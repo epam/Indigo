@@ -1,5 +1,5 @@
 #ifndef _BINGO_PG_SECTION_H__
-#define	_BINGO_PG_SECTION_H__
+#define _BINGO_PG_SECTION_H__
 
 #include "base_cpp/array.h"
 #include "base_cpp/ptr_array.h"
@@ -56,13 +56,15 @@ public:
    void removeStructure(int mol_idx);
    bool isStructureRemoved(int mol_idx);
    
-   BingoPgBufferCacheMap& getMapBufferCache(int map_idx) {return *_buffersMap[map_idx];}
-   BingoPgBufferCacheFp& getFpBufferCache(int fp_idx) {return *_buffersFp[fp_idx];}
-   BingoPgBufferCacheBin& getBinBufferCache(int bin_idx) {return *_buffersBin[bin_idx];}
+   BingoPgBufferCacheMap& getMapBufferCache(int map_idx);
+   BingoPgBufferCacheFp& getFpBufferCache(int fp_idx);
+   BingoPgBufferCacheBin& getBinBufferCache(int bin_idx);
 
    void readSectionBitsCount(indigo::Array<int>& bits_count);
 
-   DEF_ERROR("bingo postgres section");
+   const BingoSectionInfoData& getSectionInfo() const { return _sectionInfo;};
+
+   DECL_ERROR;
 
 private:
    BingoPgSection(const BingoPgSection&); //no implicit copy
@@ -71,6 +73,8 @@ private:
    void _setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx);
    void _setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data);
    void _setBitsCountData(unsigned short bits_count);
+
+   BingoPgBufferCacheBin* _getBufferBin(int idx);
    
    PG_OBJECT _index;
    int _offset;
@@ -83,9 +87,13 @@ private:
    indigo::PtrArray<BingoPgBufferCacheFp> _buffersFp;
    indigo::PtrArray<BingoPgBufferCacheMap> _buffersMap;
    indigo::PtrArray<BingoPgBufferCacheBin> _buffersBin;
+   
+   indigo::Array<int> _offsetFp;
+   indigo::Array<int> _offsetMap;
+   indigo::Array<int> _offsetBin;
 
    indigo::ObjArray<BingoPgBuffer> _bitsCountBuffers;
 };
 
-#endif	/* BINGO_PG_SECTION1_H */
+#endif /* BINGO_PG_SECTION1_H */
 

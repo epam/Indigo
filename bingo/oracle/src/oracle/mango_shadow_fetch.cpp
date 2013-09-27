@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -22,6 +22,8 @@
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/mango_fetch_context.h"
 #include "base_cpp/profiling.h"
+
+IMPL_ERROR(MangoShadowFetch, "mango shadow fetch");
 
 MangoShadowFetch::MangoShadowFetch (MangoFetchContext &context) :
 _context(context)

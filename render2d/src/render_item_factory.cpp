@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -12,7 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "molecule/base_molecule.h"
-#include "base_cpp/output.h"
+#include "render2d/render_item_factory.h"
 
 using namespace indigo;
+
+IMPL_ERROR(RenderItemFactory, "RenderItemFactory");

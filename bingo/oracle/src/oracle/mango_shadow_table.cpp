@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,6 +17,8 @@
 #include "base_cpp/profiling.h"
 #include "molecule/elements.h"
 #include "core/mango_index.h"
+
+IMPL_ERROR(MangoShadowTable, "shadow table");
 
 MangoShadowTable::MangoShadowTable (int context_id)
 {

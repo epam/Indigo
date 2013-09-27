@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -35,7 +35,7 @@ public:
    virtual int  tell  ();
    virtual void flush ();
 
-   DEF_ERROR("GZip output");
+   DECL_ERROR;
    
 protected:
    Output  &_dest;
@@ -44,6 +44,7 @@ protected:
 
    int _deflate (int flush);
 
+   CP_DECL;
    TL_CP_DECL(Array<Bytef>, _outbuf);
    TL_CP_DECL(Array<Bytef>, _inbuf);
 };

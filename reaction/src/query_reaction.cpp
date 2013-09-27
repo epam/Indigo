@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -176,16 +176,16 @@ int QueryReaction::_addBaseMolecule (int side)
    return idx;
 }
 
-bool QueryReaction::aromatize() {
+bool QueryReaction::aromatize(const AromaticityOptions &options) {
    bool arom_found = false;
    for (int i = begin(); i < end(); i = next(i)) {
-      arom_found |= QueryMoleculeAromatizer::aromatizeBonds(*(QueryMolecule *)_allMolecules[i]);
+      arom_found |= QueryMoleculeAromatizer::aromatizeBonds(*(QueryMolecule *)_allMolecules[i], options);
    }
 
    return arom_found;
 }
 
-bool QueryReaction::dearomatize() {
+bool QueryReaction::dearomatize(const AromaticityOptions &options) {
    throw Error("Dearomatization not implemented");
 }
 

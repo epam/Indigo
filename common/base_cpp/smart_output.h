@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -39,12 +39,13 @@ public:
    
    enum { HLINE_CHAR = '\a' } ;
 
-   DEF_ERROR("smart table output");
+   DECL_ERROR;
 
 private:
    void _updateColumnWidths (int index, Array<int> &widths);
    void _printLineSmart     (int index, const Array<int> &widths);
 
+   CP_DECL;
    TL_CP_DECL(ReusableObjArray< Array<char> >, _lines);
    TL_CP_DECL(ReusableObjArray< Array<char> >, _line_formats);
    TL_CP_DECL(Array<int>, _line_format_index);

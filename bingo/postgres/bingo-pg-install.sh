@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2009-2011 GGA Software Services LLC
+# Copyright (C) 2009-2013 GGA Software Services LLC
 # 
 # This file is part of Indigo toolkit.
 # 
@@ -16,6 +16,7 @@ schema_name="bingo"
 libext=".so"
 y="0"
 pglibdir="0"
+
 
 bingo_pg_name="bingo_postgres"
 

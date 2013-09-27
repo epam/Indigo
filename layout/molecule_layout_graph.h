@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -23,6 +23,7 @@
 #include "molecule/molecule.h"
 #include "layout/layout_pattern.h"
 #include "base_cpp/obj.h"
+#include "base_cpp/cancellation_handler.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -111,6 +112,8 @@ public:
    const BaseMolecule *getMolecule (const int **molecule_edge_mapping) { *molecule_edge_mapping = _molecule_edge_mapping; return _molecule; }
 
    int max_iterations;
+      
+   CancellationHandler* cancellation;
    
    void flipped () { _flipped = true; }
    bool isFlipped () const { return _flipped; }
@@ -119,7 +122,7 @@ public:
    void saveDebug ();
 #endif
 
-   DEF_ERROR("layout_graph");
+   DECL_ERROR;
 
 protected:
 
@@ -152,6 +155,7 @@ protected:
 
    protected:
 
+      CP_DECL;
       TL_CP_DECL(Array<int>, _vertices);
       TL_CP_DECL(Array<int>, _edges);
       TL_CP_DECL(Array<int>, _attached_weight);
@@ -185,9 +189,14 @@ protected:
 
    // for whole graph
    void _assignAbsoluteCoordinates (float bond_length);
+   void _findFirstVertexIdx (int n_comp, Array<int> & fixed_components, ObjArray<MoleculeLayoutGraph> &bc_components, bool all_trivial);
+   bool _prepareAssignedList (Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, ObjArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree);
    void _assignFinalCoordinates (float bond_length, const Array<Vec2f> &src_layout);
    void _copyLayout (MoleculeLayoutGraph &component);
    void _getAnchor (int &v1, int &v2, int &v3) const;
+
+   void _findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, ObjArray<MoleculeLayoutGraph> &bc_components);
+   bool _assignComponentsRelativeCoordinates (ObjArray<MoleculeLayoutGraph> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
 
    // refine
    void _refineCoordinates (const BiconnectedDecomposer &bc_decomposer, const ObjArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree);
@@ -201,14 +210,25 @@ protected:
 
    // assigning coordinates
    void _assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph);
+   bool _tryToFindPattern (int &fixed_component);
+   void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignFirstCycle(const Cycle &cycle);
    void _attachCrossingEdges ();
    void _attachDandlingVertices (int vert_idx, Array<int> &adjacent_list);
+   void _calculatePositionsOneNotDrawn (Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx);
+   void _calculatePositionsSingleDrawn (int vert_idx, Array<int> &adjacent_list, int &n_pos, int drawn_idx, bool &two_ears, Array<Vec2f> &positions, int &parity);
+   void _orderByEnergy (Array<Vec2f> &positions);
+
    void _attachEars (int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos);
    void _buildOutline (void);
 
    // attaching cycles
    bool _attachCycleOutside (const Cycle &cycle, float length, int n_common);
+   bool _drawEdgesWithoutIntersection (const Cycle &cycle, Array<int> & cycle_vertex_types);
+
+   bool _checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping);
+   bool _checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping);
+
    bool _attachCycleInside (const Cycle &cycle, float length);
    bool _attachCycleWithIntersections (const Cycle &cycle, float length);
    void _setChainType (const Array<int> &chain, const Array<int> &mapping, int type);
@@ -244,6 +264,9 @@ protected:
    // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
    static void _makeComponentsTree (BiconnectedDecomposer &decon,
       ObjArray<MoleculeLayoutGraph> &components, Array<int> &tree);
+
+   void _layoutMultipleComponents (BaseMolecule & molecule, bool respect_existing, const Filter * filter, float bond_length);
+   void _layoutSingleComponent (BaseMolecule &molecule, bool respect_existing, const Filter * filter, float bond_length);
 
    ObjArray<LayoutVertex> _layout_vertices;
    ObjArray<LayoutEdge>   _layout_edges;

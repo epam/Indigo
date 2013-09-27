@@ -725,6 +725,51 @@ grant execute on [$(bingo)].ExportSDF to $(bingo)_operator
 GO
 
 --
+-- Fingerprint
+--
+CREATE FUNCTION [$(bingo)].z_Fingerprint 
+  (
+    @molecule varbinary(max),
+    @options nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].Fingerprint
+GO
+ADD SIGNATURE TO [$(bingo)].z_Fingerprint BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].Fingerprint 
+  (
+    @molecule varchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_Fingerprint (cast(@molecule as VARBINARY(max)), @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].Fingerprint to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].FingerprintB 
+  (
+    @molecule varbinary(max),
+    @options nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_Fingerprint (@molecule, @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].FingerprintB to $(bingo)_reader
+GO
+
+--
 -- FlushOperations
 --
 CREATE PROCEDURE [$(bingo)].z_FlushOperations 
@@ -1012,6 +1057,80 @@ BEGIN
 END
 GO
 grant execute on [$(bingo)].ImportSMILES to $(bingo)_operator
+GO
+
+--
+-- InChI
+--
+CREATE FUNCTION [$(bingo)].z_InChI 
+  (
+    @molecule varbinary(max),
+    @options nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].InChI
+GO
+ADD SIGNATURE TO [$(bingo)].z_InChI BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].InChI 
+  (
+    @molecule varchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_InChI (cast(@molecule as VARBINARY(max)), @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].InChI to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].InChIB 
+  (
+    @molecule varbinary(max),
+    @options nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_InChI (@molecule, @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].InChIB to $(bingo)_reader
+GO
+
+--
+-- InChIKey
+--
+CREATE FUNCTION [$(bingo)].z_InChIKey 
+  (
+    @inchi nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].InChIKey
+GO
+ADD SIGNATURE TO [$(bingo)].z_InChIKey BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].InChIKey 
+  (
+    @inchi nvarchar(max)
+  )
+  RETURNS nvarchar(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_InChIKey (@inchi, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].InChIKey to $(bingo)_reader
 GO
 
 --
@@ -1420,6 +1539,51 @@ BEGIN
 END
 GO
 grant execute on [$(bingo)].RExactB to $(bingo)_reader
+GO
+
+--
+-- RFingerprint
+--
+CREATE FUNCTION [$(bingo)].z_RFingerprint 
+  (
+    @reaction varbinary(max),
+    @options nvarchar(max),
+    @bingo_schema nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+  EXTERNAL NAME [$(bingo)_assembly].[indigo.Bingo].RFingerprint
+GO
+ADD SIGNATURE TO [$(bingo)].z_RFingerprint BY CERTIFICATE $(bingo)_certificate
+  WITH PASSWORD = '$(bingo_pass)'
+GO
+
+CREATE FUNCTION [$(bingo)].RFingerprint 
+  (
+    @reaction varchar(max),
+    @options nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_RFingerprint (cast(@reaction as VARBINARY(max)), @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RFingerprint to $(bingo)_reader
+GO
+
+CREATE FUNCTION [$(bingo)].RFingerprintB 
+  (
+    @reaction varbinary(max),
+    @options nvarchar(max)
+  )
+  RETURNS varbinary(max)
+AS
+BEGIN
+  RETURN [$(bingo)].z_RFingerprint (@reaction, @options, '$(bingo)')
+END
+GO
+grant execute on [$(bingo)].RFingerprintB to $(bingo)_reader
 GO
 
 --

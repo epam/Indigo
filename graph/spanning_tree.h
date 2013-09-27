@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -66,7 +66,7 @@ public:
 
    void markAllEdgesInCycles (int *marks_out, int value);
 
-   DEF_ERROR("spanning tree");
+   DECL_ERROR;
 protected:
    struct StackElem
    {
@@ -83,6 +83,7 @@ protected:
    const Filter *_edge_filter;
 
    // these members made static for saving time of memory allocations
+   CP_DECL;
    TL_CP_DECL(Array<ExtEdge>, _edges_list);
    TL_CP_DECL(Array<int>, _depth_counters);
    TL_CP_DECL(Graph, _tree);

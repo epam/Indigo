@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -92,7 +92,7 @@ public:
    float verticalIntervalFactor;
    float bondLength;
    
-   DEF_ERROR("metalayout");
+   DECL_ERROR;
 private:
    Vec2f _contentSize;
    float _avel, _scaleFactor, _offset;

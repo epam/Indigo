@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,8 +17,6 @@
 #include "graph/biconnected_decomposer.h"
 #include "molecule/molecule.h"
 #include "molecule/molfile_loader.h"
-
-DEF_ERROR("patmake");
 
 int edge_cmp (const int &e1, const int &e2, const void *context)
 {

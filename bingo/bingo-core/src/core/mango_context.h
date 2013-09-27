@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -38,7 +38,7 @@ public:
    static int end ();
    static int next (int k);
 
-   DEF_ERROR("mango context");
+   DECL_ERROR;
 
    static void remove (int id);
 

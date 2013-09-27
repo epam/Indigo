@@ -44,9 +44,9 @@ CEXPORT int indigoAromatize (int object)
       IndigoObject &obj = self.getObject(object);
 
       if (IndigoBaseMolecule::is(obj))
-         return obj.getBaseMolecule().aromatize() ? 1 : 0;
+         return obj.getBaseMolecule().aromatize(self.arom_options) ? 1 : 0;
       if (IndigoBaseReaction::is(obj))
-         return obj.getBaseReaction().aromatize() ? 1 : 0;
+         return obj.getBaseReaction().aromatize(self.arom_options) ? 1 : 0;
       throw IndigoError("Only molecules and reactions can be aromatized");
    }
    INDIGO_END(-1)
@@ -58,10 +58,13 @@ CEXPORT int indigoDearomatize (int object)
    {
       IndigoObject &obj = self.getObject(object);
 
+      AromaticityOptions arom_options = self.arom_options;
+      arom_options.unique_dearomatization = self.unique_dearomatization;
+
       if (IndigoBaseMolecule::is(obj))
-         return obj.getBaseMolecule().dearomatize() ? 1 : 0;
+         return obj.getBaseMolecule().dearomatize(arom_options) ? 1 : 0;
       if (IndigoBaseReaction::is(obj))
-         return obj.getBaseReaction().dearomatize() ? 1 : 0;
+         return obj.getBaseReaction().dearomatize(arom_options) ? 1 : 0;
       throw IndigoError("Only molecules and reactions can be dearomatized");
    }
    INDIGO_END(-1)
@@ -280,18 +283,32 @@ CEXPORT int indigoUnfoldHydrogens (int item)
    INDIGO_END(-1)
 }
 
-static void _removeHydrogens (Molecule &mol)
+static bool _removeHydrogens (Molecule &mol)
 {
    QS_DEF(Array<int>, to_remove);
+   QS_DEF(Array<int>, sterecenters_to_validate);
    int i;
 
+   sterecenters_to_validate.clear();
    to_remove.clear();
    for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
       if (mol.convertableToImplicitHydrogen(i))
+      {
+         const Vertex &v = mol.getVertex(i);
+         int nei = v.neiBegin();
+         if (nei != v.neiEnd())
+         {
+            if (mol.getBondDirection(v.neiEdge(nei)))
+               sterecenters_to_validate.push(v.neiVertex(nei));
+         }
          to_remove.push(i);
+      }
 
    if (to_remove.size() > 0)
       mol.removeAtoms(to_remove);
+   for (int i = 0; i < sterecenters_to_validate.size(); i++)
+      mol.stereocenters.markBond(sterecenters_to_validate[i]);
+   return to_remove.size() > 0;
 }
 
 CEXPORT int indigoFoldHydrogens (int item)
@@ -463,6 +480,7 @@ CEXPORT int indigoSerialize (int item, byte **buf, int *size)
          saver.save_xyz = mol.have_xyz;
          saver.save_bond_dirs = true;
          saver.save_highlighting = true;
+         saver.save_ordering = self.preserve_ordering_in_serialize;
          saver.saveMolecule(mol);
       }
       else if (IndigoBaseReaction::is(obj))
@@ -472,6 +490,7 @@ CEXPORT int indigoSerialize (int item, byte **buf, int *size)
          saver.save_xyz = BaseReaction::haveCoord(rxn);
          saver.save_bond_dirs = true;
          saver.save_highlighting = true;
+         saver.save_ordering = self.preserve_ordering_in_serialize;
          saver.saveReaction(rxn);
       }
 
@@ -486,7 +505,7 @@ CEXPORT int indigoUnserialize (const byte *buf, int size)
 {
    INDIGO_BEGIN
    {
-      if (size > 3 && memcmp(buf, IcmSaver::VERSION, 3) == 0)
+      if (IcmSaver::checkVersion((const char *)buf))
       {
          BufferScanner scanner(buf, size);
          IcmLoader loader(scanner);
@@ -494,7 +513,7 @@ CEXPORT int indigoUnserialize (const byte *buf, int size)
          loader.loadMolecule(im->mol);
          return self.addObject(im.release());
       }
-      else if (size > 3 && memcmp(buf, IcrSaver::VERSION, 3) == 0)
+      else if (IcrSaver::checkVersion((const char *)buf))
       {
          BufferScanner scanner(buf, size);
          IcrLoader loader(scanner);
@@ -699,4 +718,48 @@ CEXPORT const char * indigoDbgInternalType (int object)
       return self.tmp_string.ptr();
    }
    INDIGO_END(0);
+}
+
+CEXPORT int indigoNormalize (int structure, const char *options)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(structure);
+      Molecule &mol = obj.getMolecule();
+
+      bool changed = false;
+
+      // Fold hydrogens
+      changed |= _removeHydrogens(mol);
+
+      // Neutralize charges
+      for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+      {
+         int charge = mol.getAtomCharge(i);
+         if (charge == 1 && mol.getAtomNumber(i) == ELEM_N)
+         {
+            const Vertex &v = mol.getVertex(i);
+            for (int nei = v.neiBegin(); nei != v.neiEnd(); nei = v.neiNext(nei))
+            {
+               int j = v.neiVertex(nei);
+               int charge2 = mol.getAtomCharge(j);
+               if (charge2 == -1 && mol.getAtomNumber(j) == ELEM_O)
+               {
+                  int edge_idx = v.neiEdge(nei);
+                  if (mol.getBondOrder(edge_idx) == BOND_SINGLE)
+                  {
+                     mol.setAtomCharge(i, 0);
+                     mol.setAtomCharge(j, 0);
+                     mol.setBondOrder(edge_idx, BOND_DOUBLE);
+                     changed = true;
+                     break;
+                  }
+               }
+            }
+         }
+      }
+      
+      return changed;
+   }
+   INDIGO_END(-1);
 }

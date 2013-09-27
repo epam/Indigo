@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -20,6 +20,8 @@
 #include "molecule/elements.h"
 
 using namespace indigo;
+
+IMPL_ERROR(MoleculeCisTrans, "cis-trans");
 
 BaseMolecule & MoleculeCisTrans::_getMolecule ()
 {
@@ -400,7 +402,12 @@ void MoleculeCisTrans::build (int *exclude_bonds)
 
       int *substituents = _bonds[i].substituents;
 
-      if (!isGeomStereoBond(mol, i, substituents, true))
+      bool have_xyz = true;
+      // If bond is marked with ignore flag then read this flag 
+      // even if coordinates are not valid.
+      if (exclude_bonds != 0 && exclude_bonds[i])
+         have_xyz = false;
+      if (!isGeomStereoBond(mol, i, substituents, have_xyz))
          continue;
 
       // Ignore only bonds that can be cis-trans

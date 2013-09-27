@@ -1,4 +1,4 @@
--- Copyright (C) 2009-2011 GGA Software Services LLC
+-- Copyright (C) 2009-2013 GGA Software Services LLC
 -- 
 -- This file is part of Indigo toolkit.
 -- 
@@ -303,6 +303,31 @@ create or replace function SMILES_blob (m in BLOB) return VARCHAR2
   AS language C name "oraMangoSMILES" library bingolib  
   with context parameters (context, m, m indicator short,
                            return indicator short, return OCIString);
+/
+create or replace function InChI_clob (m in CLOB, options in VARCHAR2) return CLOB
+  AS language C name "oraMangoInchi" library bingolib  
+  with context parameters (context, m, m indicator short, options, options indicator short,
+                           return indicator short, return OCILobLocator);
+/
+create or replace function InChI_blob (m in BLOB, options in VARCHAR2) return CLOB
+  AS language C name "oraMangoInchi" library bingolib  
+  with context parameters (context, m, m indicator short, options, options indicator short,
+                           return indicator short, return OCILobLocator);
+/
+create or replace function InChIKey_clob (inchi in CLOB) return VARCHAR2
+  AS language C name "oraMangoInchiKey" library bingolib
+  with context parameters (context, inchi, inchi indicator short,
+                           return indicator short, return OCIString);
+/
+create or replace function Fingerprint_clob (m in CLOB, options in VARCHAR2) return BLOB
+  AS language C name "oraMangoFingerprint" library bingolib  
+  with context parameters (context, m, m indicator short, options, options indicator short,
+                           return indicator short, return OCILobLocator);
+/
+create or replace function Fingerprint_blob (m in BLOB, options in VARCHAR2) return BLOB
+  AS language C name "oraMangoFingerprint" library bingolib  
+  with context parameters (context, m, m indicator short, options, options indicator short,
+                           return indicator short, return OCILobLocator);
 /
 create or replace function CANSMILES_clob (m in CLOB) return VARCHAR2
   AS language C name "oraMangoCanonicalSMILES" library bingolib  

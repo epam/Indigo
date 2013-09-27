@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -23,6 +23,8 @@
 #endif
 
 namespace indigo {
+
+DECL_EXCEPTION(DbitsetError);
 
 class DLLEXPORT Dbitset {
    //bitsets are packed into arrays of "words."  Currently a word is
@@ -169,9 +171,7 @@ public:
          Iterator(const Iterator&); //no implicit copy
       };
 
-
-
-   DEF_ERROR("Dynamic bitset");
+   DECL_TPL_ERROR(DbitsetError);
 };
 
 }

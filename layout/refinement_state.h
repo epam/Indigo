@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -39,10 +39,11 @@ struct RefinementState
    float dist;
    double energy;
    float height;
+   CP_DECL;
    TL_CP_DECL(Array<Vec2f>, layout);
 
+   DECL_ERROR;
 private:
-   DEF_ERROR("refinement");
 
    MoleculeLayoutGraph &_graph;
 };

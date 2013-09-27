@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -20,6 +20,8 @@
 
 TL_DEF(MangoFetchContext, PtrArray<MangoFetchContext>, _instances);
 OsLock MangoFetchContext::_instances_lock;
+
+IMPL_ERROR(MangoFetchContext, "mango fetch context");
 
 
 MangoFetchContext::MangoFetchContext (int id_, MangoOracleContext &context,

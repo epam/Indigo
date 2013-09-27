@@ -29,7 +29,7 @@ class MoleculeCmlLoader
 {
 public:
 
-   DEF_ERROR("molecule CML loader");
+   DECL_ERROR;
 
    MoleculeCmlLoader (Scanner &scanner);
    MoleculeCmlLoader (TiXmlHandle &handle);

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -24,7 +24,7 @@ public:
    RenderItemHLine (RenderItemFactory& factory);
    virtual ~RenderItemHLine () {}
 
-   DEF_ERROR("RenderItemHLine");
+   DECL_ERROR;
 
    virtual void init ();
    virtual void estimateSize ();

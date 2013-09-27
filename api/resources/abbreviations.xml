@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<abbreviations>
+	<item name="CO2" expansion="[*:2]OC([*:1])=O">
+		<right>CO2</right><left>O2C</left><right>COO</right><left>OOC</left></item>
+	<item name="Ph" expansion="*C1=CC=CC=C1"/>
+	<item name="CO" expansion="[*:1]C([*:2])=O">
+		<alias>C(O)</alias><right>CO</right><left2>OC</left2></item>
+	<item name="SO2" expansion="[*:1]S(=O)(=O)[*:2]">
+		<left>O2S</left></item>
+	<item name="Me" expansion="*C"/>
+	<item name="Et" expansion="*CC"/>
+	<item name="Boc" expansion="CC(C)(C)OC([*])=O"/>
+	<item name="Bz" expansion="[*]C(=O)C1=CC=CC=C1"/>
+	<item name="Cbz" expansion="[*]C(=O)OCC1=CC=CC=C1"/>
+	<item name="Ac" expansion="CC(=O)[*]"/>
+	<item name="NO2" expansion="[O-][N+]([*])=O">
+		<alias>NO2</alias><alias>O2N</alias></item>
+	<item name="NO" expansion="*N=O"></item>
+	<item name="CN" expansion="[*]C#N">
+		<left>NC</left></item>
+	<item name="CHO" expansion="[*]C=O">
+		<alias>CHO</alias><left>OHC</left></item>
+	<item name="N3" expansion="[*]N=[N+]=[N-]"/>
+	<item name="C2H5O" expansion="[*]OCC"/>
+	<item name="C6H11" expansion="[*]C1CCCCC1"/>
+	<item name="PMB" expansion="COC1=CC=C(C[*])C=C1"/>
+	<item name="Bn" expansion="[*]CC1=CC=CC=C1"/>
+	<item name="Ms" expansion="CS([*])(=O)=O"/>
+	<item name="Cys" expansion="SC[C@H](N[*:1])C([*:2])=O"/>
+	<item name="Pr" expansion="*CCC"/>
+	<item name="Ts" expansion="CC1=CC=C(C=C1)S([*])(=O)=O"/>
+	<item name="t-Bu" expansion="CC(C)(C)[*]"/>
+	<item name="Bu" expansion="CCCC[*]">
+		<alias>Bu</alias><alias>n-Bu</alias></item>
+	<item name="Tf" expansion="FC(F)(F)S([*])(=O)=O"/>
+	<item name="Tos" expansion="CC1=CC=C(C=C1)S([*])(=O)=O"/>
+	<item name="FMOC" expansion="[*]C(=O)OCC1C2=CC=CC=C2C2=C1C=CC=C2">
+		<alias>FMOC</alias><alias>Fmoc</alias></item>
+	<item name="SO3-" expansion="[O-]S([*])(=O)=O" />
+	<item name="SO3H" expansion="[OH]S([*])(=O)=O">
+		<right>SO3H</right><left>HO3S</left></item>
+	<item name="O-" expansion="*[O-]" />
+	<item name="NH3+" expansion="*[NH3+]" />
+	<item name="SiPr" expansion="CC(C)S[*]">
+		<right>SiPr</right><left>iPrS</left></item>
+	<item name="iPr" expansion="CC(C)[*]"/>
+	<item name="CHOH" expansion="OC([*:1])[*:2]"/>
+</abbreviations>

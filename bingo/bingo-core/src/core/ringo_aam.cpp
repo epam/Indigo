@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,6 +17,8 @@
 #include "reaction/rxnfile_saver.h"
 #include "reaction/reaction_automapper.h"
 #include "layout/reaction_layout.h"
+
+IMPL_ERROR(RingoAAM, "ringo AAM");
 
 RingoAAM::RingoAAM(){
    treat_x_as_pseudoatom = false;

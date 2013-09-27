@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,8 +18,13 @@
 
 using namespace indigo;
 
+IMPL_ERROR(DfsWalk, "DFS walk");
+
+CP_DEF(DfsWalk);
+
 DfsWalk::DfsWalk (const Graph &graph) :
 _graph(graph),
+CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
 TL_CP_GET(_v_seq),

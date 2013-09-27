@@ -1,5 +1,5 @@
 #ifndef _BINGO_PG_INDEX_H__
-#define	_BINGO_PG_INDEX_H__
+#define _BINGO_PG_INDEX_H__
 
 #include "base_cpp/obj_array.h"
 #include "base_cpp/auto_ptr.h"
@@ -60,6 +60,8 @@ public:
    int getPagesCount() const {return _metaInfo.n_pages;}
    int getFpSize() const {return _metaInfo.n_blocks_for_fp;}
    int getMapSize() const {return _metaInfo.n_blocks_for_map;}
+   int getDictCount() const {return _metaInfo.n_blocks_for_dictionary;}
+
    PG_OBJECT getIndexPtr() const {return _index;}
    INDEX_STRATEGY getIndexStrategy() const {return _strategy;}
 
@@ -83,9 +85,11 @@ public:
    void readCmfItem(int section_idx, int mol_idx, indigo::Array<char>& cmf_buf);
    void readXyzItem(int section_idx, int mol_idx, indigo::Array<char>& xyz_buf);
 
-   void andWithBitset(int section_idx, int mol_idx, BingoPgExternalBitset& ext_bitset);
+   void andWithBitset(int section_idx, int fp_idx, BingoPgExternalBitset& ext_bitset);
 
    int getSectionStructuresNumber(int section_idx);
+   const BingoSectionInfoData& getSectionInfo (int section_idx);
+
    void getSectionBitset(int section_idx, BingoPgExternalBitset& section_bitset);
    void getSectionBitsCount(int section_idx, indigo::Array<int>& bits_count);
    
@@ -95,8 +99,12 @@ public:
    
    void readDictionary(indigo::Array<char>& _dictionary);
    void writeDictionary(BingoPgBuildEngine&);
+   /*
+    * Clear all buffers
+    */
+   void clearAllBuffers();
 
-   DEF_ERROR("bingo index");
+   DECL_ERROR;
 
 private:
    BingoPgIndex(const BingoPgIndex&); //no implicit copy
@@ -115,7 +123,6 @@ private:
    
    BingoMetaPageData _metaInfo;
    BingoPgBuffer _metaBuffer;
-   BingoPgBuffer _configBuffer;
    indigo::PtrArray<BingoPgBuffer> _sectionOffsetBuffers;
    indigo::AutoPtr<BingoPgSection> _currentSection;
    int _currentSectionIdx;
@@ -124,5 +131,5 @@ private:
 
 
 
-#endif	/* BINGO_PG_SECTION_H */
+#endif /* BINGO_PG_SECTION_H */
 

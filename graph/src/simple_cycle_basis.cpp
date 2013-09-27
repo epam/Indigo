@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -28,66 +28,20 @@ _graph(graph),_isMinimized(false) {
 
 }
 
-void SimpleCycleBasis::create() {
-   QS_DEF(Array<int>, path_vertices);
+void SimpleCycleBasis::create()
+{
    QS_DEF(Array<int>, vert_mapping);
 
-   QS_DEF(RedBlackSet<int>, remaining_edges);
-   QS_DEF(RedBlackSet<int>, selected_edges);
    QS_DEF(ObjArray< Array<int> >, subgraph_cycles);
 
 
-   path_vertices.clear();
-   remaining_edges.clear();
-   selected_edges.clear();
    subgraph_cycles.clear();
 
    Graph subgraph;
 
    subgraph.cloneGraph(_graph, &vert_mapping);
 
-
-   for (int i = subgraph.edgeBegin(); i < subgraph.edgeEnd(); i = subgraph.edgeNext(i)) {
-      remaining_edges.insert(i);
-   }
-
-   ShortestPathFinder path_finder(subgraph);
-
-
-   while (remaining_edges.size() > 0) {
-
-      int edge = remaining_edges.begin();
-
-      int source = subgraph.getEdge(edge).beg;
-      int target = subgraph.getEdge(edge).end;
-      
-      subgraph.removeEdge(edge);
-
-
-      Array<int>& path_edges = _cycles.push();
-
-      path_finder.find(path_vertices, path_edges, source, target);
-
-      path_edges.push(edge);
-
-      subgraph.addEdge(source, target);
-
-      selected_edges.insert(edge);
-
-      _edgeList.push(edge);
-
-      for (int i = 0; i < path_edges.size(); ++i) {
-         remaining_edges.remove_if_exists(path_edges[i]);
-      }
-
-
-   }
-
-   for (int i = selected_edges.begin(); i < selected_edges.end(); i = selected_edges.next(i)) {
-      subgraph.removeEdge(selected_edges.key(i));
-   }
-
-
+   _prepareSubgraph(subgraph);
 
    // The cycles just created are already minimal, so we can start minimizing at startIndex
    int startIndex = _cycles.size();
@@ -395,6 +349,54 @@ int SimpleCycleBasis::_getEdgeIndex(int edge) const {
    return _edgeIndexMap.at(edge);
 }
 
+void SimpleCycleBasis::_prepareSubgraph (Graph &subgraph)
+{
+   QS_DEF(Array<int>, path_vertices);
+   path_vertices.clear();
+   QS_DEF(RedBlackSet<int>, selected_edges);
+   selected_edges.clear();
+   QS_DEF(RedBlackSet<int>, remaining_edges);
+   remaining_edges.clear();
+   for (int i = subgraph.edgeBegin(); i < subgraph.edgeEnd(); i = subgraph.edgeNext(i)) {
+      remaining_edges.insert(i);
+   }
+
+   ShortestPathFinder path_finder(subgraph);
+
+   while (remaining_edges.size() > 0) {
+
+      int edge = remaining_edges.begin();
+
+      int source = subgraph.getEdge(edge).beg;
+      int target = subgraph.getEdge(edge).end;
+
+      subgraph.removeEdge(edge);
+
+
+      Array<int>& path_edges = _cycles.push();
+
+      path_finder.find(path_vertices, path_edges, source, target);
+
+      path_edges.push(edge);
+
+      subgraph.addEdge(source, target);
+
+      selected_edges.insert(edge);
+
+      _edgeList.push(edge);
+
+      for (int i = 0; i < path_edges.size(); ++i) {
+         remaining_edges.remove_if_exists(path_edges[i]);
+      }
+
+
+   }
+
+   for (int i = selected_edges.begin(); i < selected_edges.end(); i = selected_edges.next(i)) {
+      subgraph.removeEdge(selected_edges.key(i));
+   }
+}
+
 
 int AuxiliaryGraph::auxVertex0(int vertex) {
    if (!_vertexMap0.find(vertex)) {
@@ -470,3 +472,4 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex) {
 int AuxiliaryGraph::edge(int auxEdge) {
    return _auxEdgeMap.value(auxEdge);
 }
+

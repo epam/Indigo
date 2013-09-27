@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -80,7 +80,7 @@ public:
    int  getArcCapacity  (int edge) const;
    void setArcCapacity  (int edge, int capacity);
 
-   DEF_ERROR("skew symmetric network");
+   DECL_ERROR;
 private:
    Graph _g;
    Array<int> _symmetry;

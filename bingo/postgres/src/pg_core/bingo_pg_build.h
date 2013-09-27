@@ -2,7 +2,7 @@
  */
 
 #ifndef _BINGO_PG_BUILD_H__
-#define	_BINGO_PG_BUILD_H__
+#define _BINGO_PG_BUILD_H__
 
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/obj_array.h"
@@ -35,7 +35,7 @@ public:
    void insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_ptr);
    void flush();
 
-   DEF_ERROR("build engine");
+   DECL_ERROR;
 
 private:
    BingoPgBuild(const BingoPgBuild&); //no implicit copy
@@ -70,5 +70,5 @@ private:
 
 };
 
-#endif	/* BINGO_PG_BUILD_H */
+#endif /* BINGO_PG_BUILD_H */
 

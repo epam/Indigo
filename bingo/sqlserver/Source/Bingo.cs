@@ -362,6 +362,9 @@ namespace indigo
                   }
                   catch (Exception ex)
                   {
+                     if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
+                        Thread.ResetAbort();
+
                      BingoLog.logMessage("Exception {0} in {1}:\n{2}", ex.Message, ex.Source, ex.StackTrace);
 
                      if ((op_flags & BingoOp.LOCK_INDEX) != 0)
@@ -386,6 +389,8 @@ namespace indigo
          }
          finally
          {
+            if ((Thread.CurrentThread.ThreadState & ThreadState.AbortRequested) != 0)
+               Thread.ResetAbort();
             if (ext_conn != null)
                ext_conn.Close();
          }
@@ -1542,6 +1547,73 @@ namespace indigo
             }
 
             return BingoCore.mangoMolfile(molecule.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlString InChI(SqlBinary molecule, SqlString options, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            ContextFlags flags = ContextFlags.X_PSEUDO | ContextFlags.IGNORE_CBDM;
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0, flags);
+            }
+
+            return BingoCore.mangoInChI(molecule.Value, options.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader]
+      public static SqlString InChIKey(SqlString inchi, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            return BingoCore.mangoInChIKey(inchi.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "molecule")]
+      public static SqlBinary Fingerprint(SqlBinary molecule, SqlString options, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            ContextFlags flags = ContextFlags.X_PSEUDO | 
+               ContextFlags.IGNORE_CBDM | ContextFlags.FINGERPRINTS;
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0, flags);
+            }
+
+            return BingoCore.mangoFingerprint(molecule.Value, options.Value);
+         }
+      }
+
+      [SqlFunction(DataAccess = DataAccessKind.Read,
+         SystemDataAccess = SystemDataAccessKind.Read)]
+      [BingoSqlFunctionForReader(str_bin = "reaction")]
+      public static SqlBinary RFingerprint(SqlBinary reaction, SqlString options, SqlString bingo_schema)
+      {
+         using (BingoSession session = new BingoSession())
+         {
+            ContextFlags flags = ContextFlags.X_PSEUDO |
+               ContextFlags.IGNORE_CBDM | ContextFlags.FINGERPRINTS;
+            using (SqlConnection conn = new SqlConnection("context connection=true"))
+            {
+               conn.Open();
+               prepareContext(conn, bingo_schema.Value, 0, flags);
+            }
+
+            return BingoCore.ringoFingerprint(reaction.Value, options.Value);
          }
       }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -25,7 +25,9 @@ class Output;
 class IcrSaver
 {
 public:
-   static const char* VERSION;
+   static const char *VERSION1, *VERSION2;
+
+   static bool checkVersion (const char *prefix);
 
    explicit IcrSaver (Output &output);
 
@@ -34,8 +36,9 @@ public:
    bool save_xyz;
    bool save_bond_dirs;
    bool save_highlighting;
+   bool save_ordering;
 
-   DEF_ERROR("ICR saver");
+   DECL_ERROR;
 
 protected:
    Output &_output;

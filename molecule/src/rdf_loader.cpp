@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -19,7 +19,12 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RdfLoader, "RDF loader");
+
+CP_DEF(RdfLoader);
+
 RdfLoader::RdfLoader(Scanner &scanner) :
+CP_INIT,
 TL_CP_GET(data),
 TL_CP_GET(properties),
 TL_CP_GET(_innerBuffer),
@@ -138,6 +143,9 @@ void RdfLoader::readNext() {
             continue;
          output.printf("%s\n", _innerBuffer.ptr());
       }
+
+      if(data.size() > MAX_DATA_SIZE)
+         throw Error("data size exceeded the acceptable size %d bytes, Please check for correct file format", MAX_DATA_SIZE);
 
    } while(_readLine(_getScanner(), _innerBuffer));
 

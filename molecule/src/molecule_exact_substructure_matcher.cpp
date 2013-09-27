@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -18,6 +18,8 @@
 #include "molecule/elements.h"
 
 using namespace indigo;
+
+IMPL_ERROR(MoleculeExactSubstructureMatcher, "molecule exact substructure matcher");
 
 MoleculeExactSubstructureMatcher::MoleculeExactSubstructureMatcher (Molecule &query, Molecule &target) :
 _query(query),

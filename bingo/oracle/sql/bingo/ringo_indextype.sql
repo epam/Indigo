@@ -1,4 +1,4 @@
--- Copyright (C) 2009-2011 GGA Software Services LLC
+-- Copyright (C) 2009-2013 GGA Software Services LLC
 -- 
 -- This file is part of Indigo toolkit.
 -- 
@@ -114,6 +114,11 @@ create or replace operator RSMILES binding
   (CLOB) return VARCHAR2 using RingoPackage.RSMILES,
   (BLOB) return VARCHAR2 using RingoPackage.RSMILES;
 
+create or replace operator RFingerprint binding
+   (VARCHAR2, VARCHAR2) return BLOB using RingoPackage.RFingerprint,
+   (CLOB, VARCHAR2) return BLOB using RingoPackage.RFingerprint,
+   (BLOB, VARCHAR2) return BLOB using RingoPackage.RFingerprint;   
+   
 grant execute on RSub to public;
 grant execute on RSubHi to public;
 grant execute on RExact to public;
@@ -123,6 +128,7 @@ grant execute on AAM to public;
 grant execute on RSMILES to public;
 grant execute on Rxnfile to public;
 grant execute on RCML to public;
+grant execute on RFingerprint to public;
 
 create or replace indextype ReactionIndex for
    RSub(VARCHAR2, CLOB),

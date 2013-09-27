@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -66,6 +66,8 @@ public:
    bool use_aromaticity_matcher;
    bool use_pi_systems_matcher;
    GraphVertexEquivalence *vertex_equivalence_handler;
+
+   AromaticityOptions arom_options;
 
    FragmentMatchCache *fmcache;
 
@@ -150,7 +152,7 @@ public:
 
    static void makeTransposition (BaseMolecule &mol, Array<int> &transposition);
 
-   DEF_ERROR("molecule substructure matcher");
+   DECL_ERROR;
 
    static bool shouldUnfoldTargetHydrogens (QueryMolecule &query, bool find_all_embeddings);
 protected:
@@ -159,6 +161,7 @@ protected:
    {
       explicit MarkushContext (QueryMolecule &query_, BaseMolecule &target_);
 
+      CP_DECL;
       TL_CP_DECL(QueryMolecule, query);
       TL_CP_DECL(Array<int>, query_marking);
       TL_CP_DECL(Array<int>, sites);
@@ -218,6 +221,7 @@ protected:
 
    bool _h_unfold; // implicit target hydrogens unfolded
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _3d_constrained_atoms);
    TL_CP_DECL(Array<int>, _unfolded_target_h);
    TL_CP_DECL(Array<int>, _used_target_h);

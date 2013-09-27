@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,6 +18,8 @@
 #include "base_cpp/exception.h"
 
 namespace indigo {
+
+DECL_EXCEPTION(ObjError);
 
 // Reusable storage for object
 template <typename T> class Obj
@@ -121,6 +123,26 @@ public:
       return *_ptr();
    }
 
+   template<typename A, typename B, typename C> T & create (A &a, B &b, C &c)
+   {
+      if (_initialized)
+         throw Error("create(): already have object");
+
+      new (_storage) T(a, b, c);
+      _initialized = true;
+      return *_ptr();
+   }
+
+   template<typename A, typename B, typename C> T & create (A &a, B *b, C &c)
+   {
+      if (_initialized)
+         throw Error("create(): already have object");
+
+      new (_storage) T(a, b, c);
+      _initialized = true;
+      return *_ptr();
+   }
+
    void free ()
    {
       if (_initialized)
@@ -130,7 +152,7 @@ public:
       }
    }
 
-   DEF_ERROR("obj");
+   DECL_TPL_ERROR(ObjError);
 protected:
    T* _ptr () const
    {

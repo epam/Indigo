@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -20,8 +20,13 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculePiSystemsMatcher, "Pi-system matcher");
+
+CP_DEF(MoleculePiSystemsMatcher);
+
 MoleculePiSystemsMatcher::MoleculePiSystemsMatcher (Molecule &target) 
    : _target(target),
+   CP_INIT,
    TL_CP_GET(_atom_pi_system_idx),
    TL_CP_GET(_pi_systems),
    TL_CP_GET(_connectivity)

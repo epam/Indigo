@@ -42,8 +42,10 @@ IndigoObject(SDF_LOADER)
    _own_scanner = 0;
    sdf_loader = 0;
 
-   _own_scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);
-   sdf_loader = new SdfLoader(*_own_scanner);
+   // AutoPtr guard in case of exception in SdfLoader (happens in case of empty file)
+   AutoPtr<FileScanner> scanner(new FileScanner(indigoGetInstance().filename_encoding, filename));
+   sdf_loader = new SdfLoader(*scanner.get());
+   _own_scanner = scanner.release();
 }
 
 IndigoSdfLoader::~IndigoSdfLoader ()
@@ -70,8 +72,7 @@ IndigoObject(type)
    _loaded = false;
    _data.copy(data);
 
-   for (int i = properties.begin(); i != properties.end(); i = properties.next(i))
-      _properties.value(_properties.insert(properties.key(i))).copy(properties.value(i));
+   _properties.copy(properties);
 
    _index = index;
    _offset = offset;
@@ -384,9 +385,11 @@ IndigoObject * IndigoSmilesReaction::clone ()
    return IndigoReaction::cloneFrom(*this);
 }
 
+CP_DEF(IndigoMultilineSmilesLoader);
+
 IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (Scanner &scanner) :
 IndigoObject(MULTILINE_SMILES_LOADER),
-TL_CP_GET(_offsets)
+CP_INIT, TL_CP_GET(_offsets)
 {
    _own_scanner = false;
    _scanner = &scanner;
@@ -398,7 +401,7 @@ TL_CP_GET(_offsets)
 
 IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (const char *filename) :
 IndigoObject(MULTILINE_SMILES_LOADER),
-TL_CP_GET(_offsets)
+CP_INIT, TL_CP_GET(_offsets)
 {
    _scanner = 0;
    _scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);

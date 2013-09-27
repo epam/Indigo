@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -41,7 +41,7 @@ public:
    // Method for constructing internal layer information
    void construct (Molecule &mol);
 
-   DEF_ERROR("InChI layer");
+   DECL_ERROR;
 protected:
    Molecule& _getMolecule ();
 

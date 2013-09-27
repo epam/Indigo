@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -82,15 +82,16 @@ public:
 
    virtual bool isPseudoAtom (int idx);
    virtual const char * getPseudoAtom (int idx);
-   virtual bool isRSite (int atom_idx);
-   virtual int  getRSiteBits (int atom_idx);
-   virtual void allowRGroupOnRSite (int atom_idx, int rg_idx);
+
+   virtual bool  isRSite (int atom_idx);
+   virtual dword getRSiteBits (int atom_idx);
+   virtual void  allowRGroupOnRSite (int atom_idx, int rg_idx);
            void setRSiteBits (int atom_idx, int bits);
 
    virtual bool bondStereoCare (int idx);
 
-   virtual bool aromatize ();
-   virtual bool dearomatize ();
+   virtual bool aromatize (const AromaticityOptions &options);
+   virtual bool dearomatize (const AromaticityOptions &options);
 
    int getImplicitH (int idx);
    int getImplicitH_NoThrow (int idx, int fallback);
@@ -98,6 +99,7 @@ public:
 
    int getAtomConnectivity (int idx);
    int getAtomConnectivity_noImplH (int idx);
+   int getAtomConnectivity_NoThrow (int idx, int fallback);
    int calcAtomConnectivity_noImplH (int idx);
    void calcAromaticAtomConnectivity (int idx, int &n_arom, int &min_conn);
    bool isSaturatedAtom (int idx);
@@ -120,7 +122,7 @@ public:
    static int matchAtomsCmp (Graph &g1, Graph &g2, int idx1, int idx2,
                              void *userdata);
 
-   void unfoldHydrogens (Array<int> *markers_out, int max_h_cnt = -1);
+   void unfoldHydrogens (Array<int> *markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false);
 
    static void saveBondOrders (Molecule &mol, Array<int> &orders);
    static void loadBondOrders (Molecule &mol, Array<int> &orders);

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -38,7 +38,7 @@ public:
    bool ignore_stereocenter_errors;
    bool ignore_noncritical_query_features;
    
-   DEF_ERROR("RXN loader");
+   DECL_ERROR;
 protected:
 
    BaseReaction  *_brxn;

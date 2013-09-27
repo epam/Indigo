@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -36,7 +36,7 @@ public:
    RingoExact exact;
    RingoAAM ringoAAM;
 
-   DEF_ERROR("ringo context");
+   DECL_ERROR;
 
    static int begin ();
    static int end ();

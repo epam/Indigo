@@ -43,11 +43,12 @@ void MangoPgFpData::setGrossStr(const char* gross_str, const char* counter_str) 
    _gross.appendString(counter_str, true);
 }
 
+IMPL_ERROR(MangoPgSearchEngine, "molecule search engine");
+
 MangoPgSearchEngine::MangoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name):
 BingoPgSearchEngine(),
 _searchType(-1) {
    _setBingoContext();
-//   bingoSetErrorHandler(_errorHandler, 0);
    /*
     * Set up bingo configuration
     */
@@ -92,8 +93,10 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
          _bufferIndexPtr->readXyzItem(section_idx, structure_idx, xyz_buf);
       }
 
+//      CORE_HANDLE_WARNING_TID(0, 1, "matching binary target", section_idx, structure_idx, " ");
       bingo_res = mangoMatchTargetBinary(mol_buf.ptr(), mol_buf.sizeInBytes(), xyz_buf.ptr(), xyz_buf.sizeInBytes());
-      CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while matching binary target", bingoGetError());
+      CORE_HANDLE_ERROR_TID(bingo_res, -1, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetError());
+      CORE_RETURN_WARNING_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetWarning());
 
       result = (bingo_res > 0);
    } else if(_searchType == BingoPgCommon::MOL_GROSS) {
@@ -104,7 +107,8 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
       gross_text.getText(gross_len);
       
       bingo_res = mangoMatchTarget(gross_text.getString(), gross_len);
-      CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while matching gross target", bingoGetError());
+      CORE_HANDLE_ERROR(bingo_res, -1, "molecule search engine: error while matching gross target", bingoGetError());
+      CORE_RETURN_WARNING(bingo_res, 0, "molecule search engine: error while matching gross target", bingoGetWarning());
       
       result = (bingo_res > 0);
    } else {
@@ -114,6 +118,8 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx) {
 }
 
 void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT scan_desc_ptr) {
+
+   profTimerStart(t0, "mango_pg.prepare_query_search");
 
    IndexScanDesc scan_desc = (IndexScanDesc) scan_desc_ptr;
 
@@ -131,11 +137,8 @@ void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
    _queryFpData.reset(new MangoPgFpData());
 
    _setBingoContext();
-//   bingoSetErrorHandler(_errorHandler, 0);
-
+   
    BingoPgSearchEngine::prepareQuerySearch(bingo_idx, scan_desc);
-
-   loadDictionary(bingo_idx);
 
    switch(_searchType) {
       case BingoPgCommon::MOL_SUB:
@@ -160,6 +163,7 @@ void MangoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT 
          throw Error("unsupported search type %d", _searchType);
          break;
    }
+
 
 }
 
@@ -269,6 +273,7 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
    where_clause_str.push(0);
 
 }
+
 void MangoPgSearchEngine::_prepareExactTauStrings(indigo::Array<char>& what_clause_str, indigo::Array<char>& from_clause_str, indigo::Array<char>& where_clause_str) {
    ArrayOutput what_clause(what_clause_str);
    ArrayOutput from_clause(from_clause_str);
@@ -291,20 +296,25 @@ void MangoPgSearchEngine::_prepareExactTauStrings(indigo::Array<char>& what_clau
 
 void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    IndexScanDesc scan_desc = (IndexScanDesc) scan_desc_ptr;
-   QS_DEF(Array<char>, search_type);
+   Array<char> search_type;
+   Array<char> search_query;
+   Array<char> search_options;
+
    int bingo_res;
-   BingoPgText search_query;
-   BingoPgText search_options;
    BingoPgFpData& data = _queryFpData.ref();
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, search_query, search_options);
+   /*
+    * Get block parameters and split search options
+    */
+   _getBlockParameters(search_options);
 
    /*
     * Set up matching parameters
     */
-   bingo_res = mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set sub search context", bingoGetError());
 
    const char* fingerprint_buf;
@@ -325,27 +335,33 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    QS_DEF(Array<char>, from_clause);
    QS_DEF(Array<char>, where_clause);
    QS_DEF(Array<char>, search_type);
-   BingoPgText search_query;
-   BingoPgText search_options;
+   Array<char> search_query;
+   Array<char> search_options;
    int bingo_res;
 
-   BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
+   profTimerStart(t0, "mango_pg.prepare_exact_search");
 
+   BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
    _getScanQueries(scan_desc->keyData[0].sk_argument, search_query, search_options);
 
    /*
     * Set up matching parameters
     */
-   bingo_res = mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+//   elog(WARNING, "processing query: %s", search_query.ptr());
+   bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set exact search context", bingoGetError());
 
-   if (strcasestr(search_options.getString(), "TAU") != 0) {
+   if (strcasestr(search_options.ptr(), "TAU") != 0) {
       _prepareExactTauStrings(what_clause, from_clause, where_clause);
    } else {
       _prepareExactQueryStrings(what_clause, from_clause, where_clause);
    }
-
+   _searchCursor.free();
+   profTimerStart(t4, "mango_pg.exact_search_cursor");
    _searchCursor.reset(new BingoPgCursor("SELECT %s FROM %s WHERE %s",what_clause.ptr(), from_clause.ptr(), where_clause.ptr()));
+   profTimerStop(t4);
+//   if(nanoHowManySeconds(profTimerGetTime(t4) )> 1)
+//      elog(WARNING, "select %s from %s where %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
 }
 
 void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {
@@ -353,17 +369,17 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {
 
    QS_DEF(Array<char>, gross_query);
    QS_DEF(Array<char>, search_type);
-   BingoPgText search_sigh;
-   BingoPgText search_mol;
+   Array<char> search_sigh;
+   Array<char> search_mol;
    int bingo_res;
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, search_sigh, search_mol);
 
-   gross_query.readString(search_sigh.getString(), true);
+   gross_query.readString(search_sigh.ptr(), true);
    gross_query.appendString(" ", true);
-   gross_query.appendString(search_mol.getString(), true);
+   gross_query.appendString(search_mol.ptr(), true);
 
    /*
     * Set up matching parameters
@@ -375,6 +391,7 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {
    if(gross_conditions == 0)
       CORE_HANDLE_ERROR(0, 1, "molecule search engine: can not get gross conditions", bingoGetError());
 
+   _searchCursor.free();
    _searchCursor.reset(new BingoPgCursor("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), gross_conditions));
 }
 
@@ -414,6 +431,7 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr) {
       where_clause.printf("AND mass < %f", max_mass);
    where_clause.writeChar(0);
 
+   _searchCursor.free();
    _searchCursor.reset(new BingoPgCursor("SELECT b_id FROM %s WHERE %s",_shadowRelName.ptr(), where_clause_str.ptr()));
 
 }
@@ -421,8 +439,8 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr) {
 void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
    IndexScanDesc scan_desc = (IndexScanDesc) scan_desc_ptr;
    QS_DEF(Array<char>, search_type);
-   BingoPgText search_query;
-   BingoPgText search_options;
+   Array<char> search_query;
+   Array<char> search_options;
    int bingo_res;
    float min_bound = 0, max_bound = 1;
    BingoPgFpData& data = _queryFpData.ref();
@@ -430,10 +448,14 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
    BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, min_bound, max_bound, search_query, search_options);
-            /*
+   /*
+    * Get block parameters and split search options
+    */
+   _getBlockParameters(search_options);
+   /*
     * Set up matching parameters
     */
-   bingo_res = mangoSetupMatch(search_type.ptr(), search_query.getString(), search_options.getString());
+   bingo_res = mangoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
    CORE_HANDLE_ERROR(bingo_res, 1, "molecule search engine: can not set sim search context", bingoGetError());
 
    if(min_bound > max_bound)
@@ -453,7 +475,7 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
 
 }
 
-void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1, BingoPgText& str2) {
+void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, Array<char>& str1_out, Array<char>& str2_out) {
    /*
     * Get query info
     */
@@ -488,8 +510,13 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1
       /*
        * Query tuple consist of query and options
        */
+      BingoPgText str1, str2;
+      
       str1.init(values[0]);
       str2.init(values[1]);
+
+      str1_out.readString(str1.getString(), true);
+      str2_out.readString(str2.getString(), true);
 
       pfree(values);
       pfree(nulls);
@@ -498,7 +525,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, BingoPgText& str1
    BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", message));
 }
 
-void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound, float& max_bound, BingoPgText& str1, BingoPgText& str2) {
+void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound, float& max_bound, indigo::Array<char>& str1_out, indigo::Array<char>& str2_out) {
    /*
     * Get query info
     */
@@ -535,8 +562,12 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound
        */
       min_bound = DatumGetFloat4(values[0]);
       max_bound = DatumGetFloat4(values[1]);
+      BingoPgText str1, str2;
       str1.init(values[2]);
       str2.init(values[3]);
+
+      str1_out.readString(str1.getString(), true);
+      str2_out.readString(str2.getString(), true);
 
       pfree(values);
       pfree(nulls);
@@ -557,7 +588,7 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
           return true;
        } else {
           _fetchFound = false;
-          _currentSection = _bufferIndexPtr->readNext(_currentSection);
+          ++_currentSection;
        }
    }
    
@@ -569,9 +600,14 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
 
    int* min_bounds, * max_bounds, bingo_res;
    /*
+    * Read first section
+    */
+   if(_currentSection < 0)
+      _currentSection = _blockBegin;
+   /*
     * Iterate through the sections
     */
-   for (; _currentSection < bingo_index.readEnd(); _currentSection = bingo_index.readNext(_currentSection)) {
+   for (; _currentSection < _blockEnd; ++_currentSection) {
       _currentIdx = -1;
       /*
        * Get section existing structures
@@ -662,6 +698,11 @@ bool MangoPgSearchEngine::_searchNextSim(PG_OBJECT result_ptr) {
 //         profTimerStop(t6);
 
       }
+      /*
+       * Return false on empty fingerprint
+       */
+      if(query_data.bitEnd() == 0)
+         return false;
 
       /*
        * If bitset is not null then matches are found

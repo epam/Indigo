@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -26,7 +26,7 @@ public:
    RenderItemMolecule (RenderItemFactory& factory);
    virtual ~RenderItemMolecule () {}
 
-   DEF_ERROR("RenderItemMolecule");
+   DECL_ERROR;
 
    virtual void init ();
    virtual void estimateSize ();

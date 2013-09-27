@@ -27,6 +27,8 @@ using namespace indigo;
 
 static int cursor_idx = 0;
 
+IMPL_ERROR(BingoPgCursor, "bingo cursor access");
+
 BingoPgCursor::BingoPgCursor(const char *format, ...) {
    Array<char> buf;
    va_list args;
@@ -92,8 +94,50 @@ void BingoPgCursor::getId(int arg_idx, ItemPointerData& data) {
    BINGO_PG_HANDLE(throw Error("internal error: can not get the id from the data: %s", message));
 }
 void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
-   Datum record = getDatum(arg_idx);
-   data.init(record);
+   if(SPI_processed == 0)
+      throw Error("internal error: can not get not processed tuple");
+
+   if(SPI_tuptable == NULL)
+      throw Error("internal error: can not get null tuple");
+
+   Datum record = 0;
+   
+   BINGO_PG_TRY
+   {
+      TupleDesc tupdesc = SPI_tuptable->tupdesc;
+
+      /*
+       * Tuple index is always 0
+       */
+      int tuple_idx = 0;
+
+      HeapTuple tuple = SPI_tuptable->vals[tuple_idx];
+
+      if (arg_idx > tupdesc->natts)
+         throw Error("internal error: can not get tuple was not in query %d > %d", arg_idx, tupdesc->natts);
+
+      char *result = SPI_getvalue(tuple, tupdesc, arg_idx);
+      if (result == NULL) {
+         if (SPI_result == SPI_ERROR_NOATTRIBUTE)
+            throw Error("internal error: colnumber is out of range (SPI_getvalue)");
+         else if (SPI_result == SPI_ERROR_NOOUTFUNC)
+            throw Error("internal error: no output function is available (SPI_getvalue)");
+         else
+            data.initFromString("\0");
+      }
+      else {
+         data.initFromString(result);
+         pfree(result);
+      }
+      // TODO: Any Inidgo exceptions are being catched in PG_BINGO_END outside of this function
+      // and there PG_BINGO_END raises Postgres exception this is being catched here in BINGO_PG_HANDLE...
+      // This can cause an inifinite exception throwing loop, but variables on the stack here in this function 
+      // are being already removed from stack. So Visual Studio reports "buffer overrun" exception and terminates 
+      // everything :)
+      // Here is an example:
+      // throw Error("internal error: no output function is available (SPI_getvalue)");
+   }
+   BINGO_PG_HANDLE(throw Error("internal error: can not get datum from the tuple: %s", message));
 }
 
 uintptr_t  BingoPgCursor::getDatum(int arg_idx) {

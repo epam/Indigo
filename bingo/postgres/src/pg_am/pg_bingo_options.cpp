@@ -12,6 +12,7 @@ extern "C" {
 #include "utils/tuplesort.h"
 #include "utils/array.h"
 #include "catalog/pg_type.h"
+#include "utils/rel.h"
 #include "utils/builtins.h"
 #include "utils/guc.h"
 #include "utils/memutils.h"

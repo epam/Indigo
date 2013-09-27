@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -37,7 +37,7 @@ class QueryMolecule;
 class AromaticityMatcher
 {
 public:
-   AromaticityMatcher (QueryMolecule &query, BaseMolecule &base);
+   AromaticityMatcher (QueryMolecule &query, BaseMolecule &base, const AromaticityOptions &arom_options);
 
    // Check if aromaticity matcher is necessary for specified query
    static bool isNecessary (QueryMolecule &query);
@@ -64,14 +64,17 @@ public:
    // an inverse mapping for 'core_sub'.
    bool match (int *core_sub, int *core_super);
 
-   DEF_ERROR("AromaticityMatcher");
+   DECL_ERROR;
 protected:
    QueryMolecule &_query;
    BaseMolecule &_base;
 
+   AromaticityOptions _arom_options;
+
    enum {
       ANY = 0, AROMATIC, NONAROMATIC
    };
+   CP_DECL;
    TL_CP_DECL(Array<int>, _matching_edges_state);
    AutoPtr<BaseMolecule> _submolecule;
 };

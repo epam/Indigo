@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -21,6 +21,8 @@
 #include "molecule/molfile_saver.h"
 
 using namespace indigo;
+
+IMPL_ERROR(RxnfileSaver, "Rxnfile saver");
 
 RxnfileSaver::RxnfileSaver(Output &output) : 
    _output(output)

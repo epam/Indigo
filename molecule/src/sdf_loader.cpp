@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,7 +19,12 @@
 
 using namespace indigo;
 
+IMPL_ERROR(SdfLoader, "SDF loader");
+
+CP_DEF(SdfLoader);
+
 SdfLoader::SdfLoader (Scanner &scanner) :
+CP_INIT,
 TL_CP_GET(data),
 TL_CP_GET(properties),
 TL_CP_GET(_offsets),
@@ -127,8 +132,10 @@ void SdfLoader::readNext ()
 
    bool pending_emptyline = false;
 
+   int last_offset = -1;
    while (!_scanner->isEOF())
    {
+      last_offset = _scanner->tell();
       _scanner->readLine(str, true);
       if (str.size() > 0 && str[0] == '>')
          break;
@@ -143,12 +150,19 @@ void SdfLoader::readNext ()
 
       if (!pending_emptyline)
          output.writeStringCR(str.ptr());
+
+      if(data.size() > MAX_DATA_SIZE)
+         throw Error("data size exceeded the acceptable size %d bytes, Please check for correct file format", MAX_DATA_SIZE);
    }
    
+   int properties_offset = last_offset;
+
    while (1)
    {
       if (strncmp(str.ptr(), "$$$$", 4) == 0)
          break;
+
+      output.writeStringCR(str.ptr());
 
       BufferScanner ws(str.ptr());
 
@@ -163,7 +177,6 @@ void SdfLoader::readNext ()
 
       while (!ws.isEOF())
       {
-
          char c = ws.readChar();
 
          if (c == '>')
@@ -180,11 +193,17 @@ void SdfLoader::readNext ()
 
          int idx = properties.findOrInsert(word.ptr());
 
-         _scanner->readLine(properties.value(idx), true);
+         _scanner->readLine(str, true);
+         properties.value(idx).copy(str);
+         output.writeStringCR(str.ptr());
 
          do
          {
+            if (_scanner->isEOF())
+               break;
+
             _scanner->readLine(str, true);
+            output.writeStringCR(str.ptr());
             if (str.size() > 1)
             {
                properties.value(idx).pop(); // Remove string end marker (0)

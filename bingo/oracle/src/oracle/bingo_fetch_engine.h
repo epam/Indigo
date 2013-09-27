@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -24,10 +24,7 @@ using namespace indigo;
 class BingoFetchEngine
 {
 public:
-   explicit BingoFetchEngine () : TL_CP_GET(matched)
-   {
-      matched.clear();
-   }
+   explicit BingoFetchEngine ();
    
    virtual ~BingoFetchEngine () {}
 
@@ -39,6 +36,7 @@ public:
    // In case of exceptions this rowid corresponds to the structure that was tried to be matched last time
    virtual bool getLastRowid (OraRowidText &id) = 0;
 
+   CP_DECL;
    TL_CP_DECL(List<OraRowidText>, matched);
 };
 

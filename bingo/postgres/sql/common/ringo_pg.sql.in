@@ -1,0 +1,97 @@
+CREATE TYPE rsub AS (query_reaction text, query_options text);
+
+CREATE OR REPLACE FUNCTION matchRSub(text, rsub)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._rsub_internal($2.query_reaction, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION matchRSub(bytea, rsub)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._rsub_internal($2.query_reaction, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE TYPE rexact AS (query_reaction text, query_options text);
+
+CREATE OR REPLACE FUNCTION matchRExact(text, rexact)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._rexact_internal($2.query_reaction, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION matchRExact(bytea, rexact)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._rexact_internal($2.query_reaction, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE TYPE rsmarts AS (query_reaction text, query_options text);
+
+CREATE OR REPLACE FUNCTION matchRSmarts(text, rsmarts)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._rsmarts_internal($2.query_reaction, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION matchRSmarts(bytea, rsmarts)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._rsmarts_internal($2.query_reaction, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OPERATOR public.@ (
+        LEFTARG = text,
+        RIGHTARG = rsub,
+        PROCEDURE = matchRSub,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+CREATE OPERATOR public.@ (
+        LEFTARG = bytea,
+        RIGHTARG = rsub,
+        PROCEDURE = matchRSub,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+CREATE OPERATOR public.@ (
+        LEFTARG = text,
+        RIGHTARG = rexact,
+        PROCEDURE = matchRExact,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+CREATE OPERATOR public.@ (
+        LEFTARG = bytea,
+        RIGHTARG = rexact,
+        PROCEDURE = matchRExact,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+CREATE OPERATOR public.@ (
+        LEFTARG = text,
+        RIGHTARG = rsmarts,
+        PROCEDURE = matchRSmarts,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+CREATE OPERATOR public.@ (
+        LEFTARG = bytea,
+        RIGHTARG = rsmarts,
+        PROCEDURE = matchRSmarts,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+

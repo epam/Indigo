@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -20,6 +20,8 @@
 #include "molecule/molecule_substructure_matcher.h"
 
 using namespace indigo;
+
+IMPL_ERROR(MoleculeScaffoldDetection, "Molecule Scaffold detection");
 
 MoleculeScaffoldDetection::MoleculeScaffoldDetection (ObjArray<Molecule>* mol_set):
 ScaffoldDetection(0),
@@ -144,6 +146,8 @@ bool MoleculeScaffoldDetection::matchAtoms (Graph &g1, Graph &g2, const int *, i
 
    return MoleculeSubstructureMatcher::matchQueryAtom(q_atom, *target, super_idx, 0, 0xFFFFFFFF);
 }
+
+IMPL_ERROR(MoleculeScaffoldDetection::MoleculeBasket, "Mol basket");
 
 MoleculeScaffoldDetection::MoleculeBasket::MoleculeBasket():
 cbSortSolutions(0),

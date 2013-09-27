@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -22,16 +22,22 @@
 
 using namespace indigo;
 
+IMPL_ERROR(EmbeddingEnumerator, "embedding enumerator");
+IMPL_TIMEOUT_EXCEPTION(EmbeddingEnumerator, "embedding enumerator");
+
+CP_DEF(EmbeddingEnumerator);
+
 EmbeddingEnumerator::EmbeddingEnumerator (Graph &supergraph) :
-TL_CP_GET(_core_1),
-TL_CP_GET(_core_2),
-TL_CP_GET(_term2),
-TL_CP_GET(_unterm2),
-TL_CP_GET(_s_pool),
-TL_CP_GET(_g1_fast),
-TL_CP_GET(_g2_fast),
-TL_CP_GET(_query_match_state),
-TL_CP_GET(_enumerators)
+   CP_INIT,
+   TL_CP_GET(_core_1),
+   TL_CP_GET(_core_2),
+   TL_CP_GET(_term2),
+   TL_CP_GET(_unterm2),
+   TL_CP_GET(_s_pool),
+   TL_CP_GET(_g1_fast),
+   TL_CP_GET(_g2_fast),
+   TL_CP_GET(_query_match_state),
+   TL_CP_GET(_enumerators)
 {
    _g2 = &supergraph;
    _core_2.clear();

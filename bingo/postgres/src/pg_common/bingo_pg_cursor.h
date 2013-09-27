@@ -1,5 +1,5 @@
 #ifndef _BINGO_PG_CURSOR_H__
-#define	_BINGO_PG_CURSOR_H__
+#define _BINGO_PG_CURSOR_H__
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
@@ -21,7 +21,7 @@ public:
    uintptr_t  getDatum(int arg_idx);
    unsigned int getArgOid(int arg_idx);
 
-   DEF_ERROR("bingo cursor access");
+   DECL_ERROR;
 private:
    BingoPgCursor(const BingoPgCursor&); //no implicit copy
 
@@ -33,5 +33,5 @@ private:
 
 };
 
-#endif	/* BINGO_PG_CURSOR_H */
+#endif /* BINGO_PG_CURSOR_H */
 

@@ -194,6 +194,7 @@ struct DLLEXPORT ProductEnumeratorParams
       is_multistep_reactions = false;
       is_one_tube = false;
       is_self_react = false;
+      is_layout = true;
       max_deep_level = 2;
       max_product_count = 1000;
    }
@@ -201,6 +202,7 @@ struct DLLEXPORT ProductEnumeratorParams
    bool is_multistep_reactions;
    bool is_one_tube;
    bool is_self_react;
+   bool is_layout;
    int max_deep_level;
    int max_product_count;
 };
@@ -223,6 +225,10 @@ public:
    void removeObject (int id);
 
    void removeAllObjects ();
+
+   void init ();
+
+   int getId () const;
 
    Array<char> tmp_string;
    float tmp_xyz[3];
@@ -263,15 +269,35 @@ public:
    void initMolfileSaver (MolfileSaver &saver);
    void initRxnfileSaver (RxnfileSaver &saver);
 
+   bool preserve_ordering_in_serialize;
+
+   AromaticityOptions arom_options;
+   // This option is moved out of arom_options because it should be used only in indigoDearomatize method
+   bool unique_dearomatization; 
+
 protected:
 
    RedBlackMap<int, IndigoObject *> _objects;
 
    int    _next_id;
    OsLock _objects_lock;
+
+   int _indigo_id;
 };
 
+class DLLEXPORT IndigoPluginContext
+{
+public:
+   IndigoPluginContext ();
 
+   void validate ();
+
+protected:
+   virtual void init () = 0;
+
+private:
+   int indigo_id;
+};
 
 #define INDIGO_BEGIN { Indigo &self = indigoGetInstance(); \
       try { self.error_message.clear(); self.resetCancellationHandler(); 

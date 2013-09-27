@@ -31,7 +31,7 @@ public:
    void saveReaction (Reaction &rxn);
    bool skip_cml_tag; // skips <?xml> and <cml> tags
 
-   DEF_ERROR("reaction CML saver");
+   DECL_ERROR;
 
 protected:
    Reaction *_rxn;

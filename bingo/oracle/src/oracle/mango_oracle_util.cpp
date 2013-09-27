@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -35,6 +35,8 @@
 #include "oracle/mango_oracle.h"
 #include "molecule/elements.h"
 
+#include "indigo_inchi_core.h"
+
 static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
                                  BingoOracleContext &context, bool canonical)
 {
@@ -50,7 +52,7 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
    profTimerStop(tload);
 
    if (canonical)
-      MoleculeAromatizer::aromatizeBonds(target);
+      MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
 
    QS_DEF(Array<char>, smiles);
 
@@ -434,6 +436,158 @@ ORAEXT OCILobLocator *oraMangoCML (OCIExtProcContext *ctx,
          lob.doNotDelete();
          result = lob.get();
          *return_indicator = OCI_IND_NOTNULL;
+      }
+   }
+   ORABLOCK_END
+
+   return result;
+}
+
+
+ORAEXT OCILobLocator * oraMangoInchi (OCIExtProcContext *ctx,
+    OCILobLocator *target_loc, short target_ind,
+    const char    *options,    short options_ind,
+    short *return_ind)
+{
+   OCILobLocator *result = NULL;
+
+   ORABLOCK_BEGIN
+   {
+      *return_ind = OCI_IND_NULL;
+
+      OracleEnv env(ctx, logger);
+
+      if (options_ind != OCI_IND_NOTNULL)
+         options = "";
+
+      if (target_ind == OCI_IND_NOTNULL)
+      {
+         BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
+
+         QS_DEF(Array<char>, target_buf);
+
+         OracleLOB target_lob(env, target_loc);
+
+         target_lob.readAll(target_buf, false);
+
+         QS_DEF(Molecule, target);
+
+         MoleculeAutoLoader loader(target_buf);
+
+         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
+         loader.ignore_closing_bond_direction_mismatch =
+                 context.ignore_closing_bond_direction_mismatch;
+         loader.loadMolecule(target);
+
+         QS_DEF(Array<char>, inchi);
+
+         IndigoInchi inchi_calc;
+         inchi_calc.setOptions(options);
+         inchi_calc.saveMoleculeIntoInchi(target, inchi);
+
+         OracleLOB lob(env);
+         lob.createTemporaryCLOB();
+         // Exclude terminating zero
+         if (inchi.top() == 0)
+            inchi.pop();
+         lob.write(0, inchi);
+         lob.doNotDelete();
+         result = lob.get();
+         *return_ind = OCI_IND_NOTNULL;
+      }
+   }
+   ORABLOCK_END
+
+   return result;
+}
+
+ORAEXT OCIString * oraMangoInchiKey (OCIExtProcContext *ctx,
+    OCILobLocator *inchi_loc, short inchi_ind,
+    short *return_ind)
+{
+   OCIString *result = NULL;
+
+   ORABLOCK_BEGIN
+   {
+      *return_ind = OCI_IND_NULL;
+
+      OracleEnv env(ctx, logger);
+
+      if (inchi_ind == OCI_IND_NOTNULL)
+      {
+         BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
+
+         QS_DEF(Array<char>, inchi);
+         OracleLOB inchi_lob(env, inchi_loc); 
+         inchi_lob.readAll(inchi, true);
+
+         QS_DEF(Array<char>, inchikey_buf);
+
+         IndigoInchi::InChIKey(inchi.ptr(), inchikey_buf);
+
+         env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text *)inchikey_buf.ptr(),
+                                          inchikey_buf.size() - 1, &result));
+      }
+
+      if (result != 0)
+         *return_ind = OCI_IND_NOTNULL;
+   }
+   ORABLOCK_END
+
+   return result;
+}
+
+ORAEXT OCILobLocator * oraMangoFingerprint (OCIExtProcContext *ctx,
+    OCILobLocator *target_loc, short target_ind,
+    const char    *options,    short options_ind,
+    short *return_ind)
+{
+   OCILobLocator *result = NULL;
+
+   ORABLOCK_BEGIN
+   {
+      *return_ind = OCI_IND_NULL;
+
+      OracleEnv env(ctx, logger);
+
+      if (options_ind != OCI_IND_NOTNULL)
+         options = "";
+
+      if (target_ind == OCI_IND_NOTNULL)
+      {
+         BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
+
+         QS_DEF(Array<char>, target_buf);
+
+         OracleLOB target_lob(env, target_loc);
+
+         target_lob.readAll(target_buf, false);
+
+         QS_DEF(Molecule, target);
+
+         MoleculeAutoLoader loader(target_buf);
+   
+         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
+         loader.ignore_closing_bond_direction_mismatch =
+                 context.ignore_closing_bond_direction_mismatch;
+         loader.loadMolecule(target);
+
+         MoleculeFingerprintBuilder builder(target, context.fp_parameters);
+         builder.parseFingerprintType(options, false);
+
+         builder.process();
+
+         const char* buf = (const char*)builder.get();
+         int buf_len = context.fp_parameters.fingerprintSize();
+         
+         OracleLOB lob(env);
+
+         lob.createTemporaryBLOB();
+         lob.write(0, buf, buf_len);
+         lob.doNotDelete();
+         result = lob.get();
+
+         *return_ind = OCI_IND_NOTNULL;
       }
    }
    ORABLOCK_END

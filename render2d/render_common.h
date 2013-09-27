@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -33,8 +33,9 @@ class BaseMolecule;
 class Reaction;
 class QueryMolecule;
 class QueryReaction;
+class Output;
 
-enum DINGO_MODE {MODE_NONE, MODE_PDF, MODE_PNG, MODE_SVG, MODE_EMF, MODE_HDC, MODE_PRN};
+enum DINGO_MODE {MODE_NONE, MODE_PDF, MODE_PNG, MODE_SVG, MODE_EMF, MODE_HDC, MODE_PRN, MODE_CDXML};
 enum LABEL_MODE {LABEL_MODE_NONE, LABEL_MODE_HETERO, LABEL_MODE_TERMINAL_HETERO, LABEL_MODE_ALL};
 enum STEREO_STYLE {STEREO_STYLE_EXT, STEREO_STYLE_OLD, STEREO_STYLE_NONE};
 enum {CWC_BASE = -2, CWC_WHITE=0, CWC_BLACK, CWC_RED, CWC_GREEN, CWC_BLUE, CWC_DARKGREEN, CWC_COUNT};
@@ -144,6 +145,8 @@ struct AtomDesc {
    Vec2f pos;
    Vec2f boundBoxMin;
    Vec2f boundBoxMax;
+   Vec3f hcolor;
+   bool hcolorSet;
    int label;
    int queryLabel;
    int color;
@@ -209,7 +212,7 @@ private:
 struct BondDescr : public Edge {
    BondDescr ();
 
-   DEF_ERROR("molrender bond description");
+   DECL_ERROR;
 
    void clear ();
 
@@ -279,8 +282,9 @@ private:
 class RenderSettings {
 public:
    RenderSettings ();
-   void init (float sf);
+   void init (float sf, float lwf);
 
+   CP_DECL;
    TL_CP_DECL(Array<double>, bondDashAromatic);
    TL_CP_DECL(Array<double>, bondDashAny);
    TL_CP_DECL(Array<double>, bondDashSingleOrAromatic);
@@ -288,6 +292,7 @@ public:
 
    float labelInternalOffset;
    float lowerIndexShift;
+   float unit;
    float bondLineWidth;
    float bondSpace;
    float boundExtent;
@@ -340,6 +345,8 @@ struct CanvasOptions {
 
    int width;
    int height;
+   int maxWidth;
+   int maxHeight;
    int xOffset;
    int yOffset;
    float bondLength;
@@ -378,6 +385,7 @@ public:
    Vec3f dataGroupColor;
    LABEL_MODE labelMode;
    bool highlightedLabelsVisible;
+   bool boldBondDetection;
    bool implHVisible;
    DINGO_MODE mode;
    Output* output;
@@ -395,6 +403,7 @@ public:
    bool showCycles; // for diagnostic purposes
    bool agentsBelowArrow;
    bool collapseSuperatoms;
+   Array<char> atomColorProp;
 private:
    RenderOptions (const RenderOptions& );
 };

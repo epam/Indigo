@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -46,7 +46,7 @@ public:
    void prepareGross (OracleEnv &env, int right_part);
    void prepareMass (OracleEnv &env);
 
-   DEF_ERROR("mango shadow fetch");
+   DECL_ERROR;
 protected:
    
    enum

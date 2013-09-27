@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -25,7 +25,7 @@ public:
    virtual ~RenderSingle();
    void draw ();
 
-   DEF_ERROR("RenderSingle");
+   DECL_ERROR;
 
    int obj;
    int comment;
@@ -37,7 +37,9 @@ public:
    Vec2f objArea;
    int width, height;
 private:
-   float _getScale ();
+   float _getScaleGivenSize (int w, int h);
+   int _getDefaultWidth (const float s);
+   int _getDefaultHeight (const float s);
    void _drawComment ();
    void _drawObj ();
 };

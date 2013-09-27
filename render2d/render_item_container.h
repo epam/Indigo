@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -24,7 +24,7 @@ public:
    RenderItemContainer (RenderItemFactory& factory);
    virtual ~RenderItemContainer () {}
 
-   DEF_ERROR("RenderItemContainer");
+   DECL_ERROR;
 
    virtual void estimateSize ();
    virtual void setObjScale (float scale);

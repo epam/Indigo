@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -51,7 +51,7 @@ class MoleculeScaffoldDetection: public ScaffoldDetection {
 
 
 
-      DEF_ERROR("Mol basket");
+      DECL_ERROR;
       
 
    private:
@@ -90,7 +90,7 @@ public:
    ObjArray<Molecule>* searchStructures;
    ObjArray<QueryMolecule>* basketStructures;
 
-   DEF_ERROR("Molecule Scaffold detection");
+   DECL_ERROR;
 };
 
 }

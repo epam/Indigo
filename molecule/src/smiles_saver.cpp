@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -24,10 +24,16 @@
 #include "molecule/elements.h"
 #include "molecule/molecule_arom_match.h"
 #include "graph/cycle_basis.h"
+#include "molecule/molecule_savers.h"
 
 using namespace indigo;
 
+IMPL_ERROR(SmilesSaver, "SMILES saver");
+
+CP_DEF(SmilesSaver);
+
 SmilesSaver::SmilesSaver (Output &output) : _output(output),
+CP_INIT,
 TL_CP_GET(_neipool),
 TL_CP_GET(_atoms),
 TL_CP_GET(_hcount),
@@ -42,7 +48,8 @@ TL_CP_GET(_attachment_cycle_numbers),
 TL_CP_GET(_aromatic_bonds),
 TL_CP_GET(_ignored_vertices),
 TL_CP_GET(_complicated_cistrans),
-TL_CP_GET(_ban_slashes)
+TL_CP_GET(_ban_slashes),
+TL_CP_GET(_cis_trans_parity)
 {
    vertex_ranks = 0;
    atom_atom_mapping = 0;
@@ -51,7 +58,7 @@ TL_CP_GET(_ban_slashes)
    write_extra_info = true;
    _mol = 0;
    smarts_mode = false;
-   ignore_invalid_hcount = false;
+   ignore_invalid_hcount = true;
    separate_rsites = true;
    rsite_indices_as_aam = true;
    _n_attachment_points = 0;
@@ -103,6 +110,8 @@ void SmilesSaver::_saveMolecule ()
    _complicated_cistrans.zerofill();
    _ban_slashes.clear_resize(_bmol->edgeEnd());
    _ban_slashes.zerofill();
+   _cis_trans_parity.clear_resize(_bmol->edgeEnd());
+   _cis_trans_parity.zerofill();
    _markCisTrans();
 
    _atoms.clear();
@@ -121,10 +130,18 @@ void SmilesSaver::_saveMolecule ()
    for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
    {
       _hcount[i] = 0;
+      if (_mol != 0)
+      {
+         if (!_mol->isPseudoAtom(i) && !_mol->isRSite(i))
+            _hcount[i] = _mol->getImplicitH_NoThrow(i, -1);
+      }
+      else
+      {
+         int atom_number = _bmol->getAtomNumber(i);
+         int atom_charge = _bmol->getAtomCharge(i);
+         _hcount[i] = MoleculeSavers::getHCount(*_bmol, i, atom_number, atom_charge);
+      }
       _hcount_ignored[i] = 0;
-      
-      if (_mol != 0 && !_mol->isPseudoAtom(i) && !_mol->isRSite(i))
-         _hcount[i] = _mol->getImplicitH_NoThrow(i, -1);
 
       const Vertex &vertex = _bmol->getVertex(i);
 
@@ -705,7 +722,23 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    }
 
    if (atom_number < 1)
-      throw Error("zero atom number");
+   {
+      if (_qmol != 0)
+      {
+         // Check for !H meaning any atom in SMILES
+         int value;
+         if (_qmol->getAtom(idx).sureValueInv(QueryMolecule::ATOM_NUMBER, value))
+         {
+            if (value == ELEM_H)
+            {
+               _output.printf("[*]");
+               return;
+            }
+         }
+      }
+
+      throw Error("undefined atom number");
+   }
 
    if (atom_atom_mapping != 0)
       aam = atom_atom_mapping[idx];
@@ -717,37 +750,49 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
        atom_number != ELEM_B && atom_number != ELEM_I)
       need_brackets = true;
 
-   // Ignored hydrogens will be converted to implicit hydrogens.
-   // So number of ignored hydrogens should be passed into 
-   // shouldWriteHCount to save correctly [H]S([H])([H])C
-   // as C[SH3] when hydrogens are ignored (as in canonical smiles)
-   // instead of getting CS.
-   if (_mol != 0 && Molecule::shouldWriteHCountEx(*_mol, idx, _hcount_ignored[idx]))
-   {
-      hydro = _hcount[idx];
-      if (hydro < 0 && !ignore_invalid_hcount)
-      {
-         // This function will throw better error message with a description
-         _mol->getImplicitH(idx);
-         // If not error was thrown then throw it explicitly
-         throw Error("unsure hydrogen count on atom #%d", idx);
-      }
-   }
-   if (_qmol != 0)
-      _qmol->getAtom(idx).sureValue(QueryMolecule::ATOM_TOTAL_H, hydro);
-
    int charge = _bmol->getAtomCharge(idx);
    int isotope = _bmol->getAtomIsotope(idx);
 
    if (charge == CHARGE_UNKNOWN)
       charge = 0;
 
-   if (chirality > 0 || charge != 0 || isotope > 0 || hydro >= 0 || aam > 0)
+   if (chirality > 0 || charge != 0 || isotope > 0 || aam > 0)
+      need_brackets = true;
+
+   // Ignored hydrogens will be converted to implicit hydrogens.
+   // So number of ignored hydrogens should be passed into 
+   // shouldWriteHCount to save correctly [H]S([H])([H])C
+   // as C[SH3] when hydrogens are ignored (as in canonical smiles)
+   // instead of getting CS.
+   if (_mol != 0)
+   {
+      if (Molecule::shouldWriteHCountEx(*_mol, idx, _hcount_ignored[idx]))
+      {
+         hydro = _hcount[idx];
+         if (hydro < 0 && !ignore_invalid_hcount && need_brackets)
+         {
+            // This function will throw better error message with a description
+            _mol->getImplicitH(idx);
+            // If not error was thrown then throw it explicitly
+            throw Error("unsure hydrogen count on atom #%d", idx);
+         }
+      }
+   }
+   else if (_qmol != 0)
+   {
+      // For query molecules write hydrogens if is was specified
+      hydro = _hcount[idx];
+   }
+   if (_qmol != 0)
+      _qmol->getAtom(idx).sureValue(QueryMolecule::ATOM_TOTAL_H, hydro);
+
+   if (hydro >= 0)
       need_brackets = true;
 
    if (need_brackets)
    {
-      if (hydro == -1)
+      // Check sure number of hydrogens only for the ordinary molecule
+      if (hydro == -1 && _mol != 0)
       {
          hydro = _hcount[idx];
 
@@ -970,18 +1015,32 @@ void SmilesSaver::_banSlashes ()
    for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {
       // those are only chain cis-trans bonds
-      if (mol.cis_trans.getParity(i) != 0 && mol.getEdgeTopology(i) == TOPOLOGY_CHAIN)
+      if (_cis_trans_parity[i] != 0)
       {
          const Vertex &beg = mol.getVertex(mol.getEdge(i).beg);
          const Vertex &end = mol.getVertex(mol.getEdge(i).end);
 
-         for (j = beg.neiBegin(); j != beg.neiEnd(); j = beg.neiNext(j))
-            if (mol.getBondOrder(beg.neiEdge(j)) == BOND_SINGLE)
-               slashes[beg.neiEdge(j)] = 1;
+         if (mol.getEdgeTopology(i) == TOPOLOGY_CHAIN)
+         {
+            for (j = beg.neiBegin(); j != beg.neiEnd(); j = beg.neiNext(j))
+               if (mol.getBondOrder(beg.neiEdge(j)) == BOND_SINGLE)
+                  slashes[beg.neiEdge(j)] = 1;
 
-         for (j = end.neiBegin(); j != end.neiEnd(); j = end.neiNext(j))
-            if (mol.getBondOrder(end.neiEdge(j)) == BOND_SINGLE)
-               slashes[end.neiEdge(j)] = 1;
+            for (j = end.neiBegin(); j != end.neiEnd(); j = end.neiNext(j))
+               if (mol.getBondOrder(end.neiEdge(j)) == BOND_SINGLE)
+                  slashes[end.neiEdge(j)] = 1;
+         }
+         else
+         {
+            // Do not write slashes in rings till it is not fixed
+            for (j = beg.neiBegin(); j != beg.neiEnd(); j = beg.neiNext(j))
+               if (mol.getBondOrder(beg.neiEdge(j)) == BOND_SINGLE)
+                  _ban_slashes[beg.neiEdge(j)] = 1;
+
+            for (j = end.neiBegin(); j != end.neiEnd(); j = end.neiNext(j))
+               if (mol.getBondOrder(end.neiEdge(j)) == BOND_SINGLE)
+                  _ban_slashes[end.neiEdge(j)] = 1;
+         }
       }
    }
 
@@ -992,7 +1051,7 @@ void SmilesSaver::_banSlashes ()
       if (!mol.cis_trans.isGeomStereoBond(mol, i, 0, false))
          continue;
 
-      if (mol.getEdgeTopology(i) == TOPOLOGY_RING || mol.cis_trans.getParity(i) == 0)
+      if (mol.getEdgeTopology(i) == TOPOLOGY_RING || _cis_trans_parity[i] == 0)
       {
          const Vertex &beg = mol.getVertex(mol.getEdge(i).beg);
          const Vertex &end = mol.getVertex(mol.getEdge(i).end);
@@ -1028,38 +1087,13 @@ void SmilesSaver::_banSlashes ()
    }
 }
 
-void SmilesSaver::_markCisTrans ()
+void SmilesSaver::_filterCisTransParity ()
 {
    BaseMolecule &mol = *_bmol;
-   int i, j;
 
-   _dbonds.clear_resize(mol.edgeEnd());
-
-   for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-   {
-      _dbonds[i].ctbond_beg = -1;
-      _dbonds[i].ctbond_end = -1;
-      _dbonds[i].saved = 0;
-   }
-
-   if (!mol.cis_trans.exists())
-      return;
-
-   _banSlashes();
-
-   for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
    {
       const Edge &edge = mol.getEdge(i);
-
-      // Check if we have a cis/trans double bond in a ring (not necessarily with defined parity).
-      if (mol.cis_trans.isGeomStereoBond(mol, i, 0, false) && mol.getBondTopology(i) == TOPOLOGY_RING)
-      {
-         // there is no point in saving cis-trans configurations for fused ring systems
-         if (mol.getAtomRingBondsCount(edge.beg) > 2 || mol.getAtomRingBondsCount(edge.end) > 2)
-            continue;
-
-         _complicated_cistrans[i] = 1;
-      }
 
       if (mol.cis_trans.getParity(i) != 0)
       {
@@ -1078,6 +1112,79 @@ void SmilesSaver::_markCisTrans ()
          bool have_singlebond_beg = false, have_singlebond_end = false;
          bool have_allowed_singlebond_beg = false, have_allowed_singlebond_end = false;
 
+         for (int j = beg.neiBegin(); j != beg.neiEnd(); j = beg.neiNext(j))
+         {
+            if (_ignored_vertices[beg.neiVertex(j)])
+               continue;
+            int idx = beg.neiEdge(j);
+
+            if (idx != i && mol.getBondOrder(idx) == BOND_SINGLE)
+               have_singlebond_beg = true;
+         }
+
+         for (int j = end.neiBegin(); j != end.neiEnd(); j = end.neiNext(j))
+         {
+            if (_ignored_vertices[end.neiVertex(j)])
+               continue;
+            int idx = end.neiEdge(j);
+
+            if (idx != i && mol.getBondOrder(idx) == BOND_SINGLE)
+               have_singlebond_end = true;
+         }
+
+         if (!have_singlebond_beg || !have_singlebond_end)
+            continue;
+
+         if (mol.getBondTopology(i) == TOPOLOGY_RING)
+         {
+            // But cis-trans bonds can have only rings with size more then 7:
+            // C1=C\C=C/C=C/C=C\1
+            // C1=CC=CC=CC=C1
+            // C1=C/C=C\C=C/C=C\1
+            if (mol.edgeSmallestRingSize(i) <= 7)
+               continue;
+         }
+
+         // This bond will be saved as cis-trans
+         _cis_trans_parity[i] = mol.cis_trans.getParity(i);
+      }
+   }
+}
+
+void SmilesSaver::_markCisTrans ()
+{
+   BaseMolecule &mol = *_bmol;
+   int i, j;
+
+   _dbonds.clear_resize(mol.edgeEnd());
+
+   for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   {
+      _dbonds[i].ctbond_beg = -1;
+      _dbonds[i].ctbond_end = -1;
+      _dbonds[i].saved = 0;
+   }
+
+   _filterCisTransParity();
+
+   if (!mol.cis_trans.exists())
+      return;
+
+   _banSlashes();
+
+   for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   {
+      const Edge &edge = mol.getEdge(i);
+
+      if (_cis_trans_parity[i] != 0)
+      {
+         // This cis-trans bond has already been filtered in _filterCisTransParity 
+         // and we have to write cis-trans infromation for this bond
+         const Vertex &beg = mol.getVertex(edge.beg);
+         const Vertex &end = mol.getVertex(edge.end);
+
+         bool have_allowed_singlebond_beg = false, have_allowed_singlebond_end = false;
+
          for (j = beg.neiBegin(); j != beg.neiEnd(); j = beg.neiNext(j))
          {
             if (_ignored_vertices[beg.neiVertex(j)])
@@ -1086,7 +1193,6 @@ void SmilesSaver::_markCisTrans ()
 
             if (idx != i && mol.getBondOrder(idx) == BOND_SINGLE)
             {
-               have_singlebond_beg = true;
                if (!_ban_slashes[idx])
                   have_allowed_singlebond_beg = true;
             }
@@ -1100,21 +1206,9 @@ void SmilesSaver::_markCisTrans ()
 
             if (idx != i && mol.getBondOrder(idx) == BOND_SINGLE)
             {
-               have_singlebond_end = true;
                if (!_ban_slashes[idx])
                   have_allowed_singlebond_end = true;
             }
-         }
-
-         if (!have_singlebond_beg || !have_singlebond_end)
-            continue;
-
-         if (mol.getBondTopology(i) == TOPOLOGY_RING)
-         {
-            if (mol.cis_trans.isRingTransBond(i))
-               _have_complicated_cistrans = true;
-
-            continue;
          }
 
          if (!have_allowed_singlebond_beg || !have_allowed_singlebond_end)
@@ -1164,7 +1258,7 @@ bool SmilesSaver::_updateSideBonds (int bond_idx)
    int subst[4];
 
    mol.cis_trans.getSubstituents_All(bond_idx, subst);
-   int parity = mol.cis_trans.getParity(bond_idx);
+   int parity = _cis_trans_parity[bond_idx];
 
    int sidebonds[4] = {-1, -1, -1, -1};
 
@@ -1281,7 +1375,7 @@ int SmilesSaver::_calcBondDirection (int idx, int vprev)
    {
       ntouched = 0;
       for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-         if (mol.cis_trans.getParity(i) != 0 && mol.getEdgeTopology(i) == TOPOLOGY_CHAIN)
+         if (_cis_trans_parity[i] != 0 && mol.getEdgeTopology(i) == TOPOLOGY_CHAIN)
          {
             if (_updateSideBonds(i))
                ntouched++;
@@ -1717,7 +1811,7 @@ void SmilesSaver::_writeRingCisTrans ()
       if (nei_atom_beg == -1 || nei_atom_end == -1)
          throw Error("_writeRingCisTrans(): internal");
 
-      int parity = _bmol->cis_trans.getParity(bond_idx);
+      int parity = _cis_trans_parity[bond_idx];
 
       if (parity == 0 && _mol != 0 &&
               _mol->getAtomRingBondsCount(edge.beg) == 2 &&
@@ -1777,4 +1871,9 @@ void SmilesSaver::_writeRingCisTrans ()
       for (i = 1; i < trans_bonds.size(); i++)
          _output.printf(",%d", trans_bonds[i]);
    }
+}
+
+const Array<int>& SmilesSaver::getSavedCisTransParities ()
+{
+   return _cis_trans_parity;
 }

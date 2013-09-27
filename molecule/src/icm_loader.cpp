@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(IcmLoader, "ICM loader");
+
 IcmLoader::IcmLoader (Scanner &scanner) : _scanner(scanner)
 {
 }
@@ -30,9 +32,15 @@ void IcmLoader::loadMolecule (Molecule &mol)
    char id[3];
 
    _scanner.readCharsFix(3, id);
-   if (strncmp(id, IcmSaver::VERSION, 3) != 0)
-      throw Error("expected '%s', got %.*s. Resave your molecule with new format.", 
-         IcmSaver::VERSION, 3, id);
+
+   int version = -1;
+   if (strncmp(id, IcmSaver::VERSION2, 3) == 0)
+      version = 2;
+   else if (strncmp(id, IcmSaver::VERSION1, 3) == 0)
+      version = 1;
+   else
+      throw Error("expected '%s' or '%s', got %.*s. Resave your molecule with new format.", 
+         IcmSaver::VERSION1, IcmSaver::VERSION2, 3, id);
 
    char bits = _scanner.readChar();
 
@@ -41,6 +49,7 @@ void IcmLoader::loadMolecule (Molecule &mol)
 
    CmfLoader loader(_scanner);
 
+   loader.version = version;
    loader.loadMolecule(mol);
 
    if (have_xyz)

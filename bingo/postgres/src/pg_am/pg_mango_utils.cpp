@@ -35,13 +35,25 @@ PGDLLEXPORT Datum getweight(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getmass);
 PGDLLEXPORT Datum getmass(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(fingerprint);
+PGDLLEXPORT Datum fingerprint(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(compactmolecule);
+PGDLLEXPORT Datum compactmolecule(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(inchi);
+PGDLLEXPORT Datum inchi(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(inchikey);
+PGDLLEXPORT Datum inchikey(PG_FUNCTION_ARGS);
 }
 
 
 Datum smiles(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -56,20 +68,22 @@ Datum smiles(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum cansmiles(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -85,20 +99,22 @@ Datum cansmiles(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum molfile(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
 
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -114,19 +130,21 @@ Datum molfile(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum cml(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -142,19 +160,21 @@ Datum cml(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum checkmolecule(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -169,7 +189,9 @@ Datum checkmolecule(PG_FUNCTION_ARGS) {
       if(bingo_result == 0)
          PG_RETURN_NULL();
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
 
    }
    PG_BINGO_END
@@ -177,12 +199,12 @@ Datum checkmolecule(PG_FUNCTION_ARGS) {
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum gross(PG_FUNCTION_ARGS) {
    Datum mol_datum = PG_GETARG_DATUM(0);
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -199,14 +221,16 @@ Datum gross(PG_FUNCTION_ARGS) {
          PG_RETURN_NULL();
       }
 
-      result = BingoPgCommon::releaseString(bingo_result);
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 Datum getweight(PG_FUNCTION_ARGS){
@@ -261,4 +285,143 @@ Datum getmass(PG_FUNCTION_ARGS){
    PG_BINGO_END
 
    PG_RETURN_FLOAT4(result);
+}
+
+Datum fingerprint(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   Datum options_datum = PG_GETARG_DATUM(1);
+
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
+      bingo_handler.setFunctionName("fingerprint");
+
+      BingoPgText mol_text(mol_datum);
+      BingoPgText mol_options(options_datum);
+      
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
+
+      int res_buf;
+      const char* bingo_result = mangoFingerprint(mol_buf, buf_size, mol_options.getString(), &res_buf);
+
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.fingerprint", bingoGetError());
+         PG_RETURN_NULL();
+      }
+
+      BingoPgText result_data;
+      result_data.initFromBuffer(bingo_result, res_buf);
+
+      result = result_data.release();
+   }
+   PG_BINGO_END
+
+   if(result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_BYTEA_P(result);
+}
+
+Datum compactmolecule(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   bool options_xyz = PG_GETARG_BOOL(1);
+
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
+      bingo_handler.setFunctionName("compactmolecule");
+
+      BingoPgText mol_text(mol_datum);
+
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
+
+      int res_buf;
+      const char* bingo_result = mangoICM(mol_buf, buf_size, options_xyz, &res_buf);
+
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.compactmolecule", bingoGetError());
+         PG_RETURN_NULL();
+      }
+
+      BingoPgText result_data;
+      result_data.initFromBuffer(bingo_result, res_buf);
+
+      result = result_data.release();
+   }
+   PG_BINGO_END
+
+   if(result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_BYTEA_P(result);
+}
+
+Datum inchi(PG_FUNCTION_ARGS){
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   Datum options_datum = PG_GETARG_DATUM(1);
+
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
+      bingo_handler.setFunctionName("inchi");
+
+      BingoPgText mol_text(mol_datum);
+      BingoPgText mol_options(options_datum);
+
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
+
+      int res_buf;
+      const char* bingo_result = mangoInChI(mol_buf, buf_size, mol_options.getString(), &res_buf);
+
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.inchi", bingoGetError());
+         PG_RETURN_NULL();
+      }
+
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
+   }
+   PG_BINGO_END
+
+   if (result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_TEXT_P(result);
+}
+
+Datum inchikey(PG_FUNCTION_ARGS) {
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
+      bingo_handler.setFunctionName("inchikey");
+
+      BingoPgText mol_text(mol_datum);
+      const char* mol_buf = mol_text.getString();
+
+      const char* bingo_result = mangoInChIKey(mol_buf);
+
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.inchikey", bingoGetError());
+         PG_RETURN_NULL();
+      }
+
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
+   }
+   PG_BINGO_END
+
+   if (result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_TEXT_P(result);
 }

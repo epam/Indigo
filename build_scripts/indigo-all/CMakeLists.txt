@@ -44,6 +44,15 @@ LIBRARY_NAME(indigo)
 LIBRARY_NAME(indigo-inchi)
 LIBRARY_NAME(indigo-renderer)
 add_test(dlopen-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-inchi_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-renderer_NAME})
- 
+
+if(UNIX AND NOT APPLE)
+add_test(abi-test-indigo "file" "${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME}")
+set_tests_properties (abi-test-indigo PROPERTIES PASS_REGULAR_EXPRESSION "SYSV")
+add_test(abi-test-indigo-inchi "file" "${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-inchi_NAME}")
+set_tests_properties (abi-test-indigo-inchi PROPERTIES PASS_REGULAR_EXPRESSION "SYSV")
+add_test(abi-test-indigo-renderer "file" "${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-renderer_NAME}")
+set_tests_properties (abi-test-indigo-renderer PROPERTIES PASS_REGULAR_EXPRESSION "SYSV")
+endif()
+
 INCLUDE(CPack)
 INCLUDE(CTest)                        	

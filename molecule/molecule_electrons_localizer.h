@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -82,7 +82,7 @@ public:
    int getLocalizationChargesCount () const;
    bool isAllAtomsHaveOctet () const;
 
-   DEF_ERROR("Electron localizer");
+   DECL_ERROR;
 
 private:
    void _construct ();
@@ -185,6 +185,7 @@ private:
       _constrained_primary_atoms, _constrained_secondary_atoms,
       _constrained_saturated_atoms;
 
+   CP_DECL;
    // Molecule skeleton with orbitals nodes attached
    TL_CP_DECL(Graph, _extended_skeleton);
    // Edge mapping between skeleton and extended skeleton

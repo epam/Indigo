@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -52,8 +52,9 @@ public:
 
    bool save_bond_dirs;
    bool save_highlighting;
+   bool save_mapping;
 
-   DEF_ERROR("CMF saver");
+   DECL_ERROR;
 
    struct VecRange
    {
@@ -78,6 +79,8 @@ protected:
 
    void _encodeString (const Array<char> &str);
    void _encodeUIntArray (const Array<int> &data, const Array<int> &mapping);
+   void _encodeUIntArray (const Array<int> &data);
+   void _encodeUIntArraySkipNegative (const Array<int> &data);
 
    void _encodeExtSection (Molecule &mol, const Mapping &mapping);
    void _encodeBaseSGroup (Molecule &mol, BaseMolecule::SGroup &sgroup, const Mapping &mapping);
@@ -93,6 +96,7 @@ protected:
    void _updateSGroupsXyzMinMax (Molecule &mol, Vec3f &min, Vec3f &max);
    void _updateBaseSGroupXyzMinMax (BaseMolecule::SGroup &sgroup, Vec3f &min, Vec3f &max);
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _atom_sequence);
 
    Output     *_output;

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -35,7 +35,7 @@ class Reaction;
 class DLLEXPORT RSmilesSaver
 {
 public:
-   DEF_ERROR("reaction SMILES saver");
+   DECL_ERROR;
 
    RSmilesSaver (Output &output);
 
@@ -59,6 +59,7 @@ protected:
 
    Output &_output;
 
+   CP_DECL;
    TL_CP_DECL(Array<_Idx>, _written_atoms);
    TL_CP_DECL(Array<_Idx>, _written_bonds);
    TL_CP_DECL(Array<int>, _ncomp);

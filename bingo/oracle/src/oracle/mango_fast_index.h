@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -42,7 +42,7 @@ public:
 
    virtual bool getLastRowid (OraRowidText &id);
 
-   DEF_ERROR("mango fast fetch");
+   DECL_ERROR;
 
 protected:
    

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -63,6 +63,7 @@ public:
       ATOM_TOTAL_H,
       //ATOM_IMPLICIT_H,
       ATOM_SUBSTITUENTS,
+      ATOM_SUBSTITUENTS_AS_DRAWN,
       ATOM_SSSR_RINGS,
       ATOM_SMALLEST_RING_SIZE,
       ATOM_RING_BONDS,
@@ -126,6 +127,8 @@ public:
       virtual bool _possibleValue      (int what_type, int what_value) = 0;
       virtual bool _possibleValuePair  (int what_type1, int what_value1,
                                         int what_type2, int what_value2) = 0;
+
+      Node* _findSureConstraint (int what_type, int &count);
       
       virtual bool _sureValue        (int what_type, int &value_out) = 0;
       virtual bool _sureValueBelongs (int what_type, const int *arr, int count) = 0;
@@ -153,6 +156,8 @@ public:
       bool valueWithinRange (int value);
 
       bool hasConstraintWithValue (int what_type, int what_value);
+
+      Atom* sureConstraint (int what_type);
 
       int value_min;
       int value_max;
@@ -188,7 +193,7 @@ public:
       
       virtual void _optimize ();
 
-      DEF_ERROR("query atom");
+      DECL_ERROR;
    };
 
    class DLLEXPORT Bond : public Node
@@ -250,9 +255,9 @@ public:
    virtual bool isPseudoAtom (int idx);
    virtual const char * getPseudoAtom (int idx);
 
-   virtual bool isRSite (int atom_idx);
-   virtual int  getRSiteBits (int atom_idx);
-   virtual void allowRGroupOnRSite (int atom_idx, int rg_idx);
+   virtual bool  isRSite (int atom_idx);
+   virtual dword getRSiteBits (int atom_idx);
+   virtual void  allowRGroupOnRSite (int atom_idx, int rg_idx);
 
    virtual bool isSaturatedAtom (int idx);
 
@@ -287,8 +292,8 @@ public:
    virtual bool bondStereoCare (int idx);
    void setBondStereoCare (int idx, bool stereo_care);
 
-   virtual bool aromatize ();
-   virtual bool dearomatize ();
+   virtual bool aromatize (const AromaticityOptions &options);
+   virtual bool dearomatize (const AromaticityOptions &options);
 
    int addAtom (Atom *atom);
    Atom & getAtom (int idx);

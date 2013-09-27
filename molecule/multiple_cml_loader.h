@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -28,7 +28,7 @@ class MultipleCmlLoader
 {
 public:
 
-   DEF_ERROR("multiple CML loader");
+   DECL_ERROR;
    
    MultipleCmlLoader (Scanner &scanner);
 
@@ -41,6 +41,7 @@ public:
 
    bool isReaction();
 
+   CP_DECL;
    TL_CP_DECL(Array<char>, data);
 
 protected:

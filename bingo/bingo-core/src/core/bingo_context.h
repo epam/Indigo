@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -29,6 +29,13 @@ class BingoContext
 {
 public:
 
+   enum {
+      /*
+       * Default operation timeout = 60000 ms
+       */
+      DEFAULT_TIMEOUT = 60000
+   };
+
    explicit BingoContext (int id_);
    virtual ~BingoContext ();
 
@@ -42,6 +49,7 @@ public:
    int     fp_chunk_qwords;
 
    int     nthreads;
+   int     timeout;
 
    Nullable<bool> treat_x_as_pseudoatom;
    Nullable<bool> ignore_closing_bond_direction_mismatch;
@@ -62,7 +70,7 @@ public:
 
    void reset ();
 
-   DEF_ERROR("bingo context");
+   DECL_ERROR;
 
    static BingoContext * get (int id);
    static BingoContext * existing (int id);

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -41,7 +41,7 @@ public:
    // Save InChI code to the output
    void outputInChI (Molecule &mol);
 
-   DEF_ERROR("InChI canonicalizer");
+   DECL_ERROR;
 
 private:
    //
@@ -76,6 +76,7 @@ private:
    Output &_output;                                                                    
 
    // Array with molecule components and InChI information and sorted indices
+   CP_DECL;
    TL_CP_DECL(ReusableObjArray<MoleculeInChICompoment>, _components);
    TL_CP_DECL(Array<int>, _component_indices);
 };

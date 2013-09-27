@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -20,11 +20,12 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(PoolError);
+
 template <typename T> class Pool
 {
 public:
-
-   DEF_ERROR("pool");
+   DECL_TPL_ERROR(PoolError);
 
    Pool () : _size(0), _first(-1)
    {

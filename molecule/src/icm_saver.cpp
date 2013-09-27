@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,18 +19,27 @@
 
 using namespace indigo;
 
-const char* IcmSaver::VERSION = "IM2";
+const char* IcmSaver::VERSION2 = "IM2";
+const char* IcmSaver::VERSION1 = "ICM";
+
+IMPL_ERROR(IcmSaver, "ICM saver");
+
+bool IcmSaver::checkVersion (const char *prefix)
+{
+   return strncmp(prefix, VERSION1, 3) == 0 || strncmp(prefix, VERSION2, 3) == 0;
+}
 
 IcmSaver::IcmSaver (Output &output) : _output(output)
 {
    save_xyz = false;
    save_bond_dirs = false;
    save_highlighting = false;
+   save_ordering = false;
 }
 
 void IcmSaver::saveMolecule (Molecule &mol)
 {
-   _output.writeString(VERSION);
+   _output.writeString(VERSION2);
 
    int features = 0;
 
@@ -46,6 +55,7 @@ void IcmSaver::saveMolecule (Molecule &mol)
 
    saver.save_bond_dirs = save_bond_dirs;
    saver.save_highlighting = save_highlighting;
+   saver.save_mapping = save_ordering;
 
    saver.saveMolecule(mol);
    if (save_xyz)

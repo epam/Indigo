@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -21,11 +21,13 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(QueueError);
+
 // Queue with fixed max length
 template <typename T> class Queue
 {
 public:
-   DEF_ERROR("queue");
+   DECL_TPL_ERROR(QueueError);
 
    explicit Queue (void)
    {

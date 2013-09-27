@@ -39,11 +39,6 @@
 #include "cairo-surface-subsurface-private.h"
 #include "cairo-surface-snapshot-private.h"
 
-#if CAIRO_HAS_XCB_SURFACE && CAIRO_HAS_XCB_DRM_FUNCTIONS
-/* for DRI2/DRM interoperability */
-#include "cairo-xcb-private.h"
-#endif
-
 #if 0
 static cairo_status_t
 i915_packed_pixel_surface_finish (void *abstract_surface)
@@ -332,16 +327,18 @@ i915_shader_radial_init (struct i915_shader_radial *r,
 {
     double dx, dy, dr, r1;
 
-    dx = _cairo_fixed_to_double (radial->c2.x - radial->c1.x);
-    dy = _cairo_fixed_to_double (radial->c2.y - radial->c1.y);
-    dr = _cairo_fixed_to_double (radial->r2 - radial->r1);
+    dx = radial->cd2.center.x - radial->cd1.center.x;
+    dy = radial->cd2.center.y - radial->cd1.center.y;
+    dr = radial->cd2.radius   - radial->cd1.radius;
 
-    r1 = _cairo_fixed_to_double (radial->r1);
+    r1 = radial->cd1.radius;
 
-    if (radial->c2.x == radial->c1.x && radial->c2.y == radial->c1.y) {
+    if (radial->cd2.center.x == radial->cd1.center.x &&
+	radial->cd2.center.y == radial->cd1.center.y)
+    {
 	/* XXX dr == 0, meaningless with anything other than PAD */
-	r->constants[0] = _cairo_fixed_to_double (radial->c1.x) / dr;
-	r->constants[1] = _cairo_fixed_to_double (radial->c1.y) / dr;
+	r->constants[0] = radial->cd1.center.x / dr;
+	r->constants[1] = radial->cd1.center.y / dr;
 	r->constants[2] = 1. / dr;
 	r->constants[3] = -r1 / dr;
 
@@ -352,8 +349,8 @@ i915_shader_radial_init (struct i915_shader_radial *r,
 
 	r->base.mode = RADIAL_ONE;
     } else {
-	r->constants[0] = -_cairo_fixed_to_double (radial->c1.x);
-	r->constants[1] = -_cairo_fixed_to_double (radial->c1.y);
+	r->constants[0] = -radial->cd1.center.x;
+	r->constants[1] = -radial->cd1.center.y;
 	r->constants[2] = r1;
 	r->constants[3] = -4 * (dx*dx + dy*dy - dr*dr);
 
@@ -1028,8 +1025,8 @@ i915_shader_linear_init (struct i915_shader_linear *l,
     double x0, y0, sf;
     double dx, dy, offset;
 
-    dx = _cairo_fixed_to_double (linear->p2.x - linear->p1.x);
-    dy = _cairo_fixed_to_double (linear->p2.y - linear->p1.y);
+    dx = linear->pd2.x - linear->pd1.x;
+    dy = linear->pd2.y - linear->pd1.y;
     sf = dx * dx + dy * dy;
     if (sf <= 1e-5)
 	return FALSE;
@@ -1037,8 +1034,8 @@ i915_shader_linear_init (struct i915_shader_linear *l,
     dx /= sf;
     dy /= sf;
 
-    x0 = _cairo_fixed_to_double (linear->p1.x);
-    y0 = _cairo_fixed_to_double (linear->p1.y);
+    x0 = linear->pd1.x;
+    y0 = linear->pd1.y;
     offset = dx*x0 + dy*y0;
 
     if (_cairo_matrix_is_identity (&linear->base.base.matrix)) {
@@ -1500,12 +1497,8 @@ sampled_area (const cairo_surface_pattern_t *pattern,
     sample->width  = ceil (x2 + pad) - sample->x;
     sample->height = ceil (y2 + pad) - sample->y;
 
-    if (_cairo_surface_get_extents (pattern->surface, &surface_extents)) {
-	cairo_bool_t is_empty;
-
-	is_empty = _cairo_rectangle_intersect (sample,
-					       &surface_extents);
-    }
+    if (_cairo_surface_get_extents (pattern->surface, &surface_extents))
+	_cairo_rectangle_intersect (sample, &surface_extents);
 
     return filter;
 }
@@ -1532,25 +1525,6 @@ i915_shader_acquire_surface (i915_shader_t *shader,
     extend = pattern->base.extend;
     src->base.matrix = pattern->base.matrix;
     filter = sampled_area (pattern, extents, &sample);
-
-#if CAIRO_HAS_XCB_SURFACE && CAIRO_HAS_XCB_DRM_FUNCTIONS
-    if (surface->type == CAIRO_SURFACE_TYPE_XCB) {
-	cairo_surface_t *xcb = surface;
-
-	if (xcb->backend->type == CAIRO_SURFACE_TYPE_SUBSURFACE) {
-	    xcb = ((cairo_surface_subsurface_t *) surface)->target;
-	} else if (xcb->backend->type == CAIRO_INTERNAL_SURFACE_TYPE_SNAPSHOT) {
-	    xcb = ((cairo_surface_snapshot_t *) surface)->target;
-	}
-
-	/* XXX copy windows (IncludeInferiors) to a pixmap/drm surface
-	 * xcb = _cairo_xcb_surface_to_drm (xcb)
-	 */
-	xcb = ((cairo_xcb_surface_t *) xcb)->drm;
-	if (xcb != NULL)
-	    drm = xcb;
-    }
-#endif
 
     if (surface->type == CAIRO_SURFACE_TYPE_DRM) {
 	if (surface->backend->type == CAIRO_SURFACE_TYPE_SUBSURFACE) {

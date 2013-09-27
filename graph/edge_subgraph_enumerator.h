@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -35,13 +35,14 @@ public:
 
    void *userdata;
 
-   DEF_ERROR("edge subgraph enumerator");
+   DECL_ERROR;
 
 protected:
    int  _fCIS ();
 
    Graph &_graph;
 
+   CP_DECL;
    TL_CP_DECL(Graph,      _subgraph);
 
    TL_CP_DECL(Array<int>, _mapping);          // subgraph -> graph

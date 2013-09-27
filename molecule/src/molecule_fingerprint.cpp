@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -28,11 +28,21 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeFingerprintBuilder, "fingerprint builder");
+
+CP_DEF(MoleculeFingerprintBuilder);
+
 MoleculeFingerprintBuilder::MoleculeFingerprintBuilder (BaseMolecule &mol,
                      const MoleculeFingerprintParameters &parameters):
+cancellation(0),
 _mol(mol),
-_parameters(parameters),
-TL_CP_GET(_total_fingerprint)
+_parameters(parameters), 
+CP_INIT,
+TL_CP_GET(_total_fingerprint),
+TL_CP_GET(_atom_codes),
+TL_CP_GET(_bond_codes),
+TL_CP_GET(_atom_codes_empty),
+TL_CP_GET(_bond_codes_empty)
 {
    _total_fingerprint.resize(_parameters.fingerprintSize());
    cb_fragment = 0;
@@ -50,6 +60,27 @@ TL_CP_GET(_total_fingerprint)
    skip_any_atoms_bonds = false;
 }
 
+void MoleculeFingerprintBuilder::_initHashCalculations (BaseMolecule &mol)
+{
+   subgraph_hash.create(mol);
+
+   _atom_codes.clear_resize(mol.vertexEnd());
+   _atom_codes_empty.clear_resize(mol.vertexEnd());
+   _bond_codes.clear_resize(mol.edgeEnd());
+   _bond_codes_empty.clear_resize(mol.edgeEnd());
+   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      _atom_codes[i] = _atomCode(mol, i);
+      _atom_codes_empty[i] = 0;
+   }
+   for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   {
+      _bond_codes[i] = _bondCode(mol, i);
+      _bond_codes_empty[i] = 0;
+   }
+}
+
+
 MoleculeFingerprintBuilder::~MoleculeFingerprintBuilder ()
 {
 }
@@ -59,51 +90,96 @@ void MoleculeFingerprintBuilder::process ()
    _total_fingerprint.zerofill();
    _makeFingerprint(_mol);
 }
+/*
+ * Accepted types: 'sim', 'sub', 'sub-res', 'sub-tau', 'full'
+ */
+void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool query) {
+   this->query = query;
+
+   if (type == 0 || *type == 0 || strcasecmp(type, "sim") == 0)
+   {
+      // similarity
+      this->skip_tau = true;
+      this->skip_ext = true;
+      this->skip_ord = true;
+      this->skip_any_atoms = true;
+      this->skip_any_bonds = true;
+      this->skip_any_atoms_bonds = true;
+   }
+   else if (strcasecmp(type, "sub") == 0)
+   {
+      // substructure
+      this->skip_sim = true;
+      this->skip_tau = true;
+   }
+   else if (strcasecmp(type, "sub-res") == 0)
+   {
+      // resonance substructure
+      this->skip_sim = true;
+      this->skip_tau = true;
+      this->skip_ord = true;
+      this->skip_any_atoms = true;
+      this->skip_ext_charge = true;
+   }
+   else if (strcasecmp(type, "sub-tau") == 0)
+   {
+      // tautomer
+      this->skip_ord = true;
+      this->skip_sim = true;
+
+      // tautomer fingerprint part does already contain all necessary any-bits
+      this->skip_any_atoms = true;
+      this->skip_any_bonds = true;
+      this->skip_any_atoms_bonds = true;
+   }
+   else if (strcasecmp(type, "full") == 0)
+   {
+      if (query)
+         throw Error("there can not be 'full' fingerprint of a query molecule");
+      // full (non-query) fingerprint, do not skip anything
+   }
+   else
+      throw Error("unknown molecule fingerprint type: %s", type);
+}
 
 bool MoleculeFingerprintBuilder::_handleCycle (Graph &graph,
         const Array<int> &vertices, const Array<int> &edges, void *context)
 {
    MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
+
    self->_handleSubgraph(graph, vertices, edges);
    return true;
 }
 
 void MoleculeFingerprintBuilder::_handleTree (Graph &graph,
-        const int *v_mapping, const int *e_mapping, void *context)
+        const Array<int> &vertices, const Array<int> &edges, void *context)
 {
-   QS_DEF(Array<int>, vertices);
-   QS_DEF(Array<int>, edges);
-
-   Graph::filterVertices(graph, v_mapping, FILTER_NEQ, -1, vertices);
-   Graph::filterEdges(graph, e_mapping, FILTER_NEQ, -1, edges);
-
    MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
+
    self->_handleSubgraph(graph, vertices, edges);
 }
 
 int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue (Graph &graph,
-      const int *v_mapping, const int *e_mapping, void *context)
+      const Array<int> &vertices, const Array<int> &edges, void *context)
 {
    BaseMolecule &mol = (BaseMolecule &)graph;
    int ret = 0;
-   int i;
+   int ni;
    MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
 
    // Check if fragment has query atoms or query bonds
-   for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   for (ni = 0; ni < vertices.size(); ni++)
    {
-      if (v_mapping[i] < 0)
-         continue;
+      int i = vertices[ni];
       if (mol.getAtomNumber(i) == -1)
          break;
    }
 
-   bool has_query_atoms = (i != mol.vertexEnd());
+   bool has_query_atoms = (ni != vertices.size());
 
-   for (i = mol.edgeBegin(); i !=  mol.edgeEnd(); i = mol.edgeNext(i))
+   for (ni = 0; ni < edges.size(); ni++)
    {
-      if (e_mapping[i] < 0)
-         continue;
+      int i = edges[ni];
       int bond_order = mol.getBondOrder(i);
       if (bond_order == -1 ||
             (self->query && mol.asQueryMolecule().aromaticity.canBeAromatic(i) && 
@@ -111,7 +187,7 @@ int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue (Graph &graph,
          break;
    }
 
-   bool has_query_bonds = (i != mol.edgeEnd());
+   bool has_query_bonds = (ni != edges.size());
 
    if (has_query_atoms)
       ret |= 1;
@@ -122,20 +198,16 @@ int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue (Graph &graph,
    return ret;
 }
 
-int MoleculeFingerprintBuilder::_vertex_code (Graph &graph, int vertex_idx, void *context)
+int MoleculeFingerprintBuilder::_atomCode (BaseMolecule &mol, int vertex_idx)
 {
-   BaseMolecule &mol = (BaseMolecule &)graph;
-
    if (mol.isPseudoAtom(vertex_idx))
       return CRC32::get(mol.getPseudoAtom(vertex_idx));
 
    return mol.getAtomNumber(vertex_idx);
 }
 
-int MoleculeFingerprintBuilder::_edge_code (Graph &graph, int edge_idx, void *context)
+int MoleculeFingerprintBuilder::_bondCode (BaseMolecule &mol, int edge_idx)
 {
-   BaseMolecule &mol = (BaseMolecule &)graph;
-   
    //MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
    //if (self->query && mol.asQueryMolecule().aromaticity.canBeAromatic(edge_idx))
    //  throw Error("internal: _edge_code for possibly aromatic bond");
@@ -146,20 +218,23 @@ int MoleculeFingerprintBuilder::_edge_code (Graph &graph, int edge_idx, void *co
 dword MoleculeFingerprintBuilder::_canonicalizeFragment (BaseMolecule &mol, const Array<int> &vertices,
          const Array<int> &edges, bool use_atoms, bool use_bonds, int *different_vertex_count)
 {
-   SubgraphHash subgraph_hash(mol);
-
-   subgraph_hash.context = this;
-
    if (use_bonds)
-      subgraph_hash.cb_edge_code = _edge_code; 
-   if (use_atoms)
-      subgraph_hash.cb_vertex_code = _vertex_code; 
-   subgraph_hash.max_iterations = (edges.size() + 1) / 2;
-   subgraph_hash.calc_different_codes_count = true;
+      subgraph_hash->edge_codes = &_bond_codes; 
+   else
+      subgraph_hash->edge_codes = &_bond_codes_empty; 
 
-   dword ret = subgraph_hash.getHash(vertices, edges);
+   if (use_atoms)
+      subgraph_hash->vertex_codes = &_atom_codes; 
+   else
+      subgraph_hash->vertex_codes = &_atom_codes_empty; 
+
+   subgraph_hash->max_iterations = (edges.size() + 1) / 2;
+   subgraph_hash->calc_different_codes_count = true;
+
+   dword ret = subgraph_hash->getHash(vertices, edges);
    if (different_vertex_count != 0)
-      *different_vertex_count = subgraph_hash.getDifferentCodesCount();
+      *different_vertex_count = subgraph_hash->getDifferentCodesCount();
+
    return ret;
 }
 
@@ -181,28 +256,25 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
       }
       
       // ORD and ANY are made of all fragments having more than 2 vertices
-      if (vertices.size() > 2)
+      if (use_atoms && use_bonds)
       {
-         if (use_atoms && use_bonds)
+         if (!skip_ord && _parameters.ord_qwords > 0)
+            set_ord = true;
+      }
+      else if (_parameters.any_qwords > 0)
+      {
+         if (use_atoms)
          {
-            if (!skip_ord && _parameters.ord_qwords > 0)
-               set_ord = true;
-         }
-         else if (_parameters.any_qwords > 0)
-         {
-            if (use_atoms)
-            {
-               if (!skip_any_bonds)
-                  set_any = true;
-            }
-            else if (use_bonds)
-            {
-               if (!skip_any_atoms)
-                  set_any = true;
-            }
-            else if (!skip_any_atoms_bonds)
+            if (!skip_any_bonds)
                set_any = true;
          }
+         else if (use_bonds)
+         {
+            if (!skip_any_atoms)
+               set_any = true;
+         }
+         else if (!skip_any_atoms_bonds)
+            set_any = true;
       }
    }
 
@@ -224,7 +296,7 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
    if (2 * vertices.size() > 3 * different_vertex_count)
       bits_per_fragment = 5;
    else if (vertices.size() <= 3)
-      bits_per_fragment = 3;
+      bits_per_fragment = 2;
    else if (vertices.size() >= 5 && vertices.size() != edges.size())
       bits_per_fragment = 1;
    else
@@ -267,6 +339,10 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
 void MoleculeFingerprintBuilder::_handleSubgraph (Graph &graph,
         const Array<int> &vertices, const Array<int> &edges)
 {
+
+   if(cancellation && cancellation->isCancelled())
+      throw Error("Fingerprint calculation has been cancelled: %s", cancellation->cancelledRequestMessage());
+
    BaseMolecule &mol = (BaseMolecule &)graph;
    int i;
 
@@ -342,6 +418,8 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
    if (!skip_ord || !skip_any_atoms || !skip_any_atoms_bonds ||
        !skip_any_bonds || !skip_tau || !skip_sim)
    {
+      _initHashCalculations(*mol_for_enumeration);
+
       CycleEnumerator ce(*mol_for_enumeration);
       GraphSubtreeEnumerator se(*mol_for_enumeration);
 
@@ -356,10 +434,10 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       ce.max_length = sim_only ? 6 : 8;
       ce.cb_handle_cycle = _handleCycle;
       ce.process();
-
+   
       _is_cycle = false;
       se.context = this;
-      se.min_vertices = 2;
+      se.min_vertices = 1;
       se.max_vertices = sim_only ? 5 : 7;
       se.handle_maximal = false;
       se.maximal_critera_value_callback = _maximalSubgraphCriteriaValue;

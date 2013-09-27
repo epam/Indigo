@@ -301,6 +301,8 @@ public:
    virtual int getIndex ();
    virtual void remove ();
 
+   virtual const char * getName ();
+
    static IndigoSuperatom & cast (IndigoObject &obj);
    BaseMolecule::Superatom & get();
 
@@ -574,7 +576,7 @@ public:
    virtual bool hasNext ();
 
 protected:
-   static void _handleTree (Graph &graph, const int *v_mapping, const int *e_mapping, void *context);
+   static void _handleTree (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
    BaseMolecule &_mol;
    GraphSubtreeEnumerator _enumerator;

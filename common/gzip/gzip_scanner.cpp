@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -16,8 +16,13 @@
 
 using namespace indigo;
 
+IMPL_ERROR(GZipScanner, "GZip scanner");
+
+CP_DEF(GZipScanner);
+
 GZipScanner::GZipScanner (Scanner &source) :
 _source(source),
+CP_INIT,
 TL_CP_GET(_inbuf),
 TL_CP_GET(_outbuf)
 {

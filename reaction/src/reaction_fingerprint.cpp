@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,10 +19,15 @@
 
 using namespace indigo;
 
+IMPL_ERROR(ReactionFingerprintBuilder, "fingerprint builder");
+
+CP_DEF(ReactionFingerprintBuilder);
+
 ReactionFingerprintBuilder::ReactionFingerprintBuilder (BaseReaction &reaction,
         const MoleculeFingerprintParameters &parameters) :
 _reaction(reaction),
 _parameters(parameters),
+CP_INIT,
 TL_CP_GET(_fingerprint)
 {
    query = false;
@@ -82,4 +87,26 @@ byte * ReactionFingerprintBuilder::get ()
 byte * ReactionFingerprintBuilder::getSim ()
 {
    return _fingerprint.ptr() + _parameters.fingerprintSizeExtOrd() * 2;
+}
+
+void ReactionFingerprintBuilder::parseFingerprintType(const char *type, bool query) {
+   this->query = query;
+
+   if (type == 0 || *type == 0 || strcasecmp(type, "sim") == 0)
+   {
+      // similarity
+      this->skip_ext = true;
+      this->skip_ord = true;
+   }
+   else if (strcasecmp(type, "sub") == 0)
+      // substructure
+      this->skip_sim = true;
+   else if (strcasecmp(type, "full") == 0)
+   {
+      if (query)
+         throw Error("there can not be 'full' fingerprint of a query reaction");
+      // full (non-query) fingerprint, do not skip anything
+   }
+   else
+      throw Error("unknown molecule fingerprint type: %s", type);
 }

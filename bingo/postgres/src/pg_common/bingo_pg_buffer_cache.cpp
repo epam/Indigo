@@ -19,6 +19,8 @@ BingoPgBufferCache::BingoPgBufferCache(int block_id, PG_OBJECT index_ptr, bool w
    } 
 }
 
+IMPL_ERROR(BingoPgBufferCacheMap, "bingo buffer cache");
+
 BingoPgBufferCacheMap::BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write):
 BingoPgBufferCache(block_id, index_ptr, write) {
    /*
@@ -145,6 +147,9 @@ void BingoPgBufferCacheMap::_checkMapIdx(int map_idx) {
       throw Error("internal error: map index %d is out of range %d", map_idx, BINGO_MOLS_PER_MAPBLOCK);
 }
 
+// Revview IMPL_ERROR
+IMPL_ERROR(BingoPgBufferCacheFp, "bingo buffer cache fingerprints");
+
 
 BingoPgBufferCacheFp::BingoPgBufferCacheFp(int block_id, PG_OBJECT index_ptr, bool write):
 BingoPgBufferCache(block_id, index_ptr, write), _cache(BINGO_MOLS_PER_FINGERBLOCK) {
@@ -244,6 +249,9 @@ void BingoPgBufferCacheFp::getCopy(BingoPgExternalBitset& other) {
       _buffer.changeAccess(BINGO_PG_NOLOCK);
    }
 }
+
+// Revview IMPL_ERROR
+IMPL_ERROR(BingoPgBufferCacheBin, "bingo buffer cache binary data");
 
 BingoPgBufferCacheBin::BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write) :
 BingoPgBufferCache(block_id, index_ptr, write) {

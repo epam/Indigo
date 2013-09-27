@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -35,7 +35,7 @@ public:
 
    int  getArcValue (int arc) const;
 
-   DEF_ERROR("SkewSymmetricFlowFinder");
+   DECL_ERROR;
 private:
    void _init ();
 
@@ -49,6 +49,7 @@ private:
 
    void _dbgCheckConsistency ();
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _arc_values);
    TL_CP_DECL(Array<int>, _arc_sym);
 

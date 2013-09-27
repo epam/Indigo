@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("GGA Software Services LLC")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright © GGA Software Services LLC 2010-2012")]
+[assembly: AssemblyCopyright("Copyright © GGA Software Services LLC 2010-2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 // Setting ComVisible to false makes the types in this assembly not visible 

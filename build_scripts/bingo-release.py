@@ -5,15 +5,20 @@ import subprocess
 from os.path import *
 
 from optparse import OptionParser
+from zipfile import ZipFile
 
 presets = {
     "win32" : ("Visual Studio 10", ""),
     "win64" : ("Visual Studio 10 Win64", ""),
+    "win32-2012" : ("Visual Studio 11", ""),
+    "win64-2012" : ("Visual Studio 11 Win64", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
-    }
+    "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
+    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),   
+}
 
 parser = OptionParser(description='Bingo build script')
 parser.add_option('--generator', help='this option is passed as -G option for cmake')
@@ -90,10 +95,27 @@ if args.dbms != 'sqlserver':
     for f in os.listdir(full_build_dir):
         path, ext = os.path.splitext(f)
         if ext == ".zip":
-            shutil.copy(join(full_build_dir, f), join(dist_dir, f.replace('-shared.zip', '.zip')))
+            shutil.rmtree(join(full_build_dir, f.replace('-shared.zip', ''), f.replace('-shared.zip', '')), ignore_errors=True)
+            zf = ZipFile(join(full_build_dir, f))
+            zf.extractall(join(full_build_dir, f.replace('-shared.zip', ''), f.replace('-shared.zip', '')))
+            zf = ZipFile(join(dist_dir, f.replace('-shared.zip', '.zip')), 'w')
+            os.chdir(join(full_build_dir, f.replace('-shared.zip', '')))
+            for root, dirs, files in os.walk('.'):
+                for file in files:
+                    if file.endswith('.sh') or file.endswith('.bat'):
+                        os.chmod(join(root, file), 0755)
+                    zf.write(join(root, file))
+            os.chdir(root)
 else:
     dllPath = {}
-    for arch, generator in (('x86', 'Visual Studio 10'), ('x64', 'Visual Studio 10 Win64')):
+
+    vsversion = 'Visual Studio'
+    if args.preset.find("2012") != -1:
+        vsversion += ' 11'
+    else:
+        vsversion += ' 10'
+
+    for arch, generator in (('x86', vsversion), ('x64', vsversion + ' Win64')):
         build_dir = (args.dbms + " " + generator + " " + args.params)
         build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
         full_build_dir = os.path.join(root, "build", build_dir)
@@ -127,31 +149,33 @@ else:
     if not os.path.exists("dist"):
         os.mkdir("dist")
     dist_dir = join(root, "dist")
-    if not os.path.exists(join(root, 'dist', 'bingo-sqlserver')):
-        os.mkdir(join(root, 'dist', 'bingo-sqlserver'))
-    else:
-        shutil.rmtree(join(root, 'dist', 'bingo-sqlserver'))
-        os.mkdir(join(root, 'dist', 'bingo-sqlserver'))
 
-    os.mkdir(join(root, 'dist', 'bingo-sqlserver', 'assembly'))
-    for item in os.listdir(join(root, 'bingo', 'sqlserver', 'sql')):
-        if item.endswith('.sql') or item.endswith('.bat'):
-            shutil.copyfile(join(root, 'bingo', 'sqlserver', 'sql', item), join(root, 'dist', 'bingo-sqlserver', item))
-    if not os.path.exists(join(root, 'bingo', 'sqlserver', 'bin', args.config, 'bingo-sqlserver.dll')):
-        print 'Warning: File %s does not exist, going to use empty stub instead' % join(root, 'dist', 'bingo-sqlserver', 'assembly', 'bingo-sqlserver.dll')
-        open(join(root, 'dist', 'bingo-sqlserver', 'assembly', 'bingo-sqlserver.dll', 'w')).close()
-    else:
-        shutil.copyfile(join(root, 'bingo', 'sqlserver', 'bin', args.config, 'bingo-sqlserver.dll'), join(root, 'dist', 'bingo-sqlserver', 'assembly', 'bingo-sqlserver.dll'))
-        
     # Get version
     version = ""
     for line in open(join('bingo', "bingo-version.cmake")):
         m = re.search('SET\(BINGO_VERSION "([^\"]*)\"', line)
         if m:
             version = m.group(1)
+
+    if not os.path.exists(join(root, 'dist', 'bingo-sqlserver-%s' % version)):
+        os.makedirs(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version))
+    else:
+        shutil.rmtree(join(root, 'dist', 'bingo-sqlserver-%s' % version))
+        os.makedirs(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver%s' % version))
+
+    os.makedirs(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly'))
+    for item in os.listdir(join(root, 'bingo', 'sqlserver', 'sql')):
+        if item.endswith('.sql') or item.endswith('.bat'):
+            shutil.copyfile(join(root, 'bingo', 'sqlserver', 'sql', item), join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, item))
+    if not os.path.exists(join(root, 'bingo', 'sqlserver', 'bin', args.config, 'bingo-sqlserver.dll')):
+        print 'Warning: File %s does not exist, going to use empty stub instead' % join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll')
+        open(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll', 'w')).close()
+    else:
+        shutil.copyfile(join(root, 'bingo', 'sqlserver', 'bin', args.config, 'bingo-sqlserver.dll'), join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll'))
+
     os.chdir('dist')
     if os.path.exists('bingo-sqlserver-%s.zip' % version):
         os.remove('bingo-sqlserver-%s.zip' % version)
-    shutil.make_archive('bingo-sqlserver-%s' % version, format='zip', root_dir=join(root, 'dist', 'bingo-sqlserver'))
-    shutil.rmtree('bingo-sqlserver')
+    shutil.make_archive('bingo-sqlserver-%s' % version, format='zip', root_dir=join(root, 'dist', 'bingo-sqlserver-%s' % version))
+    shutil.rmtree('bingo-sqlserver-%s' % version)
     os.chdir(root)

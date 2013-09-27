@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -26,10 +26,12 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(ArrayError);
+
 template <typename T> class Array
 {
 public:
-   DEF_ERROR("array");
+   DECL_TPL_ERROR(ArrayError);
 
    explicit Array ()
    {
@@ -54,6 +56,10 @@ public:
 
    void reserve (int to_reserve)
    {
+      // Addtional check for unexpectedly large memory allocations (larger than 512 Mb)
+      if (to_reserve * sizeof(T) >= 1 << 29)
+         throw Error("memory to reserve (%d x %d) is large than allowed threshold", to_reserve, (int)sizeof(T));
+
       if (to_reserve <= 0)
          throw Error("to_reserve = %d", to_reserve);
 
@@ -214,6 +220,21 @@ public:
        return -1;
    }
 
+   int count (const T &value) const
+   {
+      return count(0, _length, value);
+   }
+
+   int count (int from, int to, const T &value) const
+   {
+      int cnt = 0;
+      for (int i = from; i < to; i++)
+         if (_array[i] == value)
+            cnt++;
+
+       return cnt;
+   }
+
    void swap (int idx1, int idx2)
    {
       if (idx1 < 0 || idx1 >= _length)
@@ -266,6 +287,22 @@ public:
          throw Error("stack underflow");
 
       return _array[_length - 1];
+   }
+
+   T & top (int offset)
+   {
+      if (_length - offset <= 0)
+         throw Error("stack underflow");
+
+      return _array[_length - 1 - offset];
+   }
+
+   const T & top (int offset) const
+   {
+      if (_length - offset <= 0)
+         throw Error("stack underflow");
+
+      return _array[_length - 1 - offset];
    }
 
    void resize (int newsize)

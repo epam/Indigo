@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,7 +16,10 @@
 
 using namespace indigo;
 
+CP_DEF(MoleculeLayoutGraph::Cycle);
+
 MoleculeLayoutGraph::Cycle::Cycle () :
+CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
 TL_CP_GET(_attached_weight)
@@ -28,6 +31,7 @@ TL_CP_GET(_attached_weight)
 }
 
 MoleculeLayoutGraph::Cycle::Cycle (const List<int> &edges, const MoleculeLayoutGraph &graph) :
+CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
 TL_CP_GET(_attached_weight)
@@ -38,6 +42,7 @@ TL_CP_GET(_attached_weight)
 }
 
 MoleculeLayoutGraph::Cycle::Cycle (const Array<int> &vertices, const Array<int> &edges) :
+CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
 TL_CP_GET(_attached_weight)

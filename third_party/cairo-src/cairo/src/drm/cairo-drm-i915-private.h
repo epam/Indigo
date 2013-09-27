@@ -343,7 +343,7 @@ enum i915_fs_channel {
     (z##_CHANNEL_VAL << Z_CHANNEL_SHIFT) | \
     (w##_CHANNEL_VAL << W_CHANNEL_SHIFT)
 
-/**
+/*
  * Construct an operand description for using a register with no swizzling
  */
 #define i915_fs_operand_reg(reg)					\
@@ -352,17 +352,17 @@ enum i915_fs_channel {
 #define i915_fs_operand_reg_negate(reg)					\
     i915_fs_operand(reg, NEG_X, NEG_Y, NEG_Z, NEG_W)
 
-/**
+/*
  * Returns an operand containing (0.0, 0.0, 0.0, 0.0).
  */
 #define i915_fs_operand_zero() i915_fs_operand(FS_R0, ZERO, ZERO, ZERO, ZERO)
 
-/**
+/*
  * Returns an unused operand
  */
 #define i915_fs_operand_none() i915_fs_operand_zero()
 
-/**
+/*
  * Returns an operand containing (1.0, 1.0, 1.0, 1.0).
  */
 #define i915_fs_operand_one() i915_fs_operand(FS_R0, ONE, ONE, ONE, ONE)
@@ -370,7 +370,7 @@ enum i915_fs_channel {
 #define i915_get_hardware_channel_val(val, shift, negate) \
     (((val & 0x7) << shift) | ((val & 0x8) ? negate : 0))
 
-/**
+/*
  * Outputs a fragment shader command to declare a sampler or texture register.
  */
 #define i915_fs_dcl(reg)						\
@@ -527,19 +527,19 @@ do { \
 	           i915_fs_operand_none(),			\
 	           i915_fs_operand_none())
 
-/** Add operand0 and operand1 and put the result in dest_reg */
+/* Add operand0 and operand1 and put the result in dest_reg */
 #define i915_fs_add(dest_reg, operand0, operand1)			\
     i915_fs_arith (ADD, dest_reg, \
 	           operand0, operand1,	\
 		   i915_fs_operand_none())
 
-/** Multiply operand0 and operand1 and put the result in dest_reg */
+/* Multiply operand0 and operand1 and put the result in dest_reg */
 #define i915_fs_mul(dest_reg, operand0, operand1)			\
     i915_fs_arith (MUL, dest_reg, \
 	           operand0, operand1,	\
 		   i915_fs_operand_none())
 
-/** Computes 1/sqrt(operand0.replicate_swizzle) puts the result in dest_reg */
+/* Computes 1/sqrt(operand0.replicate_swizzle) puts the result in dest_reg */
 #define i915_fs_rsq(dest_reg, dest_mask, operand0)		\
 do {									\
     if (dest_mask) {							\
@@ -555,13 +555,13 @@ do {									\
     } \
 } while (0)
 
-/** Puts the minimum of operand0 and operand1 in dest_reg */
+/* Puts the minimum of operand0 and operand1 in dest_reg */
 #define i915_fs_min(dest_reg, operand0, operand1)			\
     i915_fs_arith (MIN, dest_reg, \
 	           operand0, operand1, \
 		   i915_fs_operand_none())
 
-/** Puts the maximum of operand0 and operand1 in dest_reg */
+/* Puts the maximum of operand0 and operand1 in dest_reg */
 #define i915_fs_max(dest_reg, operand0, operand1)			\
     i915_fs_arith (MAX, dest_reg, \
 	           operand0, operand1, \
@@ -570,7 +570,7 @@ do {									\
 #define i915_fs_cmp(dest_reg, operand0, operand1, operand2)		\
     i915_fs_arith (CMP, dest_reg, operand0, operand1, operand2)
 
-/** Perform operand0 * operand1 + operand2 and put the result in dest_reg */
+/* Perform operand0 * operand1 + operand2 and put the result in dest_reg */
 #define i915_fs_mad(dest_reg, dest_mask, op0, op1, op2)	\
 do {									\
     if (dest_mask) {							\
@@ -589,7 +589,7 @@ do {									\
     } \
 } while (0)
 
-/**
+/*
  * Perform a 3-component dot-product of operand0 and operand1 and put the
  * resulting scalar in the channels of dest_reg specified by the dest_mask.
  */
@@ -1258,7 +1258,7 @@ i915_surface_fallback_flush (i915_surface_t *surface)
     cairo_status_t status;
 
     if (unlikely (surface->intel.drm.fallback != NULL))
-	return intel_surface_flush (&surface->intel);
+	return intel_surface_flush (&surface->intel, 0);
 
     status = CAIRO_STATUS_SUCCESS;
     if (unlikely (surface->deferred_clear))

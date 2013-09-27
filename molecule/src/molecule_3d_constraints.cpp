@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -25,6 +25,8 @@ QueryMolecule & Molecule3dConstraints::_getMolecule ()
 
    return *(QueryMolecule *)((char *)this - offset);
 }
+
+IMPL_ERROR(Molecule3dConstraints, "molecule 3d constraints");
 
 Molecule3dConstraints::Molecule3dConstraints ()
 {
@@ -510,8 +512,13 @@ void Molecule3dConstraints::removeAtoms (const int *mapping)
    }
 }
 
+IMPL_ERROR(Molecule3dConstraintsChecker, "molecule 3d constraints checker");
+
+CP_DEF(Molecule3dConstraintsChecker);
+
 Molecule3dConstraintsChecker::Molecule3dConstraintsChecker (const Molecule3dConstraints &constraints) :
 _constraints(constraints),
+CP_INIT,
 TL_CP_GET(_cache_v),
 TL_CP_GET(_cache_l),
 TL_CP_GET(_cache_p),

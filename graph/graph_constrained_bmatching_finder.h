@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -77,7 +77,7 @@ public:
    int getEdgeMultiplicity (int edge) const;
    int getNodeIncidentEdgesCount (int node) const;
 
-   DEF_ERROR("b-matching finder");
+   DECL_ERROR;
 private:
    struct ConstraintSet
    { 
@@ -93,6 +93,7 @@ private:
 
    const Graph &_g;
 
+   CP_DECL;
    TL_CP_DECL(SkewSymmetricNetwork, _network);
    // Edges mapping between graph and network
    TL_CP_DECL(Array<int>, _edges_graph_to_net);

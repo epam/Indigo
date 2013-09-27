@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -25,8 +25,12 @@
 
 using namespace indigo;
 
+IMPL_ERROR(GraphPerfectMatching, "graph perfect matching");
+CP_DEF(GraphPerfectMatching);
+
 GraphPerfectMatching::GraphPerfectMatching (const Graph &graph, int params) :
    _graph(graph),
+   CP_INIT,
    TL_CP_GET(_matchingEdgesLocal),
    TL_CP_GET(_verticesInfo),
    TL_CP_GET(_path),

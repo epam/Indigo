@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (C) 2009-2011 GGA Software Services LLC
+* Copyright (C) 2009-2013 GGA Software Services LLC
 *
 * This file is part of Indigo toolkit.
 *
@@ -19,9 +19,13 @@
 #include "reaction/reaction.h"
 #include "render_context.h"
 
+#include <limits.h>
+
 using namespace indigo;
 
 RenderContext::TextLock RenderContext::_tlock;
+
+IMPL_ERROR(RenderContext, "render context");
 
 #ifdef _WIN32
 
@@ -107,10 +111,12 @@ void RenderContext::storeAndDestroyMetafile (bool discard)
 
 #endif
 
-RenderContext::RenderContext (const RenderOptions& ropt, float sf): TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
-metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt)
+CP_DEF(RenderContext);
+
+RenderContext::RenderContext (const RenderOptions& ropt, float sf, float lwf): CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms),
+metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt), _pattern(NULL)
 {
-   _settings.init(sf);
+   _settings.init(sf, lwf);
    bprintf(_fontfamily, "Arial");
    bbmin.x = bbmin.y = 1;
    bbmax.x = bbmax.y = -1;
@@ -179,7 +185,7 @@ int RenderContext::getMaxPageSize () const
 {
    if (opt.mode == MODE_PDF)
       return 14400;
-   return -1;
+   return INT_MAX;
 }
 
 cairo_status_t RenderContext::writer (void *closure, const unsigned char *data, unsigned int length)
@@ -410,8 +416,6 @@ void RenderContext::drawItemBackground (const RenderItem& item)
 
 void RenderContext::drawTextItemText (const TextItem& ti)
 {
-   bool bold = ti.highlighted && opt.highlightThicknessEnable;
-
    Vec3f color;
    if (ti.ritype == RenderItem::RIT_AAM)
       color.copy(opt.aamColor);
@@ -427,6 +431,12 @@ void RenderContext::drawTextItemText (const TextItem& ti)
       if (ti.highlighted && opt.highlightColorEnable)
          color.copy(opt.highlightColor);
    }
+   drawTextItemText (ti, color);
+}
+
+void RenderContext::drawTextItemText (const TextItem& ti, const Vec3f& color)
+{
+   bool bold = ti.highlighted && opt.highlightThicknessEnable;
    drawTextItemText (ti, color, bold);
 }
 
@@ -476,6 +486,20 @@ void RenderContext::fillQuad (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2,
    lineTo(v1);
    lineTo(v2);
    lineTo(v3);
+   checkPathNonEmpty();
+   bbIncludePath(false);
+   cairo_fill(_cr);
+   cairoCheckStatus();
+}
+
+void RenderContext::fillHex (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4, const Vec2f& v5)
+{
+   moveTo(v0);
+   lineTo(v1);
+   lineTo(v2);
+   lineTo(v3);
+   lineTo(v4);
+   lineTo(v5);
    checkPathNonEmpty();
    bbIncludePath(false);
    cairo_fill(_cr);
@@ -645,7 +669,7 @@ void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
    setSingleSource(ri.color);
    if (ri.highlighted && opt.highlightColorEnable)
       setSingleSource(opt.highlightColor);
-   setLineWidth(_settings.bondLineWidth);
+   setLineWidth(_settings.unit);
    moveTo(ri.p0);
    lineTo(ri.p1);
    checkPathNonEmpty();
@@ -685,8 +709,8 @@ void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
       ti.fontsize = FONT_SIZE_ATTACHMENT_POINT_INDEX;
       setTextItemSize(ti, ri.p1);
       float sz = ti.bbsz.length();
-      ti.bbp.addScaled(n, -(sz/2 + _settings.bondLineWidth));
-      ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + _settings.bondLineWidth));
+      ti.bbp.addScaled(n, -(sz/2 + _settings.unit));
+      ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + _settings.unit));
       drawTextItemText(ti);
    }
 }
@@ -694,7 +718,7 @@ void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
 void RenderContext::drawRSiteAttachmentIndex (RenderItemRSiteAttachmentIndex& ri)
 {
    setSingleSource(ri.color);
-   setLineWidth(_settings.bondLineWidth/2);
+   setLineWidth(_settings.unit/2);
    drawCircle(ri.bbp, ri.radius);
 }
 
@@ -703,7 +727,17 @@ void RenderContext::drawGraphItem (GraphItem& gi)
    setSingleSource(gi.color);
    if (gi.highlighted && opt.highlightColorEnable)
       setSingleSource(opt.highlightColor);
+   _drawGraphItem(gi);
+}
 
+void RenderContext::drawGraphItem (GraphItem& gi, const Vec3f& color)
+{
+   setSingleSource(color);
+   _drawGraphItem(gi);
+}
+
+void RenderContext::_drawGraphItem (GraphItem& gi)
+{
    Vec2f v0;
    v0.sum(gi.bbp, gi.relpos);
    switch (gi.type)
@@ -755,7 +789,7 @@ void RenderContext::drawGraphItem (GraphItem& gi)
 void RenderContext::drawBracket (RenderItemBracket& bracket)
 {
    setSingleSource(bracket.color);
-   setLineWidth(_settings.bondLineWidth);
+   setLineWidth(_settings.unit);
 
    Vec2f p;
    moveTo(bracket.q0);
@@ -893,6 +927,29 @@ void RenderContext::setSingleSource (const Vec3f& color)
 {
    cairo_set_source_rgb(_cr, color.x, color.y, color.z);
    cairoCheckStatus();
+}
+
+void RenderContext::setGradientSource (const Vec3f& color1, const Vec3f& color2, const Vec2f& pos1, const Vec2f& pos2)
+{
+   if (_pattern != NULL) {
+      throw new Error("Pattern already initialized");
+   }
+
+   _pattern = cairo_pattern_create_linear (pos1.x, pos1.y, pos2.x, pos2.y);
+   cairo_pattern_add_color_stop_rgb (_pattern, 0, color1.x, color1.y, color1.z);
+   cairo_pattern_add_color_stop_rgb (_pattern, 1, color2.x, color2.y, color2.z);
+   cairo_set_source (_cr, _pattern);
+
+   cairoCheckStatus();
+}
+
+void RenderContext::clearPattern ()
+{
+   if (_pattern != NULL) {
+      cairo_pattern_destroy (_pattern);
+      _pattern = NULL;
+      cairoCheckStatus();
+   }
 }
 
 float RenderContext::_getDashedLineAlignmentOffset (float length)

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -23,6 +23,7 @@
 #include "molecule/query_molecule.h"
 #include "gzip/gzip_scanner.h"
 #include "molecule/molecule_cml_loader.h"
+#include "molecule/sdf_loader.h"
 
 using namespace indigo;
 
@@ -35,21 +36,25 @@ void MoleculeAutoLoader::_init ()
    skip_3d_chirality = false;
 }
 
-MoleculeAutoLoader::MoleculeAutoLoader (Scanner &scanner)
+IMPL_ERROR(MoleculeAutoLoader, "molecule auto loader");
+
+CP_DEF(MoleculeAutoLoader);
+
+MoleculeAutoLoader::MoleculeAutoLoader (Scanner &scanner) : CP_INIT, TL_CP_GET(properties)
 {
    _scanner = &scanner;
    _own_scanner = false;
    _init();
 }
 
-MoleculeAutoLoader::MoleculeAutoLoader (const Array<char> &arr)
+MoleculeAutoLoader::MoleculeAutoLoader (const Array<char> &arr) : CP_INIT, TL_CP_GET(properties)
 {
    _scanner = new BufferScanner(arr);
    _own_scanner = true;
    _init();
 }
 
-MoleculeAutoLoader::MoleculeAutoLoader (const char *str)
+MoleculeAutoLoader::MoleculeAutoLoader (const char *str) : CP_INIT, TL_CP_GET(properties)
 {
    _scanner = new BufferScanner(str);
    _own_scanner = true;
@@ -145,6 +150,8 @@ bool MoleculeAutoLoader::tryMDLCT (Scanner &scanner, Array<char> &outbuf)
 
 void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 {
+   properties.clear();
+
    // check for GZip format
    if (!query && _scanner->length() >= 2)
    {
@@ -199,7 +206,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 
       _scanner->readCharsFix(3, id);
       _scanner->seek(pos, SEEK_SET);
-      if (strncmp(id, IcmSaver::VERSION, 3) == 0)
+      if (IcmSaver::checkVersion(id))
       {
          if (query)
             throw Error("cannot load query molecule from ICM format");
@@ -248,7 +255,15 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 
    // default is Molfile format
    {
-      MolfileLoader loader(*_scanner);
+      SdfLoader sdf_loader(*_scanner);
+      sdf_loader.readNext();
+
+      // Copy properties
+      properties.copy(sdf_loader.properties);
+
+      BufferScanner scanner2(sdf_loader.data);
+
+      MolfileLoader loader(scanner2);
       loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
       loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
       loader.skip_3d_chirality = skip_3d_chirality;

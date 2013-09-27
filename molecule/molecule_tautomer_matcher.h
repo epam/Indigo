@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -27,9 +27,11 @@ class AromaticityMatcher;
 class MoleculeTautomerMatcher
 {
 public:
-   DEF_ERROR("molecule tautomer matcher");
+   DECL_ERROR;
 
    bool highlight;
+
+   AromaticityOptions arom_options;
 
    MoleculeTautomerMatcher (Molecule &target, bool substructure);
 

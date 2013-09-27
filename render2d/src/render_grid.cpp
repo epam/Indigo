@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -28,6 +28,8 @@
 #include "render_grid.h"
 
 using namespace indigo;
+
+IMPL_ERROR(RenderGrid, "RenderGrid");
 
 RenderGrid::RenderGrid (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet) :
    Render(rc, factory, cnvOpt, bondLength, bondLengthSet), nColumns(cnvOpt.gridColumnNumber), comment(-1)
@@ -125,7 +127,14 @@ void RenderGrid::draw ()
    outerMargin.x = (float)(minMarg + _cnvOpt.marginX);
    outerMargin.y = (float)(minMarg + _cnvOpt.marginY);
 
-   scale = _getScale();
+   _width = __min(_width, _getMaxWidth());
+   _height = __min(_height, _getMaxHeight());
+   scale = _getScale(_width, _height);
+   if (_width < 1)
+      _width = _getDefaultWidth(scale);
+   if (_height < 1)
+      _height = _getDefaultHeight(scale);
+
    _rc.initContext(_width, _height);
    cellsz.set(__max(maxsz.x * scale, maxTitleSize.x),
       maxsz.y * scale + maxTitleSize.y + titleOffset);
@@ -184,42 +193,26 @@ void RenderGrid::draw ()
    }
 }
 
-float RenderGrid::_getScale ()
+int RenderGrid::_getDefaultWidth (const float s)
 {
-   int maxPageSize = _rc.getMaxPageSize();
-   float s;
-   bool imageSizeSet = _width > 0 && _height > 0;
-   s = (float)_bondLength;
+   return (int)ceil(__max(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), commentSize.x) + outerMargin.x * 2);
+}
+int RenderGrid::_getDefaultHeight (const float s) {
+   return (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset);
+}
 
-   int defaultWidth = (int)ceil(__max(__max(maxsz.x * s, maxTitleSize.x) * nColumns + _cnvOpt.gridMarginX * (nColumns - 1), commentSize.x) + outerMargin.x * 2);
-   int defaultHeight = (int)ceil((maxsz.y * s + maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset);
-
-   if (!imageSizeSet)
-   {
-      _width = defaultWidth;
-      _height = defaultHeight;
-   }
-   if (maxPageSize > 0 && __max(_width, _height) > maxPageSize)
-   {
-      _width = __min(_width, maxPageSize);
-      _height = __min(_height, maxPageSize);
-      imageSizeSet = true;
-   }
-
-   if (imageSizeSet) {
-      float absX = _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2;
-      float absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset;
-      float x = _width - absX,
-         y = _height - absY;
-      if (x < maxTitleSize.x * nRows + 1 || _width < commentSize.x + outerMargin.x * 2 + 1 || y < 1)
-         throw Error("Image too small, the layout requires at least %dx%d",
-            (int)__max(absX + maxTitleSize.x * nRows + 2,commentSize.x + outerMargin.x * 2 + 2),
-            (int)(absY + 2));
-      Vec2f totalScaleableSize(maxsz.x * nColumns, maxsz.y * nRows);
-      if (x * totalScaleableSize.y < y * totalScaleableSize.x)
-         s = x / totalScaleableSize.x;
-      else
-         s = y / totalScaleableSize.y;
-   }
-   return s;
+float RenderGrid::_getScaleGivenSize(int w, int h)
+{
+   float absX = _cnvOpt.gridMarginX * (nColumns - 1) + outerMargin.x * 2;
+   float absY = (maxTitleSize.y + titleOffset) * nRows + _cnvOpt.gridMarginY * (nRows - 1) + outerMargin.y * 2 + commentSize.y + commentOffset;
+   float x = w - absX,
+      y = h - absY;
+   if (x < maxTitleSize.x * nRows + 1 || w < commentSize.x + outerMargin.x * 2 + 1 || y < 1)
+      throw Error("Image too small, the layout requires at least %dx%d",
+         (int)__max(absX + maxTitleSize.x * nRows + 2,commentSize.x + outerMargin.x * 2 + 2),
+         (int)(absY + 2));
+   Vec2f totalScaleableSize(maxsz.x * nColumns, maxsz.y * nRows);
+   if (x * totalScaleableSize.y < y * totalScaleableSize.x)
+      return x / totalScaleableSize.x;
+   return y / totalScaleableSize.y;
 }

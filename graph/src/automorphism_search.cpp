@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,7 +16,12 @@
 
 using namespace indigo;
 
+IMPL_ERROR(AutomorphismSearch, "automorphism search");
+
+CP_DEF(AutomorphismSearch);
+
 AutomorphismSearch::AutomorphismSearch () :
+CP_INIT,
 TL_CP_GET(_call_stack),
 TL_CP_GET(_lab),
 TL_CP_GET(_ptn),

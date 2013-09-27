@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,6 +19,8 @@
 #include "molecule/molecule.h"
 #include "oracle/rowid_loader.h"
 #include "oracle/rowid_symbol_codes.h"
+
+IMPL_ERROR(RowIDLoader, "rowID loader");
 
 RowIDLoader::RowIDLoader( LzwDict &NewDict, Scanner &NewIn ) : 
    _decoder(NewDict, NewIn)

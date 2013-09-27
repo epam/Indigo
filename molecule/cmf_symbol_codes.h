@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -185,6 +185,9 @@ enum
 
    /* 222 - General valence */
    CMF_VALENCE_EXT,
+
+   /* 223 - Atom mapping to restore */
+   CMF_MAPPING,
 
    /* Alphabet size = 256. Any number can be used because of writing integer indices */
    CMF_ALPHABET_SIZE = 256

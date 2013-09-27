@@ -1,4 +1,4 @@
--- Copyright (C) 2009-2011 GGA Software Services LLC
+-- Copyright (C) 2009-2013 GGA Software Services LLC
 -- 
 -- This file is part of Indigo toolkit.
 -- 
@@ -118,6 +118,9 @@ CREATE OR REPLACE PACKAGE RingoPackage IS
    function RSMILES (target in CLOB) return VARCHAR2;
    function RSMILES (target in BLOB) return VARCHAR2;
 
+   function RFingerprint (target in VARCHAR2, options in VARCHAR2) return BLOB;
+   function RFingerprint (target in CLOB, options in VARCHAR2) return BLOB;
+   function RFingerprint (target in BLOB, options in VARCHAR2) return BLOB;
 END RingoPackage;
 /
 CREATE OR REPLACE PACKAGE BODY RingoPackage IS
@@ -434,6 +437,19 @@ CREATE OR REPLACE PACKAGE BODY RingoPackage IS
       return RSMILES_blob(target);
    end RSMILES;
 
+   function RFingerprint (target in VARCHAR2, options in VARCHAR2) return BLOB is
+   begin
+      return RFingerprint_clob(to_clob(target), options);
+   end RFingerprint;
+   function RFingerprint (target in CLOB, options in VARCHAR2) return BLOB is
+   begin
+      return RFingerprint_clob(target, options);
+   end RFingerprint;
+   function RFingerprint (target in BLOB, options in VARCHAR2) return BLOB is
+   begin
+      return RFingerprint_blob(target, options);
+   end RFingerprint;
+   
 END RingoPackage;
 /
 -- necessary for Oracle 9 on Solaris

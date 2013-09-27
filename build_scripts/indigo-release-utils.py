@@ -17,6 +17,9 @@ for line in open(join(os.path.dirname(os.path.abspath(__file__)), "..", "api", "
 presets = {
     "win32" : ("Visual Studio 10", ""),
     "win64" : ("Visual Studio 10 Win64", ""),
+    "win32-2012" : ("Visual Studio 11", ""),
+    "win64-2012" : ("Visual Studio 11 Win64", ""),
+    "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
@@ -68,7 +71,7 @@ if not os.path.exists("dist"):
 dist_dir = join(root, "dist")
 
 os.chdir(full_build_dir)
-command = "cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir)
+command = 'cmake -G \"%s\" %s \"%s\"' % (args.generator, args.params, project_dir)
 print(command)
 subprocess.check_call(command, shell=True)
 
@@ -80,13 +83,17 @@ for f in os.listdir(full_build_dir):
     if ext == ".zip":
         os.remove(join(full_build_dir, f))
 
-subprocess.call("cmake --build . --config %s" % (args.config), shell=True)
+command = "cmake --build . --config %s" % (args.config)
+print command
+subprocess.call(command, shell=True)
 if args.generator.find("Unix Makefiles") != -1:
     subprocess.check_call("make package", shell=True)
 elif args.generator.find("Xcode") != -1:
     subprocess.check_call("cmake --build . --target package --config %s" % (args.config), shell=True)
 elif args.generator.find("Visual Studio") != -1:
     subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config), shell=True)
+elif args.generator.find("MinGW Makefiles") != -1:
+    subprocess.check_call("mingw32-make package", shell=True)
 else:
     print("Do not know how to run package and install target")
 

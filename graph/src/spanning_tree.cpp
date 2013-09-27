@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,7 +18,12 @@
 
 using namespace indigo;
 
+IMPL_ERROR(SpanningTree, "spanning tree");
+
+CP_DEF(SpanningTree);
+
 SpanningTree::SpanningTree (Graph &graph, const Filter *vertex_filter, const Filter *edge_filter) : _graph(graph),
+CP_INIT,
 TL_CP_GET(_edges_list),
 TL_CP_GET(_depth_counters),
 TL_CP_GET(_tree),

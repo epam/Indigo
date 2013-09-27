@@ -55,7 +55,7 @@ private:
 class MangoPgSearchEngine : public BingoPgSearchEngine {
 public:
    enum {
-      MAX_HASH_ELEMENTS = 10
+      MAX_HASH_ELEMENTS = 5
    };
    MangoPgSearchEngine(BingoPgConfig& bingo_config, const char* rel_name);
    virtual ~MangoPgSearchEngine();
@@ -68,7 +68,7 @@ public:
    virtual void prepareQuerySearch(BingoPgIndex&, PG_OBJECT scan_desc);
    virtual bool searchNext(PG_OBJECT result_ptr);
 
-   DEF_ERROR("molecule search engine");
+   DECL_ERROR;
 
 private:
    MangoPgSearchEngine(const MangoPgSearchEngine&); // no implicit copy
@@ -84,8 +84,8 @@ private:
    void _prepareSmartsSearch(PG_OBJECT scan_desc);
    void _prepareMassSearch(PG_OBJECT scan_desc);
    void _prepareSimSearch(PG_OBJECT scan_desc);
-   void _getScanQueries(uintptr_t arg_datum, BingoPgText& str1, BingoPgText& str2);
-   void _getScanQueries(uintptr_t arg_datum, float& min_bound, float& max_bound, BingoPgText& str1, BingoPgText& str2);
+   void _getScanQueries(uintptr_t arg_datum, indigo::Array<char>& str1, indigo::Array<char>& str2);
+   void _getScanQueries(uintptr_t arg_datum, float& min_bound, float& max_bound, indigo::Array<char>& str1, indigo::Array<char>& str2);
 
    static void _errorHandler(const char* message, void* context);
 

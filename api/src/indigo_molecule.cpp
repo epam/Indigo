@@ -479,7 +479,6 @@ IndigoObject * IndigoBondsIter::next ()
    return bond.release();
 }
 
-
 CEXPORT int indigoLoadMolecule (int source)
 {
    INDIGO_BEGIN
@@ -498,6 +497,7 @@ CEXPORT int indigoLoadMolecule (int source)
       Molecule &mol = molptr->mol;
 
       loader.loadMolecule(mol);
+      molptr->properties.copy(loader.properties);
 
       return self.addObject(molptr.release());
    }
@@ -519,6 +519,8 @@ CEXPORT int indigoLoadQueryMolecule (int source)
       QueryMolecule &qmol = molptr->qmol;
 
       loader.loadQueryMolecule(qmol);
+      molptr->properties.copy(loader.properties);
+
       return self.addObject(molptr.release());
    }
    INDIGO_END(-1);
@@ -954,69 +956,8 @@ CEXPORT const char * indigoSymbol (int atom)
    {
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
-      if (ia.mol.isPseudoAtom(ia.idx))
-         return ia.mol.getPseudoAtom(ia.idx);
-      else if (ia.mol.isRSite(ia.idx))
-      {
-         QS_DEF(Array<int>, rgroups);
-         int i;
-         ia.mol.getAllowedRGroups(ia.idx, rgroups);
-
-         if (rgroups.size() == 0)
-            return "R";
-
-         ArrayOutput output(self.tmp_string);
-         for (i = 0; i < rgroups.size(); i++)
-         {
-            if (i > 0)
-               output.writeChar(',');
-            output.printf("R%d", rgroups[i]);
-         }
-         output.writeChar(0);
-         return self.tmp_string.ptr();
-      }
-      else 
-      {
-         int number = ia.mol.getAtomNumber(ia.idx);
-         QS_DEF(Array<int>, list);
-
-         if (number != -1)
-            return Element::toString(number);
-
-         int query_atom_type;
-
-         if (ia.mol.isQueryMolecule() &&
-               (query_atom_type = QueryMolecule::parseQueryAtom(ia.mol.asQueryMolecule(), ia.idx, list)) != -1)
-         {
-            if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
-               return "A";
-            if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
-               return "Q";
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
-               return "X";
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
-                     query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
-            {
-               int k;
-               ArrayOutput output(self.tmp_string);
-
-               if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
-                  output.writeString("NOT");
-
-               output.writeChar('[');
-               for (k = 0; k < list.size(); k++)
-               {
-                  if (k > 0)
-                     output.writeChar(',');
-                  output.writeString(Element::toString(list[k]));
-               }
-               output.writeChar(']');
-               output.writeChar(0);
-               return self.tmp_string.ptr();
-            }
-         }
-      }
-      return "*";
+      ia.mol.getAtomSymbol(ia.idx, self.tmp_string);
+      return self.tmp_string.ptr();
    }
    INDIGO_END(0);
 }
@@ -1688,7 +1629,7 @@ CEXPORT const int * indigoSymmetryClasses (int molecule, int *count_out)
 
       QS_DEF(Molecule, m2);
       m2.clone_KeepIndices(mol);
-      m2.aromatize();
+      m2.aromatize(self.arom_options);
 
       QS_DEF(Array<int>, ignored);
       ignored.clear_resize(m2.vertexEnd());
@@ -1834,6 +1775,21 @@ CEXPORT int indigoRemoveAtoms (int molecule, int nvertices, int *vertices)
       indices.copy(vertices, nvertices);
 
       mol.removeAtoms(indices);
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoRemoveBonds (int molecule, int nbonds, int *bonds)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      QS_DEF(Array<int>, indices);
+
+      indices.copy(bonds, nbonds);
+
+      mol.removeBonds(indices);
       return 1;
    }
    INDIGO_END(-1)
@@ -2221,6 +2177,11 @@ void IndigoSuperatom::remove ()
    mol.superatoms.remove(idx);
 }
 
+const char * IndigoSuperatom::getName ()
+{
+   return mol.superatoms[idx].subscript.ptr();
+}
+
 IndigoSuperatom & IndigoSuperatom::cast (IndigoObject &obj)
 {
    if (obj.type == IndigoObject::SUPERATOM)
@@ -2521,6 +2482,36 @@ CEXPORT int indigoGetDataSGroup (int molecule, int index)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoGetGenericSGroup (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoGenericSGroup(mol, index));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoGetMultipleGroup (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoMultipleGroup(mol, index));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoGetRepeatingUnit (int molecule, int index)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoRepeatingUnit(mol, index));
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT const char * indigoDescription (int data_sgroup)
 {
    INDIGO_BEGIN
@@ -2529,6 +2520,18 @@ CEXPORT const char * indigoDescription (int data_sgroup)
       if (dsg.get().description.size() < 1)
          return "";
       return dsg.get().description.ptr();
+   }
+   INDIGO_END(0)
+}
+
+CEXPORT const char * indigoData (int data_sgroup)
+{
+   INDIGO_BEGIN
+   {
+      IndigoDataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(data_sgroup));
+      if (dsg.get().data.size() < 1)
+         return "";
+      return dsg.get().data.ptr();
    }
    INDIGO_END(0)
 }
@@ -3254,15 +3257,14 @@ IndigoSubtreesIter::~IndigoSubtreesIter ()
 {
 }
 
-void IndigoSubtreesIter::_handleTree (Graph &graph, const int *v_mapping, const int *e_mapping, void *context)
+void IndigoSubtreesIter::_handleTree (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
 {
    IndigoSubtreesIter *self = (IndigoSubtreesIter *)context;
 
-   Array<int> &vertices = self->_vertices.push();
-   Array<int> &edges = self->_edges.push();
-
-   Graph::filterVertices(graph, v_mapping, FILTER_NEQ, -1, vertices);
-   Graph::filterEdges(graph, e_mapping, FILTER_NEQ, -1, edges);
+   Array<int> &self_vertices = self->_vertices.push();
+   Array<int> &self_edges = self->_edges.push();
+   self_vertices.copy(vertices);
+   self_edges.copy(edges);
 }
 
 bool IndigoSubtreesIter::hasNext ()

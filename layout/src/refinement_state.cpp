@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,10 +16,15 @@
 
 using namespace indigo;
 
+IMPL_ERROR(RefinementState, "refinement");
+
+CP_DEF(RefinementState);
+
 RefinementState::RefinementState (MoleculeLayoutGraph &graph) :
 dist(0.f),
 energy(0),
 height(0.f),
+CP_INIT,
 TL_CP_GET(layout),
 _graph(graph)
 {

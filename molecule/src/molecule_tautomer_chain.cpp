@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -318,6 +318,8 @@ void TautomerChainFinder::restore ()
    if (_bond_idx2 >= 0)
       _context.dearomatizationMatcher->unfixBond(_bond_idx2);
 }
+
+IMPL_ERROR(TautomerChainChecker, "tautomer chain checker");
 
 TautomerChainChecker::TautomerChainChecker (TautomerSearchContext &context,
                                             const Array<int> &core1, const Array<int> &core2,
@@ -1220,13 +1222,13 @@ bool TautomerChainChecker::_matchAromatizedQuery()
    QS_DEF(Array<int>, mapping);
 
    aromatized_query.clone(((BaseMolecule &)_context.g1).asQueryMolecule(), 0, &mapping);
-   QueryMoleculeAromatizer::aromatizeBonds(aromatized_query);
+   QueryMoleculeAromatizer::aromatizeBonds(aromatized_query, _context.arom_options);
 
    EmbeddingEnumerator ee(_context.g2);
 
    ee.setSubgraph(aromatized_query);
 
-   AromaticityMatcher am(aromatized_query, (Molecule &)_context.g2);
+   AromaticityMatcher am(aromatized_query, (Molecule &)_context.g2, _context.arom_options);
 
    ee.userdata = &am;
 

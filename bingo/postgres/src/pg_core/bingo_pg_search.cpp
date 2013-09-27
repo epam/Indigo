@@ -27,6 +27,8 @@ extern "C" {
 
 using namespace indigo;
 
+IMPL_ERROR(BingoPgSearch, "bingo search engine");
+
 BingoPgSearch::BingoPgSearch(PG_OBJECT rel):
 _initSearch(true),
 _indexScanDesc(0),
@@ -66,6 +68,18 @@ bool BingoPgSearch::next(PG_OBJECT scan_desc_ptr, PG_OBJECT result_ptr) {
 
 }
 
+void BingoPgSearch::prepareRescan(PG_OBJECT scan_desc_ptr) {
+   _indexScanDesc = scan_desc_ptr;
+   if(_initSearch) {
+      _initScanSearch();
+   } else {
+      /*
+       * Prepare query
+       */
+      _fpEngine->prepareQuerySearch(_bufferIndex, _indexScanDesc);
+   }
+}
+
 void BingoPgSearch::_initScanSearch() {
    _initSearch = false;
 
@@ -84,6 +98,7 @@ void BingoPgSearch::_initScanSearch() {
     * Set up search engine
     */
    _bufferIndex.readMetaInfo();
+   _bufferIndex.setStrategy(BingoPgIndex::READING_STRATEGY);
    int index_type = _bufferIndex.getIndexType();
 
    if (index_type == BINGO_INDEX_TYPE_MOLECULE)
@@ -97,7 +112,7 @@ void BingoPgSearch::_initScanSearch() {
     * Process query structure with parameters
     */
    _fpEngine->prepareQuerySearch(_bufferIndex, _indexScanDesc);
-
+   _fpEngine->loadDictionary(_bufferIndex);
 }
 
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -45,7 +45,7 @@ public:
 
    int maxIterations;
 
-   DEF_ERROR("Scaffold detection");
+   DECL_ERROR;
 
 public:
    //class for keeping graphs
@@ -87,7 +87,7 @@ public:
       void *userdata;
 
 
-      DEF_ERROR("Graph basket");
+      DECL_ERROR;
 
    protected:
 

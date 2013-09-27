@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -20,6 +20,8 @@
 #include "oracle/ringo_fetch_context.h"
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/rowid_loader.h"
+
+IMPL_ERROR(RingoFastIndex, "ringo fast fetch");
 
 RingoFastIndex::RingoFastIndex (RingoFetchContext &context) :
 _context(context)

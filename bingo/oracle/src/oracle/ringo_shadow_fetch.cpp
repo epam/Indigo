@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,6 +17,8 @@
 #include "core/ringo_matchers.h"
 
 #include "oracle/ringo_fetch_context.h"
+
+IMPL_ERROR(RingoShadowFetch, "ringo shadow fetch");
 
 RingoShadowFetch::RingoShadowFetch (RingoFetchContext &context) :
 _context(context)

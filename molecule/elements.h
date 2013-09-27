@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -150,7 +150,7 @@ enum
 class DLLEXPORT Element
 {
 public:
-   DEF_ERROR("element");
+   DECL_ERROR;
 
    static const char * toString (int element);
    static int fromString (const char *name);
@@ -182,7 +182,7 @@ public:
    static int   getDefaultIsotope       (int element);
    static float getRelativeIsotopicMass (int element, int isotope);
    static float getStandardAtomicWeight (int element);
-   static float getIsotopicComposition  (int element, int isotope);
+   static bool  getIsotopicComposition  (int element, int isotope, float &res);
    static void  getMinMaxIsotopeIndex   (int element, int &min, int &max);
 
    static bool  canBeAromatic (int element);

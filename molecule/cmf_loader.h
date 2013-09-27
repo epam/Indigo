@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -54,10 +54,19 @@ public:
    bool skip_stereocenters;
    bool skip_valence;
 
+   int version; // By default the latest version 2 is used
+
    Array<int> *atom_flags;
    Array<int> *bond_flags;
 
-   DEF_ERROR("CMF loader");
+   bool has_mapping;
+   CP_DECL;
+   TL_CP_DECL(Array<int>, atom_mapping_to_restore);
+   TL_CP_DECL(Array<int>, inv_atom_mapping_to_restore);
+   TL_CP_DECL(Array<int>, bond_mapping_to_restore);
+   TL_CP_DECL(Array<int>, inv_bond_mapping_to_restore);
+
+   DECL_ERROR;
 protected:
 
    struct _AtomDesc

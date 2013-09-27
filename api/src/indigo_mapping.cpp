@@ -195,7 +195,7 @@ CEXPORT int indigoHighlightedTarget (int item)
          AutoPtr<IndigoMolecule> mol(new IndigoMolecule());
 
          QS_DEF(Array<int>, mapping);
-         mol->mol.clone(im.to, &mapping, 0);
+         mol->mol.clone(im.to, 0, &mapping);
          _indigoHighlightSubstructure(im.from, mol->mol, im.mapping, mapping);
          return self.addObject(mol.release());
       }
@@ -207,7 +207,7 @@ CEXPORT int indigoHighlightedTarget (int item)
          QS_DEF(Array<int>, mol_mapping);
          int i;
 
-         rxn->rxn.clone(im.to, &mol_mapping, &mappings, 0);
+         rxn->rxn.clone(im.to, &mol_mapping, 0, &mappings);
 
          for (i = im.from.begin(); i != im.from.end(); i = im.from.next(i))
          {

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -34,14 +34,17 @@ using namespace indigo;
 // Atoms can't have any other double/triple bonds
 // Let's say thet C can emit bond and G with H can accept bond
 
+CP_DEF(TautomerSuperStructure);
 
 TautomerSuperStructure::TautomerSuperStructure (Molecule &mol) :
+CP_INIT,
 TL_CP_GET(_atomsEmitBond),
 TL_CP_GET(_atomsAcceptBond),
 TL_CP_GET(_isBondAttachedArray),
 TL_CP_GET(_mapping),
 TL_CP_GET(_inv_mapping),
-TL_CP_GET(_edge_mapping)
+TL_CP_GET(_edge_mapping),
+TL_CP_GET(_total_h)
 {
    int i;
 
@@ -200,14 +203,24 @@ bool TautomerSuperStructure::_isEmittingHeteroatom (int idx)
    return atomNumberBelongs(idx, list, NELEM(list));
 }
 
+int TautomerSuperStructure::getAtomTotalH (int idx)
+{
+   return _total_h[idx];
+}
 
 void TautomerSuperStructure::_collectAtomProperties (void)
 {
    _atomsAcceptBond.clear();
    _atomsEmitBond.clear();
+   _total_h.clear_resize(vertexEnd());
+
    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
    {
-      int  double_bonds_count, arom_bonds_count;
+      _total_h[i] = 0;
+      if (!isPseudoAtom(i) && !isRSite(i))
+         _total_h[i] = Molecule::getAtomTotalH(i);
+
+      int double_bonds_count, arom_bonds_count;
 
       _getDoubleBondsCount(i, double_bonds_count, arom_bonds_count);
 

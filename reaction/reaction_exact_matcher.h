@@ -39,7 +39,7 @@ public:
 
    dword flags;
 
-   DEF_ERROR("reaction exact matcher");
+   DECL_ERROR;
 
 protected:
    Reaction &_query;

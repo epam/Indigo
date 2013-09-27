@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -38,6 +38,7 @@ public:
    const byte* getCode (void);
 
 private:
+   CP_DECL;
    TL_CP_DECL(Array<int>,  _indices);
    TL_CP_DECL(Array<byte>, _code);
    bool _needFullCode;

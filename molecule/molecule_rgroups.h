@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -54,7 +54,7 @@ public:
    MoleculeRGroups ();
    ~MoleculeRGroups ();
 
-   DEF_ERROR("molecule rgroups");
+   DECL_ERROR;
 
    void copyRGroupsFromMolecule (MoleculeRGroups &other);
 

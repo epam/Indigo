@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -21,6 +21,8 @@
 #include "render_item_aux.h"
 
 using namespace indigo;
+
+IMPL_ERROR(RenderItemAuxiliary, "RenderItemAuxiliary");
 
 RenderItemAuxiliary::RenderItemAuxiliary (RenderItemFactory& factory) : 
    RenderItemBase(factory),
@@ -65,7 +67,7 @@ void RenderItemAuxiliary::_drawRGroupLabel ()
    tiR.bbp.set(0,0);
    _rc.drawTextItemText(tiR);
 
-   float ypos = tiR.bbp.y + tiR.bbsz.y + _settings.bondLineWidth;
+   float ypos = tiR.bbp.y + tiR.bbsz.y + _settings.unit;
 
    if (rg.occurrence.size() > 0)
    {
@@ -95,7 +97,7 @@ void RenderItemAuxiliary::_drawRGroupLabel ()
       tiOccurrence.bbp.set(0, ypos);
       _rc.drawTextItemText(tiOccurrence);
 
-      ypos += tiOccurrence.bbsz.y + _settings.bondLineWidth;
+      ypos += tiOccurrence.bbsz.y + _settings.unit;
    }
 
    if (rg.rest_h > 0)

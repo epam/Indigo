@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -31,7 +31,10 @@
 
 using namespace indigo;
 
+CP_DEF(MoleculeSubstructureMatcher::MarkushContext);
+
 MoleculeSubstructureMatcher::MarkushContext::MarkushContext (QueryMolecule &query_, BaseMolecule &target_) :
+CP_INIT,
 TL_CP_GET(query),
 TL_CP_GET(query_marking),
 TL_CP_GET(sites),
@@ -53,8 +56,13 @@ depth(0)
       query_marking[i] = -1;
 }
 
+IMPL_ERROR(MoleculeSubstructureMatcher, "molecule substructure matcher");
+
+CP_DEF(MoleculeSubstructureMatcher);
+
 MoleculeSubstructureMatcher::MoleculeSubstructureMatcher (BaseMolecule &target) :
 _target(target),
+CP_INIT,
 TL_CP_GET(_3d_constrained_atoms),
 TL_CP_GET(_unfolded_target_h),
 TL_CP_GET(_used_target_h)
@@ -314,7 +322,7 @@ bool MoleculeSubstructureMatcher::find ()
    _used_target_h.zerofill();
 
    if (use_aromaticity_matcher && AromaticityMatcher::isNecessary(*_query))
-      _am.create(*_query, _target);
+      _am.create(*_query, _target, arom_options);
    else
       _am.free();
 
@@ -420,7 +428,10 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       {
          if (target.isPseudoAtom(super_idx) || target.isRSite(super_idx))
             return false;
-         return query->valueWithinRange(target.getAtomRadical(super_idx));
+         int radical = target.getAtomRadical_NoThrow(super_idx, -1);
+         if (radical == -1)
+            return false;
+         return query->valueWithinRange(radical);
       }
       case QueryMolecule::ATOM_VALENCE:
       {
@@ -428,7 +439,10 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
          {
             if (target.isPseudoAtom(super_idx) || target.isRSite(super_idx))
                return false;
-            return query->valueWithinRange(target.getAtomValence(super_idx));
+            int valence = target.getAtomValence_NoThrow(super_idx, -1);
+            if (valence == -1)
+               return false;
+            return query->valueWithinRange(valence);
          }
          return (flags & MATCH_DISABLED_AS_TRUE) != 0;
       }
@@ -442,7 +456,10 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       case QueryMolecule::ATOM_TOTAL_BOND_ORDER:
       {
          // TODO: target.isPseudoAtom(super_idx) || target.isRSite(super_idx)
-         return query->valueWithinRange(target.asMolecule().getAtomConnectivity(super_idx));
+         int conn = target.asMolecule().getAtomConnectivity_NoThrow(super_idx, -1);
+         if (conn == -1)
+            return false;
+         return query->valueWithinRange(conn);
       }
       case QueryMolecule::ATOM_TOTAL_H:
       {
@@ -451,6 +468,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
          return query->valueWithinRange(target.getAtomTotalH(super_idx));
       }
       case QueryMolecule::ATOM_SUBSTITUENTS:
+      case QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN:
          return query->valueWithinRange(target.getAtomSubstCount(super_idx));
       case QueryMolecule::ATOM_SSSR_RINGS:
          return query->valueWithinRange(target.vertexCountSSSR(super_idx));

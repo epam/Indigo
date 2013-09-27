@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,6 +17,8 @@
 #include "graph/graph.h"
 
 using namespace indigo;
+
+IMPL_ERROR(Filter, "filter");
 
 Filter::Filter () :
 _filter(0),

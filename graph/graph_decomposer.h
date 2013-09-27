@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -46,11 +46,12 @@ public:
    int getComponentVerticesCount (int component) const;
    int getComponentEdgesCount    (int component) const;
 
-   DEF_ERROR("Graph decomposer");
+   DECL_ERROR;
 protected:
    const Graph &_graph;
    int n_comp;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _component_ids);
    TL_CP_DECL(Array<int>, _component_vertices_count);
    TL_CP_DECL(Array<int>, _component_edges_count);

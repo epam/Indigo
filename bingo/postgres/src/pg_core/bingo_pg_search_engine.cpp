@@ -57,6 +57,8 @@ BingoPgSearchEngine::BingoPgSearchEngine():
 _fetchFound(false),
 _currentSection(-1),
 _currentIdx(-1),
+_blockBegin(0),
+_blockEnd(0),
 _bufferIndexPtr(0),
 _sectionBitset(BINGO_MOLS_PER_SECTION){
    _bingoSession = bingoAllocateSessionID();
@@ -92,12 +94,15 @@ bool BingoPgSearchEngine::matchTarget(ItemPointerData& item_data) {
 
 void BingoPgSearchEngine::prepareQuerySearch(BingoPgIndex& bingo_idx, PG_OBJECT) {
    _bufferIndexPtr = &bingo_idx;
-   _currentSection = _bufferIndexPtr->readBegin();
+   _currentSection = -1;
    _currentIdx = -1;
    _fetchFound = false;
+   _blockBegin=0;
+   _blockEnd=bingo_idx.getSectionNumber();
 }
 
 bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr) {
+   profTimerStart(t0, "bingo_pg.search_cursor");
    ItemPointerData cmf_item;
    /*
     * Iterate through the cursor
@@ -122,6 +127,7 @@ bool BingoPgSearchEngine::_searchNextCursor(PG_OBJECT result_ptr) {
       return true;
    }
 
+   _searchCursor.free();
    return false;
 }
 
@@ -139,14 +145,17 @@ bool BingoPgSearchEngine::_searchNextSub(PG_OBJECT result_ptr) {
           return true;
        } else {
           _fetchFound = false;
-          _currentSection = bingo_index.readNext(_currentSection);
+          ++_currentSection;
        }
    }
    profTimerStart(t1, "bingo_pg.search_fp");
+   
+   if(_currentSection < 0)
+      _currentSection = _blockBegin;
    /*
-    * Iterate through the sections
+    * Iterate through the sections bingo_index.readEnd()
     */
-   for (; _currentSection < bingo_index.readEnd(); _currentSection = bingo_index.readNext(_currentSection)) {
+   for (; _currentSection < _blockEnd; ++_currentSection) {
       /*
        * Get section existing structures
        */
@@ -219,4 +228,94 @@ bool BingoPgSearchEngine::_fetchForNext() {
    }
 
    return false;
+}
+
+void BingoPgSearchEngine::_getBlockParameters(Array<char>& params) {
+   QS_DEF(Array<char>, block_params);
+   QS_DEF(Array<char>, tmp);
+   block_params.clear();
+
+   for(int i = 0; i < params.size(); ++i) {
+      if(params[i] == ';') {
+         block_params.copy(params.ptr(), i);
+         block_params.push(0);
+         tmp.copy(params);
+         params.clear();
+         for(int j = i+1; j < params.size(); ++j) {
+            params.push(tmp[j]);
+         }
+         params.push(0);
+      }
+   }
+   bool verify_split = false;
+
+   if(block_params.size() == 0) {
+      block_params.copy(params);
+      verify_split = true;
+   }
+
+   BufferScanner scanner(block_params);
+   QS_DEF(Array<char>, word);
+
+   int block_id=0,block_count=0;
+
+   while(!scanner.isEOF()) {
+      scanner.skipSpace();
+      scanner.readWord(word, 0);
+
+      if (strcasecmp(word.ptr(), "B_ID") == 0) {
+         scanner.skipSpace();
+         block_id = scanner.readInt();
+         if(block_id < 1)
+            throw BingoPgError("B_ID should be a positive value: %d", block_id);
+      } else if(strcasecmp(word.ptr(), "B_COUNT") == 0) {
+         scanner.skipSpace();
+         block_count = scanner.readInt();
+         if(block_count < 1)
+            throw BingoPgError("B_COUNT should be a positive value: %d", block_count);
+      } else if(strcasecmp(word.ptr(), "") == 0) {
+         break;
+      } else {
+         if(verify_split) 
+            return;
+         else
+            throw BingoPgError("unknown block type: %s", word.ptr());
+      }
+   }
+
+   if(verify_split) {
+      params.clear();
+      params.push(0);
+   }
+   /*
+    * Return if block id was not specified
+    */
+   if(block_id==0) 
+      return;
+
+   int max_blocks = _bufferIndexPtr->getSectionNumber();
+
+   if(block_count > 0) {
+      if(block_count > max_blocks)
+         throw BingoPgError("B_COUNT %d can not be greater then maximum block count %d", block_count, max_blocks);
+      if(block_id>block_count)
+         throw BingoPgError("B_ID %d can not be greater then B_COUNT %d", block_id, block_count);
+
+      double b = block_id-1;
+      b =  (double)(b / block_count) * max_blocks;
+      double e = block_id;
+      e = (double)(e / block_count) * max_blocks;
+      _blockBegin = (int)b;
+      _blockEnd = (int)e;
+
+   } else {
+      if(block_id>max_blocks)
+         throw BingoPgError("B_ID %d can not be greater then maximum block count %d", block_id, max_blocks);
+
+      _blockBegin = block_id - 1;
+      _blockEnd = block_id;
+   }
+
+
+
 }

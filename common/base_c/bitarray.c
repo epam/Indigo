@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -123,6 +123,19 @@ int bitGetOnesCountByte (byte value)
    return onesCount[value];
 }
 
+int bitGetOnesCountDword (dword v)
+{
+   // http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
+   v = v - ((v >> 1) & 0x55555555);                       // reuse input as temporary
+   v = (v & 0x33333333) + ((v >> 2) & 0x33333333);        // temp
+   return ((v + (v >> 4) & 0xF0F0F0F) * 0x1010101) >> 24; // count
+}
+
+int bitGetOnesCountQword (qword value)
+{
+   return bitGetOnesCountDword((dword)value) + bitGetOnesCountDword((dword)(value >> 32));
+}
+
 int bitGetOnesCount (const byte *data, int size)
 {
    int count = 0;
@@ -216,7 +229,7 @@ int bitIdecticalBits (const byte *bit1, const byte *bit2, int n_bytes)
    while (qwords_count-- > 0)
    {
       qword id = ~(*bit1_ptr ^ *bit2_ptr);
-      count += bitGetOnesCount((byte*)&id, sizeof(qword));
+      count += bitGetOnesCountQword(id);
 
       bit1_ptr++;
       bit2_ptr++;
@@ -226,7 +239,7 @@ int bitIdecticalBits (const byte *bit1, const byte *bit2, int n_bytes)
    {
       qword mask = ~(qword)0 >> (64 - 8 * bytes_left);
       qword id = (~(*bit1_ptr ^ *bit2_ptr)) & mask;
-      count += bitGetOnesCount((byte*)&id, sizeof(qword));
+      count += bitGetOnesCountQword(id);
    }
    return count;
 }
@@ -242,7 +255,7 @@ int bitCommonOnes (const byte *bit1, const byte *bit2, int n_bytes)
    while (qwords_count-- > 0)
    {
       qword id = *bit1_ptr & *bit2_ptr;
-      count += bitGetOnesCount((byte*)&id, sizeof(qword));
+      count += bitGetOnesCountQword(id);
 
       bit1_ptr++;
       bit2_ptr++;
@@ -252,7 +265,7 @@ int bitCommonOnes (const byte *bit1, const byte *bit2, int n_bytes)
    {
       qword mask = ~(qword)0 >> (64 - 8 * bytes_left);
       qword id = *bit1_ptr & *bit2_ptr & mask;
-      count += bitGetOnesCount((byte*)&id, sizeof(qword));
+      count += bitGetOnesCountQword(id);
    }
    return count;
 }
@@ -268,7 +281,7 @@ int bitUniqueOnes (const byte *bit1, const byte *bit2, int n_bytes)
    while (qwords_count-- > 0)
    {
       qword id = *bit1_ptr & ~*bit2_ptr;
-      count += bitGetOnesCount((byte*)&id, sizeof(qword));
+      count += bitGetOnesCountQword(id);
 
       bit1_ptr++;
       bit2_ptr++;
@@ -278,7 +291,7 @@ int bitUniqueOnes (const byte *bit1, const byte *bit2, int n_bytes)
    {
       qword mask = ~(qword)0 >> (64 - 8 * bytes_left);
       qword id = *bit1_ptr & ~*bit2_ptr & mask;
-      count += bitGetOnesCount((byte*)&id, sizeof(qword));
+      count += bitGetOnesCountQword(id);
    }
    return count;
 }
@@ -304,7 +317,7 @@ int bitDifferentOnes (const byte *bit1, const byte *bit2, int n_bytes)
    {
       qword mask = ~(qword)0 >> (64 - 8 * bytes_left);
       qword id = (*bit1_ptr ^ *bit2_ptr) & mask;
-      count += bitGetOnesCount((byte*)&id, sizeof(qword));
+      count += bitGetOnesCountQword(id);
    }
    return count;
 }
@@ -320,7 +333,7 @@ int bitUnionOnes (const byte *bit1, const byte *bit2, int n_bytes)
    while (qwords_count-- > 0)
    {
       qword id = *bit1_ptr | *bit2_ptr;
-      count += bitGetOnesCount((byte*)&id, sizeof(qword));
+      count += bitGetOnesCountQword(id);
 
       bit1_ptr++;
       bit2_ptr++;
@@ -330,7 +343,7 @@ int bitUnionOnes (const byte *bit1, const byte *bit2, int n_bytes)
    {
       qword mask = ~(qword)0 >> (64 - 8 * bytes_left);
       qword id = (*bit1_ptr | *bit2_ptr) & mask;
-      count += bitGetOnesCount((byte*)&id, sizeof(qword));
+      count += bitGetOnesCountQword(id);
    }
    return count;
 }

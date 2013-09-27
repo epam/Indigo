@@ -28,21 +28,27 @@ if not os.path.exists(dist_dir):
 os.chdir(dist_dir)
 if os.path.exists("java"):
     shutil.rmtree("java")
-    
+os.mkdir('java')
+
 os.chdir(os.path.join(api_dir, "java"))
-subprocess.check_call(["ant", "clean"], shell=True)
-subprocess.check_call(["ant", "jar"], shell=True)
+subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
+subprocess.check_call("mvn clean package install -Dmaven.test.skip=true", shell=True)
+shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "renderer", "java"))
-subprocess.check_call(["ant", "clean"], shell=True)
-subprocess.check_call(["ant", "jar"], shell=True)
+subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
+subprocess.check_call("mvn clean package -Dmaven.test.skip=true", shell=True)
+shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-renderer-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-renderer.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "inchi", "java"))
-subprocess.check_call(["ant", "clean"], shell=True)
-subprocess.check_call(["ant", "jar"], shell=True)
+subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
+subprocess.check_call("mvn clean package -Dmaven.test.skip=true", shell=True)
+shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-inchi-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-inchi.jar'))
 
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "java")
+doc_dir = join(api_dir, '..', 'doc')
+shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join('java', 'doc'))
 
 shutil.copy(os.path.join(root, "common", "jna", "jna.jar"), "java")
 

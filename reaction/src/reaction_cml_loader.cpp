@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(ReactionCmlLoader, "reaction CML loader");
+
 ReactionCmlLoader::ReactionCmlLoader (Scanner &scanner) : _scanner(scanner)
 {
    ignore_stereochemistry_errors = false;

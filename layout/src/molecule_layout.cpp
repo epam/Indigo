@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,6 +19,8 @@
 #include "layout/molecule_layout_macrocycles.h"
 
 using namespace indigo;
+
+IMPL_ERROR(MoleculeLayout, "molecule_layout");
 
 MoleculeLayout::MoleculeLayout (BaseMolecule &molecule) :
 _molecule(molecule)
@@ -319,23 +321,9 @@ void MoleculeLayout::_updateDataSGroups ()
 void MoleculeLayout::_make ()
 {
    _layout_graph.max_iterations = max_iterations;
-   if (filter != 0)
-   {
-      QS_DEF(Array<int>, fixed_vertices);
 
-      fixed_vertices.clear_resize(_layout_graph.vertexEnd());
-      fixed_vertices.zerofill();
-
-      for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
-         if (!filter->valid(_layout_graph.getVertexExtIdx(i)))
-            fixed_vertices[i] = 1;
-
-      Filter new_filter(fixed_vertices.ptr(), Filter::NEQ, 1);
-
-      _layout_graph.layout(*_bm, bond_length, &new_filter, respect_existing_layout);
-   } else
-      _layout_graph.layout(*_bm, bond_length, 0, respect_existing_layout);
-
+   // 0. Find 2D coordinates via proxy _layout_graph object
+   _makeLayout();
 
    // 1. Update data-sgroup label position before changing molecule atoms positions
    _updateDataSGroups();
@@ -355,26 +343,9 @@ void MoleculeLayout::_make ()
       _molCollapsed.reset(NULL);
    }
 
-   QS_DEF(Array<int>, crossBonds);
-   QS_DEF(Array<bool>, crossBondOut);
-   for (int i = _molecule.multiple_groups.begin(); i < _molecule.multiple_groups.end(); i = _molecule.multiple_groups.next(i)) {
-      BaseMolecule::MultipleGroup& sg = _molecule.multiple_groups[i];
-      _placeSGroupBracketsHorizontal (sg.brackets, _molecule, sg.atoms, bond_length);
-   }
-   for (int i = _molecule.repeating_units.begin(); i < _molecule.repeating_units.end(); i = _molecule.repeating_units.next(i)) {
-      BaseMolecule::RepeatingUnit& sg = _molecule.repeating_units[i];
+   _updateMultipleGroups();
 
-      crossBonds.clear();
-      crossBondOut.clear();
-      _collectCrossBonds(crossBonds, crossBondOut, _molecule, sg.atoms);
-      if (crossBonds.size() > 1) {
-         _placeSGroupBracketsCrossBonds (sg.brackets, _molecule, sg.atoms, crossBonds, crossBondOut, bond_length);
-      } else if (crossBonds.size() == 1) {
-         _placeSGroupBracketsCrossBondSingle (sg.brackets, _molecule, sg.atoms, crossBonds[0], crossBondOut[0], bond_length);
-      } else {
-         _placeSGroupBracketsHorizontal (sg.brackets, _molecule, sg.atoms, bond_length);
-      }
-   }
+   _updateRepeatingUnits();
 
    _molecule.have_xyz = true;
 }
@@ -417,6 +388,7 @@ void MoleculeLayout::make ()
             BaseMolecule& mol = *frags[j];
             MoleculeLayout layout(mol);
             layout.max_iterations = max_iterations;
+            layout.bond_length = bond_length;
             layout.make();
             _pushMol(line, mol); // add molecule to metalayout AFTER its own layout is determined
          }
@@ -433,6 +405,11 @@ void MoleculeLayout::make ()
    }
 }
 
+void MoleculeLayout::setCancellationHandler (CancellationHandler* cancellation)
+{
+   _layout_graph.cancellation = cancellation;
+}
+
 BaseMolecule& MoleculeLayout::cb_getMol (int id, void* context)
 {
    return ((MoleculeLayout*)context)->_getMol(id);
@@ -444,3 +421,51 @@ void MoleculeLayout::cb_process (Metalayout::LayoutItem& item, const Vec2f& pos,
    layout->_ml.adjustMol(layout->_getMol(item.id), item.min, pos);   
 }
 
+void MoleculeLayout::_makeLayout ()
+{
+   if (filter != 0)
+   {
+      QS_DEF(Array<int>, fixed_vertices);
+
+      fixed_vertices.clear_resize(_layout_graph.vertexEnd());
+      fixed_vertices.zerofill();
+
+      for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
+         if (!filter->valid(_layout_graph.getVertexExtIdx(i)))
+            fixed_vertices[i] = 1;
+
+      Filter new_filter(fixed_vertices.ptr(), Filter::NEQ, 1);
+
+      _layout_graph.layout(*_bm, bond_length, &new_filter, respect_existing_layout);
+   }
+   else
+      _layout_graph.layout(*_bm, bond_length, 0, respect_existing_layout);
+}
+
+void MoleculeLayout::_updateRepeatingUnits ()
+{
+   QS_DEF(Array<int>, crossBonds);
+   QS_DEF(Array<bool>, crossBondOut);
+   for (int i = _molecule.repeating_units.begin(); i < _molecule.repeating_units.end(); i = _molecule.repeating_units.next(i)) {
+      BaseMolecule::RepeatingUnit& sg = _molecule.repeating_units[i];
+
+      crossBonds.clear();
+      crossBondOut.clear();
+      _collectCrossBonds(crossBonds, crossBondOut, _molecule, sg.atoms);
+      if (crossBonds.size() > 1) {
+         _placeSGroupBracketsCrossBonds (sg.brackets, _molecule, sg.atoms, crossBonds, crossBondOut, bond_length);
+      } else if (crossBonds.size() == 1) {
+         _placeSGroupBracketsCrossBondSingle (sg.brackets, _molecule, sg.atoms, crossBonds[0], crossBondOut[0], bond_length);
+      } else {
+         _placeSGroupBracketsHorizontal (sg.brackets, _molecule, sg.atoms, bond_length);
+      }
+   }
+}
+
+void MoleculeLayout::_updateMultipleGroups ()
+{
+   for (int i = _molecule.multiple_groups.begin(); i < _molecule.multiple_groups.end(); i = _molecule.multiple_groups.next(i)) {
+      BaseMolecule::MultipleGroup& sg = _molecule.multiple_groups[i];
+      _placeSGroupBracketsHorizontal (sg.brackets, _molecule, sg.atoms, bond_length);
+   }
+}

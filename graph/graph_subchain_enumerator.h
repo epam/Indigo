@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -47,6 +47,7 @@ protected:
    int _min_edges;
    int _mode;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _vertex_states);
    TL_CP_DECL(Array<int>, _chain_vertices);
    TL_CP_DECL(Array<int>, _chain_edges);

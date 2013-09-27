@@ -23,7 +23,7 @@ public:
    void serialize(indigo::Array<char>& config_data);
    void deserialize(void* data, int data_len);
    
-   DEF_ERROR("bingo postgres config");
+   DECL_ERROR;
 
 private:
    BingoPgConfig(const BingoPgConfig&); //no implicit copy

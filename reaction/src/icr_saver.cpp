@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,18 +19,27 @@
 
 using namespace indigo;
 
-const char* IcrSaver::VERSION = "IR2";
+const char* IcrSaver::VERSION2 = "IR2";
+const char* IcrSaver::VERSION1 = "ICR";
+
+IMPL_ERROR(IcrSaver, "ICR saver");
+
+bool IcrSaver::checkVersion (const char *prefix)
+{
+   return strncmp(prefix, VERSION1, 3) == 0 || strncmp(prefix, VERSION2, 3) == 0;
+}
 
 IcrSaver::IcrSaver (Output &output) : _output(output)
 {
    save_xyz = false;
    save_bond_dirs = false;
    save_highlighting = false;
+   save_ordering = false;
 }
 
 void IcrSaver::saveReaction (Reaction &reaction)
 {
-   _output.writeString(VERSION);
+   _output.writeString(VERSION2);
 
    int features = 0;
 
@@ -49,5 +58,6 @@ void IcrSaver::saveReaction (Reaction &reaction)
 
    saver.save_bond_dirs = save_bond_dirs;
    saver.save_highlighting = save_highlighting;
+   saver.save_mapping = save_ordering;
    saver.saveReaction(reaction);
 }

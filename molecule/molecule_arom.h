@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -29,6 +29,18 @@ class Molecule;
 class QueryMolecule;
 class BaseMolecule;
 
+struct AromaticityOptions
+{
+   enum Method { BASIC, GENERIC };
+
+   Method method;
+   bool dearomatize_check;
+
+   bool unique_dearomatization;
+
+   AromaticityOptions (Method method = BASIC) : method(method), dearomatize_check(true), unique_dearomatization(false) {}
+};
+
 // Aromatization classes
 class DLLEXPORT AromatizerBase
 {
@@ -48,7 +60,7 @@ public:
 
    void setBondAromaticCount (int e_idx, int count);
 
-   DEF_ERROR("aromatizer");
+   DECL_ERROR;
 protected:
    // Functions for overloading
    virtual bool _checkVertex         (int v_idx);
@@ -70,6 +82,7 @@ protected:
 
    BaseMolecule &_basemol;
 
+   CP_DECL;
    TL_CP_DECL(Array<byte>,      _bonds_arom);
    TL_CP_DECL(Array<int>,       _bonds_arom_count);
    TL_CP_DECL(Array<CycleDef>,  _unsure_cycles);
@@ -89,12 +102,12 @@ class DLLEXPORT MoleculeAromatizer : public AromatizerBase
 {
 public:
    // Interface function for aromatization
-   static bool aromatizeBonds (Molecule &mol);
+   static bool aromatizeBonds (Molecule &mol, const AromaticityOptions &options);
 
-   MoleculeAromatizer (Molecule &molecule);
+   MoleculeAromatizer (Molecule &molecule, const AromaticityOptions &options);
    void precalculatePiLabels ();
 
-   static void findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds);
+   static void findAromaticAtoms (BaseMolecule &mol, Array<int> *atoms, Array<int> *bonds, const AromaticityOptions &options);
 
 protected:
    virtual bool _checkVertex      (int v_idx);
@@ -104,6 +117,9 @@ protected:
    int _getPiLabel (int v_idx);
    int _getPiLabelByConn (int v_idx, int conn);
 
+   AromaticityOptions _options;
+
+   CP_DECL;
    TL_CP_DECL(Array<int>, _pi_labels);
 };
 
@@ -111,11 +127,11 @@ class QueryMoleculeAromatizer : public AromatizerBase
 {
 public:
    // Interface function for query molecule aromatization
-   static bool aromatizeBonds (QueryMolecule &mol);
+   static bool aromatizeBonds (QueryMolecule &mol, const AromaticityOptions &options);
 
    enum { EXACT, FUZZY };
 
-   explicit QueryMoleculeAromatizer (QueryMolecule &molecule);
+   QueryMoleculeAromatizer (QueryMolecule &molecule, const AromaticityOptions &options);
 
    void setMode              (int mode);
    void precalculatePiLabels ();
@@ -136,20 +152,22 @@ protected:
    virtual void _handleAromaticCycle (const int *cycle, int cycle_len);
    virtual bool _acceptOutgoingDoubleBond (int atom, int bond);
 
-   static bool _aromatizeBondsExact (QueryMolecule &mol);
-   static bool _aromatizeBondsFuzzy (QueryMolecule &mol);
+   static bool _aromatizeBondsExact (QueryMolecule &mol, const AromaticityOptions &options);
+   static bool _aromatizeBondsFuzzy (QueryMolecule &mol, const AromaticityOptions &options);
 
-   static bool _aromatizeBonds (QueryMolecule &mol, int additional_atom);
+   static bool _aromatizeBonds (QueryMolecule &mol, int additional_atom, const AromaticityOptions &options);
 
-   static bool _aromatizeRGroupFragment (QueryMolecule &fragment, bool add_single_bonds);
+   static bool _aromatizeRGroupFragment (QueryMolecule &fragment, bool add_single_bonds, const AromaticityOptions &options);
 
    PiValue _getPiLabel           (int v_idx);
 
+   CP_DECL;
    TL_CP_DECL(Array<PiValue>,   _pi_labels);
    TL_CP_DECL(Array<CycleDef>,  _aromatic_cycles);
 
    int _mode;
    bool _collecting;
+   AromaticityOptions _options;
 };
 
 // Structure that keeps query infromation abount bonds that 

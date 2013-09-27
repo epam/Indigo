@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -27,6 +27,8 @@ namespace indigo {
 class DLLEXPORT StringPool
 {
 public:
+   DECL_ERROR;
+
    StringPool ();
    ~StringPool ();
 
@@ -44,8 +46,6 @@ public:
    const char * at (int idx) const;
 
 protected:
-   DEF_ERROR("string pool");
-
    int _add (const char *str, int size);
 
    Pool<int>  _pool;

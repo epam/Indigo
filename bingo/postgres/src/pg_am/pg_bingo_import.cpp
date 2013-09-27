@@ -321,6 +321,11 @@ public:
          try {
             getNextData();
          } catch (Exception& e) {
+            /*
+             * Handle incorrect format errors
+             */
+            if(strstr(e.message(), "data size exceeded the acceptable size") != 0)
+               throw BingoPgError(e.message());
             elog(WARNING, "can not import a structure: %s", e.message());
             continue;
          }
@@ -347,6 +352,8 @@ public:
          }
          BINGO_PG_HANDLE(throw BingoPgError("can not import all the structures: SQL error: %s", message));
 
+         if(debug_idx % 1000 == 0)
+            elog(NOTICE, "bingo.import: %d structures processed", debug_idx);
          /*
           * Return back session id and error handler
           */
@@ -397,8 +404,16 @@ public:
          else
             data = bingoImportGetPropertyValue(col_idx - 1);
          
-         if (data == 0)
+         if (data == 0) {
+            /*
+             * Handle incorrect format errors
+             */
+            if(strstr(bingoGetError(), "data size exceeded the acceptable size") != 0)
+               throw BingoPgError(bingoGetError());
             CORE_HANDLE_WARNING(0, 1, "importSDF", bingoGetError());
+         }
+
+
          _addData(data, col_idx);
       }
    }
@@ -466,8 +481,14 @@ public:
          else 
             data = bingoImportGetPropertyValue(col_idx - 1);
          
-         if (data == 0)
+         if (data == 0) {
+            /*
+             * Handle incorrect format errors
+             */
+            if(strstr(bingoGetError(), "data size exceeded the acceptable size") != 0)
+               throw BingoPgError(bingoGetError());
             CORE_HANDLE_WARNING(0, 1, "importRDF", bingoGetError());
+         }
          _addData(data, col_idx);
       }
    }
@@ -511,7 +532,7 @@ public:
       _parseColumns = false;
       setFunctionName("importSMILES");
       bingo_res = bingoSMILESImportOpen(fname);
-      CORE_HANDLE_WARNING(bingo_res, 1, "importSmiles", bingoGetError());
+      CORE_HANDLE_ERROR(bingo_res, 1, "importSmiles", bingoGetError());
    }
    virtual ~BingoImportSmilesHandler() {
       bingo_res = bingoSMILESImportClose();

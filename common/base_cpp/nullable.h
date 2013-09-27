@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,6 +16,11 @@
 #define __nullable__
 
 #include "base_cpp/exception.h"
+
+namespace indigo
+{
+
+DECL_EXCEPTION(NullableError);
 
 template <typename T>
 class Nullable
@@ -62,7 +67,7 @@ public:
       variable_name = name;
    }
 
-   DEF_ERROR("Nullable");
+   DECL_TPL_ERROR(NullableError);
 
 private:
    T _value;
@@ -70,6 +75,6 @@ private:
    const char *variable_name;
 };
 
+}
+
 #endif // __nullable__
-
-

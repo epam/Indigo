@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -87,10 +87,12 @@ struct Edge
    }
 };
 
+class CycleBasis;
+
 class DLLEXPORT Graph
 {
 public:
-   DEF_ERROR("graph");
+   DECL_ERROR;
 
    explicit Graph ();
    virtual ~Graph ();
@@ -118,6 +120,7 @@ public:
    bool haveEdge (int beg, int end) const;
    bool hasEdge (int idx) const;
    bool hasVertex(int idx) const;
+   int  getEdgeEnd (int beg, int edge) const;
 
    void swapEdgeEnds (int edge_idx);
    void removeEdge (int idx);
@@ -150,6 +153,7 @@ public:
    int vertexCountSSSR (int idx);
    int vertexSmallestRingSize (int idx);
    bool vertexInRing(int idx);
+   int edgeSmallestRingSize (int idx);
 
    List<int> & sssrEdges (int idx);
    List<int> & sssrVertices (int idx);
@@ -172,7 +176,7 @@ protected:
    Array<int> _topology; // for each edge: TOPOLOGY_RING, TOPOLOGY_CHAIN, or -1 (not calculated)
    bool       _topology_valid;
 
-   Array<int> _v_smallest_ring_size;
+   Array<int> _v_smallest_ring_size, _e_smallest_ring_size;
    Array<int> _v_sssr_count;
    Pool<List<int>::Elem> *_sssr_pool;
    ObjArray< List<int> > _sssr_vertices;
@@ -187,6 +191,9 @@ protected:
 
    void _calculateTopology ();
    void _calculateSSSR ();
+   void _calculateSSSRInit ();
+   void _calculateSSSRByCycleBasis (CycleBasis &basis);
+   void _calculateSSSRAddEdgesAndVertices (const Array<int> &cycle, List<int> &edges, List<int> &vertices);
    void _calculateComponents ();
 
    // This is a bad hack for those who are too lazy to handle the mappings.

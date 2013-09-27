@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -14,6 +14,7 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
+#include "base_cpp/os_sync_wrapper.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
@@ -38,6 +39,7 @@
 #include "render_item_factory.h"
 #include "render_single.h"
 #include "render_grid.h"
+#include "render_cdxml.h"
 
 using namespace indigo;
 
@@ -61,6 +63,7 @@ void RenderParams::clearArrays ()
 void RenderParams::clear ()
 {
    relativeThickness = 1.0f;
+   bondLineWidthFactor = 1.0f;
    rmode = RENDER_NONE;
    mol.reset(NULL);
    rxn.reset(NULL);
@@ -68,6 +71,8 @@ void RenderParams::clear ()
    cnvOpt.clear();
    clearArrays();
 }
+
+IMPL_ERROR(RenderParamInterface, "render param interface");
 
 bool RenderParamInterface::needsLayoutSub (BaseMolecule& mol)
 {
@@ -145,10 +150,19 @@ void RenderParamInterface::_prepareReaction (RenderParams& params, BaseReaction&
 
 void RenderParamInterface::render (RenderParams& params)
 {
+   // Disable multithreaded SVG rendering due to the Cairo issue. See IND-482
+   OsLock *render_lock = 0;
+   if (params.rOpt.mode == MODE_SVG)
+   {
+      static ThreadSafeStaticObj<OsLock> svg_lock;
+      render_lock = svg_lock.ptr();
+   }
+   OsLockerNullable locker(render_lock);
+
    if (params.rmode == RENDER_NONE)
       throw Error("No object to render specified");
 
-   RenderContext rc(params.rOpt, params.relativeThickness);
+   RenderContext rc(params.rOpt, params.relativeThickness, params.bondLineWidthFactor);
 
    bool bondLengthSet = params.cnvOpt.bondLength > 0;
    int bondLength = (int)(bondLengthSet ? params.cnvOpt.bondLength : 100);
@@ -212,6 +226,14 @@ void RenderParamInterface::render (RenderParams& params)
       comment = factory.addItemAuxiliary();
       factory.getItemAuxiliary(comment).type = RenderItemAuxiliary::AUX_COMMENT;
       factory.getItemAuxiliary(comment).text.copy(params.cnvOpt.comment);
+   }
+
+   // Render into other formats after objects has been prepared (layout, etc.)
+   if (params.rOpt.mode == MODE_CDXML)
+   {
+      // Render into CDXML format
+      RenderParamCdxmlInterface::render(params);
+      return;
    }
 
    if (obj >= 0) {

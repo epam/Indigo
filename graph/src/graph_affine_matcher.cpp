@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,6 +18,8 @@
 #include "graph/graph.h"
 
 using namespace indigo;
+
+IMPL_ERROR(GraphAffineMatcher, "graph affine matcher");
 
 GraphAffineMatcher::GraphAffineMatcher (Graph &subgraph, Graph &supergraph, const int *mapping) :
 _subgraph(subgraph),

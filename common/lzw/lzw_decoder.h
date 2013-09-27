@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -24,8 +24,7 @@ namespace indigo {
 class LzwDecoder
 {
 public:
-
-   DEF_ERROR("LZW decoder");
+   DECL_ERROR;
 
    LzwDecoder( LzwDict &NewDict, Scanner &NewIn );
 
@@ -39,6 +38,7 @@ private:
 
    BitInWorker _bitin;
 
+   CP_DECL;
    TL_CP_DECL(Array<byte>, _symbolsBuf);
 
    // no implicit copy
@@ -61,7 +61,7 @@ public:
 
    virtual byte readByte ();
 
-   DEF_ERROR("LZW-output");
+   DECL_ERROR;
 private:
    LzwDecoder &_decoder;
 };

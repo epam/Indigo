@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -24,7 +24,12 @@
 
 using namespace indigo;
 
+IMPL_ERROR(LzwDict, "LZW dictionary");
+
+CP_DEF(LzwDict);
+
 LzwDict::LzwDict( void ) : 
+   CP_INIT,
    TL_CP_GET(_storage), 
    TL_CP_GET(_nextPointers), 
    TL_CP_GET(_hashKeys)
@@ -42,7 +47,7 @@ void LzwDict::reset ()
 }
 
 LzwDict::LzwDict( int NewAlphabetSize, int NewBitCodeSize ) :
-   _modified(false), TL_CP_GET(_storage), TL_CP_GET(_nextPointers), 
+   _modified(false), CP_INIT, TL_CP_GET(_storage), TL_CP_GET(_nextPointers), 
    TL_CP_GET(_hashKeys)
 {
    init(NewAlphabetSize, NewBitCodeSize);

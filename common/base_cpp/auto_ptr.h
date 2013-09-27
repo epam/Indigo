@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,6 +18,8 @@
 #include "base_cpp/exception.h"
 
 namespace indigo {
+
+DECL_EXCEPTION(AutoPtrError);
 
 template <typename T> class AutoPtr
 {
@@ -95,7 +97,7 @@ public:
       reset(new T(a));
    }
 
-   DEF_ERROR("autoptr");
+   DECL_TPL_ERROR(AutoPtrError);
 
 protected:
    T *_ptr;

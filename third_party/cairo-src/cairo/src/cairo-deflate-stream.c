@@ -35,6 +35,9 @@
  */
 
 #include "cairoint.h"
+
+#if CAIRO_HAS_DEFLATE_STREAM
+
 #include "cairo-error-private.h"
 #include "cairo-output-stream-private.h"
 #include <zlib.h>
@@ -149,3 +152,5 @@ _cairo_deflate_stream_create (cairo_output_stream_t *output)
 
     return &stream->base;
 }
+
+#endif /* CAIRO_HAS_DEFLATE_STREAM */

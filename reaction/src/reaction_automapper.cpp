@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -25,6 +25,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(ReactionAutomapper, "Reaction automapper");
+
 ReactionAutomapper::ReactionAutomapper(BaseReaction& reaction):
 ignore_atom_charges(false),
 ignore_atom_valence(false),
@@ -46,10 +48,8 @@ void ReactionAutomapper::automap(int mode) {
    /*
     * Set cancellation handler
     */
-   CancellationHandler* prev_handler = 0;
-   if(cancellation) {
-      prev_handler = setCancellationHandler(0);
-   }
+   AAMCancellationWrapper canc_wrapper(cancellation);
+   
    /*
     * Check input atom mapping (if any)
     */
@@ -59,15 +59,12 @@ void ReactionAutomapper::automap(int mode) {
     * Clone reaction
     */
    _createReactionCopy(react_mapping, mol_mappings);
-//   _reactionCopy.reset(_initReaction.neu());
-//   BaseReaction& reaction = _reactionCopy.ref();
-//
-//   reaction.clone(_initReaction, &react_mapping, 0, &mol_mappings);
-//   reaction.aromatize();
 
+   /*
+    * Create AAM map
+    */
    _createReactionMap();
    _setupReactionInvMap(react_mapping, mol_mappings);
-//   _setupReactionMap(react_mapping, mol_mappings);
 
    _considerDissociation();
    _considerDimerization();
@@ -76,12 +73,6 @@ void ReactionAutomapper::automap(int mode) {
     * Check output atom mapping
     */
    _checkAtomMapping(false, true, false);
-   /*
-    * Set cancellation handler back
-    */
-   if(prev_handler) {
-      setCancellationHandler(prev_handler);
-   }
    
 }
 
@@ -98,7 +89,7 @@ void ReactionAutomapper::_createReactionCopy(Array<int>& mol_mapping, ObjArray< 
    for (; mol_idx != _initReaction.productEnd(); mol_idx = _initReaction.productNext(mol_idx)) {
       _createMoleculeCopy(mol_idx, false, mol_mapping, mappings);
    }
-   _reactionCopy->aromatize();
+   _reactionCopy->aromatize(arom_options);
 }
 
 void ReactionAutomapper::_createMoleculeCopy(int mol_idx, bool reactant, Array<int> &mol_mapping, ObjArray< Array<int> >& mappings) {
@@ -363,7 +354,6 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
          rsub_map_in.clear();
       RSubstructureMcs react_sub_mcs(reaction, react, product, *this);
       bool find_sub = react_sub_mcs.searchSubstructureReact(_reaction.getBaseMolecule(react), &rsub_map_in, &rsub_map_out);
-            
       if (!find_sub) {
          react_sub_mcs.searchMaxCommonSubReact(&rsub_map_in, &rsub_map_out);
       }
@@ -455,7 +445,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
    BaseReaction &reaction_copy = reaction_copy_ptr.ref();
 
    reaction_copy.clone(_initReaction, &rmol_map, 0, &react_invmap);
-   reaction_copy.aromatize();
+   reaction_copy.aromatize(arom_options);
 
    for (int mol_idx = _initReaction.begin(); mol_idx != _initReaction.end(); mol_idx = _initReaction.next(mol_idx)) {
       BaseMolecule& rmol = _initReaction.getBaseMolecule(mol_idx);
@@ -746,7 +736,7 @@ void ReactionAutomapper::_considerDissociation(){
       BaseMolecule& ibase_mol = _initReaction.getBaseMolecule(i);
       full_map_cut.reset(ibase_mol.neu());
       full_map_cut->clone_KeepIndices(ibase_mol, 0);
-      full_map_cut->aromatize();
+      full_map_cut->aromatize(arom_options);
 
 
       for (j = 0; j < _initReaction.getAAMArray(i).size(); j++){
@@ -758,7 +748,7 @@ void ReactionAutomapper::_considerDissociation(){
       while(mcvsum >= mcv){
          null_map_cut.reset(ibase_mol.neu());
          null_map_cut->clone_KeepIndices(ibase_mol, 0);
-         null_map_cut->aromatize();
+         null_map_cut->aromatize(arom_options);
          for (j = 0; j < _initReaction.getAAMArray(i).size(); j++){
             if(_initReaction.getAAM(i, j) > 0 || _initReaction.getBaseMolecule(i).getAtomNumber(j) == ELEM_H)
                null_map_cut->removeAtom(j);
@@ -812,7 +802,7 @@ void ReactionAutomapper::_considerDimerization() {
 
    for(int prod = reaction_copy.productBegin(); prod < reaction_copy.productEnd(); prod = reaction_copy.productNext(prod)) {
       BaseMolecule& pmol = reaction_copy.getBaseMolecule(prod);
-      pmol.aromatize();
+      pmol.aromatize(arom_options);
       way_exit = true;
       while(way_exit) {
          /*
@@ -1285,18 +1275,17 @@ void RSubstructureMcs::setUpFlags(const ReactionAutomapper& context) {
       flags |= CONDITION_ATOM_RADICAL;
    if(!context.ignore_atom_valence)
       flags |= CONDITION_ATOM_VALENCE;
+   arom_options = context.arom_options;
 }
 bool RSubstructureMcs::searchSubstructure(Array<int>* map) {
    bool result = false;
 
    if (_context.cancellation) {
-      setCancellationHandler(_context.cancellation);
       try {
          result = SubstructureMcs::searchSubstructure(map);
       } catch (Exception& e) {
          result = false;
       }
-      setCancellationHandler(0);
    } else {
       result = SubstructureMcs::searchSubstructure(map);
    }
@@ -1329,15 +1318,12 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
    if(react_vsize < 2) {
       mol_react.clone(init_rmol, 0, 0);
       react_vsize = mol_react.vertexCount();
-      mol_react.aromatize();
+      mol_react.aromatize(arom_options);
    }
 
    if(_super->vertexCount() < 2 || _sub->vertexCount() < 2)
       return false;
 
-   if (_context.cancellation) 
-      setCancellationHandler(_context.cancellation);
-      
    for(int i = 0; i < 4; ++i) {
       EmbeddingEnumerator& emb_enum = emb_enums.push(*_super);
       emb_enum.setSubgraph(*_sub);
@@ -1351,8 +1337,6 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
       tmp_maps.push().clear();
       results[i] = -1;
    }
-   if (_context.cancellation)
-      setCancellationHandler(0);
 
    Array<int>* in_map_c = 0;
    
@@ -1376,7 +1360,7 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
    results[1] = _searchSubstructure(emb_enums[1], in_map_c, &tmp_maps[1]);
 
    mol_react.clone(init_rmol, 0, 0);
-   mol_react.aromatize();
+   mol_react.aromatize(arom_options);
 
    if(mol_react.vertexCount() > react_vsize) {
       results[2] = _searchSubstructure(emb_enums[2], in_map, &tmp_maps[2]);
@@ -1431,19 +1415,24 @@ bool RSubstructureMcs::searchMaxCommonSubReact(const Array<int>* in_map, Array<i
 
    if(in_map != 0) {
       _transposeInputMap(in_map, mcs.incomingMap);
-   }
+    }
 
-   /*
-    * Search for exact mcs first
-    */
-   mcs.findExactMCS();
-
-   /*
-    * Search for approximate mcs
-    */
-   if (mcs.parametersForExact.isStopped) {
-      mcs.findApproximateMCS();
-   }
+    try {
+        /*
+         * Search for exact mcs first
+         */
+        mcs.findExactMCS();
+        /*
+         * Search for approximate mcs
+         */
+        if (mcs.parametersForExact.isStopped) {
+            mcs.findApproximateMCS();
+        }
+    } catch (Exception& e) {
+		if(strstr(e.message(), "input mapping incorrect") != 0)
+			throw e;
+        return false;
+    }
 
    mcs.getMaxSolutionMap(out_map, 0);
    /*
@@ -2036,4 +2025,14 @@ int RSubstructureMcs::_getTransposedBondIndex(BaseMolecule& mol, int bond) const
       result = _bondTransposition[bond];
    
    return result;
+}
+
+AAMCancellationWrapper::AAMCancellationWrapper(CancellationHandler* canc) {
+   _prev = setCancellationHandler(canc);
+}
+
+AAMCancellationWrapper::~AAMCancellationWrapper() {
+     if(_prev) {
+        setCancellationHandler(_prev);
+     }
 }

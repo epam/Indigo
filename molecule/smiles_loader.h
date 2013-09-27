@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -35,7 +35,7 @@ class QueryMolecule;
 class DLLEXPORT SmilesLoader
 {
 public:
-   DEF_ERROR("SMILES loader");
+   DECL_ERROR;
 
    SmilesLoader (Scanner &scanner);
    ~SmilesLoader ();
@@ -128,6 +128,7 @@ protected:
 
    Scanner &_scanner;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _atom_stack);
    TL_CP_DECL(Array<_CycleDesc>, _cycles);
    TL_CP_DECL(StringPool, _pending_bonds_pool);

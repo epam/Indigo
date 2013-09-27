@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,6 +17,8 @@
 #include "math/algebra.h"
 
 using namespace indigo;
+
+IMPL_ERROR(Transform3f, "transform3f");
 
 void Transform3f::copy (const Transform3f &other)
 {

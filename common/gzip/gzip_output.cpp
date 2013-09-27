@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -16,8 +16,13 @@
 
 using namespace indigo;
 
+IMPL_ERROR(GZipOutput, "GZip output");
+
+CP_DEF(GZipOutput);
+
 GZipOutput::GZipOutput (Output &dest, int level) :
 _dest(dest),
+CP_INIT,
 TL_CP_GET(_outbuf),
 TL_CP_GET(_inbuf)
 {

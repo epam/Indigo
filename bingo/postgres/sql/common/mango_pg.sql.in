@@ -1,0 +1,206 @@
+CREATE TYPE sub AS (query_mol text, query_options text);
+
+CREATE OR REPLACE FUNCTION matchSub(text, sub)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._sub_internal($2.query_mol, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION matchSub(bytea, sub)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._sub_internal($2.query_mol, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE TYPE exact AS (query_mol text, query_options text);
+
+CREATE OR REPLACE FUNCTION matchExact(text, exact)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._exact_internal($2.query_mol, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION matchExact(bytea, exact)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._exact_internal($2.query_mol, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE TYPE smarts AS (query_mol text, query_options text);
+
+CREATE OR REPLACE FUNCTION matchSmarts(text, smarts)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._smarts_internal($2.query_mol, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION matchSmarts(bytea, smarts)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._smarts_internal($2.query_mol, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE TYPE gross AS (sign text, query_mol text);
+
+CREATE OR REPLACE FUNCTION matchGross(bytea, gross)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._gross_internal($2.sign, $2.query_mol, $1);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION matchGross(text, gross)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._gross_internal($2.sign, $2.query_mol, $1);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OPERATOR public.@ (
+        LEFTARG = text,
+        RIGHTARG = sub,
+        PROCEDURE = matchSub,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+
+CREATE OPERATOR public.@ (
+        LEFTARG = bytea,
+        RIGHTARG = sub,
+        PROCEDURE = matchSub,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+CREATE OPERATOR public.@ (
+        LEFTARG = text,
+        RIGHTARG = exact,
+        PROCEDURE = matchExact,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+CREATE OPERATOR public.@ (
+        LEFTARG = bytea,
+        RIGHTARG = exact,
+        PROCEDURE = matchExact,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+CREATE OPERATOR public.@ (
+        LEFTARG = text,
+        RIGHTARG = smarts,
+        PROCEDURE = matchSmarts,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+CREATE OPERATOR public.@ (
+        LEFTARG = bytea,
+        RIGHTARG = smarts,
+        PROCEDURE = matchSmarts,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+
+CREATE OPERATOR public.@ (
+        LEFTARG = text,
+        RIGHTARG = gross,
+        PROCEDURE = matchGross,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+
+CREATE OPERATOR public.@ (
+        LEFTARG = bytea,
+        RIGHTARG = gross,
+        PROCEDURE = matchGross,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+--******************* MASS *******************
+
+CREATE OPERATOR public.< (
+        LEFTARG = text,
+        RIGHTARG = mass,
+        PROCEDURE = _match_mass_less,
+        COMMUTATOR = '<',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+CREATE OPERATOR public.< (
+        LEFTARG = bytea,
+        RIGHTARG = mass,
+        PROCEDURE = _match_mass_less,
+        COMMUTATOR = '<',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+
+CREATE OPERATOR public.> (
+        LEFTARG = text,
+        RIGHTARG = mass,
+        PROCEDURE = _match_mass_great,
+        COMMUTATOR = '>',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+
+CREATE OPERATOR public.> (
+        LEFTARG = bytea,
+        RIGHTARG = mass,
+        PROCEDURE = _match_mass_great,
+        COMMUTATOR = '>',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+
+--******************* SIMILARITY *******************
+
+
+
+
+CREATE OR REPLACE FUNCTION matchSim(text, sim)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._sim_internal($2.min_bound, $2.max_bound, $2.query_mol, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION matchSim(bytea, sim)
+RETURNS boolean AS $$
+   BEGIN
+	RETURN BINGO_SCHEMANAME._sim_internal($2.min_bound, $2.max_bound, $2.query_mol, $1, $2.query_options);
+   END;
+$$ LANGUAGE 'plpgsql';
+
+CREATE OPERATOR public.@ (
+        LEFTARG = text,
+        RIGHTARG = sim,
+        PROCEDURE = matchSim,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+
+CREATE OPERATOR public.@ (
+        LEFTARG = bytea,
+        RIGHTARG = sim,
+        PROCEDURE = matchSim,
+        COMMUTATOR = '@',
+        RESTRICT = contsel,
+        JOIN = contjoinsel
+);
+
+

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -28,7 +28,7 @@ public:
    void saveMolecule (Molecule &mol);
    bool skip_cml_tag; // skips <?xml> and <cml> tags
 
-   DEF_ERROR("molecule CML saver");
+   DECL_ERROR;
 
 protected:
    Molecule *_mol;

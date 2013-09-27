@@ -20,6 +20,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(ReactionExactMatcher, "reaction exact matcher");
+
 ReactionExactMatcher::ReactionExactMatcher (Reaction &query, Reaction &target) :
 BaseReactionSubstructureMatcher(target),
 _query(query), _target(target)

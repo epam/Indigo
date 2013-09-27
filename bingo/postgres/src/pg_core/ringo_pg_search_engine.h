@@ -48,7 +48,7 @@ public:
    virtual void prepareQuerySearch(BingoPgIndex&, PG_OBJECT scan_desc);
    virtual bool searchNext(PG_OBJECT result_ptr);
 
-   DEF_ERROR("reaction search engine");
+   DECL_ERROR;
 private:
    RingoPgSearchEngine(const RingoPgSearchEngine&); // no implicit copy
 
@@ -57,7 +57,7 @@ private:
    void _prepareSubSearch(PG_OBJECT scan_desc);
    void _prepareExactSearch(PG_OBJECT scan_desc);
    void _prepareSmartsSearch(PG_OBJECT scan_desc);
-   void _getScanQueries(uintptr_t arg_datum, BingoPgText& str1, BingoPgText& str2);
+   void _getScanQueries(uintptr_t arg_datum, indigo::Array<char>& str1, indigo::Array<char>& str2);
 
    static void _errorHandler(const char* message, void* context);
 

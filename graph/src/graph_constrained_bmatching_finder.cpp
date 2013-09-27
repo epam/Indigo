@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,10 +17,15 @@
 
 using namespace indigo;
 
+IMPL_ERROR(GraphConstrainedBMatchingFinder, "b-matching finder");
+
+CP_DEF(GraphConstrainedBMatchingFinder);
+
 GraphConstrainedBMatchingFinder::GraphConstrainedBMatchingFinder (
    const Graph &g, const ObjArray< Array<int> > &nodes_per_set,
    const Array<int> *per_set_set_id)
    : _g(g),
+   CP_INIT,
    TL_CP_GET(_network),
    TL_CP_GET(_edges_graph_to_net),
    TL_CP_GET(_vertices_graph_to_net),

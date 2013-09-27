@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,6 +19,7 @@
 #include "molecule/query_molecule.h"
 #include "layout/molecule_layout_graph.h"
 #include "layout/metalayout.h"
+#include "base_cpp/cancellation_handler.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -34,17 +35,22 @@ public:
 
    void make ();
 
+   void setCancellationHandler (CancellationHandler* cancellation);
+
    float bond_length;
    bool respect_existing_layout;
    Filter *filter;
    int  max_iterations;
-
-   DEF_ERROR("molecule_layout");
+   
+   DECL_ERROR;
 
 protected:
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, BaseMolecule& mol);
    BaseMolecule& _getMol (int id);
    void _make ();
+   void _makeLayout ();
+   void _updateRepeatingUnits ();
+   void _updateMultipleGroups ();
 
    static BaseMolecule& cb_getMol (int id, void* context);
    static void cb_process (Metalayout::LayoutItem& item, const Vec2f& pos, void* context);

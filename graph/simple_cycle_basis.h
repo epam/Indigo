@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -42,15 +42,12 @@ private:
     void _createEdgeIndexMap();
     int _getEdgeIndex(int edge) const;
 
-
-
+    void _prepareSubgraph (Graph &subgraph);
 
     RedBlackMap<int, int> vertices_spanning_tree;
     
     RedBlackMap<int, int> spanning_tree_vertices;
     RedBlackMap<int, int> _edgeIndexMap;
-
-
 
     const Graph& _graph;
 

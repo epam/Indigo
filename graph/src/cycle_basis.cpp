@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -19,7 +19,8 @@
 
 using namespace indigo;
 
-void CycleBasis::create(const Graph& graph) {
+void CycleBasis::create(const Graph& graph)
+{
    QS_DEF(Array<int>, mapping_out);
 
    // using biconnected decomposer since components will contain smallest cycles
@@ -30,12 +31,12 @@ void CycleBasis::create(const Graph& graph) {
    _cycles.clear();
    _cycleVertices.clear();
 
+   QS_DEF(Graph, subgraph);
+
    Filter filter;
    for (int i = 0; i < comp_num; ++i) {
       bic_dec.getComponent(i, filter);
       
-      Graph subgraph;
-
       // create subgraph and store mapping
       subgraph.makeSubgraph(graph, filter, &mapping_out, 0);
 

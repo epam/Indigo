@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -17,7 +17,12 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MultipleCmlLoader, "multiple CML loader");
+
+CP_DEF(MultipleCmlLoader);
+
 MultipleCmlLoader::MultipleCmlLoader (Scanner &scanner) :
+CP_INIT,
 TL_CP_GET(data),
 TL_CP_GET(_tags),
 TL_CP_GET(_offsets),

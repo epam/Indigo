@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,6 +18,8 @@
 TL_DEF(MangoContext, PtrArray<MangoContext>, _instances);
 
 OsLock MangoContext::_instances_lock;
+
+IMPL_ERROR(MangoContext, "mango context");
 
 MangoContext::MangoContext (BingoContext &context) :
 substructure(context),

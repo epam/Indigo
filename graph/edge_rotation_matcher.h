@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -34,7 +34,7 @@ public:
 
    bool match (float rsm_threshold, float eps);
 
-   DEF_ERROR("edge rotation matcher");
+   DECL_ERROR;
 
 protected:
    struct _DirEdge

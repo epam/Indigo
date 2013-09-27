@@ -476,7 +476,7 @@ struct brw_instruction *brw_JMPI(struct brw_compile *p,
  *
  * When the matching 'else' instruction is reached (presumably by
  * countdown of the instruction count patched in by our ELSE/ENDIF
- * functions), the relevent flags are inverted.
+ * functions), the relevant flags are inverted.
  *
  * When the matching 'endif' instruction is reached, the flags are
  * popped off.  If the stack is now empty, normal execution resumes.

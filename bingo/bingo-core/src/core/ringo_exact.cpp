@@ -24,6 +24,8 @@
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
 
+IMPL_ERROR(RingoExact, "Ringo exact");
+
 RingoExact::RingoExact (BingoContext &context) :
 _context(context)
 {
@@ -218,7 +220,7 @@ bool RingoExact::matchLoadedTarget ()
 void RingoExact::_initQuery (Reaction &query)
 {
    int i, j;
-   query.aromatize();
+   query.aromatize(AromaticityOptions::BASIC);
 
    if (_flags & MoleculeExactMatcher::CONDITION_STEREO)
    {
@@ -235,7 +237,7 @@ void RingoExact::_initQuery (Reaction &query)
 void RingoExact::_initTarget (Reaction &target, bool from_database)
 {
    if (!from_database)
-      target.aromatize();
+      target.aromatize(AromaticityOptions::BASIC);
 }
 
 bool RingoExact::matchBinary (Scanner &scanner)

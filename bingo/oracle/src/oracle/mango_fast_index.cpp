@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -25,6 +25,8 @@
 #include "base_cpp/scanner.h"
 #include "oracle/rowid_loader.h"
 #include "base_c/bitarray.h"
+
+IMPL_ERROR(MangoFastIndex, "mango fast fetch");
 
 MangoFastIndex::MangoFastIndex (MangoFetchContext &context) :
 _context(context)

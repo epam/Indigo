@@ -37,6 +37,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
+    <ConnectionString />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -112,8 +113,8 @@
     <PostBuildEvent>del $(ProjectDir)sql\assembly\$(TargetName).*
 copy $(TargetDir)$(TargetName).* $(ProjectDir)sql\assembly\
 </PostBuildEvent>
-    <PreBuildEvent>copy /Y $(DllPath32)\bingo-core-c.dll $(ProjectDir)Resources\Win\x86
-    copy /Y $(DllPath64)\bingo-core-c.dll $(ProjectDir)Resources\Win\x64
+    <PreBuildEvent>IF EXIST $(DllPath32)\bingo-core-c.dll (copy /Y $(DllPath32)\bingo-core-c.dll $(ProjectDir)Resources\Win\x86)
+IF EXIST $(DllPath64)\bingo-core-c.dll (copy /Y $(DllPath64)\bingo-core-c.dll $(ProjectDir)Resources\Win\x64)
 </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>

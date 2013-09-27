@@ -15,14 +15,20 @@
 #include "reaction/reaction_transformation.h"
 #include "reaction/reaction_enumerator_state.h"
 #include "layout/molecule_layout.h"
+#include "molecule/elements.h"
 
 using namespace indigo;
 
+IMPL_ERROR(ReactionTransformation, "Reaction transformation");
 
-ReactionTransformation::ReactionTransformation( void ) : TL_CP_GET(_merged_reaction), TL_CP_GET(_cur_monomer)
+CP_DEF(ReactionTransformation);
+
+ReactionTransformation::ReactionTransformation( void ) : CP_INIT, TL_CP_GET(_merged_reaction), TL_CP_GET(_cur_monomer)
 {
    _merged_reaction.clear();
    _cur_monomer.clear();
+   layout_flag = true;
+   cancellation = 0;
 }
 
 bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &reaction )
@@ -48,7 +54,10 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
 
    int product_count = 0;
 
-   ReactionEnumeratorState re_state(_merged_reaction, cur_full_product, 
+   ReactionEnumeratorContext context;
+   context.arom_options = arom_options;
+
+   ReactionEnumeratorState re_state(context, _merged_reaction, cur_full_product, 
       cur_cur_monomer_aam_array, cur_smiles_array, cur_reaction_monomers, 
       product_count, cur_tubes_monomers);
    
@@ -66,16 +75,32 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
    forbidden_atoms.clear_resize(_cur_monomer.vertexEnd());
    forbidden_atoms.zerofill();
 
-   while (re_state.performSingleTransformation(_cur_monomer, forbidden_atoms))
+   QS_DEF(Array<int>, original_hydrogens);
+   original_hydrogens.clear();
+   for (int i = _cur_monomer.vertexBegin(); i != _cur_monomer.vertexEnd(); i = _cur_monomer.vertexNext(i))
+   {
+      if (_cur_monomer.getAtomNumber(i) == ELEM_H)
+         original_hydrogens.push(i);
+   }
+
+   bool need_layout = true;
+   while (re_state.performSingleTransformation(_cur_monomer, forbidden_atoms, original_hydrogens, need_layout))
       ;
 
    molecule.clone(_cur_monomer, NULL, NULL);
 
    if (has_coord)
    {
-      MoleculeLayout ml(molecule);
-      ml.make();
-      molecule.stereocenters.markBonds();
+      if (layout_flag)
+      {
+         MoleculeLayout ml(molecule);
+         ml.setCancellationHandler(cancellation);
+         ml.make();
+      }
+      if (!need_layout)
+         molecule.stereocenters.markBonds();
+      else
+         molecule.clearXyz();
    }
 
    return true;

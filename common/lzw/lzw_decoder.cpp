@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,8 +18,12 @@
 
 using namespace indigo;
 
+IMPL_ERROR(LzwDecoder, "LZW decoder");
+
+CP_DEF(LzwDecoder);
+
 LzwDecoder::LzwDecoder( LzwDict &NewDict, Scanner &NewIn ) : _dict(NewDict), 
-   _bitin(_dict.getBitCodeSize(), NewIn), TL_CP_GET(_symbolsBuf) 
+   _bitin(_dict.getBitCodeSize(), NewIn), CP_INIT, TL_CP_GET(_symbolsBuf) 
 {    
 }
 
@@ -60,6 +64,9 @@ int LzwDecoder::get( void )
 //
 // LzwScanner
 //
+
+IMPL_ERROR(LzwScanner, "LZW scanner");
+
 LzwScanner::LzwScanner (LzwDecoder &decoder) : _decoder(decoder)
 {
 }

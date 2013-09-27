@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -56,7 +56,7 @@ public:
    const char * getName ();
    const char * getComponentsName ();
 
-   DEF_ERROR("shadow table");
+   DECL_ERROR;
 
 protected:
    Array<char> _table_name, _components_table_name;

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,6 +16,13 @@
 #define __molecule_auto_loader__
 
 #include "base_cpp/array.h"
+#include "base_cpp/tlscont.h"
+#include "base_cpp/red_black.h"
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
 
 namespace indigo {
 
@@ -42,7 +49,11 @@ public:
    bool treat_x_as_pseudoatom;
    bool skip_3d_chirality;
 
-   DEF_ERROR("molecule auto loader");
+   // Loaded properties
+   CP_DECL;
+   TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
+
+   DECL_ERROR;
 
    static bool tryMDLCT (Scanner &scanner, Array<char> &outbuf);
 
@@ -59,5 +70,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

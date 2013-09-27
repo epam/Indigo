@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -49,42 +49,78 @@ protected:
 private:
 };
 
-#define DEF_EXCEPTION(ExceptionName, prefix) \
-   class ExceptionName : public indigo::Exception                 \
+#define DECL_EXCEPTION_BODY(ExceptionName, Parent) \
+   ExceptionName : public Parent       \
    {                                                              \
    public:                                                        \
-      explicit ExceptionName (const char *format, ...) :          \
-      Exception()                                                 \
-      {                                                           \
-         va_list args;                                            \
-                                                                  \
-         va_start(args, format);                                  \
-         _init(prefix, format, args);                             \
-         va_end(args);                                            \
-      }                                                           \
-                                                                  \
-      virtual ~ExceptionName () {}                                \
-      virtual Exception* clone ()                                 \
-      {                                                           \
-         ExceptionName *error = new ExceptionName("");            \
-         _cloneTo(error);                                         \
-         return error;                                            \
-      }                                                           \
-      virtual void throwSelf ()                                   \
-      {                                                           \
-         throw *this;                                             \
-      }                                                           \
-      ExceptionName (const ExceptionName &other) : Exception ()   \
-      {                                                           \
-         other._cloneTo(this);                                    \
-      }                                                           \
+      explicit ExceptionName (const char *format, ...);           \
+      virtual ~ExceptionName ();                                  \
+      virtual Exception* clone ();                                \
+      virtual void throwSelf ();                                  \
+      ExceptionName (const ExceptionName &other);                 \
+   protected:                                                     \
+      explicit ExceptionName ();           \
    }
 
-#define DEF_ERROR(error_prefix) \
-   DEF_EXCEPTION(Error, error_prefix)
+#define DECL_EXCEPTION2(ExceptionName, Parent) \
+   class DLLEXPORT DECL_EXCEPTION_BODY(ExceptionName, Parent)
 
-#define DEF_TIMEOUT_EXCEPTION(prefix) \
-   DEF_EXCEPTION(TimeoutException, prefix " timeout")
+#define DECL_EXCEPTION(ExceptionName) DECL_EXCEPTION2(ExceptionName, indigo::Exception)
+
+#define DECL_EXCEPTION_NO_EXP2(ExceptionName, Parent) \
+   class DECL_EXCEPTION_BODY(ExceptionName, Parent)
+
+#define DECL_EXCEPTION_NO_EXP(ExceptionName) DECL_EXCEPTION_NO_EXP2(ExceptionName, indigo::Exception)
+
+#define IMPL_EXCEPTION2(Namespace, ExceptionName, Parent, prefix) \
+   Namespace::ExceptionName::ExceptionName () \
+   {                                                                                   \
+   }                                                                                   \
+                                                                                       \
+   Namespace::ExceptionName::ExceptionName (const char *format, ...)                   \
+      : Parent()                                                                       \
+   {                                                                                   \
+      va_list args;                                                                    \
+                                                                                       \
+      va_start(args, format);                                                          \
+      _init(prefix, format, args);                                                     \
+      va_end(args);                                                                    \
+   }                                                                                   \
+                                                                                       \
+   Namespace::ExceptionName::~ExceptionName () {}                                      \
+                                                                                       \
+   indigo::Exception* Namespace::ExceptionName::clone ()                                       \
+   {                                                                                   \
+      ExceptionName *error = new ExceptionName("");                                    \
+      _cloneTo(error);                                                                 \
+      return error;                                                                    \
+   }                                                                                   \
+   void Namespace::ExceptionName::throwSelf ()                                         \
+   {                                                                                   \
+      throw *this;                                                                     \
+   }                                                                                   \
+   Namespace::ExceptionName::ExceptionName (const ExceptionName &other) : Parent () \
+   {                                                                                   \
+      other._cloneTo(this);                                                            \
+   }                                                                                   \
+
+#define IMPL_EXCEPTION(Namespace, ExceptionName, prefix) \
+   IMPL_EXCEPTION2(Namespace, ExceptionName, indigo::Exception, prefix)
+
+#define DECL_ERROR2(Parent) DECL_EXCEPTION2(Error, Parent)
+#define DECL_ERROR DECL_ERROR2(indigo::Exception)
+#define DECL_ERROR_NO_EXP DECL_EXCEPTION_NO_EXP(Error)
+
+#define DECL_TPL_ERROR(CommonErrorName) typedef CommonErrorName Error
+
+#define IMPL_ERROR2(Namespace, Parent, error_prefix) \
+   IMPL_EXCEPTION2(Namespace, Error, Parent, error_prefix)
+
+#define IMPL_ERROR(Namespace, error_prefix) IMPL_ERROR2(Namespace, indigo::Exception, error_prefix)
+
+#define DECL_TIMEOUT_EXCEPTION DECL_EXCEPTION(TimeoutException)
+#define IMPL_TIMEOUT_EXCEPTION(Namespace, prefix) \
+   IMPL_EXCEPTION(Namespace, TimeoutException, prefix " timeout")
 
 }
 

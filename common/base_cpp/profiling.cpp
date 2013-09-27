@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -58,6 +58,8 @@ qword _ProfilingTimer::getTime () const
 //
 // Profiling functionality
 //
+
+IMPL_ERROR(ProfilingSystem, "Profiling system");
 
 namespace indigo
 {

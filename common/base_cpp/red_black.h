@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -30,9 +30,13 @@ struct RedBlackNodeBase
    int color;
 };
 
+DECL_EXCEPTION(RedBlackTreeError);
+
 template <typename Key, typename Node> class RedBlackTree
 {
 public:
+   DECL_TPL_ERROR(RedBlackTreeError);
+
    enum
    {
       RED = 0,
@@ -197,8 +201,6 @@ public:
 
       return idx != -1 && sign == 0;
    }
-
-   DEF_ERROR("red-black tree");
 
 protected:
    virtual int _compare (Key key, const Node &node) const = 0;
@@ -1140,6 +1142,18 @@ public:
    Value & value (int node) const
    {
       return this->_nodes->at(node).value;
+   }
+
+   void copy (const RedBlackStringObjMap<Value> &other)
+   {
+      clear();
+      for (int i = other.begin(); i != other.end(); i = other.next(i))
+      {
+         const char *key = other.key(i);
+         int id = insert(key);
+         // Use `copy` method if `Value` type
+         value(id).copy(other.value(i));
+      }
    }
 
 protected:

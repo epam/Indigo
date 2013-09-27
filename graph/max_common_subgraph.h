@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -35,7 +35,7 @@ namespace indigo {
 class DLLEXPORT MaxCommonSubgraph{
 public:
 
-   DEF_ERROR("MCS");
+   DECL_ERROR;
 
    MaxCommonSubgraph(Graph& subgraph, Graph& supergraph);
    ~MaxCommonSubgraph();
@@ -482,6 +482,7 @@ public:
       //assign vertex from 2 graph to 1
       int* _y; 
       //error list  
+      CP_DECL;
       TL_CP_DECL(Array<int>, _errorList); 
       //list of error vertrces 
       TL_CP_DECL(Array<int>, _listErrVertices);  

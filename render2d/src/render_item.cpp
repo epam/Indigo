@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,6 +18,8 @@
 #include "render_item_factory.h"
 
 using namespace indigo;
+
+IMPL_ERROR(RenderItemBase, "RenderItemBase");
 
 RenderItemBase::RenderItemBase (RenderItemFactory& factory) : referenceY(0),
         _factory(factory),

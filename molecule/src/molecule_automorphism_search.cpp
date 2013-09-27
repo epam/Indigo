@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -23,6 +23,9 @@
 #include "molecule/elements.h"
 
 using namespace indigo;
+
+IMPL_ERROR(MoleculeAutomorphismSearch, "Molecule automorphism search");
+IMPL_TIMEOUT_EXCEPTION(MoleculeAutomorphismSearch, "Molecule automorphism search");
 
 MoleculeAutomorphismSearch::MoleculeAutomorphismSearch () :
    TL_CP_GET(_approximation_orbits),

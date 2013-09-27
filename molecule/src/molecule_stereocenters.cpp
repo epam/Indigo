@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -20,6 +20,8 @@
 #include "molecule/elements.h"
 
 using namespace indigo;
+
+IMPL_ERROR(MoleculeStereocenters, "stereocenters");
 
 MoleculeStereocenters::MoleculeStereocenters ()
 {
@@ -164,7 +166,8 @@ bool MoleculeStereocenters::isPossibleStereocenter (int atom_idx,
    int sure_double_bonds = 0;
    int possible_double_bonds = 0;
 
-   if (vertex.degree() > 4)
+   int degree = vertex.degree();
+   if (degree > 4 || degree <= 2)
       return 0;
 
    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
@@ -265,7 +268,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
 
    int n_pure_hydrogens = 0;
 
-   if (degree > 4)
+   if (degree <= 2 || degree > 4)
       return;
 
    bool is_either = false;
@@ -366,10 +369,10 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
          return;
 
       if (zero_bond_length)
-         throw Error("zero bond length");
+         throw Error("zero bond length near atom %d", atom_idx);
 
       if (n_pure_hydrogens > 1)
-         throw Error("%d hydrogens near stereocenter", n_pure_hydrogens);
+         throw Error("%d hydrogens near stereocenter %d", n_pure_hydrogens, atom_idx);
 
       int xyz1, xyz2;
 
@@ -412,17 +415,17 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
       }
 
       if (main2 == -1)
-         throw Error("internal error: can not find opposite bond");
+         throw Error("internal error: can not find opposite bond near atom %d", atom_idx);
 
       if (main_dir == BOND_UP && mol.getBondDirection2(atom_idx, edge_ids[main2].nei_idx) == BOND_DOWN)
-         throw Error("stereo types of the opposite bonds mismatch");
+         throw Error("stereo types of the opposite bonds mismatch near atom %d", atom_idx);
       if (main_dir == BOND_DOWN && mol.getBondDirection2(atom_idx, edge_ids[main2].nei_idx) == BOND_UP)
-         throw Error("stereo types of the opposite bonds mismatch");
+         throw Error("stereo types of the opposite bonds mismatch near atom %d", atom_idx);
 
       if (main_dir == mol.getBondDirection2(atom_idx, edge_ids[side1].nei_idx))
-         throw Error("stereo types of non-opposite bonds match");
+         throw Error("stereo types of non-opposite bonds match near atom %d", atom_idx);
       if (main_dir == mol.getBondDirection2(atom_idx, edge_ids[side2].nei_idx))
-         throw Error("stereo types of non-opposite bonds match");
+         throw Error("stereo types of non-opposite bonds match near atom %d", atom_idx);
 
       if (main1 == 3 || main2 == 3)
          last_atom_dir = main_dir;
@@ -493,7 +496,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
          {
             if (dirs[(main_nei + 1) % 3] == dirs[main_nei] ||
                 dirs[(main_nei + 2) % 3] == dirs[main_nei])
-               throw Error("directions of neighbor stereo bonds match");
+               throw Error("directions of neighbor stereo bonds match near atom %d", atom_idx);
             if (dirs[main_nei] == BOND_UP)
                dir = -1;
          }
@@ -505,7 +508,7 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
             if (d1 == 0)
                d1 = d2;
             else if (d2 != 0 && d1 != d2)
-               throw Error("directions of opposite stereo bonds do not match");
+               throw Error("directions of opposite stereo bonds do not match near atom %d", atom_idx);
                
             if (d1 == 0)
                return;
@@ -517,26 +520,26 @@ void MoleculeStereocenters::_buildOneCenter (int atom_idx, int *sensible_bonds_o
       else if (!degenerate)
       {
          if (n_down > 0 && n_up > 0)
-            throw Error("one bond up, one bond down -- indefinite case");
+            throw Error("one bond up, one bond down -- indefinite case near atom %d", atom_idx);
 
          if (!possible_lone_pair)
          {
             if (n_up == 3)
-               throw Error("all 3 bonds up near stereoatom");
+               throw Error("all 3 bonds up near stereoatom %d", atom_idx);
             if (n_down == 3)
-               throw Error("all 3 bonds down near stereoatom");
+               throw Error("all 3 bonds down near stereoatom %d", atom_idx);
          } 
          if (n_down > 0)
             dir = -1;
       }
       else
-         throw Error("degenerate case for 3 bonds near stereoatom");
+         throw Error("degenerate case for 3 bonds near stereoatom %d", atom_idx);
 
       if (zero_bond_length)
-         throw Error("zero bond length");
+         throw Error("zero bond length near atom %d", atom_idx);
 
       if (n_pure_hydrogens > 0 && !possible_lone_pair)
-         throw Error("have hydrogen(s) besides implicit hydrogen near stereocenter");
+         throw Error("have hydrogen(s) besides implicit hydrogen near stereocenter %d", atom_idx);
 
       int sign = _sign(edge_ids[0].vec, edge_ids[1].vec, edge_ids[2].vec);
 
@@ -599,6 +602,11 @@ int MoleculeStereocenters::_xyzzy (const Vec3f &v1, const Vec3f &v2, const Vec3f
 
 int MoleculeStereocenters::_sign (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3)
 {
+   // Check the angle between bonds
+   float dot_eps = 0.997f; // Corresponds to 4.5 degrees
+   if (Vec3f::dot(v1, v2) > dot_eps || Vec3f::dot(v1, v3) > dot_eps || Vec3f::dot(v2, v3) > dot_eps)
+      throw Error("angle between bonds is too small");
+
    float res = (v1.x - v3.x) * (v2.y - v3.y) - (v1.y - v3.y) * (v2.x - v3.x);
    float eps = 1e-3f;
 
@@ -656,10 +664,20 @@ int MoleculeStereocenters::getGroup (int idx) const
    return _stereocenters.at(idx).group;
 }
 
+void MoleculeStereocenters::setGroup (int idx, int group)
+{
+   _stereocenters.at(idx).group = group;
+}
+
 void MoleculeStereocenters::setType (int idx, int type, int group)
 {
    _stereocenters.at(idx).type = type;
    _stereocenters.at(idx).group = group;
+}
+
+void MoleculeStereocenters::setType (int idx, int type)
+{
+   _stereocenters.at(idx).type = type;
 }
 
 const int * MoleculeStereocenters::getPyramid (int idx) const
@@ -680,8 +698,8 @@ int * MoleculeStereocenters::getPyramid (int idx)
 void MoleculeStereocenters::invertPyramid (int idx)
 {
    int tmp;
-
-   __swap(_stereocenters.at(idx).pyramid[0], _stereocenters.at(idx).pyramid[1], tmp);
+   int *pyramid = getPyramid(idx);
+   __swap(pyramid[0], pyramid[1], tmp);
 }
 
 void MoleculeStereocenters::getAbsAtoms (Array<int> &indices)
@@ -779,6 +797,17 @@ bool MoleculeStereocenters::haveAllAbs ()
          return false;
 
    return true;
+}
+
+bool MoleculeStereocenters::haveAbs ()
+{
+   int i;
+
+   for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+      if (_stereocenters.value(i).type == ATOM_ABS)
+         return true;
+
+   return false;
 }
 
 bool MoleculeStereocenters::haveAllAbsAny ()
@@ -1461,8 +1490,12 @@ void MoleculeStereocenters::_convertAtomToImplicitHydrogen (int pyramid[4], int 
 
 void MoleculeStereocenters::markBond (int atom_idx)
 {
+   const _Atom *atom_ptr = _stereocenters.at2(atom_idx);
+   if (atom_ptr == NULL)
+      return;
+
    BaseMolecule &mol = _getMolecule();
-   const _Atom &atom = _stereocenters.at(atom_idx);
+   const _Atom &atom = *atom_ptr;
    int pyramid[4];
    int mult = 1;
    int size = 0;
@@ -1470,10 +1503,9 @@ void MoleculeStereocenters::markBond (int atom_idx)
 
    memcpy(pyramid, atom.pyramid, 4 * sizeof(int));
 
+   const Vertex &vertex = mol.getVertex(atom_idx);
    if (atom.type <= ATOM_ANY)
    {
-      const Vertex &vertex = mol.getVertex(atom_idx);
-
       // fill the pyramid
       for (j = vertex.neiBegin(); j != vertex.neiEnd() && size < 4; j = vertex.neiNext(j))
          pyramid[size++] = vertex.neiVertex(j);
@@ -1481,11 +1513,11 @@ void MoleculeStereocenters::markBond (int atom_idx)
    else
       size = (pyramid[3] == -1 ? 3 : 4);
 
-   for (j = 0; j < size; j++)
-   {
-      int ei = mol.findEdgeIndex(atom_idx, pyramid[j]);
-      mol.setBondDirection(ei, 0);
-   }
+   // clear bond directions that goes to this atom, and not from this atom because they can 
+   // be marked by other sterecenter
+   for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+      if (mol.getBondDirection2(atom_idx, vertex.neiVertex(j)) != 0)
+         mol.setBondDirection(vertex.neiEdge(j), 0);
 
    int edge_idx = -1;
 

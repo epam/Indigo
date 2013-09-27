@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -39,13 +39,14 @@ public:
    virtual int  length ();
    virtual void readAll (Array<char> &arr);
 
-   DEF_ERROR("GZip scanner");
+   DECL_ERROR;
 protected:
    Scanner  &_source;
    z_stream  _zstream;
 
    bool _read (int length, void *res);
    
+   CP_DECL;
    TL_CP_DECL(Array<Bytef>, _inbuf);
    TL_CP_DECL(Array<Bytef>, _outbuf);
    int  _outbuf_start;

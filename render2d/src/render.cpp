@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -29,6 +29,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(Render, "Render");
+
 Render::Render (RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet) :
    minMarg(2),
    _rc(rc), _settings(rc.getRenderSettings()), _cnvOpt(cnvOpt), _opt(rc.opt), 
@@ -53,4 +55,42 @@ float Render::_getObjScale (int item)
       avgBondLength = 1.0f;
    float objScale = 1 / avgBondLength;
    return objScale;
+}
+
+int Render::_getMaxWidth ()
+{
+   int maxPageSize = _rc.getMaxPageSize();
+   return _cnvOpt.maxWidth > 0 ? __min(_cnvOpt.maxWidth, maxPageSize) : maxPageSize;
+}
+
+int Render::_getMaxHeight ()
+{
+   int maxPageSize = _rc.getMaxPageSize();
+   return _cnvOpt.maxHeight > 0 ? __min(_cnvOpt.maxHeight, maxPageSize) : maxPageSize;
+}
+
+float Render::_getScale (int w, int h)
+{
+   float scale = _getMaxScale(w, h);
+   if (_bondLength > 0 && _bondLength < scale)
+      return (float)_bondLength;
+   return scale;
+}
+
+float Render::_getMaxScale (int w, int h)
+{
+   float s = (float)(_bondLength > 0 ? _bondLength : 100);
+   int maxWidth = _getMaxWidth();
+   int maxHeight = _getMaxHeight();
+   int defaultWidth = _getDefaultWidth(s);
+   int defaultHeight = _getDefaultHeight(s);
+   if (h >= 1 && w >= 1)
+      return _getScaleGivenSize(w, h);
+   if (h >= 1)
+      return _getScaleGivenSize(maxWidth, h);
+   if (w >= 1)
+      return _getScaleGivenSize(w, maxHeight);
+   if (defaultWidth <= maxWidth && defaultHeight <= maxHeight)
+      return s;
+   return _getScaleGivenSize(__min(defaultWidth, maxWidth), __min(defaultHeight, maxHeight));
 }

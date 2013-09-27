@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -24,6 +24,10 @@ class Scanner;
 
 class SdfLoader
 {
+	/*
+	 * Max data size is 100 Mb
+	 */
+	enum { MAX_DATA_SIZE = 104857600 };
 public:
    SdfLoader (Scanner &scanner);
    ~SdfLoader ();
@@ -37,10 +41,11 @@ public:
 
    void readAt (int index);
 
+   CP_DECL;
    TL_CP_DECL(Array<char>, data);
    TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
 
-   DEF_ERROR("SDF loader");
+   DECL_ERROR;
 
 protected:
    Scanner *_scanner;

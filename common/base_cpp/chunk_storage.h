@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -41,7 +41,7 @@ public:
 
    void pop ();
 
-   DEF_ERROR("chunk storage");
+   DECL_ERROR;
 private:
    Array<byte> _arr;
    Array<int> _offset;

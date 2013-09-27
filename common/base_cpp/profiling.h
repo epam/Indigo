@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -48,23 +48,23 @@
    var_name##_timer.getTime()
 
 #define profIncTimer(name, dt) \
-   {                               \
+   do {                               \
       _PROF_GET_NAME_INDEX(var_name, name)   \
-      ProfilingSystem &inst = ProfilingSystem::getInstance(); \
+      indigo::ProfilingSystem &inst = indigo::ProfilingSystem::getInstance(); \
       inst.addTimer(var_name##_name_index, dt); \
-   }
+   } while (false)
 
 #define profIncCounter(name, count) \
-   {                                       \
+   do {                                       \
       _PROF_GET_NAME_INDEX(var_name, name)   \
-      ProfilingSystem &inst = ProfilingSystem::getInstance(); \
+      indigo::ProfilingSystem &inst = indigo::ProfilingSystem::getInstance(); \
       inst.addCounter(var_name##_name_index, count); \
-   }
+   } while (false)
 
-#define profTimersReset()        ProfilingSystem::getInstance().reset(false)
-#define profTimersResetSession() ProfilingSystem::getInstance().reset(true)
+#define profTimersReset()        indigo::ProfilingSystem::getInstance().reset(false)
+#define profTimersResetSession() indigo::ProfilingSystem::getInstance().reset(true)
 
-#define profGetStatistics(output, all) ProfilingSystem::getInstance().getStatistics(output, all)
+#define profGetStatistics(output, all) indigo::ProfilingSystem::getInstance().getStatistics(output, all)
 
 namespace indigo {
 class Output;
@@ -86,7 +86,7 @@ public:
    qword getLabelValue       (const char *name, bool total = false);
    qword getLabelCallCount   (const char *name, bool total = false);
 
-   DEF_ERROR("Profiling system");
+   DECL_ERROR;
 private:
    struct Record
    {

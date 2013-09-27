@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -56,7 +56,7 @@ public:
 
    void getNeighborsClosing (int v_idx, Array<int> &res);
 
-   DEF_ERROR("DFS walk");
+   DECL_ERROR;
 protected:
    struct _VertexDesc
    {
@@ -80,6 +80,7 @@ protected:
 
    const Graph &_graph;
    
+   CP_DECL;
    TL_CP_DECL(Array<_VertexDesc>,    _vertices);
    TL_CP_DECL(Array<_EdgeDesc>,      _edges);
    

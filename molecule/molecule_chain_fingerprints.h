@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -50,7 +50,7 @@ public:
 
    const byte * get ();
 
-   DEF_ERROR("chain fingerprint builder");
+   DECL_ERROR;
 protected:
 
    static void _handleChain (Graph &graph, int size, const int *vertices, const int *edges, void *context);
@@ -58,6 +58,7 @@ protected:
    Molecule &_mol;
    const MoleculeChainFingerprintParameters &_parameters;
 
+   CP_DECL;
    TL_CP_DECL(Array<byte>, _fingerprint);
 
 private:

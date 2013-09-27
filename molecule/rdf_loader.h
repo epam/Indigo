@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -30,6 +30,10 @@ class Scanner;
  */
 class RdfLoader
 {
+	/*
+	 * Max data size is 100 Mb
+	 */
+	enum { MAX_DATA_SIZE = 104857600 };
 public:
    RdfLoader (Scanner &scanner);
    ~RdfLoader ();
@@ -41,6 +45,7 @@ public:
    int currentNumber ();
    int count ();
 
+   CP_DECL;
    /*
     * Data buffer with reaction or molecule for current record
     */
@@ -55,7 +60,7 @@ public:
     */
    bool isMolecule() const { return _isMolecule;}
 
-   DEF_ERROR("RDF loader");
+   DECL_ERROR;
 
 protected:
 

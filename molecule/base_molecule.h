@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -23,6 +23,7 @@
 #include "molecule/molecule_allene_stereo.h"
 #include "base_cpp/obj_array.h"
 #include "molecule/molecule_rgroups.h"
+#include "molecule/molecule_arom.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -168,6 +169,7 @@ public:
    virtual int getAtomRingBondsCount (int idx) = 0; // >= 0 -- ring bonds count, -1 -- not sure
 
    int getAtomRadical_NoThrow (int idx, int fallback);
+   int getAtomValence_NoThrow (int idx, int fallback);
 
    virtual int getAtomMaxH   (int idx) = 0;
    virtual int getAtomMinH   (int idx) = 0;
@@ -181,9 +183,9 @@ public:
    int countRSites ();
    int countSGroups ();
 
-   virtual bool isRSite (int atom_idx) = 0;
-   virtual int  getRSiteBits (int atom_idx) = 0;
-   virtual void allowRGroupOnRSite (int atom_idx, int rg_idx) = 0;
+   virtual bool  isRSite (int atom_idx) = 0;
+   virtual dword getRSiteBits (int atom_idx) = 0;
+   virtual void  allowRGroupOnRSite (int atom_idx, int rg_idx) = 0;
 
    void getAllowedRGroups (int atom_idx, Array<int> &rgroup_list);
    int  getSingleAllowedRGroup (int atom_idx);
@@ -232,9 +234,9 @@ public:
    virtual bool bondStereoCare (int idx) = 0;
 
    // Returns true if some bonds were changed
-   virtual bool aromatize () = 0;
+   virtual bool aromatize (const AromaticityOptions &options) = 0;
    // Returns true if all bonds were dearomatized
-   virtual bool dearomatize () = 0;
+   virtual bool dearomatize (const AromaticityOptions &options) = 0;
 
    enum
    {
@@ -247,6 +249,8 @@ public:
    Vec3f & getAtomXyz (int idx);
    void setAtomXyz (int idx, float x, float y, float z);
    void setAtomXyz (int idx, const Vec3f& v);
+
+   void clearXyz ();
 
    MoleculeStereocenters stereocenters;
    MoleculeCisTrans cis_trans;
@@ -338,7 +342,9 @@ public:
 
    void getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res);
 
-   DEF_ERROR("molecule");
+   void getAtomSymbol (int v, Array<char> &output);
+
+   DECL_ERROR;
 protected:
 
    void _mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int> &vertices,

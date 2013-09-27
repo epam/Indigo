@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,6 +17,8 @@
 #include "base_cpp/output.h"
 
 using namespace indigo;
+
+IMPL_ERROR(LzwEncoder, "LZW encoder");
 
 LzwEncoder::LzwEncoder( LzwDict &NewDict, Output &NewOut ) : 
 _dict(NewDict), _bitout(_dict.getBitCodeSize(), NewOut) 

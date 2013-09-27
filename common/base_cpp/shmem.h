@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -29,7 +29,7 @@ public:
 
    void * ptr () {return _pointer;}
 
-   DEF_ERROR("shared memory");
+   DECL_ERROR;
 private:
    bool   _was_first;
    char   _id[1024];

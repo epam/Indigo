@@ -38,13 +38,36 @@
 
 #include "cairoint.h"
 
+#if CAIRO_HAS_XLIB_XCB_FUNCTIONS
+
 #include "cairo-xlib.h"
 #include "cairo-xcb.h"
 
 #include "cairo-xcb-private.h"
 #include "cairo-xlib-xrender-private.h"
 
+#include "cairo-default-context-private.h"
+#include "cairo-list-inline.h"
+#include "cairo-image-surface-private.h"
+#include "cairo-surface-backend-private.h"
+
 #include <X11/Xlib-xcb.h>
+#include <X11/Xlibint.h>	/* For XESetCloseDisplay */
+
+struct cairo_xlib_xcb_display_t {
+    cairo_device_t  base;
+
+    Display        *dpy;
+    cairo_device_t *xcb_device;
+    XExtCodes      *codes;
+
+    cairo_list_t    link;
+};
+typedef struct cairo_xlib_xcb_display_t cairo_xlib_xcb_display_t;
+
+/* List of all #cairo_xlib_xcb_display_t alive,
+ * protected by _cairo_xlib_display_mutex */
+static cairo_list_t displays;
 
 static cairo_surface_t *
 _cairo_xlib_xcb_surface_create (void *dpy,
@@ -78,8 +101,43 @@ _cairo_xlib_xcb_surface_finish (void *abstract_surface)
     cairo_surface_finish (&surface->xcb->base);
     status = surface->xcb->base.status;
     cairo_surface_destroy (&surface->xcb->base);
+    surface->xcb = NULL;
 
     return status;
+}
+
+static cairo_surface_t *
+_cairo_xlib_xcb_surface_create_similar_image (void			*abstract_other,
+					      cairo_format_t		 format,
+					      int			 width,
+					      int			 height)
+{
+    cairo_xlib_xcb_surface_t *surface = abstract_other;
+    return cairo_surface_create_similar_image (&surface->xcb->base, format, width, height);
+}
+
+static cairo_image_surface_t *
+_cairo_xlib_xcb_surface_map_to_image (void *abstract_surface,
+				      const cairo_rectangle_int_t *extents)
+{
+    cairo_xlib_xcb_surface_t *surface = abstract_surface;
+    return _cairo_surface_map_to_image (&surface->xcb->base, extents);
+}
+
+static cairo_int_status_t
+_cairo_xlib_xcb_surface_unmap (void *abstract_surface,
+			       cairo_image_surface_t *image)
+{
+    cairo_xlib_xcb_surface_t *surface = abstract_surface;
+    return _cairo_surface_unmap_image (&surface->xcb->base, image);
+}
+
+static cairo_surface_t *
+_cairo_xlib_xcb_surface_source (void *abstract_surface,
+				cairo_rectangle_int_t *extents)
+{
+    cairo_xlib_xcb_surface_t *surface = abstract_surface;
+    return _cairo_surface_get_source (&surface->xcb->base, extents);
 }
 
 static cairo_status_t
@@ -114,17 +172,17 @@ _cairo_xlib_xcb_surface_get_font_options (void *abstract_surface,
 					  cairo_font_options_t *options)
 {
     cairo_xlib_xcb_surface_t *surface = abstract_surface;
-    surface->xcb->base.backend->get_font_options (surface->xcb, options);
+    cairo_surface_get_font_options (&surface->xcb->base, options);
 }
 
 static cairo_int_status_t
 _cairo_xlib_xcb_surface_paint (void			*abstract_surface,
 			       cairo_operator_t		 op,
 			       const cairo_pattern_t	*source,
-			       cairo_clip_t		*clip)
+			       const cairo_clip_t	*clip)
 {
     cairo_xlib_xcb_surface_t *surface = abstract_surface;
-    return surface->xcb->base.backend->paint (surface->xcb, op, source, clip);
+    return _cairo_surface_paint (&surface->xcb->base, op, source, clip);
 }
 
 static cairo_int_status_t
@@ -132,46 +190,45 @@ _cairo_xlib_xcb_surface_mask (void			*abstract_surface,
 			      cairo_operator_t		 op,
 			      const cairo_pattern_t	*source,
 			      const cairo_pattern_t	*mask,
-			      cairo_clip_t		*clip)
+			      const cairo_clip_t	*clip)
 {
     cairo_xlib_xcb_surface_t *surface = abstract_surface;
-    return surface->xcb->base.backend->mask (surface->xcb, op, source, mask, clip);
+    return _cairo_surface_mask (&surface->xcb->base, op, source, mask, clip);
 }
 
 static cairo_int_status_t
 _cairo_xlib_xcb_surface_stroke (void				*abstract_surface,
 				cairo_operator_t		 op,
 				const cairo_pattern_t		*source,
-				cairo_path_fixed_t		*path,
+				const cairo_path_fixed_t	*path,
 				const cairo_stroke_style_t	*style,
 				const cairo_matrix_t		*ctm,
 				const cairo_matrix_t		*ctm_inverse,
 				double				 tolerance,
 				cairo_antialias_t		 antialias,
-				cairo_clip_t			*clip)
+				const cairo_clip_t		*clip)
 {
     cairo_xlib_xcb_surface_t *surface = abstract_surface;
-    return surface->xcb->base.backend->stroke (surface->xcb,
-					       op, source, path, style,
-					       ctm, ctm_inverse,
-					       tolerance, antialias, clip);
+    return _cairo_surface_stroke (&surface->xcb->base,
+				  op, source, path, style, ctm, ctm_inverse,
+				  tolerance, antialias, clip);
 }
 
 static cairo_int_status_t
 _cairo_xlib_xcb_surface_fill (void			*abstract_surface,
 			      cairo_operator_t		 op,
 			      const cairo_pattern_t	*source,
-			      cairo_path_fixed_t	*path,
+			      const cairo_path_fixed_t	*path,
 			      cairo_fill_rule_t		 fill_rule,
 			      double			 tolerance,
 			      cairo_antialias_t		 antialias,
-			      cairo_clip_t		*clip)
+			      const cairo_clip_t	*clip)
 {
     cairo_xlib_xcb_surface_t *surface = abstract_surface;
-    return surface->xcb->base.backend->fill (surface->xcb,
-					     op, source, path,
-					     fill_rule, tolerance, antialias,
-					     clip);
+    return _cairo_surface_fill (&surface->xcb->base,
+				op, source, path,
+				fill_rule, tolerance,
+				antialias, clip);
 }
 
 static cairo_int_status_t
@@ -181,20 +238,22 @@ _cairo_xlib_xcb_surface_glyphs (void			*abstract_surface,
 				cairo_glyph_t		*glyphs,
 				int			 num_glyphs,
 				cairo_scaled_font_t	*scaled_font,
-				cairo_clip_t		*clip,
-				int *num_remaining)
+				const cairo_clip_t	*clip)
 {
     cairo_xlib_xcb_surface_t *surface = abstract_surface;
-    return surface->xcb->base.backend->show_glyphs (surface->xcb, op, source,
-						    glyphs, num_glyphs, scaled_font,
-						    clip, num_remaining);
+    return _cairo_surface_show_text_glyphs (&surface->xcb->base, op, source,
+					    NULL, 0,
+					    glyphs, num_glyphs,
+					    NULL, 0, 0,
+					    scaled_font, clip);
 }
 
 static cairo_status_t
-_cairo_xlib_xcb_surface_flush (void *abstract_surface)
+_cairo_xlib_xcb_surface_flush (void *abstract_surface, unsigned flags)
 {
     cairo_xlib_xcb_surface_t *surface = abstract_surface;
-    return surface->xcb->base.backend->flush (surface->xcb);
+    /* We have to call cairo_surface_flush() to make sure snapshots are detached */
+    return _cairo_surface_flush (&surface->xcb->base, flags);
 }
 
 static cairo_status_t
@@ -203,39 +262,169 @@ _cairo_xlib_xcb_surface_mark_dirty (void *abstract_surface,
 				    int width, int height)
 {
     cairo_xlib_xcb_surface_t *surface = abstract_surface;
-    return surface->xcb->base.backend->mark_dirty_rectangle (surface->xcb, x, y, width, height);
+    cairo_surface_mark_dirty_rectangle (&surface->xcb->base, x, y, width, height);
+    return cairo_surface_status (&surface->xcb->base);
 }
 
 static const cairo_surface_backend_t _cairo_xlib_xcb_surface_backend = {
     CAIRO_SURFACE_TYPE_XLIB,
-    _cairo_xlib_xcb_surface_create_similar,
     _cairo_xlib_xcb_surface_finish,
+
+    _cairo_default_context_create, /* XXX */
+
+    _cairo_xlib_xcb_surface_create_similar,
+    _cairo_xlib_xcb_surface_create_similar_image,
+    _cairo_xlib_xcb_surface_map_to_image,
+    _cairo_xlib_xcb_surface_unmap,
+
+    _cairo_xlib_xcb_surface_source,
     _cairo_xlib_xcb_surface_acquire_source_image,
     _cairo_xlib_xcb_surface_release_source_image,
-    NULL, NULL, NULL, /* dest acquire/release/clone */
-
-    NULL, /* composite */
-    NULL, /* fill */
-    NULL, /* trapezoids */
-    NULL, /* span */
-    NULL, /* check-span */
+    NULL, /* snapshot */
 
     NULL, /* copy_page */
     NULL, /* show_page */
+
     _cairo_xlib_xcb_surface_get_extents,
-    NULL, /* old-glyphs */
     _cairo_xlib_xcb_surface_get_font_options,
 
     _cairo_xlib_xcb_surface_flush,
     _cairo_xlib_xcb_surface_mark_dirty,
-    NULL, NULL, /* font/glyph fini */
 
     _cairo_xlib_xcb_surface_paint,
     _cairo_xlib_xcb_surface_mask,
     _cairo_xlib_xcb_surface_stroke,
     _cairo_xlib_xcb_surface_fill,
+    NULL, /* fill_stroke */
     _cairo_xlib_xcb_surface_glyphs,
 };
+
+static void
+_cairo_xlib_xcb_display_finish (void *abstract_display)
+{
+    cairo_xlib_xcb_display_t *display = (cairo_xlib_xcb_display_t *) abstract_display;
+
+    CAIRO_MUTEX_LOCK (_cairo_xlib_display_mutex);
+    cairo_list_del (&display->link);
+    CAIRO_MUTEX_UNLOCK (_cairo_xlib_display_mutex);
+
+    cairo_device_destroy (display->xcb_device);
+    display->xcb_device = NULL;
+
+    XESetCloseDisplay (display->dpy, display->codes->extension, NULL);
+    /* Drop the reference from _cairo_xlib_xcb_device_create */
+    cairo_device_destroy (&display->base);
+}
+
+static int
+_cairo_xlib_xcb_close_display(Display *dpy, XExtCodes *codes)
+{
+    cairo_xlib_xcb_display_t *display;
+
+    CAIRO_MUTEX_LOCK (_cairo_xlib_display_mutex);
+    cairo_list_foreach_entry (display,
+			      cairo_xlib_xcb_display_t,
+			      &displays,
+			      link)
+    {
+	if (display->dpy == dpy)
+	{
+	    /* _cairo_xlib_xcb_display_finish will lock the mutex again
+	     * -> deadlock (This mutex isn't recursive) */
+	    cairo_device_reference (&display->base);
+	    CAIRO_MUTEX_UNLOCK (_cairo_xlib_display_mutex);
+
+	    /* Make sure the xcb and xlib-xcb devices are finished */
+	    cairo_device_finish (display->xcb_device);
+	    cairo_device_finish (&display->base);
+
+	    cairo_device_destroy (&display->base);
+	    return 0;
+	}
+    }
+    CAIRO_MUTEX_UNLOCK (_cairo_xlib_display_mutex);
+
+    return 0;
+}
+
+static const cairo_device_backend_t _cairo_xlib_xcb_device_backend = {
+    CAIRO_DEVICE_TYPE_XLIB,
+
+    NULL,
+    NULL,
+
+    NULL, /* flush */
+    _cairo_xlib_xcb_display_finish,
+    free, /* destroy */
+};
+
+static cairo_device_t *
+_cairo_xlib_xcb_device_create (Display *dpy, cairo_device_t *xcb_device)
+{
+    cairo_xlib_xcb_display_t *display = NULL;
+    cairo_device_t *device;
+
+    if (xcb_device == NULL)
+	return NULL;
+
+    CAIRO_MUTEX_INITIALIZE ();
+
+    CAIRO_MUTEX_LOCK (_cairo_xlib_display_mutex);
+    if (displays.next == NULL) {
+	cairo_list_init (&displays);
+    }
+
+    cairo_list_foreach_entry (display,
+			      cairo_xlib_xcb_display_t,
+			      &displays,
+			      link)
+    {
+	if (display->dpy == dpy) {
+	    /* Maintain MRU order. */
+	    if (displays.next != &display->link)
+		cairo_list_move (&display->link, &displays);
+
+	    /* Grab a reference for our caller */
+	    device = cairo_device_reference (&display->base);
+	    assert (display->xcb_device == xcb_device);
+	    goto unlock;
+	}
+    }
+
+    display = malloc (sizeof (cairo_xlib_xcb_display_t));
+    if (unlikely (display == NULL)) {
+	device = _cairo_device_create_in_error (CAIRO_STATUS_NO_MEMORY);
+	goto unlock;
+    }
+
+    display->codes = XAddExtension (dpy);
+    if (unlikely (display->codes == NULL)) {
+	device = _cairo_device_create_in_error (CAIRO_STATUS_NO_MEMORY);
+	free (display);
+	goto unlock;
+    }
+
+    _cairo_device_init (&display->base, &_cairo_xlib_xcb_device_backend);
+
+    XESetCloseDisplay (dpy, display->codes->extension, _cairo_xlib_xcb_close_display);
+    /* Add a reference for _cairo_xlib_xcb_display_finish. This basically means
+     * that the device's reference count never drops to zero
+     * as long as our Display* is alive. We need this because there is no
+     * "XDelExtension" to undo XAddExtension and having lots of registered
+     * extensions slows down libX11. */
+    cairo_device_reference (&display->base);
+
+    display->dpy = dpy;
+    display->xcb_device = cairo_device_reference(xcb_device);
+
+    cairo_list_add (&display->link, &displays);
+    device = &display->base;
+
+unlock:
+    CAIRO_MUTEX_UNLOCK (_cairo_xlib_display_mutex);
+
+    return device;
+}
 
 static cairo_surface_t *
 _cairo_xlib_xcb_surface_create (void *dpy,
@@ -257,8 +446,11 @@ _cairo_xlib_xcb_surface_create (void *dpy,
 
     _cairo_surface_init (&surface->base,
 			 &_cairo_xlib_xcb_surface_backend,
-			 xcb->device,
+			 _cairo_xlib_xcb_device_create (dpy, xcb->device),
 			 xcb->content);
+
+    /* _cairo_surface_init() got another reference to the device, drop ours */
+    cairo_device_destroy (surface->base.device);
 
     surface->display = dpy;
     surface->screen = scr;
@@ -416,6 +608,11 @@ cairo_xlib_surface_set_size (cairo_surface_t *abstract_surface,
 
     if (unlikely (abstract_surface->status))
 	return;
+    if (unlikely (abstract_surface->finished)) {
+	status = _cairo_surface_set_error (abstract_surface,
+		                           _cairo_error (CAIRO_STATUS_SURFACE_FINISHED));
+	return;
+    }
 
     if (surface->base.type != CAIRO_SURFACE_TYPE_XLIB) {
 	status = _cairo_surface_set_error (abstract_surface,
@@ -424,6 +621,10 @@ cairo_xlib_surface_set_size (cairo_surface_t *abstract_surface,
     }
 
     cairo_xcb_surface_set_size (&surface->xcb->base, width, height);
+    if (unlikely (surface->xcb->base.status)) {
+	status = _cairo_surface_set_error (abstract_surface,
+		                           _cairo_error (surface->xcb->base.status));
+    }
 }
 
 void
@@ -437,6 +638,11 @@ cairo_xlib_surface_set_drawable (cairo_surface_t   *abstract_surface,
 
     if (unlikely (abstract_surface->status))
 	return;
+    if (unlikely (abstract_surface->finished)) {
+	status = _cairo_surface_set_error (abstract_surface,
+		                           _cairo_error (CAIRO_STATUS_SURFACE_FINISHED));
+	return;
+    }
 
     if (surface->base.type != CAIRO_SURFACE_TYPE_XLIB) {
 	status = _cairo_surface_set_error (abstract_surface,
@@ -444,7 +650,11 @@ cairo_xlib_surface_set_drawable (cairo_surface_t   *abstract_surface,
 	return;
     }
 
-    ASSERT_NOT_REACHED;
+    cairo_xcb_surface_set_drawable (&surface->xcb->base, drawable, width, height);
+    if (unlikely (surface->xcb->base.status)) {
+	status = _cairo_surface_set_error (abstract_surface,
+		                           _cairo_error (surface->xcb->base.status));
+    }
 }
 
 Display *
@@ -465,7 +675,17 @@ cairo_xlib_surface_get_drawable (cairo_surface_t *abstract_surface)
 {
     cairo_xlib_xcb_surface_t *surface = (cairo_xlib_xcb_surface_t *) abstract_surface;
 
+    if (unlikely (abstract_surface->finished)) {
+	_cairo_error_throw (CAIRO_STATUS_SURFACE_FINISHED);
+	return 0;
+    }
     if (surface->base.type != CAIRO_SURFACE_TYPE_XLIB) {
+	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+	return 0;
+    }
+    /* This can happen when e.g. create_similar falls back to an image surface
+     * because we don't have the RENDER extension. */
+    if (surface->xcb->base.type != CAIRO_SURFACE_TYPE_XCB) {
 	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
 	return 0;
     }
@@ -504,7 +724,17 @@ cairo_xlib_surface_get_depth (cairo_surface_t *abstract_surface)
 {
     cairo_xlib_xcb_surface_t *surface = (cairo_xlib_xcb_surface_t *) abstract_surface;
 
+    if (unlikely (abstract_surface->finished)) {
+	_cairo_error_throw (CAIRO_STATUS_SURFACE_FINISHED);
+	return 0;
+    }
     if (surface->base.type != CAIRO_SURFACE_TYPE_XLIB) {
+	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+	return 0;
+    }
+    /* This can happen when e.g. create_similar falls back to an image surface
+     * because we don't have the RENDER extension. */
+    if (surface->xcb->base.type != CAIRO_SURFACE_TYPE_XCB) {
 	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
 	return 0;
     }
@@ -517,7 +747,17 @@ cairo_xlib_surface_get_width (cairo_surface_t *abstract_surface)
 {
     cairo_xlib_xcb_surface_t *surface = (cairo_xlib_xcb_surface_t *) abstract_surface;
 
+    if (unlikely (abstract_surface->finished)) {
+	_cairo_error_throw (CAIRO_STATUS_SURFACE_FINISHED);
+	return 0;
+    }
     if (surface->base.type != CAIRO_SURFACE_TYPE_XLIB) {
+	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+	return 0;
+    }
+    /* This can happen when e.g. create_similar falls back to an image surface
+     * because we don't have the RENDER extension. */
+    if (surface->xcb->base.type != CAIRO_SURFACE_TYPE_XCB) {
 	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
 	return 0;
     }
@@ -530,10 +770,75 @@ cairo_xlib_surface_get_height (cairo_surface_t *abstract_surface)
 {
     cairo_xlib_xcb_surface_t *surface = (cairo_xlib_xcb_surface_t *) abstract_surface;
 
+    if (unlikely (abstract_surface->finished)) {
+	_cairo_error_throw (CAIRO_STATUS_SURFACE_FINISHED);
+	return 0;
+    }
     if (surface->base.type != CAIRO_SURFACE_TYPE_XLIB) {
+	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
+	return 0;
+    }
+    /* This can happen when e.g. create_similar falls back to an image surface
+     * because we don't have the RENDER extension. */
+    if (surface->xcb->base.type != CAIRO_SURFACE_TYPE_XCB) {
 	_cairo_error_throw (CAIRO_STATUS_SURFACE_TYPE_MISMATCH);
 	return 0;
     }
 
     return surface->xcb->height;
 }
+
+void
+cairo_xlib_device_debug_cap_xrender_version (cairo_device_t *device,
+					     int major, int minor)
+{
+    cairo_xlib_xcb_display_t *display = (cairo_xlib_xcb_display_t *) device;
+
+    if (device == NULL || device->status)
+	return;
+
+    if (device->backend->type != CAIRO_DEVICE_TYPE_XLIB)
+	return;
+
+    cairo_xcb_device_debug_cap_xrender_version (display->xcb_device,
+						major, minor);
+}
+
+void
+cairo_xlib_device_debug_set_precision (cairo_device_t *device,
+				       int precision)
+{
+    cairo_xlib_xcb_display_t *display = (cairo_xlib_xcb_display_t *) device;
+
+    if (device == NULL || device->status)
+	return;
+    if (device->backend->type != CAIRO_DEVICE_TYPE_XLIB) {
+	cairo_status_t status;
+
+	status = _cairo_device_set_error (device, CAIRO_STATUS_DEVICE_TYPE_MISMATCH);
+	(void) status;
+	return;
+    }
+
+    cairo_xcb_device_debug_set_precision (display->xcb_device, precision);
+}
+
+int
+cairo_xlib_device_debug_get_precision (cairo_device_t *device)
+{
+    cairo_xlib_xcb_display_t *display = (cairo_xlib_xcb_display_t *) device;
+
+    if (device == NULL || device->status)
+	return -1;
+    if (device->backend->type != CAIRO_DEVICE_TYPE_XLIB) {
+	cairo_status_t status;
+
+	status = _cairo_device_set_error (device, CAIRO_STATUS_DEVICE_TYPE_MISMATCH);
+	(void) status;
+	return -1;
+    }
+
+    return cairo_xcb_device_debug_get_precision (display->xcb_device);
+}
+
+#endif /* CAIRO_HAS_XLIB_XCB_FUNCTIONS */

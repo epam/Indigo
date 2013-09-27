@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -35,13 +35,15 @@ public:
    void loadReaction (Reaction &reaction);
 
    Scanner *xyz_scanner;
+   int version; // By default the latest version 2 is used
 
-   DEF_ERROR("CRF loader");
+   DECL_ERROR;
 protected:
 
    void _init ();
 
    void _loadMolecule (Molecule &molecule);
+   void _loadReactionMolecule (Reaction &reaction, int index, bool have_aam);
 
    Scanner &_scanner;
 

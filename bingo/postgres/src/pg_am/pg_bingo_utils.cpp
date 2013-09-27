@@ -27,6 +27,7 @@ extern "C" {
 #include "bingo_pg_buffer.h"
 #include "bingo_pg_config.h"
 #include "bingo_pg_cursor.h"
+#include "bingo_pg_index.h"
 
 
 
@@ -48,6 +49,15 @@ PGDLLEXPORT Datum bingo_restrpos(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getindexstructurescount);
 PGDLLEXPORT Datum getindexstructurescount(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(_get_structures_count);
+PGDLLEXPORT Datum _get_structures_count(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(_get_block_count);
+PGDLLEXPORT Datum _get_block_count(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(_precache_database);
+PGDLLEXPORT Datum _precache_database(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(getversion);
 PGDLLEXPORT Datum getversion(PG_FUNCTION_ARGS);
@@ -89,19 +99,328 @@ Datum getindexstructurescount(PG_FUNCTION_ARGS){
    Relation rel;
 
    rel = relation_open(relOid, AccessShareLock);
-
-   BingoPgBuffer meta_buffer;
-   meta_buffer.readBuffer(rel, BINGO_METAPAGE, BINGO_PG_READ);
-   BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(meta_buffer.getBuffer()));
-
-   result = meta_page->n_molecules;
-
-//   elog(INFO, "attrs num = %d", rel->rd_att->natts);
+   PG_BINGO_BEGIN
+   {
+      BingoPgBuffer meta_buffer;
+      meta_buffer.readBuffer(rel, BINGO_METAPAGE, BINGO_PG_READ);
+      BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(meta_buffer.getBuffer()));
+      result = meta_page->n_molecules;
+   }
+   PG_BINGO_END
 
    relation_close(rel, AccessShareLock);
 
    PG_RETURN_INT32(result);
 }
+
+
+
+Datum _get_structures_count(PG_FUNCTION_ARGS){
+   Oid relOid = PG_GETARG_OID(0);
+
+   int result = 0;
+   Relation rel;
+
+   rel = relation_open(relOid, AccessShareLock);
+   PG_BINGO_BEGIN
+   {
+      BingoPgBuffer meta_buffer;
+      meta_buffer.readBuffer(rel, BINGO_METAPAGE, BINGO_PG_READ);
+      BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(meta_buffer.getBuffer()));
+      result = meta_page->n_molecules;
+   }
+   PG_BINGO_END
+
+   relation_close(rel, AccessShareLock);
+
+   PG_RETURN_INT32(result);
+}
+
+Datum _get_block_count(PG_FUNCTION_ARGS){
+   Oid relOid = PG_GETARG_OID(0);
+
+   int result = 0;
+   Relation rel;
+
+   rel = relation_open(relOid, AccessShareLock);
+   PG_BINGO_BEGIN
+   {
+      BingoPgBuffer meta_buffer;
+      meta_buffer.readBuffer(rel, BINGO_METAPAGE, BINGO_PG_READ);
+      BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(meta_buffer.getBuffer()));
+      result = meta_page->n_sections;
+   }
+   PG_BINGO_END
+
+   relation_close(rel, AccessShareLock);
+
+   PG_RETURN_INT32(result);
+}
+
+class CacheParams {
+public:
+   enum {
+      SIZE_IN_BYTES,
+      SIZE_IN_KB,
+      SIZE_IN_MB,
+      SIZE_IN_GB
+   };
+   
+   int size_in;
+
+   
+   CacheParams(){
+      size_in = SIZE_IN_MB;
+   }
+   void getSizeIn(Array<char>& out) {
+      switch(size_in) {
+      case SIZE_IN_BYTES:
+         out.readString("B", true);
+         break;
+      case SIZE_IN_KB:
+         out.readString("KB", true);
+         break;
+      case SIZE_IN_MB:
+         out.readString("MB", true);
+         break;
+      case SIZE_IN_GB:
+         out.readString("GB", true);
+         break;
+      default:
+         break;
+      }
+   }
+   qword getSize(qword size_b) {
+      qword res = 0;
+      switch(size_in) {
+      case SIZE_IN_BYTES:
+         res = size_b;
+         break;
+      case SIZE_IN_KB:
+         res = size_b>>10;
+         break;
+      case SIZE_IN_MB:
+         res = size_b>>20;
+         break;
+      case SIZE_IN_GB:
+         res = size_b>>30;
+         break;
+      default:
+         break;
+      }
+      if(res == 0 && size_b > 0)
+         res = 1;
+      return res;
+   }
+   void parseParameters(const char* params_str) {
+   BufferScanner scanner(params_str);
+
+   QS_DEF(Array<char>, buf_word);
+
+   scanner.skipSpace();
+
+   while (!scanner.isEOF()) {
+      scanner.readWord(buf_word, 0);
+      scanner.skipSpace();
+
+      if(strcasecmp(buf_word.ptr(), "B")==0) {
+         size_in = CacheParams::SIZE_IN_BYTES;
+      } else if(strcasecmp(buf_word.ptr(), "KB")==0) {
+         size_in = CacheParams::SIZE_IN_KB;
+      } else if(strcasecmp(buf_word.ptr(), "MB")==0) {
+         size_in = CacheParams::SIZE_IN_MB;
+      } else if(strcasecmp(buf_word.ptr(), "GB")==0) {
+         size_in = CacheParams::SIZE_IN_GB;
+      } else {
+         throw BingoPgError("unknown parameter: %s", buf_word.ptr());
+      }
+
+      if (scanner.isEOF())
+         break;
+      scanner.skipSpace();
+   }
+}
+   ~CacheParams(){}
+private:
+   CacheParams(const CacheParams&);
+};
+
+Datum _precache_database(PG_FUNCTION_ARGS){
+   Oid relOid = PG_GETARG_OID(0);
+   Datum parameters_datum = PG_GETARG_DATUM(1);
+
+   void* res = 0;
+   Relation rel;
+   /*
+   *
+   */
+
+   rel = relation_open(relOid, AccessShareLock);
+   PG_BINGO_BEGIN
+   {
+      BingoPgText parameters_text(parameters_datum);
+      /*
+      * Parse parameters
+      */
+      CacheParams params;
+      params.parseParameters(parameters_text.getString());
+
+      Array<char> tmp_buffer;
+      Array<int> tmp_buffer2;
+      Array<char> result_buf;
+      ArrayOutput result(result_buf);
+      ItemPointerData item_buf;
+
+      int buf_size = 0;
+      int processed_num = 0;
+
+      qword total_cache_size = 0;
+      qword total_index_size = 0;
+
+      qword index_metapages_size = 0;
+      qword block_metapages_size = 0;
+
+      qword cmf_real_size = 0;
+      qword cmf_cache_size = 0;
+      qword sim_real_size = 0;
+      qword sim_cache_size = 0;
+      qword xyz_real_size = 0;
+      qword xyz_cache_size = 0;
+      qword fp_cache_size = 0;
+
+      result.printfCR("{");
+      
+      BingoPgIndex bingo_index(rel);
+      int section_idx = bingo_index.readBegin();
+      int section_num = bingo_index.readEnd();
+
+      result.printfCR("structures_number : %d,", bingo_index.getStructuresNumber());
+      result.printfCR("blocks_number : %d,", bingo_index.getSectionNumber());
+      
+      params.getSizeIn(tmp_buffer);
+      result.printfCR("size_in : '%s',", tmp_buffer.ptr());
+
+      /*
+      * Calc dictionary buf size
+      */
+      buf_size = bingo_index.getDictCount() * BingoPgBufferCacheBin::BUFFER_SIZE;
+      result.printfCR("dict_cache_size : %d,", params.getSize(buf_size));
+      total_cache_size += buf_size;
+      
+      total_index_size += BINGO_DICTIONARY_BLOCKS_NUM * BingoPgBufferCacheBin::BUFFER_SIZE;
+      /*
+       * Read config and offset blocks as meta
+       */
+      BingoPgConfig bingo_config;
+      bingo_index.readConfigParameters(bingo_config);
+      index_metapages_size += BINGO_METABLOCKS_NUM * BingoPgBufferCacheBin::BUFFER_SIZE;
+
+      total_cache_size += index_metapages_size;
+      total_index_size += index_metapages_size;
+
+      buf_size = section_num / BINGO_SECTION_OFFSET_PER_BLOCK + 1;
+
+      index_metapages_size += buf_size * BingoPgBufferCacheBin::BUFFER_SIZE;
+      total_cache_size += buf_size * BingoPgBufferCacheBin::BUFFER_SIZE;
+      
+      total_index_size += BINGO_SECTION_OFFSET_BLOCKS_NUM * BingoPgBufferCacheBin::BUFFER_SIZE;
+
+      BingoPgExternalBitset bitset_buf;
+      int str_num = 0;
+
+      for (; section_idx < bingo_index.readEnd(); section_idx = bingo_index.readNext(section_idx)) {
+
+         str_num = bingo_index.getSectionStructuresNumber(section_idx);
+         /*
+          * Exist structures as section metapages
+          */
+         bingo_index.getSectionBitset(section_idx, bitset_buf);
+         block_metapages_size += 2* BingoPgBufferCacheBin::BUFFER_SIZE;
+        
+         cmf_real_size = 0;
+         for(int str_idx = 0; str_idx < str_num; ++str_idx) {
+            /*
+            * Cmf real size
+            */
+            bingo_index.readCmfItem(section_idx, str_idx, tmp_buffer);
+            cmf_real_size += tmp_buffer.sizeInBytes();
+
+            /*
+            * Mapping buffers
+            */
+            bingo_index.readTidItem(section_idx, str_idx, &item_buf);
+            
+         }
+         /*
+         * Sim buffers
+         */
+         //bingo_index.getSectionBitsCount(section_idx, tmp_buffer2);
+         //sim_real_size += tmp_buffer2.sizeInBytes();
+
+         /*
+         * Cmf buffer size
+         */
+         cmf_cache_size += ((cmf_real_size / BingoPgBufferCacheBin::MAX_SIZE) + 1) * BingoPgBufferCacheBin::BUFFER_SIZE;
+
+         /*
+         * Block mapping as metapages size
+         */
+         buf_size = str_num / BINGO_MOLS_PER_MAPBLOCK + 1;
+         block_metapages_size += buf_size * BingoPgBufferCacheBin::BUFFER_SIZE;
+
+         /*
+         * Sim buffers
+         */
+         buf_size = str_num / BingoPgSection::SECTION_BITS_PER_BLOCK + 1;
+         sim_cache_size += buf_size * BingoPgBufferCacheBin::BUFFER_SIZE;
+         
+         int fp_size = bingo_index.getSectionInfo(section_idx).n_blocks_for_fp;
+
+         bitset_buf.clear();
+         for(int fp_idx = 0; fp_idx < fp_size; ++fp_idx) {
+            bingo_index.andWithBitset(section_idx, fp_idx, bitset_buf);
+         }
+         fp_cache_size += (fp_size * BingoPgBufferCacheBin::BUFFER_SIZE);
+         
+         /*
+          * Total section size
+          */
+         
+         buf_size = bingo_index.getSectionInfo(section_idx).section_size;
+         total_index_size += buf_size * BingoPgBufferCacheBin::BUFFER_SIZE;
+
+         elog(NOTICE, "%d blocks processed", section_idx + 1);
+      }
+      total_cache_size += sim_cache_size;
+      total_cache_size += fp_cache_size;
+      total_cache_size += block_metapages_size;
+      total_cache_size += cmf_cache_size;
+      
+      result.printfCR("index_metapages_size : %d,", params.getSize(index_metapages_size));
+      result.printfCR("block_metapages_size : %d,", params.getSize(block_metapages_size));
+      result.printfCR("cmf_cache_size : %d,", params.getSize(cmf_cache_size));
+      result.printfCR("sim_cache_size : %d,", params.getSize(sim_cache_size));
+      result.printfCR("fp_cache_size : %d,", params.getSize(fp_cache_size));
+      result.printfCR("total_cache_size : %d", params.getSize(total_cache_size));
+      result.printfCR("total_index_size : %d", params.getSize(total_index_size));
+      result.printf("}");
+      result_buf.push(0);
+      elog(NOTICE, "%s", result_buf.ptr());
+      BingoPgText res_text;
+      res_text.initFromString(result_buf.ptr());
+      res = res_text.release();
+   }
+   PG_BINGO_END
+
+   relation_close(rel, AccessShareLock);
+
+   if(res == 0)
+      PG_RETURN_NULL();
+   
+   PG_RETURN_TEXT_P(res);
+}
+
+
 
 
 
@@ -209,7 +528,10 @@ bingo_desc(StringInfo buf, uint8 xl_info, char *rec) {
 }
 
 Datum getversion(PG_FUNCTION_ARGS) {
-   PG_RETURN_CSTRING(bingoGetVersion());
+   BingoPgText result_text;
+   result_text.initFromString(bingoGetVersion());
+
+   PG_RETURN_TEXT_P(result_text.release());
 }
 
 Datum filetotext(PG_FUNCTION_ARGS) {
@@ -271,7 +593,7 @@ Datum filetoblob(PG_FUNCTION_ARGS) {
 
 Datum getname(PG_FUNCTION_ARGS) {
    Datum target_datum = PG_GETARG_DATUM(0);
-   char* result = 0;
+   void* result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -286,15 +608,17 @@ Datum getname(PG_FUNCTION_ARGS) {
          CORE_HANDLE_WARNING(0, 1, "bingo.getname", bingoGetError());
          PG_RETURN_NULL();
       }
-
-      result = BingoPgCommon::releaseString(bingo_result);
+      
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
    }
    PG_BINGO_END
 
    if (result == 0)
       PG_RETURN_NULL();
 
-   PG_RETURN_CSTRING(result);
+   PG_RETURN_TEXT_P(result);
 }
 
 static void _parseQueryFieldList(const char* fields_str, RedBlackStringMap<int, false >& field_list) {
@@ -362,11 +686,11 @@ static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum o
       const char* columns_list = other_column_text.getString();
       if(strcmp(columns_list, "") !=0) {
          _parseQueryFieldList(columns_list, field_list);
-         query_out.printf(", %s ", columns_list);
+         query_out.printf(", %s", columns_list);
       }
    }
 
-   query_out.printf("FROM %s", tablename_text.getString());
+   query_out.printf(" FROM %s", tablename_text.getString());
    query_out.writeChar(0);
    
    return data_key;

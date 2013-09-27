@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -26,7 +26,7 @@ namespace indigo {
 class DLLEXPORT Scanner
 {
 public:
-   DEF_ERROR("scanner");
+   DECL_ERROR;
 
    virtual ~Scanner ();
 

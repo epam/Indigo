@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -23,6 +23,8 @@ TL_DEF(BingoContext, PtrArray<BingoContext>, _instances);
 
 OsLock BingoContext::_instances_lock;
 
+IMPL_ERROR(BingoContext, "bingo context");
+
 BingoContext::BingoContext (int id_)
 {
    id = id_;
@@ -36,6 +38,7 @@ void BingoContext::reset ()
    cmf_dict.reset();
 
    nthreads = 0;
+   timeout = DEFAULT_TIMEOUT;
    treat_x_as_pseudoatom = false;
    ignore_closing_bond_direction_mismatch = false;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -34,7 +34,7 @@ public:
 
    const Array<int> *fixed_vertices;
 
-   DEF_ERROR("graph affine matcher");
+   DECL_ERROR;
 
 protected:
 

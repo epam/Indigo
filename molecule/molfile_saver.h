@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -60,7 +60,7 @@ public:
    const Array<int>* reactionAtomExactChange;
    const Array<int>* reactionBondReactingCenter;
 
-   DEF_ERROR("molfile saver");
+   DECL_ERROR;
    
 protected:
    void _saveMolecule (BaseMolecule &mol, bool query);
@@ -84,10 +84,12 @@ protected:
    static int _getStereocenterParity (BaseMolecule &mol, int idx);
 
    bool _getRingBondCountFlagValue (QueryMolecule &qmol, int idx, int &value);
+   bool _getSubstitutionCountFlagValue (QueryMolecule &qmol, int idx, int &value);
 
    Output &_output;
    bool    _v2000;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _atom_mapping);
    TL_CP_DECL(Array<int>, _bond_mapping);
 

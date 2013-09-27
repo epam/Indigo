@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -50,8 +50,8 @@ public:
    // will be removed from this array.
    Array<int> possible_cis_trans_to_check;
 
-   DEF_ERROR("Molecule automorphism search");
-   DEF_TIMEOUT_EXCEPTION("Molecule automorphism search");
+   DECL_ERROR;
+   DECL_TIMEOUT_EXCEPTION;
 
 protected:
    static int  _vertex_cmp  (Graph &graph, int v1, int v2, const void *context);

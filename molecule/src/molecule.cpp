@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -164,8 +164,8 @@ void Molecule::_validateVertexConnectivity (int idx, bool validate)
    if (validate)
    {
       getAtomConnectivity_noImplH(idx);
-      getImplicitH(idx);
-      getAtomValence(idx);
+      getImplicitH_NoThrow(idx, -1);
+      getAtomValence_NoThrow(idx, -1);
    }
    else
    {
@@ -345,6 +345,18 @@ int Molecule::getAtomConnectivity (int idx)
    int impl_h = getImplicitH(idx);
 
    return impl_h + conn;
+}
+
+int Molecule::getAtomConnectivity_NoThrow (int idx, int fallback)
+{
+   try
+   {
+      return getAtomConnectivity(idx);
+   }
+   catch (Element::Error &)
+   {
+      return fallback;
+   }
 }
 
 int Molecule::getAtomConnectivity_noImplH (int idx)
@@ -593,7 +605,7 @@ void Molecule::_removeAtoms (const Array<int> &indices, const int *mapping)
    updateEditRevision();
 }
 
-void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt)
+void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt, bool impl_h_no_throw)
 {
    int v_end = vertexEnd();
 
@@ -608,7 +620,10 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt)
       if (isPseudoAtom(i) || isRSite(i))
          continue;
 
-      imp_h_count[i] = getImplicitH(i);
+      if (impl_h_no_throw)
+         imp_h_count[i] = getImplicitH_NoThrow(i, 0);
+      else
+         imp_h_count[i] = getImplicitH(i);
    }
 
    if (markers_out != 0)
@@ -1267,18 +1282,18 @@ bool Molecule::bondStereoCare (int idx)
    return cis_trans.getParity(idx) != 0;
 }
 
-bool Molecule::aromatize ()
+bool Molecule::aromatize (const AromaticityOptions &options)
 {
    updateEditRevision();
-   bool arom_found = MoleculeAromatizer::aromatizeBonds(*this);
+   bool arom_found = MoleculeAromatizer::aromatizeBonds(*this, options);
    _aromatized = true;
    return arom_found;
 }
 
-bool Molecule::dearomatize ()
+bool Molecule::dearomatize (const AromaticityOptions &options)
 {
    updateEditRevision();
-   return MoleculeDearomatizer::dearomatizeMolecule(*this);
+   return MoleculeDearomatizer::dearomatizeMolecule(*this, options);
 }
 
 int Molecule::getAtomMaxH (int idx)
@@ -1315,7 +1330,7 @@ bool Molecule::isRSite (int atom_idx)
    return _atoms[atom_idx].number == ELEM_RSITE;
 }
 
-int Molecule::getRSiteBits (int atom_idx)
+dword Molecule::getRSiteBits (int atom_idx)
 {
    if (_atoms[atom_idx].number != ELEM_RSITE)
       throw Error("getRSiteBits(): atom #%d is not an r-site", atom_idx);

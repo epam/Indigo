@@ -25,7 +25,7 @@ namespace indigo {
 class ReactionProductEnumerator
 {
 public:
-   DEF_ERROR("Reaction product enumerator");
+   DECL_ERROR;
    
    bool is_multistep_reaction;    /* if true - all reactants in monomer take part in reaction, false - one */
    bool is_self_react; /* if true - monomer's molecule can react with itself, false - can't */
@@ -33,6 +33,8 @@ public:
    int max_product_count;
    int max_deep_level;
    void *userdata;
+
+   AromaticityOptions arom_options;
 
    ReactionProductEnumerator( QueryReaction &reaction );
    ~ReactionProductEnumerator() {}
@@ -52,11 +54,13 @@ public:
    void buildProducts( void );
    
    void (*product_proc)( Molecule &product, Array<int> &monomers_indices, void *userdata );
+
 private:
    bool _is_rg_exist;
    int _product_count;
    QueryReaction &_reaction;
    ReactionEnumeratorState::ReactionMonomers _reaction_monomers;
+   CP_DECL;
    TL_CP_DECL(Array<int>, _product_aam_array);
    TL_CP_DECL(RedBlackStringMap<int>, _smiles_array);
    TL_CP_DECL(ObjArray< Array<int> >, _tubes_monomers);

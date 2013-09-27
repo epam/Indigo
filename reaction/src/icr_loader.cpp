@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -13,12 +13,16 @@
  ***************************************************************************/
 
 #include "reaction/icr_loader.h"
+
+#include "reaction/icr_saver.h"
 #include "base_cpp/scanner.h"
 #include "reaction/crf_loader.h"
 #include "reaction/reaction.h"
 #include "molecule/icm_common.h"
 
 using namespace indigo;
+
+IMPL_ERROR(IcrLoader, "ICR loader");
 
 IcrLoader::IcrLoader (Scanner &scanner) : _scanner(scanner)
 {
@@ -29,8 +33,15 @@ void IcrLoader::loadReaction (Reaction &reaction)
    char id[3];
 
    _scanner.readCharsFix(3, id);
-   if (strncmp(id, "IR2", 3) != 0)
-      throw Error("expected 'IR2', got %.*s. Resave your reaction with new format.", 3, id);
+
+   int version = -1;
+   if (strncmp(id, IcrSaver::VERSION2, 3) == 0)
+      version = 2;
+   else if (strncmp(id, IcrSaver::VERSION1, 3) == 0)
+      version = 1;
+   else
+      throw Error("expected '%s' or '%s', got %.*s. Resave your reaction with new format.", 
+         IcrSaver::VERSION1, IcrSaver::VERSION2, 3, id);
 
    char bits = _scanner.readChar();
 
@@ -42,6 +53,7 @@ void IcrLoader::loadReaction (Reaction &reaction)
    if (have_xyz)
       loader.xyz_scanner = &_scanner;
 
+   loader.version = version;
    loader.loadReaction(reaction);
 
    if (have_xyz)

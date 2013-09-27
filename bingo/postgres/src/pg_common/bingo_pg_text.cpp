@@ -11,7 +11,11 @@ extern "C" {
 #include "bingo_pg_index.h"
 #include "bingo_pg_common.h"
 
+
 using namespace indigo;
+
+IMPL_ERROR(BingoPgText, "bingo postgres text");
+
 BingoPgText::BingoPgText():_text(0){
 }
 BingoPgText::BingoPgText(uintptr_t text_datum):_text(0) {
@@ -42,6 +46,12 @@ void BingoPgText::initFromArray(indigo::Array<char>& str) {
    clear();
    BINGO_PG_TRY {
       _text = cstring_to_text_with_len(str.ptr(), str.sizeInBytes());
+   } BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a buffer: %s", message));
+}
+void BingoPgText::initFromBuffer(const char* buf, int buf_len) {
+   clear();
+   BINGO_PG_TRY {
+      _text = cstring_to_text_with_len(buf, buf_len);
    } BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a buffer: %s", message));
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -114,6 +114,7 @@ void AtomDesc::clear ()
       stereoGroupNumber = -1;
    isRGroupAttachmentPoint = false;
    pseudoAtomStringVerbose = false;
+   hcolorSet = false;
    fixed = false;
    exactChange = false;
    color = CWC_BASE;
@@ -157,6 +158,8 @@ void BondEnd::clear ()
    offset = 0;
    width = 0;
 }
+
+IMPL_ERROR(BondDescr, "molrender bond description");
 
 BondDescr::BondDescr ()
 {
@@ -225,55 +228,59 @@ void MoleculeRenderData::clear ()
    sgroups.clear();
 }
 
+CP_DEF(RenderSettings);
+
 RenderSettings::RenderSettings () :
+CP_INIT,
 TL_CP_GET(bondDashAromatic),
 TL_CP_GET(bondDashAny),
 TL_CP_GET(bondDashSingleOrAromatic),
 TL_CP_GET(bondDashDoubleOrAromatic)
 {
-   init(1.0f);
+   init(1.0f, 1.0f);
 }
 
-void RenderSettings::init (float sf)
+void RenderSettings::init (float sf, float lwf)
 {
-   bondLineWidth = sf / 30;
-   bondSpace = 2.5f * bondLineWidth;
+   unit = sf / 30;
+   bondLineWidth = lwf * unit;
+   bondSpace = 2.5f * unit;
 
-   fzz[FONT_SIZE_LABEL] = bondLineWidth * 12;
-   fzz[FONT_SIZE_ATTR] = bondLineWidth * 8;
-   fzz[FONT_SIZE_RGROUP_LOGIC] = bondLineWidth * 12;
-   fzz[FONT_SIZE_RGROUP_LOGIC_INDEX] = bondLineWidth * 8;
-   fzz[FONT_SIZE_INDICES] = bondLineWidth * 6;
-   fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = bondLineWidth * 6;
-   fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX] = bondLineWidth * 6;
+   fzz[FONT_SIZE_LABEL] = unit * 12;
+   fzz[FONT_SIZE_ATTR] = unit * 8;
+   fzz[FONT_SIZE_RGROUP_LOGIC] = unit * 12;
+   fzz[FONT_SIZE_RGROUP_LOGIC_INDEX] = unit * 8;
+   fzz[FONT_SIZE_INDICES] = unit * 6;
+   fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = unit * 6;
+   fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX] = unit * 6;
    fzz[FONT_SIZE_COMMENT] = 0; // not used, value taken from RenderOptions.commentFontFactor
    fzz[FONT_SIZE_TITLE] = 0; // not used, value taken from RenderOptions.titleFontFactor
-   fzz[FONT_SIZE_DATA_SGROUP] = bondLineWidth * 8;
+   fzz[FONT_SIZE_DATA_SGROUP] = unit * 8;
 
    upperIndexShift = -0.4f;
    lowerIndexShift = 0.4f;
-   boundExtent = 1.3f * bondLineWidth;
-   labelInternalOffset = bondLineWidth;
-   stereoGroupLabelOffset = 2 * bondLineWidth;
-   radicalRightOffset = bondLineWidth / 2;
+   boundExtent = 1.3f * unit;
+   labelInternalOffset = unit;
+   stereoGroupLabelOffset = 2 * unit;
+   radicalRightOffset = unit / 2;
    radicalRightVertShift = -0.2f;
-   radicalTopOffset = 0.8f * bondLineWidth;
-   radicalTopDistDot = bondLineWidth;
-   radicalTopDistCap = bondLineWidth / 2;
-   dashUnit = bondLineWidth;
+   radicalTopOffset = 0.8f * unit;
+   radicalTopDistDot = unit;
+   radicalTopDistCap = unit / 2;
+   dashUnit = unit;
    eps = 1e-4f;
    cosineTreshold = 0.98f;
    prolongAdjSinTreshold = 0.2f;
-   stereoCareBoxSize = bondSpace * 3 + bondLineWidth * 3;
-   minBondLength = bondLineWidth * 5;
+   stereoCareBoxSize = bondSpace * 3 + unit * 3;
+   minBondLength = unit * 5;
 
-   graphItemDotRadius = bondLineWidth;
+   graphItemDotRadius = unit;
    graphItemCapSlope = 2;
-   graphItemCapBase = 0.7f * bondLineWidth;
-   graphItemCapWidth = 1.2f * bondLineWidth;
-   graphItemDigitWidth = 4.5f * bondLineWidth;
-   graphItemDigitHeight = 6.5f * bondLineWidth;
-   graphItemSignLineWidth = 0.8f * bondLineWidth;
+   graphItemCapBase = 0.7f * unit;
+   graphItemCapWidth = 1.2f * unit;
+   graphItemDigitWidth = 4.5f * unit;
+   graphItemDigitHeight = 6.5f * unit;
+   graphItemSignLineWidth = 0.8f * unit;
    graphItemPlusEdge = (graphItemDigitWidth - graphItemSignLineWidth) / 2;
 
    const int dashDot[] = {5,2,1,2};
@@ -304,9 +311,9 @@ void RenderSettings::init (float sf)
    arrowHeadWidth = plusSize / 2;
    arrowHeadSize = plusSize / 2;
    equalityInterval = plusSize / 2;
-   rGroupIfThenInterval = bondLineWidth * 4;
+   rGroupIfThenInterval = unit * 4;
    neighboringLabelTolerance = 1.3f;
-   minSin = 0.6f;
+   minSin = 0.49f;
    neighboringAtomDistanceTresholdA = 0.8f;
    neighboringAtomDistanceTresholdB = 0.5f;
 }
@@ -319,6 +326,7 @@ CanvasOptions::CanvasOptions ()
 void CanvasOptions::clear ()
 {
    width = height = -1;
+   maxWidth = maxHeight = -1;
    xOffset = yOffset = 0;
    bondLength = -1;
    gridMarginX = gridMarginY = 0;

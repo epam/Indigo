@@ -34,6 +34,7 @@
 #include "cairoint.h"
 
 #include "cairo-drm-private.h"
+#include "cairo-default-context-private.h"
 #include "cairo-error-private.h"
 
 #include <dlfcn.h>
@@ -313,11 +314,15 @@ gallium_surface_release_source_image (void *abstract_surface,
 }
 
 static cairo_status_t
-gallium_surface_flush (void *abstract_surface)
+gallium_surface_flush (void *abstract_surface,
+		       unsigned flags)
 {
     gallium_surface_t *surface = abstract_surface;
     gallium_device_t *device = gallium_device (surface);
     cairo_status_t status;
+
+    if (flags)
+	return CAIRO_STATUS_SUCCESS;
 
     if (surface->fallback == NULL) {
 	device->pipe->flush (device->pipe,
@@ -462,9 +467,12 @@ gallium_surface_glyphs (void				*abstract_surface,
 
 static const cairo_surface_backend_t gallium_surface_backend = {
     CAIRO_SURFACE_TYPE_DRM,
+    _cairo_default_context_create,
+
     gallium_surface_create_similar,
     gallium_surface_finish,
 
+    NULL,
     gallium_surface_acquire_source_image,
     gallium_surface_release_source_image,
 

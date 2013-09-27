@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,8 +17,13 @@
 
 using namespace indigo;
 
+IMPL_ERROR(SkewSymmetricFlowFinder, "SkewSymmetricFlowFinder");
+
+CP_DEF(SkewSymmetricFlowFinder);
+
 SkewSymmetricFlowFinder::SkewSymmetricFlowFinder 
    (const SkewSymmetricNetwork &network) :
+   CP_INIT,
    TL_CP_GET(_arc_values), 
    TL_CP_GET(_arc_sym),
    TL_CP_GET(_edge_used_dir),

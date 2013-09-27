@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -68,7 +68,7 @@ typedef OsLockerT<OsLock, true>        OsLockerNullable;
 //
 // Semaphore wrapper
 //
-class OsSemaphore
+class DLLEXPORT OsSemaphore
 {
 public:
    OsSemaphore  (int initial_count, int max_count);

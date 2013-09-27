@@ -1,0 +1,20 @@
+
+create table bingo_config(cname varchar(255), cvalue varchar(255));
+insert into bingo_config(cname, cvalue) values ('TREAT_X_AS_PSEUDOATOM', '0');
+insert into bingo_config(cname, cvalue) values ('IGNORE_CLOSING_BOND_DIRECTION_MISMATCH', '0');
+insert into bingo_config(cname, cvalue) values ('FP_ORD_SIZE', '25');
+insert into bingo_config(cname, cvalue) values ('FP_ANY_SIZE', '15');
+insert into bingo_config(cname, cvalue) values ('FP_TAU_SIZE', '10');
+insert into bingo_config(cname, cvalue) values ('FP_SIM_SIZE', '8');
+insert into bingo_config(cname, cvalue) values ('SUB_SCREENING_MAX_BITS', '8');
+insert into bingo_config(cname, cvalue) values ('SIM_SCREENING_PASS_MARK', '128');
+insert into bingo_config(cname, cvalue) values ('NTHREADS', '-1');
+insert into bingo_config(cname, cvalue) values ('TIMEOUT', '60000');
+
+
+create table bingo_tau_config(rule_idx integer, tau_beg text, tau_end text);
+insert into bingo_tau_config(rule_idx, tau_beg, tau_end) values (1, 'N,O,P,S,As,Se,Sb,Te', 'N,O,P,S,As,Se,Sb,Te');
+insert into bingo_tau_config(rule_idx, tau_beg, tau_end) values (2, '0C', 'N,O,P,S');
+insert into bingo_tau_config(rule_idx, tau_beg, tau_end) values (3, '1C', 'N,O');
+COMMIT;
+

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -44,7 +44,7 @@ void RingoIndex::prepare (Scanner &rxnfile, Output &output, OsLock *lock_for_exc
    ReactionAutomapper ram(reaction);
    ram.correctReactingCenters(true);
 
-   reaction.aromatize();
+   reaction.aromatize(AromaticityOptions::BASIC);
 
    _hash = RingoExact::calculateHash(reaction);
    {

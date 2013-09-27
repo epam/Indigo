@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -83,6 +83,14 @@ CancellationHandler* setCancellationHandler (CancellationHandler* handler)
    CancellationHandler* prev = wrapper.handler;
    wrapper.handler = handler;
    return prev;
+}
+
+AutoCancellationHandler::AutoCancellationHandler(CancellationHandler& hand) {
+   _prev = setCancellationHandler(&hand);
+}
+
+AutoCancellationHandler::~AutoCancellationHandler() {
+   setCancellationHandler(_prev);
 }
 
 }

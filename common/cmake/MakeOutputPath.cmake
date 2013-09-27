@@ -9,6 +9,16 @@ macro(PACK_STATIC proj)
 	INSTALL(TARGETS ${proj}
 		DESTINATION static/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
 		COMPONENT static)
+	IF(MSVC)
+		get_target_property (output_name ${proj} "OUTPUT_NAME")
+		if (NOT output_name)
+			set(output_name "${proj}")
+		endif ()
+		INSTALL(FILES ${LIBRARY_OUTPUT_PATH}/Debug/${output_name}.pdb
+			DESTINATION static/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
+			COMPONENT static
+			CONFIGURATIONS Debug)
+	ENDIF(MSVC)
 endmacro()
 
 macro(PACK_SHARED proj)

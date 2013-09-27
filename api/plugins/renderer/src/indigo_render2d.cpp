@@ -33,7 +33,14 @@ _SessionLocalContainer<IndigoRenderer> indigo_renderer_self;
 
 IndigoRenderer &indigoRendererGetInstance ()
 {
-   return indigo_renderer_self.getLocalCopy();
+   IndigoRenderer &inst = indigo_renderer_self.getLocalCopy();
+   inst.validate();
+   return inst;
+}
+
+void IndigoRenderer::init ()
+{
+   renderParams.clear();
 }
 
 #define CHECKRGB(r, g, b) \
@@ -56,13 +63,38 @@ void indigoRenderSetCommentOffset (int offset)
    rp.cnvOpt.commentOffset = offset;
 }
 
+void indigoRenderSetImageWidth (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.width = v;
+}
+
+void indigoRenderSetImageHeight (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.height = v;
+}
+
+void indigoRenderSetImageMaxWidth (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+ 
+   rp.cnvOpt.maxWidth = v;
+}
+
+void indigoRenderSetImageMaxHeight (int v)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.maxHeight = v;
+}
+
 void indigoRenderSetTitleOffset (int offset)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.cnvOpt.titleOffset = offset;
 }                    
 
-void indigoRenderSetOutputFormat (const char *format)
+DINGO_MODE indigoRenderMapOutputFormat (const char *format)
 {
    TL_DECL_GET(StringIntMap, outFmtMap);
    if (outFmtMap.size() == 0) {
@@ -70,9 +102,15 @@ void indigoRenderSetOutputFormat (const char *format)
       outFmtMap.insert("png", MODE_PNG);
       outFmtMap.insert("svg", MODE_SVG);
       outFmtMap.insert("emf", MODE_EMF);
+      outFmtMap.insert("cdxml", MODE_CDXML);
    }
+   return outFmtMap.find(format) ? (DINGO_MODE)outFmtMap.at(format) : MODE_NONE;
+}
+
+void indigoRenderSetOutputFormat (const char *format)
+{
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.rOpt.mode = (DINGO_MODE)outFmtMap.at(format);
+   rp.rOpt.mode = indigoRenderMapOutputFormat(format);
 }
 
 void indigoRenderSetImageSize (int width, int height)
@@ -117,6 +155,14 @@ void indigoRenderSetRelativeThickness (float rt)
    rp.relativeThickness = rt;
 }
 
+void indigoRenderSetBondLineWidth (float w)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   if (w <= 0.0f)
+      throw IndigoError("bond line width factor must be positive");
+   rp.bondLineWidthFactor = w;
+}
+
 void indigoRenderSetBackgroundColor (float r, float g, float b)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -139,6 +185,12 @@ void indigoRenderSetHighlightedLabelsVisible (int enabled)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.rOpt.highlightedLabelsVisible = enabled != 0;
+}
+
+void indigoRenderSetBoldBondDetection (int enabled)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.boldBondDetection = enabled != 0;
 }
 
 void indigoRenderSetColoring (int enabled)
@@ -271,6 +323,13 @@ void indigoRenderSetComment (const char* comment)
    rp.cnvOpt.comment.appendString(comment, true);
 }
 
+void indigoRenderSetAtomColorProperty (const char* prop)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.atomColorProp.clear();
+   rp.rOpt.atomColorProp.appendString(prop, true);
+}
+
 void indigoRenderSetCommentFontSize (float fontSize)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -330,7 +389,7 @@ CEXPORT int indigoRender (int object, int output)
             rp.mol.reset(new QueryMolecule());
          else
             rp.mol.reset(new Molecule());
-         rp.mol->clone(self.getObject(object).getBaseMolecule(), 0, 0);
+         rp.mol->clone_KeepIndices(self.getObject(object).getBaseMolecule());
          rp.rmode = RENDER_MOL;
       }
       else if (IndigoBaseReaction::is(obj))
@@ -380,7 +439,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
 
-            rp.mols.top()->clone(objs[i]->getBaseMolecule(), 0, 0, 0);
+            rp.mols.top()->clone_KeepIndices(objs[i]->getBaseMolecule());
             rp.rmode = RENDER_MOL;
          }
       }
@@ -438,6 +497,15 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
    INDIGO_END(-1)
 }
 
+DINGO_MODE indigoRenderGuessOutputFormat(const char* filename)
+{
+   const char *ext = strrchr(filename, '.');
+   if (ext == NULL)
+      return MODE_NONE;
+
+   return indigoRenderMapOutputFormat(ext + 1);
+}
+
 CEXPORT int indigoRenderToFile (int object, const char *filename)
 {
    int f = indigoWriteFile(filename);
@@ -445,7 +513,11 @@ CEXPORT int indigoRenderToFile (int object, const char *filename)
    if (f == -1)
       return -1;
 
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   DINGO_MODE setMode = rp.rOpt.mode;
+   rp.rOpt.mode = (setMode == MODE_NONE) ? indigoRenderGuessOutputFormat(filename) : setMode;
    int res = indigoRender(object, f);
+   rp.rOpt.mode = setMode;
 
    indigoFree(f);
    return res;
@@ -458,18 +530,22 @@ CEXPORT int indigoRenderGridToFile (int objects, int* refAtoms, int nColumns, co
    if (f == -1)
       return -1;
 
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   DINGO_MODE setMode = rp.rOpt.mode;
+   rp.rOpt.mode = (setMode == MODE_NONE) ? indigoRenderGuessOutputFormat(filename) : setMode;
    int res = indigoRenderGrid(objects, refAtoms, nColumns, f);
+   rp.rOpt.mode = setMode;
 
    indigoFree(f);
    return res;
 }
 
-CEXPORT int indigoRenderReset (int render)
+CEXPORT int indigoRenderReset ()
 {
    INDIGO_BEGIN
    {
-      RenderParams& rp = indigoRendererGetInstance().renderParams;
-      rp.clear();
+      IndigoRenderer& rp = indigoRendererGetInstance();
+      rp.init();
       return 1;
    }
    INDIGO_END(-1)
@@ -496,6 +572,10 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    OsLocker locker(mgr.lock);
 
    mgr.setOptionHandlerInt("render-comment-offset", indigoRenderSetCommentOffset);
+   mgr.setOptionHandlerInt("render-image-width", indigoRenderSetImageWidth);
+   mgr.setOptionHandlerInt("render-image-height", indigoRenderSetImageHeight);
+   mgr.setOptionHandlerInt("render-image-max-width", indigoRenderSetImageMaxWidth);
+   mgr.setOptionHandlerInt("render-image-max-height", indigoRenderSetImageMaxHeight);
 
    mgr.setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat);
    mgr.setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode);
@@ -504,6 +584,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle);
    mgr.setOptionHandlerString("render-catalysts-placement", indigoRenderSetCatalystsPlacement);
    mgr.setOptionHandlerString("render-superatom-mode", indigoRenderSetSuperatomMode);
+   mgr.setOptionHandlerString("render-atom-color-property", indigoRenderSetAtomColorProperty);
 
    mgr.setOptionHandlerBool("render-coloring", indigoRenderSetColoring);
    mgr.setOptionHandlerBool("render-valences-visible", indigoRenderSetValencesVisible);
@@ -515,9 +596,11 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("render-center-double-bond-when-stereo-adjacent", indigoRenderSetCenterDoubleBondWhenStereoAdjacent);
    mgr.setOptionHandlerBool("render-implicit-hydrogens-visible", indigoRenderSetImplicitHydrogenVisible);
    mgr.setOptionHandlerBool("render-highlighted-labels-visible", indigoRenderSetHighlightedLabelsVisible);
+   mgr.setOptionHandlerBool("render-bold-bond-detection", indigoRenderSetBoldBondDetection);
 
    mgr.setOptionHandlerFloat("render-bond-length", indigoRenderSetBondLength);
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);
+   mgr.setOptionHandlerFloat("render-bond-line-width", indigoRenderSetBondLineWidth);
    mgr.setOptionHandlerFloat("render-comment-font-size", indigoRenderSetCommentFontSize);
    mgr.setOptionHandlerFloat("render-comment-alignment", indigoRenderSetCommentAlignment);
 

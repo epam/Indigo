@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -24,6 +24,8 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(PtrPoolError);
+
 template <typename T> class PtrPool
 {
 public:
@@ -36,7 +38,7 @@ public:
       clear();
    }
 
-   DEF_ERROR("ptr pool");
+   DECL_TPL_ERROR(PtrPoolError);
 
    int add (T *obj)
    {

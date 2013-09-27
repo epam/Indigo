@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -25,7 +25,7 @@ public:
    virtual ~RenderGrid();
    void draw ();
 
-   DEF_ERROR("RenderGrid");
+   DECL_ERROR;
 
    Array<int> objs;
    Array<int> titles;
@@ -48,7 +48,9 @@ private:
    Vec2f commentSize;
    int _width, _height;
 
-   float _getScale ();
+   float _getScaleGivenSize (int w, int h);
+   int _getDefaultWidth (const float s);
+   int _getDefaultHeight (const float s);
 };
 
 }

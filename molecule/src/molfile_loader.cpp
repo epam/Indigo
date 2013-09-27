@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -28,8 +28,13 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MolfileLoader, "molfile loader");
+
+CP_DEF(MolfileLoader);
+
 MolfileLoader::MolfileLoader (Scanner &scanner) : 
 _scanner(scanner),
+CP_INIT,
 TL_CP_GET(_stereo_care_atoms),
 TL_CP_GET(_stereo_care_bonds),
 TL_CP_GET(_stereocenter_types),
@@ -715,7 +720,7 @@ void MolfileLoader::_readCtab2000 ()
                else if (sub_count == -2)
                {
                   _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                     new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, _qmol->getVertex(atom_idx).degree())));
+                     new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, _qmol->getVertex(atom_idx).degree())));
                }
                else if (sub_count > 0)
                   _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
@@ -1009,10 +1014,13 @@ void MolfileLoader::_readCtab2000 ()
                   if (strscan.isEOF())
                      break;
                   int c = strscan.readChar();
-                  if (isspace(c))
-                     break;
                   sgroup.description.push(c);
                }
+               // Remove last spaces because description can have multiple words
+               if (sgroup.description.size() > 0)
+                  while (isspace(sgroup.description.top()))
+                     sgroup.description.pop();
+
                sgroup.description.push(0);
             }
          }
@@ -1037,7 +1045,26 @@ void MolfileLoader::_readCtab2000 ()
             {
                _scanner.skip(1);
                BaseMolecule::DataSGroup &sgroup = _bmol->data_sgroups[_sgroup_mapping[sgroup_idx]];
-               _scanner.appendLine(sgroup.data, false);
+               int len = sgroup.data.size();
+               _scanner.appendLine(sgroup.data, true);
+
+               // Remove last spaces because "SED" means end of a paragraph
+               if (strncmp(chars, "SED", 3) == 0)
+               {
+                  if (sgroup.data.top() == 0)
+                     sgroup.data.pop();
+                  while (sgroup.data.size() > len)
+                  {
+                     if (isspace(sgroup.data.top()))
+                        sgroup.data.pop();
+                     else
+                        break;
+                  }
+                  // Add new paragraph. Last '\n' will be cleaned at the end
+                  sgroup.data.push('\n');
+                  if (sgroup.data.top() != 0)
+                     sgroup.data.push(0);
+               }
             }
             else
                _scanner.skipLine();
@@ -1210,8 +1237,22 @@ void MolfileLoader::_readCtab2000 ()
 
          _atom_types[atom_idx] = _ATOM_PSEUDO;
       }
+      else if (c == '\n')
+         continue;
       else
          _scanner.skipLine();
+   }
+
+   // Remove last new lines for data SGroups
+   int dgroups_count = _bmol->data_sgroups.size();
+   for (int i = 0; i < dgroups_count; i++)
+   {
+      BaseMolecule::DataSGroup &sgroup = _bmol->data_sgroups[i];
+      if (sgroup.data.size() > 2 && sgroup.data.top(1) == '\n')
+      {
+         sgroup.data.pop();
+         sgroup.data.top() = 0;
+      }
    }
 
    if (_qmol == 0)
@@ -2349,7 +2390,15 @@ void MolfileLoader::_readCtab3000 ()
                else if (n == 3)
                   _bmol->setBondDirection(i, BOND_DOWN);
                else if (n == 2)
-                  _bmol->setBondDirection(i, BOND_EITHER);
+               {
+                  int bond_order = _bmol->getBondOrder(i);
+                  if (bond_order == BOND_SINGLE)
+                     _bmol->setBondDirection(i, BOND_EITHER);
+                  else if (bond_order == BOND_DOUBLE)
+                     _ignore_cistrans[i] = 1;
+                  else
+                     throw Error("unknown bond CFG=%d for thebond order %d", n, bond_order);
+               }
                else
                   throw Error("unknown bond CFG=%d", n);
             }
@@ -2546,6 +2595,47 @@ void MolfileLoader::_readMultiString (Array<char> &str)
       if (!to_next)
          break;
    }
+}
+
+void MolfileLoader::_readStringInQuotes (Scanner &scanner, Array<char> *str)
+{
+   char first = scanner.readChar();
+   if (first == ' ')
+      return;
+
+   // Check if data is already present, then append to it using new line
+   if (str && str->size() > 0)
+   {
+      if (str->top() == 0)
+         str->pop();
+      str->push('\n');
+   }
+
+   // If label is in quotes then read till the end quote
+   bool in_quotes = (first == '"');
+   if (!in_quotes && str)
+      str->push(first);
+
+   while (!scanner.isEOF())
+   {
+      char c = scanner.readChar();
+      if (in_quotes)
+      {
+         // Break if other quote is reached
+         if (c == '"')
+            break;
+      }
+      else
+      {
+         // Break if space is reached
+         if (isspace(c))
+            break;
+      }
+      if (str)
+         str->push(c);
+   }
+   if (str)
+      str->push(0);
 }
 
 void MolfileLoader::_readRGroups3000 ()
@@ -2763,29 +2853,12 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       }
       else if (strcmp(entity.ptr(), "FIELDNAME") == 0)
       {
-         while (!scanner.isEOF())
-         {
-            char c = scanner.readChar();
-            if (isspace(c))
-               break;
-            if (dsg != 0)
-               dsg->description.push(c);
-         }
-         if (dsg != 0)
-            dsg->description.push(0);
+         _readStringInQuotes(scanner, dsg ? &dsg->description : NULL);
       }
       else if (strcmp(entity.ptr(), "FIELDDISP") == 0)
       {
-         scanner.skip(1); // "
          QS_DEF(Array<char>, substr);
-         substr.clear();
-         while (!scanner.isEOF())
-         {
-            char c = scanner.readChar();
-            if (c == '"')
-               break;
-            substr.push(c);
-         }
+         _readStringInQuotes(scanner, &substr);
          if (dsg != 0)
          {
             BufferScanner subscan(substr);
@@ -2794,14 +2867,7 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       }
       else if (strcmp(entity.ptr(), "FIELDDATA") == 0)
       {
-         while (!scanner.isEOF())
-         {
-            char c = scanner.readChar();
-            if (c == ' ')
-               break;
-            if (dsg != 0)
-               dsg->data.push(c);
-         }
+         _readStringInQuotes(scanner, &dsg->data);
       }
       else if (strcmp(entity.ptr(), "LABEL") == 0)
       {
@@ -2835,8 +2901,8 @@ void MolfileLoader::_readSGroup3000 (const char *str)
          }
          else
          {
-            while (!scanner.isEOF() && scanner.readChar() != ' ')
-               ;
+            // Unknown property that can have value in quotes: PROP="     "
+            _readStringInQuotes(scanner, NULL);
          }
       }
       scanner.skipSpace();

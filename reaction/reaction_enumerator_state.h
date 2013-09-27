@@ -28,16 +28,23 @@
 
 namespace indigo {
 
+class ReactionEnumeratorContext
+{
+public:
+   AromaticityOptions arom_options;
+};
+
 class ReactionEnumeratorState
 {
 public:
-   DEF_ERROR("Reaction product enumerator state");
+   DECL_ERROR;
 
    class ReactionMonomers
    {
    public:
-      DEF_ERROR("Reaction product enumerator");
+      DECL_ERROR;
 
+      CP_DECL;
       TL_CP_DECL(ReusableObjArray<Molecule>, _monomers);
       TL_CP_DECL(Array<int>, _reactant_indexes);
       TL_CP_DECL(Array<int>, _deep_levels);
@@ -70,7 +77,7 @@ public:
    int max_product_count;
    int max_reuse_count;
    
-   ReactionEnumeratorState( QueryReaction &cur_reaction, QueryMolecule &cur_full_product, 
+   ReactionEnumeratorState(ReactionEnumeratorContext &context, QueryReaction &cur_reaction, QueryMolecule &cur_full_product, 
       Array<int> &cur_product_aam_array, RedBlackStringMap<int> &cur_smiles_array, 
       ReactionMonomers &cur_reaction_monomers, int &cur_product_coint, 
       ObjArray< Array<int> > &cur_tubes_monomers );
@@ -79,11 +86,15 @@ public:
 
    int buildProduct( void );
 
-   bool performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms );
+   bool performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms, Array<int> &original_hydrogens, bool &need_layout );
 
 private:
+   ReactionEnumeratorContext &_context;
+
    QueryReaction &_reaction;
    int _reactant_idx;
+
+   int _is_simple_transform;
 
    int &_product_count;
 
@@ -92,6 +103,7 @@ private:
    RedBlackStringMap<int> &_smiles_array;
    ReactionMonomers &_reaction_monomers;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _fragments_aam_array);
    TL_CP_DECL(QueryMolecule, _full_product);
    TL_CP_DECL(Array<int>, _product_monomers);
@@ -104,7 +116,9 @@ private:
    TL_CP_DECL(MoleculeSubstructureMatcher::FragmentMatchCache, _fmcache);
    TL_CP_DECL(Array<int>, _monomer_forbidden_atoms);
    TL_CP_DECL(Array<int>, _product_forbidden_atoms);
-   
+
+   TL_CP_DECL(Array<int>, _original_hydrogens);
+
    AromaticityMatcher *_am;
    EmbeddingEnumerator *_ee;
    int _tube_idx;
@@ -116,9 +130,69 @@ private:
 
    bool _isMonomerFromCurTube( int monomer_idx );
    
-   static void _foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep = 0 );
+   static void _foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep = 0, Array<int> *original_hydrogens = 0 );
 
    void _productProcess( void );
+
+   bool _checkForSimplicity()
+   {
+      if (_reaction.reactantsCount() != 1 || _reaction.productsCount() != 1)
+         return false;
+      
+      QueryMolecule &reactant = _reaction.getQueryMolecule(_reaction.reactantBegin());
+      QueryMolecule &product = _reaction.getQueryMolecule(_reaction.productBegin());
+
+      if ((reactant.vertexCount() != product.vertexCount()) || 
+          (reactant.edgeCount() != product.edgeCount()))
+         return false;
+
+      Array<int> &reactant_aam = _reaction.getAAMArray(_reaction.reactantBegin());
+      Array<int> &product_aam = _reaction.getAAMArray(_reaction.productBegin());
+
+      Array<int> aam_mapping;
+      aam_mapping.resize(reactant.vertexEnd());
+      aam_mapping.fffill();
+
+      for (int i = reactant.vertexBegin(); i != reactant.vertexEnd(); i = reactant.vertexNext(i))
+      {
+         if (reactant_aam[i] == 0)
+            return false;
+
+         int product_idx = product_aam.find(reactant_aam[i]);
+
+         if (product_idx == -1)
+            return false;
+
+         aam_mapping[i] = product_idx;
+      }
+
+      for (int i = reactant.edgeBegin(); i != reactant.edgeEnd(); i = reactant.edgeNext(i))
+      {
+         const Edge &edge = reactant.getEdge(i);
+         
+         int product_beg = aam_mapping[edge.beg];
+         int product_end = aam_mapping[edge.end];
+
+         if (product_beg == -1 || product_end == -1)
+            return false;
+
+         if (product.findEdgeIndex(product_beg, product_end) == -1)
+            return false;
+
+         if (!MoleculeCisTrans::isGeomStereoBond(reactant, i, NULL, false))
+            continue;
+
+         int ct_sign = MoleculeCisTrans::getMappingParitySign(reactant, product, i, aam_mapping.ptr());
+
+         if (ct_sign <= 0)
+            return false;
+      }
+
+      if (!MoleculeStereocenters::checkSub(reactant.stereocenters, product.stereocenters, aam_mapping.ptr(), false))
+         return false;
+
+      return true;
+   }
 
    bool _nextMatchProcess( EmbeddingEnumerator &ee, const QueryMolecule &reactant, 
       const Molecule &monomer );
@@ -144,9 +218,7 @@ private:
    QueryMolecule::Atom * _getReactantAtom( int atom_aam );
    
    void _buildMolProduct( QueryMolecule &product, Molecule &mol_product, 
-      Molecule &uncleaned_fragments, Array<int> &mapping_out );
-
-   void _checkConstraints( QueryMolecule &reacant, Array<int> &rp_mapping);
+      Molecule &uncleaned_fragments, Array<int> &all_forbidden_atoms, Array<int> &mapping_out );
 
    void _stereocentersUpdate( QueryMolecule &submolecule,
       Molecule &supermolecule, const Array<int> &rp_mapping,
@@ -154,6 +226,8 @@ private:
 
    void _completeCisTrans( Molecule &product, Molecule &uncleaned_fragments, 
                             Array<int> &frags_mapping );
+
+   bool _checkValence( Molecule &mol, int atom_idx );
 
    bool _attachFragments( Molecule &ready_product_out );
 

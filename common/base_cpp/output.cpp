@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <math.h>
 #include <stdarg.h>
 
@@ -23,6 +24,8 @@
 #include "base_cpp/tlscont.h"
 
 using namespace indigo;
+
+IMPL_ERROR(Output, "output");
 
 Output::Output ()
 {
@@ -82,7 +85,7 @@ void Output::vprintf (const char *format, va_list args)
    int n;
    while (true)
    {
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
       n = _vsnprintf_l(str.ptr(), str.size(), format, getCLocale(), args);
 #else
       n = vsnprintf(str.ptr(), str.size(), format, args);
@@ -178,7 +181,7 @@ FileOutput::FileOutput (Encoding filename_encoding, const char *filename)
    _file = openFile(filename_encoding, filename, "wb");
 
    if (_file == NULL)
-      throw Error("can't open file %s", filename);
+      throw Error("can't open file %s. Error: %s", filename, strerror(errno));
 }
 
 FileOutput::FileOutput (const char *filename)
@@ -186,7 +189,7 @@ FileOutput::FileOutput (const char *filename)
    _file = fopen(filename, "wb");
 
    if (_file == NULL)
-      throw Error("can't open file %s", filename);
+      throw Error("can't open file %s. Error: %s", filename, strerror(errno));
 }
 
 FileOutput::FileOutput (bool append, const char *format, ...)
@@ -205,7 +208,7 @@ FileOutput::FileOutput (bool append, const char *format, ...)
       _file = fopen(filename, "wb");
 
    if (_file == NULL)
-      throw Error("can't open file %s", filename);
+      throw Error("can't open file %s. Error: %s", filename, strerror(errno));
 }
 
 FileOutput::~FileOutput ()

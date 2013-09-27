@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -13,11 +13,16 @@
  ***************************************************************************/
 
 #include "molecule/base_molecule.h"
+
+#include "base_cpp/output.h"
+#include "molecule/elements.h"
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_arom_match.h"
 
 using namespace indigo;
+
+IMPL_ERROR(BaseMolecule, "molecule");
 
 BaseMolecule::BaseMolecule ()
 {
@@ -441,6 +446,10 @@ void BaseMolecule::flipBond (int atom_parent, int atom_from, int atom_to)
    removeEdge(src_bond_idx);
 
    int new_bond_idx = findEdgeIndex(atom_parent, atom_to);
+
+   // Clear bond direction because sterecenters 
+   // should mark bond directions properly
+   setBondDirection(new_bond_idx, 0);
    
    // sgroups
    int j;
@@ -725,6 +734,13 @@ void BaseMolecule::setAtomXyz (int idx, const Vec3f& v)
    updateEditRevision();
 }
 
+void BaseMolecule::clearXyz ()
+{
+   for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+      setAtomXyz(i, 0, 0, 0);
+   have_xyz = 0;
+}
+
 int BaseMolecule::_addBaseAtom ()
 {
    int idx = addVertex();
@@ -758,6 +774,18 @@ int BaseMolecule::getAtomRadical_NoThrow (int idx, int fallback)
    }
 }
 
+int BaseMolecule::getAtomValence_NoThrow (int idx, int fallback)
+{
+   try
+   {
+      return getAtomValence(idx);
+   }
+   catch (Element::Error &)
+   {
+      return fallback;
+   }
+}
+
 int BaseMolecule::possibleAtomTotalH (int idx, int hcount)
 {
    int minh = getAtomMinH(idx);
@@ -780,7 +808,7 @@ void BaseMolecule::getAllowedRGroups (int atom_idx, Array<int> &rgroup_list)
 {
    rgroup_list.clear();
 
-   int bits = getRSiteBits(atom_idx);
+   dword bits = getRSiteBits(atom_idx);
    int rg_idx = 1;
 
    while (bits != 0)
@@ -795,7 +823,7 @@ void BaseMolecule::getAllowedRGroups (int atom_idx, Array<int> &rgroup_list)
 
 int BaseMolecule::getSingleAllowedRGroup (int atom_idx)
 {
-   int bits = getRSiteBits(atom_idx);
+   dword bits = getRSiteBits(atom_idx);
    int rg_idx = 1;
 
    while (bits != 0)
@@ -1258,7 +1286,8 @@ void BaseMolecule::clearBondDirections ()
 
 bool BaseMolecule::isChrial ()
 {
-   return stereocenters.size() != 0 && stereocenters.haveAllAbsAny();
+   // Molecule is Chiral if it has at least one Abs stereocenter and all the stereocenters are Abs or Any
+   return stereocenters.size() != 0 && stereocenters.haveAllAbsAny() && stereocenters.haveAbs();
 }
 
 void BaseMolecule::invalidateAtom (int index, int mask)
@@ -1297,4 +1326,87 @@ void BaseMolecule::getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res)
    }
    if (sgroup.atoms.size() != 0)
       res.scale(1.0f / sgroup.atoms.size());
+}
+
+void BaseMolecule::getAtomSymbol (int v, Array<char> &result)
+{
+   if (isPseudoAtom(v))
+   {
+      result.readString(getPseudoAtom(v), true);
+   }
+   else if (isRSite(v))
+   {
+      QS_DEF(Array<int>, rgroups);
+      int i;
+      getAllowedRGroups(v, rgroups);
+
+      if (rgroups.size() == 0)
+      {
+         result.readString("R", true);
+         return;
+      }
+
+      ArrayOutput output(result);
+      for (i = 0; i < rgroups.size(); i++)
+      {
+         if (i > 0)
+            output.writeChar(',');
+         output.printf("R%d", rgroups[i]);
+      }
+      output.writeChar(0);
+   }
+   else 
+   {
+      int number = getAtomNumber(v);
+      QS_DEF(Array<int>, list);
+
+      if (number != -1)
+      {
+         result.readString(Element::toString(number), true);
+         return;
+      }
+
+      int query_atom_type;
+
+      if (isQueryMolecule() &&
+            (query_atom_type = QueryMolecule::parseQueryAtom(asQueryMolecule(), v, list)) != -1)
+      {
+         if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
+         {
+            result.readString("A", true);
+            return;
+         }
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
+         {
+            result.readString("Q", true);
+            return;
+         }
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
+         {
+            result.readString("X", true);
+            return;
+         }
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
+                  query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+         {
+            int k;
+            ArrayOutput output(result);
+
+            if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+               output.writeString("NOT");
+
+            output.writeChar('[');
+            for (k = 0; k < list.size(); k++)
+            {
+               if (k > 0)
+                  output.writeChar(',');
+               output.writeString(Element::toString(list[k]));
+            }
+            output.writeChar(']');
+            output.writeChar(0);
+         }
+      }
+   }
+   if (result.size() == 0)
+      result.readString("*", true);
 }

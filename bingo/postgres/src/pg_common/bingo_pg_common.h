@@ -305,8 +305,7 @@ public:
       indigo::Array<char> _functionName;
    };
 
-
-   DEF_ERROR("bingo postgres");
+   DECL_ERROR;
 private:
    BingoPgCommon();
    BingoPgCommon(const BingoPgCommon&); //no implicit copy
@@ -412,6 +411,16 @@ public:
       throw BingoPgError("%s: %s", suffix, message);\
    }
 
+#define CORE_HANDLE_ERROR_TID(res, success_res, suffix, section_idx, structure_idx, message)\
+   if (res < success_res) {\
+      ItemPointerData target_item;\
+      _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);\
+      int block_number = ItemPointerGetBlockNumber(&target_item);\
+      int offset_number = ItemPointerGetOffsetNumber(&target_item);\
+      throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block_number, offset_number, message);\
+   }
+
+
 #define CORE_HANDLE_WARNING(res, success_res, suffix, message)\
    if (res < success_res) {\
       elog(WARNING, "%s: %s", suffix, message);\
@@ -421,6 +430,23 @@ public:
    if (res < success_res) {\
       elog(WARNING, "%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, message);\
    }
+
+#define CORE_RETURN_WARNING(res, success_res, suffix, message)\
+   if (res < success_res) {\
+      elog(WARNING, "%s: %s", suffix, message);\
+      return false;\
+   }
+
+#define CORE_RETURN_WARNING_TID(res, success_res, suffix, section_idx, structure_idx, message)\
+   if (res < success_res) {\
+      ItemPointerData target_item;\
+      _bufferIndexPtr->readTidItem(section_idx, structure_idx, &target_item);\
+      int block_number = ItemPointerGetBlockNumber(&target_item);\
+      int offset_number = ItemPointerGetOffsetNumber(&target_item);\
+      elog(WARNING, "%s with ctid='(%d,%d)'::tid: %s", suffix, block_number, offset_number, message);\
+      return false;\
+   }
+
 
 #endif	/* BINGO_PG_COMMON_H */
 

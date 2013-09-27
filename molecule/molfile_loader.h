@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -35,7 +35,7 @@ class QueryMolecule;
 class DLLEXPORT MolfileLoader
 {
 public:
-   DEF_ERROR("molfile loader");
+   DECL_ERROR;
 
    MolfileLoader (Scanner &scanner);
 
@@ -66,6 +66,7 @@ protected:
    Scanner &_scanner;
    bool     _rgfile;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _stereo_care_atoms);
    TL_CP_DECL(Array<int>, _stereo_care_bonds);
    TL_CP_DECL(Array<int>, _stereocenter_types);
@@ -129,6 +130,7 @@ protected:
    void _readSGroupsBlock3000 ();
    void _preparePseudoAtomLabel (Array<char> &pseudo);
    void _readMultiString (Array<char> &str);
+   void _readStringInQuotes (Scanner &scanner, Array<char> *str);
    void _init ();
    void _appendQueryAtom (const char *atom_label, AutoPtr<QueryMolecule::Atom> &atom);
 

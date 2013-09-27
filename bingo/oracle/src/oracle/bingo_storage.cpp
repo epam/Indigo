@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,6 +19,8 @@
 #include "base_cpp/shmem.h"
 #include "base_cpp/auto_ptr.h"
 #include "oracle/ora_logger.h"
+
+IMPL_ERROR(BingoStorage, "storage");
 
 BingoStorage::BingoStorage (OracleEnv &env, int context_id)
 {

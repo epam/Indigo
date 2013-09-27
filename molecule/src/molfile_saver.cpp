@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -12,17 +12,23 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include "molecule/molfile_saver.h"
+
 #include <time.h>
 
 #include "base_cpp/output.h"
+#include "base_cpp/locale_guard.h"
 #include "molecule/molecule.h"
-#include "molecule/molfile_saver.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
-#include "base_cpp/locale_guard.h"
+#include "molecule/molecule_savers.h"
 
 using namespace indigo;
+
+IMPL_ERROR(MolfileSaver, "molfile saver");
+
+CP_DEF(MolfileSaver);
 
 MolfileSaver::MolfileSaver (Output &output) :
 reactionAtomMapping(0),
@@ -30,6 +36,7 @@ reactionAtomInversion(0),
 reactionAtomExactChange(0),
 reactionBondReactingCenter(0),
  _output(output),
+ CP_INIT,
 TL_CP_GET(_atom_mapping),
 TL_CP_GET(_bond_mapping)
 {
@@ -247,19 +254,17 @@ void MolfileSaver::_writeAtomLabel (Output &output, int label)
 void MolfileSaver::_writeMultiString (Output &output, const char *string, int len)
 {
    int limit = 70;
-   while (1)
+   while (len > 0)
    {
       output.writeString("M  V30 ");
 
       if (len <= limit)
-      {
-         output.write(string, len);
-         output.writeCR();
-         break;
-      }
+         limit = len;
 
       output.write(string, limit);
-      output.writeStringCR("-");
+      if (len != limit)
+         output.writeString("-");
+      output.writeCR();
       len -= limit;
       string += limit;
    }
@@ -286,6 +291,34 @@ bool MolfileSaver::_getRingBondCountFlagValue (QueryMolecule &qmol, int idx, int
       }
    }
    else if (atom.sureValue(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbc))
+   {
+      value = -2;
+      return true;
+   }
+   return false;
+}
+
+bool MolfileSaver::_getSubstitutionCountFlagValue (QueryMolecule &qmol, int idx, int &value)
+{
+   QueryMolecule::Atom &atom = qmol.getAtom(idx);
+   int v;
+   if (atom.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS))
+   {
+      if (atom.sureValue(QueryMolecule::ATOM_SUBSTITUENTS, v))
+      {
+         value = v;
+         if (value == 0)
+            value = -1;
+         return true;
+      }
+      int values[1] = { 6 };
+      if (atom.sureValueBelongs(QueryMolecule::ATOM_SUBSTITUENTS, values, 1))
+      {
+         value = 6;
+         return true;
+      }
+   }
+   else if (atom.sureValue(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, v))
    {
       value = -2;
       return true;
@@ -395,19 +428,13 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
       if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
          out.printf(" CHG=%d", charge);
-      if (!mol.isQueryMolecule() && !mol.isRSite(i) && !mol.isPseudoAtom(i))
-      {
-         if (mol.getAtomAromaticity(i) == ATOM_AROMATIC &&
-                 ((atom_number != ELEM_C && atom_number != ELEM_O) || charge != 0))
-         {
-            int hcount = mol.asMolecule().getImplicitH_NoThrow(i, -1);
 
-            if (hcount > 0)
-               out.printf(" HCOUNT=%d", hcount);
-            else if (hcount == 0)
-               out.printf(" HCOUNT=-1");
-         }
-      }
+      int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
+      if (hcount > 0)
+         out.printf(" HCOUNT=%d", hcount);
+      else if (hcount == 0)
+         out.printf(" HCOUNT=-1");
+
       if (radical > 0)
          out.printf(" RAD=%d", radical);
       if (stereo_parity > 0)
@@ -473,6 +500,9 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          int unsat;
          if (qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
             out.printf(" UNSAT=1");
+         int subst;
+         if (_getSubstitutionCountFlagValue(*qmol, i, subst))
+            out.printf(" SUBST=%d", subst);
          int rbc;
          if (_getRingBondCountFlagValue(*qmol, i, rbc))
             out.printf(" RBCNT=%d", rbc);
@@ -659,12 +689,41 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          _writeGenericSGroup3000(mol.data_sgroups[i], idx++, "DAT", out);
          const char *desc = mol.data_sgroups[i].description.ptr();
          if (desc != 0 && strlen(desc) > 0)
-            out.printf(" FIELDNAME=%s", desc);
+         {
+            out.writeString(" FIELDNAME=");
+            bool space_found = (strchr(desc, ' ') != NULL);
+            if (space_found)
+               out.writeString("\"");
+            out.writeString(desc);
+            if (space_found)
+               out.writeString("\"");
+         }
          out.printf(" FIELDDISP=\"");
          _writeDataSGroupDisplay(mol.data_sgroups[i], out);
          out.printf("\"");
-         if (mol.data_sgroups[i].data.size() > 0)
-            out.printf(" FIELDDATA=%.*s", mol.data_sgroups[i].data.size(), mol.data_sgroups[i].data.ptr());
+         if (mol.data_sgroups[i].data.size() > 0 && mol.data_sgroups[i].data[0] != 0)
+         {
+            // Split field data by new lines
+            int len = mol.data_sgroups[i].data.size();
+            char *data = mol.data_sgroups[i].data.ptr();
+            while (len > 0)
+            {
+               int j;
+               for (j = 0; j < len; j++)
+                  if (data[j] == '\n')
+                     break;
+
+               out.printf(" FIELDDATA=\"%.*s\"", j, data);
+               if (data[j] == '\n')
+                  j++;
+
+               data += j;
+               len -= j;
+
+               if (*data == 0)
+                  break;
+            }
+         }
          _writeMultiString(output, buf.ptr(), buf.size());
       }
       for (i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))
@@ -790,6 +849,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    QS_DEF(Array<int>, pseudoatoms);
    QS_DEF(Array<int>, atom_lists);
    QS_DEF(Array<int>, unsaturated);
+   QS_DEF(Array<int[2]>, substitution_count);
    QS_DEF(Array<int[2]>, ring_bonds);
 
    _atom_mapping.clear_resize(mol.vertexEnd());
@@ -801,6 +861,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
    pseudoatoms.clear();
    atom_lists.clear();
    unsaturated.clear();
+   substitution_count.clear();
    ring_bonds.clear();
 
    int iw = 1;
@@ -926,18 +987,31 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             r[0] = i;
             r[1] = rbc;
          }
+         int subst;
+         if (_getSubstitutionCountFlagValue(*qmol, i, subst))
+         {
+            int *s = substitution_count.push();
+            s[0] = i;
+            s[1] = subst;
+         }
       }
 
       stereo_parity = _getStereocenterParity(mol, i);
 
-      if (!mol.isQueryMolecule() && !mol.isRSite(i) && !mol.isPseudoAtom(i))
-      {
-         if (mol.getAtomAromaticity(i) == ATOM_AROMATIC &&
-                 ((atom_number != ELEM_C && atom_number != ELEM_O) || atom_charge != 0))
-            hydrogens_count = mol.asMolecule().getImplicitH_NoThrow(i, -1) + 1;
-      }
-      
-      Vec3f &pos = mol.getAtomXyz(i);
+      hydrogens_count = MoleculeSavers::getHCount(mol, i, atom_number, atom_charge);
+      if (hydrogens_count == -1)
+         hydrogens_count = 0;
+      else 
+         // molfile stores h+1
+         hydrogens_count++;
+
+      Vec3f pos = mol.getAtomXyz(i);
+      if (fabs(pos.x) < 1e-5f)
+         pos.x = 0;
+      if (fabs(pos.y) < 1e-5f)
+         pos.y = 0;
+      if (fabs(pos.z) < 1e-5f)
+         pos.z = 0;
 
       output.printfCR("%10.4f%10.4f%10.4f %c%c%c%2d"
                     "%3d%3d%3d%3d%3d"
@@ -1066,6 +1140,19 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          output.printf("M  UNS%3d", __min(unsaturated.size(), j + 8) - j);
          for (i = j; i < __min(unsaturated.size(), j + 8); i++)
             output.printf(" %3d %3d", _atom_mapping[unsaturated[i]], 1);
+         output.writeCR();
+         j += 8;
+      }
+   }
+
+   if (substitution_count.size() > 0)
+   {
+      int j = 0;
+      while (j < substitution_count.size())
+      {
+         output.printf("M  SUB%3d", __min(substitution_count.size(), j + 8) - j);
+         for (i = j; i < __min(substitution_count.size(), j + 8); i++)
+            output.printf(" %3d %3d", _atom_mapping[substitution_count[i][0]], substitution_count[i][1]);
          output.writeCR();
          j += 8;
       }
@@ -1281,16 +1368,33 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             output.writeCR();
 
             k = datasgroup.data.size();
+            if (k > 0 && datasgroup.data.top() == 0)
+               k--; // Exclude terminating zero
+
             char *ptr = datasgroup.data.ptr();
-            while (k > 69)
+            while (k > 0)
             {
-               output.printf("M  SCD %3d %69s", i + 1, ptr);
-               ptr += 69;
-               k -= 69;
+               int j;
+               for (j = 0; j < 69 && j < k; j++)
+                  if (ptr[j] == '\n')
+                     break;
+
+               // Print ptr[0..i]
+               output.writeString("M  ");
+               if (j != 69 || j == k)
+                  output.writeString("SED ");
+               else
+                  output.writeString("SCD ");
+               output.printf("%3d ", i + 1);
+
+               output.write(ptr, j);
+               if (ptr[j] == '\n')
+                  j++;
+
+               ptr += j;
+               k -= j;
                output.writeCR();
             }
-            output.printf("M  SED %3d %.*s", i + 1, k, ptr);
-            output.writeCR();
          }
          else if (sgroup_types[i] == _SGROUP_TYPE_MUL)
          {

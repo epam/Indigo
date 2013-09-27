@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -50,14 +50,7 @@ public:
    class Screening
    {
    public:
-      Screening () :
-      TL_CP_GET(query_ones),
-      TL_CP_GET(passed),
-      TL_CP_GET(one_counters),
-      TL_CP_GET(passed_pre),
-      TL_CP_GET(fp_final)
-      {
-      }
+      Screening ();
 
       int part;
       int items_read;
@@ -65,6 +58,8 @@ public:
 
       int start_offset, end_offset;
 
+      CP_DECL;
+      
       TL_CP_DECL(Array<int>, query_ones);
       TL_CP_DECL(List<int>, passed);
       TL_CP_DECL(Array<int>, one_counters);
@@ -116,12 +111,13 @@ public:
    int countOracleBlocks (OracleEnv &env);
    int getTotalCount (OracleEnv &env);
 
-   DEF_ERROR("screening");
+   DECL_ERROR;
 
 protected:
    // constant configuration parameters
    int  _fp_bytes, _fp_priority_bytes_min, _fp_priority_bytes_max;
    int  _chunk_qwords;
+   CP_DECL;
    TL_CP_DECL(Array<char>, _table_name);
 
    // when adding fingerprints

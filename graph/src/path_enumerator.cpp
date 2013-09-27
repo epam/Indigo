@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -13,10 +13,13 @@
  ***************************************************************************/
 
 #include "base_cpp/tlscont.h"
+#include "base_cpp/cancellation_handler.h"
 #include "graph/graph.h"
 #include "graph/path_enumerator.h"
 
 using namespace indigo;
+
+IMPL_TIMEOUT_EXCEPTION(PathEnumerator, "path enumerator");
 
 PathEnumerator::PathEnumerator (Graph &graph, int begin, int end) :
 _graph(graph),
@@ -51,9 +54,21 @@ void PathEnumerator::process ()
    visited_vertices.clear_resize(_graph.getVertex(_begin).neiEnd());
    visited_vertices.zerofill();
 
+   // Cancellation handler variables
+   int iteration = 0;
+   CancellationHandler *cancellation_handler = getCancellationHandler();
+
    // DFS all paths from given vertex
    while (vertices.size() > 0)
    {
+      // Check cancellation each 1000th iteration
+      if (cancellation_handler != NULL && iteration % 1000 == 0)
+      {
+         if (cancellation_handler->isCancelled())
+            throw TimeoutException("%s", cancellation_handler->cancelledRequestMessage());
+      }
+      iteration++;
+
       const Vertex &v_vertex = _graph.getVertex(vertices.top());
       bool no_push = true;
       

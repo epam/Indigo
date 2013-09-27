@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -94,8 +94,8 @@ public:
    // Update internal structures to fit all target vertices that might be added
    void validate ();
 
-   DEF_ERROR("embedding enumerator");
-   DEF_TIMEOUT_EXCEPTION("embedding enumerator");
+   DECL_ERROR;
+   DECL_TIMEOUT_EXCEPTION;
 
 protected:
 
@@ -105,6 +105,8 @@ protected:
    Graph *_g2;
 
    GraphVertexEquivalence *_equivalence_handler;
+
+   CP_DECL;
 
    TL_CP_DECL(Array<int>, _core_1);
    TL_CP_DECL(Array<int>, _core_2);

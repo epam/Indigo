@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -146,6 +146,9 @@ CEXPORT const char* mangoGross (const char *target_buf, int target_buf_len);
 CEXPORT const char* mangoGrossGetConditions ();
 CEXPORT const char * mangoCheckMolecule (const char *molecule, int molecule_len);
 CEXPORT const char* mangoICM (const char* molecule, int molecule_len, bool save_xyz, int *out_len);
+CEXPORT const char* mangoFingerprint (const char* molecule, int molecule_len, const char* options, int *out_len);
+CEXPORT const char* mangoInChI(const char* molecule, int molecule_len, const char* options, int *out_len);
+CEXPORT const char* mangoInChIKey(const char* inchi);
 CEXPORT int mangoIndexProcess (
    int (*get_next_record_cb) (void *context),
    void (*process_result_cb) (void *context),
@@ -182,6 +185,8 @@ CEXPORT const char * ringoCheckReaction (const char *reaction, int reaction_len)
 CEXPORT int ringoGetQueryFingerprint (const char **query_fp, int *query_fp_len);
 CEXPORT int ringoSetHightlightingMode (int enable);
 CEXPORT const char* ringoGetHightlightedReaction ();
+CEXPORT const char* ringoICR (const char* reaction, int reaction_len, bool save_xyz, int *out_len);
 CEXPORT int ringoGetHash (bool for_index, dword *hash);
+CEXPORT const char* ringoFingerprint (const char* reaction, int reaction_len, const char* options, int *out_len);
 
 #endif // __bingo_core_c_h___

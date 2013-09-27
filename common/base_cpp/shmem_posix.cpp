@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -25,6 +25,8 @@
 #include "base_cpp/shmem.h"
 
 using namespace indigo;
+
+IMPL_ERROR(SharedMemory, "shared memory");
 
 SharedMemory::SharedMemory (const char *name, int size, bool no_map_if_first)
 {

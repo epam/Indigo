@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -262,7 +262,7 @@ public:
 
    void clear ();
 
-   DEF_ERROR("molecule 3d constraints");
+   DECL_ERROR;
 
 protected:
 
@@ -284,7 +284,7 @@ public:
 
    void markUsedAtoms (int *arr, int value);
 
-   DEF_ERROR("molecule 3d constraints checker");
+   DECL_ERROR;
 protected:
    void  _cache       (int idx);
    float _getAngle    (int idx);
@@ -301,6 +301,7 @@ protected:
    typedef RedBlackMap<int, Line3f>  MapL;
    typedef RedBlackMap<int, Plane3f> MapP;
 
+   CP_DECL;
    TL_CP_DECL(MapV, _cache_v);
    TL_CP_DECL(MapL, _cache_l);
    TL_CP_DECL(MapP, _cache_p);

@@ -9,10 +9,15 @@ from optparse import OptionParser
 presets = {
     "win32" : ("Visual Studio 10", ""),
     "win64" : ("Visual Studio 10 Win64", ""),
+    "win32-2012" : ("Visual Studio 11", ""),
+    "win64-2012" : ("Visual Studio 11 Win64", ""),
+    "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
+    "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
+    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),   
 }
 
 parser = OptionParser(description='Indigo libraries build script')
@@ -25,6 +30,14 @@ parser.add_option('--clean', default=False, action="store_true",
     help='delete all the build data', dest="clean")
 parser.add_option('--preset', type="choice", dest="preset", 
     choices=presets.keys(), help='build preset %s' % (str(presets.keys())))
+parser.add_option('--cairo-gl', dest="cairogl", 
+    default=False, action="store_true", help='Build Cairo with OpenGL support')
+parser.add_option('--cairo-vg', dest="cairovg", 
+    default=False, action="store_true", help='Build Cairo with CairoVG support')
+parser.add_option('--find-cairo', dest="findcairo", 
+    default=False, action="store_true", help='Find and use system Cairo')
+parser.add_option('--find-pixman', dest="findpixman", 
+    default=False, action="store_true", help='Find and use system Pixman')
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
@@ -43,7 +56,19 @@ project_dir = join(cur_dir, "indigo-all")
 
 if args.generator.find("Unix Makefiles") != -1:
     args.params += " -DCMAKE_BUILD_TYPE=" + args.config
-    
+
+if args.cairogl:
+    args.params += ' -DWITH_CAIRO_GL=TRUE'
+
+if args.cairovg:
+    args.params += ' -DWITH_CAIRO_VG=TRUE'
+
+if args.findcairo:
+    args.params += ' -DUSE_SYSTEM_CAIRO=TRUE'
+
+if args.findcairo:
+    args.params += ' -DUSE_SYSTEM_PIXMAN=TRUE'
+
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
@@ -55,7 +80,7 @@ if not os.path.exists(full_build_dir):
     os.makedirs(full_build_dir)
 
 os.chdir(full_build_dir)
-command = "cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir)
+command = "cmake -G \"%s\" %s \"%s\"" % (args.generator, args.params, project_dir)
 print(command)
 subprocess.check_call(command, shell=True)
 
@@ -77,6 +102,9 @@ elif args.generator.find("Xcode") != -1:
 elif args.generator.find("Visual Studio") != -1:
     subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config), shell=True)
     subprocess.check_call("cmake --build . --target INSTALL --config %s" % (args.config), shell=True)
+elif args.generator.find("MinGW Makefiles") != -1:
+    subprocess.check_call("mingw32-make package", shell=True)
+    subprocess.check_call("mingw32-make install", shell=True)
 else:
     print("Do not know how to run package and install target")
 subprocess.check_call("ctest -V --timeout 10 -C %s ." % (args.config), shell=True)
@@ -86,7 +114,7 @@ os.chdir(root)
 if not os.path.exists("dist"):
     os.mkdir("dist")
 dist_dir = join(root, "dist")
-    
+
 for f in os.listdir(full_build_dir):
     path, ext = os.path.splitext(f)
     if ext == ".zip":

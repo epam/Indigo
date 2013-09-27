@@ -19,7 +19,7 @@
 #include "base_cpp/tlscont.h"
 #include "indigo_internal.h"
 
-class IndigoRenderer
+class IndigoRenderer : public IndigoPluginContext
 {
 public:
    IndigoRenderer ();
@@ -27,7 +27,7 @@ public:
 
    RenderParams renderParams;
    
-protected:
+   virtual void init ();
 };
 
 class IndigoHDCOutput : public IndigoObject

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -26,6 +26,8 @@ using namespace indigo;
 //
 Array<int> MoleculeInChIUtils::_atom_lables_sorted;
 Array<int> MoleculeInChIUtils::_atom_lables_ranks;
+
+IMPL_ERROR(MoleculeInChIUtils, "InChI utility");
 
 const Array<int>& MoleculeInChIUtils::getLexSortedAtomLables ()
 {

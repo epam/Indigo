@@ -1,5 +1,5 @@
 #ifndef _BINGO_PG_BUFFER_H__
-#define	_BINGO_PG_BUFFER_H__
+#define _BINGO_PG_BUFFER_H__
 
 #include "bingo_postgres.h"
 #include "base_cpp/exception.h"
@@ -54,7 +54,7 @@ public:
 
    bool isReady() const;
    
-   DEF_ERROR("bingo buffer");
+   DECL_ERROR;
    
 private:
    BingoPgBuffer(const BingoPgBuffer&); //no implicit copy
@@ -66,5 +66,5 @@ private:
    unsigned int _blockIdx;
 };
    
-#endif	/* BINGO_PG_BUFFER_H */
+#endif /* BINGO_PG_BUFFER_H */
 

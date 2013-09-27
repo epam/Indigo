@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -320,6 +320,7 @@ void BingoOracleContext::fingerprintLoadParameters (OracleEnv &env)
    configGetInt(env, "FP_SIM_SIZE", fp_parameters.sim_qwords);
    configGetInt(env, "FP_ANY_SIZE", fp_parameters.any_qwords);
    fp_parameters.ext = true;
+   fp_parameters_ready = true;
    
    configGetInt(env, "FP_STORAGE_CHUNK", fp_chunk_qwords);
 }

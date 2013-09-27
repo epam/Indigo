@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -91,8 +91,9 @@ public:
    bool ignore_atom_isotopes;
    bool ignore_atom_radicals;
 
+   AromaticityOptions arom_options;
 
-   DEF_ERROR("Reaction automapper");
+   DECL_ERROR;
 
    CancellationHandler* cancellation;
 
@@ -194,6 +195,7 @@ public:
    void setUpFlags(const ReactionAutomapper& context);
 
    int flags;
+   AromaticityOptions arom_options;
 
 private:
    int _searchSubstructure(EmbeddingEnumerator& emb_enum, const Array<int>* in_map, Array<int> *out_map);
@@ -221,6 +223,15 @@ private:
    Array<int> _invTransposition;
    Array<int> _bondTransposition;
    
+};
+
+class AAMCancellationWrapper {
+public:
+    AAMCancellationWrapper(CancellationHandler*);
+    ~AAMCancellationWrapper();
+private:
+    AAMCancellationWrapper(const AAMCancellationWrapper&);
+    CancellationHandler* _prev;
 };
 
 }

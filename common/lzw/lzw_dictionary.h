@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -34,7 +34,7 @@ class DLLEXPORT LzwDict
 
 public:
 
-   DEF_ERROR("LZW dictionary");
+   DECL_ERROR;
 
    /* Dictionary constants */
    enum {
@@ -108,6 +108,7 @@ private:
 
    bool _modified;
 
+   CP_DECL;
    TL_CP_DECL(Array<_DictElement>, _storage);       /* Dictionary */
 
    TL_CP_DECL(Array<int>, _nextPointers);

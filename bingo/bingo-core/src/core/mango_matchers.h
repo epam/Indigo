@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -67,7 +67,7 @@ public:
    
    bool parse (const char *params);
    
-   DEF_ERROR("substructure");
+   DECL_ERROR;
 
 protected:
    BingoContext &_context;
@@ -149,9 +149,7 @@ protected:
 
    void _initQuery  (Molecule &query);
    static void _initTarget (Molecule &target, bool from_database);
-   static int _vertex_code (Graph &graph, int vertex_idx, void *context);
-   static int _edge_code (Graph &graph, int edge_idx, void *context);
-
+   static int vertexCode (Molecule &mol, int vertex_idx);
 };
 
 
@@ -205,7 +203,7 @@ public:
    // Returns stored similarity score after calc, match or matchBinary
    float getSimilarityScore ();
 
-   DEF_ERROR("mango similarity");
+   DECL_ERROR;
 protected:
    BingoContext &_context;
    Array<byte>   _query_fp;
@@ -255,7 +253,7 @@ public:
 
    bool preserve_bonds_on_highlighting;
    
-   DEF_ERROR("tautomer matcher");
+   DECL_ERROR;
 
    Params                 _params;
 
@@ -296,7 +294,7 @@ public:
    bool checkMolecule (const Array<char> &target_buf);
    bool checkMolecule (Scanner &scanner);
 
-   DEF_ERROR("gross formula");
+   DECL_ERROR;
 
 protected:
    BingoContext &_context;

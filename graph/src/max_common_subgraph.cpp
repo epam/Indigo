@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,6 +18,8 @@
 #include "time.h"
 
 using namespace indigo;
+
+IMPL_ERROR(MaxCommonSubgraph, "MCS");
 
 MaxCommonSubgraph::MaxCommonSubgraph(Graph &subgraph, Graph &supergraph) :
    conditionEdgeWeight(0),
@@ -238,6 +240,10 @@ MaxCommonSubgraph::ReCreation::ReCreation(ReGraph &rgr, MaxCommonSubgraph& conte
 
 void MaxCommonSubgraph::ReCreation::createRegraph(){
    _regraph.clear();
+    if (_regraph.cancellation_handler != 0) {
+        if (_regraph.cancellation_handler->isCancelled())
+            throw Error("mcs search was cancelled: %s", _regraph.cancellation_handler->cancelledRequestMessage());
+    }
    _nodeConstructor();
    _edgesConstructor();
 }
@@ -609,6 +615,8 @@ void MaxCommonSubgraph::ReGraph::clear(){
 void MaxCommonSubgraph::ReGraph::parse(bool findAllStructure){
    _size = _graph.size();
    _findAllStructure = findAllStructure;
+
+
 
    Dbitset pnode_g1(_firstGraphSize);
    Dbitset pnode_g2(_secondGraphSize);
@@ -1492,8 +1500,10 @@ int MaxCommonSubgraph::Greedy::_matchedEdges(){
 
 //Refinement stage: random discrete descent method
 //-------------------------------------------------------------------------------------------------------------------
+CP_DEF(MaxCommonSubgraph::RandomDisDec);
+
 MaxCommonSubgraph::RandomDisDec::RandomDisDec(AdjMatricesStore &aj):
-_adjMstore(aj),TL_CP_GET(_errorList),TL_CP_GET(_listErrVertices),_maxIteration(MAX_ITERATION){
+_adjMstore(aj),CP_INIT,TL_CP_GET(_errorList),TL_CP_GET(_listErrVertices),_maxIteration(MAX_ITERATION){
    setIterationNumber(aj._context.parametersForApproximate.maxIteration);
    cancellation_handler = getCancellationHandler();
 }

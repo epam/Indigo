@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <errno.h>
 #include <ctype.h>
 
 #include "base_c/defs.h"
@@ -23,6 +24,8 @@
 #include "reusable_obj_array.h"
 
 using namespace indigo;
+
+IMPL_ERROR(Scanner, "scanner");
 
 Scanner::~Scanner ()
 {
@@ -140,7 +143,7 @@ bool Scanner::_readDouble (double &res, int max)
    bool minus = false;
    bool digit = false;
    bool e = false;
-   int denom = 1;
+   double denom = 0;
    int cnt = 0;
 
    while (1)
@@ -348,6 +351,10 @@ void Scanner::appendLine (Array<char> &out, bool append_zero)
    if (isEOF())
       throw Error("appendLine(): end of stream");
 
+   if (out.size() > 0)
+      while (out.top() == 0)
+         out.pop();
+
    do
    {
       char c = readChar();
@@ -498,7 +505,7 @@ void FileScanner::_init (Encoding filename_encoding, const char *filename)
    _file = openFile(filename_encoding, filename, "rb");
 
    if (_file == NULL)
-      throw Error("can't open file %s", filename);
+      throw Error("can't open file %s. Error: %s", filename, strerror(errno));
 
    fseek(_file, 0, SEEK_END);
    _file_len = ftell(_file);

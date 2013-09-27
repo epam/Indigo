@@ -175,6 +175,35 @@ static void indigoSetCancellationTimeout (int value)
    self.cancellation_timeout = value;
 }
 
+static void indigoSetPreserveOrderingInSerialize (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.preserve_ordering_in_serialize = (enabled != 0);
+}
+
+static void indigoSetAromaticityModel (const char *model)
+{
+   Indigo &self = indigoGetInstance();
+   if (strcasecmp(model, "basic") == 0)
+      self.arom_options.method = AromaticityOptions::BASIC;
+   else if (strcasecmp(model, "generic") == 0)
+      self.arom_options.method = AromaticityOptions::GENERIC;
+   else
+      throw IndigoError("unknown value: %s. Allowed values are \"basic\", \"generic\"", model);
+}
+
+static void indigoSetDearomatizeVerification (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.arom_options.dearomatize_check = (enabled != 0);
+}
+
+static void indigoSetDearomatizeUnique (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.unique_dearomatization = (enabled != 0);
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -205,6 +234,12 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 
    mgr.setOptionHandlerInt("aam-timeout", indigoAAMSetCancellationTimeout);
    mgr.setOptionHandlerInt("timeout", indigoSetCancellationTimeout);
+
+   mgr.setOptionHandlerBool("serialize-preserve-ordering", indigoSetPreserveOrderingInSerialize);
+
+   mgr.setOptionHandlerString("aromaticity-model", indigoSetAromaticityModel);
+   mgr.setOptionHandlerBool("dearomatize-verification", indigoSetDearomatizeVerification);
+   mgr.setOptionHandlerBool("unique-dearomatization", indigoSetDearomatizeUnique);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

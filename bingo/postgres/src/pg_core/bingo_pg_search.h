@@ -35,10 +35,11 @@ public:
    BingoPgIndex& getIndex() {return _bufferIndex;}
 
    const char* getFuncName() const {return _funcName.ptr();}
-   const char* getQuery() {return _queryText.getString();}
-   const char* getOptions() {return _optionsText.getString();}
 
-   DEF_ERROR("bingo search engine");
+
+   void prepareRescan(PG_OBJECT scan_desc_ptr);
+
+   DECL_ERROR;
 
 private:
    BingoPgSearch(const BingoPgSearch&); //no implicit copy
@@ -53,8 +54,6 @@ private:
    BingoPgIndex _bufferIndex;
    indigo::AutoPtr<BingoPgSearchEngine> _fpEngine;
 
-   BingoPgText _queryText;
-   BingoPgText _optionsText;
    indigo::Array<char> _funcName;
 
 };

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -21,10 +21,14 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeChainFingerprintBuilder, "chain fingerprint builder");
+
+CP_DEF(MoleculeChainFingerprintBuilder);
+
 MoleculeChainFingerprintBuilder::MoleculeChainFingerprintBuilder
         (Molecule &mol, const MoleculeChainFingerprintParameters &parameters) :
 _mol(mol), _parameters(parameters),
-TL_CP_GET(_fingerprint)
+CP_INIT, TL_CP_GET(_fingerprint)
 {
 }
 

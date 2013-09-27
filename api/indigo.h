@@ -15,46 +15,28 @@
 #ifndef __indigo__
 #define __indigo__
 
-#ifdef _WIN32
+#if defined(_WIN32)  && !defined(__MINGW32__)
 #define qword unsigned _int64
 #else
 #define qword unsigned long long
 #endif
 
-#ifndef DLLEXPORT
-#ifdef _WIN32
-#ifdef INDIGO_PLUGIN
-#define DLLEXPORT __declspec(dllimport)
-#else 
-#define DLLEXPORT __declspec(dllexport)
-#endif
-#elif (defined __GNUC__ || defined __APPLE__)
-#define DLLEXPORT __attribute__ ((visibility ("default")))
-#else
-#define DLLEXPORT
-#endif
+#ifndef EXPORT_SYMBOL
+   #ifdef _WIN32
+      #define EXPORT_SYMBOL __declspec(dllexport)
+   #elif (defined __GNUC__ || defined __APPLE__)
+      #define EXPORT_SYMBOL __attribute__ ((visibility ("default")))
+   #else
+      #define EXPORT_SYMBOL
+   #endif
 #endif
 
 #ifndef CEXPORT
-#ifdef _WIN32
-#ifndef __cplusplus
-#define CEXPORT __declspec(dllexport)
-#else
-#define CEXPORT extern "C" __declspec(dllexport)
-#endif
-#elif (defined __GNUC__ || defined __APPLE__)
-#ifndef __cplusplus
-#define CEXPORT __attribute__ ((visibility ("default")))
-#else
-#define CEXPORT extern "C" __attribute__ ((visibility ("default")))
-#endif
-#else
-#ifndef __cplusplus
-#define CEXPORT
-#else
-#define CEXPORT extern "C"
-#endif
-#endif
+   #ifndef __cplusplus
+      #define CEXPORT EXPORT_SYMBOL
+   #else
+      #define CEXPORT extern "C" EXPORT_SYMBOL
+   #endif
 #endif
 
 #ifndef __byte_typedef__
@@ -84,6 +66,7 @@ CEXPORT void  indigoSetSessionId     (qword id);
 // further allocations.
 CEXPORT void  indigoReleaseSessionId (qword id);
 
+
 // Get the last error message
 CEXPORT const char * indigoGetLastError (void);
 
@@ -96,6 +79,9 @@ CEXPORT int indigoFree (int handle);
 CEXPORT int indigoClone (int object);
 // Count object currently allocated
 CEXPORT int indigoCountReferences (void);
+
+// Deallocate all the objects in the current session
+CEXPORT int indigoFreeAllObjects ();
 
 /* Options */
 
@@ -257,6 +243,11 @@ CEXPORT const char * indigoRxnfile (int reaction);
 // (works for both query molecules and query reactions)
 CEXPORT int indigoOptimize (int query, const char *options);
 
+// Methods for structure normalization
+// It neutrailzes charges, resolves 5-valence Nitrogen, removes hydrogens and etc.
+// Default options is empty.
+CEXPORT int indigoNormalize (int structure, const char *options);
+
 // Automatic reaction atom-to-atom mapping
 // mode is one of the following (separated by a space):
 //    "discard" : discards the existing mapping entirely and considers only
@@ -326,6 +317,13 @@ CEXPORT int indigoIsRSite (int atom);
 // or zero if the atom is not a stereoatom
 CEXPORT int indigoStereocenterType (int atom);
 CEXPORT int indigoChangeStereocenterType (int atom, int type);
+
+CEXPORT int indigoStereocenterGroup (int atom);
+CEXPORT int indigoSetStereocenterGroup (int atom, int group);
+
+// returns 4 integers with atom indices that defines stereocenter pyramid
+CEXPORT const int* indigoStereocenterPyramid (int atom);
+
 CEXPORT int indigoSingleAllowedRGroup (int rsite);
 
 CEXPORT int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);
@@ -381,9 +379,15 @@ CEXPORT int indigoIterateSuperatoms (int molecule);
 CEXPORT int indigoIterateGenericSGroups (int molecule);
 CEXPORT int indigoIterateRepeatingUnits (int molecule);
 CEXPORT int indigoIterateMultipleGroups (int molecule);
+
 CEXPORT int indigoGetSuperatom (int molecule, int index);
 CEXPORT int indigoGetDataSGroup (int molecule, int index);
+CEXPORT int indigoGetGenericSGroup (int molecule, int index);
+CEXPORT int indigoGetMultipleGroup (int molecule, int index);
+CEXPORT int indigoGetRepeatingUnit (int molecule, int index);
+
 CEXPORT const char * indigoDescription (int data_sgroup);
+CEXPORT const char * indigoData (int data_sgroup);
 
 CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
         int nbonds, int *bonds, const char *description, const char *data);
@@ -447,8 +451,11 @@ CEXPORT int indigoClearAlleneCenters (int molecule);
 CEXPORT int indigoCountAlleneCenters (int molecule);
 
 CEXPORT int indigoResetSymmetricCisTrans (int handle);
+CEXPORT int indigoResetSymmetricStereocenters (int handle);
 CEXPORT int indigoMarkEitherCisTrans (int handle);
 CEXPORT int indigoMarkStereobonds (int handle);
+
+CEXPORT int indigoValidateChirality (int handle);
 
 // Accepts a symbol from the periodic table (like "C" or "Br"),
 // or a pseudoatom symbol, like "Pol". Returns the added atom.
@@ -536,6 +543,7 @@ CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *verti
 CEXPORT int indigoGetSubmolecule (int molecule, int nvertices, int *vertices);
 
 CEXPORT int indigoRemoveAtoms (int molecule, int nvertices, int *vertices);
+CEXPORT int indigoRemoveBonds (int molecule, int nbonds, int *bonds);
 
 // Determines and applies the best transformation to the given molecule
 // so that the specified atoms move as close as possible to the desired
@@ -641,7 +649,7 @@ CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2);
 
 // Accepts two molecules, two reactions, or two fingerprints.
 // Returns the similarity measure between them.
-// Metrics: "tanimoto", "tversky", "tversky <alpha> <beta>", or "euclid-sub".
+// Metrics: "tanimoto", "tversky", "tversky <alpha> <beta>", "euclid-sub" or "normalized-edit"
 // Zero pointer or empty string defaults to "tanimoto".
 // "tversky" without numbers defaults to alpha = beta = 0.5
 CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics);
@@ -807,6 +815,10 @@ CEXPORT int indigoIterateDecompositions(int deco_item);
 // Adds the input decomposition to a full scaffold
 CEXPORT int indigoAddDecomposition(int decomp, int q_match);
 
+/*
+ * Abbreviations
+ */
+CEXPORT int indigoExpandAbbreviations (int molecule);
 
 /* Other */
 
@@ -829,5 +841,11 @@ CEXPORT const char * indigoDbgInternalType (int object);
 
 // Internal breakpoint
 CEXPORT void indigoDbgBreakpoint (void);
+
+// Methods that returns profiling infromation in a human readable format
+CEXPORT const char * indigoDbgProfiling (int /*bool*/ whole_session);
+
+// Reset profiling counters either for the current state or for the whole session
+CEXPORT int indigoDbgResetProfiling (int /*bool*/ whole_session);
 
 #endif

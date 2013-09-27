@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -74,7 +74,7 @@ public:
       INFINITY = 0x7FFF
    };
 
-   DEF_ERROR("automorphism search");
+   DECL_ERROR;
 
 protected:
 
@@ -97,6 +97,8 @@ protected:
       int tv1;
       int place; // _INITIAL, _FIRST_TO_FIRST, etc.
    };
+
+   CP_DECL;
 
    TL_CP_DECL(Array<_Call>, _call_stack);
 

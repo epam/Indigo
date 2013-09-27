@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -36,10 +36,15 @@ public:
    byte * get ();
    byte * getSim ();
 
+   void parseFingerprintType(const char *type, bool query);
+
+   DECL_ERROR;
+
 protected:
          BaseReaction                  &_reaction;
    const MoleculeFingerprintParameters &_parameters;
    
+   CP_DECL;
    TL_CP_DECL(Array<byte>, _fingerprint);
 
 private:

@@ -42,53 +42,21 @@ _cairo_xcb_connection_create_pixmap (cairo_xcb_connection_t *connection,
 				     uint16_t width,
 				     uint16_t height)
 {
-    struct {
-	uint8_t req;
-	uint8_t depth;
-	uint16_t len;
-	uint32_t pixmap;
-	uint32_t drawable;
-	uint16_t width, height;
-    } req;
-    struct iovec vec[1];
+    xcb_pixmap_t pixmap = _cairo_xcb_connection_get_xid (connection);
 
-    req.req = 53;
-    req.depth = depth;
-    req.len = sizeof (req) >> 2;
-
-    req.pixmap = _cairo_xcb_connection_get_xid (connection);
-    req.drawable = drawable;
-    req.width = width;
-    req.height = height;
-
-    vec[0].iov_base = &req;
-    vec[0].iov_len = sizeof (req);
-
-    _cairo_xcb_connection_write (connection, vec, 1);
-
-    return req.pixmap;
+    assert (width > 0);
+    assert (height > 0);
+    xcb_create_pixmap (connection->xcb_connection,
+		       depth, pixmap, drawable,
+		       width, height);
+    return pixmap;
 }
 
 void
 _cairo_xcb_connection_free_pixmap (cairo_xcb_connection_t *connection,
 				   xcb_pixmap_t pixmap)
 {
-    struct {
-	uint8_t req;
-	uint8_t pad;
-	uint16_t len;
-	uint32_t pixmap;
-    } req;
-    struct iovec vec[1];
-
-    req.req = 54;
-    req.len = sizeof (req) >> 2;
-    req.pixmap = pixmap;
-
-    vec[0].iov_base = &req;
-    vec[0].iov_len = sizeof (req);
-
-    _cairo_xcb_connection_write (connection, vec, 1);
+    xcb_free_pixmap (connection->xcb_connection, pixmap);
     _cairo_xcb_connection_put_xid (connection, pixmap);
 }
 
@@ -98,53 +66,17 @@ _cairo_xcb_connection_create_gc (cairo_xcb_connection_t *connection,
 				 uint32_t value_mask,
 				 uint32_t *values)
 {
-    struct {
-	uint8_t req;
-	uint8_t pad;
-	uint16_t len;
-	uint32_t gc;
-	uint32_t drawable;
-	uint32_t mask;
-    } req;
-    struct iovec vec[2];
-    int len = _cairo_popcount (value_mask) * 4;
-
-    req.req = 55;
-    req.len = (sizeof (req) + len) >> 2;
-    req.gc = _cairo_xcb_connection_get_xid (connection);
-    req.drawable = drawable;
-    req.mask = value_mask;
-
-    vec[0].iov_base = &req;
-    vec[0].iov_len = sizeof (req);
-    vec[1].iov_base = values;
-    vec[1].iov_len = len;
-
-    _cairo_xcb_connection_write (connection, vec, 2);
-
-    return req.gc;
+    xcb_gcontext_t gc = _cairo_xcb_connection_get_xid (connection);
+    xcb_create_gc (connection->xcb_connection, gc, drawable,
+		   value_mask, values);
+    return gc;
 }
 
 void
 _cairo_xcb_connection_free_gc (cairo_xcb_connection_t *connection,
 			       xcb_gcontext_t gc)
 {
-    struct {
-	uint8_t req;
-	uint8_t pad;
-	uint16_t len;
-	uint32_t gc;
-    } req;
-    struct iovec vec[1];
-
-    req.req = 60;
-    req.len = sizeof (req) >> 2;
-    req.gc = gc;
-
-    vec[0].iov_base = &req;
-    vec[0].iov_len = sizeof (req);
-
-    _cairo_xcb_connection_write (connection, vec, 1);
+    xcb_free_gc (connection->xcb_connection, gc);
     _cairo_xcb_connection_put_xid (connection, gc);
 }
 
@@ -154,27 +86,8 @@ _cairo_xcb_connection_change_gc (cairo_xcb_connection_t *connection,
 				 uint32_t value_mask,
 				 uint32_t *values)
 {
-    struct {
-	uint8_t req;
-	uint8_t pad;
-	uint16_t len;
-	uint32_t gc;
-	uint32_t mask;
-    } req;
-    struct iovec vec[2];
-    int len = _cairo_popcount (value_mask) * 4;
-
-    req.req = 56;
-    req.len = (sizeof (req) + len) >> 2;
-    req.gc = gc;
-    req.mask = value_mask;
-
-    vec[0].iov_base = &req;
-    vec[0].iov_len = sizeof (req);
-    vec[1].iov_base = values;
-    vec[1].iov_len = len;
-
-    _cairo_xcb_connection_write (connection, vec, 2);
+    xcb_change_gc (connection->xcb_connection, gc,
+		   value_mask, values);
 }
 
 void
@@ -189,38 +102,8 @@ _cairo_xcb_connection_copy_area (cairo_xcb_connection_t *connection,
 				 uint16_t width,
 				 uint16_t height)
 {
-    struct {
-	uint8_t req;
-	uint8_t pad;
-	uint16_t len;
-	uint32_t src;
-	uint32_t dst;
-	uint32_t gc;
-	int16_t src_x;
-	int16_t src_y;
-	int16_t dst_x;
-	int16_t dst_y;
-	uint16_t width;
-	uint16_t height;
-    } req;
-    struct iovec vec[1];
-
-    req.req = 62;
-    req.len = sizeof (req) >> 2;
-    req.src = src;
-    req.dst = dst;
-    req.gc = gc;
-    req.src_x = src_x;
-    req.src_y = src_y;
-    req.dst_x = dst_x;
-    req.dst_y = dst_y;
-    req.width = width;
-    req.height = height;
-
-    vec[0].iov_base = &req;
-    vec[0].iov_len = sizeof (req);
-
-    _cairo_xcb_connection_write (connection, vec, 1);
+    xcb_copy_area (connection->xcb_connection, src, dst, gc,
+		   src_x, src_y, dst_x, dst_y, width, height);
 }
 
 void
@@ -230,26 +113,8 @@ _cairo_xcb_connection_poly_fill_rectangle (cairo_xcb_connection_t *connection,
 					   uint32_t num_rectangles,
 					   xcb_rectangle_t *rectangles)
 {
-    struct {
-	uint8_t req;
-	uint8_t pad;
-	uint16_t len;
-	uint32_t dst;
-	uint32_t gc;
-    } req;
-    struct iovec vec[2];
-
-    req.req = 70;
-    req.len = (sizeof (req) + num_rectangles * sizeof (xcb_rectangle_t)) >> 2;
-    req.dst = dst;
-    req.gc = gc;
-
-    vec[0].iov_base = &req;
-    vec[0].iov_len = sizeof (req);
-    vec[1].iov_base = rectangles;
-    vec[1].iov_len = num_rectangles * sizeof (xcb_rectangle_t);
-
-    _cairo_xcb_connection_write (connection, vec, 2);
+    xcb_poly_fill_rectangle (connection->xcb_connection, dst, gc,
+			     num_rectangles, rectangles);
 }
 
 void
@@ -264,92 +129,114 @@ _cairo_xcb_connection_put_image (cairo_xcb_connection_t *connection,
 				 uint32_t stride,
 				 void *data)
 {
-    struct {
-	uint8_t req;
-	uint8_t format;
-	uint16_t len;
-	uint32_t dst;
-	uint32_t gc;
-	uint16_t width;
-	uint16_t height;
-	int16_t dst_x;
-	int16_t dst_y;
-	uint8_t left;
-	uint8_t depth;
-	uint16_t pad;
-    } req;
-    struct iovec vec[3];
-    uint32_t prefix[2];
+    const uint32_t req_size = 18;
     uint32_t length = height * stride;
-    uint32_t len = (sizeof (req) + length) >> 2;
+    uint32_t len = (req_size + length) >> 2;
 
-    req.req = 72;
-    req.format = XCB_IMAGE_FORMAT_Z_PIXMAP;
-    req.len = 0;
-    req.dst = dst;
-    req.gc = gc;
-    req.width = width;
-    req.height = height;
-    req.dst_x = dst_x;
-    req.dst_y = dst_y;
-    req.left = 0;
-    req.depth = depth;
-
-    if (len < connection->root->maximum_request_length) {
-	req.len = len;
-
-	vec[0].iov_base = &req;
-	vec[0].iov_len = sizeof (req);
-	vec[1].iov_base = data;
-	vec[1].iov_len = length;
-
-	_cairo_xcb_connection_write (connection, vec, 2);
-    } else if (len < connection->maximum_request_length) {
-	prefix[0] = *(uint32_t *) &req;
-	prefix[1] = len + 1;
-	vec[0].iov_base = prefix;
-	vec[0].iov_len = sizeof (prefix);
-	vec[1].iov_base = (uint32_t *) &req + 1;
-	vec[1].iov_len = sizeof (req) - 4;
-	vec[2].iov_base = data;
-	vec[2].iov_len = length;
-
-	_cairo_xcb_connection_write (connection, vec, 3);
+    if (len < connection->maximum_request_length) {
+	xcb_put_image (connection->xcb_connection, XCB_IMAGE_FORMAT_Z_PIXMAP,
+		       dst, gc, width, height, dst_x, dst_y, 0, depth,
+		       length, data);
     } else {
-	int rows;
-
-	rows = (connection->maximum_request_length - sizeof (req) - 4) / stride;
+	int rows = (connection->maximum_request_length - req_size - 4) / stride;
 	if (rows > 0) {
 	    do {
 		if (rows > height)
 		    rows = height;
 
 		length = rows * stride;
-		len = (sizeof (req) + 4 + length) >> 2;
 
-		req.height = rows;
-
-		prefix[0] = *(uint32_t *) &req;
-		prefix[1] = len;
-
-		vec[0].iov_base = prefix;
-		vec[0].iov_len = sizeof (prefix);
-		vec[1].iov_base = (uint32_t *) &req + 1;
-		vec[1].iov_len = sizeof (req) - 4;
-		vec[2].iov_base = data;
-		vec[2].iov_len = length;
-
-		/* note may modify vec */
-		_cairo_xcb_connection_write (connection, vec, 3);
+		xcb_put_image (connection->xcb_connection, XCB_IMAGE_FORMAT_Z_PIXMAP,
+			       dst, gc, width, rows, dst_x, dst_y, 0, depth, length, data);
 
 		height -= rows;
-		req.dst_y += rows;
+		dst_y += rows;
 		data = (char *) data + length;
 	    } while (height);
 	} else {
 	    ASSERT_NOT_REACHED;
 	}
     }
+}
+
+static void
+_cairo_xcb_connection_do_put_subimage (cairo_xcb_connection_t *connection,
+				       xcb_drawable_t dst,
+				       xcb_gcontext_t gc,
+				       int16_t src_x,
+				       int16_t src_y,
+				       uint16_t width,
+				       uint16_t height,
+				       uint16_t cpp,
+				       int stride,
+				       int16_t dst_x,
+				       int16_t dst_y,
+				       uint8_t depth,
+				       void *_data)
+{
+    xcb_protocol_request_t xcb_req = {
+	0 /* count */,
+	0 /* ext */,
+	XCB_PUT_IMAGE /* opcode */,
+	1 /* isvoid (doesn't cause a reply) */
+    };
+    xcb_put_image_request_t req;
+    struct iovec vec_stack[CAIRO_STACK_ARRAY_LENGTH (struct iovec)];
+    struct iovec *vec = vec_stack;
+    uint32_t len = 0;
+    uint8_t *data = _data;
+    int n = 3;
+    /* Two extra entries are needed for xcb, two for us */
+    int entries_needed = height + 2 + 2;
+
+    req.format = XCB_IMAGE_FORMAT_Z_PIXMAP;
+    req.drawable = dst;
+    req.gc = gc;
+    req.width = width;
+    req.height = height;
+    req.dst_x = dst_x;
+    req.dst_y = dst_y;
+    req.left_pad = 0;
+    req.depth = depth;
+    req.pad0[0] = 0;
+    req.pad0[1] = 0;
+
+    if (entries_needed > ARRAY_LENGTH (vec_stack)) {
+	vec = _cairo_malloc_ab (entries_needed, sizeof (struct iovec));
+	if (unlikely (vec == NULL)) {
+	    /* XXX loop over ARRAY_LENGTH (vec_stack) */
+	    return;
+	}
+    }
+
+    data += src_y * stride + src_x * cpp;
+    /* vec[1] will be used in XCB if it has to use BigRequests or insert a sync,
+     * vec[0] is used if the internal queue needs to be flushed. */
+    vec[2].iov_base = (char *) &req;
+    vec[2].iov_len = sizeof (req);
+
+    /* Now comes the actual data */
+    while (height--) {
+	vec[n].iov_base = data;
+	vec[n].iov_len = cpp * width;
+	len += cpp * width;
+	data += stride;
+	n++;
+    }
+
+    /* And again some padding */
+    vec[n].iov_base = 0;
+    vec[n].iov_len = -len & 3;
+    n++;
+
+    /* For efficiency reasons, this functions writes the request "directly" to
+     * the xcb connection to avoid having to copy the data around. */
+    assert (n == entries_needed);
+    xcb_req.count = n - 2;
+    xcb_send_request (connection->xcb_connection, 0, &vec[2], &xcb_req);
+
+    if (vec != vec_stack)
+	free (vec);
 }
 
 void
@@ -361,85 +248,39 @@ _cairo_xcb_connection_put_subimage (cairo_xcb_connection_t *connection,
 				    uint16_t width,
 				    uint16_t height,
 				    uint16_t cpp,
-				    uint16_t stride,
+				    int stride,
 				    int16_t dst_x,
 				    int16_t dst_y,
 				    uint8_t depth,
 				    void *_data)
 {
-    struct {
-	uint8_t req;
-	uint8_t format;
-	uint16_t len;
-	uint32_t dst;
-	uint32_t gc;
-	uint16_t width;
-	uint16_t height;
-	int16_t dst_x;
-	int16_t dst_y;
-	uint8_t left;
-	uint8_t depth;
-	uint16_t pad;
-    } req;
-    struct iovec vec_stack[CAIRO_STACK_ARRAY_LENGTH (struct iovec)];
-    struct iovec *vec = vec_stack;
-    uint32_t prefix[2];
-    uint32_t len = (sizeof (req) + cpp*width*height) >> 2;
-    uint8_t *data = _data;
-    int n;
+    const uint32_t req_size = sizeof(xcb_put_image_request_t);
+    uint32_t length = height * cpp * width;
+    uint32_t len = (req_size + length) >> 2;
 
-    req.req = 72;
-    req.format = XCB_IMAGE_FORMAT_Z_PIXMAP;
-    req.len = 0;
-    req.dst = dst;
-    req.gc = gc;
-    req.width = width;
-    req.height = height;
-    req.dst_x = dst_x;
-    req.dst_y = dst_y;
-    req.left = 0;
-    req.depth = depth;
+    if (len < connection->maximum_request_length) {
+	_cairo_xcb_connection_do_put_subimage (connection, dst, gc, src_x, src_y,
+			width, height, cpp, stride, dst_x, dst_y, depth, _data);
+    } else {
+	int rows = (connection->maximum_request_length - req_size - 4) / (cpp * width);
+	if (rows > 0) {
+	    do {
+		if (rows > height)
+		    rows = height;
 
-    if (height + 2 > ARRAY_LENGTH (vec_stack)) {
-	vec = _cairo_malloc_ab (height+2, sizeof (struct iovec));
-	if (unlikely (vec == NULL)) {
-	    /* XXX loop over ARRAY_LENGTH (vec_stack) */
-	    return;
+		length = rows * cpp * width;
+
+		_cairo_xcb_connection_do_put_subimage (connection, dst, gc, src_x, src_y,
+			width, rows, cpp, stride, dst_x, dst_y, depth, _data);
+
+		height -= rows;
+		dst_y += rows;
+		_data = (char *) _data + stride * rows;
+	    } while (height);
+	} else {
+	    ASSERT_NOT_REACHED;
 	}
     }
-
-    data += src_y * stride + src_x * cpp;
-    if (len < connection->root->maximum_request_length) {
-	req.len = len;
-
-	vec[0].iov_base = &req;
-	vec[0].iov_len = sizeof (req);
-
-	n = 1;
-    } else if (len < connection->maximum_request_length) {
-	prefix[0] = *(uint32_t *) &req;
-	prefix[1] = len + 1;
-	vec[0].iov_base = prefix;
-	vec[0].iov_len = sizeof (prefix);
-	vec[1].iov_base = (uint32_t *) &req + 1;
-	vec[1].iov_len = sizeof (req) - 4;
-
-	n = 2;
-    } else {
-	ASSERT_NOT_REACHED;
-    }
-
-    while (height--) {
-	vec[n].iov_base = data;
-	vec[n].iov_len = cpp * width;
-	data += stride;
-	n++;
-    }
-
-    _cairo_xcb_connection_write (connection, vec, n);
-
-    if (vec != vec_stack)
-	free (vec);
 }
 
 cairo_status_t
@@ -452,7 +293,6 @@ _cairo_xcb_connection_get_image (cairo_xcb_connection_t *connection,
 				 xcb_get_image_reply_t **reply)
 {
     xcb_generic_error_t *error;
-    cairo_status_t status;
 
     *reply = xcb_get_image_reply (connection->xcb_connection,
 				  xcb_get_image (connection->xcb_connection,
@@ -466,17 +306,9 @@ _cairo_xcb_connection_get_image (cairo_xcb_connection_t *connection,
     if (error) {
 	free (error);
 
-	if (*reply)
-	    free (*reply);
+	free (*reply);
 	*reply = NULL;
     }
 
-    status = _cairo_xcb_connection_take_socket (connection);
-    if (unlikely (status)) {
-	if (*reply)
-	    free (*reply);
-	*reply = NULL;
-    }
-
-    return status;
+    return CAIRO_STATUS_SUCCESS;
 }

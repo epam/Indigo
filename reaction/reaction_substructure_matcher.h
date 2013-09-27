@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -32,7 +32,7 @@ public:
    ReactionSubstructureMatcher (Reaction &target);
    bool use_daylight_aam_mode;
 
-   DEF_ERROR("reaction substructure matcher");
+   DECL_ERROR;
 
 protected:
 

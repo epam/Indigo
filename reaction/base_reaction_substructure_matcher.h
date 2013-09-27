@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -48,12 +48,14 @@ public:
    bool highlight;
    bool use_aromaticity_matcher;
 
+   AromaticityOptions arom_options;
+
    bool find ();
 
    int getTargetMoleculeIndex (int query_molecule_idx);
    const int * getQueryMoleculeMapping (int query_mol_idx);
 
-   DEF_ERROR("reaction substructure matcher");
+   DECL_ERROR;
 
    bool (*match_atoms) (BaseReaction &query_, Reaction &target,
                         int sub_mol_idx, int sub_atom_idx, int super_mol_idx, int super_atom_idx, void *context);
@@ -107,6 +109,7 @@ protected:
 
       int _current_molecule_1, _current_molecule_2;
 
+      CP_DECL;
       TL_CP_DECL(Array<int>, _current_core_1);
       TL_CP_DECL(Array<int>, _current_core_2);
 
@@ -133,6 +136,7 @@ protected:
 
    Reaction &_target;
 
+   CP_DECL;
    TL_CP_DECL(PtrArray<_Matcher>, _matchers);
    TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_1);
    TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_2);

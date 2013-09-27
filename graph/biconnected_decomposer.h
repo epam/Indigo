@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -35,18 +35,24 @@ public:
    // returns the amount of biconnected components
    int decompose ();
 
+   int componentsCount ();
+
    bool isArticulationPoint (int idx) const;
    void getComponent (int idx, Filter &filter) const;
    const Array<int> & getIncomingComponents (int idx) const;
    int getIncomingCount (int idx) const;
    void getVertexComponents (int idx, Array<int> &components) const;
 
-   DEF_ERROR("biconnected_decomposer");
+   DECL_ERROR;
 
 protected:
    void _biconnect (int v, int u);
 
+   bool _pushToStack (Array<int> &dfs_stack, int v);
+   void _processIfNotPushed (Array<int> &dfs_stack, int w);
+
    const Graph &_graph;
+   CP_DECL;
    TL_CP_DECL(PtrArray<Array<int> >, _components);
    TL_CP_DECL(Array<int>, _dfs_order);
    TL_CP_DECL(Array<int>, _lowest_order);

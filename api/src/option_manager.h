@@ -49,7 +49,7 @@ public:
    typedef void (*optf_xy_t) (int x, int y);
    OptionManager ();
 
-   DEF_ERROR("option manager");
+   DECL_ERROR;
    DEF_SET_OPT_HANDLER(String, optf_string_t, OPTION_STRING, hMapString)
    DEF_SET_OPT_HANDLER(Int, optf_int_t, OPTION_INT, hMapInt)
    DEF_SET_OPT_HANDLER(Bool, optf_bool_t, OPTION_BOOL, hMapBool)

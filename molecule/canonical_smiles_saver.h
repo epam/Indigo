@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -30,11 +30,10 @@ public:
    ~CanonicalSmilesSaver ();
 
    bool find_invalid_stereo;
-   bool ignore_invalid_hcount;
 
    void saveMolecule (Molecule &mol) const;
 
-   DEF_ERROR("canonical SMILES saver");
+   DECL_ERROR;
 
 protected:
 

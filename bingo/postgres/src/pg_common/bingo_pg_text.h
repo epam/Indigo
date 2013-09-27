@@ -1,5 +1,5 @@
 #ifndef _BINGO_PG_TEXT_H__
-#define	_BINGO_PG_TEXT_H__
+#define _BINGO_PG_TEXT_H__
 
 #include "bingo_postgres.h"
 #include "base_cpp/array.h"
@@ -15,6 +15,7 @@ public:
    void init(uintptr_t text_datum);
    void initFromString(const char* str);
    void initFromArray(indigo::Array<char>& str);
+   void initFromBuffer(const char* buf, int buf_len);
 
    const char* getText(int& size);
    const char* getString();
@@ -22,7 +23,7 @@ public:
    uintptr_t getDatum();
    PG_OBJECT release();
 
-   DEF_ERROR("bingo postgres text");
+   DECL_ERROR;
 private:
    BingoPgText(const BingoPgText&); //no implicit copy
 
@@ -30,5 +31,5 @@ private:
    indigo::Array<char> _cstr;
 };
 
-#endif	/* BINGO_PG_TEXT_H */
+#endif /* BINGO_PG_TEXT_H */
 

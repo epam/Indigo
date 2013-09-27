@@ -19,6 +19,7 @@ for line in open(join(cur_dir, "indigo-version.cmake")):
         version = m.group(1)
 
 api_dir = abspath(dirname(__file__))
+doc_dir = join(api_dir, '..', 'doc')
 root = join(api_dir, "..")
 dist_dir = join(root, "dist")
 if not os.path.exists(dist_dir):
@@ -33,6 +34,7 @@ os.mkdir(dest)
 shutil.copy(os.path.join(api_dir, "python", "indigo.py"), dest)
 shutil.copy(os.path.join(api_dir, "plugins", "renderer", "python", "indigo_renderer.py"), dest)
 shutil.copy(os.path.join(api_dir, "plugins", "inchi", "python", "indigo_inchi.py"), dest)
+shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join(dest, 'doc'))
 shutil.copytree(os.path.join(api_dir, "libs", "shared"), 
     os.path.join(dest, "lib"), 
     ignore = shutil.ignore_patterns("*.lib"))

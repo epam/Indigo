@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -131,6 +131,8 @@ int QueryMolecule::getAtomSubstCount (int idx)
    int res;
 
    if (_atoms[idx]->sureValue(ATOM_SUBSTITUENTS, res))
+      return res;
+   if (_atoms[idx]->sureValue(ATOM_SUBSTITUENTS_AS_DRAWN, res))
       return res;
 
    return -1;
@@ -275,6 +277,9 @@ void QueryMolecule::_getAtomDescription (Atom *atom, Output &out, int depth)
          return;
       case ATOM_SUBSTITUENTS:
          out.printf("s%d", atom->value_min);
+         return;
+      case ATOM_SUBSTITUENTS_AS_DRAWN:
+         out.printf("s*");
          return;
       case ATOM_RING_BONDS:
          out.printf("rb%d", atom->value_min);
@@ -434,6 +439,8 @@ QueryMolecule::Node::~Node ()
 {
 }
 
+IMPL_ERROR(QueryMolecule::Atom, "query atom");
+
 QueryMolecule::Atom::Atom () : Node(OP_NONE)
 {
    value_min = 0;
@@ -445,8 +452,8 @@ QueryMolecule::Atom::Atom (int type_, int value) : Node(type_)
    if (type_ == ATOM_NUMBER  || type_ == ATOM_CHARGE ||
        type_ == ATOM_ISOTOPE || type_ == ATOM_RADICAL ||
        type_ == ATOM_AROMATICITY || type_ == ATOM_VALENCE ||
-       type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN || 
-       type_ == ATOM_SUBSTITUENTS ||
+       type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN ||
+       type_ == ATOM_SUBSTITUENTS || type_ == ATOM_SUBSTITUENTS_AS_DRAWN ||
        type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY ||
        type_ == ATOM_TOTAL_BOND_ORDER ||
        type_ == ATOM_UNSATURATION || type == ATOM_SSSR_RINGS ||
@@ -1139,6 +1146,48 @@ bool QueryMolecule::Node::sureValueBelongs (int what_type, const int *arr, int c
    }
 }
 
+QueryMolecule::Atom* QueryMolecule::Atom::sureConstraint (int what_type)
+{
+   int count = 0;
+   Atom *found = (Atom*)_findSureConstraint(what_type, count);
+   if (count == 1)
+      return found;
+   return NULL;
+}
+
+QueryMolecule::Node* QueryMolecule::Node::_findSureConstraint (int what_type, int &count)
+{
+   switch (type)
+   {
+   case OP_AND:
+   case OP_OR:
+      {
+         Node *subnode_found = NULL;
+         for (int i = 0; i < children.size(); i++)
+         {
+            Node *subnode = children[i]->_findSureConstraint(what_type, count);
+            if (subnode != NULL)
+               subnode_found = subnode;
+         }
+         return subnode_found;
+      }
+   case OP_NOT:
+      {
+         Node *subnode = children[0]->_findSureConstraint(what_type, count);
+         return NULL; // Do not return anything in this case but increase count if found
+      }
+   case OP_NONE:
+      return NULL;
+   default:
+      if (type == what_type)
+      {
+         count++;
+         return this;
+      }
+      return NULL;
+   }
+}
+
 bool QueryMolecule::Node::sureValueBelongsInv (int what_type, const int *arr, int count)
 {
    int i;
@@ -1536,13 +1585,13 @@ void QueryMolecule::setBondStereoCare (int idx, bool stereo_care)
    updateEditRevision();
 }
 
-bool QueryMolecule::aromatize ()
+bool QueryMolecule::aromatize (const AromaticityOptions &options)
 {
    updateEditRevision();
-   return QueryMoleculeAromatizer::aromatizeBonds(*this);
+   return QueryMoleculeAromatizer::aromatizeBonds(*this, options);
 }
 
-bool QueryMolecule::dearomatize ()
+bool QueryMolecule::dearomatize (const AromaticityOptions &options)
 {
    throw Error("Dearomatization not implemented");
 }
@@ -1736,14 +1785,14 @@ bool QueryMolecule::isRSite (int atom_idx)
    return _atoms[atom_idx]->sureValue(ATOM_RSITE, bits);
 }
 
-int QueryMolecule::getRSiteBits (int atom_idx)
+dword QueryMolecule::getRSiteBits (int atom_idx)
 {
    int bits;
 
    if (!_atoms[atom_idx]->sureValue(ATOM_RSITE, bits))
       throw Error("getRSiteBits(): atom #%d is not an r-site", atom_idx);
 
-   return bits;
+   return (dword)bits;
 }
 
 void QueryMolecule::allowRGroupOnRSite (int atom_idx, int rg_idx)
@@ -1788,6 +1837,7 @@ bool QueryMolecule::isKnownAttr (QueryMolecule::Atom& qa)
       qa.type == QueryMolecule::ATOM_VALENCE ||
       qa.type == QueryMolecule::ATOM_TOTAL_H ||
       qa.type == QueryMolecule::ATOM_SUBSTITUENTS ||
+      qa.type == QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN ||
       qa.type == QueryMolecule::ATOM_RING_BONDS || 
       qa.type == QueryMolecule::ATOM_RING_BONDS_AS_DRAWN ||
       qa.type == QueryMolecule::ATOM_UNSATURATION) && 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -65,7 +65,7 @@ public:
    // e_idx - edge index in graph (not mapping)
    virtual bool checkEdge   (int e_idx) { return true; }
 
-   DEF_ERROR("graph perfect matching");
+   DECL_ERROR;
 protected:
    bool _PathFinder (int v_idx, int needMatchingEdge);
 
@@ -80,6 +80,7 @@ protected:
 protected:
    const Graph &_graph;
 
+   CP_DECL;
    TL_CP_DECL(Array<byte>,            _matchingEdgesLocal);
    TL_CP_DECL(Array<VertexExtInfo>,   _verticesInfo);
    // Path has the following format: (v0, localEdge0, localEdge1, ...)

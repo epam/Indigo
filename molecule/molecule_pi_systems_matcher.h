@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -39,7 +39,7 @@ public:
 
    void copyLocalization (Molecule &target);
 
-   DEF_ERROR("Pi-system matcher");
+   DECL_ERROR;
 private:
    // Returns number of pi-systems
    int _initMarks (void);
@@ -75,6 +75,7 @@ private:
    Molecule &_target;
    Obj<GraphDecomposer> _decomposer;
 
+   CP_DECL;
    TL_CP_DECL(Array<int>, _atom_pi_system_idx);
 
    struct _Pi_System

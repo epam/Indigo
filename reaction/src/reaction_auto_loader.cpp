@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -32,6 +32,8 @@ void ReactionAutoLoader::_init ()
    ignore_stereocenter_errors = false;
    ignore_noncritical_query_features = false;
 }
+
+IMPL_ERROR(ReactionAutoLoader, "reaction auto loader");
 
 ReactionAutoLoader::ReactionAutoLoader (Scanner &scanner)
 {
@@ -126,7 +128,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
 
       _scanner->readCharsFix(3, id);
       _scanner->seek(pos, SEEK_SET);
-      if (strncmp(id, IcrSaver::VERSION, 3) == 0)
+      if (IcrSaver::checkVersion(id))
       {
          if (query)
             throw Error("cannot load query reaction from ICR format");

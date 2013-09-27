@@ -68,6 +68,16 @@
     <Compile Include="IndigoRendererLib.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <!-- <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "> -->
+  <ItemGroup Condition="'$(Win)' == '1'">
+    <EmbeddedResource Include="Properties\ResourcesWin.resx" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Linux)' == '1'">
+    <EmbeddedResource Include="Properties\ResourcesLinux.resx" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Mac)' == '1'">
+    <EmbeddedResource Include="Properties\ResourcesMac.resx" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="indigo-renderer.snk" />
@@ -89,15 +99,33 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-    </EmbeddedResource>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Win)' == '1'">
     <PreBuildEvent>
-	copy $(DllPath64)\indigo-renderer.dll $(ProjectDir)Resource\Win\x64
-	copy $(DllPath32)\indigo-renderer.dll $(ProjectDir)Resource\Win\x86
+		$(Copy) $(LibraryPath)\Win\x64\indigo-renderer.dll $(ProjectDir)Resource\Win\x64
+		$(Copy) $(LibraryPath)\Win\x86\indigo-renderer.dll $(ProjectDir)Resource\Win\x86	
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Linux)' == '1'">
+    <PreBuildEvent>
+		$(Copy) $(LibraryPath)\Linux\x64\libindigo-renderer.so $(ProjectDir)Resource\Linux\x64
+		$(Copy) $(LibraryPath)\Linux\x86\libindigo-renderer.so $(ProjectDir)Resource\Linux\x86
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Mac)' == '1'">
+    <PreBuildEvent>
+		$(Copy) $(LibraryPath)\Mac\10.5\libindigo-renderer.dylib $(ProjectDir)Resource\Mac\10.5
+		$(Copy) $(LibraryPath)\Mac\10.6\libindigo-renderer.dylib $(ProjectDir)Resource\Mac\10.6
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="(('$(Win)' == '1') And ('$(Linux)' == '1') And ('$(Mac)' == '1'))">
+    <PreBuildEvent>
+		$(Copy) $(LibraryPath)\Win\x64\indigo-renderer.dll $(ProjectDir)Resource\Win\x64
+		$(Copy) $(LibraryPath)\Win\x86\indigo-renderer.dll $(ProjectDir)Resource\Win\x86
+		$(Copy) $(LibraryPath)\Linux\x64\libindigo-renderer.so $(ProjectDir)Resource\Linux\x64
+		$(Copy) $(LibraryPath)\Linux\x86\libindigo-renderer.so $(ProjectDir)Resource\Linux\x86
+		$(Copy) $(LibraryPath)\Mac\10.5\libindigo-renderer.dylib $(ProjectDir)Resource\Mac\10.5
+		$(Copy) $(LibraryPath)\Mac\10.6\libindigo-renderer.dylib $(ProjectDir)Resource\Mac\10.6	
     </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

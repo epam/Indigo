@@ -13,6 +13,8 @@
  ***************************************************************************/
 
 #include "indigo_fingerprints.h"
+
+#include <math.h>
 #include "molecule/molecule_fingerprint.h"
 #include "base_cpp/output.h"
 #include "base_c/bitarray.h"
@@ -163,7 +165,7 @@ void IndigoFingerprint::toBuffer (Array<char> &buf)
 
 }
 
-float _indigoSimilarity2 (const byte *arr1, const byte *arr2, int size, const char *metrics)
+static float _indigoSimilarity2 (const byte *arr1, const byte *arr2, int size, const char *metrics)
 {
    int ones1 = bitGetOnesCount(arr1, size);
    int ones2 = bitGetOnesCount(arr2, size);
@@ -212,7 +214,7 @@ float _indigoSimilarity2 (const byte *arr1, const byte *arr2, int size, const ch
       throw IndigoError("unknown metrics: %s", metrics);
 }
 
-float _indigoSimilarity (Array<byte> &arr1, Array<byte> &arr2, const char *metrics)
+static float _indigoSimilarity (Array<byte> &arr1, Array<byte> &arr2, const char *metrics)
 {
    int size = arr1.size();
 
@@ -222,6 +224,137 @@ float _indigoSimilarity (Array<byte> &arr1, Array<byte> &arr2, const char *metri
    return _indigoSimilarity2(arr1.ptr(), arr2.ptr(), size, metrics);
 }
 
+static void _collectAtomFeatures (BaseMolecule &m, RedBlackStringMap<int> &counters, bool with_degrees)
+{
+   QS_DEF(Array<char>, symbol);
+   for (int i = m.vertexBegin(); i != m.vertexEnd(); i = m.vertexNext(i))
+   {
+      int iso = 0, charge = 0, radical = 0;
+      if (!m.isRSite(i) && !m.isPseudoAtom(i))
+      {
+         iso = m.getAtomIsotope(i);
+         charge = m.getAtomCharge(i);
+         radical = m.getAtomRadical_NoThrow(i, -1);
+      }
+      int degree = 0;
+      if (with_degrees)
+         degree = m.getVertex(i).degree();
+
+      m.getAtomSymbol(i, symbol);
+
+      char key[100];
+      snprintf(key, NELEM(key), "e:%s i:%d c:%d r:%d d:%d", symbol.ptr(), iso, charge, radical, degree);
+
+      int *ptr = counters.at2(key);
+      if (ptr)
+         (*ptr)++;
+      else
+         counters.insert(key, 1);
+   }
+}
+
+static void _collectBondFeatures (BaseMolecule &m, RedBlackStringMap<int> &counters, bool with_degrees)
+{
+   QS_DEF(Array<char>, symbol);
+   for (int i = m.edgeBegin(); i != m.edgeEnd(); i = m.edgeNext(i))
+   {
+      const Edge &e = m.getEdge(i);
+      int d1 = m.getVertex(e.beg).degree();
+      int d2 = m.getVertex(e.end).degree();
+
+      const char *stereo = "";
+
+      int parity = m.cis_trans.getParity(i);
+      if (parity)
+      {
+         // Set cis-trans parity only there is one substituent
+         // In other case atoms ordering is important
+         if (d1 == 2 && d2 == 2)
+            stereo = (parity == MoleculeCisTrans::CIS) ? "cis" : "trans";
+      }
+
+      int dir = m.getBondDirection(i);
+      if (dir == BOND_UP) stereo = "up";
+      else if (dir == BOND_DOWN) stereo = "down";
+      else if (dir == BOND_EITHER) stereo = "up-down";
+
+      if (!with_degrees)
+         d1 = d2 = 0;
+
+      char key[100];
+      snprintf(key, NELEM(key), "o:%d s:%s d:%d %d", m.getBondOrder(i), stereo, __min(d1, d2), __max(d1, d2));
+
+      int *ptr = counters.at2(key);
+      if (ptr)
+         (*ptr)++;
+      else
+         counters.insert(key, 1);
+   }
+}
+
+static void _getCountersDifference (RedBlackStringMap<int> &c1, RedBlackStringMap<int> &c2, int &common, int &diff1, int &diff2)
+{
+   common = 0;
+   diff1 = 0;
+   diff2 = 0;
+
+   int* diff[2] = { &diff1, &diff2 };
+   RedBlackStringMap<int>* cnt[2] = { &c1, &c2 };
+   for (int i = 0; i < 2; i++)
+   {
+      RedBlackStringMap<int> &a = *cnt[i], &b = *cnt[1 - i];
+
+      for (int node = a.begin(); node != a.end(); node = a.next(node))
+      {
+         const char *key = a.key(node);
+         int val1 = a.value(node);
+         int* val2_ptr = b.at2(key);
+         int val2 = val2_ptr ? *val2_ptr : 0;
+
+         int c = __min(val1, val2);
+         common += c;
+         *diff[i] += val1 - c;
+      }
+   }
+
+   // Common values were counted twice
+   common /= 2;
+}
+
+static float _indigoSimilarityNormalizedEdit (BaseMolecule &mol1, BaseMolecule &mol2)
+{
+   QS_DEF(RedBlackStringMap<int>, c1);
+   QS_DEF(RedBlackStringMap<int>, c2);
+   QS_DEF(RedBlackStringMap<int>, c1b);
+   QS_DEF(RedBlackStringMap<int>, c2b);
+
+   for (int iter = 0; iter < 2; iter++)
+   {
+      c1.clear();
+      c2.clear();
+
+      bool need_degree = (iter == 1);
+
+      _collectAtomFeatures(mol1, c1, need_degree);
+      _collectAtomFeatures(mol2, c2, need_degree);
+      _collectBondFeatures(mol1, c1, need_degree);
+      _collectBondFeatures(mol2, c2, need_degree);
+
+      int common, diff1, diff2;
+      _getCountersDifference(c1, c2, common, diff1, diff2);
+      if (diff1 != 0 || diff2 != 0)
+      {
+         // Use Tversky Index
+         float alpha = 0.7f, beta = 0.7f;
+    
+         float sim = common / (alpha * diff1 + beta * diff2 + common);
+         float scaling = sim * sim * (3 - 2 * sim);
+         return sim * scaling;
+      }
+   }
+
+   return 1;
+}
 
 CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics)
 {
@@ -229,6 +362,11 @@ CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics)
    {
       IndigoObject &obj1 = self.getObject(item1);
       IndigoObject &obj2 = self.getObject(item2);
+
+      if (strcasecmp(metrics, "normalized-edit") == 0)
+      {
+         return _indigoSimilarityNormalizedEdit(obj1.getBaseMolecule(), obj2.getBaseMolecule());
+      }
 
       if (IndigoBaseMolecule::is(obj1))
       {

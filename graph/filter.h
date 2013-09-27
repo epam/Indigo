@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -54,7 +54,7 @@ public:
    void collectGraphEdges (const Graph &graph, Array<int> &indices) const;
    int  count (const Graph &graph) const;
 
-   DEF_ERROR("filter");
+   DECL_ERROR;
 
 protected:
    const int *_filter;

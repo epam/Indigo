@@ -17,6 +17,7 @@ extern "C" {
 #include "bingo_pg_config.h"
 #include "bingo_core_c.h"
 
+IMPL_ERROR(BingoPgIndex, "bingo index");
 
 BingoPgIndex::BingoPgIndex(PG_OBJECT index) :
 _index(index),
@@ -33,6 +34,7 @@ _strategy(READING_STRATEGY) {
    _metaInfo.n_molecules = 0;
    _metaInfo.index_type = 0;
    _metaInfo.n_pages = 0;
+   _currentSectionIdx = -1;
 }
 
 /*
@@ -88,7 +90,6 @@ int BingoPgIndex::readBegin() {
    /*
     * Jump to the first section
     */
-   _currentSectionIdx = -1;
    _jumpToSection(0);
 
    return _currentSectionIdx;
@@ -102,9 +103,18 @@ int BingoPgIndex::readNext(int section_idx) {
  * Reads meta information
  */
 void BingoPgIndex::readMetaInfo() {
+   /*
+    * Read meta buffer
+    */
    _metaBuffer.readBuffer(_index, BINGO_METAPAGE, BINGO_PG_READ);
+   /*
+    * Copy meta info
+    */
    BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(_metaBuffer.getBuffer()));
    _metaInfo = *meta_page;
+   /*
+    * Return buffer pin
+    */
    _metaBuffer.changeAccess(BINGO_PG_NOLOCK);
 
    /*
@@ -118,15 +128,14 @@ void BingoPgIndex::readConfigParameters(BingoPgConfig& bingo_config) {
    /*
     * Read configuration page
     */
-   _configBuffer.readBuffer(_index, BINGO_CONFIG_PAGE, BINGO_PG_READ);
+   BingoPgBuffer config_buffer(_index, BINGO_CONFIG_PAGE, BINGO_PG_READ);
 
    /*
     * Deserialize binary stored parameters
     */
    int data_len;
-   void* data = _configBuffer.getIndexData(data_len);
+   void* data = config_buffer.getIndexData(data_len);
    bingo_config.deserialize(data, data_len);
-   _configBuffer.changeAccess(BINGO_PG_NOLOCK);
 }
 
 /*
@@ -152,9 +161,10 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config) {
     */
    indigo::Array<char> config_data;
    bingo_config.serialize(config_data);
-   _configBuffer.writeNewBuffer(_index, BINGO_CONFIG_PAGE);
-   _configBuffer.formIndexTuple(config_data.ptr(), config_data.sizeInBytes());
-   _configBuffer.changeAccess(BINGO_PG_NOLOCK);
+   BingoPgBuffer config_buffer;
+   config_buffer.writeNewBuffer(_index, BINGO_CONFIG_PAGE);
+   config_buffer.formIndexTuple(config_data.ptr(), config_data.sizeInBytes());
+   config_buffer.clear();
    ++_metaInfo.n_pages;
    /*
     * Write section mapping buffers
@@ -164,7 +174,7 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config) {
       BingoPgBuffer buffer;
       buffer.writeNewBuffer(_index, _metaInfo.n_pages);
       buffer.formEmptyIndexTuple(BINGO_SECTION_OFFSET_PER_BLOCK * sizeof(int));
-      buffer.changeAccess(BINGO_PG_NOLOCK);
+      buffer.clear();
       ++_metaInfo.n_pages;
    }
    _sectionOffsetBuffers.expand(BINGO_SECTION_OFFSET_BLOCKS_NUM);
@@ -228,6 +238,15 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine) {
    
 }
 
+void BingoPgIndex::clearAllBuffers() {
+   _metaBuffer.clear();
+   int offset_size = _sectionOffsetBuffers.size();
+   _sectionOffsetBuffers.clear();
+   _sectionOffsetBuffers.expand(offset_size);
+   _currentSection.free();
+   _currentSectionIdx = -1;
+}
+
 /*
  * Initializes and fulfils a new section
  */
@@ -281,6 +300,7 @@ BingoPgBuffer& BingoPgIndex::_getOffsetBuffer(int section_idx) {
 }
 
 BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx) {
+
    /*
     * Return if current section is already set
     */
@@ -299,13 +319,15 @@ BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx) {
          return _currentSection.ref();
       }
    }
-
+   profTimerStart(t0, "bingo_pg.read_section");
    /*
     * Read the section using offset mapping
     */
    _currentSectionIdx = section_idx;
 
+   profTimerStart(t1, "bingo_pg.get_offset");
    int offset = _getSectionOffset(section_idx);
+   profTimerStop(t1);
    _currentSection.reset(new BingoPgSection(*this, _strategy, offset));
 
    return _currentSection.ref();
@@ -394,7 +416,7 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item) {
     */
    ++_metaInfo.n_molecules;
    if (_metaInfo.n_molecules % 1000 == 0) {
-      elog(NOTICE, "processed %d structures", _metaInfo.n_molecules);
+      elog(NOTICE, "bingo.index: %d structures processed", _metaInfo.n_molecules);
    }
 
 }
@@ -404,6 +426,7 @@ void BingoPgIndex::readTidItem(ItemPointerData& cmf_item, PG_OBJECT result_ptr) 
 }
 
 void BingoPgIndex::readTidItem(int section_idx, int mol_idx, PG_OBJECT result_ptr) {
+   profTimerStart(t0, "bingo_pg.read_tid");
    /*
     * Prepare info for reading
     */
@@ -424,12 +447,13 @@ void BingoPgIndex::readTidItem(int section_idx, int mol_idx, PG_OBJECT result_pt
 
 }
 
-void BingoPgIndex::andWithBitset(int section_idx, int mol_idx, BingoPgExternalBitset& ext_bitset) {
+void BingoPgIndex::andWithBitset(int section_idx, int fp_idx, BingoPgExternalBitset& ext_bitset) {
+   profTimerStart(t0, "bingo_pg.read_fp_and_with");
    /*
     * Prepare info for reading
     */
    BingoPgSection& current_section = _jumpToSection(section_idx);
-   BingoPgBufferCacheFp& fp_buffer = current_section.getFpBufferCache(mol_idx);
+   BingoPgBufferCacheFp& fp_buffer = current_section.getFpBufferCache(fp_idx);
    /*
     * And with a bitset
     */
@@ -441,6 +465,12 @@ int BingoPgIndex::getSectionStructuresNumber(int section_idx) {
    BingoPgSection& current_section = _jumpToSection(section_idx);
    return current_section.getStructuresNumber();
 }
+
+const BingoSectionInfoData& BingoPgIndex::getSectionInfo (int section_idx) {
+   BingoPgSection& current_section = _jumpToSection(section_idx);
+   return current_section.getSectionInfo();
+}
+
 
 void BingoPgIndex::getSectionBitset(int section_idx, BingoPgExternalBitset& section_bitset) {
    BingoPgSection& current_section = _jumpToSection(section_idx);

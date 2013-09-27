@@ -17,18 +17,20 @@
 
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
+#include "molecule/molecule_arom.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction_enumerator_state.h"
 #include "graph/embedding_enumerator.h"
 #include "base_cpp/reusable_obj_array.h"
+#include "base_cpp/cancellation_handler.h"
 
 namespace indigo
 {
    class ReactionTransformation// : public ReactionEnumeratorState
    {
    public:
-      DEF_ERROR("Reaction transformation");
+      DECL_ERROR;
 
       ReactionTransformation( void );
 
@@ -36,7 +38,14 @@ namespace indigo
       
       bool transform(ReusableObjArray<Molecule> &molecules, QueryReaction &reaction);
 
+      AromaticityOptions arom_options;
+
+      bool layout_flag;
+
+      CancellationHandler *cancellation;
+
    private:
+      CP_DECL;
       TL_CP_DECL(QueryReaction, _merged_reaction);
       TL_CP_DECL(Molecule, _cur_monomer);
 

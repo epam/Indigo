@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -63,7 +63,7 @@ public:
    const PatternBond  & getBond       (int idx) const;
    const Array<Vec2f> & getOutline    () const { return _outline; }
 
-   DEF_ERROR("molecule");
+   DECL_ERROR;
 
 protected:
 

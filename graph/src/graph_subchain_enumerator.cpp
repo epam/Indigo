@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,11 +16,14 @@
 
 using namespace indigo;
 
+CP_DEF(GraphSubchainEnumerator);
+
 GraphSubchainEnumerator::GraphSubchainEnumerator (Graph &graph, int min_edges, int max_edges, int mode) :
 _graph(graph),
 _max_edges(max_edges),
 _min_edges(min_edges),
 _mode(mode),
+CP_INIT,
 TL_CP_GET(_vertex_states),
 TL_CP_GET(_chain_vertices),
 TL_CP_GET(_chain_edges)

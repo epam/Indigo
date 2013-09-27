@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,30 +17,34 @@
 
 using namespace indigo;
 
-SubgraphHash::SubgraphHash (Graph &g) : _g(g)
+CP_DEF(SubgraphHash);
+
+SubgraphHash::SubgraphHash (Graph &g) : _g(g),
+   CP_INIT,
+   TL_CP_GET(_codes),
+   TL_CP_GET(_oldcodes),
+   TL_CP_GET(_gf),
+   TL_CP_GET(_default_vertex_codes),
+   TL_CP_GET(_default_edge_codes)
 {
-   context = 0;
    max_iterations = _g.vertexEnd();
-   cb_vertex_code = 0;
-   cb_edge_code = 0;
    _different_codes_count = 0;
    calc_different_codes_count = false;
-}
 
-int SubgraphHash::_getVertexCode (int vertex)
-{
-   if (cb_vertex_code != 0)
-      return cb_vertex_code(_g, vertex, context);
-   else
-      return 0;
-}
+   _codes.clear_resize(_g.vertexEnd());
+   _oldcodes.clear_resize(_g.vertexEnd());
 
-int SubgraphHash::_getEdgeCode (int edge)
-{
-   if (cb_edge_code != 0)
-      return cb_edge_code(_g, edge, context);
-   else
-      return 0;
+   _default_vertex_codes.clear_resize(_g.vertexEnd());
+   _default_edge_codes.clear_resize(_g.edgeEnd());
+   _default_vertex_codes.fill(1);
+   _default_edge_codes.fill(1);
+
+   vertex_codes = &_default_vertex_codes;
+   edge_codes = &_default_edge_codes;
+
+
+   _gf.setGraph(g);
+   _gf.prepareEdges();
 }
 
 dword SubgraphHash::getHash ()
@@ -63,32 +67,39 @@ dword SubgraphHash::getHash ()
 
 dword SubgraphHash::getHash (const Array<int> &vertices, const Array<int> &edges)
 {
-   QS_DEF(Array<dword>, codes);
-   QS_DEF(Array<dword>, oldcodes);
    int i, iter;
 
-   codes.clear_resize(_g.vertexEnd());
-   oldcodes.clear_resize(_g.vertexEnd());
+   dword *codes_ptr = _codes.ptr();
+   dword *oldcodes_ptr = _oldcodes.ptr();
 
+   if (vertex_codes == 0 || edge_codes == 0)
+      throw Exception("SubgraphHash: vertex_codes and edge_codes are not set");
+
+   const int *vc = vertex_codes->ptr();
+   const int *ec = edge_codes->ptr();
+
+   const int *v = vertices.ptr();
+   const int *e = edges.ptr();
    for (i = 0; i < vertices.size(); i++)
-      codes[vertices[i]] = _getVertexCode(vertices[i]);
+      codes_ptr[v[i]] = vc[v[i]];
+
+   const Edge *graph_edges = _gf.getEdges();
 
    for (iter = 0; iter < max_iterations; iter++)
    {
       for (i = 0; i < vertices.size(); i++)
-         oldcodes[vertices[i]] = codes[vertices[i]];
-
+         oldcodes_ptr[v[i]] = codes_ptr[v[i]];
       for (i = 0; i < edges.size(); i++)
       {
-         int edge_index = edges[i];
-         const Edge &edge = _g.getEdge(edge_index);
-         int edge_rank = _getEdgeCode(edge_index);
+         int edge_index = e[i];
+         const Edge &edge = graph_edges[edge_index];
 
-         dword v1_code = oldcodes[edge.beg];
-         dword v2_code = oldcodes[edge.end];
+         int edge_rank = ec[edge_index];
+         dword v1_code = oldcodes_ptr[edge.beg];
+         dword v2_code = oldcodes_ptr[edge.end];
 
-         codes[edge.beg] += v2_code * v2_code + (v2_code + 23) * (edge_rank + 1721);
-         codes[edge.end] += v1_code * v1_code + (v1_code + 23) * (edge_rank + 1721);
+         codes_ptr[edge.beg] += v2_code * v2_code + (v2_code + 23) * (edge_rank + 1721);
+         codes_ptr[edge.end] += v1_code * v1_code + (v1_code + 23) * (edge_rank + 1721);
       }
    }
 
@@ -96,7 +107,7 @@ dword SubgraphHash::getHash (const Array<int> &vertices, const Array<int> &edges
    
    for (i = 0; i < vertices.size(); i++)
    {
-      dword code = codes[vertices[i]];
+      dword code = codes_ptr[v[i]];
       
       result += code * (code + 6849) + 29;
    }
@@ -104,20 +115,22 @@ dword SubgraphHash::getHash (const Array<int> &vertices, const Array<int> &edges
    if (calc_different_codes_count)
    {
       // Calculate number of different codes
-      Array<dword> &code_was_used = oldcodes;
+      Array<dword> &code_was_used = _oldcodes;
+      dword *code_was_used_ptr = code_was_used.ptr();
+
       for (i = 0; i < vertices.size(); i++)
-         code_was_used[vertices[i]] = 0;
+         code_was_used_ptr[v[i]] = 0;
 
       _different_codes_count = 0;
       for (int i = 0; i < vertices.size(); i++)
       {
-         if (code_was_used[vertices[i]])
+         if (code_was_used[v[i]])
             continue;
          _different_codes_count++;
-         dword cur_code = codes[vertices[i]];
+         dword cur_code = codes_ptr[v[i]];
          for (int j = 0; j < vertices.size(); j++)
-            if (codes[vertices[j]] == cur_code)
-               code_was_used[vertices[j]] = 1;
+            if (codes_ptr[v[j]] == cur_code)
+               code_was_used_ptr[v[j]] = 1;
       }
    }
 
@@ -127,9 +140,4 @@ dword SubgraphHash::getHash (const Array<int> &vertices, const Array<int> &edges
 int SubgraphHash::getDifferentCodesCount ()
 {
    return _different_codes_count;
-}
-
-int SubgraphHash::_cmp_int (int a, int b, void *context)
-{
-   return a - b;
 }

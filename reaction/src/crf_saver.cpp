@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,8 +18,19 @@
 #include "molecule/cmf_saver.h"
 #include "base_cpp/output.h"
 #include "molecule/cmf_symbol_codes.h"
+#include "reaction/crf_common.h"
 
 using namespace indigo;
+
+IMPL_ERROR(CrfSaver, "CRF saver");
+
+void CrfSaver::_init ()
+{
+   xyz_output = 0;
+   save_bond_dirs = false;
+   save_highlighting = false;
+   save_mapping = false;
+}
 
 CrfSaver::CrfSaver (LzwDict &dict, Output &output) : _output(output)
 {
@@ -27,16 +38,12 @@ CrfSaver::CrfSaver (LzwDict &dict, Output &output) : _output(output)
       dict.init(CMF_ALPHABET_SIZE, CMF_BIT_CODE_SIZE);
    
    _encoder.create(dict, output);
-   xyz_output = 0;
-   save_bond_dirs = false;
-   save_highlighting = false;
+   _init();
 }
 
 CrfSaver::CrfSaver (Output &output) : _output(output)
 {
-   xyz_output = 0;
-   save_bond_dirs = false;
-   save_highlighting = false;
+   _init();
 }
 
 void CrfSaver::saveReaction (Reaction &reaction)
@@ -50,24 +57,29 @@ void CrfSaver::saveReaction (Reaction &reaction)
    _aam = 0;
 
    for (i = reaction.reactantBegin(); i < reaction.reactantEnd(); i = reaction.reactantNext(i))
-   {
-      _atom_stereo_flags = reaction.getInversionArray(i).ptr();
-      _bond_rc_flags = reaction.getReactingCenterArray(i).ptr();
-      _aam = reaction.getAAMArray(i).ptr();
-      _writeMolecule(reaction.getMolecule(i));
-   }
+         _writeReactionMolecule(reaction, i);
 
    for (i = reaction.productBegin(); i < reaction.productEnd(); i = reaction.productNext(i))
+         _writeReactionMolecule(reaction, i);
+
+   if (reaction.catalystCount() > 0)
    {
-      _atom_stereo_flags = reaction.getInversionArray(i).ptr();
-      _bond_rc_flags = reaction.getReactingCenterArray(i).ptr();
-      _aam = reaction.getAAMArray(i).ptr();
-      _writeMolecule(reaction.getMolecule(i));
+      for (i = reaction.catalystBegin(); i < reaction.catalystEnd(); i = reaction.catalystNext(i))
+         _writeReactionMolecule(reaction, i);
    }
 
    if (_encoder.get() != 0)
       _encoder->finish();
 }
+
+void CrfSaver::_writeReactionMolecule (Reaction &reaction, int i)
+{
+   _atom_stereo_flags = reaction.getInversionArray(i).ptr();
+   _bond_rc_flags = reaction.getReactingCenterArray(i).ptr();
+   _aam = reaction.getAAMArray(i).ptr();
+   _writeMolecule(reaction.getMolecule(i));
+}
+
 
 void CrfSaver::_writeMolecule (Molecule &molecule)
 {
@@ -114,6 +126,8 @@ void CrfSaver::_writeMolecule (Molecule &molecule)
 
    saver->save_bond_dirs = save_bond_dirs;
    saver->save_highlighting = save_highlighting;
+   saver->save_mapping = save_mapping;
+
    saver->saveMolecule(molecule);
 
    if (_aam != 0)
@@ -133,12 +147,16 @@ void CrfSaver::_writeMolecule (Molecule &molecule)
 
 void CrfSaver::_writeReactionInfo (Reaction &reaction)
 {
-   _output.writeByte(reaction.reactantsCount());
-   _output.writeByte(reaction.productsCount());
+   _output.writePackedUInt(reaction.reactantsCount());
+   _output.writePackedUInt(reaction.productsCount());
 
-   byte have_aam = 1;
+   byte features = CrfFeatureFlags::CRF_AAM;
+   if (reaction.catalystCount() > 0)
+      features |= CrfFeatureFlags::CRF_CATALYST;
 
-   _output.writeByte(have_aam);
+   _output.writeByte(features);
+   if (reaction.catalystCount() > 0)
+      _output.writePackedUInt(reaction.catalystCount());
 }
 
 void CrfSaver::_writeAam (const int *aam, const Array<int> &sequence)

@@ -29,12 +29,17 @@
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_arom_match.h"
+#include "molecule/molfile_saver.h"
 #include "molecule/elements.h"
 #include "graph/dfs_walk.h"
 
 using namespace indigo;
 
-ReactionEnumeratorState::ReactionMonomers::ReactionMonomers() : TL_CP_GET(_monomers), 
+IMPL_ERROR(ReactionEnumeratorState::ReactionMonomers, "Reaction product enumerator");
+
+CP_DEF(ReactionEnumeratorState::ReactionMonomers);
+
+ReactionEnumeratorState::ReactionMonomers::ReactionMonomers() : CP_INIT, TL_CP_GET(_monomers), 
     TL_CP_GET(_reactant_indexes), TL_CP_GET(_deep_levels), TL_CP_GET(_tube_indexes)
 {
    _monomers.clear();
@@ -104,7 +109,12 @@ void ReactionEnumeratorState::ReactionMonomers::removeMonomer( int idx )
    _tube_indexes.pop();
 }
 
-ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
+IMPL_ERROR(ReactionEnumeratorState, "Reaction product enumerator state");
+
+CP_DEF(ReactionEnumeratorState);
+
+ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext &context,
+    QueryReaction &cur_reaction,
     QueryMolecule &cur_full_product, Array<int> &cur_product_aam_array, 
     RedBlackStringMap<int> &cur_smiles_array, ReactionMonomers &cur_reaction_monomers, 
     int &cur_product_count, ObjArray< Array<int> > &cur_tubes_monomers ) :
@@ -114,12 +124,15 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
     _product_aam_array(cur_product_aam_array),
     _smiles_array(cur_smiles_array),
     _reaction_monomers(cur_reaction_monomers),
+    _context(context),
+    CP_INIT,
     TL_CP_GET(_fragments_aam_array), TL_CP_GET(_full_product), 
     TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
     TL_CP_GET(_bonds_mapping_sub), TL_CP_GET(_bonds_mapping_super), 
     TL_CP_GET(_att_points), TL_CP_GET(_fmcache), 
-    TL_CP_GET(_monomer_forbidden_atoms), TL_CP_GET(_product_forbidden_atoms)
+    TL_CP_GET(_monomer_forbidden_atoms), TL_CP_GET(_product_forbidden_atoms),
+    TL_CP_GET(_original_hydrogens)
 {
    _reactant_idx = _reaction.reactantBegin();
 
@@ -132,6 +145,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
    _is_needless_bond.clear();
    _bonds_mapping_sub.clear();
    _bonds_mapping_super.clear();
+   _original_hydrogens.clear();
 
    _att_points.clear();
    _att_points.resize(cur_full_product.vertexEnd());
@@ -150,6 +164,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
    is_transform = false;
    _is_frag_search = false;
    _is_rg_exist = false;
+   _is_simple_transform = false;
 
    _tube_idx = -1;
 
@@ -167,18 +182,21 @@ ReactionEnumeratorState::ReactionEnumeratorState( QueryReaction &cur_reaction,
 }
 
 ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_rpe_state ) : 
+    _context(cur_rpe_state._context),
     _reaction(cur_rpe_state._reaction),
     _product_count(cur_rpe_state._product_count),
     _tubes_monomers(cur_rpe_state._tubes_monomers),
     _product_aam_array(cur_rpe_state._product_aam_array),
     _smiles_array(cur_rpe_state._smiles_array), 
     _reaction_monomers(cur_rpe_state._reaction_monomers),
+    CP_INIT,
     TL_CP_GET(_fragments_aam_array), TL_CP_GET(_full_product),
     TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
     TL_CP_GET(_bonds_mapping_sub), TL_CP_GET(_bonds_mapping_super), 
     TL_CP_GET(_att_points), TL_CP_GET(_fmcache), 
-    TL_CP_GET(_monomer_forbidden_atoms), TL_CP_GET(_product_forbidden_atoms)
+    TL_CP_GET(_monomer_forbidden_atoms), TL_CP_GET(_product_forbidden_atoms),
+    TL_CP_GET(_original_hydrogens)
 {
    _reactant_idx = cur_rpe_state._reactant_idx;
    
@@ -202,6 +220,8 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
    _monomer_forbidden_atoms.copy(cur_rpe_state._monomer_forbidden_atoms);
    _product_forbidden_atoms.clear();
    _product_forbidden_atoms.copy(cur_rpe_state._product_forbidden_atoms);
+   _original_hydrogens.clear();
+   _original_hydrogens.copy(cur_rpe_state._original_hydrogens);
 
    for (int i = 0; i < cur_rpe_state._att_points.size(); i++)
    {
@@ -225,6 +245,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
    is_same_keeping = cur_rpe_state.is_same_keeping;
    is_transform = cur_rpe_state.is_transform;
    _is_rg_exist = cur_rpe_state._is_rg_exist;
+   _is_simple_transform = cur_rpe_state._is_simple_transform;
 
    _is_frag_search = false;
 
@@ -362,13 +383,14 @@ void ReactionEnumeratorState::_productProcess( void )
 
    QS_DEF(Molecule, ready_product);
    ready_product.clear();
+
    if (!_attachFragments(ready_product))
       return;
 
    if (!is_transform)
       _foldHydrogens(ready_product);
 
-   ready_product.dearomatize();
+   ready_product.dearomatize(_context.arom_options);
 
    if (!is_same_keeping)
    {
@@ -434,11 +456,14 @@ void ReactionEnumeratorState::_productProcess( void )
       }
    }
 
+   if (!_is_simple_transform)
+      ready_product.clearXyz();
+
    if (product_proc != NULL)
       product_proc(ready_product, _product_monomers, userdata);
 }
 
-void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep )
+void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep, Array<int> *original_hydrogens )
 {
    QS_DEF(Array<int>, hydrogens);
    hydrogens.clear();
@@ -446,6 +471,9 @@ void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule, Array<int>
    for (int i = molecule.vertexBegin(); i != molecule.vertexEnd(); i = molecule.vertexNext(i))
    {
       if ((atoms_to_keep != 0) && (atoms_to_keep->at(i)))
+         continue;
+
+      if ((original_hydrogens != 0) && (original_hydrogens->find(i) != -1))
          continue;
 
       if (molecule.getAtomNumber(i) != ELEM_H || 
@@ -490,6 +518,7 @@ bool ReactionEnumeratorState::_nextMatchProcess( EmbeddingEnumerator &ee,
    _bonds_mapping_sub.copy(rpe_state._bonds_mapping_sub);
    _bonds_mapping_super.copy(rpe_state._bonds_mapping_super);
    _product_forbidden_atoms.copy(rpe_state._product_forbidden_atoms);
+   _original_hydrogens.copy(rpe_state._original_hydrogens);
 
    return stop_flag;
 }
@@ -514,22 +543,29 @@ int ReactionEnumeratorState::_calcMaxHCnt( QueryMolecule &molecule )
 }
 
 
-bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms )
+bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms, Array<int> &original_hydrogens, bool &need_layout)
 {
    is_transform = true;
+
+   _is_simple_transform = _checkForSimplicity();
 
    if (forbidden_atoms.size() != molecule.vertexEnd())
       throw Error("forbidden atoms array size is incorrect");
    
    _monomer_forbidden_atoms.copy(forbidden_atoms);
 
+   _original_hydrogens.copy(original_hydrogens);
+
    if (!_startEmbeddingEnumerator(molecule))
    {
-      _foldHydrogens(molecule, &forbidden_atoms);
+      _foldHydrogens(molecule, &forbidden_atoms, &_original_hydrogens);
       return false;
    }
 
+   original_hydrogens.copy(_original_hydrogens);
    forbidden_atoms.copy(_product_forbidden_atoms);
+
+   need_layout = !_is_simple_transform;
 
    return true;
 }
@@ -542,7 +578,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator( Molecule &monomer )
    ee_reactant.clone(_reaction.getQueryMolecule(_reactant_idx), NULL, NULL);
    ee_reactant.cis_trans.build(NULL);
 
-   ee_reactant.aromatize();
+   ee_reactant.aromatize(_context.arom_options);
 
    for (int i = ee_reactant.edgeBegin(); i != ee_reactant.edgeEnd(); i = ee_reactant.edgeNext(i))
    {
@@ -574,15 +610,31 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator( Molecule &monomer )
    ee_monomer.clear();
    ee_monomer.clone(monomer, NULL, NULL);
 
-   ee_monomer.aromatize();
-   ee_monomer.cis_trans.build(NULL);
+   ee_monomer.aromatize(_context.arom_options);
+
+
+   if (BaseMolecule::hasCoord(ee_monomer))
+   {
+      // Double Cis or Trans bonds are excluded from cis-trans build
+      QS_DEF(Array<int>, cis_trans_excluded);
+      cis_trans_excluded.clear_resize(ee_monomer.edgeEnd());
+      cis_trans_excluded.zerofill();
+
+      for (int i = ee_monomer.edgeBegin(); i < ee_monomer.edgeEnd(); i = ee_monomer.edgeNext(i))
+      {
+         if (ee_monomer.cis_trans.isIgnored(i))
+            cis_trans_excluded[i] = 1;
+      }
+      
+      ee_monomer.cis_trans.build(cis_trans_excluded.ptr());
+   }
 
    QS_DEF(Obj<AromaticityMatcher>, am);
    am.free();
-   am.create(ee_reactant, ee_monomer);
+   am.create(ee_reactant, ee_monomer, _context.arom_options);
    _am = am.get();
 
-   ee_monomer.unfoldHydrogens(NULL, _calcMaxHCnt(ee_reactant));
+   ee_monomer.unfoldHydrogens(NULL, _calcMaxHCnt(ee_reactant), true);
 
    _bonds_mapping_sub.clear_resize(ee_reactant.edgeEnd());
    _bonds_mapping_sub.fffill();
@@ -927,7 +979,7 @@ QueryMolecule::Atom * ReactionEnumeratorState::_getReactantAtom( int atom_aam )
 }
 
 void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule &mol_product, 
-                                  Molecule &uncleaned_fragments, Array<int> &mapping_out )
+                                  Molecule &uncleaned_fragments, Array<int> &all_forbidden_atoms, Array<int> &mapping_out )
 {
    mol_product.clear();
    mapping_out.clear_resize(product.vertexEnd());
@@ -975,7 +1027,7 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
          if (product.isPseudoAtom(i))
             mol_product.setPseudoAtom(i, product.getPseudoAtom(i));
       }
-      
+
       int reactant_atom_charge = CHARGE_UNKNOWN;
       
       if (reactant_atom != 0)
@@ -1018,9 +1070,17 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
 
       if (product.getAtomRadical(i) == -1 && !is_default &&
           (reactant_atom_radical == product.getAtomRadical(i)))
-      {
+      { 
          if (has_aam)
-            mol_product.setAtomRadical(mol_atom_idx, uncleaned_fragments.getAtomRadical(frags_idx));
+         {
+            try
+            {
+               mol_product.setAtomRadical(mol_atom_idx, uncleaned_fragments.getAtomRadical(frags_idx));
+            }
+            catch (Element::Error &)
+            {
+            }
+         }
       }
       else
       {
@@ -1028,16 +1088,22 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
          mol_product.setAtomRadical(mol_atom_idx, (pr_radical != -1 ? pr_radical : 0));
       }
 
-      mol_product.setAtomXyz(mol_atom_idx, product.getAtomXyz(i).x,
-                                           product.getAtomXyz(i).y,
-                                           product.getAtomXyz(i).z);
+      if (_is_simple_transform && frags_idx == -1)
+         throw Error("Incorrect AAM");
+
+      if (_is_simple_transform)
+         mol_product.setAtomXyz(mol_atom_idx, uncleaned_fragments.getAtomXyz(frags_idx));
+      else
+         mol_product.setAtomXyz(mol_atom_idx, product.getAtomXyz(i).x,
+                                              product.getAtomXyz(i).y,
+                                              product.getAtomXyz(i).z);
 
       mapping_out[i] = mol_atom_idx;
 
       if (frags_idx != -1 && frags_idx < _monomer_forbidden_atoms.size())
-         _product_forbidden_atoms[mapping_out[i]] += _monomer_forbidden_atoms[frags_idx];
+         all_forbidden_atoms[mapping_out[i]] += _monomer_forbidden_atoms[frags_idx];
       else
-         _product_forbidden_atoms[mapping_out[i]] = max_reuse_count;
+         all_forbidden_atoms[mapping_out[i]] = max_reuse_count;
    }
 
    for (int i = product.edgeBegin(); i != product.edgeEnd(); i = product.edgeNext(i))
@@ -1068,20 +1134,21 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
 
          if (frags_beg != -1 && frags_end == -1)
          {
-            if (!product.isRSite(pr_edge.end))
-               throw Error("Incorrect AAM");
-            frags_end = _att_points[pr_edge.end][0];
-            if (uncleaned_fragments.findEdgeIndex(frags_beg, frags_end) == -1)
-               frags_end = _att_points[pr_edge.end][1];
-         }
-
-         if (frags_beg == -1 && frags_end != -1)
+            if (product.isRSite(pr_edge.end))
+            {
+               frags_end = _att_points[pr_edge.end][0];
+               if (uncleaned_fragments.findEdgeIndex(frags_beg, frags_end) == -1)
+                  frags_end = _att_points[pr_edge.end][1];
+            }
+         } 
+         else if (frags_beg == -1 && frags_end != -1)
          {
-            if (!product.isRSite(pr_edge.beg))
-               throw Error("Incorrect AAM");
-            frags_beg = _att_points[pr_edge.beg][0];
-            if (uncleaned_fragments.findEdgeIndex(frags_beg, frags_end) == -1)
-               frags_beg = _att_points[pr_edge.beg][1];
+            if (product.isRSite(pr_edge.beg))
+            {
+               frags_beg = _att_points[pr_edge.beg][0];
+               if (uncleaned_fragments.findEdgeIndex(frags_beg, frags_end) == -1)
+                  frags_beg = _att_points[pr_edge.beg][1];
+            }
          }
 
 
@@ -1102,21 +1169,26 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
             // If there is no information about this bond in smarts
             QueryMolecule::Atom &q_pr_beg = product.getAtom(pr_edge.beg);
             QueryMolecule::Atom &q_pr_end = product.getAtom(pr_edge.end);
+            
 
-
-            int beg_value, end_value;
-            if ((product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC) && 
-                 product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_SINGLE) &&
-                 !product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_DOUBLE) &&
-                 !product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_TRIPLE)) &&
+            //int beg_value, end_value;
+            bool can_be_aromatic = product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC);
+            bool can_be_single = product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_SINGLE);
+            bool can_be_double = product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_DOUBLE);
+            bool can_be_triple = product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_TRIPLE);
+            if ((can_be_aromatic && can_be_single && !can_be_double && !can_be_triple)/* &&
                    (q_pr_beg.sureValue(QueryMolecule::ATOM_AROMATICITY, beg_value) &&
                     q_pr_end.sureValue(QueryMolecule::ATOM_AROMATICITY, end_value))
-                    && (beg_value == ATOM_AROMATIC) && (end_value == ATOM_AROMATIC))
+                    && (beg_value == ATOM_AROMATIC) && (end_value == ATOM_AROMATIC)*/)
             {
                   mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], BOND_AROMATIC);
-            }        
+            }
+            else if ((!can_be_aromatic && can_be_single && !can_be_double && !can_be_triple))
+            {
+                  mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], BOND_SINGLE);
+            }
             else
-               throw Error("There is no information about products bond #%d in monomer", i);         }
+               throw Error("There is no information about products bond #%d", i);         }
       }
       else
          mol_product.addBond(mapping_out[pr_edge.beg], mapping_out[pr_edge.end], 
@@ -1127,58 +1199,6 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
    mol_product.cis_trans.buildOnSubmolecule(product, mapping_out.ptr());
 
    mol_product.mergeSGroupsWithSubmolecule(product, mapping_out);
-}
-
-void ReactionEnumeratorState::_checkConstraints( QueryMolecule &reactant, Array<int> &rp_mapping)
-{
-   for (int i = reactant.vertexBegin(); i != reactant.vertexEnd(); i = reactant.vertexNext(i))
-   {
-      int pr_i = rp_mapping[i];
-      if (pr_i == -1)
-         continue;
-
-      if (((_full_product.getAtomNumber(pr_i) == -1) && 
-           (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_NUMBER))) &&
-          !((reactant.getAtomNumber(i) == -1) && 
-           (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_NUMBER))))
-         throw Error("products atom %i has number constraint", i);
-
-      if (((_full_product.getAtomCharge(pr_i) == CHARGE_UNKNOWN) && 
-           (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_CHARGE))) &&
-          !((reactant.getAtomCharge(i) == CHARGE_UNKNOWN) && 
-            (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_CHARGE))))
-         throw Error("products atom %i has charge constraint", i);
-
-      if (((_full_product.getAtomRadical(pr_i) == -1) && 
-           (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_RADICAL))) &&
-          !((reactant.getAtomRadical(i) == -1) && 
-           (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_RADICAL))))
-         throw Error("products atom %i has radical constraint", i);
-
-      if (((_full_product.getAtomIsotope(pr_i) == -1) && 
-           (_full_product.getAtom(pr_i).hasConstraint(QueryMolecule::ATOM_ISOTOPE))) &&
-          !((reactant.getAtomIsotope(i) == -1) && 
-           (reactant.getAtom(i).hasConstraint(QueryMolecule::ATOM_ISOTOPE))))
-         throw Error("products atom %i has isotope constraint", i);
-   }
-
-   QS_DEF(Array<int>, edge_mapping);
-   edge_mapping.clear_resize(reactant.edgeEnd());
-   edge_mapping.fffill();
-   _full_product.buildEdgeMapping(reactant, &rp_mapping, &edge_mapping);
-
-   for (int i = reactant.edgeBegin(); i != reactant.edgeEnd(); i = reactant.edgeNext(i))
-   {
-      int pr_i = edge_mapping[i];
-      if (pr_i == -1)
-         continue;
-
-      if (((_full_product.getBondOrder(pr_i) == -1) && 
-         (_full_product.getBond(pr_i).hasConstraint(QueryMolecule::BOND_ORDER))) &&
-          !((reactant.getBondOrder(i) == -1) && 
-           (reactant.getBond(i).hasConstraint(QueryMolecule::BOND_ORDER))))
-         throw Error("products bond %i has order constraint", pr_i);
-   }
 }
 
 void ReactionEnumeratorState::_stereocentersUpdate( QueryMolecule &submolecule,
@@ -1311,8 +1331,31 @@ void ReactionEnumeratorState::_completeCisTrans( Molecule &product, Molecule &un
          continue;
 
       int pr_bond_idx = product.findEdgeIndex(frags_mapping[edge.beg], frags_mapping[edge.end]);
+
+      /* if begin of edge in fragments matches end off edge in product subs pairs should be swaped */
+      int tmp;
+      if (frags_mapping[edge.beg] == product.getEdge(pr_bond_idx).end)
+      {
+         __swap(new_subs[0], new_subs[2], tmp);
+         __swap(new_subs[1], new_subs[3], tmp);
+      }
+
       product.cis_trans.add(pr_bond_idx, new_subs, uncleaned_fragments.cis_trans.getParity(i));
    }
+}
+
+bool ReactionEnumeratorState::_checkValence( Molecule &mol, int atom_idx )
+{
+   try
+   {
+      mol.getAtomValence(atom_idx);
+   }
+   catch (Element::Error &)
+   {
+      return false;
+   }
+
+   return true;
 }
 
 bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
@@ -1330,13 +1373,16 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    QS_DEF(Array<int>, mapping);
    mapping.clear();
 
-   _product_forbidden_atoms.clear_resize(product.vertexEnd() + _fragments.vertexCount());
-   _product_forbidden_atoms.zerofill();
+   QS_DEF(Array<int>, all_forbidden_atoms);
+   all_forbidden_atoms.clear();
+
+   all_forbidden_atoms.clear_resize(product.vertexEnd() + _fragments.vertexCount());
+   all_forbidden_atoms.zerofill();
 
    for (int i = product.vertexBegin(); i != product.vertexEnd(); i = product.vertexNext(i))
-      _product_forbidden_atoms[i] = 1;
+      all_forbidden_atoms[i] = 1;
 
-   _buildMolProduct(product, mol_product, uncleaned_fragments, mapping);
+   _buildMolProduct(product, mol_product, uncleaned_fragments, all_forbidden_atoms, mapping);
 
    _cleanFragments();
 
@@ -1347,7 +1393,7 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    
    for (int i = _fragments.vertexBegin(); i < _fragments.vertexEnd(); i = _fragments.vertexNext(i))
       if (i < _monomer_forbidden_atoms.size() && _monomer_forbidden_atoms[i])
-         _product_forbidden_atoms[frags_mapping[i]] = _monomer_forbidden_atoms[i];
+         all_forbidden_atoms[frags_mapping[i]] = _monomer_forbidden_atoms[i];
 
    QS_DEF(Array<int>, product_mapping);
    product_mapping.clear_resize(_full_product.vertexEnd());
@@ -1390,6 +1436,11 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
          }
       }
 
+      bool is_valid = false;
+
+      if (is_transform && _att_points[i].size() != 0 && _checkValence(mol_product, frags_mapping[_att_points[i][0]]))
+         is_valid = true;
+
       if (_is_rg_exist)
       {
          for (int j = 0; j < pr_neibours.size(); j++)
@@ -1407,18 +1458,16 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
                 mol_product.stereocenters.getPyramid(atom_to)[3] != -1)
                return false;
 
-            if (_is_rg_exist)
-            {
-               mol_product.flipBond(pr_neibours[j], atom_from, atom_to);
-               
-               // TODO:
-               // Check that corresponding R-group fragment in monomer has cis-trans bond
-               // and check that AAM mapping is specified for that.
-               // For example for reaction OC([*])=O>>OC([*])=O and monomer C\C=C\C(O)=O 
-               // product shouldn't have should have cis-trans bonds because
-               // AAM is not specified on R-group atom neighbor
-               // Cis-trans bonds should be saved for such reaction: O[C:1]([*])=O>>O[C:1]([*])=O
-            }
+
+            mol_product.flipBond(pr_neibours[j], atom_from, atom_to);
+
+            // TODO:
+            // Check that corresponding R-group fragment in monomer has cis-trans bond
+            // and check that AAM mapping is specified for that.
+            // For example for reaction OC([*])=O>>OC([*])=O and monomer C\C=C\C(O)=O 
+            // product shouldn't have should have cis-trans bonds because
+            // AAM is not specified on R-group atom neighbor
+            // Cis-trans bonds should be saved for such reaction: O[C:1]([*])=O>>O[C:1]([*])=O
          }
          mol_product.removeAtom(mapping[i]);
       }
@@ -1431,21 +1480,23 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
             const Vertex &mon_v = mol_product.getVertex(mon_atom);
             const Vertex &pr_v = mol_product.getVertex(pr_atom);
 
-            for (int i = mon_v.neiBegin(); i != mon_v.neiEnd(); i = mon_v.neiNext(i))
-               if (MoleculeCisTrans::isGeomStereoBond(mol_product, mon_v.neiEdge(i), NULL, false))
-                  mol_product.cis_trans.setParity(mon_v.neiEdge(i), 0);
+            for (int k = mon_v.neiBegin(); k != mon_v.neiEnd(); k = mon_v.neiNext(k))
+               if (MoleculeCisTrans::isGeomStereoBond(mol_product, mon_v.neiEdge(k), NULL, false))
+                  mol_product.cis_trans.setParity(mon_v.neiEdge(k), 0);
             if (mol_product.stereocenters.exists(mon_atom))
                mol_product.stereocenters.remove(mon_atom);
 
             QS_DEF(Array<int>, neighbors);
             neighbors.clear();
-            for (int i = mon_v.neiBegin(); i != mon_v.neiEnd(); i = mon_v.neiNext(i))
-               neighbors.push(mon_v.neiVertex(i));
-            for (int i = 0; i < neighbors.size(); i++)
-               if (mol_product.findEdgeIndex(neighbors[i], pr_atom) == -1)
-                  mol_product.flipBond(neighbors[i], mon_atom, pr_atom);
+            for (int k = mon_v.neiBegin(); k != mon_v.neiEnd(); k = mon_v.neiNext(k))
+               neighbors.push(mon_v.neiVertex(k));
 
-	    frags_mapping[_att_points[i][j]] = pr_atom;
+
+            for (int k = 0; k < neighbors.size(); k++)
+               if (mol_product.findEdgeIndex(neighbors[k], pr_atom) == -1)
+                  mol_product.flipBond(neighbors[k], mon_atom, pr_atom);
+
+            frags_mapping[_att_points[i][j]] = pr_atom;
             mol_product.removeAtom(mon_atom);
             //if (mol_product.mergeAtoms(frags_mapping[_att_points[i][0]], mapping[i]) == -1)
             //   return false;
@@ -1453,6 +1504,14 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
       }
 
       product_mapping[mapping[i]] = frags_mapping[_att_points[i][0]];
+
+
+      if (is_transform && _att_points[i].size() != 0 && is_valid && !_checkValence(mol_product, mapping[i]))
+      {
+         _product_forbidden_atoms.copy(_monomer_forbidden_atoms);
+         _product_forbidden_atoms[_att_points[i][0]] = max_reuse_count;
+         return false;
+      }
 
       /* Border stereocenters copying */
       int nv_idx = 0;
@@ -1465,18 +1524,26 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
             uncleaned_fragments.stereocenters.get(_att_points[i][j], type, group, pyramid);
 
             int new_pyramid[4];
-
+            
+            bool invalid_stereocenter = false;
             for (int k = 0; k < 4; k++)
             {
                if (pyramid[k] == -1)
                   new_pyramid[k] = -1;
                else if (!_is_needless_atom[pyramid[k]])
                   new_pyramid[k] = frags_mapping[pyramid[k]];
-               else
+               else if (nv_idx < pr_neibours.size())
                   new_pyramid[k] = pr_neibours[nv_idx++];
+               else
+               {
+                  invalid_stereocenter = true;
+                  break;
+               }
+
             }
 
-            mol_product.stereocenters.add(frags_mapping[_att_points[i][j]], type, group, new_pyramid);
+            if (!invalid_stereocenter)
+               mol_product.stereocenters.add(frags_mapping[_att_points[i][j]], type, group, new_pyramid);
          }
 
          if (nv_idx == 2)
@@ -1491,17 +1558,28 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    out_mapping.clear_resize(mol_product.vertexEnd());
    ready_product_out.clone(mol_product, NULL, &out_mapping);
 
-   QS_DEF(Array<int>, old_marked_atoms);
-   old_marked_atoms.copy(_product_forbidden_atoms);
-
    _product_forbidden_atoms.clear_resize(ready_product_out.vertexEnd());
    _product_forbidden_atoms.zerofill();
    
+   QS_DEF(Array<int>, temp_orig_hydr);
+   temp_orig_hydr.clear();
+
    if (is_transform)
    {
       for (int i = mol_product.vertexBegin(); i != mol_product.vertexEnd(); i = mol_product.vertexNext(i))
-         if (out_mapping[i] != -1 && old_marked_atoms[i])
-            _product_forbidden_atoms[out_mapping[i]] = old_marked_atoms[i];
+         if (out_mapping[i] != -1 && all_forbidden_atoms[i])
+            _product_forbidden_atoms[out_mapping[i]] = all_forbidden_atoms[i];
+
+      for (int i = 0; i <_original_hydrogens.size(); i++)
+      {
+         int new_h_idx = frags_mapping[_original_hydrogens[i]];
+         
+         if (new_h_idx == -1)
+            continue;
+
+         temp_orig_hydr.push(out_mapping[new_h_idx]);
+      }
+      _original_hydrogens.copy(temp_orig_hydr);
    }
 
    return true;
@@ -1657,8 +1735,8 @@ bool ReactionEnumeratorState::_addFragment( Molecule &fragment,
    for (int i = _is_needless_bond.size(); i < _fragments.edgeEnd(); i++)
       _is_needless_bond.push(0);
    /* marked atoms array expanding */
-   for (int i = 0; i < frag_mapping.size(); i++)
-      _product_forbidden_atoms.push(0);
+   //for (int i = 0; i < frag_mapping.size(); i++)
+   //   _product_forbidden_atoms.push(0);
 
    /* _is_needless atom array updating */
    for (int i = 0; i < frag_mapping.size(); i++)
@@ -1816,7 +1894,6 @@ int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergr
    sub_qa_array.clear() ;
    QS_DEF(Molecule, mol_fragments);
    mol_fragments.clear();
-   /*rpe_state->_mapping_super.fffill();*/
    
    if (!rpe_state->_is_rg_exist && !rpe_state->_am->match(core_sub, core_super))
       return 1;
@@ -1834,8 +1911,6 @@ int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergr
    rp_mapping.fffill();
 
    rpe_state->_findR2PMapping(submolecule, rp_mapping);
-
-   //rpe_state->_checkConstraints(submolecule, rp_mapping);
 
    rpe_state->_cistransUpdate(submolecule, supermolecule, NULL, rp_mapping, core_sub);
    rpe_state->_stereocentersUpdate(submolecule, supermolecule, rp_mapping, core_sub, core_super);

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -41,6 +41,8 @@ int Vertex::findNeiEdge (int idx) const
 
    return -1;
 }
+
+IMPL_ERROR(Graph, "graph");
 
 Graph::Graph ()
 {
@@ -90,6 +92,14 @@ bool Graph::hasEdge(int idx) const
 bool Graph::hasVertex(int idx) const
 {
    return _vertices->hasElement(idx);
+}
+
+int Graph::getEdgeEnd (int beg, int edge) const
+{
+   const Edge &e = getEdge(edge);
+   if (e.beg == beg)
+      return e.end;
+   return e.beg;
 }
 
 int Graph::addEdge (int beg, int end)
@@ -609,17 +619,22 @@ int Graph::vertexSmallestRingSize (int idx)
    return _v_smallest_ring_size[idx];
 }
 
-void Graph::_calculateSSSR ()
+int Graph::edgeSmallestRingSize (int idx)
 {
-   CycleBasis basis;
-   int i, j;
+   if (!_sssr_valid)
+      _calculateSSSR();
 
-   basis.create(*this);
+   return _e_smallest_ring_size[idx];
+}
 
+void Graph::_calculateSSSRInit ()
+{
    _v_smallest_ring_size.clear_resize(vertexEnd());
+   _e_smallest_ring_size.clear_resize(edgeEnd());
    _v_sssr_count.clear_resize(vertexEnd());
 
    _v_smallest_ring_size.fffill();
+   _e_smallest_ring_size.fffill();
    _v_sssr_count.zerofill();
 
    if (_sssr_pool == 0)
@@ -627,35 +642,23 @@ void Graph::_calculateSSSR ()
 
    _sssr_vertices.clear();
    _sssr_edges.clear();
+}
 
-   for (i = 0; i < basis.getCyclesCount(); i++)
+
+void Graph::_calculateSSSRByCycleBasis (CycleBasis &basis)
+{
+   _calculateSSSRInit();
+
+   for (int i = 0; i < basis.getCyclesCount(); i++)
    {
       const Array<int> &cycle = basis.getCycle(i);
 
       List<int> &vertices = _sssr_vertices.push(*_sssr_pool);
       List<int> &edges = _sssr_edges.push(*_sssr_pool);
 
-      int prev_beg = -1;
-      int prev_end = -1;
+      _calculateSSSRAddEdgesAndVertices(cycle, edges, vertices);
 
-      for (j = 0; j < cycle.size(); j++)
-      {
-         const Edge &edge = getEdge(cycle[j]);
-
-         edges.add(cycle[j]);
-         
-         if (j != cycle.size() - 1)
-         {
-            if (edge.beg != prev_beg && edge.beg != prev_end)
-               vertices.add(edge.beg);
-            if (edge.end != prev_beg && edge.end != prev_end)
-               vertices.add(edge.end);
-         }
-         prev_beg = edge.beg;
-         prev_end = edge.end;
-      }
-
-      for (j = vertices.begin(); j != vertices.end(); j = vertices.next(j))
+      for (int j = vertices.begin(); j != vertices.end(); j = vertices.next(j))
       {
          int idx = vertices[j];
 
@@ -664,13 +667,33 @@ void Graph::_calculateSSSR ()
          
          _v_sssr_count[idx]++;
       }
+
+      for (int j = edges.begin(); j != edges.end(); j = edges.next(j))
+      {
+         int idx = edges[j];
+
+         if (_e_smallest_ring_size[idx] == -1 || _e_smallest_ring_size[idx] > cycle.size())
+            _e_smallest_ring_size[idx] = cycle.size();
+      }
    }
 
-   for (i = 0; i < _v_smallest_ring_size.size(); i++)
+   for (int i = 0; i < _v_smallest_ring_size.size(); i++)
       if (_v_smallest_ring_size[i] == -1)
          _v_smallest_ring_size[i] = 0;
    
+   for (int i = 0; i < _e_smallest_ring_size.size(); i++)
+      if (_e_smallest_ring_size[i] == -1)
+         _e_smallest_ring_size[i] = 0;
+   
    _sssr_valid = true;
+}
+
+void Graph::_calculateSSSR ()
+{
+   // Note: function was split into smaller functions to reduce stack usage
+   QS_DEF(CycleBasis, basis);
+   basis.create(*this);
+   _calculateSSSRByCycleBasis(basis);
 }
 
 void Graph::_calculateComponents ()
@@ -832,3 +855,25 @@ void Graph::_cloneGraph_KeepIndices (const Graph &other)
    _components_valid = false;
 }
 
+void Graph::_calculateSSSRAddEdgesAndVertices (const Array<int> &cycle, List<int> &edges, List<int> &vertices)
+{
+   int prev_beg = -1;
+   int prev_end = -1;
+
+   for (int j = 0; j < cycle.size(); j++)
+   {
+      const Edge &edge = getEdge(cycle[j]);
+
+      edges.add(cycle[j]);
+
+      if (j != cycle.size() - 1)
+      {
+         if (edge.beg != prev_beg && edge.beg != prev_end)
+            vertices.add(edge.beg);
+         if (edge.end != prev_beg && edge.end != prev_end)
+            vertices.add(edge.end);
+      }
+      prev_beg = edge.beg;
+      prev_end = edge.end;
+   }
+}

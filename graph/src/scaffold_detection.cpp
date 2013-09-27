@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,6 +18,8 @@
 #include "base_cpp/ptr_array.h"
 
 using namespace indigo;
+
+IMPL_ERROR(ScaffoldDetection, "Scaffold detection");
 
 ScaffoldDetection::ScaffoldDetection (ObjArray<Graph>* graph_set):
 cbEdgeWeight(0), 
@@ -229,6 +231,8 @@ int ScaffoldDetection::GraphBasket::_copmpareRingsCount(Graph& g1, Graph& g2, vo
       result = g2.edgeCount() - g1.edgeCount();
    return result;
 }
+
+IMPL_ERROR(ScaffoldDetection::GraphBasket, "Graph basket");
 
 ScaffoldDetection::GraphBasket::GraphBasket():
 cbSortSolutions(0),

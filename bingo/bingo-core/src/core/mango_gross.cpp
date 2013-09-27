@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -20,6 +20,8 @@
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/gross_formula.h"
 #include "molecule/elements.h"
+
+IMPL_ERROR(MangoGross, "gross formula");
 
 MangoGross::MangoGross (BingoContext &context) :
 _context(context)

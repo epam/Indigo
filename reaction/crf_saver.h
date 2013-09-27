@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2013 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -39,14 +39,18 @@ public:
 
    bool save_bond_dirs;
    bool save_highlighting;
+   bool save_mapping;
 
-   DEF_ERROR("CRF saver");
+   DECL_ERROR;
 
 protected:
+
+   void _init ();
 
    void _writeReactionInfo (Reaction &reaction);
    void _writeAam (const int *aam, const Array<int> &sequence);
    void _writeMolecule (Molecule &molecule);
+   void _writeReactionMolecule (Reaction &reaction, int idx);
    
    Output &_output;
    Obj<LzwEncoder> _encoder;
