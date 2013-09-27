@@ -34,9 +34,9 @@ parser.add_option('--cairo-gl', dest="cairogl",
     default=False, action="store_true", help='Build Cairo with OpenGL support')
 parser.add_option('--cairo-vg', dest="cairovg",
     default=False, action="store_true", help='Build Cairo with CairoVG support')
-parser.add_option('--cairo-egl', dest="cairo=egl",
+parser.add_option('--cairo-egl', dest="cairoegl",
     default=False, action="store_true", help='Build Cairo with EGL support')
-parser.add_option('--cairo-glesv2', dest="cairoglesv2',
+parser.add_option('--cairo-glesv2', dest="cairoglesv2",
     default=False, action="store_true", help='Build Cairo with GLESv2 support')
 parser.add_option('--find-cairo', dest="findcairo",
     default=False, action="store_true", help='Find and use system Cairo')
