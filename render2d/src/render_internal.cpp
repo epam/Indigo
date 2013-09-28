@@ -3615,7 +3615,7 @@ void MoleculeRenderInternal::_prepareDoubleBondCoords (Vec2f* coord, BondDescr& 
    Vec2f ns, ds;
    ns.scaled(bd.norm, 2 * _settings.bondSpace + (bd.stereodir == BOND_STEREO_BOLD ? 1 : 0) * _settings.bondLineWidth);
 
-   if (!bd.stereodir == BOND_STEREO_BOLD && ((allowCentered && bd.centered) || bd.cistrans)) {
+   if (!(bd.stereodir == BOND_STEREO_BOLD) && ((allowCentered && bd.centered) || bd.cistrans)) {
       Vec2f p0, p1, q0, q1;
       ns.scale(0.5f);
       p0.sum(be1.p, ns);
