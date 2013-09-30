@@ -1,7 +1,0 @@
-Name: cairo-quartz
-Description: Quartz surface backend for cairo graphics library
-Version: 1.10.2
-
-Requires: cairo 
-Libs:  
-Cflags: -I${pc_top_builddir}/${pcfiledir}/./src 

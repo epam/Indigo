@@ -33,6 +33,7 @@
 #include "cairoint.h"
 
 #include "cairo-xcb-private.h"
+#include "cairo-list-inline.h"
 
 struct pattern_cache_entry {
     cairo_cache_entry_t key;
@@ -57,9 +58,17 @@ _cairo_xcb_screen_finish (cairo_xcb_screen_t *screen)
 					   cairo_xcb_surface_t,
 					   link)->base;
 
-	cairo_surface_reference (surface);
 	cairo_surface_finish (surface);
-	cairo_surface_destroy (surface);
+    }
+
+    while (! cairo_list_is_empty (&screen->pictures)) {
+	cairo_surface_t *surface;
+
+	surface = &cairo_list_first_entry (&screen->pictures,
+					   cairo_xcb_picture_t,
+					   link)->base;
+
+	cairo_surface_finish (surface);
     }
 
     for (i = 0; i < screen->solid_cache_size; i++)
@@ -68,32 +77,22 @@ _cairo_xcb_screen_finish (cairo_xcb_screen_t *screen)
     for (i = 0; i < ARRAY_LENGTH (screen->stock_colors); i++)
 	cairo_surface_destroy (screen->stock_colors[i]);
 
-    _cairo_cache_fini (&screen->surface_pattern_cache);
+    for (i = 0; i < ARRAY_LENGTH (screen->gc); i++) {
+	if (screen->gc_depths[i] != 0)
+	    _cairo_xcb_connection_free_gc (screen->connection, screen->gc[i]);
+    }
+
     _cairo_cache_fini (&screen->linear_pattern_cache);
     _cairo_cache_fini (&screen->radial_pattern_cache);
     _cairo_freelist_fini (&screen->pattern_cache_entry_freelist);
 
-    cairo_device_finish (screen->device);
-    cairo_device_destroy (screen->device);
-
     free (screen);
-}
-
-static cairo_bool_t
-_surface_pattern_cache_entry_equal (const void *A, const void *B)
-{
-    const struct pattern_cache_entry *a = A, *b = B;
-
-    return a->key.hash == b->key.hash;
 }
 
 static cairo_bool_t
 _linear_pattern_cache_entry_equal (const void *A, const void *B)
 {
     const struct pattern_cache_entry *a = A, *b = B;
-
-    if (a->key.hash != b->key.hash)
-	return FALSE;
 
     return _cairo_linear_pattern_equal (&a->pattern.gradient.linear,
 					&b->pattern.gradient.linear);
@@ -104,22 +103,8 @@ _radial_pattern_cache_entry_equal (const void *A, const void *B)
 {
     const struct pattern_cache_entry *a = A, *b = B;
 
-    if (a->key.hash != b->key.hash)
-	return FALSE;
-
     return _cairo_radial_pattern_equal (&a->pattern.gradient.radial,
 					&b->pattern.gradient.radial);
-}
-
-static void
-_surface_cache_entry_destroy (void *closure)
-{
-    struct pattern_cache_entry *entry = closure;
-
-    if (entry->picture->snapshot_of != NULL)
-	_cairo_surface_detach_snapshot (entry->picture);
-    cairo_surface_destroy (entry->picture);
-    _cairo_freelist_free (&entry->screen->pattern_cache_entry_freelist, entry);
 }
 
 static void
@@ -131,85 +116,6 @@ _pattern_cache_entry_destroy (void *closure)
     cairo_surface_destroy (entry->picture);
     _cairo_freelist_free (&entry->screen->pattern_cache_entry_freelist, entry);
 }
-
-#if CAIRO_HAS_DRM_SURFACE && CAIRO_HAS_XCB_DRM_FUNCTIONS
-#include "drm/cairo-drm-private.h"
-
-#include <drm/drm.h>
-#include <sys/ioctl.h>
-#include <xcb/dri2.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-
-static int drm_magic (int fd, uint32_t *magic)
-{
-    drm_auth_t auth;
-
-    if (ioctl (fd, DRM_IOCTL_GET_MAGIC, &auth))
-	return -errno;
-
-    *magic = auth.magic;
-    return 0;
-}
-
-static cairo_device_t *
-_xcb_drm_device (xcb_connection_t	*xcb_connection,
-		 xcb_screen_t		*xcb_screen)
-{
-    cairo_device_t *device = NULL;
-    xcb_dri2_connect_reply_t *connect;
-    drm_magic_t magic;
-    int fd;
-
-    connect = xcb_dri2_connect_reply (xcb_connection,
-				      xcb_dri2_connect (xcb_connection,
-							xcb_screen->root,
-							0),
-				      0);
-    if (connect == NULL)
-	return NULL;
-
-    fd = open (xcb_dri2_connect_device_name (connect), O_RDWR);
-    free (connect);
-
-    if (fd < 0)
-	return NULL;
-
-    device = cairo_drm_device_get_for_fd (fd);
-    close (fd);
-
-    if (device != NULL) {
-	xcb_dri2_authenticate_reply_t *authenticate;
-
-	if (drm_magic (((cairo_drm_device_t *) device)->fd, &magic) < 0) {
-	    cairo_device_destroy (device);
-	    return NULL;
-	}
-
-	authenticate = xcb_dri2_authenticate_reply (xcb_connection,
-						    xcb_dri2_authenticate (xcb_connection,
-									   xcb_screen->root,
-									   magic),
-						    0);
-	if (authenticate == NULL) {
-	    cairo_device_destroy (device);
-	    return NULL;
-	}
-
-	free (authenticate);
-    }
-
-    return device;
-}
-#else
-static cairo_device_t *
-_xcb_drm_device (xcb_connection_t	*xcb_connection,
-		 xcb_screen_t		*xcb_screen)
-{
-    return NULL;
-}
-#endif
 
 cairo_xcb_screen_t *
 _cairo_xcb_screen_get (xcb_connection_t *xcb_connection,
@@ -251,26 +157,14 @@ _cairo_xcb_screen_get (xcb_connection_t *xcb_connection,
 			  sizeof (struct pattern_cache_entry));
     cairo_list_init (&screen->link);
     cairo_list_init (&screen->surfaces);
+    cairo_list_init (&screen->pictures);
 
-    if (connection->flags & CAIRO_XCB_HAS_DRI2)
-	screen->device = _xcb_drm_device (xcb_connection, xcb_screen);
-    else
-	screen->device = NULL;
-
-    screen->gc_depths = 0;
+    memset (screen->gc_depths, 0, sizeof (screen->gc_depths));
     memset (screen->gc, 0, sizeof (screen->gc));
 
     screen->solid_cache_size = 0;
     for (i = 0; i < ARRAY_LENGTH (screen->stock_colors); i++)
 	screen->stock_colors[i] = NULL;
-
-    status = _cairo_cache_init (&screen->surface_pattern_cache,
-				_surface_pattern_cache_entry_equal,
-				NULL,
-				_surface_cache_entry_destroy,
-				16*1024*1024);
-    if (unlikely (status))
-	goto error_screen;
 
     status = _cairo_cache_init (&screen->linear_pattern_cache,
 				_linear_pattern_cache_entry_equal,
@@ -278,7 +172,7 @@ _cairo_xcb_screen_get (xcb_connection_t *xcb_connection,
 				_pattern_cache_entry_destroy,
 				16);
     if (unlikely (status))
-	goto error_surface;
+	goto error_screen;
 
     status = _cairo_cache_init (&screen->radial_pattern_cache,
 				_radial_pattern_cache_entry_equal,
@@ -297,11 +191,8 @@ unlock:
 
 error_linear:
     _cairo_cache_fini (&screen->linear_pattern_cache);
-error_surface:
-    _cairo_cache_fini (&screen->surface_pattern_cache);
 error_screen:
     CAIRO_MUTEX_UNLOCK (connection->screens_mutex);
-    cairo_device_destroy (screen->device);
     free (screen);
 
     return NULL;
@@ -328,8 +219,8 @@ _cairo_xcb_screen_get_gc (cairo_xcb_screen_t *screen,
     assert (CAIRO_MUTEX_IS_LOCKED (screen->connection->device.mutex));
 
     for (i = 0; i < ARRAY_LENGTH (screen->gc); i++) {
-	if (((screen->gc_depths >> (8*i)) & 0xff) == depth) {
-	    screen->gc_depths &= ~(0xff << (8*i));
+	if (screen->gc_depths[i] == depth) {
+	    screen->gc_depths[i] = 0;
 	    return screen->gc[i];
 	}
     }
@@ -345,7 +236,7 @@ _cairo_xcb_screen_put_gc (cairo_xcb_screen_t *screen, int depth, xcb_gcontext_t 
     assert (CAIRO_MUTEX_IS_LOCKED (screen->connection->device.mutex));
 
     for (i = 0; i < ARRAY_LENGTH (screen->gc); i++) {
-	if (((screen->gc_depths >> (8*i)) & 0xff) == 0)
+	if (screen->gc_depths[i] == 0)
 	    break;
     }
 
@@ -356,55 +247,7 @@ _cairo_xcb_screen_put_gc (cairo_xcb_screen_t *screen, int depth, xcb_gcontext_t 
     }
 
     screen->gc[i] = gc;
-    screen->gc_depths &= ~(0xff << (8*i));
-    screen->gc_depths |= depth << (8*i);
-}
-
-cairo_status_t
-_cairo_xcb_screen_store_surface_picture (cairo_xcb_screen_t *screen,
-					 cairo_surface_t *picture,
-					 unsigned int size)
-{
-    struct pattern_cache_entry *entry;
-    cairo_status_t status;
-
-    assert (CAIRO_MUTEX_IS_LOCKED (screen->connection->device.mutex));
-
-    entry = _cairo_freelist_alloc (&screen->pattern_cache_entry_freelist);
-    if (unlikely (entry == NULL))
-	return _cairo_error (CAIRO_STATUS_NO_MEMORY);
-
-    entry->key.hash = picture->unique_id;
-    entry->key.size = size;
-
-    entry->picture = cairo_surface_reference (picture);
-    entry->screen = screen;
-
-    status = _cairo_cache_insert (&screen->surface_pattern_cache,
-				  &entry->key);
-    if (unlikely (status)) {
-	cairo_surface_destroy (picture);
-	_cairo_freelist_free (&screen->pattern_cache_entry_freelist, entry);
-	return status;
-    }
-
-    return CAIRO_STATUS_SUCCESS;
-}
-
-void
-_cairo_xcb_screen_remove_surface_picture (cairo_xcb_screen_t *screen,
-					  cairo_surface_t *picture)
-{
-    struct pattern_cache_entry tmpl;
-    struct pattern_cache_entry *entry;
-
-    assert (CAIRO_MUTEX_IS_LOCKED (screen->connection->device.mutex));
-
-    tmpl.key.hash = picture->unique_id;
-
-    entry = _cairo_cache_lookup (&screen->surface_pattern_cache, &tmpl.key);
-    if (entry != NULL)
-	_cairo_cache_remove (&screen->surface_pattern_cache, &entry->key);
+    screen->gc_depths[i] = depth;
 }
 
 cairo_status_t

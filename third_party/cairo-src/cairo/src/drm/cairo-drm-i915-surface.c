@@ -103,6 +103,7 @@
 #include "cairo-boxes-private.h"
 #include "cairo-cache-private.h"
 #include "cairo-composite-rectangles-private.h"
+#include "cairo-default-context-private.h"
 #include "cairo-error-private.h"
 #include "cairo-freelist-private.h"
 #include "cairo-list-private.h"
@@ -715,10 +716,14 @@ i915_surface_batch_flush (i915_surface_t *surface)
 }
 
 static cairo_status_t
-i915_surface_flush (void *abstract_surface)
+i915_surface_flush (void *abstract_surface,
+		    unsigned flags)
 {
     i915_surface_t *surface = abstract_surface;
     cairo_status_t status;
+
+    if (flags)
+	return CAIRO_STATUS_SUCCESS;
 
     if (surface->intel.drm.fallback == NULL) {
 	if (surface->intel.drm.base.finished) {
@@ -735,7 +740,7 @@ i915_surface_flush (void *abstract_surface)
 	return i915_surface_batch_flush (surface);
     }
 
-    return intel_surface_flush (abstract_surface);
+    return intel_surface_flush (abstract_surface, flags);
 }
 
 /* rasterisation */
@@ -1915,9 +1920,9 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
 	return status;
     }
 
-    assert (! path->is_empty_fill);
+    assert (! _cairo_path_fixed_fill_is_empty (path));
 
-    if (_cairo_path_fixed_is_rectilinear_fill (path)) {
+    if (_cairo_path_fixed_fill_is_rectilinear (path)) {
 	cairo_boxes_t boxes;
 
 	_cairo_boxes_init (&boxes);
@@ -1938,8 +1943,7 @@ i915_surface_fill_with_alpha (void			*abstract_dst,
 	    goto CLEANUP_BOXES;
     }
 
-    _cairo_polygon_init (&info.polygon);
-    _cairo_polygon_limit (&info.polygon, clip_boxes, num_boxes);
+    _cairo_polygon_init (&info.polygon, clip_boxes, num_boxes);
 
     status = _cairo_path_fixed_fill_to_polygon (path, tolerance, &info.polygon);
     if (unlikely (status))
@@ -2259,7 +2263,7 @@ i915_surface_stroke (void			*abstract_dst,
 	return status;
     }
 
-    if (path->is_rectilinear) {
+    if (_cairo_path_fixed_stroke_is_rectilinear (path)) {
 	cairo_boxes_t boxes;
 
 	_cairo_boxes_init (&boxes);
@@ -2280,8 +2284,7 @@ i915_surface_stroke (void			*abstract_dst,
 	    goto CLEANUP_BOXES;
     }
 
-    _cairo_polygon_init (&info.polygon);
-    _cairo_polygon_limit (&info.polygon, clip_boxes, num_boxes);
+    _cairo_polygon_init (&info.polygon, clip_boxes, num_boxes);
 
     status = _cairo_path_fixed_stroke_to_polygon (path,
 						  stroke_style,
@@ -2340,9 +2343,12 @@ i915_surface_fill (void			*abstract_dst,
 
 static const cairo_surface_backend_t i915_surface_backend = {
     CAIRO_SURFACE_TYPE_DRM,
+    _cairo_default_context_create,
 
     i915_surface_create_similar,
     i915_surface_finish,
+
+    NULL,
     intel_surface_acquire_source_image,
     intel_surface_release_source_image,
 

@@ -153,7 +153,7 @@ _wgl_dummy_ctx (cairo_wgl_context_t *ctx)
 
     RegisterClassExA (&wincl);
 
-    ctx->dummy_wnd = CreateWindow ("cairo_wgl_context_dummy", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    ctx->dummy_wnd = CreateWindowA ("cairo_wgl_context_dummy", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     ctx->dummy_dc = GetDC (ctx->dummy_wnd);
 
     ZeroMemory (&pfd, sizeof (PIXELFORMATDESCRIPTOR));
@@ -199,6 +199,13 @@ cairo_wgl_device_create (HGLRC rc)
     ctx->base.swap_buffers = _wgl_swap_buffers;
     ctx->base.destroy = _wgl_destroy;
 
+    status = _cairo_gl_dispatch_init (&ctx->base.dispatch,
+				      (cairo_gl_get_proc_addr_func_t) wglGetProcAddress);
+    if (unlikely (status)) {
+	free (ctx);
+	return _cairo_gl_context_create_in_error (status);
+    }
+
     status = _cairo_gl_context_init (&ctx->base);
     if (unlikely (status)) {
         free (ctx);
@@ -238,6 +245,9 @@ cairo_gl_surface_create_for_dc (cairo_device_t	*device,
 
     if (device->backend->type != CAIRO_DEVICE_TYPE_GL)
         return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_SURFACE_TYPE_MISMATCH));
+
+    if (width <= 0 || height <= 0)
+        return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_SIZE));
 
     surface = calloc (1, sizeof (cairo_wgl_surface_t));
     if (unlikely (surface == NULL))

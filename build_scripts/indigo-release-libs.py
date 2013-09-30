@@ -33,13 +33,17 @@ parser.add_option('--clean', default=False, action="store_true",
     help='delete all the build data', dest="clean")
 parser.add_option('--preset', type="choice", dest="preset",
     choices=presets.keys(), help='build preset %s' % (str(presets.keys())))
-parser.add_option('--cairo-gl', dest="cairogl", 
+parser.add_option('--cairo-gl', dest="cairogl",
     default=False, action="store_true", help='Build Cairo with OpenGL support')
-parser.add_option('--cairo-vg', dest="cairovg", 
+parser.add_option('--cairo-vg', dest="cairovg",
     default=False, action="store_true", help='Build Cairo with CairoVG support')
-parser.add_option('--find-cairo', dest="findcairo", 
+parser.add_option('--cairo-egl', dest="cairoegl",
+    default=False, action="store_true", help='Build Cairo with EGL support')
+parser.add_option('--cairo-glesv2', dest="cairoglesv2",
+    default=False, action="store_true", help='Build Cairo with GLESv2 support')
+parser.add_option('--find-cairo', dest="findcairo",
     default=False, action="store_true", help='Find and use system Cairo')
-parser.add_option('--find-pixman', dest="findpixman", 
+parser.add_option('--find-pixman', dest="findpixman",
     default=False, action="store_true", help='Find and use system Pixman')
 if os.name == 'posix':
     parser.add_option('--check-abi', dest='checkabi',
@@ -68,6 +72,12 @@ if args.cairogl:
 
 if args.cairovg:
     args.params += ' -DWITH_CAIRO_VG=TRUE'
+
+if args.cairoegl:
+    args.params += ' -DWITH_CAIRO_EGL=TRUE'
+
+if args.cairoglesv2:
+    args.params += ' -DWITH_CAIRO_GLESV2=TRUE'
 
 if args.findcairo:
     args.params += ' -DUSE_SYSTEM_CAIRO=TRUE'

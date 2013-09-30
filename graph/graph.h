@@ -153,6 +153,7 @@ public:
    int vertexCountSSSR (int idx);
    int vertexSmallestRingSize (int idx);
    bool vertexInRing(int idx);
+   int edgeSmallestRingSize (int idx);
 
    List<int> & sssrEdges (int idx);
    List<int> & sssrVertices (int idx);
@@ -175,7 +176,7 @@ protected:
    Array<int> _topology; // for each edge: TOPOLOGY_RING, TOPOLOGY_CHAIN, or -1 (not calculated)
    bool       _topology_valid;
 
-   Array<int> _v_smallest_ring_size;
+   Array<int> _v_smallest_ring_size, _e_smallest_ring_size;
    Array<int> _v_sssr_count;
    Pool<List<int>::Elem> *_sssr_pool;
    ObjArray< List<int> > _sssr_vertices;

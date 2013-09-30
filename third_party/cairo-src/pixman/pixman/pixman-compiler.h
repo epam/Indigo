@@ -19,6 +19,12 @@
 #endif
 
 #if defined (__GNUC__)
+#  define unlikely(expr) __builtin_expect ((expr), 0)
+#else
+#  define unlikely(expr)  (expr)
+#endif
+
+#if defined (__GNUC__)
 #  define MAYBE_UNUSED  __attribute__((unused))
 #else
 #  define MAYBE_UNUSED
@@ -56,6 +62,10 @@
 # define INT64_MAX              (9223372036854775807)
 #endif
 
+#ifndef SIZE_MAX
+# define SIZE_MAX               ((size_t)-1)
+#endif
+
 
 #ifndef M_PI
 # define M_PI			3.14159265358979323846
@@ -89,6 +99,10 @@
 #   define PIXMAN_EXPORT
 #endif
 
+/* member offsets */
+#define CONTAINER_OF(type, member, data)				\
+    ((type *)(((uint8_t *)data) - offsetof (type, member)))
+
 /* TLS */
 #if defined(PIXMAN_NO_TLS)
 
@@ -97,34 +111,17 @@
 #   define PIXMAN_GET_THREAD_LOCAL(name)				\
     (&name)
 
-#elif defined(TOOLCHAIN_SUPPORTS__THREAD)
+#elif defined(TLS)
 
 #   define PIXMAN_DEFINE_THREAD_LOCAL(type, name)			\
-    static __thread type name
+    static TLS type name
 #   define PIXMAN_GET_THREAD_LOCAL(name)				\
     (&name)
 
-#elif defined(__MINGW32__) || defined(_MSC_VER)
+#elif defined(__MINGW32__)
 
-//		# http://comments.gmane.org/gmane.os.opendarwin.webkit.user/2817
-//		# http://msdn.microsoft.com/en-us/library/yx1x886y.aspx
-
-//#   define _NO_W32_PSEUDO_MODIFIERS
-//#   include <windows.h>
-
-/* We can't include <windows.h> as it causes carious clashes with
- * identifiers in pixman, sigh. So just declare the functions we need
- * here.
- */
-void *ICEP(void* volatile* d, void* e, void* c);
-
-extern int __stdcall TlsAlloc (void);
-extern void* __stdcall TlsGetValue (unsigned);
-extern int __stdcall TlsSetValue (unsigned, void *);
-extern void* __stdcall CreateMutexA(void *, int, char *);
-extern int __stdcall CloseHandle(void *);
-extern unsigned __stdcall WaitForSingleObject (void *, unsigned);
-extern int __stdcall ReleaseMutex (void *); 
+#   define _NO_W32_PSEUDO_MODIFIERS
+#   include <windows.h>
 
 #   define PIXMAN_DEFINE_THREAD_LOCAL(type, name)			\
     static volatile int tls_ ## name ## _initialized = 0;		\
@@ -149,7 +146,7 @@ extern int __stdcall ReleaseMutex (void *);
 	    if (!tls_ ## name ## _mutex)				\
 	    {								\
 		void *mutex = CreateMutexA (NULL, 0, NULL);		\
-		if (ICEP (			\
+		if (InterlockedCompareExchangePointer (			\
 			&tls_ ## name ## _mutex, mutex, NULL) != NULL)	\
 		{							\
 		    CloseHandle (mutex);				\
@@ -174,13 +171,13 @@ extern int __stdcall ReleaseMutex (void *);
 #   define PIXMAN_GET_THREAD_LOCAL(name)				\
     tls_ ## name ## _get ()
 
-/*#elif defined(_MSC_VER)
+#elif defined(_MSC_VER)
 
 #   define PIXMAN_DEFINE_THREAD_LOCAL(type, name)			\
     static __declspec(thread) type name
 #   define PIXMAN_GET_THREAD_LOCAL(name)				\
     (&name)
-*/
+
 #elif defined(HAVE_PTHREAD_SETSPECIFIC)
 
 #include <pthread.h>

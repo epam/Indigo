@@ -21,6 +21,8 @@ if (NOT PNG_FOUND)
     endif()
     include_directories(${ZLib_HEADERS_DIR})
 
+    list(REMOVE_ITEM PNG_SOURCES src/pngtest.c)
+
     # To remove GLIBC_2.11 dependency
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FORTIFY_SOURCE=0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=0")

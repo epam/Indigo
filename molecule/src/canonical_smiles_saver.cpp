@@ -12,8 +12,10 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "molecule/molecule.h"
 #include "molecule/canonical_smiles_saver.h"
+
+#include "base_cpp/output.h"
+#include "molecule/molecule.h"
 #include "molecule/smiles_saver.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/elements.h"
@@ -76,42 +78,19 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
       if (mol.convertableToImplicitHydrogen(i))
          ignored[i] = 1;
 
-   for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-      if (mol.getBondTopology(i) == TOPOLOGY_RING && mol.cis_trans.getParity(i) != 0)
-      {
-         // we save cis/trans ring bonds into SMILES, but only those who
-         // do not participate in bigger ring systems
-         const Edge &edge = mol.getEdge(i);
+   // Try to save into ordinary smiles and find what cis-trans bonds were used
+   NullOutput null_output;
+   SmilesSaver saver_cistrans(null_output);
+   saver_cistrans.ignore_hydrogens = true;
+   saver_cistrans.saveMolecule(mol);
+   // Then reset cis-trans infromation that is not saved into SMILES
+   const Array<int>& parities = saver_cistrans.getSavedCisTransParities();
+   for (i = mol.edgeBegin(); i < mol.edgeEnd(); i = mol.edgeNext(i))
+   {
+      if (mol.cis_trans.getParity(i) != 0 && parities[i] == 0)
+         mol.cis_trans.setParity(i, 0);
+   }
 
-         if (mol.getAtomRingBondsCount(edge.beg) != 2 ||
-             mol.getAtomRingBondsCount(edge.end) != 2)
-         {
-            mol.cis_trans.setParity(i, 0);
-            continue;
-         }
-
-         // also, discard the cis-trans bonds that have been converted to aromatic
-         const Vertex &beg = mol.getVertex(edge.beg);
-         const Vertex &end = mol.getVertex(edge.end);
-         bool have_singlebond_beg = false;
-         bool have_singlebond_end = false;
-         int j;
-         
-         for (j = beg.neiBegin(); j != beg.neiEnd(); j = beg.neiNext(j))
-            if (mol.getBondOrder(beg.neiEdge(j)) == BOND_SINGLE)
-               have_singlebond_beg = true;
-
-         for (j = end.neiBegin(); j != end.neiEnd(); j = end.neiNext(j))
-            if (mol.getBondOrder(end.neiEdge(j)) == BOND_SINGLE)
-               have_singlebond_end = true;
-
-         if (!have_singlebond_beg || !have_singlebond_end)
-         {
-            mol.cis_trans.setParity(i, 0);
-            continue;
-         }
-      }
-         
    MoleculeAutomorphismSearch of;
 
    of.detect_invalid_cistrans_bonds = find_invalid_stereo;

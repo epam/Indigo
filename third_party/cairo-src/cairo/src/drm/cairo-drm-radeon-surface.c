@@ -32,6 +32,7 @@
 #include "cairo-drm-private.h"
 #include "cairo-drm-radeon-private.h"
 
+#include "cairo-default-context-private.h"
 #include "cairo-error-private.h"
 
 /* Basic stub surface for radeon chipsets */
@@ -158,10 +159,14 @@ radeon_surface_map_to_image (radeon_surface_t *surface)
 }
 
 static cairo_status_t
-radeon_surface_flush (void *abstract_surface)
+radeon_surface_flush (void *abstract_surface,
+		      unsigned flags)
 {
     radeon_surface_t *surface = abstract_surface;
     cairo_status_t status;
+
+    if (flags)
+	return CAIRO_STATUS_SUCCESS;
 
     if (surface->base.fallback == NULL)
 	return CAIRO_STATUS_SUCCESS;
@@ -252,11 +257,15 @@ radeon_surface_glyphs (void			*abstract_surface,
 
 static const cairo_surface_backend_t radeon_surface_backend = {
     CAIRO_SURFACE_TYPE_DRM,
+    _cairo_default_context_create,
 
     radeon_surface_create_similar,
     radeon_surface_finish,
+
+    NULL,
     radeon_surface_acquire_source_image,
     radeon_surface_release_source_image,
+
     NULL, NULL, NULL,
     NULL, /* composite */
     NULL, /* fill */

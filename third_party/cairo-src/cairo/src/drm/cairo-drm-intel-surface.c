@@ -32,6 +32,7 @@
 #include "cairo-drm-private.h"
 #include "cairo-drm-intel-private.h"
 
+#include "cairo-default-context-private.h"
 #include "cairo-error-private.h"
 
 /* Basic generic/stub surface for intel chipsets */
@@ -156,10 +157,13 @@ intel_surface_map_to_image (void *abstract_surface)
 }
 
 cairo_status_t
-intel_surface_flush (void *abstract_surface)
+intel_surface_flush (void *abstract_surface, unsigned flags)
 {
     intel_surface_t *surface = abstract_surface;
     cairo_status_t status;
+
+    if (flags)
+	return CAIRO_STATUS_SUCCESS;
 
     if (surface->drm.fallback == NULL)
 	return CAIRO_STATUS_SUCCESS;
@@ -248,11 +252,15 @@ intel_surface_glyphs (void			*abstract_surface,
 
 static const cairo_surface_backend_t intel_surface_backend = {
     CAIRO_SURFACE_TYPE_DRM,
+    _cairo_default_context_create,
 
     intel_surface_create_similar,
     intel_surface_finish,
+
+    NULL,
     intel_surface_acquire_source_image,
     intel_surface_release_source_image,
+
     NULL, NULL, NULL,
     NULL, /* composite */
     NULL, /* fill */

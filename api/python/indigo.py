@@ -855,7 +855,7 @@ class IndigoObject(object):
 
     def getProperty(self, prop):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResultString(Indigo._lib.indigoGetProperty(self.id, prop))
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetProperty(self.id, prop.encode('ascii')))
 
     def setProperty(self, prop, value):
         self.dispatcher._setSessionId()

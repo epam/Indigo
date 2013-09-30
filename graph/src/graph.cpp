@@ -618,12 +618,22 @@ int Graph::vertexSmallestRingSize (int idx)
    return _v_smallest_ring_size[idx];
 }
 
+int Graph::edgeSmallestRingSize (int idx)
+{
+   if (!_sssr_valid)
+      _calculateSSSR();
+
+   return _e_smallest_ring_size[idx];
+}
+
 void Graph::_calculateSSSRInit ()
 {
    _v_smallest_ring_size.clear_resize(vertexEnd());
+   _e_smallest_ring_size.clear_resize(edgeEnd());
    _v_sssr_count.clear_resize(vertexEnd());
 
    _v_smallest_ring_size.fffill();
+   _e_smallest_ring_size.fffill();
    _v_sssr_count.zerofill();
 
    if (_sssr_pool == 0)
@@ -656,11 +666,23 @@ void Graph::_calculateSSSRByCycleBasis (CycleBasis &basis)
          
          _v_sssr_count[idx]++;
       }
+
+      for (int j = edges.begin(); j != edges.end(); j = edges.next(j))
+      {
+         int idx = edges[j];
+
+         if (_e_smallest_ring_size[idx] == -1 || _e_smallest_ring_size[idx] > cycle.size())
+            _e_smallest_ring_size[idx] = cycle.size();
+      }
    }
 
    for (int i = 0; i < _v_smallest_ring_size.size(); i++)
       if (_v_smallest_ring_size[i] == -1)
          _v_smallest_ring_size[i] = 0;
+   
+   for (int i = 0; i < _e_smallest_ring_size.size(); i++)
+      if (_e_smallest_ring_size[i] == -1)
+         _e_smallest_ring_size[i] = 0;
    
    _sssr_valid = true;
 }

@@ -388,7 +388,12 @@ static int _markEitherCisTrans (Molecule &mol)
          continue;
 
       if (mol.getEdgeTopology(i) == TOPOLOGY_RING)
+      {
+         // Mark all bonds in large cycles
+         if (mol.edgeSmallestRingSize(i) >= 8)
+            mol.cis_trans.ignore(i);
          continue;
+      }
 
       am.possible_cis_trans_to_check.push(i);
    }
