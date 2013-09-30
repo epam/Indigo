@@ -175,6 +175,12 @@ int GZipScanner::tell ()
 
 bool GZipScanner::isEOF ()
 {
+   if ((unsigned)_outbuf_start + _zstream.avail_out == (unsigned)_outbuf.size())
+   {
+      if (_eof)
+         return true;
+      _read(1, 0);
+   }
    return _eof && (unsigned)_outbuf_start + _zstream.avail_out == (unsigned)_outbuf.size();
 }
 
