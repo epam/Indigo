@@ -7,7 +7,12 @@ import sys
 def getIndigoStdSyms(path):
 	libstdcppSymbols = [item.replace('  ', '').split(' ') for item in subprocess.check_output('nm ../../dist/{0}/lib/libstdc++.a'.format(path), shell=True).split('\n')]
 	renameSymbols = []
+	names = []
 	for item in libstdcppSymbols:
+		names.append(item[-1])
+	for item in libstdcppSymbols:
+		if names.count(item[-1]) > 1:
+			continue
 		if len(item) < 2:
 			continue
 		if item[1] not in ('u', 'U', 'V', 'r', 'w', 'W', 'n'):

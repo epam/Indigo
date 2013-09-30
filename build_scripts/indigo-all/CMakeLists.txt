@@ -49,7 +49,7 @@ LIBRARY_NAME(indigo-renderer)
 LIBRARY_NAME(bingo)
 add_test(dlopen-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-inchi_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-renderer_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${bingo_NAME})
 
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND CHECK_ABI)
 add_test(abi-test-indigo "file" "${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME}")
 set_tests_properties (abi-test-indigo PROPERTIES PASS_REGULAR_EXPRESSION "SYSV")
 add_test(abi-test-indigo-inchi "file" "${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-inchi_NAME}")

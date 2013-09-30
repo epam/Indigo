@@ -41,6 +41,9 @@ parser.add_option('--find-cairo', dest="findcairo",
     default=False, action="store_true", help='Find and use system Cairo')
 parser.add_option('--find-pixman', dest="findpixman", 
     default=False, action="store_true", help='Find and use system Pixman')
+if os.name == 'posix':
+    parser.add_option('--check-abi', dest='checkabi',
+        default=False, action="store_true", help='Check ABI type of Indigo libraries on Linux')
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
@@ -71,6 +74,9 @@ if args.findcairo:
 
 if args.findcairo:
     args.params += ' -DUSE_SYSTEM_PIXMAN=TRUE'
+
+if os.name == 'posix' and args.checkabi:
+    args.params += ' -DCHECK_ABI=TRUE'
 
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
@@ -180,7 +186,7 @@ if args.preset == 'mac10.6-universal':
         path, ext = os.path.splitext(f)
         if ext == ".zip":
             shutil.copy(join(full_build_dir, f), join(dist_dir, f))
-elif args.preset == 'linux64-universal':
+elif args.preset in ('linux64-universal', 'linux32-universal'):
     build({'UNIVERSAL': 'TRUE'})
 else:
     build()
