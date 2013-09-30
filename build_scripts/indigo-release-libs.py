@@ -13,10 +13,12 @@ presets = {
     "win64-2012" : ("Visual Studio 11 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
+    "linux32-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
+    "linux64-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
-    "mac10.6-gcc" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.6"),
+    "mac10.6-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
     "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
 }
@@ -76,7 +78,9 @@ build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-
 def build(params=None, install=True):
     full_build_dir = os.path.join(root, "build", build_dir)
     if params:
-     full_build_dir += "_" + params['INDIGO_CMAKE_OSX_ARCHITECTURES']
+        full_build_dir += "_UNIVERSAL_"
+    if 'INDIGO_CMAKE_OSX_ARCHITECTURES' in params:
+        full_build_dir += params['INDIGO_CMAKE_OSX_ARCHITECTURES']
     if os.path.exists(full_build_dir) and args.clean:
         print("Removing previous project files")
         shutil.rmtree(full_build_dir)
@@ -133,9 +137,9 @@ def build(params=None, install=True):
     else:
         return full_build_dir
 
-if args.preset == 'mac10.6-gcc':
-    i386Path = build({'INDIGO_CMAKE_OSX_ARCHITECTURES': 'i386'}, install=False)
-    amd64Path = build({'INDIGO_CMAKE_OSX_ARCHITECTURES': 'x86_64'}, install=False)
+if args.preset == 'mac10.6-universal':
+    i386Path = build({'UNIVERSAL': 'TRUE', 'INDIGO_CMAKE_OSX_ARCHITECTURES': 'i386'}, install=False)
+    amd64Path = build({'UNIVERSAL': 'TRUE', 'INDIGO_CMAKE_OSX_ARCHITECTURES': 'x86_64'}, install=False)
     full_build_dir = os.path.join(root, "build", build_dir)
     if os.path.exists(full_build_dir) and args.clean:
         print("Removing previous project files")
@@ -176,5 +180,7 @@ if args.preset == 'mac10.6-gcc':
         path, ext = os.path.splitext(f)
         if ext == ".zip":
             shutil.copy(join(full_build_dir, f), join(dist_dir, f))
+elif args.preset == 'linux64-universal':
+    build({'UNIVERSAL': 'TRUE'})
 else:
     build()

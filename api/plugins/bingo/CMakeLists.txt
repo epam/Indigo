@@ -39,7 +39,6 @@ endif()
 
 # Bingo shared
 add_library(bingo-shared SHARED ${Bingo_src} ${Bingo_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c)
-
 if (UNIX AND NOT APPLE)
 	if(${SUBSYSTEM_NAME} MATCHES "x64")
 		set(LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
@@ -60,7 +59,7 @@ if(MSVC)
 	set_target_properties(bingo-shared PROPERTIES COMPILE_FLAGS "-D_WINDLL -DINDIGO_PLUGIN")
 endif()
 
-if (NOT APPLE)
+if (MSVC)
 	target_link_libraries(bingo-shared indigo-shared)
 endif()
 set_property(TARGET bingo-shared PROPERTY LINK_INTERFACE_LIBRARIES "")

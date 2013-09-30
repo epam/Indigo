@@ -71,7 +71,7 @@ if(MSVC)
 	set_target_properties(indigo-inchi-shared PROPERTIES COMPILE_FLAGS "-D_WINDLL -DINDIGO_PLUGIN")
 endif()
 
-if (NOT APPLE)
+if (MSVC)
 	target_link_libraries(indigo-inchi-shared indigo-shared)
 endif()
 set_property(TARGET indigo-inchi-shared PROPERTY LINK_INTERFACE_LIBRARIES "")

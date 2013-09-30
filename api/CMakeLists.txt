@@ -43,6 +43,7 @@ endif()
 
 # Indigo shared
 add_library(indigo-shared SHARED $<TARGET_OBJECTS:indigoObj> $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction> ${Common_SOURCE_DIR}/hacks/memcpy.c)
+
 SET_TARGET_PROPERTIES(indigo-shared PROPERTIES OUTPUT_NAME "indigo")
 set_target_properties(indigo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 if (APPLE)
