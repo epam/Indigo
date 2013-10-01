@@ -13,9 +13,8 @@ from optparse import OptionParser
 
 def make_doc():
     curdir = abspath(os.curdir)
-
     script_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    root_dir = os.path.join(script_dir, "..")
+    root_dir = os.path.join(scrpt_dir, "..")
 
     os.chdir(os.path.join(root_dir, 'api/python'))
     os.system('python copy-libs.py')
@@ -59,7 +58,8 @@ def join_archives(names, destname):
         move_dir_content(name, destname)
     if exists(destname + ".zip"):
         os.remove(destname + ".zip")
-    copy_doc(destname)
+    if args.doc:
+        copy_doc(destf2tname)
     subprocess.check_call("zip -r -9 -m %s.zip %s" % (destname, destname), shell=True)
     for name in names:
         shutil.rmtree(name)
