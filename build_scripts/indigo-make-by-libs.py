@@ -14,7 +14,7 @@ from optparse import OptionParser
 def make_doc():
     curdir = abspath(os.curdir)
     script_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    root_dir = os.path.join(scrpt_dir, "..")
+    root_dir = os.path.join(script_dir, "..")
 
     os.chdir(os.path.join(root_dir, 'api/python'))
     os.system('python copy-libs.py')
@@ -59,7 +59,7 @@ def join_archives(names, destname):
     if exists(destname + ".zip"):
         os.remove(destname + ".zip")
     if args.doc:
-        copy_doc(destf2tname)
+        copy_doc(destname)
     subprocess.check_call("zip -r -9 -m %s.zip %s" % (destname, destname), shell=True)
     for name in names:
         shutil.rmtree(name)
@@ -178,4 +178,4 @@ for w, libs in wrappers:
         for gen in wrappers_gen:
             if args.type is not None and gen.find(args.type) == -1:
                 continue
-            subprocess.check_call('%s %s -s "-%s"' % (sys.executable, join(api_dir, gen), w), shell=True)
+            subprocess.check_call('%s %s -s "-%s" %s' % (sys.executable, join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)
