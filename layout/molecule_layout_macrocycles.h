@@ -29,6 +29,7 @@ namespace indigo {
 class DLLEXPORT MoleculeLayoutMacrocycles
 {
 public:
+   CP_DECL;
    MoleculeLayoutMacrocycles (int size);
 
    void setVertexOutsideWeight (int v, int weight);
@@ -51,7 +52,7 @@ public:
    double depictionMacrocycleMol(bool profi);
    double depictionCircle();
 
-   DEF_ERROR("macrocycles");
+   DECL_ERROR;
 
 private:
    int length;

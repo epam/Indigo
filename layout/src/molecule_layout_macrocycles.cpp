@@ -29,10 +29,15 @@
 #include <math/random.h>
 #include "layout/molecule_layout.h"
 
-using namespace indigo;
 using namespace std;
+using namespace indigo;
+
+IMPL_ERROR(MoleculeLayoutMacrocycles, "molecule_layout_macrocycles");
+
+CP_DEF(MoleculeLayoutMacrocycles);
 
 MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) : 
+   CP_INIT,
    TL_CP_GET(_vertex_weight), // tree size
    TL_CP_GET(_vertex_stereo), // there is an angle in the vertex
    TL_CP_GET(_edge_stereo), // trans-cis configuration

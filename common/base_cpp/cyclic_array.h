@@ -20,10 +20,13 @@
 
 namespace indigo {
 
+DECL_EXCEPTION(CyclicArrayError);
 // Cyclic array
 template <typename T> struct CyclicArray
 {
 public:
+
+   DECL_TPL_ERROR(CyclicArrayError);
    explicit CyclicArray (void)
    {
       _offset = 0;
@@ -66,8 +69,6 @@ public:
    {
       _offset = offset;
    }
-
-   DEF_ERROR("cycle array");
 
 protected:
    Array<T> _array;
