@@ -60,10 +60,10 @@ typedef struct tag_os_semaphore
 #endif
 } os_semaphore;
 
-void osSemaphoreCreate  (os_semaphore *sem, int initial_count, int max_count);
-void osSemaphoreDelete  (os_semaphore *sem);
-void osSemaphoreWait    (os_semaphore *sem);
-void osSemaphorePost    (os_semaphore *sem);
+DLLEXPORT void osSemaphoreCreate  (os_semaphore *sem, int initial_count, int max_count);
+DLLEXPORT void osSemaphoreDelete  (os_semaphore *sem);
+DLLEXPORT void osSemaphoreWait    (os_semaphore *sem);
+DLLEXPORT void osSemaphorePost    (os_semaphore *sem);
 
 #ifdef __cplusplus
 }
