@@ -10,14 +10,24 @@ MMFStorage::MMFStorage()
 {
 }
 
-void MMFStorage::create (const char *filename, size_t size)
+void MMFStorage::create (const char *filename, size_t size, const char *header)
 {
-   BingoAllocator::_create(filename, size, &_mm_files);
+   size_t header_len = strlen(header);
+
+   if (header_len >= max_header_len)
+      throw Exception("MMfStorage: create(): Too long header");
+
+   BingoAllocator::_create(filename, size, max_header_len, &_mm_files);
+
+   BingoPtr<char> header_ptr(0);
+   strcpy(header_ptr.ptr(), header);
 }
 
-void MMFStorage::load (const char *filename)
+void MMFStorage::load (const char *filename, BingoPtr<char> header_ptr)
 {
-   BingoAllocator::_load(filename, &_mm_files);
+   BingoAllocator::_load(filename, max_header_len, &_mm_files);
+   
+   header_ptr = BingoPtr<char>(0);
 }
 
 void MMFStorage::close ()

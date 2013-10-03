@@ -12,29 +12,22 @@ ExactStorage::ExactStorage ()
 {
 }
 
-size_t ExactStorage::create()
+size_t ExactStorage::create(BingoPtr<ExactStorage> &exact_ptr)
 {
-   _hashes_ptr.allocate();
-   new (_hashes_ptr.ptr()) BingoArray<dword>();
+   exact_ptr.allocate();
+   new (exact_ptr.ptr()) ExactStorage();
          
-   return (size_t)_hashes_ptr;
+   return (size_t)exact_ptr;
 }
 
-void ExactStorage::load( size_t offset )
+void ExactStorage::load (BingoPtr<ExactStorage> &exact_ptr, size_t offset)
 {
-   _hashes_ptr = BingoPtr< BingoArray<dword> >(offset);
-}
-
-size_t ExactStorage::getOffset ()
-{
-   return (size_t)_hashes_ptr;
+   exact_ptr = BingoPtr<ExactStorage>(offset);
 }
 
 
 void ExactStorage::add( dword hash, int id )
 {
-   BingoArray<dword> &_molecule_hashes = _hashes_ptr.ref();
-
    if (_molecule_hashes.size() <= id)
       _molecule_hashes.resize(id + 1);
 
@@ -44,8 +37,7 @@ void ExactStorage::add( dword hash, int id )
 void ExactStorage::findCandidates( dword query_hash, Array<int> &candidates )
 {
    profTimerStart(tsingle, "exact_filter");
-   BingoArray<dword> &_molecule_hashes = _hashes_ptr.ref();
-
+   
    for (int i = 0; i < _molecule_hashes.size(); i++)
    {
       dword hash = _molecule_hashes[i];

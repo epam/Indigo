@@ -17,51 +17,39 @@ Properties::Properties ()
 {
 }
 
-void Properties::create (const char *filename)
+size_t Properties::create (BingoPtr<Properties> &ptr)
 {
-   _filename = filename;
-   std::ofstream property_file(filename);
-   _props.clear();
+   ptr.allocate();
+   new(ptr.ptr()) Properties();
+   return (size_t)ptr;
 }
 
-void Properties::load (const char *filename)
+void Properties::load (BingoPtr<Properties> &ptr, size_t offset)
 {
-   _filename = filename;
-   
-   std::string line;
-   std::ifstream property_file(filename);
-   
-   if (property_file.is_open())
-   {
-      while (property_file.good())
-      {
-         std::getline(property_file, line);
-
-         if (line.size() == 0)
-            continue;
-         std::string prop_name, prop_value;
-         _parseProperty(line, prop_name, prop_value);
-         _props.insert(_PropertyPair(prop_name, prop_value));
-      }
-
-      property_file.close();
-   }
-   else
-      throw Exception("Property file missed");
+   ptr = BingoPtr<Properties>(offset);
 }
 
 void Properties::add (const char *prop_name, const char *value)
 {
-   profTimerStart(t, "prop_add");
-   if (_filename.empty())
-      throw Exception("Property file's name wasn't initialized");
+   int prop_id;
+   
+   for (prop_id = 0; prop_id < _props.size(); prop_id++)
+      if (strcmp(_props[prop_id].name.ptr(), prop_name) == 0)
+         break;
 
-   if (_props.find(prop_name) == _props.end())
-      _props.insert(_PropertyPair(prop_name, value));
-   else
-      _props[prop_name].assign(value);
+   if (prop_id == _props.size())
+   {
+      _PropertyPair &new_pair = _props.push();
+      new_pair.name.allocate(strlen(prop_name) + 1);
+      strcpy(new_pair.name.ptr(), prop_name);
 
-   _rewritePropFile();
+      new_pair.value.allocate(max_prop_len);
+   }
+
+   if (strlen(value) >= max_prop_len)
+      throw Exception("BingoProperties: Too long property value");
+
+   strcpy(_props[prop_id].value.ptr(), value);
 }
 
 void Properties::add (const char *prop_name, unsigned long value)
@@ -74,19 +62,24 @@ void Properties::add (const char *prop_name, unsigned long value)
 
 const char * Properties::get (const char *prop_name)
 {
-   if (_props.find(prop_name) == _props.end())
-      return 0;
+   int prop_id;
+   
+   for (prop_id = 0; prop_id < _props.size(); prop_id++)
+      if (strcmp(_props[prop_id].name.ptr(), prop_name) == 0)
+         break;
 
-   return _props[prop_name].c_str();
+   if (prop_id == _props.size())
+      throw Exception("Unknown property field");
+
+   return _props[prop_id].value.ptr();
 }
 
 unsigned long Properties::getULong (const char *prop_name)
 {
-   if (_props.find(prop_name) == _props.end())
-     throw Exception("Unknown property field");
+   const char *value = get(prop_name);
 
    unsigned long u_dec;
-   std::istringstream isstr(_props[prop_name]);
+   std::istringstream isstr(value);
    isstr >> u_dec;
 
    return u_dec;
@@ -102,23 +95,6 @@ unsigned long Properties::getULongNoThrow (const char *prop_name)
    {
       return ULONG_MAX;
    }
-}
-
-void Properties::_rewritePropFile ()
-{
-   profTimerStart(t, "rewrite_prop");
-   std::map<const std::string, std::string>::iterator it;
-   
-   std::ofstream property_file;
-   property_file.open(_filename.c_str(), std::ios::out);
-
-   profTimerStart(t2, "rewrite_prop_writing");
-   for (it = _props.begin(); it != _props.end(); it++)
-   {
-      property_file << it->first << '=' << it->second << std::endl;
-   }
-
-   property_file.close();
 }
 
 void Properties::_parseProperty (const std::string &line, std::string &prop_out, std::string &value_out)

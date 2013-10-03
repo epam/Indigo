@@ -1,4 +1,4 @@
-#ifndef __tanimoto_coef__
+#ifndef __tversky_coef__
 #define __tanimoto_coef__
 
 #include "bingo_sim_coef.h"
@@ -7,10 +7,12 @@
 
 namespace bingo
 {
-   class TanimotoCoef : public SimCoef
+   class TverskyCoef : public SimCoef
    {
    public:
-      TanimotoCoef (int fp_size);
+      TverskyCoef (int fp_size);
+
+      TverskyCoef (int fp_size, double a, double b);
 
       double calcCoef (const byte *f1, const byte *f2, int f1_bit_count, int f2_bit_count );
 
@@ -20,7 +22,9 @@ namespace bingo
 
    private:
       int _fp_size;
+      double _alpha;
+      double _beta;
    };
 };
 
-#endif /* __tanimoto_coef__ */
+#endif /* __tversky_coef__ */

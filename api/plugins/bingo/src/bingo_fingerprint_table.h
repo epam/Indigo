@@ -22,6 +22,10 @@ namespace bingo
    public:
       FingerprintTable (int fp_size, const Array<int> &borders, int mt_size);
 
+      static size_t create (BingoPtr<FingerprintTable> &ptr, int fp_size, int mt_size );
+
+      static void load (BingoPtr<FingerprintTable> &ptr, size_t offset);
+
       void add (const byte *fingerprint, int id);
 
       void findSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices);

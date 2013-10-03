@@ -14,7 +14,7 @@ namespace bingo
       
       ~MMFile ();
       
-      void open (const char *filename, size_t buf_size);
+      void open (const char *filename, size_t buf_size, bool create_flag);
 
       void resize (size_t new_size);
 

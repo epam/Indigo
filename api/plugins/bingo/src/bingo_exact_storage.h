@@ -14,22 +14,22 @@ namespace bingo
    public:
       ExactStorage ();
 
-      size_t create();
+      static size_t create(BingoPtr<ExactStorage> &exact_ptr);
 
-      void load( size_t offset );
+      static void load (BingoPtr<ExactStorage> &exact_ptr, size_t offset);
 
       size_t getOffset ();
 
-      void add( dword hash, int id );
+      void add (dword hash, int id);
 
-      void findCandidates( dword query_hash, Array<int> &candidates );
+      void findCandidates (dword query_hash, Array<int> &candidates);
 
       static dword calculateMolHash (Molecule &mol);
 
       static dword calculateRxnHash (Reaction &rxn);
 
    private:
-      BingoPtr< BingoArray<dword> > _hashes_ptr;
+      BingoArray<dword> _molecule_hashes;
 
       static int _vertexCode (Molecule &mol, int vertex_idx);
    };

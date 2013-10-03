@@ -14,14 +14,6 @@ double TanimotoCoef::calcCoef( const byte *f1, const byte *f2, int f1_bit_count,
    return (double)common_bits / (common_bits + unique_bits);
 }
 
-double TanimotoCoef::calcUpperBound( int f1_bit_count, int min_f2_bit_count, int max_f2_bit_count, int min_dist )
-{
-   int a = f1_bit_count;
-   int min_b = min_f2_bit_count;
-   int max_b = max_f2_bit_count;
-
-   return (double)(a + max_b - min_dist) / (a + min_b + min_dist);
-}
 
 double TanimotoCoef::calcUpperBound( int f1_bit_count, int min_f2_bit_count, int max_f2_bit_count )
 {

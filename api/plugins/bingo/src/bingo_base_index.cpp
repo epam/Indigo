@@ -1,5 +1,4 @@
 #include "bingo_base_index.h"
-#include "bingo_storage.h"
 #include "bingo_mmf.h"
 #include "bingo_ptr.h"
 
@@ -13,20 +12,14 @@
 
 using namespace bingo;
 
-static const char *_sub_filename = "sub_fp.fp";
-static const char *_sub_info_filename = "sub_fp_info.fp";
-static const char *_sim_filename = "sim_fp.fp";
-static const char *_sim_info_filename = "sim_fp_info.fp";
 static const char *_props_filename = "properties";
 static const char *_cf_data_filename = "cf_data";
 static const char *_cf_offset_filename = "cf_offset";
 static const char *_id_mapping_filename = "id_mapping";
 static const char *_reaction_type = "reaction";
 static const char *_molecule_type = "molecule";
-static const char *_ram_storage_type = "ram";
-static const char *_file_storage_type = "file";
-static const char *_sim_mmf_file = "sim_storage";
-static const size_t _sim_mmf_size = 536870912; // 500Mb
+static const char *_mmf_file = "mmf_storage";
+static const size_t _mmf_size = 536870912; // 500Mb
 static const int _sim_mt_size = 50000;
 
 BaseIndex::BaseIndex (IndexType type)
@@ -49,52 +42,42 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    _location = location;
    
-   std::string sub_info_path = _location + _sub_info_filename;
-   std::string sim_info_path = _location + _sim_info_filename;
    std::string props_path = _location + _props_filename;
    std::string _cf_data_path = _location + _cf_data_filename;
    std::string _cf_offset_path = _location + _cf_offset_filename;
    std::string _mapping_path = _location + _id_mapping_filename;
-   std::string _sim_mmf_path = _location + _sim_mmf_file;
+   std::string _mmf_path = _location + _mmf_file;
 
    _fp_params = fp_params;
-   
-   _properties.create(props_path.c_str());
 
-   _parseOptions(options);
+   std::map<std::string, std::string> option_map;
 
-   _saveProperties(fp_params, sub_block_size, sim_block_size, cf_block_size);
+   _parseOptions(options, option_map);
 
-   if ((_properties.get("storage") == 0) || strcmp(_properties.get("storage"), _ram_storage_type) == 0)
-      _storage_manager.reset(new RamStorageManager(location, true));
-   else if (strcmp(_properties.get("storage"), _file_storage_type) == 0)
-      _storage_manager.reset(new FileStorageManager(location, true));
+   size_t mmf_size = _getMMfSize(option_map);
+
+   if (_type == MOLECULE)
+      _mmf_storage.create(_mmf_path.c_str(), mmf_size, _molecule_type);
+   else if (_type == REACTION)
+      _mmf_storage.create(_mmf_path.c_str(), mmf_size, _reaction_type);
    else
-      throw Exception("Unknown storage type");
+      throw Exception("incorrect index type");
 
-   _mapping_outfile.open(_mapping_path.c_str(), std::ios::out | std::ios::binary | std::ios::trunc);
+   _header.allocate();
 
-   AutoPtr<Storage> sub_stor(_storage_manager->create(_sub_filename, sub_block_size));
-   AutoPtr<Storage> sim_stor(_storage_manager->create(_sim_filename, sim_block_size));
-   _cf_storage.reset(new ByteBufferStorage(cf_block_size));
+   _header->properties_offset = Properties::create(_properties);
 
-   _sub_fp_storage.create(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
+   _saveProperties(fp_params, sub_block_size, sim_block_size, cf_block_size, option_map);
 
-  
-   size_t sim_mmf_size_mb = _properties.getULongNoThrow("sim_mmf_size");
-   size_t sim_mmf_size = (sim_mmf_size_mb != ULONG_MAX ? sim_mmf_size_mb * 1048576 : _sim_mmf_size);
-  
-   unsigned long prop_mt_size =  _properties.getULongNoThrow("mt_size");
+   unsigned long prop_mt_size =  _properties->getULongNoThrow("mt_size");
    int mt_size = (prop_mt_size != ULONG_MAX ? prop_mt_size : _sim_mt_size);
 
-   _mmf_storage.create(_sim_mmf_path.c_str(), sim_mmf_size);
-   
-   _header.allocate();
-      
-   _header->sim_offset = _sim_fp_storage.create(_fp_params.fingerprintSizeSim(), mt_size);
-   _header->exact_offset = _exact_storage.create();
+   _mappingCreate();
 
-   _cf_storage->create(_cf_data_path.c_str(), _cf_offset_path.c_str());
+   _header->cf_offset = ByteBufferStorage::create(_cf_storage, cf_block_size);
+   _header->sub_offset = TranspFpStorage::create(_sub_fp_storage, _fp_params.fingerprintSize(), sub_block_size);
+   _header->sim_offset = FingerprintTable::create(_sim_fp_storage, _fp_params.fingerprintSizeSim(), mt_size);
+   _header->exact_offset = ExactStorage::create(_exact_storage);
 }
 
 void BaseIndex::load (const char *location, const char *options)
@@ -105,64 +88,49 @@ void BaseIndex::load (const char *location, const char *options)
    osDirCreate(location);
 
    _location = location;
-   std::string sub_info_path = _location + _sub_info_filename;
-   std::string sim_info_path = _location + _sim_info_filename;
    std::string props_path = _location + _props_filename;
    std::string _cf_data_path = _location + _cf_data_filename;
    std::string _cf_offset_path = _location + _cf_offset_filename;
    std::string _mapping_path = _location + _id_mapping_filename;
-   std::string _sim_mmf_path = _location + _sim_mmf_file;
+   std::string _mmf_path = _location + _mmf_file;
 
-   _properties.load(props_path.c_str());
+   std::map<std::string, std::string> option_map;
 
-   _parseOptions(options);
+   _parseOptions(options, option_map);
 
+   BingoPtr<char> h_ptr;
+
+   _mmf_storage.load(_mmf_path.c_str(), h_ptr);
+   
+   _header = BingoPtr<_Header>(MMFStorage::max_header_len + sizeof(BingoAllocator));
+
+   Properties::load(_properties, _header->properties_offset);
+   
    const char *type_str = (_type == MOLECULE ? _molecule_type : _reaction_type);
-   if (strcmp(_properties.get("base_type"), type_str) != 0)
+   if (strcmp(_properties->get("base_type"), type_str) != 0)
       throw Exception("Loading databse: wrong type propety");
    
+   _fp_params.ext = (_properties.ref().getULong("fp_ext") != 0);
+   _fp_params.ord_qwords = _properties.ref().getULong("fp_ord");
+   _fp_params.any_qwords = _properties.ref().getULong("fp_any");
+   _fp_params.tau_qwords = _properties.ref().getULong("fp_tau");
+   _fp_params.sim_qwords = _properties.ref().getULong("fp_sim");
 
-   _fp_params.ext = (_properties.getULong("fp_ext") != 0);
-   _fp_params.ord_qwords = _properties.getULong("fp_ord");
-   _fp_params.any_qwords = _properties.getULong("fp_any");
-   _fp_params.tau_qwords = _properties.getULong("fp_tau");
-   _fp_params.sim_qwords = _properties.getULong("fp_sim");
+   unsigned long cf_block_size = _properties->getULong("cf_block_size");
 
-   unsigned long cf_block_size = _properties.getULong("cf_block_size");
+   _mappingLoad();
 
-   _mappingLoad(_mapping_path.c_str());
-
-   if ((_properties.get("storage") == 0) || (strcmp(_properties.get("storage"), _ram_storage_type) == 0))
-      _storage_manager.reset(new RamStorageManager(location, false));
-   else if (strcmp(_properties.get("storage"), _file_storage_type) == 0)
-      _storage_manager.reset(new FileStorageManager(location, false));
-   else
-      throw Exception("Unknown storage type");
-
-    _mapping_outfile.open(_mapping_path.c_str(), std::ios::in | std::ios::out | std::ios::binary);
-
-   AutoPtr<Storage> sub_stor(_storage_manager->load(_sub_filename));
-   AutoPtr<Storage> sim_stor(_storage_manager->load(_sim_filename));
-   _cf_storage.reset(new ByteBufferStorage(cf_block_size));
-
-   _sub_fp_storage.load(_fp_params.fingerprintSize(), sub_stor.release(), sub_info_path.c_str());
-   
-   size_t sim_mmf_size_mb = _properties.getULongNoThrow("sim_mmf_size");
-   size_t sim_mmf_size = (sim_mmf_size_mb != ULONG_MAX ? sim_mmf_size_mb * 1048576 : _sim_mmf_size);
-
-   _mmf_storage.load(_sim_mmf_path.c_str());
-   
-   _header = BingoPtr<_Header>(sizeof(BingoAllocator));
-
-   _sim_fp_storage.load(_fp_params.fingerprintSizeSim(), _header.ptr()->sim_offset);
-   _exact_storage.load(_header.ptr()->exact_offset);
-
-   _cf_storage->load(_cf_data_path.c_str(), _cf_offset_path.c_str());
+   FingerprintTable::load(_sim_fp_storage, _header.ptr()->sim_offset);
+   ExactStorage::load(_exact_storage, _header.ptr()->exact_offset);
+   TranspFpStorage::load(_sub_fp_storage, _header.ptr()->sub_offset);
+   ByteBufferStorage::load(_cf_storage, _header.ptr()->cf_offset);
 }
 
 int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
 {
-   if (obj_id != -1 && _back_id_mapping.size() > obj_id && _back_id_mapping[obj_id] != -1)
+   BingoArray<int> & back_id_mapping = _back_id_mapping_ptr.ref();
+
+   if (obj_id != -1 && back_id_mapping.size() > obj_id && back_id_mapping[obj_id] != -1)
       throw Exception("insert fail: this id was already used");
 
    {
@@ -180,17 +148,17 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
       if (obj_id == -1)
       {
          int i;
-         for (i = _first_free_id; i < _back_id_mapping.size(); i++)
+         for (i = _first_free_id; i < back_id_mapping.size(); i++)
          {
-            if (_back_id_mapping[i] == -1)
+            if (back_id_mapping[i] == -1)
             {
                _first_free_id = i;
                break;
             }
          }
 
-         if (i == _back_id_mapping.size())
-            _first_free_id = _back_id_mapping.size();
+         if (i == back_id_mapping.size())
+            _first_free_id = back_id_mapping.size();
 
          obj_id = _first_free_id;
       }
@@ -208,15 +176,17 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id)
 
 void BaseIndex::optimize ()
 {
-   _sim_fp_storage.optimize();
+   _sim_fp_storage.ptr()->optimize();
 }
 
 void BaseIndex::remove (int obj_id)
 {
-   if (obj_id < 0 || obj_id >= _back_id_mapping.size() || _back_id_mapping[obj_id] == -1)
+   BingoArray<int> & back_id_mapping = _back_id_mapping_ptr.ref();
+
+   if (obj_id < 0 || obj_id >= back_id_mapping.size() || back_id_mapping[obj_id] == -1)
       throw Exception("There is no object with this id");
 
-   _cf_storage->remove(_back_id_mapping[obj_id]);
+   _cf_storage->remove(back_id_mapping[obj_id]);
    _mappingRemove(obj_id);
 }
 
@@ -225,32 +195,32 @@ const MoleculeFingerprintParameters & BaseIndex::getFingerprintParams () const
    return _fp_params;
 }
 
-const TranspFpStorage & BaseIndex::getSubStorage () const
+TranspFpStorage & BaseIndex::getSubStorage ()
 {
-   return _sub_fp_storage;
+   return _sub_fp_storage.ref();
 }
 
-SimStorage & BaseIndex::getSimStorage ()
+FingerprintTable & BaseIndex::getSimStorage ()
 {
-   return _sim_fp_storage;
+   return _sim_fp_storage.ref();
 }
 
 ExactStorage & BaseIndex::getExactStorage ()
 {
-   return _exact_storage;
+   return _exact_storage.ref();
 }
 
-const Array<int> & BaseIndex::getIdMapping () const
+BingoArray<int> & BaseIndex::getIdMapping ()
 {
-   return _id_mapping;
+   return _id_mapping_ptr.ref();
 }
 
-const Array<int> & BaseIndex::getBackIdMapping () const
+BingoArray<int> & BaseIndex::getBackIdMapping ()
 {
-   return _back_id_mapping;
+   return _back_id_mapping_ptr.ref();
 }
 
-/*const */FlatStorage & BaseIndex::getCfStorage ()// const
+/*const */ByteBufferStorage & BaseIndex::getCfStorage ()// const
 {
    return _cf_storage.ref();
 }
@@ -262,7 +232,7 @@ int BaseIndex::getObjectsCount () const
 
 const char * BaseIndex::getIdPropertyName ()
 {
-   return _properties.get("key");
+   return _properties.ref().get("key");
 }
 
 Index::IndexType BaseIndex::getType () const
@@ -272,12 +242,16 @@ Index::IndexType BaseIndex::getType () const
 
 const char * BaseIndex::determineType (const char *location)
 {
-   Properties props;
    std::string path(location);
    path += _props_filename;
+   std::ifstream fstream(path, std::ios::binary | std::ios::ate);
+   int type_len = 9;
 
-   props.load(path.c_str());
-   return props.get("base_type");
+   char type[9];
+
+   fstream.read(type, type_len);
+
+   return type;
 }
 
 BaseIndex::~BaseIndex()
@@ -285,10 +259,12 @@ BaseIndex::~BaseIndex()
    _mmf_storage.close();
 }
 
-void BaseIndex::_parseOptions (const char *options)
+void BaseIndex::_parseOptions (const char *options, std::map<std::string, std::string> &option_map)
 {
    if (options == 0 || strlen(options) == 0)
       return;
+
+   option_map.clear();
 
    std::stringstream options_stream;
    options_stream << options;
@@ -307,22 +283,46 @@ void BaseIndex::_parseOptions (const char *options)
       opt_name.assign(line.substr(0, sep));
       opt_value.assign(line.substr(sep + 1, std::string::npos));
 
-      _properties.add(opt_name.c_str(), opt_value.c_str());
+      option_map.insert(std::pair<std::string, std::string>(opt_name, opt_value));
    }
 }
 
-void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, 
-                                 int sim_block_size, int cf_block_size)
+size_t BaseIndex::_getMMfSize (std::map<std::string, std::string> &option_map)
 {
-   _properties.add("base_type", (_type == MOLECULE ? _molecule_type : _reaction_type));
+   size_t mmf_size = _mmf_size;
 
-   _properties.add("fp_ext", _fp_params.ext);
-   _properties.add("fp_ord", _fp_params.ord_qwords);
-   _properties.add("fp_any", _fp_params.any_qwords);
-   _properties.add("fp_tau", _fp_params.tau_qwords);
-   _properties.add("fp_sim", _fp_params.sim_qwords);
+   if (option_map.find("mmf_size") != option_map.end())
+   {
+      unsigned long u_dec;
+      std::istringstream isstr(option_map["mmf_size"]);
+      isstr >> u_dec;
 
-   _properties.add("cf_block_size", cf_block_size);
+      if (u_dec != ULONG_MAX)
+         mmf_size = u_dec * 1048576;
+   }
+
+   return mmf_size;
+}
+
+void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, 
+                                 int sim_block_size, int cf_block_size, 
+                                 std::map<std::string, std::string> &option_map)
+{
+   _properties.ref().add("base_type", (_type == MOLECULE ? _molecule_type : _reaction_type));
+
+   _properties.ref().add("fp_ext", _fp_params.ext);
+   _properties.ref().add("fp_ord", _fp_params.ord_qwords);
+   _properties.ref().add("fp_any", _fp_params.any_qwords);
+   _properties.ref().add("fp_tau", _fp_params.tau_qwords);
+   _properties.ref().add("fp_sim", _fp_params.sim_qwords);
+
+   _properties.ref().add("cf_block_size", cf_block_size);
+
+   std::map<std::string, std::string>::iterator it;
+   for (it = option_map.begin(); it != option_map.end(); it++)
+   {
+      _properties->add(it->first.c_str(), it->second.c_str());
+   }
 }
 
 bool BaseIndex::_prepareIndexData (IndexObject &obj)
@@ -347,82 +347,75 @@ bool BaseIndex::_prepareIndexData (IndexObject &obj)
 
 void BaseIndex::_insertIndexData ()
 {
-   _sub_fp_storage.add(_object_index_data.sub_fp.ptr());
-   _sim_fp_storage.add(_object_index_data.sim_fp.ptr(), _object_count);
-   _cf_storage->add((byte *)_object_index_data.cf_str.ptr(), _object_index_data.cf_str.size(), _object_count);
-   _exact_storage.add(_object_index_data.hash, _object_count);
+   _sub_fp_storage.ptr()->add(_object_index_data.sub_fp.ptr());
+   _sim_fp_storage.ptr()->add(_object_index_data.sim_fp.ptr(), _object_count);
+   _cf_storage.ptr()->add((byte *)_object_index_data.cf_str.ptr(), _object_index_data.cf_str.size(), _object_count);
+   _exact_storage.ptr()->add(_object_index_data.hash, _object_count);
 }
 
-void BaseIndex::_mappingLoad (const char * mapping_path)
+void BaseIndex::_mappingLoad ()
 {
-   std::ifstream mapping_file(mapping_path, std::ios::in | std::ios::binary);
-
-   if (!mapping_file.is_open())
-      throw Exception("mapping file missed");
-
-   int obj_id = -1;
-   
-   mapping_file.seekg(0, std::ios::end);
-   size_t file_len = mapping_file.tellg();
-   size_t mapping_size = (file_len - sizeof(_object_count)) / sizeof(obj_id);
-
-   mapping_file.seekg(std::ios::beg);
-   mapping_file.read((char *)&_object_count, sizeof(_object_count));
-   
-
-   std::vector<int> mapping_buf;
-   mapping_buf.resize(mapping_size);
-
-   mapping_file.read((char *)&mapping_buf[0], sizeof(obj_id) * mapping_size);
-
-   for (int base_id = 0; base_id < mapping_size; base_id++)
-   {
-      obj_id = mapping_buf[base_id];
-      _mappingAssign(obj_id, base_id);
-   }
+   _id_mapping_ptr = BingoPtr< BingoArray<int> >(_header->mapping_offset);
+   _back_id_mapping_ptr = BingoPtr< BingoArray<int> >(_header->back_mapping_offset);
 
    return;
 }
 
+void BaseIndex::_mappingCreate ()
+{
+   _id_mapping_ptr.allocate();
+   new(_id_mapping_ptr.ptr()) BingoArray<int>();
+   _header->mapping_offset = (size_t)_id_mapping_ptr;
+
+   _back_id_mapping_ptr.allocate();
+   new(_back_id_mapping_ptr.ptr()) BingoArray<int>();
+   _header->back_mapping_offset = (size_t)_back_id_mapping_ptr;
+}
+
 void BaseIndex::_mappingAssign (int obj_id, int base_id)
 {
-   if (_id_mapping.size() <= base_id)
-      _id_mapping.expandFill(base_id + 1, -1);
-   if (_back_id_mapping.size() <= obj_id)
-      _back_id_mapping.expandFill(obj_id + 1, -1);
+   BingoArray<int> & id_mapping = _id_mapping_ptr.ref();
+   BingoArray<int> & back_id_mapping = _back_id_mapping_ptr.ref();
 
-   _id_mapping[base_id] = obj_id;
+   int old_size = id_mapping.size();
+   int old_back_size = back_id_mapping.size();
+   if (id_mapping.size() <= base_id)
+      id_mapping.resize(base_id + 1);
+   if (back_id_mapping.size() <= obj_id)
+      back_id_mapping.resize(obj_id + 1);
+
+   for (int i = old_size; i < id_mapping.size(); i++)
+      id_mapping[i] = -1;
+
+   for (int i = old_back_size; i < back_id_mapping.size(); i++)
+      back_id_mapping[i] = -1;
+
+   id_mapping[base_id] = obj_id;
    
    if (obj_id == -1)
       return;
    
-   if (_back_id_mapping[obj_id] != -1)
+   if (back_id_mapping[obj_id] != -1)
       throw Exception("insert fail: this id was already used");
 
-   _back_id_mapping[obj_id] = base_id;
+   back_id_mapping[obj_id] = base_id;
 }
 
 void BaseIndex::_mappingAdd (int obj_id, int base_id)
 {
    _mappingAssign(obj_id, base_id);
-
-   _mapping_outfile.seekp(std::ios::beg);
-   _mapping_outfile.write((char *)&_object_count, sizeof(obj_id));
-   _mapping_outfile.seekp((size_t)sizeof(_object_count) + base_id * sizeof(obj_id));
-   _mapping_outfile.write((char *)&obj_id, sizeof(obj_id));
-   _mapping_outfile.flush();
 }
 
 void BaseIndex::_mappingRemove (int obj_id)
 {
-   if (_back_id_mapping[obj_id] != -1)
+   BingoArray<int> & id_mapping = _id_mapping_ptr.ref();
+   BingoArray<int> & back_id_mapping = _back_id_mapping_ptr.ref();
+
+   if (back_id_mapping[obj_id] != -1)
    {
       int new_id = -1;
-      _mapping_outfile.seekp((size_t)sizeof(_object_count) + _back_id_mapping[obj_id] * sizeof(obj_id));
-      _mapping_outfile.write((char *)&new_id, sizeof(new_id));
-      _mapping_outfile.flush();
 
-      _id_mapping[_back_id_mapping[obj_id]] = -1;
-      _back_id_mapping[obj_id] = -1;
+      id_mapping[back_id_mapping[obj_id]] = -1;
+      back_id_mapping[obj_id] = -1;
    }
 }

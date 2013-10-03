@@ -1,4 +1,7 @@
 #include "bingo_matcher.h"
+#include "bingo_tanimoto_coef.h"
+#include "bingo_tversky_coef.h"
+#include "bingo_euclid_coef.h"
 
 #include "molecule/molecule_substructure_matcher.h"
 
@@ -8,6 +11,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <sstream>
 
 using namespace indigo;
 
@@ -133,7 +137,7 @@ BaseMatcher::~BaseMatcher ()
 
 int BaseMatcher::currentId ()
 {
-   const Array<int> &id_mapping = _index.getIdMapping();
+   BingoArray<int> &id_mapping = _index.getIdMapping();
    return id_mapping[_current_id];
 }
 
@@ -174,7 +178,7 @@ bool BaseMatcher::_loadCurrentObject()
       throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
    profTimerStart(t_get_cmf, "loadCurObj_get_cf");
-   FlatStorage &cf_storage = _index.getCfStorage();
+   ByteBufferStorage &cf_storage = _index.getCfStorage();
    
    int cf_len;
    const char *cf_str = (const char *)cf_storage.get(_current_id, cf_len);
@@ -316,11 +320,13 @@ void BaseSubstructureMatcher::setQueryData (SubstructureQueryData *query_data)
 
    _query_fp_bits_used.clear();
    for (int i = 0; i < _fp_size * 8; i++)
+   {
       if (bitGetBit(_query_fp.ptr(), i))
          _query_fp_bits_used.push(i);
+   }
 
    // Sort bits accoring to the bits frequency
-   const Array<int> &fp_bit_usage = _index.getSubStorage().getFpBitUsageCounts();
+   BingoArray<int> &fp_bit_usage = _index.getSubStorage().getFpBitUsageCounts();
    std::sort(_query_fp_bits_used.ptr(), _query_fp_bits_used.ptr() + _query_fp_bits_used.size(), 
       [&](int i1, int i2) 
       { 
@@ -334,13 +340,12 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
 
    _candidates.clear();
 
-   const TranspFpStorage &fp_storage = _index.getSubStorage();
+   TranspFpStorage &fp_storage = _index.getSubStorage();
 
    const byte *query_fp = _query_fp.ptr();
 
-   std::vector<byte> block;
-   block.resize(fp_storage.getBlockSize());
-
+   const byte * block;
+   
    int fp_size_in_bits = _fp_size * 8;
 
    Array<byte> fit_bits;
@@ -358,7 +363,7 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
       int j = _query_fp_bits_used[i];
       
       profTimerStart(tgb, "sub_find_cand_pack_get_block");
-      fp_storage.getBlock(pack_idx * fp_size_in_bits + j, &block[0]);
+      block = fp_storage.getBlock(pack_idx * fp_size_in_bits + j);
       profTimerStop(tgb);
 
       profTimerStart(tgu, "sub_find_cand_pack_fit_update");
@@ -500,19 +505,16 @@ BaseSimilarityMatcher::BaseSimilarityMatcher (/*const */ BaseIndex &index, Indig
    _current_portion.clear();
    _current_sim_value = -1;
    _fp_size = _index.getFingerprintParams().fingerprintSizeSim();
-   _sim_coef.reset(new TanimotoCoef(_fp_size));
 }
 
 bool BaseSimilarityMatcher::next ()
 {
-   SimStorage &sim_storage = _index.getSimStorage();
+   FingerprintTable &sim_storage = _index.getSimStorage();
    int query_bit_count = bitGetOnesCount(_query_fp.ptr(), _fp_size);
 
    while (true)
    {
       profTimerStart(tsingle, "sim_single");
-
-      TanimotoCoef coef(_fp_size);
 
       if (_current_portion_id >= _current_portion.size())
       {
@@ -530,7 +532,7 @@ bool BaseSimilarityMatcher::next ()
          }
 
          _current_portion.clear();
-         sim_storage.getSimilar(_query_fp.ptr(), coef, _query_data->getMin(), 
+         sim_storage.getSimilar(_query_fp.ptr(), _sim_coef.ref(), _query_data->getMin(), 
                                 _current_portion, _current_cell, _current_container);
 
          _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
@@ -565,7 +567,7 @@ void BaseSimilarityMatcher::setQueryData (SimilarityQueryData *query_data)
    const MoleculeFingerprintParameters & fp_params = _index.getFingerprintParams();
    _query_data->getQueryObject().buildFingerprint(fp_params, 0, &_query_fp);
 
-   SimStorage &sim_storage = _index.getSimStorage();
+   FingerprintTable &sim_storage = _index.getSimStorage();
 
    sim_storage.getCellsInterval(_query_fp.ptr(), *_sim_coef.get(), _query_data->getMin(), _min_cell, _max_cell);
 
@@ -575,6 +577,49 @@ void BaseSimilarityMatcher::setQueryData (SimilarityQueryData *query_data)
    _containers_count = 0;
    for (int i = _min_cell; i <= _max_cell; i++)
       _containers_count += sim_storage.getCellSize(i);
+}
+
+void BaseSimilarityMatcher::setParameters (const char *parameters)
+{
+   std::stringstream param_str;
+   param_str << parameters;
+
+   std::string type;
+
+   param_str >> type;
+
+   if (param_str.fail())
+      throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters");
+
+   if (type.compare("tanimoto") == 0)
+   {
+      _sim_coef.reset(new TanimotoCoef(_fp_size));
+   }
+   else if (type.compare("euclid") == 0)
+   {
+      _sim_coef.reset(new EuclidCoef(_fp_size));
+   }
+   else if (type.compare("tversky") == 0)
+   {
+      double alpha, beta;
+
+      param_str >> alpha;
+
+      if (param_str.fail())
+         throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters");
+
+      param_str >> beta;
+
+      if (param_str.fail())
+         throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters");
+
+      if (fabs(alpha + beta - 1) > EPSILON)
+         throw Exception("BaseSimilarityMatcher: setParameters: Tversky parameters have to satisfy the condition: alpha + beta = 1 ");
+
+      _sim_coef.reset(new TverskyCoef(_fp_size, alpha, beta));
+   }
+   else
+      throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters");
 }
 
 int BaseSimilarityMatcher::esimateRemainingResultsCount (int &delta)

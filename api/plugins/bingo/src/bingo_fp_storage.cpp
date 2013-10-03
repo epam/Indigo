@@ -8,165 +8,121 @@
 
 using namespace bingo;
 
-BaseFpStorage::BaseFpStorage () : _fp_size(0), _storage(0)
+TranspFpStorage::TranspFpStorage (int fp_size, int block_size) : _fp_size(fp_size), _block_size(block_size)
 {
+   _pack_count = 0;
+   _storage.resize(fp_size * 8);
    _block_count = 0;
-   _inc_buffer.clear();
-   _inc_count = 0;
+   _inc_fp_count = 0;
+   _inc_size = block_size * 8;
+   _inc_buffer.allocate(_inc_size * _fp_size);
+   // Resize bit usage counts information for the all bits
+   _fp_bit_usage_counts.resize(_fp_size * 8);
 }
 
-void BaseFpStorage::_loadInfo (const char *info_filename)
+size_t TranspFpStorage::create (BingoPtr<TranspFpStorage> &ptr, int fp_size, int block_size)
 {
-   std::ifstream is(info_filename, std::ios::in | std::ios::binary);
-
-   if (is)
-   {
-      is.read((char *)&_block_count, sizeof(_block_count));
-      is.read((char *)&_inc_count, sizeof(_inc_count));
-      is.read((char *)&_inc_buffer[0], _inc_count * _fp_size);
-   }
-
-   is.close();
+   ptr.allocate();
+   new(ptr.ptr()) TranspFpStorage(fp_size, block_size);
+   return (size_t)ptr;
 }
 
-void BaseFpStorage::_createFpStorage (int fp_size, Storage *storage, int inc_fp_capacity, const char *info_filename)
+void TranspFpStorage::load (BingoPtr<TranspFpStorage> &ptr, size_t offset)
 {
-   _fp_size = fp_size;
-   _storage = storage;
-   _inc_buffer.resize(_fp_size * inc_fp_capacity);
-   _block_count = 0;
-   _inc_count = 0;
-   _inc_max_count = inc_fp_capacity;
-   _inc_file.open(info_filename, std::ios::out | std::ios::binary | std::ios::trunc);
-   _writeInfoCounts();
+   ptr = BingoPtr<TranspFpStorage>(offset);
 }
 
-void BaseFpStorage::_writeInfoCounts ()
+void TranspFpStorage::add (const byte *fp)
 {
-   _inc_file.seekp(0);
-   _inc_file.write((char *)&_block_count, sizeof(_block_count));
-   _inc_file.write((char *)&_inc_count, sizeof(_inc_count));
-   _inc_file.flush();
-}
+   memcpy(_inc_buffer.ptr() + (_inc_fp_count * _fp_size), fp, _fp_size);
 
-void BaseFpStorage::_loadFpStorage (int fp_size, Storage *storage, int inc_fp_capacity, const char *info_filename)
-{
-   _fp_size = fp_size;
-   _storage = storage;
-   _inc_buffer.resize(_fp_size * inc_fp_capacity);
-   _loadInfo(info_filename);
-   _inc_max_count = inc_fp_capacity;
-   
-   _inc_file.open(info_filename, std::ios::in | std::ios::out | std::ios::binary);
-   
-    if (!_inc_file.is_open())
-      throw Exception("Fingerprint increment file missed");
-}
+   _inc_fp_count++;
 
-void BaseFpStorage::add (const byte *fp)
-{
-   memcpy(&_inc_buffer[0] + (_inc_count * _fp_size), fp, _fp_size);
-
-   _inc_file.seekp(sizeof(_inc_count) + sizeof(_block_count) + _inc_count * _fp_size);
-
-   _inc_file.write((char *)fp, _fp_size);
-   
-   _inc_count++;
-   _writeInfoCounts();
-
-   if (_inc_count == _inc_max_count)
+   if (_inc_fp_count == _inc_size)
    {
       _addIncToStorage();
-      _inc_count = 0;
-      _writeInfoCounts();
+      _inc_fp_count = 0;
    }
 }
 
-int BaseFpStorage::getBlockSize () const
+int TranspFpStorage::getBlockSize () const
 {
-   return _storage->getBlockSize();
+   return _block_size;
 }
 
-void BaseFpStorage::getBlock (int idx, byte *data) const
+const byte * TranspFpStorage::getBlock (int idx)
 {
-   _storage->readBlock(idx, data);
+   return _storage[idx].ptr();
 }
 
-int BaseFpStorage::getBlockCount () const
+int TranspFpStorage::getBlockCount () const
 {
    return _block_count;
 }
 
-const byte *BaseFpStorage::getIncrement () const
+const byte *TranspFpStorage::getIncrement () const
 {
-   return &_inc_buffer[0];
+   return _inc_buffer.ptr();
 }
 
-int BaseFpStorage::getIncrementSize () const
+int TranspFpStorage::getIncrementSize () const
 {
-   return _inc_count;
+   return _inc_fp_count;
 }
 
-int BaseFpStorage::getIncrementCapacity () const
+int TranspFpStorage::getIncrementCapacity () const
 {
-   return _inc_max_count;
+   return _inc_size;
 }
 
-BaseFpStorage::~BaseFpStorage ()
+TranspFpStorage::~TranspFpStorage ()
 {
-   _inc_file.close();
-   _inc_buffer.clear();
 }
 
 void TranspFpStorage::_addIncToStorage ()
 {
    profTimerStart(t0, "fp_inc_to_transp");
-   if (_pack_count == 0)
-   {
-      // Resize bit usage counts information for the all bits
-      fp_bit_usage_counts.resize(_fp_size * 8);
-   }
 
    std::vector<byte> block_buf;
-   block_buf.resize(_storage->getBlockSize());
+   block_buf.resize(_block_size);
    byte block_b = 0;
                
    byte inc_mask = 0x80;
    for (int bit_idx = 0; bit_idx < 8 * _fp_size; bit_idx++)
    {
-      memset(&block_buf[0], 0, _storage->getBlockSize());
-      for (int fp_idx = 0; fp_idx < _inc_count; fp_idx++)
-         bitSetBit(&block_buf[0], fp_idx, bitGetBit(&_inc_buffer[0] + fp_idx * _fp_size, bit_idx));
+      memset(&block_buf[0], 0, _block_size);
+      for (int fp_idx = 0; fp_idx < _inc_fp_count; fp_idx++)
+         bitSetBit(&block_buf[0], fp_idx, bitGetBit(_inc_buffer.ptr() + fp_idx * _fp_size, bit_idx));
 
       if (_pack_count == 0)
       {
          // Update bit usage count
-         fp_bit_usage_counts[bit_idx] = bitGetOnesCount(&block_buf[0], _storage->getBlockSize());
+         _fp_bit_usage_counts[bit_idx] = bitGetOnesCount(&block_buf[0], _block_size);
       }
 
-      _storage->writeBlock((_pack_count * _fp_size * 8) + bit_idx, &block_buf[0]);
+      int block_idx = (_pack_count * _fp_size * 8) + bit_idx;
+      _storage.resize(block_idx + 1);
+      _storage[block_idx].allocate(_block_size);
+      memcpy(_storage[block_idx].ptr(), &block_buf[0], _block_size);
       _block_count++;
    }
 
    _pack_count++;
 }
 
-TranspFpStorage::TranspFpStorage()
+/*
+void TranspFpStorage::create (int fp_size, const char *info_filename)
 {
-   _pack_count = 0;
-}
-
-void TranspFpStorage::create (int fp_size, Storage *storage, const char *info_filename)
-{
-   _createFpStorage(fp_size, storage, storage->getBlockSize() * 8, info_filename);
+   _createFpStorage(fp_size, storage->getBlockSize() * 8, info_filename);
 
    fp_bit_usage_counts.resize(fp_size * 8);
    fp_bit_usage_counts.zerofill();
 }
 
-void TranspFpStorage::load (int fp_size, Storage *storage, const char *info_filename)
+
+void TranspFpStorage::load (int fp_size, const char *info_filename)
 {
-   _loadFpStorage(fp_size, storage, storage->getBlockSize() * 8, info_filename);
+   _loadFpStorage(fp_size, storage->getBlockSize() * 8, info_filename);
    _pack_count = _block_count / (fp_size * 8);
 
    fp_bit_usage_counts.resize(fp_size * 8);
@@ -183,39 +139,14 @@ void TranspFpStorage::load (int fp_size, Storage *storage, const char *info_file
    }
    else
       fp_bit_usage_counts.zerofill();
-}
+}*/
 
-const Array<int>& TranspFpStorage::getFpBitUsageCounts () const
+BingoArray<int>& TranspFpStorage::getFpBitUsageCounts ()
 {
-   return fp_bit_usage_counts;
+   return _fp_bit_usage_counts;
 }
 
 int TranspFpStorage::getPackCount () const
 {
    return _pack_count;
-}
-
-void RowFpStorage::_addIncToStorage ()
-{
-   _storage->writeBlock(_block_count, &_inc_buffer[0]);
-   _block_count++;
-}
-
-RowFpStorage::RowFpStorage ()
-{
-}
-
-void RowFpStorage::create (int fp_size, Storage *storage, const char *info_filename)
-{
-   _createFpStorage(fp_size, storage, storage->getBlockSize() / fp_size, info_filename);
-}
-
-void RowFpStorage::load (int fp_size, Storage *storage, const char *info_filename)
-{
-   _loadFpStorage(fp_size, storage, storage->getBlockSize() / fp_size, info_filename);
-}
-
-int RowFpStorage::getFpPerBlockCount () const
-{
-   return _storage->getBlockSize() / _fp_size;
 }

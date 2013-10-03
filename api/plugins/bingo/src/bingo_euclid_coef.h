@@ -1,5 +1,5 @@
-#ifndef __tanimoto_coef__
-#define __tanimoto_coef__
+#ifndef __euclid_coef__
+#define __euclid_coef__
 
 #include "bingo_sim_coef.h"
 #include <math.h>
@@ -7,10 +7,10 @@
 
 namespace bingo
 {
-   class TanimotoCoef : public SimCoef
+   class EuclidCoef : public SimCoef
    {
    public:
-      TanimotoCoef (int fp_size);
+      EuclidCoef (int fp_size);
 
       double calcCoef (const byte *f1, const byte *f2, int f1_bit_count, int f2_bit_count );
 
@@ -23,4 +23,4 @@ namespace bingo
    };
 };
 
-#endif /* __tanimoto_coef__ */
+#endif /* __euclid_coef__ */

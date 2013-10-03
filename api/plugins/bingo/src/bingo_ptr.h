@@ -51,11 +51,6 @@ namespace bingo
          return ptr();
       }
 
-      T & operator [] (int index)
-      {
-         return ptr()[index];
-      }
-
       BingoPtr<T> operator+ (int off)
       {
          return BingoPtr<T>(_offset + off * sizeof(T));
@@ -125,6 +120,13 @@ namespace bingo
       T & operator [] (int index)
       {
          return at(index);
+      }
+
+      T & top ()
+      {
+         int index = _size - 1;
+
+         return *(_blocks[index / _block_size].ptr() + index % _block_size);
       }
 
       T & push ()
@@ -202,13 +204,22 @@ namespace bingo
       static void close ();
 
    private:
-      static void _create (const char *filename, size_t size, ObjArray<MMFile> *mm_files);
+      ObjArray<MMFile> *_mm_files;
+      size_t _file_size;
+      size_t _free_off;
 
-      static void _load (const char *filename, ObjArray<MMFile> *mm_files);
+      static BingoAllocator * _instance;
+      std::string _filename;
+
+      static void _create (const char *filename, size_t size, size_t alloc_off, ObjArray<MMFile> *mm_files);
+
+      static void _load (const char *filename, size_t alloc_off, ObjArray<MMFile> *mm_files);
 
       template<typename T> size_t allocate ( int count = 1 )
       {
          int alloc_size = sizeof(T) * count;
+
+         static size_t cnt = 0;
 
          if (alloc_size > _file_size)
             throw Exception("BingoAllocator: mmf size is too small to allocate memory");
@@ -221,6 +232,9 @@ namespace bingo
 
          size_t res_off = _free_off;
          _free_off += alloc_size;
+         
+         if (cnt % 10 == 0)
+            printf("_free_off = %d; _file_size = %d; file_off = %d\n",  _free_off, _file_size, file_off);
 
          return res_off;
       }
@@ -233,13 +247,7 @@ namespace bingo
 
       void _addFile (int alloc_size);
 
-      void _genFilename (int idx, std::string &name);
-
-      ObjArray<MMFile> *_mm_files;
-      size_t _file_size;
-      size_t _free_off;
-
-      static BingoAllocator * _instance;
+      static void _genFilename (int idx, const char *filename, std::string &out_name);
    };
 
    // Implementations for BingoPtr and BingoAllocator are dependent and thus implementation is here

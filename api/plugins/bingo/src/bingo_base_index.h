@@ -3,12 +3,12 @@
 
 #include "molecule/molecule_fingerprint.h"
 #include "bingo_object.h"
-#include "bingo_storage_manager.h"
 #include "bingo_fp_storage.h"
 #include "bingo_cf_storage.h"
-#include "bingo_sim_storage.h"
+#include "bingo_mmf_storage.h"
 #include "bingo_properties.h"
 #include "bingo_exact_storage.h"
+#include "bingo_fingerprint_table.h"
 
 using namespace indigo;
 
@@ -20,7 +20,7 @@ namespace bingo
    class Index
    {
    public:
-      virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data) = 0;
+      virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data, const char *options) = 0;
 
       virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options) = 0;
 
@@ -46,6 +46,11 @@ namespace bingo
    private:   
       struct _Header
       {
+         size_t properties_offset;
+         size_t mapping_offset;
+         size_t back_mapping_offset;
+         size_t cf_offset;
+         size_t sub_offset;
          size_t sim_offset;
          size_t exact_offset;
       };
@@ -63,17 +68,17 @@ namespace bingo
 
       const MoleculeFingerprintParameters & getFingerprintParams () const;
 
-      const TranspFpStorage & getSubStorage () const;
+      TranspFpStorage & getSubStorage ();
 
-      SimStorage & getSimStorage ();
+      FingerprintTable & getSimStorage ();
 
       ExactStorage & getExactStorage ();
 
-      const Array<int> & getIdMapping () const;
+      BingoArray<int> & getIdMapping ();
 
-      const Array<int> & getBackIdMapping () const;
+      BingoArray<int> & getBackIdMapping ();
 
-      FlatStorage & getCfStorage ();
+      ByteBufferStorage & getCfStorage ();
 
       int getObjectsCount () const;
 
@@ -98,34 +103,39 @@ namespace bingo
          dword hash;
       };
 
-      Array<int> _id_mapping;
-      Array<int> _back_id_mapping;
-      _ObjectIndexData _object_index_data;
-      TranspFpStorage _sub_fp_storage;
-      SimStorage _sim_fp_storage;
-      ExactStorage _exact_storage;
       MMFStorage _mmf_storage;
-      MoleculeFingerprintParameters _fp_params;
-      AutoPtr<FlatStorage> _cf_storage;
-      AutoPtr<StorageManager> _storage_manager;
-      Properties _properties;
       BingoPtr<_Header> _header;
+      BingoPtr< BingoArray<int> > _id_mapping_ptr;
+      BingoPtr< BingoArray<int> > _back_id_mapping_ptr;
+      BingoPtr<TranspFpStorage> _sub_fp_storage;
+      BingoPtr<FingerprintTable> _sim_fp_storage;
+      BingoPtr<ExactStorage> _exact_storage;
+      BingoPtr<ByteBufferStorage> _cf_storage;
+      BingoPtr<Properties> _properties;
+      
+      _ObjectIndexData _object_index_data;
+      MoleculeFingerprintParameters _fp_params;
       std::string _location;
-      std::ofstream _mapping_outfile;
 
       int _object_count;
 
       int _first_free_id;
 
-      void _parseOptions (const char *options);
+      static void _parseOptions (const char *options, std::map<std::string, std::string> &option_map);
 
-      void _saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, int sim_block_size, int cf_block_size);
+      static size_t _getMMfSize (std::map<std::string, std::string> &option_map);
+
+      void _saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, 
+                            int sim_block_size, int cf_block_size, 
+                            std::map<std::string, std::string> &option_map);
 
       bool _prepareIndexData (IndexObject &obj);
 
       void _insertIndexData();
 
-      void _mappingLoad (const char * mapping_path);
+      void _mappingCreate ();
+
+      void _mappingLoad ();
 
       void _mappingAssign (int obj_id, int base_id);
 

@@ -1,10 +1,12 @@
-#ifndef __cmf_storage__
-#define __cmf_storage__
+#ifndef __cf_storage__
+#define __cf_storage__
 
 #include "base_cpp/obj_array.h"
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/tlscont.h"
+
+#include "bingo_ptr.h"
 
 #include <iostream>
 #include <fstream>
@@ -15,35 +17,19 @@ using namespace indigo;
 
 namespace bingo
 {
-   class FlatStorage
-   {
-   public:
-      FlatStorage (int block_size) : _block_size(block_size) {}
-
-      virtual void create (const char *buf_filename, const char *offset_filename) = 0;
-      virtual void load (const char *buf_filename, const char *offset_filename) = 0;
-      virtual const byte * get (int idx, int &len) = 0;
-      virtual void add (const byte *data, int len, int idx) = 0;
-      virtual void remove (int idx) = 0;
-
-      virtual ~FlatStorage() {}
-
-   protected:
-      int _block_size;
-   };
-
-
-   class ByteBufferStorage : public FlatStorage
+   class ByteBufferStorage
    {
    public:
       ByteBufferStorage (int block_size);
 
-      virtual void create (const char *buf_filename, const char *offset_filename);
-      virtual void load (const char *buf_filename, const char *offset_filename);
-      virtual const byte * get (int idx, int &len);
-      virtual void add (const byte *data, int len, int idx);
-      virtual void remove (int idx);
-      virtual ~ByteBufferStorage();
+      static size_t create (BingoPtr<ByteBufferStorage> &cf_ptr, int block_size);
+
+      static void load (BingoPtr<ByteBufferStorage> &cf_ptr, size_t offset);
+
+      const byte * get (int idx, int &len);
+      void add (const byte *data, int len, int idx);
+      void remove (int idx);
+      ~ByteBufferStorage();
 
    private:
 
@@ -54,9 +40,10 @@ namespace bingo
          long len;
       };
 
+      int _block_size;
       int _free_pos;
-      Array<byte *> _blocks;
-      Array<_Addr> _addresses;
+      BingoArray< BingoPtr<byte> > _blocks;
+      BingoArray<_Addr> _addresses;
 
       std::fstream _buf_file;
       std::fstream _offset_file;
@@ -65,4 +52,4 @@ namespace bingo
    };
 };
 
-#endif /* __cmf_storage__ */
+#endif /* __cf_storage__ */

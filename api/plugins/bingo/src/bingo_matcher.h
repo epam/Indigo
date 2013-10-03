@@ -262,6 +262,8 @@ namespace bingo
       
       void setQueryData (SimilarityQueryData *query_data);
 
+      void setParameters (const char *parameters);
+
       ~BaseSimilarityMatcher();
 
       virtual int esimateRemainingResultsCount (int &delta);

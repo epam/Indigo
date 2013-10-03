@@ -12,11 +12,13 @@ namespace bingo
    class MMFStorage
    {
    public:
+      static const int max_header_len = 128;
+
       MMFStorage();
 
-      void create (const char *filename, size_t size);
+      void create (const char *filename, size_t size, const char *header);
 
-      void load (const char *filename);
+      void load (const char *filename, BingoPtr<char> header_ptr);
 
       void close ();
    private:

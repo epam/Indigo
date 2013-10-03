@@ -49,11 +49,14 @@ size_t MMFile::size()
    return _len;
 }
 
-void MMFile::open (const char *filename, size_t buf_size)
+void MMFile::open (const char *filename, size_t buf_size, bool create_flag)
 {
    _len = buf_size;
 
    _filename.assign(filename);
+
+   if (create_flag)
+      std::remove(filename);
 
 #ifdef _WIN32
    char * pBuf;
@@ -104,7 +107,7 @@ void MMFile::open (const char *filename, size_t buf_size)
 
    if (_ptr == NULL)
       throw Exception("BingoMMF: Could not map view of file");
-
+ 
 #elif (defined __GNUC__ || defined __APPLE__)
    int fd;
    if ((fd = ::open(_filename.c_str(), O_RDONLY)) == -1) 
@@ -123,7 +126,7 @@ void MMFile::resize (size_t new_size)
       throw Exception("BingoMMF: Resizeing of uninitialized file");
    
    close();
-   open(_filename.c_str(), new_size);
+   open(_filename.c_str(), new_size, false);
 }
 
 void MMFile::close ()

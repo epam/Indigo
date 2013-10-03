@@ -6,6 +6,8 @@
 #include <string>
 #include <map>
 
+#include "bingo_ptr.h"
+
 namespace bingo
 {
    class Properties
@@ -13,9 +15,9 @@ namespace bingo
    public:
       Properties ();
 
-      void create (const char *filename);
+      static size_t create (BingoPtr<Properties> &ptr);
 
-      void load (const char *filename);
+      static void load (BingoPtr<Properties> &ptr, size_t offset);
 
       void add (const char *prop_name, const char *value);
 
@@ -28,14 +30,18 @@ namespace bingo
       unsigned long getULongNoThrow (const char *prop_name);
 
    private:
-      typedef std::pair<const std::string, std::string> _PropertyPair;
+      struct _PropertyPair
+      {
+         BingoPtr<char> name;
+         BingoPtr<char> value;
+      };
 
       void _rewritePropFile ();
 
       static void _parseProperty (const std::string &line, std::string &prop_out, std::string &value_out);
 
-      std::string _filename;
-      std::map<const std::string, std::string> _props;
+      static const int max_prop_len = 1024;
+      BingoArray<_PropertyPair> _props;
    };
 };
 

@@ -2,79 +2,21 @@
 
 using namespace bingo;
 
-ByteBufferStorage::ByteBufferStorage (int block_size) : FlatStorage(block_size)
+ByteBufferStorage::ByteBufferStorage (int block_size) : _block_size(block_size)
 {
    _free_pos = 0;
 }
 
-void ByteBufferStorage::create (const char *buf_filename, const char *offset_filename)
+size_t ByteBufferStorage::create (BingoPtr<ByteBufferStorage> &cf_ptr, int block_size)
 {
-   _buf_filename = _buf_filename;
-   _offset_filename = offset_filename;
-
-   _buf_file.open(buf_filename, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
-   _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::binary | std::ios::trunc);
+   cf_ptr.allocate();
+   new(cf_ptr.ptr()) ByteBufferStorage(block_size);
+   return (size_t)cf_ptr;
 }
 
-void ByteBufferStorage::load (const char *buf_filename, const char *offset_filename)
+void ByteBufferStorage::load (BingoPtr<ByteBufferStorage> &cf_ptr, size_t offset)
 {
-   _buf_filename = _buf_filename;
-   _offset_filename = offset_filename;
-
-   _buf_file.open(buf_filename, std::ios::in | std::ios::out | std::ios::binary);
-   _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::binary);
-
-   if (!_buf_file.is_open())
-      throw Exception("ByteBufferStorage: buffer file missed");
-
-   if (!_offset_file.is_open())
-      throw Exception("ByteBufferStorage: offset file missed");
-
-   _offset_file.seekg(0, std::ios::end);
-   size_t file_len = _offset_file.tellg();
-
-   _offset_file.seekg(std::ios::beg);
-   
-   size_t addr_count = file_len / sizeof(_Addr);
-   std::vector<_Addr> addr_buf;
-   addr_buf.resize((int)addr_count);
-   _offset_file.read((char *)&addr_buf[0], sizeof(_Addr) * addr_count);
-   
-   for (int i = 0; i < addr_count; i++)
-      _addresses.push(addr_buf[i]);
-
-   _blocks.resize(_addresses.top().block_idx + 1);
-
-   for (int i = 0; i < _blocks.size(); i++)
-   {
-      size_t block_len = _block_size;
-      if (i == (_blocks.size() - 1))
-      {
-         _buf_file.seekg(0, std::ios_base::end);
-         block_len = (size_t)_buf_file.tellg() - (size_t)i * _block_size;
-
-#ifdef _MSC_VER
-#if _MSC_VER <= 1600
-
-         // VS2010 has a bug in tellg method and doesn't work with file more than 2Gb
-         // http://connect.microsoft.com/VisualStudio/feedback/details/627639/std-fstream-use-32-bit-int-as-pos-type-even-on-x64-platform
-#error Compile is not supported due to a bug in tellg method: http://connect.microsoft.com/VisualStudio/feedback/details/627639/std-fstream-use-32-bit-int-as-pos-type-even-on-x64-platform
-
-#endif
-#endif
-      }
-
-      _blocks[i] = new byte[_block_size];
-      _buf_file.seekg((size_t)i * _block_size);
-      _buf_file.read((char *)_blocks[i], block_len);
-   }
-
-   _free_pos = _addresses.top().offset + _addresses.top().len;
-
-   _buf_file.close();
-   _offset_file.close();
-   _buf_file.open(buf_filename, std::ios::in | std::ios::out | std::ios::binary);
-   _offset_file.open(offset_filename, std::ios::in | std::ios::out | std::ios::binary);
+   cf_ptr = BingoPtr<ByteBufferStorage>(offset);
 }
 
 const byte * ByteBufferStorage::get (int idx, int &len)
@@ -89,14 +31,15 @@ const byte * ByteBufferStorage::get (int idx, int &len)
    }
 
    len = _addresses[idx].len;
-   return _blocks[_addresses[idx].block_idx] + _addresses[idx].offset;
+   return _blocks[_addresses[idx].block_idx].ptr() + _addresses[idx].offset;
 }
 
 void ByteBufferStorage::add (const byte *data, int len, int idx) 
 {
    if ((_blocks.size() == 0) || (_block_size - _free_pos < len))
    {
-      _blocks.push(new byte[_block_size]);
+      BingoPtr<byte> &new_block = _blocks.push();
+      new_block.allocate(_block_size);
       _free_pos = 0;
    }
 
@@ -107,7 +50,7 @@ void ByteBufferStorage::add (const byte *data, int len, int idx)
    _addresses[idx].len = len;
    _addresses[idx].offset = _free_pos;
 
-   memcpy(_blocks.top() + _free_pos, data, len);
+   memcpy(_blocks.top().ptr() + _free_pos, data, len);
 
    _buf_file.seekp(_addresses[idx].block_idx * _block_size + _addresses[idx].offset);
    _buf_file.write((const char *)data, _addresses[idx].len);
@@ -131,6 +74,4 @@ void ByteBufferStorage::remove (int idx)
 
 ByteBufferStorage::~ByteBufferStorage()
 {
-   for (int i = 0; i < _blocks.size(); i++)
-      delete[] _blocks[i];
 }

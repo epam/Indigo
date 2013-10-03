@@ -9,7 +9,7 @@ MoleculeIndex::MoleculeIndex() : BaseIndex(MOLECULE)
 {
 }
 
-Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query_data)
+Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query_data, const char *options)
 {
    if (strcmp(type, "sub") == 0)
    {
@@ -20,12 +20,14 @@ Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query
    else if (strcmp(type, "sim") == 0)
    {
       AutoPtr<MoleculeSimMatcher> matcher(new MoleculeSimMatcher(*this));
+      matcher->setParameters(options);
       matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
       return matcher.release();
    }
    else if (strcmp(type, "exact") == 0)
    {
       AutoPtr<MolExactMatcher> matcher(new MolExactMatcher(*this));
+      matcher->setParameters(options);
       matcher->setQueryData(dynamic_cast<ExactQueryData *>(query_data));
       return matcher.release();
    }
@@ -39,7 +41,7 @@ ReactionIndex::ReactionIndex () : BaseIndex(REACTION)
 {
 }
 
-Matcher* ReactionIndex::createMatcher (const char *type, MatcherQueryData *query_data)
+Matcher* ReactionIndex::createMatcher (const char *type, MatcherQueryData *query_data, const char *options)
 {
    if (strcmp(type, "sub") == 0)
    {
@@ -50,12 +52,14 @@ Matcher* ReactionIndex::createMatcher (const char *type, MatcherQueryData *query
    else if (strcmp(type, "sim") == 0)
    {
       AutoPtr<ReactionSimMatcher> matcher(new ReactionSimMatcher(*this));
+      matcher->setParameters(options);
       matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
       return matcher.release();
    }
    else if (strcmp(type, "exact") == 0)
    {
       AutoPtr<RxnExactMatcher> matcher(new RxnExactMatcher(*this));
+      matcher->setParameters(options);
       matcher->setQueryData(dynamic_cast<ExactQueryData *>(query_data));
       return matcher.release();
    }
