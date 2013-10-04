@@ -233,9 +233,6 @@ namespace bingo
          size_t res_off = _free_off;
          _free_off += alloc_size;
          
-         if (cnt % 10 == 0)
-            printf("_free_off = %d; _file_size = %d; file_off = %d\n",  _free_off, _file_size, file_off);
-
          return res_off;
       }
 
