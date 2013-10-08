@@ -91,7 +91,7 @@ if os.name == 'posix' and args.checkabi:
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
-def build(params=None, install=True):
+def build(params=[], install=True):
     full_build_dir = os.path.join(root, "build", build_dir)
     if params:
         full_build_dir += "_UNIVERSAL_"
