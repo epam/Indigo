@@ -201,19 +201,29 @@ namespace bingo
       template<typename T> friend class BingoPtr;
       friend class MMFStorage;
 
-      static void close ();
+      static int getAllocatorDataSize ();
 
    private:
-      ObjArray<MMFile> *_mm_files;
-      size_t _file_size;
-      size_t _free_off;
+      struct _BingoAllocatorData
+      {
+         _BingoAllocatorData() : _file_size(0), _free_off(0)
+         {
+         }
 
-      static BingoAllocator * _instance;
+         size_t _file_size;
+         size_t _free_off;
+      };
+
+      ObjArray<MMFile> _mm_files;
+
+      _BingoAllocatorData *_data;
+
+      static PtrArray<BingoAllocator> _instances;
       std::string _filename;
 
-      static void _create (const char *filename, size_t size, size_t alloc_off, ObjArray<MMFile> *mm_files);
+      static void _create (const char *filename, size_t size, size_t alloc_off);
 
-      static void _load (const char *filename, size_t alloc_off, ObjArray<MMFile> *mm_files);
+      static void _load (const char *filename, size_t alloc_off);
 
       template<typename T> size_t allocate ( int count = 1 )
       {
@@ -221,17 +231,17 @@ namespace bingo
 
          static size_t cnt = 0;
 
-         if (alloc_size > _file_size)
+         if (alloc_size > _data->_file_size)
             throw Exception("BingoAllocator: mmf size is too small to allocate memory");
 
-         size_t file_idx = _free_off / _file_size;
-         size_t file_off = _free_off % _file_size;
+         size_t file_idx = _data->_free_off / _data->_file_size;
+         size_t file_off = _data->_free_off % _data->_file_size;
 
-         if (alloc_size > _file_size - file_off)
+         if (alloc_size > _data->_file_size - file_off)
             _addFile(alloc_size);
 
-         size_t res_off = _free_off;
-         _free_off += alloc_size;
+         size_t res_off = _data->_free_off;
+         _data->_free_off += alloc_size;
          
          return res_off;
       }
@@ -255,6 +265,7 @@ namespace bingo
 
       return (T *)(_allocator->_get(_offset));
    }
+
    template <typename T>
    const T * BingoPtr<T>::ptr() const
    {

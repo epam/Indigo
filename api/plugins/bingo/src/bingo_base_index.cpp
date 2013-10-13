@@ -102,7 +102,7 @@ void BaseIndex::load (const char *location, const char *options)
 
    _mmf_storage.load(_mmf_path.c_str(), h_ptr);
    
-   _header = BingoPtr<_Header>(MMFStorage::max_header_len + sizeof(BingoAllocator));
+   _header = BingoPtr<_Header>(MMFStorage::max_header_len + BingoAllocator::getAllocatorDataSize());
 
    Properties::load(_properties, _header->properties_offset);
    

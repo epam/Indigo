@@ -32,7 +32,6 @@
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/exception.h"
-#include "base_c/os_sync.h"
 
 using namespace indigo;
 using namespace bingo;
