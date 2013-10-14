@@ -60,7 +60,7 @@ class Bingo(object):
         self._lib.bingoEstimateRemainingResultsCountError.restype = c_int
         self._lib.bingoEstimateRemainingResultsCountError.argtypes = [c_int]
         self._lib.bingoEstimateRemainingTime.restype = c_int
-        self._lib.bingoEstimateRemainingTime.argtypes = [c_int, pointer(c_float)]
+        self._lib.bingoEstimateRemainingTime.argtypes = [c_int, POINTER(c_float)]
 
     def __del__(self):
         self.close()
