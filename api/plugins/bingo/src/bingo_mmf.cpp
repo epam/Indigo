@@ -109,12 +109,14 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag)
       throw Exception("BingoMMF: Could not map view of file");
  
 #elif (defined __GNUC__ || defined __APPLE__)
-   if ((_fd = ::open(_filename.c_str(), O_RDONLY)) == -1) 
-      throw Exception("BingoMMF: Could not open file");
+   if ((_fd = ::open(_filename.c_str(), O_RDWR | O_CREAT)) == -1) 
+      throw Exception("BingoMMF: Could not open file (%s)", strerror(errno));
 
-   _ptr = mmap((caddr_t)0, _len, PROT_EXEC, MAP_SHARED, _fd, 0);
+   ftruncate(_fd, _len);
+
+   _ptr = mmap((caddr_t)0, _len, PROT_READ | PROT_WRITE, MAP_SHARED, _fd, 0);
    
-   if (_ptr == (void *)-1)
+   if (_ptr == (void *)MAP_FAILED)
       throw Exception("BingoMMF: Could not map view of file");
 #endif
 }
