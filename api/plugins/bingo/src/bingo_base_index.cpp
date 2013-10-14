@@ -12,12 +12,12 @@
 
 using namespace bingo;
 
-static const char *_props_filename = "properties";
 static const char *_cf_data_filename = "cf_data";
 static const char *_cf_offset_filename = "cf_offset";
 static const char *_id_mapping_filename = "id_mapping";
 static const char *_reaction_type = "reaction";
 static const char *_molecule_type = "molecule";
+static const int _type_len = 9;
 static const char *_mmf_file = "mmf_storage";
 static const size_t _mmf_size = 536870912; // 500Mb
 static const int _sim_mt_size = 50000;
@@ -42,7 +42,6 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    _location = location;
    
-   std::string props_path = _location + _props_filename;
    std::string _cf_data_path = _location + _cf_data_filename;
    std::string _cf_offset_path = _location + _cf_offset_filename;
    std::string _mapping_path = _location + _id_mapping_filename;
@@ -88,7 +87,6 @@ void BaseIndex::load (const char *location, const char *options)
    osDirCreate(location);
 
    _location = location;
-   std::string props_path = _location + _props_filename;
    std::string _cf_data_path = _location + _cf_data_filename;
    std::string _cf_offset_path = _location + _cf_offset_filename;
    std::string _mapping_path = _location + _id_mapping_filename;
@@ -240,18 +238,23 @@ Index::IndexType BaseIndex::getType () const
    return _type;
 }
 
-const char * BaseIndex::determineType (const char *location)
+Index::IndexType BaseIndex::determineType (const char *location)
 {
    std::string path(location);
-   path += _props_filename;
+   path += '/';
+   path += _mmf_file;
+   path += '0';
    std::ifstream fstream(path, std::ios::binary | std::ios::ate);
-   int type_len = 9;
+   
+   char type[_type_len];
+   fstream.read(type, _type_len);
 
-   char type[9];
-
-   fstream.read(type, type_len);
-
-   return type;
+   if (strcmp(type, _molecule_type) == 0)
+      return MOLECULE;
+   else if (strcmp(type, _reaction_type) == 0)
+      return REACTION;
+   else
+      throw Exception("BingoIndex: determineType(): Incorrect database type");
 }
 
 BaseIndex::~BaseIndex()

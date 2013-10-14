@@ -86,7 +86,7 @@ namespace bingo
 
       virtual IndexType getType () const;
 
-      static const char * determineType (const char *location);
+      static IndexType determineType (const char *location);
 
       virtual ~BaseIndex ();
 
