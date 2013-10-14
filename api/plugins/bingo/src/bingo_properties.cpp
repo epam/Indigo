@@ -60,7 +60,7 @@ void Properties::add (const char *prop_name, unsigned long value)
    add(prop_name, osstr.str().c_str());
 }
 
-const char * Properties::get (const char *prop_name)
+const char * Properties::getNoThrow (const char *prop_name)
 {
    int prop_id;
    
@@ -69,14 +69,27 @@ const char * Properties::get (const char *prop_name)
          break;
 
    if (prop_id == _props.size())
-      throw Exception("Unknown property field");
+      return 0;
 
    return _props[prop_id].value.ptr();
 }
 
-unsigned long Properties::getULong (const char *prop_name)
+const char * Properties::get (const char *prop_name)
 {
-   const char *value = get(prop_name);
+   const char *res = getNoThrow(prop_name);
+
+   if (res == 0)
+      throw Exception("Unknown property field");
+
+   return res;
+}
+
+unsigned long Properties::getULongNoThrow (const char *prop_name)
+{
+   const char *value = getNoThrow(prop_name);
+
+   if (value == 0)
+      return ULONG_MAX;
 
    unsigned long u_dec;
    std::istringstream isstr(value);
@@ -85,16 +98,14 @@ unsigned long Properties::getULong (const char *prop_name)
    return u_dec;
 }
 
-unsigned long Properties::getULongNoThrow (const char *prop_name)
+unsigned long Properties::getULong (const char *prop_name)
 {
-   try
-   {
-      return getULong(prop_name);
-   }
-   catch (Exception &ex)
-   {
-      return ULONG_MAX;
-   }
+   unsigned long res = getULongNoThrow(prop_name);
+
+   if (res == ULONG_MAX)
+      throw Exception("Unknown property field");
+
+   return res;
 }
 
 void Properties::_parseProperty (const std::string &line, std::string &prop_out, std::string &value_out)

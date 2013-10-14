@@ -25,6 +25,8 @@ namespace bingo
 
       const char * get (const char *prop_name);
 
+      const char * getNoThrow (const char *prop_name);
+
       unsigned long getULong (const char *prop_name);
 
       unsigned long getULongNoThrow (const char *prop_name);

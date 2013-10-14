@@ -232,7 +232,7 @@ int BaseIndex::getObjectsCount () const
 
 const char * BaseIndex::getIdPropertyName ()
 {
-   return _properties.ref().get("key");
+   return _properties.ref().getNoThrow("key");
 }
 
 Index::IndexType BaseIndex::getType () const
