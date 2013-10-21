@@ -6,8 +6,10 @@
 #include "base_cpp/tlscont.h"
 #include "bingo_mmf.h"
 #include "base_cpp/profiling.h"
+#include "base_cpp/os_sync_wrapper.h"
 #include <new>
 #include <string>
+#include <thread>     
 
 using namespace indigo;
 
@@ -74,7 +76,6 @@ namespace bingo
       void allocate ( int count = 1 );
 
       operator size_t() { return _offset; }
-
    private:
       size_t _offset;
    };
@@ -214,34 +215,38 @@ namespace bingo
          size_t _free_off;
       };
 
-      ObjArray<MMFile> _mm_files;
+      ObjArray<MMFile> *_mm_files;
 
-      _BingoAllocatorData *_data;
+      size_t _data_offset;
 
       static PtrArray<BingoAllocator> _instances;
       std::string _filename;
+      int _index_id;
+      static OsLock _instances_lock;
 
-      static void _create (const char *filename, size_t size, size_t alloc_off);
-
-      static void _load (const char *filename, size_t alloc_off);
+      static void _create (const char *filename, size_t size, size_t alloc_off, ObjArray<MMFile> *mm_files, int index_id);
+     
+      static void _load (const char *filename, size_t alloc_off, ObjArray<MMFile> *mm_files, int index_id, bool read_only);
 
       template<typename T> size_t allocate ( int count = 1 )
       {
+         byte * mmf_ptr = (byte *)_mm_files->at(0).ptr();
+
+         _BingoAllocatorData *allocator_data = (_BingoAllocatorData *)(mmf_ptr + _data_offset);
+   
          int alloc_size = sizeof(T) * count;
 
-         static size_t cnt = 0;
-
-         if (alloc_size > _data->_file_size)
+         if (alloc_size > allocator_data->_file_size)
             throw Exception("BingoAllocator: mmf size is too small to allocate memory");
 
-         size_t file_idx = _data->_free_off / _data->_file_size;
-         size_t file_off = _data->_free_off % _data->_file_size;
+         size_t file_idx = allocator_data->_free_off / allocator_data->_file_size;
+         size_t file_off = allocator_data->_free_off % allocator_data->_file_size;
 
-         if (alloc_size > _data->_file_size - file_off)
+         if (alloc_size > allocator_data->_file_size - file_off)
             _addFile(alloc_size);
 
-         size_t res_off = _data->_free_off;
-         _data->_free_off += alloc_size;
+         size_t res_off = allocator_data->_free_off;
+         allocator_data->_free_off += alloc_size;
          
          return res_off;
       }

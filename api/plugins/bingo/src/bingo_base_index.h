@@ -9,6 +9,9 @@
 #include "bingo_properties.h"
 #include "bingo_exact_storage.h"
 #include "bingo_fingerprint_table.h"
+#include "bingo_lock.h"
+
+#define BINGO_VERSION "v0.99999"
 
 using namespace indigo;
 
@@ -22,11 +25,11 @@ namespace bingo
    public:
       virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data, const char *options) = 0;
 
-      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options) = 0;
+      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options, int index_id) = 0;
 
-      virtual void load (const char *location, const char *options) = 0;
+      virtual void load (const char *location, const char *options, int index_id) = 0;
 
-      virtual int add (IndexObject &obj, int obj_id) = 0;
+      virtual int add (IndexObject &obj, int obj_id, DatabaseLockData &lock_data) = 0;
 
       virtual void optimize () = 0;
 
@@ -35,6 +38,8 @@ namespace bingo
       typedef enum {MOLECULE, REACTION} IndexType;
 
       virtual const char * getIdPropertyName () = 0;
+
+      virtual const char * getVersion () = 0;
 
       virtual IndexType getType () const = 0;
 
@@ -56,11 +61,11 @@ namespace bingo
       };
 
    public:
-      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options);
+      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options, int index_id);
 
-      virtual void load (const char *location, const char *options);
+      virtual void load (const char *location, const char *options, int index_id);
       
-      virtual int add (IndexObject &obj, int obj_id);
+      virtual int add (IndexObject &obj, int obj_id, DatabaseLockData &lock_data);
 
       virtual void optimize ();
 
@@ -84,6 +89,8 @@ namespace bingo
 
       virtual const char * getIdPropertyName ();
 
+      virtual const char * getVersion ();
+
       virtual IndexType getType () const;
 
       static IndexType determineType (const char *location);
@@ -93,6 +100,7 @@ namespace bingo
    protected:
       BaseIndex (IndexType type);
       IndexType _type;
+      bool _read_only;
 
    private:
       struct _ObjectIndexData 
@@ -113,7 +121,6 @@ namespace bingo
       BingoPtr<ByteBufferStorage> _cf_storage;
       BingoPtr<Properties> _properties;
       
-      _ObjectIndexData _object_index_data;
       MoleculeFingerprintParameters _fp_params;
       std::string _location;
 
@@ -121,17 +128,21 @@ namespace bingo
 
       int _first_free_id;
 
+      int _index_id;
+
       static void _parseOptions (const char *options, std::map<std::string, std::string> &option_map);
 
       static size_t _getMMfSize (std::map<std::string, std::string> &option_map);
+
+      static bool _getAccessType (std::map<std::string, std::string> &option_map);
 
       void _saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, 
                             int sim_block_size, int cf_block_size, 
                             std::map<std::string, std::string> &option_map);
 
-      bool _prepareIndexData (IndexObject &obj);
+      bool _prepareIndexData (IndexObject &obj, _ObjectIndexData &obj_data);
 
-      void _insertIndexData();
+      void _insertIndexData(_ObjectIndexData &obj_data);
 
       void _mappingCreate ();
 

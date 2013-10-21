@@ -1,3 +1,6 @@
+#ifndef __bingo_lock__
+#define __bingo_lock__
+
 #include "base_c/os_sync.h"
 
 struct DatabaseLockData
@@ -29,3 +32,5 @@ public:
 private:
    DatabaseLockData &_data;
 };
+
+#endif //__bingo_lock__

@@ -67,12 +67,14 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
    else
       throw BingoException("wrong database type option");
 
-   if (create)
-      context->create(loc_dir.c_str(), fp_params, options);
-   else
-      context->load(loc_dir.c_str(), options);
+   int db_id = _bingo_instances.add(0);
 
-   int db_id = _bingo_instances.add(context.release());
+   if (create)
+      context->create(loc_dir.c_str(), fp_params, options, db_id);
+   else
+      context->load(loc_dir.c_str(), options, db_id);
+
+   _bingo_instances[db_id] = context.release();
 
    AutoPtr<DatabaseLockData> locker_ptr;
    locker_ptr.reset(new DatabaseLockData());
@@ -98,8 +100,7 @@ static int _insertObjectToDatabase (int db, Indigo &self, Index &bingo_index, In
       IndexMolecule ind_mol(indigo_obj.getMolecule());
       profTimerStop(t1);
       
-      WriteLock wlock(*_lockers[db]);
-      int id = bingo_index.add(ind_mol, obj_id);
+      int id = bingo_index.add(ind_mol, obj_id, *_lockers[db]);
       return id;
    }
    else if (bingo_index.getType() == Index::REACTION)
@@ -111,8 +112,7 @@ static int _insertObjectToDatabase (int db, Indigo &self, Index &bingo_index, In
 
       IndexReaction ind_rxn(indigo_obj.getReaction());
       
-      WriteLock wlock(*_lockers[db]);
-      int id = bingo_index.add(ind_rxn, obj_id);
+      int id = bingo_index.add(ind_rxn, obj_id, *_lockers[db]);
       return id;
    }
    else
@@ -126,6 +126,11 @@ Matcher& getMatcher (int id)
    if (id < _searches.begin() || id >= _searches.end() || !_searches.hasElement(id))
       throw BingoException("Incorrect search object id=%d", id);
    return *_searches[id];
+}
+
+CEXPORT const char * bingoVersion ()
+{
+   return BINGO_VERSION;
 }
 
 CEXPORT int bingoCreateDatabaseFile (const char *location, const char *type, const char *options)
@@ -148,24 +153,18 @@ CEXPORT int bingoLoadDatabaseFile (const char *location, const char *type, const
 
 CEXPORT int bingoCloseDatabase (int db)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_DB(db)
    {
-      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw BingoException("Incorrect database object");
-
       _bingo_instances.remove(db);
       return 1;
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoInsertRecordObj (int db, int obj)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_DB(db)
    {
-      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw BingoException("Incorrect database object");
-
       IndigoObject &indigo_obj = self.getObject(obj);
       Index &bingo_index = _bingo_instances.ref(db);
 
@@ -185,31 +184,25 @@ CEXPORT int bingoInsertRecordObj (int db, int obj)
 
       return _insertObjectToDatabase (db, self, bingo_index, indigo_obj, obj_id);
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_DB(db)
    {
-      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw BingoException("Incorrect database object");
-
       IndigoObject &indigo_obj = self.getObject(obj);
       Index &bingo_index = _bingo_instances.ref(db);
 
       return _insertObjectToDatabase (db, self, bingo_index, indigo_obj, id);
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoDeleteRecord (int db, int id)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_DB(db)
    {
-      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw BingoException("Incorrect database object");
-
       Index &bingo_index = _bingo_instances.ref(db);
 
       WriteLock wlock(*_lockers[db]);
@@ -218,16 +211,13 @@ CEXPORT int bingoDeleteRecord (int db, int id)
       
       return id;
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoOptimize (int db)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_DB(db)
    {
-      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw BingoException("Incorrect database object");
-
       Index &bingo_index = _bingo_instances.ref(db);
 
       WriteLock wlock(*_lockers[db]);
@@ -236,17 +226,14 @@ CEXPORT int bingoOptimize (int db)
       
       return 0;
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_DB(db)
    {
-      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw BingoException("Incorrect database object");
-
-      IndigoObject &obj = self.getObject(query_obj);
+      IndigoObject &obj = *(self.getObject(query_obj).clone());
       
       if (IndigoQueryMolecule::is(obj))
       {
@@ -281,16 +268,13 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
       else
          throw BingoException("bingoSearchSub: only query molecule and query reaction can be set as query object");
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoSearchExact (int db, int query_obj, const char *options)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_DB(db)
    {
-      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw BingoException("Incorrect database object");
-
       IndigoObject &obj = self.getObject(query_obj);
       
       if (IndigoMolecule::is(obj))
@@ -326,16 +310,13 @@ CEXPORT int bingoSearchExact (int db, int query_obj, const char *options)
       else
          throw BingoException("bingoSearchExact: only non-query molecules and reactions can be set as query object");
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const char *options)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_DB(db)
    {
-      if (db < _bingo_instances.begin() || db >= _bingo_instances.end() || !_bingo_instances.hasElement(db))
-         throw BingoException("Incorrect database object");
-
       IndigoObject &obj = self.getObject(query_obj);
       
       if (IndigoMolecule::is(obj))
@@ -371,12 +352,12 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
       else
          throw BingoException("bingoSearchSub: only query molecule and query reaction can be set as query object");
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoEndSearch (int search_obj)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_SEARCH(search_obj)
    {
       // Ensure that such matcher exists
       getMatcher(search_obj);
@@ -384,79 +365,78 @@ CEXPORT int bingoEndSearch (int search_obj)
       _searches.remove(search_obj);
       return 1;
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoNext (int search_obj)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_SEARCH(search_obj)
    {
       ReadLock rlock(*_lockers[ _searches_db[search_obj] ]);
       return getMatcher(search_obj).next();
-
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoGetCurrentId (int search_obj)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_SEARCH(search_obj)
    {
       return getMatcher(search_obj).currentId();
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT float bingoGetCurrentSimilarityValue (int search_obj)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_SEARCH(search_obj)
    {
       return getMatcher(search_obj).currentSimValue();
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoEstimateRemainingResultsCount (int search_obj)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_SEARCH(search_obj)
    {
       int delta;
       return getMatcher(search_obj).esimateRemainingResultsCount(delta);
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoEstimateRemainingResultsCountError (int search_obj)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_SEARCH(search_obj)
    {
       int delta;
       getMatcher(search_obj).esimateRemainingResultsCount(delta);
       return delta;
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 CEXPORT int bingoEstimateRemainingTime (int search_obj, float *time_sec)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_SEARCH(search_obj)
    {
       float delta;
       *time_sec = getMatcher(search_obj).esimateRemainingTime(delta);
       return 1;
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }
 
 
 CEXPORT int bingoGetObject (int search_obj)
 {
-   INDIGO_BEGIN
+   BINGO_BEGIN_SEARCH(search_obj)
    {
       Matcher &matcher = getMatcher(search_obj);
       const Index &bingo_index = matcher.getIndex();
       
       return self.addObject(matcher.currentObject());
    }
-   INDIGO_END(-1);
+   BINGO_END(-1);
 }

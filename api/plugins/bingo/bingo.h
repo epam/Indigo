@@ -17,6 +17,8 @@
 
 #include "indigo.h"
 
+CEXPORT const char * bingoVersion ();
+
 // options = "id: <property-name>"
 CEXPORT int bingoCreateDatabaseFile (const char *location, const char *type, const char *options);
 CEXPORT int bingoLoadDatabaseFile (const char *location, const char *type, const char *options);

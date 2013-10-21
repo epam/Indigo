@@ -49,7 +49,7 @@ size_t MMFile::size()
    return _len;
 }
 
-void MMFile::open (const char *filename, size_t buf_size, bool create_flag)
+void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool read_only)
 {
    _len = buf_size;
 
@@ -61,9 +61,11 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag)
 #ifdef _WIN32
    char * pBuf;
 
-   DWORD dwflags;
-   dwflags = GENERIC_READ | GENERIC_WRITE;
-
+   DWORD dwflags = GENERIC_READ | GENERIC_WRITE;
+   
+   if (read_only)
+      dwflags = GENERIC_READ;
+   
    _h_file = CreateFile((LPCSTR)_filename.c_str(), dwflags, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
    DWORD dw = GetLastError(); 
 
@@ -88,19 +90,28 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag)
       throw Exception("BingoMMF: Could not open file");
    }
 
+   dword access_info = PAGE_READWRITE;
+
+   if (read_only)
+      access_info = PAGE_READONLY;
+
    _h_map_file = CreateFileMapping(
                  _h_file,    // use paging file
                  NULL,                    // default security
-                 PAGE_READWRITE,          // read/write access
+                 access_info,          // read/write access
                  buf_size >> 32,          // maximum object size (high-order DWORD)
                  buf_size,                // maximum object size (low-order DWORD)
                  0);                 // name of mapping object
 
    if (_h_map_file == NULL)
       throw Exception("BingoMMF: Could not create file mapping object");
-   
+
+   dword map_access_permission = FILE_MAP_ALL_ACCESS;
+   if (read_only)
+      map_access_permission = FILE_MAP_READ;
+
    _ptr = (char *)MapViewOfFile(_h_map_file,   // handle to map object
-                        FILE_MAP_ALL_ACCESS, // read/write permission
+                        map_access_permission,
                         0,
                         0,
                         buf_size);
@@ -109,25 +120,26 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag)
       throw Exception("BingoMMF: Could not map view of file");
  
 #elif (defined __GNUC__ || defined __APPLE__)
-   if ((_fd = ::open(_filename.c_str(), O_RDWR | O_CREAT)) == -1) 
+   int o_flags = O_RDWR | O_CREAT;
+
+   if (read_only)
+      o_flags = O_RDONLY  | O_CREAT;
+
+   if ((_fd = ::open(_filename.c_str(), o_flags)) == -1) 
       throw Exception("BingoMMF: Could not open file (%s)", strerror(errno));
 
    ftruncate(_fd, _len);
 
-   _ptr = mmap((caddr_t)0, _len, PROT_READ | PROT_WRITE, MAP_SHARED, _fd, 0);
+   int prot_flags = PROT_READ | PROT_WRITE;
+
+   if (read_only)
+      prot_flags = PROT_READ;
+
+   _ptr = mmap((caddr_t)0, _len, prot_flags, MAP_SHARED, _fd, 0);
    
    if (_ptr == (void *)MAP_FAILED)
       throw Exception("BingoMMF: Could not map view of file");
 #endif
-}
-
-void MMFile::resize (size_t new_size)
-{
-   if (_filename.size() == 0)
-      throw Exception("BingoMMF: Resizeing of uninitialized file");
-   
-   close();
-   open(_filename.c_str(), new_size, false);
 }
 
 void MMFile::close ()
