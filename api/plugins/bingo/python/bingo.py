@@ -41,6 +41,8 @@ class Bingo(object):
         self._lib.bingoDeleteRecord.argtypes = [c_int, c_int]
         self._lib.bingoSearchSub.restype = c_int
         self._lib.bingoSearchSub.argtypes = [c_int, c_int, c_char_p]
+        self._lib.bingoSearchExact.restype = c_int
+        self._lib.bingoSearchExact.argtypes = [c_int, c_int, c_char_p]
         self._lib.bingoSearchSim.restype = c_int
         self._lib.bingoSearchSim.argtypes = [c_int, c_int, c_float, c_float, c_char_p]
         self._lib.bingoNext.restype = c_int
@@ -66,6 +68,7 @@ class Bingo(object):
         self.close()
 
     def close(self):
+        self._indigo._setSessionId()
         if self._id >= 0:
             Bingo._checkResult(self._indigo, self._lib.bingoCloseDatabase(self._id))
             self._id = -1
@@ -90,6 +93,7 @@ class Bingo(object):
 
     @staticmethod
     def createDatabaseFile(indigo, path, databaseType, options=''):
+        indigo._setSessionId()
         if not options:
             options = ''
         lib = Bingo._getLib(indigo)
@@ -99,6 +103,7 @@ class Bingo(object):
 
     @staticmethod
     def loadDatabaseFile(indigo, path, databaseType, options=''):
+        indigo._setSessionId()
         if not options:
             options = ''
         lib = Bingo._getLib(indigo)
@@ -107,6 +112,7 @@ class Bingo(object):
         return Bingo(Bingo._checkResult(indigo, lib.bingoLoadDatabaseFile(path, databaseType, options)), indigo, lib)
 
     def insert(self, indigoObject, index=None):
+        self._indigo._setSessionId()
         if not index:
             return Bingo._checkResult(self._indigo, self._lib.bingoInsertRecordObj(self._id, indigoObject.id))
         else:
@@ -114,15 +120,25 @@ class Bingo(object):
                                       self._lib.bingoInsertRecordObjWithId(self._id, indigoObject.id, index))
 
     def delete(self, index):
+        self._indigo._setSessionId()
         Bingo._checkResult(self._indigo, self._lib.bingoDeleteRecord(self._id, index))
 
     def searchSub(self, query, options=''):
+        self._indigo._setSessionId()
         if not options:
             options = ''
         return BingoObject(Bingo._checkResult(self._indigo, self._lib.bingoSearchSub(self._id, query.id, options)),
                            self._indigo, self)
+                           
+    def searchExact(self, query, options=''):
+        self._indigo._setSessionId()
+        if not options:
+            options = ''
+        return BingoObject(Bingo._checkResult(self._indigo, self._lib.bingoSearchExact(self._id, query.id, options)),
+                           self._indigo, self)
 
     def searchSim(self, query, minSim, maxSim, metric='tanimoto'):
+        self._indigo._setSessionId()
         if not metric:
             metric = 'tanimoto'
         return BingoObject(
@@ -130,6 +146,7 @@ class Bingo(object):
             self._indigo, self)
 
     def optimize(self):
+        self._indigo._setSessionId()
         Bingo._checkResult(self._indigo, self._lib.bingoOptimize(_id))
 
 
