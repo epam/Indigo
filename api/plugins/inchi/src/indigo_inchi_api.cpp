@@ -87,8 +87,9 @@ CEXPORT const char* indigoInchiGetInchi (int molecule)
       IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
       IndigoObject &obj = self.getObject(molecule);
 
-      indigo_inchi.saveMoleculeIntoInchi(obj.getMolecule(), self.tmp_string);
-      return self.tmp_string.ptr();
+      auto &tmp = self.getThreadTmpData();
+      indigo_inchi.saveMoleculeIntoInchi(obj.getMolecule(), tmp.string);
+      return tmp.string.ptr();
    }
    INDIGO_END(0)
 }
@@ -97,8 +98,9 @@ CEXPORT const char* indigoInchiGetInchiKey (const char *inchi_string)
 {
    INDIGO_BEGIN
    {
-      IndigoInchi::InChIKey(inchi_string, self.tmp_string);
-      return self.tmp_string.ptr();
+      auto &tmp = self.getThreadTmpData();
+      IndigoInchi::InChIKey(inchi_string, tmp.string);
+      return tmp.string.ptr();
    }
    INDIGO_END(0)
 }

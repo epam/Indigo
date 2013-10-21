@@ -134,8 +134,9 @@ CEXPORT const char * indigoCheckBadValence (int handle)
          }
          catch (Exception &e)
          {
-            self.tmp_string.readString(e.message(), true);
-            return self.tmp_string.ptr();
+            auto &tmp = self.getThreadTmpData();
+            tmp.string.readString(e.message(), true);
+            return tmp.string.ptr();
          }
       }
       else if (IndigoBaseReaction::is(obj))
@@ -166,8 +167,9 @@ CEXPORT const char * indigoCheckBadValence (int handle)
          }
          catch (Exception &e)
          {
-            self.tmp_string.readString(e.message(), true);
-            return self.tmp_string.ptr();
+            auto &tmp = self.getThreadTmpData();
+            tmp.string.readString(e.message(), true);
+            return tmp.string.ptr();
          }
       }
       else
@@ -213,8 +215,9 @@ CEXPORT const char * indigoCheckAmbiguousH (int handle)
          }
          catch (Exception &e)
          {
-            self.tmp_string.readString(e.message(), true);
-            return self.tmp_string.ptr();
+            auto &tmp = self.getThreadTmpData();
+            tmp.string.readString(e.message(), true);
+            return tmp.string.ptr();
          }
       }
       else if (IndigoBaseReaction::is(obj))
@@ -235,8 +238,9 @@ CEXPORT const char * indigoCheckAmbiguousH (int handle)
          }
          catch (Exception &e)
          {
-            self.tmp_string.readString(e.message(), true);
-            return self.tmp_string.ptr();
+            auto &tmp = self.getThreadTmpData();
+            tmp.string.readString(e.message(), true);
+            return tmp.string.ptr();
          }
       }
       else
@@ -252,9 +256,10 @@ CEXPORT const char * indigoSmiles (int item)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(item);
-      IndigoSmilesSaver::generateSmiles(obj, self.tmp_string);
+      auto &tmp = self.getThreadTmpData();
+      IndigoSmilesSaver::generateSmiles(obj, tmp.string);
 
-      return self.tmp_string.ptr();
+      return tmp.string.ptr();
    }
    INDIGO_END(0);
 }
@@ -367,6 +372,8 @@ CEXPORT const char * indigoRawData (int handler)
    {
       IndigoObject &obj = self.getObject(handler);
 
+      auto &tmp = self.getThreadTmpData();
+
       if (obj.type == IndigoObject::RDF_MOLECULE ||
           obj.type == IndigoObject::RDF_REACTION ||
           obj.type == IndigoObject::SMILES_MOLECULE ||
@@ -376,18 +383,18 @@ CEXPORT const char * indigoRawData (int handler)
       {
          IndigoRdfData &data = (IndigoRdfData &)obj;
 
-         self.tmp_string.copy(data.getRawData());
+         tmp.string.copy(data.getRawData());
       }
       else if (obj.type == IndigoObject::PROPERTY)
-         self.tmp_string.copy(((IndigoProperty &)obj).getValue());
+         tmp.string.copy(((IndigoProperty &)obj).getValue());
       else if (obj.type == IndigoObject::DATA_SGROUP)
       {
-         self.tmp_string.copy(((IndigoDataSGroup &)obj).get().data);
+         tmp.string.copy(((IndigoDataSGroup &)obj).get().data);
       }
       else
          throw IndigoError("%s does not have raw data", obj.debugInfo());
-      self.tmp_string.push(0);
-      return self.tmp_string.ptr();
+      tmp.string.push(0);
+      return tmp.string.ptr();
    }
    INDIGO_END(0)
 }
@@ -470,7 +477,8 @@ CEXPORT int indigoSerialize (int item, byte **buf, int *size)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(item);
-      ArrayOutput out(self.tmp_string);
+      auto &tmp = self.getThreadTmpData();
+      ArrayOutput out(tmp.string);
 
       if (IndigoBaseMolecule::is(obj))
       {
@@ -494,8 +502,8 @@ CEXPORT int indigoSerialize (int item, byte **buf, int *size)
          saver.saveReaction(rxn);
       }
 
-      *buf = (byte *)self.tmp_string.ptr();
-      *size = self.tmp_string.size();
+      *buf = (byte *)tmp.string.ptr();
+      *size = tmp.string.size();
       return 1;
    }
    INDIGO_END(-1)
@@ -712,10 +720,11 @@ CEXPORT const char * indigoDbgInternalType (int object)
    {
       IndigoObject &obj = self.getObject(object);
 
-      char tmp[1024];
-      snprintf(tmp, 1023, "#%02d: %s", obj.type, obj.debugInfo());
-      self.tmp_string.readString(tmp, true);
-      return self.tmp_string.ptr();
+      char tmp_str[1024];
+      snprintf(tmp_str, 1023, "#%02d: %s", obj.type, obj.debugInfo());
+      auto &tmp = self.getThreadTmpData();
+      tmp.string.readString(tmp_str, true);
+      return tmp.string.ptr();
    }
    INDIGO_END(0);
 }

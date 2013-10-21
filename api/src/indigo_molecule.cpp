@@ -956,8 +956,9 @@ CEXPORT const char * indigoSymbol (int atom)
    {
       IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
 
-      ia.mol.getAtomSymbol(ia.idx, self.tmp_string);
-      return self.tmp_string.ptr();
+      auto &tmp = self.getThreadTmpData();
+      ia.mol.getAtomSymbol(ia.idx, tmp.string);
+      return tmp.string.ptr();
    }
    INDIGO_END(0);
 }
@@ -1381,10 +1382,11 @@ CEXPORT float * indigoXYZ (int atom)
       BaseMolecule &mol = ia.mol;
 
       Vec3f &pos = mol.getAtomXyz(ia.idx);
-      self.tmp_xyz[0] = pos.x;
-      self.tmp_xyz[1] = pos.y;
-      self.tmp_xyz[2] = pos.z;
-      return self.tmp_xyz;
+      auto &tmp = self.getThreadTmpData();
+      tmp.xyz[0] = pos.x;
+      tmp.xyz[1] = pos.y;
+      tmp.xyz[2] = pos.z;
+      return tmp.xyz;
    }
    INDIGO_END(0)
 }
@@ -1611,12 +1613,13 @@ CEXPORT const char * indigoCanonicalSmiles (int molecule)
    {
       Molecule &mol = self.getObject(molecule).getMolecule();
 
-      ArrayOutput output(self.tmp_string);
+      auto &tmp = self.getThreadTmpData();
+      ArrayOutput output(tmp.string);
       CanonicalSmilesSaver saver(output);
       
       saver.saveMolecule(mol);
-      self.tmp_string.push(0);
-      return self.tmp_string.ptr();
+      tmp.string.push(0);
+      return tmp.string.ptr();
    }
    INDIGO_END(0);
 }
@@ -1647,13 +1650,14 @@ CEXPORT const int * indigoSymmetryClasses (int molecule, int *count_out)
       of.process(m2);
       of.getCanonicallyOrderedOrbits(orbits);
 
-      self.tmp_string.resize(orbits.sizeInBytes());
-      self.tmp_string.copy((char*)orbits.ptr(), orbits.sizeInBytes());
+      auto &tmp = self.getThreadTmpData();
+      tmp.string.resize(orbits.sizeInBytes());
+      tmp.string.copy((char*)orbits.ptr(), orbits.sizeInBytes());
 
       if (count_out != 0)
          *count_out= orbits.size();
 
-      return (const int*)self.tmp_string.ptr();
+      return (const int*)tmp.string.ptr();
    }
    INDIGO_END(0);
 }
@@ -1664,13 +1668,14 @@ CEXPORT const char * indigoLayeredCode (int molecule)
    {
       Molecule &mol = self.getObject(molecule).getMolecule();
 
-      ArrayOutput output(self.tmp_string);
+      auto &tmp = self.getThreadTmpData();
+      ArrayOutput output(tmp.string);
 
       MoleculeInChI inchi_saver(output);
       inchi_saver.outputInChI(mol);
 
-      self.tmp_string.push(0);
-      return self.tmp_string.ptr();
+      tmp.string.push(0);
+      return tmp.string.ptr();
    }
    INDIGO_END(0);
 }
