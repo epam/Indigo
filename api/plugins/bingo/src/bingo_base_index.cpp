@@ -157,6 +157,8 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id, DatabaseLockData &
    }
    
    WriteLock wlock(lock_data);
+   profTimerStart(t_after, "exclusive_write");   
+
    {
       profTimerStart(t_in, "add_obj_data");   
       _insertIndexData(_obj_data);
