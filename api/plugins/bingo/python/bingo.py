@@ -147,7 +147,7 @@ class Bingo(object):
 
     def optimize(self):
         self._indigo._setSessionId()
-        Bingo._checkResult(self._indigo, self._lib.bingoOptimize(_id))
+        Bingo._checkResult(self._indigo, self._lib.bingoOptimize(self._id))
 
 
 class BingoObject(object):
@@ -160,30 +160,37 @@ class BingoObject(object):
         self.close()
 
     def close(self):
+        self._indigo._setSessionId()
         if self._id >= 0:
             Bingo._checkResult(self._indigo, self._bingo._lib.bingoEndSearch(self._id))
             self._id = -1
 
     def next(self):
+        self._indigo._setSessionId()
         return True if Bingo._checkResult(self._indigo, self._bingo._lib.bingoNext(self._id)) == 1 else False
 
     def getCurrentId(self):
+        self._indigo._setSessionId()
         return Bingo._checkResult(self._indigo, self._bingo._lib.bingoGetCurrentId(self._id))
 
     def getIndigoObject(self):
-        return Indigo.IndigoObject(self._indigo,
-                                   Bingo._checkResult(self._indigo, self._bingo._lib.bingoGetObject(self._id)))
+        self._indigo._setSessionId()
+        return IndigoObject(self._indigo, Bingo._checkResult(self._indigo, self._bingo._lib.bingoGetObject(self._id)))
 
     def getCurrentSimilarityValue(self):
+        self._indigo._setSessionId()
         return Bingo._checkResult(self._indigo, self._bingo._lib.bingoGetCurrentSimilarityValue(self._id))
 
     def estimateRemainingResultsCount(self):
+        self._indigo._setSessionId()
         return Bingo._checkResult(self._indigo, self._bingo._lib.bingoEstimateRemainingResultsCount(self._id))
 
     def estimateRemainingResultsCountError(self):
+        self._indigo._setSessionId()
         return Bingo._checkResult(self._indigo, self._bingo._lib.bingoEstimateRemainingResultsCountError(self._id))
 
     def estimateRemainingTime(self):
+        self._indigo._setSessionId()
         value = c_float()
         return Bingo._checkResult(self._indigo, self._bingo._lib.bingoEstimateRemainingTime(self._id, pointer(value)))
         return value.value
