@@ -5,6 +5,7 @@ import re
 import shutil
 import subprocess
 
+
 if os.name == 'nt':
     msbuildcommand = 'msbuild /t:Rebuild /p:Configuration=Release'
 else:
@@ -13,7 +14,7 @@ else:
 
 parser = OptionParser(description='Indigo .NET libraries build script')
 parser.add_option('--suffix', '-s', help='archive suffix', default="")
-
+parser.add_option('--doc', default=False, action='store_true', help='Put documentation into the archive')
 (args, left_args) = parser.parse_args()
 
 wrappers = (args.suffix[1:], )
@@ -182,9 +183,10 @@ shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "dotnet")
 shutil.copy(join(indigoDotNetPath, 'bin', 'Release', 'indigo-dotnet.dll'), "dotnet")
 shutil.copy(join(indigoRendererDotNetPath, 'bin', 'Release', 'indigo-renderer-dotnet.dll'), "dotnet")
 shutil.copy(join(indigoInchiDotNetPath, 'bin', 'Release', 'indigo-inchi-dotnet.dll'), "dotnet")
-shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join('dotnet', 'doc'))
 shutil.copy(join(bingoDotNetPath, 'bin', 'Release', 'bingo-dotnet.dll'), "dotnet")
 shutil.copy(join(bingoDotNetPath, 'bin', 'Release', 'bingo-dotnet.XML'), "dotnet")
+if args.doc:
+    shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join('dotnet', 'doc'))
 
 archive_name = "indigo-dotnet-%s" % (version + args.suffix)
 os.rename("dotnet", archive_name)

@@ -8,6 +8,7 @@ from optparse import OptionParser
 
 parser = OptionParser(description='Indigo Java libraries build script')
 parser.add_option('--suffix', '-s', help='archive suffix', default="")
+parser.add_option('--doc', default=False, action='store_true', help='Put documentation into the archive')
 
 (args, left_args) = parser.parse_args()
 
@@ -47,8 +48,9 @@ shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-inchi-%s.
 
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "java")
-doc_dir = join(api_dir, '..', 'doc')
-shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join('java', 'doc'))
+if args.doc:
+	doc_dir = join(api_dir, '..', 'doc')
+	shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join('java', 'doc'))
 
 shutil.copy(os.path.join(root, "common", "jna", "jna.jar"), "java")
 

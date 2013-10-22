@@ -196,21 +196,23 @@ void SdfLoader::readNext ()
          _scanner->readLine(str, true);
          properties.value(idx).copy(str);
          output.writeStringCR(str.ptr());
-
-         do
+         if (str.size() > 1)
          {
-            if (_scanner->isEOF())
-               break;
-
-            _scanner->readLine(str, true);
-            output.writeStringCR(str.ptr());
-            if (str.size() > 1)
+            do
             {
-               properties.value(idx).pop(); // Remove string end marker (0)
-               properties.value(idx).push('\n');
-               properties.value(idx).appendString(str.ptr(), true);
-            }
-         } while (str.size() > 1);
+               if (_scanner->isEOF())
+                  break;
+
+               _scanner->readLine(str, true);
+               output.writeStringCR(str.ptr());
+               if (str.size() > 1)
+               {
+                  properties.value(idx).pop(); // Remove string end marker (0)
+                  properties.value(idx).push('\n');
+                  properties.value(idx).appendString(str.ptr(), true);
+               }
+            } while (str.size() > 1);
+         }
       }
 
       if (_scanner->isEOF())

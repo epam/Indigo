@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(IndigoDeco)
 
+include(DefineTest)
 include_directories(../../api ../../common)
 
 add_executable(indigo-deco main.c)
@@ -11,3 +12,4 @@ if (UNIX)
 endif()
 pack_executable(indigo-deco)
 
+add_test(NAME deco-simple-test COMMAND indigo-deco -h)
