@@ -139,10 +139,9 @@ namespace com.ggasoftware.indigo
         /// </summary>
         /// <param name="indigo">Indigo instance</param>
         /// <param name="location">Directory with the files location</param>
-        /// <param name="type">"molecule" or "reaction"</param>
         /// <param name="options">Additional options separated with a semicolon. See the Bingo documentation for more details.</param>
         /// <returns>Bingo database instance</returns>
-        public static Bingo loadDatabaseFile(Indigo indigo, string location, string type, string options)
+        public static Bingo loadDatabaseFile(Indigo indigo, string location, string options)
         {
             if (options == null)
             {
@@ -150,7 +149,7 @@ namespace com.ggasoftware.indigo
             }
             BingoLib lib = Bingo.getLib(indigo);
             indigo.setSessionID();
-            int databaseID = Bingo.checkResult(indigo, lib.bingoLoadDatabaseFile(location, type, options));
+            int databaseID = Bingo.checkResult(indigo, lib.bingoLoadDatabaseFile(location, options));
             return new Bingo(indigo, databaseID, lib);
         }
 
@@ -159,11 +158,10 @@ namespace com.ggasoftware.indigo
         /// </summary>
         /// <param name="indigo">Indigo instance</param>
         /// <param name="location">Directory with the files location</param>
-        /// <param name="type">"molecule" or "reaction"</param>
         /// <returns>Bingo database instance</returns>
-        public static Bingo loadDatabaseFile(Indigo indigo, string location, string type)
+        public static Bingo loadDatabaseFile(Indigo indigo, string location)
         {
-            return loadDatabaseFile(indigo, location, type, null);
+            return loadDatabaseFile(indigo, location, null);
         }
 
         /// <summary>
@@ -289,5 +287,18 @@ namespace com.ggasoftware.indigo
            _indigo.setSessionID();
            Bingo.checkResult(_indigo, _lib.bingoOptimize(_id));
         }
+
+        /// <summary>
+        /// Returns an IndigoObject for the record with the specified id
+        /// </summary>
+        /// <param name="id">record id</param>
+        /// <returns>Indigo object</returns>
+        public IndigoObject getRecordById(int id)
+        {
+           _indigo.setSessionID();
+           return new IndigoObject(_indigo, Bingo.checkResult(_indigo, _lib.bingoGetRecordObj(_id, id))); ;
+        }
+
+        
     }
 }

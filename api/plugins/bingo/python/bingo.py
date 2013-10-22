@@ -167,6 +167,9 @@ class Bingo(object):
         self._indigo._setSessionId()
         Bingo._checkResult(self._indigo, self._lib.bingoOptimize(self._id))
 
+    def getRecordById (self, id):
+        self._indigo._setSessionId()
+        return IndigoObject(self._indigo, Bingo._checkResult(self._indigo, self._lib.bingoGetRecordObj(self._id, id)))
 
 class BingoObject(object):
     def __init__(self, objId, indigo, bingo):
