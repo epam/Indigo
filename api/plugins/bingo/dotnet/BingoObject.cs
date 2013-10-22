@@ -58,7 +58,8 @@ namespace com.ggasoftware.indigo
         /// <returns>True if there are any more records</returns>
         public bool next()
         {
-            return (Bingo.checkResult(_indigo, _bingoLib.bingoNext(_id)) == 1) ? true : false;
+           _indigo.setSessionID();
+           return (Bingo.checkResult(_indigo, _bingoLib.bingoNext(_id)) == 1) ? true : false;
         }
 
         /// <summary>
@@ -67,7 +68,8 @@ namespace com.ggasoftware.indigo
         /// <returns>Record id</returns>
         public int getCurrentId()
         {
-            return Bingo.checkResult(_indigo, _bingoLib.bingoGetCurrentId(_id));
+           _indigo.setSessionID();
+           return Bingo.checkResult(_indigo, _bingoLib.bingoGetCurrentId(_id));
         }
 
         /// <summary>
@@ -76,7 +78,8 @@ namespace com.ggasoftware.indigo
         /// <returns>Similarity value</returns>
         public float getCurrentSimilarityValue()
         {
-            return Bingo.checkResult(_indigo, _bingoLib.bingoGetCurrentSimilarityValue(_id));
+           _indigo.setSessionID();
+           return Bingo.checkResult(_indigo, _bingoLib.bingoGetCurrentSimilarityValue(_id));
         }
 
         /// <summary>
@@ -85,9 +88,10 @@ namespace com.ggasoftware.indigo
         /// <returns>Shared Indigo object for the current search operation</returns>
         public IndigoObject getIndigoObject()
         {
-            IndigoObject res = new IndigoObject(_indigo, Bingo.checkResult(_indigo, _bingoLib.bingoGetObject(_id)));
-            _reference = res;
-            return res;
+           _indigo.setSessionID();
+           IndigoObject res = new IndigoObject(_indigo, Bingo.checkResult(_indigo, _bingoLib.bingoGetObject(_id)));
+           _reference = res;
+           return res;
         }
 
         /// <summary>
@@ -96,7 +100,8 @@ namespace com.ggasoftware.indigo
         /// <returns>Estimated hits count</returns>
         public int estimateRemainingResultsCount ()
         {
-            return Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingResultsCount(_id));
+           _indigo.setSessionID();
+           return Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingResultsCount(_id));
         }
 
         /// <summary>
@@ -105,7 +110,8 @@ namespace com.ggasoftware.indigo
         /// <returns>Estimated hits count error</returns>
         public int estimateRemainingResultsCountError ()
         {
-            return Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingResultsCountError(_id));
+           _indigo.setSessionID();
+           return Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingResultsCountError(_id));
         }
 
         /// <summary>
@@ -115,6 +121,7 @@ namespace com.ggasoftware.indigo
         public float estimateRemainingTime ()
         {
             float esimated_time;
+            _indigo.setSessionID();
             Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingTime(_id, &esimated_time));
             return esimated_time;
         }

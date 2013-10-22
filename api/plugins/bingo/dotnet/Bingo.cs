@@ -38,6 +38,7 @@ namespace com.ggasoftware.indigo
         {
             if (_id >= 0)
             {
+                _indigo.setSessionID();
                 Bingo.checkResult(_indigo, _lib.bingoCloseDatabase(_id));
                 _id = -1;
             }
@@ -111,6 +112,7 @@ namespace com.ggasoftware.indigo
         /// <returns>Bingo database instance</returns>
         public static Bingo createDatabaseFile(Indigo indigo, string location, string type, string options)
         {
+            indigo.setSessionID();
             if (options == null)
             {
                 options = "";
@@ -147,6 +149,7 @@ namespace com.ggasoftware.indigo
                 options = "";
             }
             BingoLib lib = Bingo.getLib(indigo);
+            indigo.setSessionID();
             int databaseID = Bingo.checkResult(indigo, lib.bingoLoadDatabaseFile(location, type, options));
             return new Bingo(indigo, databaseID, lib);
         }
@@ -170,7 +173,8 @@ namespace com.ggasoftware.indigo
         /// <returns>record id</returns>
         public int insert(IndigoObject record)
         {
-            return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObj(_id, record.self));
+           _indigo.setSessionID();
+           return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObj(_id, record.self));
         }
 
         /// <summary>
@@ -180,7 +184,8 @@ namespace com.ggasoftware.indigo
         /// <param name="id">record id</param>
         public void insert(IndigoObject record, int id)
         {
-            Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithId(_id, record.self, id));
+           _indigo.setSessionID();
+           Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithId(_id, record.self, id));
         }
 
         /// <summary>
@@ -189,7 +194,8 @@ namespace com.ggasoftware.indigo
         /// <param name="id">Record id</param>
         public void delete(int id)
         {
-            Bingo.checkResult(_indigo, _lib.bingoDeleteRecord(_id, id));
+           _indigo.setSessionID();
+           Bingo.checkResult(_indigo, _lib.bingoDeleteRecord(_id, id));
         }
 
         /// <summary>
@@ -204,6 +210,7 @@ namespace com.ggasoftware.indigo
             {
                 options = "";
             }
+            _indigo.setSessionID();
             return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSub(_id, query.self, options)), _indigo, _lib);
         }
 
@@ -231,6 +238,7 @@ namespace com.ggasoftware.indigo
             {
                 metric = "tanimoto";
             }
+            _indigo.setSessionID();
             return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSim(_id, query.self, min, max, metric)), _indigo, _lib);
         }
 
@@ -268,6 +276,7 @@ namespace com.ggasoftware.indigo
            {
               options = "";
            }
+           _indigo.setSessionID();
            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchExact(_id, query.self, options)), _indigo, _lib);
         }
 
@@ -277,7 +286,8 @@ namespace com.ggasoftware.indigo
         /// </summary>
         public void optimize ()
         {
-            Bingo.checkResult(_indigo, _lib.bingoOptimize(_id));
+           _indigo.setSessionID();
+           Bingo.checkResult(_indigo, _lib.bingoOptimize(_id));
         }
     }
 }
