@@ -140,7 +140,7 @@ def build(params=[], install=True):
         print("Do not know how to run package and install target")
     subprocess.check_call("ctest -V --timeout 10 -C %s ." % (args.config), shell=True)
 
-    if not params:
+    if not params or 'INDIGO_CMAKE_OSX_ARCHITECTURES' not in params:
         os.chdir(root)
         if not os.path.exists("dist"):
             os.mkdir("dist")
