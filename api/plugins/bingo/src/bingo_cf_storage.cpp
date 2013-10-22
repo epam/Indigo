@@ -52,12 +52,6 @@ void ByteBufferStorage::add (const byte *data, int len, int idx)
 
    memcpy(_blocks.top().ptr() + _free_pos, data, len);
 
-   _buf_file.seekp(_addresses[idx].block_idx * _block_size + _addresses[idx].offset);
-   _buf_file.write((const char *)data, _addresses[idx].len);
-
-   _offset_file.seekp(idx * sizeof(_addresses[idx]));
-   _offset_file.write((char *)&_addresses[idx], sizeof(_addresses[idx]));
-
    _free_pos += len;
 }
 
@@ -67,9 +61,6 @@ void ByteBufferStorage::remove (int idx)
       throw Exception("ByteBufferStorage: incorrect buffer id");
 
    _addresses[idx].len = -1;
-
-   _offset_file.seekp(idx * sizeof(_addresses[idx]));
-   _offset_file.write((char *)&_addresses[idx], sizeof(_addresses[idx]));
 }
 
 ByteBufferStorage::~ByteBufferStorage()

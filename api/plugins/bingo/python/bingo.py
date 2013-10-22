@@ -32,7 +32,7 @@ class Bingo(object):
         self._lib.bingoCreateDatabaseFile.restype = c_int
         self._lib.bingoCreateDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
         self._lib.bingoLoadDatabaseFile.restype = c_int
-        self._lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
+        self._lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p]
         self._lib.bingoCloseDatabase.restype = c_int
         self._lib.bingoCloseDatabase.argtypes = [c_int]
         self._lib.bingoInsertRecordObj.restype = c_int
@@ -116,14 +116,14 @@ class Bingo(object):
         return Bingo(Bingo._checkResult(indigo, lib.bingoCreateDatabaseFile(path.encode('ascii'), databaseType.encode('ascii'), options.encode('ascii'))), indigo, lib)
 
     @staticmethod
-    def loadDatabaseFile(indigo, path, databaseType, options=''):
+    def loadDatabaseFile(indigo, path, options=''):
         indigo._setSessionId()
         if not options:
             options = ''
         lib = Bingo._getLib(indigo)
         lib.bingoLoadDatabaseFile.restype = c_int
-        lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
-        return Bingo(Bingo._checkResult(indigo, lib.bingoLoadDatabaseFile(path.encode('ascii'), databaseType.encode('ascii'), options.encode('ascii'))), indigo, lib)
+        lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p]
+        return Bingo(Bingo._checkResult(indigo, lib.bingoLoadDatabaseFile(path.encode('ascii'), options.encode('ascii'))), indigo, lib)
 
     def version(self):
         self._indigo._setSessionId()

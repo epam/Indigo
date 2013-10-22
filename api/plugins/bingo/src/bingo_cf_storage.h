@@ -44,11 +44,6 @@ namespace bingo
       int _free_pos;
       BingoArray< BingoPtr<byte> > _blocks;
       BingoArray<_Addr> _addresses;
-
-      std::fstream _buf_file;
-      std::fstream _offset_file;
-      std::string _buf_filename;
-      std::string _offset_filename;
    };
 };
 

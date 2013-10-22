@@ -20,6 +20,9 @@ static const char *_molecule_type = "molecule";
 static const int _type_len = 9;
 static const char *_mmf_file = "mmf_storage";
 static const char *_version_prop = "version";
+static const char *_read_only_prop = "read_only";
+static const char *_mmf_size_prop = "mmf_size";
+static const char *_mt_size_prop = "mt_size";
 static const size_t _mmf_size = 536870912; // 500Mb
 static const int _sim_mt_size = 50000;
 
@@ -27,8 +30,6 @@ BaseIndex::BaseIndex (IndexType type)
 {
    _type = type;
    _read_only = false;
-   _object_count = 0;
-   _first_free_id = 0;
    _index_id = -1;
 }
 
@@ -54,7 +55,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    std::map<std::string, std::string> option_map;
 
-   _parseOptions(options, option_map);
+   _parseOptions(options, option_map, true);
 
    _read_only = _getAccessType(option_map);
 
@@ -84,6 +85,9 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
    _header->sub_offset = TranspFpStorage::create(_sub_fp_storage, _fp_params.fingerprintSize(), sub_block_size);
    _header->sim_offset = FingerprintTable::create(_sim_fp_storage, _fp_params.fingerprintSizeSim(), mt_size);
    _header->exact_offset = ExactStorage::create(_exact_storage);
+
+   _header->first_free_id = 0;
+   _header->object_count = 0;
 }
 
 void BaseIndex::load (const char *location, const char *options, int index_id)
@@ -103,7 +107,7 @@ void BaseIndex::load (const char *location, const char *options, int index_id)
 
    std::map<std::string, std::string> option_map;
 
-   _parseOptions(options, option_map);
+   _parseOptions(options, option_map, false);
 
    _read_only = _getAccessType(option_map);
 
@@ -169,24 +173,24 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id, DatabaseLockData &
       if (obj_id == -1)
       {
          int i;
-         for (i = _first_free_id; i < back_id_mapping.size(); i++)
+         for (i = _header->first_free_id; i < back_id_mapping.size(); i++)
          {
             if (back_id_mapping[i] == -1)
             {
-               _first_free_id = i;
+               _header->first_free_id = i;
                break;
             }
          }
 
          if (i == back_id_mapping.size())
-            _first_free_id = back_id_mapping.size();
+            _header->first_free_id = back_id_mapping.size();
 
-         obj_id = _first_free_id;
+         obj_id = _header->first_free_id;
       }
    }
 
-   int base_id = _object_count;
-   _object_count++;
+   int base_id = _header->object_count;
+   _header->object_count++;
    {
       profTimerStart(t_in, "mapping_changing_2");    
       _mappingAdd(obj_id, base_id);
@@ -254,7 +258,7 @@ BingoArray<int> & BaseIndex::getBackIdMapping ()
 
 int BaseIndex::getObjectsCount () const
 {
-   return _object_count;
+   return _header->object_count;
 }
 
 const byte * BaseIndex::getObjectCf (int id, int &len)
@@ -288,10 +292,13 @@ Index::IndexType BaseIndex::determineType (const char *location)
    path += '/';
    path += _mmf_file;
    path += '0';
-   std::ifstream fstream(path, std::ios::binary | std::ios::ate);
+   std::ifstream file(path, std::ios::binary | std::ios::in);
    
+   bool res = file.good();
+
    char type[_type_len];
-   fstream.read(type, _type_len);
+   file.seekg(0);
+   file.read(type, _type_len);
 
    if (strcmp(type, _molecule_type) == 0)
       return MOLECULE;
@@ -306,7 +313,7 @@ BaseIndex::~BaseIndex()
    _mmf_storage.close();
 }
 
-void BaseIndex::_parseOptions (const char *options, std::map<std::string, std::string> &option_map)
+void BaseIndex::_parseOptions (const char *options, std::map<std::string, std::string> &option_map, bool is_create)
 {
    if (options == 0 || strlen(options) == 0)
       return;
@@ -329,6 +336,16 @@ void BaseIndex::_parseOptions (const char *options, std::map<std::string, std::s
 
       opt_name.assign(line.substr(0, sep));
       opt_value.assign(line.substr(sep + 1, std::string::npos));
+
+      if (is_create)
+      {
+         if ((opt_name.compare(_read_only_prop) != 0) && 
+             (opt_name.compare(_mt_size_prop) != 0) && 
+             (opt_name.compare(_mmf_size_prop) != 0))
+            throw Exception("Creating index error: incorrect input options");
+      }
+      else if (opt_name.compare(_read_only_prop) != 0)
+         throw Exception("Loading index error: incorrect input options");
 
       option_map.insert(std::pair<std::string, std::string>(opt_name, opt_value));
    }
@@ -407,9 +424,9 @@ bool BaseIndex::_prepareIndexData (IndexObject &obj, _ObjectIndexData &obj_data)
 void BaseIndex::_insertIndexData (_ObjectIndexData &obj_data)
 {
    _sub_fp_storage.ptr()->add(obj_data.sub_fp.ptr());
-   _sim_fp_storage.ptr()->add(obj_data.sim_fp.ptr(), _object_count);
-   _cf_storage.ptr()->add((byte *)obj_data.cf_str.ptr(), obj_data.cf_str.size(), _object_count);
-   _exact_storage.ptr()->add(obj_data.hash, _object_count);
+   _sim_fp_storage.ptr()->add(obj_data.sim_fp.ptr(), _header->object_count);
+   _cf_storage.ptr()->add((byte *)obj_data.cf_str.ptr(), obj_data.cf_str.size(), _header->object_count);
+   _exact_storage.ptr()->add(obj_data.hash, _header->object_count);
 }
 
 void BaseIndex::_mappingLoad ()

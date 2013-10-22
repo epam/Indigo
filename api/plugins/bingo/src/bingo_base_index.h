@@ -23,7 +23,7 @@ namespace bingo
    class Index
    {
    public:
-      typedef enum {MOLECULE, REACTION} IndexType;
+      typedef enum {MOLECULE, REACTION, UNKNOWN} IndexType;
 
       virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data, const char *options) = 0;
 
@@ -60,6 +60,8 @@ namespace bingo
          size_t sub_offset;
          size_t sim_offset;
          size_t exact_offset;
+         int object_count;
+         int first_free_id;
       };
 
    public:
@@ -128,13 +130,9 @@ namespace bingo
       MoleculeFingerprintParameters _fp_params;
       std::string _location;
 
-      int _object_count;
-
-      int _first_free_id;
-
       int _index_id;
 
-      static void _parseOptions (const char *options, std::map<std::string, std::string> &option_map);
+      static void _parseOptions (const char *options, std::map<std::string, std::string> &option_map, bool is_create);
 
       static size_t _getMMfSize (std::map<std::string, std::string> &option_map);
 

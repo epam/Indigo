@@ -44,7 +44,7 @@ static PtrArray<DatabaseLockData> _lockers;
 static PtrPool<Matcher> _searches;
 static Array<int> _searches_db;
 
-static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *type, const char *options, bool create)
+static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *options, bool create, const char *type = 0)
 {
    MoleculeFingerprintParameters fp_params;
 
@@ -60,12 +60,20 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *typ
    if (loc_dir.find_last_of('/') != loc_dir.length() - 1)
       loc_dir += '/';
 
-   if (strcmp(type, "molecule") == 0)
+   BaseIndex::IndexType ind_type = BaseIndex::UNKNOWN;
+   if (!create)
+      ind_type = BaseIndex::determineType(location);
+   else if (type && strcmp(type, "molecule") == 0)
+      ind_type = BaseIndex::MOLECULE;
+   else if (type && strcmp(type, "reaction") == 0)
+      ind_type = BaseIndex::REACTION;
+      
+   if (ind_type == BaseIndex::MOLECULE)
       context.reset(new MoleculeIndex());
-   else if (strcmp(type, "reaction") == 0)
+   else if (ind_type == BaseIndex::REACTION)
       context.reset(new ReactionIndex());
    else
-      throw BingoException("wrong database type option");
+      throw BingoException("Unknown database type");
 
    int db_id = _bingo_instances.add(0);
 
@@ -137,16 +145,16 @@ CEXPORT int bingoCreateDatabaseFile (const char *location, const char *type, con
 {
    INDIGO_BEGIN
    {
-      return _bingoCreateOrLoadDatabaseFile(location, type, options, true);
+      return _bingoCreateOrLoadDatabaseFile(location, options, true, type);
    }
    INDIGO_END(-1);
 }
 
-CEXPORT int bingoLoadDatabaseFile (const char *location, const char *type, const char *options)
+CEXPORT int bingoLoadDatabaseFile (const char *location, const char *options)
 {
    INDIGO_BEGIN
    {
-      return _bingoCreateOrLoadDatabaseFile(location, type, options, false);
+      return _bingoCreateOrLoadDatabaseFile(location, options, false);
    }
    INDIGO_END(-1);
 }
