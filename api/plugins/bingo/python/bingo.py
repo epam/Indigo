@@ -27,6 +27,8 @@ class Bingo(object):
         self._id = bingoId
         self._indigo = indigo
         self._lib = lib
+        self._lib.bingoVersion.restype = c_char_p
+        self._lib.bingoVersion.argtypes = None
         self._lib.bingoCreateDatabaseFile.restype = c_int
         self._lib.bingoCreateDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
         self._lib.bingoLoadDatabaseFile.restype = c_int
@@ -35,6 +37,8 @@ class Bingo(object):
         self._lib.bingoCloseDatabase.argtypes = [c_int]
         self._lib.bingoInsertRecordObj.restype = c_int
         self._lib.bingoInsertRecordObj.argtypes = [c_int, c_int]
+        self._lib.bingoGetRecordObj.restype = c_int
+        self._lib.bingoGetRecordObj.argtypes = [c_int, c_int]
         self._lib.bingoInsertRecordObjWithId.restype = c_int
         self._lib.bingoInsertRecordObjWithId.argtypes = [c_int, c_int, c_int]
         self._lib.bingoDeleteRecord.restype = c_int
@@ -76,8 +80,18 @@ class Bingo(object):
     @staticmethod
     def _checkResult(indigo, result):
         if result < 0:
-            raise BingoException(indigo._lib.indigoGetLastError())
+            raise BingoException(indigo._lib.indigoGetLastError().decode('ascii'))
         return result
+        
+    @staticmethod
+    def _checkResultPtr (indigo, result):
+        if result is None:
+            raise BingoException(indigo._lib.indigoGetLastError().decode('ascii'))
+        return result
+        
+    @staticmethod
+    def _checkResultString (indigo, result):
+        return Bingo._checkResultPtr(indigo, result).decode('ascii')
 
     @staticmethod
     def _getLib(indigo):
@@ -90,7 +104,7 @@ class Bingo(object):
         else:
             raise BingoException("unsupported OS: " + os.name)
         return _lib
-
+    
     @staticmethod
     def createDatabaseFile(indigo, path, databaseType, options=''):
         indigo._setSessionId()
@@ -99,7 +113,7 @@ class Bingo(object):
         lib = Bingo._getLib(indigo)
         lib.bingoCreateDatabaseFile.restype = c_int
         lib.bingoCreateDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
-        return Bingo(Bingo._checkResult(indigo, lib.bingoCreateDatabaseFile(path, databaseType, options)), indigo, lib)
+        return Bingo(Bingo._checkResult(indigo, lib.bingoCreateDatabaseFile(path.encode('ascii'), databaseType.encode('ascii'), options.encode('ascii'))), indigo, lib)
 
     @staticmethod
     def loadDatabaseFile(indigo, path, databaseType, options=''):
@@ -108,9 +122,13 @@ class Bingo(object):
             options = ''
         lib = Bingo._getLib(indigo)
         lib.bingoLoadDatabaseFile.restype = c_int
-        lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p]
-        return Bingo(Bingo._checkResult(indigo, lib.bingoLoadDatabaseFile(path, databaseType, options)), indigo, lib)
+        lib.bingoLoadDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
+        return Bingo(Bingo._checkResult(indigo, lib.bingoLoadDatabaseFile(path.encode('ascii'), databaseType.encode('ascii'), options.encode('ascii'))), indigo, lib)
 
+    def version(self):
+        self._indigo._setSessionId()
+        return Bingo._checkResultString(self._indigo, self._lib.bingoVersion())
+    
     def insert(self, indigoObject, index=None):
         self._indigo._setSessionId()
         if not index:
@@ -127,14 +145,14 @@ class Bingo(object):
         self._indigo._setSessionId()
         if not options:
             options = ''
-        return BingoObject(Bingo._checkResult(self._indigo, self._lib.bingoSearchSub(self._id, query.id, options)),
+        return BingoObject(Bingo._checkResult(self._indigo, self._lib.bingoSearchSub(self._id, query.id, options.encode('ascii'))),
                            self._indigo, self)
                            
     def searchExact(self, query, options=''):
         self._indigo._setSessionId()
         if not options:
             options = ''
-        return BingoObject(Bingo._checkResult(self._indigo, self._lib.bingoSearchExact(self._id, query.id, options)),
+        return BingoObject(Bingo._checkResult(self._indigo, self._lib.bingoSearchExact(self._id, query.id, options.encode('ascii'))),
                            self._indigo, self)
 
     def searchSim(self, query, minSim, maxSim, metric='tanimoto'):
@@ -142,7 +160,7 @@ class Bingo(object):
         if not metric:
             metric = 'tanimoto'
         return BingoObject(
-            Bingo._checkResult(self._indigo, self._lib.bingoSearchSim(self._id, query.id, minSim, maxSim, metric)),
+            Bingo._checkResult(self._indigo, self._lib.bingoSearchSim(self._id, query.id, minSim, maxSim, metric.encode('ascii'))),
             self._indigo, self)
 
     def optimize(self):
