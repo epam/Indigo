@@ -45,11 +45,18 @@ void MeanEstimator::setCount (int count)
  
 float MeanEstimator::mean () const
 {
+   if (_count == 0)
+      return 0;
+
    return _sum / _count;
 }
 
 float MeanEstimator::meanEsimationError () const
 {
+   if (_count == 0)
+      return 0;
+
    float sigma = sqrt(_sum_sq / _count - pow(_sum / _count, 2));
+
    return 2 * sigma / sqrt((float)_count);
 }
