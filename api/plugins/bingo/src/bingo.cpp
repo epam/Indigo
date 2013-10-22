@@ -214,6 +214,48 @@ CEXPORT int bingoDeleteRecord (int db, int id)
    BINGO_END(-1);
 }
 
+CEXPORT int bingoGetRecordObj (int db, int id)
+{
+   BINGO_BEGIN_DB(db)
+   {
+      Index &bingo_index = _bingo_instances.ref(db);
+
+      ReadLock rlock(*_lockers[db]);
+      
+      int cf_len;
+      const byte * cf_buf = bingo_index.getObjectCf(id, cf_len);
+      int indigo_obj_id = -1;
+      
+      BufferScanner buf_scn(cf_buf, cf_len);
+
+      if (bingo_index.getType() == Index::MOLECULE)
+      {
+         AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
+
+         Molecule &mol = molptr->mol;
+         CmfLoader cmf_loader(buf_scn);
+         cmf_loader.loadMolecule(mol);
+
+         indigo_obj_id = self.addObject(molptr.release());
+      }
+      else if (bingo_index.getType() == Index::REACTION)
+      {
+         AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
+
+         Reaction &rxn = rxnptr->rxn;
+         CrfLoader crf_loader(buf_scn);  
+         crf_loader.loadReaction(rxn);
+
+         indigo_obj_id = self.addObject(rxnptr.release());
+      }
+      else
+         throw BingoException("bingoInsertRecordObj: Incorrect database");
+      
+      return indigo_obj_id;
+   }
+   BINGO_END(-1);
+}
+
 CEXPORT int bingoOptimize (int db)
 {
    BINGO_BEGIN_DB(db)

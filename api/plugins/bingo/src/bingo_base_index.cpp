@@ -255,6 +255,16 @@ int BaseIndex::getObjectsCount () const
    return _object_count;
 }
 
+const byte * BaseIndex::getObjectCf (int id, int &len)
+{
+   const byte *cf_buf = _cf_storage->get(_back_id_mapping_ptr.ref()[id], len);
+
+   if (len == -1)
+      throw Exception("There is no object with this id");
+
+   return cf_buf;
+}
+
 const char * BaseIndex::getIdPropertyName ()
 {
    return _properties.ref().getNoThrow("key");

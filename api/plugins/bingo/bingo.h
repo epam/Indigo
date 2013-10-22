@@ -30,6 +30,7 @@ CEXPORT int bingoCloseDatabase (int db);
 CEXPORT int bingoInsertRecordObj (int db, int obj);
 CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id);
 CEXPORT int bingoDeleteRecord (int db, int id);
+CEXPORT int bingoGetRecordObj (int db, int id);
 
 CEXPORT int bingoOptimize (int db);
 

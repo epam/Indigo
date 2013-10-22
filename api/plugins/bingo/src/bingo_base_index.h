@@ -23,6 +23,8 @@ namespace bingo
    class Index
    {
    public:
+      typedef enum {MOLECULE, REACTION} IndexType;
+
       virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data, const char *options) = 0;
 
       virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options, int index_id) = 0;
@@ -35,7 +37,7 @@ namespace bingo
 
       virtual void remove (int id) = 0;
    
-      typedef enum {MOLECULE, REACTION} IndexType;
+      virtual const byte * getObjectCf (int id, int &len) = 0;
 
       virtual const char * getIdPropertyName () = 0;
 
@@ -86,6 +88,8 @@ namespace bingo
       ByteBufferStorage & getCfStorage ();
 
       int getObjectsCount () const;
+
+      virtual const byte * getObjectCf (int id, int &len);
 
       virtual const char * getIdPropertyName ();
 
