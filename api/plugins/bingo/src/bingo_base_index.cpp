@@ -23,6 +23,7 @@ static const char *_version_prop = "version";
 static const char *_read_only_prop = "read_only";
 static const char *_mmf_size_prop = "mmf_size";
 static const char *_mt_size_prop = "mt_size";
+static const char *_id_key_prop = "key";
 static const size_t _mmf_size = 536870912; // 500Mb
 static const int _sim_mt_size = 50000;
 
@@ -273,7 +274,7 @@ const byte * BaseIndex::getObjectCf (int id, int &len)
 
 const char * BaseIndex::getIdPropertyName ()
 {
-   return _properties.ref().getNoThrow("key");
+   return _properties.ref().getNoThrow(_id_key_prop);
 }
 
 const char * BaseIndex::getVersion ()
@@ -341,10 +342,12 @@ void BaseIndex::_parseOptions (const char *options, std::map<std::string, std::s
       {
          if ((opt_name.compare(_read_only_prop) != 0) && 
              (opt_name.compare(_mt_size_prop) != 0) && 
-             (opt_name.compare(_mmf_size_prop) != 0))
+             (opt_name.compare(_mmf_size_prop) != 0) &&
+             (opt_name.compare(_id_key_prop) != 0))
             throw Exception("Creating index error: incorrect input options");
       }
-      else if (opt_name.compare(_read_only_prop) != 0)
+      else if ((opt_name.compare(_read_only_prop)) != 0 &&
+               (opt_name.compare(_id_key_prop) != 0))
          throw Exception("Loading index error: incorrect input options");
 
       option_map.insert(std::pair<std::string, std::string>(opt_name, opt_value));
