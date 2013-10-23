@@ -142,7 +142,7 @@ void MultibitTree::_build ()
    _tree_ptr = _buildNode(indices, is_mb, 0);
 }
 
-void MultibitTree::_findLinear (_MultibitNode *node, const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices, int fp_bit_number)
+void MultibitTree::_findLinear (_MultibitNode *node, const byte *query, int query_bit_number, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices, int fp_bit_number)
 {
    profTimerStart(tmsl, "multibit_tree_search_linear");
    byte *fingerprints = _fingerprints_ptr.ptr();
@@ -155,7 +155,7 @@ void MultibitTree::_findLinear (_MultibitNode *node, const byte *query, SimCoef 
       const byte *fp = fingerprints + fp_indices[i] * _fp_size;
       int f_bit_number = bitGetOnesCount(fp, _fp_size);
 
-      double coef = sim_coef.calcCoef(query, fp, _query_bit_number, f_bit_number);
+      double coef = sim_coef.calcCoef(query, fp, query_bit_number, f_bit_number);
       if (coef < min_coef)
          continue;
 
@@ -163,7 +163,7 @@ void MultibitTree::_findLinear (_MultibitNode *node, const byte *query, SimCoef 
    }
 }
 
-void MultibitTree::_findSimilarInNode (BingoPtr<_MultibitNode> node_ptr, const byte *query, SimCoef &sim_coef, double min_coef, 
+void MultibitTree::_findSimilarInNode (BingoPtr<_MultibitNode> node_ptr, const byte *query, int query_bit_number, SimCoef &sim_coef, double min_coef, 
                           Array<SimResult> &sim_indices, int m01, int m10)
 {
    if (node_ptr.isNull())
@@ -174,9 +174,9 @@ void MultibitTree::_findSimilarInNode (BingoPtr<_MultibitNode> node_ptr, const b
    if (node->fp_indices_count != 0)
    {
       if (_min_fp_bit_number == _max_fp_bit_number)//if fingerpint bits_count is fixed
-         _findLinear(node, query, sim_coef, min_coef, sim_indices, _min_fp_bit_number);
+         _findLinear(node, query, query_bit_number, sim_coef, min_coef, sim_indices, _min_fp_bit_number);
       else
-         _findLinear(node, query, sim_coef, min_coef, sim_indices);
+         _findLinear(node, query, query_bit_number, sim_coef, min_coef, sim_indices);
       
       return;
    }
@@ -199,7 +199,7 @@ void MultibitTree::_findSimilarInNode (BingoPtr<_MultibitNode> node_ptr, const b
       else if (!bitGetBit(query, match_bits[i].idx))
             right_m01++;
 
-   int a = _query_bit_number - right_m10;
+   int a = query_bit_number - right_m10;
    int min_b = _min_fp_bit_number - right_m01;
    int max_b = _max_fp_bit_number - right_m01;
 
@@ -209,9 +209,9 @@ void MultibitTree::_findSimilarInNode (BingoPtr<_MultibitNode> node_ptr, const b
    double right_upper_bound = (double)min / (right_m01 + right_m10 + max);
 
    if (!node->left.isNull())
-      _findSimilarInNode(node->left, query, sim_coef, min_coef, left_indices, m01, m10);  
+      _findSimilarInNode(node->left, query, query_bit_number, sim_coef, min_coef, left_indices, m01, m10);  
    if ((!node->left.isNull()) && right_upper_bound + EPSILON > min_coef)
-      _findSimilarInNode(node->right, query, sim_coef, min_coef, right_indices, right_m01, right_m10);
+      _findSimilarInNode(node->right, query, query_bit_number, sim_coef, min_coef, right_indices, right_m01, right_m10);
 
    for (int i = 0; i < left_indices.size(); i++)
       sim_indices.push(left_indices[i]);
@@ -243,10 +243,10 @@ void MultibitTree::build (BingoPtr<byte> fingerprints, BingoPtr<int> indices, in
 int MultibitTree::findSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices)
 {
    profTimerStart(tms, "multibit_tree_search");
-   _query_bit_number = bitGetOnesCount(query, _fp_size);
+   int query_bit_number = bitGetOnesCount(query, _fp_size);
    sim_fp_indices.clear();
 
-   _findSimilarInNode(_tree_ptr, query, sim_coef, min_coef, sim_fp_indices, 0, 0);
+   _findSimilarInNode(_tree_ptr, query, query_bit_number, sim_coef, min_coef, sim_fp_indices, 0, 0);
 
    return sim_fp_indices.size();
 }

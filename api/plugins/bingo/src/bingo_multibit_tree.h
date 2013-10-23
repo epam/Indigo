@@ -80,9 +80,9 @@ namespace bingo
 
       void _build ();
 
-      void _findLinear (_MultibitNode *node, const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices, int fp_bit_number = -1);
+      void _findLinear (_MultibitNode *node, const byte *query, int query_bit_number, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices, int fp_bit_number = -1);
 
-      void _findSimilarInNode (BingoPtr<_MultibitNode> node_ptr, const byte *query, SimCoef &sim_coef, double min_coef, 
+      void _findSimilarInNode (BingoPtr<_MultibitNode> node_ptr, const byte *query, int query_bit_number, SimCoef &sim_coef, double min_coef, 
                                 Array<SimResult> &sim_indices, int m01, int m10);
    };
 };
