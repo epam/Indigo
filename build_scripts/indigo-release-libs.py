@@ -172,7 +172,7 @@ if args.preset == 'mac10.6-universal':
     os.makedirs('static/Mac/10.6/')
     for item in os.listdir(os.path.join(i386Path, 'dist', 'Mac', '10.6', 'lib')):
         if item.endswith('.dylib'):
-            print item
+            print(item)
             subprocess.check_call('lipo -create -arch i386 {0}/dist/Mac/10.6/lib/{2} -arch x86_64 {1}/dist/Mac/10.6/lib/{2} -o shared/Mac/10.6/{2}'.format(i386Path, amd64Path, item), shell=True)
         elif item.endswith('.a'):
             subprocess.check_call('lipo -create -arch i386 {0}/dist/Mac/10.6/lib/{2} -arch x86_64 {1}/dist/Mac/10.6/lib/{2} -o static/Mac/10.6/{2}'.format(i386Path, amd64Path, item), shell=True)
