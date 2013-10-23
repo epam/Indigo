@@ -86,7 +86,17 @@ void MoleculeFingerprintBuilder::_initHashCalculations (BaseMolecule &mol)
    // Count number of hydrogens and find non-carbon atoms
    _atom_hydrogens.clear_resize(mol.vertexEnd());
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-      _atom_hydrogens[i] = mol.getAtomMinH(i);
+   {
+      try
+      {
+         _atom_hydrogens[i] = mol.getAtomMinH(i);
+      }
+      catch (Element::Error)
+      {
+         // Set number of hydrogens to zero if anything is undefined
+         _atom_hydrogens[i] = 0;
+      }
+   }
 }
 
 MoleculeFingerprintBuilder::~MoleculeFingerprintBuilder ()
