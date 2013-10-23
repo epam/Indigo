@@ -11,6 +11,8 @@ presets = {
     "win64" : ("Visual Studio 10 Win64", ""),
     "win32-2012" : ("Visual Studio 11", ""),
     "win64-2012" : ("Visual Studio 11 Win64", ""),
+    "win32-2013" : ("Visual Studio 12", ""),
+    "win64-2013" : ("Visual Studio 12 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
@@ -18,6 +20,7 @@ presets = {
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
     "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
+    "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
 }
 
 parser = OptionParser(description='Indigo libraries build script')

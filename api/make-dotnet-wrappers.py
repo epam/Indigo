@@ -57,15 +57,23 @@ if 'win' in wrappers:
     if os.path.exists(join(libraryPath, 'Win', 'x64', 'msvcr100.dll')):
         win2010 = 1
         win2012 = 0
+        win2013 = 0
     elif os.path.exists(join(libraryPath, 'Win', 'x64', 'msvcr110.dll')):
         win2010 = 0
         win2012 = 1
+        win2013 = 0
+    elif os.path.exists(join(libraryPath, 'Win', 'x64', 'msvcr120.dll')):
+        win2010 = 0
+        win2012 = 0
+        win2013 = 1
     else:
         win2010 = 0
         win2012 = 0
+        win2013 = 0
 else:
     win2010 = 0
     win2012 = 0
+    win2013 = 0
 
 if 'linux' in wrappers:
     os.makedirs(join(indigoDotNetPath, "Resource", 'Linux', 'x64'))
@@ -81,10 +89,8 @@ if 'mac' in wrappers:
 else:
     mac = 0
 
-print win2010, win2012
-
 os.chdir(indigoDotNetPath)
-command = '%s /property:LibraryPath=%s /property:Win2010=%s /property:Win2012=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, libraryPath, win2010, win2012, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+command = '%s /property:LibraryPath=%s /property:Win2010=%s /property:Win2012=%s /property:Win2013=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, libraryPath, win2010, win2012, win2013, linux, mac, 'copy' if os.name == 'nt' else 'cp')
 print command
 subprocess.check_call(command, shell=True)
 
