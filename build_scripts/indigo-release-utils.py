@@ -86,7 +86,7 @@ for f in os.listdir(full_build_dir):
         os.remove(os.path.join(full_build_dir, f))
 
 command = "cmake --build . --config %s" % (args.config)
-print command
+print(command)
 subprocess.call(command, shell=True)
 if args.generator.find("Unix Makefiles") != -1:
     subprocess.check_call("make package", shell=True)

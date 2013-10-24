@@ -107,7 +107,7 @@ if args.dbms != 'sqlserver':
             for root, dirs, files in os.walk('.'):
                 for file in files:
                     if file.endswith('.sh') or file.endswith('.bat'):
-                        os.chmod(join(root, file), 0755)
+                        os.chmod(join(root, file), 755)
                     zf.write(join(root, file))
             os.chdir(root)
 else:
@@ -146,7 +146,7 @@ else:
 
     os.chdir(join(root, 'bingo', 'sqlserver'))
     command = 'msbuild /t:Rebuild /p:Configuration=%s /property:DllPath32=%s /property:DllPath64=%s' % (args.config, dllPath['x86'], dllPath['x64'])
-    print os.path.abspath(os.curdir), command
+    print(os.path.abspath(os.curdir), command)
     subprocess.check_call(command)
 
     os.chdir(root)
@@ -172,7 +172,7 @@ else:
         if item.endswith('.sql') or item.endswith('.bat'):
             shutil.copyfile(join(root, 'bingo', 'sqlserver', 'sql', item), join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, item))
     if not os.path.exists(join(root, 'bingo', 'sqlserver', 'bin', args.config, 'bingo-sqlserver.dll')):
-        print 'Warning: File %s does not exist, going to use empty stub instead' % join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll')
+        print('Warning: File %s does not exist, going to use empty stub instead' % join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll'))
         open(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll', 'w')).close()
     else:
         shutil.copyfile(join(root, 'bingo', 'sqlserver', 'bin', args.config, 'bingo-sqlserver.dll'), join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll'))
