@@ -34,7 +34,7 @@ parser.add_option('--nobuild', default=False,
 parser.add_option('--clean', default=False, action="store_true",
     help='delete all the build data', dest="clean")
 parser.add_option('--preset', type="choice", dest="preset",
-    choices=presets.keys(), help='build preset %s' % (str(presets.keys())))
+    choices=list(presets.keys()), help='build preset %s' % (str(presets.keys())))
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
