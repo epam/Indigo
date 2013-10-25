@@ -193,7 +193,7 @@ bool BaseMatcher::_loadCurrentObject()
    if (IndigoMolecule::is(*_current_obj))
    {
       Molecule &mol = _current_obj->getMolecule();
-   
+
       CmfLoader cmf_loader(buf_scn);
 
       cmf_loader.loadMolecule(mol);
@@ -593,25 +593,38 @@ void BaseSimilarityMatcher::setParameters (const char *parameters)
 
    if (type.compare("tanimoto") == 0)
    {
+      if (!param_str.eof())
+         throw Exception("BaseSimilarityMatcher: setParameters: tanimoto metric has no parameters");
+
       _sim_coef.reset(new TanimotoCoef(_fp_size));
    }
-   else if (type.compare("euclid") == 0)
+   else if (type.compare("euclid-sub") == 0)
    {
+      if (!param_str.eof())
+         throw Exception("BaseSimilarityMatcher: setParameters: euclid-sub metric has no parameters");
+
       _sim_coef.reset(new EuclidCoef(_fp_size));
    }
    else if (type.compare("tversky") == 0)
    {
       double alpha, beta;
 
-      param_str >> alpha;
+      if (!param_str.eof())
+      {
+         param_str >> alpha;
 
-      if (param_str.fail())
-         throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters");
+         if (param_str.fail())
+            throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters. Allowed 'tversky <alpha> <beta>'");
 
-      param_str >> beta;
+         param_str >> beta;
 
-      if (param_str.fail())
-         throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters");
+         if (param_str.fail())
+            throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters. Allowed 'tversky <alpha> <beta>'");
+      }
+      else
+      {
+         alpha = beta = 0.5;
+      }
 
       if (fabs(alpha + beta - 1) > EPSILON)
          throw Exception("BaseSimilarityMatcher: setParameters: Tversky parameters have to satisfy the condition: alpha + beta = 1 ");
@@ -619,7 +632,7 @@ void BaseSimilarityMatcher::setParameters (const char *parameters)
       _sim_coef.reset(new TverskyCoef(_fp_size, alpha, beta));
    }
    else
-      throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters");
+      throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters. Allowed types: tanimoto, euclid-sub, tversky [<alpha> <beta>]");
 }
 
 int BaseSimilarityMatcher::esimateRemainingResultsCount (int &delta)
