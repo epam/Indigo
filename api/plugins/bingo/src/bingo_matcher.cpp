@@ -174,44 +174,54 @@ bool BaseMatcher::_isCurrentObjectExist()
 
 bool BaseMatcher::_loadCurrentObject()
 {
-   if (_current_obj == 0)
-      throw Exception("BaseMatcher: Matcher's current object was destroyed");
-
-   profTimerStart(t_get_cmf, "loadCurObj_get_cf");
-   ByteBufferStorage &cf_storage = _index.getCfStorage();
-   
-   int cf_len;
-   const char *cf_str = (const char *)cf_storage.get(_current_id, cf_len);
-
-   if (cf_len == -1)
-      return false;
-   profTimerStop(t_get_cmf);
-   
-   profTimerStart(t_load_cmf, "loadCurObj_load_cf");
-   BufferScanner buf_scn(cf_str, cf_len);
-   
-   if (IndigoMolecule::is(*_current_obj))
+   try 
    {
-      Molecule &mol = _current_obj->getMolecule();
+      if (_current_obj == 0)
+         throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
-      CmfLoader cmf_loader(buf_scn);
-
-      cmf_loader.loadMolecule(mol);
-   }
-   else if (IndigoReaction::is(*_current_obj))
-   {
-      Reaction &rxn = _current_obj->getReaction();
+      profTimerStart(t_get_cmf, "loadCurObj_get_cf");
+      ByteBufferStorage &cf_storage = _index.getCfStorage();
    
-      CrfLoader crf_loader(buf_scn);
+      int cf_len;
+      const char *cf_str = (const char *)cf_storage.get(_current_id, cf_len);
 
-      crf_loader.loadReaction(rxn);
+      if (cf_len == -1)
+         return false;
+      profTimerStop(t_get_cmf);
+   
+      profTimerStart(t_load_cmf, "loadCurObj_load_cf");
+      BufferScanner buf_scn(cf_str, cf_len);
+   
+      if (IndigoMolecule::is(*_current_obj))
+      {
+         Molecule &mol = _current_obj->getMolecule();
+
+         CmfLoader cmf_loader(buf_scn);
+
+         cmf_loader.loadMolecule(mol);
+      }
+      else if (IndigoReaction::is(*_current_obj))
+      {
+         Reaction &rxn = _current_obj->getReaction();
+   
+         CrfLoader crf_loader(buf_scn);
+
+         crf_loader.loadReaction(rxn);
+      }
+      else
+         throw Exception("BaseMatcher::unknown current object type");
+
+      profTimerStop(t_load_cmf);
+
+      return true;
    }
-   else
-      throw Exception("BaseMatcher::unknown current object type");
-
-   profTimerStop(t_load_cmf);
-
-   return true;
+   catch (Exception &ex)
+   {
+      int db_id = _index.getIdMapping()[_current_id];
+      ex.appendMessage(" on id=%d", db_id);
+      ex.throwSelf();
+      return false; // This statement is dummy because throwSelf always throws an exception
+   }
 }
 
 int BaseMatcher::esimateRemainingResultsCount (int &delta)
