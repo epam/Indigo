@@ -15,9 +15,9 @@ using namespace bingo;
 static const char *_cf_data_filename = "cf_data";
 static const char *_cf_offset_filename = "cf_offset";
 static const char *_id_mapping_filename = "id_mapping";
-static const char *_reaction_type = "reaction";
-static const char *_molecule_type = "molecule";
-static const int _type_len = 9;
+static const char *_reaction_type = "reaction_" BINGO_VERSION;
+static const char *_molecule_type = "molecule_" BINGO_VERSION;
+static const int _type_len = 30;
 static const char *_mmf_file = "mmf_storage";
 static const char *_version_prop = "version";
 static const char *_read_only_prop = "read_only";
@@ -306,7 +306,7 @@ Index::IndexType BaseIndex::determineType (const char *location)
    else if (strcmp(type, _reaction_type) == 0)
       return REACTION;
    else
-      throw Exception("BingoIndex: determineType(): Incorrect database type");
+      throw Exception("BingoIndex: determineType(): Database format is not compatible with this version.");
 }
 
 BaseIndex::~BaseIndex()

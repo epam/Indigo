@@ -11,7 +11,7 @@
 #include "bingo_fingerprint_table.h"
 #include "bingo_lock.h"
 
-#define BINGO_VERSION "v0.99999"
+#define BINGO_VERSION "v0.6"
 
 using namespace indigo;
 
