@@ -113,7 +113,7 @@ namespace bingo
       T & at (int index)
       {
          if (index < 0 || index >= _size)
-            throw Exception("BingoArray: incorrect idx");
+            throw Exception("BingoArray: incorrect idx %d out of %d", index, _size);
 
          return *(_blocks[index / _block_size].ptr() + index % _block_size);
       }
@@ -186,12 +186,12 @@ namespace bingo
       }
 
    private:
-      static const int _max_block_count = 10000;
+      static const int _max_block_count = 40000;
 
-      BingoPtr<T>  _blocks[_max_block_count];
       int _block_size;
       int _block_count;
       int _size;
+      BingoPtr<T>  _blocks[_max_block_count];
    };
 
    class MMFStorage;
