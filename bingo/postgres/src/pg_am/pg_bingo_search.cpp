@@ -56,7 +56,7 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
    Relation rel = (Relation) PG_GETARG_POINTER(0);
    int keysz = PG_GETARG_INT32(1);
 
-#if PG_VERSION_NUM / 100 == 901 || PG_VERSION_NUM / 100 == 902
+#if PG_VERSION_NUM / 100 == 901 || PG_VERSION_NUM / 100 == 902 || PG_VERSION_NUM / 100 == 903
    int norderbys = PG_GETARG_INT32(2);
 #elif PG_VERSION_NUM / 100 == 900
    ScanKey norderbys = (ScanKey) PG_GETARG_POINTER(2);
