@@ -105,6 +105,18 @@ CEXPORT int indigoSetOptionXY (const char *name, int x, int y)
    INDIGO_END(-1)
 }
 
+void _indigoCheckBadValence (Molecule &mol)
+{
+   mol.restoreUnambiguousHydrogens();
+   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      if (mol.isPseudoAtom(i) || mol.isRSite(i))
+         continue;
+      mol.getAtomValence(i);
+      mol.getImplicitH(i);
+   }
+}
+
 CEXPORT const char * indigoCheckBadValence (int handle)
 {
    INDIGO_BEGIN
@@ -122,15 +134,7 @@ CEXPORT const char * indigoCheckBadValence (int handle)
 
          try
          {
-            int i;
-
-            for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-            {
-               if (mol.isPseudoAtom(i) || mol.isRSite(i))
-                  continue;
-               mol.getAtomValence(i);
-               mol.getImplicitH(i);
-            }
+            _indigoCheckBadValence(mol);
          }
          catch (Exception &e)
          {
@@ -149,19 +153,10 @@ CEXPORT const char * indigoCheckBadValence (int handle)
 
          try
          {
-            int i, j;
-
-            for (j = rxn.begin(); j != rxn.end(); j = rxn.next(j))
+            for (int j = rxn.begin(); j != rxn.end(); j = rxn.next(j))
             {
                Molecule &mol = rxn.getMolecule(j);
-               
-               for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-               {
-                  if (mol.isPseudoAtom(i) || mol.isRSite(i))
-                     continue;
-                  mol.getAtomValence(i);
-                  mol.getImplicitH(i);
-               }
+               _indigoCheckBadValence(mol);
             }
          }
          catch (Exception &e)
@@ -180,9 +175,8 @@ CEXPORT const char * indigoCheckBadValence (int handle)
 
 void _indigoCheckAmbiguousH (Molecule &mol)
 {
-   int i;
-
-   for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   mol.restoreUnambiguousHydrogens();
+   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
       if (mol.getAtomAromaticity(i) == ATOM_AROMATIC)
       {
          int atom_number = mol.getAtomNumber(i);

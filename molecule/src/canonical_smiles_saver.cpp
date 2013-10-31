@@ -49,22 +49,7 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
       throw Error("can not canonicalize a polymer");
 
    // Detect hydrogens configuration if aromatic but not ambiguous
-   bool found_invalid_h = false;
-   for (i = mol_.vertexBegin(); i != mol_.vertexEnd(); i = mol_.vertexNext(i))
-   {
-      if (mol_.isRSite(i) || mol_.isPseudoAtom(i))
-         continue;
-
-      if (mol_.getImplicitH_NoThrow(i, -1) == -1)
-         found_invalid_h = true;
-   }
-   if (found_invalid_h)
-   {
-      AromaticityOptions options;
-      options.method = AromaticityOptions::GENERIC;
-      options.unique_dearomatization = true;
-      MoleculeDearomatizer::restoreHydrogens(mol_, options);
-   }
+   mol.restoreUnambiguousHydrogens();
 
    mol.clone(mol_, 0, 0);
 
