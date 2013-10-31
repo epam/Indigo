@@ -7,6 +7,8 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
+#include <algorithm>
 #include <map>
 #include <limits.h>
 
@@ -27,6 +29,40 @@ size_t Properties::create (BingoPtr<Properties> &ptr)
 void Properties::load (BingoPtr<Properties> &ptr, size_t offset)
 {
    ptr = BingoPtr<Properties>(offset);
+}
+
+void Properties::parseOptions (const char *options, std::map<std::string, std::string> &option_map, std::vector<std::string> *allowed_props)
+{
+   if (options == 0 || strlen(options) == 0)
+      return;
+
+   option_map.clear();
+
+   std::stringstream options_stream;
+   options_stream << options;
+
+   std::string line;
+   while (options_stream.good())
+   {
+      std::getline(options_stream, line, ';');
+
+      if (line.size() == 0)
+         continue;
+
+      std::string opt_name, opt_value;
+      int sep = (int)line.find_first_of(':');
+
+      opt_name.assign(line.substr(0, sep));
+      opt_value.assign(line.substr(sep + 1, std::string::npos));
+
+      if (allowed_props)
+      {
+         if (std::find(allowed_props->begin(), allowed_props->end(), opt_name) == allowed_props->end())
+            throw Exception("Properties: Incorrect parameters");
+      }
+
+      option_map.insert(std::pair<std::string, std::string>(opt_name, opt_value));
+   }
 }
 
 void Properties::add (const char *prop_name, const char *value)

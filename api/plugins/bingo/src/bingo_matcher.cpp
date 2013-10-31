@@ -14,9 +14,10 @@
 #include <sstream>
 
 using namespace indigo;
-
 using namespace bingo;
 
+static const char *_matcher_params_prop = "params";
+static const char *_matcher_part_prop = "part";
 
 MoleculeSimilarityQueryData::MoleculeSimilarityQueryData (/* const */ Molecule &qmol, float min_coef, float max_coef) : 
    _obj(qmol), _min(min_coef), _max(max_coef)
@@ -122,6 +123,8 @@ BaseMatcher::BaseMatcher(BaseIndex &index, IndigoObject *& current_obj) : _index
 {
    _current_obj_used = false;
    _current_id = 0;
+   _part_id = -1;
+   _part_count = -1;
 }
 
 BaseMatcher::~BaseMatcher ()
@@ -159,6 +162,40 @@ const Index & BaseMatcher::getIndex ()
 float BaseMatcher::currentSimValue ()
 {
    throw Exception("BaseMatcher: Matcher does not support this method");
+}
+
+void BaseMatcher::setOptions (const char * options)
+{
+   std::map<std::string, std::string> option_map;
+   std::vector<std::string> allowed_props;
+   allowed_props.push_back(_matcher_params_prop);
+   allowed_props.push_back(_matcher_part_prop);
+   Properties::parseOptions(options, option_map, &allowed_props);
+
+   if (option_map.find(_matcher_params_prop) != option_map.end())
+      _setParameters(option_map[_matcher_params_prop].c_str());
+
+   if (option_map.find(_matcher_part_prop) != option_map.end())
+   {
+      std::stringstream part_str;
+      part_str << option_map[_matcher_part_prop];
+
+      int part_count, part_id;
+      char sep;
+
+      part_str >> part_id;
+      part_str >> sep;
+      part_str >> part_count;
+
+      bool ef = part_str.eof();
+
+      if (part_str.fail() || sep != '/' || part_id <= 0 || part_count <= 0 || part_id > part_count)
+         throw Exception("BaseMatcher: setOptions: incorrect partitioning parameters");
+
+      _part_id = part_id;
+      _part_count = part_count;
+      _initPartition();
+   }
 }
 
 bool BaseMatcher::_isCurrentObjectExist()
@@ -260,6 +297,7 @@ BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index, I
    _current_id = -1;
    _current_cand_id = -1;
    _current_pack = -1;
+   _final_pack = _fp_storage.getPackCount() + 1;
 
    _cand_count = 0;
 }
@@ -267,9 +305,10 @@ BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index, I
 bool BaseSubstructureMatcher::next ()
 {
    int fp_size_in_bits = _fp_size * 8;
-   
+   static int sub_cnt = 0;
+
    _current_cand_id++;
-   while (!((_current_pack == _fp_storage.getPackCount()) && (_current_cand_id == _candidates.size())))
+   while (!((_current_pack == _final_pack) && (_current_cand_id == _candidates.size())))
    {
       profTimerStart(tsingle, "sub_single");
 
@@ -277,16 +316,13 @@ bool BaseSubstructureMatcher::next ()
       {
          profTimerStart(tf, "sub_find_cand");
          _current_pack++;
-         if (_current_pack < _fp_storage.getPackCount())
+         if (_current_pack < _final_pack)
          {
             _findPackCandidates(_current_pack);
             _cand_count += _candidates.size();
          }
          else
-         {
-            _findIncCandidates();
-            _cand_count += _candidates.size();
-         }
+            break;
 
          _current_cand_id = 0;
          profTimerStop(tf);
@@ -308,8 +344,10 @@ bool BaseSubstructureMatcher::next ()
       _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
 
       if (status)
+      {
+         sub_cnt++;
          return true;
-
+      }
       _current_cand_id++;
    }
 
@@ -346,6 +384,12 @@ void BaseSubstructureMatcher::setQueryData (SubstructureQueryData *query_data)
 
 void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
 {
+   if (pack_idx == _fp_storage.getPackCount())
+   {
+      _findIncCandidates();
+      return;
+   }
+
    profTimerStart(t, "sub_find_cand_pack");
 
    _candidates.clear();
@@ -414,6 +458,33 @@ void BaseSubstructureMatcher::_findIncCandidates ()
    }
 }
 
+void BaseSubstructureMatcher::_setParameters (const char * params)
+{
+}
+
+void BaseSubstructureMatcher::_initPartition ()
+{
+   int pack_count_with_inc = _fp_storage.getPackCount() + 1;
+
+   if (_part_count > pack_count_with_inc)
+   {
+      if (_part_id > pack_count_with_inc)
+      {
+         _current_pack = -1;
+         _final_pack = -1;
+      }
+      else
+      {
+         _current_pack = (_part_id - 1) - 1;
+         _final_pack = _part_id;
+      }
+   }
+   else
+   {
+      _current_pack = (_part_id - 1) * pack_count_with_inc / _part_count - 1;
+      _final_pack = _part_id * pack_count_with_inc / _part_count;
+   }
+}
 
 MoleculeSubMatcher::MoleculeSubMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseSubstructureMatcher(index, (IndigoObject *&)_current_mol)
 {
@@ -515,12 +586,16 @@ BaseSimilarityMatcher::BaseSimilarityMatcher (/*const */ BaseIndex &index, Indig
    _current_portion.clear();
    _current_sim_value = -1;
    _fp_size = _index.getFingerprintParams().fingerprintSizeSim();
+   _sim_coef.reset(new TanimotoCoef(_fp_size));
 }
 
 bool BaseSimilarityMatcher::next ()
 {
    FingerprintTable &sim_storage = _index.getSimStorage();
    int query_bit_count = bitGetOnesCount(_query_fp.ptr(), _fp_size);
+
+   if (_current_cell == -1)
+      return false;
 
    while (true)
    {
@@ -534,6 +609,10 @@ bool BaseSimilarityMatcher::next ()
          if (_current_container == sim_storage.getCellSize(_current_cell))
          {
             _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
+
+            if (_part_count != -1 && _part_id != -1)
+               while ((_current_cell % _part_count != _part_id - 1) && (_current_cell != -1))
+                  _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
 
             if (_current_cell == -1)
                return false;
@@ -579,18 +658,26 @@ void BaseSimilarityMatcher::setQueryData (SimilarityQueryData *query_data)
 
    FingerprintTable &sim_storage = _index.getSimStorage();
 
+   int query_bit_count = bitGetOnesCount(_query_fp.ptr(), _fp_size);
    sim_storage.getCellsInterval(_query_fp.ptr(), *_sim_coef.get(), _query_data->getMin(), _min_cell, _max_cell);
 
-   _first_cell = sim_storage.firstFitCell(bitGetOnesCount(_query_fp.ptr(), _fp_size), _min_cell, _max_cell);
+   _first_cell = sim_storage.firstFitCell(query_bit_count, _min_cell, _max_cell);
    _current_cell = _first_cell;
+
+   if (_part_count != -1 && _part_id != -1)
+      while (((_current_cell % _part_count) != _part_id - 1) && (_current_cell != -1))
+         _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
 
    _containers_count = 0;
    for (int i = _min_cell; i <= _max_cell; i++)
       _containers_count += sim_storage.getCellSize(i);
 }
 
-void BaseSimilarityMatcher::setParameters (const char *parameters)
+void BaseSimilarityMatcher::_setParameters (const char *parameters)
 {
+   if (_query_data.get() != 0)
+      throw Exception("BaseSimilarityMatcher: setParameters: query data have been already set");
+
    std::stringstream param_str;
    param_str << parameters;
 
@@ -645,6 +732,10 @@ void BaseSimilarityMatcher::setParameters (const char *parameters)
       throw Exception("BaseSimilarityMatcher: setParameters: incorrect similarity parameters. Allowed types: tanimoto, euclid-sub, tversky [<alpha> <beta>]");
 }
 
+void BaseSimilarityMatcher::_initPartition ()
+{
+}
+
 int BaseSimilarityMatcher::esimateRemainingResultsCount (int &delta)
 {
    int left_cont_count = _containers_count - _match_probability_esimate.getCount();
@@ -697,7 +788,7 @@ bool BaseExactMatcher::next ()
    ExactStorage &exact_storage = _index.getExactStorage();
 
    if (_candidates.size() == 0)
-      exact_storage.findCandidates(_query_hash, _candidates);
+      exact_storage.findCandidates(_query_hash, _candidates, _part_id, _part_count);
 
    while (_current_cand_id < _candidates.size())
    {
@@ -727,6 +818,10 @@ void BaseExactMatcher::setQueryData (ExactQueryData *query_data)
    _query_hash = _calcHash();
 }
 
+void BaseExactMatcher::_initPartition ()
+{
+}
+
 BaseExactMatcher::~BaseExactMatcher()
 {
 }
@@ -737,7 +832,7 @@ MolExactMatcher::MolExactMatcher (/*const */ BaseIndex &index) : _current_mol(ne
 {
 }
       
-void MolExactMatcher::setParameters (const char *parameters)
+void MolExactMatcher::_setParameters (const char *parameters)
 {
    MoleculeExactMatcher::parseConditions(parameters, _flags, _rms_threshold);
 }
@@ -780,7 +875,7 @@ RxnExactMatcher::RxnExactMatcher(/*const */ BaseIndex &index) : _current_rxn(new
 {
 }
 
-void RxnExactMatcher::setParameters (const char *flags)
+void RxnExactMatcher::_setParameters (const char *flags)
 {
    // TODO: merge Indigo code into Bingo and stop this endless copy-paste
    

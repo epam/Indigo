@@ -34,11 +34,31 @@ void ExactStorage::add( dword hash, int id )
    _molecule_hashes[id] = hash;
 }
 
-void ExactStorage::findCandidates( dword query_hash, Array<int> &candidates )
+void ExactStorage::findCandidates (dword query_hash, Array<int> &candidates, int part_id, int part_count)
 {
    profTimerStart(tsingle, "exact_filter");
+
+   size_t first_hash = 0;
+   size_t last_hash = _molecule_hashes.size();
+
+   if (part_id != -1 && part_count != -1)
+   {
+      if (part_count > _molecule_hashes.size())
+      {
+         if (part_id > _molecule_hashes.size())
+            return;
+      
+         first_hash = part_id - 1;
+         last_hash = part_id;
+      }
+      else
+      {
+         first_hash = (part_id - 1) * _molecule_hashes.size() / part_count;
+         last_hash = part_id * _molecule_hashes.size() / part_count;
+      }
+   }
    
-   for (int i = 0; i < _molecule_hashes.size(); i++)
+   for (size_t i = first_hash; i < last_hash; i++)
    {
       dword hash = _molecule_hashes[i];
 

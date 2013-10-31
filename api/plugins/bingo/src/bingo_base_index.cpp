@@ -56,7 +56,8 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    std::map<std::string, std::string> option_map;
 
-   _parseOptions(options, option_map, true);
+   Properties::parseOptions(options, option_map);
+   _checkOptions(option_map, true);
 
    _read_only = _getAccessType(option_map);
 
@@ -108,7 +109,8 @@ void BaseIndex::load (const char *location, const char *options, int index_id)
 
    std::map<std::string, std::string> option_map;
 
-   _parseOptions(options, option_map, false);
+   Properties::parseOptions(options, option_map);
+   _checkOptions(option_map, false);
 
    _read_only = _getAccessType(option_map);
 
@@ -314,43 +316,22 @@ BaseIndex::~BaseIndex()
    _mmf_storage.close();
 }
 
-void BaseIndex::_parseOptions (const char *options, std::map<std::string, std::string> &option_map, bool is_create)
+void BaseIndex::_checkOptions (std::map<std::string, std::string> &option_map, bool is_create)
 {
-   if (options == 0 || strlen(options) == 0)
-      return;
-
-   option_map.clear();
-
-   std::stringstream options_stream;
-   options_stream << options;
-
-   std::string line;
-   while (options_stream.good())
+   for(std::map<std::string, std::string>::iterator it = option_map.begin(); 
+       it != option_map.end(); it++) 
    {
-      std::getline(options_stream, line, ';');
-
-      if (line.size() == 0)
-         continue;
-
-      std::string opt_name, opt_value;
-      int sep = (int)line.find_first_of(':');
-
-      opt_name.assign(line.substr(0, sep));
-      opt_value.assign(line.substr(sep + 1, std::string::npos));
-
       if (is_create)
       {
-         if ((opt_name.compare(_read_only_prop) != 0) && 
-             (opt_name.compare(_mt_size_prop) != 0) && 
-             (opt_name.compare(_mmf_size_prop) != 0) &&
-             (opt_name.compare(_id_key_prop) != 0))
+         if ((it->first.compare(_read_only_prop) != 0) && 
+             (it->first.compare(_mt_size_prop) != 0) && 
+             (it->first.compare(_mmf_size_prop) != 0) &&
+             (it->first.compare(_id_key_prop) != 0))
             throw Exception("Creating index error: incorrect input options");
       }
-      else if ((opt_name.compare(_read_only_prop)) != 0 &&
-               (opt_name.compare(_id_key_prop) != 0))
+      else if ((it->first.compare(_read_only_prop)) != 0 &&
+               (it->first.compare(_id_key_prop) != 0))
          throw Exception("Loading index error: incorrect input options");
-
-      option_map.insert(std::pair<std::string, std::string>(opt_name, opt_value));
    }
 }
 

@@ -22,7 +22,7 @@ namespace bingo
 
       void add (dword hash, int id);
 
-      void findCandidates (dword query_hash, Array<int> &candidates);
+      void findCandidates (dword query_hash, Array<int> &candidates, int part_id = -1, int part_count = -1);
 
       static dword calculateMolHash (Molecule &mol);
 

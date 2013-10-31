@@ -157,6 +157,7 @@ namespace bingo
       virtual IndigoObject * currentObject () = 0;
       virtual const Index & getIndex () = 0;
       virtual float currentSimValue () = 0;
+      virtual void setOptions (const char * options) = 0;
       
       virtual int esimateRemainingResultsCount (int &delta) = 0;
       virtual float esimateRemainingTime (float &delta) = 0;
@@ -177,6 +178,8 @@ namespace bingo
 
       virtual float currentSimValue ();
       
+      virtual void setOptions (const char * options);
+      
       virtual int esimateRemainingResultsCount (int &delta);
       virtual float esimateRemainingTime (float &delta);
 
@@ -185,6 +188,8 @@ namespace bingo
       IndigoObject *& _current_obj;
       bool _current_obj_used;
       int _current_id;
+      int _part_id;
+      int _part_count;
 
       // Variables used for estimation
       MeanEstimator _match_probability_esimate, _match_time_esimate;
@@ -193,6 +198,9 @@ namespace bingo
 
       bool _loadCurrentObject();
 
+      virtual void _setParameters (const char * params) = 0;
+      virtual void _initPartition () = 0;
+      
       ~BaseMatcher ();
    };
 
@@ -218,10 +226,15 @@ namespace bingo
 
       virtual bool _tryCurrent ()/* const */ = 0;
 
+      virtual void _setParameters (const char * params);
+
+      virtual void _initPartition ();
+
    private:
       Array<int> _candidates;
       int _current_cand_id;
       int _current_pack;
+      int _final_pack;
       const TranspFpStorage &_fp_storage;
    };
 
@@ -262,8 +275,6 @@ namespace bingo
       
       void setQueryData (SimilarityQueryData *query_data);
 
-      void setParameters (const char *parameters);
-
       ~BaseSimilarityMatcher();
 
       virtual int esimateRemainingResultsCount (int &delta);
@@ -295,6 +306,10 @@ namespace bingo
       Array<byte> _query_fp;
 
       float _calcTanimoto (const byte *fp);
+
+      virtual void _setParameters (const char * params);
+
+      virtual void _initPartition ();
    };
 
 
@@ -325,8 +340,6 @@ namespace bingo
       
       void setQueryData (ExactQueryData *query_data);
 
-      virtual void setParameters (const char *parameters) = 0;
-
       ~BaseExactMatcher();
       
    protected:
@@ -338,6 +351,8 @@ namespace bingo
       virtual dword _calcHash () = 0;
 
       virtual bool _tryCurrent ()/* const */ = 0;
+
+      virtual void _initPartition ();
    };
 
    
@@ -346,8 +361,6 @@ namespace bingo
    public:
       MolExactMatcher (/*const */ BaseIndex &index);
       
-      virtual void setParameters (const char *parameters);
-
    private:
       IndexCurrentMolecule *_current_mol;
       int _flags;
@@ -356,6 +369,8 @@ namespace bingo
       virtual dword _calcHash ();
 
       virtual bool _tryCurrent ()/* const */;
+
+      virtual void _setParameters (const char *params);
    };
 
 
@@ -364,8 +379,6 @@ namespace bingo
    public:
       RxnExactMatcher (/*const */ BaseIndex &index);
 
-      virtual void setParameters (const char *flags);
-
    private:
       IndexCurrentReaction *_current_rxn;
       int _flags;
@@ -373,6 +386,8 @@ namespace bingo
       virtual dword _calcHash ();
    
       virtual bool _tryCurrent ()/* const */;
+
+      virtual void _setParameters (const char *params);
    };
 };
 

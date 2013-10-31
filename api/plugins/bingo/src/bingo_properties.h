@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <map>
 
 #include "bingo_ptr.h"
@@ -18,6 +19,8 @@ namespace bingo
       static size_t create (BingoPtr<Properties> &ptr);
 
       static void load (BingoPtr<Properties> &ptr, size_t offset);
+
+      static void parseOptions (const char *options, std::map<std::string, std::string> &option_map, std::vector<std::string> *allowed_props = 0);
 
       void add (const char *prop_name, const char *value);
 

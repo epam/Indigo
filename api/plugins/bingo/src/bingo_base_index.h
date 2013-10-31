@@ -132,7 +132,7 @@ namespace bingo
 
       int _index_id;
 
-      static void _parseOptions (const char *options, std::map<std::string, std::string> &option_map, bool is_create);
+      static void _checkOptions (std::map<std::string, std::string> &option_map, bool is_create);
 
       static size_t _getMMfSize (std::map<std::string, std::string> &option_map);
 
