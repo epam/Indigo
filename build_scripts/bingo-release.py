@@ -107,7 +107,7 @@ if args.dbms != 'sqlserver':
             for root, dirs, files in os.walk('.'):
                 for file in files:
                     if file.endswith('.sh') or file.endswith('.bat'):
-                        os.chmod(join(root, file), 755)
+                        os.chmod(join(root, file), 0o755)
                     zf.write(join(root, file))
             os.chdir(root)
 else:
