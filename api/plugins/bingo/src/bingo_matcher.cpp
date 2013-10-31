@@ -16,7 +16,7 @@
 using namespace indigo;
 using namespace bingo;
 
-static const char *_matcher_params_prop = "params";
+static const char *_matcher_params_prop = "";
 static const char *_matcher_part_prop = "part";
 
 MoleculeSimilarityQueryData::MoleculeSimilarityQueryData (/* const */ Molecule &qmol, float min_coef, float max_coef) : 

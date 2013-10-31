@@ -52,7 +52,9 @@ void Properties::parseOptions (const char *options, std::map<std::string, std::s
       std::string opt_name, opt_value;
       int sep = (int)line.find_first_of(':');
 
-      opt_name.assign(line.substr(0, sep));
+      if (sep != -1)
+         opt_name.assign(line.substr(0, sep));
+      
       opt_value.assign(line.substr(sep + 1, std::string::npos));
 
       if (allowed_props)
