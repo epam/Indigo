@@ -1102,6 +1102,7 @@ class Indigo(object):
     RC_ORDER_CHANGED = 8
 
     _crt = None
+    _crtp = None
     _lib = None
 
     # Python embeds path into .pyc code if method is marked with @staticmethod
@@ -1134,13 +1135,13 @@ class Indigo(object):
                 raise IndigoException("unknown platform " + arch)
             if os.path.exists(path + "/msvcr100.dll"):
                 Indigo._crt = CDLL(path + "/msvcr100.dll")
-                Indigo._crt = CDLL(path + "/msvcp100.dll")
+                Indigo._crtp = CDLL(path + "/msvcp100.dll")
             if os.path.exists(path + "/msvcr110.dll"):
                 Indigo._crt = CDLL(path + "/msvcr110.dll")
-                Indigo._crt = CDLL(path + "/msvcp110.dll")
+                Indigo._crtp = CDLL(path + "/msvcp110.dll")
             if os.path.exists(path + "/msvcr120.dll"):
                 Indigo._crt = CDLL(path + "/msvcr120.dll")
-                Indigo._crt = CDLL(path + "/msvcp120.dll")
+                Indigo._crtp = CDLL(path + "/msvcp120.dll")
             Indigo._lib = CDLL(path + "/indigo.dll")
         elif platform.mac_ver()[0]:
             path += "/Mac/"
@@ -1167,7 +1168,7 @@ class Indigo(object):
             self._initStatic(path)
         self._sid = Indigo._lib.indigoAllocSessionId()
         # Capture a reference to the _lib to access it in the __del__ method because
-        # at interpreter shutdown, the module's global variables are set to None 
+        # at interpreter shutdown, the module's global variables are set to None
         self._lib = Indigo._lib
         self._setSessionId()
         self.IndigoObject = IndigoObject
