@@ -704,6 +704,12 @@ namespace com.ggasoftware.indigo
             _indigo_lib.indigoSetSessionId(_sid);
         }
 
+        public void dbgBreakpoint()
+        {
+            setSessionID();
+            _indigo_lib.indigoDbgBreakpoint();
+        }
+
         private long _sid = -1;
         private String _dllpath;
         private int _dll_loader_id;
