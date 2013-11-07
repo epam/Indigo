@@ -138,7 +138,7 @@ def build(params=[], install=True):
         subprocess.check_call("mingw32-make install", shell=True)
     else:
         print("Do not know how to run package and install target")
-    subprocess.check_call("ctest -V --timeout 10 -C %s ." % (args.config), shell=True)
+    subprocess.check_call("ctest -V --timeout 20 -C %s ." % (args.config), shell=True)
 
     if not params or 'INDIGO_CMAKE_OSX_ARCHITECTURES' not in params:
         os.chdir(root)
