@@ -1941,6 +1941,10 @@ class Indigo(object):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateFileSaver(filename.encode('ascii'), format.encode('ascii'))))
 
+    def createSaver(self, obj, format):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateSaver(obj.id, format.encode('ascii'))))
+
     def createArray(self):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateArray()))
