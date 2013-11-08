@@ -743,15 +743,10 @@ int parseParams (Params* p, int argc, char *argv[]) {
    if (p->bond > 0)
       indigoSetOptionFloat("render-bond-length", (float)p->bond);
    
-   if ((p->width > 0 && p->height <= 0) ||
-       (p->width <= 0 && p->height > 0))
-   {
-      fprintf(stderr, "-w and -h should be specified both or neither\n");
-      return -1;
-   }
-
-   if (p->width > 0 && p->height > 0)
-      indigoSetOptionXY("render-image-size", p->width, p->height);
+   if (p->width > 0)
+      indigoSetOptionInt("render-image-width", p->width);
+   if (p->height > 0)
+      indigoSetOptionInt("render-image-height", p->height);
 
    if (p->hydro_set && p->query_set)
    {
