@@ -371,6 +371,21 @@ void MoleculeCisTrans::registerBond (int idx)
    _bonds[idx].clear();
 }
 
+void MoleculeCisTrans::validate ()
+{
+   BaseMolecule &mol = _getMolecule();
+
+   for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   {
+      if (getParity(i) != 0)
+      {
+         int subs[4];
+         if (!isGeomStereoBond(mol, i, subs, false))
+            setParity(i, 0);
+      }
+   }
+}
+ 
 bool MoleculeCisTrans::registerBondAndSubstituents (int idx)
 {
    BaseMolecule &mol = _getMolecule();
