@@ -43,13 +43,15 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
    QS_DEF(Array<int>, order);
    QS_DEF(Array<int>, ranks);
    QS_DEF(Molecule, mol);
+
    int i;
 
    if (mol_.repeating_units.size() > 0)
       throw Error("can not canonicalize a polymer");
 
    // Detect hydrogens configuration if aromatic but not ambiguous
-   mol.restoreUnambiguousHydrogens();
+   // We can store this infromation in the original structure mol_.
+   mol_.restoreUnambiguousHydrogens();
 
    mol.clone(mol_, 0, 0);
 
