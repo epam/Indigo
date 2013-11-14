@@ -28,6 +28,7 @@ bool BaseMoleculeQuery::buildFingerprint (const MoleculeFingerprintParameters &f
    MoleculeFingerprintBuilder fp_builder(_base_mol, fp_params);
    TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
 
+   fp_builder.query = true;
    fp_builder.cancellation = &canc_handler;
 
    fp_builder.process();
