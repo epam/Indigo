@@ -350,4 +350,12 @@ CEXPORT int indigoDbgResetProfiling (int whole_session)
    INDIGO_END(-1);
 }
 
+CEXPORT qword indigoDbgProfilingGetCounter (const char *name, int whole_session)
+{
+   INDIGO_BEGIN
+   {
+      return indigo::ProfilingSystem::getInstance().getLabelCallCount(name, whole_session != 0);
+   }
+   INDIGO_END(-1);
+}
 
