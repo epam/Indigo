@@ -101,6 +101,34 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       _getBounds(mols[i]->asMolecule(), p.str_min, p.str_max, p.scale);
 
       float width = p.str_max.x - p.str_min.x;
+
+      // Check titles width
+      if (i < params.titles.size())
+      {
+         const Array<char> &title = params.titles[i];
+         
+         if (title.size() > 0)
+         {
+            int start = 0;
+            int longest_line = 0;
+            while (start < title.size())
+            {
+               int next = title.find(start + 1, title.size(), '\n');
+               if (next == -1)
+                  next = title.size();
+
+               longest_line = __max(next - start, longest_line);
+
+               start = next;
+            }
+
+            // On average letters has width 6
+            float title_width = longest_line * 6.3 / 36.0;
+            width = __max(width, title_width);
+         }
+      }
+      
+
       column_widths[column] = __max(width, column_widths[column]);
    }
 

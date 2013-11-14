@@ -1102,6 +1102,10 @@ void MoleculeStereocenters::getPyramidMapping (const MoleculeStereocenters &quer
             // rare cases like '[S@](F)(Cl)=O' on '[S@](F)(Cl)(=O)=N'
             if (seq1[i] == -1 && tmol.getAtomNumber(mapping[query_atom]) == ELEM_S)
                break; // match free electron pair to an atom
+
+            // Match N[C@H](O)S on C[C@@](N)(O)S
+            if (seq1[i] == -1)
+               break; // match vacant place in query to this atom
          }
       }
 

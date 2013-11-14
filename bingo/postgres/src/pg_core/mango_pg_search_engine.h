@@ -15,6 +15,8 @@
 #include "bingo_postgres.h"
 #include "bingo_pg_cursor.h"
 
+#include <cfloat>
+
 class BingoPgText;
 class BingoPgIndex;
 class BingoPgConfig;

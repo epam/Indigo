@@ -82,6 +82,8 @@ public:
 
    bool convertableToImplicitHydrogen (int idx);
 
+   void validate ();
+
    DECL_ERROR;
 
    static bool isGeomStereoBond (BaseMolecule &mol, int bond_idx, int *substituents, bool have_xyz);
