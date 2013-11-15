@@ -1687,6 +1687,43 @@ int QueryMolecule::getAtomMinH (int idx)
    return min_h;
 }
 
+int QueryMolecule::getAtomMaxExteralConnectivity (int idx)
+{
+   int number = getAtomNumber(idx);
+   if (number == -1)
+      return -1;
+
+   int min_local_h = _getAtomMinH(_atoms[idx]);
+   if (min_local_h == -1)
+      min_local_h = 0;
+   int min_conn = _calcAtomConnectivity(idx);
+   if (min_conn == -1)
+      min_conn = 0;
+
+   int max_conn = 0;
+   for (int charge = -5; charge <= 8; charge++)
+   {
+      if (!possibleAtomCharge(idx, charge))
+         continue;
+
+      for (int radical = 0; radical <= RADICAL_DOUBLET; radical++)
+      {
+         if (!possibleAtomRadical(idx, radical))
+            continue;
+
+         int cur_max_conn = Element::getMaximumConnectivity(number, charge, radical, true);
+         if (max_conn < cur_max_conn)
+            max_conn = cur_max_conn;
+      }
+   }
+
+   int ext_conn = max_conn - min_conn - min_local_h;
+   if (ext_conn < 0)
+      return 0;
+   return ext_conn;
+}
+
+
 int QueryMolecule::_getAtomMinH (QueryMolecule::Atom *atom)
 {
    if (atom->type == ATOM_TOTAL_H)

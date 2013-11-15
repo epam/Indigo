@@ -100,7 +100,7 @@ public:
    DECL_ERROR;
 
 protected:
-   void _initHashCalculations (BaseMolecule &mol);
+   void _initHashCalculations (BaseMolecule &mol, const Filter &vfilter);
 
    static void _handleTree     (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _handleCycle    (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
@@ -119,13 +119,16 @@ protected:
       bool use_atoms, bool use_bonds, int subgraph_type, dword &bits_to_set);
 
    void _makeFingerprint (BaseMolecule &mol);
-   void _calcExtraBits (BaseMolecule &mol, Filter &vfilter);
+   void _calcExtraBits (BaseMolecule &mol);
 
    void _setTauBits (const char *str, int nbits);
    void _setOrdBits (const char *str, int nbits);
 
    static void _setBits (dword hash, byte *fp, int size, int nbits);
    
+   void _calculateFragmentVertexDegree (BaseMolecule &mol, const Array<int> &vertices, const Array<int> &edges);
+   int _calculateFragmentExternalConn (BaseMolecule &mol, const Array<int> &vertices, const Array<int> &edges);
+
    BaseMolecule &_mol;
    const MoleculeFingerprintParameters &_parameters;
 
@@ -157,6 +160,10 @@ protected:
    TL_CP_DECL(Array<int>, _atom_codes_empty);
    TL_CP_DECL(Array<int>, _bond_codes_empty);
    TL_CP_DECL(Array<int>, _atom_hydrogens);
+   TL_CP_DECL(Array<int>, _atom_charges);
+   TL_CP_DECL(Array<int>, _vertex_connectivity);
+   TL_CP_DECL(Array<int>, _fragment_vertex_degree);
+   TL_CP_DECL(Array<int>, _bond_orders);
 
    typedef std::unordered_map<HashBits, int, Hasher> HashesMap;
    TL_CP_DECL(HashesMap, _ord_hashes);

@@ -324,6 +324,8 @@ public:
 
    virtual void invalidateAtom (int index, int mask);
 
+   int getAtomMaxExteralConnectivity (int idx);
+
 protected:
 
    int _calcAtomConnectivity (int idx);
