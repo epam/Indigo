@@ -15,4 +15,5 @@ if(UNIX OR APPLE)
 endif()
 set_target_properties(graph PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 #target_link_libraries(graph common)
+
 #pack_static(graph)
