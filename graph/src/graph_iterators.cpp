@@ -62,12 +62,12 @@ EdgesAuto::EdgesAuto (Graph &owner) : _owner(owner)
 
 EdgeIter EdgesAuto::begin ()
 {
-   return EdgeIter(_owner, _owner.vertexBegin());
+   return EdgeIter(_owner, _owner.edgeBegin());
 }
 
 EdgeIter EdgesAuto::end ()
 {
-   return EdgeIter(_owner, _owner.vertexEnd());
+   return EdgeIter(_owner, _owner.edgeEnd());
 }
 
 NeighborIter::NeighborIter(const Vertex &owner, int idx) : _owner(owner), AutoIterator(idx)
