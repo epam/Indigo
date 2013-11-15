@@ -412,7 +412,7 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
    // Filter only based on the first 10 bits
    // TODO: collect time infromation about the reading and matching measurements and
    // and balance between reading new block or check filtered items without reading new block
-   for (int i = 0; i < _query_fp_bits_used.size() && i < 10; i++)
+   for (int i = 0; i < _query_fp_bits_used.size() && i < 15; i++)
    {
       int j = _query_fp_bits_used[i];
       
@@ -524,6 +524,7 @@ bool MoleculeSubMatcher::_tryCurrent ()// const
       return true;
    }
 
+   //return true;
    return false;
 }
    
