@@ -1401,13 +1401,16 @@ void Molecule::checkForConsistency (Molecule &mol)
       if (mol.isPseudoAtom(i) || mol.isRSite(i))
          continue;
 
+      // check that we are sure about valence
+      int val = mol.getAtomValence(i);
+
       // check that all explicit hydrogens are lone or 1-connected
-      if (mol.getAtomNumber(i) == ELEM_H && vertex.degree() > 1)
+      // some molecules can have 2-connected hydrogens like diborane
+      if (mol.getAtomNumber(i) == ELEM_H && (vertex.degree() != 1 && vertex.degree() != val))
          throw Element::Error("%d-connected hydrogen atom", vertex.degree());
 
       // check that we are sure about implicit H counter and valence
       mol.getImplicitH(i);
-      mol.getAtomValence(i);
       // (if the radical is not set, it is calculated from the valence anyway)
    }
 }
