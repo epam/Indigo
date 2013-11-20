@@ -1792,7 +1792,7 @@ class Indigo(object):
         return result
 
     def _checkResultString (self, result):
-        return self._checkResultPtr(result).decode('ascii')
+        return self._checkResultPtr(result).decode('ascii') if sys.version >= (3, 0) else self._checkResultPtr(result).encode('ascii')
 
     def convertToArray (self, iteratable):
         if isinstance(iteratable, IndigoObject):
