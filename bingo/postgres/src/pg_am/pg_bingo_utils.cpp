@@ -5,6 +5,10 @@ extern "C" {
 #include "storage/lock.h"
 #include "access/heapam.h"
 #include "storage/bufmgr.h"
+#if PG_VERSION_NUM / 100 == 903
+#include "lib/stringinfo.h"
+#include "access/xlog_internal.h"
+#endif
 }
 
 
@@ -28,8 +32,6 @@ extern "C" {
 #include "bingo_pg_config.h"
 #include "bingo_pg_cursor.h"
 #include "bingo_pg_index.h"
-
-
 
 extern "C" {
 //PG_FUNCTION_INFO_V1(bingo_test);

@@ -11,32 +11,39 @@ presets = {
     "win64" : ("Visual Studio 10 Win64", ""),
     "win32-2012" : ("Visual Studio 11", ""),
     "win64-2012" : ("Visual Studio 11 Win64", ""),
+    "win32-2013" : ("Visual Studio 12", ""),
+    "win64-2013" : ("Visual Studio 12 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
-    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),   
+    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
+    "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
 }
 
 parser = OptionParser(description='Indigo libraries build script')
 parser.add_option('--generator', help='this option is passed as -G option for cmake')
 parser.add_option('--params', default="", help='additional build parameters')
 parser.add_option('--config', default="Release", help='project configuration')
-parser.add_option('--nobuild', default=False, 
+parser.add_option('--nobuild', default=False,
     action="store_true", help='configure without building', dest="nobuild")
-parser.add_option('--clean', default=False, action="store_true", 
+parser.add_option('--clean', default=False, action="store_true",
     help='delete all the build data', dest="clean")
-parser.add_option('--preset', type="choice", dest="preset", 
-    choices=presets.keys(), help='build preset %s' % (str(presets.keys())))
-parser.add_option('--cairo-gl', dest="cairogl", 
+parser.add_option('--preset', type="choice", dest="preset",
+    choices=list(presets.keys()), help='build preset %s' % (str(presets.keys())))
+parser.add_option('--cairo-gl', dest="cairogl",
     default=False, action="store_true", help='Build Cairo with OpenGL support')
-parser.add_option('--cairo-vg', dest="cairovg", 
+parser.add_option('--cairo-vg', dest="cairovg",
     default=False, action="store_true", help='Build Cairo with CairoVG support')
-parser.add_option('--find-cairo', dest="findcairo", 
+parser.add_option('--cairo-egl', dest="cairoegl",
+    default=False, action="store_true", help='Build Cairo with EGL support')
+parser.add_option('--cairo-glesv2', dest="cairoglesv2",
+    default=False, action="store_true", help='Build Cairo with GLESv2 support')
+parser.add_option('--find-cairo', dest="findcairo",
     default=False, action="store_true", help='Find and use system Cairo')
-parser.add_option('--find-pixman', dest="findpixman", 
+parser.add_option('--find-pixman', dest="findpixman",
     default=False, action="store_true", help='Find and use system Pixman')
 
 (args, left_args) = parser.parse_args()
@@ -54,7 +61,7 @@ cur_dir = abspath(dirname(__file__))
 root = join(cur_dir, "..")
 project_dir = join(cur_dir, "indigo-all")
 
-if args.generator.find("Unix Makefiles") != -1:
+if args.generator.find("Unix Makefiles") != -1 or args.generator.find("MinGW Makefiles") != -1:
     args.params += " -DCMAKE_BUILD_TYPE=" + args.config
 
 if args.cairogl:
@@ -62,6 +69,12 @@ if args.cairogl:
 
 if args.cairovg:
     args.params += ' -DWITH_CAIRO_VG=TRUE'
+
+if args.cairoegl:
+    args.params += ' -DWITH_CAIRO_EGL=TRUE'
+
+if args.cairoglesv2:
+    args.params += ' -DWITH_CAIRO_GLESV2=TRUE'
 
 if args.findcairo:
     args.params += ' -DUSE_SYSTEM_CAIRO=TRUE'

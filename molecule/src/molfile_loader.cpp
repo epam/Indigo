@@ -167,7 +167,8 @@ void MolfileLoader::_readCtabHeader ()
 
       version[5] = 0;
 
-      if (strcasecmp(version, "V2000") == 0)
+      if (strcasecmp(version, "V2000") == 0 || 
+          strcasecmp(version, "     ") == 0) // ISISHOST version of Molfile do not have version in the header
          _v2000 = true;
       else if (strcasecmp(version, "V3000") == 0)
          _v2000 = false;

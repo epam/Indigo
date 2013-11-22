@@ -1,4 +1,4 @@
-# This module assumes that you have installed all the 
+# This module assumes that you have installed all the
 # libs files in the <source root>/dist directory
 
 import os
@@ -13,10 +13,9 @@ from optparse import OptionParser
 
 def make_doc():
     curdir = abspath(os.curdir)
-    
     script_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     root_dir = os.path.join(script_dir, "..")
-    
+
     os.chdir(os.path.join(root_dir, 'api/python'))
     os.system('python copy-libs.py')
     os.chdir('../../doc')
@@ -59,7 +58,8 @@ def join_archives(names, destname):
         move_dir_content(name, destname)
     if exists(destname + ".zip"):
         os.remove(destname + ".zip")
-    copy_doc(destname)
+    if args.doc:
+        copy_doc(destname)
     subprocess.check_call("zip -r -9 -m %s.zip %s" % (destname, destname), shell=True)
     for name in names:
         shutil.rmtree(name)
@@ -100,10 +100,13 @@ parser = OptionParser(description='Indigo libraries repacking')
 parser.add_option('--libonlyname', help='extract only the library into api/lib')
 parser.add_option('--config', default="Release", help='project configuration')
 parser.add_option('--type', default=None, help='wrapper (dotnet, java, python)')
-
-make_doc()
+parser.add_option('--doc', default=False, action='store_true', help='Build documentation')
 
 (args, left_args) = parser.parse_args()
+
+if args.doc:
+    make_doc()
+
 if len(left_args) > 0:
     print("Unexpected arguments: %s" % (str(left_args)))
     exit()
@@ -163,7 +166,7 @@ for w, libs in wrappers:
         continue
     any_exists = True
     for lib in libs:
-        name = "indigo-libs-%s-%s-shared" % (version, lib)
+        name = "indigo-libs-%s-%s-shared%s" % (version, lib, suffix)
         if exists(name + ".zip"):
             any_exists = any_exists and True
             unpackToLibs(name)
@@ -175,4 +178,4 @@ for w, libs in wrappers:
         for gen in wrappers_gen:
             if args.type is not None and gen.find(args.type) == -1:
                 continue
-            subprocess.check_call('%s %s -s "-%s"' % (sys.executable, join(api_dir, gen), w), shell=True)
+            subprocess.check_call('%s %s -s "-%s" %s' % (sys.executable, join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)

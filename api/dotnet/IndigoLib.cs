@@ -335,5 +335,6 @@ namespace com.ggasoftware.indigo
         sbyte* indigoDbgInternalType(int item);
         sbyte* indigoDbgProfiling (int whole_sessoin);
         int indigoDbgResetProfiling (int whole_sessoin);
+        int indigoDbgBreakpoint ();
     }
 }

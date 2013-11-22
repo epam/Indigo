@@ -71,5 +71,5 @@ if (UNIX)
 endif()
 set_property(TARGET dlopen-test PROPERTY FOLDER "tests")
 #DLOPEN test
-LIBRARY_NAME(indigo)
-add_test(dlopen-indigo-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME})
+#LIBRARY_NAME(indigo)
+#add_test(dlopen-indigo-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME})

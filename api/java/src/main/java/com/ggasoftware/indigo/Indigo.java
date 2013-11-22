@@ -255,12 +255,41 @@ public class Indigo {
                     // File could have been already loaded
                 }
             }
-            if ((new File(getPathToBinary(path, "msvcp100.dll"))).exists())
+            if ((new File(getPathToBinary(path, "msvcp100.dll"))).exists()) {
                 try {
                     System.load(getPathToBinary(path, "msvcp100.dll"));
                 } catch (UnsatisfiedLinkError e) {
                     // File could have been already loaded
                 }
+            }
+            if ((new File(getPathToBinary(path, "msvcr110.dll"))).exists()) {
+                try {
+                    System.load(getPathToBinary(path, "msvcr110.dll"));
+                } catch (UnsatisfiedLinkError e) {
+                    // File could have been already loaded
+                }
+            }
+            if ((new File(getPathToBinary(path, "msvcp110.dll"))).exists()) {
+                try {
+                    System.load(getPathToBinary(path, "msvcp110.dll"));
+                } catch (UnsatisfiedLinkError e) {
+                    // File could have been already loaded
+                }
+            }
+            if ((new File(getPathToBinary(path, "msvcr120.dll"))).exists()) {
+                try {
+                    System.load(getPathToBinary(path, "msvcr120.dll"));
+                } catch (UnsatisfiedLinkError e) {
+                    // File could have been already loaded
+                }
+            }
+            if ((new File(getPathToBinary(path, "msvcp120.dll"))).exists()) {
+                try {
+                    System.load(getPathToBinary(path, "msvcp120.dll"));
+                } catch (UnsatisfiedLinkError e) {
+                    // File could have been already loaded
+                }
+            }
             _lib = (IndigoLib) Native.loadLibrary(getPathToBinary(path, "indigo.dll"), IndigoLib.class);
         }
     }

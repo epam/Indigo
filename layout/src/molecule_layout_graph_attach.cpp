@@ -622,6 +622,7 @@ void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adj
           getEdgeType(vert.neiEdge(i)) != ELEMENT_NOT_DRAWN)
       {
          n_pos++;
+         // amount of drown neibourhoods
          drawn_idx = i;
       } else
          not_drawn_idx = i;
@@ -980,38 +981,38 @@ void MoleculeLayoutGraph::_calculatePositionsSingleDrawn (int vert_idx, Array<in
                break;
             }
 
-            const Vertex &drawn_vert = getVertex(vert.neiVertex(drawn_idx));
+         const Vertex &drawn_vert = getVertex(vert.neiVertex(drawn_idx));
 
-            int drawn_substituent = -1;
-            int drawn_substituent_idx = -1;
+         int drawn_substituent = -1;
+         int drawn_substituent_idx = -1;
 
-            for (int i = drawn_vert.neiBegin(); i < drawn_vert.neiEnd(); i = drawn_vert.neiNext(i))
-               if (drawn_vert.neiVertex(i) != vert_idx) // must be drawn
-               {
-                  for (int j = 0; j < 4; j++)
-                     if (substituents[j] == _layout_vertices[drawn_vert.neiVertex(i)].ext_idx)
-                     {
-                        drawn_substituent_idx = drawn_vert.neiVertex(i);
-                        drawn_substituent = j;
-                        break;
-                     }
+         for (int i = drawn_vert.neiBegin(); i < drawn_vert.neiEnd(); i = drawn_vert.neiNext(i))
+            if (drawn_vert.neiVertex(i) != vert_idx) // must be drawn
+            {
+               for (int j = 0; j < 4; j++)
+                  if (substituents[j] == _layout_vertices[drawn_vert.neiVertex(i)].ext_idx)
+                  {
+                     drawn_substituent_idx = drawn_vert.neiVertex(i);
+                     drawn_substituent = j;
                      break;
-               }
+                  }
+                  break;
+            }
 
-               bool same_side = false;
+         bool same_side = false;
 
-               if ((parity == MoleculeCisTrans::CIS) == (abs(to_draw_substituent - drawn_substituent) == 2))
-                  same_side = true;
+         if ((parity == MoleculeCisTrans::CIS) == (abs(to_draw_substituent - drawn_substituent) == 2))
+            same_side = true;
 
-               int side_sign = MoleculeCisTrans::sameside(Vec3f(_layout_vertices[vert.neiVertex(drawn_idx)].pos), 
-                  Vec3f(_layout_vertices[vert_idx].pos), Vec3f(_layout_vertices[drawn_substituent_idx].pos), Vec3f(positions[0]));
+         int side_sign = MoleculeCisTrans::sameside(Vec3f(_layout_vertices[vert.neiVertex(drawn_idx)].pos), 
+            Vec3f(_layout_vertices[vert_idx].pos), Vec3f(_layout_vertices[drawn_substituent_idx].pos), Vec3f(positions[0]));
 
-               if (same_side)
-               {
-                  if (side_sign == -1)
-                     positions.swap(0, 1);
-               } else if (side_sign == 1)
-                  positions.swap(0, 1);
+         if (same_side)
+         {
+            if (side_sign == -1)
+               positions.swap(0, 1);
+         } else if (side_sign == 1)
+            positions.swap(0, 1);
       }
    }
 }
@@ -1037,32 +1038,32 @@ void MoleculeLayoutGraph::_orderByEnergy (Array<Vec2f> &positions)
          norm += norm_a[i] * norm_a[i];
       }
 
-      norm = sqrt(norm);
+   norm = sqrt(norm);
 
-      for (int i = 0; i < n_pos; i++) 
-      {
-         for (int j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
-            if (getVertexType(j) != ELEMENT_NOT_DRAWN && getVertexType(j) != ELEMENT_IGNORE)
+   for (int i = 0; i < n_pos; i++) 
+   {
+      for (int j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
+         if (getVertexType(j) != ELEMENT_NOT_DRAWN && getVertexType(j) != ELEMENT_IGNORE)
+         {
+            p0.diff(positions[i], getPos(j));
+            r = p0.lengthSqr();
+
+            if  (r < EPSILON)
             {
-               p0.diff(positions[i], getPos(j));
-               r = p0.lengthSqr();
-
-               if  (r < EPSILON)
-               {
-                  energies[i] = 1E+20f;
-                  continue;
-               }
-
-               energies[i] += ((norm_a[j] / norm + 0.5) / (r));
+               energies[i] = 1E+20f;
+               continue;
             }
-      }
 
-      // Sort by energies
-      for (int i = 0; i < n_pos; i++)
-         for (int j = i + 1; j < n_pos; j++)
-            if (energies[j] < energies[i])
-            {
-               energies.swap(i, j);
-               positions.swap(i, j);
-            }
+            energies[i] += ((norm_a[j] / norm + 0.5) / r);
+         }
+   }
+
+   // Sort by energies
+   for (int i = 0; i < n_pos; i++)
+      for (int j = i + 1; j < n_pos; j++)
+         if (energies[j] < energies[i])
+         {
+            energies.swap(i, j);
+            positions.swap(i, j);
+         }
 }

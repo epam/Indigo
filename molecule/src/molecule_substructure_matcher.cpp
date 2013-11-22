@@ -450,7 +450,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       {
          int conn = target.getVertex(super_idx).degree();
          if (!target.isPseudoAtom(super_idx) && !target.isRSite(super_idx))
-            conn += target.asMolecule().getImplicitH(super_idx);
+            conn += target.asMolecule().getImplicitH_NoThrow(super_idx, 0);
          return query->valueWithinRange(conn);
       }
       case QueryMolecule::ATOM_TOTAL_BOND_ORDER:

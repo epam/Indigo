@@ -172,6 +172,8 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
       int n_enumerations = 0;
       bool to_break = false;
 
+      new_state.copy(beg_state);
+
       for (v1 = vertexBegin(); v1 < vertexEnd() && !to_break; v1 = vertexNext(v1))
          for (v2 = vertexNext(v1); v2 < vertexEnd(); v2 = vertexNext(v2))
          {
@@ -242,7 +244,7 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
 
       if (edges.size() == 0)
       {
-         //beg_state.applyToGraph();
+         beg_state.applyToGraph();
          break;
       }
 
@@ -278,7 +280,7 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
       }
 
       if (improved)
-      {
+      {// finished becouse of flipped
          beg_state.copy(best_state);
          continue;
       }

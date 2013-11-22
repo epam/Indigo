@@ -12,12 +12,16 @@ presets = {
     "win64" : ("Visual Studio 10 Win64", ""),
     "win32-2012" : ("Visual Studio 11", ""),
     "win64-2012" : ("Visual Studio 11 Win64", ""),
+    "win32-2013" : ("Visual Studio 12", ""),
+    "win64-2013" : ("Visual Studio 12 Win64", ""),
+    "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
-    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),   
+    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
+    "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
 }
 
 parser = OptionParser(description='Bingo build script')
@@ -30,7 +34,7 @@ parser.add_option('--nobuild', default=False,
 parser.add_option('--clean', default=False, action="store_true",
     help='delete all the build data', dest="clean")
 parser.add_option('--preset', type="choice", dest="preset",
-    choices=presets.keys(), help='build preset %s' % (str(presets.keys())))
+    choices=list(presets.keys()), help='build preset %s' % (str(presets.keys())))
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
@@ -103,7 +107,7 @@ if args.dbms != 'sqlserver':
             for root, dirs, files in os.walk('.'):
                 for file in files:
                     if file.endswith('.sh') or file.endswith('.bat'):
-                        os.chmod(join(root, file), 0755)
+                        os.chmod(join(root, file), 0o755)
                     zf.write(join(root, file))
             os.chdir(root)
 else:
@@ -142,7 +146,7 @@ else:
 
     os.chdir(join(root, 'bingo', 'sqlserver'))
     command = 'msbuild /t:Rebuild /p:Configuration=%s /property:DllPath32=%s /property:DllPath64=%s' % (args.config, dllPath['x86'], dllPath['x64'])
-    print os.path.abspath(os.curdir), command
+    print(os.path.abspath(os.curdir), command)
     subprocess.check_call(command)
 
     os.chdir(root)
@@ -168,7 +172,7 @@ else:
         if item.endswith('.sql') or item.endswith('.bat'):
             shutil.copyfile(join(root, 'bingo', 'sqlserver', 'sql', item), join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, item))
     if not os.path.exists(join(root, 'bingo', 'sqlserver', 'bin', args.config, 'bingo-sqlserver.dll')):
-        print 'Warning: File %s does not exist, going to use empty stub instead' % join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll')
+        print('Warning: File %s does not exist, going to use empty stub instead' % join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll'))
         open(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll', 'w')).close()
     else:
         shutil.copyfile(join(root, 'bingo', 'sqlserver', 'bin', args.config, 'bingo-sqlserver.dll'), join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version, 'assembly', 'bingo-sqlserver.dll'))

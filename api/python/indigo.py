@@ -855,7 +855,7 @@ class IndigoObject(object):
 
     def getProperty(self, prop):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResultString(Indigo._lib.indigoGetProperty(self.id, prop))
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetProperty(self.id, prop.encode('ascii')))
 
     def setProperty(self, prop, value):
         self.dispatcher._setSessionId()
@@ -1102,6 +1102,7 @@ class Indigo(object):
     RC_ORDER_CHANGED = 8
 
     _crt = None
+    _crtp = None
     _lib = None
 
     # Python embeds path into .pyc code if method is marked with @staticmethod
@@ -1134,8 +1135,13 @@ class Indigo(object):
                 raise IndigoException("unknown platform " + arch)
             if os.path.exists(path + "/msvcr100.dll"):
                 Indigo._crt = CDLL(path + "/msvcr100.dll")
+                Indigo._crtp = CDLL(path + "/msvcp100.dll")
             if os.path.exists(path + "/msvcr110.dll"):
                 Indigo._crt = CDLL(path + "/msvcr110.dll")
+                Indigo._crtp = CDLL(path + "/msvcp110.dll")
+            if os.path.exists(path + "/msvcr120.dll"):
+                Indigo._crt = CDLL(path + "/msvcr120.dll")
+                Indigo._crtp = CDLL(path + "/msvcp120.dll")
             Indigo._lib = CDLL(path + "/indigo.dll")
         elif platform.mac_ver()[0]:
             path += "/Mac/"
@@ -1162,7 +1168,7 @@ class Indigo(object):
             self._initStatic(path)
         self._sid = Indigo._lib.indigoAllocSessionId()
         # Capture a reference to the _lib to access it in the __del__ method because
-        # at interpreter shutdown, the module's global variables are set to None 
+        # at interpreter shutdown, the module's global variables are set to None
         self._lib = Indigo._lib
         self._setSessionId()
         self.IndigoObject = IndigoObject
@@ -1786,7 +1792,7 @@ class Indigo(object):
         return result
 
     def _checkResultString (self, result):
-        return self._checkResultPtr(result).decode('ascii')
+        return self._checkResultPtr(result).decode('ascii') if sys.version >= (3, 0) else self._checkResultPtr(result).encode('ascii')
 
     def convertToArray (self, iteratable):
         if isinstance(iteratable, IndigoObject):
@@ -1934,6 +1940,10 @@ class Indigo(object):
     def createFileSaver(self, filename, format):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateFileSaver(filename.encode('ascii'), format.encode('ascii'))))
+
+    def createSaver(self, obj, format):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateSaver(obj.id, format.encode('ascii'))))
 
     def createArray(self):
         self._setSessionId()

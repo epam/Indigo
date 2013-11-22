@@ -83,7 +83,7 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
          original_hydrogens.push(i);
    }
 
-   bool need_layout = true;
+   bool need_layout = false;
    while (re_state.performSingleTransformation(_cur_monomer, forbidden_atoms, original_hydrogens, need_layout))
       ;
 
@@ -91,16 +91,19 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
 
    if (has_coord)
    {
-      if (layout_flag)
+      if (need_layout)
       {
-         MoleculeLayout ml(molecule);
-         ml.setCancellationHandler(cancellation);
-         ml.make();
+         if (layout_flag)
+         {
+            MoleculeLayout ml(molecule);
+            ml.setCancellationHandler(cancellation);
+            ml.make();
+         }
+         else
+            molecule.clearXyz();
       }
-      if (!need_layout)
-         molecule.stereocenters.markBonds();
       else
-         molecule.clearXyz();
+         molecule.stereocenters.markBonds();
    }
 
    return true;

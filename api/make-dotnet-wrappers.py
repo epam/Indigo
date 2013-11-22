@@ -5,6 +5,7 @@ import re
 import shutil
 import subprocess
 
+
 if os.name == 'nt':
     msbuildcommand = 'msbuild /t:Rebuild /p:Configuration=Release'
 else:
@@ -13,11 +14,11 @@ else:
 
 parser = OptionParser(description='Indigo .NET libraries build script')
 parser.add_option('--suffix', '-s', help='archive suffix', default="")
-
+parser.add_option('--doc', default=False, action='store_true', help='Put documentation into the archive')
 (args, left_args) = parser.parse_args()
 
 wrappers = (args.suffix[1:], )
-print wrappers
+print(wrappers)
 if 'universal' in wrappers:
     wrappers = ('win', 'linux', 'mac')
 
@@ -52,19 +53,26 @@ if os.path.exists(join(indigoDotNetPath, "Resource")):
 if 'win' in wrappers:
     os.makedirs(join(indigoDotNetPath, "Resource", 'Win', 'x64'))
     os.makedirs(join(indigoDotNetPath, "Resource", 'Win', 'x86'))
-    print os.listdir(join(libraryPath, 'Win', 'x64'))
     if os.path.exists(join(libraryPath, 'Win', 'x64', 'msvcr100.dll')):
         win2010 = 1
         win2012 = 0
+        win2013 = 0
     elif os.path.exists(join(libraryPath, 'Win', 'x64', 'msvcr110.dll')):
         win2010 = 0
         win2012 = 1
+        win2013 = 0
+    elif os.path.exists(join(libraryPath, 'Win', 'x64', 'msvcr120.dll')):
+        win2010 = 0
+        win2012 = 0
+        win2013 = 1
     else:
         win2010 = 0
         win2012 = 0
+        win2013 = 0
 else:
     win2010 = 0
     win2012 = 0
+    win2013 = 0
 
 if 'linux' in wrappers:
     os.makedirs(join(indigoDotNetPath, "Resource", 'Linux', 'x64'))
@@ -80,11 +88,9 @@ if 'mac' in wrappers:
 else:
     mac = 0
 
-print win2010, win2012
-
 os.chdir(indigoDotNetPath)
-command = '%s /property:LibraryPath=%s /property:Win2010=%s /property:Win2012=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, libraryPath, win2010, win2012, linux, mac, 'copy' if os.name == 'nt' else 'cp')
-print command
+command = '%s /property:LibraryPath=%s /property:Win2010=%s /property:Win2012=%s /property:Win2013=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, libraryPath, win2010, win2012, win2013, linux, mac, 'copy' if os.name == 'nt' else 'cp')
+print(command)
 subprocess.check_call(command, shell=True)
 
 # Build IndigoRenderer-dotnet
@@ -114,7 +120,7 @@ else:
 
 os.chdir(indigoRendererDotNetPath)
 command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
-print command
+print(command)
 subprocess.check_call(command, shell=True)
 
 # Build IndigoInchi-dotnet
@@ -145,7 +151,7 @@ else:
 
 os.chdir(indigoInchiDotNetPath)
 command = '%s /property:LibraryPath=%s /property:Win=%s /property:Linux=%s /property:Mac=%s /property:Copy=%s' % (msbuildcommand, join(api_dir, 'libs', 'shared'), win, linux, mac, 'copy' if os.name == 'nt' else 'cp')
-print command
+print(command)
 subprocess.check_call(command, shell=True)
 
 # Zip results
@@ -155,7 +161,8 @@ shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "dotnet")
 shutil.copy(join(indigoDotNetPath, 'bin', 'Release', 'indigo-dotnet.dll'), "dotnet")
 shutil.copy(join(indigoRendererDotNetPath, 'bin', 'Release', 'indigo-renderer-dotnet.dll'), "dotnet")
 shutil.copy(join(indigoInchiDotNetPath, 'bin', 'Release', 'indigo-inchi-dotnet.dll'), "dotnet")
-shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join('dotnet', 'doc'))
+if args.doc:
+    shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join('dotnet', 'doc'))
 
 archive_name = "indigo-dotnet-%s" % (version + args.suffix)
 os.rename("dotnet", archive_name)
