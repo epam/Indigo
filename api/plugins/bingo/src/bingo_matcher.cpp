@@ -832,11 +832,20 @@ BaseExactMatcher::~BaseExactMatcher()
 
 MolExactMatcher::MolExactMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseExactMatcher(index, (IndigoObject *&)_current_mol)
 {
+   _tautomer = false;
 }
       
 void MolExactMatcher::_setParameters (const char *parameters)
 {
-   MoleculeExactMatcher::parseConditions(parameters, _flags, _rms_threshold);
+   if (_indigoParseTautomerFlags(parameters, _tautomer_params))
+   {
+      _tautomer = true;
+   }
+   else
+   {
+      _tautomer = false;
+      MoleculeExactMatcher::parseConditions(parameters, _flags, _rms_threshold);
+   }
 }
 
 dword MolExactMatcher::_calcHash ()
@@ -860,16 +869,26 @@ bool MolExactMatcher::_tryCurrent ()/* const */
 
    Molecule &target_mol = _current_obj->getMolecule();
 
-   MoleculeExactMatcher mem(query_mol, target_mol);
-   mem.flags = _flags;
-   mem.rms_threshold = _rms_threshold; 
+   if (_tautomer)
+   {
+      MoleculeTautomerMatcher matcher(target_mol, false);
 
-   bool find_res = mem.find();
-   
-   if (find_res)
-      return true;
-         
-   return false;
+      Indigo &indigo = indigoGetInstance();
+
+      matcher.arom_options = indigo.arom_options;
+      matcher.setRulesList(&indigo.tautomer_rules);
+      matcher.setRules(_tautomer_params.conditions, _tautomer_params.force_hydrogens, _tautomer_params.ring_chain);
+      matcher.setQuery(query_mol);
+      return matcher.find();
+   }
+   else
+   {
+      MoleculeExactMatcher mem(query_mol, target_mol);
+      mem.flags = _flags;
+      mem.rms_threshold = _rms_threshold; 
+
+      return mem.find();
+   }
 }
 
 

@@ -6,6 +6,7 @@
 
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include "indigo_match.h"
 
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
@@ -369,6 +370,9 @@ namespace bingo
       virtual bool _tryCurrent ()/* const */;
 
       virtual void _setParameters (const char *params);
+
+      bool _tautomer;
+      IndigoTautomerParams _tautomer_params;
    };
 
 

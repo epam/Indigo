@@ -19,12 +19,17 @@
 #include "molecule/molecule_tautomer.h"
 #include "base_cpp/auto_ptr.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Molecule;
 class AromaticityMatcher;
 
-class MoleculeTautomerMatcher
+class DLLEXPORT MoleculeTautomerMatcher
 {
 public:
    DECL_ERROR;
@@ -72,5 +77,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif
