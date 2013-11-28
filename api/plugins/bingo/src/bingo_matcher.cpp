@@ -782,6 +782,7 @@ BaseExactMatcher::BaseExactMatcher (BaseIndex &index, IndigoObject *& current_ob
 {
    _candidates.clear();
    _current_cand_id = 0;
+   _flags = 0;
 }
 
 bool BaseExactMatcher::next ()

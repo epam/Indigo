@@ -345,6 +345,7 @@ namespace bingo
    protected:
       int _current_cand_id;
       dword _query_hash;
+      int _flags;
       Array<int> _candidates;
       /* const */ AutoPtr<ExactQueryData> _query_data;
 
@@ -363,7 +364,6 @@ namespace bingo
       
    private:
       IndexCurrentMolecule *_current_mol;
-      int _flags;
       float _rms_threshold;
       
       virtual dword _calcHash ();
@@ -381,7 +381,6 @@ namespace bingo
 
    private:
       IndexCurrentReaction *_current_rxn;
-      int _flags;
       
       virtual dword _calcHash ();
    
