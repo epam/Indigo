@@ -305,8 +305,6 @@ namespace bingo
       const byte *_cur_loc;
       Array<byte> _query_fp;
 
-      float _calcTanimoto (const byte *fp);
-
       virtual void _setParameters (const char * params);
 
       virtual void _initPartition ();
