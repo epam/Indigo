@@ -153,6 +153,10 @@ if (NOT CAIRO_FOUND)
 
     include_directories(${PNG_INCLUDE_DIR})
     include_directories(${ZLib_HEADERS_DIR})
+	
+    if(MSVC)
+	add_definitions(/wd4244 /wd4146 /wd4267)
+    endif()
 
     # To remove GLIBC_2.11 dependency
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FORTIFY_SOURCE=0")
@@ -180,7 +184,7 @@ if (NOT CAIRO_FOUND)
         target_link_libraries(cairo glesv2)
     endif()
     set_property(TARGET cairo PROPERTY FOLDER "third_party")
-	pack_static(cairo)
+    pack_static(cairo)
 else()
     set(Cairo_headers_dir ${CAIRO_INCLUDE_DIRS})
 endif()

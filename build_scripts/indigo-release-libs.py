@@ -67,8 +67,8 @@ cur_dir = abspath(dirname(__file__))
 root = join(cur_dir, "..")
 project_dir = join(cur_dir, "indigo-all")
 
-if args.generator.find("Unix Makefiles") != -1 or args.generator.find("MinGW Makefiles") != -1:
-    args.params += " -DCMAKE_BUILD_TYPE=" + args.config
+#if args.generator.find("Unix Makefiles") != -1 or args.generator.find("MinGW Makefiles") != -1:
+args.params += " -DCMAKE_BUILD_TYPE=" + args.config
 
 if args.cairogl:
     args.params += ' -DWITH_CAIRO_GL=TRUE'
