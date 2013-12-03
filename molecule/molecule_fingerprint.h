@@ -22,6 +22,7 @@
 #include "graph/subgraph_hash.h"
 
 #include <unordered_map>
+#include <limits.h>
 
 #ifdef _WIN32
 #pragma warning(push)
