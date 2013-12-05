@@ -143,7 +143,7 @@ void BingoAllocator::_addFile ( int alloc_size )
    std::string name;
    _genFilename(_mm_files->size() - 1, _filename.c_str(), name);
    file.open(name.c_str(), allocator_data->_file_size, true, false);
-   size_t old_file_count = allocator_data->_free_off / allocator_data->_file_size + 1;
+   size_t old_file_count = _mm_files->size() - 1;
 
    allocator_data->_free_off = old_file_count * allocator_data->_file_size;
 }

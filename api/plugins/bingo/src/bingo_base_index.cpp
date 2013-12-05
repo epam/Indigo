@@ -152,9 +152,9 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id, DatabaseLockData &
    if (_read_only)
       throw Exception("insert fail: Read only index can't be changed");
 
-   BingoArray<int> & back_id_mapping = _back_id_mapping_ptr.ref();
+   BingoMapping & back_id_mapping = _back_id_mapping_ptr.ref();
 
-   if (obj_id != -1 && back_id_mapping.size() > obj_id && back_id_mapping[obj_id] != -1)
+   if (obj_id != -1 && back_id_mapping.get(obj_id) != -1)
       throw Exception("insert fail: This id was already used");
 
    _ObjectIndexData _obj_data;
@@ -175,18 +175,11 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id, DatabaseLockData &
       profTimerStart(t_in, "mapping_changing_1");      
       if (obj_id == -1)
       {
-         int i;
-         for (i = _header->first_free_id; i < back_id_mapping.size(); i++)
-         {
-            if (back_id_mapping[i] == -1)
-            {
-               _header->first_free_id = i;
-               break;
-            }
-         }
-
-         if (i == back_id_mapping.size())
-            _header->first_free_id = back_id_mapping.size();
+         int i = _header->first_free_id;
+         while (back_id_mapping.get(i) != (size_t)-1)
+            i++;
+         
+         _header->first_free_id = i;
 
          obj_id = _header->first_free_id;
       }
@@ -215,12 +208,12 @@ void BaseIndex::remove (int obj_id)
    if (_read_only)
       throw Exception("remove fail: Read only index can't be changed");
 
-   BingoArray<int> & back_id_mapping = _back_id_mapping_ptr.ref();
+   BingoMapping & back_id_mapping = _back_id_mapping_ptr.ref();
 
-   if (obj_id < 0 || obj_id >= back_id_mapping.size() || back_id_mapping[obj_id] == -1)
+   if (obj_id < 0 || back_id_mapping.get(obj_id) == -1)
       throw Exception("There is no object with this id");
 
-   _cf_storage->remove(back_id_mapping[obj_id]);
+   _cf_storage->remove(back_id_mapping.get(obj_id));
    _mappingRemove(obj_id);
 }
 
@@ -249,7 +242,7 @@ BingoArray<int> & BaseIndex::getIdMapping ()
    return _id_mapping_ptr.ref();
 }
 
-BingoArray<int> & BaseIndex::getBackIdMapping ()
+BingoMapping & BaseIndex::getBackIdMapping ()
 {
    return _back_id_mapping_ptr.ref();
 }
@@ -266,7 +259,7 @@ int BaseIndex::getObjectsCount () const
 
 const byte * BaseIndex::getObjectCf (int id, int &len)
 {
-   const byte *cf_buf = _cf_storage->get(_back_id_mapping_ptr.ref()[id], len);
+   const byte *cf_buf = _cf_storage->get(_back_id_mapping_ptr.ref().get(id), len);
 
    if (len == -1)
       throw Exception("There is no object with this id");
@@ -416,7 +409,7 @@ void BaseIndex::_insertIndexData (_ObjectIndexData &obj_data)
 void BaseIndex::_mappingLoad ()
 {
    _id_mapping_ptr = BingoPtr< BingoArray<int> >(_header->mapping_offset);
-   _back_id_mapping_ptr = BingoPtr< BingoArray<int> >(_header->back_mapping_offset);
+   _back_id_mapping_ptr = BingoPtr< BingoMapping >(_header->back_mapping_offset);
 
    return;
 }
@@ -428,37 +421,32 @@ void BaseIndex::_mappingCreate ()
    _header->mapping_offset = (size_t)_id_mapping_ptr;
 
    _back_id_mapping_ptr.allocate();
-   new(_back_id_mapping_ptr.ptr()) BingoArray<int>();
+   new(_back_id_mapping_ptr.ptr()) BingoMapping();
    _header->back_mapping_offset = (size_t)_back_id_mapping_ptr;
 }
 
 void BaseIndex::_mappingAssign (int obj_id, int base_id)
 {
    BingoArray<int> & id_mapping = _id_mapping_ptr.ref();
-   BingoArray<int> & back_id_mapping = _back_id_mapping_ptr.ref();
+   BingoMapping & back_id_mapping = _back_id_mapping_ptr.ref();
 
    int old_size = id_mapping.size();
-   int old_back_size = back_id_mapping.size();
+
    if (id_mapping.size() <= base_id)
       id_mapping.resize(base_id + 1);
-   if (back_id_mapping.size() <= obj_id)
-      back_id_mapping.resize(obj_id + 1);
 
    for (int i = old_size; i < id_mapping.size(); i++)
       id_mapping[i] = -1;
-
-   for (int i = old_back_size; i < back_id_mapping.size(); i++)
-      back_id_mapping[i] = -1;
 
    id_mapping[base_id] = obj_id;
    
    if (obj_id == -1)
       return;
    
-   if (back_id_mapping[obj_id] != -1)
+   if (back_id_mapping.get(obj_id) != (size_t)-1)
       throw Exception("insert fail: this id was already used");
 
-   back_id_mapping[obj_id] = base_id;
+   back_id_mapping.add(obj_id, base_id);
 }
 
 void BaseIndex::_mappingAdd (int obj_id, int base_id)
@@ -469,13 +457,7 @@ void BaseIndex::_mappingAdd (int obj_id, int base_id)
 void BaseIndex::_mappingRemove (int obj_id)
 {
    BingoArray<int> & id_mapping = _id_mapping_ptr.ref();
-   BingoArray<int> & back_id_mapping = _back_id_mapping_ptr.ref();
+   BingoMapping & back_id_mapping = _back_id_mapping_ptr.ref();
 
-   if (back_id_mapping[obj_id] != -1)
-   {
-      int new_id = -1;
-
-      id_mapping[back_id_mapping[obj_id]] = -1;
-      back_id_mapping[obj_id] = -1;
-   }
+   back_id_mapping.remove(obj_id);
 }
