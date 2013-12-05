@@ -38,7 +38,7 @@ struct Pos
    float scale;
 };
 
-void _getBounds (BaseMolecule &mol, Vec2f &min, Vec2f &max, float &scale)
+void _getBounds (RenderParams& params, BaseMolecule &mol, Vec2f &min, Vec2f &max, float &scale)
 {
    // Compute average bond length
    float avg_bond_length = 1;
@@ -55,7 +55,11 @@ void _getBounds (BaseMolecule &mol, Vec2f &min, Vec2f &max, float &scale)
       avg_bond_length = bond_length_sum / mol.edgeCount();
    }
 
-   scale = 1 / avg_bond_length;
+   float bond_length = 1;
+   if (params.cnvOpt.bondLength > 0)
+      bond_length = params.cnvOpt.bondLength / 100.0f;
+
+   scale = bond_length / avg_bond_length;
 
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
@@ -103,7 +107,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       int column = i % params.cnvOpt.gridColumnNumber;
 
       Pos &p = positions[i];
-      _getBounds(mols[i]->asMolecule(), p.str_min, p.str_max, p.scale);
+      _getBounds(params, mols[i]->asMolecule(), p.str_min, p.str_max, p.scale);
 
       float width = p.str_max.x - p.str_min.x;
 
