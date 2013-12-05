@@ -48,9 +48,11 @@ namespace bingo
       ~FingerprintTable();
    
    private:
-      BingoPtr<ContainerSet> _table_ptr;
-      int _cell_count;
+
+      BingoArray<ContainerSet> _table;
+      int _max_cell_count;
       int _fp_size;
+      int _mt_size;
    };
 };
 

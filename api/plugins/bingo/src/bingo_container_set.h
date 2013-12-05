@@ -30,7 +30,11 @@ namespace bingo
 
       int getMaxBorder () const;
 
-      void add (const byte *fingerprint, int id);
+      bool add (const byte *fingerprint, int id, int fp_ones_count = -1);
+
+      void buildContainer ();
+
+      void splitSet (ContainerSet &new_set);
 
       void findSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices);
 
@@ -47,6 +51,7 @@ namespace bingo
       BingoPtr<int> _indices;
       
       int _inc_count;
+      int _inc_total_ones_count;
       int _min_ones_count;
       int _max_ones_count;
 
