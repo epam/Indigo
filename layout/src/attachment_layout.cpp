@@ -262,6 +262,7 @@ void LayoutChooser::_makeLayout ()
    v = _layout._src_vertex;
    cur_angle = _layout._bc_angles[_n_components];
    v2 = _layout._bc_components[_layout._attached_bc[_n_components]].getVertexExtIdx(_layout._vertices_l[_n_components]);
+   // number of the last vertex of drown biconnected component in the connected component
 
    for (i = 0; i < _n_components; i++)
    {
@@ -319,12 +320,12 @@ void LayoutChooser::_makeLayout ()
    {
       int drawn_idx = drawn_comp.edgeBegin();
       int drawn_ext_idx = drawn_comp.getEdgeExtIdx(drawn_idx);
-      int parity = molecule->cis_trans.getParity(molecule_edge_mapping[drawn_ext_idx]);
+      int parity = molecule->cis_trans.getParity(_layout._graph.getEdgeExtIdx(drawn_ext_idx));
       
       if (parity != 0)
       {
          int substituents[4];
-         ((BaseMolecule *)molecule)->cis_trans.getSubstituents_All(molecule_edge_mapping[drawn_ext_idx], substituents);
+         ((BaseMolecule *)molecule)->cis_trans.getSubstituents_All(_layout._graph.getEdgeExtIdx(drawn_ext_idx), substituents);
          
          int drawn_substituent = -1;
          int drawn_substituent_idx = -1;

@@ -8,8 +8,9 @@
    #undef max
 #elif (defined __GNUC__ || defined __APPLE__)
    #include <sys/mman.h>
-   #include <stdlib.h>
    #include <fcntl.h>
+   #include <stdlib.h>
+   #include <errno.h>
    #include <unistd.h>
    #include <sys/types.h>
    #include <sys/mman.h>
@@ -73,7 +74,6 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool
 
    if (_h_file == INVALID_HANDLE_VALUE)
    {
-      /*
       FormatMessage(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
         FORMAT_MESSAGE_FROM_SYSTEM |
@@ -86,8 +86,7 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool
 
       char * mesg = (char *)lpMsgBuf;
 
-      printf("MMFile::open : Filename - %s, error - %s\n", _filename.c_str(), mesg);*/
-      throw Exception("BingoMMF: Could not open file");
+      throw Exception("BingoMMF: Could not open file (%s)", mesg);
    }
 
    dword access_info = PAGE_READWRITE;

@@ -14,10 +14,10 @@ macro(PACK_STATIC proj)
 		if (NOT output_name)
 			set(output_name "${proj}")
 		endif ()
-		INSTALL(FILES ${LIBRARY_OUTPUT_PATH}/Debug/${output_name}.pdb
-			DESTINATION static/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
-			COMPONENT static
-			CONFIGURATIONS Debug)
+		#INSTALL(FILES ${LIBRARY_OUTPUT_PATH}/Debug/${output_name}.pdb
+		#	DESTINATION static/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
+		#	COMPONENT static
+		#	CONFIGURATIONS Debug)
 	ENDIF(MSVC)
 endmacro()
 

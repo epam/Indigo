@@ -606,19 +606,53 @@ namespace com.ggasoftware.indigo
             {
                 case PlatformID.Win32NT:
                     libraryName = "indigo.dll";
+                    bool vs2010 = true;
+                    bool vs2012 = true;
+                    bool vs2013 = true;
                     try
+                    {
+                       dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
+                    }
+                    catch 
+                    {
+                        vs2010 = false;
+                    }
+                    try
+                    {
+                       dll_loader.loadLibrary(lib_path, "msvcr110.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
+                    }
+                    catch 
+                    {
+                        vs2012 = false;
+                    }
+                    try
+                    {
+                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2013", false);
+                    }
+                    catch 
+                    {
+                        vs2013 = false;
+                    }
+
+                    if (vs2010) 
                     {
                        dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
                        dll_loader.loadLibrary(lib_path, "msvcp100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
                        dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
                     }
-                    catch
+                    else if (vs2012)                    
                     {
                        dll_loader.loadLibrary(lib_path, "msvcr110.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
                        dll_loader.loadLibrary(lib_path, "msvcp110.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
                        dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
                     }
-
+                    else if (vs2013)
+                    {
+                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2013", false);
+                       dll_loader.loadLibrary(lib_path, "msvcp120.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2013", false);
+                       dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin2013", false);   
+                    }
+                    
                     break;
                 case PlatformID.Unix:
                     if (IndigoDllLoader.isMac())
@@ -668,6 +702,12 @@ namespace com.ggasoftware.indigo
         public void setSessionID()
         {
             _indigo_lib.indigoSetSessionId(_sid);
+        }
+
+        public void dbgBreakpoint()
+        {
+            setSessionID();
+            _indigo_lib.indigoDbgBreakpoint();
         }
 
         private long _sid = -1;

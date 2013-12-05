@@ -306,6 +306,7 @@ public:
    static bool dearomatizeMolecule (Molecule &mol, const AromaticityOptions &options);
 
    static bool restoreHydrogens (Molecule &mol, const AromaticityOptions &options);
+   static bool restoreUnambiguousHydrogens (Molecule &mol);
 
    void dearomatizeGroup (int group, int dearomatization_index);
    void restoreHydrogens (int group, int dearomatization_index);

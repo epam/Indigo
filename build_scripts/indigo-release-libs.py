@@ -11,6 +11,8 @@ presets = {
     "win64" : ("Visual Studio 10 Win64", ""),
     "win32-2012" : ("Visual Studio 11", ""),
     "win64-2012" : ("Visual Studio 11 Win64", ""),
+    "win32-2013" : ("Visual Studio 12", ""),
+    "win64-2013" : ("Visual Studio 12 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux32-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
@@ -21,6 +23,7 @@ presets = {
     "mac10.6-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
     "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
+    "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
 }
 
 parser = OptionParser(description='Indigo libraries build script')
@@ -64,8 +67,8 @@ cur_dir = abspath(dirname(__file__))
 root = join(cur_dir, "..")
 project_dir = join(cur_dir, "indigo-all")
 
-if args.generator.find("Unix Makefiles") != -1 or args.generator.find("MinGW Makefiles") != -1:
-    args.params += " -DCMAKE_BUILD_TYPE=" + args.config
+#if args.generator.find("Unix Makefiles") != -1 or args.generator.find("MinGW Makefiles") != -1:
+args.params += " -DCMAKE_BUILD_TYPE=" + args.config
 
 if args.cairogl:
     args.params += ' -DWITH_CAIRO_GL=TRUE'

@@ -154,8 +154,11 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id, DatabaseLockData &
 
    BingoMapping & back_id_mapping = _back_id_mapping_ptr.ref();
 
+   {
+      WriteLock wlock(lock_data);
    if (obj_id != -1 && back_id_mapping.get(obj_id) != -1)
-      throw Exception("insert fail: This id was already used");
+         throw Exception("insert fail: This id was already used");
+   }
 
    _ObjectIndexData _obj_data;
    {

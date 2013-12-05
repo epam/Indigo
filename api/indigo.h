@@ -848,4 +848,7 @@ CEXPORT const char * indigoDbgProfiling (int /*bool*/ whole_session);
 // Reset profiling counters either for the current state or for the whole session
 CEXPORT int indigoDbgResetProfiling (int /*bool*/ whole_session);
 
+// Methods that returns profiling counter value for a particular counter
+CEXPORT qword indigoDbgProfilingGetCounter (const char *name, int /*bool*/ whole_session);
+
 #endif

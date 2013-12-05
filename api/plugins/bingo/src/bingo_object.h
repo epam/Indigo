@@ -37,8 +37,10 @@ namespace bingo
    private:
       BaseMolecule &_base_mol;
       
+      bool _needs_query_fingerprint;
+
    public:
-      BaseMoleculeQuery (BaseMolecule &mol);
+      BaseMoleculeQuery (BaseMolecule &mol, bool needs_query_fingerprint);
 
       virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/;
       

@@ -19,7 +19,8 @@ using namespace bingo;
 
 static const int _fp_calc_timeout = 10000;
 
-BaseMoleculeQuery::BaseMoleculeQuery (BaseMolecule &mol) : _base_mol(mol)
+BaseMoleculeQuery::BaseMoleculeQuery (BaseMolecule &mol, bool needs_query_fingerprint) : 
+   _base_mol(mol), _needs_query_fingerprint(needs_query_fingerprint)
 {
 }
 
@@ -28,6 +29,7 @@ bool BaseMoleculeQuery::buildFingerprint (const MoleculeFingerprintParameters &f
    MoleculeFingerprintBuilder fp_builder(_base_mol, fp_params);
    TimeoutCancellationHandler canc_handler(_fp_calc_timeout);
 
+   fp_builder.query = _needs_query_fingerprint;
    fp_builder.cancellation = &canc_handler;
 
    fp_builder.process();
@@ -45,12 +47,12 @@ const BaseMolecule & BaseMoleculeQuery::getMolecule ()
    return _base_mol;
 }
 
-SubstructureMoleculeQuery::SubstructureMoleculeQuery (/* const */ QueryMolecule &mol) : BaseMoleculeQuery(_mol)
+SubstructureMoleculeQuery::SubstructureMoleculeQuery (/* const */ QueryMolecule &mol) : BaseMoleculeQuery(_mol, true)
 {
    _mol.clone(mol, 0, 0);
 }
 
-SimilarityMoleculeQuery::SimilarityMoleculeQuery (/* const */ Molecule &mol) : BaseMoleculeQuery(_mol)
+SimilarityMoleculeQuery::SimilarityMoleculeQuery (/* const */ Molecule &mol) : BaseMoleculeQuery(_mol, false)
 {
    _mol.clone(mol, 0, 0);
 }

@@ -1682,46 +1682,47 @@ int QueryMolecule::getAtomMinH (int idx)
          min_h++;
    }
 
-   if (stereocenters.getType(idx) > 0)
-   {
-      if (vertex.degree() == 3)
-      {
-         int number = getAtomNumber(idx);
-         int charge = getAtomCharge(idx);
-         
-         if (number == ELEM_C || number == ELEM_Si ||
-            (number == ELEM_N && charge == 1))
-            min_h++;
-      }
-   }
-   
-/* DP: this is an old piece of code. Not sure whether we need it.
-   for (i = query.edgeBegin(); i < query.edgeEnd(); i = query.edgeNext(i))
-   {
-      const Edge &edge = query.getEdge(i);
-      const QueryBond &query_bond = query.getQueryBond(i);
-
-      if (query.cis_trans.getParity(i) != 0)
-      {
-         const Atom &beg = query.getAtom(edge.beg);
-         const Atom &end = query.getAtom(edge.end);
-
-         bool beg_lost_h = ((beg.label == ELEM_C || beg.label == ELEM_Si) && beg.charge == 0 && beg.radical == 0) ||
-                            (beg.label == ELEM_N && beg.charge == 1 && beg.radical == 0);
-         bool end_lost_h = ((end.label == ELEM_C || end.label == ELEM_Si) && end.charge == 0 && end.radical == 0) ||
-                            (end.label == ELEM_N && end.charge == 1 && end.radical == 0);
-
-         if (query.getVertex(edge.beg).degree() < 3 && beg_lost_h)
-            counters[mapping == 0 ? edge.beg : mapping[edge.beg]]++;
-         if (query.getVertex(edge.end).degree() < 3 && end_lost_h)
-            counters[mapping == 0 ? edge.end : mapping[edge.end]]++;
-      }
-   } */
-
    _min_h.expandFill(idx + 1, -1);
    _min_h[idx] = min_h;
    return min_h;
 }
+
+int QueryMolecule::getAtomMaxExteralConnectivity (int idx)
+{
+   int number = getAtomNumber(idx);
+   if (number == -1)
+      return -1;
+
+   int min_local_h = _getAtomMinH(_atoms[idx]);
+   if (min_local_h == -1)
+      min_local_h = 0;
+   int min_conn = _calcAtomConnectivity(idx);
+   if (min_conn == -1)
+      min_conn = 0;
+
+   int max_conn = 0;
+   for (int charge = -5; charge <= 8; charge++)
+   {
+      if (!possibleAtomCharge(idx, charge))
+         continue;
+
+      for (int radical = 0; radical <= RADICAL_DOUBLET; radical++)
+      {
+         if (!possibleAtomRadical(idx, radical))
+            continue;
+
+         int cur_max_conn = Element::getMaximumConnectivity(number, charge, radical, true);
+         if (max_conn < cur_max_conn)
+            max_conn = cur_max_conn;
+      }
+   }
+
+   int ext_conn = max_conn - min_conn - min_local_h;
+   if (ext_conn < 0)
+      return 0;
+   return ext_conn;
+}
+
 
 int QueryMolecule::_getAtomMinH (QueryMolecule::Atom *atom)
 {

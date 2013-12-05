@@ -144,6 +144,8 @@ public:
    
    virtual void invalidateAtom (int index, int mask);
 
+   bool restoreUnambiguousHydrogens ();
+
 protected:
    struct _Atom
    {

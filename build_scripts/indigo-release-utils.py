@@ -16,11 +16,16 @@ presets = {
     "win64" : ("Visual Studio 10 Win64", ""),
     "win32-2012" : ("Visual Studio 11", ""),
     "win64-2012" : ("Visual Studio 11 Win64", ""),
+    "win32-2013" : ("Visual Studio 12", ""),
+    "win64-2013" : ("Visual Studio 12 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
+    "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
+    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
+    "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
 }
 
 parser = OptionParser(description='Indigo utilities build script')
@@ -32,7 +37,7 @@ parser.add_option('--nobuild', default=False,
 parser.add_option('--clean', default=False, action="store_true",
     help='delete all the build data', dest="clean")
 parser.add_option('--preset', type="choice", dest="preset",
-    choices=presets.keys(), help='build preset %s' % (str(presets.keys())))
+    choices=list(presets.keys()), help='build preset %s' % (str(presets.keys())))
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
@@ -81,7 +86,7 @@ for f in os.listdir(full_build_dir):
         os.remove(os.path.join(full_build_dir, f))
 
 command = "cmake --build . --config %s" % (args.config)
-print command
+print(command)
 subprocess.call(command, shell=True)
 if args.generator.find("Unix Makefiles") != -1:
     subprocess.check_call("make package", shell=True)

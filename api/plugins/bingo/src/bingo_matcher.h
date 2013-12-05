@@ -6,6 +6,7 @@
 
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include "indigo_match.h"
 
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
@@ -305,8 +306,6 @@ namespace bingo
       const byte *_cur_loc;
       Array<byte> _query_fp;
 
-      float _calcTanimoto (const byte *fp);
-
       virtual void _setParameters (const char * params);
 
       virtual void _initPartition ();
@@ -345,6 +344,7 @@ namespace bingo
    protected:
       int _current_cand_id;
       dword _query_hash;
+      int _flags;
       Array<int> _candidates;
       /* const */ AutoPtr<ExactQueryData> _query_data;
 
@@ -363,7 +363,6 @@ namespace bingo
       
    private:
       IndexCurrentMolecule *_current_mol;
-      int _flags;
       float _rms_threshold;
       
       virtual dword _calcHash ();
@@ -371,6 +370,9 @@ namespace bingo
       virtual bool _tryCurrent ()/* const */;
 
       virtual void _setParameters (const char *params);
+
+      bool _tautomer;
+      IndigoTautomerParams _tautomer_params;
    };
 
 
@@ -381,7 +383,6 @@ namespace bingo
 
    private:
       IndexCurrentReaction *_current_rxn;
-      int _flags;
       
       virtual dword _calcHash ();
    
