@@ -15,8 +15,6 @@
 #include "option_manager.h"
 #include "base_cpp/scanner.h"
 
-#include <sstream>
-
 ThreadSafeStaticObj<OptionManager> indigo_option_manager;
 
 DLLEXPORT OptionManager & indigoGetOptionManager ()
