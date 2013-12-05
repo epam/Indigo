@@ -650,6 +650,10 @@ BufferScanner::BufferScanner (const Array<char> &arr)
    _init(arr.ptr(), arr.size());
 }
 
+BufferScanner::~BufferScanner ()
+{
+}
+
 bool BufferScanner::isEOF ()
 {
    if (_size < 0)

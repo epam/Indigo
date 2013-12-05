@@ -117,6 +117,7 @@ public:
    explicit BufferScanner (const byte *buffer, int buffer_size);
    explicit BufferScanner (const char *str);
    explicit BufferScanner (const Array<char> &arr);
+   virtual ~BufferScanner ();
 
    virtual bool isEOF ();
    virtual void read (int length, void *res);
