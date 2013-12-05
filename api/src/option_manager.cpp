@@ -15,6 +15,8 @@
 #include "option_manager.h"
 #include "base_cpp/scanner.h"
 
+#include <sstream>
+
 ThreadSafeStaticObj<OptionManager> indigo_option_manager;
 
 DLLEXPORT OptionManager & indigoGetOptionManager ()
@@ -37,20 +39,26 @@ void OptionManager::callOptionHandlerInt (const char* name, int value) {
       return;
    }
 
-   CHECK_OPT_TYPE(name, OPTION_INT);
-   hMapInt.at(name)(value);
+   if (typeMap.at(name) == OPTION_INT)
+      hMapInt.at(name)(value);
+   else
+      callOptionHandlerT(name, value);
 }
 
 void OptionManager::callOptionHandlerBool (const char* name, int value) {
    CHECK_OPT_DEFINED(name);
-   CHECK_OPT_TYPE(name, OPTION_BOOL);
-   hMapBool.at(name)(value);
+   if (typeMap.at(name) == OPTION_BOOL)
+      hMapBool.at(name)(value);
+   else
+      callOptionHandlerT(name, value);
 }
 
 void OptionManager::callOptionHandlerFloat (const char* name, float value) {
    CHECK_OPT_DEFINED(name);
-   CHECK_OPT_TYPE(name, OPTION_FLOAT);
-   hMapFloat.at(name)(value);
+   if (typeMap.at(name) == OPTION_FLOAT)
+      hMapFloat.at(name)(value);
+   else
+      callOptionHandlerT(name, value);
 }
 
 void OptionManager::callOptionHandlerColor (const char* name, float r, float g, float b) {

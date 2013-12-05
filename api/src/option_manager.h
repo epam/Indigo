@@ -87,6 +87,16 @@ protected:
    RedBlackStringMap<optf_color_t, false> hMapColor;
    RedBlackStringMap<optf_xy_t, false> hMapXY;
 
+   template <typename T> 
+   void callOptionHandlerT (const char *name, T arg)
+   {
+      // Convert to string for default string parsing
+      std::stringstream ss;
+      ss << arg;
+      std::string converted = ss.str();
+      callOptionHandler(name, converted.c_str());
+   }
+
 private:
    OptionManager (const OptionManager&);
 };
