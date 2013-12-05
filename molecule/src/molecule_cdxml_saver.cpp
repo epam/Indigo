@@ -275,7 +275,12 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
 
 void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text)
 {
-   _output.printf("<t p=\"%f %f\" Justification=\"Center\"><s>%s</s></t>\n", _bond_length * pos.x, -_bond_length * pos.y, text);
+   addText(pos, text, "Center");
+}
+
+void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text, const char *alignment)
+{
+   _output.printf("<t p=\"%f %f\" Justification=\"%s\"><s>%s</s></t>\n", _bond_length * pos.x, -_bond_length * pos.y, alignment, text);
 }
 
 void MoleculeCdxmlSaver::endPage ()

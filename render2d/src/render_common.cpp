@@ -333,11 +333,59 @@ void CanvasOptions::clear ()
    marginX = marginY = 0;
    commentOffset = 0;
    commentPos = COMMENT_POS_BOTTOM;
-   commentAlign = 0.5f;
-   titleAlign = 0.5f;
+   commentAlign.clear();
+   titleAlign.clear();
    titleOffset = 0;
    gridColumnNumber = 1;
    comment.clear();
    titleProp.clear();
    titleProp.appendString("^NAME", true);
+}
+
+//
+// MultilineTextLayout
+//
+
+MultilineTextLayout::MultilineTextLayout ()
+{
+   clear();
+}
+
+MultilineTextLayout::MultilineTextLayout (Alignment bbox, Alignment inbox) : 
+   bbox_alignment(bbox), inbox_alignment(inbox)
+{
+}
+
+float MultilineTextLayout::getRelativeOffset (Alignment alignment) const
+{
+   if (alignment == Center)
+      return 0.5f;
+   if (alignment == Left)
+      return 0.0f;
+
+   // alignment == Right
+   return 1.0f;
+}
+
+
+float MultilineTextLayout::getBboxRelativeOffset () const
+{
+   return getRelativeOffset(bbox_alignment);
+}
+
+float MultilineTextLayout::getInboxRelativeOffset () const
+{
+   return getRelativeOffset(inbox_alignment);
+}
+
+void MultilineTextLayout::clear ()
+{
+   bbox_alignment = Center;
+   inbox_alignment = Center;
+}
+
+float MultilineTextLayout::getAnchorPoint (float area_x, float area_width, float text_width)
+{
+   float bbox_x = area_x + (area_width - text_width) * getBboxRelativeOffset();
+   return bbox_x + text_width * getInboxRelativeOffset();
 }
