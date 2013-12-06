@@ -37,6 +37,8 @@ public:
    void setEdgeStereo (int e, int stereo);
    void setVertexDrawn(int v, bool drawn);
 
+   int getVertexStereo (int v);
+
    Vec2f &getPos (int v);
 
    void doLayout ();

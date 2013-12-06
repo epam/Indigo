@@ -73,6 +73,11 @@ void MoleculeLayoutMacrocycles::setVertexEdgeParallel (int v, bool parallel)
    _vertex_stereo[v] = !parallel;
 }
 
+int MoleculeLayoutMacrocycles::getVertexStereo (int v) 
+{
+   return _vertex_stereo[v];
+}
+
 void MoleculeLayoutMacrocycles::setEdgeStereo (int e, int stereo)
 {
    _edge_stereo[e] = stereo;
@@ -92,13 +97,13 @@ void MoleculeLayoutMacrocycles::doLayout ()
 {
    profTimerStart(t, "bc.layout");
 
-   double b2 = depictionCircle();
+//   double b2 = depictionCircle();
    double b = depictionMacrocycleMol(false);
 
-   if (b > b2) {
+/*   if (b > b2) {
       depictionCircle();
       return;
-   }
+   }*/
 }
 
 
@@ -307,7 +312,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 
    //printf("Process started.\n");
 
-   static signed char minRotates[max_size][max_size][2][max_size][max_size];
+   static signed short minRotates[max_size][max_size][2][max_size][max_size];
    //first : number of edge
    //second : summary angle of rotation (in PI/3 times)
    //third : last rotation is contraclockwise
@@ -362,7 +367,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          for (int p = 0; p < 2; p++) 
             for (int k = max(init_x - length, 0); k < min(init_x + length + 1, max_size); k++)
                for (int t = max(init_y - length, 0); t < min(init_y + length + 1, max_size); t++)
-                  minRotates[i][j][p][k][t] = CHAR_MAX;
+                  minRotates[i][j][p][k][t] = 30000;
 
    minRotates[0][init_rot][0][init_x][init_y] = 0;
    minRotates[1][init_rot][0][init_x + 1][init_y] = 0;
@@ -382,8 +387,8 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                int y_start = max(init_y - max_dist, init_y - max_dist + ychenge);
                int y_finish = min(init_y + max_dist, init_y + max_dist + ychenge);
                for (int x = x_start; x <= x_finish; x++) {
-                  signed char *ar1 = minRotates[k + 1][rot][p][x + xchenge] + ychenge;
-                  signed char *ar2 = minRotates[k][rot][p][x];
+                  signed short *ar1 = minRotates[k + 1][rot][p][x + xchenge] + ychenge;
+                  signed short *ar2 = minRotates[k][rot][p][x];
                   for (int y = y_start; y <= y_finish; y++) {
                      if (ar1[y] > ar2[y]) {
                         ar1[y] = ar2[y];
@@ -410,8 +415,8 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                   int y_start = max(init_y - max_dist, init_y - max_dist + ychenge);
                   int y_finish = min(init_y + max_dist, init_y + max_dist + ychenge);
                   for (int x = x_start; x <= x_finish; x++) {
-                     signed char *ar1 = minRotates[k + 1][nextRot][p][x + xchenge] + ychenge;
-                     signed char *ar2 = minRotates[k][rot][p][x];
+                     signed short *ar1 = minRotates[k + 1][nextRot][p][x + xchenge] + ychenge;
+                     signed short *ar2 = minRotates[k][rot][p][x];
                      for (int y = y_start; y <= y_finish; y++) {
                         if (ar1[y] > ar2[y] + add) {
                            ar1[y] = ar2[y] + add;
@@ -436,8 +441,8 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                   int y_start = max(init_y - max_dist, init_y - max_dist + ychenge);
                   int y_finish = min(init_y + max_dist, init_y + max_dist + ychenge);
                   for (int x = x_start; x <= x_finish; x++) {
-                     signed char *ar1 = minRotates[k + 1][nextRot][p ^ 1][x + xchenge] + ychenge;
-                     signed char *ar2 = minRotates[k][rot][p][x];
+                     signed short *ar1 = minRotates[k + 1][nextRot][p ^ 1][x + xchenge] + ychenge;
+                     signed short *ar2 = minRotates[k][rot][p][x];
                      for (int y = y_start; y <= y_finish; y++) {
                         if (ar1[y] > ar2[y] + add) {
                            ar1[y] = ar2[y] + add;
@@ -674,7 +679,11 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       }
 
       double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
-      if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
+      if (index == 39) {
+         if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
+      } else {
+         if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
+      }
 
       double newBadness = 0;
       newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);

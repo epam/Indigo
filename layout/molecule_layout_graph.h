@@ -209,6 +209,8 @@ protected:
    void _calcMorganCodes ();
 
    // assigning coordinates
+   void _smoothing();
+   void _improvement(int vertex_number, float force);
    void _assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    bool _tryToFindPattern (int &fixed_component);
    void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);

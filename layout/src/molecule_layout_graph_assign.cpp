@@ -19,7 +19,8 @@
 #include "graph/cycle_enumerator.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/morgan_code.h"
-#include <random>
+#include <math/random.h>
+#include <vector>
 
 using namespace indigo;
 
@@ -257,6 +258,18 @@ int MoleculeLayoutGraph::_pattern_embedding (Graph &subgraph, Graph &supergraph,
    return 0;
 }
 
+void MoleculeLayoutGraph::_smoothing() {
+   Random rand(931170240);
+   vector<int> vertices;
+   for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i)) vertices.push_back(i);
+   for (int i = 0; i < 50 * vertexCount(); i++) _improvement(vertices[rand.next(vertices.size())], 0.1);
+   for (int i = 0; i < 50 * vertexCount(); i++) _improvement(vertices[rand.next(vertices.size())], 0.01);
+}
+
+void MoleculeLayoutGraph::_improvement(int vertex_number, float force) {
+
+}
+
 void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph)
 {
    int i;
@@ -461,6 +474,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       }
    }
 
+
 }
 
 void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
@@ -512,35 +526,41 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
          if (_sameside) layout.setEdgeStereo(i, MoleculeCisTrans::CIS);
          else layout.setEdgeStereo(i, MoleculeCisTrans::TRANS);
       } else {
-         if (_layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN &&
-            _layout_vertices[cycle.getVertex((i + 1) % size)].type != ELEMENT_NOT_DRAWN) {
+//         if (_layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN &&
+  //          _layout_vertices[cycle.getVertex((i + 1) % size)].type != ELEMENT_NOT_DRAWN) {
+         if (_layout_edges[cycle.getEdge(i)].type != ELEMENT_NOT_DRAWN) {
 
                Vec2f prev_point;
-               for (int j = getVertex(cycle.getVertex(i)).neiBegin(); j != getVertex(cycle.getVertex(i)).neiEnd(); j = getVertex(cycle.getVertex(i)).neiNext(j))
-                  if (_layout_vertices[getVertex(cycle.getVertex(i)).neiVertex(j)].type != ELEMENT_NOT_DRAWN &&
-                     getVertex(cycle.getVertex(i)).neiVertex(j) != cycle.getVertexC(i + 1))
-                     prev_point = _layout_vertices[getVertex(cycle.getVertex(i)).neiVertex(j)].pos;
+               if (_layout_edges[cycle.getEdgeC(i - 1)].type != ELEMENT_NOT_DRAWN) prev_point = _layout_vertices[cycle.getVertexC(i - 1)].pos;
+               else {
+                  for (int j = getVertex(cycle.getVertex(i)).neiBegin(); j != getVertex(cycle.getVertex(i)).neiEnd(); j = getVertex(cycle.getVertex(i)).neiNext(j))
+                     if (_layout_edges[getVertex(cycle.getVertex(i)).neiEdge(j)].type != ELEMENT_NOT_DRAWN &&
+                        getVertex(cycle.getVertex(i)).neiVertex(j) != cycle.getVertexC(i + 1))
+                        prev_point = _layout_vertices[getVertex(cycle.getVertex(i)).neiVertex(j)].pos;
+               }
 
                Vec2f next_point;
-               for (int j = getVertex(cycle.getVertexC(i + 1)).neiBegin(); j != getVertex(cycle.getVertexC(i + 1)).neiEnd(); j = getVertex(cycle.getVertexC(i + 1)).neiNext(j))
-                  if (_layout_vertices[getVertex(cycle.getVertexC(i + 1)).neiVertex(j)].type != ELEMENT_NOT_DRAWN &&
-                     getVertex(cycle.getVertexC(i + 1)).neiVertex(j) != cycle.getVertex(i))
-                     next_point = _layout_vertices[getVertex(cycle.getVertexC(i + 1)).neiVertex(j)].pos;
-
+               if (_layout_edges[cycle.getEdgeC(i + 1)].type != ELEMENT_NOT_DRAWN) next_point = _layout_vertices[cycle.getVertexC(i + 2)].pos;
+               else {
+                  for (int j = getVertex(cycle.getVertexC(i + 1)).neiBegin(); j != getVertex(cycle.getVertexC(i + 1)).neiEnd(); j = getVertex(cycle.getVertexC(i + 1)).neiNext(j))
+                     if (_layout_edges[getVertex(cycle.getVertexC(i + 1)).neiEdge(j)].type != ELEMENT_NOT_DRAWN &&
+                        getVertex(cycle.getVertexC(i + 1)).neiVertex(j) != cycle.getVertex(i))
+                        next_point = _layout_vertices[getVertex(cycle.getVertexC(i + 1)).neiVertex(j)].pos;
+               }
 
                int _sameside = _isCisConfiguratuin(prev_point,
                                                   _layout_vertices[cycle.getVertexC(i)].pos,
                                                   _layout_vertices[cycle.getVertexC(i + 1)].pos,
                                                   next_point);
 
-               if (_layout_vertices[cycle.getVertexC(i - 1)].type != ELEMENT_NOT_DRAWN &&
-                  _layout_vertices[cycle.getVertexC(i + 2)].type != ELEMENT_NOT_DRAWN) {
+               if (_layout_edges[cycle.getEdgeC(i - 1)].type != ELEMENT_NOT_DRAWN &&
+                  _layout_edges[cycle.getEdgeC(i + 1)].type != ELEMENT_NOT_DRAWN) {
                   if (_sameside) layout.setEdgeStereo(i, MoleculeCisTrans::CIS);
                   else layout.setEdgeStereo(i, MoleculeCisTrans::TRANS);
                      
                } else {
-                  if ((_layout_vertices[cycle.getVertexC(i - 1)].type != ELEMENT_NOT_DRAWN) ^
-                     (_layout_vertices[cycle.getVertexC(i + 2)].type != ELEMENT_NOT_DRAWN)) {
+                  if ((_layout_edges[cycle.getEdgeC(i - 1)].type != ELEMENT_NOT_DRAWN) ^
+                  (_layout_edges[cycle.getEdgeC(i + 1)].type != ELEMENT_NOT_DRAWN)) {
                      if (_sameside) layout.setEdgeStereo(i, MoleculeCisTrans::TRANS);
                      else layout.setEdgeStereo(i, MoleculeCisTrans::CIS);
                   } else layout.setEdgeStereo(i, MoleculeCisTrans::CIS);
@@ -557,107 +577,150 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
    }
 
    layout.doLayout();
+
+   // now we must to smooth just made layout
+   // lets check if all cycle is layouted ealier in single biconnected compenent
+
    
-   int start = -1;
-   for (int i = size - 1; i >= 0; i--) if (_layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN) start = i;
-   if (start == 0 && _layout_vertices[cycle.getVertex(size - 1)].type != ELEMENT_NOT_DRAWN) {
-      while (_layout_vertices[cycle.getVertex(start)].type != ELEMENT_NOT_DRAWN) start = (start + 1) % size;
-      while (_layout_vertices[cycle.getVertex(start)].type == ELEMENT_NOT_DRAWN) start = (start + 1) % size;
-   }
+   /*int start = -1;
+   bool undrawn = false;
+   for (int i = 0; i < size; i++) undrawn |= _layout_vertices[cycle.getVertex(i)].type == ELEMENT_NOT_DRAWN;
+   if (undrawn) {
+      for (int i = size - 1; i >= 0; i--) if (_layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN) start = i;
+      if (start == 0 && _layout_vertices[cycle.getVertex(size - 1)].type != ELEMENT_NOT_DRAWN) {
+         while (_layout_vertices[cycle.getVertex(start)].type != ELEMENT_NOT_DRAWN) start = (start + 1) % size;
+         while (_layout_vertices[cycle.getVertex(start)].type == ELEMENT_NOT_DRAWN) start = (start + 1) % size;
+      }
+   }*/
 
-   if (start >= 0) {
-      int index = start;
-      while (true) {
-         // 1. search of connected component
-         int insideVertex[100];
-         insideVertex[0] = cycle.getVertex(index);
-         bool takenVertex[100];
-         for (int i = 0; i < 100; i++) takenVertex[i] = false;
-         takenVertex[cycle.getVertex(index)] = true;
-         int takenIndex = 1;
-         for (int i = 0; i < takenIndex; i++)
-            for (int j = getVertex(insideVertex[i]).neiBegin(); j != getVertex(insideVertex[i]).neiEnd(); j = getVertex(insideVertex[i]).neiNext(j)) {
-               int vertj = getVertex(insideVertex[i]).neiVertex(j);
-               if (_layout_vertices[vertj].type != ELEMENT_NOT_DRAWN && !takenVertex[vertj]) {
-                  insideVertex[takenIndex++] = vertj;
-                  takenVertex[vertj] = true;
-               }
+   bool need_to_insert[100];
+   for (int i = 0; i < size; i++)
+      need_to_insert[i] = _layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN;
+
+   int start = 0;
+
+   bool componentIsWholeCycle = false;
+
+//   if (start >= 0) {
+      //while (true) {
+   for (int index = 0; index < size; index++) if (need_to_insert[index]) {
+      // 1. search of connected component
+      int insideVertex[100];
+      insideVertex[0] = cycle.getVertex(index);
+      bool takenVertex[100];
+      for (int i = 0; i < 100; i++) takenVertex[i] = false;
+      takenVertex[cycle.getVertex(index)] = true;
+      int takenIndex = 1;
+      for (int i = 0; i < takenIndex; i++)
+         for (int j = getVertex(insideVertex[i]).neiBegin(); j != getVertex(insideVertex[i]).neiEnd(); j = getVertex(insideVertex[i]).neiNext(j)) {
+            int vertj = getVertex(insideVertex[i]).neiVertex(j);
+            if (_layout_edges[getVertex(insideVertex[i]).neiEdge(j)].type != ELEMENT_NOT_DRAWN && !takenVertex[vertj]) {
+               insideVertex[takenIndex++] = vertj;
+               takenVertex[vertj] = true;
             }
-
-         int endIndex = index;
-         while (_layout_vertices[cycle.getVertex(endIndex)].type != ELEMENT_NOT_DRAWN) endIndex = (endIndex + 1) % size;
-
-         // 2. flip
-         bool need_to_flip = false;
-         float rotate1 = Vec2f::cross(layout.getPos((index + 1) % size) - layout.getPos(index), layout.getPos((index + 2) % size) - layout.getPos((index + 1) % size));
-         Vec2f next_point;
-         for (int j = getVertex(cycle.getVertexC(index + 1)).neiBegin(); j != getVertex(cycle.getVertexC(index + 1)).neiEnd(); j = getVertex(cycle.getVertexC(index + 1)).neiNext(j))
-                  if (_layout_vertices[getVertex(cycle.getVertexC(index + 1)).neiVertex(j)].type != ELEMENT_NOT_DRAWN &&
-                     getVertex(cycle.getVertexC(index + 1)).neiVertex(j) != cycle.getVertex(index))
-                     next_point = _layout_vertices[getVertex(cycle.getVertexC(index + 1)).neiVertex(j)].pos;
-
-         float rotate2 = Vec2f::cross(_layout_vertices[cycle.getVertex((index + 1) % size)].pos - _layout_vertices[cycle.getVertex((index + 0) % size)].pos,
-                                    next_point - _layout_vertices[cycle.getVertex((index + 1) % size)].pos);
-
-         if ((index + 2) % size == endIndex) {
-            need_to_flip = rotate1 * rotate2 > 0;
          }
-         else if ((index + 1) % size != endIndex) need_to_flip = rotate1 * rotate2 < 0;
+         
+      if (!componentIsWholeCycle) {
+         componentIsWholeCycle = true;
+         for (int i = 0; i < size; i++)
+            componentIsWholeCycle &= takenVertex[cycle.getVertex(i)];
+      }
 
-         if (need_to_flip) {
-            for (int i = 0; i < takenIndex; i++)
-               _layout_vertices[insideVertex[i]].pos.x *= -1;
-         }
+      for (int i = 0; i < size; i++)
+         if (takenVertex[cycle.getVertex(i)]) need_to_insert[i] = false;
+
+      if (componentIsWholeCycle) break;
+
+      int startIndex = index;
+      int endIndex = index;
+
+      if (!componentIsWholeCycle) {
+         while (takenVertex[cycle.getVertex(startIndex)]) startIndex = (startIndex - 1 + size) % size;
+         startIndex = (startIndex + 1) % size;
+         while (takenVertex[cycle.getVertex(endIndex)]) endIndex = (endIndex + 1) % size;
+      } else {
+         endIndex = (index - 1 + size) % size;
+      }
+
+      // 2. flip
+      bool need_to_flip = false;
+      float rotate1 = Vec2f::cross(layout.getPos((startIndex + 1) % size) - layout.getPos(startIndex), layout.getPos((startIndex + 2) % size) - layout.getPos((startIndex + 1) % size));
+      Vec2f next_point;
+      if (_layout_edges[cycle.getEdgeC(startIndex + 1)].type != ELEMENT_NOT_DRAWN) next_point = _layout_vertices[cycle.getVertexC(startIndex + 2)].pos;
+      else {
+         for (int j = getVertex(cycle.getVertexC(startIndex + 1)).neiBegin(); j != getVertex(cycle.getVertexC(startIndex + 1)).neiEnd(); j = getVertex(cycle.getVertexC(startIndex + 1)).neiNext(j))
+            if (_layout_edges[getVertex(cycle.getVertexC(startIndex + 1)).neiEdge(j)].type != ELEMENT_NOT_DRAWN &&
+                     getVertex(cycle.getVertexC(startIndex + 1)).neiVertex(j) != cycle.getVertex(startIndex))
+                     next_point = _layout_vertices[getVertex(cycle.getVertexC(startIndex + 1)).neiVertex(j)].pos;
+      }
+
+      float rotate2 = Vec2f::cross(_layout_vertices[cycle.getVertex((startIndex + 1) % size)].pos - _layout_vertices[cycle.getVertex((startIndex + 0) % size)].pos,
+                                 next_point - _layout_vertices[cycle.getVertex((startIndex + 1) % size)].pos);
+
+      if (_layout_edges[cycle.getEdgeC(startIndex + 1)].type == ELEMENT_NOT_DRAWN) {
+         need_to_flip = rotate1 * rotate2 > 0;
+      }
+      else if (_layout_edges[cycle.getEdgeC(startIndex)].type != ELEMENT_NOT_DRAWN) need_to_flip = rotate1 * rotate2 < 0;
+
+      if (need_to_flip) {
+         for (int i = 0; i < takenIndex; i++)
+            _layout_vertices[insideVertex[i]].pos.x *= -1;
+      }
 
            
-         // 3. shift
+      // 3. shift
          
-         Vec2f middle_host;
-         Vec2f middle_new;
-         int countVertex = 0;
-         for (int i = index; i != endIndex; i = (i + 1) % size) {
-            middle_host += _layout_vertices[cycle.getVertex(i)].pos;
-            middle_new += layout.getPos(i);
-            countVertex++;
-         }
-         middle_host /= countVertex;
-         middle_new /= countVertex;
-
-         for (int i = 0; i < takenIndex; i++)
-            _layout_vertices[insideVertex[i]].pos += middle_new - middle_host;
-
-         // 4. rotate
-
-         Vec2f direction_host;
-         Vec2f direction_new;
-         if (countVertex > 1)  {
-            int currentIndex = 0;
-            for (int i = index; i != endIndex; i = (i + 1) % size) {
-               if (2*currentIndex < countVertex - 1) {
-                  direction_host += _layout_vertices[cycle.getVertex(i)].pos;
-                  direction_new += layout.getPos(i);
-               } else 
-                  if (2*currentIndex > countVertex - 1) {
-                  direction_host -= _layout_vertices[cycle.getVertex(i)].pos;
-                  direction_new -= layout.getPos(i);
-               }
-               currentIndex++;
-            }
-         
-         float angle = acos(Vec2f::dot(direction_host, direction_new)/(direction_host.length()*direction_new.length()));
-         if (Vec2f::cross(direction_host, direction_new) < 0) angle = -angle;
-         for (int i = 0; i < takenIndex; i++)
-            _layout_vertices[insideVertex[i]].pos.rotateAroundSegmentEnd(_layout_vertices[insideVertex[i]].pos, middle_new, angle);
-         }
-
-
-         // move to next precalced block
-         while (_layout_vertices[cycle.getVertex(index)].type != ELEMENT_NOT_DRAWN) index = (index + 1) % size;
-         while (_layout_vertices[cycle.getVertex(index)].type == ELEMENT_NOT_DRAWN) index = (index + 1) % size;
-         if (index == start) break;
+      Vec2f middle_host;
+      Vec2f middle_new;
+      int countVertex = 0;
+      for (int i = startIndex ; i != endIndex; i = (i + 1) % size) {
+         middle_host += _layout_vertices[cycle.getVertex(i)].pos;
+         middle_new += layout.getPos(i);
+         countVertex++;
       }
+      middle_host /= countVertex;
+      middle_new /= countVertex;
+
+      for (int i = 0; i < takenIndex; i++)
+         _layout_vertices[insideVertex[i]].pos += middle_new - middle_host;
+
+      // 4. rotate
+
+      Vec2f direction_host;
+      Vec2f direction_new;
+      if (countVertex > 1)  {
+         int currentIndex = 0;
+         for (int i = startIndex ; i != endIndex; i = (i + 1) % size) {
+            if (2*currentIndex < countVertex - 1) {
+               direction_host += _layout_vertices[cycle.getVertex(i)].pos;
+               direction_new += layout.getPos(i);
+            } else 
+               if (2*currentIndex > countVertex - 1) {
+               direction_host -= _layout_vertices[cycle.getVertex(i)].pos;
+               direction_new -= layout.getPos(i);
+            }
+            currentIndex++;
+         }
+         
+      float dot = Vec2f::dot(direction_host, direction_new)/(direction_host.length()*direction_new.length());
+      if (dot > 1) dot = 1;
+      if (dot < -1) dot = -1;
+      float angle = acos(dot);
+      if (Vec2f::cross(direction_host, direction_new) < 0) angle = -angle;
+      for (int i = 0; i < takenIndex; i++)
+         _layout_vertices[insideVertex[i]].pos.rotateAroundSegmentEnd(_layout_vertices[insideVertex[i]].pos, middle_new, angle);
+      }
+
+
+      // move to next precalced block
+      //while (_layout_vertices[cycle.getVertex(index)].type != ELEMENT_NOT_DRAWN) index = (index + 1) % size;
+      //while (_layout_vertices[cycle.getVertex(index)].type == ELEMENT_NOT_DRAWN) index = (index + 1) % size;
+      //if (index == start) break;
+   }
       // 5. smoothing
-   } 
+//   } 
+
+
    for (int i = 0; i < size; i++)
       if (_layout_vertices[cycle.getVertex(i)].type == ELEMENT_NOT_DRAWN)
          _layout_vertices[cycle.getVertex(i)].pos = layout.getPos(i);
@@ -666,20 +729,31 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
    for (int i = 0; i < size; i++)
       able_to_move[i] = _layout_vertices[cycle.getVertex(i)].type == ELEMENT_NOT_DRAWN;
 
-   Vec2f p[100];
-   for (int i = 0; i < size; i++) p[i] = _layout_vertices[cycle.getVertex(i)].pos;
-   Vec2f edge[100];
-   for (int i = 0; i < size; i++) edge[i] = p[(i + 1) % size] - p[i];
-   int len[100];
-   for (int i = 0; i < size; i++) len[i] = 1;
-   int rotate_angle[100];
-   for (int i = 0; i < size; i++)
-      rotate_angle[i] = Vec2f::cross(edge[(i - 1 + size) % size], edge[i]) > 0 ? 1 : -1;
+   bool able_anything_to_move = false;
+   for (int i = 0; i < size; i++) able_anything_to_move |= able_to_move[i];
+
+   int good_vertex[100];
+   for (int i = 0; i < size; i++) good_vertex[i] = layout.getVertexStereo(i);
+
    int vertex_number[100];
-   for (int i = 0; i < size; i++) vertex_number[i] = i;
+   int ind = 0;
+   for (int i = 0; i < size; i++) 
+      if (good_vertex[i]) vertex_number[ind++] = i;
 
-   layout.smoothing(size, size, rotate_angle, len, vertex_number, p, false, able_to_move); 
+   Vec2f p[100];
+   for (int i = 0; i < ind; i++) p[i] = _layout_vertices[cycle.getVertex(vertex_number[i])].pos;
+   Vec2f edge[100];
+   for (int i = 0; i < ind; i++) edge[i] = p[(i + 1) % ind] - p[i];
+   int len[100];
+   for (int i = 0; i < ind; i++) len[i] = (vertex_number[(i + 1) % ind] - vertex_number[i] + size) % size;
+   int rotate_angle[100];
+   for (int i = 0; i < ind; i++)
+      rotate_angle[i] = Vec2f::cross(edge[(i - 1 + ind) % ind], edge[i]) > 0 ? 1 : -1;
 
+   if (!componentIsWholeCycle && able_anything_to_move) {
+
+      layout.smoothing(ind, size, rotate_angle, len, vertex_number, p, false, able_to_move); 
+   }
    _first_vertex_idx = cycle.getVertex(0);
    for (int i = 0; i < size; i++)
    {
@@ -687,38 +761,11 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
    }
 
-   for (int i = 0; i < size; i++) _layout_vertices[cycle.getVertex(i)].pos = p[i];
+   for (int i = 0; i < ind; i++)
+      for (int t = vertex_number[i], s = 0; t != vertex_number[(i + 1) % ind]; t = (t + 1) % size, s++)
+         _layout_vertices[cycle.getVertex(t)].pos = (p[i] * (len[i] - s) + p[(i + 1) % ind] * s)/len[i];
 
 
-   /* */
-   /*
-   // TODO: Start drawing from vertex with maximum code and continue to the right with one of two which has maximum code
-   int i, n;
-   float phi;
-
-   n = cycle.vertexCount();
-
-   for (i = 0; i < n; i++)
-   {
-      _layout_vertices[cycle.getVertex(i)].type = ELEMENT_BOUNDARY;
-      _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
-   }
-
-   _first_vertex_idx = cycle.getVertex(0);
-
-   _layout_vertices[cycle.getVertex(0)].pos.set(0.f, 0.f);
-   _layout_vertices[cycle.getVertex(1)].pos.set(1.f, 0.f);
-
-   phi = (float)M_PI * (n - 2) / n;
-
-   for (i = 1; i < n - 1; i++)
-   {
-      const Vec2f &v1 = _layout_vertices[cycle.getVertex(i - 1)].pos;
-      const Vec2f &v2 = _layout_vertices[cycle.getVertex(i)].pos;
-
-      _layout_vertices[cycle.getVertex(i + 1)].pos.rotateAroundSegmentEnd(v1, v2, phi);
-   }
-   */
 }
 
 // If vertices are already drawn
