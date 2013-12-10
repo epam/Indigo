@@ -38,6 +38,7 @@ public:
    void beginPage (Bounds *bounds);
    void saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float scale);
    void addText (const Vec2f &pos, const char *text);
+   void addText (const Vec2f &pos, const char *text, const char *alignment);
    void endPage ();
    void endDocument ();
 

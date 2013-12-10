@@ -339,6 +339,46 @@ private:
    RenderSettings (const RenderSettings& settings);
 };
 
+struct MultilineTextLayout
+{
+   enum Alignment { Left, Right, Center };
+
+   MultilineTextLayout ();
+   MultilineTextLayout (Alignment bbox, Alignment inbox);
+
+   // Text can be aligned in different ways: left, right, center. But if text has multiple 
+   // lines then this lines can also be aligned in different ways relative to each other
+   // +-----------------------------------+--------------+
+   // | View                              | Type         |
+   // +===================================+==============+
+   // | Line                              | left         |
+   // | Quite Long line                   |              |
+   // +-----------------------------------+--------------+
+   // |                              Line | right        |
+   // |                   Quite Long line |              |
+   // +-----------------------------------+--------------+
+   // |               Line                | center       |
+   // |         Quite a Long line         |              |
+   // +-----------------------------------+--------------+
+   // |         Line                      | center-left  |
+   // |         Quite a Long line         |              |
+   // +-----------------------------------+--------------+
+
+   // Alignment of the bounding box
+   Alignment bbox_alignment;
+   // Text alignment insdie bounding box
+   Alignment inbox_alignment;
+
+   void clear ();
+
+   // Returns values from 0.0 to 1.0 depending on the title box alignment
+   float getBboxRelativeOffset () const;
+   float getInboxRelativeOffset () const;
+   float getRelativeOffset (Alignment alignment) const;
+
+   float getAnchorPoint (float area_x, float area_width, float text_width);
+};
+
 struct CanvasOptions {
    CanvasOptions ();
    void clear ();
@@ -359,8 +399,9 @@ struct CanvasOptions {
    Array<char> comment;
    Array<char> titleProp;
    COMMENT_POS commentPos;
-   float commentAlign;
-   float titleAlign;
+   MultilineTextLayout commentAlign;
+   MultilineTextLayout titleAlign;
+
    int gridColumnNumber;
 private:
    CanvasOptions (const CanvasOptions&);
