@@ -42,6 +42,30 @@ namespace indigo
 
 IMPL_ERROR(IndigoInchi, "indigo-inchi")
 
+template<typename T>
+class InchiMemObject
+{
+public:
+   typedef void (*DestructorT) (T *obj);
+
+   InchiMemObject (DestructorT destructor) : destructor(destructor)
+   {
+   }
+
+   ~InchiMemObject()
+   {
+      destructor(&obj);
+   }
+
+   T& ref ()
+   {
+      return obj;
+   }
+private:
+   T obj;
+   DestructorT destructor;
+};
+
 const char* IndigoInchi::version ()
 {
 	return INCHI_NAME " version " INCHI_VERSION TARGET_ID_STRING;
@@ -99,31 +123,25 @@ void IndigoInchi::loadMoleculeFromAux (const char *aux, Molecule &mol)
    // lock
    OsLocker locker(inchi_lock);
 
-   inchi_Input data_inp;
+   InchiMemObject<inchi_Input> data_inp_obj(Free_inchi_Input);
+   inchi_Input &data_inp = data_inp_obj.ref(); 
+
    memset(&data_inp, 0, sizeof(data_inp));
    InchiInpData data;
    memset(&data, 0, sizeof(data));
    data.pInp = &data_inp;
 
-   try 
-   {
-      int retcode = Get_inchi_Input_FromAuxInfo((char*)aux, 0, 0, &data);
-      if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING )
-         throw Error("Indigo-InChI: Aux InChI loading failed: %s. Code: %d.", 
-            data.szErrMsg, retcode);
+   int retcode = Get_inchi_Input_FromAuxInfo((char*)aux, 0, 0, &data);
+   if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING )
+      throw Error("Indigo-InChI: Aux InChI loading failed: %s. Code: %d.", 
+         data.szErrMsg, retcode);
 
-      InchiOutput output;
-      output.atom = data_inp.atom;
-      output.stereo0D = data_inp.stereo0D;
-      output.num_atoms = data_inp.num_atoms;
-      output.num_stereo0D = data_inp.num_stereo0D;
-      parseInchiOutput(output, mol);
-   }
-   catch (...)
-   {
-      Free_inchi_Input(&data_inp);
-      throw;
-   }
+   InchiOutput output;
+   output.atom = data_inp.atom;
+   output.stereo0D = data_inp.stereo0D;
+   output.num_atoms = data_inp.num_atoms;
+   output.num_stereo0D = data_inp.num_stereo0D;
+   parseInchiOutput(output, mol);
 }
 
 void IndigoInchi::loadMoleculeFromInchi (const char *inchi_string, Molecule &mol)
@@ -135,33 +153,26 @@ void IndigoInchi::loadMoleculeFromInchi (const char *inchi_string, Molecule &mol
    inchi_input.szInChI = (char *)inchi_string;
    inchi_input.szOptions = (char *)options.ptr();
 
-   inchi_OutputStruct inchi_output;
+   InchiMemObject<inchi_OutputStruct> inchi_output_obj(FreeStructFromINCHI);
+   inchi_OutputStruct &inchi_output = inchi_output_obj.ref();
 
-   try 
-   {
-      int retcode = GetStructFromINCHI(&inchi_input, &inchi_output);
+   int retcode = GetStructFromINCHI(&inchi_input, &inchi_output);
 
-      if (inchi_output.szMessage)
-         warning.readString(inchi_output.szMessage, true);
-      if (inchi_output.szLog)
-         log.readString(inchi_output.szLog, true);
+   if (inchi_output.szMessage)
+      warning.readString(inchi_output.szMessage, true);
+   if (inchi_output.szLog)
+      log.readString(inchi_output.szLog, true);
 
-      if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING)
-         throw Error("Indigo-InChI: InChI loading failed: %s. Code: %d.", 
-            inchi_output.szMessage, retcode);
+   if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING)
+      throw Error("Indigo-InChI: InChI loading failed: %s. Code: %d.", 
+         inchi_output.szMessage, retcode);
 
-      InchiOutput output;
-      output.atom = inchi_output.atom;
-      output.stereo0D = inchi_output.stereo0D;
-      output.num_atoms = inchi_output.num_atoms;
-      output.num_stereo0D = inchi_output.num_stereo0D;
-      parseInchiOutput(output, mol);
-   }
-   catch (...)
-   {
-      FreeStructFromINCHI(&inchi_output);
-      throw;
-   }
+   InchiOutput output;
+   output.atom = inchi_output.atom;
+   output.stereo0D = inchi_output.stereo0D;
+   output.num_atoms = inchi_output.num_atoms;
+   output.num_stereo0D = inchi_output.num_stereo0D;
+   parseInchiOutput(output, mol);
 }
 
 void IndigoInchi::neutralizeV5Nitrogen (Molecule &mol)
@@ -552,7 +563,8 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
    }
    generateInchiInput(*target, input, atoms, stereo);
 
-   inchi_Output output;
+   InchiMemObject<inchi_Output> inchi_output_obj(FreeINCHI);
+   inchi_Output &output = inchi_output_obj.ref();
    
    // lock
    OsLocker locker(inchi_lock);
@@ -575,7 +587,6 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
             unrec_opt.copy(output.szLog, i - 1);
          unrec_opt.push(0);
          
-         FreeINCHI(&output);
          throw Error("Indigo-InChI: %s.", unrec_opt.ptr());;
       }
 
@@ -588,13 +599,10 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
    {
       // Construct error before dispoing inchi output to preserve error message
       Error error("Indigo-InChI: InChI generation failed: %s. Code: %d.", output.szMessage, ret);
-      FreeINCHI(&output);
       throw error;
    }
 
    inchi.readString(output.szInChI, true);
-
-   FreeINCHI(&output);
 }
 
 void IndigoInchi::InChIKey (const char *inchi, Array<char> &output)
