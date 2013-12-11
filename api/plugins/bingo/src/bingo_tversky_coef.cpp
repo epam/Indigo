@@ -42,10 +42,9 @@ double TverskyCoef::calcUpperBound( int f1_bit_count, int min_f2_bit_count, int 
       return 1;
 
    int a = f1_bit_count - m10;
-   int min_b = min_f2_bit_count - m01;
    int max_b = max_f2_bit_count - m01;
 
    int min = (a > max_b ? max_b : a );
 
-   return (double)min / (_alpha * m10 + _beta * m01 + _alpha * (a - m10) + _beta * (min_b - m01));
+   return (double)min / (_alpha * f1_bit_count + _beta * min_f2_bit_count);
 }
