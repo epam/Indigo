@@ -6,6 +6,7 @@
 #include "bingo_fp_storage.h"
 #include "bingo_cf_storage.h"
 #include "bingo_mmf_storage.h"
+#include "bingo_mapping.h"
 #include "bingo_properties.h"
 #include "bingo_exact_storage.h"
 #include "bingo_fingerprint_table.h"
@@ -85,7 +86,7 @@ namespace bingo
 
       BingoArray<int> & getIdMapping ();
 
-      BingoArray<int> & getBackIdMapping ();
+      BingoMapping & getBackIdMapping ();
 
       ByteBufferStorage & getCfStorage ();
 
@@ -120,7 +121,7 @@ namespace bingo
       MMFStorage _mmf_storage;
       BingoPtr<_Header> _header;
       BingoPtr< BingoArray<int> > _id_mapping_ptr;
-      BingoPtr< BingoArray<int> > _back_id_mapping_ptr;
+      BingoPtr< BingoMapping > _back_id_mapping_ptr;
       BingoPtr<TranspFpStorage> _sub_fp_storage;
       BingoPtr<FingerprintTable> _sim_fp_storage;
       BingoPtr<ExactStorage> _exact_storage;

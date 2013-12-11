@@ -6,6 +6,7 @@ using namespace bingo;
 ContainerSet::ContainerSet()
 {
    _inc_count = 0;
+   _inc_total_ones_count = 0;
 }
 
 void ContainerSet::setParams( int fp_size, int container_size, int min_ones_count, int max_ones_count)
@@ -35,30 +36,80 @@ int ContainerSet::getMaxBorder() const
    return _max_ones_count;
 }
 
-void ContainerSet::add( const byte *fingerprint, int id )
+bool ContainerSet::add (const byte *fingerprint, int id, int fp_ones_count)
 {
+   if (_inc_count == _container_size)
+      throw Exception("ContainerSet: Increment is full");
+
    byte *inc = _increment.ptr();
    int *indices = _indices.ptr();
 
    memcpy(inc + _inc_count * _fp_size, fingerprint, _fp_size);
    indices[_inc_count] = id;
+   _inc_total_ones_count += (fp_ones_count == -1 ? bitGetOnesCount(fingerprint, _fp_size) : fp_ones_count);
    _inc_count++;
 
    if (_inc_count == _container_size)
-   {
-      profIncCounter("trees_count", 1);
-      
-      MultibitTree &cont = _set.push<int>(_fp_size);
-      
-      cont.build(_increment, _indices, _container_size, _min_ones_count, _max_ones_count);
-      _increment.allocate(_container_size * _fp_size);
-      _indices.allocate(_container_size);
-   
-      _inc_count = 0;
-   }
+      return true;
+
+   return false;
 }
 
-void ContainerSet::findSimilar( const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices )
+void ContainerSet::buildContainer ()
+{
+   profIncCounter("trees_count", 1);
+      
+   MultibitTree &cont = _set.push<int>(_fp_size);
+      
+   cont.build(_increment, _indices, _container_size, _min_ones_count, _max_ones_count);
+   _increment.allocate(_container_size * _fp_size);
+   _indices.allocate(_container_size);
+
+   _inc_count = 0;
+}
+
+void ContainerSet::splitSet (ContainerSet &new_set)
+{
+   if (_set.size() > 0)
+      throw Exception("ContainerSet: Set with built containers can't be splited");
+
+   int new_border = (_inc_total_ones_count / _inc_count) + 1;
+
+   int inc_count_cur = 0;
+
+   new_set._inc_count = 0;
+
+   _inc_total_ones_count = 0;
+   new_set._inc_total_ones_count = 0;
+   for (int i = 0; i < _inc_count; i++)
+   {
+      int ones_count = bitGetOnesCount(_increment.ptr() + i * _fp_size, _fp_size);
+      
+      if (ones_count < new_border)
+      {
+         memcpy(_increment.ptr() + inc_count_cur * _fp_size, _increment.ptr() + i * _fp_size, _fp_size);
+         _indices[inc_count_cur] = (int)_indices[i];
+         inc_count_cur++;
+         _inc_total_ones_count += ones_count;
+      }
+      else
+      {
+         memcpy(new_set._increment.ptr() + new_set._inc_count * _fp_size, _increment.ptr() + i * _fp_size, _fp_size);
+         new_set._indices[new_set._inc_count] = (int)_indices[i];
+         new_set._inc_count++;
+         new_set._inc_total_ones_count += ones_count;
+      }
+   }
+
+   new_set._min_ones_count = new_border;
+   new_set._max_ones_count = _max_ones_count;
+
+   _max_ones_count = new_border - 1;
+
+   _inc_count = inc_count_cur;
+}
+
+void ContainerSet::findSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_indices)
 {
    sim_indices.clear();
 

@@ -5,38 +5,29 @@
 
 using namespace bingo;
 
-FingerprintTable::FingerprintTable (int fp_size, const Array<int> &borders, int mt_size) : _fp_size(fp_size)
+FingerprintTable::FingerprintTable (int fp_size, const Array<int> &borders, int mt_size) : _fp_size(fp_size), _mt_size(mt_size), _table(100)
 {
-   _table_ptr.allocate(borders.size() - 1);
+   _table.resize(borders.size() - 1);
    
    profTimerStart(tfp, "FingerprintTable constructing");
 
-   _cell_count = borders.size() - 1;
+   _max_cell_count = 100;
 
-   ContainerSet *table = _table_ptr.ptr();
-
-   for (int i = 0; i < _cell_count; i++)
+   for (int i = 0; i < _table.size(); i++)
    {
       {
          profTimerStart(tfp, "FingerprintTable element pushing");
-         new(table + i) ContainerSet();
-         table[i].setParams(_fp_size, mt_size, borders[i],  borders[i + 1] - 1);
+         _table[i].setParams(_fp_size, mt_size, borders[i],  borders[i + 1] - 1);
       }
    }
 }
 
 size_t FingerprintTable::create (BingoPtr<FingerprintTable> &ptr, int fp_size, int mt_size )
 {
-   int borders_buf[97] = {0 ,18,24,28,31,34,37,39,41,43,45,47,49,51,52,53,
-                     54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,
-                     70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,
-                     86,87,88,89,90,91,92,93,94,95,96,97,98,99,
-                     100,101,102,103,104,105,106,107,108,109,110,
-                     111,112,113,114,115,116,117,118,119,120,122,
-                     124,126,128,130,132,135,138,141,145,150,158,197,513};
-
    Array<int> borders;
-   borders.copy(borders_buf, 97);
+
+   borders.push(0);
+   borders.push(fp_size * 8 + 1);
 
    ptr.allocate();
    new(ptr.ptr()) FingerprintTable(fp_size, borders, mt_size);
@@ -53,13 +44,26 @@ void FingerprintTable::add (const byte *fingerprint, int id)
 {
    int fp_bit_count = bitGetOnesCount(fingerprint, _fp_size);
 
-   ContainerSet *table = _table_ptr.ptr();
-
-   for (int i = 0; i < _cell_count; i++)
+   for (int i = 0; i < _table.size(); i++)
    {
-      if ((fp_bit_count >= table[i].getMinBorder()) && (fp_bit_count <= table[i].getMaxBorder()))
+      if ((fp_bit_count >= _table[i].getMinBorder()) && (fp_bit_count <= _table[i].getMaxBorder()))
       {
-         table[i].add(fingerprint, id);
+         if (_table[i].add(fingerprint, id))
+         {
+            if (_table[i].getMinBorder() == _table[i].getMaxBorder() || _table[i].getContCount() > 1 || _table.size() >= _max_cell_count)
+               _table[i].buildContainer();
+            else
+            {
+               _table.resize(_table.size() + 1);
+               for (int j = _table.size() - 2; j >= i + 1; j--)
+                 _table[j + 1] =_table[j];
+
+               _table[i + 1].setParams(_fp_size, _mt_size, -1, -1);
+               _table[i].splitSet(_table[i + 1]);
+            }
+         }
+
+         break;
       }
    }  
 }
@@ -70,16 +74,14 @@ void FingerprintTable::findSimilar (const byte *query, SimCoef &sim_coef, double
    
    int query_bit_number = bitGetOnesCount(query, _fp_size);
 
-   ContainerSet *table = _table_ptr.ptr();
-
    QS_DEF(Array<SimResult>, cell_sim_indices);
-   for (int i = 0; i < _cell_count; i++)
+   for (int i = 0; i < _table.size(); i++)
    {
-      if (sim_coef.calcUpperBound(query_bit_number, table[i].getMinBorder(), table[i].getMaxBorder()) < min_coef)
+      if (sim_coef.calcUpperBound(query_bit_number, _table[i].getMinBorder(), _table[i].getMaxBorder()) < min_coef)
          continue;
 
       cell_sim_indices.clear();
-      table[i].findSimilar(query, sim_coef, min_coef, cell_sim_indices);
+      _table[i].findSimilar(query, sim_coef, min_coef, cell_sim_indices);
 
       sim_fp_indices.concat(cell_sim_indices);
    }
@@ -87,25 +89,21 @@ void FingerprintTable::findSimilar (const byte *query, SimCoef &sim_coef, double
 
 void FingerprintTable::optimize ()
 {
-   ContainerSet *table = _table_ptr.ptr();
-
-   for (int i = 0; i < _cell_count; i++)
-      table[i].optimize();
+   for (int i = 0; i < _table.size(); i++)
+      _table[i].optimize();
 }
 
 int FingerprintTable::getCellCount () const
 {
-   return _cell_count;
+   return _table.size();
 }
 
 int FingerprintTable::getCellSize (int cell_idx) const
 {
-   if (cell_idx >= _cell_count)
+   if (cell_idx >= _table.size())
       throw Exception("FingerprintTable: Incorrect cell index");
 
-   const ContainerSet *table = _table_ptr.ptr();
-
-   return table[cell_idx].getContCount();
+   return _table[cell_idx].getContCount();
 }
 
 void FingerprintTable::getCellsInterval (const byte *query, SimCoef &sim_coef, double min_coef, int &min_cell, int &max_cell)
@@ -114,16 +112,14 @@ void FingerprintTable::getCellsInterval (const byte *query, SimCoef &sim_coef, d
    max_cell = -1;
    int query_bit_count = bitGetOnesCount(query, _fp_size);
 
-   ContainerSet *table = _table_ptr.ptr();
-
-   for (int i = 0; i < _cell_count; i++)
+   for (int i = 0; i < _table.size(); i++)
    {
       if ((min_cell == -1) && 
-          (sim_coef.calcUpperBound(query_bit_count, table[i].getMinBorder(), table[i].getMaxBorder()) > min_coef))
+          (sim_coef.calcUpperBound(query_bit_count, _table[i].getMinBorder(), _table[i].getMaxBorder()) > min_coef))
          min_cell = i;
 
       if ((min_cell != -1)&& 
-          (sim_coef.calcUpperBound(query_bit_count, table[i].getMinBorder(), table[i].getMaxBorder()) > min_coef))
+          (sim_coef.calcUpperBound(query_bit_count, _table[i].getMinBorder(), _table[i].getMaxBorder()) > min_coef))
          max_cell = i;
    }
 }
@@ -133,11 +129,9 @@ int FingerprintTable::firstFitCell (int query_bit_count, int min_cell, int max_c
 {
    int first_cell = -1;
 
-   const ContainerSet *table = _table_ptr.ptr();
-
    for (int i = min_cell; i <= max_cell; i++)
    {
-      if (query_bit_count >= table[i].getMinBorder() && query_bit_count <= table[i].getMaxBorder())
+      if (query_bit_count >= _table[i].getMinBorder() && query_bit_count <= _table[i].getMaxBorder())
          first_cell = i;
    }
 
@@ -169,17 +163,15 @@ int FingerprintTable::nextFitCell (int query_bit_count, int first_fit_cell, int 
 int FingerprintTable::getSimilar (const byte *query, SimCoef &sim_coef, double min_coef, 
                   Array<SimResult> &sim_fp_indices, int cell_idx, int cont_idx)
 {
-   if (cell_idx >= _cell_count)
+   if (cell_idx >= _table.size())
       throw Exception("FingerprintTable: Incorrect cell index");
-
-   ContainerSet *table = _table_ptr.ptr();
 
    int query_bit_number = bitGetOnesCount(query, _fp_size);
 
-   if (sim_coef.calcUpperBound(query_bit_number, table[cell_idx].getMinBorder(), table[cell_idx].getMaxBorder()) < min_coef)
+   if (sim_coef.calcUpperBound(query_bit_number, _table[cell_idx].getMinBorder(), _table[cell_idx].getMaxBorder()) < min_coef)
       return 0;
 
-   table[cell_idx].getSimilar( query, sim_coef, min_coef, sim_fp_indices, cont_idx);
+   _table[cell_idx].getSimilar( query, sim_coef, min_coef, sim_fp_indices, cont_idx);
 
    return sim_fp_indices.size();
 }

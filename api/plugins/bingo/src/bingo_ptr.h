@@ -58,6 +58,11 @@ namespace bingo
          return BingoPtr<T>(_offset + off * sizeof(T));
       }
 
+      T & operator[] (int idx)
+      {
+         return *(ptr() + idx);
+      }
+
       qword serialize () const
       {
          return _offset;
@@ -75,7 +80,7 @@ namespace bingo
 
       void allocate ( int count = 1 );
 
-      operator size_t() { return _offset; }
+      operator size_t() const { return _offset; }
    private:
       size_t _offset;
    };
@@ -83,10 +88,9 @@ namespace bingo
    template<typename T> class BingoArray
    {
    public:
-      BingoArray()
+      BingoArray( int block_size = 10000 ) : _block_size(block_size)
       {
          _size = 0;
-         _block_size = 10000;
          _block_count = 0;
       }
 
@@ -103,6 +107,8 @@ namespace bingo
             for (int i = blocks_count; i < new_blocks_count; i++)
             {
                _blocks[i].allocate(_block_size);
+               for (int j = 0; j < _block_size; j++)
+                  new((_blocks[i] + j).ptr()) T();
             }
             _block_count = new_blocks_count;
          }
@@ -113,7 +119,15 @@ namespace bingo
       T & at (int index)
       {
          if (index < 0 || index >= _size)
-            throw Exception("BingoArray: incorrect idx %d out of %d", index, _size);
+            throw Exception("BingoArray: incorrect idx %d (size=%d)", index, _size);
+
+         return *(_blocks[index / _block_size].ptr() + index % _block_size);
+      }
+      
+      const T & at (int index) const
+      {
+         if (index < 0 || index >= _size)
+            throw Exception("BingoArray: incorrect idx %d (size=%d)", index, _size);
 
          return *(_blocks[index / _block_size].ptr() + index % _block_size);
       }
@@ -123,11 +137,27 @@ namespace bingo
          return at(index);
       }
 
+      const T & operator [] (int index) const
+      {
+         return at(index);
+      }
+
       T & top ()
       {
          int index = _size - 1;
 
          return *(_blocks[index / _block_size].ptr() + index % _block_size);
+      }
+
+      size_t find (const T & elem)
+      {
+         for (size_t i = 0; i < size(); i++)
+         {
+            if (at(i) == elem)
+               return i;
+         }
+
+         return (size_t)-1;
       }
 
       T & push ()
@@ -147,6 +177,19 @@ namespace bingo
          new(arr + idx_in_block) T();
 
          return arr[idx_in_block];
+      }
+
+      T & insertBefore (const T & elem, int idx)
+      {
+        if (index < 0 || index >= _size)
+            throw Exception("BingoArray: incorrect idx %d (size=%d)", index, _size);
+
+        resize(_size + 1);
+
+        for (int i = idx; i < _size - 1; i++)
+           at(i + 1) = at(i);
+
+        at(idx) = elem;
       }
 
       template <typename A> T & push (A &a)
@@ -194,6 +237,182 @@ namespace bingo
       BingoPtr<T>  _blocks[_max_block_count];
    };
 
+   template<typename T> class BingoList
+   {
+   private:
+      struct _Link
+      {
+         BingoPtr<T> data_ptr;
+         BingoPtr<_Link> next_link;
+         BingoPtr<_Link> prev_link;
+
+         _Link()
+         {
+            data_ptr = BingoPtr<T>(-1);
+            next_link = BingoPtr<_Link>(-1);
+            prev_link = BingoPtr<_Link>(-1);
+         }
+      };
+
+   public:
+      struct Iterator
+      {
+         BingoPtr<_Link> cur_link;
+         
+         Iterator () : cur_link(BingoPtr<T>(-1)) { }
+         Iterator (BingoPtr<_Link> link) : cur_link(link) { }
+         Iterator (const Iterator &it) : cur_link(it.cur_link) { }
+
+         T & operator*()
+         {
+            return cur_link->data_ptr.ref();
+         }
+
+         T * operator->()
+         {
+            return cur_link->data_ptr.ptr();
+         }
+
+         Iterator & operator= (const Iterator & it)
+         {
+            cur_link = it.cur_link;
+
+            return *this;
+         }
+
+         bool operator== (const Iterator & it) const
+         {
+            if ((size_t)cur_link == (size_t)it.cur_link)
+               return true;
+            return false;
+         }
+
+         bool operator!= (const Iterator & it) const
+         {
+            return !(*this == it);
+         }
+
+         Iterator & operator++ (int)
+         {
+            if (cur_link->next_link == -1)
+               throw Exception("BingoList::Iterator:operator++ There's no next link");
+            
+            cur_link = cur_link->next_link;
+
+            return *this;
+         }
+
+         Iterator & operator-- (int)
+         {
+            if (cur_link->prev_link == -1)
+               throw Exception("BingoList::Iterator:operator-- There's no previous link");
+            
+            cur_link = cur_link->prev_link;
+
+            return *this;
+         }
+      };
+
+      BingoList()
+      {
+         _size = 0;
+         _begin_link.allocate();
+         new(_begin_link.ptr()) _Link();
+         _end_link = _begin_link;
+      }
+
+      bool empty () const
+      {
+         if (_end_link == _begin_link)
+            return true;
+         return false;
+      }
+
+      unsigned int size () const
+      {
+         return _size;
+      }
+
+      void insertBefore(Iterator pos, const BingoPtr<T> x)
+      {
+         BingoPtr<_Link> new_link;
+         new_link.allocate();
+         new(new_link.ptr()) _Link();
+
+         new_link->data_ptr = x;
+
+         new_link->next_link = pos.cur_link;
+         new_link->prev_link = pos.cur_link->prev_link;
+
+         if (pos.cur_link->prev_link != -1)
+            pos.cur_link->prev_link->next_link = new_link;
+         pos.cur_link->prev_link = new_link;
+
+         if (pos.cur_link == _begin_link)
+            _begin_link = new_link;
+
+         _size++;
+      }
+
+      void insertBefore(Iterator pos, const T &x)
+      {
+         BingoPtr<T> data;
+         data.allocate();
+         data.ref() = x;
+
+         insertBefore(pos, data);
+      }
+
+      void erase (Iterator & pos)
+      {
+         if (pos.cur_link->prev_link != -1)
+            pos.cur_link->prev_link->next_link = pos.cur_link->next_link;
+         if (pos.cur_link->next_link != -1)
+            pos.cur_link->next_link->prev_link = pos.cur_link->prev_link;
+
+         if (pos.cur_link == _begin_link)
+            _begin_link = pos.cur_link->next_link;
+
+         if (pos.cur_link == _end_link)
+            throw Exception("BingoList:erase End link can't be removed");
+
+         _size--;
+      }
+
+      void pushBack (const T &x)
+      {
+         insertBefore(end(), x);
+      }
+
+      void pushBack (const BingoPtr<T> x)
+      {
+         insertBefore(end(), x);
+      }
+
+      Iterator begin () const
+      {
+         return Iterator(_begin_link);
+      }
+
+      Iterator top () const
+      {
+         Iterator end_it(_end_link);
+         end_it--;
+         return end_it;
+      }
+
+      Iterator end () const
+      {
+         return Iterator(_end_link);
+      }
+
+   private:
+
+      BingoPtr<_Link> _begin_link;
+      BingoPtr<_Link> _end_link;
+      int _size;
+   };
+
    class MMFStorage;
 
    class BingoAllocator
@@ -234,6 +453,7 @@ namespace bingo
 
          _BingoAllocatorData *allocator_data = (_BingoAllocatorData *)(mmf_ptr + _data_offset);
    
+         int szf_t = sizeof(T);
          int alloc_size = sizeof(T) * count;
 
          if (alloc_size > allocator_data->_file_size)
@@ -247,6 +467,9 @@ namespace bingo
 
          size_t res_off = allocator_data->_free_off;
          allocator_data->_free_off += alloc_size;
+
+         if (allocator_data->_free_off % allocator_data->_file_size == 0)
+            _addFile(0);
          
          return res_off;
       }

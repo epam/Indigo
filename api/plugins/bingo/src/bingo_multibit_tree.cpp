@@ -199,14 +199,7 @@ void MultibitTree::_findSimilarInNode (BingoPtr<_MultibitNode> node_ptr, const b
       else if (!bitGetBit(query, match_bits[i].idx))
             right_m01++;
 
-   int a = query_bit_number - right_m10;
-   int min_b = _min_fp_bit_number - right_m01;
-   int max_b = _max_fp_bit_number - right_m01;
-
-   int min = (a < max_b ? a : max_b);
-   int max = (a > min_b ? a : min_b);
-
-   double right_upper_bound = (double)min / (right_m01 + right_m10 + max);
+   double right_upper_bound = sim_coef.calcUpperBound(query_bit_number, _min_fp_bit_number, _max_fp_bit_number, right_m10, right_m01);
 
    if (!node->left.isNull())
       _findSimilarInNode(node->left, query, query_bit_number, sim_coef, min_coef, left_indices, m01, m10);  
