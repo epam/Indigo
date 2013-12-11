@@ -4,6 +4,7 @@
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
 #include "bingo_ptr.h"
+#include "bingo_mapping.h"
 
 using namespace indigo;
 
@@ -29,8 +30,8 @@ namespace bingo
       static dword calculateRxnHash (Reaction &rxn);
 
    private:
-      BingoArray<dword> _molecule_hashes;
-
+      BingoMapping _molecule_hashes;
+      
       static int _vertexCode (Molecule &mol, int vertex_idx);
    };
 }

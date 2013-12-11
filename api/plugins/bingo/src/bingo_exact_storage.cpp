@@ -28,43 +28,30 @@ void ExactStorage::load (BingoPtr<ExactStorage> &exact_ptr, size_t offset)
 
 void ExactStorage::add( dword hash, int id )
 {
-   if (_molecule_hashes.size() <= id)
-      _molecule_hashes.resize(id + 1);
-
-   _molecule_hashes[id] = hash;
+   _molecule_hashes.add(hash, id);
 }
 
 void ExactStorage::findCandidates (dword query_hash, Array<int> &candidates, int part_id, int part_count)
 {
    profTimerStart(tsingle, "exact_filter");
 
-   size_t first_hash = 0;
-   size_t last_hash = _molecule_hashes.size();
+   dword first_hash = 0;
+   dword last_hash = (dword)(-1);
 
    if (part_id != -1 && part_count != -1)
    {
-      if (part_count > _molecule_hashes.size())
-      {
-         if (part_id > _molecule_hashes.size())
-            return;
-      
-         first_hash = part_id - 1;
-         last_hash = part_id;
-      }
-      else
-      {
-         first_hash = (part_id - 1) * _molecule_hashes.size() / part_count;
-         last_hash = part_id * _molecule_hashes.size() / part_count;
-      }
+      first_hash = (part_id - 1) * last_hash / part_count;
+      last_hash = part_id * last_hash / part_count;
    }
-   
-   for (size_t i = first_hash; i < last_hash; i++)
-   {
-      dword hash = _molecule_hashes[i];
 
-      if (hash == query_hash)
-         candidates.push(i);
-   }
+   if (query_hash < first_hash || query_hash > last_hash)
+      return;
+   
+   Array<size_t> indices;
+   _molecule_hashes.getAll(query_hash, indices);
+
+   for (int i = 0; i < indices.size(); i++)
+      candidates.push(indices[i]);
 }
 
 dword ExactStorage::calculateMolHash (Molecule &mol)

@@ -21,6 +21,24 @@ size_t BingoMapping::get (size_t id)
    return (size_t)-1;
 }
 
+void BingoMapping::getAll (size_t id1, Array<size_t> &id2_array)
+{
+   _MapList::Iterator it;
+   _MapList &cur_list = _mapping_table[_hashFunc(id1)];
+
+   int i;
+   for (it = cur_list.begin(); it != cur_list.end(); it++)
+   {
+      for (i = 0; i < it->count; i++)
+      {
+         if (it->buf[i].first == id1)
+            id2_array.push(it->buf[i].second);
+      }
+   }
+
+   return;
+}
+
 void BingoMapping::add (size_t id1, size_t id2)
 {
    _MapList &cur_list = _mapping_table[_hashFunc(id1)];

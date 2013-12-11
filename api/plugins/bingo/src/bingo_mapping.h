@@ -1,6 +1,8 @@
 #ifndef __bingo_mapping__
 #define __bingo_mapping__
 
+#include <vector>
+
 #include "bingo_ptr.h"
 
 namespace bingo
@@ -12,6 +14,8 @@ namespace bingo
 
       size_t get (size_t id);
 
+      void getAll (size_t id1, Array<size_t> &id2_array);
+       
       void add (size_t id1, size_t id2);
 
       size_t remove (size_t id);
