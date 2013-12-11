@@ -179,19 +179,6 @@ namespace bingo
          return arr[idx_in_block];
       }
 
-      T & insertBefore (const T & elem, int idx)
-      {
-        if (index < 0 || index >= _size)
-            throw Exception("BingoArray: incorrect idx %d (size=%d)", index, _size);
-
-        resize(_size + 1);
-
-        for (int i = idx; i < _size - 1; i++)
-           at(i + 1) = at(i);
-
-        at(idx) = elem;
-      }
-
       template <typename A> T & push (A &a)
       {
          if (_size % _block_size == 0)
