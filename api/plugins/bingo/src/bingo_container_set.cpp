@@ -63,7 +63,8 @@ void ContainerSet::buildContainer ()
       
    cont.build(_increment, _indices, _container_size, _min_ones_count, _max_ones_count);
    _increment.allocate(_container_size * _fp_size);
-    
+   _indices.allocate(_container_size);
+
    _inc_count = 0;
 }
 
@@ -87,14 +88,14 @@ void ContainerSet::splitSet (ContainerSet &new_set)
       if (ones_count < new_border)
       {
          memcpy(_increment.ptr() + inc_count_cur * _fp_size, _increment.ptr() + i * _fp_size, _fp_size);
-         _indices[inc_count_cur] = _indices[i];
+         _indices[inc_count_cur] = (int)_indices[i];
          inc_count_cur++;
          _inc_total_ones_count += ones_count;
       }
       else
       {
          memcpy(new_set._increment.ptr() + new_set._inc_count * _fp_size, _increment.ptr() + i * _fp_size, _fp_size);
-         _indices[new_set._inc_count] = _indices[i];
+         new_set._indices[new_set._inc_count] = (int)_indices[i];
          new_set._inc_count++;
          new_set._inc_total_ones_count += ones_count;
       }
