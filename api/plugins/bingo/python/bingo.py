@@ -47,6 +47,8 @@ class Bingo(object):
         self._lib.bingoSearchSub.argtypes = [c_int, c_int, c_char_p]
         self._lib.bingoSearchExact.restype = c_int
         self._lib.bingoSearchExact.argtypes = [c_int, c_int, c_char_p]
+        self._lib.bingoSearchMolFormula.restype = c_int
+        self._lib.bingoSearchMolFormula.argtypes = [c_int, c_char_p, c_char_p]
         self._lib.bingoSearchSim.restype = c_int
         self._lib.bingoSearchSim.argtypes = [c_int, c_int, c_float, c_float, c_char_p]
         self._lib.bingoNext.restype = c_int
@@ -162,6 +164,13 @@ class Bingo(object):
         return BingoObject(
             Bingo._checkResult(self._indigo, self._lib.bingoSearchSim(self._id, query.id, minSim, maxSim, metric.encode('ascii'))),
             self._indigo, self)
+            
+    def searchMolFormula(self, query, options=''):
+        self._indigo._setSessionId()
+        if not options:
+            options = ''
+        return BingoObject(Bingo._checkResult(self._indigo, self._lib.bingoSearchMolFormula(self._id, query.encode('ascii'), options.encode('ascii'))),
+                           self._indigo, self)
 
     def optimize(self):
         self._indigo._setSessionId()
