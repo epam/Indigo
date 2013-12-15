@@ -19,9 +19,14 @@ namespace indigo {
 
 #include "base_cpp/array.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 class BaseMolecule;
 
-class GrossFormula
+class DLLEXPORT GrossFormula
 {
 public:
    static void collect (BaseMolecule &molecule, Array<int> &gross);
