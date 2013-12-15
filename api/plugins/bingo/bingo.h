@@ -38,6 +38,7 @@ CEXPORT int bingoOptimize (int db);
 // Search object is an iterator
 CEXPORT int bingoSearchSub (int db, int query_obj, const char *options);
 CEXPORT int bingoSearchExact (int db, int query_obj, const char *options);
+CEXPORT int bingoSearchMolFormula (int db, const char *query, const char *options);
 CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const char *options);
 
 //

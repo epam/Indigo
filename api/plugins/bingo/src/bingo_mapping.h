@@ -10,7 +10,7 @@ namespace bingo
    class BingoMapping
    {
    public:
-      BingoMapping  (size_t safe_prime = 222227);
+      BingoMapping  (size_t safe_prime = 200087);
 
       size_t get (size_t id);
 

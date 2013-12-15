@@ -44,6 +44,16 @@ namespace bingo
    {
    };
 
+   class GrossQueryData : public MatcherQueryData
+   {
+   public:
+      GrossQueryData (Array<char> &gross_str);
+
+      virtual /*const*/ QueryObject &getQueryObject () /*const*/ ;
+   private:
+      GrossQuery _obj;
+   };
+
    class MoleculeSimilarityQueryData : public SimilarityQueryData
    {
    public:
@@ -386,6 +396,46 @@ namespace bingo
       
       virtual dword _calcHash ();
    
+      virtual bool _tryCurrent ()/* const */;
+
+      virtual void _setParameters (const char *params);
+   };
+
+   class BaseGrossMatcher : public BaseMatcher
+   {
+   public:
+      BaseGrossMatcher (BaseIndex &index, IndigoObject *& current_obj);
+
+      virtual bool next ();
+      
+      void setQueryData (GrossQueryData *query_data);
+
+      ~BaseGrossMatcher();
+      
+   protected:
+      int _current_cand_id;
+      Array<int> _query_array;
+      Array<int> _candidates;
+      /* const */ AutoPtr<GrossQueryData> _query_data;
+
+      virtual void _calcFormula() = 0;
+
+      virtual bool _tryCurrent ()/* const */ = 0;
+
+      virtual void _initPartition ();
+   };
+
+   
+   class MolGrossMatcher : public BaseGrossMatcher
+   {
+   public:
+      MolGrossMatcher (/*const */ BaseIndex &index);
+      
+   private:
+      IndexCurrentMolecule *_current_mol;
+      
+      virtual void _calcFormula();
+
       virtual bool _tryCurrent ()/* const */;
 
       virtual void _setParameters (const char *params);

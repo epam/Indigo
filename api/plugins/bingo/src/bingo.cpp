@@ -377,6 +377,30 @@ CEXPORT int bingoSearchExact (int db, int query_obj, const char *options)
    BINGO_END(-1);
 }
 
+
+CEXPORT int bingoSearchMolFormula (int db, const char *query, const char *options)
+{
+   BINGO_BEGIN_DB(db)
+   {
+      Array<char> gross_str;
+      gross_str.copy(query, strlen(query) + 1);
+
+      AutoPtr<GrossQueryData> query_data(new GrossQueryData(gross_str));
+
+      BaseIndex &bingo_index = dynamic_cast<BaseIndex &>(_bingo_instances.ref(db));
+      MolGrossMatcher *matcher = dynamic_cast<MolGrossMatcher *>(bingo_index.createMatcher("formula", query_data.release(), options));
+         
+      _searches_lock.Lock();
+      int search_id = _searches.add(matcher);
+      _searches_db.expand(search_id + 1);
+      _searches_db[search_id] = db;
+      _searches_lock.Unlock();
+         
+      return search_id;
+   }
+   BINGO_END(-1);
+}
+
 CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const char *options)
 {
    BINGO_BEGIN_DB(db)

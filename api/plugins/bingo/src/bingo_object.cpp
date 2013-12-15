@@ -1,5 +1,6 @@
 #include "bingo_object.h"
 #include "bingo_exact_storage.h"
+#include "bingo_gross_storage.h"
 
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
@@ -9,6 +10,7 @@
 #include "reaction/reaction_substructure_matcher.h"
 
 #include "molecule/molecule.h"
+#include "molecule/gross_formula.h"
 #include "molecule/cmf_saver.h"
 #include "molecule/cmf_loader.h"
 #include "molecule/molecule_fingerprint.h"
@@ -55,6 +57,21 @@ SubstructureMoleculeQuery::SubstructureMoleculeQuery (/* const */ QueryMolecule 
 SimilarityMoleculeQuery::SimilarityMoleculeQuery (/* const */ Molecule &mol) : BaseMoleculeQuery(_mol, false)
 {
    _mol.clone(mol, 0, 0);
+}
+
+GrossQuery::GrossQuery (/* const */ Array<char> &str)
+{
+   _gross_str.copy(str);
+}
+
+bool GrossQuery::buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/
+{
+   throw Exception("GrossQuery::buildFingerprint can\t be called");
+}
+
+Array<char> &GrossQuery::getGrossString()
+{
+   return _gross_str;
 }
 
 BaseReactionQuery::BaseReactionQuery (BaseReaction &rxn) : _base_rxn(rxn)
@@ -115,6 +132,13 @@ bool IndexMolecule::buildFingerprint (const MoleculeFingerprintParameters &fp_pa
    return true;
 }
 
+bool IndexMolecule::buildGrossString (Array<char> &gross)/* const */
+{
+   GrossStorage::calculateMolFormula(_mol, gross);
+
+   return true;
+}
+
 bool IndexMolecule::buildCfString (Array<char> &cf)// const
 {
    ArrayOutput arr_out(cf);
@@ -153,6 +177,14 @@ bool IndexReaction::buildFingerprint (const MoleculeFingerprintParameters &fp_pa
 
    return true;
 }
+
+bool IndexReaction::buildGrossString (Array<char> &gross)/* const */
+{
+   GrossStorage::calculateRxnFormula(_rxn, gross);
+   
+   return true;
+}
+
 
 bool IndexReaction::buildCfString (Array<char> &cf)// const
 {

@@ -65,6 +65,19 @@ namespace bingo
       SimilarityMoleculeQuery (/* const */ Molecule &mol);
    };
 
+   class GrossQuery : public QueryObject
+   {
+   private:
+      Array<char> _gross_str;
+
+      virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/;
+      
+   public:
+      GrossQuery (/* const */ Array<char> &str);
+
+      Array<char> &getGrossString();
+   };
+
    //////////////////////////
    // Reaction query objects
    //////////////////////////
@@ -105,6 +118,8 @@ namespace bingo
    public:
       virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /* const */ = 0;
 
+      virtual bool buildGrossString (Array<char> &cf)/* const */ = 0;
+
       virtual bool buildCfString (Array<char> &cf)/* const */ = 0;
 
       virtual bool buildHash (dword &hash)/* const */ = 0;
@@ -122,6 +137,8 @@ namespace bingo
 
       virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/;
 
+      virtual bool buildGrossString (Array<char> &gross_string)/* const */;
+
       virtual bool buildCfString (Array<char> &cf) /*const*/;
 
       virtual bool buildHash (dword &hash)/* const */;
@@ -136,6 +153,8 @@ namespace bingo
       IndexReaction (/* const */ Reaction &rxn);
 
       virtual bool buildFingerprint (const MoleculeFingerprintParameters &fp_params, Array<byte> *sub_fp, Array<byte> *sim_fp) /*const*/;
+
+      virtual bool buildGrossString (Array<char> &gross_string)/* const */;
 
       virtual bool buildCfString (Array<char> &cf) /*const*/;
 

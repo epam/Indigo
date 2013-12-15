@@ -87,6 +87,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
    _header->sub_offset = TranspFpStorage::create(_sub_fp_storage, _fp_params.fingerprintSize(), sub_block_size);
    _header->sim_offset = FingerprintTable::create(_sim_fp_storage, _fp_params.fingerprintSizeSim(), mt_size);
    _header->exact_offset = ExactStorage::create(_exact_storage);
+   _header->gross_offset = GrossStorage::create(_gross_storage, cf_block_size);
 
    _header->first_free_id = 0;
    _header->object_count = 0;
@@ -145,6 +146,7 @@ void BaseIndex::load (const char *location, const char *options, int index_id)
    ExactStorage::load(_exact_storage, _header.ptr()->exact_offset);
    TranspFpStorage::load(_sub_fp_storage, _header.ptr()->sub_offset);
    ByteBufferStorage::load(_cf_storage, _header.ptr()->cf_offset);
+   GrossStorage::load(_gross_storage, _header.ptr()->gross_offset);
 }
 
 int BaseIndex::add (/* const */ IndexObject &obj, int obj_id, DatabaseLockData &lock_data)
@@ -238,6 +240,11 @@ FingerprintTable & BaseIndex::getSimStorage ()
 ExactStorage & BaseIndex::getExactStorage ()
 {
    return _exact_storage.ref();
+}
+
+GrossStorage & BaseIndex::getGrossStorage ()
+{
+   return _gross_storage.ref();
 }
 
 BingoArray<int> & BaseIndex::getIdMapping ()
@@ -390,6 +397,12 @@ bool BaseIndex::_prepareIndexData (IndexObject &obj, _ObjectIndexData &obj_data)
    }
 
    {
+      profTimerStart(t, "prepare_formula");
+      if (!obj.buildGrossString(obj_data.gross_str))
+         return false;
+   }
+
+   {
       profTimerStart(t, "prepare_fp");
       if (!obj.buildFingerprint(_fp_params, &obj_data.sub_fp, &obj_data.sim_fp))
          return false;
@@ -407,6 +420,7 @@ void BaseIndex::_insertIndexData (_ObjectIndexData &obj_data)
    _sim_fp_storage.ptr()->add(obj_data.sim_fp.ptr(), _header->object_count);
    _cf_storage.ptr()->add((byte *)obj_data.cf_str.ptr(), obj_data.cf_str.size(), _header->object_count);
    _exact_storage.ptr()->add(obj_data.hash, _header->object_count);
+   _gross_storage.ptr()->add(obj_data.gross_str, _header->object_count);
 }
 
 void BaseIndex::_mappingLoad ()

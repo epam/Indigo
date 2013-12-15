@@ -19,6 +19,15 @@ using namespace bingo;
 static const char *_matcher_params_prop = "";
 static const char *_matcher_part_prop = "part";
 
+GrossQueryData::GrossQueryData (Array<char> &gross_str) : _obj(gross_str)
+{
+}
+
+QueryObject &GrossQueryData::getQueryObject ()
+{
+   return _obj;
+}
+
 MoleculeSimilarityQueryData::MoleculeSimilarityQueryData (/* const */ Molecule &qmol, float min_coef, float max_coef) : 
    _obj(qmol), _min(min_coef), _max(max_coef)
 {
@@ -865,7 +874,7 @@ bool MolExactMatcher::_tryCurrent ()/* const */
       return false;
 
    if (_current_obj == 0)
-      throw Exception("MoleculeSubMatcher: Matcher's current object was destroyed");
+      throw Exception("MoleculeExactMatcher: Matcher's current object was destroyed");
 
    Molecule &target_mol = _current_obj->getMolecule();
 
@@ -994,7 +1003,7 @@ bool RxnExactMatcher::_tryCurrent ()/* const */
       return false;
 
    if (_current_obj == 0)
-      throw Exception("ReactionSubMatcher: Matcher's current object was destroyed");
+      throw Exception("ReactionExactMatcher: Matcher's current object was destroyed");
 
    Reaction &target_rxn = _current_obj->getReaction();
 
@@ -1005,4 +1014,87 @@ bool RxnExactMatcher::_tryCurrent ()/* const */
       return true;
 
    return false;
+}
+
+BaseGrossMatcher::BaseGrossMatcher (BaseIndex &index, IndigoObject *& current_obj) : BaseMatcher(index, current_obj)
+{
+   _candidates.clear();
+   _current_cand_id = 0;
+}
+
+bool BaseGrossMatcher::next ()
+{
+   GrossStorage &gross_storage = _index.getGrossStorage();
+   GrossQuery &gross_qobj = (GrossQuery &)_query_data->getQueryObject();
+
+   if (_candidates.size() == 0)
+      gross_storage.findCandidates(gross_qobj.getGrossString(), _candidates, _part_id, _part_count);
+
+   while (_current_cand_id < _candidates.size())
+   {
+      profTimerStart(tsingle, "exact_single");
+
+      _current_id = _candidates[_current_cand_id];
+      _current_cand_id++;
+
+      bool status = _tryCurrent();
+      if (status)
+         profIncCounter("exact_found", 1);
+
+      _match_probability_esimate.addValue((float)status);
+      _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
+
+      if (status)
+         return true;
+   }
+
+   return false;
+}
+      
+void BaseGrossMatcher::setQueryData (GrossQueryData *query_data)
+{
+   _query_data.reset(query_data);
+   GrossQuery &gross_qobj = (GrossQuery &)_query_data->getQueryObject();
+   GrossFormula::fromString(gross_qobj.getGrossString().ptr(), _query_array);
+
+   _calcFormula();
+}
+
+
+void BaseGrossMatcher::_initPartition ()
+{
+}
+
+BaseGrossMatcher::~BaseGrossMatcher()
+{
+}
+
+MolGrossMatcher::MolGrossMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseGrossMatcher(index, (IndigoObject *&)_current_mol)
+{
+}
+      
+void MolGrossMatcher::_setParameters (const char *parameters)
+{
+}
+
+void MolGrossMatcher::_calcFormula ()
+{
+   GrossQuery &query = (GrossQuery &)(_query_data->getQueryObject());
+   
+   GrossFormula::fromString(query.getGrossString().ptr(), _query_array);
+}
+
+bool MolGrossMatcher::_tryCurrent ()/* const */
+{
+   GrossQuery &query = (GrossQuery &)(_query_data->getQueryObject());
+   
+   if (!_loadCurrentObject())
+      return false;
+
+   if (_current_obj == 0)
+      throw Exception("MolGrossMatcher: Matcher's current object was destroyed");
+
+   GrossStorage &gross_storage = _index.getGrossStorage();
+
+   return gross_storage.tryCandidate(_query_array, _current_id);
 }

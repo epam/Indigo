@@ -32,6 +32,13 @@ Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query
       matcher->setQueryData(dynamic_cast<ExactQueryData *>(query_data));
       return matcher.release();
    }
+   else if (strcmp(type, "formula") == 0)
+   {
+      AutoPtr<MolGrossMatcher> matcher(new MolGrossMatcher(*this));
+      matcher->setOptions(options);
+      matcher->setQueryData(dynamic_cast<GrossQueryData *>(query_data));
+      return matcher.release();
+   }
    else
       throw Exception("createMatcher: undefined type");
 

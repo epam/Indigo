@@ -9,6 +9,7 @@
 #include "bingo_mapping.h"
 #include "bingo_properties.h"
 #include "bingo_exact_storage.h"
+#include "bingo_gross_storage.h"
 #include "bingo_fingerprint_table.h"
 #include "bingo_lock.h"
 
@@ -61,6 +62,7 @@ namespace bingo
          size_t sub_offset;
          size_t sim_offset;
          size_t exact_offset;
+         size_t gross_offset;
          int object_count;
          int first_free_id;
       };
@@ -83,6 +85,8 @@ namespace bingo
       FingerprintTable & getSimStorage ();
 
       ExactStorage & getExactStorage ();
+      
+      GrossStorage & getGrossStorage ();
 
       BingoArray<int> & getIdMapping ();
 
@@ -115,16 +119,18 @@ namespace bingo
          Array<byte> sub_fp;
          Array<byte> sim_fp;
          Array<char> cf_str;
+         Array<char> gross_str;
          dword hash;
       };
 
       MMFStorage _mmf_storage;
       BingoPtr<_Header> _header;
       BingoPtr< BingoArray<int> > _id_mapping_ptr;
-      BingoPtr< BingoMapping > _back_id_mapping_ptr;
+      BingoPtr<BingoMapping> _back_id_mapping_ptr;
       BingoPtr<TranspFpStorage> _sub_fp_storage;
       BingoPtr<FingerprintTable> _sim_fp_storage;
       BingoPtr<ExactStorage> _exact_storage;
+      BingoPtr<GrossStorage> _gross_storage;
       BingoPtr<ByteBufferStorage> _cf_storage;
       BingoPtr<Properties> _properties;
       
