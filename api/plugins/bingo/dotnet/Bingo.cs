@@ -278,6 +278,31 @@ namespace com.ggasoftware.indigo
            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchExact(_id, query.self, options)), _indigo, _lib);
         }
 
+        /// <summary>
+        /// Perform search by molecular formula
+        /// </summary>
+        /// <param name="query">string with formula to search. For example, 'C22 H23 N3 O2'.</param>
+        /// <param name="options">search options</param>
+        /// <returns>Bingo search object instanse</returns>
+        public BingoObject searchMolFormula(string query, string options)
+        {
+           if (options == null)
+           {
+              options = "";
+           }
+           _indigo.setSessionID();
+           return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchMolFormula(_id, query, options)), _indigo, _lib);
+        }
+
+        /// <summary>
+        /// Perform search by molecular formula
+        /// </summary>
+        /// <param name="query">string with formula to search. For example, 'C22 H23 N3 O2'.</param>
+        /// <returns>Bingo search object instanse</returns>
+        public BingoObject searchMolFormula(string query)
+        {
+           return searchMolFormula(query, null);
+        }
 
         /// <summary>
         /// Post-process index optimization
