@@ -98,13 +98,13 @@ void MoleculeLayoutMacrocycles::doLayout ()
 {
    profTimerStart(t, "bc.layout");
 
-//   double b2 = depictionCircle();
+   double b2 = depictionCircle();
    double b = depictionMacrocycleMol(false);
 
-/*   if (b > b2) {
+   if (b > b2) {
       depictionCircle();
       return;
-   }*/
+   }
 }
 
 
