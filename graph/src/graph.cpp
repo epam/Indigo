@@ -205,44 +205,9 @@ const Edge & Graph::getEdge (int idx) const
    return _edges[idx];
 }
 
-bool Graph::isConnected (const Graph &graph)
+bool Graph::isConnected (Graph &graph)
 {
-   if (graph.vertexCount() < 2)
-      return true;
-
-   QS_DEF(Array<int>, queue);
-   QS_DEF(Array<int>, states);
-
-   queue.clear_resize(graph.vertexCount());
-   states.clear_resize(graph.vertexEnd());
-
-   int top = 1, bottom = 0;
-
-   states.zerofill();
-   queue[0] = graph.vertexBegin();
-   states[queue[0]] = 1;
-
-   // BFS
-   while (top != bottom)
-   {
-      const Vertex &vertex = graph.getVertex(queue[bottom]);
-
-      states[queue[bottom]] = 2;
-
-      for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
-      {
-         int other = vertex.neiVertex(i);
-
-         if (states[other] == 0)
-         {
-            queue[top++] = other;
-            states[other] = 1;
-         }
-      }
-      bottom++;
-   }
-
-   return bottom == graph.vertexCount();
+   return graph.countComponents() == 1;
 }
 
 struct BfsState
@@ -334,7 +299,7 @@ bool Graph::isChain_AssumingConnected (const Graph &graph)
    return true;
 }
 
-bool Graph::isTree (const Graph &graph)
+bool Graph::isTree (Graph &graph)
 {
    if (!Graph::isConnected(graph))
       return false;

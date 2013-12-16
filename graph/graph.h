@@ -143,9 +143,9 @@ public:
    void setEdgeTopology (int idx, int topology);
    void validateEdgeTopologies ();
 
-   static bool isConnected (const Graph &graph);
+   static bool isConnected (Graph &graph);
    static bool isChain_AssumingConnected (const Graph &graph);
-   static bool isTree (const Graph &graph);
+   static bool isTree (Graph &graph);
    static void filterVertices (const Graph &graph, const int *filter, int filter_type, int filter_value, Array<int> &result);
    static void filterEdges (const Graph &graph, const int *filter, int filter_type, int filter_value, Array<int> &result);
    static int  findMappedEdge (const Graph &graph, const Graph &mapped_graph, int edge_idx, const int *mapping);
