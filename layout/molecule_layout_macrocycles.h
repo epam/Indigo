@@ -58,6 +58,14 @@ public:
 
 private:
    int length;
+   static const int max_size = 100;
+
+   struct Data 
+   {
+      signed short minRotates[max_size][max_size][2][max_size][max_size];
+   };
+
+   TL_CP_DECL(Data, data);
    TL_CP_DECL(Array<int>, _vertex_weight);
    TL_CP_DECL(Array<int>, _vertex_stereo);
    TL_CP_DECL(Array<int>, _edge_stereo);

@@ -38,6 +38,7 @@ CP_DEF(MoleculeLayoutMacrocycles);
 
 MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) : 
    CP_INIT,
+   TL_CP_GET(data), // tree size
    TL_CP_GET(_vertex_weight), // tree size
    TL_CP_GET(_vertex_stereo), // there is an angle in the vertex
    TL_CP_GET(_edge_stereo), // trans-cis configuration
@@ -307,12 +308,12 @@ void layoutChain(int length, int *can_rotate, int *trans_cis_config, Vec2f *p, V
 
 double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 {
-   const int max_size = 100;
+   //const int max_size = 100;
 //   const int molSize = length;
 
    //printf("Process started.\n");
 
-   static signed short minRotates[max_size][max_size][2][max_size][max_size];
+   signed short (&minRotates)[max_size][max_size][2][max_size][max_size] = data.minRotates;
    //first : number of edge
    //second : summary angle of rotation (in PI/3 times)
    //third : last rotation is contraclockwise
