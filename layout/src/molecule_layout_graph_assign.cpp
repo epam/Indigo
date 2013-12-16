@@ -258,18 +258,6 @@ int MoleculeLayoutGraph::_pattern_embedding (Graph &subgraph, Graph &supergraph,
    return 0;
 }
 
-void MoleculeLayoutGraph::_smoothing() {
-   Random rand(931170240);
-   vector<int> vertices;
-   for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i)) vertices.push_back(i);
-   for (int i = 0; i < 50 * vertexCount(); i++) _improvement(vertices[rand.next(vertices.size())], 0.1);
-   for (int i = 0; i < 50 * vertexCount(); i++) _improvement(vertices[rand.next(vertices.size())], 0.01);
-}
-
-void MoleculeLayoutGraph::_improvement(int vertex_number, float force) {
-
-}
-
 void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph)
 {
    int i;
