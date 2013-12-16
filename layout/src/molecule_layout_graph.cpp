@@ -162,10 +162,6 @@ void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter
 
    filter.collectGraphVertices(graph, vertices);
 
-   Filter antifilter;
-   antifilter.initAll(graph.vertexCount());
-   for (int i = 0; i < vertices.size(); i++) antifilter.hide(vertices[i]);
-
    makeSubgraph(graph, vertices, &mapping);
 
    LayoutVertex new_vertex;
