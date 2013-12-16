@@ -21,7 +21,7 @@ namespace bingo
       size_t remove (size_t id);
 
    private:
-      typedef std::pair<int, int> _KeyPair;
+      typedef std::pair<size_t, size_t> _KeyPair;
 
       struct _ListCell
       {
