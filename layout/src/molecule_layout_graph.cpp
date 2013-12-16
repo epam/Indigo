@@ -672,9 +672,6 @@ void MoleculeLayoutGraph::saveDebug ()
 
    ms.saveMolecule(mol);
 
-   if (id == 57)
-      id = id;
-
    id++;
 }
 
