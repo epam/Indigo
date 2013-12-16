@@ -749,6 +749,11 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
    int cisCount = 0;
    for (int i = 0; i < length; i++) if (_edge_stereo[i] == MoleculeCisTrans::CIS) cisCount++;
 
+   int zero_edge_stereo_count = 0;
+   for (int i = 0; i < length; i++)
+      if (_edge_stereo[i] == 0) zero_edge_stereo_count++;
+   if (zero_edge_stereo_count == 0) return 1000000;
+
    bool up[100];
    bool only_up[100];
 
