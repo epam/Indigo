@@ -991,6 +991,12 @@ int Element::getDefaultIsotope (int element)
    return p.default_isotope;
 }
 
+int Element::getMostAbundantIsotope (int element)
+{
+   _Parameters &p = _instance._element_parameters[element];
+   return p.most_abundant_isotope;
+}
+
 bool Element::getIsotopicComposition (int element, int isotope, float &res)
 {
    _IsotopeValue *value = _instance._isotope_parameters_map.at2(
@@ -1028,9 +1034,14 @@ void Element::_initDefaultIsotopes ()
    def_isotope_index.resize(_element_parameters.size());
    def_isotope_index.fffill();
 
+   Array<float> most_abundant_isotope_fraction;
+   most_abundant_isotope_fraction.resize(_element_parameters.size());
+   most_abundant_isotope_fraction.fill(0);
+
    for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
    {
       _element_parameters[i].default_isotope = -1;
+      _element_parameters[i].most_abundant_isotope = -1;
       _element_parameters[i].min_isotope_index = 10000;
       _element_parameters[i].max_isotope_index = 0;
    }
@@ -1069,6 +1080,19 @@ void Element::_initDefaultIsotopes ()
          min_iso = key.isotope;
       if (max_iso < key.isotope)
          max_iso = key.isotope;
+
+
+      float most_abundance = 1e6;
+      if (_element_parameters[key.element].default_isotope != -1)
+      {
+         most_abundance = value.isotopic_composition;
+      }
+
+      if (value.isotopic_composition > most_abundant_isotope_fraction[key.element])
+      {
+         most_abundant_isotope_fraction[key.element] = value.isotopic_composition;
+         _element_parameters[key.element].most_abundant_isotope = key.isotope;
+      }
    }
 
    for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
@@ -1077,6 +1101,8 @@ void Element::_initDefaultIsotopes ()
 
       if (element.natural_isotope_index != _IsotopeKey::NATURAL)
          element.default_isotope = element.natural_isotope_index;
+      if (element.most_abundant_isotope == -1)
+         element.most_abundant_isotope = element.default_isotope;
    }
 
    // Post-condition

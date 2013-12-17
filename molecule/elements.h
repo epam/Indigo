@@ -179,7 +179,10 @@ public:
 
    static bool isHalogen (int element);
 
+   // Returns isotope that has weight most close to the atomic weight
    static int   getDefaultIsotope       (int element);
+   // Return most abundant isotope
+   static int   getMostAbundantIsotope  (int element);
    static float getRelativeIsotopicMass (int element, int isotope);
    static float getStandardAtomicWeight (int element);
    static bool  getIsotopicComposition  (int element, int isotope, float &res);
@@ -219,8 +222,10 @@ private:
       int period;
       
       int natural_isotope_index; // Can be ElementIsotope::NATURAL or anything else 
-      // Isotope with highest mole fraction
+      // Isotope with mass most close to the atomic weight
       int default_isotope;
+      // Isotope with highest mole fraction
+      int most_abundant_isotope;
       // Minimum and maximum isotope index
       int min_isotope_index, max_isotope_index;
 

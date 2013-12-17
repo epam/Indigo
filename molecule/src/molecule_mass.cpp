@@ -83,6 +83,19 @@ float MoleculeMass::molecularWeight (Molecule &mol)
    return (float)molmass;
 }
 
+static int _isotopesCmp (int i1, int i2, void *context)
+{
+   int element = *(int *)context;
+   float c1, c2;
+   Element::getIsotopicComposition(element, i1, c1);
+   Element::getIsotopicComposition(element, i2, c2);
+   if (c1 < c2)
+      return 1;
+   else if (c1 > c2)
+      return -1;
+   return 0;
+}
+
 float MoleculeMass::mostAbundantMass (Molecule &mol)
 {
    double molmass = 0;
@@ -110,6 +123,8 @@ float MoleculeMass::mostAbundantMass (Molecule &mol)
       elements_counts[ELEM_H] += impl_h;
    } 
 
+   QS_DEF(Array<int>, isotopes);
+
    // Compute mass of the most abunant composition
    for (int i = ELEM_MIN; i < ELEM_MAX; i++)
    {
@@ -119,9 +134,24 @@ float MoleculeMass::mostAbundantMass (Molecule &mol)
 
       int count_left = count;
       int min_iso, max_iso;
+
+      // Sort by isotope abundance
+      isotopes.clear();
       Element::getMinMaxIsotopeIndex(i, min_iso, max_iso);
       for (int j = min_iso; j <= max_iso; j++)
       {
+         float composition;
+         if (!Element::getIsotopicComposition(i, j, composition))
+            continue;
+         if (composition > 0)
+            isotopes.push(j);
+      }
+      isotopes.qsort(_isotopesCmp, (void *)&i);
+
+      for (int k = 0; k < isotopes.size(); k++) 
+      {
+         int j = isotopes[k];
+
          float composition;
          if (!Element::getIsotopicComposition(i, j, composition))
             continue;
@@ -130,12 +160,14 @@ float MoleculeMass::mostAbundantMass (Molecule &mol)
 
          molmass += Element::getRelativeIsotopicMass(i, j) * such_isotope_count;
          count_left -= such_isotope_count;
+         if (count_left == 0)
+            break;
       }
 
       if (count_left != 0)
       {
          // Corrections in case of rounding errors
-         int default_iso = Element::getDefaultIsotope(i);
+         int default_iso = Element::getMostAbundantIsotope(i);
          molmass += Element::getRelativeIsotopicMass(i, default_iso) * count_left;
       }
    }
@@ -159,7 +191,7 @@ float MoleculeMass::monoisotopicMass (Molecule &mol)
       int impl_h = mol.getImplicitH(v);
 
       if (isotope == 0)
-         isotope = Element::getDefaultIsotope(number);
+         isotope = Element::getMostAbundantIsotope(number);
 
       molmass += Element::getRelativeIsotopicMass(number, isotope);
 
