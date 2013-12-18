@@ -2190,12 +2190,14 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
 
       if (element > 0)
       {
-         if (element_assigned)
-            throw Error("two element labels for one atom");
          if (qatom.get() != 0)
             subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, element));
          else
+         {
+            if (element_assigned)
+               throw Error("two element labels for one atom");
             atom.label = element;
+         }
          element_assigned = true;
       }
 
