@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2010-2011 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -263,7 +263,7 @@ CEXPORT int indigoNormalize (int structure, const char *options);
 //    "ignore_radicals" : do not consider atom radicals while searching
 CEXPORT int indigoAutomap (int reaction, const char *mode);
 
-// Returns mapping number. It might appear that there is more them 
+// Returns mapping number. It might appear that there is more them
 // one atom with the same number in AAM
 // Value 0 means no mapping number has been specified.
 CEXPORT int indigoGetAtomMappingNumber (int reaction, int reaction_atom);
@@ -273,7 +273,7 @@ CEXPORT int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int num
 CEXPORT int indigoGetReactingCenter (int reaction, int reaction_bond, int*rc);
 CEXPORT int indigoSetReactingCenter (int reaction, int reaction_bond, int rc);
 
-// Clears all reaction AAM information 
+// Clears all reaction AAM information
 CEXPORT int indigoClearAAM (int reaction);
 
 // Corrects reacting centers according to AAM
@@ -725,7 +725,7 @@ CEXPORT int indigoUnignoreAllAtoms (int matcher);
 
 // Returns a new 'match' object on success, zero on fail
 //    matcher is an matcher object returned by indigoSubstructureMatcher
-CEXPORT int indigoMatch (int matcher, int query);                                                      
+CEXPORT int indigoMatch (int matcher, int query);
 
 // Counts the number of embeddings of the query structure into the target
 CEXPORT int indigoCountMatches (int matcher, int query);
@@ -743,8 +743,8 @@ CEXPORT int indigoHighlightedTarget (int match);
 
 // Accepts an atom from the query, not an atom index.
 //   You can use indigoGetAtom() to obtain the atom by its index.
-// Returns the corresponding target atom, not an atom index. If query 
-// atom doesn't match particular atom in the target (R-group or explicit 
+// Returns the corresponding target atom, not an atom index. If query
+// atom doesn't match particular atom in the target (R-group or explicit
 // hydrogen) then return value is zero.
 //   You can use indigoIndex() to obtain the index of the returned atom.
 CEXPORT int indigoMapAtom (int handle, int atom);
@@ -760,7 +760,7 @@ CEXPORT int indigoMapBond (int handle, int bond);
 // Accepts a molecule from the query reaction, not a molecule index.
 //   You can use indigoGetMolecule() to obtain the bond by its index.
 // Returns the corresponding target molecule, not a reaction index. If query
-// molecule doesn't match particular molecule in the target then return 
+// molecule doesn't match particular molecule in the target then return
 // value is zero.
 //   You can use indigoIndex() to obtain the index of the returned molecule.
 CEXPORT int indigoMapMolecule (int handle, int molecule);

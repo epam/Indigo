@@ -27,7 +27,7 @@ if (NOT NO_STATIC)
 	set_property(TARGET indigo-renderer PROPERTY FOLDER "indigo-renderer")
 	# No exports in case of static library: define empty EXPORT_SYMBOL definition
 	set_target_properties(indigo-renderer PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL=")
-	pack_static(indigo-renderer)
+	#pack_static(indigo-renderer)
 
 	# DEFINE_TEST(indigo-renderer-c-test-static "tests/c/indigo-renderer-test.c;${Common_SOURCE_DIR}/hacks/memcpy.c" indigo-renderer)
 	# # Add stdc++ library required by indigo
@@ -55,7 +55,7 @@ if(UNIX AND NOT APPLE)
     SET_TARGET_PROPERTIES(indigo-renderer-shared PROPERTIES LINK_FLAGS "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/indigo_renderer.so.map")
 endif()
 if(APPLE)
-    SET_TARGET_PROPERTIES(indigo-renderer-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -Xlinker -framework -Xlinker ApplicationServices -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/indigo_renderer.explist")    
+    SET_TARGET_PROPERTIES(indigo-renderer-shared PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -Xlinker -framework -Xlinker ApplicationServices -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/indigo_renderer.explist")
 endif()
 
 set_target_properties(indigo-renderer-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")

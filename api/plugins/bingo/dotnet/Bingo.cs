@@ -72,6 +72,16 @@ namespace com.ggasoftware.indigo
             return result;
         }
 
+        internal static string checkResult(Indigo indigo, string result)
+        {
+            if (result == null)
+            {
+                throw new BingoException(new String(indigo._indigo_lib.indigoGetLastError()));
+            }
+
+            return result;
+        }
+
         private static BingoLib getLib(Indigo indigo)
         {
             String dllpath = indigo.getDllPath();
@@ -180,10 +190,11 @@ namespace com.ggasoftware.indigo
         /// </summary>
         /// <param name="record">Indigo object with a chemical structure (molecule or reaction)</param>
         /// <param name="id">record id</param>
-        public void insert(IndigoObject record, int id)
+        /// <returns> inserted record id</returns>
+        public int insert(IndigoObject record, int id)
         {
            _indigo.setSessionID();
-           Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithId(_id, record.self, id));
+           return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithId(_id, record.self, id));
         }
 
         /// <summary>
@@ -201,7 +212,7 @@ namespace com.ggasoftware.indigo
         /// </summary>
         /// <param name="query">Indigo query object (molecule or reaction)</param>
         /// <param name="options">Search options</param>
-        /// <returns>Bingo search object instanse</returns>
+        /// <returns>Bingo search object instance</returns>
         public BingoObject searchSub(IndigoObject query, string options)
         {
             if (options == null)
@@ -216,7 +227,7 @@ namespace com.ggasoftware.indigo
         /// Execute substructure search operation
         /// </summary>
         /// <param name="query">Indigo query object (molecule or reaction)</param>
-        /// <returns>Bingo search object instanse</returns>
+        /// <returns>Bingo search object instance</returns>
         public BingoObject searchSub(IndigoObject query)
         {
             return searchSub(query, null);
@@ -229,7 +240,7 @@ namespace com.ggasoftware.indigo
         /// <param name="min">Minimum similarity value</param>
         /// <param name="max">Maximum similairy value</param>
         /// <param name="metric">Default value is "tanimoto"</param>
-        /// <returns>Bingo search object instanse</returns>
+        /// <returns>Bingo search object instance</returns>
         public BingoObject searchSim(IndigoObject query, float min, float max, string metric)
         {
             if (metric == null)
@@ -246,7 +257,7 @@ namespace com.ggasoftware.indigo
         /// <param name="query">indigo object (molecule or reaction)</param>
         /// <param name="min">Minimum similarity value</param>
         /// <param name="max">Maximum similairy value</param>
-        /// <returns>Bingo search object instanse</returns>
+        /// <returns>Bingo search object instance</returns>
         public BingoObject searchSim(IndigoObject query, float min, float max)
         {
             return searchSim(query, min, max, null);
@@ -256,7 +267,7 @@ namespace com.ggasoftware.indigo
         /// Perform exact search operation
         /// </summary>
         /// <param name="query">indigo object (molecule or reaction)</param>
-        /// <returns>Bingo search object instanse</returns>
+        /// <returns>Bingo search object instance</returns>
         public BingoObject searchExact(IndigoObject query)
         {
            return searchExact(query, null);
@@ -267,7 +278,7 @@ namespace com.ggasoftware.indigo
         /// </summary>
         /// <param name="query">indigo object (molecule or reaction)</param>
         /// <param name="options">exact search options</param>
-        /// <returns>Bingo search object instanse</returns>
+        /// <returns>Bingo search object instance</returns>
         public BingoObject searchExact(IndigoObject query, string options)
         {
            if (options == null)
@@ -283,7 +294,7 @@ namespace com.ggasoftware.indigo
         /// </summary>
         /// <param name="query">string with formula to search. For example, 'C22 H23 N3 O2'.</param>
         /// <param name="options">search options</param>
-        /// <returns>Bingo search object instanse</returns>
+        /// <returns>Bingo search object instance</returns>
         public BingoObject searchMolFormula(string query, string options)
         {
            if (options == null)
@@ -298,7 +309,7 @@ namespace com.ggasoftware.indigo
         /// Perform search by molecular formula
         /// </summary>
         /// <param name="query">string with formula to search. For example, 'C22 H23 N3 O2'.</param>
-        /// <returns>Bingo search object instanse</returns>
+        /// <returns>Bingo search object instance</returns>
         public BingoObject searchMolFormula(string query)
         {
            return searchMolFormula(query, null);
@@ -324,6 +335,14 @@ namespace com.ggasoftware.indigo
            return new IndigoObject(_indigo, Bingo.checkResult(_indigo, _lib.bingoGetRecordObj(_id, id))); ;
         }
 
-        
+        /// <summary>
+        /// Returns Bingo version
+        /// </summary>
+        /// <returns>Bingo version</returns>
+        public string version()
+        {
+            _indigo.setSessionID();
+            return Bingo.checkResult(_indigo, _lib.bingoVersion());
+        }
     }
 }

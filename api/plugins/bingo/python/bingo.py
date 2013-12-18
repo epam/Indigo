@@ -15,6 +15,7 @@ from indigo import *
 
 
 class BingoException(Exception):
+
     def __init__(self, value):
         self.value = value
 
@@ -84,13 +85,13 @@ class Bingo(object):
         if result < 0:
             raise BingoException(indigo._lib.indigoGetLastError())
         return result
-        
+
     @staticmethod
     def _checkResultPtr (indigo, result):
         if result is None:
             raise BingoException(indigo._lib.indigoGetLastError())
         return result
-        
+
     @staticmethod
     def _checkResultString (indigo, result):
         res = Bingo._checkResultPtr(indigo, result)
@@ -107,7 +108,7 @@ class Bingo(object):
         else:
             raise BingoException("unsupported OS: " + os.name)
         return _lib
-    
+
     @staticmethod
     def createDatabaseFile(indigo, path, databaseType, options=''):
         indigo._setSessionId()
@@ -131,7 +132,7 @@ class Bingo(object):
     def version(self):
         self._indigo._setSessionId()
         return Bingo._checkResultString(self._indigo, self._lib.bingoVersion())
-    
+
     def insert(self, indigoObject, index=None):
         self._indigo._setSessionId()
         if not index:
@@ -150,7 +151,7 @@ class Bingo(object):
             options = ''
         return BingoObject(Bingo._checkResult(self._indigo, self._lib.bingoSearchSub(self._id, query.id, options.encode('ascii'))),
                            self._indigo, self)
-                           
+
     def searchExact(self, query, options=''):
         self._indigo._setSessionId()
         if not options:
@@ -165,7 +166,7 @@ class Bingo(object):
         return BingoObject(
             Bingo._checkResult(self._indigo, self._lib.bingoSearchSim(self._id, query.id, minSim, maxSim, metric.encode('ascii'))),
             self._indigo, self)
-            
+
     def searchMolFormula(self, query, options=''):
         self._indigo._setSessionId()
         if not options:

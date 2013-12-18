@@ -30,7 +30,7 @@ if (NOT NO_STATIC)
 	set_property(TARGET bingo PROPERTY FOLDER "bingo")
 	# No exports in case of static library: define empty EXPORT_SYMBOL definition
 	set_target_properties(bingo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL=")
-	PACK_STATIC(bingo)
+	#PACK_STATIC(bingo)
 
 	#DEFINE_TEST(bingo-test-static "tests/c/bingo-test.c" bingo indigo)
 	# Add stdc++ library required by indigo

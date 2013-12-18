@@ -22,7 +22,7 @@ namespace com.ggasoftware.indigo
         int bingoSearchSim (int db, int query_obj, float min, float max, string options);
         int bingoSearchExact (int db, int query_obj, string options);
         int bingoSearchMolFormula (int db, string query, string options);
-        
+
         int bingoNext (int search_obj);
         int bingoGetCurrentId (int search_obj);
         float bingoGetCurrentSimilarityValue(int search_obj);
@@ -34,6 +34,8 @@ namespace com.ggasoftware.indigo
         int bingoGetObject (int search_obj);
         int bingoEndSearch (int search_obj);
 
-        int bingoGetRecordObj (int db, int obj_id); 
+        int bingoGetRecordObj (int db, int obj_id);
+
+        string bingoVersion();
     }
 }

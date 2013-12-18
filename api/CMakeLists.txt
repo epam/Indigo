@@ -28,7 +28,7 @@ if (NOT NO_STATIC)
 	set_property(TARGET indigo PROPERTY FOLDER "indigo")
 	# No exports in case of static library: define empty EXPORT_SYMBOL definition
 	set_target_properties(indigo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL= ")
-	pack_static(indigo)
+	#pack_static(indigo)
 
 	# DEFINE_TEST(indigo-c-test-static "tests/c/indigo-test.c;${Common_SOURCE_DIR}/hacks/memcpy.c" indigo)
 	# target_link_libraries(indigo-c-test-static z tinyxml)
@@ -40,6 +40,7 @@ if (NOT NO_STATIC)
 	# 	endif()
 	# endif()
 endif()
+
 
 # Indigo shared
 add_library(indigo-shared SHARED $<TARGET_OBJECTS:indigoObj> $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction> ${Common_SOURCE_DIR}/hacks/memcpy.c)
