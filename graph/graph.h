@@ -129,7 +129,8 @@ public:
 
    bool findPath (int from, int where, Array<int> &path_out) const;
 
-   void makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *mapping);
+   void makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *vertex_mapping);
+   void makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *vertex_mapping, const Array<int> *edges, Array<int> *edge_mapping);
    void makeSubgraph (const Graph &other, const Filter &filter, Array<int> *mapping_out, Array<int> *inv_mapping);
    void cloneGraph (const Graph &other, Array<int> *mapping);
 

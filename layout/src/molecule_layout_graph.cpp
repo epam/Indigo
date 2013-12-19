@@ -149,20 +149,29 @@ void MoleculeLayoutGraph::makeOnGraph (Graph &graph)
    }
 }
 
-void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &filter)
+void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter)
+{
+   makeLayoutSubgraph(graph, vertex_filter, 0);
+}
+
+void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter, Filter *edge_filter)
 {
    _molecule = graph._molecule;
    _graph = &graph;
    _molecule_edge_mapping = graph._molecule_edge_mapping;
 
    QS_DEF(Array<int>, vertices);
-   QS_DEF(Array<int>, mapping);
+   QS_DEF(Array<int>, vertex_mapping);
+   QS_DEF(Array<int>, edges);
+   QS_DEF(Array<int>, edge_mapping);
 
    clear();
 
-   filter.collectGraphVertices(graph, vertices);
+   vertex_filter.collectGraphVertices(graph, vertices);
+   if (edge_filter != 0) (*edge_filter).collectGraphEdges(graph, edges);
 
-   makeSubgraph(graph, vertices, &mapping);
+   if (edge_filter != 0) makeSubgraph(graph, vertices, &vertex_mapping, &edges, &edge_mapping);
+   else makeSubgraph(graph, vertices, &vertex_mapping);
 
    LayoutVertex new_vertex;
    LayoutEdge new_edge;
@@ -175,7 +184,7 @@ void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter
       new_vertex.orig_idx = graph._layout_vertices[vertices[i]].orig_idx;
       new_vertex.type = graph._layout_vertices[vertices[i]].type;
 	  new_vertex.morgan_code = graph._layout_vertices[vertices[i]].morgan_code;
-      registerLayoutVertex(mapping[vertices[i]], new_vertex);
+      registerLayoutVertex(vertex_mapping[vertices[i]], new_vertex);
    }
 
    int index = 0;

@@ -103,7 +103,8 @@ public:
    float calculateAngle (int v, int &v1, int &v2) const;
 
    void makeOnGraph (Graph &graph);
-   void makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &filter);
+   void makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter);
+   void makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter, Filter *edge_filter);
    void cloneLayoutGraph (MoleculeLayoutGraph &other, Array<int> *mapping);
    void copyLayoutTo (MoleculeLayoutGraph &other, const Array<int> &mapping) const;
 
