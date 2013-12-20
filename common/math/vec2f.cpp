@@ -222,9 +222,9 @@ double Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r) {
    double c = cross(q, r);
    double s = normal.length();
 
-   double t = - c - dot(normal, p);
+   double t = -c - dot(normal, p);
 
-   return abs(t/s);
+   return fabs(t / s);
 }
 
 double Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s) {
