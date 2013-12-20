@@ -11,6 +11,7 @@ namespace com.ggasoftware.indigo
 		private int _id;
 		private Indigo _indigo;
 		private BingoLib _bingoLib;
+		private IndigoDllLoader _dllLoader;
 		private IDisposable _reference;
 
 		internal BingoObject(int id, Indigo indigo, BingoLib bingo_lib)
@@ -18,6 +19,7 @@ namespace com.ggasoftware.indigo
 			this._id = id;
 			this._indigo = indigo;
 			this._bingoLib = bingo_lib;
+			this._dllLoader = IndigoDllLoader.Instance;
 		}
 
 		/// <summary>
@@ -31,7 +33,7 @@ namespace com.ggasoftware.indigo
 		/// </summary>
 		public void Dispose()
 		{
-			if (_id >= 0)
+			if (_id >= 0 && _dllLoader != null && _dllLoader.isValid() && _bingoLib != null && _indigo != null) 
 			{
 				Bingo.checkResult(_indigo, _bingoLib.bingoEndSearch(_id));
 				_id = -1;
