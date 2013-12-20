@@ -49,8 +49,8 @@ public:
 
    const T & operator [] (int index) const
    {
-      int legnth = _array.size();
-      if (legnth == 0) 
+      int length = _array.size();
+      if (length == 0) 
          throw Error("Zero length");
       int offset = index % _array.size();
       return index >= 0 ? _array[offset] : _array[length + offset];
