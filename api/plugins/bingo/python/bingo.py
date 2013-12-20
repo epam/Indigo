@@ -224,5 +224,5 @@ class BingoObject(object):
     def estimateRemainingTime(self):
         self._indigo._setSessionId()
         value = c_float()
-        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoEstimateRemainingTime(self._id, pointer(value)))
+        Bingo._checkResult(self._indigo, self._bingo._lib.bingoEstimateRemainingTime(self._id, pointer(value)))
         return value.value
