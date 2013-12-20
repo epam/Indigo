@@ -34,6 +34,8 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutMacrocycles, "molecule_layout_macrocycles");
 
+const int MoleculeLayoutMacrocycles::max_size = MoleculeLayoutMacrocycles::Data::max_size;
+
 CP_DEF(MoleculeLayoutMacrocycles);
 
 MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) : 

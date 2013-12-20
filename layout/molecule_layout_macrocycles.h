@@ -58,10 +58,11 @@ public:
 
 private:
    int length;
-   static const int max_size = 100;
+   static const int max_size;
 
    struct Data 
    {
+      enum { max_size = 100 };
       signed short minRotates[max_size][max_size][2][max_size][max_size];
    };
 
