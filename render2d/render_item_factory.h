@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2013 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -20,6 +20,7 @@
 #include "render_item_fragment.h"
 #include "render_item_aux.h"
 #include "render_item_hline.h"
+#include "render_item_column.h"
 #include "render_item_molecule.h"
 #include "render_item_reaction.h"
 
@@ -66,6 +67,7 @@ public:
       TYPE_Fragment,
       TYPE_Auxiliary,
       TYPE_HLine,
+      TYPE_Column,
       TYPE_Molecule,
       TYPE_Reaction,
       TYPE_Comment,
@@ -78,6 +80,7 @@ public:
          GET_ITEM(Fragment);
          GET_ITEM(Auxiliary);
          GET_ITEM(HLine);
+         GET_ITEM(Column);
          GET_ITEM(Molecule);
          GET_ITEM(Reaction);
          default: throw Error("Item type unrecognized");
@@ -87,9 +90,10 @@ public:
    IMPL_ITEM(Fragment);
    IMPL_ITEM(Auxiliary);
    IMPL_ITEM(HLine);
+   IMPL_ITEM(Column);
    IMPL_ITEM(Molecule);
    IMPL_ITEM(Reaction);
-      
+
    RenderContext& rc;
 private:
    struct Item {
@@ -102,6 +106,7 @@ private:
    DEF_POOL(Fragment);
    DEF_POOL(Auxiliary);
    DEF_POOL(HLine);
+   DEF_POOL(Column);
    DEF_POOL(Molecule);
    DEF_POOL(Reaction);
 

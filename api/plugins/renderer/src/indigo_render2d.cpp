@@ -380,6 +380,12 @@ void indigoRenderSetCommentAlignment (const char *text)
    rp.cnvOpt.commentAlign = _parseTextLayout(text);
 }
 
+void indigoRenderSetTitleSpacing (float spacing)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.titleSpacing = spacing;
+}
+
 void indigoRenderSetTitleAlignment (const char *text)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -648,6 +654,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerXY("render-margins", indigoRenderSetMargins);
 
    mgr.setOptionHandlerXY("render-grid-margins", indigoRenderSetGridMargins);
+   mgr.setOptionHandlerFloat("render-grid-title-spacing", indigoRenderSetTitleSpacing);
    mgr.setOptionHandlerString("render-grid-title-alignment", indigoRenderSetTitleAlignment);
    mgr.setOptionHandlerFloat("render-grid-title-font-size", indigoRenderSetTitleFontSize);
    mgr.setOptionHandlerString("render-grid-title-property", indigoRenderSetGridTitleProperty);

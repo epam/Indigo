@@ -356,7 +356,7 @@ MultilineTextLayout::MultilineTextLayout (Alignment bbox, Alignment inbox) :
 {
 }
 
-float MultilineTextLayout::getRelativeOffset (Alignment alignment) const
+float MultilineTextLayout::getRelativeOffset (Alignment alignment)
 {
    if (alignment == Center)
       return 0.5f;

@@ -157,6 +157,7 @@ void RenderOptions::clear()
    aamColor.set(0, 0, 0);
    commentFontFactor = 20;
    titleFontFactor = 20;
+   titleSpacing = 0.5;
    labelMode = LABEL_MODE_TERMINAL_HETERO;
    highlightedLabelsVisible = false;
    boldBondDetection = true;

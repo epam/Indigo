@@ -187,10 +187,24 @@ void RenderParamInterface::render (RenderParams& params)
             objs.push(mol);
 
             if (params.titles.size() > 0) {
-               int title = factory.addItemAuxiliary();
-               factory.getItemAuxiliary(title).type = RenderItemAuxiliary::AUX_TITLE;
-               factory.getItemAuxiliary(title).text.copy(params.titles[i]);
+               int title = factory.addItemColumn();
+               int start = 0;
+               const Array<char>& titleStr = params.titles[i];
+               while (start < titleStr.size())
+               {
+                  int next = titleStr.find(start + 1, titleStr.size(), '\n');
+                  if (next == -1)
+                     next = titleStr.size();
+                  int title_line = factory.addItemAuxiliary();
+                  factory.getItemAuxiliary(title_line).type = RenderItemAuxiliary::AUX_TITLE;
+                  factory.getItemAuxiliary(title_line).text.copy(titleStr.ptr() + start, next - start);
+                  factory.getItemAuxiliary(title_line).text.push('\0');
+                  factory.getItemColumn(title).items.push(title_line);
+                  start = next+1;
+               }
                titles.push(title);
+               factory.getItemColumn(title).setVerticalSpacing(params.rOpt.titleSpacing * params.rOpt.titleFontFactor);
+               factory.getItemColumn(title).setAlignment(params.cnvOpt.titleAlign.inbox_alignment);
             }
          }
       }

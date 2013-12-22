@@ -374,7 +374,7 @@ struct MultilineTextLayout
    // Returns values from 0.0 to 1.0 depending on the title box alignment
    float getBboxRelativeOffset () const;
    float getInboxRelativeOffset () const;
-   float getRelativeOffset (Alignment alignment) const;
+   static float getRelativeOffset (Alignment alignment);
 
    float getAnchorPoint (float area_x, float area_width, float text_width);
 };
@@ -421,6 +421,7 @@ public:
    Vec3f aamColor;
    float commentFontFactor;
    float titleFontFactor;
+   float titleSpacing;
    Vec3f commentColor;
    Vec3f titleColor;
    Vec3f dataGroupColor;
