@@ -24,6 +24,7 @@ class BaseMolecule;
 class Reaction;
 class Scanner;
 class Output;
+class RenderItemFactory;
 
 enum RENDER_MODE {RENDER_MOL, RENDER_RXN, RENDER_NONE};
 
@@ -56,6 +57,7 @@ class RenderParamInterface {
 public:
    DECL_ERROR;
    static void render (RenderParams& params);
+   static int multilineTextUnit (RenderItemFactory& factory, int type, const Array<char>& titleStr, const float spacing, const MultilineTextLayout::Alignment alignment);
 
 private:
    static void _prepareMolecule (RenderParams& params, BaseMolecule& bm);

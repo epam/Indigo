@@ -420,6 +420,7 @@ public:
    Vec3f highlightColor;
    Vec3f aamColor;
    float commentFontFactor;
+   float commentSpacing;
    float titleFontFactor;
    float titleSpacing;
    Vec3f commentColor;

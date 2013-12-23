@@ -374,6 +374,12 @@ static MultilineTextLayout _parseTextLayout (const char *text)
       throw IndigoError("Option value is invalid");
 }
 
+void indigoRenderSetCommentSpacing (float spacing)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.commentSpacing = spacing;
+}
+
 void indigoRenderSetCommentAlignment (const char *text)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -641,6 +647,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerFloat("render-bond-line-width", indigoRenderSetBondLineWidth);
    mgr.setOptionHandlerFloat("render-comment-font-size", indigoRenderSetCommentFontSize);
    mgr.setOptionHandlerString("render-comment-alignment", indigoRenderSetCommentAlignment);
+   mgr.setOptionHandlerFloat("render-comment-spacing", indigoRenderSetCommentSpacing);
 
    mgr.setOptionHandlerColor("render-background-color", indigoRenderSetBackgroundColor);
    mgr.setOptionHandlerColor("render-base-color", indigoRenderSetBaseColor);

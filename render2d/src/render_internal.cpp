@@ -156,6 +156,7 @@ void RenderOptions::clear()
    highlightColor.set(1, 0, 0);
    aamColor.set(0, 0, 0);
    commentFontFactor = 20;
+   commentSpacing = 0.5;
    titleFontFactor = 20;
    titleSpacing = 0.5;
    labelMode = LABEL_MODE_TERMINAL_HETERO;
