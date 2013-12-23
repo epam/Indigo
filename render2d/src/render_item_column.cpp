@@ -26,7 +26,7 @@ using namespace indigo;
 IMPL_ERROR(RenderItemColumn, "RenderItemColumn");
 
 RenderItemColumn::RenderItemColumn (RenderItemFactory& factory) :
-   RenderItemContainer(factory), vSpace(0.0), alignment(MultilineTextLayout::Alignment::Center)
+   RenderItemContainer(factory), vSpace(0.0), alignment(MultilineTextLayout::Center)
 {
 }
 
