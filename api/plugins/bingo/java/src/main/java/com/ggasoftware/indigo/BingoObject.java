@@ -102,7 +102,7 @@ public class BingoObject {
        @return Estimated remaining search time
     */
 	public float estimateRemainingTime () {
-        FloatByReference estimated_time = null;
+        FloatByReference estimated_time = new FloatByReference();
         _indigo.setSessionID();
         Bingo.checkResult(_indigo, _bingoLib.bingoEstimateRemainingTime(_id, estimated_time));
         return estimated_time.getValue();
