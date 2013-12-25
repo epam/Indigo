@@ -863,7 +863,7 @@ class IndigoObject(object):
 
     def removeProperty(self, prop):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoRemoveProperty(self.id, prop))
+        return self.dispatcher._checkResult(Indigo._lib.indigoRemoveProperty(self.id, prop.encode('ascii')))
 
     def iterateProperties(self):
         self.dispatcher._setSessionId()
@@ -1984,6 +1984,7 @@ class Indigo(object):
 
     def loadBuffer(self, buf):
         self._setSessionId()
+        buf = list(buf)
         values = (c_byte * len(buf))()
         for i in range(len(buf)):
             values[i] = buf[i]
@@ -1991,7 +1992,7 @@ class Indigo(object):
 
     def loadString(self, string):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadString(string)))
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadString(string.encode('ascii'))))
 
     def iterateSDF(self, reader):
         self._setSessionId()
