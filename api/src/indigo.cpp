@@ -73,6 +73,8 @@ void Indigo::init ()
 
    unique_dearomatization = false;
 
+   arom_options = AromaticityOptions();
+
    // Update global index
    static ThreadSafeStaticObj<OsLock> lock;
    {
