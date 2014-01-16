@@ -81,7 +81,7 @@ def mac(compiler, linkFlags, arch, objFiles, linkLibraries, target):
         os.remove(objFile + '.tmp')
 
     if target.find('libindigo.dylib') != -1:
-        subprocess.check_call('objconv -v0 -wd1214 -wd1106 -fmacho{0} -nf:indigostd.syms {1} {2}'.format(objconvArch, '../../dist/Mac/10.6/lib/libstdc++.a', '../../dist/Mac/10.6/lib/libindigostdcpp.a'), shell=True)
+        subprocess.check_call('objconv -v0 -wd1214 -wd1106 -fmacho{0} -nf:indigostd.syms {1} {2}'.format(objconvArch, libRoot + '/libstdc++.a', libRoot + '/libindigostdcpp.a'), shell=True)
         linkLibraries = linkLibraries + ' -Wl,-all_load {0}/libindigostdcpp.a -Wl,-noall_load'.format(libRoot)
 
     os.remove(libRoot + '/libstdc++.a')
