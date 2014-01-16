@@ -4,7 +4,7 @@ project(Bingo CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../../common/cmake/)
 
-file (GLOB Bingo_src src/*.c*)
+file (GLOB Bingo_src src/bingo.cpp)
 file (GLOB Bingo_headers *.h src/*.h*)
 
 include(ConfigureCommon)
