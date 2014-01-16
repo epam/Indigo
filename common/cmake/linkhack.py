@@ -7,21 +7,19 @@ import sys
 def getIndigoStdSyms(libRoot):
     libstdcppSymbols = [item.replace('  ', '').split(' ') for item in subprocess.check_output('nm {0}/libstdc++.a'.format(libRoot), shell=True).split('\n')]
     renameSymbols = []
-    names = []
-    for item in libstdcppSymbols:
-        names.append(item[-1])
+
     invMap = {}
     for item in libstdcppSymbols:
-        if names.count(item[-1]) > 1:
-            continue
         if len(item) < 2:
             continue
         if item[1] not in ('u', 'U', 'r', 'n') and item[2].find('pthread') == -1:
             newName = 'i' + item[2][1:]
             if newName in invMap:
-                exit('Duplicate symbol: {0} for {1} and {2}', newName, invMap[newName], item[2])
-            invMap[newName] = item[2]
-            renameSymbols.append((item[2], newName))
+                if invMap[newName] != item[2]:
+                    exit('Duplicate symbol: {0} for {1} and {2}'.format(newName, invMap[newName], item[2]))
+            else:
+                invMap[newName] = item[2]
+                renameSymbols.append((item[2], newName))
     with open('indigostd.syms', 'wt') as f:
         for item in renameSymbols:
             f.write('{0} {1}\n'.format(item[0], item[1]))
