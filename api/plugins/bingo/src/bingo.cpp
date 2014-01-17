@@ -14,21 +14,6 @@
 
 
 #include "bingo.h"
-
-#include <string>
-#include <sstream>
-
-CEXPORT const char * bingoVersion ()
-{
-   std::stringstream stream;
-   stream << "Some words";
-   std::string s;
-   stream >> s;
-
-   return "AAAAAAAAAAAA";
-}
-
-/*
 #include "bingo_object.h"
 
 #include "indigo_internal.h"
@@ -155,6 +140,11 @@ Matcher& getMatcher (int id)
    if (id < _searches.begin() || id >= _searches.end() || !_searches.hasElement(id))
       throw BingoException("Incorrect search object id=%d", id);
    return *_searches[id];
+}
+
+CEXPORT const char * bingoVersion ()
+{
+   return BINGO_VERSION;
 }
 
 CEXPORT int bingoCreateDatabaseFile (const char *location, const char *type, const char *options)
@@ -546,4 +536,3 @@ CEXPORT int bingoGetObject (int search_obj)
    }
    BINGO_END(-1);
 }
-*/
