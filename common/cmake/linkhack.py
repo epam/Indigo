@@ -12,8 +12,8 @@ def getIndigoStdSyms(libRoot):
     for item in libstdcppSymbols:
         if len(item) < 2:
             continue
-        if item[1] not in ('u', 'U', 'r', 'n') and item[2].find('pthread') == -1:
-            newName = '_indigo_' + item[2]
+        if item[1] not in ('U') and item[2].find('pthread') == -1:
+            newName = '_ind_' + item[2]
             if newName in invMap:
                 if invMap[newName] != item[2]:
                     exit('Duplicate symbol: {0} for {1} and {2}'.format(newName, invMap[newName], item[2]))
