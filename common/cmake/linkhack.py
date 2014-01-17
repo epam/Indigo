@@ -13,7 +13,7 @@ def getIndigoStdSyms(libRoot):
         if len(item) < 2:
             continue
         if item[1] not in ('u', 'U', 'r', 'n') and item[2].find('pthread') == -1:
-            newName = 'i' + item[2][1:]
+            newName = '_indigo_' + item[2]
             if newName in invMap:
                 if invMap[newName] != item[2]:
                     exit('Duplicate symbol: {0} for {1} and {2}'.format(newName, invMap[newName], item[2]))
@@ -55,12 +55,7 @@ def linux(compiler, linkFlags, arch, objFiles, linkLibraries, target):
         libFile = os.path.join(libRoot, library)
         subprocess.check_call('objcopy --redefine-syms indigostd.syms {0}'.format(libFile), shell=True)
     
-    # TODO: Same for Mac
-    staticLib = ''
-    if target.find('libindigo.so') != -1:
-        staticLib = '-static-libstdc++'
-
-    linkCommand = '{0} -v -shared -L{1}/ {6} {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target, staticLib)
+    linkCommand = '{0} -v -shared -L{1}/ -static-libstdc++ {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
     print(linkCommand)
     subprocess.check_call(linkCommand, shell=True)
 
