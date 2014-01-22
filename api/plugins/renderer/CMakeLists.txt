@@ -69,7 +69,7 @@ if (MSVC)
 else()
     target_link_libraries(indigo-renderer-shared cairo pixman png z)
 endif()
-set_property(TARGET indigo-renderer-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
+set_property(TARGET indigo-renderer-shared PROPERTY LINK_INTERFACE_LIBRARIES "cairo;pixman;png;z")
 set_property(TARGET indigo-renderer-shared PROPERTY FOLDER "indigo-renderer")
 
 if(MSVC)

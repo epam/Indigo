@@ -20,10 +20,10 @@ presets = {
     "linux64-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
-    "mac10.6-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
     "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
     "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
+    "mac-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.9"),
 }
 
 parser = OptionParser(description='Indigo libraries build script')
@@ -113,7 +113,7 @@ def build(params=[], install=True):
         for key, value in params.items():
             paramString += '{0}={1} '.format(key, value)
     if params:
-        command = "CC=gcc CXX=g++ %s cmake -G \"%s\" %s %s" % (paramString, args.generator, args.params, project_dir)
+        command = "%s %s cmake -G \"%s\" %s %s" % ('CC=gcc CXX=g++' if args.preset != 'mac-universal' else '', paramString, args.generator, args.params, project_dir)
     else:
         command = "%s cmake -G \"%s\" %s %s" % (paramString, args.generator, args.params, project_dir)
     print(command)
@@ -156,50 +156,53 @@ def build(params=[], install=True):
     else:
         return full_build_dir
 
-if args.preset == 'mac10.6-universal':
-    i386Path = build({'UNIVERSAL': 'TRUE', 'INDIGO_CMAKE_OSX_ARCHITECTURES': 'i386'}, install=False)
-    amd64Path = build({'UNIVERSAL': 'TRUE', 'INDIGO_CMAKE_OSX_ARCHITECTURES': 'x86_64'}, install=False)
-    full_build_dir = os.path.join(root, "build", build_dir)
-    if os.path.exists(full_build_dir) and args.clean:
-        print("Removing previous project files")
-        shutil.rmtree(full_build_dir)
-    if not os.path.exists(full_build_dir):
-        os.makedirs(full_build_dir)
-    os.chdir(full_build_dir)
-    if os.path.exists('shared'):
-        shutil.rmtree('shared')
-    if os.path.exists('static'):
-        shutil.rmtree('static')
 
-    os.makedirs('shared/Mac/10.6/')
-    os.makedirs('static/Mac/10.6/')
-    for item in os.listdir(os.path.join(i386Path, 'dist', 'Mac', '10.6', 'lib')):
-        if item.endswith('.dylib'):
-            print(item)
-            subprocess.check_call('lipo -create -arch i386 {0}/dist/Mac/10.6/lib/{2} -arch x86_64 {1}/dist/Mac/10.6/lib/{2} -o shared/Mac/10.6/{2}'.format(i386Path, amd64Path, item), shell=True)
-        elif item.endswith('.a'):
-            subprocess.check_call('lipo -create -arch i386 {0}/dist/Mac/10.6/lib/{2} -arch x86_64 {1}/dist/Mac/10.6/lib/{2} -o static/Mac/10.6/{2}'.format(i386Path, amd64Path, item), shell=True)
+# if args.preset == 'mac-universal':
+#     amd64Path = build({'UNIVERSAL': 'TRUE'}) #, 'INDIGO_CMAKE_OSX_ARCHITECTURES': 'x86_64'}, install=False)
+#     #i386Path = build({'UNIVERSAL': 'TRUE'}), 'INDIGO_CMAKE_OSX_ARCHITECTURES': 'i386'}, install=False)
 
-    for item in os.listdir(i386Path):
-        if item.endswith('.zip'):
-            if item.find('static') != -1:
-                staticName = item
-            elif item.find('shared') != -1:
-                sharedName = item
-            shutil.copy(os.path.join(i386Path, item), '.')
+#     full_build_dir = os.path.join(root, "build", build_dir)
+#     if os.path.exists(full_build_dir) and args.clean:
+#         print("Removing previous project files")
+#         shutil.rmtree(full_build_dir)
+#     if not os.path.exists(full_build_dir):
+#         os.makedirs(full_build_dir)
+#     os.chdir(full_build_dir)
+#     if os.path.exists('shared'):
+#         shutil.rmtree('shared')
+#     if os.path.exists('static'):
+#         shutil.rmtree('static')
 
-    subprocess.check_call('zip -u {0} -r static'.format(staticName), shell=True)
-    subprocess.check_call('zip -u {0} -r shared'.format(sharedName), shell=True)
+#     os.makedirs('shared/Mac/10.6/')
+#     os.makedirs('static/Mac/10.6/')
+#     for item in os.listdir(os.path.join(i386Path, 'dist', 'Mac', '10.6', 'lib')):
+#         if item.endswith('.dylib'):
+#             print(item)
+#             subprocess.check_call('lipo -create -arch i386 {0}/dist/Mac/10.6/lib/{2} -arch x86_64 {1}/dist/Mac/10.6/lib/{2} -o shared/Mac/10.6/{2}'.format(i386Path, amd64Path, item), shell=True)
+#         elif item.endswith('.a'):
+#             subprocess.check_call('lipo -create -arch i386 {0}/dist/Mac/10.6/lib/{2} -arch x86_64 {1}/dist/Mac/10.6/lib/{2} -o static/Mac/10.6/{2}'.format(i386Path, amd64Path, item), shell=True)
 
-    dist_dir = join(root, "dist")
-    if not os.path.exists(dist_dir):
-        os.mkdir(dist_dir)
+#     for item in os.listdir(i386Path):
+#         if item.endswith('.zip'):
+#             if item.find('static') != -1:
+#                 staticName = item
+#             elif item.find('shared') != -1:
+#                 sharedName = item
+#             shutil.copy(os.path.join(i386Path, item), '.')
 
-    for f in os.listdir('.'):
-        path, ext = os.path.splitext(f)
-        if ext == ".zip":
-            shutil.copy(join(full_build_dir, f), join(dist_dir, f))
-elif args.preset in ('linux64-universal', 'linux32-universal'):
+#     subprocess.check_call('zip -u {0} -r static'.format(staticName), shell=True)
+#     subprocess.check_call('zip -u {0} -r shared'.format(sharedName), shell=True)
+
+#     dist_dir = join(root, "dist")
+#     if not os.path.exists(dist_dir):
+#         os.mkdir(dist_dir)
+
+#     for f in os.listdir('.'):
+#         path, ext = os.path.splitext(f)
+#         if ext == ".zip":
+#             shutil.copy(join(full_build_dir, f), join(dist_dir, f))
+
+if args.preset in ('linux64-universal', 'linux32-universal', 'mac-universal'):
     build({'UNIVERSAL': 'TRUE'})
 else:
     build()
