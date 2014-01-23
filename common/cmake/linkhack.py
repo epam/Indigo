@@ -10,7 +10,7 @@ def getSymbols(libPath):
 
 
 def getIndigoStdSyms(libRoot):
-    libname = 'libstd++.a' if not platform.mac_ver()[0] else 'libc++.a'
+    libname = 'libstdc++.a' if not platform.mac_ver()[0] else 'libc++.a'
     libstdcppSymbols = getSymbols(os.path.join(libRoot, libname))
     renameSymbols = []
 
@@ -32,7 +32,6 @@ def getIndigoStdSyms(libRoot):
 
 
 def linux(compiler, linkFlags, objFiles, linkLibraries, target):
-    print os.path.normpath(os.path.abspath(os.curdir))
     libstdcppPath = subprocess.check_output('g++ -print-file-name=libstdc++.a', shell=True).replace('\n', '')
 
     # Find dist root
