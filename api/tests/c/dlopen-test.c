@@ -10,7 +10,7 @@
 #define HANDLE HMODULE
 #else
 #include <dlfcn.h>
-#define DLOPEN(a) dlopen(a, RTLD_GLOBAL | RTLD_NOW)
+#define DLOPEN(a) dlopen(a, RTLD_GLOBAL)
 #define DLSYM(a, b) dlsym(a, b)
 #define DLERROR dlerror()
 #define DLCLOSE(a) dlclose(a)
@@ -62,6 +62,8 @@ int main(int argc, char **argv)
    STR_RET_INT indigoInchiGetInchi;
    INT_RET_STR_STR_STR bingoCreateDatabaseFile;
    INT_RET_INT bingoCloseDatabase;
+   STR_RET_VOID bingoVersion;
+
 
    int indigoTest = 0;
    int indigoInChITest = 0;
@@ -162,6 +164,8 @@ int main(int argc, char **argv)
          return 1;
       }
       printf("Bingo address: %lu\n", (unsigned long)bingoHandle);
+      bingoVersion = (STR_RET_VOID)DLSYM(bingoHandle, "bingoVersion");
+      printf("Bingo version: %s\n", bingoVersion());
       bingoCreateDatabaseFile = (INT_RET_STR_STR_STR)DLSYM(bingoHandle, "bingoCreateDatabaseFile");
       bingoCloseDatabase = (INT_RET_INT)DLSYM(bingoHandle, "bingoCloseDatabase");
       db = bingoCreateDatabaseFile("test.db", "molecule", "");

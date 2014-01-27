@@ -57,6 +57,8 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
     for library in os.listdir(libRoot):
         if not library.endswith('.a') or library == 'libindigostdcpp.a':
             continue
+        if 0 in [s[2].find('_ind') if len(s) > 1 else -1 for s in getSymbols(os.path.join(libRoot, library))]:
+            continue
         libFile = os.path.join(libRoot, library)
         subprocess.check_call('objcopy --redefine-syms indigostd.syms {0}'.format(libFile), shell=True)
 
@@ -66,65 +68,42 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
 
 
 def mac(compiler, linkFlags, objFiles, linkLibraries, target):
+    def lipoObjconvLipo(binaryFile):
+        subprocess.check_call('lipo -thin x86_64 {0} -o {1}'.format(binaryFile, binaryFile + '.tmp.64'), shell=True)
+        subprocess.check_call('lipo -thin i386 {0} -o {1}'.format(binaryFile, binaryFile + '.tmp.32'), shell=True)
+        os.remove(binaryFile)
+        command = 'objconv -v0 -wd1214 -wd1106 -fmacho64 -nf:indigostd.syms {0} {1}'.format(binaryFile + '.tmp.64', binaryFile + '.64')
+        print(command)
+        subprocess.check_call(command, shell=True)
+        command = 'objconv -v0 -wd1214 -wd1106 -fmacho32 -nf:indigostd.syms {0} {1}'.format(binaryFile + '.tmp.32', binaryFile + '.32')
+        print(command)
+        subprocess.check_call(command, shell=True)
+        subprocess.check_call('lipo -create {0} {1} -output {2}'.format(binaryFile + '.64', binaryFile + '.32', binaryFile), shell=True)
+        os.remove(binaryFile + '.tmp.32')
+        os.remove(binaryFile + '.tmp.64')
+        os.remove(binaryFile + '.32')
+        os.remove(binaryFile + '.64')
+
+
     libRoot = os.path.dirname(target)
     shutil.copy('/usr/lib/libc++.a', libRoot + '/libc++.a')
     getIndigoStdSyms(libRoot)
 
     for objFile in objFiles:
-        subprocess.check_call('lipo -thin x86_64 {0} -o {1}'.format(objFile, objFile + '.tmp.64'), shell=True)
-        subprocess.check_call('lipo -thin i386 {0} -o {1}'.format(objFile, objFile + '.tmp.32'), shell=True)
-        os.remove(objFile)
-        command = 'objconv -v0 -wd1214 -wd1106 -fmacho64 -nf:indigostd.syms {0} {1}'.format(objFile + '.tmp.64', objFile + '.64')
-        print(command)
-        subprocess.check_call(command, shell=True)
-        command = 'objconv -v0 -wd1214 -wd1106 -fmacho32 -nf:indigostd.syms {0} {1}'.format(objFile + '.tmp.32', objFile + '.32')
-        print(command)
-        subprocess.check_call(command, shell=True)
-        subprocess.check_call('lipo -create {0} {1} -output {2}'.format(objFile + '.64', objFile + '.32', objFile), shell=True)
-        os.remove(objFile + '.tmp.32')
-        os.remove(objFile + '.tmp.64')
-        os.remove(objFile + '.32')
-        os.remove(objFile + '.64')
+        lipoObjconvLipo(objFile)
 
     if target.find('libindigo.dylib') != -1:
-        subprocess.check_call('lipo -thin x86_64 {0} -o {1}'.format(libRoot + '/libc++.a', libRoot + '/libc++.a' + '.tmp.64'), shell=True)
-        subprocess.check_call('lipo -thin i386 {0} -o {1}'.format(libRoot + '/libc++.a', libRoot + '/libc++.a' + '.tmp.32'), shell=True)
-        os.remove(libRoot + '/libc++.a')
-        command = 'objconv -v0 -wd1214 -wd1106 -fmacho64 -nf:indigostd.syms {0} {1}'.format(libRoot + '/libc++.a.tmp.64', libRoot + '/libindigoc++.a' + '.64')
-        print(command)
-        subprocess.check_call(command, shell=True)
-        command = 'objconv -v0 -wd1214 -wd1106 -fmacho32 -nf:indigostd.syms {0} {1}'.format(libRoot + '/libc++.a.tmp.32', libRoot + '/libindigoc++.a' + '.32')
-        print(command)
-        subprocess.check_call(command, shell=True)
-        subprocess.check_call('lipo -create {0} {1} -output {2}'.format(libRoot + '/libindigoc++.a' + '.64', libRoot + '/libindigoc++.a' + '.32', libRoot + '/libindigoc++.a'), shell=True)
-        linkLibraries = linkLibraries + ' -Wl,-all_load {0}/libindigoc++.a -Wl,-noall_load'.format(libRoot)
-        os.remove(libRoot + '/libc++.a' + '.tmp.32')
-        os.remove(libRoot + '/libc++.a' + '.tmp.64')
-        os.remove(libRoot + '/libindigoc++.a' + '.32')
-        os.remove(libRoot + '/libindigoc++.a' + '.64')
+        lipoObjconvLipo(libRoot + '/libc++.a')
+        linkLibraries = linkLibraries + ' -Wl,-all_load {0}/libc++.a -Wl,-noall_load'.format(libRoot)
 
     for library in os.listdir(libRoot):
         if not library.endswith('.a') or library == 'libindigoc++.a':
             continue
         if 0 in [s[2].find('_ind') if len(s) > 1 else -1 for s in getSymbols(os.path.join(libRoot, library))]:
             continue
-        libFile = os.path.join(libRoot, library)
-        subprocess.check_call('lipo -thin x86_64 {0} -o {1}'.format(libFile, libFile + '.tmp.64'), shell=True)
-        subprocess.check_call('lipo -thin i386 {0} -o {1}'.format(libFile, libFile + '.tmp.32'), shell=True)
-        os.remove(libFile)
-        command = 'objconv -v0 -wd1214 -wd1106 -fmacho64 -nf:indigostd.syms {0} {1}'.format(libFile + '.tmp.64', libFile + '.64')
-        print(command)
-        subprocess.check_call(command, shell=True)
-        command = 'objconv -v0 -wd1214 -wd1106 -fmacho32 -nf:indigostd.syms {0} {1}'.format(libFile + '.tmp.32', libFile + '.32')
-        print(command)
-        subprocess.check_call(command, shell=True)
-        subprocess.check_call('lipo -create {0} {1} -output {2}'.format(libFile + '.64', libFile + '.32', libFile), shell=True)
-        os.remove(libFile + '.tmp.32')
-        os.remove(libFile + '.tmp.64')
-        os.remove(libFile + '.32')
-        os.remove(libFile + '.64')
+        lipoObjconvLipo(os.path.join(libRoot, library))
 
-    cmd = '{0} -L{1}/ -arch i386 -arch x86_64 -flat_namespace -undefined suppress -stdlib=libstdc++ -std=c++11 -mmacosx-version-min=10.7 -dynamiclib {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
+    cmd = '{0} -L{1}/ -arch i386 -arch x86_64 -undefined dynamic_lookup -nodefaultlibs -lpthread -lc -lm -std=c++11 -mmacosx-version-min=10.7 -dynamiclib {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
     print(cmd)
     subprocess.check_call(cmd, shell=True)
 
