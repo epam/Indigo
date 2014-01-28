@@ -56,7 +56,7 @@ void BingoMapping::add (size_t id1, size_t id2)
    cur_list.top()->buf[top_size++] = _KeyPair(id1, id2);
 }
 
-size_t BingoMapping::remove (size_t id)
+void BingoMapping::remove (size_t id)
 {
    _MapList::Iterator it;
    _MapList &cur_list = _mapping_table[_hashFunc(id)];

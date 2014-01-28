@@ -18,7 +18,7 @@ namespace bingo
        
       void add (size_t id1, size_t id2);
 
-      size_t remove (size_t id);
+      void remove (size_t id);
 
    private:
       typedef std::pair<size_t, size_t> _KeyPair;

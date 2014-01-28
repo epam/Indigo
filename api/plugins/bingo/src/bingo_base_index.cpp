@@ -37,7 +37,7 @@ BaseIndex::BaseIndex (IndexType type)
 void BaseIndex::create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options, int index_id)
 {
    // TODO: introduce global parameters table, local parameters table and constants
-   MMFStorage::database_id = index_id;
+   MMFStorage::setDatabaseId(index_id);
 
    int sub_block_size = 8192;
    int sim_block_size = 8192;
@@ -95,7 +95,7 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
 void BaseIndex::load (const char *location, const char *options, int index_id)
 {
-   MMFStorage::database_id = index_id;
+   MMFStorage::setDatabaseId(index_id);
 
    if (osDirExists(location) == OS_DIR_NOTFOUND)
       throw Exception("database directory missed");

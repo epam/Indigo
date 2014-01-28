@@ -5,12 +5,6 @@
 #include "bingo_mmf.h"
 #include "bingo_ptr.h"
 
-#ifdef _WIN32
-   #define BINGO_TL __declspec(thread)
-#elif (defined __GNUC__ || defined __APPLE__)
-   #define BINGO_TL __thread
-#endif
-
 using namespace indigo;
 
 namespace bingo
@@ -18,7 +12,8 @@ namespace bingo
    class MMFStorage
    {
    public:
-      static BINGO_TL int database_id;
+      static int getDatabaseId ();
+      static void setDatabaseId (int db);
 
       static const int max_header_len = 128;
 

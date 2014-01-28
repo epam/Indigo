@@ -96,13 +96,14 @@ void BingoAllocator::_load (const char *filename, size_t alloc_off, ObjArray<MMF
 
 BingoAllocator *BingoAllocator::_getInstance ()
 {
-   if (_instances.size() <= MMFStorage::database_id)
+   int database_id = MMFStorage::getDatabaseId();
+   if (_instances.size() <= database_id)
       throw Exception("BingoAllocator: Incorrect session id");
 
-   if (_instances[MMFStorage::database_id] == 0)
+   if (_instances[database_id] == 0)
       throw Exception("BingoAllocator: instance is not initialized");
 
-   return _instances[MMFStorage::database_id];
+   return _instances[database_id];
 }
      
 

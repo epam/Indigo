@@ -36,19 +36,19 @@ DECL_EXCEPTION_NO_EXP(BingoException);
            ((db_id) >= _bingo_instances.end()) ||           \
            !_bingo_instances.hasElement(db_id))             \
          throw BingoException("Incorrect database object"); \
-       MMFStorage::database_id = db_id;
+       MMFStorage::setDatabaseId(db_id);
 
-#define BINGO_BEGIN_SEARCH(search_id)                       \
-    INDIGO_BEGIN                                            \
-    {                                                       \
-       if (((search_id) < 0) ||                             \
-          ((search_id) >= _searches_db.size()) ||           \
-          (_searches_db[(search_id)] == -1))                \
-          throw BingoException("Incorrect search object");  \
-       MMFStorage::database_id = _searches_db[(search_id)]; \
+#define BINGO_BEGIN_SEARCH(search_id)                        \
+    INDIGO_BEGIN                                             \
+    {                                                        \
+       if (((search_id) < 0) ||                              \
+          ((search_id) >= _searches_db.size()) ||            \
+          (_searches_db[(search_id)] == -1))                 \
+          throw BingoException("Incorrect search object");   \
+       MMFStorage::setDatabaseId(_searches_db[(search_id)]); \
 
 #define BINGO_END(fail)              \
-       MMFStorage::database_id = -1; \
+       MMFStorage::setDatabaseId(-1); \
     }                                \
     INDIGO_END(fail)    
     

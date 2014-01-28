@@ -1,5 +1,5 @@
 #ifndef __tversky_coef__
-#define __tanimoto_coef__
+#define __tversky_coef__
 
 #include "bingo_sim_coef.h"
 #include <math.h>
