@@ -15,7 +15,3 @@ include_directories(${Common_SOURCE_DIR} ${Molecule_SOURCE_DIR}/.. ${ZLib_HEADER
 add_library(molecule OBJECT ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZip_headers})
 
 set_target_properties(molecule PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-
-#add_library(molecule OBJECT ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZip_headers})
-#target_link_libraries(molecule graph z tinyxml)
-#pack_static(molecule)

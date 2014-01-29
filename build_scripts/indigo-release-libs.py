@@ -1,8 +1,6 @@
 import os
 import shutil
-import sys
 import subprocess
-from os.path import *
 
 from optparse import OptionParser
 
@@ -18,12 +16,11 @@ presets = {
     "linux32-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "linux64-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
-    "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
     "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
     "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
-    "mac-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.7"),
+    "mac-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.6"),
 }
 
 parser = OptionParser(description='Indigo libraries build script')
@@ -38,6 +35,8 @@ parser.add_option('--preset', type="choice", dest="preset",
     choices=list(presets.keys()), help='build preset %s' % (str(list(presets.keys()))))
 parser.add_option('--with-static', action='store_true', help='Build Indigo static libraries',
     default=False, dest='withStatic')
+parser.add_option('--verbose', action='store_true', help='Show verbose build information',
+    default=False, dest='buildVerbose')
 parser.add_option('--cairo-gl', dest="cairogl",
     default=False, action="store_true", help='Build Cairo with OpenGL support')
 parser.add_option('--cairo-vg', dest="cairovg",
@@ -65,11 +64,10 @@ if not args.generator:
     print("Generator must be specified")
     exit()
 
-cur_dir = abspath(dirname(__file__))
-root = join(cur_dir, "..")
-project_dir = join(cur_dir, "indigo-all")
+cur_dir = os.path.abspath(os.path.dirname(__file__))
+root = os.path.join(cur_dir, "..")
+project_dir = os.path.join(cur_dir, "indigo-all")
 
-#if args.generator.find("Unix Makefiles") != -1 or args.generator.find("MinGW Makefiles") != -1:
 args.params += " -DCMAKE_BUILD_TYPE=" + args.config
 
 if args.cairogl:
@@ -102,58 +100,50 @@ if os.name == 'posix' and args.checkabi:
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
-def build():
-    full_build_dir = os.path.join(root, "build", build_dir)
-    #if params:
-    #    full_build_dir += "_UNIVERSAL_"
-    if os.path.exists(full_build_dir) and args.clean:
-        print("Removing previous project files")
-        shutil.rmtree(full_build_dir)
-    if not os.path.exists(full_build_dir):
-        os.makedirs(full_build_dir)
+full_build_dir = os.path.join(root, "build", build_dir)
 
-    os.chdir(full_build_dir)
+if os.path.exists(full_build_dir) and args.clean:
+    print("Removing previous project files")
+    shutil.rmtree(full_build_dir)
+if not os.path.exists(full_build_dir):
+    os.makedirs(full_build_dir)
 
-    command = "%s cmake -G \"%s\" %s %s" % ('CC=gcc CXX=g++' if args.preset != 'mac-universal' else '', args.generator, args.params, project_dir)
-    print(command)
-    subprocess.check_call(command, shell=True)
+os.chdir(full_build_dir)
 
-    if args.nobuild:
-        exit(0)
+command = "%s cmake -G \"%s\" %s %s" % ('CC=gcc CXX=g++' if args.preset != 'mac-universal' else '', args.generator, args.params, project_dir)
+print(command)
+subprocess.check_call(command, shell=True)
 
-    for f in os.listdir(full_build_dir):
-        path, ext = os.path.splitext(f)
-        if ext == ".zip":
-            os.remove(join(full_build_dir, f))
+if args.nobuild:
+    exit(0)
 
-    if args.generator.find("Unix Makefiles") != -1:
-        subprocess.check_call("make package", shell=True)
-        subprocess.check_call("make install", shell=True)
-    elif args.generator.find("Xcode") != -1:
-        subprocess.check_call("cmake --build . --target package --config %s" % (args.config), shell=True)
-        subprocess.check_call("cmake --build . --target install --config %s" % (args.config), shell=True)
-    elif args.generator.find("Visual Studio") != -1:
-        subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config), shell=True)
-        subprocess.check_call("cmake --build . --target INSTALL --config %s" % (args.config), shell=True)
-    elif args.generator.find("MinGW Makefiles") != -1:
-        subprocess.check_call("mingw32-make package", shell=True)
-        subprocess.check_call("mingw32-make install", shell=True)
-    else:
-        print("Do not know how to run package and install target")
-    subprocess.check_call("ctest -V --timeout 20 -C %s ." % (args.config), shell=True)
+for f in os.listdir(full_build_dir):
+    path, ext = os.path.splitext(f)
+    if ext == ".zip":
+        os.remove(os.path.join(full_build_dir, f))
 
-    os.chdir(root)
-    if not os.path.exists("dist"):
-        os.mkdir("dist")
-    dist_dir = join(root, "dist")
+if args.generator.find("Unix Makefiles") != -1:
+    subprocess.check_call("make package %s" % 'VERBOSE=1' if args.buildVerbose else '', shell=True)
+    subprocess.check_call("make install", shell=True)
+elif args.generator.find("Xcode") != -1:
+    subprocess.check_call("cmake --build . --target package --config %s" % (args.config), shell=True)
+    subprocess.check_call("cmake --build . --target install --config %s" % (args.config), shell=True)
+elif args.generator.find("Visual Studio") != -1:
+    subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config), shell=True)
+    subprocess.check_call("cmake --build . --target INSTALL --config %s" % (args.config), shell=True)
+elif args.generator.find("MinGW Makefiles") != -1:
+    subprocess.check_call("mingw32-make package", shell=True)
+    subprocess.check_call("mingw32-make install", shell=True)
+else:
+    print("Do not know how to run package and install target")
+subprocess.check_call("ctest -V --timeout 20 -C %s ." % (args.config), shell=True)
 
-    for f in os.listdir(full_build_dir):
-        path, ext = os.path.splitext(f)
-        if ext == ".zip":
-            shutil.copy(join(full_build_dir, f), join(dist_dir, f))
+os.chdir(root)
+if not os.path.exists("dist"):
+    os.mkdir("dist")
+dist_dir = os.path.join(root, "dist")
 
-build()
-#if args.preset in ('linux64-universal', 'linux32-universal', 'mac-universal'):
-#    build({'UNIVERSAL': 'TRUE'})
-#else:
-#    build()
+for f in os.listdir(full_build_dir):
+    path, ext = os.path.splitext(f)
+    if ext == ".zip":
+        shutil.copy(os.path.join(full_build_dir, f), os.path.join(dist_dir, f))

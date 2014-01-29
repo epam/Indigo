@@ -6,7 +6,7 @@ import platform
 
 
 def getSymbols(libPath):
-    return [item.replace('  ', '').split(' ') for item in subprocess.check_output('nm {0}'.format(libPath), shell=True).split('\n')]
+    return [item.replace('  ', '').split(' ') for item in subprocess.check_output('nm {0}'.format(libPath), shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None).split('\n')]
 
 
 def getIndigoStdSyms(libRoot):
@@ -73,12 +73,17 @@ def mac(compiler, linkFlags, objFiles, linkLibraries, target):
         subprocess.check_call('lipo -thin i386 {0} -o {1}'.format(binaryFile, binaryFile + '.tmp.32'), shell=True)
         os.remove(binaryFile)
         command = 'objconv -v0 -wd1214 -wd1106 -fmacho64 -nf:indigostd.syms {0} {1}'.format(binaryFile + '.tmp.64', binaryFile + '.64')
-        print(command)
-        subprocess.check_call(command, shell=True)
+        if 'VERBOSE' in os.environ:
+            print(command)
+        subprocess.check_call(command, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
         command = 'objconv -v0 -wd1214 -wd1106 -fmacho32 -nf:indigostd.syms {0} {1}'.format(binaryFile + '.tmp.32', binaryFile + '.32')
-        print(command)
-        subprocess.check_call(command, shell=True)
-        subprocess.check_call('lipo -create {0} {1} -output {2}'.format(binaryFile + '.64', binaryFile + '.32', binaryFile), shell=True)
+        if 'VERBOSE' in os.environ:
+            print(command)
+        subprocess.check_call(command, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
+        command = 'lipo -create {0} {1} -output {2}'.format(binaryFile + '.64', binaryFile + '.32', binaryFile)
+        if 'VERBOSE' in os.environ:
+            print(command)
+        subprocess.check_call(command, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
         os.remove(binaryFile + '.tmp.32')
         os.remove(binaryFile + '.tmp.64')
         os.remove(binaryFile + '.32')
@@ -104,8 +109,9 @@ def mac(compiler, linkFlags, objFiles, linkLibraries, target):
         lipoObjconvLipo(os.path.join(libRoot, library))
 
     cmd = '{0} -L{1}/ -arch i386 -arch x86_64 -undefined dynamic_lookup -nodefaultlibs -lpthread -lc -lm -std=c++11 -mmacosx-version-min=10.7 -dynamiclib {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
-    print(cmd)
-    subprocess.check_call(cmd, shell=True)
+    if 'VERBOSE' in os.environ:
+        print(cmd)
+    subprocess.check_call(cmd, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
 
 
 def main():

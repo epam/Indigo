@@ -6,8 +6,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../com
 if (USE_SYSTEM_CAIRO)
     find_package(CAIRO)
     if (NOT CAIRO_FOUND)
-	     MESSAGE(FATAL_ERROR "Cannot find system Cairo library")
-	 endif()
+         MESSAGE(FATAL_ERROR "Cannot find system Cairo library")
+     endif()
 endif()
 find_package(PIXMAN)
 if (NOT CAIRO_FOUND)
@@ -43,7 +43,7 @@ if (NOT CAIRO_FOUND)
         set(CAIRO_HAS_QUARTZ_IMAGE_SURFACE 1)
     endif()
     if(MSVC)
-    	add_definitions(-DDISABLE_SOME_FLOATING_POINT) # Fix lround missing problem
+        add_definitions(-DDISABLE_SOME_FLOATING_POINT) # Fix lround missing problem
     endif()
     if (MSVC OR MINGW)
         set(CAIRO_HAS_WIN32_FONT 1)
@@ -139,6 +139,10 @@ if (NOT CAIRO_FOUND)
         list(REMOVE_ITEM CAIRO_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-quartz-font.c)
         list(REMOVE_ITEM CAIRO_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-quartz-surface.c)
     endif(NOT APPLE)
+    if (APPLE)
+        list(REMOVE_ITEM CAIRO_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-fixed.c)
+        list(REMOVE_ITEM CAIRO_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/cairo-freed-pool.c)
+    endif()
     if((UNIX) AND (NOT APPLE))
         find_package(Freetype REQUIRED)
         if(NOT FREETYPE_FOUND)
@@ -153,9 +157,9 @@ if (NOT CAIRO_FOUND)
 
     include_directories(${PNG_INCLUDE_DIR})
     include_directories(${ZLib_HEADERS_DIR})
-	
+
     if(MSVC)
-	add_definitions(/wd4244 /wd4146 /wd4267)
+    add_definitions(/wd4244 /wd4146 /wd4267)
     endif()
 
     # To remove GLIBC_2.11 dependency
@@ -188,6 +192,3 @@ if (NOT CAIRO_FOUND)
 else()
     set(Cairo_headers_dir ${CAIRO_INCLUDE_DIRS})
 endif()
-
-
-
