@@ -27,7 +27,7 @@ MMFile::MMFile() : _ptr(0)
       _h_map_file = 0;
 #elif (defined __GNUC__ || defined __APPLE__)
       _fd = -1;
-#endif     
+#endif
 }
 
 MMFile::~MMFile ()
@@ -63,19 +63,19 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool
    char * pBuf;
 
    DWORD dwflags = GENERIC_READ | GENERIC_WRITE;
-   
+
    if (read_only)
       dwflags = GENERIC_READ;
-   
+
    _h_file = CreateFile((LPCSTR)_filename.c_str(), dwflags, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-   DWORD dw = GetLastError(); 
+   DWORD dw = GetLastError();
 
    LPVOID lpMsgBuf;
 
    if (_h_file == INVALID_HANDLE_VALUE)
    {
       FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
         FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL,
@@ -117,14 +117,20 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool
 
    if (_ptr == NULL)
       throw Exception("BingoMMF: Could not map view of file");
- 
+
 #elif (defined __GNUC__ || defined __APPLE__)
-   int o_flags = O_RDWR | O_CREAT;
+   int flags;
+   mode_t permissions = 0;
 
    if (read_only)
-      o_flags = O_RDONLY  | O_CREAT;
+      flags = O_RDONLY;
+   else
+   {
+      flags = O_RDWR | O_CREAT;
+      permissions = S_IRUSR | S_IWUSR;
+   }
 
-   if ((_fd = ::open(_filename.c_str(), o_flags)) == -1) 
+   if ((_fd = ::open(_filename.c_str(), flags, permissions)) == -1)
       throw Exception("BingoMMF: Could not open file (%s)", strerror(errno));
 
    ftruncate(_fd, _len);
@@ -135,7 +141,7 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool
       prot_flags = PROT_READ;
 
    _ptr = mmap((caddr_t)0, _len, prot_flags, MAP_SHARED, _fd, 0);
-   
+
    if (_ptr == (void *)MAP_FAILED)
       throw Exception("BingoMMF: Could not map view of file");
 #endif
