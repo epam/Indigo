@@ -10,7 +10,7 @@
 #define HANDLE HMODULE
 #else
 #include <dlfcn.h>
-#define DLOPEN(a) dlopen(a, RTLD_GLOBAL)
+#define DLOPEN(a) dlopen(a, RTLD_GLOBAL | RTLD_NOW)
 #define DLSYM(a, b) dlsym(a, b)
 #define DLERROR dlerror()
 #define DLCLOSE(a) dlclose(a)
