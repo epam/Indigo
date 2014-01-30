@@ -39,6 +39,7 @@ namespace indigo {
 class DLLEXPORT _SIDManager {
 public:
    static _SIDManager& getInst (void);
+   _SIDManager (void);
    ~_SIDManager (void);
 
    void  setSessionId     (qword id);
@@ -52,7 +53,6 @@ public:
    DECL_ERROR;
 
 private:
-   _SIDManager (void);
    qword * _getID         () const;
 
    // Thread local key for storing current session ID

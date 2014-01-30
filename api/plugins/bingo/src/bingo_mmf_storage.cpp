@@ -9,20 +9,17 @@
 using namespace bingo;
 
 // TODO: implement real thread local storage - not session local
-TL_DECL(int, database_id);
+static _SIDManager _database_id;
 
 int MMFStorage::getDatabaseId ()
 {
-   TL_GET(int, database_id);
-   return database_id;
+   return (int)_database_id.getSessionId();
 }
 
 void MMFStorage::setDatabaseId (int db)
 {
-   TL_GET(int, database_id);
-   database_id = db;
+   _database_id.setSessionId((int)db);
 }
-
 
 MMFStorage::MMFStorage()
 {
