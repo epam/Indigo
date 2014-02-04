@@ -68,8 +68,6 @@ cur_dir = os.path.abspath(os.path.dirname(__file__))
 root = os.path.join(cur_dir, "..")
 project_dir = os.path.join(cur_dir, "indigo-all")
 
-args.params += " -DCMAKE_BUILD_TYPE=" + args.config
-
 if args.cairogl:
     args.params += ' -DWITH_CAIRO_GL=TRUE'
 
@@ -97,7 +95,7 @@ if args.preset and args.preset.find('universal') != -1:
 if os.name == 'posix' and args.checkabi:
     args.params += ' -DCHECK_ABI=TRUE'
 
-build_dir = (args.generator + " " + args.params)
+build_dir = (args.generator + " " + args.config + args.params.replace('-D', ''))
 build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
 full_build_dir = os.path.join(root, "build", build_dir)
