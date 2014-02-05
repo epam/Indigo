@@ -121,7 +121,7 @@ for f in os.listdir(full_build_dir):
         os.remove(os.path.join(full_build_dir, f))
 
 if args.generator.find("Unix Makefiles") != -1:
-    subprocess.check_call("make package %s" % 'VERBOSE=1' if args.buildVerbose else '', shell=True)
+    subprocess.check_call("make package {0}".format('VERBOSE=1' if args.buildVerbose else ''), shell=True)
     subprocess.check_call("make install", shell=True)
 elif args.generator.find("Xcode") != -1:
     subprocess.check_call("cmake --build . --target package --config %s" % (args.config), shell=True)

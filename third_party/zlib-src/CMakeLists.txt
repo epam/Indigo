@@ -19,9 +19,15 @@ if (NOT ZLIB_FOUND)
 
     add_library(z STATIC ${ZLib_src} ${ZLib_headers})
 
+    if (APPLE AND NOT DEFINED $ENV{VERBOSE})
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-implicit-function-declaration")
+    endif()
+
     set_target_properties(z PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
     set_property(TARGET z PROPERTY FOLDER "third_party")
-    pack_static(z)
+    if (NOT NO_STATIC)
+        pack_static(z)
+    endif()
 
     set(ZLIB_FOUND YES PARENT_SCOPE)
 endif()
