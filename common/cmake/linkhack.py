@@ -63,8 +63,9 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
         subprocess.check_call('objcopy --redefine-syms indigostd.syms {0}'.format(libFile), shell=True)
 
     linkCommand = '{0} -v -shared -L{1}/ -static-libstdc++ {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
-    print(linkCommand)
-    subprocess.check_call(linkCommand, shell=True)
+    if 'VERBOSE' in os.environ:
+        print(linkCommand)
+    subprocess.check_call(linkCommand, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None, stdout=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
 
 
 def mac(compiler, linkFlags, objFiles, linkLibraries, target):
