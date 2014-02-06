@@ -36,6 +36,9 @@ namespace bingo
       void *_ptr;
       std::string _filename;
       size_t _len;
+
+      static char * _getSystemErrorMsg ();
+
    };
 };
 
