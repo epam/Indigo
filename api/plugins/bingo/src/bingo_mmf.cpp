@@ -60,8 +60,6 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool
       std::remove(filename);
 
 #ifdef _WIN32
-   char * pBuf;
-
    DWORD dwflags = GENERIC_READ | GENERIC_WRITE;
 
    if (read_only)
@@ -96,14 +94,17 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool
 
    _h_map_file = CreateFileMapping(
                  _h_file,    // use paging file
-                 NULL,                    // default security
-                 access_info,          // read/write access
-                 buf_size >> 32,          // maximum object size (high-order DWORD)
-                 buf_size,                // maximum object size (low-order DWORD)
-                 0);                 // name of mapping object
+                 NULL,                  // default security
+                 access_info,           // read/write access
+                 buf_size >> 32,        // maximum object size (high-order DWORD)
+                 buf_size & 0xFFFFFFFF, // maximum object size (low-order DWORD)
+                 0);                    // name of mapping object
 
    if (_h_map_file == NULL)
-      throw Exception("BingoMMF: Could not create file mapping object");
+   {
+      DWORD dw = GetLastError();
+      throw Exception("BingoMMF: Could not create file mapping object. Error code: %d", dw);
+   }
 
    dword map_access_permission = FILE_MAP_ALL_ACCESS;
    if (read_only)
