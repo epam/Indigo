@@ -117,7 +117,10 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool
                         buf_size);
 
    if (_ptr == NULL)
-      throw Exception("BingoMMF: Could not map view of file");
+   {
+      DWORD dw = GetLastError();
+      throw Exception("BingoMMF: Could not map view of file. Error code: %d", dw);
+   }
 
 #elif (defined __GNUC__ || defined __APPLE__)
    int flags;
