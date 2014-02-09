@@ -954,8 +954,9 @@ void MoleculeLayoutGraph::_findFixedComponents (BiconnectedDecomposer &bc_decom,
 
    Graph fixed_graph;
    QS_DEF(Array<int>, fixed_mapping);
+   QS_DEF(Array<int>, fixed_inv_mapping);
 
-   fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, 0);
+   fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, &fixed_inv_mapping);
 
    if (Graph::isConnected(fixed_graph))
       _n_fixed = fixed_filter.count(*this);
@@ -998,7 +999,9 @@ void MoleculeLayoutGraph::_findFixedComponents (BiconnectedDecomposer &bc_decom,
 
          MoleculeLayoutGraph &component = bc_components[i];
 
-         if (!max_filter.valid(component.getVertexExtIdx(component.vertexBegin())))
+         int comp_v = component.getVertexExtIdx(component.vertexBegin());
+         int mapped = fixed_inv_mapping[comp_v];
+         if (!max_filter.valid(mapped))
             fixed_components[i] = 0;
       }
    }
@@ -1174,7 +1177,7 @@ void MoleculeLayoutGraph::_findFirstVertexIdx (int n_comp, Array<int> & fixed_co
 {
    if (_n_fixed > 0)
    {
-      int j;
+      int j = -1;
       for (int i = 0; i < n_comp; i++)
          if (fixed_components[i])
          {
@@ -1182,9 +1185,12 @@ void MoleculeLayoutGraph::_findFirstVertexIdx (int n_comp, Array<int> & fixed_co
             j = i;
          }
 
-         MoleculeLayoutGraph &component = bc_components[j];
+      if (j == -1)
+         throw Error("Internal error: cannot find a fixed component with fixed vertices");
 
-         _first_vertex_idx = component._layout_vertices[component.vertexBegin()].ext_idx;
+      MoleculeLayoutGraph &component = bc_components[j];
+
+      _first_vertex_idx = component._layout_vertices[component.vertexBegin()].ext_idx;
    }
    else
    {
