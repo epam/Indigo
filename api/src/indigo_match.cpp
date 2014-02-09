@@ -244,7 +244,7 @@ int _indigoParseExactFlags (const char *flags, bool reaction, float *rms_thresho
       throw IndigoError("_indigoParseExactFlags(): no flags are allowed together with NONE");
    
    if (count == 0)
-      res = MoleculeExactMatcher::CONDITION_ALL | ReactionExactMatcher::CONDITION_ALL;
+      res |= MoleculeExactMatcher::CONDITION_ALL | ReactionExactMatcher::CONDITION_ALL;
 
    return res;
 }
