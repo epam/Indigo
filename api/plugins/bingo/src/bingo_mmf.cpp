@@ -55,7 +55,7 @@ char * MMFile::_getSystemErrorMsg ()
                  NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &msg, 0, NULL );
    return msg;
 #elif (defined __GNUC__ || defined __APPLE__)
-   return strerror(errno)
+   return strerror(errno);
 #endif
 }
 
@@ -80,8 +80,8 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool
       dwflags = GENERIC_READ;
 
    _h_file = CreateFile((LPCSTR)_filename.c_str(), dwflags, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-   
-   
+
+
    if (_h_file == INVALID_HANDLE_VALUE)
       throw Exception("BingoMMF: Could not open file. Error message: %s", _getSystemErrorMsg());
 
