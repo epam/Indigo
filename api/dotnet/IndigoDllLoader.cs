@@ -60,11 +60,11 @@ namespace com.ggasoftware.indigo
                 case PlatformID.Unix:
                     if (IndigoDllLoader.isMac())
                     {
-                        return MacLoader.dlopen(filename.Replace("\\", "/"), 2);
+                        return MacLoader.dlopen(filename.Replace("\\", "/"), 0x8 | 0x1); // RTLD_GLOBAL | RTLD_NOW
                     }
                     else
                     {
-                        return LinuxLoader.dlopen(filename.Replace("\\", "/"), 2);
+                        return LinuxLoader.dlopen(filename.Replace("\\", "/"), 0x00100 | 0x00002); // RTLD_GLOBAL | RTLD_NOW
                     }
             }
             return IntPtr.Zero;

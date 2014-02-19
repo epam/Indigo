@@ -118,10 +118,7 @@ class Bingo(object):
         lib = Bingo._getLib(indigo)
         lib.bingoCreateDatabaseFile.restype = c_int
         lib.bingoCreateDatabaseFile.argtypes = [c_char_p, c_char_p, c_char_p]
-        print('create before', psutil.Process(os.getpid()).get_memory_percent(), psutil.Process(os.getpid()).get_memory_info(), psutil.Process(os.getpid()).get_ext_memory_info())
-        result = Bingo(Bingo._checkResult(indigo, lib.bingoCreateDatabaseFile(path.encode('ascii'), databaseType.encode('ascii'), options.encode('ascii'))), indigo, lib)
-        print('create after', psutil.Process(os.getpid()).get_memory_percent(), psutil.Process(os.getpid()).get_memory_info(), psutil.Process(os.getpid()).get_ext_memory_info())
-        return result 
+        return Bingo(Bingo._checkResult(indigo, lib.bingoCreateDatabaseFile(path.encode('ascii'), databaseType.encode('ascii'), options.encode('ascii'))), indigo, lib)
 
     @staticmethod
     def loadDatabaseFile(indigo, path, options=''):
@@ -198,9 +195,7 @@ class BingoObject(object):
     def close(self):
         self._indigo._setSessionId()
         if self._id >= 0:
-            print('close before', psutil.Process(os.getpid()).get_memory_percent(), psutil.Process(os.getpid()).get_memory_info(), psutil.Process(os.getpid()).get_ext_memory_info())
             Bingo._checkResult(self._indigo, self._bingo._lib.bingoEndSearch(self._id))
-            print('close after', psutil.Process(os.getpid()).get_memory_percent(), psutil.Process(os.getpid()).get_memory_info(), psutil.Process(os.getpid()).get_ext_memory_info())
             self._id = -1
 
     def next(self):
