@@ -276,7 +276,7 @@ namespace com.ggasoftware.indigo
 
                 if (data.handle == IntPtr.Zero)
                     throw new Exception("Cannot load library " + dll_name +
-                        " from the temporary file " + data.file_name + ": " + LibraryLoader.GetLastError()
+                        " from the temporary file " + data.file_name.Replace('\\', '/') + ": " + LibraryLoader.GetLastError()
                     );
 
                 _loaded_dlls.Add(dll_name, data);
