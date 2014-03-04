@@ -33,10 +33,11 @@ namespace com.ggasoftware.indigo
 		/// </summary>
 		public void Dispose()
 		{
-			if (_id >= 0 && _dllLoader != null && _dllLoader.isValid() && _bingoLib != null && _indigo != null) 
+			if (_id >= 0 && _dllLoader != null && _dllLoader.isValid() && _bingoLib != null && _indigo != null)
 			{
+			    _indigo.setSessionID();
 				Bingo.checkResult(_indigo, _bingoLib.bingoEndSearch(_id));
-				_id = -1;
+                _id = -1;
 			}
 		}
 
