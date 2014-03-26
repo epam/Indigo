@@ -6,16 +6,16 @@
 #include <fstream>
 #include <vector>
 
-namespace  bingo
+namespace bingo
 {
    class TranspFpStorage
    {
    public:
-      TranspFpStorage (int fp_size, int block_size);
-      
-      static size_t create (BingoPtr<TranspFpStorage> &ptr, int fp_size, int block_size);
+      TranspFpStorage (int fp_size, int block_size, int small_base_size);
 
-      static void load (BingoPtr<TranspFpStorage> &ptr, size_t offset);
+      static BingoAddr create (BingoPtr<TranspFpStorage> &ptr, int fp_size, int block_size, int small_base_size);
+
+      static void load (BingoPtr<TranspFpStorage> &ptr, BingoAddr offset);
 
       void add (const byte *fp);
 
@@ -42,11 +42,13 @@ namespace  bingo
       int _block_count;
       int _block_size;
       int _pack_count;
+      bool _small_flag;
       BingoArray< BingoPtr< byte > > _storage; 
 
       BingoPtr< byte > _inc_buffer;
       int _inc_size;
       int _inc_fp_count;
+      int _small_inc_size;
       
       BingoArray<int> _fp_bit_usage_counts;
       

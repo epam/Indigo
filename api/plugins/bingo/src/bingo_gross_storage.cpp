@@ -8,15 +8,15 @@ GrossStorage::GrossStorage (size_t gross_block_size) : _gross_formulas(gross_blo
 {
 }
 
-size_t GrossStorage::create(BingoPtr<GrossStorage> &gross_ptr, size_t gross_block_size)
+BingoAddr GrossStorage::create(BingoPtr<GrossStorage> &gross_ptr, size_t gross_block_size)
 {
    gross_ptr.allocate();
    new (gross_ptr.ptr()) GrossStorage(gross_block_size);
          
-   return (size_t)gross_ptr;
+   return (BingoAddr)gross_ptr;
 }
 
-void GrossStorage::load (BingoPtr<GrossStorage> &gross_ptr, size_t offset)
+void GrossStorage::load (BingoPtr<GrossStorage> &gross_ptr, BingoAddr offset)
 {
    gross_ptr = BingoPtr<GrossStorage>(offset);
 }

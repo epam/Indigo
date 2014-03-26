@@ -19,7 +19,7 @@ namespace bingo
 
       MMFStorage();
 
-      void create (const char *filename, size_t size, const char *header, int index_id);
+      void create (const char *filename, size_t min_size, size_t max_size, const char *header, int index_id);
 
       void load (const char *filename, BingoPtr<char> header_ptr, int index_id, bool read_only);
 

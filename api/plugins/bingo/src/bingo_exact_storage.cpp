@@ -12,15 +12,15 @@ ExactStorage::ExactStorage ()
 {
 }
 
-size_t ExactStorage::create(BingoPtr<ExactStorage> &exact_ptr)
+BingoAddr  ExactStorage::create(BingoPtr<ExactStorage> &exact_ptr)
 {
    exact_ptr.allocate();
    new (exact_ptr.ptr()) ExactStorage();
          
-   return (size_t)exact_ptr;
+   return (BingoAddr)exact_ptr;
 }
 
-void ExactStorage::load (BingoPtr<ExactStorage> &exact_ptr, size_t offset)
+void ExactStorage::load (BingoPtr<ExactStorage> &exact_ptr, BingoAddr offset)
 {
    exact_ptr = BingoPtr<ExactStorage>(offset);
 }

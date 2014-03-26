@@ -15,9 +15,9 @@ namespace bingo
    public:
       ExactStorage ();
 
-      static size_t create(BingoPtr<ExactStorage> &exact_ptr);
+      static BingoAddr create(BingoPtr<ExactStorage> &exact_ptr);
 
-      static void load (BingoPtr<ExactStorage> &exact_ptr, size_t offset);
+      static void load (BingoPtr<ExactStorage> &exact_ptr, BingoAddr offset);
 
       size_t getOffset ();
 

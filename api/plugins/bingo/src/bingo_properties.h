@@ -16,9 +16,9 @@ namespace bingo
    public:
       Properties ();
 
-      static size_t create (BingoPtr<Properties> &ptr);
+      static BingoAddr create (BingoPtr<Properties> &ptr);
 
-      static void load (BingoPtr<Properties> &ptr, size_t offset);
+      static void load (BingoPtr<Properties> &ptr, BingoAddr offset);
 
       static void parseOptions (const char *options, std::map<std::string, std::string> &option_map, std::vector<std::string> *allowed_props = 0);
 

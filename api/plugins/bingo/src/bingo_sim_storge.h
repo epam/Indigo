@@ -1,5 +1,5 @@
-#ifndef __fingerprint_table__
-#define __fingerprint_table__
+#ifndef __sim_storage__
+#define __sim_storage__
 
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
@@ -8,27 +8,23 @@
 #include "math/algebra.h"
 #include "time.h"
 #include "new"
-#include "bingo_sim_coef.h"
-#include "bingo_container_set.h"
-#include "bingo_ptr.h"
+#include "bingo_fingerprint_table.h"
 
 #include <vector>
 
 using namespace indigo;
 namespace bingo
 {
-   class FingerprintTable
+   class SimStorage
    {
    public:
-      FingerprintTable (int fp_size, const Array<int> &borders, int mt_size);
+      SimStorage (int fp_size, int mt_size, int inc_size);
 
-      static BingoAddr create (BingoPtr<FingerprintTable> &ptr, int fp_size, int mt_size );
+      static BingoAddr create (BingoPtr<SimStorage> &ptr, int fp_size, int mt_size, int inc_size);
 
-      static void load (BingoPtr<FingerprintTable> &ptr, BingoAddr offset);
+      static void load (BingoPtr<SimStorage> &ptr, BingoAddr offset);
 
       void add (const byte *fingerprint, int id);
-
-      void findSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices);
 
       void optimize ();
 
@@ -45,19 +41,21 @@ namespace bingo
       int getSimilar (const byte *query, SimCoef &sim_coef, double min_coef, 
                       Array<SimResult> &sim_fp_indices, int cell_idx, int cont_idx);
 
-      ~FingerprintTable();
+      bool isSmallBase ();
+
+      int getIncSimilar (const byte *query, SimCoef &sim_coef, double min_coef, Array<SimResult> &sim_fp_indices);
+
+      ~SimStorage();
    
    private:
-
-      BingoArray<ContainerSet> _table;
-      int _max_cell_count;
-      int _fp_size;
-      int _mt_size;
-
+      BingoPtr< FingerprintTable > _fingerprint_table;
       BingoPtr< byte > _inc_buffer;
       BingoPtr< size_t > _inc_id_buffer;
       int _inc_size;
       int _inc_fp_count;
+
+      int _mt_size;
+      int _fp_size;
    };
 };
 

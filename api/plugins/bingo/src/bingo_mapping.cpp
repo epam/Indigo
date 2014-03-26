@@ -6,8 +6,6 @@ BingoMapping::BingoMapping  (size_t safe_prime) : _prime(safe_prime)
 {
    _block_size = 100;
    _mapping_table.resize(safe_prime);
-   for (int i = 0; i < _mapping_table.size(); i++)
-      new(&(_mapping_table[i])) _MapList();
 }
 
 size_t BingoMapping::get (size_t id)
@@ -23,8 +21,13 @@ size_t BingoMapping::get (size_t id)
 
 void BingoMapping::getAll (size_t id1, Array<size_t> &id2_array)
 {
+   id2_array.clear();
+
+   if ((BingoAddr)(_mapping_table[_hashFunc(id1)]) == BingoAddr::bingo_null)
+      return;   
+
    _MapList::Iterator it;
-   _MapList &cur_list = _mapping_table[_hashFunc(id1)];
+   _MapList &cur_list = _mapping_table[_hashFunc(id1)].ref();
 
    int i;
    for (it = cur_list.begin(); it != cur_list.end(); it++)
@@ -35,13 +38,17 @@ void BingoMapping::getAll (size_t id1, Array<size_t> &id2_array)
             id2_array.push(it->buf[i].second);
       }
    }
-
-   return;
 }
 
 void BingoMapping::add (size_t id1, size_t id2)
 {
-   _MapList &cur_list = _mapping_table[_hashFunc(id1)];
+   if ((BingoAddr)(_mapping_table[_hashFunc(id1)]) == BingoAddr::bingo_null)
+   {
+      _mapping_table[_hashFunc(id1)].allocate();
+      new(_mapping_table[_hashFunc(id1)].ptr()) _MapList();
+   }
+
+   _MapList &cur_list = _mapping_table[_hashFunc(id1)].ref();
          
    if (cur_list.size() == 0 || cur_list.top()->count == _block_size)
    {
@@ -58,8 +65,11 @@ void BingoMapping::add (size_t id1, size_t id2)
 
 void BingoMapping::remove (size_t id)
 {
+   if ((BingoAddr)(_mapping_table[_hashFunc(id)]) == BingoAddr::bingo_null)
+      throw Exception("BingoMapping: There is no such id");   
+
    _MapList::Iterator it;
-   _MapList &cur_list = _mapping_table[_hashFunc(id)];
+   _MapList &cur_list = _mapping_table[_hashFunc(id)].ref();
 
    int idx_in_block;
    bool res = _findElem(id, it, idx_in_block);
@@ -77,10 +87,13 @@ size_t BingoMapping::_hashFunc (size_t id)
    return (id % _prime);
 }
 
-bool BingoMapping::_findElem (int id, _MapIterator &iter, int &idx_in_block)
+bool BingoMapping::_findElem (size_t id, _MapIterator &iter, int &idx_in_block)
 {
+   if ((BingoAddr)(_mapping_table[_hashFunc(id)]) == BingoAddr::bingo_null)
+      return false;   
+
    _MapList::Iterator it;
-   _MapList &cur_list = _mapping_table[_hashFunc(id)];
+   _MapList &cur_list = _mapping_table[_hashFunc(id)].ref();
 
    int i;
    for (it = cur_list.begin(); it != cur_list.end(); it++)

@@ -17,15 +17,41 @@ namespace bingo
 {
    class BingoAllocator;
 
+   struct BingoAddr
+   {
+      BingoAddr ()
+      {
+         offset = (size_t)-1;
+         file_id = (size_t)-1;
+      }
+
+      BingoAddr (size_t f_id, size_t off) : offset(off), file_id(f_id)
+      {
+      }
+
+      size_t file_id;
+      size_t offset;
+
+      bool operator== (const BingoAddr &other)
+      {
+         return (file_id == other.file_id) && (offset == other.offset);
+      }
+
+      static const BingoAddr bingo_null;
+   };
+
    template<typename T> class BingoPtr
    {
    public:
       BingoPtr ()
       {
-         _offset = (size_t)-1;
       }
 
-      explicit BingoPtr (size_t offset) : _offset(offset)
+      explicit BingoPtr (BingoAddr addr) : _addr(addr)
+      {
+      }
+
+      explicit BingoPtr (size_t file_id, size_t offset) : _addr(file_id, offset)
       {
       }
 
@@ -55,7 +81,7 @@ namespace bingo
 
       BingoPtr<T> operator+ (int off)
       {
-         return BingoPtr<T>(_offset + off * sizeof(T));
+         return BingoPtr<T>(_addr.file_id, _addr.offset + off * sizeof(T));
       }
 
       T & operator[] (int idx)
@@ -63,6 +89,7 @@ namespace bingo
          return *(ptr() + idx);
       }
 
+      /*
       qword serialize () const
       {
          return _offset;
@@ -72,17 +99,19 @@ namespace bingo
       {
          _offset = data;
       }
+      */
 
       bool isNull ()
       {
-         return _offset == -1;
+         return (_addr.offset == -1) && (_addr.file_id == -1);
       }
 
       void allocate ( int count = 1 );
 
-      operator size_t() const { return _offset; }
+      operator BingoAddr() const { return _addr; }
    private:
-      size_t _offset;
+     
+     BingoAddr _addr;
    };
 
    template<typename T> class BingoArray
@@ -235,9 +264,9 @@ namespace bingo
 
          _Link()
          {
-            data_ptr = BingoPtr<T>(-1);
-            next_link = BingoPtr<_Link>(-1);
-            prev_link = BingoPtr<_Link>(-1);
+            data_ptr = BingoPtr<T>(BingoAddr::bingo_null);
+            next_link = BingoPtr<_Link>(BingoAddr::bingo_null);
+            prev_link = BingoPtr<_Link>(BingoAddr::bingo_null);
          }
       };
 
@@ -246,7 +275,7 @@ namespace bingo
       {
          BingoPtr<_Link> cur_link;
          
-         Iterator () : cur_link(BingoPtr<T>(-1)) { }
+         Iterator () : cur_link(BingoPtr<T>(-1, -1)) { }
          Iterator (BingoPtr<_Link> link) : cur_link(link) { }
          Iterator (const Iterator &it) : cur_link(it.cur_link) { }
 
@@ -269,7 +298,7 @@ namespace bingo
 
          bool operator== (const Iterator & it) const
          {
-            if ((size_t)cur_link == (size_t)it.cur_link)
+            if ((BingoAddr)cur_link == (BingoAddr)it.cur_link)
                return true;
             return false;
          }
@@ -281,7 +310,7 @@ namespace bingo
 
          Iterator & operator++ (int)
          {
-            if (cur_link->next_link == -1)
+            if ((BingoAddr)(cur_link->next_link) == BingoAddr::bingo_null)
                throw Exception("BingoList::Iterator:operator++ There's no next link");
             
             cur_link = cur_link->next_link;
@@ -291,7 +320,7 @@ namespace bingo
 
          Iterator & operator-- (int)
          {
-            if (cur_link->prev_link == -1)
+            if ((BingoAddr)(cur_link->prev_link) == BingoAddr::bingo_null)
                throw Exception("BingoList::Iterator:operator-- There's no previous link");
             
             cur_link = cur_link->prev_link;
@@ -331,11 +360,11 @@ namespace bingo
          new_link->next_link = pos.cur_link;
          new_link->prev_link = pos.cur_link->prev_link;
 
-         if (pos.cur_link->prev_link != -1)
+         if (!((BingoAddr)(pos.cur_link->prev_link) == BingoAddr::bingo_null))
             pos.cur_link->prev_link->next_link = new_link;
          pos.cur_link->prev_link = new_link;
 
-         if (pos.cur_link == _begin_link)
+         if ((BingoAddr)(pos.cur_link) == (BingoAddr)(_begin_link))
             _begin_link = new_link;
 
          _size++;
@@ -413,11 +442,14 @@ namespace bingo
    private:
       struct _BingoAllocatorData
       {
-         _BingoAllocatorData() : _file_size(0), _free_off(0)
+         _BingoAllocatorData() : _min_file_size(0), _max_file_size(0), _free_off(0), _cur_file_id(0), _existing_files(0)
          {
          }
 
-         size_t _file_size;
+         size_t _min_file_size;
+         size_t _max_file_size;
+         size_t _cur_file_id;
+         dword _existing_files;
          size_t _free_off;
       };
 
@@ -430,11 +462,11 @@ namespace bingo
       int _index_id;
       static OsLock _instances_lock;
 
-      static void _create (const char *filename, size_t size, size_t alloc_off, ObjArray<MMFile> *mm_files, int index_id);
+      static void _create (const char *filename, size_t min_size, size_t max_size, size_t alloc_off, ObjArray<MMFile> *mm_files, int index_id);
      
       static void _load (const char *filename, size_t alloc_off, ObjArray<MMFile> *mm_files, int index_id, bool read_only);
 
-      template<typename T> size_t allocate ( int count = 1 )
+      template<typename T> BingoAddr allocate ( int count = 1 )
       {
          byte * mmf_ptr = (byte *)_mm_files->at(0).ptr();
 
@@ -442,32 +474,36 @@ namespace bingo
    
          int szf_t = sizeof(T);
          int alloc_size = sizeof(T) * count;
-
-         if (alloc_size > allocator_data->_file_size)
-            throw Exception("BingoAllocator: mmf size is too small to allocate memory");
-
-         size_t file_idx = allocator_data->_free_off / allocator_data->_file_size;
-         size_t file_off = allocator_data->_free_off % allocator_data->_file_size;
-
-         if (alloc_size > allocator_data->_file_size - file_off)
+         
+         size_t file_idx = allocator_data->_cur_file_id;
+         size_t file_off = allocator_data->_free_off;
+         size_t file_size = _mm_files->at((int)file_idx).size();
+         
+         if (alloc_size > file_size - file_off)
             _addFile(alloc_size);
 
+         file_idx = allocator_data->_cur_file_id;
+         file_size = _mm_files->at((int)file_idx).size();
+
          size_t res_off = allocator_data->_free_off;
+         size_t res_id = allocator_data->_cur_file_id;
          allocator_data->_free_off += alloc_size;
 
-         if (allocator_data->_free_off % allocator_data->_file_size == 0)
+         if (allocator_data->_free_off == file_size)
             _addFile(0);
-         
-         return res_off;
+
+         return BingoAddr(res_id, res_off);
       }
 
       static BingoAllocator *_getInstance ();
 
-      byte * _get (size_t offset);
+      byte * _get (size_t file_id, size_t offset);
 
       BingoAllocator ();
 
       void _addFile (int alloc_size);
+
+      static size_t _getFileSize(size_t idx, size_t min_size, size_t max_size, dword sizes);
 
       static void _genFilename (int idx, const char *filename, std::string &out_name);
    };
@@ -478,7 +514,7 @@ namespace bingo
    {
       BingoAllocator *_allocator = BingoAllocator::_getInstance();
 
-      return (T *)(_allocator->_get(_offset));
+      return (T *)(_allocator->_get(_addr.file_id, _addr.offset));
    }
 
    template <typename T>
@@ -486,7 +522,7 @@ namespace bingo
    {
       BingoAllocator *_allocator = BingoAllocator::_getInstance();
 
-      return (T *)(_allocator->_get(_offset));
+      return (T *)(_allocator->_get(_addr.file_id, _addr.offset));
    }
 
    template <typename T>
@@ -494,7 +530,7 @@ namespace bingo
    {
       BingoAllocator *_allocator = BingoAllocator::_getInstance();
 
-      _offset = _allocator->allocate<T>(count);
+      _addr = _allocator->allocate<T>(count);
    }
 };
 

@@ -8,26 +8,28 @@
 
 using namespace bingo;
 
-TranspFpStorage::TranspFpStorage (int fp_size, int block_size) : _fp_size(fp_size), _block_size(block_size)
+TranspFpStorage::TranspFpStorage (int fp_size, int block_size, int small_base_size) : _fp_size(fp_size), _block_size(block_size)
 {
    _pack_count = 0;
    _storage.resize(fp_size * 8);
    _block_count = 0;
    _inc_fp_count = 0;
    _inc_size = block_size * 8;
-   _inc_buffer.allocate(_inc_size * _fp_size);
+   _small_inc_size = small_base_size;
+   _inc_buffer.allocate(_small_inc_size * _fp_size);
+   _small_flag = true;
    // Resize bit usage counts information for the all bits
    _fp_bit_usage_counts.resize(_fp_size * 8);
 }
 
-size_t TranspFpStorage::create (BingoPtr<TranspFpStorage> &ptr, int fp_size, int block_size)
+BingoAddr TranspFpStorage::create (BingoPtr<TranspFpStorage> &ptr, int fp_size, int block_size, int small_base_size)
 {
    ptr.allocate();
-   new(ptr.ptr()) TranspFpStorage(fp_size, block_size);
-   return (size_t)ptr;
+   new(ptr.ptr()) TranspFpStorage(fp_size, block_size, small_base_size);
+   return (BingoAddr)ptr;
 }
 
-void TranspFpStorage::load (BingoPtr<TranspFpStorage> &ptr, size_t offset)
+void TranspFpStorage::load (BingoPtr<TranspFpStorage> &ptr, BingoAddr offset)
 {
    ptr = BingoPtr<TranspFpStorage>(offset);
 }
@@ -37,6 +39,14 @@ void TranspFpStorage::add (const byte *fp)
    memcpy(_inc_buffer.ptr() + (_inc_fp_count * _fp_size), fp, _fp_size);
 
    _inc_fp_count++;
+
+   if ((_inc_fp_count == _small_inc_size) && _small_flag)
+   {
+      byte * old_inc_ptr = _inc_buffer.ptr();
+      _inc_buffer.allocate(_inc_size * _fp_size);
+      memcpy(_inc_buffer.ptr(), old_inc_ptr, _small_inc_size * _fp_size);
+      _small_flag = false;
+   }
 
    if (_inc_fp_count == _inc_size)
    {

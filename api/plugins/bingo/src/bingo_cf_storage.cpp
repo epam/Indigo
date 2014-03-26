@@ -7,14 +7,14 @@ ByteBufferStorage::ByteBufferStorage (int block_size) : _block_size(block_size)
    _free_pos = 0;
 }
 
-size_t ByteBufferStorage::create (BingoPtr<ByteBufferStorage> &cf_ptr, int block_size)
+BingoAddr ByteBufferStorage::create (BingoPtr<ByteBufferStorage> &cf_ptr, int block_size)
 {
    cf_ptr.allocate();
    new(cf_ptr.ptr()) ByteBufferStorage(block_size);
-   return (size_t)cf_ptr;
+   return (BingoAddr)cf_ptr;
 }
 
-void ByteBufferStorage::load (BingoPtr<ByteBufferStorage> &cf_ptr, size_t offset)
+void ByteBufferStorage::load (BingoPtr<ByteBufferStorage> &cf_ptr, BingoAddr offset)
 {
    cf_ptr = BingoPtr<ByteBufferStorage>(offset);
 }

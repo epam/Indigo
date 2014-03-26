@@ -601,7 +601,7 @@ BaseSimilarityMatcher::BaseSimilarityMatcher (/*const */ BaseIndex &index, Indig
 
 bool BaseSimilarityMatcher::next ()
 {
-   FingerprintTable &sim_storage = _index.getSimStorage();
+   SimStorage &sim_storage = _index.getSimStorage();
    int query_bit_count = bitGetOnesCount(_query_fp.ptr(), _fp_size);
 
    if (_current_cell == -1)
@@ -616,23 +616,34 @@ bool BaseSimilarityMatcher::next ()
          _current_portion_id = 0;
          _current_container++;
 
-         if (_current_container == sim_storage.getCellSize(_current_cell))
+         if (!sim_storage.isSmallBase())
          {
-            _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
+            if (_current_container == sim_storage.getCellSize(_current_cell))
+            {
+               _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
 
-            if (_part_count != -1 && _part_id != -1)
-               while ((_current_cell % _part_count != _part_id - 1) && (_current_cell != -1))
-                  _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
+               if (_part_count != -1 && _part_id != -1)
+                  while ((_current_cell % _part_count != _part_id - 1) && (_current_cell != -1))
+                     _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
 
-            if (_current_cell == -1)
+               if (_current_cell == -1)
+                  return false;
+
+               _current_container = 0;
+            }
+         
+            _current_portion.clear();
+            sim_storage.getSimilar(_query_fp.ptr(), _sim_coef.ref(), _query_data->getMin(), 
+                                _current_portion, _current_cell, _current_container);
+         }
+         else
+         {
+            if (_current_container > 0)
                return false;
 
-            _current_container = 0;
+            _current_portion.clear();
+            sim_storage.getIncSimilar(_query_fp.ptr(), _sim_coef.ref(), _query_data->getMin(), _current_portion);
          }
-
-         _current_portion.clear();
-         sim_storage.getSimilar(_query_fp.ptr(), _sim_coef.ref(), _query_data->getMin(), 
-                                _current_portion, _current_cell, _current_container);
 
          _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
          _match_probability_esimate.addValue((float)_current_portion.size());
@@ -666,18 +677,23 @@ void BaseSimilarityMatcher::setQueryData (SimilarityQueryData *query_data)
    const MoleculeFingerprintParameters & fp_params = _index.getFingerprintParams();
    _query_data->getQueryObject().buildFingerprint(fp_params, 0, &_query_fp);
 
-   FingerprintTable &sim_storage = _index.getSimStorage();
+   SimStorage &sim_storage = _index.getSimStorage();
 
    int query_bit_count = bitGetOnesCount(_query_fp.ptr(), _fp_size);
+
+   if (sim_storage.isSmallBase())
+      return;
+
    sim_storage.getCellsInterval(_query_fp.ptr(), *_sim_coef.get(), _query_data->getMin(), _min_cell, _max_cell);
 
    _first_cell = sim_storage.firstFitCell(query_bit_count, _min_cell, _max_cell);
    _current_cell = _first_cell;
 
    if (_part_count != -1 && _part_id != -1)
+   {
       while (((_current_cell % _part_count) != _part_id - 1) && (_current_cell != -1))
          _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
-
+   }
    _containers_count = 0;
    for (int i = _min_cell; i <= _max_cell; i++)
       _containers_count += sim_storage.getCellSize(i);

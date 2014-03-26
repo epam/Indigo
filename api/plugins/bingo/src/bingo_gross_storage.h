@@ -18,9 +18,9 @@ namespace bingo
    public:
       GrossStorage (size_t gross_block_size);
 
-      static size_t create(BingoPtr<GrossStorage> &gross_ptr, size_t gross_block_size);
+      static BingoAddr create(BingoPtr<GrossStorage> &gross_ptr, size_t gross_block_size);
 
-      static void load (BingoPtr<GrossStorage> &gross_ptr, size_t offset);
+      static void load (BingoPtr<GrossStorage> &gross_ptr, BingoAddr offset);
 
       void add (Array<char> &gross_formula, int id);
 

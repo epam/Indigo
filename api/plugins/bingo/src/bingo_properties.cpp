@@ -19,14 +19,14 @@ Properties::Properties ()
 {
 }
 
-size_t Properties::create (BingoPtr<Properties> &ptr)
+BingoAddr Properties::create (BingoPtr<Properties> &ptr)
 {
    ptr.allocate();
    new(ptr.ptr()) Properties();
-   return (size_t)ptr;
+   return (BingoAddr)ptr;
 }
 
-void Properties::load (BingoPtr<Properties> &ptr, size_t offset)
+void Properties::load (BingoPtr<Properties> &ptr, BingoAddr offset)
 {
    ptr = BingoPtr<Properties>(offset);
 }

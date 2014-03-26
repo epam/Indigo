@@ -40,11 +40,11 @@ namespace bingo
 
       size_t _hashFunc (size_t id);
 
-      bool _findElem (int id, _MapIterator &iter, int &idx_in_block);
+      bool _findElem (size_t id, _MapIterator &iter, int &idx_in_block);
 
       size_t _prime;
       int _block_size;
-      BingoArray< _MapList > _mapping_table;
+      BingoArray< BingoPtr<_MapList> > _mapping_table;
    };
 }
 

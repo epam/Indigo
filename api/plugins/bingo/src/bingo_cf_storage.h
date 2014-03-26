@@ -22,9 +22,9 @@ namespace bingo
    public:
       ByteBufferStorage (int block_size);
 
-      static size_t create (BingoPtr<ByteBufferStorage> &cf_ptr, int block_size);
+      static BingoAddr create (BingoPtr<ByteBufferStorage> &cf_ptr, int block_size);
 
-      static void load (BingoPtr<ByteBufferStorage> &cf_ptr, size_t offset);
+      static void load (BingoPtr<ByteBufferStorage> &cf_ptr, BingoAddr offset);
 
       const byte * get (int idx, int &len);
       void add (const byte *data, int len, int idx);

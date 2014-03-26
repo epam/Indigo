@@ -22,7 +22,7 @@ FingerprintTable::FingerprintTable (int fp_size, const Array<int> &borders, int 
    }
 }
 
-size_t FingerprintTable::create (BingoPtr<FingerprintTable> &ptr, int fp_size, int mt_size )
+BingoAddr FingerprintTable::create (BingoPtr<FingerprintTable> &ptr, int fp_size, int mt_size )
 {
    Array<int> borders;
 
@@ -32,10 +32,10 @@ size_t FingerprintTable::create (BingoPtr<FingerprintTable> &ptr, int fp_size, i
    ptr.allocate();
    new(ptr.ptr()) FingerprintTable(fp_size, borders, mt_size);
 
-   return (size_t)ptr;
+   return (BingoAddr)ptr;
 }
 
-void FingerprintTable::load (BingoPtr<FingerprintTable> &ptr, size_t offset)
+void FingerprintTable::load (BingoPtr<FingerprintTable> &ptr, BingoAddr offset)
 {
    ptr = BingoPtr<FingerprintTable>(offset);
 }

@@ -21,10 +21,13 @@ static const int _type_len = 30;
 static const char *_mmf_file = "mmf_storage";
 static const char *_version_prop = "version";
 static const char *_read_only_prop = "read_only";
-static const char *_mmf_size_prop = "mmf_size";
+static const char *_max_mmf_size_prop = "mmf_size";
+static const char *_min_mmf_size_prop = "first_mmf_size";
 static const char *_mt_size_prop = "mt_size";
 static const char *_id_key_prop = "key";
-static const size_t _mmf_size = 536870912; // 500Mb
+static const size_t _min_mmf_size = 33554432; // 32Mb
+static const size_t _max_mmf_size = 536870912; // 500Mb
+static const int _small_base_size = 10000;
 static const int _sim_mt_size = 50000;
 
 BaseIndex::BaseIndex (IndexType type)
@@ -61,12 +64,13 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
 
    _read_only = _getAccessType(option_map);
 
-   size_t mmf_size = _getMMfSize(option_map);
+   size_t min_mmf_size = _getMinMMfSize(option_map);
+   size_t max_mmf_size = _getMaxMMfSize(option_map);
 
    if (_type == MOLECULE)
-      _mmf_storage.create(_mmf_path.c_str(), mmf_size, _molecule_type, index_id);
+      _mmf_storage.create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _molecule_type, index_id);
    else if (_type == REACTION)
-      _mmf_storage.create(_mmf_path.c_str(), mmf_size, _reaction_type, index_id);
+      _mmf_storage.create(_mmf_path.c_str(), min_mmf_size, max_mmf_size, _reaction_type, index_id);
    else
       throw Exception("incorrect index type");
 
@@ -84,8 +88,8 @@ void BaseIndex::create (const char *location, const MoleculeFingerprintParameter
    _mappingCreate();
 
    _header->cf_offset = ByteBufferStorage::create(_cf_storage, cf_block_size);
-   _header->sub_offset = TranspFpStorage::create(_sub_fp_storage, _fp_params.fingerprintSize(), sub_block_size);
-   _header->sim_offset = FingerprintTable::create(_sim_fp_storage, _fp_params.fingerprintSizeSim(), mt_size);
+   _header->sub_offset = TranspFpStorage::create(_sub_fp_storage, _fp_params.fingerprintSize(), sub_block_size, _small_base_size);
+   _header->sim_offset = SimStorage::create(_sim_fp_storage, _fp_params.fingerprintSizeSim(), mt_size, _small_base_size);
    _header->exact_offset = ExactStorage::create(_exact_storage);
    _header->gross_offset = GrossStorage::create(_gross_storage, cf_block_size);
 
@@ -119,7 +123,7 @@ void BaseIndex::load (const char *location, const char *options, int index_id)
 
    _mmf_storage.load(_mmf_path.c_str(), h_ptr, index_id, _read_only);
    
-   _header = BingoPtr<_Header>(MMFStorage::max_header_len + BingoAllocator::getAllocatorDataSize());
+   _header = BingoPtr<_Header>(BingoAddr(0, MMFStorage::max_header_len + BingoAllocator::getAllocatorDataSize()));
 
    Properties::load(_properties, _header->properties_offset);
    
@@ -142,7 +146,7 @@ void BaseIndex::load (const char *location, const char *options, int index_id)
 
    _mappingLoad();
 
-   FingerprintTable::load(_sim_fp_storage, _header.ptr()->sim_offset);
+   SimStorage::load(_sim_fp_storage, _header.ptr()->sim_offset);
    ExactStorage::load(_exact_storage, _header.ptr()->exact_offset);
    TranspFpStorage::load(_sub_fp_storage, _header.ptr()->sub_offset);
    ByteBufferStorage::load(_cf_storage, _header.ptr()->cf_offset);
@@ -232,7 +236,7 @@ TranspFpStorage & BaseIndex::getSubStorage ()
    return _sub_fp_storage.ref();
 }
 
-FingerprintTable & BaseIndex::getSimStorage ()
+SimStorage & BaseIndex::getSimStorage ()
 {
    return _sim_fp_storage.ref();
 }
@@ -328,7 +332,8 @@ void BaseIndex::_checkOptions (std::map<std::string, std::string> &option_map, b
       {
          if ((it->first.compare(_read_only_prop) != 0) && 
              (it->first.compare(_mt_size_prop) != 0) && 
-             (it->first.compare(_mmf_size_prop) != 0) &&
+             (it->first.compare(_min_mmf_size_prop) != 0) &&
+             (it->first.compare(_max_mmf_size_prop) != 0) &&
              (it->first.compare(_id_key_prop) != 0))
             throw Exception("Creating index error: incorrect input options");
       }
@@ -338,18 +343,41 @@ void BaseIndex::_checkOptions (std::map<std::string, std::string> &option_map, b
    }
 }
 
-size_t BaseIndex::_getMMfSize (std::map<std::string, std::string> &option_map)
+size_t BaseIndex::_getMinMMfSize (std::map<std::string, std::string> &option_map)
 {
-   size_t mmf_size = _mmf_size;
+   size_t mmf_size = _min_mmf_size;
 
-   if (option_map.find("mmf_size") != option_map.end())
+   if (option_map.find(_min_mmf_size_prop) != option_map.end())
    {
       unsigned long u_dec;
-      std::istringstream isstr(option_map["mmf_size"]);
+      std::istringstream isstr(option_map[_min_mmf_size_prop]);
       isstr >> u_dec;
 
       if (u_dec != ULONG_MAX)
          mmf_size = u_dec * 1048576;
+
+      if (mmf_size < _min_mmf_size)
+         mmf_size = _min_mmf_size;
+   }
+
+   return mmf_size;
+}
+
+size_t BaseIndex::_getMaxMMfSize (std::map<std::string, std::string> &option_map)
+{
+   size_t mmf_size = _max_mmf_size;
+
+   if (option_map.find(_max_mmf_size_prop) != option_map.end())
+   {
+      unsigned long u_dec;
+      std::istringstream isstr(option_map[_max_mmf_size_prop]);
+      isstr >> u_dec;
+
+      if (u_dec != ULONG_MAX)
+         mmf_size = u_dec * 1048576;
+      
+      if (mmf_size < _min_mmf_size)
+         mmf_size = _min_mmf_size;
    }
 
    return mmf_size;
@@ -435,11 +463,11 @@ void BaseIndex::_mappingCreate ()
 {
    _id_mapping_ptr.allocate();
    new(_id_mapping_ptr.ptr()) BingoArray<int>();
-   _header->mapping_offset = (size_t)_id_mapping_ptr;
+   _header->mapping_offset = (BingoAddr)_id_mapping_ptr;
 
    _back_id_mapping_ptr.allocate();
    new(_back_id_mapping_ptr.ptr()) BingoMapping();
-   _header->back_mapping_offset = (size_t)_back_id_mapping_ptr;
+   _header->back_mapping_offset = (BingoAddr)_back_id_mapping_ptr;
 }
 
 void BaseIndex::_mappingAssign (int obj_id, int base_id)

@@ -10,7 +10,7 @@
 #include "bingo_properties.h"
 #include "bingo_exact_storage.h"
 #include "bingo_gross_storage.h"
-#include "bingo_fingerprint_table.h"
+#include "bingo_sim_storge.h"
 #include "bingo_lock.h"
 
 #define BINGO_VERSION "v0.72"
@@ -55,14 +55,14 @@ namespace bingo
    private:   
       struct _Header
       {
-         size_t properties_offset;
-         size_t mapping_offset;
-         size_t back_mapping_offset;
-         size_t cf_offset;
-         size_t sub_offset;
-         size_t sim_offset;
-         size_t exact_offset;
-         size_t gross_offset;
+         BingoAddr properties_offset;
+         BingoAddr mapping_offset;
+         BingoAddr back_mapping_offset;
+         BingoAddr cf_offset;
+         BingoAddr sub_offset;
+         BingoAddr sim_offset;
+         BingoAddr exact_offset;
+         BingoAddr gross_offset;
          int object_count;
          int first_free_id;
       };
@@ -82,7 +82,7 @@ namespace bingo
 
       TranspFpStorage & getSubStorage ();
 
-      FingerprintTable & getSimStorage ();
+      SimStorage & getSimStorage ();
 
       ExactStorage & getExactStorage ();
       
@@ -128,7 +128,7 @@ namespace bingo
       BingoPtr< BingoArray<int> > _id_mapping_ptr;
       BingoPtr<BingoMapping> _back_id_mapping_ptr;
       BingoPtr<TranspFpStorage> _sub_fp_storage;
-      BingoPtr<FingerprintTable> _sim_fp_storage;
+      BingoPtr<SimStorage> _sim_fp_storage;
       BingoPtr<ExactStorage> _exact_storage;
       BingoPtr<GrossStorage> _gross_storage;
       BingoPtr<ByteBufferStorage> _cf_storage;
@@ -141,7 +141,9 @@ namespace bingo
 
       static void _checkOptions (std::map<std::string, std::string> &option_map, bool is_create);
 
-      static size_t _getMMfSize (std::map<std::string, std::string> &option_map);
+      static size_t _getMinMMfSize (std::map<std::string, std::string> &option_map);
+
+      static size_t _getMaxMMfSize (std::map<std::string, std::string> &option_map);
 
       static bool _getAccessType (std::map<std::string, std::string> &option_map);
 
