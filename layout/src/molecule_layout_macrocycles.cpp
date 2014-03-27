@@ -371,19 +371,23 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                for (int t = max(init_y - length, 0); t < min(init_y + length + 1, max_size); t++)
                   minRotates[i][j][p][k][t] = 30000;
 
-   minRotates[0][init_rot][0][init_x][init_y] = 0;
-   minRotates[1][init_rot][0][init_x + 1][init_y] = 0;
    minRotates[0][init_rot][1][init_x][init_y] = 0;
    minRotates[1][init_rot][1][init_x + 1][init_y] = 0;
    int max_dist = length;
 
    for (int k = 1; k < length; k++) {
       //printf("Step number %d\n", k);
+
+      int not_this_p = -1;
+      if (k == length - 1) {
+         if (_edge_stereo[length - 1] == MoleculeCisTrans::CIS) not_this_p = 0;
+         if (_edge_stereo[length - 1] == MoleculeCisTrans::TRANS) not_this_p = 1;
+      }
       for (int rot = init_rot - length; rot <= init_rot + length; rot++) {
          if (!_vertex_stereo[k]) {
             int xchenge = dx[rot % 6];
             int ychenge = dy[rot % 6];
-            for (int p = 0; p < 2; p++) {
+            for (int p = 0; p < 2; p++) if (p != not_this_p) {
                int x_start = max(init_x - max_dist, init_x - max_dist + xchenge);
                int x_finish = min(init_x + max_dist, init_x + max_dist + xchenge);
                int y_start = max(init_y - max_dist, init_y - max_dist + ychenge);
@@ -401,7 +405,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          } else {
             for (int p = 0; p < 2; p++) {
                // trying to rotate like CIS
-               if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) {
+               if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) if (p != not_this_p) {
                   int nextRot = rot;
                   if (p) nextRot++;
                   else nextRot--;
@@ -427,7 +431,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                   }
                }
                // trying to rotate like TRANS
-               if (_edge_stereo[k - 1] != MoleculeCisTrans::CIS) {
+               if (_edge_stereo[k - 1] != MoleculeCisTrans::CIS) if ((p ^ 1) != not_this_p) {
                   int nextRot = rot;
                   if (p) nextRot--;
                   else nextRot++;
