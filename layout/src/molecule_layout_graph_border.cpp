@@ -216,15 +216,12 @@ void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
 
    pos.resize(vertexEnd());
    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i)) {
-      pos[i] = _layout_vertices[i].pos - p;
+      pos[i].copy(getPos(i) - p);
    }
 
    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-      if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN) {
-         float xx = pos[i].x;
-         float yy = pos[i].y;
-         pos[i].x = cs * xx - sn * yy;
-         pos[i].y = sn * xx + cs * yy;
+      if (getVertexType(i) != ELEMENT_NOT_DRAWN) {
+         pos[i].rotate(sn, cs);
       }
 
    int first_edge = -1;
