@@ -526,6 +526,7 @@ protected:
 
 private:
    Array (const Array &); // no implicit copy
+   Array<int>& operator= (const Array<int>& right); // no copy constructor
 
    template <typename T1, typename T2>
    class _CmpFunctorCaller
