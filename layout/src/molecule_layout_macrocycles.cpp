@@ -689,7 +689,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          ind = 0;
          for (int i = 0; i < length; i++) vertexNumber[ind++] = i;
       }
-
+      vertexNumber[ind] = length;
       for (int i = 0; i < ind - 1; i++) edgeLenght[i] = vertexNumber[i + 1] - vertexNumber[i];
       edgeLenght[ind - 1] = vertexNumber[0] - vertexNumber[ind - 1] + length;
 
@@ -713,21 +713,15 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          }
       }
 
-      double x[max_size];
-      double y[max_size];
       Vec2f p[max_size];
-      for (int i = 0; i < ind; i++) {
+      for (int i = 0; i <= ind; i++) {
          p[i] = Vec2f(y_result[vertexNumber[i]], 0);
          p[i].rotate(PI/3);
          p[i] += Vec2f(x_result[vertexNumber[i]], 0);
       }
 
-      double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
-      if (index == 39) {
-         if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
-      } else {
-         if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
-      }
+      Vec2f lose_vector((p[0] - p[ind])/length);      for (int i = 0; i <= ind; i++)         p[i] += lose_vector * vertexNumber[i];      double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
+      if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
 
       double newBadness = 0;
       newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
