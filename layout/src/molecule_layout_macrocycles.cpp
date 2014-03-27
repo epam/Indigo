@@ -410,7 +410,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                   int xchenge = dx[nextRot % 6];
                   int ychenge = dy[nextRot % 6];
 
-                  int add = 0;
+                  int add = 1;
                   if (!p && _vertex_weight[k] > 2) add += _vertex_weight[k];
 
                   int x_start = max(init_x - max_dist, init_x - max_dist + xchenge);
