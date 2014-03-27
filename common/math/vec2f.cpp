@@ -62,6 +62,11 @@ void Vec2f::rotate (float si, float co)
    y = si * a.x + co * a.y;
 }
 
+void Vec2f::rotate (Vec2f vec)
+{
+   rotate(vec.y, vec.x);
+}
+
 void Vec2f::rotateL (float angle)
 {
    rotateL(sin(angle), cos(angle));
