@@ -634,6 +634,43 @@ void MoleculeLayoutGraph::_layoutSingleComponent (BaseMolecule &molecule, bool r
    _assignFinalCoordinates(bond_length, src_layout);
 }
 
+MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGraph& mol, Vec2f& start, Vec2f& finish) :
+   _graph(mol),
+   _start(start),
+   _finish(finish) 
+{
+   Vec2f diameter = (_finish - _start);
+   _length = diameter.length();
+   Vec2f rotate_vector = diameter / diameter.lengthSqr();
+   rotate_vector.y *= -1;
+
+   _pos.clear_resize(_graph.vertexEnd());
+   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+      _pos[v].copy(_graph.getPos(v) - _start);
+      _pos[v].rotate(rotate_vector);
+   }
+}
+
+Vec2f MoleculeLayoutSmoothingSegment::getPosition(int v) {
+   Vec2f point;
+   point.copy(_pos[v]);
+   point.rotate(_finish - _start);
+   return point + _start;
+}
+
+void MoleculeLayoutSmoothingSegment::shiftStartBy(Vec2f shift) {
+   _start += shift;
+}
+
+void MoleculeLayoutSmoothingSegment::shiftFinishBy(Vec2f shift){
+   _finish += shift;
+}
+
+float MoleculeLayoutSmoothingSegment::getLengthCoef() const {
+   float l = (_finish - _start).length();
+   return (_length - l)/l;
+}
+
 #ifdef M_LAYOUT_DEBUG
 
 #include "molecule/molecule.h"

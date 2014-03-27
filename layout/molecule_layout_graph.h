@@ -70,6 +70,27 @@ struct LayoutEdge
    int  type;
 };
 
+class MoleculeLayoutGraph;
+class MoleculeLayoutMacrocycles;
+   
+class DLLEXPORT MoleculeLayoutSmoothingSegment {
+
+private:
+   Vec2f& _start;
+   Vec2f& _finish;
+   float _length;
+   Array<Vec2f> _pos;
+
+public:
+   MoleculeLayoutGraph& _graph;
+
+   MoleculeLayoutSmoothingSegment(MoleculeLayoutGraph& mol, Vec2f& start, Vec2f& finish);
+   Vec2f getPosition(int);
+   void shiftStartBy(Vec2f shift);
+   void shiftFinishBy(Vec2f shift);
+   float getLengthCoef() const;
+};
+
 class DLLEXPORT MoleculeLayoutGraph : public Graph
 {
 public:
@@ -262,7 +283,7 @@ protected:
    static bool _border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _edge_check (Graph &graph, int e_idx, void *context);
 
-   // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
+   // make tree of biconnected components (tree[i] - -1 or component incoming to vertex i)
    static void _makeComponentsTree (BiconnectedDecomposer &decon,
       ObjArray<MoleculeLayoutGraph> &components, Array<int> &tree);
 
@@ -288,9 +309,13 @@ protected:
    bool _flipped; // component was flipped after attaching
 
    TL_DECL(ObjArray<PatternLayout>, _patterns);
+
+private:
+   MoleculeLayoutGraph (const MoleculeLayoutGraph&);
 };
    
-   
+
+
 }
 
 #ifdef _WIN32
