@@ -184,6 +184,7 @@ void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter
       new_vertex.orig_idx = graph._layout_vertices[vertices[i]].orig_idx;
       new_vertex.type = graph._layout_vertices[vertices[i]].type;
 	  new_vertex.morgan_code = graph._layout_vertices[vertices[i]].morgan_code;
+     new_vertex.pos.copy(graph._layout_vertices[vertices[i]].pos);
       registerLayoutVertex(vertex_mapping[vertices[i]], new_vertex);
    }
 
