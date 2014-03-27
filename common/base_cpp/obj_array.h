@@ -146,6 +146,11 @@ public:
       _array.qsort(cmp, context);
    }
    
+   const T * ptr () const
+   {
+      return _array.ptr();
+   }
+
 protected:
 
    Array<T> _array;
