@@ -309,21 +309,10 @@ void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
       else {
          vertices.push(next_vertex);
          edges.push(next_edge);
-         if (vertices.size() > vertexCount()) throw Error("sorry, error of surround cycle determination");
-         if (vertices.size() > 1000) {
-            printf("V: ");
-            for (int i = 0; i < 20; i++) printf("%d ", vertices[i]);
-            printf("\n");
-            printf("V: ");
-            for (int i = 0; i < 20; i++) printf("%d ", edges[i]);
-            printf("\n");
-            printf("V.x: ");
-            for (int i = 0; i < 20; i++) printf("%5.5f ", pos[vertices[i]].x);
-            printf("\n");
-            printf("V.y: ");
-            for (int i = 0; i < 20; i++) printf("%5.5f ", pos[vertices[i]].y);
-            printf("\n");
-
+         if (vertices.size() > vertexCount()) {
+            vertices.clear_resize(0);
+            edges.clear_resize(0);
+            break;
          }
       }
    }
