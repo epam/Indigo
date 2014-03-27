@@ -425,7 +425,6 @@ float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
       p.x += 0.2f * cos(beta);
       p.y += 0.2f * sin(beta);
       on_left[i] = _isPointOutside(p);
-//      on_left[i] = 1;
    }
 
    beta = PI + (angles.top() + angles[0]) / 2;
@@ -433,7 +432,6 @@ float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
    p.x += 0.2f * cos(beta);
    p.y += 0.2f * sin(beta);
    on_left.top() = _isPointOutside(p);
-//   on_left.top() = 1;
 
    float comp_angle;
    float cur_energy = 0;
@@ -458,25 +456,28 @@ float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
    }*/
 
    // Find sector outside component
-   for (i = 0; i < vert.degree() - 1; i++)
-   {
-      if (on_left[i])
+
+   if (_graph->getVertexType(getVertexExtIdx(vert.neiVertex(vert.neiBegin()))) == ELEMENT_NOT_DRAWN)  {
+      // if this is not layouted component
+      for (i = 0; i < vert.degree() - 1; i++)
       {
-         comp_angle = 2 * PI - (angles[i + 1] - angles[i]);
-         v1 = vert.neiVertex(edges[i + 1]);
-         v2 = vert.neiVertex(edges[i]);
+         if (on_left[i])
+         {
+            comp_angle = 2 * PI - (angles[i + 1] - angles[i]);
+            v1 = vert.neiVertex(edges[i + 1]);
+            v2 = vert.neiVertex(edges[i]);
+            return comp_angle;
+         }
+      }
+
+      if (on_left.top())
+      {
+         comp_angle = angles.top() - angles[0];
+         v1 = vert.neiVertex(edges[0]);
+         v2 = vert.neiVertex(edges.top());
          return comp_angle;
       }
    }
-
-   if (on_left.top())
-   {
-      comp_angle = angles.top() - angles[0];
-      v1 = vert.neiVertex(edges[0]);
-      v2 = vert.neiVertex(edges.top());
-      return comp_angle;
-   }
-
    // TODO: if vertex is internal - choose maximal free angle
    float best_angle = 2 * PI;
 
@@ -490,7 +491,9 @@ float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
          beta += PI;
          if (beta >= 2*PI) beta -= 2*PI;
       }
-      p = getPos(v);
+      p = _graph->getPos(getVertexExtIdx(v));
+
+      
       p.x += 1 * cos(beta);
       p.y += 1 * sin(beta);
       float energy = _energyOfPoint(p);
