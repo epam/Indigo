@@ -235,6 +235,8 @@ protected:
    bool _tryToFindPattern (int &fixed_component);
    void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignFirstCycle(const Cycle &cycle);
+   void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout);
+   void _segment_improoving(int, Vec2f*, float*, const MoleculeLayoutSmoothingSegment*, int, float);
    void _attachCrossingEdges ();
    void _attachDandlingVertices (int vert_idx, Array<int> &adjacent_list);
    void _calculatePositionsOneNotDrawn (Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx);
@@ -294,7 +296,9 @@ protected:
    ObjArray<LayoutEdge>   _layout_edges;
 
    Array<int> _fixed_vertices;
+   Array<int> _layout_component_number; // number of layout component of certain edge
 
+   int _layout_component_count;
    long _total_morgan_code;
    int  _first_vertex_idx;
    int _n_fixed;

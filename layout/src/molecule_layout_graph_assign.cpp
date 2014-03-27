@@ -747,7 +747,8 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
    if (!componentIsWholeCycle && able_anything_to_move) {
 
-      layout.smoothing(ind, size, rotate_angle, len, vertex_number, p, false, able_to_move); 
+      //_segment_smoothing(cycle, layout);
+//      layout.smoothing(ind, size, rotate_angle, len, vertex_number, p, false, able_to_move); 
    }
    _first_vertex_idx = cycle.getVertex(0);
    for (int i = 0; i < size; i++)
@@ -760,7 +761,303 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       for (int t = vertex_number[i], s = 0; t != vertex_number[(i + 1) % ind]; t = (t + 1) % size, s++)
          _layout_vertices[cycle.getVertex(t)].pos = (p[i] * (len[i] - s) + p[(i + 1) % ind] * s)/len[i];
 
+   _segment_smoothing(cycle, layout);
+}
 
+void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout) {
+
+   int cycle_size = cycle.vertexCount();
+
+   /*
+   
+   QS_DEF(Array<int>, vertex_type); // only vertices in this. 1 - on cycle, 2 - layouted, connected to cycle, 0 - other (not interesting vertives)
+   vertex_type.clear_resize(vertexEnd());
+   vertex_type.zerofill();
+
+   QS_DEF(Array<int>, number_in_cycle); // number in the cycle if vertex is on cycle and -1 else
+   number_in_cycle.clear_resize(vertexEnd());
+   number_in_cycle.fffill();
+
+   QS_DEF(Array<int>, smoothing_list); // list of vertives of types 1 and 2
+   smoothing_list.clear_resize(0);
+
+   
+
+   // add cycle vertices
+   for (int i = 0; i < cycle_size; i++) {
+      smoothing_list.push(cycle.getVertex(i));
+      vertex_type[cycle.getVertex(i)] = 1;
+      number_in_cycle[cycle.getVertex(i)] = i;
+   }
+
+   // BFS
+   for (int i = 0; i < smoothing_list.size(); i++) {
+      const Vertex& v = getVertex(smoothing_list[i]);
+      for (int j = v.neiBegin(); j != v.neiEnd(); j = v.neiNext(j)) {
+         int e = v.neiEdge(j);
+         int u = v.neiVertex(j);
+         if (vertex_type[u] == 0 && getEdgeType(e) != ELEMENT_NOT_DRAWN) {
+            vertex_type[u] = 2;
+            smoothing_list.push(u);
+         }
+      }
+   }
+   
+   // if there is nothing to smoothing
+   if (smoothing_list.size() == cycle_size) return;
+
+   // else lets create graph_to_smoothing
+   MoleculeLayoutGraph graph_to_smoothing;
+   Filter vertex_to_smoothing(vertex_type.ptr(), Filter::EQ, 2);
+
+   QS_DEF(Array<int>, edge_type);
+   edge_type.clear_resize(edgeEnd());
+   edge_type.zerofill();
+
+   for (int e = edgeBegin(); e != edgeEnd(); e = edgeNext(e)) {
+      Edge edge = getEdge(e);
+      edge_type[e] = getEdgeType(e) != ELEMENT_NOT_DRAWN && vertex_type[edge.beg] == 2 && vertex_type[edge.end] == 2;
+   }
+   Filter edge_to_smoothing(edge_type.ptr(), Filter::EQ, 1);
+
+   graph_to_smoothing.makeLayoutSubgraph(*this, vertex_to_smoothing, &edge_to_smoothing);
+
+   int segments_count = graph_to_smoothing.countComponents();
+
+   const Array<int> &decomposition = graph_to_smoothing.getDecomposition();
+
+   QS_DEF(Array<int>, previous_tuoch_count);
+   previous_tuoch_count.clear_resize(cycle_size);
+   previous_tuoch_count.zerofill();
+
+   for (int i = 0; i < segments_count; i++) {
+      Filter& this_filter = segments_filter[i];
+      this_filter.initNone(vertexEnd());
+      for (int v = graph_to_smoothing.vertexBegin(); v != graph_to_smoothing.vertexEnd(); v = graph_to_smoothing.vertexNext(v)) {
+         int vv = graph_to_smoothing.getVertexExtIdx(v);
+         if (decomposition[v] == i) {
+            this_filter.unhide(vv);
+            const Vertex& vert = getVertex(vv);
+            for (int u = vert.neiBegin(); u != vert.neiEnd(); u = vert.neiNext(u))
+               if (vertex_type[vert.neiVertex(u)] == 1) {
+                  this_filter.unhide(vert.neiVertex(u));
+                  previous_tuoch_count[number_in_cycle[vert.neiVertex(u)]] = 1;
+               }
+         }
+      }
+   }
+
+   for (int i = 1; i < cycle_size; i++) previous_tuoch_count[i] += previous_tuoch_count[i - 1];
+   for (int i = 0; i < cycle_size; i++) 
+      previous_tuoch_count.push(previous_tuoch_count[i] + previous_tuoch_count[cycle.vertexCount() - 1]);
+
+   Array<int> nums;
+   for (int i = 0; i < segments_count; i++) {
+      nums.clear_resize(0);
+      for (int v = vertexBegin(); v != vertexEnd(); v = vertexNext(v))
+         if (segments_filter[i].valid(v) && vertex_type[v] == 1) nums.push(number_in_cycle[v]);
+
+      std::sort(nums.ptr(), nums.ptr() + nums.size());
+      nums.push(nums[0] + cycle_size);
+
+      int max_dist = -1;
+      for (int j = 0; j < nums.size() - 1; j++) {
+         if (previous_tuoch_count[nums[j]] + 1 != previous_tuoch_count[nums[j + 1]] ||
+            getEdgeType(cycle.getEdge(nums[j])) == ELEMENT_NOT_DRAWN ||
+            getEdgeType(cycle.getEdgeC(nums[j + 1] - 1)) == ELEMENT_NOT_DRAWN) {
+               segment_start[i] = nums[j + 1] % cycle_size;
+               segment_finish[i] = nums[j];
+               break;
+         }
+
+         if (nums[j + 1] - nums[j] > max_dist) {
+            segment_start[i] = nums[j + 1] % cycle_size;
+            segment_finish[i] = nums[j];
+            max_dist = nums[j + 1] - nums[j];
+         }
+      }
+
+     for (int j = segment_start[i]; j != segment_finish[i]; j = (j + 1) % cycle_size) segments_filter[i].unhide(cycle.getVertex(j));
+   }
+
+   */
+   
+   QS_DEF(Array<bool>, layout_comp_touch);
+   layout_comp_touch.clear_resize(_layout_component_count);
+   layout_comp_touch.zerofill();
+
+
+   for (int i = 0; i < cycle_size; i++) {
+      const Vertex &vert = getVertex(cycle.getVertex(i));
+      for (int nei = vert.neiBegin(); nei != vert.neiEnd(); nei = vert.neiNext(nei))
+         if (getEdgeType(vert.neiEdge(nei)) != ELEMENT_NOT_DRAWN) {
+            if (_layout_component_number[vert.neiEdge(nei)] >= 0)
+               layout_comp_touch[_layout_component_number[vert.neiEdge(nei)]] = true;
+         }
+   }
+
+   QS_DEF(ObjArray<Filter>, segments_filter);
+   segments_filter.clear();
+
+   QS_DEF(Array<int>, segment_start);
+   segment_start.clear_resize(0);
+   segment_start.fffill(); 
+
+   QS_DEF(Array<int>, segment_finish);
+   segment_finish.clear_resize(0);
+   segment_finish.fffill();
+ 
+   QS_DEF(Array<bool>, touch_to_currnet_component);
+   touch_to_currnet_component.clear_resize(cycle_size);
+   for (int i = 0; i < _layout_component_count; i++) if (layout_comp_touch[i]) {
+
+      // search of vertices touch to i-th layout component
+      touch_to_currnet_component.zerofill();
+      for (int j = 0; j < cycle_size; j++) {
+         const Vertex &vert = getVertex(cycle.getVertex(j));
+         for (int nei = vert.neiBegin(); nei != vert.neiEnd(); nei = vert.neiNext(nei))
+            if (getEdgeType(vert.neiEdge(nei)) != ELEMENT_NOT_DRAWN) {
+               if (_layout_component_number[vert.neiEdge(nei)] == i)
+                  touch_to_currnet_component[j] = true;
+            }
+      }
+
+
+      // search of start and finish of occupated segment of cycle
+      // if there is at least two starts of finishes then it is separationg layout component
+      int start = -1;
+      int finish = -1;
+      
+      for (int j = 0; j < cycle_size; j++)
+         if (touch_to_currnet_component[j] && _layout_component_number[cycle.getEdgeC(j - 1)] != i) {
+            if (start != -1) throw Exception("Separated layout component in cycle\n");
+            else start = j;
+         }
+
+      for (int j = 0; j < cycle_size; j++)
+         if (touch_to_currnet_component[j] && _layout_component_number[cycle.getEdge(j)] != i) {
+            if (finish != -1) throw Exception("\Separated layout component in cycle\n");
+            else finish = j;
+         }
+      
+      if (start != finish) {
+         segments_filter.push();
+         segments_filter.top().initNone(vertexEnd());
+         for (int e = edgeBegin(); e != edgeEnd(); e = edgeNext(e)) if (_layout_component_number[e] == i) {
+            segments_filter.top().unhide(getEdge(e).beg);
+            segments_filter.top().unhide(getEdge(e).end);
+         }
+
+         segment_start.push(start);
+         segment_finish.push(finish);
+      }
+   }
+
+   for (int i = 0; i < cycle_size; i++)
+      if (_layout_component_number[cycle.getEdge(i)] < 0) {
+
+      segment_start.push(i);
+      segment_finish.push((i + 1) % cycle_size);
+
+      segments_filter.push();
+      segments_filter.top().initNone(vertexEnd());
+      segments_filter.top().unhide(cycle.getVertex(i));
+      segments_filter.top().unhide(cycle.getVertexC(i + 1));
+   }
+   
+   int segments_count = segments_filter.size();
+
+   if (segments_count == 0) return;
+
+   QS_DEF(Array<int>, number_of_segment);
+   number_of_segment.clear_resize(cycle_size);
+   number_of_segment.fffill();
+   for (int i = 0; i < segments_count; i++) number_of_segment[segment_start[i]] = i;
+
+   QS_DEF(Array<int>, number_of_segment_compressed);
+   number_of_segment_compressed.clear_resize(0);
+   for (int i = 0; i < cycle_size; i++)
+      if (number_of_segment[i] != -1) number_of_segment_compressed.push(number_of_segment[i]);
+
+
+   QS_DEF(Array<Vec2f>, rotation_point);
+   rotation_point.clear_resize(0);
+   for (int i = 0; i < cycle_size; i++) 
+      if (number_of_segment[i] != -1) rotation_point.push(getPos(cycle.getVertex(segment_start[number_of_segment[i]])));
+
+   QS_DEF(ObjArray<MoleculeLayoutGraph>, segment_graph);
+   segment_graph.clear();
+   for (int i = 0; i < segments_count; i++) {
+      segment_graph.push().makeLayoutSubgraph(*this, segments_filter[i]);
+   }
+
+   QS_DEF(ObjArray<MoleculeLayoutSmoothingSegment>, segment);
+   segment.clear();
+
+   int current_number = 0;
+   for (int i = 0; i < cycle_size; i++) if (number_of_segment[i] != -1) {
+      segment.push(segment_graph[number_of_segment[i]], rotation_point[current_number], rotation_point[(1 + current_number) % segments_count]);
+      current_number++;
+   }
+   
+   QS_DEF(Array<float>, target_angle);
+   target_angle.clear_resize(segments_count);
+
+   for (int i = 0; i < segments_count; i++) {
+      Vec2f p1 = layout.getPos(segment_start[number_of_segment_compressed[(i - 1 + segments_count) % segments_count]]);
+      Vec2f p2 = layout.getPos(segment_start[number_of_segment_compressed[i]]);
+      Vec2f p3 = layout.getPos(segment_start[number_of_segment_compressed[(i + 1) % segments_count]]);
+      p1 = p2 - p1;
+      p2 = p3 - p2;
+      target_angle[i] = std::acos(Vec2f::dot(p1, p2)/p1.length()/p2.length());
+      if (Vec2f::cross(p1, p2) < 0) target_angle[i] = -target_angle[i];
+      target_angle[i] = PI - target_angle[i];
+   }
+   
+   for (int e = edgeBegin(); e != edgeEnd(); e = edgeNext(e))
+      if (_layout_component_number[e] >= 0 && layout_comp_touch[_layout_component_number[e]]) _layout_component_number[e] = _layout_component_count;
+
+   for (int i = 0; i < cycle_size; i++)
+      _layout_component_number[cycle.getEdge(i)] = _layout_component_count;
+
+   _layout_component_count++;
+
+   Random rand(34577);
+   
+   for (int i = 0; i < 10000; i++)
+      _segment_improoving(segments_count, rotation_point.ptr(), target_angle.ptr(), segment.ptr(), rand.next() % segments_count, 0.1);
+
+   for (int i = 0; i < segments_count; i++)
+      for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
+         getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
+         
+}
+
+void MoleculeLayoutGraph::_segment_improoving(int segments_count, Vec2f* point, float* target_angle, const MoleculeLayoutSmoothingSegment* segment, int move_vertex, float coef) {
+   
+   Vec2f move_vector(0, 0);
+
+   Vec2f prev_point(point[(move_vertex + segments_count - 1) % segments_count]);
+   Vec2f this_point(point[move_vertex]);
+   Vec2f next_point(point[(move_vertex + 1) % segments_count]);
+
+
+   Vec2f chord(next_point - prev_point);
+
+   Vec2f center(prev_point + chord/2);
+   Vec2f rot_chord(chord);
+   rot_chord.rotate(1, 0);
+   center += rot_chord * std::tan(target_angle[move_vertex] - PI/2) /2;
+
+   float radii = (prev_point - center).length();
+   float dist = (this_point - center).length();
+
+   move_vector += (this_point - center) * (radii - dist)/radii;
+
+   move_vector += (this_point - next_point) * segment[move_vertex].getLengthCoef();
+   move_vector += (this_point - prev_point) * segment[(move_vertex + segments_count - 1) % segments_count].getLengthCoef();
+
+   point[move_vertex] += move_vector * coef;
 }
 
 // If vertices are already drawn

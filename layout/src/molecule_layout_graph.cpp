@@ -48,6 +48,8 @@ void MoleculeLayoutGraph::clear ()
    _layout_vertices.clear();
    _layout_edges.clear();
    _fixed_vertices.clear();
+   _layout_component_number.clear();
+   _layout_component_count = 0;
 }
 
 bool MoleculeLayoutGraph::isSingleEdge () const
@@ -199,6 +201,10 @@ void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter
       new_edge.type = graph._layout_edges[ext_idx].type;
       registerLayoutEdge(i, new_edge);
    }
+
+   _layout_component_number.clear_resize(edgeEnd());
+   _layout_component_number.fffill();
+   _layout_component_count = 0;
 }
 
 void MoleculeLayoutGraph::cloneLayoutGraph (MoleculeLayoutGraph &other, Array<int> *mapping)
