@@ -94,9 +94,12 @@ static bool _isRayIntersect (float a, float b, const Vec2f &p, const Vec2f &v1, 
 // By calculating number of intersections of ray
 bool MoleculeLayoutGraph::_isPointOutside (const Vec2f &p) const
 {
+//   return true;
    QS_DEF(Array<Vec2f>, point);
    Cycle surround_cycle;
    _getSurroundCycle(surround_cycle, p);
+
+   if (surround_cycle.vertexCount() == 0) return 0;
 
    return _isPointOutsideCycle(surround_cycle, p);
 }
