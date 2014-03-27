@@ -21,7 +21,7 @@ using namespace indigo;
 CP_DEF(AttachmentLayout);
 
 AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer &bc_decom,
-                                   const ObjArray<MoleculeLayoutGraph> &bc_components,
+                                   ObjArray<MoleculeLayoutGraph> &bc_components,
                                    const Array<int> &bc_tree,
                                    MoleculeLayoutGraph &graph, int src_vertex) :
 _src_vertex(src_vertex),
@@ -180,6 +180,14 @@ void AttachmentLayout::applyLayout ()
 
    for (i = 0; i < _new_vertices.size(); i++)
       _graph.getPos(_new_vertices[i]) = _layout[i];
+
+   for (int i = 0; i < _attached_bc.size(); i++) {
+      MoleculeLayoutGraph &comp = _bc_components[_attached_bc[i]];
+
+      for (int v = comp.vertexBegin(); v != comp.vertexEnd(); v = comp.vertexNext(v)) {
+         comp.getPos(v) = _graph.getPos(comp.getVertexExtIdx(v));
+      }
+   }
 }
 
 void AttachmentLayout::markDrawnVertices()
