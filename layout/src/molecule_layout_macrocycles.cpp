@@ -304,10 +304,6 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
 
 }
 
-void layoutChain(int length, int *can_rotate, int *trans_cis_config, Vec2f *p, Vec2f end_point, double end_angle) {
-   
-}
-
 double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 {
    //const int max_size = 100;
