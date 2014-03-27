@@ -441,7 +441,6 @@ IndigoBondsIter::IndigoBondsIter (BaseMolecule &mol) :
 IndigoObject(BONDS_ITER),
 _mol(mol)
 {
-   _mol = mol;
    _idx = -1;
 }
 
