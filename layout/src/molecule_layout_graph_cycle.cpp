@@ -110,6 +110,8 @@ void MoleculeLayoutGraph::Cycle::canonize ()
 {
    // 1. v(0)<v(i), i=1,...,l-1 ; 
    // 2. v(1)< v(l-2) => unique representation of cycle
+
+   if (vertexCount() == 0) return;
    int min_idx = 0, i;
    bool vert_invert = false;
 
