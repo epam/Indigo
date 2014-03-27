@@ -39,7 +39,7 @@ public:
 
    int getVertexStereo (int v);
 
-   Vec2f &getPos (int v);
+   Vec2f &getPos (int v) const;
 
    void doLayout ();
 

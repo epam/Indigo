@@ -90,7 +90,7 @@ void MoleculeLayoutMacrocycles::setVertexDrawn(int v, bool drawn) {
    _vertex_drawn[v] = drawn;
 }
 
-Vec2f &MoleculeLayoutMacrocycles::getPos (int v)
+Vec2f &MoleculeLayoutMacrocycles::getPos (int v) const
 {
    return _positions[v];
 }
@@ -105,7 +105,6 @@ void MoleculeLayoutMacrocycles::doLayout ()
 
    if (b > b2) {
       depictionCircle();
-      return;
    }
 }
 
