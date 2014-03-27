@@ -245,8 +245,9 @@ void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle
       for (int i = 0; i < ind; i++) 
          if (able_to_move[i]) target_vertices.push_back(i);
    }
-   for (int i = 0; i < 50 * molSize; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.1, target_vertices[rand.next(target_vertices.size())]);
-   for (int i = 0; i < 50 * molSize; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.01, target_vertices[rand.next(target_vertices.size())]);
+   int iter_count = max(50 * molSize, 2000);
+   for (int i = 0; i < iter_count; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.1, target_vertices[rand.next(target_vertices.size())]);
+   //for (int i = 0; i < 50 * molSize; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.01, target_vertices[rand.next(target_vertices.size())]);
 }
 
 double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p) {
@@ -690,6 +691,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          for (int i = 0; i < length; i++) vertexNumber[ind++] = i;
       }
       vertexNumber[ind] = length;
+
       for (int i = 0; i < ind - 1; i++) edgeLenght[i] = vertexNumber[i + 1] - vertexNumber[i];
       edgeLenght[ind - 1] = vertexNumber[0] - vertexNumber[ind - 1] + length;
 
@@ -720,7 +722,12 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          p[i] += Vec2f(x_result[vertexNumber[i]], 0);
       }
 
-      Vec2f lose_vector((p[0] - p[ind])/length);      for (int i = 0; i <= ind; i++)         p[i] += lose_vector * vertexNumber[i];      double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
+      Vec2f lose_vector((p[0] - p[ind])/length);
+      for (int i = 0; i <= ind; i++)
+         p[i] += lose_vector * vertexNumber[i];
+
+
+      double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
       if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
 
       double newBadness = 0;
