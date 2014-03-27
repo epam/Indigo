@@ -21,6 +21,7 @@
 #include "graph/morgan_code.h"
 #include <math/random.h>
 #include <vector>
+#include <algorithm>
 
 using namespace indigo;
 
@@ -581,7 +582,10 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       }
    }*/
 
-   bool need_to_insert[100];
+   QS_DEF(Array<bool>, need_to_insert);
+   need_to_insert.clear_resize(size);
+   need_to_insert.zerofill();
+   
    for (int i = 0; i < size; i++)
       need_to_insert[i] = _layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN;
 
@@ -593,17 +597,20 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       //while (true) {
    for (int index = 0; index < size; index++) if (need_to_insert[index]) {
       // 1. search of connected component
-      int insideVertex[100];
-      insideVertex[0] = cycle.getVertex(index);
-      bool takenVertex[100];
-      for (int i = 0; i < 100; i++) takenVertex[i] = false;
+      QS_DEF(Array<int>, insideVertex);
+      insideVertex.clear_resize(0);
+      insideVertex.push(cycle.getVertex(index));
+
+      QS_DEF(Array<bool>, takenVertex);
+      takenVertex.clear_resize(vertexCount());
+      takenVertex.zerofill();
       takenVertex[cycle.getVertex(index)] = true;
-      int takenIndex = 1;
-      for (int i = 0; i < takenIndex; i++)
+
+      for (int i = 0; i < insideVertex.size(); i++)
          for (int j = getVertex(insideVertex[i]).neiBegin(); j != getVertex(insideVertex[i]).neiEnd(); j = getVertex(insideVertex[i]).neiNext(j)) {
             int vertj = getVertex(insideVertex[i]).neiVertex(j);
             if (_layout_edges[getVertex(insideVertex[i]).neiEdge(j)].type != ELEMENT_NOT_DRAWN && !takenVertex[vertj]) {
-               insideVertex[takenIndex++] = vertj;
+               insideVertex.push(vertj);
                takenVertex[vertj] = true;
             }
          }
@@ -651,7 +658,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       else if (_layout_edges[cycle.getEdgeC(startIndex)].type != ELEMENT_NOT_DRAWN) need_to_flip = rotate1 * rotate2 < 0;
 
       if (need_to_flip) {
-         for (int i = 0; i < takenIndex; i++)
+         for (int i = 0; i < insideVertex.size(); i++)
             _layout_vertices[insideVertex[i]].pos.x *= -1;
       }
 
@@ -669,7 +676,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       middle_host /= countVertex;
       middle_new /= countVertex;
 
-      for (int i = 0; i < takenIndex; i++)
+      for (int i = 0; i < insideVertex.size(); i++)
          _layout_vertices[insideVertex[i]].pos += middle_new - middle_host;
 
       // 4. rotate
@@ -695,7 +702,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       if (dot < -1) dot = -1;
       float angle = acos(dot);
       if (Vec2f::cross(direction_host, direction_new) < 0) angle = -angle;
-      for (int i = 0; i < takenIndex; i++)
+      for (int i = 0; i < insideVertex.size(); i++)
          _layout_vertices[insideVertex[i]].pos.rotateAroundSegmentEnd(_layout_vertices[insideVertex[i]].pos, middle_new, angle);
       }
 
