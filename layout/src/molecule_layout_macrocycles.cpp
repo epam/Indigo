@@ -414,7 +414,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                   int ychenge = dy[nextRot % 6];
 
                   int add = 0;
-                  if (!p) add = _vertex_weight[k];
+                  if (!p && _vertex_weight[k] > 2) add += _vertex_weight[k];
 
                   int x_start = max(init_x - max_dist, init_x - max_dist + xchenge);
                   int x_finish = min(init_x + max_dist, init_x + max_dist + xchenge);
@@ -437,7 +437,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                   else nextRot++;
 
                   int add = 0;
-                  if (p) add = _vertex_weight[k];
+                  if (p && _vertex_weight[k] > 2) add = _vertex_weight[k];
 
                   int xchenge = dx[nextRot % 6];
                   int ychenge = dy[nextRot % 6];
@@ -614,7 +614,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
             else rot_result[k] = rot_result[k + 1] + 1;
 
             int add = 0;
-            if (!p_result[k + 1]) add = _vertex_weight[k];
+            if (!p_result[k + 1] && _vertex_weight[k] > 2) add = _vertex_weight[k];
 
 
             double l = k * (sqrt(3.0) + 1.5) * PI / 12;
