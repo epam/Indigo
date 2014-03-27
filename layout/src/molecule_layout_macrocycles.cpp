@@ -615,19 +615,57 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 
             int add = 0;
             if (!p_result[k + 1]) add = _vertex_weight[k];
-            if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) {
-               //if (minRotates[k][rot_result[k]][p_result[k + 1]][x_result[k]][y_result[k]] + 1 == minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]) {
-               if (minRotates[k][rot_result[k]][p_result[k + 1]][x_result[k]][y_result[k]] + add == minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]) {
-                  p_result[k] = p_result[k + 1];
-                  //printf("+");
+
+
+            double l = k * (sqrt(3.0) + 1.5) * PI / 12;
+            Vec2f vec(y_result[k] - init_y, 0);
+            vec.rotate(PI/3);
+            vec += Vec2f(x_result[k] - init_x, 0);
+            double x = vec.length();
+
+            double eps = 1e-3;
+
+            double alpha = 0;
+            if (x > eps) {
+
+               double L = eps;
+               double R = 2*PI - eps;
+
+               while (R - L > eps) {
+                  double M = (L + R)/2;
+                  if (M * x/ (2 * sin(M/2)) > l) R = M;
+                  else L = M;
+               }
+
+               alpha = vec.tiltAngle2() + R/2;
+
+               //printf("%d %5.5f\n", k, x/(2*sin(R/2)));
+            }
+            
+
+//            int is_cis_better = (2*PI * (k - 1) / length < PI/3 * (rot_result[k] - init_rot) + PI/length) ^ (!p_result[k + 1]);
+            int is_cis_better = (alpha < PI/3 * (rot_result[k] - init_rot) + PI/length) ^ (!p_result[k + 1]);
+
+            if (!is_cis_better) {
+               if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) {
+                  // try CIS
+                  if (minRotates[k][rot_result[k]][p_result[k + 1]][x_result[k]][y_result[k]] + add + 1 == minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]) {
+                     p_result[k] = p_result[k + 1];
+                  }
                }
             }
-            //add = 0;
-            //if (p_result[k + 1]) add = _vertex_weight[k];
             if (_edge_stereo[k - 1] != MoleculeCisTrans::CIS) {
+                  // try TRANS
                if (minRotates[k][rot_result[k]][p_result[k + 1] ^ 1][x_result[k]][y_result[k]] + add == minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]) {
                   p_result[k] = p_result[k + 1] ^ 1;
-                  //printf("+");
+               }
+            }
+            if (is_cis_better) {
+               if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) {
+                  // try CIS
+                  if (minRotates[k][rot_result[k]][p_result[k + 1]][x_result[k]][y_result[k]] + add + 1 == minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]) {
+                     p_result[k] = p_result[k + 1];
+                  }
                }
             }
          }
