@@ -457,6 +457,38 @@ float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
 
    // Find sector outside component
 
+   if (_molecule->cis_trans.getParity(getEdgeExtIdx(vert.neiEdge(vert.neiBegin()))) != 0 || 
+      _molecule->cis_trans.getParity(getEdgeExtIdx(vert.neiEdge(vert.neiNext(vert.neiBegin())))) != 0) {
+      
+      float best_angle = 2 * PI;
+
+      for (i = 0; i < vert.degree(); i++)
+      {
+         int ii = i + 1;
+         if (ii == vert.degree()) ii = 0;
+
+         comp_angle = 2 * PI - (angles[ii] - angles[i]);
+         if (ii == 0) comp_angle -= 2 * PI;
+         float eps = 0.1;
+         if (i == 0 || comp_angle < best_angle - eps) {
+            best_angle = comp_angle;
+            v1 = vert.neiVertex(edges[ii]);
+            v2 = vert.neiVertex(edges[i]);
+         }
+
+      }
+
+   /*   comp_angle = angles.top() - angles[0];
+      if (comp_angle < best_angle)
+      {
+         best_angle = comp_angle;
+         v1 = vert.neiVertex(edges[0]);
+         v2 = vert.neiVertex(edges.top());
+      }*/
+
+      return best_angle;
+   }
+
    if (_graph->getVertexType(getVertexExtIdx(vert.neiVertex(vert.neiBegin()))) == ELEMENT_NOT_DRAWN)  {
       // if this is not layouted component
       for (i = 0; i < vert.degree() - 1; i++)
