@@ -766,122 +766,31 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
 void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout) {
 
+   QS_DEF(ObjArray<MoleculeLayoutSmoothingSegment>, segment);
+   QS_DEF(Array<Vec2f>, rotation_point);
+   QS_DEF(Array<float>, target_angle);
+
+   _segment_smoothing_prepearing(cycle, layout, rotation_point, target_angle, segment);
+   _do_segment_smoothing(rotation_point, target_angle, segment);
+}
+
+void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+   Random rand(34577);
+
+   int segments_count = segment.size();
+   
+   for (int i = 0; i < 10000; i++)
+      _segment_improoving(segments_count, rotation_point.ptr(), target_angle.ptr(), segment.ptr(), rand.next() % segments_count, 0.1);
+
+   for (int i = 0; i < segments_count; i++)
+      for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
+         getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
+
+}
+
+void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout, Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    int cycle_size = cycle.vertexCount();
 
-   /*
-   
-   QS_DEF(Array<int>, vertex_type); // only vertices in this. 1 - on cycle, 2 - layouted, connected to cycle, 0 - other (not interesting vertives)
-   vertex_type.clear_resize(vertexEnd());
-   vertex_type.zerofill();
-
-   QS_DEF(Array<int>, number_in_cycle); // number in the cycle if vertex is on cycle and -1 else
-   number_in_cycle.clear_resize(vertexEnd());
-   number_in_cycle.fffill();
-
-   QS_DEF(Array<int>, smoothing_list); // list of vertives of types 1 and 2
-   smoothing_list.clear_resize(0);
-
-   
-
-   // add cycle vertices
-   for (int i = 0; i < cycle_size; i++) {
-      smoothing_list.push(cycle.getVertex(i));
-      vertex_type[cycle.getVertex(i)] = 1;
-      number_in_cycle[cycle.getVertex(i)] = i;
-   }
-
-   // BFS
-   for (int i = 0; i < smoothing_list.size(); i++) {
-      const Vertex& v = getVertex(smoothing_list[i]);
-      for (int j = v.neiBegin(); j != v.neiEnd(); j = v.neiNext(j)) {
-         int e = v.neiEdge(j);
-         int u = v.neiVertex(j);
-         if (vertex_type[u] == 0 && getEdgeType(e) != ELEMENT_NOT_DRAWN) {
-            vertex_type[u] = 2;
-            smoothing_list.push(u);
-         }
-      }
-   }
-   
-   // if there is nothing to smoothing
-   if (smoothing_list.size() == cycle_size) return;
-
-   // else lets create graph_to_smoothing
-   MoleculeLayoutGraph graph_to_smoothing;
-   Filter vertex_to_smoothing(vertex_type.ptr(), Filter::EQ, 2);
-
-   QS_DEF(Array<int>, edge_type);
-   edge_type.clear_resize(edgeEnd());
-   edge_type.zerofill();
-
-   for (int e = edgeBegin(); e != edgeEnd(); e = edgeNext(e)) {
-      Edge edge = getEdge(e);
-      edge_type[e] = getEdgeType(e) != ELEMENT_NOT_DRAWN && vertex_type[edge.beg] == 2 && vertex_type[edge.end] == 2;
-   }
-   Filter edge_to_smoothing(edge_type.ptr(), Filter::EQ, 1);
-
-   graph_to_smoothing.makeLayoutSubgraph(*this, vertex_to_smoothing, &edge_to_smoothing);
-
-   int segments_count = graph_to_smoothing.countComponents();
-
-   const Array<int> &decomposition = graph_to_smoothing.getDecomposition();
-
-   QS_DEF(Array<int>, previous_tuoch_count);
-   previous_tuoch_count.clear_resize(cycle_size);
-   previous_tuoch_count.zerofill();
-
-   for (int i = 0; i < segments_count; i++) {
-      Filter& this_filter = segments_filter[i];
-      this_filter.initNone(vertexEnd());
-      for (int v = graph_to_smoothing.vertexBegin(); v != graph_to_smoothing.vertexEnd(); v = graph_to_smoothing.vertexNext(v)) {
-         int vv = graph_to_smoothing.getVertexExtIdx(v);
-         if (decomposition[v] == i) {
-            this_filter.unhide(vv);
-            const Vertex& vert = getVertex(vv);
-            for (int u = vert.neiBegin(); u != vert.neiEnd(); u = vert.neiNext(u))
-               if (vertex_type[vert.neiVertex(u)] == 1) {
-                  this_filter.unhide(vert.neiVertex(u));
-                  previous_tuoch_count[number_in_cycle[vert.neiVertex(u)]] = 1;
-               }
-         }
-      }
-   }
-
-   for (int i = 1; i < cycle_size; i++) previous_tuoch_count[i] += previous_tuoch_count[i - 1];
-   for (int i = 0; i < cycle_size; i++) 
-      previous_tuoch_count.push(previous_tuoch_count[i] + previous_tuoch_count[cycle.vertexCount() - 1]);
-
-   Array<int> nums;
-   for (int i = 0; i < segments_count; i++) {
-      nums.clear_resize(0);
-      for (int v = vertexBegin(); v != vertexEnd(); v = vertexNext(v))
-         if (segments_filter[i].valid(v) && vertex_type[v] == 1) nums.push(number_in_cycle[v]);
-
-      std::sort(nums.ptr(), nums.ptr() + nums.size());
-      nums.push(nums[0] + cycle_size);
-
-      int max_dist = -1;
-      for (int j = 0; j < nums.size() - 1; j++) {
-         if (previous_tuoch_count[nums[j]] + 1 != previous_tuoch_count[nums[j + 1]] ||
-            getEdgeType(cycle.getEdge(nums[j])) == ELEMENT_NOT_DRAWN ||
-            getEdgeType(cycle.getEdgeC(nums[j + 1] - 1)) == ELEMENT_NOT_DRAWN) {
-               segment_start[i] = nums[j + 1] % cycle_size;
-               segment_finish[i] = nums[j];
-               break;
-         }
-
-         if (nums[j + 1] - nums[j] > max_dist) {
-            segment_start[i] = nums[j + 1] % cycle_size;
-            segment_finish[i] = nums[j];
-            max_dist = nums[j + 1] - nums[j];
-         }
-      }
-
-     for (int j = segment_start[i]; j != segment_finish[i]; j = (j + 1) % cycle_size) segments_filter[i].unhide(cycle.getVertex(j));
-   }
-
-   */
-   
    QS_DEF(Array<bool>, layout_comp_touch);
    layout_comp_touch.clear_resize(_layout_component_count);
    layout_comp_touch.zerofill();
@@ -930,13 +839,13 @@ void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeL
       
       for (int j = 0; j < cycle_size; j++)
          if (touch_to_currnet_component[j] && _layout_component_number[cycle.getEdgeC(j - 1)] != i) {
-            if (start != -1) throw Exception("Separated layout component in cycle\n");
+            if (start != -1) throw Exception("Separating layout component in cycle\n");
             else start = j;
          }
 
       for (int j = 0; j < cycle_size; j++)
          if (touch_to_currnet_component[j] && _layout_component_number[cycle.getEdge(j)] != i) {
-            if (finish != -1) throw Exception("\Separated layout component in cycle\n");
+            if (finish != -1) throw Exception("Separating layout component in cycle\n");
             else finish = j;
          }
       
@@ -980,7 +889,6 @@ void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeL
       if (number_of_segment[i] != -1) number_of_segment_compressed.push(number_of_segment[i]);
 
 
-   QS_DEF(Array<Vec2f>, rotation_point);
    rotation_point.clear_resize(0);
    for (int i = 0; i < cycle_size; i++) 
       if (number_of_segment[i] != -1) rotation_point.push(getPos(cycle.getVertex(segment_start[number_of_segment[i]])));
@@ -991,7 +899,6 @@ void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeL
       segment_graph.push().makeLayoutSubgraph(*this, segments_filter[i]);
    }
 
-   QS_DEF(ObjArray<MoleculeLayoutSmoothingSegment>, segment);
    segment.clear();
 
    int current_number = 0;
@@ -1000,7 +907,6 @@ void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeL
       current_number++;
    }
    
-   QS_DEF(Array<float>, target_angle);
    target_angle.clear_resize(segments_count);
 
    for (int i = 0; i < segments_count; i++) {
@@ -1022,15 +928,6 @@ void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeL
 
    _layout_component_count++;
 
-   Random rand(34577);
-   
-   for (int i = 0; i < 10000; i++)
-      _segment_improoving(segments_count, rotation_point.ptr(), target_angle.ptr(), segment.ptr(), rand.next() % segments_count, 0.1);
-
-   for (int i = 0; i < segments_count; i++)
-      for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
-         getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
-         
 }
 
 void MoleculeLayoutGraph::_segment_improoving(int segments_count, Vec2f* point, float* target_angle, const MoleculeLayoutSmoothingSegment* segment, int move_vertex, float coef) {

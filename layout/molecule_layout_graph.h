@@ -236,6 +236,8 @@ protected:
    void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignFirstCycle(const Cycle &cycle);
    void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout);
+   void _segment_smoothing_prepearing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout, Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   void _do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _segment_improoving(int, Vec2f*, float*, const MoleculeLayoutSmoothingSegment*, int, float);
    void _attachCrossingEdges ();
    void _attachDandlingVertices (int vert_idx, Array<int> &adjacent_list);
