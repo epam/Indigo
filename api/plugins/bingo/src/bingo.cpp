@@ -78,22 +78,25 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *opt
    else
       throw BingoException("Unknown database type");
 
-   _bingo_lock.Lock();
-   int db_id = _bingo_instances.add(0);
-   _bingo_lock.Unlock();
+   int db_id;
+   {
+      OsLocker bingo_locker(_bingo_lock);
+      db_id = _bingo_instances.add(0);
+   }
 
    if (create)
       context->create(loc_dir.c_str(), fp_params, options, db_id);
    else
       context->load(loc_dir.c_str(), options, db_id);
 
-   _bingo_lock.Lock();
-   _bingo_instances[db_id] = context.release();
-   AutoPtr<DatabaseLockData> locker_ptr;
-   locker_ptr.reset(new DatabaseLockData());
-   _lockers.expand(db_id + 1);
-   _lockers[db_id] = locker_ptr.release();
-   _bingo_lock.Unlock();
+   {
+      OsLocker bingo_locker(_bingo_lock);
+      _bingo_instances[db_id] = context.release();
+      AutoPtr<DatabaseLockData> locker_ptr;
+      locker_ptr.reset(new DatabaseLockData());
+      _lockers.expand(db_id + 1);
+      _lockers[db_id] = locker_ptr.release();
+   }
 
    return db_id;
 }
@@ -300,11 +303,13 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
          MoleculeIndex &bingo_index = dynamic_cast<MoleculeIndex &>(_bingo_instances.ref(db));
          MoleculeSubMatcher *matcher = dynamic_cast<MoleculeSubMatcher *>(bingo_index.createMatcher("sub", query_data.release(), options));
 
-         _searches_lock.Lock();
-         int search_id = _searches.add(matcher);
-         _searches_db.expand(search_id + 1);
-         _searches_db[search_id] = db;
-         _searches_lock.Unlock();
+         int search_id;
+         {
+            OsLocker searches_locker(_searches_lock);
+            search_id = _searches.add(matcher);
+            _searches_db.expand(search_id + 1);
+            _searches_db[search_id] = db;
+         }
 
          return search_id;
       }
@@ -317,11 +322,13 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options)
          ReactionIndex &bingo_index = dynamic_cast<ReactionIndex &>(_bingo_instances.ref(db));
          ReactionSubMatcher *matcher = dynamic_cast<ReactionSubMatcher *>(bingo_index.createMatcher("sub", query_data.release(), options));
 
-         _searches_lock.Lock();
-         int search_id = _searches.add(matcher);
-         _searches_db.expand(search_id + 1);
-         _searches_db[search_id] = db;
-         _searches_lock.Unlock();
+         int search_id;
+         {
+            OsLocker searches_locker(_searches_lock);
+            search_id = _searches.add(matcher);
+            _searches_db.expand(search_id + 1);
+            _searches_db[search_id] = db;
+         }
 
          return search_id;
       }
@@ -346,11 +353,13 @@ CEXPORT int bingoSearchExact (int db, int query_obj, const char *options)
          MoleculeIndex &bingo_index = dynamic_cast<MoleculeIndex &>(_bingo_instances.ref(db));
          MolExactMatcher *matcher = dynamic_cast<MolExactMatcher *>(bingo_index.createMatcher("exact", query_data.release(), options));
 
-         _searches_lock.Lock();
-         int search_id = _searches.add(matcher);
-         _searches_db.expand(search_id + 1);
-         _searches_db[search_id] = db;
-         _searches_lock.Unlock();
+         int search_id;
+         {
+            OsLocker searches_locker(_searches_lock);
+            search_id = _searches.add(matcher);
+            _searches_db.expand(search_id + 1);
+            _searches_db[search_id] = db;
+         }
 
          return search_id;
       }
@@ -363,11 +372,13 @@ CEXPORT int bingoSearchExact (int db, int query_obj, const char *options)
          ReactionIndex &bingo_index = dynamic_cast<ReactionIndex &>(_bingo_instances.ref(db));
          RxnExactMatcher *matcher = dynamic_cast<RxnExactMatcher *>(bingo_index.createMatcher("exact", query_data.release(), options));
 
-         _searches_lock.Lock();
-         int search_id = _searches.add(matcher);
-         _searches_db.expand(search_id + 1);
-         _searches_db[search_id] = db;
-         _searches_lock.Unlock();
+         int search_id;
+         {
+            OsLocker searches_locker(_searches_lock);
+            search_id = _searches.add(matcher);
+            _searches_db.expand(search_id + 1);
+            _searches_db[search_id] = db;
+         }
 
          return search_id;
       }
@@ -390,11 +401,13 @@ CEXPORT int bingoSearchMolFormula (int db, const char *query, const char *option
       BaseIndex &bingo_index = dynamic_cast<BaseIndex &>(_bingo_instances.ref(db));
       MolGrossMatcher *matcher = dynamic_cast<MolGrossMatcher *>(bingo_index.createMatcher("formula", query_data.release(), options));
 
-      _searches_lock.Lock();
-      int search_id = _searches.add(matcher);
-      _searches_db.expand(search_id + 1);
-      _searches_db[search_id] = db;
-      _searches_lock.Unlock();
+      int search_id;
+      {
+         OsLocker searches_locker(_searches_lock);
+         search_id = _searches.add(matcher);
+         _searches_db.expand(search_id + 1);
+         _searches_db[search_id] = db;
+      }
 
       return search_id;
    }
@@ -416,11 +429,13 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
          MoleculeIndex &bingo_index = dynamic_cast<MoleculeIndex &>(_bingo_instances.ref(db));
          MoleculeSimMatcher *matcher = dynamic_cast<MoleculeSimMatcher *>(bingo_index.createMatcher("sim", query_data.release(), options));
 
-         _searches_lock.Lock();
-         int search_id = _searches.add(matcher);
-         _searches_db.expand(search_id + 1);
-         _searches_db[search_id] = db;
-         _searches_lock.Unlock();
+         int search_id;
+         {
+            OsLocker searches_locker(_searches_lock);
+            search_id = _searches.add(matcher);
+            _searches_db.expand(search_id + 1);
+            _searches_db[search_id] = db;
+         }
 
          return search_id;
       }
@@ -433,11 +448,13 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
          ReactionIndex &bingo_index = dynamic_cast<ReactionIndex &>(_bingo_instances.ref(db));
          ReactionSimMatcher *matcher = dynamic_cast<ReactionSimMatcher *>(bingo_index.createMatcher("sim", query_data.release(), options));
 
-         _searches_lock.Lock();
-         int search_id = _searches.add(matcher);
-         _searches_db.expand(search_id + 1);
-         _searches_db[search_id] = db;
-         _searches_lock.Unlock();
+         int search_id;
+         {
+            OsLocker searches_locker(_searches_lock);
+            search_id = _searches.add(matcher);
+            _searches_db.expand(search_id + 1);
+            _searches_db[search_id] = db;
+         }
 
          return search_id;
       }
@@ -452,13 +469,11 @@ CEXPORT int bingoEndSearch (int search_obj)
    BINGO_BEGIN_SEARCH(search_obj)
    {
       // Ensure that such matcher exists
-      _searches_lock.Lock();
-
+      OsLocker searches_locker(_searches_lock);
+            
       getMatcher(search_obj);
 
       _searches.remove(search_obj);
-
-      _searches_lock.Unlock();
       return 1;
    }
    BINGO_END(-1);

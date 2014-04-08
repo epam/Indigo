@@ -601,6 +601,8 @@ BaseSimilarityMatcher::BaseSimilarityMatcher (/*const */ BaseIndex &index, Indig
 
 bool BaseSimilarityMatcher::next ()
 {
+   profTimerStart(tsimnext, "sim_next");
+   
    SimStorage &sim_storage = _index.getSimStorage();
    int query_bit_count = bitGetOnesCount(_query_fp.ptr(), _fp_size);
 
