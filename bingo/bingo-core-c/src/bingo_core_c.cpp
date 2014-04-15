@@ -683,7 +683,7 @@ CEXPORT int bingoSMILESImportClose ()
       self.file_scanner.free();
       self.smiles_scanner = 0;
    }
-   BINGO_END(-2, -2)
+   BINGO_END(0, -1)
 }
 
 CEXPORT int bingoSMILESImportEOF ()

@@ -165,6 +165,7 @@ public:
       SPI_connect();
    }
    virtual ~BingoImportHandler() {
+      _importData.clear();
       SPI_finish();
    }
    
@@ -312,9 +313,11 @@ public:
       /*
        * Loop through the data
        */
+      
       while (hasNext()) {
          ++debug_idx;
          elog(DEBUG1, "bingo: %s: processing data entry with index %d", getFunctionName(), debug_idx);
+         
          /*
           * Initialize the data
           */
@@ -329,9 +332,11 @@ public:
             elog(WARNING, "can not import a structure: %s", e.message());
             continue;
          }
+         
          /*
           * Initialize values for the query
           */
+         
          q_values.clear();
          for (int q_idx = 0; q_idx < _importData.size(); ++q_idx) {
             q_values.push(_importData[q_idx]->getDatum());
@@ -358,6 +363,7 @@ public:
           * Return back session id and error handler
           */
          refresh();
+         
       }
 
    }
@@ -384,7 +390,8 @@ public:
    }
    virtual ~BingoImportSdfHandler() {
       bingo_res = bingoSDFImportClose();
-      CORE_HANDLE_WARNING(bingo_res, 1, "importSDF close", bingoGetError());
+      CORE_HANDLE_WARNING(bingo_res, 0, "importSDF close", bingoGetError());
+
    }
 
    virtual bool hasNext() {
@@ -403,6 +410,7 @@ public:
             data = bingoSDFImportGetNext();
          else
             data = bingoImportGetPropertyValue(col_idx - 1);
+         
          
          if (data == 0) {
             /*
@@ -461,7 +469,7 @@ public:
    }
    virtual ~BingoImportRdfHandler() {
       bingo_res = bingoRDFImportClose();
-      CORE_HANDLE_WARNING(bingo_res, 1, "importRDF close", bingoGetError());
+      CORE_HANDLE_WARNING(bingo_res, 0, "importRDF close", bingoGetError());
    }
 
    virtual bool hasNext() {
@@ -536,7 +544,7 @@ public:
    }
    virtual ~BingoImportSmilesHandler() {
       bingo_res = bingoSMILESImportClose();
-      CORE_HANDLE_WARNING(bingo_res, 1, "importSmiles close", bingoGetError());
+      CORE_HANDLE_WARNING(bingo_res, 0, "importSmiles close", bingoGetError());
    }
 
    virtual bool hasNext() {
