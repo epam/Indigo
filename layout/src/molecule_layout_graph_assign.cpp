@@ -565,6 +565,9 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
    }
 
+   if (size <= 6) 
+      for (int i = 0; i < size; i++) layout.setEdgeStereo(i, 0);
+
    layout.doLayout();
 
    // now we must to smooth just made layout
@@ -771,7 +774,10 @@ void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeL
    QS_DEF(Array<float>, target_angle);
 
    _segment_smoothing_prepearing(cycle, layout, rotation_point, target_angle, segment);
-   _do_segment_smoothing(rotation_point, target_angle, segment);
+   if (segment.size() > 2) {
+      _segment_smoothing_unstick(rotation_point, target_angle, segment);
+      _do_segment_smoothing(rotation_point, target_angle, segment);
+   }
 }
 
 void MoleculeLayoutGraph::_segment_smoothing_unstick(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
@@ -929,7 +935,7 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
    int segments_count = segment.size();
    
    for (int i = 0; i < 10000; i++)
-      _segment_improoving(segments_count, rotation_point.ptr(), target_angle.ptr(), segment.ptr(), rand.next() % segments_count, 0.1);
+      _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1);
 
    for (int i = 0; i < segments_count; i++)
       for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
@@ -1081,28 +1087,77 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, cons
 
 void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int move_vertex, float coef) {
    
+   int segments_count = segment.size();
    Vec2f move_vector(0, 0);
 
+   // fix angle
    Vec2f prev_point(point[(move_vertex + segments_count - 1) % segments_count]);
    Vec2f this_point(point[move_vertex]);
    Vec2f next_point(point[(move_vertex + 1) % segments_count]);
 
 
-   Vec2f chord(next_point - prev_point);
 
-   Vec2f center(prev_point + chord/2);
-   Vec2f rot_chord(chord);
-   rot_chord.rotate(1, 0);
-   center += rot_chord * std::tan(target_angle[move_vertex] - PI/2) /2;
+   if (abs(target_angle[move_vertex] - PI) > 0.001) {
+      Vec2f chord(next_point - prev_point);
 
-   float radii = (prev_point - center).length();
-   float dist = (this_point - center).length();
+      Vec2f center(prev_point + chord/2);
+      Vec2f rot_chord(chord);
+      rot_chord.rotate(1, 0);
+      center += rot_chord * std::tan(target_angle[move_vertex] - PI/2) /2;
 
-   move_vector += (this_point - center) * (radii - dist)/radii;
+      float radii = (prev_point - center).length();
+      float dist = (this_point - center).length();
 
+      move_vector += (this_point - center) * (radii - dist)/radii;
+   } else {
+      Vec2f center(prev_point * segment[(move_vertex + segments_count - 1) % segments_count].getLength() +
+                   next_point * segment[move_vertex].getLength());
+
+      center /= segment[(move_vertex + segments_count - 1) % segments_count].getLength() + segment[move_vertex].getLength();
+
+      move_vector += (center - this_point);
+   }
+
+
+   // fix distance to neighborhoods
    move_vector += (this_point - next_point) * segment[move_vertex].getLengthCoef();
    move_vector += (this_point - prev_point) * segment[(move_vertex + segments_count - 1) % segments_count].getLengthCoef();
 
+   // fix intersections to other components
+   float min_dist = 0.7;
+   for (int i = 0; i < segments_count; i++) if (i != move_vertex && (i + 1) % segments_count != move_vertex && i != (move_vertex + 1) % segments_count) {
+      if (segment[move_vertex]._graph.vertexCount() == 2 && segment[i]._graph.vertexCount() == 2) continue;
+      bool interseced = false;
+
+      for (int v1 = segment[move_vertex]._graph.vertexBegin(); v1 != segment[move_vertex]._graph.vertexEnd() && !interseced; v1 = segment[move_vertex]._graph.vertexNext(v1))
+         for (int v2 = segment[i]._graph.vertexBegin(); v2 != segment[i]._graph.vertexEnd() && !interseced; v2 = segment[i]._graph.vertexNext(v2)) {
+            //if ((move_vertex + 1) % segments_count == i && segment[move_vertex].is_finish(v1)) continue;
+            if (Vec2f::distSqr(segment[move_vertex].getPosition(v1), segment[i].getPosition(v2)) < min_dist * min_dist) interseced = true;
+         }
+
+      /*for (int e1 = segment[move_vertex]._graph.edgeBegin(); e1 != segment[move_vertex]._graph.edgeEnd() && !interseced; e1 = segment[move_vertex]._graph.edgeNext(e1))
+         for (int e2 = segment[i]._graph.edgeBegin(); e2 != segment[i]._graph.edgeEnd() && !interseced; e2 = segment[i]._graph.edgeNext(e2)) {
+            Edge ed1 = segment[move_vertex]._graph.getEdge(e1);
+            Edge ed2 = segment[i]._graph.getEdge(e2);
+            //if ((move_vertex + 1) % segments_count == i && (segment[move_vertex].is_finish(ed1.beg) || segment[move_vertex].is_finish(ed1.end))) continue;
+
+            interseced = Vec2f::segmentsIntersect(segment[move_vertex].getPosition(ed1.beg),
+                                                  segment[move_vertex].getPosition(ed1.end),
+                                                  segment[i].getPosition(ed2.beg),
+                                                  segment[i].getPosition(ed2.end));
+         }*/
+
+      if (interseced) {
+         Vec2f shift1(segment[move_vertex].getCenter());
+         Vec2f shift2(segment[i].getCenter());
+         Vec2f shift(shift1 - shift2);
+         shift.normalize();
+         shift /= 1;
+         move_vector += shift;
+      }
+   }
+
+   // apply
    point[move_vertex] += move_vector * coef;
 }
 
