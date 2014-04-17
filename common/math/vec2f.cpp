@@ -166,7 +166,7 @@ bool Vec2f::intersection (const Vec2f &v1_1, const Vec2f &v1_2, const Vec2f &v2_
    a2 = v2_2.x - v2_1.x;
    b2 = v2_2.y - v2_1.y;
 
-   delta  =  a2 * b1 - a1 * b2;
+   delta  = a2 * b1  - a1  * b2;
    delta1 = a2 * b12 - a12 * b2;
    delta2 = a1 * b12 - a12 * b1;
 
@@ -193,15 +193,7 @@ float Vec2f::triangleArea (const Vec2f &a, const Vec2f &b, const Vec2f &c) {
 }
 
 bool Vec2f::segmentsIntersect (const Vec2f &a0, const Vec2f &a1, const Vec2f &b0, const Vec2f &b1) {
-/*
-Vec2f ca, cb;
-   float la = Vec2f::distSqr(a0, a1) / 4, lb = Vec2f::distSqr(b0, b1) / 4;
-   ca.lineCombin2(a0, 0.5, a1, 0.5);
-   cb.lineCombin2(b0, 0.5, b1, 0.5);
-   // preliminary check to exclude the case of non-overlapping segments on the same line
-   if (Vec2f::distSqr(ca, b0) > la && Vec2f::distSqr(ca, b1) > la && Vec2f::distSqr(cb, a0) > lb && Vec2f::distSqr(cb, a1) > lb)
-      return false
-*/
+
    float maxax = __max(a0.x, a1.x);
    float maxay = __max(a0.y, a1.y);
    float maxbx = __max(b0.x, b1.x);
@@ -211,11 +203,33 @@ Vec2f ca, cb;
    float minbx = __min(b0.x, b1.x);
    float minby = __min(b0.y, b1.y);
 
-   if (maxax < minbx || maxbx < minax || maxay < minby || maxby < minay) return false;
+   float big_eps = 0.001;
+
+   if (maxax + big_eps < minbx || maxbx + big_eps < minax || maxay + big_eps < minby || maxby + big_eps < minay) return false;
 
    // regular check
    return triangleArea(a0, a1, b0) * triangleArea(a0, a1, b1) < EPSILON
       && triangleArea(b0, b1, a0) * triangleArea(b0, b1, a1) < EPSILON;
+}
+
+bool Vec2f::segmentsIntersectInternal (const Vec2f &a0, const Vec2f &a1, const Vec2f &b0, const Vec2f &b1) {
+
+   float maxax = __max(a0.x, a1.x);
+   float maxay = __max(a0.y, a1.y);
+   float maxbx = __max(b0.x, b1.x);
+   float maxby = __max(b0.y, b1.y);
+   float minax = __min(a0.x, a1.x);
+   float minay = __min(a0.y, a1.y);
+   float minbx = __min(b0.x, b1.x);
+   float minby = __min(b0.y, b1.y);
+
+   float big_eps = 0.001;
+
+   if (maxax < minbx + big_eps || maxbx < minax + big_eps || maxay < minby + big_eps || maxby < minay + big_eps) return false;
+
+   // regular check
+   return triangleArea(a0, a1, b0) * triangleArea(a0, a1, b1) < - EPSILON
+      && triangleArea(b0, b1, a0) * triangleArea(b0, b1, a1) < - EPSILON;
 }
 
 double Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r) {
