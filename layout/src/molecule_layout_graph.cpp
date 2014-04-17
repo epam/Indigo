@@ -643,25 +643,52 @@ void MoleculeLayoutGraph::_layoutSingleComponent (BaseMolecule &molecule, bool r
 MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGraph& mol, Vec2f& start, Vec2f& finish) :
    _graph(mol),
    _start(start),
-   _finish(finish) 
+   _finish(finish)
 {
+   _center.zero();
    Vec2f diameter = (_finish - _start);
    _length = diameter.length();
    Vec2f rotate_vector = diameter / diameter.lengthSqr();
    rotate_vector.y *= -1;
 
    _pos.clear_resize(_graph.vertexEnd());
+   
+   _start_number = -1;
+   _finish_number = -1;
+   float start_dist = 0;
+   float finish_dist = 0;
+
    for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
-      _pos[v].copy(_graph.getPos(v) - _start);
+      _pos[v].copy(_graph.getPos(v));
+
+      float dist = Vec2f::distSqr(_pos[v], _start);
+      if (_start_number == -1 || dist < start_dist) {
+         start_dist = dist;
+         _start_number = v;
+      }
+      dist = Vec2f::distSqr(_pos[v], _finish);
+      if (_finish_number == -1 || dist < finish_dist) {
+         finish_dist = dist;
+         _finish_number = v;
+      }
+
+      _pos[v] -= _start;
       _pos[v].rotate(rotate_vector);
+      _center += _pos[v];
    }
+   _center /= _graph.vertexCount();
+
+}
+
+Vec2f MoleculeLayoutSmoothingSegment::_getPosition(Vec2f p) {
+   Vec2f point;
+   point.copy(p);
+   point.rotate(_finish - _start);
+   return point + _start;
 }
 
 Vec2f MoleculeLayoutSmoothingSegment::getPosition(int v) {
-   Vec2f point;
-   point.copy(_pos[v]);
-   point.rotate(_finish - _start);
-   return point + _start;
+   return _getPosition(_pos[v]);
 }
 
 void MoleculeLayoutSmoothingSegment::shiftStartBy(Vec2f shift) {
@@ -672,9 +699,69 @@ void MoleculeLayoutSmoothingSegment::shiftFinishBy(Vec2f shift){
    _finish += shift;
 }
 
+float MoleculeLayoutSmoothingSegment::getLength() const {
+   return _length;
+}
+
 float MoleculeLayoutSmoothingSegment::getLengthCoef() const {
    float l = (_finish - _start).length();
-   return (_length - l)/l;
+   return (_graph.vertexCount() > 2 ? 5 : 1) * (_length - l)/l;
+}
+
+float MoleculeLayoutSmoothingSegment::get_min_x() {
+   float answer = 1000000.0;
+
+   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+      float xx = getPosition(v).x;
+      answer = __min(answer, xx);
+   }
+
+   return answer;
+}
+
+float MoleculeLayoutSmoothingSegment::get_min_y() {
+   float answer = 1000000.0;
+
+   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+      float yy = getPosition(v).y;
+      answer = __min(answer, yy);
+   }
+
+   return answer;
+}
+
+float MoleculeLayoutSmoothingSegment::get_max_x() {
+   float answer = -1000000.0;
+
+   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+      float xx = getPosition(v).x;
+      answer = __max(answer, getPosition(v).x);
+   }
+
+   return answer;
+}
+
+float MoleculeLayoutSmoothingSegment::get_max_y() {
+   float answer = -1000000.0;
+
+   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+      float yy = getPosition(v).y;
+      answer = __max(answer, yy);
+   }
+
+   return answer;
+}
+
+/*Vec2f& MoleculeLayoutSmoothingSegment::getStart() {
+   return _start;
+}
+
+Vec2f& MoleculeLayoutSmoothingSegment::getFinish() {
+   return _finish;
+}*/
+
+Vec2f MoleculeLayoutSmoothingSegment::getCenter() {
+   return _getPosition(_center);
 }
 
 #ifdef M_LAYOUT_DEBUG

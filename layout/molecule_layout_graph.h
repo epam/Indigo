@@ -76,10 +76,15 @@ class MoleculeLayoutMacrocycles;
 class DLLEXPORT MoleculeLayoutSmoothingSegment {
 
 private:
-   Vec2f& _start;
-   Vec2f& _finish;
    float _length;
    Array<Vec2f> _pos;
+   int _finish_number;
+   int _start_number;
+   Vec2f& _start;
+   Vec2f& _finish;
+   Vec2f _center;
+
+   Vec2f _getPosition(Vec2f);
 
 public:
    MoleculeLayoutGraph& _graph;
@@ -88,7 +93,19 @@ public:
    Vec2f getPosition(int);
    void shiftStartBy(Vec2f shift);
    void shiftFinishBy(Vec2f shift);
+   float getLength() const;
    float getLengthCoef() const;
+   Vec2f getCenter();
+
+   bool is_start(int v) {return v == _start_number;}
+   bool is_finish(int v) {return v == _finish_number;}
+
+   float get_min_x();
+   float get_min_y();
+   float get_max_x();
+   float get_max_y();
+   
+
 };
 
 class DLLEXPORT MoleculeLayoutGraph : public Graph
@@ -237,8 +254,9 @@ protected:
    void _assignFirstCycle(const Cycle &cycle);
    void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout);
    void _segment_smoothing_prepearing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout, Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   void _segment_smoothing_unstick(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
-   void _segment_improoving(int, Vec2f*, float*, const MoleculeLayoutSmoothingSegment*, int, float);
+   void _segment_improoving(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int, float);
    void _attachCrossingEdges ();
    void _attachDandlingVertices (int vert_idx, Array<int> &adjacent_list);
    void _calculatePositionsOneNotDrawn (Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx);
