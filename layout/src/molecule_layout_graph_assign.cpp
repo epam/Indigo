@@ -774,6 +774,155 @@ void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeL
    _do_segment_smoothing(rotation_point, target_angle, segment);
 }
 
+void MoleculeLayoutGraph::_segment_smoothing_unstick(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+
+   profTimerStart(t, "unstick");
+   int segment_count = segment.size();
+
+   // prepearing of list of sticked pairs of vertices
+
+   QS_DEF(Array<float>, min_x);
+   min_x.clear_resize(segment_count);
+   for (int i = 0; i < segment_count; i++)
+      min_x[i] = segment[i].get_min_x();
+
+   QS_DEF(Array<float>, max_x);
+   max_x.clear_resize(segment_count);
+   for (int i = 0; i < segment_count; i++)
+      max_x[i] = segment[i].get_max_x();
+
+   QS_DEF(Array<float>, min_y);
+   min_y.clear_resize(segment_count);
+   for (int i = 0; i < segment_count; i++)
+      min_y[i] = segment[i].get_min_y();
+
+   QS_DEF(Array<float>, max_y);
+   max_y.clear_resize(segment_count);
+   for (int i = 0; i < segment_count; i++)
+      max_y[i] = segment[i].get_max_y();
+
+   QS_DEF(Array<int>, component1);
+   QS_DEF(Array<int>, component2);
+   QS_DEF(Array<int>, vertex1);
+   QS_DEF(Array<int>, vertex2);
+
+   component1.clear_resize(0);
+   component2.clear_resize(0);
+   vertex1.clear_resize(0);
+   vertex2.clear_resize(0);
+
+   for (int i = 0; i < segment_count; i++)
+      for (int j = (i + segment_count/2) % segment_count; j != i; j = (j + segment_count - 1) % segment_count) {
+
+         if (segment_count % 2 == 0 && j + segment_count/2 == i) continue;
+
+         if (min_x[i] <= max_x[j] && min_x[j] <= max_x[i] && min_y[i] <= max_y[j] && min_y[j] <= max_y[i]) {
+            for (int v1 = segment[i]._graph.vertexBegin(); v1 != segment[i]._graph.vertexEnd(); v1 = segment[i]._graph.vertexNext(v1))
+               for (int v2 = segment[j]._graph.vertexBegin(); v2 != segment[j]._graph.vertexEnd(); v2 = segment[j]._graph.vertexNext(v2)) {
+   //                  if ((i + 1) % segment_count != j) printf("%10.10f \n", Vec2f::dist(segment[i].getPosition(v1), segment[j].getPosition(v2)));
+                  if (Vec2f::distSqr(segment[i].getPosition(v1), segment[j].getPosition(v2)) < EPSILON)
+                     if ((i + 1) % segment_count != j || !segment[i].is_finish(v1)) {
+                        component1.push(i);
+                        component2.push(j);
+                        vertex1.push(v1);
+                        vertex2.push(v2);
+                     }
+               }
+         }
+
+      }
+
+   int count_sticked_vertices = component1.size();
+   
+   bool something_done = true;
+   bool something_to_do = false;
+   while (something_done) {
+      something_done = false;
+      something_to_do = false;
+      
+      for (int index = 0; index < count_sticked_vertices; index++) {
+         int i = component1[index];
+         int j = component2[index];
+         int v1 = vertex1[index];
+         int v2 = vertex2[index];
+
+         if (Vec2f::distSqr(segment[i].getPosition(v1), segment[j].getPosition(v2)) < EPSILON) {
+            something_to_do = true;
+
+            bool exist_sepatate_vertex = false;
+            const Vertex &vert1 = segment[i]._graph.getVertex(v1);
+            const Vertex &vert2 = segment[j]._graph.getVertex(v2);
+
+            for (int u1 = vert1.neiBegin(); u1 != vert1.neiEnd() && !exist_sepatate_vertex; u1 = vert1.neiNext(u1)) {
+               bool exist_same_vertex = false;
+               int nei1 = vert1.neiVertex(u1);
+               for (int u2 = vert2.neiBegin(); u2 != vert2.neiEnd() && !exist_same_vertex; u2 = vert2.neiNext(u2)) {
+                  int nei2 = vert2.neiVertex(u2);
+                  if (Vec2f::dist(segment[i].getPosition(nei1), segment[j].getPosition(nei2)) < EPSILON)
+                     exist_same_vertex = true;
+               }
+               if (!exist_same_vertex) exist_sepatate_vertex = true;
+            }
+
+            if (exist_sepatate_vertex) {
+               Vec2f direction;
+               if (vert1.degree() == 2) {
+                  direction = (segment[i].getPosition(vert1.neiVertex(vert1.neiBegin())) + 
+                                 segment[i].getPosition(vert1.neiVertex(vert1.neiNext(vert1.neiBegin()))))/2;
+                  direction -= segment[i].getPosition(v1);
+               } else if (vert2.degree() == 2) {
+                  direction = (segment[j].getPosition(vert2.neiVertex(vert2.neiBegin())) + 
+                                 segment[j].getPosition(vert2.neiVertex(vert2.neiNext(vert2.neiBegin()))))/2;
+                  direction -= segment[i].getPosition(v1);
+               } else if (vert1.degree() == 1) {
+                  direction = segment[i].getPosition(vert1.neiVertex(vert1.neiBegin()));
+                  direction -= segment[i].getPosition(v1);
+                  direction.rotate(1, 0);
+               } else if (vert2.degree() == 1) {
+                  direction = segment[j].getPosition(vert2.neiVertex(vert2.neiBegin()));
+                  direction -= segment[i].getPosition(v1);
+                  direction.rotate(1, 0);
+               } else continue;
+
+               direction /= 3;
+
+               bool moved = false;
+               for (int sign = 1; sign >= -1 && !moved; sign -= 2) {
+
+                  Vec2f newpos = segment[i].getPosition(v1) + (direction * sign);
+                  bool can_to_move = true;
+
+                  for (int u1 = vert1.neiBegin(); u1 != vert1.neiEnd() && can_to_move; u1 = vert1.neiNext(u1)) {
+                     int nei1 = vert1.neiVertex(u1);
+                     for (int u2 = vert2.neiBegin(); u2 != vert2.neiEnd() && can_to_move; u2 = vert2.neiNext(u2)){
+                        int nei2 = vert2.neiVertex(u2);
+                        if (Vec2f::segmentsIntersectInternal(newpos, segment[i].getPosition(nei1), segment[j].getPosition(v2), segment[j].getPosition(nei2)))
+                           can_to_move = false;
+                     }
+                  }
+
+                  if (can_to_move) {
+                     something_done = true;
+                     moved = true;
+
+                     segment[i].shiftStartBy(direction * sign / 2);
+                     segment[i].shiftFinishBy(direction * sign / 2);
+
+                     segment[j].shiftStartBy(direction * -sign / 2);
+                     segment[j].shiftFinishBy(direction * -sign / 2);
+                  }
+               }
+            }
+         }
+      }
+               
+   }
+
+   for (int i = 0; i < segment_count; i++)
+      for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
+         getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
+}
+
 void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    Random rand(34577);
 
@@ -930,7 +1079,7 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, cons
 
 }
 
-void MoleculeLayoutGraph::_segment_improoving(int segments_count, Vec2f* point, float* target_angle, const MoleculeLayoutSmoothingSegment* segment, int move_vertex, float coef) {
+void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int move_vertex, float coef) {
    
    Vec2f move_vector(0, 0);
 
