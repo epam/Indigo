@@ -12,6 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include "base_cpp/profiling.h"
 #include "layout/molecule_layout_graph.h"
 #include "layout/molecule_layout_macrocycles.h"
 #include "layout/attachment_layout.h"
@@ -469,6 +470,8 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
 void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 {
  /* */ 
+   profTimerStart(t, "layout.prepearing");
+
    const int size = cycle.vertexCount();
    //printf("%d do layout cycle \n", size);
 
@@ -944,6 +947,8 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
 }
 
 void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout, Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+   profTimerStart(t, "smoothing.prepearing");
+
    int cycle_size = cycle.vertexCount();
 
    QS_DEF(Array<bool>, layout_comp_touch);
