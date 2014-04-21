@@ -29,6 +29,10 @@ if (NOT PNG_FOUND)
 
     add_library(png STATIC ${PNG_SOURCES})
 
+    if (MSVC)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4267")
+    endif()
+
     set_target_properties(png PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
     target_link_libraries(png z)
     set_property(TARGET png PROPERTY FOLDER "third_party")

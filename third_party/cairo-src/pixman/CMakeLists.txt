@@ -39,6 +39,11 @@ if (NOT PIXMAN_FOUND)
     if(UNIX OR APPLE)
         SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
     endif()
+
+    if (MSVC)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4244 /wd4146 /wd4267")
+    endif()
+
     set_target_properties(pixman PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 	 set_property(TARGET pixman PROPERTY FOLDER "third_party")
 	 pack_static(pixman)

@@ -158,6 +158,10 @@ if (NOT CAIRO_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FORTIFY_SOURCE=0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=0")
 
+    if (MSVC)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4244 /wd4146 /wd4334 /wd4267 /wd4101")
+    endif()
+
     add_library(cairo STATIC  ${CAIRO_SOURCES} ${CAIRO_WIN32_SOURCES})
 
     set_target_properties(cairo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
