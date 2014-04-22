@@ -21,7 +21,6 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/obj_array.h"
 #include "molecule/molecule.h"
-#include "layout/layout_pattern.h"
 #include "base_cpp/obj.h"
 #include "base_cpp/cancellation_handler.h"
 
@@ -144,14 +143,22 @@ public:
    void makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter);
    void makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter, Filter *edge_filter);
    void cloneLayoutGraph (MoleculeLayoutGraph &other, Array<int> *mapping);
-   void copyLayoutTo (MoleculeLayoutGraph &other, const Array<int> &mapping) const;
+   void copyLayoutTo (MoleculeLayoutGraph &other, const int *mapping) const;
 
    void layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing);
    
+   void calcMorganCode ();
+   long getMorganCode ();
+
+   void assignFirstVertex (int v);
+
    const BaseMolecule *getMolecule (const int **molecule_edge_mapping) { *molecule_edge_mapping = _molecule_edge_mapping; return _molecule; }
+   const BaseMolecule *getMolecule () { return _molecule; }
+
+   const int *getEdgeMapping () { return _molecule_edge_mapping; }
 
    int max_iterations;
-      
+
    CancellationHandler* cancellation;
    
    void flipped () { _flipped = true; }
@@ -217,13 +224,6 @@ protected:
       int maxIterationNumber;
    };
 
-   // patterns
-   void _initPatterns ();
-   static int _pattern_cmp  (PatternLayout &p1, PatternLayout &p2, void *context);
-   static int _pattern_cmp2 (PatternLayout &p1, int n_v, int n_e, long code);
-   static bool _match_pattern_bond (Graph &subgraph, Graph &supergraph, int self_idx, int other_idx, void *userdata);
-   static int  _pattern_embedding (Graph &subgraph, Graph &supergraph, int *core_sub, int *core_super, void *userdata);
-
    static bool _path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
    // for whole graph
@@ -249,7 +249,6 @@ protected:
 
    // assigning coordinates
    void _assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph);
-   bool _tryToFindPattern (int &fixed_component);
    void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignFirstCycle(const Cycle &cycle);
    void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout);
@@ -331,9 +330,6 @@ protected:
    const int *_molecule_edge_mapping;
    
    bool _flipped; // component was flipped after attaching
-
-   TL_DECL(ObjArray<PatternLayout>, _patterns);
-
 private:
    MoleculeLayoutGraph (const MoleculeLayoutGraph&);
 };

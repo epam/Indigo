@@ -16,6 +16,11 @@ if (NOT ZLIB_FOUND)
     include_directories(${ZLib_HEADERS_DIR})
 
     add_library(z STATIC ${ZLib_src} ${ZLib_headers})
+
+    if (MSVC)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4996")
+    endif()
+
         
     set_target_properties(z PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 	 set_property(TARGET z PROPERTY FOLDER "third_party")

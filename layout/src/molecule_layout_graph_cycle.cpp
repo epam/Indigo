@@ -202,3 +202,18 @@ int MoleculeLayoutGraph::Cycle::compare_cb (int &idx1, int &idx2, void *context)
 
    return cycles[idx2].morganCode() - cycles[idx1].morganCode();
 }
+
+void MoleculeLayoutGraph::calcMorganCode ()
+{
+   _calcMorganCodes();
+}
+
+long MoleculeLayoutGraph::getMorganCode ()
+{
+   return _total_morgan_code;
+}
+
+void MoleculeLayoutGraph::assignFirstVertex (int v)
+{
+   _first_vertex_idx = v;
+}

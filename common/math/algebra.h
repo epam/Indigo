@@ -137,11 +137,11 @@ struct Vec2f
       return Vec2f(x - a.x, y - a.y);
    }
 
-   inline Vec2f operator*(const float t) const {
+   inline Vec2f operator*(float t) const {
       return Vec2f(x * t, y * t);
    }
 
-   inline Vec2f operator/(const float t) const {
+   inline Vec2f operator/(float t) const {
       return Vec2f(x / t, y / t);
    }
 
@@ -157,13 +157,13 @@ struct Vec2f
       return *this;
    }
 
-   inline Vec2f operator*=(const float t) {
+   inline Vec2f operator*=(float t) {
       x *= t;
       y *= t;
       return *this;
    }
 
-   inline Vec2f operator/=(const float t) {
+   inline Vec2f operator/=(float t) {
       x /= t;
       y /= t;
       return *this;
@@ -360,6 +360,11 @@ struct Vec3f
       x = a.x * ta + b.x * tb;
       y = a.y * ta + b.y * tb;
       z = a.z * ta + b.z * tb;
+   }
+
+   inline Vec2f projectZ () const
+   {
+      return Vec2f(x, y);
    }
 
    DLLEXPORT void rotateX (float angle);

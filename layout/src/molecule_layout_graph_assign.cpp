@@ -20,6 +20,8 @@
 #include "graph/cycle_enumerator.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/morgan_code.h"
+#include "layout/layout_pattern.h"
+
 #include <math/random.h>
 #include <vector>
 #include <algorithm>
@@ -186,80 +188,6 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
    }
 }
 
-bool MoleculeLayoutGraph::_match_pattern_bond (Graph &subgraph, Graph &supergraph, int self_idx, int other_idx, void *userdata)
-{
-   if (userdata == 0 || ((MoleculeLayoutGraph *)userdata)->_molecule == 0)
-      return true;
-
-   BaseMolecule &mol = *((MoleculeLayoutGraph *)userdata)->_molecule;
-   const int *mapping = ((MoleculeLayoutGraph *)userdata)->_molecule_edge_mapping;
-
-   int layout_idx = ((const MoleculeLayoutGraph &)supergraph).getLayoutEdge(other_idx).ext_idx;
-   const PatternBond &pattern_bond = ((const PatternLayout &)subgraph).getBond(self_idx);
-
-   switch (pattern_bond.type)
-   {
-      case BOND_SINGLE:
-      case BOND_DOUBLE:
-      case BOND_TRIPLE:
-      case BOND_AROMATIC:
-         if (!mol.possibleBondOrder(mapping[layout_idx], pattern_bond.type))
-            return false;
-         break;
-      case QUERY_BOND_SINGLE_OR_DOUBLE:
-         if (!mol.possibleBondOrder(mapping[layout_idx], BOND_SINGLE) &&
-             !mol.possibleBondOrder(mapping[layout_idx], BOND_DOUBLE))
-            return false;
-         break;
-      case QUERY_BOND_SINGLE_OR_AROMATIC:
-         if (!mol.possibleBondOrder(mapping[layout_idx], BOND_SINGLE) &&
-             !mol.possibleBondOrder(mapping[layout_idx], BOND_AROMATIC))
-            return false;
-         break;
-      case QUERY_BOND_DOUBLE_OR_AROMATIC:
-         if (!mol.possibleBondOrder(mapping[layout_idx], BOND_DOUBLE) &&
-             !mol.possibleBondOrder(mapping[layout_idx], BOND_AROMATIC))
-            return false;
-         break;
-   }
-
-   int parity = mol.cis_trans.getParity(mapping[layout_idx]);
-
-   if (parity != 0 && parity != pattern_bond.parity)
-      return false;
-
-   return true;
-}
-
-int MoleculeLayoutGraph::_pattern_embedding (Graph &subgraph, Graph &supergraph, int *core_sub, int *core_super, void *userdata)
-{
-   if (userdata == 0)
-      return 1;
-
-   MoleculeLayoutGraph &layout_graph = *(MoleculeLayoutGraph *)userdata;
-   const PatternLayout &pattern_graph = (const PatternLayout &)subgraph;
-
-   int i;
-
-   // TODO: correct element marking (internal and non-planar)?
-   for (i = layout_graph.vertexBegin(); i < layout_graph.vertexEnd(); i = layout_graph.vertexNext(i))
-   {
-      layout_graph._layout_vertices[i].pos = pattern_graph.getAtom(core_super[i]).pos;
-      layout_graph._layout_vertices[i].type = ELEMENT_BOUNDARY;
-   }
-
-   for (i = layout_graph.edgeBegin(); i < layout_graph.edgeEnd(); i = layout_graph.edgeNext(i))
-      layout_graph._layout_edges[i].type = ELEMENT_BOUNDARY;
-
-   layout_graph._first_vertex_idx = layout_graph.vertexBegin();
-
-   if (layout_graph._outline.get() == 0)
-      layout_graph._outline.create();
-   layout_graph._outline->copy(pattern_graph.getOutline());
-
-   return 0;
-}
-
 void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph)
 {
    int i;
@@ -288,7 +216,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
    } 
    else
    { 
-      if (_tryToFindPattern(fixed_component))
+      if (PatternLayoutFinder::tryToFindPattern(*this))
          return;
    }
 
@@ -1817,76 +1745,6 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge (int &fixed_component, const
    }
 
    _layout_edges[edgeBegin()].type = ELEMENT_BOUNDARY;
-}
-
-bool MoleculeLayoutGraph::_tryToFindPattern (int &fixed_component)
-{
-   // try to find pattern      
-   TL_GET(ObjArray<PatternLayout>, _patterns);
-
-   MorganCode morgan(*this);
-   QS_DEF(Array<long>, morgan_codes);
-
-   morgan.calculate(morgan_codes, 3, 7);
-
-   long morgan_code = 0;
-
-   for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-      morgan_code += morgan_codes[i];
-
-   int left = 0;
-   int right = _patterns.size() - 1;
-   int pat_idx = 0;
-   int cmp;
-
-   while (left < right)
-   {
-      if (right - left == 1)
-      {
-         if (_pattern_cmp2(_patterns[left], vertexCount(), edgeCount(), morgan_code) == 0)
-            pat_idx = left;
-         else if (_pattern_cmp2(_patterns[right], vertexCount(), edgeCount(), morgan_code) == 0) 
-            pat_idx = right;
-         break;
-      }
-
-      pat_idx = (right + left) / 2;
-
-      cmp = _pattern_cmp2(_patterns[pat_idx], vertexCount(), edgeCount(), morgan_code);
-
-      if (cmp < 0)
-         left = pat_idx;
-      else
-         right = pat_idx;
-   }
-
-   while (pat_idx > 0 && _pattern_cmp2(_patterns[pat_idx - 1], vertexCount(), edgeCount(), morgan_code) == 0)
-      pat_idx--;
-
-   while (pat_idx < _patterns.size() && _pattern_cmp2(_patterns[pat_idx], vertexCount(), edgeCount(), morgan_code) == 0)
-   {
-      // Match pattern
-      // TODO: check different attachment points
-      PatternLayout &pattern = _patterns[pat_idx];
-
-      EmbeddingEnumerator ee(*this);
-
-      ee.setSubgraph(pattern);
-      ee.cb_match_edge = _match_pattern_bond;
-      ee.cb_embedding = _pattern_embedding;
-      ee.userdata = this;
-
-      if (!ee.process())
-      {
-         if (pattern.isFixed())
-            fixed_component = 1;
-         return true;
-      }
-
-      pat_idx++;
-   }
-
-   return false;
 }
 
 void MoleculeLayoutGraph::_findFirstVertexIdx (int n_comp, Array<int> & fixed_components, ObjArray<MoleculeLayoutGraph> &bc_components, bool all_trivial)
