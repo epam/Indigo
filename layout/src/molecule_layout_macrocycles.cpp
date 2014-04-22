@@ -361,12 +361,28 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    dx[4] = 0; dy[4] = -1;
    dx[5] = 1; dy[5] = -1;
 
-   for (int i = 0; i <= length; i++)
+   int infinity = 30000;
+
+/*   for (int i = 0; i <= length; i++)
       for (int j = max(init_rot - length, 0); j < min(max_size, init_rot + length + 1); j++)
          for (int p = 0; p < 2; p++) 
             for (int k = max(init_x - length, 0); k < min(init_x + length + 1, max_size); k++)
                for (int t = max(init_y - length, 0); t < min(init_y + length + 1, max_size); t++)
-                  minRotates[i][j][p][k][t] = 30000;
+                  minRotates[i][j][p][k][t] = infinity;*/
+
+   int x_left = max(init_x - length, 1);
+   int x_right = min(init_x - length, max_size - 2);
+   int y_left = max(init_y - length, 1);
+   int y_right = min(init_y - length, max_size - 2);
+   int rot_left = max(init_rot - length, 1);
+   int rot_right = min(init_rot - length, max_size - 2);
+
+   for (int i = 0; i <= length; i++)
+      for (int j = rot_left - 1; j <= rot_right + 1; j++)
+         for (int p = 0; p < 2; p++) 
+            for (int k = x_left - 1; k <= x_right + 1; k++)
+               for (int t = y_left - 1; t <= y_right + 1; t++)
+                  minRotates[i][j][p][k][t] = infinity;
 
    minRotates[0][init_rot][1][init_x][init_y] = 0;
    minRotates[1][init_rot][1][init_x + 1][init_y] = 0;
@@ -380,19 +396,15 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          if (_edge_stereo[length - 1] == MoleculeCisTrans::CIS) not_this_p = 0;
          if (_edge_stereo[length - 1] == MoleculeCisTrans::TRANS) not_this_p = 1;
       }
-      for (int rot = init_rot - length; rot <= init_rot + length; rot++) {
+      for (int rot = rot_left; rot <= rot_right; rot++) {
          if (!_vertex_stereo[k]) {
             int xchenge = dx[rot % 6];
             int ychenge = dy[rot % 6];
             for (int p = 0; p < 2; p++) if (p != not_this_p) {
-               int x_start = max(init_x - max_dist, init_x - max_dist + xchenge);
-               int x_finish = min(init_x + max_dist, init_x + max_dist + xchenge);
-               int y_start = max(init_y - max_dist, init_y - max_dist + ychenge);
-               int y_finish = min(init_y + max_dist, init_y + max_dist + ychenge);
-               for (int x = x_start; x <= x_finish; x++) {
+               for (int x = x_left; x <= x_right; x++) {
                   signed short *ar1 = minRotates[k + 1][rot][p][x + xchenge] + ychenge;
                   signed short *ar2 = minRotates[k][rot][p][x];
-                  for (int y = y_start; y <= y_finish; y++) {
+                  for (int y = y_left; y <= y_right; y++) {
                      if (ar1[y] > ar2[y]) {
                         ar1[y] = ar2[y];
                      }
@@ -413,14 +425,10 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                   int add = 1;
                   if (!p && _vertex_weight[k] > 2) add += _vertex_weight[k];
 
-                  int x_start = max(init_x - max_dist, init_x - max_dist + xchenge);
-                  int x_finish = min(init_x + max_dist, init_x + max_dist + xchenge);
-                  int y_start = max(init_y - max_dist, init_y - max_dist + ychenge);
-                  int y_finish = min(init_y + max_dist, init_y + max_dist + ychenge);
-                  for (int x = x_start; x <= x_finish; x++) {
+                  for (int x = x_left; x <= x_right; x++) {
                      signed short *ar1 = minRotates[k + 1][nextRot][p][x + xchenge] + ychenge;
                      signed short *ar2 = minRotates[k][rot][p][x];
-                     for (int y = y_start; y <= y_finish; y++) {
+                     for (int y = y_left; y <= y_right; y++) {
                         if (ar1[y] > ar2[y] + add) {
                            ar1[y] = ar2[y] + add;
                         }
@@ -439,14 +447,10 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                   int xchenge = dx[nextRot % 6];
                   int ychenge = dy[nextRot % 6];
 
-                  int x_start = max(init_x - max_dist, init_x - max_dist + xchenge);
-                  int x_finish = min(init_x + max_dist, init_x + max_dist + xchenge);
-                  int y_start = max(init_y - max_dist, init_y - max_dist + ychenge);
-                  int y_finish = min(init_y + max_dist, init_y + max_dist + ychenge);
-                  for (int x = x_start; x <= x_finish; x++) {
+                  for (int x = x_left; x <= x_right; x++) {
                      signed short *ar1 = minRotates[k + 1][nextRot][p ^ 1][x + xchenge] + ychenge;
                      signed short *ar2 = minRotates[k][rot][p][x];
-                     for (int y = y_start; y <= y_finish; y++) {
+                     for (int y = y_left; y <= y_right; y++) {
                         if (ar1[y] > ar2[y] + add) {
                            ar1[y] = ar2[y] + add;
                         }
@@ -458,11 +462,11 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       }
    }
 
-   for (int rot = max(init_rot - length, 0); rot < min(max_size, init_rot + length + 1); rot++)
+   for (int rot = rot_left; rot <= rot_right; rot++)
       for (int p = 0; p < 2; p++) 
-         for (int k = max(init_x - length, 0); k < min(init_x + length + 1, max_size); k++)
-            for (int t = max(init_y - length, 0); t < min(init_y + length + 1, max_size); t++)
-               if (minRotates[length][rot][p][k][t] != CHAR_MAX) {
+         for (int k = x_left; k <= x_right; k++)
+            for (int t = y_left; t <= y_right; t++)
+               if (minRotates[length][rot][p][k][t] != infinity) {
                   if ((_edge_stereo[length - 1] == MoleculeCisTrans::TRANS && p) ||
                      (_edge_stereo[length - 1] == MoleculeCisTrans::CIS && !p) ||
                         rot > init_rot + 6) minRotates[length][rot][p][k][t] += _vertex_weight[0];
@@ -474,12 +478,12 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    int best_y = 0;
    int best_rot = 0;
    int best_diff = 127 * 300;
-   for (int rot = max(init_rot - length, 0); rot <= min(init_rot + length, max_size - 1); rot++) {
+   for (int rot = rot_left; rot <= rot_right; rot++) {
       for (int p = 0; p < 2; p++) {
-         for (int x = max(init_x - length, 0); x <= min(init_x + length, max_size - 1); x++) {
-            for (int y = max(init_y - length, 0); y <= min(init_y + length, max_size - 1); y++) {
+         for (int x = x_left; x <= x_right; x++) {
+            for (int y = y_left; y <= y_right; y++) {
                //if (rot == init_rot) printf("%d %d %d %d\n", rot, p, x, y);
-               if (minRotates[length][rot][p][x][y] < CHAR_MAX) {
+               if (minRotates[length][rot][p][x][y] < infinity) {
                   //printf("!!!");
                   int diffCoord;
                   int startx = init_x;
@@ -500,12 +504,13 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 
                   int add = 0;
 
-                  if (2*(diffRot + diffCoord) + (int)minRotates[length][rot][p][x][y] < best_diff) {
+                  int curdiff = 20*diffRot + 10 * diffCoord + (int)minRotates[length][rot][p][x][y];
+                  if (curdiff < best_diff) {
                      best_p = p;
                      best_x = x;
                      best_y = y;
                      best_rot = rot;
-                     best_diff = 2*(diffRot + diffCoord) + (int)minRotates[length][rot][p][x][y];
+                     best_diff = curdiff;
                   }
                }
             }
@@ -520,12 +525,12 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    vector<int> diffs;
 
    for (int global_diff = 0; global_diff <= 4; global_diff++) {
-      for (int rot = max(init_rot - length, 0); rot <= min(init_rot + length, max_size - 1); rot++) {
+      for (int rot = rot_left; rot <= rot_right; rot++) {
          for (int p = 0; p < 2; p++) {
-            for (int x = max(init_x - length, 0); x <= min(init_x + length, max_size - 1); x++) {
-               for (int y = max(init_y - length, 0); y <= min(init_y + length, max_size - 1); y++) {
+            for (int x = x_left; x <= x_right; x++) {
+               for (int y = y_left; y <= y_right; y++) {
                   //if (rot == init_rot) printf("%d %d %d %d\n", rot, p, x, y);
-                  if (minRotates[length][rot][p][x][y] < CHAR_MAX) {
+                  if (minRotates[length][rot][p][x][y] < infinity) {
                      //printf("!!!");
                      int diffCoord;
                      int startx = init_x;
@@ -544,7 +549,8 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                      //TODO: pay attantion to last edge trans-cis configuration
                      diffRot = abs(abs(rot - (init_rot + 6)) - 1);
 
-                     if (2*(diffRot + diffCoord) + minRotates[length][rot][p][x][y] == best_diff + global_diff) {
+                     int curdiff = 20*diffRot + 10 * diffCoord + (int)minRotates[length][rot][p][x][y];
+                     if (curdiff == best_diff + global_diff) {
                         xs.push_back(x);
                         ys.push_back(y);
                         ps.push_back(p);
@@ -558,11 +564,11 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       }
    }
 
-   for (int rot = max(init_rot - length, 0); rot < min(max_size, init_rot + length + 1); rot++)
+   for (int rot = rot_left; rot <= rot_right; rot++)
       for (int p = 0; p < 2; p++) 
-         for (int k = max(init_x - length, 0); k < min(init_x + length + 1, max_size); k++)
-            for (int t = max(init_y - length, 0); t < min(init_y + length + 1, max_size); t++)
-               if (minRotates[length][rot][p][k][t] != CHAR_MAX) {
+         for (int k = x_left; k <= x_right; k++)
+            for (int t = y_left; t <= y_right; t++)
+               if (minRotates[length][rot][p][k][t] != infinity) {
                   if ((_edge_stereo[length - 1] == MoleculeCisTrans::TRANS && p) ||
                      (_edge_stereo[length - 1] == MoleculeCisTrans::CIS && !p) ||
                         rot > init_rot + 6) minRotates[length][rot][p][k][t] -= _vertex_weight[0];
@@ -639,9 +645,10 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                //printf("%d %5.5f\n", k, x/(2*sin(R/2)));
             }
             
-
+            p_result[k] = 2;
 //            int is_cis_better = (2*PI * (k - 1) / length < PI/3 * (rot_result[k] - init_rot) + PI/length) ^ (!p_result[k + 1]);
             int is_cis_better = (alpha < PI/3 * (rot_result[k] - init_rot) + PI/length) ^ (!p_result[k + 1]);
+            //is_cis_better = false;
 
             if (!is_cis_better) {
                if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) {
@@ -664,6 +671,12 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                      p_result[k] = p_result[k + 1];
                   }
                }
+            }
+
+            if (p_result[k] == 2) {
+               for (int i = length; i >= k; i--)
+                  printf("k = %d; x = %d; y = %d; p = %d; rot = %d; value = %d\n", i, x_result[i], y_result[i], p_result[i], rot_result[i], minRotates[i][rot_result[i]][p_result[i]][x_result[i]][y_result[i]]);
+               throw Exception("Path not find (%d): %d.", length, minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]);
             }
          }
          //printf("\n");
