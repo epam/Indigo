@@ -362,6 +362,11 @@ struct Vec3f
       z = a.z * ta + b.z * tb;
    }
 
+   inline Vec2f projectZ () const
+   {
+      return Vec2f(x, y);
+   }
+
    DLLEXPORT void rotateX (float angle);
    DLLEXPORT void rotateY (float angle);
    DLLEXPORT void rotateZ (float angle);

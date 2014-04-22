@@ -317,7 +317,7 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
 
    // Copy new layout
    if (is_attached)
-      next_bc.copyLayoutTo(*this, mapping);
+      next_bc.copyLayoutTo(*this, mapping.ptr());
 
    return is_attached;
 }
@@ -442,7 +442,7 @@ bool MoleculeLayoutGraph::_attachCycleInside (const Cycle &cycle, float length)
 
    // Copy new layout
    if (attached)
-      next_bc.copyLayoutTo(*this, mapping);
+      next_bc.copyLayoutTo(*this, mapping.ptr());
 
    return attached;
 }

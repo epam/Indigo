@@ -16,9 +16,6 @@
 #define __layout_pattern_h__
 
 #include "base_c/defs.h"
-#include "base_cpp/array.h"
-#include "math/algebra.h"
-#include "graph/graph.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -28,57 +25,18 @@
 namespace indigo
 {
 
-struct PatternAtom
-{
-   explicit PatternAtom (Vec2f pos_) : pos(pos_) {}
-   Vec2f pos;
-};
+class MoleculeLayoutGraph;
+class Graph;
 
-struct PatternBond
-{
-   explicit PatternBond (int type_) : type(type_), parity(0) {}
-
-   int type;        // see BOND_***
-   int parity;
-};
-
-class DLLEXPORT PatternLayout : public Graph
+class DLLEXPORT PatternLayoutFinder
 {      
 public:
-   explicit PatternLayout ();
-   virtual ~PatternLayout ();
+   static bool tryToFindPattern (MoleculeLayoutGraph &layout_graph);
 
-   int addBond (int atom_beg, int atom_end, int type);
-   int addAtom (float x, float y);
-   int addOutlinePoint (float x, float y);
-   bool isFixed () const { return _fixed; }
-   void fix () { _fixed = true; }
-   void setName (const char *name) { _name.readString(name, true); }
-   const char * getName () const { return _name.ptr(); }
+private:
 
-   void calcMorganCode ();
-   long morganCode () const { return _morgan_code; }
-
-   const PatternAtom  & getAtom       (int idx) const;
-   const PatternBond  & getBond       (int idx) const;
-   const Array<Vec2f> & getOutline    () const { return _outline; }
-
-   DECL_ERROR;
-
-protected:
-
-   Array<PatternAtom> _atoms;
-   Array<PatternBond> _bonds;
-
-   Array<Vec2f> _outline;
-
-   Array<char> _name;
-
-   long _morgan_code;
-   bool _fixed;
-
-   // no implicit copy
-   PatternLayout (const PatternLayout &);
+   static void _initPatterns ();
+   static bool _matchPatternBond (Graph &subgraph, Graph &supergraph, int self_idx, int other_idx, void *userdata);
 };
 
 }
