@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <math/random.h>
 #include "layout/molecule_layout.h"
+#include <algorithm>
 
 using namespace std;
 using namespace indigo;
@@ -141,7 +142,7 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
    Vec2f p3 = (p1 + p2)/2;
 
    if (rotateAngle[worstVertex] != 0) {
-      Vec2f a = (p2 - p1)/sqrt(12.0);
+      Vec2f a = (p2 - p1)/sqrt(12.0f);
       a.rotate(PI/2 * rotateAngle[worstVertex]);
       p3 += a;
    } else {
@@ -371,11 +372,11 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                   minRotates[i][j][p][k][t] = infinity;*/
 
    int x_left = max(init_x - length, 1);
-   int x_right = min(init_x - length, max_size - 2);
+   int x_right = min(init_x + length, max_size - 2);
    int y_left = max(init_y - length, 1);
-   int y_right = min(init_y - length, max_size - 2);
+   int y_right = min(init_y + length, max_size - 2);
    int rot_left = max(init_rot - length, 1);
-   int rot_right = min(init_rot - length, max_size - 2);
+   int rot_right = min(init_rot + length, max_size - 2);
 
    for (int i = 0; i <= length; i++)
       for (int j = rot_left - 1; j <= rot_right + 1; j++)
