@@ -711,8 +711,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 
 double MoleculeLayoutMacrocycles::depictionCircle() {
 
-   const int max_size = 100;
-   
    int cisCount = 0;
    for (int i = 0; i < length; i++) if (_edge_stereo[i] == MoleculeCisTrans::CIS) cisCount++;
 
@@ -721,10 +719,12 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
       if (_edge_stereo[i] == 0) zero_edge_stereo_count++;
    if (zero_edge_stereo_count == 0) return 1000000;
 
-   bool up[100];
-   bool only_up[100];
-   for (int i = 0; i < length; i++) up[i] = false;
-   for (int i = 0; i < length; i++) only_up[i] = false;
+   QS_DEF(Array<bool>, up);
+   QS_DEF(Array<bool>, only_up);
+   up.clear_resize(length + 1);
+   only_up.clear_resize(length + 1);
+   up.zerofill();
+   only_up.zerofill();
 
    for (int i = 0; i < length; i++)
       if (_edge_stereo[i] == MoleculeCisTrans::CIS && _edge_stereo[(i + length - 1) % length] == MoleculeCisTrans::CIS) {
@@ -828,9 +828,8 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
 
    double r = length * sqrt(3.0)/2 / (2 * PI);
 
-   double x[100];
-   double y[100];
-   Vec2f p[100];
+   QS_DEF(Array<Vec2f>, p);
+   p.clear_resize(length);
 
    for (int i = 0; i < length; i++) {
       double rr = r;
@@ -841,7 +840,9 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
       p[i].rotate(2*PI/length*i);
    }
 
-   int rotateAngle[100];
+   QS_DEF(Array<int>, rotateAngle);
+   rotateAngle.clear_resize(length);
+
    for (int i = 0; i < length; i++) rotateAngle[i] = -1;
    int i = 0;
    while (_edge_stereo[(i - 1 + length) % length] != 0 && _edge_stereo[i] != 0) i++;
@@ -850,10 +851,12 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
       else if (_edge_stereo[(i - 1 + length) % length] == MoleculeCisTrans::TRANS) rotateAngle[i] = -rotateAngle[(i - 1 + length) % length];
       else rotateAngle[i] = up[i] ? 1 : (up[(i + 1) % length] || up[(i + length - 1) % length]) ? -1 : 1;
 
-   int edgeLength[100];
+   QS_DEF(Array<int>, edgeLength);
+   edgeLength.clear_resize(length);
    for (i = 0; i < length; i++) edgeLength[i] = 1;
 
-   int vertexNumber[100];
+   QS_DEF(Array<int>, vertexNumber);
+   vertexNumber.clear_resize(length);
    for (i = 0; i < length; i++) vertexNumber[i] = i;
 
    /*double angle = PI * 2 * rand() / RAND_MAX;
@@ -866,7 +869,7 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
       y[i] = yy;
    }*/
 
-   smoothing(length, length, rotateAngle, edgeLength, vertexNumber, p, false, 0);
+   smoothing(length, length, rotateAngle.ptr(), edgeLength.ptr(), vertexNumber.ptr(), p.ptr(), false, 0);
 
    
    for (i = 0; i < length; i++)
@@ -880,5 +883,5 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
       _positions[i] = p[i];
    }
 
-   return badness(length, length, rotateAngle, edgeLength, vertexNumber, p);
+   return badness(length, length, rotateAngle.ptr(), edgeLength.ptr(), vertexNumber.ptr(), p.ptr());
 }
