@@ -23,6 +23,8 @@
 #include "molecule/molecule_substructure_matcher.h"
 #include "layout/molecule_layout_graph.h"
 
+#include "base_cpp/profiling.h"
+
 #include <memory>
 #include <vector>
 
@@ -63,6 +65,8 @@ bool PatternLayoutFinder::tryToFindPattern (MoleculeLayoutGraph &layout_graph)
 
       OsLocker locker(_patterns_lock);
 
+      profTimerStart(t0, "layout.find-pattern");
+
       // Check if substructure matching found
       EmbeddingEnumerator ee(layout_graph);
 
@@ -96,6 +100,8 @@ void PatternLayoutFinder::_initPatterns ()
    if (!_patterns.empty())
       return;
 
+   profTimerStart(t0, "layout.init-patterns");
+
    _patterns.reserve(NELEM(layout_templates));
    for (const char *tpl : layout_templates)
    {
@@ -123,11 +129,13 @@ bool PatternLayoutFinder::_matchPatternBond (Graph &subgraph, Graph &supergraph,
    BaseMolecule *mol = (BaseMolecule *)target.getMolecule();
 
    int layout_idx = target.getLayoutEdge(super_idx).ext_idx;
+   if (target.getEdgeMapping() != nullptr)
+      layout_idx = target.getEdgeMapping()[layout_idx];
 
    QueryMolecule &qmol = (QueryMolecule &)subgraph;
-   QueryMolecule::Bond &sub_bond = qmol.getBond(layout_idx);
+   QueryMolecule::Bond &sub_bond = qmol.getBond(sub_idx);
 
-   if (!MoleculeSubstructureMatcher::matchQueryBond(&sub_bond, *mol, sub_idx, super_idx, nullptr, 0xFFFFFFFF))
+   if (!MoleculeSubstructureMatcher::matchQueryBond(&sub_bond, *mol, sub_idx, layout_idx, nullptr, 0xFFFFFFFF))
       return false;
 
    return true;
