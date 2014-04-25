@@ -78,10 +78,18 @@ bool PatternLayoutFinder::tryToFindPattern (MoleculeLayoutGraph &layout_graph)
          // Embedding has been found -> copy coordinates
          const int *mapping = ee.getSubgraphMapping();
          QueryMolecule &qm = pattern->query_molecule;
+         int v0 = layout_graph.vertexBegin();
          for (int v = qm.vertexBegin(); v != qm.vertexEnd(); v = qm.vertexNext(v))
-            layout_graph.getPos(mapping[v]) = qm.getAtomXyz(v).projectZ();
+         {
+            layout_graph.getPos(mapping[v]) = qm.getAtomXyz(v).projectZ() - qm.getAtomXyz(v0).projectZ();
+         }
 
-         layout_graph.assignFirstVertex(layout_graph.vertexBegin());
+         for (int v = layout_graph.vertexBegin(); v != layout_graph.vertexEnd(); v = layout_graph.vertexNext(v))
+            layout_graph.setVertexType(v, ELEMENT_DRAWN);
+         for (int e = layout_graph.edgeBegin(); e != layout_graph.edgeEnd(); e = layout_graph.edgeNext(e))
+            layout_graph.setEdgeType(e, ELEMENT_DRAWN);
+
+         layout_graph.assignFirstVertex(v0);
 
          return true;
       }
