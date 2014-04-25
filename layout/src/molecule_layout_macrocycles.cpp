@@ -310,11 +310,11 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
 
 int MoleculeLayoutMacrocycles::get_diff(int x, int y, int rot, int value) {
    int diffCoord;
-   int startx = init_x;
-   int starty = init_y;
 
-   if ((x - startx) * (y - starty) >= 0) diffCoord = abs(x - startx) + abs(y - starty); // x and y both positive or negative, vector (y+x) is not neseccary
-   else diffCoord = max(abs(x - startx), abs(y - starty)); // x and y are has got different signs, vector (y-x) is neseccary
+   x -= init_x;
+   y -= init_y;
+   if (x * y >= 0) diffCoord = abs(x) + abs(y); // x and y both positive or negative, vector (y+x) is not neseccary
+   else diffCoord = max(abs(x), abs(y)); // x and y are has got different signs, vector (y-x) is neseccary
    int diffRot = abs(abs(rot - (init_rot + 6)) - 1);
 
    return 20 * diffRot + 10 * diffCoord + value;
@@ -474,55 +474,46 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                         rot > init_rot + 6) minRotates[length][rot][p][k][t] += _vertex_weight[0];
                }
 
-   //printf("Process finished.\n");
-   int best_p = 0;
-   int best_x = 0;
-   int best_y = 0;
-   int best_rot = 0;
    int best_diff = infinity;
-   for (int rot = rot_left; rot <= rot_right; rot++) {
-      for (int p = 0; p < 2; p++) {
-         for (int x = x_left; x <= x_right; x++) {
-            for (int y = y_left; y <= y_right; y++) {
-               //if (rot == init_rot) printf("%d %d %d %d\n", rot, p, x, y);
-               if (minRotates[length][rot][p][x][y] < infinity) {
+   for (int rot = rot_left; rot <= rot_right; rot++)
+      for (int p = 0; p < 2; p++)
+         for (int x = x_left; x <= x_right; x++)
+            for (int y = y_left; y <= y_right; y++)
+               if (minRotates[length][rot][p][x][y] < infinity)
+                  best_diff = min(best_diff, get_diff(x, y, rot, minRotates[length][rot][p][x][y]));
+        
+   
+   struct point {
+      int diff;
+      int x;
+      int y;
+      int p;
+      int rot;
 
-                  int curdiff = get_diff(x, y, rot, minRotates[length][rot][p][x][y]);
-                  if (curdiff < best_diff) {
-                     best_p = p;
-                     best_x = x;
-                     best_y = y;
-                     best_rot = rot;
-                     best_diff = curdiff;
-                  }
-               }
-            }
-         }
+      point(int _d, int _x, int _y, int _p, int _r) {
+         diff = _d;
+         x = _x;
+         y = _y;
+         p = _p;
+         rot = _r;
       }
-   }
+   };
 
-   vector<int> ps;
-   vector<int> xs;
-   vector<int> ys;
-   vector<int> rots;
-   vector<int> diffs;
+   QS_DEF(ObjArray<point>, points);
+   points.clear();
 
    for (int global_diff = 0; global_diff <= 4; global_diff++) {
       for (int rot = rot_left; rot <= rot_right; rot++) {
          for (int p = 0; p < 2; p++) {
             for (int x = x_left; x <= x_right; x++) {
                for (int y = y_left; y <= y_right; y++) {
-                  //if (rot == init_rot) printf("%d %d %d %d\n", rot, p, x, y);
                   if (minRotates[length][rot][p][x][y] < infinity) {
 
                      int curdiff = get_diff(x, y, rot, minRotates[length][rot][p][x][y]);
 
                      if (curdiff == best_diff + global_diff) {
-                        xs.push_back(x);
-                        ys.push_back(y);
-                        ps.push_back(p);
-                        rots.push_back(rot);
-                        diffs.push_back(global_diff);
+                        point curr_point(global_diff, x, y, p, rot);
+                        points.push(curr_point);
                      }
                   }
                }
@@ -551,12 +542,12 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 
    int last_rotate_angle = 1;
 
-   for (int index = 0; index < xs.size() && bestBadness > 0.001; index++) {
+   for (int index = 0; index < points.size() && bestBadness > 0.001; index++) {
       int displayIndex = index;
-      x_result[length] = xs[index];
-      y_result[length] = ys[index];
-      rot_result[length] = rots[index];
-      p_result[length] = ps[index];
+      x_result[length] = points[index].x;
+      y_result[length] = points[index].y;
+      rot_result[length] = points[index].rot;
+      p_result[length] = points[index].p;
 
       for (int k = length - 1; k > 0; k--) {
          int xchenge = dx[rot_result[k + 1] % 6];
@@ -626,7 +617,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
             }
 
             if (p_result[k] == 2) {
-               throw Exception("Path not find (%d): %d.", length, minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]);
+               throw Error("Path not find (%d): %d.", length, minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]);
             }
          }
       }
