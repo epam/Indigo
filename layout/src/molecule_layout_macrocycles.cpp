@@ -36,6 +36,9 @@ using namespace indigo;
 IMPL_ERROR(MoleculeLayoutMacrocycles, "molecule_layout_macrocycles");
 
 const int MoleculeLayoutMacrocycles::max_size = MoleculeLayoutMacrocycles::Data::max_size;
+const int MoleculeLayoutMacrocycles::init_x = MoleculeLayoutMacrocycles::Data::max_size / 2;
+const int MoleculeLayoutMacrocycles::init_y = MoleculeLayoutMacrocycles::Data::max_size / 2;
+const int MoleculeLayoutMacrocycles::init_rot = MoleculeLayoutMacrocycles::Data::max_size / 2 / 6 * 6;
 
 CP_DEF(MoleculeLayoutMacrocycles);
 
@@ -305,24 +308,36 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
 
 }
 
+int MoleculeLayoutMacrocycles::get_diff(int x, int y, int rot, int value) {
+   int diffCoord;
+   int startx = init_x;
+   int starty = init_y;
+
+   if ((x - startx) * (y - starty) >= 0) diffCoord = abs(x - startx) + abs(y - starty); // x and y both positive or negative, vector (y+x) is not neseccary
+   else diffCoord = max(abs(x - startx), abs(y - starty)); // x and y are has got different signs, vector (y-x) is neseccary
+   int diffRot = abs(abs(rot - (init_rot + 6)) - 1);
+
+   return 20 * diffRot + 10 * diffCoord + value;
+}
+
+void rotate(int* ar, int ar_length, int shift) {
+   QS_DEF(Array<int>, temp);
+   temp.clear_resize(ar_length);
+   shift = (shift % ar_length + ar_length) % ar_length;
+   memcpy(temp.ptr(), ar + shift, (ar_length - shift) * sizeof(int));
+   memcpy(temp.ptr() + ar_length - shift, ar, shift * sizeof(int));
+   memcpy(ar, temp.ptr(), ar_length * sizeof(int));
+}
+
 double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 {
-   //const int max_size = 100;
-//   const int molSize = length;
-
-   //printf("Process started.\n");
-
    signed short (&minRotates)[max_size][max_size][2][max_size][max_size] = data.minRotates;
    //first : number of edge
    //second : summary angle of rotation (in PI/3 times)
    //third : last rotation is contraclockwise
    //fourth : x-coordinate
    //fifth : y-coordinate
-   //value : minimum number of vertexes sticked out
-
-   /*    int len = max_size * max_size * max_size * max_size * 2;
-   signed char *y = ****minRotates;
-   for (int i = 0; i < len; i++) y[i] = CHAR_MAX;*/
+   //value : minimum number of vertexes sticked out + count of CIS-configurations
 
    int shift = 0;
    for (int i = 0; i < length; i++) 
@@ -337,21 +352,13 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                break;
          }
    }
-   int temporary[max_size];
 
    for (int i = 0; i < length; i++) 
       if (_vertex_weight[i] > 0) _vertex_weight[i]++;
-
-   for (int i = 0; i < length; i++) temporary[i] = _vertex_weight[(i + shift) % length];
-   for (int i = 0; i < length; i++) _vertex_weight[i] = temporary[i];
-   for (int i = 0; i < length; i++) temporary[i] = _vertex_stereo[(i + shift) % length];
-   for (int i = 0; i < length; i++) _vertex_stereo[i] = temporary[i];
-   for (int i = 0; i < length; i++) temporary[i] = _edge_stereo[(i + shift) % length];
-   for (int i = 0; i < length; i++) _edge_stereo[i] = temporary[i];
-
-   const int init_x = max_size/2;
-   const int init_y = max_size/2;
-   const int init_rot = max_size/2 /6*6;
+   
+   rotate(_vertex_weight.ptr(), length, shift);
+   rotate(_vertex_stereo.ptr(), length, shift);
+   rotate(_edge_stereo.ptr(), length, shift);
 
    int dx[6];
    int dy[6];
@@ -364,12 +371,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 
    int infinity = 30000;
 
-/*   for (int i = 0; i <= length; i++)
-      for (int j = max(init_rot - length, 0); j < min(max_size, init_rot + length + 1); j++)
-         for (int p = 0; p < 2; p++) 
-            for (int k = max(init_x - length, 0); k < min(init_x + length + 1, max_size); k++)
-               for (int t = max(init_y - length, 0); t < min(init_y + length + 1, max_size); t++)
-                  minRotates[i][j][p][k][t] = infinity;*/
 
    int x_left = max(init_x - length, 1);
    int x_right = min(init_x + length, max_size - 2);
@@ -478,34 +479,15 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    int best_x = 0;
    int best_y = 0;
    int best_rot = 0;
-   int best_diff = 127 * 300;
+   int best_diff = infinity;
    for (int rot = rot_left; rot <= rot_right; rot++) {
       for (int p = 0; p < 2; p++) {
          for (int x = x_left; x <= x_right; x++) {
             for (int y = y_left; y <= y_right; y++) {
                //if (rot == init_rot) printf("%d %d %d %d\n", rot, p, x, y);
                if (minRotates[length][rot][p][x][y] < infinity) {
-                  //printf("!!!");
-                  int diffCoord;
-                  int startx = init_x;
-                  int starty = init_y;
-/*                  if (rot % 6 == 1) {
-                     startx--;
-                     starty--;
-                  }
-                  if (rot % 6 == 5) {
-                     startx -= 2;
-                     starty++;
-                  }*/
-                  if ((x - startx) * (y - starty) >= 0) diffCoord = abs(x - startx) + abs(y - starty); // x and y both positive or negative, vector (y+x) is not neseccary
-                  else diffCoord = max(abs(x - startx), abs(y - starty)); // x and y are has got different signs, vector (y-x) is neseccary
-                  int diffRot;
-                  //TODO: pay attantion to last edge trans-cis configuration
-                  diffRot = abs(abs(rot - (init_rot + 6)) - 1);
 
-                  int add = 0;
-
-                  int curdiff = 20*diffRot + 10 * diffCoord + (int)minRotates[length][rot][p][x][y];
+                  int curdiff = get_diff(x, y, rot, minRotates[length][rot][p][x][y]);
                   if (curdiff < best_diff) {
                      best_p = p;
                      best_x = x;
@@ -532,25 +514,9 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                for (int y = y_left; y <= y_right; y++) {
                   //if (rot == init_rot) printf("%d %d %d %d\n", rot, p, x, y);
                   if (minRotates[length][rot][p][x][y] < infinity) {
-                     //printf("!!!");
-                     int diffCoord;
-                     int startx = init_x;
-                     int starty = init_y;
-/*                     if (rot % 6 == 1) {
-                        startx--;
-                        starty--;
-                     }
-                     if (rot % 6 == 5) {
-                        startx -= 2;
-                        starty++;
-                     }*/
-                     if ((x - startx) * (y - starty) >= 0) diffCoord = abs(x - startx) + abs(y - starty); // x and y both positive or negative, vector (y+x) is not neseccary
-                     else diffCoord = max(abs(x - startx), abs(y - starty)); // x and y are has got diggerent signs, vector (y-x) is neseccary
-                     int diffRot;
-                     //TODO: pay attantion to last edge trans-cis configuration
-                     diffRot = abs(abs(rot - (init_rot + 6)) - 1);
 
-                     int curdiff = 20*diffRot + 10 * diffCoord + (int)minRotates[length][rot][p][x][y];
+                     int curdiff = get_diff(x, y, rot, minRotates[length][rot][p][x][y]);
+
                      if (curdiff == best_diff + global_diff) {
                         xs.push_back(x);
                         ys.push_back(y);
@@ -575,10 +541,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                         rot > init_rot + 6) minRotates[length][rot][p][k][t] -= _vertex_weight[0];
                }
 
-//   printf("Best diff: %d\n", best_diff);
-//   printf("Best position: %d %d %d %d\n", best_x, best_y, best_rot, best_p);
-//   printf("Inside atoms in best case: %d\n", minRotates[length][best_rot][best_p][best_x][best_y]);
-
    int x_result[max_size + 1];
    int y_result[max_size + 1];
    int rot_result[max_size + 1];
@@ -587,23 +549,16 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    double bestBadness = 1e30;
    int bestIndex = 0;
 
-//   printf("We will encounted %d variants\n", xs.size());
-
    int last_rotate_angle = 1;
 
-//   printf("-- Start\n");
-   
    for (int index = 0; index < xs.size() && bestBadness > 0.001; index++) {
-   //for (int index = 0; index < xs.size(); index++) {
       int displayIndex = index;
-      //printf("%d\n", index);
       x_result[length] = xs[index];
       y_result[length] = ys[index];
       rot_result[length] = rots[index];
       p_result[length] = ps[index];
 
       for (int k = length - 1; k > 0; k--) {
-         //printf("k: %d\n", k);
          int xchenge = dx[rot_result[k + 1] % 6];
          int ychenge = dy[rot_result[k + 1] % 6];
          x_result[k] = x_result[k + 1] - xchenge;
@@ -612,7 +567,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          if (!_vertex_stereo[k]) {
             p_result[k] = p_result[k + 1];
             rot_result[k] = rot_result[k + 1];
-            //printf("+");
          } else {
             if (p_result[k + 1]) rot_result[k] = rot_result[k + 1] - 1;
             else rot_result[k] = rot_result[k + 1] + 1;
@@ -643,13 +597,10 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 
                alpha = vec.tiltAngle2() + R/2;
 
-               //printf("%d %5.5f\n", k, x/(2*sin(R/2)));
             }
             
             p_result[k] = 2;
-//            int is_cis_better = (2*PI * (k - 1) / length < PI/3 * (rot_result[k] - init_rot) + PI/length) ^ (!p_result[k + 1]);
             int is_cis_better = (alpha < PI/3 * (rot_result[k] - init_rot) + PI/length) ^ (!p_result[k + 1]);
-            //is_cis_better = false;
 
             if (!is_cis_better) {
                if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) {
@@ -675,17 +626,12 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
             }
 
             if (p_result[k] == 2) {
-               for (int i = length; i >= k; i--)
-                  printf("k = %d; x = %d; y = %d; p = %d; rot = %d; value = %d\n", i, x_result[i], y_result[i], p_result[i], rot_result[i], minRotates[i][rot_result[i]][p_result[i]][x_result[i]][y_result[i]]);
                throw Exception("Path not find (%d): %d.", length, minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]);
             }
          }
-         //printf("\n");
-         //printf("%d %d %d %d\n", x_result[k], y_result[k], rot_result[k], p_result[k]);
       }
       x_result[0] = init_x;
       y_result[0] = init_y;
-      //for (int k = 1; k < length; k++) printf("%d %d %d %d %d %d %d\n", k, rot_result[k], p_result[k], _vertex_weight[k], x_result[k], y_result[k], (int)minRotates[k][rot_result[k]][p_result[k]][x_result[k]][y_result[k]]);
 
       int rotateAngle[max_size];
       int edgeLenght[max_size];
@@ -742,14 +688,9 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 
       double newBadness = 0;
       newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
-      //printf("%10.10f\n", newBadness);
-
-      //printf("-- %d %d %d %5.5f %5.5f\n", xs[displayIndex], ys[displayIndex], rots[displayIndex], startBadness, newBadness);
-
 
       if (newBadness < bestBadness) {
          bestBadness = newBadness;
-         //printf("New best badness: %5.5f\n", bestBadness);
          bestIndex = displayIndex;
 
          for (int i = 0; i < ind; i++) {
@@ -767,31 +708,12 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    for (int i = 0; i < length; i++) shifted_positons[(i + shift) % length] = _positions[i];
    for (int i = 0; i < length; i++) _positions[i] = shifted_positons[i];
 
-   for (int i = 0; i < length; i++) temporary[(i + shift) % length] = _vertex_weight[i];
-   for (int i = 0; i < length; i++) _vertex_weight[i] = temporary[i];
-   for (int i = 0; i < length; i++) temporary[(i + shift) % length] = _vertex_stereo[i];
-   for (int i = 0; i < length; i++) _vertex_stereo[i] = temporary[i];
-   for (int i = 0; i < length; i++) temporary[(i + shift) % length] = _edge_stereo[i];
-   for (int i = 0; i < length; i++) _edge_stereo[i] = temporary[i];
+   rotate(_vertex_weight.ptr(), length, -shift);
+   rotate(_vertex_stereo.ptr(), length, -shift);
+   rotate(_edge_stereo.ptr(), length, -shift);
 
    for (int i = 0; i < length; i++) 
       if (_vertex_weight[i] > 0) _vertex_weight[i]--;
-
-   //fclose (stdout);
-//   printf("%5.5f\n", bestBadness);
-//   printf("--- %d\n", bestIndex);
-   //    printf("\n");
-
-   //    for (int i = 0; i < ind; i++) printf("%10.10f %10.10f\n", x[i], y[i]);
-   //    printf("\n");
-
-//   printf("\n");
-   // Saved changed into molfile
-   //    indigoSaveMolfileToFile(m, "builded_molecule2.mol");
-   // Render changed
-   //indigoSetOption("render-output-format", "png");
-   //indigoSetOption("render-background-color", "255, 255, 255");
-   //    indigoRenderToFile(m, "builded_molecule.png"); 
 
    return bestBadness;
 }
@@ -810,6 +732,8 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
 
    bool up[100];
    bool only_up[100];
+   for (int i = 0; i < length; i++) up[i] = false;
+   for (int i = 0; i < length; i++) only_up[i] = false;
 
    for (int i = 0; i < length; i++)
       if (_edge_stereo[i] == MoleculeCisTrans::CIS && _edge_stereo[(i + length - 1) % length] == MoleculeCisTrans::CIS) {

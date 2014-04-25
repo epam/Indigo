@@ -59,8 +59,14 @@ public:
 private:
    int length;
    static const int max_size;
+   static const int init_x;
+   static const int init_y;
+   static const int init_rot;
 
-   struct Data 
+
+   int get_diff(int x, int y, int rot, int value);
+
+   struct Data
    {
       enum { max_size = 100 };
       signed short minRotates[max_size][max_size][2][max_size][max_size];
