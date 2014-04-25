@@ -1448,7 +1448,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates (float bond_length, const Arra
    norm = p2.length();
 
    if (norm < 0.0001)
-      throw("too small edge");
+      throw Error("too small edge");
 
    // 2.1. If matching edge has zero length - just move to this point and scale
    if (src_norm < 0.001)
