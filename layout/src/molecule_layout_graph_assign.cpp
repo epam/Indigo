@@ -405,6 +405,12 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
    MoleculeLayoutMacrocycles layout(size);
 
+   if (size <= 6)
+   for (int i = 0; i < size; i++)
+      _molecule->cis_trans.setParity(_layout_edges[cycle.getEdge(i)].orig_idx, 0);
+
+
+
    for (int i = 0; i < size; i++) {
 
       // edge parallels
@@ -495,9 +501,6 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       layout.setVertexOutsideWeight(i, cycle.getVertexWeight(i));
 
    }
-
-   if (size <= 6) 
-      for (int i = 0; i < size; i++) layout.setEdgeStereo(i, 0);
 
    layout.doLayout();
 
