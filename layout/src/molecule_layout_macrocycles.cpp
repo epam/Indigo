@@ -331,6 +331,8 @@ void rotate(int* ar, int ar_length, int shift) {
 
 double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 {
+
+   if (length > 104) return 1e9;
    signed short (&minRotates)[max_size][max_size][2][max_size][max_size] = data.minRotates;
    //first : number of edge
    //second : summary angle of rotation (in PI/3 times)
