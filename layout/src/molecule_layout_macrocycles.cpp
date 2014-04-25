@@ -735,6 +735,9 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
 
    for (int i = 0; i < length; i++) up[i] = only_up[i];
 
+   QS_DEF(Array<int>, free);
+   free.clear_resize(length);
+
    bool exist_precalc = false;
    for (int i = 0; i < length; i++) exist_precalc |= only_up[i];
 
@@ -757,7 +760,7 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
             for (int j = index_start; j != index_end; j = (j + 1) % length) 
                if (_edge_stereo[j] != MoleculeCisTrans::CIS && _edge_stereo[(j + length - 1) % length] != MoleculeCisTrans::CIS) index_flip = j;
             if (index_flip == -1) {
-               int free[100];
+               free.zerofill();
                int index_free = 0;
                for (int j = index_start; j != index_end; j = (j + 1) % length)
                   if (_edge_stereo[(j - 1 + length) % length] == 0 || _edge_stereo[j] == 0) free[index_free++] = j;
