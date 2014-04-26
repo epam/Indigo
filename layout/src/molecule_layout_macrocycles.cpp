@@ -476,14 +476,25 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                         rot > init_rot + 6) minRotates[length][rot][p][k][t] += _vertex_weight[0];
                }
 
-   int best_diff = infinity;
+   int critical_diff = infinity - 1;
+   std::multiset<int> diff_set;
+
+//   int best_diff = infinity;
    for (int rot = rot_left; rot <= rot_right; rot++)
       for (int p = 0; p < 2; p++)
          for (int x = x_left; x <= x_right; x++)
             for (int y = y_left; y <= y_right; y++)
-               if (minRotates[length][rot][p][x][y] < infinity)
-                  best_diff = min(best_diff, get_diff(x, y, rot, minRotates[length][rot][p][x][y]));
-        
+            if (minRotates[length][rot][p][x][y] <= infinity) {
+               int curr_dif = get_diff(x, y, rot, minRotates[length][rot][p][x][y]);
+               if (curr_dif <= critical_diff) {
+                  diff_set.insert(curr_dif);
+                  if (diff_set.size() > 100) diff_set.erase(*diff_set.rbegin());
+                  critical_diff = *diff_set.rbegin();
+               }
+               //best_diff = min(best_diff, get_diff(x, y, rot, minRotates[length][rot][p][x][y]));
+            }
+   
+
    
    struct point {
       int diff;
@@ -499,24 +510,24 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          p = _p;
          rot = _r;
       }
+
+      bool operator<(const point& p) const { return diff - p.diff; }
    };
 
    QS_DEF(ObjArray<point>, points);
    points.clear();
 
-   for (int global_diff = 0; global_diff <= 4; global_diff++) {
-      for (int rot = rot_left; rot <= rot_right; rot++) {
-         for (int p = 0; p < 2; p++) {
-            for (int x = x_left; x <= x_right; x++) {
-               for (int y = y_left; y <= y_right; y++) {
-                  if (minRotates[length][rot][p][x][y] < infinity) {
+   for (int rot = rot_left; rot <= rot_right; rot++) {
+      for (int p = 0; p < 2; p++) {
+         for (int x = x_left; x <= x_right; x++) {
+            for (int y = y_left; y <= y_right; y++) {
+               if (minRotates[length][rot][p][x][y] < infinity) {
 
-                     int curdiff = get_diff(x, y, rot, minRotates[length][rot][p][x][y]);
+                  int curdiff = get_diff(x, y, rot, minRotates[length][rot][p][x][y]);
 
-                     if (curdiff == best_diff + global_diff) {
-                        point curr_point(global_diff, x, y, p, rot);
-                        points.push(curr_point);
-                     }
+                  if (curdiff <= critical_diff) {
+                     point curr_point(curdiff, x, y, p, rot);
+                     points.push(curr_point);
                   }
                }
             }
