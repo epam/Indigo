@@ -1061,27 +1061,16 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
 
    // fix intersections to other components
    float min_dist = 0.7;
-   for (int i = 0; i < segments_count; i++) if (i != move_vertex && (i + 1) % segments_count != move_vertex && i != (move_vertex + 1) % segments_count) {
+   for (int i = 0; i < segments_count; i++) if (i != move_vertex/* && (i + 1) % segments_count != move_vertex && i != (move_vertex + 1) % segments_count*/) {
       if (segment[move_vertex]._graph.vertexCount() == 2 && segment[i]._graph.vertexCount() == 2) continue;
       bool interseced = false;
 
       for (int v1 = segment[move_vertex]._graph.vertexBegin(); v1 != segment[move_vertex]._graph.vertexEnd() && !interseced; v1 = segment[move_vertex]._graph.vertexNext(v1))
          for (int v2 = segment[i]._graph.vertexBegin(); v2 != segment[i]._graph.vertexEnd() && !interseced; v2 = segment[i]._graph.vertexNext(v2)) {
-            //if ((move_vertex + 1) % segments_count == i && segment[move_vertex].is_finish(v1)) continue;
+            if ((move_vertex + 1) % segments_count == i && segment[move_vertex].is_finish(v1)) continue;
+            if ((i + 1) % segments_count == move_vertex && segment[i].is_finish(v2)) continue;
             if (Vec2f::distSqr(segment[move_vertex].getPosition(v1), segment[i].getPosition(v2)) < min_dist * min_dist) interseced = true;
          }
-
-      /*for (int e1 = segment[move_vertex]._graph.edgeBegin(); e1 != segment[move_vertex]._graph.edgeEnd() && !interseced; e1 = segment[move_vertex]._graph.edgeNext(e1))
-         for (int e2 = segment[i]._graph.edgeBegin(); e2 != segment[i]._graph.edgeEnd() && !interseced; e2 = segment[i]._graph.edgeNext(e2)) {
-            Edge ed1 = segment[move_vertex]._graph.getEdge(e1);
-            Edge ed2 = segment[i]._graph.getEdge(e2);
-            //if ((move_vertex + 1) % segments_count == i && (segment[move_vertex].is_finish(ed1.beg) || segment[move_vertex].is_finish(ed1.end))) continue;
-
-            interseced = Vec2f::segmentsIntersect(segment[move_vertex].getPosition(ed1.beg),
-                                                  segment[move_vertex].getPosition(ed1.end),
-                                                  segment[i].getPosition(ed2.beg),
-                                                  segment[i].getPosition(ed2.end));
-         }*/
 
       if (interseced) {
          Vec2f shift1(segment[move_vertex].getCenter());
