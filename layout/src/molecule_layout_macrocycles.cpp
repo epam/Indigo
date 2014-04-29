@@ -479,7 +479,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    int critical_diff = infinity - 1;
    std::multiset<int> diff_set;
 
-//   int best_diff = infinity;
    for (int rot = rot_left; rot <= rot_right; rot++)
       for (int p = 0; p < 2; p++)
          for (int x = x_left; x <= x_right; x++)
@@ -491,7 +490,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
                   if (diff_set.size() > 100) diff_set.erase(*diff_set.rbegin());
                   critical_diff = *diff_set.rbegin();
                }
-               //best_diff = min(best_diff, get_diff(x, y, rot, minRotates[length][rot][p][x][y]));
             }
    
 
@@ -674,7 +672,8 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
             last_rotate_angle = 1;
          }
       }
-
+      
+      //rotateAngle[0] = -1;
       Vec2f p[max_size];
       for (int i = 0; i <= ind; i++) {
          p[i] = Vec2f(y_result[vertexNumber[i]], 0);

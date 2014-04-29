@@ -397,7 +397,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
 
 void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 {
- /* */ 
+
    profTimerStart(t, "layout.prepearing");
 
    const int size = cycle.vertexCount();
@@ -418,7 +418,6 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       int order_next = 0;
       int edge_number = cycle.getEdge(i);
       LayoutEdge edge = _layout_edges[edge_number];
-//      int ext_edge_number = _molecule_edge_mapping[edge.ext_idx];
       int ext_edge_number = edge.orig_idx;
       int order = _molecule->getBondOrder(ext_edge_number);
       switch (order) {
@@ -428,7 +427,6 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
          default: order_next = 1;
       }
       int order_prev;
-//      int ext_edge_number_prev = _molecule_edge_mapping[_layout_edges[cycle.getEdgeC(i - 1)].ext_idx];
       int ext_edge_number_prev = _layout_edges[cycle.getEdgeC(i - 1)].orig_idx;
       switch (_molecule->getBondOrder(ext_edge_number_prev)) {
          case BOND_SINGLE : order_prev = 1; break;
@@ -644,49 +642,13 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       }
 
 
-      // move to next precalced block
-      //while (_layout_vertices[cycle.getVertex(index)].type != ELEMENT_NOT_DRAWN) index = (index + 1) % size;
-      //while (_layout_vertices[cycle.getVertex(index)].type == ELEMENT_NOT_DRAWN) index = (index + 1) % size;
-      //if (index == start) break;
    }
-      // 5. smoothing
-//   } 
 
 
-   for (int i = 0; i < size; i++)
+  for (int i = 0; i < size; i++)
       if (_layout_vertices[cycle.getVertex(i)].type == ELEMENT_NOT_DRAWN)
          _layout_vertices[cycle.getVertex(i)].pos = layout.getPos(i);
 
-   int able_to_move[100];
-   for (int i = 0; i < size; i++)
-      able_to_move[i] = _layout_vertices[cycle.getVertex(i)].type == ELEMENT_NOT_DRAWN;
-
-   bool able_anything_to_move = false;
-   for (int i = 0; i < size; i++) able_anything_to_move |= able_to_move[i];
-
-   int good_vertex[100];
-   for (int i = 0; i < size; i++) good_vertex[i] = layout.getVertexStereo(i);
-
-   int vertex_number[100];
-   int ind = 0;
-   for (int i = 0; i < size; i++) 
-      if (good_vertex[i]) vertex_number[ind++] = i;
-
-   Vec2f p[100];
-   for (int i = 0; i < ind; i++) p[i] = _layout_vertices[cycle.getVertex(vertex_number[i])].pos;
-   Vec2f edge[100];
-   for (int i = 0; i < ind; i++) edge[i] = p[(i + 1) % ind] - p[i];
-   int len[100];
-   for (int i = 0; i < ind; i++) len[i] = (vertex_number[(i + 1) % ind] - vertex_number[i] + size) % size;
-   int rotate_angle[100];
-   for (int i = 0; i < ind; i++)
-      rotate_angle[i] = Vec2f::cross(edge[(i - 1 + ind) % ind], edge[i]) > 0 ? 1 : -1;
-
-   if (!componentIsWholeCycle && able_anything_to_move) {
-
-      //_segment_smoothing(cycle, layout);
-//      layout.smoothing(ind, size, rotate_angle, len, vertex_number, p, false, able_to_move); 
-   }
    _first_vertex_idx = cycle.getVertex(0);
    for (int i = 0; i < size; i++)
    {
@@ -694,10 +656,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
    }
 
-   for (int i = 0; i < ind; i++)
-      for (int t = vertex_number[i], s = 0; t != vertex_number[(i + 1) % ind]; t = (t + 1) % size, s++)
-         _layout_vertices[cycle.getVertex(t)].pos = (p[i] * (len[i] - s) + p[(i + 1) % ind] * s)/len[i];
-
+   // 5. smoothing
    _segment_smoothing(cycle, layout);
 }
 
