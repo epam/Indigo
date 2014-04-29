@@ -26,6 +26,8 @@ MoleculeMass::MoleculeMass()
 
 float MoleculeMass::molecularWeight (Molecule &mol)
 {
+   mol.restoreUnambiguousHydrogens();
+
    double molmass = 0;
    int impl_h = 0;
    int elements_count[ELEM_MAX] = {0};
@@ -98,6 +100,8 @@ static int _isotopesCmp (int i1, int i2, void *context)
 
 float MoleculeMass::mostAbundantMass (Molecule &mol)
 {
+   mol.restoreUnambiguousHydrogens();
+
    double molmass = 0;
 
    // Count elements without explicit isotope marks
@@ -177,6 +181,8 @@ float MoleculeMass::mostAbundantMass (Molecule &mol)
 
 float MoleculeMass::monoisotopicMass (Molecule &mol)
 {
+   mol.restoreUnambiguousHydrogens();
+
    double molmass = 0;
 
    for (int v = mol.vertexBegin(); 
@@ -204,6 +210,8 @@ float MoleculeMass::monoisotopicMass (Molecule &mol)
 
 int MoleculeMass::nominalMass (Molecule &mol)
 {
+   mol.restoreUnambiguousHydrogens();
+
    int molmass = 0;
 
    for (int v = mol.vertexBegin(); 
