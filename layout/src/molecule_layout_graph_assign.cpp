@@ -409,8 +409,6 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
    for (int i = 0; i < size; i++)
       _molecule->cis_trans.setParity(_layout_edges[cycle.getEdge(i)].orig_idx, 0);
 
-
-
    for (int i = 0; i < size; i++) {
 
       // edge parallels
@@ -652,8 +650,8 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
    _first_vertex_idx = cycle.getVertex(0);
    for (int i = 0; i < size; i++)
    {
-      _layout_vertices[cycle.getVertex(i)].type = ELEMENT_BOUNDARY;
-      _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
+      _layout_vertices[cycle.getVertex(i)].type = ELEMENT_DRAWN;
+      _layout_edges[cycle.getEdge(i)].type = ELEMENT_DRAWN;
    }
 
    // 5. smoothing
@@ -846,13 +844,18 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, cons
    layout_comp_touch.zerofill();
 
 
-   for (int i = 0; i < cycle_size; i++) {
+/*   for (int i = 0; i < cycle_size; i++) {
       const Vertex &vert = getVertex(cycle.getVertex(i));
       for (int nei = vert.neiBegin(); nei != vert.neiEnd(); nei = vert.neiNext(nei))
-         if (getEdgeType(vert.neiEdge(nei)) != ELEMENT_NOT_DRAWN) {
-            if (_layout_component_number[vert.neiEdge(nei)] >= 0)
-               layout_comp_touch[_layout_component_number[vert.neiEdge(nei)]] = true;
-         }
+      if (getEdgeType(vert.neiEdge(nei)) != ELEMENT_NOT_DRAWN) {
+         if (_layout_component_number[vert.neiEdge(nei)] >= 0)
+            layout_comp_touch[_layout_component_number[vert.neiEdge(nei)]] = true;
+      }
+   }*/
+
+   for (int i = 0; i < cycle_size; i++) {
+      if (_layout_component_number[cycle.getEdge(i)] >= 0)
+         layout_comp_touch[_layout_component_number[cycle.getEdge(i)]] = true;
    }
 
    QS_DEF(ObjArray<Filter>, segments_filter);
@@ -957,6 +960,14 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, cons
       current_number++;
    }
    
+   for (int e = edgeBegin(); e != edgeEnd(); e = edgeNext(e))
+      if (_layout_component_number[e] >= 0 && layout_comp_touch[_layout_component_number[e]]) _layout_component_number[e] = _layout_component_count;
+
+   for (int i = 0; i < cycle_size; i++)
+      _layout_component_number[cycle.getEdge(i)] = _layout_component_count;
+
+   _layout_component_count++;
+
    target_angle.clear_resize(segments_count);
 
    for (int i = 0; i < segments_count; i++) {
@@ -965,18 +976,10 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, cons
       Vec2f p3 = layout.getPos(segment_start[number_of_segment_compressed[(i + 1) % segments_count]]);
       p1 = p2 - p1;
       p2 = p3 - p2;
-      target_angle[i] = std::acos(Vec2f::dot(p1, p2)/p1.length()/p2.length());
+      target_angle[i] = std::acos(Vec2f::dot(p1, p2) / p1.length() / p2.length());
       if (Vec2f::cross(p1, p2) < 0) target_angle[i] = -target_angle[i];
       target_angle[i] = PI - target_angle[i];
    }
-   
-   for (int e = edgeBegin(); e != edgeEnd(); e = edgeNext(e))
-      if (_layout_component_number[e] >= 0 && layout_comp_touch[_layout_component_number[e]]) _layout_component_number[e] = _layout_component_count;
-
-   for (int i = 0; i < cycle_size; i++)
-      _layout_component_number[cycle.getEdge(i)] = _layout_component_count;
-
-   _layout_component_count++;
 
 }
 

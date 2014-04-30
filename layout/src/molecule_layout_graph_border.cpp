@@ -193,12 +193,12 @@ void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
    int i, n = 0;
    float eps = 1e-5;
 
-   for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
+/*   for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
       if  (_layout_edges[i].type == ELEMENT_BOUNDARY)
          n++;
 
    if (n == 0)
-      return;
+      return;*/
 
    vertices.clear();
    edges.clear();
