@@ -545,9 +545,9 @@ void MoleculeLayoutGraph::_layoutSingleComponent (BaseMolecule &molecule, bool r
 }
 
 MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGraph& mol, Vec2f& start, Vec2f& finish) :
-   _graph(mol),
-   _start(start),
-   _finish(finish)
+_graph(mol),
+_start(start),
+_finish(finish)
 {
    _center.zero();
    Vec2f diameter = (_finish - _start);
@@ -556,7 +556,7 @@ MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGra
    rotate_vector.y *= -1;
 
    _pos.clear_resize(_graph.vertexEnd());
-   
+
    _start_number = -1;
    _finish_number = -1;
    float start_dist = 0;
@@ -589,6 +589,10 @@ Vec2f MoleculeLayoutSmoothingSegment::_getPosition(Vec2f p) {
    point.copy(p);
    point.rotate(_finish - _start);
    return point + _start;
+}
+
+void MoleculeLayoutSmoothingSegment::updateStartFinish() {
+   _length = (_start - _finish).length();
 }
 
 Vec2f MoleculeLayoutSmoothingSegment::getPosition(int v) {

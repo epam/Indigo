@@ -96,6 +96,7 @@ public:
    float getLength() const;
    float getLengthCoef() const;
    Vec2f getCenter();
+   void updateStartFinish();
 
    bool is_start(int v) {return v == _start_number;}
    bool is_finish(int v) {return v == _finish_number;}
@@ -252,9 +253,11 @@ protected:
    void _assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignFirstCycle(const Cycle &cycle);
-   void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout);
-   void _segment_smoothing_prepearing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout, Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
-   void _segment_smoothing_unstick(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   void _segment_smoothing_prepearing(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   void _segment_calculate_target_angle(const MoleculeLayoutMacrocycles &layout, Array<int> &rotation_vertex, Array<float> &target_angle);
+   void _segment_update_rotation_points(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   void _segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _segment_improoving(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int, float);
    void _attachCrossingEdges ();
