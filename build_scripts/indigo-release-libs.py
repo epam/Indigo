@@ -1,8 +1,6 @@
 import os
 import shutil
-import sys
 import subprocess
-from os.path import *
 
 from optparse import OptionParser
 
@@ -15,12 +13,14 @@ presets = {
     "win64-2013" : ("Visual Studio 12 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
+    "linux32-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
-    "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
+    "linux64-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
     "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
     "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
+    "mac-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.6"),
 }
 
 parser = OptionParser(description='Indigo libraries build script')
@@ -32,7 +32,11 @@ parser.add_option('--nobuild', default=False,
 parser.add_option('--clean', default=False, action="store_true",
     help='delete all the build data', dest="clean")
 parser.add_option('--preset', type="choice", dest="preset",
-    choices=list(presets.keys()), help='build preset %s' % (str(presets.keys())))
+    choices=list(presets.keys()), help='build preset %s' % (str(list(presets.keys()))))
+parser.add_option('--with-static', action='store_true', help='Build Indigo static libraries',
+    default=False, dest='withStatic')
+parser.add_option('--verbose', action='store_true', help='Show verbose build information',
+    default=False, dest='buildVerbose')
 parser.add_option('--cairo-gl', dest="cairogl",
     default=False, action="store_true", help='Build Cairo with OpenGL support')
 parser.add_option('--cairo-vg', dest="cairovg",
@@ -45,6 +49,9 @@ parser.add_option('--find-cairo', dest="findcairo",
     default=False, action="store_true", help='Find and use system Cairo')
 parser.add_option('--find-pixman', dest="findpixman",
     default=False, action="store_true", help='Find and use system Pixman')
+if os.name == 'posix':
+    parser.add_option('--check-abi', dest='checkabi',
+        default=False, action="store_true", help='Check ABI type of Indigo libraries on Linux')
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
@@ -57,12 +64,9 @@ if not args.generator:
     print("Generator must be specified")
     exit()
 
-cur_dir = abspath(dirname(__file__))
-root = join(cur_dir, "..")
-project_dir = join(cur_dir, "indigo-all")
-
-if args.generator.find("Unix Makefiles") != -1 or args.generator.find("MinGW Makefiles") != -1:
-    args.params += " -DCMAKE_BUILD_TYPE=" + args.config
+cur_dir = os.path.abspath(os.path.dirname(__file__))
+root = os.path.join(cur_dir, "..")
+project_dir = os.path.join(cur_dir, "indigo-all")
 
 if args.cairogl:
     args.params += ' -DWITH_CAIRO_GL=TRUE'
@@ -82,10 +86,20 @@ if args.findcairo:
 if args.findcairo:
     args.params += ' -DUSE_SYSTEM_PIXMAN=TRUE'
 
-build_dir = (args.generator + " " + args.params)
+if not args.withStatic:
+    args.params += ' -DNO_STATIC=TRUE'
+
+if args.preset and args.preset.find('universal') != -1:
+    args.params += ' -DUNIVERSAL_BUILD=TRUE'
+
+if os.name == 'posix' and args.checkabi:
+    args.params += ' -DCHECK_ABI=TRUE'
+
+build_dir = (args.generator + " " + args.config + args.params.replace('-D', ''))
 build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
 full_build_dir = os.path.join(root, "build", build_dir)
+
 if os.path.exists(full_build_dir) and args.clean:
     print("Removing previous project files")
     shutil.rmtree(full_build_dir)
@@ -93,7 +107,8 @@ if not os.path.exists(full_build_dir):
     os.makedirs(full_build_dir)
 
 os.chdir(full_build_dir)
-command = "cmake -G \"%s\" %s \"%s\"" % (args.generator, args.params, project_dir)
+
+command = "%s cmake -G \"%s\" %s %s" % ('CC=gcc CXX=g++' if (args.preset.find('linux') != -1 and args.preset.find('universal') != -1) else '', args.generator, args.params, project_dir)
 print(command)
 subprocess.check_call(command, shell=True)
 
@@ -103,11 +118,10 @@ if args.nobuild:
 for f in os.listdir(full_build_dir):
     path, ext = os.path.splitext(f)
     if ext == ".zip":
-        os.remove(join(full_build_dir, f))
+        os.remove(os.path.join(full_build_dir, f))
 
-subprocess.call("cmake --build . --config %s" % (args.config), shell=True)
 if args.generator.find("Unix Makefiles") != -1:
-    subprocess.check_call("make package", shell=True)
+    subprocess.check_call("make package {0}".format('VERBOSE=1' if args.buildVerbose else ''), shell=True)
     subprocess.check_call("make install", shell=True)
 elif args.generator.find("Xcode") != -1:
     subprocess.check_call("cmake --build . --target package --config %s" % (args.config), shell=True)
@@ -120,15 +134,14 @@ elif args.generator.find("MinGW Makefiles") != -1:
     subprocess.check_call("mingw32-make install", shell=True)
 else:
     print("Do not know how to run package and install target")
-subprocess.check_call("ctest -V --timeout 10 -C %s ." % (args.config), shell=True)
-
+subprocess.check_call("ctest -V --timeout 20 -C %s ." % (args.config), shell=True)
 
 os.chdir(root)
 if not os.path.exists("dist"):
     os.mkdir("dist")
-dist_dir = join(root, "dist")
+dist_dir = os.path.join(root, "dist")
 
 for f in os.listdir(full_build_dir):
     path, ext = os.path.splitext(f)
     if ext == ".zip":
-        shutil.copy(join(full_build_dir, f), join(dist_dir, f))
+        shutil.copy(os.path.join(full_build_dir, f), os.path.join(dist_dir, f))

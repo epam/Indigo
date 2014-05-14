@@ -22,7 +22,7 @@ namespace indigo
 
 class Scanner;
 
-class BitInWorker
+class DLLEXPORT BitInWorker
 {
 public:
 

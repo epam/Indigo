@@ -230,8 +230,13 @@ public:
 
    int getId () const;
 
-   Array<char> tmp_string;
-   float tmp_xyz[3];
+   struct TmpData
+   {
+      Array<char> string;
+      float xyz[3];
+   };
+   // Method that returns temporary buffer that can be returned from Indigo C API methods
+   TmpData& getThreadTmpData ();
 
    ProductEnumeratorParams rpe_params;
    MoleculeFingerprintParameters fp_params;

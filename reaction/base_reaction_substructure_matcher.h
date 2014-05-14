@@ -22,6 +22,11 @@
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule_arom_match.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Reaction;
@@ -33,7 +38,7 @@ class Molecule;
 
 typedef RedBlackMap<int, int> RedBlackIntMap;
 
-class BaseReactionSubstructureMatcher
+class DLLEXPORT BaseReactionSubstructureMatcher
 {
 protected:
    class _Matcher;
@@ -154,5 +159,9 @@ protected:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

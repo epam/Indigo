@@ -51,6 +51,11 @@ public:
       _ptrpool.remove(idx);
    }
 
+   bool hasElement(int idx) const
+   {
+      return _ptrpool.hasElement(idx);
+   }
+
    int size ()
    {
       return _ptrpool.size();
@@ -86,6 +91,9 @@ public:
 
    const T *  at (int index) const { return _ptrpool[index]; }
          T *& at (int index)       { return _ptrpool[index]; }
+
+   const T& ref (int index) const { return *_ptrpool[index]; }
+         T& ref (int index)       { return *_ptrpool[index]; }
 
 protected:
    Pool<T *> _ptrpool;

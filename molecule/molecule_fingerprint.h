@@ -21,6 +21,9 @@
 #include "base_cpp/cancellation_handler.h"
 #include "graph/subgraph_hash.h"
 
+#include <unordered_map>
+#include <limits.h>
+
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable:4251)
@@ -98,7 +101,7 @@ public:
    DECL_ERROR;
 
 protected:
-   void _initHashCalculations (BaseMolecule &mol);
+   void _initHashCalculations (BaseMolecule &mol, const Filter &vfilter);
 
    static void _handleTree     (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _handleCycle    (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
@@ -117,19 +120,37 @@ protected:
       bool use_atoms, bool use_bonds, int subgraph_type, dword &bits_to_set);
 
    void _makeFingerprint (BaseMolecule &mol);
-   void _calcExtraBits (BaseMolecule &mol, Filter &vfilter);
+   void _calcExtraBits (BaseMolecule &mol);
 
    void _setTauBits (const char *str, int nbits);
    void _setOrdBits (const char *str, int nbits);
 
    static void _setBits (dword hash, byte *fp, int size, int nbits);
    
+   void _calculateFragmentVertexDegree (BaseMolecule &mol, const Array<int> &vertices, const Array<int> &edges);
+   int _calculateFragmentExternalConn (BaseMolecule &mol, const Array<int> &vertices, const Array<int> &edges);
+
    BaseMolecule &_mol;
    const MoleculeFingerprintParameters &_parameters;
 
    // these parameters are indirectly passed to the callbacks
    TautomerSuperStructure *_tau_super_structure;
    bool _is_cycle;
+
+   struct HashBits
+   {
+      HashBits (dword hash, int bits_per_fragment);
+      bool operator== (const HashBits &right) const;
+
+      dword hash;
+      int bits_per_fragment;
+   };
+   struct Hasher
+   {
+      size_t operator () (const HashBits &input) const;
+   };
+
+   void _addOrdHashBits (dword hash, int bits_per_fragment);
 
    Obj<SubgraphHash> subgraph_hash;
 
@@ -139,6 +160,14 @@ protected:
    TL_CP_DECL(Array<int>, _bond_codes);
    TL_CP_DECL(Array<int>, _atom_codes_empty);
    TL_CP_DECL(Array<int>, _bond_codes_empty);
+   TL_CP_DECL(Array<int>, _atom_hydrogens);
+   TL_CP_DECL(Array<int>, _atom_charges);
+   TL_CP_DECL(Array<int>, _vertex_connectivity);
+   TL_CP_DECL(Array<int>, _fragment_vertex_degree);
+   TL_CP_DECL(Array<int>, _bond_orders);
+
+   typedef std::unordered_map<HashBits, int, Hasher> HashesMap;
+   TL_CP_DECL(HashesMap, _ord_hashes);
 
 private:
    MoleculeFingerprintBuilder (const MoleculeFingerprintBuilder &); // no implicit copy

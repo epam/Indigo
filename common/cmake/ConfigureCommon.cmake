@@ -1,5 +1,11 @@
-INCLUDE(GetSystemVersion)
-INCLUDE(SetBuildParameters)
-INCLUDE(MakeOutputPath)
+if (COMMON_CONFIGURED)
+    return()
+endif()
 
-SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
+include(GetSystemVersion)
+include(SetBuildParameters)
+include(MakeOutputPath)
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+set(COMMON_CONFIGURED TRUE)

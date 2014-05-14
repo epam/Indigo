@@ -58,6 +58,8 @@ DLLEXPORT void bitOr (byte *a, const byte *b, int nbytes);
 // Check whether bit array is zero
 DLLEXPORT int bitIsAllZero (const void *bits, int nbytes);
 
+DLLEXPORT int bitLog2Dword (dword input);
+
 #ifdef __cplusplus
 }
 #endif

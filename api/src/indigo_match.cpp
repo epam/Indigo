@@ -111,7 +111,7 @@ CEXPORT int indigoRemoveTautomerRule (int n)
    INDIGO_END(-1)
 }
 
-static bool _indigoParseTautomerFlags (const char *flags, IndigoTautomerParams &params)
+DLLEXPORT bool _indigoParseTautomerFlags (const char *flags, IndigoTautomerParams &params)
 {
    if (flags == 0)
       return false;
@@ -135,7 +135,7 @@ static bool _indigoParseTautomerFlags (const char *flags, IndigoTautomerParams &
    return true;
 }
 
-int _indigoParseExactFlags (const char *flags, bool reaction, float *rms_threshold)
+DLLEXPORT int _indigoParseExactFlags (const char *flags, bool reaction, float *rms_threshold)
 {
    if (flags == 0)
       throw IndigoError("_indigoParseExactFlags(): zero string pointer");

@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bingo-dotnet", "bingo-dotnet.csproj", "{A88F82B7-F522-4238-80D6-DE033CD7892E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|x64.ActiveCfg = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Debug|x64.Build.0 = Debug|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|x64.ActiveCfg = Release|x64
+		{A88F82B7-F522-4238-80D6-DE033CD7892E}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

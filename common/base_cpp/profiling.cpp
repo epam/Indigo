@@ -55,6 +55,12 @@ qword _ProfilingTimer::getTime () const
    return nanoClock() - _start_time;
 }
 
+float _ProfilingTimer::getTimeSec () const
+{
+   return nanoHowManySeconds(getTime());
+}
+
+
 //
 // Profiling functionality
 //

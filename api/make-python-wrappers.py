@@ -35,6 +35,7 @@ os.mkdir(dest)
 shutil.copy(os.path.join(api_dir, "python", "indigo.py"), dest)
 shutil.copy(os.path.join(api_dir, "plugins", "renderer", "python", "indigo_renderer.py"), dest)
 shutil.copy(os.path.join(api_dir, "plugins", "inchi", "python", "indigo_inchi.py"), dest)
+shutil.copy(os.path.join(api_dir, "plugins", "bingo", "python", "bingo.py"), dest)
 if args.doc:
 	shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join(dest, 'doc'))
 shutil.copytree(os.path.join(api_dir, "libs", "shared"),

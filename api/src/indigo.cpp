@@ -16,6 +16,7 @@
 
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
+#include "base_cpp/temporary_thread_obj.h"
 #include "molecule/molecule_fingerprint.h"
 #include "reaction/rxnfile_saver.h"
 #include "molecule/molfile_saver.h"
@@ -243,6 +244,17 @@ int Indigo::countObjects ()
    return _objects.size();
 }
 
+static TemporaryThreadObjManager<Indigo::TmpData> _indigo_temporary_obj_manager;
+Indigo::TmpData& Indigo::getThreadTmpData ()
+{
+   return _indigo_temporary_obj_manager.getObject();
+}
+
+
+//
+// IndigoError
+//
+
 IndigoError::IndigoError (const char *format, ...) :
 Exception()
 {
@@ -316,11 +328,12 @@ CEXPORT const char * indigoDbgProfiling (int whole_session)
 {
    INDIGO_BEGIN
    {
-      ArrayOutput out(self.tmp_string);
+      auto &tmp = self.getThreadTmpData();
+      ArrayOutput out(tmp.string);
       profGetStatistics(out, whole_session != 0);
 
-      self.tmp_string.push(0);
-      return self.tmp_string.ptr();
+      tmp.string.push(0);
+      return tmp.string.ptr();
    }
    INDIGO_END(0);
 }
@@ -338,3 +351,13 @@ CEXPORT int indigoDbgResetProfiling (int whole_session)
    }
    INDIGO_END(-1);
 }
+
+CEXPORT qword indigoDbgProfilingGetCounter (const char *name, int whole_session)
+{
+   INDIGO_BEGIN
+   {
+      return indigo::ProfilingSystem::getInstance().getLabelCallCount(name, whole_session != 0);
+   }
+   INDIGO_END(-1);
+}
+
