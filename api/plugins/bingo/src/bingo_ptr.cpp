@@ -2,6 +2,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <math.h>
 #include "bingo_ptr.h"
 #include "bingo_mmf_storage.h"
 #include "base_c/os_sync.h"
