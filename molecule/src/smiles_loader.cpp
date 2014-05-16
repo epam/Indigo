@@ -568,6 +568,17 @@ void SmilesLoader::_readOtherStuff ()
                _scanner.skip(1);
          }
       }
+      else if (c == 'r')
+      {
+         // All stereocenters are relative instead of abs
+         MoleculeStereocenters &s = _bmol->stereocenters;
+         for (int i = s.begin(); i != s.end(); i = s.next(i))
+         {
+            int atom = s.getAtomIndex(i);
+            if (s.getType(atom) == MoleculeStereocenters::ATOM_ABS)
+               s.setType(atom, MoleculeStereocenters::ATOM_OR);
+         }
+      }
    }
 
    if (to_remove.size() > 0)
