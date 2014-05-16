@@ -1,26 +1,13 @@
 #ifndef __graph_iterators_h__
 #define __graph_iterators_h__
 
+#include "base_cpp/auto_iter.h"
+
 namespace indigo 
 {
    class Graph;
    class Vertex;
    struct Edge;
-
-   class AutoIterator
-   {
-   public:
-      AutoIterator( int idx );
-
-      virtual int operator* () const;
-
-      virtual bool operator!= ( const AutoIterator &other ) const;
-
-      virtual AutoIterator & operator++ () = 0;
-
-   protected:
-      int _idx;
-   };
 
    class VertexIter : public AutoIterator
    {
@@ -39,7 +26,6 @@ namespace indigo
       VerticesAuto (Graph &owner);
 
       VertexIter begin ();
-
       VertexIter end ();
 
    private:
@@ -63,7 +49,6 @@ namespace indigo
       EdgesAuto (Graph &owner);
 
       EdgeIter begin ();
-
       EdgeIter end ();
 
    private:
@@ -87,7 +72,6 @@ namespace indigo
       NeighborsAuto ( const Vertex &owner);
 
       NeighborIter begin ();
-
       NeighborIter end ();
 
    private:
