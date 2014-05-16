@@ -297,7 +297,12 @@ void SmilesLoader::_readOtherStuff ()
             int idx = _scanner.readUnsigned();
 
             if (!skip)
-               stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+            {
+               // Check if the stereocenter has already been marked as any
+               // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
+               if (stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
+                  stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+            }
 
             if (_scanner.lookNext() == '.') // skip the bond index
             {
