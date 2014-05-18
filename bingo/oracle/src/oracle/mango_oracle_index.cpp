@@ -42,7 +42,8 @@ bool mangoPrepareMolecule (OracleEnv &env, const char *rowid,
                             MangoOracleContext &context,
                             MangoIndex &index,
                             Array<char> &data,
-                            OsLock *lock_for_exclusive_access)
+                            OsLock *lock_for_exclusive_access, 
+                            std::string &failure_message)
 {
    profTimerStart(tall, "moleculeIndex.prepare");
 
@@ -81,7 +82,10 @@ bool mangoPrepareMolecule (OracleEnv &env, const char *rowid,
          return false;
       }
    }
-   CATCH_READ_TARGET_MOL_ROWID(rowid, return false);
+   CATCH_READ_TARGET_MOL_ROWID(rowid, {
+         failure_message = e.message();
+         return false;
+   });
 
    // some magic: round it up to avoid ora-22282
    if (data.size() % 2 == 1)
@@ -121,17 +125,21 @@ bool mangoPrepareAndRegisterMolecule (OracleEnv &env, const char *rowid,
                              BingoFingerprints &fingerprints, bool append)
 {
    QS_DEF(Array<char>, prepared_data);
-   
+   std::string failure_message;
+
    if (mangoPrepareMolecule(env, rowid, molfile_buf, context, 
-      index, prepared_data, NULL))
+      index, prepared_data, NULL, failure_message))
    {
       mangoRegisterMolecule(env, rowid, context, 
          index, fingerprints, prepared_data, append);
 
       return true;
    }
-
-   return false;
+   else
+   {
+      context.context().warnings.add(env, rowid, failure_message.c_str());
+      return false;
+   }
 }
 
 

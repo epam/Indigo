@@ -5,6 +5,9 @@
 #include "oracle/bingo_oracle_parallel.h"
 #include "oracle/mango_oracle.h"
 
+#include <string>
+#include <vector>
+
 using namespace indigo;
 
 //
@@ -50,6 +53,11 @@ private:
    int                *_molecules_prepared_counter;
 };
 
+struct MangoRegisterFailure
+{
+   std::string rowid, message;
+};
+
 class MangoRegisterResult : public OsCommandResult
 {
 public:
@@ -58,6 +66,7 @@ public:
    virtual void clear ();
 
    ObjArray<MangoIndex> per_molecule_index;
+   std::vector<MangoRegisterFailure> warnings;
    ChunkStorage per_molecule_data;
    ChunkStorage rowids;
 }; 
@@ -68,7 +77,8 @@ bool mangoPrepareMolecule (OracleEnv &env, const char *rowid,
                             MangoOracleContext &context,
                             MangoIndex &index,
                             Array<char> &data,
-                            OsLock *lock_for_exclusive_access);
+                            OsLock *lock_for_exclusive_access, 
+                            std::string &failure_message);
 
 void mangoRegisterMolecule (OracleEnv &env, const char *rowid,
                              MangoOracleContext &context,
