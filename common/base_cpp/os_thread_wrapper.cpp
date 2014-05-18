@@ -49,7 +49,7 @@ enum {
 
 // Maximum number of results that are kept in queue if
 // _handling_order is HANDLING_ORDER_SERIAL
-static const int _MAX_RESULTS = 10;
+static const int _MAX_RESULTS = 100;
 
 OsCommandDispatcher::OsCommandDispatcher (int handling_order, bool same_session_IDs)
 {
