@@ -270,12 +270,18 @@ void OsCommandDispatcher::_onMsgHandleResult ()
       }
       _storedResults.setOffset(_expected_command_index);
 
-      // Wake up all syspended threads
-      for (int i = 0; i < _syspendedThreads.size(); i++)
-         _syspendedThreads[i]->Post();
-      _syspendedThreads.clear();
+      _wakeSuspended();
    }
 }
+
+void OsCommandDispatcher::_wakeSuspended ()
+{
+   // Wake up all syspended threads
+   for (int i = 0; i < _syspendedThreads.size(); i++)
+      _syspendedThreads[i]->Post();
+   _syspendedThreads.clear();
+}
+
 
 void OsCommandDispatcher::_onMsgHandleException (Exception *exception)
 {
@@ -300,6 +306,8 @@ void OsCommandDispatcher::_handleException (Exception *exception)
 
       exception_ptr.reset(exception);
       _exception_to_forward = exception;
+
+      _wakeSuspended();
    }
    else
    {
