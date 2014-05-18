@@ -50,7 +50,7 @@ OracleError::OracleError (OCIError *errhp, int oracle_rc, const char *message, i
       else
           snprintf(_message, sizeof(_message), "(can not get the error message because errhp is null)\n");
    }
-   _my_rc = my_rc;
+   _code = my_rc;
 }
 
 OracleError::OracleError (int my_rc, const char *format, ...)
@@ -61,17 +61,13 @@ OracleError::OracleError (int my_rc, const char *format, ...)
    va_start(args, format);
    n = vsnprintf(_message, sizeof(_message), format, args);
    va_end(args);
-   _my_rc = my_rc;
-}
-
-OracleError::~OracleError ()
-{
+   _code = my_rc;
 }
 
 void OracleError::raise (OracleLogger &logger, OCIExtProcContext *ctx)
 {
    logger.dbgPrintf("%s\n", _message);
-   if (_my_rc == -1)
+   if (_code == -1)
    {
       if (OCIExtProcRaiseExcpWithMsg(ctx, 20352, (text *)_message, 0) == OCIEXTPROC_ERROR)
          logger.dbgPrintf("Error raising OCI exception\n");
