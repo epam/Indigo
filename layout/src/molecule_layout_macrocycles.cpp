@@ -254,7 +254,7 @@ void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle
    //for (int i = 0; i < 50 * molSize; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.01, target_vertices[rand.next(target_vertices.size())]);
 }
 
-double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p) {
+double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, int diff) {
    double eps = 1e-9;
    double result = 0;
    int add = 0;
@@ -302,7 +302,14 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
          }
          else if (dist < 1) result = max(result, 1/dist - 1);
       }
+   // tails
    
+   if (diff == 30000) {
+      diff = 0;
+      for (int i = 0; i < ind; i++) diff += (rotateAngle[i] == -1) * _vertex_weight[i];
+   }
+   result += 1.0 * diff / molSize;
+
    //printf("%5.5f\n", result);
    return result + 1000.0 * add;
 
@@ -685,12 +692,12 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       for (int i = 0; i <= ind; i++)
          p[i] += lose_vector * vertexNumber[i];
 
+      double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, points[index].diff);
 
-      double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
       if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
 
       double newBadness = 0;
-      newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
+      newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, points[index].diff);
 
       if (newBadness < bestBadness) {
          bestBadness = newBadness;
@@ -898,5 +905,5 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
       _positions[i] = p[i];
    }
    
-   return badness(length, length, rotateAngle.ptr(), edgeLength.ptr(), vertexNumber.ptr(), p.ptr());
+   return badness(length, length, rotateAngle.ptr(), edgeLength.ptr(), vertexNumber.ptr(), p.ptr(), 30000);
 }

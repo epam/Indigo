@@ -50,7 +50,7 @@ public:
    double layout (BaseMolecule &mol);
 
    void smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi, int *able_to_move);
-   double badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p);
+   double badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, int diff);
    double depictionMacrocycleMol(bool profi);
    double depictionCircle();
 
