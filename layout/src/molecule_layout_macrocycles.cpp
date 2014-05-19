@@ -55,7 +55,7 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) :
    length = size;
 
    _vertex_weight.clear_resize(size);
-   _vertex_weight.fill(1);
+   _vertex_weight.fill(0);
 
    _vertex_stereo.clear_resize(size);
    _vertex_stereo.zerofill();
@@ -329,7 +329,7 @@ int MoleculeLayoutMacrocycles::get_diff(int x, int y, int rot, int value) {
    else diffCoord = max(abs(x), abs(y)); // x and y are has got different signs, vector (y-x) is neseccary
    int diffRot = abs(abs(rot - (init_rot + 6)) - 1);
 
-   return 20 * diffRot + 10 * diffCoord + value;
+   return 2 * diffRot + 1 * diffCoord + value;
 }
 
 void rotate(int* ar, int ar_length, int shift) {
@@ -344,7 +344,7 @@ void rotate(int* ar, int ar_length, int shift) {
 double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 {
 
-   if (length > 104) return 1e9;
+   if (length >= max_size) return 1e9;
    signed short (&minRotates)[max_size][max_size][2][max_size][max_size] = data.minRotates;
    //first : number of edge
    //second : summary angle of rotation (in PI/3 times)
@@ -539,6 +539,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       }
    }
 
+
    int x_result[max_size + 1];
    int y_result[max_size + 1];
    int rot_result[max_size + 1];
@@ -670,6 +671,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          p[i] += lose_vector * vertexNumber[i];
 
       double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, points[index].diff);
+      //if (startBadness > 0.001) 
          smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
 
       double newBadness = 0;
