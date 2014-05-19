@@ -245,38 +245,6 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
    sorted_cycles.qsort(Cycle::compare_cb, &cycles);
 
    while (cycles.size() != 0) {
-      Filter filter;
-      filter.initAll(supergraph.vertexCount());
-      Cycle &firstCycle = cycles[sorted_cycles[0]];
-      for (int i = 0; i < firstCycle.vertexCount(); i++) filter.hide(_layout_vertices[firstCycle.getVertex(i)].ext_idx);
-
-      Graph graphOnAnotherVertexes;
-      Array<int> mapping_out, inv_mapping;
-      graphOnAnotherVertexes.makeSubgraph(supergraph, filter, &mapping_out, &inv_mapping);
-
-      int tailsCount = graphOnAnotherVertexes.countComponents();
-
-      Array<int> componentSize;
-      componentSize.clear_resize(tailsCount);
-      componentSize.zerofill();
-
-      for (int i = 0; i < graphOnAnotherVertexes.vertexCount(); i++) componentSize[graphOnAnotherVertexes.getDecomposition()[i]]++;
-
-      Array<int> inv_cycle_mapping;
-      inv_cycle_mapping.clear_resize(supergraph.vertexCount());
-      inv_cycle_mapping.fill(-1);
-      for (int i = 0; i < firstCycle.vertexCount(); i++) inv_cycle_mapping[_layout_vertices[firstCycle.getVertex(i)].ext_idx] = i;
-
-
-
-      for (int i = 0; i < graphOnAnotherVertexes.vertexCount(); i++) {
-         const Vertex &vert = supergraph.getVertex(mapping_out[i]);
-         for (int j = vert.neiBegin(); j != vert.neiEnd(); j = vert.neiNext(j)) {
-            int u = vert.neiVertex(j);
-            if (!filter.valid(u)) 
-                firstCycle.addVertexWeight(inv_cycle_mapping[u], componentSize[graphOnAnotherVertexes.getDecomposition()[i]]);
-         }
-      }
 
       _assignFirstCycle(cycles[sorted_cycles[0]]);
 
