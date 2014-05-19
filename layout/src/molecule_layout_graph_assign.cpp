@@ -216,8 +216,8 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
    } 
    else
    { 
-      if (PatternLayoutFinder::tryToFindPattern(*this))
-         return;
+      //if (PatternLayoutFinder::tryToFindPattern(*this))
+         //return;
    }
 
    //TODO: repair exception with vec2f
@@ -377,7 +377,131 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
    _segment_smoothing_prepearing(cycle, rotation_vertex, rotation_point, segment);
 
+   QS_DEF(Array<int>, _is_vertex_taken);
+   enum {
+      NOT_CONSIDERED,
+      IN_LIST,
+      NOT_IN_LIST
+   };
+   QS_DEF(Array<int>, _list_of_vertex);
+   QS_DEF(Array<int>, _segment_weight_outside);
+
+   _segment_weight_outside.clear_resize(segment.size());
+   _segment_weight_outside.zerofill();
+
+   for (int i = 0; i < size; i++) 
+      if (_layout_component_number[cycle.getEdge(i)] < 0) _layout_component_number[cycle.getEdge(i)] = _layout_component_count;
+
+   _layout_component_count++;
+
+   QS_DEF(Array<bool>, _is_layout_component_incoming);
+   _is_layout_component_incoming.clear_resize(_layout_component_count);
+   _is_layout_component_incoming.zerofill();
+   for (int i = 0; i < size; i++) 
+      _is_layout_component_incoming[_layout_component_number[cycle.getEdge(i)]] = true;
+
+
+   for (int i = 0; i < segment.size(); i++) {
+      for (int up = 0; up <= 1; up++) {
+         _is_vertex_taken.clear_resize(_graph->vertexEnd());
+         _is_vertex_taken.fill(NOT_CONSIDERED);
+
+         if (i == segment.size() - 1) {
+            int x = 5;
+         }
+
+         _list_of_vertex.clear_resize(0);
+
+         bool is_segment_trivial = segment[i]._graph.vertexCount() == 2 && segment[(i + segment.size() - 1) % segment.size()]._graph.vertexCount() == 2 && up;
+
+         for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
+            if ((!segment[i].is_finish(v) && !segment[i].is_start(v) && segment[i].isVertexUp(v) ^ !up) ||
+               (is_segment_trivial && !segment[i].is_finish(v))) {
+
+               int ext_v = segment[i]._graph.getVertexExtIdx(v);
+               _is_vertex_taken[getVertexExtIdx(ext_v)] = IN_LIST;
+               _list_of_vertex.push(ext_v);
+            }
+         }
+
+         bool touch_to_another_segment = false;
+
+         for (int j = 0; j < _list_of_vertex.size(); j++) {
+            const Vertex& vert = getVertex(_list_of_vertex[j]);
+            for (int n = vert.neiBegin(); n != vert.neiEnd(); n = vert.neiNext(n)) {
+               int vn = vert.neiVertex(n);
+
+               if (_is_vertex_taken[getVertexExtIdx(vn)] != NOT_CONSIDERED) continue;
+
+               bool is_this_comp = false;
+               for (int n2 = getVertex(vn).neiBegin(); n2 != getVertex(vn).neiEnd(); n2 = getVertex(vn).neiNext(n2))
+               if (_layout_component_number[getVertex(vn).neiEdge(n2)] >= 0) {
+                  if (_is_layout_component_incoming[_layout_component_number[getVertex(vn).neiEdge(n2)]]) is_this_comp = true;
+                  if (!is_segment_trivial && _layout_component_number[getVertex(vn).neiEdge(n2)] != segment[i].get_layout_component_number()
+                                          && _layout_component_number[getVertex(vn).neiEdge(n2)] != _layout_component_count - 1) 
+                                             touch_to_another_segment = true;
+               }
+
+
+
+               if (!is_this_comp) {
+                  _list_of_vertex.push(vn);
+                  _is_vertex_taken[getVertexExtIdx(vn)] = IN_LIST;
+               } else _is_vertex_taken[getVertexExtIdx(vn)] = NOT_IN_LIST;
+            }
+         }
+
+         for (int j = 0; j < _list_of_vertex.size(); j++)
+            _list_of_vertex[j] = getVertexExtIdx(_list_of_vertex[j]);
+
+         for (int j = 0; j < _list_of_vertex.size(); j++) {
+            const Vertex& vert = _graph->getVertex(_list_of_vertex[j]);
+            for (int n = vert.neiBegin(); n != vert.neiEnd(); n = vert.neiNext(n)) {
+               int vn = vert.neiVertex(n);
+
+               if (_is_vertex_taken[vn] != NOT_CONSIDERED) continue;
+
+               _list_of_vertex.push(vn);
+               _is_vertex_taken[vn] = IN_LIST;
+            }
+         }
+
+         _segment_weight_outside[i] += (up ? 1 : -1) * (touch_to_another_segment ? 3 : 1) * _list_of_vertex.size();
+      }
+   }
+
    MoleculeLayoutMacrocycles layout(size);
+
+   QS_DEF(Array<int>, _index_in_cycle);
+   _index_in_cycle.clear_resize(vertexEnd());
+   _index_in_cycle.fffill();
+   for (int i = 0; i < size; i++) _index_in_cycle[cycle.getVertex(i)] = i;
+
+   for (int i = 0; i < segment.size(); i++) {
+      if (segment[i]._graph.vertexCount() == 2 && segment[(i + segment.size() - 1) % segment.size()]._graph.vertexCount() == 2)
+         layout.addVertexOutsideWeight(rotation_vertex[i], _segment_weight_outside[i] - 1);
+      else {
+         double y1 = 0, y2 = 0;
+         for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
+            if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[i] + 1) % size) {
+               y1 = segment[i].getIntPosition(v).y;
+            }
+            if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[(i + 1) % segment.size()] + size - 1) % size) {
+               y2 = segment[i].getIntPosition(v).y;
+            }
+         }
+
+         if ((y1 + y2)/2 > segment[i].getIntCenter().y) {
+            layout.addVertexOutsideWeight(rotation_vertex[i], -_segment_weight_outside[i]);
+            layout.addVertexOutsideWeight(rotation_vertex[(i + 1) % segment.size()], -_segment_weight_outside[i]);
+         }
+         else {
+            layout.addVertexOutsideWeight(rotation_vertex[i], _segment_weight_outside[i]);
+            layout.addVertexOutsideWeight(rotation_vertex[(i + 1) % segment.size()], _segment_weight_outside[i]);
+         }            
+      }
+   }
+
 
    if (size <= 6)
    for (int i = 0; i < size; i++)
@@ -470,7 +594,12 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
    }
 
+   for (int i = 0; i < segment.size(); i++) {
+      for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
+         if (segment[i].is_start(v)) if (segment[i]._graph.getVertex(v).degree() > 2) layout.setEdgeStereo(rotation_vertex[i], 0);
+         if (segment[i].is_finish(v)) if (segment[i]._graph.getVertex(v).degree() > 2) layout.setEdgeStereo((rotation_vertex[(i + 1) % segment.size()] - 1 + size) % size, 0);
       }
+   }
 
    layout.doLayout();
 
@@ -500,6 +629,9 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
    bool componentIsWholeCycle = false;
 
+   QS_DEF(Array<bool>, _is_component_touch);
+   _is_component_touch.clear_resize(_layout_component_count);
+
    for (int index = 0; index < size; index++) if (need_to_insert[index]) {
       // 1. search of connected component
       QS_DEF(Array<int>, insideVertex);
@@ -511,10 +643,13 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       takenVertex.zerofill();
       takenVertex[cycle.getVertex(index)] = true;
 
+      _is_component_touch.zerofill();
+
       for (int i = 0; i < insideVertex.size(); i++)
          for (int j = getVertex(insideVertex[i]).neiBegin(); j != getVertex(insideVertex[i]).neiEnd(); j = getVertex(insideVertex[i]).neiNext(j)) {
             int vertj = getVertex(insideVertex[i]).neiVertex(j);
             if (_layout_edges[getVertex(insideVertex[i]).neiEdge(j)].type != ELEMENT_NOT_DRAWN && !takenVertex[vertj]) {
+               _is_component_touch[_layout_component_number[getVertex(insideVertex[i]).neiEdge(j)]] = true;
                insideVertex.push(vertj);
                takenVertex[vertj] = true;
             }
@@ -565,6 +700,10 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       if (need_to_flip) {
          for (int i = 0; i < insideVertex.size(); i++)
             _layout_vertices[insideVertex[i]].pos.x *= -1;
+
+         for (int i = 0; i < segment.size(); i++)
+            if (segment[i].get_layout_component_number() >= 0 && _is_component_touch[segment[i].get_layout_component_number()])
+               segment[i].inverse();
       }
 
            
@@ -628,6 +767,11 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
 
    // 5. smoothing
+
+   for (int e = edgeBegin(); e != edgeEnd(); e = edgeNext(e))
+      if (_layout_component_number[e] >= 0 && _is_layout_component_incoming[_layout_component_number[e]])
+         _layout_component_number[e] = _layout_component_count - 1;
+ 
    _segment_smoothing(cycle, layout, rotation_vertex, rotation_point, segment);
 }
 
@@ -866,6 +1010,10 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
 
    QS_DEF(Array<bool>, touch_to_currnet_component);
    touch_to_currnet_component.clear_resize(cycle_size);
+
+   QS_DEF(Array<int>, segment_component_number);
+   segment_component_number.clear();
+
    for (int i = 0; i < _layout_component_count; i++) if (layout_comp_touch[i]) {
 
       // search of vertices touch to i-th layout component
@@ -906,6 +1054,7 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
          }
 
          segment_start.push(start);
+         segment_component_number.push(i);
          segment_finish.push(finish);
       }
    }
@@ -920,6 +1069,8 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
       segments_filter.top().initNone(vertexEnd());
       segments_filter.top().unhide(cycle.getVertex(i));
       segments_filter.top().unhide(cycle.getVertexC(i + 1));
+
+      segment_component_number.push(-1);
    }
 
    int segments_count = segments_filter.size();
@@ -949,16 +1100,9 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
    int current_number = 0;
    for (int i = 0; i < cycle_size; i++) if (number_of_segment[i] != -1) {
       segment.push(segment_graph[number_of_segment[i]], rotation_point[current_number], rotation_point[(1 + current_number) % segments_count]);
+      segment.top().set_layout_component_number(segment_component_number[number_of_segment[i]]);
       current_number++;
    }
-
-   for (int e = edgeBegin(); e != edgeEnd(); e = edgeNext(e))
-   if (_layout_component_number[e] >= 0 && layout_comp_touch[_layout_component_number[e]]) _layout_component_number[e] = _layout_component_count;
-
-   for (int i = 0; i < cycle_size; i++)
-      _layout_component_number[cycle.getEdge(i)] = _layout_component_count;
-
-   _layout_component_count++;
 
 }
 

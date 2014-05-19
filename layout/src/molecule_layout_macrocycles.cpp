@@ -560,7 +560,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
 
    int last_rotate_angle = 1;
 
-   for (int index = 0; index < points.size() && bestBadness > 0.001; index++) {
+   for (int index = 0; index < points.size(); index++) {
       int displayIndex = index;
       x_result[length] = points[index].x;
       y_result[length] = points[index].y;
@@ -678,7 +678,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
             rotateAngle[0] = -1;
             last_rotate_angle = 1;
       }
-      }
       
       //rotateAngle[0] = -1;
       Vec2f p[max_size];
@@ -693,8 +692,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          p[i] += lose_vector * vertexNumber[i];
 
       double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, points[index].diff);
-
-      if (startBadness > 0.001) smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
+         smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
 
       double newBadness = 0;
       newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, points[index].diff);
