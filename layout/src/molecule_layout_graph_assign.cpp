@@ -500,7 +500,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
       // trees sizes
 
-      layout.setVertexOutsideWeight(i, cycle.getVertexWeight(i));
+   }
 
    }
 
@@ -567,9 +567,9 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       int endIndex = index;
 
       if (!componentIsWholeCycle) {
-         while (takenVertex[cycle.getVertex(startIndex)]) startIndex = (startIndex - 1 + size) % size;
-         startIndex = (startIndex + 1) % size;
-         while (takenVertex[cycle.getVertex(endIndex)]) endIndex = (endIndex + 1) % size;
+      while (takenVertex[cycle.getVertex(startIndex)]) startIndex = (startIndex - 1 + size) % size;
+      startIndex = (startIndex + 1) % size;
+      while (takenVertex[cycle.getVertex(endIndex)]) endIndex = (endIndex + 1) % size;
       } else {
          endIndex = (index - 1 + size) % size;
       }
@@ -698,7 +698,7 @@ void MoleculeLayoutGraph::_segment_calculate_target_angle(const MoleculeLayoutMa
       if (Vec2f::cross(p1, p2) < 0) target_angle[i] = -target_angle[i];
       target_angle[i] = PI - target_angle[i];
    }
-}
+      }
 
 void MoleculeLayoutGraph::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
 

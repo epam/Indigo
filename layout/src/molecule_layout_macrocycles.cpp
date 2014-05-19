@@ -70,9 +70,9 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) :
 
 }
 
-void MoleculeLayoutMacrocycles::setVertexOutsideWeight (int v, int weight)
+void MoleculeLayoutMacrocycles::addVertexOutsideWeight (int v, int weight)
 {
-   _vertex_weight[v] = weight;
+   _vertex_weight[v] += weight;
 }
 
 void MoleculeLayoutMacrocycles::setVertexEdgeParallel (int v, bool parallel) 
@@ -178,60 +178,60 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
       newPoint += (p[worstVertex] - p2)*coef2;
       newPoint += (p[worstVertex] - p3)*coef3;
 
-      if (profi) {
-         for (int i = 0; i < ind; i++) if (i != worstVertex && (i + 1) % ind != worstVertex) {
-            double dist = Vec2f::distPointSegment(p[worstVertex], p[i], p[(i + 1) % ind]);
-            if (dist < 1 && dist > eps) {
-               Vec2f normal = (p[(i + 1) % ind] - p[i]);
-               normal.rotate(PI/2);
-               double c = Vec2f::cross(p[i], p[(i + 1)%ind]);
-               double s = normal.length();
+         if (profi) {
+            for (int i = 0; i < ind; i++) if (i != worstVertex && (i + 1) % ind != worstVertex) {
+               double dist = Vec2f::distPointSegment(p[worstVertex], p[i], p[(i + 1) % ind]);
+               if (dist < 1 && dist > eps) {
+                  Vec2f normal = (p[(i + 1) % ind] - p[i]);
+                  normal.rotate(PI / 2);
+                  double c = Vec2f::cross(p[i], p[(i + 1) % ind]);
+                  double s = normal.length();
 
-               normal /= s;
-               c /= s;
+                  normal /= s;
+                  c /= s;
 
-               double t = - c - Vec2f::dot(p[worstVertex], normal);
-               
-               Vec2f pp;
+                  double t = -c - Vec2f::dot(p[worstVertex], normal);
 
-               if (s < eps) {
-                    pp = p[i];
-               } else {
-                  pp = p[worstVertex] + normal * t;
-                  if (Vec2f::dist(p[worstVertex], p[i]) < Vec2f::dist(p[worstVertex], pp)) {
+                  Vec2f pp;
+
+                  if (s < eps) {
                      pp = p[i];
+               } else {
+                     pp = p[worstVertex] + normal * t;
+                     if (Vec2f::dist(p[worstVertex], p[i]) < Vec2f::dist(p[worstVertex], pp)) {
+                        pp = p[i];
+                     }
+                     if (Vec2f::dist(p[worstVertex], p[(i + 1) % ind]) < Vec2f::dist(p[worstVertex], pp)) {
+                        pp = p[(i + 1) % ind];
+                     }
                   }
-                  if (Vec2f::dist(p[worstVertex], p[(i + 1)%ind]) < Vec2f::dist(p[worstVertex], pp)) {
-                     pp = p[(i + 1)%ind];
-                  }
+
+                  double coef = (1 - dist) / dist;
+
+                  newPoint += (p[worstVertex] - pp) * coef;
                }
-
-               double coef = (1 - dist)/dist;
-
-               newPoint += (p[worstVertex] - pp) * coef;
             }
-         }
       } else {
-         float good_distance = 1;
-         for (int j = 0; j < ind; j++) {
-            int nextj = (j + 1) % ind;
-            Vec2f pp = p[j];
-            Vec2f dpp = (p[nextj] - p[j]) / edgeLenght[j];
+            float good_distance = 1;
+            for (int j = 0; j < ind; j++) {
+               int nextj = (j + 1) % ind;
+               Vec2f pp = p[j];
+               Vec2f dpp = (p[nextj] - p[j]) / edgeLenght[j];
 
-            for (int t = vertexNumber[j], s = 0; t != vertexNumber[nextj]; t = (t + 1)%molSize, s++) {
-               if (t != vertexNumber[worstVertex] && (t + 1)%molSize != vertexNumber[worstVertex] && t != (vertexNumber[worstVertex] + 1) % molSize) {
-                  double distSqr = Vec2f::distSqr(pp, p[worstVertex]);
-                  if (distSqr < good_distance && distSqr > eps2) {
-                     double dist = sqrt(distSqr);
-                     double coef = (good_distance - dist)/dist;
-                     //printf("%5.5f \n", dist);
-                     newPoint += (p[worstVertex] - pp)*coef;
+               for (int t = vertexNumber[j], s = 0; t != vertexNumber[nextj]; t = (t + 1) % molSize, s++) {
+                  if (t != vertexNumber[worstVertex] && (t + 1) % molSize != vertexNumber[worstVertex] && t != (vertexNumber[worstVertex] + 1) % molSize) {
+                     double distSqr = Vec2f::distSqr(pp, p[worstVertex]);
+                     if (distSqr < good_distance && distSqr > eps2) {
+                        double dist = sqrt(distSqr);
+                        double coef = (good_distance - dist) / dist;
+                        //printf("%5.5f \n", dist);
+                        newPoint += (p[worstVertex] - pp)*coef;
+                     }
                   }
+                  pp += dpp;
                }
-               pp += dpp;
             }
          }
-      }
 
       newPoint *= multiplier;
 
@@ -302,7 +302,7 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
          }
          else if (dist < 1) result = max(result, 1/dist - 1);
       }
-
+   
    //printf("%5.5f\n", result);
    return result + 1000.0 * add;
 
@@ -346,13 +346,13 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       if (_edge_stereo[i] == 1) {
             shift = i;
             break;
-      }
+         }
    if (_edge_stereo[shift] != 1) {
       for (int i = 0; i < length; i++) 
          if (_edge_stereo[i] == 0) {
                shift = i;
                break;
-         }
+      }
    }
 
    for (int i = 0; i < length; i++) 
@@ -670,7 +670,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          } else {
             rotateAngle[0] = -1;
             last_rotate_angle = 1;
-         }
+      }
       }
       
       //rotateAngle[0] = -1;
@@ -897,6 +897,6 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
   //    _positions[i].y = y[i];
       _positions[i] = p[i];
    }
-
+   
    return badness(length, length, rotateAngle.ptr(), edgeLength.ptr(), vertexNumber.ptr(), p.ptr());
 }

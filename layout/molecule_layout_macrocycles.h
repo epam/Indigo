@@ -32,7 +32,7 @@ public:
    CP_DECL;
    MoleculeLayoutMacrocycles (int size);
 
-   void setVertexOutsideWeight (int v, int weight);
+   void addVertexOutsideWeight (int v, int weight);
    void setVertexEdgeParallel (int v, bool parallel);
    void setEdgeStereo (int e, int stereo);
    void setVertexDrawn(int v, bool drawn);
