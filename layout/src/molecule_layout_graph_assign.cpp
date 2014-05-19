@@ -502,7 +502,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
    }
 
-   }
+      }
 
    layout.doLayout();
 
@@ -668,7 +668,7 @@ void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeL
    QS_DEF(Array<float>, target_angle);
 
    _segment_update_rotation_points(cycle, rotation_vertex, rotation_point, segment);
-   _segment_calculate_target_angle(layout, rotation_vertex, target_angle);
+   _segment_calculate_target_angle(layout, rotation_vertex, target_angle, segment);
 
    if (segment.size() > 2) {
       _segment_smoothing_unstick(segment);
@@ -683,7 +683,7 @@ void MoleculeLayoutGraph::_segment_update_rotation_points(const Cycle &cycle, Ar
    for (int i = 0; i < segment.size(); i++) segment[i].updateStartFinish();
 }
 
-void MoleculeLayoutGraph::_segment_calculate_target_angle(const MoleculeLayoutMacrocycles &layout, Array<int> &rotation_vertex, Array<float> &target_angle) {
+void MoleculeLayoutGraph::_segment_calculate_target_angle(const MoleculeLayoutMacrocycles &layout, Array<int> &rotation_vertex, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    int segments_count = rotation_vertex.size();
 
    target_angle.clear_resize(segments_count);
@@ -698,7 +698,14 @@ void MoleculeLayoutGraph::_segment_calculate_target_angle(const MoleculeLayoutMa
       if (Vec2f::cross(p1, p2) < 0) target_angle[i] = -target_angle[i];
       target_angle[i] = PI - target_angle[i];
    }
+
+   for (int i = 0; i < segments_count; i++)
+      for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
+         if (segment[i].is_start(v)) if (segment[i]._graph.getVertex(v).degree() > 2) target_angle[i] = 0;
+         if (segment[i].is_finish(v)) if (segment[i]._graph.getVertex(v).degree() > 2) target_angle[(i + 1) % segments_count] = 0;
       }
+
+}
 
 void MoleculeLayoutGraph::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
 
