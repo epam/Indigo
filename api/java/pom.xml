@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.ggasoftware</groupId>
     <artifactId>indigo</artifactId>
-    <version>1.2.1-layout-dev</version>
+    <version>1.2.1dev</version>
     <packaging>jar</packaging>
 
     <name>Indigo</name>

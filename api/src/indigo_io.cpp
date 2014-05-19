@@ -179,10 +179,11 @@ CEXPORT const char * indigoToString (int handle)
    {
       IndigoObject &obj = self.getObject(handle);
 
-      obj.toString(self.tmp_string);
-      self.tmp_string.push(0);
+      auto &tmp = self.getThreadTmpData();
+      obj.toString(tmp.string);
+      tmp.string.push(0);
 
-      return self.tmp_string.ptr();
+      return tmp.string.ptr();
    }
    INDIGO_END(0);
 }
@@ -193,10 +194,11 @@ CEXPORT int indigoToBuffer (int handle, char **buf, int *size)
    {
       IndigoObject &obj = self.getObject(handle);
 
-      obj.toBuffer(self.tmp_string);
+      auto &tmp = self.getThreadTmpData();
+      obj.toBuffer(tmp.string);
 
-     *buf = self.tmp_string.ptr();
-     *size = self.tmp_string.size();
+     *buf = tmp.string.ptr();
+     *size = tmp.string.size();
      return 1;
    }
    INDIGO_END(-1);

@@ -12,12 +12,6 @@ source_group("GZip" FILES ${GZip_src} ${GZip_headers})
 
 include_directories(${Common_SOURCE_DIR} ${Molecule_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR} ${TinyXML_HEADERS_DIR})
 
-add_library(molecule ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZip_headers})
-add_library(moleculeObj OBJECT ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZip_headers})
+add_library(molecule OBJECT ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZip_headers})
 
 set_target_properties(molecule PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-set_target_properties(moleculeObj PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-
-target_link_libraries(molecule graph z tinyxml)
-
-pack_static(molecule)

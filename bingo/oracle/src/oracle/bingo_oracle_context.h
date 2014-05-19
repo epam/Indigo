@@ -18,6 +18,7 @@
 #include "base_cpp/exception.h"
 #include "core/bingo_context.h"
 #include "oracle/bingo_storage.h"
+#include "oracle/warnings_table.h"
 
 using namespace indigo;
 
@@ -36,6 +37,7 @@ public:
    virtual ~BingoOracleContext ();
    
    BingoStorage storage;
+   WarningsTable warnings;
 
    int sim_screening_pass_mark;
    int sub_screening_pass_mark;
@@ -70,6 +72,8 @@ public:
 
    void atomicMassLoad (OracleEnv &env);
    void atomicMassSave (OracleEnv &env);
+
+   void setLogTableWithColumns (OracleEnv &env, const char *tableWithColumns);
 
    void lock (OracleEnv &env);
    void unlock (OracleEnv &env);

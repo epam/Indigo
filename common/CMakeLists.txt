@@ -38,22 +38,6 @@ source_group("Math" FILES ${Math_src} ${Math_headers})
 include_directories(${Common_SOURCE_DIR})
 include_directories(${ZLib_HEADERS_DIR})
 
-if(APPLE)
-    set(CMAKE_OSX_ARCHITECTURES "i386;x86_64")
-endif()
-
-add_library(common ${BaseC_src} ${BaseC_headers} ${BaseCpp_src} ${BaseCpp_headers} ${LZW_src} ${LZW_headers} ${Math_src} ${Math_headers})
-
-if(VISIBILITY_HIDDEN)
-    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
-endif()    
-if(UNIX OR APPLE)
-    SET(COMPILE_FLAGS "${COMPILE_FLAGS} -fPIC")
-endif()
+add_library(common OBJECT ${BaseC_src} ${BaseC_headers} ${BaseCpp_src} ${BaseCpp_headers} ${LZW_src} ${LZW_headers} ${Math_src} ${Math_headers})
 
 set_target_properties(common PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-if(UNIX)
-	TARGET_LINK_LIBRARIES(common "-lpthread")
-endif()
-pack_static(common)
-

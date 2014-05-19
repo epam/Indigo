@@ -60,6 +60,7 @@ extern const char *bad_molecule_warning_rowid;
    catch (SmilesLoader::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
    catch (IcmLoader::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
    catch (Molecule::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
+   catch (DearomatizationException &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
 
 #define CATCH_READ_TARGET_MOL_ROWID(rowid, action) \
    } \
@@ -72,6 +73,7 @@ extern const char *bad_molecule_warning_rowid;
    catch (SmilesLoader::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
    catch (IcmLoader::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
    catch (Molecule::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (DearomatizationException &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
 
 
 #endif

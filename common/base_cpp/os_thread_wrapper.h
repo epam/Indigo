@@ -112,6 +112,8 @@ private:
    void _handleException (Exception *exception);
    void _handleResultWithCheck (OsCommandResult *result);
 
+   void _wakeSuspended ();
+
 private:
    // Variables
    PtrArray<OsCommand> _availableCommands;

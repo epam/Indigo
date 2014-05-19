@@ -18,6 +18,8 @@
 #include "base_cpp/red_black.h"
 #include "base_cpp/os_sync_wrapper.h"
 
+#include <sstream>
+
 using namespace indigo;
 
 #define DECL_SET_OPT_HANDLER(suffix, ftype, type, map)               \
@@ -86,6 +88,16 @@ protected:
    RedBlackStringMap<optf_float_t, false> hMapFloat;
    RedBlackStringMap<optf_color_t, false> hMapColor;
    RedBlackStringMap<optf_xy_t, false> hMapXY;
+
+   template <typename T> 
+   void callOptionHandlerT (const char *name, T arg)
+   {
+      // Convert to string for default string parsing
+      std::stringstream ss;
+      ss << arg;
+      std::string converted = ss.str();
+      callOptionHandler(name, converted.c_str());
+   }
 
 private:
    OptionManager (const OptionManager&);

@@ -382,3 +382,14 @@ int bitIsAllZero (const void *bits, int nbytes)
    }
    return 1;
 }
+
+int bitLog2Dword (dword input)
+{
+   int count = 0;
+   while (input > 0)
+   {
+      count++;
+      input >>= 1;
+   }
+   return count;
+}

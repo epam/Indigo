@@ -47,6 +47,9 @@
 #define profTimerGetTime(var_name) \
    var_name##_timer.getTime()
 
+#define profTimerGetTimeSec(var_name) \
+   var_name##_timer.getTimeSec()
+
 #define profIncTimer(name, dt) \
    do {                               \
       _PROF_GET_NAME_INDEX(var_name, name)   \
@@ -134,6 +137,7 @@ public:
 
    qword stop    ();
    qword getTime () const;
+   float getTimeSec () const;
 
 private:
    int _name_index;

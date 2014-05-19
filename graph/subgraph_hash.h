@@ -19,11 +19,16 @@
 #include "base_cpp/tlscont.h"
 #include "graph/graph_fast_access.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Graph;
 
-class SubgraphHash
+class DLLEXPORT SubgraphHash
 {
 public:
    SubgraphHash (Graph &g);

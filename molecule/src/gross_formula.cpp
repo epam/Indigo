@@ -77,12 +77,13 @@ int GrossFormula::_cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void *context
 
 void GrossFormula::collect (BaseMolecule &mol, Array<int> &gross)
 {
-   int i;
+   if (!mol.isQueryMolecule())
+      mol.asMolecule().restoreUnambiguousHydrogens();
 
    gross.clear_resize(ELEM_MAX);
    gross.zerofill();
 
-   for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+   for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
    {
       if (mol.isPseudoAtom(i) || mol.isRSite(i))
          continue;

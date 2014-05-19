@@ -342,16 +342,60 @@ void indigoRenderSetTitleFontSize (float fontSize)
    rp.rOpt.titleFontFactor = fontSize;
 }                                
 
-void indigoRenderSetCommentAlignment (float align)
+static MultilineTextLayout _parseTextLayout (const char *text)
 {
-   RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.cnvOpt.commentAlign = align;
+   // Try to read as float for compatibility with previous versions
+   BufferScanner scanner(text);
+   float val;
+   if (scanner.tryReadFloat(val))
+   {
+      float eps = 1e-6f;
+      if (fabs(val) < eps)
+         text = "left";
+      else if (fabs(val - 0.5f) < eps)
+         text = "center";
+      else if (fabs(val - 1.0f) < eps)
+         text = "right";
+      else
+         throw IndigoError("Alignment allow only 0.0, 0.5, or 1.0 values");
+   }
+
+   if (strcasecmp(text, "left") == 0)
+      return MultilineTextLayout(MultilineTextLayout::Left, MultilineTextLayout::Left);
+   else if (strcasecmp(text, "right") == 0)
+      return MultilineTextLayout(MultilineTextLayout::Right, MultilineTextLayout::Right);
+   else if (strcasecmp(text, "center") == 0)
+      return MultilineTextLayout(MultilineTextLayout::Center, MultilineTextLayout::Center);
+   else if (strcasecmp(text, "center-left") == 0)
+      return MultilineTextLayout(MultilineTextLayout::Center, MultilineTextLayout::Left);
+   else if (strcasecmp(text, "center-right") == 0)
+      return MultilineTextLayout(MultilineTextLayout::Center, MultilineTextLayout::Right);
+   else
+      throw IndigoError("Option value is invalid");
 }
 
-void indigoRenderSetTitleAlignment (float align)
+void indigoRenderSetCommentSpacing (float spacing)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   rp.cnvOpt.titleAlign = align;
+   rp.rOpt.commentSpacing = spacing;
+}
+
+void indigoRenderSetCommentAlignment (const char *text)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.commentAlign = _parseTextLayout(text);
+}
+
+void indigoRenderSetTitleSpacing (float spacing)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.rOpt.titleSpacing = spacing;
+}
+
+void indigoRenderSetTitleAlignment (const char *text)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.titleAlign = _parseTextLayout(text);
 }
 
 void indigoRenderSetCommentPosition (const char* pos)
@@ -602,7 +646,8 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerFloat("render-relative-thickness", indigoRenderSetRelativeThickness);
    mgr.setOptionHandlerFloat("render-bond-line-width", indigoRenderSetBondLineWidth);
    mgr.setOptionHandlerFloat("render-comment-font-size", indigoRenderSetCommentFontSize);
-   mgr.setOptionHandlerFloat("render-comment-alignment", indigoRenderSetCommentAlignment);
+   mgr.setOptionHandlerString("render-comment-alignment", indigoRenderSetCommentAlignment);
+   mgr.setOptionHandlerFloat("render-comment-spacing", indigoRenderSetCommentSpacing);
 
    mgr.setOptionHandlerColor("render-background-color", indigoRenderSetBackgroundColor);
    mgr.setOptionHandlerColor("render-base-color", indigoRenderSetBaseColor);
@@ -616,7 +661,8 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerXY("render-margins", indigoRenderSetMargins);
 
    mgr.setOptionHandlerXY("render-grid-margins", indigoRenderSetGridMargins);
-   mgr.setOptionHandlerFloat("render-grid-title-alignment", indigoRenderSetTitleAlignment);
+   mgr.setOptionHandlerFloat("render-grid-title-spacing", indigoRenderSetTitleSpacing);
+   mgr.setOptionHandlerString("render-grid-title-alignment", indigoRenderSetTitleAlignment);
    mgr.setOptionHandlerFloat("render-grid-title-font-size", indigoRenderSetTitleFontSize);
    mgr.setOptionHandlerString("render-grid-title-property", indigoRenderSetGridTitleProperty);
    mgr.setOptionHandlerInt("render-grid-title-offset", indigoRenderSetTitleOffset);

@@ -18,11 +18,16 @@
 #include "base_cpp/exception.h"
 #include "reaction/base_reaction_substructure_matcher.h"
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
+
 namespace indigo {
 
 class Reaction;
 
-class ReactionExactMatcher : public BaseReactionSubstructureMatcher
+class DLLEXPORT ReactionExactMatcher : public BaseReactionSubstructureMatcher
 {
 public:
 

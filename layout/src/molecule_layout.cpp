@@ -386,10 +386,12 @@ void MoleculeLayout::make ()
          for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
          {
             BaseMolecule& mol = *frags[j];
-            MoleculeLayout layout(mol);
-            layout.max_iterations = max_iterations;
-            layout.bond_length = bond_length;
-            layout.make();
+            if (filter == NULL) {
+               MoleculeLayout layout(mol);
+               layout.max_iterations = max_iterations;
+               layout.bond_length = bond_length;
+               layout.make();
+            }
             _pushMol(line, mol); // add molecule to metalayout AFTER its own layout is determined
          }
       }

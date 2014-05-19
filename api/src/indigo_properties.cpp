@@ -45,9 +45,10 @@ CEXPORT const char * indigoGetProperty (int handle, const char *prop)
       if (props == 0)
          throw IndigoError("%s does not have properties", obj.debugInfo());
 
-      self.tmp_string.copy(props->at(prop));
-      self.tmp_string.push(0); // just for safety; a zero byte must be already there
-      return self.tmp_string.ptr();
+      auto &tmp = self.getThreadTmpData();
+      tmp.string.copy(props->at(prop));
+      tmp.string.push(0); // just for safety; a zero byte must be already there
+      return tmp.string.ptr();
    }
    INDIGO_END(0)
 }

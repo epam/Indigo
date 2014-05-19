@@ -17,9 +17,9 @@ def make_doc():
     root_dir = os.path.join(script_dir, "..")
 
     os.chdir(os.path.join(root_dir, 'api/python'))
-    os.system('python copy-libs.py')
+    subprocess.check_call('%s copy-libs.py' % sys.executable, shell=True)
     os.chdir('../../doc')
-    os.system('python builder.py')
+    subprocess.check_call('%s builder.py' % sys.executable, shell=True)
     os.chdir(curdir)
 
 def copy_doc(destname):

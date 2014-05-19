@@ -15,6 +15,8 @@
 #ifndef __tlscont_h__
 #define __tlscont_h__
 
+#include <typeinfo>
+
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
 #include "base_cpp/pool.h"
@@ -37,6 +39,7 @@ namespace indigo {
 class DLLEXPORT _SIDManager {
 public:
    static _SIDManager& getInst (void);
+   _SIDManager (void);
    ~_SIDManager (void);
 
    void  setSessionId     (qword id);
@@ -50,7 +53,6 @@ public:
    DECL_ERROR;
 
 private:
-   _SIDManager (void);
    qword * _getID         () const;
 
    // Thread local key for storing current session ID
@@ -222,8 +224,7 @@ public:
    template <typename T>
    size_t hash ()
    {
-      // Use simple and fast class size as a class hash to check that initialization order is the same
-      return sizeof(T);
+      return typeid(T).hash_code();
    }
 
    template <typename T>

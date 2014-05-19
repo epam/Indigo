@@ -57,7 +57,7 @@ void RenderSingle::_drawComment ()
    _rc.storeTransform();
    {
       float diff = (float)(width - 2 * outerMargin.x - commentSize.x);
-      _rc.translate(diff * _cnvOpt.commentAlign, 0);
+      _rc.translate(diff * _cnvOpt.commentAlign.getBboxRelativeOffset(), 0);
       _factory.getItem(comment).render();
    }
    _rc.restoreTransform();

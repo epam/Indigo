@@ -31,13 +31,14 @@ struct Pos
    Vec2f size, all_size;
 
    // Final offset for the coordinates
-   Vec2f offset, title_offset;
+   Vec2f offset;
+   float title_offset_y;
 
    // Structure scaling coefficient
    float scale;
 };
 
-void _getBounds (BaseMolecule &mol, Vec2f &min, Vec2f &max, float &scale)
+void _getBounds (RenderParams& params, BaseMolecule &mol, Vec2f &min, Vec2f &max, float &scale)
 {
    // Compute average bond length
    float avg_bond_length = 1;
@@ -54,7 +55,11 @@ void _getBounds (BaseMolecule &mol, Vec2f &min, Vec2f &max, float &scale)
       avg_bond_length = bond_length_sum / mol.edgeCount();
    }
 
-   scale = 1 / avg_bond_length;
+   float bond_length = 1;
+   if (params.cnvOpt.bondLength > 0)
+      bond_length = params.cnvOpt.bondLength / 100.0f;
+
+   scale = bond_length / avg_bond_length;
 
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
@@ -90,6 +95,10 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    column_widths.resize(params.cnvOpt.gridColumnNumber);
    column_widths.fill(0);
 
+   Array<float> title_widths;
+   title_widths.resize(mols.size());
+   title_widths.fill(0);
+
    Array<Pos> positions;
    positions.resize(mols.size());
 
@@ -98,7 +107,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       int column = i % params.cnvOpt.gridColumnNumber;
 
       Pos &p = positions[i];
-      _getBounds(mols[i]->asMolecule(), p.str_min, p.str_max, p.scale);
+      _getBounds(params, mols[i]->asMolecule(), p.str_min, p.str_max, p.scale);
 
       float width = p.str_max.x - p.str_min.x;
 
@@ -123,7 +132,8 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
             }
 
             // On average letters has width 6
-            float title_width = longest_line * 6.3 / 36.0;
+            float title_width = longest_line * 6.3f / 36.0f;
+            title_widths[i] = title_width;
             width = __max(width, title_width);
          }
       }
@@ -190,8 +200,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       p.offset.x = p.page_offset.x - p.str_min.x + (column_widths[column] - p.size.x) / 2;
       p.offset.y = -p.page_offset.y - p.str_max.y;
 
-      p.title_offset.x = p.page_offset.x + p.size.x / 2 + (column_widths[column] - p.size.x) / 2;
-      p.title_offset.y = -p.page_offset.y - p.size.y - 1.0f;
+      p.title_offset_y = -p.page_offset.y - p.size.y - 1.0f;
 
       max_y = __max(max_y, p.page_offset.y + p.all_size.y);
 
@@ -224,6 +233,8 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
 
    for (int i = 0; i < mols.size(); ++i)
    {
+      int column = i % params.cnvOpt.gridColumnNumber;
+
       Pos &p = positions[i];
       Vec2f offset = p.offset;
       offset.scale(1 / p.scale);
@@ -233,7 +244,22 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       {
          const Array<char> &title = params.titles[i];
          if (title.size() > 0)
-            saver.addText(p.title_offset, title.ptr());
+         {
+            // Get title bounding box
+            float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], title_widths[i]);
+
+            const char *alignment_str = "";
+            MultilineTextLayout alignment = params.cnvOpt.titleAlign;
+            if (alignment.inbox_alignment == MultilineTextLayout::Center)
+               alignment_str = "Center";
+            if (alignment.inbox_alignment == MultilineTextLayout::Left)
+               alignment_str = "Left";
+            if (alignment.inbox_alignment == MultilineTextLayout::Right)
+               alignment_str = "Right";
+
+            Vec2f title_offset(x, p.title_offset_y);
+            saver.addText(title_offset, title.ptr(), alignment_str);
+         }
       }
    }
 

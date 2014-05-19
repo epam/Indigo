@@ -13,15 +13,22 @@
  ***************************************************************************/
 
 #ifndef __reaction_fingerprint__
+#define __reaction_fingerprint__
 
 #include "base_cpp/tlscont.h"
+#include "base_cpp/cancellation_handler.h"
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable:4251)
+#endif
 
 namespace indigo {
 
 class BaseReaction;
 struct MoleculeFingerprintParameters;
 
-class ReactionFingerprintBuilder
+class DLLEXPORT ReactionFingerprintBuilder
 {
 public:
    ReactionFingerprintBuilder (BaseReaction &reaction, const MoleculeFingerprintParameters &parameters);
@@ -38,6 +45,8 @@ public:
 
    void parseFingerprintType(const char *type, bool query);
 
+   CancellationHandler* cancellation;
+
    DECL_ERROR;
 
 protected:
@@ -52,5 +61,9 @@ private:
 };
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

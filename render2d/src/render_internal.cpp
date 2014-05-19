@@ -156,7 +156,9 @@ void RenderOptions::clear()
    highlightColor.set(1, 0, 0);
    aamColor.set(0, 0, 0);
    commentFontFactor = 20;
+   commentSpacing = 0.5;
    titleFontFactor = 20;
+   titleSpacing = 0.5;
    labelMode = LABEL_MODE_TERMINAL_HETERO;
    highlightedLabelsVisible = false;
    boldBondDetection = true;
@@ -823,7 +825,8 @@ void MoleculeRenderInternal::_prepareSGroups()
                         bid = mol.addBond(said, naid, mol.getBondOrder(nbid));
                         mol.setEdgeTopology(bid, mol.getBondTopology(nbid));
                      }
-                     _bondMappingInv.remove(bid);
+                     if (_bondMappingInv.find(bid))
+                        _bondMappingInv.remove(bid);
                      _bondMappingInv.insert(bid, _bondMappingInv.at(nbid));
                   }
                }

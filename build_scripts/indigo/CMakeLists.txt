@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 if (INDIGO_CONFIGURED)
-	return()
+    return()
 endif()
 
 project(IndigoSolution)

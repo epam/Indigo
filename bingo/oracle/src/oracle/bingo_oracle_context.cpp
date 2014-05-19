@@ -118,6 +118,12 @@ void BingoOracleContext::_loadConfigParameters (OracleEnv &env)
    configGetInt(env, "SIM_SCREENING_PASS_MARK", sim_screening_pass_mark);
    configGetInt(env, "SUB_SCREENING_MAX_BITS", sub_screening_max_bits);
 
+   QS_DEF(Array<char>, log_table);
+   if (configGetString(env, "LOG_TABLE", log_table))
+      warnings.setTableNameAndColumns(env, log_table.ptr());
+   else
+      warnings.reset();
+
    _config_changed = false;
 }
 
@@ -364,6 +370,7 @@ void BingoOracleContext::parseParameters (OracleEnv &env, const char *str)
    BufferScanner scanner(str);
 
    QS_DEF(Array<char>, param_name);
+   QS_DEF(Array<char>, param_value);
 
    static const char *PARAMETERS_INT[] = 
    {
@@ -404,6 +411,13 @@ void BingoOracleContext::parseParameters (OracleEnv &env, const char *str)
       if (strcasecmp(param_name.ptr(), "NTHREADS") == 0)
       {
          nthreads = scanner.readInt();
+         parameter_found = true;
+      }
+
+      if (strcasecmp(param_name.ptr(), "LOG_TABLE") == 0)
+      {
+         scanner.readWord(param_value, " ");
+         setLogTableWithColumns(env, param_value.ptr());
          parameter_found = true;
       }
 
@@ -471,6 +485,10 @@ void BingoOracleContext::atomicMassSave (OracleEnv &env)
       configSetString(env, "RELATIVE_ATOMIC_MASS", "");
 }
 
+void BingoOracleContext::setLogTableWithColumns (OracleEnv &env, const char *tableWithColumns)
+{
+   configSetString(env, "LOG_TABLE", tableWithColumns);
+}
 
 void BingoOracleContext::lock (OracleEnv &env)
 {

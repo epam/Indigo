@@ -140,8 +140,9 @@ const char * IndigoRdfMolecule::getName ()
    Indigo &self = indigoGetInstance();
 
    BufferScanner scanner(_data);
-   scanner.readLine(self.tmp_string, true);
-   return self.tmp_string.ptr();
+   auto &tmp = self.getThreadTmpData();
+   scanner.readLine(tmp.string, true);
+   return tmp.string.ptr();
 }
 
 IndigoObject * IndigoRdfMolecule::clone ()
@@ -189,13 +190,14 @@ const char * IndigoRdfReaction::getName ()
    Indigo &self = indigoGetInstance();
 
    BufferScanner scanner(_data);
-   scanner.readLine(self.tmp_string, true);
-   if (strcmp(self.tmp_string.ptr(), "$RXN") != 0)
+   auto &tmp = self.getThreadTmpData();
+   scanner.readLine(tmp.string, true);
+   if (strcmp(tmp.string.ptr(), "$RXN") != 0)
       throw IndigoError("IndigoRdfReaction::getName(): unexpected first line in the files with reactions."
          "'%s' has been found but '$RXN' has been expected.");
    // Read next line with the name
-   scanner.readLine(self.tmp_string, true);
-   return self.tmp_string.ptr();
+   scanner.readLine(tmp.string, true);
+   return tmp.string.ptr();
 }
 
 IndigoObject * IndigoRdfReaction::clone ()
