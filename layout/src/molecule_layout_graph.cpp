@@ -595,8 +595,16 @@ void MoleculeLayoutSmoothingSegment::updateStartFinish() {
    _length = (_start - _finish).length();
 }
 
+bool MoleculeLayoutSmoothingSegment::isVertexUp(int v) {
+   return _pos[v].y > 0;
+}
+
 Vec2f MoleculeLayoutSmoothingSegment::getPosition(int v) {
    return _getPosition(_pos[v]);
+}
+
+Vec2f MoleculeLayoutSmoothingSegment::getIntPosition(int v) {
+   return _pos[v];
 }
 
 void MoleculeLayoutSmoothingSegment::shiftStartBy(Vec2f shift) {
@@ -670,6 +678,23 @@ Vec2f& MoleculeLayoutSmoothingSegment::getFinish() {
 
 Vec2f MoleculeLayoutSmoothingSegment::getCenter() {
    return _getPosition(_center);
+}
+
+Vec2f MoleculeLayoutSmoothingSegment::getIntCenter() {
+   return _center;
+}
+
+int MoleculeLayoutSmoothingSegment::get_layout_component_number() {
+   return _layout_component_number;
+}
+
+void MoleculeLayoutSmoothingSegment::set_layout_component_number(int number) {
+   _layout_component_number = number;
+}
+
+void MoleculeLayoutSmoothingSegment::inverse() {
+   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v))
+      _pos[v].y *= -1;
 }
 
 #ifdef M_LAYOUT_DEBUG

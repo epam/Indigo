@@ -83,6 +83,7 @@ private:
    Vec2f& _start;
    Vec2f& _finish;
    Vec2f _center;
+   int _layout_component_number;
 
    Vec2f _getPosition(Vec2f);
 
@@ -91,12 +92,18 @@ public:
 
    MoleculeLayoutSmoothingSegment(MoleculeLayoutGraph& mol, Vec2f& start, Vec2f& finish);
    Vec2f getPosition(int);
+   Vec2f getIntPosition(int);
    void shiftStartBy(Vec2f shift);
    void shiftFinishBy(Vec2f shift);
    float getLength() const;
    float getLengthCoef() const;
    Vec2f getCenter();
+   Vec2f getIntCenter();
    void updateStartFinish();
+   bool isVertexUp(int v);
+   int get_layout_component_number();
+   void set_layout_component_number(int number);
+   void inverse();
 
    bool is_start(int v) {return v == _start_number;}
    bool is_finish(int v) {return v == _finish_number;}
