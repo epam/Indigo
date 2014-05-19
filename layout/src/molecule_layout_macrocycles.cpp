@@ -353,19 +353,25 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    //fifth : y-coordinate
    //value : minimum number of vertexes sticked out + count of CIS-configurations
 
-   int shift = 0;
-   for (int i = 0; i < length; i++) 
-      if (_edge_stereo[i] == 1) {
+   int infinity = 30000;
+
+   int shift = -1;
+   int max_value = -infinity;
+
+   for (int i = 0; i < length; i++) {
+      if (_edge_stereo[i] != 2) {
+         int value = _edge_stereo[i]
+            + _vertex_weight[i] + _vertex_weight[(i + 1) % length]
+            - _vertex_weight[(i + length - 1) % length]/2 - _vertex_weight[(i + 2) % length]/2;
+
+         if (shift == 1 || value > max_value) {
             shift = i;
-            break;
+            max_value = value;
          }
-   if (_edge_stereo[shift] != 1) {
-      for (int i = 0; i < length; i++) 
-         if (_edge_stereo[i] == 0) {
-               shift = i;
-               break;
       }
    }
+
+   if (shift == -1) return 1e9;
 
    for (int i = 0; i < length; i++) 
       if (_vertex_weight[i] > 0) _vertex_weight[i]++;
@@ -383,7 +389,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    dx[4] = 0; dy[4] = -1;
    dx[5] = 1; dy[5] = -1;
 
-   int infinity = 30000;
 
 
    int x_left = max(init_x - length, 1);
