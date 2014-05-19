@@ -669,13 +669,9 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       int startIndex = index;
       int endIndex = index;
 
-      if (!componentIsWholeCycle) {
       while (takenVertex[cycle.getVertex(startIndex)]) startIndex = (startIndex - 1 + size) % size;
       startIndex = (startIndex + 1) % size;
       while (takenVertex[cycle.getVertex(endIndex)]) endIndex = (endIndex + 1) % size;
-      } else {
-         endIndex = (index - 1 + size) % size;
-      }
 
       // 2. flip
       bool need_to_flip = false;
@@ -1004,10 +1000,6 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
    segment_start.clear_resize(0);
    segment_start.fffill();
 
-   QS_DEF(Array<int>, segment_finish);
-   segment_finish.clear_resize(0);
-   segment_finish.fffill();
-
    QS_DEF(Array<bool>, touch_to_currnet_component);
    touch_to_currnet_component.clear_resize(cycle_size);
 
@@ -1055,7 +1047,6 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
 
          segment_start.push(start);
          segment_component_number.push(i);
-         segment_finish.push(finish);
       }
    }
 
@@ -1063,7 +1054,6 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
    if (_layout_component_number[cycle.getEdge(i)] < 0) {
 
       segment_start.push(i);
-      segment_finish.push((i + 1) % cycle_size);
 
       segments_filter.push();
       segments_filter.top().initNone(vertexEnd());
