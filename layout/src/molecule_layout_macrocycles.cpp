@@ -130,7 +130,7 @@ bool MoleculeLayoutMacrocycles::canApply (BaseMolecule &mol)
 
 double sqr(double x) {return x*x;}
 
-int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, Random* rand, bool profi, double multiplier, int worstVertex) {
+int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, Random* rand, bool profi, bool do_dist, double multiplier, int worstVertex) {
    
    Vec2f p1 = p[(worstVertex - 1 + ind) % ind];
    Vec2f p2 = p[(worstVertex + 1 + ind) % ind];
@@ -178,6 +178,7 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
       newPoint += (p[worstVertex] - p2)*coef2;
       newPoint += (p[worstVertex] - p3)*coef3;
 
+      if (do_dist) {
          if (profi) {
             for (int i = 0; i < ind; i++) if (i != worstVertex && (i + 1) % ind != worstVertex) {
                double dist = Vec2f::distPointSegment(p[worstVertex], p[i], p[(i + 1) % ind]);
@@ -196,7 +197,8 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
 
                   if (s < eps) {
                      pp = p[i];
-               } else {
+                  }
+                  else {
                      pp = p[worstVertex] + normal * t;
                      if (Vec2f::dist(p[worstVertex], p[i]) < Vec2f::dist(p[worstVertex], pp)) {
                         pp = p[i];
@@ -211,7 +213,8 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
                   newPoint += (p[worstVertex] - pp) * coef;
                }
             }
-      } else {
+         }
+         else {
             float good_distance = 1;
             for (int j = 0; j < ind; j++) {
                int nextj = (j + 1) % ind;
@@ -232,6 +235,7 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
                }
             }
          }
+      }
 
       newPoint *= multiplier;
 
@@ -241,6 +245,7 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
 }
 
 void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi, int *able_to_move) {
+
    Random rand(931170240);
    vector<int> target_vertices;
    if (able_to_move == 0) {
@@ -250,7 +255,7 @@ void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle
          if (able_to_move[i]) target_vertices.push_back(i);
    }
    int iter_count = max(50 * molSize, 2000);
-   for (int i = 0; i < iter_count; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.1, target_vertices[rand.next(target_vertices.size())]);
+   for (int i = 0; i < iter_count; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, i >= iter_count/2, 0.1, target_vertices[rand.next(target_vertices.size())]);
    //for (int i = 0; i < 50 * molSize; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.01, target_vertices[rand.next(target_vertices.size())]);
 }
 
