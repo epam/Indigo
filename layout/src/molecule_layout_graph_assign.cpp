@@ -861,7 +861,7 @@ void MoleculeLayoutGraph::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoo
             for (int v1 = segment[i]._graph.vertexBegin(); v1 != segment[i]._graph.vertexEnd(); v1 = segment[i]._graph.vertexNext(v1))
                for (int v2 = segment[j]._graph.vertexBegin(); v2 != segment[j]._graph.vertexEnd(); v2 = segment[j]._graph.vertexNext(v2)) {
    //                  if ((i + 1) % segment_count != j) printf("%10.10f \n", Vec2f::dist(segment[i].getPosition(v1), segment[j].getPosition(v2)));
-                  if (Vec2f::distSqr(segment[i].getPosition(v1), segment[j].getPosition(v2)) < EPSILON)
+                  if (Vec2f::distSqr(segment[i].getPosition(v1), segment[j].getPosition(v2)) < 0.1)
                      if ((i + 1) % segment_count != j || !segment[i].is_finish(v1)) {
                         component1.push(i);
                         component2.push(j);
@@ -925,7 +925,7 @@ void MoleculeLayoutGraph::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoo
                   direction.rotate(1, 0);
                } else continue;
 
-               direction /= 3;
+               direction *= 2;
 
                bool moved = false;
                for (int sign = 1; sign >= -1 && !moved; sign -= 2) {
