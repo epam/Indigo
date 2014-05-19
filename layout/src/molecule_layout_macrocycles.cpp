@@ -390,7 +390,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    dx[5] = 1; dy[5] = -1;
 
 
-
    int x_left = max(init_x - length, 1);
    int x_right = min(init_x + length, max_size - 2);
    int y_left = max(init_y - length, 1);
@@ -483,16 +482,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       }
    }
 
-   for (int rot = rot_left; rot <= rot_right; rot++)
-      for (int p = 0; p < 2; p++) 
-         for (int k = x_left; k <= x_right; k++)
-            for (int t = y_left; t <= y_right; t++)
-               if (minRotates[length][rot][p][k][t] != infinity) {
-                  if ((_edge_stereo[length - 1] == MoleculeCisTrans::TRANS && p) ||
-                     (_edge_stereo[length - 1] == MoleculeCisTrans::CIS && !p) ||
-                        rot > init_rot + 6) minRotates[length][rot][p][k][t] += _vertex_weight[0];
-               }
-
    int critical_diff = infinity - 1;
    std::multiset<int> diff_set;
 
@@ -549,16 +538,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          }
       }
    }
-
-   for (int rot = rot_left; rot <= rot_right; rot++)
-      for (int p = 0; p < 2; p++) 
-         for (int k = x_left; k <= x_right; k++)
-            for (int t = y_left; t <= y_right; t++)
-               if (minRotates[length][rot][p][k][t] != infinity) {
-                  if ((_edge_stereo[length - 1] == MoleculeCisTrans::TRANS && p) ||
-                     (_edge_stereo[length - 1] == MoleculeCisTrans::CIS && !p) ||
-                        rot > init_rot + 6) minRotates[length][rot][p][k][t] -= _vertex_weight[0];
-               }
 
    int x_result[max_size + 1];
    int y_result[max_size + 1];
@@ -675,18 +654,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
             rotateAngle[i] = rot_result[vertexNumber[i] + 1] > rot_result[vertexNumber[i]] ? 1 : rot_result[vertexNumber[i] + 1] == rot_result[vertexNumber[i]] ? 0 : -1;
          }
       if (vertexNumber[0] == 0) {
-         if (!_vertex_stereo[0]) rotateAngle[0] = 0;
-         else if (_edge_stereo[0] == MoleculeCisTrans::TRANS) rotateAngle[0] = - rotateAngle[1];
-         else if (_edge_stereo[0] == MoleculeCisTrans::CIS) rotateAngle[0] = rotateAngle[1];
-         else if (_edge_stereo[length - 1] == MoleculeCisTrans::TRANS) rotateAngle[0] = - rotateAngle[ind - 1];
-         else if (_edge_stereo[length - 1] == MoleculeCisTrans::CIS) rotateAngle[0] = rotateAngle[ind - 1];
-         else if (last_rotate_angle == 1) {
-            rotateAngle[0] = 1;
-            last_rotate_angle = -1;
-            index--;
-         } else {
-            rotateAngle[0] = -1;
-            last_rotate_angle = 1;
+         rotateAngle[0] = 1;
       }
       
       //rotateAngle[0] = -1;
