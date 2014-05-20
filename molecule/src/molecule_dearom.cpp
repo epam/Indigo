@@ -1539,16 +1539,16 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOpt
 
 bool MoleculeDearomatizer::restoreUnambiguousHydrogens (Molecule &mol)
 {
-   bool found_invalid_h = false;
+   bool found_invalid_aromatic_h = false;
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
       if (mol.isRSite(i) || mol.isPseudoAtom(i))
          continue;
 
-      if (mol.getImplicitH_NoThrow(i, -1) == -1)
-         found_invalid_h = true;
+      if (mol.getImplicitH_NoThrow(i, -1) == -1 && mol.getAtomAromaticity(i) == ATOM_AROMATIC)
+         found_invalid_aromatic_h = true;
    }
-   if (found_invalid_h)
+   if (found_invalid_aromatic_h)
    {
       AromaticityOptions options;
       options.method = AromaticityOptions::GENERIC;
