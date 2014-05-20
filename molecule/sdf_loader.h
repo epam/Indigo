@@ -25,9 +25,9 @@ class Scanner;
 class SdfLoader
 {
 	/*
-	 * Max data size is 100 Mb
+	 * Max data size is 10 Mb
 	 */
-	enum { MAX_DATA_SIZE = 104857600 };
+	enum { MAX_DATA_SIZE = 10485760 };
 public:
    SdfLoader (Scanner &scanner);
    ~SdfLoader ();
