@@ -60,6 +60,8 @@ public:
    int   readIntFix (int digits);
    void  skipSpace ();
 
+   void  skipUntil (const char *delimiters);
+
    float readFloat (void);
    bool  tryReadFloat (float &value);
    int readInt (void);

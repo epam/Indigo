@@ -2887,6 +2887,12 @@ void MolfileLoader::_readSGroup3000 (const char *str)
          if (sru != 0)
             sru->subscript.push(0);
       }
+      else if (strcmp(entity.ptr(), "SAP") == 0)
+      {
+         // TODO: add support for SAP: Abbreviation Sgroup Attachment Point
+         scanner.skipUntil(")");
+         scanner.skip(1);
+      }
       else 
       {
          if (scanner.lookNext() == '(')

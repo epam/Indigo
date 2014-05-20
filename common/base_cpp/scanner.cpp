@@ -346,6 +346,12 @@ void Scanner::skipSpace ()
       skip(1);
 }
 
+void Scanner::skipUntil (const char *delimiters)
+{
+   while (strchr(delimiters, lookNext()) == nullptr)
+      skip(1);
+}
+
 void Scanner::appendLine (Array<char> &out, bool append_zero)
 {
    if (isEOF())
