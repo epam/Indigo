@@ -170,6 +170,7 @@ void MangoRegisterCommand::execute (OsCommandResult &result)
 void MangoRegisterResult::clear ()
 {
    rowids.clear();
+   warnings.clear();
    per_molecule_data.clear();
    valid_molecules = 0;
 
