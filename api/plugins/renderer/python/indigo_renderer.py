@@ -41,8 +41,11 @@ class IndigoRenderer(object):
     def renderToBuffer(self, obj):
         self.indigo._setSessionId()
         wb = self.indigo.writeBuffer()
-        self.indigo._checkResult(self._lib.indigoRender(obj.id, wb.id))
-        return wb.toBuffer()
+        try:
+            self.indigo._checkResult(self._lib.indigoRender(obj.id, wb.id))
+            return wb.toBuffer()
+        finally:
+            wb.dispose()
 
     def renderToFile(self, obj, filename):
         self.indigo._setSessionId()
@@ -70,6 +73,9 @@ class IndigoRenderer(object):
             for i in range(len(refatoms)):
                 arr[i] = refatoms[i]
         wb = self.indigo.writeBuffer()
-        self.indigo._checkResult(
-            self._lib.indigoRenderGrid(objects.id, arr, ncolumns, wb.id))
-        return wb.toBuffer()
+        try:
+            self.indigo._checkResult(
+                self._lib.indigoRenderGrid(objects.id, arr, ncolumns, wb.id))
+            return wb.toBuffer()
+        finally:
+            wb.dispose()

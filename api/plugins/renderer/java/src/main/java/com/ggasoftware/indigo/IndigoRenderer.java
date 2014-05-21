@@ -42,9 +42,13 @@ public class IndigoRenderer
    {
       _indigo.setSessionID();
       IndigoObject buf = _indigo.writeBuffer();
-      Indigo.checkResult(this, obj, _lib.indigoRender(obj.self, buf.self));
+      try {
+         Indigo.checkResult(this, obj, _lib.indigoRender(obj.self, buf.self));
 
-      return buf.toBuffer();
+         return buf.toBuffer();
+      } finally {
+         buf.dispose();
+      }
    }
 
    public void renderGridToFile (IndigoObject objects, int[] refAtoms, int ncolumns, String filename)
@@ -61,8 +65,12 @@ public class IndigoRenderer
       if (refAtoms != null && objects.count() != refAtoms.length)
          throw new IndigoException(this, "refAtoms size does not match the number of objects");
       IndigoObject buf = _indigo.writeBuffer();
-      Indigo.checkResult(this, objects, _lib.indigoRenderGrid(objects.self, refAtoms, ncolumns, buf.self));
-      return buf.toBuffer();
+      try {
+         Indigo.checkResult(this, objects, _lib.indigoRenderGrid(objects.self, refAtoms, ncolumns, buf.self));
+         return buf.toBuffer();
+      } finally {
+         buf.dispose();
+      }
    }
 
    private static String getPathToBinary (String path, String filename)

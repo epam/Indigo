@@ -51,16 +51,17 @@ namespace com.ggasoftware.indigo
 		public byte[] renderToBuffer (IndigoObject obj)
 		{
 			_indigo.setSessionID ();
-			IndigoObject bufh = _indigo.writeBuffer ();
-			_indigo.checkResult (_renderer_lib.indigoRender (obj.self, bufh.self));
-			byte* buf;
-			int bufsize;
-			_indigo.checkResult (_indigo._indigo_lib.indigoToBuffer (bufh.self, &buf, &bufsize));
-			
-			byte[] res = new byte[bufsize];
-			for (int i = 0; i < bufsize; ++i)
-				res [i] = buf [i];
-			return res;
+			using (IndigoObject bufh = _indigo.writeBuffer()) {
+				_indigo.checkResult (_renderer_lib.indigoRender (obj.self, bufh.self));
+				byte* buf;
+				int bufsize;
+				_indigo.checkResult (_indigo._indigo_lib.indigoToBuffer (bufh.self, &buf, &bufsize));
+
+				byte[] res = new byte[bufsize];
+				for (int i = 0; i < bufsize; ++i)
+					res [i] = buf [i];
+				return res;
+			}
 		}
 		
 		public void renderToHDC (IndigoObject obj, IntPtr hdc, bool printing)
@@ -99,14 +100,14 @@ namespace com.ggasoftware.indigo
 		
 		public byte[] renderGridToBuffer (IndigoObject items, int[] refatoms, int ncolumns)
 		{
-			IndigoObject bufh = _indigo.writeBuffer ();
-			
-			if (refatoms != null)
-			if (refatoms.Length != items.count ())
-				throw new IndigoException ("renderGridToFile(): refatoms[] size must be equal to the number of objects");
-			
-			_indigo.checkResult (_renderer_lib.indigoRenderGrid (items.self, refatoms, ncolumns, bufh.self));
-			return bufh.toBuffer ();
+			using (IndigoObject bufh = _indigo.writeBuffer()) {
+				if (refatoms != null)
+				if (refatoms.Length != items.count ())
+					throw new IndigoException ("renderGridToFile(): refatoms[] size must be equal to the number of objects");
+				
+				_indigo.checkResult (_renderer_lib.indigoRenderGrid (items.self, refatoms, ncolumns, bufh.self));
+				return bufh.toBuffer ();
+			}
 		}
 		
 		public void renderGridToFile (IndigoObject items, int[] refatoms, int ncolumns, string filename)
