@@ -1,6 +1,7 @@
 #include "oracle/mango_oracle_index_parallel.h"
 
 #include "oracle/bingo_oracle_context.h"
+#include "base_cpp/profiling.h"
 
 //
 // MangoRegisterDispatcher
@@ -36,6 +37,7 @@ bool MangoRegisterDispatcher::_setupCommand (OsCommand &command)
 
 void MangoRegisterDispatcher::_addCurrentRecordToCommand (BingoOracleCommand &command)
 {
+   profTimerStart(t, "dispatcher.prepare_task");
    BingoOracleDispatcher::_addCurrentRecordToCommand(command);
 
    MangoRegisterCommand &cmd = (MangoRegisterCommand &)command;
@@ -45,6 +47,8 @@ void MangoRegisterDispatcher::_addCurrentRecordToCommand (BingoOracleCommand &co
 
 void MangoRegisterDispatcher::_handleResult (OsCommandResult &result)
 {
+   profTimerStart(t, "dispatcher.handle_result");
+
    // Handle result
    MangoRegisterResult &res = (MangoRegisterResult &)result; 
 

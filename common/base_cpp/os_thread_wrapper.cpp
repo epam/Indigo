@@ -28,6 +28,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/auto_ptr.h"
+#include "base_cpp/profiling.h"
 
 using namespace indigo;
 
@@ -49,7 +50,7 @@ enum {
 
 // Maximum number of results that are kept in queue if
 // _handling_order is HANDLING_ORDER_SERIAL
-static const int _MAX_RESULTS = 500;
+static const int _MAX_RESULTS = 1000;
 
 OsCommandDispatcher::OsCommandDispatcher (int handling_order, bool same_session_IDs)
 {
@@ -109,6 +110,8 @@ void OsCommandDispatcher::_run (int nthreads)
 
 void OsCommandDispatcher::_mainLoop ()
 {
+   profTimerStart(t, "dispatcher.main_loop");
+
    // Main loop
    int msg;
    while (_left_thread_count != 0)
@@ -234,6 +237,8 @@ void OsCommandDispatcher::_onMsgHandleResult ()
    if (_handling_order == HANDLING_ORDER_SERIAL)
       if (!_storedResults.isInBound(index))
       {
+         profIncCounter("dispatcher.syspend_count", 1);
+
          _privateMessageSystem.SendMsg(MSG_SYSPEND_RESULT);
          _privateMessageSystem.RecvMsg(&msg, &param);
          if (msg != MSG_SYSPEND_SEMAPHORE)
