@@ -557,30 +557,14 @@ _finish(finish)
 
    _pos.clear_resize(_graph.vertexEnd());
 
-   _start_number = -1;
-   _finish_number = -1;
-   float start_dist = 0;
-   float finish_dist = 0;
+   if (_graph.vertexCount() > 2) {
+      for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+         _pos[v].copy(_graph.getPos(v));
 
-   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
-      _pos[v].copy(_graph.getPos(v));
-
-      float dist = Vec2f::distSqr(_pos[v], _start);
-      if (_start_number == -1 || dist < start_dist) {
-         start_dist = dist;
-         _start_number = v;
+         _pos[v] -= _start;
+         _pos[v].rotate(rotate_vector);
       }
-      dist = Vec2f::distSqr(_pos[v], _finish);
-      if (_finish_number == -1 || dist < finish_dist) {
-         finish_dist = dist;
-         _finish_number = v;
-      }
-
-      _pos[v] -= _start;
-      _pos[v].rotate(rotate_vector);
-      _center += _pos[v];
    }
-   _center /= _graph.vertexCount();
 
 }
 
@@ -696,6 +680,22 @@ void MoleculeLayoutSmoothingSegment::inverse() {
    for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v))
       _pos[v].y *= -1;
 }
+
+void MoleculeLayoutSmoothingSegment::set_start_finish_number(int s, int f) {
+   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+      if (_graph.getVertexExtIdx(v) == s) _start_number = v;
+      if (_graph.getVertexExtIdx(v) == f) _finish_number = v;
+   }
+
+   if (_graph.vertexCount() == 2) {
+      _pos[_start_number].set(0, 0);
+      _pos[_finish_number].set(1, 0);
+   }
+   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) _center += _pos[v];
+   _center /= _graph.vertexCount();
+
+}
+
 
 #ifdef M_LAYOUT_DEBUG
 

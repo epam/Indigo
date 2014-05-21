@@ -1090,6 +1090,7 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
    int current_number = 0;
    for (int i = 0; i < cycle_size; i++) if (number_of_segment[i] != -1) {
       segment.push(segment_graph[number_of_segment[i]], rotation_point[current_number], rotation_point[(1 + current_number) % segments_count]);
+      segment.top().set_start_finish_number(cycle.getVertex(rotation_vertex[current_number]), cycle.getVertex(rotation_vertex[(current_number + 1) % segments_count]));
       segment.top().set_layout_component_number(segment_component_number[number_of_segment[i]]);
       current_number++;
    }

@@ -104,6 +104,7 @@ public:
    int get_layout_component_number();
    void set_layout_component_number(int number);
    void inverse();
+   void set_start_finish_number(int, int);
 
    bool is_start(int v) {return v == _start_number;}
    bool is_finish(int v) {return v == _finish_number;}
