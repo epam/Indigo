@@ -841,7 +841,8 @@ void SmilesLoader::_parseMolecule ()
                // closing some previous pending cycle bond, like the last '1' in C=1C=CC=CC=1
                else if (number >= 0 && number < _cycles.size() && _cycles[number].pending_bond >= 0)
                {
-                  _BondDesc &pending_bond = _bonds[_cycles[number].pending_bond];
+                  int pending_bond_idx = _cycles[number].pending_bond;
+                  _BondDesc &pending_bond = _bonds[pending_bond_idx];
 
                   // transfer direction from closing bond to pending bond
                   if (bond->dir > 0)
@@ -881,8 +882,16 @@ void SmilesLoader::_parseMolecule ()
                   _atoms[pending_bond.end].neighbors.add(pending_bond.beg);
                   _atoms[pending_bond.beg].closure(number, pending_bond.end);
 
-                  // forget the closing bond
-                  _bonds.pop();
+                  // forget the closing bond but move its index here
+                  // Bond order should correspons to atoms order
+                  // Bond order for the following two molecules should be the same
+                  // because later we add cis constraint:
+                  //    CCSc1nnc2c(OC=Nc3ccccc-23)n1 |c:9|
+                  //    CCSc1nnc-2c(OC=Nc3ccccc-23)n1 |c:9|
+                  // Without this shift the 9th bond in the second structure is not double
+                  _bonds.top() = pending_bond;
+                  _bonds.remove(pending_bond_idx);
+
                   _cycles[number].clear();
                   continue;
                }
