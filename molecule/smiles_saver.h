@@ -106,6 +106,7 @@ protected:
    void _writePseudoAtoms ();
    void _writeHighlighting ();
    bool _shouldWriteAromaticBond (int bond_idx);
+   void _startExtension ();
 
    void _filterCisTransParity ();
 
