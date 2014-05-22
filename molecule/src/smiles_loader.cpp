@@ -265,6 +265,7 @@ void SmilesLoader::_calcCisTrans ()
 void SmilesLoader::_readOtherStuff ()
 {
    MoleculeStereocenters &stereocenters = _bmol->stereocenters;
+   MoleculeCisTrans &cis_trans = _bmol->cis_trans;
 
    QS_DEF(Array<int>, to_remove);
 
@@ -298,10 +299,27 @@ void SmilesLoader::_readOtherStuff ()
 
             if (!skip)
             {
-               // Check if the stereocenter has already been marked as any
-               // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
-               if (stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
-                  stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+               // This either bond can mark stereocenter or cis-trans double bond
+               // For example CC=CN |w:1.0|
+               const Vertex &v = _bmol->getVertex(idx);
+               bool found = false;
+               for (int nei : v.neighbors())
+               {
+                  int edge_idx = v.neiEdge(nei);
+                  if (_bmol->getBondOrder(edge_idx) == BOND_DOUBLE)
+                  {
+                     cis_trans.ignore(edge_idx);
+                     found = true;
+                  }
+               }
+
+               if (!found)
+               {
+                  // Check if the stereocenter has already been marked as any
+                  // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
+                  if (stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
+                     stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+               }
             }
 
             if (_scanner.lookNext() == '.') // skip the bond index
