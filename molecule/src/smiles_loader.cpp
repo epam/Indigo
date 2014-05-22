@@ -576,7 +576,7 @@ void SmilesLoader::_readOtherStuff ()
          {
             int atom = s.getAtomIndex(i);
             if (s.getType(atom) == MoleculeStereocenters::ATOM_ABS)
-               s.setType(atom, MoleculeStereocenters::ATOM_OR);
+               s.setType(atom, MoleculeStereocenters::ATOM_AND, 1);
          }
       }
    }
