@@ -79,6 +79,7 @@ bool mangoPrepareMolecule (OracleEnv &env, const char *rowid,
       {
          OsLockerNullable locker(lock_for_exclusive_access);
          env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message());
+         failure_message = e.message();
          return false;
       }
    }
