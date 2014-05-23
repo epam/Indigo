@@ -558,7 +558,7 @@ _finish(finish)
    _pos.clear_resize(_graph.vertexEnd());
 
    if (_graph.vertexCount() > 2) {
-      for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+      for (int v : _graph.vertices()) {
          _pos[v].copy(_graph.getPos(v));
 
          _pos[v] -= _start;
@@ -611,7 +611,7 @@ float MoleculeLayoutSmoothingSegment::getLengthCoef() const {
 float MoleculeLayoutSmoothingSegment::get_min_x() {
    float answer = 1000000.0;
 
-   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+   for (int v : _graph.vertices()) {
       float xx = getPosition(v).x;
       answer = __min(answer, xx);
    }
@@ -622,7 +622,7 @@ float MoleculeLayoutSmoothingSegment::get_min_x() {
 float MoleculeLayoutSmoothingSegment::get_min_y() {
    float answer = 1000000.0;
 
-   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+   for (int v : _graph.vertices()) {
       float yy = getPosition(v).y;
       answer = __min(answer, yy);
    }
@@ -633,7 +633,7 @@ float MoleculeLayoutSmoothingSegment::get_min_y() {
 float MoleculeLayoutSmoothingSegment::get_max_x() {
    float answer = -1000000.0;
 
-   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+   for (int v : _graph.vertices()) {
       float xx = getPosition(v).x;
       answer = __max(answer, getPosition(v).x);
    }
@@ -644,7 +644,7 @@ float MoleculeLayoutSmoothingSegment::get_max_x() {
 float MoleculeLayoutSmoothingSegment::get_max_y() {
    float answer = -1000000.0;
 
-   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+   for (int v : _graph.vertices()) {
       float yy = getPosition(v).y;
       answer = __max(answer, yy);
    }
@@ -677,12 +677,12 @@ void MoleculeLayoutSmoothingSegment::set_layout_component_number(int number) {
 }
 
 void MoleculeLayoutSmoothingSegment::inverse() {
-   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v))
+   for (int v : _graph.vertices())
       _pos[v].y *= -1;
 }
 
 void MoleculeLayoutSmoothingSegment::set_start_finish_number(int s, int f) {
-   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) {
+   for (int v : _graph.vertices()) {
       if (_graph.getVertexExtIdx(v) == s) _start_number = v;
       if (_graph.getVertexExtIdx(v) == f) _finish_number = v;
    }
@@ -691,7 +691,7 @@ void MoleculeLayoutSmoothingSegment::set_start_finish_number(int s, int f) {
       _pos[_start_number].set(0, 0);
       _pos[_finish_number].set(1, 0);
    }
-   for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v)) _center += _pos[v];
+   for (int v : _graph.vertices()) _center += _pos[v];
    _center /= _graph.vertexCount();
 
 }

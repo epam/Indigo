@@ -214,7 +214,8 @@ struct Vec2f
    DLLEXPORT void rotate (Vec2f vec);
    DLLEXPORT void rotateL (float angle);
    DLLEXPORT void rotateL (float si, float co);
-   DLLEXPORT void rotateAroundSegmentEnd (const Vec2f &a, const Vec2f &b, float angle);
+   DLLEXPORT void rotateL (Vec2f vec);
+   DLLEXPORT void rotateAroundSegmentEnd(const Vec2f &a, const Vec2f &b, float angle);
 
    DLLEXPORT static float distSqr (const Vec2f &a, const Vec2f &b);
    DLLEXPORT static float dist    (const Vec2f &a, const Vec2f &b);

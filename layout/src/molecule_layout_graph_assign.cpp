@@ -968,9 +968,9 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
    Random rand(34577);
 
    int segments_count = segment.size();
-   
+
    for (int i = 0; i < 10000; i++)
-      _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1);
+       _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1);
 
    for (int i = 0; i < segments_count; i++)
       for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))

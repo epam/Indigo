@@ -64,7 +64,8 @@ private:
    static const int init_rot;
 
 
-   int get_diff(int x, int y, int rot, int value);
+   int get_diff_grid(int x, int y, int rot, int value);
+   int get_diff_circle(int x, int y, int rot, int value);
 
    struct Data
    {

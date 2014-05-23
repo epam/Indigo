@@ -36,9 +36,9 @@ using namespace indigo;
 IMPL_ERROR(MoleculeLayoutMacrocycles, "molecule_layout_macrocycles");
 
 const int MoleculeLayoutMacrocycles::max_size = MoleculeLayoutMacrocycles::Data::max_size;
-const int MoleculeLayoutMacrocycles::init_x = MoleculeLayoutMacrocycles::Data::max_size / 2;
-const int MoleculeLayoutMacrocycles::init_y = MoleculeLayoutMacrocycles::Data::max_size / 2;
-const int MoleculeLayoutMacrocycles::init_rot = MoleculeLayoutMacrocycles::Data::max_size / 2 / 6 * 6;
+const int MoleculeLayoutMacrocycles::init_x = MoleculeLayoutMacrocycles::max_size / 2;
+const int MoleculeLayoutMacrocycles::init_y = MoleculeLayoutMacrocycles::max_size / 2;
+const int MoleculeLayoutMacrocycles::init_rot = MoleculeLayoutMacrocycles::max_size / 2 / 6 * 6;
 
 CP_DEF(MoleculeLayoutMacrocycles);
 
@@ -320,7 +320,7 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
 
 }
 
-int MoleculeLayoutMacrocycles::get_diff(int x, int y, int rot, int value) {
+int MoleculeLayoutMacrocycles::get_diff_grid(int x, int y, int rot, int value) {
    int diffCoord;
 
    x -= init_x;
@@ -328,6 +328,17 @@ int MoleculeLayoutMacrocycles::get_diff(int x, int y, int rot, int value) {
    if (x * y >= 0) diffCoord = abs(x) + abs(y); // x and y both positive or negative, vector (y+x) is not neseccary
    else diffCoord = max(abs(x), abs(y)); // x and y are has got different signs, vector (y-x) is neseccary
    int diffRot = abs(abs(rot - (init_rot + 6)) - 1);
+
+   return 2 * diffRot + 1 * diffCoord + value;
+}
+
+int MoleculeLayoutMacrocycles::get_diff_circle(int x, int y, int rot, int value) {
+   int diffCoord;
+
+   y -= init_y;
+   if (x * y >= 0) diffCoord = abs(x) + abs(y); // x and y both positive or negative, vector (y+x) is not neseccary
+   else diffCoord = max(abs(x), abs(y)); // x and y are has got different signs, vector (y-x) is neseccary
+   int diffRot = abs(rot - (init_rot + 1));
 
    return 2 * diffRot + 1 * diffCoord + value;
 }
@@ -482,37 +493,21 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       }
    }
 
-   int critical_diff = infinity - 1;
-   std::multiset<int> diff_set;
-
-   for (int rot = rot_left; rot <= rot_right; rot++)
-      for (int p = 0; p < 2; p++)
-         for (int x = x_left; x <= x_right; x++)
-            for (int y = y_left; y <= y_right; y++)
-            if (minRotates[length][rot][p][x][y] <= infinity) {
-               int curr_dif = get_diff(x, y, rot, minRotates[length][rot][p][x][y]);
-               if (curr_dif <= critical_diff) {
-                  diff_set.insert(curr_dif);
-                  if (diff_set.size() > 100) diff_set.erase(*diff_set.rbegin());
-                  critical_diff = *diff_set.rbegin();
-               }
-            }
-   
-
-   
    struct point {
       int diff;
       int x;
       int y;
       int p;
       int rot;
+      int type;
 
-      point(int _d, int _x, int _y, int _p, int _r) {
+      point(int _d, int _x, int _y, int _p, int _r, int _t) {
          diff = _d;
          x = _x;
          y = _y;
          p = _p;
          rot = _r;
+         type = _t;
       }
 
       bool operator<(const point& p) const { return diff - p.diff; }
@@ -521,16 +516,41 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    QS_DEF(ObjArray<point>, points);
    points.clear();
 
-   for (int rot = rot_left; rot <= rot_right; rot++) {
+   int critical_diff_grid = infinity - 1;
+   std::multiset<int> diff_set;
+
+   int var_count = 100;
+
+   enum {
+      CIRCLE_TYPE,
+      GRID_TYPE
+   };
+
+   for (int rot = init_rot; rot <= rot_right; rot++)
+      for (int p = 0; p < 2; p++)
+         for (int x = x_left; x <= x_right; x++)
+            for (int y = y_left; y <= y_right; y++)
+            if (minRotates[length][rot][p][x][y] <= infinity) {
+               int curr_dif = get_diff_grid(x, y, rot, minRotates[length][rot][p][x][y]);
+               if (curr_dif <= critical_diff_grid) {
+                  diff_set.insert(curr_dif);
+                  if (diff_set.size() > var_count) diff_set.erase(*diff_set.rbegin());
+                  critical_diff_grid = *diff_set.rbegin();
+               }
+            }
+   
+
+   
+   for (int rot = init_rot; rot <= rot_right; rot++) {
       for (int p = 0; p < 2; p++) {
          for (int x = x_left; x <= x_right; x++) {
             for (int y = y_left; y <= y_right; y++) {
                if (minRotates[length][rot][p][x][y] < infinity) {
 
-                  int curdiff = get_diff(x, y, rot, minRotates[length][rot][p][x][y]);
+                  int curdiff = get_diff_grid(x, y, rot, minRotates[length][rot][p][x][y]);
 
-                  if (curdiff <= critical_diff) {
-                     point curr_point(curdiff, x, y, p, rot);
+                  if (curdiff <= critical_diff_grid) {
+                     point curr_point(curdiff, x, y, p, rot, GRID_TYPE);
                      points.push(curr_point);
                   }
                }
@@ -538,6 +558,43 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          }
       }
    }
+
+   diff_set.clear();
+   int critical_diff_circle = infinity - 1;
+
+   for (int rot = rot_left; rot <= rot_right; rot++)
+      for (int p = 0; p < 2; p++)
+         for (int x = x_left; x <= x_right; x++)
+            for (int y = y_left; y <= y_right; y++)
+               if (minRotates[length][rot][p][x][y] <= infinity) {
+                  int curr_dif = get_diff_circle(x - init_x - length/2, y - length/2, rot, minRotates[length][rot][p][x][y]);
+                  if (curr_dif <= critical_diff_circle) {
+                     diff_set.insert(curr_dif);
+                     if (diff_set.size() > var_count) diff_set.erase(*diff_set.rbegin());
+                     critical_diff_circle = *diff_set.rbegin();
+                  }
+               }
+
+
+
+   for (int rot = rot_left; rot <= rot_right; rot++) {
+      for (int p = 0; p < 2; p++) {
+         for (int x = x_left; x <= x_right; x++) {
+            for (int y = y_left; y <= y_right; y++) {
+               if (minRotates[length][rot][p][x][y] < infinity) {
+
+                  int curdiff = get_diff_circle(x - init_x - length / 2, y - length/2, rot, minRotates[length][rot][p][x][y]);
+
+                  if (curdiff <= critical_diff_circle) {
+                     point curr_point(curdiff, x, y, p, rot, CIRCLE_TYPE);
+                     points.push(curr_point);
+                  }
+               }
+            }
+         }
+      }
+   }
+
 
 
    int x_result[max_size + 1];
@@ -666,7 +723,25 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
          p[i] += Vec2f(x_result[vertexNumber[i]], 0);
       }
 
-      Vec2f lose_vector((p[0] - p[ind])/length);
+
+      for (int i = ind; i >= 0; i--)
+         p[i] -= p[0];
+      if (points[index].type == CIRCLE_TYPE) {
+         Vec2f rotate_vector(p[ind]/p[ind].length());
+         for (int i = 0; i <= ind; i++) {
+            p[i].rotateL(rotate_vector);
+         }
+         double max_x = p[ind].x;
+         if (max_x <= 0) max_x = 1;
+         double radii = max_x / (2 * PI);
+
+         for (int i = 0; i <= ind; i++) {
+            double angle = 2 * PI * (p[i].x) / max_x;
+            p[i].set(radii - p[i].y/2, 0);
+            p[i].rotate(angle);
+         }
+      }
+      Vec2f lose_vector((p[0] - p[ind]) / length);
       for (int i = 0; i <= ind; i++)
          p[i] += lose_vector * vertexNumber[i];
 
