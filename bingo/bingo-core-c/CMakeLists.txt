@@ -18,6 +18,10 @@ message(STATUS ${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS})
 target_link_libraries(bingo-core-c bingo-core inchi)
 target_link_libraries(bingo-core-c-shared bingo-core inchi tinyxml z)
 
+if(APPLE)
+	set_target_properties(bingo-core-c-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -lc++")
+endif()
+
 if (UNIX AND NOT APPLE)
 	message(STATUS "UNIX AND NOT APPLE")
 	if(${SUBSYSTEM_NAME} MATCHES "x64")
