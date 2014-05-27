@@ -13,10 +13,10 @@ include_directories(../src ../src/core ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}
 	${Common_SOURCE_DIR}/../api/plugins/inchi/src ${InChI_SOURCE_DIR}/inchi_dll)
 
 add_library(bingo-core-c STATIC ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/../api/plugins/inchi/src/indigo_inchi_core.cpp)
-add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/../api/plugins/inchi/src/indigo_inchi_core.cpp ${Common_SOURCE_DIR}/hacks/memcpy.c)
+add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/../api/plugins/inchi/src/indigo_inchi_core.cpp ${Common_SOURCE_DIR}/hacks/memcpy.c $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
 message(STATUS ${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS})
 target_link_libraries(bingo-core-c bingo-core inchi)
-target_link_libraries(bingo-core-c-shared molecule reaction layout bingo-core inchi)
+target_link_libraries(bingo-core-c-shared bingo-core inchi tinyxml z)
 
 if (UNIX AND NOT APPLE)
 	message(STATUS "UNIX AND NOT APPLE")

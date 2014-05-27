@@ -123,7 +123,7 @@ else:
         build_dir = (args.dbms + " " + generator + " " + args.params)
         build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
         full_build_dir = os.path.join(root, "build", build_dir)
-        dllPath[arch] = os.path.normpath(os.path.join(full_build_dir, 'dist', 'Win', arch, 'shared', args.config))
+        dllPath[arch] = os.path.normpath(os.path.join(full_build_dir, 'dist', 'Win', arch, 'lib', args.config))
         if os.path.exists(full_build_dir) and args.clean:
             print("Removing previous project files")
             shutil.rmtree(full_build_dir)
