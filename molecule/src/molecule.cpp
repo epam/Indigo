@@ -1391,7 +1391,7 @@ void Molecule::invalidateHCounters ()
 void Molecule::checkForConsistency (Molecule &mol)
 {
    // Try to restore hydrogens in aromatic cycles first
-   mol.restoreUnambiguousHydrogens();
+   mol.restoreAromaticHydrogens();
 
    int i;
    for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
@@ -1487,7 +1487,7 @@ void Molecule::invalidateAtom (int index, int mask)
    BaseMolecule::invalidateAtom(index, mask);
 }
 
-bool Molecule::restoreUnambiguousHydrogens ()
+bool Molecule::restoreAromaticHydrogens (bool unambiguous_only)
 {
-   return MoleculeDearomatizer::restoreUnambiguousHydrogens(*this);
+   return MoleculeDearomatizer::restoreHydrogens(*this, unambiguous_only);
 }

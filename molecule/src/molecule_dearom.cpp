@@ -1445,6 +1445,38 @@ void MoleculeDearomatizer::dearomatizeGroup (int group, int dearomatization_inde
    }
 }
 
+int MoleculeDearomatizer::_getBestDearomatization (int group)
+{
+   // Select group with more double bonds that means less hydrogens
+   // For example for c1cnn2nnnc2c1 one should select C1=CC2=NN=NN2N=C1 
+   // instead of N1NN2NC=CC=C2N1
+   int groups = _dearomatizations.getGroupDearomatizationsCount(group);
+   int best_index = -1, best_count = -1;
+   for (int i = 0; i < groups; i++)
+   {
+      int cnt = _countDoubleBonds(group, i);
+      if (cnt > best_count)
+      {
+         best_count = cnt;
+         best_index = i;
+      }
+   }
+   return best_index;
+}
+
+int MoleculeDearomatizer::_countDoubleBonds (int group, int dearomatization_index)
+{
+   byte *bondsState = _dearomatizations.getGroupDearomatization(group, dearomatization_index);
+   int bondsCount = _dearomatizations.getGroupBondsCount(group);
+
+   int count = 0;
+
+   for (int i = 0; i < bondsCount; i++)
+      if (bitGetBit(bondsState, i))
+         count++;
+   return count;
+}
+
 void MoleculeDearomatizer::restoreHydrogens (int group, int dearomatization_index)
 {
    byte *bondsState = _dearomatizations.getGroupDearomatization(group, dearomatization_index);
@@ -1494,13 +1526,25 @@ bool MoleculeDearomatizer::dearomatizeMolecule (Molecule &mol, const Aromaticity
       else if (cnt > 1 && options.unique_dearomatization)
          throw NonUniqueDearomatizationException("Dearomatization is not unique");
       else
-         mol_dearom.dearomatizeGroup(i, 0);
+         mol_dearom.dearomatizeGroup(i, mol_dearom._getBestDearomatization(i));
    }
    return all_dearomatzied;
 }
 
 bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOptions &options)
 {
+   bool found_invalid_aromatic_h = false;
+   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      if (mol.isRSite(i) || mol.isPseudoAtom(i))
+         continue;
+
+      if (mol.getImplicitH_NoThrow(i, -1) == -1 && mol.getAtomAromaticity(i) == ATOM_AROMATIC)
+         found_invalid_aromatic_h = true;
+   }
+   if (!found_invalid_aromatic_h)
+      return false;
+
    DearomatizationsStorage dst;
    Dearomatizer dearomatizer(mol, 0, options);
    dearomatizer.setDearomatizationParams(Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION);
@@ -1519,7 +1563,7 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOpt
       else if (cnt > 1 && options.unique_dearomatization)
          throw NonUniqueDearomatizationException("Dearomatization is not unique. Cannot restore hydrogens.");
       else
-         mol_dearom.restoreHydrogens(i, 0);
+         mol_dearom.restoreHydrogens(i, mol_dearom._getBestDearomatization(i));
    }
 
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
@@ -1537,23 +1581,10 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOpt
    return all_dearomatzied;
 }
 
-bool MoleculeDearomatizer::restoreUnambiguousHydrogens (Molecule &mol)
+bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, bool unambiguous_only)
 {
-   bool found_invalid_aromatic_h = false;
-   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-   {
-      if (mol.isRSite(i) || mol.isPseudoAtom(i))
-         continue;
-
-      if (mol.getImplicitH_NoThrow(i, -1) == -1 && mol.getAtomAromaticity(i) == ATOM_AROMATIC)
-         found_invalid_aromatic_h = true;
-   }
-   if (found_invalid_aromatic_h)
-   {
-      AromaticityOptions options;
-      options.method = AromaticityOptions::GENERIC;
-      options.unique_dearomatization = true;
-      return MoleculeDearomatizer::restoreHydrogens(mol, options);
-   }
-   return true;
+   AromaticityOptions options;
+   options.method = AromaticityOptions::GENERIC;
+   options.unique_dearomatization = true;
+   return MoleculeDearomatizer::restoreHydrogens(mol, options);
 }

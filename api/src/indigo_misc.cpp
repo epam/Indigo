@@ -107,7 +107,7 @@ CEXPORT int indigoSetOptionXY (const char *name, int x, int y)
 
 void _indigoCheckBadValence (Molecule &mol)
 {
-   mol.restoreUnambiguousHydrogens();
+   mol.restoreAromaticHydrogens();
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
       if (mol.isPseudoAtom(i) || mol.isRSite(i))
@@ -177,7 +177,7 @@ CEXPORT const char * indigoCheckBadValence (int handle)
 
 void _indigoCheckAmbiguousH (Molecule &mol)
 {
-   mol.restoreUnambiguousHydrogens();
+   mol.restoreAromaticHydrogens();
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
       if (mol.getAtomAromaticity(i) == ATOM_AROMATIC)
       {

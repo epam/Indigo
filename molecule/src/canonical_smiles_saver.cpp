@@ -51,7 +51,7 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
 
    // Detect hydrogens configuration if aromatic but not ambiguous
    // We can store this infromation in the original structure mol_.
-   mol_.restoreUnambiguousHydrogens();
+   mol_.restoreAromaticHydrogens();
 
    mol.clone(mol_, 0, 0);
 
