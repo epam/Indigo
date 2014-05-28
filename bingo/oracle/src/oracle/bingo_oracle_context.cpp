@@ -87,14 +87,25 @@ void BingoOracleContext::_loadConfigParameters (OracleEnv &env)
    tautomerLoadRules(env);
    atomicMassLoad(env);
 
-   int txap = 0;
-   int icbdm = 0;
+   int val;
 
-   configGetInt(env, "TREAT_X_AS_PSEUDOATOM", txap);
-   treat_x_as_pseudoatom = (txap != 0);
+   configGetIntDef(env, "TREAT_X_AS_PSEUDOATOM", val, 0);
+   treat_x_as_pseudoatom = (val != 0);
 
-   configGetInt(env, "IGNORE_CLOSING_BOND_DIRECTION_MISMATCH", icbdm);
-   ignore_closing_bond_direction_mismatch = (icbdm != 0);
+   configGetIntDef(env, "IGNORE_CLOSING_BOND_DIRECTION_MISMATCH", val, 0);
+   ignore_closing_bond_direction_mismatch = (val != 0);
+
+   configGetIntDef(env, "IGNORE_STEREOCENTER_ERRORS", val, 0);
+   ignore_stereocenter_errors = (val != 0);
+
+   configGetIntDef(env, "IGNORE_CISTRANS_ERRORS", val, 0);
+   ignore_cistrans_errors = (val != 0);
+
+   configGetIntDef(env, "ALLOW_NON_UNIQUE_DEAROMATIZATION", val, 0);
+   allow_non_unique_dearomatization = (val != 0);
+
+   configGetIntDef(env, "ZERO_UNKNOWN_AROMATIC_HYDROGENS", val, 0);
+   zero_unknown_aromatic_hydrogens = (val != 0);
 
    QS_DEF(Array<char>, cmfdict);
    
@@ -152,6 +163,19 @@ void BingoOracleContext::saveRidDict (OracleEnv &env)
 
    configSetBlob(env, "RIDDICT", riddict);
 }
+
+bool BingoOracleContext::configGetIntDef (OracleEnv &env, const char *name, int &value, int default_value)
+{
+   if (!OracleStatement::executeSingleInt(value, env, "SELECT value FROM "
+      "(SELECT value FROM config_int WHERE name = upper('%s') AND n in (0, %d) "
+      "ORDER BY n DESC) WHERE rownum <= 1", name, id))
+   {
+      return false;
+      value = default_value;
+   }
+   return true;
+}
+
 
 bool BingoOracleContext::configGetInt (OracleEnv &env, const char *name, int &value)
 {
@@ -381,7 +405,13 @@ void BingoOracleContext::parseParameters (OracleEnv &env, const char *str)
       "FP_MAX_CYCLE_LEN",
       "FP_MIN_TREE_EDGES",
       "FP_MAX_TREE_EDGES",
-      "FP_STORAGE_CHUNK"
+      "FP_STORAGE_CHUNK",
+      "TREAT_X_AS_PSEUDOATOM",
+      "IGNORE_CLOSING_BOND_DIRECTION_MISMATCH",
+      "IGNORE_STEREOCENTER_ERRORS",
+      "IGNORE_CISTRANS_ERRORS",
+      "ALLOW_NON_UNIQUE_DEAROMATIZATION",
+      "ZERO_UNKNOWN_AROMATIC_HYDROGENS",
    };
 
    bool config_changed = false;

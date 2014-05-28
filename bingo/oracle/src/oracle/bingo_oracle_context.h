@@ -47,6 +47,7 @@ public:
 
    bool configGetInt    (OracleEnv &env, const char *name, int &value);
    void configSetInt    (OracleEnv &env, const char *name, int value);
+   bool configGetIntDef (OracleEnv &env, const char *name, int &value, int default_value);
    bool configGetFloat  (OracleEnv &env, const char *name, float &value);
    void configSetFloat  (OracleEnv &env, const char *name, float value);
    bool configGetString (OracleEnv &env, const char *name, Array<char> &value);

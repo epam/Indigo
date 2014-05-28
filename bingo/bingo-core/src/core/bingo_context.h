@@ -25,6 +25,12 @@ using namespace indigo;
 
 // extern const char *bingo_version_string;
 
+namespace indigo 
+{
+   class MoleculeAutoLoader;
+   class ReactionAutoLoader;
+}
+
 class BingoContext
 {
 public:
@@ -53,6 +59,10 @@ public:
 
    Nullable<bool> treat_x_as_pseudoatom;
    Nullable<bool> ignore_closing_bond_direction_mismatch;
+   Nullable<bool> ignore_stereocenter_errors;
+   Nullable<bool> ignore_cistrans_errors;
+   Nullable<bool> allow_non_unique_dearomatization;
+   Nullable<bool> zero_unknown_aromatic_hydrogens;
 
    MoleculeFingerprintParameters fp_parameters;
 
@@ -60,11 +70,8 @@ public:
 
    RedBlackMap<int, float> relative_atomic_mass_map;
 
-   bool getTreatXAsPseudoatom ();
-   void setTreatXAsPseudoatom (bool state);
-
-   bool getIgnoreClosingBondDirectionMismatch ();
-   void setIgnoreClosingBondDirectionMismatch (bool state);
+   void setLoaderSettings (MoleculeAutoLoader &loader);
+   void setLoaderSettings (ReactionAutoLoader &loader);
 
    static void remove (int id);
 

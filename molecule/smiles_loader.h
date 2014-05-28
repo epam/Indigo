@@ -58,6 +58,7 @@ public:
    bool ignore_closing_bond_direction_mismatch;
 
    bool ignore_stereochemistry_errors;
+   bool ignore_cistrans_errors;
 
 protected:
 

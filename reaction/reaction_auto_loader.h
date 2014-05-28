@@ -39,6 +39,7 @@ public:
    bool treat_x_as_pseudoatom;
    bool ignore_closing_bond_direction_mismatch;
    bool ignore_stereocenter_errors;
+   bool ignore_cistrans_errors;
    bool ignore_noncritical_query_features;
 
    DECL_ERROR;

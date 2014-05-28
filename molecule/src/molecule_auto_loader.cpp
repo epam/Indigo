@@ -34,6 +34,7 @@ void MoleculeAutoLoader::_init ()
    ignore_closing_bond_direction_mismatch = false;
    ignore_noncritical_query_features = false;
    skip_3d_chirality = false;
+   ignore_cistrans_errors = false;
 }
 
 IMPL_ERROR(MoleculeAutoLoader, "molecule auto loader");
@@ -246,6 +247,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       loader.ignore_closing_bond_direction_mismatch =
              ignore_closing_bond_direction_mismatch;
       loader.ignore_stereochemistry_errors = ignore_stereocenter_errors;
+      loader.ignore_cistrans_errors = ignore_cistrans_errors;
       if (query)
          loader.loadQueryMolecule((QueryMolecule &)mol);
       else

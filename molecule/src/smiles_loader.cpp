@@ -45,6 +45,7 @@ TL_CP_GET(_polymer_repetitions)
    inside_rsmiles = false;
    ignore_closing_bond_direction_mismatch = false;
    ignore_stereochemistry_errors = false;
+   ignore_cistrans_errors = false;
    _mol = 0;
    _qmol = 0;
    _bmol = 0;
@@ -315,10 +316,18 @@ void SmilesLoader::_readOtherStuff ()
 
                if (!found)
                {
-                  // Check if the stereocenter has already been marked as any
-                  // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
-                  if (stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
-                     stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                  if (!stereocenters.isPossibleStereocenter(idx))
+                  {
+                     if (!ignore_stereochemistry_errors)
+                        throw Error("chirality not possible on atom #%d", idx);
+                  }
+                  else
+                  {
+                     // Check if the stereocenter has already been marked as any
+                     // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
+                     if (stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
+                       stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                  }
                }
             }
 
@@ -494,29 +503,35 @@ void SmilesLoader::_readOtherStuff ()
          {
             int idx = _scanner.readUnsigned();
 
-            _bmol->cis_trans.restoreSubstituents(_bonds[idx].index);
-            const int *subst = _bmol->cis_trans.getSubstituents(_bonds[idx].index);
-            int parity = ((c == 'c') ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
+            bool skip = false;
+            if (ignore_cistrans_errors && !MoleculeCisTrans::isGeomStereoBond(*_bmol, _bonds[idx].index, nullptr, false))
+               skip = true;
 
-            /* CXSmiles doc says:
-               the double bond has the representation a1-a2=a3-a4, where
-               a1 is the smallest atom index of the generated smiles connected to a2
-               a2 is the double bond smaller atom index in the generated smiles
-               a3 is the double bond larger atom index in the generated smiles
-               a4 is the smallest atom index of the generated smiles connected to a3
+            if (!skip)
+            {
+               _bmol->cis_trans.restoreSubstituents(_bonds[idx].index);
+               const int *subst = _bmol->cis_trans.getSubstituents(_bonds[idx].index);
+               int parity = ((c == 'c') ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
 
-             * We need to know if the calculated substituents' indices are not "smallest"
-             * (i.e. they have other substituent with smaller index on the same side).
-             * In that case, we invert the parity.
-             */
+               /* CXSmiles doc says:
+                  the double bond has the representation a1-a2=a3-a4, where
+                  a1 is the smallest atom index of the generated smiles connected to a2
+                  a2 is the double bond smaller atom index in the generated smiles
+                  a3 is the double bond larger atom index in the generated smiles
+                  a4 is the smallest atom index of the generated smiles connected to a3
 
-            if (subst[1] != -1 && subst[1] < subst[0])
-               parity = 3 - parity;
-            if (subst[3] != -1 && subst[3] < subst[2])
-               parity = 3 - parity;
+                * We need to know if the calculated substituents' indices are not "smallest"
+                * (i.e. they have other substituent with smaller index on the same side).
+                * In that case, we invert the parity.
+                */
 
-            _bmol->cis_trans.setParity(_bonds[idx].index, parity);
+               if (subst[1] != -1 && subst[1] < subst[0])
+                  parity = 3 - parity;
+               if (subst[3] != -1 && subst[3] < subst[2])
+                  parity = 3 - parity;
 
+               _bmol->cis_trans.setParity(_bonds[idx].index, parity);
+            }
             if (_scanner.lookNext() == ',')
                _scanner.skip(1);
          }

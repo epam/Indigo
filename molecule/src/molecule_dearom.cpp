@@ -1585,6 +1585,6 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, bool unambiguous_onl
 {
    AromaticityOptions options;
    options.method = AromaticityOptions::GENERIC;
-   options.unique_dearomatization = true;
+   options.unique_dearomatization = unambiguous_only;
    return MoleculeDearomatizer::restoreHydrogens(mol, options);
 }

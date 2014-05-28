@@ -31,6 +31,7 @@ void ReactionAutoLoader::_init ()
    ignore_closing_bond_direction_mismatch = false;
    ignore_stereocenter_errors = false;
    ignore_noncritical_query_features = false;
+   ignore_cistrans_errors = false;
 }
 
 IMPL_ERROR(ReactionAutoLoader, "reaction auto loader");
@@ -167,6 +168,8 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
 
       loader.ignore_closing_bond_direction_mismatch =
              ignore_closing_bond_direction_mismatch;
+      loader.ignore_cistrans_errors = ignore_cistrans_errors;
+      loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
       if (query)
          loader.loadQueryReaction((QueryReaction &)reaction);
       else

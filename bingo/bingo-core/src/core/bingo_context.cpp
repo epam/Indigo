@@ -16,6 +16,8 @@
 #include "base_cpp/scanner.h"
 #include "core/bingo_error.h"
 #include "molecule/elements.h"
+#include "molecule/molecule_auto_loader.h"
+#include "reaction/reaction_auto_loader.h"
 
 // const char * bingo_version_string = "1.7-beta3";
 
@@ -31,6 +33,10 @@ BingoContext::BingoContext (int id_)
    reset();
    treat_x_as_pseudoatom.setName("treat_x_as_pseudoatom");
    ignore_closing_bond_direction_mismatch.setName("ignore_closing_bond_direction_mismatch");
+   ignore_stereocenter_errors.setName("ignore_stereocenter_errors");
+   ignore_cistrans_errors.setName("ignore_cistrans_errors");
+   allow_non_unique_dearomatization.setName("allow_non_unique_dearomatization");
+   zero_unknown_aromatic_hydrogens.setName("zero_unknown_aromatic_hydrogens");
 }
 
 void BingoContext::reset ()
@@ -39,16 +45,18 @@ void BingoContext::reset ()
 
    nthreads = 0;
    timeout = DEFAULT_TIMEOUT;
-   treat_x_as_pseudoatom = false;
-   ignore_closing_bond_direction_mismatch = false;
 
    tautomer_rules_ready = false;
    fp_parameters_ready = false;
    atomic_mass_map_ready = false;
+
    treat_x_as_pseudoatom.reset();
    ignore_closing_bond_direction_mismatch.reset();
+   ignore_stereocenter_errors.reset();
+   ignore_cistrans_errors.reset();
+   allow_non_unique_dearomatization.reset();
+   zero_unknown_aromatic_hydrogens.reset();
 }
-
 
 BingoContext::~BingoContext ()
 {
@@ -183,4 +191,20 @@ void bingoGetName (Scanner &scanner, Array<char> &result)
       if (result.size() >= 4 && strncmp(result.ptr(), "$RXN", 4) == 0)
          scanner.readLine(result, false);
    }
+}
+
+void BingoContext::setLoaderSettings (MoleculeAutoLoader &loader)
+{
+   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+   loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+   loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+   loader.ignore_cistrans_errors = ignore_cistrans_errors;
+}
+
+void BingoContext::setLoaderSettings (ReactionAutoLoader &loader)
+{
+   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+   loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+   loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+   loader.ignore_cistrans_errors = ignore_cistrans_errors;
 }
