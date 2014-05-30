@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(BingoPostgres)
+project(BingoPostgres CXX)
 
 include(../bingo-version.cmake)
 include(ConfigureCommon)
