@@ -1,3 +1,6 @@
+#include "bingo_pg_fix_pre.h"
+#include "bingo_pg_fix_post.h"
+
 #include "bingo_pg_buffer_cache.h"
 #include "base_cpp/output.h"
 #include "bingo_pg_common.h"

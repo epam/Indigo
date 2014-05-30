@@ -1,3 +1,5 @@
+#include "bingo_pg_fix_pre.h"
+
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -5,9 +7,8 @@ extern "C" {
 #include "access/relscan.h"
 #include "utils/typcache.h"
 }
-#ifdef qsort
-#undef qsort
-#endif
+
+#include "bingo_pg_fix_post.h"
 
 #include "mango_pg_search_engine.h"
 

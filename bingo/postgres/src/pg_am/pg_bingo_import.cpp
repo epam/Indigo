@@ -1,3 +1,5 @@
+#include "bingo_pg_fix_pre.h"
+
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -6,12 +8,9 @@ extern "C" {
 #include "utils/int8.h"
 #include "utils/builtins.h"
 }
-#ifdef qsort
-#undef qsort
-#endif
-#ifdef printf
-#undef printf
-#endif
+
+#include "bingo_pg_fix_post.h"
+
 #include "bingo_postgres.h"
 #include "bingo_pg_common.h"
 #include "base_cpp/scanner.h"

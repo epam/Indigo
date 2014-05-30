@@ -1,3 +1,5 @@
+#include "bingo_pg_fix_pre.h"
+
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -9,9 +11,7 @@ extern "C" {
 #include "storage/lock.h"
 }
 
-#ifdef qsort
-#undef qsort
-#endif
+#include "bingo_pg_fix_post.h"
 
 #include "bingo_pg_buffer.h"
 #include "base_cpp/array.h"

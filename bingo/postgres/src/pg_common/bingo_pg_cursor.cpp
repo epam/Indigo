@@ -1,3 +1,5 @@
+#include "bingo_pg_fix_pre.h"
+
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -5,15 +7,8 @@ extern "C" {
 #include "storage/itemptr.h"
 #include "executor/spi.h"
 }
-#ifdef qsort
-#undef qsort
-#endif
-#ifdef printf
-#undef printf
-#endif
-#ifdef vprintf
-#undef vprintf
-#endif
+
+#include "bingo_pg_fix_post.h"
 
 #include "bingo_pg_cursor.h"
 #include "bingo_pg_common.h"
