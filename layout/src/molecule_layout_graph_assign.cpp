@@ -498,7 +498,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
          else {
             layout.addVertexOutsideWeight(rotation_vertex[i], _segment_weight_outside[i]);
             layout.addVertexOutsideWeight(rotation_vertex[(i + 1) % segment.size()], _segment_weight_outside[i]);
-         }            
+         }
       }
    }
 
@@ -925,7 +925,7 @@ void MoleculeLayoutGraph::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoo
                   direction.rotate(1, 0);
                } else continue;
 
-               direction *= 2;
+               direction /= 3;
 
                bool moved = false;
                for (int sign = 1; sign >= -1 && !moved; sign -= 2) {

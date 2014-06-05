@@ -92,7 +92,7 @@ public:
 
    MoleculeLayoutSmoothingSegment(MoleculeLayoutGraph& mol, Vec2f& start, Vec2f& finish);
    Vec2f getPosition(int);
-   Vec2f getIntPosition(int);
+   Vec2f getIntPosition(int) const;
    void shiftStartBy(Vec2f shift);
    void shiftFinishBy(Vec2f shift);
    float getLength() const;

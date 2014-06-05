@@ -182,6 +182,8 @@ void MoleculeLayoutGraph::_getBorder (Cycle &border) const
       if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN) {
          outside_point.max(_layout_vertices[i].pos);
       }
+
+   outside_point += Vec2f(1, 1);
    _getSurroundCycle(border, outside_point);
 }
 
@@ -315,7 +317,7 @@ void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
    }
 
    cycle.copy(vertices, edges);
-   cycle.canonize();
+   //cycle.canonize();
 }
 
 // Split border in two parts by two vertices

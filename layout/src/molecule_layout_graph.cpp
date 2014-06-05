@@ -587,7 +587,7 @@ Vec2f MoleculeLayoutSmoothingSegment::getPosition(int v) {
    return _getPosition(_pos[v]);
 }
 
-Vec2f MoleculeLayoutSmoothingSegment::getIntPosition(int v) {
+Vec2f MoleculeLayoutSmoothingSegment::getIntPosition(int v) const {
    return _pos[v];
 }
 

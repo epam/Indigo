@@ -105,7 +105,7 @@ void MoleculeLayoutMacrocycles::doLayout ()
    profTimerStart(t, "bc.layout");
 
    double b2 = depictionCircle();
-   double b = depictionMacrocycleMol(false);
+   double b = depictionMacrocycleGreed(false);
 
    if (b > b2) {
       depictionCircle();
@@ -283,8 +283,8 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
       if (Vec2f::cross(vp2, vp1) > 0) angle = -angle;
       angle /= (PI/3);
       if (angle * rotateAngle[i] <= 0) add += 1000;
-      else if (abs(angle) > 1) result = max(result, abs(angle - rotateAngle[i])/2);
-      else result = max(result, abs(1/angle - rotateAngle[i])/2);
+      double angle_badness = abs((((abs(angle) > 1) ? angle : 1 / angle) - rotateAngle[i]) / 2) * _angle_importance[vertexNumber[i]];
+      result = max(result, angle_badness);
    }
 
 
@@ -311,7 +311,10 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
    
    if (diff == 30000) {
       diff = 0;
-      for (int i = 0; i < ind; i++) diff += (rotateAngle[i] == -1) * _vertex_weight[i];
+      for (int i = 0; i < ind; i++) diff += (rotateAngle[i] == -1) * _vertex_weight[vertexNumber[i]];
+   }
+   else {
+      for (int i = 0; i < ind; i++) diff -= (rotateAngle[i] != 0) && (rotateAngle[i] == rotateAngle[(i + 1) % ind]);
    }
    result += 1.0 * diff / molSize;
 
@@ -352,7 +355,16 @@ void rotate(int* ar, int ar_length, int shift) {
    memcpy(ar, temp.ptr(), ar_length * sizeof(int));
 }
 
-double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
+void rotate(double* ar, int ar_length, int shift) {
+   QS_DEF(Array<double>, temp);
+   temp.clear_resize(ar_length);
+   shift = (shift % ar_length + ar_length) % ar_length;
+   memcpy(temp.ptr(), ar + shift, (ar_length - shift) * sizeof(double));
+   memcpy(temp.ptr() + ar_length - shift, ar, shift * sizeof(double));
+   memcpy(ar, temp.ptr(), ar_length * sizeof(double));
+}
+
+double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
 {
 
    if (length >= max_size) return 1e9;
@@ -375,7 +387,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
             + _vertex_weight[i] + _vertex_weight[(i + 1) % length]
             - _vertex_weight[(i + length - 1) % length]/2 - _vertex_weight[(i + 2) % length]/2;
 
-         if (shift == 1 || value > max_value) {
+         if (shift == -1 || value > max_value) {
             shift = i;
             max_value = value;
          }
@@ -493,6 +505,11 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       }
    }
 
+   for (int rot = rot_left; rot <= rot_right; rot++)
+      for (int x = x_left; x <= x_right; x++)
+         for (int y = y_left; y <= y_right; y++)
+            minRotates[length][rot][1][x][y]++;
+
    struct point {
       int diff;
       int x;
@@ -595,6 +612,11 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
       }
    }
 
+   for (int rot = rot_left; rot <= rot_right; rot++)
+      for (int x = x_left; x <= x_right; x++)
+         for (int y = y_left; y <= y_right; y++)
+            minRotates[length][rot][1][x][y]--;
+
 
 
    int x_result[max_size + 1];
@@ -605,10 +627,8 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
    double bestBadness = 1e30;
    int bestIndex = 0;
 
-   int last_rotate_angle = 1;
-
    for (int index = 0; index < points.size(); index++) {
-      int displayIndex = index;
+      
       x_result[length] = points[index].x;
       y_result[length] = points[index].y;
       rot_result[length] = points[index].rot;
@@ -741,20 +761,16 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleMol(bool profi)
             p[i].rotate(angle);
          }
       }
-      Vec2f lose_vector((p[0] - p[ind]) / length);
-      for (int i = 0; i <= ind; i++)
-         p[i] += lose_vector * vertexNumber[i];
+      Vec2f last_vector(p[0] - p[ind]);
+      for (int i = 0; i <= ind; i++) p[i] += (last_vector * vertexNumber[i]) / length;
 
-      double startBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, points[index].diff);
-      //if (startBadness > 0.001) 
-         smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
+      smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
 
-      double newBadness = 0;
-      newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, points[index].diff);
+      double newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, points[index].diff);
 
       if (newBadness < bestBadness) {
          bestBadness = newBadness;
-         bestIndex = displayIndex;
+         bestIndex = index;
 
          for (int i = 0; i < ind; i++) {
             int nexti = (i + 1) % ind;
@@ -901,6 +917,13 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
       }
    }
 
+   int diff = 0;
+   for (int i = 0; i < length; i++)
+      diff += _vertex_weight[i] * (!up[i] && (up[(i + 1) % length] || up[(i + length - 1) % length]));
+
+   for (int i = 0; i < length; i++)
+      diff += (up[i] && up[(i + 1) % length]) || (!up[i] && !up[(i + 1) % length] && (up[(i - 1 + length) % length] == up[(i + 2) % length]));
+
    double r = length * sqrt(3.0)/2 / (2 * PI);
 
    QS_DEF(Array<Vec2f>, p);
@@ -958,5 +981,5 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
       _positions[i] = p[i];
    }
    
-   return badness(length, length, rotateAngle.ptr(), edgeLength.ptr(), vertexNumber.ptr(), p.ptr(), 30000);
+   return badness(length, length, rotateAngle.ptr(), edgeLength.ptr(), vertexNumber.ptr(), p.ptr(), diff);
 }
