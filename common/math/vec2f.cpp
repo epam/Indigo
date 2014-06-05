@@ -257,3 +257,10 @@ double Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s) {
    return __min( __min(distPointSegment(p, r, s), distPointSegment(q, r, s)),
       __min(distPointSegment(r, p, q), distPointSegment(s, p, q)));
 }
+
+Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, double angle) {
+
+   Vec2f vec(q - p);
+
+   return (p + q) / 2 + vec / tan((PI - angle)/2);
+}
