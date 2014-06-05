@@ -304,8 +304,8 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
    }
    // angles
    for (int i = 0; i < ind; i++) {
-      Vec2f vp1 = p[i] - p[(i + ind - 1) % ind];
-      Vec2f vp2 = p[(i + 1) % ind] - p[i];
+      Vec2f vp1 = p[(i + 1) % ind] - p[i];
+      Vec2f vp2 = p[(i + ind - 1) % ind] - p[i];
       double len1 = vp1.length();
       double len2 = vp2.length();
       vp1 /= len1;
@@ -313,7 +313,7 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
 
       double angle = acos(Vec2f::dot(vp1, vp2));
       if (Vec2f::cross(vp2, vp1) > 0) angle = -angle;
-      angle /= (PI/3);
+      angle /= _target_angle[vertexNumber[i]];
       if (angle * rotateAngle[i] <= 0) add += 1000;
       double angle_badness = abs((((abs(angle) > 1) ? angle : 1 / angle) - rotateAngle[i]) / 2) * _angle_importance[vertexNumber[i]];
       result = max(result, angle_badness);
