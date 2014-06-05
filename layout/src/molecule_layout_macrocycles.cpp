@@ -49,7 +49,9 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) :
    TL_CP_GET(_vertex_stereo), // there is an angle in the vertex
    TL_CP_GET(_edge_stereo), // trans-cis configuration
    TL_CP_GET(_vertex_drawn), // is each vertex has been drawn earlier
-   TL_CP_GET(_positions) // position of vertex
+   TL_CP_GET(_positions), // position of vertex
+   TL_CP_GET(_vertex_added_square), // square of attached layout component
+   TL_CP_GET(_component_finish), // finish of component starting with this vertex
 {
    // Set default values...
    length = size;
@@ -68,6 +70,12 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) :
 
    _positions.clear_resize(size);
 
+   _vertex_added_square.clear_resize(size);
+   _vertex_added_square.zerofill();
+
+   _component_finish.clear_resize(size);
+   for (int i = 0; i < size; i++) _component_finish[i] = i;
+
 }
 
 void MoleculeLayoutMacrocycles::addVertexOutsideWeight (int v, int weight)
@@ -78,6 +86,10 @@ void MoleculeLayoutMacrocycles::addVertexOutsideWeight (int v, int weight)
 void MoleculeLayoutMacrocycles::setVertexEdgeParallel (int v, bool parallel) 
 {
    _vertex_stereo[v] = !parallel;
+}
+
+void MoleculeLayoutMacrocycles::set_vertex_added_square(int v, double s) {
+   _vertex_added_square[v] = s;
 }
 
 int MoleculeLayoutMacrocycles::getVertexStereo (int v) 
@@ -99,6 +111,9 @@ Vec2f &MoleculeLayoutMacrocycles::getPos (int v) const
    return _positions[v];
 }
 
+void MoleculeLayoutMacrocycles::set_component_finish(int v, int f) {
+   _component_finish[v] = f;
+}
 
 void MoleculeLayoutMacrocycles::doLayout ()
 {
@@ -317,6 +332,18 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
       for (int i = 0; i < ind; i++) diff -= (rotateAngle[i] != 0) && (rotateAngle[i] == rotateAngle[(i + 1) % ind]);
    }
    result += 1.0 * diff / molSize;
+
+/*   double square = 0;
+   for (int i = 1; i < ind - 1; i++)
+      square += Vec2f::dot(p[i] - p[0], p[(i + 1) % ind] - p[0]);
+
+   square = abs(square);
+
+   for (int i = 0; i < ind; i++)
+   if (_component_finish[vertexNumber[i]] != vertexNumber[i] && rotateAngle[i] == -1)
+      square += _vertex_added_square[vertexNumber[i]] * (p[_component_finish[vertexNumber[i]]] - p[i]).lengthSqr();
+
+   result -= square / molSize / molSize;*/
 
    //printf("%5.5f\n", result);
    return result + 1000.0 * add;

@@ -694,7 +694,21 @@ void MoleculeLayoutSmoothingSegment::set_start_finish_number(int s, int f) {
    for (int v : _graph.vertices()) _center += _pos[v];
    _center /= _graph.vertexCount();
 
+   calculate_square();
 }
+
+double MoleculeLayoutSmoothingSegment::get_square() {
+   return _square;
+}
+
+void MoleculeLayoutSmoothingSegment::calculate_square() {
+   if (_graph.vertexCount() > 2)
+      _square = _graph._get_square() / (_length * _length);
+   else _square = 0;
+}
+
+int MoleculeLayoutSmoothingSegment::get_start() const { return _start_number; }
+int MoleculeLayoutSmoothingSegment::get_finish() const { return _finish_number; }
 
 
 #ifdef M_LAYOUT_DEBUG

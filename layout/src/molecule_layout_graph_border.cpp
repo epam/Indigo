@@ -174,6 +174,22 @@ bool MoleculeLayoutGraph::_isPointOutsideCycleEx (const Cycle &cycle, const Vec2
    return false;
 }
 
+
+double MoleculeLayoutGraph::_get_square() {
+
+   Cycle cycle;
+   _getBorder(cycle);
+
+   int len = cycle.vertexCount();
+
+   double sq = 0;
+
+   for (int i = 1; i < len - 1; i++)
+      sq += Vec2f::dot(getPos(cycle.getVertex(i)) - getPos(cycle.getVertex(0)), getPos(cycle.getVertex(i + 1)) - getPos(cycle.getVertex(0)));
+
+   return abs(sq/2);
+}
+
 // Extract component border
 void MoleculeLayoutGraph::_getBorder (Cycle &border) const
 {

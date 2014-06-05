@@ -84,6 +84,7 @@ private:
    Vec2f& _finish;
    Vec2f _center;
    int _layout_component_number;
+   double _square;
 
    Vec2f _getPosition(Vec2f);
 
@@ -105,6 +106,10 @@ public:
    void set_layout_component_number(int number);
    void inverse();
    void set_start_finish_number(int, int);
+   double get_square();
+   void calculate_square();
+   int get_start () const;
+   int get_finish () const;
 
    bool is_start(int v) {return v == _start_number;}
    bool is_finish(int v) {return v == _finish_number;}
@@ -173,6 +178,9 @@ public:
    
    void flipped () { _flipped = true; }
    bool isFlipped () const { return _flipped; }
+
+   double _get_square();
+
 
 #ifdef M_LAYOUT_DEBUG
    void saveDebug ();

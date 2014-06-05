@@ -34,8 +34,10 @@ public:
 
    void addVertexOutsideWeight (int v, int weight);
    void setVertexEdgeParallel (int v, bool parallel);
+   void set_vertex_added_square(int v, double s);
    void setEdgeStereo (int e, int stereo);
    void setVertexDrawn(int v, bool drawn);
+   void set_component_finish(int v, int f);
 
    int getVertexStereo (int v);
 
@@ -76,9 +78,11 @@ private:
    TL_CP_DECL(Data, data);
    TL_CP_DECL(Array<int>, _vertex_weight);
    TL_CP_DECL(Array<int>, _vertex_stereo);
+   TL_CP_DECL(Array<double>, _vertex_added_square);
    TL_CP_DECL(Array<int>, _edge_stereo);
    TL_CP_DECL(Array<bool>, _vertex_drawn);
    TL_CP_DECL(Array<Vec2f>, _positions);
+   TL_CP_DECL(Array<int>, _component_finish);
 };
 
 }

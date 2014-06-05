@@ -371,11 +371,15 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
    const int size = cycle.vertexCount();
    //printf("%d do layout cycle \n", size);
 
+   MoleculeLayoutMacrocycles layout(size);
+
    QS_DEF(ObjArray<MoleculeLayoutSmoothingSegment>, segment);
    QS_DEF(Array<Vec2f>, rotation_point);
    QS_DEF(Array<int>, rotation_vertex);
 
    _segment_smoothing_prepearing(cycle, rotation_vertex, rotation_point, segment);
+
+   int segment_count = segment.size();
 
    QS_DEF(Array<int>, _is_vertex_taken);
    enum {
@@ -386,7 +390,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
    QS_DEF(Array<int>, _list_of_vertex);
    QS_DEF(Array<int>, _segment_weight_outside);
 
-   _segment_weight_outside.clear_resize(segment.size());
+   _segment_weight_outside.clear_resize(segment_count);
    _segment_weight_outside.zerofill();
 
    for (int i = 0; i < size; i++) 
@@ -401,18 +405,18 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       _is_layout_component_incoming[_layout_component_number[cycle.getEdge(i)]] = true;
 
 
-   for (int i = 0; i < segment.size(); i++) {
+   for (int i = 0; i < segment_count; i++) {
       for (int up = 0; up <= 1; up++) {
          _is_vertex_taken.clear_resize(_graph->vertexEnd());
          _is_vertex_taken.fill(NOT_CONSIDERED);
 
-         if (i == segment.size() - 1) {
+         if (i == segment_count - 1) {
             int x = 5;
          }
 
          _list_of_vertex.clear_resize(0);
 
-         bool is_segment_trivial = segment[i]._graph.vertexCount() == 2 && segment[(i + segment.size() - 1) % segment.size()]._graph.vertexCount() == 2 && up;
+         bool is_segment_trivial = segment[i]._graph.vertexCount() == 2 && segment[(i + segment_count - 1) % segment_count]._graph.vertexCount() == 2 && up;
 
          for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
             if ((!segment[i].is_finish(v) && !segment[i].is_start(v) && segment[i].isVertexUp(v) ^ !up) ||
@@ -470,34 +474,35 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       }
    }
 
-   MoleculeLayoutMacrocycles layout(size);
-
    QS_DEF(Array<int>, _index_in_cycle);
    _index_in_cycle.clear_resize(vertexEnd());
    _index_in_cycle.fffill();
    for (int i = 0; i < size; i++) _index_in_cycle[cycle.getVertex(i)] = i;
 
-   for (int i = 0; i < segment.size(); i++) {
-      if (segment[i]._graph.vertexCount() == 2 && segment[(i + segment.size() - 1) % segment.size()]._graph.vertexCount() == 2)
+   for (int i = 0; i < segment_count; i++) {
+      if (segment[i]._graph.vertexCount() == 2 && segment[(i + segment_count - 1) % segment_count]._graph.vertexCount() == 2)
          layout.addVertexOutsideWeight(rotation_vertex[i], _segment_weight_outside[i] - 1);
       else {
+         layout.set_component_finish(rotation_vertex[i], rotation_vertex[(i + 1) % segment_count]);
+         layout.set_vertex_added_square(rotation_vertex[i], segment[i].get_square());
+
          double y1 = 0, y2 = 0;
          for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
             if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[i] + 1) % size) {
                y1 = segment[i].getIntPosition(v).y;
             }
-            if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[(i + 1) % segment.size()] + size - 1) % size) {
+            if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[(i + 1) % segment_count] + size - 1) % size) {
                y2 = segment[i].getIntPosition(v).y;
             }
          }
 
          if ((y1 + y2)/2 > segment[i].getIntCenter().y) {
             layout.addVertexOutsideWeight(rotation_vertex[i], -_segment_weight_outside[i]);
-            layout.addVertexOutsideWeight(rotation_vertex[(i + 1) % segment.size()], -_segment_weight_outside[i]);
+            layout.addVertexOutsideWeight(rotation_vertex[(i + 1) % segment_count], -_segment_weight_outside[i]);
          }
          else {
             layout.addVertexOutsideWeight(rotation_vertex[i], _segment_weight_outside[i]);
-            layout.addVertexOutsideWeight(rotation_vertex[(i + 1) % segment.size()], _segment_weight_outside[i]);
+            layout.addVertexOutsideWeight(rotation_vertex[(i + 1) % segment_count], _segment_weight_outside[i]);
          }
       }
    }
@@ -594,10 +599,10 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
    }
 
-   for (int i = 0; i < segment.size(); i++) {
+   for (int i = 0; i < segment_count; i++) {
       for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
          if (segment[i].is_start(v)) if (segment[i]._graph.getVertex(v).degree() > 2) layout.setEdgeStereo(rotation_vertex[i], 0);
-         if (segment[i].is_finish(v)) if (segment[i]._graph.getVertex(v).degree() > 2) layout.setEdgeStereo((rotation_vertex[(i + 1) % segment.size()] - 1 + size) % size, 0);
+         if (segment[i].is_finish(v)) if (segment[i]._graph.getVertex(v).degree() > 2) layout.setEdgeStereo((rotation_vertex[(i + 1) % segment_count] - 1 + size) % size, 0);
       }
    }
 
