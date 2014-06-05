@@ -381,6 +381,77 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
    int segment_count = segment.size();
 
+   // calculate target angle
+
+   for (int s = 0; s < segment_count; s++) 
+      for (int i = rotation_vertex[s]; i != rotation_vertex[(s + 1) % segment_count]; i = (i + 1) % size) {
+         int prev_layout_component = _layout_component_number[cycle.getEdgeC(i - 1)];
+         int next_layout_component = _layout_component_number[cycle.getEdge(i)];
+
+         if (prev_layout_component < 0 && next_layout_component < 0) {
+            layout.set_target_angle(i, 2 * PI / 3);
+            layout.set_angle_importance(i, 0.2);
+         }
+         else if ((prev_layout_component < 0) ^ (next_layout_component < 0)) {
+            const MoleculeLayoutSmoothingSegment& calc_segment = prev_layout_component < 0 ? segment[s] : segment[(s + segment_count - 1) % segment_count];
+            int calc_vertex = prev_layout_component < 0 ? calc_segment.get_start() : calc_segment.get_finish();
+
+            Cycle border;
+            calc_segment._graph._getBorder(border);
+            int calc_vertex_in_border;
+            for (int j = 0; j < border.vertexCount(); j++){
+               if (border.getVertex(j) == calc_vertex) {
+                  calc_vertex_in_border = j;
+                  break;
+               }
+            }
+
+            double angle = 0;
+            int prev_vertex = -1;
+            int next_vertex = -1;
+            if (border.vertexCount() != 0) {
+               prev_vertex = border.getVertexC(calc_vertex_in_border - 1);
+               next_vertex = border.getVertexC(calc_vertex_in_border + 1);
+            }
+            else {
+               for (int n : calc_segment._graph.getVertex(calc_vertex).neighbors()) {
+                  int v = calc_segment._graph.getVertex(calc_vertex).neiVertex(n);
+                  if (prev_vertex < 0 || calc_segment.getIntPosition(v).y > calc_segment.getIntPosition(prev_vertex).y) prev_vertex = v;
+                  if (next_vertex < 0 || calc_segment.getIntPosition(v).y < calc_segment.getIntPosition(next_vertex).y) next_vertex = v;
+               }
+               if (next_layout_component < 0) {
+                  int temp = prev_vertex;
+                  prev_vertex = next_vertex;
+                  next_vertex = temp;
+               }
+            }
+            angle = (calc_segment.getIntPosition(next_vertex) - calc_segment.getIntPosition(calc_vertex)).tiltAngle2();
+            angle -= (calc_segment.getIntPosition(prev_vertex) - calc_segment.getIntPosition(calc_vertex)).tiltAngle2();
+
+
+            while (angle < 0) angle += 2 * PI;
+            while (angle >= 2 * PI) angle -= 2 * PI;
+
+            layout.set_target_angle(i, PI - angle/2);
+         }
+         else if (prev_layout_component == next_layout_component) {
+            double angle = (getPos(cycle.getVertexC(i - 1)) - getPos(cycle.getVertexC(i))).tiltAngle2();
+            angle -= (getPos(cycle.getVertexC(i + 1)) - getPos(cycle.getVertexC(i))).tiltAngle2();
+
+            while (angle < 0) angle += 2 * PI;
+            while (angle >= 2*PI) angle -= 2 * PI;
+            if (angle > PI) angle = 2*PI - angle;
+
+            layout.set_target_angle(i, angle);
+         }
+         // temporary value
+         else {
+            layout.set_target_angle(i, PI);
+            layout.set_angle_importance(i, 0.2);
+         }
+      }
+
+
    QS_DEF(Array<int>, _is_vertex_taken);
    enum {
       NOT_CONSIDERED,

@@ -52,6 +52,8 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) :
    TL_CP_GET(_positions), // position of vertex
    TL_CP_GET(_vertex_added_square), // square of attached layout component
    TL_CP_GET(_component_finish), // finish of component starting with this vertex
+   TL_CP_GET(_target_angle), // prefer angle in this vertex
+   TL_CP_GET(_angle_importance) // importance of angle in this vertiex is close to target
 {
    // Set default values...
    length = size;
@@ -75,6 +77,12 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) :
 
    _component_finish.clear_resize(size);
    for (int i = 0; i < size; i++) _component_finish[i] = i;
+
+   _target_angle.clear_resize(size);
+   _target_angle.zerofill();
+
+   _angle_importance.clear_resize(size);
+   _angle_importance.fill(1);
 
 }
 
@@ -114,6 +122,15 @@ Vec2f &MoleculeLayoutMacrocycles::getPos (int v) const
 void MoleculeLayoutMacrocycles::set_component_finish(int v, int f) {
    _component_finish[v] = f;
 }
+
+void MoleculeLayoutMacrocycles::set_target_angle(int v, double angle) {
+   _target_angle[v] = angle;
+}
+
+void MoleculeLayoutMacrocycles::set_angle_importance(int v, double imp) {
+   _angle_importance[v] = imp;
+}
+
 
 void MoleculeLayoutMacrocycles::doLayout ()
 {
@@ -429,6 +446,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
    rotate(_vertex_weight.ptr(), length, shift);
    rotate(_vertex_stereo.ptr(), length, shift);
    rotate(_edge_stereo.ptr(), length, shift);
+   rotate(_angle_importance.ptr(), length, shift);
 
    int dx[6];
    int dy[6];
@@ -817,6 +835,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
    rotate(_vertex_weight.ptr(), length, -shift);
    rotate(_vertex_stereo.ptr(), length, -shift);
    rotate(_edge_stereo.ptr(), length, -shift);
+   rotate(_angle_importance.ptr(), length, -shift);
 
    for (int i = 0; i < length; i++) 
       if (_vertex_weight[i] > 0) _vertex_weight[i]--;

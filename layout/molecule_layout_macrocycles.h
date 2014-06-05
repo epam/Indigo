@@ -38,6 +38,8 @@ public:
    void setEdgeStereo (int e, int stereo);
    void setVertexDrawn(int v, bool drawn);
    void set_component_finish(int v, int f);
+   void set_target_angle(int v, double angle);
+   void set_angle_importance(int, double);
 
    int getVertexStereo (int v);
 
@@ -83,6 +85,9 @@ private:
    TL_CP_DECL(Array<bool>, _vertex_drawn);
    TL_CP_DECL(Array<Vec2f>, _positions);
    TL_CP_DECL(Array<int>, _component_finish);
+   TL_CP_DECL(Array<double>, _target_angle);
+   TL_CP_DECL(Array<double>, _angle_importance);
+
 };
 
 }
