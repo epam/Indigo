@@ -824,7 +824,18 @@ void SmilesLoader::_parseMolecule ()
             
             for (i = 0; i < bond_str.size(); i++)
                if (bond_str[i] == '/' || bond_str[i] == '\\')
-                  bond_str[i] = '-';
+               {
+                  // Aromatic bonds can be a part of cis-trans configuration
+                  // For example in Cn1c2ccccc2c(-c2ccccc2)n/c(=N\O)c1=O
+                  if (_atoms[bond->beg].aromatic && bond_str.size() == 1)
+                  {
+                     // Erase bond type info
+                     bond_str.pop();
+                     bond->type = -1; // single of aromatic
+                  }
+                  else
+                     bond_str[i] = '-';
+               }
          }
 
          if (bond_str.size() > 0)
@@ -1305,8 +1316,10 @@ void SmilesLoader::_setRadicalsAndHCounts ()
          _mol->setImplicitH(idx, _atoms[i].hydrogens);
       else if (_atoms[i].brackets) // no hydrogens in brackets?
          _mol->setImplicitH(idx, 0); // no implicit hydrogens on atom then
-      else if (_atoms[i].aromatic)
+      else if (_atoms[i].aromatic && _mol->getAtomAromaticity(i) == ATOM_AROMATIC)
       {
+         // Additional check for _mol->getAtomAromaticity(i) is required because 
+         // a cycle can be non-aromatic while atom letters are small
          if (_atoms[i].label == ELEM_C)
          {
             // here we are basing on the fact that
