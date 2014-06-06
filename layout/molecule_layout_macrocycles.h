@@ -53,7 +53,7 @@ public:
 
    double layout (BaseMolecule &mol);
 
-   void smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi, int *able_to_move);
+   void smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi);
    double badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, int diff);
    double depictionMacrocycleGreed(bool profi);
    double depictionCircle();

@@ -144,7 +144,6 @@ void MoleculeLayoutMacrocycles::doLayout ()
    }
 }
 
-
 bool MoleculeLayoutMacrocycles::canApply (BaseMolecule &mol)
 {
    if (!mol.isConnected(mol)) {
@@ -162,7 +161,7 @@ bool MoleculeLayoutMacrocycles::canApply (BaseMolecule &mol)
 
 double sqr(double x) {return x*x;}
 
-int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, Random* rand, bool profi, bool do_dist, double multiplier, int worstVertex) {
+int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi, bool do_dist, double multiplier, int worstVertex) {
    
    Vec2f p1 = p[(worstVertex - 1 + ind) % ind];
    Vec2f p2 = p[(worstVertex + 1 + ind) % ind];
@@ -276,19 +275,13 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
    return worstVertex;
 }
 
-void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi, int *able_to_move) {
+void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi) {
 
    Random rand(931170240);
-   vector<int> target_vertices;
-   if (able_to_move == 0) {
-      for (int i = 0; i < ind; i++) target_vertices.push_back(i);
-   } else {
-      for (int i = 0; i < ind; i++) 
-         if (able_to_move[i]) target_vertices.push_back(i);
-   }
+
    int iter_count = max(50 * molSize, 2000);
-   for (int i = 0; i < iter_count; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, i >= iter_count/2, 0.1, target_vertices[rand.next(target_vertices.size())]);
-   //for (int i = 0; i < 50 * molSize; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, &rand, profi, 0.01, target_vertices[rand.next(target_vertices.size())]);
+
+   for (int i = 0; i < iter_count; i++) improvement(ind, molSize, rotateAngle, edgeLenght, vertexNumber, p, profi, i >= iter_count/2, 0.1, rand.next(ind));
 }
 
 double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, int diff) {
@@ -809,7 +802,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
       Vec2f last_vector(p[0] - p[ind]);
       for (int i = 0; i <= ind; i++) p[i] += (last_vector * vertexNumber[i]) / length;
 
-      smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi, 0);
+      smoothing(ind, length, rotateAngle, edgeLenght, vertexNumber, p, profi);
 
       double newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, points[index].diff);
 
@@ -1013,7 +1006,7 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
       y[i] = yy;
    }*/
 
-   smoothing(length, length, rotateAngle.ptr(), edgeLength.ptr(), vertexNumber.ptr(), p.ptr(), false, 0);
+   smoothing(length, length, rotateAngle.ptr(), edgeLength.ptr(), vertexNumber.ptr(), p.ptr(), false);
 
    
    for (i = 0; i < length; i++)
