@@ -97,16 +97,24 @@ private:
    ThreadSafeStaticObj<OsLock> _lock;
 };
 
+// Helpful templates to deal with commas in template type names
+// to be able to write like
+// QS_DEF((std::unordered_map<std::string, int>), atoms_id);
+// See http://stackoverflow.com/a/13842784
+template<typename T> struct ArgumentType;
+template<typename T, typename U> struct ArgumentType<T(U)> { typedef U Type; };
+#define _GET_TYPE(t) ArgumentType<void(t)>::Type
+
 // Macros for working with global variables per each session
 // By tradition this macros start with TL_, but should start with SL_
-#define TL_DECL_EXT(type, name) extern _SessionLocalContainer< type > TLSCONT_##name
-#define TL_DECL(type, name) static _SessionLocalContainer< type > TLSCONT_##name
-#define TL_GET(type, name) type& name = (TLSCONT_##name).getLocalCopy()
+#define TL_DECL_EXT(type, name) extern _SessionLocalContainer< _GET_TYPE(type) > TLSCONT_##name
+#define TL_DECL(type, name) static _SessionLocalContainer< _GET_TYPE(type) > TLSCONT_##name
+#define TL_GET(type, name) _GET_TYPE(type)& name = (TLSCONT_##name).getLocalCopy()
 #define TL_DECL_GET(type, name) TL_DECL(type, name); TL_GET(type, name)
-#define TL_GET2(type, name, realname) type& name = (TLSCONT_##realname).getLocalCopy()
-#define TL_GET_BY_ID(type, name, id) type& name = (TLSCONT_##name).getLocalCopy(id)
-#define TL_DEF(className, type, name) _SessionLocalContainer< type > className::TLSCONT_##name
-#define TL_DEF_EXT(type, name) _SessionLocalContainer< type > TLSCONT_##name
+#define TL_GET2(type, name, realname) _GET_TYPE(type)& name = (TLSCONT_##realname).getLocalCopy()
+#define TL_GET_BY_ID(type, name, id) _GET_TYPE(type)& name = (TLSCONT_##name).getLocalCopy(id)
+#define TL_DEF(className, type, name) _SessionLocalContainer< _GET_TYPE(type) > className::TLSCONT_##name
+#define TL_DEF_EXT(type, name) _SessionLocalContainer< _GET_TYPE(type) > TLSCONT_##name
 
 // Pool for local variables, reused in consecutive function calls, 
 // but not required to preserve their state
@@ -286,10 +294,10 @@ public:
 
 // "Quasi-static" variable definition
 #define QS_DEF(TYPE, name) \
-   static ThreadSafeStaticObj<_ReusableVariablesPool< TYPE > > _POOL_##name; \
+   static ThreadSafeStaticObj<_ReusableVariablesPool< _GET_TYPE(TYPE) > > _POOL_##name; \
    int _POOL_##name##_idx;                                             \
-   TYPE &name = _POOL_##name->getVacant(_POOL_##name##_idx);           \
-   _ReusableVariablesAutoRelease< TYPE > _POOL_##name##_auto_release;  \
+   _GET_TYPE(TYPE) &name = _POOL_##name->getVacant(_POOL_##name##_idx);           \
+   _ReusableVariablesAutoRelease< _GET_TYPE(TYPE) > _POOL_##name##_auto_release;  \
    _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr())
 
 //
@@ -302,8 +310,8 @@ public:
 
 // Add this to class definition  
 #define TL_CP_DECL(TYPE, name) \
-   typedef TYPE _##name##_TYPE; \
-   TYPE &name
+   typedef _GET_TYPE(TYPE) _##name##_TYPE; \
+   _GET_TYPE(TYPE) &name
 
 // Add this to constructor initialization list
 #define TL_CP_GET(name) \
