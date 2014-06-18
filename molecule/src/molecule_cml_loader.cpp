@@ -113,6 +113,15 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
    QS_DEF((std::unordered_map<std::string, int>), atoms_id);
    QS_DEF((std::unordered_map<std::string, size_t>), atoms_id_int);
 
+   // Function that mappes atom id as a string to an atom index
+   auto getAtomIdx = [&](const char *id)
+   {
+      auto it = atoms_id.find(id);
+      if (it == atoms_id.end())
+         throw Error("atom id %s cannot be found", id);
+      return it->second;
+   };
+
    QS_DEF(Array<int>, total_h_count);
    atoms_id.clear();
    atoms_id_int.clear();
@@ -313,10 +322,10 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       QS_DEF(Array<char>, id);
 
       strscan.readWord(id, 0);
-      int beg = atoms_id.at(id.ptr());
+      int beg = getAtomIdx(id.ptr());
       strscan.skipSpace();
       strscan.readWord(id, 0);
-      int end = atoms_id.at(id.ptr());
+      int end = getAtomIdx(id.ptr());
 
       const char *order = elem->Attribute("order");
       if (order == 0)
@@ -392,7 +401,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       if (id == 0)
          throw Error("atom without an id");
 
-      int idx = atoms_id.at(id);
+      int idx = getAtomIdx(id);
 
       TiXmlElement *ap_elem = elem->FirstChildElement("atomParity");
 
@@ -420,7 +429,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
          {
             strscan.skipSpace();
             strscan.readWord(id, 0);
-            pyramid[k] = atoms_id.at(id.ptr());
+            pyramid[k] = getAtomIdx(id.ptr());
             if (pyramid[k] == idx)
                pyramid[k] = -1;
          }
@@ -500,7 +509,8 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
             {
                strscan.skipSpace();
                strscan.readWord(id, 0);
-               refs[k] = atoms_id.at(id.ptr());
+
+               refs[k] = getAtomIdx(id.ptr());
             }
 
             const Edge &edge = mol.getEdge(bond_idx);
