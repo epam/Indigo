@@ -122,6 +122,8 @@ else:
     vsversion = 'Visual Studio'
     if args.preset.find("2012") != -1:
         vsversion += ' 11'
+    elif args.preset.find("2013") != -1: 
+        vsversion += ' 12'      
     else:
         vsversion += ' 10'
 
