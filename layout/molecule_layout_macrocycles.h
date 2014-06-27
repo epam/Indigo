@@ -54,6 +54,8 @@ public:
    double layout (BaseMolecule &mol);
 
    void smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi);
+   void smoothing2(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p);
+   void improvement2(int i, int vertex_count, int cycle_size, int *rotate_angle, int *edge_lenght, int *vertex_number, Vec2f *p, int base_vertex, bool fix_angle, bool fix_next, double multiplyer);
    double badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, int diff);
    double depictionMacrocycleGreed(bool profi);
    double depictionCircle();
@@ -66,6 +68,7 @@ private:
    static const int init_x;
    static const int init_y;
    static const int init_rot;
+   static const double CHANGE_FACTOR;
 
 
    int get_diff_grid(int x, int y, int rot, int value);
