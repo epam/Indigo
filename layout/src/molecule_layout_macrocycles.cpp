@@ -590,9 +590,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
 
    if (shift == -1) return 1e9;
 
-   for (int i = 0; i < length; i++) 
-      if (_vertex_weight[i] > 0) _vertex_weight[i]++;
-   
    rotate(_vertex_weight.ptr(), length, shift);
    rotate(_vertex_stereo.ptr(), length, shift);
    rotate(_edge_stereo.ptr(), length, shift);
@@ -661,7 +658,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                   int ychenge = dy[nextRot % 6];
 
                   int add = 0;
-                  if (!p && _vertex_weight[k] > 2) add += _vertex_weight[k];
+                  if (!p) add += _vertex_weight[k];
 
                   for (int x = x_left; x <= x_right; x++) {
                      signed short *ar1 = minRotates[k + 1][nextRot][p][x + xchenge] + ychenge;
@@ -680,7 +677,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                   else nextRot++;
 
                   int add = 0;
-                  if (p && _vertex_weight[k] > 2) add = _vertex_weight[k];
+                  if (p) add = _vertex_weight[k];
 
                   int xchenge = dx[nextRot % 6];
                   int ychenge = dy[nextRot % 6];
@@ -871,7 +868,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
             int is_cis_better = (alpha < PI/3 * (rot_result[k] - init_rot) + PI/length) ^ (!p_result[k + 1]);
 
             int add = 0;
-            if (!p_result[k + 1] && _vertex_weight[k] > 2) add = _vertex_weight[k];
+            if (!p_result[k + 1]) add = _vertex_weight[k];
 
             if (!is_cis_better) {
                if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) {
@@ -991,9 +988,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
    rotate(_vertex_stereo.ptr(), length, -shift);
    rotate(_edge_stereo.ptr(), length, -shift);
    rotate(_angle_importance.ptr(), length, -shift);
-
-   for (int i = 0; i < length; i++) 
-      if (_vertex_weight[i] > 0) _vertex_weight[i]--;
 
    return bestBadness;
 }
