@@ -570,7 +570,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
    //fifth : y-coordinate
    //value : minimum number of vertexes sticked out + count of CIS-configurations
 
-   int infinity = 30000;
+   int infinity = 15000;
 
    int shift = -1;
    int max_value = -infinity;
@@ -617,7 +617,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
          for (int p = 0; p < 2; p++) 
             for (int k = x_left - 1; k <= x_right + 1; k++)
                for (int t = y_left - 1; t <= y_right + 1; t++)
-                  minRotates[i][j][p][k][t] = infinity;
+                  minRotates[i][j][p][k][t] = 2*infinity;
 
    minRotates[0][init_rot][1][init_x][init_y] = 0;
    minRotates[1][init_rot][1][init_x + 1][init_y] = 0;
