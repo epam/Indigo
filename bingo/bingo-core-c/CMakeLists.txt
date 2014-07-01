@@ -22,7 +22,7 @@ set_property(TARGET bingo-core-c PROPERTY FOLDER "bingo-core-c")
 set_property(TARGET bingo-core-c PROPERTY OUTPUT_NAME "bingo-core-c-static")
 
 
-if(NOT $ENV{BINGO_PG_VERSION})
+if(BINGO_SQLSERVER)
     add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/../api/plugins/inchi/src/indigo_inchi_core.cpp ${Common_SOURCE_DIR}/hacks/memcpy.c $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
 	target_link_libraries(bingo-core-c-shared bingo-core inchi tinyxml z)
 	if (APPLE)
