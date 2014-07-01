@@ -876,17 +876,14 @@ void MoleculeLayoutGraph::_segment_calculate_target_angle(const MoleculeLayoutMa
       Vec2f p1 = layout.getPos(rotation_vertex[(i - 1 + segments_count) % segments_count]);
       Vec2f p2 = layout.getPos(rotation_vertex[i]);
       Vec2f p3 = layout.getPos(rotation_vertex[(i + 1) % segments_count]);
-      p1 = p2 - p1;
-      p2 = p3 - p2;
-      target_angle[i] = std::acos(Vec2f::dot(p1, p2) / p1.length() / p2.length());
-      if (Vec2f::cross(p1, p2) < 0) target_angle[i] = -target_angle[i];
-      target_angle[i] = PI - target_angle[i];
+      target_angle[i] = p2.calc_angle(p3, p1);
+      while (target_angle[i] < 0) target_angle[i] += 2 * PI;
    }
 
    for (int i = 0; i < segments_count; i++)
       for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
-         if (segment[i].is_start(v)) if (segment[i]._graph.getVertex(v).degree() > 2) target_angle[i] = 0;
-         if (segment[i].is_finish(v)) if (segment[i]._graph.getVertex(v).degree() > 2) target_angle[(i + 1) % segments_count] = 0;
+         if (segment[i].is_start(v)) if (segment[i]._graph.getVertex(v).degree() > 2) target_angle[i] = PI;
+         if (segment[i].is_finish(v)) if (segment[i]._graph.getVertex(v).degree() > 2) target_angle[(i + 1) % segments_count] = PI;
       }
 
 }
@@ -1183,15 +1180,13 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
    Vec2f this_point(point[move_vertex]);
    Vec2f next_point(point[(move_vertex + 1) % segments_count]);
 
-
-
-   if (abs(target_angle[move_vertex] - PI) > 0.001) {
+   if (abs(target_angle[move_vertex] - PI) > 0.1) {
       Vec2f chord(next_point - prev_point);
 
       Vec2f center(prev_point + chord/2);
       Vec2f rot_chord(chord);
       rot_chord.rotate(1, 0);
-      center += rot_chord * std::tan(target_angle[move_vertex] - PI/2) /2;
+      center += rot_chord / std::tan(PI - target_angle[move_vertex]) / 2;
 
       float radii = (prev_point - center).length();
       float dist = (this_point - center).length();
