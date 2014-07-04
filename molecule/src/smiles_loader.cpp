@@ -826,11 +826,11 @@ void SmilesLoader::_parseMolecule ()
                if (bond_str[i] == '/' || bond_str[i] == '\\')
                {
                   // Aromatic bonds can be a part of cis-trans configuration
-                  // For example in Cn1c2ccccc2c(-c2ccccc2)n/c(=N\O)c1=O
+                  // For example in Cn1c2ccccc2c(-c2ccccc2)n/c(=N\O)c1=O or O\N=c1/c(=O)c2ccccc2c(=O)/c/1=N\O
                   if (_atoms[bond->beg].aromatic && bond_str.size() == 1)
                   {
                      // Erase bond type info
-                     bond_str.pop();
+                     bond_str[i] = '?';
                      bond->type = -1; // single of aromatic
                   }
                   else
