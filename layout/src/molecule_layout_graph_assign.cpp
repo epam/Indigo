@@ -1175,12 +1175,35 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
    int segments_count = segment.size();
    Vec2f move_vector(0, 0);
 
+   // fix intersections to other components
+   float min_dist = 0.7;
+   for (int i = 0; i < segments_count; i++) if (i != move_vertex/* && (i + 1) % segments_count != move_vertex && i != (move_vertex + 1) % segments_count*/) {
+      if (segment[move_vertex]._graph.vertexCount() == 2 && segment[i]._graph.vertexCount() == 2) continue;
+      bool interseced = false;
+
+      for (int v1 = segment[move_vertex]._graph.vertexBegin(); v1 != segment[move_vertex]._graph.vertexEnd() && !interseced; v1 = segment[move_vertex]._graph.vertexNext(v1))
+      for (int v2 = segment[i]._graph.vertexBegin(); v2 != segment[i]._graph.vertexEnd() && !interseced; v2 = segment[i]._graph.vertexNext(v2)) {
+         if ((move_vertex + 1) % segments_count == i && segment[move_vertex].is_finish(v1)) continue;
+         if ((i + 1) % segments_count == move_vertex && segment[i].is_finish(v2)) continue;
+         if (Vec2f::distSqr(segment[move_vertex].getPosition(v1), segment[i].getPosition(v2)) < min_dist * min_dist) interseced = true;
+      }
+
+      if (interseced) {
+         Vec2f shift1(segment[move_vertex].getCenter());
+         Vec2f shift2(segment[i].getCenter());
+         Vec2f shift(shift1 - shift2);
+         shift.normalize();
+         shift /= 1;
+         move_vector += shift;
+      }
+   }
+
    // fix angle
    Vec2f prev_point(point[(move_vertex + segments_count - 1) % segments_count]);
    Vec2f this_point(point[move_vertex]);
    Vec2f next_point(point[(move_vertex + 1) % segments_count]);
 
-   if (abs(target_angle[move_vertex] - PI) > 0.1) {
+   if (abs(target_angle[move_vertex] - PI) > 0.01) {
       Vec2f chord(next_point - prev_point);
 
       Vec2f center(prev_point + chord/2);
@@ -1193,10 +1216,15 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
 
       move_vector += (this_point - center) * (radii - dist)/radii;
    } else {
-      Vec2f center(prev_point * segment[(move_vertex + segments_count - 1) % segments_count].getLength() +
-                   next_point * segment[move_vertex].getLength());
+      double l1 = segment[(move_vertex + segments_count - 1) % segments_count].getLength();
+      double l2 = segment[move_vertex].getLength();
+      Vec2f center(prev_point * l2 + next_point * l1);
 
-      center /= segment[(move_vertex + segments_count - 1) % segments_count].getLength() + segment[move_vertex].getLength();
+      center /= l1 + l2;
+
+      Vec2f chord(next_point - prev_point);
+      chord.rotate(1, 0);
+      center += chord * (target_angle[move_vertex] - PI) * l1 * l2 / (l1 + l2);
 
       move_vector += (center - this_point);
    }
@@ -1205,29 +1233,6 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
    // fix distance to neighborhoods
    move_vector += (this_point - next_point) * segment[move_vertex].getLengthCoef();
    move_vector += (this_point - prev_point) * segment[(move_vertex + segments_count - 1) % segments_count].getLengthCoef();
-
-   // fix intersections to other components
-   float min_dist = 0.7;
-   for (int i = 0; i < segments_count; i++) if (i != move_vertex/* && (i + 1) % segments_count != move_vertex && i != (move_vertex + 1) % segments_count*/) {
-      if (segment[move_vertex]._graph.vertexCount() == 2 && segment[i]._graph.vertexCount() == 2) continue;
-      bool interseced = false;
-
-      for (int v1 = segment[move_vertex]._graph.vertexBegin(); v1 != segment[move_vertex]._graph.vertexEnd() && !interseced; v1 = segment[move_vertex]._graph.vertexNext(v1))
-         for (int v2 = segment[i]._graph.vertexBegin(); v2 != segment[i]._graph.vertexEnd() && !interseced; v2 = segment[i]._graph.vertexNext(v2)) {
-            if ((move_vertex + 1) % segments_count == i && segment[move_vertex].is_finish(v1)) continue;
-            if ((i + 1) % segments_count == move_vertex && segment[i].is_finish(v2)) continue;
-            if (Vec2f::distSqr(segment[move_vertex].getPosition(v1), segment[i].getPosition(v2)) < min_dist * min_dist) interseced = true;
-         }
-
-      if (interseced) {
-         Vec2f shift1(segment[move_vertex].getCenter());
-         Vec2f shift2(segment[i].getCenter());
-         Vec2f shift(shift1 - shift2);
-         shift.normalize();
-         shift /= 1;
-         move_vector += shift;
-      }
-   }
 
    // apply
    point[move_vertex] += move_vector * coef;
