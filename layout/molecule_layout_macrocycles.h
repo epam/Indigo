@@ -77,7 +77,7 @@ private:
    struct Data
    {
       enum { max_size = 105 };
-      signed short minRotates[max_size][max_size][2][max_size][max_size];
+      unsigned short minRotates[max_size][max_size][2][max_size][max_size];
    };
 
    TL_CP_DECL(Data, data);

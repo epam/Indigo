@@ -89,7 +89,7 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) :
 
 void MoleculeLayoutMacrocycles::addVertexOutsideWeight (int v, int weight)
 {
-   _vertex_weight[v] += weight;
+   _vertex_weight[v] += 12*weight;
 }
 
 void MoleculeLayoutMacrocycles::setVertexEdgeParallel (int v, bool parallel) 
@@ -565,7 +565,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
 {
 
    if (length >= max_size) return 1e9;
-   signed short (&minRotates)[max_size][max_size][2][max_size][max_size] = data.minRotates;
+   unsigned short (&minRotates)[max_size][max_size][2][max_size][max_size] = data.minRotates;
    //first : number of edge
    //second : summary angle of rotation (in PI/3 times)
    //third : last rotation is contraclockwise
@@ -573,7 +573,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
    //fifth : y-coordinate
    //value : minimum number of vertexes sticked out + count of CIS-configurations
 
-   int infinity = 15000;
+   int infinity = 60000;
 
    int shift = -1;
    int max_value = -infinity;
@@ -620,7 +620,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
          for (int p = 0; p < 2; p++) 
             for (int k = x_left - 1; k <= x_right + 1; k++)
                for (int t = y_left - 1; t <= y_right + 1; t++)
-                  minRotates[i][j][p][k][t] = 2*infinity;
+                  minRotates[i][j][p][k][t] = infinity;
 
    minRotates[0][init_rot][1][init_x][init_y] = 0;
    minRotates[1][init_rot][1][init_x + 1][init_y] = 0;
@@ -640,8 +640,8 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
             int ychenge = dy[rot % 6];
             for (int p = 0; p < 2; p++) if (p != not_this_p) {
                for (int x = x_left; x <= x_right; x++) {
-                  signed short *ar1 = minRotates[k + 1][rot][p][x + xchenge] + ychenge;
-                  signed short *ar2 = minRotates[k][rot][p][x];
+                  unsigned short *ar1 = minRotates[k + 1][rot][p][x + xchenge] + ychenge;
+                  unsigned short *ar2 = minRotates[k][rot][p][x];
                   for (int y = y_left; y <= y_right; y++) {
                      if (ar1[y] > ar2[y]) {
                         ar1[y] = ar2[y];
@@ -660,12 +660,13 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                   int xchenge = dx[nextRot % 6];
                   int ychenge = dy[nextRot % 6];
 
-                  int add = 0;
-                  if (!p) add += _vertex_weight[k];
+                  int add = 1;
+                  if (!p && _vertex_weight[k] > 0) add += _vertex_weight[k];
+                  if (p && _vertex_weight[k] < 0) add -= _vertex_weight[k];
 
                   for (int x = x_left; x <= x_right; x++) {
-                     signed short *ar1 = minRotates[k + 1][nextRot][p][x + xchenge] + ychenge;
-                     signed short *ar2 = minRotates[k][rot][p][x];
+                     unsigned short *ar1 = minRotates[k + 1][nextRot][p][x + xchenge] + ychenge;
+                     unsigned short *ar2 = minRotates[k][rot][p][x];
                      for (int y = y_left; y <= y_right; y++) {
                         if (ar1[y] > ar2[y] + add) {
                            ar1[y] = ar2[y] + add;
@@ -680,14 +681,15 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                   else nextRot++;
 
                   int add = 0;
-                  if (p) add = _vertex_weight[k];
+                  if (p && _vertex_weight[k] > 0) add += _vertex_weight[k];
+                  if (!p && _vertex_weight[k] < 0) add -= _vertex_weight[k];
 
                   int xchenge = dx[nextRot % 6];
                   int ychenge = dy[nextRot % 6];
 
                   for (int x = x_left; x <= x_right; x++) {
-                     signed short *ar1 = minRotates[k + 1][nextRot][p ^ 1][x + xchenge] + ychenge;
-                     signed short *ar2 = minRotates[k][rot][p][x];
+                     unsigned short *ar1 = minRotates[k + 1][nextRot][p ^ 1][x + xchenge] + ychenge;
+                     unsigned short *ar2 = minRotates[k][rot][p][x];
                      for (int y = y_left; y <= y_right; y++) {
                         if (ar1[y] > ar2[y] + add) {
                            ar1[y] = ar2[y] + add;
@@ -871,12 +873,13 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
             int is_cis_better = (alpha < PI/3 * (rot_result[k] - init_rot) + PI/length) ^ (!p_result[k + 1]);
 
             int add = 0;
-            if (!p_result[k + 1]) add = _vertex_weight[k];
+            if (!p_result[k + 1] && _vertex_weight[k] > 0) add = _vertex_weight[k];
+            if (p_result[k + 1] && _vertex_weight[k] < 0) add = -_vertex_weight[k];
 
             if (!is_cis_better) {
                if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) {
                   // try CIS
-                  if (minRotates[k][rot_result[k]][p_result[k + 1]][x_result[k]][y_result[k]] + add == minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]) {
+                  if (minRotates[k][rot_result[k]][p_result[k + 1]][x_result[k]][y_result[k]] + add + 1== minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]) {
                      p_result[k] = p_result[k + 1];
                   }
                }
@@ -890,7 +893,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
             if (is_cis_better) {
                if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) {
                   // try CIS
-                  if (minRotates[k][rot_result[k]][p_result[k + 1]][x_result[k]][y_result[k]] + add == minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]) {
+                  if (minRotates[k][rot_result[k]][p_result[k + 1]][x_result[k]][y_result[k]] + add + 1 == minRotates[k + 1][rot_result[k + 1]][p_result[k + 1]][x_result[k + 1]][y_result[k + 1]]) {
                      p_result[k] = p_result[k + 1];
                   }
                }
@@ -966,7 +969,13 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
       //for (int i = 0; i <= ind; i++ ) printf("%5.5f %5.5f\n", p[i].x, p[i].y);
       smoothing2(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
 
-      double newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, minRotates[length][points[index].rot][points[index].p][points[index].x][points[index].y]);
+      int diff = minRotates[length][points[index].rot][points[index].p][points[index].x][points[index].y];
+      for (int i = 0; i < length - 1; i++) {
+         if (rotateAngle[i] == 1 && rotateAngle[i + 1] == 1) diff--;
+         if (rotateAngle[i] == -1 && rotateAngle[i + 1] == -1) diff--;
+      }
+
+      double newBadness = badness(ind, length, rotateAngle, edgeLenght, vertexNumber, p, diff);
 
       if (newBadness < bestBadness) {
          bestBadness = newBadness;
@@ -1116,8 +1125,10 @@ double MoleculeLayoutMacrocycles::depictionCircle() {
    }
 
    int diff = 0;
-   for (int i = 0; i < length; i++)
-      diff += _vertex_weight[i] * (!up[i] && (up[(i + 1) % length] || up[(i + length - 1) % length]));
+   for (int i = 0; i < length; i++) {
+      if ((!up[i] && (up[(i + 1) % length] || up[(i + length - 1) % length])) && _vertex_weight[i] > 0) diff += _vertex_weight[i];
+      if (!(!up[i] && (up[(i + 1) % length] || up[(i + length - 1) % length])) && _vertex_weight[i] < 0) diff -= _vertex_weight[i];
+   }
 
 //   for (int i = 0; i < length; i++)
   //    diff += (up[i] && up[(i + 1) % length]) || (!up[i] && !up[(i + 1) % length] && (up[(i - 1 + length) % length] == up[(i + 2) % length]));
