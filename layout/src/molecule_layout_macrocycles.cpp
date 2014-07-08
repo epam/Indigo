@@ -500,9 +500,9 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
    
    result += 1.0 * diff / molSize;
 
-/*   double square = 0;
+   double square = 0;
    for (int i = 1; i < ind - 1; i++)
-      square += Vec2f::dot(p[i] - p[0], p[(i + 1) % ind] - p[0]);
+      square += Vec2f::cross(p[i] - p[0], p[(i + 1) % ind] - p[0])/2;
 
    square = abs(square);
 
@@ -510,7 +510,10 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
    if (_component_finish[vertexNumber[i]] != vertexNumber[i] && rotateAngle[i] == -1)
       square += _vertex_added_square[vertexNumber[i]] * (p[_component_finish[vertexNumber[i]]] - p[i]).lengthSqr();
 
-   result -= square / molSize / molSize;*/
+   double perimeter = 0;
+   for (int i = 0; i < ind; i++) perimeter += (p[(i + 1) % ind] - p[i]).length();
+
+   result += (perimeter * perimeter / 4 / PI / square - 1) / 5;
 
    //printf("%5.5f\n", result);
    return result + 1000.0 * add;

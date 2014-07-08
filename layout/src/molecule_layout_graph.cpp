@@ -703,7 +703,7 @@ double MoleculeLayoutSmoothingSegment::get_square() {
 
 void MoleculeLayoutSmoothingSegment::calculate_square() {
    if (_graph.vertexCount() > 2)
-      _square = _graph._get_square() / (_length * _length);
+      _square = _graph._get_square();
    else _square = 0;
 }
 
