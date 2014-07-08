@@ -140,6 +140,14 @@ CEXPORT int bingoSetConfigInt (const char *name, int value)
          self.bingo_context->nthreads = value;
       else if (strcasecmp(name, "timeout") == 0)
          self.bingo_context->timeout = value;
+      else if (strcasecmp(name, "ignore_cistrans_errors") == 0)
+         self.bingo_context->ignore_cistrans_errors = (value != 0);
+      else if (strcasecmp(name, "ignore_stereocenter_errors") == 0)
+         self.bingo_context->ignore_stereocenter_errors = (value != 0);
+      else if (strcasecmp(name, "allow_non_unique_dearomatization") == 0)
+         self.bingo_context->allow_non_unique_dearomatization = (value != 0);
+      else if (strcasecmp(name, "zero_unknown_aromatic_hydrogens") == 0)
+         self.bingo_context->zero_unknown_aromatic_hydrogens = (value != 0);
       else
       {
          bool set = true;
@@ -193,6 +201,14 @@ CEXPORT int bingoGetConfigInt (const char *name, int *value)
          *value = self.bingo_context->nthreads;
       else if (strcasecmp(name, "timeout") == 0)
          *value = self.bingo_context->timeout;
+      else if (strcasecmp(name, "ignore_cistrans_errors") == 0)
+         *value = (int)self.bingo_context->ignore_cistrans_errors;
+      else if (strcasecmp(name, "ignore_stereocenter_errors") == 0)
+         *value = (int)self.bingo_context->ignore_stereocenter_errors;
+      else if (strcasecmp(name, "allow_non_unique_dearomatization") == 0)
+         *value = (int)self.bingo_context->allow_non_unique_dearomatization;
+      else if (strcasecmp(name, "zero_unknown_aromatic_hydrogens") == 0)
+         *value = (int)self.bingo_context->zero_unknown_aromatic_hydrogens;
       else
          throw BingoError("unknown parameter name: %s", name);
    }
