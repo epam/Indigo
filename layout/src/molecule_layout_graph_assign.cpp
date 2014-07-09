@@ -567,7 +567,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
             }
          }
 
-         if ((y1 + y2)/2 > 0) {
+         if ((y1 + y2) / 2 > EPSILON || ((abs((y1 + y2) / 2) <= EPSILON) && (y1 + y2) / 2 > segment[i].getIntCenter().y)) {
             layout.addVertexOutsideWeight(rotation_vertex[i], -_segment_weight_outside[i]);
             layout.addVertexOutsideWeight(rotation_vertex[(i + 1) % segment_count], -_segment_weight_outside[i]);
          }
