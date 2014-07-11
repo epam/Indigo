@@ -398,7 +398,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 
             Cycle border;
             calc_segment._graph._getBorder(border);
-            int calc_vertex_in_border;
+            int calc_vertex_in_border = -1;
             for (int j = 0; j < border.vertexCount(); j++){
                if (border.getVertex(j) == calc_vertex) {
                   calc_vertex_in_border = j;
@@ -409,7 +409,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
             double angle = 0;
             int prev_vertex = -1;
             int next_vertex = -1;
-            if (border.vertexCount() != 0) {
+            if (border.vertexCount() != 0 && calc_vertex_in_border >= 0) {
                prev_vertex = border.getVertexC(calc_vertex_in_border - 1);
                next_vertex = border.getVertexC(calc_vertex_in_border + 1);
             }
@@ -557,17 +557,54 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
          layout.set_component_finish(rotation_vertex[i], rotation_vertex[(i + 1) % segment_count]);
          layout.set_vertex_added_square(rotation_vertex[i], segment[i].get_square());
 
-         double y1 = 0, y2 = 0;
-         for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
-            if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[i] + 1) % size) {
-               y1 = segment[i].getIntPosition(v).y;
+         Cycle border;
+         if (segment[i]._graph.vertexCount() != 2) segment[i]._graph._getBorder(border);
+
+         int count_neibourhoods_outside = 0;
+
+         if (segment[i]._graph.vertexCount() != 2 && border.vertexCount() != 0) {
+            int start_in_border = -1;
+            int finish_in_border = -1;
+            for (int j = 0; j < border.vertexCount(); j++) {
+               if (border.getVertex(j) == segment[i].get_start()) start_in_border = j;
+               if (border.getVertex(j) == segment[i].get_finish()) finish_in_border = j;
             }
-            if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[(i + 1) % segment_count] + size - 1) % size) {
-               y2 = segment[i].getIntPosition(v).y;
+
+            if (start_in_border >= 0 && finish_in_border >= 0) {
+               for (int j = (start_in_border + 1) % border.vertexCount(); j != finish_in_border; j = (j + 1) % border.vertexCount()) {
+                  if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(border.getVertex(j))] == (rotation_vertex[i] + 1) % size) count_neibourhoods_outside++;
+                  if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(border.getVertex(j))] == (rotation_vertex[(i + 1) % segment_count] - 1 + size) % size) count_neibourhoods_outside++;
+               }
+
+               for (int j = (finish_in_border + 1) % border.vertexCount(); j != start_in_border; j = (j + 1) % border.vertexCount()) {
+                  if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(border.getVertex(j))] == (rotation_vertex[i] + 1) % size) count_neibourhoods_outside--;
+                  if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(border.getVertex(j))] == (rotation_vertex[(i + 1) % segment_count] - 1 + size) % size) count_neibourhoods_outside--;
+               }
             }
          }
+         bool right_orientation;
 
-         if ((y1 + y2) / 2 > EPSILON || ((abs((y1 + y2) / 2) <= EPSILON) && (y1 + y2) / 2 > segment[i].getIntCenter().y)) {
+         if (count_neibourhoods_outside > 0) right_orientation = true;
+         else if (count_neibourhoods_outside < 0) right_orientation = false;
+         else {
+            double y1 = 0, y2 = 0;
+            for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
+               if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[i] + 1) % size) {
+                  y1 = segment[i].getIntPosition(v).y;
+               }
+               if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[(i + 1) % segment_count] + size - 1) % size) {
+                  y2 = segment[i].getIntPosition(v).y;
+               }
+            }
+
+            if ((y1 + y2) / 2 > EPSILON || ((abs((y1 + y2) / 2) <= EPSILON) && (y1 + y2) / 2 > segment[i].getIntCenter().y)) {
+               right_orientation = true;
+            }
+            else {
+               right_orientation = false;
+            }
+         }
+         if (right_orientation) {
             layout.addVertexOutsideWeight(rotation_vertex[i], -_segment_weight_outside[i]);
             layout.addVertexOutsideWeight(rotation_vertex[(i + 1) % segment_count], -_segment_weight_outside[i]);
          }
