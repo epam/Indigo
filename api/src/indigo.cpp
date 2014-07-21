@@ -41,7 +41,7 @@ void Indigo::init ()
    error_handler_context = 0;
    _next_id = 1001;
 
-   ignore_stereochemistry_errors = false;
+   stereochemistry_options.reset();
    ignore_noncritical_query_features = false;
    treat_x_as_pseudoatom = false;
    skip_3d_chirality = false;

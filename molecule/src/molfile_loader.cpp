@@ -51,7 +51,6 @@ TL_CP_GET(_sgroup_mapping)
    reaction_atom_exact_change = 0;
    reaction_bond_reacting_center = 0;
    _rgfile = false;
-   ignore_stereocenter_errors = false;
    treat_x_as_pseudoatom = false;
    skip_3d_chirality = false;
    ignore_noncritical_query_features = false;
@@ -1787,8 +1786,8 @@ void MolfileLoader::_postLoad ()
          }
       }
 
-   _bmol->stereocenters.buildFromBonds(ignore_stereocenter_errors, _sensible_bond_directions.ptr());
-   _bmol->allene_stereo.buildFromBonds(ignore_stereocenter_errors, _sensible_bond_directions.ptr());
+   _bmol->stereocenters.buildFromBonds(stereochemistry_options, _sensible_bond_directions.ptr());
+   _bmol->allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
 
    if (!_chiral)
       for (i = 0; i < _atoms_num; i++)
@@ -1804,7 +1803,7 @@ void MolfileLoader::_postLoad ()
       {
          if (_bmol->stereocenters.getType(i) == 0)
          {
-            if (!ignore_stereocenter_errors)
+            if (!stereochemistry_options.ignore_errors)
                throw Error("stereo type specified for atom #%d, but the bond "
                     "directions does not say that it is a stereocenter", i);
          }
@@ -1812,7 +1811,7 @@ void MolfileLoader::_postLoad ()
             _bmol->stereocenters.setType(i, _stereocenter_types[i], _stereocenter_groups[i]);
       }
 
-   if (!ignore_stereocenter_errors)
+   if (!stereochemistry_options.ignore_errors)
       for (i = 0; i < _bonds_num; i++)
          if (_bmol->getBondDirection(i) > 0 && !_sensible_bond_directions[i])
             throw Error("direction of bond #%d makes no sense", i);

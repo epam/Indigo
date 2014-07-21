@@ -29,7 +29,7 @@ void ReactionAutoLoader::_init ()
 {
    treat_x_as_pseudoatom = false;
    ignore_closing_bond_direction_mismatch = false;
-   ignore_stereocenter_errors = false;
+   stereochemistry_options.reset();
    ignore_noncritical_query_features = false;
    ignore_cistrans_errors = false;
 }
@@ -92,7 +92,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          gzscanner.readAll(buf);
          ReactionAutoLoader loader2(buf);
 
-         loader2.ignore_stereocenter_errors = ignore_stereocenter_errors;
+         loader2.stereochemistry_options = stereochemistry_options;
          loader2.ignore_noncritical_query_features = ignore_noncritical_query_features;
          loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          if (query)
@@ -111,7 +111,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          BufferScanner scanner2(buf);
          RxnfileLoader loader(scanner2);
          loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-         loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+         loader.stereochemistry_options = stereochemistry_options;
          loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
          if (query)
             loader.loadQueryReaction((QueryReaction &)reaction);
@@ -150,7 +150,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          if (_scanner->findWord("<reaction"))
          {
             ReactionCmlLoader loader(*_scanner);
-            loader.ignore_stereochemistry_errors = ignore_stereocenter_errors;
+            loader.stereochemistry_options = stereochemistry_options;
             if (query)
                throw Error("CML queries not supported");
             loader.loadReaction((Reaction &)reaction);
@@ -169,7 +169,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
       loader.ignore_closing_bond_direction_mismatch =
              ignore_closing_bond_direction_mismatch;
       loader.ignore_cistrans_errors = ignore_cistrans_errors;
-      loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+      loader.stereochemistry_options = stereochemistry_options;
       if (query)
          loader.loadQueryReaction((QueryReaction &)reaction);
       else
@@ -181,7 +181,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
    {
       RxnfileLoader loader(*_scanner);
       loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-      loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+      loader.stereochemistry_options = stereochemistry_options;
       loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
       if (query)
          loader.loadQueryReaction((QueryReaction &)reaction);

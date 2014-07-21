@@ -18,6 +18,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/red_black.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -43,7 +44,7 @@ public:
    void loadMolecule (Molecule &mol);
    void loadQueryMolecule (QueryMolecule &qmol);
 
-   bool ignore_stereocenter_errors;
+   StereocentersOptions stereochemistry_options;
    bool ignore_cistrans_errors;
    bool ignore_closing_bond_direction_mismatch;
    bool ignore_noncritical_query_features;

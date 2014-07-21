@@ -18,7 +18,7 @@
 static void indigoIgnoreStereochemistryErrors (int enabled)
 {
    Indigo &self = indigoGetInstance();
-   self.ignore_stereochemistry_errors = (enabled != 0);
+   self.stereochemistry_options.ignore_errors = (enabled != 0);
 }
 
 static void indigoIgnoreNoncricicalQueryFeatures (int enabled)
@@ -204,6 +204,12 @@ static void indigoSetDearomatizeUnique (int enabled)
    self.unique_dearomatization = (enabled != 0);
 }
 
+static void indigoSetBidirectionalMode (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.stereochemistry_options.bidirectional_mode = (enabled != 0);
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -240,6 +246,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerString("aromaticity-model", indigoSetAromaticityModel);
    mgr.setOptionHandlerBool("dearomatize-verification", indigoSetDearomatizeVerification);
    mgr.setOptionHandlerBool("unique-dearomatization", indigoSetDearomatizeUnique);
+   mgr.setOptionHandlerBool("stereochemistry-bidirectional-mode", indigoSetBidirectionalMode);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

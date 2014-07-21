@@ -323,7 +323,7 @@ CEXPORT int indigoLoadReaction (int source)
 
       ReactionAutoLoader loader(scanner);
 
-      loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
+      loader.stereochemistry_options = self.stereochemistry_options;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
       loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
 
@@ -343,7 +343,7 @@ CEXPORT int indigoLoadQueryReaction (int source)
 
       ReactionAutoLoader loader(scanner);
 
-      loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
+      loader.stereochemistry_options = self.stereochemistry_options;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
 
       AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());

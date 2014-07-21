@@ -20,6 +20,7 @@
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
 #include "molecule/query_molecule.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 namespace indigo {
 
@@ -52,7 +53,7 @@ public:
    Array<int> * reaction_atom_exact_change;
    Array<int> * reaction_bond_reacting_center;
 
-   bool ignore_stereocenter_errors;
+   StereocentersOptions stereochemistry_options;
    bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
    bool skip_3d_chirality; // do not compute chirality from 3D coordinates
 

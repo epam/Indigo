@@ -16,6 +16,7 @@
 #define __reaction_auto_loader__
 
 #include "base_cpp/array.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 namespace indigo {
 
@@ -38,7 +39,7 @@ public:
 
    bool treat_x_as_pseudoatom;
    bool ignore_closing_bond_direction_mismatch;
-   bool ignore_stereocenter_errors;
+   StereocentersOptions stereochemistry_options;
    bool ignore_cistrans_errors;
    bool ignore_noncritical_query_features;
 

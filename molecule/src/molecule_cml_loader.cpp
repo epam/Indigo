@@ -32,14 +32,12 @@ MoleculeCmlLoader::MoleculeCmlLoader (Scanner &scanner)
 {
    _scanner = &scanner;
    _handle = 0;
-   ignore_stereochemistry_errors = false;
 }
 
 MoleculeCmlLoader::MoleculeCmlLoader (TiXmlHandle &handle)
 {
    _handle = &handle;
    _scanner = 0;
-   ignore_stereochemistry_errors = false;
 }
 
 void MoleculeCmlLoader::loadMolecule (Molecule &mol)
@@ -448,9 +446,9 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       QS_DEF(Array<int>, sensible_bond_orientations);
 
       sensible_bond_orientations.clear_resize(mol.vertexEnd());
-      mol.stereocenters.buildFromBonds(ignore_stereochemistry_errors, sensible_bond_orientations.ptr());
+      mol.stereocenters.buildFromBonds(stereochemistry_options, sensible_bond_orientations.ptr());
 
-      if (!ignore_stereochemistry_errors)
+      if (!stereochemistry_options.ignore_errors)
          for (i = 0; i < mol.vertexCount(); i++)
             if (mol.getBondDirection(i) > 0 && !sensible_bond_orientations[i])
                throw Error("direction of bond #%d makes no sense", i);

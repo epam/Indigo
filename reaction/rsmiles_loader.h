@@ -16,6 +16,7 @@
 #define __rsmiles_loader__
 
 #include "base_cpp/exception.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 namespace indigo {
 
@@ -38,7 +39,7 @@ public:
    bool ignore_closing_bond_direction_mismatch;
    bool smarts_mode;
    bool ignore_cistrans_errors;
-   bool ignore_stereocenter_errors;
+   StereocentersOptions stereochemistry_options;
    
 protected:
    struct _Atom

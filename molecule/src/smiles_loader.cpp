@@ -44,7 +44,6 @@ TL_CP_GET(_polymer_repetitions)
    ignorable_aam = 0;
    inside_rsmiles = false;
    ignore_closing_bond_direction_mismatch = false;
-   ignore_stereochemistry_errors = false;
    ignore_cistrans_errors = false;
    _mol = 0;
    _qmol = 0;
@@ -97,7 +96,7 @@ void SmilesLoader::_calcStereocenters ()
 
          if (!MoleculeAlleneStereo::possibleCenter(*_bmol, i, left, right, subst, pure_h))
          {
-            if (!ignore_stereochemistry_errors)
+            if (!stereochemistry_options.ignore_errors)
                throw Error("chirality on atom %d makes no sense", i);
             continue;
          }
@@ -171,7 +170,7 @@ void SmilesLoader::_calcStereocenters ()
 
             if (counter >= 4)
             {
-               if (!ignore_stereochemistry_errors)
+               if (!stereochemistry_options.ignore_errors)
                   throw Error("too many bonds for chiral atom %d", i);
                break;
             }
@@ -185,7 +184,7 @@ void SmilesLoader::_calcStereocenters ()
 
          if (counter < 3)
          {
-            if (!ignore_stereochemistry_errors)
+            if (!stereochemistry_options.ignore_errors)
                throw Error("only %d bonds for chiral atom %d", counter, i);
             continue;
          }
@@ -208,7 +207,7 @@ void SmilesLoader::_calcStereocenters ()
          {
             if (counter != 4)
             {
-               if (!ignore_stereochemistry_errors)
+               if (!stereochemistry_options.ignore_errors)
                   throw Error("implicit hydrogen not allowed with %d neighbor atoms", counter - 1);
                continue;
             }
@@ -230,7 +229,7 @@ void SmilesLoader::_calcStereocenters ()
 
          if (!stereocenters.isPossibleStereocenter(i))
          {
-            if (!ignore_stereochemistry_errors)
+            if (!stereochemistry_options.ignore_errors)
                throw Error("chirality not possible on atom #%d", i);
             continue;
          }
@@ -318,7 +317,7 @@ void SmilesLoader::_readOtherStuff ()
                {
                   if (!stereocenters.isPossibleStereocenter(idx))
                   {
-                     if (!ignore_stereochemistry_errors)
+                     if (!stereochemistry_options.ignore_errors)
                         throw Error("chirality not possible on atom #%d", idx);
                   }
                   else
@@ -352,7 +351,7 @@ void SmilesLoader::_readOtherStuff ()
 
             if (stereocenters.exists(idx))
                stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
-            else if (!ignore_stereochemistry_errors)
+            else if (!stereochemistry_options.ignore_errors)
                throw Error("atom %d is not a stereocenter", idx);
 
             if (_scanner.lookNext() == ',')
@@ -372,7 +371,7 @@ void SmilesLoader::_readOtherStuff ()
 
             if (stereocenters.exists(idx))
                stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
-            else if (!ignore_stereochemistry_errors)
+            else if (!stereochemistry_options.ignore_errors)
                throw Error("atom %d is not a stereocenter", idx);
 
             if (_scanner.lookNext() == ',')
@@ -392,7 +391,7 @@ void SmilesLoader::_readOtherStuff ()
 
             if (stereocenters.exists(idx))
                stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
-            else if (!ignore_stereochemistry_errors)
+            else if (!stereochemistry_options.ignore_errors)
                throw Error("atom %d is not a stereocenter", idx);
 
             if (_scanner.lookNext() == ',')

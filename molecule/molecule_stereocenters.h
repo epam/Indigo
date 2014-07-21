@@ -27,6 +27,7 @@ namespace indigo {
 
 class BaseMolecule;
 class Filter;
+class StereocentersOptions;
 
 class DLLEXPORT MoleculeStereocenters
 {
@@ -44,9 +45,9 @@ public:
 
    void clear ();
 
-   void buildFromBonds (bool ignore_errors, int *sensible_bonds_out);
+   void buildFromBonds (const StereocentersOptions &options, int *sensible_bonds_out);
 
-   void buildFrom3dCoordinates ( void );
+   void buildFrom3dCoordinates (void);
 
    void markBonds ();
    void markBond  (int atom_idx);
@@ -155,7 +156,8 @@ protected:
    static int _xyzzy (const Vec3f &v1, const Vec3f &v2, const Vec3f &u);
    static int _onPlane (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3, const Vec3f &v4);
 
-   void _buildOneCenter (int atom_idx, int *sensible_bonds_out);
+   bool _buildOneCenter (int atom_idx, int *sensible_bonds_out, 
+      bool bidirectional_mode, bool bidirectional_either_mode);
 
    void _getGroups (int type, Array<int> &numbers);
    void _getGroup  (int type, int number, Array<int> &indices);
@@ -166,6 +168,8 @@ protected:
    static void _convertAtomToImplicitHydrogen (int pyramid[4], int atom_to_remove);
 
    void _removeBondDir (int atom_from, int atom_to);
+
+   int _getDirection (BaseMolecule &mol, int atom_from, int atom_to, bool bidirectional_mode);
 
    BaseMolecule & _getMolecule() const;
 

@@ -1283,7 +1283,7 @@ bool RSubstructureMcs::searchSubstructure(Array<int>* map) {
    if (_context.cancellation) {
       try {
          result = SubstructureMcs::searchSubstructure(map);
-      } catch (Exception& e) {
+      } catch (Exception&) {
          result = false;
       }
    } else {
@@ -1672,7 +1672,7 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
    if (_context.cancellation) {
       try {
          proc = emb_enum.process();
-      } catch (Exception& e) {
+      } catch (Exception&) {
          proc = 1;
       }
    } else {

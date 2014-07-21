@@ -16,6 +16,7 @@
 #define __molecule_cml_loader__
 
 #include "base_cpp/exception.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 class TiXmlHandle;
 
@@ -36,7 +37,7 @@ public:
 
    void loadMolecule (Molecule &mol);
 
-   bool ignore_stereochemistry_errors;
+   StereocentersOptions stereochemistry_options;
 
 protected:
    Scanner *_scanner;

@@ -16,6 +16,7 @@
 #define __rxnfile_loader__
 
 #include "base_cpp/exception.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 namespace indigo {
 
@@ -35,7 +36,7 @@ public:
 
 
    bool treat_x_as_pseudoatom;
-   bool ignore_stereocenter_errors;
+   StereocentersOptions stereochemistry_options;
    bool ignore_noncritical_query_features;
    
    DECL_ERROR;
