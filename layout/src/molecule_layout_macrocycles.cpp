@@ -89,7 +89,7 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) :
 
 void MoleculeLayoutMacrocycles::addVertexOutsideWeight (int v, int weight)
 {
-   _vertex_weight[v] += 12*weight;
+   _vertex_weight[v] += WEIGHT_FACTOR * weight;
 }
 
 void MoleculeLayoutMacrocycles::setVertexEdgeParallel (int v, bool parallel) 
@@ -661,8 +661,10 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                   int ychenge = dy[nextRot % 6];
 
                   int add = 1;
-                  if (!p && _vertex_weight[k] > 0) add += _vertex_weight[k];
-                  if (p && _vertex_weight[k] < 0) add -= _vertex_weight[k];
+                  if (abs(_vertex_weight[k]) > WEIGHT_FACTOR) {
+                     if (!p && _vertex_weight[k] > 0) add += _vertex_weight[k];
+                     if (p && _vertex_weight[k] < 0) add -= _vertex_weight[k];
+                  }
 
                   for (int x = x_left; x <= x_right; x++) {
                      unsigned short *ar1 = minRotates[k + 1][nextRot][p][x + xchenge] + ychenge;
@@ -681,8 +683,10 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                   else nextRot++;
 
                   int add = 0;
-                  if (p && _vertex_weight[k] > 0) add += _vertex_weight[k];
-                  if (!p && _vertex_weight[k] < 0) add -= _vertex_weight[k];
+                  if (abs(_vertex_weight[k]) > WEIGHT_FACTOR) {
+                     if (p && _vertex_weight[k] > 0) add += _vertex_weight[k];
+                     if (!p && _vertex_weight[k] < 0) add -= _vertex_weight[k];
+                  }
 
                   int xchenge = dx[nextRot % 6];
                   int ychenge = dy[nextRot % 6];
@@ -873,8 +877,10 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
             int is_cis_better = (alpha < PI/3 * (rot_result[k] - init_rot) + PI/length) ^ (!p_result[k + 1]);
 
             int add = 0;
-            if (!p_result[k + 1] && _vertex_weight[k] > 0) add = _vertex_weight[k];
-            if (p_result[k + 1] && _vertex_weight[k] < 0) add = -_vertex_weight[k];
+            if (abs(_vertex_weight[k]) > WEIGHT_FACTOR) {
+               if (!p_result[k + 1] && _vertex_weight[k] > 0) add = _vertex_weight[k];
+               if (p_result[k + 1] && _vertex_weight[k] < 0) add = -_vertex_weight[k];
+            }
 
             if (!is_cis_better) {
                if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) {

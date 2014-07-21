@@ -69,6 +69,7 @@ private:
    static const int init_y;
    static const int init_rot;
    static const double CHANGE_FACTOR;
+   static const int WEIGHT_FACTOR = 12;
 
 
    int get_diff_grid(int x, int y, int rot, int value);
