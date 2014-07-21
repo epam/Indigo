@@ -513,7 +513,7 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
    double perimeter = 0;
    for (int i = 0; i < ind; i++) perimeter += (p[(i + 1) % ind] - p[i]).length();
 
-//   result += (perimeter * perimeter / 4 / PI / square - 1) / 5;
+   result += (perimeter * perimeter / 4 / PI / square - 1) / 5;
 
    //printf("%5.5f\n", result);
    return result + 1000.0 * add;
