@@ -58,7 +58,7 @@ root = os.path.normpath(join(cur_dir, ".."))
 project_dir = join(cur_dir, "bingo-%s" % args.dbms)
 
 if args.dbms != 'sqlserver':    
-    build_dir = (args.generator + " " + args.config + args.params.replace('-D', ''))
+    build_dir = (args.dbms + " " + args.generator + " " + args.config + args.params.replace('-D', ''))
     build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
     full_build_dir = os.path.join(root, "build", build_dir)
     if os.path.exists(full_build_dir) and args.clean:
