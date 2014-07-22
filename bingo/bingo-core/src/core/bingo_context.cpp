@@ -31,12 +31,13 @@ BingoContext::BingoContext (int id_)
 {
    id = id_;
    reset();
-   treat_x_as_pseudoatom.setName("treat_x_as_pseudoatom");
-   ignore_closing_bond_direction_mismatch.setName("ignore_closing_bond_direction_mismatch");
-   ignore_stereocenter_errors.setName("ignore_stereocenter_errors");
-   ignore_cistrans_errors.setName("ignore_cistrans_errors");
-   allow_non_unique_dearomatization.setName("allow_non_unique_dearomatization");
-   zero_unknown_aromatic_hydrogens.setName("zero_unknown_aromatic_hydrogens");
+   treat_x_as_pseudoatom.setName("treat-x-as-pseudoatom");
+   ignore_closing_bond_direction_mismatch.setName("ignore-closing-bond-direction-mismatch");
+   ignore_stereocenter_errors.setName("ignore-stereocenter-errors");
+   stereochemistry_bidirectional_mode.setName("stereochemistry-bidirectional-mode");
+   ignore_cistrans_errors.setName("ignore-cistrans-errors");
+   allow_non_unique_dearomatization.setName("allow-non-unique-dearomatization");
+   zero_unknown_aromatic_hydrogens.setName("zero-unknown-aromatic-hydrogens");
 }
 
 void BingoContext::reset ()
@@ -53,6 +54,7 @@ void BingoContext::reset ()
    treat_x_as_pseudoatom.reset();
    ignore_closing_bond_direction_mismatch.reset();
    ignore_stereocenter_errors.reset();
+   stereochemistry_bidirectional_mode.reset();
    ignore_cistrans_errors.reset();
    allow_non_unique_dearomatization.reset();
    zero_unknown_aromatic_hydrogens.reset();
@@ -197,7 +199,8 @@ void BingoContext::setLoaderSettings (MoleculeAutoLoader &loader)
 {
    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
-   loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+   loader.stereochemistry_options.ignore_errors = ignore_stereocenter_errors;
+   loader.stereochemistry_options.bidirectional_mode = stereochemistry_bidirectional_mode;
    loader.ignore_cistrans_errors = ignore_cistrans_errors;
 }
 
@@ -205,6 +208,7 @@ void BingoContext::setLoaderSettings (ReactionAutoLoader &loader)
 {
    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
-   loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+   loader.stereochemistry_options.ignore_errors = ignore_stereocenter_errors;
+   loader.stereochemistry_options.bidirectional_mode = stereochemistry_bidirectional_mode;
    loader.ignore_cistrans_errors = ignore_cistrans_errors;
 }

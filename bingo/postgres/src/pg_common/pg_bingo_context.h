@@ -46,6 +46,12 @@ typedef struct BingoAutoVacOpts {
 typedef struct BingoIndexOptions {
    int treat_x_as_pseudoatom;
    int ignore_closing_bond_direction_mismatch;
+   int ignore_stereocenter_errors;
+   int stereochemistry_bidirectional_mode;
+   int ignore_cistrans_errors;
+   int allow_non_unique_dearomatization;
+   int zero_unknown_aromatic_hydrogens;
+
    int fp_ord_size;
    int fp_any_size;
    int fp_tau_size;

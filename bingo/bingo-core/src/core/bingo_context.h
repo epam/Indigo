@@ -60,6 +60,7 @@ public:
    Nullable<bool> treat_x_as_pseudoatom;
    Nullable<bool> ignore_closing_bond_direction_mismatch;
    Nullable<bool> ignore_stereocenter_errors;
+   Nullable<bool> stereochemistry_bidirectional_mode;
    Nullable<bool> ignore_cistrans_errors;
    Nullable<bool> allow_non_unique_dearomatization;
    Nullable<bool> zero_unknown_aromatic_hydrogens;

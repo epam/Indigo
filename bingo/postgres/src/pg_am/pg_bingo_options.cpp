@@ -129,7 +129,42 @@ static relopt_int intRelOpts[] =
 			RELOPT_KIND_BINGO
 		}, -1, 0, 1
 	},
-	{
+   {
+      {
+         "ignore_stereocenter_errors",
+         "",
+         RELOPT_KIND_BINGO
+      }, -1, 0, 1
+   },
+   {
+      {
+         "stereochemistry_bidirectional_mode",
+         "",
+         RELOPT_KIND_BINGO
+      }, -1, 0, 1
+   },
+   {
+      {
+         "ignore_cistrans_errors",
+         "",
+         RELOPT_KIND_BINGO
+      }, -1, 0, 1
+   },
+   {
+      {
+         "allow_non_unique_dearomatization",
+         "",
+         RELOPT_KIND_BINGO
+      }, -1, 0, 1
+   },
+   {
+      {
+         "zero_unknown_aromatic_hydrogens",
+         "",
+         RELOPT_KIND_BINGO
+      }, -1, 0, 1
+   },
+   {
 		{
 			"fp_ord_size",
 			"",
@@ -518,6 +553,16 @@ bingo_reloptions(Datum reloptions, bool validate) {
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, treat_x_as_pseudoatom)},
       {"ignore_closing_bond_direction_mismatch", RELOPT_TYPE_INT,
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, ignore_closing_bond_direction_mismatch)},
+      {"ignore_stereocenter_errors", RELOPT_TYPE_INT,
+              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, ignore_stereocenter_errors)},
+      {"stereochemistry_bidirectional_mode", RELOPT_TYPE_INT,
+              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, stereochemistry_bidirectional_mode)},
+      {"ignore_cistrans_errors", RELOPT_TYPE_INT,
+              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, ignore_cistrans_errors)},
+      {"allow_non_unique_dearomatization", RELOPT_TYPE_INT,
+              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, allow_non_unique_dearomatization)},
+      {"zero_unknown_aromatic_hydrogens", RELOPT_TYPE_INT,
+              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, zero_unknown_aromatic_hydrogens)},
       {"fp_ord_size", RELOPT_TYPE_INT,
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, fp_ord_size)},
       {"fp_any_size", RELOPT_TYPE_INT,

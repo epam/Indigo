@@ -70,7 +70,27 @@ void BingoPgConfig::updateByIndexConfig(PG_OBJECT index_ptr) {
       name_key = _rawConfig.findOrInsert("ignore_closing_bond_direction_mismatch");
       _toString(options.ignore_closing_bond_direction_mismatch, _rawConfig.value(name_key));
    }
-   if(options.fp_any_size >= 0) {
+   if (options.ignore_stereocenter_errors >= 0) {
+      name_key = _rawConfig.findOrInsert("ignore_stereocenter_errors");
+      _toString(options.ignore_stereocenter_errors, _rawConfig.value(name_key));
+   }
+   if (options.stereochemistry_bidirectional_mode >= 0) {
+      name_key = _rawConfig.findOrInsert("stereochemistry_bidirectional_mode");
+      _toString(options.stereochemistry_bidirectional_mode, _rawConfig.value(name_key));
+   }
+   if (options.ignore_cistrans_errors >= 0) {
+      name_key = _rawConfig.findOrInsert("ignore_cistrans_errors");
+      _toString(options.ignore_cistrans_errors, _rawConfig.value(name_key));
+   }
+   if (options.allow_non_unique_dearomatization >= 0) {
+      name_key = _rawConfig.findOrInsert("allow_non_unique_dearomatization");
+      _toString(options.allow_non_unique_dearomatization, _rawConfig.value(name_key));
+   }
+   if (options.zero_unknown_aromatic_hydrogens >= 0) {
+      name_key = _rawConfig.findOrInsert("zero_unknown_aromatic_hydrogens");
+      _toString(options.zero_unknown_aromatic_hydrogens, _rawConfig.value(name_key));
+   }
+   if (options.fp_any_size >= 0) {
       name_key = _rawConfig.findOrInsert("fp_any_size");
       _toString(options.fp_any_size, _rawConfig.value(name_key));
    }

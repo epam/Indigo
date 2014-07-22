@@ -47,6 +47,7 @@ insert into CONFIG_INT values(0, 'IGNORE_STEREOCENTER_ERRORS', 0);
 insert into CONFIG_INT values(0, 'IGNORE_CISTRANS_ERRORS', 0);
 insert into CONFIG_INT values(0, 'ALLOW_NON_UNIQUE_DEAROMATIZATION', 0);
 insert into CONFIG_INT values(0, 'ZERO_UNKNOWN_AROMATIC_HYDROGENS', 0);
+insert into CONFIG_INT values(0, 'STEREOCHEMISTRY_BIDIRECTIONAL_MODE', 0);
 
 create or replace procedure SetRelativeAtomicMass (list in VARCHAR2) is
 begin

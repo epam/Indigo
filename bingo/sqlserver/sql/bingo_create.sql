@@ -52,6 +52,11 @@ create index CONFIG_N on [$(bingo)].CONFIG(n);
 insert into [$(bingo)].CONFIG values(0, 'treat-x-as-pseudoatom', '0');
 insert into [$(bingo)].CONFIG values(0, 'ignore-closing-bond-direction-mismatch', '0');
 insert into [$(bingo)].CONFIG values(0, 'nthreads', '-1');
+insert into [$(bingo)].CONFIG values(0, 'ignore-stereocenter-errors', 0);
+insert into [$(bingo)].CONFIG values(0, 'ignore-cistrans-errors', 0);
+insert into [$(bingo)].CONFIG values(0, 'allow-non-unique-dearomatization', 0);
+insert into [$(bingo)].CONFIG values(0, 'zero-unknown-aromatic-hydrogens', 0);
+insert into [$(bingo)].CONFIG values(0, 'stereochemistry-bidirectional-mode', 0);
 go
 
 insert into [$(bingo)].CONFIG values(0, 'FP_ORD_SIZE', '25');
