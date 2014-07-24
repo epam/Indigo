@@ -7,6 +7,26 @@ from os.path import *
 from optparse import OptionParser
 from zipfile import ZipFile
 
+
+def shortenDBMS(dbms):
+    if dbms == 'postgres':
+        return 'pg'
+    elif dbms == 'sqlserver':
+        return 'mssql'
+    elif dbms == 'oracle':
+        return 'ora'
+
+
+def shortenGenerator(generator):
+    result = generator
+    if generator.startswith('Visual Studio '):
+        result = generator.replace('Visual Studio ', 'VS')
+    elif generator.startswith('Unix MakeFiles'):
+        result = generator.replace('Unix Makefiles', 'umake')
+    elif generator.startswith('Unix MakeFiles'):
+        result = generator.replace('MinGW Makefiles', 'mmake')
+    return result.replace(' ', '')
+
 presets = {
     "win32" : ("Visual Studio 10", ""),
     "win64" : ("Visual Studio 10 Win64", ""),
@@ -58,7 +78,7 @@ root = os.path.normpath(join(cur_dir, ".."))
 project_dir = join(cur_dir, "bingo-%s" % args.dbms)
 
 if args.dbms != 'sqlserver':    
-    build_dir = (args.dbms + " " + args.generator + " " + args.config + args.params.replace('-D', ''))
+    build_dir = (shortenDBMS(args.dbms) + " " + shortenGenerator(args.generator) + " " + args.config + args.params.replace('-D', ''))
     build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
     full_build_dir = os.path.join(root, "build", build_dir)
     if os.path.exists(full_build_dir) and args.clean:
@@ -128,7 +148,7 @@ else:
         vsversion += ' 10'
 
     for arch, generator in (('x86', vsversion), ('x64', vsversion + ' Win64')):
-        build_dir = (args.dbms + " " + generator + " " + args.params)
+        build_dir = (shortenDBMS(args.dbms) + " " + shortenGenerator(generator) + " " + args.params)
         build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
         full_build_dir = os.path.join(root, "build", build_dir)
         dllPath[arch] = os.path.normpath(os.path.join(full_build_dir, 'dist', 'Win', arch, 'lib', args.config))
