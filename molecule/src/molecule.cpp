@@ -1456,7 +1456,8 @@ bool Molecule::shouldWriteHCountEx (Molecule &mol, int idx, int h_to_ignore)
       if (atom_number == ELEM_C)
       {
          // Ensure that there can be double bond connected
-         if (min_conn > 3)
+         // But do not save for O=c1ccocc1
+         if (min_conn > 3 && mol.getVertex(idx).degree() > 3)
             return true; // Unusual aromatic Carbon atom
       }
       if (atom_number == ELEM_O)
