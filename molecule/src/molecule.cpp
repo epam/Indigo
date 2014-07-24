@@ -1442,12 +1442,30 @@ bool Molecule::shouldWriteHCountEx (Molecule &mol, int idx, int h_to_ignore)
    // so we write hydrogen counts on all aromatic atoms, except
    // uncharged C and O with no radicals, for which we can always tell
    // the number of hydrogens by the number of bonds.
+   //
+   // Also handle some degerate cases with invalid valences like C[c]1(C)ccccc1
+   // and store implicit hydrogens for unusual situations
    if (aromatic)
    {
       if (atom_number != ELEM_C && atom_number != ELEM_O)
          return true;
       if (charge != 0)
          return true;
+      int n_arom, min_conn;
+      mol.calcAromaticAtomConnectivity(idx, n_arom, min_conn);
+      if (atom_number == ELEM_C)
+      {
+         // Ensure that there can be double bond connected
+         if (min_conn > 3)
+            return true; // Unusual aromatic Carbon atom
+      }
+      if (atom_number == ELEM_O)
+      {
+         // Ensure that there can be double bond connected
+         if (min_conn != 2)
+            return true; // Unusual aromatic Oxigen atom
+      }
+
    }
 
    // We also should write the H count if it exceeds the normal (lowest valence)
