@@ -1,4 +1,5 @@
 SET(INDIGO_VERSION "1.2.1-dev4")
+# Do not forget to launch build_scripts/indigo-update-version.py after changing the version because it should be changed in the Java and .NET files as well
 
 IF($ENV{BUILD_NUMBER})
    SET(INDIGO_BUILD_VERSION $ENV{BUILD_NUMBER})
