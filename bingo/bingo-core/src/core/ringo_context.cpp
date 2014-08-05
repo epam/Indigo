@@ -24,6 +24,7 @@ IMPL_ERROR(RingoContext, "ringo context");
 RingoContext::RingoContext (BingoContext &context) :
 substructure(context),
 exact(context),
+ringoAAM(context),
 _context(context)
 {
 }

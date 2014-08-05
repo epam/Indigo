@@ -34,8 +34,6 @@ RingoSubstructure::RingoSubstructure (BingoContext &context) :
 _context(context)
 {
    preserve_bonds_on_highlighting = false;
-   treat_x_as_pseudoatom = false;
-   ignore_closing_bond_direction_mismatch = false;
    _smarts = false;
 }
 
@@ -68,10 +66,7 @@ void RingoSubstructure::loadQuery (Scanner &scanner)
    QS_DEF(QueryReaction, source);
 
    ReactionAutoLoader loader(scanner);
-
-   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-           ignore_closing_bond_direction_mismatch;
+   _context.setLoaderSettings(loader);
    loader.loadQueryReaction(source);
 
    _initQuery(source, _query_reaction);
@@ -201,9 +196,7 @@ void RingoSubstructure::loadTarget (Scanner &scanner)
 {
    ReactionAutoLoader loader(scanner);
 
-   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-           ignore_closing_bond_direction_mismatch;
+   _context.setLoaderSettings(loader);
    loader.loadReaction(_target_reaction);
    _initTarget(false);
 }

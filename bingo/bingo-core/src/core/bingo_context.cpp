@@ -17,7 +17,9 @@
 #include "core/bingo_error.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_auto_loader.h"
+#include "molecule/smiles_loader.h"
 #include "reaction/reaction_auto_loader.h"
+#include "reaction/rsmiles_loader.h"
 
 // const char * bingo_version_string = "1.7-beta3";
 
@@ -204,7 +206,15 @@ void BingoContext::setLoaderSettings (MoleculeAutoLoader &loader)
    loader.ignore_cistrans_errors = ignore_cistrans_errors;
 }
 
-void BingoContext::setLoaderSettings (ReactionAutoLoader &loader)
+void BingoContext::setLoaderSettings(SmilesLoader &loader)
+{
+   loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+   loader.stereochemistry_options.ignore_errors = ignore_stereocenter_errors;
+   loader.stereochemistry_options.bidirectional_mode = stereochemistry_bidirectional_mode;
+   loader.ignore_cistrans_errors = ignore_cistrans_errors;
+}
+
+void BingoContext::setLoaderSettings(ReactionAutoLoader &loader)
 {
    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
@@ -212,3 +222,12 @@ void BingoContext::setLoaderSettings (ReactionAutoLoader &loader)
    loader.stereochemistry_options.bidirectional_mode = stereochemistry_bidirectional_mode;
    loader.ignore_cistrans_errors = ignore_cistrans_errors;
 }
+
+void BingoContext::setLoaderSettings(RSmilesLoader &loader)
+{
+   loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+   loader.stereochemistry_options.ignore_errors = ignore_stereocenter_errors;
+   loader.stereochemistry_options.bidirectional_mode = stereochemistry_bidirectional_mode;
+   loader.ignore_cistrans_errors = ignore_cistrans_errors;
+}
+

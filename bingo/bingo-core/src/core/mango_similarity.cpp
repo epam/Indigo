@@ -79,9 +79,7 @@ void MangoSimilarity::loadQuery (Scanner &scanner)
 
    MoleculeAutoLoader loader(scanner);
 
-   loader.treat_x_as_pseudoatom = _context.treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-           _context.ignore_closing_bond_direction_mismatch;
+   _context.setLoaderSettings(loader);
    loader.loadMolecule(query);
 
    _initQuery(query);

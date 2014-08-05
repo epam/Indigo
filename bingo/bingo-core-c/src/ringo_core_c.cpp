@@ -228,10 +228,7 @@ CEXPORT const char * ringoRSMILES (const char *target_buf, int target_buf_len)
       QS_DEF(Reaction, target);
 
       ReactionAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadReaction(target);
 
       ArrayOutput out(self.buffer);
@@ -256,10 +253,7 @@ CEXPORT const char * ringoRxnfile (const char *reaction, int reaction_len)
       QS_DEF(Reaction, target);
 
       ReactionAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadReaction(target);
 
       ArrayOutput out(self.buffer);
@@ -285,10 +279,7 @@ CEXPORT const char * ringoRCML (const char *reaction, int reaction_len)
       QS_DEF(Reaction, target);
 
       ReactionAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadReaction(target);
 
       ArrayOutput out(self.buffer);
@@ -312,9 +303,6 @@ CEXPORT const char * ringoAAM (const char *reaction, int reaction_len, const cha
 
       BufferScanner reaction_scanner(reaction, reaction_len);
       self.ringo_context->ringoAAM.loadReaction(reaction_scanner);
-      self.ringo_context->ringoAAM.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      self.ringo_context->ringoAAM.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
 
       self.ringo_context->ringoAAM.getResult(self.buffer);
       self.buffer.push(0);
@@ -335,9 +323,7 @@ CEXPORT const char * ringoCheckReaction (const char *reaction, int reaction_len)
 
          BufferScanner reaction_scanner(reaction, reaction_len);
          ReactionAutoLoader loader(reaction_scanner);
-         loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-         loader.ignore_closing_bond_direction_mismatch =
-            self.bingo_context->ignore_closing_bond_direction_mismatch;
+         self.bingo_context->setLoaderSettings(loader);
          loader.loadReaction(rxn);
          Reaction::checkForConsistency(rxn);
       }
@@ -427,10 +413,7 @@ CEXPORT const char* ringoICR (const char* reaction, int reaction_len, bool save_
       QS_DEF(Reaction, target);
 
       ReactionAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadReaction(target);
 
       ArrayOutput out(self.buffer);
@@ -484,10 +467,7 @@ CEXPORT const char* ringoFingerprint(const char* reaction, int reaction_len, con
       QS_DEF(Reaction, target);
 
       ReactionAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadReaction(target);
 
       ReactionFingerprintBuilder builder(target, self.bingo_context->fp_parameters);

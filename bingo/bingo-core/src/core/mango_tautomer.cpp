@@ -38,11 +38,8 @@ _context(context)
 void MangoTautomer::loadQuery (Scanner &scanner)
 {
    MoleculeAutoLoader loader(scanner);
+   _context.setLoaderSettings(loader);
 
-   loader.treat_x_as_pseudoatom = _context.treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-          _context.ignore_closing_bond_direction_mismatch;
-   
    if (_params.substructure)
    {
       _query.reset(new QueryMolecule());

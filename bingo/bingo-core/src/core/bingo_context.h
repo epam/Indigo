@@ -29,6 +29,8 @@ namespace indigo
 {
    class MoleculeAutoLoader;
    class ReactionAutoLoader;
+   class SmilesLoader;
+   class RSmilesLoader;
 }
 
 class BingoContext
@@ -73,6 +75,8 @@ public:
 
    void setLoaderSettings (MoleculeAutoLoader &loader);
    void setLoaderSettings (ReactionAutoLoader &loader);
+   void setLoaderSettings (SmilesLoader &loader);
+   void setLoaderSettings (RSmilesLoader &loader);
 
    static void remove (int id);
 
