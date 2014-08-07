@@ -1221,8 +1221,10 @@ void MolfileLoader::_readCtab2000 ()
       {
          QS_DEF(Array<char>, pseudo);
 
-         _scanner.skip(2);
-         int atom_idx = _scanner.readIntFix(3);
+         // There should be 3 characters to the atom index, but some molfiles
+         // has only 2 digits
+         _scanner.skipSpace();
+         int atom_idx = _scanner.readInt();
 
          atom_idx--;
          _scanner.skipLine();
