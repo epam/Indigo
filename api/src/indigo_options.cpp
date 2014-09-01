@@ -210,6 +210,13 @@ static void indigoSetBidirectionalMode (int enabled)
    self.stereochemistry_options.bidirectional_mode = (enabled != 0);
 }
 
+static void indigoSetDetectHaworthProjection (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.stereochemistry_options.detect_haworth_projection = (enabled != 0);
+}
+
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -247,6 +254,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("dearomatize-verification", indigoSetDearomatizeVerification);
    mgr.setOptionHandlerBool("unique-dearomatization", indigoSetDearomatizeUnique);
    mgr.setOptionHandlerBool("stereochemistry-bidirectional-mode", indigoSetBidirectionalMode);
+   mgr.setOptionHandlerBool("stereochemistry-detect-haworth-projection", indigoSetDetectHaworthProjection);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

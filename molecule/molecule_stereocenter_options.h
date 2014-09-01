@@ -37,6 +37,9 @@ public:
    // Treat stereobond direction bond not only for a pointed stereocenter, but for the 
    // neighbour as well. Default is false.
    bool bidirectional_mode;
+
+   // Detect Haworth projection. Default is false.
+   bool detect_haworth_projection;
 };
 
 }

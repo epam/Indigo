@@ -121,6 +121,8 @@ public:
 
    bool isPossibleStereocenter (int atom_idx, bool *possible_implicit_h = 0, bool *possible_lone_pair = 0);
 
+   static void rotatePyramid (int *pyramid);
+
 protected:
 
    struct _Atom
@@ -157,13 +159,11 @@ protected:
    static int _onPlane (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3, const Vec3f &v4);
 
    bool _buildOneCenter (int atom_idx, int *sensible_bonds_out, 
-      bool bidirectional_mode, bool bidirectional_either_mode);
+      bool bidirectional_mode, bool bidirectional_either_mode, const Array<bool> &bond_ignore);
 
    void _getGroups (int type, Array<int> &numbers);
    void _getGroup  (int type, int number, Array<int> &indices);
    void _restorePyramid (int idx, int pyramid[4], int invert_pyramid);
-
-   static void _rotatePyramid (int *pyramid);
 
    static void _convertAtomToImplicitHydrogen (int pyramid[4], int atom_to_remove);
 

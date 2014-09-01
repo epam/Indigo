@@ -104,7 +104,9 @@ int Graph::getEdgeEnd (int beg, int edge) const
    const Edge &e = getEdge(edge);
    if (e.beg == beg)
       return e.end;
-   return e.beg;
+   if (e.end == beg)
+      return e.beg;
+   return -1;
 }
 
 int Graph::addEdge (int beg, int end)

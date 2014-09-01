@@ -28,5 +28,6 @@ void StereocentersOptions::reset ()
 {
    ignore_errors = false;
    bidirectional_mode = false;
+   detect_haworth_projection = false; 
 }
 
