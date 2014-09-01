@@ -104,6 +104,9 @@ void BingoOracleContext::_loadConfigParameters (OracleEnv &env)
    configGetIntDef(env, "STEREOCHEMISTRY_BIDIRECTIONAL_MODE", val, 0);
    stereochemistry_bidirectional_mode = (val != 0);
 
+   configGetIntDef(env, "STEREOCHEMISTRY_DETECT_HAWORTH_PROJECTION", val, 0);
+   stereochemistry_detect_haworth_projection = (val != 0);
+
    configGetIntDef(env, "ALLOW_NON_UNIQUE_DEAROMATIZATION", val, 0);
    allow_non_unique_dearomatization = (val != 0);
 

@@ -1419,6 +1419,8 @@ namespace indigo
              BingoConfig.getInt(connection, bingo_schema, "zero-unknown-aromatic-hydrogens", id));
          BingoCore.setConfigInt("stereochemistry-bidirectional-mode",
              BingoConfig.getInt(connection, bingo_schema, "stereochemistry-bidirectional-mode", id));
+         BingoCore.setConfigInt("stereochemistry-detect-haworth-projection",
+             BingoConfig.getInt(connection, bingo_schema, "stereochemistry-detect-haworth-projection", id));
          BingoCore.setConfigInt("ignore-closing-bond-direction-mismatch",
              BingoConfig.getInt(connection, bingo_schema, "ignore-closing-bond-direction-mismatch", id));
 

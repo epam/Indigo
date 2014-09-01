@@ -78,6 +78,10 @@ void BingoPgConfig::updateByIndexConfig(PG_OBJECT index_ptr) {
       name_key = _rawConfig.findOrInsert("stereochemistry_bidirectional_mode");
       _toString(options.stereochemistry_bidirectional_mode, _rawConfig.value(name_key));
    }
+   if (options.stereochemistry_detect_haworth_projection >= 0) {
+      name_key = _rawConfig.findOrInsert("stereochemistry_detect_haworth_projection");
+      _toString(options.stereochemistry_detect_haworth_projection, _rawConfig.value(name_key));
+   }
    if (options.ignore_cistrans_errors >= 0) {
       name_key = _rawConfig.findOrInsert("ignore_cistrans_errors");
       _toString(options.ignore_cistrans_errors, _rawConfig.value(name_key));

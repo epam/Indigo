@@ -146,6 +146,8 @@ CEXPORT int bingoSetConfigInt (const char *name, int value)
          self.bingo_context->ignore_stereocenter_errors = (value != 0);
       else if (strcasecmp(name, "stereochemistry-bidirectional-mode") == 0 || strcasecmp(name, "stereochemistry_bidirectional_mode") == 0)
          self.bingo_context->stereochemistry_bidirectional_mode = (value != 0);
+      else if (strcasecmp(name, "stereochemistry-detect-haworth-projection") == 0 || strcasecmp(name, "stereochemistry_detect_haworth_projection") == 0)
+         self.bingo_context->stereochemistry_detect_haworth_projection = (value != 0);
       else if (strcasecmp(name, "allow-non-unique-dearomatization") == 0 || strcasecmp(name, "allow_non_unique_dearomatization") == 0)
          self.bingo_context->allow_non_unique_dearomatization = (value != 0);
       else if (strcasecmp(name, "zero-unknown-aromatic-hydrogens") == 0 || strcasecmp(name, "zero_unknown_aromatic_hydrogens") == 0)

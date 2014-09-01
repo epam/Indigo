@@ -57,6 +57,7 @@ insert into [$(bingo)].CONFIG values(0, 'ignore-cistrans-errors', 0);
 insert into [$(bingo)].CONFIG values(0, 'allow-non-unique-dearomatization', 0);
 insert into [$(bingo)].CONFIG values(0, 'zero-unknown-aromatic-hydrogens', 0);
 insert into [$(bingo)].CONFIG values(0, 'stereochemistry-bidirectional-mode', 0);
+insert into [$(bingo)].CONFIG values(0, 'stereochemistry-detect-haworth-projection', 0);
 go
 
 insert into [$(bingo)].CONFIG values(0, 'FP_ORD_SIZE', '25');

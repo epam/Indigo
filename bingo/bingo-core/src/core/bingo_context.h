@@ -63,6 +63,7 @@ public:
    Nullable<bool> ignore_closing_bond_direction_mismatch;
    Nullable<bool> ignore_stereocenter_errors;
    Nullable<bool> stereochemistry_bidirectional_mode;
+   Nullable<bool> stereochemistry_detect_haworth_projection;
    Nullable<bool> ignore_cistrans_errors;
    Nullable<bool> allow_non_unique_dearomatization;
    Nullable<bool> zero_unknown_aromatic_hydrogens;
@@ -77,6 +78,7 @@ public:
    void setLoaderSettings (ReactionAutoLoader &loader);
    void setLoaderSettings (SmilesLoader &loader);
    void setLoaderSettings (RSmilesLoader &loader);
+   StereocentersOptions getStereocentersOptions();
 
    static void remove (int id);
 

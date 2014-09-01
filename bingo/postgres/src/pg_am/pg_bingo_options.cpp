@@ -145,6 +145,13 @@ static relopt_int intRelOpts[] =
    },
    {
       {
+         "stereochemistry_detect_haworth_projection",
+         "",
+         RELOPT_KIND_BINGO
+      }, -1, 0, 1
+   },
+   {
+      {
          "ignore_cistrans_errors",
          "",
          RELOPT_KIND_BINGO
@@ -557,6 +564,8 @@ bingo_reloptions(Datum reloptions, bool validate) {
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, ignore_stereocenter_errors)},
       {"stereochemistry_bidirectional_mode", RELOPT_TYPE_INT,
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, stereochemistry_bidirectional_mode)},
+      {"stereochemistry_detect_haworth_projection", RELOPT_TYPE_INT,
+              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, stereochemistry_detect_haworth_projection)},
       {"ignore_cistrans_errors", RELOPT_TYPE_INT,
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, ignore_cistrans_errors)},
       {"allow_non_unique_dearomatization", RELOPT_TYPE_INT,
