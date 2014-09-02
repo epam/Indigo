@@ -7,6 +7,7 @@ insert into bingo_config(cname, cvalue) values ('IGNORE_STEREOCENTER_ERRORS', '0
 insert into bingo_config(cname, cvalue) values ('ALLOW_NON_UNIQUE_DEAROMATIZATION', '0');
 insert into bingo_config(cname, cvalue) values ('ZERO_UNKNOWN_AROMATIC_HYDROGENS', '0');
 insert into bingo_config(cname, cvalue) values ('STEREOCHEMISTRY_BIDIRECTIONAL_MODE', '0');
+insert into bingo_config(cname, cvalue) values ('STEREOCHEMISTRY_DETECT_HAWORTH_PROJECTION', '0');
 insert into bingo_config(cname, cvalue) values ('FP_ORD_SIZE', '25');
 insert into bingo_config(cname, cvalue) values ('FP_ANY_SIZE', '15');
 insert into bingo_config(cname, cvalue) values ('FP_TAU_SIZE', '10');
