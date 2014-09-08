@@ -735,6 +735,27 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
                return;
             }
          }
+
+         // Check atom list
+         QS_DEF(Array<int>, list);
+
+         bool not_list;
+         if (QueryMolecule::collectAtomList(_qmol->getAtom(idx), list, not_list) && !not_list)
+         {
+            if (list.size() < 1)
+               throw Error("atom list size is zero");
+
+            _output.printf("[");
+            for (int j = 0; j < list.size(); j++)
+            {
+               const char *str = Element::toString(list[j]);
+               if (j != 0)
+                  _output.printf(",");
+               _output.printf("#%d", list[j]);
+            }
+            _output.printf("]");
+            return;
+         }
       }
 
       throw Error("undefined atom number");
