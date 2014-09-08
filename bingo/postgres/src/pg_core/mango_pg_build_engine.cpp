@@ -71,9 +71,8 @@ bool MangoPgBuildEngine::processStructure(StructCache& struct_cache) {
     * Process target
     */
    bingo_res = mangoIndexProcessSingleRecord();
-   CORE_HANDLE_ERROR(bingo_res, 0, "molecule build engine: error while processing records", bingoGetError());
-
-   CORE_HANDLE_WARNING_TID(bingo_res, 1, "molecule build engine: error while processing record", block_number, offset_number, bingoGetWarning());
+   CORE_HANDLE_ERROR_TID_NO_INDEX(bingo_res, 0, "molecule build engine: error while processing records", block_number, offset_number, bingoGetError());
+   CORE_HANDLE_WARNING_TID_NO_INDEX(bingo_res, 1, "molecule build engine: error while processing record", block_number, offset_number, bingoGetWarning());
    if(bingo_res < 1)
       return false;
 

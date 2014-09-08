@@ -138,7 +138,11 @@ static void bingoIndexCallback(Relation index,
    /*
     * Insert a new structure (single or parallel)
     */
-   build_engine.insertStructure(&htup->t_self, values[0]);
+   PG_BINGO_BEGIN
+   {
+      build_engine.insertStructure(&htup->t_self, values[0]);
+   }
+   PG_BINGO_END
 }
 
 Datum

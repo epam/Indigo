@@ -411,6 +411,11 @@ public:
       throw BingoPgError("%s: %s", suffix, message);\
    }
 
+#define CORE_HANDLE_ERROR_TID_NO_INDEX(res, success_res, suffix, block, offset, message)\
+   if (res < success_res) {\
+      throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, message);\
+   }
+
 #define CORE_HANDLE_ERROR_TID(res, success_res, suffix, section_idx, structure_idx, message)\
    if (res < success_res) {\
       ItemPointerData target_item;\
@@ -426,7 +431,7 @@ public:
       elog(WARNING, "%s: %s", suffix, message);\
    }
 
-#define CORE_HANDLE_WARNING_TID(res, success_res, suffix, block, offset, message)\
+#define CORE_HANDLE_WARNING_TID_NO_INDEX(res, success_res, suffix, block, offset, message)\
    if (res < success_res) {\
       elog(WARNING, "%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, message);\
    }
