@@ -41,6 +41,7 @@ BingoContext::BingoContext (int id_)
    ignore_cistrans_errors.setName("ignore-cistrans-errors");
    allow_non_unique_dearomatization.setName("allow-non-unique-dearomatization");
    zero_unknown_aromatic_hydrogens.setName("zero-unknown-aromatic-hydrogens");
+   reject_invalid_structures.setName("reject-invalid-structures");
 }
 
 void BingoContext::reset ()
@@ -62,8 +63,7 @@ void BingoContext::reset ()
    ignore_cistrans_errors.reset();
    allow_non_unique_dearomatization.reset();
    zero_unknown_aromatic_hydrogens.reset();
-
-   reject_invalid_structures = false;
+   reject_invalid_structures.reset();
 }
 
 BingoContext::~BingoContext ()

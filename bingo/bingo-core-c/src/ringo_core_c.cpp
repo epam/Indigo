@@ -52,12 +52,30 @@ CEXPORT int ringoIndexProcessSingleRecord ()
             self.ringo_index = self.single_ringo_index.get();
             self.ringo_index->prepare(scanner, output, NULL);
          }
-         catch (CmfSaver::Error &e) { self.warning.readString(e.message(), true); return -1; }
-         catch (CrfSaver::Error &e) { self.warning.readString(e.message(), true); return -1; }
+         catch (CmfSaver::Error &e)
+         { 
+            if (self.bingo_context->reject_invalid_structures)
+               throw;
+            self.warning.readString(e.message(), true);
+            return 0;
+         }
+         catch (CrfSaver::Error &e)
+         {
+            if (self.bingo_context->reject_invalid_structures)
+               throw;
+            self.warning.readString(e.message(), true);
+            return 0;
+         }
       }
-      CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), true); return -1;);
+      CATCH_READ_TARGET_RXN({
+         if (self.bingo_context->reject_invalid_structures)
+            throw;
+
+         self.warning.readString(e.message(), true);
+         return 0;
+      });
    }
-   BINGO_END(1, 0)
+   BINGO_END(1, -1)
 }
 
 CEXPORT int ringoIndexReadPreparedReaction (int *id,

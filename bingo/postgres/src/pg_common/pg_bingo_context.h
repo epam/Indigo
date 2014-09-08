@@ -52,6 +52,7 @@ typedef struct BingoIndexOptions {
    int ignore_cistrans_errors;
    int allow_non_unique_dearomatization;
    int zero_unknown_aromatic_hydrogens;
+   int reject_invalid_structures;
 
    int fp_ord_size;
    int fp_any_size;

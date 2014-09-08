@@ -49,6 +49,7 @@ insert into CONFIG_INT values(0, 'ALLOW_NON_UNIQUE_DEAROMATIZATION', 0);
 insert into CONFIG_INT values(0, 'ZERO_UNKNOWN_AROMATIC_HYDROGENS', 0);
 insert into CONFIG_INT values(0, 'STEREOCHEMISTRY_BIDIRECTIONAL_MODE', 0);
 insert into CONFIG_INT values(0, 'STEREOCHEMISTRY_DETECT_HAWORTH_PROJECTION', 0);	
+insert into CONFIG_INT values(0, 'REJECT_INVALID_STRUCTURES', 0);	
 
 create or replace procedure SetRelativeAtomicMass (list in VARCHAR2) is
 begin

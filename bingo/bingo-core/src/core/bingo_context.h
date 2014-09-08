@@ -69,7 +69,7 @@ public:
    Nullable<bool> zero_unknown_aromatic_hydrogens;
 
    // Throw exception when invalid structure is being added to the index
-   bool reject_invalid_structures;
+   Nullable<bool> reject_invalid_structures;
 
    MoleculeFingerprintParameters fp_parameters;
 

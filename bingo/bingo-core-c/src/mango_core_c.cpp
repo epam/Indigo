@@ -52,11 +52,23 @@ CEXPORT int mangoIndexProcessSingleRecord ()
             self.mango_index = self.single_mango_index.get();
             self.mango_index->prepare(scanner, output, NULL);
          }
-         catch (CmfSaver::Error &e) { self.warning.readString(e.message(), true); return 0; }
+         catch (CmfSaver::Error &e) 
+         { 
+            if (self.bingo_context->reject_invalid_structures)
+               throw;
+            self.warning.readString(e.message(), true);
+            return 0; 
+         }
       }
-      CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), true); return 0;);
+      CATCH_READ_TARGET_MOL({
+         if (self.bingo_context->reject_invalid_structures)
+            throw;
+
+         self.warning.readString(e.message(), true);
+         return 0;
+      });
    }
-   BINGO_END(1, 0)
+   BINGO_END(1, -1)
 }
 
 CEXPORT int mangoIndexReadPreparedMolecule (int *id,

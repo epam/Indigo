@@ -94,6 +94,10 @@ void BingoPgConfig::updateByIndexConfig(PG_OBJECT index_ptr) {
       name_key = _rawConfig.findOrInsert("zero_unknown_aromatic_hydrogens");
       _toString(options.zero_unknown_aromatic_hydrogens, _rawConfig.value(name_key));
    }
+   if (options.reject_invalid_structures >= 0) {
+      name_key = _rawConfig.findOrInsert("reject_invalid_structures");
+      _toString(options.reject_invalid_structures, _rawConfig.value(name_key));
+   }
    if (options.fp_any_size >= 0) {
       name_key = _rawConfig.findOrInsert("fp_any_size");
       _toString(options.fp_any_size, _rawConfig.value(name_key));
