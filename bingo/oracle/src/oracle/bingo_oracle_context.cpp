@@ -113,6 +113,9 @@ void BingoOracleContext::_loadConfigParameters (OracleEnv &env)
    configGetIntDef(env, "ZERO_UNKNOWN_AROMATIC_HYDROGENS", val, 0);
    zero_unknown_aromatic_hydrogens = (val != 0);
 
+   configGetIntDef(env, "REJECT_INVALID_STRUCTURES", val, 0);
+   reject_invalid_structures = (val != 0);
+
    QS_DEF(Array<char>, cmfdict);
    
    if (configGetBlob(env, "CMFDICT", cmfdict))
@@ -418,6 +421,7 @@ void BingoOracleContext::parseParameters (OracleEnv &env, const char *str)
       "IGNORE_CISTRANS_ERRORS",
       "ALLOW_NON_UNIQUE_DEAROMATIZATION",
       "ZERO_UNKNOWN_AROMATIC_HYDROGENS",
+      "REJECT_INVALID_STRUCTURES",
    };
 
    bool config_changed = false;

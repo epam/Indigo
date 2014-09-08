@@ -62,6 +62,8 @@ void BingoContext::reset ()
    ignore_cistrans_errors.reset();
    allow_non_unique_dearomatization.reset();
    zero_unknown_aromatic_hydrogens.reset();
+
+   reject_invalid_structures = false;
 }
 
 BingoContext::~BingoContext ()

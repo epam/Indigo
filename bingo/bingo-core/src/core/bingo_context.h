@@ -68,6 +68,9 @@ public:
    Nullable<bool> allow_non_unique_dearomatization;
    Nullable<bool> zero_unknown_aromatic_hydrogens;
 
+   // Throw exception when invalid structure is being added to the index
+   bool reject_invalid_structures;
+
    MoleculeFingerprintParameters fp_parameters;
 
    PtrArray<TautomerRule> tautomer_rules;

@@ -77,6 +77,8 @@ bool mangoPrepareMolecule (OracleEnv &env, const char *rowid,
       }
       catch (CmfSaver::Error &e) 
       {
+         if (context.context().reject_invalid_structures)
+            throw; // Rethrow this exception further
          OsLockerNullable locker(lock_for_exclusive_access);
          env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message());
          failure_message = e.message();
@@ -84,8 +86,10 @@ bool mangoPrepareMolecule (OracleEnv &env, const char *rowid,
       }
    }
    CATCH_READ_TARGET_MOL_ROWID(rowid, {
-         failure_message = e.message();
-         return false;
+      if (context.context().reject_invalid_structures)
+         throw; // Rethrow this exception further
+      failure_message = e.message();
+      return false;
    });
 
    // some magic: round it up to avoid ora-22282
