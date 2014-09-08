@@ -2047,8 +2047,6 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       }
       else if (next == '#')
       {
-         if (!smarts_mode)
-            throw Error("'#' is allowed only within SMARTS queries");
          scanner.skip(1);
          element = scanner.readUnsigned();
       }
