@@ -1876,9 +1876,6 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
          if (scanner.readChar() != '(')
             throw Error("'$' must be followed by '('");
 
-         if (!smarts_mode)
-            throw Error("'$' fragments are allowed only in SMARTS queries");
-
          QS_DEF(Array<char>, subexp);
 
          subexp.clear();
