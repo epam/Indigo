@@ -274,14 +274,14 @@ create or replace procedure mangoAnalyzeMolecules(context_id in binary_integer)
     with context parameters (context, context_id); 
 /
 
-create or replace function Molfile_clob (m in CLOB) return CLOB
+create or replace function Molfile_clob (m in CLOB, options in VARCHAR2) return CLOB
   AS language C name "oraMangoMolfile" library bingolib  
-  with context parameters (context, m, m indicator short,
+  with context parameters (context, m, m indicator short, options, options indicator short,
                            return indicator short, return OCILobLocator);
 /
-create or replace function Molfile_blob (m in BLOB) return CLOB
+create or replace function Molfile_blob (m in BLOB, options in VARCHAR2) return CLOB
   AS language C name "oraMangoMolfile" library bingolib  
-  with context parameters (context, m, m indicator short,
+  with context parameters (context, m, m indicator short, options, options indicator short,
                            return indicator short, return OCILobLocator);
 /
 create or replace function CML_clob (m in CLOB) return CLOB  AS language C name "oraMangoCML" library bingolib    
@@ -294,14 +294,14 @@ create or replace function CML_blob (m in BLOB) return CLOB
                            return indicator short,
                            return OCILobLocator);
 /
-create or replace function SMILES_clob (m in CLOB) return VARCHAR2
+create or replace function SMILES_clob (m in CLOB, options in VARCHAR2) return VARCHAR2
   AS language C name "oraMangoSMILES" library bingolib  
-  with context parameters (context, m, m indicator short,
+  with context parameters (context, m, m indicator short, options, options indicator short,
                            return indicator short, return OCIString);
 /
-create or replace function SMILES_blob (m in BLOB) return VARCHAR2
+create or replace function SMILES_blob (m in BLOB, options in VARCHAR2) return VARCHAR2
   AS language C name "oraMangoSMILES" library bingolib  
-  with context parameters (context, m, m indicator short,
+  with context parameters (context, m, m indicator short, options, options indicator short, 
                            return indicator short, return OCIString);
 /
 create or replace function InChI_clob (m in CLOB, options in VARCHAR2) return CLOB
