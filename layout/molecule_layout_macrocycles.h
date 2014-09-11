@@ -17,6 +17,7 @@
 
 #include "molecule/molecule.h"
 #include "layout/molecule_layout_graph.h"
+#include <algorithm>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -121,62 +122,119 @@ private:
    TL_CP_DECL(Array<int>, _edge_stereo);
 };
 
+struct rectangle {
+   int min_x;
+   int max_x;
+   int min_y;
+   int max_y;
+
+   bool empty;
+
+   rectangle() {
+      set_empty();
+   }
+
+   rectangle(int x1, int x2, int y1, int y2) {
+      set(x1, x2, y1, y2);
+   }
+
+   void set(int x1, int x2, int y1, int y2) {
+      min_x = x1;
+      max_x = x2;
+      min_y = y1;
+      max_y = y2;
+
+      empty = (min_x > max_x) || (min_y > max_y);
+   }
+
+   void intersec(int x1, int x2, int y1, int y2) {
+      set(max(min_x, x1), min(max_x, x2), max(min_y, y1), min(max_y, y2));
+   }
+
+   void set(rectangle rec) {
+      set(rec.min_x, rec.max_x, rec.min_y, rec.max_y);
+   }
+
+   void intersec(rectangle rec) {
+      intersec(rec.min_x, rec.max_x, rec.min_y, rec.max_y);
+   }
+
+   rectangle expand(int w) {
+      if (empty) return rectangle(1, 0, 1, 0);
+      else return rectangle(min_x - w, max_x + w, min_y - w, max_y + w);
+   }
+
+   rectangle expand() {
+      return expand(1);
+   }
+
+   void set_empty() {
+      empty = true;
+   }
+
+   rectangle shift(int x, int y) {
+      return rectangle(min_x + x, max_x + x, min_y + y, max_y + y);
+   }
+
+   bool contains(int x, int y) {
+      return !empty && x >= min_x && x <= max_x && y >= min_y && y <= max_y;
+   }
+};
+
 
 
 class DLLEXPORT TriangleLattice
 {
 public:
-   CP_DECL;
+   
    TriangleLattice();
 
-   TriangleLattice(int min_x, int max_x, int min_y, int max_y, int hidden_min_x, int hidden_max_x, int hidden_min_y, int hidden_max_y, int rem, unsigned short* data_link);
+   TriangleLattice(rectangle rec, int rem, byte* data_link);
 
-   unsigned short& get_cell(int x, int y);
-   int get_first_valid_y(int x);
+   void init(rectangle rec, int rem, byte* data_link);
 
-   static int get_value(int min_x, int max_x, int min_y, int max_y);
+   unsigned short& getCell(int x, int y);
+   int getFirstValidY(int x);
+   bool isIncreaseForValidY(int);
+
+   static int getAllocationSize(rectangle rec) {
+      if (rec.empty) return 0;
+      int sq = (((rec.max_x - rec.min_x + 1) * (rec.max_y - rec.min_y + 1) + 2) / 3) * sizeof(unsigned short) + (rec.max_x - rec.min_x + 1) * sizeof(unsigned short*);
+      return sq;
+   };
 
    DECL_ERROR;
 
 private:
 
-   int difference_reminder;
-   unsigned short* grid;
-   unsigned short** starts;
-   int* _first_valid_y;
+   int _difference_reminder;
+   unsigned short** _starts;
 
-   int MIN_X = 0;
-   int MAX_X = 0;
-   int MIN_Y = 0;
-   int MAX_Y = 0;
-   int HIDDEN_MIN_X = 0;
-   int HIDDEN_MAX_X = 0;
-   int HIDDEN_MIN_Y = 0;
-   int HIDDEN_MAX_Y = 0;
+   unsigned short _sink;
 
-   TL_CP_DECL(Array<int>, _first_valid_y_array);
+   rectangle _BORDER;
+
 };
 
 class DLLEXPORT AnswerField
 {
 public:
    CP_DECL;
-   AnswerField();
+   AnswerField(int len, int target_x, int target_y, double target_rotation, int* vertex_weight_link, int* vertex_stereo_link, int* edge_stereo_link);
 
-   void set_length(int len);
-   void add_vertex_outside_weight(int v, int weight);
-   void set_vertex_edge_parallel(int v, bool parallel);
-   void set_edge_stereo(int e, int stereo);
-
-   void init();
-   void build();
    void fill();
 
    DECL_ERROR;
 
 private:
 
+   const int ACCEPTABLE_ERROR = 10;
+
    int length;
+
+   byte* _hidden_data_field;
+   ObjArray<Array<rectangle>> border_array;
+   Array<rectangle*> border;
 
    static const int dx[6];
    static const int dy[6];
@@ -185,8 +243,11 @@ private:
    TL_CP_DECL(Array<int>, _vertex_stereo);
    TL_CP_DECL(Array<int>, _edge_stereo);
    TL_CP_DECL(Array<int>, _rotation_parity);
-   TL_CP_DECL(Array<int>, _coord_diff_denominator); // (y - x) % 3
+   TL_CP_DECL(Array<int>, _coord_diff_reminder); // (y - x) % 3
    TL_CP_DECL(Array<TriangleLattice>, _field);
+   TL_CP_DECL(ObjArray<ObjArray<ObjArray<TriangleLattice>>>, _lattices);
+
+   TriangleLattice _sink_lattice;
 
    TriangleLattice& get_lattice(int l, int rot, int p);
 };

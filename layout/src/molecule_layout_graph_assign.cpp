@@ -1080,7 +1080,8 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
    int segments_count = segment.size();
 
    for (int i = 0; i < 10000; i++)
-       _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1);
+       _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1)
+       ;
 
    for (int i = 0; i < segments_count; i++)
       for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
@@ -1214,7 +1215,7 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
 
    // fix intersections to other components
    float min_dist = 0.7;
-   for (int i = 0; i < segments_count; i++) if (i != move_vertex/* && (i + 1) % segments_count != move_vertex && i != (move_vertex + 1) % segments_count*/) {
+   for (int i = 0; i < segments_count; i++) if (i != move_vertex && (i + 1) % segments_count != move_vertex && i != (move_vertex + 1) % segments_count) {
       if (segment[move_vertex]._graph.vertexCount() == 2 && segment[i]._graph.vertexCount() == 2) continue;
       bool interseced = false;
 
@@ -1228,9 +1229,12 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
       if (interseced) {
          Vec2f shift1(segment[move_vertex].getCenter());
          Vec2f shift2(segment[i].getCenter());
+//         Vec2f shift1(point[(move_vertex + 2) % segments_count]);
+//         Vec2f shift2(point[(move_vertex - 1 + segments_count) % segments_count]);
          Vec2f shift(shift1 - shift2);
+//         shift.rotate(-1, 0);
          shift.normalize();
-         shift /= 1;
+         shift /= 1;;
          move_vector += shift;
       }
    }
