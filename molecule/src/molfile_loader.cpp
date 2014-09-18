@@ -132,6 +132,13 @@ void MolfileLoader::_readHeader ()
 
    // Skip header
    _scanner.readLine(_bmol->name, true);
+   // Check UTF-8 BOM mark in the name
+   if (_bmol->name.size() >= 3 && 
+         (unsigned char)_bmol->name[0] == 0xEF &&
+         (unsigned char)_bmol->name[1] == 0xBB &&
+         (unsigned char)_bmol->name[2] == 0xBF)
+      _bmol->name.remove(0, 3);
+
    _scanner.skipLine();
    _scanner.skipLine();
 

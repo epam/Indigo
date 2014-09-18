@@ -101,7 +101,7 @@ private:
    FILE *_file;
    int   _file_len;
 
-   char _cache[1024];
+   unsigned char _cache[1024];
    int _cache_pos, _max_cache;
 
    void _validateCache ();
