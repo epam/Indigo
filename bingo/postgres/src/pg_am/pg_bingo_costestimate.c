@@ -316,7 +316,7 @@ genericcostestimate(PlannerInfo *root,
 	 */
 	*indexCorrelation = -1.0;
 }
-#if PG_VERSION_NUM / 100 == 902
+#if PG_VERSION_NUM / 100 >= 902
 static List *
 add_predicate_to_quals(IndexOptInfo *index, List *indexQuals)
 {
@@ -574,7 +574,7 @@ PGDLLEXPORT Datum bingo_costestimate(PG_FUNCTION_ARGS);
 Datum
 bingo_costestimate(PG_FUNCTION_ARGS) {
    
-#if PG_VERSION_NUM / 100 == 902
+#if PG_VERSION_NUM / 100 >= 902
    PlannerInfo *root = (PlannerInfo *) PG_GETARG_POINTER(0);
 	IndexPath  *path = (IndexPath *) PG_GETARG_POINTER(1);
 	double		loop_count = PG_GETARG_FLOAT8(2);
