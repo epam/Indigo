@@ -568,8 +568,13 @@ genericcostestimate92(PlannerInfo *root,
 }
 #endif
 
-PG_FUNCTION_INFO_V1(bingo_costestimate);
-PGDLLEXPORT Datum bingo_costestimate(PG_FUNCTION_ARGS);
+#if PG_VERSION_NUM / 100 == 904
+	PGDLLEXPORT PG_FUNCTION_INFO_V1(bingo_costestimate);
+#else
+	PG_FUNCTION_INFO_V1(bingo_costestimate);
+	PGDLLEXPORT Datum bingo_costestimate(PG_FUNCTION_ARGS);
+#endif
+
 
 Datum
 bingo_costestimate(PG_FUNCTION_ARGS) {

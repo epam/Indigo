@@ -20,14 +20,11 @@ extern "C" {
 
 
 extern "C" {
-PG_FUNCTION_INFO_V1(_rsub_internal);
-PGDLLEXPORT Datum _rsub_internal(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(_rsub_internal);
 
-PG_FUNCTION_INFO_V1(_rsmarts_internal);
-PGDLLEXPORT Datum _rsmarts_internal(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(_rsmarts_internal);
 
-PG_FUNCTION_INFO_V1(_rexact_internal);
-PGDLLEXPORT Datum _rexact_internal(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(_rexact_internal);
 
 }
 

@@ -29,11 +29,9 @@ extern "C" {
    PG_MODULE_MAGIC;
 #endif
 
-PG_FUNCTION_INFO_V1(bingo_build);
-PGDLLEXPORT Datum bingo_build(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(bingo_build);
 
-PG_FUNCTION_INFO_V1(bingo_buildempty);
-PGDLLEXPORT Datum bingo_buildempty(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(bingo_buildempty);
 }
 
 static void bingoIndexCallback(Relation index,

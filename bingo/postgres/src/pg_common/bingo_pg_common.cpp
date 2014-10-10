@@ -34,8 +34,7 @@ extern "C" {
 
 
 extern "C" {
-PG_FUNCTION_INFO_V1(_internal_func_check);
-PGDLLEXPORT Datum _internal_func_check(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(_internal_func_check);
 }
 
 

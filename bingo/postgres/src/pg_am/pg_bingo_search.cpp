@@ -20,22 +20,17 @@ extern "C" {
 #include "base_cpp/tlscont.h"
 
 extern "C" {
-PG_FUNCTION_INFO_V1(bingo_beginscan);
-PGDLLEXPORT Datum bingo_beginscan(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(bingo_beginscan);
 
-PG_FUNCTION_INFO_V1(bingo_gettuple);
-PGDLLEXPORT Datum bingo_gettuple(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(bingo_gettuple);
 /*
  * Turn off bitmap scan
  */
-// PG_FUNCTION_INFO_V1(bingo_getbitmap);
-// PGDLLEXPORT Datum bingo_getbitmap(PG_FUNCTION_ARGS);
+// BINGO_FUNCTION_EXPORT(bingo_getbitmap);
 
-PG_FUNCTION_INFO_V1(bingo_rescan);
-PGDLLEXPORT Datum bingo_rescan(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(bingo_rescan);
 
-PG_FUNCTION_INFO_V1(bingo_endscan);
-PGDLLEXPORT Datum bingo_endscan(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(bingo_endscan);
 }
 
 //#include <signal.h>
@@ -56,10 +51,10 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
    Relation rel = (Relation) PG_GETARG_POINTER(0);
    int keysz = PG_GETARG_INT32(1);
 
-#if PG_VERSION_NUM / 100 == 901 || PG_VERSION_NUM / 100 == 902 || PG_VERSION_NUM / 100 == 903
+#if PG_VERSION_NUM / 100 == 900
+	ScanKey norderbys = (ScanKey) PG_GETARG_POINTER(2);
+#elif PG_VERSION_NUM / 100 >= 901 
    int norderbys = PG_GETARG_INT32(2);
-#elif PG_VERSION_NUM / 100 == 900
-   ScanKey norderbys = (ScanKey) PG_GETARG_POINTER(2);
 #else
    elog(ERROR, "unsupported version %s", PG_VERSION)
 #endif
