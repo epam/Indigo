@@ -371,7 +371,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
    const int size = cycle.vertexCount();
    //printf("%d do layout cycle \n", size);
 
-   MoleculeLayoutMacrocycles layout(size);
+   MoleculeLayoutMacrocyclesLattice layout(size);
 
    QS_DEF(ObjArray<MoleculeLayoutSmoothingSegment>, segment);
    QS_DEF(Array<Vec2f>, rotation_point);
@@ -884,7 +884,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
    _segment_smoothing(cycle, layout, rotation_vertex, rotation_point, segment);
 }
 
-void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
 
    QS_DEF(Array<float>, target_angle);
 
@@ -904,7 +904,7 @@ void MoleculeLayoutGraph::_segment_update_rotation_points(const Cycle &cycle, Ar
    for (int i = 0; i < segment.size(); i++) segment[i].updateStartFinish();
 }
 
-void MoleculeLayoutGraph::_segment_calculate_target_angle(const MoleculeLayoutMacrocycles &layout, Array<int> &rotation_vertex, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraph::_segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    int segments_count = rotation_vertex.size();
 
    target_angle.clear_resize(segments_count);

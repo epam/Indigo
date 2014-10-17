@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 #include <set>
-#include <map>
 #include <stack>
 #include <cmath>
 #include <string>
@@ -45,7 +44,7 @@ CP_DEF(MoleculeLayoutMacrocycles);
 
 MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles (int size) : 
    CP_INIT,
-   TL_CP_GET(data), // tree size
+   TL_CP_GET(data), 
    TL_CP_GET(_vertex_weight), // tree size
    TL_CP_GET(_vertex_stereo), // there is an angle in the vertex
    TL_CP_GET(_edge_stereo), // trans-cis configuration
@@ -278,11 +277,21 @@ int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *ve
 }
 
 void soft_move_vertex(Vec2f* p, int vertex_count, int vertex_number, Vec2f move_vector) {
+   profTimerStart(tt, "0:soft_move_vertex");
    int i = vertex_number;
    double count = vertex_count;
+   Vec2f shift_vector = move_vector;
+   Vec2f add_vector = move_vector * (-1.0 / vertex_count);
+   double mult = 1;
+   double add_mult = -1.0 / vertex_count;
    do {
       p[i++] += move_vector * (count / vertex_count);
       count -= 1;
+      //p[i++] += shift_vector;
+      //shift_vector += add_vector;
+      //p[i++] += move_vector * mult;
+      //mult += add_mult;
+      //shift_vector = move_vector * mult;
       if (i == vertex_count) i = 0;
    } while (i != vertex_number);
 
@@ -290,6 +299,7 @@ void soft_move_vertex(Vec2f* p, int vertex_count, int vertex_number, Vec2f move_
 }
 
 void stright_rotate_chein(Vec2f* p, int vertex_count, int vertex_number, double angle) {
+   profTimerStart(tt, "0:stright_rotate_chein");
    for (int i = 0; i <= vertex_count; i++) if (i != vertex_number) p[i] -= p[vertex_number];
    p[vertex_number].set(0, 0);
 
@@ -297,12 +307,15 @@ void stright_rotate_chein(Vec2f* p, int vertex_count, int vertex_number, double 
 }
 
 void stright_move_chein(Vec2f* p, int vertex_count, int vertex_number, Vec2f vector) {
+   profTimerStart(tt, "0:stright_move_chein");
    for (int i = vertex_number; i <= vertex_count; i++) p[i] += vector;
 }
 
 
 
 void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cycle_size, int *rotate_angle, int *edge_lenght, int *vertex_number, Vec2f *p, int base_vertex, bool fix_angle, bool fix_next, double multiplyer) {
+   profTimerStart(tt, "improvement2");
+
    int prev_vertex = base_vertex - 1;
    int next_vertex = base_vertex + 1;
    if ((p[0] - p[vertex_count]).lengthSqr() == 0) {
@@ -352,6 +365,8 @@ void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cy
 
          if (fix_next) actual_chenge_angle *= -1;
 
+         //actual_chenge_angle *= _angle_importance[vertex_number[base_vertex]];
+
          move_vector.rotateAroundSegmentEnd(p[move_vertex], p[base_vertex], actual_chenge_angle);
          move_vector -= p[move_vertex];
 
@@ -370,6 +385,8 @@ void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cy
 
          if (abs(angle + actual_chenge_angle) > abs(angle + better_change_angle)) actual_chenge_angle = better_change_angle;
          if (abs(angle + actual_chenge_angle) > abs(angle + worse_chenge_angle)) actual_chenge_angle = worse_chenge_angle;
+
+         //actual_chenge_angle *= _angle_importance[vertex_number[base_vertex]];
 
          stright_rotate_chein(p, vertex_count, base_vertex, -actual_chenge_angle);
       }
@@ -425,7 +442,7 @@ void MoleculeLayoutMacrocycles::smoothing2(int vertex_count, int cycle_size, int
    for (int i = 0; i < iter_count; i++) {
       if ((p[0] - p[vertex_count]).lengthSqr() < 0.25) {
          p[vertex_count].copy(p[0]);
-//         break;
+         //break;
       }
       bool angle = rand.next() & 1;
       bool next = rand.next() & 1;
@@ -563,6 +580,10 @@ void rotate(double* ar, int ar_length, int shift) {
 
 double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
 {
+   {
+      profTimerStart(tt, "answerField");
+      //MoleculeLayoutMacrocyclesLattice molecule_layout_lattice(length);
+   }
 
    if (length >= max_size) return 1e9;
    unsigned short (&minRotates)[max_size][max_size][2][max_size][max_size] = data.minRotates;
@@ -617,7 +638,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
 
    for (int i = 0; i <= length; i++)
       for (int j = rot_left - 1; j <= rot_right + 1; j++)
-         for (int p = 0; p < 2; p++) 
+         for (int p = 0; p < 2; p++)
             for (int k = x_left - 1; k <= x_right + 1; k++)
                for (int t = y_left - 1; t <= y_right + 1; t++)
                   minRotates[i][j][p][k][t] = infinity;
@@ -626,77 +647,81 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
    minRotates[1][init_rot][1][init_x + 1][init_y] = 0;
    int max_dist = length;
 
-   for (int k = 1; k < length; k++) {
-      //printf("Step number %d\n", k);
+   {
+      profTimerStart(tt, "main.for");
+      for (int k = 1; k < length; k++) {
+         //printf("Step number %d\n", k);
 
-      int not_this_p = -1;
-      if (k == length - 1) {
-         if (_edge_stereo[length - 1] == MoleculeCisTrans::CIS) not_this_p = 0;
-         if (_edge_stereo[length - 1] == MoleculeCisTrans::TRANS) not_this_p = 1;
-      }
-      for (int rot = rot_left; rot <= rot_right; rot++) {
-         if (!_vertex_stereo[k]) {
-            int xchenge = dx[rot % 6];
-            int ychenge = dy[rot % 6];
-            for (int p = 0; p < 2; p++) if (p != not_this_p) {
-               for (int x = x_left; x <= x_right; x++) {
-                  unsigned short *ar1 = minRotates[k + 1][rot][p][x + xchenge] + ychenge;
-                  unsigned short *ar2 = minRotates[k][rot][p][x];
-                  for (int y = y_left; y <= y_right; y++) {
-                     if (ar1[y] > ar2[y]) {
-                        ar1[y] = ar2[y];
-                     }
-                  }
-               }
-            }
-         } else {
-            for (int p = 0; p < 2; p++) {
-               // trying to rotate like CIS
-               if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) if (p != not_this_p) {
-                  int nextRot = rot;
-                  if (p) nextRot++;
-                  else nextRot--;
-
-                  int xchenge = dx[nextRot % 6];
-                  int ychenge = dy[nextRot % 6];
-
-                  int add = 1;
-                  if (abs(_vertex_weight[k]) > WEIGHT_FACTOR) {
-                     if (!p && _vertex_weight[k] > 0) add += _vertex_weight[k];
-                     if (p && _vertex_weight[k] < 0) add -= _vertex_weight[k];
-                  }
-
+         int not_this_p = -1;
+         if (k == length - 1) {
+            if (_edge_stereo[length - 1] == MoleculeCisTrans::CIS) not_this_p = 0;
+            if (_edge_stereo[length - 1] == MoleculeCisTrans::TRANS) not_this_p = 1;
+         }
+         for (int rot = rot_left; rot <= rot_right; rot++) {
+            if (!_vertex_stereo[k]) {
+               int xchenge = dx[rot % 6];
+               int ychenge = dy[rot % 6];
+               for (int p = 0; p < 2; p++) if (p != not_this_p) {
                   for (int x = x_left; x <= x_right; x++) {
-                     unsigned short *ar1 = minRotates[k + 1][nextRot][p][x + xchenge] + ychenge;
+                     unsigned short *ar1 = minRotates[k + 1][rot][p][x + xchenge] + ychenge;
                      unsigned short *ar2 = minRotates[k][rot][p][x];
                      for (int y = y_left; y <= y_right; y++) {
-                        if (ar1[y] > ar2[y] + add) {
-                           ar1[y] = ar2[y] + add;
+                        if (ar1[y] > ar2[y]) {
+                           ar1[y] = ar2[y];
                         }
                      }
                   }
                }
-               // trying to rotate like TRANS
-               if (_edge_stereo[k - 1] != MoleculeCisTrans::CIS) if ((p ^ 1) != not_this_p) {
-                  int nextRot = rot;
-                  if (p) nextRot--;
-                  else nextRot++;
+            }
+            else {
+               for (int p = 0; p < 2; p++) {
+                  // trying to rotate like CIS
+                  if (_edge_stereo[k - 1] != MoleculeCisTrans::TRANS) if (p != not_this_p) {
+                     int nextRot = rot;
+                     if (p) nextRot++;
+                     else nextRot--;
 
-                  int add = 0;
-                  if (abs(_vertex_weight[k]) > WEIGHT_FACTOR) {
-                     if (p && _vertex_weight[k] > 0) add += _vertex_weight[k];
-                     if (!p && _vertex_weight[k] < 0) add -= _vertex_weight[k];
+                     int xchenge = dx[nextRot % 6];
+                     int ychenge = dy[nextRot % 6];
+
+                     int add = 1;
+                     if (abs(_vertex_weight[k]) > WEIGHT_FACTOR) {
+                        if (!p && _vertex_weight[k] > 0) add += _vertex_weight[k];
+                        if (p && _vertex_weight[k] < 0) add -= _vertex_weight[k];
+                     }
+
+                     for (int x = x_left; x <= x_right; x++) {
+                        unsigned short *ar1 = minRotates[k + 1][nextRot][p][x + xchenge] + ychenge;
+                        unsigned short *ar2 = minRotates[k][rot][p][x];
+                        for (int y = y_left; y <= y_right; y++) {
+                           if (ar1[y] > ar2[y] + add) {
+                              ar1[y] = ar2[y] + add;
+                           }
+                        }
+                     }
                   }
+                  // trying to rotate like TRANS
+                  if (_edge_stereo[k - 1] != MoleculeCisTrans::CIS) if ((p ^ 1) != not_this_p) {
+                     int nextRot = rot;
+                     if (p) nextRot--;
+                     else nextRot++;
 
-                  int xchenge = dx[nextRot % 6];
-                  int ychenge = dy[nextRot % 6];
+                     int add = 0;
+                     if (abs(_vertex_weight[k]) > WEIGHT_FACTOR) {
+                        if (p && _vertex_weight[k] > 0) add += _vertex_weight[k];
+                        if (!p && _vertex_weight[k] < 0) add -= _vertex_weight[k];
+                     }
 
-                  for (int x = x_left; x <= x_right; x++) {
-                     unsigned short *ar1 = minRotates[k + 1][nextRot][p ^ 1][x + xchenge] + ychenge;
-                     unsigned short *ar2 = minRotates[k][rot][p][x];
-                     for (int y = y_left; y <= y_right; y++) {
-                        if (ar1[y] > ar2[y] + add) {
-                           ar1[y] = ar2[y] + add;
+                     int xchenge = dx[nextRot % 6];
+                     int ychenge = dy[nextRot % 6];
+
+                     for (int x = x_left; x <= x_right; x++) {
+                        unsigned short *ar1 = minRotates[k + 1][nextRot][p ^ 1][x + xchenge] + ychenge;
+                        unsigned short *ar2 = minRotates[k][rot][p][x];
+                        for (int y = y_left; y <= y_right; y++) {
+                           if (ar1[y] > ar2[y] + add) {
+                              ar1[y] = ar2[y] + add;
+                           }
                         }
                      }
                   }
@@ -829,7 +854,7 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
    int bestIndex = 0;
 
    for (int index = 0; index < points.size(); index++) {
-      
+      profTimerStart(tt, "selector.for");
       x_result[length] = points[index].x;
       y_result[length] = points[index].y;
       rot_result[length] = points[index].rot;
@@ -995,7 +1020,6 @@ double MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
             }
          }
       }
-
    }
 
    Vec2f shifted_positons[max_size];

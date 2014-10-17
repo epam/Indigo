@@ -72,7 +72,8 @@ struct LayoutEdge
 
 class MoleculeLayoutGraph;
 class MoleculeLayoutMacrocycles;
-   
+class MoleculeLayoutMacrocyclesLattice;
+
 class DLLEXPORT MoleculeLayoutSmoothingSegment {
 
 private:
@@ -269,9 +270,9 @@ protected:
    void _assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignFirstCycle(const Cycle &cycle);
-   void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocycles &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _segment_smoothing_prepearing(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
-   void _segment_calculate_target_angle(const MoleculeLayoutMacrocycles &layout, Array<int> &rotation_vertex, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   void _segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _segment_update_rotation_points(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
