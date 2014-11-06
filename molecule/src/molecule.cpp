@@ -19,6 +19,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_dearom.h"
+#include "molecule/molecule_standardize.h"
 
 using namespace indigo;
 
@@ -1509,4 +1510,11 @@ void Molecule::invalidateAtom (int index, int mask)
 bool Molecule::restoreAromaticHydrogens (bool unambiguous_only)
 {
    return MoleculeDearomatizer::restoreHydrogens(*this, unambiguous_only);
+}
+
+bool Molecule::standardize (const StandardizeOptions &options)
+{
+   //updateEditRevision();
+   return MoleculeStandardizer::standardize(*this, options);
+	//return true;
 }
