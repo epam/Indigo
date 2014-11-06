@@ -1514,7 +1514,6 @@ bool Molecule::restoreAromaticHydrogens (bool unambiguous_only)
 
 bool Molecule::standardize (const StandardizeOptions &options)
 {
-   //updateEditRevision();
+   updateEditRevision();
    return MoleculeStandardizer::standardize(*this, options);
-	//return true;
 }

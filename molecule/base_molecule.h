@@ -24,6 +24,7 @@
 #include "base_cpp/obj_array.h"
 #include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_arom.h"
+#include "molecule/molecule_standardize.h"
 
 #ifdef _WIN32
 #pragma warning(push)

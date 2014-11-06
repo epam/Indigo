@@ -34,11 +34,48 @@ public:
    // Interface function for stadardize molecule
    static bool standardize (Molecule &mol, const StandardizeOptions &options);
 
+   DECL_ERROR;
+
 protected:
-   static void _stadardizeStereo(Molecule &mol);
-   static void _stadardizeCharges(Molecule &mol);
+   static void _standardizeStereo(Molecule &mol);
+   static void _standardizeCharges(Molecule &mol);
    static void _centerMolecule(Molecule &mol);
    static void _removeSingleAtomFragments(Molecule &mol);
+   static void _keepSmallestFragment(Molecule &mol);
+   static void _keepLargestFragment(Molecule &mol);
+   static void _removeLargestFragment(Molecule &mol);
+   static void _makeNonHAtomsCAtoms(Molecule &mol);
+   static void _makeNonHAtomsAAtoms(Molecule &mol);
+   static void _makeNonCHAtomsQAtoms(Molecule &mol);
+   static void _makeAllBondsSingle(Molecule &mol);
+   static void _clearCoordinates(Molecule &mol);
+   static void _fixCoordinateDimension(Molecule &mol);
+   static void _straightenTripleBonds(Molecule &mol);
+   static void _straightenAllenes(Molecule &mol);
+   static void _clearMolecule(Molecule &mol);
+   static void _removeMolecule(Molecule &mol);
+   static void _clearStereo(Molecule &mol);
+   static void _clearEnhancedStereo(Molecule &mol);
+   static void _clearUnknownStereo(Molecule &mol);
+   static void _clearUnknownAtomStereo(Molecule &mol);
+   static void _clearUnknownCisTransBondStereo(Molecule &mol);
+   static void _clearCisTransBondStereo(Molecule &mol);
+   static void _setStereoFromCoordinates(Molecule &mol);
+   static void _repositionStereoBonds(Molecule &mol);
+   static void _repositionAxialStereoBonds(Molecule &mol);
+   static void _fixDirectionOfWedgeBonds(Molecule &mol);
+   static void _clearCharges(Molecule &mol);
+   static void _clearPiBonds(Molecule &mol);
+   static void _clearHighlightColors(Molecule &mol);
+   static void _clearQueryInfo(Molecule &mol);
+   static void _clearAtomLabels(Molecule &mol);
+   static void _clearBondLabels(Molecule &mol);
+   static void _neutralizeBondedZwitterions(Molecule &mol);
+   static void _clearUnusualValence(Molecule &mol);
+   static void _clearIsotopes(Molecule &mol);
+   static void _clearDativeBonds(Molecule &mol);
+   static void _clearHydrogenBonds(Molecule &mol);
+   static void _localizeMarkushRAtomsOnRings(Molecule &mol);
    CP_DECL;
 };
 
