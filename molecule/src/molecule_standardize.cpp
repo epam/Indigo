@@ -15,6 +15,7 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_standardize_options.h"
 #include "molecule/molecule.h"
+#include "molecule/elements.h"
 
 using namespace indigo;
 
@@ -243,7 +244,22 @@ void MoleculeStandardizer::_centerMolecule (Molecule &mol)
 
 void MoleculeStandardizer::_removeSingleAtomFragments (Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   QS_DEF(Array<int>, single_atoms);
+   single_atoms.clear();
+
+   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      int atom_number = mol.getAtomNumber(i);
+      if ((atom_number > ELEM_H) && (atom_number < ELEM_MAX))
+      {
+         if (mol.getAtomConnectivity(i) <= 0)
+            single_atoms.push(i);
+      }
+   }
+
+   if (single_atoms.size() > 0)
+      mol.removeAtoms(single_atoms);
+   
 }
 
 void MoleculeStandardizer::_keepSmallestFragment (Molecule &mol)
@@ -283,7 +299,7 @@ void MoleculeStandardizer::_makeAllBondsSingle(Molecule &mol)
 
 void MoleculeStandardizer::_clearCoordinates(Molecule &mol)
 {
-	mol.clearXyz();
+   mol.clearXyz();
 }
 
 void MoleculeStandardizer::_fixCoordinateDimension(Molecule &mol)
@@ -313,9 +329,9 @@ void MoleculeStandardizer::_removeMolecule(Molecule &mol)
 
 void MoleculeStandardizer::_clearStereo(Molecule &mol)
 {
-	mol.stereocenters.clear();
-	mol.cis_trans.clear();
-	mol.allene_stereo.clear();
+   mol.stereocenters.clear();
+   mol.cis_trans.clear();
+   mol.allene_stereo.clear();
 }
 
 void MoleculeStandardizer::_clearEnhancedStereo(Molecule &mol)
@@ -340,7 +356,7 @@ void MoleculeStandardizer::_clearUnknownCisTransBondStereo(Molecule &mol)
 
 void MoleculeStandardizer::_clearCisTransBondStereo(Molecule &mol)
 {
-	mol.cis_trans.clear();
+   mol.cis_trans.clear();
 }
 
 void MoleculeStandardizer::_setStereoFromCoordinates(Molecule &mol)
@@ -365,10 +381,10 @@ void MoleculeStandardizer::_fixDirectionOfWedgeBonds(Molecule &mol)
 
 void MoleculeStandardizer::_clearCharges(Molecule &mol)
 {
-	for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-	{
-		mol.setAtomCharge(i, 0);
-	}
+   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      mol.setAtomCharge(i, 0);
+   }
 }
 
 void MoleculeStandardizer::_clearPiBonds(Molecule &mol)
@@ -378,7 +394,7 @@ void MoleculeStandardizer::_clearPiBonds(Molecule &mol)
 
 void MoleculeStandardizer::_clearHighlightColors(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   mol.unhighlightAll();
 }
 
 void MoleculeStandardizer::_clearQueryInfo(Molecule &mol)
@@ -408,10 +424,10 @@ void MoleculeStandardizer::_clearUnusualValence(Molecule &mol)
 
 void MoleculeStandardizer::_clearIsotopes(Molecule &mol)
 {
-	for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-	{
-		mol.setAtomIsotope(i, 0);
-	}
+   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      mol.setAtomIsotope(i, 0);
+   }
 }
 
 void MoleculeStandardizer::_clearDativeBonds(Molecule &mol)
