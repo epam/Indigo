@@ -647,6 +647,9 @@ CEXPORT int indigoCountBits (int fingerprint);
 // Counts the number of the coinincident in two fingerprints
 CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2);
 
+//Return one bits string for the fingerprint object
+CEXPORT const char* indigoOneBitsList (int fingerprint);
+
 // Accepts two molecules, two reactions, or two fingerprints.
 // Returns the similarity measure between them.
 // Metrics: "tanimoto", "tversky", "tversky <alpha> <beta>", "euclid-sub" or "normalized-edit"
