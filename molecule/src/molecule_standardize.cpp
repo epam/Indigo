@@ -247,7 +247,7 @@ void MoleculeStandardizer::_removeSingleAtomFragments (Molecule &mol)
    QS_DEF(Array<int>, single_atoms);
    single_atoms.clear();
 
-   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   for (int i : mol.vertices())
    {
       int atom_number = mol.getAtomNumber(i);
       if ((atom_number > ELEM_H) && (atom_number < ELEM_MAX))
@@ -279,7 +279,12 @@ void MoleculeStandardizer::_removeLargestFragment(Molecule &mol)
 
 void MoleculeStandardizer::_makeNonHAtomsCAtoms(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   for (int i : mol.vertices())
+   {
+      int atom_number = mol.getAtomNumber(i);
+      if ((atom_number > ELEM_H) && (atom_number < ELEM_MAX) && (atom_number != ELEM_C))
+        mol.resetAtom(i, ELEM_C);
+   }
 }
 
 void MoleculeStandardizer::_makeNonHAtomsAAtoms(Molecule &mol)
@@ -294,7 +299,11 @@ void MoleculeStandardizer::_makeNonCHAtomsQAtoms(Molecule &mol)
 
 void MoleculeStandardizer::_makeAllBondsSingle(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   for (int i : mol.edges())
+   {
+      if (mol.getBondOrder(i) != BOND_SINGLE)
+         mol.setBondOrder(i, BOND_SINGLE, false);
+   }
 }
 
 void MoleculeStandardizer::_clearCoordinates(Molecule &mol)
@@ -381,7 +390,7 @@ void MoleculeStandardizer::_fixDirectionOfWedgeBonds(Molecule &mol)
 
 void MoleculeStandardizer::_clearCharges(Molecule &mol)
 {
-   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   for (int i : mol.vertices())
    {
       mol.setAtomCharge(i, 0);
    }
@@ -424,7 +433,7 @@ void MoleculeStandardizer::_clearUnusualValence(Molecule &mol)
 
 void MoleculeStandardizer::_clearIsotopes(Molecule &mol)
 {
-   for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   for (int i : mol.vertices())
    {
       mol.setAtomIsotope(i, 0);
    }
