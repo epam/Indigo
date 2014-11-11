@@ -234,7 +234,117 @@ void MoleculeStandardizer::_standardizeStereo (Molecule &mol)
 
 void MoleculeStandardizer::_standardizeCharges (Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   for (int i : mol.vertices())
+   {
+      switch (mol.getAtomNumber(i))
+      {
+      case ELEM_N:
+         if (_getNumberOfBonds(mol, i, BOND_SINGLE, false, 0) == 4)
+         {
+            mol.setAtomCharge(i, +1);
+            if (_getNumberOfBonds(mol, i, BOND_SINGLE, true, ELEM_O) == 1)
+            {
+               const Vertex &v = mol.getVertex(i);
+               for (int j : v.neighbors())
+               {
+                  if ((mol.getAtomNumber(v.neiVertex(j)) == ELEM_O) && (mol.getVertex(v.neiVertex(j)).degree() == 1))
+                     mol.setAtomCharge(v.neiVertex(j), -1);
+               }
+            }
+         }
+         else if ((_getNumberOfBonds(mol, i, BOND_SINGLE, false, 0) == 1) &&
+                  (_getNumberOfBonds(mol, i, BOND_AROMATIC, false, 0) == 2))
+         {
+            mol.setAtomCharge(i, +1);
+            if (_getNumberOfBonds(mol, i, BOND_SINGLE, true, ELEM_O) == 1)
+            {
+               const Vertex &v = mol.getVertex(i);
+               for (int j : v.neighbors())
+               {
+                  if ((mol.getAtomNumber(v.neiVertex(j)) == ELEM_O) && (mol.getVertex(v.neiVertex(j)).degree() == 1))
+                     mol.setAtomCharge(v.neiVertex(j), -1);
+               }
+            }
+         }
+         else if ((_getNumberOfBonds(mol, i, BOND_SINGLE, false, 0) == 2) &&
+                  (_getNumberOfBonds(mol, i, BOND_DOUBLE, false, 0) == 1) &&
+                  (_getNumberOfBonds(mol, i, BOND_SINGLE, true, ELEM_O) == 1))
+         {
+            mol.setAtomCharge(i, +1);
+            const Vertex &v = mol.getVertex(i);
+            for (int j : v.neighbors())
+            {
+               if ((mol.getAtomNumber(v.neiVertex(j)) == ELEM_O) && (mol.getVertex(v.neiVertex(j)).degree() == 1))
+                  mol.setAtomCharge(v.neiVertex(j), -1);
+            }
+         }
+         else if ((_getNumberOfBonds(mol, i, BOND_SINGLE, false, 0) == 2) &&
+                  (_getNumberOfBonds(mol, i, BOND_DOUBLE, false, 0) == 1))
+         {
+            mol.setAtomCharge(i, +1);
+         }
+         break;
+      case ELEM_O:
+         if (mol.getVertex(i).degree() == 3)
+         {
+            mol.setAtomCharge(i, +1);
+         }
+         else if (mol.getVertex(i).degree() == 2)
+         {
+            if (_getNumberOfBonds(mol, i, BOND_SINGLE, false, 0) == 2)
+               break;
+            if ((_getNumberOfBonds(mol, i, BOND_SINGLE, false, ELEM_C) == 1) &&
+                (_getNumberOfBonds(mol, i, BOND_DOUBLE, false, 0) == 1))
+            {
+               mol.setAtomCharge(i, +1);
+            }
+         }
+         break;
+      case ELEM_S:
+         if (mol.getVertex(i).degree() == 3)
+         {
+            mol.setAtomCharge(i, +1);
+         }
+         else if (mol.getVertex(i).degree() == 2)
+         {
+            if (_getNumberOfBonds(mol, i, BOND_SINGLE, false, 0) == 2)
+               break;
+            if ((_getNumberOfBonds(mol, i, BOND_SINGLE, false, ELEM_C) == 1) &&
+                (_getNumberOfBonds(mol, i, BOND_DOUBLE, false, 0) == 1))
+            {
+               mol.setAtomCharge(i, +1);
+            }
+         }
+         break;
+      case ELEM_F:
+         if (mol.getVertex(i).degree() == 0)
+         {
+               mol.setAtomCharge(i, -1);
+         }
+         break;
+      case ELEM_Cl:
+         if (mol.getVertex(i).degree() == 0)
+         {
+               mol.setAtomCharge(i, -1);
+         }
+         break;
+      case ELEM_Br:
+         if (mol.getVertex(i).degree() == 0)
+         {
+               mol.setAtomCharge(i, -1);
+         }
+         break;
+      case ELEM_I:
+         if (mol.getVertex(i).degree() == 0)
+         {
+               mol.setAtomCharge(i, -1);
+         }
+         break;
+
+      default:
+         break;
+      }
+   }
 }
 
 void MoleculeStandardizer::_centerMolecule (Molecule &mol)
@@ -249,7 +359,7 @@ void MoleculeStandardizer::_removeSingleAtomFragments (Molecule &mol)
 
    for (auto i : mol.vertices())
    {
-      int atom_number = mol.getAtomNumber(i);
+      auto atom_number = mol.getAtomNumber(i);
       if ((atom_number > ELEM_H) && (atom_number < ELEM_MAX))
       {
          if (mol.getAtomConnectivity(i) <= 0)
@@ -281,7 +391,7 @@ void MoleculeStandardizer::_makeNonHAtomsCAtoms(Molecule &mol)
 {
    for (auto i : mol.vertices())
    {
-      int atom_number = mol.getAtomNumber(i);
+      auto atom_number = mol.getAtomNumber(i);
       if ((atom_number > ELEM_H) && (atom_number < ELEM_MAX) && (atom_number != ELEM_C))
         mol.resetAtom(i, ELEM_C);
    }
@@ -452,4 +562,25 @@ void MoleculeStandardizer::_clearHydrogenBonds(Molecule &mol)
 void MoleculeStandardizer::_localizeMarkushRAtomsOnRings(Molecule &mol)
 {
    throw Error("Not implemented yet");
+}
+
+int MoleculeStandardizer::_getNumberOfBonds(Molecule &mol, int idx, int bond_type, bool with_element_only, int element)
+{
+   auto num_bonds = 0;
+   const Vertex &v = mol.getVertex(idx);
+
+   for (int i : v.neighbors())
+   {
+      if (with_element_only)
+      {
+         if ((mol.getAtomNumber(v.neiVertex(i)) == element) && (mol.getBondOrder(v.neiEdge(i)) == bond_type))
+            num_bonds++;        
+      }
+      else
+      {
+         if (mol.getBondOrder(v.neiEdge(i)) == bond_type)
+            num_bonds++;        
+      }
+   }
+   return num_bonds;
 }

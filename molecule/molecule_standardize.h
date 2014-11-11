@@ -77,6 +77,9 @@ protected:
    static void _clearHydrogenBonds(Molecule &mol);
    static void _localizeMarkushRAtomsOnRings(Molecule &mol);
    CP_DECL;
+
+private:
+   static int _getNumberOfBonds(Molecule &mol, int idx, int bond_type, bool with_element_only, int element);
 };
 
 }
