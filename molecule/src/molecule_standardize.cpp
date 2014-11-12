@@ -234,7 +234,7 @@ void MoleculeStandardizer::_standardizeStereo (Molecule &mol)
 
 void MoleculeStandardizer::_standardizeCharges (Molecule &mol)
 {
-   for (int i : mol.vertices())
+   for (auto i : mol.vertices())
    {
       switch (mol.getAtomNumber(i))
       {
@@ -349,7 +349,43 @@ void MoleculeStandardizer::_standardizeCharges (Molecule &mol)
 
 void MoleculeStandardizer::_centerMolecule (Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   if (!Molecule::hasCoord(mol))
+      return;
+
+   Vec3f mol_min = Vec3f(INFINITY, INFINITY, INFINITY);
+   Vec3f mol_max = Vec3f(-INFINITY, -INFINITY, -INFINITY);
+   Vec3f mol_center = Vec3f(0, 0, 0);
+    
+   for (auto i : mol.vertices())
+   {
+      Vec3f &xyz = mol.getAtomXyz(i);
+      if (xyz.x < mol_min.x)
+         mol_min.x = xyz.x;
+      if (xyz.y < mol_min.y)
+         mol_min.y = xyz.y;
+      if (xyz.z < mol_min.z)
+         mol_min.z = xyz.z;
+
+      if (xyz.x > mol_max.x)
+         mol_max.x = xyz.x;
+      if (xyz.y > mol_max.y)
+         mol_max.y = xyz.y;
+      if (xyz.z > mol_max.z)
+         mol_max.z = xyz.z;
+   }
+
+   mol_center.x = (mol_min.x + mol_max.x)/2;
+   mol_center.y = (mol_min.y + mol_max.y)/2;
+   mol_center.z = (mol_min.z + mol_max.z)/2;
+
+   for (auto i : mol.vertices())
+   {
+      Vec3f &xyz = mol.getAtomXyz(i);
+      xyz.x -= mol_center.x;
+      xyz.y -= mol_center.y;
+      xyz.z -= mol_center.z;
+      mol.setAtomXyz(i, xyz);
+   }
 }
 
 void MoleculeStandardizer::_removeSingleAtomFragments (Molecule &mol)
@@ -362,7 +398,7 @@ void MoleculeStandardizer::_removeSingleAtomFragments (Molecule &mol)
       auto atom_number = mol.getAtomNumber(i);
       if ((atom_number > ELEM_H) && (atom_number < ELEM_MAX))
       {
-         if (mol.getAtomConnectivity(i) <= 0)
+         if (mol.getVertex(i).degree() == 0)
             single_atoms.push(i);
       }
    }
@@ -569,7 +605,7 @@ int MoleculeStandardizer::_getNumberOfBonds(Molecule &mol, int idx, int bond_typ
    auto num_bonds = 0;
    const Vertex &v = mol.getVertex(idx);
 
-   for (int i : v.neighbors())
+   for (auto i : v.neighbors())
    {
       if (with_element_only)
       {
