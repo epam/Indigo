@@ -410,17 +410,99 @@ void MoleculeStandardizer::_removeSingleAtomFragments (Molecule &mol)
 
 void MoleculeStandardizer::_keepSmallestFragment (Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   if (mol.vertexCount() <= 1)
+      return;
+
+   auto ncomp = mol.countComponents();
+   if (ncomp == 1)
+      return;
+
+   auto min_size = mol.vertexCount();
+   auto min_comp = 0;
+   for (auto i = 0; i < ncomp; i++)
+   {
+      if (mol.countComponentVertices(i) < min_size)
+      {
+         min_size = mol.countComponentVertices(i);
+         min_comp = i;
+      }  
+   }
+
+   QS_DEF(Array<int>, remove_atoms);
+   remove_atoms.clear();
+
+   for (auto i : mol.vertices())
+   {
+      if (mol.vertexComponent(i) != min_comp)
+         remove_atoms.push(i);
+   }
+
+   mol.removeAtoms(remove_atoms);
 }
 
 void MoleculeStandardizer::_keepLargestFragment(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+
+   if (mol.vertexCount() <= 1)
+      return;
+
+   auto ncomp = mol.countComponents();
+   if (ncomp == 1)
+      return;
+
+   auto max_size = 0;
+   auto max_comp = 0;
+   for (auto i = 0; i < ncomp; i++)
+   {
+      if (mol.countComponentVertices(i) > max_size)
+      {
+         max_size = mol.countComponentVertices(i);
+         max_comp = i;
+      }  
+   }
+
+   QS_DEF(Array<int>, remove_atoms);
+   remove_atoms.clear();
+
+   for (auto i : mol.vertices())
+   {
+      if (mol.vertexComponent(i) != max_comp)
+         remove_atoms.push(i);
+   }
+
+   mol.removeAtoms(remove_atoms);
 }
 
 void MoleculeStandardizer::_removeLargestFragment(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   if (mol.vertexCount() <= 1)
+      return;
+
+   auto ncomp = mol.countComponents();
+   if (ncomp == 1)
+      return;
+
+   auto max_size = 0;
+   auto max_comp = 0;
+   for (auto i = 0; i < ncomp; i++)
+   {
+      if (mol.countComponentVertices(i) > max_size)
+      {
+         max_size = mol.countComponentVertices(i);
+         max_comp = i;
+      }  
+   }
+
+   QS_DEF(Array<int>, remove_atoms);
+   remove_atoms.clear();
+
+   for (auto i : mol.vertices())
+   {
+      if (mol.vertexComponent(i) == max_comp)
+         remove_atoms.push(i);
+   }
+
+   mol.removeAtoms(remove_atoms);
 }
 
 void MoleculeStandardizer::_makeNonHAtomsCAtoms(Molecule &mol)
@@ -435,12 +517,12 @@ void MoleculeStandardizer::_makeNonHAtomsCAtoms(Molecule &mol)
 
 void MoleculeStandardizer::_makeNonHAtomsAAtoms(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   throw Error("Available only for QueryMolecule object");
 }
 
 void MoleculeStandardizer::_makeNonCHAtomsQAtoms(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   throw Error("Available only for QueryMolecule object");
 }
 
 void MoleculeStandardizer::_makeAllBondsSingle(Molecule &mol)
@@ -554,7 +636,7 @@ void MoleculeStandardizer::_clearHighlightColors(Molecule &mol)
 
 void MoleculeStandardizer::_clearQueryInfo(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   throw Error("Available only for QueryMolecule object");
 }
 
 void MoleculeStandardizer::_clearAtomLabels(Molecule &mol)
