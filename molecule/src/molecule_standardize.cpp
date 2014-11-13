@@ -674,11 +674,54 @@ void MoleculeStandardizer::_clearBondLabels(Molecule &mol)
 
 void MoleculeStandardizer::_neutralizeBondedZwitterions(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   for (auto i : mol.vertices())
+   {
+      switch (mol.getAtomNumber(i))
+      {
+      case ELEM_C:
+         if (mol.getAtomCharge(i) != 0)
+         {
+            const Vertex &v = mol.getVertex(i);
+            for (int j : v.neighbors())
+            {
+               if ((mol.getAtomNumber(v.neiVertex(j)) == ELEM_C) && (mol.getAtomCharge(v.neiVertex(j)) != 0))
+               {
+                  int c1 = mol.getAtomCharge(i);
+                  int c2 = mol.getAtomCharge(v.neiVertex(j));
+                  int bond = mol.getBondOrder(v.neiEdge(j));
+                  if ((c1 > 0) && (c2 < 0) && (bond != BOND_TRIPLE))
+                  {
+                     mol.setAtomCharge(i, c1 - 1);
+                     mol.setAtomCharge(v.neiVertex(j), c2 + 1);
+                     if (bond == BOND_SINGLE)
+                        mol.setBondOrder(v.neiEdge(j), BOND_DOUBLE);
+                     else if (bond == BOND_DOUBLE)
+                        mol.setBondOrder(v.neiEdge(j), BOND_TRIPLE);
+                  }
+                  if ((c1 < 0) && (c2 > 0) && (bond != BOND_TRIPLE))
+                  {
+                     mol.setAtomCharge(i, c1 + 1);
+                     mol.setAtomCharge(v.neiVertex(j), c2 - 1);
+                     if (bond == BOND_SINGLE)
+                        mol.setBondOrder(v.neiEdge(j), BOND_DOUBLE);
+                     else if (bond == BOND_DOUBLE)
+                        mol.setBondOrder(v.neiEdge(j), BOND_TRIPLE);
+                  }
+               }   
+            }
+         }
+         break;
+
+      default:
+         break;
+      }
+   }
 }
 
 void MoleculeStandardizer::_clearUnusualValence(Molecule &mol)
 {
+
+
    throw Error("Not implemented yet");
 }
 
