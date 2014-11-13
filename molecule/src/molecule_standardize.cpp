@@ -517,12 +517,12 @@ void MoleculeStandardizer::_makeNonHAtomsCAtoms(Molecule &mol)
 
 void MoleculeStandardizer::_makeNonHAtomsAAtoms(Molecule &mol)
 {
-   throw Error("Available only for QueryMolecule object");
+   throw Error("This option is available only for QueryMolecule object");
 }
 
 void MoleculeStandardizer::_makeNonCHAtomsQAtoms(Molecule &mol)
 {
-   throw Error("Available only for QueryMolecule object");
+   throw Error("This option is available only for QueryMolecule object");
 }
 
 void MoleculeStandardizer::_makeAllBondsSingle(Molecule &mol)
@@ -541,17 +541,40 @@ void MoleculeStandardizer::_clearCoordinates(Molecule &mol)
 
 void MoleculeStandardizer::_fixCoordinateDimension(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   throw Error("This option is not used for Indigo");
 }
 
 void MoleculeStandardizer::_straightenTripleBonds(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   if (!Molecule::hasCoord(mol) || (mol.vertexCount() < 2))
+      return;
+
+   for (auto i : mol.vertices())
+   {
+      if ((mol.getVertex(i).degree() == 2) &&
+          (_getNumberOfBonds(mol, i, BOND_TRIPLE, false, 0) == 1))
+      {
+         if (!isFragmentLinear(mol, i))
+           _linearizeFragment(mol, i);
+      }
+   }
 }
 
 void MoleculeStandardizer::_straightenAllenes(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   if (!Molecule::hasCoord(mol) || (mol.vertexCount() < 3))
+      return;
+
+   for (auto i : mol.vertices())
+   {
+      if ((mol.getAtomNumber(i) == ELEM_C) &&
+          (mol.getVertex(i).degree() == 2) && 
+          (_getNumberOfBonds(mol, i, BOND_DOUBLE, true, ELEM_C) == 2))
+      {
+         if (!isFragmentLinear(mol, i))
+           _linearizeFragment(mol, i);
+      }
+   }
 }
 
 void MoleculeStandardizer::_clearMolecule(Molecule &mol)
@@ -636,7 +659,7 @@ void MoleculeStandardizer::_clearHighlightColors(Molecule &mol)
 
 void MoleculeStandardizer::_clearQueryInfo(Molecule &mol)
 {
-   throw Error("Available only for QueryMolecule object");
+   throw Error("This option is available only for QueryMolecule object");
 }
 
 void MoleculeStandardizer::_clearAtomLabels(Molecule &mol)
@@ -701,4 +724,50 @@ int MoleculeStandardizer::_getNumberOfBonds(Molecule &mol, int idx, int bond_typ
       }
    }
    return num_bonds;
+}
+
+bool MoleculeStandardizer::isFragmentLinear(Molecule &mol, int idx)
+{
+   Vec3f &central_atom = mol.getAtomXyz(idx);
+   const Vertex &v = mol.getVertex(idx);
+
+   Vec3f nei_coords[2];
+   int nei_count = 0;
+   for (auto i : v.neighbors())
+   {
+      nei_coords[nei_count++] = mol.getAtomXyz(v.neiVertex(i));
+   }
+
+   Vec3f bond1, bond2;
+   bond1.diff(nei_coords[0], central_atom);
+   bond1.normalize();
+   bond2.diff(nei_coords[1], central_atom);
+   bond2.normalize();
+
+   float angle;
+   Vec3f::angle(bond1, bond2, angle);
+
+   if (fabs(angle - PI) > EPSILON)
+      return false;
+
+   return true;
+}
+
+void MoleculeStandardizer::_linearizeFragment(Molecule &mol, int idx)
+{
+   Vec3f &central_atom = mol.getAtomXyz(idx);
+   const Vertex &v = mol.getVertex(idx);
+
+   Vec3f nei_coords[2];
+   int nei_count = 0;
+   for (auto i : v.neighbors())
+   {
+      nei_coords[nei_count++] = mol.getAtomXyz(v.neiVertex(i));
+   }
+
+   central_atom.x = (nei_coords[0].x + nei_coords[1].x)/2;
+   central_atom.y = (nei_coords[0].y + nei_coords[1].y)/2;
+   central_atom.z = (nei_coords[0].z + nei_coords[1].z)/2;
+
+   mol.setAtomXyz(idx, central_atom);
 }

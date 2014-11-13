@@ -34,6 +34,8 @@ public:
    // Interface function for stadardize molecule
    static bool standardize (Molecule &mol, const StandardizeOptions &options);
 
+   static bool isFragmentLinear(Molecule &mol, int idx);
+
    DECL_ERROR;
 
 protected:
@@ -80,6 +82,8 @@ protected:
 
 private:
    static int _getNumberOfBonds(Molecule &mol, int idx, int bond_type, bool with_element_only, int element);
+   static void _linearizeFragment(Molecule &mol, int idx);
+
 };
 
 }
