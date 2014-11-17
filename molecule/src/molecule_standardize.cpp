@@ -16,6 +16,7 @@
 #include "molecule/molecule_standardize_options.h"
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
+#include "molecule/molecule_stereocenters.h"
 
 using namespace indigo;
 
@@ -229,7 +230,42 @@ bool MoleculeStandardizer::standardize (Molecule &mol, const StandardizeOptions 
 
 void MoleculeStandardizer::_standardizeStereo (Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   for (auto i : mol.vertices())
+   {
+      if (mol.stereocenters.isPossibleStereocenter(i))
+      {
+         if (mol.stereocenters.exists(i))
+            continue;
+         else
+            mol.stereocenters.add(i, MoleculeStereocenters::ATOM_ANY, 0, false);
+      }
+      else
+      {
+         if (mol.stereocenters.exists(i))
+            mol.stereocenters.remove(i);
+         else
+            continue;
+      }
+   }
+
+   for (auto i : mol.edges())
+   {
+      if (MoleculeCisTrans::isGeomStereoBond(mol, i, 0, false))
+      {
+         if (mol.bondStereoCare(i))
+            continue;
+         else
+            if (mol.cis_trans.registerBondAndSubstituents(i))
+               mol.cis_trans.setParity(i, 0);
+      }
+      else
+      {
+         if (mol.bondStereoCare(i))
+            mol.cis_trans.setParity(i, 0);
+         else
+            continue;
+      }
+   }
 }
 
 void MoleculeStandardizer::_standardizeCharges (Molecule &mol)
@@ -621,7 +657,11 @@ void MoleculeStandardizer::_clearCisTransBondStereo(Molecule &mol)
 
 void MoleculeStandardizer::_setStereoFromCoordinates(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   if (!Molecule::hasCoord(mol))
+      return;
+
+   mol.stereocenters.clear();
+   mol.stereocenters.buildFrom3dCoordinates();
 }
 
 void MoleculeStandardizer::_repositionStereoBonds(Molecule &mol)
@@ -664,12 +704,12 @@ void MoleculeStandardizer::_clearQueryInfo(Molecule &mol)
 
 void MoleculeStandardizer::_clearAtomLabels(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   throw Error("This option is available only for QueryMolecule object?");
 }
 
 void MoleculeStandardizer::_clearBondLabels(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   throw Error("This option is available only for QueryMolecule object?");
 }
 
 void MoleculeStandardizer::_neutralizeBondedZwitterions(Molecule &mol)
@@ -735,17 +775,17 @@ void MoleculeStandardizer::_clearIsotopes(Molecule &mol)
 
 void MoleculeStandardizer::_clearDativeBonds(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   throw Error("This option is not used for Indigo (V3000 bond type-9 unsupported)");
 }
 
 void MoleculeStandardizer::_clearHydrogenBonds(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   throw Error("This option is not used for Indigo (V3000 bond type-10 unsupported)");
 }
 
 void MoleculeStandardizer::_localizeMarkushRAtomsOnRings(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   throw Error("This option is available only for QueryMolecule object?");
 }
 
 int MoleculeStandardizer::_getNumberOfBonds(Molecule &mol, int idx, int bond_type, bool with_element_only, int element)
