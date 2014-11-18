@@ -625,34 +625,92 @@ void MoleculeStandardizer::_removeMolecule(Molecule &mol)
 
 void MoleculeStandardizer::_clearStereo(Molecule &mol)
 {
-   mol.stereocenters.clear();
-   mol.cis_trans.clear();
+   for (auto i : mol.vertices())
+   {
+      if (mol.stereocenters.exists(i))
+         mol.stereocenters.setType(i, 0, 0);
+   }
+
+   for (auto i : mol.edges())
+   {
+      if (mol.getBondDirection(i) > 0)
+         mol.setBondDirection(i, 0);
+   }
+
+   if (mol.cis_trans.exists())
+   {
+      for (auto i : mol.edges())
+      {
+         if (mol.cis_trans.getParity(i) > 0)
+            mol.cis_trans.setParity(i, 0);
+      }
+   }
+
    mol.allene_stereo.clear();
 }
 
 void MoleculeStandardizer::_clearEnhancedStereo(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   for (auto i : mol.vertices())
+   {
+      if (mol.stereocenters.exists(i))
+      {
+         mol.stereocenters.setType(i, 0, 0);
+      }
+   }
 }
 
 void MoleculeStandardizer::_clearUnknownStereo(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   for (auto i : mol.vertices())
+   {
+      if (mol.stereocenters.exists(i) && (mol.stereocenters.getType(i) == MoleculeStereocenters::ATOM_ANY)) 
+         mol.stereocenters.setType(i, 0, 0);
+   }
+
+   for (auto i : mol.edges())
+   {
+      if (mol.getBondDirection(i) == BOND_EITHER)
+         mol.setBondDirection(i, 0);
+   }
 }
 
 void MoleculeStandardizer::_clearUnknownAtomStereo(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   for (auto i : mol.vertices())
+   {
+      if (mol.stereocenters.exists(i) && (mol.stereocenters.getType(i) == MoleculeStereocenters::ATOM_ANY)) 
+         mol.stereocenters.setType(i, 0, 0);
+   }
 }
 
 void MoleculeStandardizer::_clearUnknownCisTransBondStereo(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   if (mol.cis_trans.exists())
+   {
+      for (auto i : mol.edges())
+      {
+         if ((mol.cis_trans.getParity(i) == 0) && (mol.getBondDirection(i) == BOND_EITHER))
+         {
+            mol.setBondDirection(i, 0);
+         }
+      }
+   }
 }
 
 void MoleculeStandardizer::_clearCisTransBondStereo(Molecule &mol)
 {
-   mol.cis_trans.clear();
+   if (mol.cis_trans.exists())
+   {
+      for (auto i : mol.edges())
+      {
+         if (mol.cis_trans.getParity(i) > 0)
+         {
+            mol.setBondDirection(i, BOND_EITHER);
+            mol.cis_trans.setParity(i, 0);
+         }
+      }
+   }
 }
 
 void MoleculeStandardizer::_setStereoFromCoordinates(Molecule &mol)
