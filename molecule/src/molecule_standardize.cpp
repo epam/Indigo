@@ -17,6 +17,8 @@
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_stereocenters.h"
+#include "molecule/molecule_stereocenter_options.h"
+#include "molecule/molecule_automorphism_search.h"
 
 using namespace indigo;
 
@@ -230,9 +232,26 @@ bool MoleculeStandardizer::standardize (Molecule &mol, const StandardizeOptions 
 
 void MoleculeStandardizer::_standardizeStereo (Molecule &mol)
 {
+   QS_DEF(Array<int>, ignored);
+
+   ignored.clear_resize(mol.vertexEnd());
+   ignored.zerofill();
+
+   for (auto i : mol.vertices())
+      if (mol.convertableToImplicitHydrogen(i))
+         ignored[i] = 1;
+
+   MoleculeAutomorphismSearch as;
+
+   as.detect_invalid_cistrans_bonds = true;
+   as.detect_invalid_stereocenters = true;
+   as.find_canonical_ordering = false;
+   as.ignored_vertices = ignored.ptr();
+   as.process(mol);
+
    for (auto i : mol.vertices())
    {
-      if (mol.stereocenters.isPossibleStereocenter(i))
+      if ((mol.stereocenters.isPossibleStereocenter(i)) && !as.invalidStereocenter(i))
       {
          if (mol.stereocenters.exists(i))
             continue;
@@ -242,7 +261,7 @@ void MoleculeStandardizer::_standardizeStereo (Molecule &mol)
       else
       {
          if (mol.stereocenters.exists(i))
-            mol.stereocenters.remove(i);
+            mol.stereocenters.setType(i, 0, 0);
          else
             continue;
       }
@@ -250,9 +269,9 @@ void MoleculeStandardizer::_standardizeStereo (Molecule &mol)
 
    for (auto i : mol.edges())
    {
-      if (MoleculeCisTrans::isGeomStereoBond(mol, i, 0, false))
+      if (!as.invalidCisTransBond(i))
       {
-         if (mol.bondStereoCare(i))
+         if (mol.cis_trans.getParity(i) > 0)
             continue;
          else
             if (mol.cis_trans.registerBondAndSubstituents(i))
@@ -260,7 +279,7 @@ void MoleculeStandardizer::_standardizeStereo (Molecule &mol)
       }
       else
       {
-         if (mol.bondStereoCare(i))
+         if (mol.cis_trans.getParity(i) > 0)
             mol.cis_trans.setParity(i, 0);
          else
             continue;
@@ -719,22 +738,47 @@ void MoleculeStandardizer::_setStereoFromCoordinates(Molecule &mol)
       return;
 
    mol.stereocenters.clear();
-   mol.stereocenters.buildFrom3dCoordinates();
+   mol.cis_trans.clear();
+   mol.allene_stereo.clear();
+
+   StereocentersOptions options;
+   QS_DEF(Array<int>, sensible_bond_orientations);
+   sensible_bond_orientations.clear_resize(mol.vertexEnd());
+
+   mol.stereocenters.buildFromBonds(options, sensible_bond_orientations.ptr());
+   mol.allene_stereo.buildFromBonds(options.ignore_errors, sensible_bond_orientations.ptr());
+   mol.cis_trans.build(0);
+
+   if (mol.stereocenters.size() == 0)
+      mol.stereocenters.buildFrom3dCoordinates();
+
 }
 
 void MoleculeStandardizer::_repositionStereoBonds(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   if (Molecule::hasCoord(mol))
+      mol.stereocenters.markBonds();
 }
 
 void MoleculeStandardizer::_repositionAxialStereoBonds(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   if (Molecule::hasCoord(mol))
+      mol.allene_stereo.markBonds();
 }
 
 void MoleculeStandardizer::_fixDirectionOfWedgeBonds(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   for (auto i : mol.vertices())
+   {
+      if (!mol.stereocenters.exists(i))
+      {
+         const Vertex &vertex = mol.getVertex(i);
+
+         for (int j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+            if (mol.getBondDirection2(i, vertex.neiVertex(j)) > 0)
+               mol.setBondDirection(vertex.neiEdge(j), 0);
+      }
+   }
 }
 
 void MoleculeStandardizer::_clearCharges(Molecule &mol)
@@ -747,7 +791,7 @@ void MoleculeStandardizer::_clearCharges(Molecule &mol)
 
 void MoleculeStandardizer::_clearPiBonds(Molecule &mol)
 {
-   throw Error("Not implemented yet");
+   throw Error("This option is not used for Indigo");
 }
 
 void MoleculeStandardizer::_clearHighlightColors(Molecule &mol)
@@ -818,9 +862,7 @@ void MoleculeStandardizer::_neutralizeBondedZwitterions(Molecule &mol)
 
 void MoleculeStandardizer::_clearUnusualValence(Molecule &mol)
 {
-
-
-   throw Error("Not implemented yet");
+   throw Error("This option is available only for QueryMolecule object");
 }
 
 void MoleculeStandardizer::_clearIsotopes(Molecule &mol)
