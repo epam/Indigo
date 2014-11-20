@@ -243,7 +243,6 @@ void AnswerField::_restore_path(Vec2f* point, answer_point finish) {
          int add = max(0, _vertex_weight[len] * (path[len + 1].p ? -1 : 1));
 
          // choosing rotation closer to circle
-         // len == k
          double l = len * (sqrt(3.0) + 1.5) * PI / 12;
 
          Vec2f vec(path[len].y, 0);
@@ -253,7 +252,7 @@ void AnswerField::_restore_path(Vec2f* point, answer_point finish) {
 
          double eps = 1e-3;
 
-         double alpha = 0;
+         double alpha = 2 * PI;
          if (x > eps) {
 
             double L = eps;
@@ -269,7 +268,7 @@ void AnswerField::_restore_path(Vec2f* point, answer_point finish) {
 
          }
 
-         int preferred_p = ((alpha < PI / 3 * (path[len].rot) + PI / length)) ^ 1;
+         int preferred_p = alpha > PI / 3 * (path[len].rot) + PI / 6 / length;
 
          path[len].p = preferred_p ^ 1;
 
