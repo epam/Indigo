@@ -275,7 +275,10 @@ void MoleculeStandardizer::_standardizeStereo (Molecule &mol)
             continue;
          else
             if (mol.cis_trans.registerBondAndSubstituents(i))
+            {
+               mol.setBondDirection(i, BOND_EITHER);
                mol.cis_trans.setParity(i, 0);
+            }
       }
       else
       {
