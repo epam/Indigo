@@ -408,7 +408,8 @@ void MoleculeStandardizer::_standardizeCharges (Molecule &mol)
 void MoleculeStandardizer::_centerMolecule (Molecule &mol)
 {
    if (!Molecule::hasCoord(mol))
-      return;
+      throw Error("Atoms coordinates are not defined");
+
 
    Vec3f mol_min = Vec3f(INFINITY, INFINITY, INFINITY);
    Vec3f mol_max = Vec3f(-INFINITY, -INFINITY, -INFINITY);
@@ -605,7 +606,7 @@ void MoleculeStandardizer::_fixCoordinateDimension(Molecule &mol)
 void MoleculeStandardizer::_straightenTripleBonds(Molecule &mol)
 {
    if (!Molecule::hasCoord(mol) || (mol.vertexCount() < 2))
-      return;
+      throw Error("Atoms coordinates are not defined or too few atoms");
 
    for (auto i : mol.vertices())
    {
@@ -621,7 +622,7 @@ void MoleculeStandardizer::_straightenTripleBonds(Molecule &mol)
 void MoleculeStandardizer::_straightenAllenes(Molecule &mol)
 {
    if (!Molecule::hasCoord(mol) || (mol.vertexCount() < 3))
-      return;
+      throw Error("Atoms coordinates are not defined or too few atoms");
 
    for (auto i : mol.vertices())
    {
@@ -738,7 +739,7 @@ void MoleculeStandardizer::_clearCisTransBondStereo(Molecule &mol)
 void MoleculeStandardizer::_setStereoFromCoordinates(Molecule &mol)
 {
    if (!Molecule::hasCoord(mol))
-      return;
+      throw Error("Atoms coordinates are not defined");
 
    mol.stereocenters.clear();
    mol.cis_trans.clear();
@@ -759,12 +760,18 @@ void MoleculeStandardizer::_setStereoFromCoordinates(Molecule &mol)
 
 void MoleculeStandardizer::_repositionStereoBonds(Molecule &mol)
 {
+   if (!Molecule::hasCoord(mol))
+      throw Error("Atoms coordinates are not defined");
+
    if (Molecule::hasCoord(mol))
       mol.stereocenters.markBonds();
 }
 
 void MoleculeStandardizer::_repositionAxialStereoBonds(Molecule &mol)
 {
+   if (!Molecule::hasCoord(mol))
+      throw Error("Atoms coordinates are not defined");
+
    if (Molecule::hasCoord(mol))
       mol.allene_stereo.markBonds();
 }
