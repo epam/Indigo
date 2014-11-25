@@ -24,12 +24,11 @@ namespace bingo
 
       virtual ~SimCoef () {};
 
-      virtual double calcCoef (const byte *f1, const byte *f2, int f1_bit_count, int f2_bit_count) = 0;
+      virtual double calcCoef (const byte *target, const byte *query, int target_bit_count, int query_bit_count ) = 0;
 
-      virtual double calcUpperBound (int f1_bit_count, int min_f2_bit_count, int max_f2_bit_count) = 0;
+      virtual double calcUpperBound (int query_bit_count, int min_target_bit_count, int max_target_bit_count ) = 0;
 
-      virtual double calcUpperBound (int f1_bit_count, int min_f2_bit_count, int max_f2_bit_count, 
-                                     int m10, int m01) = 0;
+      virtual double calcUpperBound (int query_bit_count, int min_target_bit_count, int max_target_bit_count, int m10, int m01 ) = 0;
    };
 };
 

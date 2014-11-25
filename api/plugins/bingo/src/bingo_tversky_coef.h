@@ -14,11 +14,11 @@ namespace bingo
 
       TverskyCoef (int fp_size, double a, double b);
 
-      double calcCoef (const byte *f1, const byte *f2, int f1_bit_count, int f2_bit_count );
+      double calcCoef (const byte *target, const byte *query, int target_bit_count, int query_bit_count );
 
-      double calcUpperBound (int f1_bit_count, int min_f2_bit_count, int max_f2_bit_count );
+      double calcUpperBound (int query_bit_count, int min_target_bit_count, int max_target_bit_count );
 
-      double calcUpperBound (int f1_bit_count, int min_f2_bit_count, int max_f2_bit_count, int m10, int m01 );
+      double calcUpperBound (int query_bit_count, int min_target_bit_count, int max_target_bit_count, int m10, int m01 );
 
    private:
       int _fp_size;
