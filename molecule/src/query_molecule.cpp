@@ -16,6 +16,7 @@
 #include "molecule/molecule_arom.h"
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
+#include "molecule/molecule_standardize.h"
 
 using namespace indigo;
 
@@ -2021,4 +2022,10 @@ void QueryMolecule::optimize ()
    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
       getAtom(i).optimize();
    updateEditRevision();
+}
+
+bool QueryMolecule::standardize (const StandardizeOptions &options)
+{
+   updateEditRevision();
+   return MoleculeStandardizer::standardize(*this, options);
 }

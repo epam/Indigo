@@ -14,7 +14,9 @@
 
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_standardize_options.h"
+#include "molecule/base_molecule.h"
 #include "molecule/molecule.h"
+#include "molecule/query_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_stereocenter_options.h"
@@ -31,7 +33,6 @@ CP_INIT{
 
 bool MoleculeStandardizer::standardize (Molecule &mol, const StandardizeOptions &options)
 {
-
    if (options.standardize_stereo)
    {
       _standardizeStereo(mol);
@@ -230,6 +231,207 @@ bool MoleculeStandardizer::standardize (Molecule &mol, const StandardizeOptions 
    return true;
 }
 
+bool MoleculeStandardizer::standardize (QueryMolecule &query, const StandardizeOptions &options)
+{
+   if (options.standardize_stereo)
+   {
+      _standardizeStereo(query);
+   }
+
+   if (options.standardize_charges)
+   {
+      _standardizeCharges(query);
+   }
+
+   if (options.center_molecule)
+   {
+      _centerMolecule(query);
+   }
+
+   if (options.remove_single_atom_fragments)
+   {
+      _removeSingleAtomFragments(query);
+   }
+
+   if (options.keep_smallest_fragment)
+   {
+      _keepSmallestFragment(query);
+   }
+
+   if (options.keep_largest_fragment)
+   {
+      _keepLargestFragment(query);
+   }
+
+   if (options.remove_largest_fragment)
+   {
+      _removeLargestFragment(query);
+   }
+
+   if (options.make_non_h_atoms_c_atoms)
+   {
+      _makeNonHAtomsCAtoms(query);
+   }
+
+   if (options.make_non_h_atoms_a_atoms)
+   {
+      _makeNonHAtomsAAtoms(query);
+   }
+
+   if (options.make_non_c_h_atoms_q_atoms)
+   {
+      _makeNonCHAtomsQAtoms(query);
+   }
+
+   if (options.make_all_bonds_single)
+   {
+      _makeAllBondsSingle(query);
+   }
+
+   if (options.clear_coordinates)
+   {
+      _clearCoordinates(query);
+   }
+
+   if (options.fix_coordinate_dimension)
+   {
+      _fixCoordinateDimension(query);
+   }
+
+   if (options.straighten_triple_bonds)
+   {
+      _straightenTripleBonds(query);
+   }
+
+   if (options.straighten_allenes)
+   {
+      _straightenAllenes(query);
+   }
+
+   if (options.clear_molecule)
+   {
+      _clearMolecule(query);
+   }
+
+   if (options.remove_molecule)
+   {
+      _removeMolecule(query);
+   }
+
+   if (options.clear_stereo)
+   {
+      _clearStereo(query);
+   }
+
+   if (options.clear_enhanced_stereo)
+   {
+      _clearEnhancedStereo(query);
+   }
+
+   if (options.clear_unknown_stereo)
+   {
+      _clearUnknownStereo(query);
+   }
+
+   if (options.clear_unknown_atom_stereo)
+   {
+      _clearUnknownAtomStereo(query);
+   }
+
+   if (options.clear_unknown_cis_trans_bond_stereo)
+   {
+      _clearUnknownCisTransBondStereo(query);
+   }
+
+   if (options.clear_cis_trans_bond_stereo)
+   {
+      _clearCisTransBondStereo(query);
+   }
+
+   if (options.set_stereo_from_coordinates)
+   {
+      _setStereoFromCoordinates(query);
+   }
+
+   if (options.reposition_stereo_bonds)
+   {
+      _repositionStereoBonds(query);
+   }
+
+   if (options.reposition_axial_stereo_bonds)
+   {
+      _repositionAxialStereoBonds(query);
+   }
+
+   if (options.fix_direction_of_wedge_bonds)
+   {
+      _fixDirectionOfWedgeBonds(query);
+   }
+
+   if (options.clear_charges)
+   {
+      _clearCharges(query);
+   }
+
+   if (options.clear_pi_bonds)
+   {
+      _clearPiBonds(query);
+   }
+
+   if (options.clear_highlight_colors)
+   {
+      _clearHighlightColors(query);
+   }
+
+   if (options.clear_query_info)
+   {
+      _clearQueryInfo(query);
+   }
+
+   if (options.clear_atom_labels)
+   {
+      _clearAtomLabels(query);
+   }
+
+   if (options.clear_bond_labels)
+   {
+      _clearBondLabels(query);
+   }
+
+   if (options.neutralize_bonded_zwitterions)
+   {
+      _neutralizeBondedZwitterions(query);
+   }
+
+   if (options.clear_unusual_valence)
+   {
+      _clearUnusualValence(query);
+   }
+
+   if (options.clear_isotopes)
+   {
+      _clearIsotopes(query);
+   }
+
+   if (options.clear_dative_bonds)
+   {
+      _clearDativeBonds(query);
+   }
+
+   if (options.clear_hydrogen_bonds)
+   {
+      _clearHydrogenBonds(query);
+   }
+
+   if (options.localize_markush_r_atoms_on_rings)
+   {
+      _localizeMarkushRAtomsOnRings(query);
+   }
+
+   return true;
+}
+
+
 void MoleculeStandardizer::_standardizeStereo (Molecule &mol)
 {
    QS_DEF(Array<int>, ignored);
@@ -288,6 +490,11 @@ void MoleculeStandardizer::_standardizeStereo (Molecule &mol)
             continue;
       }
    }
+}
+
+void MoleculeStandardizer::_standardizeStereo (QueryMolecule &mol)
+{
+   throw Error("This option is not available for QueryMolecule object");
 }
 
 void MoleculeStandardizer::_standardizeCharges (Molecule &mol)
@@ -405,7 +612,12 @@ void MoleculeStandardizer::_standardizeCharges (Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_centerMolecule (Molecule &mol)
+void MoleculeStandardizer::_standardizeCharges (QueryMolecule &mol)
+{
+   throw Error("This option is not available for QueryMolecule object");
+}
+
+void MoleculeStandardizer::_centerMolecule (BaseMolecule &mol)
 {
    if (!Molecule::hasCoord(mol))
       throw Error("Atoms coordinates are not defined");
@@ -447,7 +659,7 @@ void MoleculeStandardizer::_centerMolecule (Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_removeSingleAtomFragments (Molecule &mol)
+void MoleculeStandardizer::_removeSingleAtomFragments (BaseMolecule &mol)
 {
    QS_DEF(Array<int>, single_atoms);
    single_atoms.clear();
@@ -455,7 +667,7 @@ void MoleculeStandardizer::_removeSingleAtomFragments (Molecule &mol)
    for (auto i : mol.vertices())
    {
       auto atom_number = mol.getAtomNumber(i);
-      if ((atom_number > ELEM_H) && (atom_number < ELEM_MAX))
+      if (atom_number != ELEM_H)
       {
          if (mol.getVertex(i).degree() == 0)
             single_atoms.push(i);
@@ -467,7 +679,7 @@ void MoleculeStandardizer::_removeSingleAtomFragments (Molecule &mol)
    
 }
 
-void MoleculeStandardizer::_keepSmallestFragment (Molecule &mol)
+void MoleculeStandardizer::_keepSmallestFragment (BaseMolecule &mol)
 {
    if (mol.vertexCount() <= 1)
       return;
@@ -499,7 +711,7 @@ void MoleculeStandardizer::_keepSmallestFragment (Molecule &mol)
    mol.removeAtoms(remove_atoms);
 }
 
-void MoleculeStandardizer::_keepLargestFragment(Molecule &mol)
+void MoleculeStandardizer::_keepLargestFragment(BaseMolecule &mol)
 {
 
    if (mol.vertexCount() <= 1)
@@ -532,7 +744,7 @@ void MoleculeStandardizer::_keepLargestFragment(Molecule &mol)
    mol.removeAtoms(remove_atoms);
 }
 
-void MoleculeStandardizer::_removeLargestFragment(Molecule &mol)
+void MoleculeStandardizer::_removeLargestFragment(BaseMolecule &mol)
 {
    if (mol.vertexCount() <= 1)
       return;
@@ -574,14 +786,49 @@ void MoleculeStandardizer::_makeNonHAtomsCAtoms(Molecule &mol)
    }
 }
 
+void MoleculeStandardizer::_makeNonHAtomsCAtoms(QueryMolecule &mol)
+{
+   for (auto i : mol.vertices())
+   {
+      auto atom_number = mol.getAtomNumber(i);
+      if ((atom_number != ELEM_H) && (atom_number != ELEM_C))
+        mol.resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C));
+   }
+}
+
 void MoleculeStandardizer::_makeNonHAtomsAAtoms(Molecule &mol)
 {
    throw Error("This option is available only for QueryMolecule object");
 }
 
+void MoleculeStandardizer::_makeNonHAtomsAAtoms(QueryMolecule &mol)
+{
+   for (auto i : mol.vertices())
+   {
+      auto atom_number = mol.getAtomNumber(i);
+      if (atom_number != ELEM_H)
+        mol.resetAtom(i, QueryMolecule::Atom::nicht(
+                        new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+   }
+}
+
 void MoleculeStandardizer::_makeNonCHAtomsQAtoms(Molecule &mol)
 {
    throw Error("This option is available only for QueryMolecule object");
+}
+
+void MoleculeStandardizer::_makeNonCHAtomsQAtoms(QueryMolecule &mol)
+{
+   for (auto i : mol.vertices())
+   {
+      auto atom_number = mol.getAtomNumber(i);
+      if ((atom_number != ELEM_H) && (atom_number != ELEM_C))
+        mol.resetAtom(i, QueryMolecule::Atom::und(
+                           QueryMolecule::Atom::nicht(
+                              new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
+                           QueryMolecule::Atom::nicht(
+                              new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C))));
+   }
 }
 
 void MoleculeStandardizer::_makeAllBondsSingle(Molecule &mol)
@@ -593,17 +840,26 @@ void MoleculeStandardizer::_makeAllBondsSingle(Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_clearCoordinates(Molecule &mol)
+void MoleculeStandardizer::_makeAllBondsSingle(QueryMolecule &mol)
+{
+   for (auto i : mol.edges())
+   {
+      if (mol.getBondOrder(i) != BOND_SINGLE)
+         mol.resetBond(i, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+   }
+}
+
+void MoleculeStandardizer::_clearCoordinates(BaseMolecule &mol)
 {
    mol.clearXyz();
 }
 
-void MoleculeStandardizer::_fixCoordinateDimension(Molecule &mol)
+void MoleculeStandardizer::_fixCoordinateDimension(BaseMolecule &mol)
 {
    throw Error("This option is not used for Indigo");
 }
 
-void MoleculeStandardizer::_straightenTripleBonds(Molecule &mol)
+void MoleculeStandardizer::_straightenTripleBonds(BaseMolecule &mol)
 {
    if (!Molecule::hasCoord(mol) || (mol.vertexCount() < 2))
       throw Error("Atoms coordinates are not defined or too few atoms");
@@ -619,7 +875,7 @@ void MoleculeStandardizer::_straightenTripleBonds(Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_straightenAllenes(Molecule &mol)
+void MoleculeStandardizer::_straightenAllenes(BaseMolecule &mol)
 {
    if (!Molecule::hasCoord(mol) || (mol.vertexCount() < 3))
       throw Error("Atoms coordinates are not defined or too few atoms");
@@ -636,17 +892,17 @@ void MoleculeStandardizer::_straightenAllenes(Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_clearMolecule(Molecule &mol)
+void MoleculeStandardizer::_clearMolecule(BaseMolecule &mol)
 {
    mol.clear();
 }
 
-void MoleculeStandardizer::_removeMolecule(Molecule &mol)
+void MoleculeStandardizer::_removeMolecule(BaseMolecule &mol)
 {
    throw Error("Not implemented yet");
 }
 
-void MoleculeStandardizer::_clearStereo(Molecule &mol)
+void MoleculeStandardizer::_clearStereo(BaseMolecule &mol)
 {
    for (auto i : mol.vertices())
    {
@@ -672,7 +928,7 @@ void MoleculeStandardizer::_clearStereo(Molecule &mol)
    mol.allene_stereo.clear();
 }
 
-void MoleculeStandardizer::_clearEnhancedStereo(Molecule &mol)
+void MoleculeStandardizer::_clearEnhancedStereo(BaseMolecule &mol)
 {
    for (auto i : mol.vertices())
    {
@@ -683,7 +939,7 @@ void MoleculeStandardizer::_clearEnhancedStereo(Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_clearUnknownStereo(Molecule &mol)
+void MoleculeStandardizer::_clearUnknownStereo(BaseMolecule &mol)
 {
    for (auto i : mol.vertices())
    {
@@ -698,7 +954,7 @@ void MoleculeStandardizer::_clearUnknownStereo(Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_clearUnknownAtomStereo(Molecule &mol)
+void MoleculeStandardizer::_clearUnknownAtomStereo(BaseMolecule &mol)
 {
    for (auto i : mol.vertices())
    {
@@ -707,7 +963,7 @@ void MoleculeStandardizer::_clearUnknownAtomStereo(Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_clearUnknownCisTransBondStereo(Molecule &mol)
+void MoleculeStandardizer::_clearUnknownCisTransBondStereo(BaseMolecule &mol)
 {
    if (mol.cis_trans.exists())
    {
@@ -721,7 +977,7 @@ void MoleculeStandardizer::_clearUnknownCisTransBondStereo(Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_clearCisTransBondStereo(Molecule &mol)
+void MoleculeStandardizer::_clearCisTransBondStereo(BaseMolecule &mol)
 {
    if (mol.cis_trans.exists())
    {
@@ -736,7 +992,7 @@ void MoleculeStandardizer::_clearCisTransBondStereo(Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_setStereoFromCoordinates(Molecule &mol)
+void MoleculeStandardizer::_setStereoFromCoordinates(BaseMolecule &mol)
 {
    if (!Molecule::hasCoord(mol))
       throw Error("Atoms coordinates are not defined");
@@ -758,25 +1014,23 @@ void MoleculeStandardizer::_setStereoFromCoordinates(Molecule &mol)
 
 }
 
-void MoleculeStandardizer::_repositionStereoBonds(Molecule &mol)
+void MoleculeStandardizer::_repositionStereoBonds(BaseMolecule &mol)
 {
    if (!Molecule::hasCoord(mol))
       throw Error("Atoms coordinates are not defined");
 
-   if (Molecule::hasCoord(mol))
-      mol.stereocenters.markBonds();
+   mol.stereocenters.markBonds();
 }
 
-void MoleculeStandardizer::_repositionAxialStereoBonds(Molecule &mol)
+void MoleculeStandardizer::_repositionAxialStereoBonds(BaseMolecule &mol)
 {
    if (!Molecule::hasCoord(mol))
       throw Error("Atoms coordinates are not defined");
 
-   if (Molecule::hasCoord(mol))
-      mol.allene_stereo.markBonds();
+   mol.allene_stereo.markBonds();
 }
 
-void MoleculeStandardizer::_fixDirectionOfWedgeBonds(Molecule &mol)
+void MoleculeStandardizer::_fixDirectionOfWedgeBonds(BaseMolecule &mol)
 {
    for (auto i : mol.vertices())
    {
@@ -799,19 +1053,29 @@ void MoleculeStandardizer::_clearCharges(Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_clearPiBonds(Molecule &mol)
+void MoleculeStandardizer::_clearCharges(QueryMolecule &mol)
+{
+   for (auto i : mol.vertices())
+   {
+       mol.getAtom(i).removeConstraints(QueryMolecule::ATOM_CHARGE);
+       mol.resetAtom(i, QueryMolecule::Atom::und(mol.releaseAtom(i),
+              new QueryMolecule::Atom(QueryMolecule::ATOM_CHARGE, 0)));
+   }
+}
+
+void MoleculeStandardizer::_clearPiBonds(BaseMolecule &mol)
 {
    throw Error("This option is not used for Indigo");
 }
 
-void MoleculeStandardizer::_clearHighlightColors(Molecule &mol)
+void MoleculeStandardizer::_clearHighlightColors(BaseMolecule &mol)
 {
    mol.unhighlightAll();
 }
 
-void MoleculeStandardizer::_clearQueryInfo(Molecule &mol)
+void MoleculeStandardizer::_clearQueryInfo(BaseMolecule &mol)
 {
-   throw Error("This option is available only for QueryMolecule object");
+   throw Error("This option is not used for Indigo");
 }
 
 void MoleculeStandardizer::_clearAtomLabels(Molecule &mol)
@@ -819,7 +1083,17 @@ void MoleculeStandardizer::_clearAtomLabels(Molecule &mol)
    throw Error("This option is available only for QueryMolecule object?");
 }
 
+void MoleculeStandardizer::_clearAtomLabels(QueryMolecule &mol)
+{
+   throw Error("This option is available only for QueryMolecule object?");
+}
+
 void MoleculeStandardizer::_clearBondLabels(Molecule &mol)
+{
+   throw Error("This option is available only for QueryMolecule object?");
+}
+
+void MoleculeStandardizer::_clearBondLabels(QueryMolecule &mol)
 {
    throw Error("This option is available only for QueryMolecule object?");
 }
@@ -870,9 +1144,30 @@ void MoleculeStandardizer::_neutralizeBondedZwitterions(Molecule &mol)
    }
 }
 
+void MoleculeStandardizer::_neutralizeBondedZwitterions(QueryMolecule &mol)
+{
+   throw Error("This option is not available for QueryMolecule object");
+}
+
 void MoleculeStandardizer::_clearUnusualValence(Molecule &mol)
 {
-   throw Error("This option is available only for QueryMolecule object");
+   for (auto i : mol.vertices())
+   {
+      if (mol.getExplicitValence(i) > 0)
+      {
+         mol.setExplicitValence(i, 0);
+         mol.invalidateHCounters();
+      }
+   }
+}
+
+void MoleculeStandardizer::_clearUnusualValence(QueryMolecule &mol)
+{
+   for (auto i : mol.vertices())
+   {
+       mol.resetAtom(i, QueryMolecule::Atom::und(mol.releaseAtom(i),
+              new QueryMolecule::Atom(QueryMolecule::ATOM_VALENCE, 0)));
+   }
 }
 
 void MoleculeStandardizer::_clearIsotopes(Molecule &mol)
@@ -883,12 +1178,21 @@ void MoleculeStandardizer::_clearIsotopes(Molecule &mol)
    }
 }
 
-void MoleculeStandardizer::_clearDativeBonds(Molecule &mol)
+void MoleculeStandardizer::_clearIsotopes(QueryMolecule &mol)
+{
+   for (auto i : mol.vertices())
+   {
+       mol.resetAtom(i, QueryMolecule::Atom::und(mol.releaseAtom(i),
+              new QueryMolecule::Atom(QueryMolecule::ATOM_ISOTOPE, 0)));
+   }
+}
+
+void MoleculeStandardizer::_clearDativeBonds(BaseMolecule &mol)
 {
    throw Error("This option is not used for Indigo (V3000 bond type-9 unsupported)");
 }
 
-void MoleculeStandardizer::_clearHydrogenBonds(Molecule &mol)
+void MoleculeStandardizer::_clearHydrogenBonds(BaseMolecule &mol)
 {
    throw Error("This option is not used for Indigo (V3000 bond type-10 unsupported)");
 }
@@ -898,7 +1202,11 @@ void MoleculeStandardizer::_localizeMarkushRAtomsOnRings(Molecule &mol)
    throw Error("This option is available only for QueryMolecule object?");
 }
 
-int MoleculeStandardizer::_getNumberOfBonds(Molecule &mol, int idx, int bond_type, bool with_element_only, int element)
+void MoleculeStandardizer::_localizeMarkushRAtomsOnRings(QueryMolecule &mol)
+{
+}
+
+int MoleculeStandardizer::_getNumberOfBonds(BaseMolecule &mol, int idx, int bond_type, bool with_element_only, int element)
 {
    auto num_bonds = 0;
    const Vertex &v = mol.getVertex(idx);
@@ -919,8 +1227,11 @@ int MoleculeStandardizer::_getNumberOfBonds(Molecule &mol, int idx, int bond_typ
    return num_bonds;
 }
 
-bool MoleculeStandardizer::isFragmentLinear(Molecule &mol, int idx)
+bool MoleculeStandardizer::isFragmentLinear(BaseMolecule &mol, int idx)
 {
+   if (!Molecule::hasCoord(mol))
+      throw Error("Atoms coordinates are not defined");
+
    Vec3f &central_atom = mol.getAtomXyz(idx);
    const Vertex &v = mol.getVertex(idx);
 
@@ -946,7 +1257,7 @@ bool MoleculeStandardizer::isFragmentLinear(Molecule &mol, int idx)
    return true;
 }
 
-void MoleculeStandardizer::_linearizeFragment(Molecule &mol, int idx)
+void MoleculeStandardizer::_linearizeFragment(BaseMolecule &mol, int idx)
 {
    Vec3f &central_atom = mol.getAtomXyz(idx);
    const Vertex &v = mol.getVertex(idx);
