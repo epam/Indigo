@@ -33,7 +33,6 @@
 #include "indigo_mapping.h"
 #include "indigo_savers.h"
 #include "molecule/molecule_standardize.h"
-#include "molecule/molecule_standardize_options.h"
 
 #define CHECKRGB(r, g, b) \
 if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
