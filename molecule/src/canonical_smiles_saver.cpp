@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2014 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -15,6 +15,7 @@
 #include "molecule/canonical_smiles_saver.h"
 
 #include "base_cpp/output.h"
+#include "base_cpp/tlscont.h"
 #include "molecule/molecule.h"
 #include "molecule/smiles_saver.h"
 #include "molecule/molecule_automorphism_search.h"
@@ -25,16 +26,25 @@ using namespace indigo;
 
 IMPL_ERROR(CanonicalSmilesSaver, "canonical SMILES saver");
 
-CanonicalSmilesSaver::CanonicalSmilesSaver (Output &output) : _output(output)
+CanonicalSmilesSaver::CanonicalSmilesSaver (Output &output) : SmilesSaver(output),
+TL_CP_GET(_actual_atom_atom_mapping),
+TL_CP_GET(_initial_to_actual)
 {
    find_invalid_stereo = true;
+   ignore_invalid_hcount = false;
+   ignore_hydrogens = true;
+   canonize_chiralities = true;
+   initial_atom_atom_mapping = 0;
+   _initial_to_actual.clear();
+   _initial_to_actual.insert(0, 0);
+   _aam_counter = 0;
 }
 
 CanonicalSmilesSaver::~CanonicalSmilesSaver ()
 {
 }
 
-void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
+void CanonicalSmilesSaver::saveMolecule (Molecule &mol_)
 {
    if (mol_.vertexCount() < 1)
       return;
@@ -100,11 +110,29 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_) const
    for (i = 0; i < order.size(); i++)
       ranks[order[i]] = i;
 
-   SmilesSaver saver(_output);
+   vertex_ranks = ranks.ptr();
 
-   saver.ignore_invalid_hcount = false;
-   saver.vertex_ranks = ranks.ptr();
-   saver.ignore_hydrogens = true;
-   saver.canonize_chiralities = true;
-   saver.saveMolecule(mol);
+   if (initial_atom_atom_mapping) {
+      _actual_atom_atom_mapping.clear_resize(initial_atom_atom_mapping->size());
+      _actual_atom_atom_mapping.fill(0);
+
+      for (int i = 0; i < order.size(); ++i) {
+         int aam = initial_atom_atom_mapping->at(order[i]);
+         if (aam) {
+            if (!_initial_to_actual.find(aam)) {
+               _initial_to_actual.insert(aam, ++_aam_counter);
+               _actual_atom_atom_mapping[order[i]] = _aam_counter;
+            }
+            else {
+               _actual_atom_atom_mapping[order[i]] = _initial_to_actual.at(aam);
+            }
+         }
+      }
+      atom_atom_mapping = _actual_atom_atom_mapping.ptr();
+   }
+   else {
+      atom_atom_mapping = 0;
+   }
+
+   SmilesSaver::saveMolecule(mol);
 }

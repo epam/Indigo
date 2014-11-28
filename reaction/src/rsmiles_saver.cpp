@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2014 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -13,12 +13,13 @@
  ***************************************************************************/
 
 #include "reaction/rsmiles_saver.h"
-#include "reaction/reaction.h"
-#include "reaction/query_reaction.h"
 
-#include "molecule/smiles_saver.h"
 #include "base_cpp/output.h"
+#include "molecule/canonical_smiles_saver.h"
 #include "molecule/elements.h"
+#include "molecule/smiles_saver.h"
+#include "reaction/query_reaction.h"
+#include "reaction/reaction.h"
 
 using namespace indigo;
 

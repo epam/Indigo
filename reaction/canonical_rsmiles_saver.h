@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2014 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -12,34 +12,34 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __canonical_smiles_saver__
-#define __canonical_smiles_saver__
+#ifndef __canonical_rsmiles_saver__
+#define __canonical_rsmiles_saver__
 
-#include "molecule/smiles_saver.h"
+#include "reaction/rsmiles_saver.h"
+
 #include "base_cpp/exception.h"
 
 namespace indigo {
 
-class DLLEXPORT CanonicalSmilesSaver : public SmilesSaver
+class Output;
+class BaseReaction;
+class CanonicalSmilesSaver;
+class Reaction;
+
+class DLLEXPORT CanonicalRSmilesSaver : public RSmilesSaver
 {
 public:
 
-   explicit CanonicalSmilesSaver (Output &output);
-   ~CanonicalSmilesSaver ();
+   explicit CanonicalRSmilesSaver (Output &output);
+   ~CanonicalRSmilesSaver ();
 
-   bool find_invalid_stereo;
-   const Array<int> *initial_atom_atom_mapping;
-
-   void saveMolecule (Molecule &mol);
+   void saveReaction(Reaction &react);
 
    DECL_ERROR;
 
 protected:
-   typedef RedBlackMap<int, int> MapIntInt;
-
-   TL_CP_DECL(Array<int>, _actual_atom_atom_mapping);
-   TL_CP_DECL(MapIntInt, _initial_to_actual);
-   int _aam_counter;
+   void _saveReaction();
+   void _writeMolecule(int i, CanonicalSmilesSaver &saver);
 };
 
 }

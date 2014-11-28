@@ -24,8 +24,10 @@
 #include "molecule/molecule_cml_saver.h"
 #include "molecule/molfile_saver.h"
 #include "molecule/smiles_saver.h"
+#include "molecule/canonical_smiles_saver.h"
 #include "reaction/rxnfile_saver.h"
 #include "reaction/rsmiles_saver.h"
+#include "reaction/canonical_rsmiles_saver.h"
 #include "reaction/reaction_cml_saver.h"
 
 #include <time.h>
@@ -213,6 +215,45 @@ CEXPORT int indigoSmilesAppend (int output, int item)
       return 1;
    }
    INDIGO_END(-1)
+}
+
+//
+// IndigoCanonicalSmilesSaver
+//
+
+void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject &obj, Array<char> &out_buffer)
+{
+   ArrayOutput output(out_buffer);
+   if (IndigoBaseMolecule::is(obj))
+   {
+      BaseMolecule &mol = obj.getBaseMolecule();
+
+      CanonicalSmilesSaver saver(output);
+
+      if (mol.isQueryMolecule())
+         saver.saveQueryMolecule(mol.asQueryMolecule());
+      else
+         saver.saveMolecule(mol.asMolecule());
+   }
+   else if (IndigoBaseReaction::is(obj))
+   {
+      BaseReaction &rxn = obj.getBaseReaction();
+
+      CanonicalRSmilesSaver saver(output);
+
+      if (rxn.isQueryReaction())
+         saver.saveQueryReaction(rxn.asQueryReaction());
+      else
+         saver.saveReaction(rxn.asReaction());
+   }
+   else
+      throw IndigoError("%s can not be converted to SMILES", obj.debugInfo());
+   out_buffer.push(0);
+}
+
+const char * IndigoCanonicalSmilesSaver::debugInfo()
+{
+   return "<smiles saver>";
 }
 
 //

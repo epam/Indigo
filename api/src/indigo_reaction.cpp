@@ -23,6 +23,7 @@
 #include "base_cpp/auto_ptr.h"
 #include "indigo_array.h"
 #include "reaction/rsmiles_loader.h"
+#include "reaction/canonical_rsmiles_saver.h"
 
 //
 // IndigoBaseReaction
@@ -694,4 +695,21 @@ CEXPORT int indigoLoadReactionSmarts (int source)
       return self.addObject(rxnptr.release());
    }
    INDIGO_END(-1);
+}
+
+CEXPORT const char * indigoCanonicalRSmiles(int reaction)
+{
+   INDIGO_BEGIN
+   {
+   Reaction &react = self.getObject(reaction).getReaction();
+
+   auto &tmp = self.getThreadTmpData();
+   ArrayOutput output(tmp.string);
+   CanonicalRSmilesSaver saver(output);
+
+   saver.saveReaction(react);
+   tmp.string.push(0);
+   return tmp.string.ptr();
+}
+   INDIGO_END(0);
 }

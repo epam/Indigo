@@ -259,6 +259,19 @@ CEXPORT const char * indigoSmiles (int item)
    INDIGO_END(0);
 }
 
+CEXPORT const char * indigoCanonicalSmiles (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+      auto &tmp = self.getThreadTmpData();
+      IndigoCanonicalSmilesSaver::generateSmiles(obj, tmp.string);
+
+      return tmp.string.ptr();
+   }
+   INDIGO_END(0);
+}
+
 CEXPORT int indigoUnfoldHydrogens (int item)
 {
    INDIGO_BEGIN

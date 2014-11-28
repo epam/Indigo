@@ -1607,23 +1607,6 @@ CEXPORT int indigoAddConstraintOrNot(int atom, const char* type, const char* val
 }
  * */
 
-CEXPORT const char * indigoCanonicalSmiles (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      Molecule &mol = self.getObject(molecule).getMolecule();
-
-      auto &tmp = self.getThreadTmpData();
-      ArrayOutput output(tmp.string);
-      CanonicalSmilesSaver saver(output);
-      
-      saver.saveMolecule(mol);
-      tmp.string.push(0);
-      return tmp.string.ptr();
-   }
-   INDIGO_END(0);
-}
-
 CEXPORT const int * indigoSymmetryClasses (int molecule, int *count_out)
 {
    INDIGO_BEGIN
