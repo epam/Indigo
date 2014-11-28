@@ -531,16 +531,23 @@ void MoleculeStandardizer::_standardizeCharges (Molecule &mol)
                }
             }
          }
-         else if ((_getNumberOfBonds(mol, i, BOND_SINGLE, false, 0) == 2) &&
-                  (_getNumberOfBonds(mol, i, BOND_DOUBLE, false, 0) == 1) &&
-                  (_getNumberOfBonds(mol, i, BOND_SINGLE, true, ELEM_O) == 1))
+         else if ((_getNumberOfBonds(mol, i, BOND_SINGLE, false, 0) == 1) &&
+                  (_getNumberOfBonds(mol, i, BOND_DOUBLE, false, 0) == 2) &&
+                  (_getNumberOfBonds(mol, i, BOND_DOUBLE, true, ELEM_O) == 2))
          {
             mol.setAtomCharge(i, +1);
             const Vertex &v = mol.getVertex(i);
             for (int j : v.neighbors())
             {
                if ((mol.getAtomNumber(v.neiVertex(j)) == ELEM_O) && (mol.getVertex(v.neiVertex(j)).degree() == 1))
-                  mol.setAtomCharge(v.neiVertex(j), -1);
+               {
+                  if (mol.getBondOrder(v.neiEdge(j) == BOND_DOUBLE))
+                  {
+                      mol.setAtomCharge(v.neiVertex(j), -1);
+                      mol.setBondOrder(v.neiEdge(j), BOND_SINGLE);
+                      break;
+                  }
+               }   
             }
          }
          else if ((_getNumberOfBonds(mol, i, BOND_SINGLE, false, 0) == 2) &&
