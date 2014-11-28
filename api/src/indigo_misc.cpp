@@ -32,6 +32,8 @@
 #include "indigo_reaction.h"
 #include "indigo_mapping.h"
 #include "indigo_savers.h"
+#include "molecule/molecule_standardize.h"
+#include "molecule/molecule_standardize_options.h"
 
 #define CHECKRGB(r, g, b) \
 if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
@@ -770,6 +772,31 @@ CEXPORT int indigoNormalize (int structure, const char *options)
       }
       
       return changed;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoStandardize (int object)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
+
+      if (obj.type == IndigoObject::QUERY_MOLECULE)
+      {
+         IndigoQueryMolecule &qm_obj = (IndigoQueryMolecule &)obj;
+         QueryMolecule &q = qm_obj.getQueryMolecule();
+         q.standardize(self.standardize_options);
+      }
+      else if (obj.type == IndigoObject::MOLECULE)
+      {
+         IndigoMolecule &m_obj = (IndigoMolecule &)obj;
+         Molecule &m = m_obj.getMolecule();
+         m.standardize(self.standardize_options);
+      }
+      else
+         throw IndigoError("indigoStandardize: expected molecule or query, got %s", obj.debugInfo());
+      return 1;
    }
    INDIGO_END(-1);
 }

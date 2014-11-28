@@ -117,6 +117,8 @@ public interface IndigoLib extends Library
 
    int indigoNormalize (int structure, String options);
 
+   int indigoStandardize (int item);
+
    int indigoAutomap (int reaction, String mode);
    int indigoGetAtomMappingNumber (int reaction, int reaction_atom);
    int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int number);

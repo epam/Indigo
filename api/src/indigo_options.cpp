@@ -216,6 +216,205 @@ static void indigoSetDetectHaworthProjection (int enabled)
    self.stereochemistry_options.detect_haworth_projection = (enabled != 0);
 }
 
+static void indigoSetStandardizeStereo (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.standardize_stereo = (enabled != 0);
+}
+
+static void indigoSetStandardizeCharges (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.standardize_charges = (enabled != 0);
+}
+
+static void indigoSetStandardizeCenterMolecule (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.center_molecule = (enabled != 0);
+}
+
+static void indigoSetStandardizeRemoveSingleAtoms (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.remove_single_atom_fragments = (enabled != 0);
+}
+
+static void indigoSetStandardizeKeepSmallestFragment (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.keep_smallest_fragment = (enabled != 0);
+}
+
+static void indigoSetStandardizeKeepLargestFragment (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.keep_largest_fragment = (enabled != 0);
+}
+
+static void indigoSetStandardizeRemoveLargestFragment (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.remove_largest_fragment = (enabled != 0);
+}
+
+static void indigoSetStandardizeMakeNonHtoCAtoms (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.make_non_h_atoms_c_atoms = (enabled != 0);
+}
+
+static void indigoSetStandardizeMakeNonHtoAAtoms (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.make_non_h_atoms_a_atoms = (enabled != 0);
+}
+
+static void indigoSetStandardizeMakeNonHCtoQAtoms (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.make_non_c_h_atoms_q_atoms = (enabled != 0);
+}
+
+static void indigoSetStandardizeMakeAllBondsSingle (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.make_all_bonds_single = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearCoordinates (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_coordinates = (enabled != 0);
+}
+
+static void indigoSetStandardizeStraightenTripleBonds (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.straighten_triple_bonds = (enabled != 0);
+}
+
+static void indigoSetStandardizeStraightenAllens (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.straighten_allenes = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearMolecule (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_molecule = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearStereo (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_stereo = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearEnhancedStereo (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_enhanced_stereo = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearUnknownStereo (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_unknown_stereo = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearUnknownAtomStereo (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_unknown_atom_stereo = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearUnknownBondStereo (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_unknown_cis_trans_bond_stereo = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearCisTransStereo (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_cis_trans_bond_stereo = (enabled != 0);
+}
+
+static void indigoSetStandardizeStereoFromCoordinates (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.set_stereo_from_coordinates = (enabled != 0);
+}
+
+static void indigoSetStandardizeRepositonStereoBonds (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.reposition_stereo_bonds = (enabled != 0);
+}
+
+static void indigoSetStandardizeRepositonAxialStereoBonds (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.reposition_axial_stereo_bonds = (enabled != 0);
+}
+
+static void indigoSetStandardizeFixDirectionWedgeBonds (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.fix_direction_of_wedge_bonds = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearCharges (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_charges = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearHighlightColors (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_highlight_colors = (enabled != 0);
+}
+
+static void indigoSetStandardizeNeutralizeZwitterions (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.neutralize_bonded_zwitterions = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearUnususalValences (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_unusual_valence = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearIsotopes (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_isotopes = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearDativeBonds (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_dative_bonds = (enabled != 0);
+}
+
+static void indigoSetStandardizeClearHydrogenBonds (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.clear_hydrogen_bonds = (enabled != 0);
+}
+
+static void indigoSetStandardizeLocalizeMarkushRAtomsOnRings (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.localize_markush_r_atoms_on_rings = (enabled != 0);
+}
+
+
 
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
@@ -255,6 +454,40 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("unique-dearomatization", indigoSetDearomatizeUnique);
    mgr.setOptionHandlerBool("stereochemistry-bidirectional-mode", indigoSetBidirectionalMode);
    mgr.setOptionHandlerBool("stereochemistry-detect-haworth-projection", indigoSetDetectHaworthProjection);
+
+   mgr.setOptionHandlerBool("standardize-stereo", indigoSetStandardizeStereo);
+   mgr.setOptionHandlerBool("standardize-charges", indigoSetStandardizeCharges);
+   mgr.setOptionHandlerBool("standardize-center-molecule", indigoSetStandardizeCenterMolecule);
+   mgr.setOptionHandlerBool("standardize-remove-single-atoms", indigoSetStandardizeRemoveSingleAtoms);
+   mgr.setOptionHandlerBool("standardize-keep-smallest", indigoSetStandardizeKeepSmallestFragment);
+   mgr.setOptionHandlerBool("standardize-keep-largest", indigoSetStandardizeKeepLargestFragment);
+   mgr.setOptionHandlerBool("standardize-remove-largest", indigoSetStandardizeRemoveLargestFragment);
+   mgr.setOptionHandlerBool("standardize-make-non-h-to-c-atoms", indigoSetStandardizeMakeNonHtoCAtoms);
+   mgr.setOptionHandlerBool("standardize-make-non-h-to-a-atoms", indigoSetStandardizeMakeNonHtoAAtoms);
+   mgr.setOptionHandlerBool("standardize-make-non-h-c-to-q-atoms", indigoSetStandardizeMakeNonHCtoQAtoms);
+   mgr.setOptionHandlerBool("standardize-make-all-bonds-single", indigoSetStandardizeMakeAllBondsSingle);
+   mgr.setOptionHandlerBool("standardize-clear-coordinates", indigoSetStandardizeClearCoordinates);
+   mgr.setOptionHandlerBool("standardize-straighten-triple-bonds", indigoSetStandardizeStraightenTripleBonds);
+   mgr.setOptionHandlerBool("standardize-straighten-allens", indigoSetStandardizeStraightenAllens);
+   mgr.setOptionHandlerBool("standardize-clear-molecule", indigoSetStandardizeClearMolecule);
+   mgr.setOptionHandlerBool("standardize-clear-stereo", indigoSetStandardizeClearStereo);
+   mgr.setOptionHandlerBool("standardize-clear-enhanced-stereo", indigoSetStandardizeClearEnhancedStereo);
+   mgr.setOptionHandlerBool("standardize-clear-unknown-stereo", indigoSetStandardizeClearUnknownStereo);
+   mgr.setOptionHandlerBool("standardize-clear-unknown-atom-stereo", indigoSetStandardizeClearUnknownAtomStereo);
+   mgr.setOptionHandlerBool("standardize-clear-unknown-bond-stereo", indigoSetStandardizeClearUnknownBondStereo);
+   mgr.setOptionHandlerBool("standardize-clear-cis-trans", indigoSetStandardizeClearCisTransStereo);
+   mgr.setOptionHandlerBool("standardize-stereo-from-coordinates", indigoSetStandardizeStereoFromCoordinates);
+   mgr.setOptionHandlerBool("standardize-reposition-stereo-bonds", indigoSetStandardizeRepositonStereoBonds);
+   mgr.setOptionHandlerBool("standardize-reposition-axial-stereo-bonds", indigoSetStandardizeRepositonAxialStereoBonds);
+   mgr.setOptionHandlerBool("standardize-fix-direction-wedge-bonds", indigoSetStandardizeFixDirectionWedgeBonds);
+   mgr.setOptionHandlerBool("standardize-clear-charges", indigoSetStandardizeClearCharges);
+   mgr.setOptionHandlerBool("standardize-highlight-colors", indigoSetStandardizeClearHighlightColors);
+   mgr.setOptionHandlerBool("standardize-neutralize-zwitterions", indigoSetStandardizeNeutralizeZwitterions);
+   mgr.setOptionHandlerBool("standardize-clear-unusual-valences", indigoSetStandardizeClearUnususalValences);
+   mgr.setOptionHandlerBool("standardize-clear-isotopes", indigoSetStandardizeClearIsotopes);
+   mgr.setOptionHandlerBool("standardize-clear-dative-bonds", indigoSetStandardizeClearDativeBonds);
+   mgr.setOptionHandlerBool("standardize-clear-hydrogen-bonds", indigoSetStandardizeClearHydrogenBonds);
+   mgr.setOptionHandlerBool("standardize-localize-markush-r-atoms-on-rings", indigoSetStandardizeLocalizeMarkushRAtomsOnRings);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

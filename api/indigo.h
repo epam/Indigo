@@ -248,6 +248,11 @@ CEXPORT int indigoOptimize (int query, const char *options);
 // Default options is empty.
 CEXPORT int indigoNormalize (int structure, const char *options);
 
+// Method for molecule and query standardizing
+// It stadrdize charges, stereo and etc.
+// Default options is empty.
+CEXPORT int indigoStandardize (int item);
+
 // Automatic reaction atom-to-atom mapping
 // mode is one of the following (separated by a space):
 //    "discard" : discards the existing mapping entirely and considers only

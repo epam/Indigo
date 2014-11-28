@@ -30,6 +30,7 @@
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_tautomer.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/molecule_standardize_options.h"
 
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define 
  * should be compared with indigoVersion() to ensure libraries binary 
@@ -280,6 +281,8 @@ public:
    AromaticityOptions arom_options;
    // This option is moved out of arom_options because it should be used only in indigoDearomatize method
    bool unique_dearomatization; 
+
+   StandardizeOptions standardize_options;
 
 protected:
 

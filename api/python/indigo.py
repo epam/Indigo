@@ -230,6 +230,10 @@ class IndigoObject(object):
         options = '' if options is None else options
         return bool(self.dispatcher._checkResult(Indigo._lib.indigoNormalize(self.id, options.encode(ENCODE_ENCODING))))
 
+    def standardize(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoStandardize(self.id))
+
     def automap(self, mode=''):
         self.dispatcher._setSessionId()
         mode = '' if mode is None else mode
@@ -1348,6 +1352,8 @@ class Indigo(object):
         Indigo._lib.indigoOptimize.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoNormalize.restype = c_int
         Indigo._lib.indigoNormalize.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoStandardize.restype = c_int
+        Indigo._lib.indigoStandardize.argtypes = [c_int]
         Indigo._lib.indigoAutomap.restype = c_int
         Indigo._lib.indigoAutomap.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoGetAtomMappingNumber.restype = c_int
