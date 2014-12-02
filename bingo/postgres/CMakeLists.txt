@@ -44,7 +44,7 @@ if (UNIX AND NOT APPLE)
 	message(STATUS "UNIX AND NOT APPLE")
 	if(${SUBSYSTEM_NAME} MATCHES "x64")
 		message(STATUS "SUBSYSTEM_NAME EQUALS x64")
-		set_target_properties(bingo-postgres-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
+		set_target_properties(bingo-postgres-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -pthread -Wl,--wrap=memcpy")
 	endif()
 endif()
 
