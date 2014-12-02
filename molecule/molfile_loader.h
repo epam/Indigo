@@ -92,7 +92,9 @@ protected:
       _BOND_SINGLE_OR_DOUBLE = 5,
       _BOND_SINGLE_OR_AROMATIC = 6,
       _BOND_DOUBLE_OR_AROMATIC = 7,
-      _BOND_ANY = 8
+      _BOND_ANY = 8,
+      _BOND_COORDINATION = 9,
+      _BOND_HYDROGEN = 10
    };
 
    enum
