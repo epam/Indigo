@@ -541,6 +541,13 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       if (bond_order < 0)
          throw Error("unrepresentable query bond");
 
+      if (bond_order == BOND_ZERO)
+      {
+         bond_order = 9;
+         if ((mol.getAtomNumber(edge.beg) == ELEM_H) || (mol.getAtomNumber(edge.end) == ELEM_H))
+            bond_order = 10;
+      }
+
       out.printf("%d %d %d %d", iw, bond_order, _atom_mapping[edge.beg], _atom_mapping[edge.end]);
 
       int direction = mol.getBondDirection(i);

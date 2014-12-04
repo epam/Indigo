@@ -47,6 +47,7 @@ enum
 
 enum
 {
+   BOND_ZERO   = 0,
    BOND_SINGLE = 1,
    BOND_DOUBLE = 2,
    BOND_TRIPLE = 3,
