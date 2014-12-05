@@ -2394,9 +2394,11 @@ void MolfileLoader::_readCtab3000 ()
             strscan.readWord(prop, "=");
             strscan.skip(1);
 
+            int n; 
+
             if (strcmp(prop.ptr(), "CFG") == 0)
             {
-               int n = strscan.readInt1();
+               n = strscan.readInt1();
 
                if (n == 1)
                   _bmol->setBondDirection(i, BOND_UP);
@@ -2437,8 +2439,27 @@ void MolfileLoader::_readCtab3000 ()
             }
             else if (strcmp(prop.ptr(), "RXCTR") == 0)
                reacting_center = strscan.readInt1();
+	    else if (strcmp(prop.ptr(), "ENDPTS") == 0)
+            {
+               strscan.skip(1); // (
+               n = strscan.readInt1();
+               while (n -- > 0)
+               {
+                  strscan.readInt();
+                  strscan.skipSpace();
+               }
+               strscan.skip(1); // )
+            }
+            else if (strcmp(prop.ptr(), "ATTACH") == 0)
+            {
+               while (!strscan.isEOF())
+               {
+                  char c = strscan.readChar();
+                  if (c == ' ')
+                     break;
+               }
+            }
          }
-
          if (reaction_bond_reacting_center != 0)
             reaction_bond_reacting_center->at(i) = reacting_center;
       }
