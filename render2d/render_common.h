@@ -398,6 +398,7 @@ struct CanvasOptions {
    int titleOffset;
    Array<char> comment;
    Array<char> titleProp;
+   Array<char> titleFont;
    COMMENT_POS commentPos;
    MultilineTextLayout commentAlign;
    MultilineTextLayout titleAlign;

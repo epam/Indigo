@@ -15,6 +15,7 @@
 #include "render_cdxml.h"
 
 #include "render_params.h"
+#include "base_cpp/output.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_saver.h"
 
@@ -230,6 +231,26 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    b.max.set(w, max_y + y_margins_base);
    saver.beginDocument(&b);
    saver.beginPage(&b);
+   Array<char> font_attr;
+   ArrayOutput font_out(font_attr);
+
+   if (params.cnvOpt.titleFont.size() > 0) {
+      font_out.printf("id=\"5\" charset=\"iso-8859-1\" name=\"%s\"", params.cnvOpt.titleFont.ptr());
+      font_attr.push(0);
+      saver.addFontTable(font_attr.ptr());
+      /*
+      * Set font as id 5 always
+      */
+      font_attr.clear();
+      if (params.rOpt.titleFontFactor > 1)
+         font_out.printf(" font=\"5\" size=\"%.0f\"", params.rOpt.titleFontFactor);
+      else
+         font_out.printf(" font=\"5\"");
+   } else {
+      if (params.rOpt.titleFontFactor > 1)
+         font_out.printf(" size=\"%.0f\"", params.rOpt.titleFontFactor);
+   }
+   font_attr.push(0);
 
    for (int i = 0; i < mols.size(); ++i)
    {
@@ -258,7 +279,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
                alignment_str = "Right";
 
             Vec2f title_offset(x, p.title_offset_y);
-            saver.addText(title_offset, title.ptr(), alignment_str);
+            saver.addText(title_offset, title.ptr(), alignment_str, font_attr.ptr());
          }
       }
    }

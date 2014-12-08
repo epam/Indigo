@@ -414,7 +414,13 @@ void indigoRenderSetGridTitleProperty (const char* prop)
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.cnvOpt.titleProp.clear();
    rp.cnvOpt.titleProp.appendString(prop, true);
-}                                      
+}
+void indigoRenderSetGridTitleFont(const char* font)
+{
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   rp.cnvOpt.titleFont.clear();
+   rp.cnvOpt.titleFont.appendString(font, true);
+}
 
 CEXPORT int indigoRender (int object, int output)
 {
@@ -666,6 +672,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerFloat("render-grid-title-font-size", indigoRenderSetTitleFontSize);
    mgr.setOptionHandlerString("render-grid-title-property", indigoRenderSetGridTitleProperty);
    mgr.setOptionHandlerInt("render-grid-title-offset", indigoRenderSetTitleOffset);
+   mgr.setOptionHandlerString("render-grid-title-font", indigoRenderSetGridTitleFont);
 }
 
 _IndigoRenderingOptionsHandlersSetter _indigo_rendering_options_handlers_setter;

@@ -104,6 +104,12 @@ void MoleculeCdxmlSaver::beginPage (Bounds *bounds)
    _output.printf("HeightPages=\"%d\" WidthPages=\"1\"", _pages_height);
    _output.printf(">\n");
 }
+void MoleculeCdxmlSaver::addFontTable(const char* font)
+{
+   _output.printf("<fonttable>\n");
+   _output.printf("<font %s/>\n", font);
+   _output.printf("</fonttable>\n");
+}
 
 void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float structure_scale)
 {
@@ -275,13 +281,14 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
 
 void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text)
 {
-   addText(pos, text, "Center");
+   addText(pos, text, "Center", "");
 }
 
-void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text, const char *alignment)
+void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text, const char *alignment, const char* font_attr)
 {
-   _output.printf("<t p=\"%f %f\" Justification=\"%s\"><s>%s</s></t>\n", _bond_length * pos.x, -_bond_length * pos.y, alignment, text);
+	_output.printf("<t p=\"%f %f\" Justification=\"%s\"><s %s>%s</s></t>\n", _bond_length * pos.x, -_bond_length * pos.y, alignment, font_attr, text);
 }
+
 
 void MoleculeCdxmlSaver::endPage ()
 {
