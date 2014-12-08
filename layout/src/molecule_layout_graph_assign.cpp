@@ -389,8 +389,8 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
          int next_layout_component = _layout_component_number[cycle.getEdge(i)];
 
          if (prev_layout_component < 0 && next_layout_component < 0) {
-            layout.set_target_angle(i, 2 * PI / 3);
-            layout.set_angle_importance(i, 0.2);
+            layout.setTargetAngle(i, 2 * PI / 3);
+            layout.setAngleImportance(i, 0.2);
          }
          else if ((prev_layout_component < 0) ^ (next_layout_component < 0)) {
             const MoleculeLayoutSmoothingSegment& calc_segment = prev_layout_component < 0 ? segment[s] : segment[(s + segment_count - 1) % segment_count];
@@ -432,7 +432,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
             while (angle < 0) angle += 2 * PI;
             while (angle >= 2 * PI) angle -= 2 * PI;
 
-            layout.set_target_angle(i, PI - angle/2);
+            layout.setTargetAngle(i, PI - angle/2);
          }
          else if (prev_layout_component == next_layout_component) {
             double angle = (getPos(cycle.getVertexC(i - 1)) - getPos(cycle.getVertexC(i))).tiltAngle2();
@@ -442,12 +442,12 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
             while (angle >= 2*PI) angle -= 2 * PI;
             if (angle > PI) angle = 2*PI - angle;
 
-            layout.set_target_angle(i, angle);
+            layout.setTargetAngle(i, angle);
          }
          // temporary value
          else {
-            layout.set_target_angle(i, PI);
-            layout.set_angle_importance(i, 0.2);
+            layout.setTargetAngle(i, PI);
+            layout.setAngleImportance(i, 0.2);
          }
       }
 
@@ -554,8 +554,8 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       if (segment[i]._graph.vertexCount() == 2 && segment[(i + segment_count - 1) % segment_count]._graph.vertexCount() == 2)
          layout.addVertexOutsideWeight(rotation_vertex[i], _segment_weight_outside[i] - 1);
       else {
-         layout.set_component_finish(rotation_vertex[i], rotation_vertex[(i + 1) % segment_count]);
-         layout.set_vertex_added_square(rotation_vertex[i], segment[i].get_square());
+         layout.setComponentFinish(rotation_vertex[i], rotation_vertex[(i + 1) % segment_count]);
+         layout.setVertexAddedSquare(rotation_vertex[i], segment[i].get_square());
 
          Cycle border;
          if (segment[i]._graph.vertexCount() != 2) segment[i]._graph._getBorder(border);
@@ -881,7 +881,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       if (_layout_component_number[e] >= 0 && _is_layout_component_incoming[_layout_component_number[e]])
          _layout_component_number[e] = _layout_component_count - 1;
  
-   _segment_smoothing(cycle, layout, rotation_vertex, rotation_point, segment);
+   //_segment_smoothing(cycle, layout, rotation_vertex, rotation_point, segment);
 }
 
 void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {

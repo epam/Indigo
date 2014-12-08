@@ -98,6 +98,8 @@ namespace indigo {
 
    };
 
+   struct answer_point;
+
    class DLLEXPORT MoleculeLayoutMacrocyclesLattice
    {
    public:
@@ -110,13 +112,43 @@ namespace indigo {
       void addVertexOutsideWeight(int v, int weight);
       void setVertexEdgeParallel(int v, bool parallel);
       void setEdgeStereo(int e, int stereo);
-      void set_vertex_added_square(int v, double s);
+      void setVertexAddedSquare(int v, double s);
       void setVertexDrawn(int v, bool drawn);
-      void set_component_finish(int v, int f);
-      void set_target_angle(int v, double angle);
-      void set_angle_importance(int, double);
+      void setComponentFinish(int v, int f);
+      void setTargetAngle(int v, double angle);
+      void setAngleImportance(int, double);
 
+      class CycleLayout {
+         CP_DECL;
+      public:
+         int vertex_count;
+         TL_CP_DECL(Array<Vec2f>, point);
+         TL_CP_DECL(Array<int>, rotate);
+         TL_CP_DECL(Array<int>, external_vertex_number);
+         TL_CP_DECL(Array<int>, edge_length);
+         //TL_CP_DECL(Array<int>, component_finish);
 
+         CycleLayout();
+         void initStatic();
+         void init(answer_point* points);
+         double area();
+         double perimeter();
+         Vec2f getWantedVector(int vertex_number);
+
+         void soft_move_vertex(int vertex_number, Vec2f move_vector);
+         void stright_rotate_chein(int vertex_number, double angle);
+         void stright_move_chein(int vertex_number, Vec2f vector);
+
+         DECL_ERROR;
+      };
+
+      void initCycleLayout(CycleLayout& cl);
+      int internalValue(CycleLayout cl);
+      double rating(CycleLayout cl);
+      void closingStep(CycleLayout cl, int index, int base_vertex, bool fix_angle, bool fix_next, double multiplyer);
+      void closing(CycleLayout cl);
+      void smoothingStep(CycleLayout cl, bool do_dist, int vertex_number);
+      void smoothing(CycleLayout cl);
       Vec2f &getPos(int v) const;
 
       DECL_ERROR;
@@ -126,6 +158,8 @@ namespace indigo {
       int length;
       int rotate_length;
       static const int WEIGHT_FACTOR = 12;
+      static const double MoleculeLayoutMacrocyclesLattice::SMOOTHING_MULTIPLIER;
+      static const double MoleculeLayoutMacrocyclesLattice::CHANGE_FACTOR;
 
       void calculate_rotate_length();
       void rotate_cycle(int shift);
@@ -140,6 +174,8 @@ namespace indigo {
       TL_CP_DECL(Array<int>, _component_finish);
       TL_CP_DECL(Array<double>, _target_angle);
       TL_CP_DECL(Array<double>, _angle_importance);
+
+
    };
 
    struct rectangle {
@@ -246,8 +282,6 @@ namespace indigo {
    };
 
 
-   struct answer_point;
-
    class DLLEXPORT AnswerField
    {
    public:
@@ -257,7 +291,7 @@ namespace indigo {
       void fill();
       unsigned short& get_field(int len, answer_point p);
       unsigned short& get_field(answer_point p);
-      void _restore_path(Vec2f* point, answer_point finish);
+      void _restore_path(answer_point* point, answer_point finish);
       TriangleLattice& getLattice(int l, int rot, int p);
 
       static int _cmp_answer_points(answer_point& p1, answer_point& p2, void* context);
@@ -287,7 +321,6 @@ namespace indigo {
    };
 
 
-
    struct answer_point {
       int rot;
       int p;
@@ -315,6 +348,7 @@ namespace indigo {
       }
 
    };
+
 
 }
 #ifdef _WIN32
