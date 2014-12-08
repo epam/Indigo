@@ -715,7 +715,8 @@ void MoleculeStandardizer::_keepSmallestFragment (BaseMolecule &mol)
          remove_atoms.push(i);
    }
 
-   mol.removeAtoms(remove_atoms);
+   if (remove_atoms.size() > 0)
+      mol.removeAtoms(remove_atoms);
 }
 
 void MoleculeStandardizer::_keepLargestFragment(BaseMolecule &mol)
@@ -748,7 +749,8 @@ void MoleculeStandardizer::_keepLargestFragment(BaseMolecule &mol)
          remove_atoms.push(i);
    }
 
-   mol.removeAtoms(remove_atoms);
+   if (remove_atoms.size() > 0)
+      mol.removeAtoms(remove_atoms);
 }
 
 void MoleculeStandardizer::_removeLargestFragment(BaseMolecule &mol)
@@ -780,7 +782,8 @@ void MoleculeStandardizer::_removeLargestFragment(BaseMolecule &mol)
          remove_atoms.push(i);
    }
 
-   mol.removeAtoms(remove_atoms);
+   if (remove_atoms.size() > 0)
+      mol.removeAtoms(remove_atoms);
 }
 
 void MoleculeStandardizer::_makeNonHAtomsCAtoms(Molecule &mol)
@@ -1196,12 +1199,38 @@ void MoleculeStandardizer::_clearIsotopes(QueryMolecule &mol)
 
 void MoleculeStandardizer::_clearDativeBonds(BaseMolecule &mol)
 {
-   throw Error("This option is not used for Indigo (V3000 bond type-9 unsupported)");
+   QS_DEF(Array<int>, remove_bonds);
+   remove_bonds.clear();
+
+   for (auto i : mol.edges())
+   {
+      const Edge &edge = mol.getEdge(i);
+
+      if ((mol.getBondOrder(i) == BOND_ZERO) && (mol.getAtomNumber(edge.beg) != ELEM_H) &&
+          (mol.getAtomNumber(edge.end) != ELEM_H))
+             remove_bonds.push(i);
+   }
+
+   if (remove_bonds.size() > 0)
+      mol.removeBonds(remove_bonds);
 }
 
 void MoleculeStandardizer::_clearHydrogenBonds(BaseMolecule &mol)
 {
-   throw Error("This option is not used for Indigo (V3000 bond type-10 unsupported)");
+   QS_DEF(Array<int>, remove_bonds);
+   remove_bonds.clear();
+
+   for (auto i : mol.edges())
+   {
+      const Edge &edge = mol.getEdge(i);
+
+      if ((mol.getBondOrder(i) == BOND_ZERO) &&
+          ((mol.getAtomNumber(edge.beg) == ELEM_H) || (mol.getAtomNumber(edge.end) == ELEM_H)))
+             remove_bonds.push(i);
+   }
+
+   if (remove_bonds.size() > 0)
+      mol.removeBonds(remove_bonds);
 }
 
 void MoleculeStandardizer::_localizeMarkushRAtomsOnRings(Molecule &mol)
