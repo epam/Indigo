@@ -414,6 +414,17 @@ static void indigoSetStandardizeLocalizeMarkushRAtomsOnRings (int enabled)
    self.standardize_options.localize_markush_r_atoms_on_rings = (enabled != 0);
 }
 
+static void indigoSetStandardizeCreateDativeBonds (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.create_coordination_bonds = (enabled != 0);
+}
+
+static void indigoSetStandardizeCreateHydrogenBonds (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.create_hydrogen_bonds = (enabled != 0);
+}
 
 
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
@@ -488,6 +499,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("standardize-clear-dative-bonds", indigoSetStandardizeClearDativeBonds);
    mgr.setOptionHandlerBool("standardize-clear-hydrogen-bonds", indigoSetStandardizeClearHydrogenBonds);
    mgr.setOptionHandlerBool("standardize-localize-markush-r-atoms-on-rings", indigoSetStandardizeLocalizeMarkushRAtomsOnRings);
+   mgr.setOptionHandlerBool("standardize-create-dative-bonds", indigoSetStandardizeCreateDativeBonds);
+   mgr.setOptionHandlerBool("standardize-create-hydrogen-bonds", indigoSetStandardizeCreateHydrogenBonds);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()
