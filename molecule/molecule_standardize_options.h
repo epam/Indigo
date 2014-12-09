@@ -162,6 +162,14 @@ public:
    // R atoms bonded to the centers of rings are converted to R atoms at all open
    // positions on the ring. Default is false.
    bool localize_markush_r_atoms_on_rings;
+
+   // Create coordination bond (zero-order bond) instead of wrong co-valent bond
+   // Default is false.
+   bool create_coordination_bonds;
+
+   // Create hydrogen bond (zero-order bond) instead of wrong co-valent bond
+   // Default is false.
+   bool create_hydrogen_bonds;
 };
 
 }

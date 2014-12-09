@@ -94,12 +94,15 @@ protected:
    static void _clearHydrogenBonds(BaseMolecule &mol);
    static void _localizeMarkushRAtomsOnRings(Molecule &mol);
    static void _localizeMarkushRAtomsOnRings(QueryMolecule &mol);
+   static void _createCoordinationBonds(BaseMolecule &mol);
+   static void _createHydrogenBonds(BaseMolecule &mol);
    CP_DECL;
 
 private:
    static int _getNumberOfBonds(BaseMolecule &mol, int idx, int bond_type, bool with_element_only, int element);
    static void _linearizeFragment(BaseMolecule &mol, int idx);
-
+   static bool _isNonMetalAtom(int atom_number);
+   static bool _isMetalAtom(int atom_number);
 };
 
 }

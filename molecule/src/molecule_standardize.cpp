@@ -228,6 +228,16 @@ bool MoleculeStandardizer::standardize (Molecule &mol, const StandardizeOptions 
       _localizeMarkushRAtomsOnRings(mol);
    }
 
+   if (options.create_coordination_bonds)
+   {
+      _createCoordinationBonds(mol);
+   }
+
+   if (options.create_hydrogen_bonds)
+   {
+      _createHydrogenBonds(mol);
+   }
+
    return true;
 }
 
@@ -426,6 +436,16 @@ bool MoleculeStandardizer::standardize (QueryMolecule &query, const StandardizeO
    if (options.localize_markush_r_atoms_on_rings)
    {
       _localizeMarkushRAtomsOnRings(query);
+   }
+
+   if (options.create_coordination_bonds)
+   {
+      _createCoordinationBonds(query);
+   }
+
+   if (options.create_hydrogen_bonds)
+   {
+      _createHydrogenBonds(query);
    }
 
    return true;
@@ -1242,6 +1262,94 @@ void MoleculeStandardizer::_localizeMarkushRAtomsOnRings(QueryMolecule &mol)
 {
 }
 
+void MoleculeStandardizer::_createCoordinationBonds(BaseMolecule &mol)
+{
+   for (auto i : mol.edges())
+   {
+      const Edge &edge = mol.getEdge(i);
+
+      if ((mol.getBondOrder(i) == BOND_SINGLE) && (mol.getAtomNumber(edge.beg) != ELEM_H) &&
+          (mol.getAtomNumber(edge.end) != ELEM_H))
+      {
+         int non_metal_atom;
+         int metal_atom;
+
+         if (_isNonMetalAtom(mol.getAtomNumber(edge.beg)) && _isMetalAtom(mol.getAtomNumber(edge.end)))
+         {
+            non_metal_atom = edge.beg;
+            metal_atom = edge.end;
+         }
+         else if (_isMetalAtom(mol.getAtomNumber(edge.beg)) && _isNonMetalAtom(mol.getAtomNumber(edge.end)))
+         {
+            non_metal_atom = edge.end;
+            metal_atom = edge.beg;
+         }
+         else
+           continue;
+
+         try
+         {
+           mol.getAtomValence(non_metal_atom);
+         }
+         catch (Exception e)
+         {
+           if (mol.isQueryMolecule()) 
+              (mol.asQueryMolecule()).resetBond(i, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_ZERO));
+           else
+              (mol.asMolecule()).setBondOrder(i, BOND_ZERO, false);     
+         }
+      }
+   }
+}
+
+void MoleculeStandardizer::_createHydrogenBonds(BaseMolecule &mol)
+{
+   QS_DEF(Array<int>, modified_atoms);
+   modified_atoms.clear();
+
+   for (auto i : mol.vertices())
+   {
+      if ((mol.getAtomNumber(i) == ELEM_H) && (_getNumberOfBonds(mol, i, BOND_SINGLE, false, 0) == 2))
+      {
+         const Vertex &v = mol.getVertex(i);
+         for (auto j : v.neighbors())
+         {
+            bool already_modified = false;
+            for (int k = 0; k < modified_atoms.size(); k++)
+            {
+               if (modified_atoms[k] == v.neiVertex(j)) 
+               {
+                  already_modified = true;
+                  break;
+               }
+            }
+            if (!already_modified)
+            {
+               modified_atoms.push(v.neiVertex(j));
+
+               if (mol.isQueryMolecule()) 
+               {
+                  if (mol.findEdgeIndex(i,v.neiVertex(j)) > 0)
+                     (mol.asQueryMolecule()).resetBond(mol.findEdgeIndex(i,j),
+                          new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_ZERO));
+                  else
+                     (mol.asQueryMolecule()).resetBond(mol.findEdgeIndex(v.neiVertex(j),i),
+                          new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_ZERO));
+               }
+               else
+               {
+                  if (mol.findEdgeIndex(i,v.neiVertex(j)) > 0)
+                     (mol.asMolecule()).setBondOrder(mol.findEdgeIndex(i,v.neiVertex(j)), BOND_ZERO, false);     
+                  else
+                     (mol.asMolecule()).setBondOrder(mol.findEdgeIndex(v.neiVertex(j),i), BOND_ZERO, false);     
+               }
+               break;
+            }   
+         }
+      }
+   }
+}
+
 int MoleculeStandardizer::_getNumberOfBonds(BaseMolecule &mol, int idx, int bond_type, bool with_element_only, int element)
 {
    auto num_bonds = 0;
@@ -1310,4 +1418,23 @@ void MoleculeStandardizer::_linearizeFragment(BaseMolecule &mol, int idx)
    central_atom.z = (nei_coords[0].z + nei_coords[1].z)/2;
 
    mol.setAtomXyz(idx, central_atom);
+}
+
+bool MoleculeStandardizer::_isNonMetalAtom(int atom_number)
+{
+   if ((atom_number == ELEM_C) || (atom_number == ELEM_N) || (atom_number == ELEM_O) ||
+        (atom_number == ELEM_P) || (atom_number == ELEM_S) || (atom_number == ELEM_Se))
+      return true;
+   
+   return false;
+}
+
+bool MoleculeStandardizer::_isMetalAtom(int atom_number)
+{
+   if ((atom_number > 0) && (atom_number < ELEM_MAX) && !_isNonMetalAtom(atom_number) && !Element::isHalogen(atom_number) && 
+       (atom_number != ELEM_He) && (atom_number != ELEM_Ne) && (atom_number != ELEM_Ar) && (atom_number != ELEM_Kr) &&
+       (atom_number != ELEM_Xe) && (atom_number != ELEM_Rn))
+      return true;
+
+   return false;
 }
