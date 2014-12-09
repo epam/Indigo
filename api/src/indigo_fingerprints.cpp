@@ -447,7 +447,7 @@ CEXPORT const char* indigoOneBitsList (int fingerprint) {
       auto &tmp = self.getThreadTmpData();
       ArrayOutput out(tmp.string);
       tmp.string.clear();
-      for(int i=0; i < fp.size(); ++i) {
+      for(int i=0; i < fp.sizeInBytes() * 8; ++i) {
           if(bitGetBit(fp.ptr(), i) > 0) {
               if(tmp.string.size() > 0) {
                  out.writeString(" "); 
