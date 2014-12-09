@@ -60,7 +60,7 @@ elseif(APPLE)
     endif()
 
     if (UNIVERSAL_BUILD)
-        set(SDK_SUBSYSTEM_NAME 10.7)
+        set(SDK_SUBSYSTEM_NAME 10.9)
     else()
         set(SDK_SUBSYSTEM_NAME ${SUBSYSTEM_NAME})
     endif()
