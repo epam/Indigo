@@ -82,6 +82,11 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoToString(self.id))
 
+    def oneBitsList(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoOneBitsList(self.id))
+
+
     def mdlct(self):
         self.dispatcher._setSessionId()
         buf = self.dispatcher.writeBuffer()
@@ -1728,6 +1733,8 @@ class Indigo(object):
         Indigo._lib.indigoAddDecomposition.argtypes = [c_int, c_int]
         Indigo._lib.indigoToString.restype = c_char_p
         Indigo._lib.indigoToString.argtypes = [c_int]
+        Indigo._lib.indigoOneBitsList.restype = c_char_p
+        Indigo._lib.indigoOneBitsList.argtypes = [c_int]
         Indigo._lib.indigoToBuffer.restype = c_int
         Indigo._lib.indigoToBuffer.argtypes = [c_int, POINTER(POINTER(c_byte)), POINTER(c_int)]
         Indigo._lib.indigoStereocenterPyramid.restype = POINTER(c_int)
