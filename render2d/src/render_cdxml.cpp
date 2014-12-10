@@ -133,7 +133,9 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
             }
 
             // On average letters has width 6
-            float title_width = longest_line * 6.3f / 36.0f;
+            float letter_width = params.rOpt.titleFontFactor / 1.5f;
+
+            float title_width = longest_line * letter_width / 30.0f;
             title_widths[i] = title_width;
             width = __max(width, title_width);
          }
@@ -180,8 +182,11 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
          if (title.size() > 0)
          {
             int lines = title.count('\n') + 1;
-            float title_height = lines * saver.textLineHeight();
-            p.all_size.y += title_height + saver.textLineHeight(); // Add blank line
+            float letter_height = params.rOpt.titleFontFactor / 30.0f;
+            //float title_height = lines * saver.textLineHeight();
+            //p.all_size.y += title_height + saver.textLineHeight(); // Add blank line
+            float title_height = lines * letter_height;
+            p.all_size.y += title_height + letter_height; // Add blank line
          }
       }
 
@@ -230,7 +235,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
 
    b.max.set(w, max_y + y_margins_base);
    saver.beginDocument(&b);
-   saver.beginPage(&b);
+   
    Array<char> font_attr;
    ArrayOutput font_out(font_attr);
 
@@ -251,6 +256,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
          font_out.printf(" size=\"%.0f\"", params.rOpt.titleFontFactor);
    }
    font_attr.push(0);
+   saver.beginPage(&b);
 
    for (int i = 0; i < mols.size(); ++i)
    {
