@@ -90,13 +90,14 @@ TL_CP_GET(_vertex_drawn)
    _vertex_drawn.clear_resize(size);
 
 
-   calculate_rotate_length();
-   rotate_cycle(rotate_length);
-
 }
 
 void MoleculeLayoutMacrocyclesLattice::doLayout() {
+   calculate_rotate_length();
+
+   rotate_cycle(rotate_length);
    AnswerField answfld(length, 0, 0, 0, _vertex_weight.ptr(), _vertex_stereo.ptr(), _edge_stereo.ptr());
+
 
    answfld.fill();
 
@@ -149,18 +150,17 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
       } else count++;
    }
 
-   answfld._restore_path(path.ptr(), points[best_number]);
-   CycleLayout cl; initCycleLayout(cl); cl.init(path.ptr());
-   smoothing(cl);
+      answfld._restore_path(path.ptr(), points[best_number]);
+      CycleLayout cl; initCycleLayout(cl); cl.init(path.ptr());
+      smoothing(cl);
 
-   /*for (int i = 0; i < cl.vertex_count; i++)
-      printf("%.5f\n", (cl.point[(i + 1) % cl.vertex_count] - cl.point[(i + cl.vertex_count - 1) % cl.vertex_count]).lengthSqr() - 
-      (cl.point[(i + 1) % cl.vertex_count] - cl.point[(i) % cl.vertex_count]).lengthSqr() - 
-      (cl.point[(i) % cl.vertex_count] - cl.point[(i + cl.vertex_count - 1) % cl.vertex_count]).lengthSqr());*/
-
-   for (int i = 0, j = 0; i < cl.vertex_count; i++)
+      for (int i = 0, j = 0; i < cl.vertex_count; i++)
       for (int t = cl.external_vertex_number[i]; t < cl.external_vertex_number[i + 1]; t++, j++)
          _positions[j] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * (t - cl.external_vertex_number[i]) / cl.edge_length[i];
+   }
+
+
+   rotate_cycle(-rotate_length);
 }
 
 
@@ -181,8 +181,7 @@ void MoleculeLayoutMacrocyclesLattice::calculate_rotate_length() {
          }
       }
    }
-
-
+   rotate_length++;
 }
 
 void MoleculeLayoutMacrocyclesLattice::rotate_cycle(int shift) {
@@ -201,6 +200,14 @@ void MoleculeLayoutMacrocyclesLattice::rotate_cycle(int shift) {
    for (int i = shift; i < length; i++) temp[i - shift] = _edge_stereo[i];
    for (int i = 0; i < shift; i++) temp[i - shift + length] = _edge_stereo[i];
    for (int i = 0; i < length; i++) _edge_stereo[i] = temp[i];
+
+   QS_DEF(Array<Vec2f>, temp_point);
+   temp_point.clear_resize(length);
+
+   for (int i = shift; i < length; i++) temp_point[i - shift] = _positions[i];
+   for (int i = 0; i < shift; i++) temp_point[i - shift + length] = _positions[i];
+   for (int i = 0; i < length; i++) _positions[i] = temp_point[i];
+
 }
 
 Vec2f &MoleculeLayoutMacrocyclesLattice::getPos(int v) const
