@@ -576,14 +576,16 @@ void AnswerField::fill() {
          for (int p = 0; p < 2; p++) {
             bool can[3];
             can[0] = can[1] = can[2] = false;
-            if (_vertex_stereo[l]) {
-               if (_edge_stereo[l] == 0) can[0] = can[2] = true;
-               else if ((_edge_stereo[l] == MoleculeCisTrans::TRANS) ^ (p == 0)) can[0] = true;
-               else can[2] = true;
-            }
-            else can[1] = true;
-
             bool* acceptable_rotation = &can[1];
+
+            if (_vertex_stereo[l]) {
+               int current_edge_stereo = _edge_stereo[(l - 1 + length) % length];
+               if (current_edge_stereo == 0) acceptable_rotation[-1] = acceptable_rotation[1] = true;
+               else if ((current_edge_stereo == MoleculeCisTrans::TRANS) ^ (p == 0)) acceptable_rotation[-1] = true;
+               else acceptable_rotation[1] = true;
+            }
+            else acceptable_rotation[0] = true;
+
 
             for (int chenge_rotation = -1; chenge_rotation <= 1; chenge_rotation++) if (acceptable_rotation[chenge_rotation]) {
                int newp = chenge_rotation == 0 ? p : chenge_rotation == 1 ? 1 : 0;
