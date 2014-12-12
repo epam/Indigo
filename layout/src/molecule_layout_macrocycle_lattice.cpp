@@ -743,13 +743,19 @@ double MoleculeLayoutMacrocyclesLattice::rating(CycleLayout cl) {
 
    double area = cl.area();
 
-   /*for (int i = 0; i < cl.vertex_count; i++)
+   QS_DEF(Array<Vec2f>, current_point);
+   current_point.clear_resize(length);
+   for (int i = 0, t = 0; i < cl.vertex_count; i++)
+   for (int j = cl.external_vertex_number[i], d = 0; j < cl.external_vertex_number[i + 1]; j++, t++, d++)
+      current_point[t] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * d;
+
+   for (int i = 0; i < cl.vertex_count; i++)
    if (_component_finish[cl.external_vertex_number[i]] != cl.external_vertex_number[i] && cl.rotate[i] == -1)
-      area += _vertex_added_square[cl.external_vertex_number[i]] * (cl.point[_component_finish[cl.external_vertex_number[i]]] - cl.point[i]).lengthSqr();*/
+      area += _vertex_added_square[cl.external_vertex_number[i]] * (current_point[_component_finish[cl.external_vertex_number[i]]] - current_point[cl.external_vertex_number[i]]).lengthSqr();
 
    double perimeter = cl.perimeter();
 
-   //result += (perimeter * perimeter / 4 / PI / area - 1) / 5;
+   result += (perimeter * perimeter / 4 / PI / area - 1) / 5;
 
    //printf("%5.5f\n", result);
    return result + 1000.0 * add;
