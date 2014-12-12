@@ -344,8 +344,9 @@ namespace indigo {
 
       const int quality(AnswerField& fld) const {
          int diffCoord = (x * y >= 0) ? abs(x) + abs(y) : max(abs(x), abs(y));
-         return diffCoord + abs(rot - 6) + fld.get_field(*this);
+         return diffCoord + 2*abs(rot - 6) + fld.get_field(*this);
       }
+
 
    };
 
