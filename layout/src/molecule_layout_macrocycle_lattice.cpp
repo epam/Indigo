@@ -150,6 +150,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
       } else count++;
    }
 
+   if (best_number >= 0) {
       answfld._restore_path(path.ptr(), points[best_number]);
       CycleLayout cl; initCycleLayout(cl); cl.init(path.ptr());
       smoothing(cl);
@@ -157,6 +158,9 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
       for (int i = 0, j = 0; i < cl.vertex_count; i++)
       for (int t = cl.external_vertex_number[i]; t < cl.external_vertex_number[i + 1]; t++, j++)
          _positions[j] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * (t - cl.external_vertex_number[i]) / cl.edge_length[i];
+   } else {
+      double radius = length / (2 * PI);
+      for (int i = 0; i < length; i++) _positions[i] = Vec2f(cos(i * 2 * PI / length), sin(i * 2 * PI / length)) * radius;
    }
 
 
@@ -171,9 +175,9 @@ void MoleculeLayoutMacrocyclesLattice::calculate_rotate_length() {
 
    for (int i = 0; i < length; i++) {
       if (_edge_stereo[i] != 2) {
-         int value = _edge_stereo[i]
-            + _vertex_weight[i] + _vertex_weight[(i + 1) % length]
-            - _vertex_weight[(i + length - 1) % length] / 2 - _vertex_weight[(i + 2) % length] / 2;
+         int value = 2 * _edge_stereo[i]
+            + 2 * _vertex_weight[i] + 2 * _vertex_weight[(i + 1) % length]
+            - _vertex_weight[(i + length - 1) % length] - _vertex_weight[(i + 2) % length];
 
          if (rotate_length == -1 || value > max_value) {
             rotate_length = i;
