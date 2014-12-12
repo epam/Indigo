@@ -881,7 +881,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       if (_layout_component_number[e] >= 0 && _is_layout_component_incoming[_layout_component_number[e]])
          _layout_component_number[e] = _layout_component_count - 1;
  
-   //_segment_smoothing(cycle, layout, rotation_vertex, rotation_point, segment);
+   _segment_smoothing(cycle, layout, rotation_vertex, rotation_point, segment);
 }
 
 void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
