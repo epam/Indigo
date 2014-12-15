@@ -292,7 +292,7 @@ void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text)
 
 void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text, const char *alignment)
 {
-	_output.printf("<t p=\"%f %f\" Justification=\"%s\"><s %s>%s</s></t>\n", _bond_length * pos.x, -_bond_length * pos.y, alignment, text);
+	_output.printf("<t p=\"%f %f\" Justification=\"%s\"><s>%s</s></t>\n", _bond_length * pos.x, -_bond_length * pos.y, alignment, text);
 }
 
 void MoleculeCdxmlSaver::addCustomText(const Vec2f &pos, const char *alignment, float line_height, const char *text)
