@@ -340,7 +340,6 @@ void CanvasOptions::clear ()
    comment.clear();
    titleProp.clear();
    titleProp.appendString("^NAME", true);
-   titleFont.clear();
 }
 
 //

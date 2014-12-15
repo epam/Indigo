@@ -40,9 +40,10 @@ public:
    void beginDocument (Bounds *bounds);
    void beginPage (Bounds *bounds);
    void addFontTable(const char* font);
+   void addColorTable(const char* font);
    void saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float scale);
    void addText (const Vec2f &pos, const char *text);
-   void addText (const Vec2f &pos, const char *text, const char *alignment, const char* font_attr);
+   void addText (const Vec2f &pos, const char *text, const char *alignment);
    void addCustomText(const Vec2f &pos, const char *alignment, float line_height, const char *text);
    void endPage ();
    void endDocument ();

@@ -399,7 +399,6 @@ struct CanvasOptions {
    int titleOffset;
    Array<char> comment;
    Array<char> titleProp;
-   Array<char> titleFont;
    COMMENT_POS commentPos;
    MultilineTextLayout commentAlign;
    MultilineTextLayout titleAlign;
@@ -449,7 +448,7 @@ public:
    bool agentsBelowArrow;
    bool collapseSuperatoms;
    Array<char> atomColorProp;
-   AutoPtr<RenderCdxmlContext> cdxml_content;
+   AutoPtr<RenderCdxmlContext> cdxml_context;
 private:
    RenderOptions (const RenderOptions& );
 };

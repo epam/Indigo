@@ -122,6 +122,10 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    Array<Pos> positions;
    positions.resize(mols.size());
 
+   Array<float> title_heights;
+   title_heights.resize(mols.size());
+   title_heights.fill(0);
+
    for (int mol_idx = 0; mol_idx < mols.size(); ++mol_idx)
    {
       int column = mol_idx % params.cnvOpt.gridColumnNumber;
@@ -149,8 +153,8 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
             width = __max(width, title_width);
          }
       }
-      if (params.rOpt.cdxml_content.get() != NULL) {
-         RenderCdxmlContext& context = params.rOpt.cdxml_content.ref();
+      if (params.rOpt.cdxml_context.get() != NULL) {
+         RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
          if (context.enabled) {
             RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
             int longest_line = _getLongestLine(data.propertyName);
@@ -206,7 +210,19 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
             //float title_height = lines * saver.textLineHeight();
             //p.all_size.y += title_height + saver.textLineHeight(); // Add blank line
             float title_height = lines * letter_height;
+            title_heights[mol_idx] = title_height;
             p.all_size.y += title_height + letter_height; // Add blank line
+         }
+      }
+      if (params.rOpt.cdxml_context.get() != NULL) {
+         RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
+         if (context.enabled) {
+            RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
+            int lines = data.propertyName.count('\n') + 1;
+
+            float letter_height = params.rOpt.titleFontFactor / MoleculeCdxmlSaver::BOND_LENGTH;
+            float prop_height = lines * letter_height;
+            p.all_size.y += prop_height + letter_height; // Add blank line
          }
       }
 
@@ -258,25 +274,46 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    
    Array<char> font_attr;
    ArrayOutput font_out(font_attr);
+   font_out.printf("<s size=\"%f\"", params.rOpt.titleFontFactor);
 
-   if (params.cnvOpt.titleFont.size() > 0) {
-      font_out.printf("id=\"5\" charset=\"iso-8859-1\" name=\"%s\"", params.cnvOpt.titleFont.ptr());
-      font_attr.push(0);
-      saver.addFontTable(font_attr.ptr());
-      /*
-      * Set font as id 5 always
-      */
-      font_attr.clear();
-      if (params.rOpt.titleFontFactor > 1)
-         font_out.printf(" font=\"5\" size=\"%.0f\"", params.rOpt.titleFontFactor);
-      else
-         font_out.printf(" font=\"5\"");
-   } else {
-      if (params.rOpt.titleFontFactor > 1)
-         font_out.printf(" size=\"%.0f\"", params.rOpt.titleFontFactor);
+
+   if (params.rOpt.cdxml_context.get() != NULL) {
+      RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
+      if (context.fonttable.size() > 0) {
+         saver.addFontTable(context.fonttable.ptr());
+      }
+      if (context.colortable.size() > 0) {
+         saver.addColorTable(context.colortable.ptr());
+      }
+      if (context.titleFont.size() > 0) {
+         font_out.printf(" font=\"%s\"", context.titleFont.ptr());
+      }
+      if (context.titleFace.size() > 0) {
+         font_out.printf(" face=\"%s\"", context.titleFace.ptr());
+      }
    }
-   font_attr.push(0);
+   font_out.printf(">");
+
+   //if (params.rOtitleFont.size() > 0) {
+   //   font_out.printf("id=\"5\" charset=\"iso-8859-1\" name=\"%s\"", params.cnvOpt.titleFont.ptr());
+   //   font_attr.push(0);
+   //   saver.addFontTable(font_attr.ptr());
+   //   /*
+   //   * Set font as id 5 always
+   //   */
+
+   //   font_attr.clear();
+   //   if (params.rOpt.titleFontFactor > 1)
+   //      font_out.printf(" font=\"5\" size=\"%.0f\"", params.rOpt.titleFontFactor);
+   //   else
+   //      font_out.printf(" font=\"5\"");
+   //} else {
+   //   if (params.rOpt.titleFontFactor > 1)
+   //      font_out.printf(" size=\"%.0f\"", params.rOpt.titleFontFactor);
+   //}
+   //font_attr.push(0);
    saver.beginPage(&b);
+   Array<char> title_font;
 
    for (int mol_idx = 0; mol_idx < mols.size(); ++mol_idx)
    {
@@ -290,8 +327,11 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       if (mol_idx < params.titles.size())
       {
          const Array<char> &title = params.titles[mol_idx];
+         
          if (title.size() > 0)
          {
+            title_font.clear();
+            title_font.readString(font_attr.ptr(), false);
             // Get title bounding box
             float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], title_widths[mol_idx]);
 
@@ -305,19 +345,22 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
                alignment_str = "Right";
 
             Vec2f title_offset(x, p.title_offset_y);
-            saver.addText(title_offset, title.ptr(), alignment_str, font_attr.ptr());
+            title_font.appendString(title.ptr(), false);
+            title_font.appendString("</s>", true);
+
+            saver.addCustomText(title_offset, alignment_str, params.rOpt.titleFontFactor, title_font.ptr());
          }
       }
-      if (params.rOpt.cdxml_content.get() != NULL) {
-         RenderCdxmlContext& context = params.rOpt.cdxml_content.ref();
+      if (params.rOpt.cdxml_context.get() != NULL) {
+         RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
          if (context.enabled) {
             RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
 
             float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], title_widths[mol_idx]);
 
-            Vec2f title_offset(x, p.title_offset_y);
-            saver.addCustomText(title_offset, "Right", 20, data.propertyName.ptr());
-            saver.addCustomText(title_offset, "Left", 20, data.propertyValue.ptr());
+            Vec2f title_offset(x, p.title_offset_y - title_heights[mol_idx]);
+            saver.addCustomText(title_offset, "Right", context.propertyFontSize, data.propertyName.ptr());
+            saver.addCustomText(title_offset, "Left", context.propertyFontSize, data.propertyValue.ptr());
          }
 
       }

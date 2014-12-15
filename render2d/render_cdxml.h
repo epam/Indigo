@@ -35,13 +35,30 @@ public:
    };
 
    bool enabled;
+   float propertyFontSize;
+   Array<char> titleFont;
+   Array<char> titleFace;
    Array<char> fonttable;
    Array<char> colortable;
    Array<char> propertyNameCaption;
    Array<char> propertyValueCaption;
    ObjArray<PropertyData> property_data;
 
-   RenderCdxmlContext() :enabled(false){};
+   void clear() {
+      enabled = false;
+      propertyFontSize = 12;
+      titleFont.clear();
+      titleFace.clear();
+      fonttable.clear();
+      colortable.clear();
+      propertyNameCaption.clear();
+      propertyValueCaption.clear();
+      property_data.clear();
+   }
+
+   RenderCdxmlContext() :enabled(false){
+      clear();
+   };
 
 private:
    RenderCdxmlContext(RenderCdxmlContext&);
