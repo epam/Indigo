@@ -24,7 +24,7 @@ IMPL_ERROR(MoleculeCdxmlSaver, "molecule CMXML saver");
 
 MoleculeCdxmlSaver::MoleculeCdxmlSaver (Output &output) : _output(output)
 {
-   _bond_length = 30;
+   _bond_length = BOND_LENGTH;
    _max_page_height = 64;
    _pages_height = 1;
 }
@@ -289,7 +289,10 @@ void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text, const char
 	_output.printf("<t p=\"%f %f\" Justification=\"%s\"><s %s>%s</s></t>\n", _bond_length * pos.x, -_bond_length * pos.y, alignment, font_attr, text);
 }
 
-
+void MoleculeCdxmlSaver::addCustomText(const Vec2f &pos, const char *alignment, float line_height, const char *text)
+{
+   _output.printf("<t p=\"%f %f\" Justification=\"%s\" LineHeight=\"%f\">%s</t>\n", _bond_length * pos.x, -_bond_length * pos.y, alignment, line_height, text);
+}
 void MoleculeCdxmlSaver::endPage ()
 {
    _output.printf("</page>\n");

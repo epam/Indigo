@@ -20,6 +20,7 @@
 #include "layout/metalayout.h"
 #include "graph/graph.h"
 #include "reaction/base_reaction.h"
+#include "render2d/render_cdxml.h"
 
 typedef void* PVOID;
 
@@ -448,6 +449,7 @@ public:
    bool agentsBelowArrow;
    bool collapseSuperatoms;
    Array<char> atomColorProp;
+   AutoPtr<RenderCdxmlContext> cdxml_content;
 private:
    RenderOptions (const RenderOptions& );
 };

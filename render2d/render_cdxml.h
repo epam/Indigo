@@ -14,6 +14,8 @@
 
 #ifndef __render_cdxml_h__
 #define __render_cdxml_h__
+#include "base_cpp/array.h"
+#include "base_cpp/obj_array.h"
 
 namespace indigo {
 
@@ -21,9 +23,33 @@ class RenderParams;
 class Molecule;
 struct Vec2f;
 
+class RenderCdxmlContext {
+public:
+   class PropertyData {
+   public:
+      Array<char> propertyName;
+      Array<char> propertyValue;
+      PropertyData(){};
+   private:
+      PropertyData(PropertyData&);
+   };
+
+   bool enabled;
+   Array<char> fonttable;
+   Array<char> colortable;
+   Array<char> propertyNameCaption;
+   Array<char> propertyValueCaption;
+   ObjArray<PropertyData> property_data;
+
+   RenderCdxmlContext() :enabled(false){};
+
+private:
+   RenderCdxmlContext(RenderCdxmlContext&);
+};
+
 class RenderParamCdxmlInterface {
 public:
-   static void render (RenderParams& params);
+   static void render(RenderParams& params);
 };
 
 }

@@ -28,6 +28,9 @@ public:
    explicit MoleculeCdxmlSaver (Output &output);
 
    void saveMolecule (Molecule &mol);
+   enum {
+      BOND_LENGTH = 30
+   };
 
    struct Bounds
    {
@@ -40,6 +43,7 @@ public:
    void saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float scale);
    void addText (const Vec2f &pos, const char *text);
    void addText (const Vec2f &pos, const char *text, const char *alignment, const char* font_attr);
+   void addCustomText(const Vec2f &pos, const char *alignment, float line_height, const char *text);
    void endPage ();
    void endDocument ();
 
