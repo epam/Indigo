@@ -451,7 +451,7 @@ void indigoRenderSetCdxmlPropertiesFontTable(const char* fonttable)
 void indigoRenderSetCdxmlPropertiesColorTable(const char* colortable)
 {
    RenderCdxmlContext& context = getCdxmlContext();
-   context.fonttable.readString(colortable, true);
+   context.colortable.readString(colortable, true);
 }
 
 void indigoRenderSetCdxmlPropertiesNameProperty(const char* name)

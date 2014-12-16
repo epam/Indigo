@@ -46,7 +46,7 @@ public:
 
    void clear() {
       enabled = false;
-      propertyFontSize = 12;
+      propertyFontSize = 12.0f;
       titleFont.clear();
       titleFace.clear();
       fonttable.clear();

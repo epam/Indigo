@@ -106,15 +106,27 @@ void MoleculeCdxmlSaver::beginPage (Bounds *bounds)
 }
 void MoleculeCdxmlSaver::addFontTable(const char* font)
 {
-   _output.printf("<fonttable>\n");
-   _output.printf("%s\n", font);
-   _output.printf("</fonttable>\n");
+   if (font != NULL && strlen(font) > 0) {
+      _output.printf("<fonttable>\n");
+      _output.printf("%s\n", font);
+      _output.printf("</fonttable>\n");
+   }
 }
 void MoleculeCdxmlSaver::addColorTable(const char* color)
 {
-   _output.printf("<colortable>\n");
-   _output.printf("%s\n", color);
-   _output.printf("</colortable>\n");
+   if (color != NULL && strlen(color) > 0) {
+      _output.printf("<colortable>\n");
+      _output.printf("<color r = \"1\" g=\"1\" b=\"1\"/>\n");
+      _output.printf("<color r=\"0\" g=\"0\" b=\"0\"/>\n");
+      _output.printf("<color r=\"1\" g=\"0\" b=\"0\"/>\n");
+      _output.printf("<color r=\"1\" g=\"1\" b=\"0\"/>\n");
+      _output.printf("<color r=\"0\" g=\"1\" b=\"0\"/>\n");
+      _output.printf("<color r=\"0\" g=\"1\" b=\"1\"/>\n");
+      _output.printf("<color r=\"0\" g=\"0\" b=\"1\"/>\n");
+      _output.printf("<color r=\"1\" g=\"0\" b=\"1\"/>");
+      _output.printf("%s\n", color);
+      _output.printf("</colortable>\n");
+   }
 }
 
 void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float structure_scale)

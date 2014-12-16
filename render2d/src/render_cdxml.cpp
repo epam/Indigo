@@ -79,13 +79,40 @@ void _getBounds (RenderParams& params, BaseMolecule &mol, Vec2f &min, Vec2f &max
    min.scale(scale);
    max.scale(scale);
 }
+int _findReverse(int from, int to, const Array<char>& _array, char value) {
+   for (int i = to - 1; i >= from; i--) {
+      if (_array[i] == value)
+         return i;
+   }
+   return -1;
+}
+int _getLongestLineXml(const Array<char>& line) {
+   int longest_line = 0;
+   if (line.size() > 0)
+   {
+      int start = 0;
+      while (start < line.size() - 1)
+      {
+         int next = line.find(start + 1, line.size(), '\n');
+         if (next == -1)
+            next = line.size() - 1;
+         int st = _findReverse(start + 1, next - 1, line, '>');
+         if (st == -1) {
+            st = start;
+         }
 
+         longest_line = __max(next - st, longest_line);
+
+         start = next;
+      }
+   }
+   return longest_line;
+}
 int _getLongestLine(const Array<char>& line) {
    int longest_line = 0;
    if (line.size() > 0)
    {
       int start = 0;
-      int longest_line = 0;
       while (start < line.size())
       {
          int next = line.find(start + 1, line.size(), '\n');
@@ -118,6 +145,14 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    Array<float> title_widths;
    title_widths.resize(mols.size());
    title_widths.fill(0);
+
+   Array<float> key_widths;
+   key_widths.resize(mols.size());
+   key_widths.fill(0);
+
+   Array<float> prop_widths;
+   prop_widths.resize(mols.size());
+   prop_widths.fill(0);
 
    Array<Pos> positions;
    positions.resize(mols.size());
@@ -157,12 +192,16 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
          RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
          if (context.enabled) {
             RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
-            int longest_line = _getLongestLine(data.propertyName);
-            longest_line += _getLongestLine(data.propertyValue);
-            float letter_width = params.rOpt.titleFontFactor / 1.5f;
-            float title_width = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
-            title_widths[mol_idx] = __max(title_widths[mol_idx], title_width);
-            width = __max(width, title_width);
+            float letter_width = context.propertyFontSize / 1.5f;
+            int longest_line = _getLongestLineXml(data.propertyName);
+            
+            key_widths[mol_idx] = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
+
+            longest_line += _getLongestLineXml(data.propertyValue);
+            float prop_width = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
+            prop_widths[mol_idx] = prop_width;
+            
+            width = __max(width, prop_width);
          }
       }
 
@@ -355,12 +394,19 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
          RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
          if (context.enabled) {
             RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
+            float prop_width = prop_widths[mol_idx];
+            float key_width = key_widths[mol_idx];
+            float prop_offset_y = p.title_offset_y - title_heights[mol_idx];
+            float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], 0);
 
-            float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], title_widths[mol_idx]);
+            float prop_offset_key = prop_width * 0.5f;
+            float prop_offset_val = prop_offset_key - (prop_width - key_width);
 
-            Vec2f title_offset(x, p.title_offset_y - title_heights[mol_idx]);
-            saver.addCustomText(title_offset, "Right", context.propertyFontSize, data.propertyName.ptr());
-            saver.addCustomText(title_offset, "Left", context.propertyFontSize, data.propertyValue.ptr());
+
+            Vec2f title_offset_key(x - prop_offset_key, prop_offset_y);
+            Vec2f title_offset_val(x + prop_offset_val, prop_offset_y);
+            saver.addCustomText(title_offset_key, "Left", context.propertyFontSize, data.propertyName.ptr());
+            saver.addCustomText(title_offset_val, "Left", context.propertyFontSize, data.propertyValue.ptr());
          }
 
       }
