@@ -252,6 +252,8 @@ private:
    static void _addBondCallback( Graph &subgraph, Graph &supergraph,
       int self_idx, int other_idx, void *userdata );
 
+   static bool _checkForNeverUsed(ReactionEnumeratorState *rpe_state, Molecule &supermolecule);
+
    static int _embeddingCallback( Graph &subgraph, Graph &supergraph,
       int *core_sub, int *core_super, void *userdata );
 };

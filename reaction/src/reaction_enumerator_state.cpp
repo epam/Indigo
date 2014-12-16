@@ -744,7 +744,7 @@ bool ReactionEnumeratorState::_matchVertexCallback( Graph &subgraph, Graph &supe
          return false;
    }
 
-   if (rpe_state->_is_rg_exist && !submolecule.isRSite(sub_idx))
+   if (rpe_state->_is_rg_exist && !submolecule.isRSite(sub_idx) && !submolecule.isPseudoAtom(sub_idx))
    {
       int super_unfolded_h_cnt = supermolecule.getAtomTotalH(super_idx) - supermolecule.getImplicitH(super_idx);
      
@@ -1354,6 +1354,10 @@ bool ReactionEnumeratorState::_checkValence( Molecule &mol, int atom_idx )
    {
       return false;
    }
+   catch (Exception &)
+   {
+      return false;
+   }
 
    return true;
 }
@@ -1390,6 +1394,7 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    frags_mapping.clear_resize(_fragments.vertexEnd());
    frags_mapping.fffill();
    mol_product.mergeWithMolecule(_fragments, &frags_mapping);
+   
    
    for (int i = _fragments.vertexBegin(); i < _fragments.vertexEnd(); i = _fragments.vertexNext(i))
       if (i < _monomer_forbidden_atoms.size() && _monomer_forbidden_atoms[i])
@@ -1877,6 +1882,21 @@ void ReactionEnumeratorState::_addBondCallback( Graph &subgraph, Graph &supergra
    rpe_state->_bonds_mapping_super[super_idx] = sub_idx;
 }
 
+bool ReactionEnumeratorState::_checkForNeverUsed(ReactionEnumeratorState *rpe_state, Molecule &supermolecule)
+{
+   int never_used_vertex = -1;
+   for (int i = supermolecule.vertexBegin(); i != supermolecule.vertexEnd(); i = supermolecule.vertexNext(i))
+   {
+      if ((i >= rpe_state->_monomer_forbidden_atoms.size()) || (rpe_state->_monomer_forbidden_atoms[i] == 0))
+      {
+         never_used_vertex = i;
+         return true;
+      }
+   }
+
+   return false;
+}
+
 int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergraph,
                                               int *core_sub, int *core_super, void *userdata )
 {
@@ -1890,6 +1910,10 @@ int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergr
    QS_DEF(Molecule, supermolecule);
    supermolecule.clear();
    supermolecule.clone(cur_monomer, NULL, NULL);
+
+   if (!_checkForNeverUsed(rpe_state, supermolecule))
+      return 1;
+
    QS_DEF(Array<int>, sub_qa_array);
    sub_qa_array.clear() ;
    QS_DEF(Molecule, mol_fragments);
