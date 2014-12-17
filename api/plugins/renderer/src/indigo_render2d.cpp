@@ -466,6 +466,18 @@ void indigoRenderSetCdxmlPropertiesValueProperty(const char* value)
    context.propertyValueCaption.readString(value, true);
 }
 
+void indigoRenderSetCdxmlPropertiesKeyAlignment(const char* value)
+{
+   RenderCdxmlContext& context = getCdxmlContext();
+   if (strcasecmp(value, "left") == 0)
+      context.keyAlignment = RenderCdxmlContext::ALIGNMENT_LEFT;
+   else if (strcasecmp(value, "right") == 0)
+      context.keyAlignment = RenderCdxmlContext::ALIGNMENT_RIGHT;
+   else
+      throw IndigoError("Option value alignment is invalid");
+}
+
+
 void indigoRenderSetCdxmlPropertiesEnabled(int enabled)
 {
    RenderCdxmlContext& context = getCdxmlContext();
@@ -751,6 +763,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-cdxml-properties-colortable", indigoRenderSetCdxmlPropertiesColorTable);
    mgr.setOptionHandlerString("render-cdxml-properties-name-property", indigoRenderSetCdxmlPropertiesNameProperty);
    mgr.setOptionHandlerString("render-cdxml-properties-value-property", indigoRenderSetCdxmlPropertiesValueProperty);
+   mgr.setOptionHandlerString("render-cdxml-properties-key-alignment", indigoRenderSetCdxmlPropertiesKeyAlignment);
    mgr.setOptionHandlerFloat("render-cdxml-properties-size", indigoRenderSetCdxmlPropertiesSize);
    mgr.setOptionHandlerString("render-cdxml-title-font", indigoRenderSetCdxmlTitleFont);
    mgr.setOptionHandlerString("render-cdxml-title-face", indigoRenderSetCdxmlTitleFace);

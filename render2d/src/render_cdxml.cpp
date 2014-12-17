@@ -397,16 +397,22 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
             float prop_width = prop_widths[mol_idx];
             float key_width = key_widths[mol_idx];
             float prop_offset_y = p.title_offset_y - title_heights[mol_idx];
-            float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], 0);
+            float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], prop_width);
 
             float prop_offset_key = prop_width * 0.5f;
             float prop_offset_val = prop_offset_key - (prop_width - key_width);
-
-
-            Vec2f title_offset_key(x - prop_offset_key, prop_offset_y);
-            Vec2f title_offset_val(x + prop_offset_val, prop_offset_y);
-            saver.addCustomText(title_offset_key, "Left", context.propertyFontSize, data.propertyName.ptr());
-            saver.addCustomText(title_offset_val, "Left", context.propertyFontSize, data.propertyValue.ptr());
+            if (context.keyAlignment == RenderCdxmlContext::ALIGNMENT_LEFT) {
+               Vec2f title_offset_key(x - prop_offset_key, prop_offset_y);
+               Vec2f title_offset_val(x + prop_offset_val, prop_offset_y);
+               saver.addCustomText(title_offset_key, "Left", context.propertyFontSize, data.propertyName.ptr());
+               saver.addCustomText(title_offset_val, "Left", context.propertyFontSize, data.propertyValue.ptr());
+            }
+            else {
+               Vec2f title_offset_key(x + prop_offset_val, prop_offset_y);
+               Vec2f title_offset_val(x + prop_offset_val, prop_offset_y);
+               saver.addCustomText(title_offset_key, "Right", context.propertyFontSize, data.propertyName.ptr());
+               saver.addCustomText(title_offset_val, "Left", context.propertyFontSize, data.propertyValue.ptr());
+            }
          }
 
       }

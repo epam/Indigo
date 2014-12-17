@@ -25,6 +25,10 @@ struct Vec2f;
 
 class RenderCdxmlContext {
 public:
+   enum {
+      ALIGNMENT_LEFT,
+      ALIGNMENT_RIGHT
+   };
    class PropertyData {
    public:
       Array<char> propertyName;
@@ -35,6 +39,7 @@ public:
    };
 
    bool enabled;
+   int keyAlignment;
    float propertyFontSize;
    Array<char> titleFont;
    Array<char> titleFace;
@@ -46,6 +51,7 @@ public:
 
    void clear() {
       enabled = false;
+      keyAlignment = ALIGNMENT_LEFT;
       propertyFontSize = 12.0f;
       titleFont.clear();
       titleFace.clear();
