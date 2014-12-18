@@ -1,0 +1,9 @@
+all:indigo
+	R CMD SHLIB test.cpp libindigo-static.a libindigo-renderer-static.a libindigo-inchi-static.a libcommon.a libgraph.a libmolecule.a libreaction.a liblayout.a libinchi.a libz.a libpng.a libtinyxml.a libpixman.a librender2d.a libcairo.a libindigo-static.a libindigo-renderer-static.a libindigo-inchi-static.a libcommon.a libgraph.a libmolecule.a libreaction.a liblayout.a libinchi.a libz.a libpng.a libtinyxml.a libpixman.a librender2d.a libcairo.a libindigo-static.a libindigo-renderer-static.a libindigo-inchi-static.a libcommon.a libgraph.a libmolecule.a libreaction.a liblayout.a libinchi.a libz.a libpng.a libtinyxml.a libpixman.a librender2d.a libcairo.a
+
+indigo:clean
+	mkdir build && cd build && cmake -G "Unix Makefiles" ../build_scripts/indigo-all && cmake --build . --config Release && cp dist/Win/x86/lib/*.a ../ && cd ..
+
+clean:
+	rm -f *.o
+	rm -f *.so
