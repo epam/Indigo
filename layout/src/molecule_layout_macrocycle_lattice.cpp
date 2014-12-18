@@ -126,14 +126,13 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
 
    points.qsort(&AnswerField::_cmp_answer_points, &answfld);
 
-   int count = 0;
    int best_number = -1;
    double best_rating = 1e30;
 
    Array<answer_point> path;
    path.clear_resize(length + 1);
    printf("%d\n", points.size());
-   for (int i = 0; i < 100 && i < points.size() && count < 10; i++) {
+   for (int i = 0; i < 100 && i < points.size(); i++) {
       answfld._restore_path(path.ptr(), points[i]);
       CycleLayout cl; initCycleLayout(cl); cl.init(path.ptr());
       smoothing(cl);
@@ -141,13 +140,9 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
       double current_rating = rating(cl);
 
       if (current_rating + EPSILON < best_rating) {
-//         for (int i = 0; i <= length; i++) printf("%d %d %d %d\n", path[i].x, path[i].y, path[i].rot, path[i].p);
-         count = 0;
          best_rating = current_rating;
          best_number = i;
-//         printf("%d %d %d %d %.5f\n", best_number, points[best_number].x, points[best_number].y, points[best_number].rot, best_rating);
-
-      } else count++;
+      }
    }
 
    if (best_number >= 0) {
@@ -298,7 +293,7 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish) {
 
          }
 
-         int preferred_p = alpha > PI / 3 * (path[len].rot) + PI / 6 / length;
+         int preferred_p = alpha > PI / 3 * (path[len].rot);// +PI / 6 / length;
 
          path[len].p = preferred_p ^ 1;
 
