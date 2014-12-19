@@ -1362,8 +1362,33 @@ bool ReactionEnumeratorState::_checkValence( Molecule &mol, int atom_idx )
    return true;
 }
 
+void ReactionEnumeratorState::_findFragments2ProductMapping( Array<int> &f2p_mapping )
+{
+   f2p_mapping.clear_resize(_fragments.vertexEnd());
+   f2p_mapping.fffill();
+
+   for (int i = _full_product.vertexBegin(); i != _full_product.vertexEnd(); i = _full_product.vertexNext(i))
+   {
+      int pr_aam = _product_aam_array[i];
+         
+      if (pr_aam <= 0)
+         continue;
+         
+      int nei_in_fragments = -1;
+      nei_in_fragments = _fragments_aam_array.find(pr_aam);
+
+      if (nei_in_fragments == -1)
+         continue;
+
+      f2p_mapping[nei_in_fragments] = i;
+   }
+}
+
 bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
 {
+   QS_DEF(Array<int>, frags2product_mapping);
+   _findFragments2ProductMapping(frags2product_mapping);
+
    QS_DEF(QueryMolecule, product);
    product.clear();
    product.clone(_full_product, NULL, NULL);
@@ -1537,8 +1562,10 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
                   new_pyramid[k] = -1;
                else if (!_is_needless_atom[pyramid[k]])
                   new_pyramid[k] = frags_mapping[pyramid[k]];
-               else if (nv_idx < pr_neibours.size())
-                  new_pyramid[k] = pr_neibours[nv_idx++];
+               else if (frags2product_mapping[pyramid[k]] != -1)
+               {
+                  new_pyramid[k] = frags2product_mapping[pyramid[k]];
+               }
                else
                {
                   invalid_stereocenter = true;

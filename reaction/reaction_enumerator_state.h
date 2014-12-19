@@ -224,6 +224,8 @@ private:
       Molecule &supermolecule, const Array<int> &rp_mapping,
       int *core_sub, int *core_super );
 
+   void _findFragments2ProductMapping( Array<int> &f2p_mapping );
+
    void _completeCisTrans( Molecule &product, Molecule &uncleaned_fragments, 
                             Array<int> &frags_mapping );
 
