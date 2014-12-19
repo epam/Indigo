@@ -102,9 +102,7 @@ void RSmilesSaver::_saveReaction ()
    _comma = false;
 
    bool dot = false;
-
-   for (i = _brxn->reactantBegin(); i != _brxn->reactantEnd(); i = _brxn->reactantNext(i))
-   {
+   for (auto i : _brxn->reactants) {
       if (dot)
          _output.writeChar('.');
       else
@@ -116,8 +114,7 @@ void RSmilesSaver::_saveReaction ()
    _output.writeString(">");
 
    dot = false;
-   for (i = _brxn->catalystBegin(); i != _brxn->catalystEnd(); i = _brxn->catalystNext(i))
-   {
+   for (auto i : _brxn->catalysts) {
       if (dot)
          _output.writeChar('.');
       else
@@ -129,8 +126,7 @@ void RSmilesSaver::_saveReaction ()
    _output.writeString(">");
 
    dot = false;
-   for (i = _brxn->productBegin(); i != _brxn->productEnd(); i = _brxn->productNext(i))
-   {
+   for (auto i : _brxn->products) {
       if (dot)
          _output.writeChar('.');
       else

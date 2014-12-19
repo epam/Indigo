@@ -42,15 +42,11 @@ void CanonicalRSmilesSaver::saveReaction(Reaction &reaction_)
 
    reaction.name.copy(reaction_.name);
 
-   i = reaction_.reactantBegin();
-   if (i != reaction_.reactantEnd()) {
-      j = reaction.addReactantCopy(reaction_.getMolecule(i), 0, 0);
+   if (reaction_.reactantsCount()) {
+      j = reaction.addReactant();
       Molecule &mol = reaction.getMolecule(j);
       Array<int> &aamArray = reaction.getAAMArray(j);
-      aamArray.copy(reaction_.getAAMArray(i));
-
-      for (i = reaction_.reactantNext(i); i != reaction_.reactantEnd(); i = reaction_.reactantNext(i))
-      {
+      for (auto i : reaction_.reactants) {
          Array<int> &aamArray_ = reaction_.getAAMArray(i);
          mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
          aamArray.reserve(aamArray.size() + aamArray_.size());
@@ -61,15 +57,11 @@ void CanonicalRSmilesSaver::saveReaction(Reaction &reaction_)
       }
    }
 
-   i = reaction_.catalystBegin();
-   if (i != reaction_.catalystEnd()) {
-      j = reaction.addCatalystCopy(reaction_.getMolecule(i), 0, 0);
+   if (reaction_.catalystCount()) {
+      j = reaction.addCatalyst();
       Molecule &mol = reaction.getMolecule(j);
       Array<int> &aamArray = reaction.getAAMArray(j);
-      aamArray.copy(reaction_.getAAMArray(i));
-
-      for (i = reaction_.catalystNext(i); i != reaction_.catalystEnd(); i = reaction_.catalystNext(i))
-      {
+      for (auto i : reaction_.catalysts) {
          Array<int> &aamArray_ = reaction_.getAAMArray(i);
          mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
          aamArray.reserve(aamArray.size() + aamArray_.size());
@@ -80,15 +72,11 @@ void CanonicalRSmilesSaver::saveReaction(Reaction &reaction_)
       }
    }
 
-   i = reaction_.productBegin();
-   if (i != reaction_.productEnd()) {
-      j = reaction.addProductCopy(reaction_.getMolecule(i), 0, 0);
+   if (reaction_.productsCount()) {
+      j = reaction.addProduct();
       Molecule &mol = reaction.getMolecule(j);
       Array<int> &aamArray = reaction.getAAMArray(j);
-      aamArray.copy(reaction_.getAAMArray(i));
-
-      for (i = reaction_.productNext(i); i != reaction_.productEnd(); i = reaction_.productNext(i))
-      {
+      for (auto i : reaction_.products) {
          Array<int> &aamArray_ = reaction_.getAAMArray(i);
          mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
          aamArray.reserve(aamArray.size() + aamArray_.size());

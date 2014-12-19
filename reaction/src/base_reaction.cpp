@@ -18,8 +18,68 @@
 using namespace indigo;
 
 IMPL_ERROR(BaseReaction, "reaction");
+IMPL_ERROR(SideIter, "iterator");
+
+SideIter::SideIter(BaseReaction &owner, int idx, int side) : _owner(owner), AutoIterator(idx), _side(side)
+{
+}
+
+SideIter & SideIter::operator++()
+{
+   switch (_side) {
+   case BaseReaction::REACTANT:
+      _idx = _owner.reactantNext(_idx);
+      break;
+   case BaseReaction::PRODUCT:
+      _idx = _owner.productNext(_idx);
+      break;
+   case BaseReaction::CATALYST:
+      _idx = _owner.catalystNext(_idx);
+      break;
+   default:
+      throw Error("Invalid BaseReaction side iterator type");
+   }
+   return *this;
+}
+
+SideAuto::SideAuto(BaseReaction &owner, int side)
+   : _owner(owner),
+     _side(side)
+{
+
+}
+
+SideIter SideAuto::begin()
+{
+   int idx;
+
+   switch (_side) {
+   case BaseReaction::REACTANT:
+      idx = _owner.reactantBegin();
+      break;
+   case BaseReaction::PRODUCT:
+      idx = _owner.productBegin();
+      break;
+   case BaseReaction::CATALYST:
+      idx = _owner.catalystBegin();
+      break;
+   default:
+      throw SideIter::Error("Invalid BaseReaction side iterator type");
+   }
+
+   return SideIter(_owner, idx, _side);
+}
+
+SideIter SideAuto::end()
+{
+   return SideIter(_owner, _owner.end(), _side);
+}
+
 
 BaseReaction::BaseReaction ()
+  : reactants(*this, REACTANT),
+    catalysts(*this, CATALYST),
+    products(*this, PRODUCT)
 {
    clear();
 }
