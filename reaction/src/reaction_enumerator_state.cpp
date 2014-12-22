@@ -1346,15 +1346,14 @@ void ReactionEnumeratorState::_completeCisTrans( Molecule &product, Molecule &un
 
 bool ReactionEnumeratorState::_checkValence( Molecule &mol, int atom_idx )
 {
+   if (mol.isPseudoAtom(atom_idx))
+      return true;
+
    try
    {
       mol.getAtomValence(atom_idx);
    }
    catch (Element::Error &)
-   {
-      return false;
-   }
-   catch (Exception &)
    {
       return false;
    }
@@ -1411,10 +1410,10 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    for (int i = product.vertexBegin(); i != product.vertexEnd(); i = product.vertexNext(i))
       all_forbidden_atoms[i] = 1;
 
-   _buildMolProduct(product, mol_product, uncleaned_fragments, all_forbidden_atoms, mapping);
+   _buildMolProduct(_full_product, mol_product, uncleaned_fragments, all_forbidden_atoms, mapping);
 
    _cleanFragments();
-
+   
    QS_DEF(Array<int>, frags_mapping);
    frags_mapping.clear_resize(_fragments.vertexEnd());
    frags_mapping.fffill();
@@ -1535,13 +1534,13 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
 
       product_mapping[mapping[i]] = frags_mapping[_att_points[i][0]];
 
-
+      /*
       if (is_transform && _att_points[i].size() != 0 && is_valid && !_checkValence(mol_product, mapping[i]))
       {
          _product_forbidden_atoms.copy(_monomer_forbidden_atoms);
          _product_forbidden_atoms[_att_points[i][0]] = max_reuse_count;
          return false;
-      }
+      }*/
 
       /* Border stereocenters copying */
       int nv_idx = 0;
@@ -1939,7 +1938,7 @@ int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergr
    supermolecule.clone(cur_monomer, NULL, NULL);
 
    if (!_checkForNeverUsed(rpe_state, supermolecule))
-      return 1;
+      return 1; 
 
    QS_DEF(Array<int>, sub_qa_array);
    sub_qa_array.clear() ;
