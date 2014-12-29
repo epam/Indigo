@@ -54,6 +54,7 @@ Graph::Graph ()
    _vertices = new ObjPool<Vertex>();
    _neighbors_pool = new Pool<List<VertexEdge>::Elem>();
    _sssr_pool = 0;
+   _components_valid = false;
 }
 
 Graph::~Graph ()
