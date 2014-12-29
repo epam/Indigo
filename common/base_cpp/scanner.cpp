@@ -69,6 +69,8 @@ int Scanner::readInt1 (void)
 
    buf.clear();
 
+   skipSpace();
+
    while (!isEOF())
    {
       c = readChar();
