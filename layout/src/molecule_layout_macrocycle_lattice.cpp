@@ -98,7 +98,6 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
    rotate_cycle(rotate_length);
    AnswerField answfld(length, 0, 0, 0, _vertex_weight.ptr(), _vertex_stereo.ptr(), _edge_stereo.ptr());
 
-
    answfld.fill();
 
    QS_DEF(Array<answer_point>, points);
@@ -122,19 +121,21 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
 
    _positions.clear_resize(length + 1);
 
+   CycleLayout cl; initCycleLayout(cl);
+   int best_number = -1;
+   double best_rating = preliminary_layout(cl);
+
+
    //printf("%d\n", points.size());
 
    points.qsort(&AnswerField::_cmp_answer_points, &answfld);
-
-   int best_number = -1;
-   double best_rating = 1e30;
 
    Array<answer_point> path;
    path.clear_resize(length + 1);
    printf("%d\n", points.size());
    for (int i = 0; i < 100 && i < points.size(); i++) {
       answfld._restore_path(path.ptr(), points[i]);
-      CycleLayout cl; initCycleLayout(cl); cl.init(path.ptr());
+      cl.init(path.ptr());
       smoothing(cl);
 
       double current_rating = rating(cl);
@@ -147,16 +148,15 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
 
    if (best_number >= 0) {
       answfld._restore_path(path.ptr(), points[best_number]);
-      CycleLayout cl; initCycleLayout(cl); cl.init(path.ptr());
+      cl.init(path.ptr());
       smoothing(cl);
+   }
+   else preliminary_layout(cl);
 
-      for (int i = 0, j = 0; i < cl.vertex_count; i++)
+   for (int i = 0, j = 0; i < cl.vertex_count; i++)
       for (int t = cl.external_vertex_number[i]; t < cl.external_vertex_number[i + 1]; t++, j++)
          _positions[j] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * (t - cl.external_vertex_number[i]) / cl.edge_length[i];
-   } else {
-      double radius = length / (2 * PI);
-      for (int i = 0; i < length; i++) _positions[i] = Vec2f(cos(i * 2 * PI / length), sin(i * 2 * PI / length)) * radius;
-   }
+   
 
 
    rotate_cycle(-rotate_length);
@@ -595,7 +595,7 @@ void AnswerField::fill() {
                int xchenge = getDx(next_rot);
                int ychenge = getDy(next_rot);
 
-               unsigned short add = max(0, _vertex_weight[l] * (newp ? -1 : 1));
+               unsigned short add = abs(_vertex_weight[l]) > WEIGHT_FACTOR ? max(0, _vertex_weight[l] * (newp ? -1 : 1)) : 0;
                //add += (p && chenge_rotation > 0) || (!p && chenge_rotation < 0);
                //add += p == newp;
 
@@ -618,6 +618,8 @@ void AnswerField::fill() {
 
 }
 
+//CP_DEF(MoleculeLayoutMacrocyclesLattice::CycleLayout);
+
 MoleculeLayoutMacrocyclesLattice::CycleLayout::CycleLayout() :
 CP_INIT,
 TL_CP_GET(point),
@@ -625,6 +627,7 @@ TL_CP_GET(rotate),
 TL_CP_GET(external_vertex_number),
 TL_CP_GET(edge_length)
 {
+
 }
 
 void MoleculeLayoutMacrocyclesLattice::initCycleLayout(CycleLayout& cl) {
@@ -643,13 +646,11 @@ void MoleculeLayoutMacrocyclesLattice::initCycleLayout(CycleLayout& cl) {
    for (int i = 0; i < cl.vertex_count; i++) 
       cl.edge_length[i] = cl.external_vertex_number[i + 1] - cl.external_vertex_number[i];
 
-   //cl.component_finish.clear_resize(cl.vertex_count);
-   //for (int i = 0; i < length; i++)
 }
 
 void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(answer_point* ext_point) {
    rotate.clear_resize(vertex_count + 1);
-   for (int i = 0; i < vertex_count; i++) 
+   for (int i = 0; i < vertex_count; i++)
       rotate[i] = ext_point[external_vertex_number[i + 1]].rot - ext_point[external_vertex_number[i]].rot;
 
    if (ext_point[0].p == 1) rotate[0] = 1; else rotate[0] = -1;
@@ -658,9 +659,120 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(answer_point* ext_point
    point.clear_resize(vertex_count + 1);
    for (int i = 0; i <= vertex_count; i++) {
       point[i] = Vec2f(ext_point[external_vertex_number[i]].y, 0);
-      point[i].rotate(PI/3);
+      point[i].rotate(PI / 3);
       point[i] += Vec2f(ext_point[external_vertex_number[i]].x, 0);
    }
+}
+
+void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(int* up_point) {
+   rotate.clear_resize(vertex_count + 1);
+   for (int i = 0; i < vertex_count; i++) {
+      if (up_point[external_vertex_number[i]]) rotate[i] = 1;
+      else if (up_point[external_vertex_number[(i - 1 + vertex_count) % vertex_count]] || up_point[external_vertex_number[(i + 1 + vertex_count) % vertex_count]]) rotate[i] = -1;
+      else rotate[i] = 1;
+   }
+
+   rotate[vertex_count] = rotate[0];
+
+   point.clear_resize(vertex_count + 1);
+   int length = external_vertex_number[vertex_count];
+   double r = length / 2 / PI;
+   for (int i = 0; i <= vertex_count; i++) {
+      point[i] = Vec2f(r + up_point[external_vertex_number[i]], 0);
+      point[i].rotate(2*PI*external_vertex_number[i] / length);
+   }
+}
+
+
+double MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout &cl) {
+   QS_DEF(ObjArray<ObjArray<Array<bool>>>, can);
+
+   can.clear();
+   int maxrot = 19; // |[0, 18]|
+   int mask_count = 8; // 1 << 3
+   for (int i = 0; i <= length; i++) {
+      can.push();
+      can.top().clear();
+      for (int j = 0; j < maxrot; j++) {
+         can.top().push();
+         can.top().top().clear_resize(mask_count);
+      }
+   }
+
+   int is_cis[16];
+   for (int i = 0; i < 16; i++) is_cis[i] = 2;
+   is_cis[0] = is_cis[6] = is_cis[7] = is_cis[9] = is_cis[14] = is_cis[15] = 1;
+
+   int best_rot = -1;
+   QS_DEF(Array<int>, up);
+   up.clear_resize(length + 1);
+   up.zerofill();
+
+   for (int start_mask = 0; start_mask < mask_count; start_mask++) {
+
+      for (int i = 0; i <= length; i++) {
+         for (int j = 0; j < maxrot; j++) {
+            for (int k = 0; k < mask_count; k++) can[i][j][k] = false;
+         }
+      }
+
+      can[0][6][start_mask] = true;
+      int curr_mask;
+
+      for (int i = 0; i < length; i++) {
+         for (int j = 0; j < maxrot; j++) {
+            for (int mask = 0; mask < mask_count; mask++) if (can[i][j][mask]) {
+               for (int up = 0; up <= 1; up++) {
+                  int previ = i ? i - 1 : length - 1;
+                  if (_edge_stereo[previ] == is_cis[curr_mask = ((mask << 1) + up)] || _edge_stereo[previ] == 0) {
+                     int rot = j;
+                     if (is_cis[curr_mask] == 1) {
+                        if (curr_mask == 9) rot--; else rot++;
+                     }
+                     if (rot >= 0 && rot < maxrot) can[i + 1][rot][curr_mask & 7] = true;
+                  }
+               }
+            }
+         }
+      }
+
+      for (int rot = 0; rot < maxrot; rot++) if (can[length][rot][start_mask]) {
+         if (abs(best_rot - 12) > abs(rot - 12)) {
+            best_rot = rot;
+            curr_mask = start_mask;
+            int curr_rot = rot;
+            for (int i = length - 1;; i--) {
+               up[i + 1] = curr_mask & 1;
+               if (i < 0) break;
+               for (int mask = curr_mask + 8; mask >= curr_mask; mask -= 8) {
+                  int newrot = rot;
+                  if (is_cis[mask] == 1) {
+                     if (mask == 9) newrot++;
+                     else newrot--;
+                  }
+                  int previ = i ? i - 1 : length - 1;
+                  if (_edge_stereo[previ] == 0 || _edge_stereo[previ] == is_cis[mask]) {
+                     if (can[i][newrot][mask >> 1]) {
+                        curr_rot = newrot;
+                        curr_mask = mask >> 1;
+                        break;
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   cl.init(up.ptr());
+   smoothing(cl);
+
+   for (int i = 0, j = 0; i < cl.vertex_count; i++)
+   for (int t = cl.external_vertex_number[i]; t < cl.external_vertex_number[i + 1]; t++, j++) {
+      _positions[j] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * (t - cl.external_vertex_number[i]) / cl.edge_length[i];
+   }
+
+   return rating(cl);
 }
 
 int MoleculeLayoutMacrocyclesLattice::internalValue(CycleLayout cl) {
@@ -798,7 +910,7 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::stright_move_chein(int verte
 }
 
 
-void MoleculeLayoutMacrocyclesLattice::closingStep(CycleLayout cl, int index, int base_vertex, bool fix_angle, bool fix_next, double multiplyer) {
+void MoleculeLayoutMacrocyclesLattice::closingStep(CycleLayout &cl, int index, int base_vertex, bool fix_angle, bool fix_next, double multiplyer) {
    profTimerStart(tt, "improvement2");
 
    int prev_vertex = base_vertex - 1;
@@ -910,7 +1022,7 @@ void MoleculeLayoutMacrocyclesLattice::closingStep(CycleLayout cl, int index, in
 
 }
 
-void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout cl) {
+void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout &cl) {
    Random rand(931170243);
 
    int iter_count = max(200 * cl.vertex_count, 10000);
@@ -943,19 +1055,21 @@ void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout cl) {
 
 }
 
-void MoleculeLayoutMacrocyclesLattice::smoothing(CycleLayout cl) {
+void MoleculeLayoutMacrocyclesLattice::smoothing(CycleLayout &cl) {
    profTimerStart(tt, "smoothing");
 
    closing(cl);
 
    Random rand(931170240);
    int iter_count = max(50 * length, 2000);
+   //iter_count = 0;
 
+   double coef = SMOOTHING_MULTIPLIER;
    for (int i = 0; i < iter_count; i++) 
-      smoothingStep(cl, i >= iter_count / 2, rand.next(cl.vertex_count));
+      smoothingStep(cl, i >= iter_count / 2, rand.next(cl.vertex_count), coef *= CHANGE_FACTOR);
 }
 
-void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout cl, bool do_dist, int vertex_number) {
+void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout &cl, bool do_dist, int vertex_number, double coef) {
 
    Vec2f p1 = cl.point[(vertex_number - 1 + cl.vertex_count) % cl.vertex_count];
    Vec2f p2 = cl.point[(vertex_number + 1 + cl.vertex_count) % cl.vertex_count];
@@ -1029,7 +1143,7 @@ void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout cl, bool do_dis
          
       }
 
-      newPoint *= SMOOTHING_MULTIPLIER;
+      newPoint *= coef;
 
       cl.point[vertex_number] += newPoint;
    }

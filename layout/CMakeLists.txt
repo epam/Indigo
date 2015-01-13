@@ -8,3 +8,4 @@ include_directories(${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/..)
 add_library(layout OBJECT ${Layout_src} ${Layout_headers})
 
 set_target_properties(layout PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+

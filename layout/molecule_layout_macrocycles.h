@@ -29,6 +29,8 @@ using namespace std;
 namespace indigo {
 
    static const unsigned short SHORT_INFINITY = 60000;
+   static const int WEIGHT_FACTOR = 12;
+
 
    class DLLEXPORT MoleculeLayoutMacrocycles
    {
@@ -73,7 +75,6 @@ namespace indigo {
       static const int init_y;
       static const int init_rot;
       static const double CHANGE_FACTOR;
-      static const int WEIGHT_FACTOR = 12;
 
 
       int get_diff_grid(int x, int y, int rot, int value);
@@ -118,7 +119,7 @@ namespace indigo {
       void setTargetAngle(int v, double angle);
       void setAngleImportance(int, double);
 
-      class CycleLayout {
+      class DLLEXPORT CycleLayout {
          CP_DECL;
       public:
          int vertex_count;
@@ -131,6 +132,7 @@ namespace indigo {
          CycleLayout();
          void initStatic();
          void init(answer_point* points);
+         void init(int* up);
          double area();
          double perimeter();
          Vec2f getWantedVector(int vertex_number);
@@ -145,11 +147,12 @@ namespace indigo {
       void initCycleLayout(CycleLayout& cl);
       int internalValue(CycleLayout cl);
       double rating(CycleLayout cl);
-      void closingStep(CycleLayout cl, int index, int base_vertex, bool fix_angle, bool fix_next, double multiplyer);
-      void closing(CycleLayout cl);
-      void smoothingStep(CycleLayout cl, bool do_dist, int vertex_number);
-      void smoothing(CycleLayout cl);
+      void closingStep(CycleLayout &cl, int index, int base_vertex, bool fix_angle, bool fix_next, double multiplyer);
+      void closing(CycleLayout &cl);
+      void smoothingStep(CycleLayout &cl, bool do_dist, int vertex_number, double coef);
+      void smoothing(CycleLayout &cl);
       Vec2f &getPos(int v) const;
+      double preliminary_layout(CycleLayout &cl);
 
       DECL_ERROR;
 
@@ -157,7 +160,6 @@ namespace indigo {
 
       int length;
       int rotate_length;
-      static const int WEIGHT_FACTOR = 12;
       static const double MoleculeLayoutMacrocyclesLattice::SMOOTHING_MULTIPLIER;
       static const double MoleculeLayoutMacrocyclesLattice::CHANGE_FACTOR;
 
