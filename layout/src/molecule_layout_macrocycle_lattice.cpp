@@ -265,7 +265,7 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish) {
 
          int rot = path[len + 1].rot;
 
-         int add = max(0, _vertex_weight[len] * (path[len + 1].p ? -1 : 1));
+         int add = (_vertex_weight[len] > WEIGHT_FACTOR) ? (max(0, _vertex_weight[len] * (path[len + 1].p ? -1 : 1))) : 0;
 
          // choosing rotation closer to circle
          double l = len * (sqrt(3.0) + 1.5) * PI / 12;
@@ -300,10 +300,7 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish) {
          // enumerating two cases
          for (int i = 0; i < 2; i++) {
             if (get_field(len + 1, path[len + 1]) == add + 
-               //(path[len].p == path[len + 1].p) + 
                get_field(len, path[len])) break;
-//            printf("----| len = %d, x = %d, y = %d, p = %d, rot = %d, value = %d \n", len + 1, path[len + 1].x, path[len + 1].y, path[len + 1].p, path[len + 1].rot, get_field(len + 1, path[len + 1]));
-  //          printf("----| len = %d, x = %d, y = %d, p = %d, rot = %d, value = %d \n", len, path[len].x, path[len].y, path[len].p, path[len].rot, get_field(len, path[len]));
             path[len].p ^= 1;
          }
       }
