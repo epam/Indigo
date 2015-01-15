@@ -160,8 +160,8 @@ namespace indigo {
 
       int length;
       int rotate_length;
-      static const double MoleculeLayoutMacrocyclesLattice::SMOOTHING_MULTIPLIER;
-      static const double MoleculeLayoutMacrocyclesLattice::CHANGE_FACTOR;
+      static const double SMOOTHING_MULTIPLIER;
+      static const double CHANGE_FACTOR;
 
       void calculate_rotate_length();
       void rotate_cycle(int shift);
