@@ -265,7 +265,8 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish) {
 
          int rot = path[len + 1].rot;
 
-         int add = (_vertex_weight[len] > WEIGHT_FACTOR) ? (max(0, _vertex_weight[len] * (path[len + 1].p ? -1 : 1))) : 0;
+         int add = (abs(_vertex_weight[len]) > WEIGHT_FACTOR) ? (max(0, _vertex_weight[len] * (path[len + 1].p ? -1 : 1))) : 0;
+//         int add = max(0, _vertex_weight[len] * (path[len + 1].p ? -1 : 1));
 
          // choosing rotation closer to circle
          double l = len * (sqrt(3.0) + 1.5) * PI / 12;
@@ -298,9 +299,12 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish) {
          path[len].p = preferred_p ^ 1;
 
          // enumerating two cases
-         for (int i = 0; i < 2; i++) {
-            if (get_field(len + 1, path[len + 1]) == add + 
-               get_field(len, path[len])) break;
+         for (int i = 0; i < 3; i++) {
+            if (i == 2) throw Error("Cannot find path");
+            unsigned short a = get_field(len + 1, path[len + 1]);
+            unsigned short b = get_field(len, path[len]);
+
+            if (a == add + b) break;
             path[len].p ^= 1;
          }
       }
@@ -593,6 +597,8 @@ void AnswerField::fill() {
                int ychenge = getDy(next_rot);
 
                unsigned short add = abs(_vertex_weight[l]) > WEIGHT_FACTOR ? max(0, _vertex_weight[l] * (newp ? -1 : 1)) : 0;
+//               unsigned short add = max(0, _vertex_weight[l] * (newp ? -1 : 1));
+
                //add += (p && chenge_rotation > 0) || (!p && chenge_rotation < 0);
                //add += p == newp;
 
@@ -602,7 +608,7 @@ void AnswerField::fill() {
                      unsigned short& c = retsepient.getCell(x + xchenge, y + ychenge);
                      unsigned short& d = donor.getCell(x, y);
 
-                     if (c > (unsigned short)(d + add))
+                     if (d < SHORT_INFINITY && c > (unsigned short)(d + add))
                         c = (unsigned short)(d + add);
                      //c = min(c, (unsigned short) (donor.getCell(x, y) + add));
                   }
