@@ -31,6 +31,10 @@ namespace indigo {
    static const unsigned short SHORT_INFINITY = 60000;
    static const int WEIGHT_FACTOR = 12;
 
+   static int get_weight(int weight, int rotate) {
+      if (abs(weight) <= WEIGHT_FACTOR) return 0;
+      return max(0, weight * (rotate > 0 ? -1 : 1));
+   }
 
    class DLLEXPORT MoleculeLayoutMacrocycles
    {

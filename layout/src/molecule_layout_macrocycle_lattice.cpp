@@ -265,8 +265,7 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish) {
 
          int rot = path[len + 1].rot;
 
-         int add = (abs(_vertex_weight[len]) > WEIGHT_FACTOR) ? (max(0, _vertex_weight[len] * (path[len + 1].p ? -1 : 1))) : 0;
-//         int add = max(0, _vertex_weight[len] * (path[len + 1].p ? -1 : 1));
+         int add = get_weight(_vertex_weight[len], path[len + 1].p);
 
          // choosing rotation closer to circle
          double l = len * (sqrt(3.0) + 1.5) * PI / 12;
@@ -596,7 +595,7 @@ void AnswerField::fill() {
                int xchenge = getDx(next_rot);
                int ychenge = getDy(next_rot);
 
-               unsigned short add = abs(_vertex_weight[l]) > WEIGHT_FACTOR ? max(0, _vertex_weight[l] * (newp ? -1 : 1)) : 0;
+               unsigned short add = get_weight(_vertex_weight[l], newp);
 //               unsigned short add = max(0, _vertex_weight[l] * (newp ? -1 : 1));
 
                //add += (p && chenge_rotation > 0) || (!p && chenge_rotation < 0);
@@ -782,7 +781,7 @@ int MoleculeLayoutMacrocyclesLattice::internalValue(CycleLayout cl) {
    int val = 0;
 
    for (int i = 0; i < cl.vertex_count; i++)
-      if ((cl.rotate[i] < 0) ^ (_vertex_weight[cl.external_vertex_number[i]] < 0)) val += abs(_vertex_weight[cl.external_vertex_number[i]]);
+      val += get_weight(_vertex_weight[cl.external_vertex_number[i]], cl.rotate[i]);
 
    return val;
 }
