@@ -32,7 +32,7 @@ if (NOT NO_STATIC)
 	set_property(TARGET indigo-inchi PROPERTY FOLDER "indigo-inchi")
 	# No exports in case of static library: define empty EXPORT_SYMBOL definition
 	set_target_properties(indigo-inchi PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL=")
-	#PACK_STATIC(indigo-inchi)
+	PACK_STATIC(indigo-inchi)
 
 	# DEFINE_TEST(indigo-inchi-c-test-static "tests/c/indigo-inchi-test.c;${Common_SOURCE_DIR}/hacks/memcpy.c" indigo-inchi)
 	# target_link_libraries(indigo-inchi-c-test-static inchi)

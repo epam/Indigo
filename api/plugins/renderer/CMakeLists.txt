@@ -27,7 +27,7 @@ if (NOT NO_STATIC)
 	set_property(TARGET indigo-renderer PROPERTY FOLDER "indigo-renderer")
 	# No exports in case of static library: define empty EXPORT_SYMBOL definition
 	set_target_properties(indigo-renderer PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL=")
-	#pack_static(indigo-renderer)
+	pack_static(indigo-renderer)
 
 	# DEFINE_TEST(indigo-renderer-c-test-static "tests/c/indigo-renderer-test.c;${Common_SOURCE_DIR}/hacks/memcpy.c" indigo-renderer)
 	# # Add stdc++ library required by indigo

@@ -28,6 +28,7 @@ if (NOT NO_STATIC)
     set_property(TARGET indigo PROPERTY FOLDER "indigo")
     # No exports in case of static library: define empty EXPORT_SYMBOL definition
     set_target_properties(indigo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL= ")
+    pack_static(indigo)
 endif()
 
 
