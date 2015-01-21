@@ -717,7 +717,10 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
 
    if (_bmol->isPseudoAtom(idx)) // pseudo-atom
    {
-      _output.printf("[*]");
+      _output.printf("[*");
+      _writeChirality(chirality);
+      _output.printf("]");
+
       return;
    }
 
@@ -731,7 +734,9 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
          {
             if (value == ELEM_H)
             {
-               _output.printf("[*]");
+               _output.printf("[*");
+               _writeChirality(chirality);
+               _output.printf("]");
                return;
             }
          }
@@ -836,13 +841,7 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    else
       _output.printf("%s", elem);
 
-   if (chirality > 0)
-   {
-      if (chirality == 1)
-         _output.printf("@");
-      else // chirality == 2
-         _output.printf("@@");
-   }
+   _writeChirality(chirality);
 
    if (hydro > 1)
       _output.printf("H%d", hydro);
@@ -863,6 +862,17 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
 
    if (need_brackets)
       _output.writeChar(']');
+}
+
+void SmilesSaver::_writeChirality(int chirality) const
+{
+   if (chirality > 0)
+   {
+      if (chirality == 1)
+         _output.printf("@");
+      else // chirality == 2
+         _output.printf("@@");
+   }
 }
 
 void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chirality, int depth, bool has_or_parent) const
@@ -886,7 +896,7 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
          {
             if (i > 0)
                _output.writeChar(has_or_parent ? '&' : ';');
-            _writeSmartsAtom(idx, (QueryMolecule::Atom *)atom->children[i], 0, depth + 1, has_or_parent);
+            _writeSmartsAtom(idx, (QueryMolecule::Atom *)atom->children[i], chirality, depth + 1, has_or_parent);
          }
          break;
       }
@@ -896,7 +906,7 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
          {
             if (i > 0)
                _output.printf(",");
-            _writeSmartsAtom(idx, (QueryMolecule::Atom *)atom->children[i], 0, depth + 1, true);
+            _writeSmartsAtom(idx, (QueryMolecule::Atom *)atom->children[i], chirality, depth + 1, true);
          }
          break;
       }

@@ -992,6 +992,7 @@ void SmilesLoader::_parseMolecule ()
       if (_qmol != 0)
       {
          _qmol->addAtom(qatom.release());
+
          if (bond != 0)
             bond->index = _qmol->addBond(bond->beg, bond->end, qbond.release());
       }
@@ -1162,6 +1163,8 @@ void SmilesLoader::_loadParsedMolecule ()
    if (smarts_mode)
       // Forbid matching SMARTS atoms to hydrogens
       _forbidHydrogens();
+
+   _addExplicitHydrogens();
 
    if (!inside_rsmiles)
       for (i = 0; i < _atoms.size(); i++)
@@ -1361,6 +1364,38 @@ void SmilesLoader::_forbidHydrogens ()
 
             _qmol->resetAtom(i, newatom.release());
          }
+      }
+   }
+}
+
+void SmilesLoader::_addExplicitHydrogens ()
+{
+   for (int i = 0; i < _atoms.size(); i++)
+   {
+      if ((_atoms[i].chirality != 0) && (_bmol->getVertex(i).degree() == 2) && (_atoms[i].hydrogens == 1))
+      {
+         _AtomDesc &atom = _atoms.push(_neipool);
+         _BondDesc *bond = &_bonds.push();
+   
+         AutoPtr<QueryMolecule::Atom> qatom(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+         AutoPtr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+
+         atom.label = ELEM_H;
+         int exp_h_idx = _qmol->addAtom(qatom.release());
+
+         bond->beg = i;
+         bond->end = _atoms.size() - 1;
+         bond->type = BOND_SINGLE;;
+         bond->dir = 0;
+         bond->topology = 0;
+         bond->index = _qmol->addBond(i, exp_h_idx, qbond.release());
+
+         _atoms[i].neighbors.add(exp_h_idx);
+         _atoms[exp_h_idx].neighbors.add(i);
+         _atoms[exp_h_idx].parent = i;
+
+         _atoms[i].hydrogens = 0;
+         _qmol->getAtom(i).removeConstraints(QueryMolecule::ATOM_TOTAL_H);
       }
    }
 }
