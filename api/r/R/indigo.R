@@ -14,6 +14,10 @@ fingerprint <- function(item, mode) {
     .Call("fingerprint", item, mode)
 }
 
+fingerprintQuery <- function(item, mode) {
+    .Call("fingerprintQuery", item, mode)
+}
+
 molecularWeight <- function(item) {
     .Call("molecularWeight", item)
 }
