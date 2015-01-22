@@ -132,7 +132,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
 
    Array<answer_point> path;
    path.clear_resize(length + 1);
-   printf("%d\n", points.size());
+   //printf("%d\n", points.size());
    for (int i = 0; i < 100 && i < points.size(); i++) {
       answfld._restore_path(path.ptr(), points[i]);
       cl.init(path.ptr());
@@ -511,7 +511,7 @@ TL_CP_GET(_hidden_data_field_array)
       }
    }
 
-   printf("Global Size = %d bytes \n", global_size);
+   //printf("Global Size = %d bytes \n", global_size);
 
    _hidden_data_field_array.clear_resize(global_size);
 
