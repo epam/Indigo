@@ -29,11 +29,12 @@ using namespace indigo;
 
 void MoleculeAutoLoader::_init ()
 {
-   ignore_stereocenter_errors = false;
+   stereochemistry_options.reset();
    treat_x_as_pseudoatom = false;
    ignore_closing_bond_direction_mismatch = false;
    ignore_noncritical_query_features = false;
    skip_3d_chirality = false;
+   ignore_cistrans_errors = false;
 }
 
 IMPL_ERROR(MoleculeAutoLoader, "molecule auto loader");
@@ -169,7 +170,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          gzscanner.readAll(buf);
          MoleculeAutoLoader loader2(buf);
 
-         loader2.ignore_stereocenter_errors = ignore_stereocenter_errors;
+         loader2.stereochemistry_options = stereochemistry_options;
          loader2.ignore_noncritical_query_features = ignore_noncritical_query_features;
          loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          loader2.skip_3d_chirality = skip_3d_chirality;
@@ -185,7 +186,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       {
          BufferScanner scanner2(buf);
          MolfileLoader loader(scanner2);
-         loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+         loader.stereochemistry_options = stereochemistry_options;
          loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
          loader.skip_3d_chirality = skip_3d_chirality;
          loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
@@ -227,7 +228,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          if (_scanner->findWord("<molecule"))
          {
             MoleculeCmlLoader loader(*_scanner);
-            loader.ignore_stereochemistry_errors = ignore_stereocenter_errors;
+            loader.stereochemistry_options = stereochemistry_options;
             if (query)
                throw Error("CML queries not supported");
             loader.loadMolecule(mol.asMolecule());
@@ -245,7 +246,8 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 
       loader.ignore_closing_bond_direction_mismatch =
              ignore_closing_bond_direction_mismatch;
-      loader.ignore_stereochemistry_errors = ignore_stereocenter_errors;
+      loader.stereochemistry_options = stereochemistry_options;
+      loader.ignore_cistrans_errors = ignore_cistrans_errors;
       if (query)
          loader.loadQueryMolecule((QueryMolecule &)mol);
       else
@@ -264,7 +266,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       BufferScanner scanner2(sdf_loader.data);
 
       MolfileLoader loader(scanner2);
-      loader.ignore_stereocenter_errors = ignore_stereocenter_errors;
+      loader.stereochemistry_options = stereochemistry_options;
       loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
       loader.skip_3d_chirality = skip_3d_chirality;
       loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;

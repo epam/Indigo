@@ -326,6 +326,8 @@ public:
 
    int getAtomMaxExteralConnectivity (int idx);
 
+   bool standardize (const StandardizeOptions &options);
+
 protected:
 
    int _calcAtomConnectivity (int idx);

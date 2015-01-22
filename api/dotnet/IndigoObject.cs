@@ -1558,6 +1558,12 @@ namespace com.ggasoftware.indigo
             return (dispatcher.checkResult(_indigo_lib.indigoNormalize(self, options)) == 1);
         }
 
+        public void standardize()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(_indigo_lib.indigoStandardize(self));
+        }
+
         public int expandAbbreviations()
         {
             dispatcher.setSessionID();

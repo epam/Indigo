@@ -744,7 +744,7 @@ bool ReactionEnumeratorState::_matchVertexCallback( Graph &subgraph, Graph &supe
          return false;
    }
 
-   if (rpe_state->_is_rg_exist && !submolecule.isRSite(sub_idx))
+   if (rpe_state->_is_rg_exist && !submolecule.isRSite(sub_idx) && !submolecule.isPseudoAtom(sub_idx))
    {
       int super_unfolded_h_cnt = supermolecule.getAtomTotalH(super_idx) - supermolecule.getImplicitH(super_idx);
      
@@ -1028,64 +1028,95 @@ void ReactionEnumeratorState::_buildMolProduct( QueryMolecule &product, Molecule
             mol_product.setPseudoAtom(i, product.getPseudoAtom(i));
       }
 
-      int reactant_atom_charge = CHARGE_UNKNOWN;
+      /* "charge", "radical" or "isotope" parameters have no sense for pseudoatoms */
+      if (!product.isPseudoAtom(i) && !(has_aam && uncleaned_fragments.isPseudoAtom(frags_idx)))
+      {
+         /* Charge copying */
+         int reactant_atom_charge = CHARGE_UNKNOWN;
+         if (reactant_atom != 0)
+            reactant_atom->sureValue(QueryMolecule::ATOM_CHARGE, reactant_atom_charge);
       
-      if (reactant_atom != 0)
-         reactant_atom->sureValue(QueryMolecule::ATOM_CHARGE, reactant_atom_charge);
-      
-      if (product.getAtomCharge(i) == CHARGE_UNKNOWN && !is_default  &&
-          (reactant_atom_charge == product.getAtomCharge(i)))
-      {
-         if (has_aam)
-            mol_product.setAtomCharge(mol_atom_idx, uncleaned_fragments.getAtomCharge(frags_idx));
-      }
-      else
-      {
-         int pr_charge = product.getAtomCharge(i);
-         mol_product.setAtomCharge(mol_atom_idx, (pr_charge != CHARGE_UNKNOWN ? pr_charge : 0));
-      }
-
-
-      int reactant_atom_isotope = -1;
-      
-      if (reactant_atom != 0)
-         reactant_atom->sureValue(QueryMolecule::ATOM_ISOTOPE, reactant_atom_isotope);
-
-      if (product.getAtomIsotope(i) == -1 && !is_default &&
-          (reactant_atom_isotope == product.getAtomIsotope(i)))
-      {
-         if (has_aam)
-            mol_product.setAtomIsotope(mol_atom_idx, uncleaned_fragments.getAtomIsotope(frags_idx));
-      }
-      else
-      {
-         int pr_isotope = product.getAtomIsotope(i);
-         mol_product.setAtomIsotope(mol_atom_idx, (pr_isotope != -1 ? pr_isotope : 0));
-      }
-
-
-      int reactant_atom_radical = -1;
-      if (reactant_atom != 0)
-         reactant_atom->sureValue(QueryMolecule::ATOM_RADICAL, reactant_atom_radical);
-
-      if (product.getAtomRadical(i) == -1 && !is_default &&
-          (reactant_atom_radical == product.getAtomRadical(i)))
-      { 
-         if (has_aam)
+         if ((product.getAtomCharge(i) == CHARGE_UNKNOWN) && (!is_default)  &&
+            (reactant_atom_charge == product.getAtomCharge(i)))
          {
-            try
+            if (has_aam)
             {
-               mol_product.setAtomRadical(mol_atom_idx, uncleaned_fragments.getAtomRadical(frags_idx));
-            }
-            catch (Element::Error &)
-            {
+               try
+               {
+                  mol_product.setAtomCharge(mol_atom_idx, uncleaned_fragments.getAtomCharge(frags_idx));
+               }
+               catch (Element::Error &)
+               {
+               }
+               catch (Molecule::Error &)
+               {
+               }
             }
          }
-      }
-      else
-      {
-         int pr_radical = product.getAtomRadical(i);
-         mol_product.setAtomRadical(mol_atom_idx, (pr_radical != -1 ? pr_radical : 0));
+         else
+         {
+            int pr_charge = product.getAtomCharge(i);
+            mol_product.setAtomCharge(mol_atom_idx, (pr_charge != CHARGE_UNKNOWN ? pr_charge : 0));
+         }
+
+
+         /* Isotope copying*/
+         int reactant_atom_isotope = -1;
+         if (reactant_atom != 0)
+            reactant_atom->sureValue(QueryMolecule::ATOM_ISOTOPE, reactant_atom_isotope);
+
+         if ((product.getAtomIsotope(i) == -1) && (!is_default) &&
+             (reactant_atom_isotope == product.getAtomIsotope(i)))
+         {
+            if (has_aam)
+            {
+               try
+               {
+                  mol_product.setAtomIsotope(mol_atom_idx, uncleaned_fragments.getAtomIsotope(frags_idx));
+               }
+               catch (Element::Error &)
+               {
+               }
+               catch (Molecule::Error &)
+               {
+               }
+            }
+         }
+         else
+         {
+            int pr_isotope = product.getAtomIsotope(i);
+            mol_product.setAtomIsotope(mol_atom_idx, (pr_isotope != -1 ? pr_isotope : 0));
+         }
+
+
+         /* Radical copying */
+         int reactant_atom_radical = -1;
+         if (reactant_atom != 0)
+            reactant_atom->sureValue(QueryMolecule::ATOM_RADICAL, reactant_atom_radical);
+
+         if ((product.getAtomRadical(i) == -1) && (!is_default) &&
+             (reactant_atom_radical == product.getAtomRadical(i)))
+         { 
+            if (has_aam)
+            {
+               try
+               {
+                  int frag_radical = uncleaned_fragments.getAtomRadical(frags_idx);
+                  mol_product.setAtomRadical(mol_atom_idx, frag_radical);
+               }
+               catch (Element::Error &)
+               {
+               }
+               catch (Molecule::Error &)
+               {
+               }
+            }
+         }
+         else
+         {
+            int pr_radical = product.getAtomRadical(i);
+            mol_product.setAtomRadical(mol_atom_idx, (pr_radical != -1 ? pr_radical : 0));
+         }
       }
 
       if (_is_simple_transform && frags_idx == -1)
@@ -1346,6 +1377,9 @@ void ReactionEnumeratorState::_completeCisTrans( Molecule &product, Molecule &un
 
 bool ReactionEnumeratorState::_checkValence( Molecule &mol, int atom_idx )
 {
+   if (mol.isPseudoAtom(atom_idx))
+      return true;
+
    try
    {
       mol.getAtomValence(atom_idx);
@@ -1358,8 +1392,33 @@ bool ReactionEnumeratorState::_checkValence( Molecule &mol, int atom_idx )
    return true;
 }
 
+void ReactionEnumeratorState::_findFragments2ProductMapping( Array<int> &f2p_mapping )
+{
+   f2p_mapping.clear_resize(_fragments.vertexEnd());
+   f2p_mapping.fffill();
+
+   for (int i = _full_product.vertexBegin(); i != _full_product.vertexEnd(); i = _full_product.vertexNext(i))
+   {
+      int pr_aam = _product_aam_array[i];
+         
+      if (pr_aam <= 0)
+         continue;
+         
+      int nei_in_fragments = -1;
+      nei_in_fragments = _fragments_aam_array.find(pr_aam);
+
+      if (nei_in_fragments == -1)
+         continue;
+
+      f2p_mapping[nei_in_fragments] = i;
+   }
+}
+
 bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
 {
+   QS_DEF(Array<int>, frags2product_mapping);
+   _findFragments2ProductMapping(frags2product_mapping);
+
    QS_DEF(QueryMolecule, product);
    product.clear();
    product.clone(_full_product, NULL, NULL);
@@ -1382,14 +1441,15 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
    for (int i = product.vertexBegin(); i != product.vertexEnd(); i = product.vertexNext(i))
       all_forbidden_atoms[i] = 1;
 
-   _buildMolProduct(product, mol_product, uncleaned_fragments, all_forbidden_atoms, mapping);
+   _buildMolProduct(_full_product, mol_product, uncleaned_fragments, all_forbidden_atoms, mapping);
 
    _cleanFragments();
-
+   
    QS_DEF(Array<int>, frags_mapping);
    frags_mapping.clear_resize(_fragments.vertexEnd());
    frags_mapping.fffill();
    mol_product.mergeWithMolecule(_fragments, &frags_mapping);
+   
    
    for (int i = _fragments.vertexBegin(); i < _fragments.vertexEnd(); i = _fragments.vertexNext(i))
       if (i < _monomer_forbidden_atoms.size() && _monomer_forbidden_atoms[i])
@@ -1505,13 +1565,13 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
 
       product_mapping[mapping[i]] = frags_mapping[_att_points[i][0]];
 
-
+      /*
       if (is_transform && _att_points[i].size() != 0 && is_valid && !_checkValence(mol_product, mapping[i]))
       {
          _product_forbidden_atoms.copy(_monomer_forbidden_atoms);
          _product_forbidden_atoms[_att_points[i][0]] = max_reuse_count;
          return false;
-      }
+      }*/
 
       /* Border stereocenters copying */
       int nv_idx = 0;
@@ -1532,8 +1592,10 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
                   new_pyramid[k] = -1;
                else if (!_is_needless_atom[pyramid[k]])
                   new_pyramid[k] = frags_mapping[pyramid[k]];
-               else if (nv_idx < pr_neibours.size())
-                  new_pyramid[k] = pr_neibours[nv_idx++];
+               else if (frags2product_mapping[pyramid[k]] != -1)
+               {
+                  new_pyramid[k] = frags2product_mapping[pyramid[k]];
+               }
                else
                {
                   invalid_stereocenter = true;
@@ -1877,6 +1939,21 @@ void ReactionEnumeratorState::_addBondCallback( Graph &subgraph, Graph &supergra
    rpe_state->_bonds_mapping_super[super_idx] = sub_idx;
 }
 
+bool ReactionEnumeratorState::_checkForNeverUsed(ReactionEnumeratorState *rpe_state, Molecule &supermolecule)
+{
+   int never_used_vertex = -1;
+   for (int i = supermolecule.vertexBegin(); i != supermolecule.vertexEnd(); i = supermolecule.vertexNext(i))
+   {
+      if ((i >= rpe_state->_monomer_forbidden_atoms.size()) || (rpe_state->_monomer_forbidden_atoms[i] == 0))
+      {
+         never_used_vertex = i;
+         return true;
+      }
+   }
+
+   return false;
+}
+
 int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergraph,
                                               int *core_sub, int *core_super, void *userdata )
 {
@@ -1890,6 +1967,10 @@ int ReactionEnumeratorState::_embeddingCallback( Graph &subgraph, Graph &supergr
    QS_DEF(Molecule, supermolecule);
    supermolecule.clear();
    supermolecule.clone(cur_monomer, NULL, NULL);
+
+   if (!_checkForNeverUsed(rpe_state, supermolecule))
+      return 1; 
+
    QS_DEF(Array<int>, sub_qa_array);
    sub_qa_array.clear() ;
    QS_DEF(Molecule, mol_fragments);

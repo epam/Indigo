@@ -66,9 +66,6 @@ RingoFetchContext & RingoFetchContext::create (RingoOracleContext &context,
    const BingoOracleContext &boc = context.context();
 
    new_context->id = id;
-   new_context->substructure.treat_x_as_pseudoatom = boc.treat_x_as_pseudoatom;
-   new_context->substructure.ignore_closing_bond_direction_mismatch =
-           boc.ignore_closing_bond_direction_mismatch;
 
    _instances.add(new_context.release());
    return *_instances.top();

@@ -194,7 +194,7 @@ protected:
    Array<int> _component_numbers;
    Array<int> _component_vcount;
    Array<int> _component_ecount;
-   int        _components_valid;
+   bool        _components_valid;
    int        _components_count;
 
    void _calculateTopology ();

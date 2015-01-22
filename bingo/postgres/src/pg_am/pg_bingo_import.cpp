@@ -1,3 +1,5 @@
+#include "bingo_pg_fix_pre.h"
+
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -6,12 +8,9 @@ extern "C" {
 #include "utils/int8.h"
 #include "utils/builtins.h"
 }
-#ifdef qsort
-#undef qsort
-#endif
-#ifdef printf
-#undef printf
-#endif
+
+#include "bingo_pg_fix_post.h"
+
 #include "bingo_postgres.h"
 #include "bingo_pg_common.h"
 #include "base_cpp/scanner.h"
@@ -26,14 +25,11 @@ extern "C" {
 
 extern "C" {
 
-PG_FUNCTION_INFO_V1(importsdf);
-PGDLLEXPORT Datum importsdf(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(importsdf);
 
-PG_FUNCTION_INFO_V1(importrdf);
-PGDLLEXPORT Datum importrdf(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(importrdf);
 
-PG_FUNCTION_INFO_V1(importsmiles);
-PGDLLEXPORT Datum importsmiles(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(importsmiles);
 
 }
 

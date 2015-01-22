@@ -29,6 +29,8 @@
 #include "option_manager.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_tautomer.h"
+#include "molecule/molecule_stereocenter_options.h"
+#include "molecule/molecule_standardize_options.h"
 
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define 
  * should be compared with indigoVersion() to ensure libraries binary 
@@ -242,7 +244,7 @@ public:
    MoleculeFingerprintParameters fp_params;
    PtrArray<TautomerRule> tautomer_rules;
    
-   bool ignore_stereochemistry_errors;
+   StereocentersOptions stereochemistry_options;
    bool ignore_noncritical_query_features;
    bool treat_x_as_pseudoatom;
    bool skip_3d_chirality;
@@ -279,6 +281,8 @@ public:
    AromaticityOptions arom_options;
    // This option is moved out of arom_options because it should be used only in indigoDearomatize method
    bool unique_dearomatization; 
+
+   StandardizeOptions standardize_options;
 
 protected:
 

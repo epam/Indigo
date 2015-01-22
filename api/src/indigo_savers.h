@@ -73,6 +73,17 @@ protected:
    virtual void _append (IndigoObject &object);
 };
 
+class IndigoCanonicalSmilesSaver : public IndigoSaver
+{
+public:
+   IndigoCanonicalSmilesSaver(Output &output) : IndigoSaver(output) {}
+   virtual const char * debugInfo();
+
+   static void generateSmiles(IndigoObject &obj, Array<char> &out_buffer);
+
+protected:
+};
+
 class IndigoCmlSaver : public IndigoSaver
 {
 public:

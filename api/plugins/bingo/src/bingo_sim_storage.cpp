@@ -117,7 +117,7 @@ int SimStorage::getIncSimilar (const byte *query, SimCoef &sim_coef, double min_
 {
    for (int i = 0; i < _inc_fp_count; i++)
    {
-      double coef = sim_coef.calcCoef(query, _inc_buffer.ptr() + (i * _fp_size), -1, -1);
+      double coef = sim_coef.calcCoef(_inc_buffer.ptr() + (i * _fp_size), query, -1, -1);
       if (coef < min_coef)
          continue;
       size_t id = _inc_id_buffer[i];

@@ -1526,6 +1526,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return (Indigo.checkResult(this, _lib.indigoNormalize(self, options)) == 1);
    }
 
+   public void standardize ()
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoStandardize(self));
+   }
+
    public int expandAbbreviations()
    {
          dispatcher.setSessionID();

@@ -193,7 +193,7 @@ int ContainerSet::_findSimilarInc (const byte *query, SimCoef &sim_coef, double 
       byte *fp = inc + i * _fp_size;
       int fp_bit_number = bitGetOnesCount(fp, _fp_size);
 
-      double coef = sim_coef.calcCoef(query, fp, query_bit_number, fp_bit_number);
+      double coef = sim_coef.calcCoef(fp, query, query_bit_number, fp_bit_number);
       if (coef < min_coef)
          continue;
 

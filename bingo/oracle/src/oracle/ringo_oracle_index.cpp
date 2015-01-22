@@ -58,10 +58,26 @@ bool _ringoRegisterReaction (OracleEnv &env, const char *rowid,
       {
          index.prepare(scanner, output, NULL);
       }
-      catch (CmfSaver::Error &e) { env.dbgPrintf(bad_reaction_warning_rowid, rowid, e.message()); return false;}
-      catch (CrfSaver::Error &e) { env.dbgPrintf(bad_reaction_warning_rowid, rowid, e.message()); return false;}
+      catch (CmfSaver::Error &e)
+      { 
+         if (context.context().reject_invalid_structures)
+            throw; // Rethrow this exception further
+         env.dbgPrintf(bad_reaction_warning_rowid, rowid, e.message());
+         return false;
+      }
+      catch (CrfSaver::Error &e)
+      { 
+         if (context.context().reject_invalid_structures)
+            throw; // Rethrow this exception further
+         env.dbgPrintf(bad_reaction_warning_rowid, rowid, e.message());
+         return false;
+      }
    }
-   CATCH_READ_TARGET_RXN_ROWID(rowid, return false);
+   CATCH_READ_TARGET_RXN_ROWID(rowid, {
+      if (context.context().reject_invalid_structures)
+         throw; // Rethrow this exception further
+      return false;
+   });
 
    // some magic: round it up to avoid ora-22282
    if (data.size() % 2 == 1)

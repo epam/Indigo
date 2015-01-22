@@ -78,7 +78,7 @@ int GrossFormula::_cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void *context
 void GrossFormula::collect (BaseMolecule &mol, Array<int> &gross)
 {
    if (!mol.isQueryMolecule())
-      mol.asMolecule().restoreUnambiguousHydrogens();
+      mol.asMolecule().restoreAromaticHydrogens();
 
    gross.clear_resize(ELEM_MAX);
    gross.zerofill();

@@ -486,7 +486,7 @@ CEXPORT int indigoLoadMolecule (int source)
 
       MoleculeAutoLoader loader(IndigoScanner::get(obj));
 
-      loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
+      loader.stereochemistry_options = self.stereochemistry_options;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
       loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
       loader.skip_3d_chirality = self.skip_3d_chirality;
@@ -510,7 +510,7 @@ CEXPORT int indigoLoadQueryMolecule (int source)
       IndigoObject &obj = self.getObject(source);
       MoleculeAutoLoader loader(IndigoScanner::get(obj));
 
-      loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
+      loader.stereochemistry_options = self.stereochemistry_options;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
 
       AutoPtr<IndigoQueryMolecule> molptr(new IndigoQueryMolecule());
@@ -1605,23 +1605,6 @@ CEXPORT int indigoAddConstraintOrNot(int atom, const char* type, const char* val
    INDIGO_END(-1);
 }
  * */
-
-CEXPORT const char * indigoCanonicalSmiles (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      Molecule &mol = self.getObject(molecule).getMolecule();
-
-      auto &tmp = self.getThreadTmpData();
-      ArrayOutput output(tmp.string);
-      CanonicalSmilesSaver saver(output);
-      
-      saver.saveMolecule(mol);
-      tmp.string.push(0);
-      return tmp.string.ptr();
-   }
-   INDIGO_END(0);
-}
 
 CEXPORT const int * indigoSymmetryClasses (int molecule, int *count_out)
 {

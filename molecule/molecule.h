@@ -144,7 +144,9 @@ public:
    
    virtual void invalidateAtom (int index, int mask);
 
-   bool restoreUnambiguousHydrogens ();
+   bool restoreAromaticHydrogens (bool unambiguous_only = true);
+
+   bool standardize (const StandardizeOptions &options);
 
 protected:
    struct _Atom

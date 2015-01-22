@@ -37,14 +37,27 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
    QS_DEF(Array<int>, gross);
 
    MoleculeAutoLoader loader(molfile);
-
-   loader.treat_x_as_pseudoatom = _context->treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-           _context->ignore_closing_bond_direction_mismatch;
+   _context->setLoaderSettings(loader);
    loader.loadMolecule(mol);
 
-   //Skip all SGroups
+   // Skip all SGroups
    mol.clearSGroups();
+
+   if (_context->allow_non_unique_dearomatization)
+      MoleculeDearomatizer::restoreHydrogens(mol, false);
+
+   if (_context->zero_unknown_aromatic_hydrogens)
+   {
+      mol.restoreAromaticHydrogens();
+      for (int i : mol.vertices())
+      {
+         if (mol.isRSite(i) || mol.isPseudoAtom(i))
+            continue;
+
+         if (mol.getAtomAromaticity(i) == ATOM_AROMATIC && mol.getImplicitH_NoThrow(i, -1) == -1)
+            mol.setImplicitH(i, 0);
+      }
+   }
 
    Molecule::checkForConsistency(mol);
 

@@ -28,6 +28,7 @@ if (NOT NO_STATIC)
     set_property(TARGET indigo PROPERTY FOLDER "indigo")
     # No exports in case of static library: define empty EXPORT_SYMBOL definition
     set_target_properties(indigo PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DEXPORT_SYMBOL= ")
+    pack_static(indigo)
 endif()
 
 
@@ -43,7 +44,7 @@ if (UNIX AND NOT APPLE)
     if(${SUBSYSTEM_NAME} MATCHES "x64")
         set_target_properties(indigo-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
     endif()
-    target_link_libraries(indigo-shared -lpthread)
+    target_link_libraries(indigo-shared -lpthread -lrt)
 endif()
 if (MSVC OR MINGW)
     set_target_properties(indigo-shared PROPERTIES PREFIX "")

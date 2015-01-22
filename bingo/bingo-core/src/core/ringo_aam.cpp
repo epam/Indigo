@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include "core/ringo_matchers.h"
+#include "core/bingo_context.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_saver.h"
 #include "reaction/reaction_automapper.h"
@@ -20,9 +21,7 @@
 
 IMPL_ERROR(RingoAAM, "ringo AAM");
 
-RingoAAM::RingoAAM(){
-   treat_x_as_pseudoatom = false;
-   ignore_closing_bond_direction_mismatch = false;
+RingoAAM::RingoAAM(BingoContext &context) : _context(context) {
 }
 
 void RingoAAM::loadReaction (const Array<char> &buf) {
@@ -37,8 +36,7 @@ void RingoAAM::loadReaction (const char *str) {
 
 void RingoAAM::loadReaction (Scanner &scanner) {
    ReactionAutoLoader rxd(scanner);
-   rxd.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-   rxd.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+   _context.setLoaderSettings(rxd);
    rxd.loadReaction(_reaction);
 }
 

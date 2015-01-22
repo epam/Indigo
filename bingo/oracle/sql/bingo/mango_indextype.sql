@@ -112,7 +112,10 @@ create or replace operator Mass binding
 create or replace operator Molfile binding
    (VARCHAR2) return CLOB using MangoPackage.Molfile,
    (CLOB) return CLOB using MangoPackage.Molfile,
-   (BLOB) return CLOB using MangoPackage.Molfile;
+   (BLOB) return CLOB using MangoPackage.Molfile,
+   (VARCHAR2, VARCHAR2) return CLOB using MangoPackage.Molfile,
+   (CLOB, VARCHAR2) return CLOB using MangoPackage.Molfile,
+   (BLOB, VARCHAR2) return CLOB using MangoPackage.Molfile;
 
 create or replace operator CML binding
    (VARCHAR2) return CLOB using MangoPackage.CML,
@@ -122,7 +125,10 @@ create or replace operator CML binding
 create or replace operator SMILES binding
    (VARCHAR2) return VARCHAR2 using MangoPackage.SMILES,
    (CLOB) return VARCHAR2 using MangoPackage.SMILES,
-   (BLOB) return VARCHAR2 using MangoPackage.SMILES;
+   (BLOB) return VARCHAR2 using MangoPackage.SMILES,
+   (VARCHAR2, VARCHAR2) return VARCHAR2 using MangoPackage.SMILES,
+   (CLOB, VARCHAR2) return VARCHAR2 using MangoPackage.SMILES,
+   (BLOB, VARCHAR2) return VARCHAR2 using MangoPackage.SMILES;
 
 create or replace operator InChI binding
    (VARCHAR2, VARCHAR2) return CLOB using MangoPackage.InChI,

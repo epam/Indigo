@@ -30,17 +30,12 @@ RingoExact::RingoExact (BingoContext &context) :
 _context(context)
 {
    _flags = 0;
-   treat_x_as_pseudoatom = false;
-   ignore_closing_bond_direction_mismatch = false;
 }
 
 void RingoExact::loadQuery (Scanner &scanner)
 {
    ReactionAutoLoader loader(scanner);
-
-   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-           ignore_closing_bond_direction_mismatch;
+   _context.setLoaderSettings(loader);
    loader.loadReaction(_query);
    Reaction::checkForConsistency(_query);
 
@@ -186,9 +181,7 @@ void RingoExact::loadTarget (Scanner &scanner)
 {
    ReactionAutoLoader loader(scanner);
 
-   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-           ignore_closing_bond_direction_mismatch;
+   _context.setLoaderSettings(loader);
    loader.loadReaction(_target);
    Reaction::checkForConsistency(_target);
    _initTarget(_target, false);

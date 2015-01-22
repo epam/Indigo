@@ -15,14 +15,12 @@
 #ifndef __canonical_smiles_saver__
 #define __canonical_smiles_saver__
 
+#include "molecule/smiles_saver.h"
 #include "base_cpp/exception.h"
 
 namespace indigo {
 
-class Molecule;
-class Output;
-
-class DLLEXPORT CanonicalSmilesSaver
+class DLLEXPORT CanonicalSmilesSaver : public SmilesSaver
 {
 public:
 
@@ -30,14 +28,18 @@ public:
    ~CanonicalSmilesSaver ();
 
    bool find_invalid_stereo;
+   const Array<int> *initial_atom_atom_mapping;
 
-   void saveMolecule (Molecule &mol) const;
+   void saveMolecule (Molecule &mol);
 
    DECL_ERROR;
 
 protected:
+   typedef RedBlackMap<int, int> MapIntInt;
 
-   Output &_output;
+   TL_CP_DECL(Array<int>, _actual_atom_atom_mapping);
+   TL_CP_DECL(MapIntInt, _initial_to_actual);
+   int _aam_counter;
 };
 
 }

@@ -93,6 +93,8 @@ namespace com.ggasoftware.indigo
 
         int indigoNormalize(int structure, string options);
 
+        int indigoStandardize(int item);
+
         int indigoIterateAtoms(int molecule);
         int indigoIteratePseudoatoms(int molecule);
         int indigoIterateRSites(int molecule);

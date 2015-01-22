@@ -248,6 +248,11 @@ CEXPORT int indigoOptimize (int query, const char *options);
 // Default options is empty.
 CEXPORT int indigoNormalize (int structure, const char *options);
 
+// Method for molecule and query standardizing
+// It stadrdize charges, stereo and etc.
+// Default options is empty.
+CEXPORT int indigoStandardize (int item);
+
 // Automatic reaction atom-to-atom mapping
 // mode is one of the following (separated by a space):
 //    "discard" : discards the existing mapping entirely and considers only
@@ -646,6 +651,9 @@ CEXPORT int indigoCountBits (int fingerprint);
 
 // Counts the number of the coinincident in two fingerprints
 CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2);
+
+//Return one bits string for the fingerprint object
+CEXPORT const char* indigoOneBitsList (int fingerprint);
 
 // Accepts two molecules, two reactions, or two fingerprints.
 // Returns the similarity measure between them.

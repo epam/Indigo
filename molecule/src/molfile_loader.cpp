@@ -51,7 +51,6 @@ TL_CP_GET(_sgroup_mapping)
    reaction_atom_exact_change = 0;
    reaction_bond_reacting_center = 0;
    _rgfile = false;
-   ignore_stereocenter_errors = false;
    treat_x_as_pseudoatom = false;
    skip_3d_chirality = false;
    ignore_noncritical_query_features = false;
@@ -133,6 +132,13 @@ void MolfileLoader::_readHeader ()
 
    // Skip header
    _scanner.readLine(_bmol->name, true);
+   // Check UTF-8 BOM mark in the name
+   if (_bmol->name.size() >= 3 && 
+         (unsigned char)_bmol->name[0] == 0xEF &&
+         (unsigned char)_bmol->name[1] == 0xBB &&
+         (unsigned char)_bmol->name[2] == 0xBF)
+      _bmol->name.remove(0, 3);
+
    _scanner.skipLine();
    _scanner.skipLine();
 
@@ -1222,8 +1228,10 @@ void MolfileLoader::_readCtab2000 ()
       {
          QS_DEF(Array<char>, pseudo);
 
-         _scanner.skip(2);
-         int atom_idx = _scanner.readIntFix(3);
+         // There should be 3 characters to the atom index, but some molfiles
+         // has only 2 digits
+         _scanner.skipSpace();
+         int atom_idx = _scanner.readInt();
 
          atom_idx--;
          _scanner.skipLine();
@@ -1787,8 +1795,8 @@ void MolfileLoader::_postLoad ()
          }
       }
 
-   _bmol->stereocenters.buildFromBonds(ignore_stereocenter_errors, _sensible_bond_directions.ptr());
-   _bmol->allene_stereo.buildFromBonds(ignore_stereocenter_errors, _sensible_bond_directions.ptr());
+   _bmol->stereocenters.buildFromBonds(stereochemistry_options, _sensible_bond_directions.ptr());
+   _bmol->allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
 
    if (!_chiral)
       for (i = 0; i < _atoms_num; i++)
@@ -1804,7 +1812,7 @@ void MolfileLoader::_postLoad ()
       {
          if (_bmol->stereocenters.getType(i) == 0)
          {
-            if (!ignore_stereocenter_errors)
+            if (!stereochemistry_options.ignore_errors)
                throw Error("stereo type specified for atom #%d, but the bond "
                     "directions does not say that it is a stereocenter", i);
          }
@@ -1812,7 +1820,7 @@ void MolfileLoader::_postLoad ()
             _bmol->stereocenters.setType(i, _stereocenter_types[i], _stereocenter_groups[i]);
       }
 
-   if (!ignore_stereocenter_errors)
+   if (!stereochemistry_options.ignore_errors)
       for (i = 0; i < _bonds_num; i++)
          if (_bmol->getBondDirection(i) > 0 && !_sensible_bond_directions[i])
             throw Error("direction of bond #%d makes no sense", i);
@@ -2328,6 +2336,8 @@ void MolfileLoader::_readCtab3000 ()
             if (order == BOND_SINGLE || order == BOND_DOUBLE ||
                 order == BOND_TRIPLE || order == BOND_AROMATIC)
                _mol->addBond_Silent(beg, end, order);
+            else if (order == _BOND_COORDINATION || order == _BOND_HYDROGEN)
+               _mol->addBond_Silent(beg, end, BOND_ZERO);
             else if (order == _BOND_SINGLE_OR_DOUBLE)
                throw Error("'single or double' bonds are allowed only for queries");
             else if (order == _BOND_SINGLE_OR_AROMATIC)
@@ -2346,6 +2356,8 @@ void MolfileLoader::_readCtab3000 ()
             if (order == BOND_SINGLE || order == BOND_DOUBLE ||
                 order == BOND_TRIPLE || order == BOND_AROMATIC)
                bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
+            else if (order == _BOND_COORDINATION || order == _BOND_HYDROGEN)
+               bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_ZERO));
             else if (order == _BOND_SINGLE_OR_DOUBLE)
             {
                bond.reset(QueryMolecule::Bond::und(
@@ -2382,9 +2394,11 @@ void MolfileLoader::_readCtab3000 ()
             strscan.readWord(prop, "=");
             strscan.skip(1);
 
+            int n; 
+
             if (strcmp(prop.ptr(), "CFG") == 0)
             {
-               int n = strscan.readInt1();
+               n = strscan.readInt1();
 
                if (n == 1)
                   _bmol->setBondDirection(i, BOND_UP);
@@ -2425,8 +2439,27 @@ void MolfileLoader::_readCtab3000 ()
             }
             else if (strcmp(prop.ptr(), "RXCTR") == 0)
                reacting_center = strscan.readInt1();
+	    else if (strcmp(prop.ptr(), "ENDPTS") == 0)
+            {
+               strscan.skip(1); // (
+               n = strscan.readInt1();
+               while (n -- > 0)
+               {
+                  strscan.readInt();
+                  strscan.skipSpace();
+               }
+               strscan.skip(1); // )
+            }
+            else if (strcmp(prop.ptr(), "ATTACH") == 0)
+            {
+               while (!strscan.isEOF())
+               {
+                  char c = strscan.readChar();
+                  if (c == ' ')
+                     break;
+               }
+            }
          }
-
          if (reaction_bond_reacting_center != 0)
             reaction_bond_reacting_center->at(i) = reacting_center;
       }
@@ -2886,6 +2919,12 @@ void MolfileLoader::_readSGroup3000 (const char *str)
             sup->subscript.push(0);
          if (sru != 0)
             sru->subscript.push(0);
+      }
+      else if (strcmp(entity.ptr(), "SAP") == 0)
+      {
+         // TODO: add support for SAP: Abbreviation Sgroup Attachment Point
+         scanner.skipUntil(")");
+         scanner.skip(1);
       }
       else 
       {

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2014 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -13,12 +13,13 @@
  ***************************************************************************/
 
 #include "reaction/rsmiles_saver.h"
-#include "reaction/reaction.h"
-#include "reaction/query_reaction.h"
 
-#include "molecule/smiles_saver.h"
 #include "base_cpp/output.h"
+#include "molecule/canonical_smiles_saver.h"
 #include "molecule/elements.h"
+#include "molecule/smiles_saver.h"
+#include "reaction/query_reaction.h"
+#include "reaction/reaction.h"
 
 using namespace indigo;
 
@@ -101,9 +102,7 @@ void RSmilesSaver::_saveReaction ()
    _comma = false;
 
    bool dot = false;
-
-   for (i = _brxn->reactantBegin(); i != _brxn->reactantEnd(); i = _brxn->reactantNext(i))
-   {
+   for (auto i : _brxn->reactants) {
       if (dot)
          _output.writeChar('.');
       else
@@ -115,8 +114,7 @@ void RSmilesSaver::_saveReaction ()
    _output.writeString(">");
 
    dot = false;
-   for (i = _brxn->catalystBegin(); i != _brxn->catalystEnd(); i = _brxn->catalystNext(i))
-   {
+   for (auto i : _brxn->catalysts) {
       if (dot)
          _output.writeChar('.');
       else
@@ -128,8 +126,7 @@ void RSmilesSaver::_saveReaction ()
    _output.writeString(">");
 
    dot = false;
-   for (i = _brxn->productBegin(); i != _brxn->productEnd(); i = _brxn->productNext(i))
-   {
+   for (auto i : _brxn->products) {
       if (dot)
          _output.writeChar('.');
       else

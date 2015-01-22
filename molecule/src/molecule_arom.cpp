@@ -35,10 +35,14 @@ AromatizerBase::AromatizerBase (BaseMolecule &molecule) : _basemol(molecule),
    CP_INIT,
    TL_CP_GET(_bonds_arom),
    TL_CP_GET(_bonds_arom_count),
-   TL_CP_GET(_unsure_cycles)
+   TL_CP_GET(_unsure_cycles),
+   TL_CP_GET(_cycle_atoms)
 {
    _bonds_arom.resize(bitGetSize(molecule.edgeEnd()));
    _bonds_arom_count.resize(molecule.edgeEnd());
+
+   _cycle_atoms.clear_resize(_basemol.vertexEnd());
+
    reset();
 }
 
@@ -93,6 +97,36 @@ void AromatizerBase::_aromatizeCycle (const int *cycle, int cycle_len)
       _bonds_arom_count[e_idx]++;
       bitSetBit(_bonds_arom.ptr(), e_idx, 1);
    }
+
+   // Marks all single bonds that are inside this cycle like in CC1=CC2=CNC=CC2=N1 as aromatic
+   _cycle_atoms_mark++;
+   for (int i = 0; i < cycle_len; i++)
+      _cycle_atoms[cycle[i]] = _cycle_atoms_mark;
+
+   for (int i = 0; i < cycle_len; i++)
+   {
+      const Vertex &v = _basemol.getVertex(cycle[i]);
+      for (int nei : v.neighbors())
+      {
+         int nei_index = v.neiVertex(nei);
+         // Check that the end is in the cycle
+         if (_cycle_atoms[nei_index] != _cycle_atoms_mark)
+            continue;
+
+         // Check if the bond has already been marked as aromatic
+         int nei_edge = v.neiEdge(nei);
+         if (_bonds_arom_count[nei_edge] != 0)
+            continue;
+
+         // Check that the bond is single
+         if (_basemol.getBondOrder(nei_edge) == BOND_SINGLE)
+         {
+            bitSetBit(_bonds_arom.ptr(), nei_edge, 1);
+            _bonds_arom_count[nei_edge]++;
+         }
+      }
+   }
+
    _handleAromaticCycle(cycle, cycle_len);
 }
 
@@ -239,6 +273,10 @@ void AromatizerBase::reset (void)
    _unsure_cycles.clear();
    _bonds_arom.zerofill();
    _bonds_arom_count.zerofill();
+
+   _cycle_atoms.zerofill();
+   _cycle_atoms_mark = 1;
+
    _cyclesHandled = 0;
    _unsureCyclesCount = 0;
 }
@@ -279,8 +317,10 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
    if (!Element::canBeAromatic(_basemol.getAtomNumber(v_idx)))
       return -1;
 
+   Molecule &mol = (Molecule &)_basemol;
+
    int non_arom_conn = 0, arom_bonds = 0;
-   int n_double_ext = 0;
+   int n_double_ext = 0, n_double_ring = 0;
    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
    {
       int bond_idx = vertex.neiEdge(i);
@@ -288,10 +328,13 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
       if (type == BOND_DOUBLE)
       {
          if (_basemol.getBondTopology(bond_idx) == TOPOLOGY_RING)
-            return 1;
-         if (!_acceptOutgoingDoubleBond(v_idx, bond_idx))
-            return -1;
-         n_double_ext++;
+            n_double_ring++;
+         else
+         {
+            if (!_acceptOutgoingDoubleBond(v_idx, bond_idx))
+               return -1;
+            n_double_ext++;
+         }
       }
       if (type == BOND_TRIPLE)
          return -1;
@@ -300,6 +343,17 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
       else
          non_arom_conn++;
    }
+
+   if (arom_bonds == 0)
+   {
+      // Verify that this atom has valid valence
+      if (mol.getImplicitH_NoThrow(v_idx, -1) == -1)
+         return -1;
+   }
+
+   if (n_double_ring > 0)
+      return 1;
+
    if (n_double_ext > 1)
       return -1;
    else if (n_double_ext == 1)
@@ -312,7 +366,6 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
       return 0;
    }
 
-   Molecule &mol = (Molecule &)_basemol;
    int conn = mol.getAtomConnectivity_NoThrow(v_idx, -1);
    if (conn == -1)
       return -1;

@@ -437,10 +437,7 @@ static OCIString * _mangoGrossCalc (OracleEnv &env, MangoOracleContext &context,
    QS_DEF(Molecule, target);
 
    MoleculeAutoLoader loader(target_buf);
-   
-   loader.treat_x_as_pseudoatom = context.context().treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-           context.context().ignore_closing_bond_direction_mismatch;
+   context.context().setLoaderSettings(loader);
    loader.loadMolecule(target);
 
    OCIString *result = 0;
@@ -565,9 +562,8 @@ static OCINumber * _mangoMass (OracleEnv &env, MangoOracleContext &context,
       MoleculeAutoLoader loader(scanner);
       BingoOracleContext &bingo_context = context.context();
 
-      loader.treat_x_as_pseudoatom = bingo_context.treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-              bingo_context.ignore_closing_bond_direction_mismatch;
+      bingo_context.setLoaderSettings(loader);
+
       loader.loadMolecule(target);
 
       MoleculeMass mass_calulator;

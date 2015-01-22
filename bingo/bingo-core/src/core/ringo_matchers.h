@@ -57,8 +57,6 @@ public:
    void loadSMARTS (Scanner &scanner);
 
    bool preserve_bonds_on_highlighting;
-   bool treat_x_as_pseudoatom;
-   bool ignore_closing_bond_direction_mismatch;
    
    void getHighlightedTarget (Array<char> &buf);
 
@@ -93,7 +91,7 @@ class RingoAAM
 {
 
 public:
-   RingoAAM ();
+   RingoAAM(BingoContext &context);
 
    void parse (const char* mode);
 
@@ -103,12 +101,10 @@ public:
 
    void getResult (Array<char> &buf);
 
-   bool treat_x_as_pseudoatom;
-   bool ignore_closing_bond_direction_mismatch;
-
    DECL_ERROR;
 
 protected:
+   BingoContext &_context;
    Reaction _reaction;
 };
 
@@ -136,9 +132,6 @@ public:
    void setParameters (const char *conditions);
 
    static dword calculateHash (Reaction &rxn);
-
-   bool treat_x_as_pseudoatom;
-   bool ignore_closing_bond_direction_mismatch;
 
    DECL_ERROR;
 protected:

@@ -144,7 +144,7 @@ void ReactionTransformation::_mergeReactionComponents( QueryReaction &reaction, 
 
       merged_aam.concat(reaction.getAAMArray(i));
 
-      merged_molecule.mergeWithMolecule(molecule_i, NULL, NULL);
+      merged_molecule.mergeWithMolecule(molecule_i, NULL, 0);
    }
 }
 

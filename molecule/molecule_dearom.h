@@ -306,13 +306,17 @@ public:
    static bool dearomatizeMolecule (Molecule &mol, const AromaticityOptions &options);
 
    static bool restoreHydrogens (Molecule &mol, const AromaticityOptions &options);
-   static bool restoreUnambiguousHydrogens (Molecule &mol);
+   static bool restoreHydrogens (Molecule &mol, bool unambiguous_only);
 
    void dearomatizeGroup (int group, int dearomatization_index);
    void restoreHydrogens (int group, int dearomatization_index);
+
 private:
    DearomatizationsStorage &_dearomatizations;
    Molecule &_mol;
+
+   int _countDoubleBonds (int group, int dearomatization_index);
+   int _getBestDearomatization (int group);
 
    CP_DECL;
    TL_CP_DECL(Array<int>, vertex_connectivity);

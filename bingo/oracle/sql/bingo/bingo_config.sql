@@ -43,6 +43,13 @@ insert into CONFIG_INT values(0, 'SIM_SCREENING_PASS_MARK', 128);
 
 insert into CONFIG_INT values(0, 'TREAT_X_AS_PSEUDOATOM', 0);
 insert into CONFIG_INT values(0, 'IGNORE_CLOSING_BOND_DIRECTION_MISMATCH', 0);
+insert into CONFIG_INT values(0, 'IGNORE_STEREOCENTER_ERRORS', 0);
+insert into CONFIG_INT values(0, 'IGNORE_CISTRANS_ERRORS', 0);
+insert into CONFIG_INT values(0, 'ALLOW_NON_UNIQUE_DEAROMATIZATION', 0);
+insert into CONFIG_INT values(0, 'ZERO_UNKNOWN_AROMATIC_HYDROGENS', 0);
+insert into CONFIG_INT values(0, 'STEREOCHEMISTRY_BIDIRECTIONAL_MODE', 0);
+insert into CONFIG_INT values(0, 'STEREOCHEMISTRY_DETECT_HAWORTH_PROJECTION', 0);	
+insert into CONFIG_INT values(0, 'REJECT_INVALID_STRUCTURES', 0);	
 
 create or replace procedure SetRelativeAtomicMass (list in VARCHAR2) is
 begin

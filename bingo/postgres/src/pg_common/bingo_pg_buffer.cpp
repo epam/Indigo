@@ -1,3 +1,5 @@
+#include "bingo_pg_fix_pre.h"
+
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -9,9 +11,7 @@ extern "C" {
 #include "storage/lock.h"
 }
 
-#ifdef qsort
-#undef qsort
-#endif
+#include "bingo_pg_fix_post.h"
 
 #include "bingo_pg_buffer.h"
 #include "base_cpp/array.h"
@@ -120,7 +120,7 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num) {
               buffer_block_num, block_num);
    } else {
       BINGO_PG_TRY {
-         _buffer = ReadBufferExtended(rel, MAIN_FORKNUM,  block_num, RBM_ZERO, NULL);
+         _buffer = ReadBufferExtended(rel, MAIN_FORKNUM,  block_num, RBM_NORMAL, NULL);
       } BINGO_PG_HANDLE(throw Error("internal error: can not extend the existing buffer: %s", message));
    }
    /*

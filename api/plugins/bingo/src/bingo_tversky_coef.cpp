@@ -14,37 +14,37 @@ TverskyCoef::TverskyCoef (int fp_size, double a, double b) : _fp_size(fp_size)
    _beta = b;
 }
 
-double TverskyCoef::calcCoef( const byte *f1, const byte *f2, int f1_bit_count, int f2_bit_count )
+double TverskyCoef::calcCoef (const byte *target, const byte *query, int target_bit_count, int query_bit_count )
 {
-   int common_bits = bitCommonOnes(f1, f2, _fp_size);
+   int common_bits = bitCommonOnes(target, query, _fp_size);
 
-   if (f1_bit_count == -1)
-      f1_bit_count = bitGetOnesCount(f1, _fp_size);
-   if (f2_bit_count == -1)
-      f2_bit_count = bitGetOnesCount(f2, _fp_size);
+   if (target_bit_count == -1)
+      target_bit_count = bitGetOnesCount(target, _fp_size);
+   if (query_bit_count == -1)
+      query_bit_count = bitGetOnesCount(query, _fp_size);
 
-   return (double)common_bits / ((f1_bit_count - common_bits) * _alpha + 
-                                 (f2_bit_count - common_bits) * _beta + common_bits);
+   return (double)common_bits / ((target_bit_count - common_bits) * _alpha + 
+                                 (query_bit_count - common_bits) * _beta + common_bits);
 }
 
-double TverskyCoef::calcUpperBound( int f1_bit_count, int min_f2_bit_count, int max_f2_bit_count )
+double TverskyCoef::calcUpperBound (int query_bit_count, int min_target_bit_count, int max_target_bit_count )
 {
    if (fabs(_alpha + _beta - 1) > 1e-7)
       return 1;
 
-   int min = (f1_bit_count < max_f2_bit_count ? f1_bit_count : max_f2_bit_count);
-   return min / (_alpha * f1_bit_count + _beta * min_f2_bit_count);
+   int min = (query_bit_count < max_target_bit_count ? query_bit_count : max_target_bit_count);
+   return min / (_alpha * min_target_bit_count + _beta * query_bit_count);
 }
 
-double TverskyCoef::calcUpperBound( int f1_bit_count, int min_f2_bit_count, int max_f2_bit_count, int m10, int m01 )
+double TverskyCoef::calcUpperBound (int query_bit_count, int min_target_bit_count, int max_target_bit_count, int m10, int m01 )
 {
    if (fabs(_alpha + _beta - 1) > 1e-7)
       return 1;
 
-   int a = f1_bit_count - m10;
-   int max_b = max_f2_bit_count - m01;
+   int max_a = max_target_bit_count - m10;
+   int b = query_bit_count - m01;
+   
+   int min = (b > max_a ? max_a : b );
 
-   int min = (a > max_b ? max_b : a );
-
-   return (double)min / (_alpha * f1_bit_count + _beta * min_f2_bit_count);
+   return (double)min / (_alpha * min_target_bit_count + _beta * query_bit_count);
 }

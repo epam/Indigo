@@ -16,6 +16,10 @@
 #include "base_cpp/scanner.h"
 #include "core/bingo_error.h"
 #include "molecule/elements.h"
+#include "molecule/molecule_auto_loader.h"
+#include "molecule/smiles_loader.h"
+#include "reaction/reaction_auto_loader.h"
+#include "reaction/rsmiles_loader.h"
 
 // const char * bingo_version_string = "1.7-beta3";
 
@@ -29,8 +33,15 @@ BingoContext::BingoContext (int id_)
 {
    id = id_;
    reset();
-   treat_x_as_pseudoatom.setName("treat_x_as_pseudoatom");
-   ignore_closing_bond_direction_mismatch.setName("ignore_closing_bond_direction_mismatch");
+   treat_x_as_pseudoatom.setName("treat-x-as-pseudoatom");
+   ignore_closing_bond_direction_mismatch.setName("ignore-closing-bond-direction-mismatch");
+   ignore_stereocenter_errors.setName("ignore-stereocenter-errors");
+   stereochemistry_bidirectional_mode.setName("stereochemistry-bidirectional-mode");
+   stereochemistry_detect_haworth_projection.setName("stereochemistry-detect-haworth-projection");
+   ignore_cistrans_errors.setName("ignore-cistrans-errors");
+   allow_non_unique_dearomatization.setName("allow-non-unique-dearomatization");
+   zero_unknown_aromatic_hydrogens.setName("zero-unknown-aromatic-hydrogens");
+   reject_invalid_structures.setName("reject-invalid-structures");
 }
 
 void BingoContext::reset ()
@@ -39,16 +50,21 @@ void BingoContext::reset ()
 
    nthreads = 0;
    timeout = DEFAULT_TIMEOUT;
-   treat_x_as_pseudoatom = false;
-   ignore_closing_bond_direction_mismatch = false;
 
    tautomer_rules_ready = false;
    fp_parameters_ready = false;
    atomic_mass_map_ready = false;
+
    treat_x_as_pseudoatom.reset();
    ignore_closing_bond_direction_mismatch.reset();
+   ignore_stereocenter_errors.reset();
+   stereochemistry_bidirectional_mode.reset();
+   stereochemistry_detect_haworth_projection.reset();
+   ignore_cistrans_errors.reset();
+   allow_non_unique_dearomatization.reset();
+   zero_unknown_aromatic_hydrogens.reset();
+   reject_invalid_structures.reset();
 }
-
 
 BingoContext::~BingoContext ()
 {
@@ -184,3 +200,43 @@ void bingoGetName (Scanner &scanner, Array<char> &result)
          scanner.readLine(result, false);
    }
 }
+
+StereocentersOptions BingoContext::getStereocentersOptions()
+{
+   StereocentersOptions opt;
+   opt.ignore_errors = ignore_stereocenter_errors;
+   opt.bidirectional_mode = stereochemistry_bidirectional_mode;
+   opt.detect_haworth_projection = stereochemistry_detect_haworth_projection;
+   return opt;
+}
+
+void BingoContext::setLoaderSettings (MoleculeAutoLoader &loader)
+{
+   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+   loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+   loader.stereochemistry_options = getStereocentersOptions();
+   loader.ignore_cistrans_errors = ignore_cistrans_errors;
+}
+
+void BingoContext::setLoaderSettings(SmilesLoader &loader)
+{
+   loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+   loader.stereochemistry_options = getStereocentersOptions();
+   loader.ignore_cistrans_errors = ignore_cistrans_errors;
+}
+
+void BingoContext::setLoaderSettings(ReactionAutoLoader &loader)
+{
+   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+   loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+   loader.stereochemistry_options = getStereocentersOptions();
+   loader.ignore_cistrans_errors = ignore_cistrans_errors;
+}
+
+void BingoContext::setLoaderSettings(RSmilesLoader &loader)
+{
+   loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+   loader.stereochemistry_options = getStereocentersOptions();
+   loader.ignore_cistrans_errors = ignore_cistrans_errors;
+}
+

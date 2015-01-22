@@ -1,11 +1,12 @@
+#include "bingo_pg_fix_pre.h"
+
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
 }
 
-#ifdef qsort
-#undef qsort
-#endif
+#include "bingo_pg_fix_post.h"
+
 #include "bingo_postgres.h"
 #include "bingo_pg_text.h"
 #include "bingo_core_c.h"
@@ -13,20 +14,19 @@ extern "C" {
 
 
 extern "C" {
-PG_FUNCTION_INFO_V1(aam);
-PGDLLEXPORT Datum aam(PG_FUNCTION_ARGS);
-PG_FUNCTION_INFO_V1(rxnfile);
-PGDLLEXPORT Datum rxnfile(PG_FUNCTION_ARGS);
-PG_FUNCTION_INFO_V1(rcml);
-PGDLLEXPORT Datum rcml(PG_FUNCTION_ARGS);
-PG_FUNCTION_INFO_V1(checkreaction);
-PGDLLEXPORT Datum checkreaction(PG_FUNCTION_ARGS);
-PG_FUNCTION_INFO_V1(rsmiles);
-PGDLLEXPORT Datum rsmiles(PG_FUNCTION_ARGS);
-PG_FUNCTION_INFO_V1(rfingerprint);
-PGDLLEXPORT Datum rfingerprint(PG_FUNCTION_ARGS);
-PG_FUNCTION_INFO_V1(compactreaction);
-PGDLLEXPORT Datum compactreaction(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(aam);
+
+BINGO_FUNCTION_EXPORT(rxnfile);
+
+BINGO_FUNCTION_EXPORT(rcml);
+
+BINGO_FUNCTION_EXPORT(checkreaction);
+
+BINGO_FUNCTION_EXPORT(rsmiles);
+
+BINGO_FUNCTION_EXPORT(rfingerprint);
+
+BINGO_FUNCTION_EXPORT(compactreaction);
 }
 
 Datum aam(PG_FUNCTION_ARGS) {

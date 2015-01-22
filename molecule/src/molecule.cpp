@@ -19,6 +19,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_dearom.h"
+#include "molecule/molecule_standardize.h"
 
 using namespace indigo;
 
@@ -1391,7 +1392,7 @@ void Molecule::invalidateHCounters ()
 void Molecule::checkForConsistency (Molecule &mol)
 {
    // Try to restore hydrogens in aromatic cycles first
-   mol.restoreUnambiguousHydrogens();
+   mol.restoreAromaticHydrogens();
 
    int i;
    for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
@@ -1442,12 +1443,31 @@ bool Molecule::shouldWriteHCountEx (Molecule &mol, int idx, int h_to_ignore)
    // so we write hydrogen counts on all aromatic atoms, except
    // uncharged C and O with no radicals, for which we can always tell
    // the number of hydrogens by the number of bonds.
+   //
+   // Also handle some degerate cases with invalid valences like C[c]1(C)ccccc1
+   // and store implicit hydrogens for unusual situations
    if (aromatic)
    {
       if (atom_number != ELEM_C && atom_number != ELEM_O)
          return true;
       if (charge != 0)
          return true;
+      int n_arom, min_conn;
+      mol.calcAromaticAtomConnectivity(idx, n_arom, min_conn);
+      if (atom_number == ELEM_C)
+      {
+         // Ensure that there can be double bond connected
+         // But do not save for O=c1ccocc1
+         if (min_conn > 3 && mol.getVertex(idx).degree() > 3)
+            return true; // Unusual aromatic Carbon atom
+      }
+      if (atom_number == ELEM_O)
+      {
+         // Ensure that there can be double bond connected
+         if (min_conn != 2)
+            return true; // Unusual aromatic Oxigen atom
+      }
+
    }
 
    // We also should write the H count if it exceeds the normal (lowest valence)
@@ -1487,7 +1507,13 @@ void Molecule::invalidateAtom (int index, int mask)
    BaseMolecule::invalidateAtom(index, mask);
 }
 
-bool Molecule::restoreUnambiguousHydrogens ()
+bool Molecule::restoreAromaticHydrogens (bool unambiguous_only)
 {
-   return MoleculeDearomatizer::restoreUnambiguousHydrogens(*this);
+   return MoleculeDearomatizer::restoreHydrogens(*this, unambiguous_only);
+}
+
+bool Molecule::standardize (const StandardizeOptions &options)
+{
+   updateEditRevision();
+   return MoleculeStandardizer::standardize(*this, options);
 }

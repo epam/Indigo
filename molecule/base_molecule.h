@@ -24,6 +24,7 @@
 #include "base_cpp/obj_array.h"
 #include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_arom.h"
+#include "molecule/molecule_standardize.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -46,6 +47,7 @@ enum
 
 enum
 {
+   BOND_ZERO   = 0,
    BOND_SINGLE = 1,
    BOND_DOUBLE = 2,
    BOND_TRIPLE = 3,

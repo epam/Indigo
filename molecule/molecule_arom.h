@@ -86,6 +86,8 @@ protected:
    TL_CP_DECL(Array<byte>,      _bonds_arom);
    TL_CP_DECL(Array<int>,       _bonds_arom_count);
    TL_CP_DECL(Array<CycleDef>,  _unsure_cycles);
+   TL_CP_DECL(Array<int>,       _cycle_atoms);
+   int _cycle_atoms_mark;
 
    bool _checkDoubleBonds     (const int *cycle, int cycle_len);
    void _aromatizeCycle       (const int *cycle, int cycle_len);

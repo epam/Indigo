@@ -54,6 +54,7 @@ Graph::Graph ()
    _vertices = new ObjPool<Vertex>();
    _neighbors_pool = new Pool<List<VertexEdge>::Elem>();
    _sssr_pool = 0;
+   _components_valid = false;
 }
 
 Graph::~Graph ()
@@ -104,7 +105,9 @@ int Graph::getEdgeEnd (int beg, int edge) const
    const Edge &e = getEdge(edge);
    if (e.beg == beg)
       return e.end;
-   return e.beg;
+   if (e.end == beg)
+      return e.beg;
+   return -1;
 }
 
 int Graph::addEdge (int beg, int end)

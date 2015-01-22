@@ -28,6 +28,8 @@ def copy_doc(destname):
 def flatten_directory(dir):
     todelete = []
     for f in os.listdir(dir):
+        if f.find("python") != -1 or f.find("java") != -1 or f.find("dotnet") != -1:
+            continue
         dir2 = join(dir, f)
         if isdir(dir2):
             for f2 in os.listdir(dir2):

@@ -116,7 +116,7 @@ Molecule & IndigoRdfMolecule::getMolecule ()
       BufferScanner scanner(_data);
       MolfileLoader loader(scanner);
 
-      loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
+      loader.stereochemistry_options = self.stereochemistry_options;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
       loader.skip_3d_chirality = self.skip_3d_chirality;
       loader.loadMolecule(_mol);
@@ -168,7 +168,7 @@ Reaction & IndigoRdfReaction::getReaction ()
       BufferScanner scanner(_data);
       RxnfileLoader loader(scanner);
 
-      loader.ignore_stereocenter_errors = self.ignore_stereochemistry_errors;
+      loader.stereochemistry_options = self.stereochemistry_options;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
       loader.loadReaction(_rxn);
       _loaded = true;
@@ -324,7 +324,7 @@ Molecule & IndigoSmilesMolecule::getMolecule ()
       BufferScanner scanner(_data);
       SmilesLoader loader(scanner);
 
-      loader.ignore_stereochemistry_errors = self.ignore_stereochemistry_errors;
+      loader.stereochemistry_options = self.stereochemistry_options;
       loader.loadMolecule(_mol);
       _loaded = true;
    }
@@ -604,7 +604,7 @@ Molecule & IndigoCmlMolecule::getMolecule ()
 
       BufferScanner scanner(_data);
       MoleculeCmlLoader loader(scanner);
-      loader.ignore_stereochemistry_errors = self.ignore_stereochemistry_errors;
+      loader.stereochemistry_options = self.stereochemistry_options;
       loader.loadMolecule(_mol);
       _loaded = true;
    }
@@ -648,7 +648,7 @@ Reaction & IndigoCmlReaction::getReaction ()
 
       BufferScanner scanner(_data);
       ReactionCmlLoader loader(scanner);
-      loader.ignore_stereochemistry_errors = self.ignore_stereochemistry_errors;
+      loader.stereochemistry_options = self.stereochemistry_options;
       loader.loadReaction(_rxn);
       _loaded = true;
    }

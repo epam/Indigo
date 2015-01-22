@@ -82,6 +82,11 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoToString(self.id))
 
+    def oneBitsList(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoOneBitsList(self.id))
+
+
     def mdlct(self):
         self.dispatcher._setSessionId()
         buf = self.dispatcher.writeBuffer()
@@ -229,6 +234,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         options = '' if options is None else options
         return bool(self.dispatcher._checkResult(Indigo._lib.indigoNormalize(self.id, options.encode(ENCODE_ENCODING))))
+
+    def standardize(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoStandardize(self.id))
 
     def automap(self, mode=''):
         self.dispatcher._setSessionId()
@@ -1348,6 +1357,8 @@ class Indigo(object):
         Indigo._lib.indigoOptimize.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoNormalize.restype = c_int
         Indigo._lib.indigoNormalize.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoStandardize.restype = c_int
+        Indigo._lib.indigoStandardize.argtypes = [c_int]
         Indigo._lib.indigoAutomap.restype = c_int
         Indigo._lib.indigoAutomap.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoGetAtomMappingNumber.restype = c_int
@@ -1722,6 +1733,8 @@ class Indigo(object):
         Indigo._lib.indigoAddDecomposition.argtypes = [c_int, c_int]
         Indigo._lib.indigoToString.restype = c_char_p
         Indigo._lib.indigoToString.argtypes = [c_int]
+        Indigo._lib.indigoOneBitsList.restype = c_char_p
+        Indigo._lib.indigoOneBitsList.argtypes = [c_int]
         Indigo._lib.indigoToBuffer.restype = c_int
         Indigo._lib.indigoToBuffer.argtypes = [c_int, POINTER(POINTER(c_byte)), POINTER(c_int)]
         Indigo._lib.indigoStereocenterPyramid.restype = POINTER(c_int)

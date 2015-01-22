@@ -30,6 +30,7 @@ RSmilesLoader::RSmilesLoader (Scanner &scanner) : _scanner(scanner)
 {
    ignore_closing_bond_direction_mismatch = false;
    smarts_mode = false;
+   ignore_cistrans_errors = false;
 }
 
 int RSmilesLoader::_selectGroupByPair (int &lead_idx, int& idx, int rcnt, int ccnt, int pcnt) const
@@ -110,6 +111,8 @@ void RSmilesLoader::_loadReaction ()
    r_loader.reaction_atom_mapping = &rcnt_aam;
    r_loader.ignorable_aam = &rcnt_aam_ignorable;
    r_loader.smarts_mode = smarts_mode;
+   r_loader.ignore_cistrans_errors = ignore_cistrans_errors;
+   r_loader.stereochemistry_options = stereochemistry_options;
 
    if (_rxn != 0)
    {
@@ -146,6 +149,8 @@ void RSmilesLoader::_loadReaction ()
    c_loader.inside_rsmiles = true;
    c_loader.reaction_atom_mapping = &ctlt_aam;
    c_loader.smarts_mode = smarts_mode;
+   c_loader.ignore_cistrans_errors = ignore_cistrans_errors;
+   c_loader.stereochemistry_options = stereochemistry_options;
 
    if (_rxn != 0)
    {
@@ -183,6 +188,8 @@ void RSmilesLoader::_loadReaction ()
    p_loader.reaction_atom_mapping = &prod_aam;
    p_loader.ignorable_aam = &prod_aam_ignorable;
    p_loader.smarts_mode = smarts_mode;
+   p_loader.ignore_cistrans_errors = ignore_cistrans_errors;
+   p_loader.stereochemistry_options = stereochemistry_options;
 
    if (_rxn != 0)
    {

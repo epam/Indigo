@@ -439,3 +439,26 @@ CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2)
    }
    INDIGO_END(-1);
 }
+
+CEXPORT const char* indigoOneBitsList (int fingerprint) {
+   INDIGO_BEGIN
+   {
+      Array<byte>  &fp = IndigoFingerprint::cast(self.getObject(fingerprint)).bytes;
+      auto &tmp = self.getThreadTmpData();
+      ArrayOutput out(tmp.string);
+      tmp.string.clear();
+      for(int i=0; i < fp.sizeInBytes() * 8; ++i) {
+          if(bitGetBit(fp.ptr(), i) > 0) {
+              if(tmp.string.size() > 0) {
+                 out.writeString(" "); 
+              }
+              out.printf("%d", i);
+          }
+      }
+      
+      tmp.string.push(0);
+
+      return tmp.string.ptr();
+   }
+   INDIGO_END(0);
+}

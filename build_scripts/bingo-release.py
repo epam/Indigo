@@ -7,6 +7,26 @@ from os.path import *
 from optparse import OptionParser
 from zipfile import ZipFile
 
+
+def shortenDBMS(dbms):
+    if dbms == 'postgres':
+        return 'pg'
+    elif dbms == 'sqlserver':
+        return 'mssql'
+    elif dbms == 'oracle':
+        return 'ora'
+
+
+def shortenGenerator(generator):
+    result = generator
+    if generator.startswith('Visual Studio '):
+        result = generator.replace('Visual Studio ', 'VS')
+    elif generator.startswith('Unix MakeFiles'):
+        result = generator.replace('Unix Makefiles', 'umake')
+    elif generator.startswith('Unix MakeFiles'):
+        result = generator.replace('MinGW Makefiles', 'mmake')
+    return result.replace(' ', '')
+
 presets = {
     "win32" : ("Visual Studio 10", ""),
     "win64" : ("Visual Studio 10 Win64", ""),
@@ -16,12 +36,15 @@ presets = {
     "win64-2013" : ("Visual Studio 12 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
+    "linux32-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
+    "linux64-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
     "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
     "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
+    "mac-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.6"),
 }
 
 parser = OptionParser(description='Bingo build script')
@@ -47,12 +70,15 @@ if not args.generator and args.dbms != 'sqlserver':
     print("Generator must be specified")
     exit()
 
+if args.preset and args.preset.find('universal') != -1:
+    args.params += ' -DUNIVERSAL_BUILD=TRUE'
+
 cur_dir = abspath(dirname(__file__))
 root = os.path.normpath(join(cur_dir, ".."))
 project_dir = join(cur_dir, "bingo-%s" % args.dbms)
 
-if args.dbms != 'sqlserver':
-    build_dir = (args.dbms + " " + args.generator + " " + args.params)
+if args.dbms != 'sqlserver':    
+    build_dir = (shortenDBMS(args.dbms) + " " + shortenGenerator(args.generator) + " " + args.config + args.params.replace('-D', ''))
     build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
     full_build_dir = os.path.join(root, "build", build_dir)
     if os.path.exists(full_build_dir) and args.clean:
@@ -65,7 +91,7 @@ if args.dbms != 'sqlserver':
         args.params += " -DCMAKE_BUILD_TYPE=" + args.config
 
     os.chdir(full_build_dir)
-    command = "cmake -G \"%s\" %s %s" % (args.generator, args.params, project_dir)
+    command = "%s cmake -G \"%s\" %s %s" % ('CC=gcc CXX=g++' if (args.preset.find('linux') != -1 and args.preset.find('universal') != -1) else '', args.generator, args.params, project_dir)
     print(command)
     subprocess.check_call(command, shell=True)
 
@@ -116,14 +142,16 @@ else:
     vsversion = 'Visual Studio'
     if args.preset.find("2012") != -1:
         vsversion += ' 11'
+    elif args.preset.find("2013") != -1: 
+        vsversion += ' 12'      
     else:
         vsversion += ' 10'
 
     for arch, generator in (('x86', vsversion), ('x64', vsversion + ' Win64')):
-        build_dir = (args.dbms + " " + generator + " " + args.params)
+        build_dir = (shortenDBMS(args.dbms) + " " + shortenGenerator(generator) + " " + args.params)
         build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
         full_build_dir = os.path.join(root, "build", build_dir)
-        dllPath[arch] = os.path.normpath(os.path.join(full_build_dir, 'dist', 'Win', arch, 'shared', args.config))
+        dllPath[arch] = os.path.normpath(os.path.join(full_build_dir, 'dist', 'Win', arch, 'lib', args.config))
         if os.path.exists(full_build_dir) and args.clean:
             print("Removing previous project files")
             shutil.rmtree(full_build_dir)

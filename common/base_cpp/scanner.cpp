@@ -25,6 +25,8 @@
 
 using namespace indigo;
 
+enum { MAX_LINE_LENGTH = 1048576 };
+
 IMPL_ERROR(Scanner, "scanner");
 
 Scanner::~Scanner ()
@@ -67,12 +69,16 @@ int Scanner::readInt1 (void)
 
    buf.clear();
 
+   skipSpace();
+
    while (!isEOF())
    {
       c = readChar();
       if (!isdigit(c) && c != '-' && c != '+')
          break;
       buf.push(c);
+      if (buf.size() > MAX_LINE_LENGTH)
+         throw Error("Line length is too long. Probably the file format is not correct.");
    }
 
    buf.push(0);
@@ -96,8 +102,12 @@ int Scanner::readInt (void)
    if (c == '+' || c == '-' || isdigit(c))
       buf.push(c);
 
-   while (isdigit(lookNext()))
+   while (isdigit(lookNext())) 
+   {
       buf.push(readChar());
+      if (buf.size() > MAX_LINE_LENGTH)
+         throw Error("Line length is too long. Probably the file format is not correct.");
+   }
 
    buf.push(0);
 
@@ -266,6 +276,9 @@ void Scanner::readWord (Array<char> &word, const char *delimiters)
          break;
 
       word.push(readChar());
+
+      if (word.size() > MAX_LINE_LENGTH)
+         throw Error("Line length is too long. Probably the file format is not correct.");
    } while (!isEOF());
 
    word.push(0);
@@ -346,6 +359,12 @@ void Scanner::skipSpace ()
       skip(1);
 }
 
+void Scanner::skipUntil (const char *delimiters)
+{
+   while (strchr(delimiters, lookNext()) == nullptr)
+      skip(1);
+}
+
 void Scanner::appendLine (Array<char> &out, bool append_zero)
 {
    if (isEOF())
@@ -369,6 +388,9 @@ void Scanner::appendLine (Array<char> &out, bool append_zero)
          break;
 
       out.push(c);
+
+      if (out.size() > MAX_LINE_LENGTH)
+         throw Error("Line length is too long. Probably the file format is not correct.");
    } while (!isEOF());
 
    if (append_zero)

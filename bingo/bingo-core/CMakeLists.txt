@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
 project(BingoCore)
 
 SET(BingoCore_HEADERS_DIR ${BingoCore_SOURCE_DIR}/src CACHE INTERNAL "include directories" FORCE)
-
+CMAKE_POLICY(SET CMP0011 NEW)
 INCLUDE(${Bingo_SOURCE_DIR}/bingo-version.cmake)                                            
 MESSAGE(STATUS "BingoCore version is ${BINGO_VERSION}")
 configure_file(${BingoCore_HEADERS_DIR}/core/bingo_version.h.in ${BingoCore_HEADERS_DIR}/core/bingo_version.h)

@@ -184,15 +184,13 @@ public:
       return ::memcmp(_array, other._array, _length * sizeof(T));
    }
 
-   void remove (int idx)
+   void remove (int idx, int span = 1)
    {
-      if (idx < 0 || idx - _length >= 0)
-         throw Error("remove(): invalid index %d (size=%d)", idx, _length);
+      if (idx < 0 || idx - _length - span + 1 >= 0)
+         throw Error("remove(): invalid index %d with span %d (size=%d)", idx, span, _length);
 
-      if (idx < _length - 1)
-         memmove(_array + idx, _array + idx + 1, sizeof(T) * (_length - idx - 1));
-
-      _length--;
+      memmove(_array + idx, _array + idx + span, sizeof(T) * (_length - idx - span));
+      _length -= span;
    }
 
    void remove_replace (int idx)

@@ -44,7 +44,7 @@ TL_CP_GET(_polymer_repetitions)
    ignorable_aam = 0;
    inside_rsmiles = false;
    ignore_closing_bond_direction_mismatch = false;
-   ignore_stereochemistry_errors = false;
+   ignore_cistrans_errors = false;
    _mol = 0;
    _qmol = 0;
    _bmol = 0;
@@ -96,7 +96,7 @@ void SmilesLoader::_calcStereocenters ()
 
          if (!MoleculeAlleneStereo::possibleCenter(*_bmol, i, left, right, subst, pure_h))
          {
-            if (!ignore_stereochemistry_errors)
+            if (!stereochemistry_options.ignore_errors)
                throw Error("chirality on atom %d makes no sense", i);
             continue;
          }
@@ -170,7 +170,7 @@ void SmilesLoader::_calcStereocenters ()
 
             if (counter >= 4)
             {
-               if (!ignore_stereochemistry_errors)
+               if (!stereochemistry_options.ignore_errors)
                   throw Error("too many bonds for chiral atom %d", i);
                break;
             }
@@ -184,7 +184,7 @@ void SmilesLoader::_calcStereocenters ()
 
          if (counter < 3)
          {
-            if (!ignore_stereochemistry_errors)
+            if (!stereochemistry_options.ignore_errors)
                throw Error("only %d bonds for chiral atom %d", counter, i);
             continue;
          }
@@ -207,7 +207,7 @@ void SmilesLoader::_calcStereocenters ()
          {
             if (counter != 4)
             {
-               if (!ignore_stereochemistry_errors)
+               if (!stereochemistry_options.ignore_errors)
                   throw Error("implicit hydrogen not allowed with %d neighbor atoms", counter - 1);
                continue;
             }
@@ -229,7 +229,7 @@ void SmilesLoader::_calcStereocenters ()
 
          if (!stereocenters.isPossibleStereocenter(i))
          {
-            if (!ignore_stereochemistry_errors)
+            if (!stereochemistry_options.ignore_errors)
                throw Error("chirality not possible on atom #%d", i);
             continue;
          }
@@ -265,6 +265,7 @@ void SmilesLoader::_calcCisTrans ()
 void SmilesLoader::_readOtherStuff ()
 {
    MoleculeStereocenters &stereocenters = _bmol->stereocenters;
+   MoleculeCisTrans &cis_trans = _bmol->cis_trans;
 
    QS_DEF(Array<int>, to_remove);
 
@@ -298,10 +299,35 @@ void SmilesLoader::_readOtherStuff ()
 
             if (!skip)
             {
-               // Check if the stereocenter has already been marked as any
-               // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
-               if (stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
-                  stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+               // This either bond can mark stereocenter or cis-trans double bond
+               // For example CC=CN |w:1.0|
+               const Vertex &v = _bmol->getVertex(idx);
+               bool found = false;
+               for (int nei : v.neighbors())
+               {
+                  int edge_idx = v.neiEdge(nei);
+                  if (_bmol->getBondOrder(edge_idx) == BOND_DOUBLE)
+                  {
+                     cis_trans.ignore(edge_idx);
+                     found = true;
+                  }
+               }
+
+               if (!found)
+               {
+                  if (!stereocenters.isPossibleStereocenter(idx))
+                  {
+                     if (!stereochemistry_options.ignore_errors)
+                        throw Error("chirality not possible on atom #%d", idx);
+                  }
+                  else
+                  {
+                     // Check if the stereocenter has already been marked as any
+                     // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
+                     if (stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
+                       stereocenters.add(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                  }
+               }
             }
 
             if (_scanner.lookNext() == '.') // skip the bond index
@@ -325,7 +351,7 @@ void SmilesLoader::_readOtherStuff ()
 
             if (stereocenters.exists(idx))
                stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
-            else if (!ignore_stereochemistry_errors)
+            else if (!stereochemistry_options.ignore_errors)
                throw Error("atom %d is not a stereocenter", idx);
 
             if (_scanner.lookNext() == ',')
@@ -345,7 +371,7 @@ void SmilesLoader::_readOtherStuff ()
 
             if (stereocenters.exists(idx))
                stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
-            else if (!ignore_stereochemistry_errors)
+            else if (!stereochemistry_options.ignore_errors)
                throw Error("atom %d is not a stereocenter", idx);
 
             if (_scanner.lookNext() == ',')
@@ -365,7 +391,7 @@ void SmilesLoader::_readOtherStuff ()
 
             if (stereocenters.exists(idx))
                stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
-            else if (!ignore_stereochemistry_errors)
+            else if (!stereochemistry_options.ignore_errors)
                throw Error("atom %d is not a stereocenter", idx);
 
             if (_scanner.lookNext() == ',')
@@ -476,29 +502,35 @@ void SmilesLoader::_readOtherStuff ()
          {
             int idx = _scanner.readUnsigned();
 
-            _bmol->cis_trans.restoreSubstituents(_bonds[idx].index);
-            const int *subst = _bmol->cis_trans.getSubstituents(_bonds[idx].index);
-            int parity = ((c == 'c') ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
+            bool skip = false;
+            if (ignore_cistrans_errors && !MoleculeCisTrans::isGeomStereoBond(*_bmol, _bonds[idx].index, nullptr, false))
+               skip = true;
 
-            /* CXSmiles doc says:
-               the double bond has the representation a1-a2=a3-a4, where
-               a1 is the smallest atom index of the generated smiles connected to a2
-               a2 is the double bond smaller atom index in the generated smiles
-               a3 is the double bond larger atom index in the generated smiles
-               a4 is the smallest atom index of the generated smiles connected to a3
+            if (!skip)
+            {
+               _bmol->cis_trans.restoreSubstituents(_bonds[idx].index);
+               const int *subst = _bmol->cis_trans.getSubstituents(_bonds[idx].index);
+               int parity = ((c == 'c') ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
 
-             * We need to know if the calculated substituents' indices are not "smallest"
-             * (i.e. they have other substituent with smaller index on the same side).
-             * In that case, we invert the parity.
-             */
+               /* CXSmiles doc says:
+                  the double bond has the representation a1-a2=a3-a4, where
+                  a1 is the smallest atom index of the generated smiles connected to a2
+                  a2 is the double bond smaller atom index in the generated smiles
+                  a3 is the double bond larger atom index in the generated smiles
+                  a4 is the smallest atom index of the generated smiles connected to a3
 
-            if (subst[1] != -1 && subst[1] < subst[0])
-               parity = 3 - parity;
-            if (subst[3] != -1 && subst[3] < subst[2])
-               parity = 3 - parity;
+                * We need to know if the calculated substituents' indices are not "smallest"
+                * (i.e. they have other substituent with smaller index on the same side).
+                * In that case, we invert the parity.
+                */
 
-            _bmol->cis_trans.setParity(_bonds[idx].index, parity);
+               if (subst[1] != -1 && subst[1] < subst[0])
+                  parity = 3 - parity;
+               if (subst[3] != -1 && subst[3] < subst[2])
+                  parity = 3 - parity;
 
+               _bmol->cis_trans.setParity(_bonds[idx].index, parity);
+            }
             if (_scanner.lookNext() == ',')
                _scanner.skip(1);
          }
@@ -576,7 +608,7 @@ void SmilesLoader::_readOtherStuff ()
          {
             int atom = s.getAtomIndex(i);
             if (s.getType(atom) == MoleculeStereocenters::ATOM_ABS)
-               s.setType(atom, MoleculeStereocenters::ATOM_OR);
+               s.setType(atom, MoleculeStereocenters::ATOM_AND, 1);
          }
       }
    }
@@ -791,7 +823,18 @@ void SmilesLoader::_parseMolecule ()
             
             for (i = 0; i < bond_str.size(); i++)
                if (bond_str[i] == '/' || bond_str[i] == '\\')
-                  bond_str[i] = '-';
+               {
+                  // Aromatic bonds can be a part of cis-trans configuration
+                  // For example in Cn1c2ccccc2c(-c2ccccc2)n/c(=N\O)c1=O or O\N=c1/c(=O)c2ccccc2c(=O)/c/1=N\O
+                  if (_atoms[bond->beg].aromatic && bond_str.size() == 1)
+                  {
+                     // Erase bond type info
+                     bond_str[i] = '?';
+                     bond->type = -1; // single of aromatic
+                  }
+                  else
+                     bond_str[i] = '-';
+               }
          }
 
          if (bond_str.size() > 0)
@@ -823,7 +866,8 @@ void SmilesLoader::_parseMolecule ()
                // closing some previous pending cycle bond, like the last '1' in C=1C=CC=CC=1
                else if (number >= 0 && number < _cycles.size() && _cycles[number].pending_bond >= 0)
                {
-                  _BondDesc &pending_bond = _bonds[_cycles[number].pending_bond];
+                  int pending_bond_idx = _cycles[number].pending_bond;
+                  _BondDesc &pending_bond = _bonds[pending_bond_idx];
 
                   // transfer direction from closing bond to pending bond
                   if (bond->dir > 0)
@@ -863,8 +907,16 @@ void SmilesLoader::_parseMolecule ()
                   _atoms[pending_bond.end].neighbors.add(pending_bond.beg);
                   _atoms[pending_bond.beg].closure(number, pending_bond.end);
 
-                  // forget the closing bond
-                  _bonds.pop();
+                  // forget the closing bond but move its index here
+                  // Bond order should correspons to atoms order
+                  // Bond order for the following two molecules should be the same
+                  // because later we add cis constraint:
+                  //    CCSc1nnc2c(OC=Nc3ccccc-23)n1 |c:9|
+                  //    CCSc1nnc-2c(OC=Nc3ccccc-23)n1 |c:9|
+                  // Without this shift the 9th bond in the second structure is not double
+                  _bonds.top() = pending_bond;
+                  _bonds.remove(pending_bond_idx);
+
                   _cycles[number].clear();
                   continue;
                }
@@ -1263,8 +1315,10 @@ void SmilesLoader::_setRadicalsAndHCounts ()
          _mol->setImplicitH(idx, _atoms[i].hydrogens);
       else if (_atoms[i].brackets) // no hydrogens in brackets?
          _mol->setImplicitH(idx, 0); // no implicit hydrogens on atom then
-      else if (_atoms[i].aromatic)
+      else if (_atoms[i].aromatic && _mol->getAtomAromaticity(i) == ATOM_AROMATIC)
       {
+         // Additional check for _mol->getAtomAromaticity(i) is required because 
+         // a cycle can be non-aromatic while atom letters are small
          if (_atoms[i].label == ELEM_C)
          {
             // here we are basing on the fact that
@@ -1822,9 +1876,6 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
          if (scanner.readChar() != '(')
             throw Error("'$' must be followed by '('");
 
-         if (!smarts_mode)
-            throw Error("'$' fragments are allowed only in SMARTS queries");
-
          QS_DEF(Array<char>, subexp);
 
          subexp.clear();
@@ -1993,8 +2044,6 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       }
       else if (next == '#')
       {
-         if (!smarts_mode)
-            throw Error("'#' is allowed only within SMARTS queries");
          scanner.skip(1);
          element = scanner.readUnsigned();
       }

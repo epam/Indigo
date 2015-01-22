@@ -26,7 +26,7 @@ MoleculeMass::MoleculeMass()
 
 float MoleculeMass::molecularWeight (Molecule &mol)
 {
-   mol.restoreUnambiguousHydrogens();
+   mol.restoreAromaticHydrogens();
 
    double molmass = 0;
    int impl_h = 0;
@@ -100,7 +100,7 @@ static int _isotopesCmp (int i1, int i2, void *context)
 
 float MoleculeMass::mostAbundantMass (Molecule &mol)
 {
-   mol.restoreUnambiguousHydrogens();
+   mol.restoreAromaticHydrogens();
 
    double molmass = 0;
 
@@ -181,7 +181,7 @@ float MoleculeMass::mostAbundantMass (Molecule &mol)
 
 float MoleculeMass::monoisotopicMass (Molecule &mol)
 {
-   mol.restoreUnambiguousHydrogens();
+   mol.restoreAromaticHydrogens();
 
    double molmass = 0;
 
@@ -210,7 +210,7 @@ float MoleculeMass::monoisotopicMass (Molecule &mol)
 
 int MoleculeMass::nominalMass (Molecule &mol)
 {
-   mol.restoreUnambiguousHydrogens();
+   mol.restoreAromaticHydrogens();
 
    int molmass = 0;
 

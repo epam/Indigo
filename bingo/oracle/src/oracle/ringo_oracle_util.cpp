@@ -38,9 +38,7 @@ static OCIString * _ringoRSMILES (OracleEnv &env, const Array<char> &target_buf,
    QS_DEF(Reaction, target);
 
    ReactionAutoLoader loader(target_buf);
-   loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-           context.ignore_closing_bond_direction_mismatch;
+   context.setLoaderSettings(loader);
    loader.loadReaction(target);
 
    QS_DEF(Array<char>, rsmiles);
@@ -130,9 +128,7 @@ ORAEXT OCIString * oraRingoCheckReaction (OCIExtProcContext *ctx,
          TRY_READ_TARGET_RXN
          {
             ReactionAutoLoader loader(buf);
-            loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-            loader.ignore_closing_bond_direction_mismatch =
-                 context.ignore_closing_bond_direction_mismatch;
+            context.setLoaderSettings(loader);
             loader.loadReaction(reaction);
             Reaction::checkForConsistency(reaction);
          }
@@ -158,10 +154,7 @@ void _ICR (OracleLOB &target_lob, int save_xyz, Array<char> &icr, BingoOracleCon
    target_lob.readAll(target, false);
 
    ReactionAutoLoader loader(target);
-
-   loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-                 context.ignore_closing_bond_direction_mismatch;
+   context.setLoaderSettings(loader);
    loader.loadReaction(reaction);
 
    if ((save_xyz != 0) && !Reaction::haveCoord(reaction))
@@ -261,10 +254,7 @@ ORAEXT OCILobLocator *oraRingoRxnfile (OCIExtProcContext *ctx,
          target_lob.readAll(target, false);
 
          ReactionAutoLoader loader(target);
-
-         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-         loader.ignore_closing_bond_direction_mismatch =
-                    context.ignore_closing_bond_direction_mismatch;
+         context.setLoaderSettings(loader);
          loader.loadReaction(reaction);
 
          if (!Reaction::haveCoord(reaction))
@@ -318,10 +308,7 @@ ORAEXT OCILobLocator *oraRingoCML (OCIExtProcContext *ctx,
          target_lob.readAll(target, false);
 
          ReactionAutoLoader loader(target);
-
-         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-         loader.ignore_closing_bond_direction_mismatch =
-                    context.ignore_closing_bond_direction_mismatch;
+         context.setLoaderSettings(loader);
          loader.loadReaction(reaction);
 
          if (!Reaction::haveCoord(reaction))
@@ -380,10 +367,7 @@ ORAEXT OCILobLocator * oraRingoFingerprint (OCIExtProcContext *ctx,
          QS_DEF(Reaction, target);
 
          ReactionAutoLoader loader(target_buf);
-
-         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-         loader.ignore_closing_bond_direction_mismatch =
-                    context.ignore_closing_bond_direction_mismatch;
+         context.setLoaderSettings(loader);
          loader.loadReaction(target);
 
          ReactionFingerprintBuilder builder(target, context.fp_parameters);

@@ -1,3 +1,5 @@
+#include "bingo_pg_fix_pre.h"
+
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -7,9 +9,8 @@ extern "C" {
 #include "storage/bufmgr.h"
 }
 
-#ifdef qsort
-#undef qsort
-#endif
+#include "bingo_pg_fix_post.h"
+
 #include "bingo_pg_build.h"
 #include "bingo_pg_common.h"
 #include "bingo_postgres.h"
@@ -17,12 +18,11 @@ extern "C" {
 
 
 extern "C" {
-PG_FUNCTION_INFO_V1(bingo_insert);
-PGDLLEXPORT Datum bingo_insert(PG_FUNCTION_ARGS);
-PG_FUNCTION_INFO_V1(bingo_bulkdelete);
-PGDLLEXPORT Datum bingo_bulkdelete(PG_FUNCTION_ARGS);
-PG_FUNCTION_INFO_V1(bingo_vacuumcleanup);
-PGDLLEXPORT Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(bingo_insert);
+
+BINGO_FUNCTION_EXPORT(bingo_bulkdelete);
+
+BINGO_FUNCTION_EXPORT(bingo_vacuumcleanup);
 }
 
 

@@ -1,3 +1,5 @@
+#include "bingo_pg_fix_pre.h"
+
 extern "C" {
 #include "postgres.h"
 #include "fmgr.h"
@@ -5,19 +7,14 @@ extern "C" {
 #include "storage/lock.h"
 #include "access/heapam.h"
 #include "storage/bufmgr.h"
-#if PG_VERSION_NUM / 100 == 903
+#if PG_VERSION_NUM / 100 >= 903
 #include "lib/stringinfo.h"
 #include "access/xlog_internal.h"
 #endif
 }
 
 
-#ifdef qsort
-#undef qsort
-#endif
-#ifdef printf
-#undef printf
-#endif
+#include "bingo_pg_fix_post.h"
 
 #include "bingo_postgres.h"
 
@@ -33,61 +30,36 @@ extern "C" {
 #include "bingo_pg_cursor.h"
 #include "bingo_pg_index.h"
 
-extern "C" {
-//PG_FUNCTION_INFO_V1(bingo_test);
-//PGDLLEXPORT Datum bingo_test(PG_FUNCTION_ARGS);
-//
-//PG_FUNCTION_INFO_V1(bingo_test_tid);
-//PGDLLEXPORT Datum bingo_test_tid(PG_FUNCTION_ARGS);
-//
-//PG_FUNCTION_INFO_V1(bingo_test_select);
-//PGDLLEXPORT Datum bingo_test_select(PG_FUNCTION_ARGS);
+extern "C"  {
+BINGO_FUNCTION_EXPORT(bingo_markpos);
 
-PG_FUNCTION_INFO_V1(bingo_markpos);
-PGDLLEXPORT Datum bingo_markpos(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(bingo_restrpos);
 
-PG_FUNCTION_INFO_V1(bingo_restrpos);
-PGDLLEXPORT Datum bingo_restrpos(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(getindexstructurescount);
 
-PG_FUNCTION_INFO_V1(getindexstructurescount);
-PGDLLEXPORT Datum getindexstructurescount(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(_get_structures_count);
 
-PG_FUNCTION_INFO_V1(_get_structures_count);
-PGDLLEXPORT Datum _get_structures_count(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(_get_block_count);
 
-PG_FUNCTION_INFO_V1(_get_block_count);
-PGDLLEXPORT Datum _get_block_count(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(_precache_database);
 
-PG_FUNCTION_INFO_V1(_precache_database);
-PGDLLEXPORT Datum _precache_database(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(getversion);
 
-PG_FUNCTION_INFO_V1(getversion);
-PGDLLEXPORT Datum getversion(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(filetotext);
 
-PG_FUNCTION_INFO_V1(filetotext);
-PGDLLEXPORT Datum filetotext(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(filetoblob);
 
-PG_FUNCTION_INFO_V1(filetoblob);
-PGDLLEXPORT Datum filetoblob(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(getname);
 
-PG_FUNCTION_INFO_V1(getname);
-PGDLLEXPORT Datum getname(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(exportsdf);
 
-PG_FUNCTION_INFO_V1(exportsdf);
-PGDLLEXPORT Datum exportsdf(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(exportrdf);
 
-PG_FUNCTION_INFO_V1(exportrdf);
-PGDLLEXPORT Datum exportrdf(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(_reset_profiling_info);
 
-PG_FUNCTION_INFO_V1(_reset_profiling_info);
-PGDLLEXPORT Datum _reset_profiling_info(PG_FUNCTION_ARGS);
+BINGO_FUNCTION_EXPORT(_get_profiling_info);
 
-PG_FUNCTION_INFO_V1(_get_profiling_info);
-PGDLLEXPORT Datum _get_profiling_info(PG_FUNCTION_ARGS);
-
-PG_FUNCTION_INFO_V1(_print_profiling_info);
-PGDLLEXPORT Datum _print_profiling_info(PG_FUNCTION_ARGS);
-
+BINGO_FUNCTION_EXPORT(_print_profiling_info);
 }
 
 

@@ -37,19 +37,34 @@
 
 #include "indigo_inchi_core.h"
 
-static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
+static void _mangoUpdateMolecule(Molecule &target, const char *options, BingoOracleContext &context)
+{
+   if (strlen(options) > 0)
+   {
+      AromaticityOptions opt;
+      opt.unique_dearomatization = false;
+
+      if (strcasecmp(options, "aromatize") == 0)
+         target.aromatize(opt);
+      else if (strcasecmp(options, "dearomatize") == 0)
+         target.dearomatize(opt);
+      else
+         throw BingoError("unsupport options: %s. Can be either 'aromatize' or 'dearomatize'", options);
+   }
+}
+
+static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf, const char *options,
                                  BingoOracleContext &context, bool canonical)
 {
    QS_DEF(Molecule, target);
 
    profTimerStart(tload, "smiles.load_molecule");
    MoleculeAutoLoader loader(target_buf);
-
-   loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-           context.ignore_closing_bond_direction_mismatch;
+   context.setLoaderSettings(loader);
    loader.loadMolecule(target);
    profTimerStop(tload);
+
+   _mangoUpdateMolecule(target, options, context);
 
    if (canonical)
       MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
@@ -89,6 +104,7 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf,
 
 ORAEXT OCIString * oraMangoSMILES (OCIExtProcContext *ctx,
                                    OCILobLocator *target_locator, short target_indicator,
+                                   const char    *options, short options_ind,
                                    short *return_indicator)
 {
    OCIString *result = NULL;
@@ -101,6 +117,9 @@ ORAEXT OCIString * oraMangoSMILES (OCIExtProcContext *ctx,
 
       *return_indicator = OCI_IND_NULL;
 
+      if (options_ind != OCI_IND_NOTNULL)
+         options = "";
+
       if (target_indicator == OCI_IND_NOTNULL)
       {
          BingoOracleContext &context = BingoOracleContext::get(env, 0, false, 0);
@@ -111,7 +130,7 @@ ORAEXT OCIString * oraMangoSMILES (OCIExtProcContext *ctx,
 
          target_lob.readAll(buf, false);
 
-         result = _mangoSMILES(env, buf, context, false);
+         result = _mangoSMILES(env, buf, options, context, false);
       }
       
       if (result == 0)
@@ -156,7 +175,7 @@ ORAEXT OCIString *oraMangoCanonicalSMILES (OCIExtProcContext *ctx,
          target_lob.readAll(buf, false);
          profTimerStop(treadlob);
 
-         result = _mangoSMILES(env, buf, context, true);
+         result = _mangoSMILES(env, buf, "", context, true);
       }
 
       if (result == 0)
@@ -209,9 +228,7 @@ ORAEXT OCIString * oraMangoCheckMolecule (OCIExtProcContext *ctx,
          {
             MoleculeAutoLoader loader(buf);
 
-            loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-            loader.ignore_closing_bond_direction_mismatch =
-                    context.ignore_closing_bond_direction_mismatch;
+            context.setLoaderSettings(loader);
             loader.loadMolecule(mol);
             Molecule::checkForConsistency(mol);
          }
@@ -246,10 +263,7 @@ void _ICM (BingoOracleContext &context, OracleLOB &target_lob, int save_xyz, Arr
    target_lob.readAll(target, false);
 
    MoleculeAutoLoader loader(target);
-
-   loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-   loader.ignore_closing_bond_direction_mismatch =
-           context.ignore_closing_bond_direction_mismatch;
+   context.setLoaderSettings(loader);
    loader.loadMolecule(mol);
 
    if ((save_xyz != 0) && !mol.have_xyz)
@@ -327,6 +341,7 @@ ORAEXT void oraMangoICM2 (OCIExtProcContext *ctx,
 
 ORAEXT OCILobLocator *oraMangoMolfile (OCIExtProcContext *ctx,
                                        OCILobLocator *target_locator, short target_indicator,
+                                       const char    *options, short options_ind,
                                        short *return_indicator)
 {
    OCILobLocator *result = 0;
@@ -336,6 +351,9 @@ ORAEXT OCILobLocator *oraMangoMolfile (OCIExtProcContext *ctx,
       *return_indicator = OCI_IND_NULL;
 
       OracleEnv env(ctx, logger);
+
+      if (options_ind != OCI_IND_NOTNULL)
+         options = "";
 
       if (target_indicator == OCI_IND_NOTNULL)
       {
@@ -349,11 +367,10 @@ ORAEXT OCILobLocator *oraMangoMolfile (OCIExtProcContext *ctx,
          target_lob.readAll(target, false);
 
          MoleculeAutoLoader loader(target);
-
-         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-         loader.ignore_closing_bond_direction_mismatch =
-                 context.ignore_closing_bond_direction_mismatch;
+         context.setLoaderSettings(loader);
          loader.loadMolecule(mol);
+
+         _mangoUpdateMolecule(mol, options, context);
 
          if (!mol.have_xyz)
          {
@@ -408,10 +425,7 @@ ORAEXT OCILobLocator *oraMangoCML (OCIExtProcContext *ctx,
          target_lob.readAll(target, false);
 
          MoleculeAutoLoader loader(target);
-
-         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-         loader.ignore_closing_bond_direction_mismatch =
-                 context.ignore_closing_bond_direction_mismatch;
+         context.setLoaderSettings(loader);
          loader.loadMolecule(mol);
 
          if (!mol.have_xyz)
@@ -473,10 +487,7 @@ ORAEXT OCILobLocator * oraMangoInchi (OCIExtProcContext *ctx,
          QS_DEF(Molecule, target);
 
          MoleculeAutoLoader loader(target_buf);
-
-         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-         loader.ignore_closing_bond_direction_mismatch =
-                 context.ignore_closing_bond_direction_mismatch;
+         context.setLoaderSettings(loader);
          loader.loadMolecule(target);
 
          QS_DEF(Array<char>, inchi);
@@ -566,10 +577,7 @@ ORAEXT OCILobLocator * oraMangoFingerprint (OCIExtProcContext *ctx,
          QS_DEF(Molecule, target);
 
          MoleculeAutoLoader loader(target_buf);
-   
-         loader.treat_x_as_pseudoatom = context.treat_x_as_pseudoatom;
-         loader.ignore_closing_bond_direction_mismatch =
-                 context.ignore_closing_bond_direction_mismatch;
+         context.setLoaderSettings(loader);
          loader.loadMolecule(target);
 
          MoleculeFingerprintBuilder builder(target, context.fp_parameters);

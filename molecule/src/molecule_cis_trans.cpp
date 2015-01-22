@@ -262,7 +262,7 @@ bool MoleculeCisTrans::isGeomStereoBond (BaseMolecule &mol, int bond_idx,
       if (nei_edge_idx == bond_idx)
          continue;
       
-      if (!mol.possibleBondOrder(nei_edge_idx, BOND_SINGLE))
+      if (!mol.possibleBondOrder(nei_edge_idx, BOND_SINGLE) && !mol.possibleBondOrder(nei_edge_idx, BOND_AROMATIC))
          return false;
 
       if (substituents[0] == -1)
@@ -278,7 +278,7 @@ bool MoleculeCisTrans::isGeomStereoBond (BaseMolecule &mol, int bond_idx,
       if (nei_edge_idx == bond_idx)
          continue;
       
-      if (!mol.possibleBondOrder(nei_edge_idx, BOND_SINGLE))
+      if (!mol.possibleBondOrder(nei_edge_idx, BOND_SINGLE) && !mol.possibleBondOrder(nei_edge_idx, BOND_AROMATIC))
          return false;
 
       if (substituents[2] == -1)

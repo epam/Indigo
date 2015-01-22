@@ -16,6 +16,7 @@
 #define __reaction_cml_loader__
 
 #include "base_cpp/exception.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 namespace indigo
 {
@@ -34,7 +35,7 @@ public:
 
    void loadReaction (Reaction &rxn);
 
-   bool ignore_stereochemistry_errors;
+   StereocentersOptions stereochemistry_options;
 
 protected:
    Scanner &_scanner;

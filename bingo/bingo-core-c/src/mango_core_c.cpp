@@ -52,11 +52,23 @@ CEXPORT int mangoIndexProcessSingleRecord ()
             self.mango_index = self.single_mango_index.get();
             self.mango_index->prepare(scanner, output, NULL);
          }
-         catch (CmfSaver::Error &e) { self.warning.readString(e.message(), true); return 0; }
+         catch (CmfSaver::Error &e) 
+         { 
+            if (self.bingo_context->reject_invalid_structures)
+               throw;
+            self.warning.readString(e.message(), true);
+            return 0; 
+         }
       }
-      CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), true); return 0;);
+      CATCH_READ_TARGET_MOL({
+         if (self.bingo_context->reject_invalid_structures)
+            throw;
+
+         self.warning.readString(e.message(), true);
+         return 0;
+      });
    }
-   BINGO_END(1, 0)
+   BINGO_END(1, -1)
 }
 
 CEXPORT int mangoIndexReadPreparedMolecule (int *id,
@@ -521,10 +533,7 @@ CEXPORT const char * mangoSMILES (const char *target_buf, int target_buf_len, in
       QS_DEF(Molecule, target);
 
       MoleculeAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadMolecule(target);
 
       if (canonical)
@@ -560,10 +569,7 @@ CEXPORT const char * mangoMolfile (const char *molecule, int molecule_len)
       QS_DEF(Molecule, target);
 
       MoleculeAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadMolecule(target);
 
       ArrayOutput out(self.buffer);
@@ -589,10 +595,7 @@ CEXPORT const char * mangoCML (const char *molecule, int molecule_len)
       QS_DEF(Molecule, target);
 
       MoleculeAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadMolecule(target);
 
       ArrayOutput out(self.buffer);
@@ -712,10 +715,7 @@ CEXPORT int mangoMass (const char *target_buf, int target_buf_len, const char *t
       QS_DEF(Molecule, target);
 
       MoleculeAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.skip_3d_chirality = true;
       loader.loadMolecule(target);
 
@@ -747,10 +747,7 @@ CEXPORT const char* mangoGross (const char *target_buf, int target_buf_len)
       QS_DEF(Molecule, target);
 
       MoleculeAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadMolecule(target);
 
       QS_DEF(Array<int>, gross);
@@ -790,9 +787,7 @@ CEXPORT const char * mangoCheckMolecule (const char *molecule, int molecule_len)
 
          BufferScanner molecule_scanner(molecule, molecule_len);
          MoleculeAutoLoader loader(molecule_scanner);
-         loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-         loader.ignore_closing_bond_direction_mismatch =
-            self.bingo_context->ignore_closing_bond_direction_mismatch;
+         self.bingo_context->setLoaderSettings(loader);
          loader.loadMolecule(mol);
          Molecule::checkForConsistency(mol);
       }                               
@@ -824,10 +819,7 @@ CEXPORT const char* mangoICM (const char* molecule, int molecule_len, bool save_
       QS_DEF(Molecule, target);
 
       MoleculeAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadMolecule(target);
 
       ArrayOutput out(self.buffer);
@@ -859,10 +851,7 @@ CEXPORT const char* mangoFingerprint(const char* molecule, int molecule_len, con
       QS_DEF(Molecule, target);
 
       MoleculeAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadMolecule(target);
 
       MoleculeFingerprintBuilder builder(target, self.bingo_context->fp_parameters);
@@ -892,10 +881,7 @@ CEXPORT const char* mangoInChI(const char* molecule, int molecule_len, const cha
       QS_DEF(Molecule, target);
 
       MoleculeAutoLoader loader(scanner);
-
-      loader.treat_x_as_pseudoatom = self.bingo_context->treat_x_as_pseudoatom;
-      loader.ignore_closing_bond_direction_mismatch =
-         self.bingo_context->ignore_closing_bond_direction_mismatch;
+      self.bingo_context->setLoaderSettings(loader);
       loader.loadMolecule(target);
 
       IndigoInchi inchi;
