@@ -104,7 +104,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
    points.clear_resize(0);
 
    for (int rot = -length; rot <= length; rot++) {
-      for (int p = 0; p < 2; p++) {
+      for (int p = 1; p < 2; p++) {
          TriangleLattice& lat = answfld.getLattice(length, rot, p);
          for (int x = lat.getFirstValidX(); lat.isIncreaseForValidX(x); x++) {
             for (int y = lat.getFirstValidY(x); lat.isIncreaseForValidY(y); lat.switchNextY(y)) {
@@ -1064,7 +1064,6 @@ void MoleculeLayoutMacrocyclesLattice::smoothing(CycleLayout &cl) {
 
    Random rand(931170240);
    int iter_count = max(50 * length, 2000);
-   //iter_count = 0;
 
    double coef = SMOOTHING_MULTIPLIER;
    for (int i = 0; i < iter_count; i++) 
