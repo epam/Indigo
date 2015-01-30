@@ -135,6 +135,8 @@ public:
       ATTACHMENT_POINTS_ITER,
       DECOMPOSITION_MATCH,
       DECOMPOSITION_MATCH_ITER
+      CDX_LOADER,
+      CDX_SAVER
    };
 
    int type;
