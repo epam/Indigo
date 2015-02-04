@@ -551,6 +551,8 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             Array<char>& title = rp.titles.push();
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
+            else
+               title.appendString("", true);
 
 			if (rp.rOpt.mode == DINGO_MODE::MODE_CDXML) {
             if (rp.rOpt.cdxml_context.get() == NULL) {
@@ -587,6 +589,8 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             Array<char>& title = rp.titles.push();
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
+            else
+               title.appendString("", true);
             
             rp.rxns.top()->clone(objs[i]->getBaseReaction(), 0, 0, 0);
             rp.rmode = RENDER_RXN;
