@@ -541,6 +541,10 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
       rp.clearArrays();
 
       PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
+      if (rp.rOpt.cdxml_context.get() != NULL) {
+         RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
+         context.property_data.clear();
+      }
       if (IndigoBaseMolecule::is(*objs[0]))
       {
          for (int i = 0; i < objs.size(); ++i) {
@@ -553,23 +557,23 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
             
 
-			if (rp.rOpt.mode == DINGO_MODE::MODE_CDXML) {
-            if (rp.rOpt.cdxml_context.get() == NULL) {
-               rp.rOpt.cdxml_context.create();
-				}
-            RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
-            RenderCdxmlContext::PropertyData& data = context.property_data.push();
+            if (rp.rOpt.mode == DINGO_MODE::MODE_CDXML) {
+               if (rp.rOpt.cdxml_context.get() != NULL) {
 
-            RedBlackStringObjMap< Array<char> > *properties = objs[i]->getProperties();
-            if (properties != NULL) {
-               if (context.propertyNameCaption.size() >0 && context.propertyValueCaption.size()>0)
-               if (properties->find(context.propertyNameCaption.ptr())) {
-                  if (properties->find(context.propertyValueCaption.ptr())) {
-                     data.propertyName.readString(properties->at(context.propertyNameCaption.ptr()).ptr(), true);
-                     data.propertyValue.readString(properties->at(context.propertyValueCaption.ptr()).ptr(), true);
+                  RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
+                  RenderCdxmlContext::PropertyData& data = context.property_data.push();
+
+                  RedBlackStringObjMap< Array<char> > *properties = objs[i]->getProperties();
+                  if (properties != NULL) {
+                     if (context.propertyNameCaption.size() > 0 && context.propertyValueCaption.size() > 0)
+                     if (properties->find(context.propertyNameCaption.ptr())) {
+                        if (properties->find(context.propertyValueCaption.ptr())) {
+                           data.propertyName.readString(properties->at(context.propertyNameCaption.ptr()).ptr(), true);
+                           data.propertyValue.readString(properties->at(context.propertyValueCaption.ptr()).ptr(), true);
+                        }
+                     }
                   }
                }
-            }
             
 
 			}

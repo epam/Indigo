@@ -313,8 +313,8 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    
    Array<char> font_attr;
    ArrayOutput font_out(font_attr);
+   
    font_out.printf("<s size=\"%f\"", params.rOpt.titleFontFactor);
-
 
    if (params.rOpt.cdxml_context.get() != NULL) {
       RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
@@ -332,6 +332,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       }
    }
    font_out.printf(">");
+   font_attr.push(0);
 
    //if (params.rOtitleFont.size() > 0) {
    //   font_out.printf("id=\"5\" charset=\"iso-8859-1\" name=\"%s\"", params.cnvOpt.titleFont.ptr());
@@ -384,7 +385,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
                alignment_str = "Right";
 
             Vec2f title_offset(x, p.title_offset_y);
-            title_font.appendString(title.ptr(), false);
+            title_font.appendString(title.ptr(), true);
             title_font.appendString("</s>", true);
 
             saver.addCustomText(title_offset, alignment_str, params.rOpt.titleFontFactor, title_font.ptr());
