@@ -72,6 +72,11 @@ public class IndigoRenderer
          buf.dispose();
       }
    }
+   
+   public void renderResetSettings(){
+       _indigo.setSessionID();
+       _lib.indigoRenderReset();
+   }
 
    private static String getPathToBinary (String path, String filename)
    {
