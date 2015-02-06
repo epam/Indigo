@@ -272,10 +272,12 @@ namespace com.ggasoftware.indigo
         int indigoIterateRDF(int reader);
         int indigoIterateSmiles(int reader);
         int indigoIterateCML(int reader);
+        int indigoIterateCDX(int reader);
         int indigoIterateSDFile(string filename);
         int indigoIterateRDFile(string filename);
         int indigoIterateSmilesFile(string filename);
         int indigoIterateCMLFile(string filename);
+        int indigoIterateCDXFile(string filename);
         sbyte* indigoRawData(int item);
         int indigoTell(int item);
         int indigoSdfAppend(int output, int item);

@@ -72,7 +72,8 @@ bool IndigoBaseMolecule::is (IndigoObject &object)
 
    if (type == MOLECULE || type == QUERY_MOLECULE ||
        type == REACTION_MOLECULE || type == SCAFFOLD ||
-       type == RGROUP_FRAGMENT || type == RDF_MOLECULE || type == SMILES_MOLECULE || type == CML_MOLECULE)
+       type == RGROUP_FRAGMENT || type == RDF_MOLECULE || type == SMILES_MOLECULE || type == CML_MOLECULE ||
+       type == CDX_MOLECULE)
       return true;
 
    if (type == ARRAY_ELEMENT)

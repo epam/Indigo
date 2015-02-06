@@ -231,5 +231,62 @@ protected:
    Scanner  *_own_scanner;
 };
 
+namespace indigo
+{
+class MultipleCdxLoader;
+}
+
+class IndigoCdxMolecule : public IndigoRdfData
+{
+public:
+   IndigoCdxMolecule (Array<char> &data_, int index, int offset);
+   virtual ~IndigoCdxMolecule ();
+
+   virtual Molecule & getMolecule ();
+   virtual BaseMolecule & getBaseMolecule ();
+   virtual const char * getName ();
+   virtual IndigoObject * clone ();
+
+   virtual const char * debugInfo ();
+
+protected:
+   Molecule _mol;
+};
+
+class IndigoCdxReaction : public IndigoRdfData
+{
+public:
+   IndigoCdxReaction (Array<char> &data_, int index, int offset);
+   virtual ~IndigoCdxReaction ();
+
+   virtual Reaction & getReaction ();
+   virtual BaseReaction & getBaseReaction ();
+   virtual const char * getName ();
+   virtual IndigoObject * clone ();
+
+   virtual const char * debugInfo ();
+
+protected:
+   Reaction _rxn;
+};
+
+class IndigoMultipleCdxLoader : public IndigoObject
+{
+public:
+   IndigoMultipleCdxLoader (Scanner &scanner);
+   IndigoMultipleCdxLoader (const char *filename);
+   virtual ~IndigoMultipleCdxLoader ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+   IndigoObject * at (int index);
+
+   int tell ();
+
+   MultipleCdxLoader *loader;
+protected:
+   Scanner  *_own_scanner;
+};
 
 #endif

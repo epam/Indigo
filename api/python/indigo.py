@@ -1275,6 +1275,8 @@ class Indigo(object):
         Indigo._lib.indigoIterateSmiles.argtypes = [c_int]
         Indigo._lib.indigoIterateCML.restype = c_int
         Indigo._lib.indigoIterateCML.argtypes = [c_int]
+        Indigo._lib.indigoIterateCDX.restype = c_int
+        Indigo._lib.indigoIterateCDX.argtypes = [c_int]
         Indigo._lib.indigoIterateSDFile.restype = c_int
         Indigo._lib.indigoIterateSDFile.argtypes = [c_char_p]
         Indigo._lib.indigoIterateRDFile.restype = c_int
@@ -1283,6 +1285,8 @@ class Indigo(object):
         Indigo._lib.indigoIterateSmilesFile.argtypes = [c_char_p]
         Indigo._lib.indigoIterateCMLFile.restype = c_int
         Indigo._lib.indigoIterateCMLFile.argtypes = [c_char_p]
+        Indigo._lib.indigoIterateCDXFile.restype = c_int
+        Indigo._lib.indigoIterateCDXFile.argtypes = [c_char_p]
         Indigo._lib.indigoCreateSaver.restype = c_int
         Indigo._lib.indigoCreateSaver.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoCreateFileSaver.restype = c_int
@@ -1952,6 +1956,10 @@ class Indigo(object):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateCMLFile(filename.encode(ENCODE_ENCODING))))
 
+    def iterateCDXFile(self, filename):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateCDXFile(filename.encode(ENCODE_ENCODING))))
+
     def createFileSaver(self, filename, format):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateFileSaver(filename.encode(ENCODE_ENCODING), format.encode(ENCODE_ENCODING))))
@@ -2026,6 +2034,13 @@ class Indigo(object):
     def iterateCML(self, reader):
         self._setSessionId()
         result = self._checkResult(Indigo._lib.indigoIterateCML(reader.id))
+        if not result:
+            return None
+        return self.IndigoObject(self, result, reader)
+
+    def iterateCDX(self, reader):
+        self._setSessionId()
+        result = self._checkResult(Indigo._lib.indigoIterateCDX(reader.id))
         if not result:
             return None
         return self.IndigoObject(self, result, reader)

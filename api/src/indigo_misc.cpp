@@ -387,7 +387,9 @@ CEXPORT const char * indigoRawData (int handler)
           obj.type == IndigoObject::SMILES_MOLECULE ||
           obj.type == IndigoObject::SMILES_REACTION ||
           obj.type == IndigoObject::CML_MOLECULE ||
-          obj.type == IndigoObject::CML_REACTION)
+          obj.type == IndigoObject::CML_REACTION ||
+          obj.type == IndigoObject::CDX_MOLECULE ||
+          obj.type == IndigoObject::CDX_REACTION)
       {
          IndigoRdfData &data = (IndigoRdfData &)obj;
 
@@ -441,6 +443,13 @@ CEXPORT int indigoAt (int item, int index)
       else if (obj.type == IndigoObject::MULTILINE_SMILES_LOADER)
       {
          IndigoObject * newobj = ((IndigoMultilineSmilesLoader &)obj).at(index);
+         if (newobj == 0)
+            return 0;
+         return self.addObject(newobj);
+      }
+      else if (obj.type == IndigoObject::MULTIPLE_CDX_LOADER)
+      {
+         IndigoObject * newobj = ((IndigoMultipleCdxLoader &)obj).at(index);
          if (newobj == 0)
             return 0;
          return self.addObject(newobj);

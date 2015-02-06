@@ -332,11 +332,13 @@ public interface IndigoLib extends Library
    int indigoIterateRDF    (int reader);
    int indigoIterateSmiles (int reader);
    int indigoIterateCML    (int reader);
+   int indigoIterateCDX    (int reader);
 
    int indigoIterateSDFile     (String filename);
    int indigoIterateRDFile     (String filename);
    int indigoIterateSmilesFile (String filename);
    int indigoIterateCMLFile    (String filename);
+   int indigoIterateCDXFile    (String filename);
 
    Pointer indigoRawData (int item);
    int indigoTell (int handle);

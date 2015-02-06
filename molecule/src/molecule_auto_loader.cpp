@@ -24,6 +24,7 @@
 #include "gzip/gzip_scanner.h"
 #include "molecule/molecule_cml_loader.h"
 #include "molecule/sdf_loader.h"
+#include "molecule/molecule_cdx_loader.h"
 
 using namespace indigo;
 
@@ -255,6 +256,19 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       return;
    }
 
+
+   // check for CDX format
+/*
+   {
+      if (_scanner->findWord("VjCD0100"))
+      {
+         MoleculeCdxLoader loader(*_scanner);
+         loader.stereochemistry_options = stereochemistry_options;
+         loader.loadMolecule(mol.asMolecule());
+         return;
+      }
+   }
+*/
    // default is Molfile format
    {
       SdfLoader sdf_loader(*_scanner);

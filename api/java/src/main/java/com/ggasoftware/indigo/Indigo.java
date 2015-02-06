@@ -633,6 +633,11 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, _lib.indigoIterateCMLFile(filename)));
     }
 
+    public IndigoObject iterateCDXFile(String filename) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, _lib.indigoIterateCDXFile(filename)));
+    }
+
     public IndigoObject substructureMatcher(IndigoObject target, String mode) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, target, _lib.indigoSubstructureMatcher(target.self, mode)), target);
@@ -792,6 +797,15 @@ public class Indigo {
     public IndigoObject iterateCML(IndigoObject reader) {
         setSessionID();
         int result = checkResult(this, _lib.indigoIterateCML(reader.self));
+        if (result == 0)
+            return null;
+
+        return new IndigoObject(this, result, reader);
+    }
+
+    public IndigoObject iterateCDX(IndigoObject reader) {
+        setSessionID();
+        int result = checkResult(this, _lib.indigoIterateCDX(reader.self));
         if (result == 0)
             return null;
 
