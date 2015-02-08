@@ -52,6 +52,13 @@ public:
 
 protected:
 
+   struct _ExtConnection
+   {
+      int bond_id;
+      int point_id;
+      int atom_id;
+   };
+
    struct _NodeDesc
    {
       int id;
@@ -69,6 +76,7 @@ protected:
       int y;
       int z;
       int index;
+      Array<_ExtConnection> connections;
    };
 
    struct _BondDesc
@@ -98,6 +106,7 @@ protected:
 
    void _checkHeader ();
    void _loadMolecule ();
+   void _updateConnectionPoint (int point_id, int atom_id);
    void _postLoad ();
    void _readFragment (UINT32 fragmment_id);
    void _readNode (UINT32 node_id);
@@ -110,6 +119,8 @@ protected:
    int _getRadical ();
    int _getBondType ();
    int _getBondDirection (bool &swap_bond);
+   void _getBondOrdering (int size, Array<_ExtConnection> &cons);
+   void _getConnectionOrder (int size, Array<_ExtConnection> &cons);
 
    Molecule      *_mol;
    BaseMolecule  *_bmol;

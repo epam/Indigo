@@ -179,13 +179,64 @@ void MoleculeCdxLoader::_loadMolecule ()
       }
       else if (_nodes[_atom_mapping.at(_bonds[i].beg)].type == kCDXNodeType_ExternalConnectionPoint)
       {
+         _updateConnectionPoint(_bonds[i].beg, _bonds[i].end);
       }
       else if (_nodes[_atom_mapping.at(_bonds[i].end)].type == kCDXNodeType_ExternalConnectionPoint)
       {
+         _updateConnectionPoint(_bonds[i].end, _bonds[i].beg);
+      }
+      else if (_nodes[_atom_mapping.at(_bonds[i].beg)].type == kCDXNodeType_Fragment) 
+      {
+         int beg = 0;
+         int end = 0;
+
+         for (int j = 0; j < _nodes[_atom_mapping.at(_bonds[i].beg)].connections.size(); j++)
+         {
+            if (_nodes[_atom_mapping.at(_bonds[i].beg)].connections[j].bond_id == _bonds[i].id)
+            {
+               beg = _nodes[_atom_mapping.at(_bonds[i].beg)].connections[j].atom_id;
+               break;
+            }
+         }
+         for (int j = 0; j < _nodes[_atom_mapping.at(_bonds[i].end)].connections.size(); j++)
+         {
+            if (_nodes[_atom_mapping.at(_bonds[i].end)].connections[j].bond_id == _bonds[i].id)
+            {
+               end = _nodes[_atom_mapping.at(_bonds[i].end)].connections[j].atom_id;
+               break;
+            }
+         }
+
+         if (beg != 0 && end != 0)
+         {
+            _bonds[i].index = _mol->addBond_Silent(_nodes[_atom_mapping.at(beg)].index,
+                                                   _nodes[_atom_mapping.at(end)].index, _bonds[i].type);
+            if (_bonds[i].dir > 0)
+               _bmol->setBondDirection(_bonds[i].index, _bonds[i].dir);
+         }
       }
    }
 
    _postLoad();
+}
+
+void MoleculeCdxLoader::_updateConnectionPoint (int point_id, int atom_id)
+{
+   for (int i = 0; i < _nodes.size(); i++)
+   {
+      if (_nodes[i].type == kCDXNodeType_Fragment)
+      {
+         for (int j = 0; j < _nodes[i].connections.size(); j++)
+         {
+
+            if (_nodes[i].connections[j].point_id == point_id)
+            {
+               _nodes[i].connections[j].atom_id = atom_id;
+               break;
+            }
+         }
+      }
+   }
 }
 
 void MoleculeCdxLoader::_postLoad ()
@@ -245,7 +296,17 @@ void MoleculeCdxLoader::_readFragment (UINT32 fragment_id)
       else
       {
          size = _scanner->readBinaryWord();
-         _scanner->seek (size, SEEK_CUR);
+         _NodeDesc *node = 0;
+         switch (tag)
+         {
+            case kCDXProp_Frag_ConnectionOrder:
+              node = &_nodes.top();
+              _getConnectionOrder(size, node->connections);
+              break;
+            default:
+              _scanner->seek (size, SEEK_CUR);
+              break;
+         }
       }
       if (level == 0)
          return;
@@ -329,6 +390,9 @@ void MoleculeCdxLoader::_readNode (UINT32 node_id)
             case kCDXProp_Atom_Radical:
               node.radical = _getRadical();
               break;
+            case kCDXProp_Atom_BondOrdering:
+              _getBondOrdering(size, node.connections);
+              break;
 //            case kCDXProp_Atom_EnhancedStereoType:
 //              node.enchanced_stereo = _scanner->readByte();
 //            case kCDXProp_Atom_EnhancedStereoGroupNum:
@@ -347,7 +411,6 @@ void MoleculeCdxLoader::_readNode (UINT32 node_id)
             case kCDXProp_ZOrder:
             case kCDXProp_Atom_GenericNickname:
             case kCDXProp_Atom_Geometry:
-            case kCDXProp_Atom_BondOrdering:
             case kCDXProp_Node_LabelDisplay:
             case kCDXProp_LabelStyle:
             case kCDXProp_ForegroundColor:
@@ -364,8 +427,6 @@ void MoleculeCdxLoader::_readNode (UINT32 node_id)
          switch (node.type)
          {
             case kCDXNodeType_Fragment:
-              break;
-            case kCDXNodeType_ExternalConnectionPoint:
               break;
             case kCDXNodeType_Element:
               break;
@@ -408,6 +469,36 @@ int MoleculeCdxLoader::_getRadical ()
    return _scanner->readByte();
 }
 
+void MoleculeCdxLoader::_getBondOrdering(int size, Array<_ExtConnection> &connections)
+{
+   int nbonds = size/sizeof(UINT32);
+   connections.clear();
+
+   for (int i = 0; i < nbonds; i++)
+   {
+      _ExtConnection &conn = connections.push();
+      conn.bond_id = _scanner->readBinaryDword();
+      conn.point_id = 0;
+      conn.atom_id = 0;
+   }
+}
+
+void MoleculeCdxLoader::_getConnectionOrder(int size, Array<_ExtConnection> &connections)
+{
+   int npoints = size/sizeof(UINT32);
+
+   if (npoints != connections.size() )
+   {
+      _scanner->seek (size, SEEK_CUR);
+      return;
+   }
+
+   for (int i = 0; i < npoints; i++)
+   {
+      connections[i].point_id = _scanner->readBinaryDword();
+   }
+}
+
 void MoleculeCdxLoader::_readBond (UINT32 bond_id)
 {
    UINT16 tag;
@@ -418,6 +509,7 @@ void MoleculeCdxLoader::_readBond (UINT32 bond_id)
 
    _BondDesc &bond = _bonds.push();
    memset(&bond, 0, sizeof(_BondDesc));
+   bond.id = bond_id;
    bond.type = BOND_SINGLE;
 
    while (!_scanner->isEOF())
