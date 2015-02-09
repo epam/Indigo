@@ -14,6 +14,7 @@
 
 #include "molecule/multiple_cdx_loader.h"
 #include "base_cpp/scanner.h"
+#include "base_cpp/output.h"
 
 typedef unsigned short int UINT16;
 typedef int INT32;
@@ -29,9 +30,14 @@ CP_DEF(MultipleCdxLoader);
 MultipleCdxLoader::MultipleCdxLoader (Scanner &scanner) :
 CP_INIT,
 TL_CP_GET(data),
+TL_CP_GET(properties),
 TL_CP_GET(_offsets),
+TL_CP_GET(_latest_text),
 _scanner(scanner)
 {
+   data.clear();
+   properties.clear();
+
    _current_number = 0;
    _max_offset = 0;
    _offsets.clear();
@@ -47,6 +53,8 @@ void MultipleCdxLoader::readNext ()
 {
    int beg;
    int size;
+
+   properties.clear();
 
    bool found = _findObject(beg, size);
 
@@ -144,6 +152,7 @@ bool MultipleCdxLoader::_findObject (int &beg, int &length)
    int fragment_pos = -1;
    int reaction_pos = -1;
 
+   _latest_text.clear();
    _checkHeader();
 
    UINT16 tag;
@@ -164,13 +173,13 @@ bool MultipleCdxLoader::_findObject (int &beg, int &length)
          {
             level_found = level;
             reaction_pos = _scanner.tell() - sizeof(tag) - sizeof(id);
-            _skipObject();
+            _getObject();
          }
          else if (tag == kCDXObj_Fragment)
          {
             level_found = level;
             fragment_pos = _scanner.tell() - sizeof(tag) - sizeof(id);
-            _skipObject();
+            _getObject();
          }
          else 
          {
@@ -212,6 +221,82 @@ bool MultipleCdxLoader::_findObject (int &beg, int &length)
 
    _scanner.seek(pos_saved, SEEK_SET);
    return false;
+}
+
+void MultipleCdxLoader::_getObject ()
+{
+   UINT16 tag;
+   UINT16 size;
+   UINT32 id;
+
+   QS_DEF(Array<char>, name);
+   QS_DEF(Array<char>, value);
+   name.clear();
+   value.clear();
+   int type = 0;
+
+   int level = 1;
+
+   while (!_scanner.isEOF())
+   {
+      tag = _scanner.readBinaryWord();
+
+      if (tag & kCDXTag_Object)
+      {
+         id = _scanner.readBinaryDword();
+         if (tag == kCDXObj_Text)
+         {
+            _getObject();
+            level--;
+         }
+         else if((tag == kCDXObj_ObjectTag))
+         {
+            _getObject();
+            level--;
+         }
+         else
+            _skipObject();
+      }
+      else if (tag == 0)
+      {
+         level--;
+      }
+      else
+      {
+         size = _scanner.readBinaryWord();
+         switch (tag)
+         {
+            case kCDXProp_Text:
+              _getString(size, _latest_text);
+              break;
+            case kCDXProp_Name:
+              _getString(size, name);
+              break;
+            case kCDXProp_ObjectTag_Value:
+              _getValue(type, size, value);
+              break;
+            case kCDXProp_ObjectTag_Type:
+              type = _scanner.readBinaryWord();
+              break;
+            default:
+              _scanner.seek (size, SEEK_CUR);
+              break;
+         }
+      }
+      if (level == 0)
+      {
+         if (name.size() > 0)
+         {
+            int idx = properties.findOrInsert(name.ptr());
+            if (value.size() > 0)
+               properties.value(idx).copy(value);
+            else if (_latest_text.size() > 0)
+               properties.value(idx).copy(_latest_text);
+               _latest_text.clear();
+         }
+         return;
+      }
+   }
 }
 
 void MultipleCdxLoader::_skipObject ()
@@ -263,4 +348,50 @@ void MultipleCdxLoader::_checkHeader ()
    {
       _scanner.seek(pos_saved, SEEK_SET);
    }
+}
+
+void MultipleCdxLoader::_getString (int size, Array<char> &buf)
+{
+   UINT16 flag = 0;
+
+   if (size < 3)
+   {
+      _scanner.seek (size, SEEK_CUR);
+   }
+   else
+   {
+      flag = _scanner.readBinaryWord();
+      if (flag == 0)
+         _scanner.read(size-sizeof(flag), buf);
+      else
+         _scanner.seek (flag*10, SEEK_CUR);
+         _scanner.read(size-sizeof(flag)-flag*10, buf);
+   }
+   return;
+}
+
+void MultipleCdxLoader::_getValue (int type, int size, Array<char> &buf)
+{
+   double dval;
+   int    ival;
+   ArrayOutput output(buf);
+
+   switch (type)
+   {
+      case kCDXObjectTagType_Double:
+        _scanner.read(sizeof(dval), &dval);
+        output.printf("%f", dval);
+        break;
+      case kCDXObjectTagType_Long:
+        _scanner.read(sizeof(ival), &ival);
+        output.printf("%d", ival);
+        break;
+      case kCDXObjectTagType_String:
+        _scanner.read(size, buf);
+        break;
+      default:
+        _scanner.seek (size, SEEK_CUR);
+        break;
+   }
+   return;
 }

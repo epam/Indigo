@@ -264,7 +264,12 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       {
          MoleculeCdxLoader loader(*_scanner);
          loader.stereochemistry_options = stereochemistry_options;
+         if (query)
+            throw Error("CDX queries not supported yet");
          loader.loadMolecule(mol.asMolecule());
+
+         properties.copy(loader.properties);
+
          return;
       }
    }

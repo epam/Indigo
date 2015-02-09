@@ -26,6 +26,7 @@ CP_DEF(MoleculeCdxLoader);
 
 MoleculeCdxLoader::MoleculeCdxLoader (Scanner &scanner) :
 CP_INIT,
+TL_CP_GET(properties),
 TL_CP_GET(_nodes),
 TL_CP_GET(_bonds),
 TL_CP_GET(_stereo_care_atoms),

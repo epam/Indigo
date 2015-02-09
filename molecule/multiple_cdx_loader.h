@@ -43,9 +43,11 @@ public:
 
    CP_DECL;
    TL_CP_DECL(Array<char>, data);
+   TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
 
 protected:
    TL_CP_DECL(Array<int>, _offsets);
+   TL_CP_DECL(Array<char>, _latest_text);
    Scanner &_scanner;
    int _current_number;
    int _max_offset;
@@ -55,6 +57,9 @@ protected:
    bool _findObject (int &beg, int &length);
    bool _hasNextObject ();
    void _skipObject ();
+   void _getObject ();
+   void _getString (int size, Array<char> &str);
+   void _getValue (int type, int size, Array<char> &str);
 };
 
 }

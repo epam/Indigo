@@ -239,7 +239,7 @@ class MultipleCdxLoader;
 class IndigoCdxMolecule : public IndigoRdfData
 {
 public:
-   IndigoCdxMolecule (Array<char> &data_, int index, int offset);
+   IndigoCdxMolecule (Array<char> &data_, RedBlackStringObjMap< Array<char> > &properties, int index, int offset);
    virtual ~IndigoCdxMolecule ();
 
    virtual Molecule & getMolecule ();
@@ -256,7 +256,7 @@ protected:
 class IndigoCdxReaction : public IndigoRdfData
 {
 public:
-   IndigoCdxReaction (Array<char> &data_, int index, int offset);
+   IndigoCdxReaction (Array<char> &data_, RedBlackStringObjMap< Array<char> > &properties, int index, int offset);
    virtual ~IndigoCdxReaction ();
 
    virtual Reaction & getReaction ();

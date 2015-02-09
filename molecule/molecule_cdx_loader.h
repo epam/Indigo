@@ -50,6 +50,9 @@ public:
 
    const float COORD_COEF = 1.0/1857710.0;
 
+   CP_DECL;
+   TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
+
 protected:
 
    struct _ExtConnection
@@ -93,7 +96,6 @@ protected:
 
    Scanner *_scanner;
 
-   CP_DECL;
    TL_CP_DECL(Array<_NodeDesc>, _nodes);
    TL_CP_DECL(Array<_BondDesc>, _bonds);
 
