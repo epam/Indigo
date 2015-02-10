@@ -247,12 +247,14 @@ void MultipleCdxLoader::_getObject ()
          if (tag == kCDXObj_Text)
          {
             _getObject();
-            level--;
          }
          else if((tag == kCDXObj_ObjectTag))
          {
             _getObject();
-            level--;
+         }
+         else if((tag == 0x802b))
+         {
+            _getObject();
          }
          else
             _skipObject();
@@ -278,6 +280,12 @@ void MultipleCdxLoader::_getObject ()
             case kCDXProp_ObjectTag_Type:
               type = _scanner.readBinaryWord();
               break;
+            case 0x1500:
+              _getString(size, name);
+              break;
+            case 0x1501:
+              _getString(size, value);
+              break;
             default:
               _scanner.seek (size, SEEK_CUR);
               break;
@@ -291,8 +299,10 @@ void MultipleCdxLoader::_getObject ()
             if (value.size() > 0)
                properties.value(idx).copy(value);
             else if (_latest_text.size() > 0)
+            {
                properties.value(idx).copy(_latest_text);
                _latest_text.clear();
+            }
          }
          return;
       }
@@ -354,6 +364,9 @@ void MultipleCdxLoader::_getString (int size, Array<char> &buf)
 {
    UINT16 flag = 0;
 
+   buf.clear_resize(size);
+   buf.zerofill();
+
    if (size < 3)
    {
       _scanner.seek (size, SEEK_CUR);
@@ -364,8 +377,10 @@ void MultipleCdxLoader::_getString (int size, Array<char> &buf)
       if (flag == 0)
          _scanner.read(size-sizeof(flag), buf);
       else
+      {
          _scanner.seek (flag*10, SEEK_CUR);
          _scanner.read(size-sizeof(flag)-flag*10, buf);
+      }
    }
    return;
 }
