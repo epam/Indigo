@@ -19,7 +19,7 @@
 typedef unsigned short int UINT16;
 typedef int INT32;
 typedef unsigned int UINT32;
-#include "third_party/cdx/CDXconstants.h"
+#include "molecule/CDXconstants.h"
 
 using namespace indigo;
 
