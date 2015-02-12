@@ -41,6 +41,8 @@ public:
    // Save InChI code to the output
    void outputInChI (Molecule &mol);
 
+   static void getCanonicalOrdering(Molecule &mol, Array<int> &mapping);
+
    DECL_ERROR;
 
 private:
@@ -71,7 +73,7 @@ private:
 
    void _printInChIComponentCisTrans (MoleculeInChICompoment &comp, Array<char> &result);
 
-   void _normalizeMolecule (Molecule &mol);
+   static void _normalizeMolecule (Molecule &mol);
 
    Output &_output;                                                                    
 

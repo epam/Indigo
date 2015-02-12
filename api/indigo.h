@@ -572,6 +572,7 @@ CEXPORT float indigoMonoisotopicMass (int molecule);
 
 CEXPORT const char * indigoCanonicalSmiles (int molecule);
 CEXPORT const char * indigoLayeredCode (int molecule);
+CEXPORT const char * indigoSmth(int molecule, const char *inchiCode);
 
 CEXPORT const int * indigoSymmetryClasses (int molecule, int *count_out);
 
@@ -811,6 +812,10 @@ CEXPORT int indigoMapBond (int handle, int bond);
 // value is zero.
 //   You can use indigoIndex() to obtain the index of the returned molecule.
 CEXPORT int indigoMapMolecule (int handle, int molecule);
+
+// Accepts a molecule and InChI code for this molecule
+// Returns an iterator object over the molecules that are tautomers of this molecule.
+CEXPORT int indigoTautomerEnumerate (int molecule, const char *params);
 
 /* Scaffold detection */
 

@@ -140,7 +140,9 @@ public:
       MULTIPLE_CDX_LOADER,
       CDX_SAVER,
       SGROUP,
-      SGROUPS_ITER
+      SGROUPS_ITER,
+      TAUTOMER_ITER,
+      TAUTOMER_MOLECULE
    };
 
    int type;
