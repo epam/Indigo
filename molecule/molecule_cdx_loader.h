@@ -23,7 +23,7 @@
 typedef unsigned short int UINT16;
 typedef int INT32;
 typedef unsigned int UINT32;
-#include "molecule/CDXconstants.h"
+#include "molecule/CDXConstants.h"
 
 #ifdef _WIN32
 #pragma warning(push)
