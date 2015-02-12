@@ -110,7 +110,7 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
 
       for (int i = 0; i < out_reactions.size(); i++)
       {
-         if (has_coord)
+         if (has_coord && self.rpe_params.is_layout)
          {
             ReactionLayout layout(out_reactions[i]);
             layout.make();
@@ -137,7 +137,7 @@ CEXPORT int indigoTransform (int reaction, int monomers)
 
       ReactionTransformation rt;
       rt.arom_options = self.arom_options;
-      rt.layout_flag = self.rpe_params.is_layout;
+      rt.layout_flag = self.rpe_params.transform_is_layout;
 
       // Try to work with molecule first
       bool is_mol = false;
@@ -214,6 +214,12 @@ void indigoProductEnumeratorSetLayoutFlag (int layout_flag)
    self.rpe_params.is_layout = (layout_flag != 0);
 }
 
+void indigoProductEnumeratorSetTransformLayoutFlag (int transform_layout_flag)
+{
+   Indigo &self = indigoGetInstance();
+   self.rpe_params.transform_is_layout = (transform_layout_flag != 0);
+}
+
 
 class _IndigoRPEOptionsHandlersSetter
 {
@@ -232,7 +238,8 @@ _IndigoRPEOptionsHandlersSetter::_IndigoRPEOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("rpe-self-reaction", indigoProductEnumeratorSetSelfReactionFlag);
    mgr.setOptionHandlerInt("rpe-max-depth", indigoProductEnumeratorSetMaximumSearchDepth);
    mgr.setOptionHandlerInt("rpe-max-products-count", indigoProductEnumeratorSetMaximumProductsCount);
-   mgr.setOptionHandlerBool("transform-layout", indigoProductEnumeratorSetLayoutFlag);
+   mgr.setOptionHandlerBool("rpe-layout", indigoProductEnumeratorSetLayoutFlag);
+   mgr.setOptionHandlerBool("transform-layout", indigoProductEnumeratorSetTransformLayoutFlag);
 }
 
 _IndigoRPEOptionsHandlersSetter _indigo_rpe_options_handlers_setter;
