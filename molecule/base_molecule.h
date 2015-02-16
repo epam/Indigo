@@ -112,6 +112,7 @@ public:
       virtual ~Superatom ();
 
       Array<char> subscript; // SMT in Molfile format
+      Array<char> sa_class;  // SCL in Molfile format
       int   bond_idx;        // bond index (-1 if absent); SBV in Molfile format
       Vec2f bond_dir;        // bond direction
    };
