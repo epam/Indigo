@@ -1102,6 +1102,19 @@ void MolfileLoader::_readCtab2000 ()
             else
                _scanner.skipLine();
          }
+         else if (strncmp(chars, "SCL", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SUP)
+            {
+               _scanner.skip(1);
+               BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+               _scanner.readLine(sup.sa_class, true);
+            }
+            else
+               _scanner.skipLine();
+         }
          else if (strncmp(chars, "SBV", 3) == 0)
          {
             _scanner.skip(1);
@@ -2919,6 +2932,19 @@ void MolfileLoader::_readSGroup3000 (const char *str)
             sup->subscript.push(0);
          if (sru != 0)
             sru->subscript.push(0);
+      }
+      else if (strcmp(entity.ptr(), "CLASS") == 0)
+      {
+         while (!scanner.isEOF())
+         {
+            char c = scanner.readChar();
+            if (c == ' ')
+               break;
+            if (sup != 0)
+               sup->sa_class.push(c);
+         }
+         if (sup != 0)
+            sup->sa_class.push(0);
       }
       else if (strcmp(entity.ptr(), "SAP") == 0)
       {

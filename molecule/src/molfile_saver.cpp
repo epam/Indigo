@@ -687,6 +687,8 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             out.printf(" XBONDS=(1 %d)", _bond_mapping[mol.superatoms[i].bond_idx]);
          if (mol.superatoms[i].subscript.size() > 1)
             out.printf(" LABEL=%s", mol.superatoms[i].subscript.ptr());
+         if (mol.superatoms[i].sa_class.size() > 1)
+            out.printf(" CLASS=%s", mol.superatoms[i].sa_class.ptr());
          out.printf(" ESTATE=E");
          _writeMultiString(output, buf.ptr(), buf.size());
       }
@@ -1341,6 +1343,8 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
 
             if (superatom.subscript.size() > 1)
                output.printfCR("M  SMT %3d %s", i + 1, superatom.subscript.ptr());
+            if (superatom.sa_class.size() > 1)
+               output.printfCR("M  SCL %3d %s", i + 1, superatom.sa_class.ptr());
             if (superatom.bond_idx >= 0)
             {
                output.printfCR("M  SBV %3d %3d %9.4f %9.4f", i + 1,
