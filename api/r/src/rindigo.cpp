@@ -13,13 +13,98 @@
 
 extern "C"
 {
-   SEXP version()
+   static void _setStringToSTRSXP(SEXP *result, const char *str)
+   {
+      if (str != NULL) 
+         SET_STRING_ELT(*result, 0, mkChar(str));
+      else
+         SET_STRING_ELT(*result, 0, NA_STRING);
+   }
+   
+   SEXP r_indigoVersion()
    {
       SEXP result = PROTECT(allocVector(STRSXP, 1));
-      SET_STRING_ELT(result, 0, mkChar(indigoVersion()));
+      _setStringToSTRSXP(&result, indigoVersion());
       UNPROTECT(1);
       return result;
    }
+   
+   SEXP r_indigoGetLastError()
+   {
+      SEXP result = PROTECT(allocVector(STRSXP, 1));
+      _setStringToSTRSXP(&result, indigoGetLastError());
+      UNPROTECT(1);
+      return result;
+   }
+   
+   SEXP r_indigoAllocSessionId()
+   {
+      SEXP result = PROTECT(allocVector(INTSXP, 1));
+      INTEGER(result)[0] = indigoAllocSessionId();
+      UNPROTECT(1);
+      return result;
+   }
+      
+   void r_indigoSetSessionId(SEXP id)
+   {
+      indigoSetSessionId(INTEGER(id)[0]);
+   }
+   
+   void r_indigoReleaseSessionId(SEXP id)
+   {
+      indigoReleaseSessionId(INTEGER(id)[0]);
+   }
+   
+   void r_indigoFree(SEXP obj_id)
+   {
+      indigoFree(INTEGER(obj_id)[0]);
+   }
+
+   SEXP r_indigoLoadMolecule(SEXP data)
+   {
+      SEXP result = PROTECT(allocVector(INTSXP, 1));
+      INTEGER(result)[0] = indigoLoadMoleculeFromString(CHAR(STRING_ELT(data, 0)));
+      UNPROTECT(1);
+      return result;
+   }
+   
+   SEXP r_indigoLoadQueryMolecule(SEXP data)
+   {
+      SEXP result = PROTECT(allocVector(INTSXP, 1));
+      INTEGER(result)[0] = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(data, 0)));
+      UNPROTECT(1);
+      return result;
+   }
+   
+   SEXP r_indigoCanonicalSmiles(SEXP mol)
+   {
+      const char *con_smiles = indigoCanonicalSmiles(INTEGER(mol)[0]);
+      
+      SEXP result = PROTECT(allocVector(STRSXP, 1));
+      _setStringToSTRSXP(&result, con_smiles);
+         
+      UNPROTECT(1);
+      return result;
+   }
+   
+   SEXP r_indigoFingerprint(SEXP mol, SEXP mode)
+   {
+      SEXP result = PROTECT(allocVector(INTSXP, 1));
+      INTEGER(result)[0] = indigoFingerprint(INTEGER(mol)[0], CHAR(STRING_ELT(mode, 0)));
+      UNPROTECT(1);
+      return result;
+   }
+   
+   SEXP r_indigoMolecularWeight(SEXP mol)
+   {
+      SEXP result = PROTECT(allocVector(REALSXP, 1));
+      REAL(result)[0] = indigoMolecularWeight(INTEGER(mol)[0]);
+      UNPROTECT(1);
+      return result;
+   }
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
    SEXP canonicalSmiles(SEXP data)
    {

@@ -1,5 +1,102 @@
+checkResult = function(result){
+  if (result < 0) {
+    stop(.Call("r_indigoGetLastError"))
+  }
+  return(result)
+}
+
+checkResultFloat = function(result){
+  if (result < -0.5) {
+      stop(.Call("r_indigoGetLastError"))
+  }
+  return(result)
+}
+
+checkResultPtr = function(result){
+  if (is.na(result)) {
+      stop(.Call("r_indigoGetLastError"))
+  }
+  return(result)
+}
+
+Indigo = setRefClass(
+            Class = "Indigo",
+            fields = list(id = "numeric"))
+            
+Indigo$methods(
+initialize = function(){
+  id<<-(.Call("r_indigoAllocSessionId"))
+})
+
+Indigo$methods(
+setSession = function(){
+  .Call("r_indigoSetSessionId", id)
+})
+
+Indigo$methods(
+  version = function(){
+    setSession()
+    return(checkResultPtr(.Call("r_indigoVersion")));
+})
+
+Indigo$methods(
+  finalize = function(){
+    .Call("r_indigoReleaseSessionId", id)
+})
+
+Indigo$methods(
+  loadMolecule = function(data){
+    setSession()
+    obj_id = checkResult(.Call("r_indigoLoadMolecule",  data))
+    return(IndigoObject$new(id, obj_id))
+  })
+  
+Indigo$methods(
+  loadQueryMolecule = function(data){
+    setSession()
+    obj_id = checkResult(.Call("r_indigoLoadQueryMolecule",  data))
+    return(IndigoObject$new(id, obj_id))
+  })
+
+IndigoObject = setRefClass(
+                 Class = "IndigoObject",
+                 fields = list(indigo_id = "numeric", obj_id = "numeric"))
+
+IndigoObject$methods(
+  initialize = function(new_indigo_id, new_obj_id){
+    indigo_id<<-new_indigo_id
+    obj_id<<-new_obj_id
+  })
+
+IndigoObject$methods(
+  canonicalSmiles = function(){
+    .Call("r_indigoSetSessionId", indigo_id)
+    return(checkResultPtr(.Call("r_indigoCanonicalSmiles", obj_id)))
+  })
+  
+IndigoObject$methods(
+  fingerprint = function(mode){
+    .Call("r_indigoSetSessionId", indigo_id)
+    return(checkResult(.Call("r_indigoFingerprint", obj_id, mode)))
+  })
+  
+IndigoObject$methods(
+  molecularWeight = function(){
+    .Call("r_indigoSetSessionId", indigo_id)
+    return(checkResult(.Call("r_indigoMolecularWeight", obj_id)))
+  })
+
+IndigoObject$methods(
+  finalize = function(){
+    .Call("r_indigoSetSessionId", indigo_id)
+    (checkResult(.Call("r_indigoFree", obj_id)))
+  })
+  
+#################################################################
+#################################################################
+  
 version <- function() {
-    .Call("version")
+    .Call("r_indigoVersion")
 }
 
 canonicalSmiles <- function(data) {
