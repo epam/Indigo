@@ -169,7 +169,7 @@ void MoleculeLayoutMacrocyclesLattice::calculate_rotate_length() {
    int max_value = -SHORT_INFINITY;
 
    for (int i = 0; i < length; i++) {
-      if (_edge_stereo[i] != 2) {
+      if ((_edge_stereo[i] != 2) && _vertex_stereo[(i + 1) % length]) {
          int value = 2 * _edge_stereo[i]
             + 2 * _vertex_weight[i] + 2 * _vertex_weight[(i + 1) % length]
             - _vertex_weight[(i + length - 1) % length] - _vertex_weight[(i + 2) % length];

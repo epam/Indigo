@@ -365,7 +365,6 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
 
 void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 {
-
    profTimerStart(t, "layout.prepearing");
 
    const int size = cycle.vertexCount();
@@ -1111,8 +1110,8 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
    segment_start.clear_resize(0);
    segment_start.fffill();
 
-   QS_DEF(Array<bool>, touch_to_currnet_component);
-   touch_to_currnet_component.clear_resize(cycle_size);
+   QS_DEF(Array<bool>, touch_to_current_component);
+   touch_to_current_component.clear_resize(cycle_size);
 
    QS_DEF(Array<int>, segment_component_number);
    segment_component_number.clear();
@@ -1120,16 +1119,15 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
    for (int i = 0; i < _layout_component_count; i++) if (layout_comp_touch[i]) {
 
       // search of vertices touch to i-th layout component
-      touch_to_currnet_component.zerofill();
+      touch_to_current_component.zerofill();
       for (int j = 0; j < cycle_size; j++) {
          const Vertex &vert = getVertex(cycle.getVertex(j));
          for (int nei = vert.neiBegin(); nei != vert.neiEnd(); nei = vert.neiNext(nei))
          if (getEdgeType(vert.neiEdge(nei)) != ELEMENT_NOT_DRAWN) {
             if (_layout_component_number[vert.neiEdge(nei)] == i)
-               touch_to_currnet_component[j] = true;
+               touch_to_current_component[j] = true;
          }
       }
-
 
       // search of start and finish of occupated segment of cycle
       // if there is at least two starts of finishes then it is separationg layout component
@@ -1137,16 +1135,16 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
       int finish = -1;
 
       for (int j = 0; j < cycle_size; j++)
-         if (touch_to_currnet_component[j] && _layout_component_number[cycle.getEdgeC(j - 1)] != i) {
-            if (start != -1) throw Exception("Separating layout component in cycle\n");
-            else start = j;
-         }
+         if (touch_to_current_component[j] && _layout_component_number[cycle.getEdgeC(j - 1)] != i) {
+               if (start != -1) throw Exception("Separating layout component in cycle\n");
+               else start = j;
+            }
 
       for (int j = 0; j < cycle_size; j++)
-         if (touch_to_currnet_component[j] && _layout_component_number[cycle.getEdge(j)] != i) {
-            if (finish != -1) throw Exception("Separating layout component in cycle\n");
-            else finish = j;
-         }
+         if (touch_to_current_component[j] && _layout_component_number[cycle.getEdge(j)] != i) {
+               if (finish != -1) throw Exception("Separating layout component in cycle\n");
+               else finish = j;
+            }
 
       if (start != finish) {
          segments_filter.push();
@@ -1162,17 +1160,17 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
    }
 
    for (int i = 0; i < cycle_size; i++)
-   if (_layout_component_number[cycle.getEdge(i)] < 0) {
+      if (_layout_component_number[cycle.getEdge(i)] < 0) {
 
-      segment_start.push(i);
+         segment_start.push(i);
 
-      segments_filter.push();
-      segments_filter.top().initNone(vertexEnd());
-      segments_filter.top().unhide(cycle.getVertex(i));
-      segments_filter.top().unhide(cycle.getVertexC(i + 1));
+         segments_filter.push();
+         segments_filter.top().initNone(vertexEnd());
+         segments_filter.top().unhide(cycle.getVertex(i));
+         segments_filter.top().unhide(cycle.getVertexC(i + 1));
 
-      segment_component_number.push(-1);
-   }
+         segment_component_number.push(-1);
+      }
 
    int segments_count = segments_filter.size();
 
@@ -1219,11 +1217,12 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
       if (segment[move_vertex]._graph.vertexCount() == 2 && segment[i]._graph.vertexCount() == 2) continue;
       bool interseced = false;
 
-      for (int v1 = segment[move_vertex]._graph.vertexBegin(); v1 != segment[move_vertex]._graph.vertexEnd() && !interseced; v1 = segment[move_vertex]._graph.vertexNext(v1))
-      for (int v2 = segment[i]._graph.vertexBegin(); v2 != segment[i]._graph.vertexEnd() && !interseced; v2 = segment[i]._graph.vertexNext(v2)) {
-         if ((move_vertex + 1) % segments_count == i && segment[move_vertex].is_finish(v1)) continue;
-         if ((i + 1) % segments_count == move_vertex && segment[i].is_finish(v2)) continue;
-         if (Vec2f::distSqr(segment[move_vertex].getPosition(v1), segment[i].getPosition(v2)) < min_dist * min_dist) interseced = true;
+      for (int v1 = segment[move_vertex]._graph.vertexBegin(); v1 != segment[move_vertex]._graph.vertexEnd() && !interseced; v1 = segment[move_vertex]._graph.vertexNext(v1)) {
+         for (int v2 = segment[i]._graph.vertexBegin(); v2 != segment[i]._graph.vertexEnd() && !interseced; v2 = segment[i]._graph.vertexNext(v2)) {
+            if ((move_vertex + 1) % segments_count == i && segment[move_vertex].is_finish(v1)) continue;
+            if ((i + 1) % segments_count == move_vertex && segment[i].is_finish(v2)) continue;
+            if (Vec2f::distSqr(segment[move_vertex].getPosition(v1), segment[i].getPosition(v2)) < min_dist * min_dist) interseced = true;
+         }
       }
 
       if (interseced) {
