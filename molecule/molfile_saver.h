@@ -74,6 +74,8 @@ protected:
    void _writeRGroup (Output &output, BaseMolecule &mol, int rg_idx);
    void _writeCtabHeader2000 (Output &output, BaseMolecule &mol);
    void _writeCtab2000 (Output &output, BaseMolecule &mol, bool query);
+   void _checkSGroupIndices3000 (BaseMolecule &mol);
+   void _checkSGroupIndices2000 (BaseMolecule &mol, Array<int> &sgroup_ids, Array<int> &sgroup_types);
    void _writeRGroupIndices2000 (Output &output, BaseMolecule &mol);
    void _writeAttachmentValues2000 (Output &output, BaseMolecule &fragment);
    void _writeGenericSGroup3000 (BaseMolecule::SGroup &sgroup, int idx, const char *type, Output &output);

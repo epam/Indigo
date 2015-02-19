@@ -83,9 +83,12 @@ public:
    class DLLEXPORT SGroup
    {
    public:
+      SGroup ();
       Array<int> atoms; // represented with SAL in Molfile format
       Array<int> bonds; // represented with SBL in Molfile format
       Array<Vec2f[2]> brackets;
+      int        original_group;
+      int        parent_group; // parent group number; represented with SPL in Molfile format 
       virtual ~SGroup ();
    };
 

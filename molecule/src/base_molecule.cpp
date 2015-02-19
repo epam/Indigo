@@ -973,6 +973,12 @@ int BaseMolecule::getAttachmentPoint (int order, int index) const
    return index < _attachment_index[order - 1].size() ? _attachment_index[order - 1][index] : -1;
 }
 
+BaseMolecule::SGroup::SGroup ()
+{
+   original_group = 0;
+   parent_group = 0;
+}
+
 BaseMolecule::SGroup::~SGroup ()
 {
 }
