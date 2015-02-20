@@ -188,6 +188,8 @@ public interface IndigoLib extends Library
 
    int indigoSetDataSGroupXY (int sgroup, float x, float y, String options);
 
+   int indigoAddSgroup (String type, int mapping, String name);
+
    int indigoResetCharge (int atom);
    int indigoResetExplicitValence (int atom);
    int indigoResetRadical (int atom);

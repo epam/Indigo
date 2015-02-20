@@ -2593,6 +2593,31 @@ CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *opt
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoCreateSgroup (const char *type, int mapping, const char *name)
+{
+   INDIGO_BEGIN
+   {
+      if (strcasecmp(type, "SUP") == 0)
+      {
+         IndigoMapping &map = IndigoMapping::cast(self.getObject(mapping));
+         BaseMolecule &mol = map.to;
+         BaseMolecule &temp = map.from;
+         Array<int> &m = map.mapping;
+         int idx = mol.superatoms.add();
+         BaseMolecule::Superatom &satom =  mol.superatoms.at(idx);
+         satom.subscript.appendString(name, true);
+         for (auto i : temp.vertices())
+         {
+           satom.atoms.push(m[i]);
+         }
+         return self.addObject(new IndigoSuperatom(mol, idx));
+      }
+      else
+         throw IndigoError("indigoCreateSgroup(): unknown Sgroup type");
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoCountHeavyAtoms (int molecule)
 {
    INDIGO_BEGIN

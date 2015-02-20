@@ -573,6 +573,12 @@ namespace com.ggasoftware.indigo
             return addSuperatom(Indigo.toIntArray(atoms), name);
         }
 
+        public IndigoObject createSgroup(String type, int mapping, String name)
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoCreateSgroup(type, mapping, name)));
+        }
+
         public void addStereocenter(int type, int v1, int v2, int v3)
         {
             addStereocenter(type, v1, v2, v3, -1);

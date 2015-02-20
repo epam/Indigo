@@ -34,6 +34,14 @@ IndigoObject * IndigoMapping::clone ()
    return res_ptr.release();
 }
 
+IndigoMapping & IndigoMapping::cast (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::MAPPING)
+      return (IndigoMapping &)obj;
+
+   throw IndigoError("%s is not a mapping", obj.debugInfo());
+}
+
 IndigoReactionMapping::IndigoReactionMapping (BaseReaction &from_, BaseReaction &to_) :
 IndigoObject(REACTION_MAPPING),
 from(from_),

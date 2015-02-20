@@ -506,6 +506,10 @@ class IndigoObject(object):
         options = '' if options is None else options
         return self.dispatcher._checkResult(Indigo._lib.indigoSetDataSGroupXY(self.id, x, y, options.encode(ENCODE_ENCODING)))
 
+    def createSgroup(self, sgtype, mapping, name):
+        self.dispatcher._setSessionId()
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoCreateSgroup(sgtype.encode(ENCODE_ENCODING), mapping.id, name.encode(ENCODE_ENCODING))))
+
     def resetCharge(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoResetCharge(self.id))
@@ -1481,6 +1485,8 @@ class Indigo(object):
         Indigo._lib.indigoAddSuperatom.argtypes = [c_int, c_int, POINTER(c_int), c_char_p]
         Indigo._lib.indigoSetDataSGroupXY.restype = c_int
         Indigo._lib.indigoSetDataSGroupXY.argtypes = [c_int, c_float, c_float, c_char_p]
+        Indigo._lib.indigoCreateSgroup.restype = c_int
+        Indigo._lib.indigoCreateSgroup.argtypes = [c_char_p, c_int, c_char_p]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int

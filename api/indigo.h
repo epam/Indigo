@@ -401,6 +401,8 @@ CEXPORT int indigoAddSuperatom (int molecule, int natoms, int *atoms, const char
 
 CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *options);
 
+CEXPORT int indigoCreateSgroup (const char *type, int mapping, const char *name);
+
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetIsotope (int atom);

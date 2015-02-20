@@ -987,6 +987,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
    }
 
+   public IndigoObject createSgroup (String type, int mapping, String name)
+   {
+      return createSgroup(type, mapping, name);
+   }
+
    public void addStereocenter (int type, int v1, int v2, int v3)
    {
       addStereocenter(type, v1, v2, v3, -1);
