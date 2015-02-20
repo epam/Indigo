@@ -2610,6 +2610,17 @@ CEXPORT int indigoCreateSgroup (const char *type, int mapping, const char *name)
          {
            satom.atoms.push(m[i]);
          }
+         
+         for (auto i : mol.edges())
+         {
+            const Edge &edge = mol.getEdge(i);
+            if (((satom.atoms.find(edge.beg) != -1) && (satom.atoms.find(edge.end) == -1)) ||
+                ((satom.atoms.find(edge.end) != -1) && (satom.atoms.find(edge.beg) == -1)))
+            {
+               satom.bonds.push(i);
+            }
+         }
+
          return self.addObject(new IndigoSuperatom(mol, idx));
       }
       else
