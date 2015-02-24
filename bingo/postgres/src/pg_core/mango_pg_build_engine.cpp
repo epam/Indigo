@@ -99,6 +99,31 @@ void MangoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
     * Process target
     */
    bingo_res = bingoIndexProcess(false, _getNextRecordCb, _processResultCb, _processErrorCb, this);
+   /*
+    * If error on structure, try to parse ids
+    */
+   if(bingo_res < 0) {
+      const char* mes = bingoGetError();
+      const char* ERR_MES = "ERROR ON id=";
+      const char* id_s = strstr(mes, ERR_MES);
+      if(id_s != NULL) {
+         BufferScanner sc(id_s);
+         sc.skip(strlen(ERR_MES));
+         int id_n = -1;
+         try {
+            id_n = sc.readInt();
+         } catch (Exception&) {
+         }
+         if (id_n < struct_caches.size() && id_n >= 0) {
+            ItemPointer item_ptr = &(struct_caches[id_n].ptr);
+            int block_number = ItemPointerGetBlockNumber(item_ptr);
+            int offset_number = ItemPointerGetOffsetNumber(item_ptr);
+            CORE_HANDLE_ERROR_TID_NO_INDEX(bingo_res, 0, "molecule build engine: error while processing records", block_number, offset_number, bingoGetError());
+         }
+       
+
+      }
+   }
    CORE_HANDLE_ERROR(bingo_res, 0, "molecule build engine: error while processing records", bingoGetError());
    _setBingoContext();
 }
