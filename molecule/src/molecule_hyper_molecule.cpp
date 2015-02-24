@@ -265,7 +265,7 @@ int HyperMolecule::getAtomMinH(int idx)
 
 int HyperMolecule::getAtomTotalH(int idx)
 {
-   throw 1;
+   throw Error("getAtomTotalH method has no sense for LayeredMolecules");
 }
 
 bool HyperMolecule::isPseudoAtom(int idx)
@@ -275,7 +275,7 @@ bool HyperMolecule::isPseudoAtom(int idx)
 
 const char * HyperMolecule::getPseudoAtom(int idx)
 {
-   throw 1;
+   return _proto.getPseudoAtom(idx);
 }
 
 bool HyperMolecule::isRSite(int idx)
@@ -290,18 +290,17 @@ dword HyperMolecule::getRSiteBits(int idx)
 
 void HyperMolecule::allowRGroupOnRSite(int atom_idx, int rg_idx)
 {
-   throw 1;
+   throw Error("allowRGroupOnRSite method is not implemented in LayeredMolecules class");
 }
 
 int HyperMolecule::getBondOrder(int idx)
 {
-   throw 2;
+   throw Error("getBondOrder method has no sense for LayeredMolecules");
 }
 
 int HyperMolecule::getBondTopology(int idx)
 {
-   throw 2;
-   return getEdgeTopology(idx);
+   throw Error("getBondTopology method is not implemented in LayeredMolecules class");
 }
 
 bool HyperMolecule::atomNumberBelongs(int idx, const int *numbers, int count)
@@ -341,22 +340,22 @@ void HyperMolecule::getAtomDescription(int idx, Array<char> &description)
 
 void HyperMolecule::getBondDescription(int idx, Array<char> &description)
 {
-   throw 2;
+   throw Error("getBondDescription method is not implemented in LayeredMolecules class");
 }
 
 bool HyperMolecule::possibleBondOrder(int idx, int order)
 {
-   throw 2;
+   throw Error("possibleBondOrder method has no sense for LayeredMolecules");
 }
 
 bool HyperMolecule::isSaturatedAtom(int idx)
 {
-   throw 2;
+   throw Error("isSaturatedAtom method is not implemented in LayeredMolecules class");
 }
 
 bool HyperMolecule::bondStereoCare(int idx)
 {
-   throw 2;
+   throw Error("bondStereoCare method is not implemented in LayeredMolecules class");
 }
 
 bool HyperMolecule::aromatize(const AromaticityOptions &options)
@@ -372,10 +371,10 @@ bool HyperMolecule::dearomatize(const AromaticityOptions &options)
 void HyperMolecule::_mergeWithSubmolecule(BaseMolecule &bmol, const Array<int> &vertices,
    const Array<int> *edges, const Array<int> &mapping, int skip_flags)
 {
-   throw 2;
+   throw Error("_mergeWithSubmolecule method is not implemented in LayeredMolecules class");
 }
 
 BaseMolecule * HyperMolecule::neu ()
 {
-   throw 1;
+   throw Error("neu method is not implemented in LayeredMolecules class");
 }

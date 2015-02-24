@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2013 GGA Software Services LLC
+ * Copyright (C) 2010-2015 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -12,7 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "indigo_inchi_core.h" 
+//#include "indigo_inchi_core_e.h" 
+#include "molecule/molecule_iupac_inchi_core.h" 
 
 #include "base_cpp/obj.h"
 #include "molecule/molecule.h"
@@ -40,7 +41,7 @@ namespace indigo
    };
 }
 
-IMPL_ERROR(IndigoInchi, "indigo-inchi")
+IMPL_ERROR(IndigoInchiEmbedded, "indigo-inchi-embedded")
 
 template<typename T>
 class InchiMemObject
@@ -66,17 +67,17 @@ private:
    DestructorT destructor;
 };
 
-const char* IndigoInchi::version ()
+const char* IndigoInchiEmbedded::version()
 {
 	return INCHI_NAME " version " INCHI_VERSION TARGET_ID_STRING;
 }
 
-IndigoInchi::IndigoInchi ()
+IndigoInchiEmbedded::IndigoInchiEmbedded()
 {
    clear();
 }
 
-void IndigoInchi::clear()
+void IndigoInchiEmbedded::clear()
 {
    options.clear();
    options.push(0);
@@ -86,7 +87,7 @@ void IndigoInchi::clear()
    auxInfo.clear();
 }
 
-void IndigoInchi::setOptions (const char *opt)
+void IndigoInchiEmbedded::setOptions(const char *opt)
 {
    options.readString(opt, true);
    // Replace '/' and '-' according to InChI manual:
@@ -115,10 +116,10 @@ static inchi_BondType getInchiBondType (int bond_order)
    case BOND_AROMATIC:
       return INCHI_BOND_TYPE_ALTERN;
    }
-   throw IndigoInchi::Error("unexpected bond order %d", bond_order);
+   throw IndigoInchiEmbedded::Error("unexpected bond order %d", bond_order);
 }
 
-void IndigoInchi::loadMoleculeFromAux (const char *aux, Molecule &mol)
+void IndigoInchiEmbedded::loadMoleculeFromAux(const char *aux, Molecule &mol)
 {
    // lock
    OsLocker locker(inchi_lock);
@@ -144,7 +145,7 @@ void IndigoInchi::loadMoleculeFromAux (const char *aux, Molecule &mol)
    parseInchiOutput(output, mol);
 }
 
-void IndigoInchi::loadMoleculeFromInchi (const char *inchi_string, Molecule &mol)
+void IndigoInchiEmbedded::loadMoleculeFromInchi(const char *inchi_string, Molecule &mol)
 {
    // lock
    OsLocker locker(inchi_lock);
@@ -175,7 +176,7 @@ void IndigoInchi::loadMoleculeFromInchi (const char *inchi_string, Molecule &mol
    parseInchiOutput(output, mol);
 }
 
-void IndigoInchi::neutralizeV5Nitrogen (Molecule &mol)
+void IndigoInchiEmbedded::neutralizeV5Nitrogen(Molecule &mol)
 {
    // Initial structure C[C@H](O)[C@H](COC)/N=[N+](\[O-])/C=CCCCCCC
    // is loaded via InChI as CCCCCCC=CN(=O)=N[C@@H](COC)[C@H](C)O
@@ -205,7 +206,7 @@ void IndigoInchi::neutralizeV5Nitrogen (Molecule &mol)
       }
 }
 
-void IndigoInchi::parseInchiOutput (const InchiOutput &inchi_output, Molecule &mol)
+void IndigoInchiEmbedded::parseInchiOutput(const InchiOutput &inchi_output, Molecule &mol)
 {
    mol.clear();
 
@@ -353,7 +354,7 @@ void IndigoInchi::parseInchiOutput (const InchiOutput &inchi_output, Molecule &m
 
 }
 
-void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input, 
+void IndigoInchiEmbedded::generateInchiInput(Molecule &mol, inchi_Input &input,
    Array<inchi_Atom> &atoms, Array<inchi_Stereo0D> &stereo)
 {
    QS_DEF(Array<int>, mapping);
@@ -523,7 +524,7 @@ void IndigoInchi::generateInchiInput (Molecule &mol, inchi_Input &input,
    input.szOptions = options.ptr();
 }
  
-void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
+void IndigoInchiEmbedded::saveMoleculeIntoInchi(Molecule &mol, Array<char> &inchi)
 {
    inchi_Input input;
    QS_DEF(Array<inchi_Atom>, atoms);
@@ -605,7 +606,7 @@ void IndigoInchi::saveMoleculeIntoInchi (Molecule &mol, Array<char> &inchi)
    inchi.readString(output.szInChI, true);
 }
 
-void IndigoInchi::InChIKey (const char *inchi, Array<char> &output)
+void IndigoInchiEmbedded::InChIKey(const char *inchi, Array<char> &output)
 {
    // lock
    OsLocker locker(inchi_lock);

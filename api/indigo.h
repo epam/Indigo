@@ -815,7 +815,7 @@ CEXPORT int indigoMapMolecule (int handle, int molecule);
 
 // Accepts a molecule and InChI code for this molecule
 // Returns an iterator object over the molecules that are tautomers of this molecule.
-CEXPORT int indigoTautomerEnumerate (int molecule, const char *params);
+CEXPORT int indigoTautomerEnumerate (int molecule);
 
 /* Scaffold detection */
 

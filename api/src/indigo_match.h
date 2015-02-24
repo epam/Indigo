@@ -34,6 +34,7 @@ struct IndigoTautomerParams
    int conditions;
    bool force_hydrogens;
    bool ring_chain;
+   bool inchi;
 };
 
 // Iterator for all possible matches

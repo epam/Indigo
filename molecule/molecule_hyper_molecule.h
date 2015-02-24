@@ -100,7 +100,7 @@ protected:
 
 private:
    HyperMolecule (const HyperMolecule &); // no implicit copy
-   int _wordsNeeded;
+   unsigned _wordsNeeded;
 };
 
 }

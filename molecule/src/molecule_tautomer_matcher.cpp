@@ -53,11 +53,12 @@ void MoleculeTautomerMatcher::setRulesList (const PtrArray<TautomerRule> *rules_
    _rules_list = rules_list;
 }
 
-void MoleculeTautomerMatcher::setRules (int rules_set, bool force_hydrogens, bool ring_chain)
+void MoleculeTautomerMatcher::setRules (int rules_set, bool force_hydrogens, bool ring_chain, bool inchi)
 {
    _rules = rules_set;
    _force_hydrogens = force_hydrogens;
    _ring_chain = ring_chain;
+   _inchi = inchi;
 }
 
 void MoleculeTautomerMatcher::setQuery (BaseMolecule &query)
@@ -106,6 +107,7 @@ bool MoleculeTautomerMatcher::find ()
    _context->force_hydrogens = _force_hydrogens;
    _context->ring_chain = _ring_chain;
    _context->rules = _rules;
+   _context->inchi = _inchi;
 
    if (_rules != 0 && _rules_list != 0 && _rules_list->size() != 0)
       _context->cb_check_rules = _checkRules;
@@ -140,7 +142,7 @@ const int * MoleculeTautomerMatcher::getQueryMapping ()
    return _context->core_1.ptr();
 }
 
-void MoleculeTautomerMatcher::parseConditions (const char *tautomer_text, int &rules, bool &force_hydrogens, bool &ring_chain)
+void MoleculeTautomerMatcher::parseConditions (const char *tautomer_text, int &rules, bool &force_hydrogens, bool &ring_chain, bool &inchi)
 {
    if (tautomer_text == 0)
       throw Error("zero pointer passed to parseConditions()");
@@ -148,6 +150,7 @@ void MoleculeTautomerMatcher::parseConditions (const char *tautomer_text, int &r
    rules = 0;
    force_hydrogens = false;
    ring_chain = false;
+   inchi = false;
 
    BufferScanner scanner(tautomer_text);
 
@@ -169,6 +172,11 @@ void MoleculeTautomerMatcher::parseConditions (const char *tautomer_text, int &r
 
       if (strcasecmp(word.ptr(), "TAU") == 0)
          continue;
+      if (strncasecmp(word.ptr(), "INCHI", 5) == 0)
+      {
+         inchi = true;
+         continue;
+      }
       if (strcasecmp(word.ptr(), "HYD") == 0)
       {
          force_hydrogens = true;

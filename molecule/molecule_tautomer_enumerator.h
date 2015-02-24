@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (C) 2010-2015 GGA Software Services LLC
+* Copyright (C) 2015 GGA Software Services LLC
 *
 * This file is part of Indigo toolkit.
 *
@@ -19,10 +19,14 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_hyper_molecule.h"
 
+namespace indigo {
+
+class Molecule;
+
 class TautomerEnumerator
 {
 public:
-   TautomerEnumerator(Molecule &molecule, const char *params);
+   TautomerEnumerator(Molecule &molecule);
 
    void constructMolecule(Molecule &molecule, int layer);
    int size();
@@ -44,42 +48,10 @@ protected:
    static void vertexAdd(Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
    static void vertexRemove(Graph &subgraph, int sub_idx, void *userdata);
 
-private:
-   HyperMolecule _hyperMolecule;
-};
-
-
-class IndigoMoleculeTautomer : public IndigoObject
-{
 public:
-   IndigoMoleculeTautomer(TautomerEnumerator &enumerator, int index);
-   virtual ~IndigoMoleculeTautomer();
-
-   virtual Molecule & getMolecule();
-   virtual IndigoObject * clone();
-   virtual RedBlackStringObjMap< Array<char> > * getProperties();
-
-   virtual const char * debugInfo();
-
-private:
-   Molecule _molInstance;
+   HyperMolecule hyperMolecule;
 };
 
-class IndigoTautomerIter : public IndigoObject
-{
-public:
-   IndigoTautomerIter(Molecule &molecule, const char *params);
-   virtual ~IndigoTautomerIter();
-
-   virtual IndigoObject * next();
-   virtual bool hasNext();
-
-   virtual const char * debugInfo();
-
-protected:
-
-   TautomerEnumerator _enumerator;
-   int _layer;
-};
+}
 
 #endif /* __molecule_tautomer_enumerator__ */

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2013 GGA Software Services LLC
+ * Copyright (C) 2010-2015 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __indigo_inchi_core_h__
-#define __indigo_inchi_core_h__
+#ifndef __indigo_iupac_inchi_core_h__
+#define __indigo_iupac_inchi_core_h__
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
@@ -27,10 +27,10 @@ namespace indigo
 class Molecule; 
 struct InchiOutput;
 
-class IndigoInchi
+class IndigoInchiEmbedded
 {
 public:
-   IndigoInchi ();
+   IndigoInchiEmbedded();
 
    void clear();
 
@@ -64,4 +64,4 @@ private:
 
 }
 
-#endif // __indigo_inchi_core_h__
+#endif // __indigo_iupac_inchi_core_h__

@@ -23,7 +23,7 @@ MoleculeInChICodeParser::MoleculeInChICodeParser(const char *inchi_code)
 {
    std::string str(inchi_code);
 
-   int pos = str.find("/h");
+   size_t pos = str.find("/h");
    // assert(pos != npos)
    unsigned num = 0, from = -1;
    bool isValid;
