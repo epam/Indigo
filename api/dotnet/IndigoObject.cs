@@ -579,6 +579,36 @@ namespace com.ggasoftware.indigo
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoCreateSgroup(type, mapping, name)));
         }
 
+        public void setSgroupClass(String sgclass)
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(_indigo_lib.indigoSetSgroupClass(self, sgclass));
+        }
+
+        public void setSgroupName(String sgname)
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(_indigo_lib.indigoSetSgroupName(self, sgname));
+        }
+
+        public string getSgroupClass()
+        {
+            dispatcher.setSessionID();
+            return new String(dispatcher.checkResult(_indigo_lib.indigoGetSgroupClass(self)));
+        }
+
+        public string getSgroupName()
+        {
+            dispatcher.setSessionID();
+            return new String(dispatcher.checkResult(_indigo_lib.indigoGetSgroupName(self)));
+        }
+
+        public int getSgroupNumCrossBonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetSgroupNumCrossBonds(self));
+        }
+
         public void addStereocenter(int type, int v1, int v2, int v3)
         {
             addStereocenter(type, v1, v2, v3, -1);

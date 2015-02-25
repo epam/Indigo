@@ -989,7 +989,50 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public IndigoObject createSgroup (String type, int mapping, String name)
    {
-      return createSgroup(type, mapping, name);
+      dispatcher.setSessionID();
+      if (type == null)
+         description = "";
+      if (name == null)
+         data = "";
+      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoCreateSgroup(type, mapping, name)), this);
+   }
+
+   public void setSgroupClass(String sgclass)
+   {
+      dispatcher.setSessionID();
+
+      if (sgclass == null)
+         sgclass = "";
+     
+      Indigo.checkResult(this, _lib.indigoSetSgroupClass(self, sgclass));
+   }
+
+   public void setSgroupName(String sgname)
+   {
+      dispatcher.setSessionID();
+
+      if (sgname == null)
+         sgname = "";
+     
+      Indigo.checkResult(this, _lib.indigoSetSgroupName(self, sgname));
+   }
+
+   public String getSgroupClass()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoGetSgroupClass(self));
+   }
+
+   public String getSgroupName()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoGetSgroupName(self));
+   }
+
+   public int getSgroupNumCrossBonds()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoGetSgroupNumCrossBonds(self));
    }
 
    public void addStereocenter (int type, int v1, int v2, int v3)

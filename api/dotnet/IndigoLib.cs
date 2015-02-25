@@ -153,6 +153,11 @@ namespace com.ggasoftware.indigo
         int indigoAddSuperatom(int molecule, int natoms, int[] atoms, string name);
 
         int indigoCreateSgroup(string type, int mapping, string name);
+        int indigoSetSgroupClass(int sgroup, string sgclass);
+        int indigoSetSgroupName(int sgroup, string sgname);
+        sbyte* indigoGetSgroupClass(int sgroup);
+        sbyte* indigoGetSgroupName(int sgroup);
+        int indigoGetSgroupNumCrossBonds(int sgroup);
 
         float* indigoXYZ(int atom);
         int indigoSetXYZ(int atom, float x, float y, float z);
