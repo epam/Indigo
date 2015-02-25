@@ -1165,14 +1165,37 @@ void MolfileLoader::_readCtab2000 ()
             if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SUP)
             {
                BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+               BaseMolecule::Superatom::_BondConnection &bond = sup.bond_connections.push();
                _scanner.skip(1);
-               sup.bond_idx = _scanner.readIntFix(3) - 1;
+               bond.bond_idx = _scanner.readIntFix(3) - 1;
                _scanner.skipSpace();
-               sup.bond_dir.x = _scanner.readFloat();
+               bond.bond_dir.x = _scanner.readFloat();
                _scanner.skipSpace();
-               sup.bond_dir.y = _scanner.readFloat();
-               int k;
-               k = 1;
+               bond.bond_dir.y = _scanner.readFloat();
+            }
+            _scanner.skipLine();
+         }
+         else if (strncmp(chars, "SDS", 3) == 0)
+         {
+            _scanner.skip(1);
+            char expanded[4] = {0, 0, 0, 0};
+
+            _scanner.readCharsFix(3, expanded);
+
+            if (strncmp(expanded, "EXP", 3) == 0)
+            {
+               int n = _scanner.readIntFix(3);
+
+               while (n-- > 0)
+               {
+                  _scanner.skip(1);
+                  int sgroup_idx = _scanner.readIntFix(3) - 1;
+                  if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SUP)
+                  {
+                     BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+                     sup.contracted = 0;
+                  }
+               }
             }
             _scanner.skipLine();
          }
@@ -2872,15 +2895,14 @@ void MolfileLoader::_readSGroup3000 (const char *str)
          }
          scanner.skip(1); // )
       }
-      else if (strcmp(entity.ptr(), "XBONDS") == 0)
+      else if ((strcmp(entity.ptr(), "XBONDS") == 0) ||
+               (strcmp(entity.ptr(), "CBONDS") == 0) )
       {
          scanner.skip(1); // (
          n = scanner.readInt1();
          while (n-- > 0)
          {
-            int idx = scanner.readInt() - 1;
-            if (sup != 0)
-               sup->bond_idx = idx;
+            sgroup->bonds.push(scanner.readInt() - 1);
             scanner.skipSpace();
          }
          scanner.skip(1); // )
@@ -2995,6 +3017,52 @@ void MolfileLoader::_readSGroup3000 (const char *str)
          }
          if (sup != 0)
             sup->sa_class.push(0);
+      }
+      else if (strcmp(entity.ptr(), "ESTATE") == 0)
+      {
+         while (!scanner.isEOF())
+         {
+            char c = scanner.readChar();
+            if (c == ' ')
+               break;
+            if (c == 'E')
+            {
+               if (sup != 0)
+                  sup->contracted = 0;
+            }
+            else 
+            {
+               if (sup != 0)
+                  sup->contracted = 1;
+            }
+         }
+      }
+      else if (strcmp(entity.ptr(), "CSTATE") == 0)
+      {
+         if (sup != 0)
+         {
+            scanner.skip(1); // (
+            n = scanner.readInt1();
+            if (n != 4)
+               throw Error("CSTATE number is %d (must be 4)", n);
+            scanner.skipSpace();
+            BaseMolecule::Superatom::_BondConnection &bond = sup->bond_connections.push();
+            int idx = scanner.readInt() - 1;
+            bond.bond_idx = idx;
+            scanner.skipSpace();
+            bond.bond_dir.x = scanner.readFloat();
+            scanner.skipSpace();
+            bond.bond_dir.y = scanner.readFloat();
+            scanner.skipSpace();
+
+            scanner.skipUntil(")");    // Skip z coordinate
+            scanner.skip(1); // )
+         }
+         else   // skip for all other sgroups
+         {
+            scanner.skipUntil(")");
+            scanner.skip(1);
+         }
       }
       else if (strcmp(entity.ptr(), "SAP") == 0)
       {

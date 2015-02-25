@@ -510,6 +510,26 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoCreateSgroup(sgtype.encode(ENCODE_ENCODING), mapping.id, name.encode(ENCODE_ENCODING))))
 
+    def setSgroupClass(self, sgclass):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupClass(self.id, sgclass))
+
+    def setSgroupName(self, sgname):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupName(self.id, sgname))
+
+    def getSgroupClass(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetSgroupClass(self.id))
+
+    def getSgroupName(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetSgroupName(self.id))
+
+    def getSgroupNumCrossBonds(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSgroupNumCrossBonds(self.id))
+
     def resetCharge(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoResetCharge(self.id))
@@ -1487,6 +1507,16 @@ class Indigo(object):
         Indigo._lib.indigoSetDataSGroupXY.argtypes = [c_int, c_float, c_float, c_char_p]
         Indigo._lib.indigoCreateSgroup.restype = c_int
         Indigo._lib.indigoCreateSgroup.argtypes = [c_char_p, c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupClass.restype = c_int
+        Indigo._lib.indigoSetSgroupClass.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupName.restype = c_int
+        Indigo._lib.indigoSetSgroupName.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoGetSgroupClass.restype = c_char_p
+        Indigo._lib.indigoGetSgroupClass.argtypes = [c_int]
+        Indigo._lib.indigoGetSgroupName.restype = c_char_p
+        Indigo._lib.indigoGetSgroupName.argtypes = [c_int]
+        Indigo._lib.indigoGetSgroupNumCrossBonds.restype = c_int
+        Indigo._lib.indigoGetSgroupNumCrossBonds.argtypes = [c_int]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int

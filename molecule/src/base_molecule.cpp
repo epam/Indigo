@@ -143,12 +143,18 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
 
       if (_mergeSGroupWithSubmolecule(sa, supersa, mol, mapping, edge_mapping))
       {
-         sa.bond_dir = supersa.bond_dir;
-         if (supersa.bond_idx >= 0)
-            sa.bond_idx = edge_mapping[supersa.bond_idx];
-         else
-            sa.bond_idx = -1;
+         if (supersa.bond_connections.size() > 0)
+         {
+            for (int j = 0; j < supersa.bond_connections.size(); j++)
+            {
+             Superatom::_BondConnection &bond = sa.bond_connections.push();
+             bond.bond_dir = supersa.bond_connections[j].bond_dir;
+             bond.bond_idx = edge_mapping[supersa.bond_connections[j].bond_idx];
+            }
+         }
          sa.subscript.copy(supersa.subscript);
+         sa.sa_class.copy(supersa.sa_class);
+         sa.contracted = supersa.contracted;         
       }
       else
          superatoms.remove(idx);
@@ -997,7 +1003,7 @@ BaseMolecule::DataSGroup::~DataSGroup ()
 
 BaseMolecule::Superatom::Superatom ()
 {
-   bond_idx = -1;
+   contracted = -1;
 }
 
 BaseMolecule::Superatom::~Superatom ()

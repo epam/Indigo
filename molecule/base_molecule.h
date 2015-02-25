@@ -116,8 +116,25 @@ public:
 
       Array<char> subscript; // SMT in Molfile format
       Array<char> sa_class;  // SCL in Molfile format
-      int   bond_idx;        // bond index (-1 if absent); SBV in Molfile format
-      Vec2f bond_dir;        // bond direction
+      int   contracted;      // display option (-1 if undefined, 0 - expanded, 1 - contracted)
+                             // SDS in Molfile format
+
+      struct _AttachmentPoint
+      {
+         int  aidx;
+         int  lvidx;
+         Array<char> apid;
+      };
+   
+      Array<_AttachmentPoint> attachment_points;  // SAP in Molfile format
+
+      struct _BondConnection
+      {
+         int   bond_idx;
+         Vec2f bond_dir;
+      };
+
+      Array<_BondConnection> bond_connections;  // SBV in Molfile format
    };
 
    class DLLEXPORT RepeatingUnit : public SGroup

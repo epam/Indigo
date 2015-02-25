@@ -351,10 +351,16 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       _encode(CMF_SUPERATOM);
       _encodeBaseSGroup(mol, sa, mapping);
       _encodeString(sa.subscript);
-
-      if (sa.bond_idx < -1)
-         throw Error("internal error: SGroup bond index is invalid: %d", sa.bond_idx);
-      _output->writePackedUInt(sa.bond_idx + 1);
+      _encodeString(sa.sa_class);
+      byte packed = (sa.contracted & 0x01) | (sa.bond_connections.size() << 1);
+      _output->writeByte(packed);
+      if (sa.bond_connections.size() > 0)
+      {
+         for (int j = 0; j < sa.bond_connections.size(); j++)
+         {
+            _output->writePackedUInt(sa.bond_connections[j].bond_idx + 1);
+         }
+      }
    }
 
    for (int i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))
@@ -422,8 +428,13 @@ void CmfSaver::_writeSGroupsXyz (Molecule &mol, Output &output, const VecRange &
    {
       BaseMolecule::Superatom &sa = mol.superatoms[i];
       _writeBaseSGroupXyz(output, sa, range);
-      if (sa.bond_idx != -1)
-         _writeDir2f(output, sa.bond_dir, range);
+      if (sa.bond_connections.size() > 0)
+      {
+         for (int j = 0; j < sa.bond_connections.size(); j++)
+         {
+            _writeDir2f(output, sa.bond_connections[j].bond_dir, range);
+         }
+      }
    }
 
    for (int i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))

@@ -685,13 +685,21 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       {
          ArrayOutput out(buf);
          _writeGenericSGroup3000(mol.superatoms[i], idx++, "SUP", out);
-         if (mol.superatoms[i].bond_idx >= 0)
-            out.printf(" XBONDS=(1 %d)", _bond_mapping[mol.superatoms[i].bond_idx]);
+         if (mol.superatoms[i].bond_connections.size() > 0)
+         {
+            for (int j = 0; j < mol.superatoms[i].bond_connections.size(); j++)
+            {
+               out.printf(" CSTATE=(4 %d %f %f %f)", mol.superatoms[i].bond_connections[j].bond_idx,
+                            mol.superatoms[i].bond_connections[j].bond_dir.x,
+                            mol.superatoms[i].bond_connections[j].bond_dir.y, 0.f);
+            }
+         }
          if (mol.superatoms[i].subscript.size() > 1)
             out.printf(" LABEL=%s", mol.superatoms[i].subscript.ptr());
          if (mol.superatoms[i].sa_class.size() > 1)
             out.printf(" CLASS=%s", mol.superatoms[i].sa_class.ptr());
-         out.printf(" ESTATE=E");
+         if (mol.superatoms[i].contracted == 0)
+            out.printf(" ESTATE=E");
          _writeMultiString(output, buf.ptr(), buf.size());
       }
       for (i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
@@ -834,7 +842,10 @@ void MolfileSaver::_writeGenericSGroup3000 (BaseMolecule::SGroup &sgroup, int id
    }
    if (sgroup.bonds.size() > 0)
    {
-      output.printf(" BONDS=(%d", sgroup.bonds.size());
+      if (strcasecmp(type, "DAT") == 0)
+         output.printf(" CBONDS=(%d", sgroup.bonds.size());
+      else
+         output.printf(" XBONDS=(%d", sgroup.bonds.size());
       for (i = 0; i < sgroup.bonds.size(); i++)
          output.printf(" %d", _bond_mapping[sgroup.bonds[i]]);
       output.printf(")");
@@ -1439,10 +1450,19 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
                output.printfCR("M  SMT %3d %s", superatom.original_group, superatom.subscript.ptr());
             if (superatom.sa_class.size() > 1)
                output.printfCR("M  SCL %3d %s", superatom.original_group, superatom.sa_class.ptr());
-            if (superatom.bond_idx >= 0)
+            if (superatom.bond_connections.size() > 0)
             {
-               output.printfCR("M  SBV %3d %3d %9.4f %9.4f", superatom.original_group,
-                       _bond_mapping[superatom.bond_idx], superatom.bond_dir.x, superatom.bond_dir.y);
+               for (j = 0; j < superatom.bond_connections.size(); j++)
+               {
+                  output.printfCR("M  SBV %3d %3d %9.4f %9.4f", superatom.original_group,
+                       _bond_mapping[superatom.bond_connections[j].bond_idx],
+                       superatom.bond_connections[j].bond_dir.x,
+                       superatom.bond_connections[j].bond_dir.y);
+               }
+            }
+            if (superatom.contracted == 0)
+            {
+                  output.printfCR("M  SDS EXP  1 %3d", superatom.original_group);
             }
          }
          else if (sgroup_types[i] == _SGROUP_TYPE_SRU)

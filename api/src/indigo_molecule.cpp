@@ -2629,6 +2629,64 @@ CEXPORT int indigoCreateSgroup (const char *type, int mapping, const char *name)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoSetSgroupClass (int sgroup, const char *sgclass)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      sup.sa_class.readString(sgclass, true);
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT const char * indigoGetSgroupClass (int sgroup)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      if (sup.sa_class.size() < 1)
+         return "";
+      return sup.sa_class.ptr();
+   }
+   INDIGO_END(0)
+}
+
+CEXPORT int indigoSetSgroupName (int sgroup, const char *sgname)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      sup.subscript.readString(sgname, true);
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT const char * indigoGetSgroupName (int sgroup)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      if (sup.subscript.size() < 1)
+         return "";
+      return sup.subscript.ptr();
+   }
+   INDIGO_END(0)
+}
+
+CEXPORT int indigoGetSgroupNumCrossBonds (int sgroup)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      return sup.bonds.size();
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoCountHeavyAtoms (int molecule)
 {
    INDIGO_BEGIN
