@@ -137,7 +137,7 @@ int BingoPgCommon::executeQuery(indigo::Array<char>& query_str) {
 
       SPI_finish();
       if (success < 0) {
-         throw BingoPgError("error (%d) while executing query: %s res", success, query_str.ptr());
+         elog(ERROR, "error (%d) while executing query: %s res", success, query_str.ptr());
       }
    }
    BINGO_PG_HANDLE(throw BingoPgError("internal error: can not execute query: %s", message));

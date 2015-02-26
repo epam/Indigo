@@ -209,7 +209,7 @@ void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, indigo::Array<cha
       int ncolumns = tupdesc->natts;
 
       if (ncolumns != 2)
-         throw Error("internal error: expecting two columns in query but was %d", ncolumns);
+         elog(ERROR, "internal error: expecting two columns in query but was %d", ncolumns);
 
       HeapTupleData tuple;
       /*

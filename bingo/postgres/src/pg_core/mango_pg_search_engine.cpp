@@ -489,7 +489,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, Array<char>& str1
       int ncolumns = tupdesc->natts;
 
       if (ncolumns != 2)
-         throw Error("internal error: expecting two columns in query but was %d", ncolumns);
+         elog(ERROR, "internal error: expecting two columns in query but was %d", ncolumns);
 
       HeapTupleData tuple;
       /*
@@ -539,7 +539,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t  arg_datum, float& min_bound
       int ncolumns = tupdesc->natts;
 
       if (ncolumns != 4)
-         throw Error("internal error: expecting four columns in query but was %d", ncolumns);
+         elog(ERROR, "internal error: expecting four columns in query but was %d", ncolumns);
 
       HeapTupleData tuple;
       /*
