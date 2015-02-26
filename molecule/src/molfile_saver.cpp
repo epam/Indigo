@@ -689,7 +689,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          {
             for (int j = 0; j < mol.superatoms[i].bond_connections.size(); j++)
             {
-               out.printf(" CSTATE=(4 %d %f %f %f)", mol.superatoms[i].bond_connections[j].bond_idx,
+               out.printf(" CSTATE=(4 %d %f %f %f)", _bond_mapping[mol.superatoms[i].bond_connections[j].bond_idx],
                             mol.superatoms[i].bond_connections[j].bond_dir.x,
                             mol.superatoms[i].bond_connections[j].bond_dir.y, 0.f);
             }
@@ -700,6 +700,19 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             out.printf(" CLASS=%s", mol.superatoms[i].sa_class.ptr());
          if (mol.superatoms[i].contracted == 0)
             out.printf(" ESTATE=E");
+         if (mol.superatoms[i].attachment_points.size() > 0)
+         {
+            for (int j = mol.superatoms[i].attachment_points.begin(); j < mol.superatoms[i].attachment_points.end(); j = mol.superatoms[i].attachment_points.next(j))
+            {
+               int leave_idx = 0;
+               if (mol.superatoms[i].attachment_points[j].lvidx > -1)
+                  leave_idx = _atom_mapping[mol.superatoms[i].attachment_points[j].lvidx];
+                  
+               out.printf(" SAP=(3 %d %d %s)", _atom_mapping[mol.superatoms[i].attachment_points[j].aidx], leave_idx,
+                            mol.superatoms[i].attachment_points[j].apid.ptr());
+            }
+         }
+
          _writeMultiString(output, buf.ptr(), buf.size());
       }
       for (i = mol.data_sgroups.begin(); i != mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
@@ -1463,6 +1476,34 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             if (superatom.contracted == 0)
             {
                   output.printfCR("M  SDS EXP  1 %3d", superatom.original_group);
+            }
+            if (superatom.attachment_points.size() > 0)
+            {
+               bool next_line = true;
+               int nrem = superatom.attachment_points.size();
+               int k = 0;
+               for (int j = superatom.attachment_points.begin(); j < superatom.attachment_points.end(); j = superatom.attachment_points.next(j))
+               {
+                  if (next_line) 
+                  {
+                     output.printf("M  SAP %3d%3d", superatom.original_group, __min(nrem, 6));
+                     next_line = false;
+                  }
+
+                  int leave_idx = 0;
+                  if (superatom.attachment_points[j].lvidx > -1)
+                     leave_idx = _atom_mapping[superatom.attachment_points[j].lvidx];
+                  output.printf(" %3d %3d %c%c", _atom_mapping[superatom.attachment_points[j].aidx], leave_idx, 
+                         superatom.attachment_points[j].apid[0], superatom.attachment_points[j].apid[1]);
+                  k++;
+                  nrem--;
+                  if ((k == 6) || (nrem == 0))
+                  {
+                     output.writeCR();
+                     next_line = true;
+                     k = 0;
+                  }
+               }
             }
          }
          else if (sgroup_types[i] == _SGROUP_TYPE_SRU)

@@ -155,6 +155,22 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
          sa.subscript.copy(supersa.subscript);
          sa.sa_class.copy(supersa.sa_class);
          sa.contracted = supersa.contracted;         
+         if (supersa.attachment_points.size() > 0)
+         {
+            for (int j = supersa.attachment_points.begin(); j < supersa.attachment_points.end(); j = supersa.attachment_points.next(j))
+            {
+             int ap_idx =  sa.attachment_points.add();
+             Superatom::_AttachmentPoint &ap = sa.attachment_points.at(ap_idx);
+             ap.aidx = mapping[supersa.attachment_points[j].aidx];
+             int leave_idx = supersa.attachment_points[j].lvidx;
+             if (leave_idx > -1)
+                ap.lvidx = mapping[supersa.attachment_points[j].lvidx];
+             else
+                ap.lvidx = leave_idx;
+
+             ap.apid.copy(supersa.attachment_points[j].apid);
+            }
+         }
       }
       else
          superatoms.remove(idx);

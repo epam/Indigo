@@ -1216,6 +1216,33 @@ void MolfileLoader::_readCtab2000 ()
             }
             _scanner.skipLine();
          }
+         else if (strncmp(chars, "SAP", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SUP)
+            {
+               BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+               int n = _scanner.readIntFix(3);
+               while (n-- > 0) 
+               {
+                   int idap = sup.attachment_points.add();
+                   BaseMolecule::Superatom::_AttachmentPoint &ap = sup.attachment_points.at(idap);
+                   _scanner.skip(1);
+                   ap.aidx = _scanner.readIntFix(3) - 1;
+                   _scanner.skip(1);
+                   ap.lvidx = _scanner.readIntFix(3) - 1;
+                   _scanner.skip(1);
+                   char c = _scanner.readChar();
+                   ap.apid.push(c);
+                   c = _scanner.readChar();
+                   ap.apid.push(c);
+                   ap.apid.push(0);
+               }
+            }
+            _scanner.skipLine();
+         }
          else if (strncmp(chars, "SCN", 3) == 0)
          {
             // The format is the following: M SCNnn8 sss ttt ...
@@ -3066,9 +3093,37 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       }
       else if (strcmp(entity.ptr(), "SAP") == 0)
       {
-         // TODO: add support for SAP: Abbreviation Sgroup Attachment Point
-         scanner.skipUntil(")");
-         scanner.skip(1);
+         if (sup != 0)
+         {
+            scanner.skip(1); // (
+            n = scanner.readInt1();
+            if (n != 3)
+               throw Error("SAP number is %d (must be 3)", n);
+            scanner.skipSpace();
+            int idx = scanner.readInt() - 1;
+            int idap = sup->attachment_points.add();
+            BaseMolecule::Superatom::_AttachmentPoint &ap = sup->attachment_points.at(idap);
+            ap.aidx = idx;
+            scanner.skipSpace();
+            ap.lvidx = scanner.readInt() - 1;
+            scanner.skip(1);
+
+            ap.apid.clear();
+
+            while (!scanner.isEOF())
+            {
+               char c = scanner.readChar();
+               if (c == ')')
+                  break;
+               ap.apid.push(c);
+            }
+            ap.apid.push(0);
+         }
+         else   // skip for all other sgroups
+         {
+            scanner.skipUntil(")");
+            scanner.skip(1);
+         }
       }
       else 
       {

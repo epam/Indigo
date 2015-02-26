@@ -119,17 +119,19 @@ public:
       int   contracted;      // display option (-1 if undefined, 0 - expanded, 1 - contracted)
                              // SDS in Molfile format
 
-      struct _AttachmentPoint
+      class _AttachmentPoint
       {
+      public:
          int  aidx;
          int  lvidx;
          Array<char> apid;
       };
    
-      Array<_AttachmentPoint> attachment_points;  // SAP in Molfile format
+      ObjPool<_AttachmentPoint> attachment_points;  // SAP in Molfile format
 
-      struct _BondConnection
+      class _BondConnection
       {
+      public:
          int   bond_idx;
          Vec2f bond_dir;
       };
