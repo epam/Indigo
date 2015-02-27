@@ -22,7 +22,7 @@
 
 using namespace indigo;
 
-bool MoleculeLayoutGraph::_edge_check (Graph &graph, int e_idx, void *context_)
+bool MoleculeLayoutGraph::_edge_check(Graph &graph, int e_idx, void *context_)
 {
    /*
    EnumContext &context = *(EnumContext *)context_;
@@ -30,12 +30,34 @@ bool MoleculeLayoutGraph::_edge_check (Graph &graph, int e_idx, void *context_)
    return !context.graph->getLayoutEdge(e_idx).is_cyclic;
    */
    EnumContext &context = *(EnumContext *)context_;
-   
-   if(context.maxIterationNumber && context.iterationNumber > context.maxIterationNumber * 10000)
+
+   if (context.maxIterationNumber && context.iterationNumber > context.maxIterationNumber * 10000)
       throw Error("number of iterations exceeded %d ", context.maxIterationNumber * 10000);
-   
+
    context.iterationNumber++;
    return true;
+}
+bool MoleculeLayoutGraph::_edge_check_norm(Graph &graph, int e_idx, void *context_)
+{
+   /*
+   EnumContext &context = *(EnumContext *)context_;
+
+   return !context.graph->getLayoutEdge(e_idx).is_cyclic;
+   */
+   EnumContext &context = *(EnumContext *)context_;
+   if (!context.graph->getLayoutEdge(e_idx).is_cyclic)
+   {
+      if (context.graph->_n_fixed > 0)
+      {
+         const Edge &edge = context.graph->getEdge(e_idx);
+
+         if (context.graph->_fixed_vertices[edge.beg] && context.graph->_fixed_vertices[edge.end])
+            return false;
+      }
+      context.edges->find_or_insert(e_idx);
+      return true;
+   }
+   return false;
 }
 
 bool MoleculeLayoutGraph::_path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context_)
@@ -217,13 +239,14 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
             PathEnumerator path_enum(*this, v1, v2);
 
             path_enum.cb_check_edge = _edge_check;
+            path_enum.cb_check_edge_norm = _edge_check_norm;
             path_enum.cb_handle_path = _path_handle;
             path_enum.context = &context;
 
             context.iterationNumber = 0;
             
             try {
-               path_enum.process();
+               path_enum.process1();
             }
             catch (Error) {
                // iterations limit reached

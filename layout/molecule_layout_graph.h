@@ -323,7 +323,8 @@ protected:
    int _isCisConfiguratuin (Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4);
 
    static bool _border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
-   static bool _edge_check (Graph &graph, int e_idx, void *context);
+   static bool _edge_check(Graph &graph, int e_idx, void *context);
+   static bool _edge_check_norm(Graph &graph, int e_idx, void *context);
 
    // make tree of biconnected components (tree[i] - -1 or component incoming to vertex i)
    static void _makeComponentsTree (BiconnectedDecomposer &decon,

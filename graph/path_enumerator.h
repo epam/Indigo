@@ -32,10 +32,12 @@ public:
    void *context;
 
    bool (*cb_check_vertex)(Graph &graph, int v_idx, void *context);
-   bool (*cb_check_edge)(Graph &graph, int e_idx, void *context);
-   bool (*cb_handle_path)(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
+   bool(*cb_check_edge)(Graph &graph, int e_idx, void *context);
+   bool(*cb_check_edge_norm)(Graph &graph, int e_idx, void *context);
+   bool(*cb_handle_path)(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
-   void process ();
+   void process();
+   void process1();
 
    DECL_TIMEOUT_EXCEPTION;
 protected:
