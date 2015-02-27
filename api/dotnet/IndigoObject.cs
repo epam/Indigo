@@ -633,6 +633,18 @@ namespace com.ggasoftware.indigo
             return dispatcher.checkResult(_indigo_lib.indigoSetSgroupDisplayOption(self, option));
         }
 
+        public int getSgroupMultiplier()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetSgroupMultiplier(self));
+        }
+
+        public int setSgroupMultiplier(int mult)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoSetSgroupMultiplier(self, mult));
+        }
+
         public void addStereocenter(int type, int v1, int v2, int v3)
         {
             addStereocenter(type, v1, v2, v3, -1);

@@ -2738,6 +2738,28 @@ CEXPORT int indigoSetSgroupDisplayOption (int sgroup, int option)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoGetSgroupMultiplier (int sgroup)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::MultipleGroup &mg = IndigoMultipleGroup::cast(self.getObject(sgroup)).get();
+      return mg.multiplier;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupMultiplier (int sgroup, int multiplier)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::MultipleGroup &mg = IndigoMultipleGroup::cast(self.getObject(sgroup)).get();
+      mg.multiplier = multiplier;
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoCountHeavyAtoms (int molecule)
 {
    INDIGO_BEGIN

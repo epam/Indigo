@@ -198,6 +198,8 @@ public interface IndigoLib extends Library
    int indigoDeleteSgroupAttachmentPoint (int sgroup, int apidx);
    int indigoGetSgroupDisplayOption (int sgroup);
    int indigoSetSgroupDisplayOption (int sgroup, int option);
+   int indigoGetSgroupMultiplier (int sgroup);
+   int indigoSetSgroupMultiplier (int sgroup, int mult);
 
    int indigoResetCharge (int atom);
    int indigoResetExplicitValence (int atom);

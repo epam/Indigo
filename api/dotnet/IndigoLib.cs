@@ -162,6 +162,8 @@ namespace com.ggasoftware.indigo
         int indigoDeleteSgroupAttachmentPoint(int sgroup, int apidx);
         int indigoGetSgroupDisplayOption(int sgroup);
         int indigoSetSgroupDisplayOption(int sgroup, int option);
+        int indigoGetSgroupMultiplier(int sgroup);
+        int indigoSetSgroupMultiplier(int sgroup, int mult);
 
         float* indigoXYZ(int atom);
         int indigoSetXYZ(int atom, float x, float y, float z);

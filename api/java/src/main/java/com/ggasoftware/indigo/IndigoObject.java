@@ -1059,6 +1059,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupDisplayOption(self, option));
    }
 
+   public int getSgroupMultiplier()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoGetSgroupMultiplier(self));
+   }
+
+   public int setSgroupMultiplier(int mult)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoSetSgroupMultiplier(self, mult));
+   }
+
    public void addStereocenter (int type, int v1, int v2, int v3)
    {
       addStereocenter(type, v1, v2, v3, -1);

@@ -546,6 +546,14 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupDisplayOption(self.id, option))
 
+    def getSgroupMultiplier(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSgroupMultiplier(self.id))
+
+    def setSgroupMultiplier(self, mult):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupMultiplier(self.id, mult))
+
     def resetCharge(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoResetCharge(self.id))
@@ -1541,6 +1549,10 @@ class Indigo(object):
         Indigo._lib.indigoGetSgroupDisplayOption.argtypes = [c_int]
         Indigo._lib.indigoSetSgroupDisplayOption.restype = c_int
         Indigo._lib.indigoSetSgroupDisplayOption.argtypes = [c_int, c_int]
+        Indigo._lib.indigoGetSgroupMultiplier.restype = c_int
+        Indigo._lib.indigoGetSgroupMultiplier.argtypes = [c_int]
+        Indigo._lib.indigoSetSgroupMultiplier.restype = c_int
+        Indigo._lib.indigoSetSgroupMultiplier.argtypes = [c_int, c_int]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int

@@ -413,6 +413,9 @@ CEXPORT int indigoDeleteSgroupAttachmentPoint (int sgroup, int index);
 CEXPORT int indigoGetSgroupDisplayOption (int sgroup);
 CEXPORT int indigoSetSgroupDisplayOption (int sgroup, int option);
 
+CEXPORT int indigoGetSgroupMultiplier (int sgroup);
+CEXPORT int indigoSetSgroupMultiplier (int sgroup, int multiplier);
+
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetIsotope (int atom);
