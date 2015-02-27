@@ -2713,6 +2713,31 @@ CEXPORT int indigoDeleteSgroupAttachmentPoint (int sgroup, int ap_idx)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoGetSgroupDisplayOption (int sgroup)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      if (sup.contracted > -1)
+         return sup.contracted;
+
+      return 0;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupDisplayOption (int sgroup, int option)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      sup.contracted = option;
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoCountHeavyAtoms (int molecule)
 {
    INDIGO_BEGIN

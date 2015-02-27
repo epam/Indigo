@@ -160,6 +160,8 @@ namespace com.ggasoftware.indigo
         int indigoGetSgroupNumCrossBonds(int sgroup);
         int indigoAddSgroupAttachmentPoint(int sgroup, int aidx, int lvidx, string apid);
         int indigoDeleteSgroupAttachmentPoint(int sgroup, int apidx);
+        int indigoGetSgroupDisplayOption(int sgroup);
+        int indigoSetSgroupDisplayOption(int sgroup, int option);
 
         float* indigoXYZ(int atom);
         int indigoSetXYZ(int atom, float x, float y, float z);

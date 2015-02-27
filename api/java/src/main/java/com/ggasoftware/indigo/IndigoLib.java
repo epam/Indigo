@@ -196,6 +196,8 @@ public interface IndigoLib extends Library
    int indigoGetSgroupNumCrossBonds (int sgroup);
    int indigoAddSgroupAttachmentPoint (int sgroup, int aidx, int lvidx, String apid);
    int indigoDeleteSgroupAttachmentPoint (int sgroup, int apidx);
+   int indigoGetSgroupDisplayOption (int sgroup);
+   int indigoSetSgroupDisplayOption (int sgroup, int option);
 
    int indigoResetCharge (int atom);
    int indigoResetExplicitValence (int atom);
