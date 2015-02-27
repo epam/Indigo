@@ -408,6 +408,9 @@ CEXPORT int indigoSetSgroupClass (int sgroup, const char *sgclass);
 CEXPORT int indigoSetSgroupName (int sgroup, const char *sgname);
 CEXPORT int indigoGetSgroupNumCrossBonds (int sgroup);
 
+CEXPORT int indigoAddSgroupAttachmentPoint (int sgroup, int aidx, int lvidx, const char *apid);
+CEXPORT int indigoDeleteSgroupAttachmentPoint (int sgroup, int index);
+
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetIsotope (int atom);

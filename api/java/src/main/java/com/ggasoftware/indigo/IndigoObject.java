@@ -1035,6 +1035,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoGetSgroupNumCrossBonds(self));
    }
 
+   public int addSgroupAttachmentPoint(int aidx, int lvidx, String apid)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoAddSgroupAttachmentPoint(self, aidx, lvidx, apid));
+   }
+
+   public int deleteSgroupAttachmentPoint(int apidx)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoDeleteSgroupAttachmentPoint(self, apidx));
+   }
+
    public void addStereocenter (int type, int v1, int v2, int v3)
    {
       addStereocenter(type, v1, v2, v3, -1);

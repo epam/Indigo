@@ -530,6 +530,14 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoGetSgroupNumCrossBonds(self.id))
 
+    def addSgroupAttachmentPoint(self, aidx, lvidx, apid):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoAddSgroupAttachmentPoint(self.id, aidx, lvidx, apid))
+
+    def deleteSgroupAttachmentPoint(self, apidx):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoDeleteSgroupAttachmentPoint(self.id, apidx))
+
     def resetCharge(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoResetCharge(self.id))
@@ -1517,6 +1525,10 @@ class Indigo(object):
         Indigo._lib.indigoGetSgroupName.argtypes = [c_int]
         Indigo._lib.indigoGetSgroupNumCrossBonds.restype = c_int
         Indigo._lib.indigoGetSgroupNumCrossBonds.argtypes = [c_int]
+        Indigo._lib.indigoAddSgroupAttachmentPoint.restype = c_int
+        Indigo._lib.indigoAddSgroupAttachmentPoint.argtypes = [c_int, c_int, c_int, c_char_p]
+        Indigo._lib.indigoDeleteSgroupAttachmentPoint.restype = c_int
+        Indigo._lib.indigoDeleteSgroupAttachmentPoint.argtypes = [c_int, c_int]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int

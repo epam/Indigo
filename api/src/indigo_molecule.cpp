@@ -2687,6 +2687,32 @@ CEXPORT int indigoGetSgroupNumCrossBonds (int sgroup)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoAddSgroupAttachmentPoint (int sgroup, int aidx, int lvidx, const char *apid)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      int ap_idx = sup.attachment_points.add();
+      BaseMolecule::Superatom::_AttachmentPoint &ap = sup.attachment_points.at(ap_idx);
+      ap.aidx = aidx;
+      ap.lvidx = lvidx;
+      ap.apid.readString(apid, true);
+      return ap_idx;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoDeleteSgroupAttachmentPoint (int sgroup, int ap_idx)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      sup.attachment_points.remove(ap_idx);
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoCountHeavyAtoms (int molecule)
 {
    INDIGO_BEGIN
