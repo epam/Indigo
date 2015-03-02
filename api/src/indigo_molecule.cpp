@@ -2760,6 +2760,36 @@ CEXPORT int indigoSetSgroupMultiplier (int sgroup, int multiplier)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoSetSgroupBrackets (int sgroup, int brk_style, float x1, float y1, float x2, float y2,
+                                     float x3, float y3, float x4, float y4)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::SGroup *psg = 0;
+
+      if (self.getObject(sgroup).type == IndigoObject::GENERIC_SGROUP)
+         psg = &(IndigoGenericSGroup::cast(self.getObject(sgroup)).get());
+      else if (self.getObject(sgroup).type == IndigoObject::REPEATING_UNIT)
+         psg = &(IndigoRepeatingUnit::cast(self.getObject(sgroup)).get());
+      else if (self.getObject(sgroup).type == IndigoObject::MULTIPLE_GROUP)
+         psg = &(IndigoMultipleGroup::cast(self.getObject(sgroup)).get());
+      else
+         throw IndigoError("indigoSetSgroupBrackets(): brackets properties are not supported for this Sgroup type"); 
+
+      psg->brk_style = brk_style;
+      psg->brackets.clear();
+      Vec2f *brackets = psg->brackets.push();
+      brackets[0].set(x1, y1);
+      brackets[1].set(x2, y2);
+      brackets = psg->brackets.push();
+      brackets[0].set(x3, y3);
+      brackets[1].set(x4, y4);
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoCountHeavyAtoms (int molecule)
 {
    INDIGO_BEGIN

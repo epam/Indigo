@@ -86,9 +86,10 @@ public:
       SGroup ();
       Array<int> atoms; // represented with SAL in Molfile format
       Array<int> bonds; // represented with SBL in Molfile format
-      Array<Vec2f[2]> brackets;
-      int        original_group;
-      int        parent_group; // parent group number; represented with SPL in Molfile format 
+      Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
+      int    brk_style; // represented with SBT in Molfile format
+      int    original_group;
+      int    parent_group; // parent group number; represented with SPL in Molfile format 
       virtual ~SGroup ();
    };
 

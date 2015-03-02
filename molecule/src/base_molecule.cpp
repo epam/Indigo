@@ -997,6 +997,7 @@ int BaseMolecule::getAttachmentPoint (int order, int index) const
 
 BaseMolecule::SGroup::SGroup ()
 {
+   brk_style = 0;
    original_group = 0;
    parent_group = 0;
 }

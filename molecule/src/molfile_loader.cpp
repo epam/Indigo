@@ -957,41 +957,35 @@ void MolfileLoader::_readCtab2000 ()
             }
             _scanner.skipLine();
          }
-         else if (strncmp(chars, "SPL", 3) == 0)
+         else if (strncmp(chars, "SPL", 3) == 0 || strncmp(chars, "SBT", 3) == 0)
          {
             int n = _scanner.readIntFix(3);
 
             while (n-- > 0)
             {
                _scanner.skip(1);
-               int sgroup_idx_child = _scanner.readIntFix(3) - 1;
+               int sgroup_idx = _scanner.readIntFix(3) - 1;
+
+               BaseMolecule::SGroup *sgroup;
+
+               switch (_sgroup_types[sgroup_idx])
+               {
+                  case _SGROUP_TYPE_DAT: sgroup = &_bmol->data_sgroups[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_SRU: sgroup = &_bmol->repeating_units[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_SUP: sgroup = &_bmol->superatoms[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_MUL: sgroup = &_bmol->multiple_groups[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_GEN: sgroup = &_bmol->generic_sgroups[_sgroup_mapping[sgroup_idx]]; break;
+                  default: throw Error("internal: bad sgroup type");
+               }
+
                _scanner.skip(1);
-               int sgroup_idx_parent = _scanner.readIntFix(3);
-               if (_sgroup_types[sgroup_idx_child] == _SGROUP_TYPE_DAT)
-               {
-                  BaseMolecule::DataSGroup &sgroup = _bmol->data_sgroups[_sgroup_mapping[sgroup_idx_child]];
-                  sgroup.parent_group = sgroup_idx_parent;
-               }
-               else if (_sgroup_types[sgroup_idx_child] == _SGROUP_TYPE_SRU)
-               {
-                  BaseMolecule::RepeatingUnit &sgroup = _bmol->repeating_units[_sgroup_mapping[sgroup_idx_child]];
-                  sgroup.parent_group = sgroup_idx_parent;
-               }
-               else if (_sgroup_types[sgroup_idx_child] == _SGROUP_TYPE_SUP)
-               {
-                  BaseMolecule::Superatom &sgroup = _bmol->superatoms[_sgroup_mapping[sgroup_idx_child]];
-                  sgroup.parent_group = sgroup_idx_parent;
-               }
-               else if (_sgroup_types[sgroup_idx_child] == _SGROUP_TYPE_MUL)
-               {
-                  BaseMolecule::MultipleGroup &sgroup = _bmol->multiple_groups[_sgroup_mapping[sgroup_idx_child]];
-                  sgroup.parent_group = sgroup_idx_parent;
-               }
-               else if (_sgroup_types[sgroup_idx_child] == _SGROUP_TYPE_GEN)
-               {
-                  BaseMolecule::SGroup &sgroup = _bmol->generic_sgroups[_sgroup_mapping[sgroup_idx_child]];
-                  sgroup.parent_group = sgroup_idx_parent;
-               }
+               int value = _scanner.readIntFix(3);
+
+               if (strncmp(chars, "SPL", 3) == 0)
+                  sgroup->parent_group = value - 1;
+               else
+                  sgroup->brk_style = value;
+
             }
             _scanner.skipLine();
          }
@@ -2959,6 +2953,15 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       {
          int parent = scanner.readInt();
          sgroup->parent_group = parent;
+      }
+      else if (strcmp(entity.ptr(), "BRKTYP") == 0)
+      {
+         QS_DEF(Array<char>, style);
+         scanner.readWord(style, 0);
+         if (strcmp(style.ptr(), "BRACKET") == 0)
+            sgroup->brk_style = _BRKTYP_SQUARE;
+         if (strcmp(style.ptr(), "PAREN") == 0)
+            sgroup->brk_style = _BRKTYP_ROUND;
       }
       else if (strcmp(entity.ptr(), "BRKXYZ") == 0)
       {

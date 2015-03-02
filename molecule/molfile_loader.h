@@ -107,6 +107,11 @@ protected:
       _SGROUP_TYPE_OTHER // one of unsupported types
    };
 
+   enum
+   {
+      _BRKTYP_SQUARE = 0,
+      _BRKTYP_ROUND
+   };
 
    TL_CP_DECL(Array<int>, _atom_types);
    TL_CP_DECL(Array<int>, _hcount);

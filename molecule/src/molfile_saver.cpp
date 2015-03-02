@@ -873,6 +873,10 @@ void MolfileSaver::_writeGenericSGroup3000 (BaseMolecule::SGroup &sgroup, int id
       output.printf(" BRKXYZ=(9 %f %f %f %f %f %f %f %f %f)",
          brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
    }
+   if (sgroup.brackets.size() > 0 && sgroup.brk_style > 0)
+   {
+      output.printf(" BRKTYP=PAREN");
+   }
 }
 
 void MolfileSaver::_writeOccurrenceRanges (Output &out, const Array<int> &occurrences)
@@ -1583,7 +1587,10 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
                     sgroup->brackets[j][0].x, sgroup->brackets[j][0].y,
                     sgroup->brackets[j][1].x, sgroup->brackets[j][1].y);
          }
-
+         if (sgroup->brackets.size() > 0 && sgroup->brk_style > 0)
+         {
+            output.printf("M  SBT  1 %3d %3d\n", sgroup->original_group, sgroup->brk_style);
+         }
       }
    }
 }
