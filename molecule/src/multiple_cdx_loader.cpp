@@ -188,7 +188,8 @@ bool MultipleCdxLoader::_findObject (int &beg, int &length)
       }
       else if (tag == 0)
       {
-         level--;
+         if (level > 1)
+            level--;
       }
       else
       {
