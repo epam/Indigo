@@ -554,9 +554,9 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupMultiplier(self.id, mult))
 
-    def setSgroupBrackets(self, style, x1, y1, x2, y2):
+    def setSgroupBrackets(self, style, x1, y1, x2, y2, x3, y3, x4, y4):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupMultiplier(self.id, style, x1, y1, x2, y2))
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupBrackets(self.id, style, x1, y1, x2, y2, x3, y3, x4, y4))
 
     def resetCharge(self):
         self.dispatcher._setSessionId()
@@ -1558,7 +1558,7 @@ class Indigo(object):
         Indigo._lib.indigoSetSgroupMultiplier.restype = c_int
         Indigo._lib.indigoSetSgroupMultiplier.argtypes = [c_int, c_int]
         Indigo._lib.indigoSetSgroupBrackets.restype = c_int
-        Indigo._lib.indigoSetSgroupBrackets.argtypes = [c_int, c_int, c_float, c_float, c_float, c_float]
+        Indigo._lib.indigoSetSgroupBrackets.argtypes = [c_int, c_int, c_float, c_float, c_float, c_float, c_float, c_float, c_float, c_float]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int
