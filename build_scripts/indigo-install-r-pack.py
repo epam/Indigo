@@ -27,8 +27,9 @@ shutil.copy(os.path.join(root, "common", "cmake", "linkhack.py"), r_src_dir)
 os.chmod(os.path.join(r_src_dir, "linkhack.py"), 0777)
 
 os.chdir(r_dir)
-if not os.path.exists("package"):
-   os.mkdir("package")
+if os.path.exists("package"):
+   shutil.rmtree("package")
+os.mkdir("package")
 os.chdir(os.path.join(r_dir, "package"))
 
 subprocess.check_call("R CMD build %s" % (r_dir), shell=True)
