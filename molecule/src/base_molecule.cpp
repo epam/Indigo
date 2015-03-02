@@ -269,7 +269,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int
          int j;
 
          for (j = 0; j < ap.size(); j++)
-            if (mapping[ap[j]] >= 0)
+            if (ap[j] >= 0 && ap[j] < mapping.size() && mapping[ap[j]] >= 0)
                setRSiteAttachmentOrder(atom_idx, mapping[ap[j]], j);
       }
    }
