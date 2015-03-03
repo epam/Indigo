@@ -37,7 +37,7 @@ private:
 class IndigoTautomerIter : public IndigoObject
 {
 public:
-   IndigoTautomerIter(Molecule &molecule);
+   IndigoTautomerIter(Molecule &molecule, const char *options);
    virtual ~IndigoTautomerIter();
 
    virtual IndigoObject * next();
@@ -49,6 +49,7 @@ protected:
 
    TautomerEnumerator _enumerator;
    int _layer;
+   bool _complete;
 };
 
 #endif /* __indigo_tautomer_enumerator__ */

@@ -813,9 +813,9 @@ CEXPORT int indigoMapBond (int handle, int bond);
 //   You can use indigoIndex() to obtain the index of the returned molecule.
 CEXPORT int indigoMapMolecule (int handle, int molecule);
 
-// Accepts a molecule and InChI code for this molecule
+// Accepts a molecule and options for tautomer enumeration algorithms
 // Returns an iterator object over the molecules that are tautomers of this molecule.
-CEXPORT int indigoTautomerEnumerate (int molecule);
+CEXPORT int indigoTautomerEnumerate (int molecule, const char *options);
 
 /* Scaffold detection */
 

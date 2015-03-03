@@ -19,9 +19,9 @@
 #include "molecule/molecule_tautomer_utils.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
-#include "molecule/molecule_hyper_molecule.h"
 #include "molecule/molecule_inchi_parser.h"
 #include "molecule/molecule_inchi.h"
+#include "molecule/molecule_layered_molecules.h"
 #include "molecule/molecule_tautomer_enumerator.h"
 
 #include "molecule/molecule_iupac_inchi_core.h"
@@ -151,11 +151,11 @@ bool TautomerMatcher::_matchBondsSubHyper(Graph &subgraph, Graph &supergraph,
    int sub_idx, int super_idx, void *userdata)
 {
    SubstructureSearchBreadcrumps &breadcrumps = *(SubstructureSearchBreadcrumps *)userdata;
-   HyperMolecule &hyperMolecule = (HyperMolecule &)supergraph;
+   LayeredMolecules &layeredMolecules = (LayeredMolecules &)supergraph;
    QueryMolecule &query = ((BaseMolecule &)subgraph).asQueryMolecule();
 
    int sub_bond_order = query.getBondOrder(sub_idx);
-   Dbitset &mask = hyperMolecule.getBondMaskIND(super_idx, sub_bond_order);
+   Dbitset &mask = layeredMolecules.getBondMaskIND(super_idx, sub_bond_order);
 
    return mask.intersects(breadcrumps.mask);
 }
@@ -164,11 +164,11 @@ void TautomerMatcher::_edgeAddHyper(Graph &subgraph, Graph &supergraph,
    int sub_idx, int super_idx, void *userdata)
 {
    SubstructureSearchBreadcrumps &breadcrumps = *(SubstructureSearchBreadcrumps *)userdata;
-   HyperMolecule &hyperMolecule = (HyperMolecule &)supergraph;
+   LayeredMolecules &layeredMolecules = (LayeredMolecules &)supergraph;
    QueryMolecule &query = ((BaseMolecule &)subgraph).asQueryMolecule();
 
    int sub_bond_order = query.getBondOrder(sub_idx);
-   Dbitset &mask = hyperMolecule.getBondMaskIND(super_idx, sub_bond_order);
+   Dbitset &mask = layeredMolecules.getBondMaskIND(super_idx, sub_bond_order);
 
    breadcrumps.maskHistory.expand(breadcrumps.maskHistory.size()+1);
    breadcrumps.maskHistory.top().copy(breadcrumps.mask);
@@ -552,11 +552,11 @@ bool TautomerMatcher::findMatch ()
    if (_d.context.inchi)
    {
       g2.dearomatize(AromaticityOptions());
-      HyperMolecule hyperMolecule(g2);
+      LayeredMolecules layeredMolecules(g2);
 
-      TautomerEnumerator tautomerEnumerator(g2.asMolecule());
+      TautomerEnumerator tautomerEnumerator(g2.asMolecule(), "");
 
-      EmbeddingEnumerator ee(tautomerEnumerator.hyperMolecule);
+      EmbeddingEnumerator ee(tautomerEnumerator.layeredMolecules);
       ee.setSubgraph(g1);
       ee.userdata = &_d;
 
@@ -568,8 +568,8 @@ bool TautomerMatcher::findMatch ()
          ee.cb_vertex_add = NULL;
          ee.cb_vertex_remove = _vertexRemoveHyper;
          SubstructureSearchBreadcrumps breadcrumps;
-         breadcrumps.mask.resize(tautomerEnumerator.hyperMolecule.layers);
-         breadcrumps.mask.flip(0, tautomerEnumerator.hyperMolecule.layers);
+         breadcrumps.mask.resize(tautomerEnumerator.layeredMolecules.layers);
+         breadcrumps.mask.flip(0, tautomerEnumerator.layeredMolecules.layers);
          ee.userdata = &breadcrumps;
 
          if (!ee.process())

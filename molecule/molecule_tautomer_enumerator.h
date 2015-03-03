@@ -17,7 +17,7 @@
 
 #include "base_cpp/reusable_obj_array.h"
 #include "molecule/molecule.h"
-#include "molecule/molecule_hyper_molecule.h"
+#include "molecule/molecule_layered_molecules.h"
 
 namespace indigo {
 
@@ -26,8 +26,9 @@ class Molecule;
 class TautomerEnumerator
 {
 public:
-   TautomerEnumerator(Molecule &molecule);
+   TautomerEnumerator(Molecule &molecule, const char *options);
 
+   bool runProcedure();
    void constructMolecule(Molecule &molecule, int layer);
    int size();
 
@@ -48,8 +49,10 @@ protected:
    static void vertexAdd(Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
    static void vertexRemove(Graph &subgraph, int sub_idx, void *userdata);
 
+   Graph _zebraPattern;
+
 public:
-   HyperMolecule hyperMolecule;
+   LayeredMolecules layeredMolecules;
 };
 
 }

@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "molecule/molecule_hyper_molecule.h"
+#include "molecule/molecule_layered_molecules.h"
 
 #include "base_c/defs.h"
 #include "base_cpp/output.h"
@@ -23,10 +23,8 @@
 
 using namespace indigo;
 
-HyperMolecule::HyperMolecule(BaseMolecule& molecule)
+LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
 {
-   int i;
-
    _proto.clone(molecule.asMolecule(), 0, 0);
    _proto.dearomatize(AromaticityOptions());
 
@@ -34,7 +32,7 @@ HyperMolecule::HyperMolecule(BaseMolecule& molecule)
 
    layers = 1;
    _wordsNeeded = 1;
-   for (i = 0; i != _proto.edgeCount(); i++)
+   for (auto i = _proto.edgeBegin(); i != _proto.edgeEnd(); i = _proto.edgeNext(i))
    {
       const Edge &edge = _proto.getEdge(i);
 
@@ -63,48 +61,48 @@ HyperMolecule::HyperMolecule(BaseMolecule& molecule)
    layers = 1;
 }
 
-HyperMolecule::~HyperMolecule()
+LayeredMolecules::~LayeredMolecules()
 {
 }
 
-void HyperMolecule::constructMolecule(Molecule &molecule, int layer)
+void LayeredMolecules::constructMolecule(Molecule &molecule, int layer)
 {
    molecule.clone(_proto, NULL, NULL);
-   for (int i = 0; i != _proto.edgeCount(); ++i)
+   for (auto i = _proto.edgeBegin(); i != _proto.edgeEnd(); i = _proto.edgeNext(i))
    {
       int order = (_bond_masks[1][i].get(layer) ? 1 : 2);
       molecule.setBondOrder(i, order);
    }
 }
 
-void HyperMolecule::clear()
+void LayeredMolecules::clear()
 {
    BaseMolecule::clear();
 
    // ...
 }
 
-Dbitset &HyperMolecule::getBondMaskIND(int idx, int order)
+Dbitset &LayeredMolecules::getBondMaskIND(int idx, int order)
 {
    return _bond_masks[order][idx];
 }
 
-bool HyperMolecule::isMobilePosition(int idx)
+bool LayeredMolecules::isMobilePosition(int idx)
 {
    return _mobilePositions[idx];
 }
 
-void HyperMolecule::setMobilePosition(int idx, bool value)
+void LayeredMolecules::setMobilePosition(int idx, bool value)
 {
    _mobilePositions[idx] = value;
 }
 
-Dbitset &HyperMolecule::getMobilePositionOccupiedMask(int idx)
+Dbitset &LayeredMolecules::getMobilePositionOccupiedMask(int idx)
 {
    return _mobilePositionsOccupied[idx];
 }
 
-void HyperMolecule::setMobilePositionOccupiedMask(int idx, Dbitset &mask, bool value)
+void LayeredMolecules::setMobilePositionOccupiedMask(int idx, Dbitset &mask, bool value)
 {
    if (value)
       _mobilePositionsOccupied[idx].orWith(mask);
@@ -112,7 +110,7 @@ void HyperMolecule::setMobilePositionOccupiedMask(int idx, Dbitset &mask, bool v
       _mobilePositionsOccupied[idx].andNotWith(mask);
 }
 
-void HyperMolecule::addTautomer(Dbitset &mask1, Array<int> &path, int beg, int end, bool forward)
+void LayeredMolecules::addLayers(Dbitset &mask1, Array<int> &path, int beg, int end, bool forward)
 {
    Array<bool> onPath;
    onPath.expandFill(edgeCount(), false);
@@ -136,13 +134,13 @@ void HyperMolecule::addTautomer(Dbitset &mask1, Array<int> &path, int beg, int e
       if (_wordsNeeded * 64 < newTautomerIndex + 1)
       {
          // resize all masks
-         for (auto i = 0; i < edgeCount(); ++i)
+         for (auto i = _proto.edgeBegin(); i != _proto.edgeEnd(); i = _proto.edgeNext(i))
          {
             _bond_masks[1][i].resize(newTautomerIndex+1);
             _bond_masks[2][i].resize(newTautomerIndex+1);
             _bond_masks[3][i].resize(newTautomerIndex+1);
          }
-         for (auto i = 0; i < vertexCount(); ++i)
+         for (auto i = _proto.vertexBegin(); i != _proto.vertexEnd(); i = _proto.vertexNext(i))
          {
             _mobilePositionsOccupied[i].resize(newTautomerIndex+1);
          }
@@ -208,173 +206,173 @@ void HyperMolecule::addTautomer(Dbitset &mask1, Array<int> &path, int beg, int e
    _mobilePositionsOccupied[forward ? end : beg].orWith(newTautomersMask);
 }
 
-int HyperMolecule::getAtomNumber(int idx)
+int LayeredMolecules::getAtomNumber(int idx)
 {
    return _proto.getAtomNumber(idx);
 }
 
-int HyperMolecule::getAtomCharge(int idx)
+int LayeredMolecules::getAtomCharge(int idx)
 {
    return _proto.getAtomCharge(idx);
 }
 
-int HyperMolecule::getAtomIsotope(int idx)
+int LayeredMolecules::getAtomIsotope(int idx)
 {
    return _proto.getAtomIsotope(idx);
 }
 
-int HyperMolecule::getAtomRadical(int idx)
+int LayeredMolecules::getAtomRadical(int idx)
 {
    return _proto.getAtomRadical(idx);
 }
 
-int HyperMolecule::getAtomAromaticity(int idx)
+int LayeredMolecules::getAtomAromaticity(int idx)
 {
    return _proto.getAtomAromaticity(idx);
 }
 
-int HyperMolecule::getExplicitValence(int idx)
+int LayeredMolecules::getExplicitValence(int idx)
 {
    return _proto.getExplicitValence(idx);
 }
 
-int HyperMolecule::getAtomValence(int idx)
+int LayeredMolecules::getAtomValence(int idx)
 {
    return _proto.getAtomValence(idx);
 }
 
-int HyperMolecule::getAtomSubstCount(int idx)
+int LayeredMolecules::getAtomSubstCount(int idx)
 {
    return _proto.getAtomSubstCount(idx);
 }
 
-int HyperMolecule::getAtomRingBondsCount(int idx)
+int LayeredMolecules::getAtomRingBondsCount(int idx)
 {
    return _proto.getAtomSubstCount(idx);
 }
 
-int HyperMolecule::getAtomMaxH(int idx)
+int LayeredMolecules::getAtomMaxH(int idx)
 {
    return getAtomTotalH(idx);
 }
 
-int HyperMolecule::getAtomMinH(int idx)
+int LayeredMolecules::getAtomMinH(int idx)
 {
    return getAtomTotalH(idx);
 }
 
-int HyperMolecule::getAtomTotalH(int idx)
+int LayeredMolecules::getAtomTotalH(int idx)
 {
    throw Error("getAtomTotalH method has no sense for LayeredMolecules");
 }
 
-bool HyperMolecule::isPseudoAtom(int idx)
+bool LayeredMolecules::isPseudoAtom(int idx)
 {
    return _proto.isPseudoAtom(idx);
 }
 
-const char * HyperMolecule::getPseudoAtom(int idx)
+const char * LayeredMolecules::getPseudoAtom(int idx)
 {
    return _proto.getPseudoAtom(idx);
 }
 
-bool HyperMolecule::isRSite(int idx)
+bool LayeredMolecules::isRSite(int idx)
 {
    return _proto.isRSite(idx);
 }
 
-dword HyperMolecule::getRSiteBits(int idx)
+dword LayeredMolecules::getRSiteBits(int idx)
 {
    return _proto.getRSiteBits(idx);
 }
 
-void HyperMolecule::allowRGroupOnRSite(int atom_idx, int rg_idx)
+void LayeredMolecules::allowRGroupOnRSite(int atom_idx, int rg_idx)
 {
    throw Error("allowRGroupOnRSite method is not implemented in LayeredMolecules class");
 }
 
-int HyperMolecule::getBondOrder(int idx)
+int LayeredMolecules::getBondOrder(int idx)
 {
    throw Error("getBondOrder method has no sense for LayeredMolecules");
 }
 
-int HyperMolecule::getBondTopology(int idx)
+int LayeredMolecules::getBondTopology(int idx)
 {
    throw Error("getBondTopology method is not implemented in LayeredMolecules class");
 }
 
-bool HyperMolecule::atomNumberBelongs(int idx, const int *numbers, int count)
+bool LayeredMolecules::atomNumberBelongs(int idx, const int *numbers, int count)
 {
    return _proto.atomNumberBelongs(idx, numbers, count);
 }
 
-bool HyperMolecule::possibleAtomNumber(int idx, int number)
+bool LayeredMolecules::possibleAtomNumber(int idx, int number)
 {
    return _proto.possibleAtomNumber(idx, number);
 }
 
-bool HyperMolecule::possibleAtomNumberAndCharge(int idx, int number, int charge)
+bool LayeredMolecules::possibleAtomNumberAndCharge(int idx, int number, int charge)
 {
    return _proto.possibleAtomNumberAndCharge(idx, number, charge);
 }
 
-bool HyperMolecule::possibleAtomNumberAndIsotope(int idx, int number, int isotope)
+bool LayeredMolecules::possibleAtomNumberAndIsotope(int idx, int number, int isotope)
 {
    return _proto.possibleAtomNumberAndIsotope(idx, number, isotope);
 }
 
-bool HyperMolecule::possibleAtomIsotope(int idx, int isotope)
+bool LayeredMolecules::possibleAtomIsotope(int idx, int isotope)
 {
    return _proto.possibleAtomIsotope(idx, isotope);
 }
 
-bool HyperMolecule::possibleAtomCharge(int idx, int charge)
+bool LayeredMolecules::possibleAtomCharge(int idx, int charge)
 {
    return _proto.possibleAtomCharge(idx, charge);
 }
 
-void HyperMolecule::getAtomDescription(int idx, Array<char> &description)
+void LayeredMolecules::getAtomDescription(int idx, Array<char> &description)
 {
    return _proto.getAtomDescription(idx, description);
 }
 
-void HyperMolecule::getBondDescription(int idx, Array<char> &description)
+void LayeredMolecules::getBondDescription(int idx, Array<char> &description)
 {
    throw Error("getBondDescription method is not implemented in LayeredMolecules class");
 }
 
-bool HyperMolecule::possibleBondOrder(int idx, int order)
+bool LayeredMolecules::possibleBondOrder(int idx, int order)
 {
    throw Error("possibleBondOrder method has no sense for LayeredMolecules");
 }
 
-bool HyperMolecule::isSaturatedAtom(int idx)
+bool LayeredMolecules::isSaturatedAtom(int idx)
 {
    throw Error("isSaturatedAtom method is not implemented in LayeredMolecules class");
 }
 
-bool HyperMolecule::bondStereoCare(int idx)
+bool LayeredMolecules::bondStereoCare(int idx)
 {
    throw Error("bondStereoCare method is not implemented in LayeredMolecules class");
 }
 
-bool HyperMolecule::aromatize(const AromaticityOptions &options)
+bool LayeredMolecules::aromatize(const AromaticityOptions &options)
 {
    return _proto.aromatize(options);
 }
 
-bool HyperMolecule::dearomatize(const AromaticityOptions &options)
+bool LayeredMolecules::dearomatize(const AromaticityOptions &options)
 {
    return _proto.dearomatize(options);
 }
 
-void HyperMolecule::_mergeWithSubmolecule(BaseMolecule &bmol, const Array<int> &vertices,
+void LayeredMolecules::_mergeWithSubmolecule(BaseMolecule &bmol, const Array<int> &vertices,
    const Array<int> *edges, const Array<int> &mapping, int skip_flags)
 {
    throw Error("_mergeWithSubmolecule method is not implemented in LayeredMolecules class");
 }
 
-BaseMolecule * HyperMolecule::neu ()
+BaseMolecule * LayeredMolecules::neu()
 {
    throw Error("neu method is not implemented in LayeredMolecules class");
 }

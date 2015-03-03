@@ -15,20 +15,21 @@
 #include "indigo_tautomer_enumerator.h"
 #include "indigo_molecule.h"
 
-CEXPORT int indigoTautomerEnumerate(int molecule)
+CEXPORT int indigoTautomerEnumerate(int molecule, const char *options)
 {
    INDIGO_BEGIN
    {
    Molecule &mol = self.getObject(molecule).getMolecule();
 
-   return self.addObject(new IndigoTautomerIter(mol));
+   return self.addObject(new IndigoTautomerIter(mol, options));
    }
    INDIGO_END(-1)
 }
 
-IndigoTautomerIter::IndigoTautomerIter(Molecule &molecule) :
+IndigoTautomerIter::IndigoTautomerIter(Molecule &molecule, const char *options) :
 IndigoObject(TAUTOMER_ITER),
-_enumerator(molecule)
+_enumerator(molecule, options),
+_complete(false)
 {
    _layer = 0;
 }
@@ -44,6 +45,7 @@ IndigoTautomerIter::~IndigoTautomerIter()
 
 IndigoObject * IndigoTautomerIter::next()
 {
+   hasNext();
    if (_layer < _enumerator.size())
       return new IndigoMoleculeTautomer(_enumerator, _layer++);
    return NULL;
@@ -51,6 +53,14 @@ IndigoObject * IndigoTautomerIter::next()
 
 bool IndigoTautomerIter::hasNext()
 {
+   if (_complete)
+      return false;
+   if (_layer == _enumerator.size() - 1)
+   {
+      _enumerator.runProcedure();
+      if (_layer == _enumerator.size() - 1)
+         _complete = true;
+   }
    return _layer < _enumerator.size() - 1;
 }
 

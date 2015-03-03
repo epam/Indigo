@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 GGA Software Services LLC
+ * Copyright (C) 2015 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __molecule_hyper_molecule_h__
-#define __molecule_hyper_molecule_h__
+#ifndef __molecule_layered_molecules_h__
+#define __molecule_layered_molecules_h__
 
 #include "common/base_cpp/d_bitset.h"
 #include "molecule/base_molecule.h"
@@ -26,18 +26,18 @@
 
 namespace indigo {
 
-class DLLEXPORT HyperMolecule : public BaseMolecule
+class DLLEXPORT LayeredMolecules : public BaseMolecule
 {      
 public:
-   HyperMolecule(BaseMolecule& molecule);
-   virtual ~HyperMolecule();
+   LayeredMolecules(BaseMolecule& molecule);
+   virtual ~LayeredMolecules();
 
    Dbitset &getBondMaskIND(int idx, int order);
    bool isMobilePosition(int idx);
    void setMobilePosition(int idx, bool value);
    Dbitset &getMobilePositionOccupiedMask(int idx);
    void setMobilePositionOccupiedMask(int idx, Dbitset &mask, bool value);
-   void addTautomer(Dbitset &mask, Array<int> &path, int beg, int end, bool forward);
+   void addLayers(Dbitset &mask, Array<int> &path, int beg, int end, bool forward);
 
    void constructMolecule(Molecule &molecule, int layer);
 
@@ -99,7 +99,7 @@ protected:
                                        int skip_flags);
 
 private:
-   HyperMolecule (const HyperMolecule &); // no implicit copy
+   LayeredMolecules(const LayeredMolecules &); // no implicit copy
    unsigned _wordsNeeded;
 };
 
