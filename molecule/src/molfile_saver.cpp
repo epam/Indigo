@@ -719,10 +719,22 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       {
          ArrayOutput out(buf);
          _writeGenericSGroup3000(mol.data_sgroups[i], idx++, "DAT", out);
+
+         const char *name = mol.data_sgroups[i].name.ptr();
+         if (name != 0 && strlen(name) > 0)
+         {
+            out.writeString(" FIELDNAME=");
+            bool space_found = (strchr(name, ' ') != NULL);
+            if (space_found)
+               out.writeString("\"");
+            out.writeString(name);
+            if (space_found)
+               out.writeString("\"");
+         }
          const char *desc = mol.data_sgroups[i].description.ptr();
          if (desc != 0 && strlen(desc) > 0)
          {
-            out.writeString(" FIELDNAME=");
+            out.writeString(" FIELDINFO=");
             bool space_found = (strchr(desc, ' ') != NULL);
             if (space_found)
                out.writeString("\"");
@@ -730,6 +742,29 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             if (space_found)
                out.writeString("\"");
          }
+         const char *querycode = mol.data_sgroups[i].querycode.ptr();
+         if (querycode != 0 && strlen(querycode) > 0)
+         {
+            out.writeString(" QUERYTYPE=");
+            bool space_found = (strchr(querycode, ' ') != NULL);
+            if (space_found)
+               out.writeString("\"");
+            out.writeString(querycode);
+            if (space_found)
+               out.writeString("\"");
+         }
+         const char *queryoper = mol.data_sgroups[i].queryoper.ptr();
+         if (queryoper != 0 && strlen(queryoper) > 0)
+         {
+            out.writeString(" QUERYOP=");
+            bool space_found = (strchr(queryoper, ' ') != NULL);
+            if (space_found)
+               out.writeString("\"");
+            out.writeString(queryoper);
+            if (space_found)
+               out.writeString("\"");
+         }
+
          out.printf(" FIELDDISP=\"");
          _writeDataSGroupDisplay(mol.data_sgroups[i], out);
          out.printf("\"");
@@ -1520,17 +1555,38 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          else if (sgroup_types[i] == _SGROUP_TYPE_DAT)
          {
             BaseMolecule::DataSGroup &datasgroup = mol.data_sgroups[sgroup_ids[i]];
-            int k = 30;
 
             output.printf("M  SDT %3d ", datasgroup.original_group);
-            if (datasgroup.description.size() > 1)
+
+            int k = 30;
+            if (datasgroup.name.size() > 1)
             {
-               output.printf("%s", datasgroup.description.ptr());
-               k -= datasgroup.description.size() - 1;
+               output.printf("%s", datasgroup.name.ptr());
+               k -= datasgroup.name.size() - 1;
             }
             while (k-- > 0)
                output.writeChar(' ');
             output.writeChar('F');
+
+            if (datasgroup.description.size() > 1)
+            {
+               k = 20;
+               output.printf(" %s", datasgroup.description.ptr());
+               k -= datasgroup.description.size() - 1;
+            }
+
+            if (datasgroup.querycode.size() > 1)
+            {
+               while (k-- > 0)
+                  output.writeChar(' ');
+               output.printf("%2s", datasgroup.querycode.ptr());
+            }
+
+            if (datasgroup.queryoper.size() > 1)
+            {
+               output.printf("%s", datasgroup.queryoper.ptr());
+            }
+
             output.writeCR();
 
             output.printf("M  SDD %3d ", datasgroup.original_group);
@@ -1806,12 +1862,16 @@ bool MolfileSaver::_checkAttPointOrder (BaseMolecule &mol, int rsite)
 
 void MolfileSaver::_writeDataSGroupDisplay (BaseMolecule::DataSGroup &datasgroup, Output &out)
 {
-   out.printf("%10.4f%10.4f    %c%c%c   ALL  1       %1d  ",
+   out.printf("%10.4f%10.4f    %c%c%c",
                 datasgroup.display_pos.x, datasgroup.display_pos.y,
                 datasgroup.detached ? 'D' : 'A',
                 datasgroup.relative ? 'R' : 'A',
-                datasgroup.display_units ? 'U' : ' ',
-                datasgroup.dasp_pos);
+                datasgroup.display_units ? 'U' : ' ');
+   if (datasgroup.num_chars == 0)
+      out.printf("   ALL  1    %c  %1d  ", datasgroup.tag, datasgroup.dasp_pos);
+   else
+      out.printf("   %3d  1    %c  %1d  ", datasgroup.num_chars, datasgroup.tag, datasgroup.dasp_pos);
+
 }
 
 bool MolfileSaver::_hasNeighborEitherBond (BaseMolecule &mol, int edge_idx)

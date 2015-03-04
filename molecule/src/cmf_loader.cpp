@@ -739,12 +739,18 @@ void CmfLoader::_readSGroup (int code, Molecule &mol)
       _readGeneralSGroup(s);
 
       _readString(s.description);
+      _readString(s.name);
+      _readString(s.type);
+      _readString(s.querycode);
+      _readString(s.queryoper);
       _readString(s.data);
       byte bits = _scanner->readByte();
       s.dasp_pos = bits & 0x0F;
       s.detached = (bits & (1 << 4)) != 0;
       s.relative = (bits & (1 << 5)) != 0;
       s.display_units = (bits & (1 << 6)) != 0;
+      s.num_chars = (int)_scanner->readPackedUInt();
+      s.tag = _scanner->readChar();
    }
    else if (code == CMF_SUPERATOM)
    {

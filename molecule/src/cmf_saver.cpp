@@ -337,12 +337,18 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       _encode(CMF_DATASGROUP);
       _encodeBaseSGroup(mol, sd, mapping);
       _encodeString(sd.description);
+      _encodeString(sd.name);
+      _encodeString(sd.type);
+      _encodeString(sd.querycode);
+      _encodeString(sd.queryoper);
       _encodeString(sd.data);
       // Pack detached, relative, display_units, and sd.dasp_pos into one byte
       if (sd.dasp_pos < 0 || sd.dasp_pos > 9)
          throw Error("DataSGroup dasp_pos field should be less than 10: %d", sd.dasp_pos);
       byte packed = (sd.dasp_pos & 0x0F) | (sd.detached << 4) | (sd.relative << 5) | (sd.display_units << 6);
       _output->writeByte(packed);
+      _output->writePackedUInt(sd.num_chars);
+      _output->writeChar(sd.tag);
    }
 
    for (int i = mol.superatoms.begin(); i != mol.superatoms.end(); i = mol.superatoms.next(i))

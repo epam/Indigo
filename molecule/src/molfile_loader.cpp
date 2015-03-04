@@ -982,7 +982,7 @@ void MolfileLoader::_readCtab2000 ()
                int value = _scanner.readIntFix(3);
 
                if (strncmp(chars, "SPL", 3) == 0)
-                  sgroup->parent_group = value - 1;
+                  sgroup->parent_group = value;
                else
                   sgroup->brk_style = value;
 
@@ -1052,7 +1052,39 @@ void MolfileLoader::_readCtab2000 ()
                BufferScanner strscan(rest);
                BaseMolecule::DataSGroup &sgroup = _bmol->data_sgroups[_sgroup_mapping[sgroup_idx]];
 
+               // Read field name
                int k = 30;
+               while (k-- > 0)
+               {
+                  if (strscan.isEOF())
+                     break;
+                  int c = strscan.readChar();
+                  sgroup.name.push(c);
+               }
+               // Remove last spaces because name can have multiple words
+               while (sgroup.name.size() > 0)
+               {
+                  if (isspace(sgroup.name.top())) 
+                     sgroup.name.pop();
+                  else
+                     break;
+               }
+
+               sgroup.name.push(0);
+
+               // Read field type
+               k = 2;
+               while (k-- > 0)
+               {
+                  if (strscan.isEOF())
+                     break;
+                  int c = strscan.readChar();
+                  sgroup.type.push(c);
+               }
+               sgroup.type.push(0);
+
+               // Read field description
+               k = 20;
                while (k-- > 0)
                {
                   if (strscan.isEOF())
@@ -1060,12 +1092,52 @@ void MolfileLoader::_readCtab2000 ()
                   int c = strscan.readChar();
                   sgroup.description.push(c);
                }
-               // Remove last spaces because description can have multiple words
-               if (sgroup.description.size() > 0)
-                  while (isspace(sgroup.description.top()))
+               // Remove last spaces because dscription can have multiple words?
+               while (sgroup.description.size() > 0)
+               {
+                  if (isspace(sgroup.description.top()))
                      sgroup.description.pop();
-
+                  else
+                     break;
+               }
                sgroup.description.push(0);
+
+               // Read query code
+               k = 2;
+               while (k-- > 0)
+               {
+                  if (strscan.isEOF())
+                     break;
+                  int c = strscan.readChar();
+                  sgroup.querycode.push(c);
+               }
+               while (sgroup.querycode.size() > 0)
+               {
+                  if (isspace(sgroup.querycode.top()))
+                     sgroup.querycode.pop();
+                  else
+                     break;
+               }
+               sgroup.querycode.push(0);
+
+               // Read query operator
+               k = 20;
+               while (k-- > 0)
+               {
+                  if (strscan.isEOF())
+                     break;
+                  int c = strscan.readChar();
+                  sgroup.queryoper.push(c);
+               }
+               while (sgroup.queryoper.size() > 0)
+               {
+                  if (isspace(sgroup.queryoper.top()))
+                     sgroup.queryoper.pop();
+                  else
+                     break;
+               }
+               sgroup.queryoper.push(0);
+
             }
          }
          else if (strncmp(chars, "SDD", 3) == 0)
@@ -3002,6 +3074,10 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       }
       else if (strcmp(entity.ptr(), "FIELDNAME") == 0)
       {
+         _readStringInQuotes(scanner, dsg ? &dsg->name : NULL);
+      }
+      else if (strcmp(entity.ptr(), "FIELDINFO") == 0)
+      {
          _readStringInQuotes(scanner, dsg ? &dsg->description : NULL);
       }
       else if (strcmp(entity.ptr(), "FIELDDISP") == 0)
@@ -3017,6 +3093,14 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       else if (strcmp(entity.ptr(), "FIELDDATA") == 0)
       {
          _readStringInQuotes(scanner, &dsg->data);
+      }
+      else if (strcmp(entity.ptr(), "QUERYTYPE") == 0)
+      {
+         _readStringInQuotes(scanner, dsg ? &dsg->querycode : NULL);
+      }
+      else if (strcmp(entity.ptr(), "QUERYOP") == 0)
+      {
+         _readStringInQuotes(scanner, dsg ? &dsg->queryoper : NULL);
       }
       else if (strcmp(entity.ptr(), "LABEL") == 0)
       {
@@ -3171,9 +3255,24 @@ void MolfileLoader::_readSGroupDisplay (Scanner &scanner, BaseMolecule::DataSGro
    int end = scanner.tell();
    scanner.seek(cur, SEEK_SET);
 
+   scanner.skip(3);
+
+   char chars[4] = {0, 0, 0, 0};
+   scanner.readCharsFix(3, chars);
+   if (strncmp(chars, "ALL", 3) == 0)
+      dsg.num_chars = 0;
+   else
+   {
+      scanner.seek(cur + 3, SEEK_CUR);
+      dsg.num_chars = scanner.readInt1();       
+   }
+
+   scanner.skip(7);
+   dsg.tag = scanner.readChar(); 
+
    if (end - cur + 1 > 16)
    {
-      scanner.skip(16);
+      scanner.skip(2);
       int c = scanner.readChar();
       if (c >= '1' && c <= '9')
          dsg.dasp_pos = c - '0';

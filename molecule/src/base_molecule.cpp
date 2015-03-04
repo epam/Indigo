@@ -129,6 +129,12 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
          sg.relative = supersg.relative;
          sg.display_units = supersg.display_units;
          sg.description.copy(supersg.description);
+         sg.name.copy(supersg.name);
+         sg.type.copy(supersg.type);
+         sg.querycode.copy(supersg.querycode);
+         sg.queryoper.copy(supersg.queryoper);
+         sg.num_chars = supersg.num_chars;
+         sg.tag = supersg.tag;
       }
       else
          data_sgroups.remove(idx);
@@ -1012,6 +1018,8 @@ BaseMolecule::DataSGroup::DataSGroup ()
    relative = false;
    display_units = false;
    dasp_pos = 1;
+   num_chars = 0;
+   tag = ' ';
 }
 
 BaseMolecule::DataSGroup::~DataSGroup ()

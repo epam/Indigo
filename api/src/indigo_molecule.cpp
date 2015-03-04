@@ -2506,9 +2506,9 @@ CEXPORT const char * indigoDescription (int data_sgroup)
    INDIGO_BEGIN
    {
       IndigoDataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(data_sgroup));
-      if (dsg.get().description.size() < 1)
+      if (dsg.get().name.size() < 1)
          return "";
-      return dsg.get().description.ptr();
+      return dsg.get().name.ptr();
    }
    INDIGO_END(0)
 }
@@ -2526,7 +2526,7 @@ CEXPORT const char * indigoData (int data_sgroup)
 }
 
 CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
-        int nbonds, int *bonds, const char *description, const char *data)
+        int nbonds, int *bonds, const char *name, const char *data)
 {
    INDIGO_BEGIN
    {
@@ -2542,8 +2542,9 @@ CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
             dsg.bonds.push(bonds[i]);
       if (data != 0)
          dsg.data.readString(data, false);
-      if (description != 0)
-         dsg.description.readString(description, true);
+      if (name != 0)
+         dsg.name.readString(name, true);
+
       return self.addObject(new IndigoDataSGroup(mol, idx));
    }
    INDIGO_END(-1)
