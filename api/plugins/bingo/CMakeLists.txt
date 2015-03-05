@@ -59,7 +59,7 @@ if(MSVC)
 	set_target_properties(bingo-shared PROPERTIES COMPILE_FLAGS "-D_WINDLL -DINDIGO_PLUGIN")
 endif()
 
-if (MSVC)
+if (MSVC OR MINGW)
 	target_link_libraries(bingo-shared indigo-shared)
 endif()
 set_property(TARGET bingo-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
