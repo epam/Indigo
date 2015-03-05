@@ -401,6 +401,20 @@ CEXPORT int indigoAddSuperatom (int molecule, int natoms, int *atoms, const char
 
 CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *options);
 
+CEXPORT int indigoSetSgroupData (int sgroup, const char *data);
+CEXPORT int indigoSetSgroupCoords (int sgroup, float x, float y);
+CEXPORT int indigoSetSgroupDescription (int sgroup, const char *description);
+CEXPORT int indigoSetSgroupFieldName (int sgroup, const char *name);
+CEXPORT int indigoSetSgroupQueryCode (int sgroup, const char *querycode);
+CEXPORT int indigoSetSgroupQueryOper (int sgroup, const char *queryoper);
+CEXPORT int indigoSetSgroupDisplay (int sgroup, const char *option);
+CEXPORT int indigoSetSgroupLocation (int sgroup, const char *option);
+CEXPORT int indigoSetSgroupTag (int sgroup, const char *tag);
+CEXPORT int indigoSetSgroupTagAlign (int sgroup, int tag_align);
+CEXPORT int indigoSetSgroupDataType (int sgroup, const char *type);
+CEXPORT int indigoSetSgroupXCoord (int sgroup, float x);
+CEXPORT int indigoSetSgroupYCoord (int sgroup, float y);
+
 CEXPORT int indigoCreateSgroup (const char *type, int mapping, const char *name);
 CEXPORT const char * indigoGetSgroupClass (int sgroup);
 CEXPORT const char * indigoGetSgroupName (int sgroup);

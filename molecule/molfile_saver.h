@@ -80,6 +80,7 @@ protected:
    void _writeAttachmentValues2000 (Output &output, BaseMolecule &fragment);
    void _writeGenericSGroup3000 (BaseMolecule::SGroup &sgroup, int idx, const char *type, Output &output);
    void _writeDataSGroupDisplay (BaseMolecule::DataSGroup &datasgroup, Output &out);
+   void _writeFormattedString(Output &output, Array<char> &str, int length);
    static bool _checkAttPointOrder (BaseMolecule &mol, int rsite);
    static bool _hasNeighborEitherBond (BaseMolecule &mol, int edge_idx);
 

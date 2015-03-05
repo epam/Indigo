@@ -506,6 +506,58 @@ class IndigoObject(object):
         options = '' if options is None else options
         return self.dispatcher._checkResult(Indigo._lib.indigoSetDataSGroupXY(self.id, x, y, options.encode(ENCODE_ENCODING)))
 
+    def setSgroupData(self, data):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupData(self.id, data.encode(ENCODE_ENCODING)))
+
+    def setSgroupCoords(self, x, y):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupCoords(self.id, x, y))
+
+    def setSgroupDescription(self, description):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupDescription(self.id, description.encode(ENCODE_ENCODING)))
+
+    def setSgroupFieldName(self, name):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupFieldName(self.id, name.encode(ENCODE_ENCODING)))
+
+    def setSgroupQueryCode(self, code):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupQueryCode(self.id, code.encode(ENCODE_ENCODING)))
+
+    def setSgroupQueryOper(self, oper):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupQueryOper(self.id, oper.encode(ENCODE_ENCODING)))
+
+    def setSgroupDisplay(self, option):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupDisplay(self.id, option.encode(ENCODE_ENCODING)))
+
+    def setSgroupLocation(self, option):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupLocation(self.id, option.encode(ENCODE_ENCODING)))
+
+    def setSgroupTag(self, tag):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupTag(self.id, tag.encode(ENCODE_ENCODING)))
+
+    def setSgroupTagAlign(self, tag_align):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupTagAlign(self.id, tag_align))
+
+    def setSgroupDataType(self, data_type):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupDataType(self.id, data_type.encode(ENCODE_ENCODING)))
+
+    def setSgroupXCoord(self, x):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupXCoord(self.id, x))
+
+    def setSgroupYCoord(self, y):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupYCoord(self.id, y))
+
     def createSgroup(self, sgtype, mapping, name):
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoCreateSgroup(sgtype.encode(ENCODE_ENCODING), mapping.id, name.encode(ENCODE_ENCODING))))
@@ -1533,6 +1585,32 @@ class Indigo(object):
         Indigo._lib.indigoAddSuperatom.argtypes = [c_int, c_int, POINTER(c_int), c_char_p]
         Indigo._lib.indigoSetDataSGroupXY.restype = c_int
         Indigo._lib.indigoSetDataSGroupXY.argtypes = [c_int, c_float, c_float, c_char_p]
+        Indigo._lib.indigoSetSgroupData.restype = c_int
+        Indigo._lib.indigoSetSgroupData.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupCoords.restype = c_int
+        Indigo._lib.indigoSetSgroupCoords.argtypes = [c_int, c_float, c_float]
+        Indigo._lib.indigoSetSgroupDescription.restype = c_int
+        Indigo._lib.indigoSetSgroupDescription.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupFieldName.restype = c_int
+        Indigo._lib.indigoSetSgroupFieldName.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupQueryCode.restype = c_int
+        Indigo._lib.indigoSetSgroupQueryCode.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupQueryOper.restype = c_int
+        Indigo._lib.indigoSetSgroupQueryOper.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupDisplay.restype = c_int
+        Indigo._lib.indigoSetSgroupDisplay.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupLocation.restype = c_int
+        Indigo._lib.indigoSetSgroupLocation.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupTag.restype = c_int
+        Indigo._lib.indigoSetSgroupTag.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupTagAlign.restype = c_int
+        Indigo._lib.indigoSetSgroupTagAlign.argtypes = [c_int, c_int]
+        Indigo._lib.indigoSetSgroupDataType.restype = c_int
+        Indigo._lib.indigoSetSgroupDataType.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupXCoord.restype = c_int
+        Indigo._lib.indigoSetSgroupXCoord.argtypes = [c_int, c_float]
+        Indigo._lib.indigoSetSgroupYCoord.restype = c_int
+        Indigo._lib.indigoSetSgroupYCoord.argtypes = [c_int, c_float]
         Indigo._lib.indigoCreateSgroup.restype = c_int
         Indigo._lib.indigoCreateSgroup.argtypes = [c_char_p, c_int, c_char_p]
         Indigo._lib.indigoSetSgroupClass.restype = c_int

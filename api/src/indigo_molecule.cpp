@@ -2594,6 +2594,206 @@ CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *opt
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoSetSgroupData (int sgroup, const char *data)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      if (data != 0)
+         dsg.data.readString(data, false);
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupCoords (int sgroup, float x, float y)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      dsg.display_pos.x = x;
+      dsg.display_pos.y = y;
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupDescription (int sgroup, const char *description)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      if (description != 0)
+         dsg.description.readString(description, true);
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupFieldName (int sgroup, const char *name)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      if (name != 0)
+         dsg.name.readString(name, true);
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupQueryCode (int sgroup, const char *querycode)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      if (querycode != 0)
+         dsg.querycode.readString(querycode, true);
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupQueryOper (int sgroup, const char *queryoper)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      if (queryoper != 0)
+         dsg.queryoper.readString(queryoper, true);
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupDisplay (int sgroup, const char *option)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      if (option != 0 && option[0] != 0)
+      {
+         if (strcasecmp(option, "attached") == 0)
+            dsg.detached = false;
+         else if (strcasecmp(option, "detached") == 0)
+            dsg.detached = true;
+         else
+            throw IndigoError("indigoSetSgroupDisplay(): invalid option string");
+      }
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupLocation (int sgroup, const char *option)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      if (option != 0 && option[0] != 0)
+      {
+         if (strcasecmp(option, "absolute") == 0)
+            dsg.relative = false;
+         else if (strcasecmp(option, "relative") == 0)
+            dsg.relative = true;
+         else
+            throw IndigoError("indigoSetSgroupLocation(): invalid option string");
+      }
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupTag (int sgroup, const char *tag)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      if (tag != 0 && tag[0] != 0)
+      {
+         dsg.tag = tag[0];
+      }
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupTagAlign (int sgroup, int tag_align)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      if (tag_align > 0 && tag_align < 10)
+      {
+         dsg.dasp_pos = tag_align;
+      }
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupDataType (int sgroup, const char *data_type)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      if (data_type != 0 && data_type[0] != 0)
+      {
+         dsg.type.readString(data_type, true);
+      }
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupXCoord (int sgroup, float x)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      dsg.display_pos.x = x;
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSgroupYCoord (int sgroup, float y)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+
+      dsg.display_pos.y = y;
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoCreateSgroup (const char *type, int mapping, const char *name)
 {
    INDIGO_BEGIN

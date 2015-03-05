@@ -1558,34 +1558,15 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
 
             output.printf("M  SDT %3d ", datasgroup.original_group);
 
-            int k = 30;
-            if (datasgroup.name.size() > 1)
-            {
-               output.printf("%s", datasgroup.name.ptr());
-               k -= datasgroup.name.size() - 1;
-            }
-            while (k-- > 0)
-               output.writeChar(' ');
-            output.writeChar('F');
+            _writeFormattedString(output, datasgroup.name, 30);
 
-            if (datasgroup.description.size() > 1)
-            {
-               k = 20;
-               output.printf(" %s", datasgroup.description.ptr());
-               k -= datasgroup.description.size() - 1;
-            }
+            _writeFormattedString(output, datasgroup.type, 2);
 
-            if (datasgroup.querycode.size() > 1)
-            {
-               while (k-- > 0)
-                  output.writeChar(' ');
-               output.printf("%2s", datasgroup.querycode.ptr());
-            }
+            _writeFormattedString(output, datasgroup.description, 20);
 
-            if (datasgroup.queryoper.size() > 1)
-            {
-               output.printf("%s", datasgroup.queryoper.ptr());
-            }
+            _writeFormattedString(output, datasgroup.querycode, 2);
+
+            _writeFormattedString(output, datasgroup.queryoper, 15);
 
             output.writeCR();
 
@@ -1593,7 +1574,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             _writeDataSGroupDisplay(datasgroup, output);
             output.writeCR();
 
-            k = datasgroup.data.size();
+            int k = datasgroup.data.size();
             if (k > 0 && datasgroup.data.top() == 0)
                k--; // Exclude terminating zero
 
@@ -1649,6 +1630,31 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          }
       }
    }
+}
+
+void MolfileSaver::_writeFormattedString(Output &output, Array<char> &str, int length)
+{
+   int k = length;
+   if ((str.size() > 1) && (str.size() <= length))
+   {
+      output.printf("%s", str.ptr());
+      k -= str.size() - 1;
+      while (k-- > 0)
+         output.writeChar(' ');
+   }
+   else if (str.size() > 1)
+   {
+      for (k = 0; k < length; k++)
+      {
+         if (str[k] != 0)
+            output.writeChar(str[k]);
+         else
+            output.writeChar(' ');
+      }
+   }
+   else
+      while (k-- > 0)
+         output.writeChar(' ');
 }
 
 void MolfileSaver::_checkSGroupIndices2000 (BaseMolecule &mol, Array<int> &sgroup_ids, Array<int> &sgroup_types)
