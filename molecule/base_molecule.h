@@ -83,6 +83,29 @@ public:
    class DLLEXPORT SGroup
    {
    public:
+
+      enum
+      {
+         SG_TYPE = 1,
+         SG_CLASS,
+         SG_LABEL,
+         SG_DISPLAY_OPTION,
+         SG_BRACKET_STYLE,
+         SG_DATA,
+         SG_DATA_NAME,
+         SG_DATA_TYPE,
+         SG_DATA_DESCRIPTION,
+         SG_DATA_DISPLAY,
+         SG_DATA_LOCATION,
+         SG_DATA_TAG,
+         SG_QUERY_CODE,
+         SG_QUERY_OPER,
+         SG_PARENT,
+         SG_CHILD,
+         SG_ATOMS,
+         SG_BONDS,
+      };
+
       SGroup ();
       Array<int> atoms; // represented with SAL in Molfile format
       Array<int> bonds; // represented with SBL in Molfile format
@@ -176,7 +199,6 @@ public:
       int multiplier;
    };
 
-
    BaseMolecule ();
    virtual ~BaseMolecule ();
 
@@ -214,6 +236,8 @@ public:
 
    int countRSites ();
    int countSGroups ();
+
+   int findSgroups (int property, void *value, ObjArray<SGroup> &sgs);
 
    virtual bool  isRSite (int atom_idx) = 0;
    virtual dword getRSiteBits (int atom_idx) = 0;
