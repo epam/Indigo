@@ -32,7 +32,7 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
 
    layers = 1;
    _wordsNeeded = 1;
-   for (auto i = _proto.edgeBegin(); i != _proto.edgeEnd(); i = _proto.edgeNext(i))
+   for (auto i : _proto.edges())
    {
       const Edge &edge = _proto.getEdge(i);
 
@@ -68,7 +68,7 @@ LayeredMolecules::~LayeredMolecules()
 void LayeredMolecules::constructMolecule(Molecule &molecule, int layer)
 {
    molecule.clone(_proto, NULL, NULL);
-   for (auto i = _proto.edgeBegin(); i != _proto.edgeEnd(); i = _proto.edgeNext(i))
+   for (auto i : _proto.edges())
    {
       int order = (_bond_masks[1][i].get(layer) ? 1 : 2);
       molecule.setBondOrder(i, order);
@@ -134,13 +134,13 @@ void LayeredMolecules::addLayers(Dbitset &mask1, Array<int> &path, int beg, int 
       if (_wordsNeeded * 64 < newTautomerIndex + 1)
       {
          // resize all masks
-         for (auto i = _proto.edgeBegin(); i != _proto.edgeEnd(); i = _proto.edgeNext(i))
+         for (auto i : _proto.edges())
          {
-            _bond_masks[1][i].resize(newTautomerIndex+1);
-            _bond_masks[2][i].resize(newTautomerIndex+1);
-            _bond_masks[3][i].resize(newTautomerIndex+1);
+            _bond_masks[1][i].resize(newTautomerIndex + 1);
+            _bond_masks[2][i].resize(newTautomerIndex + 1);
+            _bond_masks[3][i].resize(newTautomerIndex + 1);
          }
-         for (auto i = _proto.vertexBegin(); i != _proto.vertexEnd(); i = _proto.vertexNext(i))
+         for (auto i : _proto.vertices())
          {
             _mobilePositionsOccupied[i].resize(newTautomerIndex+1);
          }

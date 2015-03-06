@@ -59,16 +59,16 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
       layeredMolecules.setMobilePosition(mapping[inchiParser.getHydrogen(i)], true);
    }
    /*
-   for (auto i = molecule.vertexBegin(); i != molecule.vertexEnd(); i = molecule.vertexNext(i))
+   for (auto i : molecule.vertices())
    {
       // Alternative: set all positions as possible mobile hydrogen positions.
       // This dramatically icreases total number of tautomers found.
-      _hyperMolecule.setMobilePosition(i, true);
+      layeredMolecules.setMobilePosition(i, true);
    } */
 
    // Indicate occupied mobile positions
    // Probably this could be done somehow inside of hypermolecule
-   for (auto i = molecule.vertexBegin(); i != molecule.vertexEnd(); i = molecule.vertexNext(i))
+   for (auto i : molecule.vertices())
    {
       Dbitset Ox01;
       Ox01.set(0);
@@ -93,7 +93,7 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
 
    // Look for "zebra" pattern (like -=-=-=-=... or =-=-=-=-...)
    int v1 = _zebraPattern.addVertex();
-   for (auto i = layeredMolecules.vertexBegin(); i != layeredMolecules.vertexEnd(); i = layeredMolecules.vertexNext(i))
+   for (auto i : layeredMolecules.vertices())
    {
       int v2 = _zebraPattern.addVertex();
       _zebraPattern.addEdge(v1, v2);
