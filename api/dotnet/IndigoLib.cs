@@ -165,6 +165,20 @@ namespace com.ggasoftware.indigo
         int indigoGetSgroupMultiplier(int sgroup);
         int indigoSetSgroupMultiplier(int sgroup, int mult);
 
+        int indigoSetSgroupData (int sgroup,  string data);                    
+        int indigoSetSgroupCoords (int sgroup, float x, float y);                  
+        int indigoSetSgroupDescription (int sgroup, string description);      
+        int indigoSetSgroupFieldName (int sgroup, string name);               
+        int indigoSetSgroupQueryCode (int sgroup, string querycode);          
+        int indigoSetSgroupQueryOper (int sgroup, string queryoper);          
+        int indigoSetSgroupDisplay (int sgroup, string option);               
+        int indigoSetSgroupLocation (int sgroup, string option);              
+        int indigoSetSgroupTag (int sgroup, string tag);                      
+        int indigoSetSgroupTagAlign (int sgroup, int tag_align);                   
+        int indigoSetSgroupDataType (int sgroup, string type);                
+        int indigoSetSgroupXCoord (int sgroup, float x);                           
+        int indigoSetSgroupYCoord (int sgroup, float y);                           
+
         float* indigoXYZ(int atom);
         int indigoSetXYZ(int atom, float x, float y, float z);
         int indigoResetCharge(int atom);

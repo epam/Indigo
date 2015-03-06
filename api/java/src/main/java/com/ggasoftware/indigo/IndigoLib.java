@@ -201,6 +201,20 @@ public interface IndigoLib extends Library
    int indigoGetSgroupMultiplier (int sgroup);
    int indigoSetSgroupMultiplier (int sgroup, int mult);
 
+   int indigoSetSgroupData (int sgroup,  String data);                    
+   int indigoSetSgroupCoords (int sgroup, float x, float y);                  
+   int indigoSetSgroupDescription (int sgroup, String description);      
+   int indigoSetSgroupFieldName (int sgroup, String name);               
+   int indigoSetSgroupQueryCode (int sgroup, String querycode);          
+   int indigoSetSgroupQueryOper (int sgroup, String queryoper);          
+   int indigoSetSgroupDisplay (int sgroup, String option);               
+   int indigoSetSgroupLocation (int sgroup, String option);              
+   int indigoSetSgroupTag (int sgroup, String tag);                      
+   int indigoSetSgroupTagAlign (int sgroup, int tag_align);                   
+   int indigoSetSgroupDataType (int sgroup, String type);                
+   int indigoSetSgroupXCoord (int sgroup, float x);                           
+   int indigoSetSgroupYCoord (int sgroup, float y);                           
+
    int indigoResetCharge (int atom);
    int indigoResetExplicitValence (int atom);
    int indigoResetRadical (int atom);

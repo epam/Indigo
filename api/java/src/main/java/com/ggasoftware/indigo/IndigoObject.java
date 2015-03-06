@@ -990,10 +990,6 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject createSgroup (String type, int mapping, String name)
    {
       dispatcher.setSessionID();
-      if (type == null)
-         description = "";
-      if (name == null)
-         data = "";
       return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoCreateSgroup(type, mapping, name)), this);
    }
 
@@ -1069,6 +1065,111 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoSetSgroupMultiplier(self, mult));
+   }
+
+   public int setSgroupData (int sgroup,  String data)
+   {
+      dispatcher.setSessionID();
+
+      if (data == null)
+         data = "";
+      return Indigo.checkResult(this, _lib.indigoSetSgroupData(self, data));
+   }
+
+   public int setSgroupCoords (int sgroup, float x, float y)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoSetSgroupCoords(self, x, y));
+   }
+
+   public int setSgroupDescription (int sgroup, String description)
+   {
+      dispatcher.setSessionID();
+
+      if (description == null)
+         description = "";
+      return Indigo.checkResult(this, _lib.indigoSetSgroupDescription(self, description));
+   }
+
+   public int setSgroupFieldName (int sgroup, String name)
+   {
+      dispatcher.setSessionID();
+
+      if (name == null)
+         name = "";
+      return Indigo.checkResult(this, _lib.indigoSetSgroupFieldName(self, name));
+   }
+
+   public int setSgroupQueryCode (int sgroup, String querycode)
+   {
+      dispatcher.setSessionID();
+
+      if (querycode == null)
+         querycode = "";
+      return Indigo.checkResult(this, _lib.indigoSetSgroupQueryCode(self, querycode));
+   }
+
+   public int setSgroupQueryOper (int sgroup, String queryoper)
+   {
+      dispatcher.setSessionID();
+
+      if (queryoper == null)
+         queryoper = "";
+      return Indigo.checkResult(this, _lib.indigoSetSgroupQueryOper(self, queryoper));
+   }
+
+   public int setSgroupDisplay (int sgroup, String option)
+   {
+      dispatcher.setSessionID();
+
+      if (option == null)
+         option = "";
+      return Indigo.checkResult(this, _lib.indigoSetSgroupDisplay(self, option));
+   }
+
+   public int setSgroupLocation (int sgroup, String option)
+   {
+      dispatcher.setSessionID();
+
+      if (option == null)
+         option = "";
+      return Indigo.checkResult(this, _lib.indigoSetSgroupLocation(self, option));
+   }
+
+   public int setSgroupTag (int sgroup, String tag)
+   {
+      dispatcher.setSessionID();
+
+      if (tag == null)
+         tag = "";
+      return Indigo.checkResult(this, _lib.indigoSetSgroupTag(self, tag));
+   }
+
+   public int setSgroupTagAlign (int sgroup, int tag_align)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoSetSgroupTagAlign(self, tag_align));
+   }
+
+   public int setSgroupDataType (int sgroup, String data_type)
+   {
+      dispatcher.setSessionID();
+
+      if (data_type == null)
+         data_type = "";
+      return Indigo.checkResult(this, _lib.indigoSetSgroupDataType(self, data_type));
+   }
+
+   public int setSgroupXCoord (int sgroup, float x)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoSetSgroupXCoord(self, x));
+   }
+
+   int setSgroupYCoord (int sgroup, float y)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoSetSgroupYCoord(self, y));
    }
 
    public void addStereocenter (int type, int v1, int v2, int v3)
