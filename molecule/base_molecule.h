@@ -83,7 +83,24 @@ public:
    class DLLEXPORT SGroup
    {
    public:
-
+      enum
+      {
+         SG_TYPE_GEN = 0,
+         SG_TYPE_DAT,
+         SG_TYPE_SUP,
+         SG_TYPE_SRU,
+         SG_TYPE_MUL,
+         SG_TYPE_MON,
+         SG_TYPE_MER,
+         SG_TYPE_COP,
+         SG_TYPE_CRO,
+         SG_TYPE_MOD,
+         SG_TYPE_GRA,
+         SG_TYPE_COM,
+         SG_TYPE_MIX,
+         SG_TYPE_FOR,
+         SG_TYPE_ANY
+      };
       enum
       {
          SG_TYPE = 1,
@@ -103,13 +120,21 @@ public:
          SG_PARENT,
          SG_CHILD,
          SG_ATOMS,
-         SG_BONDS,
+         SG_BONDS
+      };
+
+      class _SgroupRef
+      {
+      public:
+         int  sg_type;
+         int  sg_idx;
       };
 
       SGroup ();
       Array<int> atoms; // represented with SAL in Molfile format
       Array<int> bonds; // represented with SBL in Molfile format
       Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
+      int    sgroup_type;
       int    brk_style; // represented with SBT in Molfile format
       int    original_group;
       int    parent_group; // parent group number; represented with SPL in Molfile format 
@@ -237,7 +262,11 @@ public:
    int countRSites ();
    int countSGroups ();
 
-   int findSgroups (int property, void *value, ObjArray<SGroup> &sgs);
+   bool findSgroupById (int id, SGroup &sg, SGroup::_SgroupRef &sg_ref);
+
+   int findSgroups (int property, int value, Array<BaseMolecule::SGroup::_SgroupRef> &sgs);
+   int findSgroups (int property, const char *value, Array<BaseMolecule::SGroup::_SgroupRef> &sgs);
+   int findSgroups (int property, Array<int> &value, Array<BaseMolecule::SGroup::_SgroupRef> &sgs);
 
    virtual bool  isRSite (int atom_idx) = 0;
    virtual dword getRSiteBits (int atom_idx) = 0;
@@ -431,6 +460,8 @@ protected:
    void _removeBondsFromSuperatom (Superatom &sa, Array<int> &mapping);
    bool _mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
         Array<int> &mapping, Array<int> &edge_mapping);
+
+   bool _cmpIndices (Array<int> &t_inds, Array<int> &q_inds);
 
    Array<int> _hl_atoms;
    Array<int> _hl_bonds;
