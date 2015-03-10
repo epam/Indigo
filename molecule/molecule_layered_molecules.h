@@ -29,16 +29,30 @@ namespace indigo {
 class DLLEXPORT LayeredMolecules : public BaseMolecule
 {      
 public:
+   static const int BOND_TYPES_NUMBER = 4;
+
    LayeredMolecules(BaseMolecule& molecule);
    virtual ~LayeredMolecules();
 
-   Dbitset &getBondMaskIND(int idx, int order);
+   // This method returns a bitmask of all layers that contain a bond idx of a specific order:
+   Dbitset &getBondMask(int idx, int order);
+
+   // These methods are used for tracking if the atom is a possible position for a mobile hydrogen:
    bool isMobilePosition(int idx);
    void setMobilePosition(int idx, bool value);
+
+   // These methods are used for tracking if the mobile position is occupied already.
+   // The bitmask is the layers where the position is occupied.
    Dbitset &getMobilePositionOccupiedMask(int idx);
    void setMobilePositionOccupiedMask(int idx, Dbitset &mask, bool value);
+
+   // mask: the mask of layers used as prototypes;
+   // path: the path of single-double bonds to be inverted
+   // beg, end: the mobile positions of hydrogen to swap
+   // forward: the direction to move the hydrogen
    void addLayers(Dbitset &mask, Array<int> &path, int beg, int end, bool forward);
 
+   // construct a molecule that is represented as a layer
    void constructMolecule(Molecule &molecule, int layer);
 
    virtual void clear ();
@@ -90,8 +104,8 @@ public:
 
 protected:
    Molecule _proto;
-   ObjArray<Dbitset> _bond_masks[4];
-   Array<bool>   _mobilePositions;
+   ObjArray<Dbitset> _bond_masks[BOND_TYPES_NUMBER];
+   Array<bool> _mobilePositions;
    ObjArray<Dbitset> _mobilePositionsOccupied;
 
    virtual void _mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vertices,

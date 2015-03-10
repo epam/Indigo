@@ -129,8 +129,8 @@ bool TautomerEnumerator::matchEdge(Graph &subgraph, Graph &supergraph,
 
    int forwardSubBondOrder = breadcrumps.forwardEdgesHistory.size() % 2 == 0 ? 1 : 2;
    int backwardSubBondOrder = breadcrumps.backwardEdgesHistory.size() % 2 == 0 ? 2 : 1;
-   Dbitset &forwardMask = layeredMolecules.getBondMaskIND(super_idx, forwardSubBondOrder);
-   Dbitset &backwardMask = layeredMolecules.getBondMaskIND(super_idx, backwardSubBondOrder);
+   Dbitset &forwardMask = layeredMolecules.getBondMask(super_idx, forwardSubBondOrder);
+   Dbitset &backwardMask = layeredMolecules.getBondMask(super_idx, backwardSubBondOrder);
 
    return breadcrumps.forwardMask.intersects(forwardMask) || breadcrumps.backwardMask.intersects(backwardMask);
 }
@@ -154,8 +154,8 @@ void TautomerEnumerator::edgeAdd(Graph &subgraph, Graph &supergraph,
 
    int forwardSubBondOrder = breadcrumps.forwardEdgesHistory.size() % 2 == 0 ? 1 : 2;
    int backwardSubBondOrder = breadcrumps.backwardEdgesHistory.size() % 2 == 0 ? 2 : 1;
-   Dbitset &forwardMask = layeredMolecules.getBondMaskIND(super_idx, forwardSubBondOrder);
-   Dbitset &backwardMask = layeredMolecules.getBondMaskIND(super_idx, backwardSubBondOrder);
+   Dbitset &forwardMask = layeredMolecules.getBondMask(super_idx, forwardSubBondOrder);
+   Dbitset &backwardMask = layeredMolecules.getBondMask(super_idx, backwardSubBondOrder);
 
    breadcrumps.edgesHistory.push(super_idx);
    breadcrumps.forwardEdgesHistory.expand(breadcrumps.forwardEdgesHistory.size() + 1);

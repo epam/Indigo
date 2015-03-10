@@ -155,7 +155,7 @@ bool TautomerMatcher::_matchBondsSubHyper(Graph &subgraph, Graph &supergraph,
    QueryMolecule &query = ((BaseMolecule &)subgraph).asQueryMolecule();
 
    int sub_bond_order = query.getBondOrder(sub_idx);
-   Dbitset &mask = layeredMolecules.getBondMaskIND(super_idx, sub_bond_order);
+   Dbitset &mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
 
    return mask.intersects(breadcrumps.mask);
 }
@@ -168,7 +168,7 @@ void TautomerMatcher::_edgeAddHyper(Graph &subgraph, Graph &supergraph,
    QueryMolecule &query = ((BaseMolecule &)subgraph).asQueryMolecule();
 
    int sub_bond_order = query.getBondOrder(sub_idx);
-   Dbitset &mask = layeredMolecules.getBondMaskIND(super_idx, sub_bond_order);
+   Dbitset &mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
 
    breadcrumps.maskHistory.expand(breadcrumps.maskHistory.size()+1);
    breadcrumps.maskHistory.top().copy(breadcrumps.mask);

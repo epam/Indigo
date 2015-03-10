@@ -43,12 +43,14 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
 
       if (_proto.getBondOrder(i) == 1)
       {
+         _bond_masks[0].top().reset(0);
          _bond_masks[1].top().set(0);
          _bond_masks[2].top().reset(0);
          _bond_masks[3].top().reset(0);
       }
       else
       {
+         _bond_masks[0].top().reset(0);
          _bond_masks[1].top().reset(0);
          _bond_masks[2].top().set(0);
          _bond_masks[3].top().reset(0);
@@ -78,11 +80,9 @@ void LayeredMolecules::constructMolecule(Molecule &molecule, int layer)
 void LayeredMolecules::clear()
 {
    BaseMolecule::clear();
-
-   // ...
 }
 
-Dbitset &LayeredMolecules::getBondMaskIND(int idx, int order)
+Dbitset &LayeredMolecules::getBondMask(int idx, int order)
 {
    return _bond_masks[order][idx];
 }
@@ -110,7 +110,7 @@ void LayeredMolecules::setMobilePositionOccupiedMask(int idx, Dbitset &mask, boo
       _mobilePositionsOccupied[idx].andNotWith(mask);
 }
 
-void LayeredMolecules::addLayers(Dbitset &mask1, Array<int> &path, int beg, int end, bool forward)
+void LayeredMolecules::addLayers(Dbitset &mask, Array<int> &path, int beg, int end, bool forward)
 {
    Array<bool> onPath;
    onPath.expandFill(edgeCount(), false);
@@ -125,7 +125,7 @@ void LayeredMolecules::addLayers(Dbitset &mask1, Array<int> &path, int beg, int 
    }
 
    Dbitset mask_;
-   mask_.copy(mask1);
+   mask_.copy(mask);
 
    Dbitset newTautomersMask(_wordsNeeded * 64);
    while (!mask_.isEmpty())
