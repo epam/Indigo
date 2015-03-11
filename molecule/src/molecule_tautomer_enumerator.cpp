@@ -14,6 +14,8 @@
 #include "molecule/molecule_tautomer_enumerator.h"
 
 #include "graph/embedding_enumerator.h"
+#include "molecule/inchi_parser.h"
+#include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_tautomer.h"
@@ -21,8 +23,6 @@
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_inchi.h"
-#include "molecule/molecule_inchi_parser.h"
-#include "molecule/molecule_iupac_inchi_core.h"
 #include "molecule/molecule_layered_molecules.h"
 
 using namespace indigo;
@@ -30,7 +30,7 @@ using namespace indigo;
 TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
 : layeredMolecules(molecule)
 {
-   IndigoInchiEmbedded indigo_inchi;
+   InchiWrapper indigo_inchi;
 
    Array<char> tmp;
    indigo_inchi.saveMoleculeIntoInchi(molecule, tmp);
@@ -41,7 +41,7 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
    Array<int> mapping;
    MoleculeInChI::getCanonicalOrdering(molecule, mapping);
 
-   MoleculeInChICodeParser inchiParser(params);
+   InChICodeParser inchiParser(params);
 
    Array<int> hydrogens;
    // For each position get number of fixed hydrogens

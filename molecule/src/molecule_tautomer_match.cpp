@@ -19,12 +19,9 @@
 #include "molecule/molecule_tautomer_utils.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
-#include "molecule/molecule_inchi_parser.h"
 #include "molecule/molecule_inchi.h"
 #include "molecule/molecule_layered_molecules.h"
 #include "molecule/molecule_tautomer_enumerator.h"
-
-#include "molecule/molecule_iupac_inchi_core.h"
 
 using namespace indigo;
 

@@ -12,7 +12,7 @@ include(ConfigureCommon)
 include_directories(../src ../src/core ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR} ${BingoCore_HEADERS_DIR}
 	${Common_SOURCE_DIR}/../api/plugins/inchi/src ${InChI_SOURCE_DIR}/inchi_dll)
 
-add_library(bingo-core-c STATIC ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/../api/plugins/inchi/src/indigo_inchi_core.cpp)
+add_library(bingo-core-c STATIC ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/../inchi_wrapper/src/inchi_wrapper.cpp)
 target_link_libraries(bingo-core-c bingo-core inchi)
 if(APPLE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lc++")
@@ -23,7 +23,7 @@ set_property(TARGET bingo-core-c PROPERTY OUTPUT_NAME "bingo-core-c-static")
 
 
 if(BINGO_SQLSERVER)
-    add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/../api/plugins/inchi/src/indigo_inchi_core.cpp ${Common_SOURCE_DIR}/hacks/memcpy.c $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
+    add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/../inchi_wrapper/src/inchi_wrapper.cpp ${Common_SOURCE_DIR}/hacks/memcpy.c $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
 	target_link_libraries(bingo-core-c-shared bingo-core inchi tinyxml z)
 	if (APPLE)
 		set_target_properties(bingo-core-c-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -lc++")
