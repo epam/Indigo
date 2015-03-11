@@ -48,7 +48,7 @@ public:
 
    StereocentersOptions stereochemistry_options;
 
-   const float COORD_COEF = 1.0/1857710.0;
+   const float COORD_COEF;
 
    CP_DECL;
    TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);

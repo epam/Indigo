@@ -34,7 +34,8 @@ TL_CP_GET(_stereo_care_bonds),
 TL_CP_GET(_stereocenter_types),
 TL_CP_GET(_stereocenter_groups),
 TL_CP_GET(_sensible_bond_directions),
-TL_CP_GET(_ignore_cistrans)
+TL_CP_GET(_ignore_cistrans),
+COORD_COEF(1.0/1857710.0)
 {
    _scanner = &scanner;
 }
