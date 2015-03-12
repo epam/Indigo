@@ -325,6 +325,12 @@ void BaseMolecule::_flipSGroupBond(SGroup &sgroup, int src_bond_idx, int new_bon
       sgroup.bonds[idx] = new_bond_idx;
 }
 
+void BaseMolecule::_flipSuperatomBond(Superatom &sa, int src_bond_idx, int new_bond_idx)
+{
+   if (sa.bond_idx == src_bond_idx)
+      sa.bond_idx = new_bond_idx;
+}
+
 void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
                                          const Array<int> *edges, Array<int> *mapping_out,
                                          int skip_flags)
@@ -458,12 +464,18 @@ void BaseMolecule::flipBond (int atom_parent, int atom_from, int atom_to)
       _flipSGroupBond(data_sgroups[j], src_bond_idx, new_bond_idx);
 
    for (j = superatoms.begin(); j != superatoms.end(); j = superatoms.next(j))
+   {
       _flipSGroupBond(superatoms[j], src_bond_idx, new_bond_idx);
+      _flipSuperatomBond(superatoms[j], src_bond_idx, new_bond_idx);
+   }
 
    for (j = repeating_units.begin(); j != repeating_units.end(); j = repeating_units.next(j))
       _flipSGroupBond(repeating_units[j], src_bond_idx, new_bond_idx);
 
    for (j = multiple_groups.begin(); j != multiple_groups.end(); j = multiple_groups.next(j))
+      _flipSGroupBond(multiple_groups[j], src_bond_idx, new_bond_idx);
+
+   for (j = generic_sgroups.begin(); j != generic_sgroups.end(); j = generic_sgroups.next(j))
       _flipSGroupBond(multiple_groups[j], src_bond_idx, new_bond_idx);
 
    updateEditRevision();
@@ -584,6 +596,7 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
    for (j = superatoms.begin(); j != superatoms.end(); j = superatoms.next(j))
    {
       _removeAtomsFromSGroup(superatoms[j], mapping);
+      _removeAtomsFromSuperatom(superatoms[j], mapping);
       if (superatoms[j].atoms.size() < 1)
          superatoms.remove(j);
    }
@@ -599,6 +612,12 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
       _removeAtomsFromMultipleGroup(multiple_groups[j], mapping);
       if (multiple_groups[j].atoms.size() < 1)
          multiple_groups.remove(j);
+   }
+   for (j = generic_sgroups.begin(); j != generic_sgroups.end(); j = generic_sgroups.next(j))
+   {
+      _removeAtomsFromSGroup(generic_sgroups[j], mapping);
+      if (generic_sgroups[j].atoms.size() < 1)
+         generic_sgroups.remove(j);
    }
 
    // stereo
@@ -644,6 +663,41 @@ void BaseMolecule::removeAtoms (const Filter &filter)
 
 void BaseMolecule::removeBonds (const Array<int> &indices)
 {
+   QS_DEF(Array<int>, mapping);
+   int i, j;
+
+   mapping.clear_resize(edgeEnd());
+
+   for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
+      mapping[i] = i;
+
+   // Mark removed vertices
+   for (i = 0; i < indices.size(); i++)
+      mapping[indices[i]] = -1;
+
+   // sgroups
+   for (j = data_sgroups.begin(); j != data_sgroups.end(); j = data_sgroups.next(j))
+   {
+      _removeBondsFromSGroup(data_sgroups[j], mapping);
+   }
+   for (j = superatoms.begin(); j != superatoms.end(); j = superatoms.next(j))
+   {
+      _removeBondsFromSGroup(superatoms[j], mapping);
+      _removeBondsFromSuperatom(superatoms[j], mapping);
+   }
+   for (j = repeating_units.begin(); j != repeating_units.end(); j = repeating_units.next(j))
+   {
+      _removeBondsFromSGroup(repeating_units[j], mapping);
+   }
+   for (j = multiple_groups.begin(); j != multiple_groups.end(); j = multiple_groups.next(j))
+   {
+      _removeBondsFromSGroup(multiple_groups[j], mapping);
+   }
+   for (j = generic_sgroups.begin(); j != generic_sgroups.end(); j = generic_sgroups.next(j))
+   {
+      _removeBondsFromSGroup(generic_sgroups[j], mapping);
+   }
+
    // subclass (Molecule or QueryMolecule) removes its data
    _removeBonds(indices);
 
@@ -1053,6 +1107,41 @@ void BaseMolecule::_removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> 
    for (i = mg.parent_atoms.size() - 1; i >= 0; i--)
       if (mapping[mg.parent_atoms[i]] == -1)
          mg.parent_atoms.remove(i);
+   updateEditRevision();
+}
+
+void BaseMolecule::_removeAtomsFromSuperatom (Superatom &sa, Array<int> &mapping)
+{
+   if (sa.bond_idx == -1)
+      return;
+
+   const Edge &edge = getEdge(sa.bond_idx);
+   if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
+      sa.bond_idx = -1;
+
+   updateEditRevision();
+}
+
+void BaseMolecule::_removeBondsFromSGroup (SGroup &sgroup, Array<int> &mapping)
+{
+   int i;
+
+   for (i = sgroup.bonds.size() - 1; i >= 0; i--)
+   {
+      if (mapping[sgroup.bonds[i]] == -1)
+         sgroup.bonds.remove(i);
+   }
+   updateEditRevision();
+}
+
+void BaseMolecule::_removeBondsFromSuperatom (Superatom &sa, Array<int> &mapping)
+{
+   if (sa.bond_idx == -1)
+      return;
+
+   if (mapping[sa.bond_idx] == -1)
+      sa.bond_idx = -1;
+
    updateEditRevision();
 }
 

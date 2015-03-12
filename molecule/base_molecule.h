@@ -354,6 +354,7 @@ protected:
                                    Array<int> &edge_mapping, int skip_flags);
 
    void _flipSGroupBond(SGroup &sgroup, int src_bond_idx, int new_bond_idx);
+   void _flipSuperatomBond(Superatom &sa, int src_bond_idx, int new_bond_idx);
    
    virtual void _mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
            const Array<int> *edges, const Array<int> &mapping, int skip_flags) = 0;
@@ -369,8 +370,11 @@ protected:
    int _addBaseAtom ();
    int _addBaseBond (int beg, int end);
 
-   void _removeAtomsFromSGroup (SGroup &sgroup, Array<int> &indices);
+   void _removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping);
    void _removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> &mapping);
+   void _removeAtomsFromSuperatom (Superatom &sa, Array<int> &mapping);
+   void _removeBondsFromSGroup (SGroup &sgroup, Array<int> &mapping);
+   void _removeBondsFromSuperatom (Superatom &sa, Array<int> &mapping);
    bool _mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
         Array<int> &mapping, Array<int> &edge_mapping);
 
