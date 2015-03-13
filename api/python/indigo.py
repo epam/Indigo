@@ -614,6 +614,14 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoFindSgroups(self.id, prop.encode(ENCODE_ENCODING), val.encode(ENCODE_ENCODING))))
 
+    def getSgroupType(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSgroupType(self.id))
+
+    def getSgroupIndex(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSgroupIndex(self.id))
+
     def resetCharge(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoResetCharge(self.id))
@@ -1643,6 +1651,10 @@ class Indigo(object):
         Indigo._lib.indigoSetSgroupBrackets.argtypes = [c_int, c_int, c_float, c_float, c_float, c_float, c_float, c_float, c_float, c_float]
         Indigo._lib.indigoFindSgroups.restype = c_int
         Indigo._lib.indigoFindSgroups.argtypes = [c_int, c_char_p, c_char_p]
+        Indigo._lib.indigoGetSgroupType.restype = c_int
+        Indigo._lib.indigoGetSgroupType.argtypes = [c_int]
+        Indigo._lib.indigoGetSgroupIndex.restype = c_int
+        Indigo._lib.indigoGetSgroupIndex.argtypes = [c_int]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int

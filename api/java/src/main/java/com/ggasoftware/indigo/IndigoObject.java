@@ -1172,6 +1172,29 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupYCoord(self, y));
    }
 
+   public IndigoObject findSgroup (String property, String value)
+   {
+      dispatcher.setSessionID();
+
+      if (property == null)
+         property = "";
+      if (value == null)
+         value = "";
+      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoFindSgroups(self, property, value)), this);
+   }
+
+   public int getSgroupType()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoGetSgroupType(self));
+   }
+
+   public int getSgroupIndex()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoGetSgroupIndex(self));
+   }
+
    public void addStereocenter (int type, int v1, int v2, int v3)
    {
       addStereocenter(type, v1, v2, v3, -1);

@@ -215,6 +215,10 @@ public interface IndigoLib extends Library
    int indigoSetSgroupXCoord (int sgroup, float x);                           
    int indigoSetSgroupYCoord (int sgroup, float y);                           
 
+   int indigoFindSgroups (int molecule, String property, String value);                           
+   int indigoGetSgroupType (int sgroup);
+   int indigoGetSgroupIndex (int sgroup);
+
    int indigoResetCharge (int atom);
    int indigoResetExplicitValence (int atom);
    int indigoResetRadical (int atom);

@@ -717,10 +717,28 @@ namespace com.ggasoftware.indigo
            return dispatcher.checkResult(_indigo_lib.indigoSetSgroupXCoord(self, x));
         }
      
-        int setSgroupYCoord (int sgroup, float y)
+        public int setSgroupYCoord (int sgroup, float y)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSgroupYCoord(self, y));
+        }
+
+        public IndigoObject findSgroups(String property, String value)
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoFindSgroups(self, property, value)), this);
+        }
+
+        public int getSgroupType()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetSgroupType(self));
+        }
+
+        public int getSgroupIndex()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetSgroupIndex(self));
         }
 
         public void addStereocenter(int type, int v1, int v2, int v3)

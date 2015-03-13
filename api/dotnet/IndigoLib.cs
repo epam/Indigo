@@ -179,6 +179,10 @@ namespace com.ggasoftware.indigo
         int indigoSetSgroupXCoord (int sgroup, float x);                           
         int indigoSetSgroupYCoord (int sgroup, float y);                           
 
+        int indigoFindSgroups(int molecule, string property, string value);
+        int indigoGetSgroupType(int sgroup);
+        int indigoGetSgroupIndex(int sgroup);
+
         float* indigoXYZ(int atom);
         int indigoSetXYZ(int atom, float x, float y, float z);
         int indigoResetCharge(int atom);

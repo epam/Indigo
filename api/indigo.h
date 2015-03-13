@@ -436,6 +436,7 @@ CEXPORT int indigoSetSgroupBrackets (int sgroup, int brk_style, float x1, float 
 CEXPORT int indigoFindSgroups (int item, const char *property, const char *value);
 
 CEXPORT int indigoGetSgroupType (int item);
+CEXPORT int indigoGetSgroupIndex (int item);
 
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
