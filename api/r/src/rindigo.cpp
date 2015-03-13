@@ -102,6 +102,39 @@ extern "C"
       UNPROTECT(1);
       return result;
    }
+   
+   SEXP r_indigoSetOption(SEXP option, SEXP value)
+   {
+      SEXP result = PROTECT(allocVector(INTSXP, 1));
+      SEXPTYPE val_type = TYPEOF(value);
+      
+      double rrr = REAL(value)[0];
+      const char *opt_str = CHAR(STRING_ELT(option, 0));
+      int set_result = -1;
+      
+      printf("val_type=%d\nvalue=%lf\n", val_type, rrr);
+      
+      if (val_type == LGLSXP)
+         set_result = indigoSetOptionBool(opt_str, LOGICAL(value)[0]);
+      else if (val_type == INTSXP)
+         set_result = indigoSetOptionInt(opt_str, INTEGER(value)[0]);
+      else if (val_type == REALSXP)
+         set_result = indigoSetOptionFloat(opt_str, REAL(value)[0]);
+      else if (val_type == STRSXP)
+         set_result = indigoSetOption(opt_str, CHAR(STRING_ELT(value, 0)));
+      
+      INTEGER(result)[0] = set_result;
+      UNPROTECT(1);
+      return result;
+   }
+   
+   SEXP r_indigoAromatize(SEXP obj)
+   {
+      SEXP result = PROTECT(allocVector(INTSXP, 1));
+      INTEGER(result)[0] = indigoAromatize(INTEGER(obj)[0]);
+      UNPROTECT(1);
+      return result;
+   }
 
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
@@ -111,7 +144,53 @@ extern "C"
       SEXP result = PROTECT(allocVector(STRSXP, 1));
       
       int m = indigoLoadMoleculeFromString(CHAR(STRING_ELT(data, 0)));
-      SET_STRING_ELT(result, 0, mkChar(indigoCanonicalSmiles(m)));
+      _setStringToSTRSXP(&result, indigoCanonicalSmiles(m));
+      indigoFree(m);
+      UNPROTECT(1);
+      return result;
+   }
+   
+   SEXP smiles(SEXP data)
+   {
+      SEXP result = PROTECT(allocVector(STRSXP, 1));
+      
+      int m = indigoLoadMoleculeFromString(CHAR(STRING_ELT(data, 0)));
+      _setStringToSTRSXP(&result, indigoSmiles(m));
+      indigoFree(m);
+      UNPROTECT(1);
+      return result;
+   }
+   
+   void setFingerprintParams()
+   {
+      indigoSetOptionInt("fp-ord-qwords", 25);
+      indigoSetOptionInt("fp-sim-qwords", 8);
+      indigoSetOptionInt("fp-any-qwords", 15);
+      indigoSetOptionInt("fp-tau-qwords", 0);
+      indigoSetOptionInt("fp-ext-enabled", 0);
+   }
+   
+   SEXP aromatize(SEXP mol)
+   {
+      SEXP result = PROTECT(allocVector(STRSXP, 1));
+      
+      int m = indigoLoadMoleculeFromString(CHAR(STRING_ELT(mol, 0)));
+      indigoAromatize(m);
+      const char *ar_m =  indigoCanonicalSmiles(m);
+      _setStringToSTRSXP(&result, ar_m);
+      indigoFree(m);
+      UNPROTECT(1);
+      return result;
+   }
+   
+   SEXP aromatizeQuery(SEXP mol)
+   {
+      SEXP result = PROTECT(allocVector(STRSXP, 1));
+      
+      int m = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(mol, 0)));
+      indigoAromatize(m);
+      const char *ar_m =  indigoSmiles(m);
+      _setStringToSTRSXP(&result, ar_m);
       indigoFree(m);
       UNPROTECT(1);
       return result;
@@ -120,7 +199,9 @@ extern "C"
    SEXP checkSub(SEXP query, SEXP target, SEXP mode)
    {
       int q = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(query, 0)));
+      indigoAromatize(q);
       int t = indigoLoadMoleculeFromString(CHAR(STRING_ELT(target, 0)));
+      indigoAromatize(t);
       int matcher = indigoSubstructureMatcher(t, CHAR(STRING_ELT(mode, 0)));
       SEXP smatch;
       PROTECT( smatch = NEW_INTEGER(1)) ;

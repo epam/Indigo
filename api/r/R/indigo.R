@@ -57,6 +57,12 @@ Indigo$methods(
     obj_id = checkResult(.Call("r_indigoLoadQueryMolecule",  data))
     return(IndigoObject$new(id, obj_id))
   })
+  
+Indigo$methods(
+  setOption = function(option, value){
+    setSession()
+    obj_id = checkResult(.Call("r_indigoSetOption",  option, value))
+  })
 
 IndigoObject = setRefClass(
                  Class = "IndigoObject",
@@ -85,6 +91,12 @@ IndigoObject$methods(
     .Call("r_indigoSetSessionId", indigo_id)
     return(checkResult(.Call("r_indigoMolecularWeight", obj_id)))
   })
+  
+IndigoObject$methods(
+  aromatize = function(){
+    .Call("r_indigoSetSessionId", indigo_id)
+    return(checkResult(.Call("r_indigoAromatize", obj_id)))
+  })
 
 IndigoObject$methods(
   finalize = function(){
@@ -99,11 +111,36 @@ version <- function() {
     .Call("r_indigoVersion")
 }
 
+version <- function() {
+    .Call("setFingerprintParams")
+}
+
 canonicalSmiles <- function(data) {
     stopifnot(is.character(data))
     stopifnot(length(data) == 1)
 
     return(.Call("canonicalSmiles", data))
+}
+
+smiles <- function(data) {
+    stopifnot(is.character(data))
+    stopifnot(length(data) == 1)
+
+    return(.Call("smiles", data))
+}
+
+aromatize <- function(data) {
+    stopifnot(is.character(data))
+    stopifnot(length(data) == 1)
+
+    return(.Call("aromatize", data))
+}
+
+aromatizeQuery <- function(data) {
+    stopifnot(is.character(data))
+    stopifnot(length(data) == 1)
+
+    return(.Call("aromatizeQuery", data))
 }
 
 checkSub <- function(query, target, mode) {
