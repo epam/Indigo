@@ -73,6 +73,11 @@ void MoleculeInChICompoment::getCanonicalOrdering(Molecule &source_mol, Array<in
    as.getCanonicalNumbering(mapping);
 }
 
+int MoleculeInChICompoment::cmpVertex(Graph &graph, int v1, int v2, const void *context)
+{
+   return _cmpVertex(graph, v1, v2, context);
+}
+
 void MoleculeInChICompoment::_getCanonicalMolecule 
       (Molecule &source_mol, Molecule &cano_mol)
 {

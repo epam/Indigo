@@ -18,6 +18,7 @@
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_arom_match.h"
+#include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_tautomer.h"
 #include "molecule/molecule_tautomer_utils.h"
 #include "molecule/molecule_substructure_matcher.h"
@@ -39,7 +40,23 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
    // We need a canonical mapping. This is something that MoleculeInChI does.
    // This is the only reason I use it. Maybe it's better to implement this procedure outside of MoleculeInChI.
    Array<int> mapping;
-   MoleculeInChI::getCanonicalOrdering(molecule, mapping);
+   QS_DEF(Array<int>, ignored);
+   ignored.clear_resize(molecule.vertexEnd());
+   ignored.zerofill();
+
+   MoleculeAutomorphismSearch of;
+   of.detect_invalid_cistrans_bonds = false;
+   of.detect_invalid_stereocenters = false;
+   of.find_canonical_ordering = true;
+   of.ignored_vertices = ignored.ptr();
+
+   of.getcanon = true;
+   of.compare_vertex_degree_first = false;
+   of.refine_reverse_degree = true;
+   of.refine_by_sorted_neighbourhood = true;
+   of.cb_vertex_cmp = MoleculeInChICompoment::cmpVertex;
+   of.process(molecule);
+   of.getCanonicalNumbering(mapping);
 
    InChICodeParser inchiParser(params);
 
