@@ -356,8 +356,15 @@ void BaseMolecule::_flipSGroupBond(SGroup &sgroup, int src_bond_idx, int new_bon
 
 void BaseMolecule::_flipSuperatomBond(Superatom &sa, int src_bond_idx, int new_bond_idx)
 {
-   if (sa.bond_idx == src_bond_idx)
-      sa.bond_idx = new_bond_idx;
+   if (sa.bond_connections.size() > 0)
+   {
+      for (int j = 0; j < sa.bond_connections.size(); j++)
+      {
+         Superatom::_BondConnection &bond = sa.bond_connections[j];
+         if (bond.bond_idx == src_bond_idx)
+            bond.bond_idx = new_bond_idx;
+      }
+   }
 }
 
 void BaseMolecule::mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
@@ -647,12 +654,6 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
       _removeAtomsFromMultipleGroup(multiple_groups[j], mapping);
       if (multiple_groups[j].atoms.size() < 1)
          removeSgroup(multiple_groups[j].sgroup_type, j);
-   }
-   for (j = generic_sgroups.begin(); j != generic_sgroups.end(); j = generic_sgroups.next(j))
-   {
-      _removeAtomsFromSGroup(generic_sgroups[j], mapping);
-      if (generic_sgroups[j].atoms.size() < 1)
-         generic_sgroups.remove(j);
    }
 
    // stereo
@@ -1201,9 +1202,10 @@ void BaseMolecule::_removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping)
    int i;
 
    for (i = sgroup.atoms.size() - 1; i >= 0; i--)
+   {
       if (mapping[sgroup.atoms[i]] == -1)
          sgroup.atoms.remove(i);
-
+   }
    for (i = sgroup.bonds.size() - 1; i >= 0; i--)
    {
       const Edge &edge = getEdge(sgroup.bonds[i]);
@@ -1218,20 +1220,37 @@ void BaseMolecule::_removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> 
    int i;
 
    for (i = mg.parent_atoms.size() - 1; i >= 0; i--)
+   {
       if (mapping[mg.parent_atoms[i]] == -1)
          mg.parent_atoms.remove(i);
+   }
    updateEditRevision();
 }
 
 void BaseMolecule::_removeAtomsFromSuperatom (Superatom &sa, Array<int> &mapping)
 {
-   if (sa.bond_idx == -1)
-      return;
 
-   const Edge &edge = getEdge(sa.bond_idx);
-   if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
-      sa.bond_idx = -1;
-
+   if (sa.bond_connections.size() > 0)
+   {
+      for (int j = sa.bond_connections.size(); j >= 0; j--)
+      {
+         Superatom::_BondConnection &bond = sa.bond_connections[j];
+         const Edge &edge = getEdge(bond.bond_idx);
+         if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
+            sa.bond_connections.remove(j);
+      }
+   }
+   if (sa.attachment_points.size() > 0)
+   {
+      for (int j = sa.attachment_points.begin(); j < sa.attachment_points.end(); j = sa.attachment_points.next(j))
+      {
+         Superatom::_AttachmentPoint &ap = sa.attachment_points.at(j);
+         if (ap.aidx >= 0 && mapping[ap.aidx] == -1) 
+            sa.attachment_points.remove(j);
+         else if (ap.lvidx >= 0 && mapping[ap.lvidx] == -1)
+            ap.lvidx = -1;
+      }
+   }
    updateEditRevision();
 }
 
@@ -1249,12 +1268,16 @@ void BaseMolecule::_removeBondsFromSGroup (SGroup &sgroup, Array<int> &mapping)
 
 void BaseMolecule::_removeBondsFromSuperatom (Superatom &sa, Array<int> &mapping)
 {
-   if (sa.bond_idx == -1)
-      return;
-
-   if (mapping[sa.bond_idx] == -1)
-      sa.bond_idx = -1;
-
+   if (sa.bond_connections.size() > 0)
+   {
+      for (int j = sa.bond_connections.size(); j >= 0; j--)
+      {
+         Superatom::_BondConnection &bond = sa.bond_connections[j];
+         const Edge &edge = getEdge(bond.bond_idx);
+         if (mapping[bond.bond_idx] == -1)
+            sa.bond_connections.remove(j);
+      }
+   }
    updateEditRevision();
 }
 
