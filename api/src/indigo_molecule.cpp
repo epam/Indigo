@@ -2133,7 +2133,7 @@ BaseMolecule::DataSGroup & IndigoDataSGroup::get ()
 
 void IndigoDataSGroup::remove ()
 {
-   mol->data_sgroups.remove(idx);
+   mol->removeSgroup(BaseMolecule::SGroup::SG_TYPE_DAT, idx);
 }
 
 IndigoDataSGroup::~IndigoDataSGroup ()
@@ -2163,7 +2163,7 @@ int IndigoSuperatom::getIndex ()
 
 void IndigoSuperatom::remove ()
 {
-   mol.superatoms.remove(idx);
+   mol.removeSgroup(BaseMolecule::SGroup::SG_TYPE_SUP, idx);
 }
 
 const char * IndigoSuperatom::getName ()
@@ -2234,7 +2234,7 @@ int IndigoRepeatingUnit::getIndex ()
 
 void IndigoRepeatingUnit::remove ()
 {
-   mol.repeating_units.remove(idx);
+   mol.removeSgroup(BaseMolecule::SGroup::SG_TYPE_SRU, idx);
 }
 
 IndigoRepeatingUnit & IndigoRepeatingUnit::cast (IndigoObject &obj)
@@ -2299,7 +2299,7 @@ int IndigoMultipleGroup::getIndex ()
 
 void IndigoMultipleGroup::remove ()
 {
-   mol.multiple_groups.remove(idx);
+   mol.removeSgroup(BaseMolecule::SGroup::SG_TYPE_MUL, idx);
 }
 
 IndigoMultipleGroup & IndigoMultipleGroup::cast (IndigoObject &obj)
@@ -2364,7 +2364,7 @@ int IndigoGenericSGroup::getIndex ()
 
 void IndigoGenericSGroup::remove ()
 {
-   mol.generic_sgroups.remove(idx);
+   mol.removeSgroup(BaseMolecule::SGroup::SG_TYPE_GEN, idx);
 }
 
 IndigoGenericSGroup & IndigoGenericSGroup::cast (IndigoObject &obj)
@@ -2445,16 +2445,7 @@ int IndigoSgroup::getIndex ()
 
 void IndigoSgroup::remove ()
 {
-   if (sg_type == BaseMolecule::SGroup::SG_TYPE_GEN)
-      mol.generic_sgroups.remove(idx);
-   else if (sg_type == BaseMolecule::SGroup::SG_TYPE_DAT)
-      mol.data_sgroups.remove(idx);
-   else if (sg_type == BaseMolecule::SGroup::SG_TYPE_SUP)
-      mol.superatoms.remove(idx);
-   else if (sg_type == BaseMolecule::SGroup::SG_TYPE_SRU)
-      mol.repeating_units.remove(idx);
-   else if (sg_type == BaseMolecule::SGroup::SG_TYPE_MUL)
-      mol.multiple_groups.remove(idx);
+   mol.removeSgroup(sg_type, idx);
 }
 
 IndigoSgroup & IndigoSgroup::cast (IndigoObject &obj)

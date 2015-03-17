@@ -616,31 +616,37 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
       mapping[indices[i]] = -1;
 
    // sgroups
+   for (j = generic_sgroups.begin(); j != generic_sgroups.end(); j = generic_sgroups.next(j))
+   {
+      _removeAtomsFromSGroup(generic_sgroups[j], mapping);
+      if (generic_sgroups[j].atoms.size() < 1)
+         removeSgroup(generic_sgroups[j].sgroup_type, j);
+   }
    for (j = data_sgroups.begin(); j != data_sgroups.end(); j = data_sgroups.next(j))
    {
       _removeAtomsFromSGroup(data_sgroups[j], mapping);
       if (data_sgroups[j].atoms.size() < 1)
-         data_sgroups.remove(j);
+         removeSgroup(data_sgroups[j].sgroup_type, j);
    }
    for (j = superatoms.begin(); j != superatoms.end(); j = superatoms.next(j))
    {
       _removeAtomsFromSGroup(superatoms[j], mapping);
       _removeAtomsFromSuperatom(superatoms[j], mapping);
       if (superatoms[j].atoms.size() < 1)
-         superatoms.remove(j);
+         removeSgroup(superatoms[j].sgroup_type, j);
    }
    for (j = repeating_units.begin(); j != repeating_units.end(); j = repeating_units.next(j))
    {
       _removeAtomsFromSGroup(repeating_units[j], mapping);
       if (repeating_units[j].atoms.size() < 1)
-         repeating_units.remove(j);
+         removeSgroup(repeating_units[j].sgroup_type, j);
    }
    for (j = multiple_groups.begin(); j != multiple_groups.end(); j = multiple_groups.next(j))
    {
       _removeAtomsFromSGroup(multiple_groups[j], mapping);
       _removeAtomsFromMultipleGroup(multiple_groups[j], mapping);
       if (multiple_groups[j].atoms.size() < 1)
-         multiple_groups.remove(j);
+         removeSgroup(multiple_groups[j].sgroup_type, j);
    }
    for (j = generic_sgroups.begin(); j != generic_sgroups.end(); j = generic_sgroups.next(j))
    {
@@ -748,6 +754,35 @@ void BaseMolecule::removeBond (int idx)
    edges.clear();
    edges.push(idx);
    removeBonds(edges);
+}
+
+void BaseMolecule::removeSgroup (int sg_type, int idx)
+{
+   if (sg_type == SGroup::SG_TYPE_GEN)
+   {
+      _checkSgroupHierarchy(generic_sgroups[idx].parent_group, generic_sgroups[idx].original_group);
+      generic_sgroups.remove(idx);
+   }
+   else if (sg_type == SGroup::SG_TYPE_DAT)
+   {
+      _checkSgroupHierarchy(data_sgroups[idx].parent_group, data_sgroups[idx].original_group);
+      data_sgroups.remove(idx);
+   }
+   else if (sg_type == SGroup::SG_TYPE_SUP)
+   {
+      _checkSgroupHierarchy(superatoms[idx].parent_group, superatoms[idx].original_group);
+      superatoms.remove(idx);
+   }
+   else if (sg_type == SGroup::SG_TYPE_SRU)
+   {
+      _checkSgroupHierarchy(repeating_units[idx].parent_group, repeating_units[idx].original_group);
+      repeating_units.remove(idx);
+   }
+   else if (sg_type == SGroup::SG_TYPE_MUL)
+   {
+      _checkSgroupHierarchy(multiple_groups[idx].parent_group, multiple_groups[idx].original_group);
+      multiple_groups.remove(idx);
+   }
 }
 
 int BaseMolecule::getVacantPiOrbitals (int group, int charge, int radical,
@@ -1000,6 +1035,41 @@ int BaseMolecule::getAttachmentPoint (int order, int index) const
       throw Error("attachment point order %d no allowed (should start from 1)", order);
 
    return index < _attachment_index[order - 1].size() ? _attachment_index[order - 1][index] : -1;
+}
+
+void BaseMolecule::_checkSgroupHierarchy(int pidx, int oidx)
+{
+   int i;
+   for (i = data_sgroups.begin(); i != data_sgroups.end(); i = data_sgroups.next(i))
+   {
+      DataSGroup &sg = data_sgroups[i];
+      if (sg.parent_group == oidx)
+         sg.parent_group = pidx;
+   } 
+   for (i = superatoms.begin(); i != superatoms.end(); i = superatoms.next(i))
+   {
+      Superatom &sa = superatoms[i];
+      if (sa.parent_group == oidx)
+         sa.parent_group = pidx;
+   }
+   for (i = repeating_units.begin(); i != repeating_units.end(); i = repeating_units.next(i))
+   {
+      RepeatingUnit &ru = repeating_units[i];
+      if (ru.parent_group == oidx)
+         ru.parent_group = pidx;
+   }
+   for (i = multiple_groups.begin(); i != multiple_groups.end(); i = multiple_groups.next(i))
+   {
+      MultipleGroup &mg = multiple_groups[i];
+      if (mg.parent_group == oidx)
+         mg.parent_group = pidx;
+   }
+   for (i = generic_sgroups.begin(); i != generic_sgroups.end(); i = generic_sgroups.next(i))
+   {
+      SGroup &gg = generic_sgroups[i];
+      if (gg.parent_group == oidx)
+         gg.parent_group = pidx;
+   }
 }
 
 BaseMolecule::SGroup::SGroup ()

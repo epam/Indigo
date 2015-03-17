@@ -390,6 +390,8 @@ public:
    void removeBonds (const Array<int> &indices);
    void removeBond  (int idx);
 
+   void removeSgroup (int sg_type, int idx);
+
    void unhighlightAll ();
    void highlightAtom (int idx);
    void highlightBond (int idx);
@@ -462,6 +464,8 @@ protected:
         Array<int> &mapping, Array<int> &edge_mapping);
 
    bool _cmpIndices (Array<int> &t_inds, Array<int> &q_inds);
+
+   void _checkSgroupHierarchy(int pidx, int oidx);
 
    Array<int> _hl_atoms;
    Array<int> _hl_bonds;
