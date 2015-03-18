@@ -439,7 +439,10 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
       _setBits(hash, getSim(), _parameters.fingerprintSizeSim(), 1);
       bits_set |= 0x01;
    }
-
+   
+   
+   
+   
    if (set_ord && !(bits_set_src & 0x02))
    {
       _addOrdHashBits(hash, bits_per_fragment);
@@ -458,17 +461,19 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
          const dword CHARGE_MASK = 0x526e7e24; // random
          _addOrdHashBits(hash ^ CHARGE_MASK, bits_per_fragment);
       }
-
+   /*
+    * IND-692 disable incorrect fingerprint part (some tests are failed)
+    */
       // Add extra bits for fragments with a lot of terminal atoms
-      const dword CONN_MASK = 0x7e24526e; // random
-      int ext_conn = _calculateFragmentExternalConn(mol, vertices, edges);
-      if (ext_conn == 0)
-         // Increase bits per fragment because this is maximal fragment and they are rare
-         _addOrdHashBits(hash ^ CONN_MASK, bits_per_fragment + 4); 
-      if (ext_conn <= 1 && vertices.size() > 3)
-         _addOrdHashBits(hash ^ (CONN_MASK << 1), bits_per_fragment);
-      if (ext_conn <= 2 && vertices.size() > 4)
-         _addOrdHashBits(hash ^ (CONN_MASK << 2), bits_per_fragment);
+//      const dword CONN_MASK = 0x7e24526e; // random
+//      int ext_conn = _calculateFragmentExternalConn(mol, vertices, edges);
+//      if (ext_conn == 0)
+//         // Increase bits per fragment because this is maximal fragment and they are rare
+//         _addOrdHashBits(hash ^ CONN_MASK, bits_per_fragment + 4); 
+//      if (ext_conn <= 1 && vertices.size() > 3)
+//         _addOrdHashBits(hash ^ (CONN_MASK << 1), bits_per_fragment);
+//      if (ext_conn <= 2 && vertices.size() > 4)
+//         _addOrdHashBits(hash ^ (CONN_MASK << 2), bits_per_fragment);
 
       bits_set |= 0x02;
    }
