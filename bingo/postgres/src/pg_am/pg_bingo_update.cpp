@@ -105,7 +105,8 @@ bingo_bulkdelete(PG_FUNCTION_ARGS) {
    IndexBulkDeleteCallback bulk_del_cb = (IndexBulkDeleteCallback) PG_GETARG_POINTER(2);
    void *cb_state = (void *) PG_GETARG_POINTER(3);
 
-   elog(NOTICE, "start test bulk delete");
+   elog(NOTICE, "bingo.index: start bulk delete");
+   
    PG_BINGO_BEGIN
    {
       /*
@@ -155,8 +156,12 @@ bingo_bulkdelete(PG_FUNCTION_ARGS) {
 
    }
    PG_BINGO_END
+   /*
+    * Always return null since no index values are removed
+    */
+   PG_RETURN_POINTER(NULL);
 
-   PG_RETURN_POINTER(stats);
+//   PG_RETURN_POINTER(stats);
 }
 
 /*
@@ -170,22 +175,26 @@ Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS) {
    Relation rel = info->index;
    BlockNumber num_pages = 0;
 
-   elog(NOTICE, "start test vacuum");
-   /* 
-    * If bulkdelete wasn't called, return NULL signifying no change
-    * Note: this covers the analyze_only case too
-    */
-   if (stats == NULL) {
-      PG_RETURN_POINTER(NULL);
-   }
+   elog(NOTICE, "bingo.index: start post-vacuum");
    /*
-    * update statistics
+    * Always return null since no index values are removed
     */
-   num_pages = RelationGetNumberOfBlocks(rel);
-   stats->num_pages = num_pages;
-   stats->num_index_tuples = 1;
-   stats->estimated_count = false;
-
-   PG_RETURN_POINTER(stats);
+   PG_RETURN_POINTER(NULL);
+//   /* 
+//    * If bulkdelete wasn't called, return NULL signifying no change
+//    * Note: this covers the analyze_only case too
+//    */
+//   if (stats == NULL) {
+//      PG_RETURN_POINTER(NULL);
+//   }
+//   /*
+//    * update statistics
+//    */
+//   num_pages = RelationGetNumberOfBlocks(rel);
+//   stats->num_pages = num_pages;
+//   stats->num_index_tuples = 1;
+//   stats->estimated_count = false;
+//
+//   PG_RETURN_POINTER(stats);
 }
 
