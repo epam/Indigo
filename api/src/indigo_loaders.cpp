@@ -27,6 +27,10 @@
 #include "molecule/multiple_cml_loader.h"
 #include "molecule/molecule_cml_loader.h"
 #include "reaction/reaction_cml_loader.h"
+#include "molecule/multiple_cdx_loader.h"
+#include "molecule/molecule_cdx_loader.h"
+#include "reaction/reaction_cdx_loader.h"
+
 
 IndigoSdfLoader::IndigoSdfLoader (Scanner &scanner) :
 IndigoObject(SDF_LOADER)
@@ -553,6 +557,12 @@ CEXPORT int indigoTell (int handle)
          return ((IndigoCmlMolecule &)obj).tell();
       if (obj.type == IndigoObject::CML_REACTION)
          return ((IndigoCmlReaction &)obj).tell();
+      if (obj.type == IndigoObject::MULTIPLE_CDX_LOADER)
+         return ((IndigoMultipleCdxLoader &)obj).tell();
+      if (obj.type == IndigoObject::CDX_MOLECULE)
+         return ((IndigoCdxMolecule &)obj).tell();
+      if (obj.type == IndigoObject::CDX_REACTION)
+         return ((IndigoCdxReaction &)obj).tell();
 
       throw IndigoError("indigoTell(): not applicable to %s", obj.debugInfo());
    }
@@ -738,6 +748,173 @@ CEXPORT int indigoIterateCMLFile (const char *filename)
    INDIGO_BEGIN
    {
       return self.addObject(new IndigoMultipleCmlLoader(filename));
+   }
+   INDIGO_END(-1)
+}
+
+IndigoCdxMolecule::IndigoCdxMolecule (Array<char> &data, RedBlackStringObjMap< Array<char> > &properties,
+                                      int index, int offset) :
+IndigoRdfData(CDX_MOLECULE, data, properties, index, offset)
+{
+}
+
+IndigoCdxMolecule::~IndigoCdxMolecule ()
+{
+}
+
+Molecule & IndigoCdxMolecule::getMolecule ()
+{
+   if (!_loaded)
+   {
+      Indigo &self = indigoGetInstance();
+
+      BufferScanner scanner(_data);
+      MoleculeCdxLoader loader(scanner);
+      loader.stereochemistry_options = self.stereochemistry_options;
+      loader.loadMolecule(_mol);
+      _loaded = true;
+   }
+   return _mol;
+}
+
+BaseMolecule & IndigoCdxMolecule::getBaseMolecule ()
+{
+   return getMolecule();
+}
+
+const char * IndigoCdxMolecule::getName ()
+{
+   return getMolecule().name.ptr();
+}
+
+IndigoObject * IndigoCdxMolecule::clone ()
+{
+   return IndigoMolecule::cloneFrom(*this);
+}
+
+const char * IndigoCdxMolecule::debugInfo ()
+{
+   return "<cdx molecule>";
+}
+
+IndigoCdxReaction::IndigoCdxReaction (Array<char> &data, RedBlackStringObjMap< Array<char> > &properties,
+                                      int index, int offset) :
+IndigoRdfData(CDX_REACTION, data, properties, index, offset)
+{
+}
+
+IndigoCdxReaction::~IndigoCdxReaction ()
+{
+}
+
+Reaction & IndigoCdxReaction::getReaction ()
+{
+   if (!_loaded)
+   {
+      Indigo &self = indigoGetInstance();
+
+      BufferScanner scanner(_data);
+      ReactionCdxLoader loader(scanner);
+      loader.stereochemistry_options = self.stereochemistry_options;
+      loader.loadReaction(_rxn);
+      _loaded = true;
+   }
+   return _rxn;
+}
+
+BaseReaction & IndigoCdxReaction::getBaseReaction ()
+{
+   return getReaction();
+}
+
+const char * IndigoCdxReaction::getName ()
+{
+   return getReaction().name.ptr();
+}
+
+IndigoObject * IndigoCdxReaction::clone ()
+{
+   return IndigoReaction::cloneFrom(*this);
+}
+
+const char * IndigoCdxReaction::debugInfo ()
+{
+   return "<cdx reaction>";
+}
+
+IndigoMultipleCdxLoader::IndigoMultipleCdxLoader (Scanner &scanner) :
+IndigoObject(MULTIPLE_CDX_LOADER)
+{
+   _own_scanner = 0;
+   loader = new MultipleCdxLoader(scanner);
+}
+
+IndigoMultipleCdxLoader::IndigoMultipleCdxLoader (const char *filename) :
+IndigoObject(MULTIPLE_CDX_LOADER)
+{
+   _own_scanner = new FileScanner(filename);
+   loader = new MultipleCdxLoader(*_own_scanner);
+}
+
+IndigoMultipleCdxLoader::~IndigoMultipleCdxLoader ()
+{
+   delete loader;
+   if (_own_scanner != 0)
+      delete _own_scanner;
+}
+
+int IndigoMultipleCdxLoader::tell ()
+{
+   return loader->tell();
+}
+
+bool IndigoMultipleCdxLoader::hasNext ()
+{
+   return !loader->isEOF();
+}
+
+IndigoObject * IndigoMultipleCdxLoader::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   int counter = loader->currentNumber();
+   int offset = loader->tell();
+
+   loader->readNext();
+
+   if (loader->isReaction())
+      return new IndigoCdxReaction(loader->data, loader->properties, counter, offset);
+   else
+      return new IndigoCdxMolecule(loader->data, loader->properties, counter, offset);
+}
+
+IndigoObject * IndigoMultipleCdxLoader::at (int index)
+{
+   loader->readAt(index);
+
+   if (loader->isReaction())
+      return new IndigoCdxReaction(loader->data, loader->properties, index, 0);
+   else
+      return new IndigoCdxMolecule(loader->data, loader->properties, index, 0);
+}
+
+CEXPORT int indigoIterateCDX (int reader)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(reader);
+
+      return self.addObject(new IndigoMultipleCdxLoader(IndigoScanner::get(obj)));
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoIterateCDXFile (const char *filename)
+{
+   INDIGO_BEGIN
+   {
+      return self.addObject(new IndigoMultipleCdxLoader(filename));
    }
    INDIGO_END(-1)
 }

@@ -134,7 +134,11 @@ public:
       SAVER,
       ATTACHMENT_POINTS_ITER,
       DECOMPOSITION_MATCH,
-      DECOMPOSITION_MATCH_ITER
+      DECOMPOSITION_MATCH_ITER,
+      CDX_MOLECULE,
+      CDX_REACTION,
+      MULTIPLE_CDX_LOADER,
+      CDX_SAVER
    };
 
    int type;
@@ -197,6 +201,7 @@ struct DLLEXPORT ProductEnumeratorParams
       is_one_tube = false;
       is_self_react = false;
       is_layout = true;
+      transform_is_layout = true;
       max_deep_level = 2;
       max_product_count = 1000;
    }
@@ -205,6 +210,7 @@ struct DLLEXPORT ProductEnumeratorParams
    bool is_one_tube;
    bool is_self_react;
    bool is_layout;
+   bool transform_is_layout;
    int max_deep_level;
    int max_product_count;
 };

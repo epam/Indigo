@@ -157,6 +157,9 @@ protected:
    void _markAromaticBonds ();
    void _setRadicalsAndHCounts ();
    void _forbidHydrogens ();
+   void _addExplicitHForStereo ();
+   void _addLigandsForStereo ();
+   bool _isAlleneLike (int i);
    void _handleCurlyBrace (_AtomDesc &atom, bool &inside_polymer);
    void _handlePolymerRepetition (int i);
 

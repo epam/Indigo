@@ -24,7 +24,7 @@ IMPL_ERROR(MoleculeCdxmlSaver, "molecule CMXML saver");
 
 MoleculeCdxmlSaver::MoleculeCdxmlSaver (Output &output) : _output(output)
 {
-   _bond_length = 30;
+   _bond_length = BOND_LENGTH;
    _max_page_height = 64;
    _pages_height = 1;
 }
@@ -103,6 +103,30 @@ void MoleculeCdxmlSaver::beginPage (Bounds *bounds)
    _output.printf("<page ");
    _output.printf("HeightPages=\"%d\" WidthPages=\"1\"", _pages_height);
    _output.printf(">\n");
+}
+void MoleculeCdxmlSaver::addFontTable(const char* font)
+{
+   if (font != NULL && strlen(font) > 0) {
+      _output.printf("<fonttable>\n");
+      _output.printf("%s\n", font);
+      _output.printf("</fonttable>\n");
+   }
+}
+void MoleculeCdxmlSaver::addColorTable(const char* color)
+{
+   if (color != NULL && strlen(color) > 0) {
+      _output.printf("<colortable>\n");
+      _output.printf("<color r = \"1\" g=\"1\" b=\"1\"/>\n");
+      _output.printf("<color r=\"0\" g=\"0\" b=\"0\"/>\n");
+      _output.printf("<color r=\"1\" g=\"0\" b=\"0\"/>\n");
+      _output.printf("<color r=\"1\" g=\"1\" b=\"0\"/>\n");
+      _output.printf("<color r=\"0\" g=\"1\" b=\"0\"/>\n");
+      _output.printf("<color r=\"0\" g=\"1\" b=\"1\"/>\n");
+      _output.printf("<color r=\"0\" g=\"0\" b=\"1\"/>\n");
+      _output.printf("<color r=\"1\" g=\"0\" b=\"1\"/>");
+      _output.printf("%s\n", color);
+      _output.printf("</colortable>\n");
+   }
 }
 
 void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float structure_scale)
@@ -280,9 +304,13 @@ void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text)
 
 void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text, const char *alignment)
 {
-   _output.printf("<t p=\"%f %f\" Justification=\"%s\"><s>%s</s></t>\n", _bond_length * pos.x, -_bond_length * pos.y, alignment, text);
+	_output.printf("<t p=\"%f %f\" Justification=\"%s\"><s>%s</s></t>\n", _bond_length * pos.x, -_bond_length * pos.y, alignment, text);
 }
 
+void MoleculeCdxmlSaver::addCustomText(const Vec2f &pos, const char *alignment, float line_height, const char *text)
+{
+   _output.printf("<t p=\"%f %f\" Justification=\"%s\" LineHeight=\"%f\">%s</t>\n", _bond_length * pos.x, -_bond_length * pos.y, alignment, line_height, text);
+}
 void MoleculeCdxmlSaver::endPage ()
 {
    _output.printf("</page>\n");

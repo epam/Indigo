@@ -15,6 +15,7 @@
 #include "render_cdxml.h"
 
 #include "render_params.h"
+#include "base_cpp/output.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_saver.h"
 
@@ -78,7 +79,53 @@ void _getBounds (RenderParams& params, BaseMolecule &mol, Vec2f &min, Vec2f &max
    min.scale(scale);
    max.scale(scale);
 }
+int _findReverse(int from, int to, const Array<char>& _array, char value) {
+   for (int i = to - 1; i >= from; i--) {
+      if (_array[i] == value)
+         return i;
+   }
+   return -1;
+}
+int _getLongestLineXml(const Array<char>& line) {
+   int longest_line = 0;
+   if (line.size() > 0)
+   {
+      int start = 0;
+      while (start < line.size() - 1)
+      {
+         int next = line.find(start + 1, line.size(), '\n');
+         if (next == -1)
+            next = line.size() - 1;
+         int st = _findReverse(start + 1, next - 1, line, '>');
+         if (st == -1) {
+            st = start;
+         }
 
+         longest_line = __max(next - st, longest_line);
+
+         start = next;
+      }
+   }
+   return longest_line;
+}
+int _getLongestLine(const Array<char>& line) {
+   int longest_line = 0;
+   if (line.size() > 0)
+   {
+      int start = 0;
+      while (start < line.size())
+      {
+         int next = line.find(start + 1, line.size(), '\n');
+         if (next == -1)
+            next = line.size();
+
+         longest_line = __max(next - start, longest_line);
+
+         start = next;
+      }
+   }
+   return longest_line;
+}
 void RenderParamCdxmlInterface::render (RenderParams& params)
 {
    MoleculeCdxmlSaver saver(*params.rOpt.output);
@@ -99,45 +146,64 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
    title_widths.resize(mols.size());
    title_widths.fill(0);
 
+   Array<float> key_widths;
+   key_widths.resize(mols.size());
+   key_widths.fill(0);
+
+   Array<float> prop_widths;
+   prop_widths.resize(mols.size());
+   prop_widths.fill(0);
+
    Array<Pos> positions;
    positions.resize(mols.size());
 
-   for (int i = 0; i < mols.size(); ++i)
-   {
-      int column = i % params.cnvOpt.gridColumnNumber;
+   Array<float> title_heights;
+   title_heights.resize(mols.size());
+   title_heights.fill(0);
 
-      Pos &p = positions[i];
-      _getBounds(params, mols[i]->asMolecule(), p.str_min, p.str_max, p.scale);
+   for (int mol_idx = 0; mol_idx < mols.size(); ++mol_idx)
+   {
+      int column = mol_idx % params.cnvOpt.gridColumnNumber;
+
+      Pos &p = positions[mol_idx];
+      _getBounds(params, mols[mol_idx]->asMolecule(), p.str_min, p.str_max, p.scale);
 
       float width = p.str_max.x - p.str_min.x;
 
       // Check titles width
-      if (i < params.titles.size())
+      if (mol_idx < params.titles.size())
       {
-         const Array<char> &title = params.titles[i];
+         const Array<char> &title = params.titles[mol_idx];
+        
          
          if (title.size() > 0)
          {
-            int start = 0;
-            int longest_line = 0;
-            while (start < title.size())
-            {
-               int next = title.find(start + 1, title.size(), '\n');
-               if (next == -1)
-                  next = title.size();
-
-               longest_line = __max(next - start, longest_line);
-
-               start = next;
-            }
+            int longest_line = _getLongestLine(title);
 
             // On average letters has width 6
-            float title_width = longest_line * 6.3f / 36.0f;
-            title_widths[i] = title_width;
+            float letter_width = params.rOpt.titleFontFactor / 1.5f;
+
+            float title_width = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
+            title_widths[mol_idx] = title_width;
             width = __max(width, title_width);
          }
       }
-      
+      if (params.rOpt.cdxml_context.get() != NULL) {
+         RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
+         if (context.enabled) {
+            RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
+            float letter_width = context.propertyFontSize / 1.5f;
+            int longest_line = _getLongestLineXml(data.propertyName);
+            
+            key_widths[mol_idx] = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
+
+            longest_line += _getLongestLineXml(data.propertyValue);
+            float prop_width = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
+            prop_widths[mol_idx] = prop_width;
+            
+            width = __max(width, prop_width);
+         }
+      }
 
       column_widths[column] = __max(width, column_widths[column]);
    }
@@ -160,12 +226,12 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
 
    // Get each structure bounds 
    int row_moved = 0;
-   for (int i = 0; i < mols.size(); ++i)
+   for (int mol_idx = 0; mol_idx < mols.size(); ++mol_idx)
    {
-      Pos &p = positions[i];
+      Pos &p = positions[mol_idx];
 
-      int column = i % params.cnvOpt.gridColumnNumber;
-      int row = i / params.cnvOpt.gridColumnNumber;
+      int column = mol_idx % params.cnvOpt.gridColumnNumber;
+      int row = mol_idx / params.cnvOpt.gridColumnNumber;
 
       p.page_offset.x = column_offset[column];
       p.page_offset.y = row_y_offset;
@@ -173,14 +239,29 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       p.size.diff(p.str_max, p.str_min);
       p.all_size = p.size;
       
-      if (i < params.titles.size())
+      if (mol_idx < params.titles.size())
       {
-         const Array<char> &title = params.titles[i];
+         const Array<char> &title = params.titles[mol_idx];
          if (title.size() > 0)
          {
             int lines = title.count('\n') + 1;
-            float title_height = lines * saver.textLineHeight();
-            p.all_size.y += title_height + saver.textLineHeight(); // Add blank line
+            float letter_height = params.rOpt.titleFontFactor / MoleculeCdxmlSaver::BOND_LENGTH;
+            //float title_height = lines * saver.textLineHeight();
+            //p.all_size.y += title_height + saver.textLineHeight(); // Add blank line
+            float title_height = lines * letter_height;
+            title_heights[mol_idx] = title_height;
+            p.all_size.y += title_height + letter_height; // Add blank line
+         }
+      }
+      if (params.rOpt.cdxml_context.get() != NULL) {
+         RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
+         if (context.enabled) {
+            RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
+            int lines = data.propertyName.count('\n') + 1;
+
+            float letter_height = params.rOpt.titleFontFactor / MoleculeCdxmlSaver::BOND_LENGTH;
+            float prop_height = lines * letter_height;
+            p.all_size.y += prop_height + letter_height; // Add blank line
          }
       }
 
@@ -192,7 +273,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       {
          // Update starting row_y_offset for the whole row and start this row again
          row_y_offset = (pbegin + 1) * saver.pageHeight() + page_y_offset_base;
-         i = row * params.cnvOpt.gridColumnNumber - 1;
+         mol_idx = row * params.cnvOpt.gridColumnNumber - 1;
          row_moved = row;
          continue;
       }
@@ -204,7 +285,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
 
       max_y = __max(max_y, p.page_offset.y + p.all_size.y);
 
-      int next_row = (i + 1) / params.cnvOpt.gridColumnNumber;
+      int next_row = (mol_idx + 1) / params.cnvOpt.gridColumnNumber;
       if (last_row != next_row)
       {
          row_y_offset = max_y + 1.0f;
@@ -229,24 +310,70 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
 
    b.max.set(w, max_y + y_margins_base);
    saver.beginDocument(&b);
+   
+   Array<char> font_attr;
+   ArrayOutput font_out(font_attr);
+   
+   font_out.printf("<s size=\"%f\"", params.rOpt.titleFontFactor);
+
+   if (params.rOpt.cdxml_context.get() != NULL) {
+      RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
+      if (context.fonttable.size() > 0) {
+         saver.addFontTable(context.fonttable.ptr());
+      }
+      if (context.colortable.size() > 0) {
+         saver.addColorTable(context.colortable.ptr());
+      }
+      if (context.titleFont.size() > 0) {
+         font_out.printf(" font=\"%s\"", context.titleFont.ptr());
+      }
+      if (context.titleFace.size() > 0) {
+         font_out.printf(" face=\"%s\"", context.titleFace.ptr());
+      }
+   }
+   font_out.printf(">");
+   font_attr.push(0);
+
+   //if (params.rOtitleFont.size() > 0) {
+   //   font_out.printf("id=\"5\" charset=\"iso-8859-1\" name=\"%s\"", params.cnvOpt.titleFont.ptr());
+   //   font_attr.push(0);
+   //   saver.addFontTable(font_attr.ptr());
+   //   /*
+   //   * Set font as id 5 always
+   //   */
+
+   //   font_attr.clear();
+   //   if (params.rOpt.titleFontFactor > 1)
+   //      font_out.printf(" font=\"5\" size=\"%.0f\"", params.rOpt.titleFontFactor);
+   //   else
+   //      font_out.printf(" font=\"5\"");
+   //} else {
+   //   if (params.rOpt.titleFontFactor > 1)
+   //      font_out.printf(" size=\"%.0f\"", params.rOpt.titleFontFactor);
+   //}
+   //font_attr.push(0);
    saver.beginPage(&b);
+   Array<char> title_font;
 
-   for (int i = 0; i < mols.size(); ++i)
+   for (int mol_idx = 0; mol_idx < mols.size(); ++mol_idx)
    {
-      int column = i % params.cnvOpt.gridColumnNumber;
+      int column = mol_idx % params.cnvOpt.gridColumnNumber;
 
-      Pos &p = positions[i];
+      Pos &p = positions[mol_idx];
       Vec2f offset = p.offset;
       offset.scale(1 / p.scale);
-      saver.saveMoleculeFragment(mols[i]->asMolecule(), offset, p.scale);
+      saver.saveMoleculeFragment(mols[mol_idx]->asMolecule(), offset, p.scale);
       
-      if (i < params.titles.size())
+      if (mol_idx < params.titles.size())
       {
-         const Array<char> &title = params.titles[i];
+         const Array<char> &title = params.titles[mol_idx];
+         
          if (title.size() > 0)
          {
+            title_font.clear();
+            title_font.readString(font_attr.ptr(), false);
             // Get title bounding box
-            float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], title_widths[i]);
+            float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], title_widths[mol_idx]);
 
             const char *alignment_str = "";
             MultilineTextLayout alignment = params.cnvOpt.titleAlign;
@@ -258,9 +385,40 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
                alignment_str = "Right";
 
             Vec2f title_offset(x, p.title_offset_y);
-            saver.addText(title_offset, title.ptr(), alignment_str);
+            title_font.appendString(title.ptr(), true);
+            title_font.appendString("</s>", true);
+
+            saver.addCustomText(title_offset, alignment_str, params.rOpt.titleFontFactor, title_font.ptr());
          }
       }
+      if (params.rOpt.cdxml_context.get() != NULL) {
+         RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
+         if (context.enabled) {
+            RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
+            float prop_width = prop_widths[mol_idx];
+            float key_width = key_widths[mol_idx];
+            float prop_offset_y = p.title_offset_y - title_heights[mol_idx];
+            float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], prop_width);
+
+            float prop_offset_key = prop_width * 0.5f;
+            float prop_offset_val = prop_offset_key - (prop_width - key_width);
+            if (context.keyAlignment == RenderCdxmlContext::ALIGNMENT_LEFT) {
+               Vec2f title_offset_key(x - prop_offset_key, prop_offset_y);
+               Vec2f title_offset_val(x + prop_offset_val, prop_offset_y);
+               saver.addCustomText(title_offset_key, "Left", context.propertyFontSize, data.propertyName.ptr());
+               saver.addCustomText(title_offset_val, "Left", context.propertyFontSize, data.propertyValue.ptr());
+            }
+            else {
+               Vec2f title_offset_key(x + prop_offset_val, prop_offset_y);
+               Vec2f title_offset_val(x + prop_offset_val, prop_offset_y);
+               saver.addCustomText(title_offset_key, "Right", context.propertyFontSize, data.propertyName.ptr());
+               saver.addCustomText(title_offset_val, "Left", context.propertyFontSize, data.propertyValue.ptr());
+            }
+         }
+
+      }
+      
+     
    }
 
    if (params.cnvOpt.comment.size() > 0)

@@ -24,4 +24,5 @@ public interface IndigoRendererLib extends Library
    int indigoRenderGrid (int objects, int[] refAtoms, int nColumns, int output);
    int indigoRenderToFile (int object, String filename);
    int indigoRenderGridToFile (int objects, int[] refAtoms, int nColumns, String filename);
+   int indigoRenderReset();
 }

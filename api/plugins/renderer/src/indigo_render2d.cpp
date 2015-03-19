@@ -26,6 +26,7 @@
 #include "indigo-renderer.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include "render2d/render_cdxml.h"
 
 using namespace indigo;
 
@@ -414,7 +415,75 @@ void indigoRenderSetGridTitleProperty (const char* prop)
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    rp.cnvOpt.titleProp.clear();
    rp.cnvOpt.titleProp.appendString(prop, true);
-}                                      
+}
+
+
+RenderCdxmlContext& getCdxmlContext() {
+   RenderParams& rp = indigoRendererGetInstance().renderParams;
+   if (rp.rOpt.cdxml_context.get() == NULL) {
+      rp.rOpt.cdxml_context.create();
+   }
+   return rp.rOpt.cdxml_context.ref();
+}
+
+
+void indigoRenderSetCdxmlTitleFont(const char* font)
+{
+   RenderCdxmlContext& context = getCdxmlContext();
+   context.titleFont.readString(font, true);
+}
+void indigoRenderSetCdxmlTitleFace(const char* face)
+{
+   RenderCdxmlContext& context = getCdxmlContext();
+   context.titleFace.readString(face, true);
+}
+
+void indigoRenderSetCdxmlPropertiesSize(float size)
+{
+   RenderCdxmlContext& context = getCdxmlContext();
+   context.propertyFontSize = size;
+}
+void indigoRenderSetCdxmlPropertiesFontTable(const char* fonttable)
+{
+   RenderCdxmlContext& context = getCdxmlContext();
+   context.fonttable.readString(fonttable, true);
+}
+void indigoRenderSetCdxmlPropertiesColorTable(const char* colortable)
+{
+   RenderCdxmlContext& context = getCdxmlContext();
+   context.colortable.readString(colortable, true);
+}
+
+void indigoRenderSetCdxmlPropertiesNameProperty(const char* name)
+{
+   RenderCdxmlContext& context = getCdxmlContext();
+   context.propertyNameCaption.readString(name, true);
+}
+
+void indigoRenderSetCdxmlPropertiesValueProperty(const char* value)
+{
+   RenderCdxmlContext& context = getCdxmlContext();
+   context.propertyValueCaption.readString(value, true);
+}
+
+void indigoRenderSetCdxmlPropertiesKeyAlignment(const char* value)
+{
+   RenderCdxmlContext& context = getCdxmlContext();
+   if (strcasecmp(value, "left") == 0)
+      context.keyAlignment = RenderCdxmlContext::ALIGNMENT_LEFT;
+   else if (strcasecmp(value, "right") == 0)
+      context.keyAlignment = RenderCdxmlContext::ALIGNMENT_RIGHT;
+   else
+      throw IndigoError("Option value alignment is invalid");
+}
+
+
+void indigoRenderSetCdxmlPropertiesEnabled(int enabled)
+{
+   RenderCdxmlContext& context = getCdxmlContext();
+   context.enabled = (enabled != 0);
+
+}
 
 CEXPORT int indigoRender (int object, int output)
 {
@@ -472,6 +541,10 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
       rp.clearArrays();
 
       PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
+      if (rp.rOpt.cdxml_context.get() != NULL) {
+         RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
+         context.property_data.clear();
+      }
       if (IndigoBaseMolecule::is(*objs[0]))
       {
          for (int i = 0; i < objs.size(); ++i) {
@@ -482,6 +555,28 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             Array<char>& title = rp.titles.push();
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
+            
+
+            if (rp.rOpt.mode == DINGO_MODE::MODE_CDXML) {
+               if (rp.rOpt.cdxml_context.get() != NULL) {
+
+                  RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
+                  RenderCdxmlContext::PropertyData& data = context.property_data.push();
+
+                  RedBlackStringObjMap< Array<char> > *properties = objs[i]->getProperties();
+                  if (properties != NULL) {
+                     if (context.propertyNameCaption.size() > 0 && context.propertyValueCaption.size() > 0)
+                     if (properties->find(context.propertyNameCaption.ptr())) {
+                        if (properties->find(context.propertyValueCaption.ptr())) {
+                           data.propertyName.readString(properties->at(context.propertyNameCaption.ptr()).ptr(), true);
+                           data.propertyValue.readString(properties->at(context.propertyValueCaption.ptr()).ptr(), true);
+                        }
+                     }
+                  }
+               }
+            
+
+			}
 
             rp.mols.top()->clone_KeepIndices(objs[i]->getBaseMolecule());
             rp.rmode = RENDER_MOL;
@@ -497,6 +592,7 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             Array<char>& title = rp.titles.push();
             if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
                title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
+            
             
             rp.rxns.top()->clone(objs[i]->getBaseReaction(), 0, 0, 0);
             rp.rmode = RENDER_RXN;
@@ -666,6 +762,22 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerFloat("render-grid-title-font-size", indigoRenderSetTitleFontSize);
    mgr.setOptionHandlerString("render-grid-title-property", indigoRenderSetGridTitleProperty);
    mgr.setOptionHandlerInt("render-grid-title-offset", indigoRenderSetTitleOffset);
+   
+
+   mgr.setOptionHandlerBool("render-cdxml-properties-enabled", indigoRenderSetCdxmlPropertiesEnabled);
+   mgr.setOptionHandlerString("render-cdxml-properties-fonttable", indigoRenderSetCdxmlPropertiesFontTable);
+   mgr.setOptionHandlerString("render-cdxml-properties-colortable", indigoRenderSetCdxmlPropertiesColorTable);
+   mgr.setOptionHandlerString("render-cdxml-properties-name-property", indigoRenderSetCdxmlPropertiesNameProperty);
+   mgr.setOptionHandlerString("render-cdxml-properties-value-property", indigoRenderSetCdxmlPropertiesValueProperty);
+   mgr.setOptionHandlerString("render-cdxml-properties-key-alignment", indigoRenderSetCdxmlPropertiesKeyAlignment);
+   mgr.setOptionHandlerFloat("render-cdxml-properties-size", indigoRenderSetCdxmlPropertiesSize);
+   mgr.setOptionHandlerString("render-cdxml-title-font", indigoRenderSetCdxmlTitleFont);
+   mgr.setOptionHandlerString("render-cdxml-title-face", indigoRenderSetCdxmlTitleFace);
+
+
+
+   
+
 }
 
 _IndigoRenderingOptionsHandlersSetter _indigo_rendering_options_handlers_setter;

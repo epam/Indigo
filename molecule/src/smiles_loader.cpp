@@ -992,6 +992,7 @@ void SmilesLoader::_parseMolecule ()
       if (_qmol != 0)
       {
          _qmol->addAtom(qatom.release());
+
          if (bond != 0)
             bond->index = _qmol->addBond(bond->beg, bond->end, qbond.release());
       }
@@ -1157,7 +1158,10 @@ void SmilesLoader::_loadParsedMolecule ()
       _markAromaticBonds();
 
    if (_mol != 0)
+   {
+      _addExplicitHForStereo();
       _setRadicalsAndHCounts();
+   }
 
    if (smarts_mode)
       // Forbid matching SMARTS atoms to hydrogens
@@ -1171,6 +1175,11 @@ void SmilesLoader::_loadParsedMolecule ()
                _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
             _bmol->allowRGroupOnRSite(i, _atoms[i].aam);
          }
+
+   if (_qmol != 0)
+      // Replace implicit H with explicit one at required stereocenter
+      // or add required number of "any atom" ligands
+      _addLigandsForStereo();
 
    _calcStereocenters();
    _calcCisTrans();
@@ -1363,6 +1372,123 @@ void SmilesLoader::_forbidHydrogens ()
          }
       }
    }
+}
+
+void SmilesLoader::_addExplicitHForStereo ()
+{
+   for (int i = 0; i < _atoms.size(); i++)
+   {
+      if ((_atoms[i].chirality > 0) && (_bmol->getVertex(i).degree() == 2) && (_atoms[i].hydrogens == 1))
+      {
+         _AtomDesc &atom = _atoms.push(_neipool);
+         _BondDesc *bond = &_bonds.push();
+  
+         atom.label = ELEM_H;
+         int exp_h_idx = _mol->addAtom(atom.label);
+
+         bond->beg = i;
+         bond->end = _atoms.size() - 1;
+         bond->type = BOND_SINGLE;
+         bond->index = _mol->addBond_Silent(bond->beg, bond->end, bond->type);
+
+         _atoms[i].neighbors.add(exp_h_idx);
+         _atoms[exp_h_idx].neighbors.add(i);
+         _atoms[exp_h_idx].parent = i;
+
+         _atoms[i].hydrogens = 0;
+      }
+   }
+}
+
+void SmilesLoader::_addLigandsForStereo ()
+{
+   bool add_explicit_h = false;
+   int num_ligands = 0;
+
+   for (int i = 0; i < _atoms.size(); i++)
+   {
+      if ((_atoms[i].chirality > 0) && (_bmol->getVertex(i).degree() < 3) && !_isAlleneLike(i))
+      {
+         if (_atoms[i].hydrogens == 1)
+         {
+            add_explicit_h = true;
+            num_ligands = 3 - _bmol->getVertex(i).degree() - _atoms[i].hydrogens;
+         }
+         else
+            num_ligands = 3 - _bmol->getVertex(i).degree();
+
+         for (int j = 0; j < num_ligands; j++)
+         {
+            _AtomDesc &atom = _atoms.push(_neipool);
+            _BondDesc *bond = &_bonds.push();
+            AutoPtr<QueryMolecule::Atom> qatom;
+
+            if (add_explicit_h)
+               qatom = QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+            else
+               qatom = QueryMolecule::Atom::oder(QueryMolecule::Atom::nicht
+                                            (new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
+                                             new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+
+            AutoPtr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+
+            atom.star_atom = true;
+            int any_atom_idx = _qmol->addAtom(qatom.release());
+
+            bond->beg = i;
+            bond->end = _atoms.size() - 1;
+            bond->type = BOND_SINGLE;
+            bond->dir = 0;
+            bond->topology = 0;
+            bond->index = _qmol->addBond(i, any_atom_idx, qbond.release());
+
+            _atoms[i].neighbors.add(any_atom_idx);
+            _atoms[any_atom_idx].neighbors.add(i);
+            _atoms[any_atom_idx].parent = i;
+         }
+
+         if (_atoms[i].hydrogens == 1)
+         {
+            _AtomDesc &atom = _atoms.push(_neipool);
+            _BondDesc *bond = &_bonds.push();
+   
+            AutoPtr<QueryMolecule::Atom> qatom(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+            AutoPtr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+
+            atom.label = ELEM_H;
+            int exp_h_idx = _qmol->addAtom(qatom.release());
+
+            bond->beg = i;
+            bond->end = _atoms.size() - 1;
+            bond->type = BOND_SINGLE;
+            bond->dir = 0;
+            bond->topology = 0;
+            bond->index = _qmol->addBond(i, exp_h_idx, qbond.release());
+
+            _atoms[i].neighbors.add(exp_h_idx);
+            _atoms[exp_h_idx].neighbors.add(i);
+            _atoms[exp_h_idx].parent = i;
+
+            _atoms[i].hydrogens = 0;
+            _qmol->getAtom(i).removeConstraints(QueryMolecule::ATOM_TOTAL_H);
+         }
+      }
+   }
+}
+
+bool SmilesLoader::_isAlleneLike (int i)
+{
+   if (_bmol->getVertex(i).degree() == 2)
+   {
+      int subst[4];
+      int subst2[4];
+      int left, right;
+      bool pure_h[4];
+
+      if (MoleculeAlleneStereo::possibleCenter(*_bmol, i, left, right, subst, pure_h))
+         return true;
+   }
+   return false;   
 }
 
 void SmilesLoader::_handlePolymerRepetition (int i)

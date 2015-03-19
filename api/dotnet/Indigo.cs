@@ -395,6 +395,12 @@ namespace com.ggasoftware.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoIterateCMLFile(filename)));
         }
 
+        public IndigoObject iterateCDXFile(string filename)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoIterateCDXFile(filename)));
+        }
+
         public IndigoObject substructureMatcher(IndigoObject target, string mode)
         {
             setSessionID();
@@ -552,6 +558,17 @@ namespace com.ggasoftware.indigo
         {
             setSessionID();
             int result = checkResult(_indigo_lib.indigoIterateCML(reader.self));
+            if (result == 0)
+            {
+                return null;
+            }
+            return new IndigoObject(this, result, reader);
+        }
+
+        public IndigoObject iterateCDX(IndigoObject reader)
+        {
+            setSessionID();
+            int result = checkResult(_indigo_lib.indigoIterateCDX(reader.self));
             if (result == 0)
             {
                 return null;
