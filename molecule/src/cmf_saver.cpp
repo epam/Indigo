@@ -337,12 +337,18 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       _encode(CMF_DATASGROUP);
       _encodeBaseSGroup(mol, sd, mapping);
       _encodeString(sd.description);
+      _encodeString(sd.name);
+      _encodeString(sd.type);
+      _encodeString(sd.querycode);
+      _encodeString(sd.queryoper);
       _encodeString(sd.data);
       // Pack detached, relative, display_units, and sd.dasp_pos into one byte
       if (sd.dasp_pos < 0 || sd.dasp_pos > 9)
          throw Error("DataSGroup dasp_pos field should be less than 10: %d", sd.dasp_pos);
       byte packed = (sd.dasp_pos & 0x0F) | (sd.detached << 4) | (sd.relative << 5) | (sd.display_units << 6);
       _output->writeByte(packed);
+      _output->writePackedUInt(sd.num_chars);
+      _output->writeChar(sd.tag);
    }
 
    for (int i = mol.superatoms.begin(); i != mol.superatoms.end(); i = mol.superatoms.next(i))
@@ -351,10 +357,16 @@ void CmfSaver::_encodeExtSection (Molecule &mol, const Mapping &mapping)
       _encode(CMF_SUPERATOM);
       _encodeBaseSGroup(mol, sa, mapping);
       _encodeString(sa.subscript);
-
-      if (sa.bond_idx < -1)
-         throw Error("internal error: SGroup bond index is invalid: %d", sa.bond_idx);
-      _output->writePackedUInt(sa.bond_idx + 1);
+      _encodeString(sa.sa_class);
+      byte packed = (sa.contracted & 0x01) | (sa.bond_connections.size() << 1);
+      _output->writeByte(packed);
+      if (sa.bond_connections.size() > 0)
+      {
+         for (int j = 0; j < sa.bond_connections.size(); j++)
+         {
+            _output->writePackedUInt(sa.bond_connections[j].bond_idx + 1);
+         }
+      }
    }
 
    for (int i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))
@@ -422,8 +434,13 @@ void CmfSaver::_writeSGroupsXyz (Molecule &mol, Output &output, const VecRange &
    {
       BaseMolecule::Superatom &sa = mol.superatoms[i];
       _writeBaseSGroupXyz(output, sa, range);
-      if (sa.bond_idx != -1)
-         _writeDir2f(output, sa.bond_dir, range);
+      if (sa.bond_connections.size() > 0)
+      {
+         for (int j = 0; j < sa.bond_connections.size(); j++)
+         {
+            _writeDir2f(output, sa.bond_connections[j].bond_dir, range);
+         }
+      }
    }
 
    for (int i = mol.repeating_units.begin(); i != mol.repeating_units.end(); i = mol.repeating_units.next(i))

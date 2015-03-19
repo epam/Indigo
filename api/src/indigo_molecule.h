@@ -263,6 +263,49 @@ protected:
    BaseMolecule &_mol;
 };
 
+class IndigoSgroup : public IndigoObject
+{
+public:
+   IndigoSgroup (BaseMolecule &mol_, int sg_type_, int idx_);
+   virtual ~IndigoSgroup ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   const char * debugInfo ();
+
+   static IndigoSgroup & cast (IndigoObject &obj);
+   BaseMolecule::SGroup & get();
+
+   BaseMolecule &mol;
+   int sg_type;
+   int idx;
+};
+
+class IndigoSgroupsIter : public IndigoObject
+{
+public:
+   IndigoSgroupsIter (BaseMolecule &molecule, Array<BaseMolecule::SGroup::_SgroupRef> &sg_refs);
+
+   virtual ~IndigoSgroupsIter ();
+
+   const char * debugInfo ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+   enum PropertyTypes { PROPERTY_INT, PROPERTY_BOOL, PROPERTY_STRING, PROPERTY_INT_ARRAY };
+
+   static void parseCondition (const char* property, const char* value, int &s_property, int &s_type, int &s_int,
+                               Array<int> &s_indices);
+
+protected:
+
+   int _idx;
+   BaseMolecule &_mol;
+   Array<BaseMolecule::SGroup::_SgroupRef> &_refs;
+};
+
 class IndigoDataSGroup : public IndigoObject
 {
 public:

@@ -506,6 +506,122 @@ class IndigoObject(object):
         options = '' if options is None else options
         return self.dispatcher._checkResult(Indigo._lib.indigoSetDataSGroupXY(self.id, x, y, options.encode(ENCODE_ENCODING)))
 
+    def setSgroupData(self, data):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupData(self.id, data.encode(ENCODE_ENCODING)))
+
+    def setSgroupCoords(self, x, y):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupCoords(self.id, x, y))
+
+    def setSgroupDescription(self, description):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupDescription(self.id, description.encode(ENCODE_ENCODING)))
+
+    def setSgroupFieldName(self, name):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupFieldName(self.id, name.encode(ENCODE_ENCODING)))
+
+    def setSgroupQueryCode(self, code):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupQueryCode(self.id, code.encode(ENCODE_ENCODING)))
+
+    def setSgroupQueryOper(self, oper):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupQueryOper(self.id, oper.encode(ENCODE_ENCODING)))
+
+    def setSgroupDisplay(self, option):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupDisplay(self.id, option.encode(ENCODE_ENCODING)))
+
+    def setSgroupLocation(self, option):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupLocation(self.id, option.encode(ENCODE_ENCODING)))
+
+    def setSgroupTag(self, tag):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupTag(self.id, tag.encode(ENCODE_ENCODING)))
+
+    def setSgroupTagAlign(self, tag_align):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupTagAlign(self.id, tag_align))
+
+    def setSgroupDataType(self, data_type):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupDataType(self.id, data_type.encode(ENCODE_ENCODING)))
+
+    def setSgroupXCoord(self, x):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupXCoord(self.id, x))
+
+    def setSgroupYCoord(self, y):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupYCoord(self.id, y))
+
+    def createSgroup(self, sgtype, mapping, name):
+        self.dispatcher._setSessionId()
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoCreateSgroup(sgtype.encode(ENCODE_ENCODING), mapping.id, name.encode(ENCODE_ENCODING))))
+
+    def setSgroupClass(self, sgclass):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupClass(self.id, sgclass))
+
+    def setSgroupName(self, sgname):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupName(self.id, sgname))
+
+    def getSgroupClass(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetSgroupClass(self.id))
+
+    def getSgroupName(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetSgroupName(self.id))
+
+    def getSgroupNumCrossBonds(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSgroupNumCrossBonds(self.id))
+
+    def addSgroupAttachmentPoint(self, aidx, lvidx, apid):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoAddSgroupAttachmentPoint(self.id, aidx, lvidx, apid))
+
+    def deleteSgroupAttachmentPoint(self, apidx):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoDeleteSgroupAttachmentPoint(self.id, apidx))
+
+    def getSgroupDisplayOption(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSgroupDisplayOption(self.id))
+
+    def setSgroupDisplayOption(self, option):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupDisplayOption(self.id, option))
+
+    def getSgroupMultiplier(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSgroupMultiplier(self.id))
+
+    def setSgroupMultiplier(self, mult):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupMultiplier(self.id, mult))
+
+    def setSgroupBrackets(self, style, x1, y1, x2, y2, x3, y3, x4, y4):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupBrackets(self.id, style, x1, y1, x2, y2, x3, y3, x4, y4))
+
+    def findSgroups(self, prop, val):
+        self.dispatcher._setSessionId()
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoFindSgroups(self.id, prop.encode(ENCODE_ENCODING), val.encode(ENCODE_ENCODING))))
+
+    def getSgroupType(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSgroupType(self.id))
+
+    def getSgroupIndex(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSgroupIndex(self.id))
+
     def resetCharge(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoResetCharge(self.id))
@@ -1481,6 +1597,64 @@ class Indigo(object):
         Indigo._lib.indigoAddSuperatom.argtypes = [c_int, c_int, POINTER(c_int), c_char_p]
         Indigo._lib.indigoSetDataSGroupXY.restype = c_int
         Indigo._lib.indigoSetDataSGroupXY.argtypes = [c_int, c_float, c_float, c_char_p]
+        Indigo._lib.indigoSetSgroupData.restype = c_int
+        Indigo._lib.indigoSetSgroupData.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupCoords.restype = c_int
+        Indigo._lib.indigoSetSgroupCoords.argtypes = [c_int, c_float, c_float]
+        Indigo._lib.indigoSetSgroupDescription.restype = c_int
+        Indigo._lib.indigoSetSgroupDescription.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupFieldName.restype = c_int
+        Indigo._lib.indigoSetSgroupFieldName.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupQueryCode.restype = c_int
+        Indigo._lib.indigoSetSgroupQueryCode.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupQueryOper.restype = c_int
+        Indigo._lib.indigoSetSgroupQueryOper.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupDisplay.restype = c_int
+        Indigo._lib.indigoSetSgroupDisplay.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupLocation.restype = c_int
+        Indigo._lib.indigoSetSgroupLocation.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupTag.restype = c_int
+        Indigo._lib.indigoSetSgroupTag.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupTagAlign.restype = c_int
+        Indigo._lib.indigoSetSgroupTagAlign.argtypes = [c_int, c_int]
+        Indigo._lib.indigoSetSgroupDataType.restype = c_int
+        Indigo._lib.indigoSetSgroupDataType.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupXCoord.restype = c_int
+        Indigo._lib.indigoSetSgroupXCoord.argtypes = [c_int, c_float]
+        Indigo._lib.indigoSetSgroupYCoord.restype = c_int
+        Indigo._lib.indigoSetSgroupYCoord.argtypes = [c_int, c_float]
+        Indigo._lib.indigoCreateSgroup.restype = c_int
+        Indigo._lib.indigoCreateSgroup.argtypes = [c_char_p, c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupClass.restype = c_int
+        Indigo._lib.indigoSetSgroupClass.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSgroupName.restype = c_int
+        Indigo._lib.indigoSetSgroupName.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoGetSgroupClass.restype = c_char_p
+        Indigo._lib.indigoGetSgroupClass.argtypes = [c_int]
+        Indigo._lib.indigoGetSgroupName.restype = c_char_p
+        Indigo._lib.indigoGetSgroupName.argtypes = [c_int]
+        Indigo._lib.indigoGetSgroupNumCrossBonds.restype = c_int
+        Indigo._lib.indigoGetSgroupNumCrossBonds.argtypes = [c_int]
+        Indigo._lib.indigoAddSgroupAttachmentPoint.restype = c_int
+        Indigo._lib.indigoAddSgroupAttachmentPoint.argtypes = [c_int, c_int, c_int, c_char_p]
+        Indigo._lib.indigoDeleteSgroupAttachmentPoint.restype = c_int
+        Indigo._lib.indigoDeleteSgroupAttachmentPoint.argtypes = [c_int, c_int]
+        Indigo._lib.indigoGetSgroupDisplayOption.restype = c_int
+        Indigo._lib.indigoGetSgroupDisplayOption.argtypes = [c_int]
+        Indigo._lib.indigoSetSgroupDisplayOption.restype = c_int
+        Indigo._lib.indigoSetSgroupDisplayOption.argtypes = [c_int, c_int]
+        Indigo._lib.indigoGetSgroupMultiplier.restype = c_int
+        Indigo._lib.indigoGetSgroupMultiplier.argtypes = [c_int]
+        Indigo._lib.indigoSetSgroupMultiplier.restype = c_int
+        Indigo._lib.indigoSetSgroupMultiplier.argtypes = [c_int, c_int]
+        Indigo._lib.indigoSetSgroupBrackets.restype = c_int
+        Indigo._lib.indigoSetSgroupBrackets.argtypes = [c_int, c_int, c_float, c_float, c_float, c_float, c_float, c_float, c_float, c_float]
+        Indigo._lib.indigoFindSgroups.restype = c_int
+        Indigo._lib.indigoFindSgroups.argtypes = [c_int, c_char_p, c_char_p]
+        Indigo._lib.indigoGetSgroupType.restype = c_int
+        Indigo._lib.indigoGetSgroupType.argtypes = [c_int]
+        Indigo._lib.indigoGetSgroupIndex.restype = c_int
+        Indigo._lib.indigoGetSgroupIndex.argtypes = [c_int]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int

@@ -138,7 +138,9 @@ public:
       CDX_MOLECULE,
       CDX_REACTION,
       MULTIPLE_CDX_LOADER,
-      CDX_SAVER
+      CDX_SAVER,
+      SGROUP,
+      SGROUPS_ITER
    };
 
    int type;

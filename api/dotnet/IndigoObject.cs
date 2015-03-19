@@ -573,6 +573,174 @@ namespace com.ggasoftware.indigo
             return addSuperatom(Indigo.toIntArray(atoms), name);
         }
 
+        public IndigoObject createSgroup(String type, int mapping, String name)
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoCreateSgroup(type, mapping, name)));
+        }
+
+        public void setSgroupClass(String sgclass)
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(_indigo_lib.indigoSetSgroupClass(self, sgclass));
+        }
+
+        public void setSgroupName(String sgname)
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(_indigo_lib.indigoSetSgroupName(self, sgname));
+        }
+
+        public string getSgroupClass()
+        {
+            dispatcher.setSessionID();
+            return new String(dispatcher.checkResult(_indigo_lib.indigoGetSgroupClass(self)));
+        }
+
+        public string getSgroupName()
+        {
+            dispatcher.setSessionID();
+            return new String(dispatcher.checkResult(_indigo_lib.indigoGetSgroupName(self)));
+        }
+
+        public int getSgroupNumCrossBonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetSgroupNumCrossBonds(self));
+        }
+
+        public int addSgroupAttachmentPoint(int aidx, int lvidx, String apid)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoAddSgroupAttachmentPoint(self, aidx, lvidx, apid));
+        }
+
+        public int deleteSgroupAttachmentPoint(int apidx)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoDeleteSgroupAttachmentPoint(self, apidx));
+        }
+
+        public int getSgroupDisplayOption()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetSgroupDisplayOption(self));
+        }
+
+        public int setSgroupDisplayOption(int option)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoSetSgroupDisplayOption(self, option));
+        }
+
+        public int getSgroupMultiplier()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetSgroupMultiplier(self));
+        }
+
+        public int setSgroupMultiplier(int mult)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoSetSgroupMultiplier(self, mult));
+        }
+
+        public int setSgroupData (int sgroup,  String data)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupData(self, data));
+        }
+     
+        public int setSgroupCoords (int sgroup, float x, float y)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupCoords(self, x, y));
+        }
+     
+        public int setSgroupDescription (int sgroup, String description)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupDescription(self, description));
+        }
+     
+        public int setSgroupFieldName (int sgroup, String name)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupFieldName(self, name));
+        }
+     
+        public int setSgroupQueryCode (int sgroup, String querycode)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupQueryCode(self, querycode));
+        }
+
+        public int setSgroupQueryOper (int sgroup, String queryoper)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupQueryOper(self, queryoper));
+        }
+
+        public int setSgroupDisplay (int sgroup, String option)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupDisplay(self, option));
+        }
+     
+        public int setSgroupLocation (int sgroup, String option)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupLocation(self, option));
+        }
+     
+        public int setSgroupTag (int sgroup, String tag)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupTag(self, tag));
+        }
+     
+        public int setSgroupTagAlign (int sgroup, int tag_align)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupTagAlign(self, tag_align));
+        }
+     
+        public int setSgroupDataType (int sgroup, String data_type)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupDataType(self, data_type));
+        }
+
+        public int setSgroupXCoord (int sgroup, float x)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupXCoord(self, x));
+        }
+     
+        public int setSgroupYCoord (int sgroup, float y)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupYCoord(self, y));
+        }
+
+        public IndigoObject findSgroups(String property, String value)
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoFindSgroups(self, property, value)), this);
+        }
+
+        public int getSgroupType()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetSgroupType(self));
+        }
+
+        public int getSgroupIndex()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetSgroupIndex(self));
+        }
+
         public void addStereocenter(int type, int v1, int v2, int v3)
         {
             addStereocenter(type, v1, v2, v3, -1);

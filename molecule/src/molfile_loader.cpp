@@ -921,34 +921,71 @@ void MolfileLoader::_readCtab2000 ()
                {
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_SUP;
                   int idx = _bmol->superatoms.add();
+                  _bmol->superatoms[idx].original_group = sgroup_idx + 1;
                   _sgroup_mapping[sgroup_idx] = idx;
                }
                else if (strcmp(type, "DAT") == 0)
                {
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_DAT;
                   int idx = _bmol->data_sgroups.add();
+                  _bmol->data_sgroups[idx].original_group = sgroup_idx + 1;
                   _sgroup_mapping[sgroup_idx] = idx;
                }
                else if (strcmp(type, "SRU") == 0)
                {
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_SRU;
                   int idx = _bmol->repeating_units.add();
+                  _bmol->repeating_units[idx].original_group = sgroup_idx + 1;
                   _sgroup_mapping[sgroup_idx] = idx;
                }
                else if (strcmp(type, "MUL") == 0)
                {
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_MUL;
                   int idx = _bmol->multiple_groups.add();
+                  _bmol->multiple_groups[idx].original_group = sgroup_idx + 1;
                   _sgroup_mapping[sgroup_idx] = idx;
                }
                else if (strcmp(type, "GEN") == 0)
                {
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_GEN;
                   int idx = _bmol->generic_sgroups.add();
+                  _bmol->generic_sgroups[idx].original_group = sgroup_idx + 1;
                   _sgroup_mapping[sgroup_idx] = idx;
                }
                else
                   _sgroup_types[sgroup_idx] = _SGROUP_TYPE_OTHER;
+            }
+            _scanner.skipLine();
+         }
+         else if (strncmp(chars, "SPL", 3) == 0 || strncmp(chars, "SBT", 3) == 0)
+         {
+            int n = _scanner.readIntFix(3);
+
+            while (n-- > 0)
+            {
+               _scanner.skip(1);
+               int sgroup_idx = _scanner.readIntFix(3) - 1;
+
+               BaseMolecule::SGroup *sgroup;
+
+               switch (_sgroup_types[sgroup_idx])
+               {
+                  case _SGROUP_TYPE_DAT: sgroup = &_bmol->data_sgroups[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_SRU: sgroup = &_bmol->repeating_units[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_SUP: sgroup = &_bmol->superatoms[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_MUL: sgroup = &_bmol->multiple_groups[_sgroup_mapping[sgroup_idx]]; break;
+                  case _SGROUP_TYPE_GEN: sgroup = &_bmol->generic_sgroups[_sgroup_mapping[sgroup_idx]]; break;
+                  default: throw Error("internal: bad sgroup type");
+               }
+
+               _scanner.skip(1);
+               int value = _scanner.readIntFix(3);
+
+               if (strncmp(chars, "SPL", 3) == 0)
+                  sgroup->parent_group = value;
+               else
+                  sgroup->brk_style = value;
+
             }
             _scanner.skipLine();
          }
@@ -1015,7 +1052,39 @@ void MolfileLoader::_readCtab2000 ()
                BufferScanner strscan(rest);
                BaseMolecule::DataSGroup &sgroup = _bmol->data_sgroups[_sgroup_mapping[sgroup_idx]];
 
+               // Read field name
                int k = 30;
+               while (k-- > 0)
+               {
+                  if (strscan.isEOF())
+                     break;
+                  int c = strscan.readChar();
+                  sgroup.name.push(c);
+               }
+               // Remove last spaces because name can have multiple words
+               while (sgroup.name.size() > 0)
+               {
+                  if (isspace(sgroup.name.top())) 
+                     sgroup.name.pop();
+                  else
+                     break;
+               }
+
+               sgroup.name.push(0);
+
+               // Read field type
+               k = 2;
+               while (k-- > 0)
+               {
+                  if (strscan.isEOF())
+                     break;
+                  int c = strscan.readChar();
+                  sgroup.type.push(c);
+               }
+               sgroup.type.push(0);
+
+               // Read field description
+               k = 20;
                while (k-- > 0)
                {
                   if (strscan.isEOF())
@@ -1023,12 +1092,52 @@ void MolfileLoader::_readCtab2000 ()
                   int c = strscan.readChar();
                   sgroup.description.push(c);
                }
-               // Remove last spaces because description can have multiple words
-               if (sgroup.description.size() > 0)
-                  while (isspace(sgroup.description.top()))
+               // Remove last spaces because dscription can have multiple words?
+               while (sgroup.description.size() > 0)
+               {
+                  if (isspace(sgroup.description.top()))
                      sgroup.description.pop();
-
+                  else
+                     break;
+               }
                sgroup.description.push(0);
+
+               // Read query code
+               k = 2;
+               while (k-- > 0)
+               {
+                  if (strscan.isEOF())
+                     break;
+                  int c = strscan.readChar();
+                  sgroup.querycode.push(c);
+               }
+               while (sgroup.querycode.size() > 0)
+               {
+                  if (isspace(sgroup.querycode.top()))
+                     sgroup.querycode.pop();
+                  else
+                     break;
+               }
+               sgroup.querycode.push(0);
+
+               // Read query operator
+               k = 20;
+               while (k-- > 0)
+               {
+                  if (strscan.isEOF())
+                     break;
+                  int c = strscan.readChar();
+                  sgroup.queryoper.push(c);
+               }
+               while (sgroup.queryoper.size() > 0)
+               {
+                  if (isspace(sgroup.queryoper.top()))
+                     sgroup.queryoper.pop();
+                  else
+                     break;
+               }
+               sgroup.queryoper.push(0);
+
             }
          }
          else if (strncmp(chars, "SDD", 3) == 0)
@@ -1102,6 +1211,19 @@ void MolfileLoader::_readCtab2000 ()
             else
                _scanner.skipLine();
          }
+         else if (strncmp(chars, "SCL", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SUP)
+            {
+               _scanner.skip(1);
+               BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+               _scanner.readLine(sup.sa_class, true);
+            }
+            else
+               _scanner.skipLine();
+         }
          else if (strncmp(chars, "SBV", 3) == 0)
          {
             _scanner.skip(1);
@@ -1109,14 +1231,37 @@ void MolfileLoader::_readCtab2000 ()
             if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SUP)
             {
                BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+               BaseMolecule::Superatom::_BondConnection &bond = sup.bond_connections.push();
                _scanner.skip(1);
-               sup.bond_idx = _scanner.readIntFix(3) - 1;
+               bond.bond_idx = _scanner.readIntFix(3) - 1;
                _scanner.skipSpace();
-               sup.bond_dir.x = _scanner.readFloat();
+               bond.bond_dir.x = _scanner.readFloat();
                _scanner.skipSpace();
-               sup.bond_dir.y = _scanner.readFloat();
-               int k;
-               k = 1;
+               bond.bond_dir.y = _scanner.readFloat();
+            }
+            _scanner.skipLine();
+         }
+         else if (strncmp(chars, "SDS", 3) == 0)
+         {
+            _scanner.skip(1);
+            char expanded[4] = {0, 0, 0, 0};
+
+            _scanner.readCharsFix(3, expanded);
+
+            if (strncmp(expanded, "EXP", 3) == 0)
+            {
+               int n = _scanner.readIntFix(3);
+
+               while (n-- > 0)
+               {
+                  _scanner.skip(1);
+                  int sgroup_idx = _scanner.readIntFix(3) - 1;
+                  if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SUP)
+                  {
+                     BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+                     sup.contracted = 0;
+                  }
+               }
             }
             _scanner.skipLine();
          }
@@ -1133,6 +1278,33 @@ void MolfileLoader::_readCtab2000 ()
                {
                   _scanner.skip(1);
                   mg.parent_atoms.push(_scanner.readIntFix(3) - 1);
+               }
+            }
+            _scanner.skipLine();
+         }
+         else if (strncmp(chars, "SAP", 3) == 0)
+         {
+            _scanner.skip(1);
+            int sgroup_idx = _scanner.readIntFix(3) - 1;
+
+            if (_sgroup_types[sgroup_idx] == _SGROUP_TYPE_SUP)
+            {
+               BaseMolecule::Superatom &sup = _bmol->superatoms[_sgroup_mapping[sgroup_idx]];
+               int n = _scanner.readIntFix(3);
+               while (n-- > 0) 
+               {
+                   int idap = sup.attachment_points.add();
+                   BaseMolecule::Superatom::_AttachmentPoint &ap = sup.attachment_points.at(idap);
+                   _scanner.skip(1);
+                   ap.aidx = _scanner.readIntFix(3) - 1;
+                   _scanner.skip(1);
+                   ap.lvidx = _scanner.readIntFix(3) - 1;
+                   _scanner.skip(1);
+                   char c = _scanner.readChar();
+                   ap.apid.push(c);
+                   c = _scanner.readChar();
+                   ap.apid.push(c);
+                   ap.apid.push(0);
                }
             }
             _scanner.skipLine();
@@ -2759,7 +2931,7 @@ void MolfileLoader::_readSGroup3000 (const char *str)
    QS_DEF(Array<char>, entity);
 
    scanner.skipSpace();
-   scanner.readInt();
+   int sgroup_idx = scanner.readInt();
    scanner.skipSpace();
    scanner.readWord(type, 0);
    type.push(0);
@@ -2794,6 +2966,8 @@ void MolfileLoader::_readSGroup3000 (const char *str)
    else
       return; // unsupported kind of SGroup
 
+   sgroup->original_group = sgroup_idx;
+
    int n;
 
    while (!scanner.isEOF())
@@ -2814,15 +2988,14 @@ void MolfileLoader::_readSGroup3000 (const char *str)
          }
          scanner.skip(1); // )
       }
-      else if (strcmp(entity.ptr(), "XBONDS") == 0)
+      else if ((strcmp(entity.ptr(), "XBONDS") == 0) ||
+               (strcmp(entity.ptr(), "CBONDS") == 0) )
       {
          scanner.skip(1); // (
          n = scanner.readInt1();
          while (n-- > 0)
          {
-            int idx = scanner.readInt() - 1;
-            if (sup != 0)
-               sup->bond_idx = idx;
+            sgroup->bonds.push(scanner.readInt() - 1);
             scanner.skipSpace();
          }
          scanner.skip(1); // )
@@ -2847,6 +3020,20 @@ void MolfileLoader::_readSGroup3000 (const char *str)
          int mult = scanner.readInt();
          if (strcmp(type.ptr(), "MUL") == 0)
             ((BaseMolecule::MultipleGroup *)sgroup)->multiplier = mult;
+      }
+      else if (strcmp(entity.ptr(), "PARENT") == 0)
+      {
+         int parent = scanner.readInt();
+         sgroup->parent_group = parent;
+      }
+      else if (strcmp(entity.ptr(), "BRKTYP") == 0)
+      {
+         QS_DEF(Array<char>, style);
+         scanner.readWord(style, 0);
+         if (strcmp(style.ptr(), "BRACKET") == 0)
+            sgroup->brk_style = _BRKTYP_SQUARE;
+         if (strcmp(style.ptr(), "PAREN") == 0)
+            sgroup->brk_style = _BRKTYP_ROUND;
       }
       else if (strcmp(entity.ptr(), "BRKXYZ") == 0)
       {
@@ -2887,6 +3074,10 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       }
       else if (strcmp(entity.ptr(), "FIELDNAME") == 0)
       {
+         _readStringInQuotes(scanner, dsg ? &dsg->name : NULL);
+      }
+      else if (strcmp(entity.ptr(), "FIELDINFO") == 0)
+      {
          _readStringInQuotes(scanner, dsg ? &dsg->description : NULL);
       }
       else if (strcmp(entity.ptr(), "FIELDDISP") == 0)
@@ -2902,6 +3093,14 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       else if (strcmp(entity.ptr(), "FIELDDATA") == 0)
       {
          _readStringInQuotes(scanner, &dsg->data);
+      }
+      else if (strcmp(entity.ptr(), "QUERYTYPE") == 0)
+      {
+         _readStringInQuotes(scanner, dsg ? &dsg->querycode : NULL);
+      }
+      else if (strcmp(entity.ptr(), "QUERYOP") == 0)
+      {
+         _readStringInQuotes(scanner, dsg ? &dsg->queryoper : NULL);
       }
       else if (strcmp(entity.ptr(), "LABEL") == 0)
       {
@@ -2920,11 +3119,98 @@ void MolfileLoader::_readSGroup3000 (const char *str)
          if (sru != 0)
             sru->subscript.push(0);
       }
+      else if (strcmp(entity.ptr(), "CLASS") == 0)
+      {
+         while (!scanner.isEOF())
+         {
+            char c = scanner.readChar();
+            if (c == ' ')
+               break;
+            if (sup != 0)
+               sup->sa_class.push(c);
+         }
+         if (sup != 0)
+            sup->sa_class.push(0);
+      }
+      else if (strcmp(entity.ptr(), "ESTATE") == 0)
+      {
+         while (!scanner.isEOF())
+         {
+            char c = scanner.readChar();
+            if (c == ' ')
+               break;
+            if (c == 'E')
+            {
+               if (sup != 0)
+                  sup->contracted = 0;
+            }
+            else 
+            {
+               if (sup != 0)
+                  sup->contracted = 1;
+            }
+         }
+      }
+      else if (strcmp(entity.ptr(), "CSTATE") == 0)
+      {
+         if (sup != 0)
+         {
+            scanner.skip(1); // (
+            n = scanner.readInt1();
+            if (n != 4)
+               throw Error("CSTATE number is %d (must be 4)", n);
+            scanner.skipSpace();
+            BaseMolecule::Superatom::_BondConnection &bond = sup->bond_connections.push();
+            int idx = scanner.readInt() - 1;
+            bond.bond_idx = idx;
+            scanner.skipSpace();
+            bond.bond_dir.x = scanner.readFloat();
+            scanner.skipSpace();
+            bond.bond_dir.y = scanner.readFloat();
+            scanner.skipSpace();
+
+            scanner.skipUntil(")");    // Skip z coordinate
+            scanner.skip(1); // )
+         }
+         else   // skip for all other sgroups
+         {
+            scanner.skipUntil(")");
+            scanner.skip(1);
+         }
+      }
       else if (strcmp(entity.ptr(), "SAP") == 0)
       {
-         // TODO: add support for SAP: Abbreviation Sgroup Attachment Point
-         scanner.skipUntil(")");
-         scanner.skip(1);
+         if (sup != 0)
+         {
+            scanner.skip(1); // (
+            n = scanner.readInt1();
+            if (n != 3)
+               throw Error("SAP number is %d (must be 3)", n);
+            scanner.skipSpace();
+            int idx = scanner.readInt() - 1;
+            int idap = sup->attachment_points.add();
+            BaseMolecule::Superatom::_AttachmentPoint &ap = sup->attachment_points.at(idap);
+            ap.aidx = idx;
+            scanner.skipSpace();
+            ap.lvidx = scanner.readInt() - 1;
+            scanner.skip(1);
+
+            ap.apid.clear();
+
+            while (!scanner.isEOF())
+            {
+               char c = scanner.readChar();
+               if (c == ')')
+                  break;
+               ap.apid.push(c);
+            }
+            ap.apid.push(0);
+         }
+         else   // skip for all other sgroups
+         {
+            scanner.skipUntil(")");
+            scanner.skip(1);
+         }
       }
       else 
       {
@@ -2969,9 +3255,24 @@ void MolfileLoader::_readSGroupDisplay (Scanner &scanner, BaseMolecule::DataSGro
    int end = scanner.tell();
    scanner.seek(cur, SEEK_SET);
 
+   scanner.skip(3);
+
+   char chars[4] = {0, 0, 0, 0};
+   scanner.readCharsFix(3, chars);
+   if (strncmp(chars, "ALL", 3) == 0)
+      dsg.num_chars = 0;
+   else
+   {
+      scanner.seek(cur + 3, SEEK_CUR);
+      dsg.num_chars = scanner.readInt1();       
+   }
+
+   scanner.skip(7);
+   dsg.tag = scanner.readChar(); 
+
    if (end - cur + 1 > 16)
    {
-      scanner.skip(16);
+      scanner.skip(2);
       int c = scanner.readChar();
       if (c >= '1' && c <= '9')
          dsg.dasp_pos = c - '0';

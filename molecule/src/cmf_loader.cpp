@@ -739,12 +739,18 @@ void CmfLoader::_readSGroup (int code, Molecule &mol)
       _readGeneralSGroup(s);
 
       _readString(s.description);
+      _readString(s.name);
+      _readString(s.type);
+      _readString(s.querycode);
+      _readString(s.queryoper);
       _readString(s.data);
       byte bits = _scanner->readByte();
       s.dasp_pos = bits & 0x0F;
       s.detached = (bits & (1 << 4)) != 0;
       s.relative = (bits & (1 << 5)) != 0;
       s.display_units = (bits & (1 << 6)) != 0;
+      s.num_chars = (int)_scanner->readPackedUInt();
+      s.tag = _scanner->readChar();
    }
    else if (code == CMF_SUPERATOM)
    {
@@ -752,7 +758,18 @@ void CmfLoader::_readSGroup (int code, Molecule &mol)
       BaseMolecule::Superatom &s = mol.superatoms[idx];
       _readGeneralSGroup(s);
       _readString(s.subscript);
-      s.bond_idx = (int)_scanner->readPackedUInt() - 1;
+      _readString(s.sa_class);
+      byte bits = _scanner->readByte();
+      s.contracted = bits & 0x01;
+      int bcons = bits >> 1;
+      if (bcons > 0)
+      {
+         s.bond_connections.resize(bcons);
+         for (int j = 0; j < bcons; j++)
+         {
+            s.bond_connections[j].bond_idx = (int)_scanner->readPackedUInt() - 1;
+         }
+      }
    }
    else if (code == CMF_REPEATINGUNIT)
    {
@@ -839,8 +856,13 @@ void CmfLoader::_readSGroupXYZ (Scanner &scanner, int code, int idx_array[5], Mo
       int idx = idx_array[1]++;
       BaseMolecule::Superatom &s = mol.superatoms[idx];
       _readBaseSGroupXyz(scanner, s, range);
-      if (s.bond_idx != -1)
-         _readDir2f(scanner, s.bond_dir, range);
+      if (s.bond_connections.size() > 0)
+      {
+         for (int j = 0; j < s.bond_connections.size(); j++)
+         {
+            _readDir2f(scanner, s.bond_connections[j].bond_dir, range);
+         }
+      }
    }
    else if (code == CMF_REPEATINGUNIT)
    {

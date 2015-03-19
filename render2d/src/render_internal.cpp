@@ -590,7 +590,7 @@ void MoleculeRenderInternal::_initDataSGroups()
    const char* atomColorProp = _opt.atomColorProp.size() > 0 ? _opt.atomColorProp.ptr() : NULL;
    for (int i = bm.data_sgroups.begin(); i < bm.data_sgroups.end(); i = bm.data_sgroups.next(i)) {
       const BaseMolecule::DataSGroup& group = bm.data_sgroups[i];
-      if (atomColorProp != NULL && strcmp(atomColorProp, group.description.ptr()) == 0) {
+      if (atomColorProp != NULL && strcmp(atomColorProp, group.name.ptr()) == 0) {
          Vec3f color;
          BufferScanner scanner(group.data);
          if (_parseColorString(scanner, color.x, color.y, color.z) < 0)

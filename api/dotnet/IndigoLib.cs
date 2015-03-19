@@ -152,6 +152,37 @@ namespace com.ggasoftware.indigo
 
         int indigoAddSuperatom(int molecule, int natoms, int[] atoms, string name);
 
+        int indigoCreateSgroup(string type, int mapping, string name);
+        int indigoSetSgroupClass(int sgroup, string sgclass);
+        int indigoSetSgroupName(int sgroup, string sgname);
+        sbyte* indigoGetSgroupClass(int sgroup);
+        sbyte* indigoGetSgroupName(int sgroup);
+        int indigoGetSgroupNumCrossBonds(int sgroup);
+        int indigoAddSgroupAttachmentPoint(int sgroup, int aidx, int lvidx, string apid);
+        int indigoDeleteSgroupAttachmentPoint(int sgroup, int apidx);
+        int indigoGetSgroupDisplayOption(int sgroup);
+        int indigoSetSgroupDisplayOption(int sgroup, int option);
+        int indigoGetSgroupMultiplier(int sgroup);
+        int indigoSetSgroupMultiplier(int sgroup, int mult);
+
+        int indigoSetSgroupData (int sgroup,  string data);                    
+        int indigoSetSgroupCoords (int sgroup, float x, float y);                  
+        int indigoSetSgroupDescription (int sgroup, string description);      
+        int indigoSetSgroupFieldName (int sgroup, string name);               
+        int indigoSetSgroupQueryCode (int sgroup, string querycode);          
+        int indigoSetSgroupQueryOper (int sgroup, string queryoper);          
+        int indigoSetSgroupDisplay (int sgroup, string option);               
+        int indigoSetSgroupLocation (int sgroup, string option);              
+        int indigoSetSgroupTag (int sgroup, string tag);                      
+        int indigoSetSgroupTagAlign (int sgroup, int tag_align);                   
+        int indigoSetSgroupDataType (int sgroup, string type);                
+        int indigoSetSgroupXCoord (int sgroup, float x);                           
+        int indigoSetSgroupYCoord (int sgroup, float y);                           
+
+        int indigoFindSgroups(int molecule, string property, string value);
+        int indigoGetSgroupType(int sgroup);
+        int indigoGetSgroupIndex(int sgroup);
+
         float* indigoXYZ(int atom);
         int indigoSetXYZ(int atom, float x, float y, float z);
         int indigoResetCharge(int atom);

@@ -22,6 +22,7 @@ class IndigoMapping : public IndigoObject
 public:
    IndigoMapping (BaseMolecule &from, BaseMolecule &to);
    virtual ~IndigoMapping ();
+   static IndigoMapping & cast (IndigoObject &obj);
 
    BaseMolecule &from;
    BaseMolecule &to;
