@@ -139,6 +139,8 @@ public:
       int    original_group;
       int    parent_group; // parent group number; represented with SPL in Molfile format 
       virtual ~SGroup ();
+   private:
+      SGroup (const SGroup &); // no implicit copy
    };
 
    typedef RedBlackMap<int,int> Mapping;
@@ -161,6 +163,8 @@ public:
       int         num_chars;   // number of characters 
       int         dasp_pos;
       char        tag;         // tag  
+   private:
+      DataSGroup (const DataSGroup &); // no implicit copy
    };
 
    class DLLEXPORT Superatom : public SGroup
@@ -192,6 +196,8 @@ public:
       };
 
       Array<_BondConnection> bond_connections;  // SBV in Molfile format
+   private:
+      Superatom (const Superatom &); // no implicit copy
    };
 
    class DLLEXPORT RepeatingUnit : public SGroup
@@ -209,6 +215,8 @@ public:
 
       int connectivity;
       Array<char> subscript; // SMT in Molfile format
+   private:
+      RepeatingUnit (const RepeatingUnit &); // no implicit copy
    };
 
    class DLLEXPORT MultipleGroup : public SGroup
@@ -222,6 +230,8 @@ public:
 
       Array<int> parent_atoms;
       int multiplier;
+   private:
+      MultipleGroup (const MultipleGroup &); // no implicit copy
    };
 
    BaseMolecule ();
