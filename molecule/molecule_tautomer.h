@@ -135,14 +135,6 @@ private:
    static bool _matchAtomsEx (Graph &subgraph, Graph &supergraph,
       const int *core_sub, int sub_idx, int super_idx, void *userdata);
 
-   static bool _matchAtomsHyper(Graph &subgraph, Graph &supergraph,
-      const int *core_sub, int sub_idx, int super_idx, void *userdata);
-   static bool _matchBondsSubHyper(Graph &subgraph, Graph &supergraph,
-      int sub_idx, int super_idx, void *userdata);
-   static void _edgeAddHyper(Graph &subgraph, Graph &supergraph,
-      int sub_idx, int super_idx, void *userdata);
-   static void _vertexRemoveHyper(Graph &subgraph, int sub_idx, void *userdata);
-
    struct MatchData
    {
       MatchData (TautomerSearchContext &context_) : context(context_) {}
@@ -150,12 +142,6 @@ private:
       TautomerSearchContext &context;
       int start_path_number;
    } _d;
-
-   struct SubstructureSearchBreadcrumps
-   {
-      Dbitset mask;
-      ObjArray<Dbitset> maskHistory;
-   };
 
    int _n1;
    int _n2;

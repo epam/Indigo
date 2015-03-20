@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2010-2015 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -18,6 +18,7 @@
 #include "indigo_internal.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_tautomer_matcher.h"
+#include "molecule/molecule_tautomer_substructure_matcher.h"
 #include "reaction/reaction_substructure_matcher.h"
 #include "reaction/reaction.h"
 #include "molecule/molecule_neighbourhood_counters.h"
@@ -67,6 +68,34 @@ private:
    int _embedding_index;
 };
 
+// Iterator for all possible matches in tautomers
+class IndigoTautomerSubstructureMatchIter : public IndigoObject
+{
+public:
+   IndigoTautomerSubstructureMatchIter(Molecule &target, QueryMolecule &query);
+
+   virtual ~IndigoTautomerSubstructureMatchIter();
+
+   virtual IndigoObject * next();
+   virtual bool hasNext();
+
+   int countMatches(int embeddings_limit);
+
+   const char * debugInfo();
+
+   MoleculeTautomerSubstructureMatcher matcher;
+
+   Molecule &target;
+   QueryMolecule &query;
+
+   Array<int> mapping;
+   int max_embeddings;
+
+private:
+   bool _initialized, _found, _need_find;
+   int _embedding_index;
+};
+
 // Matcher class for matching queries on a specified target molecule
 class DLLEXPORT IndigoMoleculeSubstructureMatcher : public IndigoObject
 {
@@ -86,6 +115,9 @@ public:
    IndigoMoleculeSubstructureMatchIter* iterateQueryMatches (IndigoObject &query_object,
       bool embedding_edges_uniqueness, bool find_unique_embeddings, 
       bool for_iteration, int max_embeddings);
+   IndigoTautomerSubstructureMatchIter* iterateTautomerQueryMatches(IndigoObject &query_object,
+      bool embedding_edges_uniqueness, bool find_unique_embeddings,
+      bool for_iteration, int max_embeddings);
 
    static IndigoMoleculeSubstructureMatcher & cast (IndigoObject &obj);
    void ignoreAtom (int atom_index);
@@ -102,6 +134,8 @@ public:
          PtrArray<TautomerRule> &tautomer_rules, Array<int> &mapping_out);
 
    IndigoMoleculeSubstructureMatchIter * getMatchIterator (Indigo &self, int query,
+                    bool for_iteration, int max_embeddings);
+   IndigoTautomerSubstructureMatchIter * getTautomerMatchIterator(Indigo &self, int query,
                     bool for_iteration, int max_embeddings);
 
    int mode; // NORMAL, TAUTOMER, or RESONANCE

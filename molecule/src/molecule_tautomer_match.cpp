@@ -137,52 +137,6 @@ bool TautomerMatcher::matchBondsTau (Graph &subgraph, Graph &supergraph,
    return false;
 }
 
-bool TautomerMatcher::_matchAtomsHyper(Graph &subgraph, Graph &supergraph,
-   const int *core_sub, int sub_idx, int super_idx, void *userdata)
-{
-   // Currently use common atom match procedure
-   return _matchAtoms(subgraph, supergraph, core_sub, sub_idx, super_idx, userdata);
-}
-
-bool TautomerMatcher::_matchBondsSubHyper(Graph &subgraph, Graph &supergraph,
-   int sub_idx, int super_idx, void *userdata)
-{
-   SubstructureSearchBreadcrumps &breadcrumps = *(SubstructureSearchBreadcrumps *)userdata;
-   LayeredMolecules &layeredMolecules = (LayeredMolecules &)supergraph;
-   QueryMolecule &query = ((BaseMolecule &)subgraph).asQueryMolecule();
-
-   int sub_bond_order = query.getBondOrder(sub_idx);
-   Dbitset &mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
-
-   return mask.intersects(breadcrumps.mask);
-}
-
-void TautomerMatcher::_edgeAddHyper(Graph &subgraph, Graph &supergraph,
-   int sub_idx, int super_idx, void *userdata)
-{
-   SubstructureSearchBreadcrumps &breadcrumps = *(SubstructureSearchBreadcrumps *)userdata;
-   LayeredMolecules &layeredMolecules = (LayeredMolecules &)supergraph;
-   QueryMolecule &query = ((BaseMolecule &)subgraph).asQueryMolecule();
-
-   int sub_bond_order = query.getBondOrder(sub_idx);
-   Dbitset &mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
-
-   breadcrumps.maskHistory.expand(breadcrumps.maskHistory.size()+1);
-   breadcrumps.maskHistory.top().copy(breadcrumps.mask);
-
-   breadcrumps.mask.andWith(mask);
-}
-
-void TautomerMatcher::_vertexRemoveHyper(Graph &subgraph, int sub_idx, void *userdata)
-{
-   SubstructureSearchBreadcrumps &breadcrumps = *(SubstructureSearchBreadcrumps *)userdata;
-   if (breadcrumps.maskHistory.size())
-   {
-      breadcrumps.mask.copy(breadcrumps.maskHistory.top());
-      breadcrumps.maskHistory.pop();
-   }
-}
-
 bool TautomerMatcher::matchBondsTauSub (Graph &subgraph, Graph &supergraph,
                            int sub_idx, int super_idx, void *userdata)
 {
@@ -546,95 +500,61 @@ bool TautomerMatcher::findMatch ()
    if (!_checkInterPathBonds())
       return true;
 
-   if (_d.context.inchi)
+   EmbeddingEnumerator ee(g2);
+   ee.setSubgraph(g1);
+
+   int i;
+   for (i = g1.vertexBegin(); i < g1.vertexEnd(); i = g1.vertexNext(i))
    {
-      g2.dearomatize(AromaticityOptions());
-      LayeredMolecules layeredMolecules(g2);
+      int val = _d.context.core_1[i];
 
-      TautomerEnumerator tautomerEnumerator(g2.asMolecule(), "");
+      if (val == EmbeddingEnumerator::IGNORE)
+         ee.ignoreSubgraphVertex(i);
+      else if (val >= 0)
+         ee.unsafeFix(i, val);
+   }
+   for (i = g2.vertexBegin(); i < g2.vertexEnd(); i = g2.vertexNext(i))
+   {
+      int val = _d.context.core_2[i];
 
-      EmbeddingEnumerator ee(tautomerEnumerator.layeredMolecules);
-      ee.setSubgraph(g1);
+      if (val == EmbeddingEnumerator::IGNORE)
+         ee.ignoreSupergraphVertex(i);
+   }
+
+   ee.userdata = &_d;
+
+   if (_d.context.substructure)
+   {
       ee.userdata = &_d;
-
-      if (_d.context.substructure)
-      {
-         ee.cb_match_edge = _matchBondsSubHyper;
-         ee.cb_match_vertex = _matchAtomsHyper;
-         ee.cb_edge_add = _edgeAddHyper;
-         ee.cb_vertex_add = NULL;
-         ee.cb_vertex_remove = _vertexRemoveHyper;
-         SubstructureSearchBreadcrumps breadcrumps;
-         breadcrumps.mask.resize(tautomerEnumerator.layeredMolecules.layers);
-         breadcrumps.mask.flip(0, tautomerEnumerator.layeredMolecules.layers);
-         ee.userdata = &breadcrumps;
-
-         if (!ee.process())
-            return false;
-      }
-      else
-      {
-         // TBD
-      }
+      ee.cb_match_edge = matchBondsTauSub;
+      ee.cb_match_vertex = _matchAtoms;
+      ee.cb_embedding = _preliminaryEmbedding;
+      if (!ee.process())
+         return false;
    }
    else
    {
-      EmbeddingEnumerator ee(g2);
-      ee.setSubgraph(g1);
+      ee.cb_match_edge = matchBondsTau;
+      ee.cb_match_vertex = _matchAtomsEx;
+      ee.cb_embedding = _remainderEmbedding;
 
-      int i;
-      for (i = g1.vertexBegin(); i < g1.vertexEnd(); i = g1.vertexNext(i))
+      if (!ee.process())
+         return false;
+
+      if (_d.context.max_chains > 0 && _n_chains >= _d.context.max_chains)
+         return true;
+
+      while (nextPair(n1, n2, h_difference, n1, n2))
       {
-         int val = _d.context.core_1[i];
+         TautomerChainFinder pe(_d.context, h_difference, _d.start_path_number, _n_chains);
 
-         if (val == EmbeddingEnumerator::IGNORE)
-            ee.ignoreSubgraphVertex(i);
-         else if (val >= 0)
-            ee.unsafeFix(i, val);
-      }
-      for (i = g2.vertexBegin(); i < g2.vertexEnd(); i = g2.vertexNext(i))
-      {
-         int val = _d.context.core_2[i];
+         //pe.addPair(n1, n2, false, -1, 0);
+         pe.addPair(n1, n2, _d.start_path_number != 0 || !_d.context.ring_chain, -1, 0);
 
-         if (val == EmbeddingEnumerator::IGNORE)
-            ee.ignoreSupergraphVertex(i);
-      }
-
-      ee.userdata = &_d;
-
-      if (_d.context.substructure)
-      {
-         ee.userdata = &_d;
-         ee.cb_match_edge = matchBondsTauSub;
-         ee.cb_match_vertex = _matchAtoms;
-         ee.cb_embedding = _preliminaryEmbedding;
-         if (!ee.process())
-            return false;
-      }
-      else
-      {
-         ee.cb_match_edge = matchBondsTau;
-         ee.cb_match_vertex = _matchAtomsEx;
-         ee.cb_embedding = _remainderEmbedding;
-
-         if (!ee.process())
+         if (!pe.enumeratePaths())
             return false;
 
-         if (_d.context.max_chains > 0 && _n_chains >= _d.context.max_chains)
-            return true;
-
-         while (nextPair(n1, n2, h_difference, n1, n2))
-         {
-            TautomerChainFinder pe(_d.context, h_difference, _d.start_path_number, _n_chains);
-
-            //pe.addPair(n1, n2, false, -1, 0);
-            pe.addPair(n1, n2, _d.start_path_number != 0 || !_d.context.ring_chain, -1, 0);
-
-            if (!pe.enumeratePaths())
-               return false;
-
-            pe.restore();
-         }
+         pe.restore();
       }
    }
 
