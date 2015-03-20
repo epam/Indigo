@@ -262,7 +262,7 @@ public:
    int countRSites ();
    int countSGroups ();
 
-   bool findSgroupById (int id, SGroup &sg, SGroup::_SgroupRef &sg_ref);
+   bool findSgroupParentById (int id, int &sg_parent, SGroup::_SgroupRef &sg_ref);
 
    int findSgroups (int property, int value, Array<BaseMolecule::SGroup::_SgroupRef> &sgs);
    int findSgroups (int property, const char *value, Array<BaseMolecule::SGroup::_SgroupRef> &sgs);

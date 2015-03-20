@@ -1813,13 +1813,13 @@ int BaseMolecule::findSgroups (int property, int value, Array<SGroup::_SgroupRef
    }
    else if (property == SGroup::SG_CHILD)
    {
-      QS_DEF(SGroup, sg_child);
-      QS_DEF(SGroup, sg_parent);
       QS_DEF(SGroup::_SgroupRef, sg_ref);
+      int parent = 0;
+      int tmp = 0;
 
-      if (findSgroupById(value, sg_child, sg_ref))
+      if (findSgroupParentById(value, parent, sg_ref))
       {
-         if ((sg_child.parent_group != 0) && findSgroupById(sg_child.parent_group, sg_parent, sg_ref))
+         if ((parent != 0) && findSgroupParentById(parent, tmp, sg_ref))
          {
             SGroup::_SgroupRef &sgr = sgs.push();
             sgr.sg_type = sg_ref.sg_type;
@@ -2121,7 +2121,7 @@ int BaseMolecule::findSgroups (int property, Array<int> &indices, Array<SGroup::
    return 1;
 }
 
-bool BaseMolecule::findSgroupById (int id, SGroup &sg_found, SGroup::_SgroupRef &sgr)
+bool BaseMolecule::findSgroupParentById (int id, int &sg_parent, SGroup::_SgroupRef &sgr)
 {
    int i;
    for (i = data_sgroups.begin(); i != data_sgroups.end(); i = data_sgroups.next(i))
@@ -2129,7 +2129,7 @@ bool BaseMolecule::findSgroupById (int id, SGroup &sg_found, SGroup::_SgroupRef 
       DataSGroup &sg = data_sgroups[i];
       if (sg.original_group == id)
       {
-         sg_found = sg;
+         sg_parent = sg.parent_group;
          sgr.sg_type = sg.sgroup_type;
          sgr.sg_idx = i;
          return true;
@@ -2140,7 +2140,7 @@ bool BaseMolecule::findSgroupById (int id, SGroup &sg_found, SGroup::_SgroupRef 
       Superatom &sa = superatoms[i];
       if (sa.original_group == id)
       {
-         sg_found = sa;
+         sg_parent = sa.parent_group;
          sgr.sg_type = sa.sgroup_type;
          sgr.sg_idx = i;
          return true;
@@ -2151,7 +2151,7 @@ bool BaseMolecule::findSgroupById (int id, SGroup &sg_found, SGroup::_SgroupRef 
       RepeatingUnit &ru = repeating_units[i];
       if (ru.original_group == id)
       {
-         sg_found = ru;
+         sg_parent = ru.parent_group;
          sgr.sg_type = ru.sgroup_type;
          sgr.sg_idx = i;
          return true;
@@ -2162,7 +2162,7 @@ bool BaseMolecule::findSgroupById (int id, SGroup &sg_found, SGroup::_SgroupRef 
       MultipleGroup &mg = multiple_groups[i];
       if (mg.original_group == id)
       {
-         sg_found = mg;
+         sg_parent = mg.parent_group;
          sgr.sg_type = mg.sgroup_type;
          sgr.sg_idx = i;
          return true;
@@ -2173,7 +2173,7 @@ bool BaseMolecule::findSgroupById (int id, SGroup &sg_found, SGroup::_SgroupRef 
       SGroup &gg = generic_sgroups[i];
       if (gg.original_group == id)
       {
-         sg_found = gg;
+         sg_parent = gg.parent_group;
          sgr.sg_type = gg.sgroup_type;
          sgr.sg_idx = i;
          return true;
