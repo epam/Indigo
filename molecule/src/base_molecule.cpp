@@ -69,6 +69,7 @@ void BaseMolecule::clear ()
    _hl_atoms.clear();
    _hl_bonds.clear();
    _bond_directions.clear();
+   custom_collections.clear();
 
    updateEditRevision();
 }

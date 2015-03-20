@@ -665,6 +665,16 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             _writeMultiString(output, buf.ptr(), buf.size());
          }
       }
+      if (mol.custom_collections.size() > 0)
+      {
+         for (i = 0; i < mol.custom_collections.size(); i++)
+         {
+            ArrayOutput out(buf);
+            out.printf("%s", mol.custom_collections[i].ptr());
+            _writeMultiString(output, buf.ptr(), buf.size());
+         }
+      }
+
       output.writeStringCR("M  V30 END COLLECTION");
    }
 

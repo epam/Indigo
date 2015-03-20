@@ -2741,7 +2741,11 @@ void MolfileLoader::_readCollectionBlock3000 ()
          continue;
       }
       else
-         throw Error("unknown collection: %s", coll);
+      {
+         Array<char> *custom_coll = &_bmol->custom_collections[_bmol->custom_collections.add()];
+         custom_coll->copy(str);
+         continue;
+      }
 
       if (stereo_type == MoleculeStereocenters::ATOM_OR ||
             stereo_type == MoleculeStereocenters::ATOM_AND)
