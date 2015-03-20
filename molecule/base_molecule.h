@@ -131,7 +131,6 @@ public:
       };
 
       SGroup ();
-      
       Array<int> atoms; // represented with SAL in Molfile format
       Array<int> bonds; // represented with SBL in Molfile format
       Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
@@ -140,9 +139,8 @@ public:
       int    original_group;
       int    parent_group; // parent group number; represented with SPL in Molfile format 
       virtual ~SGroup ();
-
    private:
-      SGroup(const SGroup &sg);
+      SGroup (const SGroup &); // no implicit copy
    };
 
    typedef RedBlackMap<int,int> Mapping;
@@ -165,9 +163,8 @@ public:
       int         num_chars;   // number of characters 
       int         dasp_pos;
       char        tag;         // tag  
-
    private:
-      DataSGroup(DataSGroup &dsg);
+      DataSGroup (const DataSGroup &); // no implicit copy
    };
 
    class DLLEXPORT Superatom : public SGroup
@@ -199,8 +196,8 @@ public:
       };
 
       Array<_BondConnection> bond_connections;  // SBV in Molfile format
-
-   private: Superatom(Superatom &spa);
+   private:
+      Superatom (const Superatom &); // no implicit copy
    };
 
    class DLLEXPORT RepeatingUnit : public SGroup
@@ -218,8 +215,8 @@ public:
 
       int connectivity;
       Array<char> subscript; // SMT in Molfile format
-
-   private: RepeatingUnit(RepeatingUnit &ru);
+   private:
+      RepeatingUnit (const RepeatingUnit &); // no implicit copy
    };
 
    class DLLEXPORT MultipleGroup : public SGroup
@@ -233,8 +230,8 @@ public:
 
       Array<int> parent_atoms;
       int multiplier;
-
-   private: MultipleGroup(MultipleGroup &mg);
+   private:
+      MultipleGroup (const MultipleGroup &); // no implicit copy
    };
 
    BaseMolecule ();
@@ -275,7 +272,7 @@ public:
    int countRSites ();
    int countSGroups ();
 
-   bool findSgroupById (int id, SGroup &sg, SGroup::_SgroupRef &sg_ref);
+   bool findSgroupParentById (int id, int &sg_parent, SGroup::_SgroupRef &sg_ref);
 
    int findSgroups (int property, int value, Array<BaseMolecule::SGroup::_SgroupRef> &sgs);
    int findSgroups (int property, const char *value, Array<BaseMolecule::SGroup::_SgroupRef> &sgs);
