@@ -667,7 +667,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       }
       if (mol.custom_collections.size() > 0)
       {
-         for (i = mol.custom_collections.begin(); i < mol.custom_collections.end(); i = mol.custom_collections.next(i))
+         for (i = mol.custom_collections.begin(); i != mol.custom_collections.end(); i = mol.custom_collections.next(i))
          {
             ArrayOutput out(buf);
             out.printf("%s", mol.custom_collections.at(i));
