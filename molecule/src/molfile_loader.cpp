@@ -2742,8 +2742,7 @@ void MolfileLoader::_readCollectionBlock3000 ()
       }
       else
       {
-         Array<char> *custom_coll = &_bmol->custom_collections[_bmol->custom_collections.add()];
-         custom_coll->copy(str);
+         _bmol->custom_collections.add(str);
          continue;
       }
 

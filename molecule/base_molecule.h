@@ -362,7 +362,7 @@ public:
    ObjPool<MultipleGroup> multiple_groups;
    ObjPool<SGroup> generic_sgroups;
 
-   ObjPool< Array<char> > custom_collections;
+   StringPool custom_collections;
 
    MoleculeRGroups rgroups;
    
