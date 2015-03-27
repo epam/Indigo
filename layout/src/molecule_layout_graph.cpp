@@ -554,7 +554,6 @@ _finish(finish)
    _length = diameter.length();
    Vec2f rotate_vector = diameter / diameter.lengthSqr();
    rotate_vector.y *= -1;
-
    _pos.clear_resize(_graph.vertexEnd());
 
    if (_graph.vertexCount() > 2) {
@@ -566,6 +565,13 @@ _finish(finish)
       }
    }
 
+
+   _radius = 0;
+   Vec2f center(0.5, 0);
+   for (int v : _graph.vertices()) {
+      double dist = (center - _pos[v]).length();
+      if (dist > _radius) _radius = dist;
+   }
 }
 
 Vec2f MoleculeLayoutSmoothingSegment::_getPosition(Vec2f p) {
@@ -577,6 +583,14 @@ Vec2f MoleculeLayoutSmoothingSegment::_getPosition(Vec2f p) {
 
 void MoleculeLayoutSmoothingSegment::updateStartFinish() {
    _length = (_start - _finish).length();
+}
+
+double MoleculeLayoutSmoothingSegment::get_radius() {
+   return _radius * _length;
+}
+
+bool MoleculeLayoutSmoothingSegment::can_touch_to(MoleculeLayoutSmoothingSegment& seg) {
+   return ((_start + _finish) / 2 - (seg._start - seg._finish) / 2).length() <= get_radius() + seg.get_radius();
 }
 
 bool MoleculeLayoutSmoothingSegment::isVertexUp(int v) {

@@ -86,6 +86,7 @@ private:
    Vec2f _center;
    int _layout_component_number;
    double _square;
+   double _radius;
 
    Vec2f _getPosition(Vec2f);
 
@@ -111,6 +112,8 @@ public:
    void calculate_square();
    int get_start () const;
    int get_finish () const;
+   double get_radius();
+   bool can_touch_to(MoleculeLayoutSmoothingSegment&);
 
    bool is_start(int v) {return v == _start_number;}
    bool is_finish(int v) {return v == _finish_number;}
@@ -139,6 +142,7 @@ public:
    inline int getVertexType (int idx) const { return _layout_vertices[idx].type; }
    inline int getEdgeExtIdx (int idx) const { return _layout_edges[idx].ext_idx; }
    inline int getEdgeType   (int idx) const { return _layout_edges[idx].type; }
+   inline bool isEdgeDrawn(int idx) const { return _layout_edges[idx].type != ELEMENT_NOT_DRAWN; }
 
    void registerLayoutVertex (int idx, const LayoutVertex &vertex);
    void registerLayoutEdge   (int idx, const LayoutEdge &edge);
@@ -267,8 +271,20 @@ protected:
    void _calcMorganCodes ();
 
    // assigning coordinates
+   struct interval {
+      int left;
+      int right;
+
+      void init(int _l, int _r) { left = _l; right = _r; }
+      interval(int _l, int _r) { init(_l, _r); }
+      
+   };
+
    void _assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
+   void _get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list);
+   int _search_separated_component(Cycle& cycle, Array<interval>& interval_list);
+   void _search_path(int start, int finish, Array<int>& path, int component_number);
    void _assignFirstCycle(const Cycle &cycle);
    void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _segment_smoothing_prepearing(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);

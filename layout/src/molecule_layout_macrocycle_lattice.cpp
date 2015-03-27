@@ -93,6 +93,7 @@ TL_CP_GET(_vertex_drawn)
 }
 
 void MoleculeLayoutMacrocyclesLattice::doLayout() {
+   profTimerStart(t, "layout.internal");
    calculate_rotate_length();
 
    rotate_cycle(rotate_length);
