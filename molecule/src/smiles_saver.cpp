@@ -176,7 +176,7 @@ void SmilesSaver::_saveMolecule ()
    
    walk.ignored_vertices = _ignored_vertices.ptr();
    walk.vertex_ranks = vertex_ranks;
-   if (_bmol->repeating_units.size() > 0)
+   if (_bmol->sgroups.isPolimer())
       walk.vertex_classes = _polymer_indices.ptr();
 
    if (separate_rsites)
@@ -1727,39 +1727,45 @@ void SmilesSaver::_checkSRU ()
    int i, j, k;
 
    // check overlapping (particularly nested) blocks
-   for (i = _bmol->repeating_units.begin(); i != _bmol->repeating_units.end();
-        i = _bmol->repeating_units.next(i))
+   for (i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
    {
-      Array<int> &atoms = _bmol->repeating_units[i].atoms;
-
-      for (j = 0; j < atoms.size(); j++)
+      SGroup *sg = &_bmol->sgroups.getSGroup(i);
+      if (sg->sgroup_type == SGroup::SG_TYPE_SRU)
       {
-         if (_polymer_indices[atoms[j]] >= 0)
-            throw Error("overlapping (nested?) repeating units can not be saved");
-         _polymer_indices[atoms[j]] = i;
+         Array<int> &atoms = sg->atoms;
 
-         // check also disconnected blocks (possible to handle, but unsupported at the moment)
-         if (_bmol->vertexComponent(atoms[j]) != _bmol->vertexComponent(atoms[0]))
-            throw Error("disconnected repeating units not supported");
+         for (j = 0; j < atoms.size(); j++)
+         {
+            if (_polymer_indices[atoms[j]] >= 0)
+               throw Error("overlapping (nested?) repeating units can not be saved");
+            _polymer_indices[atoms[j]] = i;
+
+            // check also disconnected blocks (possible to handle, but unsupported at the moment)
+            if (_bmol->vertexComponent(atoms[j]) != _bmol->vertexComponent(atoms[0]))
+               throw Error("disconnected repeating units not supported");
+         }
       }
    }
 
    // check that each block has exactly two outgoing bonds
-   for (i = _bmol->repeating_units.begin(); i != _bmol->repeating_units.end();
-        i = _bmol->repeating_units.next(i))
+   for (i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
    {
-      Array<int> &atoms = _bmol->repeating_units[i].atoms;
-      int cnt = 0;
-
-      for (j = 0; j < atoms.size(); j++)
+      SGroup *sg = &_bmol->sgroups.getSGroup(i);
+      if (sg->sgroup_type == SGroup::SG_TYPE_SRU)
       {
-         const Vertex &vertex = _bmol->getVertex(atoms[j]);
-         for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
-            if (_polymer_indices[vertex.neiVertex(k)] != i)
-               cnt++;
+         Array<int> &atoms = sg->atoms;
+         int cnt = 0;
+
+         for (j = 0; j < atoms.size(); j++)
+         {
+            const Vertex &vertex = _bmol->getVertex(atoms[j]);
+            for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+               if (_polymer_indices[vertex.neiVertex(k)] != i)
+                  cnt++;
+         }
+         if (cnt != 2)
+            throw Error("repeating units must have exactly two outgoing bonds, has %d", cnt);
       }
-      if (cnt != 2)
-         throw Error("repeating units must have exactly two outgoing bonds, has %d", cnt);
    }
 }
 

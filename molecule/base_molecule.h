@@ -22,6 +22,7 @@
 #include "molecule/molecule_cis_trans.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "base_cpp/obj_array.h"
+#include "molecule/molecule_sgroups.h"
 #include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_standardize.h"
@@ -80,159 +81,7 @@ class QueryMolecule;
 class DLLEXPORT BaseMolecule : public Graph
 {
 public:
-   class DLLEXPORT SGroup
-   {
-   public:
-      enum
-      {
-         SG_TYPE_GEN = 0,
-         SG_TYPE_DAT,
-         SG_TYPE_SUP,
-         SG_TYPE_SRU,
-         SG_TYPE_MUL,
-         SG_TYPE_MON,
-         SG_TYPE_MER,
-         SG_TYPE_COP,
-         SG_TYPE_CRO,
-         SG_TYPE_MOD,
-         SG_TYPE_GRA,
-         SG_TYPE_COM,
-         SG_TYPE_MIX,
-         SG_TYPE_FOR,
-         SG_TYPE_ANY
-      };
-      enum
-      {
-         SG_TYPE = 1,
-         SG_CLASS,
-         SG_LABEL,
-         SG_DISPLAY_OPTION,
-         SG_BRACKET_STYLE,
-         SG_DATA,
-         SG_DATA_NAME,
-         SG_DATA_TYPE,
-         SG_DATA_DESCRIPTION,
-         SG_DATA_DISPLAY,
-         SG_DATA_LOCATION,
-         SG_DATA_TAG,
-         SG_QUERY_CODE,
-         SG_QUERY_OPER,
-         SG_PARENT,
-         SG_CHILD,
-         SG_ATOMS,
-         SG_BONDS
-      };
-
-      class _SgroupRef
-      {
-      public:
-         int  sg_type;
-         int  sg_idx;
-      };
-
-      SGroup ();
-      Array<int> atoms; // represented with SAL in Molfile format
-      Array<int> bonds; // represented with SBL in Molfile format
-      Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
-      int    sgroup_type;
-      int    brk_style; // represented with SBT in Molfile format
-      int    original_group;
-      int    parent_group; // parent group number; represented with SPL in Molfile format 
-      virtual ~SGroup ();
-   private:
-      SGroup (const SGroup &); // no implicit copy
-   };
-
    typedef RedBlackMap<int,int> Mapping;
-   class DLLEXPORT DataSGroup : public SGroup
-   {
-   public:
-      DataSGroup ();
-      virtual ~DataSGroup ();
-
-      Array<char> description; // SDT in Molfile format (filed units or format)
-      Array<char> name;        // SDT in Molfile format (field name)
-      Array<char> type;        // SDT in Molfile format (field type)
-      Array<char> querycode;   // SDT in Molfile format (query code)
-      Array<char> queryoper;   // SDT in Molfile format (query operator)
-      Array<char> data;        // SCD/SED in Molfile format (field data)
-      Vec2f       display_pos; // SDD in Molfile format
-      bool        detached;    // or attached
-      bool        relative;    // or absolute
-      bool        display_units;
-      int         num_chars;   // number of characters 
-      int         dasp_pos;
-      char        tag;         // tag  
-   private:
-      DataSGroup (const DataSGroup &); // no implicit copy
-   };
-
-   class DLLEXPORT Superatom : public SGroup
-   {
-   public:
-      Superatom ();
-      virtual ~Superatom ();
-
-      Array<char> subscript; // SMT in Molfile format
-      Array<char> sa_class;  // SCL in Molfile format
-      int   contracted;      // display option (-1 if undefined, 0 - expanded, 1 - contracted)
-                             // SDS in Molfile format
-
-      class _AttachmentPoint
-      {
-      public:
-         int  aidx;
-         int  lvidx;
-         Array<char> apid;
-      };
-   
-      ObjPool<_AttachmentPoint> attachment_points;  // SAP in Molfile format
-
-      class _BondConnection
-      {
-      public:
-         int   bond_idx;
-         Vec2f bond_dir;
-      };
-
-      Array<_BondConnection> bond_connections;  // SBV in Molfile format
-   private:
-      Superatom (const Superatom &); // no implicit copy
-   };
-
-   class DLLEXPORT RepeatingUnit : public SGroup
-   {
-   public:
-      enum
-      {
-         HEAD_TO_HEAD = 1,
-         HEAD_TO_TAIL,
-         EITHER
-      };
-
-      RepeatingUnit ();
-      virtual ~RepeatingUnit ();
-
-      int connectivity;
-      Array<char> subscript; // SMT in Molfile format
-   private:
-      RepeatingUnit (const RepeatingUnit &); // no implicit copy
-   };
-
-   class DLLEXPORT MultipleGroup : public SGroup
-   {
-   public:
-      MultipleGroup ();
-      virtual ~MultipleGroup ();
-      static void collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv);
-      static void collapse (BaseMolecule& bm, int id);
-      static void collapse (BaseMolecule& bm);
-
-      Array<int> parent_atoms;
-      int multiplier;
-   private:
-      MultipleGroup (const MultipleGroup &); // no implicit copy
-   };
 
    BaseMolecule ();
    virtual ~BaseMolecule ();
@@ -272,11 +121,15 @@ public:
    int countRSites ();
    int countSGroups ();
 
-   bool findSgroupParentById (int id, int &sg_parent, SGroup::_SgroupRef &sg_ref);
+   int findSGroupById (int id);
 
-   int findSgroups (int property, int value, Array<BaseMolecule::SGroup::_SgroupRef> &sgs);
-   int findSgroups (int property, const char *value, Array<BaseMolecule::SGroup::_SgroupRef> &sgs);
-   int findSgroups (int property, Array<int> &value, Array<BaseMolecule::SGroup::_SgroupRef> &sgs);
+   int findSGroups (int property, int value, Array<int> &sgs);
+   int findSGroups (int property, const char *value, Array<int> &sgs);
+   int findSGroups (int property, Array<int> &value, Array<int> &sgs);
+
+   static void collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv);
+   static void collapse (BaseMolecule& bm, int id);
+   static void collapse (BaseMolecule& bm);
 
    virtual bool  isRSite (int atom_idx) = 0;
    virtual dword getRSiteBits (int atom_idx) = 0;
@@ -355,12 +208,7 @@ public:
 
    bool isChrial ();
 
-   // TODO: use a single array
-   ObjPool<DataSGroup> data_sgroups;
-   ObjPool<Superatom>  superatoms;
-   ObjPool<RepeatingUnit> repeating_units;
-   ObjPool<MultipleGroup> multiple_groups;
-   ObjPool<SGroup> generic_sgroups;
+   MoleculeSGroups sgroups;
 
    StringPool custom_collections;
 
@@ -402,7 +250,7 @@ public:
    void removeBonds (const Array<int> &indices);
    void removeBond  (int idx);
 
-   void removeSgroup (int sg_type, int idx);
+   void removeSGroup (int idx);
 
    void unhighlightAll ();
    void highlightAtom (int idx);

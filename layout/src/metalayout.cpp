@@ -266,12 +266,16 @@ void Metalayout::adjustMol (BaseMolecule& mol, const Vec2f& min, const Vec2f& po
 
    // Compute center points for the data sgroups
    QS_DEF(Array<Vec2f>, data_centers);
-   data_centers.resize(mol.data_sgroups.end());
-   for (int i = mol.data_sgroups.begin(); i < mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
+   data_centers.resize(mol.sgroups.getSGroupCount());
+   for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
    {
-      BaseMolecule::DataSGroup &group = mol.data_sgroups[i];
-      if (!group.relative)
-         mol.getSGroupAtomsCenterPoint(group, data_centers[i]);
+      SGroup &sg = mol.sgroups.getSGroup(i);
+      if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
+      {
+         DataSGroup &group = (DataSGroup &)sg;
+         if (!group.relative)
+            mol.getSGroupAtomsCenterPoint(group, data_centers[i]);
+      }
    }
 
    for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
@@ -285,15 +289,19 @@ void Metalayout::adjustMol (BaseMolecule& mol, const Vec2f& min, const Vec2f& po
    }  
 
    // Adjust data-sgroup label positions with absolute coordinates
-   for (int i = mol.data_sgroups.begin(); i < mol.data_sgroups.end(); i = mol.data_sgroups.next(i))
+   for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
    {
-      BaseMolecule::DataSGroup &group = mol.data_sgroups[i];
-      if (!group.relative)
+      SGroup &sg = mol.sgroups.getSGroup(i);
+      if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
       {
-         Vec2f new_center;
-         mol.getSGroupAtomsCenterPoint(group, new_center);
-         group.display_pos.add(new_center);
-         group.display_pos.sub(data_centers[i]);
+         DataSGroup &group = (DataSGroup &)sg;
+         if (!group.relative)
+         {
+            Vec2f new_center;
+            mol.getSGroupAtomsCenterPoint(group, new_center);
+            group.display_pos.add(new_center);
+            group.display_pos.sub(data_centers[i]);
+         }
       }
    }
 }

@@ -133,7 +133,7 @@ protected:
    void _readCtab3000 ();
    void _readSGroup3000 (const char *str);
    void _readRGroups3000 ();
-   void _readSGroupDisplay (Scanner &scanner, BaseMolecule::DataSGroup &dsg);
+   void _readSGroupDisplay (Scanner &scanner, DataSGroup &dsg);
    void _readCollectionBlock3000 ();
    void _readSGroupsBlock3000 ();
    void _preparePseudoAtomLabel (Array<char> &pseudo);

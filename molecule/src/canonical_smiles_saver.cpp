@@ -56,7 +56,7 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_)
 
    int i;
 
-   if (mol_.repeating_units.size() > 0)
+   if (mol_.sgroups.isPolimer())
       throw Error("can not canonicalize a polymer");
 
    // Detect hydrogens configuration if aromatic but not ambiguous

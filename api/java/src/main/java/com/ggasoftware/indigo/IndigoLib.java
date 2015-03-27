@@ -188,38 +188,38 @@ public interface IndigoLib extends Library
 
    int indigoSetDataSGroupXY (int sgroup, float x, float y, String options);
 
-   int indigoCreateSgroup (String type, int mapping, String name);
-   int indigoSetSgroupClass (int sgroup, String sgclass);
-   int indigoSetSgroupName (int sgroup, String sgname);
-   Pointer indigoGetSgroupClass(int sgroup);
-   Pointer indigoGetSgroupName(int sgroup);
-   int indigoGetSgroupNumCrossBonds (int sgroup);
-   int indigoAddSgroupAttachmentPoint (int sgroup, int aidx, int lvidx, String apid);
-   int indigoDeleteSgroupAttachmentPoint (int sgroup, int apidx);
-   int indigoGetSgroupDisplayOption (int sgroup);
-   int indigoSetSgroupDisplayOption (int sgroup, int option);
-   int indigoGetSgroupMultiplier (int sgroup);
-   int indigoSetSgroupMultiplier (int sgroup, int mult);
-   int indigoSetSgroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
+   int indigoCreateSGroup (String type, int mapping, String name);
+   int indigoSetSGroupClass (int sgroup, String sgclass);
+   int indigoSetSGroupName (int sgroup, String sgname);
+   Pointer indigoGetSGroupClass(int sgroup);
+   Pointer indigoGetSGroupName(int sgroup);
+   int indigoGetSGroupNumCrossBonds (int sgroup);
+   int indigoAddSGroupAttachmentPoint (int sgroup, int aidx, int lvidx, String apid);
+   int indigoDeleteSGroupAttachmentPoint (int sgroup, int apidx);
+   int indigoGetSGroupDisplayOption (int sgroup);
+   int indigoSetSGroupDisplayOption (int sgroup, int option);
+   int indigoGetSGroupMultiplier (int sgroup);
+   int indigoSetSGroupMultiplier (int sgroup, int mult);
+   int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
                                      float x3, float y3, float x4, float y4);
 
-   int indigoSetSgroupData (int sgroup,  String data);                    
-   int indigoSetSgroupCoords (int sgroup, float x, float y);                  
-   int indigoSetSgroupDescription (int sgroup, String description);      
-   int indigoSetSgroupFieldName (int sgroup, String name);               
-   int indigoSetSgroupQueryCode (int sgroup, String querycode);          
-   int indigoSetSgroupQueryOper (int sgroup, String queryoper);          
-   int indigoSetSgroupDisplay (int sgroup, String option);               
-   int indigoSetSgroupLocation (int sgroup, String option);              
-   int indigoSetSgroupTag (int sgroup, String tag);                      
-   int indigoSetSgroupTagAlign (int sgroup, int tag_align);                   
-   int indigoSetSgroupDataType (int sgroup, String type);                
-   int indigoSetSgroupXCoord (int sgroup, float x);                           
-   int indigoSetSgroupYCoord (int sgroup, float y);                           
+   int indigoSetSGroupData (int sgroup,  String data);                    
+   int indigoSetSGroupCoords (int sgroup, float x, float y);                  
+   int indigoSetSGroupDescription (int sgroup, String description);      
+   int indigoSetSGroupFieldName (int sgroup, String name);               
+   int indigoSetSGroupQueryCode (int sgroup, String querycode);          
+   int indigoSetSGroupQueryOper (int sgroup, String queryoper);          
+   int indigoSetSGroupDisplay (int sgroup, String option);               
+   int indigoSetSGroupLocation (int sgroup, String option);              
+   int indigoSetSGroupTag (int sgroup, String tag);                      
+   int indigoSetSGroupTagAlign (int sgroup, int tag_align);                   
+   int indigoSetSGroupDataType (int sgroup, String type);                
+   int indigoSetSGroupXCoord (int sgroup, float x);                           
+   int indigoSetSGroupYCoord (int sgroup, float y);                           
 
-   int indigoFindSgroups (int molecule, String property, String value);                           
-   int indigoGetSgroupType (int sgroup);
-   int indigoGetSgroupIndex (int sgroup);
+   int indigoFindSGroups (int molecule, String property, String value);                           
+   int indigoGetSGroupType (int sgroup);
+   int indigoGetSGroupIndex (int sgroup);
 
    int indigoResetCharge (int atom);
    int indigoResetExplicitValence (int atom);

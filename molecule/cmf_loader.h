@@ -124,10 +124,10 @@ protected:
 
    void _readExtSection (Molecule &mol);
    void _readSGroup (int code, Molecule &mol);
-   void _readGeneralSGroup (BaseMolecule::SGroup &sgroup);
+   void _readGeneralSGroup (SGroup &sgroup);
 
-   void _readSGroupXYZ (Scanner &scanner, int code, int idx_array[5], Molecule &mol, const CmfSaver::VecRange &range);
-   void _readBaseSGroupXyz (Scanner &scanner, BaseMolecule::SGroup &sgroup, const CmfSaver::VecRange &range);
+   void _readSGroupXYZ (Scanner &scanner, int code, Molecule &mol, const CmfSaver::VecRange &range);
+   void _readBaseSGroupXyz (Scanner &scanner, SGroup &sgroup, const CmfSaver::VecRange &range);
 
    void _readString (Array<char> &dest);
    void _readUIntArray (Array<int> &dest);
