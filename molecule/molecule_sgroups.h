@@ -208,8 +208,21 @@ public:
    int end();
    int next(int i);
 
+   enum PropertyTypes { PROPERTY_INT, PROPERTY_BOOL, PROPERTY_STRING, PROPERTY_INT_ARRAY };
+   static void parseCondition (const char * property, const char * value, int &s_property, int &s_type, int &s_int,
+                               Array<int> &s_indices);
+
+   void findSGroups (const char * property, const char * value, Array<int> &sgs);
+   void findSGroups (int property, int value, Array<int> &sgs);
+   void findSGroups (int property, const char *value, Array<int> &sgs);
+   void findSGroups (int property, Array<int> &value, Array<int> &sgs);
+
 protected:
    PtrPool<SGroup> _sgroups;
+
+private:
+   int _findSGroupById (int id);
+   bool _cmpIndices (Array<int> &t_inds, Array<int> &q_inds);
 };
 
 

@@ -293,11 +293,6 @@ public:
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
-   enum PropertyTypes { PROPERTY_INT, PROPERTY_BOOL, PROPERTY_STRING, PROPERTY_INT_ARRAY };
-
-   static void parseCondition (const char* property, const char* value, int &s_property, int &s_type, int &s_int,
-                               Array<int> &s_indices);
-
 protected:
 
    int _idx;

@@ -2110,7 +2110,7 @@ CEXPORT int indigoIterateDataSGroups (int molecule)
       QS_DEF(Array<int>, sgs);
       sgs.clear();
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      mol.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_DAT, sgs);
+      mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_DAT, sgs);
       return self.addObject(new IndigoDataSGroupsIter(mol, sgs));
    }
    INDIGO_END(-1)
@@ -2431,7 +2431,7 @@ CEXPORT int indigoIterateGenericSGroups (int molecule)
     QS_DEF(Array<int>, sgs);
     sgs.clear();
     BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-    mol.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_GEN, sgs);
+    mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_GEN, sgs);
     return self.addObject(new IndigoGenericSGroupsIter(mol, sgs));
    }
    INDIGO_END(-1)
@@ -2514,119 +2514,6 @@ IndigoObject * IndigoSGroupsIter::next ()
    return sgroup.release();
 }
 
-void IndigoSGroupsIter::parseCondition (const char* property, const char* value, 
-                                        int &s_property, int &s_type, int &s_int, Array<int> &s_indices)
-{
-   struct Mapping
-   {
-      const char *property;
-      int  sg_property;
-      int  property_type;
-   };
-
-   struct SgType
-   {
-      const char *str_type;
-      int  int_type;
-   };
-
-   static SgType mappingForSgTypes[] = 
-   {
-      { "GEN", SGroup::SG_TYPE_GEN },
-      { "DAT", SGroup::SG_TYPE_DAT },
-      { "SUP", SGroup::SG_TYPE_SUP },
-      { "SRU", SGroup::SG_TYPE_SRU },
-      { "MUL", SGroup::SG_TYPE_MUL },
-      { "MON", SGroup::SG_TYPE_MON },
-      { "MER", SGroup::SG_TYPE_MER },
-      { "COP", SGroup::SG_TYPE_COP },
-      { "CRO", SGroup::SG_TYPE_CRO },
-      { "MOD", SGroup::SG_TYPE_MOD },
-      { "GRA", SGroup::SG_TYPE_GRA },
-      { "COM", SGroup::SG_TYPE_COM },
-      { "MIX", SGroup::SG_TYPE_MIX },
-      { "FOR", SGroup::SG_TYPE_FOR },
-      { "ANY", SGroup::SG_TYPE_ANY },
-   };
-
-
-   static Mapping mappingForProperties[] = 
-   {
-      { "SG_TYPE", SGroup::SG_TYPE, PROPERTY_INT },
-      { "SG_CLASS", SGroup::SG_CLASS, PROPERTY_STRING },
-      { "SG_LABEL", SGroup::SG_LABEL, PROPERTY_STRING },
-      { "SG_DISPLAY_OPTION", SGroup::SG_DISPLAY_OPTION, PROPERTY_INT },
-      { "SG_BRACKET_STYLE", SGroup::SG_BRACKET_STYLE, PROPERTY_INT },
-      { "SG_DATA", SGroup::SG_DATA, PROPERTY_STRING },
-      { "SG_DATA_NAME", SGroup::SG_DATA_NAME, PROPERTY_STRING },
-      { "SG_DATA_TYPE", SGroup::SG_DATA_TYPE, PROPERTY_STRING },
-      { "SG_DATA_DESCRIPTION", SGroup::SG_DATA_DESCRIPTION, PROPERTY_STRING },
-      { "SG_DATA_DISPLAY", SGroup::SG_DATA_DISPLAY, PROPERTY_STRING },
-      { "SG_DATA_LOCATION", SGroup::SG_DATA_LOCATION, PROPERTY_STRING },
-      { "SG_DATA_TAG", SGroup::SG_DATA_TAG, PROPERTY_STRING },
-      { "SG_QUERY_CODE", SGroup::SG_QUERY_CODE, PROPERTY_STRING },
-      { "SG_QUERY_OPER", SGroup::SG_QUERY_OPER, PROPERTY_STRING },
-      { "SG_PARENT", SGroup::SG_PARENT, PROPERTY_INT },
-      { "SG_CHILD", SGroup::SG_CHILD, PROPERTY_INT },
-      { "SG_ATOMS", SGroup::SG_ATOMS, PROPERTY_INT_ARRAY },
-      { "SG_BONDS", SGroup::SG_BONDS, PROPERTY_INT_ARRAY },
-   };
-
-   for (int i = 0; i < NELEM(mappingForProperties); i++)
-   {
-      if (strcasecmp(property, mappingForProperties[i].property) == 0)
-      {
-         int int_value = 0;
-         if (strcasecmp(property, "SG_TYPE") == 0)
-         {
-            for (int j = 0; j < NELEM(mappingForSgTypes); j++)
-            {
-               if (strcasecmp(value, mappingForSgTypes[j].str_type) == 0)
-               {
-                  int_value = mappingForSgTypes[j].int_type;
-               }
-            }
-         }
-         else if (value != NULL)
-         {
-            if (mappingForProperties[i].property_type == PROPERTY_INT)
-            {
-               BufferScanner buf_scanner(value);
-               int_value = buf_scanner.readInt();
-            }
-            else if (mappingForProperties[i].property_type == PROPERTY_BOOL)
-            {
-               if (strcasecmp(value, "true") == 0)
-                  int_value = 1;
-               else if (strcasecmp(value, "false") == 0)
-                  int_value = 0;
-               else
-               {
-                  BufferScanner buf_scanner(value);
-                  int_value = buf_scanner.readInt();
-               }
-            }
-            else if (mappingForProperties[i].property_type == PROPERTY_INT_ARRAY)
-            {
-               BufferScanner buf_scanner(value);
-               while (!buf_scanner.isEOF())
-               {
-                  s_indices.push(buf_scanner.readInt1());
-               }
-            }
-         }
-         s_property = mappingForProperties[i].sg_property;
-         s_type = mappingForProperties[i].property_type;
-         s_int = int_value;
-
-         return;
-      }
-   }
-
-   throw IndigoError("unsupported condition property: %s", property);
-}
-
-
 CEXPORT int indigoIterateRepeatingUnits (int molecule)
 {
    INDIGO_BEGIN
@@ -2634,7 +2521,7 @@ CEXPORT int indigoIterateRepeatingUnits (int molecule)
       QS_DEF(Array<int>, sgs);
       sgs.clear();
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      mol.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_SRU, sgs);
+      mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_SRU, sgs);
       return self.addObject(new IndigoRepeatingUnitsIter(mol, sgs));
    }
    INDIGO_END(-1)
@@ -2647,7 +2534,7 @@ CEXPORT int indigoIterateMultipleGroups (int molecule)
       QS_DEF(Array<int>, sgs);
       sgs.clear();
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      mol.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_MUL, sgs);
+      mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_MUL, sgs);
       return self.addObject(new IndigoMultipleGroupsIter(mol, sgs));
    }
    INDIGO_END(-1)
@@ -2660,7 +2547,7 @@ CEXPORT int indigoIterateSuperatoms (int molecule)
       QS_DEF(Array<int>, sgs);
       sgs.clear();
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      mol.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_SUP, sgs);
+      mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_SUP, sgs);
       return self.addObject(new IndigoSuperatomsIter(mol, sgs));
    }
    INDIGO_END(-1)
@@ -3213,22 +3100,9 @@ CEXPORT int indigoFindSGroups (int item, const char *property, const char *value
    {
       BaseMolecule &mol = self.getObject(item).getBaseMolecule();
       QS_DEF(Array<int>, sgs);
-      QS_DEF(Array<int>, s_indices);
-      int s_property;
-      int s_type;
-      int s_int;
-
       sgs.clear();
-      s_indices.clear();
 
-      IndigoSGroupsIter::parseCondition (property, value, s_property, s_type, s_int, s_indices);
-
-      if (s_type == IndigoSGroupsIter::PropertyTypes::PROPERTY_INT)
-         mol.findSGroups(s_property, s_int, sgs);
-	  else if (s_type == IndigoSGroupsIter::PropertyTypes::PROPERTY_STRING)
-         mol.findSGroups(s_property, value, sgs);
-	  else if (s_type == IndigoSGroupsIter::PropertyTypes::PROPERTY_INT_ARRAY)
-         mol.findSGroups(s_property, s_indices, sgs);
+      mol.sgroups.findSGroups(property, value, sgs);
       
       return self.addObject(new IndigoSGroupsIter(mol, sgs));
    }

@@ -121,12 +121,6 @@ public:
    int countRSites ();
    int countSGroups ();
 
-   int findSGroupById (int id);
-
-   int findSGroups (int property, int value, Array<int> &sgs);
-   int findSGroups (int property, const char *value, Array<int> &sgs);
-   int findSGroups (int property, Array<int> &value, Array<int> &sgs);
-
    static void collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv);
    static void collapse (BaseMolecule& bm, int id);
    static void collapse (BaseMolecule& bm);
@@ -322,8 +316,6 @@ protected:
    void _removeBondsFromSuperatom (Superatom &sa, Array<int> &mapping);
    bool _mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
         Array<int> &mapping, Array<int> &edge_mapping);
-
-   bool _cmpIndices (Array<int> &t_inds, Array<int> &q_inds);
 
    void _checkSgroupHierarchy(int pidx, int oidx);
 
