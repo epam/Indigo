@@ -414,7 +414,6 @@ bool IndigoMoleculeSubstructureMatchIter::hasNext ()
 IndigoTautomerSubstructureMatchIter::IndigoTautomerSubstructureMatchIter(Molecule &target_, QueryMolecule &query_) :
    IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER),
    matcher(target_),
-   target(target_),
    query(query_)
 {
    matcher.setQuery(query);
@@ -422,6 +421,7 @@ IndigoTautomerSubstructureMatchIter::IndigoTautomerSubstructureMatchIter(Molecul
    _found = false;
    _need_find = true;
    _embedding_index = 0;
+   _mask_index = 0;
 }
 
 IndigoTautomerSubstructureMatchIter::~IndigoTautomerSubstructureMatchIter()
@@ -438,10 +438,11 @@ IndigoObject * IndigoTautomerSubstructureMatchIter::next()
    if (!hasNext())
       return NULL;
 
-   AutoPtr<IndigoMapping> mptr(new IndigoMapping(query, target));
+   matcher.getTautomerFound(tautomerFound, _embedding_index, _mask_index);
+   AutoPtr<IndigoMapping> mptr(new IndigoMapping(query, tautomerFound));
 
    // Expand mapping to fit possible implicit hydrogens
-   mapping.expandFill(target.vertexEnd(), -1);
+   mapping.expandFill(tautomerFound.vertexEnd(), -1);
 
    if (!matcher.getEmbeddingsStorage().isEmpty())
    {
@@ -473,15 +474,30 @@ bool IndigoTautomerSubstructureMatchIter::hasNext()
    {
       _initialized = true;
       _found = matcher.find();
+      if (_found)
+      {
+         _embedding_index = 0;
+         _mask_index = matcher.getMask(_embedding_index).nextSetBit(0);
+      }
    }
    else
    {
-      _embedding_index++;
       int cur_count = matcher.getEmbeddingsStorage().count();
+      _mask_index = matcher.getMask(_embedding_index).nextSetBit(_mask_index + 1);
+      if (_mask_index == -1)
+      {
+         ++_embedding_index;
+      }
       if (_embedding_index < cur_count)
          _found = true;
       else
+      {
          _found = matcher.findNext();
+         if (_found)
+         {
+            _mask_index = matcher.getMask(_embedding_index).nextSetBit(0);
+         }
+      }
    }
    if (_embedding_index >= max_embeddings)
       throw IndigoError("Number of embeddings exceeded maximum allowed limit (%d). "
@@ -668,7 +684,13 @@ IndigoTautomerSubstructureMatchIter*
    iter->matcher.find_unique_by_edges = embedding_edges_uniqueness;
    iter->matcher.save_for_iteration = for_iteration;
 
-   iter->mapping.copy(*mapping);
+   Array<int> simpleMapping;
+   simpleMapping.expand(mapping->size());
+   for (int i = 0; i < simpleMapping.size(); ++i)
+   {
+      simpleMapping[i] = i;
+   }
+   iter->mapping.copy(simpleMapping);
    iter->max_embeddings = max_embeddings;
 
    return iter.release();
@@ -873,11 +895,6 @@ CEXPORT int indigoMatch (int target_matcher, int query)
             if (!matcher.findTautomerMatch(qmol, self.tautomer_rules, mptr->mapping))
                return 0;
 
-            for (auto i = 0; i < mptr->mapping.size(); ++i)
-            {
-               printf("%d ", mptr->mapping.at(i));
-            }
-            printf("\n");
             return self.addObject(mptr.release());
          }
          else // NORMAL or RESONANCE

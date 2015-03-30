@@ -39,7 +39,7 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
 
    // We need a canonical mapping. This is something that MoleculeInChI does.
    // This is the only reason I use it. Maybe it's better to implement this procedure outside of MoleculeInChI.
-   Array<int> mapping;
+   Array<int> canonical_mapping;
    QS_DEF(Array<int>, ignored);
    ignored.clear_resize(molecule.vertexEnd());
    ignored.zerofill();
@@ -56,16 +56,28 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
    of.refine_by_sorted_neighbourhood = true;
    of.cb_vertex_cmp = MoleculeInChICompoment::cmpVertex;
    of.process(molecule);
-   of.getCanonicalNumbering(mapping);
+   of.getCanonicalNumbering(canonical_mapping);
 
    InChICodeParser inchiParser(params);
 
    Array<int> hydrogens;
    // For each position get number of fixed hydrogens
    hydrogens.expandFill(molecule.vertexCount(), 0);
+
+   Array<int> inv_mapping;
+   inv_mapping.expandFill(molecule.vertexEnd(), -1);
+   int j = 0;
+   for(auto i : molecule.vertices())
+   {
+      inv_mapping[i] = j++;
+   }
+
    for (auto i = inchiParser.staticHydrogenPositionBegin(); i != inchiParser.staticHydrogenPositionEnd(); i = inchiParser.staticHydrogenPositionNext(i))
    {
-      ++hydrogens[mapping[inchiParser.getHydrogen(i)]];
+      int inchiIndex = inchiParser.getHydrogen(i);
+      int molIndex = canonical_mapping[inchiIndex];
+      int simpleIndex = inv_mapping[molIndex];
+      ++hydrogens[simpleIndex];
    }
 
    // Indicate places for mobile hydrogens
@@ -73,14 +85,20 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
    {
       // Actually this is the only thing we need from InChI: a hint which positions mobile hydrogen can occupy.
       // If we don't use this, we can avoid using InChI at all.
-      layeredMolecules.setMobilePosition(mapping[inchiParser.getHydrogen(i)], true);
+      int inchiIndex = inchiParser.getHydrogen(i);
+      int molIndex = canonical_mapping[inchiIndex];
+      int simpleIndex = inv_mapping[molIndex];
+      layeredMolecules.setMobilePosition(simpleIndex, true);
    }
    /*
    for (auto i : molecule.vertices())
    {
       // Alternative: set all positions as possible mobile hydrogen positions.
       // This dramatically icreases total number of tautomers found.
-      layeredMolecules.setMobilePosition(i, true);
+      int inchiIndex = inchiParser.getHydrogen(i);
+      int molIndex = canonical_mapping[inchiIndex];
+      int simpleIndex = inv_mapping[molIndex];
+      layeredMolecules.setMobilePosition(simpleIndex, true);
    } */
 
    // Indicate occupied mobile positions
@@ -89,7 +107,7 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
    {
       Dbitset Ox01;
       Ox01.set(0);
-      bool occupied = (molecule.getAtomTotalH(i) - hydrogens[i]) != 0;
+      bool occupied = (molecule.getAtomTotalH(i) - hydrogens[inv_mapping[i]]) != 0;
       if (occupied)
       {
          occupied = false;
@@ -105,7 +123,7 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
          }
 
       }
-      layeredMolecules.setMobilePositionOccupiedMask(i, Ox01, occupied);
+      layeredMolecules.setMobilePositionOccupiedMask(inv_mapping[i], Ox01, occupied);
    }
 
    // Look for "zebra" pattern (like -=-=-=-=... or =-=-=-=-...)
@@ -146,8 +164,8 @@ bool TautomerEnumerator::matchEdge(Graph &subgraph, Graph &supergraph,
 
    int forwardSubBondOrder = breadcrumps.forwardEdgesHistory.size() % 2 == 0 ? 1 : 2;
    int backwardSubBondOrder = breadcrumps.backwardEdgesHistory.size() % 2 == 0 ? 2 : 1;
-   Dbitset &forwardMask = layeredMolecules.getBondMask(super_idx, forwardSubBondOrder);
-   Dbitset &backwardMask = layeredMolecules.getBondMask(super_idx, backwardSubBondOrder);
+   const Dbitset &forwardMask = layeredMolecules.getBondMask(super_idx, forwardSubBondOrder);
+   const Dbitset &backwardMask = layeredMolecules.getBondMask(super_idx, backwardSubBondOrder);
 
    return breadcrumps.forwardMask.intersects(forwardMask) || breadcrumps.backwardMask.intersects(backwardMask);
 }
@@ -171,8 +189,8 @@ void TautomerEnumerator::edgeAdd(Graph &subgraph, Graph &supergraph,
 
    int forwardSubBondOrder = breadcrumps.forwardEdgesHistory.size() % 2 == 0 ? 1 : 2;
    int backwardSubBondOrder = breadcrumps.backwardEdgesHistory.size() % 2 == 0 ? 2 : 1;
-   Dbitset &forwardMask = layeredMolecules.getBondMask(super_idx, forwardSubBondOrder);
-   Dbitset &backwardMask = layeredMolecules.getBondMask(super_idx, backwardSubBondOrder);
+   const Dbitset &forwardMask = layeredMolecules.getBondMask(super_idx, forwardSubBondOrder);
+   const Dbitset &backwardMask = layeredMolecules.getBondMask(super_idx, backwardSubBondOrder);
 
    breadcrumps.edgesHistory.push(super_idx);
    breadcrumps.forwardEdgesHistory.expand(breadcrumps.forwardEdgesHistory.size() + 1);
@@ -230,7 +248,7 @@ void TautomerEnumerator::vertexRemove(Graph &subgraph, int sub_idx, void *userda
    breadcrumps.nodesHistory.pop();
 }
 
-void TautomerEnumerator::constructMolecule(Molecule &molecule, int layer)
+void TautomerEnumerator::constructMolecule(Molecule &molecule, int layer) const
 {
    layeredMolecules.constructMolecule(molecule, layer);
 }

@@ -26,8 +26,7 @@ MoleculeTautomerSubstructureMatcher::MoleculeTautomerSubstructureMatcher(BaseMol
 _tautomerEnumerator(target.asMolecule(), "INCHI"),
 CP_INIT
 {
-   _tautomerEnumerator.runProcedure();
-   _tautomerEnumerator.runProcedure();
+   while (!_tautomerEnumerator.runProcedure());
    find_all_embeddings = false;
    find_unique_embeddings = false;
    find_unique_by_edges = false;
@@ -68,6 +67,7 @@ void MoleculeTautomerSubstructureMatcher::setQuery(QueryMolecule &query)
    _ee->setSubgraph(*_query);
 
    _embeddings_storage.free();
+   _masks.clear();
 }
 
 bool MoleculeTautomerSubstructureMatcher::_matchAtoms(Graph &subgraph, Graph &supergraph,
@@ -106,7 +106,7 @@ bool MoleculeTautomerSubstructureMatcher::_matchBondsSubHyper(Graph &subgraph, G
    QueryMolecule &query = ((BaseMolecule &)subgraph).asQueryMolecule();
 
    int sub_bond_order = query.getBondOrder(sub_idx);
-   Dbitset &mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
+   const Dbitset &mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
 
    return mask.intersects(breadcrumps.mask);
 }
@@ -119,7 +119,7 @@ void MoleculeTautomerSubstructureMatcher::_edgeAddHyper(Graph &subgraph, Graph &
    QueryMolecule &query = ((BaseMolecule &)subgraph).asQueryMolecule();
 
    int sub_bond_order = query.getBondOrder(sub_idx);
-   Dbitset &mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
+   const Dbitset &mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
 
    breadcrumps.maskHistory.expand(breadcrumps.maskHistory.size() + 1);
    breadcrumps.maskHistory.top().copy(breadcrumps.mask);
@@ -142,8 +142,9 @@ int MoleculeTautomerSubstructureMatcher::_preliminaryEmbeddingHyper(Graph &g1, G
 {
    SubstructureSearchBreadcrumps &breadcrumps = *(SubstructureSearchBreadcrumps *)userdata;
    MoleculeTautomerSubstructureMatcher *self = breadcrumps.self;
+   Dbitset &mask = breadcrumps.mask;
 
-   return self->_embedding_common(core_sub, core_super);
+   return self->_embedding_common(core_sub, core_super, mask);
 
    return 0;
 }
@@ -176,7 +177,7 @@ void MoleculeTautomerSubstructureMatcher::_createEmbeddingsStorage()
    _embeddings_storage->check_uniquencess = find_unique_embeddings;
 }
 
-int MoleculeTautomerSubstructureMatcher::_embedding_common (int *core_sub, int *core_super)
+int MoleculeTautomerSubstructureMatcher::_embedding_common (int *core_sub, int *core_super, Dbitset &mask)
 {
    QueryMolecule &query = *_query;
 
@@ -185,6 +186,8 @@ int MoleculeTautomerSubstructureMatcher::_embedding_common (int *core_sub, int *
       if (!_embeddings_storage->addEmbedding(_tautomerEnumerator.layeredMolecules, query, core_sub))
          // This match has already been handled
          return 1;
+      _masks.push();
+      _masks.top().copy(mask);
    }
 
    return 0;
@@ -203,4 +206,17 @@ const int * MoleculeTautomerSubstructureMatcher::getTargetMapping()
 const GraphEmbeddingsStorage& MoleculeTautomerSubstructureMatcher::getEmbeddingsStorage() const
 {
    return _embeddings_storage.ref();
+}
+
+const Dbitset& MoleculeTautomerSubstructureMatcher::getMask(int ind) const
+{
+   return _masks.at(ind);
+}
+
+void MoleculeTautomerSubstructureMatcher::getTautomerFound(Molecule& mol, int enumInd, int tauInd) const
+{
+   const Dbitset &mask = _masks.at(enumInd);
+   int layer = mask.nextSetBit(tauInd);
+
+   return _tautomerEnumerator.constructMolecule(mol, layer);
 }

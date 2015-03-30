@@ -29,7 +29,7 @@ public:
    TautomerEnumerator(Molecule &molecule, const char *options);
 
    bool runProcedure();
-   void constructMolecule(Molecule &molecule, int layer);
+   void constructMolecule(Molecule &molecule, int layer) const;
    int size();
 
 protected:

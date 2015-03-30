@@ -67,10 +67,10 @@ LayeredMolecules::~LayeredMolecules()
 {
 }
 
-void LayeredMolecules::constructMolecule(Molecule &molecule, int layer)
+void LayeredMolecules::constructMolecule(Molecule &molecule, int layer) const
 {
-   molecule.clone(_proto, NULL, NULL);
-   for (auto i : _proto.edges())
+   molecule.clone(const_cast<Molecule&>(_proto), NULL, NULL);
+   for (auto i : const_cast<Molecule&>(_proto).edges())
    {
       int order = (_bond_masks[1][i].get(layer) ? 1 : 2);
       molecule.setBondOrder(i, order);
@@ -82,12 +82,12 @@ void LayeredMolecules::clear()
    BaseMolecule::clear();
 }
 
-Dbitset &LayeredMolecules::getBondMask(int idx, int order)
+const Dbitset &LayeredMolecules::getBondMask(int idx, int order) const
 {
    return _bond_masks[order][idx];
 }
 
-bool LayeredMolecules::isMobilePosition(int idx)
+bool LayeredMolecules::isMobilePosition(int idx) const
 {
    return _mobilePositions[idx];
 }
@@ -97,7 +97,7 @@ void LayeredMolecules::setMobilePosition(int idx, bool value)
    _mobilePositions[idx] = value;
 }
 
-Dbitset &LayeredMolecules::getMobilePositionOccupiedMask(int idx)
+const Dbitset &LayeredMolecules::getMobilePositionOccupiedMask(int idx) const
 {
    return _mobilePositionsOccupied[idx];
 }

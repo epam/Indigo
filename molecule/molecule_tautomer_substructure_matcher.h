@@ -62,14 +62,16 @@ public:
       save_for_iteration;     // true if to save embeddings to the embeddings storage. false by default
 
    const GraphEmbeddingsStorage& getEmbeddingsStorage () const;
+   const Dbitset& getMask(int ind) const;
+   void getTautomerFound(Molecule& mol, int enumInd, int tauInd) const;
 
    DECL_ERROR;
 
 protected:
    
-   int _embedding_common (int *core_sub, int *core_super);
-   TautomerEnumerator _tautomerEnumerator;
+   int _embedding_common (int *core_sub, int *core_super, Dbitset &mask);
    QueryMolecule *_query;
+   TautomerEnumerator _tautomerEnumerator;
 
    Obj<EmbeddingEnumerator> _ee;
    
@@ -77,6 +79,7 @@ protected:
    // It can be stored as TL_CP_*** if memory allocations will 
    // be critical
    Obj<GraphEmbeddingsStorage> _embeddings_storage;
+   ObjArray<Dbitset> _masks;
 
    CP_DECL;
 

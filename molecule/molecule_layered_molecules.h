@@ -35,15 +35,15 @@ public:
    virtual ~LayeredMolecules();
 
    // This method returns a bitmask of all layers that contain a bond idx of a specific order:
-   Dbitset &getBondMask(int idx, int order);
+   const Dbitset &getBondMask(int idx, int order) const;
 
    // These methods are used for tracking if the atom is a possible position for a mobile hydrogen:
-   bool isMobilePosition(int idx);
+   bool isMobilePosition(int idx) const;
    void setMobilePosition(int idx, bool value);
 
    // These methods are used for tracking if the mobile position is occupied already.
    // The bitmask is the layers where the position is occupied.
-   Dbitset &getMobilePositionOccupiedMask(int idx);
+   const Dbitset &getMobilePositionOccupiedMask(int idx) const;
    void setMobilePositionOccupiedMask(int idx, Dbitset &mask, bool value);
 
    // mask: the mask of layers used as prototypes;
@@ -53,7 +53,7 @@ public:
    void addLayers(Dbitset &mask, Array<int> &path, int beg, int end, bool forward);
 
    // construct a molecule that is represented as a layer
-   void constructMolecule(Molecule &molecule, int layer);
+   void constructMolecule(Molecule &molecule, int layer) const;
 
    virtual void clear ();
 

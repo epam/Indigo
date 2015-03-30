@@ -85,7 +85,7 @@ public:
 
    MoleculeTautomerSubstructureMatcher matcher;
 
-   Molecule &target;
+   Molecule tautomerFound;
    QueryMolecule &query;
 
    Array<int> mapping;
@@ -94,6 +94,7 @@ public:
 private:
    bool _initialized, _found, _need_find;
    int _embedding_index;
+   int _mask_index;
 };
 
 // Matcher class for matching queries on a specified target molecule
