@@ -870,6 +870,15 @@ void MolfileSaver::_writeGenericSGroup3000 (SGroup &sgroup, int idx, Output &out
          output.printf(" %d", _bond_mapping[sgroup.bonds[i]]);
       output.printf(")");
    }
+   if (sgroup.sgroup_subtype > 0)
+   {
+      if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
+         output.printf(" SUBTYPE=ALT");
+      else if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
+         output.printf(" SUBTYPE=RAN");
+      else if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
+         output.printf(" SUBTYPE=BLO");
+   }
    if (sgroup.parent_group > 0)
    {
       output.printf(" PARENT=%d", sgroup.parent_group);
@@ -1534,6 +1543,15 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          if (sgroup.brackets.size() > 0 && sgroup.brk_style > 0)
          {
             output.printf("M  SBT  1 %3d %3d\n", sgroup.original_group, sgroup.brk_style);
+         }
+         if (sgroup.sgroup_subtype > 0)
+         {
+            if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
+               output.printf("M  SST  1 %3d ALT\n", sgroup.original_group);
+            else if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
+               output.printf("M  SST  1 %3d RAN\n", sgroup.original_group);
+            else if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
+               output.printf("M  SST  1 %3d BLO\n", sgroup.original_group);
          }
       }
    }

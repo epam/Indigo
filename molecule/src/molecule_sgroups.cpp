@@ -63,6 +63,7 @@ int SGroup::getType(const char * sg_type)
 SGroup::SGroup ()
 {
    sgroup_type = SGroup::SG_TYPE_GEN;
+   sgroup_subtype = 0;
    brk_style = 0;
    original_group = 0;
    parent_group = 0;

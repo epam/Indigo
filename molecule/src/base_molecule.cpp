@@ -1113,6 +1113,8 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
    int i;
    bool merged = false;
 
+   sgroup.sgroup_subtype = super.sgroup_subtype;
+
    sgroup.brackets.copy(super.brackets);
 
    for (i = 0; i < super.atoms.size(); i++)

@@ -949,6 +949,29 @@ void MolfileLoader::_readCtab2000 ()
             }
             _scanner.skipLine();
          }
+         else if (strncmp(chars, "SST", 3) == 0)
+         {
+            int n = _scanner.readIntFix(3);
+
+            while (n-- > 0)
+            {
+               _scanner.skip(1);
+               int sgroup_idx = _scanner.readIntFix(3) - 1;
+
+               SGroup *sgroup = &_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
+
+               char subtype[4] = {0, 0, 0, 0};
+               _scanner.readCharsFix(3, subtype);
+
+               if (strncmp(subtype, "ALT", 3) == 0)
+                  sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_ALT;
+               else if (strncmp(subtype, "RAN", 3) == 0)
+                  sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_RAN;
+               else if (strncmp(subtype, "BLO", 3) == 0)
+                  sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
+            }
+            _scanner.skipLine();
+         }
          else if (strncmp(chars, "SAL", 3) == 0 || strncmp(chars, "SBL", 3) == 0 ||
                   strncmp(chars, "SDI", 3) == 0)
          {
@@ -2959,10 +2982,21 @@ void MolfileLoader::_readSGroup3000 (const char *str)
          }
          scanner.skip(1); // )
       }
+      else if (strcmp(entity.ptr(), "SUBTYPE") == 0)
+      {
+         QS_DEF(Array<char>, subtype);
+         scanner.readWord(subtype, 0);
+         if (strcmp(subtype.ptr(), "ALT") == 0)
+            sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_ALT;
+         else if (strcmp(subtype.ptr(), "RAN") == 0)
+            sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_RAN;
+         else if (strcmp(subtype.ptr(), "BLO") == 0)
+            sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
+      }
       else if (strcmp(entity.ptr(), "MULT") == 0)
       {
          int mult = scanner.readInt();
-		 if (sgroup->sgroup_type == SGroup::SG_TYPE_MUL)
+         if (sgroup->sgroup_type == SGroup::SG_TYPE_MUL)
             ((MultipleGroup *)sgroup)->multiplier = mult;
       }
       else if (strcmp(entity.ptr(), "PARENT") == 0)

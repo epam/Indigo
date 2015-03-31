@@ -53,6 +53,13 @@ public:
 
    enum
    {
+      SG_SUBTYPE_ALT = 1,
+      SG_SUBTYPE_RAN,
+      SG_SUBTYPE_BLO
+   };
+
+   enum
+   {
       HEAD_TO_HEAD = 1,
       HEAD_TO_TAIL,
       EITHER
@@ -90,6 +97,7 @@ public:
    virtual ~SGroup ();
 
    int    sgroup_type;    // group type, represnted with STY in Molfile format
+   int    sgroup_subtype; // group subtype, represnted with SST in Molfile format
    int    original_group; // original group number
    int    parent_group;   // parent group number; represented with SPL in Molfile format 
 
