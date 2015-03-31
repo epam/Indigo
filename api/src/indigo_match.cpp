@@ -411,10 +411,11 @@ bool IndigoMoleculeSubstructureMatchIter::hasNext ()
    return _found;
 }
 
-IndigoTautomerSubstructureMatchIter::IndigoTautomerSubstructureMatchIter(Molecule &target_, QueryMolecule &query_) :
+IndigoTautomerSubstructureMatchIter::IndigoTautomerSubstructureMatchIter(Molecule &target_, QueryMolecule &query_, Molecule &tautomerFound_) :
    IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER),
    matcher(target_),
-   query(query_)
+   query(query_),
+   tautomerFound(tautomerFound_)
 {
    matcher.setQuery(query);
    _initialized = false;
@@ -678,7 +679,7 @@ IndigoTautomerSubstructureMatchIter*
    }
 
    AutoPtr<IndigoTautomerSubstructureMatchIter>
-      iter(new IndigoTautomerSubstructureMatchIter(target, query));
+      iter(new IndigoTautomerSubstructureMatchIter(target, query, moleculeFound));
 
    iter->matcher.find_unique_embeddings = find_unique_embeddings;
    iter->matcher.find_unique_by_edges = embedding_edges_uniqueness;

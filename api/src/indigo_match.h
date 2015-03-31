@@ -72,7 +72,7 @@ private:
 class IndigoTautomerSubstructureMatchIter : public IndigoObject
 {
 public:
-   IndigoTautomerSubstructureMatchIter(Molecule &target, QueryMolecule &query);
+   IndigoTautomerSubstructureMatchIter(Molecule &target, QueryMolecule &query, Molecule &tautomerFound);
 
    virtual ~IndigoTautomerSubstructureMatchIter();
 
@@ -85,7 +85,7 @@ public:
 
    MoleculeTautomerSubstructureMatcher matcher;
 
-   Molecule tautomerFound;
+   Molecule &tautomerFound;
    QueryMolecule &query;
 
    Array<int> mapping;
@@ -128,6 +128,7 @@ public:
    const char * debugInfo ();
 
    Molecule &target;
+   Molecule moleculeFound;
 
    Obj<MoleculeTautomerMatcher> tau_matcher;
    IndigoTautomerParams tau_params;
