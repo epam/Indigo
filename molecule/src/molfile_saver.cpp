@@ -831,6 +831,10 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             out.printf(" MULT=%d", mg.multiplier);
             _writeMultiString(output, buf.ptr(), buf.size());
          }
+         else
+         {
+            _writeMultiString(output, buf.ptr(), buf.size());
+         }
       }
       output.writeStringCR("M  V30 END SGROUP");
    }

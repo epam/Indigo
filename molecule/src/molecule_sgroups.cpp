@@ -38,14 +38,6 @@ static SGroup::SgType mappingForSgTypes[] =
    { SGroup::SG_TYPE_ANY, "ANY" },
 };
 
-SGroup::SGroup ()
-{
-   sgroup_type = SGroup::SG_TYPE_GEN;
-   brk_style = 0;
-   original_group = 0;
-   parent_group = 0;
-}
-
 const char * SGroup::typeToString(int sg_type)
 {
    for (int i = 0; i < NELEM(mappingForSgTypes); i++)
@@ -66,6 +58,14 @@ int SGroup::getType(const char * sg_type)
       }
    }
    return -1;
+}
+
+SGroup::SGroup ()
+{
+   sgroup_type = SGroup::SG_TYPE_GEN;
+   brk_style = 0;
+   original_group = 0;
+   parent_group = 0;
 }
 
 SGroup::~SGroup ()
@@ -169,30 +169,38 @@ int MoleculeSGroups::addSGroup (const char * sg_type)
    if (sgroup_type == -1)
       throw Error("Unknown SGroup type = %s", sg_type);
 
-   int idx = -1;
-   switch (sgroup_type)
-   {
-      case SGroup::SG_TYPE_GEN: idx = _sgroups.add(new SGroup()); break;
-      case SGroup::SG_TYPE_DAT: idx = _sgroups.add(new DataSGroup()); break;
-      case SGroup::SG_TYPE_SUP: idx = _sgroups.add(new Superatom()); break;
-      case SGroup::SG_TYPE_SRU: idx = _sgroups.add(new RepeatingUnit()); break;
-      case SGroup::SG_TYPE_MUL: idx = _sgroups.add(new MultipleGroup()); break;
-      default: idx = _sgroups.add(new SGroup());
-   }
-   return idx;
+   return addSGroup(sgroup_type);
 }
 
 int MoleculeSGroups::addSGroup (int sg_type)
 {
    int idx = -1;
-   switch (sg_type)
+   if (sg_type == SGroup::SG_TYPE_GEN)
    {
-      case SGroup::SG_TYPE_GEN: idx = _sgroups.add(new SGroup()); break;
-      case SGroup::SG_TYPE_DAT: idx = _sgroups.add(new DataSGroup()); break;
-      case SGroup::SG_TYPE_SUP: idx = _sgroups.add(new Superatom()); break;
-      case SGroup::SG_TYPE_SRU: idx = _sgroups.add(new RepeatingUnit()); break;
-      case SGroup::SG_TYPE_MUL: idx = _sgroups.add(new MultipleGroup()); break;
-      default: idx = _sgroups.add(new SGroup());
+      idx = _sgroups.add(new SGroup());
+   }
+   else if (sg_type == SGroup::SG_TYPE_DAT)
+   {
+      idx = _sgroups.add(new DataSGroup());
+   }
+   else if (sg_type == SGroup::SG_TYPE_SUP)
+   {
+      idx = _sgroups.add(new Superatom());
+   }
+   else if (sg_type == SGroup::SG_TYPE_SRU)
+   {
+      idx = _sgroups.add(new RepeatingUnit());
+   }
+   else if (sg_type == SGroup::SG_TYPE_MUL)
+   {
+      idx = _sgroups.add(new MultipleGroup());
+   }
+   else
+   {
+      idx = _sgroups.add(new SGroup());
+      if (idx != -1)
+        _sgroups.at(idx)->sgroup_type = sg_type;
+         
    }
    return idx;
 }
