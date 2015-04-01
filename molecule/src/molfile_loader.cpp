@@ -97,6 +97,7 @@ void MolfileLoader::_loadMolecule ()
    {
       _readCtab3000();
       _readRGroups3000();
+      _readTGroups3000();
    }
 
    _postLoad();
@@ -2415,15 +2416,34 @@ void MolfileLoader::_readCtab3000 ()
          else if (strcmp(prop, "ATTCHORD") == 0)
          {
             int n_items, nei_idx, att_type;
+            QS_DEF(Array<char>, att_id);      
 
             strscan.skip(1); // skip '('
             n_items = strscan.readInt1() / 2;
             while (n_items-- > 0)
             {
                nei_idx = strscan.readInt1();
-               att_type = strscan.readInt1();
-               _bmol->setRSiteAttachmentOrder(i, nei_idx - 1, att_type - 1);
+               if (atom_type == _ATOM_R)
+               {
+                  att_type = strscan.readInt1();
+                  _bmol->setRSiteAttachmentOrder(i, nei_idx - 1, att_type - 1);
+               }
+               else
+               {
+                  strscan.readWord(att_id, " )");
+                  att_id.push(0);
+               }
             }
+         }
+         else if (strcmp(prop, "CLASS") == 0)
+         {
+            QS_DEF(Array<char>, temp_class);
+            strscan.readWord(temp_class, false);
+            temp_class.push(0);
+         }
+         else if (strcmp(prop, "SEQID") == 0)
+         {
+            int seq_id = strscan.readInt1();
          }
          else
          {
@@ -3212,6 +3232,65 @@ void MolfileLoader::_readSGroup3000 (const char *str)
    }
 }
 
+void MolfileLoader::_readTGroups3000 ()
+{
+   QS_DEF(Array<char>, str);
+
+   MoleculeTGroups *tgroups = &_bmol->tgroups;
+
+   while (!_scanner.isEOF())
+   {
+      _scanner.readLine(str, true);
+
+      if (strncmp(str.ptr(), "M  V30 BEGIN TEMPLATE", 21) == 0)
+      {
+         while (!_scanner.isEOF())
+         {
+            int pos = _scanner.tell();
+
+            int tg_idx;
+
+            if (sscanf(str.ptr(), "M  V30 TEMPLATE %d", &tg_idx) != 1)
+               throw Error("can not read template index");
+
+            int idx = tgroups->addTGroup();
+            TGroup &tgroup = tgroups->getTGroup(idx);
+
+            _scanner.readLine(str, true);
+            if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
+            {
+               _scanner.seek(pos, SEEK_SET);
+               AutoPtr<BaseMolecule> fragment(_bmol->neu());
+
+               MolfileLoader loader(_scanner);
+               loader._bmol = fragment.get();
+               if (_bmol->isQueryMolecule())
+               {
+                  loader._qmol = &fragment.get()->asQueryMolecule();
+                  loader._mol = 0;
+               }
+               else
+               {
+                  loader._qmol = 0;
+                  loader._mol = &fragment.get()->asMolecule();
+               }
+               loader._readCtab3000();
+               loader._postLoad();
+               tgroup.fragments.add(fragment.release());
+            }
+            else if (strcmp(str.ptr(), "M  V30 END TEMPLATE") == 0)
+               break;
+            else
+               throw Error("unexpected string in template: %s", str.ptr());
+         }
+
+      }
+      else if (strncmp(str.ptr(), "M  END", 6) == 0)
+         break;
+      else
+         throw Error("unexpected string in template: %s", str.ptr());
+   }
+}
 
 void MolfileLoader::_readSGroupDisplay (Scanner &scanner, DataSGroup &dsg)
 {

@@ -24,6 +24,7 @@
 #include "base_cpp/obj_array.h"
 #include "molecule/molecule_sgroups.h"
 #include "molecule/molecule_rgroups.h"
+#include "molecule/molecule_tgroups.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_standardize.h"
 
@@ -204,10 +205,12 @@ public:
 
    MoleculeSGroups sgroups;
 
-   StringPool custom_collections;
+   MoleculeTGroups tgroups;
 
    MoleculeRGroups rgroups;
-   
+
+   StringPool custom_collections;
+ 
    Array<char> name;
 
    static bool hasCoord (BaseMolecule &mol);
