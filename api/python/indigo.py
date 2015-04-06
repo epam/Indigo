@@ -564,11 +564,11 @@ class IndigoObject(object):
 
     def setSgroupClass(self, sgclass):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupClass(self.id, sgclass))
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupClass(self.id, sgclass.encode(ENCODE_ENCODING)))
 
     def setSgroupName(self, sgname):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupName(self.id, sgname))
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSgroupName(self.id, sgname.encode(ENCODE_ENCODING)))
 
     def getSgroupClass(self):
         self.dispatcher._setSessionId()
@@ -584,7 +584,7 @@ class IndigoObject(object):
 
     def addSgroupAttachmentPoint(self, aidx, lvidx, apid):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoAddSgroupAttachmentPoint(self.id, aidx, lvidx, apid))
+        return self.dispatcher._checkResult(Indigo._lib.indigoAddSgroupAttachmentPoint(self.id, aidx, lvidx, apid.encode(ENCODE_ENCODING)))
 
     def deleteSgroupAttachmentPoint(self, apidx):
         self.dispatcher._setSessionId()
