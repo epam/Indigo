@@ -35,13 +35,14 @@ public:
    Array<char> tgroup_class;
    Array<char> tgroup_name;
    Array<char> tgroup_alias;
+   Array<char> tgroup_comment;
    int tgroup_id;
 
    TGroup ();
    ~TGroup ();
    void clear();
 
-   PtrPool<BaseMolecule> fragments;
+   BaseMolecule* fragment;
 
 private:
    TGroup (const TGroup &);
@@ -60,6 +61,10 @@ public:
    int getTGroupCount ();
 
    void clear ();
+
+   int begin();
+   int end();
+   int next(int i);
 
 protected:
    PtrPool<TGroup> _tgroups;

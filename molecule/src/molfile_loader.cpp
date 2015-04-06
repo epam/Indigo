@@ -2432,6 +2432,7 @@ void MolfileLoader::_readCtab3000 ()
                {
                   strscan.readWord(att_id, " )");
                   att_id.push(0);
+                  strscan.skip(1); // skip stop character
                }
             }
          }
@@ -2852,6 +2853,8 @@ void MolfileLoader::_readRGroups3000 ()
 
    while (!_scanner.isEOF())
    {
+      int next_block_pos = _scanner.tell();
+
       _scanner.readLine(str, true);
 
       if (strncmp(str.ptr(), "M  V30 BEGIN RGROUP", 19) == 0)
@@ -2917,8 +2920,12 @@ void MolfileLoader::_readRGroups3000 ()
          }
 
       }
-      else if (strncmp(str.ptr(), "M  END", 6) == 0)
+      else if ((strncmp(str.ptr(), "M  END", 6) == 0) ||
+               (strncmp(str.ptr(), "M  V30 BEGIN TEMPLATE", 21) == 0))
+      {
+         _scanner.seek(next_block_pos, SEEK_SET);
          break;
+      }
       else
          throw Error("unexpected string in rgroup: %s", str.ptr());
    }
@@ -3246,40 +3253,80 @@ void MolfileLoader::_readTGroups3000 ()
       {
          while (!_scanner.isEOF())
          {
-            int pos = _scanner.tell();
+            int tg_idx = 0;
 
-            int tg_idx;
+            _readMultiString(str);
 
-            if (sscanf(str.ptr(), "M  V30 TEMPLATE %d", &tg_idx) != 1)
+            if (strcmp(str.ptr(), "END TEMPLATE") == 0)
+               break;
+
+            BufferScanner strscan(str.ptr());
+
+            if (strncmp(str.ptr(), "TEMPLATE", 8) == 0)
+            {
+               strscan.skip(8);
+               tg_idx = strscan.readInt1();
+            }
+            if (tg_idx == 0)
                throw Error("can not read template index");
 
             int idx = tgroups->addTGroup();
             TGroup &tgroup = tgroups->getTGroup(idx);
+            tgroup.tgroup_id = tg_idx;
 
+            QS_DEF(Array<char>, word);
+            strscan.skipSpace();
+            strscan.readWord(word, " /");
+            char stop_char = strscan.readChar();
+            if (stop_char == '/')
+            {
+               tgroup.tgroup_class.copy(word);
+               strscan.readWord(word, " /");
+               tgroup.tgroup_name.copy(word);
+               stop_char = strscan.readChar();
+               if (stop_char == '/')
+               {
+                  strscan.readWord(word, 0);
+                  tgroup.tgroup_alias.copy(word);
+               }
+            }
+            else
+            {
+               tgroup.tgroup_name.copy(word);
+            }
+
+            while (!strscan.isEOF())
+            {
+               strscan.readWord(word, "=");
+               if (strcmp(word.ptr(), "COMMENT") == 0)
+               {
+                  _readStringInQuotes(strscan, &tgroup.tgroup_comment);
+               }
+            }
+             
+
+            int pos = _scanner.tell();
             _scanner.readLine(str, true);
             if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
             {
                _scanner.seek(pos, SEEK_SET);
-               AutoPtr<BaseMolecule> fragment(_bmol->neu());
+               tgroup.fragment = _bmol->neu();
 
                MolfileLoader loader(_scanner);
-               loader._bmol = fragment.get();
+               loader._bmol = tgroup.fragment;
                if (_bmol->isQueryMolecule())
                {
-                  loader._qmol = &fragment.get()->asQueryMolecule();
+                  loader._qmol = (QueryMolecule *)tgroup.fragment;
                   loader._mol = 0;
                }
                else
                {
                   loader._qmol = 0;
-                  loader._mol = &fragment.get()->asMolecule();
+				  loader._mol = (Molecule *)tgroup.fragment;
                }
                loader._readCtab3000();
                loader._postLoad();
-               tgroup.fragments.add(fragment.release());
             }
-            else if (strcmp(str.ptr(), "M  V30 END TEMPLATE") == 0)
-               break;
             else
                throw Error("unexpected string in template: %s", str.ptr());
          }

@@ -39,10 +39,24 @@ MoleculeTGroups::~MoleculeTGroups ()
 {
 }
 
-
 void MoleculeTGroups::clear ()
 {
    _tgroups.clear();
+}
+
+int MoleculeTGroups::begin ()
+{
+   return _tgroups.begin();
+}
+
+int MoleculeTGroups::end ()
+{
+   return _tgroups.end();
+}
+
+int MoleculeTGroups::next (int i)
+{
+   return _tgroups.next(i);
 }
 
 int MoleculeTGroups::addTGroup ()

@@ -845,6 +845,19 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
    for (i = 1; i <= n_rgroups; i++)
       if (mol.rgroups.getRGroup(i).fragments.size() > 0)
          _writeRGroup(output, mol, i);
+
+
+   int n_tgroups = mol.tgroups.getTGroupCount();
+   if (n_tgroups > 0)
+   {
+      output.writeStringCR("M  V30 TEMPLATE BEGIN");
+
+      for (i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
+      {
+         _writeTGroup(output, mol, i);
+      }
+      output.writeStringCR("M  V30 TEMPLATE END");
+   }
 }
 
 void MolfileSaver::_writeGenericSGroup3000 (SGroup &sgroup, int idx, Output &output)
@@ -934,6 +947,28 @@ void MolfileSaver::_writeRGroup (Output &output, BaseMolecule &mol, int rg_idx)
       _writeCtab(output, *rgroup.fragments[j], mol.isQueryMolecule());
 
    output.writeStringCR("M  V30 END RGROUP");
+}
+
+void MolfileSaver::_writeTGroup (Output &output, BaseMolecule &mol, int tg_idx)
+{
+   QS_DEF(Array<char>, buf);
+   ArrayOutput out(buf);
+   TGroup &tgroup = mol.tgroups.getTGroup(tg_idx);
+
+   out.printf("M  V30 TEMPLATE %d ", tgroup.tgroup_id);
+   if (tgroup.tgroup_class.size() > 0)
+      out.printf("%s/", tgroup.tgroup_class.ptr());
+   if (tgroup.tgroup_name.size() > 0)
+      out.printf("%s", tgroup.tgroup_name.ptr());
+   if (tgroup.tgroup_alias.size() > 0)
+      out.printf("/%s", tgroup.tgroup_alias.ptr());
+   if (tgroup.tgroup_comment.size() > 0)
+      out.printf(" COMMENT=%s", tgroup.tgroup_comment.ptr());
+
+   _writeMultiString(output, buf.ptr(), buf.size());
+
+   _writeCtab(output, *tgroup.fragment, mol.isQueryMolecule());
+
 }
 
 void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query)

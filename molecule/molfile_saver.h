@@ -72,6 +72,7 @@ protected:
    void _writeCtab (Output &output, BaseMolecule &mol, bool query);
    void _writeOccurrenceRanges (Output &out, const Array<int> &occurrences);
    void _writeRGroup (Output &output, BaseMolecule &mol, int rg_idx);
+   void _writeTGroup (Output &output, BaseMolecule &mol, int tg_idx);
    void _writeCtabHeader2000 (Output &output, BaseMolecule &mol);
    void _writeCtab2000 (Output &output, BaseMolecule &mol, bool query);
    void _checkSGroupIndices (BaseMolecule &mol);
