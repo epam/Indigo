@@ -458,33 +458,36 @@ void SmilesSaver::_saveMolecule ()
       int v_prev_idx = v_seq[i].parent_vertex;
       bool write_atom = true;
 
-      if (v_prev_idx >= 0)
-      {
-         if (walk.numBranches(v_prev_idx) > 1)
+      if (v_prev_idx >= 0) {
+         int branches = walk.numBranches(v_prev_idx);
+
+         if (branches > 1)
             if (_atoms[v_prev_idx].branch_cnt > 0 && _atoms[v_prev_idx].paren_written)
                _output.writeChar(')');
+         /*
+          * Fix IND-673 unused if-statement
+          */
+         //         if (v_prev_idx >= 0)
+         //         {
 
-         if (v_prev_idx >= 0)
-         {
-            int branches = walk.numBranches(v_prev_idx);
-            
-            if (branches > 1)
-               if (_atoms[v_prev_idx].branch_cnt < branches - 1)
-               {
-                  if (walk.isClosure(e_idx))
-                     _atoms[v_prev_idx].paren_written = false;
-                  else
-                  {
-                     _output.writeChar('(');
-                     _atoms[v_prev_idx].paren_written = true;
-                  }
+         if (branches > 1)
+            if (_atoms[v_prev_idx].branch_cnt < branches - 1) {
+               if (walk.isClosure(e_idx))
+                  _atoms[v_prev_idx].paren_written = false;
+               else {
+                  _output.writeChar('(');
+                  _atoms[v_prev_idx].paren_written = true;
                }
+            }
 
-            _atoms[v_prev_idx].branch_cnt++;
+         _atoms[v_prev_idx].branch_cnt++;
 
-            if (_atoms[v_prev_idx].branch_cnt > branches)
-               throw Error("unexpected branch");
-         }
+         if (_atoms[v_prev_idx].branch_cnt > branches)
+            throw Error("unexpected branch");         
+         /*
+          * Fix IND-673 unused if-statement
+          */
+//         }
 
          const Edge &edge = _bmol->getEdge(e_idx);
          bool bond_written = true;
