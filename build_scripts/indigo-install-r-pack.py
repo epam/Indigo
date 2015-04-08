@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import subprocess
+from sys import platform as _platform
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 root = os.path.join(cur_dir, "..")
@@ -19,12 +20,13 @@ if not os.path.exists("dist"):
 r_dist_dir = os.path.join(r_src_dir, "dist")
 
 for pack in indigo_pack_array:
-   if pack.find("static") >= 0:
-      shutil.copy(pack, r_dist_dir)
+   #if pack.find("static") >= 0:
+   shutil.copy(pack, r_dist_dir)
  
 shutil.copy(os.path.join(api_dir, "indigo.h"), r_src_dir)
-shutil.copy(os.path.join(root, "common", "cmake", "linkhack.py"), r_src_dir)
-os.chmod(os.path.join(r_src_dir, "linkhack.py"), 0777)
+if _platform == "linux" or _platform == "linux2":
+   shutil.copy(os.path.join(root, "common", "cmake", "linkhack.py"), r_src_dir)
+   os.chmod(os.path.join(r_src_dir, "linkhack.py"), 0777)
 
 os.chdir(r_dir)
 if os.path.exists("package"):

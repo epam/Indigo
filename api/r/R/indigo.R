@@ -111,10 +111,6 @@ version <- function() {
     .Call("r_indigoVersion")
 }
 
-version <- function() {
-    .Call("setFingerprintParams")
-}
-
 canonicalSmiles <- function(data) {
     stopifnot(is.character(data))
     stopifnot(length(data) == 1)
