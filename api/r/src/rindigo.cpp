@@ -13,7 +13,7 @@
 #ifndef REXPORT_SYMBOL
    #ifdef _WIN32
       #define REXPORT_SYMBOL __declspec(dllexport)
-   #elif
+   #else
       #define REXPORT_SYMBOL
    #endif
 #endif
