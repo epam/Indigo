@@ -37,7 +37,7 @@ _energy(0.f),
 _bc_components(bc_components),
 _graph(graph)
 {
-   int i, j, v1, v2; 
+   int i, v1, v2; 
    float sum = 0.f;  
 
    int n_comp = bc_decom.getIncomingCount(_src_vertex);
@@ -54,15 +54,8 @@ _graph(graph)
    _bc_angles.clear_resize(_attached_bc.size());
    _vertices_l.clear_resize(_attached_bc.size());
 
-   // list of number for shuffling
-   std::vector<int> number;
-   for (i = 0; i < _attached_bc.size(); i++) number.push_back(i);
-   // uncomment next line for shuffling
-   //std::random_shuffle(number.begin(), number.end());
-
-   for (j = 0; j < _attached_bc.size(); j++)
+   for (i = 0; i < _attached_bc.size(); i++)
    {
-      i = number[j];
       if (i < n_comp)
          _attached_bc[i] = bc_decom.getIncomingComponents(_src_vertex)[i];
 
@@ -71,10 +64,7 @@ _graph(graph)
       _src_vertex_map[i] = cur_bc.findVertexByExtIdx(_src_vertex);
       _bc_angles[i] = cur_bc.calculateAngle(_src_vertex_map[i], v1, v2);
       sum += _bc_angles[i];
-      if (cur_bc.isFlipped())
-         _vertices_l[i] = v2;
-      else
-         _vertices_l[i] = v1;
+      _vertices_l[i] = v1;
    }
 
    _alpha = (2 * PI - sum) / _attached_bc.size();
@@ -415,8 +405,6 @@ void LayoutChooser::_makeLayout ()
                _layout._layout[i].set(2 * d.x * t + 2 * v1.x - vi.x, 2 * d.y * t + 2 * v1.y - vi.y);
             }
             
-            // There's only one possible layout and the component is being flipped
-            attach_comp.flipped();
          }
       }
    }
