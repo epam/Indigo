@@ -1072,7 +1072,7 @@ void MoleculeLayoutMacrocyclesLattice::smoothing(CycleLayout &cl) {
 }
 
 void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout &cl, bool do_dist, int vertex_number, double coef) {
-
+   profTimerStart(t, "smoothingStep");
    Vec2f p1 = cl.point[(vertex_number - 1 + cl.vertex_count) % cl.vertex_count];
    Vec2f p2 = cl.point[(vertex_number + 1 + cl.vertex_count) % cl.vertex_count];
    double r1 = cl.edge_length[(cl.vertex_count + vertex_number - 1) % cl.vertex_count];

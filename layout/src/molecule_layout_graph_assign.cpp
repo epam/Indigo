@@ -1204,14 +1204,40 @@ void MoleculeLayoutGraph::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoo
          getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
 }
 
+void MoleculeLayoutGraph::_update_touching_segments(Array<local_pair >& pairs, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+   int segments_count = segment.size();
+   float min_dist = 0.7;
+   pairs.clear();
+
+   for (int i = 0; i < segments_count; i++)
+   for (int j = i + 1; j < segments_count; j++) {
+      if (segment[i]._graph.vertexCount() == 2 && segment[j]._graph.vertexCount() == 2) continue;
+      bool interseced = false;
+
+      for (int v1 = segment[j]._graph.vertexBegin(); v1 != segment[j]._graph.vertexEnd() && !interseced; v1 = segment[j]._graph.vertexNext(v1)) {
+         for (int v2 = segment[i]._graph.vertexBegin(); v2 != segment[i]._graph.vertexEnd() && !interseced; v2 = segment[i]._graph.vertexNext(v2)) {
+            if (Vec2f::distSqr(segment[j].getPosition(v1), segment[i].getPosition(v2)) < min_dist * min_dist) interseced = true;
+         }
+      }
+
+      if (interseced) {
+         pairs.push(local_pair(i, j));
+         pairs.push(local_pair(j, i));
+      }
+   }
+}
+
 void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    Random rand(34577);
 
    int segments_count = segment.size();
 
-   for (int i = 0; i < 10000; i++)
-       _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1)
-       ;
+   QS_DEF(Array< local_pair >, touching_segments);
+
+   for (int i = 0; i < 10000; i++) {
+      if ((i & (i - 1)) == 1) _update_touching_segments(touching_segments, segment);
+      _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1, touching_segments);
+   }
 
    for (int i = 0; i < segments_count; i++)
       for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
@@ -1337,36 +1363,17 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
 
 }
 
-void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int move_vertex, float coef) {
-   profTimerStart(t, "segment.smoothing.improoving1");
+void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int move_vertex, float coef, Array<local_pair>& touching_segments) {
    int segments_count = segment.size();
    Vec2f move_vector(0, 0);
 
    // fix intersections to other components
-   float min_dist = 0.7;
-   for (int i = 0; i < segments_count; i++) if (i != move_vertex && (i + 1) % segments_count != move_vertex && i != (move_vertex + 1) % segments_count) {
-      if (segment[move_vertex]._graph.vertexCount() == 2 && segment[i]._graph.vertexCount() == 2) continue;
-      bool interseced = false;
-
-      for (int v1 = segment[move_vertex]._graph.vertexBegin(); v1 != segment[move_vertex]._graph.vertexEnd() && !interseced; v1 = segment[move_vertex]._graph.vertexNext(v1)) {
-         for (int v2 = segment[i]._graph.vertexBegin(); v2 != segment[i]._graph.vertexEnd() && !interseced; v2 = segment[i]._graph.vertexNext(v2)) {
-//            if ((move_vertex + 1) % segments_count == i && segment[move_vertex].is_finish(v1)) continue;
-//            if ((i + 1) % segments_count == move_vertex && segment[i].is_finish(v2)) continue;
-            if (Vec2f::distSqr(segment[move_vertex].getPosition(v1), segment[i].getPosition(v2)) < min_dist * min_dist) interseced = true;
-         }
-      }
-
-      if (interseced) {
-         Vec2f shift1(segment[move_vertex].getCenter());
-         Vec2f shift2(segment[i].getCenter());
-//         Vec2f shift1(point[(move_vertex + 2) % segments_count]);
-//         Vec2f shift2(point[(move_vertex - 1 + segments_count) % segments_count]);
-         Vec2f shift(shift1 - shift2);
-//         shift.rotate(-1, 0);
-         shift.normalize();
-         shift /= 1;;
-         move_vector += shift;
-      }
+   for (int i = 0; i < touching_segments.size(); i++) if (touching_segments[i].left == move_vertex) {
+      Vec2f shift1(segment[move_vertex].getCenter());
+      Vec2f shift2(segment[touching_segments[i].right].getCenter());
+      Vec2f shift(shift1 - shift2);
+      shift.normalize();
+      move_vector += shift;
    }
 
    // fix angle
