@@ -987,10 +987,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
    }
 
-   public IndigoObject createSgroup (String type, int mapping, String name)
+   public IndigoObject createSgroup (String type, IndigoObject mapping, String name)
    {
       dispatcher.setSessionID();
-      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoCreateSgroup(type, mapping, name)), this);
+      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoCreateSgroup(type, mapping.self, name)), this);
    }
 
    public void setSgroupClass(String sgclass)
@@ -1067,7 +1067,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupMultiplier(self, mult));
    }
 
-   public int setSgroupData (int sgroup,  String data)
+   public int setSgroupData (String data)
    {
       dispatcher.setSessionID();
 
@@ -1076,13 +1076,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupData(self, data));
    }
 
-   public int setSgroupCoords (int sgroup, float x, float y)
+   public int setSgroupCoords (float x, float y)
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoSetSgroupCoords(self, x, y));
    }
 
-   public int setSgroupDescription (int sgroup, String description)
+   public int setSgroupDescription (String description)
    {
       dispatcher.setSessionID();
 
@@ -1091,7 +1091,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupDescription(self, description));
    }
 
-   public int setSgroupFieldName (int sgroup, String name)
+   public int setSgroupFieldName (String name)
    {
       dispatcher.setSessionID();
 
@@ -1100,7 +1100,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupFieldName(self, name));
    }
 
-   public int setSgroupQueryCode (int sgroup, String querycode)
+   public int setSgroupQueryCode (String querycode)
    {
       dispatcher.setSessionID();
 
@@ -1109,7 +1109,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupQueryCode(self, querycode));
    }
 
-   public int setSgroupQueryOper (int sgroup, String queryoper)
+   public int setSgroupQueryOper (String queryoper)
    {
       dispatcher.setSessionID();
 
@@ -1118,7 +1118,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupQueryOper(self, queryoper));
    }
 
-   public int setSgroupDisplay (int sgroup, String option)
+   public int setSgroupDisplay (String option)
    {
       dispatcher.setSessionID();
 
@@ -1127,7 +1127,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupDisplay(self, option));
    }
 
-   public int setSgroupLocation (int sgroup, String option)
+   public int setSgroupLocation (String option)
    {
       dispatcher.setSessionID();
 
@@ -1136,7 +1136,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupLocation(self, option));
    }
 
-   public int setSgroupTag (int sgroup, String tag)
+   public int setSgroupTag (String tag)
    {
       dispatcher.setSessionID();
 
@@ -1145,13 +1145,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupTag(self, tag));
    }
 
-   public int setSgroupTagAlign (int sgroup, int tag_align)
+   public int setSgroupTagAlign (int tag_align)
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoSetSgroupTagAlign(self, tag_align));
    }
 
-   public int setSgroupDataType (int sgroup, String data_type)
+   public int setSgroupDataType (String data_type)
    {
       dispatcher.setSessionID();
 
@@ -1160,19 +1160,19 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSgroupDataType(self, data_type));
    }
 
-   public int setSgroupXCoord (int sgroup, float x)
+   public int setSgroupXCoord (float x)
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoSetSgroupXCoord(self, x));
    }
 
-   int setSgroupYCoord (int sgroup, float y)
+   public int setSgroupYCoord (float y)
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoSetSgroupYCoord(self, y));
    }
 
-   public IndigoObject findSgroup (String property, String value)
+   public IndigoObject findSgroups (String property, String value)
    {
       dispatcher.setSessionID();
 
@@ -1194,18 +1194,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoGetSgroupIndex(self));
    }
-
-   public void addStereocenter (int type, int v1, int v2, int v3)
-   {
-      addStereocenter(type, v1, v2, v3, -1);
-   }
-
-   public void addStereocenter (int type, int v1, int v2, int v3, int v4)
+   
+   public int setSgroupBrackets(int brk_style, float x1, float y1, float x2, float y2,
+                                     float x3, float y3, float x4, float y4)
    {
       dispatcher.setSessionID();
-      Indigo.checkResult(this, _lib.indigoAddStereocenter(self, type, v1, v2, v3, v4));
+      return Indigo.checkResult(this, _lib.indigoSetSgroupBrackets(self, brk_style, 
+              x1, y1, x2, y2, x3, y3, x4, y4));
    }
-   
+
    public void setDataSGroupXY(float x, float y)
    {
       setDataSGroupXY(x, y, "");
@@ -1219,6 +1216,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       
       Indigo.checkResult(this, _lib.indigoSetDataSGroupXY(self, x, y, options));
    }
+   
+   public void addStereocenter (int type, int v1, int v2, int v3)
+   {
+      addStereocenter(type, v1, v2, v3, -1);
+   }
+
+   public void addStereocenter (int type, int v1, int v2, int v3, int v4)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoAddStereocenter(self, type, v1, v2, v3, v4));
+   }
+   
 
    public IndigoObject createSubmolecule (int[] vertices)
    {

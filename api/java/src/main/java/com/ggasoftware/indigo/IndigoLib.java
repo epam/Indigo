@@ -200,6 +200,8 @@ public interface IndigoLib extends Library
    int indigoSetSgroupDisplayOption (int sgroup, int option);
    int indigoGetSgroupMultiplier (int sgroup);
    int indigoSetSgroupMultiplier (int sgroup, int mult);
+   int indigoSetSgroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
+                                     float x3, float y3, float x4, float y4);
 
    int indigoSetSgroupData (int sgroup,  String data);                    
    int indigoSetSgroupCoords (int sgroup, float x, float y);                  
