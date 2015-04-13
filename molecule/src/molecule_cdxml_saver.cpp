@@ -145,51 +145,67 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
    {
       for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
       {
-         if (mol.isRSite(i))
-            throw Error("R-sites are not supported");
-
-         int atom_number = mol.getAtomNumber(i);
-
-         _output.printf("    <n id=\"%d\" Element=\"%d\"", i + 1, atom_number);
-
-         if (mol.getAtomIsotope(i) != 0)
-         {
-            _output.printf(" Isotope=\"%d\"", mol.getAtomIsotope(i));
-         }
-
+         int atom_number = mol.getAtomNumber(i);;
          int charge = mol.getAtomCharge(i);
-         if (charge != 0)
-            _output.printf(" Charge=\"%d\"", charge);
+         int radical = 0;
 
-         int radical = mol.getAtomRadical_NoThrow(i, 0);
-         if (radical != 0)
+         if (mol.isRSite(i))
          {
-            const char *radical_str = NULL;
-            if (radical == RADICAL_DOUBLET)
-               radical_str = "Doublet";
-            else if (radical == RADICAL_SINGLET)
-               radical_str = "Singlet";
-            else
-               throw Error("Radical type %d is not supported", radical);
+            _output.printf("    <n id=\"%d\" NodeType=\"GenericNickname\" GenericNickname=\"A\"", i + 1);
 
-            _output.printf(" Radical=\"%s\"", radical_str);
+            if (charge != 0)
+               _output.printf(" Charge=\"%d\"", charge);
          }
-
-         if (Molecule::shouldWriteHCount(mol, i))
+         else if (mol.isPseudoAtom(i))
          {
-            int hcount;
+            _output.printf("    <n id=\"%d\" NodeType=\"GenericNickname\" GenericNickname=\"%s\"", i + 1, mol.getPseudoAtom(i));
 
-            try
+            if (charge != 0)
+               _output.printf(" Charge=\"%d\"", charge);
+         }
+         else
+         {
+            _output.printf("    <n id=\"%d\" Element=\"%d\"", i + 1, atom_number);
+
+            if (mol.getAtomIsotope(i) != 0)
             {
-               hcount = mol.getAtomTotalH(i);
+               _output.printf(" Isotope=\"%d\"", mol.getAtomIsotope(i));
             }
-            catch (Exception &)
+   
+            if (charge != 0)
+               _output.printf(" Charge=\"%d\"", charge);
+   
+            radical = mol.getAtomRadical_NoThrow(i, 0);
+            if (radical != 0)
             {
-               hcount = -1;
+               const char *radical_str = NULL;
+               if (radical == RADICAL_DOUBLET)
+                  radical_str = "Doublet";
+               else if (radical == RADICAL_SINGLET)
+                  radical_str = "Singlet";
+               else
+                  throw Error("Radical type %d is not supported", radical);
+   
+               _output.printf(" Radical=\"%s\"", radical_str);
             }
 
-            if (hcount >= 0)
-               _output.printf(" NumHydrogens=\"%d\"", hcount);
+            if (Molecule::shouldWriteHCount(mol, i))
+            {
+               int hcount;
+   
+               try
+               {
+                  hcount = mol.getAtomTotalH(i);
+               }
+               catch (Exception &)
+               {
+                  hcount = -1;
+               }
+   
+               if (hcount >= 0)
+                  _output.printf(" NumHydrogens=\"%d\"", hcount);
+            }
+
          }
 
          Vec3f pos3 = mol.getAtomXyz(i);
@@ -222,16 +238,25 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
             }
          }
 
-         if (mol.isPseudoAtom(i))
-         {
-            throw Error("Pseudoatoms are not supported yet");
-         }
-
          if (mol.getVertex(i).degree() == 0 && atom_number == ELEM_C && charge == 0 && radical == 0)
          {
             _output.printf(">\n");
             // Add explicit text label
             _output.printf("<t p=\"%f %f\" Justification=\"Center\"><s font=\"3\" size=\"10\" face=\"96\">CH4</s></t>\n", pos.x, -pos.y);
+            _output.printf("</n>\n");
+         }
+         else if (mol.isRSite(i))
+         {
+            _output.printf(">\n");
+            // Add explicit text label
+            _output.printf("<t p=\"%f %f\" LabelJustification=\"Left\"><s font=\"3\" size=\"10\" face=\"96\">A</s></t>\n", pos.x, -pos.y);
+            _output.printf("</n>\n");
+         }
+         else if (mol.isPseudoAtom(i))
+         {
+            _output.printf(">\n");
+            // Add explicit text label
+            _output.printf("<t p=\"%f %f\" LabelJustification=\"Left\"><s font=\"3\" size=\"10\" face=\"96\">%s</s></t>\n", pos.x, -pos.y, mol.getPseudoAtom(i));
             _output.printf("</n>\n");
          }
          else
