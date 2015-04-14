@@ -93,7 +93,6 @@ TL_CP_GET(_vertex_drawn)
 }
 
 void MoleculeLayoutMacrocyclesLattice::doLayout() {
-   profTimerStart(t, "layout.internal");
    calculate_rotate_length();
 
    rotate_cycle(rotate_length);
@@ -553,8 +552,6 @@ TriangleLattice& AnswerField::getLattice(int l, int rot, int p) {
 
 
 void AnswerField::fill() {
-   
-
    for (int l = 0; l <= length; l++) {
       for (int rot = -l; rot <= l; rot++) {
          for (int p = 0; p < 2; p++) {
@@ -878,7 +875,6 @@ double MoleculeLayoutMacrocyclesLattice::rating(CycleLayout cl) {
 }
 
 void MoleculeLayoutMacrocyclesLattice::CycleLayout::soft_move_vertex(int vertex_number, Vec2f move_vector) {
-   profTimerStart(tt, "0:soft_move_vertex");
    int i = vertex_number;
    double count = vertex_count;
    Vec2f shift_vector = move_vector;
@@ -900,7 +896,6 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::soft_move_vertex(int vertex_
 }
 
 void MoleculeLayoutMacrocyclesLattice::CycleLayout::stright_rotate_chein(int vertex_number, double angle) {
-   profTimerStart(tt, "0:stright_rotate_chein");
    for (int i = 0; i <= vertex_count; i++) if (i != vertex_number) point[i] -= point[vertex_number];
    point[vertex_number].set(0, 0);
 
@@ -908,13 +903,11 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::stright_rotate_chein(int ver
 }
 
 void MoleculeLayoutMacrocyclesLattice::CycleLayout::stright_move_chein(int vertex_number, Vec2f vector) {
-   profTimerStart(tt, "0:stright_move_chein");
    for (int i = vertex_number; i <= vertex_count; i++) point[i] += vector;
 }
 
 
 void MoleculeLayoutMacrocyclesLattice::closingStep(CycleLayout &cl, int index, int base_vertex, bool fix_angle, bool fix_next, double multiplyer) {
-   profTimerStart(tt, "improvement2");
 
    int prev_vertex = base_vertex - 1;
    int next_vertex = base_vertex + 1;
@@ -1058,21 +1051,50 @@ void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout &cl) {
 
 }
 
+void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>& pairs, CycleLayout& cl) {
+   int len = cl.vertex_count;
+   double eps = 1e-4;
+   double eps2 = eps * eps;
+   float good_distance = 1;
+   pairs.clear();
+
+   QS_DEF(Array<Vec2f>, all_points);
+   QS_DEF(Array<double>, all_numbers);
+   all_points.clear();
+   all_numbers.clear();
+   for (int j = 0; j < len; j++) {
+      for (int t = cl.external_vertex_number[j], s = 0; t < cl.external_vertex_number[(j + 1) % len]; t++, s += 1.0 / cl.edge_length[j]) {
+         all_points.push(cl.point[j] * (1 - s) + cl.point[j] * s);
+         all_numbers.push(j + s);
+      }
+   }
+   for (int i = 0; i < len; i++) {
+      for (int j = 0; j < all_points.size(); j++) {
+         double distSqr = (cl.point[i] - all_points[j]).lengthSqr();
+         if (eps2 < distSqr && distSqr < good_distance) {
+            pairs.push(local_pair_id(i, all_numbers[j]));
+         }
+      }
+   }
+}
+
 void MoleculeLayoutMacrocyclesLattice::smoothing(CycleLayout &cl) {
-   profTimerStart(tt, "smoothing");
 
    closing(cl);
 
    Random rand(931170240);
    int iter_count = max(50 * length, 2000);
 
+   QS_DEF(Array<local_pair_id>, touching_points);
+
    double coef = SMOOTHING_MULTIPLIER;
-   for (int i = 0; i < iter_count; i++) 
-      smoothingStep(cl, i >= iter_count / 2, rand.next(cl.vertex_count), coef *= CHANGE_FACTOR);
+   for (int i = 0; i < iter_count; i++) {
+      if ((i & (i - 1)) == 0) updateTouchingPoints(touching_points, cl);
+      smoothingStep(cl, rand.next(cl.vertex_count), coef *= CHANGE_FACTOR, touching_points);
+   }
 }
 
-void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout &cl, bool do_dist, int vertex_number, double coef) {
-   profTimerStart(t, "smoothingStep");
+void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout &cl, int vertex_number, double coef, Array<local_pair_id>& touching_points) {
    Vec2f p1 = cl.point[(vertex_number - 1 + cl.vertex_count) % cl.vertex_count];
    Vec2f p2 = cl.point[(vertex_number + 1 + cl.vertex_count) % cl.vertex_count];
    double r1 = cl.edge_length[(cl.vertex_count + vertex_number - 1) % cl.vertex_count];
@@ -1110,10 +1132,6 @@ void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout &cl, bool do_di
       double coef1 = (r1 / len1 - 1);
       double coef2 = (r2 / len2 - 1);
       double coef3 = (r3 / len3 - 1);
-      if (cl.rotate[vertex_number] != 0) {
-         double angle = acos(Vec2f::cross(p1 - cl.point[vertex_number], p2 - cl.point[vertex_number]) / (Vec2f::dist(p1, cl.point[vertex_number])*Vec2f::dist(p2, cl.point[vertex_number])));
-         //if (angle < 2 * PI / 3) coef3 /= 10;
-      }
 
       //if (!isIntersec(x[worstVertex], y[worstVertex], x3, y3, x1, y1, x2, y2)) coef3 *= 10;
       if (cl.rotate[vertex_number] == 0) coef3 = -1;
@@ -1121,27 +1139,17 @@ void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout &cl, bool do_di
       newPoint += (cl.point[vertex_number] - p1)*coef1;
       newPoint += (cl.point[vertex_number] - p2)*coef2;
       newPoint += (cl.point[vertex_number] - p3)*coef3;
-
-      if (do_dist) {
-            float good_distance = 1;
-            for (int j = 0; j < cl.vertex_count; j++) {
-               int nextj = (j + 1) % cl.vertex_count;
-               Vec2f pp = cl.point[j];
-               Vec2f dpp = (cl.point[nextj] - cl.point[j]) / cl.edge_length[j];
-
-               for (int t = cl.external_vertex_number[j], s = 0; t != cl.external_vertex_number[nextj]; t = (t + 1) % length, s++) {
-                  if (t != cl.external_vertex_number[vertex_number] && (t + 1) % length != cl.external_vertex_number[vertex_number] && t != (cl.external_vertex_number[vertex_number] + 1) % length) {
-                     double distSqr = Vec2f::distSqr(pp, cl.point[vertex_number]);
-                     if (distSqr < good_distance && distSqr > eps2) {
-                        double dist = sqrt(distSqr);
-                        double coef = (good_distance - dist) / dist;
-                        //printf("%5.5f \n", dist);
-                        newPoint += (cl.point[vertex_number] - pp)*coef;
-                     }
-                  }
-                  pp += dpp;
-               }
-            }
+      
+      float good_distance = 1;
+      for (int i = 0; i < touching_points.size(); i++) if (touching_points[i].left == vertex_number) {
+         int j = (int)touching_points[i].right;
+         double s = touching_points[i].right - j;
+         Vec2f pp = cl.point[j] * (1 - s) + cl.point[(j + 1) % cl.vertex_count] * s;
+         double distSqr = Vec2f::distSqr(cl.point[vertex_number], pp);
+         double dist = sqrt(distSqr);
+         double coef = (good_distance - dist) / dist;
+            //printf("%5.5f \n", dist);
+            newPoint += (cl.point[vertex_number] - pp)*coef;
          
       }
 

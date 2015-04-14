@@ -492,8 +492,6 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
 
 void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
 {
-   profTimerStart(t, "layout.prepearing");
-
    const int size = cycle.vertexCount();
    //printf("%d do layout cycle \n", size);
 
@@ -839,11 +837,7 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
          if (segment[i].is_finish(v)) if (segment[i]._graph.getVertex(v).degree() > 2) layout.setEdgeStereo((rotation_vertex[(i + 1) % segment_count] - 1 + size) % size, 0);
       }
    }
-   profTimerStop(t);
-
    layout.doLayout();
-
-   profTimerStart(t2, "segment.smmothong.prepearing");
 
    // now we must to smooth just made layout
    // lets check if all cycle is layouted ealier in single biconnected compenent
@@ -1010,12 +1004,10 @@ void MoleculeLayoutGraph::_assignFirstCycle (const Cycle &cycle)
       if (_layout_component_number[e] >= 0 && _is_layout_component_incoming[_layout_component_number[e]])
          _layout_component_number[e] = _layout_component_count - 1;
 
-   profTimerStop(t2);
    _segment_smoothing(cycle, layout, rotation_vertex, rotation_point, segment);
 }
 
 void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
-   profTimerStart(t, "segment.smoothing");
    QS_DEF(Array<float>, target_angle);
 
    _segment_update_rotation_points(cycle, rotation_vertex, rotation_point, segment);
@@ -1057,7 +1049,6 @@ void MoleculeLayoutGraph::_segment_calculate_target_angle(const MoleculeLayoutMa
 
 void MoleculeLayoutGraph::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
 
-   profTimerStart(t, "unstick");
    int segment_count = segment.size();
 
    // prepearing of list of sticked pairs of vertices
@@ -1204,7 +1195,7 @@ void MoleculeLayoutGraph::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoo
          getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
 }
 
-void MoleculeLayoutGraph::_update_touching_segments(Array<local_pair >& pairs, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraph::_update_touching_segments(Array<local_pair_ii >& pairs, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    int segments_count = segment.size();
    float min_dist = 0.7;
    pairs.clear();
@@ -1221,8 +1212,8 @@ void MoleculeLayoutGraph::_update_touching_segments(Array<local_pair >& pairs, O
       }
 
       if (interseced) {
-         pairs.push(local_pair(i, j));
-         pairs.push(local_pair(j, i));
+         pairs.push(local_pair_ii(i, j));
+         pairs.push(local_pair_ii(j, i));
       }
    }
 }
@@ -1232,7 +1223,7 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
 
    int segments_count = segment.size();
 
-   QS_DEF(Array< local_pair >, touching_segments);
+   QS_DEF(Array< local_pair_ii >, touching_segments);
 
    for (int i = 0; i < 10000; i++) {
       if ((i & (i - 1)) == 1) _update_touching_segments(touching_segments, segment);
@@ -1246,7 +1237,6 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
 }
 
 void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
-   profTimerStart(t, "smoothing.prepearing");
 
    int cycle_size = cycle.vertexCount();
 
@@ -1363,7 +1353,7 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
 
 }
 
-void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int move_vertex, float coef, Array<local_pair>& touching_segments) {
+void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int move_vertex, float coef, Array<local_pair_ii>& touching_segments) {
    int segments_count = segment.size();
    Vec2f move_vector(0, 0);
 

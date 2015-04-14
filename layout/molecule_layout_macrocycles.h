@@ -153,7 +153,8 @@ namespace indigo {
       double rating(CycleLayout cl);
       void closingStep(CycleLayout &cl, int index, int base_vertex, bool fix_angle, bool fix_next, double multiplyer);
       void closing(CycleLayout &cl);
-      void smoothingStep(CycleLayout &cl, bool do_dist, int vertex_number, double coef);
+      void updateTouchingPoints(Array<local_pair_id>&, CycleLayout&);
+      void smoothingStep(CycleLayout &cl, int vertex_number, double coef, Array<local_pair_id>&);
       void smoothing(CycleLayout &cl);
       Vec2f &getPos(int v) const;
       double preliminary_layout(CycleLayout &cl);
