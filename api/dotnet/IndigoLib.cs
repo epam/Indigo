@@ -178,6 +178,8 @@ namespace com.ggasoftware.indigo
         int indigoSetSgroupDataType (int sgroup, string type);                
         int indigoSetSgroupXCoord (int sgroup, float x);                           
         int indigoSetSgroupYCoord (int sgroup, float y);                           
+        int indigoSetSgroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
+                                     float x3, float y3, float x4, float y4);
 
         int indigoFindSgroups(int molecule, string property, string value);
         int indigoGetSgroupType(int sgroup);
