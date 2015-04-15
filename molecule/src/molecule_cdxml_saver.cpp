@@ -17,6 +17,7 @@
 #include "molecule/molecule.h"
 #include "molecule/elements.h"
 #include "base_cpp/locale_guard.h"
+#include "tinyxml.h"
 
 using namespace indigo;
 
