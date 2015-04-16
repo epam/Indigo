@@ -94,13 +94,13 @@ TL_CP_GET(_vertex_drawn)
 
 void MoleculeLayoutMacrocyclesLattice::doLayout() {
    //profTimerStart(t, "doLayout");
-   if (length == SIX) {
+   if (length <= 9) {
       bool has_trans = false;
       for (int i = 0; i < length; i++) if (_edge_stereo[i] == 2) has_trans = true;
       if (!has_trans) {
          for (int i = 0; i < length; i++) {
             _positions[i] = Vec2f(1, 0);
-            _positions[i].rotate(PI / 3 * i);
+            _positions[i].rotate(2 * PI / length * i);
          }
          return;
       }
