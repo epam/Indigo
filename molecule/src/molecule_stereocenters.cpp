@@ -653,7 +653,10 @@ int MoleculeStereocenters::_sign (const Vec3f &v1, const Vec3f &v2, const Vec3f 
 {
    // Check the angle between bonds
    float dot_eps = 0.997f; // Corresponds to 4.5 degrees
-   if (Vec3f::dot(v1, v2) > dot_eps || Vec3f::dot(v1, v3) > dot_eps || Vec3f::dot(v2, v3) > dot_eps)
+//   float dot_eps = 0.99999f; // Corresponds to 0 degrees
+   if (Vec3f::dot(v1, v2) > dot_eps * v1.length() * v2.length() ||
+       Vec3f::dot(v1, v3) > dot_eps * v1.length() * v3.length() || 
+       Vec3f::dot(v2, v3) > dot_eps * v2.length() * v3.length())
       throw Error("angle between bonds is too small");
 
    float res = (v1.x - v3.x) * (v2.y - v3.y) - (v1.y - v3.y) * (v2.x - v3.x);
