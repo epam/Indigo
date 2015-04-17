@@ -1227,6 +1227,12 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
 
    for (int i = 0; i < 10000; i++) {
       if ((i & (i - 1)) == 1) _update_touching_segments(touching_segments, segment);
+      if (i == 0 && touching_segments.size() == 0) {
+         bool all_right = true;
+         for (int j = 0; j < segments_count; j++)
+            all_right &= (target_angle[j] - rotation_point[j].calc_angle(rotation_point[(j + 1) % segments_count], rotation_point[(j + segments_count - 1) % segments_count])) < 1e-6;
+         if (all_right) break;
+      }
       _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1, touching_segments);
    }
 
