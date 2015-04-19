@@ -1201,7 +1201,7 @@ void MoleculeLayoutGraph::_update_touching_segments(Array<local_pair_ii >& pairs
    pairs.clear();
 
    for (int i = 0; i < segments_count; i++)
-   for (int j = i + 1; j < segments_count; j++) {
+   for (int j = i + 2; j < segments_count; j++) if (i != 0 || j != segments_count - 1){
       if (segment[i]._graph.vertexCount() == 2 && segment[j]._graph.vertexCount() == 2) continue;
       bool interseced = false;
 
@@ -1219,6 +1219,7 @@ void MoleculeLayoutGraph::_update_touching_segments(Array<local_pair_ii >& pairs
 }
 
 void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+   profTimerStart(t, "_do_segment_smoothing");
    Random rand(34577);
 
    int segments_count = segment.size();
@@ -1226,11 +1227,11 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
    QS_DEF(Array< local_pair_ii >, touching_segments);
 
    for (int i = 0; i < 10000; i++) {
-      if ((i & (i - 1)) == 1) _update_touching_segments(touching_segments, segment);
-      if (i == 0 && touching_segments.size() == 0) {
+      if ((i & (i - 1)) == 0) _update_touching_segments(touching_segments, segment);
+      if (i % 100 == 0 && touching_segments.size() == 0) {
          bool all_right = true;
          for (int j = 0; j < segments_count; j++)
-            all_right &= (target_angle[j] - rotation_point[j].calc_angle(rotation_point[(j + 1) % segments_count], rotation_point[(j + segments_count - 1) % segments_count])) < 1e-6;
+            all_right &= abs(target_angle[j] - rotation_point[j].calc_angle(rotation_point[(j + 1) % segments_count], rotation_point[(j + segments_count - 1) % segments_count])) < 1e-3;
          if (all_right) break;
       }
       _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1, touching_segments);
