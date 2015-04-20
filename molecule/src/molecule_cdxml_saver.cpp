@@ -124,7 +124,7 @@ void MoleculeCdxmlSaver::addFontTable(const char* font)
 {
    if (font != NULL && strlen(font) > 0) 
    {
-      TiXmlElement * _fonttable = new TiXmlElement("fonttable");
+      _fonttable = new TiXmlElement("fonttable");
       _root->LinkEndChild(_fonttable);
 
       TiXmlUnknown * f = new TiXmlUnknown();
@@ -132,12 +132,10 @@ void MoleculeCdxmlSaver::addFontTable(const char* font)
 
       QS_DEF(Array<char>, buf);
       ArrayOutput out(buf);
-      buf.readString(font, false);
+      buf.readString(&font[1], false);
       buf.remove(buf.size()-1);
-      buf.remove(0);
       buf.push(0);
       f->SetValue(buf.ptr());
-      _fonttable->LinkEndChild(f);
    }
 }
 
@@ -155,7 +153,7 @@ void MoleculeCdxmlSaver::addColorTable(const char* color)
 {
    if (color != NULL && strlen(color) > 0)
    {
-      TiXmlElement * _colortable = new TiXmlElement("colortable");
+      _colortable = new TiXmlElement("colortable");
       _root->LinkEndChild(_colortable);
 
       addColorToTable(-1, 1, 1, 1);
@@ -172,12 +170,10 @@ void MoleculeCdxmlSaver::addColorTable(const char* color)
 
       QS_DEF(Array<char>, buf);
       ArrayOutput out(buf);
-      buf.readString(color, false);
+      buf.readString(&color[1], false);
       buf.remove(buf.size()-1);
-      buf.remove(0);
       buf.push(0);
       c->SetValue(buf.ptr());
-      _colortable->LinkEndChild(c);
    }
 }
 void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
