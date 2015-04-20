@@ -184,7 +184,7 @@ void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
       color->SetAttribute("id", id);
    color->SetAttribute("r", r);
    color->SetAttribute("g", g);
-   color->SetAttribute("g", g);
+   color->SetAttribute("b", b);
 }
 
 
