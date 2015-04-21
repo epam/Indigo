@@ -15,9 +15,6 @@
 #ifndef __molecule_cdx_saver_h__
 #define __molecule_cdx_saver_h__
 
-class TiXmlDocument;
-class TiXmlElement;
-
 namespace indigo {
 
 class Molecule;
