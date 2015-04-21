@@ -15,6 +15,9 @@
 #ifndef __molecule_cml_saver_h__
 #define __molecule_cml_saver_h__
 
+class TiXmlDocument;
+class TiXmlElement;
+
 namespace indigo {
 
 class Molecule;
@@ -33,6 +36,9 @@ public:
 protected:
    Molecule *_mol;
    Output   &_output;
+
+   TiXmlDocument * _doc;
+   TiXmlElement * _root;
 
 private:
    MoleculeCmlSaver (const MoleculeCmlSaver &); // no implicit copy

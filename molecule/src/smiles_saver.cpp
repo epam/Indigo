@@ -717,11 +717,18 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    }
 
    int atom_number = _bmol->getAtomNumber(idx);
+   int charge = _bmol->getAtomCharge(idx);
+   int isotope = _bmol->getAtomIsotope(idx);
+
+   if (charge == CHARGE_UNKNOWN)
+      charge = 0;
+
 
    if (_bmol->isPseudoAtom(idx)) // pseudo-atom
    {
       _output.printf("[*");
       _writeChirality(chirality);
+      _writeCharge(charge);
       _output.printf("]");
 
       return;
@@ -739,6 +746,7 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
             {
                _output.printf("[*");
                _writeChirality(chirality);
+               _writeCharge(charge);
                _output.printf("]");
                return;
             }
@@ -778,12 +786,6 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
        atom_number != ELEM_F && atom_number != ELEM_Br &&
        atom_number != ELEM_B && atom_number != ELEM_I)
       need_brackets = true;
-
-   int charge = _bmol->getAtomCharge(idx);
-   int isotope = _bmol->getAtomIsotope(idx);
-
-   if (charge == CHARGE_UNKNOWN)
-      charge = 0;
 
    if (chirality > 0 || charge != 0 || isotope > 0 || aam > 0)
       need_brackets = true;
@@ -851,14 +853,7 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    else if (hydro == 1)
       _output.printf("H");
 
-   if (charge > 1)
-      _output.printf("+%d", charge);
-   else if (charge < -1)
-      _output.printf("-%d", -charge);
-   else if (charge == 1)
-      _output.printf("+");
-   else if (charge == -1)
-      _output.printf("-");
+   _writeCharge(charge);
 
    if (aam > 0)
       _output.printf(":%d", aam);
@@ -876,6 +871,18 @@ void SmilesSaver::_writeChirality(int chirality) const
       else // chirality == 2
          _output.printf("@@");
    }
+}
+
+void SmilesSaver::_writeCharge(int charge) const
+{
+   if (charge > 1)
+      _output.printf("+%d", charge);
+   else if (charge < -1)
+      _output.printf("-%d", -charge);
+   else if (charge == 1)
+      _output.printf("+");
+   else if (charge == -1)
+      _output.printf("-");
 }
 
 void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chirality, int depth, bool has_or_parent) const
