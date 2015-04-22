@@ -79,7 +79,7 @@ if not os.path.exists("dist"):
 dist_dir = os.path.join(root, "dist")
 
 os.chdir(full_build_dir)
-command = 'cmake -G \"%s\" %s \"%s\"' % (args.generator, args.params, project_dir)
+command = "%s cmake -G \"%s\" %s %s" % ('CC=gcc CXX=g++' if (args.preset.find('linux') != -1 and args.preset.find('universal') != -1) else '', args.generator, args.params, project_dir)
 print(command)
 subprocess.check_call(command, shell=True)
 
