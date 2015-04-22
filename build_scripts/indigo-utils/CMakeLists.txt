@@ -24,6 +24,7 @@ message(STATUS "**** Indigo ****")
 add_subdirectory(../indigo "${CMAKE_CURRENT_BINARY_DIR}/indigo")
 message(STATUS "**** Indigo-renderer ****")
 add_subdirectory(../indigo-renderer "${CMAKE_CURRENT_BINARY_DIR}/indigo-renderer")
+
 message(STATUS "**** Indigo-cano ****")
 add_subdirectory(../../utils/indigo-cano "${CMAKE_CURRENT_BINARY_DIR}/indigo-cano")
 message(STATUS "**** Indigo-deco ****")
