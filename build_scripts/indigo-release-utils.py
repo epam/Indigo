@@ -60,6 +60,9 @@ project_dir = os.path.join(cur_dir, "indigo-utils")
 if args.generator.find("Unix Makefiles") != -1:
     args.params += " -DCMAKE_BUILD_TYPE=" + args.config
 
+if args.preset and args.preset.find('universal') != -1:
+    args.params += ' -DUNIVERSAL_BUILD=TRUE'
+
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_utils_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
