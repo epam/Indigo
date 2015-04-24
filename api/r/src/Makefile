@@ -4,8 +4,8 @@ ifeq ($(shell uname), Linux)
 endif
 
 all:indigo
-	PKG_CXXFLAGS="-I/usr/local/Cellar/r/3.1.1/R.framework/Resources/include"  R CMD SHLIB -o rindigo.so rindigo.cpp -L$(PWD)/dist/ -L$(PWD)/dist/static/Linux/x64/ -lindigo-static -lindigo-renderer-static -lz -ltinyxml -lindigo-static $(INDIGO_LIBRARIES)
-	./linkhack.py "|gcc|-Ldist/static/Linux/x64/|rindigo.o|-lindigo-static -lindigo-renderer-static -ltinyxml -lz|./rindigo.so"
+	PKG_CXXFLAGS="-I/usr/local/Cellar/r/3.1.1/R.framework/Resources/include"  R CMD SHLIB -o rindigo.so rindigo.cpp -L$(PWD)/dist/ -L$(PWD)/dist/static/Linux/x64/ -lindigo-renderer-static -lindigo-static -ltinyxml -lcairo -lpixman -lz -lpng $(INDIGO_LIBRARIES)
+	./linkhack.py "|gcc|-Ldist/static/Linux/x64/|rindigo.o|-lindigo-renderer-static -lindigo-static -ltinyxml -lcairo -lpixman -lz -lfreetype -lfontconfig -lpng|./rindigo.so"
 indigo:clean
 	pwd && ls && cd dist && unzip "indigo-libs-1.2.1-dev5-linux64-static.zip" && cd ..
 clean:
