@@ -2199,7 +2199,18 @@ void MolfileLoader::_readCtab3000 ()
          label = Element::fromString2(buf.ptr());
 
          if (label == -1)
-            _atom_types[i] = _ATOM_PSEUDO;
+         {
+            int cur_pos = strscan.tell();
+            QS_DEF(ReusableObjArray< Array<char> >, strs);
+            strs.clear();
+            strs.push().readString("CLASS", false);
+            strs.push().readString("SEQID", false);
+            if (strscan.findWord(strs) != -1)
+               _atom_types[i] = _ATOM_TEMPLATE;
+            else
+               _atom_types[i] = _ATOM_PSEUDO;
+            strscan.seek(cur_pos, SEEK_SET);
+         }
       }
 
       strscan.skipSpace();
@@ -2219,6 +2230,11 @@ void MolfileLoader::_readCtab3000 ()
             _preparePseudoAtomLabel(buf);
             _mol->setPseudoAtom(i, buf.ptr());
          }
+         else if (atom_type == _ATOM_TEMPLATE)
+         {
+            _preparePseudoAtomLabel(buf);
+            _mol->setTemplateAtom(i, buf.ptr());
+         }
       }
       else
       {
@@ -2230,6 +2246,8 @@ void MolfileLoader::_readCtab3000 ()
             _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, label));
          else if (atom_type == _ATOM_PSEUDO)
             _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, buf.ptr()));
+         else if (atom_type == _ATOM_TEMPLATE)
+            _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE, buf.ptr()));
          else if (atom_type == _ATOM_A)
             _qmol->addAtom(QueryMolecule::Atom::nicht(
                         new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
@@ -2432,6 +2450,7 @@ void MolfileLoader::_readCtab3000 ()
                {
                   strscan.readWord(att_id, " )");
                   att_id.push(0);
+                  _bmol->setTemplateAtomAttachmentOrder(i, nei_idx - 1, att_id.ptr());
                   strscan.skip(1); // skip stop character
                }
             }
@@ -2441,10 +2460,25 @@ void MolfileLoader::_readCtab3000 ()
             QS_DEF(Array<char>, temp_class);
             strscan.readWord(temp_class, false);
             temp_class.push(0);
+            if (_mol != 0)
+               _mol->setTemplateAtomClass(i, temp_class.ptr());
+            else
+            {
+               _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+                     new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE_CLASS, temp_class.ptr())));
+            }
          }
          else if (strcmp(prop, "SEQID") == 0)
          {
             int seq_id = strscan.readInt1();
+            if (_mol != 0)
+               _mol->setTemplateAtomSeqid(i, seq_id);
+            else
+            {
+               _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+                     new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE_SEQID, seq_id)));
+            }
+
          }
          else
          {

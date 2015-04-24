@@ -50,6 +50,9 @@ void Molecule::clear ()
    _total_h.clear();
    _valence.clear();
    _radicals.clear();
+   _template_occurrences.clear();
+   _template_names.clear();
+   _template_classes.clear();
 
    _aromatized = false;
    updateEditRevision();
@@ -319,6 +322,29 @@ void Molecule::setPseudoAtom (int idx, const char *text)
    _atoms[idx].number = ELEM_PSEUDO;
    _atoms[idx].pseudoatom_value_idx = _pseudo_atom_values.add(text);
    // TODO: take care of memory allocated here in _pseudo_atom_values
+   updateEditRevision();
+}
+
+void Molecule::setTemplateAtom (int idx, const char *text)
+{
+   _atoms[idx].number = ELEM_TEMPLATE;
+   _atoms[idx].template_occur_idx = _template_occurrences.add();
+   _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
+   occur.name_idx = _template_names.add(text);
+   updateEditRevision();
+}
+
+void Molecule::setTemplateAtomClass (int idx, const char *text)
+{
+   _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
+   occur.class_idx = _template_classes.add(text);
+   updateEditRevision();
+}
+
+void Molecule::setTemplateAtomSeqid (int idx, int seq_id)
+{
+   _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
+   occur.seq_id = seq_id;
    updateEditRevision();
 }
 
@@ -869,6 +895,9 @@ int Molecule::getAtomValence (int idx)
    if (_atoms[idx].number == ELEM_PSEUDO)
       throw Error("getAtomValence() does not work on pseudo-atoms");
 
+   if (_atoms[idx].number == ELEM_TEMPLATE)
+      throw Error("getAtomValence() does not work on template atoms");
+
    if (_atoms[idx].number == ELEM_RSITE)
       throw Error("getAtomValence() does not work on R-sites");
 
@@ -1103,7 +1132,8 @@ int Molecule::getExplicitValence (int idx)
    if (_atoms[idx].explicit_valence)
       return _valence[idx];
 
-   if (_atoms[idx].number == ELEM_PSEUDO || _atoms[idx].number == ELEM_RSITE)
+   if (_atoms[idx].number == ELEM_PSEUDO || _atoms[idx].number == ELEM_RSITE ||
+       _atoms[idx].number == ELEM_TEMPLATE)
       return -1;
 
    // try to calculate explicit valence from hydrogens, as in elemental carbon [C]
@@ -1269,6 +1299,54 @@ const char * Molecule::getPseudoAtom (int idx)
 
    return res;
 }
+
+bool Molecule::isTemplateAtom (int idx)
+{
+   return _atoms[idx].number == ELEM_TEMPLATE;
+}
+
+const char * Molecule::getTemplateAtom (int idx)
+{
+   const _Atom &atom = _atoms[idx];
+   
+   if (atom.number != ELEM_TEMPLATE)
+      throw Error("getTemplateAtom(): atom #%d is not a template atom", idx);
+
+   _TemplateOccurrence &occur = _template_occurrences.at(atom.template_occur_idx);
+   const char *res = _template_names.at(occur.name_idx);
+
+   if (res == 0)
+      throw Error("template atom string is zero");
+
+   return res;
+}
+
+const char * Molecule::getTemplateAtomClass (int idx)
+{
+   const _Atom &atom = _atoms[idx];
+   
+   if (atom.number != ELEM_TEMPLATE)
+      throw Error("getTemplateAtomClass(): atom #%d is not a template atom", idx);
+
+   _TemplateOccurrence &occur = _template_occurrences.at(atom.template_occur_idx);
+   const char *res = _template_classes.at(occur.class_idx);
+
+   return res;
+}
+
+const int Molecule::getTemplateAtomSeqid (int idx)
+{
+   const _Atom &atom = _atoms[idx];
+   
+   if (atom.number != ELEM_TEMPLATE)
+      throw Error("getTemplateAtomSeqid(): atom #%d is not a template atom", idx);
+
+   _TemplateOccurrence &occur = _template_occurrences.at(atom.template_occur_idx);
+   const int res = occur.seq_id;
+
+   return res;
+}
+
 
 BaseMolecule * Molecule::neu ()
 {

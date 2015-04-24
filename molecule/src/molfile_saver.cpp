@@ -18,6 +18,7 @@
 
 #include "base_cpp/output.h"
 #include "base_cpp/locale_guard.h"
+#include "molecule/base_molecule.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
@@ -367,6 +368,8 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       }
       else if (mol.isPseudoAtom(i))
          out.writeString(mol.getPseudoAtom(i));
+      else if (mol.isTemplateAtom(i))
+         out.writeString(mol.getTemplateAtom(i));
       else if (mol.isRSite(i))
          out.writeString("R#");
       else if (atom_number > 0)
@@ -421,7 +424,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       int valence = mol.getExplicitValence(i);
       int stereo_parity = _getStereocenterParity(mol, i);
 
-      if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
+      if (!mol.isRSite(i) && !mol.isPseudoAtom(i) && !mol.isTemplateAtom(i))
          radical = mol.getAtomRadical_NoThrow(i, 0);
 
       out.printf(" %f %f %f %d", xyz.x, xyz.y, xyz.z, aam);
@@ -473,6 +476,39 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
                   out.printf(" %d %d", _atom_mapping[mol.getRSiteAttachmentPointByOrder(i, k)], k + 1);
 
                out.writeChar(')');
+            }
+         }
+      }
+
+      if (mol.isTemplateAtom(i))
+      {
+         if (mol.getTemplateAtomClass(i) != 0 && strlen(mol.getTemplateAtomClass(i)) > 0)
+            out.printf(" CLASS=%s", mol.getTemplateAtomClass(i));
+
+         if (mol.getTemplateAtomSeqid(i) != -1)
+            out.printf(" SEQID=%d", mol.getTemplateAtomSeqid(i));
+
+         if (mol.template_attachment_points.size() > 0)
+         {
+            int ap_count = 0;
+            for (int j = mol.template_attachment_points.begin(); j != mol.template_attachment_points.end(); j = mol.template_attachment_points.next(j))
+            {
+               BaseMolecule::TemplateAttPoint &ap = mol.template_attachment_points.at(j);
+               if (ap.ap_occur_idx == i) 
+                  ap_count++;
+            }
+            if (ap_count > 0)
+            {
+               out.printf(" ATTCHORD=(%d", ap_count);
+               for (int j = mol.template_attachment_points.begin(); j != mol.template_attachment_points.end(); j = mol.template_attachment_points.next(j))
+               {
+                  BaseMolecule::TemplateAttPoint &ap = mol.template_attachment_points.at(j);
+                  if (ap.ap_occur_idx == i)
+                  {
+                     out.printf(" %d %s", ap.ap_aidx, ap.ap_id.ptr());
+                  }
+               }
+               out.printf(")");
             }
          }
       }
@@ -1035,6 +1071,10 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             label[0] = 'A';
             pseudoatoms.push(i);
          }
+      }
+      else if (mol.isTemplateAtom(i))
+      {
+         throw Error("internal: template atom is not supported in V2000 format");
       }
       else if (atom_number == -1)
       {

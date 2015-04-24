@@ -137,7 +137,8 @@ enum
    ELEM_MAX,
 
    ELEM_PSEUDO, // pseudoatom
-   ELEM_RSITE  // 'R' atom
+   ELEM_RSITE,  // 'R' atom
+   ELEM_TEMPLATE  // template 
 };
 
 enum

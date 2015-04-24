@@ -889,6 +889,17 @@ void BaseMolecule::setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int 
    updateEditRevision();
 }
 
+void BaseMolecule::setTemplateAtomAttachmentOrder (int atom_idx, int att_atom_idx, const char *att_id)
+{
+   int att_idx = template_attachment_points.add();
+   TemplateAttPoint &ap = template_attachment_points.at(att_idx);
+   ap.ap_occur_idx = atom_idx;
+   ap.ap_aidx = att_atom_idx;
+   ap.ap_id.readString(att_id, false);
+   ap.ap_id.push(0);
+   updateEditRevision();
+}
+
 int BaseMolecule::attachmentPointCount () const
 {
    return _attachment_index.size();

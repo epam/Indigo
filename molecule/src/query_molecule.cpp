@@ -425,6 +425,57 @@ const char * QueryMolecule::getPseudoAtom (int idx)
    throw Error("getPseudoAtom() applied to something that is not a pseudo-atom");
 }
 
+bool QueryMolecule::isTemplateAtom (int idx)
+{
+   // This is dirty hack; however, it is legal here, as template atoms
+   // can not be present in deep query trees due to Molfile and SMILES
+   // format limitations. If they could, we would have to implement
+   // sureValue() for ATOM_TEMPLATE
+
+   if (_atoms[idx]->type == ATOM_TEMPLATE)
+      return true;
+
+   if (_atoms[idx]->type == OP_AND)
+   {
+      int i;
+
+      for (i = 0; i < _atoms[idx]->children.size(); i++)
+         if (_atoms[idx]->children[i]->type == ATOM_TEMPLATE)
+            return true;
+   }
+
+   return false;
+}
+
+const char * QueryMolecule::getTemplateAtom (int idx)
+{
+   // see the comment above in isTemplateAtom()
+   
+   if (_atoms[idx]->type == ATOM_TEMPLATE)
+      return _atoms[idx]->alias.ptr();
+
+   if (_atoms[idx]->type == OP_AND)
+   {
+      int i;
+
+      for (i = 0; i < _atoms[idx]->children.size(); i++)
+         if (_atoms[idx]->children[i]->type == ATOM_TEMPLATE)
+            return ((Atom *)_atoms[idx]->children[i])->alias.ptr();
+   }
+
+   throw Error("getTemplateAtom() applied to something that is not a template atom");
+}
+
+const char * QueryMolecule::getTemplateAtomClass (int idx)
+{
+	return 0;
+}
+
+const int QueryMolecule::getTemplateAtomSeqid (int idx)
+{
+	return -1;
+}
+
 
 bool QueryMolecule::isSaturatedAtom (int idx)
 {
@@ -458,7 +509,9 @@ QueryMolecule::Atom::Atom (int type_, int value) : Node(type_)
        type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY ||
        type_ == ATOM_TOTAL_BOND_ORDER ||
        type_ == ATOM_UNSATURATION || type == ATOM_SSSR_RINGS ||
-       type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING)
+       type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING ||
+       type == ATOM_TEMPLATE_SEQID)
+
       value_min = value_max = value;
    else
       throw Error("bad type: %d", type_);
@@ -472,7 +525,8 @@ QueryMolecule::Atom::Atom (int type_, int val_min, int val_max) : Node(type_)
 
 QueryMolecule::Atom::Atom (int type_, const char *value) : Node(type_)
 {
-   if (type_ == ATOM_PSEUDO)
+   if (type_ == ATOM_PSEUDO ||
+       type_ == ATOM_TEMPLATE || type_ == ATOM_TEMPLATE_CLASS)
       alias.readString(value, true);
    else
       throw Error("bad type: %d", type_);

@@ -119,6 +119,11 @@ public:
    virtual bool isPseudoAtom (int idx) = 0;
    virtual const char * getPseudoAtom (int idx) = 0;
 
+   virtual bool isTemplateAtom (int idx) = 0;
+   virtual const char * getTemplateAtom (int idx) = 0;
+   virtual const int getTemplateAtomSeqid (int idx) = 0;
+   virtual const char * getTemplateAtomClass (int idx) = 0;
+
    int countRSites ();
    int countSGroups ();
 
@@ -134,6 +139,8 @@ public:
    int  getSingleAllowedRGroup (int atom_idx);
    int  getRSiteAttachmentPointByOrder (int idx, int order) const;
    void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
+
+   void setTemplateAtomAttachmentOrder (int atom_idx, int att_atom_idx, const char *att_id);
 
    void addAttachmentPoint (int order, int atom_index);
    int  getAttachmentPoint (int order, int index) const;
@@ -202,6 +209,14 @@ public:
    bool have_xyz;
 
    bool isChrial ();
+
+   struct TemplateAttPoint
+   {
+      int  ap_occur_idx;
+      int  ap_aidx;
+      Array<char> ap_id;
+   };
+   ObjPool<TemplateAttPoint> template_attachment_points;
 
    MoleculeSGroups sgroups;
 

@@ -84,6 +84,7 @@ protected:
       _ATOM_LIST,
       _ATOM_NOTLIST,
       _ATOM_PSEUDO,
+      _ATOM_TEMPLATE,
       _ATOM_ELEMENT
    };
 
