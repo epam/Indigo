@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 GGA Software Services LLC
+ * Copyright (C) 2015 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,6 +16,7 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/output.h"
+#include "graph/cycle_enumerator.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_dearom.h"
@@ -24,22 +25,25 @@
 using namespace indigo;
 
 LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
+   :_layersAromatized(0)
 {
    _proto.clone(molecule.asMolecule(), 0, 0);
    _proto.dearomatize(AromaticityOptions());
 
    cloneGraph(_proto, 0);
 
-   layers = 1;
-   _wordsNeeded = 1;
    for (auto i : _proto.edges())
    {
-      const Edge &edge = _proto.getEdge(i);
-
       _bond_masks[0].push();
+      _bond_masks[0].top().resize(1);
       _bond_masks[1].push();
+      _bond_masks[1].top().resize(1);
       _bond_masks[2].push();
+      _bond_masks[2].top().resize(1);
       _bond_masks[3].push();
+      _bond_masks[3].top().resize(1);
+      _bond_masks[4].push();
+      _bond_masks[4].top().resize(1);
 
       if (_proto.getBondOrder(i) == 1)
       {
@@ -47,6 +51,7 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
          _bond_masks[1].top().set(0);
          _bond_masks[2].top().reset(0);
          _bond_masks[3].top().reset(0);
+         _bond_masks[4].top().reset(0);
       }
       else
       {
@@ -54,6 +59,7 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
          _bond_masks[1].top().reset(0);
          _bond_masks[2].top().set(0);
          _bond_masks[3].top().reset(0);
+         _bond_masks[4].top().reset(0);
       }
    }
 
@@ -61,20 +67,35 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
    _mobilePositionsOccupied.expand(_proto.vertexCount());
 
    layers = 1;
+
+   TrieNode *node = _trie.getRoot();
+   for (auto i : _proto.edges())
+   {
+      bool stub;
+      node = _trie.add(node, _proto.getBondOrder(i), stub);
+   }
+   _hashs.push(node);
 }
 
 LayeredMolecules::~LayeredMolecules()
 {
 }
 
-void LayeredMolecules::constructMolecule(Molecule &molecule, int layer) const
+void LayeredMolecules::constructMolecule(Molecule &molecule, int layer, bool aromatized) const
 {
    molecule.clone(const_cast<Molecule&>(_proto), NULL, NULL);
    for (auto i : const_cast<Molecule&>(_proto).edges())
    {
-      int order = (_bond_masks[1][i].get(layer) ? 1 : 2);
+      int order = BOND_ZERO;
+      _bond_masks[1][i].get(layer)? order = BOND_SINGLE: 0;
+      _bond_masks[2][i].get(layer)? order = BOND_DOUBLE: 0;
+      _bond_masks[3][i].get(layer)? order = BOND_TRIPLE: 0;
       molecule.setBondOrder(i, order);
    }
+   // Actually I would prefer to aromatize the molecule manually (and much more effective) as far as I have the list of aromatic bonds already.
+   // But I don't have any approprite molecule API to do it effectively... :(
+   if(aromatized)
+      molecule.aromatize(AromaticityOptions());
 }
 
 void LayeredMolecules::clear()
@@ -110,100 +131,82 @@ void LayeredMolecules::setMobilePositionOccupiedMask(int idx, Dbitset &mask, boo
       _mobilePositionsOccupied[idx].andNotWith(mask);
 }
 
-void LayeredMolecules::addLayers(Dbitset &mask, Array<int> &path, int beg, int end, bool forward)
+void LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Array<int> &edgesPath, int beg, int end, bool forward)
+// mask: the mask of layers used as prototypes;
+// edgesPath: the path of single-double bonds to be inverted
+// edgesPath: a sequence of edges with intercganging single-double bonds that need to be inverted
+// beg, end: the mobile positions of hydrogen to swap
+// forward: the direction to move the hydrogen
 {
-   Array<bool> onPath;
-   onPath.expandFill(edgeCount(), false);
-   Dbitset onPathMask(layers);
-   onPathMask.flip();
-   int order = forward ? 2 : 1;
-   for (auto i = 0; i < path.size(); ++i)
+   Array<bool> edgeIsOnPath; // indicates if an edge is on path that needs to be inverted
+   // заменить потом на Dbitset
+   edgeIsOnPath.expandFill(edgeCount(), false);
+   for (auto i = 0; i < edgesPath.size(); ++i)
    {
-      onPath[path[i]] = true;
-      onPathMask.andWith(_bond_masks[order][path[i]]);
-      order = order == 1 ? 2 : 1;
+      edgeIsOnPath[edgesPath[i]] = true;
    }
 
-   Dbitset mask_;
-   mask_.copy(mask);
+   Dbitset maskCopy;
+   maskCopy.copy(mask);
 
-   Dbitset newTautomersMask(_wordsNeeded * 64);
-   while (!mask_.isEmpty())
+   unsigned newTautomerIndex;
+   while (!maskCopy.isEmpty())
    {
-      unsigned newTautomerIndex = layers;
-      if (_wordsNeeded * 64 < newTautomerIndex + 1)
+      newTautomerIndex = layers;
+
+      int prototypeIndex = maskCopy.nextSetBit(0);
+
+      _resizeLayers(newTautomerIndex + 1);
+
+      TrieNode *node = _trie.getRoot();
+      bool unique = false;
+
+      for (auto i = 0; i < edgeIsOnPath.size(); ++i)
       {
-         // resize all masks
-         for (auto i : _proto.edges())
+         int order = 0;
+         if(_bond_masks[1][i].get(prototypeIndex))
+            order = 1;
+         else if(_bond_masks[2][i].get(prototypeIndex))
+            order = 2;
+
+         if(edgeIsOnPath[i])
          {
-            _bond_masks[1][i].resize(newTautomerIndex + 1);
-            _bond_masks[2][i].resize(newTautomerIndex + 1);
-            _bond_masks[3][i].resize(newTautomerIndex + 1);
+            order = (order == 1? 2: 1);
          }
-         for (auto i : _proto.vertices())
-         {
-            _mobilePositionsOccupied[i].resize(newTautomerIndex+1);
-         }
-         newTautomersMask.resize(newTautomerIndex + 1);
-         _wordsNeeded = (newTautomerIndex + 1) / 64 + 1;
+
+         bool newlyAdded;
+         node = _trie.add(node, order, newlyAdded);
+         unique = (newlyAdded? true: unique);
+
+         _bond_masks[order][i].set(newTautomerIndex);
+         _bond_masks[3][i].reset(newTautomerIndex);
+         _bond_masks[4][i].reset(newTautomerIndex);
+         _bond_masks[order == 1? 2: 1][i].reset(newTautomerIndex);
       }
-
-
-      Dbitset protoMask; protoMask.copy(mask_);
-      Dbitset antiProtoMask; antiProtoMask.copy(onPathMask);
-      int leaderIndex = mask_.nextSetBit(0);
-
-      for (auto i = 0; i < onPath.size(); ++i)
+      if(!unique)
       {
-         if (onPath[i])
-            continue;
-         if (_bond_masks[1][i].get(leaderIndex))
-         {
-            _bond_masks[1][i].set(newTautomerIndex);
-            protoMask.andWith(_bond_masks[1][i]);
-            antiProtoMask.andWith(_bond_masks[1][i]);
-         }
-         else
-         {
-            _bond_masks[2][i].set(newTautomerIndex);
-            protoMask.andWith(_bond_masks[2][i]);
-            antiProtoMask.andWith(_bond_masks[2][i]);
-         }
-      }
-
-      if (!antiProtoMask.isEmpty())
-      {
-         mask_.andNotWith(protoMask);
-         for (auto i = 0; i < onPath.size(); ++i)
-         {
-            if (onPath[i])
-               continue;
-            _bond_masks[1][i].reset(newTautomerIndex);
-            _bond_masks[2][i].reset(newTautomerIndex);
-         }
+         maskCopy.reset(prototypeIndex);
          continue;
       }
 
       for (auto i = 0; i < _mobilePositionsOccupied.size(); ++i)
       {
-         if (_mobilePositionsOccupied[i].intersects(protoMask))
+         if (_mobilePositionsOccupied[i].get(prototypeIndex))
             _mobilePositionsOccupied[i].set(newTautomerIndex);
       }
 
+      _hashs.push(node);
       ++layers;
-      mask_.andNotWith(protoMask);
-      newTautomersMask.set(newTautomerIndex);
+      maskCopy.reset(prototypeIndex);
+      _mobilePositionsOccupied[forward? beg: end].reset(newTautomerIndex);
+      _mobilePositionsOccupied[forward? end: beg].set(newTautomerIndex);
    }
 
-   order = forward? 2: 1;
-   for (auto i = 0; i < path.size(); ++i)
+   if(newTautomerIndex == layers)
    {
-      _bond_masks[order][path[i]].orWith(newTautomersMask);
-      order = order == 1 ? 2 : 1;
+      // This means that we avoided adding non-unique layer, and we need to reduce the size of bitsets.
+      _resizeLayers(layers);
    }
-
-   _mobilePositionsOccupied[forward ? beg : end].andNotWith(newTautomersMask);
-   _mobilePositionsOccupied[forward ? end : beg].orWith(newTautomersMask);
 }
 
 int LayeredMolecules::getAtomNumber(int idx)
@@ -228,7 +231,8 @@ int LayeredMolecules::getAtomRadical(int idx)
 
 int LayeredMolecules::getAtomAromaticity(int idx)
 {
-   return _proto.getAtomAromaticity(idx);
+//   return _proto.getAtomAromaticity(idx);
+   return true;
 }
 
 int LayeredMolecules::getExplicitValence(int idx)
@@ -358,7 +362,7 @@ bool LayeredMolecules::bondStereoCare(int idx)
 
 bool LayeredMolecules::aromatize(const AromaticityOptions &options)
 {
-   return _proto.aromatize(options);
+   return aromatize(_layersAromatized, layers, options);
 }
 
 bool LayeredMolecules::dearomatize(const AromaticityOptions &options)
@@ -375,4 +379,306 @@ void LayeredMolecules::_mergeWithSubmolecule(BaseMolecule &bmol, const Array<int
 BaseMolecule * LayeredMolecules::neu()
 {
    throw Error("neu method is not implemented in LayeredMolecules class");
+}
+
+void LayeredMolecules::_resizeLayers(int newSize)
+{
+   for (auto i : _proto.edges())
+   {
+      _bond_masks[1][i].resize(newSize);
+      _bond_masks[2][i].resize(newSize);
+      _bond_masks[3][i].resize(newSize);
+      _bond_masks[4][i].resize(newSize);
+   }
+   for (auto i : _proto.vertices())
+   {
+      _mobilePositionsOccupied[i].resize(newSize);
+   }
+}
+
+void LayeredMolecules::_calcConnectivity(int layerFrom, int layerTo)
+{
+   _connectivity.resize(_proto.vertexEnd());
+   for(auto v_idx : _proto.vertices())
+   {
+      _connectivity[v_idx].expandFill(layerTo, 0);
+   }
+
+   for(auto bond_idx : _proto.edges())
+   {
+      const Edge &edge = _proto.getEdge(bond_idx);
+      const Dbitset &bs1 = _bond_masks[1][bond_idx];
+      const Dbitset &bs2 = _bond_masks[2][bond_idx];
+      const Dbitset &bs3 = _bond_masks[3][bond_idx];
+      for(auto l = layerFrom; l < layerTo; ++l)
+      {
+         int order = 0;
+         if(bs1.get(l))
+            order = 1;
+         else if(bs2.get(l))
+            order = 2;
+         if(bs3.get(l))
+            order = 3;
+         _connectivity[edge.beg][l] += order;
+         _connectivity[edge.end][l] += order;
+      }
+   }
+}
+
+void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
+{
+   _piLabels.resize(_proto.vertexEnd());
+   for(auto v_idx : _proto.vertices())
+   {
+      Dbitset skip;
+      skip.resize(layers);
+      skip.clear();
+
+      _piLabels[v_idx].expandFill(layers, -1);
+
+      if(!_proto.vertexInRing(v_idx) || !Element::canBeAromatic(_proto.getAtomNumber(v_idx)))
+      {
+         _piLabels[v_idx].fill(-1);
+         continue;
+      }
+
+      const Vertex &vertex = _proto.getVertex(v_idx);
+
+      Array<int> non_arom_conn;
+      Array<int> arom_bonds;
+      Array<int> n_double_ext;
+      Array<int> n_double_ring;
+      non_arom_conn.expandFill(layers, 0);
+      arom_bonds.expandFill(layers, 0);
+      n_double_ext.expandFill(layers, 0);
+      n_double_ring.expandFill(layers, 0);
+
+      for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+      {
+         int bond_idx = vertex.neiEdge(i);
+         const Dbitset &bs1 = _bond_masks[1][bond_idx];
+         const Dbitset &bs2 = _bond_masks[2][bond_idx];
+         const Dbitset &bs3 = _bond_masks[3][bond_idx];
+         const Dbitset &bsArom = _bond_masks[4][bond_idx];
+
+         for(auto l = layerFrom; l < layerTo; ++l)
+         {
+            if(bs3.get(l))
+            {
+               skip.set(l);
+               continue;
+            }
+            if(bs2.get(l))
+            {
+               if(_proto.getBondTopology(bond_idx) == TOPOLOGY_RING) // needs to be layer by layer
+               {
+                  ++n_double_ring[l];
+               }
+               else
+               {
+                  if(!_proto.isNitrogenV5(v_idx))
+                     // needs to be checked layer by layer
+                  {
+                     skip.set(l);
+                     continue;
+                  }
+                  else
+                     ++n_double_ext[l];
+               }
+            }
+
+            if(bsArom.get(l))
+               ++arom_bonds[l];
+            else
+               ++non_arom_conn[l];
+         }
+      }
+
+      for(auto l = layerFrom; l < layerTo; ++l)
+      {
+         if(skip.get(l))
+            continue;
+         if (arom_bonds[l] == 0)
+         {
+            // Verify that this atom has valid valence
+            // TBD
+         }
+         if(n_double_ring[l] > 0)
+            _piLabels[v_idx][l] = 1;
+
+         if(n_double_ext[l] > 1)
+         {
+            _piLabels[v_idx][l] = -1;
+            skip.set(l);
+         }
+         else if (n_double_ext[l] == 1)
+         {
+            // Only a single external double bond that was accepted in _acceptOutgoingDoubleBond
+            // It means that it is C=S, C=O, or C=N, like in O=C1NC=CC(=O)N1
+            int atom_number = _proto.getAtomNumber(v_idx);
+            if (atom_number == ELEM_S)
+               _piLabels[v_idx][l] = 2;
+            _piLabels[v_idx][l] = 0;
+         }
+
+         if(_piLabels[v_idx][l] != -1)
+            continue;
+
+         int conn = _connectivity[v_idx][l];
+         int valence;
+         int impl_h;
+         Element::calcValence(_proto.getAtomNumber(v_idx), _proto.getAtomCharge(v_idx), 0, conn, valence, impl_h, false);
+         conn += impl_h;
+
+         if (arom_bonds[l] != 0)
+         {
+            // Atom is already aromatic and in general number of hydrogens
+            // cannot be deduced. But if atom can have one single or onle
+            // double bond while being aromatic then pi label can be calculated
+
+            // Currently not implemented
+         }
+         int group = Element::group(_proto.getAtomNumber(v_idx));
+         int charge = 0;// getAtomCharge(atom_idx);
+         int radical = 0;// getAtomRadical(atom_idx);
+         int lonepairs = 0;
+         if(BaseMolecule::getVacantPiOrbitals(group, charge, radical, conn, &lonepairs) > 0)
+            _piLabels[v_idx][l] = 0;
+         else if (lonepairs > 0)
+            _piLabels[v_idx][l] = 2;
+      }
+   }
+}
+
+bool LayeredMolecules::_cb_handle_cycle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
+{
+   AromatizationContext *aromatizationContext = (AromatizationContext *)context;
+   LayeredMolecules *self = aromatizationContext->self;
+   self->_handleCycle(aromatizationContext->layerFrom, aromatizationContext->layerTo, vertices);
+   return true;
+}
+
+bool LayeredMolecules::_handleCycle (int layerFrom, int layerTo, const Array<int> &path)
+{
+   // Check Huckel's rule
+   Dbitset satisfiesRule;
+   satisfiesRule.resize(layerTo);
+   satisfiesRule.clear();
+   for(auto l = layerFrom; l < layerTo; ++l)
+   {
+      if(_isCycleAromaticInLayer(path.ptr(), path.size(), l))
+      {
+         satisfiesRule.set(l);
+      }
+   }
+   if(!satisfiesRule.isEmpty())
+   {
+      _aromatizeCycle(path, satisfiesRule);
+      return true;
+   }
+   return false;
+}
+
+bool LayeredMolecules::_isCycleAromaticInLayer (const int *cycle, int cycle_len, int layer)
+{
+   int count = 0;
+   // Check Huckel's rule
+   for (int i = 0; i < cycle_len; ++i)
+      count += _piLabels[cycle[i]][layer];
+
+   if (((count - 2) % 4) != 0)
+      return false;
+   return true;
+}
+
+void LayeredMolecules::_aromatizeCycle (const Array<int> &cycle, const Dbitset &mask)
+{
+   for(auto i = 0; i < cycle.size(); ++i)
+   {
+      const Vertex &vertex = _proto.getVertex(cycle[i]);
+      for(int j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+      {
+         int bond_idx = vertex.neiEdge(j);
+         _bond_masks[4][bond_idx].orWith(mask);
+         // We are able to store both aromatic and non-aromatic bonds. But in case we need to store only one type, uncomment next lines.
+         //_bond_masks[1][bond_idx].andNotWith(mask);
+         //_bond_masks[2][bond_idx].andNotWith(mask);
+         //_bond_masks[3][bond_idx].andNotWith(mask);
+      }
+   }
+}
+
+void LayeredMolecules::_registerAromatizedLayers(int layerFrom, int layerTo)
+{
+   _hashsAromatized.resize(layerTo);
+   for(auto l = layerFrom; l < layerTo; ++l)
+   {
+      TrieNode *node = _trie.getRoot();
+      bool unique = false;
+      bool aromatic = false;
+      for (auto i : _proto.edges())
+      {
+         int order = 0;
+         if(_bond_masks[4][i].get(l))
+         {
+            order = 4;
+            aromatic = true;
+         }
+         else
+         {
+            if(_bond_masks[1][i].get(l))
+               order = 1;
+            else if(_bond_masks[2][i].get(l))
+               order = 2;
+            else if(_bond_masks[3][i].get(l))
+               order = 3;
+         }
+
+         node = _trie.add(node, order, unique);
+      }
+      if(aromatic)
+      {
+         for(auto i : _proto.vertices())
+         {
+            int piLabel = 0;
+            if(_piLabels[i][l] != -1)
+            {
+               piLabel = _piLabels[i][l];
+            }
+            node = _trie.add(node, piLabel, unique);
+         }
+         _hashsAromatized[l] = node;
+      }
+      else
+      {
+         _hashsAromatized[l] = NULL;
+      }
+   }
+}
+
+bool LayeredMolecules::aromatize(int layerFrom, int layerTo, const AromaticityOptions &options)
+{
+   if(layerFrom == layerTo)
+      return false;
+
+   _calcConnectivity(layerFrom, layerTo);
+   _calcPiLabels(layerFrom, layerTo);
+
+   CycleEnumerator cycle_enumerator(_proto);
+
+   cycle_enumerator.cb_handle_cycle = _cb_handle_cycle;
+   cycle_enumerator.max_length = 22;
+   AromatizationContext context;
+   context.self = this;
+   context.layerFrom = layerFrom;
+   context.layerTo = layerTo;
+   context.result = false;
+   cycle_enumerator.context = &context;
+   cycle_enumerator.process();
+
+   _registerAromatizedLayers(layerFrom, layerTo);
+
+   if(layerFrom <= _layersAromatized && _layersAromatized < layerTo)
+      _layersAromatized = layerTo;
+   return context.result;
 }

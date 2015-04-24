@@ -29,7 +29,7 @@ namespace indigo {
 class DLLEXPORT LayeredMolecules : public BaseMolecule
 {      
 public:
-   static const int BOND_TYPES_NUMBER = 4;
+   static const int BOND_TYPES_NUMBER = 5;
 
    LayeredMolecules(BaseMolecule& molecule);
    virtual ~LayeredMolecules();
@@ -47,13 +47,23 @@ public:
    void setMobilePositionOccupiedMask(int idx, Dbitset &mask, bool value);
 
    // mask: the mask of layers used as prototypes;
-   // path: the path of single-double bonds to be inverted
+   // edgesPath: the path of single-double bonds to be inverted
    // beg, end: the mobile positions of hydrogen to swap
    // forward: the direction to move the hydrogen
-   void addLayers(Dbitset &mask, Array<int> &path, int beg, int end, bool forward);
+   void addLayersWithInvertedPath(const Dbitset &mask, const Array<int> &path, int beg, int end, bool forward);
+
+   bool aromatize (int layerFrom, int layerTo, const AromaticityOptions &options);
 
    // construct a molecule that is represented as a layer
-   void constructMolecule(Molecule &molecule, int layer) const;
+   void constructMolecule(Molecule &molecule, int layer, bool aromatized) const;
+
+   void* getHash(int layer, bool aromatized)
+   {
+      if(aromatized)
+         return _hashsAromatized[layer];
+      return _hashs[layer];
+   }
+
 
    virtual void clear ();
 
@@ -103,6 +113,15 @@ public:
    int layers;
 
 protected:
+   struct AromatizationContext
+   {
+      LayeredMolecules *self;
+      int layerFrom;
+      int layerTo;
+      bool result;
+   };
+
+
    Molecule _proto;
    ObjArray<Dbitset> _bond_masks[BOND_TYPES_NUMBER];
    Array<bool> _mobilePositions;
@@ -112,9 +131,76 @@ protected:
                                        const Array<int> *edges, const Array<int> &mapping, 
                                        int skip_flags);
 
+   static bool _cb_handle_cycle(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
+
+   void _resizeLayers(int newSize);
+   void _calcConnectivity(int layerFrom, int layerTo);
+   void _calcPiLabels(int layerFrom, int layerTo);
+   bool _handleCycle(int layerFrom, int layerTo, const Array<int> &path);
+   bool _isCycleAromaticInLayer(const int *cycle, int cycle_len, int layer);
+   void _aromatizeCycle(const Array<int> &cycle, const Dbitset &mask);
+   void _registerAromatizedLayers(int layerFrom, int layerTo);
+
 private:
    LayeredMolecules(const LayeredMolecules &); // no implicit copy
-   unsigned _wordsNeeded;
+   ObjArray<Array<int>> _piLabels;
+   ObjArray<Array<int>> _connectivity;
+   int _layersAromatized;
+
+
+   struct TrieNode
+   {
+      TrieNode()
+      {
+         for(TrieNode* &n : next)
+         {
+            n = NULL;
+         }
+      }
+      ~TrieNode()
+      {
+         for(TrieNode* &n : next)
+         {
+            delete n;
+         }
+      }
+      // These should be smart ptrs. Will do it later.
+      TrieNode* next[5];
+   };
+
+   class Trie
+   {
+   public:
+      Trie()
+      {
+         // These should be pooled. Will do it later.
+         _root = new TrieNode;
+      }
+      ~Trie()
+      {
+         delete _root;
+      }
+      TrieNode* getRoot() { return _root; }
+      TrieNode* follow(TrieNode* node, unsigned long key) { return node->next[key]; }
+      TrieNode* add(TrieNode* node, unsigned long key, bool &newlyAdded)
+      {
+         if(node->next[key])
+         {
+            newlyAdded = false;
+            return node->next[key];
+         }
+         newlyAdded = true;
+         return node->next[key] = new TrieNode;
+      }
+
+   private:
+      TrieNode *_root;
+   };
+
+   Trie _trie;
+   Array<void*> _hashs;
+   Array<void*> _hashsAromatized;
+
 };
 
 }

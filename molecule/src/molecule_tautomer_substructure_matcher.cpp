@@ -26,11 +26,12 @@ MoleculeTautomerSubstructureMatcher::MoleculeTautomerSubstructureMatcher(BaseMol
 _tautomerEnumerator(target.asMolecule(), "INCHI"),
 CP_INIT
 {
-   while (!_tautomerEnumerator.runProcedure());
+   _tautomerEnumerator.enumerateAll(false);
    find_all_embeddings = false;
    find_unique_embeddings = false;
    find_unique_by_edges = false;
    save_for_iteration = false;
+   _needAromatize = target.asMolecule().isAromatized();
 }
 
 MoleculeTautomerSubstructureMatcher::~MoleculeTautomerSubstructureMatcher()
@@ -40,6 +41,12 @@ MoleculeTautomerSubstructureMatcher::~MoleculeTautomerSubstructureMatcher()
 void MoleculeTautomerSubstructureMatcher::setQuery(QueryMolecule &query)
 {
    _query = &query;
+
+   // We should check that query has any trace of aromatization. Otherwise it has no sense to perform expensive procedure of _tautomerEnumerator aromatization.
+   //if(query.isAromatic())
+   {
+      _tautomerEnumerator.aromatize();
+   }
 
    QS_DEF(Array<int>, ignored);
 
@@ -188,6 +195,24 @@ int MoleculeTautomerSubstructureMatcher::_embedding_common (int *core_sub, int *
          return 1;
       _masks.push();
       _masks.top().copy(mask);
+      if(_needAromatize)
+      {
+         int layer = _masks.top().nextSetBit(0);
+         int enumPosition = _tautomerEnumerator.beginAromatized();
+         while(layer != -1)
+         {
+            // Magic! layer is a non-negative number. We know that we enumerate aromatized tautomers. That means that the range is [-1, -2, -3, ...]
+            if(!_tautomerEnumerator.isValid(-1 - layer))
+            {
+               _masks.top().reset(layer);
+            }
+            else
+            {
+               _tautomerEnumerator.next(-1 - layer);
+            }
+            layer = _masks.top().nextSetBit(layer + 1);
+         }
+      }
    }
 
    return 0;
@@ -218,5 +243,5 @@ void MoleculeTautomerSubstructureMatcher::getTautomerFound(Molecule& mol, int en
    const Dbitset &mask = _masks.at(enumInd);
    int layer = mask.nextSetBit(tauInd);
 
-   return _tautomerEnumerator.constructMolecule(mol, layer);
+   return _tautomerEnumerator.constructMolecule(mol, layer, _needAromatize);
 }

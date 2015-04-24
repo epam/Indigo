@@ -19,9 +19,9 @@ CEXPORT int indigoTautomerEnumerate(int molecule, const char *options)
 {
    INDIGO_BEGIN
    {
-   Molecule &mol = self.getObject(molecule).getMolecule();
+      Molecule &mol = self.getObject(molecule).getMolecule();
 
-   return self.addObject(new IndigoTautomerIter(mol, options));
+      return self.addObject(new IndigoTautomerIter(mol, options));
    }
    INDIGO_END(-1)
 }
@@ -31,7 +31,11 @@ IndigoObject(TAUTOMER_ITER),
 _enumerator(molecule, options),
 _complete(false)
 {
-   _layer = 0;
+   bool needAromatize = molecule.isAromatized();
+   if(needAromatize)
+      _currentPosition = _enumerator.beginAromatized();
+   else
+      _currentPosition = _enumerator.beginNotAromatized();
 }
 
 const char * IndigoTautomerIter::debugInfo()
@@ -45,29 +49,24 @@ IndigoTautomerIter::~IndigoTautomerIter()
 
 IndigoObject * IndigoTautomerIter::next()
 {
-   hasNext();
-   if (_layer < _enumerator.size())
-      return new IndigoMoleculeTautomer(_enumerator, _layer++);
+   if (hasNext())
+   {
+      IndigoMoleculeTautomer *result = new IndigoMoleculeTautomer(_enumerator, _currentPosition);
+      _currentPosition = _enumerator.next(_currentPosition);
+      return result;
+   }
    return NULL;
 }
 
 bool IndigoTautomerIter::hasNext()
 {
-   if (_complete)
-      return false;
-   if (_layer == _enumerator.size() - 1)
-   {
-      _enumerator.runProcedure();
-      if (_layer == _enumerator.size() - 1)
-         _complete = true;
-   }
-   return _layer < _enumerator.size() - 1;
+   return _enumerator.isValid(_currentPosition);
 }
 
-IndigoMoleculeTautomer::IndigoMoleculeTautomer(TautomerEnumerator &enumerator, int layer) :
+IndigoMoleculeTautomer::IndigoMoleculeTautomer(TautomerEnumerator &enumerator, int position) :
 IndigoObject(TAUTOMER_MOLECULE)
 {
-   enumerator.constructMolecule(_molInstance, layer);
+   enumerator.constructMolecule(_molInstance, position);
 }
 
 const char * IndigoMoleculeTautomer::debugInfo()

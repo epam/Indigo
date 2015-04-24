@@ -21,7 +21,7 @@
 class IndigoMoleculeTautomer : public IndigoObject
 {
 public:
-   IndigoMoleculeTautomer(TautomerEnumerator &enumerator, int index);
+   IndigoMoleculeTautomer(TautomerEnumerator &enumerator, int position);
    virtual ~IndigoMoleculeTautomer();
 
    virtual Molecule & getMolecule();
@@ -48,7 +48,7 @@ public:
 protected:
 
    TautomerEnumerator _enumerator;
-   int _layer;
+   int _currentPosition;
    bool _complete;
 };
 

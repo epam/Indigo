@@ -115,7 +115,7 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
          for (auto i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
          {
             int e_inx = v.neiEdge(i);
-            if (molecule.getBondOrder(e_inx) == 1)
+            if (molecule.getBondOrder(e_inx) == 1 || molecule.getBondOrder(e_inx) == 4)
             {
                occupied = true;
                break;
@@ -134,9 +134,109 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
       _zebraPattern.addEdge(v1, v2);
       v1 = v2;
    }
+
+   _complete = false;
+   aromatizedRange[0] = 0;
+   aromatizedRange[1] = 0;
 }
 
-bool TautomerEnumerator::runProcedure()
+void TautomerEnumerator::enumerateAll(bool needAromatization)
+{
+   while (!_performProcedure())
+      ;
+   if(needAromatization)
+      aromatize();
+}
+
+int TautomerEnumerator::beginNotAromatized()
+{
+   _enumeratedHistory.clear();
+   return 1;
+}
+
+int TautomerEnumerator::beginAromatized()
+{
+   _enumeratedHistory.clear();
+   if(aromatizedRange[1] == 0)
+   {
+      _aromatize(aromatizedRange[1], layeredMolecules.layers);
+      aromatizedRange[1] = layeredMolecules.layers;
+   }
+   return -1;
+}
+
+bool TautomerEnumerator::isValid(int n)
+{
+   if(n > 0)
+   {
+      if(n - 1 < layeredMolecules.layers)
+         return true;
+      if(_complete)
+         return false;
+      if(_performProcedure())
+      {
+         _complete = true;
+         return false;
+      }
+      return true;
+   }
+   if(n < 0)
+   {
+      if(-(n + 1) < layeredMolecules.layers)
+      {
+         if(-(n + 1) >= aromatizedRange[1])
+         {
+            _aromatize(aromatizedRange[1], layeredMolecules.layers);
+            aromatizedRange[1] = layeredMolecules.layers;
+         }
+         void *hash = layeredMolecules.getHash(-(n + 1), true);
+         return !_enumeratedHistory.find(hash);
+      }
+      if(_complete)
+         return false;
+      if(_performProcedure())
+      {
+         _complete = true;
+         return false;
+      }
+     _aromatize(aromatizedRange[1], layeredMolecules.layers);
+      aromatizedRange[1] = layeredMolecules.layers;
+      void *hash = layeredMolecules.getHash(-(n + 1), true);
+      return !_enumeratedHistory.find(hash);
+   }
+   return false;
+}
+
+int TautomerEnumerator::next(int n)
+{
+   if(n > 0)
+      return n + 1;
+   else if(n < 0)
+   {
+      void *hash = layeredMolecules.getHash(-(n + 1), true);
+      _enumeratedHistory.insert(hash);
+      --n;
+      while(!_complete && !isValid(n))
+      {
+         --n;
+      }
+
+      return n;
+   }
+   return 1;
+}
+
+void TautomerEnumerator::constructMolecule(Molecule &molecule, int n) const
+{
+   if(n > 0)
+      layeredMolecules.constructMolecule(molecule, n - 1, false);
+   else if(n < 0)
+      layeredMolecules.constructMolecule(molecule, -(n + 1), true);
+   else
+      ;//error!
+}
+
+bool TautomerEnumerator::_performProcedure()
 {
    // Construct tautomers
    EmbeddingEnumerator ee(layeredMolecules);
@@ -154,6 +254,16 @@ bool TautomerEnumerator::runProcedure()
    int layersBefore = layeredMolecules.layers;
    ee.process();
    return layeredMolecules.layers == layersBefore;
+}
+
+bool TautomerEnumerator::aromatize()
+{
+    return layeredMolecules.aromatize(AromaticityOptions());
+}
+
+bool TautomerEnumerator::_aromatize(int from, int to)
+{
+    return layeredMolecules.aromatize(from, to, AromaticityOptions());
 }
 
 bool TautomerEnumerator::matchEdge(Graph &subgraph, Graph &supergraph,
@@ -212,14 +322,14 @@ void TautomerEnumerator::vertexAdd(Graph &subgraph, Graph &supergraph,
    {
       if (breadcrumps.forwardMask.complements(layeredMolecules.getMobilePositionOccupiedMask(super_idx)))
       {
-         layeredMolecules.addLayers(breadcrumps.forwardMask, breadcrumps.edgesHistory, breadcrumps.nodesHistory.at(0), breadcrumps.nodesHistory.top(), true);
+         layeredMolecules.addLayersWithInvertedPath(breadcrumps.forwardMask, breadcrumps.edgesHistory, breadcrumps.nodesHistory.at(0), breadcrumps.nodesHistory.top(), true);
       }
       if (breadcrumps.backwardMask.intersects(layeredMolecules.getMobilePositionOccupiedMask(super_idx)))
       {
          Dbitset mask;
          mask.copy(breadcrumps.backwardMask);
          mask.andWith(layeredMolecules.getMobilePositionOccupiedMask(super_idx));
-         layeredMolecules.addLayers(mask, breadcrumps.edgesHistory, breadcrumps.nodesHistory.at(0), breadcrumps.nodesHistory.top(), false);
+         layeredMolecules.addLayersWithInvertedPath(mask, breadcrumps.edgesHistory, breadcrumps.nodesHistory.at(0), breadcrumps.nodesHistory.top(), false);
       }
    }
    else if (breadcrumps.nodesHistory.size() == 1)
@@ -248,12 +358,7 @@ void TautomerEnumerator::vertexRemove(Graph &subgraph, int sub_idx, void *userda
    breadcrumps.nodesHistory.pop();
 }
 
-void TautomerEnumerator::constructMolecule(Molecule &molecule, int layer) const
+void TautomerEnumerator::constructMolecule(Molecule &molecule, int layer, bool needAromatize) const
 {
-   layeredMolecules.constructMolecule(molecule, layer);
-}
-
-int TautomerEnumerator::size()
-{
-   return layeredMolecules.layers;
+   layeredMolecules.constructMolecule(molecule, layer, needAromatize);
 }

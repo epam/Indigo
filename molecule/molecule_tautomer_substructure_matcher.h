@@ -93,6 +93,7 @@ protected:
    };
 
    SubstructureSearchBreadcrumps _breadcrumps;
+   bool _needAromatize;
 
    static bool _matchAtoms(Graph &subgraph, Graph &supergraph,
       const int *core_sub, int sub_idx, int super_idx, void *userdata);

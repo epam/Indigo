@@ -28,9 +28,14 @@ class TautomerEnumerator
 public:
    TautomerEnumerator(Molecule &molecule, const char *options);
 
-   bool runProcedure();
-   void constructMolecule(Molecule &molecule, int layer) const;
-   int size();
+   void constructMolecule(Molecule &molecule, int layer, bool needAromatize) const;
+   void enumerateAll(bool needAromatization);
+   bool aromatize();
+   int beginNotAromatized();
+   int beginAromatized();
+   bool isValid(int);
+   int next(int);
+   void constructMolecule(Molecule &molecule, int n) const;
 
 protected:
    struct Breadcrumps
@@ -49,10 +54,16 @@ protected:
    static void vertexAdd(Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
    static void vertexRemove(Graph &subgraph, int sub_idx, void *userdata);
 
+   bool _performProcedure();
+   bool _aromatize(int from, int to);
+
    Graph _zebraPattern;
 
 public:
    LayeredMolecules layeredMolecules;
+   bool _complete;
+   int aromatizedRange[2];
+   RedBlackSet<void*> _enumeratedHistory;
 };
 
 }
