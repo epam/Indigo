@@ -24,6 +24,7 @@ for pack in indigo_pack_array:
    shutil.copy(pack, r_dist_dir)
  
 shutil.copy(os.path.join(api_dir, "indigo.h"), r_src_dir)
+shutil.copy(os.path.join(api_dir, "plugins", "renderer", "indigo-renderer.h"), r_src_dir)
 if _platform == "linux" or _platform == "linux2":
    shutil.copy(os.path.join(root, "common", "cmake", "linkhack.py"), r_src_dir)
    os.chmod(os.path.join(r_src_dir, "linkhack.py"), 0777)

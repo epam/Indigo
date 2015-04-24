@@ -111,6 +111,13 @@ version <- function() {
     .Call("r_indigoVersion")
 }
 
+setOption <- function(option, value){
+   stopifnot(is.character(option))
+   stopifnot(length(option) == 1, length(value) == 1)
+   
+   obj_id = checkResult(.Call("r_indigoSetOption",  option, value))
+}
+
 canonicalSmiles <- function(data) {
     stopifnot(is.character(data))
     stopifnot(length(data) == 1)
@@ -169,4 +176,11 @@ molecularWeight <- function(item) {
     stopifnot(length(item) == 1)
 
     return(.Call("molecularWeight", item))
+}
+
+render <- function(item) {
+    stopifnot(is.character(item))
+    stopifnot(length(item) == 1)
+
+    return(.Call("render", item))
 }

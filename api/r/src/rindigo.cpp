@@ -9,6 +9,7 @@
 #include <Rinternals.h>
 
 #include "indigo.h"
+#include "indigo-renderer.h"
 
 #ifndef REXPORT_SYMBOL
    #ifdef _WIN32
@@ -122,11 +123,10 @@ REXPORT SEXP r_indigoSetOption(SEXP option, SEXP value)
    SEXP result = PROTECT(allocVector(INTSXP, 1));
    SEXPTYPE val_type = TYPEOF(value);
       
-   double rrr = REAL(value)[0];
    const char *opt_str = CHAR(STRING_ELT(option, 0));
    int set_result = -1;
       
-   printf("val_type=%d\nvalue=%lf\n", val_type, rrr);
+   printf("val_type=%d\n", val_type);
       
    if (val_type == LGLSXP)
       set_result = indigoSetOptionBool(opt_str, LOGICAL(value)[0]);
@@ -290,6 +290,28 @@ REXPORT SEXP molecularWeight(SEXP item)
    int i = indigoLoadMoleculeFromString(CHAR(STRING_ELT(item, 0)));
    REAL(result)[0] = indigoMolecularWeight(i);
    indigoFree(i);
+   UNPROTECT(1);
+   return result;
+}
+
+REXPORT SEXP render(SEXP item)
+{
+   SEXP result = PROTECT(allocVector(STRSXP, 1));
+   
+   char *raw_ptr;
+   int size;
+   
+   indigoSetOption("render-output-format", "svg");
+   indigoSetOption("render-background-color", "255, 255, 255");
+   
+   int mol = indigoLoadMoleculeFromString(CHAR(STRING_ELT(item, 0)));
+   int buffer_object = indigoWriteBuffer();
+   int render_res = indigoRender(mol, buffer_object);
+   indigoToBuffer(buffer_object, &raw_ptr, &size);
+
+   SET_STRING_ELT(result, 0, mkChar(raw_ptr));
+   indigoFree(buffer_object);
+   indigoFree(mol);
    UNPROTECT(1);
    return result;
 }
