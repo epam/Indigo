@@ -141,6 +141,16 @@ REXPORT SEXP r_indigoSetOption(SEXP option, SEXP value)
    UNPROTECT(1);
    return result;
 }
+
+REXPORT SEXP r_indigoLayout(SEXP item)
+{
+   SEXP result = PROTECT(allocVector(INTSXP, 1));
+   
+   INTEGER(result)[0] = indigoLayout(INTEGER(item)[0]);
+   UNPROTECT(1);
+
+   return result;
+}
    
 REXPORT SEXP r_indigoAromatize(SEXP obj)
 {
@@ -305,13 +315,68 @@ REXPORT SEXP render(SEXP item)
    indigoSetOption("render-background-color", "255, 255, 255");
    
    int mol = indigoLoadMoleculeFromString(CHAR(STRING_ELT(item, 0)));
+   indigoLayout(mol);
    int buffer_object = indigoWriteBuffer();
    int render_res = indigoRender(mol, buffer_object);
-   indigoToBuffer(buffer_object, &raw_ptr, &size);
-
-   SET_STRING_ELT(result, 0, mkChar(raw_ptr));
+   const char *svg_str =indigoToString(buffer_object);
+   
+   SET_STRING_ELT(result, 0, mkChar(svg_str));
    indigoFree(buffer_object);
    indigoFree(mol);
    UNPROTECT(1);
    return result;
 }
+
+REXPORT SEXP renderQuery(SEXP item)
+{
+   SEXP result = PROTECT(allocVector(STRSXP, 1));
+   
+   char *raw_ptr;
+   int size;
+   
+   indigoSetOption("render-output-format", "svg");
+   indigoSetOption("render-background-color", "255, 255, 255");
+   
+   int mol = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(item, 0)));
+   indigoLayout(mol);
+   int buffer_object = indigoWriteBuffer();
+   int render_res = indigoRender(mol, buffer_object);
+   const char *svg_str =indigoToString(buffer_object);
+   
+   SET_STRING_ELT(result, 0, mkChar(svg_str));
+   indigoFree(buffer_object);
+   indigoFree(mol);
+   UNPROTECT(1);
+   return result;
+}
+
+REXPORT SEXP renderHighlightedTarget(SEXP target, SEXP query) 
+{
+   SEXP result = PROTECT(allocVector(STRSXP, 1));
+   
+   char *raw_ptr;
+   int size;
+   
+   indigoSetOption("render-output-format", "svg");
+   indigoSetOption("render-background-color", "255, 255, 255");
+   
+   int q = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(query, 0)));
+   int t = indigoLoadMoleculeFromString(CHAR(STRING_ELT(target, 0)));
+   int m = indigoSubstructureMatcher(t, "");
+   int res = 0;
+   res = indigoMatch(m, q);
+
+   int ht = indigoHighlightedTarget(res);
+   
+   indigoLayout(ht);
+   int buffer_object = indigoWriteBuffer();
+   int render_res = indigoRender(ht, buffer_object);
+   const char *svg_str =indigoToString(buffer_object);
+   
+   SET_STRING_ELT(result, 0, mkChar(svg_str));
+   indigoFree(buffer_object);
+   indigoFree(ht);
+   UNPROTECT(1);
+   return result;
+}
+

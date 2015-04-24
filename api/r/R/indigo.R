@@ -184,3 +184,17 @@ render <- function(item) {
 
     return(.Call("render", item))
 }
+
+renderQuery <- function(item) {
+    stopifnot(is.character(item))
+    stopifnot(length(item) == 1)
+
+    return(.Call("renderQuery", item))
+}
+
+renderHighlightedTarget <- function(target, query) {
+    stopifnot(is.character(target), is.character(query))
+    stopifnot(length(target) == 1, length(query) == 1)
+
+    return(.Call("renderHighlightedTarget", target, query))
+}
