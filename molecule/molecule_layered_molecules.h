@@ -57,7 +57,7 @@ public:
    // construct a molecule that is represented as a layer
    void constructMolecule(Molecule &molecule, int layer, bool aromatized) const;
 
-   void* getHash(int layer, bool aromatized)
+   unsigned getHash(int layer, bool aromatized)
    {
       if(aromatized)
          return _hashsAromatized[layer];
@@ -150,22 +150,14 @@ private:
 
    struct TrieNode
    {
+      static const int ALPHABET_SIZE = 5;
+
       TrieNode()
       {
-         for(TrieNode* &n : next)
-         {
-            n = NULL;
-         }
+         for(auto &n : next)
+            n = -1;
       }
-      ~TrieNode()
-      {
-         for(TrieNode* &n : next)
-         {
-            delete n;
-         }
-      }
-      // These should be smart ptrs. Will do it later.
-      TrieNode* next[5];
+      unsigned next[ALPHABET_SIZE];
    };
 
    class Trie
@@ -173,33 +165,32 @@ private:
    public:
       Trie()
       {
-         // These should be pooled. Will do it later.
-         _root = new TrieNode;
+         _nodes = new ObjPool<TrieNode>();
+         // Adding root (index == 0)
+         _nodes->add();
       }
-      ~Trie()
+      unsigned getRoot() { return 0; }
+      unsigned follow(unsigned nodeInd, unsigned key) { return _nodes->at(nodeInd).next[key]; }
+      unsigned add(unsigned nodeInd, unsigned key, bool &newlyAdded)
       {
-         delete _root;
-      }
-      TrieNode* getRoot() { return _root; }
-      TrieNode* follow(TrieNode* node, unsigned long key) { return node->next[key]; }
-      TrieNode* add(TrieNode* node, unsigned long key, bool &newlyAdded)
-      {
-         if(node->next[key])
+         if(_nodes->at(nodeInd).next[key] != -1)
          {
             newlyAdded = false;
-            return node->next[key];
+            return _nodes->at(nodeInd).next[key];
          }
          newlyAdded = true;
-         return node->next[key] = new TrieNode;
+         int ind = _nodes->add();
+         _nodes->at(nodeInd).next[key] = ind;
+         return ind;
       }
 
    private:
-      TrieNode *_root;
+      AutoPtr<ObjPool<TrieNode>> _nodes;
    };
 
    Trie _trie;
-   Array<void*> _hashs;
-   Array<void*> _hashsAromatized;
+   Array<unsigned> _hashs;
+   Array<unsigned> _hashsAromatized;
 
 };
 

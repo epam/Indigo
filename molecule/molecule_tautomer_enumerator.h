@@ -63,7 +63,7 @@ public:
    LayeredMolecules layeredMolecules;
    bool _complete;
    int aromatizedRange[2];
-   RedBlackSet<void*> _enumeratedHistory;
+   RedBlackSet<unsigned> _enumeratedHistory;
 };
 
 }

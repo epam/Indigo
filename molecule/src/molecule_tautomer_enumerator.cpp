@@ -189,7 +189,7 @@ bool TautomerEnumerator::isValid(int n)
             _aromatize(aromatizedRange[1], layeredMolecules.layers);
             aromatizedRange[1] = layeredMolecules.layers;
          }
-         void *hash = layeredMolecules.getHash(-(n + 1), true);
+         unsigned hash = layeredMolecules.getHash(-(n + 1), true);
          return !_enumeratedHistory.find(hash);
       }
       if(_complete)
@@ -201,7 +201,7 @@ bool TautomerEnumerator::isValid(int n)
       }
      _aromatize(aromatizedRange[1], layeredMolecules.layers);
       aromatizedRange[1] = layeredMolecules.layers;
-      void *hash = layeredMolecules.getHash(-(n + 1), true);
+      unsigned hash = layeredMolecules.getHash(-(n + 1), true);
       return !_enumeratedHistory.find(hash);
    }
    return false;
@@ -213,7 +213,7 @@ int TautomerEnumerator::next(int n)
       return n + 1;
    else if(n < 0)
    {
-      void *hash = layeredMolecules.getHash(-(n + 1), true);
+      unsigned hash = layeredMolecules.getHash(-(n + 1), true);
       _enumeratedHistory.insert(hash);
       --n;
       while(!_complete && !isValid(n))

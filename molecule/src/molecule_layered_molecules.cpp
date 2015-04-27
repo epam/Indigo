@@ -34,16 +34,11 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
 
    for (auto i : _proto.edges())
    {
-      _bond_masks[0].push();
-      _bond_masks[0].top().resize(1);
-      _bond_masks[1].push();
-      _bond_masks[1].top().resize(1);
-      _bond_masks[2].push();
-      _bond_masks[2].top().resize(1);
-      _bond_masks[3].push();
-      _bond_masks[3].top().resize(1);
-      _bond_masks[4].push();
-      _bond_masks[4].top().resize(1);
+      for(auto i = 0; i < BOND_TYPES_NUMBER; ++i)
+      {
+         _bond_masks[i].push();
+         _bond_masks[i].top().resize(1);
+      }
 
       if (_proto.getBondOrder(i) == 1)
       {
@@ -68,7 +63,7 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
 
    layers = 1;
 
-   TrieNode *node = _trie.getRoot();
+   unsigned node = _trie.getRoot();
    for (auto i : _proto.edges())
    {
       bool stub;
@@ -158,7 +153,7 @@ void LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Arra
 
       _resizeLayers(newTautomerIndex + 1);
 
-      TrieNode *node = _trie.getRoot();
+      unsigned node = _trie.getRoot();
       bool unique = false;
 
       for (auto i = 0; i < edgeIsOnPath.size(); ++i)
@@ -613,7 +608,7 @@ void LayeredMolecules::_registerAromatizedLayers(int layerFrom, int layerTo)
    _hashsAromatized.resize(layerTo);
    for(auto l = layerFrom; l < layerTo; ++l)
    {
-      TrieNode *node = _trie.getRoot();
+      unsigned node = _trie.getRoot();
       bool unique = false;
       bool aromatic = false;
       for (auto i : _proto.edges())
