@@ -273,6 +273,7 @@ public:
    int max_embeddings;
 
    int layout_max_iterations; // default is zero -- no limit
+   bool smart_layout;
 
    int aam_cancellation_timeout; //default is zero - no timeout
 
