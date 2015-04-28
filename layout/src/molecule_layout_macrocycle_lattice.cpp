@@ -93,14 +93,15 @@ TL_CP_GET(_vertex_drawn)
 }
 
 void MoleculeLayoutMacrocyclesLattice::doLayout() {
-   //profTimerStart(t, "doLayout");
    if (length <= 9) {
       bool has_trans = false;
       for (int i = 0; i < length; i++) if (_edge_stereo[i] == 2) has_trans = true;
       if (!has_trans) {
+         double alpha = 2 * PI / length;
+         double r = 1 / sqrt(2 * (1 - cos(alpha)));
          for (int i = 0; i < length; i++) {
-            _positions[i] = Vec2f(1, 0);
-            _positions[i].rotate(2 * PI / length * i);
+            _positions[i] = Vec2f(r, 0);
+            _positions[i].rotate(alpha * i);
          }
          return;
       }

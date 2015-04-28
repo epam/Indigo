@@ -155,8 +155,9 @@ public:
    inline int getVertexExtIdx(int idx) const { return _layout_vertices[idx].ext_idx; }
    inline int getVertexOrigIdx(int idx) const { return _layout_vertices[idx].orig_idx; }
    inline int getVertexType(int idx) const { return _layout_vertices[idx].type; }
-   inline int getEdgeExtIdx (int idx) const { return _layout_edges[idx].ext_idx; }
-   inline int getEdgeType   (int idx) const { return _layout_edges[idx].type; }
+   inline int getEdgeExtIdx(int idx) const { return _layout_edges[idx].ext_idx; }
+   inline int getEdgeOrigIdx(int idx) const { return _layout_edges[idx].orig_idx; }
+   inline int getEdgeType(int idx) const { return _layout_edges[idx].type; }
    inline bool isEdgeDrawn(int idx) const { return _layout_edges[idx].type != ELEMENT_NOT_DRAWN; }
 
    void registerLayoutVertex (int idx, const LayoutVertex &vertex);
