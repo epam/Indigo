@@ -48,7 +48,7 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
     for objFile in objFiles:
         subprocess.check_call('objcopy --redefine-syms indigostd.syms {0}'.format(objFile), shell=True)
 
-    if target.find('libindigo.so') != -1 or target.find('bingo_postgres.so') != -1 or target.find('libbingo-oracle.so') != -1 or target.find('libketcher-server.so') != -1:
+    if target.find('libindigo.so') != -1 or target.find('bingo_postgres.so') != -1 or target.find('libbingo-oracle.so') != -1 or target.find('libketcher-server.so') != -1 or target.find('indigo-cano') != -1 or target.find('indigo-deco') != -1 or target.find('indigo-depict') != -1:
         subprocess.check_call('objcopy --redefine-syms indigostd.syms {0}/libstdc++.a {0}/libindigostdcpp.a'.format(libRoot), shell=True)
         linkLibraries = linkLibraries + ' -Wl,--whole-archive {0}/libindigostdcpp.a -Wl,--no-whole-archive '.format(libRoot)
 
@@ -62,7 +62,7 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
         libFile = os.path.join(libRoot, library)
         subprocess.check_call('objcopy --redefine-syms indigostd.syms {0}'.format(libFile), shell=True)
 
-    linkCommand = '{0} -v -shared -L{1}/ -static-libstdc++ {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
+    linkCommand = '{0} -v -L{1}/ -static-libstdc++ {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
     if 'VERBOSE' in os.environ:
         print(linkCommand)
     subprocess.check_call(linkCommand, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None, stdout=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
@@ -98,7 +98,7 @@ def mac(compiler, linkFlags, objFiles, linkLibraries, target):
     for objFile in objFiles:
         lipoObjconvLipo(objFile)
 
-    if target.find('libindigo.dylib') != -1 or target.find('bingo_postgres.dylib') or target.find('libketcher-server.dylib') != -1:
+    if target.find('libindigo.dylib') != -1 or target.find('bingo_postgres.dylib') or target.find('libketcher-server.dylib') != -1  or target.find('indigo-cano') != -1 or target.find('indigo-deco') != -1 or target.find('indigo-depict') != -1:
         lipoObjconvLipo(libRoot + '/libc++.a')
         linkLibraries = linkLibraries + ' -Wl,-all_load {0}/libc++.a -Wl,-noall_load'.format(libRoot)
 
@@ -109,7 +109,7 @@ def mac(compiler, linkFlags, objFiles, linkLibraries, target):
             continue
         lipoObjconvLipo(os.path.join(libRoot, library))
 
-    cmd = '{0} -L{1}/ -arch i386 -arch x86_64 -undefined dynamic_lookup -nodefaultlibs -lpthread -lc -lm -std=c++11 -mmacosx-version-min=10.7 -dynamiclib {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
+    cmd = '{0} -L{1}/ -arch i386 -arch x86_64 -undefined dynamic_lookup -nodefaultlibs -lc -lm -std=c++11 -mmacosx-version-min=10.7 {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
     if 'VERBOSE' in os.environ:
         print(cmd)
     subprocess.check_call(cmd, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
