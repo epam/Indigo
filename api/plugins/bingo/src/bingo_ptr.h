@@ -21,11 +21,11 @@ namespace bingo
    {
       BingoAddr ()
       {
-         offset = (size_t)-1;
          file_id = (size_t)-1;
+         offset = (size_t)-1;
       }
 
-      BingoAddr (size_t f_id, size_t off) : offset(off), file_id(f_id)
+      BingoAddr (size_t f_id, size_t off) : file_id(f_id), offset(off)
       {
       }
 
@@ -103,7 +103,7 @@ namespace bingo
 
       bool isNull ()
       {
-         return (_addr.offset == -1) && (_addr.file_id == -1);
+         return (_addr.offset == (size_t)-1) && (_addr.file_id == (size_t)-1);
       }
 
       void allocate ( int count = 1 );
@@ -442,7 +442,7 @@ namespace bingo
    private:
       struct _BingoAllocatorData
       {
-         _BingoAllocatorData() : _min_file_size(0), _max_file_size(0), _free_off(0), _cur_file_id(0), _existing_files(0)
+         _BingoAllocatorData() : _min_file_size(0), _max_file_size(0), _cur_file_id(0), _existing_files(0), _free_off(0)
          {
          }
 
@@ -472,8 +472,7 @@ namespace bingo
 
          _BingoAllocatorData *allocator_data = (_BingoAllocatorData *)(mmf_ptr + _data_offset);
    
-         int szf_t = sizeof(T);
-         int alloc_size = sizeof(T) * count;
+         size_t alloc_size = sizeof(T) * count;
          
          size_t file_idx = allocator_data->_cur_file_id;
          size_t file_off = allocator_data->_free_off;
@@ -501,7 +500,7 @@ namespace bingo
 
       BingoAllocator ();
 
-      void _addFile (int alloc_size);
+      void _addFile (size_t alloc_size);
 
       static size_t _getFileSize(size_t idx, size_t min_size, size_t max_size, dword sizes);
 

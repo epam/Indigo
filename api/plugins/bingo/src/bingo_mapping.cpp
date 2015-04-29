@@ -69,7 +69,7 @@ void BingoMapping::remove (size_t id)
       throw Exception("BingoMapping: There is no such id");   
 
    _MapList::Iterator it;
-   _MapList &cur_list = _mapping_table[_hashFunc(id)].ref();
+   //_MapList &cur_list = _mapping_table[_hashFunc(id)].ref();
 
    int idx_in_block;
    bool res = _findElem(id, it, idx_in_block);

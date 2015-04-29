@@ -95,9 +95,8 @@ void TranspFpStorage::_addIncToStorage ()
 
    std::vector<byte> block_buf;
    block_buf.resize(_block_size);
-   byte block_b = 0;
                
-   byte inc_mask = 0x80;
+   //byte inc_mask = 0x80;
    for (int bit_idx = 0; bit_idx < 8 * _fp_size; bit_idx++)
    {
       memset(&block_buf[0], 0, _block_size);
