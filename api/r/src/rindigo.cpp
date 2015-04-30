@@ -223,9 +223,7 @@ REXPORT SEXP aromatizeQuery(SEXP mol)
 REXPORT SEXP checkSub(SEXP query, SEXP target, SEXP mode)
 {
    int q = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(query, 0)));
-   indigoAromatize(q);
    int t = indigoLoadMoleculeFromString(CHAR(STRING_ELT(target, 0)));
-   indigoAromatize(t);
    int matcher = indigoSubstructureMatcher(t, CHAR(STRING_ELT(mode, 0)));
    SEXP smatch;
    PROTECT( smatch = NEW_INTEGER(1)) ;
