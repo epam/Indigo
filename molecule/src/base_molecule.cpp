@@ -1397,6 +1397,10 @@ void BaseMolecule::getAtomSymbol (int v, Array<char> &result)
    {
       result.readString(getPseudoAtom(v), true);
    }
+   else if (isTemplateAtom(v))
+   {
+      result.readString(getTemplateAtom(v), true);
+   }
    else if (isRSite(v))
    {
       QS_DEF(Array<int>, rgroups);
