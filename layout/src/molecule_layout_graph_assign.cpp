@@ -12,6 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+//#include "api/src/indigo_internal.h"
+
 #include "base_cpp/profiling.h"
 #include "layout/molecule_layout_graph.h"
 #include "layout/molecule_layout_macrocycles.h"
@@ -124,13 +126,6 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
       // ( 3.i] let k = 0  ( top of the list];;
       while (assigned_list.size() != 0)
       {
-         //int middle = (rand()+1) % assigned_list.size();
-         int middle = assigned_list.size() - 1;
-         int last = assigned_list.size() - 1;
-         int temp = assigned_list[middle];
-         assigned_list[middle] = assigned_list[last];
-         assigned_list[last] = temp;
-
          int k = assigned_list.pop();
          const Vertex &vert_k = getVertex(k);
 
@@ -317,164 +312,225 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       cycles[cycle_idx].canonize();
    }
 
-   while (cycles.size() != 0) {
+   bool do_smart_layout = false;
+   /*INDIGO_BEGIN
+   {
+      do_smart_layout = self.smart_layout;
+   }
+   INDIGO_END();*/
+   if (do_smart_layout) {
+      while (cycles.size() != 0) {
 
-      QS_DEF(Array<int>, unused_count);
-      unused_count.clear_resize(cycles.end());
-      unused_count.zerofill();
-      for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i)) {
-         for (int j = 0; j < cycles[i].vertexCount(); j++) {
-            if (_layout_component_number[cycles[i].getEdge(j)] == -1) unused_count[i]++;
-         }
-      }
-
-      int min_i = cycles.begin();
-      for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i)) {
-         if (unused_count[i] < unused_count[min_i] ||
-            (unused_count[i] == unused_count[min_i] && cycles[i].morganCode() > cycles[min_i].morganCode())) min_i = i;
-      }
-
-      if (unused_count[min_i] > 0) {
-
-         QS_DEF(Array<interval>, interval_list);
-         int separating_component = _search_separated_component(cycles[min_i], interval_list);
-         if (separating_component >= 0) {
-            for (int i = 0; i < interval_list.size(); i++) {
-               int start = interval_list[i].left;
-               int finish = interval_list[i].right;
-               QS_DEF(Array<int>, verts);
-               QS_DEF(Array<int>, edges);
-               verts.clear();
-               edges.clear();
-               _search_path(cycles[min_i].getVertex(finish), cycles[min_i].getVertex(start), verts, separating_component);
-               for (int j = (start + 1) % cycles[min_i].vertexCount(); j != finish; j = (j + 1) % cycles[min_i].vertexCount())
-                  verts.push(cycles[min_i].getVertex(j));
-               for (int j = 0; j < verts.size(); j++) {
-                  int e = findEdgeIndex(verts[j], verts[(j + 1) % verts.size()]);
-                  edges.push(e);
-               }
-               cycles.add(verts, edges);
+         QS_DEF(Array<int>, unused_count);
+         unused_count.clear_resize(cycles.end());
+         unused_count.zerofill();
+         for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i)) {
+            for (int j = 0; j < cycles[i].vertexCount(); j++) {
+               if (_layout_component_number[cycles[i].getEdge(j)] == -1) unused_count[i]++;
             }
          }
-         else {
-            _assignFirstCycle(cycles[min_i]);
+
+         int min_i = cycles.begin();
+         for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i)) {
+            if (unused_count[i] < unused_count[min_i] ||
+               (unused_count[i] == unused_count[min_i] && cycles[i].morganCode() > cycles[min_i].morganCode())) min_i = i;
+         }
+
+         if (unused_count[min_i] > 0) {
+
+            QS_DEF(Array<interval>, interval_list);
+            int separating_component = _search_separated_component(cycles[min_i], interval_list);
+            if (separating_component >= 0) {
+               for (int i = 0; i < interval_list.size(); i++) {
+                  int start = interval_list[i].left;
+                  int finish = interval_list[i].right;
+                  QS_DEF(Array<int>, verts);
+                  QS_DEF(Array<int>, edges);
+                  verts.clear();
+                  edges.clear();
+                  _search_path(cycles[min_i].getVertex(finish), cycles[min_i].getVertex(start), verts, separating_component);
+                  for (int j = (start + 1) % cycles[min_i].vertexCount(); j != finish; j = (j + 1) % cycles[min_i].vertexCount())
+                     verts.push(cycles[min_i].getVertex(j));
+                  for (int j = 0; j < verts.size(); j++) {
+                     int e = findEdgeIndex(verts[j], verts[(j + 1) % verts.size()]);
+                     edges.push(e);
+                  }
+                  cycles.add(verts, edges);
+               }
+            }
+            else {
+               _assignEveryCycle(cycles[min_i]);
+            }
+         }
+         cycles.remove(min_i);
+      }
+   }
+   else {
+      QS_DEF(Array<int>, sorted_cycles);
+
+      sorted_cycles.clear();
+      for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
+      {
+         cycles[i].calcMorganCode(*this);
+         sorted_cycles.push(i);
+      }
+      sorted_cycles.qsort(Cycle::compare_cb, &cycles);
+
+      _assignFirstCycle(cycles[sorted_cycles[0]]);
+
+      cycles.remove(sorted_cycles[0]);
+      sorted_cycles.remove(0);
+
+      bool chain_attached;
+
+      // Try to attach chains with one, two or more common edges outside drawn part
+      do
+      {
+         chain_attached = false;
+
+         for (i = 0; !chain_attached && i < sorted_cycles.size();)
+         {
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], 1.f, 1))
+            {
+               cycles.remove(sorted_cycles[i]);
+               sorted_cycles.remove(i);
+               chain_attached = true;
+            }
+            else
+               i++;
+         }
+
+         for (i = 0; !chain_attached && i < sorted_cycles.size();)
+         {
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], 1.f, 2))
+            {
+               cycles.remove(sorted_cycles[i]);
+               sorted_cycles.remove(i);
+               chain_attached = true;
+            }
+            else
+               i++;
+         }
+
+         for (i = 0; !chain_attached && i < sorted_cycles.size();)
+         {
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], 1.f, 0))
+            {
+               cycles.remove(sorted_cycles[i]);
+               sorted_cycles.remove(i);
+               chain_attached = true;
+            }
+            else
+               i++;
+         }
+      } while (chain_attached);
+
+      // Try to attach chains inside
+      for (i = 0; i < sorted_cycles.size();)
+      {
+         if (_attachCycleInside(cycles[sorted_cycles[i]], 1.f))
+         {
+            cycles.remove(sorted_cycles[i]);
+            sorted_cycles.remove(i);
+         }
+         else
+            i++;
+      }
+
+
+      // Try to attach chains inside with lower edge length
+      for (i = 0; i < sorted_cycles.size();)
+      {
+         if (_attachCycleInside(cycles[sorted_cycles[i]], 0.75f))
+         {
+            cycles.remove(sorted_cycles[i]);
+            sorted_cycles.remove(i);
+         }
+         else
+            i++;
+      }
+
+      do
+      {
+         chain_attached = false;
+
+         for (i = 0; !chain_attached && i < sorted_cycles.size();)
+         {
+            // 1.5f (> 1) means to calculate new length;
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], 1.5f, 0))
+            {
+               cycles.remove(sorted_cycles[i]);
+               sorted_cycles.remove(i);
+               chain_attached = true;
+            }
+            else
+               i++;
+         }
+      } while (chain_attached);
+
+      do
+      {
+         chain_attached = false;
+
+         for (i = 0; !chain_attached && i < sorted_cycles.size();)
+         {
+            if (_attachCycleWithIntersections(cycles[sorted_cycles[i]], 1.f))
+            {
+               cycles.remove(sorted_cycles[i]);
+               sorted_cycles.remove(i);
+               chain_attached = true;
+            }
+            else
+               i++;
+         }
+      } while (chain_attached);
+
+      _attachCrossingEdges();
+
+      for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
+      {
+         if (_layout_edges[i].type == ELEMENT_NOT_PLANAR)
+         {
+            _buildOutline();
+            break;
          }
       }
-      cycles.remove(min_i);
    }
-
-   bool chain_attached;
-   /*
-   // Try to attach chains with one, two or more common edges outside drawn part
-   do 
-   {
-      chain_attached = false;
-
-      for (i = 0; !chain_attached && i < sorted_cycles.size(); )
-      {
-         if (_attachCycleOutside(cycles[sorted_cycles[i]], 1.f, 1))
-         {
-            cycles.remove(sorted_cycles[i]);
-            sorted_cycles.remove(i);
-            chain_attached = true;
-         } else
-            i++;
-      }
-
-      for (i = 0; !chain_attached && i < sorted_cycles.size(); )
-      {
-         if (_attachCycleOutside(cycles[sorted_cycles[i]], 1.f, 2))
-         {
-            cycles.remove(sorted_cycles[i]);
-            sorted_cycles.remove(i);
-            chain_attached = true;
-         } else
-            i++;
-      }
-
-      for (i = 0; !chain_attached && i < sorted_cycles.size(); )
-      {
-         if (_attachCycleOutside(cycles[sorted_cycles[i]], 1.f, 0))
-         {
-            cycles.remove(sorted_cycles[i]);
-            sorted_cycles.remove(i);
-            chain_attached = true;
-         } else
-            i++;
-      }
-   } while (chain_attached);
-
-   // Try to attach chains inside
-   for (i = 0; i < sorted_cycles.size(); )
-   {
-      if (_attachCycleInside(cycles[sorted_cycles[i]], 1.f))
-      {
-         cycles.remove(sorted_cycles[i]);
-         sorted_cycles.remove(i);
-      } else
-         i++;
-   }
-
-
-   // Try to attach chains inside with lower edge length
-   for (i = 0; i < sorted_cycles.size(); )
-   {
-      if (_attachCycleInside(cycles[sorted_cycles[i]], 0.75f))
-      {
-         cycles.remove(sorted_cycles[i]);
-         sorted_cycles.remove(i);
-      } else
-         i++;
-   }
-
-   do 
-   {
-      chain_attached = false;
-
-      for (i = 0; !chain_attached && i < sorted_cycles.size(); )
-      {
-         // 1.5f (> 1) means to calculate new length;
-         if (_attachCycleOutside(cycles[sorted_cycles[i]], 1.5f, 0))
-         {
-            cycles.remove(sorted_cycles[i]);
-            sorted_cycles.remove(i);
-            chain_attached = true;
-         } else
-            i++;
-      }
-   } while (chain_attached);
-
-   do 
-   {
-      chain_attached = false;
-
-      for (i = 0; !chain_attached && i < sorted_cycles.size(); )
-      {
-         if (_attachCycleWithIntersections(cycles[sorted_cycles[i]], 1.f))
-         {
-            cycles.remove(sorted_cycles[i]);
-            sorted_cycles.remove(i);
-            chain_attached = true;
-         } else
-            i++;
-      }
-   } while (chain_attached);
-
-   _attachCrossingEdges();
-
-   for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
-   {
-      if (_layout_edges[i].type == ELEMENT_NOT_PLANAR)
-      {
-         _buildOutline();
-         break;
-      }
-   }
-   */
 
 }
 
 void MoleculeLayoutGraph::_assignFirstCycle(const Cycle &cycle)
+{
+   // TODO: Start drawing from vertex with maximum code and continue to the right with one of two which has maximum code
+   int i, n;
+   float phi;
+
+   n = cycle.vertexCount();
+
+   for (i = 0; i < n; i++)
+   {
+      _layout_vertices[cycle.getVertex(i)].type = ELEMENT_BOUNDARY;
+      _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
+   }
+
+   _first_vertex_idx = cycle.getVertex(0);
+
+   _layout_vertices[cycle.getVertex(0)].pos.set(0.f, 0.f);
+   _layout_vertices[cycle.getVertex(1)].pos.set(1.f, 0.f);
+
+   phi = (float)M_PI * (n - 2) / n;
+
+   for (i = 1; i < n - 1; i++)
+   {
+      const Vec2f &v1 = _layout_vertices[cycle.getVertex(i - 1)].pos;
+      const Vec2f &v2 = _layout_vertices[cycle.getVertex(i)].pos;
+
+      _layout_vertices[cycle.getVertex(i + 1)].pos.rotateAroundSegmentEnd(v1, v2, phi);
+   }
+}
+
+
+void MoleculeLayoutGraph::_assignEveryCycle(const Cycle &cycle)
 {
    profTimerStart(t, "_assignFirstCycle");
    const int size = cycle.vertexCount();

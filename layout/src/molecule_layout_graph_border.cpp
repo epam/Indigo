@@ -279,7 +279,7 @@ void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
       int second_vertex = -1;
       for (int i = getVertex(firts_vertex).neiBegin(); i != getVertex(firts_vertex).neiEnd(); i = getVertex(firts_vertex).neiNext(i)) {
          int new_vertex = getVertex(firts_vertex).neiVertex(i);
-         if (second_vertex == -1 || Vec2f::cross(pos[second_vertex] - pos[firts_vertex], pos[new_vertex] - pos[firts_vertex]) > 0) {
+         if (isVertexDrawn(new_vertex) && (second_vertex == -1 || Vec2f::cross(pos[second_vertex] - pos[firts_vertex], pos[new_vertex] - pos[firts_vertex]) > 0)) {
             second_vertex = new_vertex;
             first_edge = getVertex(firts_vertex).neiEdge(i);
          }
@@ -299,7 +299,7 @@ void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
 
       for (int i = getVertex(next_vertex).neiBegin(); i != getVertex(next_vertex).neiEnd(); i = getVertex(next_vertex).neiNext(i)) {
          int try_vertex = getVertex(next_vertex).neiVertex(i);
-         if (try_vertex != current_vertex) {
+         if (isVertexDrawn(try_vertex) && try_vertex != current_vertex) {
             bool need_to_update = false;
             if (next_vertex2 == current_vertex) {
                need_to_update = true;

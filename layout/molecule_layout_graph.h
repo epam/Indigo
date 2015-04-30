@@ -159,6 +159,7 @@ public:
    inline int getEdgeOrigIdx(int idx) const { return _layout_edges[idx].orig_idx; }
    inline int getEdgeType(int idx) const { return _layout_edges[idx].type; }
    inline bool isEdgeDrawn(int idx) const { return _layout_edges[idx].type != ELEMENT_NOT_DRAWN; }
+   inline bool isVertexDrawn(int idx) const { return _layout_vertices[idx].type != ELEMENT_NOT_DRAWN; }
 
    void registerLayoutVertex (int idx, const LayoutVertex &vertex);
    void registerLayoutEdge   (int idx, const LayoutEdge &edge);
@@ -298,6 +299,7 @@ protected:
    void _get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list);
    int _search_separated_component(Cycle& cycle, Array<interval>& interval_list);
    void _search_path(int start, int finish, Array<int>& path, int component_number);
+   void _assignEveryCycle(const Cycle &cycle);
    void _assignFirstCycle(const Cycle &cycle);
    void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _update_touching_segments(Array<local_pair_ii >&, ObjArray<MoleculeLayoutSmoothingSegment> &);
