@@ -264,8 +264,8 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
       // Ignore border1 and check if vertices are inside new bound
       // if no then restore Border1 and ignore Border2
       //next_bc._setChainType(border1v, mapping, ELEMENT_IGNORE);
-      /*
-      p.lineCombin2(next_bc._layout_vertices[mapping[border1v[0]]].pos, 0.9f,
+      
+      /*p.lineCombin2(next_bc._layout_vertices[mapping[border1v[0]]].pos, 0.9f,
          next_bc._layout_vertices[mapping[border1v[1]]].pos, 0.1f);
 
       if (!next_bc._isPointOutside(p))
@@ -280,7 +280,7 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
       {
          next_bc._setChainType(chain_ext, mapping, ELEMENT_IGNORE);
 
-         const Vertex &vert = next_bc.getVertex(mapping[c_beg]);
+         /*const Vertex &vert = next_bc.getVertex(mapping[c_beg]);
          int edge_idx;
          int type = -1;
 
@@ -290,17 +290,19 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
             type = next_bc._layout_edges[edge_idx].type;
             next_bc._layout_edges[edge_idx].type = ELEMENT_BOUNDARY;
          } else 
-            edge_idx = next_bc.addLayoutEdge(mapping[c_beg], mapping[c_end], -1, ELEMENT_BOUNDARY);
+            edge_idx = next_bc.addLayoutEdge(mapping[c_beg], mapping[c_end], -1, ELEMENT_BOUNDARY);*/
 
-         if (!next_bc._isPointOutside(next_bc._layout_vertices[mapping[chain_ext[1]]].pos))
+//         if (!next_bc._isPointOutside(next_bc._layout_vertices[mapping[chain_ext[1]]].pos))
+  //          continue;
+         if (!next_bc._isPointOutsideCycle(border, next_bc._layout_vertices[mapping[chain_ext[1]]].pos))
             continue;
 
          next_bc._setChainType(chain_ext, mapping, ELEMENT_BOUNDARY);
 
-         if (type < 0)
+         /*if (type < 0)
             next_bc.removeEdge(edge_idx);
          else
-            next_bc._layout_edges[edge_idx].type = type;
+            next_bc._layout_edges[edge_idx].type = type;*/
       }
       // Check if border1, border2 are outside cycle
       // (draw cycle outside not inside)
