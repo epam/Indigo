@@ -194,7 +194,7 @@ bool MoleculeLayoutGraph::_attachCycleOutside (const Cycle &cycle, float length,
    // If all vertices are drawn then draw edges without intersections with already drawn
    // Find new border
    // If then all edges are drawn return true, else return false
-   if  (n_common_v == cycle.vertexCount())
+   if (n_common_v == cycle.vertexCount())
       return _drawEdgesWithoutIntersection(cycle, cycle_vertex_types);
 
    // Attach cycle of two parts:
@@ -720,7 +720,7 @@ bool MoleculeLayoutGraph::_drawEdgesWithoutIntersection (const Cycle &cycle, Arr
                   break;
                }
 
-         if (!is_attached)
+         /*if (!is_attached)
             continue;
 
          if  (cycle_vertex_types[i] == ELEMENT_INTERNAL ||
@@ -778,7 +778,7 @@ bool MoleculeLayoutGraph::_drawEdgesWithoutIntersection (const Cycle &cycle, Arr
             } 
             else
                _layout_edges[cycle.getEdge(i)].type = ELEMENT_INTERNAL;
-         }
+         }*/
       }
    }
 
