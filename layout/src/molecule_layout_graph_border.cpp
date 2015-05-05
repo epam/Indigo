@@ -221,7 +221,7 @@ void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
    vertices.clear();
    edges.clear();
    
-   srand(940);
+   srand(19857615);
    float sn = 0;
    float cs = 0;
    while (sn == 0 && cs == 0) {
@@ -233,7 +233,7 @@ void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
    cs /= len;
 
    pos.resize(vertexEnd());
-   for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i)) {
+   for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i)) if (getVertexType(i) != ELEMENT_NOT_DRAWN) {
       pos[i].copy(getPos(i) - p);
    }
 
