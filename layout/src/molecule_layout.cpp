@@ -321,6 +321,7 @@ void MoleculeLayout::_updateDataSGroups ()
 void MoleculeLayout::_make ()
 {
    _layout_graph.max_iterations = max_iterations;
+   _layout_graph.smart_layout = smart_layout;
 
    // 0. Find 2D coordinates via proxy _layout_graph object
    _makeLayout();

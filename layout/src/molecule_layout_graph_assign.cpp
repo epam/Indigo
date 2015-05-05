@@ -312,13 +312,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
       cycles[cycle_idx].canonize();
    }
 
-   bool do_smart_layout = false;
-   /*INDIGO_BEGIN
-   {
-      do_smart_layout = self.smart_layout;
-   }
-   INDIGO_END();*/
-   if (do_smart_layout) {
+   if (smart_layout) {
       while (cycles.size() != 0) {
 
          QS_DEF(Array<int>, unused_count);
@@ -2085,6 +2079,7 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates (ObjArray<Molecul
    {
       MoleculeLayoutGraph &component = bc_components[i];
       component.max_iterations = max_iterations;
+      component.smart_layout = smart_layout;
 
       //component._calcMorganCodes();
       component._total_morgan_code = 0;

@@ -32,6 +32,7 @@ CEXPORT int indigoLayout (int object)
          MoleculeLayout ml(mol);
          ml.max_iterations = self.layout_max_iterations;
          ml.bond_length = 1.6f;
+         ml.smart_layout = self.smart_layout;
 
          TimeoutCancellationHandler cancellation(self.cancellation_timeout);
          ml.setCancellationHandler(&cancellation);

@@ -352,6 +352,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents (BaseMolecule & molecule, bo
 
       component.makeLayoutSubgraph(*this, comp_filter);
       component.max_iterations = max_iterations;
+      component.smart_layout = smart_layout;
 
       component._molecule = &molecule;
       component._molecule_edge_mapping = molecule_edge_mapping.ptr();

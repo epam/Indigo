@@ -195,6 +195,7 @@ public:
    const int *getEdgeMapping () { return _molecule_edge_mapping; }
 
    int max_iterations;
+   bool smart_layout;
 
    CancellationHandler* cancellation;
    

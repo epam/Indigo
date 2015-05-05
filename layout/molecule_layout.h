@@ -41,7 +41,8 @@ public:
    bool respect_existing_layout;
    Filter *filter;
    int  max_iterations;
-   
+   bool smart_layout;
+
    DECL_ERROR;
 
 protected:
