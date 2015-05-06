@@ -196,29 +196,41 @@ void MoleculeLayoutMacrocyclesLattice::calculate_rotate_length() {
    rotate_length++;
 }
 
+void MoleculeLayoutMacrocyclesLattice::_rotate_ar_i(Array<int>& ar, Array<int>& tmp, int shift) {
+   for (int i = shift; i < length; i++) tmp[i - shift] = ar[i];
+   for (int i = 0; i < shift; i++) tmp[i - shift + length] = ar[i];
+   for (int i = 0; i < length; i++) ar[i] = tmp[i];
+}
+
+void MoleculeLayoutMacrocyclesLattice::_rotate_ar_d(Array<double>& ar, Array<double>& tmp, int shift) {
+   for (int i = shift; i < length; i++) tmp[i - shift] = ar[i];
+   for (int i = 0; i < shift; i++) tmp[i - shift + length] = ar[i];
+   for (int i = 0; i < length; i++) ar[i] = tmp[i];
+}
+
+void MoleculeLayoutMacrocyclesLattice::_rotate_ar_v(Array<Vec2f>& ar, Array<Vec2f>& tmp, int shift) {
+   for (int i = shift; i < length; i++) tmp[i - shift] = ar[i];
+   for (int i = 0; i < shift; i++) tmp[i - shift + length] = ar[i];
+   for (int i = 0; i < length; i++) ar[i] = tmp[i];
+}
+
+
 void MoleculeLayoutMacrocyclesLattice::rotate_cycle(int shift) {
    shift = (shift % length + length) % length;
+
    QS_DEF(Array<int>, temp);
    temp.clear_resize(length);
+   QS_DEF(Array<double>, tempd);
+   tempd.clear_resize(length);
+   QS_DEF(Array<Vec2f>, temp_v);
+   temp_v.clear_resize(length);
 
-   for (int i = shift; i < length; i++) temp[i - shift] = _vertex_weight[i];
-   for (int i = 0; i < shift; i++) temp[i - shift + length] = _vertex_weight[i];
-   for (int i = 0; i < length; i++) _vertex_weight[i] = temp[i];
-
-   for (int i = shift; i < length; i++) temp[i - shift] = _vertex_stereo[i];
-   for (int i = 0; i < shift; i++) temp[i - shift + length] = _vertex_stereo[i];
-   for (int i = 0; i < length; i++) _vertex_stereo[i] = temp[i];
-
-   for (int i = shift; i < length; i++) temp[i - shift] = _edge_stereo[i];
-   for (int i = 0; i < shift; i++) temp[i - shift + length] = _edge_stereo[i];
-   for (int i = 0; i < length; i++) _edge_stereo[i] = temp[i];
-
-   QS_DEF(Array<Vec2f>, temp_point);
-   temp_point.clear_resize(length);
-
-   for (int i = shift; i < length; i++) temp_point[i - shift] = _positions[i];
-   for (int i = 0; i < shift; i++) temp_point[i - shift + length] = _positions[i];
-   for (int i = 0; i < length; i++) _positions[i] = temp_point[i];
+   _rotate_ar_i(_vertex_weight, temp, shift);
+   _rotate_ar_i(_vertex_stereo, temp, shift);
+   _rotate_ar_i(_edge_stereo, temp, shift);
+   _rotate_ar_d(_target_angle, tempd, shift);
+   _rotate_ar_d(_angle_importance, tempd, shift);
+   _rotate_ar_v(_positions, temp_v, shift);
 
 }
 

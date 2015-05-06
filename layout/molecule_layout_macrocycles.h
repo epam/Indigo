@@ -172,6 +172,9 @@ namespace indigo {
 
       void calculate_rotate_length();
       void rotate_cycle(int shift);
+      void _rotate_ar_i(Array<int>& ar, Array<int>& tmp, int shift);
+      void _rotate_ar_d(Array<double>& ar, Array<double>& tmp, int shift);
+      void _rotate_ar_v(Array<Vec2f>& ar, Array<Vec2f>& tmp, int shift);
       //double rating(Array<answer_point>);
 
       TL_CP_DECL(Array<int>, _vertex_weight);
