@@ -788,7 +788,7 @@ double MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout &cl) {
    return rating(cl);
 }
 
-int MoleculeLayoutMacrocyclesLattice::internalValue(CycleLayout cl) {
+int MoleculeLayoutMacrocyclesLattice::internalValue(CycleLayout& cl) {
    int val = 0;
 
    for (int i = 0; i < cl.vertex_count; i++)
@@ -811,7 +811,26 @@ double MoleculeLayoutMacrocyclesLattice::CycleLayout::perimeter() {
    return perimeter; 
 }
 
-double MoleculeLayoutMacrocyclesLattice::rating(CycleLayout cl) {
+bool MoleculeLayoutMacrocyclesLattice::is_period(CycleLayout& cl, int k) {
+   if (cl.vertex_count % k != 0) return false;
+   int len = cl.vertex_count / k;
+   for (int i = 0; i + len < cl.vertex_count; i++) if (cl.rotate[i] != cl.rotate[i + len]) return false;
+   for (int i = 0; i + len < cl.vertex_count; i++) if (cl.edge_length[i] != cl.edge_length[i + len]) return false;
+   return true;
+}
+
+int MoleculeLayoutMacrocyclesLattice::period(CycleLayout& cl) {
+   int answer = 1;
+   if (is_period(cl, 2)) {
+      answer = 2;
+      if (is_period(cl, 4)) answer = 4;
+   }
+   if (is_period(cl, 3)) answer *= 3;
+
+   return answer;
+}
+
+double MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl) {
    double eps = 1e-9;
    double result = 0;
    int add = 0;
@@ -881,10 +900,12 @@ double MoleculeLayoutMacrocyclesLattice::rating(CycleLayout cl) {
 
    result += (perimeter * perimeter / 4 / PI / area - 1) / 5;
 
-   //printf("%5.5f\n", result);
-   return result + 1000.0 * add;
+   result += 1000.0 * add;
 
+   int p = period(cl);
+   result *= 1.0 / p;
 
+   return result;
 }
 
 void MoleculeLayoutMacrocyclesLattice::CycleLayout::soft_move_vertex(int vertex_number, Vec2f move_vector) {
@@ -1083,9 +1104,12 @@ void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>
    }
    for (int i = 0; i < len; i++) {
       for (int j = 0; j < all_points.size(); j++) {
-         double distSqr = (cl.point[i] - all_points[j]).lengthSqr();
-         if (eps2 < distSqr && distSqr < good_distance) {
-            pairs.push(local_pair_id(i, all_numbers[j]));
+         int diff = (i - (int)all_numbers[j] + len) % len;
+         if (diff > 1 && diff != len - 1) {
+            double distSqr = (cl.point[i] - all_points[j]).lengthSqr();
+            if (eps2 < distSqr && distSqr < good_distance) {
+               pairs.push(local_pair_id(i, all_numbers[j]));
+            }
          }
       }
    }

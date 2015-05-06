@@ -149,8 +149,10 @@ namespace indigo {
       };
 
       void initCycleLayout(CycleLayout& cl);
-      int internalValue(CycleLayout cl);
-      double rating(CycleLayout cl);
+      int internalValue(CycleLayout& cl);
+      double rating(CycleLayout& cl);
+      int period(CycleLayout& cl);
+      bool is_period(CycleLayout& cl, int k);
       void closingStep(CycleLayout &cl, int index, int base_vertex, bool fix_angle, bool fix_next, double multiplyer);
       void closing(CycleLayout &cl);
       void updateTouchingPoints(Array<local_pair_id>&, CycleLayout&);
