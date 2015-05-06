@@ -274,12 +274,9 @@ CEXPORT int mangoSetupMatch (const char *search_type, const char *query, const c
             self.mango_search_type = BingoCore::_GROSS;
             return 1;
          }
-         else
-         {
-            self.mango_search_type = BingoCore::_UNDEF;
-            throw BingoError("Unknown search type '%s' or options string '%s'", 
-               search_type, options);
-         }
+         self.mango_search_type = BingoCore::_UNDEF;
+         throw BingoError("Unknown search type '%s' or options string '%s'", 
+            search_type, options);
       }
       CATCH_READ_TARGET_MOL(self.error.readString(e.message(), 1); return -1;);
    }
