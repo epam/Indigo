@@ -323,6 +323,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
                if (_layout_component_number[cycles[i].getEdge(j)] == -1) unused_count[i]++;
             }
          }
+         for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i)) unused_count[i] *= cycles[i].vertexCount();
 
          int min_i = cycles.begin();
          for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i)) {
@@ -1031,7 +1032,7 @@ void MoleculeLayoutGraph::_assignEveryCycle(const Cycle &cycle)
             segment[i].inverse();
       }
 
-
+      
       // 3. shift
 
       Vec2f middle_host;
@@ -1076,7 +1077,7 @@ void MoleculeLayoutGraph::_assignEveryCycle(const Cycle &cycle)
             _layout_vertices[insideVertex[i]].pos.rotateAroundSegmentEnd(_layout_vertices[insideVertex[i]].pos, middle_new, angle);
       }
 
-
+      
    }
 
    for (int i = 0; i < size; i++)
