@@ -714,7 +714,7 @@ namespace com.ggasoftware.indigo
                                      float x3, float y3, float x4, float y4)
         {
            dispatcher.setSessionID();
-           return dispatcher.checkResult(_indigo_lib.indigoSetSgroupBrackets(self, brk_style, x1, y1, x2, y2, x3, y3, x4, y4));
+           return dispatcher.checkResult(_indigo_lib.indigoSetSGroupBrackets(self, brk_style, x1, y1, x2, y2, x3, y3, x4, y4));
         }
 
         public IndigoObject findSGroups(String property, String value)
