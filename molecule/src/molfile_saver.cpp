@@ -499,13 +499,13 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             }
             if (ap_count > 0)
             {
-               out.printf(" ATTCHORD=(%d", ap_count);
+               out.printf(" ATTCHORD=(%d", ap_count * 2);
                for (int j = mol.template_attachment_points.begin(); j != mol.template_attachment_points.end(); j = mol.template_attachment_points.next(j))
                {
                   BaseMolecule::TemplateAttPoint &ap = mol.template_attachment_points.at(j);
                   if (ap.ap_occur_idx == i)
                   {
-                     out.printf(" %d %s", ap.ap_aidx, ap.ap_id.ptr());
+                     out.printf(" %d %s", ap.ap_aidx + 1, ap.ap_id.ptr());
                   }
                }
                out.printf(")");
