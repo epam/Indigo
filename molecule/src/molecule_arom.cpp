@@ -311,6 +311,9 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
    if (_basemol.isPseudoAtom(v_idx))
       return -1;
 
+   if (_basemol.isTemplateAtom(v_idx))
+      return -1;
+
    if (_basemol.isRSite(v_idx))
       return -1;
 

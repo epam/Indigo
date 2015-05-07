@@ -91,8 +91,6 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          atom->SetAttribute("id", buf.ptr());
          atom->SetAttribute("elementType", atom_str);
 
-         if (!_mol->isRSite(i) && !_mol->isPseudoAtom(i))
-
          if (_mol->getAtomIsotope(i) != 0)
          {
             atom->SetAttribute("isotope", _mol->getAtomIsotope(i));

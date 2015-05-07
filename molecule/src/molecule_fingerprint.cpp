@@ -285,6 +285,9 @@ int MoleculeFingerprintBuilder::_atomCode (BaseMolecule &mol, int vertex_idx)
    if (mol.isPseudoAtom(vertex_idx))
       return CRC32::get(mol.getPseudoAtom(vertex_idx));
 
+   if (mol.isTemplateAtom(vertex_idx))
+      return CRC32::get(mol.getTemplateAtom(vertex_idx));
+
    return mol.getAtomNumber(vertex_idx);
 }
 

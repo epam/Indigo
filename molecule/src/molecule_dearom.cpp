@@ -721,7 +721,8 @@ int DearomatizationsGroups::detectAromaticGroups (const int *atom_external_conn)
       if (_vertexAromaticGroupIndex[v_idx] != -1)
          continue;
 
-      if ((_molecule.getAtomAromaticity(v_idx) == ATOM_ALIPHATIC) || _molecule.isPseudoAtom(v_idx))
+      if ((_molecule.getAtomAromaticity(v_idx) == ATOM_ALIPHATIC) || _molecule.isPseudoAtom(v_idx) ||
+          _molecule.isTemplateAtom(v_idx))
          continue;
 
       if (_molecule.getAtomNumber(v_idx) == -1)
@@ -1537,7 +1538,7 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOpt
    bool found_invalid_aromatic_h = false;
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
-      if (mol.isRSite(i) || mol.isPseudoAtom(i))
+      if (mol.isRSite(i) || mol.isPseudoAtom(i) || mol.isTemplateAtom(i))
          continue;
 
       if (mol.getImplicitH_NoThrow(i, -1) == -1 && mol.getAtomAromaticity(i) == ATOM_AROMATIC)
@@ -1570,7 +1571,7 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOpt
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
       int conn = mol_dearom.vertex_connectivity[i];
-      if (mol.isRSite(i) || mol.isPseudoAtom(i))
+      if (mol.isRSite(i) || mol.isPseudoAtom(i) || mol.isTemplateAtom(i))
          continue;
 
       if (mol.getImplicitH_NoThrow(i, -1) == -1 && conn > 0)

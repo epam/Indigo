@@ -52,7 +52,7 @@ void MoleculePiSystemsMatcher::_calcConnectivity (Molecule &mol, Array<int> &con
       conn[edge.end] += bond_order;
    }
    for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
-      if (!mol.isPseudoAtom(v) && !mol.isRSite(v))
+      if (!mol.isPseudoAtom(v) && !mol.isRSite(v) && !mol.isTemplateAtom(v))
          conn[v] += mol.getImplicitH(v);
 }
 
@@ -255,7 +255,7 @@ void MoleculePiSystemsMatcher::_markAtomsFirst ()
 
 bool MoleculePiSystemsMatcher::_canAtomBeInPiSystem (int v)
 {
-   if (_target.isPseudoAtom(v) || _target.isRSite(v))
+   if (_target.isPseudoAtom(v) || _target.isRSite(v) || _target.isTemplateAtom(v))
       return false;
 
    int label = _target.getAtomNumber(v);

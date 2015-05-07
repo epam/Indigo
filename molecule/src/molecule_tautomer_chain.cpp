@@ -596,7 +596,7 @@ int TautomerChainChecker::isFeasiblePair (int n1, int n2, TautomerChainChecker &
    if (_prev_n2 != -1 && n2 != -1 && _context.decomposer2.getComponent(_prev_n2) != _context.decomposer2.getComponent(n2))
       return 0;
    
-   if (_context.g2.isPseudoAtom(n2)) // n1 are checked in matchAtomsTau later
+   if (_context.g2.isPseudoAtom(n2) || _context.g2.isTemplateAtom(n2)) // n1 are checked in matchAtomsTau later
       return 0;
 
    int h_diff = _h_difference;

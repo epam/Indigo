@@ -248,6 +248,9 @@ void QueryMolecule::_getAtomDescription (Atom *atom, Output &out, int depth)
       case ATOM_PSEUDO:
          out.writeString(atom->alias.ptr());
          return;
+      case ATOM_TEMPLATE:
+         out.writeString(atom->alias.ptr());
+         return;
       case ATOM_CHARGE:
          out.printf("%+d", atom->value_min);
          return;

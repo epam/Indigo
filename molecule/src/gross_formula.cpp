@@ -85,7 +85,7 @@ void GrossFormula::collect (BaseMolecule &mol, Array<int> &gross)
 
    for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
    {
-      if (mol.isPseudoAtom(i) || mol.isRSite(i))
+      if (mol.isPseudoAtom(i) || mol.isRSite(i) || mol.isTemplateAtom(i)) 
          continue;
       int number = mol.getAtomNumber(i);
 
