@@ -71,7 +71,10 @@ InChICodeParser::InChICodeParser(const char *inchi_code)
          num = 0;
          break;
       case '-':
-         if (from != -1);//throw exception
+         if(from != -1)
+         {
+            //throw exception
+         }
          from = num;
          num = 0;
          break;

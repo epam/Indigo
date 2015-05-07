@@ -94,8 +94,6 @@ void RSmilesSaver::_writeMolecule (int i)
 
 void RSmilesSaver::_saveReaction ()
 {
-   int i;
-
    _written_atoms.clear();
    _written_bonds.clear();
    _ncomp.clear();

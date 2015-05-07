@@ -32,7 +32,7 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
 
    cloneGraph(_proto, 0);
 
-   for (auto i : _proto.edges())
+   for (auto e_idx : _proto.edges())
    {
       for(auto i = 0; i < BOND_TYPES_NUMBER; ++i)
       {
@@ -40,7 +40,7 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
          _bond_masks[i].top().resize(1);
       }
 
-      if (_proto.getBondOrder(i) == 1)
+      if (_proto.getBondOrder(e_idx) == 1)
       {
          _bond_masks[0].top().reset(0);
          _bond_masks[1].top().set(0);

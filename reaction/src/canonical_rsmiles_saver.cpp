@@ -35,7 +35,7 @@ CanonicalRSmilesSaver::~CanonicalRSmilesSaver ()
 
 void CanonicalRSmilesSaver::saveReaction(Reaction &reaction_)
 {
-   int i, j;
+   int j;
 
    QS_DEF(Reaction, reaction);
    reaction.clear();
