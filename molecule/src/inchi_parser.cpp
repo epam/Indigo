@@ -62,7 +62,7 @@ InChICodeParser::InChICodeParser(const char *inchi_code)
             {
                for (auto i = from; i <= num; ++i)
                {
-                  _hydrogens.push(num - 1);
+                  _hydrogens.push(i - 1);
                   _types.push(type);
                }
                from = -1;
