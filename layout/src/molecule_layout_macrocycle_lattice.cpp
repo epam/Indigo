@@ -35,8 +35,8 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutMacrocyclesLattice, "molecule_layout_macrocycles_lattice");
 
-const double MoleculeLayoutMacrocyclesLattice::CHANGE_FACTOR = 0.999;
-const double MoleculeLayoutMacrocyclesLattice::SMOOTHING_MULTIPLIER = 0.1;
+const double MoleculeLayoutMacrocyclesLattice::CHANGE_FACTOR = 1.0;
+const double MoleculeLayoutMacrocyclesLattice::SMOOTHING_MULTIPLIER = 0.2;
 
 
 CP_DEF(MoleculeLayoutMacrocyclesLattice);
