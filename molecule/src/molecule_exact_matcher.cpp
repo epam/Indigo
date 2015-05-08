@@ -286,7 +286,7 @@ bool MoleculeExactMatcher::matchAtoms (BaseMolecule& query, BaseMolecule& target
       if (strcmp(query.getPseudoAtom(sub_idx), target.getPseudoAtom(super_idx)) != 0)
          return false;
    }
-   if (query.isTemplateAtom(sub_idx) && target.isTemplateAtom(super_idx))
+   else if (query.isTemplateAtom(sub_idx) && target.isTemplateAtom(super_idx))
    {
       if (strcmp(query.getTemplateAtom(sub_idx), target.getTemplateAtom(super_idx)) != 0)
          return false;
