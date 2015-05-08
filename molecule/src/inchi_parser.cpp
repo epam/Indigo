@@ -18,6 +18,8 @@
 
 using namespace indigo;
 
+IMPL_EXCEPTION(indigo, InchiParserError, "InchiParser");
+
 InChICodeParser::InChICodeParser(const char *inchi_code)
 : _mobileCount(0)
 {
@@ -73,7 +75,7 @@ InChICodeParser::InChICodeParser(const char *inchi_code)
       case '-':
          if(from != -1)
          {
-            //throw exception
+            throw InchiParserError("Dash without left boundary defined");
          }
          from = num;
          num = 0;
@@ -86,7 +88,7 @@ InChICodeParser::InChICodeParser(const char *inchi_code)
          }
          else
          {
-            //throw exception
+            throw InchiParserError("Invalid InChI format: \"%s\"", inchi_code);
          }
          break;
       case ')':
@@ -139,7 +141,7 @@ InChICodeParser::InChICodeParser(const char *inchi_code)
    }
    if (!isValid)
    {
-      // throw exception
+      //throw InchiParserError("Invalid InChI format: \"%s\"", inchi_code);
    }
 
 }

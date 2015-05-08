@@ -18,6 +18,8 @@
 #include "base_cpp/array.h"
 
 namespace indigo {
+   DECL_EXCEPTION(InchiParserError);
+
    // Molecule InChI code constructor class 
    class InChICodeParser
    {
