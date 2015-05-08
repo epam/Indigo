@@ -2935,34 +2935,55 @@ CEXPORT int indigoCreateSGroup (const char *type, int mapping, const char *name)
 {
    INDIGO_BEGIN
    {
-      if (strcasecmp(type, "SUP") == 0)
+      IndigoMapping &map = IndigoMapping::cast(self.getObject(mapping));
+      BaseMolecule &mol = map.to;
+      BaseMolecule &temp = map.from;
+      Array<int> &m = map.mapping;
+      int idx = mol.sgroups.addSGroup(type);
+      if (idx != -1)
       {
-         IndigoMapping &map = IndigoMapping::cast(self.getObject(mapping));
-         BaseMolecule &mol = map.to;
-         BaseMolecule &temp = map.from;
-         Array<int> &m = map.mapping;
-         int idx = mol.sgroups.addSGroup(type);
-         Superatom &satom = (Superatom &)mol.sgroups.getSGroup(idx);
-         satom.subscript.appendString(name, true);
+         SGroup &sgroup = mol.sgroups.getSGroup(idx);
+        
          for (auto i : temp.vertices())
          {
-           satom.atoms.push(m[i]);
+           sgroup.atoms.push(m[i]);
          }
          
          for (auto i : mol.edges())
          {
             const Edge &edge = mol.getEdge(i);
-            if (((satom.atoms.find(edge.beg) != -1) && (satom.atoms.find(edge.end) == -1)) ||
-                ((satom.atoms.find(edge.end) != -1) && (satom.atoms.find(edge.beg) == -1)))
+            if (((sgroup.atoms.find(edge.beg) != -1) && (sgroup.atoms.find(edge.end) == -1)) ||
+                ((sgroup.atoms.find(edge.end) != -1) && (sgroup.atoms.find(edge.beg) == -1)))
             {
-               satom.bonds.push(i);
+               sgroup.bonds.push(i);
             }
          }
 
-         return self.addObject(new IndigoSuperatom(mol, idx));
+         if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+         {
+            Superatom &sa = (Superatom &)sgroup;
+            sa.subscript.appendString(name, true);
+            return self.addObject(new IndigoSuperatom(mol, idx));
+         }
+         else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
+         {
+            RepeatingUnit &ru = (RepeatingUnit &)sgroup;
+            ru.subscript.appendString(name, true);
+            return self.addObject(new IndigoRepeatingUnit(mol, idx));
+         }
+         else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
+         {
+            return self.addObject(new IndigoMultipleGroup(mol, idx));
+         }
+         else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+         {
+            return self.addObject(new IndigoDataSGroup(mol, idx));
+         }
+         else
+         {
+            return self.addObject(new IndigoGenericSGroup(mol, idx));
+         }
       }
-      else
-         throw IndigoError("indigoCreateSgroup(): unknown Sgroup type");
    }
    INDIGO_END(-1)
 }
