@@ -164,7 +164,8 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
       cl.init(path.ptr());
       smoothing(cl);
    }
-   else preliminary_layout(cl);
+   else 
+      preliminary_layout(cl);
 
    for (int i = 0, j = 0; i < cl.vertex_count; i++)
       for (int t = cl.external_vertex_number[i]; t < cl.external_vertex_number[i + 1]; t++, j++)
@@ -286,51 +287,55 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish) {
 
       if (_vertex_stereo[len]) {
          path[len].rot -= path[len + 1].p ? 1 : -1;
-         path[len].p ^= 1;
 
-         int rot = path[len + 1].rot;
+         if (len > 0 && _edge_stereo[len - 1] == 0) {
+            path[len].p ^= 1;
 
-         int add = get_weight(_vertex_weight[len], path[len + 1].p);
+            int rot = path[len + 1].rot;
 
-         // choosing rotation closer to circle
-         double l = len * (sqrt(3.0) + 1.5) * PI / 12;
+            int add = get_weight(_vertex_weight[len], path[len + 1].p);
 
-         Vec2f vec(path[len].y, 0);
-         vec.rotate(PI / 3);
-         vec += Vec2f(path[len].x, 0);
-         double x = vec.length();
+            // choosing rotation closer to circle
+            double l = len * (sqrt(3.0) + 1.5) * PI / 12;
 
-         double eps = 1e-3;
+            Vec2f vec(path[len].y, 0);
+            vec.rotate(PI / 3);
+            vec += Vec2f(path[len].x, 0);
+            double x = vec.length();
 
-         double alpha = 2 * PI;
-         if (x > eps) {
+            double eps = 1e-3;
 
-            double L = eps;
-            double R = 2 * PI - eps;
+            double alpha = 2 * PI;
+            if (x > eps) {
 
-            while (R - L > eps) {
-               double M = (L + R) / 2;
-               if (M * x / (2 * sin(M / 2)) > l) R = M;
-               else L = M;
+               double L = eps;
+               double R = 2 * PI - eps;
+
+               while (R - L > eps) {
+                  double M = (L + R) / 2;
+                  if (M * x / (2 * sin(M / 2)) > l) R = M;
+                  else L = M;
+               }
+
+               alpha = vec.tiltAngle2() + R / 2;
+
             }
 
-            alpha = vec.tiltAngle2() + R / 2;
+            int preferred_p = alpha > PI / 3 * (path[len].rot);// +PI / 6 / length;
 
+            path[len].p = preferred_p ^ 1;
+
+            // enumerating two cases
+            for (int i = 0; i < 3; i++) {
+               if (i == 2) throw Error("Cannot find path");
+               unsigned short a = get_field(len + 1, path[len + 1]);
+               unsigned short b = get_field(len, path[len]);
+
+               if (a == add + b) break;
+               path[len].p ^= 1;
+            }
          }
-
-         int preferred_p = alpha > PI / 3 * (path[len].rot);// +PI / 6 / length;
-
-         path[len].p = preferred_p ^ 1;
-
-         // enumerating two cases
-         for (int i = 0; i < 3; i++) {
-            if (i == 2) throw Error("Cannot find path");
-            unsigned short a = get_field(len + 1, path[len + 1]);
-            unsigned short b = get_field(len, path[len]);
-
-            if (a == add + b) break;
-            path[len].p ^= 1;
-         }
+         else if (len > 0 && _edge_stereo[len - 1] == 2) path[len].p ^= 1;
       }
    }
 
@@ -724,9 +729,12 @@ double MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout &cl) {
       }
    }
 
+   bool is_pos_rotate[8];
+   for (int i = 0; i < 8; i++) is_pos_rotate[i] = i & 2;
+   is_pos_rotate[0] = true;
    int is_cis[16];
-   for (int i = 0; i < 16; i++) is_cis[i] = 2;
-   is_cis[0] = is_cis[6] = is_cis[7] = is_cis[9] = is_cis[14] = is_cis[15] = 1;
+   for (int i = 0; i < 16; i++) 
+      is_cis[i] = (is_pos_rotate[i & 7] == is_pos_rotate[i >> 1]) ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS;
 
    int best_rot = -1;
    QS_DEF(Array<int>, up);
@@ -751,9 +759,13 @@ double MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout &cl) {
                   int previ = i ? i - 1 : length - 1;
                   if (_edge_stereo[previ] == is_cis[curr_mask = ((mask << 1) + up)] || _edge_stereo[previ] == 0) {
                      int rot = j;
-                     if (is_cis[curr_mask] == 1) {
+/*                     if (is_cis[curr_mask] == 1) {
                         if (curr_mask == 9) rot--; else rot++;
-                     }
+                     }*/
+                     ///if (_edge_stereo[previ]) {
+                        if (is_pos_rotate[curr_mask & 7]) rot++;
+                        else rot--;
+                     //}
                      if (rot >= 0 && rot < maxrot) can[i + 1][rot][curr_mask & 7] = true;
                   }
                }
@@ -770,11 +782,14 @@ double MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout &cl) {
                up[i + 1] = curr_mask & 1;
                if (i < 0) break;
                for (int mask = curr_mask + 8; mask >= curr_mask; mask -= 8) {
-                  int newrot = rot;
-                  if (is_cis[mask] == 1) {
+                  int newrot = curr_rot;
+
+/*                  if (is_cis[mask] == 1) {
                      if (mask == 9) newrot++;
                      else newrot--;
-                  }
+                  }*/
+                  if (is_pos_rotate[mask & 7]) newrot--;
+                  else newrot++;
                   int previ = i ? i - 1 : length - 1;
                   if (_edge_stereo[previ] == 0 || _edge_stereo[previ] == is_cis[mask]) {
                      if (can[i][newrot][mask >> 1]) {
