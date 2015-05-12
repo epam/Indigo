@@ -2558,7 +2558,14 @@ CEXPORT int indigoGetSuperatom (int molecule, int index)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoSuperatom(mol, index));
+      if (index < 0 || index > (mol.sgroups.getSGroupCount() - 1))
+         throw IndigoError("Invalid Sgroup index %d (size = %d)", index, mol.sgroups.getSGroupCount());
+
+      SGroup &sg = mol.sgroups.getSGroup(index);
+      if (sg.sgroup_type == SGroup::SG_TYPE_SUP) 
+         return self.addObject(new IndigoSuperatom(mol, index));
+
+      throw IndigoError("Sgroup with index %d is not a Superatom", index);
    }
    INDIGO_END(-1)
 }
@@ -2568,7 +2575,14 @@ CEXPORT int indigoGetDataSGroup (int molecule, int index)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoDataSGroup(mol, index));
+      if (index < 0 || index > (mol.sgroups.getSGroupCount() - 1))
+         throw IndigoError("Invalid Sgroup index %d (size = %d)", index, mol.sgroups.getSGroupCount());
+
+      SGroup &sg = mol.sgroups.getSGroup(index);
+      if (sg.sgroup_type == SGroup::SG_TYPE_DAT) 
+         return self.addObject(new IndigoDataSGroup(mol, index));
+
+      throw IndigoError("Sgroup with index %d is not a DataSGroup", index);
    }
    INDIGO_END(-1)
 }
@@ -2578,7 +2592,14 @@ CEXPORT int indigoGetGenericSGroup (int molecule, int index)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoGenericSGroup(mol, index));
+      if (index < 0 || index > (mol.sgroups.getSGroupCount() - 1))
+         throw IndigoError("Invalid Sgroup index %d (size = %d)", index, mol.sgroups.getSGroupCount());
+
+      SGroup &sg = mol.sgroups.getSGroup(index);
+      if (sg.sgroup_type == SGroup::SG_TYPE_GEN) 
+         return self.addObject(new IndigoGenericSGroup(mol, index));
+
+      throw IndigoError("Sgroup with index %d is not a GenericSGroup", index);
    }
    INDIGO_END(-1)
 }
@@ -2588,7 +2609,14 @@ CEXPORT int indigoGetMultipleGroup (int molecule, int index)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoMultipleGroup(mol, index));
+      if (index < 0 || index > (mol.sgroups.getSGroupCount() - 1))
+         throw IndigoError("Invalid Sgroup index %d (size = %d)", index, mol.sgroups.getSGroupCount());
+
+      SGroup &sg = mol.sgroups.getSGroup(index);
+      if (sg.sgroup_type == SGroup::SG_TYPE_MUL) 
+         return self.addObject(new IndigoMultipleGroup(mol, index));
+
+      throw IndigoError("Sgroup with index %d is not a MultipleGroup", index);
    }
    INDIGO_END(-1)
 }
@@ -2598,7 +2626,14 @@ CEXPORT int indigoGetRepeatingUnit (int molecule, int index)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoRepeatingUnit(mol, index));
+      if (index < 0 || index > (mol.sgroups.getSGroupCount() - 1))
+         throw IndigoError("Invalid Sgroup index %d (size = %d)", index, mol.sgroups.getSGroupCount());
+
+      SGroup &sg = mol.sgroups.getSGroup(index);
+      if (sg.sgroup_type == SGroup::SG_TYPE_SRU) 
+         return self.addObject(new IndigoRepeatingUnit(mol, index));
+
+      throw IndigoError("Sgroup with index %d is not a RepeatingUnit", index);
    }
    INDIGO_END(-1)
 }
