@@ -324,6 +324,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
             }
          }
          for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i)) unused_count[i] *= cycles[i].vertexCount();
+         for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i)) cycles[i].calcMorganCode(supergraph);
 
          int min_i = cycles.begin();
          for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i)) {
