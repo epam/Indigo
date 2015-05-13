@@ -759,13 +759,8 @@ double MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout &cl) {
                   int previ = i ? i - 1 : length - 1;
                   if (_edge_stereo[previ] == is_cis[curr_mask = ((mask << 1) + up)] || _edge_stereo[previ] == 0) {
                      int rot = j;
-/*                     if (is_cis[curr_mask] == 1) {
-                        if (curr_mask == 9) rot--; else rot++;
-                     }*/
-                     ///if (_edge_stereo[previ]) {
-                        if (is_pos_rotate[curr_mask & 7]) rot++;
-                        else rot--;
-                     //}
+                     if (is_pos_rotate[curr_mask & 7]) rot++;
+                     else rot--;
                      if (rot >= 0 && rot < maxrot) can[i + 1][rot][curr_mask & 7] = true;
                   }
                }
@@ -784,10 +779,6 @@ double MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout &cl) {
                for (int mask = curr_mask + 8; mask >= curr_mask; mask -= 8) {
                   int newrot = curr_rot;
 
-/*                  if (is_cis[mask] == 1) {
-                     if (mask == 9) newrot++;
-                     else newrot--;
-                  }*/
                   if (is_pos_rotate[mask & 7]) newrot--;
                   else newrot++;
                   int previ = i ? i - 1 : length - 1;
@@ -912,7 +903,6 @@ double MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl) {
    result += 1.0 * diff / length;
 
    double area = cl.area();
-
    QS_DEF(Array<Vec2f>, current_point);
    current_point.clear_resize(length);
    for (int i = 0, t = 0; i < cl.vertex_count; i++)
@@ -920,7 +910,9 @@ double MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl) {
       current_point[t] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * d;
 
    for (int i = 0; i < cl.vertex_count; i++)
-   if (_component_finish[cl.external_vertex_number[i]] != cl.external_vertex_number[i] && cl.rotate[i] == -1)
+   if ((_component_finish[cl.external_vertex_number[i]] != cl.external_vertex_number[i]) &&
+      ((_component_finish[cl.external_vertex_number[i]] - cl.external_vertex_number[i] + cl.vertex_count) % cl.vertex_count <= cl.vertex_count / 4) &&
+      (cl.rotate[i] == -1))
       area += _vertex_added_square[cl.external_vertex_number[i]] * (current_point[_component_finish[cl.external_vertex_number[i]]] - current_point[cl.external_vertex_number[i]]).lengthSqr();
 
    double perimeter = cl.perimeter();
