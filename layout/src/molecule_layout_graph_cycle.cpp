@@ -28,6 +28,7 @@ TL_CP_GET(_attached_weight)
    _edges.clear();
    _attached_weight.clear();
    _max_idx = 0;
+   _morgan_code_calculated = false;
 }
 
 MoleculeLayoutGraph::Cycle::Cycle (const List<int> &edges, const MoleculeLayoutGraph &graph) :
@@ -39,6 +40,7 @@ TL_CP_GET(_attached_weight)
    copy(edges, graph);
    _attached_weight.resize(graph.vertexCount());
    _attached_weight.zerofill();
+   _morgan_code_calculated = false;
 }
 
 MoleculeLayoutGraph::Cycle::Cycle (const Array<int> &vertices, const Array<int> &edges) :
@@ -50,6 +52,7 @@ TL_CP_GET(_attached_weight)
    copy(vertices, edges);
    _attached_weight.resize(vertices.size());
    _attached_weight.zerofill();
+   _morgan_code_calculated = false;
 }
 
 void MoleculeLayoutGraph::Cycle::copy (const List<int> &edges, const MoleculeLayoutGraph &graph)
@@ -98,15 +101,23 @@ void MoleculeLayoutGraph::Cycle::copy (const Array<int> &vertices, const Array<i
          _max_idx = _vertices[i];
 }
 
-void MoleculeLayoutGraph::Cycle::calcMorganCode (const MoleculeLayoutGraph &parent_graph)
+long MoleculeLayoutGraph::Cycle::morganCode() const
+{
+   if (!_morgan_code_calculated) throw Error("Morgan code does not calculated yet.");
+   return _morgan_code;
+}
+
+void MoleculeLayoutGraph::Cycle::calcMorganCode(const MoleculeLayoutGraph &parent_graph)
 {
    _morgan_code = 0;
 
    for (int i = 0; i < vertexCount(); i++)
       _morgan_code += parent_graph.getLayoutVertex(_vertices[i]).morgan_code;
+
+   _morgan_code_calculated = true;
 }
 
-void MoleculeLayoutGraph::Cycle::canonize ()
+void MoleculeLayoutGraph::Cycle::canonize()
 {
    // 1. v(0)<v(i), i=1,...,l-1 ; 
    // 2. v(1)< v(l-2) => unique representation of cycle

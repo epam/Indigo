@@ -230,7 +230,7 @@ protected:
       void setVertexWeight(int idx, int w) {_attached_weight[idx] = w;}
       void addVertexWeight(int idx, int w) {_attached_weight[idx] += w;}
       int getVertexWeight(int idx) const {return _attached_weight[idx];}
-      long morganCode () const { return _morgan_code; }
+      long morganCode() const;
       void canonize ();
       bool contains (const Cycle &another) const;
       void calcMorganCode (const MoleculeLayoutGraph &parent_graph);
@@ -248,6 +248,7 @@ protected:
 //      Array<int> _edges;
       int _max_idx;
       long _morgan_code;
+      bool _morgan_code_calculated;
 
    private:
       Cycle(const Cycle &other); // No copy constructor
