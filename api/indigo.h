@@ -572,7 +572,6 @@ CEXPORT float indigoMonoisotopicMass (int molecule);
 
 CEXPORT const char * indigoCanonicalSmiles (int molecule);
 CEXPORT const char * indigoLayeredCode (int molecule);
-CEXPORT const char * indigoSmth(int molecule, const char *inchiCode);
 
 CEXPORT const int * indigoSymmetryClasses (int molecule, int *count_out);
 

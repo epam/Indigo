@@ -103,10 +103,10 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
 
    // Indicate occupied mobile positions
    // Probably this could be done somehow inside of hypermolecule
+   Dbitset Ox01;
+   Ox01.set(0);
    for (auto i : molecule.vertices())
    {
-      Dbitset Ox01;
-      Ox01.set(0);
       bool occupied = (molecule.getAtomTotalH(i) - hydrogens[inv_mapping[i]]) != 0;
       if (occupied)
       {
@@ -334,10 +334,8 @@ void TautomerEnumerator::vertexAdd(Graph &subgraph, Graph &supergraph,
    }
    else if (breadcrumps.nodesHistory.size() == 1)
    {
-      // Magic number. We expect no more than 2048 tautomers for now.
-      // This shall be fixed later.
-      breadcrumps.forwardMask.resize(2048);
-      breadcrumps.backwardMask.resize(2048);
+      breadcrumps.forwardMask.resize(layeredMolecules.layers);
+      breadcrumps.backwardMask.resize(layeredMolecules.layers);
       breadcrumps.forwardMask.copy(layeredMolecules.getMobilePositionOccupiedMask(super_idx));
       breadcrumps.backwardMask.set(0, layeredMolecules.layers);
    }

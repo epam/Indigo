@@ -42,19 +42,19 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
 
       if (_proto.getBondOrder(e_idx) == 1)
       {
-         _bond_masks[0].top().reset(0);
-         _bond_masks[1].top().set(0);
-         _bond_masks[2].top().reset(0);
-         _bond_masks[3].top().reset(0);
-         _bond_masks[4].top().reset(0);
+         _bond_masks[BOND_ZERO].top().reset(0);
+         _bond_masks[BOND_SINGLE].top().set(0);
+         _bond_masks[BOND_DOUBLE].top().reset(0);
+         _bond_masks[BOND_TRIPLE].top().reset(0);
+         _bond_masks[BOND_AROMATIC].top().reset(0);
       }
       else
       {
-         _bond_masks[0].top().reset(0);
-         _bond_masks[1].top().reset(0);
-         _bond_masks[2].top().set(0);
-         _bond_masks[3].top().reset(0);
-         _bond_masks[4].top().reset(0);
+         _bond_masks[BOND_ZERO].top().reset(0);
+         _bond_masks[BOND_SINGLE].top().reset(0);
+         _bond_masks[BOND_DOUBLE].top().set(0);
+         _bond_masks[BOND_TRIPLE].top().reset(0);
+         _bond_masks[BOND_AROMATIC].top().reset(0);
       }
    }
 
@@ -82,9 +82,9 @@ void LayeredMolecules::constructMolecule(Molecule &molecule, int layer, bool aro
    for (auto i : const_cast<Molecule&>(_proto).edges())
    {
       int order = BOND_ZERO;
-      _bond_masks[1][i].get(layer)? order = BOND_SINGLE: 0;
-      _bond_masks[2][i].get(layer)? order = BOND_DOUBLE: 0;
-      _bond_masks[3][i].get(layer)? order = BOND_TRIPLE: 0;
+      _bond_masks[BOND_SINGLE][i].get(layer)? order = BOND_SINGLE: 0;
+      _bond_masks[BOND_DOUBLE][i].get(layer)? order = BOND_DOUBLE: 0;
+      _bond_masks[BOND_TRIPLE][i].get(layer)? order = BOND_TRIPLE: 0;
       molecule.setBondOrder(i, order);
    }
    // Actually I would prefer to aromatize the molecule manually (and much more effective) as far as I have the list of aromatic bonds already.
@@ -159,9 +159,9 @@ void LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Arra
       for (auto i = 0; i < edgeIsOnPath.size(); ++i)
       {
          int order = 0;
-         if(_bond_masks[1][i].get(prototypeIndex))
+         if(_bond_masks[BOND_SINGLE][i].get(prototypeIndex))
             order = 1;
-         else if(_bond_masks[2][i].get(prototypeIndex))
+         else if(_bond_masks[BOND_DOUBLE][i].get(prototypeIndex))
             order = 2;
 
          if(edgeIsOnPath[i])
@@ -174,9 +174,9 @@ void LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Arra
          unique = (newlyAdded? true: unique);
 
          _bond_masks[order][i].set(newTautomerIndex);
-         _bond_masks[3][i].reset(newTautomerIndex);
-         _bond_masks[4][i].reset(newTautomerIndex);
-         _bond_masks[order == 1? 2: 1][i].reset(newTautomerIndex);
+         _bond_masks[BOND_TRIPLE][i].reset(newTautomerIndex);
+         _bond_masks[BOND_AROMATIC][i].reset(newTautomerIndex);
+         _bond_masks[order == 1? BOND_DOUBLE: BOND_SINGLE][i].reset(newTautomerIndex);
       }
       if(!unique)
       {
@@ -380,10 +380,11 @@ void LayeredMolecules::_resizeLayers(int newSize)
 {
    for (auto i : _proto.edges())
    {
-      _bond_masks[1][i].resize(newSize);
-      _bond_masks[2][i].resize(newSize);
-      _bond_masks[3][i].resize(newSize);
-      _bond_masks[4][i].resize(newSize);
+      _bond_masks[BOND_ZERO][i].resize(newSize);
+      _bond_masks[BOND_SINGLE][i].resize(newSize);
+      _bond_masks[BOND_DOUBLE][i].resize(newSize);
+      _bond_masks[BOND_TRIPLE][i].resize(newSize);
+      _bond_masks[BOND_AROMATIC][i].resize(newSize);
    }
    for (auto i : _proto.vertices())
    {
@@ -402,9 +403,9 @@ void LayeredMolecules::_calcConnectivity(int layerFrom, int layerTo)
    for(auto bond_idx : _proto.edges())
    {
       const Edge &edge = _proto.getEdge(bond_idx);
-      const Dbitset &bs1 = _bond_masks[1][bond_idx];
-      const Dbitset &bs2 = _bond_masks[2][bond_idx];
-      const Dbitset &bs3 = _bond_masks[3][bond_idx];
+      const Dbitset &bs1 = _bond_masks[BOND_SINGLE][bond_idx];
+      const Dbitset &bs2 = _bond_masks[BOND_DOUBLE][bond_idx];
+      const Dbitset &bs3 = _bond_masks[BOND_TRIPLE][bond_idx];
       for(auto l = layerFrom; l < layerTo; ++l)
       {
          int order = 0;
@@ -451,10 +452,10 @@ void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
       for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
       {
          int bond_idx = vertex.neiEdge(i);
-         const Dbitset &bs1 = _bond_masks[1][bond_idx];
-         const Dbitset &bs2 = _bond_masks[2][bond_idx];
-         const Dbitset &bs3 = _bond_masks[3][bond_idx];
-         const Dbitset &bsArom = _bond_masks[4][bond_idx];
+         //const Dbitset &bs1 = _bond_masks[BOND_SINGLE][bond_idx];
+         const Dbitset &bs2 = _bond_masks[BOND_DOUBLE][bond_idx];
+         const Dbitset &bs3 = _bond_masks[BOND_TRIPLE][bond_idx];
+         const Dbitset &bsArom = _bond_masks[BOND_AROMATIC][bond_idx];
 
          for(auto l = layerFrom; l < layerTo; ++l)
          {
@@ -594,11 +595,12 @@ void LayeredMolecules::_aromatizeCycle (const Array<int> &cycle, const Dbitset &
       for(int j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
       {
          int bond_idx = vertex.neiEdge(j);
-         _bond_masks[4][bond_idx].orWith(mask);
+         _bond_masks[BOND_AROMATIC][bond_idx].orWith(mask);
          // We are able to store both aromatic and non-aromatic bonds. But in case we need to store only one type, uncomment next lines.
-         //_bond_masks[1][bond_idx].andNotWith(mask);
-         //_bond_masks[2][bond_idx].andNotWith(mask);
-         //_bond_masks[3][bond_idx].andNotWith(mask);
+         //_bond_masks[BOND_ZERO][bond_idx].andNotWith(mask);
+         //_bond_masks[BOND_SINGLE][bond_idx].andNotWith(mask);
+         //_bond_masks[BOND_DOUBLE][bond_idx].andNotWith(mask);
+         //_bond_masks[BOND_TRIPLE][bond_idx].andNotWith(mask);
       }
    }
 }
@@ -614,18 +616,18 @@ void LayeredMolecules::_registerAromatizedLayers(int layerFrom, int layerTo)
       for (auto i : _proto.edges())
       {
          int order = 0;
-         if(_bond_masks[4][i].get(l))
+         if(_bond_masks[BOND_AROMATIC][i].get(l))
          {
             order = 4;
             aromatic = true;
          }
          else
          {
-            if(_bond_masks[1][i].get(l))
+            if(_bond_masks[BOND_SINGLE][i].get(l))
                order = 1;
-            else if(_bond_masks[2][i].get(l))
+            else if(_bond_masks[BOND_DOUBLE][i].get(l))
                order = 2;
-            else if(_bond_masks[3][i].get(l))
+            else if(_bond_masks[BOND_TRIPLE][i].get(l))
                order = 3;
          }
 

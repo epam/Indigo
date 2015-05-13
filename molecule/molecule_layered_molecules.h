@@ -29,7 +29,7 @@ namespace indigo {
 class DLLEXPORT LayeredMolecules : public BaseMolecule
 {      
 public:
-   static const int BOND_TYPES_NUMBER = 5;
+   enum { BOND_TYPES_NUMBER = 5 };
 
    LayeredMolecules(BaseMolecule& molecule);
    virtual ~LayeredMolecules();

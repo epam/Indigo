@@ -51,9 +51,9 @@ IndigoObject * IndigoTautomerIter::next()
 {
    if (hasNext())
    {
-      IndigoMoleculeTautomer *result = new IndigoMoleculeTautomer(_enumerator, _currentPosition);
+      AutoPtr<IndigoMoleculeTautomer> result = new IndigoMoleculeTautomer(_enumerator, _currentPosition);
       _currentPosition = _enumerator.next(_currentPosition);
-      return result;
+      return result.release();
    }
    return NULL;
 }
