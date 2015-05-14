@@ -133,15 +133,15 @@ void LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Arra
 // beg, end: the mobile positions of hydrogen to swap
 // forward: the direction to move the hydrogen
 {
-   Array<bool> edgeIsOnPath; // indicates if an edge is on path that needs to be inverted
-   // заменить потом на Dbitset
+   QS_DEF(Array<bool>, edgeIsOnPath); // indicates if an edge is on path that needs to be inverted
+   edgeIsOnPath.clear();
    edgeIsOnPath.expandFill(edgeCount(), false);
    for (auto i = 0; i < edgesPath.size(); ++i)
    {
       edgeIsOnPath[edgesPath[i]] = true;
    }
 
-   Dbitset maskCopy;
+   QS_DEF(Dbitset, maskCopy);
    maskCopy.copy(mask);
 
    unsigned newTautomerIndex;
@@ -156,7 +156,7 @@ void LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Arra
       unsigned node = _trie.getRoot();
       bool unique = false;
 
-      for (auto i = 0; i < edgeIsOnPath.size(); ++i)
+      for (auto i = 0; i < edgeCount(); ++i)
       {
          int order = 0;
          if(_bond_masks[BOND_SINGLE][i].get(prototypeIndex))
@@ -424,10 +424,19 @@ void LayeredMolecules::_calcConnectivity(int layerFrom, int layerTo)
 void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
 {
    _piLabels.resize(_proto.vertexEnd());
+   QS_DEF(Dbitset, skip);
+   skip.resize(layers);
+   QS_DEF(Array<int>, non_arom_conn);
+   QS_DEF(Array<int>, arom_bonds);
+   QS_DEF(Array<int>, n_double_ext);
+   QS_DEF(Array<int>, n_double_ring);
+   non_arom_conn.resize(layers);
+   arom_bonds.resize(layers);
+   n_double_ext.resize(layers);
+   n_double_ring.resize(layers);
+
    for(auto v_idx : _proto.vertices())
    {
-      Dbitset skip;
-      skip.resize(layers);
       skip.clear();
 
       _piLabels[v_idx].expandFill(layers, -1);
@@ -440,14 +449,10 @@ void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
 
       const Vertex &vertex = _proto.getVertex(v_idx);
 
-      Array<int> non_arom_conn;
-      Array<int> arom_bonds;
-      Array<int> n_double_ext;
-      Array<int> n_double_ring;
-      non_arom_conn.expandFill(layers, 0);
-      arom_bonds.expandFill(layers, 0);
-      n_double_ext.expandFill(layers, 0);
-      n_double_ring.expandFill(layers, 0);
+      non_arom_conn.fill(0);
+      arom_bonds.fill(0);
+      n_double_ext.fill(0);
+      n_double_ring.fill(0);
 
       for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
       {
@@ -557,7 +562,7 @@ bool LayeredMolecules::_cb_handle_cycle (Graph &graph, const Array<int> &vertice
 bool LayeredMolecules::_handleCycle (int layerFrom, int layerTo, const Array<int> &path)
 {
    // Check Huckel's rule
-   Dbitset satisfiesRule;
+   QS_DEF(Dbitset, satisfiesRule);
    satisfiesRule.resize(layerTo);
    satisfiesRule.clear();
    for(auto l = layerFrom; l < layerTo; ++l)

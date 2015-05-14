@@ -33,15 +33,17 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
 {
    InchiWrapper indigo_inchi;
 
-   Array<char> tmp;
+   QS_DEF(Array<char>, tmp);
    indigo_inchi.saveMoleculeIntoInchi(molecule, tmp);
    const char *params = tmp.ptr();
 
    // We need a canonical mapping. This is something that MoleculeInChI does.
    // This is the only reason I use it. Maybe it's better to implement this procedure outside of MoleculeInChI.
-   Array<int> canonical_mapping;
+   QS_DEF(Array<int>, canonical_mapping);
+   canonical_mapping.resize(molecule.vertexEnd());
+   canonical_mapping.zerofill();
    QS_DEF(Array<int>, ignored);
-   ignored.clear_resize(molecule.vertexEnd());
+   ignored.resize(molecule.vertexEnd());
    ignored.zerofill();
 
    MoleculeAutomorphismSearch of;
@@ -60,12 +62,14 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
 
    InChICodeParser inchiParser(params);
 
-   Array<int> hydrogens;
+   QS_DEF(Array<int>, hydrogens);
    // For each position get number of fixed hydrogens
-   hydrogens.expandFill(molecule.vertexCount(), 0);
+   hydrogens.resize(molecule.vertexCount());
+   hydrogens.zerofill();
 
-   Array<int> inv_mapping;
-   inv_mapping.expandFill(molecule.vertexEnd(), -1);
+   QS_DEF(Array<int>, inv_mapping);
+   inv_mapping.resize(molecule.vertexEnd());
+   inv_mapping.fill(-1);
    int j = 0;
    for(auto i : molecule.vertices())
    {
