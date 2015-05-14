@@ -303,6 +303,8 @@ protected:
    void _search_path(int start, int finish, Array<int>& path, int component_number);
    void _assignEveryCycle(const Cycle &cycle);
    void _assignFirstCycle(const Cycle &cycle);
+
+   // smoothing
    void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _update_touching_segments(Array<local_pair_ii >&, ObjArray<MoleculeLayoutSmoothingSegment> &);
    void _segment_smoothing_prepearing(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
@@ -311,6 +313,7 @@ protected:
    void _segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _segment_improoving(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int, float, Array<local_pair_ii>&);
+
    void _attachCrossingEdges ();
    void _attachDandlingVertices (int vert_idx, Array<int> &adjacent_list);
    void _calculatePositionsOneNotDrawn (Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx);

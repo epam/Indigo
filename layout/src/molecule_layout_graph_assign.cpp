@@ -25,7 +25,6 @@
 #include "layout/layout_pattern.h"
 
 #include <math/random.h>
-#include <vector>
 #include <algorithm>
 
 using namespace indigo;
@@ -1296,7 +1295,7 @@ void MoleculeLayoutGraph::_update_touching_segments(Array<local_pair_ii >& pairs
 
    for (int i = 0; i < segments_count; i++)
    for (int j = i + 2; j < segments_count; j++) if (i != 0 || j != segments_count - 1){
-      if (segment[i]._graph.vertexCount() == 2 && segment[j]._graph.vertexCount() == 2) continue;
+      if (segment[i]._graph.vertexCount() == 2 || segment[j]._graph.vertexCount() == 2) continue;
       bool interseced = false;
 
       for (int v1 = segment[j]._graph.vertexBegin(); v1 != segment[j]._graph.vertexEnd() && !interseced; v1 = segment[j]._graph.vertexNext(v1)) {
@@ -1324,7 +1323,7 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
       if ((i & (i - 1)) == 0) _update_touching_segments(touching_segments, segment);
       if (i % 100 == 0 && touching_segments.size() == 0) {
          bool all_right = true;
-         for (int j = 0; j < segments_count; j++)
+         for (int j = 0; all_right && j < segments_count; j++)
             all_right &= abs(target_angle[j] - rotation_point[j].calc_angle(rotation_point[(j + 1) % segments_count], rotation_point[(j + segments_count - 1) % segments_count])) < 1e-3;
          if (all_right) break;
       }
@@ -1334,7 +1333,7 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
    for (int i = 0; i < segments_count; i++)
       for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
          getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
-
+   
 }
 
 void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
@@ -1458,13 +1457,27 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
    Vec2f move_vector(0, 0);
 
    // fix intersections to other components
-   for (int i = 0; i < touching_segments.size(); i++) if (touching_segments[i].left == move_vertex) {
-      Vec2f shift1(segment[move_vertex].getCenter());
-      Vec2f shift2(segment[touching_segments[i].right].getCenter());
-      Vec2f shift(shift1 - shift2);
-      shift.normalize();
-      move_vector += shift;
-   }
+   for (int i = 0; i < touching_segments.size(); i++) 
+      if (touching_segments[i].left == move_vertex || touching_segments[i].left == (move_vertex + 1) % segments_count) {
+         int another_segment = touching_segments[i].right;
+         float min_dist = 0.7;
+         //float dist2 = min_dist;
+         bool interseced = false;
+         for (int v1 = segment[move_vertex]._graph.vertexBegin(); !interseced && v1 != segment[move_vertex]._graph.vertexEnd(); v1 = segment[move_vertex]._graph.vertexNext(v1)) {
+            for (int v2 = segment[another_segment]._graph.vertexBegin(); !interseced && v2 != segment[another_segment]._graph.vertexEnd(); v2 = segment[another_segment]._graph.vertexNext(v2)) {
+               if ((segment[move_vertex].getPosition(v1) - segment[another_segment].getPosition(v2)).lengthSqr() < min_dist * min_dist) interseced = true;
+               //dist2 = min(dist2, (segment[move_vertex].getPosition(v1) - segment[another_segment].getPosition(v2)).lengthSqr());
+            }
+         }
+            //dist2 = max(dist2, 0.25f);
+            if (interseced) {
+               Vec2f shift1(segment[move_vertex].getCenter());
+               Vec2f shift2(segment[touching_segments[i].right].getCenter());
+               Vec2f shift(shift1 - shift2);
+               shift.normalize();
+               move_vector += shift;
+            }
+      }
 
    // fix angle
    Vec2f prev_point(point[(move_vertex + segments_count - 1) % segments_count]);
@@ -1483,6 +1496,7 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
       float dist = (this_point - center).length();
 
       move_vector += (this_point - center) * (radii - dist)/radii;
+      //move_vector += get_move_vector(this_point, center, radii);
    } else {
       double l1 = segment[(move_vertex + segments_count - 1) % segments_count].getLength();
       double l2 = segment[move_vertex].getLength();
@@ -1501,10 +1515,13 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
    // fix distance to neighborhoods
    move_vector += (this_point - next_point) * segment[move_vertex].getLengthCoef();
    move_vector += (this_point - prev_point) * segment[(move_vertex + segments_count - 1) % segments_count].getLengthCoef();
+//   move_vector += get_move_vector(this_point, prev_point, segment[(move_vertex + segments_count - 1) % segments_count].getLength());
+//   move_vector += get_move_vector(this_point, next_point, segment[move_vertex].getLength());
 
    // apply
    point[move_vertex] += move_vector * coef;
 }
+
 
 // If vertices are already drawn
 // draw edges with intersections

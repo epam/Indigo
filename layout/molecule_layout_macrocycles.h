@@ -18,7 +18,6 @@
 #include "molecule/molecule.h"
 #include "layout/molecule_layout_graph.h"
 #include <algorithm>
-#include <set>
 
 #ifdef _WIN32
 #pragma warning(push)
