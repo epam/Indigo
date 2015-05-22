@@ -84,6 +84,13 @@ void Molecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vert
       if (mol.isPseudoAtom(vertices[i]))
          setPseudoAtom(newidx, mol.getPseudoAtom(vertices[i]));
 
+      if (mol.isTemplateAtom(vertices[i]))
+      {
+         setTemplateAtom(newidx, mol.getTemplateAtom(vertices[i]));
+         setTemplateAtomClass(newidx, mol.getTemplateAtomClass(vertices[i]));
+         setTemplateAtomSeqid(newidx, mol.getTemplateAtomSeqid(vertices[i]));
+      }
+
       bool nei_mapped = 
          (getVertex(newidx).degree() == mol.getVertex(vertices[i]).degree());
 
@@ -331,11 +338,15 @@ void Molecule::setTemplateAtom (int idx, const char *text)
    _atoms[idx].template_occur_idx = _template_occurrences.add();
    _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
    occur.name_idx = _template_names.add(text);
+   occur.contracted = -1;
    updateEditRevision();
 }
 
 void Molecule::setTemplateAtomClass (int idx, const char *text)
 {
+   if (_atoms[idx].number != ELEM_TEMPLATE)
+      throw Error("setTemplateAtomClass(): atom #%d is not a template atom", idx);
+
    _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
    occur.class_idx = _template_classes.add(text);
    updateEditRevision();
@@ -343,8 +354,21 @@ void Molecule::setTemplateAtomClass (int idx, const char *text)
 
 void Molecule::setTemplateAtomSeqid (int idx, int seq_id)
 {
+   if (_atoms[idx].number != ELEM_TEMPLATE)
+      throw Error("setTemplateAtomSeqid(): atom #%d is not a template atom", idx);
+
    _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
    occur.seq_id = seq_id;
+   updateEditRevision();
+}
+
+void Molecule::setTemplateAtomDisplayOption (int idx, int option)
+{
+   if (_atoms[idx].number != ELEM_TEMPLATE)
+      throw Error("setTemplateAtomDisplayOption(): atom #%d is not a template atom", idx);
+
+   _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
+   occur.contracted = option;
    updateEditRevision();
 }
 
@@ -1199,6 +1223,8 @@ void Molecule::getAtomDescription (int idx, Array<char> &description)
 
    if (isPseudoAtom(idx))
       output.printf("%s", getPseudoAtom(idx));
+   else if (isTemplateAtom(idx))
+      output.printf("%s", getTemplateAtom(idx));
    else
       output.printf("%s", Element::toString(atom.number));
 
@@ -1343,6 +1369,19 @@ const int Molecule::getTemplateAtomSeqid (int idx)
 
    _TemplateOccurrence &occur = _template_occurrences.at(atom.template_occur_idx);
    const int res = occur.seq_id;
+
+   return res;
+}
+
+const int Molecule::getTemplateAtomDisplayOption (int idx)
+{
+   const _Atom &atom = _atoms[idx];
+   
+   if (atom.number != ELEM_TEMPLATE)
+      throw Error("getTemplateAtomDisplayOption(): atom #%d is not a template atom", idx);
+
+   _TemplateOccurrence &occur = _template_occurrences.at(atom.template_occur_idx);
+   const int res = occur.contracted;
 
    return res;
 }

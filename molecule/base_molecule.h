@@ -73,7 +73,8 @@ enum
    SKIP_STEREOCENTERS = 0x02,
    SKIP_XYZ = 0x04,
    SKIP_RGROUP_FRAGMENTS = 0x08,
-   SKIP_ATTACHMENT_POINTS = 0x16
+   SKIP_ATTACHMENT_POINTS = 0x16,
+   SKIP_TGROUPS = 0x32
 };
 
 class Molecule;
@@ -123,6 +124,7 @@ public:
    virtual const char * getTemplateAtom (int idx) = 0;
    virtual const int getTemplateAtomSeqid (int idx) = 0;
    virtual const char * getTemplateAtomClass (int idx) = 0;
+   virtual const int getTemplateAtomDisplayOption (int idx) = 0;
 
    int countRSites ();
    int countSGroups ();
@@ -130,6 +132,9 @@ public:
    static void collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv);
    static void collapse (BaseMolecule& bm, int id);
    static void collapse (BaseMolecule& bm);
+
+   int transformSCSRtoFullCTAB ();
+   int transformFullCTABtoSCSR (Array<TGroup> &templates);
 
    virtual bool  isRSite (int atom_idx) = 0;
    virtual dword getRSiteBits (int atom_idx) = 0;
@@ -141,6 +146,7 @@ public:
    void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
 
    void setTemplateAtomAttachmentOrder (int atom_idx, int att_atom_idx, const char *att_id);
+   int getTemplateAtomAttachmentPointById (int atom_idx, Array<char> &att_id);
 
    void addAttachmentPoint (int order, int atom_index);
    int  getAttachmentPoint (int order, int index) const;
@@ -263,6 +269,7 @@ public:
    void removeBond  (int idx);
 
    void removeSGroup (int idx);
+   void removeSGroupWithBasis (int idx);
 
    void unhighlightAll ();
    void highlightAtom (int idx);
@@ -312,6 +319,7 @@ protected:
 
    void _flipSGroupBond(SGroup &sgroup, int src_bond_idx, int new_bond_idx);
    void _flipSuperatomBond(Superatom &sa, int src_bond_idx, int new_bond_idx);
+   void _flipTemplateAtomAttachmentPoint(int idx, int atom_from, int atom_to);
    
    virtual void _mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
            const Array<int> *edges, const Array<int> &mapping, int skip_flags) = 0;
@@ -336,6 +344,8 @@ protected:
         Array<int> &mapping, Array<int> &edge_mapping);
 
    void _checkSgroupHierarchy(int pidx, int oidx);
+
+   int _transformTGroupToSGroup (int idx);
 
    Array<int> _hl_atoms;
    Array<int> _hl_bonds;

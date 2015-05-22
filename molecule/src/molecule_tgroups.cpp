@@ -14,6 +14,8 @@
 
 #include "molecule/molecule_tgroups.h"
 #include "base_cpp/auto_ptr.h"
+#include "molecule/base_molecule.h"
+#include "base_cpp/scanner.h"
 
 using namespace indigo;
 
@@ -27,6 +29,18 @@ TGroup::~TGroup ()
 
 void TGroup::clear()
 {
+}
+
+void TGroup::copy (TGroup &other)
+{
+   tgroup_class.copy(other.tgroup_class);
+   tgroup_name.copy(other.tgroup_name);
+   tgroup_alias.copy(other.tgroup_alias);
+   tgroup_comment.copy(other.tgroup_comment);
+   tgroup_id = other.tgroup_id;
+
+   fragment = other.fragment->neu();
+   fragment->clone(*other.fragment, 0, 0);
 }
 
 IMPL_ERROR(MoleculeTGroups, "molecule tgroups");
@@ -69,8 +83,29 @@ TGroup & MoleculeTGroups::getTGroup (int idx)
    return *_tgroups.at(idx);
 }
 
+void MoleculeTGroups::copyTGroupsFromMolecule (MoleculeTGroups &other)
+{
+   for (int i = other.begin(); i != other.end(); i = other.next(i))
+   {
+      TGroup &tgroup = other.getTGroup(i);
+      int idx = addTGroup();
+      getTGroup(idx).copy(tgroup);
+   }
+}
+
 int MoleculeTGroups::getTGroupCount ()
 {
    return _tgroups.size();
 }
 
+int MoleculeTGroups::findTGroup (const char *name)
+{
+   for (int i = _tgroups.begin(); i != _tgroups.end(); i = _tgroups.next(i))
+   {
+      TGroup &tgroup = *_tgroups.at(i);
+      BufferScanner sc(tgroup.tgroup_name);
+      if (tgroup.tgroup_name.size() == (strlen(name) + 1) && sc.findWord(name))
+         return i;
+   }
+   return -1;
+}

@@ -886,13 +886,13 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
    int n_tgroups = mol.tgroups.getTGroupCount();
    if (n_tgroups > 0)
    {
-      output.writeStringCR("M  V30 TEMPLATE BEGIN");
+      output.writeStringCR("M  V30 BEGIN TEMPLATE");
 
       for (i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
       {
          _writeTGroup(output, mol, i);
       }
-      output.writeStringCR("M  V30 TEMPLATE END");
+      output.writeStringCR("M  V30 END TEMPLATE");
    }
 }
 
@@ -991,7 +991,7 @@ void MolfileSaver::_writeTGroup (Output &output, BaseMolecule &mol, int tg_idx)
    ArrayOutput out(buf);
    TGroup &tgroup = mol.tgroups.getTGroup(tg_idx);
 
-   out.printf("M  V30 TEMPLATE %d ", tgroup.tgroup_id);
+   out.printf("TEMPLATE %d ", tgroup.tgroup_id);
    if (tgroup.tgroup_class.size() > 0)
       out.printf("%s/", tgroup.tgroup_class.ptr());
    if (tgroup.tgroup_name.size() > 0)
