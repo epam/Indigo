@@ -17,9 +17,9 @@ def make_doc():
     root_dir = os.path.join(script_dir, "..")
 
     os.chdir(os.path.join(root_dir, 'api/python'))
-    subprocess.check_call('%s copy-libs.py' % sys.executable, shell=True)
+    subprocess.check_call('"%s" copy-libs.py' % sys.executable, shell=True)
     os.chdir('../../doc')
-    subprocess.check_call('%s builder.py' % sys.executable, shell=True)
+    subprocess.check_call('"%s" builder.py' % sys.executable, shell=True)
     os.chdir(curdir)
 
 def copy_doc(destname):
@@ -180,4 +180,4 @@ for w, libs in wrappers:
         for gen in wrappers_gen:
             if args.type is not None and gen.find(args.type) == -1:
                 continue
-            subprocess.check_call('%s %s -s "-%s" %s' % (sys.executable, join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)
+            subprocess.check_call('"%s" %s -s "-%s" %s' % (sys.executable, join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)
