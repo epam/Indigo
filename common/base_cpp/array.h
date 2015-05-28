@@ -23,6 +23,7 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
+#include "math/random.h"
 
 namespace indigo {
 
@@ -463,6 +464,13 @@ public:
    void qsort (int (*cmp)(T1, T2, void*), void *context)
    {
       this->qsort(0, _length - 1, cmp, context);
+   }
+
+   void shuffle() {
+	   for (int i = _length - 1; i > 0; i--) {
+		   int x = next(i + 1);
+		   swap(_array[i], _array[x]);
+	   }
    }
    
    // Array<char>-specific
