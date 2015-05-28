@@ -572,6 +572,7 @@ _finish(finish)
       double dist = (center - _pos[v]).length();
       if (dist > _radius) _radius = dist;
    }
+   _center = center;
 }
 
 Vec2f MoleculeLayoutSmoothingSegment::_getPosition(Vec2f p) {
@@ -707,6 +708,12 @@ void MoleculeLayoutSmoothingSegment::set_start_finish_number(int s, int f) {
    }
    for (int v : _graph.vertices()) _center += _pos[v];
    _center /= _graph.vertexCount();
+
+   _radius = 0;
+   for (int v : _graph.vertices()) {
+	   double dist = (_center - _pos[v]).length();
+	   if (dist > _radius) _radius = dist;
+   }
 
    calculate_square();
 }
