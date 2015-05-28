@@ -1108,7 +1108,8 @@ void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeL
 
    if (segment.size() > 2) {
       _segment_smoothing_unstick(segment);
-      _do_segment_smoothing(rotation_point, target_angle, segment);
+      //_do_segment_smoothing(rotation_point, target_angle, segment);
+	  _do_segment_smoothing_gradient(rotation_point, target_angle, segment);
    }
 }
 
@@ -1520,6 +1521,120 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
 
    // apply
    point[move_vertex] += move_vector * coef;
+}
+
+
+void MoleculeLayoutGraph::_do_segment_smoothing_gradient(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+	int length = segment.size();
+
+	QS_DEF(Array< local_pair_ii >, touching_segments);
+
+	float coef = 1.0;
+	for (int i = 0; i < 100; i++, coef *= 0.9) {
+		if (!_gradient_step(rotation_point, target_angle, segment, coef, touching_segments)) break;
+	}
+
+	for (int i = 0; i < length; i++)
+		for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
+			getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
+
+}
+
+bool MoleculeLayoutGraph::_gradient_step(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, float coef, Array<local_pair_ii>& touching_segments) {
+	int length = point.size();
+	QS_DEF(Array<Vec2f>, change);
+	change.clear_resize(length);
+	for (int i = 0; i < length; i++) change[i] = Vec2f(0, 0);
+	QS_DEF(Array<float>, len1);
+	len1.clear_resize(length);
+	for (int i = 0; i < length; i++) len1[i] = segment[i].getLength();
+
+	float eps = 0.01;
+	for (int i = 0; i < length; i++) {
+		int i_1 = (i - 1 + length) % length; // i - 1
+		int i1 = (i + 1) % length; // i + 1
+
+		change[i] += _get_len_derivative(point[i1] - point[i], len1[i]) * (segment[i]._graph.vertexCount() > 2 ? 5 : 1);
+		change[i] += _get_len_derivative(point[i_1] - point[i], len1[i_1]) * (segment[i_1]._graph.vertexCount() > 2 ? 5 : 1);
+
+		if (abs(target_angle[i] - PI) > eps) change[i] += _get_angle_derivative(point[i] - point[i_1], point[i1] - point[i], PI - target_angle[i]);
+	}
+
+	for (int i = 0; i < length; i++) for (int j = i + 2; j < length; j++) if (j - i != length - 1) if (segment[i]._graph.vertexCount() > 2 && segment[j]._graph.vertexCount() > 2) {
+		float current_dist = (segment[i].getCenter() - segment[j].getCenter()).length();
+		float target_dist = segment[i].get_radius() + segment[j].get_radius() + 1.0;
+		if (current_dist < target_dist) {
+			float importance = 1;
+			Vec2f ch = _get_len_derivative_simple(segment[i].getCenter() - segment[j].getCenter(), target_dist);
+			change[j] += ch / 2 * importance;
+			change[(j + 1) % length] += ch / 2 * importance;
+			change[i] -= ch / 2 * importance;
+			change[(i + 1) % length] -= ch / 2 * importance;
+		}
+	}
+	/*for (int i = 0; i < length; i++) for (int j = i + 2; j < length; j++) if (j - i != length - 1) {
+		if ((point[i] - point[j]).lengthSqr() < 1) {
+			change[i] += _get_len_derivative(point[j] - point[i], 1);
+			change[j] += _get_len_derivative(point[i] - point[j], 1);
+		}
+	}*/
+
+	float len = 0;
+	for (int i = 0; i < length; i++) len += change[i].lengthSqr();
+	len = sqrt(len);
+	if (len > 1) for (int i = 0; i < length; i++) change[i] /= len;
+
+	for (int i = 0; i < length; i++) point[i] -= change[i] * coef;
+	return len > eps || 1;
+
+}
+
+Vec2f MoleculeLayoutGraph::_get_len_derivative(Vec2f& current_vector, float target_dist) {
+	float dist = current_vector.length();
+	//dist = __max(dist, 0.01);
+	float coef = 1;
+	if (dist >= target_dist) {
+		coef = (dist / target_dist - 1) * 2 / target_dist / dist;
+	}
+	else {
+		coef = -(target_dist / dist - 1) * 2 * target_dist / dist / dist / dist;
+	}
+	return current_vector * -coef;
+}
+
+Vec2f MoleculeLayoutGraph::_get_len_derivative_simple(Vec2f& current_vector, float target_dist) {
+	float dist = current_vector.length();
+	//dist = __max(dist, 0.01);
+	float coef = -1;// dist - target_dist;
+	return current_vector * -coef;
+}
+
+Vec2f MoleculeLayoutGraph::_get_angle_derivative(Vec2f& left_point, Vec2f& right_point, float target_angle) {
+	float len1_sq = left_point.lengthSqr();
+	float len2_sq = right_point.lengthSqr();
+	float len12 = sqrt(len1_sq * len2_sq);
+	float cross = Vec2f::cross(left_point, right_point);
+	float signcross = cross > 0 ? 1 : cross == 0 ? 0 : -1;
+	float dot = Vec2f::dot(left_point, right_point);
+	float cos = dot / len12;
+	float alpha;
+	Vec2f alphadv;
+	if (cos < 0.5) {
+		Vec2f cosdv = ((right_point - left_point) * len12 - (left_point * len2_sq - right_point * len1_sq) * dot / len12) / (len1_sq * len2_sq);
+		alpha = acos(cos)* signcross;
+		alphadv = cosdv * (-1. / sqrt(1 - cos * cos)) * signcross;
+	}
+	else {
+		float sin = cross / len12;
+		Vec2f vec = left_point + right_point;
+		vec.rotate(-1, 0);
+		alphadv = (vec * len12 - (left_point * len2_sq - right_point * len1_sq) * cross / len12) / (len1_sq * len2_sq);
+		alpha = asin(sin);
+	}
+	//float diff = abs(alpha) > abs(target_angle) ? alpha / target_angle - 1 : target_angle / alpha - 1;
+	//Vec2f result = abs(alpha) > abs(target_angle) ? alphadv / target_angle : alphadv * (- target_angle) / (alpha * alpha);
+	//return result * diff * 2;
+	return alphadv * (alpha - target_angle) * 2;
 }
 
 

@@ -313,6 +313,11 @@ protected:
    void _segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _segment_improoving(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int, float, Array<local_pair_ii>&);
+   void _do_segment_smoothing_gradient(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   bool _gradient_step(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, float coef, Array<local_pair_ii>& touching_segments);
+   Vec2f _get_len_derivative(Vec2f& current_vector, float target_dist);
+   Vec2f _get_len_derivative_simple(Vec2f& current_vector, float target_dist);
+   Vec2f _get_angle_derivative(Vec2f& left_point, Vec2f& right_point, float target_angle);
 
    void _attachCrossingEdges ();
    void _attachDandlingVertices (int vert_idx, Array<int> &adjacent_list);
