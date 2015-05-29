@@ -225,6 +225,8 @@ public:
    void findSGroups (int property, const char *value, Array<int> &sgs);
    void findSGroups (int property, Array<int> &value, Array<int> &sgs);
 
+   void registerUnfoldedHydrogen(int idx, int new_h_idx);
+
 protected:
    PtrPool<SGroup> _sgroups;
 

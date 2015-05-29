@@ -37,6 +37,16 @@ _ee(target)
    _ee.setSubgraph(query);
 }
 
+const int * MoleculeExactSubstructureMatcher::getQueryMapping ()
+{
+   return _ee.getSubgraphMapping();
+}
+
+void MoleculeExactSubstructureMatcher::ignoreTargetAtom (int idx)
+{
+    _ee.ignoreSupergraphVertex(idx);
+}
+
 bool MoleculeExactSubstructureMatcher::find ()
 {
    int i;
@@ -60,6 +70,35 @@ bool MoleculeExactSubstructureMatcher::find ()
          if (_target.getAtomIsotope(i) == 0 || !(flags & MoleculeExactMatcher::CONDITION_ISOTOPE))
             _ee.ignoreSupergraphVertex(i);
    }
+
+   if (flags & MoleculeExactMatcher::CONDITION_FRAGMENTS)
+   {
+      if (_ee.countUnmappedSubgraphVertices() > _ee.countUnmappedSupergraphVertices())
+         return false;
+
+      if (_ee.countUnmappedSubgraphEdges() > _ee.countUnmappedSupergraphEdges())
+         return false;
+   }
+   else
+   {
+      _collectConnectedComponentsInfo();
+
+      // Basic check: the query must contain no more fragments than the target
+      int query_components = _query_decomposer->getComponentsCount();
+      int target_components = _target_decomposer->getComponentsCount();
+
+      if (query_components > target_components)
+         return false;
+   }
+
+   if (_ee.process() == 0)
+      return true;
+
+   return false;
+}
+
+bool MoleculeExactSubstructureMatcher::find_withHydrogens ()
+{
 
    if (flags & MoleculeExactMatcher::CONDITION_FRAGMENTS)
    {

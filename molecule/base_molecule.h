@@ -134,7 +134,7 @@ public:
    static void collapse (BaseMolecule& bm);
 
    int transformSCSRtoFullCTAB ();
-   int transformFullCTABtoSCSR (Array<TGroup> &templates);
+   int transformFullCTABtoSCSR (ObjArray<TGroup> &templates);
 
    virtual bool  isRSite (int atom_idx) = 0;
    virtual dword getRSiteBits (int atom_idx) = 0;
@@ -307,6 +307,7 @@ public:
    void clearSGroups();
 
    void getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res);
+   void getAtomsCenterPoint (Array<int> &atoms, Vec2f &res);
 
    void getAtomSymbol (int v, Array<char> &output);
 
@@ -346,6 +347,7 @@ protected:
    void _checkSgroupHierarchy(int pidx, int oidx);
 
    int _transformTGroupToSGroup (int idx);
+   int _addTemplate (TGroup &tgroup);
 
    Array<int> _hl_atoms;
    Array<int> _hl_bonds;

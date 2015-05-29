@@ -20,6 +20,8 @@
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_arom_match.h"
+#include "molecule/molecule_exact_matcher.h"
+#include "molecule/molecule_exact_substructure_matcher.h"
 
 using namespace indigo;
 
@@ -1094,13 +1096,179 @@ int BaseMolecule::transformSCSRtoFullCTAB ()
 
    removeAtoms(tinds);
    tgroups.clear();
+   template_attachment_points.clear();
 
    return result;
 }
 
-int BaseMolecule::transformFullCTABtoSCSR (Array<TGroup> &templates)
+int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 {
    int result = 0;
+   QS_DEF(Molecule, fragment);
+   QS_DEF(Array<int>, added_templates);
+   QS_DEF(Array<int>, mapping);
+   QS_DEF(Array<int>, remove_atoms);
+   QS_DEF(Array<int>, base_sgs);
+   QS_DEF(Array<int>, sgs);
+   QS_DEF(Array<int>, ap_points_atoms);
+   QS_DEF(StringPool, ap_points_ids);
+   QS_DEF(Array<int>, ap_ids);
+   QS_DEF(Array<int>, ignore_atoms);
+
+   added_templates.clear();
+   ignore_atoms.clear();
+
+   int seq_id = 1;
+
+   templates.qsort(TGroup::cmp, 0);
+
+   for (auto i = 0; i < templates.size(); i++)
+   {
+      const TGroup &tg = templates.at(i);
+      fragment.clear();
+      fragment.clone_KeepIndices(*tg.fragment);
+
+      sgs.clear();
+      base_sgs.clear();
+      fragment.sgroups.findSGroups(SGroup::SG_CLASS, "LGRP", sgs);
+      for (int j = fragment.sgroups.begin(); j != fragment.sgroups.end(); j = fragment.sgroups.next(j))
+      {
+         if (sgs.find(j) == -1)
+            base_sgs.push(j);
+      }
+
+      ap_points_atoms.clear();
+      ap_points_ids.clear();
+      ap_ids.clear();
+      for (int j = 0; j < base_sgs.size(); j++)
+      {
+         SGroup &sg = fragment.sgroups.getSGroup(base_sgs[j]);
+         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+         {
+            Superatom &su = (Superatom &)sg;
+         
+            if (su.attachment_points.size() > 0)
+            {
+               for (int k = su.attachment_points.begin(); k < su.attachment_points.end(); k = su.attachment_points.next(k))
+               {
+                  Superatom::_AttachmentPoint &ap = su.attachment_points.at(k);
+                  ap_points_atoms.push(ap.aidx);
+                  ap_ids.push(ap_points_ids.add(ap.apid));
+               }
+            }
+         }
+         else
+            throw Error("Wrong template structure was found (base SGroup is not Superatom type)");
+      }
+
+      for (int j = 0; j < sgs.size(); j++)
+      {
+         fragment.removeSGroupWithBasis(sgs[j]);
+      }
+
+      int count_occur = 0;
+      for (;;)
+      {
+         MoleculeExactSubstructureMatcher matcher(fragment, this->asMolecule());
+
+         for (int j = 0; j < ignore_atoms.size(); j++)
+            matcher.ignoreTargetAtom(ignore_atoms[j]);
+
+         if (!matcher.find())
+            break;
+
+         mapping.clear();
+         remove_atoms.clear();
+         mapping.copy(matcher.getQueryMapping(), fragment.vertexEnd());
+         for (int j = 0; j < mapping.size(); j++)
+         {
+            if (mapping[j] > -1)
+               remove_atoms.push(mapping[j]);
+              
+         }
+
+         int out_bonds = 0;
+         for (int j = 0; j < remove_atoms.size(); j++)
+         {
+            const Vertex &v = getVertex(remove_atoms[j]);
+            for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+            {
+               if (remove_atoms.find(v.neiVertex(k)) == -1)
+               {
+                  out_bonds++;
+               }
+            }
+         }
+
+         if (out_bonds > ap_points_atoms.size())
+         {
+            ignore_atoms.concat(remove_atoms);
+            continue;
+         }
+
+         int idx = this->asMolecule().addAtom(-1);
+         this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
+         this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
+         this->asMolecule().setTemplateAtomSeqid(idx, seq_id);
+         seq_id++;
+         count_occur++;
+
+         for (int j = 0; j < ap_points_atoms.size(); j++)
+         {
+            int att_point_idx = mapping[ap_points_atoms[j]];
+            if (remove_atoms.find(att_point_idx) != -1)
+            {
+               const Vertex &v = getVertex(att_point_idx);
+               QS_DEF(Array<int>, neighbors);
+               neighbors.clear();
+               for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+               {
+                  if (remove_atoms.find(v.neiVertex(k)) == -1)
+                  {
+                     neighbors.push(v.neiVertex(k));
+                  }
+               }
+               for (int k = 0; k < neighbors.size(); k++)
+               {
+                  if (findEdgeIndex(neighbors[k], att_point_idx) != -1)
+                  {
+                     flipBond(neighbors[k], att_point_idx, idx);
+                     this->asMolecule().setTemplateAtomAttachmentOrder(idx, neighbors[k], ap_points_ids.at(ap_ids[j]));
+                     if (isTemplateAtom(neighbors[k]))
+                        _flipTemplateAtomAttachmentPoint(neighbors[k], att_point_idx, idx);
+                  }
+               }
+            }
+         }
+
+         QS_DEF(Vec2f, cp);
+         QS_DEF(Vec3f, p);
+         p.set(0, 0, 0);
+         getAtomsCenterPoint(remove_atoms, cp);
+         p.x = cp.x;
+         p.y = cp.y;
+         setAtomXyz(idx, p);
+
+         removeAtoms(remove_atoms);
+      }
+
+      if (count_occur > 0)
+         added_templates.push(i);
+   }
+
+   for (auto i = 0; i < added_templates.size(); i++)
+   {
+      _addTemplate(templates.at(i));
+   }
+
+   return result;
+}
+
+int BaseMolecule::_addTemplate (TGroup &tgroup)
+{
+   int result = 0;
+   int idx = tgroups.addTGroup();
+   (tgroups.getTGroup(idx)).copy(tgroup);
    return result;
 }
 
@@ -1524,16 +1692,21 @@ void BaseMolecule::invalidateAtom (int index, int mask)
 
 void BaseMolecule::getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res)
 {
+   getAtomsCenterPoint(sgroup.atoms, res);
+}
+
+void BaseMolecule::getAtomsCenterPoint (Array<int> &atoms, Vec2f &res)
+{
    res.set(0, 0);
-   for (int j = 0; j < sgroup.atoms.size(); j++)
+   for (int j = 0; j < atoms.size(); j++)
    {
-      int ai = sgroup.atoms[j];
+      int ai = atoms[j];
       Vec3f &p = getAtomXyz(ai);
       res.x += p.x;
       res.y += p.y;
    }
-   if (sgroup.atoms.size() != 0)
-      res.scale(1.0f / sgroup.atoms.size());
+   if (atoms.size() != 0)
+      res.scale(1.0f / atoms.size());
 }
 
 void BaseMolecule::getAtomSymbol (int v, Array<char> &result)

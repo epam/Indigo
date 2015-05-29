@@ -31,6 +31,16 @@ void TGroup::clear()
 {
 }
 
+int TGroup::cmp (TGroup &tg1, TGroup &tg2, void *context)
+{
+   if (tg1.fragment == 0)
+      return -1;
+   if (tg2.fragment == 0)
+      return 1;
+
+   return tg2.fragment->vertexCount() - tg1.fragment->vertexCount();
+}
+
 void TGroup::copy (TGroup &other)
 {
    tgroup_class.copy(other.tgroup_class);
@@ -104,7 +114,7 @@ int MoleculeTGroups::findTGroup (const char *name)
    {
       TGroup &tgroup = *_tgroups.at(i);
       BufferScanner sc(tgroup.tgroup_name);
-      if (tgroup.tgroup_name.size() == (strlen(name) + 1) && sc.findWord(name))
+      if (sc.findWordIgnoreCase(name))
          return i;
    }
    return -1;

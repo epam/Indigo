@@ -73,6 +73,8 @@ public:
 
    bool findWord (const char *word);
    int findWord (ReusableObjArray< Array<char> > &words);
+   bool findWordIgnoreCase (const char *word);
+   int findWordIgnoreCase (ReusableObjArray< Array<char> > &words);
 
    static bool isSingleLine (Scanner &scanner);
 
