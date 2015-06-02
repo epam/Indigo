@@ -252,7 +252,12 @@ void MoleculeLayoutMacrocyclesLattice::addVertexOutsideWeight(int v, int weight)
 
 void MoleculeLayoutMacrocyclesLattice::setVertexEdgeParallel(int v, bool parallel)
 {
-   _vertex_stereo[v] = !parallel;
+	_vertex_stereo[v] = !parallel;
+}
+
+bool MoleculeLayoutMacrocyclesLattice::getVertexStereo(int v)
+{
+	return _vertex_stereo[v];
 }
 
 void MoleculeLayoutMacrocyclesLattice::setVertexAddedSquare(int v, double s) {
@@ -323,7 +328,7 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish) {
 
             int preferred_p = alpha > PI / 3 * (path[len].rot);// +PI / 6 / length;
 
-            path[len].p = preferred_p ^ 1;
+			path[len].p = preferred_p ^ 1;
 
             // enumerating two cases
             for (int i = 0; i < 3; i++) {
@@ -1004,7 +1009,7 @@ void MoleculeLayoutMacrocyclesLattice::closingStep(CycleLayout &cl, int index, i
 
       double actual_chenge_angle = 0;
 
-      if ((cl.point[0] - cl.point[cl.vertex_count]).lengthSqr() == 0) {
+      /*if ((cl.point[0] - cl.point[cl.vertex_count]).lengthSqr() == 0) {
 
          if (abs(current_angle - current_target_angle) < EPSILON) actual_chenge_angle = 0;
          else actual_chenge_angle = better_change_angle;
@@ -1021,10 +1026,8 @@ void MoleculeLayoutMacrocyclesLattice::closingStep(CycleLayout &cl, int index, i
          if (fix_next) cl.soft_move_vertex(move_vertex, move_vector);
          else cl.soft_move_vertex(base_vertex, move_vector);
       }
-      else {
+      else*/ {
          double angle = current_angle;
-         while (angle < 0) angle += 2 * PI;
-         while (angle >= 2 * PI) angle -= 2 * PI;
 
          for (int i = next_vertex; i < cl.vertex_count; i++) angle -= cl.point[base_vertex].calc_angle(cl.point[i], cl.point[i + 1]);
          for (int i = prev_vertex; i > 0; i--) angle += cl.point[base_vertex].calc_angle(cl.point[i], cl.point[i - 1]);
@@ -1079,10 +1082,14 @@ void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout &cl) {
 
    for (int i = 0; i < iter_count; i++) {
       double lenSqr = (cl.point[0] - cl.point[cl.vertex_count]).lengthSqr();
-      if (0 < lenSqr && lenSqr < 0.25) {
-         cl.point[cl.vertex_count].copy(cl.point[0]);
-         //printf("%d/%d\n", i, iter_count);
-         break;
+      if (lenSqr < 0.25) {
+		  double angle = - PI * cl.vertex_count;
+		  for (int i = 0; i < cl.vertex_count; i++) angle += cl.point[i].calc_angle_pos(cl.point[(i + 1) % cl.vertex_count], cl.point[(i + cl.vertex_count - 1) % cl.vertex_count]);
+		  if (angle < 0) {
+			  cl.point[cl.vertex_count].copy(cl.point[0]);
+			  //printf("%d/%d\n", i, iter_count);
+			  break;
+		  }
       }
       bool angle = rand.next() & 1;
       bool next = rand.next() & 1;
