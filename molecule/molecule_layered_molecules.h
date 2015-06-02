@@ -86,6 +86,11 @@ public:
    virtual bool isPseudoAtom (int idx);
    virtual const char * getPseudoAtom (int idx);
 
+   virtual bool isTemplateAtom (int idx);
+   virtual const char * getTemplateAtom (int idx);
+   virtual const int getTemplateAtomSeqid (int idx);
+   virtual const char * getTemplateAtomClass (int idx);
+
    virtual bool  isRSite (int atom_idx);
    virtual dword getRSiteBits (int atom_idx);
    virtual void  allowRGroupOnRSite (int atom_idx, int rg_idx);

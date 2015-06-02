@@ -275,6 +275,26 @@ const char * LayeredMolecules::getPseudoAtom(int idx)
    return _proto.getPseudoAtom(idx);
 }
 
+bool LayeredMolecules::isTemplateAtom(int idx)
+{
+   return _proto.isTemplateAtom(idx);
+}
+
+const char * LayeredMolecules::getTemplateAtom(int idx)
+{
+   return _proto.getTemplateAtom(idx);
+}
+
+const int LayeredMolecules::getTemplateAtomSeqid(int idx)
+{
+   return _proto.getTemplateAtomSeqid(idx);
+}
+
+const char * LayeredMolecules::getTemplateAtomClass(int idx)
+{
+   return _proto.getTemplateAtomClass(idx);
+}
+
 bool LayeredMolecules::isRSite(int idx)
 {
    return _proto.isRSite(idx);
