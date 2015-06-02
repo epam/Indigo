@@ -114,9 +114,10 @@ namespace indigo {
       void doLayout();
 
       void addVertexOutsideWeight(int v, int weight);
-      void setVertexEdgeParallel(int v, bool parallel);
-      void setEdgeStereo(int e, int stereo);
-      void setVertexAddedSquare(int v, double s);
+	  void setVertexEdgeParallel(int v, bool parallel);
+	  bool getVertexStereo(int v);
+	  void setEdgeStereo(int e, int stereo);
+	  void setVertexAddedSquare(int v, double s);
       void setVertexDrawn(int v, bool drawn);
       void setComponentFinish(int v, int f);
       void setTargetAngle(int v, double angle);

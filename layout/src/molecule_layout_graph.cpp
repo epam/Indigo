@@ -556,13 +556,33 @@ _finish(finish)
    rotate_vector.y *= -1;
    _pos.clear_resize(_graph.vertexEnd());
 
-   if (_graph.vertexCount() > 2) {
+   bool is_line = false;
+   for (int v : _graph.vertices()) if (_graph.getVertex(v).degree() == 1) is_line = true;
+
+   if (!is_line) {
       for (int v : _graph.vertices()) {
          _pos[v].copy(_graph.getPos(v));
 
          _pos[v] -= _start;
          _pos[v].rotate(rotate_vector);
       }
+   }
+   else {
+	   // this is straight line
+	   QS_DEF(Array<int>, vert);
+	   vert.clear(); // list or vertices in order of connection
+	   for (int v : _graph.vertices()) if (_graph.getVertex(v).degree() == 1) {
+		   vert.push(v);
+		   break;
+	   }
+	   vert.push(_graph.getVertex(vert[0]).neiVertex(_graph.getVertex(vert[0]).neiBegin()));
+	   while (vert.size() < _graph.vertexCount()) {
+		   for (int n = _graph.getVertex(vert.top()).neiBegin(); n != _graph.getVertex(vert.top()).neiEnd(); n = _graph.getVertex(vert.top()).neiNext(n))
+			   if (_graph.getVertex(vert.top()).neiVertex(n) != vert[vert.size() - 2]) {
+				   vert.push(_graph.getVertex(vert.top()).neiVertex(n));
+			   }
+	   }
+	   for (int i = 0; i < vert.size(); i++) _pos[vert[i]].set(i * 1. / (vert.size() - 1), 0);
    }
 
 
@@ -702,9 +722,9 @@ void MoleculeLayoutSmoothingSegment::set_start_finish_number(int s, int f) {
       if (_graph.getVertexExtIdx(v) == f) _finish_number = v;
    }
 
-   if (_graph.vertexCount() == 2) {
-      _pos[_start_number].set(0, 0);
-      _pos[_finish_number].set(1, 0);
+   if (get_layout_component_number() == -1) {
+	   _pos[_start_number].set(0, 0);
+	   _pos[_finish_number].set(1, 0);
    }
    for (int v : _graph.vertices()) _center += _pos[v];
    _center /= _graph.vertexCount();
@@ -723,7 +743,7 @@ double MoleculeLayoutSmoothingSegment::get_square() {
 }
 
 void MoleculeLayoutSmoothingSegment::calculate_square() {
-   if (_graph.vertexCount() > 2)
+   if (_layout_component_number >= 0)
       _square = _graph._get_square();
    else _square = 0;
 }
