@@ -181,7 +181,9 @@ struct Vec2f
 
    DLLEXPORT float calc_angle(Vec2f a, Vec2f b);
 
-   inline void scale (float s)
+   DLLEXPORT float calc_angle_pos(Vec2f a, Vec2f b);
+
+   inline void scale(float s)
    {
       x *= s;
       y *= s;

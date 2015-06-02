@@ -117,17 +117,23 @@ float Vec2f::tiltAngle2 ()
 }
 
 float Vec2f::calc_angle(Vec2f a, Vec2f b) {
-   a -= *this;
-   b -= *this;
-   double cos = Vec2f::dot(a, b) / sqrt(a.lengthSqr() * b.lengthSqr());
-   if (cos > 1) cos = 1;
-   if (cos < -1) cos = -1;
-   float angle = acos(cos);
-   if (Vec2f::cross(a, b) < 0) angle = -angle;
-   return angle;
+	a -= *this;
+	b -= *this;
+	double cos = Vec2f::dot(a, b) / sqrt(a.lengthSqr() * b.lengthSqr());
+	if (cos > 1) cos = 1;
+	if (cos < -1) cos = -1;
+	float angle = acos(cos);
+	if (Vec2f::cross(a, b) < 0) angle = -angle;
+	return angle;
 }
 
-float Vec2f::distSqr (const Vec2f &a, const Vec2f &b)
+float Vec2f::calc_angle_pos(Vec2f a, Vec2f b) {
+	float angle = this->calc_angle(a, b);
+	if (angle < 0) angle += 2 * PI;
+	return angle;
+}
+
+float Vec2f::distSqr(const Vec2f &a, const Vec2f &b)
 {
    float dx = b.x - a.x;
    float dy = b.y - a.y;
