@@ -41,8 +41,6 @@ public:
    // Save InChI code to the output
    void outputInChI (Molecule &mol);
 
-   static void getCanonicalOrdering(Molecule &mol, Array<int> &mapping);
-
    DECL_ERROR;
 
 private:

@@ -66,7 +66,7 @@ void MoleculeInChICompoment::getCanonicalOrdering(Molecule &source_mol, Array<in
    as.cb_vertex_cmp = _cmpVertex;
    as.cb_compare_mapped = _cmpMappings;
    as.cb_check_automorphism = _checkAutomorphism;
-   as.context = NULL;// (void *)this;
+   as.context = (void *)this;
 
    as.process(source_mol);
 
@@ -97,7 +97,7 @@ void MoleculeInChICompoment::_getCanonicalMolecule
    as.cb_vertex_cmp = _cmpVertex;
    as.cb_compare_mapped = _cmpMappings;
    as.cb_check_automorphism = _checkAutomorphism;
-   as.context = NULL;// (void *)this;
+   as.context = (void *)this;
 
    as.process(source_mol);
 

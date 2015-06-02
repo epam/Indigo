@@ -269,16 +269,6 @@ int MoleculeInChI::_cmpComponents (int &index1,
    return 0;
 }
 
-void MoleculeInChI::getCanonicalOrdering(Molecule &mol, Array<int> &mapping)
-{
-   QS_DEF(Molecule, normMol);
-   QS_DEF(MoleculeInChICompoment, inchiComp);
-
-   normMol.clone(mol, 0, 0);
-   _normalizeMolecule(normMol);
-   MoleculeInChICompoment::getCanonicalOrdering(normMol, mapping);
-}
-
 void MoleculeInChI::_normalizeMolecule(Molecule &mol)
 {
    QS_DEF(Array<int>, ignored);
