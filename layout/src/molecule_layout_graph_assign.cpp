@@ -1560,8 +1560,8 @@ bool MoleculeLayoutGraph::_gradient_step(Array<Vec2f> &point, Array<float> &targ
 		int i_1 = (i - 1 + length) % length; // i - 1
 		int i1 = (i + 1) % length; // i + 1
 
-		change[i] += _get_len_derivative(point[i1] - point[i], len1[i]) * (segment[i]._graph.vertexCount() > 2 ? 5 : 1);
-		change[i] += _get_len_derivative(point[i_1] - point[i], len1[i_1]) * (segment[i_1]._graph.vertexCount() > 2 ? 5 : 1);
+		change[i] += _get_len_derivative(point[i1] - point[i], len1[i]) * (segment[i].get_layout_component_number() >= 0 ? 5 : 1);
+		change[i] += _get_len_derivative(point[i_1] - point[i], len1[i_1]) * (segment[i_1].get_layout_component_number() >= 0 ? 5 : 1);
 
 		if (abs(target_angle[i] - PI) > eps) change[i] += _get_angle_derivative(point[i] - point[i_1], point[i1] - point[i], PI - target_angle[i]);
 	}
@@ -1611,7 +1611,7 @@ Vec2f MoleculeLayoutGraph::_get_len_derivative(Vec2f& current_vector, float targ
 Vec2f MoleculeLayoutGraph::_get_len_derivative_simple(Vec2f& current_vector, float target_dist) {
 	float dist = current_vector.length();
 	//dist = __max(dist, 0.01);
-	float coef = -1;// dist - target_dist;
+	float coef = -1; // dist - target_dist;
 	return current_vector * -coef;
 }
 

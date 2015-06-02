@@ -585,14 +585,51 @@ _finish(finish)
 	   for (int i = 0; i < vert.size(); i++) _pos[vert[i]].set(i * 1. / (vert.size() - 1), 0);
    }
 
-
+   // double ternary search of center of component
+   double MLx = 0, Ly = 0, MRx = 0, Ry = 0, Lx, Rx;
+   for (int v : _graph.vertices()) {
+	   MLx = __min(MLx, _pos[v].x);
+	   MRx = __max(MRx, _pos[v].x);
+	   Ly = __min(Ly, _pos[v].y);
+	   Ry = __max(Ry, _pos[v].y);
+   }
+   while (Ry - Ly > EPSILON) {
+	   double dy = (Ry - Ly) / 3;
+	   double ry[2];
+	   double My = Ly + dy;
+	   for (int i = 0; i < 2; i++) {
+		   Lx = MLx, Rx = MRx;
+		   double rx[2];
+		   while (Rx - Lx > EPSILON) {
+			   double dx = (Rx - Lx) / 3;
+			   double Mx = Lx + dx;
+			   for (int j = 0; j < 2; j++) {
+				   rx[j] = calc_radius(Vec2f(Mx, My));
+				   Mx += dx;
+			   }
+			   if (rx[0] > rx[1]) Lx += dx; else Rx -= dx;
+		   }
+		   ry[i] = calc_radius(Vec2f(Rx, My));
+		   My += dy;
+	   }
+	   if (ry[0] > ry[1]) Ly += dy; else Ry -= dy;
+   }
+   _center = Vec2f(Rx, Ry);
+   _radius = calc_radius(_center);
+   /*
    _radius = 0;
    Vec2f center(0.5, 0);
    for (int v : _graph.vertices()) {
       double dist = (center - _pos[v]).length();
       if (dist > _radius) _radius = dist;
    }
-   _center = center;
+   _center = center;*/
+}
+
+double MoleculeLayoutSmoothingSegment::calc_radius(Vec2f c) {
+	double answer = 0;
+	for (int v : _graph.vertices()) answer = __max(answer, (c - _pos[v]).lengthSqr());
+	return sqrt(answer);
 }
 
 Vec2f MoleculeLayoutSmoothingSegment::_getPosition(Vec2f p) {

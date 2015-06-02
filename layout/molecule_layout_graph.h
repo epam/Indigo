@@ -103,6 +103,7 @@ private:
    double _radius;
 
    Vec2f _getPosition(Vec2f);
+   double calc_radius(Vec2f);
 
 public:
    MoleculeLayoutGraph& _graph;
