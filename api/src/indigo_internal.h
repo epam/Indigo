@@ -142,7 +142,9 @@ public:
       SGROUP,
       SGROUPS_ITER,
       TAUTOMER_ITER,
-      TAUTOMER_MOLECULE
+      TAUTOMER_MOLECULE,
+      TGROUP,
+      TGROUPS_ITER
    };
 
    int type;

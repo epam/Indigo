@@ -263,6 +263,42 @@ protected:
    BaseMolecule &_mol;
 };
 
+class IndigoTGroup : public IndigoObject
+{
+public:
+   IndigoTGroup (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoTGroup ();
+
+   virtual int getIndex ();
+   virtual void remove ();
+
+   const char * debugInfo ();
+
+   static IndigoTGroup & cast (IndigoObject &obj);
+   TGroup & get();
+
+   BaseMolecule &mol;
+   int idx;
+};
+
+class IndigoTGroupsIter : public IndigoObject
+{
+public:
+   IndigoTGroupsIter (BaseMolecule &molecule);
+
+   virtual ~IndigoTGroupsIter ();
+
+   const char * debugInfo ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+protected:
+
+   int _idx;
+   BaseMolecule &_mol;
+};
+
 class IndigoSGroup : public IndigoObject
 {
 public:

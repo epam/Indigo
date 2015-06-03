@@ -83,6 +83,11 @@ int MoleculeTGroups::next (int i)
    return _tgroups.next(i);
 }
 
+void MoleculeTGroups::remove (int i)
+{
+   return _tgroups.remove(i);
+}
+
 int MoleculeTGroups::addTGroup ()
 {
    return  _tgroups.add(new TGroup());

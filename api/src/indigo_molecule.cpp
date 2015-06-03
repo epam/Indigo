@@ -2514,6 +2514,92 @@ IndigoObject * IndigoSGroupsIter::next ()
    return sgroup.release();
 }
 
+IndigoTGroup::IndigoTGroup (BaseMolecule &mol_, int tg_idx_) :
+IndigoObject(TGROUP),
+mol(mol_)
+{
+   idx = tg_idx_;
+}
+
+IndigoTGroup::~IndigoTGroup ()
+{
+}
+
+const char * IndigoTGroup::debugInfo ()
+{
+   return "<tgroup>";
+}
+
+int IndigoTGroup::getIndex ()
+{
+   return idx;
+}
+
+void IndigoTGroup::remove ()
+{
+   mol.tgroups.remove(idx);
+}
+
+IndigoTGroup & IndigoTGroup::cast (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::TGROUP)
+      return (IndigoTGroup &)obj;
+
+   throw IndigoError("%s is not a tgroup", obj.debugInfo());
+}
+
+TGroup & IndigoTGroup::get ()
+{
+   return (TGroup &)mol.tgroups.getTGroup(idx);
+}
+
+IndigoTGroupsIter::IndigoTGroupsIter (BaseMolecule &molecule) :
+IndigoObject(TGROUPS_ITER),
+_mol(molecule)
+{
+   _idx = -1;
+}
+
+IndigoTGroupsIter::~IndigoTGroupsIter ()
+{
+}
+
+const char * IndigoTGroupsIter::debugInfo ()
+{
+   return "<tgroups iterator>";
+}
+
+bool IndigoTGroupsIter::hasNext ()
+{
+   if (_idx == -1)
+      return _mol.tgroups.getTGroupCount() > 0;
+   return _idx + 1 < _mol.tgroups.getTGroupCount();
+}
+
+IndigoObject * IndigoTGroupsIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   if (_idx == -1)
+      _idx = 0;
+   else
+      _idx++;
+
+   AutoPtr<IndigoTGroup> tgroup(new IndigoTGroup(_mol, _idx));
+   return tgroup.release();
+}
+
+CEXPORT int indigoIterateTGroups (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return self.addObject(new IndigoTGroupsIter(mol));
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoIterateRepeatingUnits (int molecule)
 {
    INDIGO_BEGIN
@@ -3185,6 +3271,38 @@ CEXPORT int indigoGetSGroupIndex (int sgroup)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoTransformSCSRtoCTAB (int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+
+      mol.transformSCSRtoFullCTAB();
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoTransformCTABtoSCSR (int molecule, int templates)
+{
+   INDIGO_BEGIN
+   {
+      QS_DEF(ObjArray<TGroup>, tgs);
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      BaseMolecule &temp = self.getObject(templates).getBaseMolecule();
+      for (auto i = temp.tgroups.begin(); i != temp.tgroups.end(); i = temp.tgroups.next(i))
+      {
+         TGroup &tg = tgs.push();
+         tg.copy(temp.tgroups.getTGroup(i));
+      }
+
+      mol.transformFullCTABtoSCSR(tgs);
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
 
 CEXPORT int indigoCountHeavyAtoms (int molecule)
 {

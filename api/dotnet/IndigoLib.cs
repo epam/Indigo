@@ -185,6 +185,9 @@ namespace com.ggasoftware.indigo
         int indigoGetSGroupType(int sgroup);
         int indigoGetSGroupIndex(int sgroup);
 
+        int indigoTransformSCSRtoCTAB(int molecule);
+        int indigoTransformCTABtoSCSR(int molecule, int templates);
+
         float* indigoXYZ(int atom);
         int indigoSetXYZ(int atom, float x, float y, float z);
         int indigoResetCharge(int atom);

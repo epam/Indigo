@@ -438,6 +438,9 @@ CEXPORT int indigoFindSGroups (int item, const char *property, const char *value
 CEXPORT int indigoGetSGroupType (int item);
 CEXPORT int indigoGetSGroupIndex (int item);
 
+CEXPORT int indigoTransformSCSRtoCTAB (int item);
+CEXPORT int indigoTransformCTABtoSCSR (int molecule, int templates);
+
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetIsotope (int atom);

@@ -735,6 +735,18 @@ namespace com.ggasoftware.indigo
             return dispatcher.checkResult(_indigo_lib.indigoGetSGroupIndex(self));
         }
 
+        public int transformSCSRtoCTAB()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoTransformSCSRtoCTAB(self));
+        }
+
+        public int transformCTABtoSCSR(IndigoObject templates)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoTransformCTABtoSCSR(self, templates.self));
+        }
+
         public void addStereocenter(int type, int v1, int v2, int v3)
         {
             addStereocenter(type, v1, v2, v3, -1);

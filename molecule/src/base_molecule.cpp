@@ -1082,6 +1082,7 @@ int BaseMolecule::transformSCSRtoFullCTAB ()
 {
    int result = 0;
    QS_DEF(Array<int>, tinds);
+   tinds.clear();
 
    for (auto i : vertices())
    {
@@ -1094,9 +1095,12 @@ int BaseMolecule::transformSCSRtoFullCTAB ()
       _transformTGroupToSGroup(tinds[i]);
    }
 
-   removeAtoms(tinds);
-   tgroups.clear();
-   template_attachment_points.clear();
+   if (tinds.size() > 0)
+   {
+      removeAtoms(tinds);
+      tgroups.clear();
+      template_attachment_points.clear();
+   }
 
    return result;
 }
@@ -1167,6 +1171,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
       }
 
       int count_occur = 0;
+      ignore_atoms.clear();
       for (;;)
       {
          MoleculeExactSubstructureMatcher matcher(fragment, this->asMolecule());
@@ -1251,14 +1256,14 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 
          removeAtoms(remove_atoms);
       }
-
+    
       if (count_occur > 0)
          added_templates.push(i);
    }
 
    for (auto i = 0; i < added_templates.size(); i++)
    {
-      _addTemplate(templates.at(i));
+      _addTemplate(templates.at(added_templates[i]));
    }
 
    return result;
