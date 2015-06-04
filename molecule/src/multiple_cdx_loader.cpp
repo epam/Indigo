@@ -296,12 +296,12 @@ void MultipleCdxLoader::_getObject ()
       {
          if (name.size() > 0)
          {
-            int idx = properties.findOrInsert(name.ptr());
+            auto& propVal = properties.insert(name.ptr());
             if (value.size() > 0)
-               properties.value(idx).copy(value);
+               propVal.readString(value.ptr(), true);
             else if (_latest_text.size() > 0)
             {
-               properties.value(idx).copy(_latest_text);
+               propVal.readString(_latest_text.ptr(), true);
                _latest_text.clear();
             }
          }

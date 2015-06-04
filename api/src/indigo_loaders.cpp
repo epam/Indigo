@@ -69,7 +69,7 @@ IndigoObject(type)
    _offset = offset;
 }
 
-IndigoRdfData::IndigoRdfData (int type, Array<char> &data, RedBlackStringObjMap< Array<char> > &properties,
+IndigoRdfData::IndigoRdfData (int type, Array<char> &data, PropertiesMap &properties,
                               int index, int offset) :
 IndigoObject(type)
 {
@@ -101,12 +101,8 @@ int IndigoRdfData::getIndex ()
    return _index;
 }
 
-RedBlackStringObjMap< Array<char> > * IndigoRdfData::getProperties ()
-{
-   return &_properties;
-}
 
-IndigoRdfMolecule::IndigoRdfMolecule (Array<char> &data, RedBlackStringObjMap< Array<char> > &properties,
+IndigoRdfMolecule::IndigoRdfMolecule (Array<char> &data, PropertiesMap &properties,
                                       int index, int offset) :
 IndigoRdfData(RDF_MOLECULE, data, properties, index, offset)
 {
@@ -158,7 +154,7 @@ IndigoRdfMolecule::~IndigoRdfMolecule ()
 {
 }
 
-IndigoRdfReaction::IndigoRdfReaction (Array<char> &data, RedBlackStringObjMap< Array<char> > &properties,
+IndigoRdfReaction::IndigoRdfReaction (Array<char> &data, PropertiesMap &properties,
                                       int index, int offset) :
 IndigoRdfData(RDF_REACTION, data, properties, index, offset)
 {
@@ -752,7 +748,7 @@ CEXPORT int indigoIterateCMLFile (const char *filename)
    INDIGO_END(-1)
 }
 
-IndigoCdxMolecule::IndigoCdxMolecule (Array<char> &data, RedBlackStringObjMap< Array<char> > &properties,
+IndigoCdxMolecule::IndigoCdxMolecule (Array<char> &data, PropertiesMap &properties,
                                       int index, int offset) :
 IndigoRdfData(CDX_MOLECULE, data, properties, index, offset)
 {
@@ -797,7 +793,7 @@ const char * IndigoCdxMolecule::debugInfo ()
    return "<cdx molecule>";
 }
 
-IndigoCdxReaction::IndigoCdxReaction (Array<char> &data, RedBlackStringObjMap< Array<char> > &properties,
+IndigoCdxReaction::IndigoCdxReaction (Array<char> &data, PropertiesMap &properties,
                                       int index, int offset) :
 IndigoRdfData(CDX_REACTION, data, properties, index, offset)
 {

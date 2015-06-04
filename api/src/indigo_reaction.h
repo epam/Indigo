@@ -18,6 +18,7 @@
 #include "indigo_internal.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
+#include "base_cpp/properties_map.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -31,13 +32,13 @@ public:
 
    virtual ~IndigoBaseReaction ();
 
-   virtual RedBlackStringObjMap< Array<char> > * getProperties ();
+   virtual indigo::PropertiesMap& getProperties() { return _properties;}
 
    static bool is (IndigoObject &obj);
 
    virtual const char * debugInfo ();
 
-   RedBlackStringObjMap< Array<char> > properties;
+   indigo::PropertiesMap _properties;
 };
 
 class DLLEXPORT IndigoReaction : public IndigoBaseReaction
@@ -76,6 +77,7 @@ public:
    virtual const char * debugInfo ();
 
    QueryReaction rxn;
+   
 };
 
 class IndigoReactionMolecule : public IndigoObject
@@ -89,13 +91,14 @@ public:
    virtual Molecule & getMolecule ();
    virtual int getIndex ();
    virtual IndigoObject * clone ();
-   virtual RedBlackStringObjMap< Array<char> > * getProperties ();
    virtual void remove ();
+   virtual indigo::PropertiesMap& getProperties() { return _properties;}
 
    virtual const char * debugInfo ();
 
    BaseReaction &rxn;
    int idx;
+   indigo::PropertiesMap _properties;
 };
 
 class IndigoReactionIter : public IndigoObject

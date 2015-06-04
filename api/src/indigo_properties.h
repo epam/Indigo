@@ -16,34 +16,37 @@
 #define __indigo_properties__
 
 #include "indigo_internal.h"
+namespace indigo {
+class PropertiesMap;
+}
 
 class DLLEXPORT IndigoProperty : public IndigoObject
 {
 public:
-   IndigoProperty (RedBlackStringObjMap< Array<char> > &props, int idx);
+   IndigoProperty (indigo::PropertiesMap &props, int idx);
    virtual ~IndigoProperty ();
 
    virtual const char * getName ();
    virtual int getIndex ();
 
-   Array<char> & getValue ();
+   const char* getValue ();
 
 protected:
-   RedBlackStringObjMap< Array<char> > &_props;
+   indigo::PropertiesMap &_props;
    int _idx;
 };
 
 class IndigoPropertiesIter : public IndigoObject
 {
 public:
-   IndigoPropertiesIter (RedBlackStringObjMap< Array<char> > &props);
+   IndigoPropertiesIter (indigo::PropertiesMap &props);
    virtual ~IndigoPropertiesIter ();
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
 protected:
-   RedBlackStringObjMap< Array<char> > &_props;
+   indigo::PropertiesMap &_props;
    int _idx;
 };
 

@@ -19,6 +19,7 @@
 #include "molecule/sdf_loader.h"
 #include "molecule/rdf_loader.h"
 #include "reaction/reaction.h"
+#include "base_cpp/properties_map.h"
 
 IndigoObject::IndigoObject (int type_)
 {
@@ -67,24 +68,39 @@ QueryMolecule & IndigoObject::getQueryMolecule ()
    throw IndigoError("%s is not a query molecule", debugInfo());
 }
 
-RedBlackStringObjMap< Array<char> > * IndigoObject::getProperties ()
-{
-   throw IndigoError("%s can not have properties", debugInfo());
+//RedBlackStringObjMap< Array<char> > * IndigoObject::getProperties ()
+//{
+//   throw IndigoError("%s can not have properties", debugInfo());
+//}
+
+
+//void IndigoObject::copyProperties (RedBlackStringObjMap< Array<char> > &other)
+//{
+//   RedBlackStringObjMap< Array<char> > *props = getProperties();
+//
+//   if (props == 0)
+//      throw IndigoError("copyProperties(): zero destination");
+//
+//   int i;
+//
+//   props->clear();
+//
+//   for (i = other.begin(); i != other.end(); i = other.next(i))
+//      props->value(props->insert(other.key(i))).copy(other.value(i));
+//}
+void IndigoObject::copyProperties (RedBlackStringObjMap< Array<char> > &other) {
+   auto& props = getProperties();
+   props.copy(other);
 }
 
-void IndigoObject::copyProperties (RedBlackStringObjMap< Array<char> > &other)
+void IndigoObject::copyProperties (PropertiesMap& other) {
+   auto& props = getProperties();
+   props.copy(other);
+}
+
+PropertiesMap& IndigoObject::getProperties()
 {
-   RedBlackStringObjMap< Array<char> > *props = getProperties();
-
-   if (props == 0)
-      throw IndigoError("copyProperties(): zero destination");
-
-   int i;
-
-   props->clear();
-
-   for (i = other.begin(); i != other.end(); i = other.next(i))
-      props->value(props->insert(other.key(i))).copy(other.value(i));
+   throw IndigoError("%s can not have properties", debugInfo());
 }
 
 Reaction & IndigoObject::getReaction ()

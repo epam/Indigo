@@ -27,6 +27,7 @@
 #include "graph/cycle_enumerator.h"
 #include "graph/edge_subgraph_enumerator.h"
 #include "molecule/molecule_neighbourhood_counters.h"
+#include "base_cpp/properties_map.h"
 
 class DLLEXPORT IndigoBaseMolecule : public IndigoObject
 {
@@ -35,13 +36,13 @@ public:
 
    virtual ~IndigoBaseMolecule ();
 
-   virtual RedBlackStringObjMap< Array<char> > * getProperties ();
+   virtual PropertiesMap& getProperties() { return _properties;}
 
    const char * debugInfo ();
 
    static bool is (IndigoObject &object);
 
-   RedBlackStringObjMap< Array<char> > properties;
+   indigo::PropertiesMap _properties;
 };
 
 class DLLEXPORT IndigoQueryMolecule : public IndigoBaseMolecule

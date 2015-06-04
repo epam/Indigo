@@ -186,17 +186,13 @@ CEXPORT int bingoInsertRecordObj (int db, int obj)
       Index &bingo_index = _bingo_instances.ref(db);
 
       long obj_id = -1;
-      RedBlackStringObjMap< Array<char> > *properties = indigo_obj.getProperties();
+      auto& properties = indigo_obj.getProperties();
 
-      if (properties != 0)
+      const char *key_name = bingo_index.getIdPropertyName();
+
+      if (key_name != 0 && properties.contains(key_name))
       {
-         const char *key_name = bingo_index.getIdPropertyName();
-
-         if (key_name != 0 && properties->find(key_name))
-         {
-            Array<char> &key_str = properties->at(key_name);
-            obj_id = strtol(key_str.ptr(), NULL, 10);
-         }
+         obj_id = strtol(properties.at(key_name), NULL, 10);
       }
 
       return _insertObjectToDatabase (db, self, bingo_index, indigo_obj, obj_id);

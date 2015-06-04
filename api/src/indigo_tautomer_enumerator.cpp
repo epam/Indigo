@@ -88,7 +88,3 @@ Molecule & IndigoMoleculeTautomer::getMolecule()
    return _molInstance;
 }
 
-RedBlackStringObjMap< Array<char> > * IndigoMoleculeTautomer::getProperties()
-{
-   return 0;
-}

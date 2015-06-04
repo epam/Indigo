@@ -17,6 +17,7 @@
 
 #include "base_cpp/pool.h"
 #include "base_cpp/ptr_array.h"
+#include "base_cpp/auto_iter.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -44,6 +45,37 @@ public:
 
    char * at (int idx);
    const char * at (int idx) const;
+   /*
+    * Iterators
+    */
+   class PoolIter : public AutoIterator {
+   public:
+      PoolIter(StringPool &owner, int idx): _owner(owner), AutoIterator(idx) {
+      }
+      PoolIter & operator++() {
+         _idx = _owner.next(_idx);
+         return *this;
+      }
+   private:
+      StringPool &_owner;
+   };
+   class PoolAuto {
+   public:
+      PoolAuto(StringPool &owner) : _owner(owner) {
+      }
+      PoolIter begin(){
+         return StringPool::PoolIter(_owner, _owner.begin());
+      }
+      PoolIter end() {
+         return StringPool::PoolIter(_owner, _owner.end());
+      }
+   private:
+      StringPool &_owner;
+   };
+   
+   PoolAuto elements () {
+      return PoolAuto(*this);
+   }
 
 protected:
    int _add (const char *str, int size);

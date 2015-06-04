@@ -27,6 +27,7 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 #include "render2d/render_cdxml.h"
+#include "base_cpp/properties_map.h"
 
 using namespace indigo;
 
@@ -553,8 +554,8 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             else
                rp.mols.add(new Molecule());
             Array<char>& title = rp.titles.push();
-            if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
-               title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
+            if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
+               title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
             
 
             if (rp.rOpt.mode == DINGO_MODE::MODE_CDXML) {
@@ -563,14 +564,12 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
                   RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
                   RenderCdxmlContext::PropertyData& data = context.property_data.push();
 
-                  RedBlackStringObjMap< Array<char> > *properties = objs[i]->getProperties();
-                  if (properties != NULL) {
-                     if (context.propertyNameCaption.size() > 0 && context.propertyValueCaption.size() > 0)
-                     if (properties->find(context.propertyNameCaption.ptr())) {
-                        if (properties->find(context.propertyValueCaption.ptr())) {
-                           data.propertyName.readString(properties->at(context.propertyNameCaption.ptr()).ptr(), true);
-                           data.propertyValue.readString(properties->at(context.propertyValueCaption.ptr()).ptr(), true);
-                        }
+                  auto& properties = objs[i]->getProperties();
+                  if (context.propertyNameCaption.size() > 0 && context.propertyValueCaption.size() > 0)
+                  if (properties.contains(context.propertyNameCaption.ptr())) {
+                     if (properties.contains(context.propertyValueCaption.ptr())) {
+                        data.propertyName.readString(properties.at(context.propertyNameCaption.ptr()), true);
+                        data.propertyValue.readString(properties.at(context.propertyValueCaption.ptr()), true);
                      }
                   }
                }
@@ -590,8 +589,8 @@ CEXPORT int indigoRenderGrid (int objects, int* refAtoms, int nColumns, int outp
             else
                rp.rxns.add(new Reaction());
             Array<char>& title = rp.titles.push();
-            if (objs[i]->getProperties()->find(rp.cnvOpt.titleProp.ptr()))
-               title.copy(objs[i]->getProperties()->at(rp.cnvOpt.titleProp.ptr()));
+            if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
+               title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
             
             
             rp.rxns.top()->clone(objs[i]->getBaseReaction(), 0, 0, 0);

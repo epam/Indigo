@@ -17,6 +17,7 @@
 
 #include "indigo_internal.h"
 #include "molecule/molecule_tautomer_enumerator.h"
+#include "base_cpp/properties_map.h"
 
 class IndigoMoleculeTautomer : public IndigoObject
 {
@@ -26,12 +27,14 @@ public:
 
    virtual Molecule & getMolecule();
    virtual IndigoObject * clone();
-   virtual RedBlackStringObjMap< Array<char> > * getProperties();
 
    virtual const char * debugInfo();
+   
+   virtual PropertiesMap& getProperties() { return _properties;}
 
 private:
    Molecule _molInstance;
+   indigo::PropertiesMap _properties;
 };
 
 class IndigoTautomerIter : public IndigoObject

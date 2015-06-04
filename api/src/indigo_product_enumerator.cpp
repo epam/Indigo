@@ -29,7 +29,8 @@
 #include "reaction/rxnfile_saver.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_product_enumerator.h"
-#include "reaction/reaction_transformation.h" 
+#include "reaction/reaction_transformation.h"
+#include "base_cpp/properties_map.h"
 
 struct ProductEnumeratorCallbackData 
 {

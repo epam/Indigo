@@ -109,14 +109,11 @@ void IndigoSdfSaver::append (Output &out, IndigoObject &obj)
 {
    appendMolfile(out, obj);
 
-   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
-   if (props != 0)
-   {
-      int i;
+   auto& props = obj.getProperties();
 
-      for (i = props->begin(); i != props->end(); i = props->next(i))
-         out.printf(">  <%s>\n%s\n\n", props->key(i), props->value(i).ptr());
-   }
+      for (auto i : props.elements()) {
+         out.printf(">  <%s>\n%s\n\n", props.key(i), props.value(i));
+      }
 
    out.printfCR("$$$$");
    out.flush();
@@ -371,14 +368,10 @@ void IndigoRdfSaver::append (Output &out, IndigoObject &obj)
    else
       throw IndigoError("%s can not be saved to RDF", obj.debugInfo());
 
-   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
-      
-   if (props != 0)
-   {
-      int i;
+   auto& props = obj.getProperties();
 
-      for (i = props->begin(); i != props->end(); i = props->next(i))
-         out.printf("$DTYPE %s\n$DATUM %s\n", props->key(i), props->value(i).ptr());
+   for (auto i : props.elements()) {
+      out.printf("$DTYPE %s\n$DATUM %s\n", props.key(i), props.value(i));
    }
 }
 

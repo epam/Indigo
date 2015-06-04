@@ -176,11 +176,11 @@ void RdfLoader::readNext() {
          if(!_readLine(scanner, property_name)) {
             current_datum = 0;
          } else {
-            int idx = properties.findOrInsert(property_name.ptr());
+            properties.insert(property_name.ptr());
             /*
              * Define current value buffer
              */
-            current_datum = &properties.value(idx);
+            current_datum = &properties.valueBuf(property_name.ptr());
          }
          continue;
       }
@@ -231,8 +231,7 @@ bool RdfLoader::_readIdentifiers(bool from_begin) {
          /*
           * Insert new property key
           */
-         int idx = properties.findOrInsert("internal-regno");
-         Array<char>& val = properties.value(idx);
+         Array<char>& val = properties.insert("internal-regno");
          scanner.skipSpace();
          /*
           * Insert new property value
@@ -244,8 +243,7 @@ bool RdfLoader::_readIdentifiers(bool from_begin) {
          /*
           * Insert new property key
           */
-         int idx = properties.findOrInsert("external-regno");
-         Array<char>& val = properties.value(idx);
+         Array<char>& val = properties.insert("external-regno");
          scanner.skipSpace();
          /*
           * Insert new property value

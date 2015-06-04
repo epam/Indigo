@@ -55,11 +55,6 @@ const char * IndigoBaseReaction::debugInfo ()
    return "<base reaction>";
 }
 
-RedBlackStringObjMap< Array<char> > * IndigoBaseReaction::getProperties ()
-{
-   return &properties;
-}
-
 //
 // IndigoBaseReaction
 //
@@ -176,11 +171,6 @@ IndigoObject * IndigoReactionMolecule::clone ()
       return IndigoMolecule::cloneFrom(*this); 
 }
 
-RedBlackStringObjMap< Array<char> > * IndigoReactionMolecule::getProperties ()
-{
-   return 0;
-}
-
 void IndigoReactionMolecule::remove ()
 {
    rxn.remove(idx);
@@ -274,9 +264,8 @@ IndigoReaction * IndigoReaction::cloneFrom (IndigoObject & obj)
    rxnptr.reset(new IndigoReaction());
    rxnptr->rxn.clone(rxn, 0, 0, 0);
 
-   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
-   if (props != 0)
-      rxnptr->copyProperties(*props);
+   auto& props = obj.getProperties();
+   rxnptr->copyProperties(props);
    return rxnptr.release();
 }
 
@@ -288,9 +277,8 @@ IndigoQueryReaction * IndigoQueryReaction::cloneFrom (IndigoObject & obj)
    rxnptr.reset(new IndigoQueryReaction());
    rxnptr->rxn.clone(rxn, 0, 0, 0);
 
-   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
-   if (props != 0)
-      rxnptr->copyProperties(*props);
+   auto& props = obj.getProperties();
+   rxnptr->copyProperties(props);
    return rxnptr.release();
 }
 

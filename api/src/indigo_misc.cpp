@@ -396,7 +396,7 @@ CEXPORT const char * indigoRawData (int handler)
          tmp.string.copy(data.getRawData());
       }
       else if (obj.type == IndigoObject::PROPERTY)
-         tmp.string.copy(((IndigoProperty &)obj).getValue());
+         tmp.string.readString(((IndigoProperty &)obj).getValue(), false);
       else if (obj.type == IndigoObject::DATA_SGROUP)
       {
          tmp.string.copy(((IndigoDataSGroup &)obj).get().data);

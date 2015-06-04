@@ -21,6 +21,7 @@
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "base_cpp/obj_list.h"
+#include "base_cpp/properties_map.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -39,7 +40,7 @@ public:
    IndigoDeconvolution();
    virtual ~IndigoDeconvolution(){}
 
-   void addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props, int idx);
+   void addMolecule(Molecule& mol, PropertiesMap& props, int idx);
 
    void setScaffold (QueryMolecule& scaffold);
    void makeRGroups (QueryMolecule& scaffold);
@@ -125,22 +126,21 @@ class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
 {
 public:
    IndigoDeconvolutionElem (Molecule& mol);
-   IndigoDeconvolutionElem (Molecule& mol, RedBlackStringObjMap< Array<char> >* props);
+   IndigoDeconvolutionElem (Molecule& mol, PropertiesMap& props);
    IndigoDeconvolutionElem (Molecule& mol, int* index);
    IndigoDeconvolutionElem (IndigoDeconvolutionElem& elem);
 
    virtual ~IndigoDeconvolutionElem ();
 
    virtual int getIndex () {return idx;}
-   virtual RedBlackStringObjMap< Array<char> > * getProperties() {return &properties;}
+   virtual indigo::PropertiesMap& getProperties() { return _properties;}
    int idx;
 
    Molecule mol_in;
    IndigoDeconvolution::DecompositionEnumerator deco_enum;
 
-   RedBlackStringObjMap< Array<char> > properties;
+   indigo::PropertiesMap _properties;
 
-   void _copyProperties(RedBlackStringObjMap< Array<char> >* props);
 };
 
 class DLLEXPORT IndigoDecompositionMatch : public IndigoObject {

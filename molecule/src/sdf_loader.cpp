@@ -191,10 +191,12 @@ void SdfLoader::readNext ()
       {
          word.push(0);
 
-         int idx = properties.findOrInsert(word.ptr());
 
          _scanner->readLine(str, true);
-         properties.value(idx).copy(str);
+         auto& propBuf = properties.insert(word.ptr());
+//         auto& propBuf = properties.valueBuf(word.ptr());
+//         int idx = properties.findOrInsert(word.ptr());
+         propBuf.copy(str);
          output.writeStringCR(str.ptr());
          if (str.size() > 1)
          {
@@ -207,9 +209,9 @@ void SdfLoader::readNext ()
                output.writeStringCR(str.ptr());
                if (str.size() > 1)
                {
-                  properties.value(idx).pop(); // Remove string end marker (0)
-                  properties.value(idx).push('\n');
-                  properties.value(idx).appendString(str.ptr(), true);
+                  propBuf.pop(); // Remove string end marker (0)
+                  propBuf.push('\n');
+                  propBuf.appendString(str.ptr(), true);
                }
             } while (str.size() > 1);
          }

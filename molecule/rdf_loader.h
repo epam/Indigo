@@ -16,8 +16,8 @@
 #define	_RDF_LOADER_H__
 
 #include "base_cpp/tlscont.h"
-#include "base_cpp/red_black.h"
 #include "base_cpp/obj.h"
+#include "base_cpp/properties_map.h"
 
 namespace indigo {
 
@@ -53,7 +53,7 @@ public:
    /*
     * Properties map for current record
     */
-   TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
+   TL_CP_DECL(PropertiesMap, properties);
 
    /*
     * Defines is molecule or reaction there in the current record

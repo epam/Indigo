@@ -17,6 +17,7 @@
 
 #include "base_cpp/tlscont.h"
 #include "base_cpp/reusable_obj_array.h"
+#include "base_cpp/properties_map.h"
 
 
 namespace indigo
@@ -43,7 +44,7 @@ public:
 
    CP_DECL;
    TL_CP_DECL(Array<char>, data);
-   TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
+   TL_CP_DECL(PropertiesMap, properties);
 
 protected:
    TL_CP_DECL(Array<int>, _offsets);

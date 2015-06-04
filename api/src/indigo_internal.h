@@ -32,6 +32,7 @@
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_standardize_options.h"
 
+
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define 
  * should be compared with indigoVersion() to ensure libraries binary 
  * compatibility. */
@@ -50,8 +51,8 @@ namespace indigo
    class RdfLoader;
    class MolfileSaver;
    class RxnfileSaver;
+   class PropertiesMap;
 }
-
 extern DLLEXPORT OptionManager & indigoGetOptionManager ();
 
 class DLLEXPORT IndigoObject
@@ -161,7 +162,6 @@ public:
    virtual QueryReaction & getQueryReaction ();
    virtual Reaction & getReaction ();
 
-   virtual RedBlackStringObjMap< Array<char> > * getProperties();
    
    virtual IndigoObject * clone ();
 
@@ -175,7 +175,11 @@ public:
 
    virtual void remove ();
 
-   void copyProperties (RedBlackStringObjMap< Array<char> > &other);
+//   virtual RedBlackStringObjMap< Array<char> > * getProperties();
+//   void copyProperties (RedBlackStringObjMap< Array<char> > &other);
+   virtual PropertiesMap& getProperties();
+   virtual void copyProperties(PropertiesMap&);
+   virtual void copyProperties (RedBlackStringObjMap< Array<char> > &other);
 
 protected:
    AutoPtr< Array<char> > _dbg_info; // allocated by debugInfo() on demand

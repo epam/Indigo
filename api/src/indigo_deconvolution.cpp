@@ -504,17 +504,17 @@ IndigoObject(DECONVOLUTION_ELEM), idx(*index)
    mol_in.clone_KeepIndices(mol, 0);
 }
 
-IndigoDeconvolutionElem::IndigoDeconvolutionElem (Molecule& mol, RedBlackStringObjMap< Array<char> >* props) :
+IndigoDeconvolutionElem::IndigoDeconvolutionElem (Molecule& mol, PropertiesMap& props) :
 IndigoObject(DECONVOLUTION_ELEM), idx(-1)
 {
    mol_in.clone_KeepIndices(mol, 0);
-   _copyProperties(props);
+   copyProperties(props);
 }
 
 IndigoDeconvolutionElem::IndigoDeconvolutionElem (IndigoDeconvolutionElem& other):
 IndigoObject(DECONVOLUTION_ELEM), idx(other.idx) {
    mol_in.clone_KeepIndices(other.mol_in, 0);
-   _copyProperties(&other.properties);
+   copyProperties(other.getProperties());
    
    deco_enum.contexts.clear();
    for (int i = 0; i < other.deco_enum.contexts.size(); ++i) {
@@ -523,15 +523,6 @@ IndigoObject(DECONVOLUTION_ELEM), idx(other.idx) {
    deco_enum.deco = other.deco_enum.deco;
 }
 
-
-void IndigoDeconvolutionElem::_copyProperties(RedBlackStringObjMap< Array<char> >* props) {
-   properties.clear();
-
-   if (props != 0) {
-      for (int i = props->begin(); i != props->end(); i = props->next(i))
-         properties.value(properties.insert(props->key(i))).copy(props->value(i));
-   }
-}
 
 IndigoDeconvolutionElem::~IndigoDeconvolutionElem ()
 {
@@ -580,15 +571,9 @@ bool IndigoDecompositionMatchIter::hasNext () {
    return _index + 1 < _matches.size();
 }
 
-void IndigoDeconvolution::addMolecule(Molecule& mol, RedBlackStringObjMap< Array<char> >* props, int idx) {
+void IndigoDeconvolution::addMolecule(Molecule& mol, PropertiesMap& props, int idx) {
    IndigoDeconvolutionElem & item = _deconvolutionElems.push(mol, &idx);
-   int i;
-   
-   if (props != 0)
-   {
-      for (i = props->begin(); i != props->end(); i = props->next(i))
-         item.properties.value(item.properties.insert(props->key(i))).copy(props->value(i));
-   }
+   item.copyProperties(props);
 }
 
 void IndigoDecompositionMatch::renumber(Array<int>& map, Array<int>& inv_map) {
@@ -1578,7 +1563,7 @@ CEXPORT int indigoDecomposedMoleculeHighlighted (int decomp) {
 
          mol.create();
          mol->mol.clone_KeepIndices(deco_match.mol_out, 0);
-         mol->copyProperties(elem.properties);
+         mol->copyProperties(elem.getProperties());
 
          deco_match.completeScaffold();
       } else if (obj.type == IndigoObject::DECOMPOSITION_MATCH) {
@@ -1643,7 +1628,7 @@ CEXPORT int indigoDecomposedMoleculeWithRGroups (int decomp) {
 
          mol_ptr.reset(new IndigoMolecule());
          mol_ptr->mol.clone(deco_match.rgroup_mol, 0, 0);
-         mol_ptr->copyProperties(elem.properties);
+         mol_ptr->copyProperties(elem.getProperties());
          
          deco_match.completeScaffold();
          

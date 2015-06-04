@@ -52,11 +52,6 @@ IndigoBaseMolecule::~IndigoBaseMolecule ()
 {
 }
 
-RedBlackStringObjMap< Array<char> > * IndigoBaseMolecule::getProperties ()
-{
-   return &properties;
-}
-
 const char * IndigoBaseMolecule::debugInfo ()
 {
    return "<base molecule>";
@@ -110,9 +105,8 @@ IndigoMolecule * IndigoMolecule::cloneFrom (IndigoObject & obj)
 
    molptr->mol.clone(obj.getMolecule(), 0, &mapping);
 
-   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
-   if (props != 0)
-      molptr->copyProperties(*props);
+   auto& props = obj.getProperties();
+   molptr->copyProperties(props);
 
    return molptr.release();
 }
@@ -138,9 +132,8 @@ IndigoQueryMolecule * IndigoQueryMolecule::cloneFrom( IndigoObject & obj )
 
    molptr->qmol.clone(obj.getQueryMolecule(), 0, &mapping);
 
-   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
-   if (props != 0)
-      molptr->copyProperties(*props);
+   auto& props = obj.getProperties();
+   molptr->copyProperties(props);
 
    return molptr.release();
 }
@@ -497,7 +490,7 @@ CEXPORT int indigoLoadMolecule (int source)
       Molecule &mol = molptr->mol;
 
       loader.loadMolecule(mol);
-      molptr->properties.copy(loader.properties);
+      molptr->getProperties().copy(loader.properties);
 
       return self.addObject(molptr.release());
    }
@@ -519,7 +512,7 @@ CEXPORT int indigoLoadQueryMolecule (int source)
       QueryMolecule &qmol = molptr->qmol;
 
       loader.loadQueryMolecule(qmol);
-      molptr->properties.copy(loader.properties);
+      molptr->copyProperties(loader.properties);
 
       return self.addObject(molptr.release());
    }
