@@ -295,6 +295,11 @@ const char * LayeredMolecules::getTemplateAtomClass(int idx)
    return _proto.getTemplateAtomClass(idx);
 }
 
+const int LayeredMolecules::getTemplateAtomDisplayOption(int idx)
+{
+   return _proto.getTemplateAtomDisplayOption(idx);
+}
+
 bool LayeredMolecules::isRSite(int idx)
 {
    return _proto.isRSite(idx);
