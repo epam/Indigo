@@ -468,7 +468,7 @@ public:
 
    void shuffle() {
 	   for (int i = _length - 1; i > 0; i--) {
-		   int x = Random.next(i + 1);
+		   int x = Random::next(i + 1);
 		   swap(i, x);
 	   }
    }
