@@ -1595,7 +1595,7 @@ bool MoleculeLayoutGraph::_gradient_step(Array<Vec2f> &point, Array<float> &targ
 
 }
 
-Vec2f MoleculeLayoutGraph::_get_len_derivative(Vec2f& current_vector, float target_dist) {
+Vec2f MoleculeLayoutGraph::_get_len_derivative(Vec2f current_vector, float target_dist) {
 	float dist = current_vector.length();
 	//dist = __max(dist, 0.01);
 	float coef = 1;
@@ -1608,14 +1608,14 @@ Vec2f MoleculeLayoutGraph::_get_len_derivative(Vec2f& current_vector, float targ
 	return current_vector * -coef;
 }
 
-Vec2f MoleculeLayoutGraph::_get_len_derivative_simple(Vec2f& current_vector, float target_dist) {
+Vec2f MoleculeLayoutGraph::_get_len_derivative_simple(Vec2f current_vector, float target_dist) {
 	float dist = current_vector.length();
 	//dist = __max(dist, 0.01);
 	float coef = -1; // dist - target_dist;
 	return current_vector * -coef;
 }
 
-Vec2f MoleculeLayoutGraph::_get_angle_derivative(Vec2f& left_point, Vec2f& right_point, float target_angle) {
+Vec2f MoleculeLayoutGraph::_get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle) {
 	float len1_sq = left_point.lengthSqr();
 	float len2_sq = right_point.lengthSqr();
 	float len12 = sqrt(len1_sq * len2_sq);

@@ -282,11 +282,11 @@ Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, double angle) {
    return (p + q) / 2 + vec / tan((PI - angle)/2);
 }
 
-Vec2f Vec2f::get_circle_center(Vec2f& a, Vec2f& b, Vec2f& c) {
-	Vec2f p = b - a;
-	Vec2f q = c - a;
+Vec2f Vec2f::get_circle_center(Vec2f a, Vec2f p, Vec2f q) {
+	p -= a;
+	q -= a;
 	float cross = Vec2f::cross(p, q);
-	if (abs(cross) < EPSILON) return (p + q) / 2 + a;
+	if (fabs(cross) < EPSILON) return (p + q) / 2 + a;
 	float c1 = -p.lengthSqr() / 2;
 	float c2 = -q.lengthSqr() / 2;
 

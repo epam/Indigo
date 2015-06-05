@@ -235,7 +235,7 @@ struct Vec2f
    DLLEXPORT static double distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s);
 
    DLLEXPORT static Vec2f get_circle_center(Vec2f p, Vec2f q, double angle);
-   DLLEXPORT static Vec2f get_circle_center(Vec2f& a, Vec2f& b, Vec2f& c);
+   DLLEXPORT static Vec2f get_circle_center(Vec2f a, Vec2f b, Vec2f c);
 };
 
 struct Vec3f
