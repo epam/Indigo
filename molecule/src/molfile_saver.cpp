@@ -15,6 +15,7 @@
 #include "molecule/molfile_saver.h"
 
 #include <time.h>
+#include <sstream>
 
 #include "base_cpp/output.h"
 #include "base_cpp/locale_guard.h"
@@ -44,6 +45,25 @@ TL_CP_GET(_bond_mapping)
    mode = MODE_AUTO;
    no_chiral = false;
    skip_date = false;
+}
+/*
+ * Utility functions
+ */
+void write_c(float c, std::stringstream& coords) {
+   int strip = (int)c;
+   if ((float)strip == c) {
+      coords << strip << ".0";
+   } else {
+      coords << c;
+   }
+}
+void convert_xyz_to_string(Vec3f& xyz, std::stringstream& coords) {
+   coords.str("");
+   write_c(xyz.x, coords);
+   coords << " ";
+   write_c(xyz.y, coords);
+   coords << " ";
+   write_c(xyz.z, coords);
 }
 
 void MolfileSaver::saveBaseMolecule (BaseMolecule &mol)
@@ -348,7 +368,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
    for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i), iw++)
       _atom_mapping[i] = iw;
 
-
+   std::stringstream coords;
    for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
    {
       int atom_number = mol.getAtomNumber(i);
@@ -429,8 +449,14 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
       if (!mol.isRSite(i) && !mol.isPseudoAtom(i) && !mol.isTemplateAtom(i))
          radical = mol.getAtomRadical_NoThrow(i, 0);
+      
+      /*
+       * Trailing zeros workaround
+       */
+      convert_xyz_to_string(xyz, coords);
+      
 
-      out.printf(" %f %f %f %d", xyz.x, xyz.y, xyz.z, aam);
+      out.printf(" %s %d", coords.str().c_str(), aam);
 
       if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
          out.printf(" CHG=%d", charge);
