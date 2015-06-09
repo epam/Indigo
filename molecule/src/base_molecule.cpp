@@ -207,6 +207,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int
                                               const Array<int> *edges, Array<int> &mapping,
                                               Array<int> &edge_mapping, int skip_flags)
 {
+   QS_DEF(Array<char>, apid);
    int i;
    
    // XYZ
@@ -289,6 +290,27 @@ void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int
    if (!(skip_flags & SKIP_TGROUPS))
    {
       tgroups.copyTGroupsFromMolecule(mol.tgroups);
+   }
+
+   if (!(skip_flags & SKIP_TEMPLATE_ATTACHMENT_POINTS))
+   {
+      for (i = 0; i < vertices.size(); i++)
+      {
+         if (mol.isTemplateAtom(vertices[i]))
+         {
+            for (int j = 0; j < mol.getTemplateAtomAttachmentPointsCount(vertices[i]); j++)
+            {
+               if ( (mol.getTemplateAtomAttachmentPoint(vertices[i], j) != -1) &&
+                    (mapping[mol.getTemplateAtomAttachmentPoint(vertices[i], j)] != -1) )
+               {  
+                  mol.getTemplateAtomAttachmentPointId(vertices[i], j, apid);
+                  setTemplateAtomAttachmentOrder(mapping[vertices[i]],
+                                                 mapping[mol.getTemplateAtomAttachmentPoint(vertices[i], j)],
+                                                 apid.ptr());
+               }
+            }
+         }
+      }
    }
 
    // SGroups merging
@@ -929,6 +951,42 @@ void BaseMolecule::setTemplateAtomAttachmentOrder (int atom_idx, int att_atom_id
    updateEditRevision();
 }
 
+int BaseMolecule::getTemplateAtomAttachmentPoint (int atom_idx, int order)
+{
+   int ap_count = 0;
+   for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+   {
+      BaseMolecule::TemplateAttPoint &ap = template_attachment_points.at(j);
+      if (ap.ap_occur_idx == atom_idx)
+      {
+         if (ap_count == order)
+            return ap.ap_aidx;
+
+         ap_count++;    
+      }
+   }
+   return -1;
+}
+
+void BaseMolecule::getTemplateAtomAttachmentPointId (int atom_idx, int order, Array<char> &apid)
+{
+   int ap_count = 0;
+   for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+   {
+      BaseMolecule::TemplateAttPoint &ap = template_attachment_points.at(j);
+      if (ap.ap_occur_idx == atom_idx)
+      {
+         if (ap_count == order)
+         {
+            apid.copy(ap.ap_id);
+            return;
+         }
+         ap_count++;    
+      }
+   }
+   throw Error("attachment point order %d is out of range (%d)", order, ap_count);
+}
+
 int BaseMolecule::getTemplateAtomAttachmentPointById (int atom_idx, Array<char> &att_id)
 {
    QS_DEF(Array<char>, tmp);
@@ -942,6 +1000,20 @@ int BaseMolecule::getTemplateAtomAttachmentPointById (int atom_idx, Array<char> 
       }
    }
    return aidx;
+}
+
+int BaseMolecule::getTemplateAtomAttachmentPointsCount (int atom_idx)
+{
+   int count = 0;
+   for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+   {
+      BaseMolecule::TemplateAttPoint &ap = template_attachment_points.at(j);
+      if (ap.ap_occur_idx == atom_idx)
+      {
+         count++;
+      }
+   }
+   return count;
 }
 
 int BaseMolecule::attachmentPointCount () const
@@ -1214,7 +1286,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          int idx = this->asMolecule().addAtom(-1);
          this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
          this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
-         this->asMolecule().setTemplateAtomSeqid(idx, seq_id);
+//         this->asMolecule().setTemplateAtomSeqid(idx, seq_id);
          seq_id++;
          count_occur++;
 

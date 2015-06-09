@@ -74,7 +74,8 @@ enum
    SKIP_XYZ = 0x04,
    SKIP_RGROUP_FRAGMENTS = 0x08,
    SKIP_ATTACHMENT_POINTS = 0x16,
-   SKIP_TGROUPS = 0x32
+   SKIP_TGROUPS = 0x32,
+   SKIP_TEMPLATE_ATTACHMENT_POINTS = 0x64
 };
 
 class Molecule;
@@ -146,6 +147,10 @@ public:
    void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
 
    void setTemplateAtomAttachmentOrder (int atom_idx, int att_atom_idx, const char *att_id);
+
+   int getTemplateAtomAttachmentPoint (int atom_idx, int order);
+   void getTemplateAtomAttachmentPointId (int atom_idx, int order, Array<char> &apid);
+   int getTemplateAtomAttachmentPointsCount (int atom_idx);
    int getTemplateAtomAttachmentPointById (int atom_idx, Array<char> &att_id);
 
    void addAttachmentPoint (int order, int atom_index);
