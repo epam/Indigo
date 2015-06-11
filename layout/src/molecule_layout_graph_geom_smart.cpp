@@ -16,7 +16,7 @@
 
 using namespace indigo;
 
-float f1 (float X, int L, float s)
+float f1_smart (float X, int L, float s)
 {
    int i,  min1;
    float f;
@@ -32,7 +32,7 @@ float f1 (float X, int L, float s)
    return f;	
 }
 
-float f2 (float X, int L, float s)
+float f2_smart (float X, int L, float s)
 {
    int i,  min1;
    float f;
@@ -74,11 +74,11 @@ void MoleculeLayoutGraphSmart::_findAngles (int k, float s, float &x, float &y)
 
       if (k % 2 == 0) 
       {
-         if (f1(a0, L, s) * f1(b0, L, s) > 0)
+         if (f1_smart(a0, L, s) * f1_smart(b0, L, s) > 0)
             continue;
       } else
       {
-         if (f2(a0, L, s) * f2(b0, L, s) > 0)
+         if (f2_smart(a0, L, s) * f2_smart(b0, L, s) > 0)
             continue;
       }
 
@@ -105,15 +105,15 @@ float MoleculeLayoutGraphSmart::_dichotomy1 (float a0, float b0, int L, float s)
    float  C,  pr;
    float pr1,  fa0;
 
-   fa0 = f1(a0, L, s);
+   fa0 = f1_smart(a0, L, s);
 
-   if (fa0 * f1(b0, L, s) > 0)
+   if (fa0 * f1_smart(b0, L, s) > 0)
       throw Error("there are no roots");
 
    while (true)
    {
       C = (a0 + b0) / 2;
-      pr = f1( C, L, s);
+      pr = f1_smart( C, L, s);
 
       if (C - a0 < EPSILON)
          return C;
@@ -138,15 +138,15 @@ float MoleculeLayoutGraphSmart::_dichotomy2 (float a0, float b0, int L, float s)
    float  C,  pr;
    float pr1,  fa0;
 
-   fa0 = f2 ( a0, L, s);
+   fa0 = f2_smart ( a0, L, s);
 
-   if (fa0 * f2 ( b0, L, s) > 0)
+   if (fa0 * f2_smart ( b0, L, s) > 0)
       throw Error("there are no roots");
 
    while (true)
    {
       C = (a0 + b0) / 2;
-      pr = f2(C, L, s);
+      pr = f2_smart(C, L, s);
 
       if (C - a0 < EPSILON)
          return C;

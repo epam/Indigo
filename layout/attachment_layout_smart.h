@@ -12,18 +12,18 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __attachment_layout_h__
-#define __attachment_layout_h__
+#ifndef __attachment_layout_smart_h__
+#define __attachment_layout_smart_h__
 
 #include "layout/molecule_layout_graph_smart.h"
 #include "graph/biconnected_decomposer.h"
 
 namespace indigo {
 
-class AttachmentLayout
+class AttachmentLayoutSmart
 {
 public:
-   explicit AttachmentLayout (const BiconnectedDecomposer &bc_decom,
+   explicit AttachmentLayoutSmart (const BiconnectedDecomposer &bc_decom,
       ObjArray<MoleculeLayoutGraphSmart> &bc_components, 
       const Array<int> &bc_tree, MoleculeLayoutGraphSmart &graph, int src_vertex);
 
@@ -49,10 +49,10 @@ public:
    MoleculeLayoutGraphSmart &_graph;
 };
 
-class LayoutChooser
+class LayoutChooserSmart
 {
 public:
-   LayoutChooser(AttachmentLayout &layout);
+   LayoutChooserSmart(AttachmentLayoutSmart &layout);
 
    void perform () { _perform(_layout._attached_bc.size() - 1); }
 
@@ -65,7 +65,7 @@ private:
    CP_DECL;
    TL_CP_DECL(Array<int>, _comp_permutation);
    TL_CP_DECL(Array<int>, _rest_numbers);
-   AttachmentLayout &_layout;
+   AttachmentLayoutSmart &_layout;
 };
 
 }

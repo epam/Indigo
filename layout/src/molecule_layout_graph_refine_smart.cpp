@@ -147,9 +147,9 @@ bool MoleculeLayoutGraphSmart::_allowRotateAroundVertex (int idx) const
 // Increase minimal distance between vertices
 void MoleculeLayoutGraphSmart::_refineCoordinates (const BiconnectedDecomposer &bc_decomposer, const ObjArray<MoleculeLayoutGraphSmart> &bc_components, const Array<int> &bc_tree)
 {
-   RefinementState beg_state(*this);
-   RefinementState best_state(*this);
-   RefinementState new_state(*this);
+   RefinementStateSmart beg_state(*this);
+   RefinementStateSmart best_state(*this);
+   RefinementStateSmart new_state(*this);
    QS_DEF(Array<int>, branch);
    int v1, v2;
    int v1c, v2c;

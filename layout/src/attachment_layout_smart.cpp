@@ -18,9 +18,9 @@
 
 using namespace indigo;
 
-CP_DEF(AttachmentLayout);
+CP_DEF(AttachmentLayoutSmart);
 
-AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer &bc_decom,
+AttachmentLayoutSmart::AttachmentLayoutSmart(const BiconnectedDecomposer &bc_decom,
                                    ObjArray<MoleculeLayoutGraphSmart> &bc_components,
                                    const Array<int> &bc_tree,
                                    MoleculeLayoutGraphSmart &graph, int src_vertex) :
@@ -95,7 +95,7 @@ _graph(graph)
 }
 
 // Calculate energy of the drawn part of graph
-double AttachmentLayout::calculateEnergy ()
+double AttachmentLayoutSmart::calculateEnergy ()
 {
    int i,  j;
    double sum_a;
@@ -164,7 +164,7 @@ double AttachmentLayout::calculateEnergy ()
    return _energy;
 }
 
-void AttachmentLayout::applyLayout ()
+void AttachmentLayoutSmart::applyLayout ()
 {
    int i;
 
@@ -180,7 +180,7 @@ void AttachmentLayout::applyLayout ()
    }
 }
 
-void AttachmentLayout::markDrawnVertices()
+void AttachmentLayoutSmart::markDrawnVertices()
 {
    int i,  j;
 
@@ -204,9 +204,9 @@ void AttachmentLayout::markDrawnVertices()
    }
 }
 
-CP_DEF(LayoutChooser);
+CP_DEF(LayoutChooserSmart);
 
-LayoutChooser::LayoutChooser(AttachmentLayout &layout) :
+LayoutChooserSmart::LayoutChooserSmart(AttachmentLayoutSmart &layout) :
 _n_components(layout._attached_bc.size() - 1),
 _cur_energy(1E+20f),
 CP_INIT,
@@ -222,7 +222,7 @@ _layout(layout)
 }
 
 // Look through all perturbations recursively
-void LayoutChooser::_perform (int level)
+void LayoutChooserSmart::_perform (int level)
 {
    int i;
 
@@ -254,7 +254,7 @@ void LayoutChooser::_perform (int level)
 }
 
 // Draw components connected with respect to current order
-void LayoutChooser::_makeLayout () 
+void LayoutChooserSmart::_makeLayout () 
 {
    int i,  j,  k;
    float cur_angle;

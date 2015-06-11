@@ -453,6 +453,28 @@ void MoleculeLayout::_makeLayout ()
       _layout_graph.layout(*_bm, bond_length, 0, respect_existing_layout);
 }
 
+void MoleculeLayout::_makeLayoutSmart()
+{
+    if (filter != 0)
+    {
+        QS_DEF(Array<int>, fixed_vertices);
+
+        fixed_vertices.clear_resize(_layout_graph_smart.vertexEnd());
+        fixed_vertices.zerofill();
+
+        for (int i = _layout_graph_smart.vertexBegin(); i < _layout_graph_smart.vertexEnd(); i = _layout_graph_smart.vertexNext(i))
+            if (!filter->valid(_layout_graph_smart.getVertexExtIdx(i)))
+                fixed_vertices[i] = 1;
+
+        Filter new_filter(fixed_vertices.ptr(), Filter::NEQ, 1);
+
+        _layout_graph_smart.layout(*_bm, bond_length, &new_filter, respect_existing_layout);
+    }
+    else
+        _layout_graph_smart.layout(*_bm, bond_length, 0, respect_existing_layout);
+}
+
+
 void MoleculeLayout::_updateRepeatingUnits ()
 {
    QS_DEF(Array<int>, crossBonds);

@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __molecule_layout_graph_h_smart__
-#define __molecule_layout_graph_h_smart__
+#ifndef __molecule_layout_graph_smart_h__
+#define __molecule_layout_graph_smart_h__
 
 #include "graph/graph.h"
 #include "graph/filter.h"
@@ -37,6 +37,7 @@ class BiconnectedDecomposer;
 #define M_LAYOUT_DEBUG
 #endif
 
+#ifndef __molecule_layout_graph_h__
 enum
 {
    ELEMENT_NOT_DRAWN = 0,
@@ -46,6 +47,7 @@ enum
    ELEMENT_IGNORE,
    ELEMENT_DRAWN
 };
+#endif
 
 struct LayoutVertexSmart
 {

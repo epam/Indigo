@@ -16,11 +16,11 @@
 
 using namespace indigo;
 
-IMPL_ERROR(RefinementState, "refinement");
+IMPL_ERROR(RefinementStateSmart, "refinement");
 
-CP_DEF(RefinementState);
+CP_DEF(RefinementStateSmart);
 
-RefinementState::RefinementState (MoleculeLayoutGraphSmart &graph) :
+RefinementStateSmart::RefinementStateSmart (MoleculeLayoutGraphSmart &graph) :
 dist(0.f),
 energy(0),
 height(0.f),
@@ -30,7 +30,7 @@ _graph(graph)
 {
 }
 
-void RefinementState::calcDistance (int v1, int v2)
+void RefinementStateSmart::calcDistance (int v1, int v2)
 {
    Vec2f d;
 
@@ -39,7 +39,7 @@ void RefinementState::calcDistance (int v1, int v2)
    dist = d.lengthSqr();
 }
 
-void RefinementState::calcHeight ()
+void RefinementStateSmart::calcHeight ()
 {
    float min = 1000.f, max = -1000.f;
    int i;
@@ -55,7 +55,7 @@ void RefinementState::calcHeight ()
    height = max - min;
 }
 
-void RefinementState::copy (const RefinementState &other)
+void RefinementStateSmart::copy (const RefinementStateSmart &other)
 {
    dist = other.dist;
    energy = other.energy;
@@ -64,7 +64,7 @@ void RefinementState::copy (const RefinementState &other)
    layout.copy(other.layout);
 }
 
-void RefinementState::copyFromGraph ()
+void RefinementStateSmart::copyFromGraph ()
 {
    int i;
 
@@ -74,7 +74,7 @@ void RefinementState::copyFromGraph ()
       layout[i] = _graph.getPos(i);
 }
 
-void RefinementState::applyToGraph ()
+void RefinementStateSmart::applyToGraph ()
 {
    int i;
 
@@ -82,7 +82,7 @@ void RefinementState::applyToGraph ()
       _graph.getPos(i) = layout[i];
 }
 
-void RefinementState::calcEnergy ()
+void RefinementStateSmart::calcEnergy ()
 {
    int i,  j;
    float r;
@@ -111,7 +111,7 @@ void RefinementState::calcEnergy ()
 }
 
 // Flip all verices from branch around (v1,v2)
-void RefinementState::flipBranch (const Filter &branch, const RefinementState &state, int v1_idx, int v2_idx)
+void RefinementStateSmart::flipBranch (const Filter &branch, const RefinementStateSmart &state, int v1_idx, int v2_idx)
 {
    int i;
    float r,  t;
@@ -143,7 +143,7 @@ void RefinementState::flipBranch (const Filter &branch, const RefinementState &s
 }
 
 // Rotate branch around vertex v1
-void RefinementState::rotateBranch (const Filter &branch, const RefinementState &state, int v_idx, float angle) 
+void RefinementStateSmart::rotateBranch (const Filter &branch, const RefinementStateSmart &state, int v_idx, float angle) 
 {
    int i;
    float co,  si;
@@ -172,7 +172,7 @@ void RefinementState::rotateBranch (const Filter &branch, const RefinementState 
 }
 
 // Translate branch on 0.1 of vector [v1,v2]
-void RefinementState::stretchBranch (const Filter &branch, const RefinementState &state, int v1_idx, int v2_idx, int val)
+void RefinementStateSmart::stretchBranch (const Filter &branch, const RefinementStateSmart &state, int v1_idx, int v2_idx, int val)
 {
    int i;
    float r, sh = 0.1f * val;
@@ -204,7 +204,7 @@ void RefinementState::stretchBranch (const Filter &branch, const RefinementState
 }
 
 // Rotate layout around vertex v (in degrees)
-void RefinementState::rotateLayout (const RefinementState &state, int v_idx, float angle) 
+void RefinementStateSmart::rotateLayout (const RefinementStateSmart &state, int v_idx, float angle) 
 {
    int i;
    float co,  si;

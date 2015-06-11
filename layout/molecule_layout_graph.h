@@ -38,14 +38,17 @@ class BiconnectedDecomposer;
 #define M_LAYOUT_DEBUG
 #endif
 
+#ifndef __molecule_layout_graph_smart_h__
 enum
 {
-   ELEMENT_NOT_DRAWN = 0,
-   ELEMENT_INTERNAL,
-   ELEMENT_BOUNDARY,
-   ELEMENT_NOT_PLANAR,
-   ELEMENT_IGNORE
+    ELEMENT_NOT_DRAWN = 0,
+    ELEMENT_INTERNAL,
+    ELEMENT_BOUNDARY,
+    ELEMENT_NOT_PLANAR,
+    ELEMENT_IGNORE,
+    ELEMENT_DRAWN
 };
+#endif
 
 struct LayoutVertex
 {

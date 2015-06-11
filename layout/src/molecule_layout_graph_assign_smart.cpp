@@ -164,12 +164,12 @@ void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates (float bond_length)
          {
             // Component layout in current vertex should have the same angles between components.
             // So it depends on component order and their flipping (for nontrivial components)
-            AttachmentLayout att_layout(bc_decom, bc_components, bc_tree, *this, k);
+            AttachmentLayoutSmart att_layout(bc_decom, bc_components, bc_tree, *this, k);
 
             // ( 3.iii] Look over all possible orders of component layouts
             //         (vertex itself is already drawn means one component is already drawn)
             // ( 3.iv]  Choose layout with minimal energy
-            LayoutChooser layout_chooser(att_layout);
+            LayoutChooserSmart layout_chooser(att_layout);
 
             layout_chooser.perform();
 

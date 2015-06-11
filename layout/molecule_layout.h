@@ -50,8 +50,9 @@ protected:
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, BaseMolecule& mol);
    BaseMolecule& _getMol (int id);
    void _make ();
-   void _makeLayout ();
-   void _updateRepeatingUnits ();
+   void _makeLayout();
+   void _makeLayoutSmart();
+   void _updateRepeatingUnits();
    void _updateMultipleGroups ();
 
    static BaseMolecule& cb_getMol (int id, void* context);
