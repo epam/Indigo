@@ -15,7 +15,7 @@
 #ifndef __attachment_layout_h__
 #define __attachment_layout_h__
 
-#include "layout/molecule_layout_graph.h"
+#include "layout/molecule_layout_graph_smart.h"
 #include "graph/biconnected_decomposer.h"
 
 namespace indigo {
@@ -24,8 +24,8 @@ class AttachmentLayout
 {
 public:
    explicit AttachmentLayout (const BiconnectedDecomposer &bc_decom,
-      ObjArray<MoleculeLayoutGraph> &bc_components, 
-      const Array<int> &bc_tree, MoleculeLayoutGraph &graph, int src_vertex);
+      ObjArray<MoleculeLayoutGraphSmart> &bc_components, 
+      const Array<int> &bc_tree, MoleculeLayoutGraphSmart &graph, int src_vertex);
 
    double calculateEnergy ();
    void  applyLayout ();
@@ -45,8 +45,8 @@ public:
    TL_CP_DECL(Array<Vec2f>, _layout);      // layout of new vertices
    double _energy;                         // current energy between drawn part and new part
 
-   ObjArray<MoleculeLayoutGraph> &_bc_components;
-   MoleculeLayoutGraph &_graph;
+   ObjArray<MoleculeLayoutGraphSmart> &_bc_components;
+   MoleculeLayoutGraphSmart &_graph;
 };
 
 class LayoutChooser

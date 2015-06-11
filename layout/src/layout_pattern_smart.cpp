@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "layout/layout_pattern.h"
+#include "layout/layout_pattern_smart.h"
 
 #include "base_cpp/scanner.h"
 #include "base_cpp/os_sync_wrapper.h"
@@ -21,7 +21,7 @@
 #include "molecule/query_molecule.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molecule_substructure_matcher.h"
-#include "layout/molecule_layout_graph.h"
+#include "layout/molecule_layout_graph_smart.h"
 
 #include "base_cpp/profiling.h"
 
@@ -37,13 +37,13 @@ class DLLEXPORT PatternLayout
 {      
 public:
    QueryMolecule query_molecule;
-   MoleculeLayoutGraph layout_graph;
+   MoleculeLayoutGraphSmart layout_graph;
 };
 
 static vector<unique_ptr<PatternLayout>> _patterns;
 static OsLock _patterns_lock;
 
-bool PatternLayoutFinder::tryToFindPattern (MoleculeLayoutGraph &layout_graph)
+bool PatternLayoutFinder::tryToFindPattern (MoleculeLayoutGraphSmart &layout_graph)
 {
    _initPatterns();
 
@@ -51,7 +51,7 @@ bool PatternLayoutFinder::tryToFindPattern (MoleculeLayoutGraph &layout_graph)
 
    for (auto & pattern : _patterns)
    {
-      MoleculeLayoutGraph &plg = pattern->layout_graph;
+      MoleculeLayoutGraphSmart &plg = pattern->layout_graph;
 
       // Compare morgan code and graph size
       if (plg.getMorganCode() != layout_graph.getMorganCode())
@@ -133,7 +133,7 @@ void PatternLayoutFinder::_initPatterns ()
 
 bool PatternLayoutFinder::_matchPatternBond (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata)
 {
-   MoleculeLayoutGraph &target = (MoleculeLayoutGraph &)supergraph;
+   MoleculeLayoutGraphSmart &target = (MoleculeLayoutGraphSmart &)supergraph;
    BaseMolecule *mol = (BaseMolecule *)target.getMolecule();
 
    int layout_idx = target.getLayoutEdge(super_idx).ext_idx;

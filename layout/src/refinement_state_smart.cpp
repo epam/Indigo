@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "layout/refinement_state.h"
+#include "layout/refinement_state_smart.h"
 
 using namespace indigo;
 
@@ -20,7 +20,7 @@ IMPL_ERROR(RefinementState, "refinement");
 
 CP_DEF(RefinementState);
 
-RefinementState::RefinementState (MoleculeLayoutGraph &graph) :
+RefinementState::RefinementState (MoleculeLayoutGraphSmart &graph) :
 dist(0.f),
 energy(0),
 height(0.f),

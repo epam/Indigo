@@ -12,13 +12,13 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "layout/molecule_layout_graph.h"
+#include "layout/molecule_layout_graph_smart.h"
 
 using namespace indigo;
 
-CP_DEF(MoleculeLayoutGraph::Cycle);
+CP_DEF(MoleculeLayoutGraphSmart::CycleSmart);
 
-MoleculeLayoutGraph::Cycle::Cycle () :
+MoleculeLayoutGraphSmart::CycleSmart::CycleSmart () :
 CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
@@ -31,7 +31,7 @@ TL_CP_GET(_attached_weight)
    _morgan_code_calculated = false;
 }
 
-MoleculeLayoutGraph::Cycle::Cycle (const List<int> &edges, const MoleculeLayoutGraph &graph) :
+MoleculeLayoutGraphSmart::CycleSmart::CycleSmart (const List<int> &edges, const MoleculeLayoutGraphSmart &graph) :
 CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
@@ -43,7 +43,7 @@ TL_CP_GET(_attached_weight)
    _morgan_code_calculated = false;
 }
 
-MoleculeLayoutGraph::Cycle::Cycle (const Array<int> &vertices, const Array<int> &edges) :
+MoleculeLayoutGraphSmart::CycleSmart::CycleSmart (const Array<int> &vertices, const Array<int> &edges) :
 CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges),
@@ -55,7 +55,7 @@ TL_CP_GET(_attached_weight)
    _morgan_code_calculated = false;
 }
 
-void MoleculeLayoutGraph::Cycle::copy (const List<int> &edges, const MoleculeLayoutGraph &graph)
+void MoleculeLayoutGraphSmart::CycleSmart::copy (const List<int> &edges, const MoleculeLayoutGraphSmart &graph)
 {
    int i = edges.begin();
    const Edge &edge1 = graph.getEdge(edges[i]);
@@ -90,7 +90,7 @@ void MoleculeLayoutGraph::Cycle::copy (const List<int> &edges, const MoleculeLay
          _max_idx = _vertices[i];
 }
 
-void MoleculeLayoutGraph::Cycle::copy (const Array<int> &vertices, const Array<int> &edges)
+void MoleculeLayoutGraphSmart::CycleSmart::copy (const Array<int> &vertices, const Array<int> &edges)
 {
    _vertices.copy(vertices);
    _edges.copy(edges);
@@ -101,13 +101,13 @@ void MoleculeLayoutGraph::Cycle::copy (const Array<int> &vertices, const Array<i
          _max_idx = _vertices[i];
 }
 
-long MoleculeLayoutGraph::Cycle::morganCode() const
+long MoleculeLayoutGraphSmart::CycleSmart::morganCode() const
 {
    if (!_morgan_code_calculated) throw Error("Morgan code does not calculated yet.");
    return _morgan_code;
 }
 
-void MoleculeLayoutGraph::Cycle::calcMorganCode(const MoleculeLayoutGraph &parent_graph)
+void MoleculeLayoutGraphSmart::CycleSmart::calcMorganCode(const MoleculeLayoutGraphSmart &parent_graph)
 {
    _morgan_code = 0;
 
@@ -117,7 +117,7 @@ void MoleculeLayoutGraph::Cycle::calcMorganCode(const MoleculeLayoutGraph &paren
    _morgan_code_calculated = true;
 }
 
-void MoleculeLayoutGraph::Cycle::canonize()
+void MoleculeLayoutGraphSmart::CycleSmart::canonize()
 {
    // 1. v(0)<v(i), i=1,...,l-1 ; 
    // 2. v(1)< v(l-2) => unique representation of cycle
@@ -126,7 +126,7 @@ void MoleculeLayoutGraph::Cycle::canonize()
    int min_idx = 0, i;
    bool vert_invert = false;
 
-   Cycle src_cycle(_vertices, _edges);
+   CycleSmart src_cycle(_vertices, _edges);
 
    for (i = 1; i < vertexCount(); i++)
       if (_vertices[i] < _vertices[min_idx])
@@ -167,7 +167,7 @@ void MoleculeLayoutGraph::Cycle::canonize()
    }
 }
 
-bool MoleculeLayoutGraph::Cycle::contains (const Cycle &another) const
+bool MoleculeLayoutGraphSmart::CycleSmart::contains (const CycleSmart &another) const
 {
    if (vertexCount() < another.vertexCount())
       return false;
@@ -190,9 +190,9 @@ bool MoleculeLayoutGraph::Cycle::contains (const Cycle &another) const
 // Cycle sorting callback
 // Order by size: 6, 5, 7, 8, 4, 3, 9, 10, 11, ..
 // If cycles has the same size then Morgan code in descending order (higher first)
-int MoleculeLayoutGraph::Cycle::compare_cb (int &idx1, int &idx2, void *context)
+int MoleculeLayoutGraphSmart::CycleSmart::compare_cb (int &idx1, int &idx2, void *context)
 {
-   const ObjPool<Cycle> &cycles = *(const ObjPool<Cycle> *)context;
+   const ObjPool<CycleSmart> &cycles = *(const ObjPool<CycleSmart> *)context;
 
    int size_freq[] = {6, 5, 7, 8, 4, 3};
    int freq_idx1, freq_idx2;
@@ -214,17 +214,17 @@ int MoleculeLayoutGraph::Cycle::compare_cb (int &idx1, int &idx2, void *context)
    return cycles[idx2].morganCode() - cycles[idx1].morganCode();
 }
 
-void MoleculeLayoutGraph::calcMorganCode ()
+void MoleculeLayoutGraphSmart::calcMorganCode ()
 {
    _calcMorganCodes();
 }
 
-long MoleculeLayoutGraph::getMorganCode ()
+long MoleculeLayoutGraphSmart::getMorganCode ()
 {
    return _total_morgan_code;
 }
 
-void MoleculeLayoutGraph::assignFirstVertex (int v)
+void MoleculeLayoutGraphSmart::assignFirstVertex (int v)
 {
    _first_vertex_idx = v;
 }

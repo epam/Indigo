@@ -47,9 +47,9 @@ enum
    ELEMENT_DRAWN
 };
 
-struct LayoutVertex
+struct LayoutVertexSmart
 {
-   LayoutVertex () { memset(this, 0, sizeof(LayoutVertex)); }
+   LayoutVertexSmart () { memset(this, 0, sizeof(LayoutVertexSmart)); }
 
    int  orig_idx;
    int  ext_idx;
@@ -60,9 +60,9 @@ struct LayoutVertex
    Vec2f pos;
 };
 
-struct LayoutEdge
+struct LayoutEdgeSmart
 {
-   LayoutEdge () { memset(this, 0, sizeof(LayoutEdge)); }
+   LayoutEdgeSmart () { memset(this, 0, sizeof(LayoutEdgeSmart)); }
 
    int  orig_idx;
    int  ext_idx;
@@ -84,7 +84,7 @@ struct local_pair_id {
    local_pair_id(int l, double r) { left = l; right = r; }
 };
 
-class MoleculeLayoutGraph;
+class MoleculeLayoutGraphSmart;
 class MoleculeLayoutMacrocycles;
 class MoleculeLayoutMacrocyclesLattice;
 
@@ -106,9 +106,9 @@ private:
    double calc_radius(Vec2f);
 
 public:
-   MoleculeLayoutGraph& _graph;
+   MoleculeLayoutGraphSmart& _graph;
 
-   MoleculeLayoutSmoothingSegment(MoleculeLayoutGraph& mol, Vec2f& start, Vec2f& finish);
+   MoleculeLayoutSmoothingSegment(MoleculeLayoutGraphSmart& mol, Vec2f& start, Vec2f& finish);
    Vec2f getPosition(int);
    Vec2f getIntPosition(int) const;
    void shiftStartBy(Vec2f shift);
@@ -141,11 +141,11 @@ public:
 
 };
 
-class DLLEXPORT MoleculeLayoutGraph : public Graph
+class DLLEXPORT MoleculeLayoutGraphSmart : public Graph
 {
 public:
-   explicit MoleculeLayoutGraph ();
-   virtual ~MoleculeLayoutGraph ();
+   explicit MoleculeLayoutGraphSmart ();
+   virtual ~MoleculeLayoutGraphSmart ();
 
    virtual void clear ();
 
@@ -162,13 +162,13 @@ public:
    inline bool isEdgeDrawn(int idx) const { return _layout_edges[idx].type != ELEMENT_NOT_DRAWN; }
    inline bool isVertexDrawn(int idx) const { return _layout_vertices[idx].type != ELEMENT_NOT_DRAWN; }
 
-   void registerLayoutVertex (int idx, const LayoutVertex &vertex);
-   void registerLayoutEdge   (int idx, const LayoutEdge &edge);
+   void registerLayoutVertex (int idx, const LayoutVertexSmart &vertex);
+   void registerLayoutEdge   (int idx, const LayoutEdgeSmart &edge);
    int  addLayoutVertex      (int ext_idx, int type);
    int  addLayoutEdge        (int beg, int end, int ext_idx, int type);
 
-   const LayoutVertex &getLayoutVertex (int idx) const;
-   const LayoutEdge   &getLayoutEdge   (int idx) const;
+   const LayoutVertexSmart &getLayoutVertex (int idx) const;
+   const LayoutEdgeSmart   &getLayoutEdge   (int idx) const;
 
    void setVertexType (int idx, int type) { _layout_vertices[idx].type = type; }
    void setEdgeType   (int idx, int type) { _layout_edges[idx].type = type; }
@@ -178,10 +178,10 @@ public:
    float calculateAngle (int v, int &v1, int &v2) const;
 
    void makeOnGraph (Graph &graph);
-   void makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter);
-   void makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter, Filter *edge_filter);
-   void cloneLayoutGraph (MoleculeLayoutGraph &other, Array<int> *mapping);
-   void copyLayoutTo (MoleculeLayoutGraph &other, const int *mapping) const;
+   void makeLayoutSubgraph (MoleculeLayoutGraphSmart &graph, Filter &vertex_filter);
+   void makeLayoutSubgraph (MoleculeLayoutGraphSmart &graph, Filter &vertex_filter, Filter *edge_filter);
+   void cloneLayoutGraph (MoleculeLayoutGraphSmart &other, Array<int> *mapping);
+   void copyLayoutTo (MoleculeLayoutGraphSmart &other, const int *mapping) const;
 
    void layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing);
    
@@ -211,13 +211,13 @@ public:
 
 protected:
 
-   struct Cycle
+   struct CycleSmart
    {
-      explicit Cycle();
-      explicit Cycle(const List<int> &edges, const MoleculeLayoutGraph &graph);
-      explicit Cycle(const Array<int> &vertices, const Array<int> &edges);
+      explicit CycleSmart();
+      explicit CycleSmart(const List<int> &edges, const MoleculeLayoutGraphSmart &graph);
+      explicit CycleSmart(const Array<int> &vertices, const Array<int> &edges);
 
-      void copy (const List<int> &edges, const MoleculeLayoutGraph &graph);
+      void copy (const List<int> &edges, const MoleculeLayoutGraphSmart &graph);
       void copy (const Array<int> &vertices, const Array<int> &edges);
 
       int vertexCount () const { return _vertices.size(); }
@@ -233,8 +233,8 @@ protected:
       int getVertexWeight(int idx) const {return _attached_weight[idx];}
       long morganCode() const;
       void canonize ();
-      bool contains (const Cycle &another) const;
-      void calcMorganCode (const MoleculeLayoutGraph &parent_graph);
+      bool contains (const CycleSmart &another) const;
+      void calcMorganCode (const MoleculeLayoutGraphSmart &parent_graph);
 
       static int compare_cb (int &idx1, int &idx2, void *context);
 
@@ -252,13 +252,13 @@ protected:
       bool _morgan_code_calculated;
 
    private:
-      Cycle(const Cycle &other); // No copy constructor
+      CycleSmart(const CycleSmart &other); // No copy constructor
 
    };
 
-   struct EnumContext
+   struct EnumContextSmart
    {
-      const MoleculeLayoutGraph *graph;
+      const MoleculeLayoutGraphSmart *graph;
       RedBlackSet<int> *edges;
       int iterationNumber;
       int maxIterationNumber;
@@ -268,17 +268,17 @@ protected:
 
    // for whole graph
    void _assignAbsoluteCoordinates (float bond_length);
-   void _findFirstVertexIdx (int n_comp, Array<int> & fixed_components, ObjArray<MoleculeLayoutGraph> &bc_components, bool all_trivial);
-   bool _prepareAssignedList (Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, ObjArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree);
+   void _findFirstVertexIdx (int n_comp, Array<int> & fixed_components, ObjArray<MoleculeLayoutGraphSmart> &bc_components, bool all_trivial);
+   bool _prepareAssignedList (Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, ObjArray<MoleculeLayoutGraphSmart> &bc_components, Array<int> &bc_tree);
    void _assignFinalCoordinates (float bond_length, const Array<Vec2f> &src_layout);
-   void _copyLayout (MoleculeLayoutGraph &component);
+   void _copyLayout (MoleculeLayoutGraphSmart &component);
    void _getAnchor (int &v1, int &v2, int &v3) const;
 
-   void _findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, ObjArray<MoleculeLayoutGraph> &bc_components);
-   bool _assignComponentsRelativeCoordinates (ObjArray<MoleculeLayoutGraph> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
+   void _findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, ObjArray<MoleculeLayoutGraphSmart> &bc_components);
+   bool _assignComponentsRelativeCoordinates (ObjArray<MoleculeLayoutGraphSmart> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
 
    // refine
-   void _refineCoordinates (const BiconnectedDecomposer &bc_decomposer, const ObjArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree);
+   void _refineCoordinates (const BiconnectedDecomposer &bc_decomposer, const ObjArray<MoleculeLayoutGraphSmart> &bc_components, const Array<int> &bc_tree);
    bool _allowRotateAroundVertex (int idx) const;
    void _makeBranches (Array<int> &branches, int edge, Filter &filter) const;
    void _findBranch (Array<int> &branches, int v, int edge) const;
@@ -297,20 +297,20 @@ protected:
       
    };
 
-   void _assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph);
-   void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
-   void _get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list);
-   int _search_separated_component(Cycle& cycle, Array<interval>& interval_list);
+   void _assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraphSmart &supergraph);
+   void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraphSmart &supergraph);
+   void _get_toches_to_component(CycleSmart& cycle, int component_number, Array<interval>& interval_list);
+   int _search_separated_component(CycleSmart& cycle, Array<interval>& interval_list);
    void _search_path(int start, int finish, Array<int>& path, int component_number);
-   void _assignEveryCycle(const Cycle &cycle);
-   void _assignFirstCycle(const Cycle &cycle);
+   void _assignEveryCycle(const CycleSmart &cycle);
+   void _assignFirstCycle(const CycleSmart &cycle);
 
    // smoothing
-   void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   void _segment_smoothing(const CycleSmart &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _update_touching_segments(Array<local_pair_ii >&, ObjArray<MoleculeLayoutSmoothingSegment> &);
-   void _segment_smoothing_prepearing(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment, MoleculeLayoutMacrocyclesLattice& layout);
+   void _segment_smoothing_prepearing(const CycleSmart &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment, MoleculeLayoutMacrocyclesLattice& layout);
    void _segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
-   void _segment_update_rotation_points(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+   void _segment_update_rotation_points(const CycleSmart &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
    void _segment_improoving(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int, float, Array<local_pair_ii>&);
@@ -330,26 +330,26 @@ protected:
    void _buildOutline (void);
 
    // attaching cycles
-   bool _attachCycleOutside (const Cycle &cycle, float length, int n_common);
-   bool _drawEdgesWithoutIntersection (const Cycle &cycle, Array<int> & cycle_vertex_types);
+   bool _attachCycleOutside (const CycleSmart &cycle, float length, int n_common);
+   bool _drawEdgesWithoutIntersection (const CycleSmart &cycle, Array<int> & cycle_vertex_types);
 
-   bool _checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping);
-   bool _checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping);
+   bool _checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraphSmart &next_bc, Array<int> &mapping);
+   bool _checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraphSmart &next_bc, Array<int> & mapping);
 
-   bool _attachCycleInside (const Cycle &cycle, float length);
-   bool _attachCycleWithIntersections (const Cycle &cycle, float length);
+   bool _attachCycleInside (const CycleSmart &cycle, float length);
+   bool _attachCycleWithIntersections (const CycleSmart &cycle, float length);
    void _setChainType (const Array<int> &chain, const Array<int> &mapping, int type);
-   bool _splitCycle (const Cycle &cycle, const Array<int> &cycle_vertex_types, bool check_boundary,
+   bool _splitCycle (const CycleSmart &cycle, const Array<int> &cycle_vertex_types, bool check_boundary,
       Array<int> &chain_ext, Array<int> &chain_int, int &c_beg, int &c_end) const;
-   void _splitCycle2 (const Cycle &cycle, const Array<int> &cycle_vertex_types, ObjArray < Array<int> > &chains_ext) const;
+   void _splitCycle2 (const CycleSmart &cycle, const Array<int> &cycle_vertex_types, ObjArray < Array<int> > &chains_ext) const;
 
    // border functions
-   void _getBorder (Cycle &border) const;
-   void _getSurroundCycle (Cycle &cycle, Vec2f p) const;
+   void _getBorder (CycleSmart &border) const;
+   void _getSurroundCycle (CycleSmart &cycle, Vec2f p) const;
    void _splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const;
    bool _isPointOutside (const Vec2f &p) const;
-   bool _isPointOutsideCycle   (const Cycle &cycle, const Vec2f &p) const;
-   bool _isPointOutsideCycleEx (const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const;
+   bool _isPointOutsideCycle   (const CycleSmart &cycle, const Vec2f &p) const;
+   bool _isPointOutsideCycleEx (const CycleSmart &cycle, const Vec2f &p, const Array<int> &mapping) const;
 
    // geometry functions
    int _calcIntersection     (int edge1, int edge2) const;
@@ -371,13 +371,13 @@ protected:
 
    // make tree of biconnected components (tree[i] - -1 or component incoming to vertex i)
    static void _makeComponentsTree (BiconnectedDecomposer &decon,
-      ObjArray<MoleculeLayoutGraph> &components, Array<int> &tree);
+      ObjArray<MoleculeLayoutGraphSmart> &components, Array<int> &tree);
 
    void _layoutMultipleComponents (BaseMolecule & molecule, bool respect_existing, const Filter * filter, float bond_length);
    void _layoutSingleComponent (BaseMolecule &molecule, bool respect_existing, const Filter * filter, float bond_length);
 
-   ObjArray<LayoutVertex> _layout_vertices;
-   ObjArray<LayoutEdge>   _layout_edges;
+   ObjArray<LayoutVertexSmart> _layout_vertices;
+   ObjArray<LayoutEdgeSmart>   _layout_edges;
 
    Array<int> _fixed_vertices;
    Array<int> _layout_component_number; // number of layout component of certain edge
@@ -391,11 +391,11 @@ protected:
    Obj< Array<Vec2f> > _outline;
 
    BaseMolecule *_molecule;
-   MoleculeLayoutGraph *_graph;
+   MoleculeLayoutGraphSmart *_graph;
    const int *_molecule_edge_mapping;
    
 private:
-   MoleculeLayoutGraph (const MoleculeLayoutGraph&);
+   MoleculeLayoutGraphSmart (const MoleculeLayoutGraphSmart&);
 };
    
 

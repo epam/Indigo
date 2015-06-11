@@ -14,13 +14,13 @@
 
 #include "graph/biconnected_decomposer.h"
 #include "graph/morgan_code.h"
-#include "layout/molecule_layout_graph.h"
+#include "layout/molecule_layout_graph_smart.h"
 
 using namespace indigo;
 
-IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
+IMPL_ERROR(MoleculeLayoutGraphSmart, "layout_graph_smart");
 
-MoleculeLayoutGraph::MoleculeLayoutGraph ()
+MoleculeLayoutGraphSmart::MoleculeLayoutGraphSmart ()
 {
    _total_morgan_code = 0;
    _first_vertex_idx = -1;
@@ -31,11 +31,11 @@ MoleculeLayoutGraph::MoleculeLayoutGraph ()
    cancellation = 0;
 }
 
-MoleculeLayoutGraph::~MoleculeLayoutGraph ()
+MoleculeLayoutGraphSmart::~MoleculeLayoutGraphSmart ()
 {
 }
 
-void MoleculeLayoutGraph::clear ()
+void MoleculeLayoutGraphSmart::clear ()
 {
    Graph::clear();
 
@@ -49,28 +49,28 @@ void MoleculeLayoutGraph::clear ()
    _layout_component_count = 0;
 }
 
-bool MoleculeLayoutGraph::isSingleEdge () const
+bool MoleculeLayoutGraphSmart::isSingleEdge () const
 {
    return edgeCount() == 1 && vertexCount() == 2;
 }
 
-void MoleculeLayoutGraph::registerLayoutVertex (int idx, const LayoutVertex &vertex)
+void MoleculeLayoutGraphSmart::registerLayoutVertex (int idx, const LayoutVertexSmart &vertex)
 {
    _layout_vertices.expand(idx + 1);
    _layout_vertices[idx] = vertex;
 }
 
-void MoleculeLayoutGraph::registerLayoutEdge (int idx, const LayoutEdge &edge)
+void MoleculeLayoutGraphSmart::registerLayoutEdge (int idx, const LayoutEdgeSmart &edge)
 {
    _layout_edges.expand(idx + 1);
    _layout_edges[idx] = edge;
 }
 
-int MoleculeLayoutGraph::addLayoutVertex (int ext_idx, int type)
+int MoleculeLayoutGraphSmart::addLayoutVertex (int ext_idx, int type)
 {
    int new_idx = Graph::addVertex();
 
-   LayoutVertex new_vertex;
+   LayoutVertexSmart new_vertex;
 
    new_vertex.ext_idx = ext_idx;
    new_vertex.type = type;
@@ -80,11 +80,11 @@ int MoleculeLayoutGraph::addLayoutVertex (int ext_idx, int type)
    return new_idx;
 }
 
-int MoleculeLayoutGraph::addLayoutEdge (int beg, int end, int ext_idx, int type)
+int MoleculeLayoutGraphSmart::addLayoutEdge (int beg, int end, int ext_idx, int type)
 {
    int new_idx = Graph::addEdge(beg, end);
 
-   LayoutEdge new_edge;
+   LayoutEdgeSmart new_edge;
 
    new_edge.ext_idx = ext_idx;
    new_edge.type = type;
@@ -94,17 +94,17 @@ int MoleculeLayoutGraph::addLayoutEdge (int beg, int end, int ext_idx, int type)
    return new_idx;
 }
 
-const LayoutVertex & MoleculeLayoutGraph::getLayoutVertex (int idx) const
+const LayoutVertexSmart & MoleculeLayoutGraphSmart::getLayoutVertex (int idx) const
 {
    return _layout_vertices[idx];
 }
 
-const LayoutEdge & MoleculeLayoutGraph::getLayoutEdge (int idx) const
+const LayoutEdgeSmart & MoleculeLayoutGraphSmart::getLayoutEdge (int idx) const
 {
    return _layout_edges[idx];
 }
 
-int MoleculeLayoutGraph::findVertexByExtIdx (int ext_idx) const
+int MoleculeLayoutGraphSmart::findVertexByExtIdx (int ext_idx) const
 {
    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
       if (getLayoutVertex(i).ext_idx == ext_idx)
@@ -113,7 +113,7 @@ int MoleculeLayoutGraph::findVertexByExtIdx (int ext_idx) const
    return -1;
 }
 
-void MoleculeLayoutGraph::makeOnGraph (Graph &graph)
+void MoleculeLayoutGraphSmart::makeOnGraph (Graph &graph)
 {
    QS_DEF(Array<int>, mapping);
 
@@ -122,8 +122,8 @@ void MoleculeLayoutGraph::makeOnGraph (Graph &graph)
    // vertices and edges
    cloneGraph (graph, &mapping);
 
-   LayoutVertex new_vertex;
-   LayoutEdge new_edge;
+   LayoutVertexSmart new_vertex;
+   LayoutEdgeSmart new_edge;
 
    new_vertex.type = ELEMENT_NOT_DRAWN;
    new_vertex.is_cyclic = false;
@@ -148,12 +148,12 @@ void MoleculeLayoutGraph::makeOnGraph (Graph &graph)
    }
 }
 
-void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter)
+void MoleculeLayoutGraphSmart::makeLayoutSubgraph (MoleculeLayoutGraphSmart &graph, Filter &vertex_filter)
 {
    makeLayoutSubgraph(graph, vertex_filter, 0);
 }
 
-void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter, Filter *edge_filter)
+void MoleculeLayoutGraphSmart::makeLayoutSubgraph (MoleculeLayoutGraphSmart &graph, Filter &vertex_filter, Filter *edge_filter)
 {
    _molecule = graph._molecule;
    _graph = &graph;
@@ -172,8 +172,8 @@ void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter
    if (edge_filter != 0) makeSubgraph(graph, vertices, &vertex_mapping, &edges, &edge_mapping);
    else makeSubgraph(graph, vertices, &vertex_mapping);
 
-   LayoutVertex new_vertex;
-   LayoutEdge new_edge;
+   LayoutVertexSmart new_vertex;
+   LayoutEdgeSmart new_edge;
 
    new_vertex.is_cyclic = false;
 
@@ -204,7 +204,7 @@ void MoleculeLayoutGraph::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter
    _layout_component_count = 0;
 }
 
-void MoleculeLayoutGraph::cloneLayoutGraph (MoleculeLayoutGraph &other, Array<int> *mapping)
+void MoleculeLayoutGraphSmart::cloneLayoutGraph (MoleculeLayoutGraphSmart &other, Array<int> *mapping)
 {
    QS_DEF(Array<int>, mapping_tmp);
 
@@ -215,8 +215,8 @@ void MoleculeLayoutGraph::cloneLayoutGraph (MoleculeLayoutGraph &other, Array<in
 
    cloneGraph(other, mapping);
 
-   LayoutVertex new_vertex;
-   LayoutEdge new_edge;
+   LayoutVertexSmart new_vertex;
+   LayoutEdgeSmart new_edge;
 
    for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
    {
@@ -237,7 +237,7 @@ void MoleculeLayoutGraph::cloneLayoutGraph (MoleculeLayoutGraph &other, Array<in
    }
 }
 
-void MoleculeLayoutGraph::copyLayoutTo (MoleculeLayoutGraph &other, const int *mapping) const
+void MoleculeLayoutGraphSmart::copyLayoutTo (MoleculeLayoutGraphSmart &other, const int *mapping) const
 {
    for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
    {
@@ -255,7 +255,7 @@ void MoleculeLayoutGraph::copyLayoutTo (MoleculeLayoutGraph &other, const int *m
    }
 }
 
-void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing)
+void MoleculeLayoutGraphSmart::layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing)
 {
    if (molecule.vertexCount() == 0)
       return;
@@ -272,7 +272,7 @@ void MoleculeLayoutGraph::layout (BaseMolecule &molecule, float bond_length, con
       _layoutSingleComponent(molecule, respect_existing, filter, bond_length);
 }
 
-void MoleculeLayoutGraph::_calcMorganCodes ()
+void MoleculeLayoutGraphSmart::_calcMorganCodes ()
 {
    MorganCode morgan(*this);
    QS_DEF(Array<long>, morgan_codes);
@@ -287,8 +287,8 @@ void MoleculeLayoutGraph::_calcMorganCodes ()
    }
 }
 
-void MoleculeLayoutGraph::_makeComponentsTree (BiconnectedDecomposer &decon,
-                                               ObjArray<MoleculeLayoutGraph> &components, Array<int> &tree)
+void MoleculeLayoutGraphSmart::_makeComponentsTree (BiconnectedDecomposer &decon,
+                                               ObjArray<MoleculeLayoutGraphSmart> &components, Array<int> &tree)
 {
    int i, j, v, k;
    bool from;
@@ -322,7 +322,7 @@ void MoleculeLayoutGraph::_makeComponentsTree (BiconnectedDecomposer &decon,
    }
 }
 
-void MoleculeLayoutGraph::_layoutMultipleComponents (BaseMolecule & molecule, bool respect_existing, const Filter * filter, float bond_length)
+void MoleculeLayoutGraphSmart::_layoutMultipleComponents (BaseMolecule & molecule, bool respect_existing, const Filter * filter, float bond_length)
 {
    QS_DEF(Array<Vec2f>, src_layout);
    QS_DEF(Array<int>, molecule_edge_mapping);
@@ -339,14 +339,14 @@ void MoleculeLayoutGraph::_layoutMultipleComponents (BaseMolecule & molecule, bo
 
    _molecule_edge_mapping = molecule_edge_mapping.ptr();
 
-   ObjArray<MoleculeLayoutGraph> components;
+   ObjArray<MoleculeLayoutGraphSmart> components;
 
    components.reserve(n_components);
 
    for (i = 0; i < n_components; i++)
    {
       Filter comp_filter(decomposition.ptr(), Filter::EQ, i);
-      MoleculeLayoutGraph &component = components.push();
+      MoleculeLayoutGraphSmart &component = components.push();
       
       component.cancellation = cancellation;
 
@@ -403,7 +403,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents (BaseMolecule & molecule, bo
       // find fixed components
       for (i = 0; i < n_components; i++)
       {
-         MoleculeLayoutGraph &component = components[i];
+         MoleculeLayoutGraphSmart &component = components[i];
 
          if (component._n_fixed > 0)
          {
@@ -431,7 +431,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents (BaseMolecule & molecule, bo
 
          for (i = 0; i < n_components; i++)
          {
-            MoleculeLayoutGraph &component = components[i];
+            MoleculeLayoutGraphSmart &component = components[i];
 
             if (component._n_fixed > 0)
                for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
@@ -446,7 +446,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents (BaseMolecule & molecule, bo
 
    for (i = 0, k = 0; i < n_components; i++)
    {
-      MoleculeLayoutGraph &component = components[i];
+      MoleculeLayoutGraphSmart &component = components[i];
 
       if (component._n_fixed > 0)
          continue;
@@ -500,7 +500,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents (BaseMolecule & molecule, bo
 }
 
 
-void MoleculeLayoutGraph::_layoutSingleComponent (BaseMolecule &molecule, bool respect_existing, const Filter * filter, float bond_length)
+void MoleculeLayoutGraphSmart::_layoutSingleComponent (BaseMolecule &molecule, bool respect_existing, const Filter * filter, float bond_length)
 {
    QS_DEF(Array<Vec2f>, src_layout);
    QS_DEF(Array<int>, molecule_edge_mapping);
@@ -544,7 +544,7 @@ void MoleculeLayoutGraph::_layoutSingleComponent (BaseMolecule &molecule, bool r
    _assignFinalCoordinates(bond_length, src_layout);
 }
 
-MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGraph& mol, Vec2f& start, Vec2f& finish) :
+MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGraphSmart& mol, Vec2f& start, Vec2f& finish) :
 _graph(mol),
 _start(start),
 _finish(finish)
@@ -796,7 +796,7 @@ int MoleculeLayoutSmoothingSegment::get_finish() const { return _finish_number; 
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 
-void MoleculeLayoutGraph::saveDebug ()
+void MoleculeLayoutGraphSmart::saveDebug ()
 {
    int i;
    Molecule mol;

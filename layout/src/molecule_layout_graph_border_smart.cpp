@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "layout/molecule_layout_graph.h"
+#include "layout/molecule_layout_graph_smart.h"
 #include "stdlib.h"
 
 using namespace indigo;
@@ -92,11 +92,11 @@ static bool _isRayIntersect (float a, float b, const Vec2f &p, const Vec2f &v1, 
 
 // Check if point is outside biconnected component
 // By calculating number of intersections of ray
-bool MoleculeLayoutGraph::_isPointOutside (const Vec2f &p) const
+bool MoleculeLayoutGraphSmart::_isPointOutside (const Vec2f &p) const
 {
 //   return true;
    QS_DEF(Array<Vec2f>, point);
-   Cycle surround_cycle;
+   CycleSmart surround_cycle;
    _getSurroundCycle(surround_cycle, p);
 
    if (surround_cycle.vertexCount() == 0) return 0;
@@ -106,7 +106,7 @@ bool MoleculeLayoutGraph::_isPointOutside (const Vec2f &p) const
 
 // Check if point is outside cycle
 // By calculating number of intersections of ray
-bool MoleculeLayoutGraph::_isPointOutsideCycle (const Cycle &cycle, const Vec2f &p) const
+bool MoleculeLayoutGraphSmart::_isPointOutsideCycle (const CycleSmart &cycle, const Vec2f &p) const
 {
    QS_DEF(Array<Vec2f>, point);
    float rotate_angle = 0;
@@ -127,7 +127,7 @@ bool MoleculeLayoutGraph::_isPointOutsideCycle (const Cycle &cycle, const Vec2f 
 }
 
 // The same but with mapping
-bool MoleculeLayoutGraph::_isPointOutsideCycleEx (const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const
+bool MoleculeLayoutGraphSmart::_isPointOutsideCycleEx (const CycleSmart &cycle, const Vec2f &p, const Array<int> &mapping) const
 {
    // TODO: check that point 'p' is equal to the one of cycle points (sometimes it happens)
    float a, b;
@@ -175,9 +175,9 @@ bool MoleculeLayoutGraph::_isPointOutsideCycleEx (const Cycle &cycle, const Vec2
 }
 
 
-double MoleculeLayoutGraph::_get_square() {
+double MoleculeLayoutGraphSmart::_get_square() {
 
-   Cycle cycle;
+   CycleSmart cycle;
    _getBorder(cycle);
 
    int len = cycle.vertexCount();
@@ -191,7 +191,7 @@ double MoleculeLayoutGraph::_get_square() {
 }
 
 // Extract component border
-void MoleculeLayoutGraph::_getBorder (Cycle &border) const
+void MoleculeLayoutGraphSmart::_getBorder ( CycleSmart &border) const
 {
    Vec2f outside_point(0, 0);
    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
@@ -203,7 +203,7 @@ void MoleculeLayoutGraph::_getBorder (Cycle &border) const
    _getSurroundCycle(border, outside_point);
 }
 
-void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
+void MoleculeLayoutGraphSmart::_getSurroundCycle ( CycleSmart &cycle, Vec2f p) const
 {
    QS_DEF(Array<int>, vertices);
    QS_DEF(Array<int>, edges);
@@ -337,9 +337,9 @@ void MoleculeLayoutGraph::_getSurroundCycle (Cycle &cycle, Vec2f p) const
 }
 
 // Split border in two parts by two vertices
-void MoleculeLayoutGraph::_splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const
+void MoleculeLayoutGraphSmart::_splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const
 {
-   Cycle border;
+   CycleSmart border;
 
    _getBorder(border);
 
@@ -381,12 +381,12 @@ void MoleculeLayoutGraph::_splitBorder (int v1, int v2, Array<int> &part1v, Arra
    part2e.pop(); // edge count is less
 }
 
-// Cycle enumerator callback
+// CycleSmart enumerator callback
 // Check if cycle is boundary and mark vertices and edges as boundary/internal
-bool MoleculeLayoutGraph::_border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
+bool MoleculeLayoutGraphSmart::_border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
 {
-   MoleculeLayoutGraph &self = *(MoleculeLayoutGraph *)context;
-   Cycle cycle(vertices, edges);
+   MoleculeLayoutGraphSmart &self = *(MoleculeLayoutGraphSmart *)context;
+   CycleSmart cycle(vertices, edges);
 
    //cycle.canonize();
 

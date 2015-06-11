@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "layout/attachment_layout.h"
+#include "layout/attachment_layout_smart.h"
 #include <vector>
 #include <algorithm>
 
@@ -21,9 +21,9 @@ using namespace indigo;
 CP_DEF(AttachmentLayout);
 
 AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer &bc_decom,
-                                   ObjArray<MoleculeLayoutGraph> &bc_components,
+                                   ObjArray<MoleculeLayoutGraphSmart> &bc_components,
                                    const Array<int> &bc_tree,
-                                   MoleculeLayoutGraph &graph, int src_vertex) :
+                                   MoleculeLayoutGraphSmart &graph, int src_vertex) :
 _src_vertex(src_vertex),
 CP_INIT,
 TL_CP_GET(_src_vertex_map),
@@ -59,7 +59,7 @@ _graph(graph)
       if (i < n_comp)
          _attached_bc[i] = bc_decom.getIncomingComponents(_src_vertex)[i];
 
-      const MoleculeLayoutGraph &cur_bc = bc_components[_attached_bc[i]];
+      const MoleculeLayoutGraphSmart &cur_bc = bc_components[_attached_bc[i]];
 
       _src_vertex_map[i] = cur_bc.findVertexByExtIdx(_src_vertex);
       _bc_angles[i] = cur_bc.calculateAngle(_src_vertex_map[i], v1, v2);
@@ -172,7 +172,7 @@ void AttachmentLayout::applyLayout ()
       _graph.getPos(_new_vertices[i]) = _layout[i];
 
    for (int i = 0; i < _attached_bc.size(); i++) {
-      MoleculeLayoutGraph &comp = _bc_components[_attached_bc[i]];
+      MoleculeLayoutGraphSmart &comp = _bc_components[_attached_bc[i]];
 
       for (int v = comp.vertexBegin(); v != comp.vertexEnd(); v = comp.vertexNext(v)) {
          comp.getPos(v) = _graph.getPos(comp.getVertexExtIdx(v));
@@ -186,18 +186,18 @@ void AttachmentLayout::markDrawnVertices()
 
    for (i = 0; i < _attached_bc.size(); i++)
    {
-      const MoleculeLayoutGraph &comp = _bc_components[_attached_bc[i]];
+      const MoleculeLayoutGraphSmart &comp = _bc_components[_attached_bc[i]];
 
       for (j = comp.vertexBegin(); j < comp.vertexEnd(); j = comp.vertexNext(j))
       {
-         const LayoutVertex &vert = comp.getLayoutVertex(j);
+         const LayoutVertexSmart &vert = comp.getLayoutVertex(j);
 
          _graph.setVertexType(vert.ext_idx, vert.type);
       }
 
       for (j = comp.edgeBegin(); j < comp.edgeEnd(); j = comp.edgeNext(j))
       {
-         const LayoutEdge &edge = comp.getLayoutEdge(j);
+         const LayoutEdgeSmart &edge = comp.getLayoutEdge(j);
 
          _graph.setEdgeType(edge.ext_idx, edge.type);
       }
@@ -277,7 +277,7 @@ void LayoutChooser::_makeLayout ()
 
       // Shift and rotate component so cur_angle is the angle between [v1C,v2C] and drawn edge [v,v2]
       int comp_idx = _comp_permutation[i];
-      const MoleculeLayoutGraph &comp = _layout._bc_components[_layout._attached_bc[comp_idx]];
+      const MoleculeLayoutGraphSmart &comp = _layout._bc_components[_layout._attached_bc[comp_idx]];
 
       v1C = _layout._src_vertex_map[comp_idx];
       v2C = _layout._vertices_l[comp_idx];
@@ -320,8 +320,8 @@ void LayoutChooser::_makeLayout ()
    // respect cis/trans
    const int *molecule_edge_mapping = 0;
    const BaseMolecule *molecule = _layout._graph.getMolecule(&molecule_edge_mapping);
-   const MoleculeLayoutGraph &drawn_comp = _layout._bc_components[_layout._attached_bc[1]];
-   MoleculeLayoutGraph &attach_comp = (MoleculeLayoutGraph &)_layout._bc_components[_layout._attached_bc[0]];
+   const MoleculeLayoutGraphSmart &drawn_comp = _layout._bc_components[_layout._attached_bc[1]];
+   MoleculeLayoutGraphSmart &attach_comp = (MoleculeLayoutGraphSmart &)_layout._bc_components[_layout._attached_bc[0]];
    
    if (_n_components == 1 && molecule != 0 && drawn_comp.isSingleEdge())
    {

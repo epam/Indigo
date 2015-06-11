@@ -17,19 +17,19 @@
 #include "graph/graph_subchain_enumerator.h"
 #include "graph/biconnected_decomposer.h"
 #include "graph/path_enumerator.h"
-#include "layout/molecule_layout_graph.h"
-#include "layout/refinement_state.h"
+#include "layout/molecule_layout_graph_smart.h"
+#include "layout/refinement_state_smart.h"
 
 using namespace indigo;
 
-bool MoleculeLayoutGraph::_edge_check(Graph &graph, int e_idx, void *context_)
+bool MoleculeLayoutGraphSmart::_edge_check(Graph &graph, int e_idx, void *context_)
 {
    /*
    EnumContext &context = *(EnumContext *)context_;
 
    return !context.graph->getLayoutEdge(e_idx).is_cyclic;
    */
-   EnumContext &context = *(EnumContext *)context_;
+   EnumContextSmart &context = *(EnumContextSmart *)context_;
 
    if (context.maxIterationNumber && context.iterationNumber > context.maxIterationNumber * 10000)
       throw Error("number of iterations exceeded %d ", context.maxIterationNumber * 10000);
@@ -37,14 +37,14 @@ bool MoleculeLayoutGraph::_edge_check(Graph &graph, int e_idx, void *context_)
    context.iterationNumber++;
    return true;
 }
-bool MoleculeLayoutGraph::_edge_check_norm(Graph &graph, int e_idx, void *context_)
+bool MoleculeLayoutGraphSmart::_edge_check_norm(Graph &graph, int e_idx, void *context_)
 {
    /*
    EnumContext &context = *(EnumContext *)context_;
 
    return !context.graph->getLayoutEdge(e_idx).is_cyclic;
    */
-   EnumContext &context = *(EnumContext *)context_;
+   EnumContextSmart &context = *(EnumContextSmart *)context_;
    if (!context.graph->getLayoutEdge(e_idx).is_cyclic)
    {
       if (context.graph->_n_fixed > 0)
@@ -60,9 +60,9 @@ bool MoleculeLayoutGraph::_edge_check_norm(Graph &graph, int e_idx, void *contex
    return false;
 }
 
-bool MoleculeLayoutGraph::_path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context_)
+bool MoleculeLayoutGraphSmart::_path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context_)
 {
-   EnumContext &context = *(EnumContext *)context_;
+   EnumContextSmart &context = *(EnumContextSmart *)context_;
    int i;
 
    for (i = 0; i < edges.size(); i++)
@@ -81,7 +81,7 @@ bool MoleculeLayoutGraph::_path_handle (Graph &graph, const Array<int> &vertices
 }
 
 // Split graph in two branches by acyclic edge (its vertices are in different branches)
-void MoleculeLayoutGraph::_makeBranches (Array<int> &branches, int edge, Filter &filter) const
+void MoleculeLayoutGraphSmart::_makeBranches (Array<int> &branches, int edge, Filter &filter) const
 {
    branches.clear_resize(vertexEnd());
    branches.zerofill();
@@ -124,7 +124,7 @@ void MoleculeLayoutGraph::_makeBranches (Array<int> &branches, int edge, Filter 
    filter.init(branches.ptr(), Filter::EQ, 1);
 }
 
-bool MoleculeLayoutGraph::_allowRotateAroundVertex (int idx) const
+bool MoleculeLayoutGraphSmart::_allowRotateAroundVertex (int idx) const
 {
    if (_molecule != 0)
    {
@@ -145,7 +145,7 @@ bool MoleculeLayoutGraph::_allowRotateAroundVertex (int idx) const
 }
 
 // Increase minimal distance between vertices
-void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_decomposer, const ObjArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree)
+void MoleculeLayoutGraphSmart::_refineCoordinates (const BiconnectedDecomposer &bc_decomposer, const ObjArray<MoleculeLayoutGraphSmart> &bc_components, const Array<int> &bc_tree)
 {
    RefinementState beg_state(*this);
    RefinementState best_state(*this);
@@ -170,7 +170,7 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
    QS_DEF(RedBlackSet<int>, edges);
    QS_DEF(Array<int>, components1);
    QS_DEF(Array<int>, components2);
-   EnumContext context;
+   EnumContextSmart context;
 
    context.edges = &edges;
    context.graph = this;
@@ -426,7 +426,7 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
    _excludeDandlingIntersections();
 }
 
-void MoleculeLayoutGraph::_excludeDandlingIntersections ()
+void MoleculeLayoutGraphSmart::_excludeDandlingIntersections ()
 {
    QS_DEF(Array<int>, edges);
    int i, j, res, beg1, end1, beg2, end2;

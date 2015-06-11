@@ -25,13 +25,13 @@
 namespace indigo
 {
 
-class MoleculeLayoutGraph;
+class MoleculeLayoutGraphSmart;
 class Graph;
 
 class DLLEXPORT PatternLayoutFinder
 {      
 public:
-   static bool tryToFindPattern (MoleculeLayoutGraph &layout_graph);
+   static bool tryToFindPattern (MoleculeLayoutGraphSmart &layout_graph);
 
 private:
 

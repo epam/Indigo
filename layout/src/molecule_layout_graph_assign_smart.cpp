@@ -15,14 +15,14 @@
 //#include "api/src/indigo_internal.h"
 
 #include "base_cpp/profiling.h"
-#include "layout/molecule_layout_graph.h"
+#include "layout/molecule_layout_graph_smart.h"
 #include "layout/molecule_layout_macrocycles.h"
-#include "layout/attachment_layout.h"
+#include "layout/attachment_layout_smart.h"
 #include "graph/biconnected_decomposer.h"
 #include "graph/cycle_enumerator.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/morgan_code.h"
-#include "layout/layout_pattern.h"
+#include "layout/layout_pattern_smart.h"
 
 #include <math/random.h>
 #include <algorithm>
@@ -39,13 +39,13 @@ enum
 
 
 // Make relative coordinates of a component absolute
-void MoleculeLayoutGraph::_copyLayout (MoleculeLayoutGraph &component)
+void MoleculeLayoutGraphSmart::_copyLayout (MoleculeLayoutGraphSmart &component)
 {
    int i;
 
    for (i = component.vertexBegin(); i < component.vertexEnd(); i = component.vertexNext(i))
    {
-      LayoutVertex &vert = component._layout_vertices[i];
+      LayoutVertexSmart &vert = component._layout_vertices[i];
 
       _layout_vertices[vert.ext_idx].pos.copy(vert.pos);
       _layout_vertices[vert.ext_idx].type = vert.type;
@@ -53,7 +53,7 @@ void MoleculeLayoutGraph::_copyLayout (MoleculeLayoutGraph &component)
 
    for (i = component.edgeBegin(); i < component.edgeEnd(); i = component.edgeNext(i))
    {
-      LayoutEdge &edge = component._layout_edges[i];
+      LayoutEdgeSmart &edge = component._layout_edges[i];
 
       _layout_edges[edge.ext_idx].type = edge.type;
    }
@@ -61,9 +61,9 @@ void MoleculeLayoutGraph::_copyLayout (MoleculeLayoutGraph &component)
 
 static int _vertex_cmp (int &n1, int &n2, void *context)
 {
-   const MoleculeLayoutGraph &graph = *(MoleculeLayoutGraph *)context;
-   const LayoutVertex &v1 = graph.getLayoutVertex(n1);
-   const LayoutVertex &v2 = graph.getLayoutVertex(n2);
+   const MoleculeLayoutGraphSmart &graph = *(MoleculeLayoutGraphSmart *)context;
+   const LayoutVertexSmart &v1 = graph.getLayoutVertex(n1);
+   const LayoutVertexSmart &v2 = graph.getLayoutVertex(n2);
 
    if (v1.is_cyclic != v2.is_cyclic)
    {
@@ -75,11 +75,11 @@ static int _vertex_cmp (int &n1, int &n2, void *context)
    return v1.morgan_code - v2.morgan_code;
 }
 
-void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
+void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates (float bond_length)
 {
    BiconnectedDecomposer bc_decom(*this);
    QS_DEF(Array<int>, bc_tree);
-   QS_DEF(ObjArray<MoleculeLayoutGraph>, bc_components);
+   QS_DEF(ObjArray<MoleculeLayoutGraphSmart>, bc_components);
    QS_DEF(Array<int>, fixed_components);
    bool all_trivial = true;
 
@@ -182,7 +182,7 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates (float bond_length)
    }
 }
 
-void MoleculeLayoutGraph::_get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list) {
+void MoleculeLayoutGraphSmart::_get_toches_to_component(CycleSmart& cycle, int component_number, Array<interval>& interval_list) {
    if (component_number < 0 || component_number >= _layout_component_count) return;
    QS_DEF(Array<bool>, touch_to_current_component);
    touch_to_current_component.clear_resize(cycle.vertexCount());
@@ -221,7 +221,7 @@ void MoleculeLayoutGraph::_get_toches_to_component(Cycle& cycle, int component_n
    }
 }
 
-int MoleculeLayoutGraph::_search_separated_component(Cycle& cycle, Array<interval>& interval_list) {
+int MoleculeLayoutGraphSmart::_search_separated_component(CycleSmart& cycle, Array<interval>& interval_list) {
    for (int i = 0; i < _layout_component_count; i++) {
       _get_toches_to_component(cycle, i, interval_list);
       if (interval_list.size() > 1) return i;
@@ -229,7 +229,7 @@ int MoleculeLayoutGraph::_search_separated_component(Cycle& cycle, Array<interva
    return -1;
 }
 
-void MoleculeLayoutGraph::_search_path(int start, int finish, Array<int>& path, int component_number) {
+void MoleculeLayoutGraphSmart::_search_path(int start, int finish, Array<int>& path, int component_number) {
    QS_DEF(Array<bool>, visited);
    visited.clear_resize(vertexEnd());
    visited.zerofill();
@@ -264,7 +264,7 @@ void MoleculeLayoutGraph::_search_path(int start, int finish, Array<int>& path, 
    }
 }
 
-void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph)
+void MoleculeLayoutGraphSmart::_assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraphSmart &supergraph)
 {
    profTimerStart(t, "_assignRelativeCoordinates");
    int i;
@@ -299,7 +299,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
 
    //TODO: repair exception with vec2f
 
-   QS_DEF(ObjPool<Cycle>, cycles);
+   QS_DEF(ObjPool<CycleSmart>, cycles);
     
    cycles.clear();
    int n_cycles = sssrCount();
@@ -369,7 +369,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
          cycles[i].calcMorganCode(*this);
          sorted_cycles.push(i);
       }
-      sorted_cycles.qsort(Cycle::compare_cb, &cycles);
+      sorted_cycles.qsort(CycleSmart::compare_cb, &cycles);
 
       _assignFirstCycle(cycles[sorted_cycles[0]]);
 
@@ -494,7 +494,7 @@ void MoleculeLayoutGraph::_assignRelativeCoordinates (int &fixed_component, cons
 
 }
 
-void MoleculeLayoutGraph::_assignFirstCycle(const Cycle &cycle)
+void MoleculeLayoutGraphSmart::_assignFirstCycle(const CycleSmart &cycle)
 {
    // TODO: Start drawing from vertex with maximum code and continue to the right with one of two which has maximum code
    int i, n;
@@ -525,9 +525,9 @@ void MoleculeLayoutGraph::_assignFirstCycle(const Cycle &cycle)
 }
 
 
-void MoleculeLayoutGraph::_assignEveryCycle(const Cycle &cycle)
+void MoleculeLayoutGraphSmart::_assignEveryCycle(const CycleSmart &cycle)
 {
-   profTimerStart(t, "_assignFirstCycle");
+   profTimerStart(t, "_assignFirstCycleSmart");
    const int size = cycle.vertexCount();
    _first_vertex_idx = cycle.getVertex(0);
 
@@ -544,7 +544,7 @@ void MoleculeLayoutGraph::_assignEveryCycle(const Cycle &cycle)
 	   // !!
 	   int order_next = 0;
 	   int edge_number = cycle.getEdge(i);
-	   LayoutEdge edge = _layout_edges[edge_number];
+	   LayoutEdgeSmart edge = _layout_edges[edge_number];
 	   int ext_edge_number = edge.orig_idx;
 	   int order = _molecule->getBondOrder(ext_edge_number);
 	   switch (order) {
@@ -708,7 +708,7 @@ void MoleculeLayoutGraph::_assignEveryCycle(const Cycle &cycle)
             const MoleculeLayoutSmoothingSegment& calc_segment = prev_layout_component < 0 ? segment[s] : segment[(s + segment_count - 1) % segment_count];
             int calc_vertex = prev_layout_component < 0 ? calc_segment.get_start() : calc_segment.get_finish();
 
-            Cycle border;
+            CycleSmart border;
             calc_segment._graph._getBorder(border);
             int calc_vertex_in_border = -1;
             for (int j = 0; j < border.vertexCount(); j++){
@@ -870,7 +870,7 @@ void MoleculeLayoutGraph::_assignEveryCycle(const Cycle &cycle)
          layout.setComponentFinish(rotation_vertex[i], rotation_vertex[(i + 1) % segment_count]);
          layout.setVertexAddedSquare(rotation_vertex[i], segment[i].get_square());
 
-         Cycle border;
+         CycleSmart border;
          if (segment[i].get_layout_component_number() >= 0) segment[i]._graph._getBorder(border);
 
          int count_neibourhoods_outside = 0;
@@ -956,7 +956,7 @@ void MoleculeLayoutGraph::_assignEveryCycle(const Cycle &cycle)
 
    int start = 0;
 
-   bool componentIsWholeCycle = false;
+   bool componentIsWholeCycleSmart = false;
 
    QS_DEF(Array<bool>, _is_component_touch);
    _is_component_touch.clear_resize(_layout_component_count);
@@ -984,16 +984,16 @@ void MoleculeLayoutGraph::_assignEveryCycle(const Cycle &cycle)
          }
       }
 
-      if (!componentIsWholeCycle) {
-         componentIsWholeCycle = true;
+      if (!componentIsWholeCycleSmart) {
+         componentIsWholeCycleSmart = true;
          for (int i = 0; i < size; i++)
-            componentIsWholeCycle &= takenVertex[cycle.getVertex(i)];
+            componentIsWholeCycleSmart &= takenVertex[cycle.getVertex(i)];
       }
 
       for (int i = 0; i < size; i++)
       if (takenVertex[cycle.getVertex(i)]) need_to_insert[i] = false;
 
-      if (componentIsWholeCycle) break;
+      if (componentIsWholeCycleSmart) break;
 
       int startIndex = index;
       int endIndex = index;
@@ -1099,7 +1099,7 @@ void MoleculeLayoutGraph::_assignEveryCycle(const Cycle &cycle)
 
 }
 
-void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraphSmart::_segment_smoothing(const CycleSmart &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    QS_DEF(Array<float>, target_angle);
 
    _segment_update_rotation_points(cycle, rotation_vertex, rotation_point, segment);
@@ -1112,14 +1112,14 @@ void MoleculeLayoutGraph::_segment_smoothing(const Cycle &cycle, const MoleculeL
    }
 }
 
-void MoleculeLayoutGraph::_segment_update_rotation_points(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraphSmart::_segment_update_rotation_points(const CycleSmart &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    for (int i = 0; i < rotation_vertex.size(); i++)
       rotation_point[i] = getPos(cycle.getVertex(rotation_vertex[i]));
 
    for (int i = 0; i < segment.size(); i++) segment[i].updateStartFinish();
 }
 
-void MoleculeLayoutGraph::_segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraphSmart::_segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    int segments_count = rotation_vertex.size();
 
    target_angle.clear_resize(segments_count);
@@ -1140,7 +1140,7 @@ void MoleculeLayoutGraph::_segment_calculate_target_angle(const MoleculeLayoutMa
 
 }
 
-void MoleculeLayoutGraph::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
 
    int segment_count = segment.size();
 
@@ -1288,7 +1288,7 @@ void MoleculeLayoutGraph::_segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoo
          getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
 }
 
-void MoleculeLayoutGraph::_update_touching_segments(Array<local_pair_ii >& pairs, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraphSmart::_update_touching_segments(Array<local_pair_ii >& pairs, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    int segments_count = segment.size();
    float min_dist = 0.7;
    pairs.clear();
@@ -1311,7 +1311,7 @@ void MoleculeLayoutGraph::_update_touching_segments(Array<local_pair_ii >& pairs
    }
 }
 
-void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraphSmart::_do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    //profTimerStart(t, "_do_segment_smoothing");
    Random rand(34577);
 
@@ -1336,7 +1336,7 @@ void MoleculeLayoutGraph::_do_segment_smoothing(Array<Vec2f> &rotation_point, Ar
    
 }
 
-void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment, MoleculeLayoutMacrocyclesLattice& layout) {
+void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const CycleSmart &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment, MoleculeLayoutMacrocyclesLattice& layout) {
    int cycle_size = cycle.vertexCount();
 
    QS_DEF(Array<bool>, layout_comp_touch);
@@ -1439,7 +1439,7 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
    rotation_point.clear_resize(segments_count);
    _segment_update_rotation_points(cycle, rotation_vertex, rotation_point, segment);
 
-   QS_DEF(ObjArray<MoleculeLayoutGraph>, segment_graph);
+   QS_DEF(ObjArray<MoleculeLayoutGraphSmart>, segment_graph);
    segment_graph.clear();
    for (int i = 0; i < segments_count; i++) {
       segment_graph.push().makeLayoutSubgraph(*this, segments_filter[i]);
@@ -1459,7 +1459,7 @@ void MoleculeLayoutGraph::_segment_smoothing_prepearing(const Cycle &cycle, Arra
 
 }
 
-void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int move_vertex, float coef, Array<local_pair_ii>& touching_segments) {
+void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int move_vertex, float coef, Array<local_pair_ii>& touching_segments) {
    int segments_count = segment.size();
    Vec2f move_vector(0, 0);
 
@@ -1530,7 +1530,7 @@ void MoleculeLayoutGraph::_segment_improoving(Array<Vec2f> &point, Array<float> 
 }
 
 
-void MoleculeLayoutGraph::_do_segment_smoothing_gradient(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraphSmart::_do_segment_smoothing_gradient(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
 	int length = segment.size();
 
 	QS_DEF(Array< local_pair_ii >, touching_segments);
@@ -1546,7 +1546,7 @@ void MoleculeLayoutGraph::_do_segment_smoothing_gradient(Array<Vec2f> &rotation_
 
 }
 
-bool MoleculeLayoutGraph::_gradient_step(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, float coef, Array<local_pair_ii>& touching_segments) {
+bool MoleculeLayoutGraphSmart::_gradient_step(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, float coef, Array<local_pair_ii>& touching_segments) {
 	int length = point.size();
 	QS_DEF(Array<Vec2f>, change);
 	change.clear_resize(length);
@@ -1595,7 +1595,7 @@ bool MoleculeLayoutGraph::_gradient_step(Array<Vec2f> &point, Array<float> &targ
 
 }
 
-Vec2f MoleculeLayoutGraph::_get_len_derivative(Vec2f current_vector, float target_dist) {
+Vec2f MoleculeLayoutGraphSmart::_get_len_derivative(Vec2f current_vector, float target_dist) {
 	float dist = current_vector.length();
 	//dist = __max(dist, 0.01);
 	float coef = 1;
@@ -1608,14 +1608,14 @@ Vec2f MoleculeLayoutGraph::_get_len_derivative(Vec2f current_vector, float targe
 	return current_vector * -coef;
 }
 
-Vec2f MoleculeLayoutGraph::_get_len_derivative_simple(Vec2f current_vector, float target_dist) {
+Vec2f MoleculeLayoutGraphSmart::_get_len_derivative_simple(Vec2f current_vector, float target_dist) {
 	float dist = current_vector.length();
 	//dist = __max(dist, 0.01);
 	float coef = -1; // dist - target_dist;
 	return current_vector * -coef;
 }
 
-Vec2f MoleculeLayoutGraph::_get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle) {
+Vec2f MoleculeLayoutGraphSmart::_get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle) {
 	float len1_sq = left_point.lengthSqr();
 	float len2_sq = right_point.lengthSqr();
 	float len12 = sqrt(len1_sq * len2_sq);
@@ -1646,7 +1646,7 @@ Vec2f MoleculeLayoutGraph::_get_angle_derivative(Vec2f left_point, Vec2f right_p
 
 // If vertices are already drawn
 // draw edges with intersections
-void MoleculeLayoutGraph::_attachCrossingEdges ()
+void MoleculeLayoutGraphSmart::_attachCrossingEdges ()
 {
    int i, j, pr;
    bool intersection;
@@ -1699,7 +1699,7 @@ void MoleculeLayoutGraph::_attachCrossingEdges ()
    }
 }
 
-void MoleculeLayoutGraph::_buildOutline (void)
+void MoleculeLayoutGraphSmart::_buildOutline (void)
 {
    Vec2f v, inter;
    Vec2f pos_i;
@@ -1850,7 +1850,7 @@ void MoleculeLayoutGraph::_buildOutline (void)
 
 // Return 1 - with maximum code, 2 - neighbor of the 1 with maximum code
 // 3 - neighbor with maximum code from the rest or -1 if it doesn't exist.
-void MoleculeLayoutGraph::_getAnchor (int &v1, int &v2, int &v3) const
+void MoleculeLayoutGraphSmart::_getAnchor (int &v1, int &v2, int &v3) const
 {
    int i;
 
@@ -1908,7 +1908,7 @@ void MoleculeLayoutGraph::_getAnchor (int &v1, int &v2, int &v3) const
 }
 
 // Scale and transform
-void MoleculeLayoutGraph::_assignFinalCoordinates (float bond_length, const Array<Vec2f> &src_layout)
+void MoleculeLayoutGraphSmart::_assignFinalCoordinates (float bond_length, const Array<Vec2f> &src_layout)
 {
    int i;
 
@@ -2098,7 +2098,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates (float bond_length, const Arra
    }
 }
 
-void MoleculeLayoutGraph::_findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, ObjArray<MoleculeLayoutGraph> & bc_components )
+void MoleculeLayoutGraphSmart::_findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, ObjArray<MoleculeLayoutGraphSmart> & bc_components )
 {
    // 1. Find biconnected components forming connected subgraph from fixed vertices
    if (_n_fixed == 0)
@@ -2141,7 +2141,7 @@ void MoleculeLayoutGraph::_findFixedComponents (BiconnectedDecomposer &bc_decom,
       if (!fixed_components[i])
          continue;
 
-      MoleculeLayoutGraph &component = bc_components[i];
+      MoleculeLayoutGraphSmart &component = bc_components[i];
 
       for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
          _fixed_vertices[component.getVertexExtIdx(j)] = 1;
@@ -2194,7 +2194,7 @@ void MoleculeLayoutGraph::_findFixedComponents (BiconnectedDecomposer &bc_decom,
          if (!fixed_components[i])
             continue;
 
-         MoleculeLayoutGraph &component = bc_components[i];
+         MoleculeLayoutGraphSmart &component = bc_components[i];
 
          int comp_v = component.getVertexExtIdx(component.vertexBegin());
          int mapped = fixed_inv_mapping[comp_v];
@@ -2204,7 +2204,7 @@ void MoleculeLayoutGraph::_findFixedComponents (BiconnectedDecomposer &bc_decom,
    }
 }
 
-bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates (ObjArray<MoleculeLayoutGraph> & bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom)
+bool MoleculeLayoutGraphSmart::_assignComponentsRelativeCoordinates (ObjArray<MoleculeLayoutGraphSmart> & bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom)
 {
    bool all_trivial = true;
    int n_comp = bc_decom.componentsCount();
@@ -2217,7 +2217,7 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates (ObjArray<Molecul
    // Initially was 1a and 2b then changed to 1b and 2b
    for (int i = 0; i < n_comp; i++)
    {
-      MoleculeLayoutGraph &component = bc_components[i];
+      MoleculeLayoutGraphSmart &component = bc_components[i];
       component.max_iterations = max_iterations;
       component.smart_layout = smart_layout;
 
@@ -2278,7 +2278,7 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates (ObjArray<Molecul
    return all_trivial;
 }
 
-void MoleculeLayoutGraph::_assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph) 
+void MoleculeLayoutGraphSmart::_assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraphSmart &supergraph) 
 {
    // Trivial component layout
    int idx1 = vertexBegin();
@@ -2301,7 +2301,7 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge (int &fixed_component, const
    _layout_edges[edgeBegin()].type = ELEMENT_BOUNDARY;
 }
 
-void MoleculeLayoutGraph::_findFirstVertexIdx (int n_comp, Array<int> & fixed_components, ObjArray<MoleculeLayoutGraph> &bc_components, bool all_trivial)
+void MoleculeLayoutGraphSmart::_findFirstVertexIdx (int n_comp, Array<int> & fixed_components, ObjArray<MoleculeLayoutGraphSmart> &bc_components, bool all_trivial)
 {
    if (_n_fixed > 0)
    {
@@ -2316,7 +2316,7 @@ void MoleculeLayoutGraph::_findFirstVertexIdx (int n_comp, Array<int> & fixed_co
       if (j == -1)
          throw Error("Internal error: cannot find a fixed component with fixed vertices");
 
-      MoleculeLayoutGraph &component = bc_components[j];
+      MoleculeLayoutGraphSmart &component = bc_components[j];
 
       _first_vertex_idx = component._layout_vertices[component.vertexBegin()].ext_idx;
    }
@@ -2332,7 +2332,7 @@ void MoleculeLayoutGraph::_findFirstVertexIdx (int n_comp, Array<int> & fixed_co
          nucleus_idx = -1;
          for (int i = 0; i < n_comp; i++)
          {
-            MoleculeLayoutGraph &component = bc_components[i];
+            MoleculeLayoutGraphSmart &component = bc_components[i];
 
             if (!component.isSingleEdge())
             {
@@ -2344,7 +2344,7 @@ void MoleculeLayoutGraph::_findFirstVertexIdx (int n_comp, Array<int> & fixed_co
          if (nucleus_idx < 0)
             throw Error("Internal error: cannot find nontrivial component");
 
-         MoleculeLayoutGraph &nucleus = bc_components[nucleus_idx];
+         MoleculeLayoutGraphSmart &nucleus = bc_components[nucleus_idx];
 
          _copyLayout(nucleus);
          _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
@@ -2374,7 +2374,7 @@ void MoleculeLayoutGraph::_findFirstVertexIdx (int n_comp, Array<int> & fixed_co
    }
 }
 
-bool MoleculeLayoutGraph::_prepareAssignedList (Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, ObjArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree)
+bool MoleculeLayoutGraphSmart::_prepareAssignedList (Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, ObjArray<MoleculeLayoutGraphSmart> &bc_components, Array<int> &bc_tree)
 {
    assigned_list.clear();
 

@@ -15,13 +15,13 @@
 #ifndef __refinement_state_h__
 #define __refinement_state_h__
 
-#include "layout/molecule_layout_graph.h"
+#include "layout/molecule_layout_graph_smart.h"
 
 namespace indigo {
 
 struct RefinementState  
 {
-   explicit RefinementState (MoleculeLayoutGraph &graph);
+   explicit RefinementState (MoleculeLayoutGraphSmart &graph);
 
    void calcHeight ();
    void calcDistance (int v1, int v2);
@@ -45,7 +45,7 @@ struct RefinementState
    DECL_ERROR;
 private:
 
-   MoleculeLayoutGraph &_graph;
+   MoleculeLayoutGraphSmart &_graph;
 };
 
 }

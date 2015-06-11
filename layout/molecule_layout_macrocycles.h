@@ -16,7 +16,7 @@
 #define __molecule_layout_macrocycles_h__
 
 #include "molecule/molecule.h"
-#include "layout/molecule_layout_graph.h"
+#include "layout/molecule_layout_graph_smart.h"
 #include <algorithm>
 
 #ifdef _WIN32
