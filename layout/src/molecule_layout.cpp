@@ -332,7 +332,8 @@ void MoleculeLayout::_make ()
    _layout_graph.max_iterations = max_iterations;
 
    // 0. Find 2D coordinates via proxy _layout_graph object
-   _makeLayout();
+   if (smart_layout) _makeLayoutSmart();
+   else _makeLayout();
 
    // 1. Update data-sgroup label position before changing molecule atoms positions
    _updateDataSGroups();
