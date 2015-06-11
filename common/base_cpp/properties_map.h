@@ -18,6 +18,8 @@
 #include "base_cpp/auto_iter.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/exception.h"
+#include "base_cpp/obj_array.h"
+#include "base_cpp/array.h"
 
 namespace indigo
 {
@@ -71,7 +73,7 @@ public:
 private:
    PropertiesMap(const PropertiesMap&);
    RedBlackStringObjMap< Array<char> > _properties;
-   StringPool _propertyNames;
+   ObjArray< Array<char> > _propertyNames;
 };
 
 

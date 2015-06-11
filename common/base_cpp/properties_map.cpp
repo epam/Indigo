@@ -37,7 +37,8 @@ void PropertiesMap::insert(const char* key, const char* value) {
       if (value != 0)
          val.readString(value, true);
    } else {
-      _propertyNames.add(key);
+      auto& name = _propertyNames.push();
+      name.readString(key, true);
       int k = _properties.insert(key);
       if (value != 0)
          _properties.value(k).readString(value, true);
@@ -48,11 +49,11 @@ Array<char>& PropertiesMap::insert(const char* key){
    return valueBuf(key);
 }
 const char* PropertiesMap::key(int i) {
-   return _propertyNames.at(i);
+   return _propertyNames.at(i).ptr();
 }
 
 const char* PropertiesMap::value(int i) {
-   auto& buf = valueBuf(_propertyNames.at(i));
+   auto& buf = valueBuf(_propertyNames.at(i).ptr());
    if(buf.size() > 0) {
       return buf.ptr();
    } else {
@@ -81,8 +82,8 @@ void PropertiesMap::remove(const char* key) {
    if(_properties.find(key)) {
       _properties.remove(key);
       int to_remove = -1;
-      for (auto i : _propertyNames.elements()) {
-         if(strcmp(_propertyNames.at(i), key) == 0) {
+      for (auto i =0; i < _propertyNames.size(); i++) {
+         if(strcmp(_propertyNames.at(i).ptr(), key) == 0) {
             to_remove = i;
             break;
          }
@@ -104,17 +105,17 @@ PropertiesMap::PrIter::PrIter(PropertiesMap &owner, int idx): _owner(owner), Aut
 }
 
 PropertiesMap::PrIter & PropertiesMap::PrIter::operator++(){
-   _idx = _owner._propertyNames.next(_idx);
+   _idx += 1;
    return *this;
 }
 
 PropertiesMap::PrIter PropertiesMap::PrAuto::begin(){
-   return PropertiesMap::PrIter(_owner, _owner._propertyNames.begin());
+   return PropertiesMap::PrIter(_owner, 0);
 }
 
 int PropertiesMap::PrAuto::next(int k) {
-   return _owner._propertyNames.next(k);
+   return k+1;
 }
 PropertiesMap::PrIter PropertiesMap::PrAuto::end(){
-   return PropertiesMap::PrIter(_owner, _owner._propertyNames.end());
+   return PropertiesMap::PrIter(_owner, _owner._propertyNames.size());
 }
