@@ -2460,7 +2460,7 @@ void MolfileLoader::_readCtab3000 ()
          else if (strcmp(prop, "CLASS") == 0)
          {
             QS_DEF(Array<char>, temp_class);
-            strscan.readWord(temp_class, false);
+            strscan.readWord(temp_class, 0);
             temp_class.push(0);
             if (_mol != 0)
                _mol->setTemplateAtomClass(i, temp_class.ptr());
