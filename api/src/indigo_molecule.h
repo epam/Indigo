@@ -263,47 +263,41 @@ protected:
    BaseMolecule &_mol;
 };
 
-class IndigoSgroup : public IndigoObject
+class IndigoSGroup : public IndigoObject
 {
 public:
-   IndigoSgroup (BaseMolecule &mol_, int sg_type_, int idx_);
-   virtual ~IndigoSgroup ();
+   IndigoSGroup (BaseMolecule &mol_, int idx_);
+   virtual ~IndigoSGroup ();
 
    virtual int getIndex ();
    virtual void remove ();
 
    const char * debugInfo ();
 
-   static IndigoSgroup & cast (IndigoObject &obj);
-   BaseMolecule::SGroup & get();
+   static IndigoSGroup & cast (IndigoObject &obj);
+   SGroup & get();
 
    BaseMolecule &mol;
-   int sg_type;
    int idx;
 };
 
-class IndigoSgroupsIter : public IndigoObject
+class IndigoSGroupsIter : public IndigoObject
 {
 public:
-   IndigoSgroupsIter (BaseMolecule &molecule, Array<BaseMolecule::SGroup::_SgroupRef> &sg_refs);
+   IndigoSGroupsIter (BaseMolecule &molecule, Array<int> &sgs);
 
-   virtual ~IndigoSgroupsIter ();
+   virtual ~IndigoSGroupsIter ();
 
    const char * debugInfo ();
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
 
-   enum PropertyTypes { PROPERTY_INT, PROPERTY_BOOL, PROPERTY_STRING, PROPERTY_INT_ARRAY };
-
-   static void parseCondition (const char* property, const char* value, int &s_property, int &s_type, int &s_int,
-                               Array<int> &s_indices);
-
 protected:
 
    int _idx;
    BaseMolecule &_mol;
-   Array<BaseMolecule::SGroup::_SgroupRef> &_refs;
+   Array<int> &_refs;
 };
 
 class IndigoDataSGroup : public IndigoObject
@@ -316,16 +310,16 @@ public:
    virtual void remove ();
 
    static IndigoDataSGroup & cast (IndigoObject &obj);
-   BaseMolecule::DataSGroup & get();
+   DataSGroup & get();
 
-   BaseMolecule *mol;
+   BaseMolecule &mol;
    int idx;
 };
 
 class IndigoDataSGroupsIter : public IndigoObject
 {
 public:
-   IndigoDataSGroupsIter (BaseMolecule &molecule);
+   IndigoDataSGroupsIter (BaseMolecule &molecule, Array<int> &refs);
    virtual ~IndigoDataSGroupsIter ();
 
    virtual IndigoObject * next ();
@@ -333,6 +327,7 @@ public:
 protected:
    int _idx;
    BaseMolecule &_mol;
+   Array<int> &_refs;
 };
 
 class IndigoSuperatom : public IndigoObject
@@ -347,7 +342,7 @@ public:
    virtual const char * getName ();
 
    static IndigoSuperatom & cast (IndigoObject &obj);
-   BaseMolecule::Superatom & get();
+   Superatom & get();
 
    BaseMolecule &mol;
    int idx;
@@ -356,7 +351,7 @@ public:
 class IndigoSuperatomsIter : public IndigoObject
 {
 public:
-   IndigoSuperatomsIter (BaseMolecule &molecule);
+   IndigoSuperatomsIter (BaseMolecule &molecule, Array<int> &refs);
    virtual ~IndigoSuperatomsIter ();
 
    virtual IndigoObject * next ();
@@ -364,6 +359,7 @@ public:
 protected:
    int _idx;
    BaseMolecule &_mol;
+   Array<int> &_refs;
 };
 
 class IndigoRepeatingUnit : public IndigoObject
@@ -376,7 +372,7 @@ public:
    virtual void remove ();
 
    static IndigoRepeatingUnit & cast (IndigoObject &obj);
-   BaseMolecule::RepeatingUnit & get();
+   RepeatingUnit & get();
 
    BaseMolecule &mol;
    int idx;
@@ -385,7 +381,7 @@ public:
 class IndigoRepeatingUnitsIter : public IndigoObject
 {
 public:
-   IndigoRepeatingUnitsIter (BaseMolecule &molecule);
+   IndigoRepeatingUnitsIter (BaseMolecule &molecule, Array<int> &refs);
    virtual ~IndigoRepeatingUnitsIter ();
 
    virtual IndigoObject * next ();
@@ -393,6 +389,7 @@ public:
 protected:
    int _idx;
    BaseMolecule &_mol;
+   Array<int> &_refs;
 };
 
 class IndigoMultipleGroup : public IndigoObject
@@ -405,7 +402,7 @@ public:
    virtual void remove ();
 
    static IndigoMultipleGroup & cast (IndigoObject &obj);
-   BaseMolecule::MultipleGroup & get();
+   MultipleGroup & get();
 
    BaseMolecule &mol;
    int idx;
@@ -414,7 +411,7 @@ public:
 class IndigoMultipleGroupsIter : public IndigoObject
 {
 public:
-   IndigoMultipleGroupsIter (BaseMolecule &molecule);
+   IndigoMultipleGroupsIter (BaseMolecule &molecule, Array<int> &refs);
    virtual ~IndigoMultipleGroupsIter ();
 
    virtual IndigoObject * next ();
@@ -422,6 +419,7 @@ public:
 protected:
    int _idx;
    BaseMolecule &_mol;
+   Array<int> &_refs;
 };
 
 class IndigoGenericSGroup : public IndigoObject
@@ -434,7 +432,7 @@ public:
    virtual void remove ();
 
    static IndigoGenericSGroup & cast (IndigoObject &obj);
-   BaseMolecule::SGroup & get();
+   SGroup & get();
 
    BaseMolecule &mol;
    int idx;
@@ -443,7 +441,7 @@ public:
 class IndigoGenericSGroupsIter : public IndigoObject
 {
 public:
-   IndigoGenericSGroupsIter (BaseMolecule &molecule);
+   IndigoGenericSGroupsIter (BaseMolecule &molecule, Array<int> &refs);
    virtual ~IndigoGenericSGroupsIter ();
 
    virtual IndigoObject * next ();
@@ -451,12 +449,13 @@ public:
 protected:
    int _idx;
    BaseMolecule &_mol;
+   Array<int> &_refs;
 };
 
 class IndigoSGroupAtomsIter : public IndigoObject
 {
 public:
-   IndigoSGroupAtomsIter (BaseMolecule &mol, BaseMolecule::SGroup &sgroup);
+   IndigoSGroupAtomsIter (BaseMolecule &mol, SGroup &sgroup);
    virtual ~IndigoSGroupAtomsIter ();
 
    virtual IndigoObject * next ();
@@ -464,14 +463,14 @@ public:
 
 protected:
    BaseMolecule &_mol;
-   BaseMolecule::SGroup &_sgroup;
+   SGroup &_sgroup;
    int _idx;
 };
 
 class IndigoSGroupBondsIter : public IndigoObject
 {
 public:
-   IndigoSGroupBondsIter (BaseMolecule &mol, BaseMolecule::SGroup &sgroup);
+   IndigoSGroupBondsIter (BaseMolecule &mol, SGroup &sgroup);
    virtual ~IndigoSGroupBondsIter ();
 
    virtual IndigoObject * next ();
@@ -479,7 +478,7 @@ public:
 
 protected:
    BaseMolecule &_mol;
-   BaseMolecule::SGroup &_sgroup;
+   SGroup &_sgroup;
    int _idx;
 };
 

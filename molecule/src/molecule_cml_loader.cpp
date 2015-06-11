@@ -249,9 +249,12 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
 
       if (label == -1)
          label = ELEM_PSEUDO;
-
+      
       int idx = mol.addAtom(label);
 
+      if (label == ELEM_PSEUDO)
+         mol.setPseudoAtom(idx, a.element_type.c_str());
+      
       total_h_count.expandFill(idx + 1, -1);
 
       atoms_id.emplace(a.id, idx);

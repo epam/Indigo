@@ -654,7 +654,7 @@ IndigoObject * IndigoComponentsIter::next ()
    return new IndigoMoleculeComponent(mol, _idx);
 }
 
-IndigoSGroupAtomsIter::IndigoSGroupAtomsIter (BaseMolecule &mol, BaseMolecule::SGroup &sgroup) :
+IndigoSGroupAtomsIter::IndigoSGroupAtomsIter (BaseMolecule &mol, SGroup &sgroup) :
 IndigoObject(SGROUP_ATOMS_ITER),
 _mol(mol),
 _sgroup(sgroup)
@@ -680,7 +680,7 @@ IndigoObject * IndigoSGroupAtomsIter::next ()
    return new IndigoAtom(_mol, _sgroup.atoms[_idx]);
 }
 
-IndigoSGroupBondsIter::IndigoSGroupBondsIter (BaseMolecule &mol, BaseMolecule::SGroup &sgroup) :
+IndigoSGroupBondsIter::IndigoSGroupBondsIter (BaseMolecule &mol, SGroup &sgroup) :
 IndigoObject(SGROUP_ATOMS_ITER),
 _mol(mol),
 _sgroup(sgroup)
@@ -734,27 +734,27 @@ CEXPORT int indigoIterateAtoms (int molecule)
       if (obj.type == IndigoObject::DATA_SGROUP)
       {
          IndigoDataSGroup &dsg = IndigoDataSGroup::cast(obj);
-         return self.addObject(new IndigoSGroupAtomsIter(*dsg.mol, dsg.mol->data_sgroups[dsg.idx]));
+         return self.addObject(new IndigoSGroupAtomsIter(dsg.mol, dsg.mol.sgroups.getSGroup(dsg.idx)));
       }
       if (obj.type == IndigoObject::SUPERATOM)
       {
          IndigoSuperatom &sa = IndigoSuperatom::cast(obj);
-         return self.addObject(new IndigoSGroupAtomsIter(sa.mol, sa.mol.superatoms[sa.idx]));
+		 return self.addObject(new IndigoSGroupAtomsIter(sa.mol, sa.mol.sgroups.getSGroup(sa.idx)));
       }
       if (obj.type == IndigoObject::REPEATING_UNIT)
       {
          IndigoRepeatingUnit &ru = IndigoRepeatingUnit::cast(obj);
-         return self.addObject(new IndigoSGroupAtomsIter(ru.mol, ru.mol.repeating_units[ru.idx]));
+		 return self.addObject(new IndigoSGroupAtomsIter(ru.mol, ru.mol.sgroups.getSGroup(ru.idx)));
       }
       if (obj.type == IndigoObject::MULTIPLE_GROUP)
       {
          IndigoMultipleGroup &mr = IndigoMultipleGroup::cast(obj);
-         return self.addObject(new IndigoSGroupAtomsIter(mr.mol, mr.mol.multiple_groups[mr.idx]));
+		 return self.addObject(new IndigoSGroupAtomsIter(mr.mol, mr.mol.sgroups.getSGroup(mr.idx)));
       }
       if (obj.type == IndigoObject::GENERIC_SGROUP)
       {
          IndigoGenericSGroup &gg = IndigoGenericSGroup::cast(obj);
-         return self.addObject(new IndigoSGroupAtomsIter(gg.mol, gg.mol.generic_sgroups[gg.idx]));
+		 return self.addObject(new IndigoSGroupAtomsIter(gg.mol, gg.mol.sgroups.getSGroup(gg.idx)));
       }
 
 
@@ -782,27 +782,27 @@ CEXPORT int indigoIterateBonds (int molecule)
       if (obj.type == IndigoObject::DATA_SGROUP)
       {
          IndigoDataSGroup &dsg = IndigoDataSGroup::cast(obj);
-         return self.addObject(new IndigoSGroupBondsIter(*dsg.mol, dsg.mol->data_sgroups[dsg.idx]));
+		 return self.addObject(new IndigoSGroupBondsIter(dsg.mol, dsg.mol.sgroups.getSGroup(dsg.idx)));
       }
       if (obj.type == IndigoObject::SUPERATOM)
       {
          IndigoSuperatom &sa = IndigoSuperatom::cast(obj);
-         return self.addObject(new IndigoSGroupBondsIter(sa.mol, sa.mol.superatoms[sa.idx]));
+		 return self.addObject(new IndigoSGroupBondsIter(sa.mol, sa.mol.sgroups.getSGroup(sa.idx)));
       }
       if (obj.type == IndigoObject::REPEATING_UNIT)
       {
          IndigoRepeatingUnit &ru = IndigoRepeatingUnit::cast(obj);
-         return self.addObject(new IndigoSGroupBondsIter(ru.mol, ru.mol.repeating_units[ru.idx]));
+		 return self.addObject(new IndigoSGroupBondsIter(ru.mol, ru.mol.sgroups.getSGroup(ru.idx)));
       }
       if (obj.type == IndigoObject::MULTIPLE_GROUP)
       {
          IndigoMultipleGroup &mr = IndigoMultipleGroup::cast(obj);
-         return self.addObject(new IndigoSGroupBondsIter(mr.mol, mr.mol.multiple_groups[mr.idx]));
+		 return self.addObject(new IndigoSGroupBondsIter(mr.mol, mr.mol.sgroups.getSGroup(mr.idx)));
       }
       if (obj.type == IndigoObject::GENERIC_SGROUP)
       {
          IndigoGenericSGroup &gg = IndigoGenericSGroup::cast(obj);
-         return self.addObject(new IndigoSGroupBondsIter(gg.mol, gg.mol.generic_sgroups[gg.idx]));
+		 return self.addObject(new IndigoSGroupBondsIter(gg.mol, gg.mol.sgroups.getSGroup(gg.idx)));
       }
       BaseMolecule &mol = obj.getBaseMolecule();
 
@@ -2022,7 +2022,7 @@ CEXPORT int indigoCountSuperatoms (int molecule)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return mol.superatoms.size();
+	  return mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SUP);
    }
    INDIGO_END(-1)
 }
@@ -2032,7 +2032,7 @@ CEXPORT int indigoCountDataSGroups (int molecule)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return mol.data_sgroups.size();
+	  return mol.sgroups.getSGroupCount(SGroup::SG_TYPE_DAT);
    }
    INDIGO_END(-1)
 }
@@ -2042,7 +2042,7 @@ CEXPORT int indigoCountRepeatingUnits (int molecule)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return mol.repeating_units.size();
+	  return mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU);
    }
    INDIGO_END(-1)
 }
@@ -2052,7 +2052,7 @@ CEXPORT int indigoCountMultipleGroups (int molecule)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return mol.multiple_groups.size();
+	  return mol.sgroups.getSGroupCount(SGroup::SG_TYPE_MUL);
    }
    INDIGO_END(-1)
 }
@@ -2062,15 +2062,16 @@ CEXPORT int indigoCountGenericSGroups (int molecule)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return mol.generic_sgroups.size();
+	  return mol.sgroups.getSGroupCount(SGroup::SG_TYPE_GEN);
    }
    INDIGO_END(-1)
 }
 
 
-IndigoDataSGroupsIter::IndigoDataSGroupsIter (BaseMolecule &molecule) :
-        IndigoObject(DATA_SGROUPS_ITER),
-        _mol(molecule)
+IndigoDataSGroupsIter::IndigoDataSGroupsIter (BaseMolecule &molecule, Array<int> &refs) :
+IndigoObject(DATA_SGROUPS_ITER),
+_mol(molecule),
+_refs(refs)
 {
    _idx = -1;
 }
@@ -2082,8 +2083,8 @@ IndigoDataSGroupsIter::~IndigoDataSGroupsIter ()
 bool IndigoDataSGroupsIter::hasNext ()
 {
    if (_idx == -1)
-      return _mol.data_sgroups.begin() != _mol.data_sgroups.end();
-   return _mol.data_sgroups.next(_idx) != _mol.data_sgroups.end();
+      return _refs.size() > 0;
+   return _idx + 1 < _refs.size();
 }
 
 IndigoObject * IndigoDataSGroupsIter::next ()
@@ -2092,11 +2093,11 @@ IndigoObject * IndigoDataSGroupsIter::next ()
       return 0;
 
    if (_idx == -1)
-      _idx = _mol.data_sgroups.begin();
+      _idx = 0;
    else
-      _idx = _mol.data_sgroups.next(_idx);
+      _idx++;
 
-   AutoPtr<IndigoDataSGroup> sgroup(new IndigoDataSGroup(_mol, _idx));
+   AutoPtr<IndigoDataSGroup> sgroup(new IndigoDataSGroup(_mol, _refs[_idx]));
    return sgroup.release();
 }
 
@@ -2105,34 +2106,38 @@ CEXPORT int indigoIterateDataSGroups (int molecule)
 {
    INDIGO_BEGIN
    {
+      QS_DEF(Array<int>, sgs);
+      sgs.clear();
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoDataSGroupsIter(mol));
+      mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_DAT, sgs);
+      return self.addObject(new IndigoDataSGroupsIter(mol, sgs));
    }
    INDIGO_END(-1)
 }
 
 IndigoDataSGroup::IndigoDataSGroup (BaseMolecule &mol_, int idx_) :
-         IndigoObject(DATA_SGROUP)
+IndigoObject(DATA_SGROUP),
+mol(mol_)
 {
-   mol = &mol_;
    idx = idx_;
 }
 
 IndigoDataSGroup & IndigoDataSGroup::cast (IndigoObject &obj)
 {
-   if (obj.type != DATA_SGROUP)
-      throw IndigoError("%s is not a data sgroup", obj.debugInfo());
-   return (IndigoDataSGroup &)obj;
+   if (obj.type == IndigoObject::DATA_SGROUP)
+      return (IndigoDataSGroup &)obj;
+
+   throw IndigoError("%s is not a data sgroup", obj.debugInfo());
 }
 
-BaseMolecule::DataSGroup & IndigoDataSGroup::get ()
+DataSGroup & IndigoDataSGroup::get ()
 {
-   return mol->data_sgroups[idx];
+   return (DataSGroup &)mol.sgroups.getSGroup(idx);
 }
 
 void IndigoDataSGroup::remove ()
 {
-   mol->removeSgroup(BaseMolecule::SGroup::SG_TYPE_DAT, idx);
+   mol.removeSGroup(idx);
 }
 
 IndigoDataSGroup::~IndigoDataSGroup ()
@@ -2162,12 +2167,12 @@ int IndigoSuperatom::getIndex ()
 
 void IndigoSuperatom::remove ()
 {
-   mol.removeSgroup(BaseMolecule::SGroup::SG_TYPE_SUP, idx);
+   mol.removeSGroup(idx);
 }
 
 const char * IndigoSuperatom::getName ()
 {
-   return mol.superatoms[idx].subscript.ptr();
+   return ((Superatom &)mol.sgroups.getSGroup(idx)).subscript.ptr();
 }
 
 IndigoSuperatom & IndigoSuperatom::cast (IndigoObject &obj)
@@ -2178,15 +2183,16 @@ IndigoSuperatom & IndigoSuperatom::cast (IndigoObject &obj)
    throw IndigoError("%s is not a superatom", obj.debugInfo());
 }
 
-Molecule::Superatom & IndigoSuperatom::get ()
+Superatom & IndigoSuperatom::get ()
 {
-   return mol.superatoms[idx];
+   return (Superatom &)mol.sgroups.getSGroup(idx);
 }
 
 
-IndigoSuperatomsIter::IndigoSuperatomsIter (BaseMolecule &molecule) :
+IndigoSuperatomsIter::IndigoSuperatomsIter (BaseMolecule &molecule, Array<int> &refs) :
 IndigoObject(SUPERATOMS_ITER),
-_mol(molecule)
+_mol(molecule),
+_refs(refs)
 {
    _idx = -1;
 }
@@ -2198,8 +2204,8 @@ IndigoSuperatomsIter::~IndigoSuperatomsIter ()
 bool IndigoSuperatomsIter::hasNext ()
 {
    if (_idx == -1)
-      return _mol.superatoms.begin() != _mol.superatoms.end();
-   return _mol.superatoms.next(_idx) != _mol.superatoms.end();
+      return _refs.size() > 0;
+   return _idx + 1 < _refs.size();
 }
 
 IndigoObject * IndigoSuperatomsIter::next ()
@@ -2208,11 +2214,12 @@ IndigoObject * IndigoSuperatomsIter::next ()
       return 0;
 
    if (_idx == -1)
-      _idx = _mol.superatoms.begin();
+      _idx = 0;
    else
-      _idx = _mol.superatoms.next(_idx);
+      _idx++;
 
-   return new IndigoSuperatom(_mol, _idx);
+   AutoPtr<IndigoSuperatom> sgroup(new IndigoSuperatom(_mol, _refs[_idx]));
+   return sgroup.release();
 }
 
 IndigoRepeatingUnit::IndigoRepeatingUnit (BaseMolecule &mol_, int idx_) :
@@ -2233,7 +2240,7 @@ int IndigoRepeatingUnit::getIndex ()
 
 void IndigoRepeatingUnit::remove ()
 {
-   mol.removeSgroup(BaseMolecule::SGroup::SG_TYPE_SRU, idx);
+   mol.removeSGroup(idx);
 }
 
 IndigoRepeatingUnit & IndigoRepeatingUnit::cast (IndigoObject &obj)
@@ -2244,14 +2251,15 @@ IndigoRepeatingUnit & IndigoRepeatingUnit::cast (IndigoObject &obj)
    throw IndigoError("%s is not a repeating unit", obj.debugInfo());
 }
 
-Molecule::RepeatingUnit & IndigoRepeatingUnit::get ()
+RepeatingUnit & IndigoRepeatingUnit::get ()
 {
-   return mol.repeating_units[idx];
+   return (RepeatingUnit &)mol.sgroups.getSGroup(idx);
 }
 
-IndigoRepeatingUnitsIter::IndigoRepeatingUnitsIter (BaseMolecule &molecule) :
+IndigoRepeatingUnitsIter::IndigoRepeatingUnitsIter (BaseMolecule &molecule, Array<int> &refs) :
 IndigoObject(REPEATING_UNITS_ITER),
-_mol(molecule)
+_mol(molecule),
+_refs(refs)
 {
    _idx = -1;
 }
@@ -2263,8 +2271,8 @@ IndigoRepeatingUnitsIter::~IndigoRepeatingUnitsIter ()
 bool IndigoRepeatingUnitsIter::hasNext ()
 {
    if (_idx == -1)
-      return _mol.repeating_units.begin() != _mol.repeating_units.end();
-   return _mol.repeating_units.next(_idx) != _mol.repeating_units.end();
+      return _refs.size() > 0;
+   return _idx + 1 < _refs.size();
 }
 
 IndigoObject * IndigoRepeatingUnitsIter::next ()
@@ -2273,11 +2281,12 @@ IndigoObject * IndigoRepeatingUnitsIter::next ()
       return 0;
 
    if (_idx == -1)
-      _idx = _mol.repeating_units.begin();
+      _idx = 0;
    else
-      _idx = _mol.repeating_units.next(_idx);
+      _idx++;
 
-   return new IndigoRepeatingUnit(_mol, _idx);
+   AutoPtr<IndigoRepeatingUnit> sgroup(new IndigoRepeatingUnit(_mol, _refs[_idx]));
+   return sgroup.release();
 }
 
 IndigoMultipleGroup::IndigoMultipleGroup (BaseMolecule &mol_, int idx_) :
@@ -2298,7 +2307,7 @@ int IndigoMultipleGroup::getIndex ()
 
 void IndigoMultipleGroup::remove ()
 {
-   mol.removeSgroup(BaseMolecule::SGroup::SG_TYPE_MUL, idx);
+   mol.removeSGroup(idx);
 }
 
 IndigoMultipleGroup & IndigoMultipleGroup::cast (IndigoObject &obj)
@@ -2309,14 +2318,15 @@ IndigoMultipleGroup & IndigoMultipleGroup::cast (IndigoObject &obj)
    throw IndigoError("%s is not a multiple group", obj.debugInfo());
 }
 
-Molecule::MultipleGroup & IndigoMultipleGroup::get ()
+MultipleGroup & IndigoMultipleGroup::get ()
 {
-   return mol.multiple_groups[idx];
+   return (MultipleGroup &)mol.sgroups.getSGroup(idx);
 }
 
-IndigoMultipleGroupsIter::IndigoMultipleGroupsIter (BaseMolecule &molecule) :
+IndigoMultipleGroupsIter::IndigoMultipleGroupsIter (BaseMolecule &molecule, Array<int> &refs) :
 IndigoObject(MULTIPLE_GROUPS_ITER),
-_mol(molecule)
+_mol(molecule),
+_refs(refs)
 {
    _idx = -1;
 }
@@ -2328,8 +2338,8 @@ IndigoMultipleGroupsIter::~IndigoMultipleGroupsIter ()
 bool IndigoMultipleGroupsIter::hasNext ()
 {
    if (_idx == -1)
-      return _mol.multiple_groups.begin() != _mol.multiple_groups.end();
-   return _mol.multiple_groups.next(_idx) != _mol.multiple_groups.end();
+      return _refs.size() > 0;
+   return _idx + 1 < _refs.size();
 }
 
 IndigoObject * IndigoMultipleGroupsIter::next ()
@@ -2338,11 +2348,12 @@ IndigoObject * IndigoMultipleGroupsIter::next ()
       return 0;
 
    if (_idx == -1)
-      _idx = _mol.multiple_groups.begin();
+      _idx = 0;
    else
-      _idx = _mol.multiple_groups.next(_idx);
+      _idx++;
 
-   return new IndigoMultipleGroup(_mol, _idx);
+   AutoPtr<IndigoMultipleGroup> sgroup(new IndigoMultipleGroup(_mol, _refs[_idx]));
+   return sgroup.release();
 }
 
 IndigoGenericSGroup::IndigoGenericSGroup (BaseMolecule &mol_, int idx_) :
@@ -2363,7 +2374,7 @@ int IndigoGenericSGroup::getIndex ()
 
 void IndigoGenericSGroup::remove ()
 {
-   mol.removeSgroup(BaseMolecule::SGroup::SG_TYPE_GEN, idx);
+   mol.removeSGroup(idx);
 }
 
 IndigoGenericSGroup & IndigoGenericSGroup::cast (IndigoObject &obj)
@@ -2374,14 +2385,15 @@ IndigoGenericSGroup & IndigoGenericSGroup::cast (IndigoObject &obj)
    throw IndigoError("%s is not a generic sgroup", obj.debugInfo());
 }
 
-Molecule::SGroup & IndigoGenericSGroup::get ()
+SGroup & IndigoGenericSGroup::get ()
 {
-   return mol.generic_sgroups[idx];
+   return (SGroup &)mol.sgroups.getSGroup(idx);
 }
 
-IndigoGenericSGroupsIter::IndigoGenericSGroupsIter (BaseMolecule &molecule) :
+IndigoGenericSGroupsIter::IndigoGenericSGroupsIter (BaseMolecule &molecule, Array<int> &refs) :
 IndigoObject(GENERIC_SGROUPS_ITER),
-_mol(molecule)
+_mol(molecule),
+_refs(refs)
 {
    _idx = -1;
 }
@@ -2393,109 +2405,11 @@ IndigoGenericSGroupsIter::~IndigoGenericSGroupsIter ()
 bool IndigoGenericSGroupsIter::hasNext ()
 {
    if (_idx == -1)
-      return _mol.generic_sgroups.begin() != _mol.generic_sgroups.end();
-   return _mol.generic_sgroups.next(_idx) != _mol.generic_sgroups.end();
-}
-
-IndigoObject * IndigoGenericSGroupsIter::next ()
-{
-   if (!hasNext())
-      return 0;
-
-   if (_idx == -1)
-      _idx = _mol.generic_sgroups.begin();
-   else
-      _idx = _mol.generic_sgroups.next(_idx);
-
-   return new IndigoGenericSGroup(_mol, _idx);
-}
-
-CEXPORT int indigoIterateGenericSGroups (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoGenericSGroupsIter(mol));
-   }
-   INDIGO_END(-1)
-}
-
-IndigoSgroup::IndigoSgroup (BaseMolecule &mol_, int sg_type_, int sg_idx_) :
-IndigoObject(SGROUP),
-mol(mol_)
-{
-   sg_type = sg_type_;
-   idx = sg_idx_;
-}
-
-IndigoSgroup::~IndigoSgroup ()
-{
-}
-
-const char * IndigoSgroup::debugInfo ()
-{
-   return "<sgroup>";
-}
-
-int IndigoSgroup::getIndex ()
-{
-   return idx;
-}
-
-void IndigoSgroup::remove ()
-{
-   mol.removeSgroup(sg_type, idx);
-}
-
-IndigoSgroup & IndigoSgroup::cast (IndigoObject &obj)
-{
-   if (obj.type == IndigoObject::SGROUP)
-      return (IndigoSgroup &)obj;
-
-   throw IndigoError("%s is not a sgroup", obj.debugInfo());
-}
-
-BaseMolecule::SGroup & IndigoSgroup::get ()
-{
-   if (sg_type == BaseMolecule::SGroup::SG_TYPE_GEN)
-      return mol.generic_sgroups[idx];
-   else if (sg_type == BaseMolecule::SGroup::SG_TYPE_DAT)
-      return mol.data_sgroups[idx];
-   else if (sg_type == BaseMolecule::SGroup::SG_TYPE_SUP)
-      return mol.superatoms[idx];
-   else if (sg_type == BaseMolecule::SGroup::SG_TYPE_SRU)
-      return mol.repeating_units[idx];
-   else if (sg_type == BaseMolecule::SGroup::SG_TYPE_MUL)
-      return mol.multiple_groups[idx];
-   else
-      throw IndigoError("Unknown type %d for sgroup", sg_type);
-}
-
-IndigoSgroupsIter::IndigoSgroupsIter (BaseMolecule &molecule, Array<BaseMolecule::SGroup::_SgroupRef> &sg_refs) :
-IndigoObject(SGROUPS_ITER),
-_mol(molecule),
-_refs(sg_refs)
-{
-   _idx = -1;
-}
-
-IndigoSgroupsIter::~IndigoSgroupsIter ()
-{
-}
-
-const char * IndigoSgroupsIter::debugInfo ()
-{
-   return "<sgroups iterator>";
-}
-
-bool IndigoSgroupsIter::hasNext ()
-{
-   if (_idx == -1)
       return _refs.size() > 0;
    return _idx + 1 < _refs.size();
 }
 
-IndigoObject * IndigoSgroupsIter::next ()
+IndigoObject * IndigoGenericSGroupsIter::next ()
 {
    if (!hasNext())
       return 0;
@@ -2505,129 +2419,109 @@ IndigoObject * IndigoSgroupsIter::next ()
    else
       _idx++;
 
-   AutoPtr<IndigoSgroup> sgroup(new IndigoSgroup(_mol, _refs[_idx].sg_type, _refs[_idx].sg_idx));
+   AutoPtr<IndigoGenericSGroup> sgroup(new IndigoGenericSGroup(_mol, _refs[_idx]));
    return sgroup.release();
 }
 
-void IndigoSgroupsIter::parseCondition (const char* property, const char* value, 
-                                        int &s_property, int &s_type, int &s_int, Array<int> &s_indices)
+CEXPORT int indigoIterateGenericSGroups (int molecule)
 {
-   struct Mapping
+   INDIGO_BEGIN
    {
-      const char *property;
-      int  sg_property;
-      int  property_type;
-   };
-
-   struct SgType
-   {
-      const char *str_type;
-      int  int_type;
-   };
-
-   static SgType mappingForSgTypes[] = 
-   {
-      { "GEN", BaseMolecule::SGroup::SG_TYPE_GEN },
-      { "DAT", BaseMolecule::SGroup::SG_TYPE_DAT },
-      { "SUP", BaseMolecule::SGroup::SG_TYPE_SUP },
-      { "SRU", BaseMolecule::SGroup::SG_TYPE_SRU },
-      { "MUL", BaseMolecule::SGroup::SG_TYPE_MUL },
-      { "MON", BaseMolecule::SGroup::SG_TYPE_MON },
-      { "MER", BaseMolecule::SGroup::SG_TYPE_MER },
-      { "COP", BaseMolecule::SGroup::SG_TYPE_COP },
-      { "CRO", BaseMolecule::SGroup::SG_TYPE_CRO },
-      { "MOD", BaseMolecule::SGroup::SG_TYPE_MOD },
-      { "GRA", BaseMolecule::SGroup::SG_TYPE_GRA },
-      { "COM", BaseMolecule::SGroup::SG_TYPE_COM },
-      { "MIX", BaseMolecule::SGroup::SG_TYPE_MIX },
-      { "FOR", BaseMolecule::SGroup::SG_TYPE_FOR },
-      { "ANY", BaseMolecule::SGroup::SG_TYPE_ANY },
-   };
-
-
-   static Mapping mappingForProperties[] = 
-   {
-      { "SG_TYPE", BaseMolecule::SGroup::SG_TYPE, PROPERTY_INT },
-      { "SG_CLASS", BaseMolecule::SGroup::SG_CLASS, PROPERTY_STRING },
-      { "SG_LABEL", BaseMolecule::SGroup::SG_LABEL, PROPERTY_STRING },
-      { "SG_DISPLAY_OPTION", BaseMolecule::SGroup::SG_DISPLAY_OPTION, PROPERTY_INT },
-      { "SG_BRACKET_STYLE", BaseMolecule::SGroup::SG_BRACKET_STYLE, PROPERTY_INT },
-      { "SG_DATA", BaseMolecule::SGroup::SG_DATA, PROPERTY_STRING },
-      { "SG_DATA_NAME", BaseMolecule::SGroup::SG_DATA_NAME, PROPERTY_STRING },
-      { "SG_DATA_TYPE", BaseMolecule::SGroup::SG_DATA_TYPE, PROPERTY_STRING },
-      { "SG_DATA_DESCRIPTION", BaseMolecule::SGroup::SG_DATA_DESCRIPTION, PROPERTY_STRING },
-      { "SG_DATA_DISPLAY", BaseMolecule::SGroup::SG_DATA_DISPLAY, PROPERTY_STRING },
-      { "SG_DATA_LOCATION", BaseMolecule::SGroup::SG_DATA_LOCATION, PROPERTY_STRING },
-      { "SG_DATA_TAG", BaseMolecule::SGroup::SG_DATA_TAG, PROPERTY_STRING },
-      { "SG_QUERY_CODE", BaseMolecule::SGroup::SG_QUERY_CODE, PROPERTY_STRING },
-      { "SG_QUERY_OPER", BaseMolecule::SGroup::SG_QUERY_OPER, PROPERTY_STRING },
-      { "SG_PARENT", BaseMolecule::SGroup::SG_PARENT, PROPERTY_INT },
-      { "SG_CHILD", BaseMolecule::SGroup::SG_CHILD, PROPERTY_INT },
-      { "SG_ATOMS", BaseMolecule::SGroup::SG_ATOMS, PROPERTY_INT_ARRAY },
-      { "SG_BONDS", BaseMolecule::SGroup::SG_BONDS, PROPERTY_INT_ARRAY },
-   };
-
-   for (int i = 0; i < NELEM(mappingForProperties); i++)
-   {
-      if (strcasecmp(property, mappingForProperties[i].property) == 0)
-      {
-         int int_value = 0;
-         if (strcasecmp(property, "SG_TYPE") == 0)
-         {
-            for (int j = 0; j < NELEM(mappingForSgTypes); j++)
-            {
-               if (strcasecmp(value, mappingForSgTypes[j].str_type) == 0)
-               {
-                  int_value = mappingForSgTypes[j].int_type;
-               }
-            }
-         }
-         else if (value != NULL)
-         {
-            if (mappingForProperties[i].property_type == PROPERTY_INT)
-            {
-               BufferScanner buf_scanner(value);
-               int_value = buf_scanner.readInt();
-            }
-            else if (mappingForProperties[i].property_type == PROPERTY_BOOL)
-            {
-               if (strcasecmp(value, "true") == 0)
-                  int_value = 1;
-               else if (strcasecmp(value, "false") == 0)
-                  int_value = 0;
-               else
-               {
-                  BufferScanner buf_scanner(value);
-                  int_value = buf_scanner.readInt();
-               }
-            }
-            else if (mappingForProperties[i].property_type == PROPERTY_INT_ARRAY)
-            {
-               BufferScanner buf_scanner(value);
-               while (!buf_scanner.isEOF())
-               {
-                  s_indices.push(buf_scanner.readInt1());
-               }
-            }
-         }
-         s_property = mappingForProperties[i].sg_property;
-         s_type = mappingForProperties[i].property_type;
-         s_int = int_value;
-
-         return;
-      }
+    QS_DEF(Array<int>, sgs);
+    sgs.clear();
+    BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+    mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_GEN, sgs);
+    return self.addObject(new IndigoGenericSGroupsIter(mol, sgs));
    }
-
-   throw IndigoError("unsupported condition property: %s", property);
+   INDIGO_END(-1)
 }
 
+IndigoSGroup::IndigoSGroup (BaseMolecule &mol_, int sg_idx_) :
+IndigoObject(SGROUP),
+mol(mol_)
+{
+   idx = sg_idx_;
+}
+
+IndigoSGroup::~IndigoSGroup ()
+{
+}
+
+const char * IndigoSGroup::debugInfo ()
+{
+   return "<sgroup>";
+}
+
+int IndigoSGroup::getIndex ()
+{
+   return idx;
+}
+
+void IndigoSGroup::remove ()
+{
+   mol.removeSGroup(idx);
+}
+
+IndigoSGroup & IndigoSGroup::cast (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::SGROUP)
+      return (IndigoSGroup &)obj;
+
+   throw IndigoError("%s is not a sgroup", obj.debugInfo());
+}
+
+SGroup & IndigoSGroup::get ()
+{
+   return (SGroup &)mol.sgroups.getSGroup(idx);
+}
+
+IndigoSGroupsIter::IndigoSGroupsIter (BaseMolecule &molecule, Array<int> &sg_refs) :
+IndigoObject(SGROUPS_ITER),
+_mol(molecule),
+_refs(sg_refs)
+{
+   _idx = -1;
+}
+
+IndigoSGroupsIter::~IndigoSGroupsIter ()
+{
+}
+
+const char * IndigoSGroupsIter::debugInfo ()
+{
+   return "<sgroups iterator>";
+}
+
+bool IndigoSGroupsIter::hasNext ()
+{
+   if (_idx == -1)
+      return _refs.size() > 0;
+   return _idx + 1 < _refs.size();
+}
+
+IndigoObject * IndigoSGroupsIter::next ()
+{
+   if (!hasNext())
+      return 0;
+
+   if (_idx == -1)
+      _idx = 0;
+   else
+      _idx++;
+
+   AutoPtr<IndigoSGroup> sgroup(new IndigoSGroup(_mol, _refs[_idx]));
+   return sgroup.release();
+}
 
 CEXPORT int indigoIterateRepeatingUnits (int molecule)
 {
    INDIGO_BEGIN
    {
+      QS_DEF(Array<int>, sgs);
+      sgs.clear();
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoRepeatingUnitsIter(mol));
+      mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_SRU, sgs);
+      return self.addObject(new IndigoRepeatingUnitsIter(mol, sgs));
    }
    INDIGO_END(-1)
 }
@@ -2636,8 +2530,11 @@ CEXPORT int indigoIterateMultipleGroups (int molecule)
 {
    INDIGO_BEGIN
    {
+      QS_DEF(Array<int>, sgs);
+      sgs.clear();
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoMultipleGroupsIter(mol));
+      mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_MUL, sgs);
+      return self.addObject(new IndigoMultipleGroupsIter(mol, sgs));
    }
    INDIGO_END(-1)
 }
@@ -2646,8 +2543,11 @@ CEXPORT int indigoIterateSuperatoms (int molecule)
 {
    INDIGO_BEGIN
    {
+      QS_DEF(Array<int>, sgs);
+      sgs.clear();
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoSuperatomsIter(mol));
+      mol.sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_SUP, sgs);
+      return self.addObject(new IndigoSuperatomsIter(mol, sgs));
    }
    INDIGO_END(-1)
 }
@@ -2657,7 +2557,14 @@ CEXPORT int indigoGetSuperatom (int molecule, int index)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoSuperatom(mol, index));
+      if (index < 0 || index > (mol.sgroups.getSGroupCount() - 1))
+         throw IndigoError("Invalid Sgroup index %d (size = %d)", index, mol.sgroups.getSGroupCount());
+
+      SGroup &sg = mol.sgroups.getSGroup(index);
+      if (sg.sgroup_type == SGroup::SG_TYPE_SUP) 
+         return self.addObject(new IndigoSuperatom(mol, index));
+
+      throw IndigoError("Sgroup with index %d is not a Superatom", index);
    }
    INDIGO_END(-1)
 }
@@ -2667,7 +2574,14 @@ CEXPORT int indigoGetDataSGroup (int molecule, int index)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoDataSGroup(mol, index));
+      if (index < 0 || index > (mol.sgroups.getSGroupCount() - 1))
+         throw IndigoError("Invalid Sgroup index %d (size = %d)", index, mol.sgroups.getSGroupCount());
+
+      SGroup &sg = mol.sgroups.getSGroup(index);
+      if (sg.sgroup_type == SGroup::SG_TYPE_DAT) 
+         return self.addObject(new IndigoDataSGroup(mol, index));
+
+      throw IndigoError("Sgroup with index %d is not a DataSGroup", index);
    }
    INDIGO_END(-1)
 }
@@ -2677,7 +2591,14 @@ CEXPORT int indigoGetGenericSGroup (int molecule, int index)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoGenericSGroup(mol, index));
+      if (index < 0 || index > (mol.sgroups.getSGroupCount() - 1))
+         throw IndigoError("Invalid Sgroup index %d (size = %d)", index, mol.sgroups.getSGroupCount());
+
+      SGroup &sg = mol.sgroups.getSGroup(index);
+      if (sg.sgroup_type == SGroup::SG_TYPE_GEN) 
+         return self.addObject(new IndigoGenericSGroup(mol, index));
+
+      throw IndigoError("Sgroup with index %d is not a GenericSGroup", index);
    }
    INDIGO_END(-1)
 }
@@ -2687,7 +2608,14 @@ CEXPORT int indigoGetMultipleGroup (int molecule, int index)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoMultipleGroup(mol, index));
+      if (index < 0 || index > (mol.sgroups.getSGroupCount() - 1))
+         throw IndigoError("Invalid Sgroup index %d (size = %d)", index, mol.sgroups.getSGroupCount());
+
+      SGroup &sg = mol.sgroups.getSGroup(index);
+      if (sg.sgroup_type == SGroup::SG_TYPE_MUL) 
+         return self.addObject(new IndigoMultipleGroup(mol, index));
+
+      throw IndigoError("Sgroup with index %d is not a MultipleGroup", index);
    }
    INDIGO_END(-1)
 }
@@ -2697,7 +2625,14 @@ CEXPORT int indigoGetRepeatingUnit (int molecule, int index)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoRepeatingUnit(mol, index));
+      if (index < 0 || index > (mol.sgroups.getSGroupCount() - 1))
+         throw IndigoError("Invalid Sgroup index %d (size = %d)", index, mol.sgroups.getSGroupCount());
+
+      SGroup &sg = mol.sgroups.getSGroup(index);
+      if (sg.sgroup_type == SGroup::SG_TYPE_SRU) 
+         return self.addObject(new IndigoRepeatingUnit(mol, index));
+
+      throw IndigoError("Sgroup with index %d is not a RepeatingUnit", index);
    }
    INDIGO_END(-1)
 }
@@ -2732,8 +2667,8 @@ CEXPORT int indigoAddDataSGroup (int molecule, int natoms, int *atoms,
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      int idx = mol.data_sgroups.add();
-      BaseMolecule::DataSGroup &dsg =  mol.data_sgroups.at(idx);
+      int idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+      DataSGroup &dsg = (DataSGroup &)mol.sgroups.getSGroup(idx);
       int i;
       if (atoms != 0)
          for (i = 0; i < natoms; i++)
@@ -2756,8 +2691,8 @@ CEXPORT int indigoAddSuperatom (int molecule, int natoms, int *atoms, const char
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      int idx = mol.superatoms.add();
-      BaseMolecule::Superatom &satom =  mol.superatoms.at(idx);
+      int idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
+      Superatom &satom = (Superatom &)mol.sgroups.getSGroup(idx);
       satom.subscript.appendString(name, true);
       if (atoms == 0)
          throw IndigoError("indigoAddSuperatom(): atoms were not specified");
@@ -2774,7 +2709,7 @@ CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *opt
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       dsg.display_pos.x = x;
       dsg.display_pos.y = y;
@@ -2795,11 +2730,11 @@ CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *opt
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupData (int sgroup, const char *data)
+CEXPORT int indigoSetSGroupData (int sgroup, const char *data)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       if (data != 0)
          dsg.data.readString(data, false);
@@ -2809,11 +2744,11 @@ CEXPORT int indigoSetSgroupData (int sgroup, const char *data)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupCoords (int sgroup, float x, float y)
+CEXPORT int indigoSetSGroupCoords (int sgroup, float x, float y)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       dsg.display_pos.x = x;
       dsg.display_pos.y = y;
@@ -2823,11 +2758,11 @@ CEXPORT int indigoSetSgroupCoords (int sgroup, float x, float y)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupDescription (int sgroup, const char *description)
+CEXPORT int indigoSetSGroupDescription (int sgroup, const char *description)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       if (description != 0)
          dsg.description.readString(description, true);
@@ -2837,11 +2772,11 @@ CEXPORT int indigoSetSgroupDescription (int sgroup, const char *description)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupFieldName (int sgroup, const char *name)
+CEXPORT int indigoSetSGroupFieldName (int sgroup, const char *name)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       if (name != 0)
          dsg.name.readString(name, true);
@@ -2851,11 +2786,11 @@ CEXPORT int indigoSetSgroupFieldName (int sgroup, const char *name)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupQueryCode (int sgroup, const char *querycode)
+CEXPORT int indigoSetSGroupQueryCode (int sgroup, const char *querycode)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       if (querycode != 0)
          dsg.querycode.readString(querycode, true);
@@ -2865,11 +2800,11 @@ CEXPORT int indigoSetSgroupQueryCode (int sgroup, const char *querycode)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupQueryOper (int sgroup, const char *queryoper)
+CEXPORT int indigoSetSGroupQueryOper (int sgroup, const char *queryoper)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       if (queryoper != 0)
          dsg.queryoper.readString(queryoper, true);
@@ -2879,11 +2814,11 @@ CEXPORT int indigoSetSgroupQueryOper (int sgroup, const char *queryoper)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupDisplay (int sgroup, const char *option)
+CEXPORT int indigoSetSGroupDisplay (int sgroup, const char *option)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       if (option != 0 && option[0] != 0)
       {
@@ -2900,11 +2835,11 @@ CEXPORT int indigoSetSgroupDisplay (int sgroup, const char *option)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupLocation (int sgroup, const char *option)
+CEXPORT int indigoSetSGroupLocation (int sgroup, const char *option)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       if (option != 0 && option[0] != 0)
       {
@@ -2921,11 +2856,11 @@ CEXPORT int indigoSetSgroupLocation (int sgroup, const char *option)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupTag (int sgroup, const char *tag)
+CEXPORT int indigoSetSGroupTag (int sgroup, const char *tag)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       if (tag != 0 && tag[0] != 0)
       {
@@ -2937,11 +2872,11 @@ CEXPORT int indigoSetSgroupTag (int sgroup, const char *tag)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupTagAlign (int sgroup, int tag_align)
+CEXPORT int indigoSetSGroupTagAlign (int sgroup, int tag_align)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       if (tag_align > 0 && tag_align < 10)
       {
@@ -2953,11 +2888,11 @@ CEXPORT int indigoSetSgroupTagAlign (int sgroup, int tag_align)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupDataType (int sgroup, const char *data_type)
+CEXPORT int indigoSetSGroupDataType (int sgroup, const char *data_type)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       if (data_type != 0 && data_type[0] != 0)
       {
@@ -2969,11 +2904,11 @@ CEXPORT int indigoSetSgroupDataType (int sgroup, const char *data_type)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupXCoord (int sgroup, float x)
+CEXPORT int indigoSetSGroupXCoord (int sgroup, float x)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       dsg.display_pos.x = x;
 
@@ -2982,11 +2917,11 @@ CEXPORT int indigoSetSgroupXCoord (int sgroup, float x)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupYCoord (int sgroup, float y)
+CEXPORT int indigoSetSGroupYCoord (int sgroup, float y)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
+      DataSGroup &dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
       dsg.display_pos.y = y;
 
@@ -2995,7 +2930,7 @@ CEXPORT int indigoSetSgroupYCoord (int sgroup, float y)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoCreateSgroup (const char *type, int mapping, const char *name)
+CEXPORT int indigoCreateSGroup (const char *type, int mapping, const char *name)
 {
    INDIGO_BEGIN
    {
@@ -3005,8 +2940,8 @@ CEXPORT int indigoCreateSgroup (const char *type, int mapping, const char *name)
          BaseMolecule &mol = map.to;
          BaseMolecule &temp = map.from;
          Array<int> &m = map.mapping;
-         int idx = mol.superatoms.add();
-         BaseMolecule::Superatom &satom =  mol.superatoms.at(idx);
+         int idx = mol.sgroups.addSGroup(type);
+         Superatom &satom = (Superatom &)mol.sgroups.getSGroup(idx);
          satom.subscript.appendString(name, true);
          for (auto i : temp.vertices())
          {
@@ -3031,11 +2966,11 @@ CEXPORT int indigoCreateSgroup (const char *type, int mapping, const char *name)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupClass (int sgroup, const char *sgclass)
+CEXPORT int indigoSetSGroupClass (int sgroup, const char *sgclass)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
       sup.sa_class.readString(sgclass, true);
 
       return 1;
@@ -3043,11 +2978,11 @@ CEXPORT int indigoSetSgroupClass (int sgroup, const char *sgclass)
    INDIGO_END(-1)
 }
 
-CEXPORT const char * indigoGetSgroupClass (int sgroup)
+CEXPORT const char * indigoGetSGroupClass (int sgroup)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
       if (sup.sa_class.size() < 1)
          return "";
       return sup.sa_class.ptr();
@@ -3055,11 +2990,11 @@ CEXPORT const char * indigoGetSgroupClass (int sgroup)
    INDIGO_END(0)
 }
 
-CEXPORT int indigoSetSgroupName (int sgroup, const char *sgname)
+CEXPORT int indigoSetSGroupName (int sgroup, const char *sgname)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
       sup.subscript.readString(sgname, true);
 
       return 1;
@@ -3067,11 +3002,11 @@ CEXPORT int indigoSetSgroupName (int sgroup, const char *sgname)
    INDIGO_END(-1)
 }
 
-CEXPORT const char * indigoGetSgroupName (int sgroup)
+CEXPORT const char * indigoGetSGroupName (int sgroup)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
       if (sup.subscript.size() < 1)
          return "";
       return sup.subscript.ptr();
@@ -3080,23 +3015,23 @@ CEXPORT const char * indigoGetSgroupName (int sgroup)
    INDIGO_END(0)
 }
 
-CEXPORT int indigoGetSgroupNumCrossBonds (int sgroup)
+CEXPORT int indigoGetSGroupNumCrossBonds (int sgroup)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
       return sup.bonds.size();
    }
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoAddSgroupAttachmentPoint (int sgroup, int aidx, int lvidx, const char *apid)
+CEXPORT int indigoAddSGroupAttachmentPoint (int sgroup, int aidx, int lvidx, const char *apid)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
       int ap_idx = sup.attachment_points.add();
-      BaseMolecule::Superatom::_AttachmentPoint &ap = sup.attachment_points.at(ap_idx);
+      Superatom::_AttachmentPoint &ap = sup.attachment_points.at(ap_idx);
       ap.aidx = aidx;
       ap.lvidx = lvidx;
       ap.apid.readString(apid, true);
@@ -3105,22 +3040,22 @@ CEXPORT int indigoAddSgroupAttachmentPoint (int sgroup, int aidx, int lvidx, con
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoDeleteSgroupAttachmentPoint (int sgroup, int ap_idx)
+CEXPORT int indigoDeleteSGroupAttachmentPoint (int sgroup, int ap_idx)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
       sup.attachment_points.remove(ap_idx);
       return 1;
    }
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoGetSgroupDisplayOption (int sgroup)
+CEXPORT int indigoGetSGroupDisplayOption (int sgroup)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
       if (sup.contracted > -1)
          return sup.contracted;
 
@@ -3129,11 +3064,11 @@ CEXPORT int indigoGetSgroupDisplayOption (int sgroup)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupDisplayOption (int sgroup, int option)
+CEXPORT int indigoSetSGroupDisplayOption (int sgroup, int option)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
       sup.contracted = option;
 
       return 1;
@@ -3141,21 +3076,21 @@ CEXPORT int indigoSetSgroupDisplayOption (int sgroup, int option)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoGetSgroupMultiplier (int sgroup)
+CEXPORT int indigoGetSGroupMultiplier (int sgroup)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::MultipleGroup &mg = IndigoMultipleGroup::cast(self.getObject(sgroup)).get();
+      MultipleGroup &mg = IndigoMultipleGroup::cast(self.getObject(sgroup)).get();
       return mg.multiplier;
    }
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupMultiplier (int sgroup, int multiplier)
+CEXPORT int indigoSetSGroupMultiplier (int sgroup, int multiplier)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::MultipleGroup &mg = IndigoMultipleGroup::cast(self.getObject(sgroup)).get();
+      MultipleGroup &mg = IndigoMultipleGroup::cast(self.getObject(sgroup)).get();
       mg.multiplier = multiplier;
 
       return 1;
@@ -3163,12 +3098,12 @@ CEXPORT int indigoSetSgroupMultiplier (int sgroup, int multiplier)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoSetSgroupBrackets (int sgroup, int brk_style, float x1, float y1, float x2, float y2,
+CEXPORT int indigoSetSGroupBrackets (int sgroup, int brk_style, float x1, float y1, float x2, float y2,
                                      float x3, float y3, float x4, float y4)
 {
    INDIGO_BEGIN
    {
-      BaseMolecule::SGroup *psg = 0;
+      SGroup *psg = 0;
 
       if (self.getObject(sgroup).type == IndigoObject::GENERIC_SGROUP)
          psg = &(IndigoGenericSGroup::cast(self.getObject(sgroup)).get());
@@ -3193,49 +3128,36 @@ CEXPORT int indigoSetSgroupBrackets (int sgroup, int brk_style, float x1, float 
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoFindSgroups (int item, const char *property, const char *value)
+CEXPORT int indigoFindSGroups (int item, const char *property, const char *value)
 {
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(item).getBaseMolecule();
-      QS_DEF(Array<BaseMolecule::SGroup::_SgroupRef>, sg_refs);
-      QS_DEF(Array<int>, s_indices);
-      int s_property;
-      int s_type;
-      int s_int;
+      QS_DEF(Array<int>, sgs);
+      sgs.clear();
 
-      sg_refs.clear();
-      s_indices.clear();
-
-      IndigoSgroupsIter::parseCondition (property, value, s_property, s_type, s_int, s_indices);
-
-      if (s_type == IndigoSgroupsIter::PropertyTypes::PROPERTY_INT)
-         mol.findSgroups(s_property, s_int, sg_refs);
-	  else if (s_type == IndigoSgroupsIter::PropertyTypes::PROPERTY_STRING)
-         mol.findSgroups(s_property, value, sg_refs);
-	  else if (s_type == IndigoSgroupsIter::PropertyTypes::PROPERTY_INT_ARRAY)
-         mol.findSgroups(s_property, s_indices, sg_refs);
+      mol.sgroups.findSGroups(property, value, sgs);
       
-      return self.addObject(new IndigoSgroupsIter(mol, sg_refs));
+      return self.addObject(new IndigoSGroupsIter(mol, sgs));
    }
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoGetSgroupType (int sgroup)
+CEXPORT int indigoGetSGroupType (int sgroup)
 {
    INDIGO_BEGIN
    {
-      IndigoSgroup &sg = IndigoSgroup::cast(self.getObject(sgroup));
-      return sg.sg_type;
+      IndigoSGroup &sg = IndigoSGroup::cast(self.getObject(sgroup));
+      return sg.get().sgroup_type;
    }
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoGetSgroupIndex (int sgroup)
+CEXPORT int indigoGetSGroupIndex (int sgroup)
 {
    INDIGO_BEGIN
    {
-      IndigoSgroup &sg = IndigoSgroup::cast(self.getObject(sgroup));
+      IndigoSGroup &sg = IndigoSGroup::cast(self.getObject(sgroup));
       return sg.idx;
    }
    INDIGO_END(-1)

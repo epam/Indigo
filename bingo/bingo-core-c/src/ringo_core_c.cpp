@@ -149,11 +149,10 @@ CEXPORT int ringoSetupMatch (const char *search_type, const char *query, const c
             self.ringo_search_type = BingoCore::_EXACT;
             return 1;
          }
-         else
-         {
-            self.ringo_search_type = BingoCore::_UNDEF;
-            throw BingoError("Unknown search type %s", search_type);
-         }
+         self.ringo_search_type = BingoCore::_UNDEF;
+         throw BingoError("Unknown search type '%s' or options string '%s'", 
+            search_type, options);
+
       }
       CATCH_READ_TARGET_RXN(self.error.readString(e.message(), 1); return -1;);
    }

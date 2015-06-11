@@ -167,8 +167,8 @@ private:
    AtomDesc(const AtomDesc& ad);
 };
 
-struct SGroup {
-   SGroup();
+struct Sgroup {
+   Sgroup();
    void clear ();
 
    int tibegin, ticount;
@@ -176,7 +176,7 @@ struct SGroup {
    int bibegin, bicount;
 
 private:
-   SGroup(const SGroup& sg);
+   Sgroup(const SGroup& sg);
 };
 
 struct BondEnd {
@@ -262,7 +262,7 @@ struct MoleculeRenderData {
    MoleculeRenderData ();
    void clear ();
 
-   ObjArray<SGroup> sgroups;
+   ObjArray<Sgroup> sgroups;
    ObjArray<AtomDesc> atoms;
    ObjArray<BondDescr> bonds;
    ObjArray<Ring> rings;

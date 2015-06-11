@@ -4,7 +4,7 @@ EXEC_PROGRAM(xcodebuild ARGS -version OUTPUT_VARIABLE XCODE_VERSION)
 string(REGEX MATCH "[0-9][.][0-9]" XCODE_VERSION ${XCODE_VERSION})
 
 if(UNIVERSAL_BUILD)
-    set(SSNAME 10.9)
+    set(SSNAME 10.8)
 else()
     set(SSNAME ${SUBSYSTEM_NAME})
 endif()

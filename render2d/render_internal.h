@@ -72,10 +72,10 @@ private:
    void _hydroPosCorrectRepulse ();
    void _initAtomData();
    void _initRGroups();
-   void _loadBrackets(SGroup& sg, const Array<Vec2f[2]>& coord, bool transformCoordinates);
-   void _placeBrackets(SGroup& sg, const Array<int>& atoms);
-   void _positionIndex(SGroup& sg, int ti, bool lower);
-   void _loadBracketsAuto(const BaseMolecule::SGroup& group, SGroup& sg);
+   void _loadBrackets(Sgroup& sg, const Array<Vec2f[2]>& coord, bool transformCoordinates);
+   void _placeBrackets(Sgroup& sg, const Array<int>& atoms);
+   void _positionIndex(Sgroup& sg, int ti, bool lower);
+   void _loadBracketsAuto(const SGroup& group, Sgroup& sg);
    void _initDataSGroups();
    void _initSruGroups();
    void _initMulGroups();
@@ -115,10 +115,10 @@ private:
    void _prepareAAM ();
    int _pushTextItem (RenderItem::TYPE type, int color, bool highlighted);
    int _pushTextItem (AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);
-   int _pushTextItem (SGroup& sg, RenderItem::TYPE ritype, int color = CWC_BASE);
+   int _pushTextItem (Sgroup& sg, RenderItem::TYPE ritype, int color = CWC_BASE);
    int _pushGraphItem (RenderItem::TYPE type, int color, bool highlighted);
    int _pushGraphItem (AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);
-   int _pushGraphItem (SGroup& ad, RenderItem::TYPE type, int color = CWC_BASE);
+   int _pushGraphItem (Sgroup& ad, RenderItem::TYPE type, int color = CWC_BASE);
    const char* _valenceText (const int valence);
    float _ctghalf (float cs);
    void _drawBond (int b);

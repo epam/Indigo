@@ -115,7 +115,7 @@ void ContainerSet::findSimilar (const byte *query, SimCoef &sim_coef, double min
 
    static int idx = 0;
 
-   int query_bit_number = bitGetOnesCount(query, _fp_size);
+   //int query_bit_number = bitGetOnesCount(query, _fp_size);
 
    QS_DEF(Array<SimResult>, cell_sim_indices);
    for (int i = 0; i < _set.size(); i++)

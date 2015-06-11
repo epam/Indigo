@@ -17,6 +17,10 @@
 
 #include "math/algebra.h"
 
+
+class TiXmlDocument;
+class TiXmlElement;
+
 namespace indigo {
 
 class Molecule;
@@ -40,7 +44,9 @@ public:
    void beginDocument (Bounds *bounds);
    void beginPage (Bounds *bounds);
    void addFontTable(const char* font);
-   void addColorTable(const char* font);
+   void addFontToTable(int id, const char* charset, const char* name);
+   void addColorTable(const char* color);
+   void addColorToTable(int id, int r, int g, int b);
    void saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float scale);
    void addText (const Vec2f &pos, const char *text);
    void addText (const Vec2f &pos, const char *text, const char *alignment);
@@ -59,6 +65,13 @@ private:
    float _bond_length;
    int _pages_height;
    float _max_page_height;
+
+   TiXmlDocument * _doc;
+   TiXmlElement * _root;
+   TiXmlElement * _page;
+   TiXmlElement * _current;
+   TiXmlElement * _fonttable;
+   TiXmlElement * _colortable;
 
    MoleculeCdxmlSaver (const MoleculeCdxmlSaver &); // no implicit copy
 };

@@ -25,7 +25,6 @@ double EuclidCoef::calcUpperBound (int query_bit_count, int min_target_bit_count
 
 double EuclidCoef::calcUpperBound (int query_bit_count, int min_target_bit_count, int max_target_bit_count, int m10, int m01 )
 {
-   int min_a = min_target_bit_count - m10;
    int max_a = max_target_bit_count - m10;
    int b = query_bit_count - m01;
    

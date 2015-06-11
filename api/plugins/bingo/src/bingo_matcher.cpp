@@ -196,7 +196,7 @@ void BaseMatcher::setOptions (const char * options)
       part_str >> sep;
       part_str >> part_count;
 
-      bool ef = part_str.eof();
+      //bool ef = part_str.eof();
 
       if (part_str.fail() || sep != '/' || part_id <= 0 || part_count <= 0 || part_id > part_count)
          throw Exception("BaseMatcher: setOptions: incorrect partitioning parameters");
@@ -313,7 +313,7 @@ BaseSubstructureMatcher::BaseSubstructureMatcher (/*const */ BaseIndex &index, I
 
 bool BaseSubstructureMatcher::next ()
 {
-   int fp_size_in_bits = _fp_size * 8;
+   //int fp_size_in_bits = _fp_size * 8;
    static int sub_cnt = 0;
 
    _current_cand_id++;
@@ -405,7 +405,7 @@ void BaseSubstructureMatcher::_findPackCandidates (int pack_idx)
 
    TranspFpStorage &fp_storage = _index.getSubStorage();
 
-   const byte *query_fp = _query_fp.ptr();
+   //const byte *query_fp = _query_fp.ptr();
 
    const byte * block;
    
@@ -495,7 +495,7 @@ void BaseSubstructureMatcher::_initPartition ()
    }
 }
 
-MoleculeSubMatcher::MoleculeSubMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseSubstructureMatcher(index, (IndigoObject *&)_current_mol)
+MoleculeSubMatcher::MoleculeSubMatcher (/*const */ BaseIndex &index) : BaseSubstructureMatcher(index, (IndigoObject *&)_current_mol), _current_mol(new IndexCurrentMolecule(_current_mol))
 {
    _mapping.clear();
 }
@@ -537,7 +537,7 @@ bool MoleculeSubMatcher::_tryCurrent ()// const
    return false;
 }
    
-ReactionSubMatcher::ReactionSubMatcher (/*const */ BaseIndex &index) : _current_rxn(new IndexCurrentReaction(_current_rxn)), BaseSubstructureMatcher(index, (IndigoObject *&)_current_rxn)
+ReactionSubMatcher::ReactionSubMatcher (/*const */ BaseIndex &index) : BaseSubstructureMatcher(index, (IndigoObject *&)_current_rxn), _current_rxn(new IndexCurrentReaction(_current_rxn))
 {
    _mapping.clear();
 }
@@ -796,11 +796,11 @@ BaseSimilarityMatcher::~BaseSimilarityMatcher ()
    _current_block.clear();
 }
 
-MoleculeSimMatcher::MoleculeSimMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseSimilarityMatcher(index, (IndigoObject *&)_current_mol)
+MoleculeSimMatcher::MoleculeSimMatcher (/*const */ BaseIndex &index) : BaseSimilarityMatcher(index, (IndigoObject *&)_current_mol), _current_mol(new IndexCurrentMolecule(_current_mol))
 {
 }
 
-ReactionSimMatcher::ReactionSimMatcher (/*const */ BaseIndex &index) : _current_rxn(new IndexCurrentReaction(_current_rxn)), BaseSimilarityMatcher(index, (IndigoObject *&)_current_rxn)
+ReactionSimMatcher::ReactionSimMatcher (/*const */ BaseIndex &index) : BaseSimilarityMatcher(index, (IndigoObject *&)_current_rxn), _current_rxn(new IndexCurrentReaction(_current_rxn))
 {
 }
 
@@ -857,7 +857,7 @@ BaseExactMatcher::~BaseExactMatcher()
 
 
 
-MolExactMatcher::MolExactMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseExactMatcher(index, (IndigoObject *&)_current_mol)
+MolExactMatcher::MolExactMatcher (/*const */ BaseIndex &index) : BaseExactMatcher(index, (IndigoObject *&)_current_mol), _current_mol(new IndexCurrentMolecule(_current_mol))
 {
    _tautomer = false;
 }
@@ -919,7 +919,7 @@ bool MolExactMatcher::_tryCurrent ()/* const */
 }
 
 
-RxnExactMatcher::RxnExactMatcher(/*const */ BaseIndex &index) : _current_rxn(new IndexCurrentReaction(_current_rxn)), BaseExactMatcher(index, (IndigoObject *&)_current_rxn)
+RxnExactMatcher::RxnExactMatcher(/*const */ BaseIndex &index) : BaseExactMatcher(index, (IndigoObject *&)_current_rxn), _current_rxn(new IndexCurrentReaction(_current_rxn))
 {
 }
 
@@ -1087,7 +1087,7 @@ BaseGrossMatcher::~BaseGrossMatcher()
 {
 }
 
-MolGrossMatcher::MolGrossMatcher (/*const */ BaseIndex &index) : _current_mol(new IndexCurrentMolecule(_current_mol)), BaseGrossMatcher(index, (IndigoObject *&)_current_mol)
+MolGrossMatcher::MolGrossMatcher (/*const */ BaseIndex &index) : BaseGrossMatcher(index, (IndigoObject *&)_current_mol), _current_mol(new IndexCurrentMolecule(_current_mol))
 {
 }
       

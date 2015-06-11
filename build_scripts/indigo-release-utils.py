@@ -20,12 +20,15 @@ presets = {
     "win64-2013" : ("Visual Studio 12 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
+    "linux32-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
-    "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
+    "linux64-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
     "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
     "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
     "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
+    "mac10.10" : ("Xcode", "-DSUBSYSTEM_NAME=10.10"),
+    "mac-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.6"),
 }
 
 parser = OptionParser(description='Indigo utilities build script')
@@ -57,6 +60,9 @@ project_dir = os.path.join(cur_dir, "indigo-utils")
 if args.generator.find("Unix Makefiles") != -1:
     args.params += " -DCMAKE_BUILD_TYPE=" + args.config
 
+if args.preset and args.preset.find('universal') != -1:
+    args.params += ' -DUNIVERSAL_BUILD=TRUE'
+
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_utils_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
 
@@ -73,7 +79,7 @@ if not os.path.exists("dist"):
 dist_dir = os.path.join(root, "dist")
 
 os.chdir(full_build_dir)
-command = 'cmake -G \"%s\" %s \"%s\"' % (args.generator, args.params, project_dir)
+command = "%s cmake -G \"%s\" %s %s" % ('CC=gcc CXX=g++' if (args.preset.find('linux') != -1 or args.preset.find('universal') != -1) else '', args.generator, args.params, project_dir)
 print(command)
 subprocess.check_call(command, shell=True)
 

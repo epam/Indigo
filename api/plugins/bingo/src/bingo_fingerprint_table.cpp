@@ -5,7 +5,7 @@
 
 using namespace bingo;
 
-FingerprintTable::FingerprintTable (int fp_size, const Array<int> &borders, int mt_size) : _fp_size(fp_size), _mt_size(mt_size), _table(100)
+FingerprintTable::FingerprintTable (int fp_size, const Array<int> &borders, int mt_size) :  _table(100), _fp_size(fp_size), _mt_size(mt_size)
 {
    _table.resize(borders.size() - 1);
    

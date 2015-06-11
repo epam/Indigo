@@ -152,36 +152,38 @@ namespace com.ggasoftware.indigo
 
         int indigoAddSuperatom(int molecule, int natoms, int[] atoms, string name);
 
-        int indigoCreateSgroup(string type, int mapping, string name);
-        int indigoSetSgroupClass(int sgroup, string sgclass);
-        int indigoSetSgroupName(int sgroup, string sgname);
-        sbyte* indigoGetSgroupClass(int sgroup);
-        sbyte* indigoGetSgroupName(int sgroup);
-        int indigoGetSgroupNumCrossBonds(int sgroup);
-        int indigoAddSgroupAttachmentPoint(int sgroup, int aidx, int lvidx, string apid);
-        int indigoDeleteSgroupAttachmentPoint(int sgroup, int apidx);
-        int indigoGetSgroupDisplayOption(int sgroup);
-        int indigoSetSgroupDisplayOption(int sgroup, int option);
-        int indigoGetSgroupMultiplier(int sgroup);
-        int indigoSetSgroupMultiplier(int sgroup, int mult);
+        int indigoCreateSGroup(string type, int mapping, string name);
+        int indigoSetSGroupClass(int sgroup, string sgclass);
+        int indigoSetSGroupName(int sgroup, string sgname);
+        sbyte* indigoGetSGroupClass(int sgroup);
+        sbyte* indigoGetSGroupName(int sgroup);
+        int indigoGetSGroupNumCrossBonds(int sgroup);
+        int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, string apid);
+        int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);
+        int indigoGetSGroupDisplayOption(int sgroup);
+        int indigoSetSGroupDisplayOption(int sgroup, int option);
+        int indigoGetSGroupMultiplier(int sgroup);
+        int indigoSetSGroupMultiplier(int sgroup, int mult);
 
-        int indigoSetSgroupData (int sgroup,  string data);                    
-        int indigoSetSgroupCoords (int sgroup, float x, float y);                  
-        int indigoSetSgroupDescription (int sgroup, string description);      
-        int indigoSetSgroupFieldName (int sgroup, string name);               
-        int indigoSetSgroupQueryCode (int sgroup, string querycode);          
-        int indigoSetSgroupQueryOper (int sgroup, string queryoper);          
-        int indigoSetSgroupDisplay (int sgroup, string option);               
-        int indigoSetSgroupLocation (int sgroup, string option);              
-        int indigoSetSgroupTag (int sgroup, string tag);                      
-        int indigoSetSgroupTagAlign (int sgroup, int tag_align);                   
-        int indigoSetSgroupDataType (int sgroup, string type);                
-        int indigoSetSgroupXCoord (int sgroup, float x);                           
-        int indigoSetSgroupYCoord (int sgroup, float y);                           
+        int indigoSetSGroupData (int sgroup,  string data);                    
+        int indigoSetSGroupCoords (int sgroup, float x, float y);                  
+        int indigoSetSGroupDescription (int sgroup, string description);      
+        int indigoSetSGroupFieldName (int sgroup, string name);               
+        int indigoSetSGroupQueryCode (int sgroup, string querycode);          
+        int indigoSetSGroupQueryOper (int sgroup, string queryoper);          
+        int indigoSetSGroupDisplay (int sgroup, string option);               
+        int indigoSetSGroupLocation (int sgroup, string option);              
+        int indigoSetSGroupTag (int sgroup, string tag);                      
+        int indigoSetSGroupTagAlign (int sgroup, int tag_align);                   
+        int indigoSetSGroupDataType (int sgroup, string type);                
+        int indigoSetSGroupXCoord (int sgroup, float x);                           
+        int indigoSetSGroupYCoord (int sgroup, float y);                           
+        int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
+                                     float x3, float y3, float x4, float y4);
 
-        int indigoFindSgroups(int molecule, string property, string value);
-        int indigoGetSgroupType(int sgroup);
-        int indigoGetSgroupIndex(int sgroup);
+        int indigoFindSGroups(int molecule, string property, string value);
+        int indigoGetSGroupType(int sgroup);
+        int indigoGetSGroupIndex(int sgroup);
 
         float* indigoXYZ(int atom);
         int indigoSetXYZ(int atom, float x, float y, float z);

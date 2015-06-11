@@ -41,6 +41,10 @@ public:
    
    void setPseudoAtom (int idx, const char *text);
 
+   void setTemplateAtom (int idx, const char *text);
+   void setTemplateAtomClass (int idx, const char *text);
+   void setTemplateAtomSeqid (int idx, int seq_id);
+
    int addBond (int beg, int end, int order);
    int addBond_Silent (int beg, int end, int order);
 
@@ -82,6 +86,11 @@ public:
 
    virtual bool isPseudoAtom (int idx);
    virtual const char * getPseudoAtom (int idx);
+
+   virtual bool isTemplateAtom (int idx);
+   virtual const char * getTemplateAtom (int idx);
+   virtual const int getTemplateAtomSeqid (int idx);
+   virtual const char * getTemplateAtomClass (int idx);
 
    virtual bool  isRSite (int atom_idx);
    virtual dword getRSiteBits (int atom_idx);
@@ -161,6 +170,8 @@ protected:
       int  rgroup_bits;          // if number == ELEM_RSITE, these are 32 bits, each allowing
                                  // an r-group with corresponding number to go for this atom.
                                  // Simple 'R' atoms have this field equal to zero.
+      int  template_occur_idx;   // if number == ELEM_TEMPLATE, this is the corresponding
+                                 // index from _template_occurrences
    };
 
    Array<_Atom> _atoms;
@@ -173,6 +184,25 @@ protected:
    Array<int>   _radicals;
 
    StringPool _pseudo_atom_values;
+
+
+   struct _AttachOrder
+   {
+      int  ap_idx;
+      Array<char> ap_id;  
+   };
+
+   struct _TemplateOccurrence
+   {
+      int  name_idx;         // index in _template_names
+      int  class_idx;        // index in _template_classes
+      int  seq_id;           // sequence id
+      Array<_AttachOrder> order;   // attach order info
+   };
+   ObjPool<_TemplateOccurrence> _template_occurrences;
+
+   StringPool _template_classes;
+   StringPool _template_names;
 
    bool _aromatized;
 

@@ -1495,21 +1495,23 @@ void SmilesLoader::_handlePolymerRepetition (int i)
 {
    int j, start = -1, end = -1;
    int start_bond = -1, end_bond = -1;
-   BaseMolecule::SGroup *sgroup;
+   SGroup *sgroup;
 
    // no repetitions counter => polymer
    if (_polymer_repetitions[i] == 0)
    {
-      BaseMolecule::RepeatingUnit &ru = _bmol->repeating_units[_bmol->repeating_units.add()];
-      ru.connectivity = BaseMolecule::RepeatingUnit::HEAD_TO_TAIL;
-      sgroup = &ru;
+      int idx = _bmol->sgroups.addSGroup(SGroup::SG_TYPE_SRU);
+      sgroup = &_bmol->sgroups.getSGroup(idx);
+      RepeatingUnit *ru = (RepeatingUnit *)sgroup;
+      ru->connectivity = RepeatingUnit::HEAD_TO_TAIL;
    }
    // repetitions counter present => multiple group
    else
    {
-      BaseMolecule::MultipleGroup &mg = _bmol->multiple_groups[_bmol->multiple_groups.add()];
-      mg.multiplier = _polymer_repetitions[i];
-      sgroup = &mg;
+      int idx = _bmol->sgroups.addSGroup(SGroup::SG_TYPE_MUL);
+      sgroup = &_bmol->sgroups.getSGroup(idx);
+      MultipleGroup *mg = (MultipleGroup *)sgroup;
+      mg->multiplier = _polymer_repetitions[i];
    }
    for (j = 0; j < _atoms.size(); j++)
    {
@@ -1517,7 +1519,7 @@ void SmilesLoader::_handlePolymerRepetition (int i)
          continue;
       sgroup->atoms.push(j);
       if (_polymer_repetitions[i] > 0)
-         ((BaseMolecule::MultipleGroup *)sgroup)->parent_atoms.push(j);
+         ((MultipleGroup *)sgroup)->parent_atoms.push(j);
       if (_atoms[j].starts_polymer)
          start = j;
       if (_atoms[j].ends_polymer)
@@ -1574,8 +1576,8 @@ void SmilesLoader::_handlePolymerRepetition (int i)
       AutoPtr<BaseMolecule> rep(_bmol->neu());
 
       rep->makeSubmolecule(*_bmol, sgroup->atoms, &mapping, 0);
-      rep->repeating_units.clear();
-      rep->multiple_groups.clear();
+      rep->sgroups.clear(SGroup::SG_TYPE_SRU);
+      rep->sgroups.clear(SGroup::SG_TYPE_MUL);
       int rep_start = mapping[start];
       int rep_end = mapping[end];
 

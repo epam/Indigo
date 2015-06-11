@@ -401,42 +401,42 @@ CEXPORT int indigoAddSuperatom (int molecule, int natoms, int *atoms, const char
 
 CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *options);
 
-CEXPORT int indigoSetSgroupData (int sgroup, const char *data);
-CEXPORT int indigoSetSgroupCoords (int sgroup, float x, float y);
-CEXPORT int indigoSetSgroupDescription (int sgroup, const char *description);
-CEXPORT int indigoSetSgroupFieldName (int sgroup, const char *name);
-CEXPORT int indigoSetSgroupQueryCode (int sgroup, const char *querycode);
-CEXPORT int indigoSetSgroupQueryOper (int sgroup, const char *queryoper);
-CEXPORT int indigoSetSgroupDisplay (int sgroup, const char *option);
-CEXPORT int indigoSetSgroupLocation (int sgroup, const char *option);
-CEXPORT int indigoSetSgroupTag (int sgroup, const char *tag);
-CEXPORT int indigoSetSgroupTagAlign (int sgroup, int tag_align);
-CEXPORT int indigoSetSgroupDataType (int sgroup, const char *type);
-CEXPORT int indigoSetSgroupXCoord (int sgroup, float x);
-CEXPORT int indigoSetSgroupYCoord (int sgroup, float y);
+CEXPORT int indigoSetSGroupData (int sgroup, const char *data);
+CEXPORT int indigoSetSGroupCoords (int sgroup, float x, float y);
+CEXPORT int indigoSetSGroupDescription (int sgroup, const char *description);
+CEXPORT int indigoSetSGroupFieldName (int sgroup, const char *name);
+CEXPORT int indigoSetSGroupQueryCode (int sgroup, const char *querycode);
+CEXPORT int indigoSetSGroupQueryOper (int sgroup, const char *queryoper);
+CEXPORT int indigoSetSGroupDisplay (int sgroup, const char *option);
+CEXPORT int indigoSetSGroupLocation (int sgroup, const char *option);
+CEXPORT int indigoSetSGroupTag (int sgroup, const char *tag);
+CEXPORT int indigoSetSGroupTagAlign (int sgroup, int tag_align);
+CEXPORT int indigoSetSGroupDataType (int sgroup, const char *type);
+CEXPORT int indigoSetSGroupXCoord (int sgroup, float x);
+CEXPORT int indigoSetSGroupYCoord (int sgroup, float y);
 
-CEXPORT int indigoCreateSgroup (const char *type, int mapping, const char *name);
-CEXPORT const char * indigoGetSgroupClass (int sgroup);
-CEXPORT const char * indigoGetSgroupName (int sgroup);
-CEXPORT int indigoSetSgroupClass (int sgroup, const char *sgclass);
-CEXPORT int indigoSetSgroupName (int sgroup, const char *sgname);
-CEXPORT int indigoGetSgroupNumCrossBonds (int sgroup);
+CEXPORT int indigoCreateSGroup (const char *type, int mapping, const char *name);
+CEXPORT const char * indigoGetSGroupClass (int sgroup);
+CEXPORT const char * indigoGetSGroupName (int sgroup);
+CEXPORT int indigoSetSGroupClass (int sgroup, const char *sgclass);
+CEXPORT int indigoSetSGroupName (int sgroup, const char *sgname);
+CEXPORT int indigoGetSGroupNumCrossBonds (int sgroup);
 
-CEXPORT int indigoAddSgroupAttachmentPoint (int sgroup, int aidx, int lvidx, const char *apid);
-CEXPORT int indigoDeleteSgroupAttachmentPoint (int sgroup, int index);
-CEXPORT int indigoGetSgroupDisplayOption (int sgroup);
-CEXPORT int indigoSetSgroupDisplayOption (int sgroup, int option);
+CEXPORT int indigoAddSGroupAttachmentPoint (int sgroup, int aidx, int lvidx, const char *apid);
+CEXPORT int indigoDeleteSGroupAttachmentPoint (int sgroup, int index);
+CEXPORT int indigoGetSGroupDisplayOption (int sgroup);
+CEXPORT int indigoSetSGroupDisplayOption (int sgroup, int option);
 
-CEXPORT int indigoGetSgroupMultiplier (int sgroup);
-CEXPORT int indigoSetSgroupMultiplier (int sgroup, int multiplier);
+CEXPORT int indigoGetSGroupMultiplier (int sgroup);
+CEXPORT int indigoSetSGroupMultiplier (int sgroup, int multiplier);
 
-CEXPORT int indigoSetSgroupBrackets (int sgroup, int brk_style, float x1, float y1, float x2, float y2,
+CEXPORT int indigoSetSGroupBrackets (int sgroup, int brk_style, float x1, float y1, float x2, float y2,
                                      float x3, float y3, float x4, float y4);    
 
-CEXPORT int indigoFindSgroups (int item, const char *property, const char *value);
+CEXPORT int indigoFindSGroups (int item, const char *property, const char *value);
 
-CEXPORT int indigoGetSgroupType (int item);
-CEXPORT int indigoGetSgroupIndex (int item);
+CEXPORT int indigoGetSGroupType (int item);
+CEXPORT int indigoGetSGroupIndex (int item);
 
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);

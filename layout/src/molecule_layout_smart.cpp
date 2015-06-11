@@ -25,7 +25,7 @@ IMPL_ERROR(MoleculeLayout, "molecule_layout");
 MoleculeLayout::MoleculeLayout (BaseMolecule &molecule) :
 _molecule(molecule)
 {
-   _hasMulGroups = _molecule.multiple_groups.size() > 0;
+   _hasMulGroups = _molecule.sgroups.getSGroupCount(SGroup::SG_TYPE_MUL) > 0;
    _init();
    _query = _molecule.isQueryMolecule();
 }
@@ -48,16 +48,22 @@ void MoleculeLayout::_init ()
       _molCollapsed->clone(_molecule, &_atomMapping, NULL);
       QS_DEF(BaseMolecule::Mapping, atomMapCollapse);
       QS_DEF(BaseMolecule::Mapping, bondMapInv);
-      for (int i = _molCollapsed->multiple_groups.begin(); i < _molCollapsed->multiple_groups.end(); i = _molCollapsed->multiple_groups.next(i)) {
-         // collapse multiple group
-         atomMapCollapse.clear();
-         bondMapInv.clear();
-         BaseMolecule::MultipleGroup::collapse(_molCollapsed.ref(), i, atomMapCollapse, bondMapInv);
 
-         // modify the atom mapping
-         for (int j = 0; j < _atomMapping.size(); ++j)
-            if (atomMapCollapse.find(_atomMapping[j]))
-               _atomMapping[j] = atomMapCollapse.at(_atomMapping[j]);
+      for (int i = _molCollapsed->sgroups.begin(); i != _molCollapsed->sgroups.end(); i = _molCollapsed->sgroups.next(i))
+      {
+         SGroup &sg =  _molCollapsed->sgroups.getSGroup(i);
+         if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
+         {
+            // collapse multiple group
+            atomMapCollapse.clear();
+            bondMapInv.clear();
+            BaseMolecule::collapse(_molCollapsed.ref(), i, atomMapCollapse, bondMapInv);
+
+            // modify the atom mapping
+            for (int j = 0; j < _atomMapping.size(); ++j)
+               if (atomMapCollapse.find(_atomMapping[j]))
+                  _atomMapping[j] = atomMapCollapse.at(_atomMapping[j]);
+         }
       }
       _bm = _molCollapsed.get();
    }
@@ -291,29 +297,33 @@ void MoleculeLayout::_updateDataSGroups ()
       layout_graph_mapping[vi] = i;
    }
 
-   for (int i = _molecule.data_sgroups.begin(); i < _molecule.data_sgroups.end(); i = _molecule.data_sgroups.next(i))
+   for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
    {
-      BaseMolecule::DataSGroup &group = _molecule.data_sgroups[i];
-      if (!group.relative)
+      SGroup &sg = _molecule.sgroups.getSGroup(i);
+      if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
       {
-         Vec2f before;
-         _molecule.getSGroupAtomsCenterPoint(group, before);
-
-         Vec2f after;
-         for (int j = 0; j < group.atoms.size(); j++)
+         DataSGroup &group = (DataSGroup &)sg;
+         if (!group.relative)
          {
-            int ai = group.atoms[j];
-            const LayoutVertexSmart &vert = _layout_graph.getLayoutVertex(layout_graph_mapping[ai]);
-            after.x += vert.pos.x;
-            after.y += vert.pos.y;
+            Vec2f before;
+            _molecule.getSGroupAtomsCenterPoint(group, before);
+   
+            Vec2f after;
+            for (int j = 0; j < group.atoms.size(); j++)
+            {
+               int ai = group.atoms[j];
+               const LayoutVertex &vert = _layout_graph.getLayoutVertex(layout_graph_mapping[ai]);
+               after.x += vert.pos.x;
+               after.y += vert.pos.y;
+            }
+   
+            if (group.atoms.size() != 0)
+               after.scale(1.0f / group.atoms.size());
+   
+            Vec2f delta;
+            delta.diff(after, before);
+            group.display_pos.add(delta);
          }
-
-         if (group.atoms.size() != 0)
-            after.scale(1.0f / group.atoms.size());
-
-         Vec2f delta;
-         delta.diff(after, before);
-         group.display_pos.add(delta);
       }
    }
 }
@@ -449,26 +459,34 @@ void MoleculeLayout::_updateRepeatingUnits ()
 {
    QS_DEF(Array<int>, crossBonds);
    QS_DEF(Array<bool>, crossBondOut);
-   for (int i = _molecule.repeating_units.begin(); i < _molecule.repeating_units.end(); i = _molecule.repeating_units.next(i)) {
-      BaseMolecule::RepeatingUnit& sg = _molecule.repeating_units[i];
-
-      crossBonds.clear();
-      crossBondOut.clear();
-      _collectCrossBonds(crossBonds, crossBondOut, _molecule, sg.atoms);
-      if (crossBonds.size() > 1) {
-         _placeSGroupBracketsCrossBonds (sg.brackets, _molecule, sg.atoms, crossBonds, crossBondOut, bond_length);
-      } else if (crossBonds.size() == 1) {
-         _placeSGroupBracketsCrossBondSingle (sg.brackets, _molecule, sg.atoms, crossBonds[0], crossBondOut[0], bond_length);
-      } else {
-         _placeSGroupBracketsHorizontal (sg.brackets, _molecule, sg.atoms, bond_length);
+   for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
+   {
+      SGroup &sg = _molecule.sgroups.getSGroup(i);
+      if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
+      {
+         RepeatingUnit& ru = (RepeatingUnit &)sg;
+         crossBonds.clear();
+         crossBondOut.clear();
+         _collectCrossBonds(crossBonds, crossBondOut, _molecule, ru.atoms);
+         if (crossBonds.size() > 1) 
+            _placeSGroupBracketsCrossBonds (ru.brackets, _molecule, ru.atoms, crossBonds, crossBondOut, bond_length);
+         else if (crossBonds.size() == 1)
+            _placeSGroupBracketsCrossBondSingle (ru.brackets, _molecule, ru.atoms, crossBonds[0], crossBondOut[0], bond_length);
+         else 
+            _placeSGroupBracketsHorizontal (ru.brackets, _molecule, ru.atoms, bond_length);
       }
    }
 }
 
 void MoleculeLayout::_updateMultipleGroups ()
 {
-   for (int i = _molecule.multiple_groups.begin(); i < _molecule.multiple_groups.end(); i = _molecule.multiple_groups.next(i)) {
-      BaseMolecule::MultipleGroup& sg = _molecule.multiple_groups[i];
-      _placeSGroupBracketsHorizontal (sg.brackets, _molecule, sg.atoms, bond_length);
+   for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
+   {
+      SGroup &sg = _molecule.sgroups.getSGroup(i);
+      if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
+      {
+         MultipleGroup& mg = (MultipleGroup &)sg;
+         _placeSGroupBracketsHorizontal (mg.brackets, _molecule, mg.atoms, bond_length);
+      }
    }
 }

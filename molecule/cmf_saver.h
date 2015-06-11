@@ -83,18 +83,18 @@ protected:
    void _encodeUIntArraySkipNegative (const Array<int> &data);
 
    void _encodeExtSection (Molecule &mol, const Mapping &mapping);
-   void _encodeBaseSGroup (Molecule &mol, BaseMolecule::SGroup &sgroup, const Mapping &mapping);
+   void _encodeBaseSGroup (Molecule &mol, SGroup &sgroup, const Mapping &mapping);
 
    //void _encodeSGroups (Molecule &mol, const Mapping &mapping);
    void _writeSGroupsXyz (Molecule &mol, Output &output, const VecRange &range);
-   void _writeBaseSGroupXyz (Output &output, BaseMolecule::SGroup &sgroup, const VecRange &range);
+   void _writeBaseSGroupXyz (Output &output, SGroup &sgroup, const VecRange &range);
 
    void _writeVec3f (Output &output, const Vec3f &pos, const VecRange &range);
    void _writeVec2f (Output &output, const Vec2f &pos, const VecRange &range);
    void _writeDir2f (Output &output, const Vec2f &dir, const VecRange &range);
 
    void _updateSGroupsXyzMinMax (Molecule &mol, Vec3f &min, Vec3f &max);
-   void _updateBaseSGroupXyzMinMax (BaseMolecule::SGroup &sgroup, Vec3f &min, Vec3f &max);
+   void _updateBaseSGroupXyzMinMax (SGroup &sgroup, Vec3f &min, Vec3f &max);
 
    CP_DECL;
    TL_CP_DECL(Array<int>, _atom_sequence);

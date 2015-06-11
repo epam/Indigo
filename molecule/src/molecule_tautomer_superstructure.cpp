@@ -217,7 +217,7 @@ void TautomerSuperStructure::_collectAtomProperties (void)
    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
    {
       _total_h[i] = 0;
-      if (!isPseudoAtom(i) && !isRSite(i))
+      if (!isPseudoAtom(i) && !isRSite(i) && !isTemplateAtom(i))
          _total_h[i] = Molecule::getAtomTotalH(i);
 
       int double_bonds_count, arom_bonds_count;
