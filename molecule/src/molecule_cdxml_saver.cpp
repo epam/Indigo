@@ -492,8 +492,11 @@ void MoleculeCdxmlSaver::addCustomText(const Vec2f &pos, const char *alignment, 
 
    TiXmlUnknown * s = new TiXmlUnknown();
    buf.readString(text, false);
-   buf.remove(buf.size()-1);
-   buf.remove(0);
+   if (buf.size() > 1) {
+	  buf.remove(buf.size()-1);
+	  buf.remove(0);
+   }
+   //buf.remove(0);
    buf.push(0);
    s->SetValue(buf.ptr());
    t->LinkEndChild(s);
