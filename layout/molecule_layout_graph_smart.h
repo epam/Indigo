@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __molecule_layout_graph_h__
-#define __molecule_layout_graph_h__
+#ifndef __molecule_layout_graph_h_smart__
+#define __molecule_layout_graph_h_smart__
 
 #include "graph/graph.h"
 #include "graph/filter.h"
