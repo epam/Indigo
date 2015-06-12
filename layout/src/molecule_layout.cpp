@@ -34,6 +34,7 @@ void MoleculeLayout::_init ()
    bond_length = 1.f;
    respect_existing_layout = false;
    filter = 0;
+   smart_layout = false;
    max_iterations = 20;
    _query = false;
    _atomMapping.clear();
@@ -332,8 +333,15 @@ void MoleculeLayout::_make ()
    _layout_graph.max_iterations = max_iterations;
 
    // 0. Find 2D coordinates via proxy _layout_graph object
-   if (smart_layout) _makeLayoutSmart();
-   else _makeLayout();
+   if (smart_layout) {
+       _layout_graph_smart.max_iterations = max_iterations;
+       _layout_graph_smart.smart_layout = smart_layout;
+       _makeLayoutSmart();
+   }
+   else {
+       _layout_graph.max_iterations = max_iterations;
+       _makeLayout();
+   }
 
    // 1. Update data-sgroup label position before changing molecule atoms positions
    _updateDataSGroups();
