@@ -68,14 +68,22 @@ void MoleculeLayout::_init ()
       _bm = _molCollapsed.get();
    }
 
-   _layout_graph.makeOnGraph(*_bm);
+    _layout_graph_smart.makeOnGraph(*_bm);
 
-   for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
-   {
-      const Vec3f &pos = _bm->getAtomXyz(_layout_graph.getVertexExtIdx(i));
+    for (int i = _layout_graph_smart.vertexBegin(); i < _layout_graph_smart.vertexEnd(); i = _layout_graph_smart.vertexNext(i))
+    {
+        const Vec3f &pos = _bm->getAtomXyz(_layout_graph_smart.getVertexExtIdx(i));
 
-      _layout_graph.getPos(i).set(pos.x, pos.y);
-   }
+        _layout_graph_smart.getPos(i).set(pos.x, pos.y);
+    }
+    _layout_graph.makeOnGraph(*_bm);
+
+    for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
+    {
+        const Vec3f &pos = _bm->getAtomXyz(_layout_graph.getVertexExtIdx(i));
+
+        _layout_graph.getPos(i).set(pos.x, pos.y);
+    }
 }
 
 void _collectCrossBonds (Array<int>& crossBonds, Array<bool>& crossBondOut, BaseMolecule& mol, const Array<int>& atoms)
@@ -347,10 +355,19 @@ void MoleculeLayout::_make ()
    _updateDataSGroups();
 
    // 2. Update atoms
-   for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
-   {
-      const LayoutVertex &vert = _layout_graph.getLayoutVertex(i);
-      _bm->setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+   if (smart_layout) {
+       for (int i = _layout_graph_smart.vertexBegin(); i < _layout_graph_smart.vertexEnd(); i = _layout_graph_smart.vertexNext(i))
+       {
+           const LayoutVertexSmart &vert = _layout_graph_smart.getLayoutVertex(i);
+           _bm->setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+       }
+   }
+   else {
+       for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
+       {
+           const LayoutVertex &vert = _layout_graph.getLayoutVertex(i);
+           _bm->setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+       }
    }
 
    if (_hasMulGroups) {
