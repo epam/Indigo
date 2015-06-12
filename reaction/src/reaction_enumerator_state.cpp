@@ -1855,6 +1855,9 @@ bool ReactionEnumeratorState::_addFragment( Molecule &fragment,
       int pr_i = rp_mapping[i];
       if (pr_i == -1)
       {
+         if (!_is_rg_exist && (reactant_aam_array[i] == 0))
+            throw Error("Incorrect AAM");
+
          is_needless_att_point[frag_rg_idx] = 1;
          continue; // No such RGroup in product
       }

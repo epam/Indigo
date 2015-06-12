@@ -262,6 +262,7 @@ public:
    virtual const char * getTemplateAtom (int idx);
    virtual const int getTemplateAtomSeqid (int idx);
    virtual const char * getTemplateAtomClass (int idx);
+   virtual const int getTemplateAtomDisplayOption (int idx);
 
    virtual bool  isRSite (int atom_idx);
    virtual dword getRSiteBits (int atom_idx);

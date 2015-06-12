@@ -107,12 +107,12 @@ public class Bingo {
     }
 
 	/**
-			Creates a chemical storage of a specifed type in a specified location
+			Creates a chemical storage of a specified type in a specified location
 
 		@param indigo Indigo instance
 		@param location Directory with the files location
-			@param type molecule" or "reaction"
-			@options additional options separated with a semicolon. See the Bingo documentation for more detail
+		@param type molecule" or "reaction"
+		@param options additional options separated with a semicolon. See the Bingo documentation for more detail
 		@return Bingo database instance
 	*/
 	public static Bingo createDatabaseFile(Indigo indigo, String location, String type, String options) {
@@ -125,7 +125,7 @@ public class Bingo {
 	}
 
 	/**
-		Creates a chemical storage of a specifed type in a specified location
+		Creates a chemical storage of a specified type in a specified location
 
 		@param indigo Indigo instance
 		@param location Directory with the files location
@@ -137,7 +137,7 @@ public class Bingo {
 	}
 
 	/**
-		Loads a chemical storage of a specifed type from a specified location
+		Loads a chemical storage of a specified type from a specified location
 
 		@param indigo Indigo instance
 		@param location Directory with the files location
@@ -152,7 +152,7 @@ public class Bingo {
 	}
 
 	/**
-		Loads a chemical storage of a specifed type from a specified location
+		Loads a chemical storage of a specified type from a specified location
 
 		@param indigo Indigo instance
 		@param location Directory with the files location

@@ -132,7 +132,7 @@ void Dbitset::flip(int fromIndex, int toIndex) {
    toIndex -= (end_word_index << ADDRESS_BITS_PER_WORD);
 
    qword first_word_mask = WORD_MASK << fromIndex;
-   qword last_word_mask  = ((qword)1 << toIndex) - 1;
+   qword last_word_mask  = shiftOne(toIndex) - 1;
 
    if (start_word_index == end_word_index) {
       _words[start_word_index] ^= (first_word_mask & last_word_mask);
@@ -236,7 +236,18 @@ bool Dbitset::intersects(const Dbitset& set) const{
    return false;
 }
 
-void Dbitset::andWith(const Dbitset& set) {   
+bool Dbitset::complements(const Dbitset& set) const{
+   if (_wordsInUse > set._wordsInUse)
+      for (int i = _wordsInUse - 1; i >= set._wordsInUse; --i)
+         if (_words[i])
+            return true;
+   for (int i = _wordsInUse - 1; i >= 0; --i)
+      if ((_words[i] & ~set._words[i]) != 0)
+         return true;
+    return false;
+}
+
+void Dbitset::andWith(const Dbitset& set) {
    while (_wordsInUse > set._wordsInUse)
       _words[--_wordsInUse] = 0;
    

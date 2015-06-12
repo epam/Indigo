@@ -16,4 +16,4 @@ add_library(molecule OBJECT ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZ
 
 set_target_properties(molecule PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
-
+include_directories (../third_party/inchi/inchi_dll)

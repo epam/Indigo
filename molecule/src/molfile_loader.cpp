@@ -1920,6 +1920,7 @@ void MolfileLoader::_postLoad ()
 
    // Some "either" bonds may mean not "either stereocenter", but
    // "either cis-trans", or "connected to either cis-trans".
+
    for (i = 0; i < _bonds_num; i++)
       if (_bmol->getBondDirection(i) == BOND_EITHER)
       {
@@ -1947,6 +1948,7 @@ void MolfileLoader::_postLoad ()
 
    _bmol->stereocenters.buildFromBonds(stereochemistry_options, _sensible_bond_directions.ptr());
    _bmol->allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
+
 
    if (!_chiral)
       for (i = 0; i < _atoms_num; i++)
@@ -2458,7 +2460,7 @@ void MolfileLoader::_readCtab3000 ()
          else if (strcmp(prop, "CLASS") == 0)
          {
             QS_DEF(Array<char>, temp_class);
-            strscan.readWord(temp_class, false);
+            strscan.readWord(temp_class, 0);
             temp_class.push(0);
             if (_mol != 0)
                _mol->setTemplateAtomClass(i, temp_class.ptr());

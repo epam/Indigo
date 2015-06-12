@@ -71,7 +71,7 @@ private:
 
    void _printInChIComponentCisTrans (MoleculeInChICompoment &comp, Array<char> &result);
 
-   void _normalizeMolecule (Molecule &mol);
+   static void _normalizeMolecule (Molecule &mol);
 
    Output &_output;                                                                    
 

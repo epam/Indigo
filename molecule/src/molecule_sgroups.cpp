@@ -434,7 +434,7 @@ void MoleculeSGroups::findSGroups (int property, const char *str, Array<int> &sg
          {
             Superatom &sa = (Superatom &)sg;
             BufferScanner sc(sa.sa_class);
-            if (sa.sa_class.size() == (strlen(str) + 1) && sc.findWord(str))
+            if (sc.findWordIgnoreCase(str))
             {
                sgs.push(i);
             }
@@ -450,7 +450,7 @@ void MoleculeSGroups::findSGroups (int property, const char *str, Array<int> &sg
          {
             Superatom &sa = (Superatom &)sg;
             BufferScanner sc(sa.subscript);
-            if (sa.subscript.size() == (strlen(str) + 1) && sc.findWord(str))
+            if (sc.findWordIgnoreCase(str))
             {
                sgs.push(i);
             }
@@ -459,7 +459,7 @@ void MoleculeSGroups::findSGroups (int property, const char *str, Array<int> &sg
          {
             RepeatingUnit &ru = (RepeatingUnit &)sg;
             BufferScanner sc(ru.subscript);
-            if (ru.subscript.size() == (strlen(str) + 1) && sc.findWord(str))
+            if (sc.findWordIgnoreCase(str))
             {
                sgs.push(i);
             }
@@ -475,7 +475,7 @@ void MoleculeSGroups::findSGroups (int property, const char *str, Array<int> &sg
          {
             DataSGroup &dg = (DataSGroup &)sg;
             BufferScanner sc(dg.data);
-            if (dg.data.size() == (strlen(str) + 1) && sc.findWord(str))
+            if (sc.findWordIgnoreCase(str))
             {
                sgs.push(i);
             }
@@ -491,7 +491,7 @@ void MoleculeSGroups::findSGroups (int property, const char *str, Array<int> &sg
          {
             DataSGroup &dg = (DataSGroup &)sg;
             BufferScanner sc(dg.name);
-            if (dg.name.size() == (strlen(str) + 1) && sc.findWord(str))
+            if (sc.findWordIgnoreCase(str))
             {
                sgs.push(i);
             }
@@ -507,7 +507,7 @@ void MoleculeSGroups::findSGroups (int property, const char *str, Array<int> &sg
          {
             DataSGroup &dg = (DataSGroup &)sg;
             BufferScanner sc(dg.type);
-            if (dg.type.size() == (strlen(str) + 1) && sc.findWord(str))
+            if (sc.findWordIgnoreCase(str))
             {
                sgs.push(i);
             }
@@ -523,7 +523,7 @@ void MoleculeSGroups::findSGroups (int property, const char *str, Array<int> &sg
          {
             DataSGroup &dg = (DataSGroup &)sg;
             BufferScanner sc(dg.description);
-            if (dg.description.size() == (strlen(str) + 1) && sc.findWord(str))
+            if (sc.findWordIgnoreCase(str))
             {
                sgs.push(i);
             }
@@ -586,7 +586,7 @@ void MoleculeSGroups::findSGroups (int property, const char *str, Array<int> &sg
          {
             DataSGroup &dg = (DataSGroup &)sg;
             BufferScanner sc(dg.querycode);
-            if (dg.querycode.size() == (strlen(str) + 1) && sc.findWord(str))
+            if (sc.findWordIgnoreCase(str))
             {
                sgs.push(i);
             }
@@ -602,7 +602,7 @@ void MoleculeSGroups::findSGroups (int property, const char *str, Array<int> &sg
          {
             DataSGroup &dg = (DataSGroup &)sg;
             BufferScanner sc(dg.queryoper);
-            if (dg.queryoper.size() == (strlen(str) + 1) && sc.findWord(str))
+            if (sc.findWordIgnoreCase(str))
             {
                sgs.push(i);
             }
@@ -640,6 +640,18 @@ void MoleculeSGroups::findSGroups (int property, Array<int> &indices, Array<int>
    }
    else
       throw Error("Unknown or incomaptible value Sgroup property: %d", property);
+}
+
+void MoleculeSGroups::registerUnfoldedHydrogen (int idx, int new_h_idx)
+{
+   for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+   {
+      SGroup &sg = *_sgroups.at(i);
+      if (sg.atoms.find(idx) != -1)
+      {
+         sg.atoms.push(new_h_idx);
+      }
+   }
 }
 
 int MoleculeSGroups::_findSGroupById (int id)

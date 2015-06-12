@@ -41,6 +41,8 @@ struct MoleculeInChICompoment
 
    void clear() {}
 
+   void getCanonicalOrdering(Molecule &source_mol, Array<int> &mapping);
+   static int cmpVertex(Graph &graph, int v1, int v2, const void *context);
 private:
    void _getCanonicalMolecule (Molecule &source_mol, Molecule &cano_mol);
 

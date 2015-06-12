@@ -84,6 +84,13 @@ void Molecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vert
       if (mol.isPseudoAtom(vertices[i]))
          setPseudoAtom(newidx, mol.getPseudoAtom(vertices[i]));
 
+      if (mol.isTemplateAtom(vertices[i]))
+      {
+         setTemplateAtom(newidx, mol.getTemplateAtom(vertices[i]));
+         setTemplateAtomClass(newidx, mol.getTemplateAtomClass(vertices[i]));
+         setTemplateAtomSeqid(newidx, mol.getTemplateAtomSeqid(vertices[i]));
+      }
+
       bool nei_mapped = 
          (getVertex(newidx).degree() == mol.getVertex(vertices[i]).degree());
 
@@ -331,11 +338,16 @@ void Molecule::setTemplateAtom (int idx, const char *text)
    _atoms[idx].template_occur_idx = _template_occurrences.add();
    _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
    occur.name_idx = _template_names.add(text);
+   occur.seq_id = -1;
+   occur.contracted = -1;
    updateEditRevision();
 }
 
 void Molecule::setTemplateAtomClass (int idx, const char *text)
 {
+   if (_atoms[idx].number != ELEM_TEMPLATE)
+      throw Error("setTemplateAtomClass(): atom #%d is not a template atom", idx);
+
    _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
    occur.class_idx = _template_classes.add(text);
    updateEditRevision();
@@ -343,8 +355,21 @@ void Molecule::setTemplateAtomClass (int idx, const char *text)
 
 void Molecule::setTemplateAtomSeqid (int idx, int seq_id)
 {
+   if (_atoms[idx].number != ELEM_TEMPLATE)
+      throw Error("setTemplateAtomSeqid(): atom #%d is not a template atom", idx);
+
    _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
    occur.seq_id = seq_id;
+   updateEditRevision();
+}
+
+void Molecule::setTemplateAtomDisplayOption (int idx, int option)
+{
+   if (_atoms[idx].number != ELEM_TEMPLATE)
+      throw Error("setTemplateAtomDisplayOption(): atom #%d is not a template atom", idx);
+
+   _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
+   occur.contracted = option;
    updateEditRevision();
 }
 
@@ -483,6 +508,12 @@ int Molecule::matchAtomsCmp (Graph &g1, Graph &g2,
    if (!m1.isPseudoAtom(idx1) && m2.isPseudoAtom(idx2))
       return -1;
 
+   if (m1.isTemplateAtom(idx1) && !m2.isTemplateAtom(idx2))
+      return 1;
+
+   if (!m1.isTemplateAtom(idx1) && m2.isTemplateAtom(idx2))
+      return -1;
+
    if (m1.isRSite(idx1) && !m2.isRSite(idx2))
       return 1;
 
@@ -522,6 +553,14 @@ int Molecule::matchAtomsCmp (Graph &g1, Graph &g2,
    if (m1.isPseudoAtom(idx1) && m2.isPseudoAtom(idx2))
    {
       int res = strcmp(m1.getPseudoAtom(idx1), m2.getPseudoAtom(idx2));
+
+      if (res != 0)
+         return res;
+      pseudo = true;
+   }
+   else if (m1.isTemplateAtom(idx1) && m2.isTemplateAtom(idx2))
+   {
+      int res = strcmp(m1.getTemplateAtom(idx1), m2.getTemplateAtom(idx2));
 
       if (res != 0)
          return res;
@@ -600,7 +639,7 @@ void Molecule::_removeAtoms (const Array<int> &indices, const int *mapping)
          // Precalculate and store into cache number of implicit hydrogens
          // This is required for correct hydrogens unfolding for molecules 
          // like [H]S([H])([H])C (that is seems to be invalid)
-         if (!isRSite(nei) && !isPseudoAtom(nei))
+		 if (!isRSite(nei) && !isPseudoAtom(nei) && !isTemplateAtom(nei))
             if (_implicit_h.size() <= nei || _implicit_h[nei] < 0)
                getImplicitH_NoThrow(nei, -1);
 
@@ -644,7 +683,7 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt, bool imp
    // before unfolding them
    for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
    {
-      if (isPseudoAtom(i) || isRSite(i))
+      if (isPseudoAtom(i) || isRSite(i) || isTemplateAtom(i))
          continue;
 
       if (impl_h_no_throw)
@@ -685,6 +724,7 @@ void Molecule::unfoldHydrogens (Array<int> *markers_out, int max_h_cnt, bool imp
          stereocenters.registerUnfoldedHydrogen(i, new_h_idx);
          cis_trans.registerUnfoldedHydrogen(i, new_h_idx);
          allene_stereo.registerUnfoldedHydrogen(i, new_h_idx);
+         sgroups.registerUnfoldedHydrogen(i, new_h_idx);
       }
 
       _validateVertexConnectivity(i, false);
@@ -1199,6 +1239,8 @@ void Molecule::getAtomDescription (int idx, Array<char> &description)
 
    if (isPseudoAtom(idx))
       output.printf("%s", getPseudoAtom(idx));
+   else if (isTemplateAtom(idx))
+      output.printf("%s", getTemplateAtom(idx));
    else
       output.printf("%s", Element::toString(atom.number));
 
@@ -1347,6 +1389,19 @@ const int Molecule::getTemplateAtomSeqid (int idx)
    return res;
 }
 
+const int Molecule::getTemplateAtomDisplayOption (int idx)
+{
+   const _Atom &atom = _atoms[idx];
+   
+   if (atom.number != ELEM_TEMPLATE)
+      throw Error("getTemplateAtomDisplayOption(): atom #%d is not a template atom", idx);
+
+   _TemplateOccurrence &occur = _template_occurrences.at(atom.template_occur_idx);
+   const int res = occur.contracted;
+
+   return res;
+}
+
 
 BaseMolecule * Molecule::neu ()
 {
@@ -1477,7 +1532,7 @@ void Molecule::checkForConsistency (Molecule &mol)
    {
       const Vertex &vertex = mol.getVertex(i);
 
-      if (mol.isPseudoAtom(i) || mol.isRSite(i))
+      if (mol.isPseudoAtom(i) || mol.isRSite(i) || mol.isTemplateAtom(i))
          continue;
 
       // check that we are sure about valence

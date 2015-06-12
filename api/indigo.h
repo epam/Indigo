@@ -438,6 +438,9 @@ CEXPORT int indigoFindSGroups (int item, const char *property, const char *value
 CEXPORT int indigoGetSGroupType (int item);
 CEXPORT int indigoGetSGroupIndex (int item);
 
+CEXPORT int indigoTransformSCSRtoCTAB (int item);
+CEXPORT int indigoTransformCTABtoSCSR (int molecule, int templates);
+
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetIsotope (int atom);
@@ -811,6 +814,10 @@ CEXPORT int indigoMapBond (int handle, int bond);
 // value is zero.
 //   You can use indigoIndex() to obtain the index of the returned molecule.
 CEXPORT int indigoMapMolecule (int handle, int molecule);
+
+// Accepts a molecule and options for tautomer enumeration algorithms
+// Returns an iterator object over the molecules that are tautomers of this molecule.
+CEXPORT int indigoTautomerEnumerate (int molecule, const char *options);
 
 /* Scaffold detection */
 

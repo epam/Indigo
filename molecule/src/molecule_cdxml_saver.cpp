@@ -396,7 +396,11 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
          if (order == BOND_DOUBLE || order == BOND_TRIPLE)
             bond->SetAttribute("Order", order);
          else if (order == BOND_AROMATIC)
+         {
             bond->SetAttribute("Order", "1.5");
+            bond->SetAttribute("Display", "Dash");
+            bond->SetAttribute("Display2", "Dash");
+         }
          else
             ; // Do not write single bond order
 

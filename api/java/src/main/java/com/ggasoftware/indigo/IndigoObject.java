@@ -1194,6 +1194,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoGetSGroupIndex(self));
    }
+
+   public int transformSCSRtoCTAB()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoTransformSCSRtoCTAB(self));
+   }
+
+   public int transformCTABtoSCSR(IndigoObject templates)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoTransformCTABtoSCSR(self, templates.self));
+   }
    
    public int setSGroupBrackets(int brk_style, float x1, float y1, float x2, float y2,
                                      float x3, float y3, float x4, float y4)

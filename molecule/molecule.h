@@ -44,6 +44,7 @@ public:
    void setTemplateAtom (int idx, const char *text);
    void setTemplateAtomClass (int idx, const char *text);
    void setTemplateAtomSeqid (int idx, int seq_id);
+   void setTemplateAtomDisplayOption (int idx, int contracted);
 
    int addBond (int beg, int end, int order);
    int addBond_Silent (int beg, int end, int order);
@@ -91,6 +92,7 @@ public:
    virtual const char * getTemplateAtom (int idx);
    virtual const int getTemplateAtomSeqid (int idx);
    virtual const char * getTemplateAtomClass (int idx);
+   virtual const int getTemplateAtomDisplayOption (int idx);
 
    virtual bool  isRSite (int atom_idx);
    virtual dword getRSiteBits (int atom_idx);
@@ -197,6 +199,8 @@ protected:
       int  name_idx;         // index in _template_names
       int  class_idx;        // index in _template_classes
       int  seq_id;           // sequence id
+      int  contracted;       // display option (-1 if undefined, 0 - expanded, 1 - contracted)
+
       Array<_AttachOrder> order;   // attach order info
    };
    ObjPool<_TemplateOccurrence> _template_occurrences;

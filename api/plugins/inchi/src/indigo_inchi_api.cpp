@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2013 GGA Software Services LLC
+ * Copyright (C) 2010-2015 GGA Software Services LLC
  *
  * This file is part of Indigo toolkit.
  *
@@ -12,20 +12,16 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "indigo-inchi.h"
+#include "molecule/inchi_wrapper.h"
 
-#include "indigo_inchi_core.h"
-                      
 #include "indigo_internal.h"
 #include "indigo_molecule.h"
-#include "option_manager.h"
-
 
 using namespace indigo;
 
-CEXPORT const char* indigoInchiVersion ()
+CEXPORT const char* indigoInchiVersion()
 {
-   return IndigoInchi::version();
+   return InchiWrapper::version();
 }
 
 //
@@ -34,98 +30,98 @@ CEXPORT const char* indigoInchiVersion ()
 class IndigoInchiContext : public IndigoPluginContext
 {
 public:
-   IndigoInchi inchi;
+   InchiWrapper inchi;
 
-   virtual void init ()
+   virtual void init()
    {
       inchi.clear();
    }
 };
 
-_SessionLocalContainer<IndigoInchiContext> indigo_inchi_self;
+_SessionLocalContainer<IndigoInchiContext> inchi_wrapper_self;
 
-IndigoInchiContext &indigoInchiGetInstance ()
+IndigoInchiContext &indigoInchiGetInstance()
 {
-   IndigoInchiContext &inst = indigo_inchi_self.getLocalCopy();
+   IndigoInchiContext &inst = inchi_wrapper_self.getLocalCopy();
    inst.validate();
    return inst;
 }
 
-// 
+//
 // C interface functions
 //
 
-CEXPORT int indigoInchiResetOptions (void)
+CEXPORT int indigoInchiResetOptions(void)
 {
-   IndigoInchiContext &indigo_inchi = indigoInchiGetInstance();
-   indigo_inchi.init();
+   IndigoInchiContext &inchi_context = indigoInchiGetInstance();
+   inchi_context.init();
    return 0;
 }
 
-CEXPORT int indigoInchiLoadMolecule (const char *inchi_string)
+CEXPORT int indigoInchiLoadMolecule(const char *inchi_string)
 {
    INDIGO_BEGIN
    {
-      IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
+      InchiWrapper &inchi_wrapper = indigoInchiGetInstance().inchi;
 
       AutoPtr<IndigoMolecule> mol_obj(new IndigoMolecule());
 
       const char *aux_prefix = "AuxInfo";
       if (strncmp(inchi_string, aux_prefix, strlen(aux_prefix)) == 0)
-         indigo_inchi.loadMoleculeFromAux(inchi_string, mol_obj->mol);
+         inchi_wrapper.loadMoleculeFromAux(inchi_string, mol_obj->mol);
       else
-         indigo_inchi.loadMoleculeFromInchi(inchi_string, mol_obj->mol);
+         inchi_wrapper.loadMoleculeFromInchi(inchi_string, mol_obj->mol);
       return self.addObject(mol_obj.release());
    }
    INDIGO_END(-1)
 }
 
-CEXPORT const char* indigoInchiGetInchi (int molecule)
+CEXPORT const char* indigoInchiGetInchi(int molecule)
 {
    INDIGO_BEGIN
    {
-      IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
+      InchiWrapper &inchi_wrapper = indigoInchiGetInstance().inchi;
       IndigoObject &obj = self.getObject(molecule);
 
       auto &tmp = self.getThreadTmpData();
-      indigo_inchi.saveMoleculeIntoInchi(obj.getMolecule(), tmp.string);
+      inchi_wrapper.saveMoleculeIntoInchi(obj.getMolecule(), tmp.string);
       return tmp.string.ptr();
    }
    INDIGO_END(0)
 }
 
-CEXPORT const char* indigoInchiGetInchiKey (const char *inchi_string)
+CEXPORT const char* indigoInchiGetInchiKey(const char *inchi_string)
 {
    INDIGO_BEGIN
    {
       auto &tmp = self.getThreadTmpData();
-      IndigoInchi::InChIKey(inchi_string, tmp.string);
+      InchiWrapper::InChIKey(inchi_string, tmp.string);
       return tmp.string.ptr();
    }
    INDIGO_END(0)
 }
 
-CEXPORT const char* indigoInchiGetWarning ()
+CEXPORT const char* indigoInchiGetWarning()
 {
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
-   if (indigo_inchi.warning.size() != 0)
-      return indigo_inchi.warning.ptr();
+   InchiWrapper &inchi_wrapper = indigoInchiGetInstance().inchi;
+   if (inchi_wrapper.warning.size() != 0)
+      return inchi_wrapper.warning.ptr();
    return "";
 }
 
-CEXPORT const char* indigoInchiGetLog ()
+CEXPORT const char* indigoInchiGetLog()
 {
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
-   if (indigo_inchi.log.size() != 0)
-      return indigo_inchi.log.ptr();
+   InchiWrapper &inchi_wrapper = indigoInchiGetInstance().inchi;
+   if (inchi_wrapper.log.size() != 0)
+      return inchi_wrapper.log.ptr();
    return "";
 }
 
-CEXPORT const char* indigoInchiGetAuxInfo ()
+CEXPORT const char* indigoInchiGetAuxInfo()
 {
-   IndigoInchi &indigo_inchi = indigoInchiGetInstance().inchi;
-   if (indigo_inchi.auxInfo.size() != 0)
-      return indigo_inchi.auxInfo.ptr();
+   InchiWrapper &inchi_wrapper = indigoInchiGetInstance().inchi;
+   if (inchi_wrapper.auxInfo.size() != 0)
+      return inchi_wrapper.auxInfo.ptr();
    return "";
 }
 
@@ -135,8 +131,8 @@ CEXPORT const char* indigoInchiGetAuxInfo ()
 
 void indigoInchiSetInchiOptions (const char *options)
 {
-   IndigoInchi &inchi = indigoInchiGetInstance().inchi;
-   inchi.setOptions(options);
+   InchiWrapper &inchi_wrapper = indigoInchiGetInstance().inchi;
+   inchi_wrapper.setOptions(options);
 }
 
 class _IndigoInchiOptionsHandlersSetter
@@ -149,7 +145,7 @@ _IndigoInchiOptionsHandlersSetter::_IndigoInchiOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
    OsLocker locker(mgr.lock);
-   
+
    mgr.setOptionHandlerString("inchi-options", indigoInchiSetInchiOptions);
 }
 

@@ -26,7 +26,7 @@
 #include "molecule/icm_saver.h"
 #include "molecule/molecule_cml_saver.h"
 
-#include "indigo_inchi_core.h"
+#include "molecule/inchi_wrapper.h"
 
 using namespace indigo::bingo_core;
 
@@ -881,7 +881,7 @@ CEXPORT const char* mangoInChI(const char* molecule, int molecule_len, const cha
       self.bingo_context->setLoaderSettings(loader);
       loader.loadMolecule(target);
 
-      IndigoInchi inchi;
+      InchiWrapper inchi;
       inchi.setOptions(options);
       inchi.saveMoleculeIntoInchi(target, self.buffer);
       
@@ -896,7 +896,7 @@ CEXPORT const char* mangoInChIKey(const char* inchi)
 {
    BINGO_BEGIN
    {
-      IndigoInchi::InChIKey(inchi, self.buffer);
+      InchiWrapper::InChIKey(inchi, self.buffer);
       return self.buffer.ptr();
    }
    BINGO_END(0, 0)

@@ -34,9 +34,11 @@ void MoleculeInChICompoment::construct (Molecule &original_component)
       &tetra_stereochemistry_layer
    };
 
-   // Construct layers for original molecule
-   for (int i = 0; i < NELEM(layers); i++)
-      layers[i]->construct(original_component);
+// Do we really need this code?
+// The results will be owerwritten later...
+//   // Construct layers for original molecule
+//   for (int i = 0; i < NELEM(layers); i++)
+//      layers[i]->construct(original_component);
 
    // Construct canonical molecule
    _getCanonicalMolecule(original_component, mol);
@@ -44,6 +46,36 @@ void MoleculeInChICompoment::construct (Molecule &original_component)
    // Reconstruct layers for canonical molecule
    for (int i = 0; i < NELEM(layers); i++)
       layers[i]->construct(mol);
+}
+
+void MoleculeInChICompoment::getCanonicalOrdering(Molecule &source_mol, Array<int> &mapping)
+{
+   QS_DEF(Array<int>, ignored);
+   ignored.clear_resize(source_mol.vertexEnd());
+   ignored.zerofill();
+   for (int i = source_mol.vertexBegin(); i < source_mol.vertexEnd(); i = source_mol.vertexNext(i))
+   if (source_mol.getAtomNumber(i) == ELEM_H && source_mol.getVertex(i).degree() == 1)
+      ignored[i] = 1;
+
+   AutomorphismSearch as;
+   as.getcanon = true;
+   as.compare_vertex_degree_first = false;
+   as.refine_reverse_degree = true;
+   as.refine_by_sorted_neighbourhood = true;
+   as.ignored_vertices = ignored.ptr();
+   as.cb_vertex_cmp = _cmpVertex;
+   as.cb_compare_mapped = _cmpMappings;
+   as.cb_check_automorphism = _checkAutomorphism;
+   as.context = (void *)this;
+
+   as.process(source_mol);
+
+   as.getCanonicalNumbering(mapping);
+}
+
+int MoleculeInChICompoment::cmpVertex(Graph &graph, int v1, int v2, const void *context)
+{
+   return _cmpVertex(graph, v1, v2, context);
 }
 
 void MoleculeInChICompoment::_getCanonicalMolecule 
@@ -71,6 +103,11 @@ void MoleculeInChICompoment::_getCanonicalMolecule
 
    QS_DEF(Array<int>, canonical_order);
    as.getCanonicalNumbering(canonical_order);
+   for (int i = 0; i < canonical_order.size(); ++i)
+   {
+      printf("%d ", canonical_order[i]);
+   }
+   printf("\n");
 
    cano_mol.makeSubmolecule(source_mol, canonical_order, NULL);
 

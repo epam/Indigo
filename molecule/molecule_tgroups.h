@@ -40,7 +40,10 @@ public:
 
    TGroup ();
    ~TGroup ();
+
+   void copy (TGroup &other);
    void clear();
+   static int cmp (TGroup &tg1, TGroup &tg2, void *context);
 
    BaseMolecule* fragment;
 
@@ -60,7 +63,11 @@ public:
    TGroup &getTGroup (int idx);
    int getTGroupCount ();
 
+   void remove(int idx);
    void clear ();
+
+   void copyTGroupsFromMolecule (MoleculeTGroups &other);
+   int findTGroup(const char *name);
 
    int begin();
    int end();

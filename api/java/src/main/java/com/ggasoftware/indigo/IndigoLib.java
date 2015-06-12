@@ -221,6 +221,9 @@ public interface IndigoLib extends Library
    int indigoGetSGroupType (int sgroup);
    int indigoGetSGroupIndex (int sgroup);
 
+   int indigoTransformSCSRtoCTAB (int molecule);                           
+   int indigoTransformCTABtoSCSR (int molecule, int templates);                           
+
    int indigoResetCharge (int atom);
    int indigoResetExplicitValence (int atom);
    int indigoResetRadical (int atom);

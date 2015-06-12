@@ -479,6 +479,10 @@ const int QueryMolecule::getTemplateAtomSeqid (int idx)
 	return -1;
 }
 
+const int QueryMolecule::getTemplateAtomDisplayOption (int idx)
+{
+	return -1;
+}
 
 bool QueryMolecule::isSaturatedAtom (int idx)
 {

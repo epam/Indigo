@@ -622,6 +622,14 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoGetSGroupIndex(self.id))
 
+    def transformSCSRtoCTAB(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoTransformSCSRtoCTAB(self.id))
+
+    def transformCTABtoSCSR(self, templates):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoTransformCTABtoSCSR(self.id, templates.id))
+
     def resetCharge(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoResetCharge(self.id))
@@ -1655,6 +1663,10 @@ class Indigo(object):
         Indigo._lib.indigoGetSGroupType.argtypes = [c_int]
         Indigo._lib.indigoGetSGroupIndex.restype = c_int
         Indigo._lib.indigoGetSGroupIndex.argtypes = [c_int]
+        Indigo._lib.indigoTransformSCSRtoCTAB.restype = c_int
+        Indigo._lib.indigoTransformSCSRtoCTAB.argtypes = [c_int]
+        Indigo._lib.indigoTransformCTABtoSCSR.restype = c_int
+        Indigo._lib.indigoTransformCTABtoSCSR.argtypes = [c_int, c_int]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int
@@ -1893,6 +1905,8 @@ class Indigo(object):
         Indigo._lib.indigoMapBond.argtypes = [c_int, c_int]
         Indigo._lib.indigoMapMolecule.restype = c_int
         Indigo._lib.indigoMapMolecule.argtypes = [c_int, c_int]
+        Indigo._lib.indigoTautomerEnumerate.restype = c_int
+        Indigo._lib.indigoTautomerEnumerate.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoAllScaffolds.restype = c_int
         Indigo._lib.indigoAllScaffolds.argtypes = [c_int]
         Indigo._lib.indigoDecomposedMoleculeScaffold.restype = c_int
@@ -2225,3 +2239,7 @@ class Indigo(object):
         if not result:
             return None
         return self.IndigoObject(self, result, reader)
+
+    def tautomerEnumerate(self, molecule, params):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoTautomerEnumerate(molecule.id, params)), molecule)

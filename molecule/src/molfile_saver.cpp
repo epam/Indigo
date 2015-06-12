@@ -346,13 +346,16 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
    _bond_mapping.clear_resize(mol.edgeEnd());
 
    for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i), iw++)
+      _atom_mapping[i] = iw;
+
+
+   for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
    {
       int atom_number = mol.getAtomNumber(i);
       int isotope = mol.getAtomIsotope(i);
       ArrayOutput out(buf);
 
-      _atom_mapping[i] = iw;
-      out.printf("%d ", iw);
+      out.printf("%d ", _atom_mapping[i]);
       QS_DEF(Array<int>, list);
       int query_atom_type;
 
@@ -505,7 +508,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
                   BaseMolecule::TemplateAttPoint &ap = mol.template_attachment_points.at(j);
                   if (ap.ap_occur_idx == i)
                   {
-                     out.printf(" %d %s", ap.ap_aidx + 1, ap.ap_id.ptr());
+                     out.printf(" %d %s", _atom_mapping[ap.ap_aidx], ap.ap_id.ptr());
                   }
                }
                out.printf(")");
@@ -886,13 +889,13 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
    int n_tgroups = mol.tgroups.getTGroupCount();
    if (n_tgroups > 0)
    {
-      output.writeStringCR("M  V30 TEMPLATE BEGIN");
+      output.writeStringCR("M  V30 BEGIN TEMPLATE");
 
       for (i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
       {
          _writeTGroup(output, mol, i);
       }
-      output.writeStringCR("M  V30 TEMPLATE END");
+      output.writeStringCR("M  V30 END TEMPLATE");
    }
 }
 
@@ -991,7 +994,7 @@ void MolfileSaver::_writeTGroup (Output &output, BaseMolecule &mol, int tg_idx)
    ArrayOutput out(buf);
    TGroup &tgroup = mol.tgroups.getTGroup(tg_idx);
 
-   out.printf("M  V30 TEMPLATE %d ", tgroup.tgroup_id);
+   out.printf("TEMPLATE %d ", tgroup.tgroup_id);
    if (tgroup.tgroup_class.size() > 0)
       out.printf("%s/", tgroup.tgroup_class.ptr());
    if (tgroup.tgroup_name.size() > 0)

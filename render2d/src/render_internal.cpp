@@ -1543,6 +1543,11 @@ void MoleculeRenderInternal::_initAtomData ()
          ad.type = AtomDesc::TYPE_PSEUDO;
          ad.pseudo.readString(bm.getPseudoAtom(i), true);
       }
+      else if (bm.isTemplateAtom(i))
+      {
+         ad.type = AtomDesc::TYPE_PSEUDO;
+         ad.pseudo.readString(bm.getTemplateAtom(i), true);
+      }
       else if (atomNumber < 0 || atomNumber == ELEM_RSITE)
          ad.type = AtomDesc::TYPE_QUERY;
       else
@@ -1598,7 +1603,7 @@ void MoleculeRenderInternal::_initAtomData ()
 
       valence = bm.getExplicitValence(i);
 
-      if (!bm.isRSite(i) && !bm.isPseudoAtom(i)) {
+      if (!bm.isRSite(i) && !bm.isPseudoAtom(i) && !bm.isTemplateAtom(i)) {
          radical = bm.getAtomRadical_NoThrow(i, -1);
          if (!bm.isQueryMolecule())
             ad.implicit_h = bm.asMolecule().getImplicitH_NoThrow(i, 0);
@@ -2882,7 +2887,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       if (!bm.isQueryMolecule()) {
          int implicit_h = 0;
 
-         if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
+         if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid)  && !bm.isTemplateAtom(aid))
             implicit_h = bm.asMolecule().getImplicitH_NoThrow(aid, 0);
 
          if (implicit_h > 0 && _opt.implHVisible)
@@ -2989,7 +2994,7 @@ void MoleculeRenderInternal::_prepareLabelText (int aid)
       // radical
       int radical = -1;
 
-      if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid))
+      if (!bm.isRSite(aid) && !bm.isPseudoAtom(aid) && !bm.isTemplateAtom(aid))
          radical = bm.getAtomRadical_NoThrow(aid, -1);
 
       if (radical > 0)

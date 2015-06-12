@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 GGA Software Services LLC
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,6 +19,9 @@
 #include "molecule/molecule_tautomer_utils.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
+#include "molecule/molecule_inchi.h"
+#include "molecule/molecule_layered_molecules.h"
+#include "molecule/molecule_tautomer_enumerator.h"
 
 using namespace indigo;
 
@@ -498,11 +501,9 @@ bool TautomerMatcher::findMatch ()
       return true;
 
    EmbeddingEnumerator ee(g2);
-
    ee.setSubgraph(g1);
 
    int i;
-
    for (i = g1.vertexBegin(); i < g1.vertexEnd(); i = g1.vertexNext(i))
    {
       int val = _d.context.core_1[i];
@@ -524,13 +525,14 @@ bool TautomerMatcher::findMatch ()
 
    if (_d.context.substructure)
    {
+      ee.userdata = &_d;
       ee.cb_match_edge = matchBondsTauSub;
       ee.cb_match_vertex = _matchAtoms;
       ee.cb_embedding = _preliminaryEmbedding;
-
       if (!ee.process())
          return false;
-   } else
+   }
+   else
    {
       ee.cb_match_edge = matchBondsTau;
       ee.cb_match_vertex = _matchAtomsEx;
