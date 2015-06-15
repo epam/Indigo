@@ -495,11 +495,12 @@ void MoleculeCdxmlSaver::addCustomText(const Vec2f &pos, const char *alignment, 
    if (buf.size() > 1) {
 	  buf.remove(buf.size()-1);
 	  buf.remove(0);
+	  buf.push(0);
+	  s->SetValue(buf.ptr());
+	  t->LinkEndChild(s);
    }
    //buf.remove(0);
-   buf.push(0);
-   s->SetValue(buf.ptr());
-   t->LinkEndChild(s);
+   
 }
 
 void MoleculeCdxmlSaver::endPage ()
