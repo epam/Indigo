@@ -16,6 +16,7 @@
 
 #include <time.h>
 #include <sstream>
+#include "math/algebra.h"
 
 #include "base_cpp/output.h"
 #include "base_cpp/locale_guard.h"
@@ -51,7 +52,7 @@ TL_CP_GET(_bond_mapping)
  */
 void write_c(float c, std::stringstream& coords) {
    int strip = (int)c;
-   if ((float)strip == c) {
+   if (fabs(c- strip) < EPSILON) {
       coords << strip << ".0";
    } else {
       coords << c;
