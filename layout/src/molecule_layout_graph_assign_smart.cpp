@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2013 GGA Software Services LLC
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -96,7 +96,7 @@ void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates (float bond_length)
       bc_decom.getComponent(i, comp);
       bc_components.push().makeLayoutSubgraph(*this, comp);
    }
-   
+
    bc_tree.clear_resize(vertexEnd());
    _makeComponentsTree(bc_decom, bc_components, bc_tree);
 
@@ -114,7 +114,7 @@ void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates (float bond_length)
    QS_DEF(Array<int>, assigned_list);
    QS_DEF(Array<int>, adjacent_list);
 
-   while (true) 
+   while (true)
    {
       if(cancellation && cancellation->isCancelled())
          throw Error("Molecule layout has been cancelled: %s", cancellation->cancelledRequestMessage());
@@ -159,7 +159,7 @@ void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates (float bond_length)
             adjacent_list.qsort(_vertex_cmp, this);
 
             _attachDandlingVertices(k, adjacent_list);
-         } 
+         }
          else
          {
             // Component layout in current vertex should have the same angles between components.
@@ -211,12 +211,12 @@ void MoleculeLayoutGraphSmart::_get_toches_to_component(CycleSmart& cycle, int c
       finish = (start + 1) % cycle.vertexCount();
       while (!touch_to_current_component[finish]) finish = (finish + 1) % cycle.vertexCount();
 
-      interval_list.push(); 
+      interval_list.push();
       interval_list.top().init(start, finish);
 
       start = finish;
       while (_layout_component_number[cycle.getEdge(start)] == component_number) start = (start + 1) % cycle.vertexCount();
-      
+
       if (start == first_start) break;
    }
 }
@@ -290,9 +290,9 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates (int &fixed_component,
          return;
 
       fixed_component = 0;
-   } 
+   }
    else
-   { 
+   {
       //if (PatternLayoutFinder::tryToFindPattern(*this))
          //return;
    }
@@ -300,14 +300,14 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates (int &fixed_component,
    //TODO: repair exception with vec2f
 
    QS_DEF(ObjPool<CycleSmart>, cycles);
-    
+
    cycles.clear();
    int n_cycles = sssrCount();
-   
+
    for (i = 0; i < n_cycles; i++)
    {
       int cycle_idx = cycles.add(sssrEdges(i), *this);
-      
+
       cycles[cycle_idx].canonize();
    }
 
@@ -1031,7 +1031,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const CycleSmart &cycle)
             segment[i].inverse();
       }
 
-      
+
       // 3. shift
 
       Vec2f middle_host;
@@ -1076,7 +1076,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const CycleSmart &cycle)
             _layout_vertices[insideVertex[i]].pos.rotateAroundSegmentEnd(_layout_vertices[insideVertex[i]].pos, middle_new, angle);
       }
 
-      
+
    }
 
    for (int i = 0; i < size; i++)
@@ -1198,13 +1198,13 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(ObjArray<MoleculeLayou
       }
 
    int count_sticked_vertices = component1.size();
-   
+
    bool something_done = true;
    bool something_to_do = false;
    while (something_done) {
       something_done = false;
       something_to_do = false;
-      
+
       for (int index = 0; index < count_sticked_vertices; index++) {
          int i = component1[index];
          int j = component2[index];
@@ -1232,11 +1232,11 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(ObjArray<MoleculeLayou
             if (exist_sepatate_vertex) {
                Vec2f direction;
                if (vert1.degree() == 2) {
-                  direction = (segment[i].getPosition(vert1.neiVertex(vert1.neiBegin())) + 
+                  direction = (segment[i].getPosition(vert1.neiVertex(vert1.neiBegin())) +
                                  segment[i].getPosition(vert1.neiVertex(vert1.neiNext(vert1.neiBegin()))))/2;
                   direction -= segment[i].getPosition(v1);
                } else if (vert2.degree() == 2) {
-                  direction = (segment[j].getPosition(vert2.neiVertex(vert2.neiBegin())) + 
+                  direction = (segment[j].getPosition(vert2.neiVertex(vert2.neiBegin())) +
                                  segment[j].getPosition(vert2.neiVertex(vert2.neiNext(vert2.neiBegin()))))/2;
                   direction -= segment[i].getPosition(v1);
                } else if (vert1.degree() == 1) {
@@ -1280,7 +1280,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(ObjArray<MoleculeLayou
             }
          }
       }
-               
+
    }
 
    for (int i = 0; i < segment_count; i++)
@@ -1333,7 +1333,7 @@ void MoleculeLayoutGraphSmart::_do_segment_smoothing(Array<Vec2f> &rotation_poin
    for (int i = 0; i < segments_count; i++)
       for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
          getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
-   
+
 }
 
 void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const CycleSmart &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment, MoleculeLayoutMacrocyclesLattice& layout) {
@@ -1399,7 +1399,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const CycleSmart &c
             segments_filter.top().unhide(getEdge(e).beg);
             segments_filter.top().unhide(getEdge(e).end);
          }
-		
+
          segment_start.push(start);
          segment_component_number.push(i);
       }
@@ -1464,7 +1464,7 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f> &point, Array<fl
    Vec2f move_vector(0, 0);
 
    // fix intersections to other components
-   for (int i = 0; i < touching_segments.size(); i++) 
+   for (int i = 0; i < touching_segments.size(); i++)
       if (touching_segments[i].left == move_vertex || touching_segments[i].left == (move_vertex + 1) % segments_count) {
          int another_segment = touching_segments[i].right;
          float min_dist = 0.7;
@@ -1497,7 +1497,7 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f> &point, Array<fl
       Vec2f center(prev_point + chord/2);
       Vec2f rot_chord(chord);
       rot_chord.rotate(1, 0);
-      center += rot_chord / std::tan(PI - target_angle[move_vertex]) / 2;
+      center += rot_chord / tan(PI - target_angle[move_vertex]) / 2;
 
       float radii = (prev_point - center).length();
       float dist = (this_point - center).length();
@@ -1744,7 +1744,7 @@ void MoleculeLayoutGraphSmart::_buildOutline (void)
          i_angle = v.tiltAngle2();
       } else if (_outline->size() > 0)
          break;
-      
+
       _outline->push(pos_i);
 
       max_angle = 0.f;
@@ -1757,7 +1757,7 @@ void MoleculeLayoutGraphSmart::_buildOutline (void)
 
          cur_angle = v.tiltAngle2() - i_angle;
 
-         // If cur_angle is almost zero but negative due to numeric errors (-1e-8) then 
+         // If cur_angle is almost zero but negative due to numeric errors (-1e-8) then
          // on some structures the results are not stable and even inifinite loop appreas
          // Example of such structure: ClC1(C(=O)C2(Cl)C3(Cl)C14Cl)C5(Cl)C2(Cl)C3(Cl)C(Cl)(Cl)C45Cl
          if (fabs(cur_angle) < EPS_ANGLE)
@@ -1807,7 +1807,7 @@ void MoleculeLayoutGraphSmart::_buildOutline (void)
          {
             if (min_dist > EPSILON)
                _outline->push(v);
-            
+
             const Edge &edge = getEdge(int_edge);
             const Vec2f &cur_v3 = getPos(edge.beg);
             const Vec2f &cur_v4 = getPos(edge.end);
@@ -1840,7 +1840,7 @@ void MoleculeLayoutGraphSmart::_buildOutline (void)
                cur_v2 = cur_v4;
                i = edge.end;
             }
-            
+
             prev_edge = cur_edge;
             cur_edge = int_edge;
          }
@@ -1893,7 +1893,7 @@ void MoleculeLayoutGraphSmart::_getAnchor (int &v1, int &v2, int &v3) const
       v3 = -1;
       return;
    }
-   
+
    v3 = vert.neiBegin();
 
    if (v3 == v2)
@@ -1928,7 +1928,7 @@ void MoleculeLayoutGraphSmart::_assignFinalCoordinates (float bond_length, const
    // Flip according to various rules
    if (_molecule != 0 && _n_fixed == 0)
    {
-      if (_molecule->countRSites() > 1) 
+      if (_molecule->countRSites() > 1)
       {
          // flip molecule vertically if R1 is not above other R-groups
          // flip molecule horizontally if R1 is not on the left
@@ -1936,7 +1936,7 @@ void MoleculeLayoutGraphSmart::_assignFinalCoordinates (float bond_length, const
          Vec2f r1_pos, highest_pos(0.f, -1000.f);
          bool r1_exist = false;
          float center_x = 0.f;
-      
+
          for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
          {
             if (_molecule->isRSite(_layout_vertices[i].ext_idx))
@@ -1953,9 +1953,9 @@ void MoleculeLayoutGraphSmart::_assignFinalCoordinates (float bond_length, const
             }
             center_x += _layout_vertices[i].pos.x;
          }
-      
+
          center_x /= vertexCount();
-      
+
          if (r1_exist)
          {
             if (r1_pos.y < highest_pos.y)
@@ -2055,21 +2055,21 @@ void MoleculeLayoutGraphSmart::_assignFinalCoordinates (float bond_length, const
       if (v3 == -1)
       {
          for (v3 = vertexBegin(); v3 < vertexEnd(); v3 = vertexNext(v3))
-         {	
-            if (fabs(p.x) < 0.001f) 
+         {
+            if (fabs(p.x) < 0.001f)
                crit = (src_layout[v3].x - p1.x) * (getPos(v3).x - p1.x);
-            else if (fabs(p.y) < 0.001f) 
+            else if (fabs(p.y) < 0.001f)
                crit = (src_layout[v3].y - p1.y) * (getPos(v3).y - p1.y);
-            else 
+            else
             {
                crit = (p.y * (src_layout[v3].x - p1.x) - p.x * (src_layout[v3].y - p1.y)) *
                   (p.y * (getPos(v3).x - p1.x) - p.x * (getPos(v3).y - p1.y));
             }
-            
+
             if (fabs(crit) > 0.001)
                break;
          }
-      } else 
+      } else
          crit = -1.0;
 
       if (crit < 0 && v3 < vertexEnd())
@@ -2087,7 +2087,7 @@ void MoleculeLayoutGraphSmart::_assignFinalCoordinates (float bond_length, const
             _layout_vertices[i].pos.y *= -1;
          }
 
-         // Turn by phi1 and translate back 
+         // Turn by phi1 and translate back
          sina = -sina;
          for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
          {
@@ -2158,7 +2158,7 @@ void MoleculeLayoutGraphSmart::_findFixedComponents (BiconnectedDecomposer &bc_d
    if (Graph::isConnected(fixed_graph))
       _n_fixed = fixed_filter.count(*this);
    else
-   { 
+   {
       // fixed subgraph is not connected - choose its greatest component
       int n = fixed_graph.countComponents();
       const Array<int> &decomposition = fixed_graph.getDecomposition();
@@ -2278,7 +2278,7 @@ bool MoleculeLayoutGraphSmart::_assignComponentsRelativeCoordinates (ObjArray<Mo
    return all_trivial;
 }
 
-void MoleculeLayoutGraphSmart::_assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraphSmart &supergraph) 
+void MoleculeLayoutGraphSmart::_assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraphSmart &supergraph)
 {
    // Trivial component layout
    int idx1 = vertexBegin();
@@ -2348,7 +2348,7 @@ void MoleculeLayoutGraphSmart::_findFirstVertexIdx (int n_comp, Array<int> & fix
 
          _copyLayout(nucleus);
          _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
-      } else 
+      } else
       {
          for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             if (_layout_vertices[i].morgan_code > _layout_vertices[nucleus_idx].morgan_code)
