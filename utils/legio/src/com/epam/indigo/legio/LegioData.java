@@ -1,9 +1,9 @@
-package com.ggasoftware.indigo.legio;
+package com.epam.indigo.legio;
 
-import com.ggasoftware.indigo.Indigo;
-import com.ggasoftware.indigo.IndigoObject;
-import com.ggasoftware.indigo.controls.IndigoCheckedException;
-import com.ggasoftware.indigo.controls.IndigoObjectWrapper;
+import com.epam.indigo.Indigo;
+import com.epam.indigo.IndigoObject;
+import com.epam.indigo.controls.IndigoCheckedException;
+import com.epam.indigo.controls.IndigoObjectWrapper;
 import java.io.IOException;
 import java.util.ArrayList;
 

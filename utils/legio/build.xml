@@ -61,7 +61,7 @@
     	</copy>
 		<jar destfile="dist/legio.jar" basedir="build/classes">
             <manifest>
-                <attribute name="Main-Class" value="com.ggasoftware.indigo.legio.Main"/>
+                <attribute name="Main-Class" value="com.epam.indigo.legio.Main"/>
 				<attribute name="SplashScreen-Image" value="META-INF/legio-splash.png"/>
 				<attribute name="Class-Path" value="lib/common-controls.jar lib/jna.jar lib/indigo-renderer.jar lib/indigo.jar"/>
 			</manifest>

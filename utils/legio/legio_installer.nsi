@@ -1,4 +1,4 @@
-!define WEB_SITE "http://ggasoftware.com/opensource/indigo/legio"
+!define WEB_SITE "http://epam.com/opensource/indigo/legio"
 !define APP_NAME "Legio"
 !define COMP_NAME "EPAM Systems"
 !define COPYRIGHT "EPAM Systems © 2010"

@@ -1,9 +1,9 @@
-package com.ggasoftware.indigo.legio;
+package com.epam.indigo.legio;
 
-import com.ggasoftware.indigo.Indigo;
-import com.ggasoftware.indigo.IndigoObject;
-import com.ggasoftware.indigo.IndigoRenderer;
-import com.ggasoftware.indigo.controls.*;
+import com.epam.indigo.Indigo;
+import com.epam.indigo.IndigoObject;
+import com.epam.indigo.IndigoRenderer;
+import com.epam.indigo.controls.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -102,7 +102,7 @@ public class MainFrame extends javax.swing.JFrame
         reaction_label = new javax.swing.JLabel();
         reaction_button = new javax.swing.JButton();
         reaction_path_label = new javax.swing.JTextField();
-        rct_view = new com.ggasoftware.indigo.controls.IndigoObjectViewPanel();
+        rct_view = new com.epam.indigo.controls.IndigoObjectViewPanel();
         mons_part = new javax.swing.JPanel();
         enumeration_panel = new javax.swing.JPanel();
         is_multistep_reactions_check = new java.awt.Checkbox();
@@ -114,7 +114,7 @@ public class MainFrame extends javax.swing.JFrame
         is_one_tube_check = new java.awt.Checkbox();
         is_self_react_check = new java.awt.Checkbox();
         out_tab = new javax.swing.JPanel();
-        products_panel = new com.ggasoftware.indigo.controls.MoleculeOutputTable();
+        products_panel = new com.epam.indigo.controls.MoleculeOutputTable();
         menu_bar = new javax.swing.JMenuBar();
         file_menu = new javax.swing.JMenu();
         exit_menu_item = new javax.swing.JMenuItem();
@@ -533,7 +533,7 @@ public class MainFrame extends javax.swing.JFrame
     }//GEN-LAST:event_exit_menu_itemActionPerformed
 
     private void about_menu_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_about_menu_itemActionPerformed
-       CommonUtils.showAboutDialog(this, "Legio", "http://ggasoftware.com/opensource/indigo/legio");
+       CommonUtils.showAboutDialog(this, "Legio", "http://epam.com/opensource/indigo/legio");
     }//GEN-LAST:event_about_menu_itemActionPerformed
 
     private void menu_view_compactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menu_view_compactActionPerformed
@@ -678,9 +678,9 @@ public class MainFrame extends javax.swing.JFrame
     private javax.swing.JCheckBoxMenuItem menu_view_medium;
     private javax.swing.JPanel mons_part;
     private javax.swing.JPanel out_tab;
-    private com.ggasoftware.indigo.controls.MoleculeOutputTable products_panel;
+    private com.epam.indigo.controls.MoleculeOutputTable products_panel;
     private javax.swing.JPanel rct_part;
-    private com.ggasoftware.indigo.controls.IndigoObjectViewPanel rct_view;
+    private com.epam.indigo.controls.IndigoObjectViewPanel rct_view;
     private javax.swing.JButton react_button;
     private javax.swing.JButton reaction_button;
     private javax.swing.JLabel reaction_label;

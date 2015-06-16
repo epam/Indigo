@@ -209,7 +209,7 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="reaction_path_label">
                     </Component>
-                    <Container class="com.ggasoftware.indigo.controls.IndigoObjectViewPanel" name="rct_view">
+                    <Container class="com.epam.indigo.controls.IndigoObjectViewPanel" name="rct_view">
 
                       <Layout>
                         <DimensionLayout dim="0">
@@ -392,7 +392,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="com.ggasoftware.indigo.controls.MoleculeOutputTable" name="products_panel">
+            <Component class="com.epam.indigo.controls.MoleculeOutputTable" name="products_panel">
               <Properties>
                 <Property name="idColumnCount" type="int" value="1"/>
                 <Property name="reactionsContentType" type="boolean" value="true"/>
