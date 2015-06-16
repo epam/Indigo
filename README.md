@@ -1,6 +1,6 @@
-# GGA Indigo projects #
+# EPAM Indigo projects #
 
-Copyright (c) 2009-2013 EPAM Systems
+Copyright (c) 2009-2015 EPAM Systems
 GNU General Public License version 3
 
 ## Introduction ##
