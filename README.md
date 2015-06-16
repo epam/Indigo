@@ -14,7 +14,7 @@ This repository includes:
 		- indigo-cano: Canonical SMILES generator
 		- indigo-deco: R-Group deconvolution utility
 
-Detailed documentations is available at http://ggasoftware.com/opensource
+Detailed documentations is available at http://lifescience.opensource.epam.com
 
 Main directory structure:
 	* api: Indigo API sources
