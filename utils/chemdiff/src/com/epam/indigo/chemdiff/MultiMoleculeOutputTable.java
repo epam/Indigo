@@ -8,11 +8,11 @@
  *
  * Created on Mar 5, 2011, 10:02:17 PM
  */
-package com.ggasoftware.indigo.chemdiff;
+package com.epam.indigo.chemdiff;
 
-import com.ggasoftware.indigo.IndigoException;
-import com.ggasoftware.indigo.IndigoObject;
-import com.ggasoftware.indigo.controls.*;
+import com.epam.indigo.IndigoException;
+import com.epam.indigo.IndigoObject;
+import com.epam.indigo.controls.*;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

@@ -1,14 +1,14 @@
-package com.ggasoftware.indigo.chemdiff;
+package com.epam.indigo.chemdiff;
 
-import com.ggasoftware.indigo.Indigo;
-import com.ggasoftware.indigo.IndigoObject;
-import com.ggasoftware.indigo.IndigoRenderer;
-import com.ggasoftware.indigo.chemdiff.CanonicalCodeGenerator;
-import com.ggasoftware.indigo.controls.Global;
-import com.ggasoftware.indigo.controls.IndigoCheckedException;
-import com.ggasoftware.indigo.controls.MoleculeItem;
-import com.ggasoftware.indigo.controls.RenderableObject;
-import com.ggasoftware.indigo.controls.RenderableObjectWithId;
+import com.epam.indigo.Indigo;
+import com.epam.indigo.IndigoObject;
+import com.epam.indigo.IndigoRenderer;
+import com.epam.indigo.chemdiff.CanonicalCodeGenerator;
+import com.epam.indigo.controls.Global;
+import com.epam.indigo.controls.IndigoCheckedException;
+import com.epam.indigo.controls.MoleculeItem;
+import com.epam.indigo.controls.RenderableObject;
+import com.epam.indigo.controls.RenderableObjectWithId;
 import java.util.ArrayList;
 
 public class MultipleMoleculeItem extends RenderableObjectWithId

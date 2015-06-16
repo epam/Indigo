@@ -1,6 +1,6 @@
-package com.ggasoftware.indigo.chemdiff;
+package com.epam.indigo.chemdiff;
 
-import com.ggasoftware.indigo.controls.MessageBox;
+import com.epam.indigo.controls.MessageBox;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.UIManager;

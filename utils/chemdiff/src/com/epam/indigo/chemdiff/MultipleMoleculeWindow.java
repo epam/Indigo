@@ -8,7 +8,7 @@
  *
  * Created on May 11, 2011, 4:34:43 PM
  */
-package com.ggasoftware.indigo.chemdiff;
+package com.epam.indigo.chemdiff;
 
 import java.awt.Frame;
 
@@ -69,8 +69,8 @@ public class MultipleMoleculeWindow extends javax.swing.JFrame
         jLabel1 = new javax.swing.JLabel();
         canonical_code_field = new javax.swing.JTextField();
         output_panel = new javax.swing.JPanel();
-        output_table1 = new com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable();
-        output_table2 = new com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable();
+        output_table1 = new com.epam.indigo.chemdiff.MultiMoleculeOutputTable();
+        output_table2 = new com.epam.indigo.chemdiff.MultiMoleculeOutputTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Molecules within a group");
@@ -123,7 +123,7 @@ public class MultipleMoleculeWindow extends javax.swing.JFrame
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel output_panel;
-    private com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable output_table1;
-    private com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable output_table2;
+    private com.epam.indigo.chemdiff.MultiMoleculeOutputTable output_table1;
+    private com.epam.indigo.chemdiff.MultiMoleculeOutputTable output_table2;
     // End of variables declaration//GEN-END:variables
 }

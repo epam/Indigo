@@ -71,13 +71,13 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
       <SubComponents>
-        <Component class="com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable" name="output_table1">
+        <Component class="com.epam.indigo.chemdiff.MultiMoleculeOutputTable" name="output_table1">
           <Properties>
             <Property name="idColumnCount" type="int" value="1"/>
             <Property name="title" type="java.lang.String" value="From the first set"/>
           </Properties>
         </Component>
-        <Component class="com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable" name="output_table2">
+        <Component class="com.epam.indigo.chemdiff.MultiMoleculeOutputTable" name="output_table2">
           <Properties>
             <Property name="idColumnCount" type="int" value="1"/>
             <Property name="title" type="java.lang.String" value="From the second set"/>

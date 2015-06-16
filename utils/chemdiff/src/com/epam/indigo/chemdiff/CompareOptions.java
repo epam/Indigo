@@ -1,4 +1,4 @@
-package com.ggasoftware.indigo.chemdiff;
+package com.epam.indigo.chemdiff;
 
 public class CompareOptions
 {

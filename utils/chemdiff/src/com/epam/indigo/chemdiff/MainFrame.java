@@ -1,12 +1,12 @@
-package com.ggasoftware.indigo.chemdiff;
+package com.epam.indigo.chemdiff;
 
-import com.ggasoftware.indigo.controls.Global;
-import com.ggasoftware.indigo.controls.MoleculeItem;
-import com.ggasoftware.indigo.controls.CommonUtils;
-import com.ggasoftware.indigo.controls.IndigoCheckedException;
-import com.ggasoftware.indigo.controls.MessageBox;
-import com.ggasoftware.indigo.controls.MolSaver;
-import com.ggasoftware.indigo.controls.ProgressStatusDialog;
+import com.epam.indigo.controls.Global;
+import com.epam.indigo.controls.MoleculeItem;
+import com.epam.indigo.controls.CommonUtils;
+import com.epam.indigo.controls.IndigoCheckedException;
+import com.epam.indigo.controls.MessageBox;
+import com.epam.indigo.controls.MolSaver;
+import com.epam.indigo.controls.ProgressStatusDialog;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -75,13 +75,13 @@ public class MainFrame extends javax.swing.JFrame
 
         tabbed_panel = new javax.swing.JTabbedPane();
         in_tab = new javax.swing.JPanel();
-        in_table_1 = new com.ggasoftware.indigo.controls.MoleculesInputTable();
-        in_table_2 = new com.ggasoftware.indigo.controls.MoleculesInputTable();
+        in_table_1 = new com.epam.indigo.controls.MoleculesInputTable();
+        in_table_2 = new com.epam.indigo.controls.MoleculesInputTable();
         compare_button = new javax.swing.JButton();
         out_tab = new javax.swing.JPanel();
-        out_table_common = new com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable();
-        out_table1 = new com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable();
-        out_table2 = new com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable();
+        out_table_common = new com.epam.indigo.chemdiff.MultiMoleculeOutputTable();
+        out_table1 = new com.epam.indigo.chemdiff.MultiMoleculeOutputTable();
+        out_table2 = new com.epam.indigo.chemdiff.MultiMoleculeOutputTable();
         main_menu_bar = new javax.swing.JMenuBar();
         menu_file = new javax.swing.JMenu();
         load1_mi = new javax.swing.JMenuItem();
@@ -338,7 +338,7 @@ public class MainFrame extends javax.swing.JFrame
     }//GEN-LAST:event_exit_miActionPerformed
 
     private void about_miActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_about_miActionPerformed
-       CommonUtils.showAboutDialog(this, "ChemDiff", "http://ggasoftware.com/opensource/indigo/chemdiff");
+       CommonUtils.showAboutDialog(this, "ChemDiff", "http://epam.com/opensource/indigo/chemdiff");
     }//GEN-LAST:event_about_miActionPerformed
 
     private void compare_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compare_buttonActionPerformed
@@ -587,7 +587,7 @@ public class MainFrame extends javax.swing.JFrame
        try
        {
           java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-          java.net.URI uri = new java.net.URI("http://ggasoftware.com/opensource/indigo/chemdiff");
+          java.net.URI uri = new java.net.URI("http://epam.com/opensource/indigo/chemdiff");
           desktop.browse(uri);
        }
        catch (URISyntaxException ex)
@@ -648,8 +648,8 @@ public class MainFrame extends javax.swing.JFrame
     private javax.swing.JButton compare_button;
     private javax.swing.JMenuItem exit_mi;
     private javax.swing.JPanel in_tab;
-    private com.ggasoftware.indigo.controls.MoleculesInputTable in_table_1;
-    private com.ggasoftware.indigo.controls.MoleculesInputTable in_table_2;
+    private com.epam.indigo.controls.MoleculesInputTable in_table_1;
+    private com.epam.indigo.controls.MoleculesInputTable in_table_2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem load1_mi;
@@ -665,9 +665,9 @@ public class MainFrame extends javax.swing.JFrame
     private javax.swing.JCheckBoxMenuItem merge_duplicates_check;
     private javax.swing.JMenuItem online_help;
     private javax.swing.JPanel out_tab;
-    private com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable out_table1;
-    private com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable out_table2;
-    private com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable out_table_common;
+    private com.epam.indigo.chemdiff.MultiMoleculeOutputTable out_table1;
+    private com.epam.indigo.chemdiff.MultiMoleculeOutputTable out_table2;
+    private com.epam.indigo.chemdiff.MultiMoleculeOutputTable out_table_common;
     private javax.swing.JCheckBoxMenuItem show_duplicates_on_top_check;
     private javax.swing.JCheckBoxMenuItem show_invalid_on_top_check;
     private javax.swing.JCheckBoxMenuItem stereocenters_check;

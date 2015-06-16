@@ -229,7 +229,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
           <SubComponents>
-            <Component class="com.ggasoftware.indigo.controls.MoleculesInputTable" name="in_table_1">
+            <Component class="com.epam.indigo.controls.MoleculesInputTable" name="in_table_1">
               <Properties>
                 <Property name="title" type="java.lang.String" value="First file"/>
               </Properties>
@@ -239,7 +239,7 @@
                 </Constraint>
               </Constraints>
             </Component>
-            <Component class="com.ggasoftware.indigo.controls.MoleculesInputTable" name="in_table_2">
+            <Component class="com.epam.indigo.controls.MoleculesInputTable" name="in_table_2">
               <Properties>
                 <Property name="title" type="java.lang.String" value="Second file"/>
               </Properties>
@@ -285,7 +285,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
           <SubComponents>
-            <Component class="com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable" name="out_table_common">
+            <Component class="com.epam.indigo.chemdiff.MultiMoleculeOutputTable" name="out_table_common">
               <Properties>
                 <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[175, 179]"/>
@@ -298,7 +298,7 @@
                 </Constraint>
               </Constraints>
             </Component>
-            <Component class="com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable" name="out_table1">
+            <Component class="com.epam.indigo.chemdiff.MultiMoleculeOutputTable" name="out_table1">
               <Properties>
                 <Property name="idColumnCount" type="int" value="1"/>
                 <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
@@ -312,7 +312,7 @@
                 </Constraint>
               </Constraints>
             </Component>
-            <Component class="com.ggasoftware.indigo.chemdiff.MultiMoleculeOutputTable" name="out_table2">
+            <Component class="com.epam.indigo.chemdiff.MultiMoleculeOutputTable" name="out_table2">
               <Properties>
                 <Property name="idColumnCount" type="int" value="1"/>
                 <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">

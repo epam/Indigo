@@ -1,4 +1,4 @@
-!define WEB_SITE "http://ggasoftware.com/opensource/indigo/chemdiff"
+!define WEB_SITE "http://epam.com/opensource/indigo/chemdiff"
 !define APP_NAME "ChemDiff"
 !define COMP_NAME "EPAM Systems"
 !define COPYRIGHT "EPAM Systems © 2010"

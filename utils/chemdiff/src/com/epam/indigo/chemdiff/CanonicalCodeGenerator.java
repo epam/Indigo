@@ -1,10 +1,10 @@
-package com.ggasoftware.indigo.chemdiff;
+package com.epam.indigo.chemdiff;
 
-import com.ggasoftware.indigo.Indigo;
-import com.ggasoftware.indigo.IndigoException;
-import com.ggasoftware.indigo.IndigoObject;
-import com.ggasoftware.indigo.controls.IndigoCheckedException;
-import com.ggasoftware.indigo.controls.MoleculeItem;
+import com.epam.indigo.Indigo;
+import com.epam.indigo.IndigoException;
+import com.epam.indigo.IndigoObject;
+import com.epam.indigo.controls.IndigoCheckedException;
+import com.epam.indigo.controls.MoleculeItem;
 
 public class CanonicalCodeGenerator
 {

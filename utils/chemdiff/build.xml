@@ -61,7 +61,7 @@
     	</copy>
 		<jar destfile="dist/chemdiff.jar" basedir="build/classes">
             <manifest>
-                <attribute name="Main-Class" value="com.ggasoftware.indigo.chemdiff.Main"/>
+                <attribute name="Main-Class" value="com.epam.indigo.chemdiff.Main"/>
 				<attribute name="SplashScreen-Image" value="META-INF/chemdiff-splash.png"/>
 				<attribute name="Class-Path" value="lib/common-controls.jar lib/jna.jar lib/indigo-renderer.jar lib/indigo.jar"/>
 			</manifest>
