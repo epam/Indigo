@@ -371,6 +371,7 @@ namespace com.ggasoftware.indigo
         int indigoTransform(int reaction, int monomers);
 
         int indigoExpandAbbreviations (int structure);
+        int indigoTautomerEnumerate(int structure, string params);
 
         sbyte* indigoDbgInternalType(int item);
         sbyte* indigoDbgProfiling (int whole_sessoin);

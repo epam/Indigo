@@ -586,6 +586,16 @@ namespace com.ggasoftware.indigo
             }
             return new IndigoObject(this, result, reader);
         }
+        public IndigoObject tautomerEnumerate(IndigoObject molecule, string params)
+        {
+            setSessionID();
+            int result = checkResult(_indigo_lib.indigoTautomerEnumerate(molecule.self, params));
+            if (result == 0)
+            {
+                return null;
+            }
+            return new IndigoObject(this, result, molecule);
+        }
 
         public void free(int id)
         {
