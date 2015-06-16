@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Diagnostics;
 
-namespace com.ggasoftware.indigo
+namespace com.epam.indigo
 {
     class LibraryLoader
     {

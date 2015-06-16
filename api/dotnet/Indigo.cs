@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
 
-namespace com.ggasoftware.indigo
+namespace com.epam.indigo
 {
     [Flags]
     public enum ReactingCenter
@@ -638,7 +638,7 @@ namespace com.ggasoftware.indigo
                     bool vs2013 = true;
                     try
                     {
-                       dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
+                       dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.epam.indigo.Properties.ResourcesWin2010", false);
                     }
                     catch 
                     {
@@ -646,7 +646,7 @@ namespace com.ggasoftware.indigo
                     }
                     try
                     {
-                       dll_loader.loadLibrary(lib_path, "msvcr110.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
+                       dll_loader.loadLibrary(lib_path, "msvcr110.dll", "com.epam.indigo.Properties.ResourcesWin2012", false);
                     }
                     catch 
                     {
@@ -654,7 +654,7 @@ namespace com.ggasoftware.indigo
                     }
                     try
                     {
-                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2013", false);
+                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
                     }
                     catch 
                     {
@@ -663,21 +663,21 @@ namespace com.ggasoftware.indigo
 
                     if (vs2010) 
                     {
-                       dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
-                       dll_loader.loadLibrary(lib_path, "msvcp100.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
-                       dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin2010", false);
+                       dll_loader.loadLibrary(lib_path, "msvcr100.dll", "com.epam.indigo.Properties.ResourcesWin2010", false);
+                       dll_loader.loadLibrary(lib_path, "msvcp100.dll", "com.epam.indigo.Properties.ResourcesWin2010", false);
+                       dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2010", false);
                     }
                     else if (vs2012)                    
                     {
-                       dll_loader.loadLibrary(lib_path, "msvcr110.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
-                       dll_loader.loadLibrary(lib_path, "msvcp110.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
-                       dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin2012", false);
+                       dll_loader.loadLibrary(lib_path, "msvcr110.dll", "com.epam.indigo.Properties.ResourcesWin2012", false);
+                       dll_loader.loadLibrary(lib_path, "msvcp110.dll", "com.epam.indigo.Properties.ResourcesWin2012", false);
+                       dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2012", false);
                     }
                     else if (vs2013)
                     {
-                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2013", false);
-                       dll_loader.loadLibrary(lib_path, "msvcp120.dll", "com.ggasoftware.indigo.Properties.ResourcesWin2013", false);
-                       dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin2013", false);   
+                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
+                       dll_loader.loadLibrary(lib_path, "msvcp120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
+                       dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2013", false);   
                     }
                     
                     break;
@@ -685,12 +685,12 @@ namespace com.ggasoftware.indigo
                     if (IndigoDllLoader.isMac())
                     {
                         libraryName = "libindigo.dylib";
-                        dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesMac", false);
+                        dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesMac", false);
                     }
                     else
                     {
                         libraryName = "libindigo.so";
-                        dll_loader.loadLibrary(lib_path, libraryName, "com.ggasoftware.indigo.Properties.ResourcesLinux", false);
+                        dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesLinux", false);
                     }
                     break;
                 default:

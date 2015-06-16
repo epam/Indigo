@@ -8,7 +8,7 @@
     <ProjectGuid>{9813B608-3372-4D46-B432-1533CBF54C62}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>com.ggasoftware.indigo</RootNamespace>
+    <RootNamespace>com.epam.indigo</RootNamespace>
     <AssemblyName>indigo-dotnet</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

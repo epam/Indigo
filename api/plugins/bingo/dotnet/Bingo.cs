@@ -4,7 +4,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace com.ggasoftware.indigo
+namespace com.epam.indigo
 {
     /// <summary>
     /// Bingo instance corresponds to a single chemical database
@@ -93,18 +93,18 @@ namespace com.ggasoftware.indigo
             {
                 case PlatformID.Win32NT:
                     libraryName = "bingo.dll";
-                    dll_loader.loadLibrary(dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin", false);
+                    dll_loader.loadLibrary(dllpath, libraryName, "com.epam.indigo.Properties.ResourcesWin", false);
                     break;
                 case PlatformID.Unix:
                     if (IndigoDllLoader.isMac())
                     {
                         libraryName = "libbingo.dylib";
-                        dll_loader.loadLibrary(dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesMac", false);
+                        dll_loader.loadLibrary(dllpath, libraryName, "com.epam.indigo.Properties.ResourcesMac", false);
                     }
                     else
                     {
                         libraryName = "libbingo.so";
-                        dll_loader.loadLibrary(dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesLinux", false);
+                        dll_loader.loadLibrary(dllpath, libraryName, "com.epam.indigo.Properties.ResourcesLinux", false);
                     }
                     break;
                 default:

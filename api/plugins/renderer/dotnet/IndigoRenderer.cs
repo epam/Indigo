@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace com.ggasoftware.indigo
+namespace com.epam.indigo
 {
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
 	public unsafe class IndigoRenderer
@@ -22,15 +22,15 @@ namespace com.ggasoftware.indigo
 			switch (Environment.OSVersion.Platform) {
 			case PlatformID.Win32NT:
 				libraryName = "indigo-renderer.dll";
-				dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesWin", false);				
+				dll_loader.loadLibrary (dllpath, libraryName, "com.epam.indigo.Properties.ResourcesWin", false);				
 				break;
 			case PlatformID.Unix:
 				if (IndigoDllLoader.isMac()) {
 					libraryName = "libindigo-renderer.dylib";
-					dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesMac", false);
+					dll_loader.loadLibrary (dllpath, libraryName, "com.epam.indigo.Properties.ResourcesMac", false);
 				} else {
 					libraryName = "libindigo-renderer.so";
-					dll_loader.loadLibrary (dllpath, libraryName, "com.ggasoftware.indigo.Properties.ResourcesLinux", false);
+					dll_loader.loadLibrary (dllpath, libraryName, "com.epam.indigo.Properties.ResourcesLinux", false);
 				}
 				break;
 			default:

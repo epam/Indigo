@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-namespace com.ggasoftware.indigo
+namespace com.epam.indigo
 {
     public unsafe interface IndigoLib
     {
