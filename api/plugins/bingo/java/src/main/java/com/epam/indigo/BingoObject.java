@@ -1,4 +1,4 @@
-package com.ggasoftware.indigo;
+package com.epam.indigo;
 
 import com.sun.jna.ptr.FloatByReference;
 

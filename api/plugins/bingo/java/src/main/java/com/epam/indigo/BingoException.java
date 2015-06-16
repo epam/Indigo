@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-package com.ggasoftware.indigo;
+package com.epam.indigo;
 
 public class BingoException extends RuntimeException
 {
