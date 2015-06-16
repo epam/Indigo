@@ -50,14 +50,19 @@ TL_CP_GET(_bond_mapping)
 /*
  * Utility functions
  */
+const float XYZ_EPSILON = 0.0001f;
+
 void write_c(float c, std::stringstream& coords) {
    int strip = (int)c;
-   if (fabs(c- strip) < EPSILON) {
+   if (fabs(c- strip) < XYZ_EPSILON) {
       coords << strip << ".0";
    } else {
       coords << c;
    }
 }
+/*
+ * Converts float to string
+ */
 void convert_xyz_to_string(Vec3f& xyz, std::stringstream& coords) {
    coords.str("");
    write_c(xyz.x, coords);
