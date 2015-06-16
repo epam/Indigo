@@ -9,9 +9,9 @@ using System.Data.Sql;
 [assembly: AssemblyTitle("Bingo")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("GGA Software Services LLC")]
+[assembly: AssemblyCompany("EPAM Systems")]
 [assembly: AssemblyProduct("Bingo")]
-[assembly: AssemblyCopyright("Copyright © GGA Software Services LLC 2010-2013")]
+[assembly: AssemblyCopyright("Copyright © EPAM Systems 2010-2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

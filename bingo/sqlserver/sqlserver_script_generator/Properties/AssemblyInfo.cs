@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("sqlserver_script_generator")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("GGA Software Services LLC")]
+[assembly: AssemblyCompany("EPAM Systems")]
 [assembly: AssemblyProduct("sqlserver_script_generator")]
-[assembly: AssemblyCopyright("Copyright © GGA Software Services LLC 2010")]
+[assembly: AssemblyCopyright("Copyright © EPAM Systems 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

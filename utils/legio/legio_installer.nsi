@@ -1,7 +1,7 @@
 !define WEB_SITE "http://ggasoftware.com/opensource/indigo/legio"
 !define APP_NAME "Legio"
-!define COMP_NAME "GGA Software"
-!define COPYRIGHT "GGA Software Services LLC © 2010"
+!define COMP_NAME "EPAM Systems"
+!define COPYRIGHT "EPAM Systems © 2010"
 !define DESCRIPTION "Legio is an Indigo-based GUI application that exposes the combinatorial chemistry capabilities of Indigo."
 
 SetCompressor /SOLID lzma
@@ -9,11 +9,11 @@ SetCompressor /SOLID lzma
   !define MULTIUSER_EXECUTIONLEVEL Highest
   !define MULTIUSER_MUI
   !define MULTIUSER_INSTALLMODE_COMMANDLINE
-  !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "Software\GGA Software\${APP_NAME}"
+  !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "Software\EPAM Systems\${APP_NAME}"
   !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME ""
-  !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "Software\GGA Software\${APP_NAME}"
+  !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_KEY "Software\EPAM Systems\${APP_NAME}"
   !define MULTIUSER_INSTALLMODE_INSTDIR_REGISTRY_VALUENAME ""
-  !define MULTIUSER_INSTALLMODE_INSTDIR "GGA Software\${APP_NAME}"
+  !define MULTIUSER_INSTALLMODE_INSTDIR "EPAM Systems\${APP_NAME}"
   !include "MultiUser.nsh"
   !include "MUI2.nsh"
  
@@ -39,7 +39,7 @@ SetCompressor /SOLID lzma
  
   ;Remember the installer language
   !define MUI_LANGDLL_REGISTRY_ROOT "SHCTX" 
-  !define MUI_LANGDLL_REGISTRY_KEY "Software\GGA Software\${APP_NAME}" 
+  !define MUI_LANGDLL_REGISTRY_KEY "Software\EPAM Systems\${APP_NAME}" 
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
  
 ;--------------------------------
@@ -51,9 +51,9 @@ SetCompressor /SOLID lzma
   !insertmacro MUI_PAGE_DIRECTORY
  
   ;Start Menu Folder Page Configuration
-  !define MUI_STARTMENUPAGE_DEFAULTFOLDER "GGA Software\${APP_NAME}"
+  !define MUI_STARTMENUPAGE_DEFAULTFOLDER "EPAM Systems\${APP_NAME}"
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "SHCTX" 
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\GGA Software\${APP_NAME}" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\EPAM Systems\${APP_NAME}" 
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
  
   !insertmacro MUI_PAGE_STARTMENU Application $StartMenuFolder
@@ -96,7 +96,7 @@ Section "${APP_NAME}"
   ;%NSIS_INSTALL_FILES
  
   ;Store installation folder
-  WriteRegStr SHCTX "Software\GGA Software\${APP_NAME}" "" $INSTDIR
+  WriteRegStr SHCTX "Software\EPAM Systems\${APP_NAME}" "" $INSTDIR
  
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -168,8 +168,8 @@ Section "Uninstall"
  
   Delete "$DESKTOP\${APP_NAME}.lnk"
  
-  DeleteRegKey SHCTX "Software\GGA Software\${APP_NAME}"
-  DeleteRegKey /ifempty SHCTX "Software\GGA Software"
+  DeleteRegKey SHCTX "Software\EPAM Systems\${APP_NAME}"
+  DeleteRegKey /ifempty SHCTX "Software\EPAM Systems"
  
 SectionEnd
  

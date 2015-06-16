@@ -29,14 +29,14 @@ Installation Prerequisities
 
 ### All Systems ###
 
- The shared buffer parameter in the PostgreSQL database configuration file (postgresql.conf) should be increased. For the optimal performance GGA recommends to increase the value . 
+ The shared buffer parameter in the PostgreSQL database configuration file (postgresql.conf) should be increased. For the optimal performance EPAM recommends to increase the value . 
 
     shared_buffers=64MB
 
 ### Linux ###
 
 The Bingo engine requires a lot of shared memory. 
-For linux systems GGA recommends to change kernel.shmmax and kernel.shmall
+For linux systems EPAM recommends to change kernel.shmmax and kernel.shmall
 
  Add the following line to `/etc/sysctl.conf` file:
 

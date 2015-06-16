@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2011 GGA Software Services LLC
+ * Copyright (C) 2011 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *

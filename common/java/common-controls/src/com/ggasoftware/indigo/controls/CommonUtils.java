@@ -41,7 +41,7 @@ public class CommonUtils
       StringBuilder sb = new StringBuilder();
       sb.append(String.format("<b>%s</b><br>", product));
       sb.append(String.format("Indigo version: %s<br>", (new Indigo()).version()));
-      sb.append("(C) 2010-2013 GGA Software Services LLC<br>");
+      sb.append("(C) 2010-2013 EPAM Systems<br>");
       sb.append(String.format("<a href=\"%s\">%s</a>", url, url));
       
       URL icon_url = CommonUtils.class.getResource("images/gga-logo.png");

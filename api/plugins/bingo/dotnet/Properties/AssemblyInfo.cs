@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Indigo")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("GGA Software Services LLC")]
+[assembly: AssemblyCompany("EPAM Systems")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright © GGA Software Services LLC 2010-2012")]
+[assembly: AssemblyCopyright("Copyright © EPAM Systems 2010-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 // Setting ComVisible to false makes the types in this assembly not visible 

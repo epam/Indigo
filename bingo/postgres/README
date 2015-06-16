@@ -2,7 +2,7 @@
 
 ********* 
 Bingo postgres engine requires a lot of shared memory. 
-For linux systems GGA recommends to change kernel.shmmax and kernel.shmall
+For linux systems EPAM recommends to change kernel.shmmax and kernel.shmall
 The system parameters can be changed by adding the strings:
 
 kernel.shmmax=<value>
