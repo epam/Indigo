@@ -6,20 +6,23 @@ GNU General Public License version 3
 ## Introduction ##
 
 This repository includes:
-	* Bingo: Chemistry search engine for Oracle, Microsoft SQL Server and PostgreSQL databases
-	* Indigo: Universal cheminformatics library, and the following tools:
-		- Legio: GUI application for combinatorial chemistry
-		- ChemDiff: Visual comparison of two SDF or SMILES files
-		- indigo-depict: Molecule and reaction rendering utility
-		- indigo-cano: Canonical SMILES generator
-		- indigo-deco: R-Group deconvolution utility
+ * Bingo: Chemistry search engine for Oracle, Microsoft SQL Server and PostgreSQL databases
+ * Indigo: Universal cheminformatics library, and the following tools:
+  - Legio: GUI application for combinatorial chemistry
+  - ChemDiff: Visual comparison of two SDF or SMILES files
+  - indigo-depict: Molecule and reaction rendering utility
+  - indigo-cano: Canonical SMILES generator
+  - indigo-deco: R-Group deconvolution utility
 
 Detailed documentations is available at http://lifescience.opensource.epam.com
 
-Main directory structure:
-	* api: Indigo API sources
-	* bingo: Bingo sources
-	* build_scripts: CMake and python scripts for building all the sources
+Main directory structure layout:
+ * api: Indigo API sources
+ * bingo: Bingo sources
+ * build_scripts: CMake and python scripts for building all the sources
+ * third_party: sources for third-party libraries
+ * utils: utilities sources
+ * common|graph|layout|molecule|reaction|render2d: indigo-core sources
 
 ## Source code organization ##
 
