@@ -36,9 +36,9 @@ void MoleculeInChICompoment::construct (Molecule &original_component)
 
 // Do we really need this code?
 // The results will be owerwritten later...
-//   // Construct layers for original molecule
-//   for (int i = 0; i < NELEM(layers); i++)
-//      layers[i]->construct(original_component);
+   // Construct layers for original molecule
+   for (int i = 0; i < NELEM(layers); i++)
+      layers[i]->construct(original_component);
 
    // Construct canonical molecule
    _getCanonicalMolecule(original_component, mol);
