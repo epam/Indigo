@@ -371,7 +371,7 @@ namespace com.epam.indigo
         int indigoTransform(int reaction, int monomers);
 
         int indigoExpandAbbreviations (int structure);
-        int indigoTautomerEnumerate(int structure, string params);
+        int indigoTautomerEnumerate(int structure, string parameters);
 
         sbyte* indigoDbgInternalType(int item);
         sbyte* indigoDbgProfiling (int whole_sessoin);

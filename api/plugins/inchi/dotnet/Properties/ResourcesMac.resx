@@ -119,7 +119,7 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Mac/10.6/libindigo-inchi.dylib" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Mac\10.6\libindigo-inchi.dylib;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resource\Mac\10.7\libindigo-inchi.dylib;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <!--
   <data name="Mac/10.5/libindigo-inchi.dylib" type="System.Resources.ResXFileRef, System.Windows.Forms">

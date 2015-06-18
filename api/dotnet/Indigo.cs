@@ -586,10 +586,10 @@ namespace com.epam.indigo
             }
             return new IndigoObject(this, result, reader);
         }
-        public IndigoObject tautomerEnumerate(IndigoObject molecule, string params)
+        public IndigoObject tautomerEnumerate(IndigoObject molecule, string parameters)
         {
             setSessionID();
-            int result = checkResult(_indigo_lib.indigoTautomerEnumerate(molecule.self, params));
+            int result = checkResult(_indigo_lib.indigoTautomerEnumerate(molecule.self, parameters));
             if (result == 0)
             {
                 return null;

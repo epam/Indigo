@@ -114,8 +114,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Mac)' == '1'">
     <PreBuildEvent>
-		$(Copy) $(LibraryPath)\Mac\10.5\libindigo-renderer.dylib $(ProjectDir)Resource\Mac\10.5
-		$(Copy) $(LibraryPath)\Mac\10.6\libindigo-renderer.dylib $(ProjectDir)Resource\Mac\10.6
+		$(Copy) $(LibraryPath)\Mac\10.7\libindigo-renderer.dylib $(ProjectDir)Resource\Mac\10.7
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="(('$(Win)' == '1') And ('$(Linux)' == '1') And ('$(Mac)' == '1'))">
@@ -124,8 +123,7 @@
 		$(Copy) $(LibraryPath)\Win\x86\indigo-renderer.dll $(ProjectDir)Resource\Win\x86
 		$(Copy) $(LibraryPath)\Linux\x64\libindigo-renderer.so $(ProjectDir)Resource\Linux\x64
 		$(Copy) $(LibraryPath)\Linux\x86\libindigo-renderer.so $(ProjectDir)Resource\Linux\x86
-		$(Copy) $(LibraryPath)\Mac\10.5\libindigo-renderer.dylib $(ProjectDir)Resource\Mac\10.5
-		$(Copy) $(LibraryPath)\Mac\10.6\libindigo-renderer.dylib $(ProjectDir)Resource\Mac\10.6	
+		$(Copy) $(LibraryPath)\Mac\10.7\libindigo-renderer.dylib $(ProjectDir)Resource\Mac\10.7	
     </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

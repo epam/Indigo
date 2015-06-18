@@ -83,7 +83,7 @@ else:
 
 if 'mac' in wrappers:
     #os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.5'))
-    os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.6'))
+    os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.7'))
     mac = 1
 else:
     mac = 0
@@ -113,7 +113,7 @@ else:
 
 if 'mac' in wrappers:
     #os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.5'))
-    os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.6'))
+    os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.7'))
     mac = 1
 else:
     mac = 0
@@ -143,7 +143,7 @@ else:
 
 if 'mac' in wrappers:
     #os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.5'))
-    os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.6'))
+    os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.7'))
     mac = 1
 else:
     mac = 0
@@ -174,7 +174,7 @@ else:
 
 if 'mac' in wrappers:
     #os.makedirs(join(bingoDotNetPath, "Resource", 'Mac', '10.5'))
-    os.makedirs(join(bingoDotNetPath, "Resource", 'Mac', '10.6'))
+    os.makedirs(join(bingoDotNetPath, "Resource", 'Mac', '10.7'))
     mac = 1
 else:
     mac = 0
