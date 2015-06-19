@@ -49,7 +49,7 @@ for filename in os.listdir(dist_dir):
         else:
             shutil.copy(join("chemdiff.sh"), join(dist_dir, "chemdiff", fullChemdiffName,"chemdiff.sh"))
         shutil.copy(join("LICENSE.GPL"), join(dist_dir, "chemdiff", fullChemdiffName, "LICENSE.GPL"))
-        shutil.copytree(join(root, "utils", "chemdiff", "tests"), join(dist_dir, "chemdiff", fullChemdiffName, "tests"))
+        #shutil.copytree(join(root, "utils", "chemdiff", "tests"), join(dist_dir, "chemdiff", fullChemdiffName, "tests"))
         os.chdir(join(dist_dir, "chemdiff", fullChemdiffName))
         os.mkdir("lib")
         for file in glob.glob("../../indigo-java/*.jar"):
@@ -57,9 +57,9 @@ for filename in os.listdir(dist_dir):
                 shutil.copy(file, "lib")
         shutil.copy(join(root, "common/java/common-controls/dist/common-controls.jar"), "lib")
         if os.name == "nt" and os.path.exists("chemdiff.sh"):
-            with open("chemdiff.sh", "rb") as f:
+            with open("chemdiff.sh", "rt") as f:
                 text = f.read()
-            with open("chemdiff.sh", "wb") as f:
+            with open("chemdiff.sh", "wt") as f:
                 f.write(text.replace("\r\n", "\n"))
         os.chdir(dist_dir)
         shutil.make_archive(fullChemdiffName, "zip", "chemdiff")
@@ -71,7 +71,7 @@ for filename in os.listdir(dist_dir):
             os.chdir(dist_dir)
         shutil.rmtree("chemdiff")
         shutil.rmtree("indigo-java")
-        
+
 # Legio
 for filename in os.listdir(dist_dir):
     if filename.startswith("indigo-java-") :
