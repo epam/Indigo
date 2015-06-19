@@ -1362,6 +1362,8 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const CycleSmart &c
    QS_DEF(Array<int>, segment_component_number);
    segment_component_number.clear();
 
+   segment.clear();
+
    for (int i = 0; i < _layout_component_count; i++) if (layout_comp_touch[i]) {
 
       // search of vertices touch to i-th layout component
@@ -1447,7 +1449,6 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const CycleSmart &c
 
    int segment_count = segment_graph.size();
 
-   segment.clear();
 
    int current_number = 0;
    for (int i = 0; i < cycle_size; i++) if (number_of_segment[i] != -1) {
