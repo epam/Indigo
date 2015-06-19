@@ -358,7 +358,7 @@ void MoleculeLayout::_make ()
    if (smart_layout) {
        for (int i = _layout_graph_smart.vertexBegin(); i < _layout_graph_smart.vertexEnd(); i = _layout_graph_smart.vertexNext(i))
        {
-           const LayoutVertexSmart &vert = _layout_graph_smart.getLayoutVertex(i);
+           const LayoutVertex &vert = _layout_graph_smart.getLayoutVertex(i);
            _bm->setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
        }
    }

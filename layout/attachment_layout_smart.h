@@ -15,7 +15,7 @@
 #ifndef __attachment_layout_smart_h__
 #define __attachment_layout_smart_h__
 
-#include "layout/molecule_layout_graph_smart.h"
+#include "layout/molecule_layout_graph.h"
 #include "graph/biconnected_decomposer.h"
 
 namespace indigo {

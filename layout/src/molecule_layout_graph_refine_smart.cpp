@@ -17,7 +17,7 @@
 #include "graph/graph_subchain_enumerator.h"
 #include "graph/biconnected_decomposer.h"
 #include "graph/path_enumerator.h"
-#include "layout/molecule_layout_graph_smart.h"
+#include "layout/molecule_layout_graph.h"
 #include "layout/refinement_state_smart.h"
 
 using namespace indigo;

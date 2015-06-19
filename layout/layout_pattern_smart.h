@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __layout_pattern_h__
-#define __layout_pattern_h__
+#ifndef __layout_pattern_smart_h__
+#define __layout_pattern_smart_h__
 
 #include "base_c/defs.h"
 

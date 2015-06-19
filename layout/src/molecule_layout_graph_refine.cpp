@@ -22,7 +22,7 @@
 
 using namespace indigo;
 
-bool MoleculeLayoutGraph::_edge_check (Graph &graph, int e_idx, void *context_)
+bool MoleculeLayoutGraphSimple::_edge_check (Graph &graph, int e_idx, void *context_)
 {
    /*
    EnumContext &context = *(EnumContext *)context_;
@@ -38,7 +38,7 @@ bool MoleculeLayoutGraph::_edge_check (Graph &graph, int e_idx, void *context_)
    return true;
 }
 
-bool MoleculeLayoutGraph::_path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context_)
+bool MoleculeLayoutGraphSimple::_path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context_)
 {
    EnumContext &context = *(EnumContext *)context_;
    int i;
@@ -59,7 +59,7 @@ bool MoleculeLayoutGraph::_path_handle (Graph &graph, const Array<int> &vertices
 }
 
 // Split graph in two branches by acyclic edge (its vertices are in different branches)
-void MoleculeLayoutGraph::_makeBranches (Array<int> &branches, int edge, Filter &filter) const
+void MoleculeLayoutGraphSimple::_makeBranches (Array<int> &branches, int edge, Filter &filter) const
 {
    branches.clear_resize(vertexEnd());
    branches.zerofill();
@@ -102,7 +102,7 @@ void MoleculeLayoutGraph::_makeBranches (Array<int> &branches, int edge, Filter 
    filter.init(branches.ptr(), Filter::EQ, 1);
 }
 
-bool MoleculeLayoutGraph::_allowRotateAroundVertex (int idx) const
+bool MoleculeLayoutGraphSimple::_allowRotateAroundVertex (int idx) const
 {
    if (_molecule != 0)
    {
@@ -123,7 +123,7 @@ bool MoleculeLayoutGraph::_allowRotateAroundVertex (int idx) const
 }
 
 // Increase minimal distance between vertices
-void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_decomposer, const ObjArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree)
+void MoleculeLayoutGraphSimple::_refineCoordinates (const BiconnectedDecomposer &bc_decomposer, const ObjArray<MoleculeLayoutGraphSimple> &bc_components, const Array<int> &bc_tree)
 {
    RefinementState beg_state(*this);
    RefinementState best_state(*this);
@@ -403,7 +403,7 @@ void MoleculeLayoutGraph::_refineCoordinates (const BiconnectedDecomposer &bc_de
    _excludeDandlingIntersections();
 }
 
-void MoleculeLayoutGraph::_excludeDandlingIntersections ()
+void MoleculeLayoutGraphSimple::_excludeDandlingIntersections ()
 {
    QS_DEF(Array<int>, edges);
    int i, j, res, beg1, end1, beg2, end2;

@@ -18,7 +18,6 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "layout/molecule_layout_graph.h"
-#include "layout/molecule_layout_graph_smart.h"
 #include "layout/metalayout.h"
 #include "base_cpp/cancellation_handler.h"
 
@@ -67,7 +66,7 @@ protected:
    AutoPtr<BaseMolecule> _molCollapsed;
    BaseMolecule*         _bm;
    Array<int>            _atomMapping;
-   MoleculeLayoutGraph   _layout_graph;
+   MoleculeLayoutGraphSimple   _layout_graph;
    MoleculeLayoutGraphSmart   _layout_graph_smart;
    Array<BaseMolecule*>  _map;
    bool _query;

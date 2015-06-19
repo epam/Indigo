@@ -15,7 +15,7 @@
 #ifndef __refinement_state_smart_h__
 #define __refinement_state_smart_h__
 
-#include "layout/molecule_layout_graph_smart.h"
+#include "layout/molecule_layout_graph.h"
 
 namespace indigo {
 

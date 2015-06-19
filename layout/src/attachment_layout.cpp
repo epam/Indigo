@@ -19,9 +19,9 @@ using namespace indigo;
 CP_DEF(AttachmentLayout);
 
 AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer &bc_decom,
-                                   const ObjArray<MoleculeLayoutGraph> &bc_components,
+                                   const ObjArray<MoleculeLayoutGraphSimple> &bc_components,
                                    const Array<int> &bc_tree,
-                                   MoleculeLayoutGraph &graph, int src_vertex) :
+                                   MoleculeLayoutGraphSimple &graph, int src_vertex) :
 _src_vertex(src_vertex),
 CP_INIT,
 TL_CP_GET(_src_vertex_map),
@@ -57,7 +57,7 @@ _graph(graph)
       if (i < n_comp)
          _attached_bc[i] = bc_decom.getIncomingComponents(_src_vertex)[i];
 
-      const MoleculeLayoutGraph &cur_bc = bc_components[_attached_bc[i]];
+      const MoleculeLayoutGraphSimple &cur_bc = bc_components[_attached_bc[i]];
 
       _src_vertex_map[i] = cur_bc.findVertexByExtIdx(_src_vertex);
       _bc_angles[i] = cur_bc.calculateAngle(_src_vertex_map[i], v1, v2);
@@ -179,7 +179,7 @@ void AttachmentLayout::markDrawnVertices()
 
    for (i = 0; i < _attached_bc.size(); i++)
    {
-      const MoleculeLayoutGraph &comp = _bc_components[_attached_bc[i]];
+      const MoleculeLayoutGraphSimple &comp = _bc_components[_attached_bc[i]];
 
       for (j = comp.vertexBegin(); j < comp.vertexEnd(); j = comp.vertexNext(j))
       {
@@ -270,7 +270,7 @@ void LayoutChooser::_makeLayout ()
 
       // Shift and rotate component so cur_angle is the angle between [v1C,v2C] and drawn edge [v,v2]
       int comp_idx = _comp_permutation[i];
-      const MoleculeLayoutGraph &comp = _layout._bc_components[_layout._attached_bc[comp_idx]];
+      const MoleculeLayoutGraphSimple &comp = _layout._bc_components[_layout._attached_bc[comp_idx]];
 
       v1C = _layout._src_vertex_map[comp_idx];
       v2C = _layout._vertices_l[comp_idx];
@@ -313,8 +313,8 @@ void LayoutChooser::_makeLayout ()
    // respect cis/trans
    const int *molecule_edge_mapping = 0;
    const BaseMolecule *molecule = _layout._graph.getMolecule(&molecule_edge_mapping);
-   const MoleculeLayoutGraph &drawn_comp = _layout._bc_components[_layout._attached_bc[1]];
-   MoleculeLayoutGraph &attach_comp = (MoleculeLayoutGraph &)_layout._bc_components[_layout._attached_bc[0]];
+   const MoleculeLayoutGraphSimple &drawn_comp = _layout._bc_components[_layout._attached_bc[1]];
+   MoleculeLayoutGraphSimple &attach_comp = (MoleculeLayoutGraphSimple &)_layout._bc_components[_layout._attached_bc[0]];
    
    if (_n_components == 1 && molecule != 0 && drawn_comp.isSingleEdge())
    {

@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "layout/molecule_layout_graph_smart.h"
+#include "layout/molecule_layout_graph.h"
 
 using namespace indigo;
 

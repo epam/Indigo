@@ -91,7 +91,7 @@ static bool _isRayIntersect (float a, float b, const Vec2f &p, const Vec2f &v1, 
 
 // Check if point is outside biconnected component
 // By calculating number of intersections of ray
-bool MoleculeLayoutGraph::_isPointOutside (const Vec2f &p) const
+bool MoleculeLayoutGraphSimple::_isPointOutside (const Vec2f &p) const
 {
    int i, count = 0;
    float a, b;
@@ -183,7 +183,7 @@ bool MoleculeLayoutGraph::_isPointOutside (const Vec2f &p) const
 
 // Check if point is outside cycle
 // By calculating number of intersections of ray
-bool MoleculeLayoutGraph::_isPointOutsideCycle (const Cycle &cycle, const Vec2f &p) const
+bool MoleculeLayoutGraphSimple::_isPointOutsideCycle (const Cycle &cycle, const Vec2f &p) const
 {
    int i, count = 0;
    float a, b;
@@ -238,7 +238,7 @@ bool MoleculeLayoutGraph::_isPointOutsideCycle (const Cycle &cycle, const Vec2f 
 }
 
 // The same but with mapping
-bool MoleculeLayoutGraph::_isPointOutsideCycleEx (const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const
+bool MoleculeLayoutGraphSimple::_isPointOutsideCycleEx (const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const
 {
    // TODO: check that point 'p' is equal to the one of cycle points (sometimes it happens)
    float a, b;
@@ -286,7 +286,7 @@ bool MoleculeLayoutGraph::_isPointOutsideCycleEx (const Cycle &cycle, const Vec2
 }
 
 // Extract component border
-void MoleculeLayoutGraph::_getBorder (Cycle &border) const
+void MoleculeLayoutGraphSimple::_getBorder (Cycle &border) const
 {
    QS_DEF(Array<int>, vertices);
    QS_DEF(Array<int>, edges);
@@ -342,7 +342,7 @@ void MoleculeLayoutGraph::_getBorder (Cycle &border) const
 }
 
 // Split border in two parts by two vertices
-void MoleculeLayoutGraph::_splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const
+void MoleculeLayoutGraphSimple::_splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const
 {
    Cycle border;
 
@@ -388,9 +388,9 @@ void MoleculeLayoutGraph::_splitBorder (int v1, int v2, Array<int> &part1v, Arra
 
 // Cycle enumerator callback
 // Check if cycle is boundary and mark vertices and edges as boundary/internal
-bool MoleculeLayoutGraph::_border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
+bool MoleculeLayoutGraphSimple::_border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
 {
-   MoleculeLayoutGraph &self = *(MoleculeLayoutGraph *)context;
+   MoleculeLayoutGraphSimple &self = *(MoleculeLayoutGraphSimple *)context;
    Cycle cycle(vertices, edges);
 
    //cycle.canonize();

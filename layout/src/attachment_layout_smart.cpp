@@ -190,14 +190,14 @@ void AttachmentLayoutSmart::markDrawnVertices()
 
       for (j = comp.vertexBegin(); j < comp.vertexEnd(); j = comp.vertexNext(j))
       {
-         const LayoutVertexSmart &vert = comp.getLayoutVertex(j);
+         const LayoutVertex &vert = comp.getLayoutVertex(j);
 
          _graph.setVertexType(vert.ext_idx, vert.type);
       }
 
       for (j = comp.edgeBegin(); j < comp.edgeEnd(); j = comp.edgeNext(j))
       {
-         const LayoutEdgeSmart &edge = comp.getLayoutEdge(j);
+         const LayoutEdge &edge = comp.getLayoutEdge(j);
 
          _graph.setEdgeType(edge.ext_idx, edge.type);
       }

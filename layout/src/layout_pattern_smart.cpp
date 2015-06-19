@@ -21,7 +21,7 @@
 #include "molecule/query_molecule.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molecule_substructure_matcher.h"
-#include "layout/molecule_layout_graph_smart.h"
+#include "layout/molecule_layout_graph.h"
 
 #include "base_cpp/profiling.h"
 
@@ -33,14 +33,14 @@
 using namespace indigo;
 using namespace std;
 
-class DLLEXPORT PatternLayout
+class DLLEXPORT PatternLayoutSmart
 {      
 public:
    QueryMolecule query_molecule;
    MoleculeLayoutGraphSmart layout_graph;
 };
 
-static vector<unique_ptr<PatternLayout>> _patterns;
+static vector<unique_ptr<PatternLayoutSmart>> _patterns;
 static OsLock _patterns_lock;
 
 bool PatternLayoutFinder::tryToFindPattern (MoleculeLayoutGraphSmart &layout_graph)
@@ -113,7 +113,7 @@ void PatternLayoutFinder::_initPatterns ()
    _patterns.reserve(NELEM(layout_templates));
    for (const char *tpl : layout_templates)
    {
-      _patterns.emplace_back(new PatternLayout);
+      _patterns.emplace_back(new PatternLayoutSmart);
       auto &pattern = _patterns.back();
 
       BufferScanner scanner(tpl);

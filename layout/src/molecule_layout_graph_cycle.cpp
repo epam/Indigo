@@ -16,9 +16,9 @@
 
 using namespace indigo;
 
-CP_DEF(MoleculeLayoutGraph::Cycle);
+CP_DEF(MoleculeLayoutGraphSimple::Cycle);
 
-MoleculeLayoutGraph::Cycle::Cycle () :
+MoleculeLayoutGraphSimple::Cycle::Cycle () :
 CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges)
@@ -28,7 +28,7 @@ TL_CP_GET(_edges)
    _max_idx = 0;
 }
 
-MoleculeLayoutGraph::Cycle::Cycle (const List<int> &edges, const MoleculeLayoutGraph &graph) :
+MoleculeLayoutGraphSimple::Cycle::Cycle (const List<int> &edges, const MoleculeLayoutGraphSimple &graph) :
 CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges)
@@ -36,7 +36,7 @@ TL_CP_GET(_edges)
    copy(edges, graph);
 }
 
-MoleculeLayoutGraph::Cycle::Cycle (const Array<int> &vertices, const Array<int> &edges) :
+MoleculeLayoutGraphSimple::Cycle::Cycle (const Array<int> &vertices, const Array<int> &edges) :
 CP_INIT,
 TL_CP_GET(_vertices),
 TL_CP_GET(_edges)
@@ -44,7 +44,7 @@ TL_CP_GET(_edges)
    copy(vertices, edges);
 }
 
-void MoleculeLayoutGraph::Cycle::copy (const List<int> &edges, const MoleculeLayoutGraph &graph)
+void MoleculeLayoutGraphSimple::Cycle::copy (const List<int> &edges, const MoleculeLayoutGraphSimple &graph)
 {
    int i = edges.begin();
    const Edge &edge1 = graph.getEdge(edges[i]);
@@ -79,7 +79,7 @@ void MoleculeLayoutGraph::Cycle::copy (const List<int> &edges, const MoleculeLay
          _max_idx = _vertices[i];
 }
 
-void MoleculeLayoutGraph::Cycle::copy (const Array<int> &vertices, const Array<int> &edges)
+void MoleculeLayoutGraphSimple::Cycle::copy (const Array<int> &vertices, const Array<int> &edges)
 {
    _vertices.copy(vertices);
    _edges.copy(edges);
@@ -90,7 +90,7 @@ void MoleculeLayoutGraph::Cycle::copy (const Array<int> &vertices, const Array<i
          _max_idx = _vertices[i];
 }
 
-void MoleculeLayoutGraph::Cycle::calcMorganCode (const MoleculeLayoutGraph &parent_graph)
+void MoleculeLayoutGraphSimple::Cycle::calcMorganCode (const MoleculeLayoutGraphSimple &parent_graph)
 {
    _morgan_code = 0;
 
@@ -98,7 +98,7 @@ void MoleculeLayoutGraph::Cycle::calcMorganCode (const MoleculeLayoutGraph &pare
       _morgan_code += parent_graph.getLayoutVertex(_vertices[i]).morgan_code;
 }
 
-void MoleculeLayoutGraph::Cycle::canonize ()
+void MoleculeLayoutGraphSimple::Cycle::canonize ()
 {
    // 1. v(0)<v(i), i=1,...,l-1 ; 2. v(1)< v(l-2) => unique representation of cycle
    int min_idx = 0, i;
@@ -145,7 +145,7 @@ void MoleculeLayoutGraph::Cycle::canonize ()
    }
 }
 
-bool MoleculeLayoutGraph::Cycle::contains (const Cycle &another) const
+bool MoleculeLayoutGraphSimple::Cycle::contains (const Cycle &another) const
 {
    if (vertexCount() < another.vertexCount())
       return false;
@@ -168,7 +168,7 @@ bool MoleculeLayoutGraph::Cycle::contains (const Cycle &another) const
 // Cycle sorting callback
 // Order by size: 6, 5, 7, 8, 4, 3, 9, 10, 11, ..
 // If cycles has the same size then Morgan code in descending order (higher first)
-int MoleculeLayoutGraph::Cycle::compare_cb (int &idx1, int &idx2, void *context)
+int MoleculeLayoutGraphSimple::Cycle::compare_cb (int &idx1, int &idx2, void *context)
 {
    const ObjPool<Cycle> &cycles = *(const ObjPool<Cycle> *)context;
 

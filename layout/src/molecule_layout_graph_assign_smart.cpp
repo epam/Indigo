@@ -15,7 +15,7 @@
 //#include "api/src/indigo_internal.h"
 
 #include "base_cpp/profiling.h"
-#include "layout/molecule_layout_graph_smart.h"
+#include "layout/molecule_layout_graph.h"
 #include "layout/molecule_layout_macrocycles.h"
 #include "layout/attachment_layout_smart.h"
 #include "graph/biconnected_decomposer.h"
@@ -45,7 +45,7 @@ void MoleculeLayoutGraphSmart::_copyLayout (MoleculeLayoutGraphSmart &component)
 
    for (i = component.vertexBegin(); i < component.vertexEnd(); i = component.vertexNext(i))
    {
-      LayoutVertexSmart &vert = component._layout_vertices[i];
+      LayoutVertex &vert = component._layout_vertices[i];
 
       _layout_vertices[vert.ext_idx].pos.copy(vert.pos);
       _layout_vertices[vert.ext_idx].type = vert.type;
@@ -53,7 +53,7 @@ void MoleculeLayoutGraphSmart::_copyLayout (MoleculeLayoutGraphSmart &component)
 
    for (i = component.edgeBegin(); i < component.edgeEnd(); i = component.edgeNext(i))
    {
-      LayoutEdgeSmart &edge = component._layout_edges[i];
+      LayoutEdge &edge = component._layout_edges[i];
 
       _layout_edges[edge.ext_idx].type = edge.type;
    }
@@ -62,8 +62,8 @@ void MoleculeLayoutGraphSmart::_copyLayout (MoleculeLayoutGraphSmart &component)
 static int _vertex_cmp (int &n1, int &n2, void *context)
 {
    const MoleculeLayoutGraphSmart &graph = *(MoleculeLayoutGraphSmart *)context;
-   const LayoutVertexSmart &v1 = graph.getLayoutVertex(n1);
-   const LayoutVertexSmart &v2 = graph.getLayoutVertex(n2);
+   const LayoutVertex &v1 = graph.getLayoutVertex(n1);
+   const LayoutVertex &v2 = graph.getLayoutVertex(n2);
 
    if (v1.is_cyclic != v2.is_cyclic)
    {
@@ -544,7 +544,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const CycleSmart &cycle)
 	   // !!
 	   int order_next = 0;
 	   int edge_number = cycle.getEdge(i);
-	   LayoutEdgeSmart edge = _layout_edges[edge_number];
+	   LayoutEdge edge = _layout_edges[edge_number];
 	   int ext_edge_number = edge.orig_idx;
 	   int order = _molecule->getBondOrder(ext_edge_number);
 	   switch (order) {

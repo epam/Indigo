@@ -14,7 +14,7 @@
 
 #include "graph/biconnected_decomposer.h"
 #include "graph/morgan_code.h"
-#include "layout/molecule_layout_graph_smart.h"
+#include "layout/molecule_layout_graph.h"
 
 using namespace indigo;
 
@@ -54,13 +54,13 @@ bool MoleculeLayoutGraphSmart::isSingleEdge () const
    return edgeCount() == 1 && vertexCount() == 2;
 }
 
-void MoleculeLayoutGraphSmart::registerLayoutVertex (int idx, const LayoutVertexSmart &vertex)
+void MoleculeLayoutGraphSmart::registerLayoutVertex (int idx, const LayoutVertex &vertex)
 {
    _layout_vertices.expand(idx + 1);
    _layout_vertices[idx] = vertex;
 }
 
-void MoleculeLayoutGraphSmart::registerLayoutEdge (int idx, const LayoutEdgeSmart &edge)
+void MoleculeLayoutGraphSmart::registerLayoutEdge (int idx, const LayoutEdge &edge)
 {
    _layout_edges.expand(idx + 1);
    _layout_edges[idx] = edge;
@@ -70,7 +70,7 @@ int MoleculeLayoutGraphSmart::addLayoutVertex (int ext_idx, int type)
 {
    int new_idx = Graph::addVertex();
 
-   LayoutVertexSmart new_vertex;
+   LayoutVertex new_vertex;
 
    new_vertex.ext_idx = ext_idx;
    new_vertex.type = type;
@@ -84,7 +84,7 @@ int MoleculeLayoutGraphSmart::addLayoutEdge (int beg, int end, int ext_idx, int 
 {
    int new_idx = Graph::addEdge(beg, end);
 
-   LayoutEdgeSmart new_edge;
+   LayoutEdge new_edge;
 
    new_edge.ext_idx = ext_idx;
    new_edge.type = type;
@@ -94,12 +94,12 @@ int MoleculeLayoutGraphSmart::addLayoutEdge (int beg, int end, int ext_idx, int 
    return new_idx;
 }
 
-const LayoutVertexSmart & MoleculeLayoutGraphSmart::getLayoutVertex (int idx) const
+const LayoutVertex & MoleculeLayoutGraphSmart::getLayoutVertex (int idx) const
 {
    return _layout_vertices[idx];
 }
 
-const LayoutEdgeSmart & MoleculeLayoutGraphSmart::getLayoutEdge (int idx) const
+const LayoutEdge & MoleculeLayoutGraphSmart::getLayoutEdge (int idx) const
 {
    return _layout_edges[idx];
 }
@@ -122,8 +122,8 @@ void MoleculeLayoutGraphSmart::makeOnGraph (Graph &graph)
    // vertices and edges
    cloneGraph (graph, &mapping);
 
-   LayoutVertexSmart new_vertex;
-   LayoutEdgeSmart new_edge;
+   LayoutVertex new_vertex;
+   LayoutEdge new_edge;
 
    new_vertex.type = ELEMENT_NOT_DRAWN;
    new_vertex.is_cyclic = false;
@@ -172,8 +172,8 @@ void MoleculeLayoutGraphSmart::makeLayoutSubgraph (MoleculeLayoutGraphSmart &gra
    if (edge_filter != 0) makeSubgraph(graph, vertices, &vertex_mapping, &edges, &edge_mapping);
    else makeSubgraph(graph, vertices, &vertex_mapping);
 
-   LayoutVertexSmart new_vertex;
-   LayoutEdgeSmart new_edge;
+   LayoutVertex new_vertex;
+   LayoutEdge new_edge;
 
    new_vertex.is_cyclic = false;
 
@@ -215,8 +215,8 @@ void MoleculeLayoutGraphSmart::cloneLayoutGraph (MoleculeLayoutGraphSmart &other
 
    cloneGraph(other, mapping);
 
-   LayoutVertexSmart new_vertex;
-   LayoutEdgeSmart new_edge;
+   LayoutVertex new_vertex;
+   LayoutEdge new_edge;
 
    for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
    {

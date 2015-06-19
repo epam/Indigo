@@ -48,7 +48,7 @@ float f2 (float X, int L, float s)
    return f;	
 }
 
-void MoleculeLayoutGraph::_findAngles (int k, float s, float &x, float &y)
+void MoleculeLayoutGraphSimple::_findAngles (int k, float s, float &x, float &y)
 { 
    int L;
    float a0,  b0;
@@ -97,7 +97,7 @@ void MoleculeLayoutGraph::_findAngles (int k, float s, float &x, float &y)
    }
 }
 
-float MoleculeLayoutGraph::_dichotomy1 (float a0, float b0, int L, float s)
+float MoleculeLayoutGraphSimple::_dichotomy1 (float a0, float b0, int L, float s)
 {
    // Return root of the equation f1 ( x,l,S]=0;
    // if there are a root at the [a0,b0].;
@@ -130,7 +130,7 @@ float MoleculeLayoutGraph::_dichotomy1 (float a0, float b0, int L, float s)
    }
 }
 
-float MoleculeLayoutGraph::_dichotomy2 (float a0, float b0, int L, float s)
+float MoleculeLayoutGraphSimple::_dichotomy2 (float a0, float b0, int L, float s)
 {
    // Return root of the equation f2 ( x,l,S]=0;
    // if there are a root at the [a0,b0].;
@@ -164,7 +164,7 @@ float MoleculeLayoutGraph::_dichotomy2 (float a0, float b0, int L, float s)
 }
 
 // Complete regular curve from v1 to v2 by vertices in chain
-bool MoleculeLayoutGraph::_drawRegularCurve (const Array<int> &chain, int v1, int v2, float length, bool ccw, int type)
+bool MoleculeLayoutGraphSimple::_drawRegularCurve (const Array<int> &chain, int v1, int v2, float length, bool ccw, int type)
 {
    QS_DEF(Array<int>, mapping);
 
@@ -176,7 +176,7 @@ bool MoleculeLayoutGraph::_drawRegularCurve (const Array<int> &chain, int v1, in
    return _drawRegularCurveEx(chain, v1, v2, length, ccw, type, mapping);
 }
 
-bool MoleculeLayoutGraph::_drawRegularCurveEx (const Array<int> &chain, int v1, int v2, float length, bool ccw, int type, const Array<int> &mapping)
+bool MoleculeLayoutGraphSimple::_drawRegularCurveEx (const Array<int> &chain, int v1, int v2, float length, bool ccw, int type, const Array<int> &mapping)
 {
    float s, x0 = 0.f, y0 = 0.f;
    int i, k, L;
@@ -277,7 +277,7 @@ bool MoleculeLayoutGraph::_drawRegularCurveEx (const Array<int> &chain, int v1, 
 }
 
 // Check vertex is inside the edge
-bool MoleculeLayoutGraph::_isVertexOnEdge (int vert_idx, int edge_beg, int edge_end) const
+bool MoleculeLayoutGraphSimple::_isVertexOnEdge (int vert_idx, int edge_beg, int edge_end) const
 {
    float a1, a0, b1, b0;
    float t, eps = 0.05f;
@@ -338,7 +338,7 @@ bool MoleculeLayoutGraph::_isVertexOnEdge (int vert_idx, int edge_beg, int edge_
       return false;
 }
 
-bool MoleculeLayoutGraph::_isVertexOnSomeEdge (int vert_idx) const
+bool MoleculeLayoutGraphSimple::_isVertexOnSomeEdge (int vert_idx) const
 {
    int i;
 
@@ -358,7 +358,7 @@ bool MoleculeLayoutGraph::_isVertexOnSomeEdge (int vert_idx) const
 }
 
 // Translate edge by delta orthogonally
-void MoleculeLayoutGraph::_shiftEdge (int edge_idx, float delta)
+void MoleculeLayoutGraphSimple::_shiftEdge (int edge_idx, float delta)
 {
    float norm;
    const Edge &edge = getEdge(edge_idx);
@@ -376,7 +376,7 @@ void MoleculeLayoutGraph::_shiftEdge (int edge_idx, float delta)
 // Calculate angle v1vv2 such the edge (v,v1) is on the right and (v,v2) is on the left
 // if component is trivial return 0
 // if v is internal return 2pi
-float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
+float MoleculeLayoutGraphSimple::calculateAngle (int v, int &v1, int &v2) const
 {
    int i, j;
    Vec2f p, p0; 
@@ -497,7 +497,7 @@ float MoleculeLayoutGraph::calculateAngle (int v, int &v1, int &v2) const
 }
 
 // Calculate position by adding one unit with given angle to the segment
-void MoleculeLayoutGraph::_calculatePos (float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v)
+void MoleculeLayoutGraphSimple::_calculatePos (float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v)
 { 
    float alpha;
    Vec2f dir;
@@ -526,7 +526,7 @@ void MoleculeLayoutGraph::_calculatePos (float phi, const Vec2f &v1, const Vec2f
 //  x = (x1 - x0) * t + x0;
 //  y = (y1 - y0) * t + y0;
 //  0 <= t <= 1;
-int MoleculeLayoutGraph::_calcIntersection (int edge1_idx, int edge2_idx) const
+int MoleculeLayoutGraphSimple::_calcIntersection (int edge1_idx, int edge2_idx) const
 {
    float a11,  a12,  a21,  a22,  b1,  b2;
    float delta,  delta1,  delta2,  t,  s;
