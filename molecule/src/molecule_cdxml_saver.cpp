@@ -352,7 +352,22 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
             s->SetAttribute("size", 10);
             s->SetAttribute("face", 96);
 
-            TiXmlText * txt = new TiXmlText("A");
+			out.clear();
+			out.printf("A");
+			/*
+			 * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
+			*/
+			/*if (charge != 0) {
+				if (charge > 0) {
+					out.printf("+%d", charge);
+				}
+				else {
+					out.printf("-%d", charge);
+				}
+			}*/
+			buf.push(0);
+
+            TiXmlText * txt = new TiXmlText(buf.ptr());
             s->LinkEndChild(txt);
          }
          else if (mol.isPseudoAtom(i))
@@ -362,7 +377,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
          
             QS_DEF(Array<char>, buf);
             ArrayOutput out(buf);
-            out.printf(buf.ptr(), "%f %f", pos.x, -pos.y);
+            out.printf("%f %f", pos.x, -pos.y);
             buf.push(0);
             t->SetAttribute("p", buf.ptr());
             t->SetAttribute("LabelJustification", "Left");
@@ -373,7 +388,22 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
             s->SetAttribute("size", 10);
             s->SetAttribute("face", 96);
 
-            TiXmlText * txt = new TiXmlText(mol.getPseudoAtom(i));
+			out.clear();
+
+			out.printf("%s", mol.getPseudoAtom(i));
+			/*
+			* Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
+			*/
+			/*if (charge != 0) {
+				if (charge > 0) {
+					out.printf("+%d", charge);
+				}
+				else {
+					out.printf("-%d", charge);
+				}
+			}*/
+			buf.push(0);
+			TiXmlText * txt = new TiXmlText(buf.ptr());
             s->LinkEndChild(txt);
          }
       }
@@ -488,7 +518,11 @@ void MoleculeCdxmlSaver::addCustomText(const Vec2f &pos, const char *alignment, 
    buf.push(0);
    t->SetAttribute("p", buf.ptr());
    t->SetAttribute("Justification", alignment);
-   t->SetAttribute("LineHeight", sprintf(buf.ptr(), "%f", line_height));
+
+   out.clear();
+   out.printf("%f", line_height);
+   buf.push(0);
+   t->SetAttribute("LineHeight", buf.ptr());
 
    TiXmlUnknown * s = new TiXmlUnknown();
    buf.readString(text, false);
@@ -499,7 +533,6 @@ void MoleculeCdxmlSaver::addCustomText(const Vec2f &pos, const char *alignment, 
 	  s->SetValue(buf.ptr());
 	  t->LinkEndChild(s);
    }
-   //buf.remove(0);
    
 }
 
