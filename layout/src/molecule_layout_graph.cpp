@@ -21,7 +21,13 @@ using namespace indigo;
 IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
 
 MoleculeLayoutGraph::MoleculeLayoutGraph() {
-
+    max_iterations = 0;
+    _total_morgan_code = 0;
+    _first_vertex_idx = -1;
+    _n_fixed = 0;
+    _molecule = 0;
+    _molecule_edge_mapping = 0;
+    cancellation = 0;
 }
 
 MoleculeLayoutGraph::~MoleculeLayoutGraph() {
@@ -34,13 +40,6 @@ IMPL_ERROR(MoleculeLayoutGraphSimple, "layout_graph");
 
 MoleculeLayoutGraphSimple::MoleculeLayoutGraphSimple() :MoleculeLayoutGraph()
 {
-   _total_morgan_code = 0;
-   _first_vertex_idx = -1;
-   _n_fixed = 0;
-   _molecule = 0;
-   _molecule_edge_mapping = 0;
-   max_iterations = 0;
-   cancellation = 0;
    _flipped = false;
 }
 

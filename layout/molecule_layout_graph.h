@@ -76,7 +76,29 @@ public:
     explicit MoleculeLayoutGraph();
     virtual ~MoleculeLayoutGraph();
 
+    int max_iterations;
+
+    CancellationHandler* cancellation;
+
     DECL_ERROR;
+
+protected:
+    ObjArray<LayoutVertex> _layout_vertices;
+    ObjArray<LayoutEdge>   _layout_edges;
+
+    Array<int> _fixed_vertices;
+
+    long _total_morgan_code;
+    int  _first_vertex_idx;
+    int _n_fixed;
+
+    // Outline of the graph (from pattern)
+    Obj< Array<Vec2f> > _outline;
+
+    BaseMolecule *_molecule;
+    const int *_molecule_edge_mapping;
+
+
 };
 
 class DLLEXPORT MoleculeLayoutGraphSimple : public MoleculeLayoutGraph
@@ -120,10 +142,6 @@ public:
    
    const BaseMolecule *getMolecule (const int **molecule_edge_mapping) { *molecule_edge_mapping = _molecule_edge_mapping; return _molecule; }
 
-   int max_iterations;
-      
-   CancellationHandler* cancellation;
-   
    void flipped () { _flipped = true; }
    bool isFlipped () const { return _flipped; }
 
@@ -260,21 +278,6 @@ protected:
    void _layoutMultipleComponents (BaseMolecule & molecule, bool respect_existing, const Filter * filter, float bond_length);
    void _layoutSingleComponent (BaseMolecule &molecule, bool respect_existing, const Filter * filter, float bond_length);
 
-   ObjArray<LayoutVertex> _layout_vertices;
-   ObjArray<LayoutEdge>   _layout_edges;
-
-   Array<int> _fixed_vertices;
-
-   long _total_morgan_code;
-   int  _first_vertex_idx;
-   int _n_fixed;
-
-   // Outline of the graph (from pattern)
-   Obj< Array<Vec2f> > _outline;
-
-   BaseMolecule *_molecule;
-   const int *_molecule_edge_mapping;
-   
    bool _flipped; // component was flipped after attaching
 
    TL_DECL(ObjArray<PatternLayout>, _patterns);
@@ -428,10 +431,7 @@ public:
 
     const int *getEdgeMapping() { return _molecule_edge_mapping; }
 
-    int max_iterations;
     bool smart_layout;
-
-    CancellationHandler* cancellation;
 
     double _get_square();
 
@@ -609,23 +609,10 @@ protected:
     void _layoutMultipleComponents(BaseMolecule & molecule, bool respect_existing, const Filter * filter, float bond_length);
     void _layoutSingleComponent(BaseMolecule &molecule, bool respect_existing, const Filter * filter, float bond_length);
 
-    ObjArray<LayoutVertex> _layout_vertices;
-    ObjArray<LayoutEdge>   _layout_edges;
-
-    Array<int> _fixed_vertices;
     Array<int> _layout_component_number; // number of layout component of certain edge
-
     int _layout_component_count;
-    long _total_morgan_code;
-    int  _first_vertex_idx;
-    int _n_fixed;
 
-    // Outline of the graph (from pattern)
-    Obj< Array<Vec2f> > _outline;
-
-    BaseMolecule *_molecule;
     MoleculeLayoutGraphSmart *_graph;
-    const int *_molecule_edge_mapping;
 
 private:
     MoleculeLayoutGraphSmart(const MoleculeLayoutGraphSmart&);

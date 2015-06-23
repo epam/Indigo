@@ -22,13 +22,7 @@ IMPL_ERROR(MoleculeLayoutGraphSmart, "layout_graph_smart");
 
 MoleculeLayoutGraphSmart::MoleculeLayoutGraphSmart() : MoleculeLayoutGraph()
 {
-   _total_morgan_code = 0;
-   _first_vertex_idx = -1;
-   _n_fixed = 0;
-   _molecule = 0;
-   _molecule_edge_mapping = 0;
-   max_iterations = 0;
-   cancellation = 0;
+    smart_layout = false;
 }
 
 MoleculeLayoutGraphSmart::~MoleculeLayoutGraphSmart ()
