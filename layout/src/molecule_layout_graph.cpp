@@ -18,11 +18,21 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
+
+MoleculeLayoutGraph::MoleculeLayoutGraph() {
+
+}
+
+MoleculeLayoutGraph::~MoleculeLayoutGraph() {
+
+}
+
 TL_DEF(MoleculeLayoutGraphSimple, ObjArray<PatternLayout>, _patterns);
 
 IMPL_ERROR(MoleculeLayoutGraphSimple, "layout_graph");
 
-MoleculeLayoutGraphSimple::MoleculeLayoutGraphSimple ()
+MoleculeLayoutGraphSimple::MoleculeLayoutGraphSimple() :MoleculeLayoutGraph()
 {
    _total_morgan_code = 0;
    _first_vertex_idx = -1;

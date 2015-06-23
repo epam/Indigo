@@ -20,7 +20,7 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutGraphSmart, "layout_graph_smart");
 
-MoleculeLayoutGraphSmart::MoleculeLayoutGraphSmart ()
+MoleculeLayoutGraphSmart::MoleculeLayoutGraphSmart() : MoleculeLayoutGraph()
 {
    _total_morgan_code = 0;
    _first_vertex_idx = -1;

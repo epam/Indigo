@@ -72,14 +72,18 @@ struct LayoutEdge
 };
 
 class DLLEXPORT MoleculeLayoutGraph : public Graph {
+public:
+    explicit MoleculeLayoutGraph();
+    virtual ~MoleculeLayoutGraph();
 
+    DECL_ERROR;
 };
 
 class DLLEXPORT MoleculeLayoutGraphSimple : public MoleculeLayoutGraph
 {
 public:
-   explicit MoleculeLayoutGraphSimple ();
-   virtual ~MoleculeLayoutGraphSimple ();
+    explicit MoleculeLayoutGraphSimple();
+    virtual ~MoleculeLayoutGraphSimple();
 
    virtual void clear ();
 
