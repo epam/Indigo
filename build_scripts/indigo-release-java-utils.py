@@ -49,7 +49,7 @@ for filename in os.listdir(dist_dir):
         else:
             shutil.copy(join("chemdiff.sh"), join(dist_dir, "chemdiff", fullChemdiffName,"chemdiff.sh"))
         shutil.copy(join("LICENSE.GPL"), join(dist_dir, "chemdiff", fullChemdiffName, "LICENSE.GPL"))
-        #shutil.copytree(join(root, "utils", "chemdiff", "tests"), join(dist_dir, "chemdiff", fullChemdiffName, "tests"))
+        shutil.copytree(join(root, "utils", "chemdiff", "examples"), join(dist_dir, "chemdiff", fullChemdiffName, "examples"))
         os.chdir(join(dist_dir, "chemdiff", fullChemdiffName))
         os.mkdir("lib")
         for file in glob.glob("../../indigo-java/*.jar"):
@@ -97,7 +97,7 @@ for filename in os.listdir(dist_dir):
         else:
             shutil.copy(join("legio.sh"), join(dist_dir, "legio", fullLegioName,"legio.sh"))
         shutil.copy(join("LICENSE.GPL"), join(dist_dir, "legio", fullLegioName, "LICENSE.GPL"))
-        shutil.copytree(join(root, "utils", "legio", "tests"), join(dist_dir, "legio", fullLegioName, "tests"))
+        shutil.copytree(join(root, "utils", "legio", "examples"), join(dist_dir, "legio", fullLegioName, "examples"))
         os.chdir(join(dist_dir, "legio", fullLegioName))
         os.mkdir("lib")
         for file in glob.glob("../../indigo-java/*.jar"):

@@ -90,8 +90,8 @@ Section "${APP_NAME}"
   SetOutPath $INSTDIR
   File "chemdiff.jar"
   File "launch.bat"
-  SetOutPath "$INSTDIR\tests\"
-  File /r "tests\"
+  SetOutPath "$INSTDIR\examples\"
+  File /r "examples\"
  
   ;%NSIS_INSTALL_FILES
  

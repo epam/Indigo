@@ -87,8 +87,8 @@ Section "${APP_NAME}"
  
   SetOutPath "$INSTDIR\lib\"
   File /r "lib\"
-  SetOutPath "$INSTDIR\tests\"
-  File /r "tests\"
+  SetOutPath "$INSTDIR\examples\"
+  File /r "examples\"
   SetOutPath $INSTDIR
   File "legio.jar"
   File "launch.bat"
