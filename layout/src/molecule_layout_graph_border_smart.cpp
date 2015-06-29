@@ -96,7 +96,7 @@ bool MoleculeLayoutGraphSmart::_isPointOutside (const Vec2f &p) const
 {
 //   return true;
    QS_DEF(Array<Vec2f>, point);
-   CycleSmart surround_cycle;
+   Cycle surround_cycle;
    _getSurroundCycle(surround_cycle, p);
 
    if (surround_cycle.vertexCount() == 0) return 0;
@@ -106,7 +106,7 @@ bool MoleculeLayoutGraphSmart::_isPointOutside (const Vec2f &p) const
 
 // Check if point is outside cycle
 // By calculating number of intersections of ray
-bool MoleculeLayoutGraphSmart::_isPointOutsideCycle (const CycleSmart &cycle, const Vec2f &p) const
+bool MoleculeLayoutGraphSmart::_isPointOutsideCycle (const Cycle &cycle, const Vec2f &p) const
 {
    QS_DEF(Array<Vec2f>, point);
    float rotate_angle = 0;
@@ -127,7 +127,7 @@ bool MoleculeLayoutGraphSmart::_isPointOutsideCycle (const CycleSmart &cycle, co
 }
 
 // The same but with mapping
-bool MoleculeLayoutGraphSmart::_isPointOutsideCycleEx (const CycleSmart &cycle, const Vec2f &p, const Array<int> &mapping) const
+bool MoleculeLayoutGraphSmart::_isPointOutsideCycleEx (const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const
 {
    // TODO: check that point 'p' is equal to the one of cycle points (sometimes it happens)
    float a, b;
@@ -177,7 +177,7 @@ bool MoleculeLayoutGraphSmart::_isPointOutsideCycleEx (const CycleSmart &cycle, 
 
 double MoleculeLayoutGraphSmart::_get_square() {
 
-   CycleSmart cycle;
+   Cycle cycle;
    _getBorder(cycle);
 
    int len = cycle.vertexCount();
@@ -191,7 +191,7 @@ double MoleculeLayoutGraphSmart::_get_square() {
 }
 
 // Extract component border
-void MoleculeLayoutGraphSmart::_getBorder ( CycleSmart &border) const
+void MoleculeLayoutGraphSmart::_getBorder ( Cycle &border) const
 {
    Vec2f outside_point(0, 0);
    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
@@ -203,7 +203,7 @@ void MoleculeLayoutGraphSmart::_getBorder ( CycleSmart &border) const
    _getSurroundCycle(border, outside_point);
 }
 
-void MoleculeLayoutGraphSmart::_getSurroundCycle ( CycleSmart &cycle, Vec2f p) const
+void MoleculeLayoutGraphSmart::_getSurroundCycle ( Cycle &cycle, Vec2f p) const
 {
    QS_DEF(Array<int>, vertices);
    QS_DEF(Array<int>, edges);
@@ -339,7 +339,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle ( CycleSmart &cycle, Vec2f p) c
 // Split border in two parts by two vertices
 void MoleculeLayoutGraphSmart::_splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const
 {
-   CycleSmart border;
+   Cycle border;
 
    _getBorder(border);
 
@@ -381,12 +381,12 @@ void MoleculeLayoutGraphSmart::_splitBorder (int v1, int v2, Array<int> &part1v,
    part2e.pop(); // edge count is less
 }
 
-// CycleSmart enumerator callback
+// Cycle enumerator callback
 // Check if cycle is boundary and mark vertices and edges as boundary/internal
 bool MoleculeLayoutGraphSmart::_border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
 {
    MoleculeLayoutGraphSmart &self = *(MoleculeLayoutGraphSmart *)context;
-   CycleSmart cycle(vertices, edges);
+   Cycle cycle(vertices, edges);
 
    //cycle.canonize();
 

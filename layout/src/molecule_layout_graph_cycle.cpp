@@ -16,35 +16,46 @@
 
 using namespace indigo;
 
-CP_DEF(MoleculeLayoutGraphSimple::Cycle);
+CP_DEF(MoleculeLayoutGraph::Cycle);
 
-MoleculeLayoutGraphSimple::Cycle::Cycle () :
+MoleculeLayoutGraph::Cycle::Cycle () :
 CP_INIT,
 TL_CP_GET(_vertices),
-TL_CP_GET(_edges)
+TL_CP_GET(_edges),
+TL_CP_GET(_attached_weight)
 {
    _vertices.clear();
    _edges.clear();
+   _attached_weight.clear();
    _max_idx = 0;
+   _morgan_code_calculated = false;
 }
 
-MoleculeLayoutGraphSimple::Cycle::Cycle (const List<int> &edges, const MoleculeLayoutGraphSimple &graph) :
+MoleculeLayoutGraph::Cycle::Cycle (const List<int> &edges, const MoleculeLayoutGraph &graph) :
 CP_INIT,
 TL_CP_GET(_vertices),
-TL_CP_GET(_edges)
+TL_CP_GET(_edges),
+TL_CP_GET(_attached_weight)
 {
    copy(edges, graph);
+   _attached_weight.resize(graph.vertexCount());
+   _attached_weight.zerofill();
+   _morgan_code_calculated = false;
 }
 
-MoleculeLayoutGraphSimple::Cycle::Cycle (const Array<int> &vertices, const Array<int> &edges) :
+MoleculeLayoutGraph::Cycle::Cycle (const Array<int> &vertices, const Array<int> &edges) :
 CP_INIT,
 TL_CP_GET(_vertices),
-TL_CP_GET(_edges)
+TL_CP_GET(_edges),
+TL_CP_GET(_attached_weight)
 {
    copy(vertices, edges);
+   _attached_weight.resize(vertices.size());
+   _attached_weight.zerofill();
+   _morgan_code_calculated = false;
 }
 
-void MoleculeLayoutGraphSimple::Cycle::copy (const List<int> &edges, const MoleculeLayoutGraphSimple &graph)
+void MoleculeLayoutGraph::Cycle::copy (const List<int> &edges, const MoleculeLayoutGraph &graph)
 {
    int i = edges.begin();
    const Edge &edge1 = graph.getEdge(edges[i]);
@@ -79,7 +90,7 @@ void MoleculeLayoutGraphSimple::Cycle::copy (const List<int> &edges, const Molec
          _max_idx = _vertices[i];
 }
 
-void MoleculeLayoutGraphSimple::Cycle::copy (const Array<int> &vertices, const Array<int> &edges)
+void MoleculeLayoutGraph::Cycle::copy (const Array<int> &vertices, const Array<int> &edges)
 {
    _vertices.copy(vertices);
    _edges.copy(edges);
@@ -90,17 +101,22 @@ void MoleculeLayoutGraphSimple::Cycle::copy (const Array<int> &vertices, const A
          _max_idx = _vertices[i];
 }
 
-void MoleculeLayoutGraphSimple::Cycle::calcMorganCode (const MoleculeLayoutGraphSimple &parent_graph)
+void MoleculeLayoutGraph::Cycle::calcMorganCode(const MoleculeLayoutGraph &parent_graph)
 {
    _morgan_code = 0;
 
    for (int i = 0; i < vertexCount(); i++)
       _morgan_code += parent_graph.getLayoutVertex(_vertices[i]).morgan_code;
+
+   _morgan_code_calculated = true;
 }
 
-void MoleculeLayoutGraphSimple::Cycle::canonize ()
+void MoleculeLayoutGraph::Cycle::canonize()
 {
-   // 1. v(0)<v(i), i=1,...,l-1 ; 2. v(1)< v(l-2) => unique representation of cycle
+   // 1. v(0)<v(i), i=1,...,l-1 ; 
+   // 2. v(1)< v(l-2) => unique representation of cycle
+
+   if (vertexCount() == 0) return;
    int min_idx = 0, i;
    bool vert_invert = false;
 
@@ -145,7 +161,7 @@ void MoleculeLayoutGraphSimple::Cycle::canonize ()
    }
 }
 
-bool MoleculeLayoutGraphSimple::Cycle::contains (const Cycle &another) const
+bool MoleculeLayoutGraph::Cycle::contains (const Cycle &another) const
 {
    if (vertexCount() < another.vertexCount())
       return false;
@@ -168,7 +184,7 @@ bool MoleculeLayoutGraphSimple::Cycle::contains (const Cycle &another) const
 // Cycle sorting callback
 // Order by size: 6, 5, 7, 8, 4, 3, 9, 10, 11, ..
 // If cycles has the same size then Morgan code in descending order (higher first)
-int MoleculeLayoutGraphSimple::Cycle::compare_cb (int &idx1, int &idx2, void *context)
+int MoleculeLayoutGraph::Cycle::compare_cb (int &idx1, int &idx2, void *context)
 {
    const ObjPool<Cycle> &cycles = *(const ObjPool<Cycle> *)context;
 
@@ -190,4 +206,19 @@ int MoleculeLayoutGraphSimple::Cycle::compare_cb (int &idx1, int &idx2, void *co
       return cycles[idx1].vertexCount() - cycles[idx2].vertexCount();
 
    return cycles[idx2].morganCode() - cycles[idx1].morganCode();
+}
+
+void MoleculeLayoutGraphSmart::calcMorganCode ()
+{
+   _calcMorganCodes();
+}
+
+long MoleculeLayoutGraphSmart::getMorganCode ()
+{
+   return _total_morgan_code;
+}
+
+void MoleculeLayoutGraphSmart::assignFirstVertex (int v)
+{
+   _first_vertex_idx = v;
 }

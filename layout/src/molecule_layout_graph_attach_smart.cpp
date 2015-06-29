@@ -30,7 +30,7 @@ void MoleculeLayoutGraphSmart::_setChainType (const Array<int> &chain, const Arr
    }
 }
 
-bool MoleculeLayoutGraphSmart::_splitCycle (const CycleSmart &cycle, const Array<int> &cycle_vertex_types, bool check_boundary,
+bool MoleculeLayoutGraphSmart::_splitCycle (const Cycle &cycle, const Array<int> &cycle_vertex_types, bool check_boundary,
                                        Array<int> &chain_ext, Array<int> &chain_int, int &c_beg, int &c_end) const
 {
    int i, j, k;
@@ -113,7 +113,7 @@ bool MoleculeLayoutGraphSmart::_splitCycle (const CycleSmart &cycle, const Array
 }
 
 // Split cycle into separate chains which are not drawn
-void MoleculeLayoutGraphSmart::_splitCycle2 (const CycleSmart &cycle, const Array<int> &cycle_vertex_types, ObjArray < Array<int> > &chains_ext) const
+void MoleculeLayoutGraphSmart::_splitCycle2 (const Cycle &cycle, const Array<int> &cycle_vertex_types, ObjArray < Array<int> > &chains_ext) const
 {
    int i;
    
@@ -166,7 +166,7 @@ void MoleculeLayoutGraphSmart::_splitCycle2 (const CycleSmart &cycle, const Arra
 }
 
 // Attach cycle outside component border. Component must have given number of common edges or any (if 0)
-bool MoleculeLayoutGraphSmart::_attachCycleOutside (const CycleSmart &cycle, float length, int n_common_edges)
+bool MoleculeLayoutGraphSmart::_attachCycleOutside (const Cycle &cycle, float length, int n_common_edges)
 {
    int n_common_e = 0, n_common_v = 0;
    QS_DEF(Array<int>, cycle_vertex_types);
@@ -221,7 +221,7 @@ bool MoleculeLayoutGraphSmart::_attachCycleOutside (const CycleSmart &cycle, flo
 
    // Make Border1, Border2 from component border (borders have two common vertices)
    //_splitBorder(c_beg, c_end, border1v, border1e, border2v, border2e);
-   CycleSmart border;
+   Cycle border;
    _getBorder(border);
 
    QS_DEF(MoleculeLayoutGraphSmart, next_bc);
@@ -332,7 +332,7 @@ bool MoleculeLayoutGraphSmart::_attachCycleOutside (const CycleSmart &cycle, flo
 
 // Attach cycle inside component border.
 // Everything can be attached outside is already attached.
-bool MoleculeLayoutGraphSmart::_attachCycleInside (const CycleSmart &cycle, float length)
+bool MoleculeLayoutGraphSmart::_attachCycleInside (const Cycle &cycle, float length)
 {
    int n_common_e = 0, n_common_v = 0;
    int i, j;
@@ -458,7 +458,7 @@ bool MoleculeLayoutGraphSmart::_attachCycleInside (const CycleSmart &cycle, floa
 // Attach cycle with intersections.
 // Everything can be attached w/o intersections is already attached.
 // Not all cycle vertices are drawn
-bool MoleculeLayoutGraphSmart::_attachCycleWithIntersections (const CycleSmart &cycle, float length)
+bool MoleculeLayoutGraphSmart::_attachCycleWithIntersections (const Cycle &cycle, float length)
 {
    int n_common_e = 0, n_common_v = 0;
    int i, j, k;
@@ -698,7 +698,7 @@ void MoleculeLayoutGraphSmart::_attachDandlingVertices (int vert_idx, Array<int>
    }
 }
 
-bool MoleculeLayoutGraphSmart::_drawEdgesWithoutIntersection (const CycleSmart &cycle, Array<int> & cycle_vertex_types)
+bool MoleculeLayoutGraphSmart::_drawEdgesWithoutIntersection (const Cycle &cycle, Array<int> & cycle_vertex_types)
 {
    bool is_attached = true;
    Vec2f p;

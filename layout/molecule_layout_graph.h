@@ -111,6 +111,8 @@ public:
 
     const BaseMolecule *getMolecule(const int **molecule_edge_mapping) { *molecule_edge_mapping = _molecule_edge_mapping; return _molecule; }
 
+
+
     int max_iterations;
     bool smart_layout;
 
@@ -134,6 +136,48 @@ public:
     BaseMolecule *_molecule;
     const int *_molecule_edge_mapping;
 protected:
+    struct Cycle
+    {
+        explicit Cycle();
+        explicit Cycle(const List<int> &edges, const MoleculeLayoutGraph &graph);
+        explicit Cycle(const Array<int> &vertices, const Array<int> &edges);
+
+        void copy(const List<int> &edges, const MoleculeLayoutGraph &graph);
+        void copy(const Array<int> &vertices, const Array<int> &edges);
+
+        int vertexCount() const { return _vertices.size(); }
+        int getVertex(int idx) const { return _vertices[idx]; }
+        int getVertexC(int idx) const { return _vertices[(vertexCount() + idx) % vertexCount()]; }
+        int getEdge(int idx) const { return _edges[idx]; }
+        int getEdgeC(int idx) const { return _edges[(_edges.size() + idx) % _edges.size()]; }
+        int getEdgeStart(int idx) const { return getVertexC(idx); }
+        int getEdgeFinish(int idx) const { return getVertexC(idx + 1); }
+        int findVertex(int idx) const { return _vertices.find(idx); }
+        long morganCode() const { if (!_morgan_code_calculated) throw Error("Morgan code does not calculated yet."); return _morgan_code; }
+        void setVertexWeight(int idx, int w) { _attached_weight[idx] = w; }
+        void addVertexWeight(int idx, int w) { _attached_weight[idx] += w; }
+        int getVertexWeight(int idx) const { return _attached_weight[idx]; }
+        void canonize();
+        bool contains(const Cycle &another) const;
+        void calcMorganCode(const MoleculeLayoutGraph &parent_graph);
+
+        static int compare_cb(int &idx1, int &idx2, void *context);
+
+    protected:
+
+        CP_DECL;
+        TL_CP_DECL(Array<int>, _vertices);
+        TL_CP_DECL(Array<int>, _edges);
+        TL_CP_DECL(Array<int>, _attached_weight);
+
+        int _max_idx;
+        long _morgan_code;
+        bool _morgan_code_calculated;
+
+    private:
+        Cycle(const Cycle &other); // No copy constructor
+
+    };
 
 };
 
@@ -152,8 +196,6 @@ public:
 
    void layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing);
    
-   const BaseMolecule *getMolecule (const int **molecule_edge_mapping) { *molecule_edge_mapping = _molecule_edge_mapping; return _molecule; }
-
    void flipped () { _flipped = true; }
    bool isFlipped () const { return _flipped; }
 
@@ -164,7 +206,7 @@ public:
    DECL_ERROR;
 
 protected:
-
+    /*
    struct Cycle
    {
       explicit Cycle();
@@ -194,7 +236,7 @@ protected:
       int _max_idx;
       long _morgan_code;
    };
-
+   */
    struct EnumContext
    {
       const MoleculeLayoutGraphSimple *graph;
@@ -406,12 +448,12 @@ public:
     DECL_ERROR;
 
 protected:
-
-    struct CycleSmart
+    /*
+    struct Cycle
     {
-        explicit CycleSmart();
-        explicit CycleSmart(const List<int> &edges, const MoleculeLayoutGraphSmart &graph);
-        explicit CycleSmart(const Array<int> &vertices, const Array<int> &edges);
+        explicit Cycle();
+        explicit Cycle(const List<int> &edges, const MoleculeLayoutGraphSmart &graph);
+        explicit Cycle(const Array<int> &vertices, const Array<int> &edges);
 
         void copy(const List<int> &edges, const MoleculeLayoutGraphSmart &graph);
         void copy(const Array<int> &vertices, const Array<int> &edges);
@@ -427,9 +469,9 @@ protected:
         void setVertexWeight(int idx, int w) { _attached_weight[idx] = w; }
         void addVertexWeight(int idx, int w) { _attached_weight[idx] += w; }
         int getVertexWeight(int idx) const { return _attached_weight[idx]; }
-        long morganCode() const;
+        long morganCode() const { if (!_morgan_code_calculated) throw Error("Morgan code does not calculated yet."); return _morgan_code; }
         void canonize();
-        bool contains(const CycleSmart &another) const;
+        bool contains(const Cycle &another) const;
         void calcMorganCode(const MoleculeLayoutGraphSmart &parent_graph);
 
         static int compare_cb(int &idx1, int &idx2, void *context);
@@ -448,10 +490,10 @@ protected:
         bool _morgan_code_calculated;
 
     private:
-        CycleSmart(const CycleSmart &other); // No copy constructor
+        Cycle(const Cycle &other); // No copy constructor
 
     };
-
+    */
     struct EnumContextSmart
     {
         const MoleculeLayoutGraphSmart *graph;
@@ -495,18 +537,18 @@ protected:
 
     void _assignRelativeCoordinates(int &fixed_component, const MoleculeLayoutGraphSmart &supergraph);
     void _assignRelativeSingleEdge(int &fixed_component, const MoleculeLayoutGraphSmart &supergraph);
-    void _get_toches_to_component(CycleSmart& cycle, int component_number, Array<interval>& interval_list);
-    int _search_separated_component(CycleSmart& cycle, Array<interval>& interval_list);
+    void _get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list);
+    int _search_separated_component(Cycle& cycle, Array<interval>& interval_list);
     void _search_path(int start, int finish, Array<int>& path, int component_number);
-    void _assignEveryCycle(const CycleSmart &cycle);
-    void _assignFirstCycle(const CycleSmart &cycle);
+    void _assignEveryCycle(const Cycle& cycle);
+    void _assignFirstCycle(const Cycle& cycle);
 
     // smoothing
-    void _segment_smoothing(const CycleSmart &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+    void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
     void _update_touching_segments(Array<local_pair_ii >&, ObjArray<MoleculeLayoutSmoothingSegment> &);
-    void _segment_smoothing_prepearing(const CycleSmart &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment, MoleculeLayoutMacrocyclesLattice& layout);
+    void _segment_smoothing_prepearing(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment, MoleculeLayoutMacrocyclesLattice& layout);
     void _segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
-    void _segment_update_rotation_points(const CycleSmart &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
+    void _segment_update_rotation_points(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
     void _segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment> &segment);
     void _do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
     void _segment_improoving(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int, float, Array<local_pair_ii>&);
@@ -526,26 +568,26 @@ protected:
     void _buildOutline(void);
 
     // attaching cycles
-    bool _attachCycleOutside(const CycleSmart &cycle, float length, int n_common);
-    bool _drawEdgesWithoutIntersection(const CycleSmart &cycle, Array<int> & cycle_vertex_types);
+    bool _attachCycleOutside(const Cycle &cycle, float length, int n_common);
+    bool _drawEdgesWithoutIntersection(const Cycle &cycle, Array<int> & cycle_vertex_types);
 
     bool _checkBadTryBorderIntersection(Array<int> &chain_ext, MoleculeLayoutGraphSmart &next_bc, Array<int> &mapping);
     bool _checkBadTryChainOutside(Array<int> &chain_ext, MoleculeLayoutGraphSmart &next_bc, Array<int> & mapping);
 
-    bool _attachCycleInside(const CycleSmart &cycle, float length);
-    bool _attachCycleWithIntersections(const CycleSmart &cycle, float length);
+    bool _attachCycleInside(const Cycle &cycle, float length);
+    bool _attachCycleWithIntersections(const Cycle &cycle, float length);
     void _setChainType(const Array<int> &chain, const Array<int> &mapping, int type);
-    bool _splitCycle(const CycleSmart &cycle, const Array<int> &cycle_vertex_types, bool check_boundary,
+    bool _splitCycle(const Cycle &cycle, const Array<int> &cycle_vertex_types, bool check_boundary,
         Array<int> &chain_ext, Array<int> &chain_int, int &c_beg, int &c_end) const;
-    void _splitCycle2(const CycleSmart &cycle, const Array<int> &cycle_vertex_types, ObjArray < Array<int> > &chains_ext) const;
+    void _splitCycle2(const Cycle &cycle, const Array<int> &cycle_vertex_types, ObjArray < Array<int> > &chains_ext) const;
 
     // border functions
-    void _getBorder(CycleSmart &border) const;
-    void _getSurroundCycle(CycleSmart &cycle, Vec2f p) const;
+    void _getBorder(Cycle &border) const;
+    void _getSurroundCycle(Cycle &cycle, Vec2f p) const;
     void _splitBorder(int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const;
     bool _isPointOutside(const Vec2f &p) const;
-    bool _isPointOutsideCycle(const CycleSmart &cycle, const Vec2f &p) const;
-    bool _isPointOutsideCycleEx(const CycleSmart &cycle, const Vec2f &p, const Array<int> &mapping) const;
+    bool _isPointOutsideCycle(const Cycle &cycle, const Vec2f &p) const;
+    bool _isPointOutsideCycleEx(const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const;
 
     // geometry functions
     int _calcIntersection(int edge1, int edge2) const;

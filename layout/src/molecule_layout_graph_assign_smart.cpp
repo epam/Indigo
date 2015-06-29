@@ -182,7 +182,7 @@ void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates (float bond_length)
    }
 }
 
-void MoleculeLayoutGraphSmart::_get_toches_to_component(CycleSmart& cycle, int component_number, Array<interval>& interval_list) {
+void MoleculeLayoutGraphSmart::_get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list) {
    if (component_number < 0 || component_number >= _layout_component_count) return;
    QS_DEF(Array<bool>, touch_to_current_component);
    touch_to_current_component.clear_resize(cycle.vertexCount());
@@ -221,7 +221,7 @@ void MoleculeLayoutGraphSmart::_get_toches_to_component(CycleSmart& cycle, int c
    }
 }
 
-int MoleculeLayoutGraphSmart::_search_separated_component(CycleSmart& cycle, Array<interval>& interval_list) {
+int MoleculeLayoutGraphSmart::_search_separated_component(Cycle& cycle, Array<interval>& interval_list) {
    for (int i = 0; i < _layout_component_count; i++) {
       _get_toches_to_component(cycle, i, interval_list);
       if (interval_list.size() > 1) return i;
@@ -299,7 +299,7 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates (int &fixed_component,
 
    //TODO: repair exception with vec2f
 
-   QS_DEF(ObjPool<CycleSmart>, cycles);
+   QS_DEF(ObjPool<Cycle>, cycles);
 
    cycles.clear();
    int n_cycles = sssrCount();
@@ -369,7 +369,7 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates (int &fixed_component,
          cycles[i].calcMorganCode(*this);
          sorted_cycles.push(i);
       }
-      sorted_cycles.qsort(CycleSmart::compare_cb, &cycles);
+      sorted_cycles.qsort(Cycle::compare_cb, &cycles);
 
       _assignFirstCycle(cycles[sorted_cycles[0]]);
 
@@ -494,7 +494,7 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates (int &fixed_component,
 
 }
 
-void MoleculeLayoutGraphSmart::_assignFirstCycle(const CycleSmart &cycle)
+void MoleculeLayoutGraphSmart::_assignFirstCycle(const Cycle &cycle)
 {
    // TODO: Start drawing from vertex with maximum code and continue to the right with one of two which has maximum code
    int i, n;
@@ -525,9 +525,9 @@ void MoleculeLayoutGraphSmart::_assignFirstCycle(const CycleSmart &cycle)
 }
 
 
-void MoleculeLayoutGraphSmart::_assignEveryCycle(const CycleSmart &cycle)
+void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle &cycle)
 {
-   profTimerStart(t, "_assignFirstCycleSmart");
+   profTimerStart(t, "_assignFirstCycle");
    const int size = cycle.vertexCount();
    _first_vertex_idx = cycle.getVertex(0);
 
@@ -708,7 +708,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const CycleSmart &cycle)
             const MoleculeLayoutSmoothingSegment& calc_segment = prev_layout_component < 0 ? segment[s] : segment[(s + segment_count - 1) % segment_count];
             int calc_vertex = prev_layout_component < 0 ? calc_segment.get_start() : calc_segment.get_finish();
 
-            CycleSmart border;
+            Cycle border;
             calc_segment._graph._getBorder(border);
             int calc_vertex_in_border = -1;
             for (int j = 0; j < border.vertexCount(); j++){
@@ -870,7 +870,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const CycleSmart &cycle)
          layout.setComponentFinish(rotation_vertex[i], rotation_vertex[(i + 1) % segment_count]);
          layout.setVertexAddedSquare(rotation_vertex[i], segment[i].get_square());
 
-         CycleSmart border;
+         Cycle border;
          if (segment[i].get_layout_component_number() >= 0) segment[i]._graph._getBorder(border);
 
          int count_neibourhoods_outside = 0;
@@ -956,7 +956,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const CycleSmart &cycle)
 
    int start = 0;
 
-   bool componentIsWholeCycleSmart = false;
+   bool componentIsWholeCycle = false;
 
    QS_DEF(Array<bool>, _is_component_touch);
    _is_component_touch.clear_resize(_layout_component_count);
@@ -984,16 +984,16 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const CycleSmart &cycle)
          }
       }
 
-      if (!componentIsWholeCycleSmart) {
-         componentIsWholeCycleSmart = true;
+      if (!componentIsWholeCycle) {
+         componentIsWholeCycle = true;
          for (int i = 0; i < size; i++)
-            componentIsWholeCycleSmart &= takenVertex[cycle.getVertex(i)];
+            componentIsWholeCycle &= takenVertex[cycle.getVertex(i)];
       }
 
       for (int i = 0; i < size; i++)
       if (takenVertex[cycle.getVertex(i)]) need_to_insert[i] = false;
 
-      if (componentIsWholeCycleSmart) break;
+      if (componentIsWholeCycle) break;
 
       int startIndex = index;
       int endIndex = index;
@@ -1099,7 +1099,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const CycleSmart &cycle)
 
 }
 
-void MoleculeLayoutGraphSmart::_segment_smoothing(const CycleSmart &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraphSmart::_segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    QS_DEF(Array<float>, target_angle);
 
    _segment_update_rotation_points(cycle, rotation_vertex, rotation_point, segment);
@@ -1112,7 +1112,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing(const CycleSmart &cycle, const
    }
 }
 
-void MoleculeLayoutGraphSmart::_segment_update_rotation_points(const CycleSmart &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
+void MoleculeLayoutGraphSmart::_segment_update_rotation_points(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
    for (int i = 0; i < rotation_vertex.size(); i++)
       rotation_point[i] = getPos(cycle.getVertex(rotation_vertex[i]));
 
@@ -1336,7 +1336,7 @@ void MoleculeLayoutGraphSmart::_do_segment_smoothing(Array<Vec2f> &rotation_poin
 
 }
 
-void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const CycleSmart &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment, MoleculeLayoutMacrocyclesLattice& layout) {
+void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment, MoleculeLayoutMacrocyclesLattice& layout) {
    int cycle_size = cycle.vertexCount();
 
    QS_DEF(Array<bool>, layout_comp_touch);
