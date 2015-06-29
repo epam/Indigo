@@ -22,7 +22,7 @@ IMPL_ERROR(MoleculeLayoutGraphSmart, "layout_graph_smart");
 
 MoleculeLayoutGraphSmart::MoleculeLayoutGraphSmart() : MoleculeLayoutGraph()
 {
-    smart_layout = false;
+    smart_layout = true;
 }
 
 MoleculeLayoutGraphSmart::~MoleculeLayoutGraphSmart ()
@@ -31,80 +31,9 @@ MoleculeLayoutGraphSmart::~MoleculeLayoutGraphSmart ()
 
 void MoleculeLayoutGraphSmart::clear ()
 {
-   Graph::clear();
-
-   _total_morgan_code = 0;
-   _first_vertex_idx = -1;
-   _n_fixed = 0;
-   _layout_vertices.clear();
-   _layout_edges.clear();
-   _fixed_vertices.clear();
+   MoleculeLayoutGraph::clear();
    _layout_component_number.clear();
    _layout_component_count = 0;
-}
-
-bool MoleculeLayoutGraphSmart::isSingleEdge () const
-{
-   return edgeCount() == 1 && vertexCount() == 2;
-}
-
-void MoleculeLayoutGraphSmart::registerLayoutVertex (int idx, const LayoutVertex &vertex)
-{
-   _layout_vertices.expand(idx + 1);
-   _layout_vertices[idx] = vertex;
-}
-
-void MoleculeLayoutGraphSmart::registerLayoutEdge (int idx, const LayoutEdge &edge)
-{
-   _layout_edges.expand(idx + 1);
-   _layout_edges[idx] = edge;
-}
-
-int MoleculeLayoutGraphSmart::addLayoutVertex (int ext_idx, int type)
-{
-   int new_idx = Graph::addVertex();
-
-   LayoutVertex new_vertex;
-
-   new_vertex.ext_idx = ext_idx;
-   new_vertex.type = type;
-
-   registerLayoutVertex(new_idx, new_vertex);
-
-   return new_idx;
-}
-
-int MoleculeLayoutGraphSmart::addLayoutEdge (int beg, int end, int ext_idx, int type)
-{
-   int new_idx = Graph::addEdge(beg, end);
-
-   LayoutEdge new_edge;
-
-   new_edge.ext_idx = ext_idx;
-   new_edge.type = type;
-
-   registerLayoutEdge(new_idx, new_edge);
-
-   return new_idx;
-}
-
-const LayoutVertex & MoleculeLayoutGraphSmart::getLayoutVertex (int idx) const
-{
-   return _layout_vertices[idx];
-}
-
-const LayoutEdge & MoleculeLayoutGraphSmart::getLayoutEdge (int idx) const
-{
-   return _layout_edges[idx];
-}
-
-int MoleculeLayoutGraphSmart::findVertexByExtIdx (int ext_idx) const
-{
-   for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-      if (getLayoutVertex(i).ext_idx == ext_idx)
-         return i;
-
-   return -1;
 }
 
 void MoleculeLayoutGraphSmart::makeOnGraph (Graph &graph)
@@ -142,12 +71,12 @@ void MoleculeLayoutGraphSmart::makeOnGraph (Graph &graph)
    }
 }
 
-void MoleculeLayoutGraphSmart::makeLayoutSubgraph (MoleculeLayoutGraphSmart &graph, Filter &vertex_filter)
+void MoleculeLayoutGraphSmart::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter)
 {
    makeLayoutSubgraph(graph, vertex_filter, 0);
 }
 
-void MoleculeLayoutGraphSmart::makeLayoutSubgraph (MoleculeLayoutGraphSmart &graph, Filter &vertex_filter, Filter *edge_filter)
+void MoleculeLayoutGraphSmart::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter, Filter *edge_filter)
 {
    _molecule = graph._molecule;
    _graph = &graph;
@@ -196,57 +125,6 @@ void MoleculeLayoutGraphSmart::makeLayoutSubgraph (MoleculeLayoutGraphSmart &gra
    _layout_component_number.clear_resize(edgeEnd());
    _layout_component_number.fffill();
    _layout_component_count = 0;
-}
-
-void MoleculeLayoutGraphSmart::cloneLayoutGraph (MoleculeLayoutGraphSmart &other, Array<int> *mapping)
-{
-   QS_DEF(Array<int>, mapping_tmp);
-
-   clear();
-
-   if (mapping == 0)
-      mapping = &mapping_tmp;
-
-   cloneGraph(other, mapping);
-
-   LayoutVertex new_vertex;
-   LayoutEdge new_edge;
-
-   for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
-   {
-      new_vertex = other.getLayoutVertex(i);
-      new_vertex.ext_idx = i;
-
-      registerLayoutVertex(mapping->at(i), new_vertex);
-   }
-
-   for (int i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
-   {
-      const Edge &edge = other.getEdge(i);
-
-      new_edge = other.getLayoutEdge(i);
-      new_edge.ext_idx = i;
-
-      registerLayoutEdge(findEdgeIndex(mapping->at(edge.beg), mapping->at(edge.end)), new_edge);
-   }
-}
-
-void MoleculeLayoutGraphSmart::copyLayoutTo (MoleculeLayoutGraphSmart &other, const int *mapping) const
-{
-   for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
-   {
-      other._layout_vertices[i].type = _layout_vertices[mapping[i]].type;
-      other._layout_vertices[i].pos  = _layout_vertices[mapping[i]].pos;
-   }
-
-   for (int i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
-   {
-      const Edge &edge = other.getEdge(i);
-      const Vertex &vert = other.getVertex(mapping[edge.beg]);
-      int edge_idx = vert.neiEdge(vert.findNeiVertex(mapping[edge.end]));
-
-      other._layout_edges[i].type = _layout_edges[edge_idx].type;
-   }
 }
 
 void MoleculeLayoutGraphSmart::layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing)

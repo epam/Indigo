@@ -76,13 +76,49 @@ public:
     explicit MoleculeLayoutGraph();
     virtual ~MoleculeLayoutGraph();
 
+    inline const Vec2f & getPos(int idx) const { return _layout_vertices[idx].pos; }
+    inline       Vec2f & getPos(int idx)       { return _layout_vertices[idx].pos; }
+    inline int getVertexExtIdx(int idx) const { return _layout_vertices[idx].ext_idx; }
+    inline int getVertexType(int idx) const { return _layout_vertices[idx].type; }
+    inline int getEdgeExtIdx(int idx) const { return _layout_edges[idx].ext_idx; }
+    inline int getEdgeType(int idx) const { return _layout_edges[idx].type; }
+
+    void setVertexType(int idx, int type) { _layout_vertices[idx].type = type; }
+    void setEdgeType(int idx, int type) { _layout_edges[idx].type = type; }
+
+    virtual void clear();
+
+    bool isSingleEdge() const;
+
+    void registerLayoutVertex(int idx, const LayoutVertex &vertex);
+    void registerLayoutEdge(int idx, const LayoutEdge &edge);
+    int  addLayoutVertex(int ext_idx, int type);
+    int  addLayoutEdge(int beg, int end, int ext_idx, int type);
+
+    const LayoutVertex &getLayoutVertex(int idx) const;
+    const LayoutEdge   &getLayoutEdge(int idx) const;
+
+    int findVertexByExtIdx(int ext_idx) const;
+
+    float calculateAngle(int v, int &v1, int &v2) const;
+
+    virtual void makeOnGraph(Graph &graph) = 0;
+    virtual void makeLayoutSubgraph(MoleculeLayoutGraph &graph, Filter &filter) = 0;
+    void cloneLayoutGraph(MoleculeLayoutGraph &other, Array<int> *mapping);
+    void copyLayoutTo(MoleculeLayoutGraph &other, const Array<int> &mapping) const;
+
+    virtual void layout(BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing) = 0;
+
+    const BaseMolecule *getMolecule(const int **molecule_edge_mapping) { *molecule_edge_mapping = _molecule_edge_mapping; return _molecule; }
+
     int max_iterations;
+    bool smart_layout;
 
     CancellationHandler* cancellation;
 
     DECL_ERROR;
 
-protected:
+
     ObjArray<LayoutVertex> _layout_vertices;
     ObjArray<LayoutEdge>   _layout_edges;
 
@@ -97,7 +133,7 @@ protected:
 
     BaseMolecule *_molecule;
     const int *_molecule_edge_mapping;
-
+protected:
 
 };
 
@@ -109,34 +145,10 @@ public:
 
    virtual void clear ();
 
-   bool isSingleEdge () const;
-
-   inline const Vec2f & getPos (int idx) const { return _layout_vertices[idx].pos; }
-   inline       Vec2f & getPos (int idx)       { return _layout_vertices[idx].pos; }
-   inline int getVertexExtIdx (int idx) const { return _layout_vertices[idx].ext_idx; }
-   inline int getVertexType (int idx) const { return _layout_vertices[idx].type; }
-   inline int getEdgeExtIdx (int idx) const { return _layout_edges[idx].ext_idx; }
-   inline int getEdgeType   (int idx) const { return _layout_edges[idx].type; }
-
-   void registerLayoutVertex (int idx, const LayoutVertex &vertex);
-   void registerLayoutEdge   (int idx, const LayoutEdge &edge);
-   int  addLayoutVertex      (int ext_idx, int type);
-   int  addLayoutEdge        (int beg, int end, int ext_idx, int type);
-
-   const LayoutVertex &getLayoutVertex (int idx) const;
-   const LayoutEdge   &getLayoutEdge   (int idx) const;
-
-   void setVertexType (int idx, int type) { _layout_vertices[idx].type = type; }
-   void setEdgeType   (int idx, int type) { _layout_edges[idx].type = type; }
-
-   int findVertexByExtIdx (int ext_idx) const;
-
    float calculateAngle (int v, int &v1, int &v2) const;
 
    void makeOnGraph (Graph &graph);
-   void makeLayoutSubgraph (MoleculeLayoutGraphSimple &graph, Filter &filter);
-   void cloneLayoutGraph (MoleculeLayoutGraphSimple &other, Array<int> *mapping);
-   void copyLayoutTo (MoleculeLayoutGraphSimple &other, const Array<int> &mapping) const;
+   void makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &filter);
 
    void layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing);
    
@@ -283,29 +295,6 @@ protected:
    TL_DECL(ObjArray<PatternLayout>, _patterns);
 };
 
-/*struct LayoutVertexSmart
-{
-    LayoutVertexSmart() { memset(this, 0, sizeof(LayoutVertexSmart)); }
-
-    int  orig_idx;
-    int  ext_idx;
-    long morgan_code;
-    bool is_cyclic;
-    int  type;
-
-    Vec2f pos;
-};
-
-struct LayoutEdgeSmart
-{
-    LayoutEdgeSmart() { memset(this, 0, sizeof(LayoutEdgeSmart)); }
-
-    int  orig_idx;
-    int  ext_idx;
-    bool is_cyclic;
-    int  type;
-};*/
-
 struct local_pair_ii {
     int left;
     int right;
@@ -385,40 +374,16 @@ public:
 
     virtual void clear();
 
-    bool isSingleEdge() const;
-
-    inline const Vec2f & getPos(int idx) const { return _layout_vertices[idx].pos; }
-    inline       Vec2f & getPos(int idx)       { return _layout_vertices[idx].pos; }
-    inline int getVertexExtIdx(int idx) const { return _layout_vertices[idx].ext_idx; }
     inline int getVertexOrigIdx(int idx) const { return _layout_vertices[idx].orig_idx; }
-    inline int getVertexType(int idx) const { return _layout_vertices[idx].type; }
-    inline int getEdgeExtIdx(int idx) const { return _layout_edges[idx].ext_idx; }
     inline int getEdgeOrigIdx(int idx) const { return _layout_edges[idx].orig_idx; }
-    inline int getEdgeType(int idx) const { return _layout_edges[idx].type; }
     inline bool isEdgeDrawn(int idx) const { return _layout_edges[idx].type != ELEMENT_NOT_DRAWN; }
     inline bool isVertexDrawn(int idx) const { return _layout_vertices[idx].type != ELEMENT_NOT_DRAWN; }
-
-    void registerLayoutVertex(int idx, const LayoutVertex &vertex);
-    void registerLayoutEdge(int idx, const LayoutEdge &edge);
-    int  addLayoutVertex(int ext_idx, int type);
-    int  addLayoutEdge(int beg, int end, int ext_idx, int type);
-
-    const LayoutVertex &getLayoutVertex(int idx) const;
-    const LayoutEdge &getLayoutEdge(int idx) const;
-
-    void setVertexType(int idx, int type) { _layout_vertices[idx].type = type; }
-    void setEdgeType(int idx, int type) { _layout_edges[idx].type = type; }
-
-    int findVertexByExtIdx(int ext_idx) const;
 
     float calculateAngle(int v, int &v1, int &v2) const;
 
     void makeOnGraph(Graph &graph);
-    void makeLayoutSubgraph(MoleculeLayoutGraphSmart &graph, Filter &vertex_filter);
-    void makeLayoutSubgraph(MoleculeLayoutGraphSmart &graph, Filter &vertex_filter, Filter *edge_filter);
-    void cloneLayoutGraph(MoleculeLayoutGraphSmart &other, Array<int> *mapping);
-    void copyLayoutTo(MoleculeLayoutGraphSmart &other, const int *mapping) const;
-
+    void makeLayoutSubgraph(MoleculeLayoutGraph &graph, Filter &vertex_filter);
+    void makeLayoutSubgraph(MoleculeLayoutGraph &graph, Filter &vertex_filter, Filter *edge_filter);
     void layout(BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing);
 
     void calcMorganCode();
@@ -430,8 +395,6 @@ public:
     const BaseMolecule *getMolecule() { return _molecule; }
 
     const int *getEdgeMapping() { return _molecule_edge_mapping; }
-
-    bool smart_layout;
 
     double _get_square();
 
@@ -612,7 +575,7 @@ protected:
     Array<int> _layout_component_number; // number of layout component of certain edge
     int _layout_component_count;
 
-    MoleculeLayoutGraphSmart *_graph;
+    MoleculeLayoutGraph *_graph;
 
 private:
     MoleculeLayoutGraphSmart(const MoleculeLayoutGraphSmart&);

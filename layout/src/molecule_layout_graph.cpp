@@ -28,10 +28,125 @@ MoleculeLayoutGraph::MoleculeLayoutGraph() {
     _molecule = 0;
     _molecule_edge_mapping = 0;
     cancellation = 0;
+    smart_layout = false;
 }
 
 MoleculeLayoutGraph::~MoleculeLayoutGraph() {
 
+}
+
+const LayoutVertex& MoleculeLayoutGraph::getLayoutVertex(int idx) const {
+    return _layout_vertices[idx];
+}
+
+const LayoutEdge & MoleculeLayoutGraph::getLayoutEdge(int idx) const
+{
+    return _layout_edges[idx];
+}
+
+bool MoleculeLayoutGraph::isSingleEdge() const
+{
+    return edgeCount() == 1 && vertexCount() == 2;
+}
+
+void MoleculeLayoutGraph::registerLayoutVertex(int idx, const LayoutVertex &vertex)
+{
+    _layout_vertices.expand(idx + 1);
+    _layout_vertices[idx] = vertex;
+}
+
+void MoleculeLayoutGraph::registerLayoutEdge(int idx, const LayoutEdge &edge)
+{
+    _layout_edges.expand(idx + 1);
+    _layout_edges[idx] = edge;
+}
+
+int MoleculeLayoutGraph::addLayoutVertex(int ext_idx, int type)
+{
+    int new_idx = Graph::addVertex();
+
+    LayoutVertex new_vertex;
+
+    new_vertex.ext_idx = ext_idx;
+    new_vertex.type = type;
+
+    registerLayoutVertex(new_idx, new_vertex);
+
+    return new_idx;
+}
+
+int MoleculeLayoutGraph::addLayoutEdge(int beg, int end, int ext_idx, int type)
+{
+    int new_idx = Graph::addEdge(beg, end);
+
+    LayoutEdge new_edge;
+
+    new_edge.ext_idx = ext_idx;
+    new_edge.type = type;
+
+    registerLayoutEdge(new_idx, new_edge);
+
+    return new_idx;
+}
+
+int MoleculeLayoutGraph::findVertexByExtIdx(int ext_idx) const
+{
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+        if (getLayoutVertex(i).ext_idx == ext_idx)
+            return i;
+
+    return -1;
+}
+
+void MoleculeLayoutGraph::cloneLayoutGraph(MoleculeLayoutGraph &other, Array<int> *mapping)
+{
+    QS_DEF(Array<int>, mapping_tmp);
+
+    clear();
+
+    if (mapping == 0)
+        mapping = &mapping_tmp;
+
+    cloneGraph(other, mapping);
+
+    LayoutVertex new_vertex;
+    LayoutEdge new_edge;
+
+    for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
+    {
+        new_vertex = other.getLayoutVertex(i);
+        new_vertex.ext_idx = i;
+
+        registerLayoutVertex(mapping->at(i), new_vertex);
+    }
+
+    for (int i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
+    {
+        const Edge &edge = other.getEdge(i);
+
+        new_edge = other.getLayoutEdge(i);
+        new_edge.ext_idx = i;
+
+        registerLayoutEdge(findEdgeIndex(mapping->at(edge.beg), mapping->at(edge.end)), new_edge);
+    }
+}
+
+void MoleculeLayoutGraph::copyLayoutTo(MoleculeLayoutGraph &other, const Array<int> &mapping) const
+{
+    for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
+    {
+        other._layout_vertices[i].type = _layout_vertices[mapping[i]].type;
+        other._layout_vertices[i].pos = _layout_vertices[mapping[i]].pos;
+    }
+
+    for (int i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
+    {
+        const Edge &edge = other.getEdge(i);
+        const Vertex &vert = other.getVertex(mapping[edge.beg]);
+        int edge_idx = vert.neiEdge(vert.findNeiVertex(mapping[edge.end]));
+
+        other._layout_edges[i].type = _layout_edges[edge_idx].type;
+    }
 }
 
 TL_DEF(MoleculeLayoutGraphSimple, ObjArray<PatternLayout>, _patterns);
@@ -47,83 +162,23 @@ MoleculeLayoutGraphSimple::~MoleculeLayoutGraphSimple ()
 {
 }
 
-void MoleculeLayoutGraphSimple::clear ()
+void MoleculeLayoutGraph::clear()
 {
-   Graph::clear();
-
-   _total_morgan_code = 0;
-   _first_vertex_idx = -1;
-   _n_fixed = 0;
-   _layout_vertices.clear();
-   _layout_edges.clear();
-   _fixed_vertices.clear();
+    Graph::clear();
+    _total_morgan_code = 0;
+    _first_vertex_idx = -1;
+    _n_fixed = 0;
+    _layout_vertices.clear();
+    _layout_edges.clear();
+    _fixed_vertices.clear();
 }
 
-bool MoleculeLayoutGraphSimple::isSingleEdge () const
+void MoleculeLayoutGraphSimple::clear()
 {
-   return edgeCount() == 1 && vertexCount() == 2;
+    MoleculeLayoutGraph::clear();
 }
 
-void MoleculeLayoutGraphSimple::registerLayoutVertex (int idx, const LayoutVertex &vertex)
-{
-   _layout_vertices.expand(idx + 1);
-   _layout_vertices[idx] = vertex;
-}
-
-void MoleculeLayoutGraphSimple::registerLayoutEdge (int idx, const LayoutEdge &edge)
-{
-   _layout_edges.expand(idx + 1);
-   _layout_edges[idx] = edge;
-}
-
-int MoleculeLayoutGraphSimple::addLayoutVertex (int ext_idx, int type)
-{
-   int new_idx = Graph::addVertex();
-
-   LayoutVertex new_vertex;
-
-   new_vertex.ext_idx = ext_idx;
-   new_vertex.type = type;
-
-   registerLayoutVertex(new_idx, new_vertex);
-
-   return new_idx;
-}
-
-int MoleculeLayoutGraphSimple::addLayoutEdge (int beg, int end, int ext_idx, int type)
-{
-   int new_idx = Graph::addEdge(beg, end);
-
-   LayoutEdge new_edge;
-
-   new_edge.ext_idx = ext_idx;
-   new_edge.type = type;
-
-   registerLayoutEdge(new_idx, new_edge);
-
-   return new_idx;
-}
-
-const LayoutVertex & MoleculeLayoutGraphSimple::getLayoutVertex (int idx) const
-{
-   return _layout_vertices[idx];
-}
-
-const LayoutEdge & MoleculeLayoutGraphSimple::getLayoutEdge (int idx) const
-{
-   return _layout_edges[idx];
-}
-
-int MoleculeLayoutGraphSimple::findVertexByExtIdx (int ext_idx) const
-{
-   for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-      if (getLayoutVertex(i).ext_idx == ext_idx)
-         return i;
-
-   return -1;
-}
-
-void MoleculeLayoutGraphSimple::makeOnGraph (Graph &graph)
+void MoleculeLayoutGraphSimple::makeOnGraph(Graph &graph)
 {
    QS_DEF(Array<int>, mapping);
 
@@ -156,7 +211,7 @@ void MoleculeLayoutGraphSimple::makeOnGraph (Graph &graph)
    }
 }
 
-void MoleculeLayoutGraphSimple::makeLayoutSubgraph (MoleculeLayoutGraphSimple &graph, Filter &filter)
+void MoleculeLayoutGraphSimple::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &filter)
 {
    QS_DEF(Array<int>, vertices);
    QS_DEF(Array<int>, mapping);
@@ -191,56 +246,6 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph (MoleculeLayoutGraphSimple &g
    }
 }
 
-void MoleculeLayoutGraphSimple::cloneLayoutGraph (MoleculeLayoutGraphSimple &other, Array<int> *mapping)
-{
-   QS_DEF(Array<int>, mapping_tmp);
-
-   clear();
-
-   if (mapping == 0)
-      mapping = &mapping_tmp;
-
-   cloneGraph(other, mapping);
-
-   LayoutVertex new_vertex;
-   LayoutEdge new_edge;
-
-   for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
-   {
-      new_vertex = other.getLayoutVertex(i);
-      new_vertex.ext_idx = i;
-
-      registerLayoutVertex(mapping->at(i), new_vertex);
-   }
-
-   for (int i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
-   {
-      const Edge &edge = other.getEdge(i);
-
-      new_edge = other.getLayoutEdge(i);
-      new_edge.ext_idx = i;
-
-      registerLayoutEdge(findEdgeIndex(mapping->at(edge.beg), mapping->at(edge.end)), new_edge);
-   }
-}
-
-void MoleculeLayoutGraphSimple::copyLayoutTo (MoleculeLayoutGraphSimple &other, const Array<int> &mapping) const
-{
-   for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
-   {
-      other._layout_vertices[i].type = _layout_vertices[mapping[i]].type;
-      other._layout_vertices[i].pos  = _layout_vertices[mapping[i]].pos;
-   }
-
-   for (int i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
-   {
-      const Edge &edge = other.getEdge(i);
-      const Vertex &vert = other.getVertex(mapping[edge.beg]);
-      int edge_idx = vert.neiEdge(vert.findNeiVertex(mapping[edge.end]));
-
-      other._layout_edges[i].type = _layout_edges[edge_idx].type;
-   }
-}
 
 void MoleculeLayoutGraphSimple::layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing)
 {

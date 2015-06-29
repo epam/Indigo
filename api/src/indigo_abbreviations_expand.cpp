@@ -799,7 +799,7 @@ CEXPORT int indigoExpandAbbreviations (int molecule)
       if (count > 0 && Molecule::hasCoord(mol))
       {
          // Layout expanded parts
-         MoleculeLayout ml(mol);
+         MoleculeLayout ml(mol, self.smart_layout);
          ml.max_iterations = self.layout_max_iterations;
          ml.respect_existing_layout = true;
          // Check if there are not bonds at all or if the coordinates are invalid

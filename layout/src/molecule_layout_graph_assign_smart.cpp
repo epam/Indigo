@@ -1107,7 +1107,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing(const CycleSmart &cycle, const
 
    if (segment.size() > 2) {
       _segment_smoothing_unstick(segment);
-      //_do_segment_smoothing(rotation_point, target_angle, segment);
+     // _do_segment_smoothing(rotation_point, target_angle, segment);
 	  _do_segment_smoothing_gradient(rotation_point, target_angle, segment);
    }
 }
@@ -1543,8 +1543,7 @@ void MoleculeLayoutGraphSmart::_do_segment_smoothing_gradient(Array<Vec2f> &rota
 
 	for (int i = 0; i < length; i++)
 		for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
-			getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
-
+          getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
 }
 
 bool MoleculeLayoutGraphSmart::_gradient_step(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, float coef, Array<local_pair_ii>& touching_segments) {
@@ -1623,10 +1622,11 @@ Vec2f MoleculeLayoutGraphSmart::_get_angle_derivative(Vec2f left_point, Vec2f ri
 	float cross = Vec2f::cross(left_point, right_point);
 	float signcross = cross > 0 ? 1 : cross == 0 ? 0 : -1;
 	float dot = Vec2f::dot(left_point, right_point);
+   float signdot = dot > 0 ? 1 : dot == 0 ? 0 : -1;
 	float cos = dot / len12;
 	float alpha;
 	Vec2f alphadv;
-	if (cos < 0.5) {
+	if (fabs(cos) < 0.5) {
 		Vec2f cosdv = ((right_point - left_point) * len12 - (left_point * len2_sq - right_point * len1_sq) * dot / len12) / (len1_sq * len2_sq);
 		alpha = acos(cos)* signcross;
 		alphadv = cosdv * (-1. / sqrt(1 - cos * cos)) * signcross;
@@ -1635,8 +1635,13 @@ Vec2f MoleculeLayoutGraphSmart::_get_angle_derivative(Vec2f left_point, Vec2f ri
 		float sin = cross / len12;
 		Vec2f vec = left_point + right_point;
 		vec.rotate(-1, 0);
-		alphadv = (vec * len12 - (left_point * len2_sq - right_point * len1_sq) * cross / len12) / (len1_sq * len2_sq);
+		Vec2f sindv = (vec * len12 - (left_point * len2_sq - right_point * len1_sq) * cross / len12) / (len1_sq * len2_sq);
+      alphadv = sindv * (1. / sqrt(1 - sin * sin)) * signdot;
 		alpha = asin(sin);
+      if (cos < 0) {
+          if (alpha > 0) alpha = PI - alpha;
+          else alpha = -PI - alpha;
+      }
 	}
 	//float diff = abs(alpha) > abs(target_angle) ? alpha / target_angle - 1 : target_angle / alpha - 1;
 	//Vec2f result = abs(alpha) > abs(target_angle) ? alphadv / target_angle : alphadv * (- target_angle) / (alpha * alpha);

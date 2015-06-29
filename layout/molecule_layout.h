@@ -31,7 +31,7 @@ namespace indigo {
 class DLLEXPORT MoleculeLayout
 {      
 public:
-   explicit MoleculeLayout (BaseMolecule &molecule);
+    explicit MoleculeLayout(BaseMolecule &molecule, bool smart_layout);
 
    void make ();
 
@@ -41,7 +41,7 @@ public:
    bool respect_existing_layout;
    Filter *filter;
    int  max_iterations;
-   bool smart_layout;
+   bool _smart_layout;
 
    DECL_ERROR;
 
@@ -50,7 +50,6 @@ protected:
    BaseMolecule& _getMol (int id);
    void _make ();
    void _makeLayout();
-   void _makeLayoutSmart();
    void _updateRepeatingUnits();
    void _updateMultipleGroups ();
 
@@ -59,15 +58,14 @@ protected:
 
    void _updateDataSGroups ();
 
-   void _init ();
+   void _init(bool smart_layout);
 
    Metalayout _ml;
    BaseMolecule          &_molecule;
    AutoPtr<BaseMolecule> _molCollapsed;
    BaseMolecule*         _bm;
    Array<int>            _atomMapping;
-   MoleculeLayoutGraphSimple   _layout_graph;
-   MoleculeLayoutGraphSmart   _layout_graph_smart;
+   AutoPtr<MoleculeLayoutGraph> _layout_graph;
    Array<BaseMolecule*>  _map;
    bool _query;
    bool _hasMulGroups;

@@ -129,7 +129,7 @@ void RenderParamInterface::_prepareMolecule (RenderParams& params, BaseMolecule&
 {
    if (needsLayout(bm))
    {
-      MoleculeLayout ml(bm);
+      MoleculeLayout ml(bm, false);
       ml.make();
       bm.clearBondDirections();
       bm.stereocenters.markBonds();
@@ -144,7 +144,7 @@ void RenderParamInterface::_prepareReaction (RenderParams& params, BaseReaction&
       BaseMolecule& mol = rxn.getBaseMolecule(i);
       if (needsLayout(mol))
       {
-         MoleculeLayout ml(mol);
+         MoleculeLayout ml(mol, false);
          ml.make();
          mol.clearBondDirections();
          mol.stereocenters.markBonds();

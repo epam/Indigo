@@ -29,10 +29,9 @@ CEXPORT int indigoLayout (int object)
 
       if (IndigoBaseMolecule::is(obj) || obj.type == IndigoObject::SUBMOLECULE) {
          BaseMolecule &mol = obj.getBaseMolecule();
-         MoleculeLayout ml(mol);
+         MoleculeLayout ml(mol, self.smart_layout);
          ml.max_iterations = self.layout_max_iterations;
          ml.bond_length = 1.6f;
-         ml.smart_layout = self.smart_layout;
 
          TimeoutCancellationHandler cancellation(self.cancellation_timeout);
          ml.setCancellationHandler(&cancellation);
@@ -73,7 +72,7 @@ CEXPORT int indigoLayout (int object)
          }
       } else if (IndigoBaseReaction::is(obj)) {
          BaseReaction &rxn = obj.getBaseReaction();
-         ReactionLayout rl(rxn);
+         ReactionLayout rl(rxn, self.smart_layout);
          rl.max_iterations = self.layout_max_iterations;
          rl.bond_length = 1.6f;
          rl.make();

@@ -21,20 +21,23 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeLayout, "molecule_layout");
 
-MoleculeLayout::MoleculeLayout (BaseMolecule &molecule) :
-_molecule(molecule)
+MoleculeLayout::MoleculeLayout(BaseMolecule &molecule, bool smart_layout) :
+_molecule(molecule),
+_smart_layout(smart_layout)
 {
-   _hasMulGroups = _molecule.sgroups.getSGroupCount(SGroup::SG_TYPE_MUL) > 0;
-   _init();
-   _query = _molecule.isQueryMolecule();
+    _hasMulGroups = _molecule.sgroups.getSGroupCount(SGroup::SG_TYPE_MUL) > 0;
+    _init(smart_layout);
+    _query = _molecule.isQueryMolecule();
 }
 
-void MoleculeLayout::_init ()
+void MoleculeLayout::_init(bool smart_layout)
 {
    bond_length = 1.f;
    respect_existing_layout = false;
    filter = 0;
-   smart_layout = false;
+   _smart_layout = smart_layout;
+   if (_smart_layout) _layout_graph.reset(new MoleculeLayoutGraphSmart());
+   else _layout_graph.reset(new MoleculeLayoutGraphSimple());
    max_iterations = 20;
    _query = false;
    _atomMapping.clear();
@@ -68,21 +71,13 @@ void MoleculeLayout::_init ()
       _bm = _molCollapsed.get();
    }
 
-    _layout_graph_smart.makeOnGraph(*_bm);
+   _layout_graph->makeOnGraph(*_bm);
 
-    for (int i = _layout_graph_smart.vertexBegin(); i < _layout_graph_smart.vertexEnd(); i = _layout_graph_smart.vertexNext(i))
+   for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
     {
-        const Vec3f &pos = _bm->getAtomXyz(_layout_graph_smart.getVertexExtIdx(i));
+        const Vec3f &pos = _bm->getAtomXyz(_layout_graph->getVertexExtIdx(i));
 
-        _layout_graph_smart.getPos(i).set(pos.x, pos.y);
-    }
-    _layout_graph.makeOnGraph(*_bm);
-
-    for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
-    {
-        const Vec3f &pos = _bm->getAtomXyz(_layout_graph.getVertexExtIdx(i));
-
-        _layout_graph.getPos(i).set(pos.x, pos.y);
+        _layout_graph->getPos(i).set(pos.x, pos.y);
     }
 }
 
@@ -299,9 +294,9 @@ void MoleculeLayout::_updateDataSGroups ()
    QS_DEF(Array<int>, layout_graph_mapping);
    layout_graph_mapping.resize(_molecule.vertexEnd());
    layout_graph_mapping.fffill();
-   for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
+   for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
    {
-      int vi = _layout_graph.getVertexExtIdx(i);
+       int vi = _layout_graph->getVertexExtIdx(i);
       layout_graph_mapping[vi] = i;
    }
 
@@ -320,7 +315,7 @@ void MoleculeLayout::_updateDataSGroups ()
             for (int j = 0; j < group.atoms.size(); j++)
             {
                int ai = group.atoms[j];
-               const LayoutVertex &vert = _layout_graph.getLayoutVertex(layout_graph_mapping[ai]);
+               const LayoutVertex &vert = _layout_graph->getLayoutVertex(layout_graph_mapping[ai]);
                after.x += vert.pos.x;
                after.y += vert.pos.y;
             }
@@ -338,37 +333,21 @@ void MoleculeLayout::_updateDataSGroups ()
 
 void MoleculeLayout::_make ()
 {
-   _layout_graph.max_iterations = max_iterations;
+   _layout_graph->max_iterations = max_iterations;
 
    // 0. Find 2D coordinates via proxy _layout_graph object
-   if (smart_layout) {
-       _layout_graph_smart.max_iterations = max_iterations;
-       _layout_graph_smart.smart_layout = smart_layout;
-       _makeLayoutSmart();
-   }
-   else {
-       _layout_graph.max_iterations = max_iterations;
-       _makeLayout();
-   }
+    _layout_graph->max_iterations = max_iterations;
+    _makeLayout();
 
    // 1. Update data-sgroup label position before changing molecule atoms positions
    _updateDataSGroups();
 
    // 2. Update atoms
-   if (smart_layout) {
-       for (int i = _layout_graph_smart.vertexBegin(); i < _layout_graph_smart.vertexEnd(); i = _layout_graph_smart.vertexNext(i))
-       {
-           const LayoutVertex &vert = _layout_graph_smart.getLayoutVertex(i);
-           _bm->setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
-       }
-   }
-   else {
-       for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
-       {
-           const LayoutVertex &vert = _layout_graph.getLayoutVertex(i);
-           _bm->setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
-       }
-   }
+   for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
+    {
+        const LayoutVertex &vert = _layout_graph->getLayoutVertex(i);
+        _bm->setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+    }
 
    if (_hasMulGroups) {
       for (int j = 0; j < _atomMapping.size(); ++j) {
@@ -422,7 +401,7 @@ void MoleculeLayout::make ()
          {
             BaseMolecule& mol = *frags[j];
             if (filter == NULL) {
-               MoleculeLayout layout(mol);
+               MoleculeLayout layout(mol, _smart_layout);
                layout.max_iterations = max_iterations;
                layout.bond_length = bond_length;
                layout.make();
@@ -444,7 +423,7 @@ void MoleculeLayout::make ()
 
 void MoleculeLayout::setCancellationHandler (CancellationHandler* cancellation)
 {
-   _layout_graph.cancellation = cancellation;
+   _layout_graph->cancellation = cancellation;
 }
 
 BaseMolecule& MoleculeLayout::cb_getMol (int id, void* context)
@@ -464,42 +443,20 @@ void MoleculeLayout::_makeLayout ()
    {
       QS_DEF(Array<int>, fixed_vertices);
 
-      fixed_vertices.clear_resize(_layout_graph.vertexEnd());
+      fixed_vertices.clear_resize(_layout_graph->vertexEnd());
       fixed_vertices.zerofill();
 
-      for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
-         if (!filter->valid(_layout_graph.getVertexExtIdx(i)))
+      for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
+          if (!filter->valid(_layout_graph->getVertexExtIdx(i)))
             fixed_vertices[i] = 1;
 
       Filter new_filter(fixed_vertices.ptr(), Filter::NEQ, 1);
 
-      _layout_graph.layout(*_bm, bond_length, &new_filter, respect_existing_layout);
+      _layout_graph->layout(*_bm, bond_length, &new_filter, respect_existing_layout);
    }
    else
-      _layout_graph.layout(*_bm, bond_length, 0, respect_existing_layout);
+       _layout_graph->layout(*_bm, bond_length, 0, respect_existing_layout);
 }
-
-void MoleculeLayout::_makeLayoutSmart()
-{
-    if (filter != 0)
-    {
-        QS_DEF(Array<int>, fixed_vertices);
-
-        fixed_vertices.clear_resize(_layout_graph_smart.vertexEnd());
-        fixed_vertices.zerofill();
-
-        for (int i = _layout_graph_smart.vertexBegin(); i < _layout_graph_smart.vertexEnd(); i = _layout_graph_smart.vertexNext(i))
-            if (!filter->valid(_layout_graph_smart.getVertexExtIdx(i)))
-                fixed_vertices[i] = 1;
-
-        Filter new_filter(fixed_vertices.ptr(), Filter::NEQ, 1);
-
-        _layout_graph_smart.layout(*_bm, bond_length, &new_filter, respect_existing_layout);
-    }
-    else
-        _layout_graph_smart.layout(*_bm, bond_length, 0, respect_existing_layout);
-}
-
 
 void MoleculeLayout::_updateRepeatingUnits ()
 {

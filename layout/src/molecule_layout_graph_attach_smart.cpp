@@ -325,7 +325,7 @@ bool MoleculeLayoutGraphSmart::_attachCycleOutside (const CycleSmart &cycle, flo
 
    // Copy new layout
    if (is_attached)
-      next_bc.copyLayoutTo(*this, mapping.ptr());
+      next_bc.copyLayoutTo(*this, mapping);
 
    return is_attached;
 }
@@ -450,7 +450,7 @@ bool MoleculeLayoutGraphSmart::_attachCycleInside (const CycleSmart &cycle, floa
 
    // Copy new layout
    if (attached)
-      next_bc.copyLayoutTo(*this, mapping.ptr());
+      next_bc.copyLayoutTo(*this, mapping);
 
    return attached;
 }

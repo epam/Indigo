@@ -19,12 +19,13 @@
 
 using namespace indigo;
 
-ReactionLayout::ReactionLayout (BaseReaction& r) :
+ReactionLayout::ReactionLayout (BaseReaction& r, bool smart_layout) :
 bond_length(1),
 plus_interval_factor(4),
 arrow_interval_factor(6),
 preserve_molecule_layout(false),
-_r(r)
+_r(r),
+_smart_layout(smart_layout)
 {
    max_iterations = 0;
 }
@@ -36,7 +37,7 @@ void ReactionLayout::make ()
    {
       for (int i = _r.begin(); i < _r.end(); i = _r.next(i))
       {
-         MoleculeLayout molLayout(_r.getBaseMolecule(i));
+         MoleculeLayout molLayout(_r.getBaseMolecule(i), _smart_layout);
          molLayout.max_iterations = max_iterations;
          molLayout.bond_length = bond_length;
          molLayout.make();

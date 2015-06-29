@@ -113,7 +113,7 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
       {
          if (has_coord && self.rpe_params.is_layout)
          {
-            ReactionLayout layout(out_reactions[i]);
+            ReactionLayout layout(out_reactions[i], self.smart_layout);
             layout.make();
             out_reactions[i].markStereocenterBonds();
          }
@@ -139,6 +139,7 @@ CEXPORT int indigoTransform (int reaction, int monomers)
       ReactionTransformation rt;
       rt.arom_options = self.arom_options;
       rt.layout_flag = self.rpe_params.transform_is_layout;
+      rt.smart_layout = self.smart_layout;
 
       // Try to work with molecule first
       bool is_mol = false;

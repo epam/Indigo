@@ -29,6 +29,7 @@ ReactionTransformation::ReactionTransformation( void ) : CP_INIT, TL_CP_GET(_mer
    _cur_monomer.clear();
    layout_flag = true;
    cancellation = 0;
+   smart_layout = false;
 }
 
 bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &reaction )
@@ -95,7 +96,7 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
       {
          if (layout_flag)
          {
-            MoleculeLayout ml(molecule);
+            MoleculeLayout ml(molecule, smart_layout);
             ml.setCancellationHandler(cancellation);
             ml.make();
          }

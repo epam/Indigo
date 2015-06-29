@@ -42,6 +42,8 @@ namespace indigo
 
       bool layout_flag;
 
+      bool smart_layout;
+
       CancellationHandler *cancellation;
 
    private:
