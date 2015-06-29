@@ -27,6 +27,7 @@
 #include "molecule/molecule_tgroups.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_standardize.h"
+#include "molecule/molecule_ionize.h"
 
 #ifdef _WIN32
 #pragma warning(push)

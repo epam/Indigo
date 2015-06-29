@@ -821,3 +821,22 @@ CEXPORT int indigoStandardize (int object)
    }
    INDIGO_END(-1);
 }
+
+CEXPORT int indigoIonize (int object, float pH, float pH_toll)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
+
+      if (obj.type == IndigoObject::MOLECULE)
+      {
+         IndigoMolecule &m_obj = (IndigoMolecule &)obj;
+         Molecule &m = m_obj.getMolecule();
+         m.ionize(pH, pH_toll, self.ionize_options);
+      }
+      else
+         throw IndigoError("indigoStandardize: expected molecule, got %s", obj.debugInfo());
+      return 1;
+   }
+   INDIGO_END(-1);
+}

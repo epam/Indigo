@@ -31,6 +31,7 @@
 #include "molecule/molecule_tautomer.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_standardize_options.h"
+#include "molecule/molecule_ionize.h"
 
 
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define 
@@ -300,6 +301,8 @@ public:
    bool unique_dearomatization; 
 
    StandardizeOptions standardize_options;
+
+   IonizeOptions ionize_options;
 
 protected:
 

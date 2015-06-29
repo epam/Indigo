@@ -159,6 +159,8 @@ public:
 
    bool standardize (const StandardizeOptions &options);
 
+   bool ionize (float ph, float ph_toll, const IonizeOptions &options);
+
 protected:
    struct _Atom
    {

@@ -250,8 +250,10 @@ CEXPORT int indigoNormalize (int structure, const char *options);
 
 // Method for molecule and query standardizing
 // It stadrdize charges, stereo and etc.
-// Default options is empty.
 CEXPORT int indigoStandardize (int item);
+
+// Method for structure ionization at specified pH and pH tollerance
+CEXPORT int indigoIonize (int item, float pH, float pH_toll);
 
 // Automatic reaction atom-to-atom mapping
 // mode is one of the following (separated by a space):

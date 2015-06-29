@@ -239,6 +239,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoStandardize(self.id))
 
+    def ionize(self, pH, pH_toll):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoIonize(self.id, pH, pH_toll))
+
     def automap(self, mode=''):
         self.dispatcher._setSessionId()
         mode = '' if mode is None else mode
@@ -1487,6 +1491,8 @@ class Indigo(object):
         Indigo._lib.indigoNormalize.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoStandardize.restype = c_int
         Indigo._lib.indigoStandardize.argtypes = [c_int]
+        Indigo._lib.indigoIonize.restype = c_int
+        Indigo._lib.indigoIonize.argtypes = [c_int, c_float, c_float]
         Indigo._lib.indigoAutomap.restype = c_int
         Indigo._lib.indigoAutomap.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoGetAtomMappingNumber.restype = c_int

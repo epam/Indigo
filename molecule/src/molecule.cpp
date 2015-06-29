@@ -1650,3 +1650,9 @@ bool Molecule::standardize (const StandardizeOptions &options)
    updateEditRevision();
    return MoleculeStandardizer::standardize(*this, options);
 }
+
+bool Molecule::ionize (float ph, float ph_toll, const IonizeOptions &options)
+{
+   updateEditRevision();
+   return MoleculeIonizer::ionize(*this, ph, ph_toll, options);
+}
