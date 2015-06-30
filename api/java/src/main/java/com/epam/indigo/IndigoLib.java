@@ -118,6 +118,7 @@ public interface IndigoLib extends Library
    int indigoNormalize (int structure, String options);
 
    int indigoStandardize (int item);
+   int indigoIonize(int item, float pH, float pH_toll);
 
    int indigoAutomap (int reaction, String mode);
    int indigoGetAtomMappingNumber (int reaction, int reaction_atom);
@@ -142,7 +143,7 @@ public interface IndigoLib extends Library
    int indigoSingleAllowedRGroup (int rsite);
 
    int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);
-      
+
    int indigoIterateRGroupFragments (int rgroup);
    int indigoCountAttachmentPoints (int rgroup);
 
@@ -161,7 +162,7 @@ public interface IndigoLib extends Library
 
    int indigoGetReactingCenter (int reaction, int reaction_bond, IntByReference rc);
    int indigoSetReactingCenter (int reaction, int reaction_bond, int rc);
-   
+
    Pointer indigoXYZ (int atom);
    int indigoSetXYZ (int atom, float x, float y, float z);
 
@@ -203,26 +204,26 @@ public interface IndigoLib extends Library
    int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
                                      float x3, float y3, float x4, float y4);
 
-   int indigoSetSGroupData (int sgroup,  String data);                    
-   int indigoSetSGroupCoords (int sgroup, float x, float y);                  
-   int indigoSetSGroupDescription (int sgroup, String description);      
-   int indigoSetSGroupFieldName (int sgroup, String name);               
-   int indigoSetSGroupQueryCode (int sgroup, String querycode);          
-   int indigoSetSGroupQueryOper (int sgroup, String queryoper);          
-   int indigoSetSGroupDisplay (int sgroup, String option);               
-   int indigoSetSGroupLocation (int sgroup, String option);              
-   int indigoSetSGroupTag (int sgroup, String tag);                      
-   int indigoSetSGroupTagAlign (int sgroup, int tag_align);                   
-   int indigoSetSGroupDataType (int sgroup, String type);                
-   int indigoSetSGroupXCoord (int sgroup, float x);                           
-   int indigoSetSGroupYCoord (int sgroup, float y);                           
+   int indigoSetSGroupData (int sgroup,  String data);
+   int indigoSetSGroupCoords (int sgroup, float x, float y);
+   int indigoSetSGroupDescription (int sgroup, String description);
+   int indigoSetSGroupFieldName (int sgroup, String name);
+   int indigoSetSGroupQueryCode (int sgroup, String querycode);
+   int indigoSetSGroupQueryOper (int sgroup, String queryoper);
+   int indigoSetSGroupDisplay (int sgroup, String option);
+   int indigoSetSGroupLocation (int sgroup, String option);
+   int indigoSetSGroupTag (int sgroup, String tag);
+   int indigoSetSGroupTagAlign (int sgroup, int tag_align);
+   int indigoSetSGroupDataType (int sgroup, String type);
+   int indigoSetSGroupXCoord (int sgroup, float x);
+   int indigoSetSGroupYCoord (int sgroup, float y);
 
-   int indigoFindSGroups (int molecule, String property, String value);                           
+   int indigoFindSGroups (int molecule, String property, String value);
    int indigoGetSGroupType (int sgroup);
    int indigoGetSGroupIndex (int sgroup);
 
-   int indigoTransformSCSRtoCTAB (int molecule);                           
-   int indigoTransformCTABtoSCSR (int molecule, int templates);                           
+   int indigoTransformSCSRtoCTAB (int molecule);
+   int indigoTransformCTABtoSCSR (int molecule, int templates);
 
    int indigoResetCharge (int atom);
    int indigoResetExplicitValence (int atom);

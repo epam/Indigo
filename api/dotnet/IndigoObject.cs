@@ -1738,6 +1738,12 @@ namespace com.epam.indigo
             dispatcher.checkResult(_indigo_lib.indigoStandardize(self));
         }
 
+        public void ionize(float pH, float pHToll)
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(_indigo_lib.indigoIonize(self, pH, pHToll));
+        }
+
         public int expandAbbreviations()
         {
             dispatcher.setSessionID();

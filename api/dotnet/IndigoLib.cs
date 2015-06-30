@@ -94,7 +94,7 @@ namespace com.epam.indigo
         int indigoNormalize(int structure, string options);
 
         int indigoStandardize(int item);
-
+        int indigoIonize(int item, float pH, float pH_toll);
         int indigoIterateAtoms(int molecule);
         int indigoIteratePseudoatoms(int molecule);
         int indigoIterateRSites(int molecule);
@@ -165,19 +165,19 @@ namespace com.epam.indigo
         int indigoGetSGroupMultiplier(int sgroup);
         int indigoSetSGroupMultiplier(int sgroup, int mult);
 
-        int indigoSetSGroupData (int sgroup,  string data);                    
-        int indigoSetSGroupCoords (int sgroup, float x, float y);                  
-        int indigoSetSGroupDescription (int sgroup, string description);      
-        int indigoSetSGroupFieldName (int sgroup, string name);               
-        int indigoSetSGroupQueryCode (int sgroup, string querycode);          
-        int indigoSetSGroupQueryOper (int sgroup, string queryoper);          
-        int indigoSetSGroupDisplay (int sgroup, string option);               
-        int indigoSetSGroupLocation (int sgroup, string option);              
-        int indigoSetSGroupTag (int sgroup, string tag);                      
-        int indigoSetSGroupTagAlign (int sgroup, int tag_align);                   
-        int indigoSetSGroupDataType (int sgroup, string type);                
-        int indigoSetSGroupXCoord (int sgroup, float x);                           
-        int indigoSetSGroupYCoord (int sgroup, float y);                           
+        int indigoSetSGroupData (int sgroup,  string data);
+        int indigoSetSGroupCoords (int sgroup, float x, float y);
+        int indigoSetSGroupDescription (int sgroup, string description);
+        int indigoSetSGroupFieldName (int sgroup, string name);
+        int indigoSetSGroupQueryCode (int sgroup, string querycode);
+        int indigoSetSGroupQueryOper (int sgroup, string queryoper);
+        int indigoSetSGroupDisplay (int sgroup, string option);
+        int indigoSetSGroupLocation (int sgroup, string option);
+        int indigoSetSGroupTag (int sgroup, string tag);
+        int indigoSetSGroupTagAlign (int sgroup, int tag_align);
+        int indigoSetSGroupDataType (int sgroup, string type);
+        int indigoSetSGroupXCoord (int sgroup, float x);
+        int indigoSetSGroupYCoord (int sgroup, float y);
         int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
                                      float x3, float y3, float x4, float y4);
 

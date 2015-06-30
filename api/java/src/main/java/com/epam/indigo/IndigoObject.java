@@ -46,7 +46,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       return dispatcher;
    }
-   
+
    public void dispose ()
    {
       if (self >= 0) {
@@ -151,7 +151,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoIterateAttachmentPoints(self, order)), this);
    }
-	
+
    public IndigoObject iterateReactants ()
    {
       dispatcher.setSessionID();
@@ -212,19 +212,19 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       Indigo.checkResult(this, reaction_atom, _lib.indigoSetAtomMappingNumber(self, reaction_atom.self, number));
    }
-   
+
    public void clearAAM ()
    {
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoClearAAM(self));
    }
-   
+
    public void correctReactingCenters ()
    {
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoCorrectReactingCenters(self));
    }
-   
+
    public IndigoObject iterateAtoms ()
    {
       dispatcher.setSessionID();
@@ -290,20 +290,20 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoStereocenterType(self));
    }
-   
+
    public int stereocenterGroup ()
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoStereocenterGroup(self));
    }
-   
+
    public int[] stereocenterPyramid ()
    {
       dispatcher.setSessionID();
       Pointer ptr = Indigo.checkResultPointer(this, _lib.indigoStereocenterPyramid(self));
       return ptr.getIntArray(0, 4);
    }
-   
+
    public void changeStereocenterType (int type)
    {
       dispatcher.setSessionID();
@@ -352,7 +352,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
          return res.getValue();
       throw new IndigoException(this, "reactingCenter(): unexpected result");
    }
-   
+
    public void setReactingCenter (IndigoObject bond, int type)
    {
       dispatcher.setSessionID();
@@ -999,7 +999,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
       if (sgclass == null)
          sgclass = "";
-     
+
       Indigo.checkResult(this, _lib.indigoSetSGroupClass(self, sgclass));
    }
 
@@ -1009,7 +1009,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
       if (sgname == null)
          sgname = "";
-     
+
       Indigo.checkResult(this, _lib.indigoSetSGroupName(self, sgname));
    }
 
@@ -1206,12 +1206,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoTransformCTABtoSCSR(self, templates.self));
    }
-   
+
    public int setSGroupBrackets(int brk_style, float x1, float y1, float x2, float y2,
                                      float x3, float y3, float x4, float y4)
    {
       dispatcher.setSessionID();
-      return Indigo.checkResult(this, _lib.indigoSetSGroupBrackets(self, brk_style, 
+      return Indigo.checkResult(this, _lib.indigoSetSGroupBrackets(self, brk_style,
               x1, y1, x2, y2, x3, y3, x4, y4));
    }
 
@@ -1225,10 +1225,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
       if (options == null)
          options = "";
-      
+
       Indigo.checkResult(this, _lib.indigoSetDataSGroupXY(self, x, y, options));
    }
-   
+
    public void addStereocenter (int type, int v1, int v2, int v3)
    {
       addStereocenter(type, v1, v2, v3, -1);
@@ -1239,7 +1239,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoAddStereocenter(self, type, v1, v2, v3, v4));
    }
-   
+
 
    public IndigoObject createSubmolecule (int[] vertices)
    {
@@ -1287,7 +1287,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       removeAtoms(Indigo.toIntArray(vertices));
    }
-   
+
    public void removeBonds (int[] bonds)
    {
       dispatcher.setSessionID();
@@ -1298,7 +1298,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       removeBonds(Indigo.toIntArray(bonds));
    }
-   
+
    public float alignAtoms (int[] atom_ids, float[] desired_xyz)
    {
       if (atom_ids.length * 3 != desired_xyz.length)
@@ -1370,7 +1370,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Pointer p = ptr.getValue();
       return p.getByteArray(0, size.getValue());
    }
-   
+
    public boolean hasProperty(String prop)
    {
       dispatcher.setSessionID();
@@ -1545,7 +1545,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
       if (res == 0)
          return null;
-      
+
       return new IndigoObject(dispatcher, res, this);
    }
 
@@ -1554,13 +1554,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       dispatcher.setSessionID();
       return Indigo.checkResult(this, query, _lib.indigoCountMatches(self, query.self));
    }
-   
+
    public int countMatchesWithLimit (IndigoObject query, int embeddings_limit)
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, query, _lib.indigoCountMatchesWithLimit(self, query.self, embeddings_limit));
    }
-   
+
    public IndigoObject iterateMatches (IndigoObject query)
    {
       dispatcher.setSessionID();
@@ -1585,7 +1585,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    public IndigoObject mapMolecule (IndigoObject query_reaction_molecule)
    {
       dispatcher.setSessionID();
-      int res = Indigo.checkResult(this, query_reaction_molecule, 
+      int res = Indigo.checkResult(this, query_reaction_molecule,
          _lib.indigoMapMolecule(self, query_reaction_molecule.self));
       if (res == 0)
          return null;
@@ -1713,7 +1713,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Pointer p = ptr.getValue();
       return p.getByteArray(0, size.getValue());
    }
-   
+
    public int[] symmetryClasses ()
    {
       IntByReference count = new IntByReference();
@@ -1722,13 +1722,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Pointer p = Indigo.checkResultPointer(this, _lib.indigoSymmetryClasses(self, count));
       return p.getIntArray(0, count.getValue());
    }
-   
+
    public void append (IndigoObject obj)
    {
       dispatcher.setSessionID();
       Indigo.checkResult(this, obj, _lib.indigoAppend(self, obj.self));
    }
-   
+
    public void optimize ()
    {
       optimize(null);
@@ -1759,6 +1759,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoStandardize(self));
+   }
+
+   public void ionize(float pH, float pHToll)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoIonize(self, pH, pHToll));
    }
 
    public int expandAbbreviations()
