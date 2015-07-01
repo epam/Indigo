@@ -31,6 +31,7 @@
 #include "reaction/reaction_product_enumerator.h"
 #include "reaction/reaction_transformation.h"
 #include "base_cpp/properties_map.h"
+#include "indigo_mapping.h"
 
 struct ProductEnumeratorCallbackData 
 {
@@ -38,7 +39,7 @@ struct ProductEnumeratorCallbackData
    ObjArray<Reaction> *out_reactions;
 };
 
-static void product_proc( Molecule &product, Array<int> &monomers_indices, void *userdata )
+static void product_proc( Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, void *userdata )
 {
    ProductEnumeratorCallbackData *rpe_data = (ProductEnumeratorCallbackData *)userdata;
 
@@ -135,7 +136,7 @@ CEXPORT int indigoTransform (int reaction, int monomers)
    {
       IndigoObject &monomers_object = self.getObject(monomers);
       QueryReaction &query_rxn = self.getObject(reaction).getQueryReaction();
-
+         
       ReactionTransformation rt;
       rt.arom_options = self.arom_options;
       rt.layout_flag = self.rpe_params.transform_is_layout;
@@ -155,22 +156,58 @@ CEXPORT int indigoTransform (int reaction, int monomers)
       TimeoutCancellationHandler cancellation(self.cancellation_timeout);
       rt.cancellation = &cancellation;
 
+      bool transformed_flag = false;
+   
+      IndigoObject *out_mapping = 0;
+      
       if (is_mol)
       {
+         Array<int> mapping;
          Molecule &mol = monomers_object.getMolecule();
-         rt.transform(mol, query_rxn);
+         Molecule input_mol;
+         input_mol.clone(mol, 0, 0);
+         
+         transformed_flag = rt.transform(mol, query_rxn, &mapping);
+
+         AutoPtr<IndigoMapping> mptr(new IndigoMapping(input_mol, mol));
+      
+         mptr.get()->mapping.copy(mapping);
+
+         out_mapping = mptr.release();
       }
       else if (monomers_object.type == IndigoObject::ARRAY)
       {
          IndigoArray &monomers_array = IndigoArray::cast(self.getObject(monomers));
-
+         AutoPtr<IndigoArray> out_array(new IndigoArray());
+         
          for (int i = 0; i < monomers_array.objects.size(); i++)
-            rt.transform(monomers_array.objects[i]->getMolecule(), query_rxn);
+         {
+            
+            Array<int> mapping;
+            Molecule &mol = monomers_object.getMolecule();
+            Molecule input_mol;
+            input_mol.clone(mol, 0, 0);
+         
+            if (rt.transform(monomers_array.objects[i]->getMolecule(), query_rxn, &mapping))
+               transformed_flag = true;
+
+            AutoPtr<IndigoMapping> mptr(new IndigoMapping(input_mol, mol));
+            mptr.get()->mapping.copy(mapping);
+
+            out_array.get()->objects.add(mptr.release());
+         }
+
+         out_mapping = out_array.release();
       }
       else
          throw IndigoError("%s is not a molecule or array of molecules", self.getObject(monomers).debugInfo());
 
-      return 1;
+      if (transformed_flag)
+         return self.addObject(out_mapping);
+      else
+      {
+         return 0;
+      }
    }
    INDIGO_END(-1)
 }

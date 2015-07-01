@@ -65,7 +65,7 @@ public:
       void removeMonomer( int idx );
    };
    
-   void (*product_proc)( Molecule &product, Array<int> &monomers_indices, void *userdata );
+   void (*product_proc)( Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, void *userdata );
    void *userdata;
    bool is_multistep_reaction;
    bool is_self_react;
@@ -86,7 +86,7 @@ public:
 
    int buildProduct( void );
 
-   bool performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms, Array<int> &original_hydrogens, bool &need_layout );
+   bool performSingleTransformation( Molecule &molecule, Array<int> &mapping, Array<int> &forbidden_atoms, Array<int> &original_hydrogens, bool &need_layout );
 
 private:
    ReactionEnumeratorContext &_context;
@@ -107,6 +107,7 @@ private:
    TL_CP_DECL(Array<int>, _fragments_aam_array);
    TL_CP_DECL(QueryMolecule, _full_product);
    TL_CP_DECL(Array<int>, _product_monomers);
+   TL_CP_DECL(Array<int>, _mapping);
    TL_CP_DECL(Molecule, _fragments);
    TL_CP_DECL(Array<int>, _is_needless_atom);
    TL_CP_DECL(Array<int>, _is_needless_bond);
@@ -130,7 +131,7 @@ private:
 
    bool _isMonomerFromCurTube( int monomer_idx );
    
-   static void _foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep = 0, Array<int> *original_hydrogens = 0 );
+   static void _foldHydrogens(BaseMolecule &molecule, Array<int> *atoms_to_keep = 0, Array<int> *original_hydrogens = 0, Array<int> *mol_mapping = 0 );
 
    void _productProcess( void );
 
@@ -231,7 +232,7 @@ private:
 
    bool _checkValence( Molecule &mol, int atom_idx );
 
-   bool _attachFragments( Molecule &ready_product_out );
+   bool _attachFragments( Molecule &ready_product_out, Array<int> &ucfrag_mapping );
 
    bool _checkFragment( QueryMolecule &submolecule, Molecule &monomer, 
                         Array<byte> &unfrag_mon_atoms, int *core_sub );

@@ -127,7 +127,7 @@ ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext &cont
     _context(context),
     CP_INIT,
     TL_CP_GET(_fragments_aam_array), TL_CP_GET(_full_product), 
-    TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
+    TL_CP_GET(_product_monomers), TL_CP_GET(_mapping), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
     TL_CP_GET(_bonds_mapping_sub), TL_CP_GET(_bonds_mapping_super), 
     TL_CP_GET(_att_points), TL_CP_GET(_fmcache), 
@@ -140,6 +140,7 @@ ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext &cont
    _fragments_aam_array.clear();
    _full_product.clear();
    _full_product.clone(cur_full_product, NULL, NULL);
+   _mapping.clear();
    _fragments.clear();
    _is_needless_atom.clear();
    _is_needless_bond.clear();
@@ -191,7 +192,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
     _reaction_monomers(cur_rpe_state._reaction_monomers),
     CP_INIT,
     TL_CP_GET(_fragments_aam_array), TL_CP_GET(_full_product),
-    TL_CP_GET(_product_monomers), TL_CP_GET(_fragments), 
+    TL_CP_GET(_product_monomers), TL_CP_GET(_mapping), TL_CP_GET(_fragments), 
     TL_CP_GET(_is_needless_atom), TL_CP_GET(_is_needless_bond), 
     TL_CP_GET(_bonds_mapping_sub), TL_CP_GET(_bonds_mapping_super), 
     TL_CP_GET(_att_points), TL_CP_GET(_fmcache), 
@@ -205,6 +206,8 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
    _fragments_aam_array.copy(cur_rpe_state._fragments_aam_array);
    _full_product.clear();
    _full_product.clone(cur_rpe_state._full_product, NULL, NULL);
+   _mapping.clear();
+   _mapping.copy(cur_rpe_state._mapping);
    _fragments.clear();
    _fragments.clone(cur_rpe_state._fragments, NULL, NULL);
    _is_needless_atom.clear();
@@ -384,7 +387,11 @@ void ReactionEnumeratorState::_productProcess( void )
    QS_DEF(Molecule, ready_product);
    ready_product.clear();
 
-   if (!_attachFragments(ready_product))
+
+   QS_DEF(Array<int>, ucfrag_mapping);
+   ucfrag_mapping.clear();
+
+   if (!_attachFragments(ready_product, ucfrag_mapping))
       return;
 
    if (!is_transform)
@@ -460,10 +467,10 @@ void ReactionEnumeratorState::_productProcess( void )
       ready_product.clearXyz();
 
    if (product_proc != NULL)
-      product_proc(ready_product, _product_monomers, userdata);
+      product_proc(ready_product, _product_monomers, ucfrag_mapping, userdata);
 }
 
-void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule, Array<int> *atoms_to_keep, Array<int> *original_hydrogens )
+void ReactionEnumeratorState::_foldHydrogens(BaseMolecule &molecule, Array<int> *atoms_to_keep, Array<int> *original_hydrogens, Array<int> *mol_mapping)
 {
    QS_DEF(Array<int>, hydrogens);
    hydrogens.clear();
@@ -501,6 +508,12 @@ void ReactionEnumeratorState::_foldHydrogens( BaseMolecule &molecule, Array<int>
    }
 
    molecule.removeAtoms(hydrogens);
+
+   if (mol_mapping != 0)
+   {
+      for (int i = 0; i < hydrogens.size(); i++)
+         mol_mapping->at(hydrogens[i]) = -1;
+   }
 }
 
 bool ReactionEnumeratorState::_nextMatchProcess( EmbeddingEnumerator &ee, 
@@ -543,7 +556,7 @@ int ReactionEnumeratorState::_calcMaxHCnt( QueryMolecule &molecule )
 }
 
 
-bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, Array<int> &forbidden_atoms, Array<int> &original_hydrogens, bool &need_layout)
+bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, Array<int> &mapping, Array<int> &forbidden_atoms, Array<int> &original_hydrogens, bool &need_layout)
 {
    is_transform = true;
 
@@ -556,9 +569,11 @@ bool ReactionEnumeratorState::performSingleTransformation( Molecule &molecule, A
 
    _original_hydrogens.copy(original_hydrogens);
 
+   _mapping.copy(mapping);
+
    if (!_startEmbeddingEnumerator(molecule))
    {
-      _foldHydrogens(molecule, &forbidden_atoms, &_original_hydrogens);
+      _foldHydrogens(molecule, &forbidden_atoms, &_original_hydrogens, &_mapping);
       return false;
    }
 
@@ -1414,7 +1429,7 @@ void ReactionEnumeratorState::_findFragments2ProductMapping( Array<int> &f2p_map
    }
 }
 
-bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
+bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out, Array<int> &ucfrag_mapping )
 {
    QS_DEF(Array<int>, frags2product_mapping);
    _findFragments2ProductMapping(frags2product_mapping);
@@ -1642,6 +1657,36 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out )
          temp_orig_hydr.push(out_mapping[new_h_idx]);
       }
       _original_hydrogens.copy(temp_orig_hydr);
+   }
+
+   ucfrag_mapping.clear_resize(_fragments.vertexEnd());
+   ucfrag_mapping.fffill();
+
+   QS_DEF(Array<int>, old_mapping);
+   old_mapping.copy(_mapping);
+
+   _mapping.clear_resize(_fragments.vertexEnd());
+   _mapping.fffill();
+
+   for (int i = uncleaned_fragments.vertexBegin(); i != uncleaned_fragments.vertexEnd(); i++)
+   {
+      if (frags_mapping[i] != -1)
+         ucfrag_mapping[i] = frags_mapping[i];
+      else if (frags2product_mapping[i] != -1)
+         ucfrag_mapping[i] = frags2product_mapping[i];
+      else
+         continue;
+
+      ucfrag_mapping[i] = out_mapping[ucfrag_mapping[i]];
+
+      if (old_mapping.size() > 0)
+      {
+         int i_id = old_mapping.find(i);
+         if (i_id != -1)
+            _mapping[i_id] = ucfrag_mapping[i];
+      }
+      else
+         _mapping[i] = ucfrag_mapping[i];
    }
 
    return true;

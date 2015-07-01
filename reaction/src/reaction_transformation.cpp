@@ -23,16 +23,17 @@ IMPL_ERROR(ReactionTransformation, "Reaction transformation");
 
 CP_DEF(ReactionTransformation);
 
-ReactionTransformation::ReactionTransformation( void ) : CP_INIT, TL_CP_GET(_merged_reaction), TL_CP_GET(_cur_monomer)
+ReactionTransformation::ReactionTransformation( void ) : CP_INIT, TL_CP_GET(_merged_reaction), TL_CP_GET(_cur_monomer), TL_CP_GET(_mapping)
 {
    _merged_reaction.clear();
    _cur_monomer.clear();
+   _mapping.clear();
    layout_flag = true;
    cancellation = 0;
    smart_layout = false;
 }
 
-bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &reaction )
+bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &reaction, Array<int> *mapping )
 {
    _generateMergedReaction(reaction);
    
@@ -85,8 +86,10 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
    }
 
    bool need_layout = false;
-   while (re_state.performSingleTransformation(_cur_monomer, forbidden_atoms, original_hydrogens, need_layout))
-      ;
+
+   bool transformed_flag = false;
+   while (re_state.performSingleTransformation(_cur_monomer, _mapping, forbidden_atoms, original_hydrogens, need_layout))
+      transformed_flag = true;
 
    molecule.clone(_cur_monomer, NULL, NULL);
 
@@ -107,22 +110,33 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
          molecule.stereocenters.markBonds();
    }
 
-   return true;
+   mapping->copy(_mapping);
+
+   return transformed_flag;
 }
 
-bool ReactionTransformation::transform(ReusableObjArray<Molecule> &molecules, QueryReaction &reaction)
+bool ReactionTransformation::transform(ReusableObjArray<Molecule> &molecules, QueryReaction &reaction,
+                                       ReusableObjArray<Array<int>> *mapping_array)
 {
    for (int i = 0; i < molecules.size(); i++)
-      if (!transform(molecules[i], reaction))
+   {
+      Array<int> *mapping = 0;
+      if (mapping_array != 0)
+         mapping = &(mapping_array->at(i));
+
+      if (!transform(molecules[i], reaction, mapping))
          return false;
+   }
 
    return true;
 }
 
-void ReactionTransformation::_product_proc( Molecule &product, Array<int> &monomers_indices, 
+void ReactionTransformation::_product_proc( Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, 
                                             void *userdata )
 {
    ReactionTransformation *rt = (ReactionTransformation *)userdata;
+
+   rt->_mapping.copy(mapping);
 
    rt->_cur_monomer.clone(product, NULL, NULL);
 

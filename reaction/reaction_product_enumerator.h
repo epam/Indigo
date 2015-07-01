@@ -53,7 +53,7 @@ public:
 
    void buildProducts( void );
    
-   void (*product_proc)( Molecule &product, Array<int> &monomers_indices, void *userdata );
+   void (*product_proc)( Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, void *userdata );
 
 private:
    bool _is_rg_exist;
