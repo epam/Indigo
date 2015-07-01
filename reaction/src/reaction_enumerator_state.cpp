@@ -395,7 +395,7 @@ void ReactionEnumeratorState::_productProcess( void )
       return;
 
    if (!is_transform)
-      _foldHydrogens(ready_product);
+      _foldHydrogens(ready_product, 0, 0, &_mapping);
 
    ready_product.dearomatize(_context.arom_options);
 
