@@ -22,36 +22,32 @@
 
 using namespace indigo;
 
-IMPL_ERROR(MoleculeIonizer, "Molecule Ionizer");
 
-CP_DEF(MoleculeIonizer);
-MoleculeIonizer::MoleculeIonizer():
-CP_INIT{
-}
+MoleculePkaModel MoleculePkaModel::_model;
 
-bool MoleculeIonizer::ionize (Molecule &mol, float ph, float ph_toll, const IonizeOptions &options)
+IMPL_ERROR(MoleculePkaModel, "Molecule Pka Model");
+
+MoleculePkaModel::MoleculePkaModel ()
 {
-   QS_DEF(Array<int>, acid_sites);
-   QS_DEF(Array<int>, basic_sites);
-   QS_DEF(Array<float>, acid_pkas);
-   QS_DEF(Array<float>, basic_pkas);
-
-   acid_sites.clear();
-   basic_sites.clear();
-   acid_pkas.clear();
-   basic_pkas.clear();
-
-   _estimate_pKa(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
-
-   if (acid_sites.size() > 0 || basic_sites.size() > 0)
-      _setCharges(mol, ph, ph_toll, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
-
-   return true;
+   _loadSimplePkaModel();
 }
 
-void MoleculeIonizer::_loadPkaModel(const IonizeOptions &options,
-                      ObjArray<QueryMolecule> &acids, Array<float> &a_pkas,
-                      ObjArray<QueryMolecule> &basics, Array<float> &b_pkas)
+void MoleculePkaModel::estimate_pKa (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
+                      Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas)
+{
+   if (options.model == IonizeOptions::PKA_MODEL_SIMPLE)
+   {
+      _estimate_pKa_Simple(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
+   }
+   else if (options.model == IonizeOptions::PKA_MODEL_ADVANCED)
+   {
+      throw Error("pKa model %d is not supported yet", options.model);
+   }
+   else
+      throw Error("Unsupported pKa model: %d", options.model);
+}
+
+void MoleculePkaModel::_loadSimplePkaModel()
 {
    struct PkaDef
    {
@@ -122,43 +118,37 @@ void MoleculeIonizer::_loadPkaModel(const IonizeOptions &options,
       {"[SH+;!H0]", -7.00, "[S]"},
    };
 
-   acids.clear();
-   basics.clear();
-   a_pkas.clear();
-   b_pkas.clear();
+   _model.acids.clear();
+   _model.basics.clear();
+   _model.a_pkas.clear();
+   _model.b_pkas.clear();
 
    for (auto i = 0; i < NELEM(simple_pka_model); i++)
    {
       BufferScanner scanner(simple_pka_model[i].acid);
       SmilesLoader loader(scanner);
-      QueryMolecule &acid = acids.push();
+      QueryMolecule &acid = _model.acids.push();
       loader.loadSMARTS(acid);
-      a_pkas.push(simple_pka_model[i].pka);
+      _model.a_pkas.push(simple_pka_model[i].pka);
    }
 
    for (auto i = 0; i < NELEM(simple_pka_model); i++)
    {
       BufferScanner scanner(simple_pka_model[i].basic);
       SmilesLoader loader(scanner);
-      QueryMolecule &basic = basics.push();
+      QueryMolecule &basic = _model.basics.push();
       loader.loadSMARTS(basic);
-      b_pkas.push(simple_pka_model[i].pka);
+      _model.b_pkas.push(simple_pka_model[i].pka);
    }
 }
 
-void MoleculeIonizer::_estimate_pKa (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
+void MoleculePkaModel::_estimate_pKa_Simple (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
                       Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas)
 {
    QS_DEF(Array<int>, ignore_atoms);
    QS_DEF(Array<int>, mapping);
-   QS_DEF(ObjArray<QueryMolecule>, acids);
-   QS_DEF(ObjArray<QueryMolecule>, basics);
-   QS_DEF(Array<float>, a_pkas);
-   QS_DEF(Array<float>, b_pkas);
    AromaticityOptions opts;
    bool _dearomatize = false;
-
-   _loadPkaModel(options, acids, a_pkas, basics, b_pkas);
 
    if (!mol.isAromatized())
    {
@@ -172,9 +162,9 @@ void MoleculeIonizer::_estimate_pKa (Molecule &mol, const IonizeOptions &options
    matcher.fmcache = new MoleculeSubstructureMatcher::FragmentMatchCache;
    matcher.use_aromaticity_matcher = true;
    ignore_atoms.clear();
-   for (auto i = 0; i < acids.size(); i++)
+   for (auto i = 0; i < _model.acids.size(); i++)
    {
-      matcher.setQuery(acids[i]);
+      matcher.setQuery(_model.acids[i]);
 
       for (int j = 0; j < ignore_atoms.size(); j++)
          matcher.ignoreTargetAtom(ignore_atoms[j]);
@@ -185,13 +175,13 @@ void MoleculeIonizer::_estimate_pKa (Molecule &mol, const IonizeOptions &options
       for (;;)
       {
          mapping.clear();
-         mapping.copy(matcher.getQueryMapping(), acids[i].vertexEnd());
+         mapping.copy(matcher.getQueryMapping(), _model.acids[i].vertexEnd());
          for (int j = 0; j < mapping.size(); j++)
          {
             if (mapping[j] > -1)
             {
                acid_sites.push(mapping[j]);
-               acid_pkas.push(a_pkas[i]);
+               acid_pkas.push(_model.a_pkas[i]);
                ignore_atoms.push(mapping[j]);
 //               printf("atom with index %d pKa = %f\n", mapping[j], a_pkas[i]);
             }  
@@ -202,9 +192,9 @@ void MoleculeIonizer::_estimate_pKa (Molecule &mol, const IonizeOptions &options
    }
 
    ignore_atoms.clear();
-   for (auto i = 0; i < basics.size(); i++)
+   for (auto i = 0; i < _model.basics.size(); i++)
    {
-      matcher.setQuery(basics[i]);
+      matcher.setQuery(_model.basics[i]);
 
       for (int j = 0; j < ignore_atoms.size(); j++)
          matcher.ignoreTargetAtom(ignore_atoms[j]);
@@ -215,13 +205,13 @@ void MoleculeIonizer::_estimate_pKa (Molecule &mol, const IonizeOptions &options
       for (;;)
       {
          mapping.clear();
-         mapping.copy(matcher.getQueryMapping(), basics[i].vertexEnd());
+         mapping.copy(matcher.getQueryMapping(), _model.basics[i].vertexEnd());
          for (int j = 0; j < mapping.size(); j++)
          {
             if (mapping[j] > -1)
             {
                basic_sites.push(mapping[j]);
-               basic_pkas.push(b_pkas[i]);
+               basic_pkas.push(_model.b_pkas[i]);
                ignore_atoms.push(mapping[j]);
 //               printf("atom with index %d pKa = %f\n", mapping[j], b_pkas[i]);
             }  
@@ -233,6 +223,34 @@ void MoleculeIonizer::_estimate_pKa (Molecule &mol, const IonizeOptions &options
 
    if (_dearomatize)
       mol.dearomatize(opts);
+}
+
+
+IMPL_ERROR(MoleculeIonizer, "Molecule Ionizer");
+
+CP_DEF(MoleculeIonizer);
+MoleculeIonizer::MoleculeIonizer():
+CP_INIT{
+}
+
+bool MoleculeIonizer::ionize (Molecule &mol, float ph, float ph_toll, const IonizeOptions &options)
+{
+   QS_DEF(Array<int>, acid_sites);
+   QS_DEF(Array<int>, basic_sites);
+   QS_DEF(Array<float>, acid_pkas);
+   QS_DEF(Array<float>, basic_pkas);
+
+   acid_sites.clear();
+   basic_sites.clear();
+   acid_pkas.clear();
+   basic_pkas.clear();
+
+   MoleculePkaModel::estimate_pKa(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
+
+   if (acid_sites.size() > 0 || basic_sites.size() > 0)
+      _setCharges(mol, ph, ph_toll, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
+
+   return true;
 }
 
 void MoleculeIonizer::_setCharges (Molecule &mol, float pH, float pH_toll, const IonizeOptions &options, Array<int> &acid_sites,

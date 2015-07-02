@@ -28,8 +28,34 @@ namespace indigo {
 class Molecule;
 class QueryMolecule;
 
-class IonizeOptions
+struct IonizeOptions
 {
+   enum PkaModel { PKA_MODEL_SIMPLE, PKA_MODEL_ADVANCED };
+
+   PkaModel model;
+
+   IonizeOptions (PkaModel model = PKA_MODEL_SIMPLE) : model(model) {}
+};
+
+class MoleculePkaModel
+{
+public:
+   DECL_ERROR;
+   static void estimate_pKa (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
+                      Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas);
+
+private:
+   MoleculePkaModel ();
+   static MoleculePkaModel _model;
+
+   static void _loadSimplePkaModel ();
+   static void _estimate_pKa_Simple (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
+                      Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas);
+
+   ObjArray<QueryMolecule> acids;
+   ObjArray<QueryMolecule> basics;
+   Array<float> a_pkas;
+   Array<float> b_pkas;
 };
 
 class DLLEXPORT MoleculeIonizer
@@ -43,10 +69,6 @@ public:
    CP_DECL;
 
 protected:
-   static void _loadPkaModel (const IonizeOptions &options, ObjArray<QueryMolecule> &acids, Array<float> &a_pkas,
-                      ObjArray<QueryMolecule> &basics, Array<float> &b_pkas);
-   static void _estimate_pKa (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
-                      Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas);
    static void _setCharges (Molecule &mol, float ph, float ph_toll, const IonizeOptions &options, Array<int> &acid_sites,
                       Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas);
 };
