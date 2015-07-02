@@ -467,7 +467,7 @@ void ReactionEnumeratorState::_productProcess( void )
       ready_product.clearXyz();
 
    if (product_proc != NULL)
-      product_proc(ready_product, _product_monomers, ucfrag_mapping, userdata);
+      product_proc(ready_product, _product_monomers, _mapping, userdata);
 }
 
 void ReactionEnumeratorState::_foldHydrogens(BaseMolecule &molecule, Array<int> *atoms_to_keep, Array<int> *original_hydrogens, Array<int> *mol_mapping)
@@ -511,8 +511,13 @@ void ReactionEnumeratorState::_foldHydrogens(BaseMolecule &molecule, Array<int> 
 
    if (mol_mapping != 0)
    {
+      
       for (int i = 0; i < hydrogens.size(); i++)
-         mol_mapping->at(hydrogens[i]) = -1;
+      {
+         int h_id = mol_mapping->find(hydrogens[i]);
+         if (h_id != -1)
+            mol_mapping->at(h_id) = -1;
+      }
    }
 }
 
