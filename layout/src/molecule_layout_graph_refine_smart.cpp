@@ -29,7 +29,7 @@ bool MoleculeLayoutGraphSmart::_edge_check(Graph &graph, int e_idx, void *contex
 
    return !context.graph->getLayoutEdge(e_idx).is_cyclic;
    */
-   EnumContextSmart &context = *(EnumContextSmart *)context_;
+   EnumContext &context = *(EnumContext *)context_;
 
    if (context.maxIterationNumber && context.iterationNumber > context.maxIterationNumber * 10000)
       throw Error("number of iterations exceeded %d ", context.maxIterationNumber * 10000);
@@ -44,7 +44,7 @@ bool MoleculeLayoutGraphSmart::_edge_check_norm(Graph &graph, int e_idx, void *c
 
    return !context.graph->getLayoutEdge(e_idx).is_cyclic;
    */
-   EnumContextSmart &context = *(EnumContextSmart *)context_;
+   EnumContext &context = *(EnumContext *)context_;
    if (!context.graph->getLayoutEdge(e_idx).is_cyclic)
    {
       if (context.graph->_n_fixed > 0)
@@ -62,7 +62,7 @@ bool MoleculeLayoutGraphSmart::_edge_check_norm(Graph &graph, int e_idx, void *c
 
 bool MoleculeLayoutGraphSmart::_path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context_)
 {
-   EnumContextSmart &context = *(EnumContextSmart *)context_;
+   EnumContext &context = *(EnumContext *)context_;
    int i;
 
    for (i = 0; i < edges.size(); i++)
@@ -170,7 +170,7 @@ void MoleculeLayoutGraphSmart::_refineCoordinates (const BiconnectedDecomposer &
    QS_DEF(RedBlackSet<int>, edges);
    QS_DEF(Array<int>, components1);
    QS_DEF(Array<int>, components2);
-   EnumContextSmart context;
+   EnumContext context;
 
    context.edges = &edges;
    context.graph = this;

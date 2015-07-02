@@ -29,6 +29,10 @@ MoleculeLayoutGraphSmart::~MoleculeLayoutGraphSmart ()
 {
 }
 
+MoleculeLayoutGraph* MoleculeLayoutGraphSmart::getInstance() {
+    return new MoleculeLayoutGraphSmart();
+}
+
 void MoleculeLayoutGraphSmart::clear ()
 {
    MoleculeLayoutGraph::clear();
@@ -36,40 +40,6 @@ void MoleculeLayoutGraphSmart::clear ()
    _layout_component_count = 0;
 }
 
-void MoleculeLayoutGraphSmart::makeOnGraph (Graph &graph)
-{
-   QS_DEF(Array<int>, mapping);
-
-   clear();
-
-   // vertices and edges
-   cloneGraph (graph, &mapping);
-
-   LayoutVertex new_vertex;
-   LayoutEdge new_edge;
-
-   new_vertex.type = ELEMENT_NOT_DRAWN;
-   new_vertex.is_cyclic = false;
-
-   for (int i = graph.vertexBegin(); i < graph.vertexEnd(); i = graph.vertexNext(i))
-   {
-      new_vertex.ext_idx = i;
-      new_vertex.orig_idx = i;
-      registerLayoutVertex(mapping[i], new_vertex);
-   }
-
-   new_edge.type = ELEMENT_NOT_DRAWN;
-
-   for (int i = graph.edgeBegin(); i < graph.edgeEnd(); i = graph.edgeNext(i))
-   {
-      const Edge &edge = graph.getEdge(i);
-      int idx = findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
-
-      new_edge.ext_idx = i;
-      new_edge.orig_idx = i;
-      registerLayoutEdge(idx, new_edge);
-   }
-}
 
 void MoleculeLayoutGraphSmart::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &vertex_filter)
 {

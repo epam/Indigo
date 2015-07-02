@@ -76,6 +76,8 @@ public:
     explicit MoleculeLayoutGraph();
     virtual ~MoleculeLayoutGraph();
 
+    virtual MoleculeLayoutGraph* getInstance() = 0;
+
     inline const Vec2f & getPos(int idx) const { return _layout_vertices[idx].pos; }
     inline       Vec2f & getPos(int idx)       { return _layout_vertices[idx].pos; }
     inline int getVertexExtIdx(int idx) const { return _layout_vertices[idx].ext_idx; }
@@ -102,7 +104,7 @@ public:
 
     float calculateAngle(int v, int &v1, int &v2) const;
 
-    virtual void makeOnGraph(Graph &graph) = 0;
+    void makeOnGraph(Graph &graph);
     virtual void makeLayoutSubgraph(MoleculeLayoutGraph &graph, Filter &filter) = 0;
     void cloneLayoutGraph(MoleculeLayoutGraph &other, Array<int> *mapping);
     void copyLayoutTo(MoleculeLayoutGraph &other, const Array<int> &mapping) const;
@@ -111,7 +113,12 @@ public:
 
     const BaseMolecule *getMolecule(const int **molecule_edge_mapping) { *molecule_edge_mapping = _molecule_edge_mapping; return _molecule; }
 
+    
 
+    void flipped() { _flipped = true; }
+    bool isFlipped() const { return _flipped; }
+
+    bool _flipped; // component was flipped after attaching
 
     int max_iterations;
     bool smart_layout;
@@ -178,6 +185,14 @@ protected:
         Cycle(const Cycle &other); // No copy constructor
 
     };
+    struct EnumContext
+    {
+        const MoleculeLayoutGraph *graph;
+        RedBlackSet<int> *edges;
+        int iterationNumber;
+        int maxIterationNumber;
+    };
+
 
 };
 
@@ -187,18 +202,16 @@ public:
     explicit MoleculeLayoutGraphSimple();
     virtual ~MoleculeLayoutGraphSimple();
 
+    MoleculeLayoutGraph* getInstance();
+
    virtual void clear ();
 
    float calculateAngle (int v, int &v1, int &v2) const;
 
-   void makeOnGraph (Graph &graph);
    void makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &filter);
 
    void layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing);
    
-   void flipped () { _flipped = true; }
-   bool isFlipped () const { return _flipped; }
-
 #ifdef M_LAYOUT_DEBUG
    void saveDebug ();
 #endif
@@ -206,45 +219,6 @@ public:
    DECL_ERROR;
 
 protected:
-    /*
-   struct Cycle
-   {
-      explicit Cycle();
-      explicit Cycle(const List<int> &edges, const MoleculeLayoutGraphSimple &graph);
-      explicit Cycle(const Array<int> &vertices, const Array<int> &edges);
-
-      void copy (const List<int> &edges, const MoleculeLayoutGraphSimple &graph);
-      void copy (const Array<int> &vertices, const Array<int> &edges);
-
-      int vertexCount () const { return _vertices.size(); }
-      int getVertex  (int idx) const { return _vertices[idx]; }
-      int getVertexC (int idx) const { return _vertices[idx % vertexCount()]; }
-      int getEdge    (int idx) const { return _edges[idx]; }
-      int findVertex (int idx) const { return _vertices.find(idx); }
-      long morganCode () const { return _morgan_code; }
-      void canonize ();
-      bool contains (const Cycle &another) const;
-      void calcMorganCode (const MoleculeLayoutGraphSimple &parent_graph);
-
-      static int compare_cb (int &idx1, int &idx2, void *context);
-
-   protected:
-
-      CP_DECL;
-      TL_CP_DECL(Array<int>, _vertices);
-      TL_CP_DECL(Array<int>, _edges);
-      int _max_idx;
-      long _morgan_code;
-   };
-   */
-   struct EnumContext
-   {
-      const MoleculeLayoutGraphSimple *graph;
-      RedBlackSet<int> *edges;
-      int iterationNumber;
-      int maxIterationNumber;
-   };
-
    // patterns
    void _initPatterns ();
    static int _pattern_cmp  (PatternLayout &p1, PatternLayout &p2, void *context);
@@ -252,6 +226,7 @@ protected:
    static bool _match_pattern_bond (Graph &subgraph, Graph &supergraph, int self_idx, int other_idx, void *userdata);
    static int  _pattern_embedding (Graph &subgraph, Graph &supergraph, int *core_sub, int *core_super, void *userdata);
 
+   // THERE
    static bool _path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
    // for whole graph
@@ -331,8 +306,6 @@ protected:
 
    void _layoutMultipleComponents (BaseMolecule & molecule, bool respect_existing, const Filter * filter, float bond_length);
    void _layoutSingleComponent (BaseMolecule &molecule, bool respect_existing, const Filter * filter, float bond_length);
-
-   bool _flipped; // component was flipped after attaching
 
    TL_DECL(ObjArray<PatternLayout>, _patterns);
 };
@@ -414,6 +387,8 @@ public:
     explicit MoleculeLayoutGraphSmart();
     virtual ~MoleculeLayoutGraphSmart();
 
+    MoleculeLayoutGraph* getInstance();
+
     virtual void clear();
 
     inline int getVertexOrigIdx(int idx) const { return _layout_vertices[idx].orig_idx; }
@@ -423,7 +398,6 @@ public:
 
     float calculateAngle(int v, int &v1, int &v2) const;
 
-    void makeOnGraph(Graph &graph);
     void makeLayoutSubgraph(MoleculeLayoutGraph &graph, Filter &vertex_filter);
     void makeLayoutSubgraph(MoleculeLayoutGraph &graph, Filter &vertex_filter, Filter *edge_filter);
     void layout(BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing);
@@ -448,60 +422,7 @@ public:
     DECL_ERROR;
 
 protected:
-    /*
-    struct Cycle
-    {
-        explicit Cycle();
-        explicit Cycle(const List<int> &edges, const MoleculeLayoutGraphSmart &graph);
-        explicit Cycle(const Array<int> &vertices, const Array<int> &edges);
-
-        void copy(const List<int> &edges, const MoleculeLayoutGraphSmart &graph);
-        void copy(const Array<int> &vertices, const Array<int> &edges);
-
-        int vertexCount() const { return _vertices.size(); }
-        int getVertex(int idx) const { return _vertices[idx]; }
-        int getVertexC(int idx) const { return _vertices[(vertexCount() + idx) % vertexCount()]; }
-        int getEdge(int idx) const { return _edges[idx]; }
-        int getEdgeC(int idx) const { return _edges[(_edges.size() + idx) % _edges.size()]; }
-        int getEdgeStart(int idx) const { return getVertexC(idx); }
-        int getEdgeFinish(int idx) const { return getVertexC(idx + 1); }
-        int findVertex(int idx) const { return _vertices.find(idx); }
-        void setVertexWeight(int idx, int w) { _attached_weight[idx] = w; }
-        void addVertexWeight(int idx, int w) { _attached_weight[idx] += w; }
-        int getVertexWeight(int idx) const { return _attached_weight[idx]; }
-        long morganCode() const { if (!_morgan_code_calculated) throw Error("Morgan code does not calculated yet."); return _morgan_code; }
-        void canonize();
-        bool contains(const Cycle &another) const;
-        void calcMorganCode(const MoleculeLayoutGraphSmart &parent_graph);
-
-        static int compare_cb(int &idx1, int &idx2, void *context);
-
-    protected:
-
-        CP_DECL;
-        TL_CP_DECL(Array<int>, _vertices);
-        TL_CP_DECL(Array<int>, _edges);
-        TL_CP_DECL(Array<int>, _attached_weight);
-
-        //      Array<int> _vertices;
-        //      Array<int> _edges;
-        int _max_idx;
-        long _morgan_code;
-        bool _morgan_code_calculated;
-
-    private:
-        Cycle(const Cycle &other); // No copy constructor
-
-    };
-    */
-    struct EnumContextSmart
-    {
-        const MoleculeLayoutGraphSmart *graph;
-        RedBlackSet<int> *edges;
-        int iterationNumber;
-        int maxIterationNumber;
-    };
-
+    // THERE
     static bool _path_handle(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
     // for whole graph

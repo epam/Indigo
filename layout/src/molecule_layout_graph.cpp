@@ -28,11 +28,23 @@ MoleculeLayoutGraph::MoleculeLayoutGraph() {
     _molecule = 0;
     _molecule_edge_mapping = 0;
     cancellation = 0;
+    _flipped = false;
     smart_layout = false;
 }
 
 MoleculeLayoutGraph::~MoleculeLayoutGraph() {
 
+}
+
+void MoleculeLayoutGraph::clear()
+{
+    Graph::clear();
+    _total_morgan_code = 0;
+    _first_vertex_idx = -1;
+    _n_fixed = 0;
+    _layout_vertices.clear();
+    _layout_edges.clear();
+    _fixed_vertices.clear();
 }
 
 const LayoutVertex& MoleculeLayoutGraph::getLayoutVertex(int idx) const {
@@ -149,66 +161,61 @@ void MoleculeLayoutGraph::copyLayoutTo(MoleculeLayoutGraph &other, const Array<i
     }
 }
 
+void MoleculeLayoutGraph::makeOnGraph(Graph &graph)
+{
+    QS_DEF(Array<int>, mapping);
+
+    clear();
+
+    // vertices and edges
+    cloneGraph(graph, &mapping);
+
+    LayoutVertex new_vertex;
+    LayoutEdge new_edge;
+
+    new_vertex.type = ELEMENT_NOT_DRAWN;
+    new_vertex.is_cyclic = false;
+
+    for (int i = graph.vertexBegin(); i < graph.vertexEnd(); i = graph.vertexNext(i))
+    {
+        new_vertex.ext_idx = i;
+        new_vertex.orig_idx = i;
+        registerLayoutVertex(mapping[i], new_vertex);
+    }
+
+    new_edge.type = ELEMENT_NOT_DRAWN;
+
+    for (int i = graph.edgeBegin(); i < graph.edgeEnd(); i = graph.edgeNext(i))
+    {
+        const Edge &edge = graph.getEdge(i);
+        int idx = findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
+
+        new_edge.ext_idx = i;
+        new_edge.orig_idx = i;
+        registerLayoutEdge(idx, new_edge);
+    }
+}
+
+
 TL_DEF(MoleculeLayoutGraphSimple, ObjArray<PatternLayout>, _patterns);
 
 IMPL_ERROR(MoleculeLayoutGraphSimple, "layout_graph");
 
 MoleculeLayoutGraphSimple::MoleculeLayoutGraphSimple() :MoleculeLayoutGraph()
 {
-   _flipped = false;
 }
 
 MoleculeLayoutGraphSimple::~MoleculeLayoutGraphSimple ()
 {
 }
 
-void MoleculeLayoutGraph::clear()
-{
-    Graph::clear();
-    _total_morgan_code = 0;
-    _first_vertex_idx = -1;
-    _n_fixed = 0;
-    _layout_vertices.clear();
-    _layout_edges.clear();
-    _fixed_vertices.clear();
+MoleculeLayoutGraph* MoleculeLayoutGraphSimple::getInstance() {
+    return new MoleculeLayoutGraphSimple();
 }
 
 void MoleculeLayoutGraphSimple::clear()
 {
     MoleculeLayoutGraph::clear();
-}
-
-void MoleculeLayoutGraphSimple::makeOnGraph(Graph &graph)
-{
-   QS_DEF(Array<int>, mapping);
-
-   clear();
-
-   // vertices and edges
-   cloneGraph (graph, &mapping);
-
-   LayoutVertex new_vertex;
-   LayoutEdge new_edge;
-
-   new_vertex.type = ELEMENT_NOT_DRAWN;
-   new_vertex.is_cyclic = false;
-
-   for (int i = graph.vertexBegin(); i < graph.vertexEnd(); i = graph.vertexNext(i))
-   {
-      new_vertex.ext_idx = i;
-      registerLayoutVertex(mapping[i], new_vertex);
-   }
-
-   new_edge.type = ELEMENT_NOT_DRAWN;
-
-   for (int i = graph.edgeBegin(); i < graph.edgeEnd(); i = graph.edgeNext(i))
-   {
-      const Edge &edge = graph.getEdge(i);
-      int idx = findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
-
-      new_edge.ext_idx = i;
-      registerLayoutEdge(idx, new_edge);
-   }
 }
 
 void MoleculeLayoutGraphSimple::makeLayoutSubgraph (MoleculeLayoutGraph &graph, Filter &filter)

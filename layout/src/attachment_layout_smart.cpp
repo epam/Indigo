@@ -13,8 +13,6 @@
  ***************************************************************************/
 
 #include "layout/attachment_layout_smart.h"
-#include <vector>
-#include <algorithm>
 
 using namespace indigo;
 
@@ -64,7 +62,10 @@ _graph(graph)
       _src_vertex_map[i] = cur_bc.findVertexByExtIdx(_src_vertex);
       _bc_angles[i] = cur_bc.calculateAngle(_src_vertex_map[i], v1, v2);
       sum += _bc_angles[i];
-      _vertices_l[i] = v1;
+      if (cur_bc.isFlipped())
+         _vertices_l[i] = v2;
+      else
+         _vertices_l[i] = v1;
    }
 
    _alpha = (2 * PI - sum) / _attached_bc.size();
