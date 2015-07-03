@@ -16,6 +16,8 @@
 #include "graph/morgan_code.h"
 #include "layout/molecule_layout_graph.h"
 
+#include <memory>
+
 using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutGraphSmart, "layout_graph_smart");
@@ -130,7 +132,7 @@ void MoleculeLayoutGraphSmart::_calcMorganCodes ()
 }
 
 void MoleculeLayoutGraphSmart::_makeComponentsTree (BiconnectedDecomposer &decon,
-                                               ObjArray<MoleculeLayoutGraphSmart> &components, Array<int> &tree)
+    PtrArray<MoleculeLayoutGraphSmart> &components, Array<int> &tree)
 {
    int i, j, v, k;
    bool from;
@@ -140,9 +142,9 @@ void MoleculeLayoutGraphSmart::_makeComponentsTree (BiconnectedDecomposer &decon
 
    for (i = 0; i < components.size(); i++)
    {
-      for (k = components[i].vertexBegin(); k < components[i].vertexEnd(); k = components[i].vertexNext(k))
+      for (k = components[i]->vertexBegin(); k < components[i]->vertexEnd(); k = components[i]->vertexNext(k))
       {
-         v = components[i].getLayoutVertex(k).ext_idx;
+         v = components[i]->getLayoutVertex(k).ext_idx;
 
          if (decon.isArticulationPoint(v))
          {
@@ -181,14 +183,16 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents (BaseMolecule & molecul
 
    _molecule_edge_mapping = molecule_edge_mapping.ptr();
 
-   ObjArray<MoleculeLayoutGraphSmart> components;
+   PtrArray<MoleculeLayoutGraphSmart> components;
 
-   components.reserve(n_components);
+   components.clear();
 
    for (i = 0; i < n_components; i++)
    {
       Filter comp_filter(decomposition.ptr(), Filter::EQ, i);
-      MoleculeLayoutGraphSmart &component = components.push();
+      std::unique_ptr<MoleculeLayoutGraphSmart> current_component((MoleculeLayoutGraphSmart *) getInstance());
+      components.add(current_component.release());
+      MoleculeLayoutGraphSmart &component = *components.top();
       
       component.cancellation = cancellation;
 
@@ -245,7 +249,7 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents (BaseMolecule & molecul
       // find fixed components
       for (i = 0; i < n_components; i++)
       {
-         MoleculeLayoutGraphSmart &component = components[i];
+         MoleculeLayoutGraphSmart &component = *components[i];
 
          if (component._n_fixed > 0)
          {
@@ -273,7 +277,7 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents (BaseMolecule & molecul
 
          for (i = 0; i < n_components; i++)
          {
-            MoleculeLayoutGraphSmart &component = components[i];
+            MoleculeLayoutGraphSmart &component = *components[i];
 
             if (component._n_fixed > 0)
                for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
@@ -288,7 +292,7 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents (BaseMolecule & molecul
 
    for (i = 0, k = 0; i < n_components; i++)
    {
-      MoleculeLayoutGraphSmart &component = components[i];
+      MoleculeLayoutGraphSmart &component = *components[i];
 
       if (component._n_fixed > 0)
          continue;

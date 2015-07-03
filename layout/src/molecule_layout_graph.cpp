@@ -22,7 +22,7 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
 
-MoleculeLayoutGraph::MoleculeLayoutGraph() {
+MoleculeLayoutGraph::MoleculeLayoutGraph():Graph() {
     max_iterations = 0;
     _total_morgan_code = 0;
     _first_vertex_idx = -1;
