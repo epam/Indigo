@@ -24,7 +24,7 @@ class AttachmentLayout
 {
 public:
    explicit AttachmentLayout (const BiconnectedDecomposer &bc_decom,
-      const ObjArray<MoleculeLayoutGraphSimple> &bc_components, 
+       const PtrArray<MoleculeLayoutGraphSimple> &bc_components,
       const Array<int> &bc_tree, MoleculeLayoutGraphSimple &graph, int src_vertex);
 
    double calculateEnergy ();
@@ -45,7 +45,7 @@ public:
    TL_CP_DECL(Array<Vec2f>, _layout);      // layout of new vertices
    double _energy;                         // current energy between drawn part and new part
 
-   const ObjArray<MoleculeLayoutGraphSimple> &_bc_components;
+   const PtrArray<MoleculeLayoutGraphSimple> &_bc_components;
    MoleculeLayoutGraphSimple &_graph;
 };
 

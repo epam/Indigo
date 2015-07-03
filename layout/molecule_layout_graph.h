@@ -231,17 +231,17 @@ protected:
 
    // for whole graph
    void _assignAbsoluteCoordinates (float bond_length);
-   void _findFirstVertexIdx (int n_comp, Array<int> & fixed_components, ObjArray<MoleculeLayoutGraphSimple> &bc_components, bool all_trivial);
-   bool _prepareAssignedList (Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, ObjArray<MoleculeLayoutGraphSimple> &bc_components, Array<int> &bc_tree);
+   void _findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraphSimple> &bc_components, bool all_trivial);
+   bool _prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraphSimple> &bc_components, Array<int> &bc_tree);
    void _assignFinalCoordinates (float bond_length, const Array<Vec2f> &src_layout);
    void _copyLayout (MoleculeLayoutGraphSimple &component);
    void _getAnchor (int &v1, int &v2, int &v3) const;
 
-   void _findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, ObjArray<MoleculeLayoutGraphSimple> &bc_components);
-   bool _assignComponentsRelativeCoordinates (ObjArray<MoleculeLayoutGraphSimple> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
+   void _findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraphSimple> &bc_components);
+   bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraphSimple> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
 
    // refine
-   void _refineCoordinates (const BiconnectedDecomposer &bc_decomposer, const ObjArray<MoleculeLayoutGraphSimple> &bc_components, const Array<int> &bc_tree);
+   void _refineCoordinates(const BiconnectedDecomposer &bc_decomposer, const PtrArray<MoleculeLayoutGraphSimple> &bc_components, const Array<int> &bc_tree);
    bool _allowRotateAroundVertex (int idx) const;
    void _makeBranches (Array<int> &branches, int edge, Filter &filter) const;
    void _findBranch (Array<int> &branches, int v, int edge) const;
@@ -302,7 +302,7 @@ protected:
 
    // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
    static void _makeComponentsTree (BiconnectedDecomposer &decon,
-      ObjArray<MoleculeLayoutGraphSimple> &components, Array<int> &tree);
+      PtrArray<MoleculeLayoutGraphSimple> &components, Array<int> &tree);
 
    void _layoutMultipleComponents (BaseMolecule & molecule, bool respect_existing, const Filter * filter, float bond_length);
    void _layoutSingleComponent (BaseMolecule &molecule, bool respect_existing, const Filter * filter, float bond_length);

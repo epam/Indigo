@@ -19,6 +19,8 @@
 #include "graph/embedding_enumerator.h"
 #include "graph/morgan_code.h"
 
+#include <memory>
+
 using namespace indigo;
 
 enum
@@ -71,7 +73,8 @@ void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates (float bond_length)
 {
    BiconnectedDecomposer bc_decom(*this);
    QS_DEF(Array<int>, bc_tree);
-   QS_DEF(ObjArray<MoleculeLayoutGraphSimple>, bc_components);
+   //QS_DEF(ObjArray<MoleculeLayoutGraphSimple>, bc_components);
+   PtrArray<MoleculeLayoutGraphSimple> bc_components;
    QS_DEF(Array<int>, fixed_components);
    bool all_trivial = true;
 
@@ -86,7 +89,9 @@ void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates (float bond_length)
    {
       Filter comp;
       bc_decom.getComponent(i, comp);
-      bc_components.push().makeLayoutSubgraph(*this, comp);
+      std::unique_ptr<MoleculeLayoutGraphSimple> tmp((MoleculeLayoutGraphSimple *)getInstance());
+      tmp->makeLayoutSubgraph(*this, comp);
+      bc_components.add(tmp.release()) ;
    }
    
    bc_tree.clear_resize(vertexEnd());
@@ -137,13 +142,13 @@ void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates (float bond_length)
          all_trivial = true;
 
          for (i = 0; i < bc_decom.getIncomingCount(k); i++)
-            if (!bc_components[bc_decom.getIncomingComponents(k)[i]].isSingleEdge())
+            if (!bc_components[bc_decom.getIncomingComponents(k)[i]]->isSingleEdge())
             {
                all_trivial = false;
                break;
             }
 
-         if (all_trivial && bc_tree[k] != -1 && !bc_components[bc_tree[k]].isSingleEdge())
+         if (all_trivial && bc_tree[k] != -1 && !bc_components[bc_tree[k]]->isSingleEdge())
             all_trivial = false;
 
          if  (all_trivial)
@@ -901,7 +906,7 @@ void MoleculeLayoutGraphSimple::_assignFinalCoordinates (float bond_length, cons
    }
 }
 
-void MoleculeLayoutGraphSimple::_findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, ObjArray<MoleculeLayoutGraphSimple> & bc_components )
+void MoleculeLayoutGraphSimple::_findFixedComponents(BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraphSimple> & bc_components)
 {
    // 1. Find biconnected components forming connected subgraph from fixed vertices
    if (_n_fixed == 0)
@@ -944,7 +949,7 @@ void MoleculeLayoutGraphSimple::_findFixedComponents (BiconnectedDecomposer &bc_
       if (!fixed_components[i])
          continue;
 
-      MoleculeLayoutGraphSimple &component = bc_components[i];
+      MoleculeLayoutGraphSimple &component = *bc_components[i];
 
       for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
          _fixed_vertices[component.getVertexExtIdx(j)] = 1;
@@ -997,7 +1002,7 @@ void MoleculeLayoutGraphSimple::_findFixedComponents (BiconnectedDecomposer &bc_
          if (!fixed_components[i])
             continue;
 
-         MoleculeLayoutGraphSimple &component = bc_components[i];
+         MoleculeLayoutGraphSimple &component = *bc_components[i];
 
          int comp_v = component.getVertexExtIdx(component.vertexBegin());
          int mapped = fixed_inv_mapping[comp_v];
@@ -1007,7 +1012,7 @@ void MoleculeLayoutGraphSimple::_findFixedComponents (BiconnectedDecomposer &bc_
    }
 }
 
-bool MoleculeLayoutGraphSimple::_assignComponentsRelativeCoordinates (ObjArray<MoleculeLayoutGraphSimple> & bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom)
+bool MoleculeLayoutGraphSimple::_assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraphSimple> & bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom)
 {
    bool all_trivial = true;
    int n_comp = bc_decom.componentsCount();
@@ -1020,7 +1025,7 @@ bool MoleculeLayoutGraphSimple::_assignComponentsRelativeCoordinates (ObjArray<M
    // Initially was 1a and 2b then changed to 1b and 2b
    for (int i = 0; i < n_comp; i++)
    {
-      MoleculeLayoutGraphSimple &component = bc_components[i];
+      MoleculeLayoutGraphSimple &component = *bc_components[i];
       component.max_iterations = max_iterations;
 
       //component._calcMorganCodes();
@@ -1173,7 +1178,7 @@ bool MoleculeLayoutGraphSimple::_tryToFindPattern (int &fixed_component)
    return false;
 }
 
-void MoleculeLayoutGraphSimple::_findFirstVertexIdx (int n_comp, Array<int> & fixed_components, ObjArray<MoleculeLayoutGraphSimple> &bc_components, bool all_trivial)
+void MoleculeLayoutGraphSimple::_findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraphSimple> &bc_components, bool all_trivial)
 {
    if (_n_fixed > 0)
    {
@@ -1181,14 +1186,14 @@ void MoleculeLayoutGraphSimple::_findFirstVertexIdx (int n_comp, Array<int> & fi
       for (int i = 0; i < n_comp; i++)
          if (fixed_components[i])
          {
-            _copyLayout(bc_components[i]);
+            _copyLayout(*bc_components[i]);
             j = i;
          }
 
       if (j == -1)
          throw Error("Internal error: cannot find a fixed component with fixed vertices");
 
-      MoleculeLayoutGraphSimple &component = bc_components[j];
+      MoleculeLayoutGraphSimple &component = *bc_components[j];
 
       _first_vertex_idx = component._layout_vertices[component.vertexBegin()].ext_idx;
    }
@@ -1204,11 +1209,11 @@ void MoleculeLayoutGraphSimple::_findFirstVertexIdx (int n_comp, Array<int> & fi
          nucleus_idx = -1;
          for (int i = 0; i < n_comp; i++)
          {
-            MoleculeLayoutGraphSimple &component = bc_components[i];
+            MoleculeLayoutGraphSimple &component = *bc_components[i];
 
             if (!component.isSingleEdge())
             {
-               if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]._total_morgan_code)
+               if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]->_total_morgan_code)
                   nucleus_idx = i;
             }
          }
@@ -1216,7 +1221,7 @@ void MoleculeLayoutGraphSimple::_findFirstVertexIdx (int n_comp, Array<int> & fi
          if (nucleus_idx < 0)
             throw Error("Internal error: cannot find nontrivial component");
 
-         MoleculeLayoutGraphSimple &nucleus = bc_components[nucleus_idx];
+         MoleculeLayoutGraphSimple &nucleus = *bc_components[nucleus_idx];
 
          _copyLayout(nucleus);
          _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
@@ -1246,7 +1251,7 @@ void MoleculeLayoutGraphSimple::_findFirstVertexIdx (int n_comp, Array<int> & fi
    }
 }
 
-bool MoleculeLayoutGraphSimple::_prepareAssignedList (Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, ObjArray<MoleculeLayoutGraphSimple> &bc_components, Array<int> &bc_tree)
+bool MoleculeLayoutGraphSimple::_prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraphSimple> &bc_components, Array<int> &bc_tree)
 {
    assigned_list.clear();
 

@@ -16,6 +16,8 @@
 #include "graph/morgan_code.h"
 #include "layout/molecule_layout_graph.h"
 
+#include <memory>
+
 using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
@@ -287,7 +289,7 @@ void MoleculeLayoutGraphSimple::_calcMorganCodes ()
 }
 
 void MoleculeLayoutGraphSimple::_makeComponentsTree (BiconnectedDecomposer &decon,
-                                               ObjArray<MoleculeLayoutGraphSimple> &components, Array<int> &tree)
+                                               PtrArray<MoleculeLayoutGraphSimple> &components, Array<int> &tree)
 {
    int i, j, v, k;
    bool from;
@@ -297,9 +299,9 @@ void MoleculeLayoutGraphSimple::_makeComponentsTree (BiconnectedDecomposer &deco
 
    for (i = 0; i < components.size(); i++)
    {
-      for (k = components[i].vertexBegin(); k < components[i].vertexEnd(); k = components[i].vertexNext(k))
+       for (k = components[i]->vertexBegin(); k < components[i]->vertexEnd(); k = components[i]->vertexNext(k))
       {
-         v = components[i].getLayoutVertex(k).ext_idx;
+          v = components[i]->getLayoutVertex(k).ext_idx;
 
          if (decon.isArticulationPoint(v))
          {
@@ -429,15 +431,18 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents (BaseMolecule & molecu
    for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
       molecule_edge_mapping[i] = getEdgeExtIdx(i);
 
-   ObjArray<MoleculeLayoutGraphSimple> components;
+   PtrArray<MoleculeLayoutGraphSimple> components;
 
-   components.reserve(n_components);
+    components.clear();
 
    for (i = 0; i < n_components; i++)
    {
       Filter comp_filter(decomposition.ptr(), Filter::EQ, i);
-      MoleculeLayoutGraphSimple &component = components.push();
       
+      std::unique_ptr<MoleculeLayoutGraphSimple> current_component((MoleculeLayoutGraphSimple *)getInstance());
+      components.add(current_component.release());
+      MoleculeLayoutGraphSimple& component = *components.top();
+
       component.cancellation = cancellation;
 
       component.makeLayoutSubgraph(*this, comp_filter);
@@ -492,7 +497,7 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents (BaseMolecule & molecu
       // find fixed components
       for (i = 0; i < n_components; i++)
       {
-         MoleculeLayoutGraphSimple &component = components[i];
+         MoleculeLayoutGraphSimple &component = *components[i];
 
          if (component._n_fixed > 0)
          {
@@ -520,7 +525,7 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents (BaseMolecule & molecu
 
          for (i = 0; i < n_components; i++)
          {
-            MoleculeLayoutGraphSimple &component = components[i];
+            MoleculeLayoutGraphSimple &component = *components[i];
 
             if (component._n_fixed > 0)
                for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
@@ -535,7 +540,7 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents (BaseMolecule & molecu
 
    for (i = 0, k = 0; i < n_components; i++)
    {
-      MoleculeLayoutGraphSimple &component = components[i];
+      MoleculeLayoutGraphSimple &component = *components[i];
 
       if (component._n_fixed > 0)
          continue;

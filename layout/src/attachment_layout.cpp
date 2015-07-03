@@ -19,7 +19,7 @@ using namespace indigo;
 CP_DEF(AttachmentLayout);
 
 AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer &bc_decom,
-                                   const ObjArray<MoleculeLayoutGraphSimple> &bc_components,
+    const PtrArray<MoleculeLayoutGraphSimple> &bc_components,
                                    const Array<int> &bc_tree,
                                    MoleculeLayoutGraphSimple &graph, int src_vertex) :
 _src_vertex(src_vertex),
@@ -57,7 +57,7 @@ _graph(graph)
       if (i < n_comp)
          _attached_bc[i] = bc_decom.getIncomingComponents(_src_vertex)[i];
 
-      const MoleculeLayoutGraphSimple &cur_bc = bc_components[_attached_bc[i]];
+      const MoleculeLayoutGraphSimple &cur_bc = *bc_components[_attached_bc[i]];
 
       _src_vertex_map[i] = cur_bc.findVertexByExtIdx(_src_vertex);
       _bc_angles[i] = cur_bc.calculateAngle(_src_vertex_map[i], v1, v2);
@@ -74,7 +74,7 @@ _graph(graph)
    // find the one component which is drawn and put it to the end
    for (i = 0; i < _attached_bc.size() - 1; i++)
    {
-      if (_graph.getVertexType(_bc_components[_attached_bc[i]].getVertexExtIdx(_vertices_l[i])) != ELEMENT_NOT_DRAWN)
+      if (_graph.getVertexType(_bc_components[_attached_bc[i]]->getVertexExtIdx(_vertices_l[i])) != ELEMENT_NOT_DRAWN)
       {
          _src_vertex_map.swap(i, _attached_bc.size() - 1);
          _attached_bc.swap(i, _attached_bc.size() - 1);
@@ -88,7 +88,7 @@ _graph(graph)
    int n_new_vert = 0;
 
    for (i = 0; i < _attached_bc.size() - 1; i++)
-      n_new_vert += _bc_components[_attached_bc[i]].vertexCount() - 1;
+      n_new_vert += _bc_components[_attached_bc[i]]->vertexCount() - 1;
 
    _new_vertices.clear_resize(n_new_vert);
    _layout.clear_resize(n_new_vert);
@@ -179,7 +179,7 @@ void AttachmentLayout::markDrawnVertices()
 
    for (i = 0; i < _attached_bc.size(); i++)
    {
-      const MoleculeLayoutGraphSimple &comp = _bc_components[_attached_bc[i]];
+      const MoleculeLayoutGraphSimple &comp = *_bc_components[_attached_bc[i]];
 
       for (j = comp.vertexBegin(); j < comp.vertexEnd(); j = comp.vertexNext(j))
       {
@@ -261,7 +261,7 @@ void LayoutChooser::_makeLayout ()
    k = -1;
    v = _layout._src_vertex;
    cur_angle = _layout._bc_angles[_n_components];
-   v2 = _layout._bc_components[_layout._attached_bc[_n_components]].getVertexExtIdx(_layout._vertices_l[_n_components]);
+   v2 = _layout._bc_components[_layout._attached_bc[_n_components]]->getVertexExtIdx(_layout._vertices_l[_n_components]);
    // number of the last vertex of drown biconnected component in the connected component
 
    for (i = 0; i < _n_components; i++)
@@ -270,7 +270,7 @@ void LayoutChooser::_makeLayout ()
 
       // Shift and rotate component so cur_angle is the angle between [v1C,v2C] and drawn edge [v,v2]
       int comp_idx = _comp_permutation[i];
-      const MoleculeLayoutGraphSimple &comp = _layout._bc_components[_layout._attached_bc[comp_idx]];
+      const MoleculeLayoutGraphSimple &comp = *_layout._bc_components[_layout._attached_bc[comp_idx]];
 
       v1C = _layout._src_vertex_map[comp_idx];
       v2C = _layout._vertices_l[comp_idx];
@@ -313,8 +313,8 @@ void LayoutChooser::_makeLayout ()
    // respect cis/trans
    const int *molecule_edge_mapping = 0;
    const BaseMolecule *molecule = _layout._graph.getMolecule(&molecule_edge_mapping);
-   const MoleculeLayoutGraphSimple &drawn_comp = _layout._bc_components[_layout._attached_bc[1]];
-   MoleculeLayoutGraphSimple &attach_comp = (MoleculeLayoutGraphSimple &)_layout._bc_components[_layout._attached_bc[0]];
+   const MoleculeLayoutGraphSimple &drawn_comp = *_layout._bc_components[_layout._attached_bc[1]];
+   MoleculeLayoutGraphSimple &attach_comp = (MoleculeLayoutGraphSimple &)*_layout._bc_components[_layout._attached_bc[0]];
    
    if (_n_components == 1 && molecule != 0 && drawn_comp.isSingleEdge())
    {
