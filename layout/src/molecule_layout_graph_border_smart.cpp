@@ -385,7 +385,7 @@ void MoleculeLayoutGraphSmart::_splitBorder (int v1, int v2, Array<int> &part1v,
 // Check if cycle is boundary and mark vertices and edges as boundary/internal
 bool MoleculeLayoutGraphSmart::_border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
 {
-   MoleculeLayoutGraphSmart &self = *(MoleculeLayoutGraphSmart *)context;
+   MoleculeLayoutGraph &self = *(MoleculeLayoutGraph *)context;
    Cycle cycle(vertices, edges);
 
    //cycle.canonize();

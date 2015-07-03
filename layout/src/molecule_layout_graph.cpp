@@ -431,7 +431,7 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents (BaseMolecule & molecu
    for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
       molecule_edge_mapping[i] = getEdgeExtIdx(i);
 
-   PtrArray<MoleculeLayoutGraphSimple> components;
+   PtrArray<MoleculeLayoutGraph> components;
 
     components.clear();
 
@@ -439,9 +439,9 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents (BaseMolecule & molecu
    {
       Filter comp_filter(decomposition.ptr(), Filter::EQ, i);
       
-      std::unique_ptr<MoleculeLayoutGraphSimple> current_component((MoleculeLayoutGraphSimple *)getInstance());
+      std::unique_ptr<MoleculeLayoutGraph> current_component(getInstance());
       components.add(current_component.release());
-      MoleculeLayoutGraphSimple& component = *components.top();
+      MoleculeLayoutGraph& component = *components.top();
 
       component.cancellation = cancellation;
 
@@ -497,7 +497,7 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents (BaseMolecule & molecu
       // find fixed components
       for (i = 0; i < n_components; i++)
       {
-         MoleculeLayoutGraphSimple &component = *components[i];
+         MoleculeLayoutGraph &component = *components[i];
 
          if (component._n_fixed > 0)
          {
@@ -525,7 +525,7 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents (BaseMolecule & molecu
 
          for (i = 0; i < n_components; i++)
          {
-            MoleculeLayoutGraphSimple &component = *components[i];
+            MoleculeLayoutGraph &component = *components[i];
 
             if (component._n_fixed > 0)
                for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
@@ -540,7 +540,7 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents (BaseMolecule & molecu
 
    for (i = 0, k = 0; i < n_components; i++)
    {
-      MoleculeLayoutGraphSimple &component = *components[i];
+      MoleculeLayoutGraph &component = *components[i];
 
       if (component._n_fixed > 0)
          continue;

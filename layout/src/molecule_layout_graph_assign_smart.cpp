@@ -62,7 +62,7 @@ void MoleculeLayoutGraphSmart::_copyLayout (MoleculeLayoutGraph &component)
 
 static int _vertex_cmp (int &n1, int &n2, void *context)
 {
-   const MoleculeLayoutGraphSmart &graph = *(MoleculeLayoutGraphSmart *)context;
+   const MoleculeLayoutGraph &graph = *(MoleculeLayoutGraph *)context;
    const LayoutVertex &v1 = graph.getLayoutVertex(n1);
    const LayoutVertex &v2 = graph.getLayoutVertex(n2);
 

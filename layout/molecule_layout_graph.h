@@ -205,6 +205,24 @@ public:
     static float _dichotomy2(float a0, float b0, int L, float s);
     static void _calculatePos(float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v);
 
+    // border functions
+    virtual void _getBorder(Cycle &border) const = 0;
+    virtual void _splitBorder(int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const = 0;
+    virtual bool _isPointOutside(const Vec2f &p) const = 0;
+    virtual bool _isPointOutsideCycle(const Cycle &cycle, const Vec2f &p) const = 0;
+    virtual bool _isPointOutsideCycleEx(const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const = 0;
+
+    // for components
+    virtual void _calcMorganCodes() = 0;
+
+    // for whole graph
+    virtual void _assignAbsoluteCoordinates(float bond_length) = 0;
+    virtual void _findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components, bool all_trivial) = 0;
+    virtual bool _prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree) = 0;
+    virtual void _assignFinalCoordinates(float bond_length, const Array<Vec2f> &src_layout) = 0;
+    virtual void _copyLayout(MoleculeLayoutGraph &component) = 0;
+    virtual void _getAnchor(int &v1, int &v2, int &v3) const = 0;
+
     virtual bool _checkBadTryBorderIntersection(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping) = 0;
     virtual bool _checkBadTryChainOutside(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping) = 0;
 

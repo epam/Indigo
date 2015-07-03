@@ -183,16 +183,16 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents (BaseMolecule & molecul
 
    _molecule_edge_mapping = molecule_edge_mapping.ptr();
 
-   PtrArray<MoleculeLayoutGraphSmart> components;
+   PtrArray<MoleculeLayoutGraph> components;
 
    components.clear();
 
    for (i = 0; i < n_components; i++)
    {
       Filter comp_filter(decomposition.ptr(), Filter::EQ, i);
-      std::unique_ptr<MoleculeLayoutGraphSmart> current_component((MoleculeLayoutGraphSmart *) getInstance());
+      std::unique_ptr<MoleculeLayoutGraph> current_component(getInstance());
       components.add(current_component.release());
-      MoleculeLayoutGraphSmart &component = *components.top();
+      MoleculeLayoutGraph &component = *components.top();
       
       component.cancellation = cancellation;
 
@@ -249,7 +249,7 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents (BaseMolecule & molecul
       // find fixed components
       for (i = 0; i < n_components; i++)
       {
-         MoleculeLayoutGraphSmart &component = *components[i];
+         MoleculeLayoutGraph &component = *components[i];
 
          if (component._n_fixed > 0)
          {
@@ -277,7 +277,7 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents (BaseMolecule & molecul
 
          for (i = 0; i < n_components; i++)
          {
-            MoleculeLayoutGraphSmart &component = *components[i];
+            MoleculeLayoutGraph &component = *components[i];
 
             if (component._n_fixed > 0)
                for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
@@ -292,7 +292,7 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents (BaseMolecule & molecul
 
    for (i = 0, k = 0; i < n_components; i++)
    {
-      MoleculeLayoutGraphSmart &component = *components[i];
+      MoleculeLayoutGraph &component = *components[i];
 
       if (component._n_fixed > 0)
          continue;
