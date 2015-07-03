@@ -20,7 +20,7 @@ IMPL_ERROR(RefinementStateSmart, "refinement");
 
 CP_DEF(RefinementStateSmart);
 
-RefinementStateSmart::RefinementStateSmart (MoleculeLayoutGraphSmart &graph) :
+RefinementStateSmart::RefinementStateSmart (MoleculeLayoutGraph &graph) :
 dist(0.f),
 energy(0),
 height(0.f),

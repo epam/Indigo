@@ -193,6 +193,21 @@ public:
         int maxIterationNumber;
     };
 
+    // geometry functions
+    virtual int _calcIntersection(int edge1, int edge2) const = 0;
+    virtual bool _isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const = 0;
+    virtual bool _isVertexOnSomeEdge(int vert_idx) const = 0;
+    virtual void _shiftEdge(int edge_idx, float delta) = 0;
+    virtual bool _drawRegularCurve(const Array<int> &chain, int begin, int end, float length, bool ccw, int type) = 0;
+    virtual bool _drawRegularCurveEx(const Array<int> &chain, int begin, int end, float length, bool ccw, int type, const Array<int> &mapping) = 0;
+    static void  _findAngles(int k, float s, float &x, float &y);
+    static float _dichotomy1(float a0, float b0, int L, float s);
+    static float _dichotomy2(float a0, float b0, int L, float s);
+    static void _calculatePos(float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v);
+
+    virtual bool _checkBadTryBorderIntersection(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping) = 0;
+    virtual bool _checkBadTryChainOutside(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping) = 0;
+
     virtual void _assignRelativeCoordinates(int &fixed_component, const MoleculeLayoutGraph &supergraph) = 0;
 };
 
@@ -268,8 +283,8 @@ protected:
    bool _attachCycleOutside (const Cycle &cycle, float length, int n_common);
    bool _drawEdgesWithoutIntersection (const Cycle &cycle, Array<int> & cycle_vertex_types);
 
-   bool _checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraphSimple &next_bc, Array<int> &mapping);
-   bool _checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraphSimple &next_bc, Array<int> & mapping);
+   bool _checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping);
+   bool _checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping);
 
    bool _attachCycleInside (const Cycle &cycle, float length);
    bool _attachCycleWithIntersections (const Cycle &cycle, float length);
@@ -492,8 +507,8 @@ protected:
     bool _attachCycleOutside(const Cycle &cycle, float length, int n_common);
     bool _drawEdgesWithoutIntersection(const Cycle &cycle, Array<int> & cycle_vertex_types);
 
-    bool _checkBadTryBorderIntersection(Array<int> &chain_ext, MoleculeLayoutGraphSmart &next_bc, Array<int> &mapping);
-    bool _checkBadTryChainOutside(Array<int> &chain_ext, MoleculeLayoutGraphSmart &next_bc, Array<int> & mapping);
+    bool _checkBadTryBorderIntersection(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping);
+    bool _checkBadTryChainOutside(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping);
 
     bool _attachCycleInside(const Cycle &cycle, float length);
     bool _attachCycleWithIntersections(const Cycle &cycle, float length);

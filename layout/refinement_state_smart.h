@@ -21,7 +21,7 @@ namespace indigo {
 
 struct RefinementStateSmart  
 {
-   explicit RefinementStateSmart (MoleculeLayoutGraphSmart &graph);
+   explicit RefinementStateSmart (MoleculeLayoutGraph &graph);
 
    void calcHeight ();
    void calcDistance (int v1, int v2);
@@ -45,7 +45,7 @@ struct RefinementStateSmart
    DECL_ERROR;
 private:
 
-   MoleculeLayoutGraphSmart &_graph;
+   MoleculeLayoutGraph &_graph;
 };
 
 }

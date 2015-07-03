@@ -785,7 +785,7 @@ bool MoleculeLayoutGraphSmart::_drawEdgesWithoutIntersection (const Cycle &cycle
    return is_attached;
 }
 
-bool MoleculeLayoutGraphSmart::_checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraphSmart &next_bc, Array<int> &mapping)
+bool MoleculeLayoutGraphSmart::_checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping)
 {
    for (int i = 0; i < chain_ext.size() - 1; i++)
       for (int j = next_bc.edgeBegin(); j < next_bc.edgeEnd(); j = next_bc.edgeNext(j))
@@ -811,7 +811,7 @@ bool MoleculeLayoutGraphSmart::_checkBadTryBorderIntersection (Array<int> &chain
    return true;
 }
 
-bool MoleculeLayoutGraphSmart::_checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraphSmart &next_bc, Array<int> & mapping)
+bool MoleculeLayoutGraphSmart::_checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping)
 {
    // Check chain_ext is outside bound
    for (int i = 1; i < chain_ext.size() - 1; i++)
