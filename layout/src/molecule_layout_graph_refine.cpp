@@ -123,7 +123,7 @@ bool MoleculeLayoutGraphSimple::_allowRotateAroundVertex (int idx) const
 }
 
 // Increase minimal distance between vertices
-void MoleculeLayoutGraphSimple::_refineCoordinates(const BiconnectedDecomposer &bc_decomposer, const PtrArray<MoleculeLayoutGraphSimple> &bc_components, const Array<int> &bc_tree)
+void MoleculeLayoutGraphSimple::_refineCoordinates(const BiconnectedDecomposer &bc_decomposer, const PtrArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree)
 {
    RefinementState beg_state(*this);
    RefinementState best_state(*this);

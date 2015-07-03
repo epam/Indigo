@@ -40,7 +40,7 @@ enum
 
 
 // Make relative coordinates of a component absolute
-void MoleculeLayoutGraphSmart::_copyLayout (MoleculeLayoutGraphSmart &component)
+void MoleculeLayoutGraphSmart::_copyLayout (MoleculeLayoutGraph &component)
 {
    int i;
 
@@ -80,7 +80,7 @@ void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates (float bond_length)
 {
    BiconnectedDecomposer bc_decom(*this);
    QS_DEF(Array<int>, bc_tree);
-   QS_DEF(PtrArray<MoleculeLayoutGraphSmart>, bc_components);
+   QS_DEF(PtrArray<MoleculeLayoutGraph>, bc_components);
    QS_DEF(Array<int>, fixed_components);
    bool all_trivial = true;
 
@@ -95,7 +95,7 @@ void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates (float bond_length)
    {
       Filter comp;
       bc_decom.getComponent(i, comp);
-      std::unique_ptr<MoleculeLayoutGraphSmart> current_component((MoleculeLayoutGraphSmart *) getInstance());
+      std::unique_ptr<MoleculeLayoutGraph> current_component(getInstance());
       current_component->makeLayoutSubgraph(*this, comp);
       bc_components.add(current_component.release());
    }
@@ -267,7 +267,7 @@ void MoleculeLayoutGraphSmart::_search_path(int start, int finish, Array<int>& p
    }
 }
 
-void MoleculeLayoutGraphSmart::_assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraphSmart &supergraph)
+void MoleculeLayoutGraphSmart::_assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph)
 {
    profTimerStart(t, "_assignRelativeCoordinates");
    int i;
@@ -2107,7 +2107,7 @@ void MoleculeLayoutGraphSmart::_assignFinalCoordinates (float bond_length, const
    }
 }
 
-void MoleculeLayoutGraphSmart::_findFixedComponents(BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraphSmart> & bc_components)
+void MoleculeLayoutGraphSmart::_findFixedComponents(BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraph> & bc_components)
 {
    // 1. Find biconnected components forming connected subgraph from fixed vertices
    if (_n_fixed == 0)
@@ -2150,7 +2150,7 @@ void MoleculeLayoutGraphSmart::_findFixedComponents(BiconnectedDecomposer &bc_de
       if (!fixed_components[i])
          continue;
 
-      MoleculeLayoutGraphSmart &component = *bc_components[i];
+      MoleculeLayoutGraph &component = *bc_components[i];
 
       for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
          _fixed_vertices[component.getVertexExtIdx(j)] = 1;
@@ -2203,7 +2203,7 @@ void MoleculeLayoutGraphSmart::_findFixedComponents(BiconnectedDecomposer &bc_de
          if (!fixed_components[i])
             continue;
 
-         MoleculeLayoutGraphSmart &component = *bc_components[i];
+         MoleculeLayoutGraph &component = *bc_components[i];
 
          int comp_v = component.getVertexExtIdx(component.vertexBegin());
          int mapped = fixed_inv_mapping[comp_v];
@@ -2213,7 +2213,7 @@ void MoleculeLayoutGraphSmart::_findFixedComponents(BiconnectedDecomposer &bc_de
    }
 }
 
-bool MoleculeLayoutGraphSmart::_assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraphSmart> & bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom)
+bool MoleculeLayoutGraphSmart::_assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph> & bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom)
 {
    bool all_trivial = true;
    int n_comp = bc_decom.componentsCount();
@@ -2226,7 +2226,7 @@ bool MoleculeLayoutGraphSmart::_assignComponentsRelativeCoordinates(PtrArray<Mol
    // Initially was 1a and 2b then changed to 1b and 2b
    for (int i = 0; i < n_comp; i++)
    {
-      MoleculeLayoutGraphSmart &component = *bc_components[i];
+      MoleculeLayoutGraph &component = *bc_components[i];
       component.max_iterations = max_iterations;
       component.smart_layout = smart_layout;
 
@@ -2287,7 +2287,7 @@ bool MoleculeLayoutGraphSmart::_assignComponentsRelativeCoordinates(PtrArray<Mol
    return all_trivial;
 }
 
-void MoleculeLayoutGraphSmart::_assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraphSmart &supergraph)
+void MoleculeLayoutGraphSmart::_assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph)
 {
    // Trivial component layout
    int idx1 = vertexBegin();
@@ -2310,7 +2310,7 @@ void MoleculeLayoutGraphSmart::_assignRelativeSingleEdge (int &fixed_component, 
    _layout_edges[edgeBegin()].type = ELEMENT_BOUNDARY;
 }
 
-void MoleculeLayoutGraphSmart::_findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraphSmart> &bc_components, bool all_trivial)
+void MoleculeLayoutGraphSmart::_findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components, bool all_trivial)
 {
    if (_n_fixed > 0)
    {
@@ -2325,7 +2325,7 @@ void MoleculeLayoutGraphSmart::_findFirstVertexIdx(int n_comp, Array<int> & fixe
       if (j == -1)
          throw Error("Internal error: cannot find a fixed component with fixed vertices");
 
-      MoleculeLayoutGraphSmart &component = *bc_components[j];
+      MoleculeLayoutGraph &component = *bc_components[j];
 
       _first_vertex_idx = component._layout_vertices[component.vertexBegin()].ext_idx;
    }
@@ -2341,7 +2341,7 @@ void MoleculeLayoutGraphSmart::_findFirstVertexIdx(int n_comp, Array<int> & fixe
          nucleus_idx = -1;
          for (int i = 0; i < n_comp; i++)
          {
-            MoleculeLayoutGraphSmart &component = *bc_components[i];
+            MoleculeLayoutGraph &component = *bc_components[i];
 
             if (!component.isSingleEdge())
             {
@@ -2353,7 +2353,7 @@ void MoleculeLayoutGraphSmart::_findFirstVertexIdx(int n_comp, Array<int> & fixe
          if (nucleus_idx < 0)
             throw Error("Internal error: cannot find nontrivial component");
 
-         MoleculeLayoutGraphSmart &nucleus = *bc_components[nucleus_idx];
+         MoleculeLayoutGraph &nucleus = *bc_components[nucleus_idx];
 
          _copyLayout(nucleus);
          _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
@@ -2383,7 +2383,7 @@ void MoleculeLayoutGraphSmart::_findFirstVertexIdx(int n_comp, Array<int> & fixe
    }
 }
 
-bool MoleculeLayoutGraphSmart::_prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraphSmart> &bc_components, Array<int> &bc_tree)
+bool MoleculeLayoutGraphSmart::_prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree)
 {
    assigned_list.clear();
 

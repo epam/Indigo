@@ -132,7 +132,7 @@ void MoleculeLayoutGraphSmart::_calcMorganCodes ()
 }
 
 void MoleculeLayoutGraphSmart::_makeComponentsTree (BiconnectedDecomposer &decon,
-    PtrArray<MoleculeLayoutGraphSmart> &components, Array<int> &tree)
+    PtrArray<MoleculeLayoutGraph> &components, Array<int> &tree)
 {
    int i, j, v, k;
    bool from;

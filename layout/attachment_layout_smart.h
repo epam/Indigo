@@ -24,8 +24,8 @@ class AttachmentLayoutSmart
 {
 public:
    explicit AttachmentLayoutSmart (const BiconnectedDecomposer &bc_decom,
-       PtrArray<MoleculeLayoutGraphSmart> &bc_components,
-      const Array<int> &bc_tree, MoleculeLayoutGraphSmart &graph, int src_vertex);
+       PtrArray<MoleculeLayoutGraph> &bc_components,
+      const Array<int> &bc_tree, MoleculeLayoutGraph &graph, int src_vertex);
 
    double calculateEnergy ();
    void  applyLayout ();
@@ -45,8 +45,8 @@ public:
    TL_CP_DECL(Array<Vec2f>, _layout);      // layout of new vertices
    double _energy;                         // current energy between drawn part and new part
 
-   PtrArray<MoleculeLayoutGraphSmart> &_bc_components;
-   MoleculeLayoutGraphSmart &_graph;
+   PtrArray<MoleculeLayoutGraph> &_bc_components;
+   MoleculeLayoutGraph &_graph;
 };
 
 class LayoutChooserSmart
