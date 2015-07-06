@@ -18,7 +18,7 @@
 #include "graph/biconnected_decomposer.h"
 #include "graph/path_enumerator.h"
 #include "layout/molecule_layout_graph.h"
-#include "layout/refinement_state_smart.h"
+#include "layout/refinement_state.h"
 
 using namespace indigo;
 
@@ -147,9 +147,9 @@ bool MoleculeLayoutGraphSmart::_allowRotateAroundVertex (int idx) const
 // Increase minimal distance between vertices
 void MoleculeLayoutGraphSmart::_refineCoordinates(const BiconnectedDecomposer &bc_decomposer, const PtrArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree)
 {
-   RefinementStateSmart beg_state(*this);
-   RefinementStateSmart best_state(*this);
-   RefinementStateSmart new_state(*this);
+   RefinementState beg_state(*this);
+   RefinementState best_state(*this);
+   RefinementState new_state(*this);
    QS_DEF(Array<int>, branch);
    int v1, v2;
    int v1c, v2c;
