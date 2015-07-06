@@ -29,6 +29,7 @@ public:
    TautomerEnumerator(Molecule &molecule, const char *options);
 
    void constructMolecule(Molecule &molecule, int layer, bool needAromatize) const;
+   bool enumerateLazy();
    void enumerateAll(bool needAromatization);
    bool aromatize();
    int beginNotAromatized();
@@ -54,6 +55,8 @@ protected:
    static void vertexAdd(Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
    static void vertexRemove(Graph &subgraph, int sub_idx, void *userdata);
 
+   static void product_proc(Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, void *userdata);
+
    bool _performProcedure();
    bool _aromatize(int from, int to);
 
@@ -61,6 +64,8 @@ protected:
 
 public:
    LayeredMolecules layeredMolecules;
+   int _currentLayer;
+   int _currentRule;
    bool _complete;
    int aromatizedRange[2];
    RedBlackSet<unsigned> _enumeratedHistory;

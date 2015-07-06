@@ -50,7 +50,9 @@ public:
    // edgesPath: the path of single-double bonds to be inverted
    // beg, end: the mobile positions of hydrogen to swap
    // forward: the direction to move the hydrogen
-   void addLayersWithInvertedPath(const Dbitset &mask, const Array<int> &path, int beg, int end, bool forward);
+   // returns true if at least one new layer was added, false otherwise
+   bool addLayersWithInvertedPath(const Dbitset &mask, const Array<int> &path, int beg, int end, bool forward);
+   bool addLayerFromMolecule(const Molecule &molecule, Array<int> &aam);
 
    bool aromatize (int layerFrom, int layerTo, const AromaticityOptions &options);
 

@@ -26,7 +26,11 @@ MoleculeTautomerSubstructureMatcher::MoleculeTautomerSubstructureMatcher(BaseMol
 _tautomerEnumerator(target.asMolecule(), "INCHI"),
 CP_INIT
 {
-   _tautomerEnumerator.enumerateAll(false);
+   _allLayersFound = false;
+   _layerBeg = 0;
+   _layerEnd = 1;
+   // Instead of full enumeration of tautomers we are using lazy enumeration now.
+   //_tautomerEnumerator.enumerateAll(false);
    find_all_embeddings = false;
    find_unique_embeddings = false;
    find_unique_by_edges = false;
@@ -64,10 +68,6 @@ void MoleculeTautomerSubstructureMatcher::setQuery(QueryMolecule &query)
    _ee->cb_vertex_add = NULL;
    _ee->cb_vertex_remove = _vertexRemoveHyper;
    _ee->cb_embedding = _preliminaryEmbeddingHyper;
-   _breadcrumps.maskHistory.clear();
-   _breadcrumps.mask.resize(_tautomerEnumerator.layeredMolecules.layers);
-   _breadcrumps.mask.zeroFill();
-   _breadcrumps.mask.flip(0, _tautomerEnumerator.layeredMolecules.layers);
    _breadcrumps.self = this;
    _ee->userdata = &_breadcrumps;
 
@@ -163,7 +163,31 @@ bool MoleculeTautomerSubstructureMatcher::find()
 
    _createEmbeddingsStorage();
 
+   _breadcrumps.maskHistory.clear();
+   _breadcrumps.mask.resize(_tautomerEnumerator.layeredMolecules.layers);
+   _breadcrumps.mask.zeroFill();
+   _breadcrumps.mask.flip(_layerBeg, _layerEnd);
    int result = _ee->process();
+
+   while(result == 1)
+   {
+      _layerBeg = _layerEnd;
+      if(!_tautomerEnumerator.enumerateLazy())
+      {
+         _layerEnd = _tautomerEnumerator.layeredMolecules.layers;
+         _breadcrumps.maskHistory.clear();
+         _breadcrumps.mask.resize(_tautomerEnumerator.layeredMolecules.layers);
+         _breadcrumps.mask.zeroFill();
+         _breadcrumps.mask.flip(_layerBeg, _layerEnd);
+
+         _ee->setSubgraph(*_query);
+         result = _ee->process();
+      }
+      else
+      {
+         break;
+      }
+   }
 
    return result == 0;
 }
@@ -171,6 +195,26 @@ bool MoleculeTautomerSubstructureMatcher::find()
 bool MoleculeTautomerSubstructureMatcher::findNext()
 {
    bool found = _ee->processNext();
+
+   while(!found)
+   {
+      _layerBeg = _layerEnd;
+      if(!_tautomerEnumerator.enumerateLazy())
+      {
+         _layerEnd = _tautomerEnumerator.layeredMolecules.layers;
+         _breadcrumps.maskHistory.clear();
+         _breadcrumps.mask.resize(_tautomerEnumerator.layeredMolecules.layers);
+         _breadcrumps.mask.zeroFill();
+         _breadcrumps.mask.flip(_layerBeg, _layerEnd);
+
+         _ee->setSubgraph(*_query);
+         found = _ee->process() != 1;
+      }
+      else
+      {
+         break;
+      }
+   }
 
    return found;
 }
@@ -181,7 +225,7 @@ void MoleculeTautomerSubstructureMatcher::_createEmbeddingsStorage()
    _embeddings_storage->unique_by_edges = find_unique_by_edges;
    _embeddings_storage->save_edges = save_for_iteration;
    _embeddings_storage->save_mapping = save_for_iteration;
-   _embeddings_storage->check_uniquencess = find_unique_embeddings;
+   _embeddings_storage->check_uniquencess = false;// find_unique_embeddings;
 }
 
 int MoleculeTautomerSubstructureMatcher::_embedding_common (int *core_sub, int *core_super, Dbitset &mask)

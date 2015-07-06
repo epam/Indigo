@@ -126,7 +126,7 @@ void LayeredMolecules::setMobilePositionOccupiedMask(int idx, Dbitset &mask, boo
       _mobilePositionsOccupied[idx].andNotWith(mask);
 }
 
-void LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Array<int> &edgesPath, int beg, int end, bool forward)
+bool LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Array<int> &edgesPath, int beg, int end, bool forward)
 // mask: the mask of layers used as prototypes;
 // edgesPath: the path of single-double bonds to be inverted
 // edgesPath: a sequence of edges with intercganging single-double bonds that need to be inverted
@@ -201,8 +201,93 @@ void LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Arra
    {
       // This means that we avoided adding non-unique layer, and we need to reduce the size of bitsets.
       _resizeLayers(layers);
+      return false;
    }
+
+   return true;
 }
+
+bool LayeredMolecules::addLayerFromMolecule(const Molecule &molecule, Array<int> &aam)
+{
+   unsigned newTautomerIndex = layers;
+   _resizeLayers(newTautomerIndex + 1);
+
+   unsigned node = _trie.getRoot();
+   bool unique = false;
+
+   unsigned edgesFollowed = 0;
+
+   for (auto e1_idx = 0; e1_idx < edgeCount(); ++e1_idx)
+   {
+      auto e = getEdge(e1_idx);
+      int u = e.beg;
+      int v = e.end;
+      int e2_idx = molecule.findEdgeIndex(aam[e.beg], aam[e.end]);
+      int order = BOND_ZERO;
+      if(e2_idx != -1)
+      {
+         order = const_cast<Molecule&>(molecule).getBondOrder(e2_idx);
+         ++edgesFollowed;
+      }
+
+      bool newlyAdded;
+      node = _trie.add(node, order, newlyAdded);
+      unique = (newlyAdded ? true : unique);
+
+      _bond_masks[BOND_ZERO][e1_idx].reset(newTautomerIndex);
+      _bond_masks[BOND_SINGLE][e1_idx].reset(newTautomerIndex);
+      _bond_masks[BOND_DOUBLE][e1_idx].reset(newTautomerIndex);
+      _bond_masks[BOND_TRIPLE][e1_idx].reset(newTautomerIndex);
+      _bond_masks[BOND_AROMATIC][e1_idx].reset(newTautomerIndex);
+      _bond_masks[order][e1_idx].set(newTautomerIndex);
+   }
+
+   if(molecule.edgeCount() != edgesFollowed)
+   {
+      Array<int> inv_aam;
+      inv_aam.resize(aam.size());
+      for(auto i = 0; i < aam.size(); ++i)
+      {
+         inv_aam[i] = i;
+      }
+
+      for (auto e2_idx = 0; e2_idx < molecule.edgeCount(); ++e2_idx)
+      {
+         auto e = molecule.getEdge(e2_idx);
+         int u = inv_aam[e.beg];
+         int v = inv_aam[e.end];
+         int e1_idx = findEdgeIndex(u, v);
+         if(e1_idx == -1)
+         {
+            int order = const_cast<Molecule&>(molecule).getBondOrder(e2_idx);
+            bool newlyAdded;
+            node = _trie.add(node, order, newlyAdded);
+            unique = (newlyAdded ? true : unique);
+            e1_idx = addEdge(u, v);
+            _proto.addEdge(u, v);
+            _proto.setBondOrder(e1_idx, order, false);
+
+            _bond_masks[BOND_ZERO][e1_idx].reset(newTautomerIndex);
+            _bond_masks[BOND_SINGLE][e1_idx].reset(newTautomerIndex);
+            _bond_masks[BOND_DOUBLE][e1_idx].reset(newTautomerIndex);
+            _bond_masks[BOND_TRIPLE][e1_idx].reset(newTautomerIndex);
+            _bond_masks[BOND_AROMATIC][e1_idx].reset(newTautomerIndex);
+            _bond_masks[order][e1_idx].set(newTautomerIndex);
+         }
+      }
+   }
+
+   if(unique)
+   {
+      ++layers;
+      return true;
+   }
+
+   // This means that we avoided adding non-unique layer, and we need to reduce the size of bitsets.
+   _resizeLayers(layers);
+   return false;
+}
+
 
 int LayeredMolecules::getAtomNumber(int idx)
 {
@@ -678,7 +763,7 @@ void LayeredMolecules::_registerAromatizedLayers(int layerFrom, int layerTo)
       }
       else
       {
-         _hashsAromatized[l] = 0;
+         _hashsAromatized[l] = NULL;
       }
    }
 }
@@ -694,8 +779,7 @@ bool LayeredMolecules::aromatize(int layerFrom, int layerTo, const AromaticityOp
    CycleEnumerator cycle_enumerator(_proto);
 
    cycle_enumerator.cb_handle_cycle = _cb_handle_cycle;
-   cycle_enumerator.max_length = MAX_CYCLE_LENGTH;
-   
+   cycle_enumerator.max_length = 22;
    AromatizationContext context;
    context.self = this;
    context.layerFrom = layerFrom;
