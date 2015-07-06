@@ -227,6 +227,16 @@ public:
     virtual bool _checkBadTryChainOutside(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping) = 0;
 
     virtual void _assignRelativeCoordinates(int &fixed_component, const MoleculeLayoutGraph &supergraph) = 0;
+
+    // refine
+    static bool _edge_check(Graph &graph, int e_idx, void *context);
+    void _refineCoordinates(const BiconnectedDecomposer &bc_decomposer, const PtrArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree);
+    bool _allowRotateAroundVertex(int idx) const;
+    void _makeBranches(Array<int> &branches, int edge, Filter &filter) const;
+    void _excludeDandlingIntersections();
+    static bool _path_handle(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
+
+
 };
 
 class DLLEXPORT MoleculeLayoutGraphSimple : public MoleculeLayoutGraph
@@ -260,7 +270,6 @@ protected:
    static int  _pattern_embedding (Graph &subgraph, Graph &supergraph, int *core_sub, int *core_super, void *userdata);
 
    // THERE
-   static bool _path_handle (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
    // for whole graph
    void _assignAbsoluteCoordinates (float bond_length);
@@ -272,13 +281,6 @@ protected:
 
    void _findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components);
    bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
-
-   // refine
-   void _refineCoordinates(const BiconnectedDecomposer &bc_decomposer, const PtrArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree);
-   bool _allowRotateAroundVertex (int idx) const;
-   void _makeBranches (Array<int> &branches, int edge, Filter &filter) const;
-   void _findBranch (Array<int> &branches, int v, int edge) const;
-   void _excludeDandlingIntersections ();
 
    // for components
    void _calcMorganCodes ();
@@ -445,7 +447,6 @@ public:
 
 protected:
     // THERE
-    static bool _path_handle(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
     // for whole graph
     void _assignAbsoluteCoordinates(float bond_length);
@@ -457,13 +458,6 @@ protected:
 
     void _findFixedComponents(BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components);
     bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
-
-    // refine
-    void _refineCoordinates(const BiconnectedDecomposer &bc_decomposer, const PtrArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree);
-    bool _allowRotateAroundVertex(int idx) const;
-    void _makeBranches(Array<int> &branches, int edge, Filter &filter) const;
-    void _findBranch(Array<int> &branches, int v, int edge) const;
-    void _excludeDandlingIntersections();
 
     // for components
     void _calcMorganCodes();
@@ -537,8 +531,6 @@ protected:
     int _isCisConfiguratuin(Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4);
 
     static bool _border_cb(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
-    static bool _edge_check(Graph &graph, int e_idx, void *context);
-    static bool _edge_check_norm(Graph &graph, int e_idx, void *context);
 
     // make tree of biconnected components (tree[i] - -1 or component incoming to vertex i)
     static void _makeComponentsTree(BiconnectedDecomposer &decon,
