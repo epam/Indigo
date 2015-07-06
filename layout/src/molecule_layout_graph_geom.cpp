@@ -48,7 +48,7 @@ float f2 (float X, int L, float s)
    return f;	
 }
 
-void MoleculeLayoutGraphSimple::_findAngles (int k, float s, float &x, float &y)
+void MoleculeLayoutGraph::_findAngles (int k, float s, float &x, float &y)
 { 
    int L;
    float a0,  b0;
@@ -97,7 +97,7 @@ void MoleculeLayoutGraphSimple::_findAngles (int k, float s, float &x, float &y)
    }
 }
 
-float MoleculeLayoutGraphSimple::_dichotomy1 (float a0, float b0, int L, float s)
+float MoleculeLayoutGraph::_dichotomy1 (float a0, float b0, int L, float s)
 {
    // Return root of the equation f1 ( x,l,S]=0;
    // if there are a root at the [a0,b0].;
@@ -130,7 +130,7 @@ float MoleculeLayoutGraphSimple::_dichotomy1 (float a0, float b0, int L, float s
    }
 }
 
-float MoleculeLayoutGraphSimple::_dichotomy2 (float a0, float b0, int L, float s)
+float MoleculeLayoutGraph::_dichotomy2 (float a0, float b0, int L, float s)
 {
    // Return root of the equation f2 ( x,l,S]=0;
    // if there are a root at the [a0,b0].;
@@ -164,7 +164,7 @@ float MoleculeLayoutGraphSimple::_dichotomy2 (float a0, float b0, int L, float s
 }
 
 // Complete regular curve from v1 to v2 by vertices in chain
-bool MoleculeLayoutGraphSimple::_drawRegularCurve (const Array<int> &chain, int v1, int v2, float length, bool ccw, int type)
+bool MoleculeLayoutGraph::_drawRegularCurve (const Array<int> &chain, int v1, int v2, float length, bool ccw, int type)
 {
    QS_DEF(Array<int>, mapping);
 
@@ -176,7 +176,7 @@ bool MoleculeLayoutGraphSimple::_drawRegularCurve (const Array<int> &chain, int 
    return _drawRegularCurveEx(chain, v1, v2, length, ccw, type, mapping);
 }
 
-bool MoleculeLayoutGraphSimple::_drawRegularCurveEx (const Array<int> &chain, int v1, int v2, float length, bool ccw, int type, const Array<int> &mapping)
+bool MoleculeLayoutGraph::_drawRegularCurveEx (const Array<int> &chain, int v1, int v2, float length, bool ccw, int type, const Array<int> &mapping)
 {
    float s, x0 = 0.f, y0 = 0.f;
    int i, k, L;
@@ -277,7 +277,7 @@ bool MoleculeLayoutGraphSimple::_drawRegularCurveEx (const Array<int> &chain, in
 }
 
 // Check vertex is inside the edge
-bool MoleculeLayoutGraphSimple::_isVertexOnEdge (int vert_idx, int edge_beg, int edge_end) const
+bool MoleculeLayoutGraph::_isVertexOnEdge (int vert_idx, int edge_beg, int edge_end) const
 {
    float a1, a0, b1, b0;
    float t, eps = 0.05f;
@@ -338,7 +338,7 @@ bool MoleculeLayoutGraphSimple::_isVertexOnEdge (int vert_idx, int edge_beg, int
       return false;
 }
 
-bool MoleculeLayoutGraphSimple::_isVertexOnSomeEdge (int vert_idx) const
+bool MoleculeLayoutGraph::_isVertexOnSomeEdge (int vert_idx) const
 {
    int i;
 
@@ -358,7 +358,7 @@ bool MoleculeLayoutGraphSimple::_isVertexOnSomeEdge (int vert_idx) const
 }
 
 // Translate edge by delta orthogonally
-void MoleculeLayoutGraphSimple::_shiftEdge (int edge_idx, float delta)
+void MoleculeLayoutGraph::_shiftEdge (int edge_idx, float delta)
 {
    float norm;
    const Edge &edge = getEdge(edge_idx);
@@ -497,7 +497,7 @@ float MoleculeLayoutGraphSimple::calculateAngle (int v, int &v1, int &v2) const
 }
 
 // Calculate position by adding one unit with given angle to the segment
-void MoleculeLayoutGraphSimple::_calculatePos (float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v)
+void MoleculeLayoutGraph::_calculatePos (float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v)
 { 
    float alpha;
    Vec2f dir;
@@ -526,7 +526,7 @@ void MoleculeLayoutGraphSimple::_calculatePos (float phi, const Vec2f &v1, const
 //  x = (x1 - x0) * t + x0;
 //  y = (y1 - y0) * t + y0;
 //  0 <= t <= 1;
-int MoleculeLayoutGraphSimple::_calcIntersection (int edge1_idx, int edge2_idx) const
+int MoleculeLayoutGraph::_calcIntersection (int edge1_idx, int edge2_idx) const
 {
    float a11,  a12,  a21,  a22,  b1,  b2;
    float delta,  delta1,  delta2,  t,  s;
@@ -631,3 +631,217 @@ int MoleculeLayoutGraphSimple::_calcIntersection (int edge1_idx, int edge2_idx) 
    }
    return 5;
 }
+
+// Calculate angle v1vv2 such the edge (v,v1) is on the right and (v,v2) is on the left
+// if component is trivial return 0
+// if v is internal return 2pi
+float MoleculeLayoutGraphSmart::calculateAngle(int v, int &v1, int &v2) const
+{
+    int i, j;
+    Vec2f p, p0;
+    float beta = 0.f;
+    QS_DEF(Array<float>, angles);
+    QS_DEF(Array<int>, edges);
+    QS_DEF(Array<int>, on_left);
+
+    if (vertexCount() == 2)
+    {
+        if (v == vertexBegin())
+            v1 = v2 = vertexNext(v);
+        else
+            v1 = v2 = vertexBegin();
+        return 0.f;
+    }
+
+    const Vertex &vert = getVertex(v);
+
+    // Calculate polar angles
+    angles.clear();
+    edges.clear();
+    on_left.clear_resize(vert.degree());
+
+    for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
+    {
+        edges.push(i);
+        p0.diff(getPos(vert.neiVertex(i)), getPos(v));
+        angles.push(p0.tiltAngle2());
+    }
+
+    // Sort
+    for (i = 0; i < angles.size(); i++)
+        for (j = i + 1; j < angles.size(); j++)
+            if (angles[i] > angles[j])
+            {
+                angles.swap(i, j);
+                edges.swap(i, j);
+            }
+
+    // Find v1
+    for (i = 0; i < angles.size() - 1; i++)
+    {
+        beta = (angles[i + 1] + angles[i]) / 2;
+        p = getPos(v);
+        p.x += 0.2f * cos(beta);
+        p.y += 0.2f * sin(beta);
+        on_left[i] = _isPointOutside(p);
+    }
+
+    beta = PI + (angles.top() + angles[0]) / 2;
+    p = getPos(v);
+    p.x += 0.2f * cos(beta);
+    p.y += 0.2f * sin(beta);
+    on_left.top() = _isPointOutside(p);
+
+    float comp_angle;
+    float cur_energy = 0;
+
+    /*   if (vert.degree() == 2)
+    {
+
+
+    //      if (on_left[0] || (!on_left[1] && angles[1] - angles[0] > PI))
+    if (on_left[0] > on_left[1] || (on_left[0] == on_left[1] && angles[1] - angles[0] > PI))
+    {
+    comp_angle = 2 * PI - (angles[1] - angles[0]);
+    v1 = vert.neiVertex(edges[1]);
+    v2 = vert.neiVertex(edges[0]);
+    } else
+    {
+    comp_angle = angles[1] - angles[0];
+    v1 = vert.neiVertex(edges[0]);
+    v2 = vert.neiVertex(edges[1]);
+    }
+    return comp_angle;
+    }*/
+
+    // Find sector outside component
+
+    if (_molecule->cis_trans.getParity(getEdgeExtIdx(vert.neiEdge(vert.neiBegin()))) != 0 ||
+        _molecule->cis_trans.getParity(getEdgeExtIdx(vert.neiEdge(vert.neiNext(vert.neiBegin())))) != 0) {
+
+        float best_angle = 2 * PI;
+
+        for (i = 0; i < vert.degree(); i++)
+        {
+            int ii = i + 1;
+            if (ii == vert.degree()) ii = 0;
+
+            comp_angle = 2 * PI - (angles[ii] - angles[i]);
+            if (ii == 0) comp_angle -= 2 * PI;
+            float eps = 0.1;
+            if (i == 0 || comp_angle < best_angle - eps) {
+                best_angle = comp_angle;
+                v1 = vert.neiVertex(edges[ii]);
+                v2 = vert.neiVertex(edges[i]);
+            }
+
+        }
+
+        /*   comp_angle = angles.top() - angles[0];
+        if (comp_angle < best_angle)
+        {
+        best_angle = comp_angle;
+        v1 = vert.neiVertex(edges[0]);
+        v2 = vert.neiVertex(edges.top());
+        }*/
+
+        return best_angle;
+    }
+
+    if (_graph->getVertexType(getVertexExtIdx(vert.neiVertex(vert.neiBegin()))) == ELEMENT_NOT_DRAWN)  {
+        // if this is not layouted component
+        for (i = 0; i < vert.degree() - 1; i++)
+        {
+            if (on_left[i])
+            {
+                comp_angle = 2 * PI - (angles[i + 1] - angles[i]);
+                v1 = vert.neiVertex(edges[i + 1]);
+                v2 = vert.neiVertex(edges[i]);
+                return comp_angle;
+            }
+        }
+
+        if (on_left.top())
+        {
+            comp_angle = angles.top() - angles[0];
+            v1 = vert.neiVertex(edges[0]);
+            v2 = vert.neiVertex(edges.top());
+            return comp_angle;
+        }
+    }
+    // TODO: if vertex is internal - choose maximal free angle
+    float best_angle = 2 * PI;
+
+    for (i = 0; i < vert.degree(); i++)
+    {
+        int ii = i + 1;
+        if (ii == vert.degree()) ii = 0;
+
+        beta = (angles[ii] + angles[i]) / 2;
+        if (ii == 0) {
+            beta += PI;
+            if (beta >= 2 * PI) beta -= 2 * PI;
+        }
+        p = _graph->getPos(getVertexExtIdx(v));
+
+
+        p.x += 1 * cos(beta);
+        p.y += 1 * sin(beta);
+        float energy = _energyOfPoint(p);
+        comp_angle = 2 * PI - (angles[ii] - angles[i]);
+        if (ii == 0) comp_angle -= 2 * PI;
+        float eps = 0.1;
+        //      printf("%d: %5.5f %5.5f %d\n", i, energy, comp_angle, on_left[i]);
+        if (i == 0 ||
+            energy + eps < cur_energy ||
+            (abs(energy - cur_energy) < eps && comp_angle < best_angle - eps) ||
+            (abs(energy - cur_energy) < eps && abs(comp_angle - best_angle) < eps && on_left[i])) {
+            cur_energy = energy;
+            best_angle = comp_angle;
+            v1 = vert.neiVertex(edges[ii]);
+            v2 = vert.neiVertex(edges[i]);
+        }
+
+        /*      comp_angle = 2 * PI - (angles[i + 1] - angles[i]);
+        if (comp_angle < best_angle)
+        {
+        best_angle = comp_angle;
+        v1 = vert.neiVertex(edges[i + 1]);
+        v2 = vert.neiVertex(edges[i]);
+        }*/
+    }
+
+    /*   comp_angle = angles.top() - angles[0];
+    if (comp_angle < best_angle)
+    {
+    best_angle = comp_angle;
+    v1 = vert.neiVertex(edges[0]);
+    v2 = vert.neiVertex(edges.top());
+    }*/
+
+    return best_angle;
+}
+
+const float MoleculeLayoutGraphSmart::_energyOfPoint(Vec2f p) const {
+
+    float energy = 0;
+    for (int i = _graph->vertexBegin(); i < _graph->vertexEnd(); i = _graph->vertexNext(i))
+        if (_graph->getLayoutVertex(i).type != ELEMENT_NOT_DRAWN) {
+            float d = Vec2f::dist(p, _graph->getPos(i));
+            if (d <= 1.5)
+                if (d >= 0.5) energy += 1.0 / d;
+                else energy += 2.0;
+        }
+
+    return energy;
+}
+
+// Calculate position by adding one unit with given angle to the segment
+
+int MoleculeLayoutGraphSmart::_isCisConfiguratuin(Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4) {
+    int rotateCounterclockwise1 = (p3.x - p2.x) * (p2.y - p1.y) - (p3.y - p2.y) * (p2.x - p1.x) > 0;
+    int rotateCounterclockwise2 = (p4.x - p3.x) * (p3.y - p2.y) - (p4.y - p3.y) * (p3.x - p2.x) > 0;
+
+    return rotateCounterclockwise1 == rotateCounterclockwise2;
+}
+

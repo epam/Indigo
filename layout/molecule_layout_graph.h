@@ -194,12 +194,12 @@ public:
     };
 
     // geometry functions
-    virtual int _calcIntersection(int edge1, int edge2) const = 0;
-    virtual bool _isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const = 0;
-    virtual bool _isVertexOnSomeEdge(int vert_idx) const = 0;
-    virtual void _shiftEdge(int edge_idx, float delta) = 0;
-    virtual bool _drawRegularCurve(const Array<int> &chain, int begin, int end, float length, bool ccw, int type) = 0;
-    virtual bool _drawRegularCurveEx(const Array<int> &chain, int begin, int end, float length, bool ccw, int type, const Array<int> &mapping) = 0;
+    int _calcIntersection(int edge1, int edge2) const;
+    bool _isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const;
+    bool _isVertexOnSomeEdge(int vert_idx) const;
+    void _shiftEdge(int edge_idx, float delta);
+    bool _drawRegularCurve(const Array<int> &chain, int begin, int end, float length, bool ccw, int type);
+    bool _drawRegularCurveEx(const Array<int> &chain, int begin, int end, float length, bool ccw, int type, const Array<int> &mapping);
     static void  _findAngles(int k, float s, float &x, float &y);
     static float _dichotomy1(float a0, float b0, int L, float s);
     static float _dichotomy2(float a0, float b0, int L, float s);
@@ -318,17 +318,6 @@ protected:
    bool _isPointOutsideCycle   (const Cycle &cycle, const Vec2f &p) const;
    bool _isPointOutsideCycleEx (const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const;
 
-   // geometry functions
-   int _calcIntersection     (int edge1, int edge2) const;
-   bool _isVertexOnEdge      (int vert_idx, int edge_beg, int edge_end) const;
-   bool _isVertexOnSomeEdge  (int vert_idx) const;
-   void _shiftEdge           (int edge_idx, float delta);
-   bool _drawRegularCurve    (const Array<int> &chain, int begin, int end, float length, bool ccw, int type);
-   bool _drawRegularCurveEx  (const Array<int> &chain, int begin, int end, float length, bool ccw, int type, const Array<int> &mapping);
-   static void  _findAngles  (int k, float s, float &x, float &y);
-   static float _dichotomy1  (float a0, float b0, int L, float s);
-   static float _dichotomy2  (float a0, float b0, int L, float s);
-   static void _calculatePos (float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v);
 
    static bool _border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _edge_check (Graph &graph, int e_idx, void *context);
@@ -544,16 +533,6 @@ protected:
     bool _isPointOutsideCycleEx(const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const;
 
     // geometry functions
-    int _calcIntersection(int edge1, int edge2) const;
-    bool _isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const;
-    bool _isVertexOnSomeEdge(int vert_idx) const;
-    void _shiftEdge(int edge_idx, float delta);
-    bool _drawRegularCurve(const Array<int> &chain, int begin, int end, float length, bool ccw, int type);
-    bool _drawRegularCurveEx(const Array<int> &chain, int begin, int end, float length, bool ccw, int type, const Array<int> &mapping);
-    static void  _findAngles(int k, float s, float &x, float &y);
-    static float _dichotomy1(float a0, float b0, int L, float s);
-    static float _dichotomy2(float a0, float b0, int L, float s);
-    static void _calculatePos(float phi, const Vec2f &v1, const Vec2f &v2, Vec2f &v);
     const float _energyOfPoint(Vec2f p) const;
     int _isCisConfiguratuin(Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4);
 
