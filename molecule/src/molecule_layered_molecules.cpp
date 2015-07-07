@@ -209,72 +209,66 @@ bool LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Arra
 
 bool LayeredMolecules::addLayerFromMolecule(const Molecule &molecule, Array<int> &aam)
 {
+   Array<int> aam_inverse;
+   aam_inverse.expandFill(aam.size(), -1);
+   for(int i = 0; i < aam.size(); ++i)
+   {
+      if(aam[i] != -1)
+         aam_inverse[aam[i]] = i;
+   }
+
    unsigned newTautomerIndex = layers;
    _resizeLayers(newTautomerIndex + 1);
-
-   unsigned node = _trie.getRoot();
-   bool unique = false;
-
-   unsigned edgesFollowed = 0;
-
-   for (auto e1_idx = 0; e1_idx < edgeCount(); ++e1_idx)
+   for(auto e1_idx : edges())
    {
-      auto e = getEdge(e1_idx);
-      int u = e.beg;
-      int v = e.end;
-      int e2_idx = molecule.findEdgeIndex(aam[e.beg], aam[e.end]);
-      int order = BOND_ZERO;
-      if(e2_idx != -1)
-      {
-         order = const_cast<Molecule&>(molecule).getBondOrder(e2_idx);
-         ++edgesFollowed;
-      }
-
-      bool newlyAdded;
-      node = _trie.add(node, order, newlyAdded);
-      unique = (newlyAdded ? true : unique);
-
       _bond_masks[BOND_ZERO][e1_idx].reset(newTautomerIndex);
       _bond_masks[BOND_SINGLE][e1_idx].reset(newTautomerIndex);
       _bond_masks[BOND_DOUBLE][e1_idx].reset(newTautomerIndex);
       _bond_masks[BOND_TRIPLE][e1_idx].reset(newTautomerIndex);
       _bond_masks[BOND_AROMATIC][e1_idx].reset(newTautomerIndex);
+   }
+
+   unsigned node = _trie.getRoot();
+   bool unique = false;
+
+   for(auto e2_idx : const_cast<Molecule&>(molecule).edges())
+   {
+      auto e2 = molecule.getEdge(e2_idx);
+      int u2 = e2.beg;
+      int v2 = e2.end;
+      int u1 = aam_inverse[u2];
+      int v1 = aam_inverse[v2];
+      if(u1 == -1 || v1 == -1)
+         continue;
+      int e1_idx = findEdgeIndex(u1, v1);
+      if(e1_idx == -1)
+      {
+         e1_idx = addEdge(u1, v1);
+         _proto.addEdge(u1, v1);
+         _proto.setBondOrder(e1_idx, BOND_ZERO, false);
+         _bond_masks[BOND_ZERO].resize(e1_idx + 1);
+         _bond_masks[BOND_SINGLE].resize(e1_idx + 1);
+         _bond_masks[BOND_DOUBLE].resize(e1_idx + 1);
+         _bond_masks[BOND_TRIPLE].resize(e1_idx + 1);
+         _bond_masks[BOND_AROMATIC].resize(e1_idx + 1);
+      }
+      int order = const_cast<Molecule&>(molecule).getBondOrder(e2_idx);
       _bond_masks[order][e1_idx].set(newTautomerIndex);
    }
 
-   if(molecule.edgeCount() != edgesFollowed)
+   for (auto e1_idx : edges())
    {
-      Array<int> inv_aam;
-      inv_aam.resize(aam.size());
-      for(auto i = 0; i < aam.size(); ++i)
-      {
-         inv_aam[i] = i;
-      }
+      int order = BOND_ZERO;
+      if(_bond_masks[BOND_SINGLE][e1_idx].get(newTautomerIndex))
+         order = BOND_SINGLE;
+      else if(_bond_masks[BOND_DOUBLE][e1_idx].get(newTautomerIndex))
+         order = BOND_DOUBLE;
+      else if(_bond_masks[BOND_TRIPLE][e1_idx].get(newTautomerIndex))
+         order = BOND_TRIPLE;
 
-      for (auto e2_idx = 0; e2_idx < molecule.edgeCount(); ++e2_idx)
-      {
-         auto e = molecule.getEdge(e2_idx);
-         int u = inv_aam[e.beg];
-         int v = inv_aam[e.end];
-         int e1_idx = findEdgeIndex(u, v);
-         if(e1_idx == -1)
-         {
-            int order = const_cast<Molecule&>(molecule).getBondOrder(e2_idx);
-            bool newlyAdded;
-            node = _trie.add(node, order, newlyAdded);
-            unique = (newlyAdded ? true : unique);
-            e1_idx = addEdge(u, v);
-            _proto.addEdge(u, v);
-            _proto.setBondOrder(e1_idx, order, false);
-
-            _bond_masks[BOND_ZERO][e1_idx].reset(newTautomerIndex);
-            _bond_masks[BOND_SINGLE][e1_idx].reset(newTautomerIndex);
-            _bond_masks[BOND_DOUBLE][e1_idx].reset(newTautomerIndex);
-            _bond_masks[BOND_TRIPLE][e1_idx].reset(newTautomerIndex);
-            _bond_masks[BOND_AROMATIC][e1_idx].reset(newTautomerIndex);
-            _bond_masks[order][e1_idx].set(newTautomerIndex);
-         }
-      }
+      bool newlyAdded;
+      node = _trie.add(node, order, newlyAdded);
+      unique = (newlyAdded ? true : unique);
    }
 
    if(unique)
