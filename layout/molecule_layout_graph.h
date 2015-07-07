@@ -218,11 +218,6 @@ public:
 
     // for whole graph
     virtual void _assignAbsoluteCoordinates(float bond_length) = 0;
-    virtual void _findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components, bool all_trivial) = 0;
-    virtual bool _prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree) = 0;
-    virtual void _assignFinalCoordinates(float bond_length, const Array<Vec2f> &src_layout) = 0;
-    virtual void _copyLayout(MoleculeLayoutGraph &component) = 0;
-    virtual void _getAnchor(int &v1, int &v2, int &v3) const = 0;
 
     bool _checkBadTryBorderIntersection(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping);
     bool _checkBadTryChainOutside(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping);
@@ -245,6 +240,20 @@ public:
     void _calculatePositionsOneNotDrawn(Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx);
     void _calculatePositionsSingleDrawn(int vert_idx, Array<int> &adjacent_list, int &n_pos, int drawn_idx, bool &two_ears, Array<Vec2f> &positions, int &parity);
     void _orderByEnergy(Array<Vec2f> &positions);
+    void _assignRelativeSingleEdge(int &fixed_component, const MoleculeLayoutGraph &supergraph);
+    void _findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components, bool all_trivial);
+    bool _prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree);
+    void _assignFinalCoordinates(float bond_length, const Array<Vec2f> &src_layout);
+    void _copyLayout(MoleculeLayoutGraph &component);
+    void _getAnchor(int &v1, int &v2, int &v3) const;
+
+    void _findFixedComponents(BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components);
+    bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
+    void _attachCrossingEdges();
+
+    void _buildOutline(void);
+
+
 
 };
 
@@ -284,14 +293,6 @@ protected:
 
    // for whole graph
    void _assignAbsoluteCoordinates (float bond_length);
-   void _findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components, bool all_trivial);
-   bool _prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree);
-   void _assignFinalCoordinates (float bond_length, const Array<Vec2f> &src_layout);
-   void _copyLayout (MoleculeLayoutGraph &component);
-   void _getAnchor (int &v1, int &v2, int &v3) const;
-
-   void _findFixedComponents (BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components);
-   bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
 
    // for components
    void _calcMorganCodes ();
@@ -299,11 +300,7 @@ protected:
    // assigning coordinates
    void _assignRelativeCoordinates (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    bool _tryToFindPattern (int &fixed_component);
-   void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignFirstCycle(const Cycle &cycle);
-   void _attachCrossingEdges ();
-
-   void _buildOutline (void);
 
    // attaching cycles
    bool _attachCycleOutside (const Cycle &cycle, float length, int n_common);
@@ -451,14 +448,6 @@ protected:
 
     // for whole graph
     void _assignAbsoluteCoordinates(float bond_length);
-    void _findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components, bool all_trivial);
-    bool _prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree);
-    void _assignFinalCoordinates(float bond_length, const Array<Vec2f> &src_layout);
-    void _copyLayout(MoleculeLayoutGraph &component);
-    void _getAnchor(int &v1, int &v2, int &v3) const;
-
-    void _findFixedComponents(BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components);
-    bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom);
 
     // for components
     void _calcMorganCodes();
@@ -474,12 +463,10 @@ protected:
     };
 
     void _assignRelativeCoordinates(int &fixed_component, const MoleculeLayoutGraph &supergraph);
-    void _assignRelativeSingleEdge(int &fixed_component, const MoleculeLayoutGraph &supergraph);
     void _get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list);
     int _search_separated_component(Cycle& cycle, Array<interval>& interval_list);
     void _search_path(int start, int finish, Array<int>& path, int component_number);
     void _assignEveryCycle(const Cycle& cycle);
-    void _assignFirstCycle(const Cycle& cycle);
 
     // smoothing
     void _segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
@@ -496,10 +483,8 @@ protected:
     Vec2f _get_len_derivative_simple(Vec2f current_vector, float target_dist);
     Vec2f _get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle);
 
-    void _attachCrossingEdges();
 
     void _attachEars(int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos);
-    void _buildOutline(void);
 
     // attaching cycles
     bool _attachCycleOutside(const Cycle &cycle, float length, int n_common);

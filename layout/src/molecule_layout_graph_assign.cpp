@@ -33,7 +33,7 @@ enum
 
 
 // Make relative coordinates of a component absolute
-void MoleculeLayoutGraphSimple::_copyLayout (MoleculeLayoutGraph &component)
+void MoleculeLayoutGraph::_copyLayout (MoleculeLayoutGraph &component)
 {
    int i;
 
@@ -454,7 +454,7 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle (const Cycle &cycle)
 
 // If vertices are already drawn
 // draw edges with intersections
-void MoleculeLayoutGraphSimple::_attachCrossingEdges ()
+void MoleculeLayoutGraph::_attachCrossingEdges ()
 {
    int i, j, pr;
    bool intersection;
@@ -507,7 +507,7 @@ void MoleculeLayoutGraphSimple::_attachCrossingEdges ()
    }
 }
 
-void MoleculeLayoutGraphSimple::_buildOutline (void)
+void MoleculeLayoutGraph::_buildOutline (void)
 {
    Vec2f v, inter;
    Vec2f pos_i;
@@ -658,7 +658,7 @@ void MoleculeLayoutGraphSimple::_buildOutline (void)
 
 // Return 1 - with maximum code, 2 - neighbor of the 1 with maximum code
 // 3 - neighbor with maximum code from the rest or -1 if it doesn't exist.
-void MoleculeLayoutGraphSimple::_getAnchor (int &v1, int &v2, int &v3) const
+void MoleculeLayoutGraph::_getAnchor (int &v1, int &v2, int &v3) const
 {
    int i;
 
@@ -716,7 +716,7 @@ void MoleculeLayoutGraphSimple::_getAnchor (int &v1, int &v2, int &v3) const
 }
 
 // Scale and transform
-void MoleculeLayoutGraphSimple::_assignFinalCoordinates (float bond_length, const Array<Vec2f> &src_layout)
+void MoleculeLayoutGraph::_assignFinalCoordinates (float bond_length, const Array<Vec2f> &src_layout)
 {
    int i;
 
@@ -806,7 +806,7 @@ void MoleculeLayoutGraphSimple::_assignFinalCoordinates (float bond_length, cons
    norm = p2.length();
 
    if (norm < 0.0001)
-      throw("too small edge");
+       throw Error("too small edge");
 
    // 2.1. If matching edge has zero length - just move to this point and scale
    if (src_norm < 0.001)
@@ -906,7 +906,7 @@ void MoleculeLayoutGraphSimple::_assignFinalCoordinates (float bond_length, cons
    }
 }
 
-void MoleculeLayoutGraphSimple::_findFixedComponents(BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraph> & bc_components)
+void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer &bc_decom, Array<int> &fixed_components, PtrArray<MoleculeLayoutGraph> & bc_components)
 {
    // 1. Find biconnected components forming connected subgraph from fixed vertices
    if (_n_fixed == 0)
@@ -1012,7 +1012,7 @@ void MoleculeLayoutGraphSimple::_findFixedComponents(BiconnectedDecomposer &bc_d
    }
 }
 
-bool MoleculeLayoutGraphSimple::_assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph> & bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom)
+bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph> & bc_components, Array<int> &fixed_components, BiconnectedDecomposer &bc_decom)
 {
    bool all_trivial = true;
    int n_comp = bc_decom.componentsCount();
@@ -1085,7 +1085,7 @@ bool MoleculeLayoutGraphSimple::_assignComponentsRelativeCoordinates(PtrArray<Mo
    return all_trivial;
 }
 
-void MoleculeLayoutGraphSimple::_assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph) 
+void MoleculeLayoutGraph::_assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph) 
 {
    // Trivial component layout
    int idx1 = vertexBegin();
@@ -1178,7 +1178,7 @@ bool MoleculeLayoutGraphSimple::_tryToFindPattern (int &fixed_component)
    return false;
 }
 
-void MoleculeLayoutGraphSimple::_findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components, bool all_trivial)
+void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int> & fixed_components, PtrArray<MoleculeLayoutGraph> &bc_components, bool all_trivial)
 {
    if (_n_fixed > 0)
    {
@@ -1251,7 +1251,7 @@ void MoleculeLayoutGraphSimple::_findFirstVertexIdx(int n_comp, Array<int> & fix
    }
 }
 
-bool MoleculeLayoutGraphSimple::_prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree)
+bool MoleculeLayoutGraph::_prepareAssignedList(Array<int> &assigned_list, BiconnectedDecomposer &bc_decom, PtrArray<MoleculeLayoutGraph> &bc_components, Array<int> &bc_tree)
 {
    assigned_list.clear();
 
