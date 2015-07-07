@@ -95,6 +95,21 @@ _graph(graph)
    _layout.zerofill();
 }
 
+
+AttachmentLayoutSimple::AttachmentLayoutSimple(const BiconnectedDecomposer &bc_decom,
+    const PtrArray<MoleculeLayoutGraph> &bc_components,
+    const Array<int> &bc_tree, MoleculeLayoutGraph &graph, int src_vertex) :
+    AttachmentLayout(bc_decom, bc_components, bc_tree, graph, src_vertex) {
+
+}
+
+AttachmentLayoutSmart::AttachmentLayoutSmart(const BiconnectedDecomposer &bc_decom,
+    const PtrArray<MoleculeLayoutGraph> &bc_components,
+    const Array<int> &bc_tree, MoleculeLayoutGraph &graph, int src_vertex) :
+    AttachmentLayout(bc_decom, bc_components, bc_tree, graph, src_vertex) {
+
+}
+
 // Calculate energy of the drawn part of graph
 double AttachmentLayout::calculateEnergy ()
 {
@@ -165,13 +180,31 @@ double AttachmentLayout::calculateEnergy ()
    return _energy;
 }
 
-void AttachmentLayout::applyLayout ()
+void AttachmentLayoutSimple::applyLayout ()
 {
    int i;
 
    for (i = 0; i < _new_vertices.size(); i++)
       _graph.getPos(_new_vertices[i]) = _layout[i];
 }
+
+void AttachmentLayoutSmart::applyLayout()
+{
+    int i;
+
+    for (i = 0; i < _new_vertices.size(); i++)
+        _graph.getPos(_new_vertices[i]) = _layout[i];
+
+    for (int i = 0; i < _attached_bc.size(); i++) {
+        MoleculeLayoutGraph &comp = (MoleculeLayoutGraph &)*_bc_components[_attached_bc[i]];
+
+        for (int v = comp.vertexBegin(); v != comp.vertexEnd(); v = comp.vertexNext(v)) {
+            comp.getPos(v) = _graph.getPos(comp.getVertexExtIdx(v));
+        }
+    }
+}
+
+
 
 void AttachmentLayout::markDrawnVertices()
 {

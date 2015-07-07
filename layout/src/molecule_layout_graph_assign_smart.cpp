@@ -17,7 +17,7 @@
 #include "base_cpp/profiling.h"
 #include "layout/molecule_layout_graph.h"
 #include "layout/molecule_layout_macrocycles.h"
-#include "layout/attachment_layout_smart.h"
+#include "layout/attachment_layout.h"
 #include "graph/biconnected_decomposer.h"
 #include "graph/cycle_enumerator.h"
 #include "graph/embedding_enumerator.h"
@@ -172,7 +172,7 @@ void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates (float bond_length)
             // ( 3.iii] Look over all possible orders of component layouts
             //         (vertex itself is already drawn means one component is already drawn)
             // ( 3.iv]  Choose layout with minimal energy
-            LayoutChooserSmart layout_chooser(att_layout);
+            LayoutChooser layout_chooser(att_layout);
 
             layout_chooser.perform();
 
@@ -363,37 +363,6 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates (int &fixed_component,
       }
 
 }
-
-void MoleculeLayoutGraphSmart::_assignFirstCycle(const Cycle &cycle)
-{
-   // TODO: Start drawing from vertex with maximum code and continue to the right with one of two which has maximum code
-   int i, n;
-   float phi;
-
-   n = cycle.vertexCount();
-
-   for (i = 0; i < n; i++)
-   {
-      _layout_vertices[cycle.getVertex(i)].type = ELEMENT_BOUNDARY;
-      _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
-   }
-
-   _first_vertex_idx = cycle.getVertex(0);
-
-   _layout_vertices[cycle.getVertex(0)].pos.set(0.f, 0.f);
-   _layout_vertices[cycle.getVertex(1)].pos.set(1.f, 0.f);
-
-   phi = (float)M_PI * (n - 2) / n;
-
-   for (i = 1; i < n - 1; i++)
-   {
-      const Vec2f &v1 = _layout_vertices[cycle.getVertex(i - 1)].pos;
-      const Vec2f &v2 = _layout_vertices[cycle.getVertex(i)].pos;
-
-      _layout_vertices[cycle.getVertex(i + 1)].pos.rotateAroundSegmentEnd(v1, v2, phi);
-   }
-}
-
 
 void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle &cycle)
 {

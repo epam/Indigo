@@ -115,7 +115,7 @@ public:
 
     
 
-    void flipped() { _flipped = true; }
+    virtual void flipped() = 0;
     bool isFlipped() const { return _flipped; }
 
     bool _flipped; // component was flipped after attaching
@@ -207,10 +207,11 @@ public:
 
     // border functions
     virtual void _getBorder(Cycle &border) const = 0;
-    virtual void _splitBorder(int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const = 0;
     virtual bool _isPointOutside(const Vec2f &p) const = 0;
     virtual bool _isPointOutsideCycle(const Cycle &cycle, const Vec2f &p) const = 0;
-    virtual bool _isPointOutsideCycleEx(const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const = 0;
+    bool _isPointOutsideCycleEx(const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const;
+    static bool _border_cb(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
+
 
     // for components
     virtual void _calcMorganCodes() = 0;
@@ -223,8 +224,8 @@ public:
     virtual void _copyLayout(MoleculeLayoutGraph &component) = 0;
     virtual void _getAnchor(int &v1, int &v2, int &v3) const = 0;
 
-    virtual bool _checkBadTryBorderIntersection(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping) = 0;
-    virtual bool _checkBadTryChainOutside(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping) = 0;
+    bool _checkBadTryBorderIntersection(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping);
+    bool _checkBadTryChainOutside(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping);
 
     virtual void _assignRelativeCoordinates(int &fixed_component, const MoleculeLayoutGraph &supergraph) = 0;
 
@@ -236,6 +237,14 @@ public:
     void _excludeDandlingIntersections();
     static bool _path_handle(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
+    // attaching
+    void _attachEars(int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos);
+
+    // assigning coordinates
+    void _attachDandlingVertices(int vert_idx, Array<int> &adjacent_list);
+    void _calculatePositionsOneNotDrawn(Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx);
+    void _calculatePositionsSingleDrawn(int vert_idx, Array<int> &adjacent_list, int &n_pos, int drawn_idx, bool &two_ears, Array<Vec2f> &positions, int &parity);
+    void _orderByEnergy(Array<Vec2f> &positions);
 
 };
 
@@ -255,6 +264,8 @@ public:
 
    void layout (BaseMolecule &molecule, float bond_length, const Filter *filter, bool respect_existing);
    
+   void flipped() { _flipped = true; };
+
 #ifdef M_LAYOUT_DEBUG
    void saveDebug ();
 #endif
@@ -291,20 +302,12 @@ protected:
    void _assignRelativeSingleEdge (int &fixed_component, const MoleculeLayoutGraph &supergraph);
    void _assignFirstCycle(const Cycle &cycle);
    void _attachCrossingEdges ();
-   void _attachDandlingVertices (int vert_idx, Array<int> &adjacent_list);
-   void _calculatePositionsOneNotDrawn (Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx);
-   void _calculatePositionsSingleDrawn (int vert_idx, Array<int> &adjacent_list, int &n_pos, int drawn_idx, bool &two_ears, Array<Vec2f> &positions, int &parity);
-   void _orderByEnergy (Array<Vec2f> &positions);
 
-   void _attachEars (int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos);
    void _buildOutline (void);
 
    // attaching cycles
    bool _attachCycleOutside (const Cycle &cycle, float length, int n_common);
    bool _drawEdgesWithoutIntersection (const Cycle &cycle, Array<int> & cycle_vertex_types);
-
-   bool _checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping);
-   bool _checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping);
 
    bool _attachCycleInside (const Cycle &cycle, float length);
    bool _attachCycleWithIntersections (const Cycle &cycle, float length);
@@ -318,10 +321,8 @@ protected:
    void _splitBorder (int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const;
    bool _isPointOutside (const Vec2f &p) const;
    bool _isPointOutsideCycle   (const Cycle &cycle, const Vec2f &p) const;
-   bool _isPointOutsideCycleEx (const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const;
 
 
-   static bool _border_cb (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _edge_check (Graph &graph, int e_idx, void *context);
 
    // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
@@ -437,7 +438,7 @@ public:
     const int *getEdgeMapping() { return _molecule_edge_mapping; }
 
     double _get_square();
-
+    void flipped() { ; }
 
 #ifdef M_LAYOUT_DEBUG
     void saveDebug();
@@ -496,10 +497,6 @@ protected:
     Vec2f _get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle);
 
     void _attachCrossingEdges();
-    void _attachDandlingVertices(int vert_idx, Array<int> &adjacent_list);
-    void _calculatePositionsOneNotDrawn(Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx);
-    void _calculatePositionsSingleDrawn(int vert_idx, Array<int> &adjacent_list, int &n_pos, int drawn_idx, bool &two_ears, Array<Vec2f> &positions, int &parity);
-    void _orderByEnergy(Array<Vec2f> &positions);
 
     void _attachEars(int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos);
     void _buildOutline(void);
@@ -507,9 +504,6 @@ protected:
     // attaching cycles
     bool _attachCycleOutside(const Cycle &cycle, float length, int n_common);
     bool _drawEdgesWithoutIntersection(const Cycle &cycle, Array<int> & cycle_vertex_types);
-
-    bool _checkBadTryBorderIntersection(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping);
-    bool _checkBadTryChainOutside(Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping);
 
     bool _attachCycleInside(const Cycle &cycle, float length);
     bool _attachCycleWithIntersections(const Cycle &cycle, float length);
@@ -524,13 +518,10 @@ protected:
     void _splitBorder(int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const;
     bool _isPointOutside(const Vec2f &p) const;
     bool _isPointOutsideCycle(const Cycle &cycle, const Vec2f &p) const;
-    bool _isPointOutsideCycleEx(const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const;
 
     // geometry functions
     const float _energyOfPoint(Vec2f p) const;
     int _isCisConfiguratuin(Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4);
-
-    static bool _border_cb(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
     // make tree of biconnected components (tree[i] - -1 or component incoming to vertex i)
     static void _makeComponentsTree(BiconnectedDecomposer &decon,

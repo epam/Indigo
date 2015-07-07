@@ -20,15 +20,17 @@
 
 namespace indigo {
 
+
+
 class AttachmentLayout
 {
 public:
-   explicit AttachmentLayout (const BiconnectedDecomposer &bc_decom,
+   explicit AttachmentLayout(const BiconnectedDecomposer &bc_decom,
        const PtrArray<MoleculeLayoutGraph> &bc_components,
       const Array<int> &bc_tree, MoleculeLayoutGraph &graph, int src_vertex);
 
    double calculateEnergy ();
-   void  applyLayout ();
+   virtual void  applyLayout () = 0;
    void  markDrawnVertices ();
 
 public:   
@@ -47,6 +49,24 @@ public:
 
    const PtrArray<MoleculeLayoutGraph> &_bc_components;
    MoleculeLayoutGraph &_graph;
+};
+
+class AttachmentLayoutSimple : public AttachmentLayout {
+public:
+    explicit AttachmentLayoutSimple(const BiconnectedDecomposer &bc_decom,
+        const PtrArray<MoleculeLayoutGraph> &bc_components,
+        const Array<int> &bc_tree, MoleculeLayoutGraph &graph, int src_vertex);
+
+    void applyLayout();
+};
+
+class AttachmentLayoutSmart : public AttachmentLayout {
+public:
+    explicit AttachmentLayoutSmart(const BiconnectedDecomposer &bc_decom,
+        const PtrArray<MoleculeLayoutGraph> &bc_components,
+        const Array<int> &bc_tree, MoleculeLayoutGraph &graph, int src_vertex);
+
+    void applyLayout();
 };
 
 class LayoutChooser

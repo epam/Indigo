@@ -581,7 +581,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections (const Cycle &cycl
 }
 
 // Attach two atoms to the same side of chain
-void MoleculeLayoutGraphSimple::_attachEars (int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos)
+void MoleculeLayoutGraph::_attachEars (int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos)
 {
    Vec2f v1, v2, v3, v4;
    float phi = 13*PI/24;
@@ -605,7 +605,7 @@ void MoleculeLayoutGraphSimple::_attachEars (int vert_idx, int drawn_idx, int *e
 }
 
 // Attach set of trivial components
-void MoleculeLayoutGraphSimple::_attachDandlingVertices (int vert_idx, Array<int> &adjacent_list)
+void MoleculeLayoutGraph::_attachDandlingVertices (int vert_idx, Array<int> &adjacent_list)
 {
    int n_pos = 0, not_drawn_idx = 0, drawn_idx = -1;
    Vec2f v1, v2;
@@ -777,7 +777,7 @@ bool MoleculeLayoutGraphSimple::_drawEdgesWithoutIntersection (const Cycle &cycl
    return is_attached;
 }
 
-bool MoleculeLayoutGraphSimple::_checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping)
+bool MoleculeLayoutGraph::_checkBadTryBorderIntersection (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> &mapping)
 {
    for (int i = 0; i < chain_ext.size() - 1; i++)
       for (int j = next_bc.edgeBegin(); j < next_bc.edgeEnd(); j = next_bc.edgeNext(j))
@@ -803,7 +803,7 @@ bool MoleculeLayoutGraphSimple::_checkBadTryBorderIntersection (Array<int> &chai
    return true;
 }
 
-bool MoleculeLayoutGraphSimple::_checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping)
+bool MoleculeLayoutGraph::_checkBadTryChainOutside (Array<int> &chain_ext, MoleculeLayoutGraph &next_bc, Array<int> & mapping)
 {
    // Check chain_ext is outside bound
    for (int i = 1; i < chain_ext.size() - 1; i++)
@@ -814,7 +814,7 @@ bool MoleculeLayoutGraphSimple::_checkBadTryChainOutside (Array<int> &chain_ext,
    return true;
 }
 
-void MoleculeLayoutGraphSimple::_calculatePositionsOneNotDrawn (Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx)
+void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn (Array<Vec2f> &positions, int n_pos, int vert_idx, int not_drawn_idx)
 {
    positions.clear_resize(n_pos);
 
@@ -871,7 +871,7 @@ void MoleculeLayoutGraphSimple::_calculatePositionsOneNotDrawn (Array<Vec2f> &po
          _calculatePos(phi, v1, v2, positions.top());
 }
 
-void MoleculeLayoutGraphSimple::_calculatePositionsSingleDrawn (int vert_idx, Array<int> &adjacent_list, int &n_pos, 
+void MoleculeLayoutGraph::_calculatePositionsSingleDrawn (int vert_idx, Array<int> &adjacent_list, int &n_pos, 
                                                           int drawn_idx, bool &two_ears, Array<Vec2f> &positions, int &parity)
 {
    // Split 2pi to n_pos+1 parts
@@ -1017,7 +1017,7 @@ void MoleculeLayoutGraphSimple::_calculatePositionsSingleDrawn (int vert_idx, Ar
    }
 }
 
-void MoleculeLayoutGraphSimple::_orderByEnergy (Array<Vec2f> &positions)
+void MoleculeLayoutGraph::_orderByEnergy (Array<Vec2f> &positions)
 {
    QS_DEF(Array<double>, energies);
    QS_DEF(Array<double>, norm_a);
