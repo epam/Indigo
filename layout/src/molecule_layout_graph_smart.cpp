@@ -24,7 +24,6 @@ IMPL_ERROR(MoleculeLayoutGraphSmart, "layout_graph_smart");
 
 MoleculeLayoutGraphSmart::MoleculeLayoutGraphSmart() : MoleculeLayoutGraph()
 {
-    smart_layout = true;
 }
 
 MoleculeLayoutGraphSmart::~MoleculeLayoutGraphSmart ()
@@ -198,7 +197,6 @@ void MoleculeLayoutGraphSmart::_layoutMultipleComponents (BaseMolecule & molecul
 
       component.makeLayoutSubgraph(*this, comp_filter);
       component.max_iterations = max_iterations;
-      component.smart_layout = smart_layout;
 
       component._molecule = &molecule;
       component._molecule_edge_mapping = molecule_edge_mapping.ptr();

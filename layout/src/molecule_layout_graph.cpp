@@ -23,7 +23,6 @@ using namespace indigo;
 IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
 
 MoleculeLayoutGraph::MoleculeLayoutGraph():Graph() {
-    max_iterations = 0;
     _total_morgan_code = 0;
     _first_vertex_idx = -1;
     _n_fixed = 0;
@@ -31,7 +30,6 @@ MoleculeLayoutGraph::MoleculeLayoutGraph():Graph() {
     _molecule_edge_mapping = 0;
     cancellation = 0;
     _flipped = false;
-    smart_layout = false;
 }
 
 MoleculeLayoutGraph::~MoleculeLayoutGraph() {
