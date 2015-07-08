@@ -1687,7 +1687,7 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out, Arr
       if (old_mapping.size() > 0)
       {
          int i_id = old_mapping.find(i);
-         if (i_id != -1)
+         if ((i_id != -1) && (i_id < _mapping.size()))
             _mapping[i_id] = ucfrag_mapping[i];
       }
       else
