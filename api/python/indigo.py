@@ -2193,7 +2193,11 @@ class Indigo(object):
 
     def transform(self, reaction, monomers):
         self._setSessionId()
-        return self._checkResult(Indigo._lib.indigoTransform(reaction.id, monomers.id))
+        newobj = self._checkResult(Indigo._lib.indigoTransform(reaction.id, monomers.id))
+        if newobj == 0:
+            return None
+        else:
+            return self.IndigoObject(self, newobj, self)
 
     def loadBuffer(self, buf):
         self._setSessionId()
