@@ -432,6 +432,16 @@ static void indigoSetStandardizeCreateHydrogenBonds (int enabled)
    self.standardize_options.create_hydrogen_bonds = (enabled != 0);
 }
 
+static void indigoSetPkaModel (const char *model)
+{
+   Indigo &self = indigoGetInstance();
+   if (strcasecmp(model, "simple") == 0)
+      self.ionize_options.model = IonizeOptions::PKA_MODEL_SIMPLE;
+   else if (strcasecmp(model, "advanced") == 0)
+      self.ionize_options.model = IonizeOptions::PKA_MODEL_ADVANCED;
+   else
+      throw IndigoError("unknown value: %s. Allowed values are \"simple\", \"advanced\"", model);
+}
 
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
@@ -508,6 +518,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("standardize-localize-markush-r-atoms-on-rings", indigoSetStandardizeLocalizeMarkushRAtomsOnRings);
    mgr.setOptionHandlerBool("standardize-create-dative-bonds", indigoSetStandardizeCreateDativeBonds);
    mgr.setOptionHandlerBool("standardize-create-hydrogen-bonds", indigoSetStandardizeCreateHydrogenBonds);
+
+   mgr.setOptionHandlerString("pKa-model", indigoSetPkaModel);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

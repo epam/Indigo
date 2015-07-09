@@ -17,6 +17,7 @@
 
 #include "base_cpp/tlscont.h"
 #include "base_cpp/obj_array.h"
+#include "base_cpp/red_black.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -43,19 +44,31 @@ public:
    DECL_ERROR;
    static void estimate_pKa (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
                       Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas);
+   static void getAtomLocalFingerprint (Molecule &mol, int idx, Array<char> &fp, int level);
+   static void build_pKa (int level);
 
 private:
    MoleculePkaModel ();
    static MoleculePkaModel _model;
 
    static void _loadSimplePkaModel ();
+   static void _loadAdvancedPkaModel ();
    static void _estimate_pKa_Simple (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
                       Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas);
+
+   static void _estimate_pKa_Advanced (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
+                      Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas);
+
+   static float _getAcidPkaValue (Molecule &mol, int idx, int level);
+   static float _getBasicPkaValue (Molecule &mol, int idx, int level);
 
    ObjArray<QueryMolecule> acids;
    ObjArray<QueryMolecule> basics;
    Array<float> a_pkas;
    Array<float> b_pkas;
+
+   RedBlackStringMap<float> adv_a_pkas;
+   RedBlackStringMap<float> adv_b_pkas;
 };
 
 class DLLEXPORT MoleculeIonizer
