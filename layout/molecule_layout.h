@@ -31,7 +31,7 @@ namespace indigo {
 class DLLEXPORT MoleculeLayout
 {      
 public:
-    explicit MoleculeLayout(BaseMolecule &molecule, bool smart_layout);
+    explicit MoleculeLayout(BaseMolecule &molecule, bool smart_layout=false);
 
    void make ();
 

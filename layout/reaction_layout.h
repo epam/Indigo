@@ -24,7 +24,7 @@ struct Vec2f;
 
 class ReactionLayout {
 public:
-   explicit ReactionLayout (BaseReaction& r, bool smart_layout);
+   explicit ReactionLayout (BaseReaction& r, bool smart_layout=false);
 
    void make ();
 
