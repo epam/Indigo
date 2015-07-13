@@ -377,9 +377,9 @@ CEXPORT const char * bingoImportGetPropertyValue (int idx) {
          throw BingoError("bingo import list has not been parsed yet");
       const char* property_name = self.import_properties.ref().at(idx);
       if(self.sdf_loader.get()) {
-         return self.sdf_loader->properties[property_name].ptr();
+         return self.sdf_loader->properties.at(property_name);
       } else if(self.rdf_loader.get()) {
-         return self.rdf_loader->properties[property_name].ptr();
+         return self.rdf_loader->properties.at(property_name);
       } else {
          throw BingoError("bingo import has not been initialized yet");
       }
@@ -435,7 +435,7 @@ CEXPORT const char * bingoSDFImportGetProperty (const char *param_name)
 {
    BINGO_BEGIN
    {
-      return self.sdf_loader->properties[param_name].ptr();
+      return self.sdf_loader->properties.at(param_name);
    }
    BINGO_END("", 0)
 }
@@ -485,7 +485,7 @@ CEXPORT const char * bingoRDFImportGetProperty (const char *param_name)
 {
    BINGO_BEGIN
    {
-      return self.rdf_loader->properties[param_name].ptr();
+      return self.rdf_loader->properties.at(param_name);
    }
    BINGO_END("", 0)
 }
