@@ -820,9 +820,9 @@ public class Indigo {
 
         return new IndigoObject(this, result, reader);
     }
-    public IndigoObject tautomerEnumerate(IndigoObject molecule, String params) {
+    public IndigoObject iterateTautomers(IndigoObject molecule, String params) {
         setSessionID();
-        int result = checkResult(this, _lib.indigoTautomerEnumerate(molecule.self, params));
+        int result = checkResult(this, _lib.indigoIterateTautomers(molecule.self, params));
         if (result == 0)
             return null;
 

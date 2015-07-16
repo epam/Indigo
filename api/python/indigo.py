@@ -1911,8 +1911,8 @@ class Indigo(object):
         Indigo._lib.indigoMapBond.argtypes = [c_int, c_int]
         Indigo._lib.indigoMapMolecule.restype = c_int
         Indigo._lib.indigoMapMolecule.argtypes = [c_int, c_int]
-        Indigo._lib.indigoTautomerEnumerate.restype = c_int
-        Indigo._lib.indigoTautomerEnumerate.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoIterateTautomers.restype = c_int
+        Indigo._lib.indigoIterateTautomers.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoAllScaffolds.restype = c_int
         Indigo._lib.indigoAllScaffolds.argtypes = [c_int]
         Indigo._lib.indigoDecomposedMoleculeScaffold.restype = c_int
@@ -2246,6 +2246,6 @@ class Indigo(object):
             return None
         return self.IndigoObject(self, result, reader)
 
-    def tautomerEnumerate(self, molecule, params):
+    def iterateTautomers(self, molecule, params):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoTautomerEnumerate(molecule.id, params)), molecule)
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateTautomers(molecule.id, params)), molecule)

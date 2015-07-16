@@ -589,7 +589,7 @@ namespace com.epam.indigo
         public IndigoObject tautomerEnumerate(IndigoObject molecule, string parameters)
         {
             setSessionID();
-            int result = checkResult(_indigo_lib.indigoTautomerEnumerate(molecule.self, parameters));
+            int result = checkResult(_indigo_lib.indigoIterateTautomers(molecule.self, parameters));
             if (result == 0)
             {
                 return null;

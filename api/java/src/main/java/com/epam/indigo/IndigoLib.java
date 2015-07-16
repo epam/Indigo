@@ -430,7 +430,7 @@ public interface IndigoLib extends Library
    int indigoTransform (int reaction, int monomers);
 
    int indigoExpandAbbreviations (int structure);
-   int indigoTautomerEnumerate(int structure, String params);
+   int indigoIterateTautomers(int structure, String params);
 
    int indigoDbgBreakpoint ();
    Pointer indigoDbgInternalType (int object);

@@ -819,7 +819,7 @@ CEXPORT int indigoMapMolecule (int handle, int molecule);
 
 // Accepts a molecule and options for tautomer enumeration algorithms
 // Returns an iterator object over the molecules that are tautomers of this molecule.
-CEXPORT int indigoTautomerEnumerate (int molecule, const char *options);
+CEXPORT int indigoIterateTautomers (int molecule, const char *options);
 
 /* Scaffold detection */
 

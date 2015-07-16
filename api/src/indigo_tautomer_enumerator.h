@@ -22,8 +22,10 @@
 class IndigoMoleculeTautomer : public IndigoObject
 {
 public:
-   IndigoMoleculeTautomer(TautomerEnumerator &enumerator, int position);
+   IndigoMoleculeTautomer(TautomerEnumerator &enumerator, int index);
    virtual ~IndigoMoleculeTautomer();
+
+   virtual int getIndex();
 
    virtual Molecule & getMolecule();
    virtual IndigoObject * clone();
@@ -34,6 +36,7 @@ public:
 
 private:
    Molecule _molInstance;
+   int _index;
    indigo::PropertiesMap _properties;
 };
 
@@ -42,6 +45,8 @@ class IndigoTautomerIter : public IndigoObject
 public:
    IndigoTautomerIter(Molecule &molecule, const char *options);
    virtual ~IndigoTautomerIter();
+
+   virtual int getIndex();
 
    virtual IndigoObject * next();
    virtual bool hasNext();

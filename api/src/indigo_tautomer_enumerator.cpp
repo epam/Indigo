@@ -15,7 +15,7 @@
 #include "indigo_tautomer_enumerator.h"
 #include "indigo_molecule.h"
 
-CEXPORT int indigoTautomerEnumerate(int molecule, const char *options)
+CEXPORT int indigoIterateTautomers(int molecule, const char *options)
 {
    INDIGO_BEGIN
    {
@@ -47,6 +47,11 @@ IndigoTautomerIter::~IndigoTautomerIter()
 {
 }
 
+int IndigoTautomerIter::getIndex()
+{
+   return _currentPosition > 0? _currentPosition: -_currentPosition;
+}
+
 IndigoObject * IndigoTautomerIter::next()
 {
    if (hasNext())
@@ -63,10 +68,11 @@ bool IndigoTautomerIter::hasNext()
    return _enumerator.isValid(_currentPosition);
 }
 
-IndigoMoleculeTautomer::IndigoMoleculeTautomer(TautomerEnumerator &enumerator, int position) :
-IndigoObject(TAUTOMER_MOLECULE)
+IndigoMoleculeTautomer::IndigoMoleculeTautomer(TautomerEnumerator &enumerator, int index) :
+IndigoObject(TAUTOMER_MOLECULE),
+_index(index)
 {
-   enumerator.constructMolecule(_molInstance, position);
+   enumerator.constructMolecule(_molInstance, index);
 }
 
 const char * IndigoMoleculeTautomer::debugInfo()
@@ -81,6 +87,11 @@ IndigoMoleculeTautomer::~IndigoMoleculeTautomer()
 IndigoObject *IndigoMoleculeTautomer::clone()
 {
    return IndigoMolecule::cloneFrom(*this);
+}
+
+int IndigoMoleculeTautomer::getIndex()
+{
+   return (_index > 0? _index: -_index) - 1;
 }
 
 Molecule & IndigoMoleculeTautomer::getMolecule()
