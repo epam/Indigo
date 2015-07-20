@@ -397,7 +397,8 @@ void ReactionEnumeratorState::_productProcess( void )
    if (!is_transform)
       _foldHydrogens(ready_product, 0, 0, &_mapping);
 
-   ready_product.dearomatize(_context.arom_options);
+   if(!ready_product.dearomatize(_context.arom_options))
+      return;
 
    if (!is_same_keeping)
    {
@@ -1692,6 +1693,81 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out, Arr
       }
       else
          _mapping[i] = ucfrag_mapping[i];
+   }
+
+   // Verifying possible errors in aromatization (broken rings):
+   RedBlackSet<int> toVerify;
+   for(auto v_idx : ready_product_out.vertices())
+   {
+      toVerify.insert(v_idx);
+   }
+
+   while(toVerify.size())
+   {
+      for(auto v_idx = toVerify.begin(); v_idx != toVerify.end(); v_idx = toVerify.next(v_idx))
+      {
+         const Vertex &vertex = ready_product_out.getVertex(v_idx);
+         int arom_count = 0;
+         int arom_bond_ind1 = 0;
+         int arom_bond_ind2 = 0;
+         int arom_bond_end_ind1 = 0;
+         int arom_bond_end_ind2 = 0;
+         int connectivity = 0;
+         int totalH = 0;
+         for(int j : vertex.neighbors())
+         {
+            int vn_idx = vertex.neiVertex(j);
+            int e_idx = ready_product_out.findEdgeIndex(v_idx, vn_idx);
+            int order = ready_product_out.getBondOrder(e_idx);
+            if(order == BOND_AROMATIC)
+            {
+               if(arom_count == 1)
+               {
+                  arom_bond_ind2 = e_idx;
+                  arom_bond_end_ind2 = vn_idx;
+               }
+               else
+               {
+                  arom_bond_ind1 = e_idx;
+                  arom_bond_end_ind1 = vn_idx;
+               }
+               ++arom_count;
+            }
+            else if(ready_product_out.getAtomNumber(vn_idx) != 1)
+               connectivity += order;
+            else
+               ++totalH;
+         }
+         if(arom_count == 1)
+         {
+            int frags_idx = ucfrag_mapping.find(v_idx);
+            int new_order = uncleaned_fragments.getAtomValence(frags_idx) - totalH - connectivity - uncleaned_fragments.getImplicitH(frags_idx);
+            if(new_order < 1 || new_order > 3)
+               return false;
+            ready_product_out.setBondOrder(arom_bond_ind1, new_order);
+            toVerify.insert(arom_bond_end_ind1);
+         }
+         else if(arom_count == 2 && connectivity > 1)
+         {
+            int frags_idx = ucfrag_mapping.find(v_idx);
+            if(uncleaned_fragments.getAtomValence(frags_idx) == connectivity + 2)
+            {
+               ready_product_out.setBondOrder(arom_bond_ind1, 1);
+               ready_product_out.setBondOrder(arom_bond_ind2, 1);
+               toVerify.insert(arom_bond_end_ind1);
+               toVerify.insert(arom_bond_end_ind2);
+            }
+            else
+               return false;
+         }
+         else if(arom_count == 0)
+         {
+            int frags_idx = ucfrag_mapping.find(v_idx);
+            if(ready_product_out.getAtomNumber(v_idx) != 1 &&
+               uncleaned_fragments.getAtomValence(frags_idx) != connectivity + totalH + uncleaned_fragments.getImplicitH(frags_idx))
+               return false;
+         }
+      }
    }
 
    return true;
