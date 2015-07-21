@@ -79,6 +79,7 @@ LayeredMolecules::~LayeredMolecules()
 void LayeredMolecules::constructMolecule(Molecule &molecule, int layer, bool aromatized) const
 {
    molecule.clone(const_cast<Molecule&>(_proto), NULL, NULL);
+   molecule.clearXyz();
    for (auto i : const_cast<Molecule&>(_proto).edges())
    {
       int order = BOND_ZERO;
@@ -86,6 +87,10 @@ void LayeredMolecules::constructMolecule(Molecule &molecule, int layer, bool aro
       _bond_masks[BOND_DOUBLE][i].get(layer)? order = BOND_DOUBLE: 0;
       _bond_masks[BOND_TRIPLE][i].get(layer)? order = BOND_TRIPLE: 0;
       molecule.setBondOrder(i, order);
+   }
+   for (auto i : const_cast<Molecule&>(_proto).vertices())
+   {
+      molecule.setAtomCharge(i, const_cast<Molecule&>(_proto).getAtomCharge(i));
    }
    // Actually I would prefer to aromatize the molecule manually (and much more effective) as far as I have the list of aromatic bonds already.
    // But I don't have any approprite molecule API to do it effectively... :(
