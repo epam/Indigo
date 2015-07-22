@@ -200,7 +200,7 @@ REXPORT SEXP aromatize(SEXP mol)
       
    int m = indigoLoadMoleculeFromString(CHAR(STRING_ELT(mol, 0)));
    indigoAromatize(m);
-   const char *ar_m =  indigoCanonicalSmiles(m);
+   const char *ar_m =  indigoSmiles(m);
    _setStringToSTRSXP(&result, ar_m);
    indigoFree(m);
    UNPROTECT(1);
@@ -310,7 +310,7 @@ REXPORT SEXP render(SEXP item)
    int size;
    
    indigoSetOption("render-output-format", "svg");
-   indigoSetOption("render-background-color", "255, 255, 255");
+   //indigoSetOption("render-background-color", "255, 255, 255");
    
    int mol = indigoLoadMoleculeFromString(CHAR(STRING_ELT(item, 0)));
    indigoLayout(mol);
@@ -333,7 +333,7 @@ REXPORT SEXP renderQuery(SEXP item)
    int size;
    
    indigoSetOption("render-output-format", "svg");
-   indigoSetOption("render-background-color", "255, 255, 255");
+   //indigoSetOption("render-background-color", "255, 255, 255");
    
    int mol = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(item, 0)));
    indigoLayout(mol);
@@ -356,7 +356,7 @@ REXPORT SEXP renderHighlightedTarget(SEXP target, SEXP query)
    int size;
    
    indigoSetOption("render-output-format", "svg");
-   indigoSetOption("render-background-color", "255, 255, 255");
+   //indigoSetOption("render-background-color", "255, 255, 255");
    
    int q = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(query, 0)));
    int t = indigoLoadMoleculeFromString(CHAR(STRING_ELT(target, 0)));
