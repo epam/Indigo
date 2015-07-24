@@ -240,6 +240,35 @@ REXPORT SEXP checkSub(SEXP query, SEXP target, SEXP mode)
    UNPROTECT(1);
    return smatch;
 }
+
+REXPORT SEXP checkSubBin(SEXP query, SEXP target, SEXP mode)
+{
+   int q = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(query, 0)));
+   int t = indigoUnserialize(RAW(VECTOR_ELT(target, 0)), GET_LENGTH(VECTOR_ELT(target, 0)));
+   
+   //printf("GET_LENGTH(VECTOR_ELT(target, 0)))=%d\n", GET_LENGTH(VECTOR_ELT(target, 0)));
+   //printf("q=%d\n", q);
+   //printf("t=%d\n", t);
+   //printf("indigoSmiles(q)=%s\n", indigoSmiles(q));
+   //printf("indigoSmiles(t)=%s\n", indigoSmiles(t));
+   int matcher = indigoSubstructureMatcher(t, CHAR(STRING_ELT(mode, 0)));
+   //printf("matcher=%d\n", matcher);
+   SEXP smatch;
+   PROTECT( smatch = NEW_INTEGER(1)) ;
+      
+   int match_res = indigoMatch(matcher, q);
+   //printf("match_res=%d\n", match_res);
+      
+   INTEGER(smatch)[0] = match_res;
+      
+   indigoFree(q);
+   indigoFree(t);
+   indigoFree(matcher);
+   indigoFree(match_res);
+      
+   UNPROTECT(1);
+   return smatch;
+}
    
 const char * _makeOnesListStr(int mol, const char *mode)
 {
@@ -270,6 +299,29 @@ REXPORT SEXP fingerprint(SEXP item, SEXP mode)
                
    indigoFree(i);  
    UNPROTECT(1);
+      
+   return result;
+}
+
+REXPORT SEXP cmf(SEXP item)
+{
+   int i = indigoLoadMoleculeFromString(CHAR(STRING_ELT(item, 0)));
+
+   byte* cmf_buf;
+   int cmf_len;
+   indigoSerialize(i, &cmf_buf, &cmf_len);
+   SEXP result = PROTECT(allocVector(VECSXP, 1));
+   SEXP result_el = PROTECT(allocVector(RAWSXP, cmf_len));
+   if (cmf_buf != NULL) 
+   {
+      //RAW(result) = R_alloc(strlen(ones_list), sizeof(char));
+      Rbyte *result_ptr = RAW(result_el);//(Rbyte *) DATAPTR(result);
+      memcpy(result_ptr, cmf_buf, cmf_len);
+      SET_VECTOR_ELT(result, 0, result_el);
+   }
+
+   indigoFree(i);  
+   UNPROTECT(2);
       
    return result;
 }
@@ -325,6 +377,29 @@ REXPORT SEXP render(SEXP item)
    return result;
 }
 
+REXPORT SEXP renderBin(SEXP item)
+{
+   SEXP result = PROTECT(allocVector(STRSXP, 1));
+   
+   char *raw_ptr;
+   int size;
+   
+   indigoSetOption("render-output-format", "svg");
+   //indigoSetOption("render-background-color", "255, 255, 255");
+   
+   int mol = indigoUnserialize(RAW(VECTOR_ELT(item, 0)), GET_LENGTH(VECTOR_ELT(item, 0)));
+   indigoLayout(mol);
+   int buffer_object = indigoWriteBuffer();
+   int render_res = indigoRender(mol, buffer_object);
+   const char *svg_str =indigoToString(buffer_object);
+   
+   SET_STRING_ELT(result, 0, mkChar(svg_str));
+   indigoFree(buffer_object);
+   indigoFree(mol);
+   UNPROTECT(1);
+   return result;
+}
+
 REXPORT SEXP renderQuery(SEXP item)
 {
    SEXP result = PROTECT(allocVector(STRSXP, 1));
@@ -360,6 +435,36 @@ REXPORT SEXP renderHighlightedTarget(SEXP target, SEXP query)
    
    int q = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(query, 0)));
    int t = indigoLoadMoleculeFromString(CHAR(STRING_ELT(target, 0)));
+   int m = indigoSubstructureMatcher(t, "");
+   int res = 0;
+   res = indigoMatch(m, q);
+
+   int ht = indigoHighlightedTarget(res);
+   
+   indigoLayout(ht);
+   int buffer_object = indigoWriteBuffer();
+   int render_res = indigoRender(ht, buffer_object);
+   const char *svg_str =indigoToString(buffer_object);
+   
+   SET_STRING_ELT(result, 0, mkChar(svg_str));
+   indigoFree(buffer_object);
+   indigoFree(ht);
+   UNPROTECT(1);
+   return result;
+}
+
+REXPORT SEXP renderHighlightedTargetBin(SEXP target, SEXP query) 
+{
+   SEXP result = PROTECT(allocVector(STRSXP, 1));
+   
+   char *raw_ptr;
+   int size;
+   
+   indigoSetOption("render-output-format", "svg");
+   //indigoSetOption("render-background-color", "255, 255, 255");
+   
+   int q = indigoLoadQueryMoleculeFromString(CHAR(STRING_ELT(query, 0)));
+   int t = indigoUnserialize(RAW(VECTOR_ELT(target, 0)), GET_LENGTH(VECTOR_ELT(target, 0)));
    int m = indigoSubstructureMatcher(t, "");
    int res = 0;
    res = indigoMatch(m, q);

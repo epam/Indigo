@@ -111,6 +111,10 @@ version <- function() {
     .Call("r_indigoVersion")
 }
 
+getLastError <- function() {
+    .Call("r_indigoGetLastError")
+}
+
 setOption <- function(option, value){
    stopifnot(is.character(option))
    stopifnot(length(option) == 1, length(value) == 1)
@@ -157,11 +161,29 @@ checkSub <- function(query, target, mode) {
     return(result > 0)
 }
 
+checkSubBin <- function(query, target, mode) {
+    stopifnot(is.character(query), is.character(mode))
+    stopifnot(length(query) == 1, length(target) == 1, length(mode) == 1)
+    
+    result <- .Call("checkSubBin", query, target, mode)
+    if (result == -1)
+       warning(paste("checkSubBin(\"", query, "\", \"", target, "\", \"", mode, "\") was failed", sep = "", collapse = NULL))
+
+    return(result > 0)
+}
+
 fingerprint <- function(item, mode) {
     stopifnot(is.character(item), is.character(mode))
     stopifnot(length(item) == 1, length(mode) == 1)
 
     return(.Call("fingerprint", item, mode))
+}
+
+cmf <- function(item) {
+    stopifnot(is.character(item))
+    stopifnot(length(item) == 1)
+
+    return(.Call("cmf", item))
 }
 
 fingerprintQuery <- function(item, mode) {
@@ -185,6 +207,13 @@ render <- function(item) {
     return(.Call("render", item))
 }
 
+renderBin <- function(item) {
+    stopifnot()
+    stopifnot(length(item) == 1)
+
+    return(.Call("renderBin", item))
+}
+
 renderQuery <- function(item) {
     stopifnot(is.character(item))
     stopifnot(length(item) == 1)
@@ -197,4 +226,11 @@ renderHighlightedTarget <- function(target, query) {
     stopifnot(length(target) == 1, length(query) == 1)
 
     return(.Call("renderHighlightedTarget", target, query))
+}
+
+renderHighlightedTargetBin <- function(target, query) {
+    stopifnot(is.character(query))
+    stopifnot(length(target) == 1, length(query) == 1)
+
+    return(.Call("renderHighlightedTargetBin", target, query))
 }
