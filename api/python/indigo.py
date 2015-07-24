@@ -1528,9 +1528,11 @@ class Indigo(object):
         Indigo._lib.indigoStereocenterGroup.restype = c_int
         Indigo._lib.indigoStereocenterGroup.argtypes = [c_int]
         Indigo._lib.indigoSetStereocenterGroup.restype = c_int
-        Indigo._lib.indigoSetStereocenterGroup.argtypes = [c_int]
+        Indigo._lib.indigoSetStereocenterGroup.argtypes = [c_int, c_int]
         Indigo._lib.indigoChangeStereocenterType.restype = c_int
         Indigo._lib.indigoChangeStereocenterType.argtypes = [c_int, c_int]
+        Indigo._lib.indigoValidateChirality.restype = c_int
+        Indigo._lib.indigoValidateChirality.argtypes = [c_int]
         Indigo._lib.indigoSingleAllowedRGroup.restype = c_int
         Indigo._lib.indigoSingleAllowedRGroup.argtypes = [c_int]
         Indigo._lib.indigoAddStereocenter.restype = c_int
@@ -1939,8 +1941,6 @@ class Indigo(object):
         Indigo._lib.indigoStereocenterPyramid.argtypes = [c_int]
         Indigo._lib.indigoExpandAbbreviations.restype = c_int
         Indigo._lib.indigoExpandAbbreviations.argtypes = [c_int]
-        Indigo._lib.indigoValidateChirality.restype = c_int
-        Indigo._lib.indigoValidateChirality.argtypes = [c_int]
         Indigo._lib.indigoDbgInternalType.restype = c_char_p
         Indigo._lib.indigoDbgInternalType.argtypes = [c_int]
 
