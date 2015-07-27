@@ -697,6 +697,10 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(answer_point* ext_point
       point[i].rotate(PI / 3);
       point[i] += Vec2f(ext_point[external_vertex_number[i]].x, 0);
    }
+   /*for (int i = 0; i < vertex_count; i++) {
+       point[i] = Vec2f(vertex_count / (2 * PI), 0);
+       point[i].rotate(2*PI * i / vertex_count);
+   }*/
 }
 
 void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(int* up_point) {
