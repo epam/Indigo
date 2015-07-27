@@ -100,10 +100,6 @@ class IndigoObject(object):
             raise IndigoException(Indigo._lib.indigoGetLastError())
         return [xyz[0], xyz[1], xyz[2]]
 
-    def setXYZ (self, x, y, z):
-        self.dispatcher._setSessionId()
-        self.dispatcher._checkResult(Indigo._lib.indigoSetXYZ(self.id, x, y, z))
-
     def alignAtoms (self, atom_ids, desired_xyz):
         self.dispatcher._setSessionId()
         if len(atom_ids) * 3 != len(desired_xyz):
