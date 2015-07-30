@@ -405,21 +405,25 @@ public:
 class DLLEXPORT SmoothingCycle {
 public:
     CP_DECL;
+    SmoothingCycle(Array<Vec2f>&, Array<float>&);
+    SmoothingCycle(Array<Vec2f>&, Array<float>&, Array<int>&, int);
     SmoothingCycle(Array<Vec2f>&, Array<float>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
 
     int cycle_length;
     Array<Vec2f>& point;
-    TL_CP_DECL(Array<float>, target_angle);
+    Array<float>& target_angle;
     MoleculeLayoutSmoothingSegment* segment;
+    TL_CP_DECL(Array<float>, edge_length);
+    
 
     bool is_simple_component(int i) { return segment == 0 || segment[i].get_layout_component_number() < 0; }
     float get_radius(int i) { return segment == 0 ? (point[(i + 1) % cycle_length] - point[i]).length() / 2 : segment[i].get_radius(); }
     Vec2f get_center(int i) { return segment == 0 ? (point[(i + 1) % cycle_length] + point[i]) / 2 : segment[i].getCenter(); }
-    float get_length(int i) { return segment == 0 ? (point[(i + 1) % cycle_length] - point[i]).length() : segment[i].getLength(); }
+    float get_length(int i) { return edge_length[i]; }
 
     DECL_ERROR;
 
-    void _do_smoothing();
+    void _do_smoothing(int iter_count);
 
 
     void _gradient_step(float coef, Array<local_pair_ii>& touching_segments);

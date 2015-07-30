@@ -1354,7 +1354,7 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f> &point, Array<fl
 void MoleculeLayoutGraphSmart::_do_segment_smoothing_gradient(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
 
     SmoothingCycle cycle(rotation_point, target_angle, segment);
-    cycle._do_smoothing();
+    cycle._do_smoothing(100);
 
     for (int i = 0; i < cycle.cycle_length; i++)
         for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
@@ -1363,24 +1363,40 @@ void MoleculeLayoutGraphSmart::_do_segment_smoothing_gradient(Array<Vec2f> &rota
 
 CP_DEF(SmoothingCycle);
 
-SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, ObjArray<MoleculeLayoutSmoothingSegment>& s):
+SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a) :
 CP_INIT,
 point(p),
-TL_CP_GET(target_angle),
-segment(&s[0])
+target_angle(t_a),
+segment(0),
+cycle_length(-1),
+TL_CP_GET(edge_length)
 {
-    cycle_length = p.size();
-
-    target_angle.clear_resize(cycle_length);
-    for (int i = 0; i < cycle_length; i++) target_angle[i] = t_a[i];
 
 }
 
-void SmoothingCycle::_do_smoothing() {
+SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, Array<int>& e_l, int l) :
+SmoothingCycle(p, t_a)
+{
+    cycle_length = l;
+    edge_length.clear_resize(cycle_length);
+    for (int i = 0; i < cycle_length; i++) edge_length[i] = e_l[i];
+}
+
+SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, ObjArray<MoleculeLayoutSmoothingSegment>& s) :
+SmoothingCycle(p, t_a)
+{
+    segment = &s[0];
+    cycle_length = s.size();
+    edge_length.clear_resize(cycle_length);
+    for (int i = 0; i < cycle_length; i++) edge_length[i] = s[i].getLength();
+}
+
+void SmoothingCycle::_do_smoothing(int iter_count) {
     QS_DEF(Array< local_pair_ii >, touching_segments);
     touching_segments.clear();
 
     float coef = 1.0;
+    float multiplyer = __max(0.5, __min(0.999f, 1 - 10.0 / iter_count));
     for (int i = 0; i < 100; i++, coef *= 0.9) {
         _gradient_step(coef, touching_segments);
     }
