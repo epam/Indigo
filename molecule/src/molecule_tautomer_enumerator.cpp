@@ -39,6 +39,8 @@ TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
 _currentLayer(0),
 _currentRule(0)
 {
+#if 0
+   // Obsolete code for tautomer enumeration using InChI code
    InchiWrapper indigo_inchi;
 
    QS_DEF(Array<char>, tmp);
@@ -146,6 +148,7 @@ _currentRule(0)
       _zebraPattern.addEdge(v1, v2);
       v1 = v2;
    }
+#endif
 
    _complete = false;
    aromatizedRange[0] = 0;
@@ -280,32 +283,49 @@ bool TautomerEnumerator::_performProcedure()
    return layeredMolecules.layers == layersBefore;
 #endif
    char* reactionSmarts[] = {
-      "[#1:0][N,O:1][*:2]=[N,O:3]>>[N,O:1]=[A:2][N,O:3][#1:0]",
-      "[#1:0][N,O:1][*:2]=[*:3][*:4]=[N,O:5]>>[N,O:1]=[A:2][A:3]=[A:4][N,O:5][#1:0]",
-      "[#1:0][N,O:1][*:2]=[*:3][*:4]=[*:5][*:6]=[N,O:7]>>[N,O:1]=[A:2][A:3]=[A:4][A:5]=[A:6][N,O:7][#1:0]",
-      "[#1:0][N,O:1][*:2]=[*:3][*:4]=[*:5][*:6]=[*:7][*:8]=[N,O:9]>>[N,O:1]=[A:2][A:3]=[A:4][A:5]=[A:6][A:7]=[A:8][N,O:9][#1:0]"
-      /*"[O,S,Se,Te;X1:1]=[C:2][CX4;R0,R1,R2:3][#1:0]>>[#1:0][O,S,Se,Te;X2:1][#6;X3:2]=,:[C,c;X3:3]", // Rule 1:  1,3 Keto-enol
-      "[#1:0][O,S,Se,Te;X2:1][#6;X3:2]=,:[C,c;X3:3]>>[O,S,Se,Te;X1:1]=[C:2][CX4;R0,R1,R2:3][#1:0]", // Rule 1:  1,3 Keto-enol
+#if 0
+      // Just InChI-like rules based on heteroatoms
+      "[#1:0][N&v3,n,O,S:1][*:2]=,:[N&v3,n,O,S:3]>>[N,n,O,S:1]=[A,a:2]-[N,n,O,S:3][#1:0]",
+      "[#1:0][N&v3,n,O,S:1][*:2]=,:[*:3][*:4]=,:[N&v3,n,O,S:5]>>[N,n,O,S:1]=[A,a:2]-[A,a:3]=[A,a:4]-[N,n,O,S:5][#1:0]",
+      "[#1:0][N&v3,n,O,S:1][*:2]=,:[*:3][*:4]=,:[*:5][*:6]=,:[N&v3,n,O,S:7]>>[N,n,O,S:1]=[A,a:2]-[A,a:3]=[A,a:4]-[A,a:5]=[A,a:6]-[N,n,O,S:7][#1:0]",
+      "[#1:0][N&v3,n,O,S:1][*:2]=,:[*:3][*:4]=,:[*:5][*:6]=,:[*:7][*:8]=,:[N&v3,n,O,S:9]>>[N,n,O,S:1]=[A,a:2]-[A,a:3]=[A,a:4]-[A,a:5]=[A,a:6]-[A,a:7]=[A,a:8]-[N,n,O,S:9][#1:0]"
+#else
+      "[O,S,Se,Te;X1:1]=[C:2][CX4;R0,R1,R2:3][#1:0]>>[#1:0][O,S,Se,Te;X2:1]-[#6;X3:2]=[C,c;X3:3]", // Rule 1:  1,3 Keto-enol
+      "[#1:0][O,S,Se,Te;X2:1]-[#6;X3:2]=[C,c;X3:3]>>[O,S,Se,Te;X1:1]=[C:2][CX4;R0,R1,R2:3][#1:0]", // Rule 1:  1,3 Keto-enol
       "[O,S,Se,Te;X1:1]=[CX3:2]([#6:6])[C:3]=[C:4][CX4,NX3:5]([C:7])[#1:0]>>[#1:0][O,S,Se,Te;X2:1][CX3:2]([C:6])=[C:3][C:4]=[CX3,N:5]([C:7])", // Rule 2:  1,5 Keto-enol
       "[#1:0][O,S,Se,Te;X2:1][CX3:2]([C:6])=[C:3][C:4]=[CX3,N:5]([C:7])>>[O,S,Se,Te;X1:1]=[CX3:2]([#6:6])[C:3]=[C:4][CX4,NX3:5]([C:7])[#1:0]", // Rule 2:  1,5 Keto-enol
       "[#1,a,O:5][NX2:1]=[CX3:2]([C,#1:4])[CX4;R0,R1,R2:3][#1:0]>>[#1,a,O:5][NX3:1]([#1:0])[CX3:2]([C,#1:4])=[CX3:3]",   // Rule 3:  simple (aliphatic) imine
-      "[#1,a,O:5][NX3:1]([#1:0])[CX3:2]([C,#1:4])=[CX3:3]>>[#1,a,O:5][NX2:1]=[CX3:2]([C,#1:4])[CX4;R0,R1,R2:3][#1:0]",   // Rule 3:  simple (aliphatic) imine
-      "[CX3R0:1]([C,#1:5])([C:4])=[C:2][N:3]([C,#1:6])[#1:0]>>[#1:0][CX4R0:1]([C,#1:5])([C:4])[c:2]:[n:3]:[c:6]",  // Rule 4:  special imine
-      "[#1:0][CX4R0:1]([C,#1:5])([C:4])[c:2]:[n:3]:[c:6]>>[CX3R0:1]([C,#1:5])([C:4])=[C:2][N:3]([C,#1:6])[#1:0]",  // Rule 4:  special imine
-      "[#1:0][N:1]@[C:2]=[O,NX2:3]>>[NX2,nX2:1]=&@,:[C,c:2][O,N:3][#1:0]",          // Rule 5:  aromatic heteroatom H shift
-      "[NX2,nX2:1]=&@,:[C,c:2][O,N:3][#1:0]>>[#1:0][N:1]@[C:2]=[O,NX2:3]",          // Rule 5:  aromatic heteroatom H shift
-      "[N,n,S,s,O,o,Se,Te:1]=[NX2,nX2,C,c,P,p:2][N,n,S,O,Se,Te:3][#1:0]>>[#1:0][N,n,S,O,Se,Te:1][NX2,nX2,C,c,P,p:2]=[N,n,S,s,O,o,Se,Te:3]",  // Rule 6:  1,3 heteroatom H shift
+      "[#1,a,O:5]-[NX3:1](-[#1:0])-[CX3:2](-[C,#1:4])=[CX3:3]>>[#1,a,O:5]-[NX2:1]=[CX3:2](-[C,#1:4])-[CX4;R0,R1,R2:3][#1:0]",   // Rule 3:  simple (aliphatic) imine
+      "[CX3R0:1]([C,#1:5])([C:4])=[C:2][N:3]([C:6])[#1:0]>>[#1:0][CX4R0:1]([C,#1:5])([C:4])[c:2]:[n:3]:[c:6]",  // Rule 4:  special imine
+      "[#1:0][CX4R0:1]([C,#1:5])([C:4])[c:2]:[n:3]:[c:6]>>[CX3R0:1]([C,#1:5])([C:4])=[C:2][N:3]([C:6])[#1:0]",  // Rule 4:  special imine
+      "[#1:0][N:1]-&@[C:2]=[O,NX2:3]>>[NX2,nX2:1]=,:[C,c:2][O,N:3][#1:0]",          // Rule 5:  aromatic heteroatom H shift
+      "[NX2,nX2:1]=,:[C,c:2][O,N:3][#1:0]>>[#1:0][N:1]-&@[C:2]=[O,NX2:3]",          // Rule 5:  aromatic heteroatom H shift
+      "[N,n,S,s,O,o,Se,Te:1]=[NX2,nX2,C,c,P,p:2]-[N,n,S,O,Se,Te:3][#1:0]>>[#1:0][N,n,S,O,Se,Te:1]-[NX2,nX2,C,c,P,p:2]=[N,n,S,s,O,o,Se,Te:3]",  // Rule 6:  1,3 heteroatom H shift
       "[NX2,nX2,S,O,Se,Te:1]=[C,c,NX2,nX2:2][C,c:3]=[C,c,nX2:4][N,n,S,s,O,o,Se,Te:5][#1:0]>>[#1:0][N,n,S,O,Se,Te:1][C,c,NX2,nX2:2]=[C,c:3][C,c,nX2:4]=[NX2,S,O,Se,Te:5]",  // Rule 7:  1,5 (aromatic) heteroatom H shift (1)
-      "[n,s,o:1]=[c,n:2][c:3]=[c,n:4][n,s,o:5][#1:0]>>[#1:0][n,s,o:1][c,n:2]=[c:3][c,n:4]=[n,s,o:5]",  // Rule 8:  1,5 aromatic heteroatom H shift (2)
-      "[NX2,nX2,S,O,Se,Te:1]=[C,c,NX2,nX2:2][C,c:3]=[C,c,NX2,nX2:4][C,c,NX2,nX2:5]=[C,c,NX2,nX2:6][N,n,S,s,O,o,Se,Te:7][#1:0]>>[#1:0][N,n,S,O,Se,Te:1][C,c,NX2,nX2:2]=[C,c:3][C,c,NX2,nX2:4]=[C,c,NX2,nX2:5][C,c,NX2,nX2:6]=[NX2,S,O,Se,Te:7]",  // Rule 9:  1,7 (aromatic) heteroatom H shift 
-      "[CX3:1]([C,#1:8])([C,#1:9])=[C,c,NX2,nX2:2][C,c:3]=[C,c,NX2,nX2:4][C,c,NX2,nX2:5]=[C,c,NX2,nX2:6][N,n,S,s,O,o,Se,Te:7][#1:0]>>[#1:0][CX3:1]([C,#1:8])([C,#1:9])[C,c,NX2,nX2:2]=[C,c:3][C,c,NX2,nX2:4]=[C,c,NX2,nX2:5][C,c,NX2,nX2:6]=[NX2,S,O,Se,Te:7]",  // Rule 9:  1,7 (aromatic) heteroatom H shift (1) 
-      "[#1:0][N,n,O:1][C,c,nX2:2]=[C,c,nX2:3][c,nX2:4]=[c,nX2:5][c,nX2:6]=[c,nX2:7][C,c,nX2:8]=[N,n,O:9]>>[NX2,nX2,O:1]=[C,c,nX2:2][c,nX2:3]=[c,nX2:4][c,nX2:5]=[c,nX2:6][c,nX2:7]=[c,nX2:8][n,O:9][#1:0]",  // Rule 10:  1,9 (aromatic) heteroatom H shift
-      "[#1:0][N,n,O:1][C,c,nX2:2]=[C,c,nX2:3][c,nX2:4]=[C,c,nX2:5][C,c,nX2:6]=[C,c,nX2:7][C,c,nX2:8]=[C,c,nX2:9][C,c,nX2:10]=[NX2,nX2,O:11]>>[NX2,nX2,O:1]=[C,c,nX2:2][C,c,nX2:3]=[C,c,nX2:4][C,c,nX2:5]=[C,c,nX2:6][C,c,nX2:7]=[C,c,nX2:8][C,c,nX2:9]=[C,c,nX2:10][O,nX2:11][#1:0]",   // Rule 11:  1,11 (aromatic) heteroatom H shift
-      "[#1:0][O,S,N:1][C,c;r5:2]([!C&!c&!#1])=[C,c;r5:3][C,c;r5:4]>>[O,S,N:1]=[C;r5:2]([!C&!c&!#1])[Cr5;R0,R1,R2:3]([#1:0])[C,c;r5:4]",          // Rule 12:  furanones
+      "[n,s,o:1]:[c,n:2]:[c:3]:[c,n:4]:[n,s,o:5][#1:0]>>[#1:0][n,s,o:1]:[c,n:2]:[c:3]:[c,n:4]:[n,s,o:5]",  // Rule 8:  1,5 aromatic heteroatom H shift (2)
+      "[NX2,nX2,S,O,Se,Te:1]=,:[C,c,NX2,nX2:2][C,c:3]=,:[C,c,NX2,nX2:4][C,c,NX2,nX2:5]=,:[C,c,NX2,nX2:6][N,n,S,s,O,o,Se,Te:7][#1:0]>>[#1:0][N,n,S,O,Se,Te:1]-[C,c,NX2,nX2:2]=[C,c:3]-[C,c,NX2,nX2:4]=[C,c,NX2,nX2:5]-[C,c,NX2,nX2:6]=[NX2,S,O,Se,Te:7]",  // Rule 9:  1,7 (aromatic) heteroatom H shift 
+      "[#1:0][N,n,O:1][C,c,nX2:2]=,:[C,c,nX2:3][c,nX2:4]=,:[c,nX2:5][c,nX2:6]=,:[c,nX2:7][C,c,nX2:8]=,:[N,n,O:9]>>[NX2,nX2,O:1]=[C,c,nX2:2]-[c,nX2:3]=[c,nX2:4]-[c,nX2:5]=[c,nX2:6]-[c,nX2:7]=[c,nX2:8]-[n,O:9][#1:0]",  // Rule 10:  1,9 (aromatic) heteroatom H shift
+      "[#1:0][N,n,O:1][C,c,nX2:2]=,:[C,c,nX2:3][c,nX2:4]=,:[C,c,nX2:5][C,c,nX2:6]=,:[C,c,nX2:7][C,c,nX2:8]=,:[C,c,nX2:9][C,c,nX2:10]=,:[NX2,nX2,O:11]>>[NX2,nX2,O:1]=[C,c,nX2:2]-[C,c,nX2:3]=[C,c,nX2:4]-[C,c,nX2:5]=[C,c,nX2:6]-[C,c,nX2:7]=[C,c,nX2:8]-[C,c,nX2:9]=[C,c,nX2:10]-[O,nX2:11][#1:0]",   // Rule 11:  1,11 (aromatic) heteroatom H shift
+      "[#1:0][O,S,N:1][C,c;r5:2]([!#6&!#1:5])=,:[C,c;r5:3][C,c;r5:4]>>[O,S,N:1]=[C;r5:2]([A,a:5])-[Cr5;R0,R1,R2:3]([#1:0])[C,c;r5:4]",          // Rule 12:  furanones
+      "[O,S,N:1]=[C;r5:2]([A,a:5])[Cr5;R0,R1,R2:3]([#1:0])[C,c;r5:4]>>[#1:0][O,S,N:1]-[C,c;r5:2]([!#6&!#1:5])=[C,c;r5:3]-[C,c;r5:4]",           // Rule 12:  furanones
+      "[O,S,Se,Te;X1:1]=[C:2]=[C:3][#1:0]>>[#1:0][O,S,Se,Te;X2:1][C:2]#[C:3]",           // Rule 13:  keten/ynol exchange
+      "[#1:0][O,S,Se,Te;X2:1][C:2]#[C:3]>>[O,S,Se,Te;X1:1]=[C:2]=[C:3][#1:0]",           // Rule 13:  keten/ynol exchange
       "[#1:0][C:1][N+:2]([O-:4])=[O:3]>>[C:1]=[N+:2]([O-:4])[O:3][#1:0]",   // Rule 14:  ionic nitro/aci-nitro
-      "[#1:0][C:1][N:2](=[O:4])=[O:3]>>[C:1]=[N:2](=[O:4])[O:3][#1:0]",   // Rule 15:  pentavalent nitro/aci-nitro
+      "[C:1]=[N+:2]([O-:4])[O:3][#1:0]>>[#1:0][C:1][N+:2]([O-:4])=[O:3]",   // Rule 14:  ionic nitro/aci-nitro
+      //"[#1:0][C:1][N:2](=[O:4])=[O:3]>>[C:1]=[N:2](=[O:4])[O:3][#1:0]",   // Rule 15:  pentavalent nitro/aci-nitro
       "[#1:0][O:1][N:2]=[C:3]>>[O:1]=[N:2][C:3][#1:0]",   // Rule 16:  oxim/nitroso
-      "[#1:0][O:1][N:2]=[C:3][C:4]=[C:5][C:6]=[O:7]>>[O:1]=[N:2][c:3]=[c:4][c:5]=[c:6][O:7][#1:0]"   // Rule 17:  oxim/nitroso via phenol*/
+      "[O:1]=[N:2][C:3][#1:0]>>[#1:0][O:1][N:2]=[C:3]",   // Rule 16:  oxim/nitroso
+      "[#1:0][O:1][N:2]=[C:3][C:4]=[C:5][C:6]=[O:7]>>[O:1]=[N:2][c:3]=[c:4][c:5]=[c:6][O:7][#1:0]",   // Rule 17:  oxim/nitroso via phenol
+      "[O:1]=[N:2][c:3]:[c:4]:[c:5]:[c:6][O:7][#1:0]>>[#1:0][O:1][N:2]=[C:3][C:4]=[C:5][C:6]=[O:7]",  // Rule 17:  oxim/nitroso via phenol
+      "[#1:0][O:1][C:2]#[N:3]>>[O:1]=[C:2]=[N:3][#1:0]",  // Rule 18:  cyanic/iso-cyanic acids
+      "[O:1]=[C:2]=[N:3][#1:0]>>[#1:0][O:1][C:2]#[N:3]",   // Rule 18:  cyanic/iso-cyanic acids
+      "[#1:0][O,N:1][C:2]=[S,Se,Te:3]=[O:4]>>[O,N:1]=[C:2][S,Se,Te:3][O:4][#1:0]",    // Rule 19:  formamidinesulfinic acids
+      "[O,N:1]=[C:2][S,Se,Te:3][O:4][#1:0]>>[#1:0][O,N:1][C:2]=[S,Se,Te:3]=[O:4]",    // Rule 19:  formamidinesulfinic acids
+      "[#1:0][C0:1]#[N0:2]>>[C-:1]#[N+:2][#1:0]",   // Rule 20:  isocyanides
+      "[C-:1]#[N+:2][#1:0]>>[#1:0][C0:1]#[N0:2]",   // Rule 20:  isocyanides
+      "[#1:0][O:1][P:2]>>[O:1]=[P:2][#1:0]",   // Rule 21:   phosphonic acids
+      "[O:1]=[P:2][#1:0]>>[#1:0][O:1][P:2]"    // Rule 21:   phosphonic acids
+#endif
    };
 
    while(_currentLayer < layeredMolecules.layers)
