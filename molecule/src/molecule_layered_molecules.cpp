@@ -40,22 +40,12 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule)
          _bond_masks[i].top().resize(1);
       }
 
-      if (_proto.getBondOrder(e_idx) == 1)
-      {
-         _bond_masks[BOND_ZERO].top().reset(0);
-         _bond_masks[BOND_SINGLE].top().set(0);
-         _bond_masks[BOND_DOUBLE].top().reset(0);
-         _bond_masks[BOND_TRIPLE].top().reset(0);
-         _bond_masks[BOND_AROMATIC].top().reset(0);
-      }
-      else
-      {
-         _bond_masks[BOND_ZERO].top().reset(0);
-         _bond_masks[BOND_SINGLE].top().reset(0);
-         _bond_masks[BOND_DOUBLE].top().set(0);
-         _bond_masks[BOND_TRIPLE].top().reset(0);
-         _bond_masks[BOND_AROMATIC].top().reset(0);
-      }
+      _bond_masks[BOND_ZERO].top().reset(0);
+      _bond_masks[BOND_SINGLE].top().reset(0);
+      _bond_masks[BOND_DOUBLE].top().reset(0);
+      _bond_masks[BOND_TRIPLE].top().reset(0);
+      _bond_masks[BOND_AROMATIC].top().reset(0);
+      _bond_masks[_proto.getBondOrder(e_idx)].top().set(0);
    }
 
    _mobilePositions.expandFill(_proto.vertexCount(), false);
