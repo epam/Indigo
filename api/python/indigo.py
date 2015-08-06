@@ -72,12 +72,6 @@ class IndigoObject(object):
     def next (self):
         return self.__next__()
 
-    def grossFormula(self):
-        self.dispatcher._setSessionId()
-        gfid = self.dispatcher._checkResult(Indigo._lib.indigoGrossFormula(self.id))
-        gf = self.dispatcher.IndigoObject(self.dispatcher, gfid)
-        return self.dispatcher._checkResultString(Indigo._lib.indigoToString(gf.id))
-
     def toString(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoToString(self.id))
@@ -862,6 +856,11 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoCountHeavyAtoms(self.id))
 
+    def grossFormula(self):
+        self.dispatcher._setSessionId()
+        gfid = self.dispatcher._checkResult(Indigo._lib.indigoGrossFormula(self.id))
+        gf = self.dispatcher.IndigoObject(self.dispatcher, gfid)
+        return self.dispatcher._checkResultString(Indigo._lib.indigoToString(gf.id))
 
     def molecularWeight(self):
         self.dispatcher._setSessionId()
