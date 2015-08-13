@@ -1193,6 +1193,7 @@ class IndigoObject(object):
         return res
 
     def stereocenterPyramid(self):
+        self.dispatcher._setSessionId()
         ptr = self.dispatcher._checkResultPtr(Indigo._lib.indigoStereocenterPyramid(self.id))
         res = [0] * 4
         for i in range(4):
