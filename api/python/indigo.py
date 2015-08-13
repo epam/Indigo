@@ -72,10 +72,6 @@ class IndigoObject(object):
     def next (self):
         return self.__next__()
 
-    def toString(self):
-        self.dispatcher._setSessionId()
-        return self.dispatcher._checkResultString(Indigo._lib.indigoToString(self.id))
-
     def oneBitsList(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoOneBitsList(self.id))
