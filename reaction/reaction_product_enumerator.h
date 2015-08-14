@@ -53,6 +53,16 @@ public:
 
    void buildProducts( void );
    
+   // This callback should be used for validation and refining of the results of applying the pattern.
+   // uncleaned_fragments: the molecule before applying the reaction (with aromatization and unfolded hydrogens)
+   // product: the molecule after transformation (possibly broken), may be modified in callback
+   // mapping: atom to atom mapping
+   // result: true if the molecule shall be accepted, false otherwise
+   bool (*refine_proc)( const Molecule &uncleaned_fragments, Molecule &product, Array<int> &mapping, void *userdata );
+
+   // This callback provides the results of applying the pattern, one for each possible mapping.
+   // product: the molecule after transformation
+   // mapping: atom to atom mapping
    void (*product_proc)( Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, void *userdata );
 
 private:

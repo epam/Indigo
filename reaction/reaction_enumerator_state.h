@@ -65,7 +65,9 @@ public:
       void removeMonomer( int idx );
    };
    
+   bool (*refine_proc)( const Molecule &uncleaned_fragments, Molecule &product, Array<int> &mapping, void *userdata );
    void (*product_proc)( Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, void *userdata );
+
    void *userdata;
    bool is_multistep_reaction;
    bool is_self_react;

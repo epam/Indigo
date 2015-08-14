@@ -178,6 +178,7 @@ ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext &cont
    max_product_count = 1000;
    max_reuse_count = 10;
 
+   refine_proc = NULL;
    product_proc = NULL;
    userdata = NULL;
 }
@@ -252,6 +253,7 @@ ReactionEnumeratorState::ReactionEnumeratorState( ReactionEnumeratorState &cur_r
 
    _is_frag_search = false;
 
+   refine_proc = cur_rpe_state.refine_proc;
    product_proc = cur_rpe_state.product_proc;
    userdata = cur_rpe_state.userdata;
 }
@@ -1693,6 +1695,9 @@ bool ReactionEnumeratorState::_attachFragments( Molecule &ready_product_out, Arr
       else
          _mapping[i] = ucfrag_mapping[i];
    }
+
+   if(refine_proc)
+      return refine_proc(uncleaned_fragments, ready_product_out, ucfrag_mapping, userdata);
 
    return true;
 }

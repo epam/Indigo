@@ -44,6 +44,7 @@ ReactionProductEnumerator::ReactionProductEnumerator( QueryReaction &reaction ) 
    _tubes_monomers.clear();
    _product_count = 0;
    _is_rg_exist = false;
+   refine_proc = 0;
    product_proc = 0;
 }
 
@@ -131,6 +132,7 @@ void ReactionProductEnumerator::buildProducts( void )
                       _product_aam_array, _smiles_array, _reaction_monomers, 
                       _product_count, _tubes_monomers);
 
+   rpe_state.refine_proc = refine_proc;
    rpe_state.product_proc = product_proc;
    rpe_state.userdata = userdata;
    rpe_state.is_multistep_reaction = is_multistep_reaction;
