@@ -17,6 +17,7 @@
 #include "graph/embedding_enumerator.h"
 #include "molecule/inchi_parser.h"
 #include "molecule/inchi_wrapper.h"
+#include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_automorphism_search.h"
@@ -251,6 +252,90 @@ void TautomerEnumerator::constructMolecule(Molecule &molecule, int n) const
       ;//error!
 }
 
+bool TautomerEnumerator::refine_proc(const Molecule &uncleaned_fragments, Molecule &product, Array<int> &mapping, void *userdata)
+{
+   bool changed = true;
+   while(changed)
+   {
+      changed = false;
+      for(auto v_idx : product.vertices())
+      {
+         const Vertex &vertex = product.getVertex(v_idx);
+         int aromatic = 0;
+         int aromaticBondInd1 = 0;
+         int aromaticBondInd2 = 0;
+         int connectivity = 0;
+         int explicitHydrogens = 0;
+         for(int j : vertex.neighbors())
+         {
+            int vn_idx = vertex.neiVertex(j);
+            int e_idx = product.findEdgeIndex(v_idx, vn_idx);
+            int order = product.getBondOrder(e_idx);
+            if(order == BOND_AROMATIC)
+            {
+               if(aromatic == 1)
+                  aromaticBondInd2 = e_idx;
+               else
+                  aromaticBondInd1 = e_idx;
+               ++aromatic;
+            }
+            else if(product.getAtomNumber(vn_idx) != ELEM_H)
+               connectivity += order;
+            else
+               ++explicitHydrogens;
+         }
+         if(aromatic == 1)
+         {
+            int frags_idx = mapping.find(v_idx);
+            int new_order = const_cast<Molecule&>(uncleaned_fragments).getAtomValence(frags_idx) - explicitHydrogens - connectivity - const_cast<Molecule&>(uncleaned_fragments).getImplicitH(frags_idx);
+            if(new_order < BOND_SINGLE || new_order > BOND_TRIPLE)
+               return false;
+            product.setBondOrder(aromaticBondInd1, new_order);
+            changed = true;
+         }
+         else if(aromatic == 2 && connectivity > 1)
+         {
+            int frags_idx = mapping.find(v_idx);
+            if(const_cast<Molecule&>(uncleaned_fragments).getAtomValence(frags_idx) == connectivity + 2)
+            {
+               product.setBondOrder(aromaticBondInd1, BOND_SINGLE);
+               product.setBondOrder(aromaticBondInd2, BOND_SINGLE);
+               changed = true;
+            }
+            else
+               return false;
+         }
+         else if(aromatic == 0)
+         {
+            if(product.getAtomNumber(v_idx) != ELEM_H)
+            {
+               int frags_idx = mapping.find(v_idx);
+               try
+               {
+                  if(product.getAtomNumber(v_idx) != ELEM_N)
+                  {
+                     if(product.getAtomValence(v_idx) + product.getAtomCharge(v_idx) != connectivity + explicitHydrogens + product.getImplicitH(v_idx))
+                        return false;
+                  }
+                  else
+                  {
+                     if(product.getAtomValence(v_idx) + product.getAtomCharge(v_idx) != connectivity + explicitHydrogens + product.getImplicitH(v_idx)
+                        && product.getAtomValence(v_idx) != connectivity + explicitHydrogens + product.getImplicitH(v_idx))
+                        return false;
+                  }
+               }
+               catch(indigo::Exception&)
+               {
+                  return false;
+               }
+            }
+         }
+      }
+   }
+
+   return true;
+}
+
 void TautomerEnumerator::product_proc( Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, void *userdata )
 {
    LayeredMolecules *lm = (LayeredMolecules *)userdata;
@@ -298,7 +383,7 @@ bool TautomerEnumerator::_performProcedure()
       "[#1,a,O:5]-[NX3:1](-[#1:0])-[CX3:2](-[C,#1:4])=[CX3:3]>>[#1,a,O:5]-[NX2:1]=[CX3:2](-[C,#1:4])-[CX4;R0,R1,R2:3][#1:0]",   // Rule 3:  simple (aliphatic) imine
       "[CX3R0:1]([C,#1:5])([C:4])=[C:2][N:3]([C:6])[#1:0]>>[#1:0][CX4R0:1]([C,#1:5])([C:4])[c:2]:[n:3]:[c:6]",  // Rule 4:  special imine
       "[#1:0][CX4R0:1]([C,#1:5])([C:4])[c:2]:[n:3]:[c:6]>>[CX3R0:1]([C,#1:5])([C:4])=[C:2][N:3]([C:6])[#1:0]",  // Rule 4:  special imine
-      "[#1:0][N:1]-&@[C:2]=[O,NX2:3]>>[NX2,nX2:1]=,:[C,c:2][O,N:3][#1:0]",          // Rule 5:  aromatic heteroatom H shift
+      "[#1:0][N:1]-&@[C:2]=[O,NX2:3]>>[NX2,nX2:1]=[C,c:2]-[O,N:3][#1:0]",           // Rule 5:  aromatic heteroatom H shift
       "[NX2,nX2:1]=,:[C,c:2][O,N:3][#1:0]>>[#1:0][N:1]-&@[C:2]=[O,NX2:3]",          // Rule 5:  aromatic heteroatom H shift
       "[N,n,S,s,O,o,Se,Te:1]=[NX2,nX2,C,c,P,p:2]-[N,n,S,O,Se,Te:3][#1:0]>>[#1:0][N,n,S,O,Se,Te:1]-[NX2,nX2,C,c,P,p:2]=[N,n,S,s,O,o,Se,Te:3]",  // Rule 6:  1,3 heteroatom H shift
       "[NX2,nX2,S,O,Se,Te:1]=[C,c,NX2,nX2:2][C,c:3]=[C,c,nX2:4][N,n,S,s,O,o,Se,Te:5][#1:0]>>[#1:0][N,n,S,O,Se,Te:1][C,c,NX2,nX2:2]=[C,c:3][C,c,nX2:4]=[NX2,S,O,Se,Te:5]",  // Rule 7:  1,5 (aromatic) heteroatom H shift (1)
@@ -368,6 +453,7 @@ bool TautomerEnumerator::_performProcedure()
          rpe.is_self_react = true;
          rpe.max_deep_level = 1;
          rpe.max_product_count = 10;
+         rpe.refine_proc = refine_proc;
          rpe.product_proc = product_proc;
          rpe.userdata = &layeredMolecules;
 

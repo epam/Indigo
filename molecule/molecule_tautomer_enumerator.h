@@ -55,6 +55,7 @@ protected:
    static void vertexAdd(Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
    static void vertexRemove(Graph &subgraph, int sub_idx, void *userdata);
 
+   static bool refine_proc(const Molecule &uncleaned_fragments, Molecule &product, Array<int> &mapping, void *userdata);
    static void product_proc(Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, void *userdata);
 
    bool _performProcedure();
