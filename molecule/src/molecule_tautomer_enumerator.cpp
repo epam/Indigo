@@ -35,119 +35,130 @@
 
 using namespace indigo;
 
-TautomerEnumerator::TautomerEnumerator(Molecule &molecule, const char *options)
+TautomerEnumerator::TautomerEnumerator(Molecule &molecule, TautomerMethod method)
 : layeredMolecules(molecule),
+#ifdef USE_DEPRECATED_INCHI
+_use_deprecated_inchi(false),
+#endif
 _currentLayer(0),
 _currentRule(0)
 {
-#if 0
-   // Obsolete code for tautomer enumeration using InChI code
-   InchiWrapper indigo_inchi;
-
-   QS_DEF(Array<char>, tmp);
-   indigo_inchi.saveMoleculeIntoInchi(molecule, tmp);
-   const char *params = tmp.ptr();
-
-   // We need a canonical mapping. This is something that MoleculeInChI does.
-   // This is the only reason I use it. Maybe it's better to implement this procedure outside of MoleculeInChI.
-   QS_DEF(Array<int>, canonical_mapping);
-   canonical_mapping.resize(molecule.vertexEnd());
-   canonical_mapping.zerofill();
-   QS_DEF(Array<int>, ignored);
-   ignored.resize(molecule.vertexEnd());
-   ignored.zerofill();
-
-   MoleculeAutomorphismSearch of;
-   of.detect_invalid_cistrans_bonds = false;
-   of.detect_invalid_stereocenters = false;
-   of.find_canonical_ordering = true;
-   of.ignored_vertices = ignored.ptr();
-
-   of.getcanon = true;
-   of.compare_vertex_degree_first = false;
-   of.refine_reverse_degree = true;
-   of.refine_by_sorted_neighbourhood = true;
-   of.cb_vertex_cmp = MoleculeInChICompoment::cmpVertex;
-   of.process(molecule);
-   of.getCanonicalNumbering(canonical_mapping);
-
-   InChICodeParser inchiParser(params);
-
-   QS_DEF(Array<int>, hydrogens);
-   // For each position get number of fixed hydrogens
-   hydrogens.resize(molecule.vertexCount());
-   hydrogens.zerofill();
-
-   QS_DEF(Array<int>, inv_mapping);
-   inv_mapping.resize(molecule.vertexEnd());
-   inv_mapping.fill(-1);
-   int j = 0;
-   for(auto i : molecule.vertices())
+#ifdef USE_DEPRECATED_INCHI
+   if(method == INCHI)
    {
-      inv_mapping[i] = j++;
+      _use_deprecated_inchi = true;
    }
 
-   for (auto i = inchiParser.staticHydrogenPositionBegin(); i != inchiParser.staticHydrogenPositionEnd(); i = inchiParser.staticHydrogenPositionNext(i))
+   if(_use_deprecated_inchi)
    {
-      int inchiIndex = inchiParser.getHydrogen(i);
-      int molIndex = canonical_mapping[inchiIndex];
-      int simpleIndex = inv_mapping[molIndex];
-      ++hydrogens[simpleIndex];
-   }
+      // Obsolete code for tautomer enumeration using InChI code
+      InchiWrapper indigo_inchi;
 
-   // Indicate places for mobile hydrogens
-   for (auto i = inchiParser.mobileHydrogenPositionBegin(); i != inchiParser.mobileHydrogenPositionEnd(); i = inchiParser.mobileHydrogenPositionNext(i))
-   {
-      // Actually this is the only thing we need from InChI: a hint which positions mobile hydrogen can occupy.
-      // If we don't use this, we can avoid using InChI at all.
-      int inchiIndex = inchiParser.getHydrogen(i);
-      int molIndex = canonical_mapping[inchiIndex];
-      int simpleIndex = inv_mapping[molIndex];
-      layeredMolecules.setMobilePosition(simpleIndex, true);
-   }
-   /*
-   for (auto i : molecule.vertices())
-   {
-      // Alternative: set all positions as possible mobile hydrogen positions.
-      // This dramatically icreases total number of tautomers found.
-      int inchiIndex = inchiParser.getHydrogen(i);
-      int molIndex = canonical_mapping[inchiIndex];
-      int simpleIndex = inv_mapping[molIndex];
-      layeredMolecules.setMobilePosition(simpleIndex, true);
-   } */
+      QS_DEF(Array<char>, tmp);
+      indigo_inchi.saveMoleculeIntoInchi(molecule, tmp);
+      const char *params = tmp.ptr();
 
-   // Indicate occupied mobile positions
-   // Probably this could be done somehow inside of hypermolecule
-   Dbitset Ox01;
-   Ox01.set(0);
-   for (auto i : molecule.vertices())
-   {
-      bool occupied = (molecule.getAtomTotalH(i) - hydrogens[inv_mapping[i]]) != 0;
-      if (occupied)
+      // We need a canonical mapping. This is something that MoleculeInChI does.
+      // This is the only reason I use it. Maybe it's better to implement this procedure outside of MoleculeInChI.
+      QS_DEF(Array<int>, canonical_mapping);
+      canonical_mapping.resize(molecule.vertexEnd());
+      canonical_mapping.zerofill();
+      QS_DEF(Array<int>, ignored);
+      ignored.resize(molecule.vertexEnd());
+      ignored.zerofill();
+
+      MoleculeAutomorphismSearch of;
+      of.detect_invalid_cistrans_bonds = false;
+      of.detect_invalid_stereocenters = false;
+      of.find_canonical_ordering = true;
+      of.ignored_vertices = ignored.ptr();
+
+      of.getcanon = true;
+      of.compare_vertex_degree_first = false;
+      of.refine_reverse_degree = true;
+      of.refine_by_sorted_neighbourhood = true;
+      of.cb_vertex_cmp = MoleculeInChICompoment::cmpVertex;
+      of.process(molecule);
+      of.getCanonicalNumbering(canonical_mapping);
+
+      InChICodeParser inchiParser(params);
+
+      QS_DEF(Array<int>, hydrogens);
+      // For each position get number of fixed hydrogens
+      hydrogens.resize(molecule.vertexCount());
+      hydrogens.zerofill();
+
+      QS_DEF(Array<int>, inv_mapping);
+      inv_mapping.resize(molecule.vertexEnd());
+      inv_mapping.fill(-1);
+      int j = 0;
+      for(auto i : molecule.vertices())
       {
-         occupied = false;
-         const Vertex &v = molecule.getVertex(i);
-         for (auto i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
-         {
-            int e_inx = v.neiEdge(i);
-            if (molecule.getBondOrder(e_inx) == 1 || molecule.getBondOrder(e_inx) == 4)
-            {
-               occupied = true;
-               break;
-            }
-         }
-
+         inv_mapping[i] = j++;
       }
-      layeredMolecules.setMobilePositionOccupiedMask(inv_mapping[i], Ox01, occupied);
-   }
 
-   // Look for "zebra" pattern (like -=-=-=-=... or =-=-=-=-...)
-   int v1 = _zebraPattern.addVertex();
-   for (auto i : layeredMolecules.vertices())
-   {
-      int v2 = _zebraPattern.addVertex();
-      _zebraPattern.addEdge(v1, v2);
-      v1 = v2;
+      for(auto i = inchiParser.staticHydrogenPositionBegin(); i != inchiParser.staticHydrogenPositionEnd(); i = inchiParser.staticHydrogenPositionNext(i))
+      {
+         int inchiIndex = inchiParser.getHydrogen(i);
+         int molIndex = canonical_mapping[inchiIndex];
+         int simpleIndex = inv_mapping[molIndex];
+         ++hydrogens[simpleIndex];
+      }
+
+      // Indicate places for mobile hydrogens
+      for(auto i = inchiParser.mobileHydrogenPositionBegin(); i != inchiParser.mobileHydrogenPositionEnd(); i = inchiParser.mobileHydrogenPositionNext(i))
+      {
+         // Actually this is the only thing we need from InChI: a hint which positions mobile hydrogen can occupy.
+         // If we don't use this, we can avoid using InChI at all.
+         int inchiIndex = inchiParser.getHydrogen(i);
+         int molIndex = canonical_mapping[inchiIndex];
+         int simpleIndex = inv_mapping[molIndex];
+         layeredMolecules.setMobilePosition(simpleIndex, true);
+      }
+      /*
+      for (auto i : molecule.vertices())
+      {
+         // Alternative: set all positions as possible mobile hydrogen positions.
+         // This dramatically icreases total number of tautomers found.
+         int inchiIndex = inchiParser.getHydrogen(i);
+         int molIndex = canonical_mapping[inchiIndex];
+         int simpleIndex = inv_mapping[molIndex];
+         layeredMolecules.setMobilePosition(simpleIndex, true);
+      } */
+
+      // Indicate occupied mobile positions
+      // Probably this could be done somehow inside of hypermolecule
+      Dbitset Ox01;
+      Ox01.set(0);
+      for(auto i : molecule.vertices())
+      {
+         bool occupied = (molecule.getAtomTotalH(i) - hydrogens[inv_mapping[i]]) != 0;
+         if(occupied)
+         {
+            occupied = false;
+            const Vertex &v = molecule.getVertex(i);
+            for(auto i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
+            {
+               int e_inx = v.neiEdge(i);
+               if(molecule.getBondOrder(e_inx) == 1 || molecule.getBondOrder(e_inx) == 4)
+               {
+                  occupied = true;
+                  break;
+               }
+            }
+
+         }
+         layeredMolecules.setMobilePositionOccupiedMask(inv_mapping[i], Ox01, occupied);
+      }
+
+      // Look for "zebra" pattern (like -=-=-=-=... or =-=-=-=-...)
+      int v1 = _zebraPattern.addVertex();
+      for(auto i : layeredMolecules.vertices())
+      {
+         int v2 = _zebraPattern.addVertex();
+         _zebraPattern.addEdge(v1, v2);
+         v1 = v2;
+      }
    }
 #endif
 
@@ -349,23 +360,26 @@ bool TautomerEnumerator::enumerateLazy()
 
 bool TautomerEnumerator::_performProcedure()
 {
-#if 0
-   // Construct tautomers
-   EmbeddingEnumerator ee(layeredMolecules);
+#ifdef USE_DEPRECATED_INCHI
+   if(_use_deprecated_inchi)
+   {
+      // Construct tautomers
+      EmbeddingEnumerator ee(layeredMolecules);
 
-   ee.setSubgraph(_zebraPattern);
-   ee.cb_match_edge = matchEdge;
-   ee.cb_match_vertex = matchVertex;
-   ee.cb_edge_add = edgeAdd;
-   ee.cb_vertex_add = vertexAdd;
-   ee.cb_vertex_remove = vertexRemove;
+      ee.setSubgraph(_zebraPattern);
+      ee.cb_match_edge = matchEdge;
+      ee.cb_match_vertex = matchVertex;
+      ee.cb_edge_add = edgeAdd;
+      ee.cb_vertex_add = vertexAdd;
+      ee.cb_vertex_remove = vertexRemove;
 
-   Breadcrumps breadcrumps;
-   ee.userdata = &breadcrumps;
+      Breadcrumps breadcrumps;
+      ee.userdata = &breadcrumps;
 
-   int layersBefore = layeredMolecules.layers;
-   ee.process();
-   return layeredMolecules.layers == layersBefore;
+      int layersBefore = layeredMolecules.layers;
+      ee.process();
+      return layeredMolecules.layers == layersBefore;
+   }
 #endif
    char* reactionSmarts[] = {
 #if 0
@@ -479,6 +493,7 @@ bool TautomerEnumerator::_aromatize(int from, int to)
     return layeredMolecules.aromatize(from, to, AromaticityOptions());
 }
 
+#ifdef USE_DEPRECATED_INCHI
 bool TautomerEnumerator::matchEdge(Graph &subgraph, Graph &supergraph,
    int sub_idx, int super_idx, void *userdata)
 {
@@ -568,6 +583,7 @@ void TautomerEnumerator::vertexRemove(Graph &subgraph, int sub_idx, void *userda
    }
    breadcrumps.nodesHistory.pop();
 }
+#endif
 
 void TautomerEnumerator::constructMolecule(Molecule &molecule, int layer, bool needAromatize) const
 {

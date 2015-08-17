@@ -22,8 +22,8 @@ IMPL_ERROR(MoleculeTautomerSubstructureMatcher, "molecule tautomer substructure 
 
 CP_DEF(MoleculeTautomerSubstructureMatcher);
 
-MoleculeTautomerSubstructureMatcher::MoleculeTautomerSubstructureMatcher(BaseMolecule &target) :
-_tautomerEnumerator(target.asMolecule(), "INCHI"),
+MoleculeTautomerSubstructureMatcher::MoleculeTautomerSubstructureMatcher(BaseMolecule &target, TautomerMethod method) :
+_tautomerEnumerator(target.asMolecule(), method),
 CP_INIT
 {
    _allLayersFound = false;

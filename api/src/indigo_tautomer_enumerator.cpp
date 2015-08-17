@@ -21,14 +21,21 @@ CEXPORT int indigoIterateTautomers(int molecule, const char *options)
    {
       Molecule &mol = self.getObject(molecule).getMolecule();
 
-      return self.addObject(new IndigoTautomerIter(mol, options));
+      TautomerMethod method;
+      if(strncasecmp(options, "INCHI", 5) == 0)
+         method = INCHI;
+      else if(strncasecmp(options, "RSMARTS", 7) == 0)
+         method = RSMARTS;
+      else
+         method = RSMARTS;
+      return self.addObject(new IndigoTautomerIter(mol, method));
    }
    INDIGO_END(-1)
 }
 
-IndigoTautomerIter::IndigoTautomerIter(Molecule &molecule, const char *options) :
+IndigoTautomerIter::IndigoTautomerIter(Molecule &molecule, TautomerMethod method) :
 IndigoObject(TAUTOMER_ITER),
-_enumerator(molecule, options),
+_enumerator(molecule, method),
 _complete(false)
 {
    bool needAromatize = molecule.isAromatized();

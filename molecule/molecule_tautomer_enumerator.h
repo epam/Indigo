@@ -18,6 +18,9 @@
 #include "base_cpp/reusable_obj_array.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_layered_molecules.h"
+#include "molecule/molecule_tautomer.h"
+
+#define USE_DEPRECATED_INCHI
 
 namespace indigo {
 
@@ -26,7 +29,7 @@ class Molecule;
 class TautomerEnumerator
 {
 public:
-   TautomerEnumerator(Molecule &molecule, const char *options);
+   TautomerEnumerator(Molecule &molecule, TautomerMethod method);
 
    void constructMolecule(Molecule &molecule, int layer, bool needAromatize) const;
    bool enumerateLazy();
@@ -65,6 +68,9 @@ protected:
 
 public:
    LayeredMolecules layeredMolecules;
+#ifdef USE_DEPRECATED_INCHI
+   bool _use_deprecated_inchi;
+#endif
    int _currentLayer;
    int _currentRule;
    bool _complete;

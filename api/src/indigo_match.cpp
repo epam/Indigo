@@ -130,7 +130,7 @@ DLLEXPORT bool _indigoParseTautomerFlags (const char *flags, IndigoTautomerParam
    if (strcasecmp(word.ptr(), "TAU") != 0)
       return false;
 
-   MoleculeTautomerMatcher::parseConditions(flags, params.conditions, params.force_hydrogens, params.ring_chain, params.inchi);
+   MoleculeTautomerMatcher::parseConditions(flags, params.conditions, params.force_hydrogens, params.ring_chain, params.method);
 
    return true;
 }
@@ -272,7 +272,7 @@ CEXPORT int indigoExactMatch (int handler1, int handler2, const char *flags)
 
             matcher.arom_options = self.arom_options;
             matcher.setRulesList(&self.tautomer_rules);
-            matcher.setRules(params.conditions, params.force_hydrogens, params.ring_chain, params.inchi);
+            matcher.setRules(params.conditions, params.force_hydrogens, params.ring_chain, params.method);
             matcher.setQuery(mol1);
 
             if (!matcher.find())
@@ -411,9 +411,9 @@ bool IndigoMoleculeSubstructureMatchIter::hasNext ()
    return _found;
 }
 
-IndigoTautomerSubstructureMatchIter::IndigoTautomerSubstructureMatchIter(Molecule &target_, QueryMolecule &query_, Molecule &tautomerFound_) :
+IndigoTautomerSubstructureMatchIter::IndigoTautomerSubstructureMatchIter(Molecule &target_, QueryMolecule &query_, Molecule &tautomerFound_, TautomerMethod method) :
    IndigoObject(MOLECULE_SUBSTRUCTURE_MATCH_ITER),
-   matcher(target_),
+   matcher(target_, method),
    query(query_),
    tautomerFound(tautomerFound_)
 {
@@ -659,7 +659,7 @@ IndigoMoleculeSubstructureMatchIter*
 IndigoTautomerSubstructureMatchIter*
    IndigoMoleculeSubstructureMatcher::iterateTautomerQueryMatches (IndigoObject &query_object,
       bool embedding_edges_uniqueness, bool find_unique_embeddings, bool for_iteration,
-      int max_embeddings)
+      int max_embeddings, TautomerMethod method)
 {
    QueryMolecule &query = query_object.getQueryMolecule();
 
@@ -679,7 +679,7 @@ IndigoTautomerSubstructureMatchIter*
    }
 
    AutoPtr<IndigoTautomerSubstructureMatchIter>
-      iter(new IndigoTautomerSubstructureMatchIter(target, query, moleculeFound));
+      iter(new IndigoTautomerSubstructureMatchIter(target, query, moleculeFound, method));
 
    iter->matcher.find_unique_embeddings = find_unique_embeddings;
    iter->matcher.find_unique_by_edges = embedding_edges_uniqueness;
@@ -732,7 +732,7 @@ bool IndigoMoleculeSubstructureMatcher::findTautomerMatch (
    }
 
    tau_matcher->setRulesList(&tautomer_rules);
-   tau_matcher->setRules(tau_params.conditions, tau_params.force_hydrogens, tau_params.ring_chain, tau_params.inchi);
+   tau_matcher->setRules(tau_params.conditions, tau_params.force_hydrogens, tau_params.ring_chain, tau_params.method);
    tau_matcher->setQuery(query);
    tau_matcher->arom_options = indigo.arom_options;
    if (!tau_matcher->find())
@@ -820,11 +820,11 @@ IndigoMoleculeSubstructureMatchIter * IndigoMoleculeSubstructureMatcher::getMatc
 }
 
 IndigoTautomerSubstructureMatchIter * IndigoMoleculeSubstructureMatcher::getTautomerMatchIterator(
-      Indigo &self, int query, bool for_iteration, int max_embeddings)
+      Indigo &self, int query, bool for_iteration, int max_embeddings, TautomerMethod method)
 {
    return iterateTautomerQueryMatches(self.getObject(query),
          self.embedding_edges_uniqueness, self.find_unique_embeddings,
-         for_iteration, max_embeddings);
+         for_iteration, max_embeddings, method);
 }
 
 CEXPORT int indigoIgnoreAtom (int target_matcher, int atom_object)
@@ -878,25 +878,32 @@ CEXPORT int indigoMatch (int target_matcher, int query)
       {
          IndigoMoleculeSubstructureMatcher &matcher = IndigoMoleculeSubstructureMatcher::cast(obj);
 
-         if (matcher.tau_params.inchi && matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
+         if(matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
          {
-            AutoPtr<IndigoTautomerSubstructureMatchIter>
-               match_iter(matcher.getTautomerMatchIterator(self, query, true, 1));
+            switch(matcher.tau_params.method)
+            {
+            case BASIC:
+               {
+                  QueryMolecule &qmol = self.getObject(query).getQueryMolecule();
+                  AutoPtr<IndigoMapping> mptr(new IndigoMapping(qmol, matcher.target));
+                  if (!matcher.findTautomerMatch(qmol, self.tautomer_rules, mptr->mapping))
+                     return 0;
 
-            match_iter->matcher.find_unique_embeddings = false;
+                  return self.addObject(mptr.release());
+               }
+            case INCHI:
+            case RSMARTS:
+               {
+                  AutoPtr<IndigoTautomerSubstructureMatchIter>
+                     match_iter(matcher.getTautomerMatchIterator(self, query, true, 1, matcher.tau_params.method));
 
-            if (!match_iter->hasNext())
-               return 0;
-            return self.addObject(match_iter->next());
-         }
-         else if (matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
-         {
-            QueryMolecule &qmol = self.getObject(query).getQueryMolecule();
-            AutoPtr<IndigoMapping> mptr(new IndigoMapping(qmol, matcher.target));
-            if (!matcher.findTautomerMatch(qmol, self.tautomer_rules, mptr->mapping))
-               return 0;
+                  match_iter->matcher.find_unique_embeddings = false;
 
-            return self.addObject(mptr.release());
+                  if (!match_iter->hasNext())
+                     return 0;
+                  return self.addObject(match_iter->next());
+               }
+             }
          }
          else // NORMAL or RESONANCE
          {
@@ -1018,10 +1025,10 @@ int indigoIterateMatches (int target_matcher, int query)
       {
          IndigoMoleculeSubstructureMatcher &matcher = IndigoMoleculeSubstructureMatcher::cast(obj);
 
-         if (matcher.tau_params.inchi && matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
+         if (matcher.tau_params.method != BASIC && matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
          {
             AutoPtr<IndigoTautomerSubstructureMatchIter>
-               match_iter(matcher.getTautomerMatchIterator(self, query, true, self.max_embeddings));
+               match_iter(matcher.getTautomerMatchIterator(self, query, true, self.max_embeddings, matcher.tau_params.method));
             return self.addObject(match_iter.release());
          }
          else if (matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)

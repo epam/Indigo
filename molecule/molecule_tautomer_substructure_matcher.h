@@ -17,6 +17,7 @@
 
 #include "molecule/molecule.h"
 #include "molecule/molecule_layered_molecules.h"
+#include "molecule/molecule_tautomer.h"
 #include "molecule/molecule_tautomer_enumerator.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/embeddings_storage.h"
@@ -40,7 +41,7 @@ public:
 
    typedef ObjArray< RedBlackStringMap<int> > FragmentMatchCache;
 
-   MoleculeTautomerSubstructureMatcher(BaseMolecule &target);
+   MoleculeTautomerSubstructureMatcher(BaseMolecule &target, TautomerMethod method);
    ~MoleculeTautomerSubstructureMatcher();
 
    void setQuery (QueryMolecule &query);

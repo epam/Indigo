@@ -43,7 +43,7 @@ private:
 class IndigoTautomerIter : public IndigoObject
 {
 public:
-   IndigoTautomerIter(Molecule &molecule, const char *options);
+   IndigoTautomerIter(Molecule &molecule, TautomerMethod method);
    virtual ~IndigoTautomerIter();
 
    virtual int getIndex();

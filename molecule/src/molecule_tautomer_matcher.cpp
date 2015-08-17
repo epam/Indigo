@@ -53,12 +53,12 @@ void MoleculeTautomerMatcher::setRulesList (const PtrArray<TautomerRule> *rules_
    _rules_list = rules_list;
 }
 
-void MoleculeTautomerMatcher::setRules (int rules_set, bool force_hydrogens, bool ring_chain, bool inchi)
+void MoleculeTautomerMatcher::setRules (int rules_set, bool force_hydrogens, bool ring_chain, TautomerMethod method)
 {
    _rules = rules_set;
    _force_hydrogens = force_hydrogens;
    _ring_chain = ring_chain;
-   _inchi = inchi;
+   _method = method;
 }
 
 void MoleculeTautomerMatcher::setQuery (BaseMolecule &query)
@@ -107,7 +107,7 @@ bool MoleculeTautomerMatcher::find ()
    _context->force_hydrogens = _force_hydrogens;
    _context->ring_chain = _ring_chain;
    _context->rules = _rules;
-   _context->inchi = _inchi;
+   _context->method = _method;
 
    if (_rules != 0 && _rules_list != 0 && _rules_list->size() != 0)
       _context->cb_check_rules = _checkRules;
@@ -142,7 +142,7 @@ const int * MoleculeTautomerMatcher::getQueryMapping ()
    return _context->core_1.ptr();
 }
 
-void MoleculeTautomerMatcher::parseConditions (const char *tautomer_text, int &rules, bool &force_hydrogens, bool &ring_chain, bool &inchi)
+void MoleculeTautomerMatcher::parseConditions (const char *tautomer_text, int &rules, bool &force_hydrogens, bool &ring_chain, TautomerMethod &method)
 {
    if (tautomer_text == 0)
       throw Error("zero pointer passed to parseConditions()");
@@ -150,7 +150,7 @@ void MoleculeTautomerMatcher::parseConditions (const char *tautomer_text, int &r
    rules = 0;
    force_hydrogens = false;
    ring_chain = false;
-   inchi = false;
+   method = BASIC;
 
    BufferScanner scanner(tautomer_text);
 
@@ -174,7 +174,12 @@ void MoleculeTautomerMatcher::parseConditions (const char *tautomer_text, int &r
          continue;
       if (strncasecmp(word.ptr(), "INCHI", 5) == 0)
       {
-         inchi = true;
+         method = INCHI;
+         continue;
+      }
+      if (strncasecmp(word.ptr(), "RSMARTS", 7) == 0)
+      {
+         method = RSMARTS;
          continue;
       }
       if (strcasecmp(word.ptr(), "HYD") == 0)

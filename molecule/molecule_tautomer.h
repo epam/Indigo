@@ -37,6 +37,8 @@ class Dearomatizer;
 class DearomatizationMatcher;
 struct Atom;
 
+typedef enum { BASIC, INCHI, RSMARTS } TautomerMethod;
+
 //#define TRACE_TAUTOMER_MATCHING
 
 struct TautomerRule
@@ -73,7 +75,7 @@ struct TautomerSearchContext
    bool force_hydrogens;
    bool ring_chain;
    int  rules;
-   bool inchi;
+   TautomerMethod method;
    bool substructure;
    bool (*cb_check_rules) (TautomerSearchContext &context, int first1, int first2, int last1, int last2);
 

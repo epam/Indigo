@@ -35,7 +35,7 @@ struct IndigoTautomerParams
    int conditions;
    bool force_hydrogens;
    bool ring_chain;
-   bool inchi;
+   TautomerMethod method;
 };
 
 // Iterator for all possible matches
@@ -72,7 +72,7 @@ private:
 class IndigoTautomerSubstructureMatchIter : public IndigoObject
 {
 public:
-   IndigoTautomerSubstructureMatchIter(Molecule &target, QueryMolecule &query, Molecule &tautomerFound);
+   IndigoTautomerSubstructureMatchIter(Molecule &target, QueryMolecule &query, Molecule &tautomerFound, TautomerMethod method);
 
    virtual ~IndigoTautomerSubstructureMatchIter();
 
@@ -118,7 +118,7 @@ public:
       bool for_iteration, int max_embeddings);
    IndigoTautomerSubstructureMatchIter* iterateTautomerQueryMatches(IndigoObject &query_object,
       bool embedding_edges_uniqueness, bool find_unique_embeddings,
-      bool for_iteration, int max_embeddings);
+      bool for_iteration, int max_embeddings, TautomerMethod method);
 
    static IndigoMoleculeSubstructureMatcher & cast (IndigoObject &obj);
    void ignoreAtom (int atom_index);
@@ -138,7 +138,7 @@ public:
    IndigoMoleculeSubstructureMatchIter * getMatchIterator (Indigo &self, int query,
                     bool for_iteration, int max_embeddings);
    IndigoTautomerSubstructureMatchIter * getTautomerMatchIterator(Indigo &self, int query,
-                    bool for_iteration, int max_embeddings);
+                    bool for_iteration, int max_embeddings, TautomerMethod method);
 
    int mode; // NORMAL, TAUTOMER, or RESONANCE
 private:
