@@ -381,7 +381,7 @@ bool TautomerEnumerator::_performProcedure()
       return layeredMolecules.layers == layersBefore;
    }
 #endif
-   char* reactionSmarts[] = {
+   const char* reactionSmarts[] = {
 #if 0
       // Just InChI-like rules based on heteroatoms
       "[#1:0][N&v3,n,O,S:1][*:2]=,:[N&v3,n,O,S:3]>>[N,n,O,S:1]=[A,a:2]-[N,n,O,S:3][#1:0]",
@@ -438,7 +438,7 @@ bool TautomerEnumerator::_performProcedure()
             _currentRule = 0;
             break;
          }
-         char *rule = reactionSmarts[_currentRule++];
+         const char *rule = reactionSmarts[_currentRule++];
          QueryReaction reaction;
          AutoPtr<Scanner> _scanner(new BufferScanner(rule));
          RSmilesLoader loader(*_scanner.get());

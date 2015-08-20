@@ -752,7 +752,7 @@ void LayeredMolecules::_registerAromatizedLayers(int layerFrom, int layerTo)
       }
       else
       {
-         _hashsAromatized[l] = NULL;
+         _hashsAromatized[l] = 0;
       }
    }
 }
