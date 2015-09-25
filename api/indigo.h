@@ -255,6 +255,12 @@ CEXPORT int indigoStandardize (int item);
 // Method for structure ionization at specified pH and pH tollerance
 CEXPORT int indigoIonize (int item, float pH, float pH_toll);
 
+// Method for building PKA model
+CEXPORT int indigoBuildPkaModel (int max_level, float threshold, const char *filename);
+
+CEXPORT float * indigoGetAcidPkaValue (int item, int atom, int level, int min_level);
+CEXPORT float * indigoGetBasicPkaValue (int item, int atom, int level, int min_level);
+
 // Automatic reaction atom-to-atom mapping
 // mode is one of the following (separated by a space):
 //    "discard" : discards the existing mapping entirely and considers only

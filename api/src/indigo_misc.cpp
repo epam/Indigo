@@ -33,6 +33,7 @@
 #include "indigo_mapping.h"
 #include "indigo_savers.h"
 #include "molecule/molecule_standardize.h"
+#include "molecule/molecule_ionize.h"
 
 #define CHECKRGB(r, g, b) \
 if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
@@ -827,16 +828,67 @@ CEXPORT int indigoIonize (int object, float pH, float pH_toll)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(object);
+      Molecule &mol = obj.getMolecule();
+      mol.ionize(pH, pH_toll, self.ionize_options);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoBuildPkaModel (int max_level, float threshold, const char * filename)
+{
+   INDIGO_BEGIN
+   {
+      int level = MoleculePkaModel::buildPkaModel(max_level, threshold, filename);
+      if (level > 0)
+         return 1;
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT float * indigoGetAcidPkaValue (int object, int atom, int level, int min_level)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
 
       if (obj.type == IndigoObject::MOLECULE)
       {
          IndigoMolecule &m_obj = (IndigoMolecule &)obj;
-         Molecule &m = m_obj.getMolecule();
-         m.ionize(pH, pH_toll, self.ionize_options);
+         Molecule &mol = m_obj.getMolecule();
+         IndigoAtom &site = IndigoAtom::cast(self.getObject(atom));
+         auto &tmp = self.getThreadTmpData();
+         float pka = MoleculePkaModel::getAcidPkaValue(mol, site.getIndex(), level, min_level);
+         tmp.xyz[0] = pka;
+         return tmp.xyz;
       }
       else
-         throw IndigoError("indigoStandardize: expected molecule, got %s", obj.debugInfo());
-      return 1;
+         throw IndigoError("indigoGetAcidPkaValue: expected molecule, got %s", obj.debugInfo());
+      return 0;
    }
-   INDIGO_END(-1);
+   INDIGO_END(0);
+}
+
+CEXPORT float * indigoGetBasicPkaValue (int object, int atom, int level, int min_level)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
+
+      if (obj.type == IndigoObject::MOLECULE)
+      {
+         IndigoMolecule &m_obj = (IndigoMolecule &)obj;
+         Molecule &mol = m_obj.getMolecule();
+         IndigoAtom &site = IndigoAtom::cast(self.getObject(atom));
+         auto &tmp = self.getThreadTmpData();
+         float pka = MoleculePkaModel::getBasicPkaValue(mol, site.getIndex(), level, min_level);
+         tmp.xyz[0] = pka;
+         return tmp.xyz;
+      }
+      else
+         throw IndigoError("indigoGetBasicPkaValue: expected molecule, got %s", obj.debugInfo());
+      return 0;
+   }
+   INDIGO_END(0);
 }

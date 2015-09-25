@@ -443,6 +443,18 @@ static void indigoSetPkaModel (const char *model)
       throw IndigoError("unknown value: %s. Allowed values are \"simple\", \"advanced\"", model);
 }
 
+static void indigoSetPkaModelLevel (int value)
+{
+   Indigo &self = indigoGetInstance();
+   self.ionize_options.level = value;
+}
+
+static void indigoSetPkaModelMinLevel (int value)
+{
+   Indigo &self = indigoGetInstance();
+   self.ionize_options.min_level = value;
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -520,6 +532,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("standardize-create-hydrogen-bonds", indigoSetStandardizeCreateHydrogenBonds);
 
    mgr.setOptionHandlerString("pKa-model", indigoSetPkaModel);
+   mgr.setOptionHandlerInt("pKa-model-level", indigoSetPkaModelLevel);
+   mgr.setOptionHandlerInt("pKa-model-min-level", indigoSetPkaModelMinLevel);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

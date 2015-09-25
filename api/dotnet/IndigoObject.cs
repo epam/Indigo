@@ -1744,6 +1744,29 @@ namespace com.epam.indigo
             dispatcher.checkResult(_indigo_lib.indigoIonize(self, pH, pHToll));
         }
 
+        public float getAcidPkaValue(IndigoObject atom, int level, int min_level)
+        {
+           dispatcher.setSessionID();
+           float* ptr = dispatcher.checkResult(_indigo_lib.indigoGetAcidPkaValue(self, atom.self, level, min_level));
+           float pka = ptr[0];
+           return pka;
+        }
+     
+        public float getBasicPkaValue(IndigoObject atom, int level, int min_level)
+        {
+           dispatcher.setSessionID();
+           float* ptr = dispatcher.checkResult(_indigo_lib.indigoGetBasicPkaValue(self, atom.self, level, min_level));
+           float pka = ptr[0];
+           return pka;
+        }
+     
+        public int buildPkaModel(int level, float threshold, String filename)
+        {
+           dispatcher.setSessionID();
+           return dispatcher.checkResult(_indigo_lib.indigoBuildPkaModel(level, threshold, filename));
+        }
+
+
         public int expandAbbreviations()
         {
             dispatcher.setSessionID();

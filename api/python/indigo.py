@@ -229,6 +229,16 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoIonize(self.id, pH, pH_toll))
 
+    def getAcidPkaValue(self, atom, level, min_level):
+        self.dispatcher._setSessionId()
+        result = self.dispatcher._checkResultPtr(Indigo._lib.indigoGetAcidPkaValue(self.id, atom.id, level, min_level))
+        return result[0]
+
+    def getBasicPkaValue(self, atom, level, min_level):
+        self.dispatcher._setSessionId()
+        result = self.dispatcher._checkResultPtr(Indigo._lib.indigoGetBasicPkaValue(self.id, atom.id, level, min_level))
+        return result[0]
+
     def automap(self, mode=''):
         self.dispatcher._setSessionId()
         mode = '' if mode is None else mode
@@ -1485,6 +1495,12 @@ class Indigo(object):
         Indigo._lib.indigoStandardize.argtypes = [c_int]
         Indigo._lib.indigoIonize.restype = c_int
         Indigo._lib.indigoIonize.argtypes = [c_int, c_float, c_float]
+        Indigo._lib.indigoBuildPkaModel.restype = c_int
+        Indigo._lib.indigoBuildPkaModel.argtypes = [c_int, c_float, c_char_p]
+        Indigo._lib.indigoGetAcidPkaValue.restype = POINTER(c_float)
+        Indigo._lib.indigoGetAcidPkaValue.argtypes = [c_int, c_int, c_int, c_int]
+        Indigo._lib.indigoGetBasicPkaValue.restype = POINTER(c_float)
+        Indigo._lib.indigoGetBasicPkaValue.argtypes = [c_int, c_int, c_int, c_int]
         Indigo._lib.indigoAutomap.restype = c_int
         Indigo._lib.indigoAutomap.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoGetAtomMappingNumber.restype = c_int
@@ -2245,3 +2261,9 @@ class Indigo(object):
     def iterateTautomers(self, molecule, params):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateTautomers(molecule.id, params)), molecule)
+
+
+    def buildPkaModel(self, level, threshold, filename):
+        self._setSessionId()
+        return self._checkResult(Indigo._lib.indigoBuildPkaModel(level, threshold, filename.encode(ENCODE_ENCODING)))
+

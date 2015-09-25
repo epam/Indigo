@@ -95,6 +95,10 @@ namespace com.epam.indigo
 
         int indigoStandardize(int item);
         int indigoIonize(int item, float pH, float pH_toll);
+        float* indigoGetAcidPkaValue(int item, int atom, int level, int min_level);
+        float* indigoGetBasicPkaValue(int item, int atom, int level, int min_level);
+        int indigoBuildPkaModel(int level, float theshold, String filename);
+
         int indigoIterateAtoms(int molecule);
         int indigoIteratePseudoatoms(int molecule);
         int indigoIterateRSites(int molecule);

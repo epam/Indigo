@@ -34,6 +34,8 @@ struct IonizeOptions
    enum PkaModel { PKA_MODEL_SIMPLE, PKA_MODEL_ADVANCED };
 
    PkaModel model;
+   int level = 0;
+   int min_level = 0;
 
    IonizeOptions (PkaModel model = PKA_MODEL_SIMPLE) : model(model) {}
 };
@@ -45,7 +47,11 @@ public:
    static void estimate_pKa (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
                       Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas);
    static void getAtomLocalFingerprint (Molecule &mol, int idx, Array<char> &fp, int level);
-   static void build_pKa (int level);
+   static void getAtomLocalKey (Molecule &mol, int idx, Array<char> &fp);
+   static int buildPkaModel (int level, float threshold, const char * filename);
+
+   static float getAcidPkaValue (Molecule &mol, int idx, int level, int min_level);
+   static float getBasicPkaValue (Molecule &mol, int idx, int level, int min_level);
 
 private:
    MoleculePkaModel ();
@@ -59,16 +65,20 @@ private:
    static void _estimate_pKa_Advanced (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
                       Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas);
 
-   static float _getAcidPkaValue (Molecule &mol, int idx, int level);
-   static float _getBasicPkaValue (Molecule &mol, int idx, int level);
+
+   static int _asc_cmp_cb (int &v1, int &v2, void *context);
+   static void _checkCanonicalOrder(Molecule &mol, Molecule &can_mol, Array<int> &order);
+   static void _removeExtraHydrogens (Molecule &mol);
 
    ObjArray<QueryMolecule> acids;
    ObjArray<QueryMolecule> basics;
    Array<float> a_pkas;
    Array<float> b_pkas;
 
-   RedBlackStringMap<float> adv_a_pkas;
-   RedBlackStringMap<float> adv_b_pkas;
+   RedBlackStringObjMap<Array <float> > adv_a_pkas;
+   RedBlackStringObjMap<Array <float> > adv_b_pkas;
+   int level;
+   Array<float> max_deviations;
 };
 
 class DLLEXPORT MoleculeIonizer

@@ -119,6 +119,9 @@ public interface IndigoLib extends Library
 
    int indigoStandardize (int item);
    int indigoIonize(int item, float pH, float pH_toll);
+   Pointer indigoGetAcidPkaValue(int item, int atom, int level, int min_level);
+   Pointer indigoGetBasicPkaValue(int item, int atom, int level, int min_level);
+   int indigoBuildPkaModel(int level, float theshold, String filename);
 
    int indigoAutomap (int reaction, String mode);
    int indigoGetAtomMappingNumber (int reaction, int reaction_atom);

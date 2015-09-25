@@ -1767,6 +1767,26 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoIonize(self, pH, pHToll));
    }
 
+   public float getAcidPkaValue(IndigoObject atom, int level, int min_level)
+   {
+      dispatcher.setSessionID();
+      Pointer ptr = Indigo.checkResultPointer(this, _lib.indigoGetAcidPkaValue(self, atom.self, level, min_level));
+      return ptr.getFloat(0);
+   }
+
+   public float getBasicPkaValue(IndigoObject atom, int level, int min_level)
+   {
+      dispatcher.setSessionID();
+      Pointer ptr = Indigo.checkResultPointer(this, _lib.indigoGetBasicPkaValue(self, atom.self, level, min_level));
+      return ptr.getFloat(0);
+   }
+
+   public int buildPkaModel(int level, float threshold, String filename)
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoBuildPkaModel(level, threshold, filename));
+   }
+
    public int expandAbbreviations()
    {
          dispatcher.setSessionID();
