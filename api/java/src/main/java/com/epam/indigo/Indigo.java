@@ -828,7 +828,11 @@ public class Indigo {
 
         return new IndigoObject(this, result, molecule);
     }
-    
+
+    public int buildPkaModel(int level, float threshold, String filename) {
+        setSessionID();
+        return checkResult(this, _lib.indigoBuildPkaModel(level, threshold, filename));
+    }
 
     @Override
     protected void finalize() throws Throwable {

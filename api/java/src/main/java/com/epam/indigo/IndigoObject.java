@@ -1781,12 +1781,6 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return ptr.getFloat(0);
    }
 
-   public int buildPkaModel(int level, float threshold, String filename)
-   {
-      dispatcher.setSessionID();
-      return Indigo.checkResult(this, _lib.indigoBuildPkaModel(level, threshold, filename));
-   }
-
    public int expandAbbreviations()
    {
          dispatcher.setSessionID();
