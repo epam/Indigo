@@ -1656,3 +1656,13 @@ bool Molecule::ionize (float ph, float ph_toll, const IonizeOptions &options)
    updateEditRevision();
    return MoleculeIonizer::ionize(*this, ph, ph_toll, options);
 }
+
+float Molecule::getLogPValue (const LogPOptions &options)
+{
+   return MoleculeLogPModel::estimateLogPValue(*this, options);
+}
+
+float Molecule::getLogDValue (float pH, const LogPOptions &options)
+{
+   return MoleculeLogPModel::estimateLogDValue(*this, pH, options);
+}

@@ -28,6 +28,7 @@
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_ionize.h"
+#include "molecule/molecule_logp.h"
 
 #ifdef _WIN32
 #pragma warning(push)

@@ -161,6 +161,9 @@ public:
 
    bool ionize (float ph, float ph_toll, const IonizeOptions &options);
 
+   float getLogPValue (const LogPOptions &options);
+   float getLogDValue (float pH, const LogPOptions &options);
+
 protected:
    struct _Atom
    {
