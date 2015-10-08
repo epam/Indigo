@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.ggasoftware.indigo</groupId>
     <artifactId>bingo</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2beta-r1</version>
     <packaging>jar</packaging>
 
     <name>Bingo</name>
