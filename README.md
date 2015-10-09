@@ -50,14 +50,32 @@ The are different cmake presets:
 To generate project configuration, build the source code, and create the archives for 
 installation you need to execute build_scripts\bingo-release.py:
 
-	build_scripts\indigo-release-libs.py --preset=linux32
-	build_scripts\indigo-release-utils.py --preset=win32
+
+### Linux (gcc 4.7+)
+
+	build_scripts\indigo-release-libs.py --preset=linux64
+	build_scripts\indigo-release-utils.py --preset=linux64
+
+### Windows (Microsoft Visual Studio 2013+)
+
+	build_scripts\indigo-release-libs.py --preset=win64-2013
+	build_scripts\indigo-release-utils.py --preset=win64-2013
+
+### Mac OS (Clang 3.0+)
+
+	build_scripts\indigo-release-libs.py --preset=mac10.10
+	build_scripts\indigo-release-utils.py --preset=mac10.10
+
+### Other
 
 There are different cmake presets:
-	linux32, linux64, win32, win64, mac10.5, mac10.6 (for 10.7 also)
+	win32-2013, win64-2013, win32-mingw, linux32, linux32-universal, linux64, linux64-universal, mac10.6, mac10.7, mac10.8, mac10.9, mac10.10, mac-universal
+
+### Wrappers
 
 To generate Java, C#, or Python wrappers after build the binaries you need to execute
-	api\make-cs-wrappers.py
-	make-java-wrappers.py
-	make-python-wrappers.py
+
+    build_scripts\indigo-make-by-libs.py --type=java
+
+Available types: java, dotnet, python
 
