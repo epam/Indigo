@@ -5,7 +5,7 @@
         <version>7</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.ggasoftware</groupId>
+    <groupId>com.epam</groupId>
     <artifactId>indigo</artifactId>
     <version>1.2.2beta-r1</version>
     <packaging>jar</packaging>
@@ -25,9 +25,9 @@
     <developers>
         <developer>
             <id>engineer</id>
-            <name>Mikhail Kvyatkovskiy</name>
-            <email>mkvyatkovskiy@ggasoftware.com</email>
-            <timezone>UTC+4</timezone>
+            <name>Mikhail Kviatkovskii</name>
+            <email>mikhail_kviatkovskii@epam.com</email>
+            <timezone>UTC+3</timezone>
         </developer>
     </developers>
 
