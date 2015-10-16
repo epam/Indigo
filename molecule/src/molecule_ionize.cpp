@@ -341,6 +341,7 @@ int MoleculePkaModel::buildPkaModel (int max_level, float threshold, const char 
    }
 
    _model.level = level;
+   _model.advanced_model_ready = true;
 
    return level;
 }
@@ -860,7 +861,7 @@ void MoleculePkaModel::_loadAdvancedPkaModel()
          _model.adv_b_pkas.at(advanced_pka_model[i].a_fp).push(advanced_pka_model[i].deviation);
       }
    }
-   _model.simple_model_ready = true;
+   _model.advanced_model_ready = true;
 }
 
 void MoleculePkaModel::_estimate_pKa_Simple (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
