@@ -1372,7 +1372,7 @@ void MolfileLoader::_readCtab2000 ()
       }
       else if (c == 'A')
       {
-         QS_DEF(Array<char>, pseudo);
+         QS_DEF(Array<char>, alias);
 
          // There should be 3 characters to the atom index, but some molfiles
          // has only 2 digits
@@ -1381,16 +1381,29 @@ void MolfileLoader::_readCtab2000 ()
 
          atom_idx--;
          _scanner.skipLine();
-         _scanner.readLine(pseudo, true);
-         _preparePseudoAtomLabel(pseudo);
+         _scanner.readLine(alias, true);
+         _preparePseudoAtomLabel(alias);
 
-         if (_mol != 0)
-            _mol->setPseudoAtom(atom_idx, pseudo.ptr());
+         if (_atom_types[atom_idx] == _ATOM_ELEMENT)
+         {
+            int idx = _bmol->sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+            DataSGroup &sgroup = (DataSGroup &)_bmol->sgroups.getSGroup(idx);
+   
+            sgroup.atoms.push(atom_idx);
+            sgroup.data.copy(alias);
+            sgroup.display_pos.x = _bmol->getAtomXyz(idx).x;
+            sgroup.display_pos.y = _bmol->getAtomXyz(idx).y;
+         }
          else
-            _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                     new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, pseudo.ptr())));
-
-         _atom_types[atom_idx] = _ATOM_PSEUDO;
+         {
+            if (_mol != 0)
+               _mol->setPseudoAtom(atom_idx, alias.ptr());
+            else
+               _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
+                        new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, alias.ptr())));
+   
+            _atom_types[atom_idx] = _ATOM_PSEUDO;
+         }
       }
       else if (c == '\n')
          continue;
