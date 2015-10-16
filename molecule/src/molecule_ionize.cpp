@@ -35,8 +35,8 @@ IMPL_ERROR(MoleculePkaModel, "Molecule Pka Model");
 
 MoleculePkaModel::MoleculePkaModel ()
 {
-   _loadSimplePkaModel();
-   _loadAdvancedPkaModel();
+//   _loadSimplePkaModel();
+//   _loadAdvancedPkaModel();
 }
 
 void MoleculePkaModel::estimate_pKa (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
@@ -44,10 +44,14 @@ void MoleculePkaModel::estimate_pKa (Molecule &mol, const IonizeOptions &options
 {
    if (options.model == IonizeOptions::PKA_MODEL_SIMPLE)
    {
+      if (!_model.simple_model_ready)
+         _loadSimplePkaModel();  
       _estimate_pKa_Simple(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
    }
    else if (options.model == IonizeOptions::PKA_MODEL_ADVANCED)
    {
+      if (!_model.advanced_model_ready)
+         _loadAdvancedPkaModel();  
       _estimate_pKa_Advanced(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
    }
    else
@@ -438,6 +442,8 @@ void MoleculePkaModel::_loadSimplePkaModel()
       loader.loadSMARTS(basic);
       _model.b_pkas.push(simple_pka_model[i].pka);
    }
+
+   _model.simple_model_ready = true;
 }
 
 void MoleculePkaModel::_loadAdvancedPkaModel()
@@ -854,6 +860,7 @@ void MoleculePkaModel::_loadAdvancedPkaModel()
          _model.adv_b_pkas.at(advanced_pka_model[i].a_fp).push(advanced_pka_model[i].deviation);
       }
    }
+   _model.simple_model_ready = true;
 }
 
 void MoleculePkaModel::_estimate_pKa_Simple (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,

@@ -74,11 +74,13 @@ private:
    ObjArray<QueryMolecule> basics;
    Array<float> a_pkas;
    Array<float> b_pkas;
+   bool simple_model_ready = false;
 
    RedBlackStringObjMap<Array <float> > adv_a_pkas;
    RedBlackStringObjMap<Array <float> > adv_b_pkas;
    int level;
    Array<float> max_deviations;
+   bool advanced_model_ready = false;
 };
 
 class DLLEXPORT MoleculeIonizer
