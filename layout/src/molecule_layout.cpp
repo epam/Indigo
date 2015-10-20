@@ -36,9 +36,12 @@ void MoleculeLayout::_init(bool smart_layout)
    respect_existing_layout = false;
    filter = 0;
    _smart_layout = smart_layout;
-   if (_smart_layout) _layout_graph.reset(new MoleculeLayoutGraphSmart());
-   else _layout_graph.reset(new MoleculeLayoutGraphSimple());
-   max_iterations = 20;
+   if (_smart_layout) 
+      _layout_graph.reset(new MoleculeLayoutGraphSmart());
+   else 
+      _layout_graph.reset(new MoleculeLayoutGraphSimple());
+   
+   max_iterations = LAYOUT_MAX_ITERATION;
    _query = false;
    _atomMapping.clear();
 

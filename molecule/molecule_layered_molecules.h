@@ -29,7 +29,7 @@ namespace indigo {
 class DLLEXPORT LayeredMolecules : public BaseMolecule
 {      
 public:
-   enum { BOND_TYPES_NUMBER = 5 };
+   enum { BOND_TYPES_NUMBER = 5, MAX_CYCLE_LENGTH=22 };
 
    LayeredMolecules(BaseMolecule& molecule);
    virtual ~LayeredMolecules();

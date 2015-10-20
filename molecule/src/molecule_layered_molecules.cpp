@@ -678,7 +678,7 @@ void LayeredMolecules::_registerAromatizedLayers(int layerFrom, int layerTo)
       }
       else
       {
-         _hashsAromatized[l] = NULL;
+         _hashsAromatized[l] = 0;
       }
    }
 }
@@ -694,7 +694,8 @@ bool LayeredMolecules::aromatize(int layerFrom, int layerTo, const AromaticityOp
    CycleEnumerator cycle_enumerator(_proto);
 
    cycle_enumerator.cb_handle_cycle = _cb_handle_cycle;
-   cycle_enumerator.max_length = 22;
+   cycle_enumerator.max_length = MAX_CYCLE_LENGTH;
+   
    AromatizationContext context;
    context.self = this;
    context.layerFrom = layerFrom;
