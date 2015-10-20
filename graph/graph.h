@@ -17,6 +17,7 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/list.h"
+#include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/obj_array.h"
 #include "graph/filter.h"
@@ -92,7 +93,7 @@ struct Edge
 
 class CycleBasis;
 
-class DLLEXPORT Graph
+class DLLEXPORT Graph : public NonCopyable
 {
 public:
    DECL_ERROR;
@@ -208,8 +209,6 @@ protected:
    // NEVER USE IT.
    void _cloneGraph_KeepIndices (const Graph &other);
 
-private:
-   Graph (const Graph &); // no implicit copy
 };
 
 }

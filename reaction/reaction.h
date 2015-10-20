@@ -75,11 +75,7 @@ public:
    DECL_ERROR;
 
 protected:
-
    virtual int _addBaseMolecule (int side);
-
-private:
-   Reaction (const Reaction&);//no implicit copy
 };
 
 }

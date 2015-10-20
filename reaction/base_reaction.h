@@ -24,6 +24,7 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/auto_iter.h"
+#include "base_cpp/non_copyable.h"
 
 namespace indigo {
 
@@ -58,7 +59,7 @@ private:
    int _side;
 };
 
-class DLLEXPORT BaseReaction {
+class DLLEXPORT BaseReaction : public NonCopyable {
 public:
    enum
    {
@@ -176,9 +177,6 @@ protected:
    int _nextElement(int type, int index);
 
    virtual void _clone (BaseReaction &other, int index, int i, ObjArray< Array<int> >* mol_mappings);
-
-private:
-   BaseReaction(const BaseReaction&);//no implicit copy
 };
 
 }

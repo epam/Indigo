@@ -227,8 +227,6 @@ protected:
    void _invalidateVertexCache (int idx);
 
 private:
-   Molecule (const Molecule &); // no implicit copy
-
    int _getImplicitHForConnectivity (int idx, int conn, bool use_cache);
 };
 
