@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.epam</groupId>
     <artifactId>indigo</artifactId>
-    <version>1.2.2beta-r1</version>
+    <version>1.2.2beta-r11</version>
     <packaging>jar</packaging>
 
     <name>Indigo</name>
