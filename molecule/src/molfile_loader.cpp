@@ -1390,9 +1390,9 @@ void MolfileLoader::_readCtab2000 ()
             DataSGroup &sgroup = (DataSGroup &)_bmol->sgroups.getSGroup(idx);
    
             sgroup.atoms.push(atom_idx);
-            sgroup.data.copy(alias);
-            sgroup.display_pos.x = _bmol->getAtomXyz(idx).x;
-            sgroup.display_pos.y = _bmol->getAtomXyz(idx).y;
+            sgroup.name.readString("INDIGO_ALIAS", true);
+            sgroup.display_pos.x = _bmol->getAtomXyz(atom_idx).x;
+            sgroup.display_pos.y = _bmol->getAtomXyz(atom_idx).y;
          }
          else
          {

@@ -90,6 +90,9 @@ protected:
    bool _getRingBondCountFlagValue (QueryMolecule &qmol, int idx, int &value);
    bool _getSubstitutionCountFlagValue (QueryMolecule &qmol, int idx, int &value);
 
+   void _updateCIPStereoDescriptors(BaseMolecule &mol);
+   void _addCIPStereoDescriptors(BaseMolecule &mol);
+
    Output &_output;
    bool    _v2000;
 

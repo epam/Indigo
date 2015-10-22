@@ -1423,6 +1423,11 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       output.writeCR();
    }
 
+
+   _updateCIPStereoDescriptors(mol);
+
+
+
    QS_DEF(Array<int>, sgroup_ids);
    QS_DEF(Array<int>, child_ids);
    QS_DEF(Array<int>, parent_ids);
@@ -1907,4 +1912,30 @@ bool MolfileSaver::_hasNeighborEitherBond (BaseMolecule &mol, int edge_idx)
       if (mol.getBondDirection2(edge.end, end.neiVertex(k)) == BOND_EITHER)
          return true;
    return false;
+}
+
+void MolfileSaver::_updateCIPStereoDescriptors (BaseMolecule &mol)
+{
+   // clear old stereo descriptors DAT S-groups
+   for (auto i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+   {
+      SGroup &sgroup = mol.sgroups.getSGroup(i);
+      if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+      {
+         DataSGroup &datasgroup = (DataSGroup &)sgroup;
+         if (strcmp(datasgroup.name.ptr(), "INDIGO_CIP_DESC") == 0)
+         {
+            mol.sgroups.remove(i);
+         }
+      }         
+   }
+   // add current stereo descriptors DAT S-groups
+   if (add_stereo_desc)
+   {
+      _addCIPStereoDescriptors(mol);
+   }
+}
+
+void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
+{
 }
