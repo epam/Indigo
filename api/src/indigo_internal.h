@@ -273,6 +273,7 @@ public:
    int  molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
    bool molfile_saving_no_chiral;
    bool molfile_saving_skip_date;
+   bool molfile_saving_add_stereo_desc;
 
    bool smiles_saving_write_name;
 

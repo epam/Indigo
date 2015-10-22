@@ -81,6 +81,12 @@ static void indigoSetMolfileSavingSkipDate (int enabled)
    self.molfile_saving_skip_date = (enabled != 0);
 }
 
+static void indigoSetMolfileSavingAddStereoDesc (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.molfile_saving_add_stereo_desc = (enabled != 0);
+}
+
 static void indigoSetSmilesSavingWriteName (int enabled)
 {
    Indigo &self = indigoGetInstance();
@@ -470,6 +476,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode);
    mgr.setOptionHandlerBool("molfile-saving-no-chiral", indigoSetMolfileSavingNoChiral);
    mgr.setOptionHandlerBool("molfile-saving-skip-date", indigoSetMolfileSavingSkipDate);
+   mgr.setOptionHandlerBool("molfile-saving-add-stereo-desc", indigoSetMolfileSavingAddStereoDesc);
    mgr.setOptionHandlerBool("smiles-saving-write-name", indigoSetSmilesSavingWriteName);
    mgr.setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding);
    mgr.setOptionHandlerInt("fp-ord-qwords", indigoSetFPOrdQwords);

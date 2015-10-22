@@ -65,6 +65,8 @@ void Indigo::init ()
 
    molfile_saving_skip_date = false;
 
+   molfile_saving_add_stereo_desc = false;
+
    smiles_saving_write_name = false;
 
    aam_cancellation_timeout = 0;
@@ -114,6 +116,7 @@ void Indigo::initMolfileSaver (MolfileSaver &saver)
    saver.mode = molfile_saving_mode;
    saver.skip_date = molfile_saving_skip_date;
    saver.no_chiral = molfile_saving_no_chiral;
+   saver.add_stereo_desc = molfile_saving_add_stereo_desc;
 }
 
 void Indigo::initRxnfileSaver (RxnfileSaver &saver)

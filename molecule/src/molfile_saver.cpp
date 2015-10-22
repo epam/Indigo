@@ -46,6 +46,7 @@ TL_CP_GET(_bond_mapping)
    mode = MODE_AUTO;
    no_chiral = false;
    skip_date = false;
+   add_stereo_desc = false;
 }
 /*
  * Utility functions
