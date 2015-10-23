@@ -41,6 +41,12 @@ public:
       MODE_3000      // force saving to v3000 format
    };
 
+   struct CIPContext
+   {
+      BaseMolecule *mol;
+      Array<int>   *used;
+   };
+
    MolfileSaver (Output &output);
 
    void saveBaseMolecule   (BaseMolecule &mol);
@@ -92,6 +98,7 @@ protected:
 
    void _updateCIPStereoDescriptors(BaseMolecule &mol);
    void _addCIPStereoDescriptors(BaseMolecule &mol);
+   static int _cip_rules_cmp (int &i1, int &i2, void *context);
 
    Output &_output;
    bool    _v2000;

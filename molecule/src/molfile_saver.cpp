@@ -750,6 +750,8 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       output.writeStringCR("M  V30 END COLLECTION");
    }
 
+   _updateCIPStereoDescriptors(mol);
+
    _checkSGroupIndices(mol);
 
    if (mol.countSGroups() > 0)
@@ -1423,10 +1425,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       output.writeCR();
    }
 
-
    _updateCIPStereoDescriptors(mol);
-
-
 
    QS_DEF(Array<int>, sgroup_ids);
    QS_DEF(Array<int>, child_ids);
@@ -1938,4 +1937,209 @@ void MolfileSaver::_updateCIPStereoDescriptors (BaseMolecule &mol)
 
 void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
 {
+   QS_DEF(Array<int>, ligands);
+   QS_DEF(Array<int>, used);
+   QS_DEF(Array<char>, st_desc);
+   CIPContext context;
+
+   int atom_idx, type, group, pyramid[4];
+
+   int parity = 0;
+   int cip_parity = 0;
+
+   for (auto i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
+   {
+      mol.stereocenters.get(i, atom_idx, type, group, pyramid);
+
+      parity = _getStereocenterParity (mol, atom_idx);
+
+      ligands.clear();
+      used.clear();
+      ligands.copy(pyramid, 4);
+
+      used.push(atom_idx);
+      context.mol  = &mol;
+      context.used = &used;
+
+      ligands.qsort(_cip_rules_cmp, &context);
+
+      if (ligands[3] == -1)
+      {
+         // Assign implicit hydrogen the highest index
+         ligands[3] = mol.vertexEnd();
+      }
+      else
+      {
+         // Replace pure hydrogen atom with the highest value
+         for (int k = 0; k < 4; k++)
+         {
+            int p = ligands[k];
+            if (mol.getAtomNumber(p) == ELEM_H)
+            {
+               bool pure_hydrogen = (mol.getAtomIsotope(p) == 0);
+               if (pure_hydrogen)
+               {
+                  ligands[k] = mol.vertexEnd();
+                  break;
+               }
+            }
+         }
+      }
+
+      if (MoleculeStereocenters::isPyramidMappingRigid(ligands.ptr()))
+      {
+         cip_parity = 1;
+      }
+      else
+      {
+         cip_parity = 2;
+      }
+
+
+      if (cip_parity == 1)
+      {
+         if (parity == 1)
+         {
+            st_desc.readString("(R)", true);
+         }    
+         else
+         {
+            st_desc.readString("(S)", true);
+         }
+      }
+      else
+      {
+         if (parity == 1)
+         {
+            st_desc.readString("(S)", true);
+         }
+         else
+         {
+            st_desc.readString("(R)", true);
+         }
+      }
+
+      int sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+      DataSGroup &sgroup = (DataSGroup &)mol.sgroups.getSGroup(sg_idx);
+
+      sgroup.atoms.push(atom_idx);
+      sgroup.data.copy(st_desc);
+      sgroup.name.readString("INDIGO_CIP_DESC", true);
+      sgroup.display_pos.x = mol.getAtomXyz(atom_idx).x;
+      sgroup.display_pos.y = mol.getAtomXyz(atom_idx).y;
+   }
+}
+
+int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
+{
+   int res = 0;
+   QS_DEF(Array<int>, used);
+
+   CIPContext *cur_context = (CIPContext *)context;
+   BaseMolecule &mol = *(BaseMolecule *)cur_context->mol;
+   used.copy(*(Array<int> *)cur_context->used);
+
+   if ((i1 == -1) && (i2 == -1))
+      return 0;
+
+   if (i1 == -1)
+      return 1;
+
+   if (i2 == -1)
+      return -1;
+
+   if (mol.getAtomNumber(i1) > mol.getAtomNumber(i2))
+      return -1;
+   else if (mol.getAtomNumber(i1) < mol.getAtomNumber(i2))
+      return 1;
+   else
+   {
+      const Vertex &v1 = mol.getVertex(i1);
+      Array<int> neibs1;
+      neibs1.clear();
+      for (auto i : v1.neighbors())
+      {
+         if (used.find(v1.neiVertex(i)) == -1)
+         {
+            neibs1.push(v1.neiVertex(i));
+         }
+      }
+      if (neibs1.size() > 1)
+      {
+         CIPContext next_context;
+         Array<int> used1;
+         used1.copy(used);
+         used1.push(i1);
+         next_context.mol  = &mol;
+         next_context.used = &used1;
+         neibs1.qsort(_cip_rules_cmp, &next_context);
+      }
+
+      const Vertex &v2 = mol.getVertex(i2);
+      Array<int> neibs2;
+      neibs2.clear();
+      for (auto i : v2.neighbors())
+      {
+         if (used.find(v2.neiVertex(i)) == -1)
+         {
+            neibs2.push(v2.neiVertex(i));
+         }
+      }
+      if (neibs2.size() > 1)
+      {
+         CIPContext next_context;
+         Array<int> used2;
+         used2.copy(used);
+         used2.push(i2);
+         next_context.mol  = &mol;
+         next_context.used = &used2;
+         neibs2.qsort(_cip_rules_cmp, &next_context);
+      }
+
+
+      if (neibs2.size() > neibs1.size())
+      {  
+         for (auto i = 0; i < neibs1.size(); i++)
+         {       
+            res = mol.getAtomNumber(neibs2[i]) - mol.getAtomNumber(neibs1[i]); 
+            if (res != 0)
+               return res;
+         }
+         return 1;
+      }
+      else if (neibs2.size() < neibs1.size())
+      {  
+         for (auto i = 0; i < neibs2.size(); i++)
+         {       
+            res = mol.getAtomNumber(neibs2[i]) - mol.getAtomNumber(neibs1[i]); 
+            if (res != 0)
+               return res;
+         }
+         return -1;
+      }
+      else if (neibs1.size() > 0)
+      {
+         for (auto i = 0; i < neibs1.size(); i++)
+         {       
+            res = mol.getAtomNumber(neibs2[i]) - mol.getAtomNumber(neibs1[i]); 
+            if (res != 0)
+               return res;
+         }
+
+         for (auto i = 0; i < neibs1.size(); i++)
+         {       
+            CIPContext next_context;
+            Array<int> next_used;
+            next_used.copy(used);
+            next_used.push(i1);
+            next_used.push(i2);
+            next_context.mol  = &mol;
+            next_context.used = &next_used;
+            res = _cip_rules_cmp(neibs1[i], neibs2[i], &next_context);
+            if (res != 0)
+               return res;
+         }
+      }
+   }
+   return res;
 }

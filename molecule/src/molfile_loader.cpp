@@ -1391,6 +1391,7 @@ void MolfileLoader::_readCtab2000 ()
    
             sgroup.atoms.push(atom_idx);
             sgroup.name.readString("INDIGO_ALIAS", true);
+            sgroup.data.copy(alias);
             sgroup.display_pos.x = _bmol->getAtomXyz(atom_idx).x;
             sgroup.display_pos.y = _bmol->getAtomXyz(atom_idx).y;
          }
