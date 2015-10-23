@@ -49,7 +49,7 @@ shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-inchi-%s.
 os.chdir(os.path.join(api_dir, "plugins", "bingo", "java")) # TODO: Update when folder will be changed to nosql
 subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
 subprocess.check_call("mvn clean package -Dmaven.test.skip=true", shell=True)
-shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-nosql-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-nosql.jar'))
+shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-nosql-%s.jar' % version), os.path.join(dist_dir, 'java', 'bingo-nosql.jar'))
 
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "java")
