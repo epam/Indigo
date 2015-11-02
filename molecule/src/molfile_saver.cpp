@@ -2027,6 +2027,70 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
       sgroup.name.readString("INDIGO_CIP_DESC", true);
       sgroup.display_pos.x = mol.getAtomXyz(atom_idx).x;
       sgroup.display_pos.y = mol.getAtomXyz(atom_idx).y;
+      sgroup.detached = true;
+   }
+
+   for (auto i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+   {
+      cip_parity = mol.cis_trans.getParity(i);
+      if (cip_parity > 0)
+      {
+         if (mol.getBondTopology(i) == TOPOLOGY_RING)
+         {
+            if (mol.edgeSmallestRingSize(i) <= 7)
+               continue;
+         }
+
+         int beg = mol.getEdge(i).beg;
+         int end = mol.getEdge(i).end;
+         memcpy(pyramid, mol.cis_trans.getSubstituents(i), sizeof(pyramid));
+
+         used.clear();
+         used.push(beg);
+         used.push(end);
+         context.mol  = &mol;
+         context.used = &used;
+
+         int cmp_res1 = _cip_rules_cmp(pyramid[0], pyramid[1], &context);
+         int cmp_res2 = _cip_rules_cmp(pyramid[2], pyramid[3], &context);
+
+         if (cmp_res1 == cmp_res2)
+         {
+            if (cip_parity == 1)
+            {
+               st_desc.readString("(Z)", true);
+            }    
+            else
+            {
+               st_desc.readString("(E)", true);
+            }
+           
+         }
+         else
+         {
+            if (cip_parity == 1)
+            {
+               st_desc.readString("(E)", true);
+            }    
+            else
+            {
+               st_desc.readString("(Z)", true);
+            }
+         }
+
+
+       int sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+       DataSGroup &sgroup = (DataSGroup &)mol.sgroups.getSGroup(sg_idx);
+
+       sgroup.atoms.push(beg);
+       sgroup.atoms.push(end);
+       sgroup.data.copy(st_desc);
+       sgroup.name.readString("CIP_DESC", true);
+			sgroup.display_pos.x = (mol.getAtomXyz(beg).x + mol.getAtomXyz(end).x) / 2;
+			sgroup.display_pos.y = (mol.getAtomXyz(beg).y + mol.getAtomXyz(end).y) / 2;
+
+       sgroup.detached = true;
+      }
    }
 }
 
@@ -2102,8 +2166,10 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          for (auto i = 0; i < neibs1.size(); i++)
          {       
             res = mol.getAtomNumber(neibs2[i]) - mol.getAtomNumber(neibs1[i]); 
-            if (res != 0)
-               return res;
+            if (res > 0)
+               return 1;
+            else if (res < 0)
+               return -1;
          }
          return 1;
       }
@@ -2112,8 +2178,10 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          for (auto i = 0; i < neibs2.size(); i++)
          {       
             res = mol.getAtomNumber(neibs2[i]) - mol.getAtomNumber(neibs1[i]); 
-            if (res != 0)
-               return res;
+            if (res > 0)
+               return 1;
+            else if (res < 0)
+               return -1;
          }
          return -1;
       }
@@ -2122,8 +2190,10 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          for (auto i = 0; i < neibs1.size(); i++)
          {       
             res = mol.getAtomNumber(neibs2[i]) - mol.getAtomNumber(neibs1[i]); 
-            if (res != 0)
-               return res;
+            if (res > 0)
+               return 1;
+            else if (res < 0)
+               return -1;
          }
 
          for (auto i = 0; i < neibs1.size(); i++)
