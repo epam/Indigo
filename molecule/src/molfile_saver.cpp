@@ -2085,9 +2085,9 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
        sgroup.atoms.push(beg);
        sgroup.atoms.push(end);
        sgroup.data.copy(st_desc);
-       sgroup.name.readString("CIP_DESC", true);
-			sgroup.display_pos.x = (mol.getAtomXyz(beg).x + mol.getAtomXyz(end).x) / 2;
-			sgroup.display_pos.y = (mol.getAtomXyz(beg).y + mol.getAtomXyz(end).y) / 2;
+       sgroup.name.readString("INDIGO_CIP_DESC", true);
+       sgroup.display_pos.x = (mol.getAtomXyz(beg).x + mol.getAtomXyz(end).x) / 2;
+       sgroup.display_pos.y = (mol.getAtomXyz(beg).y + mol.getAtomXyz(end).y) / 2;
 
        sgroup.detached = true;
       }
