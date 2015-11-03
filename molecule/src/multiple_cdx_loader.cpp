@@ -162,7 +162,7 @@ bool MultipleCdxLoader::_findObject (int &beg, int &length)
    int level = 1;
    int level_found = 0;
 
-   while (!_scanner.isEOF())
+   while (!_scanner.isEOF() && ((_scanner.length() - _scanner.tell()) > 1))
    {
       tag = _scanner.readBinaryWord();
 
