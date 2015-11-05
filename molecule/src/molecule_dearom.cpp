@@ -432,12 +432,18 @@ byte* DearomatizationsStorage::getGroupDearomatization (int group, int dearomati
 {
    int offset = _aromaticGroups[group].dearomBondsState.offset +  
       dearomatizationIndex * bitGetSize(_aromaticGroups[group].aromBondsIndices.count);
+   
+   if(offset >= _dearomBondsStateArray.size())
+      return 0;
    return &_dearomBondsStateArray[offset];
 }
 
 const int* DearomatizationsStorage::getGroupBonds (int group) const
 {
-   return &_aromBondsArray[_aromaticGroups[group].aromBondsIndices.offset];
+   int offset = _aromaticGroups[group].aromBondsIndices.offset;
+   if (offset >= _aromBondsArray.size())
+      return 0;
+   return &_aromBondsArray[offset];
 }
 
 int DearomatizationsStorage::getGroupBondsCount (int group) const
