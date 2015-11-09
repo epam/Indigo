@@ -1960,6 +1960,7 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
       used.push(atom_idx);
       context.mol  = &mol;
       context.used = &used;
+      context.isotope_check = false;
 
       ligands.qsort(_cip_rules_cmp, &context);
 
@@ -2047,11 +2048,16 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
 
          used.clear();
          used.push(beg);
+         context.mol  = &mol;
+         context.used = &used;
+         context.isotope_check = false;
+         int cmp_res1 = _cip_rules_cmp(pyramid[0], pyramid[1], &context);
+
+         used.clear();
          used.push(end);
          context.mol  = &mol;
          context.used = &used;
-
-         int cmp_res1 = _cip_rules_cmp(pyramid[0], pyramid[1], &context);
+         context.isotope_check = false;
          int cmp_res2 = _cip_rules_cmp(pyramid[2], pyramid[3], &context);
 
          if (cmp_res1 == cmp_res2)
@@ -2118,6 +2124,17 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
       return 1;
    else
    {
+      if (cur_context->isotope_check)
+      {
+         int m1 = mol.getAtomIsotope(i1) == 0 ? Element::getDefaultIsotope(mol.getAtomNumber(i1)) : mol.getAtomIsotope(i1);
+         int m2 = mol.getAtomIsotope(i2) == 0 ? Element::getDefaultIsotope(mol.getAtomNumber(i2)) : mol.getAtomIsotope(i2);
+
+         if (m1 > m2)
+            return -1;
+         else if (m1 < m2)
+            return 1;
+      }
+
       const Vertex &v1 = mol.getVertex(i1);
       Array<int> neibs1;
       neibs1.clear();
@@ -2136,6 +2153,7 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          used1.push(i1);
          next_context.mol  = &mol;
          next_context.used = &used1;
+         next_context.isotope_check = cur_context->isotope_check;
          neibs1.qsort(_cip_rules_cmp, &next_context);
       }
 
@@ -2157,6 +2175,7 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          used2.push(i2);
          next_context.mol  = &mol;
          next_context.used = &used2;
+         next_context.isotope_check = cur_context->isotope_check;
          neibs2.qsort(_cip_rules_cmp, &next_context);
       }
 
@@ -2196,6 +2215,20 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
                return -1;
          }
 
+         if (cur_context->isotope_check)
+         {
+            for (auto i = 0; i < neibs1.size(); i++)
+            {
+               int m1 = mol.getAtomIsotope(neibs1[i]) == 0 ? Element::getDefaultIsotope(mol.getAtomNumber(neibs1[i])) : mol.getAtomIsotope(neibs1[i]);
+               int m2 = mol.getAtomIsotope(neibs2[i]) == 0 ? Element::getDefaultIsotope(mol.getAtomNumber(neibs2[i])) : mol.getAtomIsotope(neibs2[i]);
+
+               if (m1 > m2)
+                  return -1;
+               else if (m1 < m2)
+                  return 1;
+            }
+         }
+
          for (auto i = 0; i < neibs1.size(); i++)
          {       
             CIPContext next_context;
@@ -2205,10 +2238,39 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
             next_used.push(i2);
             next_context.mol  = &mol;
             next_context.used = &next_used;
+            next_context.isotope_check = cur_context->isotope_check;
             res = _cip_rules_cmp(neibs1[i], neibs2[i], &next_context);
-            if (res != 0)
-               return res;
+            if (res > 0)
+               return 1;
+            else if (res < 0)
+               return -1;
          }
+      }
+   }
+
+   if (used.size() == 1 && !cur_context->isotope_check)
+   {
+      int isotope_found = 0;
+      for (auto i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+      {
+         if (mol.getAtomIsotope(i) > 0)
+         {
+            isotope_found = mol.getAtomIsotope(i);
+         }
+      }
+      if (isotope_found > 0)
+      {
+         CIPContext next_context;
+         Array<int> next_used;
+         next_used.copy(used);
+         next_context.mol  = &mol;
+         next_context.used = &next_used;
+         next_context.isotope_check = true;
+         res = _cip_rules_cmp(i1, i2, &next_context);
+         if (res > 0)
+            return 1;
+         else if (res < 0)
+            return -1;
       }
    }
    return res;

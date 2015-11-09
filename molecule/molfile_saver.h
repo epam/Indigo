@@ -45,6 +45,7 @@ public:
    {
       BaseMolecule *mol;
       Array<int>   *used;
+      bool         isotope_check;
    };
 
    MolfileSaver (Output &output);
