@@ -321,6 +321,7 @@ public interface IndigoLib extends Library
    int indigoHasCoord (int molecule);
    int indigoHasZCoord (int molecule);
    int indigoIsChiral (int molecule);
+   int indigoIsPossibleFisherProjection (int molecule);
 
    int indigoCreateSubmolecule (int molecule, int nvertices, int vertices[]);
    int indigoGetSubmolecule (int molecule, int nvertices, int vertices[]);

@@ -850,6 +850,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoIsChiral(self)) == 1;
    }
 
+   public boolean isPossibleFisherProjection()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoIsPossibleFisherProjection(self)) == 1;
+   }
+
    public float[] xyz()
    {
       dispatcher.setSessionID();

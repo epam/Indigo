@@ -892,3 +892,24 @@ CEXPORT float * indigoGetBasicPkaValue (int object, int atom, int level, int min
    }
    INDIGO_END(0);
 }
+
+CEXPORT int indigoIsPossibleFisherProjection (int object)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
+
+      if (obj.type == IndigoObject::MOLECULE)
+      {
+         IndigoMolecule &m_obj = (IndigoMolecule &)obj;
+         Molecule &mol = m_obj.getMolecule();
+         if (mol.isPossibleFisherProjection())
+            return 1;
+         return 0;
+      }
+      else
+         throw IndigoError("indigoIsPossibleFisherProjection: expected molecule, got %s", obj.debugInfo());
+      return -1;
+   }
+   INDIGO_END(-1);
+}

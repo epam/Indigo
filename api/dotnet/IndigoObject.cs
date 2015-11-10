@@ -1241,6 +1241,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoIsChiral(self)) == 1;
         }
 
+        public bool isPossibleFisherProjection()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoIsPossibleFisherProjection(self)) == 1;
+        }
+
         public IndigoObject createSubmolecule(int[] vertices)
         {
             dispatcher.setSessionID();

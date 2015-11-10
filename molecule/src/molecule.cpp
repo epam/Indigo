@@ -1656,3 +1656,63 @@ bool Molecule::ionize (float ph, float ph_toll, const IonizeOptions &options)
    updateEditRevision();
    return MoleculeIonizer::ionize(*this, ph, ph_toll, options);
 }
+
+bool Molecule::isPossibleFisherProjection ()
+{
+   bool fisher_found = false;
+
+   if (!BaseMolecule::hasCoord(*this) || BaseMolecule::hasZCoord(*this))
+      return false;
+
+   for (auto i : edges())
+   {
+      if (getBondDirection(i) > 0)
+         return false;
+   }
+
+   for (auto i : vertices())
+   {
+      if ((getAtomNumber(i) == ELEM_C) && (getVertex(i).degree() == 4))
+      {
+         const Vertex &v = getVertex(i);
+         Vec3f &central_atom = getAtomXyz(i);
+         Vec3f nei_coords[4];
+         int nei_count = 0;
+         for (auto j : v.neighbors())
+         {
+            nei_coords[nei_count++] = getAtomXyz(v.neiVertex(j));
+         }
+
+         float angle;
+         Vec3f bond1, bond2;
+         int ncount = 0;
+         for (auto j = 0; j < 4; j++)
+         {
+            if (j == 3)
+            {
+               bond1.diff(nei_coords[3], central_atom);
+               bond1.normalize();
+               bond2.diff(nei_coords[0], central_atom);
+               bond2.normalize();
+               Vec3f::angle(bond1, bond2, angle);
+            }
+            else
+            {
+               bond1.diff(nei_coords[j], central_atom);
+               bond1.normalize();
+               bond2.diff(nei_coords[j+1], central_atom);
+               bond2.normalize();
+               Vec3f::angle(bond1, bond2, angle);
+            }
+
+            if ((fabs(angle - PI/2.f) < EPSILON) || (fabs(angle - PI) < EPSILON))
+               ncount++;
+         }
+         if (ncount == 4)
+         {  
+            return true;
+         }
+      }
+   }
+   return false;
+}
