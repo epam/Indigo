@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.epam.indigo</groupId>
     <artifactId>bingo-nosql</artifactId>
-    <version>1.2.2beta-r13</version>
+    <version>1.2.2beta-r37</version>
     <packaging>jar</packaging>
 
     <name>Indigo NoSQL</name>
