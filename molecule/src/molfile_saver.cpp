@@ -2137,7 +2137,9 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
 
       const Vertex &v1 = mol.getVertex(i1);
       Array<int> neibs1;
+      Array<int> cip_neibs1;
       neibs1.clear();
+      cip_neibs1.clear();
       for (auto i : v1.neighbors())
       {
          if (used.find(v1.neiVertex(i)) == -1)
@@ -2157,9 +2159,57 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          neibs1.qsort(_cip_rules_cmp, &next_context);
       }
 
+      cip_neibs1.copy(neibs1);
+
+      for (auto i : v1.neighbors())
+      {
+         if (mol.getBondOrder(v1.neiEdge(i)) == BOND_SINGLE)
+         {
+         }
+         else if (mol.getBondOrder(v1.neiEdge(i)) == BOND_DOUBLE)
+         {
+            int ins = cip_neibs1.find(v1.neiVertex(i));
+            if (ins > -1)
+            {
+               cip_neibs1.expand(cip_neibs1.size() + 1);
+               if (ins < cip_neibs1.size() - 2)
+               {
+                  for (auto k = cip_neibs1.size() - 1; k > ins; k--)
+                  {
+                      cip_neibs1[k] = cip_neibs1[k-1];
+                  }
+               }
+               cip_neibs1[ins+1] = v1.neiVertex(i);
+            }
+         }
+         else if (mol.getBondOrder(v1.neiEdge(i)) == BOND_TRIPLE)
+         {
+            int ins = cip_neibs1.find(v1.neiVertex(i));
+            if (ins > -1)
+            {
+               cip_neibs1.expand(cip_neibs1.size() + 2);
+               if (ins < cip_neibs1.size() - 3)
+               {
+                  for (auto k = cip_neibs1.size() - 1; k > ins; k--)
+                  {
+                      cip_neibs1[k] = cip_neibs1[k-2];
+                  }
+               }
+               cip_neibs1[ins+1] = v1.neiVertex(i);
+               cip_neibs1[ins+2] = v1.neiVertex(i);
+            }
+         }
+         else if (mol.getBondOrder(v1.neiEdge(i)) == BOND_AROMATIC)
+         {
+         }
+      }
+
       const Vertex &v2 = mol.getVertex(i2);
       Array<int> neibs2;
+      Array<int> cip_neibs2;
       neibs2.clear();
+      cip_neibs2.clear();
+
       for (auto i : v2.neighbors())
       {
          if (used.find(v2.neiVertex(i)) == -1)
@@ -2179,12 +2229,57 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          neibs2.qsort(_cip_rules_cmp, &next_context);
       }
 
+      cip_neibs2.copy(neibs2);
 
-      if (neibs2.size() > neibs1.size())
+      for (auto i : v2.neighbors())
+      {
+         if (mol.getBondOrder(v2.neiEdge(i)) == BOND_SINGLE)
+         {
+         }
+         else if (mol.getBondOrder(v2.neiEdge(i)) == BOND_DOUBLE)
+         {
+            int ins = cip_neibs2.find(v2.neiVertex(i));
+            if (ins > -1)
+            {
+               cip_neibs2.expand(cip_neibs2.size() + 1);
+               if (ins < cip_neibs2.size() - 2)
+               {
+                  for (auto k = cip_neibs2.size() - 1; k > ins; k--)
+                  {
+                     cip_neibs2[k] = cip_neibs2[k-1];
+                  }
+               }
+               cip_neibs2[ins+1] = v2.neiVertex(i);
+            }
+         }
+         else if (mol.getBondOrder(v2.neiEdge(i)) == BOND_TRIPLE)
+         {
+            int ins = cip_neibs2.find(v2.neiVertex(i));
+            if (ins > -1)
+            {
+               cip_neibs2.expand(cip_neibs2.size() + 2);
+               if (ins < cip_neibs2.size() - 3)
+               {
+                  for (auto k = cip_neibs2.size() - 1; k > ins; k--)
+                  {
+                      cip_neibs2[k] = cip_neibs2[k-2];
+                  }
+               }
+               cip_neibs2[ins+1] = v2.neiVertex(i);
+               cip_neibs2[ins+2] = v2.neiVertex(i);
+            }
+         }
+         else if (mol.getBondOrder(v2.neiEdge(i)) == BOND_AROMATIC)
+         {
+         }
+      }
+
+
+      if (cip_neibs2.size() > cip_neibs1.size())
       {  
-         for (auto i = 0; i < neibs1.size(); i++)
+         for (auto i = 0; i < cip_neibs1.size(); i++)
          {       
-            res = mol.getAtomNumber(neibs2[i]) - mol.getAtomNumber(neibs1[i]); 
+            res = mol.getAtomNumber(cip_neibs2[i]) - mol.getAtomNumber(cip_neibs1[i]); 
             if (res > 0)
                return 1;
             else if (res < 0)
@@ -2192,11 +2287,11 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          }
          return 1;
       }
-      else if (neibs2.size() < neibs1.size())
+      else if (cip_neibs2.size() < cip_neibs1.size())
       {  
-         for (auto i = 0; i < neibs2.size(); i++)
+         for (auto i = 0; i < cip_neibs2.size(); i++)
          {       
-            res = mol.getAtomNumber(neibs2[i]) - mol.getAtomNumber(neibs1[i]); 
+            res = mol.getAtomNumber(cip_neibs2[i]) - mol.getAtomNumber(cip_neibs1[i]); 
             if (res > 0)
                return 1;
             else if (res < 0)
@@ -2204,11 +2299,11 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          }
          return -1;
       }
-      else if (neibs1.size() > 0)
+      else if (cip_neibs1.size() > 0)
       {
-         for (auto i = 0; i < neibs1.size(); i++)
+         for (auto i = 0; i < cip_neibs1.size(); i++)
          {       
-            res = mol.getAtomNumber(neibs2[i]) - mol.getAtomNumber(neibs1[i]); 
+            res = mol.getAtomNumber(cip_neibs2[i]) - mol.getAtomNumber(cip_neibs1[i]); 
             if (res > 0)
                return 1;
             else if (res < 0)
