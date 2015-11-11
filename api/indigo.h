@@ -590,7 +590,7 @@ CEXPORT int indigoHasCoord (int molecule);
 CEXPORT int indigoHasZCoord (int molecule);
 CEXPORT int indigoIsChiral (int molecule);
 
-CEXPORT int indigoIsPossibleFisherProjection (int molecule);
+CEXPORT int indigoIsPossibleFischerProjection (int molecule, const char *options);
 
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices);
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices, int nedges, int *edges);

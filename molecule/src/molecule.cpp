@@ -1657,10 +1657,8 @@ bool Molecule::ionize (float ph, float ph_toll, const IonizeOptions &options)
    return MoleculeIonizer::ionize(*this, ph, ph_toll, options);
 }
 
-bool Molecule::isPossibleFisherProjection ()
+bool Molecule::isPossibleFischerProjection (const char *options)
 {
-   bool fisher_found = false;
-
    if (!BaseMolecule::hasCoord(*this) || BaseMolecule::hasZCoord(*this))
       return false;
 

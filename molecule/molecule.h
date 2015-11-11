@@ -161,7 +161,7 @@ public:
 
    bool ionize (float ph, float ph_toll, const IonizeOptions &options);
 
-   bool isPossibleFisherProjection ();
+   bool isPossibleFischerProjection (const char* options);
 
 protected:
    struct _Atom

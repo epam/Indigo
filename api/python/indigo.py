@@ -909,9 +909,9 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return bool(self.dispatcher._checkResult(Indigo._lib.indigoIsChiral(self.id)))
 
-    def isPossibleFisherProjection(self):
+    def isPossibleFischerProjection(self, options):
         self.dispatcher._setSessionId()
-        return bool(self.dispatcher._checkResult(Indigo._lib.indigoIsPossibleFisherProjection(self.id)))
+        return bool(self.dispatcher._checkResult(Indigo._lib.indigoIsPossibleFischerProjection(self.id, options.encode(ENCODE_ENCODING))))
 
     def createSubmolecule(self, vertices):
         self.dispatcher._setSessionId()
@@ -1823,8 +1823,8 @@ class Indigo(object):
         Indigo._lib.indigoHasZCoord.argtypes = [c_int]
         Indigo._lib.indigoIsChiral.restype = c_int
         Indigo._lib.indigoIsChiral.argtypes = [c_int]
-        Indigo._lib.indigoIsPossibleFisherProjection.restype = c_int
-        Indigo._lib.indigoIsPossibleFisherProjection.argtypes = [c_int]
+        Indigo._lib.indigoIsPossibleFischerProjection.restype = c_int
+        Indigo._lib.indigoIsPossibleFischerProjection.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoCreateSubmolecule.restype = c_int
         Indigo._lib.indigoCreateSubmolecule.argtypes = [c_int, c_int, POINTER(c_int)]
         Indigo._lib.indigoCreateEdgeSubmolecule.restype = c_int
