@@ -1938,7 +1938,8 @@ void MolfileSaver::_updateCIPStereoDescriptors (BaseMolecule &mol)
 void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
 {
    QS_DEF(Array<int>, ligands);
-   QS_DEF(Array<int>, used);
+   QS_DEF(Array<int>, used1);
+   QS_DEF(Array<int>, used2);
    QS_DEF(Array<char>, st_desc);
    CIPContext context;
 
@@ -1954,12 +1955,15 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
       parity = _getStereocenterParity (mol, atom_idx);
 
       ligands.clear();
-      used.clear();
+      used1.clear();
+      used2.clear();
       ligands.copy(pyramid, 4);
 
-      used.push(atom_idx);
+      used1.push(atom_idx);
+      used2.push(atom_idx);
       context.mol  = &mol;
-      context.used = &used;
+      context.used1 = &used1;
+      context.used2 = &used2;
       context.isotope_check = false;
 
       ligands.qsort(_cip_rules_cmp, &context);
@@ -2046,17 +2050,23 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
          int end = mol.getEdge(i).end;
          memcpy(pyramid, mol.cis_trans.getSubstituents(i), sizeof(pyramid));
 
-         used.clear();
-         used.push(beg);
+         used1.clear();
+         used2.clear();
+         used1.push(beg);
+         used2.push(beg);
          context.mol  = &mol;
-         context.used = &used;
+         context.used1 = &used1;
+         context.used2 = &used2;
          context.isotope_check = false;
          int cmp_res1 = _cip_rules_cmp(pyramid[0], pyramid[1], &context);
 
-         used.clear();
-         used.push(end);
+         used1.clear();
+         used2.clear();
+         used1.push(end);
+         used2.push(end);
          context.mol  = &mol;
-         context.used = &used;
+         context.used1 = &used1;
+         context.used2 = &used2;
          context.isotope_check = false;
          int cmp_res2 = _cip_rules_cmp(pyramid[2], pyramid[3], &context);
 
@@ -2103,11 +2113,13 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
 int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
 {
    int res = 0;
-   QS_DEF(Array<int>, used);
+   Array<int> used1;
+   Array<int> used2;
 
    CIPContext *cur_context = (CIPContext *)context;
    BaseMolecule &mol = *(BaseMolecule *)cur_context->mol;
-   used.copy(*(Array<int> *)cur_context->used);
+   used1.copy(*(Array<int> *)cur_context->used1);
+   used2.copy(*(Array<int> *)cur_context->used2);
 
    if ((i1 == -1) && (i2 == -1))
       return 0;
@@ -2142,7 +2154,7 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
       cip_neibs1.clear();
       for (auto i : v1.neighbors())
       {
-         if (used.find(v1.neiVertex(i)) == -1)
+         if (used1.find(v1.neiVertex(i)) == -1)
          {
             neibs1.push(v1.neiVertex(i));
          }
@@ -2150,16 +2162,58 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
       if (neibs1.size() > 1)
       {
          CIPContext next_context;
-         Array<int> used1;
-         used1.copy(used);
-         used1.push(i1);
+         Array<int> used1_next;
+         Array<int> used2_next;
+         used1_next.copy(used1);
+         used1_next.push(i1);
+         used2_next.copy(used1_next);
          next_context.mol  = &mol;
-         next_context.used = &used1;
+         next_context.used1 = &used1_next;
+         next_context.used2 = &used2_next;
          next_context.isotope_check = cur_context->isotope_check;
          neibs1.qsort(_cip_rules_cmp, &next_context);
       }
 
       cip_neibs1.copy(neibs1);
+
+      if (mol.vertexInRing(i1))
+      {
+         for (auto i : v1.neighbors())
+         {
+            if ((used1.find(v1.neiVertex(i)) != -1) && (used1.find(v1.neiVertex(i)) != (used1.size() - 1)))
+            {
+               int at_idx = v1.neiVertex(i);
+               int an = mol.getAtomNumber(at_idx);
+               bool inserted = false;
+
+               if (cip_neibs1.size() > 0)
+               {
+                  for (int j = 0; j < cip_neibs1.size(); j++)
+                  {
+                     if (mol.getAtomNumber(cip_neibs1[j]) < an) 
+                     {
+                        cip_neibs1.expand(cip_neibs1.size() + 1);
+                        for (auto k = cip_neibs1.size() - 1; k > j; k--)
+                        {
+                               cip_neibs1[k] = cip_neibs1[k-1];
+                        }
+                        cip_neibs1[j] = at_idx;
+                        inserted = true;
+                        break;
+                     }
+                  }
+                  if (!inserted)
+                  {
+                     cip_neibs1.push(at_idx);
+                  }
+               }
+               else
+               {
+                  cip_neibs1.push(at_idx);
+               }
+            }
+         }
+      }
 
       for (auto i : v1.neighbors())
       {
@@ -2212,7 +2266,7 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
 
       for (auto i : v2.neighbors())
       {
-         if (used.find(v2.neiVertex(i)) == -1)
+         if (used2.find(v2.neiVertex(i)) == -1)
          {
             neibs2.push(v2.neiVertex(i));
          }
@@ -2220,16 +2274,58 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
       if (neibs2.size() > 1)
       {
          CIPContext next_context;
-         Array<int> used2;
-         used2.copy(used);
-         used2.push(i2);
+         Array<int> used1_next;
+         Array<int> used2_next;
+         used1_next.copy(used2);
+         used1_next.push(i2);
+         used2_next.copy(used1_next);
          next_context.mol  = &mol;
-         next_context.used = &used2;
+         next_context.used1 = &used1_next;
+         next_context.used2 = &used2_next;
          next_context.isotope_check = cur_context->isotope_check;
          neibs2.qsort(_cip_rules_cmp, &next_context);
       }
 
       cip_neibs2.copy(neibs2);
+
+      if (mol.vertexInRing(i2))
+      {
+         for (auto i : v2.neighbors())
+         {
+            if ((used2.find(v2.neiVertex(i)) != -1) && (used2.find(v2.neiVertex(i)) != (used2.size() - 1)))
+            {
+               int at_idx = v2.neiVertex(i);
+               int an = mol.getAtomNumber(at_idx);
+               bool inserted = false;
+
+               if (cip_neibs2.size() > 0)
+               {
+                  for (int j = 0; j < cip_neibs2.size(); j++)
+                  {
+                     if (mol.getAtomNumber(cip_neibs2[j]) < an) 
+                     {
+                        cip_neibs2.expand(cip_neibs2.size() + 1);
+                        for (auto k = cip_neibs2.size() - 1; k > j; k--)
+                        {
+                               cip_neibs2[k] = cip_neibs2[k-1];
+                        }
+                        cip_neibs2[j] = at_idx;
+                        inserted = true;
+                        break;
+                     }
+                  }
+                  if (!inserted)
+                  {
+                     cip_neibs2.push(at_idx);
+                  }
+               }
+               else
+               {
+                  cip_neibs2.push(at_idx);
+               }
+            }
+         }
+      }
 
       for (auto i : v2.neighbors())
       {
@@ -2324,26 +2420,45 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
             }
          }
 
-         for (auto i = 0; i < neibs1.size(); i++)
-         {       
-            CIPContext next_context;
-            Array<int> next_used;
-            next_used.copy(used);
-            next_used.push(i1);
-            next_used.push(i2);
-            next_context.mol  = &mol;
-            next_context.used = &next_used;
-            next_context.isotope_check = cur_context->isotope_check;
-            res = _cip_rules_cmp(neibs1[i], neibs2[i], &next_context);
-            if (res > 0)
-               return 1;
-            else if (res < 0)
-               return -1;
+         int next_level_branches = 0;
+         if (neibs2.size() > neibs1.size())
+            next_level_branches = neibs1.size();
+         else if (neibs2.size() < neibs1.size())
+            next_level_branches = neibs2.size();
+         else
+            next_level_branches = neibs1.size();
+
+         
+         if (next_level_branches > 0)
+         {
+            for (auto i = 0; i < next_level_branches; i++)
+            {       
+               CIPContext next_context;
+               Array<int> used1_next;
+               Array<int> used2_next;
+               used1_next.copy(used1);
+               used1_next.push(i1);
+               used2_next.copy(used2);
+               used2_next.push(i2);
+               next_context.mol  = &mol;
+               next_context.used1 = &used1_next;
+               next_context.used2 = &used2_next;
+               next_context.isotope_check = cur_context->isotope_check;
+               res = _cip_rules_cmp(neibs1[i], neibs2[i], &next_context);
+               if (res > 0)
+                  return 1;
+               else if (res < 0)
+                  return -1;
+            }
          }
+         else if (neibs2.size() > 0)
+            return 1;
+         else if (neibs1.size() > 0)
+            return -1;
       }
    }
 
-   if (used.size() == 1 && !cur_context->isotope_check)
+   if (used1.size() == 1 && !cur_context->isotope_check)
    {
       int isotope_found = 0;
       for (auto i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
@@ -2356,10 +2471,13 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
       if (isotope_found > 0)
       {
          CIPContext next_context;
-         Array<int> next_used;
-         next_used.copy(used);
+         Array<int> used1_next;
+         Array<int> used2_next;
+         used1_next.copy(used1);
+         used2_next.copy(used2);
          next_context.mol  = &mol;
-         next_context.used = &next_used;
+         next_context.used1 = &used1_next;
+         next_context.used2 = &used2_next;
          next_context.isotope_check = true;
          res = _cip_rules_cmp(i1, i2, &next_context);
          if (res > 0)

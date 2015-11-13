@@ -44,7 +44,8 @@ public:
    struct CIPContext
    {
       BaseMolecule *mol;
-      Array<int>   *used;
+      Array<int>   *used1;
+      Array<int>   *used2;
       bool         isotope_check;
    };
 
