@@ -147,9 +147,12 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>1.4</version>
                         <configuration>
                             <passphrase>${gpg.passhprase}</passphrase>
+                            <gpgArguments>
+                                <arg>--no-tty</arg>
+                            </gpgArguments>
                         </configuration>
                         <executions>
                             <execution>
