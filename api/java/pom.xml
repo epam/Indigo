@@ -128,7 +128,7 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
-    </distributionManagement>    
+    </distributionManagement>
     <profiles>
         <profile>
             <id>sign-artifacts</id>
@@ -146,6 +146,9 @@
                         <version>1.6</version>
                         <configuration>
                             <passphrase>${gpg.passhprase}</passphrase>
+                            <gpgArguments>
+                                <arg>--no-tty</arg>
+                            </gpgArguments>
                         </configuration>
                         <executions>
                             <execution>
