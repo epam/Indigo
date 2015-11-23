@@ -46,6 +46,7 @@ public:
       BaseMolecule *mol;
       Array<int>   *used1;
       Array<int>   *used2;
+      bool         next_level;
       bool         isotope_check;
    };
 

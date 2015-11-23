@@ -1964,6 +1964,7 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
       context.mol  = &mol;
       context.used1 = &used1;
       context.used2 = &used2;
+      context.next_level = true;
       context.isotope_check = false;
 
       ligands.qsort(_cip_rules_cmp, &context);
@@ -2057,6 +2058,7 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
          context.mol  = &mol;
          context.used1 = &used1;
          context.used2 = &used2;
+         context.next_level = true;
          context.isotope_check = false;
          int cmp_res1 = _cip_rules_cmp(pyramid[0], pyramid[1], &context);
 
@@ -2067,6 +2069,7 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
          context.mol  = &mol;
          context.used1 = &used1;
          context.used2 = &used2;
+         context.next_level = true;
          context.isotope_check = false;
          int cmp_res2 = _cip_rules_cmp(pyramid[2], pyramid[3], &context);
 
@@ -2170,6 +2173,7 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          next_context.mol  = &mol;
          next_context.used1 = &used1_next;
          next_context.used2 = &used2_next;
+         next_context.next_level = false;
          next_context.isotope_check = cur_context->isotope_check;
          neibs1.qsort(_cip_rules_cmp, &next_context);
       }
@@ -2282,6 +2286,7 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          next_context.mol  = &mol;
          next_context.used1 = &used1_next;
          next_context.used2 = &used2_next;
+         next_context.next_level = false;
          next_context.isotope_check = cur_context->isotope_check;
          neibs2.qsort(_cip_rules_cmp, &next_context);
       }
@@ -2420,6 +2425,10 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
             }
          }
 
+         if (!cur_context->next_level)
+            return 0;
+
+
          int next_level_branches = 0;
          if (neibs2.size() > neibs1.size())
             next_level_branches = neibs1.size();
@@ -2443,6 +2452,7 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
                next_context.mol  = &mol;
                next_context.used1 = &used1_next;
                next_context.used2 = &used2_next;
+               next_context.next_level = false;
                next_context.isotope_check = cur_context->isotope_check;
                res = _cip_rules_cmp(neibs1[i], neibs2[i], &next_context);
                if (res > 0)
@@ -2450,6 +2460,28 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
                else if (res < 0)
                   return -1;
             }
+
+            for (auto i = 0; i < next_level_branches; i++)
+            {       
+               CIPContext next_context;
+               Array<int> used1_next;
+               Array<int> used2_next;
+               used1_next.copy(used1);
+               used1_next.push(i1);
+               used2_next.copy(used2);
+               used2_next.push(i2);
+               next_context.mol  = &mol;
+               next_context.used1 = &used1_next;
+               next_context.used2 = &used2_next;
+               next_context.next_level = true;
+               next_context.isotope_check = cur_context->isotope_check;
+               res = _cip_rules_cmp(neibs1[i], neibs2[i], &next_context);
+               if (res > 0)
+                  return 1;
+               else if (res < 0)
+                  return -1;
+            }
+
          }
          else if (neibs2.size() > 0)
             return 1;
@@ -2478,6 +2510,7 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
          next_context.mol  = &mol;
          next_context.used1 = &used1_next;
          next_context.used2 = &used2_next;
+         next_context.next_level = false;
          next_context.isotope_check = true;
          res = _cip_rules_cmp(i1, i2, &next_context);
          if (res > 0)
