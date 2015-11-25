@@ -65,6 +65,12 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
          elem = handle.Element();
       }
       if (elem == 0)
+      {
+         // For support Chemaxon CML extention (via FileScanner)
+         handle = hxml.FirstChild("cml").FirstChild("MDocument").FirstChild("MChemicalStruct").FirstChild("molecule");
+         elem = handle.Element();
+      }
+      if (elem == 0)
          throw Error("no <molecule>?");
       _loadMolecule(handle, mol);
    }
@@ -551,4 +557,125 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
    }
    else if (BaseMolecule::hasCoord(mol))
       mol.cis_trans.build(0);
+
+   // Sgroups
+
+   MoleculeSGroups *sgroups = &mol.sgroups;
+
+   for (TiXmlElement *elem = handle.FirstChild("molecule").Element();
+      elem; 
+      elem = elem->NextSiblingElement())
+   {
+      const char *role = elem->Attribute("role");
+      if (role == 0)
+         throw Error("Sgroup without type");
+
+      DataSGroup *dsg = 0;
+      if (strncmp(role, "DataSgroup", 10) == 0)
+      {
+         int idx = sgroups->addSGroup(SGroup::SG_TYPE_DAT);
+         dsg = (DataSGroup *) &sgroups->getSGroup(idx);
+      }
+
+      if (dsg == 0)
+         continue;
+
+      const char *atom_refs = elem->Attribute("atomRefs");
+      if (atom_refs != 0)
+      {
+         BufferScanner strscan(atom_refs);
+         QS_DEF(Array<char>, id);
+
+         if (strscan.isEOF())
+            break;
+
+         strscan.readWord(id, 0);
+         int aidx = getAtomIdx(id.ptr());
+         strscan.skipSpace();
+         dsg->atoms.push(aidx);
+      }
+
+      const char * fieldname = elem->Attribute("fieldName");
+      if (fieldname != 0)
+         dsg->name.readString(fieldname, true);
+
+      const char * fielddata = elem->Attribute("fieldData");
+      if (fieldname != 0)
+         dsg->data.readString(fielddata, true);
+
+      const char * fieldtype = elem->Attribute("fieldType");
+      if (fieldtype != 0)
+         dsg->description.readString(fieldtype, true);
+
+      const char * disp_x = elem->Attribute("x");
+      if (disp_x != 0)
+      {
+         BufferScanner strscan(disp_x);
+         dsg->display_pos.x = strscan.readFloat();
+      }
+
+      const char * disp_y = elem->Attribute("y");
+      if (disp_y != 0)
+      {
+         BufferScanner strscan(disp_y);
+         dsg->display_pos.y = strscan.readFloat();
+      }
+
+      const char * detached = elem->Attribute("dataDetached");
+      if (detached != 0)
+      {
+         if ( (strncmp(detached, "yes", 3) == 0) ||
+              (strncmp(detached, "on", 2) == 0) ||
+              (strncmp(detached, "1", 1) == 0) )
+         {
+            dsg->detached = true;
+         }
+      }
+
+      const char * relative = elem->Attribute("placement");
+      if (relative != 0)
+      {
+         if (strncmp(relative, "Relative", 8) == 0)
+         {
+            dsg->relative = true;
+         }
+      }
+
+
+      const char * disp_units = elem->Attribute("unitsDisplayed");
+      if (disp_units != 0)
+      {
+         if ( (strncmp(disp_units, "yes", 3) == 0) ||
+              (strncmp(disp_units, "on", 2) == 0) ||
+              (strncmp(disp_units, "1", 1) == 0) )
+         {
+            dsg->display_units = true;
+         }
+      }
+
+      dsg->num_chars = 0;
+      const char * disp_chars = elem->Attribute("displayedChars");
+      if (disp_chars != 0)
+      {
+         BufferScanner strscan(disp_chars);
+         dsg->num_chars = strscan.readInt1();
+      }
+
+      const char * disp_tag = elem->Attribute("tag");
+      if (disp_tag != 0)
+      {
+         BufferScanner strscan(disp_tag);
+         dsg->tag = strscan.readChar();
+      }
+
+      const char * query_op = elem->Attribute("queryOp");
+      if (query_op != 0)
+         dsg->queryoper.readString(query_op, true);
+
+      const char * query_type = elem->Attribute("queryType");
+      if (query_type != 0)
+         dsg->querycode.readString(query_type, true);
+
+   }
+
 }
