@@ -586,13 +586,12 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
          BufferScanner strscan(atom_refs);
          QS_DEF(Array<char>, id);
 
-         if (strscan.isEOF())
-            break;
-
-         strscan.readWord(id, 0);
-         int aidx = getAtomIdx(id.ptr());
-         strscan.skipSpace();
-         dsg->atoms.push(aidx);
+         while (!strscan.isEOF())
+         {
+           strscan.readWord(id, 0);
+           dsg->atoms.push(getAtomIdx(id.ptr()));
+           strscan.skipSpace();
+         }
       }
 
       const char * fieldname = elem->Attribute("fieldName");
@@ -622,17 +621,27 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       }
 
       const char * detached = elem->Attribute("dataDetached");
+      dsg->detached = true;
       if (detached != 0)
       {
          if ( (strncmp(detached, "yes", 3) == 0) ||
               (strncmp(detached, "on", 2) == 0) ||
-              (strncmp(detached, "1", 1) == 0) )
+              (strncmp(detached, "1", 1) == 0) ||
+              (strncmp(detached, "true", 4) == 0) )
+         {
+            dsg->detached = true;
+         }
+        else if ( (strncmp(detached, "no", 2) == 0) ||
+              (strncmp(detached, "off", 3) == 0) ||
+              (strncmp(detached, "0", 1) == 0) ||
+              (strncmp(detached, "false", 5) == 0) )
          {
             dsg->detached = true;
          }
       }
 
       const char * relative = elem->Attribute("placement");
+      dsg->relative = false;
       if (relative != 0)
       {
          if (strncmp(relative, "Relative", 8) == 0)
@@ -645,9 +654,11 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       const char * disp_units = elem->Attribute("unitsDisplayed");
       if (disp_units != 0)
       {
-         if ( (strncmp(disp_units, "yes", 3) == 0) ||
+         if ( (strncmp(disp_units, "Unit displayed", 14) == 0) ||
+              (strncmp(disp_units, "yes", 3) == 0) ||
               (strncmp(disp_units, "on", 2) == 0) ||
-              (strncmp(disp_units, "1", 1) == 0) )
+              (strncmp(disp_units, "1", 1) == 0) ||
+              (strncmp(disp_units, "true", 1) == 0) )
          {
             dsg->display_units = true;
          }
