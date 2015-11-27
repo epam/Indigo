@@ -636,7 +636,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
               (strncmp(detached, "0", 1) == 0) ||
               (strncmp(detached, "false", 5) == 0) )
          {
-            dsg->detached = true;
+            dsg->detached = false;
          }
       }
 
