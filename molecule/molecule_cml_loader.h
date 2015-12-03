@@ -50,7 +50,7 @@ protected:
    TiXmlHandle *_handle;
 
    void _loadMolecule (TiXmlHandle &handle, Molecule &mol);
-   void _loadSGroup (TiXmlElement *elem, Molecule &mol, std::unordered_map<std::string, int> &atoms_id);
+   void _loadSGroup (TiXmlElement *elem, Molecule &mol, std::unordered_map<std::string, int> &atoms_id, int parent);
 
 private:
    MoleculeCmlLoader (const MoleculeCmlLoader &); // no implicit copy

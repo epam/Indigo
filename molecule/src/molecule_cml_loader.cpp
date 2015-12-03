@@ -561,11 +561,12 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
    {
       if (strncmp(elem->Value(), "molecule", 8) != 0)
             continue;
-      _loadSGroup(elem, mol, atoms_id);
+      _loadSGroup(elem, mol, atoms_id, 0);
    }
 }
 
-void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol, std::unordered_map<std::string, int> &atoms_id)
+void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol,
+     std::unordered_map<std::string, int> &atoms_id, int sg_parent)
 {
    auto getAtomIdx = [&](const char *id)
    {
@@ -577,21 +578,25 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol, std::uno
 
    MoleculeSGroups *sgroups = &mol.sgroups;
 
+   DataSGroup *dsg = 0;
+   int idx = 0;
    if (elem != 0)
    {
       const char *role = elem->Attribute("role");
       if (role == 0)
          throw Error("Sgroup without type");
 
-      DataSGroup *dsg = 0;
       if (strncmp(role, "DataSgroup", 10) == 0)
       {
-         int idx = sgroups->addSGroup(SGroup::SG_TYPE_DAT);
+         idx = sgroups->addSGroup(SGroup::SG_TYPE_DAT);
          dsg = (DataSGroup *) &sgroups->getSGroup(idx);
       }
 
       if (dsg == 0)
          return;
+
+      if (sg_parent > 0)
+         dsg->parent_group = sg_parent;
 
       const char *atom_refs = elem->Attribute("atomRefs");
       if (atom_refs != 0)
@@ -709,7 +714,7 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol, std::uno
             continue;
          TiXmlHandle next_mol = pChild;
          if (next_mol.Element() != 0)
-            _loadSGroup(next_mol.Element(), mol, atoms_id);
+            _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
       }
    }
 }
