@@ -703,7 +703,7 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol, std::uno
       TiXmlNode * pChild;
       for (pChild = elem->FirstChild();
            pChild != 0;
-           pChild = elem->NextSibling())
+           pChild = pChild->NextSibling())
       {
          if (strncmp(pChild->Value(), "molecule", 4) != 0)
             continue;
