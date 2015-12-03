@@ -559,7 +559,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       elem; 
       elem = elem->NextSiblingElement())
    {
-      if (strncmp(elem->Value(), "molecule", 4) != 0)
+      if (strncmp(elem->Value(), "molecule", 8) != 0)
             continue;
       _loadSGroup(elem, mol, atoms_id);
    }
@@ -705,7 +705,7 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol, std::uno
            pChild != 0;
            pChild = pChild->NextSibling())
       {
-         if (strncmp(pChild->Value(), "molecule", 4) != 0)
+         if (strncmp(pChild->Value(), "molecule", 8) != 0)
             continue;
          TiXmlHandle next_mol = pChild;
          if (next_mol.Element() != 0)
