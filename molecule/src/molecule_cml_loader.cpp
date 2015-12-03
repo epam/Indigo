@@ -19,11 +19,6 @@
 #include "molecule/elements.h"
 #include "molecule/molecule_scaffold_detection.h"
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <sstream>
-
 using namespace indigo;
 
 IMPL_ERROR(MoleculeCmlLoader, "molecule CML loader");
@@ -560,11 +555,29 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
 
    // Sgroups
 
-   MoleculeSGroups *sgroups = &mol.sgroups;
-
-   for (TiXmlElement *elem = handle.FirstChild("molecule").Element();
+   for (TiXmlElement *elem = handle.FirstChild().Element();
       elem; 
       elem = elem->NextSiblingElement())
+   {
+      if (strncmp(elem->Value(), "molecule", 4) != 0)
+            continue;
+      _loadSGroup(elem, mol, atoms_id);
+   }
+}
+
+void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol, std::unordered_map<std::string, int> &atoms_id)
+{
+   auto getAtomIdx = [&](const char *id)
+   {
+      auto it = atoms_id.find(id);
+      if (it == atoms_id.end())
+         throw Error("atom id %s cannot be found", id);
+      return it->second;
+   };
+
+   MoleculeSGroups *sgroups = &mol.sgroups;
+
+   if (elem != 0)
    {
       const char *role = elem->Attribute("role");
       if (role == 0)
@@ -578,7 +591,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       }
 
       if (dsg == 0)
-         continue;
+         return;
 
       const char *atom_refs = elem->Attribute("atomRefs");
       if (atom_refs != 0)
@@ -624,17 +637,17 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       dsg->detached = true;
       if (detached != 0)
       {
-         if ( (strncmp(detached, "yes", 3) == 0) ||
+         if ( (strncmp(detached, "true", 4) == 0) ||
               (strncmp(detached, "on", 2) == 0) ||
               (strncmp(detached, "1", 1) == 0) ||
-              (strncmp(detached, "true", 4) == 0) )
+              (strncmp(detached, "yes", 3) == 0) )
          {
             dsg->detached = true;
          }
-        else if ( (strncmp(detached, "no", 2) == 0) ||
+        else if ( (strncmp(detached, "false", 5) == 0) ||
               (strncmp(detached, "off", 3) == 0) ||
               (strncmp(detached, "0", 1) == 0) ||
-              (strncmp(detached, "false", 5) == 0) )
+              (strncmp(detached, "no", 2) == 0) )
          {
             dsg->detached = false;
          }
@@ -658,7 +671,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
               (strncmp(disp_units, "yes", 3) == 0) ||
               (strncmp(disp_units, "on", 2) == 0) ||
               (strncmp(disp_units, "1", 1) == 0) ||
-              (strncmp(disp_units, "true", 1) == 0) )
+              (strncmp(disp_units, "true", 4) == 0) )
          {
             dsg->display_units = true;
          }
@@ -687,6 +700,16 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       if (query_type != 0)
          dsg->querycode.readString(query_type, true);
 
+      TiXmlNode * pChild;
+      for (pChild = elem->FirstChild();
+           pChild != 0;
+           pChild = elem->NextSibling())
+      {
+         if (strncmp(pChild->Value(), "molecule", 4) != 0)
+            continue;
+         TiXmlHandle next_mol = pChild;
+         if (next_mol.Element() != 0)
+            _loadSGroup(next_mol.Element(), mol, atoms_id);
+      }
    }
-
 }

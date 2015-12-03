@@ -18,8 +18,14 @@
 #include "base_cpp/exception.h"
 #include "molecule/molecule_stereocenter_options.h"
 
-class TiXmlHandle;
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <sstream>
 
+class TiXmlHandle;
+class TiXmlElement;
+	
 namespace indigo
 {
 
@@ -44,6 +50,7 @@ protected:
    TiXmlHandle *_handle;
 
    void _loadMolecule (TiXmlHandle &handle, Molecule &mol);
+   void _loadSGroup (TiXmlElement *elem, Molecule &mol, std::unordered_map<std::string, int> &atoms_id);
 
 private:
    MoleculeCmlLoader (const MoleculeCmlLoader &); // no implicit copy
