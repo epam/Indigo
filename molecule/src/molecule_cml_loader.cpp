@@ -85,6 +85,7 @@ struct Atom
       spin_multiplicity, 
       radical, 
       valence, 
+      rgroupref, 
       hydrogen_count, 
       x, y, z;
 };
@@ -167,6 +168,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
    splitStringIntoProperties(atom_array.Element()->Attribute("spinMultiplicity"), atoms, &Atom::spin_multiplicity);
    splitStringIntoProperties(atom_array.Element()->Attribute("radical"), atoms, &Atom::radical);
    splitStringIntoProperties(atom_array.Element()->Attribute("mrvValence"), atoms, &Atom::valence);
+   splitStringIntoProperties(atom_array.Element()->Attribute("rgroupRef"), atoms, &Atom::rgroupref);
 
    // Read atoms as nested xml elements
    //   <atomArray>
@@ -255,6 +257,12 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
          a.y = y3;
          a.z = z3;
       }
+
+      const char *rgroupref = elem->Attribute("rgroupRef");
+
+      if (rgroupref != 0)
+         a.rgroupref = rgroupref;
+
    }
 
    // Parse them
@@ -262,14 +270,19 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
    {
       int label = Element::fromString2(a.element_type.c_str());
 
-      if (label == -1)
+      if ( (label == -1) && (strncmp(a.element_type.c_str(), "R", 1) == 0) )
+      {
+         label = ELEM_RSITE;
+      }
+      else if (label == -1)
          label = ELEM_PSEUDO;
       
       int idx = mol.addAtom(label);
 
       if (label == ELEM_PSEUDO)
          mol.setPseudoAtom(idx, a.element_type.c_str());
-      
+
+    
       total_h_count.expandFill(idx + 1, -1);
 
       atoms_id.emplace(a.id, idx);
@@ -339,6 +352,14 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       if (!a.z.empty())
          if (sscanf(a.z.c_str(), "%f", &mol.getAtomXyz(idx).z) != 1)
             throw Error("error parsing z");
+
+      if (!a.rgroupref.empty())
+      {
+         int val;
+         if (sscanf(a.rgroupref.c_str(), "%d", &val) != 1)
+            throw Error("error parsing R-group reference");
+         mol.allowRGroupOnRSite(idx, val);
+      }
    }
 
    // Bonds
