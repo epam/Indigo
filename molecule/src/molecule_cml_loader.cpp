@@ -83,6 +83,8 @@ struct Atom
       isotope, 
       formal_charge,
       spin_multiplicity, 
+      radical, 
+      valence, 
       hydrogen_count, 
       x, y, z;
 };
@@ -158,11 +160,13 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
    splitStringIntoProperties(atom_array.Element()->Attribute("y2"), atoms, &Atom::y);
    splitStringIntoProperties(atom_array.Element()->Attribute("x3"), atoms, &Atom::x);
    splitStringIntoProperties(atom_array.Element()->Attribute("y3"), atoms, &Atom::y);
-   splitStringIntoProperties(atom_array.Element()->Attribute("z3"), atoms, &Atom::y);
+   splitStringIntoProperties(atom_array.Element()->Attribute("z3"), atoms, &Atom::z);
    splitStringIntoProperties(atom_array.Element()->Attribute("isotope"), atoms, &Atom::isotope);
    splitStringIntoProperties(atom_array.Element()->Attribute("isotopeNumber"), atoms, &Atom::isotope);
    splitStringIntoProperties(atom_array.Element()->Attribute("formalCharge"), atoms, &Atom::formal_charge);
    splitStringIntoProperties(atom_array.Element()->Attribute("spinMultiplicity"), atoms, &Atom::spin_multiplicity);
+   splitStringIntoProperties(atom_array.Element()->Attribute("radical"), atoms, &Atom::radical);
+   splitStringIntoProperties(atom_array.Element()->Attribute("mrvValence"), atoms, &Atom::valence);
 
    // Read atoms as nested xml elements
    //   <atomArray>
@@ -212,10 +216,20 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       if (charge != 0)
          a.formal_charge = charge;
 
-      const char *radical = elem->Attribute("spinMultiplicity");
+      const char *spinmultiplicity = elem->Attribute("spinMultiplicity");
+      
+      if (spinmultiplicity != 0)
+         a.spin_multiplicity = spinmultiplicity;
+
+      const char *radical = elem->Attribute("radical");
       
       if (radical != 0)
-         a.spin_multiplicity = radical;
+         a.radical = radical;
+
+      const char *valence = elem->Attribute("mrvValence");
+
+      if (valence != 0)
+         a.valence = valence;
 
       const char *hcount = elem->Attribute("hydrogenCount");
 
@@ -282,6 +296,26 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
          if (sscanf(a.spin_multiplicity.c_str(), "%d", &val) != 1)
             throw Error("error parsing spin multiplicity");
          mol.setAtomRadical(idx, val);
+      }
+
+      if (!a.radical.empty())
+      {
+         int val = 0;
+         if (strncmp(a.radical.c_str(), "monovalent", 10) == 0)
+            val = 2;
+         else if ( (strncmp(a.radical.c_str(), "divalent3", 9) == 0) ||
+                   (strncmp(a.radical.c_str(), "triplet", 7) == 0) )
+            val = 3;
+         else if (strncmp(a.radical.c_str(), "divalent", 8) == 0)
+            val = 1;
+         mol.setAtomRadical(idx, val);
+      }
+
+      if (!a.valence.empty())
+      {
+         int val;
+         if (sscanf(a.valence.c_str(), "%d", &val) == 1)
+            mol.setExplicitValence(idx, val);
       }
 
       if (!a.hydrogen_count.empty())
