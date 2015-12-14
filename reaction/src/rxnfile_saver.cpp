@@ -29,6 +29,7 @@ RxnfileSaver::RxnfileSaver(Output &output) :
 {
    molfile_saving_mode = MolfileSaver::MODE_AUTO;
    skip_date = false;
+   add_stereo_desc = false;
 }
 
 RxnfileSaver::~RxnfileSaver(){
@@ -87,6 +88,8 @@ void RxnfileSaver::_saveReaction(){
 
    MolfileSaver molfileSaver(_output);
    molfileSaver.mode = _v2000 ? MolfileSaver::MODE_2000 : MolfileSaver::MODE_3000;
+   molfileSaver.add_stereo_desc = add_stereo_desc;
+
    
    _writeRxnHeader(*_brxn);
 

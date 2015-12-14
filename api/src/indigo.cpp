@@ -123,6 +123,7 @@ void Indigo::initRxnfileSaver (RxnfileSaver &saver)
 {
    saver.molfile_saving_mode = molfile_saving_mode;
    saver.skip_date = molfile_saving_skip_date;
+   saver.add_stereo_desc = molfile_saving_add_stereo_desc;
 }
 
 
