@@ -136,9 +136,10 @@ enum
    ELEM_Rf,
    ELEM_MAX,
 
-   ELEM_PSEUDO, // pseudoatom
-   ELEM_RSITE,  // 'R' atom
-   ELEM_TEMPLATE  // template 
+   ELEM_PSEUDO,   // pseudoatom
+   ELEM_RSITE,    // 'R' atom
+   ELEM_TEMPLATE, // template 
+   ELEM_ATTPOINT  // attachment point
 };
 
 enum

@@ -16,6 +16,7 @@
 #define __molecule_cml_loader__
 
 #include "base_cpp/exception.h"
+#include "base_cpp/array.h"
 #include "molecule/molecule_stereocenter_options.h"
 
 #include <string>
@@ -25,6 +26,7 @@
 
 class TiXmlHandle;
 class TiXmlElement;
+class TiXmlNode;
 	
 namespace indigo
 {
@@ -48,9 +50,13 @@ public:
 protected:
    Scanner *_scanner;
    TiXmlHandle *_handle;
+   TiXmlNode *_molecule;
 
    void _loadMolecule (TiXmlHandle &handle, Molecule &mol);
    void _loadSGroup (TiXmlElement *elem, Molecule &mol, std::unordered_map<std::string, int> &atoms_id, int parent);
+   void _loadRgroup (TiXmlHandle &handle, Molecule &mol);
+   bool _findMolecule (TiXmlNode *node);
+   void _parseRlogicRange (const char *str, Array<int> &ranges);
 
 private:
    MoleculeCmlLoader (const MoleculeCmlLoader &); // no implicit copy
