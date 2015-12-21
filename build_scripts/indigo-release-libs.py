@@ -117,7 +117,7 @@ def build_libs(cl_args):
        environment_prefix = 'CC=gcc CXX=g++'
    command = "%s cmake -G \"%s\" %s %s" % (environment_prefix, args.generator, args.params, project_dir)
    print(command)
-   subprocess.check_call(command, shell=True)
+   subprocess.call(command, shell=True)
 
    if args.nobuild:
        exit(0)
@@ -128,20 +128,23 @@ def build_libs(cl_args):
            os.remove(os.path.join(full_build_dir, f))
 
    if args.generator.find("Unix Makefiles") != -1:
-       subprocess.check_call("make package {0}".format('VERBOSE=1' if args.buildVerbose else ''), shell=True)
-       subprocess.check_call("make install", shell=True)
+       verbose = ''
+       if args.buildVerbose:
+           verbose = 'VERBOSE=1' 
+       subprocess.call("make package {0}".format(verbose), shell=True)
+       subprocess.call("make install", shell=True)
    elif args.generator.find("Xcode") != -1:
-       subprocess.check_call("cmake --build . --target package --config %s" % (args.config), shell=True)
-       subprocess.check_call("cmake --build . --target install --config %s" % (args.config), shell=True)
+       subprocess.call("cmake --build . --target package --config %s" % (args.config), shell=True)
+       subprocess.call("cmake --build . --target install --config %s" % (args.config), shell=True)
    elif args.generator.find("Visual Studio") != -1:
-       subprocess.check_call("cmake --build . --target PACKAGE --config %s" % (args.config), shell=True)
-       subprocess.check_call("cmake --build . --target INSTALL --config %s" % (args.config), shell=True)
+       subprocess.call("cmake --build . --target PACKAGE --config %s" % (args.config), shell=True)
+       subprocess.call("cmake --build . --target INSTALL --config %s" % (args.config), shell=True)
    elif args.generator.find("MinGW Makefiles") != -1:
-       subprocess.check_call("mingw32-make package", shell=True)
-       subprocess.check_call("mingw32-make install", shell=True)
+       subprocess.call("mingw32-make package", shell=True)
+       subprocess.call("mingw32-make install", shell=True)
    else:
        print("Do not know how to run package and install target")
-   subprocess.check_call("ctest -V --timeout 20 -C %s ." % (args.config), shell=True)
+   subprocess.call("ctest -V --timeout 20 -C %s ." % (args.config), shell=True)
 
    os.chdir(root)
    if not os.path.exists("dist"):
