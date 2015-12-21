@@ -112,7 +112,10 @@ def build_libs(cl_args):
 
    os.chdir(full_build_dir)
 
-   command = "%s cmake -G \"%s\" %s %s" % ('CC=gcc CXX=g++' if (args.preset.find('linux') != -1 and args.preset.find('universal') != -1) else '', args.generator, args.params, project_dir)
+   environment_prefix = ''
+   if (args.preset.find('linux') != -1 and args.preset.find('universal') != -1):
+       environment_prefix = 'CC=gcc CXX=g++'
+   command = "%s cmake -G \"%s\" %s %s" % (environment_prefix, args.generator, args.params, project_dir)
    print(command)
    subprocess.check_call(command, shell=True)
 
