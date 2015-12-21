@@ -131,7 +131,7 @@ def build_libs(cl_args):
        verbose = ''
        if args.buildVerbose:
            verbose = 'VERBOSE=1' 
-       subprocess.call("make package {0}".format(verbose), shell=True)
+       subprocess.call("make package %s" % (verbose), shell=True)
        subprocess.call("make install", shell=True)
    elif args.generator.find("Xcode") != -1:
        subprocess.call("cmake --build . --target package --config %s" % (args.config), shell=True)
