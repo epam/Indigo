@@ -7,11 +7,16 @@ import platform
 
 
 def getSymbols(libPath):
-    return [item.replace('  ', '').split(' ') for item in subprocess.check_output('nm {0}'.format(libPath), shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None).split('\n')]
+    stderr = None
+    if not 'VERBOSE' in os.environ:
+        stderr = subprocess.PIPE
+    return [item.replace('  ', '').split(' ') for item in subprocess.check_output('nm {0}'.format(libPath), shell=True, stderr=stderr).split('\n')]
 
 
 def getIndigoStdSyms(libRoot):
-    libname = 'libstdc++.a' if not platform.mac_ver()[0] else 'libc++.a'
+    libname = 'libc++.a'
+    if not platform.mac_ver()[0]:
+        libname = 'libstdc++.a'
     libstdcppSymbols = getSymbols(os.path.join(libRoot, libname))
     renameSymbols = []
 
@@ -58,15 +63,24 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
     for library in os.listdir(libRoot):
         if not library.endswith('.a') or library == 'libindigostdcpp.a':
             continue
-        if 0 in [s[2].find('_ind') if len(s) > 1 else -1 for s in getSymbols(os.path.join(libRoot, library))]:
+
+        symlist = []
+        for s in getSymbols(os.path.join(libRoot, library)):
+            if len(s) > 1:
+                symlist.append(s[2].find('_ind'))
+        if 0 in symlist:
             continue
         libFile = os.path.join(libRoot, library)
         subprocess.check_call('objcopy --redefine-syms indigostd.syms {0}'.format(libFile), shell=True)
 
     linkCommand = '{0} -v -L{1}/ -static-libstdc++ {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
+    stderr = None
+    stdout = None
     if 'VERBOSE' in os.environ:
         print(linkCommand)
-    subprocess.check_call(linkCommand, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None, stdout=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
+        stderr = subprocess.PIPE
+        stdout = subprocess.PIPE
+    subprocess.check_call(linkCommand, shell=True, stderr=stderr, stdout=stdout)
 
 
 def mac(compiler, linkFlags, objFiles, linkLibraries, target):
@@ -75,17 +89,19 @@ def mac(compiler, linkFlags, objFiles, linkLibraries, target):
         subprocess.check_call('lipo -thin i386 {0} -o {1}'.format(binaryFile, binaryFile + '.tmp.32'), shell=True)
         os.remove(binaryFile)
         command = 'objconv -v0 -wd1214 -wd1106 -fmacho64 -nf:indigostd.syms {0} {1}'.format(binaryFile + '.tmp.64', binaryFile + '.64')
+        stderr=None
         if 'VERBOSE' in os.environ:
             print(command)
-        subprocess.check_call(command, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
+            stderr = subprocess.PIPE
+        subprocess.check_call(command, shell=True, stderr=stderr)
         command = 'objconv -v0 -wd1214 -wd1106 -fmacho32 -nf:indigostd.syms {0} {1}'.format(binaryFile + '.tmp.32', binaryFile + '.32')
         if 'VERBOSE' in os.environ:
             print(command)
-        subprocess.check_call(command, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
+        subprocess.check_call(command, shell=True, stderr=sterr
         command = 'lipo -create {0} {1} -output {2}'.format(binaryFile + '.64', binaryFile + '.32', binaryFile)
         if 'VERBOSE' in os.environ:
             print(command)
-        subprocess.check_call(command, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
+        subprocess.check_call(command, shell=True, stderr=stderr)
         os.remove(binaryFile + '.tmp.32')
         os.remove(binaryFile + '.tmp.64')
         os.remove(binaryFile + '.32')
@@ -106,14 +122,20 @@ def mac(compiler, linkFlags, objFiles, linkLibraries, target):
     for library in os.listdir(libRoot):
         if not library.endswith('.a') or library == 'libindigoc++.a':
             continue
-        if 0 in [s[2].find('_ind') if len(s) > 1 else -1 for s in getSymbols(os.path.join(libRoot, library))]:
+        symlist = []
+        for s in getSymbols(os.path.join(libRoot, library)):
+            if len(s) > 1:
+                symlist.append(s[2].find('_ind'))
+        if 0 in symlist:
             continue
         lipoObjconvLipo(os.path.join(libRoot, library))
 
     cmd = '{0} -L{1}/ -arch i386 -arch x86_64 -undefined dynamic_lookup -nodefaultlibs -lc -lm -std=c++11 -mmacosx-version-min=10.7 {2} {3} {4} -o {5}'.format(compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
+    stderr=None
     if 'VERBOSE' in os.environ:
         print(cmd)
-    subprocess.check_call(cmd, shell=True, stderr=subprocess.PIPE if not 'VERBOSE' in os.environ else None)
+        stderr = subprocess.PIPE
+    subprocess.check_call(cmd, shell=True, stderr=stderr)
 
 
 def main():
