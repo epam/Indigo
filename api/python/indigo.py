@@ -1433,6 +1433,8 @@ class Indigo(object):
         Indigo._lib.indigoExtractCommonScaffold.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoDecomposeMolecules.restype = c_int
         Indigo._lib.indigoDecomposeMolecules.argtypes = [c_int, c_int]
+        Indigo._lib.indigoRGroupComposition.restype = c_int
+        Indigo._lib.indigoRGroupComposition.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoCreateDecomposer.restype = c_int
         Indigo._lib.indigoCreateDecomposer.argtypes = [c_int]
         Indigo._lib.indigoReactionProductEnumerate.restype = c_int
@@ -2199,6 +2201,15 @@ class Indigo(object):
         self._setSessionId()
         structures = self.convertToArray(structures)
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoDecomposeMolecules(scaffold.id, structures.id)), scaffold)
+
+    def rgroupComposition(self, molecule, options=''):
+        self._setSessionId()
+        options = '' if options is None else options
+        newobj = self._checkResult(Indigo._lib.indigoRGroupComposition(molecule.id, options.encode(ENCODE_ENCODING)))
+        if newobj == 0:
+            return None
+        else:
+            return self.IndigoObject(self, newobj, self)
 
     def createDecomposer(self, scaffold):
         self._setSessionId()

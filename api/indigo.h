@@ -879,6 +879,11 @@ CEXPORT int indigoIterateDecompositions(int deco_item);
 // Adds the input decomposition to a full scaffold
 CEXPORT int indigoAddDecomposition(int decomp, int q_match);
 
+/* R-Group convolution */
+
+//TODO
+CEXPORT int indigoRGroupComposition(int molecule, const char *options);
+
 /*
  * Abbreviations
  */

@@ -56,22 +56,22 @@ public:
       return _ptrpool.hasElement(idx);
    }
 
-   int size ()
+   int size () const
    {
       return _ptrpool.size();
    }
 
-   int begin ()
+   int begin () const
    {
       return _ptrpool.begin();
    }
 
-   int end ()
+   int end () const
    {
       return _ptrpool.end();
    }
 
-   int next (int i)
+   int next (int i) const
    {
       return _ptrpool.next(i);
    }
