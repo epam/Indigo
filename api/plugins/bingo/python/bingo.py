@@ -100,9 +100,9 @@ class Bingo(object):
 
     @staticmethod
     def _getLib(indigo):
-        if os.name == 'posix' and not platform.mac_ver()[0]:
+        if os.name == 'posix' and not platform.mac_ver()[0] and not platform.system().startswith("CYGWIN"):
             _lib = CDLL(indigo.dllpath + "/libbingo.so")
-        elif os.name == 'nt':
+        elif os.name == 'nt' or platform.system().startswith("CYGWIN"):
             _lib = CDLL(indigo.dllpath + "/bingo.dll")
         elif platform.mac_ver()[0]:
             _lib = CDLL(indigo.dllpath + "/libbingo.dylib")
