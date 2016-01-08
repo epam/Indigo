@@ -1259,7 +1259,7 @@ class Indigo(object):
             if not dirname:
                 dirname = '.'
             path = dirname + '/lib'
-        if os.name == 'posix' and not platform.mac_ver()[0]:
+        if os.name == 'posix' and not platform.mac_ver()[0] and not platform.system().startswith("CYGWIN"):
             arch = platform.architecture()[0]
             path += "/Linux"
             if arch == '32bit':
@@ -1269,7 +1269,7 @@ class Indigo(object):
             else:
                 raise IndigoException("unknown platform " + arch)
             Indigo._lib = CDLL(path + "/libindigo.so", mode=RTLD_GLOBAL)
-        elif os.name == 'nt':
+        elif os.name == 'nt' or platform.system().startswith("CYGWIN"):
             arch = platform.architecture()[0]
             path += "/Win"
             if arch == '32bit':
