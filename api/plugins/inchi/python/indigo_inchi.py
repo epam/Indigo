@@ -18,9 +18,9 @@ class IndigoInchi(object):
     def __init__(self, indigo):
         self.indigo = indigo
 
-        if os.name == 'posix' and not platform.mac_ver()[0]:
+        if os.name == 'posix' and not platform.mac_ver()[0] and not platform.system().startswith("CYGWIN"):
             self._lib = CDLL(indigo.dllpath + "/libindigo-inchi.so")
-        elif os.name == 'nt':
+        elif os.name == 'nt' or platform.system().startswith("CYGWIN"):
             self._lib = CDLL(indigo.dllpath + "\indigo-inchi.dll")
         elif platform.mac_ver()[0]:
             self._lib = CDLL(indigo.dllpath + "/libindigo-inchi.dylib")
