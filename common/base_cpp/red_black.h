@@ -710,7 +710,7 @@ public:
          throw typename Parent::Error("remove(): key not found");
    }
 
-   void copy (RedBlackMap &other)
+   void copy (const RedBlackMap &other)
    {
       int i;
 

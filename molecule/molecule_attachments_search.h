@@ -35,21 +35,25 @@
 namespace indigo {
 
 template<typename K>
-static K any(const RedBlackSet<K> &set) {
-    return set.key(set.begin());
-}
-
-template<typename K>
 static void copy(const RedBlackSet<K> &source, RedBlackSet<K> &target) {
-    for (auto x = source.begin(); x != source.end(); x = source.next(x)) {
-        target.insert(source.key(x));
+    target.clear();
+    for (auto i = source.begin(); i != source.end(); i = source.next(i)) {
+        target.insert(source.key(i));
     }
 }
 
 template<typename K, typename V>
 static void copy(const RedBlackMap<K,V> &source, RedBlackMap<K,V> &target) {
+    target.copy(source);
+}
+
+template<typename K, typename V>
+static void copy(const RedBlackMap<K, V*> &source, RedBlackMap<K, V*> &target) {
+    target.clear();
     for (auto i = source.begin(); i != source.end(); i = source.next(i)) {
-        target.insert(source.key(i), source.value(i));
+        V* v = new V();
+        copy(*source.value(i), *v);
+        target.insert(source.key(i), v);
     }
 }
 
@@ -327,8 +331,8 @@ public: DECL_ERROR;
 template<typename T>
 class DLLEXPORT Iterator : public ErrorThrower {
 public:
-    explicit Iterator()    { printf("Iterator<T>::<constructor>\n"); }
-    virtual ~Iterator()    { printf("Iterator<T>::<destructor>\n");  }
+    explicit Iterator()    { }
+    virtual ~Iterator()    { }
     virtual bool hasNext() { throw Error("hasNext() is pure abstract"); }
     virtual T next()       { throw Error("next() is pure abstract"); }
     //pseudo-abstract class for simplicity of interfaces
@@ -429,8 +433,14 @@ public:
 protected:
     void advance() {
         if (xs != nullptr && xs->hasNext()) { return; }
-        if (xss->hasNext()) { xs = xss->next();  }
-        else                { xs = nullptr; }
+        if (xss->hasNext()) {
+            xs = xss->next();
+            if (!xs->hasNext()) {
+                advance();
+            }
+        } else {
+            xs = nullptr;
+        }
     }
 
     Iterator<Iterator<X>*>* const xss;
@@ -501,6 +511,9 @@ template<typename T>
 static Iterator<T>* cons(T head, Iterator<T>* tail) { return new Cons<T>(head, tail); }
 
 template<typename T>
+static Iterator<T>* single(T value) { return cons(value, nil<T>()); }
+
+template<typename T>
 class DLLEXPORT Lazy {
 public:
     explicit Lazy(std::function<T()> f) : f(f) {}
@@ -564,6 +577,27 @@ static Iterator<T>* iterator(const RedBlackSet<T> &set) {
     return new SetIterator<T>(set);
 }
 
+class RangeIterator : public Iterator<int> {
+public:
+    RangeIterator(int from, int to) : from(from), to(to), i(from) {}
+    virtual ~RangeIterator() {}
+
+    virtual bool hasNext() { return i <= to; }
+    virtual int  next()    { return i++; }
+protected:
+    const int from;
+    const int to;
+
+    int i;
+};
+
+static Iterator<int>* count(int from, int to) { return new RangeIterator(from, to); }
+
+template<typename T>
+static Iterator<T>* every(const RedBlackSet<T> &set) {
+    return new SetIterator<T>(set);
+}
+
 /* END Iterable */
 
 struct Fragment {
@@ -597,8 +631,14 @@ public:
     virtual ~Attachments() {
         release();
     }
+
     virtual Iterator<Attachment*>* iterator() {
-        return remember(new AttachmentsIterator(this));
+        std::function<Attachment*(State)> peel = [](State &state) {
+            Attachment* result = new Attachment();
+            copy(*state.at, *result);
+            return result;
+        };
+        return map(peel, search(init()));
     }
 
     DECL_ERROR;
@@ -612,75 +652,62 @@ protected:
           Map      group2size;
     const OccurrenceRestrictions occurrences;
 
-    class AttachmentsIterator : public Iterator<Attachment*> {
-    public:
-        explicit AttachmentsIterator(Attachments *obj) : self(obj) {}
-        virtual ~AttachmentsIterator() {}
-        virtual bool hasNext()     { return true; }
-        virtual Attachment* next() {
-            return nullptr;//todo
-        }
-
-        Attachment* search() {
-            Topology top(self->top);
-
-            printf("%d sites, %d groups\n", self->n, self->k);
-            printf("===================\n");
-            printf("Site->Group: %s\nGroup->Site: %s\n", self->site2group.print(), self->group2site.print());
-            printf("Group->Size: %s\nOccurrences: %s\nTopology: %s\n", indigo::print(self->group2size), self->occurrences.print(),
-                top.print());
-            printf("===================\n");
-
-            Attachment* result = new Attachment();
-            Attachment& at     = *result; //site  -> group
-            Array<int> ocs;               //group -> occurrences
-            ocs.resize(1 + self->k);
-            ocs.fill(0);
-
-            auto select = [&top]() {
-                const Set* result = &top.pending();
-                if (result->size() < 1) {
-                    result = &top.satisfied();
-                    printf("satisfied groups are chosen\n");
-                } else {
-                    printf("pending groups are chosen\n");
-                }
-                return result;
-            };
-
-            const Set* ptr;
-            while (at.size() < self->n && (ptr = select())->size() > 0) {
-                const Set &groups = *ptr;
-                assert(groups.size() > 0);
-
-                int group = any(groups); //todo: choose wisely           (!)
-                const Set &sites = self->group2site[group];
-                if (sites.size() < 1) { /* todo: continue */ }
-
-                printf("group %d\n", group);
-
-                int oc = ocs[group];
-                int dist0 = self->occurrences[group][oc];
-                int dist1 = self->occurrences[group][oc + 1];
-                //todo: occurrence restrictions
-
-                const int  site = any(sites); //todo: choose wisely      (!)
-                printf("site %d\n", site);
-
-                const int  size = self->group2size.at(group);
-                const int  frag = 0; //todo: choose wisely               (!)
-                printf("frag %d\n", frag);
-
-                at.insert(site, { group, frag });
-                top.satisfy(group);
-            }
-            assert(top.finished());
-            return result;
-        }
-
-    protected:
-        Attachments *self;
+    struct State {
+        const Topology   *top;
+        const Attachment *at;
+        const Array<int> *ocs;
     };
+
+    State init() {
+        Array<int> *ocs = new Array<int>();
+        ocs->resize(1 + k);
+        ocs->fill(0);
+
+        return { new Topology(top), new Attachment(), ocs };
+    }
+
+    Iterator<State>* search(State &state) {
+        if (state.at->size() == n) {
+            return single(state);
+        }
+
+        const Set* ptr = &state.top->pending();
+        if (ptr->size() < 1) {
+            ptr = &state.top->satisfied();
+        }
+        assert(ptr->size() > 0);
+        auto groups = every(*ptr);
+
+        std::function<Iterator<State>*(int)> group2states = [=](int group) {
+            int occurs   = (*state.ocs)[group];
+            int currDist = occurrences[group][occurs];
+            int nextDist = occurrences[group][occurs + 1];
+            //todo: occurrence restrictions
+
+            auto frags = count(1, group2size.at(group));
+            auto sites = every(group2site[group]);
+
+            std::function<Iterator<State>*(int)> site2states = [=](int site) {
+                std::function<Iterator<State>*(int)> attachAndRec = [=](int frag) {
+                    Topology *top = new Topology(*state.top);
+                    Attachment *at = new Attachment();
+                    copy(*state.at, *at);
+                    Array<int> *ocs = new Array<int>();
+                    (*ocs).copy(*state.ocs);
+                    (*ocs)[group] = 1 + (*ocs)[group];
+
+                    at->insert(site, { group, frag });
+                    top->satisfy(group);
+
+                    State result = { top, at, ocs };
+                    return search(result);
+                };
+                return join(map(attachAndRec, frags));
+            };
+            return join(map(site2states, sites));
+        };
+        return join(map(group2states, groups));
+    }
 
     CP_DECL;
 
