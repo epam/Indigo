@@ -64,12 +64,39 @@ Iterable<Attachment*>* MoleculeRGroupsComposition::refine(BaseMolecule &mol) {
     return new Attachments(n, k, site2group, group2site, group2size, occurrences, top);
 }
 
-BaseMolecule* MoleculeRGroupsComposition::decorate(BaseMolecule &mol, Attachment &at) {
-    return &mol.asMolecule();
-    //todo
+BaseMolecule* MoleculeRGroupsComposition::decorate(BaseMolecule &scaffold, Attachment &at) {
+    Molecule* result = new Molecule();
+
+    Molecule& mol = *result;
+    mol.clone(scaffold, nullptr, nullptr);
+
+    MoleculeRGroups &rgroups = mol.rgroups;
+    for (auto i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i)) {
+        if (!mol.isRSite(i)) { continue; }
+        int rsite = i;
+
+        Fragment frag = at.at(rsite+1);
+        BaseMolecule *fragment = rgroups.getRGroup(frag.group).fragments.at(frag.fragment-1);
+
+        int apcount = fragment->attachmentPointCount();
+        int apoint  = fragment->getAttachmentPoint(apcount, 0);
+
+        Array<int> map;
+        mol.mergeWithMolecule(*fragment, &map);
+        if (mol.mergeAtoms(rsite, map[apoint]) == rsite) {
+            mol.setRSiteBits(rsite, 0);
+        }
+    }
+
+    rgroups.clear();
+    mol.removeAttachmentPoints();
+
+    return result;
 }
 
-// temporary {
-FileOutput MoleculeRGroupsComposition::file("out");
-StandardOutput MoleculeRGroupsComposition::std;
-// } temporary
+Iterable<BaseMolecule*>* MoleculeRGroupsComposition::combinations(BaseMolecule &mol) {
+    std::function<BaseMolecule*(Attachment*)> at2mol = [&mol](Attachment *at) {
+        return decorate(mol, *at);
+    };
+    return map(at2mol, refine(mol));
+}   

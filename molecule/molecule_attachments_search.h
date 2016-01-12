@@ -408,7 +408,7 @@ protected:
     std::function<Y(X)> f;
     Iterable<X>* const xs;
 
-    CLEANER(Iterator<Y>*)
+    CLEANER(Iterator<Y>)
 };
 
 template<typename X, typename Y>
@@ -602,9 +602,9 @@ static Iterator<T>* every(const RedBlackSet<T> &set) {
 
 struct Fragment {
     Fragment(int g, int f)
-    : group(g), fragment(f) {}
-    int group    = 0;
-    int fragment = 0;
+      : group(g), fragment(f) {}
+    int group;
+    int fragment;
 };
 
 typedef RedBlackMap<int,Fragment> Attachment;

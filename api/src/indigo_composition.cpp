@@ -31,7 +31,7 @@ protected:
 };
 
 static std::function<IndigoObject*(Attachment*)> wrap(Indigo& indigo) {
-    return[&indigo](Attachment* at) {
+    return [&indigo](Attachment* at) {
         IndigoObject* obj = new IndigoAttachment(*at);
         indigo.addObject(obj);
         return obj;
@@ -45,8 +45,16 @@ public:
     it(map(wrap(indigo), iterable->iterator(), true)) {}
     virtual ~IndigoCompositionIter() { delete iterable; }
 
-    virtual IndigoObject* next() { return it->next(); }
-    virtual bool hasNext() { return it->hasNext(); }
+    virtual IndigoObject* next() {
+        if (hasNext()) {
+            return it->next();
+        } else {
+            return nullptr;
+        }
+    }
+    virtual bool hasNext() {
+        return it->hasNext();
+    }
 
 protected:
     Iterable<Attachment*>* iterable;
@@ -62,14 +70,3 @@ CEXPORT int indigoRGroupComposition(int molecule, const char* options)
    }
    INDIGO_END(-1);
 }
-
-template<>
-class DLLEXPORT Cleaner<IndigoObject*> : public Iterator<IndigoObject*>{
-public:
-    explicit Cleaner(bool clean) {}
-protected:
-    IndigoObject* remember(IndigoObject* t) { return t; }
-    void          release() {}
-private:
-    bool clean;
-};
