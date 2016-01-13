@@ -83,8 +83,10 @@ BaseMolecule* MoleculeRGroupsComposition::decorate(BaseMolecule &scaffold, Attac
 
         Array<int> map;
         mol.mergeWithMolecule(*fragment, &map);
+
+        int atom = mol.getAtomNumber(map[apoint]);
         if (mol.mergeAtoms(rsite, map[apoint]) == rsite) {
-            mol.setRSiteBits(rsite, 0);
+            mol.resetAtom(rsite, atom);
         }
     }
 
