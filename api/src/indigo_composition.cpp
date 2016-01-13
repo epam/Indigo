@@ -13,41 +13,30 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "indigo_molecule.h"
 
 #include "molecule/molecule_attachments_search.h"
 #include "molecule/molecule_rgroups_composition.h"
 
-class DLLEXPORT IndigoAttachment : public IndigoObject {
-public:
-    explicit IndigoAttachment(Attachment& at) : IndigoObject(GROSS), str(print(at)) {}
-    ~IndigoAttachment() {}
-
-    virtual void toString(Array<char> &out) {
-        out.appendString(str, true);
-    }
-
-protected:
-    const char * str;
-};
-
-static std::function<IndigoObject*(Attachment*)> wrap(Indigo& indigo) {
-    return [&indigo](Attachment* at) {
-        IndigoObject* obj = new IndigoAttachment(*at);
-        indigo.addObject(obj);
-        return obj;
-    };
-}
-
 class DLLEXPORT IndigoCompositionIter : public IndigoObject {
 public:
-    IndigoCompositionIter(Indigo& indigo, BaseMolecule& mol) : IndigoObject(COMPOSITION_ITER),
-    iterable(MoleculeRGroupsComposition::refine(mol)), 
-    it(map(wrap(indigo), iterable->iterator(), true)) {}
-    virtual ~IndigoCompositionIter() { delete iterable; }
+    IndigoCompositionIter(BaseMolecule& mol)
+        : IndigoObject(COMPOSITION_ITER),
+          it(MoleculeRGroupsComposition::combinations(mol)->iterator()) {}
+    virtual ~IndigoCompositionIter() {}
 
     virtual IndigoObject* next() {
         if (hasNext()) {
-            return it->next();
+            AutoPtr<BaseMolecule> mol(it.ref().next());
+            if (mol.ref().isQueryMolecule()) {
+                AutoPtr<IndigoQueryMolecule> result(new IndigoQueryMolecule());
+                result.ref().qmol.clone(mol.ref(), nullptr, nullptr);
+                return result.release();
+            } else {
+                AutoPtr<IndigoMolecule> result(new IndigoMolecule());
+                result.ref().mol.clone(mol.ref(), nullptr, nullptr);
+                return result.release();
+            }
         } else {
             return nullptr;
         }
@@ -57,8 +46,7 @@ public:
     }
 
 protected:
-    Iterable<Attachment*>* iterable;
-    Iterator<IndigoObject*>* it;
+    AutoPtr<Iterator<BaseMolecule*>> it;
 };
 
 CEXPORT int indigoRGroupComposition(int molecule, const char* options)
@@ -66,7 +54,7 @@ CEXPORT int indigoRGroupComposition(int molecule, const char* options)
    INDIGO_BEGIN
    {
       BaseMolecule& target = self.getObject(molecule).getBaseMolecule();
-      return self.addObject(new IndigoCompositionIter(self, target));
+      return self.addObject(new IndigoCompositionIter(target));
    }
    INDIGO_END(-1);
 }
