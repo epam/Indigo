@@ -29,89 +29,27 @@ CP_DEF(OccurrenceRestrictions);
 IMPL_ERROR(ErrorThrower, "attachments search");
 CP_DEF(Attachments);
 
-int  MultiMap::size() const {
-    return map.size();
+void Topology::print(Array<char> &out, bool finalize) const {
+    out.appendString("<current = ", false);
+    indigo::print(current,  out, false);
+    out.appendString(";\n  forward  = ", false);
+    indigo::print(forward,  out, false);
+    out.appendString(";\n  backward = ", false);
+    indigo::print(backward, out, false);
+    out.appendString(">\n", finalize);
 }
 
-void MultiMap::insert(int key, int value) {
-    Set* *ptr = map.at2(key);
-    if (ptr != nullptr) {
-        (*ptr)->insert(value);
-        return;
-    }
-
-    Set *values = new Set();
-    map.insert(key, values);
-    values->insert(value);
+const Array<int>& Topology::history() const {
+    return path;
 }
-
-void MultiMap::insert(int key, const Array<int> &values) {
-    for (auto i = 0; i < values.size(); i++) {
-        insert(key, values[i]);
-    }
-}
-
-void MultiMap::remove(int key, int value) {
-    Set* *ptr = map.at2(key);
-    if (ptr == nullptr) {
-        return;
-    }
-
-    Set *values = (*ptr);
-    values->remove_if_exists(value);
-    if (values->size() == 0) {
-        map.remove(key);
-        delete values;
-    }
-}
-
-void MultiMap::remove(int key) {
-    if (map.find(key)) {
-        map.remove(key);
-    }
-}
-
-const char* MultiMap::print() const {
-    return print("->");
-}
-
-const char* MultiMap::print(const char *delim) const {
-    return indigo::print(map, delim);
-}
-
-const Set& MultiMap::operator[](int key) const {
-    Set* *ptr = map.at2(key);
-    if (ptr == nullptr) return nil;
-    return **ptr;
-}
-
-const Set& MultiMap::nil = Set();
-
-const char* Topology::print() const {
-    const char* sf = forward.print("->");
-    const char* sb = backward.print("<-");
-    const char* sc = indigo::print(&current);
-
-    char* ptr = new char[strlen(sc) + strlen(sf) + strlen(sb) + 255];
-    sprintf(ptr, "<current = %s;\n  forward  = %s;\n  backward = %s>", sc, sf, sb);
-    return ptr;
-}
-
-const Path &Topology::history() const {
-    Path *result = new Path();
-    result->copy(path);
-    return *result;
-}
-
-const Set& Topology::pending() const {
+const RedBlackSet<int>& Topology::pending() const {
     return current;
 }
-
-const Set& Topology::satisfied() const {
+const RedBlackSet<int>& Topology::satisfied() const {
     return used;
 }
 
-void Topology::depends(Node source, Node target) {
+void Topology::depends(int source, int target) {
     expand(std::max(source, target));
 
     if (path.size() > 0) {
@@ -124,16 +62,16 @@ void Topology::depends(Node source, Node target) {
     forward.insert(source, target);
 }
 
-bool Topology::satisfy(Node source) {
+bool Topology::satisfy(int source) {
     if (!current.find(source)) {
         return false;
     }
     current.remove(source);
     used.insert(source);
 
-    const Set &targets = forward[source];
+    const RedBlackSet<int> &targets = forward[source];
     for (int i = targets.begin(); i != targets.end(); i = targets.next(i)) {
-        Node target = targets.key(i);
+        int target = targets.key(i);
         backward.remove(target, source);
         if (backward[target].size() < 1) {
             current.insert(target);
@@ -142,6 +80,10 @@ bool Topology::satisfy(Node source) {
     forward.remove(source);
     path.push(source);
     return true;
+}
+
+void Topology::allow(int source) {
+    used.insert(source);
 }
 
 bool Topology::finished() const {
@@ -264,7 +206,7 @@ const char* IntervalFilter::print() const {
     return out;
 }
 
-const IntervalFilter OccurrenceRestrictions::DEFAULT = gt(0);
+const IntervalFilter OccurrenceRestrictions::DEFAULT = positive();
 
 const char* OccurrenceRestrictions::print() const {
     return indigo::print(restrictions);
@@ -275,7 +217,7 @@ void OccurrenceRestrictions::free(int group) {
 }
 
 void OccurrenceRestrictions::set(int group, const IntervalFilter &f) {
-    restrictions[group-1] = f;
+    restrictions[group] = f;
 }
 
 void OccurrenceRestrictions::set(int group, const Array<int> &bits) {

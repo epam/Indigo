@@ -29,14 +29,17 @@ class Molecule;
 
 class MoleculeRGroupsComposition {
 public:
-   MoleculeRGroupsComposition () {};
-   ~MoleculeRGroupsComposition () {};
+    MoleculeRGroupsComposition(BaseMolecule &mol) : _mol(mol) {};
+    ~MoleculeRGroupsComposition () {};
 
-   static Iterable<Attachment*>*   refine(BaseMolecule &mol);
-   static BaseMolecule*            decorate(BaseMolecule &mol, Attachment &at);
-   static Iterable<BaseMolecule*>* combinations(BaseMolecule &mol);
+    Iterator<Attachment*>*   refine();
+    BaseMolecule*            decorate(Attachment &at);
+    Iterator<BaseMolecule*>* combinations();
 
-   DECL_ERROR;
+    DECL_ERROR;
+
+private:
+    BaseMolecule& _mol;
 };
 
 }

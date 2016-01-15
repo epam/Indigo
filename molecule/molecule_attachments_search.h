@@ -16,21 +16,16 @@
 #define __molecule_attachments_search__
 
 #include "assert.h"
+
 #include "algorithm"
 #include "functional"
 
-#include "base_cpp/obj_array.h"
 #include "base_cpp/array.h"
+#include "base_cpp/multimap.h"
 
 #include "base_cpp/red_black.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/auto_ptr.h"
 #include "base_cpp/tlscont.h"
-
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable:4251)
-#endif
 
 namespace indigo {
 
@@ -57,77 +52,53 @@ static void copy(const RedBlackMap<K, V*> &source, RedBlackMap<K, V*> &target) {
     }
 }
 
-typedef RedBlackSet<int> Set;
-typedef RedBlackMap<int, Set*> RawMultiMap;
-typedef RedBlackMap<int, int>  Map;
-
-class MultiMap {
-public:
-    explicit MultiMap() {}
-    MultiMap(const MultiMap &other) : MultiMap(other.map) {}
-    MultiMap(const RawMultiMap &other) { copy(other, map); }
-    ~MultiMap() {}
-
-    int  size() const;
-
-    void insert(int key, int value);
-    void insert(int key, const Array<int> &values);
-
-    void remove(int key, int value);
-    void remove(int key);
-
-    const Set& operator[](int key) const;
-
-    const char* print(const char *delim) const;
-    const char* print() const;
-
-protected:
-    static const Set& nil;
-    RawMultiMap map;
-};
-
-typedef int   Node;
-typedef Array<Node> Path;
-
 class DLLEXPORT Topology {
 public:
     explicit Topology(int size)
     : lim(0), CP_INIT {
         expand(size);
     }
-    Topology(const Topology &other)
-    : forward(other.forward), backward(other.backward),
-      lim(other.lim), CP_INIT {
-        copy(other.current, current);
-        copy(other.used,    used);
-        path.copy(other.path);
+
+    void copy(Topology &target) const {
+        target.lim = lim;
+        forward.copy(target.forward);
+        backward.copy(target.backward);
+        indigo::copy(current, target.current);
+        indigo::copy(used, target.used);
+        target.path.copy(path);
     }
+
     ~Topology() {}
 
-    const Path& history() const;
-    const Set & pending() const;
-    const Set & satisfied() const;
+    const Array<int>& history() const;
+    const RedBlackSet<int>& pending() const;
+    const RedBlackSet<int>& satisfied() const;
 
-    void depends(Node source, Node target);
-    bool satisfy(Node source);
+    void depends(int source, int target);
+    bool satisfy(int source);
+    void allow(int source);
 
     bool finished() const;
 
-    const char* print() const;
+    void print(Array<char> &out, bool finalize = true) const;
 
     DECL_ERROR;
 
 protected:
     void expand(int nlim);
 
-    MultiMap forward;
-    MultiMap backward;
-    Set      current;
-    Set      used;
-    Path     path;
-    int      lim;
+    MultiMap<int,int> forward;
+    MultiMap<int,int> backward;
+
+    RedBlackSet<int>  current;
+    RedBlackSet<int>  used;
+    Array<int>        path;
+    int               lim;
 
     CP_DECL;
+
+private:
+    Topology(const Topology &); // no implicit copy
 };
 
 #define swap1(l,r) \
@@ -201,6 +172,9 @@ static IntervalFilter point(int n)        { return range(n, n); }
 static IntervalFilter lt(int n)           { return range(INT_MIN, n - 1); }
 static IntervalFilter gt(int n)           { return range(n + 1, INT_MAX); }
 
+static IntervalFilter positive()          { return gt(0);  }
+static IntervalFilter natural()           { return gt(-1); }
+
 static IntervalFilter join(const IntervalFilter &a, const IntervalFilter &b) {
     return a.join(b);
 }
@@ -211,12 +185,12 @@ class DLLEXPORT OccurrenceRestrictions {
 public:
     explicit OccurrenceRestrictions(int groupsN)
     : groups(groupsN), CP_INIT {
-        restrictions.resize(groups);
+        restrictions.resize(groups+1);
         restrictions.fill(DEFAULT);
     }
     OccurrenceRestrictions(const OccurrenceRestrictions &other)
     : groups(other.groups), CP_INIT {
-        restrictions.resize(groups);
+        restrictions.resize(groups+1);
         for (int i = 0; i < other.restrictions.size(); i++) {
             restrictions[i] = other.restrictions[i];
         }
@@ -228,7 +202,7 @@ public:
     void set(int group, const Array<int>     &f);
 
     const IntervalFilter& operator[](int group) const {
-        return restrictions[group - 1];
+        return restrictions[group];
     }
 
     const char* print() const;
@@ -261,7 +235,7 @@ static const char* print(const IntervalFilter &f) {
     return f.print();
 }
 
-static const char* print(const Set &set) {
+static const char* print(const RedBlackSet<int> &set) {
     if (set.size() < 1) return "{}";
 
     char* ptr = new char[1024];
@@ -274,7 +248,7 @@ static const char* print(const Set &set) {
 }
 
 template<>
-static const char* print(const Set *set) {
+static const char* print(const RedBlackSet<int> *set) {
     if (set == nullptr) { return "{}"; }
     return print(*set);
 }
@@ -298,10 +272,6 @@ static const char* print(const RedBlackMap<int, T> &map, const char *delim) {
 template<typename T>
 static const char* print(const RedBlackMap<int, T> &map) {
     return print(map, "->");
-}
-
-static const char* print(const MultiMap &map, const char *delim) {
-    return print(map, delim);
 }
 
 template<typename T>
@@ -336,13 +306,6 @@ public:
     virtual bool hasNext() { throw Error("hasNext() is pure abstract"); }
     virtual T next()       { throw Error("next() is pure abstract"); }
     //pseudo-abstract class for simplicity of interfaces
-};
-
-template<typename T>
-class DLLEXPORT Iterable {
-public:
-    virtual ~Iterable() = 0 {}
-    virtual Iterator<T>* iterator() = 0;
 };
 
 template<typename T>
@@ -395,30 +358,8 @@ protected:
 };
 
 template<typename X, typename Y>
-class DLLEXPORT MapIterable : public Iterable<Y> {
-public:
-    explicit MapIterable(std::function<Y(X)> f, Iterable<X>* xs, bool clean = false)
-        : f(f), xs(xs), clean(clean) {}
-    virtual ~MapIterable() { delete xs; this->release(); }
-
-    virtual Iterator<Y>* iterator() {
-        return remember(map(f, xs->iterator(), clean));
-    }
-protected:
-    std::function<Y(X)> f;
-    Iterable<X>* const xs;
-
-    CLEANER(Iterator<Y>)
-};
-
-template<typename X, typename Y>
 static Iterator<Y>* map(std::function<Y(X)> f, Iterator<X>* xs, bool clean = false) {
     return new MapIterator<X, Y>(f, xs, clean);
-}
-
-template<typename X, typename Y>
-static Iterable<Y>* map(std::function<Y(X)> f, Iterable<X>* xs, bool clean = false) {
-    return new MapIterable<X, Y>(f, xs, clean);
 }
 
 template<typename X>
@@ -448,28 +389,8 @@ protected:
 };
 
 template<typename X>
-class DLLEXPORT JoinIterable : public Iterable<X> {
-public:
-    explicit JoinIterable(Iterable<Iterable<X>*>* xss) : xss(xss) {}
-    virtual ~JoinIterable() { delete xs; }
-
-    virtual Iterator<X>* iterator() {
-        return new JoinIterator<X>(map(
-            Iterable<Iterable<X>*>::iterator,
-            xss)->iterator());
-    }
-protected:
-    Iterable<Iterable<X>*>* const xss;
-};
-
-template<typename X>
 static Iterator<X>* join(Iterator<Iterator<X>*>* xss) {
     return new JoinIterator<X>(xss);
-}
-
-template<typename X>
-static Iterable<X>* join(Iterable<Iterable<X>*>* xss) {
-    return new JoinIterable<X>(xss);
 }
 
 template<typename T>
@@ -607,6 +528,9 @@ struct Fragment {
     int fragment;
 };
 
+static const int      H = 0;
+static const Fragment Hydrogen = {H, 0};
+
 typedef RedBlackMap<int,Fragment> Attachment;
 
 static const char* print(const Fragment &fr) {
@@ -618,21 +542,33 @@ static const char* print(const Attachment &at) {
     return indigo::print(at, "~>");
 }
 
-class DLLEXPORT Attachments : public Iterable<Attachment*> {
+class DLLEXPORT Attachments {
 public:
     Attachments(int sitesN, int groupsN,
-      const MultiMap& site2group, const MultiMap& group2site,
-      const Map     & _group2size, const OccurrenceRestrictions& occurrences,
-      const Topology& top) : n(sitesN), k(groupsN), top(top),
-        site2group(site2group), group2site(group2site), 
-        occurrences(occurrences), CP_INIT {
-      copy(_group2size, group2size);
+      const MultiMap<int,int>& site2group, const MultiMap<int,int>& group2site,
+      const RedBlackMap<int,int>& group2size, const OccurrenceRestrictions& occurrences,
+      const Topology& top) : n(sitesN), k(groupsN), _top(n), _occurrences(occurrences), CP_INIT
+    {
+       top.copy(_top);
+       site2group.copy(_site2group);
+       group2site.copy(_group2site);
+       copy(group2size, _group2size);
+
+       Array<char> out;
+       out.appendString("top: ", false);
+       top.print(out, false);
+       out.appendString("\nsite2group: ", false);
+       print(site2group, out, false);
+       out.appendString("\ngroup2site: ", false);
+       print(group2site, out, true);
+       printf("%s\n", out.ptr());
     }
-    virtual ~Attachments() {
+
+    ~Attachments() {
         release();
     }
 
-    virtual Iterator<Attachment*>* iterator() {
+    Iterator<Attachment*>* iterator() {
         std::function<Attachment*(State)> peel = [](State &state) {
             Attachment* result = new Attachment();
             copy(*state.at, *result);
@@ -646,16 +582,20 @@ public:
 protected:
     const int n, k;
 
-    const Topology top;
-    const MultiMap site2group;
-    const MultiMap group2site;
-          Map      group2size;
-    const OccurrenceRestrictions occurrences;
+    Topology _top;
+
+    MultiMap<int,int>    _site2group;
+    MultiMap<int,int>    _group2site;
+    RedBlackMap<int,int> _group2size;
+
+    const OccurrenceRestrictions _occurrences;
 
     struct State {
         const Topology   *top;
         const Attachment *at;
         const Array<int> *ocs;
+
+        const int debug_depth;
     };
 
     State init() {
@@ -663,7 +603,10 @@ protected:
         ocs->resize(1 + k);
         ocs->fill(0);
 
-        return { new Topology(top), new Attachment(), ocs };
+        Topology *top = new Topology(n);
+        _top.copy(*top);
+
+        return { top, new Attachment(), ocs, 0 };
     }
 
     Iterator<State>* search(State &state) {
@@ -671,7 +614,7 @@ protected:
             return single(state);
         }
 
-        const Set* ptr = &state.top->pending();
+        const RedBlackSet<int>* ptr = &state.top->pending();
         if (ptr->size() < 1) {
             ptr = &state.top->satisfied();
         }
@@ -679,17 +622,19 @@ protected:
         auto groups = every(*ptr);
 
         std::function<Iterator<State>*(int)> group2states = [=](int group) {
+            printf("DEBUG {depth=%d; group=%d; at=%s}\n", state.debug_depth, group, print(state.at));
             int occurs   = (*state.ocs)[group];
-            int currDist = occurrences[group][occurs];
-            int nextDist = occurrences[group][occurs + 1];
+            int currDist = _occurrences[group][occurs];
+            int nextDist = _occurrences[group][occurs + 1];
             //todo: occurrence restrictions
 
-            auto frags = count(1, group2size.at(group));
-            auto sites = every(group2site[group]);
+            auto frags = count(1, _group2size.at(group));
+            auto sites = every(_group2site[group]);
 
             std::function<Iterator<State>*(int)> site2states = [=](int site) {
                 std::function<Iterator<State>*(int)> attachAndRec = [=](int frag) {
-                    Topology *top = new Topology(*state.top);
+                    Topology *top = new Topology(n);
+                    state.top->copy(*top);
                     Attachment *at = new Attachment();
                     copy(*state.at, *at);
                     Array<int> *ocs = new Array<int>();
@@ -699,7 +644,7 @@ protected:
                     at->insert(site, { group, frag });
                     top->satisfy(group);
 
-                    State result = { top, at, ocs };
+                    State result = { top, at, ocs, state.debug_depth+1 };
                     return search(result);
                 };
                 return join(map(attachAndRec, frags));
