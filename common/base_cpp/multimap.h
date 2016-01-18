@@ -91,6 +91,18 @@ static void print(const RedBlackSet<int> &set, Array<char> &out, bool finalize =
    if (finalize) { out.push(0); }
 }
 
+static void print(const RedBlackMap<int, int> &map, Array<char> &out, bool finalize = true) {
+   out.push('[');
+   char buffer[8];
+   for (auto i = map.begin(); i != map.end(); i = map.next(i)) {
+      if (i != map.begin()) { out.push(';'); out.push(' '); }
+      sprintf(buffer, "%d->%d", map.key(i), map.value(i));
+      out.appendString(buffer, false);
+   }
+   out.push(']');
+   if (finalize) { out.push(0); }
+}
+
 static void print(const MultiMap<int, int> &map, Array<char> &out, bool finalize = true) {
    out.push('[');
    char buffer[8];
@@ -109,6 +121,7 @@ static void print(const MultiMap<int, int> &map, Array<char> &out, bool finalize
 }
 
 #ifdef _DEBUG
+#include "assert.h"
 #define CHECK_KEYS assert(_map.size() == _keys.size());
 #else
 #define CHECK_KEYS

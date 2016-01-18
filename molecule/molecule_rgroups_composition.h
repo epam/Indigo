@@ -16,30 +16,145 @@
 #define __molecule_rgroups_composition__
 
 #include "molecule/molecule.h"
-#include "molecule/molecule_attachments_search.h"
 
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable:4251)
-#endif
+#include "base_cpp/multimap.h"
+#include "base_cpp/array.h"
+
+#include <memory>
+
+using namespace std;
 
 namespace indigo {
 
-class Molecule;
+class AttachmentIter {
+public:
+   AttachmentIter(const AttachmentIter &) = delete;
+   AttachmentIter() : _limits(nullptr), _end(true), n(-1) {}
+   ~AttachmentIter() {}
+
+   AttachmentIter(int n, const Array<int> &limits)
+      : _limits(&limits), _end(false), n(n) {
+      _fragments.resize(n);
+      _fragments.fill(0);
+   }
+
+   const Array<int>* operator* () const;
+   bool operator!= (const AttachmentIter &other) const;
+   AttachmentIter& operator++ ();
+
+   void dump(Array<int> &other) const;
+   bool next();
+
+protected:
+   const Array<int>* _limits;
+   Array<int> _fragments;
+
+   bool _end;
+   int n;
+};
+
+class Attachments {
+public:
+   Attachments(const Attachments &) = delete;
+   Attachments(int n, const Array<int>& limits)
+      : _limits(limits),
+      _end(), n(n) {}
+   ~Attachments() {}
+
+   unique_ptr<AttachmentIter> begin_ptr() const {
+      return unique_ptr<AttachmentIter>(_begin());
+   }
+   AttachmentIter& begin() {
+      AttachmentIter *ptr = _begin();
+      _ptrs.add(ptr);
+      return *ptr;
+   }
+   AttachmentIter& end() {
+      return _end;
+   }
+
+private:
+   AttachmentIter* _begin() const {
+      return new AttachmentIter(n, _limits);
+   }
+   const Array<int>& _limits;
+
+   PtrPool<AttachmentIter> _ptrs;
+   AttachmentIter _end;
+
+   const int n;
+};
 
 class MoleculeRGroupsComposition {
 public:
-    MoleculeRGroupsComposition(BaseMolecule &mol) : _mol(mol) {};
-    ~MoleculeRGroupsComposition () {};
+   MoleculeRGroupsComposition(const MoleculeRGroupsComposition &) = delete;
+   explicit MoleculeRGroupsComposition(BaseMolecule &mol);
+   ~MoleculeRGroupsComposition () {};
 
-    Iterator<Attachment*>*   refine();
-    BaseMolecule*            decorate(Attachment &at);
-    Iterator<BaseMolecule*>* combinations();
+   Attachments& attachments() const {
+      _init(); return *_ats.get();
+   }
 
-    DECL_ERROR;
+   void decorate(const Array<int>     &at, Molecule &out) const;
+   void decorate(const AttachmentIter &at, Molecule &out) const;
+
+   unique_ptr<Molecule> decorate(const Array<int>     &at) const;
+   unique_ptr<Molecule> decorate(const AttachmentIter &at) const;
+
+   class MoleculeIter {
+   public:
+      MoleculeIter() = delete;
+      MoleculeIter(AttachmentIter& at, const MoleculeRGroupsComposition& parent)
+         : _parent(parent), _at(at) {}
+
+      unique_ptr<Molecule> operator* () const {
+         return _parent.decorate(_at);
+      }
+      bool operator!= (const MoleculeIter &other) const {
+         return _at != other._at;
+      }
+      MoleculeIter& operator++ () {
+         next(); return *this;
+      }
+
+      void dump(Molecule& out) const {
+         _parent.decorate(_at, out);
+      }
+      bool next() const {
+         return _at.next();
+      }
+   protected:
+      const MoleculeRGroupsComposition& _parent;
+      AttachmentIter& _at;
+   };
+
+   MoleculeIter begin() const {
+      _init(); return MoleculeIter(_ats->begin(), *this);
+   }
+   MoleculeIter end() const {
+      _init(); return MoleculeIter(_ats->end(),   *this);
+   }
+
+   DECL_ERROR;
 
 private:
-    BaseMolecule& _mol;
+   inline void _init() const {
+      if (_ats.get() == nullptr) {
+         _ats.reset(new Attachments(n, _limits));
+      }
+   }
+
+   BaseMolecule&    _mol;
+   MoleculeRGroups& _rgroups;
+
+   Array<int>            _limits;
+   Array<int>            _rgroup2size;
+   MultiMap<int, int>    _rsite2rgroup;
+   RedBlackMap<int, int> _rsite2vertex;
+
+   mutable unique_ptr<Attachments> _ats;
+
+   int n, k;
 };
 
 }

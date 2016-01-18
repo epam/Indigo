@@ -15,38 +15,35 @@
 #include "indigo_internal.h"
 #include "indigo_molecule.h"
 
-#include "molecule/molecule_attachments_search.h"
 #include "molecule/molecule_rgroups_composition.h"
 
 class DLLEXPORT IndigoCompositionIter : public IndigoObject {
 public:
-    IndigoCompositionIter(BaseMolecule& mol)
-        : IndigoObject(COMPOSITION_ITER),
-          it(MoleculeRGroupsComposition(mol).combinations()) {}
-    virtual ~IndigoCompositionIter() {}
+   IndigoCompositionIter(BaseMolecule& mol)
+      : IndigoObject(COMPOSITION_ITER),
+      _composition(MoleculeRGroupsComposition(mol)),
+      _it(_composition.begin()), _end(_composition.end())
+   {}
+   virtual ~IndigoCompositionIter() {}
 
-    virtual IndigoObject* next() {
-        if (hasNext()) {
-            AutoPtr<BaseMolecule> mol(it.ref().next());
-            if (mol.ref().isQueryMolecule()) {
-                AutoPtr<IndigoQueryMolecule> result(new IndigoQueryMolecule());
-                result.ref().qmol.clone(mol.ref(), nullptr, nullptr);
-                return result.release();
-            } else {
-                AutoPtr<IndigoMolecule> result(new IndigoMolecule());
-                result.ref().mol.clone(mol.ref(), nullptr, nullptr);
-                return result.release();
-            }
-        } else {
-            return nullptr;
-        }
-    }
-    virtual bool hasNext() {
-        return it->hasNext();
-    }
+   virtual IndigoObject* next() {
+      if (!_hasNext) { return nullptr; }
+
+      AutoPtr<IndigoMolecule> result(new IndigoMolecule());
+      _it.dump(result.ref().mol);
+      _hasNext = _it.next();
+      return result.release();
+   }
+   virtual bool hasNext() {
+      return _hasNext;
+   }
 
 protected:
-    AutoPtr<Iterator<BaseMolecule*>> it;
+   MoleculeRGroupsComposition _composition;
+   MoleculeRGroupsComposition::MoleculeIter _it;
+   MoleculeRGroupsComposition::MoleculeIter _end;
+
+   bool _hasNext = true;
 };
 
 CEXPORT int indigoRGroupComposition(int molecule, const char* options)
