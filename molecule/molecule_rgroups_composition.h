@@ -26,14 +26,13 @@ using namespace std;
 
 namespace indigo {
 
-class AttachmentIter {
+class AttachmentIter : NonCopyable {
 public:
-   AttachmentIter(const AttachmentIter &) = delete;
-   AttachmentIter() : _limits(nullptr), _end(true), n(-1) {}
+   AttachmentIter() : _limits(nullptr), _end(true), _size(-1) {}
    ~AttachmentIter() {}
 
    AttachmentIter(int n, const Array<int> &limits)
-      : _limits(&limits), _end(false), n(n) {
+      : _limits(&limits), _end(false), _size(n) {
       _fragments.resize(n);
       _fragments.fill(0);
    }
@@ -50,15 +49,14 @@ protected:
    Array<int> _fragments;
 
    bool _end;
-   int n;
+   int _size;
 };
 
-class Attachments {
+class Attachments : NonCopyable {
 public:
-   Attachments(const Attachments &) = delete;
    Attachments(int n, const Array<int>& limits)
       : _limits(limits),
-      _end(), n(n) {}
+      _end(), _size(n) {}
    ~Attachments() {}
 
    unique_ptr<AttachmentIter> begin_ptr() const {
@@ -75,19 +73,18 @@ public:
 
 private:
    AttachmentIter* _begin() const {
-      return new AttachmentIter(n, _limits);
+      return new AttachmentIter(_size, _limits);
    }
    const Array<int>& _limits;
 
    PtrPool<AttachmentIter> _ptrs;
    AttachmentIter _end;
 
-   const int n;
+   const int _size;
 };
 
-class MoleculeRGroupsComposition {
+class MoleculeRGroupsComposition : NonCopyable {
 public:
-   MoleculeRGroupsComposition(const MoleculeRGroupsComposition &) = delete;
    explicit MoleculeRGroupsComposition(BaseMolecule &mol);
    ~MoleculeRGroupsComposition () {};
 
@@ -140,7 +137,7 @@ public:
 private:
    inline void _init() const {
       if (_ats.get() == nullptr) {
-         _ats.reset(new Attachments(n, _limits));
+         _ats.reset(new Attachments(_rsites_count, _limits));
       }
    }
 
@@ -154,7 +151,7 @@ private:
 
    mutable unique_ptr<Attachments> _ats;
 
-   int n, k;
+   int _rsites_count, _rgroups_count;
 };
 
 }

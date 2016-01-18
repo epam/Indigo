@@ -21,7 +21,7 @@ namespace indigo {
 
 DECL_EXCEPTION(MultiMapError);
 
-template <typename K, typename V> class MultiMap {
+template <typename K, typename V> class MultiMap : public NonCopyable {
 public:
    DECL_TPL_ERROR(MultiMapError);
 
@@ -62,8 +62,7 @@ protected:
             V &v = set.key(j);
             if (invert) {
                target.insert(v, k);
-            }
-            else {
+            } else {
                target.insert(k, v);
             }
          }
@@ -74,49 +73,7 @@ protected:
    RedBlackSet<K>           _keys;
    PtrArray<RedBlackSet<V>> _sets;
    const RedBlackSet<V>     _nil;
-
-private:
-   MultiMap (const MultiMap &); // no implicit copy
 };
-
-static void print(const RedBlackSet<int> &set, Array<char> &out, bool finalize = true) {
-   out.push('{');
-   char buffer[8];
-   for (auto i = set.begin(); i != set.end(); i = set.next(i)) {
-      if (i != set.begin()) { out.push(','); }
-      sprintf(buffer, "%d", set.key(i));
-      out.appendString(buffer, false);
-   }
-   out.push('}');
-   if (finalize) { out.push(0); }
-}
-
-static void print(const RedBlackMap<int, int> &map, Array<char> &out, bool finalize = true) {
-   out.push('[');
-   char buffer[8];
-   for (auto i = map.begin(); i != map.end(); i = map.next(i)) {
-      if (i != map.begin()) { out.push(';'); out.push(' '); }
-      sprintf(buffer, "%d->%d", map.key(i), map.value(i));
-      out.appendString(buffer, false);
-   }
-   out.push(']');
-   if (finalize) { out.push(0); }
-}
-
-static void print(const MultiMap<int, int> &map, Array<char> &out, bool finalize = true) {
-   out.push('[');
-   char buffer[8];
-   const RedBlackSet<int> &keys = map.keys();
-   for (auto i = keys.begin(); i != keys.end(); i = keys.next(i)) {
-      auto k = keys.key(i);
-      if (i != keys.begin()) { out.push(';'); out.push(' '); }
-      sprintf(buffer, "%d->", k);
-      out.appendString(buffer, false);
-      print(map[k], out, false);
-   }
-   out.push(']');
-   if (finalize) { out.push(0); }
-}
 
 }
 

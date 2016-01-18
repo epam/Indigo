@@ -23,10 +23,11 @@ IMPL_ERROR(MoleculeRGroupsComposition, "molecule rgroups composition");
 
 MoleculeRGroupsComposition::MoleculeRGroupsComposition(BaseMolecule &mol)
 : _mol(mol), _rgroups(_mol.rgroups),
-  n(_mol.countRSites()), k(_rgroups.getRGroupCount())
+  _rsites_count(_mol.countRSites()),
+  _rgroups_count(_rgroups.getRGroupCount())
 {
-   _limits.resize(n);
-   _rgroup2size.resize(k+1);
+   _limits.resize(_rsites_count);
+   _rgroup2size.resize(_rgroups_count+1);
 
    int rsite = 0;
    for (auto vertex : _mol.vertices()) {
@@ -120,7 +121,7 @@ AttachmentIter& AttachmentIter::operator++() {
 
 //todo: gray codes? every digit has its own limit
 bool AttachmentIter::next() {
-   for (int i = 0; i < n; i++) {
+   for (int i = 0; i < _size; i++) {
       if (_fragments[i] < _limits->at(i)) {
          _fragments[i]++;
          for (int j = 0; j < i; j++) {
