@@ -96,7 +96,7 @@ void MoleculeFingerprintBuilder::_initHashCalculations (BaseMolecule &mol, const
       {
          _atom_hydrogens[i] = mol.getAtomMinH(i);
       }
-      catch (Element::Error)
+      catch (Exception e)
       {
          // Set number of hydrogens to zero if anything is undefined
          _atom_hydrogens[i] = 0;
