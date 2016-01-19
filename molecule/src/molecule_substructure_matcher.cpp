@@ -310,7 +310,7 @@ bool MoleculeSubstructureMatcher::find ()
 
    if (_h_unfold)
    {
-     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
+     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h, -1, true);
      _ee->validate();
    }
 
@@ -374,7 +374,7 @@ void MoleculeSubstructureMatcher::_removeUnfoldedHydrogens ()
 bool MoleculeSubstructureMatcher::findNext ()
 {
    if (_h_unfold)
-     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
+     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h, -1, true);
 
    bool found = _ee->processNext();
 
@@ -611,9 +611,29 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph &subgraph, Graph &supergraph
    BaseMolecule &target  = (BaseMolecule &)supergraph;
 
    if (!target.isPseudoAtom(super_idx) && !target.isRSite(super_idx) && !target.isTemplateAtom(super_idx))
-      if (query.getAtomMinH(sub_idx) > 0 && target.getAtomMaxH(super_idx) >= 0)
-         if (query.getAtomMinH(sub_idx) > target.getAtomMaxH(super_idx))
+   {
+      int q_min_h;
+      int t_max_h;
+      try
+      {
+         q_min_h = query.getAtomMinH(sub_idx);
+      }
+      catch (Exception e)
+      {
+         q_min_h = 0;
+      }
+      try
+      {
+         t_max_h = target.getAtomMaxH(super_idx);
+      }
+      catch (indigo::Exception e)
+      {
+         t_max_h = 0;
+      }
+      if (q_min_h > 0 && t_max_h >= 0)
+         if (q_min_h > t_max_h)
             return false;
+   }
 
    if (query.components.size() > sub_idx && query.components[sub_idx] > 0)
    {
