@@ -881,7 +881,7 @@ CEXPORT int indigoAddDecomposition(int decomp, int q_match);
 
 /* R-Group convolution */
 
-//TODO
+CEXPORT int indigoGetFragmentedMolecule(int elem, const char *options);
 CEXPORT int indigoRGroupComposition(int molecule, const char *options);
 
 /*

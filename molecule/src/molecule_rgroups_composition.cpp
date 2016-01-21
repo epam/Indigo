@@ -72,20 +72,9 @@ void MoleculeRGroupsComposition::decorate(const Array<int> &fs, Molecule &mol) c
    mol.clone(_mol, nullptr, nullptr);
 
    for (int i = 0; i < fs.size(); i++) {
-      int f = fs[i];
+      BaseMolecule &fragment = _fragment(i, fs[i]);
+
       int rsite = _rsite2vertex.at(i);
-      const RedBlackSet<int> &rs = _rsite2rgroup[rsite];
-
-      int r;
-      for (int i = rs.begin(); i != rs.end(); i = rs.next(i)) {
-         r = rs.key(i);
-         int size = _rgroup2size[r];
-         if (f >= size) { f -= size; }
-         else { break; }
-      }
-
-      BaseMolecule &fragment = *_rgroups.getRGroup(r).fragments[f];
-
       int apcount = fragment.attachmentPointCount();
       int apoint = fragment.getAttachmentPoint(apcount, 0);
 
@@ -100,6 +89,35 @@ void MoleculeRGroupsComposition::decorate(const Array<int> &fs, Molecule &mol) c
 
    mol.removeAttachmentPoints();
    mol.rgroups.clear();
+}
+
+using MoleculeIter = MoleculeRGroupsComposition::MoleculeIter;
+
+std::unique_ptr<MoleculeRGroups> MoleculeIter::modifyRGroups(const char *options) const {
+   if (!strcmp(options, OPTION(ERASE)) || !strcmp(options, "")) {
+      return std::make_unique<MoleculeRGroups>();
+   }
+   if (!strcmp(options, OPTION(LEAVE))) {
+      auto result(std::make_unique<MoleculeRGroups>());
+      result->copyRGroupsFromMolecule(_parent._mol.rgroups);
+      return result;
+   }
+   if (!strcmp(options, OPTION(ORDER))) {
+      return std::make_unique<OrderedRGroups>(*this);
+   }
+   return std::make_unique<MoleculeRGroups>();
+}
+
+MoleculeIter::OrderedRGroups::OrderedRGroups(const MoleculeIter &m) {
+   Array<int> fs;
+   m._at.dump(fs);
+   for (auto i = 0; i < fs.size(); i++) {
+      RGroup &rgroup = _rgroups.push();
+      Molecule *fragment = new Molecule();
+      fragment->clone(m._parent._fragment(i, fs[i]), nullptr, nullptr);
+      fragment->removeAttachmentPoints();
+      rgroup.fragments.add(fragment);
+   }
 }
 
 using AttachmentIter = MoleculeRGroupsComposition::AttachmentIter;

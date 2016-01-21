@@ -1435,6 +1435,8 @@ class Indigo(object):
         Indigo._lib.indigoDecomposeMolecules.argtypes = [c_int, c_int]
         Indigo._lib.indigoRGroupComposition.restype = c_int
         Indigo._lib.indigoRGroupComposition.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoGetFragmentedMolecule.restype = c_int
+        Indigo._lib.indigoGetFragmentedMolecule.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoCreateDecomposer.restype = c_int
         Indigo._lib.indigoCreateDecomposer.argtypes = [c_int]
         Indigo._lib.indigoReactionProductEnumerate.restype = c_int
@@ -2206,6 +2208,15 @@ class Indigo(object):
         self._setSessionId()
         options = '' if options is None else options
         newobj = self._checkResult(Indigo._lib.indigoRGroupComposition(molecule.id, options.encode(ENCODE_ENCODING)))
+        if newobj == 0:
+            return None
+        else:
+            return self.IndigoObject(self, newobj, self)
+
+    def getFragmentedMolecule(self, elem, options=''):
+        self._setSessionId()
+        options = '' if options is None else options
+        newobj = self._checkResult(Indigo._lib.indigoGetFragmentedMolecule(elem.id, options.encode(ENCODE_ENCODING)))
         if newobj == 0:
             return None
         else:

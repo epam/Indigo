@@ -133,9 +133,35 @@ public:
       bool next() const {
          return _at.next();
       }
+
+      /* Modify rgroups information according to options:
+      * "composed" erase rgroups in resulting molecule (returns empty rgroups)
+      * "source" leaves rgroups info as is (returns copy of source rgroups)
+      * "ordered" places each attached fragment into its own rgroup
+      * "" defaults to "composed" */
+      std::unique_ptr<MoleculeRGroups> modifyRGroups(const char *options = "") const;
+
+      enum Option { ERASE, LEAVE, ORDER };
+      #define RGCOMP_OPT MoleculeIter::Option
+      #define RGCOMP_OPT_ENUM { RGCOMP_OPT::ERASE, RGCOMP_OPT::LEAVE, RGCOMP_OPT::ORDER }
+      #define RGCOMP_OPT_COUNT 3
+
+      static const char * const OPTION(Option opt) {
+         switch (opt) {
+            case ERASE: return "composed";
+            case LEAVE: return "source";
+            case ORDER: return "ordered";
+         }
+      }
+
    protected:
       const MoleculeRGroupsComposition& _parent;
       AttachmentIter& _at;
+
+      class OrderedRGroups : public MoleculeRGroups {
+      public:
+         OrderedRGroups(const MoleculeIter &m);
+      };
    };
 
    MoleculeIter begin() const {
@@ -146,6 +172,22 @@ public:
    }
 
    DECL_ERROR;
+
+protected:
+   inline BaseMolecule& _fragment(int i, int fragment) const {
+      const RedBlackSet<int> &rs = _rsite2rgroup[_rsite2vertex.at(i)];
+
+      int r = -1;
+      int f = fragment;
+      for (int i = rs.begin(); i != rs.end(); i = rs.next(i)) {
+         r = rs.key(i);
+         int size = _rgroup2size[r];
+         if (f >= size) { f -= size; }
+         else { break; }
+      }
+
+      return *_rgroups.getRGroup(r).fragments[f];
+   }
 
 private:
    inline void _init() const {
