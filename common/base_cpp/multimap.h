@@ -202,4 +202,4 @@ RedBlackSet<V>& MultiMap<K, V>::_provide_set(const K &k)
     return _sets.add(new RedBlackSet<V>());
 }
 
-#endif __multimap__
+#endif

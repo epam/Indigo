@@ -50,16 +50,16 @@ MoleculeRGroupsComposition::MoleculeRGroupsComposition(BaseMolecule &mol)
    }
 }
 
-unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const AttachmentIter &at) const {
+std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const AttachmentIter &at) const {
    Array<int> fs;
    at.dump(fs);
    return decorate(fs);
 }
 
-unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const Array<int> &at) const {
-   Molecule* result = new Molecule();
-   decorate(at, *result);
-   return unique_ptr<Molecule>(result);
+std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const Array<int> &at) const {
+   std::unique_ptr<Molecule> result = std::make_unique<Molecule>();
+   decorate(at, *result.get());
+   return result;
 }
 
 void MoleculeRGroupsComposition::decorate(const AttachmentIter &at, Molecule &mol) const {
@@ -101,6 +101,8 @@ void MoleculeRGroupsComposition::decorate(const Array<int> &fs, Molecule &mol) c
    mol.removeAttachmentPoints();
    mol.rgroups.clear();
 }
+
+using AttachmentIter = MoleculeRGroupsComposition::AttachmentIter;
 
 bool AttachmentIter::operator!= (const AttachmentIter &other) const {
    if (_end && other._end) { return false; }

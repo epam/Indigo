@@ -22,89 +22,99 @@
 
 #include <memory>
 
-using namespace std;
-
 namespace indigo {
-
-class AttachmentIter : NonCopyable {
-public:
-   AttachmentIter() : _limits(nullptr), _end(true), _size(-1) {}
-   ~AttachmentIter() {}
-
-   AttachmentIter(int n, const Array<int> &limits)
-      : _limits(&limits), _end(false), _size(n) {
-      _fragments.resize(n);
-      _fragments.fill(0);
-   }
-
-   const Array<int>* operator* () const;
-   bool operator!= (const AttachmentIter &other) const;
-   AttachmentIter& operator++ ();
-
-   void dump(Array<int> &other) const;
-   bool next();
-
-protected:
-   const Array<int>* _limits;
-   Array<int> _fragments;
-
-   bool _end;
-   int _size;
-};
-
-class Attachments : NonCopyable {
-public:
-   Attachments(int n, const Array<int>& limits)
-      : _limits(limits),
-      _end(), _size(n) {}
-   ~Attachments() {}
-
-   unique_ptr<AttachmentIter> begin_ptr() const {
-      return unique_ptr<AttachmentIter>(_begin());
-   }
-   AttachmentIter& begin() {
-      AttachmentIter *ptr = _begin();
-      _ptrs.add(ptr);
-      return *ptr;
-   }
-   AttachmentIter& end() {
-      return _end;
-   }
-
-private:
-   AttachmentIter* _begin() const {
-      return new AttachmentIter(_size, _limits);
-   }
-   const Array<int>& _limits;
-
-   PtrPool<AttachmentIter> _ptrs;
-   AttachmentIter _end;
-
-   const int _size;
-};
 
 class MoleculeRGroupsComposition : NonCopyable {
 public:
    explicit MoleculeRGroupsComposition(BaseMolecule &mol);
    ~MoleculeRGroupsComposition () {};
 
+   //State of search abstracted from chemistry details
+   class AttachmentIter : NonCopyable {
+   public:
+      //Default constructor is used to indicate final state
+      AttachmentIter() : _limits(nullptr), _end(true), _size(-1) {}
+      ~AttachmentIter() {}
+
+      //Constructs (0,...,0) state, limits indicates max number on every site
+      AttachmentIter(int size, const Array<int> &limits)
+         : _limits(&limits), _end(false), _size(size) {
+         _fragments.resize(size);
+         _fragments.fill(0);
+      }
+
+      //Operators *, != and ++ are used for range-loop iteration
+      const Array<int>* operator* () const;
+      bool operator!= (const AttachmentIter &other) const;
+      AttachmentIter& operator++ ();
+
+      //Output numbers assigned to sites
+      void dump(Array<int> &other) const;
+
+      //Move to next state, returns true if the iterator has next element
+      bool next();
+
+   protected:
+      const Array<int>* _limits;
+      Array<int> _fragments;
+
+      bool _end;
+      int _size;
+   };
+
+   //Collection of search states
+   class Attachments : NonCopyable {
+   public:
+      Attachments(int size, const Array<int>& limits)
+         : _limits(limits),
+         _end(), _size(size) {}
+      ~Attachments() {}
+
+      std::unique_ptr<AttachmentIter> begin_ptr() const {
+         return std::unique_ptr<AttachmentIter>(_begin());
+      }
+      AttachmentIter& begin() {
+         AttachmentIter *ptr = _begin();
+         _ptrs.add(ptr);
+         return *ptr;
+      }
+      AttachmentIter& end() {
+         return _end;
+      }
+
+   private:
+      AttachmentIter* _begin() const {
+         return new AttachmentIter(_size, _limits);
+      }
+      const Array<int>& _limits;
+
+      PtrPool<AttachmentIter> _ptrs;
+      AttachmentIter _end;
+
+      const int _size;
+   };
+
+   //Searchs all possible assignments of rgroup numbers to sites
    Attachments& attachments() const {
       _init(); return *_ats.get();
    }
 
+   //Assembles result molecule from abstract assigment of numbers to sites
    void decorate(const Array<int>     &at, Molecule &out) const;
    void decorate(const AttachmentIter &at, Molecule &out) const;
 
-   unique_ptr<Molecule> decorate(const Array<int>     &at) const;
-   unique_ptr<Molecule> decorate(const AttachmentIter &at) const;
+   std::unique_ptr<Molecule> decorate(const Array<int>     &at) const;
+   std::unique_ptr<Molecule> decorate(const AttachmentIter &at) const;
 
+   //Iterator for result molecules, essentially wrapper of AttachmentIter
    class MoleculeIter {
    public:
       MoleculeIter() = delete;
       MoleculeIter(AttachmentIter& at, const MoleculeRGroupsComposition& parent)
          : _parent(parent), _at(at) {}
 
-      unique_ptr<Molecule> operator* () const {
+      //Operators *, != and ++ are used for range-loop iteration
+      std::unique_ptr<Molecule> operator* () const {
          return _parent.decorate(_at);
       }
       bool operator!= (const MoleculeIter &other) const {
@@ -114,9 +124,12 @@ public:
          next(); return *this;
       }
 
+      //Assemble resulting molecule from attachment
       void dump(Molecule& out) const {
          _parent.decorate(_at, out);
       }
+
+      //Shift to next molecule, returns true if there is next molecule after
       bool next() const {
          return _at.next();
       }
@@ -129,7 +142,7 @@ public:
       _init(); return MoleculeIter(_ats->begin(), *this);
    }
    MoleculeIter end() const {
-      _init(); return MoleculeIter(_ats->end(),   *this);
+      _init(); return MoleculeIter(_ats->end(), *this);
    }
 
    DECL_ERROR;
@@ -149,7 +162,7 @@ private:
    MultiMap<int, int>    _rsite2rgroup;
    RedBlackMap<int, int> _rsite2vertex;
 
-   mutable unique_ptr<Attachments> _ats;
+   mutable std::unique_ptr<Attachments> _ats;
 
    int _rsites_count, _rgroups_count;
 };

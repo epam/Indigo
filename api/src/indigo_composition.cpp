@@ -20,8 +20,7 @@
 class DLLEXPORT IndigoCompositionIter : public IndigoObject {
 public:
    IndigoCompositionIter(BaseMolecule& mol)
-      : IndigoObject(COMPOSITION_ITER),
-      _composition(MoleculeRGroupsComposition(mol)),
+      : IndigoObject(COMPOSITION_ITER), _composition(mol),
       _it(_composition.begin()), _end(_composition.end())
    {}
    virtual ~IndigoCompositionIter() {}
