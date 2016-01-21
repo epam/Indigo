@@ -720,6 +720,12 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
    if (radical > 0)
       return PiValue(1, 1);
 
+
+   int valence, implicit_h;
+   if (!Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false))
+      return PiValue(-1, -1);
+
+
    if (exact_double_bonds >= 1)
    {
       if (_options.method == AromaticityOptions::BASIC)
@@ -750,10 +756,6 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
       }
       return PiValue(1, 1);
    }
-
-   int valence, implicit_h;
-   if (!Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false))
-      return PiValue(-1, -1);
 
    int pi_label = -1;
    int lonepairs = 0;

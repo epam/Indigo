@@ -626,7 +626,7 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph &subgraph, Graph &supergraph
       {
          t_max_h = target.getAtomMaxH(super_idx);
       }
-      catch (indigo::Exception e)
+      catch (Exception e)
       {
          t_max_h = 0;
       }
