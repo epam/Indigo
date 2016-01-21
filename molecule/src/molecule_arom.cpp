@@ -722,7 +722,9 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
 
 
    int valence, implicit_h;
-   if (!Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false))
+
+   if (!Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false) &&
+       !query.possibleNitrogenV5(v_idx))
       return PiValue(-1, -1);
 
 
