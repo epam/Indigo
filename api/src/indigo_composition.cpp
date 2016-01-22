@@ -49,7 +49,7 @@ CEXPORT int indigoGetFragmentedMolecule(int elem, const char* options)
          }
       }
       if (rgroups == nullptr) {
-         //todo: error
+         throw IndigoError("indigoGetFragmentedMolecule(): weird options \"%s\"", options);
       }
 
       AutoPtr<IndigoMolecule> result(new IndigoMolecule());

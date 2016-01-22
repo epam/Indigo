@@ -162,6 +162,11 @@ public:
       public:
          OrderedRGroups(const MoleculeIter &m);
       };
+
+      class SourceRGroups : public MoleculeRGroups {
+      public:
+         SourceRGroups(const MoleculeIter &m);
+      };
    };
 
    MoleculeIter begin() const {
@@ -174,8 +179,9 @@ public:
    DECL_ERROR;
 
 protected:
-   inline BaseMolecule& _fragment(int i, int fragment) const {
-      const RedBlackSet<int> &rs = _rsite2rgroup[_rsite2vertex.at(i)];
+   struct Fragment { int rgroup; int fragment; };
+   inline Fragment _fragment_coordinates(int rsite, int fragment) const {
+      const RedBlackSet<int> &rs = _rsite2rgroup[_rsite2vertex.at(rsite)];
 
       int r = -1;
       int f = fragment;
@@ -186,7 +192,12 @@ protected:
          else { break; }
       }
 
-      return *_rgroups.getRGroup(r).fragments[f];
+      return { r, f };
+   }
+
+   inline BaseMolecule& _fragment(int rsite, int fragment) const {
+      auto x = _fragment_coordinates(rsite, fragment);
+      return *_rgroups.getRGroup(x.rgroup).fragments[x.fragment];
    }
 
 private:

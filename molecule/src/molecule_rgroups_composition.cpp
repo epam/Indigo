@@ -57,7 +57,7 @@ std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const AttachmentI
 }
 
 std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const Array<int> &at) const {
-   std::unique_ptr<Molecule> result = std::make_unique<Molecule>();
+   std::unique_ptr<Molecule> result(new Molecule());
    decorate(at, *result.get());
    return result;
 }
@@ -93,19 +93,45 @@ void MoleculeRGroupsComposition::decorate(const Array<int> &fs, Molecule &mol) c
 
 using MoleculeIter = MoleculeRGroupsComposition::MoleculeIter;
 
+#define EMPTY_RGROUPS   std::unique_ptr<MoleculeRGroups>(new MoleculeRGroups())
+#define MAKE_RGROUPS(T) std::unique_ptr<T>(new T(*this))
+
 std::unique_ptr<MoleculeRGroups> MoleculeIter::modifyRGroups(const char *options) const {
    if (!strcmp(options, OPTION(ERASE)) || !strcmp(options, "")) {
-      return std::make_unique<MoleculeRGroups>();
+      return EMPTY_RGROUPS;
    }
    if (!strcmp(options, OPTION(LEAVE))) {
-      auto result(std::make_unique<MoleculeRGroups>());
-      result->copyRGroupsFromMolecule(_parent._mol.rgroups);
-      return result;
+      return MAKE_RGROUPS(SourceRGroups);
    }
    if (!strcmp(options, OPTION(ORDER))) {
-      return std::make_unique<OrderedRGroups>(*this);
+      return MAKE_RGROUPS(OrderedRGroups);
    }
-   return std::make_unique<MoleculeRGroups>();
+   return EMPTY_RGROUPS;
+}
+
+MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter &m) {
+   Array<int> fs;
+   m._at.dump(fs);
+   MultiMap<int, int> rgroup2fragment;
+   for (auto i = 0; i < fs.size(); i++) {
+      auto x = m._parent._fragment_coordinates(i, fs[i]);
+      rgroup2fragment.insert(x.rgroup, x.fragment);
+   }
+
+   const RedBlackSet<int> &rgroups = rgroup2fragment.keys();
+   for (auto i = rgroups.begin(); i != rgroups.end(); i = rgroups.next(i)) {
+      auto r = rgroups.key(i);
+      RGroup &rgroup = _rgroups.push();
+      RGroup &source = m._parent._rgroups.getRGroup(r);
+
+      const RedBlackSet<int> &fs_r = rgroup2fragment[r];
+      for (auto j = fs_r.begin(); j != fs_r.end(); j = fs_r.next(j)) {
+         Molecule *fragment = new Molecule();
+         fragment->clone(*source.fragments[fs_r.key(j)], nullptr, nullptr);
+         fragment->removeAttachmentPoints();
+         rgroup.fragments.add(fragment);
+      }
+   }
 }
 
 MoleculeIter::OrderedRGroups::OrderedRGroups(const MoleculeIter &m) {
