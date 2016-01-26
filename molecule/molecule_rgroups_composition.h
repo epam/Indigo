@@ -179,7 +179,16 @@ public:
    DECL_ERROR;
 
 protected:
-   struct Fragment { int rgroup; int fragment; };
+   struct Fragment {
+      int rgroup;
+      int fragment;
+
+      bool operator<(const Fragment &other) const {
+         return rgroup < other.rgroup ||
+            fragment < other.fragment;
+      }
+   };
+
    inline Fragment _fragment_coordinates(int rsite, int fragment) const {
       const RedBlackSet<int> &rs = _rsite2rgroup[_rsite2vertex.at(rsite)];
 

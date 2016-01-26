@@ -113,9 +113,17 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter &m) {
    Array<int> fs;
    m._at.dump(fs);
    MultiMap<int, int> rgroup2fragment;
+   RedBlackMap<Fragment, int> fragment2count;
    for (auto i = 0; i < fs.size(); i++) {
       auto x = m._parent._fragment_coordinates(i, fs[i]);
-      rgroup2fragment.insert(x.rgroup, x.fragment);
+      if (rgroup2fragment.find(x.rgroup, x.fragment)) {
+         int count = fragment2count.at(x);
+         fragment2count.remove(x);
+         fragment2count.insert(x, count + 1);
+      } else {
+         rgroup2fragment.insert(x.rgroup, x.fragment);
+         fragment2count.insert(x, 1);
+      }
    }
 
    const RedBlackSet<int> &rgroups = rgroup2fragment.keys();
@@ -126,10 +134,13 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter &m) {
 
       const RedBlackSet<int> &fs_r = rgroup2fragment[r];
       for (auto j = fs_r.begin(); j != fs_r.end(); j = fs_r.next(j)) {
-         Molecule *fragment = new Molecule();
-         fragment->clone(*source.fragments[fs_r.key(j)], nullptr, nullptr);
-         fragment->removeAttachmentPoints();
-         rgroup.fragments.add(fragment);
+         auto f = fs_r.key(j);
+         for (auto k = 0; k < fragment2count.at({r,f}); k++) {
+            Molecule *fragment = new Molecule();
+            fragment->clone(*source.fragments[f], nullptr, nullptr);
+            fragment->removeAttachmentPoints();
+            rgroup.fragments.add(fragment);
+         }
       }
    }
 }
