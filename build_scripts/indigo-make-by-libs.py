@@ -106,6 +106,9 @@ parser.add_option('--doc', default=False, action='store_true', help='Build docum
 
 (args, left_args) = parser.parse_args()
 
+if not args.type:
+    args.type = 'python,java,dotnet'
+
 if args.doc:
     make_doc()
 
@@ -178,6 +181,8 @@ for w, libs in wrappers:
         continue
     if need_gen_wrappers:
         for gen in wrappers_gen:
-            if args.type is not None and gen not in args.type.split(','):
-                continue
-            subprocess.check_call('"%s" %s -s "-%s" %s' % (sys.executable, join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)
+            if args.type is not None:
+                for g in args.type.split(','):
+                    if gen.find(g) != -1:
+                        subprocess.check_call('"%s" %s -s "-%s" %s' % (sys.executable, join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)
+            
