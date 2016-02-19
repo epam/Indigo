@@ -140,6 +140,12 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    Array<char> search_query;
    Array<char> search_options;
    BingoPgFpData& data = _queryFpData.ref();
+   
+   if(scan_desc->numberOfKeys != 1) {
+      throw BingoPgError("reaction search engine: unsupported condition number '%d': "
+              "if you want to search several queries please use 'matchRSub' or 'matchRSmarts' functions for a secondary condition",  
+              scan_desc->numberOfKeys);
+   }
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, false);
 
@@ -176,6 +182,12 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    Array<char> search_query;
    Array<char> search_options;
    int bingo_res;
+   
+   if(scan_desc->numberOfKeys != 1) {
+      throw BingoPgError("reaction search engine: unsupported condition number '%d': "
+              "if you want to search several queries please use 'matchRExact' function for a secondary condition",  
+              scan_desc->numberOfKeys);
+   }
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, false);
 
