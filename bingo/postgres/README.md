@@ -1,28 +1,31 @@
-*** PostreSQL database install pre-requisites
-
-********* 
-Bingo postgres engine requires a lot of shared memory. 
+# PostreSQL database install pre-requisites
+ 
+Bingo PostgreSQL engine requires a lot of shared memory. 
 For linux systems EPAM recommends to change kernel.shmmax and kernel.shmall
 The system parameters can be changed by adding the strings:
-
+```
 kernel.shmmax=<value>
 kernel.shmall=<value>
+```
 
 into the /etc/sysctl.conf and launching (with the root privilegies)
 
- >   sysctl -p /etc/sysctl.conf
+```
+sysctl -p /etc/sysctl.conf
+```
 
 The recommended value is appr. 50% of the RAM (in bytes)
 
-********* 
 Also, there is a parameter in the postgres database configuration file (postgresql.conf):
 
+```
 shared_buffers=<value>
+```
+The recommended value at least 64 Mbytes:
 
-The recommended value at least 32 Mbytes:
-
-shared_buffers=32MB
-
+```
+shared_buffers=64MB
+```
 
 
 
