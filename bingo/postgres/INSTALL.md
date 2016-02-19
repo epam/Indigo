@@ -1,4 +1,4 @@
-    System Requirements
+System Requirements
 -------------------
 
 ### Operating Systems ###
@@ -13,15 +13,7 @@
 
 ### Tested Configurations ###
 
- Bingo has been successfully tested on the following configurations:
-
-| Bingo Version |        Database           |         Operating System        |  Architecture  |
-| ------------- | ------------------------- | ------------------------------- | -------------- |
-|     32-bit    | PostgreSQL 9.0.5 (32-bit) |        Linux: Ubuntu 10.04      |   Intel x86    |
-|     64-bit    | PostgreSQL 9.0.5 (64-bit) |        Linux: Debian sid        |  Intel x86-64  |
-|     32-bit    | PostgreSQL 9.0.5 (32-bit) |       Windows 7 Enterprise      |  Intel x86-64  |
-|     64-bit    | PostgreSQL 9.0.5 (64-bit) |       Windows 7 Enterprise      |  Intel x86-64  |
-|32/64 universal| PostgreSQL 9.0.3(Mac OS X)|    Mac OS X 10.6 (Snow Leopard) |  Intel x86-64  |
+ Bingo has been successfully tested for 9.0-9.5 PostgreSQL versions
 
 
 Installation Prerequisities
