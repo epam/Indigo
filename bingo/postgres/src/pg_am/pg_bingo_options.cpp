@@ -1,4 +1,5 @@
 #include "bingo_pg_fix_pre.h"
+#include "float.h"
 
 extern "C" {
 #include "postgres.h"
