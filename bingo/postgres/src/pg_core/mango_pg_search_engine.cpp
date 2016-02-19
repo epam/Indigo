@@ -285,7 +285,7 @@ void MangoPgSearchEngine::_prepareExactTauStrings(indigo::Array<char>& what_clau
 
    const char* query_gross = mangoTauGetQueryGross();
    if(query_gross == 0)
-      CORE_HANDLE_ERROR(0, 1, "molecule seach engine: error while constructing gross string", bingoGetError());
+      CORE_HANDLE_ERROR(0, 1, "molecule search engine: error while constructing gross string", bingoGetError());
    
    where_clause.printf("gross='%s' OR gross LIKE '%s H%%'", query_gross, query_gross);
 
@@ -300,7 +300,13 @@ void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr) {
    Array<char> search_type;
    Array<char> search_query;
    Array<char> search_options;
-
+   
+   if(scan_desc->numberOfKeys != 1) {
+      throw BingoPgError("molecule search engine: unsupported condition number '%d': "
+              "if you want to search several queries please use 'matchSub' or 'matchSmarts' functions for a secondary condition",  
+              scan_desc->numberOfKeys);
+   }
+   
    int bingo_res;
    BingoPgFpData& data = _queryFpData.ref();
 
@@ -339,6 +345,12 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr) {
    Array<char> search_query;
    Array<char> search_options;
    int bingo_res;
+   
+   if(scan_desc->numberOfKeys != 1) {
+      throw BingoPgError("molecule search engine: unsupported condition number '%d': "
+              "if you want to search several queries please use 'matchExact'  for a secondary condition",  
+              scan_desc->numberOfKeys);
+   }
 
    profTimerStart(t0, "mango_pg.prepare_exact_search");
 
@@ -373,6 +385,12 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr) {
    Array<char> search_sigh;
    Array<char> search_mol;
    int bingo_res;
+   
+   if(scan_desc->numberOfKeys != 1) {
+      throw BingoPgError("molecule search engine: unsupported condition number '%d': "
+              "if you want to search several queries please use 'matchGross'  for a secondary condition",  
+              scan_desc->numberOfKeys);
+   }
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
 
@@ -447,6 +465,12 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr) {
    BingoPgFpData& data = _queryFpData.ref();
 
    BingoPgCommon::getSearchTypeString(_searchType, search_type, true);
+   
+   if(scan_desc->numberOfKeys != 1) {
+      throw BingoPgError("molecule search engine: unsupported condition number '%d': "
+              "if you want to search several queries please use 'matchSim'  for a secondary condition",  
+              scan_desc->numberOfKeys);
+   }
 
    _getScanQueries(scan_desc->keyData[0].sk_argument, min_bound, max_bound, search_query, search_options);
    /*
