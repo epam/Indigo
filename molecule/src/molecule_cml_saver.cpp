@@ -106,6 +106,10 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          {
             if (_mol->getAtomRadical_NoThrow(i, 0) != 0)
                atom->SetAttribute("spinMultiplicity", _mol->getAtomRadical(i));
+
+            if (_mol->getExplicitValence(i) > 0)
+               atom->SetAttribute("mrvValence", _mol->getExplicitValence(i));
+
    
             if (Molecule::shouldWriteHCount(*_mol, i))
             {
