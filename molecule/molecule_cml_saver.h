@@ -22,6 +22,7 @@ namespace indigo {
 
 class Molecule;
 class Output;
+class SGroup;
 
 class MoleculeCmlSaver
 {
@@ -34,6 +35,8 @@ public:
    DECL_ERROR;
 
 protected:
+   void _addSgroupElement (TiXmlElement *elem, SGroup &sgroup);
+
    Molecule *_mol;
    Output   &_output;
 
@@ -41,6 +44,7 @@ protected:
    TiXmlElement * _root;
 
 private:
+
    MoleculeCmlSaver (const MoleculeCmlSaver &); // no implicit copy
 };
 

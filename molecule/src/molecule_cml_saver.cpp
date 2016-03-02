@@ -59,7 +59,7 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
       molecule->SetAttribute("title", _mol->name.ptr());
    }
 
-   bool have_hyz = _mol->have_xyz;
+   bool have_xyz = BaseMolecule::hasCoord(*_mol);
    bool have_z = BaseMolecule::hasZCoord(*_mol);
 
    if (_mol->vertexCount() > 0)
@@ -129,7 +129,7 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
             }
          }
 
-         if (have_hyz)
+         if (have_xyz)
          {
             Vec3f &pos = _mol->getAtomXyz(i);
 
@@ -145,25 +145,23 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
                atom->SetDoubleAttribute("y2", pos.y);
             }
          }
-         else
+
+         if (_mol->stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
          {
-            if (_mol->stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
-            {
-               TiXmlElement * atomparity = new TiXmlElement("atomParity");
-               atom->LinkEndChild(atomparity);
+            TiXmlElement * atomparity = new TiXmlElement("atomParity");
+            atom->LinkEndChild(atomparity);
 
-               QS_DEF(Array<char>, buf);
-               ArrayOutput out(buf);
-               const int *pyramid = _mol->stereocenters.getPyramid(i);
-               if (pyramid[3] == -1)
-                  out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], i);
-                else
-                  out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], pyramid[3]);
-               buf.push(0);
-               atomparity->SetAttribute("atomRefs4", buf.ptr());
+            QS_DEF(Array<char>, buf);
+            ArrayOutput out(buf);
+            const int *pyramid = _mol->stereocenters.getPyramid(i);
+            if (pyramid[3] == -1)
+               out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], i);
+             else
+               out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], pyramid[3]);
+            buf.push(0);
+            atomparity->SetAttribute("atomRefs4", buf.ptr());
 
-               atomparity->LinkEndChild(new TiXmlText("1"));
-            }
+            atomparity->LinkEndChild(new TiXmlText("1"));
          }
       }
    }
@@ -198,13 +196,13 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          int dir = _mol->getBondDirection(i);
          int parity = _mol->cis_trans.getParity(i);
 
-         if (_mol->have_xyz && (dir == BOND_UP || dir == BOND_DOWN))
+         if (dir == BOND_UP || dir == BOND_DOWN)
          {
             TiXmlElement * bondstereo = new TiXmlElement("bondStereo");
             bond->LinkEndChild(bondstereo);
             bondstereo->LinkEndChild(new TiXmlText((dir == BOND_UP) ? "W" : "H"));
          }
-         else if (!_mol->have_xyz && parity != 0)
+         else if (parity != 0)
          {
             TiXmlElement * bondstereo = new TiXmlElement("bondStereo");
             bond->LinkEndChild(bondstereo);
@@ -221,7 +219,118 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
       }
    }
 
+   if (_mol->countSGroups() > 0)
+   {
+      MoleculeSGroups *sgroups = &_mol->sgroups;
+
+      for (i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      {
+         SGroup &sgroup = sgroups->getSGroup(i);
+
+         if (sgroup.parent_group == 0)
+            _addSgroupElement(molecule, sgroup);
+      }
+   }
+
    TiXmlPrinter printer;
    _doc->Accept(&printer);
    _output.printf("%s", printer.CStr());
+}
+
+void MoleculeCmlSaver::_addSgroupElement (TiXmlElement *molecule, SGroup &sgroup)
+{
+   if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+   {
+      TiXmlElement * sg = new TiXmlElement("molecule");
+      molecule->LinkEndChild(sg);
+
+      QS_DEF(Array<char>, buf);
+      ArrayOutput out(buf);
+      out.printf("sg%d", sgroup.original_group);
+      buf.push(0);
+      sg->SetAttribute("id", buf.ptr());
+
+      sg->SetAttribute("role", "DataSgroup");
+
+      if (sgroup.atoms.size() > 0)
+      {
+         QS_DEF(Array<char>, buf);
+         ArrayOutput out(buf);
+
+         for (int j = 0; j < sgroup.atoms.size(); j++)
+            out.printf("a%d ", sgroup.atoms[j]);
+
+         buf.pop();
+         buf.push(0);
+
+         sg->SetAttribute("atomRefs", buf.ptr());
+      }
+
+      DataSGroup &dsg = (DataSGroup &)sgroup;
+
+      const char *name = dsg.name.ptr();
+      if (name != 0 && strlen(name) > 0)
+      {
+         sg->SetAttribute("fieldName", name);
+      }
+      const char *desc = dsg.description.ptr();
+      if (desc != 0 && strlen(desc) > 0)
+      {
+         sg->SetAttribute("fieldType", desc);
+      }
+      const char *querycode = dsg.querycode.ptr();
+      if (querycode != 0 && strlen(querycode) > 0)
+      {
+         sg->SetAttribute("queryType", querycode);
+      }
+      const char *queryoper = dsg.queryoper.ptr();
+      if (queryoper != 0 && strlen(queryoper) > 0)
+      {
+         sg->SetAttribute("queryOp", queryoper);
+      }
+
+      sg->SetDoubleAttribute("x", dsg.display_pos.x);
+      sg->SetDoubleAttribute("y", dsg.display_pos.y);
+
+      if (!dsg.detached)
+      {
+         sg->SetAttribute("dataDetached", "false");
+      }
+
+      if (dsg.relative)
+      {
+         sg->SetAttribute("placement", "Relative");
+      }
+
+      if (dsg.display_units)
+      {
+         sg->SetAttribute("unitsDisplayed", "Unit displayed");
+      }
+
+      char tag = dsg.tag;
+      if (tag != 0 && tag != ' ')
+      {
+         sg->SetAttribute("tag", tag);
+      }
+
+      if (dsg.num_chars > 0)
+      {
+         sg->SetAttribute("displayedChars", dsg.num_chars);
+      }
+
+      if (dsg.data.size() > 0 && dsg.data[0] != 0)
+      {
+         sg->SetAttribute("fieldData", dsg.data.ptr());
+      }
+
+      MoleculeSGroups *sgroups = &_mol->sgroups;
+      
+      for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      {
+         SGroup &sg_child = sgroups->getSGroup(i);
+
+         if ( (sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group) )
+            _addSgroupElement(sg, sg_child);
+      }
+   }
 }
