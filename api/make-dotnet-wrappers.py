@@ -29,13 +29,10 @@ if not os.path.exists(dist_dir):
     os.mkdir(dist_dir)
 
 cur_dir = os.path.abspath(os.curdir)
-for line in open(join(api_dir, "indigo-version.cmake")):
-    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
-    if m:
-        version = m.group(1)
-        break
-    else:
-        raise RuntimeError("Could not find indigo-version!")
+
+# Find indigo version
+from get_indigo_version import getIndigoVersion
+version = getIndigoVersion()
 
 os.chdir(dist_dir)
 if os.path.exists("dotnet"):

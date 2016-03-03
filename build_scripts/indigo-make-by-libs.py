@@ -123,13 +123,14 @@ if args.config.lower() != "release":
 need_join_archieves = (args.libonlyname == None)
 need_gen_wrappers = (args.libonlyname == None)
 
-# find indigo version
-version = ""
+
 cur_dir = split(__file__)[0]
-for line in open(join(cur_dir, "..", "api", "indigo-version.cmake")):
-    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
-    if m:
-        version = m.group(1)
+
+# Find indigo version
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "api"))
+from get_indigo_version import getIndigoVersion
+
+version = getIndigoVersion()
 
 os.chdir(join(cur_dir, "../dist"))
 #dist = abspath(join("..", "dist"))

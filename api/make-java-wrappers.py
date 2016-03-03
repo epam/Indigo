@@ -12,13 +12,9 @@ parser.add_option('--doc', default=False, action='store_true', help='Put documen
 
 (args, left_args) = parser.parse_args()
 
-# find indigo version
-version = ""
-cur_dir = split(__file__)[0]
-for line in open(join(cur_dir, "indigo-version.cmake")):
-    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
-    if m:
-        version = m.group(1)
+# Find indigo version
+from get_indigo_version import getIndigoVersion
+version = getIndigoVersion()
 
 api_dir = abspath(dirname(__file__))
 root = join(api_dir, "..")
