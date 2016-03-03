@@ -3,10 +3,10 @@ if(GIT_EXECUTABLE)
    EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match "indigo-*" 
                     OUTPUT_VARIABLE INDIGO_FULL_VERSION
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
-   string(REGEX REPLACE "indigo-(.+)-(.+)-(.+)" "\\1-r\\2-\\3" INDIGO_FULL_VERSION ${INDIGO_FULL_VERSION})
-   string(REGEX REPLACE "(.+)-(.+)-(.+)" "\\1-\\2" INDIGO_VERSION ${INDIGO_FULL_VERSION})
+   string(REGEX REPLACE "indigo-(.+)-(.+)-(.+)" "\\1.r\\2-\\3" INDIGO_FULL_VERSION ${INDIGO_FULL_VERSION})
+   string(REGEX REPLACE "(.+)-(.+)" "\\1" INDIGO_VERSION ${INDIGO_FULL_VERSION})
 else()
-	SET(INDIGO_VERSION "1.2.2beta-r37")
+	SET(INDIGO_VERSION "1.2.2beta.r37")
 	SET(INDIGO_FULL_VERSION ${INDIGO_VERSION})
 endif()
 
