@@ -105,7 +105,15 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          if (!_mol->isRSite(i) && !_mol->isPseudoAtom(i))
          {
             if (_mol->getAtomRadical_NoThrow(i, 0) != 0)
+            {
                atom->SetAttribute("spinMultiplicity", _mol->getAtomRadical(i));
+               if (_mol->getAtomRadical_NoThrow(i, 0) == 1)
+                  atom->SetAttribute("radical", "divalent1");
+               else if (_mol->getAtomRadical_NoThrow(i, 0) == 2)
+                  atom->SetAttribute("radical", "monovalent");
+               else if (_mol->getAtomRadical_NoThrow(i, 0) == 3)
+                  atom->SetAttribute("radical", "divalent3");
+            }
 
             if (_mol->getExplicitValence(i) > 0)
                atom->SetAttribute("mrvValence", _mol->getExplicitValence(i));

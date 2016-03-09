@@ -373,13 +373,14 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
          if (!a.radical.empty())
          {
             int val = 0;
-            if (strncmp(a.radical.c_str(), "monovalent", 10) == 0)
+            if (strncmp(a.radical.c_str(), "divalent1", 9) == 0)
+               val = 1;
+            else if (strncmp(a.radical.c_str(), "monovalent", 10) == 0)
                val = 2;
             else if ( (strncmp(a.radical.c_str(), "divalent3", 9) == 0) ||
+                      (strncmp(a.radical.c_str(), "divalent", 8) == 0)  ||
                       (strncmp(a.radical.c_str(), "triplet", 7) == 0) )
                val = 3;
-            else if (strncmp(a.radical.c_str(), "divalent", 8) == 0)
-               val = 1;
             mol.setAtomRadical(idx, val);
          }
    
