@@ -2452,7 +2452,6 @@ int MolfileSaver::_cip_rules_cmp (int &i1, int &i2, void *context)
                   cip_neibs2.push(at_idx);
                }
             }
-
          }
          else if (mol.getBondOrder(v2.neiEdge(i)) == BOND_TRIPLE)
          {
