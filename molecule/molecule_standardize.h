@@ -96,6 +96,7 @@ protected:
    static void _localizeMarkushRAtomsOnRings(QueryMolecule &mol);
    static void _createCoordinationBonds(BaseMolecule &mol);
    static void _createHydrogenBonds(BaseMolecule &mol);
+   static void _removeExtraStereoBonds(BaseMolecule &mol);
    CP_DECL;
 
 private:
@@ -103,6 +104,7 @@ private:
    static void _linearizeFragment(BaseMolecule &mol, int idx);
    static bool _isNonMetalAtom(int atom_number);
    static bool _isMetalAtom(int atom_number);
+   static int _asc_cmp_cb (int &v1, int &v2, void *context);
 };
 
 }

@@ -438,6 +438,12 @@ static void indigoSetStandardizeCreateHydrogenBonds (int enabled)
    self.standardize_options.create_hydrogen_bonds = (enabled != 0);
 }
 
+static void indigoSetStandardizeRemoveExtraStereoBonds (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.remove_extra_stereo_bonds = (enabled != 0);
+}
+
 static void indigoSetPkaModel (const char *model)
 {
    Indigo &self = indigoGetInstance();
@@ -537,6 +543,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("standardize-localize-markush-r-atoms-on-rings", indigoSetStandardizeLocalizeMarkushRAtomsOnRings);
    mgr.setOptionHandlerBool("standardize-create-dative-bonds", indigoSetStandardizeCreateDativeBonds);
    mgr.setOptionHandlerBool("standardize-create-hydrogen-bonds", indigoSetStandardizeCreateHydrogenBonds);
+   mgr.setOptionHandlerBool("standardize-remove-extra-stereo-bonds", indigoSetStandardizeRemoveExtraStereoBonds);
 
    mgr.setOptionHandlerString("pKa-model", indigoSetPkaModel);
    mgr.setOptionHandlerInt("pKa-model-level", indigoSetPkaModelLevel);

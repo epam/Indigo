@@ -67,5 +67,6 @@ void StandardizeOptions::reset ()
    localize_markush_r_atoms_on_rings = false;
    create_coordination_bonds = false;
    create_hydrogen_bonds = false;
+   remove_extra_stereo_bonds = false;
 }
 

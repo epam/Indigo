@@ -1075,6 +1075,82 @@ void MoleculeStandardizer::_fixDirectionOfWedgeBonds(BaseMolecule &mol)
    }
 }
 
+void MoleculeStandardizer::_removeExtraStereoBonds(BaseMolecule &mol)
+{
+   QS_DEF(Array<int>, stereo_neibs);
+
+   if (!Molecule::hasCoord(mol))
+      throw Error("Atoms coordinates are not defined");
+
+   // Clear wrong stereo
+   for (auto i : mol.vertices())
+   {
+      if ((mol.stereocenters.exists(i)) && !mol.stereocenters.isPossibleStereocenter(i)) 
+            mol.stereocenters.remove(i);
+
+      if (!mol.stereocenters.exists(i)) 
+      {
+         const Vertex &vertex = mol.getVertex(i);
+
+         for (int j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+            if (mol.getBondDirection2(i, vertex.neiVertex(j)) > 0)
+               mol.setBondDirection(vertex.neiEdge(j), 0);
+      }
+   }
+
+   // Check several stereo bonds from one stereocenter
+   for (auto i : mol.vertices())
+   {
+      int count_bonds = 0;
+      stereo_neibs.clear();
+      if (mol.stereocenters.exists(i)) 
+      {
+         const Vertex &vertex = mol.getVertex(i);
+
+         for (int j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+         {
+            if (mol.getBondDirection2(i, vertex.neiVertex(j)) > 0)
+            {
+               count_bonds++;
+               stereo_neibs.push(vertex.neiVertex(j));
+            }
+         }
+      }
+      // Remove unnecessary bonds
+      if (count_bonds > 1)
+      {
+         stereo_neibs.qsort(_asc_cmp_cb, &mol);
+         for (int j = 1; j < stereo_neibs.size(); j++)
+         {
+            int rem_edge_dir = mol.findEdgeIndex(i, stereo_neibs[j]);
+            mol.setBondDirection(rem_edge_dir, 0);
+         }
+      }
+   }
+}
+
+int MoleculeStandardizer::_asc_cmp_cb (int &v1, int &v2, void *context)
+{
+   int res = 0;
+   Molecule &mol = *(Molecule *)context;
+   if (mol.vertexInRing(v1) && !mol.vertexInRing(v2))
+      return 1;
+   else if (!mol.vertexInRing(v1) && mol.vertexInRing(v2))
+      return -1;
+
+   if ( (mol.getAtomNumber(v1) == ELEM_H) && (mol.getAtomNumber(v2) != ELEM_H) )
+      return 1;
+   else if ( (mol.getAtomNumber(v1) != ELEM_H) && (mol.getAtomNumber(v2) == ELEM_H) )
+      return -1;
+
+   if ( (mol.getAtomNumber(v1) == ELEM_C) && (mol.getAtomNumber(v2) != ELEM_C) )
+      return 1;
+   else if ( (mol.getAtomNumber(v1) != ELEM_C) && (mol.getAtomNumber(v2) == ELEM_C) )
+      return -1;
+
+   return res;
+}
+
 void MoleculeStandardizer::_clearCharges(Molecule &mol)
 {
    for (auto i : mol.vertices())
@@ -1132,78 +1208,40 @@ void MoleculeStandardizer::_neutralizeBondedZwitterions(Molecule &mol)
 {
    for (auto i : mol.vertices())
    {
-      switch (mol.getAtomNumber(i))
+      int elem = mol.getAtomNumber(i);
+      if (mol.getAtomCharge(i) == 0)
+         continue;
+
+      if ((elem == ELEM_C) || (elem == ELEM_N) || (elem == ELEM_P) || (elem == ELEM_S))
       {
-      case ELEM_C:
-         if (mol.getAtomCharge(i) != 0)
+         const Vertex &v = mol.getVertex(i);
+         for (int j : v.neighbors())
          {
-            const Vertex &v = mol.getVertex(i);
-            for (int j : v.neighbors())
+            if (mol.getAtomCharge(v.neiVertex(j)) != 0)
             {
-               if ((mol.getAtomNumber(v.neiVertex(j)) == ELEM_C) && (mol.getAtomCharge(v.neiVertex(j)) != 0))
+               int c1 = mol.getAtomCharge(i);
+               int c2 = mol.getAtomCharge(v.neiVertex(j));
+               int bond = mol.getBondOrder(v.neiEdge(j));
+               if ((c1 > 0) && (c2 < 0) && (bond != BOND_TRIPLE))
                {
-                  int c1 = mol.getAtomCharge(i);
-                  int c2 = mol.getAtomCharge(v.neiVertex(j));
-                  int bond = mol.getBondOrder(v.neiEdge(j));
-                  if ((c1 > 0) && (c2 < 0) && (bond != BOND_TRIPLE))
-                  {
-                     mol.setAtomCharge(i, c1 - 1);
-                     mol.setAtomCharge(v.neiVertex(j), c2 + 1);
-                     if (bond == BOND_SINGLE)
-                        mol.setBondOrder(v.neiEdge(j), BOND_DOUBLE);
-                     else if (bond == BOND_DOUBLE)
-                        mol.setBondOrder(v.neiEdge(j), BOND_TRIPLE);
-                  }
-                  if ((c1 < 0) && (c2 > 0) && (bond != BOND_TRIPLE))
-                  {
-                     mol.setAtomCharge(i, c1 + 1);
-                     mol.setAtomCharge(v.neiVertex(j), c2 - 1);
-                     if (bond == BOND_SINGLE)
-                        mol.setBondOrder(v.neiEdge(j), BOND_DOUBLE);
-                     else if (bond == BOND_DOUBLE)
-                        mol.setBondOrder(v.neiEdge(j), BOND_TRIPLE);
-                  }
-               }   
-            }
-         }
-         break;
-
-      case ELEM_N:
-         if (mol.getAtomCharge(i) != 0)
-         {
-            const Vertex &v = mol.getVertex(i);
-            for (int j : v.neighbors())
-            {
-               if (mol.getAtomCharge(v.neiVertex(j)) != 0)
+                  mol.setAtomCharge(i, c1 - 1);
+                  mol.setAtomCharge(v.neiVertex(j), c2 + 1);
+                  if (bond == BOND_SINGLE)
+                     mol.setBondOrder(v.neiEdge(j), BOND_DOUBLE);
+                  else if (bond == BOND_DOUBLE)
+                     mol.setBondOrder(v.neiEdge(j), BOND_TRIPLE);
+               }
+               if ((c1 < 0) && (c2 > 0) && (bond != BOND_TRIPLE))
                {
-                  int c1 = mol.getAtomCharge(i);
-                  int c2 = mol.getAtomCharge(v.neiVertex(j));
-                  int bond = mol.getBondOrder(v.neiEdge(j));
-                  if ((c1 > 0) && (c2 < 0) && (bond != BOND_TRIPLE))
-                  {
-                     mol.setAtomCharge(i, c1 - 1);
-                     mol.setAtomCharge(v.neiVertex(j), c2 + 1);
-                     if (bond == BOND_SINGLE)
-                        mol.setBondOrder(v.neiEdge(j), BOND_DOUBLE);
-                     else if (bond == BOND_DOUBLE)
-                        mol.setBondOrder(v.neiEdge(j), BOND_TRIPLE);
-                  }
-                  if ((c1 < 0) && (c2 > 0) && (bond != BOND_TRIPLE))
-                  {
-                     mol.setAtomCharge(i, c1 + 1);
-                     mol.setAtomCharge(v.neiVertex(j), c2 - 1);
-                     if (bond == BOND_SINGLE)
-                        mol.setBondOrder(v.neiEdge(j), BOND_DOUBLE);
-                     else if (bond == BOND_DOUBLE)
-                        mol.setBondOrder(v.neiEdge(j), BOND_TRIPLE);
-                  }
-               }   
-            }
+                  mol.setAtomCharge(i, c1 + 1);
+                  mol.setAtomCharge(v.neiVertex(j), c2 - 1);
+                  if (bond == BOND_SINGLE)
+                     mol.setBondOrder(v.neiEdge(j), BOND_DOUBLE);
+                  else if (bond == BOND_DOUBLE)
+                     mol.setBondOrder(v.neiEdge(j), BOND_TRIPLE);
+               }
+            }   
          }
-         break;
-
-      default:
-         break;
       }
    }
 }

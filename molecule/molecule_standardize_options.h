@@ -170,6 +170,10 @@ public:
    // Create hydrogen bond (zero-order bond) instead of wrong co-valent bond
    // Default is false.
    bool create_hydrogen_bonds;
+
+   // Remove unnecessary stereo bonds 
+   // Default is false.
+   bool remove_extra_stereo_bonds;
 };
 
 }
