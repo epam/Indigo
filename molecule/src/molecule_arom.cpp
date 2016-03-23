@@ -727,6 +727,8 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
        !query.possibleNitrogenV5(v_idx))
       return PiValue(-1, -1);
 
+   if (_basemol.possibleAtomNumber(v_idx, ELEM_C) && query.getExplicitValence(v_idx) == 5)
+      return PiValue(-1, -1);
 
    if (exact_double_bonds >= 1)
    {
