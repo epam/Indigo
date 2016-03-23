@@ -1937,6 +1937,10 @@ void MolfileSaver::_updateCIPStereoDescriptors (BaseMolecule &mol)
 
 void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
 {
+   QS_DEF(Molecule, unfolded_h_mol);
+   QS_DEF(Array<int>, markers);
+
+
    QS_DEF(Array<int>, ligands);
    QS_DEF(Array<int>, used1);
    QS_DEF(Array<int>, used2);
@@ -1947,6 +1951,12 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
 
    int parity = 0;
    int cip_parity = 0;
+
+   unfolded_h_mol.clear();
+   markers.clear();
+   unfolded_h_mol.clone_KeepIndices(mol);
+   unfolded_h_mol.unfoldHydrogens(&markers, -1);
+
 
    for (auto i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
    {
@@ -1961,7 +1971,7 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
 
       used1.push(atom_idx);
       used2.push(atom_idx);
-      context.mol  = &mol;
+      context.mol  = &unfolded_h_mol;
       context.used1 = &used1;
       context.used2 = &used2;
       context.next_level = true;
@@ -2055,7 +2065,7 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
          used2.clear();
          used1.push(beg);
          used2.push(beg);
-         context.mol  = &mol;
+         context.mol  = &unfolded_h_mol;
          context.used1 = &used1;
          context.used2 = &used2;
          context.next_level = true;
