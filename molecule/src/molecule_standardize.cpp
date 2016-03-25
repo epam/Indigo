@@ -238,6 +238,11 @@ bool MoleculeStandardizer::standardize (Molecule &mol, const StandardizeOptions 
       _createHydrogenBonds(mol);
    }
 
+   if (options.remove_extra_stereo_bonds)
+   {
+      _removeExtraStereoBonds(mol);
+   }
+
    return true;
 }
 

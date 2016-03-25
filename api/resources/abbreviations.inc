@@ -46,4 +46,8 @@ static const char *default_abbreviations_xml =
   "		<right>SiPr</right><left>iPrS</left></item>\n"
   "	<item name=\"iPr\" expansion=\"CC(C)[*]\"/>\n"
   "	<item name=\"CHOH\" expansion=\"OC([*:1])[*:2]\"/>\n"
+  "	<item name=\"PO3H2\" expansion=\"[OH]P([*])([OH])=O\">\n"
+  "		<right>PO3H2</right><left>H2O3P</left></item>\n"
+  "	<item name=\"AsO3H2\" expansion=\"[OH][As]([*])([OH])=O\">\n"
+  "		<right>AsO3H2</right><left>H2O3As</left></item>\n"
   "</abbreviations>\n";

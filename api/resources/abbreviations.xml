@@ -45,4 +45,8 @@
 		<right>SiPr</right><left>iPrS</left></item>
 	<item name="iPr" expansion="CC(C)[*]"/>
 	<item name="CHOH" expansion="OC([*:1])[*:2]"/>
+	<item name="PO3H2" expansion="[OH]P([*])([OH])=O">
+		<right>PO3H2</right><left>H2O3P</left></item>
+	<item name="AsO3H2" expansion="[OH][As]([*])([OH])=O">
+		<right>AsO3H2</right><left>H2O3As</left></item>
 </abbreviations>
