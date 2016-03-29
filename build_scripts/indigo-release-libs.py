@@ -6,8 +6,9 @@ import sys
 from optparse import OptionParser
 
 
+check_call = None
 if not hasattr(subprocess, 'check_call'):
-    def check_call(*popenargs, **kwargs):
+    def check_call_replacement(*popenargs, **kwargs):
         retcode = subprocess.call(*popenargs, **kwargs)
         if retcode:
             cmd = kwargs.get("args")
@@ -15,7 +16,9 @@ if not hasattr(subprocess, 'check_call'):
                 cmd = popenargs[0]
             raise subprocess.CalledProcessError(retcode, cmd)
         return 0
-    subprocess.check_call = check_call
+    check_call = check_call_replacement
+else:
+    check_call = subprocess.check_call
 
 
 def build_libs(cl_args):
