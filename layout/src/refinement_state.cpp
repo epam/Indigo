@@ -228,3 +228,13 @@ void RefinementState::rotateLayout (const RefinementState &state, int v_idx, flo
    }
 }
 
+bool RefinementState::is_small_cycle() {
+    if (_graph.vertexCount() >= 10) return false;
+
+    bool answ = true;
+    for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v++)
+        if (_graph.getVertex(v).degree() != 2) answ = false;
+
+    return answ;
+}
+

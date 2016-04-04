@@ -402,6 +402,39 @@ public:
 
 };
 
+class DLLEXPORT SmoothingCycle {
+public:
+    CP_DECL;
+    SmoothingCycle(Array<Vec2f>&, Array<float>&);
+    SmoothingCycle(Array<Vec2f>&, Array<float>&, Array<int>&, int);
+    SmoothingCycle(Array<Vec2f>&, Array<float>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
+
+    int cycle_length;
+    Array<Vec2f>& point;
+    Array<float>& target_angle;
+    MoleculeLayoutSmoothingSegment* segment;
+    TL_CP_DECL(Array<float>, edge_length);
+    
+
+    bool is_simple_component(int i) { return segment == 0 || segment[i].get_layout_component_number() < 0; }
+    float get_radius(int i) { return segment == 0 ? (point[(i + 1) % cycle_length] - point[i]).length() / 2 : segment[i].get_radius(); }
+    Vec2f get_center(int i) { return segment == 0 ? (point[(i + 1) % cycle_length] + point[i]) / 2 : segment[i].getCenter(); }
+    float get_length(int i) { return edge_length[i]; }
+
+    DECL_ERROR;
+
+    void _do_smoothing(int iter_count);
+
+
+    void _gradient_step(float coef, Array<local_pair_ii>& touching_segments);
+
+    static Vec2f _get_len_derivative(Vec2f current_vector, float target_dist);
+    static Vec2f _get_len_derivative_simple(Vec2f current_vector, float target_dist);
+    static Vec2f _get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle);
+
+
+};
+
 class DLLEXPORT MoleculeLayoutGraphSmart : public MoleculeLayoutGraph
 {
 public:
@@ -477,10 +510,7 @@ protected:
     void _do_segment_smoothing(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
     void _segment_improoving(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, int, float, Array<local_pair_ii>&);
     void _do_segment_smoothing_gradient(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment);
-    bool _gradient_step(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, float coef, Array<local_pair_ii>& touching_segments);
-    Vec2f _get_len_derivative(Vec2f current_vector, float target_dist);
-    Vec2f _get_len_derivative_simple(Vec2f current_vector, float target_dist);
-    Vec2f _get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle);
+    void _gradient_step(Array<Vec2f> &point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment, float coef, Array<local_pair_ii>& touching_segments);
 
 
     void _attachEars(int vert_idx, int drawn_idx, int *ears, const Vec2f &rest_pos);

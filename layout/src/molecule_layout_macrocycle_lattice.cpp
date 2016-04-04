@@ -43,7 +43,6 @@ CP_DEF(MoleculeLayoutMacrocyclesLattice);
 CP_DEF(MoleculeLayoutMacrocyclesLattice::CycleLayout);
 
 
-static const int SIX = 6;
 static const int MAX_ROT = 100; // rotation can be negative. We must add MAX_ROT * SIX to it for correct reminder obtaining
 
 static const int dx[6] = { 1, 0, -1, -1, 0, 1 };
@@ -100,7 +99,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
          double alpha = 2 * PI / length;
          double r = 1 / sqrt(2 * (1 - cos(alpha)));
          for (int i = 0; i < length; i++) {
-            _positions[i] = Vec2f(r, 0);
+            _positions[i] = Vec2f(0, r);
             _positions[i].rotate(alpha * i);
          }
          return;
@@ -697,6 +696,10 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(answer_point* ext_point
       point[i].rotate(PI / 3);
       point[i] += Vec2f(ext_point[external_vertex_number[i]].x, 0);
    }
+   /*for (int i = 0; i < vertex_count; i++) {
+       point[i] = Vec2f(vertex_count / (2 * PI), 0);
+       point[i].rotate(2*PI * i / vertex_count);
+   }*/
 }
 
 void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(int* up_point) {
@@ -1142,19 +1145,18 @@ void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>
 }
 
 void MoleculeLayoutMacrocyclesLattice::smoothing(CycleLayout &cl) {
+    closing(cl);
 
-   closing(cl);
+    Random rand(931170240);
+    int iter_count = max(50 * length, 2000);
 
-   Random rand(931170240);
-   int iter_count = max(50 * length, 2000);
+    QS_DEF(Array<local_pair_id>, touching_points);
 
-   QS_DEF(Array<local_pair_id>, touching_points);
-
-   double coef = SMOOTHING_MULTIPLIER;
-   for (int i = 0; i < iter_count; i++) {
-      if ((i & (i - 1)) == 0) updateTouchingPoints(touching_points, cl);
-      smoothingStep(cl, rand.next(cl.vertex_count), coef *= CHANGE_FACTOR, touching_points);
-   }
+    double coef = SMOOTHING_MULTIPLIER;
+    for (int i = 0; i < iter_count; i++) {
+        if ((i & (i - 1)) == 0) updateTouchingPoints(touching_points, cl);
+        smoothingStep(cl, rand.next(cl.vertex_count), coef *= CHANGE_FACTOR, touching_points);
+    }
 }
 
 void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout &cl, int vertex_number, double coef, Array<local_pair_id>& touching_points) {

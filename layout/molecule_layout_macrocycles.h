@@ -29,6 +29,7 @@ namespace indigo {
 
    static const unsigned short SHORT_INFINITY = 60000;
    static const int WEIGHT_FACTOR = 12;
+   static const int SIX = 6;
 
    static int get_weight(int weight, int rotate) {
       if (abs(weight) <= WEIGHT_FACTOR) return 0;
@@ -356,7 +357,7 @@ namespace indigo {
 
       const int quality(AnswerField& fld) const {
          int diffCoord = (x * y >= 0) ? abs(x) + abs(y) : max(abs(x), abs(y));
-         return diffCoord + 2*abs(rot - 6) + fld.get_field(*this);
+         return diffCoord + 2*abs(rot - SIX) + fld.get_field(*this);
       }
 
 
