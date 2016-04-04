@@ -1145,39 +1145,18 @@ void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>
 }
 
 void MoleculeLayoutMacrocyclesLattice::smoothing(CycleLayout &cl) {
+    closing(cl);
 
+    Random rand(931170240);
+    int iter_count = max(50 * length, 2000);
 
-    float alpha = 0;
-    for (int i = 1; i < cl.vertex_count; i++) 
-        alpha += PI - cl.point[i].calc_angle_pos(cl.point[(i + 1) % cl.vertex_count], cl.point[(i + cl.vertex_count - 1) % cl.vertex_count]);
+    QS_DEF(Array<local_pair_id>, touching_points);
 
-    if (alpha > 0) closing(cl);
-    else {
-        float circ_length = 0;
-        for (int i = 0; i < cl.vertex_count; i++) circ_length += cl.edge_length[i];
-        cl.point[0].set(circ_length / (2 * PI), 0);
-        for (int i = 0; i < cl.vertex_count; i++) {
-            cl.point[i + 1] = cl.point[i];
-            cl.point[i + 1].rotate(2 * PI * cl.edge_length[i] / circ_length);
-        }
+    double coef = SMOOTHING_MULTIPLIER;
+    for (int i = 0; i < iter_count; i++) {
+        if ((i & (i - 1)) == 0) updateTouchingPoints(touching_points, cl);
+        smoothingStep(cl, rand.next(cl.vertex_count), coef *= CHANGE_FACTOR, touching_points);
     }
-    
-
-   /*Random rand(931170240);
-   int iter_count = max(50 * length, 2000);
-
-   QS_DEF(Array<local_pair_id>, touching_points);
-
-   double coef = SMOOTHING_MULTIPLIER;
-   for (int i = 0; i < iter_count; i++) {
-      if ((i & (i - 1)) == 0) updateTouchingPoints(touching_points, cl);
-      smoothingStep(cl, rand.next(cl.vertex_count), coef *= CHANGE_FACTOR, touching_points);
-   }*/
-   QS_DEF(Array<float>, angle);
-   angle.clear_resize(cl.vertex_count);
-   for (int i = 0; i < cl.vertex_count; i++) angle[i] = PI - PI / 3 * cl.rotate[i];
-   SmoothingCycle smoothing_cycle(cl.point, angle, cl.edge_length, cl.vertex_count);
-   smoothing_cycle._do_smoothing(300);
 }
 
 void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout &cl, int vertex_number, double coef, Array<local_pair_id>& touching_points) {
