@@ -17,6 +17,8 @@ static const char *default_abbreviations_xml =
   "	<item name=\"NO2\" expansion=\"[O-][N+]([*])=O\">\n"
   "		<alias>NO2</alias><alias>O2N</alias></item>\n"
   "	<item name=\"NO\" expansion=\"*N=O\"></item>\n"
+  "	<item name=\"NCS\" expansion=\"[*]N=C=S\">\n"
+  "		<left>SCN</left></item>\n"
   "	<item name=\"CN\" expansion=\"[*]C#N\">\n"
   "		<left>NC</left></item>\n"
   "	<item name=\"CHO\" expansion=\"[*]C=O\">\n"
@@ -50,4 +52,6 @@ static const char *default_abbreviations_xml =
   "		<right>PO3H2</right><left>H2O3P</left></item>\n"
   "	<item name=\"AsO3H2\" expansion=\"[OH][As]([*])([OH])=O\">\n"
   "		<right>AsO3H2</right><left>H2O3As</left></item>\n"
+  "	<item name=\"SbO3H2\" expansion=\"[OH][Sb]([*])([OH])=O\">\n"
+  "		<right>SbO3H2</right><left>H2O3Sb</left></item>\n"
   "</abbreviations>\n";

@@ -16,6 +16,8 @@
 	<item name="NO2" expansion="[O-][N+]([*])=O">
 		<alias>NO2</alias><alias>O2N</alias></item>
 	<item name="NO" expansion="*N=O"></item>
+	<item name="NCS" expansion="[*]N=C=S">
+		<left>SCN</left></item>
 	<item name="CN" expansion="[*]C#N">
 		<left>NC</left></item>
 	<item name="CHO" expansion="[*]C=O">
@@ -49,4 +51,6 @@
 		<right>PO3H2</right><left>H2O3P</left></item>
 	<item name="AsO3H2" expansion="[OH][As]([*])([OH])=O">
 		<right>AsO3H2</right><left>H2O3As</left></item>
+	<item name="SbO3H2" expansion="[OH][Sb]([*])([OH])=O">
+		<right>SbO3H2</right><left>H2O3Sb</left></item>
 </abbreviations>
