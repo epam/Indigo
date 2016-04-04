@@ -35,6 +35,7 @@ struct RefinementState
    void rotateBranch  (const Filter &branch, const RefinementState &state, int v_idx, float angle);
    void stretchBranch (const Filter &branch, const RefinementState &state, int v1, int v2, int d);
    void rotateLayout  (const RefinementState &state, int v_idx, float angle);
+   bool is_small_cycle();
 
    float dist;
    double energy;

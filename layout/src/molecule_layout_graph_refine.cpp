@@ -378,25 +378,27 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer &bc_dec
 
     if (_n_fixed == 0)
     {
-        int center = -1;
-        long max_code = 0;
+        if (!beg_state.is_small_cycle()) {
+            int center = -1;
+            long max_code = 0;
 
-        for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-            if (getLayoutVertex(i).morgan_code > max_code)
+            for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+                if (getLayoutVertex(i).morgan_code > max_code)
+                {
+                    center = i;
+                    max_code = getLayoutVertex(i).morgan_code;
+                }
+
+            beg_state.calcHeight();
+
+            for (float angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
             {
-                center = i;
-                max_code = getLayoutVertex(i).morgan_code;
+                new_state.rotateLayout(beg_state, center, angle);
+                new_state.calcHeight();
+
+                if (new_state.height < beg_state.height - EPSILON)
+                    beg_state.copy(new_state);
             }
-
-        beg_state.calcHeight();
-
-        for (float angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
-        {
-            new_state.rotateLayout(beg_state, center, angle);
-            new_state.calcHeight();
-
-            if (new_state.height < beg_state.height - EPSILON)
-                beg_state.copy(new_state);
         }
     }
 

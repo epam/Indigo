@@ -43,7 +43,6 @@ CP_DEF(MoleculeLayoutMacrocyclesLattice);
 CP_DEF(MoleculeLayoutMacrocyclesLattice::CycleLayout);
 
 
-static const int SIX = 6;
 static const int MAX_ROT = 100; // rotation can be negative. We must add MAX_ROT * SIX to it for correct reminder obtaining
 
 static const int dx[6] = { 1, 0, -1, -1, 0, 1 };
@@ -100,7 +99,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
          double alpha = 2 * PI / length;
          double r = 1 / sqrt(2 * (1 - cos(alpha)));
          for (int i = 0; i < length; i++) {
-            _positions[i] = Vec2f(r, 0);
+            _positions[i] = Vec2f(0, r);
             _positions[i].rotate(alpha * i);
          }
          return;
