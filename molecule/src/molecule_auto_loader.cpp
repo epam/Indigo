@@ -25,6 +25,7 @@
 #include "molecule/molecule_cml_loader.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/molecule_cdx_loader.h"
+#include "molecule/inchi_wrapper.h"
 
 using namespace indigo;
 
@@ -240,22 +241,44 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       _scanner->seek(pos, SEEK_SET);
    }
 
-   // check for SMILES format
-   if (Scanner::isSingleLine(*_scanner))
-   {
-      SmilesLoader loader(*_scanner);
+   // check for single line formats
+   if (Scanner::isSingleLine(*_scanner)) {
+      // check for InChI format
+      {
+         char prefix[6];
+         int  start = _scanner->tell();
+         _scanner->readCharsFix(6, prefix);
+         _scanner->seek(start, SEEK_SET);
 
-      loader.ignore_closing_bond_direction_mismatch =
-             ignore_closing_bond_direction_mismatch;
-      loader.stereochemistry_options = stereochemistry_options;
-      loader.ignore_cistrans_errors = ignore_cistrans_errors;
-      if (query)
-         loader.loadQueryMolecule((QueryMolecule &)mol);
-      else
-         loader.loadMolecule((Molecule &)mol);
-      return;
+         if (!strncmp(prefix, "InChI=", 6)) {
+            if (query) {
+               throw Error("InChI input doesn't support query molecules");
+            }
+
+            Array<char> inchi;
+            _scanner->readWord(inchi, " ");
+
+            InchiWrapper loader;
+            loader.loadMoleculeFromInchi(inchi.ptr(), (Molecule &)mol);
+            return;
+         }
+      }
+
+      // if not InChI then SMILES
+      {
+         SmilesLoader loader(*_scanner);
+
+         loader.ignore_closing_bond_direction_mismatch =
+            ignore_closing_bond_direction_mismatch;
+         loader.stereochemistry_options = stereochemistry_options;
+         loader.ignore_cistrans_errors = ignore_cistrans_errors;
+         if (query)
+            loader.loadQueryMolecule((QueryMolecule &)mol);
+         else
+            loader.loadMolecule((Molecule &)mol);
+         return;
+      }
    }
-
 
    // check for CDX format
 /*

@@ -119,7 +119,9 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
       SGroup &supersg = mol.sgroups.getSGroup(i);
       int idx = sgroups.addSGroup(supersg.sgroup_type);
       SGroup &sg = sgroups.getSGroup(idx);
-      if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
+
+      //TODO: check
+      _mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping);
       {
          if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
          {
@@ -193,8 +195,6 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
                   mg.parent_atoms.push(mapping[supermg.parent_atoms[j]]);
          }
       }
-      else
-         sgroups.remove(idx);
    }
 }
 
@@ -1513,6 +1513,8 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
 {
    int i;
    bool merged = false;
+
+   sgroup.parent_group = super.parent_group;
 
    sgroup.sgroup_subtype = super.sgroup_subtype;
 

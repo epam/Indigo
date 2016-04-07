@@ -24,6 +24,7 @@
 void usage (void)
 {
    fprintf(stderr,
+           "Indigo version: %s\n\n"
            "Usage:\n"
            "  indigo-depict infile.{mol,rxn,cml,smi} outfile.{png,svg,pdf} [parameters]\n"
            "  indigo-depict infile.{sdf,rdf,cml,smi} outfile_%%s.{png,svg,pdf} [parameters]\n"
@@ -32,6 +33,8 @@ void usage (void)
            "  indigo-depict infile.smi outfile.{sdf,rdf,cml} [parameters]\n"
            "  indigo-depict - SMILES outfile.{png,svg,pdf} [parameters]\n"
            "  indigo-depict - SMILES outfile.{mol,rxn,cml} [parameters]\n"
+           "  indigo-depict - InChI outfile.{png,svg,pdf} [parameters]\n"
+           "  indigo-depict - InChI outfile.{mol,rxn,cml} [parameters]\n"
            "\nParameters:\n"
            "-w <number>\n"
            "   Picture width in pixels\n"
@@ -108,8 +111,8 @@ void usage (void)
            "   indigo-depict database.sdf molecule_%%s.png -id cdbregno -thickness 1.1\n"
            "   indigo-depict database.smi database.sdf\n"
            "   indigo-depict - \"CC.[O-][*-]([O-])=O\" query.png -query\n"
-           "   indigo-depict - \"OCO>>CC(C)N\" reaction.rxn\n"
-           );
+           "   indigo-depict - \"OCO>>CC(C)N\" reaction.rxn\n",
+           indigoVersion());
 }
 
 #define USAGE() do { usage(); return -1; } while (0)

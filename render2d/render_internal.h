@@ -16,6 +16,7 @@
 #define __render_internal_h__
 
 #include "render_common.h"
+#include "base_cpp/tree.h"
 
 namespace indigo {
 
@@ -76,11 +77,11 @@ private:
    void _placeBrackets(Sgroup& sg, const Array<int>& atoms);
    void _positionIndex(Sgroup& sg, int ti, bool lower);
    void _loadBracketsAuto(const SGroup& group, Sgroup& sg);
-   void _initDataSGroups();
-   void _initSruGroups();
-   void _initMulGroups();
-   void _initSupGroups();
+
    void _prepareSGroups();
+   void _initSGroups(Tree& sgroups, Rect2f parent);
+   void _initSGroups();
+
    void _findAnglesOverPi();
    void _renderBondIds();
    void _renderAtomIds();
@@ -111,6 +112,7 @@ private:
    int _findClosestCircle (Vec2f& p, int aid, float radius, int skip = -1);
    int _findClosestBox (Vec2f& p, int aid, const Vec2f& sz, float mrg, int skip = -1);
    void _preparePseudoAtom (int aid, int color, bool highlighted);
+   void _prepareChargeLabel(int aid, int color, bool highlighted);
    void _prepareLabelText (int aid);
    void _prepareAAM ();
    int _pushTextItem (RenderItem::TYPE type, int color, bool highlighted);
@@ -139,6 +141,56 @@ private:
    void _bondTriple (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
    void _bondAny (BondDescr& bd, const BondEnd& be1, const BondEnd& be2);
    int _parseColorString (Scanner& str, float& r, float& g, float& b);
+
+   void _cloneAndFillMappings();
+
+   //TODO: remove dublicate with _placeBrackets(..)
+   inline Rect2f _bound(Array<int>& atoms) const {
+      const int n = atoms.size();
+      if (n <= 0) {
+         return Rect2f(Vec2f(0, 0), Vec2f(0, 0));
+      }
+      Array<Vec2f> points;
+      points.resize(n);
+      for (int i = 0; i < n; i++) {
+         points[i] = _ad(atoms[i]).pos;
+      }
+      return _bound(points, 0, n-1);
+   }
+
+   Rect2f _bound(Array<Vec2f>& points, int l, int r) const {
+      if (r == l || r == l + 1) {
+         return Rect2f(points[l], points[r]);
+      }
+      int m = (l + r) / 2;
+      return Rect2f(
+         _bound(points, l,   m),
+         _bound(points, m+1, r)
+      );
+   }
+
+   inline Vec2f _firstPosition(Array<int>& atoms) {
+      return _ad(atoms[0]).pos;
+   }
+
+   inline static Vec2f  ILLEGAL_POINT() {
+      return Vec2f(nanf(""), nanf(""));
+   }
+
+   //TODO: eliminate
+   inline static Rect2f ILLEGAL_RECT () {
+      return Rect2f(ILLEGAL_POINT(), ILLEGAL_POINT());
+   }
+
+   inline static bool IS_NAN(float x) {
+      return x != x;
+   }
+   inline static bool IS_ILLEGAL(Vec2f point) {
+      return IS_NAN(point.x) && IS_NAN(point.y);
+   }
+   inline static bool IS_ILLEGAL(Rect2f rect) {
+      return IS_ILLEGAL(rect.leftBottom()) && IS_ILLEGAL(rect.rightTop());
+   }
 
    // local
    void* _hdc;

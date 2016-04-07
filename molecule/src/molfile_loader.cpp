@@ -2986,6 +2986,8 @@ void MolfileLoader::_readSGroup3000 (const char *str)
    BufferScanner scanner(str);
    QS_DEF(Array<char>, type);
    QS_DEF(Array<char>, entity);
+   entity.clear();
+   type.clear();
 
    MoleculeSGroups *sgroups = &_bmol->sgroups;
 
@@ -3062,6 +3064,7 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       else if (strcmp(entity.ptr(), "SUBTYPE") == 0)
       {
          QS_DEF(Array<char>, subtype);
+         subtype.clear();
          scanner.readWord(subtype, 0);
          if (strcmp(subtype.ptr(), "ALT") == 0)
             sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_ALT;
@@ -3084,6 +3087,7 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       else if (strcmp(entity.ptr(), "BRKTYP") == 0)
       {
          QS_DEF(Array<char>, style);
+         style.clear();
          scanner.readWord(style, 0);
          if (strcmp(style.ptr(), "BRACKET") == 0)
             sgroup->brk_style = _BRKTYP_SQUARE;
@@ -3137,6 +3141,7 @@ void MolfileLoader::_readSGroup3000 (const char *str)
       else if (strcmp(entity.ptr(), "FIELDDISP") == 0)
       {
          QS_DEF(Array<char>, substr);
+         substr.clear();
          _readStringInQuotes(scanner, &substr);
          if (dsg != 0)
          {

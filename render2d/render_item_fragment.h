@@ -30,7 +30,7 @@ public:
 
    virtual void estimateSize ();
    virtual void setObjScale (float scale) { 
-      _scaleFactor = scale; 
+      _scaleFactor = scale;
    }
    virtual void init ();
    virtual void render ();

@@ -238,6 +238,59 @@ struct Vec2f
    DLLEXPORT static Vec2f get_circle_center(Vec2f a, Vec2f b, Vec2f c);
 };
 
+struct Rect2f {
+
+   explicit Rect2f () {}
+
+   Rect2f (Vec2f a, Vec2f b)
+   {
+      _leftBottom = a;
+      _leftBottom.min(b);
+      _rightTop = a;
+      _rightTop.max(b);
+   }
+
+   Rect2f (Rect2f a, Rect2f b)
+   {
+      _leftBottom = a._leftBottom;
+      _leftBottom.min(b._leftBottom);
+      _rightTop = a._rightTop;
+      _rightTop.max(b._rightTop);
+   }
+
+   inline void copy (Rect2f &other)
+   {
+      _leftBottom = other._leftBottom;
+      _rightTop   = other._rightTop;
+   }
+
+   inline float left() const { return _leftBottom.x; }
+   inline float right() const { return _rightTop.x; }
+   inline float bottom() const { return _leftBottom.y; }
+   inline float top() const { return _rightTop.y; }
+
+   inline float middleX() const { return (_leftBottom.x + _rightTop.x) / 2; }
+   inline float middleY() const { return (_leftBottom.y + _rightTop.y) / 2; }
+
+   inline Vec2f leftBottom() const { return _leftBottom; }
+   inline Vec2f rightTop() const { return _rightTop; }
+
+   inline Vec2f leftTop() const { return Vec2f(left(), top()); }
+   inline Vec2f rightBottom() const { return Vec2f(right(), bottom()); }
+
+   inline Vec2f leftMiddle() const { return Vec2f(left(), middleY()); }
+   inline Vec2f rightMiddle() const { return Vec2f(right(), middleY()); }
+
+   inline Vec2f bottomMiddle() const { return Vec2f(middleX(), bottom()); }
+   inline Vec2f topMiddle() const { return Vec2f(middleX(), top()); }
+
+   inline Vec2f center() const { return Vec2f(middleX(), middleY()); }
+
+protected:
+   Vec2f _leftBottom;
+   Vec2f _rightTop;
+};
+
 struct Vec3f
 {
    Vec3f () : x(0), y(0), z(0) {}

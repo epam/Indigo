@@ -235,7 +235,6 @@ private:
    bool _cmpIndices (Array<int> &t_inds, Array<int> &q_inds);
 };
 
-
 }
 
 #ifdef _WIN32
