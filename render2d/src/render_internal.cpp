@@ -706,7 +706,6 @@ void MoleculeRenderInternal::_initSGroups()
 
    Tree sgroups;
    mol.sgroups.buildTree(sgroups);
-
    _initSGroups(sgroups, Rect2f(_min, _max));
 }
 
