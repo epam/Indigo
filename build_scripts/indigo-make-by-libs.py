@@ -7,8 +7,6 @@ import sys
 import re
 import subprocess
 import inspect
-from zipfile import *
-from os.path import *
 from optparse import OptionParser
 
 def make_doc():
@@ -30,10 +28,10 @@ def flatten_directory(dir):
     for f in os.listdir(dir):
         if f.find("python") != -1 or f.find("java") != -1 or f.find("dotnet") != -1:
             continue
-        dir2 = join(dir, f)
-        if isdir(dir2):
+        dir2 = os.path.join(dir, f)
+        if os.path.isdir(dir2):
             for f2 in os.listdir(dir2):
-                f2full = join(dir2, f2)
+                f2full = os.path.join(dir2, f2)
                 shutil.move(f2full, dir)
             todelete.append(dir2)
             os.rmdir(dir2)
@@ -83,8 +81,8 @@ def clearLibs():
     for f in os.listdir(libs_dir):
         if f == "readme.txt":
             continue
-        ffull = join(libs_dir, f)
-        if isdir(ffull):
+        ffull = os.path.join(libs_dir, f)
+        if os.path.isdir(ffull):
             shutil.rmtree(ffull)
         else:
             os.remove(ffull)
@@ -124,16 +122,17 @@ need_join_archieves = (args.libonlyname == None)
 need_gen_wrappers = (args.libonlyname == None)
 
 
-cur_dir = split(__file__)[0]
+cur_dir = os.path.split(__file__)[0]
 
 # Find indigo version
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "api"))
 from get_indigo_version import getIndigoVersion
 
 version = getIndigoVersion()
-
-os.chdir(join(cur_dir, "../dist"))
+print("version: ", version)
+os.chdir(os.path.join(cur_dir, "../dist"))
 #dist = abspath(join("..", "dist"))
+print("need_join_archieves:", need_join_archieves, "need_gen_wrappers:", need_gen_wrappers)
 if need_join_archieves:
     flatten_directory(".")
 
@@ -154,8 +153,8 @@ if need_join_archieves:
 
 print("*** Making wrappers *** ")
 
-api_dir = abspath("../api")
-libs_dir = join(api_dir, "libs")
+api_dir = os.path.abspath("../api")
+libs_dir = os.path.join(api_dir, "libs")
 
 wrappers = [
     ("win", ["win"]),
@@ -167,13 +166,15 @@ wrappers = [
 wrappers_gen = ["make-java-wrappers.py", "make-python-wrappers.py", 'make-dotnet-wrappers.py']
 
 for w, libs in wrappers:
+    print("0", w, libs)
     clearLibs()
     if args.libonlyname and w != args.libonlyname:
         continue
     any_exists = True
     for lib in libs:
         name = "indigo-libs-%s-%s-shared%s" % (version, lib, suffix)
-        if exists(name + ".zip"):
+        print("1", name)
+        if os.path.exists(name + ".zip"):
             any_exists = any_exists and True
             unpackToLibs(name)
         else:
@@ -185,5 +186,7 @@ for w, libs in wrappers:
             if args.type is not None:
                 for g in args.type.split(','):
                     if gen.find(g) != -1:
-                        subprocess.check_call('"%s" %s -s "-%s" %s' % (sys.executable, join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)
+                        q = '"%s" %s -s "-%s" %s' % (sys.executable, os.path.join(api_dir, gen), w, '--doc' if args.doc else '')
+                        print("2", q)
+                        subprocess.check_call('"%s" %s -s "-%s" %s' % (sys.executable, os.path.join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)
             
