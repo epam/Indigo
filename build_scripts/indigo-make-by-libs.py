@@ -39,24 +39,24 @@ def flatten_directory(dir):
 
 def move_dir_content(src_dir, dest_dir):
     for f in os.listdir(src_dir):
-        f2 = join(src_dir, f)
-        destf2 = join(dest_dir, f)
-        if isdir(destf2):
+        f2 = os.path.join(src_dir, f)
+        destf2 = os.path.join(dest_dir, f)
+        if os.path.isdir(destf2):
             move_dir_content(f2, destf2)
-        elif not exists(destf2):
+        elif not os.path.exists(destf2):
             shutil.move(f2, destf2)
 
 
 def join_archives(names, destname):
     for name in names:
-        if not exists(name + ".zip"):
+        if not os.path.exists(name + ".zip"):
             return
     for name in names:
         subprocess.check_call("unzip %s.zip -d %s" % (name, name), shell=True)
     os.mkdir(destname)
     for name in names:
         move_dir_content(name, destname)
-    if exists(destname + ".zip"):
+    if os.path.exists(destname + ".zip"):
         os.remove(destname + ".zip")
     if args.doc:
         copy_doc(destname)
@@ -70,7 +70,7 @@ def join_archives_by_pattern(pattern, destname):
     archives = []
     for f in os.listdir("."):
         if re.match(pattern, f):
-            archives.append(splitext(f)[0])
+            archives.append(os.path.splitext(f)[0])
     if len(archives) == 0:
         return
     print(archives)
@@ -89,10 +89,10 @@ def clearLibs():
 
 
 def unpackToLibs(name):
-    if exists("tmp"):
+    if os.path.exists("tmp"):
         shutil.rmtree("tmp")
     subprocess.check_call("unzip %s.zip -d tmp" % (name), shell=True)
-    move_dir_content(join("tmp", name), libs_dir)
+    move_dir_content(os.path.join("tmp", name), libs_dir)
     shutil.rmtree("tmp")
 
 
@@ -129,10 +129,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "api"))
 from get_indigo_version import getIndigoVersion
 
 version = getIndigoVersion()
-print("version: ", version)
 os.chdir(os.path.join(cur_dir, "../dist"))
-#dist = abspath(join("..", "dist"))
-print("need_join_archieves:", need_join_archieves, "need_gen_wrappers:", need_gen_wrappers)
 if need_join_archieves:
     flatten_directory(".")
 
@@ -166,14 +163,12 @@ wrappers = [
 wrappers_gen = ["make-java-wrappers.py", "make-python-wrappers.py", 'make-dotnet-wrappers.py']
 
 for w, libs in wrappers:
-    print("0", w, libs)
     clearLibs()
     if args.libonlyname and w != args.libonlyname:
         continue
     any_exists = True
     for lib in libs:
         name = "indigo-libs-%s-%s-shared%s" % (version, lib, suffix)
-        print("1", name)
         if os.path.exists(name + ".zip"):
             any_exists = any_exists and True
             unpackToLibs(name)
@@ -186,7 +181,5 @@ for w, libs in wrappers:
             if args.type is not None:
                 for g in args.type.split(','):
                     if gen.find(g) != -1:
-                        q = '"%s" %s -s "-%s" %s' % (sys.executable, os.path.join(api_dir, gen), w, '--doc' if args.doc else '')
-                        print("2", q)
                         subprocess.check_call('"%s" %s -s "-%s" %s' % (sys.executable, os.path.join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)
             
