@@ -26,7 +26,7 @@ class IndigoException (Exception):
         self.value = value
 
     def __str__(self):
-        return repr(self.value.decode(DECODE_ENCODING)) if sys.version_info > (3, 0) else repr(self.value)
+        return str(self.value.decode(DECODE_ENCODING)) if sys.version_info > (3, 0) else str(self.value)
 
 
 class IndigoObject(object):
