@@ -26,7 +26,10 @@ class IndigoException (Exception):
         self.value = value
 
     def __str__(self):
-        return str(self.value.decode(DECODE_ENCODING)) if sys.version_info > (3, 0) else str(self.value)
+        if sys.version_info > (3, 0):
+            return str(self.value.decode(DECODE_ENCODING))  
+        else:
+            return str(self.value)
 
 
 class IndigoObject(object):
@@ -213,12 +216,14 @@ class IndigoObject(object):
 
     def optimize(self, options=''):
         self.dispatcher._setSessionId()
-        options = '' if options is None else options
+        if options is None:
+            options = ''
         return self.dispatcher._checkResult(Indigo._lib.indigoOptimize(self.id, options.encode(ENCODE_ENCODING)))
 
     def normalize(self, options=''):
         self.dispatcher._setSessionId()
-        options = '' if options is None else options
+        if options is None:
+            options = ''
         return bool(self.dispatcher._checkResult(Indigo._lib.indigoNormalize(self.id, options.encode(ENCODE_ENCODING))))
 
     def standardize(self):
@@ -241,7 +246,8 @@ class IndigoObject(object):
 
     def automap(self, mode=''):
         self.dispatcher._setSessionId()
-        mode = '' if mode is None else mode
+        if mode is None:
+            mode = ''
         return self.dispatcher._checkResult(Indigo._lib.indigoAutomap(self.id, mode.encode(ENCODE_ENCODING)))
 
     def atomMappingNumber(self, reaction_atom):
@@ -503,7 +509,8 @@ class IndigoObject(object):
 
     def setDataSGroupXY(self, x, y, options=''):
         self.dispatcher._setSessionId()
-        options = '' if options is None else options
+        if options is None:
+            options = '' 
         return self.dispatcher._checkResult(Indigo._lib.indigoSetDataSGroupXY(self.id, x, y, options.encode(ENCODE_ENCODING)))
 
     def setSGroupData(self, data):
@@ -2023,7 +2030,10 @@ class Indigo(object):
         return result
 
     def _checkResultString (self, result):
-        return self._checkResultPtr(result).decode(DECODE_ENCODING) if sys.version_info >= (3, 0) else self._checkResultPtr(result).encode(ENCODE_ENCODING)
+        if sys.version_info >= (3, 0):
+            return self._checkResultPtr(result).decode(DECODE_ENCODING)  
+        else:
+            return self._checkResultPtr(result).encode(ENCODE_ENCODING)
 
     def convertToArray (self, iteratable):
         if isinstance(iteratable, IndigoObject):
@@ -2123,8 +2133,9 @@ class Indigo(object):
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateQueryReaction()))
 
     def exactMatch(self, item1, item2, flags=''):
-        self._setSessionId()
-        flags = '' if flags is None else flags
+        self._setSessionId()        
+        if flags is None:
+            flags = ''
         newobj = self._checkResult(Indigo._lib.indigoExactMatch(item1.id, item2.id, flags.encode(ENCODE_ENCODING)))
         if newobj == 0:
             return None
@@ -2149,7 +2160,8 @@ class Indigo(object):
 
     def similarity(self, item1, item2, metrics=''):
         self._setSessionId()
-        metrics = '' if metrics is None else metrics
+        if metrics is None:
+            metrics = '' 
         return self._checkResultFloat(Indigo._lib.indigoSimilarity(item1.id, item2.id, metrics.encode(ENCODE_ENCODING)))
 
     def iterateSDFile(self, filename):
@@ -2186,13 +2198,15 @@ class Indigo(object):
 
     def substructureMatcher(self, target, mode=''):
         self._setSessionId()
-        mode = '' if mode is None else mode
+        if mode is None:
+            mode = ''
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoSubstructureMatcher(target.id, mode.encode(ENCODE_ENCODING))), target)
 
     def extractCommonScaffold(self, structures, options=''):
         self._setSessionId()
         structures = self.convertToArray(structures)
-        options = '' if options is None else options
+        if options is None:
+            options = ''
         newobj = self._checkResult(Indigo._lib.indigoExtractCommonScaffold(structures.id, options.encode(ENCODE_ENCODING)))
         if newobj == 0:
             return None
@@ -2206,7 +2220,8 @@ class Indigo(object):
 
     def rgroupComposition(self, molecule, options=''):
         self._setSessionId()
-        options = '' if options is None else options
+        if options is None:
+            options = ''
         newobj = self._checkResult(Indigo._lib.indigoRGroupComposition(molecule.id, options.encode(ENCODE_ENCODING)))
         if newobj == 0:
             return None
@@ -2215,7 +2230,8 @@ class Indigo(object):
 
     def getFragmentedMolecule(self, elem, options=''):
         self._setSessionId()
-        options = '' if options is None else options
+        if options is None:
+            options = ''
         newobj = self._checkResult(Indigo._lib.indigoGetFragmentedMolecule(elem.id, options.encode(ENCODE_ENCODING)))
         if newobj == 0:
             return None
