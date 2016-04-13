@@ -21,7 +21,10 @@ class BingoException(Exception):
         self.value = value
 
     def __str__(self):
-        return repr(self.value.decode('ascii')) if sys.version_info > (3, 0) else repr(self.value)
+        if sys.version_info > (3, 0):
+            return repr(self.value.decode('ascii'))  
+        else:
+            return repr(self.value)
 
 
 class Bingo(object):
@@ -96,7 +99,10 @@ class Bingo(object):
     @staticmethod
     def _checkResultString (indigo, result):
         res = Bingo._checkResultPtr(indigo, result)
-        return res.decode('ascii') if sys.version_info >= (3, 0) else res.encode('ascii')
+        if sys.version_info >= (3, 0):
+            return res.decode('ascii')  
+        else:
+            return res.encode('ascii')
 
     @staticmethod
     def _getLib(indigo):
@@ -200,7 +206,7 @@ class BingoObject(object):
 
     def next(self):
         self._indigo._setSessionId()
-        return True if Bingo._checkResult(self._indigo, self._bingo._lib.bingoNext(self._id)) == 1 else False
+        return (Bingo._checkResult(self._indigo, self._bingo._lib.bingoNext(self._id)) == 1)
 
     def getCurrentId(self):
         self._indigo._setSessionId()
