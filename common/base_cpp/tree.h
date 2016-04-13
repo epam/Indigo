@@ -14,11 +14,13 @@
 
 #ifndef __tree_h__
 #define __tree_h__
+
 #include "obj_array.h"
+#include "non_copyable.h"
 
 namespace indigo {
 
-class Tree {
+class Tree : public NonCopyable {
 public:
 
    Tree (int label)
@@ -28,27 +30,21 @@ public:
 
    explicit Tree () : Tree(-1) {}
 
-   Tree & insert (int label)
-   {
-      //TODO: check for presence of label and correct value
-      return _children.push(label);
-   }
-
-   Tree & provide (int label)
-   {
-      Tree* tree = find(label);
-      if (tree != nullptr) {
-         return *tree;
+   void insert (int label, int parent) {
+      Tree* present = _find(parent);
+      if (present != nullptr) {
+         present->_insert(label);
+      } else {
+         _insert(parent)._insert(label);
       }
-      return insert(label);
    }
 
-   void insert(int label, int parent) {
-      Tree& tree = provide(parent);
-      tree.insert(label);
+   void insert (int label)
+   {
+      insert(label, -1);
    }
 
-   ObjArray<Tree> & children() {
+   ObjArray<Tree> & children () {
       return _children;
    }
 
@@ -56,7 +52,13 @@ public:
 
 protected:
 
-   Tree * find(int label) {
+   Tree & _insert (int label)
+   {
+      return _children.push(label);
+   }
+
+   Tree * _find (int label)
+   {
       if (this->label == label) {
          return this;
       }
@@ -65,7 +67,7 @@ protected:
          if (child.label == label) {
             return &child;
          }
-         Tree * deeper = child.find(label);
+         Tree * deeper = child._find(label);
          if (deeper != nullptr) {
             return deeper;
          }
@@ -74,9 +76,6 @@ protected:
    }
 
    ObjArray<Tree> _children;
-
-private:
-   Tree (const Tree &); //no implicit copy
 };
 
 }
