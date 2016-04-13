@@ -1957,10 +1957,12 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
    unfolded_h_mol.clone_KeepIndices(mol);
    unfolded_h_mol.unfoldHydrogens(&markers, -1);
 
-
    for (auto i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
    {
       mol.stereocenters.get(i, atom_idx, type, group, pyramid);
+
+      if (type == 0)
+         continue;
 
       parity = _getStereocenterParity (mol, atom_idx);
 
@@ -1977,7 +1979,21 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
       context.next_level = true;
       context.isotope_check = false;
 
-      ligands.qsort(_cip_rules_cmp, &context);
+      if ( (_cip_rules_cmp(ligands[0], ligands[1], &context) == 0) ||
+           (_cip_rules_cmp(ligands[1], ligands[2], &context) == 0) ||
+           (_cip_rules_cmp(ligands[2], ligands[3], &context) == 0) ||
+           (_cip_rules_cmp(ligands[0], ligands[2], &context) == 0) ||
+           (_cip_rules_cmp(ligands[1], ligands[3], &context) == 0) ||
+           (_cip_rules_cmp(ligands[3], ligands[0], &context) == 0) )
+
+      {
+         continue;
+      }
+      else
+      {
+         ligands.qsort(_cip_rules_cmp, &context);
+      }
+
 
       if (ligands[3] == -1)
       {
@@ -2082,6 +2098,9 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
          context.next_level = true;
          context.isotope_check = false;
          int cmp_res2 = _cip_rules_cmp(pyramid[2], pyramid[3], &context);
+
+         if ( (cmp_res1 == 0) || (cmp_res2 == 0) )
+            continue;
 
          if (cmp_res1 == cmp_res2)
          {
