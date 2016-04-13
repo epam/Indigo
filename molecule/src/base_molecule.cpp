@@ -120,7 +120,6 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
       int idx = sgroups.addSGroup(supersg.sgroup_type);
       SGroup &sg = sgroups.getSGroup(idx);
 
-      //TODO: check
       _mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping);
       {
          if (sg.sgroup_type == SGroup::SG_TYPE_DAT)

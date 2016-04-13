@@ -247,10 +247,19 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       {
          char prefix[6];
          int  start = _scanner->tell();
-         _scanner->readCharsFix(6, prefix);
-         _scanner->seek(start, SEEK_SET);
 
-         if (!strncmp(prefix, "InChI=", 6)) {
+         bool inchi = false;
+         {
+            char* ptr = prefix;
+            while (!_scanner->isEOF() && ptr - prefix < 6) {
+               *ptr = _scanner->readChar();
+               ptr++;
+            }
+            inchi = !strncmp(prefix, "InChI=", 6);
+            _scanner->seek(start, SEEK_SET);
+         }
+
+         if (inchi) {
             if (query) {
                throw Error("InChI input doesn't support query molecules");
             }
