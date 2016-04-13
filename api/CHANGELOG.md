@@ -1,3 +1,51 @@
+############
+Indigo 1.2.1
+############
+
+*30 April 2015*
+
+*******
+Summary
+*******
+
+
+**New features and improvements**:
+
+* Bingo NoSQL new plugin for Indigo was released.
+
+* ``standardize()`` function was implemented 
+* SGroup better support. Loading, saving, searching, editing different types of SGroups  
+
+* ``canonicalSmiles()`` for *Reactions* 
+
+* Molfile V3000 type9 and type10 bonds support was implemented 
+
+* ChemDraw CDX reader was implemented 
+
+* Stereo and cis-trans configuration better support
+
+* Bidirectional stereocenters mode (used by ChemDraw) support was implemented. :optref:`stereochemistry-bidirectional-mode` option was added.  
+
+* Stereocenters detection for the haworth projection was implemented. New option :optref:`stereochemistry-detect-haworth-projection` was added
+
+
+
+
+**Bugfixes**:
+
+* SGroups releated bugs were fixed
+
+* Indigo now calculates stereocenters for SMARTS like ``[*@H](~*)~*`` 
+
+* Bug with ``countComponents()`` was fixed
+
+* Custom collection names loading in molfile V3000
+
+* Bug with superatoms saving was fixed
+
+* Other small bugfixes
+
+
 Indigo 1.1.10
 ----------
 
