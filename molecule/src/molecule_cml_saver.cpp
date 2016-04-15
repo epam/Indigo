@@ -26,14 +26,14 @@ IMPL_ERROR(MoleculeCmlSaver, "molecule CML saver");
 MoleculeCmlSaver::MoleculeCmlSaver (Output &output) : _output(output)
 {
    skip_cml_tag = false;
-   _doc = new TiXmlDocument();
-   _root = 0;
 }
 
 void MoleculeCmlSaver::saveMolecule (Molecule &mol)
 {
    LocaleGuard locale_guard;
    int i;
+   _doc = new TiXmlDocument();
+   _root = 0;
 
    _mol = &mol;
 
