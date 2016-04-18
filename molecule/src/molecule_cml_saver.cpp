@@ -32,7 +32,7 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
 {
    LocaleGuard locale_guard;
    int i;
-   _doc = new TiXmlDocument();
+   AutoPtr<TiXmlDocument> _doc(new TiXmlDocument());
    _root = 0;
 
    _mol = &mol;
@@ -243,6 +243,7 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
    TiXmlPrinter printer;
    _doc->Accept(&printer);
    _output.printf("%s", printer.CStr());
+   _doc.release();
 }
 
 void MoleculeCmlSaver::_addSgroupElement (TiXmlElement *molecule, SGroup &sgroup)
