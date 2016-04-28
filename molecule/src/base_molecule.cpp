@@ -1521,23 +1521,13 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
    bool merged = false;
    
    sgroup.parent_group = super.parent_group;
-
    sgroup.sgroup_subtype = super.sgroup_subtype;
-
    sgroup.brackets.copy(super.brackets);
 
-   static int q = 0;
-   if (q == 3) {
-//      printf("!!!\n");
-   }
-//   printf("=== %d, %p ===\n", q, &supermol);
    MoleculeSGroups &ss = supermol.sgroups;
    for (auto i = ss.begin(); i != ss.end(); i = ss.next(i)) {
       SGroup &s = ss.getSGroup(i);
-//      printf("i = %d; original = %d; parent = %d; parent_idx = %d\n",
-//         i, s.original_group, s.parent_group, s.parent_idx);
    }
-   q++;
    
    QS_DEF(Array<int>, parent_atoms);
    parent_atoms.clear();
