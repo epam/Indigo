@@ -610,9 +610,16 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent) {
          Sgroup& sg = _data.sgroups.push();
          int tii = _pushTextItem(sg, RenderItem::RIT_DATASGROUP);
          TextItem& ti = _data.textitems[tii];
-         ti.text.push(group.tag);
-         ti.text.appendString(" = ", false);
-         ti.text.appendString(group.data.ptr(), true);
+         if (group.tag != ' ') {
+            ti.text.push(group.tag);
+            ti.text.appendString(" = ", false);
+         }
+         { const char *data = group.data.ptr();
+            if (*data == '\\') {
+               data++;
+            }
+            ti.text.appendString(data, true);
+         }
          ti.fontsize = FONT_SIZE_DATA_SGROUP;
          _cw.setTextItemSize(ti);
 
@@ -701,10 +708,7 @@ void MoleculeRenderInternal::_initSGroups()
    BaseMolecule& mol = *_mol;
 
    Tree sgroups;
-   for (auto i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i)) {
-      SGroup &sgroup = mol.sgroups.getSGroup(i);
-      sgroups.insert(i, sgroup.parent_group - 1);
-   }
+   mol.sgroups.buildTree(sgroups);
 
    _initSGroups(sgroups, Rect2f(_min, _max));
 }
