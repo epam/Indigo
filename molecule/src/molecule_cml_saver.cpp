@@ -75,7 +75,7 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          const char *atom_str;
 
          if (_mol->isRSite(i))
-            atom_str = "A";
+            atom_str = "R";
          else if (_mol->isPseudoAtom(i))
             atom_str = _mol->getPseudoAtom(i);
          else
