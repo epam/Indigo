@@ -1513,13 +1513,24 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
 {
    int i;
    bool merged = false;
-
+   
    sgroup.parent_group = super.parent_group;
 
    sgroup.sgroup_subtype = super.sgroup_subtype;
 
    sgroup.brackets.copy(super.brackets);
 
+   QS_DEF(Array<int>, parent_atoms);
+   parent_atoms.clear();
+   if (supermol.sgroups.getParentAtoms(super, parent_atoms)) {
+      //parent exists
+      for (i = 0; i < parent_atoms.size(); i++) {
+         if (mapping[parent_atoms[i]] >= 0) {
+            merged = true;
+         }
+      }
+   }
+   
    for (i = 0; i < super.atoms.size(); i++)
    {
       if (mapping[super.atoms[i]] >= 0)

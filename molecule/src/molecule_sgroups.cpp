@@ -16,6 +16,7 @@
 #include "base_cpp/tlscont.h"
 
 #include "molecule/molecule_sgroups.h"
+#include "base_cpp/tree.h"
 
 using namespace indigo;
 
@@ -240,6 +241,32 @@ int MoleculeSGroups::getSGroupCount (int sg_type)
         count++;
    }
    return count;
+}
+
+void MoleculeSGroups::buildTree(Tree &tree)
+{
+   for (auto i = begin(); i != end(); i = next(i)) {
+      SGroup &sgroup = getSGroup(i);
+      tree.insert(sgroup.original_group, sgroup.parent_idx);
+   }
+}
+
+bool MoleculeSGroups::getParentAtoms(int idx, Array<int> &target)
+{
+   return getParentAtoms(getSGroup(idx), target);
+}
+
+bool MoleculeSGroups::getParentAtoms(SGroup &sgroup, Array<int> &target)
+{
+   if (sgroup.parent_idx == -1) {
+      return false;
+   }
+
+   int parent_idx = sgroup.parent_idx;
+   SGroup &parent = getSGroup(parent_idx);
+   getParentAtoms(parent, target);
+   target.concat(parent.atoms);
+   return true;
 }
 
 bool MoleculeSGroups::isPolimer ()

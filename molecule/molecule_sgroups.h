@@ -99,8 +99,10 @@ public:
    int    sgroup_type;    // group type, represnted with STY in Molfile format
    int    sgroup_subtype; // group subtype, represnted with SST in Molfile format
    int    original_group; // original group number
-   int    parent_group;   // parent group number; represented with SPL in Molfile format 
-
+   int    parent_group;   // parent group number; represented with SPL in Molfile format
+   int    parent_idx;     // parent group number; represented with index in the array
+   //TODO: leave only parent_idx
+   
    Array<int> atoms; // represented with SAL in Molfile format
    Array<int> bonds; // represented with SBL in Molfile format
 
@@ -191,6 +193,7 @@ private:
    MultipleGroup (const MultipleGroup &);
 };
 
+class Tree;
 class DLLEXPORT MoleculeSGroups
 {
 public:
@@ -208,10 +211,14 @@ public:
    int getSGroupCount (int sg_type);
    bool isPolimer();
 
+   void buildTree(Tree &tree);
+   bool getParentAtoms(int idx, Array<int> &target);
+   bool getParentAtoms(SGroup &sgroup, Array<int> &target);
+   
    void remove(int idx);
    void clear ();
    void clear (int sg_type);
-
+   
    int begin();
    int end();
    int next(int i);

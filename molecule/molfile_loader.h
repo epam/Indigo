@@ -144,6 +144,8 @@ protected:
    void _init ();
    void _appendQueryAtom (const char *atom_label, AutoPtr<QueryMolecule::Atom> &atom);
 
+   void _fillSGroupsParentIndices();
+   
    int _getElement (const char *buf);
    char* _strtrim (char *buf);
 

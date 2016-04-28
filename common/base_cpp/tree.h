@@ -30,7 +30,8 @@ public:
 
    explicit Tree () : Tree(-1) {}
 
-   void insert (int label, int parent) {
+   void insert (int label, int parent)
+   {
       Tree* present = _find(parent);
       if (present != nullptr) {
          present->_insert(label);

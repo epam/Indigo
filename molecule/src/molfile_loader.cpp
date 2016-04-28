@@ -24,6 +24,8 @@
 #include "molecule/elements.h"
 #include "molecule/smiles_loader.h"
 
+#include "base_cpp/red_black.h"
+
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
 using namespace indigo;
@@ -924,7 +926,6 @@ void MolfileLoader::_readCtab2000 ()
                sgroup->original_group = sgroup_idx + 1;
                _sgroup_types[sgroup_idx] = sgroup->sgroup_type;
                _sgroup_mapping[sgroup_idx] = idx;
-
             }
             _scanner.skipLine();
          }
@@ -1432,6 +1433,8 @@ void MolfileLoader::_readCtab2000 ()
       for (int atom_idx = 0; atom_idx < _atoms_num; atom_idx++)
          if (_atom_types[atom_idx] == _ATOM_A)
             throw Error("'any' atoms are allowed only for queries");
+
+   _fillSGroupsParentIndices();
 }
 
 void MolfileLoader::_appendQueryAtom (const char *atom_label, AutoPtr<QueryMolecule::Atom> &atom)
@@ -2732,6 +2735,28 @@ void MolfileLoader::_readSGroupsBlock3000 ()
       if (STRCMP(str.ptr(), "M  V30 DEFAULT") == 0)
          continue;
       _readSGroup3000(str.ptr());
+   }
+
+   _fillSGroupsParentIndices();
+}
+
+void MolfileLoader::_fillSGroupsParentIndices() {
+   MoleculeSGroups &sgroups = _bmol->sgroups;
+   RedBlackMap<int,int> indices; //original index can be arbitrary
+   for (auto i = sgroups.begin(); i != sgroups.end(); i++) {
+      SGroup &sgroup = sgroups.getSGroup(i);
+      indices.insert(sgroup.original_group, i);
+   }
+
+   //TODO: replace parent_group with parent_idx
+   for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i)) {
+      SGroup &sgroup = sgroups.getSGroup(i);
+      auto idx = indices.at2(sgroup.parent_group);
+      if (idx != nullptr) {
+         sgroup.parent_idx = *idx;
+      } else {
+         sgroup.parent_idx = -1;
+      }
    }
 }
 
