@@ -63,7 +63,7 @@ long long Random::nextLong(long long mod)
 
 double Random::nextDouble() 
 {
-   return 1.0 * next() + 1.0 * next() / (1LL << 32);
+   return 1.0 * next() / (1LL << 32);
 }
 
 double Random::nextDoubleBounded(double l, double r) 
