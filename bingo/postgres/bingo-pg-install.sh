@@ -92,20 +92,20 @@ fi
 
 
 # Generate install script
-sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo_schema.sql.in  >bingo_install.sql
-sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/bingo_internal.sql.in >>bingo_install.sql
-sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo_pg.sql.in  >>bingo_install.sql
+sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/common/bingo_schema.sql.in  >bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/common/bingo_internal.sql.in >>bingo_install.sql
+sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/common/bingo_pg.sql.in  >>bingo_install.sql
 
-sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/mango_internal.sql.in >>bingo_install.sql
-sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/mango_pg.sql.in       >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/common/mango_internal.sql.in >>bingo_install.sql
+sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/common/mango_pg.sql.in       >>bingo_install.sql
 
-sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/ringo_internal.sql.in >>bingo_install.sql
-sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/ringo_pg.sql.in       >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/common/ringo_internal.sql.in >>bingo_install.sql
+sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/common/ringo_pg.sql.in       >>bingo_install.sql
 
-sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/bingo_am.sql.in     >>bingo_install.sql
-sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/bingo_config.sql.in >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql//${BINGO_PG_VERSION}/bingo_am.sql.in     >>bingo_install.sql
+sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/common/bingo_config.sql.in >>bingo_install.sql
 
 #Generate uninstall script
-sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo_uninstall.quick.sql.in >bingo_uninstall.sql
+sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/common/bingo_uninstall.quick.sql.in >bingo_uninstall.sql
 
 
