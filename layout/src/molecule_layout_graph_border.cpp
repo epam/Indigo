@@ -529,6 +529,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle &cycle, Vec2f p) const
     int i, n = 0;
     float eps = 1e-5;
 
+    Random rand(SOME_MAGIC_INT_FOR_RANDOM_3);
     /*   for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
     if  (_layout_edges[i].type == ELEMENT_BOUNDARY)
     n++;
@@ -539,12 +540,11 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle &cycle, Vec2f p) const
     vertices.clear();
     edges.clear();
 
-    srand(19857615);
     float sn = 0;
     float cs = 0;
     while (sn == 0 && cs == 0) {
-        sn = 2.0*rand() / RAND_MAX - 1;
-        cs = 2.0*rand() / RAND_MAX - 1;
+        sn = 2.0*rand.nextDouble() - 1;
+        cs = 2.0*rand.nextDouble() - 1;
     }
     float len = sqrt(sn*sn + cs*cs);
     sn /= len;
