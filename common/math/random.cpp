@@ -16,7 +16,7 @@ Random::Random(int seed)
    randSeed = seed;
 }
 
-void Random::setSeed(long long x) 
+void Random::setSeed(unsigned long long x) 
 {
    randSeed = x;
 }
@@ -51,12 +51,12 @@ unsigned int Random::nextLarge(int mod)
    return nextLarge(mod);
 }
 
-long long Random::nextLong() 
+unsigned long long Random::nextLong()
 {
-   return ((long long)next() << 32) + next();
+   return ((unsigned long long)next() << 32) + next();
 }
 
-long long Random::nextLong(long long mod) 
+unsigned long long Random::nextLong(unsigned long long mod)
 {
    return nextLong() % mod;
 }
