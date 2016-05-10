@@ -426,7 +426,7 @@ void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cy
 
 void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi) {
 
-   Random rand(931170240);
+   Random rand(SOME_MAGIC_INT_FOR_RANDOM_2);
 
    int iter_count = max(50 * molSize, 2000);
 
@@ -434,7 +434,7 @@ void MoleculeLayoutMacrocycles::smoothing(int ind, int molSize, int *rotateAngle
 }
 
 void MoleculeLayoutMacrocycles::smoothing2(int vertex_count, int cycle_size, int *rotate_angle, int *edge_lenght, int *vertex_number, Vec2f *p) {
-   Random rand(931170241);
+   Random rand(SOME_MAGIC_INT_FOR_RANDOM_4);
 
    int iter_count = 200 * vertex_count;
    double multiplyer = 0.3;
