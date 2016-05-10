@@ -32,6 +32,11 @@
 
 namespace indigo {
 
+    const int SOME_MAGIC_INT_FOR_RANDOM_1 = 931170243;
+    const int SOME_MAGIC_INT_FOR_RANDOM_2 = 931170240;
+    const int SOME_MAGIC_INT_FOR_RANDOM_3 = 931170242;
+
+
 class BiconnectedDecomposer;
 
 #ifdef _DEBUG

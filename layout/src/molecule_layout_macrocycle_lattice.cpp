@@ -1078,7 +1078,7 @@ void MoleculeLayoutMacrocyclesLattice::closingStep(CycleLayout &cl, int index, i
 }
 
 void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout &cl) {
-   Random rand(931170243);
+   Random rand(SOME_MAGIC_INT_FOR_RANDOM_1);
 
    int iter_count = max(200 * cl.vertex_count, 10000);
    double multiplyer = 0.3;
@@ -1147,7 +1147,7 @@ void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>
 void MoleculeLayoutMacrocyclesLattice::smoothing(CycleLayout &cl) {
     closing(cl);
 
-    Random rand(931170240);
+    Random rand(SOME_MAGIC_INT_FOR_RANDOM_2);
     int iter_count = max(50 * length, 2000);
 
     QS_DEF(Array<local_pair_id>, touching_points);
