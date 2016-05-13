@@ -38,7 +38,7 @@ unsigned int Random::next(int mod)
 
 unsigned int Random::nextBounded(int l, int r) 
 {
-   return __min(l, r) + next(abs((long)(r - l)));
+   return __min(l, r) + next(abs(r - l));
 }
 
 unsigned int Random::nextLarge(int mod) 
@@ -68,5 +68,5 @@ double Random::nextDouble()
 
 double Random::nextDoubleBounded(double l, double r) 
 {
-   return __min(l, r) + nextDouble() * abs((long)(r - l));
+   return __min(l, r) + nextDouble() * fabs(r - l);
 }
