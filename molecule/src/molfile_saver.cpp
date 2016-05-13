@@ -2151,7 +2151,6 @@ void MolfileSaver::_calcRSStereoDescriptor (BaseMolecule &mol, BaseMolecule &unf
 
    parity = _getStereocenterParity (mol, atom_idx);
 
-
    ligands.clear();
    used1.clear();
    used2.clear();
@@ -2280,7 +2279,6 @@ void MolfileSaver::_calcRSStereoDescriptor (BaseMolecule &mol, BaseMolecule &unf
          }
       }
    }
-
    return;
 }
 
@@ -2628,7 +2626,8 @@ void MolfileSaver::_calcStereocenters (Molecule &source, Molecule &mol, Array<in
 
    for (auto i : mol.vertices())
    {
-      if ( (chirality[i] != BOND_UP) || (chirality[i] != BOND_DOWN) )
+
+      if ((chirality[i] != BOND_UP) && (chirality[i] != BOND_DOWN))
          continue;
 
       if (!mol.stereocenters.isPossibleStereocenter(i))
@@ -2638,6 +2637,7 @@ void MolfileSaver::_calcStereocenters (Molecule &source, Molecule &mol, Array<in
 
       int pyramid[4] = {-1, -1, -1, -1};
       int counter = 0;
+      int hcount = 0;
       int size = 0;
 
       for (auto j : v.neighbors())
@@ -2648,12 +2648,23 @@ void MolfileSaver::_calcStereocenters (Molecule &source, Molecule &mol, Array<in
          else
          {
             pyramid[counter++] = -1;
+            hcount++;
          }
       }
+
+      if (hcount > 1)
+         continue;
+
+      if ( (pyramid[0] == -1) || (pyramid[1] == -1) || (pyramid[2] == -1) )
+         continue;
 
       size = pyramid[3] == -1 ? 3 : 4;
 
       int source_pyramid[4];
+
+      if (!source.stereocenters.exists(mapping[i]))
+         continue;
+
       source.stereocenters.get(mapping[i], type, group, source_pyramid);
 
       if (source.stereocenters.isPyramidMappingRigid(source_pyramid) !=
