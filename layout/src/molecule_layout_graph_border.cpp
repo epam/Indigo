@@ -567,7 +567,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle &cycle, Vec2f p) const
             Edge e = getEdge(i);
             if (pos[e.beg].y * pos[e.end].y <= 0) {
                 float mid_x = (pos[e.beg].x * pos[e.end].y - pos[e.end].x * pos[e.beg].y) / (pos[e.end].y - pos[e.beg].y);
-                if (abs(mid_x) < eps) return;
+                if (fabs(mid_x) < eps) return;
                 if (mid_x > 0 && (first_edge == -1 || mid_x < first_edge_x)) {
                     first_edge = i;
                     first_edge_x = mid_x;
