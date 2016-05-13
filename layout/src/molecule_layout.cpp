@@ -16,6 +16,7 @@
 #include "base_cpp/obj_array.h"
 #include "graph/filter.h"
 #include "layout/molecule_layout.h"
+#include <vector>
 
 using namespace indigo;
 
@@ -341,6 +342,7 @@ void MoleculeLayout::_make ()
    // 0. Find 2D coordinates via proxy _layout_graph object
     _layout_graph->max_iterations = max_iterations;
     _makeLayout();
+
 
    // 1. Update data-sgroup label position before changing molecule atoms positions
    _updateDataSGroups();

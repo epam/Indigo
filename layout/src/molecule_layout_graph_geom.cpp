@@ -794,8 +794,8 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int &v1, int &v2) const
         //      printf("%d: %5.5f %5.5f %d\n", i, energy, comp_angle, on_left[i]);
         if (i == 0 ||
             energy + eps < cur_energy ||
-            (abs(energy - cur_energy) < eps && comp_angle < best_angle - eps) ||
-            (abs(energy - cur_energy) < eps && abs(comp_angle - best_angle) < eps && on_left[i])) {
+            (fabs(energy - cur_energy) < eps && comp_angle < best_angle - eps) ||
+            (fabs(energy - cur_energy) < eps && fabs(comp_angle - best_angle) < eps && on_left[i])) {
             cur_energy = energy;
             best_angle = comp_angle;
             v1 = vert.neiVertex(edges[ii]);

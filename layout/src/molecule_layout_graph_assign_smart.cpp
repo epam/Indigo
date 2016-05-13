@@ -27,6 +27,7 @@
 #include <math/random.h>
 #include <algorithm>
 #include <memory>
+#include <vector>
 
 using namespace indigo;
 
@@ -37,6 +38,34 @@ enum
    QUERY_BOND_DOUBLE_OR_AROMATIC = 7,
    QUERY_BOND_ANY = 8
 };
+
+void print_float(float x, char c = ' ') {
+    int sign = x < 0 ? -1 : 1;
+    x = fabs(x);
+    int deg = 0;
+
+    if (x != 0) {
+        while (x >= 2) {
+            deg++;
+            x /= 2;
+        }
+        while (x < 1) {
+            deg--;
+            x *= 2;
+        }
+    }
+    printf("%d ", deg);
+    if (sign > 0) printf("+"); else printf("-");
+
+    printf("0");
+    while (x != 0) {
+        if (x >= 1) printf("1"); else printf("0");
+        if (x >= 1) x -= 1;
+        x *= 2;
+    }
+    printf("%c", c);
+}
+
 
 
 // Make relative coordinates of a component absolute
@@ -730,7 +759,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle &cycle)
                }
             }
 
-            if ((y1 + y2) / 2 > EPSILON || ((abs((y1 + y2) / 2) <= EPSILON) && (y1 + y2) / 2 > segment[i].getIntCenter().y)) {
+            if ((y1 + y2) / 2 > EPSILON || ((fabs((y1 + y2) / 2) <= EPSILON) && (y1 + y2) / 2 > segment[i].getIntCenter().y)) {
                right_orientation = true;
             }
             else {
@@ -750,6 +779,8 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle &cycle)
 
 
    layout.doLayout();
+
+
 
 
    // now we must to smooth just made layout
@@ -935,6 +966,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle &cycle)
 
    }
 
+
    for (int i = 0; i < size; i++)
    if (getVertexType(cycle.getVertex(i)) == ELEMENT_NOT_DRAWN)
       getPos(cycle.getVertex(i)) = layout.getPos(i);
@@ -952,7 +984,6 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle &cycle)
       _layout_component_number[e] = _layout_component_count - 1;
 
    _segment_smoothing(cycle, layout, rotation_vertex, rotation_point, segment);
-
 }
 
 void MoleculeLayoutGraphSmart::_segment_smoothing(const Cycle &cycle, const MoleculeLayoutMacrocyclesLattice &layout, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
@@ -966,6 +997,8 @@ void MoleculeLayoutGraphSmart::_segment_smoothing(const Cycle &cycle, const Mole
      // _do_segment_smoothing(rotation_point, target_angle, segment);
 	  _do_segment_smoothing_gradient(rotation_point, target_angle, segment);
    }
+
+
 }
 
 void MoleculeLayoutGraphSmart::_segment_update_rotation_points(const Cycle &cycle, Array<int> &rotation_vertex, Array<Vec2f> &rotation_point, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
@@ -985,7 +1018,11 @@ void MoleculeLayoutGraphSmart::_segment_calculate_target_angle(const MoleculeLay
       Vec2f p2 = layout.getPos(rotation_vertex[i]);
       Vec2f p3 = layout.getPos(rotation_vertex[(i + 1) % segments_count]);
       target_angle[i] = p2.calc_angle(p3, p1);
+      //printf("\nBefore: ");
+      //print_float(target_angle[i], '\n');
       while (target_angle[i] < 0) target_angle[i] += 2 * PI;
+      //printf("\nAfter: ");
+      //print_float(target_angle[i], '\n');
    }
 
    for (int i = 0; i < segments_count; i++)
@@ -1180,7 +1217,7 @@ void MoleculeLayoutGraphSmart::_do_segment_smoothing(Array<Vec2f> &rotation_poin
       if (i % 100 == 0 && touching_segments.size() == 0) {
          bool all_right = true;
          for (int j = 0; all_right && j < segments_count; j++)
-            all_right &= abs(target_angle[j] - rotation_point[j].calc_angle(rotation_point[(j + 1) % segments_count], rotation_point[(j + segments_count - 1) % segments_count])) < 1e-3;
+            all_right &= fabs(target_angle[j] - rotation_point[j].calc_angle(rotation_point[(j + 1) % segments_count], rotation_point[(j + segments_count - 1) % segments_count])) < 1e-3;
          if (all_right) break;
       }
       _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1, touching_segments);
@@ -1348,7 +1385,7 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f> &point, Array<fl
    Vec2f this_point(point[move_vertex]);
    Vec2f next_point(point[(move_vertex + 1) % segments_count]);
 
-   if (abs(target_angle[move_vertex] - PI) > 0.01) {
+   if (fabs(target_angle[move_vertex] - PI) > 0.01) {
       Vec2f chord(next_point - prev_point);
 
       Vec2f center(prev_point + chord/2);
@@ -1389,12 +1426,37 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f> &point, Array<fl
 
 void MoleculeLayoutGraphSmart::_do_segment_smoothing_gradient(Array<Vec2f> &rotation_point, Array<float> &target_angle, ObjArray<MoleculeLayoutSmoothingSegment> &segment) {
 
+
+    /*std::vector<float> to_out;
+
+    for (int i = 0; i != rotation_point.size(); i++) {
+        to_out.push_back(getPos(i).x);
+        to_out.push_back(getPos(i).y);
+    }
+
+    for (int i = 0; i < to_out.size(); i++) {
+        print_float(to_out[i], " \n"[i & 1]);
+    }*/
+
     SmoothingCycle cycle(rotation_point, target_angle, segment);
     cycle._do_smoothing(100);
 
     for (int i = 0; i < cycle.cycle_length; i++)
         for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
             getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
+
+
+    /*to_out.clear();
+
+    for (int i = 0; i != rotation_point.size(); i++) {
+        to_out.push_back(getPos(i).x);
+        to_out.push_back(getPos(i).y);
+    }
+
+    for (int i = 0; i < to_out.size(); i++) {
+        print_float(to_out[i], " \n"[i & 1]);
+    }*/
+
 }
 
 CP_DEF(SmoothingCycle);
@@ -1434,25 +1496,42 @@ void SmoothingCycle::_do_smoothing(int iter_count) {
     float coef = 1.0;
     float multiplyer = __max(0.5, __min(0.999f, 1 - 10.0 / iter_count));
     for (int i = 0; i < 100; i++, coef *= 0.9) {
-        _gradient_step(coef, touching_segments);
+        _gradient_step(coef, touching_segments, 0);
     }
 }
 
-void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& touching_segments) {
+void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& touching_segments, bool flag) {
 	QS_DEF(Array<Vec2f>, change);
    change.clear_resize(cycle_length);
    for (int i = 0; i < cycle_length; i++) change[i] = Vec2f(0, 0);
 
-	float eps = 0.01;
+   if (flag) {
+       for (int i = 0; i < cycle_length; i++) {
+           print_float(change[i].x, ' ');
+           print_float(change[i].y, '\n');
+       }
+   }
+   if (flag) {
+       printf("\nTarget angles:\n");
+       for (int i = 0; i < target_angle.size(); i++) print_float(target_angle[i], '\n');
+   }
+   float eps = 0.01;
    for (int i = 0; i < cycle_length; i++) {
        int i_1 = (i - 1 + cycle_length) % cycle_length; // i - 1
        int i1 = (i + 1) % cycle_length; // i + 1
 
-		change[i] += _get_len_derivative(point[i1] - point[i], get_length(i)) * (is_simple_component(i) ? 1 : 5);
-      change[i] += _get_len_derivative(point[i_1] - point[i], get_length(i_1)) * (is_simple_component(i_1) ? 1 : 5);
+       change[i] += _get_len_derivative(point[i1] - point[i], get_length(i), false) * (is_simple_component(i) ? 1 : 5);
+       change[i] += _get_len_derivative(point[i_1] - point[i], get_length(i_1), false) * (is_simple_component(i_1) ? 1 : 5);
 
-      if (abs(target_angle[i] - PI) > eps) change[i] += _get_angle_derivative(point[i] - point[i_1], point[i1] - point[i], PI - target_angle[i]);
+      if (fabs(target_angle[i] - PI) > eps) change[i] += _get_angle_derivative(point[i] - point[i_1], point[i1] - point[i], PI - target_angle[i], false);
 	}
+
+   if (flag) {
+       for (int i = 0; i < cycle_length; i++) {
+           print_float(change[i].x, ' ');
+           print_float(change[i].y, '\n');
+       }
+   }
 
    for (int i = 0; i < cycle_length; i++) for (int j = i + 2; j < cycle_length; j++) if (j - i != cycle_length - 1) if (!is_simple_component(i) && !is_simple_component(j)) {
        float current_dist = (get_center(i) - get_center(j)).length();
@@ -1467,23 +1546,45 @@ void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& touching_s
 		}
 	}
 
-	float len = 0;
+   if (flag) {
+       for (int i = 0; i < cycle_length; i++) {
+           print_float(change[i].x, ' ');
+           print_float(change[i].y, '\n');
+       }
+   }
+
+   float len = 0;
    for (int i = 0; i < cycle_length; i++) len += change[i].lengthSqr();
 	len = sqrt(len);
    if (len > 1) for (int i = 0; i < cycle_length; i++) change[i] /= len;
 
+   if (flag) {
+       for (int i = 0; i < cycle_length; i++) {
+           print_float(change[i].x, ' ');
+           print_float(change[i].y, '\n');
+       }
+   }
+
    for (int i = 0; i < cycle_length; i++) point[i] -= change[i] * coef;
 }
 
-Vec2f SmoothingCycle::_get_len_derivative(Vec2f current_vector, float target_dist) {
+Vec2f SmoothingCycle::_get_len_derivative(Vec2f current_vector, float target_dist, bool flag) {
     float dist = current_vector.length();
     //dist = __max(dist, 0.01);
     float coef = 1;
+    if (flag) {
+        printf("\n len derivative:\n");
+        print_float(dist, ' ');
+        print_float(target_dist, ' ');
+    }
     if (dist >= target_dist) {
         coef = (dist / target_dist - 1) * 2 / target_dist / dist;
     }
     else {
         coef = -(target_dist / dist - 1) * 2 * target_dist / dist / dist / dist;
+    }
+    if (flag) {
+        print_float(coef, ' ');
     }
     return current_vector * -coef;
 }
@@ -1495,7 +1596,9 @@ Vec2f SmoothingCycle::_get_len_derivative_simple(Vec2f current_vector, float tar
     return current_vector * -coef;
 }
 
-Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle) {
+Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle, bool flag) {
+    if (flag)
+        printf("\nAngle derivative \n");
     float len1_sq = left_point.lengthSqr();
     float len2_sq = right_point.lengthSqr();
     float len12 = sqrt(len1_sq * len2_sq);
@@ -1523,8 +1626,14 @@ Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point,
             else alpha = -PI - alpha;
         }
     }
-    //float diff = abs(alpha) > abs(target_angle) ? alpha / target_angle - 1 : target_angle / alpha - 1;
-    //Vec2f result = abs(alpha) > abs(target_angle) ? alphadv / target_angle : alphadv * (- target_angle) / (alpha * alpha);
+    if (flag) {
+        print_float(alphadv.x);
+        print_float(alphadv.y, '\n');
+        print_float(target_angle, '\n');
+        print_float(alpha, '\n');
+    }
+    //float diff = fabs(alpha) > fabs(target_angle) ? alpha / target_angle - 1 : target_angle / alpha - 1;
+    //Vec2f result = fabs(alpha) > fabs(target_angle) ? alphadv / target_angle : alphadv * (- target_angle) / (alpha * alpha);
     //return result * diff * 2;
     return alphadv * (alpha - target_angle) * 2;
 }

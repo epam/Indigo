@@ -19,6 +19,7 @@
 #include "reaction/base_reaction.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include <vector>
 
 CEXPORT int indigoLayout (int object)
 {
@@ -47,6 +48,7 @@ CEXPORT int indigoLayout (int object)
          }
 
          ml.make();
+      
          if (obj.type != IndigoObject::SUBMOLECULE)
          {
             // Not for submolecule yet

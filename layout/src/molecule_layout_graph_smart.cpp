@@ -17,6 +17,7 @@
 #include "layout/molecule_layout_graph.h"
 
 #include <memory>
+#include <vector>
 
 using namespace indigo;
 
@@ -380,10 +381,11 @@ void MoleculeLayoutGraphSmart::_layoutSingleComponent (BaseMolecule &molecule, b
          }
    }
 
+
    if (vertexCount() > 1)
    {
-      _calcMorganCodes();
-      _assignAbsoluteCoordinates(bond_length);
+       _calcMorganCodes();
+       _assignAbsoluteCoordinates(bond_length);
    }
    _assignFinalCoordinates(bond_length, src_layout);
 }

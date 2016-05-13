@@ -347,7 +347,7 @@ void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cy
          
       double better_change_angle = 0;
       double worse_chenge_angle = 0;
-      if (abs(current_angle - current_target_angle) < EPSILON) {
+      if (fabs(current_angle - current_target_angle) < EPSILON) {
          better_change_angle = current_angle * multiplyer;
          worse_chenge_angle = -current_angle * multiplyer;
       }
@@ -360,7 +360,7 @@ void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cy
 
       if ((p[0] - p[vertex_count]).lengthSqr() == 0) {
 
-         if (abs(current_angle - current_target_angle) < EPSILON) actual_chenge_angle = 0;
+         if (fabs(current_angle - current_target_angle) < EPSILON) actual_chenge_angle = 0;
          else actual_chenge_angle = better_change_angle;
 
          if (fix_next) actual_chenge_angle *= -1;
@@ -383,8 +383,8 @@ void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cy
          for (int i = next_vertex; i < vertex_count; i++) angle -= p[base_vertex].calc_angle(p[i], p[i + 1]);
          for (int i = prev_vertex; i > 0; i--) angle += p[base_vertex].calc_angle(p[i], p[i - 1]);
 
-         if (abs(angle + actual_chenge_angle) > abs(angle + better_change_angle)) actual_chenge_angle = better_change_angle;
-         if (abs(angle + actual_chenge_angle) > abs(angle + worse_chenge_angle)) actual_chenge_angle = worse_chenge_angle;
+         if (fabs(angle + actual_chenge_angle) > fabs(angle + better_change_angle)) actual_chenge_angle = better_change_angle;
+         if (fabs(angle + actual_chenge_angle) > fabs(angle + worse_chenge_angle)) actual_chenge_angle = worse_chenge_angle;
 
          //actual_chenge_angle *= _angle_importance[vertex_number[base_vertex]];
 
@@ -399,7 +399,7 @@ void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cy
       Vec2f better_chenge_vector = p[second_vertex] - p[first_vertex];
       Vec2f worse_chenge_vector = p[second_vertex] - p[first_vertex];
 
-      if (abs(current_target_dist - current_dist) > EPSILON) {
+      if (fabs(current_target_dist - current_dist) > EPSILON) {
          better_chenge_vector *= (current_target_dist - current_dist) / current_dist * multiplyer;
          worse_chenge_vector *= (current_dist - current_target_dist) / current_dist * multiplyer;
       }
@@ -489,7 +489,7 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
       if (Vec2f::cross(vp2, vp1) > 0) angle = -angle;
       angle /= _target_angle[vertexNumber[i]];
       if (angle * rotateAngle[i] <= 0) add += 1000;
-      double angle_badness = abs((((abs(angle) > 1) ? angle : 1 / angle) - rotateAngle[i]) / 2) * _angle_importance[vertexNumber[i]];
+      double angle_badness = fabs((((fabs(angle) > 1) ? angle : 1 / angle) - rotateAngle[i]) / 2) * _angle_importance[vertexNumber[i]];
       result = max(result, angle_badness);
    }
 
@@ -507,7 +507,7 @@ double MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle
          int nextj = (j + 1) % size;
          double dist = Vec2f::distSegmentSegment(pp[i], pp[nexti], pp[j], pp[nextj]);
 
-         if (abs(dist) < eps) {
+         if (fabs(dist) < eps) {
             add++;
             //printf("%5.5f %5.5f %5.5f %5.5f %5.5f %5.5f %5.5f %5.5f \n", xx[i], yy[i], xx[nexti], yy[nexti], xx[j], yy[j], xx[nextj], yy[nextj]);
          }
