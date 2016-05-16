@@ -82,7 +82,7 @@ os.chdir(full_build_dir)
 cmake_build_prefix = ''
 if (args.preset.find('linux') != -1 or args.preset.find('universal') != -1):
     cmake_build_prefix = 'CC=gcc CXX=g++'     
-command = "%s cmake -G \"%s\" %s %s" % (, args.generator, args.params, project_dir)
+command = "%s cmake -G \"%s\" %s %s" % (cmake_build_prefix, args.generator, args.params, project_dir)
 print(command)
 subprocess.check_call(command, shell=True)
 
