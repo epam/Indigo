@@ -1077,6 +1077,40 @@ void MoleculeStandardizer::_fixDirectionOfWedgeBonds(BaseMolecule &mol)
             if (mol.getBondDirection2(i, vertex.neiVertex(j)) > 0)
                mol.setBondDirection(vertex.neiEdge(j), 0);
       }
+      else if (mol.vertexInRing(i))
+      {
+         const Vertex &vertex = mol.getVertex(i);
+         int from = -1;
+         int to = -1;
+         int bond_dir = 0;
+
+         for (int j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+         {
+            if ((mol.getBondDirection2(i, vertex.neiVertex(j)) > 0) && mol.vertexInRing(vertex.neiVertex(j)))
+            {
+               from = j;
+               bond_dir = mol.getBondDirection2(i, vertex.neiVertex(j));
+               break;
+            }
+         }
+
+         if (from == -1)
+            continue;
+
+         for (int j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+         {
+            if ((mol.getBondDirection2(i, vertex.neiVertex(j)) == 0) && !mol.vertexInRing(vertex.neiVertex(j)))
+            {
+               to = j;
+               break;
+            }
+         }
+         if ((from != -1) && (to != -1))
+         {
+             mol.setBondDirection(vertex.neiEdge(from), 0);
+             mol.setBondDirection(vertex.neiEdge(to), bond_dir);
+         }
+      }
    }
 }
 
