@@ -25,7 +25,7 @@ for filename in os.listdir(dist_dir):
             shutil.rmtree("indigo-java")
         #os.mkdir("indigo-java")
         java_dir = join(dist_dir, "indigo-java")
-        version = filename.replace("indigo-java-%s-" % version , '').replace('.zip', '')
+        version = filename.replace("indigo-java-", '').replace('.zip', '')
         fullChemdiffName = "chemdiff-%s" % (version)
         uz = ZipFile(join(dist_dir, filename))
         uz.extractall(path=dist_dir)
@@ -73,7 +73,7 @@ for filename in os.listdir(dist_dir):
         if os.path.exists("indigo-java"):
             shutil.rmtree("indigo-java")
         java_dir = join(dist_dir, "indigo-java")
-        version = filename.replace("indigo-java-%s-" % version , '').replace('.zip', '')
+        version = filename.replace("indigo-java-" , '').replace('.zip', '')
         fullLegioName = "legio-%s" % (version)
         uz = ZipFile(join(dist_dir, filename))
         uz.extractall(path=dist_dir)
