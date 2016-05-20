@@ -1524,10 +1524,25 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
    sgroup.sgroup_subtype = super.sgroup_subtype;
    sgroup.brackets.copy(super.brackets);
 
+<<<<<<< 4a21ac49ad09dbea5610f0a3b38993909a076438
    MoleculeSGroups &ss = supermol.sgroups;
    for (auto i = ss.begin(); i != ss.end(); i = ss.next(i)) {
       SGroup &s = ss.getSGroup(i);
    }
+=======
+   static int q = 0;
+   if (q == 3) {
+//      printf("!!!\n");
+   }
+//   printf("=== %d, %p ===\n", q, &supermol);
+   MoleculeSGroups &ss = supermol.sgroups;
+   for (auto i = ss.begin(); i != ss.end(); i = ss.next(i)) {
+      SGroup &s = ss.getSGroup(i);
+//      printf("i = %d; original = %d; parent = %d; parent_idx = %d\n",
+//         i, s.original_group, s.parent_group, s.parent_idx);
+   }
+   q++;
+>>>>>>> 7b7f97b5c1ac9e6912c916ea268dadced1df5c41
    
    QS_DEF(Array<int>, parent_atoms);
    parent_atoms.clear();
