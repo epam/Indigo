@@ -24,7 +24,7 @@
 #include "molecule/elements.h"
 #include "molecule/smiles_loader.h"
 
-#include "base_cpp/red_black.h"
+#include "base_cpp/multimap.h"
 
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
@@ -2742,7 +2742,10 @@ void MolfileLoader::_readSGroupsBlock3000 ()
 
 void MolfileLoader::_fillSGroupsParentIndices() {
    MoleculeSGroups &sgroups = _bmol->sgroups;
-   RedBlackMap<int,int> indices; //original index can be arbitrary
+
+   MultiMap<int,int> indices;
+   //original index can be arbitrary, sometimes key is used multiple times
+   
    for (auto i = sgroups.begin(); i != sgroups.end(); i++) {
       SGroup &sgroup = sgroups.getSGroup(i);
       indices.insert(sgroup.original_group, i);
@@ -2751,9 +2754,9 @@ void MolfileLoader::_fillSGroupsParentIndices() {
    //TODO: replace parent_group with parent_idx
    for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i)) {
       SGroup &sgroup = sgroups.getSGroup(i);
-      auto idx = indices.at2(sgroup.parent_group);
-      if (idx != nullptr) {
-         sgroup.parent_idx = *idx;
+      auto &set = indices.get(sgroup.parent_group);
+      if (set.size() == 1) {
+         sgroup.parent_idx = set.key(set.begin());
       } else {
          sgroup.parent_idx = -1;
       }

@@ -68,6 +68,7 @@ SGroup::SGroup ()
    brk_style = 0;
    original_group = 0;
    parent_group = 0;
+   parent_idx = -1;
 }
 
 SGroup::~SGroup ()
@@ -247,7 +248,7 @@ void MoleculeSGroups::buildTree(Tree &tree)
 {
    for (auto i = begin(); i != end(); i = next(i)) {
       SGroup &sgroup = getSGroup(i);
-      tree.insert(sgroup.original_group, sgroup.parent_idx);
+      tree.insert(i, sgroup.parent_idx);
    }
 }
 
@@ -258,12 +259,11 @@ bool MoleculeSGroups::getParentAtoms(int idx, Array<int> &target)
 
 bool MoleculeSGroups::getParentAtoms(SGroup &sgroup, Array<int> &target)
 {
-   if (sgroup.parent_idx == -1) {
+   if (sgroup.parent_idx < 0) {
       return false;
    }
 
-   int parent_idx = sgroup.parent_idx;
-   SGroup &parent = getSGroup(parent_idx);
+   SGroup &parent = getSGroup(sgroup.parent_idx);
    getParentAtoms(parent, target);
    target.concat(parent.atoms);
    return true;

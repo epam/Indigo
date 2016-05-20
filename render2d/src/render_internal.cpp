@@ -632,10 +632,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent) {
             }
          } else if (group.relative) {
             _objDistTransform(ti.bbp, group.display_pos);
-            if (IS_ILLEGAL(parent)) {
-               if (group.atoms.size() > 0) {
-                  ti.bbp.add(_ad(group.atoms[0]).pos);
-               }
+            if (group.atoms.size() > 0) {
+               ti.bbp.add(_ad(group.atoms[0]).pos);
             } else {
                ti.bbp.add(parent.rightTop());
             }
@@ -666,7 +664,6 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent) {
             }
             _positionIndex(sg, tiConn, false);
          }
-
          parent = bound;
       }
 

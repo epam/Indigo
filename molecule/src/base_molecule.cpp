@@ -119,6 +119,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
       SGroup &supersg = mol.sgroups.getSGroup(i);
       int idx = sgroups.addSGroup(supersg.sgroup_type);
       SGroup &sg = sgroups.getSGroup(idx);
+      sg.parent_idx = supersg.parent_idx;
 
       if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping)) {
          if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
@@ -1107,7 +1108,7 @@ void BaseMolecule::collapse (BaseMolecule& bm, int id) {
 void BaseMolecule::collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv)
 {
    SGroup &sg = bm.sgroups.getSGroup(id);
-  
+
    if (sg.sgroup_type != SGroup::SG_TYPE_MUL)
       throw Error("The group is wrong type");
 
@@ -1118,17 +1119,22 @@ void BaseMolecule::collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping
 
    QS_DEF(Array<int>, toRemove);
    toRemove.clear();
+   
    for (int j = 0; j < group.atoms.size(); ++j) {
       int k = j % group.parent_atoms.size();
-      int *value = mapAtom.at2(group.atoms[j]);
-      if (value == 0)
-         mapAtom.insert(group.atoms[j], group.atoms[k]);
-      else if (*value != group.atoms[k])
+      int from = group.atoms[j];
+      int to   = group.atoms[k];
+
+      int *to_ = mapAtom.at2(from);
+      if (to_ == 0)
+         mapAtom.insert(from, to);
+      else if (*to_ != to)
          throw Error("Invalid mapping in MultipleGroup::collapse");
 
       if (k != j)
-         toRemove.push(group.atoms[j]);
+         toRemove.push(from);
    }
+
    for (int j = bm.edgeBegin(); j < bm.edgeEnd(); j = bm.edgeNext(j)) {
       const Edge& edge = bm.getEdge(j);
       bool in1 = mapAtom.find(edge.beg),
@@ -1520,6 +1526,19 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, B
 
    sgroup.brackets.copy(super.brackets);
 
+   static int q = 0;
+   if (q == 3) {
+//      printf("!!!\n");
+   }
+//   printf("=== %d, %p ===\n", q, &supermol);
+   MoleculeSGroups &ss = supermol.sgroups;
+   for (auto i = ss.begin(); i != ss.end(); i = ss.next(i)) {
+      SGroup &s = ss.getSGroup(i);
+//      printf("i = %d; original = %d; parent = %d; parent_idx = %d\n",
+//         i, s.original_group, s.parent_group, s.parent_idx);
+   }
+   q++;
+   
    QS_DEF(Array<int>, parent_atoms);
    parent_atoms.clear();
    if (supermol.sgroups.getParentAtoms(super, parent_atoms)) {

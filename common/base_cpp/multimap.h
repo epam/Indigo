@@ -12,8 +12,8 @@
 * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ***************************************************************************/
 
-#ifndef __multimap__
-#define __multimap__
+#ifndef __multimap_h__
+#define __multimap_h__
 
 #include "base_cpp/red_black.h"
 
