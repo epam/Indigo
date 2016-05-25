@@ -1,6 +1,6 @@
 /* cairo - a vector graphics library with display and print output
  *
- * Copyright © 2006, 2007 Mozilla Corporation
+ * Copyright ï¿½ 2006, 2007 Mozilla Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it either under the terms of the GNU Lesser General Public
@@ -38,9 +38,18 @@
 
 #include "cairo.h"
 
+
 #if CAIRO_HAS_QUARTZ_SURFACE
 
+#ifdef TARGET_OS_IPHONE
 #include <ApplicationServices/ApplicationServices.h>
+#else
+#include <CoreGraphics/CoreGraphics.h>
+#include <CoreText/CTFont.h>
+#define ATSUFontID int
+#define FMFont int
+//#define ATSFontRef int
+#endif
 
 CAIRO_BEGIN_DECLS
 
@@ -76,6 +85,7 @@ CAIRO_END_DECLS
 #else
 
 # error Cairo was not compiled with support for the quartz backend
+
 
 #endif /* CAIRO_HAS_QUARTZ_SURFACE */
 

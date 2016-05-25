@@ -51,7 +51,9 @@ void osMutexUnlock (os_mutex *mutex)
 void osSemaphoreCreate (os_semaphore *sem, int initial_count, int max_count)
 {
 #ifdef __APPLE__
+#if TARGET_OS_MAC == 1
    semaphore_create(mach_task_self(), &sem->data, SYNC_POLICY_FIFO, initial_count);
+#endif
 #else
    sem_init(&sem->data, 0, initial_count);
 #endif
@@ -60,7 +62,9 @@ void osSemaphoreCreate (os_semaphore *sem, int initial_count, int max_count)
 void osSemaphoreDelete (os_semaphore *sem)
 {
 #ifdef __APPLE__
+#if TARGET_OS_MAC == 1
    semaphore_destroy(mach_task_self(), sem->data);
+#endif
 #else
    sem_destroy(&sem->data);
 #endif

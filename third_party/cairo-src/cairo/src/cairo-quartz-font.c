@@ -44,6 +44,12 @@
 
 #include "cairo-error-private.h"
 
+#ifdef TARGET_OS_IPHONE
+#include <QuartzCore/QuartzCore.h>
+#include <CoreGraphics/CoreGraphics.h>
+#include <CoreGraphics/CGContext.h>
+#endif
+
 /**
  * SECTION:cairo-quartz-fonts
  * @Title: Quartz (CGFont) Fonts
@@ -546,10 +552,23 @@ _cairo_quartz_init_glyph_path (cairo_quartz_scaled_font_t *font,
 			       cairo_scaled_glyph_t *scaled_glyph)
 {
     cairo_quartz_font_face_t *font_face = _cairo_quartz_scaled_to_face(font);
-    CGGlyph glyph = _cairo_quartz_scaled_glyph_index (scaled_glyph);
+    CGGlyph glyph;
+    
+#ifdef TARGET_OS_IPHONE
+    glyph = _cairo_quartz_scaled_glyph_index (scaled_glyph);
+#else
+    glyph = _cairo_quartz_scaled_glyph_iendex (scaled_glyph);
+#endif
+    
     CGAffineTransform textMatrix;
     CGPathRef glyphPath;
+    
+#ifdef TARGET_OS_IPHONE
+    CGFontRef ctFont;
+#else
     CTFontRef ctFont;
+#endif
+    
     cairo_path_fixed_t *path;
 
     if (glyph == INVALID_GLYPH) {
@@ -565,8 +584,14 @@ _cairo_quartz_init_glyph_path (cairo_quartz_scaled_font_t *font,
 					0, 0);
 
     // glyphPath = CGFontGetGlyphPathPtr (font_face->cgFont, &textMatrix, 0, glyph);
+#ifdef TARGET_OS_IPHONE
+    ctFont = CTFontCreateWithGraphicsFont (font_face->cgFont, 1.0, NULL, NULL);
+#else
     ctFont = CTFontCreateWithGraphicsFont (font_face->cgFont, 0.0, NULL, NULL);
+#endif
+    
     glyphPath = CTFontCreatePathForGlyph (ctFont, glyph, &textMatrix);
+    
     CFRelease (ctFont);
     if (!glyphPath)
 	return CAIRO_INT_STATUS_UNSUPPORTED;
@@ -816,6 +841,8 @@ _cairo_quartz_scaled_font_get_cg_font_ref (cairo_scaled_font_t *abstract_font)
     return ffont->cgFont;
 }
 
+#ifdef TARGET_OS_IPHONE
+#else
 /*
  * compat with old ATSUI backend
  */
@@ -862,3 +889,4 @@ cairo_atsui_font_face_create_for_atsu_font_id (ATSUFontID font_id)
 {
     return cairo_quartz_font_face_create_for_atsu_font_id (font_id);
 }
+#endif
