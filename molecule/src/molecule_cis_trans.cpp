@@ -861,7 +861,7 @@ void MoleculeCisTrans::flipBond (int atom_parent, int atom_from, int atom_to)
             i != from_vertex.neiEnd();
             i = from_vertex.neiNext(i))
    {
-      int edge = parent_vertex.neiEdge(i);
+      int edge = from_vertex.neiEdge(i);
       if (getParity(edge) == 0)
          continue;
 
@@ -880,7 +880,7 @@ void MoleculeCisTrans::flipBond (int atom_parent, int atom_from, int atom_to)
             i != to_vertex.neiEnd();
             i = to_vertex.neiNext(i))
    {
-      int edge = parent_vertex.neiEdge(i);
+      int edge = to_vertex.neiEdge(i);
       if (getParity(edge) == 0)
          continue;
 
