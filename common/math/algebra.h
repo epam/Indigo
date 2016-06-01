@@ -231,10 +231,10 @@ struct Vec2f
    DLLEXPORT static bool segmentsIntersect (const Vec2f &a0, const Vec2f &a1, const Vec2f &b0, const Vec2f &b1);
    DLLEXPORT static bool segmentsIntersectInternal (const Vec2f &a0, const Vec2f &a1, const Vec2f &b0, const Vec2f &b1);
 
-   DLLEXPORT static double distPointSegment(Vec2f p, Vec2f q, Vec2f r);
-   DLLEXPORT static double distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s);
+   DLLEXPORT static float distPointSegment(Vec2f p, Vec2f q, Vec2f r);
+   DLLEXPORT static float distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s);
 
-   DLLEXPORT static Vec2f get_circle_center(Vec2f p, Vec2f q, double angle);
+   DLLEXPORT static Vec2f get_circle_center(Vec2f p, Vec2f q, float angle);
    DLLEXPORT static Vec2f get_circle_center(Vec2f a, Vec2f b, Vec2f c);
 };
 

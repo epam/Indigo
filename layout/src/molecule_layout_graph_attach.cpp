@@ -1019,9 +1019,9 @@ void MoleculeLayoutGraph::_calculatePositionsSingleDrawn (int vert_idx, Array<in
 
 void MoleculeLayoutGraph::_orderByEnergy (Array<Vec2f> &positions)
 {
-   QS_DEF(Array<double>, energies);
-   QS_DEF(Array<double>, norm_a);
-   double norm = 0.0;
+   QS_DEF(Array<float>, energies);
+   QS_DEF(Array<float>, norm_a);
+   float norm = 0.0;
    float r = 0.f;
    Vec2f p0;
 

@@ -111,12 +111,12 @@ AttachmentLayoutSmart::AttachmentLayoutSmart(const BiconnectedDecomposer &bc_dec
 }
 
 // Calculate energy of the drawn part of graph
-double AttachmentLayout::calculateEnergy ()
+float AttachmentLayout::calculateEnergy ()
 {
    int i,  j;
-   double sum_a;
+   float sum_a;
    float r;
-   QS_DEF(Array<double>, norm_a);
+   QS_DEF(Array<float>, norm_a);
    QS_DEF(Array<int>, drawn_vertices);
 
    drawn_vertices.clear_resize(_graph.vertexEnd());

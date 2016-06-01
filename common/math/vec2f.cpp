@@ -297,28 +297,28 @@ bool Vec2f::segmentsIntersectInternal (const Vec2f &a0, const Vec2f &a1, const V
       && triangleArea(b0, b1, a0) * triangleArea(b0, b1, a1) < - EPSILON;
 }
 
-double Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r) {
+float Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r) {
    if (dot(p - q, r - q) <= 0) return dist(p, q);
    if (dot(p - r, q - r) <= 0) return dist(p, r);
    
    Vec2f normal = r - q;
    normal.rotate(PI/2);
-   double c = cross(q, r);
-   double s = normal.length();
+   float c = cross(q, r);
+   float s = normal.length();
 
-   double t = -c - dot(normal, p);
+   float t = -c - dot(normal, p);
 
    return fabs(t / s);
 }
 
-double Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s) {
+float Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s) {
    if (Vec2f::segmentsIntersect(p, q, r, s)) return 0;
 
    return __min( __min(distPointSegment(p, r, s), distPointSegment(q, r, s)),
       __min(distPointSegment(r, p, q), distPointSegment(s, p, q)));
 }
 
-Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, double angle) {
+Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, float angle) {
 
    Vec2f vec(q - p);
 

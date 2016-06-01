@@ -567,7 +567,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle &cycle)
                }
             }
 
-            double angle = 0;
+            float angle = 0;
             int prev_vertex = -1;
             int next_vertex = -1;
             if (border.vertexCount() != 0 && calc_vertex_in_border >= 0) {
@@ -596,7 +596,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle &cycle)
             layout.setTargetAngle(i, PI - angle / 2);
          }
          else if (prev_layout_component == next_layout_component) {
-            double angle = (getPos(cycle.getVertexC(i - 1)) - getPos(cycle.getVertexC(i))).tiltAngle2();
+            float angle = (getPos(cycle.getVertexC(i - 1)) - getPos(cycle.getVertexC(i))).tiltAngle2();
             angle -= (getPos(cycle.getVertexC(i + 1)) - getPos(cycle.getVertexC(i))).tiltAngle2();
 
             while (angle < 0) angle += 2 * PI;
@@ -749,7 +749,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle &cycle)
          if (count_neibourhoods_outside > 0) right_orientation = true;
          else if (count_neibourhoods_outside < 0) right_orientation = false;
          else {
-            double y1 = 0, y2 = 0;
+            float y1 = 0, y2 = 0;
             for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v)) {
                if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[i] + 1) % size) {
                   y1 = segment[i].getIntPosition(v).y;
@@ -1399,8 +1399,8 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f> &point, Array<fl
       move_vector += (this_point - center) * (radii - dist)/radii;
       //move_vector += get_move_vector(this_point, center, radii);
    } else {
-      double l1 = segment[(move_vertex + segments_count - 1) % segments_count].getLength();
-      double l2 = segment[move_vertex].getLength();
+      float l1 = segment[(move_vertex + segments_count - 1) % segments_count].getLength();
+      float l2 = segment[move_vertex].getLength();
       Vec2f center(prev_point * l2 + next_point * l1);
 
       center /= l1 + l2;

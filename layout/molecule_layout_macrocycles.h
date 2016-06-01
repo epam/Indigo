@@ -44,12 +44,12 @@ namespace indigo {
 
       void addVertexOutsideWeight(int v, int weight);
       void setVertexEdgeParallel(int v, bool parallel);
-      void set_vertex_added_square(int v, double s);
+      void set_vertex_added_square(int v, float s);
       void setEdgeStereo(int e, int stereo);
       void setVertexDrawn(int v, bool drawn);
       void set_component_finish(int v, int f);
-      void set_target_angle(int v, double angle);
-      void set_angle_importance(int, double);
+      void set_target_angle(int v, float angle);
+      void set_angle_importance(int, float);
 
       int getVertexStereo(int v);
 
@@ -61,14 +61,14 @@ namespace indigo {
    public:
       static bool canApply(BaseMolecule &mol);
 
-      double layout(BaseMolecule &mol);
+      float layout(BaseMolecule &mol);
 
       void smoothing(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi);
       void smoothing2(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p);
-      void improvement2(int i, int vertex_count, int cycle_size, int *rotate_angle, int *edge_lenght, int *vertex_number, Vec2f *p, int base_vertex, bool fix_angle, bool fix_next, double multiplyer);
-      double badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, int diff);
-      double depictionMacrocycleGreed(bool profi);
-      double depictionCircle();
+      void improvement2(int i, int vertex_count, int cycle_size, int *rotate_angle, int *edge_lenght, int *vertex_number, Vec2f *p, int base_vertex, bool fix_angle, bool fix_next, float multiplyer);
+      float badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, int diff);
+      float depictionMacrocycleGreed(bool profi);
+      float depictionCircle();
 
       DECL_ERROR;
 
@@ -78,7 +78,7 @@ namespace indigo {
       static const int init_x;
       static const int init_y;
       static const int init_rot;
-      static const double CHANGE_FACTOR;
+      static const float CHANGE_FACTOR;
 
 
       int get_diff_grid(int x, int y, int rot, int value);
@@ -93,13 +93,13 @@ namespace indigo {
       TL_CP_DECL(Data, data);
       TL_CP_DECL(Array<int>, _vertex_weight);
       TL_CP_DECL(Array<int>, _vertex_stereo);
-      TL_CP_DECL(Array<double>, _vertex_added_square);
+      TL_CP_DECL(Array<float>, _vertex_added_square);
       TL_CP_DECL(Array<int>, _edge_stereo);
       TL_CP_DECL(Array<bool>, _vertex_drawn);
       TL_CP_DECL(Array<Vec2f>, _positions);
       TL_CP_DECL(Array<int>, _component_finish);
-      TL_CP_DECL(Array<double>, _target_angle);
-      TL_CP_DECL(Array<double>, _angle_importance);
+      TL_CP_DECL(Array<float>, _target_angle);
+      TL_CP_DECL(Array<float>, _angle_importance);
 
    };
 
@@ -118,11 +118,11 @@ namespace indigo {
 	  void setVertexEdgeParallel(int v, bool parallel);
 	  bool getVertexStereo(int v);
 	  void setEdgeStereo(int e, int stereo);
-	  void setVertexAddedSquare(int v, double s);
+	  void setVertexAddedSquare(int v, float s);
       void setVertexDrawn(int v, bool drawn);
       void setComponentFinish(int v, int f);
-      void setTargetAngle(int v, double angle);
-      void setAngleImportance(int, double);
+      void setTargetAngle(int v, float angle);
+      void setAngleImportance(int, float);
 
       class DLLEXPORT CycleLayout {
          CP_DECL;
@@ -138,12 +138,12 @@ namespace indigo {
          void initStatic();
          void init(answer_point* points);
          void init(int* up);
-         double area();
-         double perimeter();
+         float area();
+         float perimeter();
          Vec2f getWantedVector(int vertex_number);
 
          void soft_move_vertex(int vertex_number, Vec2f move_vector);
-         void stright_rotate_chein(int vertex_number, double angle);
+         void stright_rotate_chein(int vertex_number, float angle);
          void stright_move_chein(int vertex_number, Vec2f vector);
 
          DECL_ERROR;
@@ -151,16 +151,16 @@ namespace indigo {
 
       void initCycleLayout(CycleLayout& cl);
       int internalValue(CycleLayout& cl);
-      double rating(CycleLayout& cl);
+      float rating(CycleLayout& cl);
       int period(CycleLayout& cl);
       bool is_period(CycleLayout& cl, int k);
-      void closingStep(CycleLayout &cl, int index, int base_vertex, bool fix_angle, bool fix_next, double multiplyer);
+      void closingStep(CycleLayout &cl, int index, int base_vertex, bool fix_angle, bool fix_next, float multiplyer);
       void closing(CycleLayout &cl);
       void updateTouchingPoints(Array<local_pair_id>&, CycleLayout&);
-      void smoothingStep(CycleLayout &cl, int vertex_number, double coef, Array<local_pair_id>&);
+      void smoothingStep(CycleLayout &cl, int vertex_number, float coef, Array<local_pair_id>&);
       void smoothing(CycleLayout &cl);
       Vec2f &getPos(int v) const;
-      double preliminary_layout(CycleLayout &cl);
+      float preliminary_layout(CycleLayout &cl);
 
       DECL_ERROR;
 
@@ -168,25 +168,25 @@ namespace indigo {
 
       int length;
       int rotate_length;
-      static const double SMOOTHING_MULTIPLIER;
-      static const double CHANGE_FACTOR;
+      static const float SMOOTHING_MULTIPLIER;
+      static const float CHANGE_FACTOR;
 
       void calculate_rotate_length();
       void rotate_cycle(int shift);
       void _rotate_ar_i(Array<int>& ar, Array<int>& tmp, int shift);
-      void _rotate_ar_d(Array<double>& ar, Array<double>& tmp, int shift);
+      void _rotate_ar_d(Array<float>& ar, Array<float>& tmp, int shift);
       void _rotate_ar_v(Array<Vec2f>& ar, Array<Vec2f>& tmp, int shift);
-      //double rating(Array<answer_point>);
+      //float rating(Array<answer_point>);
 
       TL_CP_DECL(Array<int>, _vertex_weight);
       TL_CP_DECL(Array<int>, _vertex_stereo);
       TL_CP_DECL(Array<int>, _edge_stereo);
       TL_CP_DECL(Array<Vec2f>, _positions);
-      TL_CP_DECL(Array<double>, _vertex_added_square);
+      TL_CP_DECL(Array<float>, _vertex_added_square);
       TL_CP_DECL(Array<bool>, _vertex_drawn);
       TL_CP_DECL(Array<int>, _component_finish);
-      TL_CP_DECL(Array<double>, _target_angle);
-      TL_CP_DECL(Array<double>, _angle_importance);
+      TL_CP_DECL(Array<float>, _target_angle);
+      TL_CP_DECL(Array<float>, _angle_importance);
 
 
    };
@@ -299,7 +299,7 @@ namespace indigo {
    {
    public:
       CP_DECL;
-      AnswerField(int len, int target_x, int target_y, double target_rotation, int* vertex_weight_link, int* vertex_stereo_link, int* edge_stereo_link);
+      AnswerField(int len, int target_x, int target_y, float target_rotation, int* vertex_weight_link, int* vertex_stereo_link, int* edge_stereo_link);
 
       void fill();
       unsigned short& get_field(int len, answer_point p);

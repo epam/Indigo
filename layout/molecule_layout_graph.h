@@ -346,9 +346,9 @@ struct local_pair_ii {
 
 struct local_pair_id {
     int left;
-    double right;
+    float right;
 
-    local_pair_id(int l, double r) { left = l; right = r; }
+    local_pair_id(int l, float r) { left = l; right = r; }
 };
 
 class MoleculeLayoutGraphSmart;
@@ -366,11 +366,11 @@ private:
     Vec2f& _finish;
     Vec2f _center;
     int _layout_component_number;
-    double _square;
-    double _radius;
+    float _square;
+    float _radius;
 
     Vec2f _getPosition(Vec2f);
-    double calc_radius(Vec2f);
+    float calc_radius(Vec2f);
 
 public:
     MoleculeLayoutGraphSmart& _graph;
@@ -390,11 +390,11 @@ public:
     void set_layout_component_number(int number);
     void inverse();
     void set_start_finish_number(int, int);
-    double get_square();
+    float get_square();
     void calculate_square();
     int get_start() const;
     int get_finish() const;
-    double get_radius();
+    float get_radius();
     bool can_touch_to(MoleculeLayoutSmoothingSegment&);
 
     bool is_start(int v) { return v == _start_number; }
@@ -472,7 +472,7 @@ public:
 
     const int *getEdgeMapping() { return _molecule_edge_mapping; }
 
-    double _get_square();
+    float _get_square();
     void flipped() { ; }
 
 #ifdef M_LAYOUT_DEBUG

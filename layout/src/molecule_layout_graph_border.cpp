@@ -493,19 +493,21 @@ bool MoleculeLayoutGraphSmart::_isPointOutsideCycle(const Cycle &cycle, const Ve
     return abs(rotate_angle) < PI;
 }
 
-double MoleculeLayoutGraphSmart::_get_square() {
+float MoleculeLayoutGraphSmart::_get_square() {
 
     Cycle cycle;
     _getBorder(cycle);
 
     int len = cycle.vertexCount();
 
-    double sq = 0;
+    float sq = 0;
 
     for (int i = 1; i < len - 1; i++)
         sq += Vec2f::cross(getPos(cycle.getVertex(i)) - getPos(cycle.getVertex(0)), getPos(cycle.getVertex(i + 1)) - getPos(cycle.getVertex(0)));
 
-    return abs(sq / 2);
+    //printf("sq = %.20f\n", sq);
+
+    return fabs(sq / 2);
 }
 
 // Extract component border

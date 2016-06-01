@@ -29,7 +29,7 @@ public:
        const PtrArray<MoleculeLayoutGraph> &bc_components,
       const Array<int> &bc_tree, MoleculeLayoutGraph &graph, int src_vertex);
 
-   double calculateEnergy ();
+   float calculateEnergy ();
    virtual void  applyLayout () = 0;
    void  markDrawnVertices ();
 
@@ -45,7 +45,7 @@ public:
    float _alpha;                           // if positive then angle between components
    TL_CP_DECL(Array<int>, _new_vertices);  // indices in source graph of new verices
    TL_CP_DECL(Array<Vec2f>, _layout);      // layout of new vertices
-   double _energy;                         // current energy between drawn part and new part
+   float _energy;                         // current energy between drawn part and new part
 
    const PtrArray<MoleculeLayoutGraph> &_bc_components;
    MoleculeLayoutGraph &_graph;
@@ -81,7 +81,7 @@ private:
    void _makeLayout ();
 
    int _n_components;
-   double _cur_energy;
+   float _cur_energy;
    CP_DECL;
    TL_CP_DECL(Array<int>, _comp_permutation);
    TL_CP_DECL(Array<int>, _rest_numbers);
