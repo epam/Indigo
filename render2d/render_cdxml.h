@@ -21,6 +21,7 @@ namespace indigo {
 
 class RenderParams;
 class Molecule;
+class Reaction;
 struct Vec2f;
 
 class RenderCdxmlContext {
@@ -73,6 +74,8 @@ private:
 class RenderParamCdxmlInterface {
 public:
    static void render(RenderParams& params);
+   static void _renderMols(RenderParams& params);
+   static void _renderRxns(RenderParams& params);
 };
 
 }

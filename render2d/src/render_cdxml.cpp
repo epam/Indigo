@@ -18,6 +18,8 @@
 #include "base_cpp/output.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_saver.h"
+#include "reaction/reaction.h"
+#include "reaction/reaction_cdxml_saver.h"
 
 using namespace indigo;
 
@@ -126,15 +128,44 @@ int _getLongestLine(const Array<char>& line) {
    }
    return longest_line;
 }
+
 void RenderParamCdxmlInterface::render (RenderParams& params)
+{
+   if (params.rmode == RENDER_MOL)
+      _renderMols(params);
+   else if (params.rmode == RENDER_RXN)
+      _renderRxns(params);
+}
+
+void RenderParamCdxmlInterface::_renderRxns (RenderParams& params)
+{
+   ReactionCdxmlSaver saver(*params.rOpt.output);
+
+   Array<BaseReaction*> rxns;
+
+   if (params.rxns.size() != 0)
+      for (int i = 0; i < params.rxns.size(); ++i)
+         rxns.push(params.rxns[i]);
+   else if (params.rxn.get() != 0)
+      rxns.push(params.rxn.get());
+
+   for (int rxn_ind = 0; rxn_ind < rxns.size(); rxn_ind++)
+   {
+      saver.saveReaction(rxns[rxn_ind]->asReaction());
+   }
+}
+
+void RenderParamCdxmlInterface::_renderMols (RenderParams& params)
 {
    MoleculeCdxmlSaver saver(*params.rOpt.output);
 
    Array<BaseMolecule*> mols;
+   Array<int> ids;
+
    if (params.mols.size() != 0)
       for (int i = 0; i < params.mols.size(); ++i)
          mols.push(params.mols[i]);
-   else
+   else if (params.mol.get() != 0)
       mols.push(params.mol.get());
 
    Vec2f offset(0, 0);
@@ -362,7 +393,7 @@ void RenderParamCdxmlInterface::render (RenderParams& params)
       Pos &p = positions[mol_idx];
       Vec2f offset = p.offset;
       offset.scale(1 / p.scale);
-      saver.saveMoleculeFragment(mols[mol_idx]->asMolecule(), offset, p.scale);
+      saver.saveMoleculeFragment(mols[mol_idx]->asMolecule(), offset, p.scale, -1, ids);
       
       if (mol_idx < params.titles.size())
       {

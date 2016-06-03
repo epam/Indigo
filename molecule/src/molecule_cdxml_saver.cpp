@@ -21,7 +21,7 @@
 
 using namespace indigo;
 
-IMPL_ERROR(MoleculeCdxmlSaver, "molecule CMXML saver");
+IMPL_ERROR(MoleculeCdxmlSaver, "molecule CDXML saver");
 
 MoleculeCdxmlSaver::MoleculeCdxmlSaver (Output &output) : _output(output)
 {
@@ -54,7 +54,9 @@ void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
    ArrayOutput out(buf);
    out.printf("%f", _bond_length);
    buf.push(0);
-   _root->SetAttribute("_bond_length", buf.ptr());
+   _root->SetAttribute("BondLength", buf.ptr());
+   _root->SetAttribute("LabelFont", "3");
+   _root->SetAttribute("CaptionFont", "4");
    _doc->LinkEndChild(_root);
 
    if (bounds != NULL)
@@ -188,7 +190,7 @@ void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
 }
 
 
-void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float structure_scale)
+void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float structure_scale, int id, Array<int> &ids)
 {
    float scale = structure_scale * _bond_length;
 
@@ -198,6 +200,10 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
    TiXmlElement * fragment = new TiXmlElement("fragment");
    _current->LinkEndChild(fragment);
    _current = fragment;
+   int nid;
+
+   if (id > 0) 
+      fragment->SetAttribute("id", id);
 
    bool have_hyz = mol.have_xyz;
 
@@ -210,13 +216,19 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
          int atom_number = mol.getAtomNumber(i);
          int charge = mol.getAtomCharge(i);
          int radical = 0;
+         int hcount = -1;
 
          TiXmlElement * node = new TiXmlElement("n");
          fragment->LinkEndChild(node);
 
+         if (ids.size() > i)
+            nid = ids[i];
+         else
+            nid = i + 1;
+
          if (mol.isRSite(i))
          {
-            node->SetAttribute("id", i + 1);
+            node->SetAttribute("id", nid);
             node->SetAttribute("NodeType", "GenericNickname");
             node->SetAttribute("GenericNickname", "A");
 
@@ -225,7 +237,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
          }
          else if (mol.isPseudoAtom(i))
          {
-            node->SetAttribute("id", i + 1);
+            node->SetAttribute("id", nid);
             node->SetAttribute("NodeType", "GenericNickname");
             node->SetAttribute("GenericNickname", mol.getPseudoAtom(i));
 
@@ -234,7 +246,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
          }
          else 
          {
-            node->SetAttribute("id", i + 1);
+            node->SetAttribute("id", nid);
             node->SetAttribute("Element", atom_number);
             if (charge != 0)
                node->SetAttribute("Charge", charge);
@@ -257,10 +269,9 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
                node->SetAttribute("Radical", radical_str);
             }
 
-            if (Molecule::shouldWriteHCount(mol, i))
+
+            if ( (Molecule::shouldWriteHCount(mol, i)) || (atom_number != ELEM_C) )
             {
-               int hcount;
-   
                try
                {
                   hcount = mol.getAtomTotalH(i);
@@ -307,7 +318,15 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
                // 0 means atom absence
                QS_DEF(Array<char>, buf);
                ArrayOutput out(buf);
-               out.printf("%d %d %d %d", pyramid[0] + 1, pyramid[1] + 1, pyramid[2] + 1, pyramid[3] + 1);
+               if (ids.size() > 0)
+               {
+                  out.printf("%d %d %d %d", ids[pyramid[0]], ids[pyramid[1]], ids[pyramid[2]], ids[pyramid[3]]);
+               }
+               else
+               {
+                  out.printf("%d %d %d %d", pyramid[0] + 1, pyramid[1] + 1, pyramid[2] + 1, pyramid[3] + 1);
+               }
+
                buf.push(0);
                node->SetAttribute("BondOrdering", buf.ptr());
             }
@@ -406,6 +425,50 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
 			TiXmlText * txt = new TiXmlText(buf.ptr());
             s->LinkEndChild(txt);
          }
+         else if (atom_number != ELEM_C) 
+         {
+            TiXmlElement * t = new TiXmlElement("t");
+            node->LinkEndChild(t);
+         
+            QS_DEF(Array<char>, buf);
+            ArrayOutput out(buf);
+            out.printf("%f %f", pos.x, -pos.y);
+            buf.push(0);
+            t->SetAttribute("p", buf.ptr());
+            t->SetAttribute("LabelJustification", "Left");
+         
+            TiXmlElement * s = new TiXmlElement("s");
+            t->LinkEndChild(s);
+            s->SetAttribute("font", 3);
+            s->SetAttribute("size", 10);
+            s->SetAttribute("face", 96);
+
+			out.clear();
+			mol.getAtomSymbol(i, buf);
+                        if (hcount > 0)
+                        {
+                           buf.pop();
+   			   buf.push('H');
+                        }
+
+			buf.push(0);
+			TiXmlText * txt = new TiXmlText(buf.ptr());
+                      s->LinkEndChild(txt);
+               if (hcount > 1)
+               {
+                  TiXmlElement * s = new TiXmlElement("s");
+                  t->LinkEndChild(s);
+                  s->SetAttribute("font", 3);
+                  s->SetAttribute("size", 10);
+                  s->SetAttribute("face", 32);
+
+                  out.clear();
+                  out.printf("%d", hcount);
+                  buf.push(0);
+                  TiXmlText * txt = new TiXmlText(buf.ptr());
+                  s->LinkEndChild(txt);
+               }
+         }
       }
    }
 
@@ -418,8 +481,16 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
          TiXmlElement * bond = new TiXmlElement("b");
          fragment->LinkEndChild(bond);
 
-         bond->SetAttribute("B", edge.beg + 1);
-         bond->SetAttribute("E", edge.end + 1);
+         if (ids.size() > 0)
+         {
+            bond->SetAttribute("B", ids[edge.beg]);
+            bond->SetAttribute("E", ids[edge.end]);
+         }
+         else
+         {
+            bond->SetAttribute("B", edge.beg + 1);
+            bond->SetAttribute("E", edge.end + 1);
+         }
 
          int order = mol.getBondOrder(i);
 
@@ -445,7 +516,17 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
          {
             const int *subst = mol.cis_trans.getSubstituents(i);
 
-            int s3 = subst[2] + 1, s4  = subst[3] + 1;
+            int s1, s2, s3, s4;
+            if (ids.size() > 0)
+            {
+               s1 = ids[subst[0]], s2  = ids[subst[1]];
+               s3 = ids[subst[2]], s4  = ids[subst[3]];
+            }
+            else
+            {
+               s1 = subst[0] + 1, s2  = subst[1] + 1;
+               s3 = subst[2] + 1, s4  = subst[3] + 1;
+            }
             if (parity == MoleculeCisTrans::TRANS)
             {
                int tmp;
@@ -453,7 +534,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
             }
             QS_DEF(Array<char>, buf);
             ArrayOutput out(buf);
-            out.printf("%d %d %d %d", subst[0] + 1, subst[1] + 1, s3, s4);
+            out.printf("%d %d %d %d", s1, s2 , s3, s4);
             buf.push(0);
             bond->SetAttribute("BondCircularOrdering", buf.ptr());
          }
@@ -500,11 +581,90 @@ void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text, const char
    buf.push(0);
    t->SetAttribute("p", buf.ptr());
    t->SetAttribute("Justification", alignment);
+   t->SetAttribute("InterpretChemically", "no");
 
    TiXmlElement * s = new TiXmlElement("s");
    t->LinkEndChild(s);
+   s->SetAttribute("font", 3);
+   s->SetAttribute("size", 10);
+   s->SetAttribute("face", 96);
    TiXmlText * txt = new TiXmlText(text);
    s->LinkEndChild(txt);
+}
+
+void MoleculeCdxmlSaver::addTitle (const Vec2f &pos, const char *text)
+{
+   TiXmlElement * t = new TiXmlElement("t");
+   _current->LinkEndChild(t);
+
+   QS_DEF(Array<char>, buf);
+   ArrayOutput out(buf);
+   out.printf("%f %f", _bond_length * pos.x, -_bond_length * pos.y);
+   buf.push(0);
+   t->SetAttribute("p", buf.ptr());
+   t->SetAttribute("Justification", "Center");
+   t->SetAttribute("InterpretChemically", "no");
+
+   TiXmlElement * s = new TiXmlElement("s");
+   t->LinkEndChild(s);
+   s->SetAttribute("font", 4);
+   s->SetAttribute("size", 18);
+   s->SetAttribute("face", 1);
+   TiXmlText * txt = new TiXmlText(text);
+   s->LinkEndChild(txt);
+}
+
+void MoleculeCdxmlSaver::addGraphic (int id, const Vec2f &p1, const Vec2f &p2, PropertiesMap &attrs)
+{
+   TiXmlElement * g = new TiXmlElement("graphic");
+   _current->LinkEndChild(g);
+
+   if (id > 0)
+      g->SetAttribute("id", id);
+
+   QS_DEF(Array<char>, buf);
+   ArrayOutput out(buf);
+   out.printf("%f %f %f %f", _bond_length * p1.x, -_bond_length * p1.y, _bond_length * p2.x, -_bond_length * p2.y);
+   buf.push(0);
+
+   g->SetAttribute("BoundingBox", buf.ptr());
+
+   for (auto i : attrs.elements()) {
+      g->SetAttribute(attrs.key(i), attrs.value(i));
+   }
+}
+
+void MoleculeCdxmlSaver::addCustomElement (int id, Array<char> &name, PropertiesMap &attrs)
+{
+   TiXmlElement * e = new TiXmlElement(name.ptr());
+   _current->LinkEndChild(e);
+
+   if (id > 0)
+      e->SetAttribute("id", id);
+
+   for (auto i : attrs.elements()) {
+      e->SetAttribute(attrs.key(i), attrs.value(i));
+   }
+}
+
+void MoleculeCdxmlSaver::startCurrentElement (int id, Array<char> &name, PropertiesMap &attrs)
+{
+   TiXmlElement * e = new TiXmlElement(name.ptr());
+   _current->LinkEndChild(e);
+   _current = e;
+
+   if (id > 0)
+      e->SetAttribute("id", id);
+
+   for (auto i : attrs.elements()) {
+      e->SetAttribute(attrs.key(i), attrs.value(i));
+   }
+}
+
+void MoleculeCdxmlSaver::endCurrentElement ()
+{
+   TiXmlNode * node = _current->Parent();
+   _current = (TiXmlElement *)node;
 }
 
 void MoleculeCdxmlSaver::addCustomText(const Vec2f &pos, const char *alignment, float line_height, const char *text)
@@ -551,6 +711,7 @@ void MoleculeCdxmlSaver::endDocument ()
 
 void MoleculeCdxmlSaver::saveMolecule (Molecule &mol)
 {
+   Array<int> ids;
    Vec3f min_coord, max_coord;
    if (mol.have_xyz)
    {
@@ -581,7 +742,7 @@ void MoleculeCdxmlSaver::saveMolecule (Molecule &mol)
 
    Vec2f offset(-min_coord.x, -max_coord.y);
 
-   saveMoleculeFragment(mol, offset, 1);
+   saveMoleculeFragment(mol, offset, 1, -1, ids);
    endPage();
    endDocument();
 }
