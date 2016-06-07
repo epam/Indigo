@@ -15,6 +15,7 @@
 #include "base_cpp/output.h"
 #include "molecule/molecule_cdxml_saver.h"
 #include "molecule/molecule.h"
+#include "molecule/query_molecule.h"
 #include "molecule/elements.h"
 #include "base_cpp/locale_guard.h"
 #include "tinyxml.h"
@@ -190,7 +191,7 @@ void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
 }
 
 
-void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float structure_scale, int id, Array<int> &ids)
+void MoleculeCdxmlSaver::saveMoleculeFragment (BaseMolecule &mol, const Vec2f &offset, float structure_scale, int id, Array<int> &ids)
 {
    float scale = structure_scale * _bond_length;
 
@@ -232,7 +233,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
             node->SetAttribute("NodeType", "GenericNickname");
             node->SetAttribute("GenericNickname", "A");
 
-            if (charge != 0)
+            if ( (charge != 0) && (charge != CHARGE_UNKNOWN) )
                node->SetAttribute("Charge", charge);
          }
          else if (mol.isPseudoAtom(i))
@@ -241,28 +242,30 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
             node->SetAttribute("NodeType", "GenericNickname");
             node->SetAttribute("GenericNickname", mol.getPseudoAtom(i));
 
-            if (charge != 0)
+            if ( (charge != 0) && (charge != CHARGE_UNKNOWN) )
                node->SetAttribute("Charge", charge);
          }
-         else 
+         else if (atom_number > 0)
          {
             node->SetAttribute("id", nid);
             node->SetAttribute("Element", atom_number);
-            if (charge != 0)
+            if ( (charge != 0) && (charge != CHARGE_UNKNOWN) )
                node->SetAttribute("Charge", charge);
 
-            if (mol.getAtomIsotope(i) != 0)
+            if (mol.getAtomIsotope(i) > 0)
                node->SetAttribute("Isotope", mol.getAtomIsotope(i));
   
   
             radical = mol.getAtomRadical_NoThrow(i, 0);
-            if (radical != 0)
+            if (radical > 0)
             {
                const char *radical_str = NULL;
                if (radical == RADICAL_DOUBLET)
                   radical_str = "Doublet";
                else if (radical == RADICAL_SINGLET)
                   radical_str = "Singlet";
+               else if (radical == RADICAL_TRIPLET)
+                  radical_str = "Triplet";
                else
                   throw Error("Radical type %d is not supported", radical);
    
@@ -270,20 +273,65 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
             }
 
 
-            if ( (Molecule::shouldWriteHCount(mol, i)) || (atom_number != ELEM_C) )
+            if ( (atom_number != ELEM_C) && (atom_number != ELEM_H) ) 
             {
                try
                {
-                  hcount = mol.getAtomTotalH(i);
+                  hcount = getHydrogenCount(mol, i, charge, radical);
                }
                catch (Exception &)
                {
                   hcount = -1;
                }
-   
+  
                if (hcount >= 0)
                   node->SetAttribute("NumHydrogens", hcount);
+            }
+         }
+         else if (atom_number < 0)
+         {
+            QS_DEF(Array<int>, list);
+            int query_atom_type;
+            node->SetAttribute("id", nid);
+            if (mol.isQueryMolecule() &&
+                   (query_atom_type = QueryMolecule::parseQueryAtom(mol.asQueryMolecule(), i, list)) != -1)
+            {
+               if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
+               {
+                  node->SetAttribute("NodeType", "GenericNickname");
+                  node->SetAttribute("GenericNickname", "A");
+               }
+               else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
+               {
+                  node->SetAttribute("NodeType", "GenericNickname");
+                  node->SetAttribute("GenericNickname", "Q");
+               }
+               else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
+               {
+                  node->SetAttribute("NodeType", "GenericNickname");
+                  node->SetAttribute("GenericNickname", "X");
+               }
+               else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
+                        query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+               {
+                  int k;
 
+				  QS_DEF(Array<char>, buf);
+				  ArrayOutput out(buf);
+
+                  if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                     out.writeString("NOT ");
+      
+                  for (k = 0; k < list.size(); k++)
+                  {
+                     out.printf("%d ", list[k]);
+                  }
+                  buf.pop();
+                  buf.push(0);
+
+                  node->SetAttribute("NodeType", "ElementList");
+                  node->SetAttribute("ElementList", buf.ptr());
+               }
             }
          }
 
@@ -372,7 +420,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
             s->SetAttribute("face", 96);
 
 			out.clear();
-			out.printf("A");
+//			out.printf("A");
+			mol.getAtomSymbol(i, buf);
 			/*
 			 * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
 			*/
@@ -425,7 +474,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
 			TiXmlText * txt = new TiXmlText(buf.ptr());
             s->LinkEndChild(txt);
          }
-         else if (atom_number != ELEM_C) 
+         else if (atom_number > 0 && atom_number != ELEM_C)  
          {
             TiXmlElement * t = new TiXmlElement("t");
             node->LinkEndChild(t);
@@ -468,6 +517,55 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (Molecule &mol, const Vec2f &offse
                   TiXmlText * txt = new TiXmlText(buf.ptr());
                   s->LinkEndChild(txt);
                }
+         }
+         else if (atom_number < 0 && mol.isQueryMolecule())  
+         {
+            TiXmlElement * t = new TiXmlElement("t");
+            node->LinkEndChild(t);
+         
+            QS_DEF(Array<char>, buf);
+            ArrayOutput out(buf);
+            out.printf("%f %f", pos.x, -pos.y);
+            buf.push(0);
+            t->SetAttribute("p", buf.ptr());
+            t->SetAttribute("LabelJustification", "Left");
+         
+            TiXmlElement * s = new TiXmlElement("s");
+            t->LinkEndChild(s);
+            s->SetAttribute("font", 3);
+            s->SetAttribute("size", 10);
+            s->SetAttribute("face", 96);
+
+			QS_DEF(Array<int>, list);
+            int query_atom_type;
+
+            out.clear();
+      
+            if (mol.isQueryMolecule() &&
+                  (query_atom_type = QueryMolecule::parseQueryAtom(mol.asQueryMolecule(), i, list)) != -1)
+            {
+               if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
+                   query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+               {
+                  int k;
+      
+                  if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                     out.writeString("NOT ");
+      
+                  for (k = 0; k < list.size(); k++)
+                  {
+                     if (k > 0)
+                        out.writeChar(',');
+                     out.writeString(Element::toString(list[k]));
+                  }
+                  buf.push(0);
+               }
+               else
+                  mol.getAtomSymbol(i, buf);
+            }
+
+            TiXmlText * txt = new TiXmlText(buf.ptr());
+            s->LinkEndChild(txt);
          }
       }
    }
@@ -708,8 +806,46 @@ void MoleculeCdxmlSaver::endDocument ()
    _output.printf("%s", printer.CStr());
 }
 
+int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule &mol, int idx, int charge, int radical)
+{
+   int h;
+   int val, chg, rad;
 
-void MoleculeCdxmlSaver::saveMolecule (Molecule &mol)
+   if (!mol.isQueryMolecule())
+      h = mol.asMolecule().getImplicitH(idx);
+   else if (mol.isQueryMolecule())
+   {
+      int number = mol.getAtomNumber(idx);
+   
+      if (number == -1)
+         return -1;
+   
+      int conn = mol.asQueryMolecule()._calcAtomConnectivity(idx);
+   
+      if (conn == -1)
+         return -1;
+
+      if (charge == CHARGE_UNKNOWN)
+         chg = 0;
+      else
+         chg = charge;
+
+      if (radical == -1)
+         rad = 0;
+      else
+         rad = radical;
+  
+      int explicit_val = mol.getExplicitValence(idx);
+   
+      if (explicit_val != -1)
+         h = explicit_val - Element::calcValenceMinusHyd(number, chg, rad, conn);
+      else
+         Element::calcValence(number, chg, rad, conn, val, h, false);
+   }
+   return h;
+}
+
+void MoleculeCdxmlSaver::saveMolecule (BaseMolecule &mol)
 {
    Array<int> ids;
    Vec3f min_coord, max_coord;

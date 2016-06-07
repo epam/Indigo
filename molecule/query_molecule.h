@@ -334,12 +334,12 @@ public:
    virtual void invalidateAtom (int index, int mask);
 
    int getAtomMaxExteralConnectivity (int idx);
+   int _calcAtomConnectivity (int idx);
 
    bool standardize (const StandardizeOptions &options);
 
 protected:
 
-   int _calcAtomConnectivity (int idx);
    void _getAtomDescription (Atom *atom, Output &out, int depth);
    void _getBondDescription (Bond *bond, Output &out);
    int _getAtomMinH (Atom *atom);

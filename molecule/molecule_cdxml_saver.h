@@ -23,7 +23,7 @@ class TiXmlElement;
 
 namespace indigo {
 
-class Molecule;
+class BaseMolecule;
 class Output;
 
 class DLLEXPORT MoleculeCdxmlSaver
@@ -31,7 +31,7 @@ class DLLEXPORT MoleculeCdxmlSaver
 public:
    explicit MoleculeCdxmlSaver (Output &output);
 
-   void saveMolecule (Molecule &mol);
+   void saveMolecule (BaseMolecule &mol);
    enum {
       BOND_LENGTH = 30
    };
@@ -47,7 +47,7 @@ public:
    void addFontToTable(int id, const char* charset, const char* name);
    void addColorTable(const char* color);
    void addColorToTable(int id, int r, int g, int b);
-   void saveMoleculeFragment (Molecule &mol, const Vec2f &offset, float scale, int id, Array<int> &nodes_ids);
+   void saveMoleculeFragment (BaseMolecule &mol, const Vec2f &offset, float scale, int id, Array<int> &nodes_ids);
    void addText (const Vec2f &pos, const char *text);
    void addText (const Vec2f &pos, const char *text, const char *alignment);
    void addCustomText(const Vec2f &pos, const char *alignment, float line_height, const char *text);
@@ -58,6 +58,7 @@ public:
    void endCurrentElement ();
    void endPage ();
    void endDocument ();
+   int  getHydrogenCount(BaseMolecule &mol, int idx, int charge, int radical);
 
    float pageHeight () const;
    float textLineHeight () const;

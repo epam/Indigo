@@ -151,7 +151,8 @@ void RenderParamCdxmlInterface::_renderRxns (RenderParams& params)
 
    for (int rxn_ind = 0; rxn_ind < rxns.size(); rxn_ind++)
    {
-      saver.saveReaction(rxns[rxn_ind]->asReaction());
+      BaseReaction &rxn = (BaseReaction &) *rxns[rxn_ind];
+      saver.saveReaction(rxn);
    }
 }
 

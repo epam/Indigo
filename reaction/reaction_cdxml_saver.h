@@ -22,7 +22,7 @@
 namespace indigo {
 
 class Output;
-class Reaction;
+class BaseReaction;
 class MoleculeCdxmlSaver;
 
 class DLLEXPORT ReactionCdxmlSaver
@@ -31,12 +31,12 @@ public:
    explicit ReactionCdxmlSaver (Output &output);
    ~ReactionCdxmlSaver ();
 
-   void saveReaction (Reaction &rxn);
+   void saveReaction (BaseReaction &rxn);
 
    DECL_ERROR;
 
 protected:
-   Reaction *_rxn;
+   BaseReaction *_rxn;
    Output   &_output;
 
 private:
@@ -44,15 +44,15 @@ private:
 
    void _addDefaultFontTable (MoleculeCdxmlSaver &molsaver);
    void _addDefaultColorTable (MoleculeCdxmlSaver &molsaver);
-   void _addPlusses (Reaction &rxn, MoleculeCdxmlSaver &molsaver);
-   void _addArrow (Reaction &rxn, MoleculeCdxmlSaver &molsaver, int arrow_id);
+   void _addPlusses (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver);
+   void _addArrow (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver, int arrow_id);
    void _addScheme (MoleculeCdxmlSaver &molsaver);
    void _closeScheme (MoleculeCdxmlSaver &molsaver);
-   void _addStep (Reaction &rxn, MoleculeCdxmlSaver &molsaver, Array<int> &reactants_ids, Array<int> &products_ids,
+   void _addStep (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver, Array<int> &reactants_ids, Array<int> &products_ids,
            ObjArray< Array<int> > &nodes_ids, int arrow_id);
-   void _generateCdxmlObjIds (Reaction &rxn, Array<int> &reactants_ids, Array<int> &products_ids,
+   void _generateCdxmlObjIds (BaseReaction &rxn, Array<int> &reactants_ids, Array<int> &products_ids,
            ObjArray< Array<int> > &nodes_ids, int &arrow_id);
-   void _addTitle (Reaction &rxn, MoleculeCdxmlSaver &molsaver);
+   void _addTitle (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver);
 
 };
 

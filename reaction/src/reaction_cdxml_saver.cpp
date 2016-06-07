@@ -67,7 +67,7 @@ ReactionCdxmlSaver::~ReactionCdxmlSaver ()
 {
 }
 
-void ReactionCdxmlSaver::saveReaction (Reaction &rxn)
+void ReactionCdxmlSaver::saveReaction (BaseReaction &rxn)
 {
    int i;
    Array<int> reactants_ids;
@@ -95,14 +95,14 @@ void ReactionCdxmlSaver::saveReaction (Reaction &rxn)
    {
       for (i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
       {
-         molsaver.saveMoleculeFragment(rxn.getMolecule(i), offset, 1, reactants_ids[i], nodes_ids[i]);
+         molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1, reactants_ids[i], nodes_ids[i]);
       }
    }
    if (rxn.productsCount() > 0)
    {
       for (i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
       {
-         molsaver.saveMoleculeFragment(rxn.getMolecule(i), offset, 1, products_ids[i], nodes_ids[i]);
+         molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1, products_ids[i], nodes_ids[i]);
       }
    }
 /*
@@ -110,7 +110,7 @@ void ReactionCdxmlSaver::saveReaction (Reaction &rxn)
    {
       for (i = rxn.catalystBegin(); i != rxn.catalystEnd(); i = rxn.catalystNext(i))
       {
-         molsaver.saveMoleculeFragment(rxn.getMolecule(i), offset, 1);
+         molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1);
       }
    }
 */
@@ -132,7 +132,7 @@ void ReactionCdxmlSaver::saveReaction (Reaction &rxn)
 
 void ReactionCdxmlSaver::_addDefaultFontTable (MoleculeCdxmlSaver &molsaver)
 {
-   int id;
+   int id = -1;
    Array<char> name;
    PropertiesMap attrs;
 
@@ -168,7 +168,7 @@ void ReactionCdxmlSaver::_addDefaultColorTable (MoleculeCdxmlSaver &molsaver)
    molsaver.addColorTable(color.ptr());
 }
 
-void ReactionCdxmlSaver::_addPlusses (Reaction &rxn, MoleculeCdxmlSaver &molsaver)
+void ReactionCdxmlSaver::_addPlusses (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver)
 {
    Vec2f offset(0, 0);
 
@@ -181,8 +181,8 @@ void ReactionCdxmlSaver::_addPlusses (Reaction &rxn, MoleculeCdxmlSaver &molsave
          {
             Vec2f min1, max1;
             Vec2f min2, max2;
-            _getBounds (rxn.getMolecule(i), min1, max1, 1.0);
-            _getBounds (rxn.getMolecule(rxn.reactantNext(i)), min2, max2, 1.0);
+            _getBounds (rxn.getBaseMolecule(i), min1, max1, 1.0);
+            _getBounds (rxn.getBaseMolecule(rxn.reactantNext(i)), min2, max2, 1.0);
             offset.x = (max1.x + min2.x)/2;
             offset.y = (min1.y + max1.y)/2;
 
@@ -201,8 +201,8 @@ void ReactionCdxmlSaver::_addPlusses (Reaction &rxn, MoleculeCdxmlSaver &molsave
          {
             Vec2f min1, max1;
             Vec2f min2, max2;
-            _getBounds (rxn.getMolecule(i), min1, max1, 1.0);
-            _getBounds (rxn.getMolecule(rxn.productNext(i)), min2, max2, 1.0);
+            _getBounds (rxn.getBaseMolecule(i), min1, max1, 1.0);
+            _getBounds (rxn.getBaseMolecule(rxn.productNext(i)), min2, max2, 1.0);
             offset.x = (max1.x + min2.x)/2;
             offset.y = (min1.y + max1.y)/2;
 
@@ -213,7 +213,7 @@ void ReactionCdxmlSaver::_addPlusses (Reaction &rxn, MoleculeCdxmlSaver &molsave
    }
 }
 
-void ReactionCdxmlSaver::_addArrow (Reaction &rxn, MoleculeCdxmlSaver &molsaver, int arrow_id)
+void ReactionCdxmlSaver::_addArrow (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver, int arrow_id)
 {
    int id = -1;
    Vec2f p1(0, 0);
@@ -228,7 +228,7 @@ void ReactionCdxmlSaver::_addArrow (Reaction &rxn, MoleculeCdxmlSaver &molsaver,
       for (auto i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
       {
          Vec2f min, max;
-         _getBounds (rxn.getMolecule(i), min, max, 1.0);
+         _getBounds (rxn.getBaseMolecule(i), min, max, 1.0);
          if (i == rxn.reactantBegin())
          {
             rmin = min; 
@@ -251,7 +251,7 @@ void ReactionCdxmlSaver::_addArrow (Reaction &rxn, MoleculeCdxmlSaver &molsaver,
       for (auto i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
       {
          Vec2f min, max;
-         _getBounds (rxn.getMolecule(i), min, max, 1.0);
+         _getBounds (rxn.getBaseMolecule(i), min, max, 1.0);
          if (i == rxn.productBegin())
          {
             pmin = min; 
@@ -320,7 +320,7 @@ void ReactionCdxmlSaver::_closeScheme (MoleculeCdxmlSaver &molsaver)
    molsaver.endCurrentElement();
 }
 
-void ReactionCdxmlSaver::_addStep (Reaction &rxn, MoleculeCdxmlSaver &molsaver, Array<int> &reactants_ids, Array<int> &products_ids,
+void ReactionCdxmlSaver::_addStep (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver, Array<int> &reactants_ids, Array<int> &products_ids,
         ObjArray< Array<int> > &nodes_ids, int arrow_id)
 {
    int id = -1;
@@ -365,7 +365,7 @@ void ReactionCdxmlSaver::_addStep (Reaction &rxn, MoleculeCdxmlSaver &molsaver, 
    buf.clear();
    for (auto i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
    {
-      BaseMolecule &mol = rxn.getMolecule(i);
+      BaseMolecule &mol = rxn.getBaseMolecule(i);
 
       for (auto j = mol.vertexBegin(); j != mol.vertexEnd(); j = mol.vertexNext(j))
       {
@@ -396,7 +396,7 @@ void ReactionCdxmlSaver::_addStep (Reaction &rxn, MoleculeCdxmlSaver &molsaver, 
    molsaver.addCustomElement(id, name, attrs);
 }
 
-void ReactionCdxmlSaver::_generateCdxmlObjIds (Reaction &rxn, Array<int> &reactants_ids, Array<int> &products_ids,
+void ReactionCdxmlSaver::_generateCdxmlObjIds (BaseReaction &rxn, Array<int> &reactants_ids, Array<int> &products_ids,
       ObjArray< Array<int> > &nodes_ids, int &arrow_id)
 {
    reactants_ids.clear_resize(rxn.reactantEnd());
@@ -412,7 +412,7 @@ void ReactionCdxmlSaver::_generateCdxmlObjIds (Reaction &rxn, Array<int> &reacta
       id++;
       reactants_ids[i] = id;
 
-      BaseMolecule &mol = rxn.getMolecule(i);
+      BaseMolecule &mol = rxn.getBaseMolecule(i);
 
       nodes_ids.expand(i + 1);
       nodes_ids[i].clear_resize(mol.vertexEnd());
@@ -430,7 +430,7 @@ void ReactionCdxmlSaver::_generateCdxmlObjIds (Reaction &rxn, Array<int> &reacta
       id++;
       products_ids[i] = id;
 
-      BaseMolecule &mol = rxn.getMolecule(i);
+      BaseMolecule &mol = rxn.getBaseMolecule(i);
 
       nodes_ids.expand(i + 1);
       nodes_ids[i].clear_resize(mol.vertexEnd());
@@ -448,7 +448,7 @@ void ReactionCdxmlSaver::_generateCdxmlObjIds (Reaction &rxn, Array<int> &reacta
    return;
 }
 
-void ReactionCdxmlSaver::_addTitle (Reaction &rxn, MoleculeCdxmlSaver &molsaver)
+void ReactionCdxmlSaver::_addTitle (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver)
 {
    Vec2f p(0, 0);
    PropertiesMap attrs;
@@ -461,7 +461,7 @@ void ReactionCdxmlSaver::_addTitle (Reaction &rxn, MoleculeCdxmlSaver &molsaver)
       for (auto i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
       {
          Vec2f min, max;
-         _getBounds (rxn.getMolecule(i), min, max, 1.0);
+         _getBounds (rxn.getBaseMolecule(i), min, max, 1.0);
          if (i == rxn.reactantBegin())
          {
             rmin = min; 
@@ -482,7 +482,7 @@ void ReactionCdxmlSaver::_addTitle (Reaction &rxn, MoleculeCdxmlSaver &molsaver)
       for (auto i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
       {
          Vec2f min, max;
-         _getBounds (rxn.getMolecule(i), min, max, 1.0);
+         _getBounds (rxn.getBaseMolecule(i), min, max, 1.0);
          if (i == rxn.productBegin())
          {
             pmin = min; 
