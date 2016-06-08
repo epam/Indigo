@@ -76,6 +76,10 @@ public interface IndigoLib extends Library
    int indigoSaveCmlToFile (int object, String filename);
    Pointer indigoCml (int object);
 
+   int indigoSaveCdxml (int object, int output);
+   int indigoSaveCdxmlToFile (int object, String filename);
+   Pointer indigoCdxml (int object);
+
    int indigoSaveMDLCT (int item, int output);
 
    int indigoLoadReaction  (int source);

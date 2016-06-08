@@ -190,6 +190,43 @@ void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
    color->SetAttribute("b", b);
 }
 
+void MoleculeCdxmlSaver::addDefaultFontTable ()
+{
+   int id = -1;
+   Array<char> name;
+   PropertiesMap attrs;
+
+   name.clear();
+   attrs.clear();
+
+   name.readString("fonttable", true);
+   startCurrentElement(id, name, attrs);
+
+   name.readString("font", true);
+   id = 3;
+   attrs.insert("charset", "iso-8859-1");
+   attrs.insert("name", "Arial");
+   addCustomElement(id, name, attrs);
+
+   attrs.clear();
+   id = 4;
+   attrs.insert("charset", "iso-8859-1");
+   attrs.insert("name", "Times New Roman");
+   addCustomElement(id, name, attrs);
+
+   endCurrentElement();
+}
+
+void MoleculeCdxmlSaver::addDefaultColorTable ()
+{
+   Array<char> color;
+   ArrayOutput color_out(color);
+   
+   color_out.printf("<color r=\"0.5\" g=\"0.5\" b=\"0.5\"/>");
+   color.push(0);
+
+   addColorTable(color.ptr());
+}
 
 void MoleculeCdxmlSaver::saveMoleculeFragment (BaseMolecule &mol, const Vec2f &offset, float structure_scale, int id, Array<int> &ids)
 {
@@ -849,6 +886,8 @@ void MoleculeCdxmlSaver::saveMolecule (BaseMolecule &mol)
 {
    Array<int> ids;
    Vec3f min_coord, max_coord;
+   ids.clear();
+
    if (mol.have_xyz)
    {
       for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
@@ -874,6 +913,8 @@ void MoleculeCdxmlSaver::saveMolecule (BaseMolecule &mol)
    }
 
    beginDocument(NULL);
+   addDefaultFontTable();
+   addDefaultColorTable();
    beginPage(NULL);
 
    Vec2f offset(-min_coord.x, -max_coord.y);

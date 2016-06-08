@@ -111,6 +111,20 @@ namespace com.epam.indigo
             dispatcher.checkResult(_indigo_lib.indigoFree(s));
         }
 
+        public String cdxml()
+        {
+            dispatcher.setSessionID();
+            return new String(dispatcher.checkResult(_indigo_lib.indigoCdxml(self)));
+        }
+
+        public void saveCdxml(String filename)
+        {
+            dispatcher.setSessionID();
+            int s = dispatcher.checkResult(_indigo_lib.indigoWriteFile(filename));
+            dispatcher.checkResult(_indigo_lib.indigoSaveCdxml(self, s));
+            dispatcher.checkResult(_indigo_lib.indigoFree(s));
+        }
+
         public byte[] mdlct()
         {
             dispatcher.setSessionID();

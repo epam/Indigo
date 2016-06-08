@@ -96,6 +96,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       Indigo.checkResult(this, _lib.indigoSaveCmlToFile(self, filename));
    }
 
+   public String cdxml ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoCdxml(self));
+   }
+
+   public void saveCdxml (String filename)
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoSaveCdxmlToFile(self, filename));
+   }
+
    public byte[] mdlct ()
    {
       dispatcher.setSessionID();

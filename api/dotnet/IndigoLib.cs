@@ -49,6 +49,9 @@ namespace com.epam.indigo
         int indigoSaveCml(int molecule, int output);
         int indigoSaveCmlToFile(int molecule, string filename);
         sbyte* indigoCml(int molecule);
+        int indigoSaveCdxml(int molecule, int output);
+        int indigoSaveCdxmlToFile(int molecule, string filename);
+        sbyte* indigoCdxml(int molecule);
         int indigoSaveMDLCT(int item, int output);
 
         int indigoCreateSaver(int output, string format);

@@ -182,6 +182,11 @@ CEXPORT int indigoSaveCml (int object, int output);
 CEXPORT int indigoSaveCmlToFile (int object, const char *filename);
 CEXPORT const char * indigoCml (int object);
 
+// accepts molecules and reactions 
+CEXPORT int indigoSaveCdxml (int object, int output);
+CEXPORT int indigoSaveCdxmlToFile (int object, const char *filename);
+CEXPORT const char * indigoCdxml (int object);
+
 // the output must be a file or a buffer, but not a string
 // (because MDLCT data usually contains zeroes)
 CEXPORT int indigoSaveMDLCT (int item, int output);

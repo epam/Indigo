@@ -63,6 +63,9 @@ public:
    float pageHeight () const;
    float textLineHeight () const;
 
+   void addDefaultFontTable ();
+   void addDefaultColorTable ();
+
    DECL_ERROR;
 
 private:

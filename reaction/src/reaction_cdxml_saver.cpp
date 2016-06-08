@@ -85,8 +85,8 @@ void ReactionCdxmlSaver::saveReaction (BaseReaction &rxn)
    _generateCdxmlObjIds(rxn, reactants_ids, products_ids, nodes_ids, arrow_id);
    
    molsaver.beginDocument(NULL);
-   _addDefaultFontTable(molsaver);
-   _addDefaultColorTable(molsaver);
+   molsaver.addDefaultFontTable();
+   molsaver.addDefaultColorTable();
    molsaver.beginPage(NULL);
 
    Vec2f offset(0, 0);
@@ -128,44 +128,6 @@ void ReactionCdxmlSaver::saveReaction (BaseReaction &rxn)
 
    molsaver.endPage();
    molsaver.endDocument();
-}
-
-void ReactionCdxmlSaver::_addDefaultFontTable (MoleculeCdxmlSaver &molsaver)
-{
-   int id = -1;
-   Array<char> name;
-   PropertiesMap attrs;
-
-   name.clear();
-   attrs.clear();
-
-   name.readString("fonttable", true);
-   molsaver.startCurrentElement(id, name, attrs);
-
-   name.readString("font", true);
-   id = 3;
-   attrs.insert("charset", "iso-8859-1");
-   attrs.insert("name", "Arial");
-   molsaver.addCustomElement(id, name, attrs);
-
-   attrs.clear();
-   id = 4;
-   attrs.insert("charset", "iso-8859-1");
-   attrs.insert("name", "Times New Roman");
-   molsaver.addCustomElement(id, name, attrs);
-
-   molsaver.endCurrentElement();
-}
-
-void ReactionCdxmlSaver::_addDefaultColorTable (MoleculeCdxmlSaver &molsaver)
-{
-   Array<char> color;
-   ArrayOutput color_out(color);
-   
-   color_out.printf("<color r=\"0.5\" g=\"0.5\" b=\"0.5\"/>");
-   color.push(0);
-
-   molsaver.addColorTable(color.ptr());
 }
 
 void ReactionCdxmlSaver::_addPlusses (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver)
@@ -326,13 +288,9 @@ void ReactionCdxmlSaver::_addStep (BaseReaction &rxn, MoleculeCdxmlSaver &molsav
    int id = -1;
    Array<char> name;
    PropertiesMap attrs;
-   Array<int> raam;
-   Array<int> paam;
 
    name.clear();
    attrs.clear();
-   raam.clear();
-   paam.clear();
 
    name.readString("step", true);
 

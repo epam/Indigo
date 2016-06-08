@@ -42,8 +42,6 @@ protected:
 private:
    ReactionCdxmlSaver (const ReactionCdxmlSaver &); // no implicit copy
 
-   void _addDefaultFontTable (MoleculeCdxmlSaver &molsaver);
-   void _addDefaultColorTable (MoleculeCdxmlSaver &molsaver);
    void _addPlusses (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver);
    void _addArrow (BaseReaction &rxn, MoleculeCdxmlSaver &molsaver, int arrow_id);
    void _addScheme (MoleculeCdxmlSaver &molsaver);
