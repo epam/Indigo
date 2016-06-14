@@ -183,7 +183,8 @@ void ReactionCdxmlSaver::_addArrow (BaseReaction &rxn, MoleculeCdxmlSaver &molsa
    PropertiesMap attrs;
    attrs.clear();
 
-   Vec2f rmin, rmax;
+   Vec2f rmin(0,0);
+   Vec2f rmax(0,0);
 
    if (rxn.reactantsCount() > 0)
    {
@@ -203,10 +204,9 @@ void ReactionCdxmlSaver::_addArrow (BaseReaction &rxn, MoleculeCdxmlSaver &molsa
          }
       }
    }
-   else
-      return;
 
-   Vec2f pmin, pmax;
+   Vec2f pmin(0,0);
+   Vec2f pmax(0,0);
 
    if (rxn.productsCount() > 0)
    {
@@ -226,29 +226,46 @@ void ReactionCdxmlSaver::_addArrow (BaseReaction &rxn, MoleculeCdxmlSaver &molsa
          }
       }
    }
-   else
+
+   if (rxn.reactantsCount() == 0 && rxn.productsCount() == 0)
       return;
-
-   if ((pmin.x - rmax.x) > 0)
+   else if (rxn.productsCount() == 0)
    {
-      p2.x = (rmax.x + pmin.x)/2 - (pmin.x - rmax.x)/4;
+      p2.x = rmax.x + 1.0;
       p2.y = (rmin.y + rmax.y)/2;
+      p1.x = p2.x + 1.0;
+      p1.y = p2.y;
+   }
+   else if (rxn.reactantsCount() == 0)
+   {
+      p1.x = pmin.x - 1.0;
+      p1.y = (pmin.y + pmax.y)/2;
+      p2.x = p1.x - 1.0;
+      p2.y = p1.y;
    }
    else
    {
-      p2.x = (rmax.x + pmin.x)/2 - 1.0;
-      p2.y = (rmin.y + rmax.y)/2;
-   }
-
-   if ((pmin.x - rmax.x) > 0)
-   {
-      p1.x = (rmax.x + pmin.x)/2 + (pmin.x - rmax.x)/4;
-      p1.y = (pmin.y + pmax.y)/2;
-   }
-   else
-   {
-      p1.x = (rmax.x + pmin.x)/2 + 1.0;
-      p1.y = (pmin.y + pmax.y)/2;
+      if ((pmin.x - rmax.x) > 0)
+      {
+         p2.x = (rmax.x + pmin.x)/2 - (pmin.x - rmax.x)/4;
+         p2.y = (rmin.y + rmax.y)/2;
+      }
+      else
+      {
+         p2.x = (rmax.x + pmin.x)/2 - 1.0;
+         p2.y = (rmin.y + rmax.y)/2;
+      }
+   
+      if ((pmin.x - rmax.x) > 0)
+      {
+         p1.x = (rmax.x + pmin.x)/2 + (pmin.x - rmax.x)/4;
+         p1.y = (pmin.y + pmax.y)/2;
+      }
+      else
+      {
+         p1.x = (rmax.x + pmin.x)/2 + 1.0;
+         p1.y = (pmin.y + pmax.y)/2;
+      }
    }
 
    Array<char> buf;
@@ -301,9 +318,12 @@ void ReactionCdxmlSaver::_addStep (BaseReaction &rxn, MoleculeCdxmlSaver &molsav
       if (reactants_ids[i] > 0)
          buf_out.printf("%d ", reactants_ids[i]);
    }
-   buf.pop();
-   buf.push(0);
-   attrs.insert("ReactionStepReactants", buf.ptr());
+   if (buf.size() > 1)
+   {
+      buf.pop();
+      buf.push(0);
+      attrs.insert("ReactionStepReactants", buf.ptr());
+   }
 
    buf.clear();
    for (auto i = 0; i < products_ids.size(); i++)
@@ -311,9 +331,12 @@ void ReactionCdxmlSaver::_addStep (BaseReaction &rxn, MoleculeCdxmlSaver &molsav
       if (products_ids[i] > 0)
          buf_out.printf("%d ", products_ids[i]);
    }
-   buf.pop();
-   buf.push(0);
-   attrs.insert("ReactionStepProducts", buf.ptr());
+   if (buf.size() > 1)
+   {
+      buf.pop();
+      buf.push(0);
+      attrs.insert("ReactionStepProducts", buf.ptr());
+   }
 
    buf.clear();
    buf_out.printf("%d", arrow_id);
