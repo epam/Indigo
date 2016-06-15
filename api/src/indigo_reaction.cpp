@@ -134,25 +134,6 @@ idx(index)
 {
 }
 
-//static void output_props(PropertiesMap &props) {
-//   printf("\t");
-//   for (auto prop : props.elements()) {
-//      printf("%s = %s; ", props.key(prop), props.value(prop));
-//   }
-//   printf("\n");
-//}
-//
-//static void output_monos(MonomersProperties &monos) {
-//   for (auto i = 0; i < monos.size(); i++) {
-//      printf("[%d]: ", i);
-//      PropertiesMap &props = monos[i];
-//      for (auto prop : props.elements()) {
-//         printf("%s = %s; ", props.key(prop), props.value(prop));
-//      }
-//      printf("\n");
-//   }
-//}
-
 IndigoReactionMolecule::IndigoReactionMolecule (BaseReaction &reaction, MonomersProperties &map, int index) :
 IndigoObject(REACTION_MOLECULE),
 rxn(reaction),
