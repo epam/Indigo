@@ -36,6 +36,7 @@ struct RefinementState
    void stretchBranch (const Filter &branch, const RefinementState &state, int v1, int v2, int d);
    void rotateLayout  (const RefinementState &state, int v_idx, float angle);
    bool is_small_cycle();
+   float calc_best_angle();
 
    float dist;
    double energy;

@@ -238,3 +238,67 @@ bool RefinementState::is_small_cycle() {
     return answ;
 }
 
+float RefinementState::calc_best_angle() {
+    QS_DEF(Array<int>, convex_hull);
+    QS_DEF(Array<bool>, take);
+    convex_hull.resize(_graph.vertexEnd() + 1);
+    take.resize(_graph.vertexEnd());
+    take.zerofill();
+
+    int index = 0;
+
+    int first = _graph.vertexBegin();
+    for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v))
+        if (layout[v].y < layout[first].y ||
+            (layout[v].y == layout[first].y && layout[v].x < layout[first].x)) first = v;
+
+    convex_hull[index++] = first;
+    take[first] = true;
+
+    while (true) {
+        int next = -1;
+        float bestcross = 0;
+        for (int v = _graph.vertexBegin(); v != _graph.vertexEnd(); v = _graph.vertexNext(v))  if (v != convex_hull[index - 1]) {
+            if (next < 0 ||
+                Vec2f::cross(layout[v] - layout[convex_hull[index - 1]], layout[next] - layout[convex_hull[index - 1]]) > 0 ||
+                (Vec2f::cross(layout[v] - layout[convex_hull[index - 1]], layout[next] - layout[convex_hull[index - 1]]) == 0 &&
+                Vec2f::distSqr(layout[convex_hull[index - 1]], layout[v]) > Vec2f::distSqr(layout[convex_hull[index - 1]], layout[next])))
+                next = v;
+        }
+        if (next >= 0 && next != first) {
+            convex_hull[index++] = next;
+            take[next] = true;
+        }
+        else {
+            convex_hull[index] = next;
+            break;
+        }
+    }
+
+    int base = 0;
+    int oppsite = 1;
+    float high = -1;
+    int best_base = 0;
+    do {
+        Vec2f vec = layout[convex_hull[base + 1]] - layout[convex_hull[base]];
+        float A = vec.y;
+        float B = -vec.x;
+        float C = Vec2f::cross(layout[convex_hull[base + 1]], layout[convex_hull[base]]);
+        float len = sqrt(A * A + B * B);
+        A /= len;
+        B /= len;
+        C /= len;
+
+        while (fabs(A * layout[convex_hull[oppsite + 1]].x + B * layout[convex_hull[oppsite + 1]].y + C) >
+            fabs(A * layout[convex_hull[oppsite]].x + B * layout[convex_hull[oppsite]].y + C)) oppsite = (oppsite + 1) % index;
+
+        if (high < 0 || fabs(A * layout[convex_hull[oppsite]].x + B * layout[convex_hull[oppsite]].y + C) < high) {
+            best_base = base;
+            high = fabs(A * layout[convex_hull[oppsite]].x + B * layout[convex_hull[oppsite]].y + C);
+        }
+        base++;
+    } while (base != index - 1);
+
+    Vec2f vec = layout[convex_hull[best_base + 1]] - layout[convex_hull[best_base]];
+    return -atan2(vec.y, vec.x);
+}
