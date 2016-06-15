@@ -53,6 +53,8 @@ namespace indigo
    class MolfileSaver;
    class RxnfileSaver;
    class PropertiesMap;
+   
+   typedef ObjArray<PropertiesMap> MonomersProperties;
 }
 extern DLLEXPORT OptionManager & indigoGetOptionManager ();
 
@@ -165,7 +167,6 @@ public:
    virtual QueryReaction & getQueryReaction ();
    virtual Reaction & getReaction ();
 
-   
    virtual IndigoObject * clone ();
 
    virtual const char * getName ();
@@ -181,8 +182,9 @@ public:
 //   virtual RedBlackStringObjMap< Array<char> > * getProperties();
 //   void copyProperties (RedBlackStringObjMap< Array<char> > &other);
    virtual PropertiesMap& getProperties();
+   virtual MonomersProperties& getMonomersProperties();
    virtual void copyProperties(PropertiesMap&);
-   virtual void copyProperties (RedBlackStringObjMap< Array<char> > &other);
+   virtual void copyProperties(RedBlackStringObjMap< Array<char> > &other);
 
 protected:
    AutoPtr< Array<char> > _dbg_info; // allocated by debugInfo() on demand

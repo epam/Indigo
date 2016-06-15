@@ -134,6 +134,33 @@ idx(index)
 {
 }
 
+//static void output_props(PropertiesMap &props) {
+//   printf("\t");
+//   for (auto prop : props.elements()) {
+//      printf("%s = %s; ", props.key(prop), props.value(prop));
+//   }
+//   printf("\n");
+//}
+//
+//static void output_monos(MonomersProperties &monos) {
+//   for (auto i = 0; i < monos.size(); i++) {
+//      printf("[%d]: ", i);
+//      PropertiesMap &props = monos[i];
+//      for (auto prop : props.elements()) {
+//         printf("%s = %s; ", props.key(prop), props.value(prop));
+//      }
+//      printf("\n");
+//   }
+//}
+
+IndigoReactionMolecule::IndigoReactionMolecule (BaseReaction &reaction, MonomersProperties &map, int index) :
+IndigoObject(REACTION_MOLECULE),
+rxn(reaction),
+idx(index)
+{
+   _properties.copy(map.at(index));
+}
+
 const char * IndigoReactionMolecule::debugInfo ()
 {
    return "<reaction molecule>";
@@ -180,9 +207,10 @@ void IndigoReactionMolecule::remove ()
 // IndigoReactionIter
 //
 
-IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, int subtype) :
+IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, MonomersProperties &map, int subtype) :
 IndigoObject(REACTION_ITER),
-_rxn(rxn)
+_rxn(rxn),
+_map(map)
 {
    _subtype = subtype;
    _idx = -1;
@@ -245,7 +273,7 @@ IndigoObject * IndigoReactionIter::next ()
    if (_idx == _end())
       return 0;
 
-   return new IndigoReactionMolecule(_rxn, _idx);
+   return new IndigoReactionMolecule(_rxn, _map, _idx);
 }
 
 bool IndigoReactionIter::hasNext ()
@@ -264,6 +292,11 @@ IndigoReaction * IndigoReaction::cloneFrom (IndigoObject & obj)
    rxnptr.reset(new IndigoReaction());
    rxnptr->rxn.clone(rxn, 0, 0, 0);
 
+   MonomersProperties &mprops = obj.getMonomersProperties();
+   for (auto i = 0; i < mprops.size(); i++) {
+      rxnptr->_monomersProperties.push().copy(mprops[i]);
+   }
+   
    auto& props = obj.getProperties();
    rxnptr->copyProperties(props);
    return rxnptr.release();
@@ -276,6 +309,11 @@ IndigoQueryReaction * IndigoQueryReaction::cloneFrom (IndigoObject & obj)
    AutoPtr<IndigoQueryReaction> rxnptr;
    rxnptr.reset(new IndigoQueryReaction());
    rxnptr->rxn.clone(rxn, 0, 0, 0);
+
+   MonomersProperties &mprops = obj.getMonomersProperties();
+   for (auto i = 0; i < mprops.size(); i++) {
+      rxnptr->_monomersProperties.push().copy(mprops[i]);
+   }
 
    auto& props = obj.getProperties();
    rxnptr->copyProperties(props);
@@ -296,9 +334,11 @@ int _indigoIterateReaction (int reaction, int subtype)
 {
    INDIGO_BEGIN
    {
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+      IndigoObject *obj = self.getObject(reaction).clone();
+      BaseReaction &rxn = obj->getBaseReaction();
+      MonomersProperties &map = obj->getMonomersProperties();
 
-      return self.addObject(new IndigoReactionIter(rxn, subtype));
+      return self.addObject(new IndigoReactionIter(rxn, map, subtype));
    }
    INDIGO_END(-1)
 }
@@ -461,9 +501,11 @@ CEXPORT int indigoGetMolecule (int reaction, int index)
 {
    INDIGO_BEGIN
    {
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+      IndigoObject &obj = self.getObject(reaction);
+      BaseReaction &rxn = obj.getBaseReaction();
+      MonomersProperties &map = obj.getMonomersProperties();
 
-      return self.addObject(new IndigoReactionMolecule(rxn, index));
+      return self.addObject(new IndigoReactionMolecule(rxn, map, index));
    }
    INDIGO_END(-1)
 }

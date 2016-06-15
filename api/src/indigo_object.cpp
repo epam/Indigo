@@ -103,6 +103,11 @@ PropertiesMap& IndigoObject::getProperties()
    throw IndigoError("%s can not have properties", debugInfo());
 }
 
+MonomersProperties& IndigoObject::getMonomersProperties()
+{
+   throw IndigoError("%s can not have monomers properties", debugInfo());
+}
+
 Reaction & IndigoObject::getReaction ()
 {
    throw IndigoError("%s is not a reaction", debugInfo());

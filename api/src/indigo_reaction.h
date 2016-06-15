@@ -33,11 +33,13 @@ public:
    virtual ~IndigoBaseReaction ();
 
    virtual indigo::PropertiesMap& getProperties() { return _properties;}
+   virtual MonomersProperties& getMonomersProperties() { return _monomersProperties; };
 
    static bool is (IndigoObject &obj);
 
    virtual const char * debugInfo ();
 
+   MonomersProperties _monomersProperties;
    indigo::PropertiesMap _properties;
 };
 
@@ -56,7 +58,7 @@ public:
    static IndigoReaction * cloneFrom (IndigoObject & obj);
 
    virtual const char * debugInfo ();
-
+   
    Reaction rxn;
 };
 
@@ -84,6 +86,7 @@ class IndigoReactionMolecule : public IndigoObject
 {
 public:
    IndigoReactionMolecule (BaseReaction &reaction, int index);
+   IndigoReactionMolecule (BaseReaction &reaction, MonomersProperties &map, int index);
    virtual ~IndigoReactionMolecule ();
 
    virtual BaseMolecule & getBaseMolecule ();
@@ -92,7 +95,7 @@ public:
    virtual int getIndex ();
    virtual IndigoObject * clone ();
    virtual void remove ();
-   virtual indigo::PropertiesMap& getProperties() { return _properties;}
+   virtual indigo::PropertiesMap& getProperties() { return _properties; }
 
    virtual const char * debugInfo ();
 
@@ -112,7 +115,7 @@ public:
       MOLECULES
    };
 
-   IndigoReactionIter (BaseReaction &rxn, int subtype);
+   IndigoReactionIter (BaseReaction &rxn, MonomersProperties &map, int subtype);
    virtual ~IndigoReactionIter ();
 
    virtual IndigoObject * next ();
@@ -128,6 +131,7 @@ protected:
 
    int _subtype;
    BaseReaction &_rxn;
+   MonomersProperties &_map;
    int _idx;
 };
 

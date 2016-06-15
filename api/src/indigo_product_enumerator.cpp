@@ -32,31 +32,45 @@
 #include "reaction/reaction_transformation.h"
 #include "base_cpp/properties_map.h"
 #include "indigo_mapping.h"
+#include "indigo_molecule.h"
+
+CEXPORT const char * cano (Molecule &mol)
+{
+   INDIGO_BEGIN
+   {
+      AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
+      molptr->mol.clone_KeepIndices(mol);
+      return indigoCanonicalSmiles(self.addObject(molptr.release()));
+   }
+   INDIGO_END("<err>");
+}
 
 struct ProductEnumeratorCallbackData 
 {
    ReactionProductEnumerator *rpe;
    ObjArray<Reaction> *out_reactions;
+   ObjArray<Array<int>> *out_indices;
 };
 
 static void product_proc( Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, void *userdata )
 {
    ProductEnumeratorCallbackData *rpe_data = (ProductEnumeratorCallbackData *)userdata;
 
-   Reaction &reaction = rpe_data->out_reactions->push();
-
    QS_DEF(Molecule, new_product);
    new_product.clear();
    new_product.clone(product, NULL, NULL);   
 
+   Reaction &reaction = rpe_data->out_reactions->push();
    reaction.clear();
 
    for (int i = 0; i < monomers_indices.size(); i++)
       reaction.addReactantCopy(rpe_data->rpe->getMonomer(monomers_indices[i]), NULL, NULL);
 
    reaction.addProductCopy(new_product, NULL, NULL);
-
    reaction.name.copy(product.name);
+   
+   Array<int> &indices = rpe_data->out_indices->push();
+   indices.copy(monomers_indices);
 }
 
 CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
@@ -71,26 +85,27 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
       ReactionProductEnumerator rpe(query_rxn);
       rpe.arom_options = self.arom_options;
 
-      ObjArray<Reaction> out_reactions;
-
       if (monomers_object.objects.size() < query_rxn.reactantsCount())
          throw IndigoError("Too small monomers array");
 
-      int user_reactant_idx = 0;
+      ObjArray<PropertiesMap> monomers_properties;
       for (int i = query_rxn.reactantBegin();
                i != query_rxn.reactantEnd();
                i = query_rxn.reactantNext(i))
       {
          IndigoArray &reactant_monomers_object = IndigoArray::cast(*monomers_object.objects[i]);
-         
-         for (int j = 0; j < reactant_monomers_object.objects.size(); j++)
+
+         auto size = reactant_monomers_object.objects.size();
+         for (int j = 0; j < size; j++)
          {
-            Molecule &monomer = reactant_monomers_object.objects[j]->getMolecule();
+            IndigoObject &object = *reactant_monomers_object.objects[j];
+            monomers_properties.push().copy(object.getProperties());
+            
+            Molecule &monomer = object.getMolecule();
+            rpe.addMonomer(i, monomer);
             if (monomer.have_xyz)
                has_coord = true;
-            rpe.addMonomer(i, monomer);
          }
-         user_reactant_idx++;
       }
 
       rpe.is_multistep_reaction = self.rpe_params.is_multistep_reactions;
@@ -101,8 +116,12 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
 
       rpe.product_proc = product_proc;
 
+      ObjArray<Reaction> out_reactions;
+      ObjArray<Array<int>> out_indices_all;
+      
       ProductEnumeratorCallbackData rpe_data;
       rpe_data.out_reactions = &out_reactions;
+      rpe_data.out_indices = &out_indices_all;
       rpe_data.rpe = &rpe;
       rpe.userdata = &rpe_data;
 
@@ -110,17 +129,24 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
 
       int out_array = indigoCreateArray();
 
-      for (int i = 0; i < out_reactions.size(); i++)
+      for (int k = 0; k < out_reactions.size(); k++)
       {
+         Reaction& out_reaction = out_reactions[k];
          if (has_coord && self.rpe_params.is_layout)
          {
-            ReactionLayout layout(out_reactions[i], self.smart_layout);
+            ReactionLayout layout(out_reaction, self.smart_layout);
             layout.make();
-            out_reactions[i].markStereocenterBonds();
+            out_reaction.markStereocenterBonds();
          }
 
          QS_DEF(IndigoReaction, indigo_rxn);
-         indigo_rxn.rxn.clone(out_reactions[i], NULL, NULL, NULL);
+         indigo_rxn._monomersProperties.clear();
+         indigo_rxn.rxn.clone(out_reaction, NULL, NULL, NULL);
+
+         Array<int>& out_indices = out_indices_all[k];
+         for (auto m = 0; m < out_indices.size(); m++) {
+            indigo_rxn._monomersProperties.push().copy(monomers_properties[out_indices[m]]);
+         }
 
          indigoArrayAdd(out_array, self.addObject(indigo_rxn.clone()));
       }
