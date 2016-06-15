@@ -34,17 +34,6 @@
 #include "indigo_mapping.h"
 #include "indigo_molecule.h"
 
-CEXPORT const char * cano (Molecule &mol)
-{
-   INDIGO_BEGIN
-   {
-      AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
-      molptr->mol.clone_KeepIndices(mol);
-      return indigoCanonicalSmiles(self.addObject(molptr.release()));
-   }
-   INDIGO_END("<err>");
-}
-
 struct ProductEnumeratorCallbackData 
 {
    ReactionProductEnumerator *rpe;
