@@ -49,6 +49,7 @@ public:
    virtual Molecule & getMolecule ();
    virtual QueryMolecule & getQueryMolecule ();
 
+   virtual MonomersProperties & getMonomersProperties ();
    virtual BaseReaction & getBaseReaction ();
    virtual Reaction & getReaction ();
 

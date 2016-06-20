@@ -139,7 +139,9 @@ IndigoObject(REACTION_MOLECULE),
 rxn(reaction),
 idx(index)
 {
-   _properties.copy(map.at(index));
+   if (index < map.size()) {
+      _properties.copy(map.at(index));
+   }
 }
 
 const char * IndigoReactionMolecule::debugInfo ()
@@ -315,9 +317,9 @@ int _indigoIterateReaction (int reaction, int subtype)
 {
    INDIGO_BEGIN
    {
-      IndigoObject *obj = self.getObject(reaction).clone();
-      BaseReaction &rxn = obj->getBaseReaction();
-      MonomersProperties &map = obj->getMonomersProperties();
+      IndigoObject &obj = self.getObject(reaction);
+      BaseReaction &rxn = obj.getBaseReaction();
+      MonomersProperties &map = obj.getMonomersProperties();
 
       return self.addObject(new IndigoReactionIter(rxn, map, subtype));
    }
