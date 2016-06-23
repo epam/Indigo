@@ -116,6 +116,7 @@ public:
    };
 
    IndigoReactionIter (BaseReaction &rxn, MonomersProperties &map, int subtype);
+   IndigoReactionIter (BaseReaction &rxn, int subtype);
    virtual ~IndigoReactionIter ();
 
    virtual IndigoObject * next ();
@@ -131,7 +132,7 @@ protected:
 
    int _subtype;
    BaseReaction &_rxn;
-   MonomersProperties &_map;
+   MonomersProperties *_map;
    int _idx;
 };
 
