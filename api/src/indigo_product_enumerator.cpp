@@ -132,9 +132,14 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
          indigo_rxn._monomersProperties.clear();
          indigo_rxn.rxn.clone(out_reaction, NULL, NULL, NULL);
 
+         int properties_count = monomers_properties.size();
          Array<int>& out_indices = out_indices_all[k];
          for (auto m = 0; m < out_indices.size(); m++) {
-            indigo_rxn._monomersProperties.push().copy(monomers_properties[out_indices[m]]);
+            int index = out_indices[m];
+            if (index < properties_count) {
+               PropertiesMap &properties = monomers_properties[index];
+               indigo_rxn._monomersProperties.push().copy(properties);
+            }
          }
 
          indigoArrayAdd(out_array, self.addObject(indigo_rxn.clone()));
