@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -32,10 +32,10 @@ public:
    void *context;
 
    bool (*cb_check_vertex)(Graph &graph, int v_idx, void *context);
-   bool (*cb_check_edge)(Graph &graph, int e_idx, void *context);
-   bool (*cb_handle_path)(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
+   bool(*cb_check_edge)(Graph &graph, int e_idx, void *context);
+   bool(*cb_handle_path)(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
-   void process ();
+   void process();
 
    DECL_TIMEOUT_EXCEPTION;
 protected:

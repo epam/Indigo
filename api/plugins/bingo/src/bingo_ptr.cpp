@@ -88,7 +88,7 @@ void BingoAllocator::_load (const char *filename, size_t alloc_off, ObjArray<MMF
    inst->_filename.assign(filename);
    inst->_index_id = index_id;
 
-   for (int i = 1; i < allocator_data->_cur_file_id + 1; i++)
+   for (int i = 1; i < (int)allocator_data->_cur_file_id + 1; i++)
    {
       _genFilename(i, inst->_filename.c_str(), name);
 
@@ -116,9 +116,9 @@ BingoAllocator *BingoAllocator::_getInstance ()
 
 byte * BingoAllocator::_get (size_t file_id, size_t offset)
 {
-   byte * mmf_ptr = (byte *)_mm_files->at(0).ptr();
+   //byte * mmf_ptr = (byte *)_mm_files->at(0).ptr();
 
-   _BingoAllocatorData *allocator_data = (_BingoAllocatorData *)(mmf_ptr + _data_offset);
+   //_BingoAllocatorData *allocator_data = (_BingoAllocatorData *)(mmf_ptr + _data_offset);
    
    byte * file_ptr = (byte *)_mm_files->at((int)file_id).ptr();
 
@@ -134,7 +134,7 @@ size_t BingoAllocator::_getFileSize(size_t idx, size_t min_size, size_t max_size
 {
    int incr_f_count = (int)log(max_size / min_size);
    int i;
-   int bit_cnt = 0;
+   size_t bit_cnt = 0;
 
    for (i = 0; i < incr_f_count; i++)
    {
@@ -149,7 +149,7 @@ size_t BingoAllocator::_getFileSize(size_t idx, size_t min_size, size_t max_size
    return file_size;
 }
 
-void BingoAllocator::_addFile (int alloc_size)
+void BingoAllocator::_addFile (size_t alloc_size)
 {
    byte * mmf_ptr = (byte *)_mm_files->at(0).ptr();
 

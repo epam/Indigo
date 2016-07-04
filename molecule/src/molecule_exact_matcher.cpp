@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -286,7 +286,13 @@ bool MoleculeExactMatcher::matchAtoms (BaseMolecule& query, BaseMolecule& target
       if (strcmp(query.getPseudoAtom(sub_idx), target.getPseudoAtom(super_idx)) != 0)
          return false;
    }
-   else if (!query.isPseudoAtom(sub_idx) && !target.isPseudoAtom(super_idx))
+   else if (query.isTemplateAtom(sub_idx) && target.isTemplateAtom(super_idx))
+   {
+      if (strcmp(query.getTemplateAtom(sub_idx), target.getTemplateAtom(super_idx)) != 0)
+         return false;
+   }
+   else if (!query.isPseudoAtom(sub_idx) && !target.isPseudoAtom(super_idx) &&
+            !query.isTemplateAtom(sub_idx) && !target.isTemplateAtom(super_idx))
    {
       if (query.getAtomNumber(sub_idx) != target.getAtomNumber(super_idx))
          return false;
@@ -311,7 +317,7 @@ bool MoleculeExactMatcher::matchAtoms (BaseMolecule& query, BaseMolecule& target
       if (qcharge != tcharge)
          return false;
 
-      if (!query.isPseudoAtom(sub_idx))
+      if (!query.isPseudoAtom(sub_idx) && !query.isTemplateAtom(sub_idx))
       {
          if (!query.isQueryMolecule() && !target.isQueryMolecule())
          {

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -732,33 +732,53 @@ void CmfLoader::loadMolecule (Molecule &mol)
 
 void CmfLoader::_readSGroup (int code, Molecule &mol)
 {
+   int idx = -1;
    if (code == CMF_DATASGROUP)
    {
-      int idx = mol.data_sgroups.add();
-      BaseMolecule::DataSGroup &s = mol.data_sgroups[idx];
+      idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+      DataSGroup &s = (DataSGroup &)mol.sgroups.getSGroup(idx);
       _readGeneralSGroup(s);
 
       _readString(s.description);
+      _readString(s.name);
+      _readString(s.type);
+      _readString(s.querycode);
+      _readString(s.queryoper);
       _readString(s.data);
       byte bits = _scanner->readByte();
       s.dasp_pos = bits & 0x0F;
       s.detached = (bits & (1 << 4)) != 0;
       s.relative = (bits & (1 << 5)) != 0;
       s.display_units = (bits & (1 << 6)) != 0;
+      s.num_chars = (int)_scanner->readPackedUInt();
+      s.tag = _scanner->readChar();
    }
    else if (code == CMF_SUPERATOM)
    {
-      int idx = mol.superatoms.add();
-      BaseMolecule::Superatom &s = mol.superatoms[idx];
+      idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
+      Superatom &s = (Superatom &)mol.sgroups.getSGroup(idx);
       _readGeneralSGroup(s);
+
       _readString(s.subscript);
-      s.bond_idx = (int)_scanner->readPackedUInt() - 1;
+      _readString(s.sa_class);
+      byte bits = _scanner->readByte();
+      s.contracted = bits & 0x01;
+      int bcons = bits >> 1;
+      if (bcons > 0)
+      {
+         s.bond_connections.resize(bcons);
+         for (int j = 0; j < bcons; j++)
+         {
+            s.bond_connections[j].bond_idx = (int)_scanner->readPackedUInt() - 1;
+         }
+      }
    }
    else if (code == CMF_REPEATINGUNIT)
    {
-      int idx = mol.repeating_units.add();
-      BaseMolecule::RepeatingUnit &s = mol.repeating_units[idx];
+      idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_SRU);
+      RepeatingUnit &s = (RepeatingUnit &)mol.sgroups.getSGroup(idx);
       _readGeneralSGroup(s);
+
       if (version >= 2)
          _readString(s.subscript);
       else
@@ -768,21 +788,23 @@ void CmfLoader::_readSGroup (int code, Molecule &mol)
    }
    else if (code == CMF_MULTIPLEGROUP)
    {
-      int idx = mol.multiple_groups.add();
-      BaseMolecule::MultipleGroup &s = mol.multiple_groups[idx];
+      idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_MUL);
+      MultipleGroup &s = (MultipleGroup &)mol.sgroups.getSGroup(idx);
       _readGeneralSGroup(s);
+
       _readUIntArray(s.parent_atoms);
       s.multiplier = _scanner->readPackedUInt();
    }
    else if (code == CMF_GENERICSGROUP)
    {
-      int idx = mol.generic_sgroups.add();
-      _readGeneralSGroup(mol.generic_sgroups[idx]);
+      idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+      SGroup &s = (SGroup &)mol.sgroups.getSGroup(idx);
+      _readGeneralSGroup(s);
    }
    else
       throw Error("_readExtSection: unexpected SGroup code: %d", code);
 
-   _sgroup_order.push(code);
+   _sgroup_order.push(idx);
 }
 
 float CmfLoader::_readFloatInRange (Scanner &scanner, float min, float range)
@@ -814,7 +836,7 @@ void CmfLoader::_readDir2f (Scanner &scanner, Vec2f &dir, const CmfSaver::VecRan
 }
 
 
-void CmfLoader::_readBaseSGroupXyz (Scanner &scanner, BaseMolecule::SGroup &sgroup, const CmfSaver::VecRange &range)
+void CmfLoader::_readBaseSGroupXyz (Scanner &scanner, SGroup &sgroup, const CmfSaver::VecRange &range)
 {
    int len = scanner.readPackedUInt();
    sgroup.brackets.resize(len);
@@ -825,40 +847,37 @@ void CmfLoader::_readBaseSGroupXyz (Scanner &scanner, BaseMolecule::SGroup &sgro
    }
 }
 
-void CmfLoader::_readSGroupXYZ (Scanner &scanner, int code, int idx_array[5], Molecule &mol, const CmfSaver::VecRange &range)
+void CmfLoader::_readSGroupXYZ (Scanner &scanner, int idx, Molecule &mol, const CmfSaver::VecRange &range)
 {
-   if (code == CMF_DATASGROUP)
+   SGroup &sg = mol.sgroups.getSGroup(idx);
+   int sg_type = sg.sgroup_type;
+
+   if (sg_type == SGroup::SG_TYPE_DAT)
    {
-      int idx = idx_array[0]++;
-      BaseMolecule::DataSGroup &s = mol.data_sgroups[idx];
+      DataSGroup &s = (DataSGroup &)sg;
       _readBaseSGroupXyz(scanner, s, range);
       _readVec2f(scanner, s.display_pos, range);
    }
-   else if (code == CMF_SUPERATOM)
+   else if (sg_type == SGroup::SG_TYPE_SUP)
    {
-      int idx = idx_array[1]++;
-      BaseMolecule::Superatom &s = mol.superatoms[idx];
+      Superatom &s = (Superatom &)sg;
       _readBaseSGroupXyz(scanner, s, range);
-      if (s.bond_idx != -1)
-         _readDir2f(scanner, s.bond_dir, range);
+      if (s.bond_connections.size() > 0)
+      {
+         for (int j = 0; j < s.bond_connections.size(); j++)
+         {
+            _readDir2f(scanner, s.bond_connections[j].bond_dir, range);
+         }
+      }
    }
-   else if (code == CMF_REPEATINGUNIT)
+   else if ( (sg_type == SGroup::SG_TYPE_SRU) || 
+             (sg_type == SGroup::SG_TYPE_MUL) ||
+             (sg_type == SGroup::SG_TYPE_GEN) )
    {
-      int idx = idx_array[2]++;
-      _readBaseSGroupXyz(scanner, mol.repeating_units[idx], range);
-   }
-   else if (code == CMF_MULTIPLEGROUP)
-   {
-      int idx = idx_array[3]++;
-      _readBaseSGroupXyz(scanner, mol.multiple_groups[idx], range);
-   }
-   else if (code == CMF_GENERICSGROUP)
-   {
-      int idx = idx_array[4]++;
-      _readBaseSGroupXyz(scanner, mol.generic_sgroups[idx], range);
+      _readBaseSGroupXyz(scanner, sg, range);
    }
    else
-      throw Error("_readExtSection: unexpected SGroup code: %d", code);
+      throw Error("_readExtSection: unexpected SGroup type: %d", sg_type);
 }
 
 
@@ -878,7 +897,7 @@ void CmfLoader::_readUIntArray (Array<int> &dest)
       dest[i] = _scanner->readPackedUInt();
 }
  
-void CmfLoader::_readGeneralSGroup (BaseMolecule::SGroup &sgroup)
+void CmfLoader::_readGeneralSGroup (SGroup &sgroup)
 {
    _readUIntArray(sgroup.atoms);
    _readUIntArray(sgroup.bonds);
@@ -954,9 +973,8 @@ void CmfLoader::loadXyz (Scanner &scanner)
    }
 
    // Read sgroup coordinates data
-   int idx[5] = {0};
    for (int i = 0; i < _sgroup_order.size(); i++)
-      _readSGroupXYZ(scanner, _sgroup_order[i], idx, *_mol, range);
+      _readSGroupXYZ(scanner, _sgroup_order[i], *_mol, range);
 
    _mol->have_xyz = true;
 }

@@ -8,7 +8,7 @@ using System.Collections;
 using System.IO;
 using System.Text;
 using Microsoft.Win32;
-using com.ggasoftware.indigo;
+using com.epam.indigo;
 
 namespace indigo
 {

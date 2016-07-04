@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -84,6 +84,11 @@ Molecule & IndigoArrayElement::getMolecule ()
 QueryMolecule & IndigoArrayElement::getQueryMolecule ()
 {
    return array->objects[idx]->getQueryMolecule();
+}
+
+MonomersProperties & IndigoArrayElement::getMonomersProperties ()
+{
+   return array->objects[idx]->getMonomersProperties();
 }
 
 BaseReaction & IndigoArrayElement::getBaseReaction ()

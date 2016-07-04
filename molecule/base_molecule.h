@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -22,9 +22,12 @@
 #include "molecule/molecule_cis_trans.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "base_cpp/obj_array.h"
+#include "molecule/molecule_sgroups.h"
 #include "molecule/molecule_rgroups.h"
+#include "molecule/molecule_tgroups.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_standardize.h"
+#include "molecule/molecule_ionize.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -71,7 +74,9 @@ enum
    SKIP_STEREOCENTERS = 0x02,
    SKIP_XYZ = 0x04,
    SKIP_RGROUP_FRAGMENTS = 0x08,
-   SKIP_ATTACHMENT_POINTS = 0x16
+   SKIP_ATTACHMENT_POINTS = 0x16,
+   SKIP_TGROUPS = 0x32,
+   SKIP_TEMPLATE_ATTACHMENT_POINTS = 0x64
 };
 
 class Molecule;
@@ -80,72 +85,7 @@ class QueryMolecule;
 class DLLEXPORT BaseMolecule : public Graph
 {
 public:
-   class DLLEXPORT SGroup
-   {
-   public:
-      Array<int> atoms; // represented with SAL in Molfile format
-      Array<int> bonds; // represented with SBL in Molfile format
-      Array<Vec2f[2]> brackets;
-      virtual ~SGroup ();
-   };
-
    typedef RedBlackMap<int,int> Mapping;
-   class DLLEXPORT DataSGroup : public SGroup
-   {
-   public:
-      DataSGroup ();
-      virtual ~DataSGroup ();
-
-      Array<char> description; // SDT in Molfile format
-      Array<char> data;        // SCD/SED in Molfile format
-      Vec2f       display_pos; // SDD in Molfile format
-      bool        detached;    // or attached
-      bool        relative;    // or absolute
-      bool        display_units;
-      int         dasp_pos;
-   };
-
-   class DLLEXPORT Superatom : public SGroup
-   {
-   public:
-      Superatom ();
-      virtual ~Superatom ();
-
-      Array<char> subscript; // SMT in Molfile format
-      int   bond_idx;        // bond index (-1 if absent); SBV in Molfile format
-      Vec2f bond_dir;        // bond direction
-   };
-
-   class DLLEXPORT RepeatingUnit : public SGroup
-   {
-   public:
-      enum
-      {
-         HEAD_TO_HEAD = 1,
-         HEAD_TO_TAIL,
-         EITHER
-      };
-
-      RepeatingUnit ();
-      virtual ~RepeatingUnit ();
-
-      int connectivity;
-      Array<char> subscript; // SMT in Molfile format
-   };
-
-   class DLLEXPORT MultipleGroup : public SGroup
-   {
-   public:
-      MultipleGroup ();
-      virtual ~MultipleGroup ();
-      static void collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv);
-      static void collapse (BaseMolecule& bm, int id);
-      static void collapse (BaseMolecule& bm);
-
-      Array<int> parent_atoms;
-      int multiplier;
-   };
-
 
    BaseMolecule ();
    virtual ~BaseMolecule ();
@@ -182,8 +122,21 @@ public:
    virtual bool isPseudoAtom (int idx) = 0;
    virtual const char * getPseudoAtom (int idx) = 0;
 
+   virtual bool isTemplateAtom (int idx) = 0;
+   virtual const char * getTemplateAtom (int idx) = 0;
+   virtual const int getTemplateAtomSeqid (int idx) = 0;
+   virtual const char * getTemplateAtomClass (int idx) = 0;
+   virtual const int getTemplateAtomDisplayOption (int idx) = 0;
+
    int countRSites ();
    int countSGroups ();
+
+   static void collapse (BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv);
+   static void collapse (BaseMolecule& bm, int id);
+   static void collapse (BaseMolecule& bm);
+
+   int transformSCSRtoFullCTAB ();
+   int transformFullCTABtoSCSR (ObjArray<TGroup> &templates);
 
    virtual bool  isRSite (int atom_idx) = 0;
    virtual dword getRSiteBits (int atom_idx) = 0;
@@ -193,6 +146,13 @@ public:
    int  getSingleAllowedRGroup (int atom_idx);
    int  getRSiteAttachmentPointByOrder (int idx, int order) const;
    void setRSiteAttachmentOrder (int atom_idx, int att_atom_idx, int order);
+
+   void setTemplateAtomAttachmentOrder (int atom_idx, int att_atom_idx, const char *att_id);
+
+   int getTemplateAtomAttachmentPoint (int atom_idx, int order);
+   void getTemplateAtomAttachmentPointId (int atom_idx, int order, Array<char> &apid);
+   int getTemplateAtomAttachmentPointsCount (int atom_idx);
+   int getTemplateAtomAttachmentPointById (int atom_idx, Array<char> &att_id);
 
    void addAttachmentPoint (int order, int atom_index);
    int  getAttachmentPoint (int order, int index) const;
@@ -262,15 +222,22 @@ public:
 
    bool isChrial ();
 
-   // TODO: use a single array
-   ObjPool<DataSGroup> data_sgroups;
-   ObjPool<Superatom>  superatoms;
-   ObjPool<RepeatingUnit> repeating_units;
-   ObjPool<MultipleGroup> multiple_groups;
-   ObjPool<SGroup> generic_sgroups;
+   struct TemplateAttPoint
+   {
+      int  ap_occur_idx;
+      int  ap_aidx;
+      Array<char> ap_id;
+   };
+   ObjPool<TemplateAttPoint> template_attachment_points;
+
+   MoleculeSGroups sgroups;
+
+   MoleculeTGroups tgroups;
 
    MoleculeRGroups rgroups;
-   
+
+   StringPool custom_collections;
+ 
    Array<char> name;
 
    static bool hasCoord (BaseMolecule &mol);
@@ -306,6 +273,9 @@ public:
    void removeAtom  (int idx);
    void removeBonds (const Array<int> &indices);
    void removeBond  (int idx);
+
+   void removeSGroup (int idx);
+   void removeSGroupWithBasis (int idx);
 
    void unhighlightAll ();
    void highlightAtom (int idx);
@@ -343,6 +313,7 @@ public:
    void clearSGroups();
 
    void getSGroupAtomsCenterPoint (SGroup &sgroup, Vec2f &res);
+   void getAtomsCenterPoint (Array<int> &atoms, Vec2f &res);
 
    void getAtomSymbol (int v, Array<char> &output);
 
@@ -354,6 +325,8 @@ protected:
                                    Array<int> &edge_mapping, int skip_flags);
 
    void _flipSGroupBond(SGroup &sgroup, int src_bond_idx, int new_bond_idx);
+   void _flipSuperatomBond(Superatom &sa, int src_bond_idx, int new_bond_idx);
+   void _flipTemplateAtomAttachmentPoint(int idx, int atom_from, int atom_to);
    
    virtual void _mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
            const Array<int> *edges, const Array<int> &mapping, int skip_flags) = 0;
@@ -369,10 +342,18 @@ protected:
    int _addBaseAtom ();
    int _addBaseBond (int beg, int end);
 
-   void _removeAtomsFromSGroup (SGroup &sgroup, Array<int> &indices);
+   void _removeAtomsFromSGroup (SGroup &sgroup, Array<int> &mapping);
    void _removeAtomsFromMultipleGroup (MultipleGroup &mg, Array<int> &mapping);
+   void _removeAtomsFromSuperatom (Superatom &sa, Array<int> &mapping);
+   void _removeBondsFromSGroup (SGroup &sgroup, Array<int> &mapping);
+   void _removeBondsFromSuperatom (Superatom &sa, Array<int> &mapping);
    bool _mergeSGroupWithSubmolecule (SGroup &sgroup, SGroup &super, BaseMolecule &supermol,
         Array<int> &mapping, Array<int> &edge_mapping);
+
+   void _checkSgroupHierarchy(int pidx, int oidx);
+
+   int _transformTGroupToSGroup (int idx);
+   int _addTemplate (TGroup &tgroup);
 
    Array<int> _hl_atoms;
    Array<int> _hl_bonds;

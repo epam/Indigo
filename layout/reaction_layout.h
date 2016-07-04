@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -24,7 +24,7 @@ struct Vec2f;
 
 class ReactionLayout {
 public:
-   explicit ReactionLayout (BaseReaction& r);
+   explicit ReactionLayout (BaseReaction& r, bool smart_layout=false);
 
    void make ();
 
@@ -33,6 +33,7 @@ public:
    float arrow_interval_factor;
    bool preserve_molecule_layout;
    int  max_iterations;
+   bool _smart_layout;
 
 private:
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, int id);

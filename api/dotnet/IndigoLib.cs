@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-namespace com.ggasoftware.indigo
+namespace com.epam.indigo
 {
     public unsafe interface IndigoLib
     {
@@ -49,6 +49,9 @@ namespace com.ggasoftware.indigo
         int indigoSaveCml(int molecule, int output);
         int indigoSaveCmlToFile(int molecule, string filename);
         sbyte* indigoCml(int molecule);
+        int indigoSaveCdxml(int molecule, int output);
+        int indigoSaveCdxmlToFile(int molecule, string filename);
+        sbyte* indigoCdxml(int molecule);
         int indigoSaveMDLCT(int item, int output);
 
         int indigoCreateSaver(int output, string format);
@@ -94,6 +97,10 @@ namespace com.ggasoftware.indigo
         int indigoNormalize(int structure, string options);
 
         int indigoStandardize(int item);
+        int indigoIonize(int item, float pH, float pH_toll);
+        float* indigoGetAcidPkaValue(int item, int atom, int level, int min_level);
+        float* indigoGetBasicPkaValue(int item, int atom, int level, int min_level);
+        int indigoBuildPkaModel(int level, float theshold, String filename);
 
         int indigoIterateAtoms(int molecule);
         int indigoIteratePseudoatoms(int molecule);
@@ -151,6 +158,42 @@ namespace com.ggasoftware.indigo
         int indigoSetDataSGroupXY(int sgroup, float x, float y, string options);
 
         int indigoAddSuperatom(int molecule, int natoms, int[] atoms, string name);
+
+        int indigoCreateSGroup(string type, int mapping, string name);
+        int indigoSetSGroupClass(int sgroup, string sgclass);
+        int indigoSetSGroupName(int sgroup, string sgname);
+        sbyte* indigoGetSGroupClass(int sgroup);
+        sbyte* indigoGetSGroupName(int sgroup);
+        int indigoGetSGroupNumCrossBonds(int sgroup);
+        int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, string apid);
+        int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);
+        int indigoGetSGroupDisplayOption(int sgroup);
+        int indigoSetSGroupDisplayOption(int sgroup, int option);
+        int indigoGetSGroupMultiplier(int sgroup);
+        int indigoSetSGroupMultiplier(int sgroup, int mult);
+
+        int indigoSetSGroupData (int sgroup,  string data);
+        int indigoSetSGroupCoords (int sgroup, float x, float y);
+        int indigoSetSGroupDescription (int sgroup, string description);
+        int indigoSetSGroupFieldName (int sgroup, string name);
+        int indigoSetSGroupQueryCode (int sgroup, string querycode);
+        int indigoSetSGroupQueryOper (int sgroup, string queryoper);
+        int indigoSetSGroupDisplay (int sgroup, string option);
+        int indigoSetSGroupLocation (int sgroup, string option);
+        int indigoSetSGroupTag (int sgroup, string tag);
+        int indigoSetSGroupTagAlign (int sgroup, int tag_align);
+        int indigoSetSGroupDataType (int sgroup, string type);
+        int indigoSetSGroupXCoord (int sgroup, float x);
+        int indigoSetSGroupYCoord (int sgroup, float y);
+        int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
+                                     float x3, float y3, float x4, float y4);
+
+        int indigoFindSGroups(int molecule, string property, string value);
+        int indigoGetSGroupType(int sgroup);
+        int indigoGetSGroupIndex(int sgroup);
+
+        int indigoTransformSCSRtoCTAB(int molecule);
+        int indigoTransformCTABtoSCSR(int molecule, int templates);
 
         float* indigoXYZ(int atom);
         int indigoSetXYZ(int atom, float x, float y, float z);
@@ -231,6 +274,7 @@ namespace com.ggasoftware.indigo
         int indigoHasCoord(int molecule);
         int indigoHasZCoord(int molecule);
         int indigoIsChiral(int molecule);
+        int indigoIsPossibleFischerProjection(int molecule, string options);
         int indigoCreateSubmolecule(int molecule, int nvertices, int[] vertices);
         int indigoCreateEdgeSubmolecule(int molecule, int nvertices, int[] vertices,
                                            int nedges, int[] edges);
@@ -272,10 +316,12 @@ namespace com.ggasoftware.indigo
         int indigoIterateRDF(int reader);
         int indigoIterateSmiles(int reader);
         int indigoIterateCML(int reader);
+        int indigoIterateCDX(int reader);
         int indigoIterateSDFile(string filename);
         int indigoIterateRDFile(string filename);
         int indigoIterateSmilesFile(string filename);
         int indigoIterateCMLFile(string filename);
+        int indigoIterateCDXFile(string filename);
         sbyte* indigoRawData(int item);
         int indigoTell(int item);
         int indigoSdfAppend(int output, int item);
@@ -333,6 +379,7 @@ namespace com.ggasoftware.indigo
         int indigoTransform(int reaction, int monomers);
 
         int indigoExpandAbbreviations (int structure);
+        int indigoIterateTautomers(int structure, string parameters);
 
         sbyte* indigoDbgInternalType(int item);
         sbyte* indigoDbgProfiling (int whole_sessoin);

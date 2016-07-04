@@ -4,8 +4,8 @@
 
 using namespace bingo;
 
-SimStorage::SimStorage (int fp_size, int mt_size, int inc_size) : _fp_size(fp_size), _mt_size(mt_size),
-                                                                  _inc_size(inc_size), _fingerprint_table(BingoAddr::bingo_null)
+SimStorage::SimStorage (int fp_size, int mt_size, int inc_size) : _fingerprint_table(BingoAddr::bingo_null), _inc_size(inc_size),
+                                                                  _mt_size(mt_size), _fp_size(fp_size)
 {
    _inc_buffer.allocate(_inc_size * _fp_size);
    _inc_id_buffer.allocate(_inc_size * _fp_size);

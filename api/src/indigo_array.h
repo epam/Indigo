@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -49,6 +49,7 @@ public:
    virtual Molecule & getMolecule ();
    virtual QueryMolecule & getQueryMolecule ();
 
+   virtual MonomersProperties & getMonomersProperties ();
    virtual BaseReaction & getBaseReaction ();
    virtual Reaction & getReaction ();
 

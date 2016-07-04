@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -805,6 +805,62 @@ int Scanner::findWord (ReusableObjArray< Array<char> > &words)
          while (pos[i] > 0 && words[i][pos[i]] != c)
             pos[i] = prefixes[i][pos[i] - 1];
          if (words[i][pos[i]] == c)
+            pos[i]++;
+
+         if (pos[i] == words[i].size())
+         {
+            seek(-words[i].size(), SEEK_CUR);
+            return i;
+         }
+      }
+   }
+
+   seek(pos_saved, SEEK_SET);
+   return -1;
+}
+
+bool Scanner::findWordIgnoreCase (const char *word)
+{
+   QS_DEF(ReusableObjArray< Array<char> >, strs);
+
+   strs.clear();
+   Array<char> &str = strs.push();
+
+   str.readString(word, false);
+   return findWordIgnoreCase(strs) == 0;
+}
+
+int Scanner::findWordIgnoreCase (ReusableObjArray< Array<char> > &words)
+{
+   if (isEOF())
+      return -1;
+   
+   QS_DEF(ReusableObjArray< Array<int> >, prefixes);
+   QS_DEF(Array<int>, pos);
+   int i;
+   int pos_saved = tell();
+   
+   prefixes.clear();
+   pos.clear();
+   
+   for (i = 0; i < words.size(); i++)
+   {
+      _prefixFunction(words[i], prefixes.push());
+      pos.push(0);
+   }
+
+   while (!isEOF())
+   {
+      int c = readChar();
+
+      for (i = 0; i < words.size(); i++)
+      {
+         int c1 = ::tolower(words[i][pos[i]]);
+         int c2 = ::tolower(c);
+
+         while (pos[i] > 0 && c1 != c2)
+            pos[i] = prefixes[i][pos[i] - 1];
+         if (c1 == c2)
             pos[i]++;
 
          if (pos[i] == words[i].size())

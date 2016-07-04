@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -30,7 +30,7 @@ public:
 
    virtual void estimateSize ();
    virtual void setObjScale (float scale) { 
-      _scaleFactor = scale; 
+      _scaleFactor = scale;
    }
    virtual void init ();
    virtual void render ();

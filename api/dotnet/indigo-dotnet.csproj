@@ -8,7 +8,7 @@
     <ProjectGuid>{9813B608-3372-4D46-B432-1533CBF54C62}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>com.ggasoftware.indigo</RootNamespace>
+    <RootNamespace>com.epam.indigo</RootNamespace>
     <AssemblyName>indigo-dotnet</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -33,6 +33,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <DisableOutOfProcTaskHost>true</DisableOutOfProcTaskHost>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -145,8 +146,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Mac)' == '1'">
     <PreBuildEvent>
-      $(Copy) $(LibraryPath)\Mac\10.5\libindigo.dylib $(ProjectDir)Resource\Mac\10.5
-      $(Copy) $(LibraryPath)\Mac\10.6\libindigo.dylib $(ProjectDir)Resource\Mac\10.6
+      $(Copy) $(LibraryPath)\Mac\10.7\libindigo.dylib $(ProjectDir)Resource\Mac\10.7
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="(('$(Win2010)' == '1') And ('$(Linux)' == '1') And ('$(Mac)' == '1'))">
@@ -159,8 +159,7 @@
       $(Copy) $(LibraryPath)\Win\x86\indigo.dll $(ProjectDir)Resource\Win\x86
       $(Copy) $(LibraryPath)\Linux\x64\libindigo.so $(ProjectDir)Resource\Linux\x64
       $(Copy) $(LibraryPath)\Linux\x86\libindigo.so $(ProjectDir)Resource\Linux\x86
-      $(Copy) $(LibraryPath)\Mac\10.5\libindigo.dylib $(ProjectDir)Resource\Mac\10.5
-      $(Copy) $(LibraryPath)\Mac\10.6\libindigo.dylib $(ProjectDir)Resource\Mac\10.6
+      $(Copy) $(LibraryPath)\Mac\10.7\libindigo.dylib $(ProjectDir)Resource\Mac\10.7
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="(('$(Win2012)' == '1') And ('$(Linux)' == '1') And ('$(Mac)' == '1'))">
@@ -174,7 +173,7 @@
       $(Copy) $(LibraryPath)\Linux\x64\libindigo.so $(ProjectDir)Resource\Linux\x64
       $(Copy) $(LibraryPath)\Linux\x86\libindigo.so $(ProjectDir)Resource\Linux\x86
       $(Copy) $(LibraryPath)\Mac\10.5\libindigo.dylib $(ProjectDir)Resource\Mac\10.5
-      $(Copy) $(LibraryPath)\Mac\10.6\libindigo.dylib $(ProjectDir)Resource\Mac\10.6
+      $(Copy) $(LibraryPath)\Mac\10.7\libindigo.dylib $(ProjectDir)Resource\Mac\10.7
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition="(('$(Win2013)' == '1') And ('$(Linux)' == '1') And ('$(Mac)' == '1'))">
@@ -188,7 +187,7 @@
       $(Copy) $(LibraryPath)\Linux\x64\libindigo.so $(ProjectDir)Resource\Linux\x64
       $(Copy) $(LibraryPath)\Linux\x86\libindigo.so $(ProjectDir)Resource\Linux\x86
       $(Copy) $(LibraryPath)\Mac\10.5\libindigo.dylib $(ProjectDir)Resource\Mac\10.5
-      $(Copy) $(LibraryPath)\Mac\10.6\libindigo.dylib $(ProjectDir)Resource\Mac\10.6
+      $(Copy) $(LibraryPath)\Mac\10.7\libindigo.dylib $(ProjectDir)Resource\Mac\10.7
     </PreBuildEvent>
   </PropertyGroup>
 </Project>

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -129,12 +129,12 @@ void AtomDesc::clear ()
    upperSin = lowerSin = rightSin = leftSin = 0;
 }
 
-SGroup::SGroup()
+Sgroup::Sgroup()
 {
    clear();
 }
 
-void SGroup::clear ()
+void Sgroup::clear ()
 {
    tibegin = gibegin = bibegin = -1;
    ticount = gicount = bicount = 0;

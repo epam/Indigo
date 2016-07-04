@@ -129,7 +129,10 @@ void MMFile::open (const char *filename, size_t buf_size, bool create_flag, bool
    if ((_fd = ::open(_filename.c_str(), flags, permissions)) == -1)
       throw Exception("BingoMMF: Could not open file. Error message: %s", _getSystemErrorMsg());
 
-   ftruncate(_fd, _len);
+   auto trunc_res = ftruncate(_fd, _len);
+   if(trunc_res < 0) {
+      //TODO check result
+   }
 
    int prot_flags = PROT_READ | PROT_WRITE;
 

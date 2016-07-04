@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -20,6 +20,7 @@
 #include "layout/metalayout.h"
 #include "graph/graph.h"
 #include "reaction/base_reaction.h"
+#include "render2d/render_cdxml.h"
 
 typedef void* PVOID;
 
@@ -166,8 +167,8 @@ private:
    AtomDesc(const AtomDesc& ad);
 };
 
-struct SGroup {
-   SGroup();
+struct Sgroup {
+   Sgroup();
    void clear ();
 
    int tibegin, ticount;
@@ -175,7 +176,7 @@ struct SGroup {
    int bibegin, bicount;
 
 private:
-   SGroup(const SGroup& sg);
+   Sgroup(const SGroup& sg);
 };
 
 struct BondEnd {
@@ -261,7 +262,7 @@ struct MoleculeRenderData {
    MoleculeRenderData ();
    void clear ();
 
-   ObjArray<SGroup> sgroups;
+   ObjArray<Sgroup> sgroups;
    ObjArray<AtomDesc> atoms;
    ObjArray<BondDescr> bonds;
    ObjArray<Ring> rings;
@@ -447,6 +448,7 @@ public:
    bool agentsBelowArrow;
    bool collapseSuperatoms;
    Array<char> atomColorProp;
+   AutoPtr<RenderCdxmlContext> cdxml_context;
 private:
    RenderOptions (const RenderOptions& );
 };

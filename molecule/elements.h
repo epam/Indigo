@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -136,8 +136,10 @@ enum
    ELEM_Rf,
    ELEM_MAX,
 
-   ELEM_PSEUDO, // pseudoatom
-   ELEM_RSITE  // 'R' atom
+   ELEM_PSEUDO,   // pseudoatom
+   ELEM_RSITE,    // 'R' atom
+   ELEM_TEMPLATE, // template 
+   ELEM_ATTPOINT  // attachment point
 };
 
 enum

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -269,7 +269,7 @@ int MoleculeInChI::_cmpComponents (int &index1,
    return 0;
 }
 
-void MoleculeInChI::_normalizeMolecule (Molecule &mol)
+void MoleculeInChI::_normalizeMolecule(Molecule &mol)
 {
    QS_DEF(Array<int>, ignored);
 

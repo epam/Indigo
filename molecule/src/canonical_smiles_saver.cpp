@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2014 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -56,7 +56,7 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_)
 
    int i;
 
-   if (mol_.repeating_units.size() > 0)
+   if (mol_.sgroups.isPolimer())
       throw Error("can not canonicalize a polymer");
 
    // Detect hydrogens configuration if aromatic but not ambiguous

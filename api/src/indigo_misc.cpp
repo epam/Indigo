@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -33,6 +33,7 @@
 #include "indigo_mapping.h"
 #include "indigo_savers.h"
 #include "molecule/molecule_standardize.h"
+#include "molecule/molecule_ionize.h"
 
 #define CHECKRGB(r, g, b) \
 if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
@@ -387,14 +388,16 @@ CEXPORT const char * indigoRawData (int handler)
           obj.type == IndigoObject::SMILES_MOLECULE ||
           obj.type == IndigoObject::SMILES_REACTION ||
           obj.type == IndigoObject::CML_MOLECULE ||
-          obj.type == IndigoObject::CML_REACTION)
+          obj.type == IndigoObject::CML_REACTION ||
+          obj.type == IndigoObject::CDX_MOLECULE ||
+          obj.type == IndigoObject::CDX_REACTION)
       {
          IndigoRdfData &data = (IndigoRdfData &)obj;
 
          tmp.string.copy(data.getRawData());
       }
       else if (obj.type == IndigoObject::PROPERTY)
-         tmp.string.copy(((IndigoProperty &)obj).getValue());
+         tmp.string.readString(((IndigoProperty &)obj).getValue(), false);
       else if (obj.type == IndigoObject::DATA_SGROUP)
       {
          tmp.string.copy(((IndigoDataSGroup &)obj).get().data);
@@ -441,6 +444,13 @@ CEXPORT int indigoAt (int item, int index)
       else if (obj.type == IndigoObject::MULTILINE_SMILES_LOADER)
       {
          IndigoObject * newobj = ((IndigoMultilineSmilesLoader &)obj).at(index);
+         if (newobj == 0)
+            return 0;
+         return self.addObject(newobj);
+      }
+      else if (obj.type == IndigoObject::MULTIPLE_CDX_LOADER)
+      {
+         IndigoObject * newobj = ((IndigoMultipleCdxLoader &)obj).at(index);
          if (newobj == 0)
             return 0;
          return self.addObject(newobj);
@@ -809,6 +819,97 @@ CEXPORT int indigoStandardize (int object)
       else
          throw IndigoError("indigoStandardize: expected molecule or query, got %s", obj.debugInfo());
       return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoIonize (int object, float pH, float pH_toll)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
+      Molecule &mol = obj.getMolecule();
+      mol.ionize(pH, pH_toll, self.ionize_options);
+      return 1;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT int indigoBuildPkaModel (int max_level, float threshold, const char * filename)
+{
+   INDIGO_BEGIN
+   {
+      int level = MoleculePkaModel::buildPkaModel(max_level, threshold, filename);
+      if (level > 0)
+         return 1;
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
+CEXPORT float * indigoGetAcidPkaValue (int object, int atom, int level, int min_level)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
+
+      if (obj.type == IndigoObject::MOLECULE)
+      {
+         IndigoMolecule &m_obj = (IndigoMolecule &)obj;
+         Molecule &mol = m_obj.getMolecule();
+         IndigoAtom &site = IndigoAtom::cast(self.getObject(atom));
+         auto &tmp = self.getThreadTmpData();
+         float pka = MoleculePkaModel::getAcidPkaValue(mol, site.getIndex(), level, min_level);
+         tmp.xyz[0] = pka;
+         return tmp.xyz;
+      }
+      else
+         throw IndigoError("indigoGetAcidPkaValue: expected molecule, got %s", obj.debugInfo());
+      return 0;
+   }
+   INDIGO_END(0);
+}
+
+CEXPORT float * indigoGetBasicPkaValue (int object, int atom, int level, int min_level)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
+
+      if (obj.type == IndigoObject::MOLECULE)
+      {
+         IndigoMolecule &m_obj = (IndigoMolecule &)obj;
+         Molecule &mol = m_obj.getMolecule();
+         IndigoAtom &site = IndigoAtom::cast(self.getObject(atom));
+         auto &tmp = self.getThreadTmpData();
+         float pka = MoleculePkaModel::getBasicPkaValue(mol, site.getIndex(), level, min_level);
+         tmp.xyz[0] = pka;
+         return tmp.xyz;
+      }
+      else
+         throw IndigoError("indigoGetBasicPkaValue: expected molecule, got %s", obj.debugInfo());
+      return 0;
+   }
+   INDIGO_END(0);
+}
+
+CEXPORT int indigoIsPossibleFischerProjection (int object, const char *options)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(object);
+
+      if (obj.type == IndigoObject::MOLECULE)
+      {
+         IndigoMolecule &m_obj = (IndigoMolecule &)obj;
+         Molecule &mol = m_obj.getMolecule();
+         if (mol.isPossibleFischerProjection(options))
+            return 1;
+         return 0;
+      }
+      else
+         throw IndigoError("indigoIsPossibleFischerProjection: expected molecule, got %s", obj.debugInfo());
+      return -1;
    }
    INDIGO_END(-1);
 }

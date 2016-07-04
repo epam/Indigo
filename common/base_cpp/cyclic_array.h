@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,13 +16,17 @@
 #define __cyclic_array_h__
 
 #include "base_cpp/array.h"
+#include "base_cpp/exception.h"
 
 namespace indigo {
 
+DECL_EXCEPTION(CyclicArrayError);
 // Cyclic array
 template <typename T> struct CyclicArray
 {
 public:
+
+   DECL_TPL_ERROR(CyclicArrayError);
    explicit CyclicArray (void)
    {
       _offset = 0;
@@ -32,7 +36,7 @@ public:
    {
       _array.resize(max_size);
    }
-
+   
    void zeroFill (void)
    {
       _array.zerofill();
@@ -44,13 +48,21 @@ public:
    }
 
    const T & operator [] (int index) const
-   {                        
-      return _array[index % _array.size()];
+   {
+      int length = _array.size();
+      if (length == 0) 
+         throw Error("Zero length");
+      int offset = index % _array.size();
+      return index >= 0 ? _array[offset] : _array[length + offset];
    }
 
    T & operator [] (int index)
    {                        
-      return _array[index % _array.size()];
+      int length = _array.size();
+      if (length == 0) 
+         throw Error("Zero length");
+      int offset = index % _array.size();
+      return index >= 0 ? _array[offset] : _array[length + offset];
    }
 
    void setOffset (int offset)

@@ -7,8 +7,6 @@ import sys
 import re
 import subprocess
 import inspect
-from zipfile import *
-from os.path import *
 from optparse import OptionParser
 
 def make_doc():
@@ -17,9 +15,9 @@ def make_doc():
     root_dir = os.path.join(script_dir, "..")
 
     os.chdir(os.path.join(root_dir, 'api/python'))
-    subprocess.check_call('%s copy-libs.py' % sys.executable, shell=True)
+    subprocess.check_call('"%s" copy-libs.py' % sys.executable, shell=True)
     os.chdir('../../doc')
-    subprocess.check_call('%s builder.py' % sys.executable, shell=True)
+    subprocess.check_call('"%s" builder.py' % sys.executable, shell=True)
     os.chdir(curdir)
 
 def copy_doc(destname):
@@ -30,10 +28,10 @@ def flatten_directory(dir):
     for f in os.listdir(dir):
         if f.find("python") != -1 or f.find("java") != -1 or f.find("dotnet") != -1:
             continue
-        dir2 = join(dir, f)
-        if isdir(dir2):
+        dir2 = os.path.join(dir, f)
+        if os.path.isdir(dir2):
             for f2 in os.listdir(dir2):
-                f2full = join(dir2, f2)
+                f2full = os.path.join(dir2, f2)
                 shutil.move(f2full, dir)
             todelete.append(dir2)
             os.rmdir(dir2)
@@ -41,24 +39,24 @@ def flatten_directory(dir):
 
 def move_dir_content(src_dir, dest_dir):
     for f in os.listdir(src_dir):
-        f2 = join(src_dir, f)
-        destf2 = join(dest_dir, f)
-        if isdir(destf2):
+        f2 = os.path.join(src_dir, f)
+        destf2 = os.path.join(dest_dir, f)
+        if os.path.isdir(destf2):
             move_dir_content(f2, destf2)
-        elif not exists(destf2):
+        elif not os.path.exists(destf2):
             shutil.move(f2, destf2)
 
 
 def join_archives(names, destname):
     for name in names:
-        if not exists(name + ".zip"):
+        if not os.path.exists(name + ".zip"):
             return
     for name in names:
         subprocess.check_call("unzip %s.zip -d %s" % (name, name), shell=True)
     os.mkdir(destname)
     for name in names:
         move_dir_content(name, destname)
-    if exists(destname + ".zip"):
+    if os.path.exists(destname + ".zip"):
         os.remove(destname + ".zip")
     if args.doc:
         copy_doc(destname)
@@ -72,7 +70,7 @@ def join_archives_by_pattern(pattern, destname):
     archives = []
     for f in os.listdir("."):
         if re.match(pattern, f):
-            archives.append(splitext(f)[0])
+            archives.append(os.path.splitext(f)[0])
     if len(archives) == 0:
         return
     print(archives)
@@ -83,28 +81,31 @@ def clearLibs():
     for f in os.listdir(libs_dir):
         if f == "readme.txt":
             continue
-        ffull = join(libs_dir, f)
-        if isdir(ffull):
+        ffull = os.path.join(libs_dir, f)
+        if os.path.isdir(ffull):
             shutil.rmtree(ffull)
         else:
             os.remove(ffull)
 
 
 def unpackToLibs(name):
-    if exists("tmp"):
+    if os.path.exists("tmp"):
         shutil.rmtree("tmp")
     subprocess.check_call("unzip %s.zip -d tmp" % (name), shell=True)
-    move_dir_content(join("tmp", name), libs_dir)
+    move_dir_content(os.path.join("tmp", name), libs_dir)
     shutil.rmtree("tmp")
 
 
 parser = OptionParser(description='Indigo libraries repacking')
 parser.add_option('--libonlyname', help='extract only the library into api/lib')
 parser.add_option('--config', default="Release", help='project configuration')
-parser.add_option('--type', default=None, help='wrapper (dotnet, java, python)')
+parser.add_option('--type', default='python,java,dotnet', help='wrapper (dotnet, java, python)')
 parser.add_option('--doc', default=False, action='store_true', help='Build documentation')
 
 (args, left_args) = parser.parse_args()
+
+if not args.type:
+    args.type = 'python,java,dotnet'
 
 if args.doc:
     make_doc()
@@ -120,16 +121,15 @@ if args.config.lower() != "release":
 need_join_archieves = (args.libonlyname == None)
 need_gen_wrappers = (args.libonlyname == None)
 
-# find indigo version
-version = ""
-cur_dir = split(__file__)[0]
-for line in open(join(cur_dir, "..", "api", "indigo-version.cmake")):
-    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
-    if m:
-        version = m.group(1)
 
-os.chdir(join(cur_dir, "../dist"))
-#dist = abspath(join("..", "dist"))
+cur_dir = os.path.split(__file__)[0]
+
+# Find indigo version
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "api"))
+from get_indigo_version import getIndigoVersion
+
+version = getIndigoVersion()
+os.chdir(os.path.join(cur_dir, "../dist"))
 if need_join_archieves:
     flatten_directory(".")
 
@@ -150,8 +150,8 @@ if need_join_archieves:
 
 print("*** Making wrappers *** ")
 
-api_dir = abspath("../api")
-libs_dir = join(api_dir, "libs")
+api_dir = os.path.abspath("../api")
+libs_dir = os.path.join(api_dir, "libs")
 
 wrappers = [
     ("win", ["win"]),
@@ -169,7 +169,7 @@ for w, libs in wrappers:
     any_exists = True
     for lib in libs:
         name = "indigo-libs-%s-%s-shared%s" % (version, lib, suffix)
-        if exists(name + ".zip"):
+        if os.path.exists(name + ".zip"):
             any_exists = any_exists and True
             unpackToLibs(name)
         else:
@@ -178,6 +178,8 @@ for w, libs in wrappers:
         continue
     if need_gen_wrappers:
         for gen in wrappers_gen:
-            if args.type is not None and gen.find(args.type) == -1:
-                continue
-            subprocess.check_call('%s %s -s "-%s" %s' % (sys.executable, join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)
+            if args.type is not None:
+                for g in args.type.split(','):
+                    if gen.find(g) != -1:
+                        subprocess.check_call('"%s" %s -s "-%s" %s' % (sys.executable, os.path.join(api_dir, gen), w, '--doc' if args.doc else ''), shell=True)
+            

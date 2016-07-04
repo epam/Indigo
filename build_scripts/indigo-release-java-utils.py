@@ -7,12 +7,6 @@ from zipfile import ZipFile
 from optparse import OptionParser
 import re
 
-version = ""
-cur_dir = split(__file__)[0]
-for line in open(join(os.path.dirname(os.path.abspath(__file__)), "..", "api", "indigo-version.cmake")):
-    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
-    if m:
-        version = m.group(1)
 
 cur_dir = abspath(dirname(__file__))
 root = os.path.normpath(join(cur_dir, ".."))
@@ -31,8 +25,8 @@ for filename in os.listdir(dist_dir):
             shutil.rmtree("indigo-java")
         #os.mkdir("indigo-java")
         java_dir = join(dist_dir, "indigo-java")
-        distVersion = filename.replace("indigo-java-%s-" % version , '').replace('.zip', '')
-        fullChemdiffName = "chemdiff-%s-%s" % (version, distVersion)
+        version = filename.replace("indigo-java-", '').replace('.zip', '')
+        fullChemdiffName = "chemdiff-%s" % (version)
         uz = ZipFile(join(dist_dir, filename))
         uz.extractall(path=dist_dir)
         os.rename(join(dist_dir, filename)[:-4], "indigo-java")
@@ -49,7 +43,7 @@ for filename in os.listdir(dist_dir):
         else:
             shutil.copy(join("chemdiff.sh"), join(dist_dir, "chemdiff", fullChemdiffName,"chemdiff.sh"))
         shutil.copy(join("LICENSE.GPL"), join(dist_dir, "chemdiff", fullChemdiffName, "LICENSE.GPL"))
-        shutil.copytree(join(root, "utils", "chemdiff", "tests"), join(dist_dir, "chemdiff", fullChemdiffName, "tests"))
+        shutil.copytree(join(root, "utils", "chemdiff", "examples"), join(dist_dir, "chemdiff", fullChemdiffName, "examples"))
         os.chdir(join(dist_dir, "chemdiff", fullChemdiffName))
         os.mkdir("lib")
         for file in glob.glob("../../indigo-java/*.jar"):
@@ -57,9 +51,9 @@ for filename in os.listdir(dist_dir):
                 shutil.copy(file, "lib")
         shutil.copy(join(root, "common/java/common-controls/dist/common-controls.jar"), "lib")
         if os.name == "nt" and os.path.exists("chemdiff.sh"):
-            with open("chemdiff.sh", "rb") as f:
+            with open("chemdiff.sh", "rt") as f:
                 text = f.read()
-            with open("chemdiff.sh", "wb") as f:
+            with open("chemdiff.sh", "wt") as f:
                 f.write(text.replace("\r\n", "\n"))
         os.chdir(dist_dir)
         shutil.make_archive(fullChemdiffName, "zip", "chemdiff")
@@ -71,7 +65,7 @@ for filename in os.listdir(dist_dir):
             os.chdir(dist_dir)
         shutil.rmtree("chemdiff")
         shutil.rmtree("indigo-java")
-        
+
 # Legio
 for filename in os.listdir(dist_dir):
     if filename.startswith("indigo-java-") :
@@ -79,8 +73,8 @@ for filename in os.listdir(dist_dir):
         if os.path.exists("indigo-java"):
             shutil.rmtree("indigo-java")
         java_dir = join(dist_dir, "indigo-java")
-        distVersion = filename.replace("indigo-java-%s-" % version , '').replace('.zip', '')
-        fullLegioName = "legio-%s-%s" % (version, distVersion)
+        version = filename.replace("indigo-java-" , '').replace('.zip', '')
+        fullLegioName = "legio-%s" % (version)
         uz = ZipFile(join(dist_dir, filename))
         uz.extractall(path=dist_dir)
         os.rename(join(dist_dir, filename)[:-4], "indigo-java")
@@ -97,7 +91,7 @@ for filename in os.listdir(dist_dir):
         else:
             shutil.copy(join("legio.sh"), join(dist_dir, "legio", fullLegioName,"legio.sh"))
         shutil.copy(join("LICENSE.GPL"), join(dist_dir, "legio", fullLegioName, "LICENSE.GPL"))
-        shutil.copytree(join(root, "utils", "legio", "tests"), join(dist_dir, "legio", fullLegioName, "tests"))
+        shutil.copytree(join(root, "utils", "legio", "examples"), join(dist_dir, "legio", fullLegioName, "examples"))
         os.chdir(join(dist_dir, "legio", fullLegioName))
         os.mkdir("lib")
         for file in glob.glob("../../indigo-java/*.jar"):

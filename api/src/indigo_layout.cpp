@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -19,6 +19,7 @@
 #include "reaction/base_reaction.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include <vector>
 
 CEXPORT int indigoLayout (int object)
 {
@@ -29,7 +30,7 @@ CEXPORT int indigoLayout (int object)
 
       if (IndigoBaseMolecule::is(obj) || obj.type == IndigoObject::SUBMOLECULE) {
          BaseMolecule &mol = obj.getBaseMolecule();
-         MoleculeLayout ml(mol);
+         MoleculeLayout ml(mol, self.smart_layout);
          ml.max_iterations = self.layout_max_iterations;
          ml.bond_length = 1.6f;
 
@@ -47,6 +48,7 @@ CEXPORT int indigoLayout (int object)
          }
 
          ml.make();
+      
          if (obj.type != IndigoObject::SUBMOLECULE)
          {
             // Not for submolecule yet
@@ -72,7 +74,7 @@ CEXPORT int indigoLayout (int object)
          }
       } else if (IndigoBaseReaction::is(obj)) {
          BaseReaction &rxn = obj.getBaseReaction();
-         ReactionLayout rl(rxn);
+         ReactionLayout rl(rxn, self.smart_layout);
          rl.max_iterations = self.layout_max_iterations;
          rl.bond_length = 1.6f;
          rl.make();

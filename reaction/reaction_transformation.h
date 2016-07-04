@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -34,13 +34,16 @@ namespace indigo
 
       ReactionTransformation( void );
 
-      bool transform(Molecule &molecule, QueryReaction &reaction);
+      bool transform(Molecule &molecule, QueryReaction &reaction, Array<int> *mapping = 0 );
       
-      bool transform(ReusableObjArray<Molecule> &molecules, QueryReaction &reaction);
+      bool transform(ReusableObjArray<Molecule> &molecules, QueryReaction &reaction,
+                     ReusableObjArray<Array<int>> *mapping_array = 0 );
 
       AromaticityOptions arom_options;
 
       bool layout_flag;
+
+      bool smart_layout;
 
       CancellationHandler *cancellation;
 
@@ -48,8 +51,9 @@ namespace indigo
       CP_DECL;
       TL_CP_DECL(QueryReaction, _merged_reaction);
       TL_CP_DECL(Molecule, _cur_monomer);
+      TL_CP_DECL(Array<int>, _mapping);
 
-      static void _product_proc( Molecule &product, Array<int> &monomers_indices, 
+      static void _product_proc( Molecule &product, Array<int> &monomers_indices, Array<int> &mapping,
                                  void *userdata );
    
       void _mergeReactionComponents( QueryReaction &reaction, int mol_type, 

@@ -142,7 +142,7 @@ void BaseIndex::load (const char *location, const char *options, int index_id)
    _fp_params.tau_qwords = _properties.ref().getULong("fp_tau");
    _fp_params.sim_qwords = _properties.ref().getULong("fp_sim");
 
-   unsigned long cf_block_size = _properties->getULong("cf_block_size");
+   //unsigned long cf_block_size = _properties->getULong("cf_block_size");
 
    _mappingLoad();
 
@@ -162,8 +162,8 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id, DatabaseLockData &
 
    {
       WriteLock wlock(lock_data);
-   if (obj_id != -1 && back_id_mapping.get(obj_id) != -1)
-         throw Exception("insert fail: This id was already used");
+      if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
+            throw Exception("insert fail: This id was already used");
    }
 
    _ObjectIndexData _obj_data;
@@ -219,7 +219,7 @@ void BaseIndex::remove (int obj_id)
 
    BingoMapping & back_id_mapping = _back_id_mapping_ptr.ref();
 
-   if (obj_id < 0 || back_id_mapping.get(obj_id) == -1)
+   if (obj_id < 0 || back_id_mapping.get(obj_id) == (size_t)-1)
       throw Exception("There is no object with this id");
 
    _cf_storage->remove(back_id_mapping.get(obj_id));
@@ -304,7 +304,7 @@ Index::IndexType BaseIndex::determineType (const char *location)
    path += '0';
    std::ifstream file(path, std::ios::binary | std::ios::in);
    
-   bool res = file.good();
+   //bool res = file.good();
 
    char type[_type_len];
    file.seekg(0);
@@ -501,7 +501,7 @@ void BaseIndex::_mappingAdd (int obj_id, int base_id)
 
 void BaseIndex::_mappingRemove (int obj_id)
 {
-   BingoArray<int> & id_mapping = _id_mapping_ptr.ref();
+   //BingoArray<int> & id_mapping = _id_mapping_ptr.ref();
    BingoMapping & back_id_mapping = _back_id_mapping_ptr.ref();
 
    back_id_mapping.remove(obj_id);

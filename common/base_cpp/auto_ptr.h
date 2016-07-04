@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -24,7 +24,7 @@ DECL_EXCEPTION(AutoPtrError);
 template <typename T> class AutoPtr
 {
 public:
-   AutoPtr (T *ptr = 0)
+   explicit AutoPtr (T *ptr = 0)
    {
       _ptr = ptr;
    }

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -89,6 +89,8 @@ public:
    static bool isGeomStereoBond (BaseMolecule &mol, int bond_idx, int *substituents, bool have_xyz);
    static int  sameside (const Vec3f &beg, const Vec3f &end, const Vec3f &nei_beg, const Vec3f &nei_end);
    static bool sameline (const Vec3f &beg, const Vec3f &end, const Vec3f &nei_beg);
+
+   bool sameside (int edge_idx, int v1, int v2);
 
 protected:
 

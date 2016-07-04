@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2011 GGA Software Services LLC
+ * Copyright (C) 2011 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -32,6 +32,14 @@ IndigoObject * IndigoMapping::clone ()
    AutoPtr<IndigoMapping> res_ptr(new IndigoMapping(from, to));
    res_ptr->mapping.copy(mapping);
    return res_ptr.release();
+}
+
+IndigoMapping & IndigoMapping::cast (IndigoObject &obj)
+{
+   if (obj.type == IndigoObject::MAPPING)
+      return (IndigoMapping &)obj;
+
+   throw IndigoError("%s is not a mapping", obj.debugInfo());
 }
 
 IndigoReactionMapping::IndigoReactionMapping (BaseReaction &from_, BaseReaction &to_) :

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -856,7 +856,7 @@ void MoleculeAutomorphismSearch::_calculateHydrogensAndDegree (Molecule &mol)
 
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
-      if (mol.isRSite(i) || mol.isPseudoAtom(i))
+      if (mol.isRSite(i) || mol.isPseudoAtom(i) || mol.isTemplateAtom(i))
          _hcount[i] = 0;
       else
          _hcount[i] = mol.getImplicitH_NoThrow(i, -1);

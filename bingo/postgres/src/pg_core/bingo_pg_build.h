@@ -21,7 +21,7 @@ class BingoPgConfig;
 class BingoPgBuild {
 public:
    enum {
-      MAX_CACHE_SIZE=100
+      MAX_CACHE_SIZE=1000
    };
    BingoPgBuild(PG_OBJECT index, const char* schema_name,const char* index_schema, bool new_index);
    ~BingoPgBuild();

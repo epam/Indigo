@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -464,9 +464,8 @@ public:
    {
       this->qsort(0, _length - 1, cmp, context);
    }
-   
-   // Array<char>-specific
 
+   // Array<char>-specific
    void appendString (const char *str, bool keep_zero)
    {
       int len = (int)strlen(str);
@@ -524,6 +523,7 @@ protected:
 
 private:
    Array (const Array &); // no implicit copy
+   Array<int>& operator= (const Array<int>& right); // no copy constructor
 
    template <typename T1, typename T2>
    class _CmpFunctorCaller

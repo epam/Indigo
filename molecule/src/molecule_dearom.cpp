@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -432,12 +432,18 @@ byte* DearomatizationsStorage::getGroupDearomatization (int group, int dearomati
 {
    int offset = _aromaticGroups[group].dearomBondsState.offset +  
       dearomatizationIndex * bitGetSize(_aromaticGroups[group].aromBondsIndices.count);
+   
+   if(offset >= _dearomBondsStateArray.size())
+      return 0;
    return &_dearomBondsStateArray[offset];
 }
 
 const int* DearomatizationsStorage::getGroupBonds (int group) const
 {
-   return &_aromBondsArray[_aromaticGroups[group].aromBondsIndices.offset];
+   int offset = _aromaticGroups[group].aromBondsIndices.offset;
+   if (offset >= _aromBondsArray.size())
+      return 0;
+   return &_aromBondsArray[offset];
 }
 
 int DearomatizationsStorage::getGroupBondsCount (int group) const
@@ -721,7 +727,8 @@ int DearomatizationsGroups::detectAromaticGroups (const int *atom_external_conn)
       if (_vertexAromaticGroupIndex[v_idx] != -1)
          continue;
 
-      if ((_molecule.getAtomAromaticity(v_idx) == ATOM_ALIPHATIC) || _molecule.isPseudoAtom(v_idx))
+      if ((_molecule.getAtomAromaticity(v_idx) == ATOM_ALIPHATIC) || _molecule.isPseudoAtom(v_idx) ||
+          _molecule.isTemplateAtom(v_idx))
          continue;
 
       if (_molecule.getAtomNumber(v_idx) == -1)
@@ -942,7 +949,8 @@ void DearomatizationsGroups::_detectAromaticGroups (int v_idx, const int *atom_e
 
    atom_aromatic_connectivity = max_connectivity - non_aromatic_conn;
    if (atom_aromatic_connectivity < 0)
-      throw Error("internal error: atom_aromatic_connectivity < 0");
+      throw Error("atom_aromatic_connectivity < 0 on %s having %d drawn bonds, charge %d, and %d radical electrons",
+            Element::toString(label), non_aromatic_conn, charge, radical);
 
    _vertexIsAcceptSingleEdge[v_idx] = true;
    if (atom_aromatic_connectivity > 0)
@@ -1536,7 +1544,7 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOpt
    bool found_invalid_aromatic_h = false;
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
-      if (mol.isRSite(i) || mol.isPseudoAtom(i))
+      if (mol.isRSite(i) || mol.isPseudoAtom(i) || mol.isTemplateAtom(i))
          continue;
 
       if (mol.getImplicitH_NoThrow(i, -1) == -1 && mol.getAtomAromaticity(i) == ATOM_AROMATIC)
@@ -1569,7 +1577,7 @@ bool MoleculeDearomatizer::restoreHydrogens (Molecule &mol, const AromaticityOpt
    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
    {
       int conn = mol_dearom.vertex_connectivity[i];
-      if (mol.isRSite(i) || mol.isPseudoAtom(i))
+      if (mol.isRSite(i) || mol.isPseudoAtom(i) || mol.isTemplateAtom(i))
          continue;
 
       if (mol.getImplicitH_NoThrow(i, -1) == -1 && conn > 0)

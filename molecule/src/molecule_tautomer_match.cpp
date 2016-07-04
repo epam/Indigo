@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -19,6 +19,9 @@
 #include "molecule/molecule_tautomer_utils.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
+#include "molecule/molecule_inchi.h"
+#include "molecule/molecule_layered_molecules.h"
+#include "molecule/molecule_tautomer_enumerator.h"
 
 using namespace indigo;
 
@@ -88,7 +91,7 @@ bool TautomerMatcher::_matchAtoms (Graph &subgraph, Graph &supergraph,
       // This is to avoid "cannot map pyramid" error.
       // Normally, hydrogen counters are not something to look after
       // when doing tautomer match.]
-      if (!target.isPseudoAtom(super_idx) && !target.isRSite(super_idx))
+      if (!target.isPseudoAtom(super_idx) && !target.isRSite(super_idx) && !target.isTemplateAtom(super_idx))
          if (query.getAtomMinH(sub_idx) > target.getAtomMaxH(super_idx))
             return false;
 
@@ -171,6 +174,9 @@ bool TautomerMatcher::matchBondsTauSub (Graph &subgraph, Graph &supergraph,
 bool TautomerMatcher::matchAtomsTau (BaseMolecule &g1, BaseMolecule &g2, int n1, int n2)
 {
    if (g1.isPseudoAtom(n1) || g2.isPseudoAtom(n2))
+      return false;
+
+   if (g1.isTemplateAtom(n1) || g2.isTemplateAtom(n2))
       return false;
 
    if (g1.isRSite(n1) || g2.isRSite(n2))
@@ -495,11 +501,9 @@ bool TautomerMatcher::findMatch ()
       return true;
 
    EmbeddingEnumerator ee(g2);
-
    ee.setSubgraph(g1);
 
    int i;
-
    for (i = g1.vertexBegin(); i < g1.vertexEnd(); i = g1.vertexNext(i))
    {
       int val = _d.context.core_1[i];
@@ -521,13 +525,14 @@ bool TautomerMatcher::findMatch ()
 
    if (_d.context.substructure)
    {
+      ee.userdata = &_d;
       ee.cb_match_edge = matchBondsTauSub;
       ee.cb_match_vertex = _matchAtoms;
       ee.cb_embedding = _preliminaryEmbedding;
-
       if (!ee.process())
          return false;
-   } else
+   }
+   else
    {
       ee.cb_match_edge = matchBondsTau;
       ee.cb_match_vertex = _matchAtomsEx;

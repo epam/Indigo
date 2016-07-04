@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -19,25 +19,27 @@
 
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
+#include "base_cpp/properties_map.h"
 
 class IndigoRdfData : public IndigoObject
 {
 public:
    IndigoRdfData (int type, Array<char> &data, int index, int offset);
-   IndigoRdfData (int type, Array<char> &data, RedBlackStringObjMap< Array<char> > &properties,
+   IndigoRdfData (int type, Array<char> &data, PropertiesMap &properties,
                   int index, int offset);
    virtual ~IndigoRdfData ();
 
    Array<char> & getRawData ();
-   virtual RedBlackStringObjMap< Array<char> > * getProperties ();
+//   virtual RedBlackStringObjMap< Array<char> > * getProperties () {return &_properties.getProperties();}
+   virtual PropertiesMap& getProperties(){return _properties;}
 
    virtual int getIndex ();
    int tell ();
 
 protected:
    Array<char> _data;
-   RedBlackStringObjMap< Array<char> > _properties;
-
+   
+   PropertiesMap _properties;
    bool _loaded;
    int _index;
    int _offset;
@@ -46,7 +48,7 @@ protected:
 class IndigoRdfMolecule : public IndigoRdfData
 {
 public:
-   IndigoRdfMolecule (Array<char> &data, RedBlackStringObjMap< Array<char> > &properties,
+   IndigoRdfMolecule (Array<char> &data, PropertiesMap &properties,
                       int index, int offset);
    virtual ~IndigoRdfMolecule ();
 
@@ -62,7 +64,7 @@ protected:
 class IndigoRdfReaction : public IndigoRdfData
 {
 public:
-   IndigoRdfReaction (Array<char> &data, RedBlackStringObjMap< Array<char> > &properties,
+   IndigoRdfReaction (Array<char> &data, PropertiesMap &properties,
                       int index, int offset);
    virtual ~IndigoRdfReaction ();
 
@@ -231,5 +233,62 @@ protected:
    Scanner  *_own_scanner;
 };
 
+namespace indigo
+{
+class MultipleCdxLoader;
+}
+
+class IndigoCdxMolecule : public IndigoRdfData
+{
+public:
+   IndigoCdxMolecule (Array<char> &data_, PropertiesMap &properties, int index, int offset);
+   virtual ~IndigoCdxMolecule ();
+
+   virtual Molecule & getMolecule ();
+   virtual BaseMolecule & getBaseMolecule ();
+   virtual const char * getName ();
+   virtual IndigoObject * clone ();
+
+   virtual const char * debugInfo ();
+
+protected:
+   Molecule _mol;
+};
+
+class IndigoCdxReaction : public IndigoRdfData
+{
+public:
+   IndigoCdxReaction (Array<char> &data_, PropertiesMap &properties, int index, int offset);
+   virtual ~IndigoCdxReaction ();
+
+   virtual Reaction & getReaction ();
+   virtual BaseReaction & getBaseReaction ();
+   virtual const char * getName ();
+   virtual IndigoObject * clone ();
+
+   virtual const char * debugInfo ();
+
+protected:
+   Reaction _rxn;
+};
+
+class IndigoMultipleCdxLoader : public IndigoObject
+{
+public:
+   IndigoMultipleCdxLoader (Scanner &scanner);
+   IndigoMultipleCdxLoader (const char *filename);
+   virtual ~IndigoMultipleCdxLoader ();
+
+   virtual IndigoObject * next ();
+   virtual bool hasNext ();
+
+   IndigoObject * at (int index);
+
+   int tell ();
+
+   MultipleCdxLoader *loader;
+protected:
+   Scanner  *_own_scanner;
+};
 
 #endif

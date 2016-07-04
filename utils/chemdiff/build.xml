@@ -8,7 +8,7 @@
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
 <project name="chemdiff" default="default" basedir=".">
-    <description>Builds, tests, and runs the project chemdiff.</description>
+    <description>Builds and runs the project chemdiff.</description>
     <!--<import file="nbproject/build-impl.xml"/>-->
 
 	<property name="lib.dir"     value="lib"/>
@@ -61,7 +61,7 @@
     	</copy>
 		<jar destfile="dist/chemdiff.jar" basedir="build/classes">
             <manifest>
-                <attribute name="Main-Class" value="com.ggasoftware.indigo.chemdiff.Main"/>
+                <attribute name="Main-Class" value="com.epam.indigo.chemdiff.Main"/>
 				<attribute name="SplashScreen-Image" value="META-INF/chemdiff-splash.png"/>
 				<attribute name="Class-Path" value="lib/common-controls.jar lib/jna.jar lib/indigo-renderer.jar lib/indigo.jar"/>
 			</manifest>

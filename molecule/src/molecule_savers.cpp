@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -23,7 +23,7 @@ using namespace indigo;
 int MoleculeSavers::getHCount (BaseMolecule &mol, int index, int atom_number, int atom_charge)
 {
    int hydrogens_count = -1;
-   if (!mol.isRSite(index) && !mol.isPseudoAtom(index))
+   if (!mol.isRSite(index) && !mol.isPseudoAtom(index) && !mol.isTemplateAtom(index))
    {
       if (!mol.isQueryMolecule())
       {

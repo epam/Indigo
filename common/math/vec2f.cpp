@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -13,12 +13,40 @@
  ***************************************************************************/
 
 #include "math/algebra.h"
+#include <stdio.h>
 
 using namespace indigo;
 
 IMPL_ERROR(Vec2f, "Vec2f");
 
-bool Vec2f::normalize ()
+void print_float2(float x, char c = ' ') {
+    int sign = x < 0 ? -1 : 1;
+    x = fabs(x);
+    int deg = 0;
+
+    if (x != 0) {
+        while (x >= 2) {
+            deg++;
+            x /= 2;
+        }
+        while (x < 1) {
+            deg--;
+            x *= 2;
+        }
+    }
+    printf("%d ", deg);
+    if (sign > 0) printf("+"); else printf("-");
+
+    printf("0");
+    while (x != 0) {
+        if (x >= 1) printf("1"); else printf("0");
+        if (x >= 1) x -= 1;
+        x *= 2;
+    }
+    printf("%c", c);
+}
+
+bool Vec2f::normalize()
 {
    float l = lengthSqr();
 
@@ -62,7 +90,17 @@ void Vec2f::rotate (float si, float co)
    y = si * a.x + co * a.y;
 }
 
-void Vec2f::rotateL (float angle)
+void Vec2f::rotate(Vec2f vec)
+{
+   rotate(vec.y, vec.x);
+}
+
+void Vec2f::rotateL(Vec2f vec)
+{
+   rotateL(vec.y, vec.x);
+}
+
+void Vec2f::rotateL(float angle)
 {
    rotateL(sin(angle), cos(angle));
 }
@@ -106,7 +144,39 @@ float Vec2f::tiltAngle2 ()
    return 2 * PI - acos(x / l);
 }
 
-float Vec2f::distSqr (const Vec2f &a, const Vec2f &b)
+float Vec2f::calc_angle(Vec2f a, Vec2f b) {
+    /*printf("\ncalc_angle !!\n");
+    print_float2(x); print_float2(y, '\n');
+    print_float2(a.x); print_float2(a.y, '\n');
+    print_float2(b.x); print_float2(b.y, '\n');*/
+    a -= *this;
+	b -= *this;
+   /*printf("Value: ");
+   print_float2(a.lengthSqr() * b.lengthSqr(), '\n');
+   printf("Square root: ");
+   print_float2(sqrt(a.lengthSqr() * b.lengthSqr()), '\n');*/
+
+	float cos = Vec2f::dot(a, b) / sqrt(a.lengthSqr() * b.lengthSqr());
+	if (cos > 1) cos = 1;
+	if (cos < -1) cos = -1;
+   //printf("Cos: ");
+   //print_float2(cos, '\n');
+	float angle = acos(cos);
+   //printf("Angle: ");
+   //print_float2(angle, '\n');
+   if (Vec2f::cross(a, b) < 0) angle = -angle;
+   //printf("result: ");
+   //print_float2(angle);
+	return angle;
+}
+
+float Vec2f::calc_angle_pos(Vec2f a, Vec2f b) {
+	float angle = this->calc_angle(a, b);
+	if (angle < 0) angle += 2 * PI;
+	return angle;
+}
+
+float Vec2f::distSqr(const Vec2f &a, const Vec2f &b)
 {
    float dx = b.x - a.x;
    float dy = b.y - a.y;
@@ -161,7 +231,7 @@ bool Vec2f::intersection (const Vec2f &v1_1, const Vec2f &v1_2, const Vec2f &v2_
    a2 = v2_2.x - v2_1.x;
    b2 = v2_2.y - v2_1.y;
 
-   delta  =  a2 * b1 - a1 * b2;
+   delta  = a2 * b1  - a1  * b2;
    delta1 = a2 * b12 - a12 * b2;
    delta2 = a1 * b12 - a12 * b1;
 
@@ -188,14 +258,81 @@ float Vec2f::triangleArea (const Vec2f &a, const Vec2f &b, const Vec2f &c) {
 }
 
 bool Vec2f::segmentsIntersect (const Vec2f &a0, const Vec2f &a1, const Vec2f &b0, const Vec2f &b1) {
-   Vec2f ca, cb;
-   float la = Vec2f::distSqr(a0, a1) / 4, lb = Vec2f::distSqr(b0, b1) / 4;
-   ca.lineCombin2(a0, 0.5, a1, 0.5);
-   cb.lineCombin2(b0, 0.5, b1, 0.5);
-   // preliminary check to exclude the case of non-overlapping segments on the same line
-   if (Vec2f::distSqr(ca, b0) > la && Vec2f::distSqr(ca, b1) > la && Vec2f::distSqr(cb, a0) > lb && Vec2f::distSqr(cb, a1) > lb)
-      return false;
+
+   float maxax = __max(a0.x, a1.x);
+   float maxay = __max(a0.y, a1.y);
+   float maxbx = __max(b0.x, b1.x);
+   float maxby = __max(b0.y, b1.y);
+   float minax = __min(a0.x, a1.x);
+   float minay = __min(a0.y, a1.y);
+   float minbx = __min(b0.x, b1.x);
+   float minby = __min(b0.y, b1.y);
+
+   float big_eps = 0.001;
+
+   if (maxax + big_eps < minbx || maxbx + big_eps < minax || maxay + big_eps < minby || maxby + big_eps < minay) return false;
+
    // regular check
    return triangleArea(a0, a1, b0) * triangleArea(a0, a1, b1) < EPSILON
       && triangleArea(b0, b1, a0) * triangleArea(b0, b1, a1) < EPSILON;
+}
+
+bool Vec2f::segmentsIntersectInternal (const Vec2f &a0, const Vec2f &a1, const Vec2f &b0, const Vec2f &b1) {
+
+   float maxax = __max(a0.x, a1.x);
+   float maxay = __max(a0.y, a1.y);
+   float maxbx = __max(b0.x, b1.x);
+   float maxby = __max(b0.y, b1.y);
+   float minax = __min(a0.x, a1.x);
+   float minay = __min(a0.y, a1.y);
+   float minbx = __min(b0.x, b1.x);
+   float minby = __min(b0.y, b1.y);
+
+   float big_eps = 0.001;
+
+   if (maxax < minbx + big_eps || maxbx < minax + big_eps || maxay < minby + big_eps || maxby < minay + big_eps) return false;
+
+   // regular check
+   return triangleArea(a0, a1, b0) * triangleArea(a0, a1, b1) < - EPSILON
+      && triangleArea(b0, b1, a0) * triangleArea(b0, b1, a1) < - EPSILON;
+}
+
+float Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r) {
+   if (dot(p - q, r - q) <= 0) return dist(p, q);
+   if (dot(p - r, q - r) <= 0) return dist(p, r);
+   
+   Vec2f normal = r - q;
+   normal.rotate(PI/2);
+   float c = cross(q, r);
+   float s = normal.length();
+
+   float t = -c - dot(normal, p);
+
+   return fabs(t / s);
+}
+
+float Vec2f::distSegmentSegment(Vec2f p, Vec2f q, Vec2f r, Vec2f s) {
+   if (Vec2f::segmentsIntersect(p, q, r, s)) return 0;
+
+   return __min( __min(distPointSegment(p, r, s), distPointSegment(q, r, s)),
+      __min(distPointSegment(r, p, q), distPointSegment(s, p, q)));
+}
+
+Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, float angle) {
+
+   Vec2f vec(q - p);
+
+   return (p + q) / 2 + vec / tan((PI - angle)/2);
+}
+
+Vec2f Vec2f::get_circle_center(Vec2f a, Vec2f p, Vec2f q) {
+	p -= a;
+	q -= a;
+	float cross = Vec2f::cross(p, q);
+	if (fabs(cross) < EPSILON) return (p + q) / 2 + a;
+	float c1 = -p.lengthSqr() / 2;
+	float c2 = -q.lengthSqr() / 2;
+
+	Vec2f center(c1*q.x - c2*p.x, p.y * c2 - q.y * c1);
+	return center / cross + a;
 }

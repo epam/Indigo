@@ -4,7 +4,7 @@ using System.Text;
 
 #pragma warning disable 1591
 
-namespace com.ggasoftware.indigo
+namespace com.epam.indigo
 {
     public unsafe interface BingoLib
     {

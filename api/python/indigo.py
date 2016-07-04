@@ -1,6 +1,6 @@
 #
 #
-# Copyright (C) 2010-2013 GGA Software Services LLC
+# Copyright (C) 2009-2015 EPAM Systems
 #
 # This file is part of Indigo toolkit.
 #
@@ -26,7 +26,10 @@ class IndigoException (Exception):
         self.value = value
 
     def __str__(self):
-        return repr(self.value.decode(DECODE_ENCODING)) if sys.version_info > (3, 0) else repr(self.value)
+        if sys.version_info > (3, 0):
+            return str(self.value.decode(DECODE_ENCODING))  
+        else:
+            return str(self.value)
 
 
 class IndigoObject(object):
@@ -72,16 +75,6 @@ class IndigoObject(object):
     def next (self):
         return self.__next__()
 
-    def grossFormula(self):
-        self.dispatcher._setSessionId()
-        gfid = self.dispatcher._checkResult(Indigo._lib.indigoGrossFormula(self.id))
-        gf = self.dispatcher.IndigoObject(self.dispatcher, gfid)
-        return self.dispatcher._checkResultString(Indigo._lib.indigoToString(gf.id))
-
-    def toString(self):
-        self.dispatcher._setSessionId()
-        return self.dispatcher._checkResultString(Indigo._lib.indigoToString(self.id))
-
     def oneBitsList(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoOneBitsList(self.id))
@@ -99,10 +92,6 @@ class IndigoObject(object):
         if xyz is None:
             raise IndigoException(Indigo._lib.indigoGetLastError())
         return [xyz[0], xyz[1], xyz[2]]
-
-    def setXYZ (self, x, y, z):
-        self.dispatcher._setSessionId()
-        self.dispatcher._checkResult(Indigo._lib.indigoSetXYZ(self.id, x, y, z))
 
     def alignAtoms (self, atom_ids, desired_xyz):
         self.dispatcher._setSessionId()
@@ -164,6 +153,14 @@ class IndigoObject(object):
     def cml(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoCml(self.id))
+
+    def saveCdxml(self, filename):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSaveCdxmlToFile(self.id, filename.encode(ENCODE_ENCODING)))
+
+    def cdxml(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoCdxml(self.id))
 
     def saveMDLCT(self, output):
         self.dispatcher._setSessionId()
@@ -227,21 +224,38 @@ class IndigoObject(object):
 
     def optimize(self, options=''):
         self.dispatcher._setSessionId()
-        options = '' if options is None else options
+        if options is None:
+            options = ''
         return self.dispatcher._checkResult(Indigo._lib.indigoOptimize(self.id, options.encode(ENCODE_ENCODING)))
 
     def normalize(self, options=''):
         self.dispatcher._setSessionId()
-        options = '' if options is None else options
+        if options is None:
+            options = ''
         return bool(self.dispatcher._checkResult(Indigo._lib.indigoNormalize(self.id, options.encode(ENCODE_ENCODING))))
 
     def standardize(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoStandardize(self.id))
 
+    def ionize(self, pH, pH_toll):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoIonize(self.id, pH, pH_toll))
+
+    def getAcidPkaValue(self, atom, level, min_level):
+        self.dispatcher._setSessionId()
+        result = self.dispatcher._checkResultPtr(Indigo._lib.indigoGetAcidPkaValue(self.id, atom.id, level, min_level))
+        return result[0]
+
+    def getBasicPkaValue(self, atom, level, min_level):
+        self.dispatcher._setSessionId()
+        result = self.dispatcher._checkResultPtr(Indigo._lib.indigoGetBasicPkaValue(self.id, atom.id, level, min_level))
+        return result[0]
+
     def automap(self, mode=''):
         self.dispatcher._setSessionId()
-        mode = '' if mode is None else mode
+        if mode is None:
+            mode = ''
         return self.dispatcher._checkResult(Indigo._lib.indigoAutomap(self.id, mode.encode(ENCODE_ENCODING)))
 
     def atomMappingNumber(self, reaction_atom):
@@ -503,8 +517,133 @@ class IndigoObject(object):
 
     def setDataSGroupXY(self, x, y, options=''):
         self.dispatcher._setSessionId()
-        options = '' if options is None else options
+        if options is None:
+            options = '' 
         return self.dispatcher._checkResult(Indigo._lib.indigoSetDataSGroupXY(self.id, x, y, options.encode(ENCODE_ENCODING)))
+
+    def setSGroupData(self, data):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupData(self.id, data.encode(ENCODE_ENCODING)))
+
+    def setSGroupCoords(self, x, y):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupCoords(self.id, x, y))
+
+    def setSGroupDescription(self, description):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupDescription(self.id, description.encode(ENCODE_ENCODING)))
+
+    def setSGroupFieldName(self, name):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupFieldName(self.id, name.encode(ENCODE_ENCODING)))
+
+    def setSGroupQueryCode(self, code):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupQueryCode(self.id, code.encode(ENCODE_ENCODING)))
+
+    def setSGroupQueryOper(self, oper):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupQueryOper(self.id, oper.encode(ENCODE_ENCODING)))
+
+    def setSGroupDisplay(self, option):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupDisplay(self.id, option.encode(ENCODE_ENCODING)))
+
+    def setSGroupLocation(self, option):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupLocation(self.id, option.encode(ENCODE_ENCODING)))
+
+    def setSGroupTag(self, tag):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupTag(self.id, tag.encode(ENCODE_ENCODING)))
+
+    def setSGroupTagAlign(self, tag_align):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupTagAlign(self.id, tag_align))
+
+    def setSGroupDataType(self, data_type):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupDataType(self.id, data_type.encode(ENCODE_ENCODING)))
+
+    def setSGroupXCoord(self, x):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupXCoord(self.id, x))
+
+    def setSGroupYCoord(self, y):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupYCoord(self.id, y))
+
+    def createSGroup(self, sgtype, mapping, name):
+        self.dispatcher._setSessionId()
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoCreateSGroup(sgtype.encode(ENCODE_ENCODING), mapping.id, name.encode(ENCODE_ENCODING))))
+
+    def setSGroupClass(self, sgclass):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupClass(self.id, sgclass.encode(ENCODE_ENCODING)))
+
+    def setSGroupName(self, sgname):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupName(self.id, sgname.encode(ENCODE_ENCODING)))
+
+    def getSGroupClass(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetSGroupClass(self.id))
+
+    def getSGroupName(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetSGroupName(self.id))
+
+    def getSGroupNumCrossBonds(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSGroupNumCrossBonds(self.id))
+
+    def addSGroupAttachmentPoint(self, aidx, lvidx, apid):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoAddSGroupAttachmentPoint(self.id, aidx, lvidx, apid.encode(ENCODE_ENCODING)))
+
+    def deleteSGroupAttachmentPoint(self, apidx):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoDeleteSGroupAttachmentPoint(self.id, apidx))
+
+    def getSGroupDisplayOption(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSGroupDisplayOption(self.id))
+
+    def setSGroupDisplayOption(self, option):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupDisplayOption(self.id, option))
+
+    def getSGroupMultiplier(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSGroupMultiplier(self.id))
+
+    def setSGroupMultiplier(self, mult):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupMultiplier(self.id, mult))
+
+    def setSGroupBrackets(self, style, x1, y1, x2, y2, x3, y3, x4, y4):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupBrackets(self.id, style, x1, y1, x2, y2, x3, y3, x4, y4))
+
+    def findSGroups(self, prop, val):
+        self.dispatcher._setSessionId()
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoFindSGroups(self.id, prop.encode(ENCODE_ENCODING), val.encode(ENCODE_ENCODING))))
+
+    def getSGroupType(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSGroupType(self.id))
+
+    def getSGroupIndex(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSGroupIndex(self.id))
+
+    def transformSCSRtoCTAB(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoTransformSCSRtoCTAB(self.id))
+
+    def transformCTABtoSCSR(self, templates):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoTransformCTABtoSCSR(self.id, templates.id))
 
     def resetCharge(self):
         self.dispatcher._setSessionId()
@@ -738,6 +877,11 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoCountHeavyAtoms(self.id))
 
+    def grossFormula(self):
+        self.dispatcher._setSessionId()
+        gfid = self.dispatcher._checkResult(Indigo._lib.indigoGrossFormula(self.id))
+        gf = self.dispatcher.IndigoObject(self.dispatcher, gfid)
+        return self.dispatcher._checkResultString(Indigo._lib.indigoToString(gf.id))
 
     def molecularWeight(self):
         self.dispatcher._setSessionId()
@@ -779,6 +923,10 @@ class IndigoObject(object):
     def isChiral(self):
         self.dispatcher._setSessionId()
         return bool(self.dispatcher._checkResult(Indigo._lib.indigoIsChiral(self.id)))
+
+    def isPossibleFischerProjection(self, options):
+        self.dispatcher._setSessionId()
+        return bool(self.dispatcher._checkResult(Indigo._lib.indigoIsPossibleFischerProjection(self.id, options.encode(ENCODE_ENCODING))))
 
     def createSubmolecule(self, vertices):
         self.dispatcher._setSessionId()
@@ -1074,6 +1222,7 @@ class IndigoObject(object):
         return res
 
     def stereocenterPyramid(self):
+        self.dispatcher._setSessionId()
         ptr = self.dispatcher._checkResultPtr(Indigo._lib.indigoStereocenterPyramid(self.id))
         res = [0] * 4
         for i in range(4):
@@ -1125,7 +1274,7 @@ class Indigo(object):
             if not dirname:
                 dirname = '.'
             path = dirname + '/lib'
-        if os.name == 'posix' and not platform.mac_ver()[0]:
+        if os.name == 'posix' and not platform.mac_ver()[0] and not platform.system().startswith("CYGWIN"):
             arch = platform.architecture()[0]
             path += "/Linux"
             if arch == '32bit':
@@ -1135,7 +1284,7 @@ class Indigo(object):
             else:
                 raise IndigoException("unknown platform " + arch)
             Indigo._lib = CDLL(path + "/libindigo.so", mode=RTLD_GLOBAL)
-        elif os.name == 'nt':
+        elif os.name == 'nt' or platform.system().startswith("CYGWIN"):
             arch = platform.architecture()[0]
             path += "/Win"
             if arch == '32bit':
@@ -1275,6 +1424,8 @@ class Indigo(object):
         Indigo._lib.indigoIterateSmiles.argtypes = [c_int]
         Indigo._lib.indigoIterateCML.restype = c_int
         Indigo._lib.indigoIterateCML.argtypes = [c_int]
+        Indigo._lib.indigoIterateCDX.restype = c_int
+        Indigo._lib.indigoIterateCDX.argtypes = [c_int]
         Indigo._lib.indigoIterateSDFile.restype = c_int
         Indigo._lib.indigoIterateSDFile.argtypes = [c_char_p]
         Indigo._lib.indigoIterateRDFile.restype = c_int
@@ -1283,6 +1434,8 @@ class Indigo(object):
         Indigo._lib.indigoIterateSmilesFile.argtypes = [c_char_p]
         Indigo._lib.indigoIterateCMLFile.restype = c_int
         Indigo._lib.indigoIterateCMLFile.argtypes = [c_char_p]
+        Indigo._lib.indigoIterateCDXFile.restype = c_int
+        Indigo._lib.indigoIterateCDXFile.argtypes = [c_char_p]
         Indigo._lib.indigoCreateSaver.restype = c_int
         Indigo._lib.indigoCreateSaver.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoCreateFileSaver.restype = c_int
@@ -1295,6 +1448,10 @@ class Indigo(object):
         Indigo._lib.indigoExtractCommonScaffold.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoDecomposeMolecules.restype = c_int
         Indigo._lib.indigoDecomposeMolecules.argtypes = [c_int, c_int]
+        Indigo._lib.indigoRGroupComposition.restype = c_int
+        Indigo._lib.indigoRGroupComposition.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoGetFragmentedMolecule.restype = c_int
+        Indigo._lib.indigoGetFragmentedMolecule.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoCreateDecomposer.restype = c_int
         Indigo._lib.indigoCreateDecomposer.argtypes = [c_int]
         Indigo._lib.indigoReactionProductEnumerate.restype = c_int
@@ -1323,6 +1480,10 @@ class Indigo(object):
         Indigo._lib.indigoSaveCmlToFile.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoCml.restype = c_char_p
         Indigo._lib.indigoCml.argtypes = [c_int]
+        Indigo._lib.indigoSaveCdxmlToFile.restype = c_int
+        Indigo._lib.indigoSaveCdxmlToFile.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoCdxml.restype = c_char_p
+        Indigo._lib.indigoCdxml.argtypes = [c_int]
         Indigo._lib.indigoSaveMDLCT.restype = c_int
         Indigo._lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
         Indigo._lib.indigoAddReactant.restype = c_int
@@ -1359,6 +1520,14 @@ class Indigo(object):
         Indigo._lib.indigoNormalize.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoStandardize.restype = c_int
         Indigo._lib.indigoStandardize.argtypes = [c_int]
+        Indigo._lib.indigoIonize.restype = c_int
+        Indigo._lib.indigoIonize.argtypes = [c_int, c_float, c_float]
+        Indigo._lib.indigoBuildPkaModel.restype = c_int
+        Indigo._lib.indigoBuildPkaModel.argtypes = [c_int, c_float, c_char_p]
+        Indigo._lib.indigoGetAcidPkaValue.restype = POINTER(c_float)
+        Indigo._lib.indigoGetAcidPkaValue.argtypes = [c_int, c_int, c_int, c_int]
+        Indigo._lib.indigoGetBasicPkaValue.restype = POINTER(c_float)
+        Indigo._lib.indigoGetBasicPkaValue.argtypes = [c_int, c_int, c_int, c_int]
         Indigo._lib.indigoAutomap.restype = c_int
         Indigo._lib.indigoAutomap.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoGetAtomMappingNumber.restype = c_int
@@ -1394,9 +1563,11 @@ class Indigo(object):
         Indigo._lib.indigoStereocenterGroup.restype = c_int
         Indigo._lib.indigoStereocenterGroup.argtypes = [c_int]
         Indigo._lib.indigoSetStereocenterGroup.restype = c_int
-        Indigo._lib.indigoSetStereocenterGroup.argtypes = [c_int]
+        Indigo._lib.indigoSetStereocenterGroup.argtypes = [c_int, c_int]
         Indigo._lib.indigoChangeStereocenterType.restype = c_int
         Indigo._lib.indigoChangeStereocenterType.argtypes = [c_int, c_int]
+        Indigo._lib.indigoValidateChirality.restype = c_int
+        Indigo._lib.indigoValidateChirality.argtypes = [c_int]
         Indigo._lib.indigoSingleAllowedRGroup.restype = c_int
         Indigo._lib.indigoSingleAllowedRGroup.argtypes = [c_int]
         Indigo._lib.indigoAddStereocenter.restype = c_int
@@ -1477,6 +1648,68 @@ class Indigo(object):
         Indigo._lib.indigoAddSuperatom.argtypes = [c_int, c_int, POINTER(c_int), c_char_p]
         Indigo._lib.indigoSetDataSGroupXY.restype = c_int
         Indigo._lib.indigoSetDataSGroupXY.argtypes = [c_int, c_float, c_float, c_char_p]
+        Indigo._lib.indigoSetSGroupData.restype = c_int
+        Indigo._lib.indigoSetSGroupData.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupCoords.restype = c_int
+        Indigo._lib.indigoSetSGroupCoords.argtypes = [c_int, c_float, c_float]
+        Indigo._lib.indigoSetSGroupDescription.restype = c_int
+        Indigo._lib.indigoSetSGroupDescription.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupFieldName.restype = c_int
+        Indigo._lib.indigoSetSGroupFieldName.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupQueryCode.restype = c_int
+        Indigo._lib.indigoSetSGroupQueryCode.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupQueryOper.restype = c_int
+        Indigo._lib.indigoSetSGroupQueryOper.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupDisplay.restype = c_int
+        Indigo._lib.indigoSetSGroupDisplay.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupLocation.restype = c_int
+        Indigo._lib.indigoSetSGroupLocation.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupTag.restype = c_int
+        Indigo._lib.indigoSetSGroupTag.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupTagAlign.restype = c_int
+        Indigo._lib.indigoSetSGroupTagAlign.argtypes = [c_int, c_int]
+        Indigo._lib.indigoSetSGroupDataType.restype = c_int
+        Indigo._lib.indigoSetSGroupDataType.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupXCoord.restype = c_int
+        Indigo._lib.indigoSetSGroupXCoord.argtypes = [c_int, c_float]
+        Indigo._lib.indigoSetSGroupYCoord.restype = c_int
+        Indigo._lib.indigoSetSGroupYCoord.argtypes = [c_int, c_float]
+        Indigo._lib.indigoCreateSGroup.restype = c_int
+        Indigo._lib.indigoCreateSGroup.argtypes = [c_char_p, c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupClass.restype = c_int
+        Indigo._lib.indigoSetSGroupClass.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoSetSGroupName.restype = c_int
+        Indigo._lib.indigoSetSGroupName.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoGetSGroupClass.restype = c_char_p
+        Indigo._lib.indigoGetSGroupClass.argtypes = [c_int]
+        Indigo._lib.indigoGetSGroupName.restype = c_char_p
+        Indigo._lib.indigoGetSGroupName.argtypes = [c_int]
+        Indigo._lib.indigoGetSGroupNumCrossBonds.restype = c_int
+        Indigo._lib.indigoGetSGroupNumCrossBonds.argtypes = [c_int]
+        Indigo._lib.indigoAddSGroupAttachmentPoint.restype = c_int
+        Indigo._lib.indigoAddSGroupAttachmentPoint.argtypes = [c_int, c_int, c_int, c_char_p]
+        Indigo._lib.indigoDeleteSGroupAttachmentPoint.restype = c_int
+        Indigo._lib.indigoDeleteSGroupAttachmentPoint.argtypes = [c_int, c_int]
+        Indigo._lib.indigoGetSGroupDisplayOption.restype = c_int
+        Indigo._lib.indigoGetSGroupDisplayOption.argtypes = [c_int]
+        Indigo._lib.indigoSetSGroupDisplayOption.restype = c_int
+        Indigo._lib.indigoSetSGroupDisplayOption.argtypes = [c_int, c_int]
+        Indigo._lib.indigoGetSGroupMultiplier.restype = c_int
+        Indigo._lib.indigoGetSGroupMultiplier.argtypes = [c_int]
+        Indigo._lib.indigoSetSGroupMultiplier.restype = c_int
+        Indigo._lib.indigoSetSGroupMultiplier.argtypes = [c_int, c_int]
+        Indigo._lib.indigoSetSGroupBrackets.restype = c_int
+        Indigo._lib.indigoSetSGroupBrackets.argtypes = [c_int, c_int, c_float, c_float, c_float, c_float, c_float, c_float, c_float, c_float]
+        Indigo._lib.indigoFindSGroups.restype = c_int
+        Indigo._lib.indigoFindSGroups.argtypes = [c_int, c_char_p, c_char_p]
+        Indigo._lib.indigoGetSGroupType.restype = c_int
+        Indigo._lib.indigoGetSGroupType.argtypes = [c_int]
+        Indigo._lib.indigoGetSGroupIndex.restype = c_int
+        Indigo._lib.indigoGetSGroupIndex.argtypes = [c_int]
+        Indigo._lib.indigoTransformSCSRtoCTAB.restype = c_int
+        Indigo._lib.indigoTransformSCSRtoCTAB.argtypes = [c_int]
+        Indigo._lib.indigoTransformCTABtoSCSR.restype = c_int
+        Indigo._lib.indigoTransformCTABtoSCSR.argtypes = [c_int, c_int]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int
@@ -1613,6 +1846,8 @@ class Indigo(object):
         Indigo._lib.indigoHasZCoord.argtypes = [c_int]
         Indigo._lib.indigoIsChiral.restype = c_int
         Indigo._lib.indigoIsChiral.argtypes = [c_int]
+        Indigo._lib.indigoIsPossibleFischerProjection.restype = c_int
+        Indigo._lib.indigoIsPossibleFischerProjection.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoCreateSubmolecule.restype = c_int
         Indigo._lib.indigoCreateSubmolecule.argtypes = [c_int, c_int, POINTER(c_int)]
         Indigo._lib.indigoCreateEdgeSubmolecule.restype = c_int
@@ -1715,6 +1950,8 @@ class Indigo(object):
         Indigo._lib.indigoMapBond.argtypes = [c_int, c_int]
         Indigo._lib.indigoMapMolecule.restype = c_int
         Indigo._lib.indigoMapMolecule.argtypes = [c_int, c_int]
+        Indigo._lib.indigoIterateTautomers.restype = c_int
+        Indigo._lib.indigoIterateTautomers.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoAllScaffolds.restype = c_int
         Indigo._lib.indigoAllScaffolds.argtypes = [c_int]
         Indigo._lib.indigoDecomposedMoleculeScaffold.restype = c_int
@@ -1741,8 +1978,6 @@ class Indigo(object):
         Indigo._lib.indigoStereocenterPyramid.argtypes = [c_int]
         Indigo._lib.indigoExpandAbbreviations.restype = c_int
         Indigo._lib.indigoExpandAbbreviations.argtypes = [c_int]
-        Indigo._lib.indigoValidateChirality.restype = c_int
-        Indigo._lib.indigoValidateChirality.argtypes = [c_int]
         Indigo._lib.indigoDbgInternalType.restype = c_char_p
         Indigo._lib.indigoDbgInternalType.argtypes = [c_int]
 
@@ -1807,7 +2042,10 @@ class Indigo(object):
         return result
 
     def _checkResultString (self, result):
-        return self._checkResultPtr(result).decode(DECODE_ENCODING) if sys.version_info >= (3, 0) else self._checkResultPtr(result).encode(ENCODE_ENCODING)
+        if sys.version_info >= (3, 0):
+            return self._checkResultPtr(result).decode(DECODE_ENCODING)  
+        else:
+            return self._checkResultPtr(result).encode(ENCODE_ENCODING)
 
     def convertToArray (self, iteratable):
         if isinstance(iteratable, IndigoObject):
@@ -1907,8 +2145,9 @@ class Indigo(object):
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateQueryReaction()))
 
     def exactMatch(self, item1, item2, flags=''):
-        self._setSessionId()
-        flags = '' if flags is None else flags
+        self._setSessionId()        
+        if flags is None:
+            flags = ''
         newobj = self._checkResult(Indigo._lib.indigoExactMatch(item1.id, item2.id, flags.encode(ENCODE_ENCODING)))
         if newobj == 0:
             return None
@@ -1933,7 +2172,8 @@ class Indigo(object):
 
     def similarity(self, item1, item2, metrics=''):
         self._setSessionId()
-        metrics = '' if metrics is None else metrics
+        if metrics is None:
+            metrics = '' 
         return self._checkResultFloat(Indigo._lib.indigoSimilarity(item1.id, item2.id, metrics.encode(ENCODE_ENCODING)))
 
     def iterateSDFile(self, filename):
@@ -1952,6 +2192,10 @@ class Indigo(object):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateCMLFile(filename.encode(ENCODE_ENCODING))))
 
+    def iterateCDXFile(self, filename):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateCDXFile(filename.encode(ENCODE_ENCODING))))
+
     def createFileSaver(self, filename, format):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateFileSaver(filename.encode(ENCODE_ENCODING), format.encode(ENCODE_ENCODING))))
@@ -1966,13 +2210,15 @@ class Indigo(object):
 
     def substructureMatcher(self, target, mode=''):
         self._setSessionId()
-        mode = '' if mode is None else mode
+        if mode is None:
+            mode = ''
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoSubstructureMatcher(target.id, mode.encode(ENCODE_ENCODING))), target)
 
     def extractCommonScaffold(self, structures, options=''):
         self._setSessionId()
         structures = self.convertToArray(structures)
-        options = '' if options is None else options
+        if options is None:
+            options = ''
         newobj = self._checkResult(Indigo._lib.indigoExtractCommonScaffold(structures.id, options.encode(ENCODE_ENCODING)))
         if newobj == 0:
             return None
@@ -1983,6 +2229,26 @@ class Indigo(object):
         self._setSessionId()
         structures = self.convertToArray(structures)
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoDecomposeMolecules(scaffold.id, structures.id)), scaffold)
+
+    def rgroupComposition(self, molecule, options=''):
+        self._setSessionId()
+        if options is None:
+            options = ''
+        newobj = self._checkResult(Indigo._lib.indigoRGroupComposition(molecule.id, options.encode(ENCODE_ENCODING)))
+        if newobj == 0:
+            return None
+        else:
+            return self.IndigoObject(self, newobj, self)
+
+    def getFragmentedMolecule(self, elem, options=''):
+        self._setSessionId()
+        if options is None:
+            options = ''
+        newobj = self._checkResult(Indigo._lib.indigoGetFragmentedMolecule(elem.id, options.encode(ENCODE_ENCODING)))
+        if newobj == 0:
+            return None
+        else:
+            return self.IndigoObject(self, newobj, self)
 
     def createDecomposer(self, scaffold):
         self._setSessionId()
@@ -1995,7 +2261,11 @@ class Indigo(object):
 
     def transform(self, reaction, monomers):
         self._setSessionId()
-        return self._checkResult(Indigo._lib.indigoTransform(reaction.id, monomers.id))
+        newobj = self._checkResult(Indigo._lib.indigoTransform(reaction.id, monomers.id))
+        if newobj == 0:
+            return None
+        else:
+            return self.IndigoObject(self, newobj, self)
 
     def loadBuffer(self, buf):
         self._setSessionId()
@@ -2030,9 +2300,26 @@ class Indigo(object):
             return None
         return self.IndigoObject(self, result, reader)
 
+    def iterateCDX(self, reader):
+        self._setSessionId()
+        result = self._checkResult(Indigo._lib.indigoIterateCDX(reader.id))
+        if not result:
+            return None
+        return self.IndigoObject(self, result, reader)
+
     def iterateRDF(self, reader):
         self._setSessionId()
         result = self._checkResult(Indigo._lib.indigoIterateRDF(reader.id))
         if not result:
             return None
         return self.IndigoObject(self, result, reader)
+
+    def iterateTautomers(self, molecule, params):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateTautomers(molecule.id, params)), molecule)
+
+
+    def buildPkaModel(self, level, threshold, filename):
+        self._setSessionId()
+        return self._checkResult(Indigo._lib.indigoBuildPkaModel(level, threshold, filename.encode(ENCODE_ENCODING)))
+

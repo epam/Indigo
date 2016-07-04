@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -18,6 +18,7 @@
 #include "indigo_internal.h"
 #include "reaction/reaction.h"
 #include "reaction/query_reaction.h"
+#include "base_cpp/properties_map.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -31,13 +32,15 @@ public:
 
    virtual ~IndigoBaseReaction ();
 
-   virtual RedBlackStringObjMap< Array<char> > * getProperties ();
+   virtual indigo::PropertiesMap& getProperties() { return _properties;}
+   virtual MonomersProperties& getMonomersProperties() { return _monomersProperties; };
 
    static bool is (IndigoObject &obj);
 
    virtual const char * debugInfo ();
 
-   RedBlackStringObjMap< Array<char> > properties;
+   MonomersProperties _monomersProperties;
+   indigo::PropertiesMap _properties;
 };
 
 class DLLEXPORT IndigoReaction : public IndigoBaseReaction
@@ -55,7 +58,7 @@ public:
    static IndigoReaction * cloneFrom (IndigoObject & obj);
 
    virtual const char * debugInfo ();
-
+   
    Reaction rxn;
 };
 
@@ -76,12 +79,14 @@ public:
    virtual const char * debugInfo ();
 
    QueryReaction rxn;
+   
 };
 
 class IndigoReactionMolecule : public IndigoObject
 {
 public:
    IndigoReactionMolecule (BaseReaction &reaction, int index);
+   IndigoReactionMolecule (BaseReaction &reaction, MonomersProperties &map, int index);
    virtual ~IndigoReactionMolecule ();
 
    virtual BaseMolecule & getBaseMolecule ();
@@ -89,13 +94,14 @@ public:
    virtual Molecule & getMolecule ();
    virtual int getIndex ();
    virtual IndigoObject * clone ();
-   virtual RedBlackStringObjMap< Array<char> > * getProperties ();
    virtual void remove ();
+   virtual indigo::PropertiesMap& getProperties() { return _properties; }
 
    virtual const char * debugInfo ();
 
    BaseReaction &rxn;
    int idx;
+   indigo::PropertiesMap _properties;
 };
 
 class IndigoReactionIter : public IndigoObject
@@ -109,6 +115,7 @@ public:
       MOLECULES
    };
 
+   IndigoReactionIter (BaseReaction &rxn, MonomersProperties &map, int subtype);
    IndigoReactionIter (BaseReaction &rxn, int subtype);
    virtual ~IndigoReactionIter ();
 
@@ -125,6 +132,7 @@ protected:
 
    int _subtype;
    BaseReaction &_rxn;
+   MonomersProperties *_map;
    int _idx;
 };
 

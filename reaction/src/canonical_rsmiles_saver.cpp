@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2014 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -35,7 +35,7 @@ CanonicalRSmilesSaver::~CanonicalRSmilesSaver ()
 
 void CanonicalRSmilesSaver::saveReaction(Reaction &reaction_)
 {
-   int i, j;
+   int j;
 
    QS_DEF(Reaction, reaction);
    reaction.clear();

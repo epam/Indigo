@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -33,7 +33,7 @@
 
 #define __swap(a, b, tmp) ((tmp) = (b), (b) = (a), (a) = (tmp))
 
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(__MINGW32__)
 //#define vsnprintf _vsnprintf
 #define snprintf _snprintf
 #define strcasecmp _stricmp

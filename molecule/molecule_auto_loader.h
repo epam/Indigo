@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -18,6 +18,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/red_black.h"
+#include "base_cpp/properties_map.h"
 #include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32
@@ -53,7 +54,7 @@ public:
 
    // Loaded properties
    CP_DECL;
-   TL_CP_DECL(RedBlackStringObjMap< Array<char> >, properties);
+   TL_CP_DECL(PropertiesMap, properties);
 
    DECL_ERROR;
 

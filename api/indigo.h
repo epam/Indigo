@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -182,6 +182,11 @@ CEXPORT int indigoSaveCml (int object, int output);
 CEXPORT int indigoSaveCmlToFile (int object, const char *filename);
 CEXPORT const char * indigoCml (int object);
 
+// accepts molecules and reactions 
+CEXPORT int indigoSaveCdxml (int object, int output);
+CEXPORT int indigoSaveCdxmlToFile (int object, const char *filename);
+CEXPORT const char * indigoCdxml (int object);
+
 // the output must be a file or a buffer, but not a string
 // (because MDLCT data usually contains zeroes)
 CEXPORT int indigoSaveMDLCT (int item, int output);
@@ -250,8 +255,16 @@ CEXPORT int indigoNormalize (int structure, const char *options);
 
 // Method for molecule and query standardizing
 // It stadrdize charges, stereo and etc.
-// Default options is empty.
 CEXPORT int indigoStandardize (int item);
+
+// Method for structure ionization at specified pH and pH tollerance
+CEXPORT int indigoIonize (int item, float pH, float pH_toll);
+
+// Method for building PKA model
+CEXPORT int indigoBuildPkaModel (int max_level, float threshold, const char *filename);
+
+CEXPORT float * indigoGetAcidPkaValue (int item, int atom, int level, int min_level);
+CEXPORT float * indigoGetBasicPkaValue (int item, int atom, int level, int min_level);
 
 // Automatic reaction atom-to-atom mapping
 // mode is one of the following (separated by a space):
@@ -401,6 +414,46 @@ CEXPORT int indigoAddSuperatom (int molecule, int natoms, int *atoms, const char
 
 CEXPORT int indigoSetDataSGroupXY (int sgroup, float x, float y, const char *options);
 
+CEXPORT int indigoSetSGroupData (int sgroup, const char *data);
+CEXPORT int indigoSetSGroupCoords (int sgroup, float x, float y);
+CEXPORT int indigoSetSGroupDescription (int sgroup, const char *description);
+CEXPORT int indigoSetSGroupFieldName (int sgroup, const char *name);
+CEXPORT int indigoSetSGroupQueryCode (int sgroup, const char *querycode);
+CEXPORT int indigoSetSGroupQueryOper (int sgroup, const char *queryoper);
+CEXPORT int indigoSetSGroupDisplay (int sgroup, const char *option);
+CEXPORT int indigoSetSGroupLocation (int sgroup, const char *option);
+CEXPORT int indigoSetSGroupTag (int sgroup, const char *tag);
+CEXPORT int indigoSetSGroupTagAlign (int sgroup, int tag_align);
+CEXPORT int indigoSetSGroupDataType (int sgroup, const char *type);
+CEXPORT int indigoSetSGroupXCoord (int sgroup, float x);
+CEXPORT int indigoSetSGroupYCoord (int sgroup, float y);
+
+CEXPORT int indigoCreateSGroup (const char *type, int mapping, const char *name);
+CEXPORT const char * indigoGetSGroupClass (int sgroup);
+CEXPORT const char * indigoGetSGroupName (int sgroup);
+CEXPORT int indigoSetSGroupClass (int sgroup, const char *sgclass);
+CEXPORT int indigoSetSGroupName (int sgroup, const char *sgname);
+CEXPORT int indigoGetSGroupNumCrossBonds (int sgroup);
+
+CEXPORT int indigoAddSGroupAttachmentPoint (int sgroup, int aidx, int lvidx, const char *apid);
+CEXPORT int indigoDeleteSGroupAttachmentPoint (int sgroup, int index);
+CEXPORT int indigoGetSGroupDisplayOption (int sgroup);
+CEXPORT int indigoSetSGroupDisplayOption (int sgroup, int option);
+
+CEXPORT int indigoGetSGroupMultiplier (int sgroup);
+CEXPORT int indigoSetSGroupMultiplier (int sgroup, int multiplier);
+
+CEXPORT int indigoSetSGroupBrackets (int sgroup, int brk_style, float x1, float y1, float x2, float y2,
+                                     float x3, float y3, float x4, float y4);    
+
+CEXPORT int indigoFindSGroups (int item, const char *property, const char *value);
+
+CEXPORT int indigoGetSGroupType (int item);
+CEXPORT int indigoGetSGroupIndex (int item);
+
+CEXPORT int indigoTransformSCSRtoCTAB (int item);
+CEXPORT int indigoTransformCTABtoSCSR (int molecule, int templates);
+
 CEXPORT int indigoResetCharge (int atom);
 CEXPORT int indigoResetExplicitValence (int atom);
 CEXPORT int indigoResetIsotope (int atom);
@@ -542,6 +595,8 @@ CEXPORT int indigoHasCoord (int molecule);
 CEXPORT int indigoHasZCoord (int molecule);
 CEXPORT int indigoIsChiral (int molecule);
 
+CEXPORT int indigoIsPossibleFischerProjection (int molecule, const char *options);
+
 CEXPORT int indigoCreateSubmolecule (int molecule, int nvertices, int *vertices);
 CEXPORT int indigoCreateEdgeSubmolecule (int molecule, int nvertices, int *vertices, int nedges, int *edges);
 
@@ -662,17 +717,19 @@ CEXPORT const char* indigoOneBitsList (int fingerprint);
 // "tversky" without numbers defaults to alpha = beta = 0.5
 CEXPORT float indigoSimilarity (int item1, int item2, const char *metrics);
 
-/* Working with SDF/RDF/SMILES/CML files  */
+/* Working with SDF/RDF/SMILES/CML/CDX files  */
 
 CEXPORT int indigoIterateSDF    (int reader);
 CEXPORT int indigoIterateRDF    (int reader);
 CEXPORT int indigoIterateSmiles (int reader);
 CEXPORT int indigoIterateCML    (int reader);
+CEXPORT int indigoIterateCDX    (int reader);
 
 CEXPORT int indigoIterateSDFile     (const char *filename);
 CEXPORT int indigoIterateRDFile     (const char *filename);
 CEXPORT int indigoIterateSmilesFile (const char *filename);
 CEXPORT int indigoIterateCMLFile    (const char *filename);
+CEXPORT int indigoIterateCDXFile    (const char *filename);
 
 // Applicable to items returned by SDF/RDF iterators.
 // Returns the content of SDF/RDF item.
@@ -773,6 +830,10 @@ CEXPORT int indigoMapBond (int handle, int bond);
 //   You can use indigoIndex() to obtain the index of the returned molecule.
 CEXPORT int indigoMapMolecule (int handle, int molecule);
 
+// Accepts a molecule and options for tautomer enumeration algorithms
+// Returns an iterator object over the molecules that are tautomers of this molecule.
+CEXPORT int indigoIterateTautomers (int molecule, const char *options);
+
 /* Scaffold detection */
 
 // Returns zero if no common substructure is found.
@@ -822,6 +883,11 @@ CEXPORT int indigoDecomposeMolecule(int decomp, int mol);
 CEXPORT int indigoIterateDecompositions(int deco_item);
 // Adds the input decomposition to a full scaffold
 CEXPORT int indigoAddDecomposition(int decomp, int q_match);
+
+/* R-Group convolution */
+
+CEXPORT int indigoGetFragmentedMolecule(int elem, const char *options);
+CEXPORT int indigoRGroupComposition(int molecule, const char *options);
 
 /*
  * Abbreviations

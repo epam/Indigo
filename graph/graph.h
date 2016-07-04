@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -17,6 +17,7 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/list.h"
+#include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/obj_array.h"
 #include "graph/filter.h"
@@ -92,7 +93,7 @@ struct Edge
 
 class CycleBasis;
 
-class DLLEXPORT Graph
+class DLLEXPORT Graph : public NonCopyable
 {
 public:
    DECL_ERROR;
@@ -136,7 +137,8 @@ public:
 
    bool findPath (int from, int where, Array<int> &path_out) const;
 
-   void makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *mapping);
+   void makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *vertex_mapping);
+   void makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *vertex_mapping, const Array<int> *edges, Array<int> *edge_mapping);
    void makeSubgraph (const Graph &other, const Filter &filter, Array<int> *mapping_out, Array<int> *inv_mapping);
    void cloneGraph (const Graph &other, Array<int> *mapping);
 
@@ -150,9 +152,9 @@ public:
    void setEdgeTopology (int idx, int topology);
    void validateEdgeTopologies ();
 
-   static bool isConnected (const Graph &graph);
+   static bool isConnected (Graph &graph);
    static bool isChain_AssumingConnected (const Graph &graph);
-   static bool isTree (const Graph &graph);
+   static bool isTree (Graph &graph);
    static void filterVertices (const Graph &graph, const int *filter, int filter_type, int filter_value, Array<int> &result);
    static void filterEdges (const Graph &graph, const int *filter, int filter_type, int filter_value, Array<int> &result);
    static int  findMappedEdge (const Graph &graph, const Graph &mapped_graph, int edge_idx, const int *mapping);
@@ -207,8 +209,6 @@ protected:
    // NEVER USE IT.
    void _cloneGraph_KeepIndices (const Graph &other);
 
-private:
-   Graph (const Graph &); // no implicit copy
 };
 
 }

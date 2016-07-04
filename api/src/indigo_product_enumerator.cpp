@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -29,32 +29,37 @@
 #include "reaction/rxnfile_saver.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_product_enumerator.h"
-#include "reaction/reaction_transformation.h" 
+#include "reaction/reaction_transformation.h"
+#include "base_cpp/properties_map.h"
+#include "indigo_mapping.h"
+#include "indigo_molecule.h"
 
 struct ProductEnumeratorCallbackData 
 {
    ReactionProductEnumerator *rpe;
    ObjArray<Reaction> *out_reactions;
+   ObjArray<Array<int>> *out_indices;
 };
 
-static void product_proc( Molecule &product, Array<int> &monomers_indices, void *userdata )
+static void product_proc( Molecule &product, Array<int> &monomers_indices, Array<int> &mapping, void *userdata )
 {
    ProductEnumeratorCallbackData *rpe_data = (ProductEnumeratorCallbackData *)userdata;
-
-   Reaction &reaction = rpe_data->out_reactions->push();
 
    QS_DEF(Molecule, new_product);
    new_product.clear();
    new_product.clone(product, NULL, NULL);   
 
+   Reaction &reaction = rpe_data->out_reactions->push();
    reaction.clear();
 
    for (int i = 0; i < monomers_indices.size(); i++)
       reaction.addReactantCopy(rpe_data->rpe->getMonomer(monomers_indices[i]), NULL, NULL);
 
    reaction.addProductCopy(new_product, NULL, NULL);
-
    reaction.name.copy(product.name);
+   
+   Array<int> &indices = rpe_data->out_indices->push();
+   indices.copy(monomers_indices);
 }
 
 CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
@@ -69,26 +74,27 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
       ReactionProductEnumerator rpe(query_rxn);
       rpe.arom_options = self.arom_options;
 
-      ObjArray<Reaction> out_reactions;
-
       if (monomers_object.objects.size() < query_rxn.reactantsCount())
          throw IndigoError("Too small monomers array");
 
-      int user_reactant_idx = 0;
+      ObjArray<PropertiesMap> monomers_properties;
       for (int i = query_rxn.reactantBegin();
                i != query_rxn.reactantEnd();
                i = query_rxn.reactantNext(i))
       {
          IndigoArray &reactant_monomers_object = IndigoArray::cast(*monomers_object.objects[i]);
-         
-         for (int j = 0; j < reactant_monomers_object.objects.size(); j++)
+
+         auto size = reactant_monomers_object.objects.size();
+         for (int j = 0; j < size; j++)
          {
-            Molecule &monomer = reactant_monomers_object.objects[j]->getMolecule();
+            IndigoObject &object = *reactant_monomers_object.objects[j];
+            monomers_properties.push().copy(object.getProperties());
+            
+            Molecule &monomer = object.getMolecule();
+            rpe.addMonomer(i, monomer);
             if (monomer.have_xyz)
                has_coord = true;
-            rpe.addMonomer(i, monomer);
          }
-         user_reactant_idx++;
       }
 
       rpe.is_multistep_reaction = self.rpe_params.is_multistep_reactions;
@@ -99,8 +105,12 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
 
       rpe.product_proc = product_proc;
 
+      ObjArray<Reaction> out_reactions;
+      ObjArray<Array<int>> out_indices_all;
+      
       ProductEnumeratorCallbackData rpe_data;
       rpe_data.out_reactions = &out_reactions;
+      rpe_data.out_indices = &out_indices_all;
       rpe_data.rpe = &rpe;
       rpe.userdata = &rpe_data;
 
@@ -108,17 +118,29 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
 
       int out_array = indigoCreateArray();
 
-      for (int i = 0; i < out_reactions.size(); i++)
+      for (int k = 0; k < out_reactions.size(); k++)
       {
-         if (has_coord)
+         Reaction& out_reaction = out_reactions[k];
+         if (has_coord && self.rpe_params.is_layout)
          {
-            ReactionLayout layout(out_reactions[i]);
+            ReactionLayout layout(out_reaction, self.smart_layout);
             layout.make();
-            out_reactions[i].markStereocenterBonds();
+            out_reaction.markStereocenterBonds();
          }
 
          QS_DEF(IndigoReaction, indigo_rxn);
-         indigo_rxn.rxn.clone(out_reactions[i], NULL, NULL, NULL);
+         indigo_rxn._monomersProperties.clear();
+         indigo_rxn.rxn.clone(out_reaction, NULL, NULL, NULL);
+
+         int properties_count = monomers_properties.size();
+         Array<int>& out_indices = out_indices_all[k];
+         for (auto m = 0; m < out_indices.size(); m++) {
+            int index = out_indices[m];
+            if (index < properties_count) {
+               PropertiesMap &properties = monomers_properties[index];
+               indigo_rxn._monomersProperties.push().copy(properties);
+            }
+         }
 
          indigoArrayAdd(out_array, self.addObject(indigo_rxn.clone()));
       }
@@ -134,10 +156,11 @@ CEXPORT int indigoTransform (int reaction, int monomers)
    {
       IndigoObject &monomers_object = self.getObject(monomers);
       QueryReaction &query_rxn = self.getObject(reaction).getQueryReaction();
-
+         
       ReactionTransformation rt;
       rt.arom_options = self.arom_options;
-      rt.layout_flag = self.rpe_params.is_layout;
+      rt.layout_flag = self.rpe_params.transform_is_layout;
+      rt.smart_layout = self.smart_layout;
 
       // Try to work with molecule first
       bool is_mol = false;
@@ -153,22 +176,58 @@ CEXPORT int indigoTransform (int reaction, int monomers)
       TimeoutCancellationHandler cancellation(self.cancellation_timeout);
       rt.cancellation = &cancellation;
 
+      bool transformed_flag = false;
+   
+      IndigoObject *out_mapping = 0;
+      
       if (is_mol)
       {
+         Array<int> mapping;
          Molecule &mol = monomers_object.getMolecule();
-         rt.transform(mol, query_rxn);
+         Molecule input_mol;
+         input_mol.clone(mol, 0, 0);
+         
+         transformed_flag = rt.transform(mol, query_rxn, &mapping);
+
+         AutoPtr<IndigoMapping> mptr(new IndigoMapping(input_mol, mol));
+      
+         mptr.get()->mapping.copy(mapping);
+
+         out_mapping = mptr.release();
       }
       else if (monomers_object.type == IndigoObject::ARRAY)
       {
          IndigoArray &monomers_array = IndigoArray::cast(self.getObject(monomers));
-
+         AutoPtr<IndigoArray> out_array(new IndigoArray());
+         
          for (int i = 0; i < monomers_array.objects.size(); i++)
-            rt.transform(monomers_array.objects[i]->getMolecule(), query_rxn);
+         {
+            
+            Array<int> mapping;
+            Molecule &mol = monomers_object.getMolecule();
+            Molecule input_mol;
+            input_mol.clone(mol, 0, 0);
+         
+            if (rt.transform(monomers_array.objects[i]->getMolecule(), query_rxn, &mapping))
+               transformed_flag = true;
+
+            AutoPtr<IndigoMapping> mptr(new IndigoMapping(input_mol, mol));
+            mptr.get()->mapping.copy(mapping);
+
+            out_array.get()->objects.add(mptr.release());
+         }
+
+         out_mapping = out_array.release();
       }
       else
          throw IndigoError("%s is not a molecule or array of molecules", self.getObject(monomers).debugInfo());
 
-      return 1;
+      if (transformed_flag)
+         return self.addObject(out_mapping);
+      else
+      {
+         return 0;
+      }
    }
    INDIGO_END(-1)
 }
@@ -214,6 +273,12 @@ void indigoProductEnumeratorSetLayoutFlag (int layout_flag)
    self.rpe_params.is_layout = (layout_flag != 0);
 }
 
+void indigoProductEnumeratorSetTransformLayoutFlag (int transform_layout_flag)
+{
+   Indigo &self = indigoGetInstance();
+   self.rpe_params.transform_is_layout = (transform_layout_flag != 0);
+}
+
 
 class _IndigoRPEOptionsHandlersSetter
 {
@@ -232,7 +297,8 @@ _IndigoRPEOptionsHandlersSetter::_IndigoRPEOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("rpe-self-reaction", indigoProductEnumeratorSetSelfReactionFlag);
    mgr.setOptionHandlerInt("rpe-max-depth", indigoProductEnumeratorSetMaximumSearchDepth);
    mgr.setOptionHandlerInt("rpe-max-products-count", indigoProductEnumeratorSetMaximumProductsCount);
-   mgr.setOptionHandlerBool("transform-layout", indigoProductEnumeratorSetLayoutFlag);
+   mgr.setOptionHandlerBool("rpe-layout", indigoProductEnumeratorSetLayoutFlag);
+   mgr.setOptionHandlerBool("transform-layout", indigoProductEnumeratorSetTransformLayoutFlag);
 }
 
 _IndigoRPEOptionsHandlersSetter _indigo_rpe_options_handlers_setter;

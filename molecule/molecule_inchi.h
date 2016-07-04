@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -71,7 +71,7 @@ private:
 
    void _printInChIComponentCisTrans (MoleculeInChICompoment &comp, Array<char> &result);
 
-   void _normalizeMolecule (Molecule &mol);
+   static void _normalizeMolecule (Molecule &mol);
 
    Output &_output;                                                                    
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -163,6 +163,36 @@ CEXPORT const char * indigoRxnfile (int molecule)
       return 0;
 
    if (indigoSaveRxnfile(molecule, b) == -1)
+      return 0;
+
+   res = indigoToString(b);
+   indigoFree(b);
+   return res;
+}
+
+CEXPORT int indigoSaveCdxmlToFile (int item, const char *filename)
+{
+   int f = indigoWriteFile(filename);
+   int res;
+
+   if (f == -1)
+      return -1;
+
+   res = indigoSaveCdxml(item, f);
+
+   indigoFree(f);
+   return res;
+}
+
+CEXPORT const char * indigoCdxml (int item)
+{
+   int b = indigoWriteBuffer();
+   const char *res;
+
+   if (b == -1)
+      return 0;
+
+   if (indigoSaveCdxml(item, b) == -1)
       return 0;
 
    res = indigoToString(b);

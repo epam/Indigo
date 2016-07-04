@@ -12,13 +12,9 @@ parser.add_option('--doc', default=False, action='store_true', help='Put documen
 
 (args, left_args) = parser.parse_args()
 
-# find indigo version
-version = ""
-cur_dir = split(__file__)[0]
-for line in open(join(cur_dir, "indigo-version.cmake")):
-    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
-    if m:
-        version = m.group(1)
+# Find indigo version
+from get_indigo_version import getIndigoVersion
+version = getIndigoVersion()
 
 api_dir = abspath(dirname(__file__))
 root = join(api_dir, "..")
@@ -46,10 +42,10 @@ subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
 subprocess.check_call("mvn clean package -Dmaven.test.skip=true", shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-inchi-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-inchi.jar'))
 
-os.chdir(os.path.join(api_dir, "plugins", "bingo", "java"))
+os.chdir(os.path.join(api_dir, "plugins", "bingo", "java")) # TODO: Update when folder will be changed to nosql
 subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
 subprocess.check_call("mvn clean package -Dmaven.test.skip=true", shell=True)
-shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-%s.jar' % version), os.path.join(dist_dir, 'java', 'bingo.jar'))
+shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-nosql-%s.jar' % version), os.path.join(dist_dir, 'java', 'bingo-nosql.jar'))
 
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "java")

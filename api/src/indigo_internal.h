@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -31,6 +31,8 @@
 #include "molecule/molecule_tautomer.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_standardize_options.h"
+#include "molecule/molecule_ionize.h"
+
 
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define 
  * should be compared with indigoVersion() to ensure libraries binary 
@@ -50,8 +52,10 @@ namespace indigo
    class RdfLoader;
    class MolfileSaver;
    class RxnfileSaver;
+   class PropertiesMap;
+   
+   typedef ObjArray<PropertiesMap> MonomersProperties;
 }
-
 extern DLLEXPORT OptionManager & indigoGetOptionManager ();
 
 class DLLEXPORT IndigoObject
@@ -95,6 +99,8 @@ public:
       DECONVOLUTION,
       DECONVOLUTION_ELEM,
       DECONVOLUTION_ITER,
+      COMPOSITION_ELEM,
+      COMPOSITION_ITER,
       PROPERTIES_ITER,
       PROPERTY,
       FINGERPRINT,
@@ -134,7 +140,17 @@ public:
       SAVER,
       ATTACHMENT_POINTS_ITER,
       DECOMPOSITION_MATCH,
-      DECOMPOSITION_MATCH_ITER
+      DECOMPOSITION_MATCH_ITER,
+      CDX_MOLECULE,
+      CDX_REACTION,
+      MULTIPLE_CDX_LOADER,
+      CDX_SAVER,
+      SGROUP,
+      SGROUPS_ITER,
+      TAUTOMER_ITER,
+      TAUTOMER_MOLECULE,
+      TGROUP,
+      TGROUPS_ITER
    };
 
    int type;
@@ -151,8 +167,6 @@ public:
    virtual QueryReaction & getQueryReaction ();
    virtual Reaction & getReaction ();
 
-   virtual RedBlackStringObjMap< Array<char> > * getProperties();
-   
    virtual IndigoObject * clone ();
 
    virtual const char * getName ();
@@ -165,7 +179,12 @@ public:
 
    virtual void remove ();
 
-   void copyProperties (RedBlackStringObjMap< Array<char> > &other);
+//   virtual RedBlackStringObjMap< Array<char> > * getProperties();
+//   void copyProperties (RedBlackStringObjMap< Array<char> > &other);
+   virtual PropertiesMap& getProperties();
+   virtual MonomersProperties& getMonomersProperties();
+   virtual void copyProperties(PropertiesMap&);
+   virtual void copyProperties(RedBlackStringObjMap< Array<char> > &other);
 
 protected:
    AutoPtr< Array<char> > _dbg_info; // allocated by debugInfo() on demand
@@ -197,6 +216,7 @@ struct DLLEXPORT ProductEnumeratorParams
       is_one_tube = false;
       is_self_react = false;
       is_layout = true;
+      transform_is_layout = true;
       max_deep_level = 2;
       max_product_count = 1000;
    }
@@ -205,6 +225,7 @@ struct DLLEXPORT ProductEnumeratorParams
    bool is_one_tube;
    bool is_self_react;
    bool is_layout;
+   bool transform_is_layout;
    int max_deep_level;
    int max_product_count;
 };
@@ -256,6 +277,7 @@ public:
    int  molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
    bool molfile_saving_no_chiral;
    bool molfile_saving_skip_date;
+   bool molfile_saving_add_stereo_desc;
 
    bool smiles_saving_write_name;
 
@@ -265,6 +287,7 @@ public:
    int max_embeddings;
 
    int layout_max_iterations; // default is zero -- no limit
+   bool smart_layout = false;
 
    int aam_cancellation_timeout; //default is zero - no timeout
 
@@ -283,6 +306,8 @@ public:
    bool unique_dearomatization; 
 
    StandardizeOptions standardize_options;
+
+   IonizeOptions ionize_options;
 
 protected:
 

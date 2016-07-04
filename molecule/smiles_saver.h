@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -94,6 +94,8 @@ protected:
 
    void _writeCycleNumber (int n) const;
    void _writeAtom (int idx, bool aromatic, bool lowercase, int chirality) const;
+   void _writeChirality (int chirality) const;
+   void _writeCharge (int charge) const;
    void _writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chirality, int depth, bool has_or_parent) const;
    void _writeSmartsBond (int idx, QueryMolecule::Bond *bond) const;
    void _markCisTrans ();

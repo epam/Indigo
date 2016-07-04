@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -81,7 +81,16 @@ public:
       return _array.top();
    }
 
-   template <typename A, typename B, typename C> T & push (A &a, B *b, C c)
+   template <typename A, typename B, typename C> T & push (A &a, B &b, C &c)
+   {
+      void *addr = &_array.push();
+
+      new (addr) T(a, b, c);
+
+      return _array.top();
+   }
+
+   template <typename A, typename B, typename C> T & push (A *a, B b, C c)
    {
       void *addr = &_array.push();
 
@@ -146,6 +155,11 @@ public:
       _array.qsort(cmp, context);
    }
    
+   const T * ptr () const
+   {
+      return _array.ptr();
+   }
+
 protected:
 
    Array<T> _array;

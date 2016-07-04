@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -47,7 +47,7 @@ BiconnectedDecomposer::~BiconnectedDecomposer ()
 }
 
 int BiconnectedDecomposer::decompose ()
-{
+{// recursion? no, not heard...
    QS_DEF(Array<int>, dfs_stack);
    int i, v;
    

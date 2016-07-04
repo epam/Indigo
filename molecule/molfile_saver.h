@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -41,6 +41,34 @@ public:
       MODE_3000      // force saving to v3000 format
    };
 
+
+   enum
+   {
+      CIP_DESC_NONE = 0,
+      CIP_DESC_UNKNOWN,
+      CIP_DESC_s,
+      CIP_DESC_r,
+      CIP_DESC_S,
+      CIP_DESC_R,
+      CIP_DESC_E,
+      CIP_DESC_Z
+   };
+
+   struct CIPContext
+   {
+      BaseMolecule *mol;
+      Array<int>   *cip_desc;
+      Array<int>   *used1;
+      Array<int>   *used2;
+      bool         next_level;
+      bool         isotope_check;
+      bool         use_stereo;
+      bool         use_rule_4;
+      int          ref_cip1;
+      int          ref_cip2;
+      bool         use_rule_5;
+   };
+
    MolfileSaver (Output &output);
 
    void saveBaseMolecule   (BaseMolecule &mol);
@@ -53,6 +81,7 @@ public:
    int mode; // one of MODE_***, MODE_AUTO by default
    bool no_chiral; // skip the 'chiral' flag, not regarding of the actual stereochemistry
    bool skip_date; // If true then zero date is written
+   bool add_stereo_desc; // If true then stereo descriptors will be added as DAT S-groups
 
    // optional parameters for reaction
    const Array<int>* reactionAtomMapping;
@@ -72,12 +101,15 @@ protected:
    void _writeCtab (Output &output, BaseMolecule &mol, bool query);
    void _writeOccurrenceRanges (Output &out, const Array<int> &occurrences);
    void _writeRGroup (Output &output, BaseMolecule &mol, int rg_idx);
+   void _writeTGroup (Output &output, BaseMolecule &mol, int tg_idx);
    void _writeCtabHeader2000 (Output &output, BaseMolecule &mol);
    void _writeCtab2000 (Output &output, BaseMolecule &mol, bool query);
+   void _checkSGroupIndices (BaseMolecule &mol);
    void _writeRGroupIndices2000 (Output &output, BaseMolecule &mol);
    void _writeAttachmentValues2000 (Output &output, BaseMolecule &fragment);
-   void _writeGenericSGroup3000 (BaseMolecule::SGroup &sgroup, int idx, const char *type, Output &output);
-   void _writeDataSGroupDisplay (BaseMolecule::DataSGroup &datasgroup, Output &out);
+   void _writeGenericSGroup3000 (SGroup &sgroup, int idx, Output &output);
+   void _writeDataSGroupDisplay (DataSGroup &datasgroup, Output &out);
+   void _writeFormattedString(Output &output, Array<char> &str, int length);
    static bool _checkAttPointOrder (BaseMolecule &mol, int rsite);
    static bool _hasNeighborEitherBond (BaseMolecule &mol, int edge_idx);
 
@@ -85,6 +117,24 @@ protected:
 
    bool _getRingBondCountFlagValue (QueryMolecule &qmol, int idx, int &value);
    bool _getSubstitutionCountFlagValue (QueryMolecule &qmol, int idx, int &value);
+
+   void _updateCIPStereoDescriptors(BaseMolecule &mol);
+   void _addCIPStereoDescriptors(BaseMolecule &mol);
+   void _addCIPSgroups(BaseMolecule &mol, Array<int> &attom_cip_desc, Array<int> &bond_cip_desc);
+   void _calcRSStereoDescriptor (BaseMolecule &mol, BaseMolecule &unfolded_h_mol, int idx,
+           Array<int> &atom_cip_desc, Array<int> &stereo_passed, bool use_stereo, Array<int[2]> &equiv_ligands,
+           bool &digrap_cip_used);
+   void _calcEZStereoDescriptor (BaseMolecule &mol, BaseMolecule &unfolded_h_mol, int idx, Array<int> &bond_cip_desc);
+   bool _checkLigandsEquivalence (Array<int> &ligands, Array<int[2]> &equiv_ligands, CIPContext &context);
+   static int  _getNumberOfStereoDescritors (Array<int> &atom_cip_desc);
+   bool _isPseudoAssymCenter (BaseMolecule &mol, int idx, Array<int> &atom_cip_desc, Array<int> &ligands,
+        Array<int[2]> &equiv_ligands);
+
+   int _calcCIPDigraphDescriptor (BaseMolecule &mol, int atom_idx, Array<int> &ligands, Array<int[2]> &equiv_ligands);
+   void _addNextLevel (Molecule &source, Molecule &target, int s_idx, int t_idx, Array<int> &used, Array<int> &mapping);
+   void _calcStereocenters (Molecule &source, Molecule &mol, Array<int> &mapping);
+
+   static int _cip_rules_cmp (int &i1, int &i2, void *context);
 
    Output &_output;
    bool    _v2000;

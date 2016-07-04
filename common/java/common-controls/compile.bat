@@ -14,7 +14,7 @@ set EXEC_JAR="%JAVA_HOME%\bin\jar"
 
 mkdir dist
 cd src
-%EXEC_JAVAC% -cp ../../../../api/java/dist/indigo.jar;../../../../api/renderer/java/dist/indigo-renderer.jar com/ggasoftware/indigo/controls/*.java
-%EXEC_JAR% cvf ../dist/common-controls.jar com/ggasoftware/indigo/controls/*.class com/ggasoftware/indigo/controls/images/*
-del /Q com\ggasoftware\indigo\controls\*.class
+%EXEC_JAVAC% -cp ../../../../api/java/dist/indigo.jar;../../../../api/renderer/java/dist/indigo-renderer.jar com/epam/indigo/controls/*.java
+%EXEC_JAR% cvf ../dist/common-controls.jar com/epam/indigo/controls/*.class com/epam/indigo/controls/images/*
+del /Q com\epam\indigo\controls\*.class
 cd ..

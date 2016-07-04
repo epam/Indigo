@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -176,7 +176,7 @@ void SmilesSaver::_saveMolecule ()
    
    walk.ignored_vertices = _ignored_vertices.ptr();
    walk.vertex_ranks = vertex_ranks;
-   if (_bmol->repeating_units.size() > 0)
+   if (_bmol->sgroups.isPolimer())
       walk.vertex_classes = _polymer_indices.ptr();
 
    if (separate_rsites)
@@ -458,33 +458,36 @@ void SmilesSaver::_saveMolecule ()
       int v_prev_idx = v_seq[i].parent_vertex;
       bool write_atom = true;
 
-      if (v_prev_idx >= 0)
-      {
-         if (walk.numBranches(v_prev_idx) > 1)
+      if (v_prev_idx >= 0) {
+         int branches = walk.numBranches(v_prev_idx);
+
+         if (branches > 1)
             if (_atoms[v_prev_idx].branch_cnt > 0 && _atoms[v_prev_idx].paren_written)
                _output.writeChar(')');
+         /*
+          * Fix IND-673 unused if-statement
+          */
+         //         if (v_prev_idx >= 0)
+         //         {
 
-         if (v_prev_idx >= 0)
-         {
-            int branches = walk.numBranches(v_prev_idx);
-            
-            if (branches > 1)
-               if (_atoms[v_prev_idx].branch_cnt < branches - 1)
-               {
-                  if (walk.isClosure(e_idx))
-                     _atoms[v_prev_idx].paren_written = false;
-                  else
-                  {
-                     _output.writeChar('(');
-                     _atoms[v_prev_idx].paren_written = true;
-                  }
+         if (branches > 1)
+            if (_atoms[v_prev_idx].branch_cnt < branches - 1) {
+               if (walk.isClosure(e_idx))
+                  _atoms[v_prev_idx].paren_written = false;
+               else {
+                  _output.writeChar('(');
+                  _atoms[v_prev_idx].paren_written = true;
                }
+            }
 
-            _atoms[v_prev_idx].branch_cnt++;
+         _atoms[v_prev_idx].branch_cnt++;
 
-            if (_atoms[v_prev_idx].branch_cnt > branches)
-               throw Error("unexpected branch");
-         }
+         if (_atoms[v_prev_idx].branch_cnt > branches)
+            throw Error("unexpected branch");         
+         /*
+          * Fix IND-673 unused if-statement
+          */
+//         }
 
          const Edge &edge = _bmol->getEdge(e_idx);
          bool bond_written = true;
@@ -714,10 +717,20 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    }
 
    int atom_number = _bmol->getAtomNumber(idx);
+   int charge = _bmol->getAtomCharge(idx);
+   int isotope = _bmol->getAtomIsotope(idx);
+
+   if (charge == CHARGE_UNKNOWN)
+      charge = 0;
+
 
    if (_bmol->isPseudoAtom(idx)) // pseudo-atom
    {
-      _output.printf("[*]");
+      _output.printf("[*");
+      _writeChirality(chirality);
+      _writeCharge(charge);
+      _output.printf("]");
+
       return;
    }
 
@@ -731,7 +744,10 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
          {
             if (value == ELEM_H)
             {
-               _output.printf("[*]");
+               _output.printf("[*");
+               _writeChirality(chirality);
+               _writeCharge(charge);
+               _output.printf("]");
                return;
             }
          }
@@ -770,12 +786,6 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
        atom_number != ELEM_F && atom_number != ELEM_Br &&
        atom_number != ELEM_B && atom_number != ELEM_I)
       need_brackets = true;
-
-   int charge = _bmol->getAtomCharge(idx);
-   int isotope = _bmol->getAtomIsotope(idx);
-
-   if (charge == CHARGE_UNKNOWN)
-      charge = 0;
 
    if (chirality > 0 || charge != 0 || isotope > 0 || aam > 0)
       need_brackets = true;
@@ -836,6 +846,24 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    else
       _output.printf("%s", elem);
 
+   _writeChirality(chirality);
+
+   if (hydro > 1)
+      _output.printf("H%d", hydro);
+   else if (hydro == 1)
+      _output.printf("H");
+
+   _writeCharge(charge);
+
+   if (aam > 0)
+      _output.printf(":%d", aam);
+
+   if (need_brackets)
+      _output.writeChar(']');
+}
+
+void SmilesSaver::_writeChirality(int chirality) const
+{
    if (chirality > 0)
    {
       if (chirality == 1)
@@ -843,12 +871,10 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
       else // chirality == 2
          _output.printf("@@");
    }
+}
 
-   if (hydro > 1)
-      _output.printf("H%d", hydro);
-   else if (hydro == 1)
-      _output.printf("H");
-
+void SmilesSaver::_writeCharge(int charge) const
+{
    if (charge > 1)
       _output.printf("+%d", charge);
    else if (charge < -1)
@@ -857,12 +883,6 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
       _output.printf("+");
    else if (charge == -1)
       _output.printf("-");
-
-   if (aam > 0)
-      _output.printf(":%d", aam);
-
-   if (need_brackets)
-      _output.writeChar(']');
 }
 
 void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chirality, int depth, bool has_or_parent) const
@@ -886,7 +906,7 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
          {
             if (i > 0)
                _output.writeChar(has_or_parent ? '&' : ';');
-            _writeSmartsAtom(idx, (QueryMolecule::Atom *)atom->children[i], 0, depth + 1, has_or_parent);
+            _writeSmartsAtom(idx, (QueryMolecule::Atom *)atom->children[i], chirality, depth + 1, has_or_parent);
          }
          break;
       }
@@ -896,7 +916,7 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
          {
             if (i > 0)
                _output.printf(",");
-            _writeSmartsAtom(idx, (QueryMolecule::Atom *)atom->children[i], 0, depth + 1, true);
+            _writeSmartsAtom(idx, (QueryMolecule::Atom *)atom->children[i], chirality, depth + 1, true);
          }
          break;
       }
@@ -1707,39 +1727,45 @@ void SmilesSaver::_checkSRU ()
    int i, j, k;
 
    // check overlapping (particularly nested) blocks
-   for (i = _bmol->repeating_units.begin(); i != _bmol->repeating_units.end();
-        i = _bmol->repeating_units.next(i))
+   for (i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
    {
-      Array<int> &atoms = _bmol->repeating_units[i].atoms;
-
-      for (j = 0; j < atoms.size(); j++)
+      SGroup *sg = &_bmol->sgroups.getSGroup(i);
+      if (sg->sgroup_type == SGroup::SG_TYPE_SRU)
       {
-         if (_polymer_indices[atoms[j]] >= 0)
-            throw Error("overlapping (nested?) repeating units can not be saved");
-         _polymer_indices[atoms[j]] = i;
+         Array<int> &atoms = sg->atoms;
 
-         // check also disconnected blocks (possible to handle, but unsupported at the moment)
-         if (_bmol->vertexComponent(atoms[j]) != _bmol->vertexComponent(atoms[0]))
-            throw Error("disconnected repeating units not supported");
+         for (j = 0; j < atoms.size(); j++)
+         {
+            if (_polymer_indices[atoms[j]] >= 0)
+               throw Error("overlapping (nested?) repeating units can not be saved");
+            _polymer_indices[atoms[j]] = i;
+
+            // check also disconnected blocks (possible to handle, but unsupported at the moment)
+            if (_bmol->vertexComponent(atoms[j]) != _bmol->vertexComponent(atoms[0]))
+               throw Error("disconnected repeating units not supported");
+         }
       }
    }
 
    // check that each block has exactly two outgoing bonds
-   for (i = _bmol->repeating_units.begin(); i != _bmol->repeating_units.end();
-        i = _bmol->repeating_units.next(i))
+   for (i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
    {
-      Array<int> &atoms = _bmol->repeating_units[i].atoms;
-      int cnt = 0;
-
-      for (j = 0; j < atoms.size(); j++)
+      SGroup *sg = &_bmol->sgroups.getSGroup(i);
+      if (sg->sgroup_type == SGroup::SG_TYPE_SRU)
       {
-         const Vertex &vertex = _bmol->getVertex(atoms[j]);
-         for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
-            if (_polymer_indices[vertex.neiVertex(k)] != i)
-               cnt++;
+         Array<int> &atoms = sg->atoms;
+         int cnt = 0;
+
+         for (j = 0; j < atoms.size(); j++)
+         {
+            const Vertex &vertex = _bmol->getVertex(atoms[j]);
+            for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+               if (_polymer_indices[vertex.neiVertex(k)] != i)
+                  cnt++;
+         }
+         if (cnt != 2)
+            throw Error("repeating units must have exactly two outgoing bonds, has %d", cnt);
       }
-      if (cnt != 2)
-         throw Error("repeating units must have exactly two outgoing bonds, has %d", cnt);
    }
 }
 

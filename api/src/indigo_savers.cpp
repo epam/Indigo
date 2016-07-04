@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -29,6 +29,8 @@
 #include "reaction/rsmiles_saver.h"
 #include "reaction/canonical_rsmiles_saver.h"
 #include "reaction/reaction_cml_saver.h"
+#include "molecule/molecule_cdxml_saver.h"
+#include "reaction/reaction_cdxml_saver.h"
 
 #include <time.h>
 
@@ -109,14 +111,11 @@ void IndigoSdfSaver::append (Output &out, IndigoObject &obj)
 {
    appendMolfile(out, obj);
 
-   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
-   if (props != 0)
-   {
-      int i;
+   auto& props = obj.getProperties();
 
-      for (i = props->begin(); i != props->end(); i = props->next(i))
-         out.printf(">  <%s>\n%s\n\n", props->key(i), props->value(i).ptr());
-   }
+      for (auto i : props.elements()) {
+         out.printf(">  <%s>\n%s\n\n", props.key(i), props.value(i));
+      }
 
    out.printfCR("$$$$");
    out.flush();
@@ -371,14 +370,10 @@ void IndigoRdfSaver::append (Output &out, IndigoObject &obj)
    else
       throw IndigoError("%s can not be saved to RDF", obj.debugInfo());
 
-   RedBlackStringObjMap< Array<char> > *props = obj.getProperties();
-      
-   if (props != 0)
-   {
-      int i;
+   auto& props = obj.getProperties();
 
-      for (i = props->begin(); i != props->end(); i = props->next(i))
-         out.printf("$DTYPE %s\n$DATUM %s\n", props->key(i), props->value(i).ptr());
+   for (auto i : props.elements()) {
+      out.printf("$DTYPE %s\n$DATUM %s\n", props.key(i), props.value(i));
    }
 }
 
@@ -569,6 +564,50 @@ CEXPORT int indigoAppend (int saver_id, int object)
       IndigoSaver &saver = (IndigoSaver &)saver_obj;
       saver.appendObject(obj);
       return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSaveCdxml (int item, int output)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+      Output &out = IndigoOutput::get(self.getObject(output));
+
+      if (IndigoBaseMolecule::is(obj))
+      {
+         MoleculeCdxmlSaver saver(out);
+         if (obj.type == IndigoObject::MOLECULE)
+         {
+            Molecule &mol = obj.getMolecule();
+            saver.saveMolecule(mol);
+         }
+         else if (obj.type == IndigoObject::QUERY_MOLECULE)
+         {
+            QueryMolecule &mol = obj.getQueryMolecule();
+            saver.saveMolecule(mol);
+         }
+         out.flush();
+         return 1;
+      }
+      if (IndigoBaseReaction::is(obj))
+      {
+         ReactionCdxmlSaver saver(out);
+         if (obj.type == IndigoObject::REACTION)
+         {
+            Reaction &rxn = obj.getReaction();
+            saver.saveReaction(rxn);
+         }
+         else if (obj.type == IndigoObject::QUERY_REACTION)
+         {
+            QueryReaction &rxn = obj.getQueryReaction();
+            saver.saveReaction(rxn);
+         }
+         out.flush();
+         return 1;
+      }
+      throw IndigoError("indigoSaveCdxml(): expected molecule or reaction, got %s", obj.debugInfo());
    }
    INDIGO_END(-1)
 }

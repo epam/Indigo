@@ -29,13 +29,10 @@ if not os.path.exists(dist_dir):
     os.mkdir(dist_dir)
 
 cur_dir = os.path.abspath(os.curdir)
-for line in open(join(api_dir, "indigo-version.cmake")):
-    m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
-    if m:
-        version = m.group(1)
-        break
-    else:
-        raise RuntimeError("Could not find indigo-version!")
+
+# Find indigo version
+from get_indigo_version import getIndigoVersion
+version = getIndigoVersion()
 
 os.chdir(dist_dir)
 if os.path.exists("dotnet"):
@@ -83,7 +80,7 @@ else:
 
 if 'mac' in wrappers:
     #os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.5'))
-    os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.6'))
+    os.makedirs(join(indigoDotNetPath, "Resource", 'Mac', '10.7'))
     mac = 1
 else:
     mac = 0
@@ -113,7 +110,7 @@ else:
 
 if 'mac' in wrappers:
     #os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.5'))
-    os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.6'))
+    os.makedirs(join(indigoRendererDotNetPath, "Resource", 'Mac', '10.7'))
     mac = 1
 else:
     mac = 0
@@ -143,7 +140,7 @@ else:
 
 if 'mac' in wrappers:
     #os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.5'))
-    os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.6'))
+    os.makedirs(join(indigoInchiDotNetPath, "Resource", 'Mac', '10.7'))
     mac = 1
 else:
     mac = 0
@@ -174,7 +171,7 @@ else:
 
 if 'mac' in wrappers:
     #os.makedirs(join(bingoDotNetPath, "Resource", 'Mac', '10.5'))
-    os.makedirs(join(bingoDotNetPath, "Resource", 'Mac', '10.6'))
+    os.makedirs(join(bingoDotNetPath, "Resource", 'Mac', '10.7'))
     mac = 1
 else:
     mac = 0

@@ -1,3 +1,51 @@
+############
+Indigo 1.2.1
+############
+
+*30 April 2015*
+
+*******
+Summary
+*******
+
+
+**New features and improvements**:
+
+* Bingo NoSQL new plugin for Indigo was released.
+
+* ``standardize()`` function was implemented 
+* SGroup better support. Loading, saving, searching, editing different types of SGroups  
+
+* ``canonicalSmiles()`` for *Reactions* 
+
+* Molfile V3000 type9 and type10 bonds support was implemented 
+
+* ChemDraw CDX reader was implemented 
+
+* Stereo and cis-trans configuration better support
+
+* Bidirectional stereocenters mode (used by ChemDraw) support was implemented. :optref:`stereochemistry-bidirectional-mode` option was added.  
+
+* Stereocenters detection for the haworth projection was implemented. New option :optref:`stereochemistry-detect-haworth-projection` was added
+
+
+
+
+**Bugfixes**:
+
+* SGroups releated bugs were fixed
+
+* Indigo now calculates stereocenters for SMARTS like ``[*@H](~*)~*`` 
+
+* Bug with ``countComponents()`` was fixed
+
+* Custom collection names loading in molfile V3000
+
+* Bug with superatoms saving was fixed
+
+* Other small bugfixes
+
+
 Indigo 1.1.10
 ----------
 
@@ -117,7 +165,7 @@ New features:
 * Additional check for an invalid stereocenter when an angle between bonds is small.  
 Thanks to Karen: <https://groups.google.com/d/msg/indigo-general/zYHfZs9V72Q/lB_KHfMxmi8J>
 * Options passed to the InChI plugin are being automatically corrected independent of OS. You can use both '-' and '/' prefixes on all the systems.  
-Look more at <http://ggasoftware.com/opensource/indigo/api#options>  
+Look more at <http://lifescience.opensource.epam.com/indigo/api#options>  
 Thanks to Karen for the suggestion: <https://groups.google.com/d/msg/indigo-general/XxPC2EuT0-g/7kNUasWWpz0J>
 * Build scripts now work with Visual Studio 2012
 * Cross-like layout of atom with four bonds for molecules like CCS(=O)(=O)CC
@@ -359,12 +407,12 @@ Indigo 1.1-beta6
 New functionality:
 
  * Indigo.transform(reaction, molecule) method for transformation a molecule according  to a rule, specified with a reaction.  
-   Examples are available here: <http://ggasoftware.com/opensource/indigo/concepts/transformation>
+   Examples are available here: <http://lifescience.opensource.epam.com/indigo/concepts/transformation>
 
  * New IndigoObject methods for working with reaction atom-to-atom mapping: atomMappingNumber, setAtomMappingNumber, clearAAM
  
  * New IndigoObject methods for working with attachment points: iterateAttachmentPoints, countAttachmentPoints, clearAttachmentPoints.  
-   See <http://ggasoftware.com/opensource/indigo/api#attachment-points> for more details
+   See <http://lifescience.opensource.epam.com/indigo/api#attachment-points> for more details
  
  * Other new IndigoObject methods with documentation has been added: changeStereocenterType, addStereocenter, reactingCenter, setReactingCenter, loadSmartsFromFile, loadReactionSmartsFromFile, getSuperatom, getDataSGroup, description, decomposedMoleculeHighlighted, getSubmolecule, addSuperatom
  

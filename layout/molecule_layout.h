@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -31,7 +31,9 @@ namespace indigo {
 class DLLEXPORT MoleculeLayout
 {      
 public:
-   explicit MoleculeLayout (BaseMolecule &molecule);
+   enum {LAYOUT_MAX_ITERATION=20};
+   
+   explicit MoleculeLayout(BaseMolecule &molecule, bool smart_layout=false);
 
    void make ();
 
@@ -41,15 +43,16 @@ public:
    bool respect_existing_layout;
    Filter *filter;
    int  max_iterations;
-   
+   bool _smart_layout;
+
    DECL_ERROR;
 
 protected:
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, BaseMolecule& mol);
    BaseMolecule& _getMol (int id);
    void _make ();
-   void _makeLayout ();
-   void _updateRepeatingUnits ();
+   void _makeLayout();
+   void _updateRepeatingUnits();
    void _updateMultipleGroups ();
 
    static BaseMolecule& cb_getMol (int id, void* context);
@@ -57,14 +60,14 @@ protected:
 
    void _updateDataSGroups ();
 
-   void _init ();
+   void _init(bool smart_layout);
 
    Metalayout _ml;
    BaseMolecule          &_molecule;
    AutoPtr<BaseMolecule> _molCollapsed;
    BaseMolecule*         _bm;
    Array<int>            _atomMapping;
-   MoleculeLayoutGraph   _layout_graph;
+   AutoPtr<MoleculeLayoutGraph> _layout_graph;
    Array<BaseMolecule*>  _map;
    bool _query;
    bool _hasMulGroups;

@@ -32,7 +32,7 @@ namespace bingo
          _MatchBit()
          {
             idx = -1;
-            bool val = 0;
+            val = 0;
          }
 
          _MatchBit (int new_idx, bool new_val) : idx(new_idx), val(new_val)

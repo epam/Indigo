@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -16,25 +16,33 @@
 #include "base_cpp/obj_array.h"
 #include "graph/filter.h"
 #include "layout/molecule_layout.h"
+#include <vector>
 
 using namespace indigo;
 
 IMPL_ERROR(MoleculeLayout, "molecule_layout");
 
-MoleculeLayout::MoleculeLayout (BaseMolecule &molecule) :
-_molecule(molecule)
+MoleculeLayout::MoleculeLayout(BaseMolecule &molecule, bool smart_layout) :
+_molecule(molecule),
+_smart_layout(smart_layout)
 {
-   _hasMulGroups = _molecule.multiple_groups.size() > 0;
-   _init();
-   _query = _molecule.isQueryMolecule();
+    _hasMulGroups = _molecule.sgroups.getSGroupCount(SGroup::SG_TYPE_MUL) > 0;
+    _init(smart_layout);
+    _query = _molecule.isQueryMolecule();
 }
 
-void MoleculeLayout::_init ()
+void MoleculeLayout::_init(bool smart_layout)
 {
    bond_length = 1.f;
    respect_existing_layout = false;
    filter = 0;
-   max_iterations = 20;
+   _smart_layout = smart_layout;
+   if (_smart_layout) 
+      _layout_graph.reset(new MoleculeLayoutGraphSmart());
+   else 
+      _layout_graph.reset(new MoleculeLayoutGraphSimple());
+   
+   max_iterations = LAYOUT_MAX_ITERATION;
    _query = false;
    _atomMapping.clear();
 
@@ -47,28 +55,34 @@ void MoleculeLayout::_init ()
       _molCollapsed->clone(_molecule, &_atomMapping, NULL);
       QS_DEF(BaseMolecule::Mapping, atomMapCollapse);
       QS_DEF(BaseMolecule::Mapping, bondMapInv);
-      for (int i = _molCollapsed->multiple_groups.begin(); i < _molCollapsed->multiple_groups.end(); i = _molCollapsed->multiple_groups.next(i)) {
-         // collapse multiple group
-         atomMapCollapse.clear();
-         bondMapInv.clear();
-         BaseMolecule::MultipleGroup::collapse(_molCollapsed.ref(), i, atomMapCollapse, bondMapInv);
 
-         // modify the atom mapping
-         for (int j = 0; j < _atomMapping.size(); ++j)
-            if (atomMapCollapse.find(_atomMapping[j]))
-               _atomMapping[j] = atomMapCollapse.at(_atomMapping[j]);
+      for (int i = _molCollapsed->sgroups.begin(); i != _molCollapsed->sgroups.end(); i = _molCollapsed->sgroups.next(i))
+      {
+         SGroup &sg =  _molCollapsed->sgroups.getSGroup(i);
+         if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
+         {
+            // collapse multiple group
+            atomMapCollapse.clear();
+            bondMapInv.clear();
+            BaseMolecule::collapse(_molCollapsed.ref(), i, atomMapCollapse, bondMapInv);
+
+            // modify the atom mapping
+            for (int j = 0; j < _atomMapping.size(); ++j)
+               if (atomMapCollapse.find(_atomMapping[j]))
+                  _atomMapping[j] = atomMapCollapse.at(_atomMapping[j]);
+         }
       }
       _bm = _molCollapsed.get();
    }
 
-   _layout_graph.makeOnGraph(*_bm);
+   _layout_graph->makeOnGraph(*_bm);
 
-   for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
-   {
-      const Vec3f &pos = _bm->getAtomXyz(_layout_graph.getVertexExtIdx(i));
+   for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
+    {
+        const Vec3f &pos = _bm->getAtomXyz(_layout_graph->getVertexExtIdx(i));
 
-      _layout_graph.getPos(i).set(pos.x, pos.y);
-   }
+        _layout_graph->getPos(i).set(pos.x, pos.y);
+    }
 }
 
 void _collectCrossBonds (Array<int>& crossBonds, Array<bool>& crossBondOut, BaseMolecule& mol, const Array<int>& atoms)
@@ -284,55 +298,61 @@ void MoleculeLayout::_updateDataSGroups ()
    QS_DEF(Array<int>, layout_graph_mapping);
    layout_graph_mapping.resize(_molecule.vertexEnd());
    layout_graph_mapping.fffill();
-   for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
+   for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
    {
-      int vi = _layout_graph.getVertexExtIdx(i);
+       int vi = _layout_graph->getVertexExtIdx(i);
       layout_graph_mapping[vi] = i;
    }
 
-   for (int i = _molecule.data_sgroups.begin(); i < _molecule.data_sgroups.end(); i = _molecule.data_sgroups.next(i))
+   for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
    {
-      BaseMolecule::DataSGroup &group = _molecule.data_sgroups[i];
-      if (!group.relative)
+      SGroup &sg = _molecule.sgroups.getSGroup(i);
+      if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
       {
-         Vec2f before;
-         _molecule.getSGroupAtomsCenterPoint(group, before);
-
-         Vec2f after;
-         for (int j = 0; j < group.atoms.size(); j++)
+         DataSGroup &group = (DataSGroup &)sg;
+         if (!group.relative)
          {
-            int ai = group.atoms[j];
-            const LayoutVertex &vert = _layout_graph.getLayoutVertex(layout_graph_mapping[ai]);
-            after.x += vert.pos.x;
-            after.y += vert.pos.y;
+            Vec2f before;
+            _molecule.getSGroupAtomsCenterPoint(group, before);
+   
+            Vec2f after;
+            for (int j = 0; j < group.atoms.size(); j++)
+            {
+               int ai = group.atoms[j];
+               const LayoutVertex &vert = _layout_graph->getLayoutVertex(layout_graph_mapping[ai]);
+               after.x += vert.pos.x;
+               after.y += vert.pos.y;
+            }
+   
+            if (group.atoms.size() != 0)
+               after.scale(1.0f / group.atoms.size());
+   
+            Vec2f delta;
+            delta.diff(after, before);
+            group.display_pos.add(delta);
          }
-
-         if (group.atoms.size() != 0)
-            after.scale(1.0f / group.atoms.size());
-
-         Vec2f delta;
-         delta.diff(after, before);
-         group.display_pos.add(delta);
       }
    }
 }
 
 void MoleculeLayout::_make ()
 {
-   _layout_graph.max_iterations = max_iterations;
+   _layout_graph->max_iterations = max_iterations;
 
    // 0. Find 2D coordinates via proxy _layout_graph object
-   _makeLayout();
+    _layout_graph->max_iterations = max_iterations;
+    _makeLayout();
+
 
    // 1. Update data-sgroup label position before changing molecule atoms positions
    _updateDataSGroups();
 
    // 2. Update atoms
-   for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
-   {
-      const LayoutVertex &vert = _layout_graph.getLayoutVertex(i);
-      _bm->setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
-   }
+   for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
+    {
+        const LayoutVertex &vert = _layout_graph->getLayoutVertex(i);
+        _bm->setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+    }
 
    if (_hasMulGroups) {
       for (int j = 0; j < _atomMapping.size(); ++j) {
@@ -386,7 +406,7 @@ void MoleculeLayout::make ()
          {
             BaseMolecule& mol = *frags[j];
             if (filter == NULL) {
-               MoleculeLayout layout(mol);
+               MoleculeLayout layout(mol, _smart_layout);
                layout.max_iterations = max_iterations;
                layout.bond_length = bond_length;
                layout.make();
@@ -408,7 +428,7 @@ void MoleculeLayout::make ()
 
 void MoleculeLayout::setCancellationHandler (CancellationHandler* cancellation)
 {
-   _layout_graph.cancellation = cancellation;
+   _layout_graph->cancellation = cancellation;
 }
 
 BaseMolecule& MoleculeLayout::cb_getMol (int id, void* context)
@@ -428,45 +448,53 @@ void MoleculeLayout::_makeLayout ()
    {
       QS_DEF(Array<int>, fixed_vertices);
 
-      fixed_vertices.clear_resize(_layout_graph.vertexEnd());
+      fixed_vertices.clear_resize(_layout_graph->vertexEnd());
       fixed_vertices.zerofill();
 
-      for (int i = _layout_graph.vertexBegin(); i < _layout_graph.vertexEnd(); i = _layout_graph.vertexNext(i))
-         if (!filter->valid(_layout_graph.getVertexExtIdx(i)))
+      for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
+          if (!filter->valid(_layout_graph->getVertexExtIdx(i)))
             fixed_vertices[i] = 1;
 
       Filter new_filter(fixed_vertices.ptr(), Filter::NEQ, 1);
 
-      _layout_graph.layout(*_bm, bond_length, &new_filter, respect_existing_layout);
+      _layout_graph->layout(*_bm, bond_length, &new_filter, respect_existing_layout);
    }
    else
-      _layout_graph.layout(*_bm, bond_length, 0, respect_existing_layout);
+       _layout_graph->layout(*_bm, bond_length, 0, respect_existing_layout);
 }
 
 void MoleculeLayout::_updateRepeatingUnits ()
 {
    QS_DEF(Array<int>, crossBonds);
    QS_DEF(Array<bool>, crossBondOut);
-   for (int i = _molecule.repeating_units.begin(); i < _molecule.repeating_units.end(); i = _molecule.repeating_units.next(i)) {
-      BaseMolecule::RepeatingUnit& sg = _molecule.repeating_units[i];
-
-      crossBonds.clear();
-      crossBondOut.clear();
-      _collectCrossBonds(crossBonds, crossBondOut, _molecule, sg.atoms);
-      if (crossBonds.size() > 1) {
-         _placeSGroupBracketsCrossBonds (sg.brackets, _molecule, sg.atoms, crossBonds, crossBondOut, bond_length);
-      } else if (crossBonds.size() == 1) {
-         _placeSGroupBracketsCrossBondSingle (sg.brackets, _molecule, sg.atoms, crossBonds[0], crossBondOut[0], bond_length);
-      } else {
-         _placeSGroupBracketsHorizontal (sg.brackets, _molecule, sg.atoms, bond_length);
+   for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
+   {
+      SGroup &sg = _molecule.sgroups.getSGroup(i);
+      if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
+      {
+         RepeatingUnit& ru = (RepeatingUnit &)sg;
+         crossBonds.clear();
+         crossBondOut.clear();
+         _collectCrossBonds(crossBonds, crossBondOut, _molecule, ru.atoms);
+         if (crossBonds.size() > 1) 
+            _placeSGroupBracketsCrossBonds (ru.brackets, _molecule, ru.atoms, crossBonds, crossBondOut, bond_length);
+         else if (crossBonds.size() == 1)
+            _placeSGroupBracketsCrossBondSingle (ru.brackets, _molecule, ru.atoms, crossBonds[0], crossBondOut[0], bond_length);
+         else 
+            _placeSGroupBracketsHorizontal (ru.brackets, _molecule, ru.atoms, bond_length);
       }
    }
 }
 
 void MoleculeLayout::_updateMultipleGroups ()
 {
-   for (int i = _molecule.multiple_groups.begin(); i < _molecule.multiple_groups.end(); i = _molecule.multiple_groups.next(i)) {
-      BaseMolecule::MultipleGroup& sg = _molecule.multiple_groups[i];
-      _placeSGroupBracketsHorizontal (sg.brackets, _molecule, sg.atoms, bond_length);
+   for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
+   {
+      SGroup &sg = _molecule.sgroups.getSGroup(i);
+      if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
+      {
+         MultipleGroup& mg = (MultipleGroup &)sg;
+         _placeSGroupBracketsHorizontal (mg.brackets, _molecule, mg.atoms, bond_length);
+      }
    }
 }

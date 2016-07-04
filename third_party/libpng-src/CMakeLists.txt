@@ -24,10 +24,14 @@ if (NOT PNG_FOUND)
     list(REMOVE_ITEM PNG_SOURCES src/pngtest.c)
 
     # To remove GLIBC_2.11 dependency
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FORTIFY_SOURCE=0")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=0")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0")
 
     add_library(png STATIC ${PNG_SOURCES})
+
+    if (MSVC)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4267")
+    endif()
 
     set_target_properties(png PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
     set_property(TARGET png PROPERTY FOLDER "third_party")

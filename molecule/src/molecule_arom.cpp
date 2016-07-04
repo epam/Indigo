@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -309,6 +309,9 @@ int MoleculeAromatizer::_getPiLabel (int v_idx)
    const Vertex &vertex = _basemol.getVertex(v_idx);
   
    if (_basemol.isPseudoAtom(v_idx))
+      return -1;
+
+   if (_basemol.isTemplateAtom(v_idx))
       return -1;
 
    if (_basemol.isRSite(v_idx))
@@ -717,6 +720,16 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
    if (radical > 0)
       return PiValue(1, 1);
 
+
+   int valence, implicit_h;
+
+   if (!Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false) &&
+       !query.possibleNitrogenV5(v_idx))
+      return PiValue(-1, -1);
+
+   if (_basemol.possibleAtomNumber(v_idx, ELEM_C) && query.getExplicitValence(v_idx) == 5)
+      return PiValue(-1, -1);
+
    if (exact_double_bonds >= 1)
    {
       if (_options.method == AromaticityOptions::BASIC)
@@ -747,10 +760,6 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel (int v_idx
       }
       return PiValue(1, 1);
    }
-
-   int valence, implicit_h;
-   if (!Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false))
-      return PiValue(-1, -1);
 
    int pi_label = -1;
    int lonepairs = 0;

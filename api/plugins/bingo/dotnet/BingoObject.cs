@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace com.ggasoftware.indigo
+namespace com.epam.indigo
 {
 	/// <summary>
 	/// Bingo search object

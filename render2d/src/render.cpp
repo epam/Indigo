@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -51,8 +51,9 @@ float Render::_getObjScale (int item)
    } else {
       avgBondLength = _factory.getItem(item).getTotalClosestAtomDistance() / atomCount;
    }
-   if (avgBondLength < 1e-4)
+   if (avgBondLength < 1e-4) {
       avgBondLength = 1.0f;
+   }
    float objScale = 1 / avgBondLength;
    return objScale;
 }

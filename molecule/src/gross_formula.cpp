@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -85,7 +85,7 @@ void GrossFormula::collect (BaseMolecule &mol, Array<int> &gross)
 
    for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
    {
-      if (mol.isPseudoAtom(i) || mol.isRSite(i))
+      if (mol.isPseudoAtom(i) || mol.isRSite(i) || mol.isTemplateAtom(i)) 
          continue;
       int number = mol.getAtomNumber(i);
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2014 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -94,8 +94,6 @@ void RSmilesSaver::_writeMolecule (int i)
 
 void RSmilesSaver::_saveReaction ()
 {
-   int i;
-
    _written_atoms.clear();
    _written_bonds.clear();
    _ncomp.clear();

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2011 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -81,6 +81,12 @@ static void indigoSetMolfileSavingSkipDate (int enabled)
    self.molfile_saving_skip_date = (enabled != 0);
 }
 
+static void indigoSetMolfileSavingAddStereoDesc (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.molfile_saving_add_stereo_desc = (enabled != 0);
+}
+
 static void indigoSetSmilesSavingWriteName (int enabled)
 {
    Indigo &self = indigoGetInstance();
@@ -122,13 +128,19 @@ static void indigoSetFPAnyQwords (int qwords)
    self.fp_params.any_qwords = qwords;
 }
 
-static void indigoSetFPExt (int enabled)
+static void indigoSetFPExt(int enabled)
 {
    Indigo &self = indigoGetInstance();
    self.fp_params.ext = (enabled != 0);
 }
 
-static void indigoSetEmbeddingUniqueness (const char *mode)
+static void indigoSetSmartLayout(int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.smart_layout = (enabled != 0);
+}
+
+static void indigoSetEmbeddingUniqueness(const char *mode)
 {
    Indigo &self = indigoGetInstance();
    if (strcasecmp(mode, "atoms") == 0)
@@ -426,6 +438,34 @@ static void indigoSetStandardizeCreateHydrogenBonds (int enabled)
    self.standardize_options.create_hydrogen_bonds = (enabled != 0);
 }
 
+static void indigoSetStandardizeRemoveExtraStereoBonds (int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.remove_extra_stereo_bonds = (enabled != 0);
+}
+
+static void indigoSetPkaModel (const char *model)
+{
+   Indigo &self = indigoGetInstance();
+   if (strcasecmp(model, "simple") == 0)
+      self.ionize_options.model = IonizeOptions::PKA_MODEL_SIMPLE;
+   else if (strcasecmp(model, "advanced") == 0)
+      self.ionize_options.model = IonizeOptions::PKA_MODEL_ADVANCED;
+   else
+      throw IndigoError("unknown value: %s. Allowed values are \"simple\", \"advanced\"", model);
+}
+
+static void indigoSetPkaModelLevel (int value)
+{
+   Indigo &self = indigoGetInstance();
+   self.ionize_options.level = value;
+}
+
+static void indigoSetPkaModelMinLevel (int value)
+{
+   Indigo &self = indigoGetInstance();
+   self.ionize_options.min_level = value;
+}
 
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
@@ -442,6 +482,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode);
    mgr.setOptionHandlerBool("molfile-saving-no-chiral", indigoSetMolfileSavingNoChiral);
    mgr.setOptionHandlerBool("molfile-saving-skip-date", indigoSetMolfileSavingSkipDate);
+   mgr.setOptionHandlerBool("molfile-saving-add-stereo-desc", indigoSetMolfileSavingAddStereoDesc);
    mgr.setOptionHandlerBool("smiles-saving-write-name", indigoSetSmilesSavingWriteName);
    mgr.setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding);
    mgr.setOptionHandlerInt("fp-ord-qwords", indigoSetFPOrdQwords);
@@ -449,6 +490,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("fp-any-qwords", indigoSetFPAnyQwords);
    mgr.setOptionHandlerInt("fp-tau-qwords", indigoSetFPTauQwords);
    mgr.setOptionHandlerBool("fp-ext-enabled", indigoSetFPExt);
+   mgr.setOptionHandlerBool("smart-layout", indigoSetSmartLayout);
 
    mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness);
    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings);
@@ -501,6 +543,11 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("standardize-localize-markush-r-atoms-on-rings", indigoSetStandardizeLocalizeMarkushRAtomsOnRings);
    mgr.setOptionHandlerBool("standardize-create-dative-bonds", indigoSetStandardizeCreateDativeBonds);
    mgr.setOptionHandlerBool("standardize-create-hydrogen-bonds", indigoSetStandardizeCreateHydrogenBonds);
+   mgr.setOptionHandlerBool("standardize-remove-extra-stereo-bonds", indigoSetStandardizeRemoveExtraStereoBonds);
+
+   mgr.setOptionHandlerString("pKa-model", indigoSetPkaModel);
+   mgr.setOptionHandlerInt("pKa-model-level", indigoSetPkaModelLevel);
+   mgr.setOptionHandlerInt("pKa-model-min-level", indigoSetPkaModelMinLevel);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

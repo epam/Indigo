@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -213,44 +213,9 @@ const Edge & Graph::getEdge (int idx) const
    return _edges[idx];
 }
 
-bool Graph::isConnected (const Graph &graph)
+bool Graph::isConnected (Graph &graph)
 {
-   if (graph.vertexCount() < 2)
-      return true;
-
-   QS_DEF(Array<int>, queue);
-   QS_DEF(Array<int>, states);
-
-   queue.clear_resize(graph.vertexCount());
-   states.clear_resize(graph.vertexEnd());
-
-   int top = 1, bottom = 0;
-
-   states.zerofill();
-   queue[0] = graph.vertexBegin();
-   states[queue[0]] = 1;
-
-   // BFS
-   while (top != bottom)
-   {
-      const Vertex &vertex = graph.getVertex(queue[bottom]);
-
-      states[queue[bottom]] = 2;
-
-      for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
-      {
-         int other = vertex.neiVertex(i);
-
-         if (states[other] == 0)
-         {
-            queue[top++] = other;
-            states[other] = 1;
-         }
-      }
-      bottom++;
-   }
-
-   return bottom == graph.vertexCount();
+   return graph.countComponents() == 1;
 }
 
 struct BfsState
@@ -352,7 +317,7 @@ bool Graph::isChain_AssumingConnected (const Graph &graph)
    return true;
 }
 
-bool Graph::isTree (const Graph &graph)
+bool Graph::isTree (Graph &graph)
 {
    if (!Graph::isConnected(graph))
       return false;
@@ -398,16 +363,16 @@ void Graph::filterEdges (const Graph &graph, const int *filter, int filter_type,
 }
 
 void Graph::_mergeWithSubgraph (const Graph &other, const Array<int> &vertices, const Array<int> *edges,
-                                Array<int> *mapping, Array<int> *edge_mapping)
+                                Array<int> *vertex_mapping, Array<int> *edge_mapping)
 {
    QS_DEF(Array<int>, tmp_mapping);
    int i;
 
-   if (mapping == 0)
-      mapping = &tmp_mapping;
+   if (vertex_mapping == 0)
+      vertex_mapping = &tmp_mapping;
 
-   mapping->clear_resize(other.vertexEnd());
-   mapping->fffill();
+   vertex_mapping->clear_resize(other.vertexEnd());
+   vertex_mapping->fffill();
 
    if (edge_mapping != 0)
    {
@@ -419,10 +384,10 @@ void Graph::_mergeWithSubgraph (const Graph &other, const Array<int> &vertices, 
    {
       int idx = vertices[i];
 
-      if (mapping->at(idx) != -1)
+      if (vertex_mapping->at(idx) != -1)
          throw Error("makeSubgraph(): repeated vertex #%d", idx);
 
-      mapping->at(idx) = addVertex();
+      vertex_mapping->at(idx) = addVertex();
    }
 
    if (edges != 0)
@@ -431,8 +396,8 @@ void Graph::_mergeWithSubgraph (const Graph &other, const Array<int> &vertices, 
       {
          const Edge &edge = other.getEdge(edges->at(i));
 
-         int beg = mapping->at(edge.beg);
-         int end = mapping->at(edge.end);
+         int beg = vertex_mapping->at(edge.beg);
+         int end = vertex_mapping->at(edge.end);
 
          if (beg == -1 || end == -1)
             throw Error("_mergeWithSubgraph: edge %d maps to (%d, %d)", edges->at(i), beg, end);
@@ -441,13 +406,14 @@ void Graph::_mergeWithSubgraph (const Graph &other, const Array<int> &vertices, 
 
          if (edge_mapping != 0)
             edge_mapping->at(edges->at(i)) = idx;
+
       }
    }
    else for (i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
    {
       const Edge &edge = other.getEdge(i);
-      int beg = mapping->at(edge.beg);
-      int end = mapping->at(edge.end);
+      int beg = vertex_mapping->at(edge.beg);
+      int end = vertex_mapping->at(edge.end);
 
       if (beg != -1 && end != -1)
       {
@@ -488,10 +454,16 @@ void Graph::mergeWith (const Graph &other, Array<int> *mapping)
    _mergeWithSubgraph(other, vertices, 0, mapping, 0);
 }
 
-void Graph::makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *mapping)
+void Graph::makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *vertex_mapping)
 {
    clear();
-   _mergeWithSubgraph(other, vertices, 0, mapping, 0);
+   _mergeWithSubgraph(other, vertices, 0, vertex_mapping, 0);
+}
+
+void Graph::makeSubgraph (const Graph &other, const Array<int> &vertices, Array<int> *vertex_mapping, const Array<int> *edges, Array<int> *edge_mapping)
+{
+   clear();
+   _mergeWithSubgraph(other, vertices, edges, vertex_mapping, edge_mapping);
 }
 
 void Graph::makeSubgraph (const Graph &other, const Filter &filter,

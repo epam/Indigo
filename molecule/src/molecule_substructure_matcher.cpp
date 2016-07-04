@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -310,7 +310,7 @@ bool MoleculeSubstructureMatcher::find ()
 
    if (_h_unfold)
    {
-     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
+     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h, -1, true);
      _ee->validate();
    }
 
@@ -374,7 +374,7 @@ void MoleculeSubstructureMatcher::_removeUnfoldedHydrogens ()
 bool MoleculeSubstructureMatcher::findNext ()
 {
    if (_h_unfold)
-     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h);
+     _target.asMolecule().unfoldHydrogens(&_unfolded_target_h, -1, true);
 
    bool found = _ee->processNext();
 
@@ -414,6 +414,9 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       case QueryMolecule::ATOM_PSEUDO:
          return target.isPseudoAtom(super_idx) &&
                  strcmp(query->alias.ptr(), target.getPseudoAtom(super_idx)) == 0;
+      case QueryMolecule::ATOM_TEMPLATE:
+         return target.isTemplateAtom(super_idx) &&
+                 strcmp(query->alias.ptr(), target.getTemplateAtom(super_idx)) == 0;
       case QueryMolecule::ATOM_RSITE:
          return true;
       case QueryMolecule::ATOM_ISOTOPE:
@@ -463,7 +466,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom
       }
       case QueryMolecule::ATOM_TOTAL_H:
       {
-         if (target.isPseudoAtom(super_idx) || target.isRSite(super_idx))
+         if (target.isPseudoAtom(super_idx) || target.isRSite(super_idx) || target.isTemplateAtom(super_idx))
             return false;
          return query->valueWithinRange(target.getAtomTotalH(super_idx));
       }
@@ -607,10 +610,30 @@ bool MoleculeSubstructureMatcher::_matchAtoms(Graph &subgraph, Graph &supergraph
    QueryMolecule &query = (QueryMolecule &)subgraph;
    BaseMolecule &target  = (BaseMolecule &)supergraph;
 
-   if (!target.isPseudoAtom(super_idx) && !target.isRSite(super_idx))
-      if (query.getAtomMinH(sub_idx) > 0 && target.getAtomMaxH(super_idx) >= 0)
-         if (query.getAtomMinH(sub_idx) > target.getAtomMaxH(super_idx))
+   if (!target.isPseudoAtom(super_idx) && !target.isRSite(super_idx) && !target.isTemplateAtom(super_idx))
+   {
+      int q_min_h;
+      int t_max_h;
+      try
+      {
+         q_min_h = query.getAtomMinH(sub_idx);
+      }
+      catch (Exception e)
+      {
+         q_min_h = 0;
+      }
+      try
+      {
+         t_max_h = target.getAtomMaxH(super_idx);
+      }
+      catch (Exception e)
+      {
+         t_max_h = 0;
+      }
+      if (q_min_h > 0 && t_max_h >= 0)
+         if (q_min_h > t_max_h)
             return false;
+   }
 
    if (query.components.size() > sub_idx && query.components[sub_idx] > 0)
    {
@@ -1506,6 +1529,15 @@ int MoleculeSubstructureMatcher::_compare (int &i1, int &i2, void *context)
       return 1;
    if (is_pseudo1)
       return 0; // All pseudoatoms are the same for transposition for substructure
+
+   bool is_template1 = mol.isTemplateAtom(i1);
+   bool is_template2 = mol.isTemplateAtom(i2);
+   if (is_template1 && !is_template2)
+      return -1;
+   if (!is_template1 && is_template2)
+      return 1;
+   if (is_template1)
+      return 0; // All template atoms are the same for transposition for substructure (?)
 
    int res;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -41,6 +41,8 @@ struct MoleculeInChICompoment
 
    void clear() {}
 
+   void getCanonicalOrdering(Molecule &source_mol, Array<int> &mapping);
+   static int cmpVertex(Graph &graph, int v1, int v2, const void *context);
 private:
    void _getCanonicalMolecule (Molecule &source_mol, Molecule &cano_mol);
 

@@ -109,14 +109,14 @@ void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
       HeapTuple tuple = SPI_tuptable->vals[tuple_idx];
 
       if (arg_idx > tupdesc->natts)
-         throw Error("internal error: can not get tuple was not in query %d > %d", arg_idx, tupdesc->natts);
+         elog(ERROR, "internal error: can not get tuple was not in query %d > %d", arg_idx, tupdesc->natts);
 
       char *result = SPI_getvalue(tuple, tupdesc, arg_idx);
       if (result == NULL) {
          if (SPI_result == SPI_ERROR_NOATTRIBUTE)
-            throw Error("internal error: colnumber is out of range (SPI_getvalue)");
+            elog(ERROR, "internal error: colnumber is out of range (SPI_getvalue)");
          else if (SPI_result == SPI_ERROR_NOOUTFUNC)
-            throw Error("internal error: no output function is available (SPI_getvalue)");
+            elog(ERROR, "internal error: no output function is available (SPI_getvalue)");
          else
             data.initFromString("\0");
       }
@@ -124,13 +124,6 @@ void BingoPgCursor::getText(int arg_idx, BingoPgText& data) {
          data.initFromString(result);
          pfree(result);
       }
-      // TODO: Any Inidgo exceptions are being catched in PG_BINGO_END outside of this function
-      // and there PG_BINGO_END raises Postgres exception this is being catched here in BINGO_PG_HANDLE...
-      // This can cause an inifinite exception throwing loop, but variables on the stack here in this function 
-      // are being already removed from stack. So Visual Studio reports "buffer overrun" exception and terminates 
-      // everything :)
-      // Here is an example:
-      // throw Error("internal error: no output function is available (SPI_getvalue)");
    }
    BINGO_PG_HANDLE(throw Error("internal error: can not get datum from the tuple: %s", message));
 }
@@ -157,12 +150,12 @@ uintptr_t  BingoPgCursor::getDatum(int arg_idx) {
       bool isnull;
 
       if (arg_idx > tupdesc->natts)
-         throw Error("internal error: can not get tuple was not in query %d > %d", arg_idx, tupdesc->natts);
+         elog(ERROR, "internal error: can not get tuple was not in query %d > %d", arg_idx, tupdesc->natts);
 
       record = SPI_getbinval(tuple, tupdesc, arg_idx, &isnull);
 
       if (isnull)
-         throw Error("internal error: can not get null tuple");
+         elog(ERROR, "internal error: can not get null tuple");
    }
    BINGO_PG_HANDLE(throw Error("internal error: can not get datum from the tuple: %s", message));
    
@@ -179,7 +172,7 @@ unsigned int BingoPgCursor::getArgOid(int arg_idx) {
    {
       TupleDesc tupdesc = SPI_tuptable->tupdesc;
       if(arg_idx >= tupdesc->natts)
-         throw Error("internal error: can not get argument %d natts = %d", arg_idx, tupdesc->natts);
+         elog(ERROR, "internal error: can not get argument %d natts = %d", arg_idx, tupdesc->natts);
       result = tupdesc->attrs[arg_idx]->atttypid;
       
    }

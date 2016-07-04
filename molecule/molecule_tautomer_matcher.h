@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -43,13 +43,13 @@ public:
    void setQuery (BaseMolecule &query);
 
    void setRulesList (const PtrArray<TautomerRule> *rules_list);
-   void setRules (int rules_set, bool force_hydrogens, bool ring_chain);
+   void setRules (int rules_set, bool force_hydrogens, bool ring_chain, TautomerMethod method);
 
    bool find ();
 
    const int * getQueryMapping ();
 
-   static void parseConditions (const char *tautomer_text, int &rules, bool &force_hydrogens, bool &ring_chain);
+   static void parseConditions (const char *tautomer_text, int &rules, bool &force_hydrogens, bool &ring_chain, TautomerMethod &method);
 
    static int countNonHydrogens (BaseMolecule &molecule);
 
@@ -62,6 +62,7 @@ protected:
    bool _substructure;
    bool _force_hydrogens;
    bool _ring_chain;
+   TautomerMethod _method;
    int  _rules;
 
    const PtrArray<TautomerRule> *_rules_list;

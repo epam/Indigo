@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2010-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -742,8 +742,8 @@ bool AbbreviationExpander::expandAtomAbbreviation (Molecule &mol, int v)
       added_atoms.push(mapping[ve]);
    }
 
-   int sid = mol.superatoms.add();
-   Molecule::Superatom &super = mol.superatoms[sid];
+   int sid = mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
+   Superatom &super = (Superatom &)mol.sgroups.getSGroup(sid);
    super.subscript.readString(mol.getPseudoAtom(v), true);
    for (int ve = expanded.vertexBegin(); ve != expanded.vertexEnd(); ve = expanded.vertexNext(ve))
       super.atoms.push(mapping[ve]);
@@ -799,7 +799,7 @@ CEXPORT int indigoExpandAbbreviations (int molecule)
       if (count > 0 && Molecule::hasCoord(mol))
       {
          // Layout expanded parts
-         MoleculeLayout ml(mol);
+         MoleculeLayout ml(mol, self.smart_layout);
          ml.max_iterations = self.layout_max_iterations;
          ml.respect_existing_layout = true;
          // Check if there are not bonds at all or if the coordinates are invalid

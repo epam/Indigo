@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -26,7 +26,7 @@
 #include "molecule/icm_saver.h"
 #include "molecule/molecule_cml_saver.h"
 
-#include "indigo_inchi_core.h"
+#include "molecule/inchi_wrapper.h"
 
 using namespace indigo::bingo_core;
 
@@ -274,12 +274,9 @@ CEXPORT int mangoSetupMatch (const char *search_type, const char *query, const c
             self.mango_search_type = BingoCore::_GROSS;
             return 1;
          }
-         else
-         {
-            self.mango_search_type = BingoCore::_UNDEF;
-            throw BingoError("Unknown search type '%s' or options string '%s'", 
-               search_type, options);
-         }
+         self.mango_search_type = BingoCore::_UNDEF;
+         throw BingoError("Unknown search type '%s' or options string '%s'", 
+            search_type, options);
       }
       CATCH_READ_TARGET_MOL(self.error.readString(e.message(), 1); return -1;);
    }
@@ -884,7 +881,7 @@ CEXPORT const char* mangoInChI(const char* molecule, int molecule_len, const cha
       self.bingo_context->setLoaderSettings(loader);
       loader.loadMolecule(target);
 
-      IndigoInchi inchi;
+      InchiWrapper inchi;
       inchi.setOptions(options);
       inchi.saveMoleculeIntoInchi(target, self.buffer);
       
@@ -899,7 +896,7 @@ CEXPORT const char* mangoInChIKey(const char* inchi)
 {
    BINGO_BEGIN
    {
-      IndigoInchi::InChIKey(inchi, self.buffer);
+      InchiWrapper::InChIKey(inchi, self.buffer);
       return self.buffer.ptr();
    }
    BINGO_END(0, 0)

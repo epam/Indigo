@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2013 GGA Software Services LLC
+ * Copyright (C) 2009-2015 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -84,6 +84,7 @@ protected:
       _ATOM_LIST,
       _ATOM_NOTLIST,
       _ATOM_PSEUDO,
+      _ATOM_TEMPLATE,
       _ATOM_ELEMENT
    };
 
@@ -107,6 +108,11 @@ protected:
       _SGROUP_TYPE_OTHER // one of unsupported types
    };
 
+   enum
+   {
+      _BRKTYP_SQUARE = 0,
+      _BRKTYP_ROUND
+   };
 
    TL_CP_DECL(Array<int>, _atom_types);
    TL_CP_DECL(Array<int>, _hcount);
@@ -128,7 +134,8 @@ protected:
    void _readCtab3000 ();
    void _readSGroup3000 (const char *str);
    void _readRGroups3000 ();
-   void _readSGroupDisplay (Scanner &scanner, BaseMolecule::DataSGroup &dsg);
+   void _readTGroups3000 ();
+   void _readSGroupDisplay (Scanner &scanner, DataSGroup &dsg);
    void _readCollectionBlock3000 ();
    void _readSGroupsBlock3000 ();
    void _preparePseudoAtomLabel (Array<char> &pseudo);
@@ -137,6 +144,8 @@ protected:
    void _init ();
    void _appendQueryAtom (const char *atom_label, AutoPtr<QueryMolecule::Atom> &atom);
 
+   void _fillSGroupsParentIndices();
+   
    int _getElement (const char *buf);
    char* _strtrim (char *buf);
 
