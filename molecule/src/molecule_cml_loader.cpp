@@ -136,8 +136,8 @@ static void splitStringIntoProperties (const char *s, std::vector<Atom> &atoms, 
 
 void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
 {
-   QS_DEF((std::unordered_map<std::string, int>), atoms_id);
-   QS_DEF((std::unordered_map<std::string, size_t>), atoms_id_int);
+   std::unordered_map<std::string, int> atoms_id;
+   std::unordered_map<std::string, size_t> atoms_id_int;
 
    // Function that mappes atom id as a string to an atom index
    auto getAtomIdx = [&](const char *id)

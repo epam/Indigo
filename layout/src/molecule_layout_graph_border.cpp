@@ -490,7 +490,7 @@ bool MoleculeLayoutGraphSmart::_isPointOutsideCycle(const Cycle &cycle, const Ve
     }
 
     // if point is outside, rotate angle is equals to 0. If point is inside rotate angle is equals to 2*PI of -2*PI
-    return abs(rotate_angle) < PI;
+    return fabs(rotate_angle) < PI;
 }
 
 float MoleculeLayoutGraphSmart::_get_square() {
