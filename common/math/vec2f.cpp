@@ -19,33 +19,6 @@ using namespace indigo;
 
 IMPL_ERROR(Vec2f, "Vec2f");
 
-void print_float2(float x, char c = ' ') {
-    int sign = x < 0 ? -1 : 1;
-    x = fabs(x);
-    int deg = 0;
-
-    if (x != 0) {
-        while (x >= 2) {
-            deg++;
-            x /= 2;
-        }
-        while (x < 1) {
-            deg--;
-            x *= 2;
-        }
-    }
-    printf("%d ", deg);
-    if (sign > 0) printf("+"); else printf("-");
-
-    printf("0");
-    while (x != 0) {
-        if (x >= 1) printf("1"); else printf("0");
-        if (x >= 1) x -= 1;
-        x *= 2;
-    }
-    printf("%c", c);
-}
-
 bool Vec2f::normalize()
 {
    float l = lengthSqr();
@@ -145,28 +118,31 @@ float Vec2f::tiltAngle2 ()
 }
 
 float Vec2f::calc_angle(Vec2f a, Vec2f b) {
-    /*printf("\ncalc_angle !!\n");
-    print_float2(x); print_float2(y, '\n');
-    print_float2(a.x); print_float2(a.y, '\n');
-    print_float2(b.x); print_float2(b.y, '\n');*/
     a -= *this;
 	b -= *this;
-   /*printf("Value: ");
-   print_float2(a.lengthSqr() * b.lengthSqr(), '\n');
-   printf("Square root: ");
-   print_float2(sqrt(a.lengthSqr() * b.lengthSqr()), '\n');*/
+   double len_sqr_a = a.lengthSqr();
+   double len_sqr_b = b.lengthSqr();
+   double mult_ab = len_sqr_a * len_sqr_b;
+   double sqr = sqrt(mult_ab);
 
-	float cos = Vec2f::dot(a, b) / sqrt(a.lengthSqr() * b.lengthSqr());
-	if (cos > 1) cos = 1;
-	if (cos < -1) cos = -1;
-   //printf("Cos: ");
-   //print_float2(cos, '\n');
-	float angle = acos(cos);
-   //printf("Angle: ");
-   //print_float2(angle, '\n');
-   if (Vec2f::cross(a, b) < 0) angle = -angle;
-   //printf("result: ");
-   //print_float2(angle);
+   double cross = Vec2f::cross(a, b);
+   double dot = Vec2f::dot(a, b);
+	float cos = dot / sqr;
+   float sin = cross / sqr;
+
+   float angle;
+   if (2 * cos * cos < 1) {
+       angle = acos_stable(cos);
+       if (cross < 0) angle = -angle;
+   }
+   else {
+       angle = asin_stable(sin);
+       if (dot < 0) {
+           if (cross >= 0) angle = PI - angle;
+           else angle = -PI - angle;
+       }
+   }
+
 	return angle;
 }
 
