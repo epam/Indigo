@@ -48,7 +48,8 @@ The are different cmake presets:
 ## Indigo build instructions ##
 
 To generate project configuration, build the source code, and create the archives for 
-installation you need to execute build_scripts\bingo-release.py:
+installation you need to execute build_scripts\indigo-release-libs.py and
+build_scripts\indigo-release-utils.py:
 
 
 ### Linux (gcc 4.7+)
@@ -69,7 +70,7 @@ installation you need to execute build_scripts\bingo-release.py:
 ### Other
 
 There are different cmake presets:
-	win32-2013, win64-2013, win32-mingw, linux32, linux32-universal, linux64, linux64-universal, mac10.6, mac10.7, mac10.8, mac10.9, mac10.10, mac-universal
+	win32-2013, win64-2013, win64-2015, win32-mingw, linux32, linux32-universal, linux64, linux64-universal, mac10.6, mac10.7, mac10.8, mac10.9, mac10.10, mac-universal
 
 ### Wrappers
 
