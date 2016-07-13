@@ -37,7 +37,7 @@ void Metalayout::LayoutLine::clear ()
 IMPL_ERROR(Metalayout, "metalayout");
 
 Metalayout::Metalayout () :
-horizontalIntervalFactor(1.4f), verticalIntervalFactor(0.8f), bondLength(1.0f), _avel(1.0f), _scaleFactor(1.0f)
+horizontalIntervalFactor(0.5f), verticalIntervalFactor(0.8f), bondLength(1.0f), _avel(1.0f), _scaleFactor(1.0f)
 {
    clear();
 }

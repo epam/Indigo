@@ -31,6 +31,7 @@ public:
    float bond_length;
    float plus_interval_factor;
    float arrow_interval_factor;
+   float horizontal_interval_factor;
    bool preserve_molecule_layout;
    int  max_iterations;
    bool _smart_layout;

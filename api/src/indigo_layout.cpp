@@ -77,6 +77,8 @@ CEXPORT int indigoLayout (int object)
          ReactionLayout rl(rxn, self.smart_layout);
          rl.max_iterations = self.layout_max_iterations;
          rl.bond_length = 1.6f;
+         rl.horizontal_interval_factor = self.layout_horintervalfactor;
+
          rl.make();
          rxn.markStereocenterBonds();
       } else {

@@ -175,6 +175,12 @@ static void indigoSetLayoutMaxIterations (int value)
    self.layout_max_iterations = value;
 }
 
+static void indigoSetLayoutHorIntervalFactor(float value)
+{
+   Indigo &self = indigoGetInstance();
+   self.layout_horintervalfactor = value;
+}
+
 static void indigoAAMSetCancellationTimeout (int value)
 {
    Indigo &self = indigoGetInstance();
@@ -496,6 +502,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings);
 
    mgr.setOptionHandlerInt("layout-max-iterations", indigoSetLayoutMaxIterations);
+
+   mgr.setOptionHandlerFloat("layout-horintervalfactor", indigoSetLayoutHorIntervalFactor);
 
    mgr.setOptionHandlerInt("aam-timeout", indigoAAMSetCancellationTimeout);
    mgr.setOptionHandlerInt("timeout", indigoSetCancellationTimeout);
