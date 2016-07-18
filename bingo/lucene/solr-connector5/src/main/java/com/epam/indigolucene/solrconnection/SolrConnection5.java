@@ -72,15 +72,6 @@ public class SolrConnection5 implements SolrConnection {
 
         results.addAll(res);
 
-        ////TO REMOVE
-        Map<String, Object> tst1 = new HashMap<>();
-        tst1.put("score", 0.5f);
-
-        Map<String, Object> tst2 = new HashMap<>();
-        tst2.put("score", 1.0f);
-
-        /////
-
         Function<Map<String, Object>, Map<String, Object>> postMapper = (Function<Map<String, Object>, Map<String, Object>>) query.getCondition().getPostMappers(results).stream().reduce(Function.identity(), new BinaryOperator<Function<Map<String, Object>, Map<String, Object>>>() {
             @Override
             public Function<Map<String, Object>, Map<String, Object>> apply(Function<Map<String, Object>, Map<String, Object>> f1, Function<Map<String, Object>, Map<String, Object>> f2) {

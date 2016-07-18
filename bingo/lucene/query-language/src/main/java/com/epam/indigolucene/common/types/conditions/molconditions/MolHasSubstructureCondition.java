@@ -16,7 +16,6 @@ import java.util.List;
 public class MolHasSubstructureCondition<S> extends MolStructureCondition<S> {
     public static final String OP_SUBSTRUCTURE = "subs";
     public static final String QMOL         = "qMolString";
-    public static float SUBSTRUCTURE_MATCHES = 1.0f;
 
     public static int SUBSTRUCTURE_REAL_MATCH_COST = 100;
     public static int SUBSTRUCTURE_FP_MATCH_COST   = 1;

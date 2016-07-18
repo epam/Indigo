@@ -19,7 +19,6 @@ import java.util.function.Function;
 public class MolSimilarTo<S> extends FieldCondition<S> implements PostFilterable<S, Float> {
     public static final String OP_MOLECULE_SIMILAR = "mol_sim";
     public static final String Q_FINGERPRINT = "qFp";
-    public static final int    SIMILARITY_MATCH_COST = 1;
 
     private String qFp;
     private IndigoObject qMol;
