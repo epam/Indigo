@@ -53,11 +53,11 @@ protected:
 
    const Graph &_graph;
    CP_DECL;
-   TL_CP_DECL(PtrArray<Array<int> >, _components);
+   TL_CP_DECL(PtrArray<Array<int> >, _components); // masks for components
    TL_CP_DECL(Array<int>, _dfs_order);
    TL_CP_DECL(Array<int>, _lowest_order);
    TL_CP_DECL(PtrArray<Array<int> >, _component_lists);
-   TL_CP_DECL(Array<Array<int> *>, _component_ids);
+   TL_CP_DECL(Array<Array<int> *>, _component_ids); // list of components for articulation point
    TL_CP_DECL(Array<Edge>, _edges_stack);
    int _cur_order;
 };
