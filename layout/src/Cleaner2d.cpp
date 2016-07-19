@@ -157,6 +157,10 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
 
     }
     
+    is_base_point.clear_resize(vertex_count);
+    is_base_point.zerofill();
+    for (int i = 0; i < base_point.size(); i++) is_base_point[base_point[i]] = true;
+
     printf("%d components\n", component_count);
     for (int i = 0; i < component_count; i++) {
         printf("%d: ", i);
@@ -203,9 +207,23 @@ void Cleaner2d::updatePosition(int i) {
 }
 
 void Cleaner2d::updatePositions() {
-    for (int i = 0; i < vertex_count; i++) updatePosition(i);
+    for (int i = 0; i < vertex_count; i++) if (!is_base_point[i]) updatePosition(i);
 }
 
 void Cleaner2d::clean() {
     if (is_biconnected) return; // nothing to do for biconnected graph
+
+    float need_len = 1;
+    for (int iter = 0; iter = 100; iter++) {
+        update_gradient();
+        float len = 0;
+        for (int i = 0; i < base_point.size(); i++) len += gradient[i].lengthSqr();
+        len = sqrt(len);
+        float factor = need_len / len;
+        for (int i = 0; i < base_point.size(); i++) gradient[i] *= factor;
+        for (int i = 0; i < base_point.size(); i++) pos[base_point[i]] -= gradient[i];
+        updatePositions();
+
+        need_len *= .9;
+    }
 }
