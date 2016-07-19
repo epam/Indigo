@@ -98,7 +98,7 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
             break;
         }
         base_point.push(ver);
-        add_coef(ver, ver, ONE);
+        add_coef(ver, base_point.size() - 1, ONE);
 
         base_point_comp.push(c);
 
@@ -123,7 +123,7 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
                 }
             }
             base_point.push(ver);
-            add_coef(ver, ver, ONE);
+            add_coef(ver, base_point.size() - 1, ONE);
             base_point_comp.push(comp);
             has_vertex[ver] = true;
 
@@ -142,7 +142,9 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
 
             // 3. Calculation coefficients
 
-            for (int j = 0; j < vertex_count; j++) if (in[comp][j]) calc_coef(j, def[comp][0], def[comp][1]);
+            for (int j = 0; j < vertex_count; j++) 
+                if (in[comp][j] && j != def[comp][0] && j != def[comp][1] && !block_vertex[j]) 
+                    calc_coef(j, def[comp][0], def[comp][1]);
 
             // 4. Add new components to list
 
@@ -171,6 +173,14 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
         printf("\n");
     }
 
+    for (int i = 0; i < vertex_count; i++) {
+        printf("%d = ", i);
+        for (int j = 0; j < coef[i].size(); j++) if (coef[i][j].lengthSqr() > 0) 
+        {
+            printf(" + %d * (%.2f, %.2f)", base_point[j], coef[i][j].x, coef[i][j].y);
+        }
+        printf("\n");
+    }
 }
 
 void Cleaner2d::add_coef(int ver, int index, Vec2f value) {
@@ -197,7 +207,7 @@ void Cleaner2d::calc_coef(int to, int from0, int from1) {
 
     for (int i = 0; i < len; i++) {
         add_coef(to, i, mult(_coef, coef[from1][i]));
-        add_coef(to, i, mult(_coef, coef[from0][i]) * -1);
+        add_coef(to, i, mult(ONE - _coef, coef[from0][i]));
     }
 }
 
@@ -208,6 +218,12 @@ void Cleaner2d::updatePosition(int i) {
 
 void Cleaner2d::updatePositions() {
     for (int i = 0; i < vertex_count; i++) if (!is_base_point[i]) updatePosition(i);
+}
+
+void Cleaner2d::update_gradient() {
+    gradient.zerofill();
+
+
 }
 
 void Cleaner2d::clean() {
