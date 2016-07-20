@@ -873,10 +873,12 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
             }
          }
          else
+         {
             // no information about implicit H, but sure about radical --
             // this is a commmon situtation for Molfiles or non-bracketed SMILES atoms.
             // Will throw an error on 5-valent carbon and such.
             Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
+         }
       }
    }
 
@@ -1021,14 +1023,25 @@ int Molecule::getAtomValence (int idx)
             valence = conn + impl_h;
             unusual_valence = true;
          }
-         else // [C], [CH]
+         else if (atom.number == ELEM_C) // [C], [CH]
          {
             radical = 0;
             valence = conn + impl_h;
             unusual_valence = true;
          }
-         _radicals.expandFill(idx + 1, -1);
-         _radicals[idx] = radical;
+         else if (abs(atom.charge) == 1) // [N+], [O-]
+         {
+            radical = 0;
+            valence = conn + impl_h;
+            unusual_valence = true;
+         }
+
+
+         if (radical != -1)
+         {
+            _radicals.expandFill(idx + 1, -1);
+            _radicals[idx] = radical;
+         }
       }
       else
       {
@@ -1075,6 +1088,7 @@ int Molecule::getAtomValence (int idx)
 
    _valence.expandFill(idx + 1, -1);
    _valence[idx] = valence;
+
    if (unusual_valence)
       _atoms[idx].explicit_valence = true;
 
