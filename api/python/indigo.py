@@ -1261,6 +1261,22 @@ class Indigo(object):
     RC_MADE_OR_BROKEN = 4
     RC_ORDER_CHANGED = 8
 
+    SG_TYPE_GEN = 0
+    SG_TYPE_DAT = 1
+    SG_TYPE_SUP = 2
+    SG_TYPE_SRU = 3
+    SG_TYPE_MUL = 4
+    SG_TYPE_MON = 5
+    SG_TYPE_MER = 6
+    SG_TYPE_COP = 7
+    SG_TYPE_CRO = 8
+    SG_TYPE_MOD = 9
+    SG_TYPE_GRA = 10
+    SG_TYPE_COM = 11
+    SG_TYPE_MIX = 12
+    SG_TYPE_FOR = 13
+    SG_TYPE_ANY = 14
+
     _crt = None
     _crtp = None
     _lib = None
