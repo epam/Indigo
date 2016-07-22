@@ -15,6 +15,7 @@
 #include "layout\cleaner2d.h"
 #include "graph\biconnected_decomposer.h"
 #include <algorithm> 
+#include <vector>
 
 using namespace indigo;
 
@@ -22,31 +23,69 @@ using namespace indigo;
 
 Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
     vertex_count = _mol.vertexCount();
-    printf("%d\n", vertex_count);
+//    printf("%d\n", vertex_count);
     BiconnectedDecomposer bi_decomposer(_mol);
     component_count = bi_decomposer.decompose();
-    printf("%d\n", component_count);
+//    printf("%d\n", component_count);
     if (component_count == 1) {
         is_biconnected = true;
         return;
     }
+    else is_biconnected = false;
+    pos.clear_resize(vertex_count);
 
     base_point.clear();
     base_point_comp.clear();
+
+    is_art_point.clear_resize(vertex_count);
+    for (int i = 0; i < vertex_count; i++) is_art_point[i] = bi_decomposer.isArticulationPoint(i);
+
+    adj_matrix.clear();
+    for (int i = 0; i < vertex_count; i++) {
+        adj_matrix.push();
+        adj_matrix.top().clear_resize(vertex_count);
+        adj_matrix.top().zerofill();
+    }
+    for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e)) {
+        Edge Ed = _mol.getEdge(e);
+        adj_matrix[Ed.beg][Ed.end] = adj_matrix[Ed.end][Ed.beg] = true;
+    }
+
+    std::vector<float> lens;
+    for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e))
+        lens.push_back(Vec2f::dist(plane(_mol.getAtomXyz(_mol.getEdge(e).beg)), plane(_mol.getAtomXyz(_mol.getEdge(e).end))));
+
+    sort(lens.begin(), lens.end());
+
+    target_len = lens.size() % 2 == 1 ? lens[lens.size() / 2] : (lens[lens.size() / 2] + lens[lens.size() / 2 - 1]) / 2;
 
     in.clear();
     for (int i = 0; i < component_count; i++) {
         in.push();
         in.top().clear_resize(vertex_count);
     }
-    printf("A\n");
     Filter filter;
     for (int i = 0; i < component_count; i++) {
-        printf("%d\n", i);
         bi_decomposer.getComponent(i, filter);
         for (int j = 0; j < vertex_count; j++) in[i][j] = filter.valid(j);
     }
-    printf("B\n");
+
+    common_comp.clear();
+    for (int i = 0; i < vertex_count; i++) {
+        common_comp.push();
+        common_comp.top().clear_resize(vertex_count);
+        common_comp.top().fffill();
+        for (int j = 0; j < vertex_count; j++)
+            for (int c = 0; c < component_count; c++) if (in[c][i] && in[c][j]) common_comp[i][j] = c;
+    }
+
+    edge_comp.clear_resize(_mol.edgeEnd());
+
+    for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e)) {
+        int v = _mol.getEdge(e).beg, u = _mol.getEdge(e).end;
+        for (int i = 0; i < component_count; i++) if (in[i][u] && in[i][v]) edge_comp[e] = i;
+    }
+
     def.clear();
     for (int i = 0; i < component_count; i++) {
         def.push();
@@ -71,23 +110,7 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
         coef.top().clear();
     }
 
-    /*printf("%d components\n", component_count);
-    for (int i = 0; i < component_count; i++) {
-        printf("%d: ", i);
-        for (int j = 0; j < vertex_count; j++) if (in[i][j]) printf("%d, ", j);
-        printf("\n");
-    }*/
-
     QS_DEF(Array<int>, local_component_list);
-    //printf("C\n");
-
-    /*printf("Components for every vertex:\n");
-    for (int i = 0; i < vertex_count; i++) {
-        printf("%d: ", i);
-        bi_decomposer.getVertexComponents(i, local_component_list);
-        for (int j = 0; j < local_component_list.size(); j++) printf("%d, ", local_component_list[j]);
-        printf("\n");
-    }*/
 
     int index = 0;
     for (int c = 0; c < component_count; c++) if (!has_component[c]) {
@@ -159,11 +182,15 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
 
     }
     
-    is_base_point.clear_resize(vertex_count);
-    is_base_point.zerofill();
-    for (int i = 0; i < base_point.size(); i++) is_base_point[base_point[i]] = true;
+    base_point_index.clear_resize(vertex_count);
+    base_point_index.fffill();
+    for (int i = 0; i < base_point.size(); i++) base_point_index[base_point[i]] = i;
 
-    printf("%d components\n", component_count);
+    gradient.clear_resize(base_point.size());
+    pregradient.clear_resize(vertex_count);
+    for (int i = 0; i < vertex_count; i++) if (is_base_point(i)) pos[i] = plane(_mol.getAtomXyz(i));
+
+    /*printf("%d components\n", component_count);
     for (int i = 0; i < component_count; i++) {
         printf("%d: ", i);
         for (int j = 0; j < vertex_count; j++) if (in[i][j]) printf("%d, ", j);
@@ -180,8 +207,10 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
             printf(" + %d * (%.2f, %.2f)", base_point[j], coef[i][j].x, coef[i][j].y);
         }
         printf("\n");
-    }
+    }*/
 }
+
+bool Cleaner2d::is_base_point(int i) { return base_point_index[i] >= 0; }
 
 void Cleaner2d::add_coef(int ver, int index, Vec2f value) {
     while (coef[ver].size() <= index) coef[ver].push(ZERO);
@@ -217,29 +246,226 @@ void Cleaner2d::updatePosition(int i) {
 }
 
 void Cleaner2d::updatePositions() {
-    for (int i = 0; i < vertex_count; i++) if (!is_base_point[i]) updatePosition(i);
+    for (int i = 0; i < vertex_count; i++) if (!is_base_point(i)) updatePosition(i);
 }
 
 void Cleaner2d::update_gradient() {
+    pregradient.zerofill();
+
+    // 1. edges
+
+    float sqrt3 = sqrt(3.);
+
+    if (1)
+    for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e)) {
+        int c = edge_comp[e];
+        float e_len = (pos[_mol.getEdge(e).beg] - pos[_mol.getEdge(e).end]).length();
+        float l_len2 = (pos[def[c][0]] - pos[def[c][1]]).lengthSqr();
+
+        //printf("[%d, %d]\n", _mol.getEdge(e).beg, _mol.getEdge(e).end);
+
+        pregradient[def[c][0]] += (pos[def[c][0]] - pos[def[c][1]]) * (2 * e_len * (e_len - target_len) / l_len2);
+        pregradient[def[c][1]] += (pos[def[c][1]] - pos[def[c][0]]) * (2 * e_len * (e_len - target_len) / l_len2);
+    }
+
+    // 2. atoms pairs
+    if (1) 
+    for (int i = 0; i < vertex_count; i++)
+        for (int j = 0; j < i; j++) if (common_comp[i][j] == -1) {
+            float dist2 = Vec2f::distSqr(pos[i], pos[j]);
+            if (dist2 < target_len * target_len) {
+                //printf("[%d, %d]\n", i, j);
+                float dist = sqrt(dist2);
+                pregradient[i] += (pos[i] - pos[j]) * (2 * (dist - target_len) / dist);
+                pregradient[j] += (pos[j] - pos[i]) * (2 * (dist - target_len) / dist);
+            }
+        }
+    //printf("\n");
+                    
+    // 3. angles
+
+    if (1)
+    for (int i = 0; i < vertex_count; i++) if (is_art_point[i]) {
+        const Vertex& vert = _mol.getVertex(i);
+        for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1))
+            for (int n2 = vert.neiBegin(); n2 < n1; n2 = vert.neiNext(n2)) {
+                int v1 = vert.neiVertex(n1);
+                int v2 = vert.neiVertex(n2);
+                if (common_comp[v1][v2] >= 0) continue;
+
+                Vec2f vec1 = pos[v1] - pos[i];
+                Vec2f vec2 = pos[v2] - pos[i];
+
+                float dot = Vec2f::dot(vec1, vec2);
+                float cross = Vec2f::cross(vec1, vec2);
+                float signcross = cross > 0 ? 1 : cross == 0 ? 0 : -1;
+
+                float l1 = vec1.length();
+                float l2 = vec2.length();
+
+                float cos = dot / (l1 * l2);
+                float sin = cross / (l1 * l2);
+
+                if (cos < -1) cos = -1;
+                if (cos > 1) cos = 1;
+                if (sin < -1) sin = -1;
+                if (sin > 1) sin = 1;
+
+                if (fabs(sin) > 1e-6) {
+
+                    float x = 1 - cos * cos;
+                    float acosd = -1. / sqrt(x);
+                    Vec2f alphadv1 = (vec2 * l1 * l2 - vec1 * dot * l2 / l1) * acosd / (l1 * l1 * l2 * l2) * signcross;
+                    Vec2f alphadv2 = (vec1 * l1 * l2 - vec2 * dot * l1 / l2) * acosd / (l1 * l1 * l2 * l2) * signcross;
+                    Vec2f alphadv = ((vec1 + vec2) * (-l1 * l2) + (vec1 * l2 / l1 + vec2 * l1 / l2) * dot) * acosd / (l1 * l1 * l2 * l2) * signcross;
+
+                    float alpha = acos(cos) * signcross;
+                    float target_alpha = (2 * PI / 3) * signcross;
+
+                    pregradient[i] += alphadv * (alpha - target_alpha) * 2;
+                    pregradient[v1] += alphadv1 * (alpha - target_alpha) * 2;
+                    pregradient[v2] += alphadv2 * (alpha - target_alpha) * 2;
+                }
+                //float dist = Vec2f::dist(pos[v1], pos[v2]);
+                //float d1 = Vec2f::dist(pos[v1], pos[i]);
+                //float d2 = Vec2f::dist(pos[v2], pos[i]);
+
+                //float cos = (d1 * d1 + d2 * d2 - dist * dist) / (2 * d1 * d2);
+                //float acos_der = -1. / sqrt(1 - cos * cos);
+                //float acos = std::acos(cos);
+
+                //float cross = Vec2f::cross(pos[v1] - pos[i], pos[v2] - pos[i]);
+                //float sign = cross > 0 ? 1 : -1;
+
+                ////printf("%d %d %.5f %.5f %.5f %.5f %.5f\n", v1, v2, dist, d1, d2, acos, acos_der);
+                //pregradient[v1] += (pos[v1] - pos[i]) * 2 * (acos - 2 * PI / 3) * (sign * acos_der * (d1 * d1 - d2 * d2 + dist * dist) / (2 * d1 * d1 * d2) / d1);
+                ////pregradient[v1] += (pos[v1] - pos[v2]) * 2 * (acos - 2 * PI / 3) * (sign * acos_der * (-dist / d1 / d2) / dist);
+                //pregradient[v2] += (pos[v2] - pos[i]) * 2 * (acos - 2 * PI / 3) * (sign * acos_der * (d2 * d2 - d1 * d1 + dist * dist) / (2 * d2 * d2 * d1) / d2);
+                ////pregradient[v2] += (pos[v2] - pos[v1]) * 2 * (acos - 2 * PI / 3) * (sign * acos_der * (-dist / d1 / d2) / dist);
+
+
+                //float need_dist = sqrt(d1 * d1 + d2 * d2 + d1 * d2);
+                //pregradient[v1] += (pos[v1] - pos[i]) * 2 * (need_dist / dist - 1) * (2 * d1 + d2) / (2 * dist * need_dist) / d1;
+                //pregradient[v1] += (pos[v1] - pos[v2]) * -2 * (need_dist / dist - 1) * need_dist / dist / dist / dist;
+                //pregradient[v2] += (pos[v2] - pos[i]) * 2 * (need_dist / dist - 1) * (2 * d2 + d1) / (2 * dist * need_dist) / d2;
+                //pregradient[v2] += (pos[v2] - pos[v1]) * -2 * (need_dist / dist - 1) * need_dist / dist / dist / dist;
+            }
+    }
+
+    // 4. final gradient calc
+
     gradient.zerofill();
-
-
+    for (int i = 0; i < vertex_count; i++)
+        for (int j = 0; j < coef[i].size(); j++) gradient[j] += mult(pregradient[i], coef[i][j]);
 }
 
 void Cleaner2d::clean() {
     if (is_biconnected) return; // nothing to do for biconnected graph
 
-    float need_len = 1;
-    for (int iter = 0; iter = 100; iter++) {
+    updatePositions();
+
+    //for (int i = 0; i < vertex_count; i++) printf("%d: (%.5f, %.5f)\n", i, pos[i].x, pos[i].y);
+
+    QS_DEF(Array<float>, mult);
+    QS_DEF(Array<float>, energies);
+
+    int k = 20;
+    mult.clear_resize(k + 1);
+    energies.clear_resize(k + 1);
+    mult[0] = 0;
+    mult[1] = 1.;
+    for (int i = 2; i <= k; i++) mult[i] = mult[i - 1] * 0.5;
+
+    float need_len = target_len;
+    for (int iter = 0; iter < 5; iter++) {
+        //for (int i = 0; i < vertex_count; i++) printf("%d: (%.5f, %.5f) ", i, pos[i].x, pos[i].y);
+        //printf("\n");
         update_gradient();
+        //if (iter == 0) {
+        //    for (int i = 0; i < gradient.size(); i++) printf("%d: (%.5f, %.5f)\n", base_point[i], gradient[i].x, gradient[i].y);
+        //}
         float len = 0;
         for (int i = 0; i < base_point.size(); i++) len += gradient[i].lengthSqr();
         len = sqrt(len);
+        //printf("%.5f\n", len);
         float factor = need_len / len;
         for (int i = 0; i < base_point.size(); i++) gradient[i] *= factor;
-        for (int i = 0; i < base_point.size(); i++) pos[base_point[i]] -= gradient[i];
+
+        for (int i = 0; i <= k; i++) {
+            for (int j = 0; j < base_point.size(); j++) pos[base_point[j]] -= gradient[j] * mult[i];
+            updatePositions();
+            energies[i] = energy();
+            for (int j = 0; j < base_point.size(); j++) pos[base_point[j]] += gradient[j] * mult[i];
+        }
+
+        int best_i = 0;
+        for (int i = 1; i <= k; i++) if (energies[i] < energies[best_i]) best_i = i;
+        //for (int i = 0; i <= k; i++) printf("%d: %.5f %.5f\n", i, mult[i], energies[i]);
+        //printf("%d\n", best_i);
+
+        for (int i = 0; i < base_point.size(); i++) pos[base_point[i]] -= gradient[i] * mult[best_i];
         updatePositions();
 
-        need_len *= .9;
+        //need_len *= .95;
     }
+
+    for (int i = 0; i < vertex_count; i++) _mol.setAtomXyz(i, Vec3f(pos[i].x, pos[i].y, 0));
+}
+
+float Cleaner2d::energy() {
+    float result = 0;
+
+    // 1. edges
+    if (1)
+    for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e)) {
+        int c = edge_comp[e];
+        float e_len = (pos[_mol.getEdge(e).beg] - pos[_mol.getEdge(e).end]).length();
+
+        float diff = (e_len - target_len) / target_len;
+        result += diff * diff;
+    }
+
+    // 2. atoms pairs
+    if (1)
+    for (int i = 0; i < vertex_count; i++)
+        for (int j = 0; j < i; j++) if (common_comp[i][j] == -1) {
+            float dist2 = Vec2f::distSqr(pos[i], pos[j]);
+            if (dist2 < target_len * target_len) {
+                float dist = sqrt(dist2);
+                float diff = (dist - target_len) / target_len;
+                result += diff * diff;
+            }
+        }
+    //printf("\n");
+
+    // 3. angles
+
+    for (int i = 0; i < vertex_count; i++) if (is_art_point[i]) {
+        const Vertex& vert = _mol.getVertex(i);
+        for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1))
+            for (int n2 = vert.neiBegin(); n2 < n1; n2 = vert.neiNext(n2)) {
+                int v1 = vert.neiVertex(n1);
+                int v2 = vert.neiVertex(n2);
+                if (common_comp[v1][v2] >= 0) continue;
+
+                Vec2f vec1 = pos[v1] - pos[i];
+                Vec2f vec2 = pos[v2] - pos[i];
+
+                float dot = Vec2f::dot(vec1, vec2);
+                float cross = Vec2f::cross(vec1, vec2);
+                float signcross = cross > 0 ? 1 : cross == 0 ? 0 : -1;
+
+                float l1 = vec1.length();
+                float l2 = vec2.length();
+
+                float cos = dot / (l1 * l2);
+                float sin = cross / (l1 * l2);
+
+                float alpha = acos(cos) * signcross;
+                float target_alpha = (2 * PI / 3) * signcross;
+                result += (alpha - target_alpha) * (alpha - target_alpha);
+            }
+    }
+
+    return result;
 }
