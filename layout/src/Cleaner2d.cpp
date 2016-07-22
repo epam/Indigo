@@ -259,13 +259,14 @@ void Cleaner2d::update_gradient() {
     if (1)
     for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e)) {
         int c = edge_comp[e];
-        float e_len = (pos[_mol.getEdge(e).beg] - pos[_mol.getEdge(e).end]).length();
-        float l_len2 = (pos[def[c][0]] - pos[def[c][1]]).lengthSqr();
 
-        //printf("[%d, %d]\n", _mol.getEdge(e).beg, _mol.getEdge(e).end);
+        int v1 = _mol.getEdge(e).beg;
+        int v2 = _mol.getEdge(e).end;
 
-        pregradient[def[c][0]] += (pos[def[c][0]] - pos[def[c][1]]) * (2 * e_len * (e_len - target_len) / l_len2);
-        pregradient[def[c][1]] += (pos[def[c][1]] - pos[def[c][0]]) * (2 * e_len * (e_len - target_len) / l_len2);
+        float len = (pos[v1] - pos[v2]).length();
+
+        pregradient[v1] += (pos[v1] - pos[v2]) * 2 * (len - target_len) / len / (target_len * target_len);
+        pregradient[v2] += (pos[v2] - pos[v1]) * 2 * (len - target_len) / len / (target_len * target_len);
     }
 
     // 2. atoms pairs
@@ -276,8 +277,8 @@ void Cleaner2d::update_gradient() {
             if (dist2 < target_len * target_len) {
                 //printf("[%d, %d]\n", i, j);
                 float dist = sqrt(dist2);
-                pregradient[i] += (pos[i] - pos[j]) * (2 * (dist - target_len) / dist);
-                pregradient[j] += (pos[j] - pos[i]) * (2 * (dist - target_len) / dist);
+                pregradient[i] += (pos[i] - pos[j]) * (2 * (dist - target_len) / dist) / (target_len * target_len);
+                pregradient[j] += (pos[j] - pos[i]) * (2 * (dist - target_len) / dist) / (target_len * target_len);
             }
         }
     //printf("\n");
@@ -326,29 +327,6 @@ void Cleaner2d::update_gradient() {
                     pregradient[v1] += alphadv1 * (alpha - target_alpha) * 2;
                     pregradient[v2] += alphadv2 * (alpha - target_alpha) * 2;
                 }
-                //float dist = Vec2f::dist(pos[v1], pos[v2]);
-                //float d1 = Vec2f::dist(pos[v1], pos[i]);
-                //float d2 = Vec2f::dist(pos[v2], pos[i]);
-
-                //float cos = (d1 * d1 + d2 * d2 - dist * dist) / (2 * d1 * d2);
-                //float acos_der = -1. / sqrt(1 - cos * cos);
-                //float acos = std::acos(cos);
-
-                //float cross = Vec2f::cross(pos[v1] - pos[i], pos[v2] - pos[i]);
-                //float sign = cross > 0 ? 1 : -1;
-
-                ////printf("%d %d %.5f %.5f %.5f %.5f %.5f\n", v1, v2, dist, d1, d2, acos, acos_der);
-                //pregradient[v1] += (pos[v1] - pos[i]) * 2 * (acos - 2 * PI / 3) * (sign * acos_der * (d1 * d1 - d2 * d2 + dist * dist) / (2 * d1 * d1 * d2) / d1);
-                ////pregradient[v1] += (pos[v1] - pos[v2]) * 2 * (acos - 2 * PI / 3) * (sign * acos_der * (-dist / d1 / d2) / dist);
-                //pregradient[v2] += (pos[v2] - pos[i]) * 2 * (acos - 2 * PI / 3) * (sign * acos_der * (d2 * d2 - d1 * d1 + dist * dist) / (2 * d2 * d2 * d1) / d2);
-                ////pregradient[v2] += (pos[v2] - pos[v1]) * 2 * (acos - 2 * PI / 3) * (sign * acos_der * (-dist / d1 / d2) / dist);
-
-
-                //float need_dist = sqrt(d1 * d1 + d2 * d2 + d1 * d2);
-                //pregradient[v1] += (pos[v1] - pos[i]) * 2 * (need_dist / dist - 1) * (2 * d1 + d2) / (2 * dist * need_dist) / d1;
-                //pregradient[v1] += (pos[v1] - pos[v2]) * -2 * (need_dist / dist - 1) * need_dist / dist / dist / dist;
-                //pregradient[v2] += (pos[v2] - pos[i]) * 2 * (need_dist / dist - 1) * (2 * d2 + d1) / (2 * dist * need_dist) / d2;
-                //pregradient[v2] += (pos[v2] - pos[v1]) * -2 * (need_dist / dist - 1) * need_dist / dist / dist / dist;
             }
     }
 
@@ -357,6 +335,21 @@ void Cleaner2d::update_gradient() {
     gradient.zerofill();
     for (int i = 0; i < vertex_count; i++)
         for (int j = 0; j < coef[i].size(); j++) gradient[j] += mult(pregradient[i], coef[i][j]);
+}
+
+void Cleaner2d::update_gradient2() {
+    float e0 = energy();
+    for (int i = 0; i < base_point.size(); i++) {
+        pos[base_point[i]].x += dif_eps;
+        updatePositions();
+        float e1 = energy();
+        pos[base_point[i]].x -= dif_eps;
+        pos[base_point[i]].y += dif_eps;
+        updatePositions();
+        float e2 = energy();
+        pos[base_point[i]].y -= dif_eps;
+        gradient[i].set((e1 - e0) / dif_eps, (e2 - e0) / dif_eps);
+    }
 }
 
 void Cleaner2d::clean() {
@@ -377,17 +370,14 @@ void Cleaner2d::clean() {
     for (int i = 2; i <= k; i++) mult[i] = mult[i - 1] * 0.5;
 
     float need_len = target_len;
-    for (int iter = 0; iter < 5; iter++) {
-        //for (int i = 0; i < vertex_count; i++) printf("%d: (%.5f, %.5f) ", i, pos[i].x, pos[i].y);
-        //printf("\n");
-        update_gradient();
-        //if (iter == 0) {
-        //    for (int i = 0; i < gradient.size(); i++) printf("%d: (%.5f, %.5f)\n", base_point[i], gradient[i].x, gradient[i].y);
-        //}
+    for (int iter = 0; iter < 100; iter++) {
+        update_gradient2();
+        /*if (iter == 99) {
+            for (int i = 0; i < gradient.size(); i++) printf("%d: (%.5f, %.5f) : (%.5f, %.5f)\n", base_point[i], gradient[i].x, gradient[i].y, dgradient[i].x, dgradient[i].y);
+        }*/
         float len = 0;
         for (int i = 0; i < base_point.size(); i++) len += gradient[i].lengthSqr();
         len = sqrt(len);
-        //printf("%.5f\n", len);
         float factor = need_len / len;
         for (int i = 0; i < base_point.size(); i++) gradient[i] *= factor;
 
@@ -400,7 +390,6 @@ void Cleaner2d::clean() {
 
         int best_i = 0;
         for (int i = 1; i <= k; i++) if (energies[i] < energies[best_i]) best_i = i;
-        //for (int i = 0; i <= k; i++) printf("%d: %.5f %.5f\n", i, mult[i], energies[i]);
         //printf("%d\n", best_i);
 
         for (int i = 0; i < base_point.size(); i++) pos[base_point[i]] -= gradient[i] * mult[best_i];
@@ -461,7 +450,19 @@ float Cleaner2d::energy() {
                 float cos = dot / (l1 * l2);
                 float sin = cross / (l1 * l2);
 
-                float alpha = acos(cos) * signcross;
+                float alpha;
+
+                if (fabs(cos) < 0.5) {
+                    alpha = acos_stable(cos)* signcross;
+                }
+                else {
+                    alpha = asin_stable(sin);
+                    if (cos < 0) {
+                        if (alpha > 0) alpha = PI - alpha;
+                        else alpha = -PI - alpha;
+                    }
+                }
+
                 float target_alpha = (2 * PI / 3) * signcross;
                 result += (alpha - target_alpha) * (alpha - target_alpha);
             }

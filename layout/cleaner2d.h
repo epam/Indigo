@@ -31,6 +31,7 @@ private:
     void add_coef(int ver, int index, Vec2f value);
     void calc_coef(int to, int from0, int from1);
     void update_gradient();
+    void update_gradient2();
     float get_comp_der(int i);
     bool is_base_point(int i);
     float energy();
@@ -58,6 +59,7 @@ private:
     Vec2f plane(Vec3f v) { return Vec2f(v.x, v.y); }
     Vec2f mult(Vec2f& a, Vec2f& b) { return Vec2f(a.x * b.x  - a.y * b.y, a.x * b.y + a.y * b.x); }
 
+    const float dif_eps = 0.01;
     const Vec2f ZERO = Vec2f(0., 0.);
     const Vec2f ONE = Vec2f(1., 0.);
 };
