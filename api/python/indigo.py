@@ -27,7 +27,7 @@ class IndigoException (Exception):
 
     def __str__(self):
         if sys.version_info > (3, 0):
-            return str(self.value.decode(DECODE_ENCODING))  
+            return str(self.value.decode(DECODE_ENCODING))
         else:
             return str(self.value)
 
@@ -518,7 +518,7 @@ class IndigoObject(object):
     def setDataSGroupXY(self, x, y, options=''):
         self.dispatcher._setSessionId()
         if options is None:
-            options = '' 
+            options = ''
         return self.dispatcher._checkResult(Indigo._lib.indigoSetDataSGroupXY(self.id, x, y, options.encode(ENCODE_ENCODING)))
 
     def setSGroupData(self, data):
@@ -985,6 +985,10 @@ class IndigoObject(object):
     def layout(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoLayout(self.id))
+
+    def clean2d(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoClean2d(self.id))
 
     def smiles(self):
         self.dispatcher._setSessionId()
@@ -2061,7 +2065,7 @@ class Indigo(object):
 
     def _checkResultString (self, result):
         if sys.version_info >= (3, 0):
-            return self._checkResultPtr(result).decode(DECODE_ENCODING)  
+            return self._checkResultPtr(result).decode(DECODE_ENCODING)
         else:
             return self._checkResultPtr(result).encode(ENCODE_ENCODING)
 
@@ -2163,7 +2167,7 @@ class Indigo(object):
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoCreateQueryReaction()))
 
     def exactMatch(self, item1, item2, flags=''):
-        self._setSessionId()        
+        self._setSessionId()
         if flags is None:
             flags = ''
         newobj = self._checkResult(Indigo._lib.indigoExactMatch(item1.id, item2.id, flags.encode(ENCODE_ENCODING)))
@@ -2191,7 +2195,7 @@ class Indigo(object):
     def similarity(self, item1, item2, metrics=''):
         self._setSessionId()
         if metrics is None:
-            metrics = '' 
+            metrics = ''
         return self._checkResultFloat(Indigo._lib.indigoSimilarity(item1.id, item2.id, metrics.encode(ENCODE_ENCODING)))
 
     def iterateSDFile(self, filename):
@@ -2340,4 +2344,3 @@ class Indigo(object):
     def buildPkaModel(self, level, threshold, filename):
         self._setSessionId()
         return self._checkResult(Indigo._lib.indigoBuildPkaModel(level, threshold, filename.encode(ENCODE_ENCODING)))
-
