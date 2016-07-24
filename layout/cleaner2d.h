@@ -15,7 +15,7 @@
 #ifndef __cleaner_2d__
 #define __cleaner_2d__
 
-#include "molecule\molecule.h"
+#include "molecule/molecule.h"
 
 namespace indigo
 {
@@ -24,7 +24,7 @@ class DLLEXPORT Cleaner2d {
 
 public:
     Cleaner2d(Molecule& mol);
-    void clean(); 
+    void clean();
 private:
     void updatePosition(int i);
     void updatePositions();
@@ -64,7 +64,7 @@ private:
     const Vec2f ONE = Vec2f(1., 0.);
 };
 
-    
+
 }
 
 #endif

@@ -12,9 +12,9 @@
 * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ***************************************************************************/
 
-#include "layout\cleaner2d.h"
-#include "graph\biconnected_decomposer.h"
-#include <algorithm> 
+#include "layout/cleaner2d.h"
+#include "graph/biconnected_decomposer.h"
+#include <algorithm>
 #include <vector>
 
 using namespace indigo;
@@ -103,7 +103,7 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
     has_vertex.zerofill();
     block_vertex.clear_resize(vertex_count);
     block_vertex.zerofill();
-    
+
 
     for (int i = 0; i < vertex_count; i++) {
         coef.push();
@@ -165,8 +165,8 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
 
             // 3. Calculation coefficients
 
-            for (int j = 0; j < vertex_count; j++) 
-                if (in[comp][j] && j != def[comp][0] && j != def[comp][1] && !block_vertex[j]) 
+            for (int j = 0; j < vertex_count; j++)
+                if (in[comp][j] && j != def[comp][0] && j != def[comp][1] && !block_vertex[j])
                     calc_coef(j, def[comp][0], def[comp][1]);
 
             // 4. Add new components to list
@@ -181,7 +181,7 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
         }
 
     }
-    
+
     base_point_index.clear_resize(vertex_count);
     base_point_index.fffill();
     for (int i = 0; i < base_point.size(); i++) base_point_index[base_point[i]] = i;
@@ -202,7 +202,7 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
 
     for (int i = 0; i < vertex_count; i++) {
         printf("%d = ", i);
-        for (int j = 0; j < coef[i].size(); j++) if (coef[i][j].lengthSqr() > 0) 
+        for (int j = 0; j < coef[i].size(); j++) if (coef[i][j].lengthSqr() > 0)
         {
             printf(" + %d * (%.2f, %.2f)", base_point[j], coef[i][j].x, coef[i][j].y);
         }
@@ -270,7 +270,7 @@ void Cleaner2d::update_gradient() {
     }
 
     // 2. atoms pairs
-    if (1) 
+    if (1)
     for (int i = 0; i < vertex_count; i++)
         for (int j = 0; j < i; j++) if (common_comp[i][j] == -1) {
             float dist2 = Vec2f::distSqr(pos[i], pos[j]);
@@ -282,7 +282,7 @@ void Cleaner2d::update_gradient() {
             }
         }
     //printf("\n");
-                    
+
     // 3. angles
 
     if (1)
