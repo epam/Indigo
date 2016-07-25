@@ -38,6 +38,10 @@ private:
     void _updateGradient2();
     bool _isBasePoint(int i);
     float _energy();
+    Vec2f _energy_diff(int v);
+    float _local_energy(int v);
+    float _edge_energy(int i, int j);
+    float _angle_energy(int i, int v1, int v2);
 
     Molecule& _mol;
     Array<int> base_point;

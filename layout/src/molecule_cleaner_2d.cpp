@@ -216,7 +216,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     for (int i = 0; i < vertex_count; i++) if (_isBasePoint(i)) pos[i] = plane(_mol.getAtomXyz(i));
 
 
-    printf("%d components\n", component_count);
+    /*printf("%d components\n", component_count);
     for (int i = 0; i < component_count; i++) {
         printf("%d: ", i);
         for (int j = 0; j < vertex_count; j++) if (in[i][j]) printf("%d, ", j);
@@ -233,7 +233,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
             printf(" + %d * (%.2f, %.2f)", base_point[j], coef[i][j].x, coef[i][j].y);
         }
         printf("\n");
-    }
+    }*/
 }
 
 bool MoleculeCleaner2d::_isBasePoint(int i) { return base_point_index[i] >= 0; }
@@ -365,18 +365,8 @@ void MoleculeCleaner2d::_updateGradient() {
 }
 
 void MoleculeCleaner2d::_updateGradient2() {
-    float e0 = _energy();
-    for (int i = 0; i < base_point.size(); i++) {
-        pos[base_point[i]].x += APPROX_STEP;
-        _updatePositions();
-        float e1 = _energy();
-        pos[base_point[i]].x -= APPROX_STEP;
-        pos[base_point[i]].y += APPROX_STEP;
-        _updatePositions();
-        float e2 = _energy();
-        pos[base_point[i]].y -= APPROX_STEP;
-        gradient[i].set((e1 - e0) / APPROX_STEP, (e2 - e0) / APPROX_STEP);
-    }
+    for (int i = 0; i < base_point.size(); i++)
+        gradient[i] = _energy_diff(base_point[i]);
 }
 
 void MoleculeCleaner2d::clean() {
@@ -499,4 +489,80 @@ float MoleculeCleaner2d::_energy() {
     }
 
     return result;
+}
+
+Vec2f MoleculeCleaner2d::_energy_diff(int v) {
+    _updatePositions();
+    float e = _local_energy(v);
+    pos[v].x + APPROX_STEP;
+    _updatePositions();
+    float ex = _local_energy(v);
+    pos[v].x -= APPROX_STEP;
+    pos[v].y + APPROX_STEP;
+    _updatePositions();
+    float ey = _local_energy(v);
+    pos[v].y -= APPROX_STEP;
+
+    return Vec2f(ex - e, ey - e) / APPROX_STEP;
+}
+
+float MoleculeCleaner2d::_local_energy(int v) {
+    //return _energy();
+    float result = 0;
+
+    for (int i = 0; i < vertex_count; i++) if (v != i) result += _edge_energy(v, i);
+
+    const Vertex& vert = _mol.getVertex(v);
+    for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1)) {
+        for (int n2 = vert.neiBegin(); n2 < n1; n2 = vert.neiNext(n2))
+            result += _angle_energy(v, vert.neiVertex(n1), vert.neiVertex(n2));
+
+        int v1 = vert.neiVertex(n1);
+        const Vertex& vert1 = _mol.getVertex(v1);
+        for (int n2 = vert1.neiBegin(); n2 != vert1.neiEnd(); n2 = vert.neiNext(n2))
+            result += _angle_energy(v1, v, vert1.neiVertex(n2));
+    }
+
+    return result;
+}
+
+float MoleculeCleaner2d::_edge_energy(int i, int j) {
+    float len = Vec2f::distSqr(pos[i], pos[j]);
+
+    if (len < target_len * target_len || adj_matrix[i][j])
+        return (len - target_len) * (len - target_len);
+
+    else return 0;
+}
+
+float MoleculeCleaner2d::_angle_energy(int i, int v1, int v2) {
+    Vec2f vec1 = pos[v1] - pos[i];
+    Vec2f vec2 = pos[v2] - pos[i];
+
+    float dot = Vec2f::dot(vec1, vec2);
+    float cross = Vec2f::cross(vec1, vec2);
+    float signcross = cross > 0 ? 1 : cross == 0 ? 0 : -1;
+
+    float l1 = vec1.length();
+    float l2 = vec2.length();
+
+    float cos = dot / (l1 * l2);
+    float sin = cross / (l1 * l2);
+
+    float alpha;
+
+    if (fabs(cos) < 0.5) {
+        alpha = acos_stable(cos)* signcross;
+    }
+    else {
+        alpha = asin_stable(sin);
+        if (cos < 0) {
+            if (alpha > 0) alpha = PI - alpha;
+            else alpha = -PI - alpha;
+        }
+    }
+
+    float target_alpha = (2 * PI / 3) * signcross;
+    return (alpha - target_alpha) * (alpha - target_alpha);
+
 }
