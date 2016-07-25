@@ -494,11 +494,11 @@ float MoleculeCleaner2d::_energy() {
 Vec2f MoleculeCleaner2d::_energy_diff(int v) {
     _updatePositions();
     float e = _local_energy(v);
-    pos[v].x + APPROX_STEP;
+    pos[v].x += APPROX_STEP;
     _updatePositions();
     float ex = _local_energy(v);
     pos[v].x -= APPROX_STEP;
-    pos[v].y + APPROX_STEP;
+    pos[v].y += APPROX_STEP;
     _updatePositions();
     float ey = _local_energy(v);
     pos[v].y -= APPROX_STEP;
@@ -519,8 +519,9 @@ float MoleculeCleaner2d::_local_energy(int v) {
 
         int v1 = vert.neiVertex(n1);
         const Vertex& vert1 = _mol.getVertex(v1);
-        for (int n2 = vert1.neiBegin(); n2 != vert1.neiEnd(); n2 = vert.neiNext(n2))
-            result += _angle_energy(v1, v, vert1.neiVertex(n2));
+        for (int n2 = vert1.neiBegin(); n2 != vert1.neiEnd(); n2 = vert1.neiNext(n2))
+            if (vert1.neiVertex(n2) != v)
+                result += _angle_energy(v1, v, vert1.neiVertex(n2));
     }
 
     return result;
@@ -529,10 +530,12 @@ float MoleculeCleaner2d::_local_energy(int v) {
 float MoleculeCleaner2d::_edge_energy(int i, int j) {
     float len = Vec2f::distSqr(pos[i], pos[j]);
 
-    if (len < target_len * target_len || adj_matrix[i][j])
-        return (len - target_len) * (len - target_len);
-
-    else return 0;
+    if (len < target_len * target_len || adj_matrix[i][j]) {
+        len = sqrt(len);
+        float diff = (len - target_len) / target_len;
+        return diff * diff;
+    }
+    return 0;
 }
 
 float MoleculeCleaner2d::_angle_energy(int i, int v1, int v2) {
