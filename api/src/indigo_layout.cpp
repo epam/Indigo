@@ -19,7 +19,7 @@
 #include "reaction/base_reaction.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
-#include "layout/cleaner2d.h"
+#include "layout/molecule_cleaner_2d.h"
 #include <vector>
 
 CEXPORT int indigoLayout (int object)
@@ -98,7 +98,7 @@ CEXPORT int indigoClean2d(int object)
 
         if (IndigoBaseMolecule::is(obj) || obj.type == IndigoObject::SUBMOLECULE) {
             Molecule &mol = obj.getBaseMolecule().asMolecule();
-            Cleaner2d cleaner2d(mol);
+            MoleculeCleaner2d cleaner2d(mol);
             cleaner2d.clean();
 
         }

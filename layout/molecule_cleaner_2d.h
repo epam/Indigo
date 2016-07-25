@@ -12,32 +12,32 @@
 * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ***************************************************************************/
 
-#ifndef __cleaner_2d__
-#define __cleaner_2d__
+#ifndef __molecule_cleaner_2d__
+#define __molecule_cleaner_2d__
 
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
+#include "base_cpp/non_copyable.h"
 #include "common/math/algebra.h"
 
 namespace indigo
 {
 class Molecule;
    
-class DLLEXPORT Cleaner2d {
+class DLLEXPORT MoleculeCleaner2d : public NonCopyable {
 
 public:
-    Cleaner2d(Molecule& mol);
+    MoleculeCleaner2d(Molecule& mol);
     void clean(); 
 private:
-    void updatePosition(int i);
-    void updatePositions();
-    void add_coef(int ver, int index, Vec2f value);
-    void calc_coef(int to, int from0, int from1);
-    void update_gradient();
-    void update_gradient2();
-    float get_comp_der(int i);
-    bool is_base_point(int i);
-    float energy();
+    void _updatePosition(int i);
+    void _updatePositions();
+    void _addCoef(int ver, int index, Vec2f value);
+    void _calc—oef(int to, int from0, int from1);
+    void _updateGradient();
+    void _updateGradient2();
+    bool _isBasePoint(int i);
+    float _energy();
 
     Molecule& _mol;
     Array<int> base_point;
@@ -47,27 +47,26 @@ private:
     bool is_biconnected;
     int vertex_count;
     int component_count;
-    ObjArray< Array<bool> > in;
-    ObjArray<Array<int> > def;
+    ObjArray< Array<bool> > in; // is vertex in component
+    ObjArray<Array<int> > definiting_points; // definiting points for component
     ObjArray<Array<Vec2f> > coef; // linear representation for every vertices throw base points over field of complex numbers
     Array<Vec2f> gradient;
     Array<Vec2f> pregradient;
     Array<int> edge_comp;
-    Array<Vec2f> component_edge_derivative;
     Array<bool> is_art_point;
     ObjArray<Array<bool> > adj_matrix;
-    ObjArray<Array<int> > common_comp;
-    float target_len;
+    ObjArray<Array<int> > common_comp; // common_comp[i][j] = number of component wich is contains both vertices i and j (or -1 if there isnt such component)
+    float target_len; // target length of bonds
 
-    Vec2f plane(Vec3f v) { return Vec2f(v.x, v.y); }
-    Vec2f mult(Vec2f& a, Vec2f& b) { return Vec2f(a.x * b.x  - a.y * b.y, a.x * b.y + a.y * b.x); }
+    Vec2f plane(Vec3f& v) { return Vec2f(v.x, v.y); } // projection to plane z == 0 
+    Vec2f mult(Vec2f& a, Vec2f& b) { return Vec2f(a.x * b.x  - a.y * b.y, a.x * b.y + a.y * b.x); } // complex multiplication of two complex numbers
 
-    const float dif_eps = 0.01;
-    const Vec2f ZERO = Vec2f(0., 0.);
-    const Vec2f ONE = Vec2f(1., 0.);
+    const float APPROX_STEP = 0.01; // step of derivate approximation
+    const Vec2f ZERO = Vec2f(0., 0.); // complex zero
+    const Vec2f ONE = Vec2f(1., 0.); // complex one
 };
 
     
 }
 
-#endif
+#endif // __molecule_cleaner_2d__

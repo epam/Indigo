@@ -12,7 +12,7 @@
 * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ***************************************************************************/
 
-#include "layout/cleaner2d.h"
+#include "layout/molecule_cleaner_2d.h"
 #include "graph/biconnected_decomposer.h"
 #include "molecule/molecule.h"
 #include <algorithm> 
@@ -20,9 +20,9 @@
 
 using namespace indigo;
 
-//IMPL_ERROR(Cleaner2d, "cleaner2d");
+//IMPL_ERROR(MoleculeCleaner2d, "MoleculeCleaner2d");
 
-Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
+MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     vertex_count = _mol.vertexCount();
 //    printf("%d\n", vertex_count);
     BiconnectedDecomposer bi_decomposer(_mol);
@@ -87,10 +87,10 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
         for (int i = 0; i < component_count; i++) if (in[i][u] && in[i][v]) edge_comp[e] = i;
     }
 
-    def.clear();
+    definiting_points.clear();
     for (int i = 0; i < component_count; i++) {
-        def.push();
-        def.top().clear();
+        definiting_points.push();
+        definiting_points.top().clear();
     }
 
     QS_DEF(Array<bool>, has_component);
@@ -122,7 +122,7 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
             break;
         }
         base_point.push(ver);
-        add_coef(ver, base_point.size() - 1, ONE);
+        _addCoef(ver, base_point.size() - 1, ONE);
 
         base_point_comp.push(c);
 
@@ -147,28 +147,28 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
                 }
             }
             base_point.push(ver);
-            add_coef(ver, base_point.size() - 1, ONE);
+            _addCoef(ver, base_point.size() - 1, ONE);
             base_point_comp.push(comp);
             has_vertex[ver] = true;
 
             // 2. Add yet another defining point if it is need
 
-            for (int j = 0; j < base_point.size(); j++) if (in[comp][base_point[j]]) def[comp].push(base_point[j]);
-            if (def[comp].size() < 2) {
+            for (int j = 0; j < base_point.size(); j++) if (in[comp][base_point[j]]) definiting_points[comp].push(base_point[j]);
+            if (definiting_points[comp].size() < 2) {
                 int newver = -1;
                 for (int j = 0; j < vertex_count; j++) if (block_vertex[j] && in[comp][j]) {
                     newver = j;
                     break;
                 }
 
-                def[comp].push(newver);
+                definiting_points[comp].push(newver);
             }
 
             // 3. Calculation coefficients
 
             for (int j = 0; j < vertex_count; j++) 
-                if (in[comp][j] && j != def[comp][0] && j != def[comp][1] && !block_vertex[j]) 
-                    calc_coef(j, def[comp][0], def[comp][1]);
+                if (in[comp][j] && j != definiting_points[comp][0] && j != definiting_points[comp][1] && !block_vertex[j])
+                    _calcÑoef(j, definiting_points[comp][0], definiting_points[comp][1]);
 
             // 4. Add new components to list
 
@@ -189,7 +189,7 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
 
     gradient.clear_resize(base_point.size());
     pregradient.clear_resize(vertex_count);
-    for (int i = 0; i < vertex_count; i++) if (is_base_point(i)) pos[i] = plane(_mol.getAtomXyz(i));
+    for (int i = 0; i < vertex_count; i++) if (_isBasePoint(i)) pos[i] = plane(_mol.getAtomXyz(i));
 
     /*printf("%d components\n", component_count);
     for (int i = 0; i < component_count; i++) {
@@ -211,14 +211,14 @@ Cleaner2d::Cleaner2d(Molecule& mol) : _mol(mol) {
     }*/
 }
 
-bool Cleaner2d::is_base_point(int i) { return base_point_index[i] >= 0; }
+bool MoleculeCleaner2d::_isBasePoint(int i) { return base_point_index[i] >= 0; }
 
-void Cleaner2d::add_coef(int ver, int index, Vec2f value) {
+void MoleculeCleaner2d::_addCoef(int ver, int index, Vec2f value) {
     while (coef[ver].size() <= index) coef[ver].push(ZERO);
     coef[ver][index] += value;
 }
 
-void Cleaner2d::calc_coef(int to, int from0, int from1) {
+void MoleculeCleaner2d::_calcÑoef(int to, int from0, int from1) {
     Vec2f A0 = plane(_mol.getAtomXyz(from0));
     Vec2f A1 = plane(_mol.getAtomXyz(from1));
     Vec2f A2 = plane(_mol.getAtomXyz(to));
@@ -232,26 +232,26 @@ void Cleaner2d::calc_coef(int to, int from0, int from1) {
     Vec2f _coef = Vec2f(dot, cross) / dist2;
 
     int len = std::max(coef[from0].size(), coef[from1].size());
-    add_coef(from0, len - 1, ZERO);
-    add_coef(from1, len - 1, ZERO);
+    _addCoef(from0, len - 1, ZERO);
+    _addCoef(from1, len - 1, ZERO);
 
     for (int i = 0; i < len; i++) {
-        add_coef(to, i, mult(_coef, coef[from1][i]));
+        _addCoef(to, i, mult(_coef, coef[from1][i]));
         Vec2f one_minus_coef = ONE - _coef;
-        add_coef(to, i, mult(one_minus_coef, coef[from0][i]));
+        _addCoef(to, i, mult(one_minus_coef, coef[from0][i]));
     }
 }
 
-void Cleaner2d::updatePosition(int i) {
+void MoleculeCleaner2d::_updatePosition(int i) {
     pos[i] = ZERO;
     for (int j = 0; j < coef[i].size(); j++) pos[i] += mult(coef[i][j], pos[base_point[j]]);
 }
 
-void Cleaner2d::updatePositions() {
-    for (int i = 0; i < vertex_count; i++) if (!is_base_point(i)) updatePosition(i);
+void MoleculeCleaner2d::_updatePositions() {
+    for (int i = 0; i < vertex_count; i++) if (!_isBasePoint(i)) _updatePosition(i);
 }
 
-void Cleaner2d::update_gradient() {
+void MoleculeCleaner2d::_updateGradient() {
     pregradient.zerofill();
 
     // 1. edges
@@ -339,25 +339,25 @@ void Cleaner2d::update_gradient() {
         for (int j = 0; j < coef[i].size(); j++) gradient[j] += mult(pregradient[i], coef[i][j]);
 }
 
-void Cleaner2d::update_gradient2() {
-    float e0 = energy();
+void MoleculeCleaner2d::_updateGradient2() {
+    float e0 = _energy();
     for (int i = 0; i < base_point.size(); i++) {
-        pos[base_point[i]].x += dif_eps;
-        updatePositions();
-        float e1 = energy();
-        pos[base_point[i]].x -= dif_eps;
-        pos[base_point[i]].y += dif_eps;
-        updatePositions();
-        float e2 = energy();
-        pos[base_point[i]].y -= dif_eps;
-        gradient[i].set((e1 - e0) / dif_eps, (e2 - e0) / dif_eps);
+        pos[base_point[i]].x += APPROX_STEP;
+        _updatePositions();
+        float e1 = _energy();
+        pos[base_point[i]].x -= APPROX_STEP;
+        pos[base_point[i]].y += APPROX_STEP;
+        _updatePositions();
+        float e2 = _energy();
+        pos[base_point[i]].y -= APPROX_STEP;
+        gradient[i].set((e1 - e0) / APPROX_STEP, (e2 - e0) / APPROX_STEP);
     }
 }
 
-void Cleaner2d::clean() {
+void MoleculeCleaner2d::clean() {
     if (is_biconnected) return; // nothing to do for biconnected graph
 
-    updatePositions();
+    _updatePositions();
 
     //for (int i = 0; i < vertex_count; i++) printf("%d: (%.5f, %.5f)\n", i, pos[i].x, pos[i].y);
 
@@ -373,7 +373,7 @@ void Cleaner2d::clean() {
 
     float need_len = target_len;
     for (int iter = 0; iter < 100; iter++) {
-        update_gradient2();
+        _updateGradient2();
         /*if (iter == 99) {
             for (int i = 0; i < gradient.size(); i++) printf("%d: (%.5f, %.5f) : (%.5f, %.5f)\n", base_point[i], gradient[i].x, gradient[i].y, dgradient[i].x, dgradient[i].y);
         }*/
@@ -385,8 +385,8 @@ void Cleaner2d::clean() {
 
         for (int i = 0; i <= k; i++) {
             for (int j = 0; j < base_point.size(); j++) pos[base_point[j]] -= gradient[j] * mult[i];
-            updatePositions();
-            energies[i] = energy();
+            _updatePositions();
+            energies[i] = _energy();
             for (int j = 0; j < base_point.size(); j++) pos[base_point[j]] += gradient[j] * mult[i];
         }
 
@@ -395,7 +395,7 @@ void Cleaner2d::clean() {
         //printf("%d\n", best_i);
 
         for (int i = 0; i < base_point.size(); i++) pos[base_point[i]] -= gradient[i] * mult[best_i];
-        updatePositions();
+        _updatePositions();
 
         //need_len *= .95;
     }
@@ -403,7 +403,7 @@ void Cleaner2d::clean() {
     for (int i = 0; i < vertex_count; i++) _mol.setAtomXyz(i, Vec3f(pos[i].x, pos[i].y, 0));
 }
 
-float Cleaner2d::energy() {
+float MoleculeCleaner2d::_energy() {
     float result = 0;
 
     // 1. edges
