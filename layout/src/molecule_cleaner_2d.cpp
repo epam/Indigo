@@ -26,7 +26,8 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     vertex_count = _mol.vertexCount();
 //    printf("%d\n", vertex_count);
     BiconnectedDecomposer bi_decomposer(_mol);
-    component_count = bi_decomposer.decompose();
+    //component_count = bi_decomposer.decompose();
+    component_count = _mol.edgeCount();
 //    printf("%d\n", component_count);
     if (component_count == 1) {
         is_biconnected = true;
@@ -36,10 +37,29 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     pos.clear_resize(vertex_count);
 
     base_point.clear();
-    base_point_comp.clear();
+
+    in.clear();
+    for (int i = 0; i < component_count; i++) {
+        in.push();
+        in.top().clear_resize(vertex_count);
+        in.top().zerofill();
+    }
+
+    for (int i = 0, e = _mol.edgeBegin(); e != _mol.edgeEnd(); i++, e = _mol.edgeNext(e)) {
+        const Edge& edge = _mol.getEdge(e);
+        in[i][edge.beg] = true;
+        in[i][edge.end] = true;
+    }
 
     is_art_point.clear_resize(vertex_count);
-    for (int i = 0; i < vertex_count; i++) is_art_point[i] = bi_decomposer.isArticulationPoint(i);
+    is_art_point.zerofill();
+    for (int i = 0; i < vertex_count; i++) {
+        int cnt = 0;
+        for (int j = 0; j < component_count; j++) {
+            cnt += in[j][i];
+        }
+        if (cnt > 1) is_art_point[i] = true;
+    }
 
     adj_matrix.clear();
     for (int i = 0; i < vertex_count; i++) {
@@ -60,16 +80,11 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
 
     target_len = lens.size() % 2 == 1 ? lens[lens.size() / 2] : (lens[lens.size() / 2] + lens[lens.size() / 2 - 1]) / 2;
 
-    in.clear();
-    for (int i = 0; i < component_count; i++) {
-        in.push();
-        in.top().clear_resize(vertex_count);
-    }
-    Filter filter;
+    /*Filter filter;
     for (int i = 0; i < component_count; i++) {
         bi_decomposer.getComponent(i, filter);
         for (int j = 0; j < vertex_count; j++) in[i][j] = filter.valid(j);
-    }
+    }*/
 
     common_comp.clear();
     for (int i = 0; i < vertex_count; i++) {
@@ -84,7 +99,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
 
     for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e)) {
         int v = _mol.getEdge(e).beg, u = _mol.getEdge(e).end;
-        for (int i = 0; i < component_count; i++) if (in[i][u] && in[i][v]) edge_comp[e] = i;
+        edge_comp[e] = common_comp[v][u];
     }
 
     definiting_points.clear();
@@ -93,7 +108,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
         definiting_points.top().clear();
     }
 
-    QS_DEF(Array<bool>, has_component);
+    /*QS_DEF(Array<bool>, has_component);
     QS_DEF(Array<int>, component_list);
     QS_DEF(Array<bool>, has_vertex);
     QS_DEF(Array<bool>, block_vertex);
@@ -103,7 +118,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     has_vertex.clear_resize(vertex_count);
     has_vertex.zerofill();
     block_vertex.clear_resize(vertex_count);
-    block_vertex.zerofill();
+    block_vertex.zerofill();*/
     
 
     for (int i = 0; i < vertex_count; i++) {
@@ -111,6 +126,15 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
         coef.top().clear();
     }
 
+    for (int i = 0; i < vertex_count; i++) {
+        base_point.push(i);
+        _addCoef(i, i, ONE);
+    }
+    for (int i = 0; i < component_count; i++) {
+        for (int j = 0; j < vertex_count; j++) if (in[i][j]) definiting_points[i].push(j);
+    }
+
+    /*
     QS_DEF(Array<int>, local_component_list);
 
     int index = 0;
@@ -182,7 +206,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
         }
 
     }
-    
+    */
     base_point_index.clear_resize(vertex_count);
     base_point_index.fffill();
     for (int i = 0; i < base_point.size(); i++) base_point_index[base_point[i]] = i;
@@ -191,13 +215,14 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     pregradient.clear_resize(vertex_count);
     for (int i = 0; i < vertex_count; i++) if (_isBasePoint(i)) pos[i] = plane(_mol.getAtomXyz(i));
 
-    /*printf("%d components\n", component_count);
+
+    printf("%d components\n", component_count);
     for (int i = 0; i < component_count; i++) {
         printf("%d: ", i);
         for (int j = 0; j < vertex_count; j++) if (in[i][j]) printf("%d, ", j);
         printf("|| ");
-        printf("%d: ", def[i].size());
-        for (int j = 0; j < def[i].size(); j++) printf("%d, ", def[i][j]);
+        printf("%d: ", definiting_points[i].size());
+        for (int j = 0; j < definiting_points[i].size(); j++) printf("%d, ", definiting_points[i][j]);
         printf("\n");
     }
 
@@ -208,7 +233,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
             printf(" + %d * (%.2f, %.2f)", base_point[j], coef[i][j].x, coef[i][j].y);
         }
         printf("\n");
-    }*/
+    }
 }
 
 bool MoleculeCleaner2d::_isBasePoint(int i) { return base_point_index[i] >= 0; }
@@ -372,7 +397,7 @@ void MoleculeCleaner2d::clean() {
     for (int i = 2; i <= k; i++) mult[i] = mult[i - 1] * 0.5;
 
     float need_len = target_len;
-    for (int iter = 0; iter < 100; iter++) {
+    for (int iter = 0; iter < 1000; iter++) {
         _updateGradient2();
         /*if (iter == 99) {
             for (int i = 0; i < gradient.size(); i++) printf("%d: (%.5f, %.5f) : (%.5f, %.5f)\n", base_point[i], gradient[i].x, gradient[i].y, dgradient[i].x, dgradient[i].y);
@@ -397,6 +422,7 @@ void MoleculeCleaner2d::clean() {
         for (int i = 0; i < base_point.size(); i++) pos[base_point[i]] -= gradient[i] * mult[best_i];
         _updatePositions();
 
+        if (best_i == 0) break;
         //need_len *= .95;
     }
 
@@ -438,6 +464,8 @@ float MoleculeCleaner2d::_energy() {
                 int v1 = vert.neiVertex(n1);
                 int v2 = vert.neiVertex(n2);
                 if (common_comp[v1][v2] >= 0) continue;
+
+                //printf("%d %d %d\n", i, v1, v2);
 
                 Vec2f vec1 = pos[v1] - pos[i];
                 Vec2f vec2 = pos[v2] - pos[i];

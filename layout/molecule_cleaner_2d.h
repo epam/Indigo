@@ -42,7 +42,6 @@ private:
     Molecule& _mol;
     Array<int> base_point;
     Array<int> base_point_index;
-    Array<int> base_point_comp;
     Array<Vec2f> pos;
     bool is_biconnected;
     int vertex_count;
