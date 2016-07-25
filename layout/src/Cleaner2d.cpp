@@ -12,8 +12,9 @@
 * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ***************************************************************************/
 
-#include "layout\cleaner2d.h"
-#include "graph\biconnected_decomposer.h"
+#include "layout/cleaner2d.h"
+#include "graph/biconnected_decomposer.h"
+#include "molecule/molecule.h"
 #include <algorithm> 
 #include <vector>
 
@@ -236,7 +237,8 @@ void Cleaner2d::calc_coef(int to, int from0, int from1) {
 
     for (int i = 0; i < len; i++) {
         add_coef(to, i, mult(_coef, coef[from1][i]));
-        add_coef(to, i, mult(ONE - _coef, coef[from0][i]));
+        Vec2f one_minus_coef = ONE - _coef;
+        add_coef(to, i, mult(one_minus_coef, coef[from0][i]));
     }
 }
 

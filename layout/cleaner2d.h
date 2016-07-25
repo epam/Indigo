@@ -15,11 +15,14 @@
 #ifndef __cleaner_2d__
 #define __cleaner_2d__
 
-#include "molecule\molecule.h"
+#include "base_cpp/array.h"
+#include "base_cpp/obj_array.h"
+#include "common/math/algebra.h"
 
 namespace indigo
 {
-
+class Molecule;
+   
 class DLLEXPORT Cleaner2d {
 
 public:
