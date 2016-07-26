@@ -1955,8 +1955,7 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
    unfolded_h_mol.clear();
    markers.clear();
    unfolded_h_mol.clone_KeepIndices(mol);
-   unfolded_h_mol.unfoldHydrogens(&markers, -1);
-
+   unfolded_h_mol.unfoldHydrogens(&markers, -1, true);
 
    atom_cip_desc.clear_resize(unfolded_h_mol.vertexEnd());
    atom_cip_desc.zerofill();
