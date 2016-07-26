@@ -1029,7 +1029,7 @@ int Molecule::getAtomValence (int idx)
             valence = conn + impl_h;
             unusual_valence = true;
          }
-         else if (abs(atom.charge) == 1) // [N+], [O-]
+         else if ( (abs(atom.charge) == 1) && (atom.number == ELEM_N || atom.number == ELEM_O) )// [N+], [O-]
          {
             radical = 0;
             valence = conn + impl_h;
