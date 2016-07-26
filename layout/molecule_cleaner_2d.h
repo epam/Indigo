@@ -38,16 +38,24 @@ private:
     void _updateGradient2();
     bool _isBasePoint(int i);
     float _energy();
-    Vec2f _energy_diff(int v);
-    float _local_energy(int v);
-    float _edge_energy(int i, int j);
-    float _angle_energy(int i, int v1, int v2);
+    Vec2f _energyDiff(int v);
+    float _localEnergy(int v);
+    float _edgeEnergy(int i, int j);
+    float _angleEnergy(int i, int v1, int v2);
+
+    void _initComponents(bool use_beconnected_decomposition);
+    void _initBasePointIndex();
+    void _initGeometry();
+    void _initArtPoints();
+    void _initAdjMatrix();
+    void _calcTargetLen();
+    void _initCommonComp();
 
     Molecule& _mol;
     Array<int> base_point;
     Array<int> base_point_index;
     Array<Vec2f> pos;
-    bool is_biconnected;
+    bool is_trivial;
     int vertex_size;
     int component_count;
     ObjArray< Array<bool> > in; // is vertex in component

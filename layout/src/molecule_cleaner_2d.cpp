@@ -26,32 +26,210 @@ using namespace indigo;
 MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     vertex_size = _mol.vertexEnd();
 //    printf("%d\n", vertex_count);
-    BiconnectedDecomposer bi_decomposer(_mol);
-    //component_count = bi_decomposer.decompose();
-    component_count = _mol.edgeCount();
 //    printf("%d\n", component_count);
-    if (component_count == 1) {
-        is_biconnected = true;
-        return;
-    }
-    else is_biconnected = false;
-    pos.clear_resize(vertex_size);
+    _initComponents(true);
 
-    base_point.clear();
+    if (is_trivial) return;
 
-    in.clear();
+    _initArtPoints();
+    _initAdjMatrix();
+    _calcTargetLen();
+    _initCommonComp();
+
+    /*printf("%d components\n", component_count);
     for (int i = 0; i < component_count; i++) {
-        in.push();
-        in.top().clear_resize(vertex_size);
-        in.top().zerofill();
+    printf("%d: ", i);
+    for (int j = 0; j < vertex_count; j++) if (in[i][j]) printf("%d, ", j);
+    printf("|| ");
+    printf("%d: ", definiting_points[i].size());
+    for (int j = 0; j < definiting_points[i].size(); j++) printf("%d, ", definiting_points[i][j]);
+    printf("\n");
     }
 
-    for (int i = 0, e = _mol.edgeBegin(); e != _mol.edgeEnd(); i++, e = _mol.edgeNext(e)) {
-        const Edge& edge = _mol.getEdge(e);
-        in[i][edge.beg] = true;
-        in[i][edge.end] = true;
+    for (int i = 0; i < vertex_count; i++) {
+    printf("%d = ", i);
+    for (int j = 0; j < coef[i].size(); j++) if (coef[i][j].lengthSqr() > 0)
+    {
+    printf(" + %d * (%.2f, %.2f)", base_point[j], coef[i][j].x, coef[i][j].y);
+    }
+    printf("\n");
+    }*/
+
+
+
+}
+    
+
+
+void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
+    pos.clear_resize(vertex_size);
+    base_point.clear();
+    in.clear();
+
+    for (int i = 0; i < vertex_size; i++) {
+        coef.push();
+        coef.top().clear();
     }
 
+    if (use_beconnected_decomposition) {
+        BiconnectedDecomposer bi_decomposer(_mol);
+        component_count = bi_decomposer.decompose();
+
+        for (int i = 0; i < component_count; i++) {
+            in.push();
+            in.top().clear_resize(vertex_size);
+            in.top().zerofill();
+        }
+
+        Filter filter;
+        for (int i = 0; i < component_count; i++) {
+            bi_decomposer.getComponent(i, filter);
+            for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j)) in[i][j] = filter.valid(j);
+        }
+
+        definiting_points.clear();
+        for (int i = 0; i < component_count; i++) {
+            definiting_points.push();
+            definiting_points.top().clear();
+        }
+
+
+        QS_DEF(Array<bool>, has_component);
+        QS_DEF(Array<int>, component_list);
+        QS_DEF(Array<bool>, has_vertex);
+        QS_DEF(Array<bool>, block_vertex);
+        has_component.clear_resize(component_count);
+        has_component.zerofill();
+        component_list.clear();
+        has_vertex.clear_resize(vertex_size);
+        has_vertex.zerofill();
+        block_vertex.clear_resize(vertex_size);
+        block_vertex.zerofill();
+
+
+
+
+        QS_DEF(Array<int>, local_component_list);
+
+        int index = 0;
+        for (int c = 0; c < component_count; c++) if (!has_component[c]) {
+
+            int ver = -1;
+            for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (in[c][i]) if (bi_decomposer.isArticulationPoint(i)) {
+                ver = i;
+                break;
+            }
+            base_point.push(ver);
+            _addCoef(ver, base_point.size() - 1, ONE);
+
+            has_vertex[ver] = true;
+            block_vertex[ver] = true;
+
+            has_component[c] = true;
+            component_list.push(c);
+
+            for (; index < component_list.size(); index++) {
+                // 1. Search for new vertex
+                int comp = component_list[index];
+                ver = -1;
+                for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
+                    if (in[comp][j] && !block_vertex[j] && bi_decomposer.isArticulationPoint(j)) {
+                        ver = j;
+                        break;
+                    }
+                if (ver == -1) {
+                    for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
+                        if (in[comp][j] && !block_vertex[j]) {
+                            ver = j;
+                            break;
+                        }
+                }
+                base_point.push(ver);
+                _addCoef(ver, base_point.size() - 1, ONE);
+                has_vertex[ver] = true;
+
+                // 2. Add yet another defining point if it is need
+
+                for (int j = 0; j < base_point.size(); j++) if (in[comp][base_point[j]]) definiting_points[comp].push(base_point[j]);
+                if (definiting_points[comp].size() < 2) {
+                    int newver = -1;
+                    for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j)) if (block_vertex[j] && in[comp][j]) {
+                        newver = j;
+                        break;
+                    }
+
+                    definiting_points[comp].push(newver);
+                }
+
+                // 3. Calculation coefficients
+
+                for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
+                    if (in[comp][j] && j != definiting_points[comp][0] && j != definiting_points[comp][1] && !block_vertex[j])
+                        _calc—oef(j, definiting_points[comp][0], definiting_points[comp][1]);
+
+                // 4. Add new components to list
+
+                for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v)) if (in[comp][v] && bi_decomposer.isArticulationPoint(v)) {
+                    for (int j = 0; j < component_count; j++) if (in[j][v] && !has_component[j]) {
+                        component_list.push(j);
+                        has_component[j] = true;
+                    }
+                }
+                for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v)) if (in[comp][v]) block_vertex[v] = true;
+            }
+        }
+
+
+    } else {
+        component_count = _mol.edgeCount();
+
+        
+        for (int i = 0; i < component_count; i++) {
+            in.push();
+            in.top().clear_resize(vertex_size);
+            in.top().zerofill();
+        }
+
+        for (int i = 0, e = _mol.edgeBegin(); e != _mol.edgeEnd(); i++, e = _mol.edgeNext(e)) {
+            const Edge& edge = _mol.getEdge(e);
+            in[i][edge.beg] = true;
+            in[i][edge.end] = true;
+        }
+
+        definiting_points.clear();
+        for (int i = 0; i < component_count; i++) {
+            definiting_points.push();
+            definiting_points.top().clear();
+        }
+
+        for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) {
+            base_point.push(i);
+            _addCoef(i, i, ONE);
+        }
+        for (int i = 0; i < component_count; i++) {
+            for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j)) if (in[i][j]) definiting_points[i].push(j);
+        }
+    }
+
+    is_trivial = component_count <= 1;
+
+    _initBasePointIndex();
+    _initGeometry();
+}
+
+void MoleculeCleaner2d::_initBasePointIndex() {
+    base_point_index.clear_resize(vertex_size);
+    base_point_index.fffill();
+    for (int i = 0; i < base_point.size(); i++) base_point_index[base_point[i]] = i;
+}
+
+void MoleculeCleaner2d::_initGeometry() {
+    gradient.clear_resize(base_point.size());
+    pregradient.clear_resize(vertex_size);
+    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (_isBasePoint(i)) pos[i] = plane(_mol.getAtomXyz(i));
+}
+
+void MoleculeCleaner2d::_initArtPoints() {
     is_art_point.clear_resize(vertex_size);
     is_art_point.zerofill();
     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) {
@@ -61,7 +239,9 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
         }
         if (cnt > 1) is_art_point[i] = true;
     }
+}
 
+void MoleculeCleaner2d::_initAdjMatrix() {
     adj_matrix.clear();
     for (int i = 0; i < vertex_size; i++) {
         adj_matrix.push();
@@ -72,7 +252,9 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
         Edge Ed = _mol.getEdge(e);
         adj_matrix[Ed.beg][Ed.end] = adj_matrix[Ed.end][Ed.beg] = true;
     }
+}
 
+void MoleculeCleaner2d::_calcTargetLen() {
     std::vector<float> lens;
     for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e))
         lens.push_back(Vec2f::dist(plane(_mol.getAtomXyz(_mol.getEdge(e).beg)), plane(_mol.getAtomXyz(_mol.getEdge(e).end))));
@@ -80,13 +262,9 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     sort(lens.begin(), lens.end());
 
     target_len = lens.size() % 2 == 1 ? lens[lens.size() / 2] : (lens[lens.size() / 2] + lens[lens.size() / 2 - 1]) / 2;
+}
 
-    /*Filter filter;
-    for (int i = 0; i < component_count; i++) {
-        bi_decomposer.getComponent(i, filter);
-        for (int j = 0; j < vertex_count; j++) in[i][j] = filter.valid(j);
-    }*/
-
+void MoleculeCleaner2d::_initCommonComp() {
     common_comp.clear();
     for (int i = 0; i < vertex_size; i++) {
         common_comp.push();
@@ -102,139 +280,6 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
         int v = _mol.getEdge(e).beg, u = _mol.getEdge(e).end;
         edge_comp[e] = common_comp[v][u];
     }
-
-    definiting_points.clear();
-    for (int i = 0; i < component_count; i++) {
-        definiting_points.push();
-        definiting_points.top().clear();
-    }
-
-    /*QS_DEF(Array<bool>, has_component);
-    QS_DEF(Array<int>, component_list);
-    QS_DEF(Array<bool>, has_vertex);
-    QS_DEF(Array<bool>, block_vertex);
-    has_component.clear_resize(component_count);
-    has_component.zerofill();
-    component_list.clear();
-    has_vertex.clear_resize(vertex_count);
-    has_vertex.zerofill();
-    block_vertex.clear_resize(vertex_count);
-    block_vertex.zerofill();*/
-    
-
-    for (int i = 0; i < vertex_size; i++) {
-        coef.push();
-        coef.top().clear();
-    }
-
-    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) {
-        base_point.push(i);
-        _addCoef(i, i, ONE);
-    }
-    for (int i = 0; i < component_count; i++) {
-        for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j)) if (in[i][j]) definiting_points[i].push(j);
-    }
-
-    /*
-    QS_DEF(Array<int>, local_component_list);
-
-    int index = 0;
-    for (int c = 0; c < component_count; c++) if (!has_component[c]) {
-
-        int ver = -1;
-        for (int i = 0; i < vertex_count; i++) if (in[c][i]) if (bi_decomposer.isArticulationPoint(i)) {
-            ver = i;
-            break;
-        }
-        base_point.push(ver);
-        _addCoef(ver, base_point.size() - 1, ONE);
-
-        base_point_comp.push(c);
-
-        has_vertex[ver] = true;
-        block_vertex[ver] = true;
-
-        has_component[c] = true;
-        component_list.push(c);
-
-        for (; index < component_list.size(); index++) {
-            // 1. Search for new vertex
-            int comp = component_list[index];
-            ver = -1;
-            for (int j = 0; j < vertex_count; j++) if (in[comp][j] && !block_vertex[j] && bi_decomposer.isArticulationPoint(j)) {
-                ver = j;
-                break;
-            }
-            if (ver == -1) {
-                for (int j = 0; j < vertex_count; j++) if (in[comp][j] && !block_vertex[j]) {
-                    ver = j;
-                    break;
-                }
-            }
-            base_point.push(ver);
-            _addCoef(ver, base_point.size() - 1, ONE);
-            base_point_comp.push(comp);
-            has_vertex[ver] = true;
-
-            // 2. Add yet another defining point if it is need
-
-            for (int j = 0; j < base_point.size(); j++) if (in[comp][base_point[j]]) definiting_points[comp].push(base_point[j]);
-            if (definiting_points[comp].size() < 2) {
-                int newver = -1;
-                for (int j = 0; j < vertex_count; j++) if (block_vertex[j] && in[comp][j]) {
-                    newver = j;
-                    break;
-                }
-
-                definiting_points[comp].push(newver);
-            }
-
-            // 3. Calculation coefficients
-
-            for (int j = 0; j < vertex_count; j++) 
-                if (in[comp][j] && j != definiting_points[comp][0] && j != definiting_points[comp][1] && !block_vertex[j])
-                    _calcCoef(j, definiting_points[comp][0], definiting_points[comp][1]);
-
-            // 4. Add new components to list
-
-            for (int v = 0; v < vertex_count; v++) if (in[comp][v] && bi_decomposer.isArticulationPoint(v)) {
-                for (int j = 0; j < component_count; j++) if (in[j][v] && !has_component[j]) {
-                    component_list.push(j);
-                    has_component[j] = true;
-                }
-            }
-            for (int v = 0; v < vertex_count; v++) if (in[comp][v]) block_vertex[v] = true;
-        }
-
-    }
-    */
-    base_point_index.clear_resize(vertex_size);
-    base_point_index.fffill();
-    for (int i = 0; i < base_point.size(); i++) base_point_index[base_point[i]] = i;
-
-    gradient.clear_resize(base_point.size());
-    pregradient.clear_resize(vertex_size);
-    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (_isBasePoint(i)) pos[i] = plane(_mol.getAtomXyz(i));
-
-
-    /*printf("%d components\n", component_count);
-    for (int i = 0; i < component_count; i++) {
-        printf("%d: ", i);
-        for (int j = 0; j < vertex_count; j++) if (in[i][j]) printf("%d, ", j);
-        printf("|| ");
-        printf("%d: ", definiting_points[i].size());
-        for (int j = 0; j < definiting_points[i].size(); j++) printf("%d, ", definiting_points[i][j]);
-        printf("\n");
-    }
-
-    for (int i = 0; i < vertex_count; i++) {
-        printf("%d = ", i);
-        for (int j = 0; j < coef[i].size(); j++) if (coef[i][j].lengthSqr() > 0) 
-        {
-            printf(" + %d * (%.2f, %.2f)", base_point[j], coef[i][j].x, coef[i][j].y);
-        }
-        printf("\n");
-    }*/
 }
 
 bool MoleculeCleaner2d::_isBasePoint(int i) { return base_point_index[i] >= 0; }
@@ -244,7 +289,7 @@ void MoleculeCleaner2d::_addCoef(int ver, int index, Vec2f value) {
     coef[ver][index] += value;
 }
 
-void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1) {
+void MoleculeCleaner2d::_calc—oef(int to, int from0, int from1) {
     Vec2f A0 = plane(_mol.getAtomXyz(from0));
     Vec2f A1 = plane(_mol.getAtomXyz(from1));
     Vec2f A2 = plane(_mol.getAtomXyz(to));
@@ -369,11 +414,11 @@ void MoleculeCleaner2d::_updateGradient() {
 void MoleculeCleaner2d::_updateGradient2() {
     profTimerStart(t, "Update gradient 2");
     for (int i = 0; i < base_point.size(); i++)
-        gradient[i] = _energy_diff(base_point[i]);
+        gradient[i] = _energyDiff(base_point[i]);
 }
 
 void MoleculeCleaner2d::clean() {
-    if (is_biconnected) return; // nothing to do for biconnected graph
+    if (is_trivial) return; // nothing to do for biconnected graph
 
     _updatePositions();
 
@@ -497,43 +542,43 @@ float MoleculeCleaner2d::_energy() {
     return result;
 }
 
-Vec2f MoleculeCleaner2d::_energy_diff(int v) {
+Vec2f MoleculeCleaner2d::_energyDiff(int v) {
     _updatePositions();
-    float e = _local_energy(v);
+    float e = _localEnergy(v);
     pos[v].x += APPROX_STEP;
     _updatePositions();
-    float ex = _local_energy(v);
+    float ex = _localEnergy(v);
     pos[v].x -= APPROX_STEP;
     pos[v].y += APPROX_STEP;
     _updatePositions();
-    float ey = _local_energy(v);
+    float ey = _localEnergy(v);
     pos[v].y -= APPROX_STEP;
 
     return Vec2f(ex - e, ey - e) / APPROX_STEP;
 }
 
-float MoleculeCleaner2d::_local_energy(int v) {
+float MoleculeCleaner2d::_localEnergy(int v) {
     //return _energy();
     float result = 0;
 
-    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (v != i) result += _edge_energy(v, i);
+    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (v != i) result += _edgeEnergy(v, i);
 
     const Vertex& vert = _mol.getVertex(v);
     for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1)) {
         for (int n2 = vert.neiBegin(); n2 < n1; n2 = vert.neiNext(n2))
-            result += _angle_energy(v, vert.neiVertex(n1), vert.neiVertex(n2));
+            result += _angleEnergy(v, vert.neiVertex(n1), vert.neiVertex(n2));
 
         int v1 = vert.neiVertex(n1);
         const Vertex& vert1 = _mol.getVertex(v1);
         for (int n2 = vert1.neiBegin(); n2 != vert1.neiEnd(); n2 = vert1.neiNext(n2))
             if (vert1.neiVertex(n2) != v)
-                result += _angle_energy(v1, v, vert1.neiVertex(n2));
+                result += _angleEnergy(v1, v, vert1.neiVertex(n2));
     }
 
     return result;
 }
 
-float MoleculeCleaner2d::_edge_energy(int i, int j) {
+float MoleculeCleaner2d::_edgeEnergy(int i, int j) {
     profTimerStart(t, "Edge enegry");
     float len = Vec2f::distSqr(pos[i], pos[j]);
 
@@ -545,7 +590,7 @@ float MoleculeCleaner2d::_edge_energy(int i, int j) {
     return 0;
 }
 
-float MoleculeCleaner2d::_angle_energy(int i, int v1, int v2) {
+float MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2) {
     profTimerStart(t, "Angle enegry");
     Vec2f vec1 = pos[v1] - pos[i];
     Vec2f vec2 = pos[v2] - pos[i];
