@@ -17,13 +17,14 @@
 #include "molecule/molecule.h"
 #include <algorithm> 
 #include <vector>
+#include "base_cpp/profiling.h"
 
 using namespace indigo;
 
 //IMPL_ERROR(MoleculeCleaner2d, "MoleculeCleaner2d");
 
 MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
-    vertex_count = _mol.vertexCount();
+    vertex_size = _mol.vertexEnd();
 //    printf("%d\n", vertex_count);
     BiconnectedDecomposer bi_decomposer(_mol);
     //component_count = bi_decomposer.decompose();
@@ -34,14 +35,14 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
         return;
     }
     else is_biconnected = false;
-    pos.clear_resize(vertex_count);
+    pos.clear_resize(vertex_size);
 
     base_point.clear();
 
     in.clear();
     for (int i = 0; i < component_count; i++) {
         in.push();
-        in.top().clear_resize(vertex_count);
+        in.top().clear_resize(vertex_size);
         in.top().zerofill();
     }
 
@@ -51,9 +52,9 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
         in[i][edge.end] = true;
     }
 
-    is_art_point.clear_resize(vertex_count);
+    is_art_point.clear_resize(vertex_size);
     is_art_point.zerofill();
-    for (int i = 0; i < vertex_count; i++) {
+    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) {
         int cnt = 0;
         for (int j = 0; j < component_count; j++) {
             cnt += in[j][i];
@@ -62,9 +63,9 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     }
 
     adj_matrix.clear();
-    for (int i = 0; i < vertex_count; i++) {
+    for (int i = 0; i < vertex_size; i++) {
         adj_matrix.push();
-        adj_matrix.top().clear_resize(vertex_count);
+        adj_matrix.top().clear_resize(vertex_size);
         adj_matrix.top().zerofill();
     }
     for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e)) {
@@ -87,11 +88,11 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     }*/
 
     common_comp.clear();
-    for (int i = 0; i < vertex_count; i++) {
+    for (int i = 0; i < vertex_size; i++) {
         common_comp.push();
-        common_comp.top().clear_resize(vertex_count);
+        common_comp.top().clear_resize(vertex_size);
         common_comp.top().fffill();
-        for (int j = 0; j < vertex_count; j++)
+        for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
             for (int c = 0; c < component_count; c++) if (in[c][i] && in[c][j]) common_comp[i][j] = c;
     }
 
@@ -121,17 +122,17 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     block_vertex.zerofill();*/
     
 
-    for (int i = 0; i < vertex_count; i++) {
+    for (int i = 0; i < vertex_size; i++) {
         coef.push();
         coef.top().clear();
     }
 
-    for (int i = 0; i < vertex_count; i++) {
+    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) {
         base_point.push(i);
         _addCoef(i, i, ONE);
     }
     for (int i = 0; i < component_count; i++) {
-        for (int j = 0; j < vertex_count; j++) if (in[i][j]) definiting_points[i].push(j);
+        for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j)) if (in[i][j]) definiting_points[i].push(j);
     }
 
     /*
@@ -207,13 +208,13 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
 
     }
     */
-    base_point_index.clear_resize(vertex_count);
+    base_point_index.clear_resize(vertex_size);
     base_point_index.fffill();
     for (int i = 0; i < base_point.size(); i++) base_point_index[base_point[i]] = i;
 
     gradient.clear_resize(base_point.size());
-    pregradient.clear_resize(vertex_count);
-    for (int i = 0; i < vertex_count; i++) if (_isBasePoint(i)) pos[i] = plane(_mol.getAtomXyz(i));
+    pregradient.clear_resize(vertex_size);
+    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (_isBasePoint(i)) pos[i] = plane(_mol.getAtomXyz(i));
 
 
     /*printf("%d components\n", component_count);
@@ -273,7 +274,8 @@ void MoleculeCleaner2d::_updatePosition(int i) {
 }
 
 void MoleculeCleaner2d::_updatePositions() {
-    for (int i = 0; i < vertex_count; i++) if (!_isBasePoint(i)) _updatePosition(i);
+    profTimerStart(t, "Update positions");
+    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (!_isBasePoint(i)) _updatePosition(i);
 }
 
 void MoleculeCleaner2d::_updateGradient() {
@@ -298,8 +300,8 @@ void MoleculeCleaner2d::_updateGradient() {
 
     // 2. atoms pairs
     if (1) 
-    for (int i = 0; i < vertex_count; i++)
-        for (int j = 0; j < i; j++) if (common_comp[i][j] == -1) {
+        for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
+            for (int j = _mol.vertexBegin(); j < i; j = _mol.vertexNext(j)) if (common_comp[i][j] == -1) {
             float dist2 = Vec2f::distSqr(pos[i], pos[j]);
             if (dist2 < target_len * target_len) {
                 //printf("[%d, %d]\n", i, j);
@@ -313,7 +315,7 @@ void MoleculeCleaner2d::_updateGradient() {
     // 3. angles
 
     if (1)
-    for (int i = 0; i < vertex_count; i++) if (is_art_point[i]) {
+        for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (is_art_point[i]) {
         const Vertex& vert = _mol.getVertex(i);
         for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1))
             for (int n2 = vert.neiBegin(); n2 < n1; n2 = vert.neiNext(n2)) {
@@ -360,11 +362,12 @@ void MoleculeCleaner2d::_updateGradient() {
     // 4. final gradient calc
 
     gradient.zerofill();
-    for (int i = 0; i < vertex_count; i++)
+    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
         for (int j = 0; j < coef[i].size(); j++) gradient[j] += mult(pregradient[i], coef[i][j]);
 }
 
 void MoleculeCleaner2d::_updateGradient2() {
+    profTimerStart(t, "Update gradient 2");
     for (int i = 0; i < base_point.size(); i++)
         gradient[i] = _energy_diff(base_point[i]);
 }
@@ -398,12 +401,14 @@ void MoleculeCleaner2d::clean() {
         float factor = need_len / len;
         for (int i = 0; i < base_point.size(); i++) gradient[i] *= factor;
 
+        profTimerStart(t1, "Find len");
         for (int i = 0; i <= k; i++) {
             for (int j = 0; j < base_point.size(); j++) pos[base_point[j]] -= gradient[j] * mult[i];
             _updatePositions();
             energies[i] = _energy();
             for (int j = 0; j < base_point.size(); j++) pos[base_point[j]] += gradient[j] * mult[i];
         }
+        profTimerStop(t1);
 
         int best_i = 0;
         for (int i = 1; i <= k; i++) if (energies[i] < energies[best_i]) best_i = i;
@@ -416,10 +421,11 @@ void MoleculeCleaner2d::clean() {
         //need_len *= .95;
     }
 
-    for (int i = 0; i < vertex_count; i++) _mol.setAtomXyz(i, Vec3f(pos[i].x, pos[i].y, 0));
+    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) _mol.setAtomXyz(i, Vec3f(pos[i].x, pos[i].y, 0));
 }
 
 float MoleculeCleaner2d::_energy() {
+    profTimerStart(t, "Total energy");
     float result = 0;
 
     // 1. edges
@@ -434,8 +440,8 @@ float MoleculeCleaner2d::_energy() {
 
     // 2. atoms pairs
     if (1)
-    for (int i = 0; i < vertex_count; i++)
-        for (int j = 0; j < i; j++) if (common_comp[i][j] == -1) {
+        for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
+            for (int j = _mol.vertexBegin(); j < i; j = _mol.vertexNext(j)) if (common_comp[i][j] == -1) {
             float dist2 = Vec2f::distSqr(pos[i], pos[j]);
             if (dist2 < target_len * target_len) {
                 float dist = sqrt(dist2);
@@ -447,7 +453,7 @@ float MoleculeCleaner2d::_energy() {
 
     // 3. angles
 
-    for (int i = 0; i < vertex_count; i++) if (is_art_point[i]) {
+    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (is_art_point[i]) {
         const Vertex& vert = _mol.getVertex(i);
         for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1))
             for (int n2 = vert.neiBegin(); n2 < n1; n2 = vert.neiNext(n2)) {
@@ -510,7 +516,7 @@ float MoleculeCleaner2d::_local_energy(int v) {
     //return _energy();
     float result = 0;
 
-    for (int i = 0; i < vertex_count; i++) if (v != i) result += _edge_energy(v, i);
+    for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (v != i) result += _edge_energy(v, i);
 
     const Vertex& vert = _mol.getVertex(v);
     for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1)) {
@@ -528,6 +534,7 @@ float MoleculeCleaner2d::_local_energy(int v) {
 }
 
 float MoleculeCleaner2d::_edge_energy(int i, int j) {
+    profTimerStart(t, "Edge enegry");
     float len = Vec2f::distSqr(pos[i], pos[j]);
 
     if (len < target_len * target_len || adj_matrix[i][j]) {
@@ -539,6 +546,7 @@ float MoleculeCleaner2d::_edge_energy(int i, int j) {
 }
 
 float MoleculeCleaner2d::_angle_energy(int i, int v1, int v2) {
+    profTimerStart(t, "Angle enegry");
     Vec2f vec1 = pos[v1] - pos[i];
     Vec2f vec2 = pos[v2] - pos[i];
 

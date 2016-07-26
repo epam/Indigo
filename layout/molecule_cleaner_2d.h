@@ -48,7 +48,7 @@ private:
     Array<int> base_point_index;
     Array<Vec2f> pos;
     bool is_biconnected;
-    int vertex_count;
+    int vertex_size;
     int component_count;
     ObjArray< Array<bool> > in; // is vertex in component
     ObjArray<Array<int> > definiting_points; // definiting points for component
