@@ -33,7 +33,7 @@ private:
     void _updatePosition(int i);
     void _updatePositions();
     void _addCoef(int ver, int index, Vec2f value);
-    void _calc—oef(int to, int from0, int from1);
+    void _calcCoef(int to, int from0, int from1);
     void _updateGradient();
     void _updateGradient2();
     bool _isBasePoint(int i);

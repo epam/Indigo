@@ -168,7 +168,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
 
             for (int j = 0; j < vertex_count; j++) 
                 if (in[comp][j] && j != definiting_points[comp][0] && j != definiting_points[comp][1] && !block_vertex[j])
-                    _calcÑoef(j, definiting_points[comp][0], definiting_points[comp][1]);
+                    _calcCoef(j, definiting_points[comp][0], definiting_points[comp][1]);
 
             // 4. Add new components to list
 
@@ -218,7 +218,7 @@ void MoleculeCleaner2d::_addCoef(int ver, int index, Vec2f value) {
     coef[ver][index] += value;
 }
 
-void MoleculeCleaner2d::_calcÑoef(int to, int from0, int from1) {
+void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1) {
     Vec2f A0 = plane(_mol.getAtomXyz(from0));
     Vec2f A1 = plane(_mol.getAtomXyz(from1));
     Vec2f A2 = plane(_mol.getAtomXyz(to));
