@@ -1152,7 +1152,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
 
          label[0] = str[0];
          if (str[1] != 0)
+         {
             label[1] = str[1];
+            if (str[2] != 0)
+            {
+               label[2] = str[2];
+            }
+         }
 
          if (atom_isotope > 0)
             isotopes.push(i);
