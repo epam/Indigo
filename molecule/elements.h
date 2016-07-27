@@ -134,8 +134,21 @@ enum
    ELEM_No,
    ELEM_Lr,
    ELEM_Rf,
+   ELEM_Db,
+   ELEM_Sg,
+   ELEM_Bh,
+   ELEM_Hs,
+   ELEM_Mt,
+   ELEM_Ds,
+   ELEM_Rg,
+   ELEM_Cn,
+   ELEM_Uut,
+   ELEM_Fl,
+   ELEM_Uup,
+   ELEM_Lv,
+   ELEM_Uus,
+   ELEM_Uuo,
    ELEM_MAX,
-
    ELEM_PSEUDO,   // pseudoatom
    ELEM_RSITE,    // 'R' atom
    ELEM_TEMPLATE, // template 
