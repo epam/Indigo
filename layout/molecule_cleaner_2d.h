@@ -33,7 +33,8 @@ private:
     void _updatePosition(int i);
     void _updatePositions();
     void _addCoef(int ver, int index, Vec2f value);
-    void _calcCoef(int to, int from0, int from1);
+    void _calc—oef(int to, int from0, int from1);
+    void _calc—oef(int to, int from0, int from1, float alpha);
     void _updateGradient();
     void _updateGradient2();
     bool _isBasePoint(int i);
@@ -50,6 +51,8 @@ private:
     void _initAdjMatrix();
     void _calcTargetLen();
     void _initCommonComp();
+    void _uniteBondsOnLine();
+    void _initBasePointValid();
 
     Molecule& _mol;
     Array<int> base_point;
@@ -65,9 +68,11 @@ private:
     Array<Vec2f> pregradient;
     Array<int> edge_comp;
     Array<bool> is_art_point;
+    Array<bool> is_valid_base;
     ObjArray<Array<bool> > adj_matrix;
     ObjArray<Array<int> > common_comp; // common_comp[i][j] = number of component wich is contains both vertices i and j (or -1 if there isnt such component)
     float target_len; // target length of bonds
+    Array<bool> _is_trivial; // is component single edge or straightline chain
 
     Vec2f plane(Vec3f& v) { return Vec2f(v.x, v.y); } // projection to plane z == 0 
     Vec2f mult(Vec2f& a, Vec2f& b) { return Vec2f(a.x * b.x  - a.y * b.y, a.x * b.y + a.y * b.x); } // complex multiplication of two complex numbers
