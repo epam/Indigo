@@ -148,7 +148,10 @@ def build_libs(cl_args):
         subprocess.call("cmake --build . --target package --config %s" % (args.config), shell=True)
         subprocess.call("cmake --build . --target install --config %s" % (args.config), shell=True)
     elif args.generator.find("Visual Studio") != -1:
-        subprocess.call("cmake --build . --target PACKAGE --config %s" % (args.config), env=dict(os.environ, CL='/MP') if args.mtbuild else os.environ, shell=True)
+        vsenv = os.environ
+        if args.mtbuild:
+            vsenv = dict(os.environ, CL='/MP')
+        subprocess.call("cmake --build . --target PACKAGE --config %s" % (args.config), env=vsenv, shell=True)
         subprocess.call("cmake --build . --target INSTALL --config %s" % (args.config), shell=True)
     elif args.generator.find("MinGW Makefiles") != -1:
         subprocess.call("mingw32-make package", shell=True)
