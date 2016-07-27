@@ -45,6 +45,22 @@ public class Indigo {
     public static final int RC_MADE_OR_BROKEN = 4;
     public static final int RC_ORDER_CHANGED = 8;
 
+    public static final int SG_TYPE_GEN = 0;
+    public static final int SG_TYPE_DAT = 1;
+    public static final int SG_TYPE_SUP = 2;
+    public static final int SG_TYPE_SRU = 3;
+    public static final int SG_TYPE_MUL = 4;
+    public static final int SG_TYPE_MON = 5;
+    public static final int SG_TYPE_MER = 6;
+    public static final int SG_TYPE_COP = 7;
+    public static final int SG_TYPE_CRO = 8;
+    public static final int SG_TYPE_MOD = 9;
+    public static final int SG_TYPE_GRA = 10;
+    public static final int SG_TYPE_COM = 11;
+    public static final int SG_TYPE_MIX = 12;
+    public static final int SG_TYPE_FOR = 13;
+    public static final int SG_TYPE_ANY = 14;
+
     // JNA does not allow throwing exception from callbacks, thus we can not
     // use the error handler and we have to check the error codes. Below are
     // four functions to ease checking them.

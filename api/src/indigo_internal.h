@@ -288,6 +288,7 @@ public:
 
    int layout_max_iterations; // default is zero -- no limit
    bool smart_layout = false;
+   float layout_horintervalfactor = 1.4f;
 
    int aam_cancellation_timeout; //default is zero - no timeout
 

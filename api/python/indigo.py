@@ -645,6 +645,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoTransformCTABtoSCSR(self.id, templates.id))
 
+    def clean2d(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoClean2d(self.id))
+
     def resetCharge(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoResetCharge(self.id))
@@ -1261,6 +1265,22 @@ class Indigo(object):
     RC_MADE_OR_BROKEN = 4
     RC_ORDER_CHANGED = 8
 
+    SG_TYPE_GEN = 0
+    SG_TYPE_DAT = 1
+    SG_TYPE_SUP = 2
+    SG_TYPE_SRU = 3
+    SG_TYPE_MUL = 4
+    SG_TYPE_MON = 5
+    SG_TYPE_MER = 6
+    SG_TYPE_COP = 7
+    SG_TYPE_CRO = 8
+    SG_TYPE_MOD = 9
+    SG_TYPE_GRA = 10
+    SG_TYPE_COM = 11
+    SG_TYPE_MIX = 12
+    SG_TYPE_FOR = 13
+    SG_TYPE_ANY = 14
+
     _crt = None
     _crtp = None
     _lib = None
@@ -1870,6 +1890,8 @@ class Indigo(object):
         Indigo._lib.indigoUnfoldHydrogens.argtypes = [c_int]
         Indigo._lib.indigoLayout.restype = c_int
         Indigo._lib.indigoLayout.argtypes = [c_int]
+        Indigo._lib.indigoClean2d.restype = c_int
+        Indigo._lib.indigoClean2d.argtypes = [c_int]
         Indigo._lib.indigoSmiles.restype = c_char_p
         Indigo._lib.indigoSmiles.argtypes = [c_int]
         Indigo._lib.indigoName.restype = c_char_p

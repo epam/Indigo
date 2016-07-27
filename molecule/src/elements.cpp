@@ -181,6 +181,20 @@ void Element::_initAllPeriodic ()
    INIT(No, 7, 3);
    INIT(Lr, 7, 3);
    INIT(Rf, 7, 3);
+   INIT(Db, 7, 3);
+   INIT(Sg, 7, 3);
+   INIT(Bh, 7, 3);
+   INIT(Hs, 7, 3);
+   INIT(Mt, 7, 3);
+   INIT(Ds, 7, 3);
+   INIT(Rg, 7, 3);
+   INIT(Cn, 7, 3);
+   INIT(Uut, 7, 3);
+   INIT(Fl, 7, 4);
+   INIT(Uup, 7, 5);
+   INIT(Lv, 7, 6);
+   INIT(Uus, 7, 7);
+   INIT(Uuo, 7, 8);
    #undef INIT
 }
 

@@ -45,6 +45,22 @@ namespace com.epam.indigo
         public const int RC_MADE_OR_BROKEN = 4;
         public const int RC_ORDER_CHANGED = 8;
 
+        public const int SG_TYPE_GEN = 0;
+        public const int SG_TYPE_DAT = 1;
+        public const int SG_TYPE_SUP = 2;
+        public const int SG_TYPE_SRU = 3;
+        public const int SG_TYPE_MUL = 4;
+        public const int SG_TYPE_MON = 5;
+        public const int SG_TYPE_MER = 6;
+        public const int SG_TYPE_COP = 7;
+        public const int SG_TYPE_CRO = 8;
+        public const int SG_TYPE_MOD = 9;
+        public const int SG_TYPE_GRA = 10;
+        public const int SG_TYPE_COM = 11;
+        public const int SG_TYPE_MIX = 12;
+        public const int SG_TYPE_FOR = 13;
+        public const int SG_TYPE_ANY = 14;
+
         private IndigoDllLoader dll_loader;
 
         public float checkResult(float result)

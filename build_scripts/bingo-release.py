@@ -34,6 +34,7 @@ presets = {
     "win64-2012" : ("Visual Studio 11 Win64", ""),
     "win32-2013" : ("Visual Studio 12", ""),
     "win64-2013" : ("Visual Studio 12 Win64", ""),
+    "win64-2015" : ("Visual Studio 14 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
     "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux32-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),

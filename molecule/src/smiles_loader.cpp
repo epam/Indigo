@@ -2227,6 +2227,31 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
                if (element == ELEM_As || element == ELEM_Se)
                   aromatic = ATOM_ALIPHATIC;
          }
+         else if (next == 'U' && scanner.lookNext() == 'u')
+                  // Special check for "untitled" elements
+         {
+            scanner.skip(1);
+            if (scanner.lookNext() == 't')
+            {
+               scanner.skip(1);
+               element = ELEM_Uut;
+            }
+            else if (scanner.lookNext() == 'p')
+            {
+               scanner.skip(1);
+               element = ELEM_Uup;
+            }
+            else if (scanner.lookNext() == 's')
+            {
+               scanner.skip(1);
+               element = ELEM_Uus;
+            }
+            else if (scanner.lookNext() == 'o')
+            {
+               scanner.skip(1);
+               element = ELEM_Uuo;
+            }            
+         }
          else
          {
             // It is a single-char uppercase element identifier then

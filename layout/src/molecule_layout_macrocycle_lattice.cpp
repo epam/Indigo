@@ -86,6 +86,8 @@ TL_CP_GET(_vertex_drawn)
    _target_angle.zerofill();
 
    _vertex_added_square.clear_resize(size);
+   _vertex_added_square.zerofill();
+
    _vertex_drawn.clear_resize(size);
 
 
@@ -101,21 +103,10 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
          for (int i = 0; i < length; i++) {
             _positions[i] = Vec2f(0, r);
             _positions[i].rotate(alpha * i);
-            //printf("%.20f %.20f\n", _positions[i].x, _positions[i].y);
          }
          return;
       }
    }
-   /*for (int i = 0; i < length; i++) printf("%d ", _vertex_weight[i]);
-   printf("\n");
-   for (int i = 0; i < length; i++) printf("%d ", _edge_stereo[i]);
-   printf("\n");
-   for (int i = 0; i < length; i++) printf("%d ", _vertex_stereo[i]);
-   printf("\n");
-   for (int i = 0; i < length; i++) printf("%.20f ", _vertex_added_square[i]);
-   printf("\n");
-   for (int i = 0; i < length; i++) printf("%.20f ", _target_angle[i]);
-   printf("\n");*/
    calculate_rotate_length();
 
    rotate_cycle(rotate_length);
@@ -149,13 +140,10 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
    float best_rating = preliminary_layout(cl);
 
 
-   //printf("%d\n", points.size());
-
    points.qsort(&AnswerField::_cmp_answer_points, &answfld);
 
    Array<answer_point> path;
    path.clear_resize(length + 1);
-   //printf("%d\n", points.size());
    for (int i = 0; i < 100 && i < points.size(); i++) {
       answfld._restore_path(path.ptr(), points[i]);
       cl.init(path.ptr());
@@ -164,6 +152,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout() {
       float current_rating = rating(cl);
 
       if (current_rating + EPSILON < best_rating) {
+         // printf("%d: %.5f\n", i, current_rating);
          best_rating = current_rating;
          best_number = i;
       }
@@ -1101,23 +1090,23 @@ void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout &cl) {
 		  for (int i = 0; i < cl.vertex_count; i++) angle += cl.point[i].calc_angle_pos(cl.point[(i + 1) % cl.vertex_count], cl.point[(i + cl.vertex_count - 1) % cl.vertex_count]);
 		  if (angle < 0) {
 			  cl.point[cl.vertex_count].copy(cl.point[0]);
-			  //printf("%d/%d\n", i, iter_count);
 			  break;
 		  }
       }
-      bool angle = rand.next() & 1;
-      bool next = rand.next() & 1;
+
+      bool is_angle = rand.next() & 1;
+      bool is_next = rand.next() & 1;
       int base_vertex = rand.next(cl.vertex_count + 1);
 
       if ((cl.point[0] - cl.point[cl.vertex_count]).lengthSqr() != 0) {
-         if (angle && (base_vertex == 0 || base_vertex == cl.vertex_count)) continue;
-         if (!angle && ((base_vertex == 0 && !next) || (base_vertex == cl.vertex_count && next))) continue;
+          if (is_angle && (base_vertex == 0 || base_vertex == cl.vertex_count)) continue;
+          if (!is_angle && ((base_vertex == 0 && !is_next) || (base_vertex == cl.vertex_count && is_next))) continue;
       }
       else {
          if (base_vertex == cl.vertex_count) continue;
       }
 
-      closingStep(cl, i, base_vertex, angle, next, multiplyer);
+      closingStep(cl, i, base_vertex, is_angle, is_next, multiplyer);
       if (lenSqr == 0) multiplyer *= CHANGE_FACTOR;
       //if (i % 100 == 0) printf("%.5f\n", rating(cl));
    }
@@ -1137,11 +1126,14 @@ void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>
    all_points.clear();
    all_numbers.clear();
    for (int j = 0; j < len; j++) {
-      for (int t = cl.external_vertex_number[j], s = 0; t < cl.external_vertex_number[(j + 1) % len]; t++, s += 1.0 / cl.edge_length[j]) {
+       float s;
+       int t;
+      for (t = cl.external_vertex_number[j], s = 0; t < cl.external_vertex_number[(j + 1) % len]; t++, s += 1.0f / cl.edge_length[j]) {
          all_points.push(cl.point[j] * (1 - s) + cl.point[j] * s);
          all_numbers.push(j + s);
       }
    }
+
    for (int i = 0; i < len; i++) {
       for (int j = 0; j < all_points.size(); j++) {
          int diff = (i - (int)all_numbers[j] + len) % len;
@@ -1166,7 +1158,8 @@ void MoleculeLayoutMacrocyclesLattice::smoothing(CycleLayout &cl) {
     float coef = SMOOTHING_MULTIPLIER;
     for (int i = 0; i < iter_count; i++) {
         if ((i & (i - 1)) == 0) updateTouchingPoints(touching_points, cl);
-        smoothingStep(cl, rand.next(cl.vertex_count), coef *= CHANGE_FACTOR, touching_points);
+        int current_vertex = rand.next(cl.vertex_count);
+        smoothingStep(cl, current_vertex, coef *= CHANGE_FACTOR, touching_points);
     }
 }
 

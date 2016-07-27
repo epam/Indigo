@@ -21,8 +21,8 @@ using namespace indigo;
 
 ReactionLayout::ReactionLayout (BaseReaction& r, bool smart_layout) :
 bond_length(1),
-plus_interval_factor(4),
-arrow_interval_factor(6),
+plus_interval_factor(1),
+arrow_interval_factor(1),
 preserve_molecule_layout(false),
 _r(r),
 _smart_layout(smart_layout)
@@ -61,6 +61,7 @@ void ReactionLayout::make ()
    }
 
    _ml.bondLength = bond_length;
+   _ml.horizontalIntervalFactor = horizontal_interval_factor;
    _ml.cb_getMol = cb_getMol;
    _ml.cb_process = cb_process;
    _ml.context = this;

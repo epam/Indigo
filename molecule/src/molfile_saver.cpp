@@ -1152,7 +1152,13 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
 
          label[0] = str[0];
          if (str[1] != 0)
+         {
             label[1] = str[1];
+            if (str[2] != 0)
+            {
+               label[2] = str[2];
+            }
+         }
 
          if (atom_isotope > 0)
             isotopes.push(i);
@@ -1955,8 +1961,7 @@ void MolfileSaver::_addCIPStereoDescriptors (BaseMolecule &mol)
    unfolded_h_mol.clear();
    markers.clear();
    unfolded_h_mol.clone_KeepIndices(mol);
-   unfolded_h_mol.unfoldHydrogens(&markers, -1);
-
+   unfolded_h_mol.unfoldHydrogens(&markers, -1, true);
 
    atom_cip_desc.clear_resize(unfolded_h_mol.vertexEnd());
    atom_cip_desc.zerofill();
