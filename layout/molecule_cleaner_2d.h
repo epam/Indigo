@@ -73,6 +73,7 @@ private:
     ObjArray<Array<int> > common_comp; // common_comp[i][j] = number of component wich is contains both vertices i and j (or -1 if there isnt such component)
     float target_len; // target length of bonds
     Array<bool> _is_trivial; // is component single edge or straightline chain
+    Array<bool> _is_straightline_vertex;
 
     Vec2f plane(Vec3f& v) { return Vec2f(v.x, v.y); } // projection to plane z == 0 
     Vec2f mult(Vec2f& a, Vec2f& b) { return Vec2f(a.x * b.x  - a.y * b.y, a.x * b.y + a.y * b.x); } // complex multiplication of two complex numbers

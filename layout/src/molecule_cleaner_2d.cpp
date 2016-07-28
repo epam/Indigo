@@ -27,7 +27,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
     vertex_size = _mol.vertexEnd();
 //    printf("%d\n", vertex_count);
 //    printf("%d\n", component_count);
-    _initComponents(true);
+    _initComponents(false);
 
     if (is_trivial) return;
 
@@ -279,6 +279,9 @@ void MoleculeCleaner2d::_uniteBondsOnLine() {
     unite_with.clear_resize(component_count);
     for (int i = 0; i < component_count; i++) unite_with[i] = i;
 
+    _is_straightline_vertex.clear_resize(vertex_size);
+    _is_straightline_vertex.zerofill();
+
     QS_DEF(ObjArray<Array<int>>, unite_to);
     unite_to.clear();
     for (int i = 0; i < component_count; i++) {
@@ -308,6 +311,8 @@ void MoleculeCleaner2d::_uniteBondsOnLine() {
             default: order2 = 1;
         }
         if (order1 + order2 == 4) {
+            _is_straightline_vertex[v] = true;
+
             int c1 = -1, c2 = -1;
             for (int c = 0; c < component_count; c++) if (in[c][v]) {
                 c2 = c1;
@@ -604,13 +609,13 @@ void MoleculeCleaner2d::clean() {
     float need_len = target_len;
     for (int iter = 0; iter < 1000; iter++) {
         _updateGradient2();
-        /*if (iter == 99) {
-            for (int i = 0; i < gradient.size(); i++) printf("%d: (%.5f, %.5f) : (%.5f, %.5f)\n", base_point[i], gradient[i].x, gradient[i].y, dgradient[i].x, dgradient[i].y);
+        /*if (iter < 10) {
+            for (int i = 0; i < gradient.size(); i++) printf("%d: (%.5f, %.5f) \n", base_point[i], gradient[i].x, gradient[i].y);
         }*/
         float len = 0;
         for (int i = 0; i < base_point.size(); i++) len += gradient[i].lengthSqr();
         len = sqrt(len);
-        float factor = need_len / len;
+        float factor = std::min(need_len / len, 1.f);
         for (int i = 0; i < base_point.size(); i++) gradient[i] *= factor;
 
         profTimerStart(t1, "Find len");
@@ -701,7 +706,10 @@ float MoleculeCleaner2d::_energy() {
                     }
                 }
 
-                float target_alpha = (2 * PI / 3) * signcross;
+                float target_alpha;
+                if (_is_straightline_vertex[i])
+                    target_alpha = alpha > 0 ? PI : -PI;
+                else target_alpha = (2 * PI / 3) * signcross;
                 result += (alpha - target_alpha) * (alpha - target_alpha);
             }
     }
@@ -785,7 +793,11 @@ float MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2) {
         }
     }
 
-    float target_alpha = (2 * PI / 3) * signcross;
+    float target_alpha;
+    if (_is_straightline_vertex[i])
+        target_alpha = alpha > 0 ? PI : -PI;
+    else target_alpha = (2 * PI / 3) * signcross;
+
     return (alpha - target_alpha) * (alpha - target_alpha);
 
 }
