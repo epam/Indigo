@@ -99,7 +99,6 @@ if(UNIX OR APPLE)
     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
 
-
 if(VISIBILITY_HIDDEN)
     set(COMPILE_FLAGS "${COMPILE_FLAGS} -fvisibility=hidden")
 endif()
