@@ -27,8 +27,8 @@ class Molecule;
 class DLLEXPORT MoleculeCleaner2d : public NonCopyable {
 
 public:
-    MoleculeCleaner2d(Molecule& mol);
-    void clean(); 
+    MoleculeCleaner2d(Molecule& mol, bool use_biconnected_decompose);
+    void clean(bool _clean_external_angles); 
 private:
     void _updatePosition(int i);
     void _updatePositions();
@@ -51,6 +51,7 @@ private:
     void _initAdjMatrix();
     void _calcTargetLen();
     void _initCommonComp();
+    void _initCommonBiconnectedComp();
     void _uniteBondsOnLine();
     void _initBasePointValid();
 
@@ -71,7 +72,9 @@ private:
     Array<bool> is_valid_base;
     ObjArray<Array<bool> > adj_matrix;
     ObjArray<Array<int> > common_comp; // common_comp[i][j] = number of component wich is contains both vertices i and j (or -1 if there isnt such component)
+    ObjArray<Array<int> > common_bicon_comp; // common_bicon_comp[i][j] = number of biconnected component wich is contains both vertices i and j (or -1 if there isnt such component)
     float target_len; // target length of bonds
+    bool clean_external_angles;
     Array<bool> _is_trivial; // is component single edge or straightline chain
     Array<bool> _is_straightline_vertex;
 

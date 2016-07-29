@@ -98,8 +98,10 @@ CEXPORT int indigoClean2d(int object)
 
         if (IndigoBaseMolecule::is(obj) || obj.type == IndigoObject::SUBMOLECULE) {
             Molecule &mol = obj.getBaseMolecule().asMolecule();
-            MoleculeCleaner2d cleaner2d(mol);
-            cleaner2d.clean();
+            MoleculeCleaner2d cleaner2d1(mol, false);
+            cleaner2d1.clean(false);
+            MoleculeCleaner2d cleaner2d2(mol, true);
+            cleaner2d2.clean(true);
 
         }
         return 0;

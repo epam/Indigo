@@ -23,37 +23,40 @@ using namespace indigo;
 
 //IMPL_ERROR(MoleculeCleaner2d, "MoleculeCleaner2d");
 
-MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol) : _mol(mol) {
+MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol, bool use_biconnected_decompose) : _mol(mol) {
     vertex_size = _mol.vertexEnd();
 //    printf("%d\n", vertex_count);
 //    printf("%d\n", component_count);
-    _initComponents(false);
+    _initComponents(use_biconnected_decompose);
 
     if (is_trivial) return;
 
     _initAdjMatrix();
     _calcTargetLen();
     _initCommonComp();
+    _initCommonBiconnectedComp();
 
-    /*printf("%d components\n", component_count);
-    for (int i = 0; i < component_count; i++) {
-    printf("%d: ", i);
-    for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v)) if (in[i][v]) printf("%d, ", v);
-    printf("|| ");
-    printf("%d: ", definiting_points[i].size());
-    for (int j = 0; j < definiting_points[i].size(); j++) printf("%d, ", definiting_points[i][j]);
-    printf("\n");
-    }
+    /*if (use_biconnected_decompose) {
+        printf("%d components\n", component_count);
+        for (int i = 0; i < component_count; i++) {
+            printf("%d: ", i);
+            for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v)) if (in[i][v]) printf("%d, ", v);
+            printf("|| ");
+            printf("%d: ", definiting_points[i].size());
+            for (int j = 0; j < definiting_points[i].size(); j++) printf("%d, ", definiting_points[i][j]);
+            printf("\n");
+        }
 
-    for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v)) {
-    printf("%d = ", v);
-    for (int j = 0; j < coef[v].size(); j++) if (coef[v][j].lengthSqr() > 0)
-    {
-    printf(" + %d * (%.2f, %.2f)", base_point[j], coef[v][j].x, coef[v][j].y);
-    }
-    printf("\n");
-    }
-    */
+        for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v)) {
+            printf("%d = ", v);
+            for (int j = 0; j < coef[v].size(); j++) if (coef[v][j].lengthSqr() > 0)
+            {
+                printf(" + %d * (%.2f, %.2f)", base_point[j], coef[v][j].x, coef[v][j].y);
+            }
+            printf("\n");
+        }
+    }*/
+    
 
 
 }
@@ -264,7 +267,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
             }
 
             for (int i = 1; i < vertex_list.size() - 1; i++)
-                _calcÑoef(vertex_list[i], vertex_list[0], vertex_list.top(), 1. * i / (vertex_list.size() - 1));
+                _calcÑoef(vertex_list[i], vertex_list[0], vertex_list.top(), 1. - 1. * i / (vertex_list.size() - 1));
         }
     }
 
@@ -443,6 +446,37 @@ void MoleculeCleaner2d::_initCommonComp() {
     }
 }
 
+void MoleculeCleaner2d::_initCommonBiconnectedComp() {
+    BiconnectedDecomposer decomposer(_mol);
+    decomposer.decompose();
+
+    common_bicon_comp.clear();
+
+    QS_DEF(ObjArray<Array<bool> >, b_in);
+    Filter filter;
+    int b_component_count = decomposer.componentsCount();
+
+    for (int i = 0; i < b_component_count; i++) {
+        decomposer.getComponent(i, filter);
+        b_in.push();
+        b_in[i].clear_resize(vertex_size);
+        b_in[i].zerofill();
+        for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j)) {
+            b_in[i][j] = filter.valid(j);
+        }
+    }
+
+    for (int i = 0; i < vertex_size; i++) {
+        common_bicon_comp.push();
+        common_bicon_comp.top().clear_resize(vertex_size);
+        common_bicon_comp.top().fffill();
+    }
+
+    for (int v1 = _mol.vertexBegin(); v1 != _mol.vertexEnd(); v1 = _mol.vertexNext(v1))
+        for (int v2 = _mol.vertexBegin(); v2 != _mol.vertexEnd(); v2 = _mol.vertexNext(v2))
+            for (int c = 0; c < b_component_count; c++) if (b_in[c][v1] && b_in[c][v2]) common_bicon_comp[v1][v2] = c;
+}
+
 bool MoleculeCleaner2d::_isBasePoint(int i) { return base_point_index[i] >= 0; }
 
 void MoleculeCleaner2d::_addCoef(int ver, int index, Vec2f value) {
@@ -585,13 +619,22 @@ void MoleculeCleaner2d::_updateGradient() {
 
 void MoleculeCleaner2d::_updateGradient2() {
     profTimerStart(t, "Update gradient 2");
+    _updatePositions();
+/*    for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
+        pregradient[v] = _energyDiff(v);
+
+    gradient.zerofill();
+    for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
+        for (int j = 0; j < coef[v].size(); j++) gradient[j] += mult(pregradient[v], coef[v][j]);*/
+
+    gradient.zerofill();
     for (int i = 0; i < base_point.size(); i++)
         gradient[i] = _energyDiff(base_point[i]);
 }
 
-void MoleculeCleaner2d::clean() {
+void MoleculeCleaner2d::clean(bool _clean_external_angles) {
     if (is_trivial) return; // nothing to do for biconnected graph
-
+    clean_external_angles = _clean_external_angles;
     _updatePositions();
 
     //for (int i = 0; i < vertex_count; i++) printf("%d: (%.5f, %.5f)\n", i, pos[i].x, pos[i].y);
@@ -634,7 +677,10 @@ void MoleculeCleaner2d::clean() {
         for (int i = 0; i < base_point.size(); i++) pos[base_point[i]] -= gradient[i] * mult[best_i];
         _updatePositions();
 
-        if (best_i == 0) break;
+        /*if (best_i == 0) {
+            for (int i = 0; i < gradient.size(); i++) printf("%d: (%.5f, %.5f) \n", base_point[i], gradient[i].x, gradient[i].y);
+            break;
+        }*/
         //need_len *= .95;
     }
 
@@ -670,48 +716,86 @@ float MoleculeCleaner2d::_energy() {
 
     // 3. angles
 
+    
     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (is_art_point[i]) {
         const Vertex& vert = _mol.getVertex(i);
-        for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1))
-            for (int n2 = vert.neiBegin(); n2 < n1; n2 = vert.neiNext(n2)) {
-                int v1 = vert.neiVertex(n1);
-                int v2 = vert.neiVertex(n2);
-                if (common_comp[v1][v2] >= 0) continue;
-
-                //printf("%d %d %d\n", i, v1, v2);
-
-                Vec2f vec1 = pos[v1] - pos[i];
-                Vec2f vec2 = pos[v2] - pos[i];
-
-                float dot = Vec2f::dot(vec1, vec2);
-                float cross = Vec2f::cross(vec1, vec2);
-                float signcross = cross > 0 ? 1 : cross == 0 ? 0 : -1;
-
-                float l1 = vec1.length();
-                float l2 = vec2.length();
-
-                float cos = dot / (l1 * l2);
-                float sin = cross / (l1 * l2);
-
-                float alpha;
-
-                if (fabs(cos) < 0.5) {
-                    alpha = acos_stable(cos)* signcross;
-                }
-                else {
-                    alpha = asin_stable(sin);
-                    if (cos < 0) {
-                        if (alpha > 0) alpha = PI - alpha;
-                        else alpha = -PI - alpha;
-                    }
-                }
-
-                float target_alpha;
-                if (_is_straightline_vertex[i])
-                    target_alpha = alpha > 0 ? PI : -PI;
-                else target_alpha = (2 * PI / 3) * signcross;
-                result += (alpha - target_alpha) * (alpha - target_alpha);
+        if (clean_external_angles) {
+            QS_DEF(Array<float>, angles);
+            angles.clear();
+            for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1)) {
+                int v = vert.neiVertex(n1);
+                Vec2f vec = pos[v] - pos[i];
+                float alpha = atan2(vec.y, vec.x);
+                angles.push(alpha);
             }
+
+            for (int a = 0; a < angles.size(); a++)
+                for (int b = 0; b < angles.size() - 1; b++)
+                    if (angles[b + 1] < angles[b]) std::swap(angles[b], angles[b + 1]);
+
+            angles.push(angles[0] + 2 * PI);
+            if (vert.degree() > 2) {
+                float target_angle = 2 * PI / angles.size();
+                for (int j = 0; j < angles.size() - 1; j++) {
+                    float diff = angles[j + 1] - angles[j] - target_angle;
+                    result += diff * diff;
+                }
+            }
+            else {
+                float diff0 = angles[1] - angles[0];
+                float diff1 = angles[2] - angles[1];
+                if (diff0 > diff1) std::swap(diff0, diff1);
+                float target_angle0 = 2 * PI / 3;
+                float target_angle1 = 4 * PI / 3;
+                if (_is_straightline_vertex[i]) target_angle0 = target_angle1 = PI;
+                result += (diff0 - target_angle0) * (diff0 - target_angle0);
+                result += (diff1 - target_angle1) * (diff1 - target_angle1);
+            }
+        }
+        else {
+            for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1)) {
+                for (int n2 = vert.neiBegin(); n2 < n1; n2 = vert.neiNext(n2)) {
+                    int v1 = vert.neiVertex(n1);
+                    int v2 = vert.neiVertex(n2);
+                    if (common_comp[v1][v2] >= 0) continue;
+                    if (common_bicon_comp[v1][v2] == -1) continue;
+
+                    //printf("%d %d %d\n", i, v1, v2);
+
+                    Vec2f vec1 = pos[v1] - pos[i];
+                    Vec2f vec2 = pos[v2] - pos[i];
+
+                    float dot = Vec2f::dot(vec1, vec2);
+                    float cross = Vec2f::cross(vec1, vec2);
+                    float signcross = cross > 0 ? 1 : cross == 0 ? 0 : -1;
+
+                    float l1 = vec1.length();
+                    float l2 = vec2.length();
+
+                    float cos = dot / (l1 * l2);
+                    float sin = cross / (l1 * l2);
+
+                    float alpha;
+
+                    if (fabs(cos) < 0.5) {
+                        alpha = acos_stable(cos)* signcross;
+                    }
+                    else {
+                        alpha = asin_stable(sin);
+                        if (cos < 0) {
+                            if (alpha > 0) alpha = PI - alpha;
+                            else alpha = -PI - alpha;
+                        }
+                    }
+
+                    float target_alpha;
+                    if (_is_straightline_vertex[i])
+                        target_alpha = alpha > 0 ? PI : -PI;
+                    else target_alpha = (2 * PI / 3) * signcross;
+                    result += (alpha - target_alpha) * (alpha - target_alpha);
+                }
+            }
+        }
     }
 
     return result;
@@ -733,23 +817,25 @@ Vec2f MoleculeCleaner2d::_energyDiff(int v) {
 }
 
 float MoleculeCleaner2d::_localEnergy(int v) {
-    //return _energy();
+    return _energy();
     float result = 0;
 
     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) if (v != i) result += _edgeEnergy(v, i);
 
-    const Vertex& vert = _mol.getVertex(v);
-    for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1)) {
-        for (int n2 = vert.neiBegin(); n2 < n1; n2 = vert.neiNext(n2))
-            result += _angleEnergy(v, vert.neiVertex(n1), vert.neiVertex(n2));
+    //if (!clean_external_angles) 
+    {
+        const Vertex& vert = _mol.getVertex(v);
+        for (int n1 = vert.neiBegin(); n1 != vert.neiEnd(); n1 = vert.neiNext(n1)) {
+            for (int n2 = vert.neiBegin(); n2 < n1; n2 = vert.neiNext(n2))
+                result += _angleEnergy(v, vert.neiVertex(n1), vert.neiVertex(n2));
 
-        int v1 = vert.neiVertex(n1);
-        const Vertex& vert1 = _mol.getVertex(v1);
-        for (int n2 = vert1.neiBegin(); n2 != vert1.neiEnd(); n2 = vert1.neiNext(n2))
-            if (vert1.neiVertex(n2) != v)
-                result += _angleEnergy(v1, v, vert1.neiVertex(n2));
+            int v1 = vert.neiVertex(n1);
+            const Vertex& vert1 = _mol.getVertex(v1);
+            for (int n2 = vert1.neiBegin(); n2 != vert1.neiEnd(); n2 = vert1.neiNext(n2))
+                if (vert1.neiVertex(n2) != v)
+                    result += _angleEnergy(v1, v, vert1.neiVertex(n2));
+        }
     }
-
     return result;
 }
 
@@ -766,7 +852,9 @@ float MoleculeCleaner2d::_edgeEnergy(int i, int j) {
 }
 
 float MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2) {
+
     profTimerStart(t, "Angle enegry");
+    if (!clean_external_angles && common_bicon_comp[v1][v2] == -1) return 0;
     Vec2f vec1 = pos[v1] - pos[i];
     Vec2f vec2 = pos[v2] - pos[i];
 
