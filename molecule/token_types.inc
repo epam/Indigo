@@ -1,0 +1,15 @@
+static const char* token_types_table = 
+  "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+  "<tokenTypes>\n"
+  "  <tokenType>factor</tokenType>\n"
+  "  <tokenType>basic</tokenType>\n"
+  "  <tokenType>group</tokenType>\n"
+  "  <tokenType>ending</tokenType>\n"
+  "  <tokenType>ringAssembly</tokenType>\n"
+  "  <tokenType>punctuation</tokenType>\n"
+  "  <tokenType>bracket</tokenType>\n"
+  "  <tokenType>prime</tokenType>\n"
+  "  <tokenType>locant</tokenType>\n"
+  "  <tokenType>basicElement</tokenType>\n"
+  "  <tokenType>text</tokenType>\n"
+  "</tokenTypes>\n";

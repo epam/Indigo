@@ -30,6 +30,7 @@
 #include "molecule/molecule_automorphism_search.h"
 #include "base_cpp/scanner.h"
 #include "indigo_mapping.h"
+#include "molecule/molecule_name_parser.h"
 
 IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
 {
@@ -4136,3 +4137,27 @@ CEXPORT int indigoIterateAttachmentPoints (int molecule, int order)
    INDIGO_END(-1)
 }
 
+
+//tests
+// 1 canonical smiles
+// 2 unit tests
+CEXPORT int indigoNameToStructure(const char* name)
+{
+	INDIGO_BEGIN
+	{
+		if (name == nullptr) {
+			throw IndigoError("indigoNameToStructure: invalid parameter");
+		}
+
+		using namespace name_parsing;
+		MoleculeNameParser &parser = getMoleculeNameParserInstance();
+
+		AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
+
+		Molecule &mol = molptr->mol;
+		parser.parseMolecule(name, mol);
+	
+		return self.addObject(molptr.release());
+	}
+	INDIGO_END(-1)
+}
