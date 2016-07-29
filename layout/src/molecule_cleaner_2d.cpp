@@ -227,7 +227,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
 
                 for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
                     if (in[comp][j] && j != definiting_points[comp][0] && j != definiting_points[comp][1] && !block_vertex[j])
-                        _calc—oef(j, definiting_points[comp][0], definiting_points[comp][1]);
+                        _calcCoef(j, definiting_points[comp][0], definiting_points[comp][1]);
 
                 // 4. Add new components to list
 
@@ -267,7 +267,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
             }
 
             for (int i = 1; i < vertex_list.size() - 1; i++)
-                _calc—oef(vertex_list[i], vertex_list[0], vertex_list.top(), 1. - 1. * i / (vertex_list.size() - 1));
+                _calcCoef(vertex_list[i], vertex_list[0], vertex_list.top(), 1. - 1. * i / (vertex_list.size() - 1));
         }
     }
 
@@ -484,7 +484,7 @@ void MoleculeCleaner2d::_addCoef(int ver, int index, Vec2f value) {
     coef[ver][index] += value;
 }
 
-void MoleculeCleaner2d::_calc—oef(int to, int from0, int from1) {
+void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1) {
     Vec2f A0 = plane(_mol.getAtomXyz(from0));
     Vec2f A1 = plane(_mol.getAtomXyz(from1));
     Vec2f A2 = plane(_mol.getAtomXyz(to));
@@ -508,7 +508,7 @@ void MoleculeCleaner2d::_calc—oef(int to, int from0, int from1) {
     }
 }
 
-void MoleculeCleaner2d::_calc—oef(int to, int from0, int from1, float alpha) {
+void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1, float alpha) {
     int len = std::max(coef[from0].size(), coef[from1].size());
     
     _addCoef(from0, len - 1, ZERO);
