@@ -18,6 +18,7 @@
 #include <algorithm> 
 #include <vector>
 #include "base_cpp/profiling.h"
+#include "base_cpp/cancellation_handler.h"
 
 using namespace indigo;
 
@@ -650,6 +651,9 @@ void MoleculeCleaner2d::clean(bool _clean_external_angles) {
     for (int i = 2; i <= k; i++) mult[i] = mult[i - 1] * 0.5;
 
     float need_len = target_len;
+    
+    TimeoutCancellationHandler timeout(CLEAN_TIMER_MS);
+    
     for (int iter = 0; iter < 1000; iter++) {
         _updateGradient2();
         /*if (iter < 10) {
@@ -682,6 +686,12 @@ void MoleculeCleaner2d::clean(bool _clean_external_angles) {
             break;
         }*/
         //need_len *= .95;
+        /*
+         * Add timeout for clean2d
+         */
+        if(timeout.isCancelled()) {
+           break;
+        }
     }
 
     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i)) _mol.setAtomXyz(i, Vec3f(pos[i].x, pos[i].y, 0));

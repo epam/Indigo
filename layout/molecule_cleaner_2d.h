@@ -27,6 +27,9 @@ class Molecule;
 class DLLEXPORT MoleculeCleaner2d : public NonCopyable {
 
 public:
+    enum {
+       CLEAN_TIMER_MS = 2000
+    };
     MoleculeCleaner2d(Molecule& mol, bool use_biconnected_decompose);
     void clean(bool _clean_external_angles); 
 private:
