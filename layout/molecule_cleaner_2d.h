@@ -22,7 +22,7 @@
 
 namespace indigo
 {
-class Molecule;
+class BaseMolecule;
    
 class DLLEXPORT MoleculeCleaner2d : public NonCopyable {
 
@@ -30,7 +30,7 @@ public:
     enum {
        CLEAN_TIMER_MS = 2000
     };
-    MoleculeCleaner2d(Molecule& mol, bool use_biconnected_decompose);
+    MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose);
     void clean(bool _clean_external_angles); 
 private:
     void _updatePosition(int i);
@@ -58,7 +58,7 @@ private:
     void _uniteBondsOnLine();
     void _initBasePointValid();
 
-    Molecule& _mol;
+    BaseMolecule& _mol;
     Array<int> base_point;
     Array<int> base_point_index;
     Array<Vec2f> pos;

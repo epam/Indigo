@@ -24,7 +24,7 @@ using namespace indigo;
 
 //IMPL_ERROR(MoleculeCleaner2d, "MoleculeCleaner2d");
 
-MoleculeCleaner2d::MoleculeCleaner2d(Molecule& mol, bool use_biconnected_decompose) : _mol(mol) {
+MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose) : _mol(mol) {
     vertex_size = _mol.vertexEnd();
 //    printf("%d\n", vertex_count);
 //    printf("%d\n", component_count);
