@@ -74,7 +74,7 @@ dword ExactStorage::calculateMolHash (Molecule &mol)
    SubgraphHash hh(mol_without_h);
 
    for (int v = mol_without_h.vertexBegin(); v != mol_without_h.vertexEnd(); v = mol_without_h.vertexNext(v))
-      vertex_codes[v] = _vertexCode(mol_without_h, v);
+      vertex_codes[v] = mol_without_h.atomCode(v);
    hh.vertex_codes = &vertex_codes;
    hh.max_iterations = (mol_without_h.edgeCount() + 1) / 2;
 
@@ -104,15 +104,4 @@ dword ExactStorage::calculateRxnHash (Reaction &rxn)
    }
 
    return hash;
-}
-
-int ExactStorage::_vertexCode (Molecule &mol, int vertex_idx)
-{
-   if (mol.isPseudoAtom(vertex_idx))
-      return indigo::CRC32::get(mol.getPseudoAtom(vertex_idx));
-
-   if (mol.isRSite(vertex_idx))
-      return ELEM_RSITE;
-
-   return mol.getAtomNumber(vertex_idx);
 }

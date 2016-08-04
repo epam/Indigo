@@ -149,7 +149,6 @@ protected:
 
    void _initQuery  (Molecule &query);
    static void _initTarget (Molecule &target, bool from_database);
-   static int vertexCode (Molecule &mol, int vertex_idx);
 };
 
 

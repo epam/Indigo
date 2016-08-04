@@ -209,7 +209,11 @@ int MolfileLoader::_getElement (const char *buf)
       if (!isalpha(buf[i]))
          return -1;
 
-      buf2[i] = (i == 0) ? toupper(buf[i]) : tolower(buf[i]);
+//      buf2[i] = (i == 0) ? toupper(buf[i]) : tolower(buf[i]);
+// Removed defensive conversion of input symbols to avoid possible issues with abbreviations like
+//   No <-> NO 
+//   Co <-> CO and etc.
+      buf2[i] = buf[i];
    }
 
    return Element::fromString2(buf2);

@@ -2220,12 +2220,20 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
                   // They can possibly not form an element: for example,
                   // [Nr] is formally a nitrogen in a ring (although nobody would
                   // write it that way: [N;r] is much more clear).
-                  (element = Element::fromTwoChars2(next, scanner.lookNext())) > 0)
+                  (Element::fromTwoChars2(next, scanner.lookNext())) > 0 && 
+                  (Element::fromTwoChars2(next, scanner.lookNext()) != ELEM_Cn) )
          {
+            element = Element::fromTwoChars2(next, scanner.lookNext());
             scanner.skip(1);
             if (smarts_mode)
                if (element == ELEM_As || element == ELEM_Se)
                   aromatic = ATOM_ALIPHATIC;
+         }
+         else if ( (next == 'C' && scanner.lookNext() == 'n') &&
+                   first_in_brackets)
+         {
+            scanner.skip(1);
+            element = ELEM_Cn;
          }
          else if (next == 'U' && scanner.lookNext() == 'u')
                   // Special check for "untitled" elements

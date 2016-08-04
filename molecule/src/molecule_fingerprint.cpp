@@ -12,7 +12,6 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "base_cpp/crc32.h"
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 
@@ -78,12 +77,12 @@ void MoleculeFingerprintBuilder::_initHashCalculations (BaseMolecule &mol, const
    _bond_codes_empty.clear_resize(mol.edgeEnd());
    for (int i : mol.vertices())
    {
-      _atom_codes[i] = _atomCode(mol, i);
+      _atom_codes[i] = mol.atomCode(i);
       _atom_codes_empty[i] = 0;
    }
    for (int i : mol.edges())
    {
-      _bond_codes[i] = _bondCode(mol, i);
+      _bond_codes[i] = mol.bondCode(i);
       _bond_codes_empty[i] = 0;
    }
 
@@ -278,26 +277,6 @@ int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue (Graph &graph,
       ret |= 2;
 
    return ret;
-}
-
-int MoleculeFingerprintBuilder::_atomCode (BaseMolecule &mol, int vertex_idx)
-{
-   if (mol.isPseudoAtom(vertex_idx))
-      return CRC32::get(mol.getPseudoAtom(vertex_idx));
-
-   if (mol.isTemplateAtom(vertex_idx))
-      return CRC32::get(mol.getTemplateAtom(vertex_idx));
-
-   return mol.getAtomNumber(vertex_idx);
-}
-
-int MoleculeFingerprintBuilder::_bondCode (BaseMolecule &mol, int edge_idx)
-{
-   //MoleculeFingerprintBuilder *self = (MoleculeFingerprintBuilder *)context;
-   //if (self->query && mol.asQueryMolecule().aromaticity.canBeAromatic(edge_idx))
-   //  throw Error("internal: _edge_code for possibly aromatic bond");
-   
-   return mol.getBondOrder(edge_idx);
 }
 
 dword MoleculeFingerprintBuilder::_canonicalizeFragment (BaseMolecule &mol, const Array<int> &vertices,

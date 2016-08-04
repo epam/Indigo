@@ -31,8 +31,6 @@ namespace bingo
 
    private:
       BingoMapping _molecule_hashes;
-      
-      static int _vertexCode (Molecule &mol, int vertex_idx);
    };
 }
 

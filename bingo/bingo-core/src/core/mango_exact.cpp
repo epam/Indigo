@@ -78,7 +78,7 @@ void MangoExact::calculateHash (Molecule &mol, Hash &hash)
 
       vertex_codes.clear_resize(component.vertexEnd());
       for (int v = component.vertexBegin(); v != component.vertexEnd(); v = component.vertexNext(v))
-         vertex_codes[v] = vertexCode(component, v);
+         vertex_codes[v] = component.atomCode(v);
       hh.vertex_codes = &vertex_codes;
       hh.max_iterations = (component.edgeCount() + 1) / 2;
 
@@ -241,15 +241,4 @@ bool MangoExact::parse (const char *params)
 
    setParameters(params);
    return true;
-}
-
-int MangoExact::vertexCode (Molecule &mol, int vertex_idx)
-{
-   if (mol.isPseudoAtom(vertex_idx))
-      return CRC32::get(mol.getPseudoAtom(vertex_idx));
-
-   if (mol.isRSite(vertex_idx))
-      return ELEM_RSITE;
-
-   return mol.getAtomNumber(vertex_idx);
 }

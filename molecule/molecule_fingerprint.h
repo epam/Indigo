@@ -106,9 +106,6 @@ protected:
    static void _handleTree     (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
    static bool _handleCycle    (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
-   int _atomCode (BaseMolecule &mol, int vertex_idx);
-   int _bondCode (BaseMolecule &mol, int edge_idx);
-
    static int _maximalSubgraphCriteriaValue (Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context);
 
    void _handleSubgraph (Graph &graph, const Array<int> &vertices, const Array<int> &edges);

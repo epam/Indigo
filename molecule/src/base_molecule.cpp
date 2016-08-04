@@ -14,6 +14,7 @@
 
 #include "molecule/base_molecule.h"
 
+#include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
@@ -1887,4 +1888,23 @@ void BaseMolecule::getAtomSymbol (int v, Array<char> &result)
    }
    if (result.size() == 0)
       result.readString("*", true);
+}
+
+int BaseMolecule::atomCode (int vertex_idx)
+{
+   if (isPseudoAtom(vertex_idx))
+      return CRC32::get(getPseudoAtom(vertex_idx));
+
+   if (isTemplateAtom(vertex_idx))
+      return CRC32::get(getTemplateAtom(vertex_idx));
+
+   if (isRSite(vertex_idx))
+      return 0;
+
+   return getAtomNumber(vertex_idx);
+}
+
+int BaseMolecule::bondCode (int edge_idx)
+{
+   return getBondOrder(edge_idx);
 }

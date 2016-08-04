@@ -145,8 +145,6 @@ protected:
 
    void _initQuery  (Reaction &query);
    static void _initTarget (Reaction &target, bool from_database);
-   static int _vertex_code (Graph &graph, int vertex_idx, void *context);
-   static int _edge_code (Graph &graph, int edge_idx, void *context);
 };
 
 #endif

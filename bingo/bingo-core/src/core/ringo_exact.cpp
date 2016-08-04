@@ -254,22 +254,3 @@ bool RingoExact::matchBinary (const Array<char> &target_buf)
 
    return matchBinary(scanner);
 }
-
-int RingoExact::_vertex_code (Graph &graph, int vertex_idx, void *context)
-{
-   Molecule &mol = (Molecule &)graph;
-
-   if (mol.isPseudoAtom(vertex_idx))
-      return CRC32::get(mol.getPseudoAtom(vertex_idx));
-
-   if (mol.isRSite(vertex_idx))
-      return ELEM_RSITE;
-
-   return mol.getAtomNumber(vertex_idx);
-}
-
-int RingoExact::_edge_code (Graph &graph, int edge_idx, void *context)
-{
-   Molecule &mol = (Molecule &)graph;
-   return mol.getBondOrder(edge_idx);
-}

@@ -317,6 +317,9 @@ public:
 
    void getAtomSymbol (int v, Array<char> &output);
 
+   int atomCode (int idx);
+   int bondCode (int idx);
+
    DECL_ERROR;
 protected:
 
