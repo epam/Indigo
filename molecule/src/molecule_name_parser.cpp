@@ -26,14 +26,16 @@ using namespace std;
 using namespace indigo;
 using namespace name_parsing;
 
-IMPL_ERROR(MoleculeNameParser, "NameToStructure parser");
-IMPL_ERROR(AuxParseTools, "Parse tools");
-IMPL_ERROR(Tokenizer, "Tokenizer");
-IMPL_ERROR(TokenizationResult, "TokenizationResult");
-IMPL_ERROR(DictionaryManager, "TableManager");
+IMPL_ERROR(MoleculeNameParser, "name_parsing::MoleculeNameParser");
+IMPL_ERROR(AuxParseTools, "name_parsing::AuxParseTools");
+IMPL_ERROR(Tokenizer, "name_parsing::Tokenizer");
+IMPL_ERROR(TokenizationResult, "name_parsing::TokenizationResult");
+IMPL_ERROR(DictionaryManager, "name_parsing::TableManager");
+IMPL_ERROR(Parse, "name_parsing::Parse");
+IMPL_ERROR(ResultBuilder, "name_parsing::ResultBuilder");
 
 // Converts a given token type name into enum value, 'unknown' if no name found
-TokenType Token::tokenTypeFromString(const std::string& s) {
+TokenType Lexeme::tokenTypeFromString(const std::string& s) {
 	auto begin = std::begin(TokenTypeStrings);
 	auto end = std::end(TokenTypeStrings);
 	auto it = find(begin, end, s);
@@ -49,8 +51,8 @@ DictionaryManager::DictionaryManager() {
 
 	readTokenTypeStrings();
 
-	readTable(basic_elements_table);
-	readTable(multipliers_table);
+	readTable(basic_elements_table, true);
+	readTable(multipliers_table, true);
 	readTable(separators_table);
 }
 
@@ -68,7 +70,7 @@ void DictionaryManager::readTokenTypeStrings() {
 		TokenTypeStrings.push_back(e->GetText());
 }
 
-void DictionaryManager::readTable(const char* table) {
+void DictionaryManager::readTable(const char* table, bool useTrie /* = false*/) {
 	TiXmlDocument doc;
 
 	doc.Parse(table);
@@ -83,6 +85,7 @@ void DictionaryManager::readTable(const char* table) {
 		const bool isSeparator = (name == "separator");
 
 		string type = tokenTable->Attribute("type");
+		TokenType token = Lexeme::tokenTypeFromString(type);
 
 		TiXmlElement* e = tokenTable->FirstChild("token")->ToElement();
 		for (; e; e = e->NextSiblingElement()) {
@@ -94,28 +97,35 @@ void DictionaryManager::readTable(const char* table) {
 			// several symbols with the same token type into the dictionary
 			size_t pos = symbol.find('|');
 			if (pos != symbol.npos) {
-				int i = 0;
+				size_t i = 0;
 				string alias;
 				while (pos < symbol.length()) {
 					alias = symbol.substr(i, pos);
-					_dictionary[alias] = { alias, Token::tokenTypeFromString(type) };
+					addLexeme(alias, token, useTrie);
 					i += ++pos;
 					pos = symbol.find('|', pos);
 				}
 				alias = symbol.substr(i, pos);
-				_dictionary[alias] = { alias, Token::tokenTypeFromString(type) };
+				addLexeme(alias, token, useTrie);
 			} else {
-				_dictionary[symbol] = { name, Token::tokenTypeFromString(type) };
+				addLexeme(symbol, token, useTrie);
 
 				// all separators are 1-byte ASCII
-				if (isSeparator) _separators.push_back(symbol[0]);
+				if (isSeparator)
+					_separators.push_back(symbol[0]);
 			}
 		}
 	}
 }
 
+void DictionaryManager::addLexeme(const string& lexeme, TokenType token, bool useTrie) {
+	_dictionary[lexeme] = token;
+	if (useTrie)
+		_lexTrie.addWord(lexeme, token);
+}
+
 void Parse::scan() {
-	DictionaryManager& dm = getTableManagerInstance();
+	DictionaryManager& dm = getDictionaryManagerInstance();
 	const SymbolDictionary& dictionary = dm.getDictionary();
 	const string& separators = dm.getSeparators();
 
@@ -133,31 +143,62 @@ void Parse::scan() {
 		if (pos != separators.npos) {
 			auto it = dictionary.find({ ch });
 			if (it != dictionary.end())
-				addLexeme({ch}, it->second);
+				_lexems.push_back(Lexeme(ch, it->second));
 			continue;
 		}
 
 		size_t next = _input.find_first_of(separators, i);
 		if (next == _input.npos) {
 			string fragment = _input.substr(i, length - i);
-			addLexeme(fragment, { fragment, TokenType::text });
+			processTextFragment(fragment);
 			break;
 		}
 		else {
 			string fragment = _input.substr(i, next - i);
-			addLexeme(fragment, { fragment, TokenType::text });
+			processTextFragment(fragment);
 			i = next - 1;
 			continue;
 		}
-	}
+	}	
 }
 
-void Parse::addLexeme(const string& s, Token t) {
-	_lexems.push_back({s, t});
-	_tokens.push_back(t);
+void Parse::processTextFragment(const string& fragment) {
+	DictionaryManager& dm = getDictionaryManagerInstance();
+	const LexemsTrie& root = dm.getLexemsTrie();
 
-	// number of lexems and tokens must match
-	assert(_lexems.size() == _tokens.size());
+	const int fLength = fragment.length();
+
+	int total = 0;
+	string buffer = fragment;
+
+	while (total <= fLength) {
+		int current = 0;
+
+		const Trie<TokenType>* match = root.getNode({ buffer[0] });
+		if (!match) {
+			_failures.push_back(buffer);
+			_hasFailures = true;
+			return;
+		}
+
+		while (match && !match->isMark()) {
+			match = match->getNode({ buffer[++current] });
+			total++;
+		}
+
+		string lexeme = buffer.substr(0, current + 1);
+
+		if (!match) {
+			_failures.push_back(lexeme);
+			_hasFailures = false;
+			return;
+		}
+
+		TokenType token = match->getData();
+		_lexems.push_back(Lexeme(lexeme, token));
+
+		buffer = buffer.substr(current + 1);
+	}
 }
 
 TokenizationResult Tokenizer::tokenize(const char* name) {
@@ -167,8 +208,10 @@ TokenizationResult Tokenizer::tokenize(const char* name) {
 	AuxParseTools::checkBrackets(input);
 	TokenizationResult result(input);
 	result.parse();
-	if (!result.is_completely_parsed()) {
-		// check parse error severity
+	if (!result.isCompletelyParsed()) {
+		/* TODO
+		 * result has some unparsed fragments, display warning
+		 */
 	}
 
 	return result;
@@ -176,7 +219,23 @@ TokenizationResult Tokenizer::tokenize(const char* name) {
 
 void TokenizationResult::parse() {
 	_parse.scan();
-	const Tokens& tokens = _parse.getTokens();
+	_completelyParsed = _parse.hasFailures();
+}
+
+bool ResultBuilder::build(const Parse& parse) {
+	_mol->clear();
+
+	const Lexems& lexems = parse.getLexemes();
+	for (const Lexeme& l : lexems) {
+		processLexeme(l);
+	}
+
+	return false;
+}
+
+void ResultBuilder::processLexeme(const Lexeme& l) {
+	const string lexeme = l.getLexeme();
+	const TokenType type = l.getToken();
 }
 
 /* Main method for convertion from a chemical name into a Molecule object
@@ -188,14 +247,19 @@ void TokenizationResult::parse() {
  * No param check - did that on caller side
  */
 void MoleculeNameParser::parseMolecule(const char *name, Molecule &mol) {
-	mol.clear();
 	TokenizationResult result = _tokenizer.tokenize(name);
+	const Parse& parse = result.getParse();
+
+	ResultBuilder builder(mol);
+	if (!builder.build(parse)) {
+		mol.clear();
+		throw Error("Unable to parse name: %s", name);
+	}
 }
 
-void AuxParseTools::checkBrackets(const string& input) {
+void AuxParseTools::checkBrackets(const string& s) {
 	int level = 0;
-	for (int i = 0; i < input.length(); i++) {
-		auto ch = input.at(i);
+	for (char ch : s) {
 		if (ch == '(' || ch == '[' || ch == '{') {
 			level++;
 		}
@@ -212,13 +276,17 @@ void AuxParseTools::checkBrackets(const string& input) {
 	}
 }
 
+int AuxParseTools::splitMultipliers(const string& s) {
+	return -1;
+}
+
 _SessionLocalContainer<MoleculeNameParser> name_parser_self;
-_SessionLocalContainer<DictionaryManager> table_manager_self;
+_SessionLocalContainer<DictionaryManager> dictionary_manager_self;
 
 MoleculeNameParser& name_parsing::getMoleculeNameParserInstance() {
 	return name_parser_self.getLocalCopy();
 }
 
-DictionaryManager& name_parsing::getTableManagerInstance() {
-	return table_manager_self.getLocalCopy();
+DictionaryManager& name_parsing::getDictionaryManagerInstance() {
+	return dictionary_manager_self.getLocalCopy();
 }
