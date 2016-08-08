@@ -19,7 +19,7 @@ if (NOT ZLIB_FOUND)
 
     add_library(z STATIC ${ZLib_src} ${ZLib_headers})
 
-    if (APPLE AND NOT DEFINED $ENV{VERBOSE})
+    if (UNIX AND NOT DEFINED $ENV{VERBOSE})
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-implicit-function-declaration")
     endif()
 
