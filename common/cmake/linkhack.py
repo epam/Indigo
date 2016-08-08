@@ -83,7 +83,10 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
         libFile = os.path.join(libRoot, library)
         subprocess.call('objcopy --redefine-syms indigostd.syms %s' % (libFile), shell=True)
 
-    linkCommand = '%s -v -L%s/ -static-libstdc++ %s %s %s -o %s' % (compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
+    verboseParam = ''
+    if 'VERBOSE' in os.environ:
+        verboseParam = ' -v '
+    linkCommand = '%s %s -L%s/ -static-libstdc++ %s %s %s -o %s' % (compiler, verboseParam, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
     stderr = None
     stdout = None
     if 'VERBOSE' in os.environ:
