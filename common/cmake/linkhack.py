@@ -13,11 +13,11 @@ def getSymbols(libPath):
     return [item.replace('  ', '').split(' ') for item in subprocess.Popen('nm %s' % (libPath), shell=True, stdout=subprocess.PIPE, stderr=stderr).communicate()[0].split('\n')]
 
 
-def getIndigoStdSyms(libRoot):
+def getIndigoStdSyms():
     libname = 'libc++.a'
     if not platform.mac_ver()[0]:
         libname = 'libstdc++.a'
-    libstdcppSymbols = getSymbols(os.path.join(libRoot, libname))
+    libstdcppSymbols = getSymbols(libname)
     renameSymbols = []
 
     invMap = {}
@@ -48,9 +48,9 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
     if not os.path.exists(libRoot):
         sys.exit("Cannot create or find a directory with library files")
 
-    shutil.copy(libstdcppPath, libRoot + '/libstdc++.a')
+    shutil.copy(libstdcppPath, 'libstdc++.a')
 
-    getIndigoStdSyms(libRoot)
+    getIndigoStdSyms()
 
     for objFile in objFiles:
         subprocess.call('objcopy --redefine-syms indigostd.syms %s' % (objFile), shell=True)
@@ -64,12 +64,11 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
                     'indigo-depict',
                     'rindigo.so'):
         if target.find(libname) != -1:
-            subprocess.call('objcopy --redefine-syms indigostd.syms %s/libstdc++.a %s/libindigostdcpp.a' % (libRoot, libRoot), shell=True)
-            linkLibraries = linkLibraries + ' -Wl,--whole-archive %s/libindigostdcpp.a -Wl,--no-whole-archive ' % (libRoot)
+            subprocess.call('objcopy --redefine-syms indigostd.syms libstdc++.a libindigostdcpp.a', shell=True)
+            linkLibraries = linkLibraries + ' -Wl,--whole-archive libindigostdcpp.a -Wl,--no-whole-archive '
             break
 
-    if os.path.exists('%s/libstdc++.a' % (libRoot)):
-        os.remove('%s/libstdc++.a' % (libRoot))
+    os.remove('libstdc++.a')
 
     for library in os.listdir(libRoot):
         if not library.endswith('.a') or library == 'libindigostdcpp.a':
@@ -87,7 +86,7 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
     verboseParam = ''
     if 'VERBOSE' in os.environ:
         verboseParam = ' -v '
-    linkCommand = '%s %s -L%s/ -static-libstdc++ %s %s %s -o %s' % (compiler, verboseParam, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target)
+    linkCommand = '%s %s -static-libstdc++ %s %s %s -o %s' % (compiler, verboseParam, linkFlags, ' '.join(objFiles), linkLibraries, target)
     stderr = None
     stdout = None
     if 'VERBOSE' in os.environ:
@@ -95,68 +94,6 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
         stderr = subprocess.PIPE
         stdout = subprocess.PIPE
     subprocess.call(linkCommand, shell=True, stderr=stderr, stdout=stdout)
-
-
-def mac(compiler, linkFlags, objFiles, linkLibraries, target):
-    def lipoObjconvLipo(binaryFile):
-        subprocess.call('lipo -thin x86_64 %s -o %s' % (binaryFile, binaryFile + '.tmp.64'), shell=True)
-        subprocess.call('lipo -thin i386 %s -o %s' % (binaryFile, binaryFile + '.tmp.32'), shell=True)
-        os.remove(binaryFile)
-        command = 'objconv -v0 -wd1214 -wd1106 -fmacho64 -nf:indigostd.syms %s %s' % (binaryFile + '.tmp.64', binaryFile + '.64')
-        stderr = None
-        if 'VERBOSE' in os.environ:
-            print(command)
-            stderr = subprocess.PIPE
-        subprocess.call(command, shell=True, stderr=stderr)
-        command = 'objconv -v0 -wd1214 -wd1106 -fmacho32 -nf:indigostd.syms %s %s' % (binaryFile + '.tmp.32', binaryFile + '.32')
-        if 'VERBOSE' in os.environ:
-            print(command)
-        subprocess.call(command, shell=True, stderr=stderr)
-        command = 'lipo -create %s %s -output %s' % (binaryFile + '.64', binaryFile + '.32', binaryFile)
-        if 'VERBOSE' in os.environ:
-            print(command)
-        subprocess.call(command, shell=True, stderr=stderr)
-        os.remove(binaryFile + '.tmp.32')
-        os.remove(binaryFile + '.tmp.64')
-        os.remove(binaryFile + '.32')
-        os.remove(binaryFile + '.64')
-
-    libRoot = os.path.dirname(target)
-    shutil.copy('/usr/lib/libc++.a', libRoot + '/libc++.a')
-    getIndigoStdSyms(libRoot)
-
-    for objFile in objFiles:
-        lipoObjconvLipo(objFile)
-
-    for libname in ('libindigo.dylib',
-                    'bingo_postgres.dylib',
-                    'libketcher-server.dylib',
-                    'indigo-cano',
-                    'indigo-deco',
-                    'indigo-depict'):
-        if target.find(libname) != -1:
-            lipoObjconvLipo(libRoot + '/libc++.a')
-            linkLibraries = linkLibraries + ' -Wl,-all_load %s/libc++.a -Wl,-noall_load' % (libRoot)
-            break
-
-    for library in os.listdir(libRoot):
-        if not library.endswith('.a') or library == 'libindigoc++.a':
-            continue
-        symlist = []
-        for s in getSymbols(os.path.join(libRoot, library)):
-            if len(s) > 1:
-                symlist.append(s[2].find('_ind'))
-        if 0 in symlist:
-            continue
-        lipoObjconvLipo(os.path.join(libRoot, library))
-
-    cmd = ('%s -L%s/ -arch i386 -arch x86_64 -undefined dynamic_lookup -nodefaultlibs -lc -lm -std=c++11 -mmacosx-version-min=10.7 %s %s %s -o %s' %
-           (compiler, libRoot, linkFlags, ' '.join(objFiles), linkLibraries, target))
-    stderr = None
-    if 'VERBOSE' in os.environ:
-        print(cmd)
-        stderr = subprocess.PIPE
-    subprocess.call(cmd, shell=True, stderr=stderr)
 
 
 def main():
@@ -168,7 +105,7 @@ def main():
     target = args[5].strip()
 
     if platform.mac_ver()[0]:
-        mac(compiler, linkFlags, objFiles, linkLibraries, target)
+        print('linkhack for Mac is not supported anymore, build with 10.7 SDK instead')
     else:
         linux(compiler, linkFlags, objFiles, linkLibraries, target)
 
