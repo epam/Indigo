@@ -12,5 +12,5 @@ if (NOT NO_STATIC)
 endif()
 
 if (APPLE AND NOT DEFINED $ENV{VERBOSE})
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-parentheses -Wno-sizeof-pointer-memaccess -Wno-tautological-compare -Wno-unsequenced -Wno-comment -Wno-logical-op-parentheses")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-pointer-bool-conversion -Wno-parentheses -Wno-sizeof-pointer-memaccess -Wno-tautological-compare -Wno-unsequenced -Wno-comment -Wno-logical-op-parentheses")
 endif()
