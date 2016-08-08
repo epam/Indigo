@@ -68,7 +68,8 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
             linkLibraries = linkLibraries + ' -Wl,--whole-archive %s/libindigostdcpp.a -Wl,--no-whole-archive ' % (libRoot)
             break
 
-    os.remove('%s/libstdc++.a' % (libRoot))
+    if os.path.exists('%s/libstdc++.a' % (libRoot)):
+        os.remove('%s/libstdc++.a' % (libRoot))
 
     for library in os.listdir(libRoot):
         if not library.endswith('.a') or library == 'libindigostdcpp.a':
