@@ -383,6 +383,12 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
                val = 3;
             mol.setAtomRadical(idx, val);
          }
+
+         if (a.spin_multiplicity.empty() && a.radical.empty())
+         {
+            mol.setAtomRadical(idx, 0);
+         }
+
    
          if (!a.valence.empty())
          {
