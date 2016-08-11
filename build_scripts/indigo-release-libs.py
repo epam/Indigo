@@ -42,7 +42,7 @@ def build_libs(cl_args):
         "mac10.9": ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
         "mac10.10": ("Xcode", "-DSUBSYSTEM_NAME=10.10"),
         "mac10.11": ("Xcode", "-DSUBSYSTEM_NAME=10.11"),
-        "mac-build": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.7"),
+        "mac-universal": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.7"),
     }
 
     parser = OptionParser(description='Indigo libraries build script')

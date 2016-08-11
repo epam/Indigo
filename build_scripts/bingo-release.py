@@ -28,24 +28,26 @@ def shortenGenerator(generator):
     return result.replace(' ', '')
 
 presets = {
-    "win32" : ("Visual Studio 10", ""),
-    "win64" : ("Visual Studio 10 Win64", ""),
-    "win32-2012" : ("Visual Studio 11", ""),
-    "win64-2012" : ("Visual Studio 11 Win64", ""),
-    "win32-2013" : ("Visual Studio 12", ""),
-    "win64-2013" : ("Visual Studio 12 Win64", ""),
-    "win64-2015" : ("Visual Studio 14 Win64", ""),
+    "win32": ("Visual Studio 10", ""),
+    "win64": ("Visual Studio 10 Win64", ""),
+    "win32-2012": ("Visual Studio 11", ""),
+    "win64-2012": ("Visual Studio 11 Win64", ""),
+    "win32-2013": ("Visual Studio 12", ""),
+    "win32-2015": ("Visual Studio 14", ""),
+    "win64-2013": ("Visual Studio 12 Win64", ""),
+    "win64-2015": ("Visual Studio 14 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
-    "linux32" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
-    "linux32-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
-    "linux64" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
-    "linux64-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
-    "mac10.5" : ("Xcode", "-DSUBSYSTEM_NAME=10.5"),
-    "mac10.6" : ("Xcode", "-DSUBSYSTEM_NAME=10.6"),
-    "mac10.7" : ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
-    "mac10.8" : ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
-    "mac10.9" : ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
-    "mac-universal" : ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.6"),
+    "linux32": ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
+    "linux32-universal": ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
+    "linux64": ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
+    "linux64-universal": ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
+    "mac10.7": ("Xcode", "-DSUBSYSTEM_NAME=10.7"),
+    "mac10.8": ("Xcode", "-DSUBSYSTEM_NAME=10.8"),
+    "mac10.9": ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
+    "mac10.10": ("Xcode", "-DSUBSYSTEM_NAME=10.10"),
+    "mac10.11": ("Xcode", "-DSUBSYSTEM_NAME=10.11"),
+    "mac10.12": ("Xcode", "-DSUBSYSTEM_NAME=10.12"),
+    "mac-universal": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.7"),
 }
 
 parser = OptionParser(description='Bingo build script')
@@ -53,12 +55,9 @@ parser.add_option('--generator', help='this option is passed as -G option for cm
 parser.add_option('--params', default="", help='additional build parameters')
 parser.add_option('--config', default="Release", help='project configuration')
 parser.add_option('--dbms', help='DMBS (oracle, postgres or sqlserver)')
-parser.add_option('--nobuild', default=False,
-    action="store_true", help='configure without building', dest="nobuild")
-parser.add_option('--clean', default=False, action="store_true",
-    help='delete all the build data', dest="clean")
-parser.add_option('--preset', type="choice", dest="preset",
-    choices=list(presets.keys()), help='build preset %s' % (str(presets.keys())))
+parser.add_option('--nobuild', default=False, action="store_true", help='configure without building', dest="nobuild")
+parser.add_option('--clean', default=False, action="store_true", help='delete all the build data', dest="clean")
+parser.add_option('--preset', type="choice", dest="preset", choices=list(presets.keys()), help='build preset %s' % (str(presets.keys())))
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
@@ -78,7 +77,7 @@ cur_dir = abspath(dirname(__file__))
 root = os.path.normpath(join(cur_dir, ".."))
 project_dir = join(cur_dir, "bingo-%s" % args.dbms)
 
-if args.dbms != 'sqlserver':    
+if args.dbms != 'sqlserver':
     build_dir = (shortenDBMS(args.dbms) + " " + shortenGenerator(args.generator) + " " + args.config + args.params.replace('-D', ''))
     build_dir = build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
     full_build_dir = os.path.join(root, "build", build_dir)
@@ -143,8 +142,10 @@ else:
     vsversion = 'Visual Studio'
     if args.preset.find("2012") != -1:
         vsversion += ' 11'
-    elif args.preset.find("2013") != -1: 
-        vsversion += ' 12'      
+    elif args.preset.find("2013") != -1:
+        vsversion += ' 12'
+    elif args.preset.find("2015") != -1:
+        vsversion += ' 14'
     else:
         vsversion += ' 10'
 
