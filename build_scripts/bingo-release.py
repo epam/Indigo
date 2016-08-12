@@ -28,10 +28,6 @@ def shortenGenerator(generator):
     return result.replace(' ', '')
 
 presets = {
-    "win32": ("Visual Studio 10", ""),
-    "win64": ("Visual Studio 10 Win64", ""),
-    "win32-2012": ("Visual Studio 11", ""),
-    "win64-2012": ("Visual Studio 11 Win64", ""),
     "win32-2013": ("Visual Studio 12", ""),
     "win32-2015": ("Visual Studio 14", ""),
     "win64-2013": ("Visual Studio 12 Win64", ""),
