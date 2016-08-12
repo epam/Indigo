@@ -17,6 +17,7 @@
 
 #include <map>
 #include <memory>
+#include <stack>
 #include <string>
 #include <vector>
 
@@ -32,7 +33,8 @@
 namespace name_parsing {
 
 	enum class TokenType {
-		unknown = -1,
+		endOfStream = -2,
+		unknown,
 
 		// multipliers.inc
 		factor,
@@ -51,11 +53,27 @@ namespace name_parsing {
 		basicElement,
 
 		// text fragment
-		text
+		text,
+
+		// alkanes
+		bases,
+		suffixes
 	};
 
 	// static array of token type names
 	static std::vector<std::string> TokenTypeStrings;
+
+	struct Token {
+		std::string _name;
+		std::string _value;
+		TokenType   _type;
+
+		inline Token() { }
+		inline Token(const std::string& name, const std::string& value, TokenType type) :
+			_name{name}, _value{value}, _type{type} { }
+
+		static TokenType tokenTypeFromString(const std::string& s);
+	};
 
 	/*
 	* A lexeme represents a product of parsing
@@ -63,23 +81,21 @@ namespace name_parsing {
 	*/
 	class Lexeme {
 		std::string _lexeme;					// a lexeme
-		TokenType	_token;						// a token
+		Token		_token;						// a token
 
 	public:
-		inline Lexeme(char ch, TokenType token) : _token{ token } { _lexeme += ch; }
-		inline Lexeme(const std::string& lexeme, TokenType token) : _lexeme{ lexeme }, _token{ token } { }
+		inline Lexeme(char ch, const Token& token) : _token{ token } { _lexeme += ch; }
+		inline Lexeme(const std::string& lexeme, const Token& token) : _lexeme{ lexeme }, _token{ token } { }
 
 		inline const std::string& getLexeme() const { return _lexeme; }
-		inline TokenType getToken() const { return _token; }
-
-		static TokenType tokenTypeFromString(const std::string& s);
+		inline const Token& getToken() const { return _token; }
 	}; // Lexeme
 
 	// A dictionary of known pre-defined symbols
-	typedef std::map<std::string, TokenType> SymbolDictionary;
+	typedef std::map<std::string, Token> SymbolDictionary;
 
-	// A trie for known pre-defined lexems
-	typedef indigo::Trie<TokenType> LexemsTrie;
+	// A trie for known pre-defined lexemes
+	typedef indigo::Trie<Token> LexemesTrie;
 
 	/*
 	 * A singleton for managing various global symbol tables
@@ -88,7 +104,7 @@ namespace name_parsing {
 
 		DECL_ERROR;
 
-		LexemsTrie		 _lexTrie;				// global trie of pre-defined lexems
+		LexemesTrie		 _lexTrie;				// global trie of pre-defined lexemes
 		SymbolDictionary _dictionary;			// global dictionary of pre-defined symbols
 		std::string		 _separators;			// a string of separator characters
 
@@ -97,52 +113,63 @@ namespace name_parsing {
 		 */
 		void readTable(const char* table, bool useTrie = false);
 		void readTokenTypeStrings();
-		void addLexeme(const std::string& lexeme, TokenType token, bool useTrie);
+		void addLexeme(const std::string& lexeme, const Token& token, bool useTrie);
 
 	public:
 		DictionaryManager();
 
-		inline LexemsTrie& getLexemsTrie() { return _lexTrie; }
-		inline const LexemsTrie& getLexemsTrie() const { return _lexTrie; }
+		inline LexemesTrie& getLexemesTrie() { return _lexTrie; }
+		inline const LexemesTrie& getLexemesTrie() const { return _lexTrie; }
 		inline const SymbolDictionary& getDictionary() const { return _dictionary; }
 		inline const std::string& getSeparators() const { return _separators; }
 	};
 
-	typedef std::vector<Lexeme> Lexems;
+	typedef std::vector<Lexeme> Lexemes;
 	typedef std::vector<std::string> Failures;
 
 	/*
 	 * A product of parsing process
-	 * Keeps dictionaries of lexems and tokens
+	 * Keeps dictionaries of lexemes and tokens
 	 */
 	class Parse {
 		DECL_ERROR;
 
 		std::string _input;						// an input string as-is
-		Lexems		_lexems;					// a list of lexems that form the input
+		Lexemes		_lexemes;					// a list of lexemes that form the input
 
 		Failures _failures;						// a list of fragments failed to having being parsed
 		bool	 _hasFailures;					// failure flag
 
 		/*
-		 * Splits a fragment into smaller lexems
+		 * Splits a fragment into smaller lexemes
 		 * Sets up the failure flag if unparsable fragment is encountered
 		 */
 		void processTextFragment(const std::string& fragment);
 
+		bool _elision;							// there was an elision during a parse
+		// try to find a lexeme using an elision rule
+		bool tryElision(const std::string& failure);
+
+		mutable size_t _currentLexeme;
+
 	public:
-		inline explicit Parse(const std::string& input) : _input{ input }, _hasFailures{ false } { }
+		inline explicit Parse(const std::string& input) : _input{ input }, _hasFailures{ false },
+			_elision{ false }, _currentLexeme{ 0 } { }
 
 		inline const std::string& getInput() const { return _input; }
-		inline const Lexems& getLexemes() const { return _lexems; }
+		inline const Lexemes& getLexemes() const { return _lexemes; }
 		inline const Failures& getFailures() const { return _failures; }
 		inline bool hasFailures() const { return _hasFailures; }
+		inline bool hasElision() const { return _elision; }
 
 		/*
 		 * Performs by-symbol input scan, determines basic tokens
 		 * Text fragments require further processing
 		 */
 		void scan();
+
+		Lexeme& getNextLexeme();
+		const Lexeme& getNextLexeme() const;
 	};
 
 	class TokenizationResult {
@@ -173,6 +200,36 @@ namespace name_parsing {
 		TokenizationResult tokenize(const char* name);
 	};
 
+	class BuildFragment;
+	class BuildFragment {
+
+		DECL_ERROR;
+
+		indigo::Molecule _fragment;
+
+		bool _hasMultiplier;
+		int _multiplier;
+
+		typedef std::pair<int, TokenType> Multiplier;
+		std::stack<Multiplier> _multipliers;
+		void combineMultipliers();
+
+		bool _hasLocant;
+		std::vector<int> _locants;
+
+		void processAlkane(const Lexeme& l);
+		void processMultiplier(const Lexeme& l);
+		void processSeparator(const Lexeme& l);
+
+		void finalizeAcyclic();
+
+	public:
+		BuildFragment();
+		inline indigo::Molecule& toMolecule() { return _fragment; }
+
+		bool processLexeme(const Parse& parse);
+	};
+
 	/*
 	 * A result builder
 	 * Builds a resulting molecule from a tokenization result
@@ -181,8 +238,6 @@ namespace name_parsing {
 		DECL_ERROR;
 
 		indigo::Molecule* _mol;
-
-		void processLexeme(const Lexeme& l);
 
 	public:
 		inline explicit ResultBuilder(indigo::Molecule& mol) : _mol(&mol) { }

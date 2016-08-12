@@ -150,11 +150,11 @@ namespace indigo {
 			words.insert(buffer);
 
 		for (const auto& it : _leaves) {
-			buffer += it.first;
+			string s = buffer + it.first;
 			if (it.second->_mark)
-				words.insert(buffer);
+				words.insert(s);
 
-			it.second->getWords(words, buffer);
+			it.second->getWords(words, s);
 		}
 	}
 

@@ -12,4 +12,6 @@ static const char* token_types_table =
   "  <tokenType>locant</tokenType>\n"
   "  <tokenType>basicElement</tokenType>\n"
   "  <tokenType>text</tokenType>\n"
+  "  <tokenType>bases</tokenType>\n"
+  "  <tokenType>suffixes</tokenType>\n"
   "</tokenTypes>\n";

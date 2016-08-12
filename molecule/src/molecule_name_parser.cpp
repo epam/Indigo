@@ -13,6 +13,7 @@
 ***************************************************************************/
 
 #include <algorithm>
+#include <cstdlib>
 
 #include "molecule/molecule_name_parser.h"
 
@@ -33,9 +34,10 @@ IMPL_ERROR(TokenizationResult, "name_parsing::TokenizationResult");
 IMPL_ERROR(DictionaryManager, "name_parsing::TableManager");
 IMPL_ERROR(Parse, "name_parsing::Parse");
 IMPL_ERROR(ResultBuilder, "name_parsing::ResultBuilder");
+IMPL_ERROR(BuildFragment, "name_parsing::BuildFragment");
 
 // Converts a given token type name into enum value, 'unknown' if no name found
-TokenType Lexeme::tokenTypeFromString(const std::string& s) {
+TokenType Token::tokenTypeFromString(const std::string& s) {
 	auto begin = std::begin(TokenTypeStrings);
 	auto end = std::end(TokenTypeStrings);
 	auto it = find(begin, end, s);
@@ -51,6 +53,7 @@ DictionaryManager::DictionaryManager() {
 
 	readTokenTypeStrings();
 
+	readTable(alkanes_table, true);
 	readTable(basic_elements_table, true);
 	readTable(multipliers_table, true);
 	readTable(separators_table);
@@ -81,44 +84,37 @@ void DictionaryManager::readTable(const char* table, bool useTrie /* = false*/) 
 	TiXmlHandle tokenTables = hdoc.FirstChild("tokenTables");
 	TiXmlElement* tokenTable = tokenTables.FirstChild("tokenTable").ToElement();
 	for (; tokenTable; tokenTable = tokenTable->NextSiblingElement()) {
-		string name = tokenTable->Attribute("name");
-		const bool isSeparator = (name == "separator");
+		const char* name = tokenTable->Attribute("name");
+		const char* type = tokenTable->Attribute("type");
+		if (!name || !type)
+			throw Error("Cannot parse table");
 
-		string type = tokenTable->Attribute("type");
-		TokenType token = Lexeme::tokenTypeFromString(type);
+		const bool isSeparator = (::strcmp(name, "separator") == 0);
+		TokenType tt = Token::tokenTypeFromString(type);
 
 		TiXmlElement* e = tokenTable->FirstChild("token")->ToElement();
 		for (; e; e = e->NextSiblingElement()) {
-			string symbol = e->GetText();
+			const char* lexeme = e->GetText();
+			const char* value = e->Attribute("value");
+			if (!lexeme || !value)
+				throw Error("Cannot parse table %s", name);
 			
-			//string value = e->Attribute("value");
-
-			// Symbols might have a separator, in which case we need to add
+			// Symbols might have a separator '|', in which case we need to add
 			// several symbols with the same token type into the dictionary
-			size_t pos = symbol.find('|');
-			if (pos != symbol.npos) {
-				size_t i = 0;
-				string alias;
-				while (pos < symbol.length()) {
-					alias = symbol.substr(i, pos);
-					addLexeme(alias, token, useTrie);
-					i += ++pos;
-					pos = symbol.find('|', pos);
-				}
-				alias = symbol.substr(i, pos);
-				addLexeme(alias, token, useTrie);
-			} else {
-				addLexeme(symbol, token, useTrie);
-
-				// all separators are 1-byte ASCII
-				if (isSeparator)
-					_separators.push_back(symbol[0]);
+			char delim[] = "|";
+			char* fragment = ::strtok(const_cast<char*>(lexeme), delim);
+			while (fragment) {
+				addLexeme(fragment, Token(name, value, tt), useTrie);
+				fragment = ::strtok(nullptr, delim);
 			}
+			// all separators are 1-byte ASCII
+			if (isSeparator)
+				_separators.push_back(lexeme[0]);
 		}
 	}
 }
 
-void DictionaryManager::addLexeme(const string& lexeme, TokenType token, bool useTrie) {
+void DictionaryManager::addLexeme(const string& lexeme, const Token& token, bool useTrie) {
 	_dictionary[lexeme] = token;
 	if (useTrie)
 		_lexTrie.addWord(lexeme, token);
@@ -143,7 +139,7 @@ void Parse::scan() {
 		if (pos != separators.npos) {
 			auto it = dictionary.find({ ch });
 			if (it != dictionary.end())
-				_lexems.push_back(Lexeme(ch, it->second));
+				_lexemes.push_back(Lexeme(ch, it->second));
 			continue;
 		}
 
@@ -159,22 +155,42 @@ void Parse::scan() {
 			i = next - 1;
 			continue;
 		}
-	}	
+	}
+
+	Token terminator;
+	terminator._type = TokenType::endOfStream;
+	_lexemes.push_back(Lexeme("", terminator));
+}
+
+Lexeme& Parse::getNextLexeme() {
+	if (_currentLexeme < _lexemes.size())
+		return _lexemes[_currentLexeme++];
+
+	throw Error("Lexemes array owerflow");
+}
+
+const Lexeme& Parse::getNextLexeme() const {
+	if (_currentLexeme < _lexemes.size())
+		return _lexemes[_currentLexeme++];
+
+	throw Error("Lexemes array owerflow");
 }
 
 void Parse::processTextFragment(const string& fragment) {
 	DictionaryManager& dm = getDictionaryManagerInstance();
-	const LexemsTrie& root = dm.getLexemsTrie();
+	const LexemesTrie& root = dm.getLexemesTrie();
 
-	const int fLength = fragment.length();
+	const size_t fLength = fragment.length();
 
+	// global position inside the input string
 	int total = 0;
 	string buffer = fragment;
 
-	while (total <= fLength) {
+	while (total < fLength) {
+		// current position inside a buffer
 		int current = 0;
 
-		const Trie<TokenType>* match = root.getNode({ buffer[0] });
+		const Trie<Token>* match = root.getNode({ buffer[0] });
 		if (!match) {
 			_failures.push_back(buffer);
 			_hasFailures = true;
@@ -186,19 +202,43 @@ void Parse::processTextFragment(const string& fragment) {
 			total++;
 		}
 
-		string lexeme = buffer.substr(0, current + 1);
+		// need to increment counters here, as we manupulate characters and
+		// not buffer positions
+		current++;
+		total++;
+
+		string lexeme = buffer.substr(0, current);
 
 		if (!match) {
+			if (tryElision(lexeme)) {
+				continue;
+			}
+
 			_failures.push_back(lexeme);
-			_hasFailures = false;
+			_hasFailures = true;
 			return;
 		}
 
-		TokenType token = match->getData();
-		_lexems.push_back(Lexeme(lexeme, token));
+		const Token& token = match->getData();
+		_lexemes.push_back(Lexeme(lexeme, token));
 
-		buffer = buffer.substr(current + 1);
+		buffer = buffer.substr(current);
 	}
+}
+
+bool Parse::tryElision(const string& failure) {
+	const Lexeme& last = _lexemes.back();
+	const string& l = last.getLexeme();
+	char ch = l.back();
+	if (ch == 'a' || ch == 'e' || ch == 'o') {
+		string tryout = failure;
+		tryout.insert(0, 1, ch);
+		processTextFragment(tryout);
+		_elision = true;
+		return true;
+	}
+
+	return false;
 }
 
 TokenizationResult Tokenizer::tokenize(const char* name) {
@@ -222,20 +262,148 @@ void TokenizationResult::parse() {
 	_completelyParsed = _parse.hasFailures();
 }
 
+/*
+* Builds a result from a parse
+* Returns true if successful
+*/
 bool ResultBuilder::build(const Parse& parse) {
 	_mol->clear();
 
-	const Lexems& lexems = parse.getLexemes();
-	for (const Lexeme& l : lexems) {
-		processLexeme(l);
-	}
+	BuildFragment fragment;
+	if (!fragment.processLexeme(parse))
+		return false;
 
-	return false;
+	Array<int> mapping;
+	_mol->mergeWithMolecule(fragment.toMolecule(), &mapping);
+	
+	Molecule::checkForConsistency(*_mol);
+	return true;
 }
 
-void ResultBuilder::processLexeme(const Lexeme& l) {
-	const string lexeme = l.getLexeme();
-	const TokenType type = l.getToken();
+BuildFragment::BuildFragment() {
+	_fragment.clear();
+
+	_hasMultiplier = false;
+	_hasLocant = false;
+	_multiplier = 0;
+}
+
+bool BuildFragment::processLexeme(const Parse& parse) {
+	const Lexeme& l = parse.getNextLexeme();
+	const Token& token = l.getToken();
+
+	TokenType tt = token._type;
+	const string tname = token._name;
+	if (tt == TokenType::endOfStream)
+		return true;
+	if (tt == TokenType::unknown)
+		throw Error("Unknown token encountered: %s-%s", tname, token._value);
+	if (tt == TokenType::text)
+		throw Error("Unparsed text fragment encountered: %s", l.getLexeme());
+
+	if (tname == "alkanes") {
+		processAlkane(l);
+	}
+	
+	if (tname == "multiplier") {
+		processMultiplier(l);
+	}
+
+	if (tname == "separator") {
+		processSeparator(l);
+	}
+
+	return processLexeme(parse);
+}
+
+void BuildFragment::processAlkane(const Lexeme& l) {
+	const string& text = l.getLexeme();
+	const Token& token = l.getToken();
+
+	switch (token._type) {
+
+	case TokenType::bases: {
+	} break;
+
+	case TokenType::suffixes: {
+		if (text == "ane")
+			finalizeAcyclic();
+	} break;
+
+	default:
+		break;
+	}
+}
+
+void BuildFragment::processMultiplier(const Lexeme& l) {
+	const string& text = l.getLexeme();
+	const Token& token = l.getToken();
+
+	char* end;
+	switch (token._type) {
+
+	case TokenType::basic: {
+		int number = std::strtol(token._value.c_str(), &end, 10);
+		_multipliers.push({ number, token._type });
+		_hasMultiplier = true;
+	} break;
+
+	case TokenType::factor: {
+		int number = std::strtol(token._value.c_str(), &end, 10);
+
+		if (!_multipliers.empty()) {
+			Multiplier prev = _multipliers.top();
+			if (prev.second != TokenType::basic)
+				throw Error("Inconsistent token sequence");
+			else {
+				number *= prev.first;
+				_multipliers.pop();
+				_multipliers.push({ number, TokenType::basic });
+				_hasMultiplier = true;
+			}
+		} else {
+			_multipliers.push({ number, TokenType::basic });
+			_hasMultiplier = true;
+		}
+	} break;
+
+	default:
+		break;
+	}
+}
+
+void BuildFragment::processSeparator(const Lexeme& l) {
+	const string& text = l.getLexeme();
+	const Token& token = l.getToken();
+
+	switch (token._type) {
+	case TokenType::bracket:
+	case TokenType::locant:
+	case TokenType::prime:
+	case TokenType::punctuation:
+		break;
+
+	default:
+		break;
+	}
+}
+
+void BuildFragment::combineMultipliers() {
+	while (!_multipliers.empty()) {
+		_multiplier += _multipliers.top().first;
+		_multipliers.pop();
+	}
+}
+
+void BuildFragment::finalizeAcyclic() {
+	if (_hasMultiplier)
+		combineMultipliers();
+
+	for (int i = 0; i < _multiplier; i++)
+		_fragment.addAtom(6);
+
+	for (int i = 0; i < _multiplier - 1; i++)
+		_fragment.addBond(i, i + 1, 1);
 }
 
 /* Main method for convertion from a chemical name into a Molecule object
@@ -249,6 +417,13 @@ void ResultBuilder::processLexeme(const Lexeme& l) {
 void MoleculeNameParser::parseMolecule(const char *name, Molecule &mol) {
 	TokenizationResult result = _tokenizer.tokenize(name);
 	const Parse& parse = result.getParse();
+	if (parse.hasFailures()) {
+		const Failures& failures = parse.getFailures();
+		string result;
+		for (const string& f : failures)
+			result += f + " ";
+		throw Error("Cannot parse input %s due to errors: %s", name, result);
+	}
 
 	ResultBuilder builder(mol);
 	if (!builder.build(parse)) {
