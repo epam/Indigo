@@ -12,6 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include "base_cpp/output.h"
+
 #include "molecule/molecule_mass.h"
 
 #include "molecule/molecule.h"
@@ -235,4 +237,103 @@ int MoleculeMass::nominalMass (Molecule &mol)
    } 
 
    return molmass;
+}
+
+int MoleculeMass::_cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
+{
+    if (ec1.weight == 0)
+        return 1;
+    if (ec2.weight == 0)
+        return -1;
+    
+    if (ec2.elem == ELEM_H) // move hydrogen to the end
+        return -1;
+    if (ec1.elem == ELEM_H)
+        return 1;
+    
+    return ec1.elem - ec2.elem;
+}
+
+
+void MoleculeMass::massComposition (Molecule &mol, Array<char> &str)
+{
+    Array<float> relativeMass;
+    int impl_h = 0;
+    relativeMass.clear_resize(ELEM_MAX);
+    relativeMass.zerofill();
+    
+    mol.restoreAromaticHydrogens();
+    
+    for (int v = mol.vertexBegin();
+         v != mol.vertexEnd();
+         v = mol.vertexNext(v))
+    {
+        if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v))
+        {
+            continue;
+        }
+        
+        int number = mol.getAtomNumber(v);
+        int isotope = mol.getAtomIsotope(v);
+        impl_h += mol.getImplicitH(v);
+        
+        if (isotope)
+        {
+            relativeMass[number] += Element::getRelativeIsotopicMass(number, isotope);
+        }
+        else
+        {
+            float *value = 0;
+            if (relative_atomic_mass_map != NULL)
+            {
+                value = relative_atomic_mass_map->at2(number);
+            }
+            
+            if (value)
+            {
+                relativeMass[number] += *value;
+            }
+            else
+            {
+                relativeMass[number] += Element::getStandardAtomicWeight(number);
+            }
+        }
+    }
+    
+    relativeMass[ELEM_H] += Element::getStandardAtomicWeight(ELEM_H) * impl_h;
+    
+    float totalWeight = molecularWeight(mol);
+    
+    QS_DEF(Array<_ElemCounter>, counters);
+    int i;
+    
+    counters.clear();
+    
+    for (i = ELEM_MIN; i < ELEM_MAX; i++)
+    {
+        _ElemCounter &ec = counters.push();
+        
+        ec.elem = i;
+        ec.weight = (relativeMass[i] / totalWeight) * 100;
+    }
+    
+    counters.qsort(_cmp, 0);
+    
+    ArrayOutput output(str);
+    
+    bool first_written = false;
+    
+    for (i = 0; i < counters.size(); i++)
+    {
+        if (counters[i].weight == 0)
+            break;
+        
+        if (first_written)
+            output.printf(" ");
+        
+        output.printf(Element::toString(counters[i].elem));
+        output.printf(" %.2f", counters[i].weight);
+        first_written = true;
+    }
+    output.writeChar(0);
 }

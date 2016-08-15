@@ -585,6 +585,20 @@ CEXPORT float indigoMonoisotopicMass (int molecule)
    INDIGO_END(-1)
 }
 
+CEXPORT const char * indigoMassComposition (int molecule)
+{
+    INDIGO_BEGIN
+    {
+        Molecule &mol = self.getObject(molecule).getMolecule();
+        auto &tmp = self.getThreadTmpData();
+        MoleculeMass mass;
+        mass.massComposition(mol, tmp.string);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0)
+}
+
+
 IndigoMoleculeComponent::IndigoMoleculeComponent (BaseMolecule &mol_, int index_) :
 IndigoObject(COMPONENT),
 mol(mol_)

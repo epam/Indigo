@@ -899,6 +899,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultFloat(Indigo._lib.indigoMonoisotopicMass(self.id))
 
+    def massComposition(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoMassComposition(self.id))
+
     def canonicalSmiles(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoCanonicalSmiles(self.id))
@@ -1854,6 +1858,8 @@ class Indigo(object):
         Indigo._lib.indigoMostAbundantMass.argtypes = [c_int]
         Indigo._lib.indigoMonoisotopicMass.restype = c_float
         Indigo._lib.indigoMonoisotopicMass.argtypes = [c_int]
+        Indigo._lib.indigoMassComposition.restype = c_char_p
+        Indigo._lib.indigoMassComposition.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmiles.restype = c_char_p
         Indigo._lib.indigoCanonicalSmiles.argtypes = [c_int]
         Indigo._lib.indigoLayeredCode.restype = c_char_p

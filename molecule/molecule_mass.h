@@ -24,8 +24,17 @@ class Molecule;
 // Molecular mass calculation
 class MoleculeMass
 {
+protected:
+    struct _ElemCounter
+    {
+        int elem;
+        float weight;
+    };
+    
+    static int _cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context);
 public:
-   MoleculeMass();
+
+    MoleculeMass();
 
    const RedBlackMap<int, float> *relative_atomic_mass_map;
 
@@ -49,6 +58,11 @@ public:
    /* Sum of the mass numbers of all constituent atoms.
     */
    int nominalMass (Molecule &mol);
+    
+    
+    /* Atom weight percentage like "C 77% H 13%"
+     */
+   void massComposition (Molecule &molecule, Array<char> &str);
 };
 
 }

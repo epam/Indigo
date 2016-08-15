@@ -585,6 +585,7 @@ CEXPORT int   indigoGrossFormula    (int molecule);
 CEXPORT float indigoMolecularWeight (int molecule);
 CEXPORT float indigoMostAbundantMass (int molecule);
 CEXPORT float indigoMonoisotopicMass (int molecule);
+CEXPORT const char * indigoMassComposition (int molecule);
 
 CEXPORT const char * indigoCanonicalSmiles (int molecule);
 CEXPORT const char * indigoLayeredCode (int molecule);
