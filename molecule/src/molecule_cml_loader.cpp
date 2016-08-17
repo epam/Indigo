@@ -725,6 +725,11 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol,
    MoleculeSGroups *sgroups = &mol.sgroups;
 
    DataSGroup *dsg = 0;
+   SGroup *gen = 0;
+   RepeatingUnit *sru = 0;
+   MultipleGroup *mul = 0;
+   Superatom *sup = 0;
+
    int idx = 0;
    if (elem != 0)
    {
@@ -737,130 +742,611 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol,
          idx = sgroups->addSGroup(SGroup::SG_TYPE_DAT);
          dsg = (DataSGroup *) &sgroups->getSGroup(idx);
       }
+      else if (strncmp(role, "GenericSgroup", 13) == 0)
+      {
+         idx = sgroups->addSGroup(SGroup::SG_TYPE_GEN);
+         gen = (SGroup *) &sgroups->getSGroup(idx);
+      }
+      else if (strncmp(role, "SruSgroup", 9) == 0)
+      {
+         idx = sgroups->addSGroup(SGroup::SG_TYPE_SRU);
+         sru = (RepeatingUnit *) &sgroups->getSGroup(idx);
+      }
+      else if (strncmp(role, "MultipleSgroup", 14) == 0)
+      {
+         idx = sgroups->addSGroup(SGroup::SG_TYPE_MUL);
+         mul = (MultipleGroup *) &sgroups->getSGroup(idx);
+      }
+      else if (strncmp(role, "SuperatomSgroup", 15) == 0)
+      {
+         idx = sgroups->addSGroup(SGroup::SG_TYPE_SUP);
+         sup = (Superatom *) &sgroups->getSGroup(idx);
+      }
 
-      if (dsg == 0)
+      if ( (dsg == 0) && (gen == 0) && (sru == 0) && (mul == 0) && (sup == 0) )
          return;
 
-      if (sg_parent > 0)
-         dsg->parent_group = sg_parent;
-
-      const char *atom_refs = elem->Attribute("atomRefs");
-      if (atom_refs != 0)
+      if (dsg != 0)
       {
-         BufferScanner strscan(atom_refs);
-         QS_DEF(Array<char>, id);
-
-         while (!strscan.isEOF())
+         if (sg_parent > 0)
+            dsg->parent_group = sg_parent;
+   
+         const char *atom_refs = elem->Attribute("atomRefs");
+         if (atom_refs != 0)
          {
-           strscan.readWord(id, 0);
-           dsg->atoms.push(getAtomIdx(id.ptr()));
-           strscan.skipSpace();
+            BufferScanner strscan(atom_refs);
+            QS_DEF(Array<char>, id);
+   
+            while (!strscan.isEOF())
+            {
+              strscan.readWord(id, 0);
+              dsg->atoms.push(getAtomIdx(id.ptr()));
+              strscan.skipSpace();
+            }
+         }
+
+         TiXmlElement *brackets = elem->FirstChildElement("MBracket"); 
+          
+         if (brackets != 0)
+         {
+            const char * brk_type = brackets->Attribute("type");
+            if (brk_type != 0)
+            {
+               if (strncmp(brk_type, "SQUARE", 6) == 0)
+               {
+                  dsg->brk_style = 0;
+               }
+               else if (strncmp(brk_type, "ROUND", 5) == 0)
+               {
+                  dsg->brk_style = 1;
+               }
+            }
+
+            int point_idx = 0;
+            Vec2f *pbrackets;
+            TiXmlElement * pPoint;
+            for (pPoint = brackets->FirstChildElement();
+                 pPoint;
+                 pPoint = pPoint->NextSiblingElement())
+            {
+               if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
+                  continue;
+
+               if (point_idx == 0)
+                  pbrackets = dsg->brackets.push();
+  
+               float x,y;
+               const char *point_x = pPoint->Attribute("x");
+               if (point_x != 0)
+               {
+                  BufferScanner strscan(point_x);
+                  x = strscan.readFloat();
+               }
+               const char *point_y = pPoint->Attribute("y");
+               if (point_y != 0)
+               {
+                  BufferScanner strscan(point_y);
+                  y = strscan.readFloat();
+               }
+               pbrackets[point_idx].x = x;
+               pbrackets[point_idx].y = y;
+               point_idx++;
+               if (point_idx == 2)
+                  point_idx = 0;
+            }
+         }
+   
+         const char * fieldname = elem->Attribute("fieldName");
+         if (fieldname != 0)
+            dsg->name.readString(fieldname, true);
+   
+         const char * fielddata = elem->Attribute("fieldData");
+         if (fieldname != 0)
+            dsg->data.readString(fielddata, true);
+   
+         const char * fieldtype = elem->Attribute("fieldType");
+         if (fieldtype != 0)
+            dsg->description.readString(fieldtype, true);
+   
+         const char * disp_x = elem->Attribute("x");
+         if (disp_x != 0)
+         {
+            BufferScanner strscan(disp_x);
+            dsg->display_pos.x = strscan.readFloat();
+         }
+   
+         const char * disp_y = elem->Attribute("y");
+         if (disp_y != 0)
+         {
+            BufferScanner strscan(disp_y);
+            dsg->display_pos.y = strscan.readFloat();
+         }
+   
+         const char * detached = elem->Attribute("dataDetached");
+         dsg->detached = true;
+         if (detached != 0)
+         {
+            if ( (strncmp(detached, "true", 4) == 0) ||
+                 (strncmp(detached, "on", 2) == 0) ||
+                 (strncmp(detached, "1", 1) == 0) ||
+                 (strncmp(detached, "yes", 3) == 0) )
+            {
+               dsg->detached = true;
+            }
+           else if ( (strncmp(detached, "false", 5) == 0) ||
+                 (strncmp(detached, "off", 3) == 0) ||
+                 (strncmp(detached, "0", 1) == 0) ||
+                 (strncmp(detached, "no", 2) == 0) )
+            {
+               dsg->detached = false;
+            }
+         }
+   
+         const char * relative = elem->Attribute("placement");
+         dsg->relative = false;
+         if (relative != 0)
+         {
+            if (strncmp(relative, "Relative", 8) == 0)
+            {
+               dsg->relative = true;
+            }
+         }
+   
+   
+         const char * disp_units = elem->Attribute("unitsDisplayed");
+         if (disp_units != 0)
+         {
+            if ( (strncmp(disp_units, "Unit displayed", 14) == 0) ||
+                 (strncmp(disp_units, "yes", 3) == 0) ||
+                 (strncmp(disp_units, "on", 2) == 0) ||
+                 (strncmp(disp_units, "1", 1) == 0) ||
+                 (strncmp(disp_units, "true", 4) == 0) )
+            {
+               dsg->display_units = true;
+            }
+         }
+   
+         dsg->num_chars = 0;
+         const char * disp_chars = elem->Attribute("displayedChars");
+         if (disp_chars != 0)
+         {
+            BufferScanner strscan(disp_chars);
+            dsg->num_chars = strscan.readInt1();
+         }
+   
+         const char * disp_tag = elem->Attribute("tag");
+         if (disp_tag != 0)
+         {
+            BufferScanner strscan(disp_tag);
+            dsg->tag = strscan.readChar();
+         }
+   
+         const char * query_op = elem->Attribute("queryOp");
+         if (query_op != 0)
+            dsg->queryoper.readString(query_op, true);
+   
+         const char * query_type = elem->Attribute("queryType");
+         if (query_type != 0)
+            dsg->querycode.readString(query_type, true);
+   
+         TiXmlNode * pChild;
+         for (pChild = elem->FirstChild();
+              pChild != 0;
+              pChild = pChild->NextSibling())
+         {
+            if (strncmp(pChild->Value(), "molecule", 8) != 0)
+               continue;
+            TiXmlHandle next_mol = pChild;
+            if (next_mol.Element() != 0)
+               _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
          }
       }
-
-      const char * fieldname = elem->Attribute("fieldName");
-      if (fieldname != 0)
-         dsg->name.readString(fieldname, true);
-
-      const char * fielddata = elem->Attribute("fieldData");
-      if (fieldname != 0)
-         dsg->data.readString(fielddata, true);
-
-      const char * fieldtype = elem->Attribute("fieldType");
-      if (fieldtype != 0)
-         dsg->description.readString(fieldtype, true);
-
-      const char * disp_x = elem->Attribute("x");
-      if (disp_x != 0)
+      else if (gen != 0)
       {
-         BufferScanner strscan(disp_x);
-         dsg->display_pos.x = strscan.readFloat();
-      }
-
-      const char * disp_y = elem->Attribute("y");
-      if (disp_y != 0)
-      {
-         BufferScanner strscan(disp_y);
-         dsg->display_pos.y = strscan.readFloat();
-      }
-
-      const char * detached = elem->Attribute("dataDetached");
-      dsg->detached = true;
-      if (detached != 0)
-      {
-         if ( (strncmp(detached, "true", 4) == 0) ||
-              (strncmp(detached, "on", 2) == 0) ||
-              (strncmp(detached, "1", 1) == 0) ||
-              (strncmp(detached, "yes", 3) == 0) )
+         if (sg_parent > 0)
+            gen->parent_group = sg_parent;
+   
+         const char *atom_refs = elem->Attribute("atomRefs");
+         if (atom_refs != 0)
          {
-            dsg->detached = true;
+            BufferScanner strscan(atom_refs);
+            QS_DEF(Array<char>, id);
+   
+            while (!strscan.isEOF())
+            {
+              strscan.readWord(id, 0);
+              gen->atoms.push(getAtomIdx(id.ptr()));
+              strscan.skipSpace();
+            }
          }
-        else if ( (strncmp(detached, "false", 5) == 0) ||
-              (strncmp(detached, "off", 3) == 0) ||
-              (strncmp(detached, "0", 1) == 0) ||
-              (strncmp(detached, "no", 2) == 0) )
+
+         TiXmlElement *brackets = elem->FirstChildElement("MBracket"); 
+          
+         if (brackets != 0)
          {
-            dsg->detached = false;
-         }
-      }
+            const char * brk_type = brackets->Attribute("type");
+            if (brk_type != 0)
+            {
+               if (strncmp(brk_type, "SQUARE", 6) == 0)
+               {
+                  gen->brk_style = 0;
+               }
+               else if (strncmp(brk_type, "ROUND", 5) == 0)
+               {
+                  gen->brk_style = 1;
+               }
+            }
 
-      const char * relative = elem->Attribute("placement");
-      dsg->relative = false;
-      if (relative != 0)
-      {
-         if (strncmp(relative, "Relative", 8) == 0)
+            int point_idx = 0;
+            Vec2f *pbrackets;
+            TiXmlElement * pPoint;
+            for (pPoint = brackets->FirstChildElement();
+                 pPoint;
+                 pPoint = pPoint->NextSiblingElement())
+            {
+               if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
+                  continue;
+
+               if (point_idx == 0)
+                  pbrackets = gen->brackets.push();
+  
+               float x,y;
+               const char *point_x = pPoint->Attribute("x");
+               if (point_x != 0)
+               {
+                  BufferScanner strscan(point_x);
+                  x = strscan.readFloat();
+               }
+               const char *point_y = pPoint->Attribute("y");
+               if (point_y != 0)
+               {
+                  BufferScanner strscan(point_y);
+                  y = strscan.readFloat();
+               }
+               pbrackets[point_idx].x = x;
+               pbrackets[point_idx].y = y;
+               point_idx++;
+               if (point_idx == 2)
+                  point_idx = 0;
+            }
+         }
+
+         TiXmlNode * pChild;
+         for (pChild = elem->FirstChild();
+              pChild != 0;
+              pChild = pChild->NextSibling())
          {
-            dsg->relative = true;
+            if (strncmp(pChild->Value(), "molecule", 8) != 0)
+               continue;
+            TiXmlHandle next_mol = pChild;
+            if (next_mol.Element() != 0)
+               _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
          }
       }
-
-
-      const char * disp_units = elem->Attribute("unitsDisplayed");
-      if (disp_units != 0)
+      else if (sru != 0)
       {
-         if ( (strncmp(disp_units, "Unit displayed", 14) == 0) ||
-              (strncmp(disp_units, "yes", 3) == 0) ||
-              (strncmp(disp_units, "on", 2) == 0) ||
-              (strncmp(disp_units, "1", 1) == 0) ||
-              (strncmp(disp_units, "true", 4) == 0) )
+         if (sg_parent > 0)
+            sru->parent_group = sg_parent;
+   
+         const char *atom_refs = elem->Attribute("atomRefs");
+         if (atom_refs != 0)
          {
-            dsg->display_units = true;
+            BufferScanner strscan(atom_refs);
+            QS_DEF(Array<char>, id);
+   
+            while (!strscan.isEOF())
+            {
+              strscan.readWord(id, 0);
+              sru->atoms.push(getAtomIdx(id.ptr()));
+              strscan.skipSpace();
+            }
+         }
+
+         TiXmlElement *brackets = elem->FirstChildElement("MBracket"); 
+          
+         if (brackets != 0)
+         {
+            const char * brk_type = brackets->Attribute("type");
+            if (brk_type != 0)
+            {
+               if (strncmp(brk_type, "SQUARE", 6) == 0)
+               {
+                  sru->brk_style = 0;
+               }
+               else if (strncmp(brk_type, "ROUND", 5) == 0)
+               {
+                  sru->brk_style = 1;
+               }
+            }
+
+            int point_idx = 0;
+            Vec2f *pbrackets;
+            TiXmlElement * pPoint;
+            for (pPoint = brackets->FirstChildElement();
+                 pPoint;
+                 pPoint = pPoint->NextSiblingElement())
+            {
+               if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
+                  continue;
+
+               if (point_idx == 0)
+                  pbrackets = sru->brackets.push();
+  
+               float x,y;
+               const char *point_x = pPoint->Attribute("x");
+               if (point_x != 0)
+               {
+                  BufferScanner strscan(point_x);
+                  x = strscan.readFloat();
+               }
+               const char *point_y = pPoint->Attribute("y");
+               if (point_y != 0)
+               {
+                  BufferScanner strscan(point_y);
+                  y = strscan.readFloat();
+               }
+               pbrackets[point_idx].x = x;
+               pbrackets[point_idx].y = y;
+               point_idx++;
+               if (point_idx == 2)
+                  point_idx = 0;
+            }
+         }
+
+         const char * title = elem->Attribute("title");
+         if (title != 0)
+            sru->subscript.readString(title, true);
+
+         const char * connect = elem->Attribute("connect");
+         if (connect != 0)
+         {
+            if (strncmp(connect, "ht", 2) == 0)
+            {
+               sru->connectivity = SGroup::HEAD_TO_TAIL;
+            }
+            else if (strncmp(connect, "hh", 2) == 0)
+            {
+               sru->connectivity = SGroup::HEAD_TO_HEAD;
+            }
+         }
+
+         TiXmlNode * pChild;
+         for (pChild = elem->FirstChild();
+              pChild != 0;
+              pChild = pChild->NextSibling())
+         {
+            if (strncmp(pChild->Value(), "molecule", 8) != 0)
+               continue;
+            TiXmlHandle next_mol = pChild;
+            if (next_mol.Element() != 0)
+               _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
          }
       }
-
-      dsg->num_chars = 0;
-      const char * disp_chars = elem->Attribute("displayedChars");
-      if (disp_chars != 0)
+      else if (mul != 0)
       {
-         BufferScanner strscan(disp_chars);
-         dsg->num_chars = strscan.readInt1();
+         if (sg_parent > 0)
+            mul->parent_group = sg_parent;
+   
+         const char *atom_refs = elem->Attribute("atomRefs");
+         if (atom_refs != 0)
+         {
+            BufferScanner strscan(atom_refs);
+            QS_DEF(Array<char>, id);
+   
+            while (!strscan.isEOF())
+            {
+              strscan.readWord(id, 0);
+              mul->atoms.push(getAtomIdx(id.ptr()));
+              strscan.skipSpace();
+            }
+         }
+
+         const char *patoms = elem->Attribute("patoms");
+         if (patoms != 0)
+         {
+            BufferScanner strscan(patoms);
+            QS_DEF(Array<char>, id);
+   
+            while (!strscan.isEOF())
+            {
+              strscan.readWord(id, 0);
+              mul->parent_atoms.push(getAtomIdx(id.ptr()));
+              strscan.skipSpace();
+            }
+         }
+
+         TiXmlElement *brackets = elem->FirstChildElement("MBracket"); 
+          
+         if (brackets != 0)
+         {
+            const char * brk_type = brackets->Attribute("type");
+            if (brk_type != 0)
+            {
+               if (strncmp(brk_type, "SQUARE", 6) == 0)
+               {
+                  mul->brk_style = 0;
+               }
+               else if (strncmp(brk_type, "ROUND", 5) == 0)
+               {
+                  mul->brk_style = 1;
+               }
+            }
+
+            int point_idx = 0;
+            Vec2f *pbrackets;
+            TiXmlElement * pPoint;
+            for (pPoint = brackets->FirstChildElement();
+                 pPoint;
+                 pPoint = pPoint->NextSiblingElement())
+            {
+               if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
+                  continue;
+
+               if (point_idx == 0)
+                  pbrackets = mul->brackets.push();
+  
+               float x,y;
+               const char *point_x = pPoint->Attribute("x");
+               if (point_x != 0)
+               {
+                  BufferScanner strscan(point_x);
+                  x = strscan.readFloat();
+               }
+               const char *point_y = pPoint->Attribute("y");
+               if (point_y != 0)
+               {
+                  BufferScanner strscan(point_y);
+                  y = strscan.readFloat();
+               }
+               pbrackets[point_idx].x = x;
+               pbrackets[point_idx].y = y;
+               point_idx++;
+               if (point_idx == 2)
+                  point_idx = 0;
+            }
+         }
+
+         const char * title = elem->Attribute("title");
+         if (title != 0)
+         {
+            BufferScanner strscan(title);
+            mul->multiplier = strscan.readInt1();
+         }
+
+         TiXmlNode * pChild;
+         for (pChild = elem->FirstChild();
+              pChild != 0;
+              pChild = pChild->NextSibling())
+         {
+            if (strncmp(pChild->Value(), "molecule", 8) != 0)
+               continue;
+            TiXmlHandle next_mol = pChild;
+            if (next_mol.Element() != 0)
+               _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
+         }
       }
-
-      const char * disp_tag = elem->Attribute("tag");
-      if (disp_tag != 0)
+      else if (sup != 0)
       {
-         BufferScanner strscan(disp_tag);
-         dsg->tag = strscan.readChar();
-      }
+         if (sg_parent > 0)
+            sup->parent_group = sg_parent;
+   
+         const char *atom_refs = elem->Attribute("atomRefs");
+         if (atom_refs != 0)
+         {
+            BufferScanner strscan(atom_refs);
+            QS_DEF(Array<char>, id);
+   
+            while (!strscan.isEOF())
+            {
+              strscan.readWord(id, 0);
+              sup->atoms.push(getAtomIdx(id.ptr()));
+              strscan.skipSpace();
+            }
+         }
 
-      const char * query_op = elem->Attribute("queryOp");
-      if (query_op != 0)
-         dsg->queryoper.readString(query_op, true);
+         TiXmlElement *brackets = elem->FirstChildElement("MBracket"); 
+          
+         if (brackets != 0)
+         {
+            const char * brk_type = brackets->Attribute("type");
+            if (brk_type != 0)
+            {
+               if (strncmp(brk_type, "SQUARE", 6) == 0)
+               {
+                  sup->brk_style = 0;
+               }
+               else if (strncmp(brk_type, "ROUND", 5) == 0)
+               {
+                  sup->brk_style = 1;
+               }
+            }
 
-      const char * query_type = elem->Attribute("queryType");
-      if (query_type != 0)
-         dsg->querycode.readString(query_type, true);
+            int point_idx = 0;
+            Vec2f *pbrackets;
+            TiXmlElement * pPoint;
+            for (pPoint = brackets->FirstChildElement();
+                 pPoint;
+                 pPoint = pPoint->NextSiblingElement())
+            {
+               if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
+                  continue;
 
-      TiXmlNode * pChild;
-      for (pChild = elem->FirstChild();
-           pChild != 0;
-           pChild = pChild->NextSibling())
-      {
-         if (strncmp(pChild->Value(), "molecule", 8) != 0)
-            continue;
-         TiXmlHandle next_mol = pChild;
-         if (next_mol.Element() != 0)
-            _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
+               if (point_idx == 0)
+                  pbrackets = sup->brackets.push();
+  
+               float x,y;
+               const char *point_x = pPoint->Attribute("x");
+               if (point_x != 0)
+               {
+                  BufferScanner strscan(point_x);
+                  x = strscan.readFloat();
+               }
+               const char *point_y = pPoint->Attribute("y");
+               if (point_y != 0)
+               {
+                  BufferScanner strscan(point_y);
+                  y = strscan.readFloat();
+               }
+               pbrackets[point_idx].x = x;
+               pbrackets[point_idx].y = y;
+               point_idx++;
+               if (point_idx == 2)
+                  point_idx = 0;
+            }
+         }
+/*
+         TiXmlElement *atpoints = elem->FirstChildElement("AttachmentPointArray"); 
+
+         if (atpoints != 0)
+         {
+            TiXmlElement * aPoint;
+            for (aPoint = atpoints->FirstChildElement();
+                 aPoint;
+                 aPoint = aPoint->NextSiblingElement())
+            {
+               if (strncmp(aPoint->Value(), "attachmentPoint", 15) != 0)
+                  continue;
+
+               int idap = sup->attachment_points.add();
+               Superatom::_AttachmentPoint &ap = sup->attachment_points.at(idap);
+
+               const char *a_idx = aPoint->Attribute("atom");
+               if (a_idx != 0)
+               {
+                  ap.aidx = getAtomIdx(a_idx);
+               }
+
+               const char *b_idx = aPoint->Attribute("bond");
+               if (b_idx != 0)
+               {
+                  ap.aidx = getAtomIdx(a_idx);
+               }
+
+               const char *ap_order = aPoint->Attribute("order");
+               if (ap_order != 0)
+               {
+                  ap.aidx = getAtomIdx(a_idx);
+               }
+
+            }
+         }
+*/
+
+         const char * title = elem->Attribute("title");
+         if (title != 0)
+            sup->subscript.readString(title, true);
+
+         TiXmlNode * pChild;
+         for (pChild = elem->FirstChild();
+              pChild != 0;
+              pChild = pChild->NextSibling())
+         {
+            if (strncmp(pChild->Value(), "molecule", 8) != 0)
+               continue;
+            TiXmlHandle next_mol = pChild;
+            if (next_mol.Element() != 0)
+               _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
+         }
       }
    }
 }

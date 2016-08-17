@@ -248,32 +248,56 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
 
 void MoleculeCmlSaver::_addSgroupElement (TiXmlElement *molecule, SGroup &sgroup)
 {
-   if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-   {
-      TiXmlElement * sg = new TiXmlElement("molecule");
-      molecule->LinkEndChild(sg);
+   TiXmlElement * sg = new TiXmlElement("molecule");
+   molecule->LinkEndChild(sg);
 
+   QS_DEF(Array<char>, buf);
+   ArrayOutput out(buf);
+   out.printf("sg%d", sgroup.original_group);
+   buf.push(0);
+   sg->SetAttribute("id", buf.ptr());
+
+   if (sgroup.atoms.size() > 0)
+   {
       QS_DEF(Array<char>, buf);
       ArrayOutput out(buf);
-      out.printf("sg%d", sgroup.original_group);
+
+      for (int j = 0; j < sgroup.atoms.size(); j++)
+         out.printf("a%d ", sgroup.atoms[j]);
+
+      buf.pop();
       buf.push(0);
-      sg->SetAttribute("id", buf.ptr());
 
-      sg->SetAttribute("role", "DataSgroup");
+      sg->SetAttribute("atomRefs", buf.ptr());
+   }
 
-      if (sgroup.atoms.size() > 0)
+   if (sgroup.brackets.size() > 0)
+   {
+      TiXmlElement * brks = new TiXmlElement("MBracket");
+      sg->LinkEndChild(brks);
+
+      if (sgroup.brk_style == 0)
+         brks->SetAttribute("type", "SQUARE");
+      else
+         brks->SetAttribute("type", "ROUND");
+
+      for (int i = 0; i < sgroup.brackets.size(); i++)
       {
-         QS_DEF(Array<char>, buf);
-         ArrayOutput out(buf);
+         TiXmlElement * pnt0 = new TiXmlElement("MPoint");
+         brks->LinkEndChild(pnt0);
+         pnt0->SetDoubleAttribute("x", sgroup.brackets[i][0].x);
+         pnt0->SetDoubleAttribute("y", sgroup.brackets[i][0].y);
 
-         for (int j = 0; j < sgroup.atoms.size(); j++)
-            out.printf("a%d ", sgroup.atoms[j]);
-
-         buf.pop();
-         buf.push(0);
-
-         sg->SetAttribute("atomRefs", buf.ptr());
+         TiXmlElement * pnt1 = new TiXmlElement("MPoint");
+         brks->LinkEndChild(pnt1);
+         pnt1->SetDoubleAttribute("x", sgroup.brackets[i][1].x);
+         pnt1->SetDoubleAttribute("y", sgroup.brackets[i][1].y);
       }
+   }
+
+   if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+   {
+      sg->SetAttribute("role", "DataSgroup");
 
       DataSGroup &dsg = (DataSGroup &)sgroup;
 
@@ -342,4 +366,110 @@ void MoleculeCmlSaver::_addSgroupElement (TiXmlElement *molecule, SGroup &sgroup
             _addSgroupElement(sg, sg_child);
       }
    }
+   else if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
+   {
+      sg->SetAttribute("role", "GenericSgroup");
+
+      MoleculeSGroups *sgroups = &_mol->sgroups;
+      
+      for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      {
+         SGroup &sg_child = sgroups->getSGroup(i);
+
+         if ( (sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group) )
+            _addSgroupElement(sg, sg_child);
+      }
+
+   }
+   else if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+   {
+      sg->SetAttribute("role", "SuperatomSgroup");
+
+      Superatom &sup = (Superatom &)sgroup;
+
+      const char *name = sup.subscript.ptr();
+      if (name != 0 && strlen(name) > 0)
+      {
+         sg->SetAttribute("title", name);
+      }
+
+      MoleculeSGroups *sgroups = &_mol->sgroups;
+      
+      for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      {
+         SGroup &sg_child = sgroups->getSGroup(i);
+
+         if ( (sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group) )
+            _addSgroupElement(sg, sg_child);
+      }
+   }
+   else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
+   {
+      sg->SetAttribute("role", "SruSgroup");
+
+      RepeatingUnit &sru = (RepeatingUnit &)sgroup;
+
+      const char *name = sru.subscript.ptr();
+      if (name != 0 && strlen(name) > 0)
+      {
+         sg->SetAttribute("title", name);
+      }
+
+      if (sru.connectivity == SGroup::HEAD_TO_TAIL)
+      {
+         sg->SetAttribute("connect", "ht");
+      }
+      else if (sru.connectivity == SGroup::HEAD_TO_HEAD)
+      {
+         sg->SetAttribute("connect", "hh");
+      }
+
+      MoleculeSGroups *sgroups = &_mol->sgroups;
+      
+      for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      {
+         SGroup &sg_child = sgroups->getSGroup(i);
+
+         if ( (sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group) )
+            _addSgroupElement(sg, sg_child);
+      }
+
+   }
+   else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
+   {
+      sg->SetAttribute("role", "MultipleSgroup");
+
+      MultipleGroup &mul = (MultipleGroup &)sgroup;
+
+      if (mul.multiplier > 0)
+      {
+         sg->SetAttribute("title", mul.multiplier);
+      }
+
+      if (mul.parent_atoms.size() > 0)
+      {
+         QS_DEF(Array<char>, buf);
+         ArrayOutput out(buf);
+   
+         for (int j = 0; j < mul.parent_atoms.size(); j++)
+            out.printf("a%d ", mul.parent_atoms[j]);
+   
+         buf.pop();
+         buf.push(0);
+   
+         sg->SetAttribute("patoms", buf.ptr());
+      }
+
+      MoleculeSGroups *sgroups = &_mol->sgroups;
+      
+      for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      {
+         SGroup &sg_child = sgroups->getSGroup(i);
+
+         if ( (sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group) )
+            _addSgroupElement(sg, sg_child);
+      }
+
+   }
+
 }
