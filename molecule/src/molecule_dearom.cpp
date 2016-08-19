@@ -1536,6 +1536,20 @@ bool MoleculeDearomatizer::dearomatizeMolecule (Molecule &mol, const Aromaticity
       else
          mol_dearom.dearomatizeGroup(i, mol_dearom._getBestDearomatization(i));
    }
+   
+   
+   // Dearomatize RGroups
+   int n_rgroups = mol.rgroups.getRGroupCount();
+   for (int i = 1; i <= n_rgroups; i++)
+   {
+      PtrPool<BaseMolecule> &frags = mol.rgroups.getRGroup(i).fragments;
+
+      for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
+      {
+         Molecule &fragment = frags[j]->asMolecule();
+         dearomatizeMolecule(fragment, options);
+      }
+   }
    return all_dearomatzied;
 }
 
