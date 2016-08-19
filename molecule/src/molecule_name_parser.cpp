@@ -15,10 +15,13 @@
 #include <algorithm>
 #include <cstdlib>
 
+#include "tinyxml.h"
+
 #include "molecule/molecule_name_parser.h"
 
 #include "molecule/alkanes.inc"
 #include "molecule/basic_elements.inc"
+#include "molecule/elements.h"
 #include "molecule/multipliers.inc"
 #include "molecule/separators.inc"
 #include "molecule/token_types.inc"
@@ -29,7 +32,6 @@ using namespace name_parsing;
 
 IMPL_ERROR(MoleculeNameParser, "name_parsing::MoleculeNameParser");
 IMPL_ERROR(AuxParseTools, "name_parsing::AuxParseTools");
-IMPL_ERROR(Tokenizer, "name_parsing::Tokenizer");
 IMPL_ERROR(TokenizationResult, "name_parsing::TokenizationResult");
 IMPL_ERROR(DictionaryManager, "name_parsing::TableManager");
 IMPL_ERROR(Parse, "name_parsing::Parse");
@@ -48,8 +50,8 @@ TokenType Token::tokenTypeFromString(const std::string& s) {
 }
 
 DictionaryManager::DictionaryManager() {
-	_dictionary.clear();
-	_separators.clear();
+	dictionary.clear();
+	separators.clear();
 
 	readTokenTypeStrings();
 
@@ -109,15 +111,15 @@ void DictionaryManager::readTable(const char* table, bool useTrie /* = false*/) 
 			}
 			// all separators are 1-byte ASCII
 			if (isSeparator)
-				_separators.push_back(lexeme[0]);
+				separators.push_back(lexeme[0]);
 		}
 	}
 }
 
 void DictionaryManager::addLexeme(const string& lexeme, const Token& token, bool useTrie) {
-	_dictionary[lexeme] = token;
+	dictionary[lexeme] = token;
 	if (useTrie)
-		_lexTrie.addWord(lexeme, token);
+		lexemesTrie.addWord(lexeme, token);
 }
 
 void Parse::scan() {
@@ -125,7 +127,7 @@ void Parse::scan() {
 	const SymbolDictionary& dictionary = dm.getDictionary();
 	const string& separators = dm.getSeparators();
 
-	const size_t length = _input.length();
+	const size_t length = input.length();
 
 	/* If a symbol is a separator, convert it into a lexeme
 	 * If not, scan until either a next separator or an end of the string is reached,
@@ -134,23 +136,23 @@ void Parse::scan() {
 	 * By this time we're already know that brackets match
 	 */
 	for (size_t i = 0; i < length; i++) {
-		char ch = _input.at(i);
+		char ch = input.at(i);
 		size_t pos = separators.find(ch);
 		if (pos != separators.npos) {
 			auto it = dictionary.find({ ch });
 			if (it != dictionary.end())
-				_lexemes.push_back(Lexeme(ch, it->second));
+				lexemes.push_back(Lexeme(ch, it->second));
 			continue;
 		}
 
-		size_t next = _input.find_first_of(separators, i);
-		if (next == _input.npos) {
-			string fragment = _input.substr(i, length - i);
+		size_t next = input.find_first_of(separators, i);
+		if (next == input.npos) {
+			string fragment = input.substr(i, length - i);
 			processTextFragment(fragment);
 			break;
 		}
 		else {
-			string fragment = _input.substr(i, next - i);
+			string fragment = input.substr(i, next - i);
 			processTextFragment(fragment);
 			i = next - 1;
 			continue;
@@ -158,20 +160,20 @@ void Parse::scan() {
 	}
 
 	Token terminator;
-	terminator._type = TokenType::endOfStream;
-	_lexemes.push_back(Lexeme("", terminator));
+	terminator.type = TokenType::endOfStream;
+	lexemes.push_back(Lexeme("", terminator));
 }
 
 Lexeme& Parse::getNextLexeme() {
-	if (_currentLexeme < _lexemes.size())
-		return _lexemes[_currentLexeme++];
+	if (currentLexeme < lexemes.size())
+		return lexemes[currentLexeme++];
 
 	throw Error("Lexemes array owerflow");
 }
 
 const Lexeme& Parse::getNextLexeme() const {
-	if (_currentLexeme < _lexemes.size())
-		return _lexemes[_currentLexeme++];
+	if (currentLexeme < lexemes.size())
+		return lexemes[currentLexeme++];
 
 	throw Error("Lexemes array owerflow");
 }
@@ -192,7 +194,7 @@ void Parse::processTextFragment(const string& fragment) {
 
 		const Trie<Token>* match = root.getNode({ buffer[0] });
 		if (!match) {
-			_failures.push_back(buffer);
+			failures.push_back(buffer);
 			_hasFailures = true;
 			return;
 		}
@@ -214,171 +216,149 @@ void Parse::processTextFragment(const string& fragment) {
 				continue;
 			}
 
-			_failures.push_back(lexeme);
+			failures.push_back(lexeme);
 			_hasFailures = true;
 			return;
 		}
 
 		const Token& token = match->getData();
-		_lexemes.push_back(Lexeme(lexeme, token));
+		lexemes.push_back(Lexeme(lexeme, token));
 
 		buffer = buffer.substr(current);
 	}
 }
 
 bool Parse::tryElision(const string& failure) {
-	const Lexeme& last = _lexemes.back();
+	const Lexeme& last = lexemes.back();
 	const string& l = last.getLexeme();
 	char ch = l.back();
 	if (ch == 'a' || ch == 'e' || ch == 'o') {
 		string tryout = failure;
 		tryout.insert(0, 1, ch);
 		processTextFragment(tryout);
-		_elision = true;
+		_hasElision = true;
 		return true;
 	}
 
 	return false;
 }
 
-TokenizationResult Tokenizer::tokenize(const char* name) {
-	string input(name);
-	transform(input.begin(), input.end(), input.begin(), tolower);
-
-	AuxParseTools::checkBrackets(input);
-	TokenizationResult result(input);
-	result.parse();
-	if (!result.isCompletelyParsed()) {
-		/* TODO
-		 * result has some unparsed fragments, display warning
-		 */
-	}
-
-	return result;
-}
-
 void TokenizationResult::parse() {
 	_parse.scan();
-	_completelyParsed = _parse.hasFailures();
+	_isCompletelyParsed = _parse.hasFailures();
 }
 
-/*
-* Builds a result from a parse
-* Returns true if successful
-*/
-bool ResultBuilder::build(const Parse& parse) {
-	_mol->clear();
-
-	BuildFragment fragment;
-	if (!fragment.processLexeme(parse))
-		return false;
-
-	Array<int> mapping;
-	_mol->mergeWithMolecule(fragment.toMolecule(), &mapping);
-	
-	Molecule::checkForConsistency(*_mol);
-	return true;
+BuildFragment::BuildFragment(Parse& p) {
+	parse = &p;
+	fragment.reset(new Molecule());
 }
 
-BuildFragment::BuildFragment() {
-	_fragment.clear();
-
-	_hasMultiplier = false;
-	_hasLocant = false;
-	_multiplier = 0;
-}
-
-bool BuildFragment::processLexeme(const Parse& parse) {
-	const Lexeme& l = parse.getNextLexeme();
+bool BuildFragment::processLexeme() {
+	const Lexeme& l = parse->getNextLexeme();
 	const Token& token = l.getToken();
 
-	TokenType tt = token._type;
-	const string tname = token._name;
+	TokenType tt = token.type;
+	const string& tname = token.name;
 	if (tt == TokenType::endOfStream)
 		return true;
 	if (tt == TokenType::unknown)
-		throw Error("Unknown token encountered: %s-%s", tname, token._value);
+		throw Error("Unknown token encountered: %s-%s", tname, token.value);
 	if (tt == TokenType::text)
 		throw Error("Unparsed text fragment encountered: %s", l.getLexeme());
 
-	if (tname == "alkanes") {
-		processAlkane(l);
-	}
-	
-	if (tname == "multiplier") {
-		processMultiplier(l);
-	}
+	if (tname == "alkanes")
+		return processAlkane(l);
+	else if (tname == "multiplier")
+		return processMultiplier(l);
+	else if (tname == "separator")
+		return processSeparator(l);
 
-	if (tname == "separator") {
-		processSeparator(l);
-	}
-
-	return processLexeme(parse);
+	return processLexeme();
 }
 
-void BuildFragment::processAlkane(const Lexeme& l) {
+bool BuildFragment::processAlkane(const Lexeme& l) {
 	const string& text = l.getLexeme();
 	const Token& token = l.getToken();
 
-	switch (token._type) {
+	switch (token.type) {
 
 	case TokenType::bases: {
+		char* end;
+		int number = std::strtol(token.value.c_str(), &end, 10);
+		multipliers.push({ number, TokenType::basic });
+		hasMultiplier = true;
 	} break;
 
 	case TokenType::suffixes: {
-		if (text == "ane")
-			finalizeAcyclic();
+		return processSuffix(l);
 	} break;
 
 	default:
 		break;
 	}
+
+	return processLexeme();
 }
 
-void BuildFragment::processMultiplier(const Lexeme& l) {
+bool BuildFragment::processSuffix(const Lexeme& l) {
+	const string& text = l.getLexeme();
+	const Token& token = l.getToken();
+
+	return processLexeme();
+}
+
+bool BuildFragment::processMultiplier(const Lexeme& l) {
 	const string& text = l.getLexeme();
 	const Token& token = l.getToken();
 
 	char* end;
-	switch (token._type) {
+	int number = std::strtol(token.value.c_str(), &end, 10);
+
+	switch (token.type) {
 
 	case TokenType::basic: {
-		int number = std::strtol(token._value.c_str(), &end, 10);
-		_multipliers.push({ number, token._type });
-		_hasMultiplier = true;
+		multipliers.push({ number, token.type });
+		hasMultiplier = true;
 	} break;
 
 	case TokenType::factor: {
-		int number = std::strtol(token._value.c_str(), &end, 10);
-
-		if (!_multipliers.empty()) {
-			Multiplier prev = _multipliers.top();
+		if (!multipliers.empty()) {
+			Multiplier prev = multipliers.top();
 			if (prev.second != TokenType::basic)
 				throw Error("Inconsistent token sequence");
 			else {
 				number *= prev.first;
-				_multipliers.pop();
-				_multipliers.push({ number, TokenType::basic });
-				_hasMultiplier = true;
+				multipliers.pop();
+				multipliers.push({ number, TokenType::basic });
+				hasMultiplier = true;
 			}
 		} else {
-			_multipliers.push({ number, TokenType::basic });
-			_hasMultiplier = true;
+			multipliers.push({ number, TokenType::basic });
+			hasMultiplier = true;
 		}
 	} break;
 
 	default:
 		break;
 	}
+
+	return processLexeme();
 }
 
-void BuildFragment::processSeparator(const Lexeme& l) {
+bool BuildFragment::processSeparator(const Lexeme& l) {
 	const string& text = l.getLexeme();
 	const Token& token = l.getToken();
 
-	switch (token._type) {
+	switch (token.type) {
 	case TokenType::bracket:
-	case TokenType::locant:
+		break;
+
+	case TokenType::locant: {
+		char* end;
+		int position = std::strtol(token.value.c_str(), &end, 10);
+		hasPendingLocant = true;
+	} break;
+
 	case TokenType::prime:
 	case TokenType::punctuation:
 		break;
@@ -386,24 +366,44 @@ void BuildFragment::processSeparator(const Lexeme& l) {
 	default:
 		break;
 	}
+
+	return processLexeme();
 }
 
 void BuildFragment::combineMultipliers() {
-	while (!_multipliers.empty()) {
-		_multiplier += _multipliers.top().first;
-		_multipliers.pop();
+	while (!multipliers.empty()) {
+		multiplierFactor += multipliers.top().first;
+		multipliers.pop();
 	}
 }
 
+/*
 void BuildFragment::finalizeAcyclic() {
-	if (_hasMultiplier)
+	if (hasMultiplier)
 		combineMultipliers();
 
-	for (int i = 0; i < _multiplier; i++)
-		_fragment.addAtom(6);
+	fragment->addAtom(ELEM_C);
 
-	for (int i = 0; i < _multiplier - 1; i++)
-		_fragment.addBond(i, i + 1, 1);
+	int pos = 0;
+	for (int i = 1; i < multiplierFactor; i++) {
+		pos = fragment->addAtom(ELEM_C);
+		fragment->addBond(pos - 1, pos, 1);
+	}
+}
+*/
+
+ResultBuilder::ResultBuilder(Parse& parse) {
+	base.reset(new BuildFragment(parse));
+}
+
+bool ResultBuilder::build(indigo::Molecule& molecule) {
+	if (!base->processLexeme())
+		return false;
+
+	Array<int> mapping;
+	molecule.mergeWithMolecule(base->toMolecule(), &mapping);
+	Molecule::checkForConsistency(molecule);
+	return true;
 }
 
 /* Main method for convertion from a chemical name into a Molecule object
@@ -414,21 +414,30 @@ void BuildFragment::finalizeAcyclic() {
  *		phase 4: construction of a Moleclule object from parsed fragments
  * No param check - did that on caller side
  */
-void MoleculeNameParser::parseMolecule(const char *name, Molecule &mol) {
-	TokenizationResult result = _tokenizer.tokenize(name);
-	const Parse& parse = result.getParse();
+void MoleculeNameParser::parseMolecule(const char *name, Molecule &molecule) {
+	string input(name);
+	transform(input.begin(), input.end(), input.begin(), tolower);
+
+	AuxParseTools::checkBrackets(input);
+	TokenizationResult tr(input);
+	tr.parse();
+	Parse& parse = tr.getParse();
+
+	// TODO: check grammar
+	// for now we assume that grammar is correct
+
 	if (parse.hasFailures()) {
 		const Failures& failures = parse.getFailures();
-		string result;
+		string message;
 		for (const string& f : failures)
-			result += f + " ";
-		throw Error("Cannot parse input %s due to errors: %s", name, result);
+			message += f + " ";
+		throw Error("Cannot parse input %s due to errors: %s", name, message);
 	}
 
-	ResultBuilder builder(mol);
-	if (!builder.build(parse)) {
-		mol.clear();
-		throw Error("Unable to parse name: %s", name);
+	ResultBuilder builder(parse);
+	if (!builder.build(molecule)) {
+		molecule.clear();
+		throw Error("Unable to parse name %s", name);
 	}
 }
 
@@ -449,10 +458,6 @@ void AuxParseTools::checkBrackets(const string& s) {
 	else if (level < 0) {
 		throw Error("Wrong number of closing brackets: %d", -level);
 	}
-}
-
-int AuxParseTools::splitMultipliers(const string& s) {
-	return -1;
 }
 
 _SessionLocalContainer<MoleculeNameParser> name_parser_self;
