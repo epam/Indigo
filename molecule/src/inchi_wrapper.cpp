@@ -289,6 +289,10 @@ void InchiWrapper::parseInchiOutput(const InchiOutput &inchi_output, Molecule &m
 
          int bond = mol.findEdgeIndex(stereo0D.neighbor[1], stereo0D.neighbor[2]);
 
+         // Just ignore cis/trans info non-double bonds
+         if (mol.getBondOrder(bond) != BOND_DOUBLE)
+            continue;
+
          bool valid = mol.cis_trans.registerBondAndSubstituents(bond);
          if (!valid)
             throw Error("Indigo-InChI: Unsupported cis-trans configuration for "
