@@ -2407,31 +2407,41 @@ void MolfileLoader::_readCtab3000 ()
          else if (strcmp(prop, "UNSAT") == 0)
          {
             if (_qmol == 0)
-               throw Error("unsaturation flag is allowed only for queries");
-
-            bool unsat = (strscan.readInt1() > 0);
-
-            if (unsat)
-               _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
-                  new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
+            {
+               if (!ignore_noncritical_query_features)
+                  throw Error("unsaturation flag is allowed only for queries");
+            }
+            else
+            {
+               bool unsat = (strscan.readInt1() > 0);
+  
+               if (unsat)
+                  _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+                     new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
+            }
          }
          else if (strcmp(prop, "RBCNT") == 0)
          {
             if (_qmol == 0)
-               throw Error("ring bond count is allowed only for queries");
-            
-            int rb = strscan.readInt1();
-
-            if (rb != 0)
             {
-               if (rb == -1)
-                  rb = 0;
-
-               if (rb > 1)
-                  _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
-                           new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rb, (rb < 4 ? rb : 100))));
-               else
-                  throw Error("invalid RBCNT value: %d", rb);
+                if (!ignore_noncritical_query_features)
+                   throw Error("ring bond count is allowed only for queries");
+            }
+            else
+            {
+               int rb = strscan.readInt1();
+   
+               if (rb != 0)
+               {
+                  if (rb == -1)
+                     rb = 0;
+   
+                  if (rb > 1)
+                     _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+                              new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rb, (rb < 4 ? rb : 100))));
+                  else
+                     throw Error("invalid RBCNT value: %d", rb);
+               }
             }
          }
          else if (strcmp(prop, "RGROUPS") == 0)
@@ -2639,7 +2649,7 @@ void MolfileLoader::_readCtab3000 ()
                   else if (bond_order == BOND_DOUBLE)
                      _ignore_cistrans[i] = 1;
                   else
-                     throw Error("unknown bond CFG=%d for thebond order %d", n, bond_order);
+                     throw Error("unknown bond CFG=%d for the bond order %d", n, bond_order);
                }
                else
                   throw Error("unknown bond CFG=%d", n);
@@ -2647,7 +2657,8 @@ void MolfileLoader::_readCtab3000 ()
             else if (strcmp(prop.ptr(), "STBOX") == 0)
             {
                if (_qmol == 0)
-                  throw Error("stereo care box is allowed only for queries");
+                  if (!ignore_noncritical_query_features)
+                     throw Error("stereo care box is allowed only for queries");
 
                if ((strscan.readInt1() != 0))
                   _stereo_care_bonds[i] = 1;
@@ -2655,14 +2666,18 @@ void MolfileLoader::_readCtab3000 ()
             else if (strcmp(prop.ptr(), "TOPO") == 0)
             {
                if (_qmol == 0)
-                  throw Error("bond topology setting is allowed only for queries");
-                  
-               int topo = strscan.readInt1();
+               {
+                  if (!ignore_noncritical_query_features)
+                     throw Error("bond topology setting is allowed only for queries");
+               }
+               else
+               {   
+                  int topo = strscan.readInt1();
                
-               _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(i),
-                  new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY,
-                                          topo == 1 ? TOPOLOGY_RING : TOPOLOGY_CHAIN)));
-
+                  _qmol->resetBond(i, QueryMolecule::Bond::und(_qmol->releaseBond(i),
+                     new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY,
+                                             topo == 1 ? TOPOLOGY_RING : TOPOLOGY_CHAIN)));
+               }
             }
             else if (strcmp(prop.ptr(), "RXCTR") == 0)
                reacting_center = strscan.readInt1();
