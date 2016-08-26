@@ -213,6 +213,9 @@ void Parse::processTextFragment(const string& fragment) {
 
 		if (!match) {
 			if (tryElision(lexeme)) {
+				// decrement counters as we step back 1 char
+				total--;
+				buffer = buffer.substr(--current);
 				continue;
 			}
 
@@ -228,13 +231,28 @@ void Parse::processTextFragment(const string& fragment) {
 	}
 }
 
+/*
+Tries to apply different elision rules to a lexeme
+For instance, 'pentyl' consists of 2 lexemes, 'penta' and 'yl',
+with 'a' being elided. Hence, the first lexeme will be 'penty',
+and parsing will fail as there's no known word 'penty'
+The idea is to try several different word endidngs and see if we actually
+know the word in question
+*/
 bool Parse::tryElision(const string& failure) {
-	const Lexeme& last = lexemes.back();
-	const string& l = last.getLexeme();
-	char ch = l.back();
-	if (ch == 'a' || ch == 'e' || ch == 'o') {
-		string tryout = failure;
-		tryout.insert(0, 1, ch);
+	DictionaryManager& dm = getDictionaryManagerInstance();
+	const LexemesTrie& root = dm.getLexemesTrie();
+
+	string endings = "aoey";
+	string tryout = failure;
+	for (char ch : endings) {
+		tryout.replace(tryout.length() - 1, 1, { ch });
+		if (!root.isWord(tryout)) {
+			tryout = failure;
+			tryout.insert(0, 1, { ch });
+			if (!root.isWord(tryout))
+				return false;
+		}
 		processTextFragment(tryout);
 		_hasElision = true;
 		return true;

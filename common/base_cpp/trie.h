@@ -33,9 +33,9 @@ namespace indigo {
 	typedef std::set<std::string> Wordset;
 
 	/* 
-	 * A trie (https://en.wikipedia.org/wiki/Trie)
-	 * Also holds an arbitrary data type, associated with a given trie
-	 * Currently, doesn't provide a delete/remove operation
+	 A trie (https://en.wikipedia.org/wiki/Trie)
+	 Also holds an arbitrary data type, associated with a given trie
+	 Currently, doesn't provide a delete/remove operation
 	 */
 	template <typename T>
 	class Trie : public NonCopyable {
@@ -44,9 +44,6 @@ namespace indigo {
 		Leaves<T> _leaves;						// (Sub)trie(s)
 		bool	  _mark;						// A terminator flag
 
-		/*
-		 * Helper functions
-		 */
 		void getWords(Wordset& words, std::string& buffer) const;
 		void getWordsWithPrefix(const std::string& prefix, Wordset& words, std::string& buffer) const;
 
@@ -70,10 +67,15 @@ namespace indigo {
 		void getWordsWithPrefix(const std::string& prefix, Wordset& words) const;
 
 		/*
-		 * Returns a terminating node for a given word,
-		 * nullptr if there's no such word in a trie
+		 Returns a terminating node for a given word,
+		 nullptr if there's no such word in a trie
 		 */
 		const Trie* getNode(const std::string& word) const;
+
+		/*
+		Returns true if trie contains the word
+		*/
+		bool isWord(const std::string& word) const;
 	}; // class Trie
 
 	template <typename T>
@@ -121,8 +123,8 @@ namespace indigo {
 	}
 
 	/*
-	* Returns a terminating node for a given word,
-	* nullptr if there's no such word in a trie
+	Returns a terminating node for a given word,
+	nullptr if there's no such word in a trie
 	*/
 	template <typename T>
 	const Trie<T>* Trie<T>::getNode(const std::string& word) const {
@@ -172,6 +174,18 @@ namespace indigo {
 			buffer += prefix[0];
 			leaf->getWordsWithPrefix(remainder, words, buffer);
 		}
+	}
+
+	template <typename T>
+	bool Trie<T>::isWord(const std::string& word) const {
+		if (word.empty())
+			return false;
+
+		const Trie* node = getNode(word);
+		if (!node)
+			return false;
+
+		return node->isMark();
 	}
 }; // namespace indigo
 
