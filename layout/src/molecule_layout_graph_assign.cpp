@@ -937,8 +937,9 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer &bc_decom, 
 
       bc_decom.getComponent(i, filter);
 
-      if (fixed_count[i] > filter.count(*this) / 2)
-         fixed_components[i] = 1;
+      //if (fixed_count[i] > filter.count(*this) / 2)
+      if (fixed_count[i] == filter.count(*this))
+            fixed_components[i] = 1;
    }
 
    _fixed_vertices.zerofill();
