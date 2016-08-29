@@ -277,8 +277,8 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates (int &fixed_component,
    }
    else
    {
-      //if (PatternLayoutFinder::tryToFindPattern(*this))
-         //return;
+      if (PatternLayoutFinder::tryToFindPattern(*this))
+         return;
    }
 
    //TODO: repair exception with vec2f
