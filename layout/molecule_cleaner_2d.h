@@ -31,7 +31,8 @@ public:
        CLEAN_TIMER_MS = 2000
     };
     MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose);
-    void clean(bool _clean_external_angles); 
+    MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, Array<int>& selected_vertices);
+    void clean(bool _clean_external_angles);
 private:
     void _updatePosition(int i);
     void _updatePositions();
@@ -59,6 +60,8 @@ private:
     void _initBasePointValid();
 
     BaseMolecule& _mol;
+
+    Array<int> active_points;
     Array<int> base_point;
     Array<int> base_point_index;
     Array<Vec2f> pos;

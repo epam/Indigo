@@ -58,8 +58,15 @@ MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_dec
         }
     }*/
     
+    active_points.clear_resize(vertex_size);
+    active_points.fffill();
+}
 
-
+MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, Array<int>& selected_vertices)
+    : MoleculeCleaner2d(mol, use_biconnected_decompose) {
+    active_points.zerofill();
+    for (int i = 0; i < selected_vertices.size(); i++)
+        active_points[selected_vertices[i]] = true;
 }
     
 void MoleculeCleaner2d::_initBasePointValid() {
@@ -630,7 +637,7 @@ void MoleculeCleaner2d::_updateGradient2() {
 
     gradient.zerofill();
     for (int i = 0; i < base_point.size(); i++)
-        gradient[i] = _energyDiff(base_point[i]);
+        if (active_points[base_point[i]]) gradient[i] = _energyDiff(base_point[i]);
 }
 
 void MoleculeCleaner2d::clean(bool _clean_external_angles) {
