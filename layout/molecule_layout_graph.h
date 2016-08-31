@@ -37,6 +37,12 @@ namespace indigo {
     const int SOME_MAGIC_INT_FOR_RANDOM_3 = 931170242;
     const int SOME_MAGIC_INT_FOR_RANDOM_4 = 931170241;
 
+    enum layout_orientation_value {
+        UNCPECIFIED,
+        HORIZONTAL,
+        VERTICAL
+    };
+
 
 class BiconnectedDecomposer;
 
@@ -127,6 +133,7 @@ public:
     bool _flipped; // component was flipped after attaching
 
     int max_iterations;
+    layout_orientation_value layout_orientation;
 
     CancellationHandler* cancellation;
 

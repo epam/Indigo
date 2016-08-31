@@ -142,8 +142,21 @@ static void indigoSetFPExt(int enabled)
 
 static void indigoSetSmartLayout(int enabled)
 {
-   Indigo &self = indigoGetInstance();
-   self.smart_layout = (enabled != 0);
+    Indigo &self = indigoGetInstance();
+    self.smart_layout = (enabled != 0);
+}
+
+static void indigoSetLayoutOrientation(const char *orientation)
+{
+    Indigo &self = indigoGetInstance();
+    if (strcasecmp(orientation, "unspecified") == 0)
+        self.layout_orientation = 0;
+    else if (strcasecmp(orientation, "horizontal") == 0)
+        self.layout_orientation = 1;
+    else if (strcasecmp(orientation, "vertical") == 0)
+        self.layout_orientation = 2;
+    else 
+        throw IndigoError("unknown value: %s", orientation);
 }
 
 static void indigoSetEmbeddingUniqueness(const char *mode)
@@ -504,6 +517,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("fp-tau-qwords", indigoSetFPTauQwords);
    mgr.setOptionHandlerBool("fp-ext-enabled", indigoSetFPExt);
    mgr.setOptionHandlerBool("smart-layout", indigoSetSmartLayout);
+   mgr.setOptionHandlerString("layout-orientation", indigoSetLayoutOrientation);
 
    mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness);
    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings);

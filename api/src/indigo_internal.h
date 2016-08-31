@@ -291,6 +291,8 @@ public:
    bool smart_layout = false;
    float layout_horintervalfactor = 1.4f;
 
+   int layout_orientation = 0;
+
    int aam_cancellation_timeout; //default is zero - no timeout
 
    int cancellation_timeout; // default is 0 seconds - no timeout

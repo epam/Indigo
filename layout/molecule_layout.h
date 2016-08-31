@@ -44,6 +44,7 @@ public:
    Filter *filter;
    int  max_iterations;
    bool _smart_layout;
+   layout_orientation_value layout_orientation;
 
    DECL_ERROR;
 
