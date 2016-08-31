@@ -1876,6 +1876,7 @@ void MolfileLoader::_postLoad ()
       }
    }
 
+
    if (_mol != 0)
    {
       int k;
@@ -1883,6 +1884,30 @@ void MolfileLoader::_postLoad ()
          if (_hcount[k] > 0)
             _mol->setImplicitH(k, _hcount[k] - 1);
 
+   }
+
+   for (i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
+   {
+      SGroup &sgroup = _bmol->sgroups.getSGroup(i);
+      if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+      {
+         DataSGroup &dsg = (DataSGroup &)sgroup;
+         if (dsg.name.size() > 0 && strncmp(dsg.name.ptr(), "MRV_IMPLICIT_H", 14) == 0)
+         {
+            BufferScanner scanner(dsg.data);
+            scanner.skip(6);   // IMPL_H
+            int hcount = scanner.readInt1();
+            int k = dsg.atoms[0];
+
+            if ( (_mol != 0) && (_hcount[k] == 0) )
+               _mol->setImplicitH(k, hcount);
+            else if (_hcount[k] == 0)
+            {
+               _hcount[k] = hcount + 1;
+            }
+            _bmol->sgroups.remove(i);
+         }
+      }         
    }
 
    if (_qmol != 0)

@@ -39,6 +39,7 @@ public:
    int molfile_saving_mode; // MolfileSaver::MODE_***, default zero
    bool skip_date;
    bool add_stereo_desc;
+   bool add_implicit_h;
 
    DECL_ERROR;
 

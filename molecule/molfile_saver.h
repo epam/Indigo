@@ -82,6 +82,9 @@ public:
    bool no_chiral; // skip the 'chiral' flag, not regarding of the actual stereochemistry
    bool skip_date; // If true then zero date is written
    bool add_stereo_desc; // If true then stereo descriptors will be added as DAT S-groups
+   bool add_implicit_h;  // If true then MRV_IMPLICIT_H Data S-groups will be added for saving
+                         // the number of implicit H for aromatic atoms
+                         // (if it is required for correct de-aromatization) (default value is true)
 
    // optional parameters for reaction
    const Array<int>* reactionAtomMapping;

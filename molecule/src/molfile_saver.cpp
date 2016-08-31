@@ -50,6 +50,7 @@ TL_CP_GET(_bond_mapping)
    no_chiral = false;
    skip_date = false;
    add_stereo_desc = false;
+   add_implicit_h = true;
 }
 /*
  * Utility functions
@@ -472,10 +473,32 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
          out.printf(" CHG=%d", charge);
 
       int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
-      if (hcount > 0)
-         out.printf(" HCOUNT=%d", hcount);
-      else if (hcount == 0)
-         out.printf(" HCOUNT=-1");
+
+      if (qmol != 0)
+      {
+         if (hcount > 0)
+            out.printf(" HCOUNT=%d", hcount);
+         else if (hcount == 0)
+            out.printf(" HCOUNT=-1");
+      }
+      else if (add_implicit_h && Molecule::shouldWriteHCount(mol.asMolecule(), i) && hcount > 0)
+      {
+         int sg_idx;
+
+         sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+         DataSGroup &sgroup = (DataSGroup &)mol.sgroups.getSGroup(sg_idx);
+      
+         sgroup.atoms.push(i);
+
+         QS_DEF(Array<char>, tmp_buf);
+         ArrayOutput tmp_out(tmp_buf);
+         tmp_out.printf("IMPL_H%d", hcount);
+         tmp_buf.push(0);
+         sgroup.data.readString(tmp_buf.ptr(), true);
+
+         sgroup.name.readString("MRV_IMPLICIT_H", true);
+         sgroup.detached = true;
+      }
 
       if (radical > 0)
          out.printf(" RAD=%d", radical);
@@ -1219,14 +1242,45 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          }
       }
 
-      stereo_parity = _getStereocenterParity(mol, i);
 
       hydrogens_count = MoleculeSavers::getHCount(mol, i, atom_number, atom_charge);
-      if (hydrogens_count == -1)
-         hydrogens_count = 0;
-      else 
-         // molfile stores h+1
-         hydrogens_count++;
+
+      if (qmol != 0)
+      {
+         if (hydrogens_count == -1)
+            hydrogens_count = 0;
+         else 
+            // molfile stores h+1
+            hydrogens_count++;
+      }
+      else if (add_implicit_h && Molecule::shouldWriteHCount(mol.asMolecule(), i) && hydrogens_count > 0)
+      {
+         int sg_idx;
+
+         sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+         DataSGroup &sgroup = (DataSGroup &)mol.sgroups.getSGroup(sg_idx);
+      
+         sgroup.atoms.push(i);
+
+         QS_DEF(Array<char>, tmp_buf);
+         ArrayOutput tmp_out(tmp_buf);
+         tmp_buf.clear();
+         tmp_out.printf("IMPL_H%d", hydrogens_count);
+         tmp_buf.push(0);
+         sgroup.data.readString(tmp_buf.ptr(), true);
+
+         sgroup.name.readString("MRV_IMPLICIT_H", true);
+         sgroup.detached = true;
+
+         hydrogens_count = 0;         
+      }
+      else
+      {
+         hydrogens_count = 0;         
+      }
+
+
+      stereo_parity = _getStereocenterParity(mol, i);
 
       Vec3f pos = mol.getAtomXyz(i);
       if (fabs(pos.x) < 1e-5f)
@@ -1931,7 +1985,7 @@ void MolfileSaver::_updateCIPStereoDescriptors (BaseMolecule &mol)
       if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
       {
          DataSGroup &datasgroup = (DataSGroup &)sgroup;
-         if (strcmp(datasgroup.name.ptr(), "INDIGO_CIP_DESC") == 0)
+         if (datasgroup.name.size() > 0 && strcmp(datasgroup.name.ptr(), "INDIGO_CIP_DESC") == 0)
          {
             mol.sgroups.remove(i);
          }

@@ -816,6 +816,8 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
             impl_h = 0;
          else if (atom.number == ELEM_N && atom.charge == 0 && degree == 3)
             impl_h = 0;
+         else if (atom.number == ELEM_N && atom.charge == 1 && degree == 3)
+            impl_h = 0;
          else if (atom.number == ELEM_S && atom.charge == 0 && degree == 3)
             impl_h = 0;
       }
@@ -1571,6 +1573,10 @@ bool Molecule::shouldWriteHCount (Molecule &mol, int idx)
 // Moved this method here to supply both Smiles and CML savers
 bool Molecule::shouldWriteHCountEx (Molecule &mol, int idx, int h_to_ignore)
 {
+
+   if (mol.isPseudoAtom(idx) || mol.isRSite(idx) || mol.isTemplateAtom(idx))
+      return false;
+
    bool aromatic = (mol.getAtomAromaticity(idx) == ATOM_AROMATIC);
 
    int atom_number = mol.getAtomNumber(idx);

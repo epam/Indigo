@@ -278,6 +278,7 @@ public:
    bool molfile_saving_no_chiral;
    bool molfile_saving_skip_date;
    bool molfile_saving_add_stereo_desc;
+   bool molfile_saving_add_implicit_h;
 
    bool smiles_saving_write_name;
 
