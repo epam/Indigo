@@ -296,7 +296,7 @@ void _importSDF (OracleEnv &env, const char *table, const char *clob_col,
 
       for (i = columns.begin(); i != columns.end(); i = columns.next(i))
       {
-         if (loader.properties.at2(props.at(i)) == 0)
+         if (loader.properties.contains(props.at(i)))
             statement.append(", NULL");
          else
             statement.append(",:%s", columns.at(i));
@@ -309,7 +309,7 @@ void _importSDF (OracleEnv &env, const char *table, const char *clob_col,
 
       for (i = columns.begin(); i != columns.end(); i = columns.next(i))
       {
-         if (loader.properties.at2(props.at(i)) == 0)
+         if (loader.properties.contains(props.at(i)))
             continue;
          
          ArrayOutput out(word);
@@ -317,9 +317,9 @@ void _importSDF (OracleEnv &env, const char *table, const char *clob_col,
          out.printf(":%s", columns.at(i));
          out.writeChar(0);
 
-         Array<char> &val = loader.properties.at(props.at(i));
+         const char* val = loader.properties.at(props.at(i));
 
-         statement.bindStringByName(word.ptr(), val.ptr(), val.size());
+         statement.bindStringByName(word.ptr(), val, strlen(val) + 1);
       }
 
       profTimerStart(tinsert, "import.sql_insert");
@@ -462,7 +462,7 @@ void _importRDF (OracleEnv &env, const char *table, const char *clob_col,
 
       for (i = columns.begin(); i != columns.end(); i = columns.next(i))
       {
-         if (loader.properties.at2(props.at(i)) == 0)
+         if (loader.properties.contains(props.at(i)))
             statement.append(", NULL");
          else
             statement.append(",:%s", columns.at(i));
@@ -475,7 +475,7 @@ void _importRDF (OracleEnv &env, const char *table, const char *clob_col,
 
       for (i = columns.begin(); i != columns.end(); i = columns.next(i))
       {
-         if (loader.properties.at2(props.at(i)) == 0)
+         if (loader.properties.contains(props.at(i)))
             continue;
 
          ArrayOutput out(word);
@@ -483,9 +483,9 @@ void _importRDF (OracleEnv &env, const char *table, const char *clob_col,
          out.printf(":%s", columns.at(i));
          out.writeChar(0);
 
-         Array<char> &val = loader.properties.at(props.at(i));
+         const char* val = loader.properties.at(props.at(i));
 
-         statement.bindStringByName(word.ptr(), val.ptr(), val.size());
+         statement.bindStringByName(word.ptr(), val, strlen(val) + 1);
       }
 
       statement.execute();

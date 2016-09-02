@@ -2,7 +2,7 @@
 PROJECT(OCI)
 if (USE_SYSTEM_OCI)
     find_package(OCI)
-    if (NOT ${OCI_FOUND})
+    if (NOT OCI_FOUND)
          MESSAGE(FATAL_ERROR "Cannot find system OCI library")
      endif()
 endif()

@@ -35,7 +35,7 @@
 #include "oracle/mango_oracle.h"
 #include "molecule/elements.h"
 
-#include "indigo_inchi_core.h"
+#include "molecule/inchi_wrapper.h"
 
 static void _mangoUpdateMolecule(Molecule &target, const char *options, BingoOracleContext &context)
 {
@@ -492,7 +492,7 @@ ORAEXT OCILobLocator * oraMangoInchi (OCIExtProcContext *ctx,
 
          QS_DEF(Array<char>, inchi);
 
-         IndigoInchi inchi_calc;
+         InchiWrapper inchi_calc;
          inchi_calc.setOptions(options);
          inchi_calc.saveMoleculeIntoInchi(target, inchi);
 
@@ -534,7 +534,7 @@ ORAEXT OCIString * oraMangoInchiKey (OCIExtProcContext *ctx,
 
          QS_DEF(Array<char>, inchikey_buf);
 
-         IndigoInchi::InChIKey(inchi.ptr(), inchikey_buf);
+         InchiWrapper::InChIKey(inchi.ptr(), inchikey_buf);
 
          env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text *)inchikey_buf.ptr(),
                                           inchikey_buf.size() - 1, &result));

@@ -7,6 +7,8 @@ from os.path import *
 from optparse import OptionParser
 from zipfile import ZipFile
 
+import sys
+
 
 def shortenDBMS(dbms):
     if dbms == 'postgres':
@@ -66,12 +68,29 @@ if not args.generator and args.dbms != 'sqlserver':
     print("Generator must be specified")
     exit()
 
-if args.preset and args.preset.find('universal') != -1:
+if args.preset and 'universal' in args.preset:
     args.params += ' -DUNIVERSAL_BUILD=TRUE'
 
 cur_dir = abspath(dirname(__file__))
 root = os.path.normpath(join(cur_dir, ".."))
 project_dir = join(cur_dir, "bingo-%s" % args.dbms)
+
+if args.dbms == 'oracle':
+    print('dbms is oracle. Detecting oci...')
+
+    print('Detecting local oci...')
+    local_oci_include_dir = os.path.join(root, 'third_party/oci/include')
+    print('Local oci include directory: ' + local_oci_include_dir)
+    if os.path.isdir(local_oci_include_dir):
+        print('The local oci include directory exists. Use local oci. Don\'t attach command line argument -DUSE_SYSTEM_OCI=ON.')
+    else:
+        print('The local oci include directory doesn\'t exist.')
+        print('Detecting system oci...')
+        if not 'ORACLE_HOME' in os.environ:
+            print('ORACLE_HOME evn var wasn\'t found. It is needed to build with system oci.')
+            raise Exception('Failed to detect neither local nor system oci.')
+        print('ORACLE_HOME evn var was found. Use system oci. Attach command line argument -DUSE_SYSTEM_OCI=ON.')
+        args.params += ' -DUSE_SYSTEM_OCI=ON'
 
 if args.dbms != 'sqlserver':
     build_dir = (shortenDBMS(args.dbms) + " " + shortenGenerator(args.generator) + " " + args.config + args.params.replace('-D', ''))
