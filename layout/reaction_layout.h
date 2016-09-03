@@ -35,6 +35,7 @@ public:
    bool preserve_molecule_layout;
    int  max_iterations;
    bool _smart_layout;
+   layout_orientation_value layout_orientation;
 
 private:
    Metalayout::LayoutItem& _pushMol (Metalayout::LayoutLine& line, int id);

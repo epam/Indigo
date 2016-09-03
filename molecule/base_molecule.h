@@ -64,6 +64,13 @@ enum
    BOND_EITHER = 3
 };
 
+enum layout_orientation_value {
+    UNCPECIFIED,
+    HORIZONTAL,
+    VERTICAL
+};
+
+
 
 // Flags that disables copying information in making submolecule,
 // merging with molecule and cloning procedures

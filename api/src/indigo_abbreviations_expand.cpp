@@ -801,6 +801,7 @@ CEXPORT int indigoExpandAbbreviations (int molecule)
          // Layout expanded parts
          MoleculeLayout ml(mol, self.smart_layout);
          ml.max_iterations = self.layout_max_iterations;
+         ml.layout_orientation = (layout_orientation_value) self.layout_orientation;
          ml.respect_existing_layout = true;
          // Check if there are not bonds at all or if the coordinates are invalid
          if (fabs(avg_bond_length) > 0.001)

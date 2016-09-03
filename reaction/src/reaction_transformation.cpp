@@ -100,6 +100,7 @@ bool ReactionTransformation::transform( Molecule &molecule, QueryReaction &react
          if (layout_flag)
          {
             MoleculeLayout ml(molecule, smart_layout);
+            ml.layout_orientation = layout_orientation;
             ml.setCancellationHandler(cancellation);
             ml.make();
          }

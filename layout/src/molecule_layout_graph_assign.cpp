@@ -1028,6 +1028,7 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
    {
       MoleculeLayoutGraph &component = *bc_components[i];
       component.max_iterations = max_iterations;
+      component.layout_orientation = layout_orientation;
 
       //component._calcMorganCodes();
       component._total_morgan_code = 0;
