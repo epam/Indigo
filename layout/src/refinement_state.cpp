@@ -275,11 +275,12 @@ float RefinementState::calc_best_angle() {
         }
     }
 
-    int base = 0;
+    int base = -1;
     int oppsite = 1;
     float high = -1;
     int best_base = 0;
     do {
+        base++;
         Vec2f vec = layout[convex_hull[base + 1]] - layout[convex_hull[base]];
         float A = vec.y;
         float B = -vec.x;
@@ -296,7 +297,6 @@ float RefinementState::calc_best_angle() {
             best_base = base;
             high = fabs(A * layout[convex_hull[oppsite]].x + B * layout[convex_hull[oppsite]].y + C);
         }
-        base++;
     } while (base != index - 1);
 
     Vec2f vec = layout[convex_hull[best_base + 1]] - layout[convex_hull[best_base]];
