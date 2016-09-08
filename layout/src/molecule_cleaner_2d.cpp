@@ -25,6 +25,7 @@ using namespace indigo;
 //IMPL_ERROR(MoleculeCleaner2d, "MoleculeCleaner2d");
 
 MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose) : _mol(mol) {
+    if (_isZero()) return;
     vertex_size = _mol.vertexEnd();
 //    printf("%d\n", vertex_count);
 //    printf("%d\n", component_count);
@@ -641,6 +642,7 @@ void MoleculeCleaner2d::_updateGradient2() {
 }
 
 void MoleculeCleaner2d::clean(bool _clean_external_angles) {
+    if (_isZero()) return;
     if (is_trivial) return; // nothing to do for biconnected graph
     clean_external_angles = _clean_external_angles;
     _updatePositions();
@@ -905,4 +907,13 @@ float MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2) {
 
     return (alpha - target_alpha) * (alpha - target_alpha);
 
+}
+
+bool MoleculeCleaner2d::_isZero() {
+    bool is_zero = true;
+    for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v)) {
+        is_zero = is_zero & _mol.getAtomXyz(v).x == 0;
+        is_zero = is_zero & _mol.getAtomXyz(v).y == 0;
+    }
+    return is_zero;
 }

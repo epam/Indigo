@@ -34,6 +34,7 @@ public:
     MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, Array<int>& selected_vertices);
     void clean(bool _clean_external_angles);
 private:
+    bool _isZero();
     void _updatePosition(int i);
     void _updatePositions();
     void _addCoef(int ver, int index, Vec2f value);
