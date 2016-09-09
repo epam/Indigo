@@ -25,7 +25,7 @@
 #include "reaction/rxnfile_loader.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/multiple_cml_loader.h"
-#include "molecule/molecule_cml_loader.h"
+#include "molecule/cml_loader.h"
 #include "reaction/reaction_cml_loader.h"
 #include "molecule/multiple_cdx_loader.h"
 #include "molecule/molecule_cdx_loader.h"
@@ -609,7 +609,7 @@ Molecule & IndigoCmlMolecule::getMolecule ()
       Indigo &self = indigoGetInstance();
 
       BufferScanner scanner(_data);
-      MoleculeCmlLoader loader(scanner);
+      CmlLoader loader(scanner);
       loader.stereochemistry_options = self.stereochemistry_options;
       loader.loadMolecule(_mol);
       _loaded = true;

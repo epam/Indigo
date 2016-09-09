@@ -21,7 +21,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/auto_ptr.h"
-#include "molecule/molecule_cml_saver.h"
+#include "molecule/cml_saver.h"
 #include "molecule/molfile_saver.h"
 #include "molecule/smiles_saver.h"
 #include "molecule/canonical_smiles_saver.h"
@@ -263,9 +263,16 @@ void IndigoCmlSaver::append (Output &out, IndigoObject &obj)
 {
    if (IndigoBaseMolecule::is(obj))
    {
-      MoleculeCmlSaver saver(out);
+      CmlSaver saver(out);
       saver.skip_cml_tag = true;
-      saver.saveMolecule(obj.getMolecule());
+
+      BaseMolecule &mol = obj.getBaseMolecule();
+
+      if (mol.isQueryMolecule())
+         saver.saveQueryMolecule(mol.asQueryMolecule());
+      else
+         saver.saveMolecule(mol.asMolecule());
+
    }
    else if (IndigoBaseReaction::is(obj))
    {
@@ -481,10 +488,15 @@ CEXPORT int indigoSaveCml (int item, int output)
 
       if (IndigoBaseMolecule::is(obj))
       {
-         Molecule &mol = obj.getMolecule();
-         MoleculeCmlSaver saver(out);
-         
-         saver.saveMolecule(mol);
+         CmlSaver saver(out);
+
+         BaseMolecule &mol = obj.getBaseMolecule();
+   
+         if (mol.isQueryMolecule())
+            saver.saveQueryMolecule(mol.asQueryMolecule());
+         else
+            saver.saveMolecule(mol.asMolecule());
+
          out.flush();
          return 1;
       }

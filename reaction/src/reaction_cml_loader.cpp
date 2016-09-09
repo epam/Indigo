@@ -17,7 +17,7 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/scanner.h"
 #include "tinyxml.h"
-#include "molecule/molecule_cml_loader.h"
+#include "molecule/cml_loader.h"
 
 using namespace indigo;
 
@@ -70,7 +70,7 @@ void ReactionCmlLoader::loadReaction (Reaction &rxn)
       if (strcasecmp(elem->Value(), "molecule") != 0)
          continue;
       TiXmlHandle handle(elem);
-      MoleculeCmlLoader loader(handle);
+      CmlLoader loader(handle);
       loader.stereochemistry_options = stereochemistry_options;
       loader.loadMolecule(mol);
       rxn.addReactantCopy(mol, 0, 0);
@@ -82,7 +82,7 @@ void ReactionCmlLoader::loadReaction (Reaction &rxn)
       if (strcasecmp(elem->Value(), "molecule") != 0)
          continue;
       TiXmlHandle handle(elem);
-      MoleculeCmlLoader loader(handle);
+      CmlLoader loader(handle);
       loader.stereochemistry_options = stereochemistry_options;
       loader.loadMolecule(mol);
       rxn.addProductCopy(mol, 0, 0);
@@ -94,7 +94,7 @@ void ReactionCmlLoader::loadReaction (Reaction &rxn)
       if (strcasecmp(elem->Value(), "molecule") != 0)
          continue;
       TiXmlHandle handle(elem);
-      MoleculeCmlLoader loader(handle);
+      CmlLoader loader(handle);
       loader.stereochemistry_options = stereochemistry_options;
       loader.loadMolecule(mol);
       rxn.addCatalystCopy(mol, 0, 0);

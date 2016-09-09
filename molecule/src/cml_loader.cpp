@@ -12,7 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "molecule/molecule_cml_loader.h"
+#include "molecule/cml_loader.h"
 #include "base_cpp/scanner.h"
 #include "molecule/molecule.h"
 #include "tinyxml.h"
@@ -21,24 +21,40 @@
 
 using namespace indigo;
 
-IMPL_ERROR(MoleculeCmlLoader, "molecule CML loader");
+IMPL_ERROR(CmlLoader, "CML loader");
 
-MoleculeCmlLoader::MoleculeCmlLoader (Scanner &scanner)
+CmlLoader::CmlLoader (Scanner &scanner)
 {
    _scanner = &scanner;
    _handle = 0;
 }
 
-MoleculeCmlLoader::MoleculeCmlLoader (TiXmlHandle &handle)
+CmlLoader::CmlLoader (TiXmlHandle &handle)
 {
    _handle = &handle;
    _scanner = 0;
 }
 
-void MoleculeCmlLoader::loadMolecule (Molecule &mol)
+void CmlLoader::loadMolecule (Molecule &mol)
 {
    mol.clear();
+   _bmol = &mol;
+   _mol = &mol;
+   _qmol = 0;
+   _loadMolecule();
+}
 
+void CmlLoader::loadQueryMolecule (QueryMolecule &mol)
+{
+   mol.clear();
+   _bmol = &mol;
+   _mol = 0;
+   _qmol = &mol;
+   _loadMolecule();
+}
+
+void CmlLoader::_loadMolecule ()
+{
    if (_scanner != 0)
    {
       QS_DEF(Array<char>, buf);
@@ -58,7 +74,7 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
       {
          node = _molecule;
          TiXmlHandle molecule = _molecule;
-         _loadMolecule(molecule, mol);
+         _loadMoleculeElement(molecule);
 
 	 for (node = node->NextSibling();
               node != 0; 
@@ -67,17 +83,17 @@ void MoleculeCmlLoader::loadMolecule (Molecule &mol)
             if (strncmp(node->Value(), "Rgroup", 6) == 0)
             {
                TiXmlHandle rgroup = node;
-               _loadRgroup(rgroup, mol);
+               _loadRgroupElement(rgroup);
             }
          }
       }
    }
    else
-      _loadMolecule(*_handle, mol);
+      _loadMoleculeElement(*_handle);
 
 }
 
-bool MoleculeCmlLoader::_findMolecule(TiXmlNode *elem)
+bool CmlLoader::_findMolecule(TiXmlNode *elem)
 {
 	TiXmlNode *node;
    for (node = elem->FirstChild();
@@ -135,7 +151,7 @@ static void splitStringIntoProperties (const char *s, std::vector<Atom> &atoms, 
    }
 }
 
-void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
+void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
 {
    std::unordered_map<std::string, int> atoms_id;
    std::unordered_map<std::string, size_t> atoms_id_int;
@@ -157,7 +173,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
    const char *title = handle.Element()->Attribute("title");
 
    if (title != 0)
-      mol.name.readString(title, true);
+      _bmol->name.readString(title, true);
 
    QS_DEF(std::vector<Atom>, atoms);
    atoms.clear();
@@ -339,112 +355,287 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       }
       else
       {
-         int idx = mol.addAtom(label);
-   
-         if (label == ELEM_PSEUDO)
+         if (_mol != 0)
          {
-            if (!a.label.empty())
-               mol.setPseudoAtom(idx, a.label.c_str());
-            else
-               mol.setPseudoAtom(idx, a.element_type.c_str());
+            idx = _mol->addAtom(label);
+      
+            if (label == ELEM_PSEUDO)
+            {
+               if (!a.label.empty())
+                  _mol->setPseudoAtom(idx, a.label.c_str());
+               else
+                  _mol->setPseudoAtom(idx, a.element_type.c_str());
+            }
+   
+            total_h_count.expandFill(idx + 1, -1);
+      
+            atoms_id.emplace(a.id, idx);
+      
+            if (!a.isotope.empty())
+            {
+               int val;
+               if (sscanf(a.isotope.c_str(), "%d", &val) != 1)
+                  throw Error("error parsing isotope");
+               _mol->setAtomIsotope(idx, val);
+            }
+      
+            if (!a.formal_charge.empty())
+            {
+               int val;
+               if (sscanf(a.formal_charge.c_str(), "%d", &val) != 1)
+                  throw Error("error parsing charge");
+               _mol->setAtomCharge(idx, val);
+            }
+      
+            if (!a.spin_multiplicity.empty())
+            {
+               int val;
+               if (sscanf(a.spin_multiplicity.c_str(), "%d", &val) != 1)
+                  throw Error("error parsing spin multiplicity");
+               _mol->setAtomRadical(idx, val);
+            }
+      
+            if (!a.radical.empty())
+            {
+               int val = 0;
+               if (strncmp(a.radical.c_str(), "divalent1", 9) == 0)
+                  val = 1;
+               else if (strncmp(a.radical.c_str(), "monovalent", 10) == 0)
+                  val = 2;
+               else if ( (strncmp(a.radical.c_str(), "divalent3", 9) == 0) ||
+                         (strncmp(a.radical.c_str(), "divalent", 8) == 0)  ||
+                         (strncmp(a.radical.c_str(), "triplet", 7) == 0) )
+                  val = 3;
+               _mol->setAtomRadical(idx, val);
+            }
+   
+            if (a.spin_multiplicity.empty() && a.radical.empty())
+            {
+               _mol->setAtomRadical(idx, 0);
+            }
+   
+      
+            if (!a.valence.empty())
+            {
+               int val;
+               if (sscanf(a.valence.c_str(), "%d", &val) == 1)
+                  _mol->setExplicitValence(idx, val);
+            }
+      
+            if (!a.hydrogen_count.empty())
+            {
+               int val;
+               if (sscanf(a.hydrogen_count.c_str(), "%d", &val) != 1)
+                  throw Error("error parsing hydrogen count");
+               if (val < 0)
+                  throw Error("negative hydrogen count");
+               total_h_count[idx] = val;
+            }
+     
+            if (!a.rgroupref.empty())
+            {
+               int val;
+               if (sscanf(a.rgroupref.c_str(), "%d", &val) != 1)
+                  throw Error("error parsing R-group reference");
+               _mol->allowRGroupOnRSite(idx, val);
+            }
+      
+            if (!a.attpoint.empty())
+            {
+               int val;
+               if (strncmp(a.attpoint.c_str(), "both", 4) == 0)
+                  val = 3;
+               else if (sscanf(a.attpoint.c_str(), "%d", &val) != 1)
+                  throw Error("error parsing Attachment point");
+               for (int att_idx = 0; (1 << att_idx) <= val; att_idx++)
+                  if (val & (1 << att_idx))
+                     _mol->addAttachmentPoint(att_idx + 1, idx);
+            }
+         }
+         else 
+         {
+            AutoPtr<QueryMolecule::Atom> atom;
+   
+            if (label == ELEM_PSEUDO)
+            {
+               if (!a.label.empty())
+                  atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, a.label.c_str()));
+               else
+                  atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, a.element_type.c_str()));
+
+            }
+            else if (label == ELEM_RSITE)
+               atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+            else 
+               atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, label));
+
+            if ( !a.query_props.empty() && (strncmp(a.query_props.c_str(), "L", 1) == 0) )  // _ATOM_LIST
+            {
+               AutoPtr<QueryMolecule::Atom> atomlist;
+
+               BufferScanner strscan(a.query_props.c_str());
+               QS_DEF(Array<char>, el);
+               QS_DEF(Array<char>, delim);
+               el.clear();
+               delim.clear();
+
+               strscan.skip(1);
+               delim.push(strscan.readChar()); 
+               delim.push(':');
+               delim.push(0);
+
+               while (!strscan.isEOF())
+               {
+                 strscan.readWord(el, delim.ptr());
+                 _appendQueryAtom(el.ptr(), atomlist);
+                 if (strscan.readChar() == ':')
+                    break;
+               }
+
+               if (delim[0] == '!')
+                  atomlist.reset(QueryMolecule::Atom::nicht(atomlist.release()));
+
+               atom.reset(atomlist.release());
+            }
+            else if (!a.query_props.empty())  // Query features
+            {
+               BufferScanner strscan(a.query_props.c_str());
+               QS_DEF(Array<char>, qf);
+               QS_DEF(Array<char>, delim);
+               qf.clear();
+               delim.clear();
+
+               delim.push(';');
+               delim.push(0);
+
+               while (!strscan.isEOF())
+               {
+                  strscan.readWord(qf, delim.ptr());
+                  if (strncmp(qf.ptr(), "rb", 2) == 0)
+                  {
+                     BufferScanner qfscan(qf.ptr());
+                     qfscan.skip(2);
+                     int rbcount;
+                     if (qfscan.lookNext() == '*')
+                        rbcount = -2;
+                     else 
+                        rbcount = qfscan.readInt1();
+
+                     if (rbcount > 0)
+                        atom.reset(QueryMolecule::Atom::und(atom.release(),
+                           new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbcount, (rbcount < 4 ? rbcount : 100))));
+                     else if (rbcount == 0)
+                        atom.reset(QueryMolecule::Atom::und(atom.release(),
+                           new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
+                     else if (rbcount == 2)
+                        atom.reset(QueryMolecule::Atom::und(atom.release(),
+                           new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, 0)));
+                  }     
+                  else if (strncmp(qf.ptr(), "s", 1) == 0)
+                  {
+                     BufferScanner qfscan(qf.ptr());
+                     qfscan.skip(1);
+                     int subst;
+                     if (qfscan.lookNext() == '*')
+                        subst = -2;
+                     else 
+                        subst = qfscan.readInt1();
+
+                        if (subst == 0)
+                           atom.reset(QueryMolecule::Atom::und(atom.release(),
+                                    new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, 0)));
+                        else if (subst == -2)
+                           atom.reset(QueryMolecule::Atom::und(atom.release(),
+                                   new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, 0)));
+                        else if (subst > 0)
+                           atom.reset(QueryMolecule::Atom::und(atom.release(),
+                                    new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS,
+                                           subst, (subst < 6 ? subst : 100))));
+                  }
+                  else if (strncmp(qf.ptr(), "u", 1) == 0)
+                  {
+                     BufferScanner qfscan(qf.ptr());
+                     qfscan.skip(1);
+                     bool unsat = (qfscan.readInt1() > 0);
+                     if (unsat)
+                        atom.reset(QueryMolecule::Atom::und(atom.release(),
+                                 new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
+                  }
+                  if (!strscan.isEOF())
+                     strscan.skip(1);
+               }
+            }
+
+            if (!a.formal_charge.empty())
+            {
+               int val;
+               if (sscanf(a.formal_charge.c_str(), "%d", &val) != 1)
+                  throw Error("error parsing charge");
+               atom.reset(QueryMolecule::Atom::und(atom.release(),
+                  new QueryMolecule::Atom(QueryMolecule::ATOM_CHARGE, val)));
+            }
+
+            if (!a.isotope.empty())
+            {
+               int val;
+               if (sscanf(a.isotope.c_str(), "%d", &val) != 1)
+                  throw Error("error parsing isotope");
+               atom.reset(QueryMolecule::Atom::und(atom.release(),
+                  new QueryMolecule::Atom(QueryMolecule::ATOM_ISOTOPE, val)));
+            }
+
+
+            if (!a.spin_multiplicity.empty())
+            {
+               int val;
+               if (sscanf(a.spin_multiplicity.c_str(), "%d", &val) != 1)
+                  throw Error("error parsing spin multiplicity");
+               atom.reset(QueryMolecule::Atom::und(atom.release(),
+                  new QueryMolecule::Atom(QueryMolecule::ATOM_RADICAL, val)));
+            }
+      
+            if (!a.radical.empty())
+            {
+               int val = 0;
+               if (strncmp(a.radical.c_str(), "divalent1", 9) == 0)
+                  val = 1;
+               else if (strncmp(a.radical.c_str(), "monovalent", 10) == 0)
+                  val = 2;
+               else if ( (strncmp(a.radical.c_str(), "divalent3", 9) == 0) ||
+                         (strncmp(a.radical.c_str(), "divalent", 8) == 0)  ||
+                         (strncmp(a.radical.c_str(), "triplet", 7) == 0) )
+                  val = 3;
+               atom.reset(QueryMolecule::Atom::und(atom.release(),
+                  new QueryMolecule::Atom(QueryMolecule::ATOM_RADICAL, val)));
+            }
+
+
+            if (!a.valence.empty())
+            {
+               int val;
+               if (sscanf(a.valence.c_str(), "%d", &val) == 1)
+                  atom.reset(QueryMolecule::Atom::und(atom.release(),
+                     new QueryMolecule::Atom(QueryMolecule::ATOM_VALENCE, val)));
+            }
+
+  
+            idx = _qmol->addAtom(atom.release());
+            atoms_id.emplace(a.id, idx);
+            total_h_count.expandFill(idx + 1, -1);
          }
 
-         total_h_count.expandFill(idx + 1, -1);
-   
-         atoms_id.emplace(a.id, idx);
-   
-         if (!a.isotope.empty())
-         {
-            int val;
-            if (sscanf(a.isotope.c_str(), "%d", &val) != 1)
-               throw Error("error parsing isotope");
-            mol.setAtomIsotope(idx, val);
-         }
-   
-         if (!a.formal_charge.empty())
-         {
-            int val;
-            if (sscanf(a.formal_charge.c_str(), "%d", &val) != 1)
-               throw Error("error parsing charge");
-            mol.setAtomCharge(idx, val);
-         }
-   
-         if (!a.spin_multiplicity.empty())
-         {
-            int val;
-            if (sscanf(a.spin_multiplicity.c_str(), "%d", &val) != 1)
-               throw Error("error parsing spin multiplicity");
-            mol.setAtomRadical(idx, val);
-         }
-   
-         if (!a.radical.empty())
-         {
-            int val = 0;
-            if (strncmp(a.radical.c_str(), "divalent1", 9) == 0)
-               val = 1;
-            else if (strncmp(a.radical.c_str(), "monovalent", 10) == 0)
-               val = 2;
-            else if ( (strncmp(a.radical.c_str(), "divalent3", 9) == 0) ||
-                      (strncmp(a.radical.c_str(), "divalent", 8) == 0)  ||
-                      (strncmp(a.radical.c_str(), "triplet", 7) == 0) )
-               val = 3;
-            mol.setAtomRadical(idx, val);
-         }
-
-         if (a.spin_multiplicity.empty() && a.radical.empty())
-         {
-            mol.setAtomRadical(idx, 0);
-         }
-
-   
-         if (!a.valence.empty())
-         {
-            int val;
-            if (sscanf(a.valence.c_str(), "%d", &val) == 1)
-               mol.setExplicitValence(idx, val);
-         }
-   
-         if (!a.hydrogen_count.empty())
-         {
-            int val;
-            if (sscanf(a.hydrogen_count.c_str(), "%d", &val) != 1)
-               throw Error("error parsing hydrogen count");
-            if (val < 0)
-               throw Error("negative hydrogen count");
-            total_h_count[idx] = val;
-         }
-   
          if (!a.x.empty())
-            if (sscanf(a.x.c_str(), "%f", &mol.getAtomXyz(idx).x) != 1)
+            if (sscanf(a.x.c_str(), "%f", &_bmol->getAtomXyz(idx).x) != 1)
                throw Error("error parsing x");
    
          if (!a.y.empty())
-            if (sscanf(a.y.c_str(), "%f", &mol.getAtomXyz(idx).y) != 1)
+            if (sscanf(a.y.c_str(), "%f", &_bmol->getAtomXyz(idx).y) != 1)
                throw Error("error parsing y");
    
          if (!a.z.empty())
-            if (sscanf(a.z.c_str(), "%f", &mol.getAtomXyz(idx).z) != 1)
+            if (sscanf(a.z.c_str(), "%f", &_bmol->getAtomXyz(idx).z) != 1)
                throw Error("error parsing z");
-   
-         if (!a.rgroupref.empty())
-         {
-            int val;
-            if (sscanf(a.rgroupref.c_str(), "%d", &val) != 1)
-               throw Error("error parsing R-group reference");
-            mol.allowRGroupOnRSite(idx, val);
-         }
-   
-         if (!a.attpoint.empty())
-         {
-            int val;
-            if (strncmp(a.attpoint.c_str(), "both", 4) == 0)
-               val = 3;
-            else if (sscanf(a.attpoint.c_str(), "%d", &val) != 1)
-               throw Error("error parsing Attachment point");
-            for (int att_idx = 0; (1 << att_idx) <= val; att_idx++)
-               if (val & (1 << att_idx))
-                  mol.addAttachmentPoint(att_idx + 1, idx);
-         }
+
       }
 /*
       if (!a.attorder.empty())
@@ -469,6 +660,8 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       const char *atom_refs = elem->Attribute("atomRefs2");
       if (atom_refs == 0)
          throw Error("bond without atomRefs2");
+
+      int idx;
 
       BufferScanner strscan(atom_refs);
       QS_DEF(Array<char>, id);
@@ -500,7 +693,46 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
             throw Error("error parsing order");
       }
 
-      int idx = mol.addBond_Silent(beg, end, order_val);
+
+      if (_mol != 0)
+      {
+         idx = _mol->addBond_Silent(beg, end, order_val);
+      }
+      else
+      {
+         AutoPtr<QueryMolecule::Bond> bond;
+         const char *query_type = elem->Attribute("queryType");
+
+         if (query_type == 0)
+         {
+            if (order_val == BOND_SINGLE || order_val == BOND_DOUBLE ||
+                order_val == BOND_TRIPLE || order_val == BOND_AROMATIC)
+               bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order_val));
+         }
+         else if (strncmp(query_type, "SD", 2) == 0)
+            bond.reset(QueryMolecule::Bond::und(
+               QueryMolecule::Bond::nicht(
+                 new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
+               QueryMolecule::Bond::oder(
+                 new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
+                 new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE))));
+         else if (strncmp(query_type, "SA", 2) == 0)
+            bond.reset(QueryMolecule::Bond::oder(
+              new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
+              new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
+         else if (strncmp(query_type, "DA", 2) == 0)
+            bond.reset(QueryMolecule::Bond::oder(
+              new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
+              new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
+         else if (strncmp(query_type, "Any", 3) == 0)
+            bond.reset(new QueryMolecule::Bond());
+         else
+            throw Error("unknown bond type: %d", order);
+
+         idx = _qmol->addBond(beg, end, bond.release());
+
+      }
+
 
       int dir = 0;
 
@@ -521,29 +753,30 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
       }
 
       if (dir != 0)
-         mol.setBondDirection(idx, dir);
+         _bmol->setBondDirection(idx, dir);
    }
 
    // Implicit H counts
    int i, j;
 
-   for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   for (i = _bmol->vertexBegin(); i != _bmol->vertexEnd(); i = _bmol->vertexNext(i))
    {
       int h = total_h_count[i];
 
       if (h < 0)
          continue;
 
-      const Vertex &vertex = mol.getVertex(i);
+      const Vertex &vertex = _bmol->getVertex(i);
 
       for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
-         if (mol.getAtomNumber(vertex.neiVertex(j)) == ELEM_H)
+         if (_bmol->getAtomNumber(vertex.neiVertex(j)) == ELEM_H)
             h--;
 
       if (h < 0)
          throw Error("hydrogenCount on atom %d is less than the number of explicit hydrogens");
 
-      mol.setImplicitH(i, h);
+      if (_mol != 0)
+         _mol->setImplicitH(i, h);
    }
 
    // Tetrahedral stereocenters
@@ -594,20 +827,20 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
 
          MoleculeStereocenters::moveMinimalToEnd(pyramid);
 
-         mol.stereocenters.add(idx, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
+         _bmol->stereocenters.add(idx, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
       }
    }
 
-   if (mol.stereocenters.size() == 0 && BaseMolecule::hasCoord(mol))
+   if (_bmol->stereocenters.size() == 0 && BaseMolecule::hasCoord(*_bmol))
    {
       QS_DEF(Array<int>, sensible_bond_orientations);
 
-      sensible_bond_orientations.clear_resize(mol.vertexEnd());
-      mol.stereocenters.buildFromBonds(stereochemistry_options, sensible_bond_orientations.ptr());
+      sensible_bond_orientations.clear_resize(_bmol->vertexEnd());
+      _bmol->stereocenters.buildFromBonds(stereochemistry_options, sensible_bond_orientations.ptr());
 
       if (!stereochemistry_options.ignore_errors)
-         for (i = 0; i < mol.vertexCount(); i++)
-            if (mol.getBondDirection(i) > 0 && !sensible_bond_orientations[i])
+         for (i = 0; i < _bmol->vertexCount(); i++)
+            if (_bmol->getBondDirection(i) > 0 && !sensible_bond_orientations[i])
                throw Error("direction of bond #%d makes no sense", i);
    }
 
@@ -648,10 +881,10 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
 
          int substituents[4];
 
-         if (!MoleculeCisTrans::isGeomStereoBond(mol, bond_idx, substituents, false))
+         if (!MoleculeCisTrans::isGeomStereoBond(*_bmol, bond_idx, substituents, false))
             throw Error("cis-trans notation on a non cis-trans bond #%d", bond_idx);
 
-         if (!MoleculeCisTrans::sortSubstituents(mol, substituents, 0))
+         if (!MoleculeCisTrans::sortSubstituents(*_bmol, substituents, 0))
             throw Error("cis-trans notation on a non cis-trans bond #%d", bond_idx);
 
          if (has_subst)
@@ -668,7 +901,7 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
                refs[k] = getAtomIdx(id.ptr());
             }
 
-            const Edge &edge = mol.getEdge(bond_idx);
+            const Edge &edge = _bmol->getEdge(bond_idx);
 
             if (refs[1] == edge.beg && refs[2] == edge.end)
                ;
@@ -700,11 +933,11 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
                parity = 3 - parity;
          }
 
-         mol.cis_trans.add(bond_idx, substituents, parity);
+         _bmol->cis_trans.add(bond_idx, substituents, parity);
       }
    }
-   else if (BaseMolecule::hasCoord(mol))
-      mol.cis_trans.build(0);
+   else if (BaseMolecule::hasCoord(*_bmol))
+      _bmol->cis_trans.build(0);
 
    // Sgroups
 
@@ -714,12 +947,11 @@ void MoleculeCmlLoader::_loadMolecule (TiXmlHandle &handle, Molecule &mol)
    {
       if (strncmp(elem->Value(), "molecule", 8) != 0)
             continue;
-      _loadSGroup(elem, mol, atoms_id, 0);
+      _loadSGroupElement(elem, atoms_id, 0);
    }
 }
 
-void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol,
-     std::unordered_map<std::string, int> &atoms_id, int sg_parent)
+void CmlLoader::_loadSGroupElement (TiXmlElement *elem, std::unordered_map<std::string, int> &atoms_id, int sg_parent)
 {
    auto getAtomIdx = [&](const char *id)
    {
@@ -729,7 +961,7 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol,
       return it->second;
    };
 
-   MoleculeSGroups *sgroups = &mol.sgroups;
+   MoleculeSGroups *sgroups = &_mol->sgroups;
 
    DataSGroup *dsg = 0;
    SGroup *gen = 0;
@@ -945,7 +1177,7 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol,
                continue;
             TiXmlHandle next_mol = pChild;
             if (next_mol.Element() != 0)
-               _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
+               _loadSGroupElement(next_mol.Element(), atoms_id, idx + 1);
          }
       }
       else if (gen != 0)
@@ -1027,7 +1259,7 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol,
                continue;
             TiXmlHandle next_mol = pChild;
             if (next_mol.Element() != 0)
-               _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
+               _loadSGroupElement(next_mol.Element(), atoms_id, idx + 1);
          }
       }
       else if (sru != 0)
@@ -1126,7 +1358,7 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol,
                continue;
             TiXmlHandle next_mol = pChild;
             if (next_mol.Element() != 0)
-               _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
+               _loadSGroupElement(next_mol.Element(), atoms_id, idx + 1);
          }
       }
       else if (mul != 0)
@@ -1229,7 +1461,7 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol,
                continue;
             TiXmlHandle next_mol = pChild;
             if (next_mol.Element() != 0)
-               _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
+               _loadSGroupElement(next_mol.Element(), atoms_id, idx + 1);
          }
       }
       else if (sup != 0)
@@ -1352,15 +1584,15 @@ void MoleculeCmlLoader::_loadSGroup (TiXmlElement *elem, Molecule &mol,
                continue;
             TiXmlHandle next_mol = pChild;
             if (next_mol.Element() != 0)
-               _loadSGroup(next_mol.Element(), mol, atoms_id, idx + 1);
+               _loadSGroupElement(next_mol.Element(), atoms_id, idx + 1);
          }
       }
    }
 }
 
-void MoleculeCmlLoader::_loadRgroup (TiXmlHandle &handle, Molecule &mol)
+void CmlLoader::_loadRgroupElement (TiXmlHandle &handle)
 {
-   MoleculeRGroups *rgroups = &mol.rgroups;
+   MoleculeRGroups *rgroups = &_bmol->rgroups;
 
    TiXmlElement *elem = handle.Element();
    if (elem != 0)
@@ -1407,15 +1639,41 @@ void MoleculeCmlLoader::_loadRgroup (TiXmlHandle &handle, Molecule &mol)
          TiXmlHandle molecule = pChild;
          if (molecule.Element() != 0)
          {
-            AutoPtr<BaseMolecule> fragment(mol.neu());
-           _loadMolecule (molecule, fragment.get()->asMolecule());
-           rgroup.fragments.add(fragment.release());
+            AutoPtr<BaseMolecule> fragment(_bmol->neu());
+
+            Molecule      *_mol_save;
+            BaseMolecule  *_bmol_save;
+            QueryMolecule *_qmol_save;
+
+            _mol_save = _mol;
+            _bmol_save = _bmol;
+            _qmol_save = _qmol;
+
+            _bmol = fragment.get();
+
+            if (_bmol->isQueryMolecule())
+            {
+               _qmol = &_bmol->asQueryMolecule();
+               _mol = 0;
+            }
+            else
+            {
+               _mol = &_bmol->asMolecule();
+               _qmol = 0;
+            }
+            _loadMoleculeElement (molecule);
+
+            _mol = _mol_save;
+            _bmol = _bmol_save;
+            _qmol = _qmol_save;
+
+            rgroup.fragments.add(fragment.release());
          }
       }
    }
 }
 
-void MoleculeCmlLoader::_parseRlogicRange (const char *str, Array<int> &ranges)
+void CmlLoader::_parseRlogicRange (const char *str, Array<int> &ranges)
 {
    int beg = -1, end = -1;
    int add_beg = 0, add_end = 0;
@@ -1457,4 +1715,19 @@ void MoleculeCmlLoader::_parseRlogicRange (const char *str, Array<int> &ranges)
    else
       beg += add_beg, end += add_end;
    ranges.push((beg << 16) | end);
+}
+
+void CmlLoader::_appendQueryAtom (const char *atom_label, AutoPtr<QueryMolecule::Atom> &atom)
+{
+   int atom_number = Element::fromString2(atom_label);
+   AutoPtr<QueryMolecule::Atom> cur_atom;
+   if (atom_number != -1)
+      cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, atom_number));
+   else
+      cur_atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, atom_label));
+
+   if (atom.get() == 0)
+      atom.reset(cur_atom.release());
+   else
+      atom.reset(QueryMolecule::Atom::oder(atom.release(), cur_atom.release()));
 }

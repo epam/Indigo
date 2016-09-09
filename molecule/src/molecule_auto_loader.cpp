@@ -22,7 +22,7 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "gzip/gzip_scanner.h"
-#include "molecule/molecule_cml_loader.h"
+#include "molecule/cml_loader.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/molecule_cdx_loader.h"
 #include "molecule/inchi_wrapper.h"
@@ -229,11 +229,12 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       {
          if (_scanner->findWord("<molecule"))
          {
-            MoleculeCmlLoader loader(*_scanner);
+            CmlLoader loader(*_scanner);
             loader.stereochemistry_options = stereochemistry_options;
             if (query)
-               throw Error("CML queries not supported");
-            loader.loadMolecule(mol.asMolecule());
+               loader.loadQueryMolecule((QueryMolecule &)mol);
+            else
+               loader.loadMolecule((Molecule &)mol);
             return;
          }
       }

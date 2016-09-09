@@ -64,6 +64,7 @@ void BaseMolecule::clear ()
    _rsite_attachment_points.clear();
    _attachment_index.clear();
    sgroups.clear();
+   tgroups.clear();
    Graph::clear();
    _hl_atoms.clear();
    _hl_bonds.clear();

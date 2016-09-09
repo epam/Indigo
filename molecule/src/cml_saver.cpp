@@ -13,29 +13,41 @@
  ***************************************************************************/
 
 #include "base_cpp/output.h"
-#include "molecule/molecule_cml_saver.h"
+#include "molecule/cml_saver.h"
 #include "molecule/molecule.h"
+#include "molecule/query_molecule.h"
 #include "molecule/elements.h"
 #include "base_cpp/locale_guard.h"
 #include "tinyxml.h"
 
 using namespace indigo;
 
-IMPL_ERROR(MoleculeCmlSaver, "molecule CML saver");
+IMPL_ERROR(CmlSaver, "CML saver");
 
-MoleculeCmlSaver::MoleculeCmlSaver (Output &output) : _output(output)
+CmlSaver::CmlSaver (Output &output) : _output(output)
 {
    skip_cml_tag = false;
 }
 
-void MoleculeCmlSaver::saveMolecule (Molecule &mol)
+
+void CmlSaver::saveMolecule (Molecule &mol)
+{
+   _saveMolecule(mol, false);
+}
+
+void CmlSaver::saveQueryMolecule (QueryMolecule &mol)
+{
+   _saveMolecule(mol, true);
+}
+
+void CmlSaver::_saveMolecule (BaseMolecule &mol, bool query)
 {
    LocaleGuard locale_guard;
    int i;
-   AutoPtr<TiXmlDocument> _doc(new TiXmlDocument());
+   AutoPtr<TiXmlDocument> doc(new TiXmlDocument());
+   _doc = doc->GetDocument();
    _root = 0;
-
-   _mol = &mol;
+   TiXmlElement * elem = 0;
 
    if (!skip_cml_tag)
    {
@@ -43,14 +55,34 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
       _doc->LinkEndChild(decl);
       _root = new TiXmlElement("cml");
       _doc->LinkEndChild(_root);
+      elem = _root;
    }
 
-   TiXmlElement * molecule = new TiXmlElement("molecule");
-   if (_root != 0)
-      _root->LinkEndChild(molecule);
-   else
-      _doc->LinkEndChild(molecule);
+   _addMoleculeElement(elem, mol, query);
+ 
+   _addRgroups(elem, mol, query);
 
+   TiXmlPrinter printer;
+   _doc->Accept(&printer);
+   _output.printf("%s", printer.CStr());
+   doc.release();
+}
+
+void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool query)
+{
+   int i;
+
+   BaseMolecule *_mol = &mol;
+   QueryMolecule *qmol = 0;
+
+   if (query)
+      qmol = (QueryMolecule *)(&mol);
+
+   TiXmlElement * molecule = new TiXmlElement("molecule");
+   if (elem == 0)
+      _doc->LinkEndChild(molecule);
+   else
+      elem->LinkEndChild(molecule);
 
    if (_mol->name.ptr() != 0)
    {
@@ -78,8 +110,22 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
             atom_str = "R";
          else if (_mol->isPseudoAtom(i))
             atom_str = _mol->getPseudoAtom(i);
-         else
+         else if (atom_number > 0)
             atom_str = Element::toString(atom_number);
+         else if (qmol != 0)
+         {
+            QS_DEF(Array<int>, list);
+
+            int query_atom_type;
+            if ((query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list)) != -1)
+            {
+               if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
+                   query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+               {
+                  atom_str = Element::toString(list[0]);
+               }
+            }
+         }
 
          TiXmlElement * atom = new TiXmlElement("atom");
          atomarray->LinkEndChild(atom);
@@ -104,7 +150,7 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
 
          if (!_mol->isRSite(i) && !_mol->isPseudoAtom(i))
          {
-            if (_mol->getAtomRadical_NoThrow(i, 0) != 0)
+            if (_mol->getAtomRadical_NoThrow(i, 0) > 0)
             {
                atom->SetAttribute("spinMultiplicity", _mol->getAtomRadical(i));
                if (_mol->getAtomRadical_NoThrow(i, 0) == 1)
@@ -118,22 +164,24 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
             if (_mol->getExplicitValence(i) > 0)
                atom->SetAttribute("mrvValence", _mol->getExplicitValence(i));
 
-   
-            if (Molecule::shouldWriteHCount(*_mol, i))
+            if (qmol == 0)
             {
-               int hcount;
-   
-               try
+               if (Molecule::shouldWriteHCount(mol.asMolecule(), i))
                {
-                  hcount = _mol->getAtomTotalH(i);
+                  int hcount;
+      
+                  try
+                  {
+                     hcount = _mol->getAtomTotalH(i);
+                  }
+                  catch (Exception &)
+                  {
+                     hcount = -1;
+                  }
+      
+                  if (hcount >= 0)
+                     atom->SetAttribute("hydrogenCount", hcount);
                }
-               catch (Exception &)
-               {
-                  hcount = -1;
-               }
-   
-               if (hcount >= 0)
-                  atom->SetAttribute("hydrogenCount", hcount);
             }
          }
 
@@ -149,9 +197,97 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
             if (rg_refs.size() == 1)
             {
                out.printf("%d", rg_refs[0]);
+               buf.push(0);
+               atom->SetAttribute("rgroupRef", buf.ptr());
             }
-            buf.push(0);
-            atom->SetAttribute("rgroupref", buf.ptr());
+         }
+
+         if (qmol != 0)
+         {
+            QS_DEF(Array<char>, buf);
+            ArrayOutput out(buf);
+
+            QS_DEF(Array<int>, list);
+
+            int query_atom_type;
+            if ((query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list)) != -1)
+            {
+               if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
+                   query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+               {
+                  int k;
+
+                  out.writeString("L");
+                 
+                  for (k = 0; k < list.size(); k++)
+                  {
+                     if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                        out.writeString("!");
+                     else
+                        out.writeString(",");
+
+                     out.writeString(Element::toString(list[k]));
+                  }
+                  out.writeString(": ");
+               }
+            }
+
+            int rbc;
+            if (_getRingBondCountFlagValue(*qmol, i, rbc))
+            {
+               if (rbc > 0)
+                  out.printf("rb%d;", rbc);
+               else if (rbc == -2)
+                  out.printf("rb*;");
+               else if (rbc == -1)
+                  out.printf("rb0;");
+            }
+
+            int subst;
+            if (_getSubstitutionCountFlagValue(*qmol, i, subst))
+            {
+               if (subst > 0)
+                  out.printf("s%d;", subst);
+               else if (subst == -2)
+                  out.printf("s*;");
+               else if (subst == -1)
+                  out.printf("s0;");
+            }
+
+            int unsat;
+            if (qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
+               out.printf("u1");
+
+            if (buf.size() > 0)
+            {
+               buf.push(0);
+               atom->SetAttribute("mrvQueryProps", buf.ptr());
+            }
+         }
+
+         if (_mol->attachmentPointCount() > 0)
+         {
+            int val = 0;
+   
+            for (int idx = 1; idx <= _mol->attachmentPointCount(); idx++)
+            {
+               for (int j = 0; _mol->getAttachmentPoint(idx, j) != -1; j++)
+               {
+                  if (_mol->getAttachmentPoint(idx, j) == i)
+                  {
+                     val |= 1 << (idx - 1);
+                     break;
+                  }
+               }
+            }
+   
+            if (val > 0)
+            {
+               if (val == 3)
+                  atom->SetAttribute("attachmentPoint", "both");
+               else
+                  atom->SetAttribute("attachmentPoint", val);
+            }
          }
 
          if (have_xyz)
@@ -189,6 +325,42 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
             atomparity->LinkEndChild(new TiXmlText("1"));
          }
       }
+
+      int latest_ind = i;
+
+      if (_mol->attachmentPointCount() > 0)
+      {
+         for (i = _mol->vertexBegin(); i != _mol->vertexEnd(); i = _mol->vertexNext(i))
+         {
+            int val = 0;
+   
+            for (int idx = 1; idx <= _mol->attachmentPointCount(); idx++)
+            {
+               for (int j = 0; _mol->getAttachmentPoint(idx, j) != -1; j++)
+               {
+                  if (_mol->getAttachmentPoint(idx, j) == i)
+                  {
+                     val |= 1 << (idx - 1);
+                     break;
+                  }
+               }
+            }
+   
+            if (val > 0)
+            {
+               TiXmlElement * atom = new TiXmlElement("atom");
+               atomarray->LinkEndChild(atom);
+   
+               QS_DEF(Array<char>, buf);
+               ArrayOutput out(buf);
+               out.printf("a%d", latest_ind++);
+               buf.push(0);
+               atom->SetAttribute("id", buf.ptr());
+               atom->SetAttribute("elementType", "*");
+
+            }
+         }
+      }
    }
 
    if (_mol->edgeCount() > 0)
@@ -214,9 +386,26 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
 
          if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE)
             bond->SetAttribute("order", order);
-         else
+         else if (order == BOND_AROMATIC)
             bond->SetAttribute("order", "A");
 
+
+         if (qmol != 0)
+         {
+            if (order < 0)
+               bond->SetAttribute("order", 1);
+
+            int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
+   
+            if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
+               bond->SetAttribute("queryType", "SD");
+            else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
+               bond->SetAttribute("queryType", "SA");
+            else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
+               bond->SetAttribute("queryType", "DA");
+            else if (qb == QueryMolecule::QUERY_BOND_ANY)
+               bond->SetAttribute("queryType", "Any");
+         }
 
          int dir = _mol->getBondDirection(i);
          int parity = _mol->cis_trans.getParity(i);
@@ -253,17 +442,12 @@ void MoleculeCmlSaver::saveMolecule (Molecule &mol)
          SGroup &sgroup = sgroups->getSGroup(i);
 
          if (sgroup.parent_group == 0)
-            _addSgroupElement(molecule, sgroup);
+            _addSgroupElement(molecule, *_mol, sgroup);
       }
    }
-
-   TiXmlPrinter printer;
-   _doc->Accept(&printer);
-   _output.printf("%s", printer.CStr());
-   _doc.release();
 }
 
-void MoleculeCmlSaver::_addSgroupElement (TiXmlElement *molecule, SGroup &sgroup)
+void CmlSaver::_addSgroupElement (TiXmlElement *molecule, BaseMolecule &mol, SGroup &sgroup)
 {
    TiXmlElement * sg = new TiXmlElement("molecule");
    molecule->LinkEndChild(sg);
@@ -373,28 +557,28 @@ void MoleculeCmlSaver::_addSgroupElement (TiXmlElement *molecule, SGroup &sgroup
          sg->SetAttribute("fieldData", dsg.data.ptr());
       }
 
-      MoleculeSGroups *sgroups = &_mol->sgroups;
+      MoleculeSGroups *sgroups = &mol.sgroups;
       
-      for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
       {
          SGroup &sg_child = sgroups->getSGroup(i);
 
          if ( (sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group) )
-            _addSgroupElement(sg, sg_child);
+            _addSgroupElement(sg, mol, sg_child);
       }
    }
    else if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
    {
       sg->SetAttribute("role", "GenericSgroup");
 
-      MoleculeSGroups *sgroups = &_mol->sgroups;
+      MoleculeSGroups *sgroups = &mol.sgroups;
       
-      for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
       {
          SGroup &sg_child = sgroups->getSGroup(i);
 
          if ( (sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group) )
-            _addSgroupElement(sg, sg_child);
+            _addSgroupElement(sg, mol, sg_child);
       }
 
    }
@@ -410,14 +594,14 @@ void MoleculeCmlSaver::_addSgroupElement (TiXmlElement *molecule, SGroup &sgroup
          sg->SetAttribute("title", name);
       }
 
-      MoleculeSGroups *sgroups = &_mol->sgroups;
+      MoleculeSGroups *sgroups = &mol.sgroups;
       
-      for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
       {
          SGroup &sg_child = sgroups->getSGroup(i);
 
          if ( (sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group) )
-            _addSgroupElement(sg, sg_child);
+            _addSgroupElement(sg, mol, sg_child);
       }
    }
    else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
@@ -441,14 +625,14 @@ void MoleculeCmlSaver::_addSgroupElement (TiXmlElement *molecule, SGroup &sgroup
          sg->SetAttribute("connect", "hh");
       }
 
-      MoleculeSGroups *sgroups = &_mol->sgroups;
+      MoleculeSGroups *sgroups = &mol.sgroups;
       
-      for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
       {
          SGroup &sg_child = sgroups->getSGroup(i);
 
          if ( (sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group) )
-            _addSgroupElement(sg, sg_child);
+            _addSgroupElement(sg, mol, sg_child);
       }
 
    }
@@ -477,16 +661,142 @@ void MoleculeCmlSaver::_addSgroupElement (TiXmlElement *molecule, SGroup &sgroup
          sg->SetAttribute("patoms", buf.ptr());
       }
 
-      MoleculeSGroups *sgroups = &_mol->sgroups;
+      MoleculeSGroups *sgroups = &mol.sgroups;
       
-      for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+      for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
       {
          SGroup &sg_child = sgroups->getSGroup(i);
 
          if ( (sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group) )
-            _addSgroupElement(sg, sg_child);
+            _addSgroupElement(sg, mol, sg_child);
       }
-
    }
+}
 
+void CmlSaver::_addRgroups (TiXmlElement *elem, BaseMolecule &mol, bool query)
+{
+  if (mol.rgroups.getRGroupCount() > 0)
+   {
+      MoleculeRGroups &rgroups = mol.rgroups;
+      int n_rgroups = rgroups.getRGroupCount();
+
+      for (int i = 1; i <= n_rgroups; i++)
+      {
+         RGroup &rgroup = rgroups.getRGroup(i);
+
+         if (rgroup.fragments.size() == 0)
+            continue;
+
+         TiXmlElement * rg = new TiXmlElement("Rgroup");
+         elem->LinkEndChild(rg);
+
+         rg->SetAttribute("rgroupID", i);
+
+
+         if (rgroup.if_then > 0)
+            rg->SetAttribute("thenR", rgroup.if_then);
+
+         if (rgroup.rest_h > 0)
+            rg->SetAttribute("restH", rgroup.rest_h);
+
+
+         QS_DEF(Array<char>, buf);
+         ArrayOutput out(buf);
+
+         _writeOccurrenceRanges(out, rgroup.occurrence);
+
+         if (buf.size() > 1)
+            rg->SetAttribute("rlogicRange", buf.ptr());
+
+         _addRgroupElement(rg, rgroup, query);
+      }
+   }
+}
+
+void CmlSaver::_addRgroupElement (TiXmlElement *elem, RGroup &rgroup, bool query)
+{
+   PtrPool<BaseMolecule> &frags = rgroup.fragments;
+
+   for (int i = frags.begin(); i != frags.end(); i = frags.next(i))
+   {
+      BaseMolecule *fragment = frags[i];
+
+      _addMoleculeElement(elem, *fragment, query);
+   }
+}
+
+void CmlSaver::_writeOccurrenceRanges (Output &out, const Array<int> &occurrences)
+{
+   for (int i = 0; i < occurrences.size(); i++)
+   {
+      int occurrence = occurrences[i];
+
+      if ((occurrence & 0xFFFF) == 0xFFFF)
+         out.printf(">%d", (occurrence >> 16) - 1);
+      else if ((occurrence >> 16) == (occurrence & 0xFFFF))
+         out.printf("%d", occurrence >> 16);
+      else if ((occurrence >> 16) == 0)
+         out.printf("<%d", (occurrence & 0xFFFF) + 1);
+      else
+         out.printf("%d-%d", occurrence >> 16, occurrence & 0xFFFF);
+
+      if (i != occurrences.size() - 1)
+         out.printf(",");
+   }
+}
+
+bool CmlSaver::_getRingBondCountFlagValue (QueryMolecule &qmol, int idx, int &value)
+{
+   QueryMolecule::Atom &atom = qmol.getAtom(idx);
+   int rbc;
+   if (atom.hasConstraint(QueryMolecule::ATOM_RING_BONDS))
+   {
+      if (atom.sureValue(QueryMolecule::ATOM_RING_BONDS, rbc))
+      {
+         value = rbc;
+         if (value == 0)
+            value = -1;
+         return true;
+      }
+      int rbc_values[1] = { 4 };
+      if (atom.sureValueBelongs(QueryMolecule::ATOM_RING_BONDS, rbc_values, 1))
+      {
+         value = 4;
+         return true;
+      }
+   }
+   else if (atom.sureValue(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbc))
+   {
+      value = -2;
+      return true;
+   }
+   return false;
+}
+
+bool CmlSaver::_getSubstitutionCountFlagValue (QueryMolecule &qmol, int idx, int &value)
+{
+   QueryMolecule::Atom &atom = qmol.getAtom(idx);
+   int v;
+   if (atom.hasConstraint(QueryMolecule::ATOM_SUBSTITUENTS))
+   {
+      if (atom.sureValue(QueryMolecule::ATOM_SUBSTITUENTS, v))
+      {
+         value = v;
+         if (value == 0)
+            value = -1;
+         return true;
+      }
+      int values[1] = { 6 };
+      if (atom.sureValueBelongs(QueryMolecule::ATOM_SUBSTITUENTS, values, 1))
+      {
+         value = 6;
+         return true;
+      }
+   }
+   else if (atom.sureValue(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, v))
+   {
+      value = -2;
+      return true;
+   }
+   return false;
 }

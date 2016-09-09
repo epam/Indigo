@@ -15,7 +15,7 @@
 #include "reaction/reaction_cml_saver.h"
 #include "base_cpp/output.h"
 #include "reaction/reaction.h"
-#include "molecule/molecule_cml_saver.h"
+#include "molecule/cml_saver.h"
 
 using namespace indigo;
 
@@ -49,7 +49,7 @@ void ReactionCmlSaver::saveReaction (Reaction &rxn)
 
    int i;
 
-   MoleculeCmlSaver molsaver(_output);
+   CmlSaver molsaver(_output);
 
    molsaver.skip_cml_tag = true;
 
