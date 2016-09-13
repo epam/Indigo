@@ -306,6 +306,20 @@ public class Indigo {
                     // File could have been already loaded
                 }
             }
+            if ((new File(getPathToBinary(path, "msvcr140.dll"))).exists()) {
+                try {
+                    System.load(getPathToBinary(path, "msvcr140.dll"));
+                } catch (UnsatisfiedLinkError e) {
+                    // File could have been already loaded
+                }
+            }
+            if ((new File(getPathToBinary(path, "msvcp140.dll"))).exists()) {
+                try {
+                    System.load(getPathToBinary(path, "msvcp140.dll"));
+                } catch (UnsatisfiedLinkError e) {
+                    // File could have been already loaded
+                }
+            }
             _lib = (IndigoLib) Native.loadLibrary(getPathToBinary(path, "indigo.dll"), IndigoLib.class);
         }
     }
