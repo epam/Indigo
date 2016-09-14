@@ -1,8 +1,7 @@
 import os
 import re
-#
-# Searches for Indigo version
-#
+
+
 def getIndigoVersion():
     version = "unknown"
 
@@ -11,4 +10,3 @@ def getIndigoVersion():
         if m:
             version = m.group(1)
     return version
-
