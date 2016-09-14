@@ -36,7 +36,8 @@ public:
 private:
 
    static void _initPatterns ();
-   static bool _matchPatternBond (Graph &subgraph, Graph &supergraph, int self_idx, int other_idx, void *userdata);
+   static bool _matchPatternBond(Graph &subgraph, Graph &supergraph, int self_idx, int other_idx, void *userdata);
+   static bool _matchPatternAtom(Graph &subgraph, Graph &supergraph, const int *core_sub, int sub_idx, int super_idx, void *userdata);
 };
 
 }

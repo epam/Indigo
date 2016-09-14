@@ -72,6 +72,7 @@ bool PatternLayoutFinder::tryToFindPattern (MoleculeLayoutGraphSmart &layout_gra
 
       ee.setSubgraph(pattern->query_molecule);
       ee.cb_match_edge = _matchPatternBond;
+      ee.cb_match_vertex = _matchPatternAtom;
 
       if (!ee.process())
       {
@@ -147,4 +148,24 @@ bool PatternLayoutFinder::_matchPatternBond (Graph &subgraph, Graph &supergraph,
       return false;
 
    return true;
+}
+
+
+
+bool PatternLayoutFinder::_matchPatternAtom(Graph &subgraph, Graph &supergraph, const int *core_sub, int sub_idx, int super_idx, void *userdata)
+{
+    MoleculeLayoutGraphSmart &target = (MoleculeLayoutGraphSmart &)supergraph;
+    BaseMolecule *mol = (BaseMolecule *)target.getMolecule();
+
+    int layout_idx = target.getLayoutVertex(super_idx).ext_idx;
+    if (target.getEdgeMapping() != nullptr)
+        layout_idx = target.getEdgeMapping()[layout_idx];
+
+    QueryMolecule &qmol = (QueryMolecule &)subgraph;
+    QueryMolecule::Atom &sub_atom = qmol.getAtom(sub_idx);
+
+    if (!MoleculeSubstructureMatcher::matchQueryAtom(&sub_atom, *mol, layout_idx, nullptr, 0xFFFFFFFF))
+        return false;
+
+    return true;
 }
