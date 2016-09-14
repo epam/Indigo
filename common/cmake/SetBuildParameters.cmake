@@ -61,9 +61,6 @@ elseif(APPLE)
     endif()
 
     message(STATUS "SDK: ${CMAKE_OSX_SYSROOT}")
-    message(STATUS "CMAKE_OSX_ARCHITECTURES ${CMAKE_OSX_ARCHITECTURES}")
-    message(STATUS "CMAKE_C_FLAGS ${CMAKE_C_FLAGS}")
-    message(STATUS "CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}")
 
     set(COMPILE_FLAGS "${COMPILE_FLAGS}")
     set(LINK_FLAGS "${LINK_FLAGS} -Wl,-no_compact_unwind")

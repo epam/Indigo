@@ -16,9 +16,7 @@ include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${OCI_INCLU
 add_library(bingo-oracle-shared SHARED ${Bingo_src} ${Bingo_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
 
 if (UNIX AND NOT APPLE)
-	message(STATUS "UNIX AND NOT APPLE")
 	if(${SUBSYSTEM_NAME} MATCHES "x64")
-		message(STATUS "SUBSYSTEM_NAME EQUALS x64")
 		set_target_properties(bingo-oracle-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
 	endif()
 endif()
