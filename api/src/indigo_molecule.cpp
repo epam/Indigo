@@ -3220,6 +3220,7 @@ CEXPORT int indigoTransformCTABtoSCSR (int molecule, int templates)
    INDIGO_BEGIN
    {
       QS_DEF(ObjArray<TGroup>, tgs);
+      tgs.clear();
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
       BaseMolecule &temp = self.getObject(templates).getBaseMolecule();
       for (auto i = temp.tgroups.begin(); i != temp.tgroups.end(); i = temp.tgroups.next(i))
