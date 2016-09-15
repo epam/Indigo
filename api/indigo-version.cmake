@@ -1,9 +1,9 @@
 find_package(Git)
 if(GIT_EXECUTABLE) 
-   	EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match "indigo-*" 
+   EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match "indigo-*" 
                     OUTPUT_VARIABLE INDIGO_FULL_VERSION
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
- 	if (${INDIGO_FULL_VERSION})
+ 	if (NOT ${INDIGO_FULL_VERSION} STREQUAL "")
    		string(REGEX REPLACE "indigo-(.+)-(.+)-(.+)" "\\1.r\\2-\\3" INDIGO_FULL_VERSION ${INDIGO_FULL_VERSION})
    		string(REGEX REPLACE "(.+)-(.+)" "\\1" INDIGO_VERSION ${INDIGO_FULL_VERSION})
    	else()
