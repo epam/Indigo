@@ -1189,8 +1189,12 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 {
    int result = 0;
    QS_DEF(Molecule, fragment);
+   QS_DEF(Molecule, su_fragment);
+   QS_DEF(Molecule, rep);
    QS_DEF(Array<int>, added_templates);
    QS_DEF(Array<int>, mapping);
+   QS_DEF(Array<int>, su_mapping);
+   QS_DEF(Array<int>, tm_mapping);
    QS_DEF(Array<int>, remove_atoms);
    QS_DEF(Array<int>, base_sgs);
    QS_DEF(Array<int>, sgs);
@@ -1252,6 +1256,108 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 
       int count_occur = 0;
       ignore_atoms.clear();
+
+      sgs.clear();
+      this->sgroups.findSGroups(SGroup::SG_CLASS, "AA", sgs);
+
+      for (int l = 0; l < sgs.size(); l++)
+      {
+         su_fragment.clear();
+         rep.clear();
+         su_mapping.clear();
+         Superatom &su = (Superatom &) this->sgroups.getSGroup(sgs[l]);
+         rep.makeSubmolecule(*this, su.atoms, &su_mapping, 0);
+         su_fragment.clone_KeepIndices(rep);
+
+//         MoleculeExactSubstructureMatcher matcher(fragment, su_fragment);
+         MoleculeExactMatcher matcher(fragment, su_fragment);
+
+         if (!matcher.find())
+            continue;
+
+         mapping.clear();
+         remove_atoms.clear();
+         mapping.copy(matcher.getQueryMapping(), fragment.vertexEnd());
+         tm_mapping.clear();
+
+         for (int j = 0; j < mapping.size(); j++)
+         {
+            if (mapping[j] > -1)
+            {
+               int at_ind = su_mapping.find(mapping[j]);
+               if (at_ind != -1)
+               {
+                  remove_atoms.push(at_ind);
+               }
+            }  
+         }
+
+         int out_bonds = 0;
+         for (int j = 0; j < remove_atoms.size(); j++)
+         {
+            const Vertex &v = getVertex(remove_atoms[j]);
+            for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+            {
+               if (remove_atoms.find(v.neiVertex(k)) == -1)
+               {
+                  out_bonds++;
+               }
+            }
+         }
+
+         if (out_bonds > ap_points_atoms.size())
+         {
+            ignore_atoms.concat(remove_atoms);
+            continue;
+         }
+
+         int idx = this->asMolecule().addAtom(-1);
+         this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
+         this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
+//         this->asMolecule().setTemplateAtomSeqid(idx, seq_id);
+         seq_id++;
+         count_occur++;
+
+         for (int j = 0; j < ap_points_atoms.size(); j++)
+         {
+            int att_point_idx = su_mapping.find(mapping[ap_points_atoms[j]]);
+            if (remove_atoms.find(att_point_idx) != -1)
+            {
+               const Vertex &v = getVertex(att_point_idx);
+               QS_DEF(Array<int>, neighbors);
+               neighbors.clear();
+               for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+               {
+                  if (remove_atoms.find(v.neiVertex(k)) == -1)
+                  {
+                     neighbors.push(v.neiVertex(k));
+                  }
+               }
+               for (int k = 0; k < neighbors.size(); k++)
+               {
+                  if (findEdgeIndex(neighbors[k], att_point_idx) != -1)
+                  {
+                     flipBond(neighbors[k], att_point_idx, idx);
+                     this->asMolecule().setTemplateAtomAttachmentOrder(idx, neighbors[k], ap_points_ids.at(ap_ids[j]));
+                     if (isTemplateAtom(neighbors[k]))
+                        _flipTemplateAtomAttachmentPoint(neighbors[k], att_point_idx, idx);
+                  }
+               }
+            }
+         }
+
+         QS_DEF(Vec2f, cp);
+         QS_DEF(Vec3f, p);
+         p.set(0, 0, 0);
+         getAtomsCenterPoint(remove_atoms, cp);
+         p.x = cp.x;
+         p.y = cp.y;
+         setAtomXyz(idx, p);
+
+         removeAtoms(remove_atoms);
+      }
+
+/*
       for (;;)
       {
          MoleculeExactSubstructureMatcher matcher(fragment, this->asMolecule());
@@ -1336,6 +1442,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 
          removeAtoms(remove_atoms);
       }
+*/
     
       if (count_occur > 0)
          added_templates.push(i);
