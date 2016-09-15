@@ -43,6 +43,11 @@ _ee(target)
    _ee.setSubgraph(query);
 }
 
+void MoleculeExactMatcher::ignoreTargetAtom (int idx)
+{
+    _ee.ignoreSupergraphVertex(idx);
+}
+
 bool MoleculeExactMatcher::find ()
 {
    int i;

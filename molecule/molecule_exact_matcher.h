@@ -48,6 +48,7 @@ public:
    bool find ();
 
    const int * getQueryMapping ();
+   void ignoreTargetAtom (int idx);
 
    static void parseConditions (const char *params, int &flags, float &rms_threshold);
 

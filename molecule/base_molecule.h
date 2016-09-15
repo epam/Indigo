@@ -241,6 +241,10 @@ public:
 
    MoleculeTGroups tgroups;
 
+   bool use_scsr_sgroups_only = false;
+   bool remove_scsr_lgrp = false;
+   bool use_scsr_name = false;
+
    MoleculeRGroups rgroups;
 
    StringPool custom_collections;
