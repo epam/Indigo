@@ -171,7 +171,7 @@ void Parse::scan() {
 	lexemes.push_back(Lexeme("", terminator));
 }
 
-// Retrieves a next lexeme from the stream, incrementing the pointer
+// Retrieves a next lexeme from the stream, incrementing the stream pointer
 const Lexeme& Parse::getNextLexeme() const {
 	if (currentLexeme < lexemes.size())
 		return lexemes[currentLexeme++];
@@ -277,6 +277,7 @@ FragmentNode::~FragmentNode() {
 		delete node;
 }
 
+// Inserts a new node before anchor position, returns status
 bool FragmentNode::insertBefore(FragmentNode* node, const FragmentNode* anchor) {
 	bool result = false;
 
@@ -299,10 +300,13 @@ void FragmentNode::insert(FragmentNode* node) {
 void FragmentNode::print(ostream& out) const {
 	out << "Parent: " << parent << endl;
 
-	if (type == FragmentNodeType::root)
-		out << "Type: root" << endl;
-	else if (type == FragmentNodeType::unknown)
+	if (type == FragmentNodeType::unknown)
 		out << "Type: unknown" << endl;
+}
+
+void FragmentNodeRoot::print(ostream& out) const {
+	out << "Type: FragmentNodeRoot" << endl;
+	FragmentNode::print(out);
 }
 
 void FragmentNodeBase::print(ostream& out) const {
@@ -338,6 +342,18 @@ ostream& operator<<(ostream& out, const FragmentNode* node) {
 }
 #endif // DEBUG
 
+int FragmentNodeBase::combineMultipliers() {
+	int result = 0;
+	while (!multipliers.empty()) {
+		const auto& mul = multipliers.top();
+		result += mul.first;
+		multipliers.pop();
+	}
+
+	assert(multipliers.empty());
+	return result;
+}
+
 FragmentBuildTree::FragmentBuildTree() {
 	addRoot();
 }
@@ -348,8 +364,7 @@ FragmentBuildTree::~FragmentBuildTree() {
 }
 
 void FragmentBuildTree::addRoot() {
-	FragmentNode* root = new FragmentNode;
-	root->setType(FragmentNodeType::root);
+	FragmentNode* root = new FragmentNodeRoot;
 	currentRoot = root;
 	roots.push_back(root);
 }
@@ -372,19 +387,18 @@ level's base fragment
 Returns false if operation cannot be performed
 */
 bool TreeBuilder::upOneLevel() {
-	const auto safe = current;
-
-	if (parse->peekNextToken(TokenType::endOfStream))
+	if (parse->peekNextToken(TokenType::endOfStream)) {
 		return true;
+	}
 
 	if (current->checkType(FragmentNodeType::base)) {
-		auto parent = current->getParent();
-		if (!parent)
+		if (!current->getParent()) {
 			return false;
+		}
 	}
 
 	startNewNode = true;
-	current = getCurrentBase();
+	current = getParentBase();
 	return (current != nullptr);
 }
 
@@ -419,6 +433,25 @@ bool TreeBuilder::processParseImpl() {
 	return processParseImpl();
 }
 
+void TreeBuilder::processSuffix(const Lexeme& lexeme) {
+	const string& text = lexeme.getLexeme();
+	const Token& token = lexeme.getToken();
+
+	FragmentNodeBase* node = static_cast<FragmentNodeBase*>(current);
+	node->setElement(ELEM_C);
+
+	if (text == "ane") {
+		node->setBondType(BondType::ONE);
+		node->setValencyDiff(0);
+		node->setFreeAtomOrder(0);
+	}
+	else if (text == "yl") {
+		node->setBondType(BondType::ONE);
+		node->setValencyDiff(1);
+		node->setFreeAtomOrder(1);
+	}
+}
+
 // Processes alkane lexemes
 bool TreeBuilder::processAlkane(const Lexeme& lexeme) {
 	const string& text = lexeme.getLexeme();
@@ -432,11 +465,21 @@ bool TreeBuilder::processAlkane(const Lexeme& lexeme) {
 	} break;
 
 	case TokenType::suffixes: {
-		if (parse->peekNextToken(TokenType::closingBracket))
-			break;
+		processSuffix(lexeme);
 
-		if (!upOneLevel()) {
-			if(!current)
+		if (parse->peekNextToken(TokenType::closingBracket)) {
+			break;
+		}
+
+		// FIXME: move nodes
+		if (current->checkType(FragmentNodeType::substituent)) {
+			current = getCurrentBase();
+			if (!current) {
+				return false;
+			}
+		} else if (current->checkType(FragmentNodeType::base)) {
+			if (!upOneLevel()) {
+			}
 		}
 	} break;
 
@@ -554,6 +597,7 @@ bool TreeBuilder::processSeparator(const Lexeme& lexeme) {
 		Whitespace is a special case when we actually add a new build tree
 		for a new structure
 		*/
+		// FIXME - process acids (acid names have whitespace)
 		if (text == " ") {
 			buildTree->addRoot();
 			initBuildTree();
@@ -568,40 +612,144 @@ bool TreeBuilder::processSeparator(const Lexeme& lexeme) {
 	return true;
 }
 
+// Retrieves current level's base; each level has only one base
 FragmentNode* TreeBuilder::getCurrentBase() {
+	if (current->checkType(FragmentNodeType::base))
+		return current;
+
 	FragmentNode* parent = current->getParent();
 	if (!parent)
 		return nullptr;
 
+	// Base is always a rightmost element
 	const Nodes& nodes = parent->getNodes();
-	if (nodes.empty())
+	return nodes.back();
+}
+
+// Retrieves upper level's base, if any; each level has only one base
+FragmentNode* TreeBuilder::getParentBase() {
+	const auto parent = current->getParent();
+	if (!parent)
+		return nullptr;
+
+	const auto grand = parent->getParent();
+	if (!grand)
 		return nullptr;
 
 	// Base is always a rightmost element
+	const Nodes& nodes = grand->getNodes();
 	return nodes.back();
 }
 
 /*
-Traverses the build tree in depth-first order, creates
+Traverses the build tree in post-order depth-first order, creates
 Molecule objects and combines then into the resulting structure
 */
-bool ResultBuilder::buildResult(indigo::Molecule& molecule) {
-	unique_ptr<FragmentBuildTree> tree = treeBuilder->getBuildTree();
-	const auto& roots = tree->getRoots();
-	for (FragmentNode* root : roots)
-		visit(root);
+bool ResultBuilder::buildResult(Molecule& molecule) {
+	molecule.clear();
+
+	const auto& buildTree = treeBuilder->getBuildTree();
+	const auto& roots = buildTree->getRoots();
+	if (roots.empty())
+		return false;
+
+	// most time we'll have a sigle root
+	for (const auto root : roots) {
+		const auto& nodes = root->getNodes();
+		for (const auto node : nodes) {
+			processNode(node);
+		}
+		combine(root);
+	}
+
+	Fragment f = fragments.top();
+	molecule.mergeWithMolecule(*f, nullptr);
+
+	clear();
 
 	return true;
 }
 
-void ResultBuilder::visit(FragmentNode* node) {
-#ifdef DEBUG
-	cout << node << endl;
-#endif // DEBUG
+void ResultBuilder::processNode(FragmentNode* node) {
+	const FragmentNodeType type = node->getType();
+	if (type == FragmentNodeType::base) {
+		processBase(static_cast<FragmentNodeBase*>(node));
+	} else if (type == FragmentNodeType::substituent) {
+		processSubstituent(static_cast<FragmentNodeSubstituent*>(node));
+	}
+}
 
+void ResultBuilder::processBase(FragmentNodeBase* node) {
+	Fragment fragment = createFragment(node);
+	fragments.push(fragment);
+}
+
+void ResultBuilder::processSubstituent(FragmentNodeSubstituent* node) {
+	bool mustCombine = false;
 	const auto& nodes = node->getNodes();
-	for (FragmentNode* node : nodes)
-		visit(node);
+	if (!nodes.empty()) {
+		mustCombine = true;
+		for (const auto child : nodes) {
+			processNode(child);
+		}
+	}
+
+	// make fragment
+	if (!mustCombine) {
+		processBase(node);
+	} else {
+		combine(node);
+	}
+}
+
+void ResultBuilder::combine(FragmentNode* node) {
+	const auto& nodes = node->getNodes();
+
+	Fragment base = fragments.top();
+	fragments.pop();
+	auto tail = nodes.rbegin();
+	++tail;
+	for (int i = nodes.size() - 1; i > 0; i--) {
+		Fragment subst = fragments.top();
+		fragments.pop();
+
+		FragmentNodeSubstituent* snode = static_cast<FragmentNodeSubstituent*>(*tail);
+		++tail;
+
+		base->mergeWithMolecule(*subst, nullptr);
+	}
+	fragments.push(base);
+}
+
+Fragment ResultBuilder::createFragment(FragmentNodeBase* base) {
+	Fragment fragment = new Molecule;
+	fragment->clear();
+
+	// we add at least one atom
+	// position 0
+	fragment->addAtom(base->getElement());
+
+	int multiplier = base->combineMultipliers();
+	if (multiplier == 1) {
+		return fragment;
+	}
+
+	int position = 0;
+	int bond = static_cast<int>(base->getBondType());
+	for (int i = 1; i < multiplier; i++) {
+		position = fragment->addAtom(base->getElement());
+		fragment->addBond(position - 1, position, bond);
+	}
+
+	return fragment;
+}
+
+void ResultBuilder::clear() {
+	while (!fragments.empty()) {
+		Fragment f = fragments.top();
+		delete f;
+		fragments.pop();
+	}
 }
 
 /*
@@ -641,6 +789,10 @@ void MoleculeNameParser::parseMolecule(const char *name, Molecule &molecule) {
 	}
 }
 
+/*
+Checks if allowed opening and closing brackets match
+Doesn't check brackets type matching (e.g. ((]] is valid)
+*/
 void AuxParseTools::checkBrackets(const string& s) {
 	int level = 0;
 	for (char ch : s) {
@@ -655,6 +807,7 @@ void AuxParseTools::checkBrackets(const string& s) {
 		throw Error("Opening and closing brackets don't match: %d", level);
 }
 
+// Converts std::string to int
 int AuxParseTools::strToInt(const string& str) {
 	char* ch = nullptr;
 	return std::strtol(str.c_str(), &ch, 10);

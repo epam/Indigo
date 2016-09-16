@@ -177,7 +177,7 @@ namespace name_parsing {
 		 */
 		void scan();
 
-		// Retrieves a next lexeme from the stream, incrementing the pointer
+		// Retrieves a next lexeme from the stream, incrementing the stream pointer
 		const Lexeme& getNextLexeme() const;
 		// Returns true if next lexeme's token type equals to input
 		bool peekNextToken(TokenType peek) const;
@@ -212,28 +212,39 @@ namespace name_parsing {
 		Nodes nodes;
 
 	protected:
-		FragmentNodeType type = FragmentNodeType::unknown;
+		FragmentNodeType type   = FragmentNodeType::unknown;
 
 	public:
+		inline FragmentNode() { }
 		virtual ~FragmentNode();
 
-		inline const FragmentNodeType& getType() const { return type; }
+		virtual FragmentNodeType getType() const { return type; }
+		virtual bool checkType(FragmentNodeType type) { return (this->type == type); }
 		inline void setType(FragmentNodeType type) { this->type = type; }
 
 		inline FragmentNode* getParent() { return parent; }
 		inline const FragmentNode* getParent() const { return parent; }
-		inline void setParent(FragmentNode* node) { parent = node; }
+		inline void setParent(FragmentNode* parent) { this->parent = parent; }
 
 		inline Nodes& getNodes() { return nodes; }
 		inline const Nodes& getNodes() const { return nodes; }
-
-		inline bool checkType(FragmentNodeType type) { return this->type == type; }
 
 		// Inserts a new node before anchor position, returns status
 		bool insertBefore(FragmentNode* node, const FragmentNode* anchor);
 
 		// Inserts a new node at the end of the list
 		void insert(FragmentNode* node);
+
+		virtual void setElement(int e) { /*no-op*/ }
+
+#ifdef DEBUG
+		virtual void print(std::ostream& out) const;
+#endif
+	};
+
+	class FragmentNodeRoot : public FragmentNode {
+	public:
+		inline FragmentNodeRoot() { type = FragmentNodeType::root; }
 
 #ifdef DEBUG
 		virtual void print(std::ostream& out) const;
@@ -242,6 +253,15 @@ namespace name_parsing {
 
 	typedef std::pair<int, TokenType> Multiplier;
 	typedef std::stack<Multiplier> Multipliers;
+
+	/*
+	The type represents the number of bonds in the structure
+	*/
+	enum class BondType : int {
+		ONE = 1,
+		TWO,
+		THREE
+	};
 
 	/*
 	A node that represents a base structure
@@ -254,6 +274,21 @@ namespace name_parsing {
 		Multipliers multipliers;
 		int element = indigo::ELEM_MIN;
 
+		/*
+		A diff in total valency of the (sub)stucture
+		Must correspond to the name grammar and syntax, and bonds count
+		*/
+		int valencyDiff = 0;
+
+		/*
+		The number of atom with free bond
+		Alkanes ending with -ane don't have free bonds
+		Alkanes ending with -yl have 1 free bond
+		*/
+		int freeAtomOrder = 0;
+
+		BondType bondType = BondType::ONE;
+
 	public:
 		inline FragmentNodeBase() { type = FragmentNodeType::base; }
 
@@ -261,7 +296,22 @@ namespace name_parsing {
 		inline const Multipliers& getMultipliers() const { return multipliers; }
 
 		inline int getElement() const { return element; }
-		inline void setElement(int e) { element = e; }
+		virtual void setElement(int e) { element = e; }
+
+		inline int getValenceDiff() const { return valencyDiff; }
+		inline void setValencyDiff(int diff) { valencyDiff = diff; }
+
+		inline BondType getBondType() const { return bondType; }
+		inline void setBondType(BondType bond) { bondType = bond; }
+
+		inline int getFreeAtomOrder() const { return freeAtomOrder; }
+		inline void setFreeAtomOrder(int order) { freeAtomOrder = order; }
+
+		/*
+		Returns the sum of multipliers stack
+		This is a destructive operation
+		*/
+		int combineMultipliers();
 
 #ifdef DEBUG
 		virtual void print(std::ostream& out) const;
@@ -356,6 +406,9 @@ namespace name_parsing {
 		// Retrieves current level's base; each level has only one base
 		FragmentNode* getCurrentBase();
 
+		// Retrieves upper level's base, if any; each level has only one base
+		FragmentNode* getParentBase();
+
 		// A handle to Parse object; must not be freed
 		const Parse* parse;
 
@@ -382,14 +435,19 @@ namespace name_parsing {
 		// Processes separator lexemes
 		bool processSeparator(const Lexeme& lexeme);
 
+		void processSuffix(const Lexeme& lexeme);
+
 	public:
 		inline TreeBuilder(const Parse& input) : parse{ &input } { buildTree.reset(new FragmentBuildTree); }
 
-		inline std::unique_ptr<FragmentBuildTree> getBuildTree() { return std::move(buildTree); }
-		inline 
+		inline std::unique_ptr<FragmentBuildTree>& getBuildTree() { return buildTree; }
+		inline const std::unique_ptr<FragmentBuildTree>& getBuildTree() const { return buildTree; }
 
 		bool processParse();
 	};
+
+	typedef indigo::Molecule* Fragment;
+	typedef std::stack<Fragment> Fragments;
 
 	/*
 	Builds a resulting structure from a build tree
@@ -398,9 +456,19 @@ namespace name_parsing {
 	class ResultBuilder : public indigo::NonCopyable {
 		DECL_ERROR;
 
+		// A pointer to the tree builder, which provides the build tree
 		std::unique_ptr<TreeBuilder> treeBuilder;
 
-		void visit(FragmentNode* node);
+		Fragments fragments;
+
+		void processNode(FragmentNode* node);
+		void processBase(FragmentNodeBase* node);
+		void processSubstituent(FragmentNodeSubstituent* node);
+		Fragment createFragment(FragmentNodeBase* base);
+
+		void combine(FragmentNode* node);
+
+		void clear();
 
 	public:
 		inline ResultBuilder(const Parse& input) { treeBuilder.reset(new TreeBuilder(input)); }
@@ -408,7 +476,7 @@ namespace name_parsing {
 		inline bool buildTree() const { return treeBuilder->processParse(); }
 
 		/*
-		Traverses the build tree in depth-first order, creates
+		Traverses the build tree in post-order depth-first order, creates
 		Molecule objects and combines then into the resulting structure
 		*/
 		bool buildResult(indigo::Molecule& molecule);
@@ -439,9 +507,13 @@ namespace name_parsing {
 		DECL_ERROR;
 
 	public:
-		// checks if allowed opening and closing brackets match
+		/*
+		Checks if allowed opening and closing brackets match
+		Doesn't check brackets type matching (e.g. ((]] is valid)
+		*/
 		static void checkBrackets(const std::string& s);
 
+		// Converts std::string to int
 		static int strToInt(const std::string& str);
 	};
 
