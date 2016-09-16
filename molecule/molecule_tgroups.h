@@ -45,7 +45,7 @@ public:
    void clear();
    static int cmp (TGroup &tg1, TGroup &tg2, void *context);
 
-   BaseMolecule* fragment;
+   AutoPtr<BaseMolecule> fragment;
 
 private:
    TGroup (const TGroup &);

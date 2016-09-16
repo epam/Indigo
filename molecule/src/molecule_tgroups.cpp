@@ -33,9 +33,9 @@ void TGroup::clear()
 
 int TGroup::cmp (TGroup &tg1, TGroup &tg2, void *context)
 {
-   if (tg1.fragment == 0)
+   if (tg1.fragment.get() == 0)
       return -1;
-   if (tg2.fragment == 0)
+   if (tg2.fragment.get() == 0)
       return 1;
 
    return tg2.fragment->vertexCount() - tg1.fragment->vertexCount();
@@ -49,8 +49,9 @@ void TGroup::copy (TGroup &other)
    tgroup_comment.copy(other.tgroup_comment);
    tgroup_id = other.tgroup_id;
 
-   fragment = other.fragment->neu();
-   fragment->clone(*other.fragment, 0, 0);
+   AutoPtr<BaseMolecule> new_fragment(other.fragment->neu());
+   fragment.reset(new_fragment.release());
+   fragment->clone(*other.fragment.get(), 0, 0);
 }
 
 IMPL_ERROR(MoleculeTGroups, "molecule tgroups");

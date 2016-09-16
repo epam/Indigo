@@ -3449,19 +3449,20 @@ void MolfileLoader::_readTGroups3000 ()
             if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
             {
                _scanner.seek(pos, SEEK_SET);
-               tgroup.fragment = _bmol->neu();
+               AutoPtr<BaseMolecule> fragment(_bmol->neu());
+               tgroup.fragment.reset(fragment.release());
 
                MolfileLoader loader(_scanner);
-               loader._bmol = tgroup.fragment;
+               loader._bmol = tgroup.fragment.get();
                if (_bmol->isQueryMolecule())
                {
-                  loader._qmol = (QueryMolecule *)tgroup.fragment;
+                  loader._qmol = &loader._bmol->asQueryMolecule();
                   loader._mol = 0;
                }
                else
                {
                   loader._qmol = 0;
-				  loader._mol = (Molecule *)tgroup.fragment;
+                  loader._mol = &loader._bmol->asMolecule();
                }
                loader._readCtab3000();
                loader._postLoad();

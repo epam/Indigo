@@ -1069,7 +1069,7 @@ void MolfileSaver::_writeTGroup (Output &output, BaseMolecule &mol, int tg_idx)
 
    _writeMultiString(output, buf.ptr(), buf.size());
 
-   _writeCtab(output, *tgroup.fragment, mol.isQueryMolecule());
+   _writeCtab(output, *tgroup.fragment.get(), mol.isQueryMolecule());
 
 }
 

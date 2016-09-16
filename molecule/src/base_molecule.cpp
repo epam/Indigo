@@ -1221,7 +1221,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
       const TGroup &tg = templates.at(i);
 
       fragment.clear();
-      fragment.clone_KeepIndices(*tg.fragment);
+      fragment.clone_KeepIndices(*tg.fragment.get());
 
       sgs.clear();
       base_sgs.clear();
@@ -1272,7 +1272,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          Superatom &su = (Superatom &) this->sgroups.getSGroup(sgs[l]);
 
 
-         if (su.sa_class.size() > 0 && strncmp(su.sa_class.ptr(), "LGRP", 4) == 0)
+         if (su.sa_class.size() > 3 && strncmp(su.sa_class.ptr(), "LGRP", 4) == 0)
          {
             if (remove_scsr_lgrp)
                sgroups.remove(sgs[l]);
@@ -1390,7 +1390,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
    {
       const TGroup &tg = templates.at(i);
       fragment.clear();
-      fragment.clone_KeepIndices(*tg.fragment);
+      fragment.clone_KeepIndices(*tg.fragment.get());
 
       sgs.clear();
       base_sgs.clear();
@@ -1550,7 +1550,7 @@ int BaseMolecule::_transformTGroupToSGroup (int idx)
    int tg_idx = tgroups.findTGroup(getTemplateAtom(idx));
    TGroup &tgroup = tgroups.getTGroup(tg_idx);
    fragment.clear();
-   fragment.clone_KeepIndices(*tgroup.fragment);
+   fragment.clone_KeepIndices(*tgroup.fragment.get());
 
    sgs.clear();
    att_atoms.clear();
