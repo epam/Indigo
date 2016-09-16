@@ -1272,7 +1272,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          Superatom &su = (Superatom &) this->sgroups.getSGroup(sgs[l]);
 
 
-         if (strncmp(su.sa_class.ptr(), "LGRP", 4) == 0)
+         if (su.sa_class.size() > 0 && strncmp(su.sa_class.ptr(), "LGRP", 4) == 0)
          {
             if (remove_scsr_lgrp)
                sgroups.remove(sgs[l]);
