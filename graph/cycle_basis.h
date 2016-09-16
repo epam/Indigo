@@ -30,6 +30,7 @@ public:
     const Array<int>& getCycle(int num) const {return _cycles[num]; }
 
     bool containsVertex(int vertex) const;
+    inline void clear() {_cycles.clear(); _cycleVertices.clear();}
     
 private:
    CycleBasis(const CycleBasis&);// no implicit copy

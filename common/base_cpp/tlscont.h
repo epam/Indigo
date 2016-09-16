@@ -298,7 +298,8 @@ public:
    int _POOL_##name##_idx;                                             \
    _GET_TYPE(TYPE) &name = _POOL_##name->getVacant(_POOL_##name##_idx);           \
    _ReusableVariablesAutoRelease< _GET_TYPE(TYPE) > _POOL_##name##_auto_release;  \
-   _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr())
+   _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());      \
+   name.clear();
 
 //
 // Reusable class members definition

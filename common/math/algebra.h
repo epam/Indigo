@@ -113,6 +113,8 @@ struct Vec2f
       x = 0;
       y = 0;
    }
+   
+   inline void clear() { zero(); }
 
    inline void negate () {x = -x; y = -y;}
 
@@ -360,6 +362,8 @@ struct Vec3f
       y = 0;
       z = 0;
    }
+   
+   inline void clear() { zero(); }
 
    inline void negate () {x = -x; y = -y; z = -z;}
 

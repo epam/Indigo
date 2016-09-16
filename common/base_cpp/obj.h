@@ -151,6 +151,8 @@ public:
          _initialized = false;
       }
    }
+   
+   inline void clear() {free();}
 
    DECL_TPL_ERROR(ObjError);
 protected:

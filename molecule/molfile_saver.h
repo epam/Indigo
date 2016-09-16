@@ -67,6 +67,15 @@ public:
       int          ref_cip1;
       int          ref_cip2;
       bool         use_rule_5;
+      
+      inline void clear() {
+         mol = 0;
+         cip_desc = 0;
+         used1 = 0;
+         used2 = 0;
+         ref_cip1=0;
+         ref_cip2=0;
+      }
    };
 
    MolfileSaver (Output &output);

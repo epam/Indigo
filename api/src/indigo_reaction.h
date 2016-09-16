@@ -38,6 +38,8 @@ public:
    static bool is (IndigoObject &obj);
 
    virtual const char * debugInfo ();
+   
+   inline void clear() {_monomersProperties.clear(); _properties.clear();}
 
    MonomersProperties _monomersProperties;
    indigo::PropertiesMap _properties;

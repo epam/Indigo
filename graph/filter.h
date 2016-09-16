@@ -53,6 +53,7 @@ public:
    void collectGraphVertices (const Graph &graph, Array<int> &indices) const;
    void collectGraphEdges (const Graph &graph, Array<int> &indices) const;
    int  count (const Graph &graph) const;
+   inline void clear() {_filter=0; _own.clear(); _value=0; _type=0;}
 
    DECL_ERROR;
 
