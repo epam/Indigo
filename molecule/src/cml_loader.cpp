@@ -693,15 +693,18 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
             throw Error("error parsing order");
       }
 
+      const char *query_type = elem->Attribute("queryType");
 
       if (_mol != 0)
       {
-         idx = _mol->addBond_Silent(beg, end, order_val);
+         if (query_type == 0)
+            idx = _mol->addBond_Silent(beg, end, order_val);
+         else
+            throw Error("'query type' bonds are allowed only for queries");
       }
       else
       {
          AutoPtr<QueryMolecule::Bond> bond;
-         const char *query_type = elem->Attribute("queryType");
 
          if (query_type == 0)
          {

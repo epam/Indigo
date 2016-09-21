@@ -137,16 +137,16 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
          atom->SetAttribute("id", buf.ptr());
          atom->SetAttribute("elementType", atom_str);
 
-         if (_mol->getAtomIsotope(i) != 0)
+         if (_mol->getAtomIsotope(i) > 0)
          {
             atom->SetAttribute("isotope", _mol->getAtomIsotope(i));
             // for inchi-1 program which ignores "isotope" property (version 1.03)
             atom->SetAttribute("isotopeNumber", _mol->getAtomIsotope(i));
          }
 
-         if (_mol->getAtomCharge(i) != 0)
+         int charge = _mol->getAtomCharge(i);
+         if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
             atom->SetAttribute("formalCharge", _mol->getAtomCharge(i));
-
 
          if (!_mol->isRSite(i) && !_mol->isPseudoAtom(i))
          {
