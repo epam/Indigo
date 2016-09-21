@@ -13,6 +13,7 @@
 ***************************************************************************/
 
 #include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <iostream>
 
@@ -763,7 +764,7 @@ No param check - did that on caller side
 */
 void MoleculeNameParser::parseMolecule(const char *name, Molecule &molecule) {
 	string input(name);
-	std::transform(input.begin(), input.end(), input.begin(), tolower);
+	std::transform(input.begin(), input.end(), input.begin(), [](unsigned long c){ return std::tolower(c); });
 
 	AuxParseTools::checkBrackets(input);
 	Parse parse(input);

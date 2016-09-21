@@ -152,7 +152,7 @@ namespace indigo {
 			words.insert(buffer);
 
 		for (const auto& it : _leaves) {
-			string s = buffer + it.first;
+			std::string s = buffer + it.first;
 			if (it.second->_mark)
 				words.insert(s);
 
@@ -169,8 +169,9 @@ namespace indigo {
 
 		const std::string& remainder = prefix.substr(1);
 		const char ch = prefix[0];
-		if ((const auto& it = _leaves.find(ch)) != _leaves.end()) {
-			const Trie const * leaf = it->second;
+		const auto& it = _leaves.find(ch);
+		if (it != _leaves.end()) {
+			const Trie* leaf = it->second;
 			buffer += prefix[0];
 			leaf->getWordsWithPrefix(remainder, words, buffer);
 		}
