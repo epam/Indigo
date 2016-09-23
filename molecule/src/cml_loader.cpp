@@ -327,8 +327,12 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
       const char *query_props = elem->Attribute("mrvQueryProps");
 
       if (query_props != 0)
-         a.query_props = query_props;
-
+      {
+         if (_qmol != 0)
+            a.query_props = query_props;
+         else
+            throw Error("'query features' are allowed only for queries");
+      }
    }
 
    // Parse them
