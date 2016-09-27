@@ -18,8 +18,8 @@ import platform
 from array import array
 from ctypes import c_int, c_char_p, c_float, POINTER, pointer, CDLL, RTLD_GLOBAL, c_ulonglong, c_byte
 
-DECODE_ENCODING = 'ascii'
-ENCODE_ENCODING = 'ascii'
+DECODE_ENCODING = 'utf-8'
+ENCODE_ENCODING = 'utf-8'
 
 class IndigoException (Exception):
     def __init__(self, value):
@@ -2073,10 +2073,7 @@ class Indigo(object):
         return result
 
     def _checkResultString (self, result):
-        if sys.version_info >= (3, 0):
-            return self._checkResultPtr(result).decode(DECODE_ENCODING)  
-        else:
-            return self._checkResultPtr(result).encode(ENCODE_ENCODING)
+        return self._checkResultPtr(result).decode(DECODE_ENCODING)  
 
     def convertToArray (self, iteratable):
         if isinstance(iteratable, IndigoObject):
