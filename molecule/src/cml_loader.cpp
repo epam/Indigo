@@ -435,26 +435,6 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
                   throw Error("negative hydrogen count");
                total_h_count[idx] = val;
             }
-     
-            if (!a.rgroupref.empty())
-            {
-               int val;
-               if (sscanf(a.rgroupref.c_str(), "%d", &val) != 1)
-                  throw Error("error parsing R-group reference");
-               _mol->allowRGroupOnRSite(idx, val);
-            }
-      
-            if (!a.attpoint.empty())
-            {
-               int val;
-               if (strncmp(a.attpoint.c_str(), "both", 4) == 0)
-                  val = 3;
-               else if (sscanf(a.attpoint.c_str(), "%d", &val) != 1)
-                  throw Error("error parsing Attachment point");
-               for (int att_idx = 0; (1 << att_idx) <= val; att_idx++)
-                  if (val & (1 << att_idx))
-                     _mol->addAttachmentPoint(att_idx + 1, idx);
-            }
          }
          else 
          {
@@ -626,6 +606,27 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
             idx = _qmol->addAtom(atom.release());
             atoms_id.emplace(a.id, idx);
             total_h_count.expandFill(idx + 1, -1);
+         }
+
+
+         if (!a.rgroupref.empty())
+         {
+            int val;
+            if (sscanf(a.rgroupref.c_str(), "%d", &val) != 1)
+               throw Error("error parsing R-group reference");
+            _bmol->allowRGroupOnRSite(idx, val);
+         }
+   
+         if (!a.attpoint.empty())
+         {
+            int val;
+            if (strncmp(a.attpoint.c_str(), "both", 4) == 0)
+               val = 3;
+            else if (sscanf(a.attpoint.c_str(), "%d", &val) != 1)
+               throw Error("error parsing Attachment point");
+            for (int att_idx = 0; (1 << att_idx) <= val; att_idx++)
+               if (val & (1 << att_idx))
+                  _bmol->addAttachmentPoint(att_idx + 1, idx);
          }
 
          if (!a.x.empty())
