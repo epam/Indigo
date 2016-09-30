@@ -21,15 +21,16 @@ from ctypes import c_int, c_char_p, c_float, POINTER, pointer, CDLL, RTLD_GLOBAL
 DECODE_ENCODING = 'utf-8'
 ENCODE_ENCODING = 'utf-8'
 
+
 class IndigoException (Exception):
     def __init__(self, value):
-        self.value = value
+        if sys.version_info > (3, 0):
+            self.value = value.decode(DECODE_ENCODING)
+        else:
+            self.value = value
 
     def __str__(self):
-        if sys.version_info > (3, 0):
-            return str(self.value.decode(DECODE_ENCODING))  
-        else:
-            return str(self.value)
+        return self.value
 
 
 class IndigoObject(object):
@@ -2073,7 +2074,7 @@ class Indigo(object):
         return result
 
     def _checkResultString (self, result):
-        return self._checkResultPtr(result).decode(DECODE_ENCODING)  
+        return self._checkResultPtr(result).decode(DECODE_ENCODING)
 
     def convertToArray (self, iteratable):
         if isinstance(iteratable, IndigoObject):
