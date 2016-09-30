@@ -19,6 +19,8 @@
 
 #include "tinyxml.h"
 
+#include "base_cpp/scanner.h"
+#include "molecule/smiles_loader.h"
 #include "molecule/molecule_name_parser.h"
 
 #include "molecule/alkanes.inc"
@@ -36,16 +38,18 @@ IMPL_ERROR(MoleculeNameParser, "name_parsing::MoleculeNameParser");
 IMPL_ERROR(AuxParseTools, "name_parsing::AuxParseTools");
 IMPL_ERROR(DictionaryManager, "name_parsing::TableManager");
 IMPL_ERROR(Parse, "name_parsing::Parse");
+IMPL_ERROR(TreeBuilder, "name_parsing::TreeBuilder");
 
 // Converts a given token type name into enum value, 'unknown' if no name found
 TokenType Token::tokenTypeFromString(const std::string& s) {
 	const auto& begin = std::begin(TokenTypeStrings);
 	const auto& end = std::end(TokenTypeStrings);
 	const auto& it = find(begin, end, s);
-	if (it != end)
+	if (it != end) {
 		return static_cast<TokenType>(std::distance(begin, it));
-	else
-		return TokenType::unknown;
+	}
+	
+	return TokenType::unknown;
 }
 
 DictionaryManager::DictionaryManager() {
@@ -55,31 +59,19 @@ DictionaryManager::DictionaryManager() {
 	readTokenTypeStrings();
 
 	readTable(alkanes_table, true);
-	readTable(basic_elements_table, true);
 	readTable(multipliers_table, true);
 	readTable(separators_table);
+
+	readBasicElementsTable();
 }
 
-void DictionaryManager::readTokenTypeStrings() {
+void DictionaryManager::readBasicElementsTable() {
 	TiXmlDocument doc;
 
-	doc.Parse(token_types_table);
-	if (doc.Error())
-		throw Error("Cannot parse the token types table");
-
-	TiXmlHandle hdoc(&doc);
-	TiXmlHandle tokenTypes = hdoc.FirstChild("tokenTypes");
-	TiXmlElement* e = tokenTypes.FirstChild("tokenType").ToElement();
-	for (; e; e = e->NextSiblingElement())
-		TokenTypeStrings.push_back(e->GetText());
-}
-
-void DictionaryManager::readTable(const char* table, bool useTrie /* = false*/) {
-	TiXmlDocument doc;
-
-	doc.Parse(table);
-	if (doc.Error())
-		throw Error("Cannot parse table %s", table);
+	doc.Parse(basic_elements_table);
+	if (doc.Error()) {
+		throw Error("Cannot parse table %s", basic_elements_table);
+	}
 
 	TiXmlHandle hdoc(&doc);
 	TiXmlHandle tokenTables = hdoc.FirstChild("tokenTables");
@@ -87,8 +79,78 @@ void DictionaryManager::readTable(const char* table, bool useTrie /* = false*/) 
 	for (; tokenTable; tokenTable = tokenTable->NextSiblingElement()) {
 		const char* name = tokenTable->Attribute("name");
 		const char* type = tokenTable->Attribute("type");
-		if (!name || !type)
+		if (!name || !type) {
 			throw Error("Cannot parse table");
+		}
+
+		TokenType tt = Token::tokenTypeFromString(type);
+
+		TiXmlElement* e = tokenTable->FirstChild("token")->ToElement();
+		for (; e; e = e->NextSiblingElement()) {
+			const char* lexeme = e->GetText();
+			const char* number = e->Attribute("number");
+			const char* symbol = e->Attribute("symbol");
+			if (!lexeme || !number || !symbol) {
+				throw Error("Cannot parse table %s", name);
+			}
+
+			/*
+			For basic elements, we combine number and symbol into one value
+			Values are separated by underscore _
+			*/
+
+			string value = number;
+			value += '_';
+			value += symbol;
+
+			/*
+			Symbols might have a separator '|', in which case we need to add
+			several symbols with the same token type into the dictionary
+			*/
+
+			char delim[] = "|";
+			char* fragment = ::strtok(const_cast<char*>(lexeme), delim);
+			while (fragment) {
+				addLexeme(fragment, Token(name, value, tt), true);
+				fragment = ::strtok(nullptr, delim);
+			}
+		}
+	}
+}
+
+void DictionaryManager::readTokenTypeStrings() {
+	TiXmlDocument doc;
+
+	doc.Parse(token_types_table);
+	if (doc.Error()) {
+		throw Error("Cannot parse the token types table");
+	}
+
+	TiXmlHandle hdoc(&doc);
+	TiXmlHandle tokenTypes = hdoc.FirstChild("tokenTypes");
+	TiXmlElement* e = tokenTypes.FirstChild("tokenType").ToElement();
+	for (; e; e = e->NextSiblingElement()) {
+		TokenTypeStrings.push_back(e->GetText());
+	}
+}
+
+void DictionaryManager::readTable(const char* table, bool useTrie /* = false*/) {
+	TiXmlDocument doc;
+
+	doc.Parse(table);
+	if (doc.Error()) {
+		throw Error("Cannot parse table %s", table);
+	}
+
+	TiXmlHandle hdoc(&doc);
+	TiXmlHandle tokenTables = hdoc.FirstChild("tokenTables");
+	TiXmlElement* tokenTable = tokenTables.FirstChild("tokenTable").ToElement();
+	for (; tokenTable; tokenTable = tokenTable->NextSiblingElement()) {
+		const char* name = tokenTable->Attribute("name");
+		const char* type = tokenTable->Attribute("type");
+		if (!name || !type) {
+			throw Error("Cannot parse table");
+		}
 
 		const bool isSeparator = (::strcmp(name, "separator") == 0);
 		TokenType tt = Token::tokenTypeFromString(type);
@@ -97,8 +159,9 @@ void DictionaryManager::readTable(const char* table, bool useTrie /* = false*/) 
 		for (; e; e = e->NextSiblingElement()) {
 			const char* lexeme = e->GetText();
 			const char* value = e->Attribute("value");
-			if (!lexeme || !value)
+			if (!lexeme || !value) {
 				throw Error("Cannot parse table %s", name);
+			}
 			
 			// Symbols might have a separator '|', in which case we need to add
 			// several symbols with the same token type into the dictionary
@@ -109,16 +172,18 @@ void DictionaryManager::readTable(const char* table, bool useTrie /* = false*/) 
 				fragment = ::strtok(nullptr, delim);
 			}
 			// all separators are 1-byte ASCII
-			if (isSeparator)
+			if (isSeparator) {
 				separators.push_back(lexeme[0]);
+			}
 		}
 	}
 }
 
 void DictionaryManager::addLexeme(const string& lexeme, const Token& token, bool useTrie) {
 	dictionary[lexeme] = token;
-	if (useTrie)
+	if (useTrie) {
 		lexemesTrie.addWord(lexeme, token);
+	}
 }
 
 void Parse::scan() {
@@ -149,8 +214,9 @@ void Parse::scan() {
 		size_t pos = separators.find(ch);
 		if (pos != separators.npos) {
 			const auto& it = dictionary.find({ ch });
-			if (it != dictionary.end())
+			if (it != dictionary.end()) {
 				lexemes.push_back(Lexeme(ch, it->second));
+			}
 			continue;
 		}
 
@@ -174,8 +240,9 @@ void Parse::scan() {
 
 // Retrieves a next lexeme from the stream, incrementing the stream pointer
 const Lexeme& Parse::getNextLexeme() const {
-	if (currentLexeme < lexemes.size())
+	if (currentLexeme < lexemes.size()) {
 		return lexemes[currentLexeme++];
+	}
 
 	throw Error("Lexemes stream pointer overflow");
 }
@@ -262,8 +329,9 @@ bool Parse::tryElision(const string& failure) {
 		if (!root.isWord(tryout)) {
 			tryout = failure;
 			tryout.insert(0, 1, { ch });
-			if (!root.isWord(tryout))
+			if (!root.isWord(tryout)) {
 				return false;
+			}
 		}
 		processTextFragment(tryout);
 		_hasElision = true;
@@ -274,8 +342,9 @@ bool Parse::tryElision(const string& failure) {
 }
 
 FragmentNode::~FragmentNode() {
-	for (auto node : nodes)
+	for (FragmentNode* node : nodes) {
 		delete node;
+	}
 }
 
 // Inserts a new node before anchor position, returns status
@@ -301,8 +370,9 @@ void FragmentNode::insert(FragmentNode* node) {
 void FragmentNode::print(ostream& out) const {
 	out << "Parent: " << parent << endl;
 
-	if (type == FragmentNodeType::unknown)
+	if (type == FragmentNodeType::unknown) {
 		out << "Type: unknown" << endl;
+	}
 }
 
 void FragmentNodeRoot::print(ostream& out) const {
@@ -312,22 +382,30 @@ void FragmentNodeRoot::print(ostream& out) const {
 
 void FragmentNodeBase::print(ostream& out) const {
 	out << "Type: FragmentNodeBase" << endl;
+
 	out << "Multipliers:" << endl;
-	const auto& container = multipliers._Get_container();
-	std::for_each(container.begin(), container.end(), [&out](const auto& multiplier) {
+	const auto& mul_container = multipliers._Get_container();
+	std::for_each(mul_container.begin(), mul_container.end(), [&out](const Multiplier& multiplier) {
 		out << "\tvalue: " << multiplier.first << endl;
 	});
-	out << "Element: " << static_cast<int>(element) << endl;
+
+	out << "Locants:" << endl;
+	for (int locant : locants) {
+		out << "\tvalue: " << locant << endl;
+	}
+
+	out << "Element: " << endl;
+	out << "\tnumber: " << element.first << endl;
+	out << "\tsymbol: " << element.second << endl;
 	FragmentNode::print(out);
 }
 
 void FragmentNodeSubstituent::print(ostream& out) const {
 	out << "Type: FragmentNodeSubstituent" << endl;
-	out << "Locants:" << endl;
-	const auto& container = locants._Get_container();
-	std::for_each(container.begin(), container.end(), [&out](int locant) {
-		out << "\tvalue: " << locant << endl;
-	});
+	out << "Positions:" << endl;
+	for (int pos : positions) {
+		out << "\tvalue: " << pos << endl;
+	}
 	out << "Fragment multiplier: " << fragmentMultiplier << endl;
 	FragmentNodeBase::print(out);
 }
@@ -343,10 +421,15 @@ ostream& operator<<(ostream& out, const FragmentNode* node) {
 }
 #endif // DEBUG
 
+FragmentNodeBase::FragmentNodeBase() {
+	type = FragmentNodeType::base;
+	element.first = indigo::ELEM_MIN;
+}
+
 int FragmentNodeBase::combineMultipliers() {
 	int result = 0;
 	while (!multipliers.empty()) {
-		const auto& mul = multipliers.top();
+		const Multiplier& mul = multipliers.top();
 		result += mul.first;
 		multipliers.pop();
 	}
@@ -360,8 +443,9 @@ FragmentBuildTree::FragmentBuildTree() {
 }
 
 FragmentBuildTree::~FragmentBuildTree() {
-	for (auto root : roots)
+	for (FragmentNode* root : roots) {
 		delete root;
+	}
 }
 
 void FragmentBuildTree::addRoot() {
@@ -377,7 +461,7 @@ bool TreeBuilder::processParse() {
 
 void TreeBuilder::initBuildTree() {
 	FragmentNodeBase* node = new FragmentNodeBase;
-	auto root = buildTree->getCurrentRoot();
+	FragmentNode* root = buildTree->getCurrentRoot();
 	root->insert(node);
 	current = node;
 }
@@ -413,25 +497,57 @@ bool TreeBuilder::processParseImpl() {
 
 	TokenType tt = token.type;
 	const string& tname = token.name;
-	if (tt == TokenType::endOfStream)
+	
+	if (tt == TokenType::endOfStream) {
 		return true;
-	if ((tt == TokenType::unknown) || (tt == TokenType::text))
+	}
+
+	if ((tt == TokenType::unknown) || (tt == TokenType::text)) {
 		return false;
+	}
 
 	if (tname == "alkanes") {
-		if (!processAlkane(lexeme))
+		if (!processAlkane(lexeme)) {
 			return false;
-	}
-	else if (tname == "multiplier") {
-		if (!processMultiplier(lexeme))
+		}
+	} else if (tname == "multiplier") {
+		if (!processMultiplier(lexeme)) {
 			return false;
-	}
-	else if (tname == "separator") {
-		if (!processSeparator(lexeme))
+		}
+	} else if (tname == "separator") {
+		if (!processSeparator(lexeme)) {
 			return false;
+		}
+	} else if (tname == "basicElement") {
+		if (!processBasicElement(lexeme)) {
+			return false;
+		}
 	}
 
 	return processParseImpl();
+}
+
+bool TreeBuilder::processBasicElement(const Lexeme& lexeme) {
+	// FIXME
+	// currently inserting basic element into base node
+	assert(current->checkType(FragmentNodeType::base));
+
+	const Token& token = lexeme.getToken();
+	const string& value = token.value;
+	const size_t pos = value.find('_');
+	if (pos == string::npos) {
+		return false;
+	}
+
+	const string number = value.substr(0, pos);
+	const string symbol = value.substr(pos + 1);
+	const int element = AuxParseTools::strToInt(number);
+
+	FragmentNodeBase* base = static_cast<FragmentNodeBase*>(current);
+	base->setElementNumber(element);
+	base->setElementSymbol(symbol);
+
+	return true;
 }
 
 void TreeBuilder::processSuffix(const Lexeme& lexeme) {
@@ -439,15 +555,15 @@ void TreeBuilder::processSuffix(const Lexeme& lexeme) {
 	const Token& token = lexeme.getToken();
 
 	FragmentNodeBase* node = static_cast<FragmentNodeBase*>(current);
-	node->setElement(ELEM_C);
+	node->setElementNumber(ELEM_C);
 
 	if (text == "ane") {
-		node->setBondType(BondType::ONE);
+		node->setBondOrder(BOND_SINGLE);
 		node->setValencyDiff(0);
 		node->setFreeAtomOrder(0);
 	}
 	else if (text == "yl") {
-		node->setBondType(BondType::ONE);
+		node->setBondOrder(BOND_SINGLE);
 		node->setValencyDiff(1);
 		node->setFreeAtomOrder(1);
 	}
@@ -461,7 +577,7 @@ bool TreeBuilder::processAlkane(const Lexeme& lexeme) {
 	switch (token.type) {
 	case TokenType::bases: {
 		int value = AuxParseTools::strToInt(token.value);
-		auto& multipliers = static_cast<FragmentNodeBase*>(current)->getMultipliers();
+		Multipliers& multipliers = static_cast<FragmentNodeBase*>(current)->getMultipliers();
 		multipliers.push({ value, TokenType::basic });
 	} break;
 
@@ -509,7 +625,7 @@ bool TreeBuilder::processMultiplier(const Lexeme& lexeme) {
 			}
 		}
 
-		auto& multipliers = static_cast<FragmentNodeBase*>(current)->getMultipliers();
+		Multipliers& multipliers = static_cast<FragmentNodeBase*>(current)->getMultipliers();
 		multipliers.push({ value, token.type });
 	} break;
 
@@ -520,15 +636,16 @@ bool TreeBuilder::processMultiplier(const Lexeme& lexeme) {
 			FragmentNodeSubstituent* node = static_cast<FragmentNodeSubstituent*>(current);
 			if (node->getExpectFragMultiplier()) {
 				int fragMultiplier = node->getFragmentMultiplier();
-				if (fragMultiplier != 1)
+				if (fragMultiplier != 1) {
 					fragMultiplier *= value;
+				}
 				node->setFragmentMultiplier(fragMultiplier);
 				node->setExpectFragMultiplier(false);
 				break;
 			}
 		}
 
-		auto& multipliers = static_cast<FragmentNodeBase*>(current)->getMultipliers();
+		Multipliers& multipliers = static_cast<FragmentNodeBase*>(current)->getMultipliers();
 		if (multipliers.empty()) {
 			multipliers.push({ value, TokenType::basic });
 		} else {
@@ -555,8 +672,9 @@ bool TreeBuilder::processSeparator(const Lexeme& lexeme) {
 	switch (token.type) {
 	case TokenType::openingBracket: {
 		// empty brackets aren't allowed
-		if (parse->peekNextToken(TokenType::closingBracket))
+		if (parse->peekNextToken(TokenType::closingBracket)) {
 			return false;
+		}
 
 		FragmentNodeBase* base = new FragmentNodeBase;
 		current->insert(base);
@@ -565,31 +683,38 @@ bool TreeBuilder::processSeparator(const Lexeme& lexeme) {
 	} break;
 
 	case TokenType::closingBracket:
-		if (!upOneLevel())
+		if (!upOneLevel()) {
 			return false;
+		}
 		break;
 
 	case TokenType::locant: {
 		if (startNewNode) {
-			auto parent = current->getParent();
+			FragmentNode* parent = current->getParent();
 			FragmentNodeSubstituent* subst = new FragmentNodeSubstituent;
-			if (!parent->insertBefore(subst, getCurrentBase()))
+			if (!parent->insertBefore(subst, getCurrentBase())) {
 				return false;
+			}
 			current = subst;
 			startNewNode = false;
 		}
-		int locant = AuxParseTools::strToInt(token.value);
-		auto& locants = static_cast<FragmentNodeSubstituent*>(current)->getLocants();
-		locants.push(locant);
+		int value = AuxParseTools::strToInt(token.value);
+		Positions& positions = static_cast<FragmentNodeSubstituent*>(current)->getPositions();
+		positions.push_back(value);
+		FragmentNodeBase* base = getCurrentBase();
+		Locants& locants = base->getLocants();
+		locants.push_back(value);
 	} break;
 
+	// currently no-op
 	case TokenType::prime:
 		break;
 
 	case TokenType::punctuation: {
 		if (text == ",") {
-			if (!current->checkType(FragmentNodeType::substituent))
+			if (!current->checkType(FragmentNodeType::substituent)) {
 				return false;
+			}
 			static_cast<FragmentNodeSubstituent*>(current)->setExpectFragMultiplier(true);
 			break;
 		}
@@ -614,143 +739,173 @@ bool TreeBuilder::processSeparator(const Lexeme& lexeme) {
 }
 
 // Retrieves current level's base; each level has only one base
-FragmentNode* TreeBuilder::getCurrentBase() {
-	if (current->checkType(FragmentNodeType::base))
-		return current;
+FragmentNodeBase* TreeBuilder::getCurrentBase() {
+	if (current->checkType(FragmentNodeType::base)) {
+		return static_cast<FragmentNodeBase*>(current);
+	}
 
 	FragmentNode* parent = current->getParent();
-	if (!parent)
+	if (!parent) {
 		return nullptr;
+	}
 
-	// Base is always a rightmost element
+	// Base is always the rightmost node
 	const Nodes& nodes = parent->getNodes();
-	return nodes.back();
+	return static_cast<FragmentNodeBase*>(nodes.back());
 }
 
 // Retrieves upper level's base, if any; each level has only one base
-FragmentNode* TreeBuilder::getParentBase() {
-	const auto parent = current->getParent();
-	if (!parent)
+FragmentNodeBase* TreeBuilder::getParentBase() {
+	const FragmentNode* parent = current->getParent();
+	if (!parent) {
 		return nullptr;
+	}
 
-	const auto grand = parent->getParent();
-	if (!grand)
+	const FragmentNode* grand = parent->getParent();
+	if (!grand) {
 		return nullptr;
+	}
 
-	// Base is always a rightmost element
+	// Base is always the rightmost node
 	const Nodes& nodes = grand->getNodes();
-	return nodes.back();
+	return static_cast<FragmentNodeBase*>(nodes.back());
+}
+
+ResultBuilder::ResultBuilder(const Parse& input) {
+	treeBuilder.reset(new TreeBuilder(input));
+	initOrganicElements();
+}
+
+void ResultBuilder::initOrganicElements() {
+	organicElements[ELEM_B] = "B";
+	organicElements[ELEM_C] = "C";
+	organicElements[ELEM_N] = "N";
+	organicElements[ELEM_O] = "O";
+	organicElements[ELEM_P] = "P";
+	organicElements[ELEM_S] = "S";
+	organicElements[ELEM_F] = "F";
+	organicElements[ELEM_Cl] = "Cl";
+	organicElements[ELEM_Br] = "Br";
 }
 
 /*
 Traverses the build tree in post-order depth-first order, creates
-Molecule objects and combines then into the resulting structure
+SMILES representation and loads the SMILES into the resulting Molecule
 */
 bool ResultBuilder::buildResult(Molecule& molecule) {
 	molecule.clear();
 
 	const auto& buildTree = treeBuilder->getBuildTree();
-	const auto& roots = buildTree->getRoots();
-	if (roots.empty())
+	const Nodes& roots = buildTree->getRoots();
+	if (roots.empty()) {
 		return false;
+	}
 
 	// most time we'll have a sigle root
-	for (const auto root : roots) {
-		const auto& nodes = root->getNodes();
-		for (const auto node : nodes) {
+	for (FragmentNode* root : roots) {
+		const Nodes& nodes = root->getNodes();
+		for (FragmentNode* node : nodes) {
 			processNode(node);
 		}
 		combine(root);
 	}
 
-	Fragment f = fragments.top();
-	molecule.mergeWithMolecule(*f, nullptr);
+	SMILES += std::move(fragments.top());
+	fragments.pop();
+	while (!fragments.empty()) {
+		SMILES += ".";
+		SMILES += std::move(fragments.top());
+		fragments.pop();
+	}
 
-	clear();
+	BufferScanner scanner(SMILES.c_str());
+	SmilesLoader loader(scanner);
+	loader.loadMolecule(molecule);
+
+	SMILES.clear();
+	auto containter = fragments._Get_container();
+	containter.clear();
 
 	return true;
 }
 
 void ResultBuilder::processNode(FragmentNode* node) {
-	const FragmentNodeType type = node->getType();
+	const Nodes& nodes = node->getNodes();
+	for (FragmentNode* node : nodes) {
+		processNode(node);
+	}
+
+	FragmentNodeType type = node->getType();
 	if (type == FragmentNodeType::base) {
-		processBase(static_cast<FragmentNodeBase*>(node));
+		processBaseNode(static_cast<FragmentNodeBase*>(node));
 	} else if (type == FragmentNodeType::substituent) {
-		processSubstituent(static_cast<FragmentNodeSubstituent*>(node));
+		processSubstNode(static_cast<FragmentNodeSubstituent*>(node));
 	}
 }
 
-void ResultBuilder::processBase(FragmentNodeBase* node) {
-	Fragment fragment = createFragment(node);
-	fragments.push(fragment);
-}
+void ResultBuilder::processBaseNode(FragmentNodeBase* base) {
+	const int multipliers = base->combineMultipliers();
+	const name_parsing::Element& element = base->getElement();
+	const int number = element.first;
+	const string& symbol = element.second;
 
-void ResultBuilder::processSubstituent(FragmentNodeSubstituent* node) {
-	bool mustCombine = false;
-	const auto& nodes = node->getNodes();
-	if (!nodes.empty()) {
-		mustCombine = true;
-		for (const auto child : nodes) {
-			processNode(child);
+	bool organicElement = (organicElements.find(number) != organicElements.end());
+
+	string fragment;
+	fragment += organicElement ? organicElements[number] : symbol;
+
+	if (multipliers > 1) {
+		for (int i = 1; i < multipliers; i++) {
+			fragment += organicElement ? organicElements[number] : symbol;
 		}
 	}
 
-	// make fragment
-	if (!mustCombine) {
-		processBase(node);
+	// locant positions are marked with pipe | for easier search and substitution
+	const char separator{ '|' };
+	const Locants& locants = base->getLocants();
+	if (!locants.empty()) {
+		int inserted{ 0 };
+		for (int loc : locants) {
+			fragment.insert(loc + inserted, 1, separator);
+			inserted++;
+		}
+	}
+
+	fragments.push(fragment);
+}
+
+void ResultBuilder::processSubstNode(FragmentNodeSubstituent* subst) {
+	const Nodes& nodes = subst->getNodes();
+	if (nodes.empty()) {
+		processBaseNode(subst);
 	} else {
-		combine(node);
+		combine(subst);
 	}
 }
 
 void ResultBuilder::combine(FragmentNode* node) {
-	const auto& nodes = node->getNodes();
-
-	Fragment base = fragments.top();
+	string base = std::move(fragments.top());
 	fragments.pop();
-	auto tail = nodes.rbegin();
-	++tail;
-	for (int i = nodes.size() - 1; i > 0; i--) {
-		Fragment subst = fragments.top();
+
+	const Nodes& nodes = node->getNodes();
+	auto it = nodes.rbegin();
+	++it;
+
+	for (; it != nodes.rend(); it++) {
+		string fragment = "(";
+		fragment += std::move(fragments.top());
+		fragment += ")";
 		fragments.pop();
 
-		FragmentNodeSubstituent* snode = static_cast<FragmentNodeSubstituent*>(*tail);
-		++tail;
-
-		base->mergeWithMolecule(*subst, nullptr);
+		FragmentNodeSubstituent* subst = static_cast<FragmentNodeSubstituent*>(*it);
+		const int fragMul = subst->getFragmentMultiplier();
+		for (int i = 0; i < fragMul; i++) {
+			size_t pos = base.find_last_of('|');
+			base.replace(pos, 1, fragment);
+		}
 	}
+
 	fragments.push(base);
-}
-
-Fragment ResultBuilder::createFragment(FragmentNodeBase* base) {
-	Fragment fragment = new Molecule;
-	fragment->clear();
-
-	// we add at least one atom
-	// position 0
-	fragment->addAtom(base->getElement());
-
-	int multiplier = base->combineMultipliers();
-	if (multiplier == 1) {
-		return fragment;
-	}
-
-	int position = 0;
-	int bond = static_cast<int>(base->getBondType());
-	for (int i = 1; i < multiplier; i++) {
-		position = fragment->addAtom(base->getElement());
-		fragment->addBond(position - 1, position, bond);
-	}
-
-	return fragment;
-}
-
-void ResultBuilder::clear() {
-	while (!fragments.empty()) {
-		Fragment f = fragments.top();
-		delete f;
-		fragments.pop();
-	}
 }
 
 /*
@@ -759,7 +914,7 @@ A given name undergoes several transformations:
 	phase 1: lexical analysis
 	phase 2: tokenization
 	phase 3: grammatical rules check
-	phase 4: construction of a Moleclule object from parsed fragments
+	phase 4: construction of a SMILES representation from parsed fragments
 No param check - did that on caller side
 */
 void MoleculeNameParser::parseMolecule(const char *name, Molecule &molecule) {
@@ -773,8 +928,9 @@ void MoleculeNameParser::parseMolecule(const char *name, Molecule &molecule) {
 	if (parse.hasFailures()) {
 		const Failures& failures = parse.getFailures();
 		string message;
-		for (const string& f : failures)
+		for (const string& f : failures) {
 			message += f + " ";
+		}
 		throw Error("Cannot parse input %s due to errors: %s", name, message);
 	}
 
@@ -797,15 +953,20 @@ Doesn't check brackets type matching (e.g. ((]] is valid)
 void AuxParseTools::checkBrackets(const string& s) {
 	int level = 0;
 	for (char ch : s) {
-		if (ch == '(' || ch == '[' || ch == '{')
+		if (ch == '(' || ch == '[' || ch == '{') {
 			level++;
-		else
-			if (ch == ')' || ch == ']' || ch == '}')
-				level--;
+			continue;
+		}
+
+		if (ch == ')' || ch == ']' || ch == '}') {
+			level--;
+			continue;
+		}
 	}
 
-	if (level != 0)
+	if (level != 0) {
 		throw Error("Opening and closing brackets don't match: %d", level);
+	}
 }
 
 // Converts std::string to int

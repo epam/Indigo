@@ -114,9 +114,7 @@ namespace name_parsing {
 		SymbolDictionary dictionary;			// global dictionary of pre-defined symbols
 		std::string		 separators;			// a string of separator characters
 
-		/*
-		 * Helpers
-		 */
+		void readBasicElementsTable();
 		void readTable(const char* table, bool useTrie = false);
 		void readTokenTypeStrings();
 		void addLexeme(const std::string& lexeme, const Token& token, bool useTrie);
@@ -212,14 +210,14 @@ namespace name_parsing {
 		Nodes nodes;
 
 	protected:
-		FragmentNodeType type   = FragmentNodeType::unknown;
+		FragmentNodeType type = FragmentNodeType::unknown;
 
 	public:
 		inline FragmentNode() { }
 		virtual ~FragmentNode();
 
-		virtual FragmentNodeType getType() const { return type; }
-		virtual bool checkType(FragmentNodeType type) { return (this->type == type); }
+		inline FragmentNodeType getType() const { return type; }
+		inline bool checkType(FragmentNodeType type) { return (this->type == type); }
 		inline void setType(FragmentNodeType type) { this->type = type; }
 
 		inline FragmentNode* getParent() { return parent; }
@@ -234,8 +232,6 @@ namespace name_parsing {
 
 		// Inserts a new node at the end of the list
 		void insert(FragmentNode* node);
-
-		virtual void setElement(int e) { /*no-op*/ }
 
 #ifdef DEBUG
 		virtual void print(std::ostream& out) const;
@@ -254,14 +250,9 @@ namespace name_parsing {
 	typedef std::pair<int, TokenType> Multiplier;
 	typedef std::stack<Multiplier> Multipliers;
 
-	/*
-	The type represents the number of bonds in the structure
-	*/
-	enum class BondType : int {
-		ONE = 1,
-		TWO,
-		THREE
-	};
+	typedef std::vector<int> Locants;
+
+	typedef std::pair<int, std::string> Element;
 
 	/*
 	A node that represents a base structure
@@ -270,9 +261,12 @@ namespace name_parsing {
 	*/
 	class FragmentNodeBase : public FragmentNode {
 
+		Locants locants;
+
 	protected:
 		Multipliers multipliers;
-		int element = indigo::ELEM_MIN;
+
+		Element element;
 
 		/*
 		A diff in total valency of the (sub)stucture
@@ -287,25 +281,30 @@ namespace name_parsing {
 		*/
 		int freeAtomOrder = 0;
 
-		BondType bondType = BondType::ONE;
+		int bondOrder = indigo::BOND_ZERO;		// from base_molecule.h via molecule.h
 
 	public:
-		inline FragmentNodeBase() { type = FragmentNodeType::base; }
+		FragmentNodeBase();
 
 		inline Multipliers& getMultipliers() { return multipliers; }
 		inline const Multipliers& getMultipliers() const { return multipliers; }
 
-		inline int getElement() const { return element; }
-		virtual void setElement(int e) { element = e; }
+		inline Element& getElement() { return element; }
+		inline const Element& getElement() const { return element; }
+		inline void setElementNumber(int number) { element.first = number; }
+		inline void setElementSymbol(const std::string& symbol) { element.second = symbol; }
 
 		inline int getValenceDiff() const { return valencyDiff; }
 		inline void setValencyDiff(int diff) { valencyDiff = diff; }
 
-		inline BondType getBondType() const { return bondType; }
-		inline void setBondType(BondType bond) { bondType = bond; }
+		inline int getBondOrder() const { return bondOrder; }
+		inline void setBondOrder(int order) { bondOrder = order; }
 
 		inline int getFreeAtomOrder() const { return freeAtomOrder; }
 		inline void setFreeAtomOrder(int order) { freeAtomOrder = order; }
+
+		inline Locants& getLocants() { return locants; }
+		inline const Locants& getLocants() const { return locants; }
 
 		/*
 		Returns the sum of multipliers stack
@@ -318,7 +317,7 @@ namespace name_parsing {
 #endif
 	};
 
-	typedef std::stack<int> Locants;
+	typedef std::vector<int> Positions;
 
 	/*
 	A node that represents a substituent
@@ -327,7 +326,8 @@ namespace name_parsing {
 	*/
 	class FragmentNodeSubstituent : public FragmentNodeBase {
 
-		Locants locants;
+		// Positions of this substituent inside its base
+		Positions positions;
 
 		/*
 		First multiplier in a substituent must match the number of locant positions
@@ -349,8 +349,8 @@ namespace name_parsing {
 	public:
 		inline FragmentNodeSubstituent() { type = FragmentNodeType::substituent; }
 
-		inline Locants& getLocants() { return locants; }
-		inline const Locants& getLocants() const { return locants; }
+		inline Positions& getPositions() { return positions; }
+		inline const Positions& getPositions() const { return positions; }
 
 		inline int getFragmentMultiplier() const { return fragmentMultiplier; }
 		inline void setFragmentMultiplier(int multiplier) { fragmentMultiplier = multiplier; }
@@ -394,6 +394,7 @@ namespace name_parsing {
 	Builds all trees in one pass, consequently reading the lexemes stream
 	*/
 	class TreeBuilder : public indigo::NonCopyable {
+		DECL_ERROR;
 
 		std::unique_ptr<FragmentBuildTree> buildTree;
 
@@ -404,10 +405,10 @@ namespace name_parsing {
 		FragmentNode* current = nullptr;
 
 		// Retrieves current level's base; each level has only one base
-		FragmentNode* getCurrentBase();
+		FragmentNodeBase* getCurrentBase();
 
 		// Retrieves upper level's base, if any; each level has only one base
-		FragmentNode* getParentBase();
+		FragmentNodeBase* getParentBase();
 
 		// A handle to Parse object; must not be freed
 		const Parse* parse;
@@ -436,6 +437,7 @@ namespace name_parsing {
 		bool processSeparator(const Lexeme& lexeme);
 
 		void processSuffix(const Lexeme& lexeme);
+		bool processBasicElement(const Lexeme& lexeme);
 
 	public:
 		inline TreeBuilder(const Parse& input) : parse{ &input } { buildTree.reset(new FragmentBuildTree); }
@@ -445,9 +447,6 @@ namespace name_parsing {
 
 		bool processParse();
 	};
-
-	typedef indigo::Molecule* Fragment;
-	typedef std::stack<Fragment> Fragments;
 
 	/*
 	Builds a resulting structure from a build tree
@@ -459,25 +458,28 @@ namespace name_parsing {
 		// A pointer to the tree builder, which provides the build tree
 		std::unique_ptr<TreeBuilder> treeBuilder;
 
+		std::string SMILES;
+
+		typedef std::map<int, std::string> Elements;
+		Elements organicElements;
+		void initOrganicElements();
+
+		typedef std::stack<std::string> Fragments;
 		Fragments fragments;
 
 		void processNode(FragmentNode* node);
-		void processBase(FragmentNodeBase* node);
-		void processSubstituent(FragmentNodeSubstituent* node);
-		Fragment createFragment(FragmentNodeBase* base);
-
+		void processBaseNode(FragmentNodeBase* base);
+		void processSubstNode(FragmentNodeSubstituent* subst);
 		void combine(FragmentNode* node);
 
-		void clear();
-
 	public:
-		inline ResultBuilder(const Parse& input) { treeBuilder.reset(new TreeBuilder(input)); }
+		ResultBuilder(const Parse& input);
 
 		inline bool buildTree() const { return treeBuilder->processParse(); }
 
 		/*
 		Traverses the build tree in post-order depth-first order, creates
-		Molecule objects and combines then into the resulting structure
+		SMILES representation and loads the SMILES into the resulting Molecule
 		*/
 		bool buildResult(indigo::Molecule& molecule);
 	};
