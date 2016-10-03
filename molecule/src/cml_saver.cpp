@@ -688,10 +688,12 @@ void CmlSaver::_addRgroups (TiXmlElement *elem, BaseMolecule &mol, bool query)
             continue;
 
          TiXmlElement * rg = new TiXmlElement("Rgroup");
-         elem->LinkEndChild(rg);
+         if (elem == 0)
+            _doc->LinkEndChild(rg);
+         else
+            elem->LinkEndChild(rg);
 
          rg->SetAttribute("rgroupID", i);
-
 
          if (rgroup.if_then > 0)
             rg->SetAttribute("thenR", rgroup.if_then);
@@ -743,6 +745,7 @@ void CmlSaver::_writeOccurrenceRanges (Output &out, const Array<int> &occurrence
       if (i != occurrences.size() - 1)
          out.printf(",");
    }
+   out.writeChar(0);
 }
 
 bool CmlSaver::_getRingBondCountFlagValue (QueryMolecule &qmol, int idx, int &value)
