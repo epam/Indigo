@@ -16,7 +16,7 @@
 #include "base_cpp/scanner.h"
 #include "base_cpp/output.h"
 #include "base_cpp/auto_ptr.h"
-#include "molecule/gross_formula.h"
+#include "molecule/molecule_gross_formula.h"
 #include "indigo_savers.h"
 
 IndigoScanner::IndigoScanner (Scanner *scanner) : IndigoObject(SCANNER), ptr(scanner)

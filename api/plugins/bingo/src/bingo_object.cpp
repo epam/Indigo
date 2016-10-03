@@ -10,7 +10,7 @@
 #include "reaction/reaction_substructure_matcher.h"
 
 #include "molecule/molecule.h"
-#include "molecule/gross_formula.h"
+#include "molecule/molecule_gross_formula.h"
 #include "molecule/cmf_saver.h"
 #include "molecule/cmf_loader.h"
 #include "molecule/molecule_fingerprint.h"

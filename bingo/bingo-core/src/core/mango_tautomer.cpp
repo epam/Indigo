@@ -17,7 +17,7 @@
 #include "base_cpp/scanner.h"
 #include "molecule/molecule_fingerprint.h"
 #include "core/bingo_error.h"
-#include "molecule/gross_formula.h"
+#include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_tautomer_matcher.h"
 #include "molecule/molfile_saver.h"
 #include "core/bingo_context.h"
@@ -118,9 +118,9 @@ void MangoTautomer::_validateQueryData ()
    {
       QS_DEF(Array<int>, gross);
 
-      GrossFormula::collect(_query.ref(), gross);
+      MoleculeGrossFormula::collect(_query.ref(), gross);
       gross[ELEM_H] = 0;
-      GrossFormula::toString(gross, _query_gross_str);
+      MoleculeGrossFormula::toString(gross, _query_gross_str);
    }
    _query_data_valid = true;
 }

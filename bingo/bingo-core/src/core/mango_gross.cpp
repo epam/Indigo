@@ -18,7 +18,7 @@
 #include "core/mango_index.h"
 #include "core/mango_matchers.h"
 #include "molecule/molecule_auto_loader.h"
-#include "molecule/gross_formula.h"
+#include "molecule/molecule_gross_formula.h"
 #include "molecule/elements.h"
 
 IMPL_ERROR(MangoGross, "gross formula");
@@ -65,7 +65,7 @@ void MangoGross::parseQuery (Scanner &scanner)
    else
       throw Error("expected one of '<= >= =', got %c", c);
 
-   GrossFormula::fromString(scanner, _query_gross);
+   MoleculeGrossFormula::fromString(scanner, _query_gross);
 
    ArrayOutput out(_conditions);
 
@@ -75,7 +75,7 @@ void MangoGross::parseQuery (Scanner &scanner)
    {
       QS_DEF(Array<char>, query_gross_str);
 
-      GrossFormula::toString(_query_gross, query_gross_str);
+      MoleculeGrossFormula::toString(_query_gross, query_gross_str);
 
       out.printf("gross = '%s'", query_gross_str.ptr());
    }
@@ -107,18 +107,18 @@ const char * MangoGross::getConditions ()
 bool MangoGross::checkGross (const Array<int> &target_gross)
 {
    if (_sign == 1)
-      return GrossFormula::geq(target_gross, _query_gross);
+      return MoleculeGrossFormula::geq(target_gross, _query_gross);
    else if (_sign == -1)
-      return GrossFormula::leq(target_gross, _query_gross);
+      return MoleculeGrossFormula::leq(target_gross, _query_gross);
    // _sign == 0
-   return GrossFormula::equal(target_gross, _query_gross);
+   return MoleculeGrossFormula::equal(target_gross, _query_gross);
 }
 
 bool MangoGross::checkGross (const char *target_gross_str)
 {
    QS_DEF(Array<int>, target_gross);
 
-   GrossFormula::fromString(target_gross_str, target_gross);
+   MoleculeGrossFormula::fromString(target_gross_str, target_gross);
 
    return checkGross(target_gross);
 }
@@ -139,7 +139,7 @@ bool MangoGross::checkMolecule (Scanner &scanner)
    _context.setLoaderSettings(loader);
    loader.loadMolecule(target);
 
-   GrossFormula::collect(target, target_gross);
+   MoleculeGrossFormula::collect(target, target_gross);
 
    return checkGross(target_gross);
 }

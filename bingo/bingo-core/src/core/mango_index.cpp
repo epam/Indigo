@@ -19,7 +19,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_auto_loader.h"
 #include "core/bingo_error.h"
-#include "molecule/gross_formula.h"
+#include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_mass.h"
 #include "core/bingo_context.h"
 #include "core/mango_matchers.h"
@@ -110,8 +110,8 @@ void MangoIndex::prepare (Scanner &molfile, Output &output,
    output.writeArray(_cmf);
 
    // Save gross formula
-   GrossFormula::collect(mol, gross);
-   GrossFormula::toString(gross, _gross_str);
+   MoleculeGrossFormula::collect(mol, gross);
+   MoleculeGrossFormula::toString(gross, _gross_str);
 
    _counted_elems_str.clear();
    _counted_elem_counters.clear();

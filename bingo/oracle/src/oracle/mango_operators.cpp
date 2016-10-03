@@ -23,7 +23,7 @@
 #include "molecule/molecule_tautomer_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_mass.h"
-#include "molecule/gross_formula.h"
+#include "molecule/molecule_gross_formula.h"
 #include "oracle/ora_wrap.h"
 #include "oracle/ora_logger.h"
 #include "core/mango_matchers.h"
@@ -445,8 +445,8 @@ static OCIString * _mangoGrossCalc (OracleEnv &env, MangoOracleContext &context,
    QS_DEF(Array<int>, gross);
    QS_DEF(Array<char>, gross_str);
 
-   GrossFormula::collect(target, gross);
-   GrossFormula::toString(gross, gross_str);
+   MoleculeGrossFormula::collect(target, gross);
+   MoleculeGrossFormula::toString(gross, gross_str);
 
    if (gross_str.size() == 1)
       // We can not return empty string to Oracle, as empty string is NULL to Oracle.

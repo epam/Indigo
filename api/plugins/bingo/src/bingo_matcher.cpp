@@ -1073,7 +1073,7 @@ void BaseGrossMatcher::setQueryData (GrossQueryData *query_data)
 {
    _query_data.reset(query_data);
    GrossQuery &gross_qobj = (GrossQuery &)_query_data->getQueryObject();
-   GrossFormula::fromString(gross_qobj.getGrossString().ptr(), _query_array);
+   MoleculeGrossFormula::fromString(gross_qobj.getGrossString().ptr(), _query_array);
 
    _calcFormula();
 }
@@ -1099,7 +1099,7 @@ void MolGrossMatcher::_calcFormula ()
 {
    GrossQuery &query = (GrossQuery &)(_query_data->getQueryObject());
    
-   GrossFormula::fromString(query.getGrossString().ptr(), _query_array);
+   MoleculeGrossFormula::fromString(query.getGrossString().ptr(), _query_array);
 }
 
 bool MolGrossMatcher::_tryCurrent ()/* const */

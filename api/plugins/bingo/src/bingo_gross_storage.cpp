@@ -68,7 +68,7 @@ void GrossStorage::findCandidates (Array<char> &query_formula, Array<int> &candi
 int GrossStorage::findNext (Array<char> &query_formula, Array<int> &candidates, int &cur_candidate)
 {
    Array<int> query_array;
-   GrossFormula::fromString(query_formula.ptr(), query_array);
+   MoleculeGrossFormula::fromString(query_formula.ptr(), query_array);
 
    while(++cur_candidate)
    {
@@ -92,9 +92,9 @@ bool GrossStorage::tryCandidate (Array<int> &query_array, int id)
    Array<char> cand_fstr;
    cand_fstr.copy(cand_formula, len);
 
-   GrossFormula::fromString(cand_fstr.ptr(), cand_array);
+   MoleculeGrossFormula::fromString(cand_fstr.ptr(), cand_array);
 
-   if (GrossFormula::equal(query_array, cand_array))
+   if (MoleculeGrossFormula::equal(query_array, cand_array))
       return true;
 
    return false;
@@ -103,8 +103,8 @@ bool GrossStorage::tryCandidate (Array<int> &query_array, int id)
 void GrossStorage::calculateMolFormula (Molecule &mol, Array<char> &gross_formula)
 {
    Array<int> gross_array;
-   GrossFormula::collect(mol, gross_array);
-   GrossFormula::toString(gross_array, gross_formula);
+   MoleculeGrossFormula::collect(mol, gross_array);
+   MoleculeGrossFormula::toString(gross_array, gross_formula);
 }
 
 void GrossStorage::calculateRxnFormula (Reaction &rxn, Array<char> &gross_formula)
@@ -116,8 +116,8 @@ void GrossStorage::calculateRxnFormula (Reaction &rxn, Array<char> &gross_formul
       Array<int> mol_array;
       Array<char> mol_formula;
 
-      GrossFormula::collect(rxn.getBaseMolecule(i), mol_array);
-      GrossFormula::toString(mol_array, mol_formula);
+      MoleculeGrossFormula::collect(rxn.getBaseMolecule(i), mol_array);
+      MoleculeGrossFormula::toString(mol_array, mol_formula);
 
       gross_formula.concat(mol_formula);
       if (rxn.next(i) != rxn.end())
@@ -143,7 +143,7 @@ dword GrossStorage::_calculateGrossHashForMolArray (Array<int> &gross_array)
 dword GrossStorage::_calculateGrossHashForMol (const char *gross_str, int len)
 {
    Array<int> gross_array;
-   GrossFormula::fromString(gross_str, gross_array);
+   MoleculeGrossFormula::fromString(gross_str, gross_array);
  
    return _calculateGrossHashForMolArray(gross_array);
 }

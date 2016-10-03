@@ -28,7 +28,9 @@ int main (void)
 {
    int m;
    const char *simple_mol = "CCCCCCCCCCC";
-
+   int r;
+   int gf;
+    
    indigoSetErrorHandler(onError, 0);
    printf("%s\n", indigoVersion());
    m = indigoLoadMoleculeFromString("COC1=CC2=C(NC(=C2)C(O)(CC2=CN=CC=C2)CC2=CN=CC=C2)C=C1");
@@ -42,6 +44,10 @@ int main (void)
    }
 
    testTransform();
-
+    
+   r = indigoLoadReactionFromString("C.CC>>CC.C");
+   gf = indigoGrossFormula(r);
+   printf("%s\n", indigoToString(gf));
+    
    return 0;
 }

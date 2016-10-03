@@ -17,7 +17,7 @@
 #include "indigo_array.h"
 #include "molecule/molecule_auto_loader.h"
 #include "base_cpp/output.h"
-#include "molecule/gross_formula.h"
+#include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_mass.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
@@ -30,19 +30,6 @@
 #include "molecule/molecule_automorphism_search.h"
 #include "base_cpp/scanner.h"
 #include "indigo_mapping.h"
-
-IndigoGross::IndigoGross() : IndigoObject(GROSS)
-{
-}
-
-IndigoGross::~IndigoGross ()
-{
-}
-
-void IndigoGross::toString (Array<char> &str)
-{
-   GrossFormula::toString_Hill(gross, str);
-}
 
 IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
 {
@@ -535,69 +522,6 @@ CEXPORT int indigoLoadSmarts (int source)
    }
    INDIGO_END(-1);
 }
-
-CEXPORT int indigoGrossFormula (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      AutoPtr<IndigoGross> grossptr(new IndigoGross());
-
-      GrossFormula::collect(mol, grossptr->gross);
-      return self.addObject(grossptr.release());
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT float indigoMolecularWeight (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      Molecule &mol = self.getObject(molecule).getMolecule();
-
-      MoleculeMass mass;
-      return mass.molecularWeight(mol);
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT float indigoMostAbundantMass (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      Molecule &mol = self.getObject(molecule).getMolecule();
-
-      MoleculeMass mass;
-      return mass.mostAbundantMass(mol);
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT float indigoMonoisotopicMass (int molecule)
-{
-   INDIGO_BEGIN
-   {
-      Molecule &mol = self.getObject(molecule).getMolecule();
-
-      MoleculeMass mass;
-      return mass.monoisotopicMass(mol);
-   }
-   INDIGO_END(-1)
-}
-
-CEXPORT const char * indigoMassComposition (int molecule)
-{
-    INDIGO_BEGIN
-    {
-        Molecule &mol = self.getObject(molecule).getMolecule();
-        auto &tmp = self.getThreadTmpData();
-        MoleculeMass mass;
-        mass.massComposition(mol, tmp.string);
-        return tmp.string.ptr();
-    }
-    INDIGO_END(0)
-}
-
 
 IndigoMoleculeComponent::IndigoMoleculeComponent (BaseMolecule &mol_, int index_) :
 IndigoObject(COMPONENT),

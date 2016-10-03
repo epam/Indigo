@@ -3,7 +3,7 @@
 
 #include "molecule/molecule.h"
 #include "base_cpp/scanner.h"
-#include "molecule/gross_formula.h"
+#include "molecule/molecule_gross_formula.h"
 #include "reaction/reaction.h"
 #include "bingo_ptr.h"
 #include "bingo_mapping.h"

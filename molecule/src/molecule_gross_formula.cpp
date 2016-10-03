@@ -1,13 +1,13 @@
 /****************************************************************************
  * Copyright (C) 2009-2015 EPAM Systems
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * This file may be distributed and/or modified under the terms of the
  * GNU General Public License version 3 as published by the Free Software
  * Foundation and appearing in the file LICENSE.GPL included in the
  * packaging of this file.
- * 
+ *
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
@@ -19,13 +19,13 @@
 
 #include "molecule/elements.h"
 #include "molecule/base_molecule.h"
-#include "molecule/gross_formula.h"
+#include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 
 using namespace indigo;
 
-int GrossFormula::_cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
+int MoleculeGrossFormula::_cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
 {
    if (ec1.counter == 0)
       return 1;
@@ -42,7 +42,7 @@ int GrossFormula::_cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
 
 // comparator implementing the Hill system without carbon:
 // <all atoms in alphabetical order>
-int GrossFormula::_cmp_hill_no_carbon (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
+int MoleculeGrossFormula::_cmp_hill_no_carbon (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
 {
    if (ec1.counter == 0)
       return 1;
@@ -54,7 +54,7 @@ int GrossFormula::_cmp_hill_no_carbon (_ElemCounter &ec1, _ElemCounter &ec2, voi
 
 // comparator implementing the Hill system with carbon:
 // C H <other atoms in alphabetical order>
-int GrossFormula::_cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
+int MoleculeGrossFormula::_cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
 {
    if (ec1.counter == 0)
       return 1;
@@ -75,7 +75,7 @@ int GrossFormula::_cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void *context
    return _cmp_hill_no_carbon(ec1, ec2, context);
 }
 
-void GrossFormula::collect (BaseMolecule &mol, Array<int> &gross)
+void MoleculeGrossFormula::collect (BaseMolecule &mol, Array<int> &gross)
 {
    if (!mol.isQueryMolecule())
       mol.asMolecule().restoreAromaticHydrogens();
@@ -102,12 +102,12 @@ void GrossFormula::collect (BaseMolecule &mol, Array<int> &gross)
    }
 }
 
-void GrossFormula::toString (const Array<int> &gross, Array<char> &str)
+void MoleculeGrossFormula::toString (const Array<int> &gross, Array<char> &str)
 {
    _toString(gross, str, _cmp);
 }
 
-void GrossFormula::toString_Hill (const Array<int> &gross, Array<char> &str)
+void MoleculeGrossFormula::toString_Hill (const Array<int> &gross, Array<char> &str)
 {
    if (gross[ELEM_C] == 0)
       _toString(gross, str, _cmp_hill_no_carbon);
@@ -116,7 +116,7 @@ void GrossFormula::toString_Hill (const Array<int> &gross, Array<char> &str)
 }
 
 
-void GrossFormula::_toString (const Array<int> &gross, Array<char> &str,
+void MoleculeGrossFormula::_toString (const Array<int> &gross, Array<char> &str,
                               int (*cmp)(_ElemCounter &, _ElemCounter &, void *))
 {
    QS_DEF(Array<_ElemCounter>, counters);
@@ -127,7 +127,7 @@ void GrossFormula::_toString (const Array<int> &gross, Array<char> &str,
    for (i = 1; i < ELEM_MAX; i++)
    {
       _ElemCounter &ec = counters.push();
- 
+
       ec.elem = i;
       ec.counter = gross[i];
    }
@@ -154,7 +154,7 @@ void GrossFormula::_toString (const Array<int> &gross, Array<char> &str,
    output.writeChar(0);
 }
 
-void GrossFormula::fromString (Scanner &scanner, Array<int> &gross)
+void MoleculeGrossFormula::fromString (Scanner &scanner, Array<int> &gross)
 {
    gross.clear_resize(ELEM_MAX);
    gross.zerofill();
@@ -165,7 +165,7 @@ void GrossFormula::fromString (Scanner &scanner, Array<int> &gross)
       int elem = Element::read(scanner);
       scanner.skipSpace();
       int counter = 1;
-      
+
       if (isdigit(scanner.lookNext()))
       {
          counter = scanner.readUnsigned();
@@ -176,14 +176,14 @@ void GrossFormula::fromString (Scanner &scanner, Array<int> &gross)
    }
 }
 
-void GrossFormula::fromString (const char *str, Array<int> &gross)
+void MoleculeGrossFormula::fromString (const char *str, Array<int> &gross)
 {
    BufferScanner scanner(str);
 
    fromString(scanner, gross);
 }
 
-bool GrossFormula::leq (const Array<int> &gross1, const Array<int> &gross2)
+bool MoleculeGrossFormula::leq (const Array<int> &gross1, const Array<int> &gross2)
 {
    int i;
 
@@ -194,7 +194,7 @@ bool GrossFormula::leq (const Array<int> &gross1, const Array<int> &gross2)
    return true;
 }
 
-bool GrossFormula::geq (const Array<int> &gross1, const Array<int> &gross2)
+bool MoleculeGrossFormula::geq (const Array<int> &gross1, const Array<int> &gross2)
 {
    int i;
 
@@ -205,7 +205,7 @@ bool GrossFormula::geq (const Array<int> &gross1, const Array<int> &gross2)
    return true;
 }
 
-bool GrossFormula::equal (const Array<int> &gross1, const Array<int> &gross2)
+bool MoleculeGrossFormula::equal (const Array<int> &gross1, const Array<int> &gross2)
 {
    int i;
 

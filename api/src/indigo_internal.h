@@ -20,6 +20,8 @@
 #pragma warning(disable:4251)
 #endif
 
+#include <utility>
+
 #include "indigo.h"
 
 #include "base_cpp/exception.h"
@@ -74,7 +76,7 @@ public:
       OUTPUT,
       REACTION_ITER,
       REACTION_MOLECULE,
-      GROSS,
+      GROSS_MOLECULE,
       SDF_LOADER,
       SDF_SAVER,
       RDF_MOLECULE,
@@ -150,7 +152,8 @@ public:
       TAUTOMER_ITER,
       TAUTOMER_MOLECULE,
       TGROUP,
-      TGROUPS_ITER
+      TGROUPS_ITER,
+      GROSS_REACTION
    };
 
    int type;
@@ -192,16 +195,28 @@ private:
    IndigoObject (const IndigoObject &);
 };
 
-class IndigoGross : public IndigoObject
+class IndigoMoleculeGross : public IndigoObject
 {
 public:
-   IndigoGross ();
-   virtual ~IndigoGross ();
+   IndigoMoleculeGross ();
+   virtual ~IndigoMoleculeGross ();
 
    virtual void toString (Array<char> &str);
 
    Array<int> gross;
 };
+
+class IndigoReactionGross : public IndigoObject
+{
+public:
+   IndigoReactionGross ();
+   virtual ~IndigoReactionGross ();
+
+   virtual void toString (Array<char> &str);
+
+   std::pair<ObjArray<Array<int> >, ObjArray<Array<int> > > gross;
+};
+
 
 struct DLLEXPORT ProductEnumeratorParams
 {
