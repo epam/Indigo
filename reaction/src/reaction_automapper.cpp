@@ -319,7 +319,7 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
     *delete hydrogens
     */
    vertices_to_remove.clear();
-   for(int k = product_cut.vertexBegin(); k < product_cut.vertexEnd(); k = product_cut.vertexNext(k))
+   for(int k : product_cut.vertices())
       if(product_cut.getAtomNumber(k) == ELEM_H)
          vertices_to_remove.push(k);
    product_cut.removeAtoms(vertices_to_remove);
@@ -327,60 +327,81 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
    product_mapping_tmp.zerofill();
    
    _usedVertices[0] = 0;
+   int previuosly_used= -1;
+   
+   while(previuosly_used != _usedVertices[0]) {
+      previuosly_used = _usedVertices[0];
+      
+      for(int perm_idx = 0; perm_idx < reactant_cons.size(); perm_idx++) {
+         int react = reactant_cons.at(perm_idx);
+         
+         auto& reactant_r = reaction.getBaseMolecule(react);
+         int react_vsize = reactant_r.vertexEnd();
+         rsub_map_in.resize(react_vsize);
+         for(int k = 0; k < react_vsize; k++)
+            rsub_map_in[k] = SubstructureMcs::UNMAPPED;
 
-   for(int perm_idx = 0; perm_idx < reactant_cons.size(); perm_idx++){
-      int react = reactant_cons.at(perm_idx);
+         bool map_exc = false;
+         if(_mode != AAM_REGEN_DISCARD){
+            for(int m : product_cut.vertices()){
+               react_map_match.getAtomMap(product, react, m, &matching_map);
 
-      int react_vsize = reaction.getBaseMolecule(react).vertexEnd();
-      rsub_map_in.resize(react_vsize);
-      for(int k = 0; k < react_vsize; k++)
-         rsub_map_in[k] = SubstructureMcs::UNMAPPED;
-
-
-      bool map_exc = false;
-      if(_mode != AAM_REGEN_DISCARD){
-         for(int m = product_cut.vertexBegin(); m < product_cut.vertexEnd(); m = product_cut.vertexNext(m)){
-            react_map_match.getAtomMap(product, react, m, &matching_map);
-
-            for(int k = 0; k < matching_map.size();k++) {
-               rsub_map_in[matching_map[k]] = m;
-               map_exc = true;
-               break;
+               for(int k = 0; k < matching_map.size();k++) {
+                  rsub_map_in[matching_map[k]] = m;
+                  map_exc = true;
+                  break;
+               }
             }
          }
-      }
 
-      if(!map_exc) 
-         rsub_map_in.clear();
-      RSubstructureMcs react_sub_mcs(reaction, react, product, *this);
-      bool find_sub = react_sub_mcs.searchSubstructureReact(_reaction.getBaseMolecule(react), &rsub_map_in, &rsub_map_out);
-      if (!find_sub) {
-         react_sub_mcs.searchMaxCommonSubReact(&rsub_map_in, &rsub_map_out);
-      }
-
-      bool cur_used = false;
-      for (int j = 0; j < rsub_map_out.size(); j++) {
-         int v = rsub_map_out.at(j);
-         if (v >= 0) {
-            /*
-             * Check delta Y exchange problem possibility
-             */
-            if(!product_cut.hasVertex(v))
-               continue;
-            
-            cur_used = true;
-            product_mapping_tmp[v] = reaction.getAAM(react, j);
-            if (_usedVertices[product_mapping_tmp[v]] == 0)
-               ++_usedVertices[0];
-            product_cut.removeAtom(v);
+         if(!map_exc) 
+            rsub_map_in.clear();
+         /*
+          * First search substructure
+          */
+         RSubstructureMcs react_sub_mcs(reaction, react, product, *this);
+         bool find_sub = react_sub_mcs.searchSubstructureReact(_reaction.getBaseMolecule(react), 
+                 &rsub_map_in, &rsub_map_out);
+         
+         if (!find_sub) {
+            react_sub_mcs.searchMaxCommonSubReact(&rsub_map_in, &rsub_map_out);
          }
-      }
-      if(!cur_used)
-         ++map_complete;
 
-      if(product_cut.vertexCount() == 0) {
-         map_complete += reactant_cons.size() - perm_idx - 1;
-         break;
+         bool cur_used = false;
+         for (int j = 0; j < rsub_map_out.size(); j++) {
+            int v = rsub_map_out.at(j);
+            if (v >= 0) {
+               /*
+                * Check delta Y exchange problem possibility
+                */
+               if(!product_cut.hasVertex(v))
+                  continue;
+
+               cur_used = true;
+               product_mapping_tmp[v] = reaction.getAAM(react, j);
+               if (_usedVertices[product_mapping_tmp[v]] == 0) {
+                  _usedVertices[product_mapping_tmp[v]] = 1;
+                  ++_usedVertices[0];
+               }
+               product_cut.removeAtom(v);
+            }
+         }
+         if(!cur_used)
+            ++map_complete;
+
+         if(product_cut.vertexCount() == 0) {
+            map_complete += reactant_cons.size() - perm_idx - 1;
+            break;
+         }
+         /*
+          * Remove mapped atoms for reactant
+          */
+         vertices_to_remove.clear();
+         for(int k : reactant_r.vertices()) {
+            if(_usedVertices[reaction.getAAM(react, k)] > 0)
+               vertices_to_remove.push(k);
+         }
+         reactant_r.removeAtoms(vertices_to_remove);
       }
    }
    return map_complete;
