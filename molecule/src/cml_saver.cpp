@@ -17,6 +17,7 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
+#include "molecule/molecule_savers.h"
 #include "base_cpp/locale_guard.h"
 #include "tinyxml.h"
 
@@ -256,13 +257,21 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
 
             int unsat;
             if (qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
-               out.printf("u1");
+               out.printf("u1;");
+
+            int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
+      
+            if (hcount > 0)
+               out.printf("H%d", hcount);
+            else if (hcount == 0)
+               out.printf("H0");
 
             if (buf.size() > 0)
             {
                buf.push(0);
                atom->SetAttribute("mrvQueryProps", buf.ptr());
             }
+
          }
 
          if (_mol->attachmentPointCount() > 0)
@@ -405,6 +414,15 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
                bond->SetAttribute("queryType", "DA");
             else if (qb == QueryMolecule::QUERY_BOND_ANY)
                bond->SetAttribute("queryType", "Any");
+
+            int indigo_topology = -1;
+            if (qmol != 0)
+               qmol->getBond(i).sureValue(QueryMolecule::BOND_TOPOLOGY, indigo_topology);
+      
+            if (indigo_topology == TOPOLOGY_RING)
+               bond->SetAttribute("topology", "ring");
+            else if (indigo_topology == TOPOLOGY_CHAIN)
+               bond->SetAttribute("topology", "chain");
          }
 
          int dir = _mol->getBondDirection(i);

@@ -511,7 +511,7 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
                      else if (rbcount == 0)
                         atom.reset(QueryMolecule::Atom::und(atom.release(),
                            new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
-                     else if (rbcount == 2)
+                     else if (rbcount == -2)
                         atom.reset(QueryMolecule::Atom::und(atom.release(),
                            new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, 0)));
                   }     
@@ -545,6 +545,16 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
                         atom.reset(QueryMolecule::Atom::und(atom.release(),
                                  new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
                   }
+                  else if (strncmp(qf.ptr(), "H", 1) == 0)
+                  {
+                     BufferScanner qfscan(qf.ptr());
+                     qfscan.skip(1);
+                     int total_h = qfscan.readInt1();
+                     if (total_h > 0)
+                        atom.reset(QueryMolecule::Atom::und(atom.release(),
+                                 new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_H, total_h)));
+                  }
+
                   if (!strscan.isEOF())
                      strscan.skip(1);
                }
@@ -737,8 +747,20 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
          else
             throw Error("unknown bond type: %d", order);
 
-         idx = _qmol->addBond(beg, end, bond.release());
+         const char *topology = elem->Attribute("topology");
+         if (topology != 0)
+         {
+            if (strncmp(topology, "ring", 4) == 0)
+               bond.reset(QueryMolecule::Bond::und(bond.release(),
+                  new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_RING)));
+            else if (strncmp(topology, "chain", 5) == 0)
+               bond.reset(QueryMolecule::Bond::und(bond.release(),
+                  new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_CHAIN)));
+            else
+               throw Error("unknown topology: %s", topology);
+         }
 
+         idx = _qmol->addBond(beg, end, bond.release());
       }
 
 
