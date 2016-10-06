@@ -47,8 +47,8 @@ elseif(APPLE)
     include(MacFrameworks)
 
     set(CMAKE_OSX_ARCHITECTURES "x86_64")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -arch x86_64 ")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -arch x86_64 ")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -arch x86_64)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -arch x86_64)
 
     set(CMAKE_OSX_DEPLOYMENT_TARGET ${SUBSYSTEM_NAME})
     set(SDK_SUBSYSTEM_NAME ${SUBSYSTEM_NAME})
@@ -61,11 +61,6 @@ elseif(APPLE)
     endif()
 
     message(STATUS "SDK: ${CMAKE_OSX_SYSROOT}")
-
-    set(COMPILE_FLAGS "${COMPILE_FLAGS}")
-    set(LINK_FLAGS "${LINK_FLAGS} -Wl,-no_compact_unwind")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++")
-
 endif()
 
 if(UNIX OR APPLE)
