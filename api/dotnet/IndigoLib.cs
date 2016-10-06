@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 namespace com.epam.indigo
@@ -266,9 +267,9 @@ namespace com.epam.indigo
 
         int indigoCountHeavyAtoms(int molecule);
         int indigoGrossFormula(int molecule);
-        float indigoMolecularWeight(int molecule);
-        float indigoMostAbundantMass(int molecule);
-        float indigoMonoisotopicMass(int molecule);
+        double indigoMolecularWeight(int molecule);
+        double indigoMostAbundantMass(int molecule);
+        double indigoMonoisotopicMass(int molecule);
         sbyte* indigoCanonicalSmiles(int molecule);
         sbyte* indigoLayeredCode(int molecule);
         int indigoHasCoord(int molecule);

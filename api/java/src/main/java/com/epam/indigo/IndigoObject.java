@@ -814,22 +814,22 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       }
    }
 
-   public float molecularWeight ()
+   public double molecularWeight ()
    {
       dispatcher.setSessionID();
-      return Indigo.checkResultFloat(this, _lib.indigoMolecularWeight(self));
+      return Indigo.checkResultDouble(this, _lib.indigoMolecularWeight(self));
    }
 
-   public float mostAbundantMass()
+   public double mostAbundantMass()
    {
       dispatcher.setSessionID();
-      return Indigo.checkResultFloat(this, _lib.indigoMostAbundantMass(self));
+      return Indigo.checkResultDouble(this, _lib.indigoMostAbundantMass(self));
    }
 
-   public float monoisotopicMass()
+   public double monoisotopicMass()
    {
       dispatcher.setSessionID();
-      return Indigo.checkResultFloat(this, _lib.indigoMonoisotopicMass(self));
+      return Indigo.checkResultDouble(this, _lib.indigoMonoisotopicMass(self));
    }
 
    public String canonicalSmiles()

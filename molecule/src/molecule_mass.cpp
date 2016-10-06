@@ -26,7 +26,7 @@ MoleculeMass::MoleculeMass()
    relative_atomic_mass_map = NULL;
 }
 
-float MoleculeMass::molecularWeight (Molecule &mol)
+double MoleculeMass::molecularWeight (Molecule &mol)
 {
    mol.restoreAromaticHydrogens();
 
@@ -49,7 +49,7 @@ float MoleculeMass::molecularWeight (Molecule &mol)
 
       if (isotope == 0)
       {
-         float *value = 0;
+         double *value = 0;
          if (relative_atomic_mass_map != NULL)
          {
             value = relative_atomic_mass_map->at2(number);
@@ -84,13 +84,13 @@ float MoleculeMass::molecularWeight (Molecule &mol)
 
    molmass += Element::getStandardAtomicWeight(ELEM_H) * impl_h;
 
-   return (float)molmass;
+   return molmass;
 }
 
 static int _isotopesCmp (int i1, int i2, void *context)
 {
    int element = *(int *)context;
-   float c1, c2;
+   double c1, c2;
    Element::getIsotopicComposition(element, i1, c1);
    Element::getIsotopicComposition(element, i2, c2);
    if (c1 < c2)
@@ -100,7 +100,7 @@ static int _isotopesCmp (int i1, int i2, void *context)
    return 0;
 }
 
-float MoleculeMass::mostAbundantMass (Molecule &mol)
+double MoleculeMass::mostAbundantMass (Molecule &mol)
 {
    mol.restoreAromaticHydrogens();
 
@@ -146,7 +146,7 @@ float MoleculeMass::mostAbundantMass (Molecule &mol)
       Element::getMinMaxIsotopeIndex(i, min_iso, max_iso);
       for (int j = min_iso; j <= max_iso; j++)
       {
-         float composition;
+         double composition;
          if (!Element::getIsotopicComposition(i, j, composition))
             continue;
          if (composition > 0)
@@ -158,7 +158,7 @@ float MoleculeMass::mostAbundantMass (Molecule &mol)
       {
          int j = isotopes[k];
 
-         float composition;
+         double composition;
          if (!Element::getIsotopicComposition(i, j, composition))
             continue;
 
@@ -178,10 +178,10 @@ float MoleculeMass::mostAbundantMass (Molecule &mol)
       }
    }
 
-   return (float)molmass;
+   return molmass;
 }
 
-float MoleculeMass::monoisotopicMass (Molecule &mol)
+double MoleculeMass::monoisotopicMass (Molecule &mol)
 {
    mol.restoreAromaticHydrogens();
 
@@ -207,7 +207,7 @@ float MoleculeMass::monoisotopicMass (Molecule &mol)
       molmass += Element::getRelativeIsotopicMass(ELEM_H, 1) * impl_h;
    } 
 
-   return (float)molmass;
+   return molmass;
 }
 
 int MoleculeMass::nominalMass (Molecule &mol)
@@ -257,7 +257,7 @@ int MoleculeMass::_cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
 
 void MoleculeMass::massComposition (Molecule &mol, Array<char> &str)
 {
-    Array<float> relativeMass;
+    Array<double> relativeMass;
     int impl_h = 0;
     relativeMass.clear_resize(ELEM_MAX);
     relativeMass.zerofill();
@@ -283,7 +283,7 @@ void MoleculeMass::massComposition (Molecule &mol, Array<char> &str)
         }
         else
         {
-            float *value = 0;
+            double *value = 0;
             if (relative_atomic_mass_map != NULL)
             {
                 value = relative_atomic_mass_map->at2(number);
@@ -302,7 +302,7 @@ void MoleculeMass::massComposition (Molecule &mol, Array<char> &str)
     
     relativeMass[ELEM_H] += Element::getStandardAtomicWeight(ELEM_H) * impl_h;
     
-    float totalWeight = molecularWeight(mol);
+    double totalWeight = molecularWeight(mol);
     
     QS_DEF(Array<_ElemCounter>, counters);
     int i;

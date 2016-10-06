@@ -582,9 +582,9 @@ CEXPORT int indigoIterateEdgeSubmolecules (int molecule, int min_bonds, int max_
 
 CEXPORT int   indigoCountHeavyAtoms (int molecule);
 CEXPORT int   indigoGrossFormula    (int molecule);
-CEXPORT float indigoMolecularWeight (int molecule);
-CEXPORT float indigoMostAbundantMass (int molecule);
-CEXPORT float indigoMonoisotopicMass (int molecule);
+CEXPORT double indigoMolecularWeight (int molecule);
+CEXPORT double indigoMostAbundantMass (int molecule);
+CEXPORT double indigoMonoisotopicMass (int molecule);
 CEXPORT const char * indigoMassComposition (int molecule);
 
 CEXPORT const char * indigoCanonicalSmiles (int molecule);

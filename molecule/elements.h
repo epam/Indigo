@@ -198,9 +198,9 @@ public:
    static int   getDefaultIsotope       (int element);
    // Return most abundant isotope
    static int   getMostAbundantIsotope  (int element);
-   static float getRelativeIsotopicMass (int element, int isotope);
-   static float getStandardAtomicWeight (int element);
-   static bool  getIsotopicComposition  (int element, int isotope, float &res);
+   static double getRelativeIsotopicMass (int element, int isotope);
+   static double getStandardAtomicWeight (int element);
+   static bool  getIsotopicComposition  (int element, int isotope, double &res);
    static void  getMinMaxIsotopeIndex   (int element, int &min, int &max);
 
    static bool  canBeAromatic (int element);
@@ -218,7 +218,7 @@ private:
 
    void _setStandardAtomicWeightIndex (int element, int index);
    void _addElementIsotope            (int element, int isotope, 
-                                       float mass, float isotopic_composition);
+                                       double mass, double isotopic_composition);
    void _initAllIsotopes ();
    void _initDefaultIsotopes ();
 
@@ -266,12 +266,12 @@ private:
 
    struct _IsotopeValue
    {
-      _IsotopeValue (float mass, float isotopic_composition);
+      _IsotopeValue (double mass, double isotopic_composition);
 
       // Isotope mass
-      float mass;
+      double mass;
       // Mole fraction of the various isotopes
-      float isotopic_composition;
+      double isotopic_composition;
    };
    RedBlackMap<_IsotopeKey, _IsotopeValue> _isotope_parameters_map;
 };

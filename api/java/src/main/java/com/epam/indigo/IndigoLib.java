@@ -314,9 +314,9 @@ public interface IndigoLib extends Library
 
    int   indigoCountHeavyAtoms (int molecule);
    int   indigoGrossFormula    (int molecule);
-   float indigoMolecularWeight (int molecule);
-   float indigoMostAbundantMass (int molecule);
-   float indigoMonoisotopicMass (int molecule);
+   double indigoMolecularWeight (int molecule);
+   double indigoMostAbundantMass (int molecule);
+   double indigoMonoisotopicMass (int molecule);
 
    Pointer indigoCanonicalSmiles (int molecule);
    Pointer indigoLayeredCode (int molecule);

@@ -28,7 +28,7 @@ protected:
     struct _ElemCounter
     {
         int elem;
-        float weight;
+        double weight;
     };
     
     static int _cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context);
@@ -36,24 +36,24 @@ public:
 
     MoleculeMass();
 
-   const RedBlackMap<int, float> *relative_atomic_mass_map;
+   const RedBlackMap<int, double> *relative_atomic_mass_map;
 
    /* Mass of a molecule calculated using the average mass of each 
     * element weighted for its natural isotopic abundance 
     */
-   float molecularWeight (Molecule &mol);
+   double molecularWeight (Molecule &mol);
 
    /* Mass of a molecule containing most likely 
     * isotopic composition for a single random molecule.
     * Notes: in PubChem search engine it is called Exact Mass
     */
-   float mostAbundantMass (Molecule &mol);
+   double mostAbundantMass (Molecule &mol);
 
    /* Mass of a molecule calculated using the mass of 
     * the most abundant isotope of each element.
     * Notes: in Marvin it is called Exact Mass
     */
-   float monoisotopicMass (Molecule &mol);
+   double monoisotopicMass (Molecule &mol);
 
    /* Sum of the mass numbers of all constituent atoms.
     */

@@ -1195,19 +1195,19 @@ namespace com.epam.indigo
 
         }
 
-        public float molecularWeight()
+        public double molecularWeight()
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoMolecularWeight(self));
         }
 
-        public float mostAbundantMass()
+        public double mostAbundantMass()
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoMostAbundantMass(self));
         }
 
-        public float monoisotopicMass()
+        public double monoisotopicMass()
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoMonoisotopicMass(self));

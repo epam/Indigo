@@ -16,7 +16,7 @@ import sys
 import os
 import platform
 from array import array
-from ctypes import c_int, c_char_p, c_float, POINTER, pointer, CDLL, RTLD_GLOBAL, c_ulonglong, c_byte
+from ctypes import c_int, c_char_p, c_float, POINTER, pointer, CDLL, RTLD_GLOBAL, c_ulonglong, c_byte, c_double
 
 DECODE_ENCODING = 'utf-8'
 ENCODE_ENCODING = 'utf-8'
@@ -1856,11 +1856,11 @@ class Indigo(object):
         Indigo._lib.indigoCountHeavyAtoms.argtypes = [c_int]
         Indigo._lib.indigoGrossFormula.restype = c_int
         Indigo._lib.indigoGrossFormula.argtypes = [c_int]
-        Indigo._lib.indigoMolecularWeight.restype = c_float
+        Indigo._lib.indigoMolecularWeight.restype = c_double
         Indigo._lib.indigoMolecularWeight.argtypes = [c_int]
-        Indigo._lib.indigoMostAbundantMass.restype = c_float
+        Indigo._lib.indigoMostAbundantMass.restype = c_double
         Indigo._lib.indigoMostAbundantMass.argtypes = [c_int]
-        Indigo._lib.indigoMonoisotopicMass.restype = c_float
+        Indigo._lib.indigoMonoisotopicMass.restype = c_double
         Indigo._lib.indigoMonoisotopicMass.argtypes = [c_int]
         Indigo._lib.indigoMassComposition.restype = c_char_p
         Indigo._lib.indigoMassComposition.argtypes = [c_int]

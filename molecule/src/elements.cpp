@@ -971,7 +971,7 @@ void Element::_setStandardAtomicWeightIndex (int element, int index)
 }
 
 void Element::_addElementIsotope (int element, int isotope, 
-                                  float mass, float isotopic_composition)
+                                  double mass, double isotopic_composition)
 {
    _instance._isotope_parameters_map.insert(
       _IsotopeKey(element, isotope), 
@@ -993,7 +993,7 @@ void Element::_initAllIsotopes ()
    _initDefaultIsotopes();
 }
 
-float Element::getStandardAtomicWeight (int element)
+double Element::getStandardAtomicWeight (int element)
 {
    _Parameters &p = _instance._element_parameters[element];
    return getRelativeIsotopicMass(element, p.natural_isotope_index);
@@ -1011,7 +1011,7 @@ int Element::getMostAbundantIsotope (int element)
    return p.most_abundant_isotope;
 }
 
-bool Element::getIsotopicComposition (int element, int isotope, float &res)
+bool Element::getIsotopicComposition (int element, int isotope, double &res)
 {
    _IsotopeValue *value = _instance._isotope_parameters_map.at2(
       _IsotopeKey(element, isotope));
@@ -1030,7 +1030,7 @@ void Element::getMinMaxIsotopeIndex  (int element, int &min, int &max)
    max = p.max_isotope_index;
 }
 
-float Element::getRelativeIsotopicMass (int element, int isotope)
+double Element::getRelativeIsotopicMass (int element, int isotope)
 {
    _IsotopeValue *value = _instance._isotope_parameters_map.at2(
       _IsotopeKey(element, isotope));
@@ -1048,7 +1048,7 @@ void Element::_initDefaultIsotopes ()
    def_isotope_index.resize(_element_parameters.size());
    def_isotope_index.fffill();
 
-   Array<float> most_abundant_isotope_fraction;
+   Array<double> most_abundant_isotope_fraction;
    most_abundant_isotope_fraction.resize(_element_parameters.size());
    most_abundant_isotope_fraction.fill(0);
 
@@ -1070,9 +1070,9 @@ void Element::_initDefaultIsotopes ()
       if (key.isotope == _IsotopeKey::NATURAL)
          continue;
 
-      float atomic_weight = getStandardAtomicWeight(key.element);
+      double atomic_weight = getStandardAtomicWeight(key.element);
 
-      float diff_best = 1e6;
+      double diff_best = 1e6;
       if (def_isotope_index[key.element] != -1)
       {
          int best_iso = def_isotope_index[key.element];
@@ -1080,7 +1080,7 @@ void Element::_initDefaultIsotopes ()
 
          diff_best = fabs(best.mass - atomic_weight);
       }
-      float diff_cur = fabs(value.mass - atomic_weight);
+      double diff_cur = fabs(value.mass - atomic_weight);
 
       if (diff_best > diff_cur)
       {
@@ -1096,7 +1096,7 @@ void Element::_initDefaultIsotopes ()
          max_iso = key.isotope;
 
 
-      float most_abundance = 1e6;
+      double most_abundance = 1e6;
       if (_element_parameters[key.element].default_isotope != -1)
       {
          most_abundance = value.isotopic_composition;
@@ -1180,7 +1180,7 @@ bool Element::_IsotopeKey::operator< (const _IsotopeKey &right) const
    return false;
 }
 
-Element::_IsotopeValue::_IsotopeValue (float mass, float isotopic_composition) :
+Element::_IsotopeValue::_IsotopeValue (double mass, double isotopic_composition) :
    mass(mass), isotopic_composition(isotopic_composition)
 {
 }

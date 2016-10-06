@@ -104,6 +104,12 @@ public class Indigo {
         return result;
     }
 
+    static public double checkResultDouble(Object obj, double result) {
+        if (result < 0)
+            throw new IndigoException(obj, _lib.indigoGetLastError());
+        return result;
+    }
+
     static public String checkResultString(Object obj, Pointer result) {
         if (result == Pointer.NULL)
             throw new IndigoException(obj, _lib.indigoGetLastError());

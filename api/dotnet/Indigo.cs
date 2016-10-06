@@ -73,6 +73,16 @@ namespace com.epam.indigo
             return result;
         }
 
+        public double checkResult(double result)
+        {
+            if (result < 0)
+            {
+                throw new IndigoException(new String(_indigo_lib.indigoGetLastError()));
+            }
+
+            return result;
+        }
+
         public int checkResult(int result)
         {
             if (result < 0)

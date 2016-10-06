@@ -62,7 +62,7 @@ CEXPORT int indigoGrossFormula (int object)
    INDIGO_END(-1)
 }
 
-CEXPORT float indigoMolecularWeight (int molecule)
+CEXPORT double indigoMolecularWeight (int molecule)
 {
    INDIGO_BEGIN
    {
@@ -74,7 +74,7 @@ CEXPORT float indigoMolecularWeight (int molecule)
    INDIGO_END(-1)
 }
 
-CEXPORT float indigoMostAbundantMass (int molecule)
+CEXPORT double indigoMostAbundantMass (int molecule)
 {
    INDIGO_BEGIN
    {
@@ -86,7 +86,7 @@ CEXPORT float indigoMostAbundantMass (int molecule)
    INDIGO_END(-1)
 }
 
-CEXPORT float indigoMonoisotopicMass (int molecule)
+CEXPORT double indigoMonoisotopicMass (int molecule)
 {
    INDIGO_BEGIN
    {
