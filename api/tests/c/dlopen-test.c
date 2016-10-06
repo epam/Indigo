@@ -55,7 +55,9 @@ int main(int argc, char **argv)
    HANDLE bingoHandle;
 
    STR_RET_VOID indigoVersion;
+   INT_RET_STR indigoLoadReactionFromString;
    INT_RET_STR indigoLoadMoleculeFromString;
+   STR_RET_VOID indigoGetLastError;
    INT_RET_STR_STR indigoSetOption;
    INT_RET indigoWriteBuffer;
    INT_RET_INT_INT indigoRender;
@@ -103,7 +105,8 @@ int main(int argc, char **argv)
    }
    /* Tests */
    if (indigoTest)
-   {
+   {   
+      int r;
       /* Load Indigo */
       indigoHandle = dlOpenWithCheck(indigoLibraryPath);
       if (!indigoHandle)
@@ -115,6 +118,13 @@ int main(int argc, char **argv)
       /* Execute Indigo function */
       indigoVersion = (STR_RET_VOID)DLSYM(indigoHandle, "indigoVersion");
       printf("Indigo version: %s\n", indigoVersion());
+      indigoLoadReactionFromString = (INT_RET_STR)DLSYM(indigoHandle, "indigoLoadReactionFromString");
+      indigoGetLastError = (STR_RET_VOID)DLSYM(indigoHandle, "indigoGetLastError");
+      r = indigoLoadReactionFromString("C");
+      if (r < 0)
+      {
+         printf("Error handled: %s\n", indigoGetLastError());
+      }
    }
    if (indigoInChITest)
    {
