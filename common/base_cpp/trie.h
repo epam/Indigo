@@ -91,19 +91,22 @@ namespace indigo {
 			const std::string& remainder = word.substr(1);
 			const char ch = word[0];
 
-			if (_leaves[ch]) {
-				if (word.length() == 1)
-					_leaves[ch]->_mark = true;
-				else
-					_leaves[ch]->addWord(remainder, data);
+			Trie*& leaf = _leaves[ch];
+			if (leaf) {
+				if (word.length() == 1) {
+					leaf->_mark = true;
+					leaf->_data = data;
+				} else {
+					leaf->addWord(remainder, data);
+				}
 			} else {
 				Trie* trie = new Trie(word.length() == 1);
 				trie->addWord(remainder, data);
-				_leaves[ch] = trie;
+				leaf = trie;
 			}
-		}
-		else
+		} else {
 			_data = data;
+		}
 	}
 
 	// Retrieves a list of words that a given (sub)trie holds

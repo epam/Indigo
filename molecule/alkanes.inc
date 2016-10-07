@@ -9,9 +9,9 @@ static const char* alkanes_table =
   "  </tokenTable>\n"
   "\n"
   "  <tokenTable name=\"alkanes\" type=\"suffixes\">\n"
-  "    <token value=\"\">ane</token>\n"
+  "    <token value=\"1\">ane</token>\n"
+  "    <token value=\"2\">ene</token>\n"
+  "    <token value=\"3\">yne|yn</token>\n"
   "    <token value=\"\">yl</token>\n"
-  "    <token value=\"\">ene</token>\n"
-  "    <token value=\"\">yne</token>\n"
   "  </tokenTable>\n"
   "</tokenTables>\n";

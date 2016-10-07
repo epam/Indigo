@@ -17,7 +17,6 @@
 
 #include <list>
 #include <map>
-#include <memory>
 #include <stack>
 #include <string>
 #include <vector>
@@ -37,38 +36,59 @@
 
 namespace name_parsing {
 
+	/*
+	Enum class of token types
+	These types are assigned to tokens during lexical analysis
+	*/
 	enum class TokenType : int {
-		endOfStream = -2,
-		unknown,
+		endOfStream = -2,						// a special terminator for lexemes stream
+		unknown,								// a default value
 
-		// multipliers.inc
-		factor,
-		basic,
-		group,
-		ending,
-		ringAssembly,
+		/*
+		multipliers.inc
+		*/
+		factor,									// a factor (x10, x100, etc.)
+		basic,									// basic [1..9] OR combined final value, e.g. 113
+		group,									// group multipliers
+		ending,									// special multiplier endings
+		ringAssembly,							// ring multipliers
 
-		// separators.inc
-		punctuation,
-		openingBracket,
-		closingBracket,
-		prime,
-		locant,
+		/*
+		separators.inc
+		*/
+		punctuation,							// a generic punctuation mark
+		openingBracket,							// ( [ {
+		closingBracket,							// ) ] }
+		prime,									// '
+		locant,									// a locant in basic structure
 
-		// basic_elements.inc
-		basicElement,
+		/*
+		basic_elements.inc
+		*/
+		basicElement,							// a basic chemical element
 
-		// text fragment
+		/*
+		A generic text fragment
+		Will be analyzed and split into smaller lexemes
+		*/
 		text,
 
-		// alkanes
-		bases,
-		suffixes
+		/*
+		FIXME
+		needs re-naming and re-design
+		*/
+		bases,									// names of alkanes(-enes, -ynes)
+		suffixes								// suffixes for alkanes(enes, -ynes)
 	};
 
 	// static array of token type names
 	static std::vector<std::string> TokenTypeStrings;
 
+	/*
+	A struct denoting a token
+	Keeps a name of the token family, associated value, and type
+	Due to restrictions of tinyxml library, all types are const char* or strings
+	*/
 	struct Token {
 		std::string name;
 		std::string value;
@@ -78,6 +98,10 @@ namespace name_parsing {
 		inline Token(const std::string& name, const std::string& value, TokenType type) :
 			name{ name }, value{ value }, type{ type } { }
 
+		/*
+		Converts a token type name into token type value
+		Returns TokenType::unknown if no matching found
+		*/
 		static TokenType tokenTypeFromString(const std::string& s);
 	};
 
@@ -104,8 +128,8 @@ namespace name_parsing {
 	typedef indigo::Trie<Token> LexemesTrie;
 
 	/*
-	 * A singleton for managing various global symbol tables
-	 */
+	A dictionary for managing various global symbol tables
+	*/
 	class DictionaryManager {
 
 		DECL_ERROR;
@@ -128,13 +152,15 @@ namespace name_parsing {
 		inline const std::string& getSeparators() const { return separators; }
 	};
 
+	static DictionaryManager dictionaryManager;
+
 	typedef std::vector<Lexeme> Lexemes;
 	typedef std::vector<std::string> Failures;
 
 	/*
-	 * A product of parsing process
-	 * Keeps dictionaries of lexemes and tokens
-	 */
+	A product of parsing process
+	Keeps dictionaries of lexemes and tokens
+	*/
 	class Parse : public indigo::NonCopyable {
 		DECL_ERROR;
 
@@ -145,12 +171,10 @@ namespace name_parsing {
 		bool	 _hasFailures = false;			// failure flag
 
 		/*
-		 Splits a fragment into smaller lexemes
-		 Sets up the failure flag if unparsable fragment is encountered
-		 */
+		Splits a fragment into smaller lexemes
+		Sets up the failure flag if unparsable fragment is encountered
+		*/
 		void processTextFragment(const std::string& fragment);
-
-		bool _hasElision = false;				// there was an elision during a parse
 
 		// try to find a lexeme using an elision rule
 		bool tryElision(const std::string& failure);
@@ -165,14 +189,13 @@ namespace name_parsing {
 		inline const Lexemes& getLexemes() const { return lexemes; }
 		inline const Failures& getFailures() const { return failures; }
 		inline bool hasFailures() const { return _hasFailures; }
-		inline bool hasElision() const { return _hasElision; }
 
 		inline const size_t getCurrentLexeme() const { return currentLexeme; }
 
 		/*
-		 Performs by-symbol input scan, determines basic tokens
-		 Text fragments require further processing
-		 */
+		Performs by-symbol input scan, determines basic tokens
+		Text fragments require further processing
+		*/
 		void scan();
 
 		// Retrieves a next lexeme from the stream, incrementing the stream pointer
@@ -254,6 +277,13 @@ namespace name_parsing {
 
 	typedef std::pair<int, std::string> Element;
 
+	enum class NodeType : int {
+		unknown = -1,
+		element,
+		base,
+		suffix
+	};
+
 	/*
 	A node that represents a base structure
 	Has multipliers that define how many basic elements or groups this structure has
@@ -283,6 +313,8 @@ namespace name_parsing {
 
 		int bondOrder = indigo::BOND_ZERO;		// from base_molecule.h via molecule.h
 
+		NodeType tokenType = NodeType::unknown;
+
 	public:
 		FragmentNodeBase();
 
@@ -291,8 +323,10 @@ namespace name_parsing {
 
 		inline Element& getElement() { return element; }
 		inline const Element& getElement() const { return element; }
-		inline void setElementNumber(int number) { element.first = number; }
-		inline void setElementSymbol(const std::string& symbol) { element.second = symbol; }
+		inline void setElement(int number, const std::string& symbol = "") {
+			element.first = number;
+			element.second = symbol;
+		}
 
 		inline int getValenceDiff() const { return valencyDiff; }
 		inline void setValencyDiff(int diff) { valencyDiff = diff; }
@@ -305,6 +339,9 @@ namespace name_parsing {
 
 		inline Locants& getLocants() { return locants; }
 		inline const Locants& getLocants() const { return locants; }
+
+		inline const NodeType getNodeType() const { return tokenType; }
+		inline void setNodeType(NodeType type) { tokenType = type; }
 
 		/*
 		Returns the sum of multipliers stack
@@ -396,7 +433,7 @@ namespace name_parsing {
 	class TreeBuilder : public indigo::NonCopyable {
 		DECL_ERROR;
 
-		std::unique_ptr<FragmentBuildTree> buildTree;
+		FragmentBuildTree* buildTree = nullptr;
 
 		// Indicates that a next locant will start a new substituent node
 		bool startNewNode = true;
@@ -431,19 +468,29 @@ namespace name_parsing {
 
 		// Processes alkane lexemes
 		bool processAlkane(const Lexeme& lexeme);
+
 		// Processes multiplier lexemes
 		bool processMultiplier(const Lexeme& lexeme);
+
 		// Processes separator lexemes
 		bool processSeparator(const Lexeme& lexeme);
 
+		// Processes an alkane suffix
 		void processSuffix(const Lexeme& lexeme);
+
 		bool processBasicElement(const Lexeme& lexeme);
+		bool processAlkaneBase(const Lexeme& lexeme);
+		bool processAlkaneSuffix(const Lexeme& lexeme);
+		bool processBasicMultiplier(const Lexeme& lexeme);
+		bool processFactorMultiplier(const Lexeme& lexeme);
+		bool processLocant(const Lexeme& lexeme);
+		bool processPunctuation(const Lexeme& lexeme);
 
 	public:
-		inline TreeBuilder(const Parse& input) : parse{ &input } { buildTree.reset(new FragmentBuildTree); }
+		inline TreeBuilder(const Parse& input) : parse{ &input } { buildTree = new FragmentBuildTree; }
+		inline ~TreeBuilder() { delete buildTree; }
 
-		inline std::unique_ptr<FragmentBuildTree>& getBuildTree() { return buildTree; }
-		inline const std::unique_ptr<FragmentBuildTree>& getBuildTree() const { return buildTree; }
+		inline const FragmentBuildTree* getBuildTree() { return buildTree; }
 
 		bool processParse();
 	};
@@ -456,7 +503,7 @@ namespace name_parsing {
 		DECL_ERROR;
 
 		// A pointer to the tree builder, which provides the build tree
-		std::unique_ptr<TreeBuilder> treeBuilder;
+		TreeBuilder* treeBuilder = nullptr;
 
 		std::string SMILES;
 
@@ -474,6 +521,11 @@ namespace name_parsing {
 
 	public:
 		ResultBuilder(const Parse& input);
+		inline ~ResultBuilder() {
+			if (treeBuilder) {
+				delete treeBuilder;
+			}
+		}
 
 		inline bool buildTree() const { return treeBuilder->processParse(); }
 
@@ -520,7 +572,6 @@ namespace name_parsing {
 	};
 
 	MoleculeNameParser& getMoleculeNameParserInstance();
-	DictionaryManager& getDictionaryManagerInstance();
 } // namespace name_parsing
 
 #ifdef _WIN32
