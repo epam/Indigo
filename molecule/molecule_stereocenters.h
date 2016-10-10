@@ -47,7 +47,7 @@ public:
 
    void buildFromBonds (const StereocentersOptions &options, int *sensible_bonds_out);
 
-   void buildFrom3dCoordinates (void);
+   void buildFrom3dCoordinates (const StereocentersOptions &options);
 
    void markBonds ();
    void markBond  (int atom_idx);
@@ -159,7 +159,9 @@ protected:
    static int _onPlane (const Vec3f &v1, const Vec3f &v2, const Vec3f &v3, const Vec3f &v4);
 
    bool _buildOneCenter (int atom_idx, int *sensible_bonds_out, 
-      bool bidirectional_mode, bool bidirectional_either_mode, const Array<bool> &bond_ignore);
+   bool bidirectional_mode, bool bidirectional_either_mode, const Array<bool> &bond_ignore);
+
+   void _buildOneFrom3dCoordinates (int idx);
 
    void _getGroups (int type, Array<int> &numbers);
    void _getGroup  (int type, int number, Array<int> &indices);

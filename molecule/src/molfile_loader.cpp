@@ -67,7 +67,7 @@ void MolfileLoader::loadMolecule (Molecule &mol)
    _loadMolecule();
 
    if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
-      mol.stereocenters.buildFrom3dCoordinates();
+      mol.stereocenters.buildFrom3dCoordinates(stereochemistry_options);
 }
 
 void MolfileLoader::loadQueryMolecule (QueryMolecule &mol)
@@ -79,7 +79,7 @@ void MolfileLoader::loadQueryMolecule (QueryMolecule &mol)
    _loadMolecule();
 
    if (mol.stereocenters.size() == 0)
-      mol.stereocenters.buildFrom3dCoordinates();
+      mol.stereocenters.buildFrom3dCoordinates(stereochemistry_options);
 }
 
 void MolfileLoader::_loadMolecule ()

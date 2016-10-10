@@ -93,7 +93,7 @@ void MoleculeStereocenters::buildFromBonds (const StereocentersOptions &options,
    }
 }
 
-void MoleculeStereocenters::buildFrom3dCoordinates ( void )
+void MoleculeStereocenters::buildFrom3dCoordinates (const StereocentersOptions &options)
 {
    BaseMolecule &bmol = _getMolecule();
 
@@ -111,66 +111,15 @@ void MoleculeStereocenters::buildFrom3dCoordinates ( void )
 
    for (i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
    {
-      Vec3f &v_pos = bmol.getAtomXyz(i);
-
-      if (!isPossibleStereocenter(i))
-         continue;
-
-      int pyramid[4];
-
       try
       {
-         _restorePyramid(i, pyramid, false);
+         _buildOneFrom3dCoordinates(i);
       }
-      catch (Exception &)
+      catch (Error &)
       {
-         continue;
+         if (!options.ignore_errors)
+            throw;
       }
-
-      Vec3f nei_coords[4];
-      int nei_cnt = 0;
-      for (int j = 0; j < 4; j++)
-      {
-         if (pyramid[j] != -1)
-            nei_coords[nei_cnt++] = bmol.getAtomXyz(pyramid[j]);
-      }
-
-      if (nei_cnt != 4)
-      {
-         Vec3f v1, v2, v3;
-         v1.copy(nei_coords[0]);
-         v2.copy(nei_coords[1]);
-         v3.copy(nei_coords[2]);
-
-         // Check if substituents with center atom are on the same plane
-         int plane_sign_v_pos = _onPlane(v1, v2, v3, v_pos);
-         if (plane_sign_v_pos == 0)
-            continue;
-
-         v1.sub(v_pos);
-         v2.sub(v_pos);
-         v3.sub(v_pos);
-         v1.normalize();
-         v2.normalize();
-         v3.normalize();
-         nei_coords[3] = Vec3f(0, 0, 0);
-         nei_coords[3].add(v1);
-         nei_coords[3].add(v2);
-         nei_coords[3].add(v3);
-         nei_coords[3].scale(-1);
-         nei_coords[3].normalize();
-         nei_coords[3].add(v_pos);
-      }
-
-      int plane_sign = _onPlane(nei_coords[0], nei_coords[1], nei_coords[2], nei_coords[3]);
-
-      if (plane_sign == 0)
-         continue;
-
-      if (plane_sign > 0)
-         add(i, ATOM_ABS, 0, true);
-      else
-         add(i, ATOM_ABS, 0, false);
    }
 
    MoleculeAutomorphismSearch am;
@@ -186,6 +135,72 @@ void MoleculeStereocenters::buildFrom3dCoordinates ( void )
       if (am.invalidStereocenter(i))
          remove(i);
    }
+}
+
+void MoleculeStereocenters::_buildOneFrom3dCoordinates (int idx)
+{
+   BaseMolecule &bmol = _getMolecule();
+
+   Vec3f &v_pos = bmol.getAtomXyz(idx);
+
+   if (!isPossibleStereocenter(idx))
+      return;
+
+   int pyramid[4];
+
+   try
+   {
+      _restorePyramid(idx, pyramid, false);
+   }
+   catch (Exception &)
+   {
+      return;
+   }
+
+   Vec3f nei_coords[4];
+   int nei_cnt = 0;
+   for (int j = 0; j < 4; j++)
+   {
+      if (pyramid[j] != -1)
+         nei_coords[nei_cnt++] = bmol.getAtomXyz(pyramid[j]);
+   }
+
+   if (nei_cnt != 4)
+   {
+      Vec3f v1, v2, v3;
+      v1.copy(nei_coords[0]);
+      v2.copy(nei_coords[1]);
+      v3.copy(nei_coords[2]);
+
+      // Check if substituents with center atom are on the same plane
+      int plane_sign_v_pos = _onPlane(v1, v2, v3, v_pos);
+      if (plane_sign_v_pos == 0)
+         return;
+
+      v1.sub(v_pos);
+      v2.sub(v_pos);
+      v3.sub(v_pos);
+      v1.normalize();
+      v2.normalize();
+      v3.normalize();
+      nei_coords[3] = Vec3f(0, 0, 0);
+      nei_coords[3].add(v1);
+      nei_coords[3].add(v2);
+      nei_coords[3].add(v3);
+      nei_coords[3].scale(-1);
+      nei_coords[3].normalize();
+      nei_coords[3].add(v_pos);
+   }
+
+   int plane_sign = _onPlane(nei_coords[0], nei_coords[1], nei_coords[2], nei_coords[3]);
+
+   if (plane_sign == 0)
+      return;
+
+   if (plane_sign > 0)
+      add(idx, ATOM_ABS, 0, true);
+   else
+      add(idx, ATOM_ABS, 0, false);
 }
 
 bool MoleculeStereocenters::isPossibleStereocenter (int atom_idx,

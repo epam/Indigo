@@ -1045,7 +1045,7 @@ void MoleculeStandardizer::_setStereoFromCoordinates(BaseMolecule &mol)
    mol.cis_trans.build(0);
 
    if (mol.stereocenters.size() == 0)
-      mol.stereocenters.buildFrom3dCoordinates();
+      mol.stereocenters.buildFrom3dCoordinates(options);
 
 }
 
