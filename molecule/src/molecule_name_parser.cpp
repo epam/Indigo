@@ -1068,7 +1068,7 @@ void MoleculeNameParser::parseMolecule(const char *name, Molecule &molecule) {
 		for (const string& f : failures) {
 			message += f + " ";
 		}
-		throw Error("Cannot parse input %s due to errors: %s", name, message);
+		throw Error("Cannot parse input %s due to errors: %s", name, message.c_str());
 	}
 
 	ResultBuilder builder(parse);
