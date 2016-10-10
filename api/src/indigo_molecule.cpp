@@ -4137,11 +4137,7 @@ CEXPORT int indigoIterateAttachmentPoints (int molecule, int order)
    INDIGO_END(-1)
 }
 
-
-//tests
-// 1 canonical smiles
-// 2 unit tests
-CEXPORT int indigoNameToStructure(const char* name)
+CEXPORT int indigoNameToStructure(const char* name, const char* params)
 {
 	INDIGO_BEGIN
 	{

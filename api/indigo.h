@@ -193,7 +193,7 @@ CEXPORT int indigoSaveMDLCT (int item, int output);
 
 // converts a chemical name into a corresponding structure
 // return -1 if parsing fails or no structure is found
-CEXPORT int indigoNameToStructure(const char* name);
+CEXPORT int indigoNameToStructure(const char* name, const char* params);
 
 /* Reactions, query reactions */
 /*
