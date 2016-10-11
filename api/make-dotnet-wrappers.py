@@ -54,22 +54,32 @@ if 'win' in wrappers:
         win2010 = 1
         win2012 = 0
         win2013 = 0
+        win2015 = 0
     elif os.path.exists(join(libraryPath, 'Win', 'x64', 'msvcr110.dll')):
         win2010 = 0
         win2012 = 1
         win2013 = 0
+        win2015 = 0
     elif os.path.exists(join(libraryPath, 'Win', 'x64', 'msvcr120.dll')):
         win2010 = 0
         win2012 = 0
         win2013 = 1
+        win2015 = 0
+    elif os.path.exists(join(libraryPath, 'Win', 'x64', 'msvcr140.dll')):
+        win2010 = 0
+        win2012 = 0
+        win2013 = 0
+        win2015 = 1
     else:
         win2010 = 0
         win2012 = 0
         win2013 = 0
+        win2015 = 0
 else:
     win2010 = 0
     win2012 = 0
     win2013 = 0
+    win2015 = 0
 
 if 'linux' in wrappers:
     os.makedirs(join(indigoDotNetPath, "Resource", 'Linux', 'x64'))

@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2016 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -868,6 +868,15 @@ public class Indigo {
     public int buildPkaModel(int level, float threshold, String filename) {
         setSessionID();
         return checkResult(this, _lib.indigoBuildPkaModel(level, threshold, filename));
+    }
+    
+    public IndigoObject nameToStructure(String name, String params) {
+        setSessionID();
+        int result = checkResult(this, _lib.indigoNameToStructure(name, params));
+        if(result == 0)
+            return null;
+        
+        return new IndigoObject(this, result);
     }
 
     @Override

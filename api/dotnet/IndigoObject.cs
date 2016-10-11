@@ -1793,6 +1793,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoExpandAbbreviations(self));
         }
 
+        public int nameToStructure(string name, string parameters)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoNameToStructure(name, parameters));
+        }
+
         public String dbgInternalType()
         {
             dispatcher.setSessionID();

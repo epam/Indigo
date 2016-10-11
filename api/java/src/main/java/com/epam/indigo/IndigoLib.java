@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2011 EPAM Systems
+ * Copyright (C) 2011, 2016 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -439,6 +439,8 @@ public interface IndigoLib extends Library
 
    int indigoExpandAbbreviations (int structure);
    int indigoIterateTautomers(int structure, String params);
+   
+   int indigoNameToStructure(String name, String params);
 
    int indigoDbgBreakpoint ();
    Pointer indigoDbgInternalType (int object);

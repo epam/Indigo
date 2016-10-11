@@ -382,6 +382,8 @@ namespace com.epam.indigo
         int indigoExpandAbbreviations (int structure);
         int indigoIterateTautomers(int structure, string parameters);
 
+        int indigoNameToStructure(string name, string parameters);
+
         sbyte* indigoDbgInternalType(int item);
         sbyte* indigoDbgProfiling (int whole_sessoin);
         int indigoDbgResetProfiling (int whole_sessoin);

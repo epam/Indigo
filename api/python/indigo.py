@@ -1,6 +1,6 @@
 #
 #
-# Copyright (C) 2009-2015 EPAM Systems
+# Copyright (C) 2009-2016 EPAM Systems
 #
 # This file is part of Indigo toolkit.
 #
@@ -1246,7 +1246,6 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoDbgInternalType(self.id))
 
-
 class Indigo(object):
     ABS = 1
     OR = 2
@@ -2012,6 +2011,8 @@ class Indigo(object):
         Indigo._lib.indigoExpandAbbreviations.argtypes = [c_int]
         Indigo._lib.indigoDbgInternalType.restype = c_char_p
         Indigo._lib.indigoDbgInternalType.argtypes = [c_int]
+        Indigo._lib.indigoNameToStructure.restype = c_int
+        Indigo._lib.indigoNameToStructure.argtypes = [c_char_p, c_char_p]
 
     def __del__ (self):
         if hasattr(self, '_lib'):
@@ -2347,6 +2348,9 @@ class Indigo(object):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateTautomers(molecule.id, params)), molecule)
 
+    def nameToStructure(self, name, params=''):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoNameToStructure(name.encode(ENCODE_ENCODING), params.encode(ENCODE_ENCODING))))
 
     def buildPkaModel(self, level, threshold, filename):
         self._setSessionId()
