@@ -432,6 +432,12 @@ void InchiWrapper::generateInchiInput(Molecule &mol, inchi_Input &input,
             // set -1 to tell InChI add implicit hydrogens automatically
             hcount = mol.getImplicitH_NoThrow(v, -1); 
       }
+
+      if ( (mol.getAtomNumber(v) == ELEM_S) && (mol.getAtomValence(v) == 4) )
+      {
+         hcount = mol.getImplicitH_NoThrow(v, -1);
+      }
+
       atom.num_iso_H[0] = hcount;
    }
   
