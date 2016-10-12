@@ -2,7 +2,8 @@ find_package(Git)
 if(GIT_EXECUTABLE) 
    EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match "indigo-*" 
                     OUTPUT_VARIABLE INDIGO_FULL_VERSION
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
  	if (NOT ${INDIGO_FULL_VERSION} STREQUAL "")
    		string(REGEX REPLACE "indigo-(.+)-(.+)-(.+)" "\\1.r\\2-\\3" INDIGO_FULL_VERSION ${INDIGO_FULL_VERSION})
    		string(REGEX REPLACE "(.+)-(.+)" "\\1" INDIGO_VERSION ${INDIGO_FULL_VERSION})
