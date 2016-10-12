@@ -4145,7 +4145,6 @@ CEXPORT int indigoNameToStructure(const char* name, const char* params)
 			throw IndigoError("indigoNameToStructure: invalid parameter");
 		}
 
-		using namespace name_parsing;
 		MoleculeNameParser &parser = getMoleculeNameParserInstance();
 
 		AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
