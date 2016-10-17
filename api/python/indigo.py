@@ -2348,8 +2348,10 @@ class Indigo(object):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateTautomers(molecule.id, params)), molecule)
 
-    def nameToStructure(self, name, params=''):
+    def nameToStructure(self, name, params = None):
         self._setSessionId()
+        if params is None:
+            params = ""
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoNameToStructure(name.encode(ENCODE_ENCODING), params.encode(ENCODE_ENCODING))))
 
     def buildPkaModel(self, level, threshold, filename):
