@@ -80,8 +80,9 @@ namespace indigo {
 
    template <typename T>
    Trie<T>::~Trie() {
-      for (auto& it : _leaves)
+      for (auto& it : _leaves) {
          delete it.second;
+      }
    }
 
    // Adds a word into the trie, setting up data in the end
@@ -132,8 +133,9 @@ namespace indigo {
    template <typename T>
    const Trie<T>* Trie<T>::getNode(const std::string& word) const {
       // if no input, return current node
-      if (word.empty())
+      if (word.empty()) {
          return this;
+      }
 
       const Trie* leaf = this;
       std::string buffer = word;
@@ -142,8 +144,9 @@ namespace indigo {
          if (it != leaf->_leaves.end()) {
             leaf = it->second;
             buffer = buffer.substr(1);
-         } else
+         } else {
             return nullptr;
+         }
       }
 
       return leaf;
@@ -151,13 +154,15 @@ namespace indigo {
 
    template <typename T>
    void Trie<T>::getWords(Wordset& words, std::string& buffer) const {
-      if (_mark)
+      if (_mark) {
          words.insert(buffer);
+      }
 
       for (const auto& it : _leaves) {
          std::string s = buffer + it.first;
-         if (it.second->_mark)
+         if (it.second->_mark) {
             words.insert(s);
+         }
 
          it.second->getWords(words, s);
       }
@@ -182,12 +187,14 @@ namespace indigo {
 
    template <typename T>
    bool Trie<T>::isWord(const std::string& word) const {
-      if (word.empty())
+      if (word.empty()) {
          return false;
+      }
 
       const Trie* node = getNode(word);
-      if (!node)
+      if (!node) {
          return false;
+      }
 
       return node->isMark();
    }

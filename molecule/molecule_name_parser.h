@@ -230,6 +230,7 @@ class DLLEXPORT MoleculeNameParser {
    class FragmentNodeRoot : public FragmentNode {
    public:
       inline FragmentNodeRoot() { type = FragmentNodeType::ROOT; }
+      virtual ~FragmentNodeRoot() { }
 
 #ifdef DEBUG
       virtual void print(std::ostream& out) const;
@@ -258,6 +259,7 @@ class DLLEXPORT MoleculeNameParser {
    class FragmentNodeBase : public FragmentNode {
    public:
       FragmentNodeBase();
+      virtual ~FragmentNodeBase() { }
 
       /*
       Returns the sum of multipliers stack
@@ -301,6 +303,7 @@ class DLLEXPORT MoleculeNameParser {
    class FragmentNodeSubstituent : public FragmentNodeBase {
    public:
       inline FragmentNodeSubstituent() { type = FragmentNodeType::SUBSTITUENT; }
+      virtual ~FragmentNodeSubstituent() { }
 
 #ifdef DEBUG
       virtual void print(std::ostream& out) const;
@@ -352,12 +355,11 @@ class DLLEXPORT MoleculeNameParser {
    */
    class TreeBuilder : public NonCopyable {
    public:
-      inline TreeBuilder(const Parse& input) : _parse{ &input } { buildTree = new FragmentBuildTree; }
-      inline ~TreeBuilder() { delete buildTree; }
+      inline TreeBuilder(const Parse& input) : _parse{ &input } { }
 
       bool processParse();
 
-      FragmentBuildTree* buildTree = nullptr;
+      FragmentBuildTree buildTree;
 
    private:
       DECL_ERROR;
@@ -423,14 +425,9 @@ class DLLEXPORT MoleculeNameParser {
    */
    class ResultBuilder : public NonCopyable {
    public:
-      ResultBuilder(const Parse& input);
-      virtual ~ResultBuilder() {
-         if (_treeBuilder) {
-            delete _treeBuilder;
-         }
-      }
+      ResultBuilder(const Parse& input) : _treeBuilder{ input } { _initOrganicElements(); }
 
-      inline bool buildTree() const { return _treeBuilder->processParse(); }
+      inline bool buildTree() { return _treeBuilder.processParse(); }
 
       /*
       Traverses the build tree in post-order depth-first order, creates
@@ -441,8 +438,8 @@ class DLLEXPORT MoleculeNameParser {
    private:
       DECL_ERROR;
 
-      // A pointer to the tree builder, which provides the build tree
-      TreeBuilder* _treeBuilder = nullptr;
+      // The tree builder, which provides the build tree
+      TreeBuilder _treeBuilder;
 
       std::string _SMILES;
 
