@@ -184,6 +184,20 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
                      atom->SetAttribute("hydrogenCount", hcount);
                }
             }
+
+            for (int j = _mol->sgroups.begin(); j != _mol->sgroups.end(); j = _mol->sgroups.next(j))
+            {
+               SGroup &sgroup = _mol->sgroups.getSGroup(j);
+               if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+               {
+                  DataSGroup &dsg = (DataSGroup &)sgroup;
+                  if ( (dsg.name.size() > 0) && (strcmp(dsg.name.ptr(), "INDIGO_ALIAS") == 0) &&
+                       (dsg.atoms[0] == i) )
+                  {
+                     atom->SetAttribute("mrvAlias", dsg.data.ptr());
+                  }
+               }
+            }
          }
 
          if (_mol->isRSite(i))
@@ -271,7 +285,6 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
                buf.push(0);
                atom->SetAttribute("mrvQueryProps", buf.ptr());
             }
-
          }
 
          if (_mol->attachmentPointCount() > 0)
@@ -453,11 +466,16 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
 
    if (_mol->countSGroups() > 0)
    {
-      MoleculeSGroups *sgroups = &_mol->sgroups;
-
       for (i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
       {
-         SGroup &sgroup = sgroups->getSGroup(i);
+         SGroup &sgroup = _mol->sgroups.getSGroup(i);
+
+         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+         {
+            DataSGroup &dsg = (DataSGroup &)sgroup;
+            if ( (dsg.name.size() > 0) && (strcmp(dsg.name.ptr(), "INDIGO_ALIAS") == 0) )
+               continue;
+         }
 
          if (sgroup.parent_group == 0)
             _addSgroupElement(molecule, *_mol, sgroup);

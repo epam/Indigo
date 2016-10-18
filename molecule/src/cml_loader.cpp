@@ -118,6 +118,7 @@ struct Atom
       id, 
       element_type, 
       label, 
+      alias, 
       isotope, 
       formal_charge,
       spin_multiplicity, 
@@ -214,6 +215,7 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
    splitStringIntoProperties(atom_array.Element()->Attribute("attachmentPoint"), atoms, &Atom::attpoint);
    splitStringIntoProperties(atom_array.Element()->Attribute("attachmentOrder"), atoms, &Atom::attorder);
    splitStringIntoProperties(atom_array.Element()->Attribute("mrvQueryProps"), atoms, &Atom::query_props);
+   splitStringIntoProperties(atom_array.Element()->Attribute("mrvAlias"), atoms, &Atom::alias);
 
    // Read atoms as nested xml elements
    //   <atomArray>
@@ -255,6 +257,10 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
       if (pseudo != 0)
          a.label = pseudo;
 
+      const char *alias = elem->Attribute("mrvAlias");
+
+      if (alias != 0)
+         a.alias = alias;
 
       const char *isotope = elem->Attribute("isotope");
 
@@ -651,6 +657,20 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
             if (sscanf(a.z.c_str(), "%f", &_bmol->getAtomXyz(idx).z) != 1)
                throw Error("error parsing z");
 
+         if (!a.alias.empty())
+         {
+            if (strncmp(a.alias.c_str(), "0", 1) != 0)
+            {            
+               int sg_idx = _bmol->sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+               DataSGroup &sgroup = (DataSGroup &)_bmol->sgroups.getSGroup(sg_idx);
+      
+               sgroup.atoms.push(idx);
+               sgroup.name.readString("INDIGO_ALIAS", true);
+               sgroup.data.readString(a.alias.c_str(), true);
+               sgroup.display_pos.x = _bmol->getAtomXyz(idx).x;
+               sgroup.display_pos.y = _bmol->getAtomXyz(idx).y;
+            }
+         }
       }
 /*
       if (!a.attorder.empty())
