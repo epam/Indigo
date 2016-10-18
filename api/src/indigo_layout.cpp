@@ -54,15 +54,9 @@ CEXPORT int indigoLayout (int object)
          if (obj.type != IndigoObject::SUBMOLECULE)
          {
             // Not for submolecule yet
-            try
-            {
-               mol.clearBondDirections();
-               mol.stereocenters.markBonds();
-               mol.allene_stereo.markBonds();
-            }
-            catch (Exception e)
-            {
-            }
+            mol.clearBondDirections();
+            mol.stereocenters.markBonds();
+            mol.allene_stereo.markBonds();
          }
 
          if (obj.type != IndigoObject::SUBMOLECULE)
@@ -74,15 +68,9 @@ CEXPORT int indigoLayout (int object)
                for (int j = rgp.fragments.begin(); j != rgp.fragments.end();
                         j = rgp.fragments.next(j))
                {
-                  try
-                  {
-                     rgp.fragments[j]->clearBondDirections();
-                     rgp.fragments[j]->stereocenters.markBonds();
-                     rgp.fragments[j]->allene_stereo.markBonds();
-                  }
-                  catch (Exception e)
-                  {
-                  }
+                  rgp.fragments[j]->clearBondDirections();
+                  rgp.fragments[j]->stereocenters.markBonds();
+                  rgp.fragments[j]->allene_stereo.markBonds();
                }
             }
          }
@@ -95,13 +83,7 @@ CEXPORT int indigoLayout (int object)
          rl.horizontal_interval_factor = self.layout_horintervalfactor;
 
          rl.make();
-         try
-         {
-            rxn.markStereocenterBonds();
-         } 
-         catch (Exception e)
-         {
-         }
+         rxn.markStereocenterBonds();
       } else {
          throw IndigoError("The object provided is neither a molecule, nor a reaction");
       }
