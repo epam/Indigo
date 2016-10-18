@@ -263,16 +263,20 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
                 vertex_list.push(v);
                 break;
             }
+			int prev_vert = -1;
+			int prev_prev_vert = -1;
             while (true) {
-                const Vertex& vert = _mol.getVertex(vertex_list.top());
+				int current_vert = vertex_list.top();
+                const Vertex& vert = _mol.getVertex(current_vert);
                 bool found = false;
-                int prev = vertex_list.size() == 1 ? -1 : vertex_list[vertex_list.size() - 2];
                 for (int n = vert.neiBegin(); n != vert.neiEnd() && !found; n = vert.neiNext(n))
-                    if (in[c][vert.neiVertex(n)] && vert.neiVertex(n) != prev) {
+                    if (in[c][vert.neiVertex(n)] && vert.neiVertex(n) != prev_vert && vert.neiVertex(n) != prev_prev_vert) {
                         found = true;
                         vertex_list.push(vert.neiVertex(n));
                     }
                 if (!found) break;
+				prev_prev_vert = prev_vert;
+				prev_vert = current_vert;
             }
 
             for (int i = 1; i < vertex_list.size() - 1; i++)
