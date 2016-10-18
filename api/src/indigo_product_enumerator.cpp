@@ -126,7 +126,13 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers)
             ReactionLayout layout(out_reaction, self.smart_layout);
             layout.layout_orientation = (layout_orientation_value) self.layout_orientation;
             layout.make();
-            out_reaction.markStereocenterBonds();
+//            try
+//            {
+               out_reaction.markStereocenterBonds();
+//            }
+//            catch (Exception e)
+//            {
+//            }
          }
 
          QS_DEF(IndigoReaction, indigo_rxn);
