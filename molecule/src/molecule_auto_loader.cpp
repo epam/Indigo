@@ -26,6 +26,8 @@
 #include "molecule/sdf_loader.h"
 #include "molecule/molecule_cdx_loader.h"
 #include "molecule/inchi_wrapper.h"
+#include "base_cpp/output.h"
+#include "molecule/molecule_name_parser.h"
 
 using namespace indigo;
 
@@ -274,19 +276,40 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          }
       }
 
-      // if not InChI then SMILES
-      {
+      // If not InChI then SMILES or IUPAC name
+      Array<char> err_buf;
+
+      try {
          SmilesLoader loader(*_scanner);
 
          loader.ignore_closing_bond_direction_mismatch =
             ignore_closing_bond_direction_mismatch;
          loader.stereochemistry_options = stereochemistry_options;
          loader.ignore_cistrans_errors = ignore_cistrans_errors;
+
+         /*
+         If exception is thrown, the string is rather an IUPAC name than a SMILES string
+         We catch it and pass down to IUPAC name conversion
+         */
          if (query)
             loader.loadQueryMolecule((QueryMolecule &)mol);
          else
             loader.loadMolecule((Molecule &)mol);
          return;
+      } catch (Exception& e) {
+         err_buf.appendString(e.message(), true);
+      }
+
+      // We fall down to IUPAC name conversion if SMILES loading threw an exception
+      try {
+         Array<char> name;
+         _scanner->seek(SEEK_SET, SEEK_SET);
+         _scanner->readLine(name, true);
+         MoleculeNameParser parser;
+         parser.parseMolecule(name.ptr(), static_cast<Molecule&>(mol));
+      } catch (Exception& e) {
+         err_buf.appendString(e.message(), true);
+         throw Exception(err_buf.ptr());
       }
    }
 
@@ -308,24 +331,26 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
    }
 */
    // default is Molfile format
-   {
-      SdfLoader sdf_loader(*_scanner);
-      sdf_loader.readNext();
+   //TODO check dead code
 
-      // Copy properties
-      properties.copy(sdf_loader.properties);
+   //{
+   //   SdfLoader sdf_loader(*_scanner);
+   //   sdf_loader.readNext();
 
-      BufferScanner scanner2(sdf_loader.data);
+   //   // Copy properties
+   //   properties.copy(sdf_loader.properties);
 
-      MolfileLoader loader(scanner2);
-      loader.stereochemistry_options = stereochemistry_options;
-      loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-      loader.skip_3d_chirality = skip_3d_chirality;
-      loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+   //   BufferScanner scanner2(sdf_loader.data);
 
-      if (query)
-         loader.loadQueryMolecule((QueryMolecule &)mol);
-      else
-         loader.loadMolecule((Molecule &)mol);
-   }
+   //   MolfileLoader loader(scanner2);
+   //   loader.stereochemistry_options = stereochemistry_options;
+   //   loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+   //   loader.skip_3d_chirality = skip_3d_chirality;
+   //   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+
+   //   if (query)
+   //      loader.loadQueryMolecule((QueryMolecule &)mol);
+   //   else
+   //      loader.loadMolecule((Molecule &)mol);
+   //}
 }
