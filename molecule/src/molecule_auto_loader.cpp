@@ -307,8 +307,11 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          _scanner->readLine(name, true);
          MoleculeNameParser parser;
          parser.parseMolecule(name.ptr(), static_cast<Molecule&>(mol));
-      } catch (Exception& e) {
-         err_buf.appendString(e.message(), true);
+         return;
+      } catch (Exception&) {
+      }
+
+      if (err_buf.size() > 0) {
          throw Exception(err_buf.ptr());
       }
    }
@@ -331,26 +334,24 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
    }
 */
    // default is Molfile format
-   //TODO check dead code
+   {
+      SdfLoader sdf_loader(*_scanner);
+      sdf_loader.readNext();
 
-   //{
-   //   SdfLoader sdf_loader(*_scanner);
-   //   sdf_loader.readNext();
+      // Copy properties
+      properties.copy(sdf_loader.properties);
 
-   //   // Copy properties
-   //   properties.copy(sdf_loader.properties);
+      BufferScanner scanner2(sdf_loader.data);
 
-   //   BufferScanner scanner2(sdf_loader.data);
+      MolfileLoader loader(scanner2);
+      loader.stereochemistry_options = stereochemistry_options;
+      loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+      loader.skip_3d_chirality = skip_3d_chirality;
+      loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
 
-   //   MolfileLoader loader(scanner2);
-   //   loader.stereochemistry_options = stereochemistry_options;
-   //   loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-   //   loader.skip_3d_chirality = skip_3d_chirality;
-   //   loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-
-   //   if (query)
-   //      loader.loadQueryMolecule((QueryMolecule &)mol);
-   //   else
-   //      loader.loadMolecule((Molecule &)mol);
-   //}
+      if (query)
+         loader.loadQueryMolecule((QueryMolecule &)mol);
+      else
+         loader.loadMolecule((Molecule &)mol);
+   }
 }
