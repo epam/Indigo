@@ -191,13 +191,10 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
                if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
                {
                   DataSGroup &dsg = (DataSGroup &)sgroup;
-                  if (dsg.name.ptr() != 0 &&  dsg.atoms.ptr() != 0)
+                  if ( (dsg.name.size() >= 12) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) &&
+                       (dsg.atoms.size() > 0) && (dsg.atoms[0] == i) )
                   {
-                     if ( (dsg.name.size() >= 12) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) &&
-                          (dsg.atoms.size() > 0) && (dsg.atoms[0] == i) )
-                     {
-                        atom->SetAttribute("mrvAlias", dsg.data.ptr());
-                     }
+                     atom->SetAttribute("mrvAlias", dsg.data.ptr());
                   }
                }
             }
