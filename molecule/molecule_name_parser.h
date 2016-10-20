@@ -450,10 +450,10 @@ class DLLEXPORT MoleculeNameParser {
       typedef std::stack<std::string> Fragments;
       Fragments _fragments;
 
-      void _processNode(FragmentNode* node);
-      void _processBaseNode(FragmentNodeBase* base);
-      void _processSubstNode(FragmentNodeSubstituent* subst);
-      void _combine(FragmentNode* node);
+      bool _processNode(FragmentNode* node);
+      bool _processBaseNode(FragmentNodeBase* base);
+      bool _processSubstNode(FragmentNodeSubstituent* subst);
+      bool _combine(FragmentNode* node);
    }; // class ResultBuilder
 
    /*

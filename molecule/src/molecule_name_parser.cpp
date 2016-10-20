@@ -890,9 +890,13 @@ bool MoleculeNameParser::ResultBuilder::buildResult(Molecule& molecule) {
    for (FragmentNode* root : roots) {
       const Nodes& nodes = root->nodes;
       for (FragmentNode* node : nodes) {
-         _processNode(node);
+         if (!_processNode(node)) {
+            return false;
+         }
       }
-      _combine(root);
+      if (!_combine(root)) {
+         return false;
+      }
    }
 
    if (!_fragments.empty()) {
@@ -914,21 +918,29 @@ bool MoleculeNameParser::ResultBuilder::buildResult(Molecule& molecule) {
    return true;
 }
 
-void MoleculeNameParser::ResultBuilder::_processNode(FragmentNode* node) {
+bool MoleculeNameParser::ResultBuilder::_processNode(FragmentNode* node) {
    const Nodes& nodes = node->nodes;
    for (FragmentNode* frag : nodes) {
-      _processNode(frag);
+      if (!_processNode(frag)) {
+         return false;
+      }
    }
 
    FragmentNodeType type = node->type;
    if (type == FragmentNodeType::BASE) {
-      _processBaseNode(dynamic_cast<FragmentNodeBase*>(node));
+      if (!_processBaseNode(dynamic_cast<FragmentNodeBase*>(node))) {
+         return false;
+      }
    } else if (type == FragmentNodeType::SUBSTITUENT) {
-      _processSubstNode(dynamic_cast<FragmentNodeSubstituent*>(node));
+      if (!_processSubstNode(dynamic_cast<FragmentNodeSubstituent*>(node))) {
+         return false;
+      }
    }
+
+   return true;
 }
 
-void MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base) {
+bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base) {
    const Element& element = base->element;
    const int number = element.first;
 
@@ -944,7 +956,7 @@ void MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
    if (nt == NodeType::SUFFIX) {
       fragment.append(bond_sym);
       _fragments.push(fragment);
-      return;
+      return true;
    }
 
    const int multipliers = base->combineMultipliers();
@@ -969,7 +981,7 @@ void MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
       int inserted{ 0 };
       for (int loc : locants) {
          if (loc + inserted > fragment.length()) {
-            throw Error("Cannot build SMILES using a base string: %s", fragment);
+            return false;
          }
          fragment.insert(loc + inserted, 1, separator);
          ++inserted;
@@ -987,18 +999,26 @@ void MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
    }
 
    _fragments.push(fragment);
+   return true;
 }
 
-void MoleculeNameParser::ResultBuilder::_processSubstNode(FragmentNodeSubstituent* subst) {
+bool MoleculeNameParser::ResultBuilder::_processSubstNode(FragmentNodeSubstituent* subst) {
    if (subst->nodes.empty()) {
-      _processBaseNode(subst);
+      return _processBaseNode(subst);
    } else {
-      _combine(subst);
+      return _combine(subst);
    }
+
+   // shouldn't reach here
+   return false;
 }
 
-void MoleculeNameParser::ResultBuilder::_combine(FragmentNode* node) {
+bool MoleculeNameParser::ResultBuilder::_combine(FragmentNode* node) {
    string base = _fragments.top();
+   if (base.empty()) {
+      return false;
+   }
+
    _fragments.pop();
 
    const Nodes& nodes = node->nodes;
@@ -1030,6 +1050,7 @@ void MoleculeNameParser::ResultBuilder::_combine(FragmentNode* node) {
    if (node->type != FragmentNodeType::ROOT) {
       dynamic_cast<FragmentNodeBase*>(node)->tokenType = NodeType::BASE;
    }
+   return true;
 }
 
 /*
