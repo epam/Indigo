@@ -33,10 +33,11 @@
 using namespace std;
 using namespace indigo;
 
-IMPL_ERROR(MoleculeNameParser, "name_parsing::MoleculeNameParser");
-IMPL_ERROR(MoleculeNameParser::DictionaryManager, "name_parsing::TableManager");
-IMPL_ERROR(MoleculeNameParser::Parse, "name_parsing::Parse");
-IMPL_ERROR(MoleculeNameParser::TreeBuilder, "name_parsing::TreeBuilder");
+IMPL_ERROR(MoleculeNameParser, "indigo::MoleculeNameParser");
+IMPL_ERROR(MoleculeNameParser::DictionaryManager, "MoleculeNameParser::DictionaryManager");
+IMPL_ERROR(MoleculeNameParser::Parse, "MoleculeNameParser::Parse");
+IMPL_ERROR(MoleculeNameParser::TreeBuilder, "MoleculeNameParser::TreeBuilder");
+IMPL_ERROR(MoleculeNameParser::ResultBuilder, "MoleculeNameParser::ResultBuilder");
 
 MoleculeNameParser::DictionaryManager::DictionaryManager() {
    _readTokenTypeStrings();
@@ -967,6 +968,9 @@ void MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
       const char separator{ '|' };
       int inserted{ 0 };
       for (int loc : locants) {
+         if (loc + inserted > fragment.length()) {
+            throw Error("Cannot build SMILES using a base string: %s", fragment);
+         }
          fragment.insert(loc + inserted, 1, separator);
          ++inserted;
       }
