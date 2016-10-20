@@ -998,7 +998,7 @@ void MoleculeNameParser::ResultBuilder::_combine(FragmentNode* node) {
    _fragments.pop();
 
    const Nodes& nodes = node->nodes;
-   auto& it = nodes.rbegin();
+   auto it = nodes.rbegin();
    ++it;
 
    string fragment;
