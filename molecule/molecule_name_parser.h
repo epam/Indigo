@@ -112,7 +112,7 @@ class DLLEXPORT MoleculeNameParser {
       Token       token;				            // a token
 
       inline Lexeme() { }
-      inline Lexeme(char ch, const Token& t) : lexeme{ ch }, token{ t } { }
+      inline Lexeme(char ch, const Token& t) : token{ t } { lexeme = ch; }
       inline Lexeme(const std::string& l, const Token& t) : lexeme{ l }, token{ t } { }
    }; // class Lexeme
 
