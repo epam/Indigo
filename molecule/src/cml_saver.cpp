@@ -192,7 +192,7 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
                {
                   DataSGroup &dsg = (DataSGroup &)sgroup;
                   if ( (dsg.name.size() >= 12) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) &&
-                       (dsg.atoms.size() > 0) && (dsg.atoms[0] == i) )
+                       (dsg.atoms.size() > 0) && (dsg.atoms[0] == i) && dsg.data.size() > 0)
                   {
                      atom->SetAttribute("mrvAlias", dsg.data.ptr());
                   }

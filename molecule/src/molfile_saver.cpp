@@ -1496,7 +1496,8 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
       {
          DataSGroup &dsg = (DataSGroup &)sgroup;
-         if ( (dsg.name.size() > 0) && (strcmp(dsg.name.ptr(), "INDIGO_ALIAS") == 0) )
+         if ( (dsg.name.size() > 11) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) &&
+              (dsg.atoms.size() > 0) && dsg.data.size() > 0)
          {
             output.printfCR("A  %3d", _atom_mapping[dsg.atoms[0]]);
             output.writeString(dsg.data.ptr());
@@ -1519,7 +1520,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
       {
          DataSGroup &dsg = (DataSGroup &)sgroup;
-         if ( (dsg.name.size() > 0) && (strcmp(dsg.name.ptr(), "INDIGO_ALIAS") == 0) )
+         if ( (dsg.name.size() > 11) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) )
             continue;
       }
       sgroup_ids.push(i);
@@ -1596,7 +1597,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
          {
             DataSGroup &datasgroup = (DataSGroup &)sgroup;
-            if ( (datasgroup.name.size() > 0) && (strcmp(datasgroup.name.ptr(), "INDIGO_ALIAS") == 0) )
+            if ( (datasgroup.name.size() > 11) && (strncmp(datasgroup.name.ptr(), "INDIGO_ALIAS", 12) == 0) )
                continue;
          }
 
@@ -1679,7 +1680,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
          {
             DataSGroup &datasgroup = (DataSGroup &)sgroup;
 
-            if ( (datasgroup.name.size() > 0) && (strcmp(datasgroup.name.ptr(), "INDIGO_ALIAS") == 0) )
+            if ( (datasgroup.name.size() > 11) && (strncmp(datasgroup.name.ptr(), "INDIGO_ALIAS", 12) == 0) )
                continue;
 
             output.printf("M  SDT %3d ", datasgroup.original_group);
