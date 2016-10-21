@@ -832,10 +832,11 @@ void MoleculeCisTrans::flipBond (int atom_parent, int atom_from, int atom_to)
 {
    BaseMolecule &mol = _getMolecule();
    int parent_edge_index = mol.findEdgeIndex(atom_parent, atom_from);
-   if (parent_edge_index == -1 || getParity(parent_edge_index) != 0)
+   if (parent_edge_index == -1)
+// || getParity(parent_edge_index) != 0)
       // Such call wasn't expected and wasn't implemented
-      throw Error("bond flipping with may cause stereobond destruction. "
-         "Such functionality isn't implemented yet.");
+      throw Error("bond flipping attempt for nonexisting bond. ");
+//         "Such functionality isn't implemented yet.");
 
    const Vertex &parent_vertex = mol.getVertex(atom_parent);
    for (int i = parent_vertex.neiBegin();

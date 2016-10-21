@@ -827,6 +827,12 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
                                sup.attachment_points[j].apid.ptr());
                }
             }
+            if (sup.seqid > 0)
+               out.printf(" SEQID=%d", sup.seqid);
+
+            if (sup.sa_natreplace.size() > 1)
+               out.printf(" NATREPLACE=%s", sup.sa_natreplace.ptr());
+
             _writeMultiString(output, buf.ptr(), buf.size());
          }
          else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)

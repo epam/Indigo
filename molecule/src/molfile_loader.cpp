@@ -1150,7 +1150,7 @@ void MolfileLoader::_readCtab2000 ()
                      sgroup.data.pop();
                   while (sgroup.data.size() > len)
                   {
-                     if (isspace(sgroup.data.top()))
+                     if (isspace((unsigned char)sgroup.data.top()))
                         sgroup.data.pop();
                      else
                         break;
@@ -2145,6 +2145,7 @@ void MolfileLoader::_readCtab3000 ()
       if (_atoms_num > 0)
          throw Error("Error reading ATOM block header");
       atom_block_exists = false;
+      
    }
    else
    {
@@ -3273,6 +3274,25 @@ void MolfileLoader::_readSGroup3000 (const char *str)
          if (sup != 0)
             sup->sa_class.push(0);
       }
+      else if (strcmp(entity.ptr(), "SEQID") == 0)
+      {
+         int seqid = scanner.readInt();
+         if ((sup != 0) && seqid > 0)
+            sup->seqid = seqid;
+      }
+      else if (strcmp(entity.ptr(), "NATREPLACE") == 0)
+      {
+         while (!scanner.isEOF())
+         {
+            char c = scanner.readChar();
+            if (c == ' ')
+               break;
+            if (sup != 0)
+               sup->sa_natreplace.push(c);
+         }
+         if (sup != 0)
+            sup->sa_natreplace.push(0);
+      }
       else if (strcmp(entity.ptr(), "ESTATE") == 0)
       {
          while (!scanner.isEOF())
@@ -3420,11 +3440,15 @@ void MolfileLoader::_readTGroups3000 ()
                tgroup.tgroup_class.copy(word);
                strscan.readWord(word, " /");
                tgroup.tgroup_name.copy(word);
-               stop_char = strscan.readChar();
-               if (stop_char == '/' && !strscan.isEOF())
+
+               if (!strscan.isEOF())
                {
-                  strscan.readWord(word, 0);
-                  tgroup.tgroup_alias.copy(word);
+                  stop_char = strscan.readChar();
+                  if (stop_char == '/' && !strscan.isEOF())
+                  {
+                     strscan.readWord(word, 0);
+                     tgroup.tgroup_alias.copy(word);
+                  }
                }
             }
             else
@@ -3439,8 +3463,14 @@ void MolfileLoader::_readTGroups3000 ()
                {
                   _readStringInQuotes(strscan, &tgroup.tgroup_comment);
                }
+
+               if (strcmp(word.ptr(), "NATREPLACE") == 0)
+               {
+                  _readStringInQuotes(strscan, &tgroup.tgroup_natreplace);
+               }
+
                if (!strscan.isEOF())
-                   strscan.skip(1);
+                  strscan.skip(1);
             }
              
 
@@ -3451,6 +3481,8 @@ void MolfileLoader::_readTGroups3000 ()
                _scanner.seek(pos, SEEK_SET);
                AutoPtr<BaseMolecule> fragment(_bmol->neu());
                tgroup.fragment.reset(fragment.release());
+
+//               tgroup.fragment = _bmol->neu();
 
                MolfileLoader loader(_scanner);
                loader._bmol = tgroup.fragment.get();

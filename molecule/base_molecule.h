@@ -368,6 +368,7 @@ protected:
 
    int _transformTGroupToSGroup (int idx);
    int _addTemplate (TGroup &tgroup);
+   void _fillTemplateSeqIds ();
 
    Array<int> _hl_atoms;
    Array<int> _hl_bonds;

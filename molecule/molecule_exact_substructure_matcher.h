@@ -33,6 +33,7 @@ public:
 
    const int * getQueryMapping ();
    void ignoreTargetAtom (int idx);
+   void ignoreQueryAtom (int idx);
 
    dword flags;
 

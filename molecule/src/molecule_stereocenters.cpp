@@ -950,7 +950,14 @@ bool MoleculeStereocenters::checkSub (const MoleculeStereocenters &query,
 
       if (type == ATOM_ABS)
       {
-         getPyramidMapping(query, target, iq, mapping, pyramid_mapping, reset_h_isotopes);
+         try
+         {
+            getPyramidMapping(query, target, iq, mapping, pyramid_mapping, reset_h_isotopes);
+         }
+         catch (Exception e)
+         {
+            return false;
+         }
 
          if (!isPyramidMappingRigid(pyramid_mapping))
             return false;

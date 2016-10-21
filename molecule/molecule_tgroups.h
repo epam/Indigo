@@ -36,6 +36,7 @@ public:
    Array<char> tgroup_name;
    Array<char> tgroup_alias;
    Array<char> tgroup_comment;
+   Array<char> tgroup_natreplace;
    int tgroup_id;
 
    TGroup ();

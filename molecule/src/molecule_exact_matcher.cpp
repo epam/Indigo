@@ -48,6 +48,21 @@ void MoleculeExactMatcher::ignoreTargetAtom (int idx)
     _ee.ignoreSupergraphVertex(idx);
 }
 
+const int * MoleculeExactMatcher::getTargetMapping ()
+{
+   return _ee.getSupergraphMapping();
+}
+
+void MoleculeExactMatcher::ignoreQueryAtom (int idx)
+{
+   _ee.ignoreSubgraphVertex(idx);
+}
+
+const int * MoleculeExactMatcher::getQueryMapping ()
+{
+   return _ee.getSubgraphMapping();
+}
+
 bool MoleculeExactMatcher::find ()
 {
    int i;
@@ -100,11 +115,6 @@ bool MoleculeExactMatcher::find ()
       return true;
 
    return false;
-}
-
-const int * MoleculeExactMatcher::getQueryMapping ()
-{
-   return _ee.getSubgraphMapping();
 }
 
 void MoleculeExactMatcher::_collectConnectedComponentsInfo ()
@@ -322,33 +332,40 @@ bool MoleculeExactMatcher::matchAtoms (BaseMolecule& query, BaseMolecule& target
       if (qcharge != tcharge)
          return false;
 
+      int qval = -1;
+      int tval = -1;
       if (!query.isPseudoAtom(sub_idx) && !query.isTemplateAtom(sub_idx))
       {
          if (!query.isQueryMolecule() && !target.isQueryMolecule())
          {
-            if (query.getAtomValence(sub_idx) != target.getAtomValence(super_idx))
+            qval = query.getAtomValence_NoThrow(sub_idx, -1);
+            tval = target.getAtomValence_NoThrow(super_idx, -1);
+            if ( (qval != -1) && (tval != -1) && (qval != tval) )
                return false;
          }      
-         
-         int qrad = query.getAtomRadical(sub_idx);
-         int trad = target.getAtomRadical(super_idx);
 
-         if (qrad == -1)
-            qrad = 0;
-         if (trad == -1)
-            trad = 0;
-
-         if (qrad != trad)
-            return false;
-
-         if (query.isQueryMolecule())
+         if ( (qval != -1) && (tval != -1) )
          {
-            int qarom = query.getAtomAromaticity(sub_idx);
-            int tarom = target.getAtomAromaticity(super_idx);
-
-            if (qarom != -1 && tarom != -1)
-               if (qarom != tarom)
-                  return false;
+            int qrad = query.getAtomRadical(sub_idx);
+            int trad = target.getAtomRadical(super_idx);
+   
+            if (qrad == -1)
+               qrad = 0;
+            if (trad == -1)
+               trad = 0;
+   
+            if (qrad != trad)
+               return false;
+   
+            if (query.isQueryMolecule())
+            {
+               int qarom = query.getAtomAromaticity(sub_idx);
+               int tarom = target.getAtomAromaticity(super_idx);
+   
+               if (qarom != -1 && tarom != -1)
+                  if (qarom != tarom)
+                     return false;
+            }
          }
       }
    }
