@@ -304,36 +304,38 @@ void MoleculeMass::massComposition (Molecule &mol, Array<char> &str)
     
     double totalWeight = molecularWeight(mol);
     
-    QS_DEF(Array<_ElemCounter>, counters);
-    int i;
-    
-    counters.clear();
-    
-    for (i = ELEM_MIN; i < ELEM_MAX; i++)
-    {
-        _ElemCounter &ec = counters.push();
-        
-        ec.elem = i;
-        ec.weight = (relativeMass[i] / totalWeight) * 100;
-    }
-    
-    counters.qsort(_cmp, 0);
-    
     ArrayOutput output(str);
-    
-    bool first_written = false;
-    
-    for (i = 0; i < counters.size(); i++)
+    if (totalWeight)
     {
-        if (counters[i].weight == 0)
-            break;
+        QS_DEF(Array<_ElemCounter>, counters);
+        int i;
+    
+        counters.clear();
+    
+        for (i = ELEM_MIN; i < ELEM_MAX; i++)
+        {
+            _ElemCounter &ec = counters.push();
         
-        if (first_written)
-            output.printf(" ");
+            ec.elem = i;
+            ec.weight = (relativeMass[i] / totalWeight) * 100;
+        }
+    
+        counters.qsort(_cmp, 0);
+    
+        bool first_written = false;
+    
+        for (i = 0; i < counters.size(); i++)
+        {
+            if (counters[i].weight == 0)
+                break;
         
-        output.printf(Element::toString(counters[i].elem));
-        output.printf(" %.2f", counters[i].weight);
-        first_written = true;
+            if (first_written)
+                output.printf(" ");
+        
+            output.printf(Element::toString(counters[i].elem));
+            output.printf(" %.2f", counters[i].weight);
+            first_written = true;
+        }
     }
     output.writeChar(0);
 }
