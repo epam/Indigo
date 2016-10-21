@@ -3515,6 +3515,8 @@ void MolfileLoader::_readSGroupDisplay (Scanner &scanner, DataSGroup &dsg)
    if (end - cur + 1 > 16)
    {
       scanner.skip(2);
+      if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
+         return;
       int c = scanner.readChar();
       if (c >= '1' && c <= '9')
          dsg.dasp_pos = c - '0';
