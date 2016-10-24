@@ -76,6 +76,7 @@ void BaseMolecule::clear ()
    use_scsr_sgroups_only = false;
    remove_scsr_lgrp = false;
    use_scsr_name = false;
+   expand_mod_templates = false;
 
    updateEditRevision();
 }
@@ -1617,43 +1618,45 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
       _fillTemplateSeqIds();
    }
 
-   QS_DEF(Array<int>, tinds);
-   tinds.clear();
-
-   for (auto i : vertices())
+   if (expand_mod_templates)
    {
-      if (isTemplateAtom(i))
+      QS_DEF(Array<int>, tinds);
+      tinds.clear();
+   
+      for (auto i : vertices())
       {
-         const Vertex &v = getVertex(i);
-         for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+         if (isTemplateAtom(i))
          {
-            if (!isTemplateAtom(v.neiVertex(k)))
+            const Vertex &v = getVertex(i);
+            for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
             {
-               const Vertex &v_n = getVertex(v.neiVertex(k));
-
-               if (getAtomNumber(v.neiVertex(k)) == ELEM_H)
-                  continue;
-
-               if (getAtomNumber(v.neiVertex(k)) == ELEM_O && v_n.degree() == 1) 
-                  continue;
-                    
-               tinds.push(i);
-               break;
+               if (!isTemplateAtom(v.neiVertex(k)))
+               {
+                  const Vertex &v_n = getVertex(v.neiVertex(k));
+   
+                  if (getAtomNumber(v.neiVertex(k)) == ELEM_H)
+                     continue;
+   
+                  if (getAtomNumber(v.neiVertex(k)) == ELEM_O && v_n.degree() == 1) 
+                     continue;
+                       
+                  tinds.push(i);
+                  break;
+               }
             }
          }
       }
-   }
-
-   for (auto i = 0; i < tinds.size(); i++)
-   {
-      _transformTGroupToSGroup(tinds[i]);
-   }
-
-   if (tinds.size() > 0)
-   {
-      removeAtoms(tinds);
-   }
    
+      for (auto i = 0; i < tinds.size(); i++)
+      {
+         _transformTGroupToSGroup(tinds[i]);
+      }
+   
+      if (tinds.size() > 0)
+      {
+         removeAtoms(tinds);
+      }
+   }
    return result;
 }
 

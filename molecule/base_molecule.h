@@ -244,6 +244,7 @@ public:
    bool use_scsr_sgroups_only = false;
    bool remove_scsr_lgrp = false;
    bool use_scsr_name = false;
+   bool expand_mod_templates = false;
 
    MoleculeRGroups rgroups;
 
