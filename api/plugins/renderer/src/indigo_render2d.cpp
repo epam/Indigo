@@ -690,6 +690,12 @@ CEXPORT int indigoRenderReset ()
    INDIGO_END(-1)
 }
 
+CEXPORT void indigoRenderResetOptions ()
+{
+   indigoRendererGetInstance().init();
+   getCdxmlContext().clear();
+}
+
 CEXPORT int indigoRenderWriteHDC (void* hdc, int printingHdc)
 {
    INDIGO_BEGIN
@@ -773,10 +779,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerString("render-cdxml-title-font", indigoRenderSetCdxmlTitleFont);
    mgr.setOptionHandlerString("render-cdxml-title-face", indigoRenderSetCdxmlTitleFace);
 
-
-
-   
-
+   mgr.setOptionHandlerVoid("reset-render-options", indigoRenderResetOptions);
 }
 
 _IndigoRenderingOptionsHandlersSetter _indigo_rendering_options_handlers_setter;

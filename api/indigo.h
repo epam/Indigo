@@ -91,6 +91,7 @@ CEXPORT int indigoSetOptionBool (const char *name, int value);
 CEXPORT int indigoSetOptionFloat (const char *name, float value);
 CEXPORT int indigoSetOptionColor (const char *name, float r, float g, float b);
 CEXPORT int indigoSetOptionXY (const char *name, int x, int y);
+CEXPORT int indigoResetOptions ();
 
 /* Basic input-output */
 

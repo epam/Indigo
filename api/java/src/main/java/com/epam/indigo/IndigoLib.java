@@ -36,6 +36,7 @@ public interface IndigoLib extends Library
    int indigoSetOptionFloat (String name, float value);
    int indigoSetOptionColor (String name, float r, float g, float b);
    int indigoSetOptionXY (String name, int x, int y);
+   int indigoResetOption ();
 
    int indigoReadFile (String filename);
    int indigoLoadString (String str);

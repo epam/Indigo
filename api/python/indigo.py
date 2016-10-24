@@ -2057,6 +2057,10 @@ class Indigo(object):
         else:
             raise IndigoException("bad option")
 
+    def resetOptions(self):
+        self._setSessionId()
+        self._checkResult(Indigo._lib.indigoResetOption())
+
     def _checkResult(self, result):
         if result < 0:
             raise IndigoException(Indigo._lib.indigoGetLastError())

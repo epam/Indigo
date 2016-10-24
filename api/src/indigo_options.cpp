@@ -492,6 +492,14 @@ static void indigoSetPkaModelMinLevel (int value)
    self.ionize_options.min_level = value;
 }
 
+static void indigoResetBasicOptions ()
+{
+   Indigo &self = indigoGetInstance();
+   self.standardize_options.reset();
+   self.ionize_options = IonizeOptions();
+   self.init();   
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -577,6 +585,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerString("pKa-model", indigoSetPkaModel);
    mgr.setOptionHandlerInt("pKa-model-level", indigoSetPkaModelLevel);
    mgr.setOptionHandlerInt("pKa-model-min-level", indigoSetPkaModelMinLevel);
+       
+   mgr.setOptionHandlerVoid("reset-basic-options", indigoResetBasicOptions);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

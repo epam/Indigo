@@ -107,6 +107,23 @@ CEXPORT int indigoSetOptionXY (const char *name, int x, int y)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoResetOptions ()
+{
+   INDIGO_BEGIN
+   {
+      if (indigoGetOptionManager().hasOptionHandler("reset-basic-options"))
+      {
+         indigoGetOptionManager().callOptionHandlerVoid("reset-basic-options");
+      }
+      if(indigoGetOptionManager().hasOptionHandler("reset-render-options"))
+      {
+         indigoGetOptionManager().callOptionHandlerVoid("reset-render-options");
+      }
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 void _indigoCheckBadValence (Molecule &mol)
 {
    mol.restoreAromaticHydrogens();

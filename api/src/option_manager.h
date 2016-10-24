@@ -49,6 +49,7 @@ public:
    typedef void (*optf_float_t) (float value);
    typedef void (*optf_color_t) (float r, float g, float b);
    typedef void (*optf_xy_t) (int x, int y);
+   typedef void (*optf_void_t) ();
    OptionManager ();
 
    DECL_ERROR;
@@ -58,6 +59,7 @@ public:
    DEF_SET_OPT_HANDLER(Float, optf_float_t, OPTION_FLOAT, hMapFloat)
    DEF_SET_OPT_HANDLER(Color, optf_color_t, OPTION_COLOR, hMapColor)
    DEF_SET_OPT_HANDLER(XY, optf_xy_t, OPTION_XY, hMapXY)
+   DEF_SET_OPT_HANDLER(Void, optf_void_t, OPTION_VOID, hMapVoid)
 
 
    bool hasOptionHandler (const char* name);
@@ -67,12 +69,13 @@ public:
    void callOptionHandlerFloat (const char* name, float value);
    void callOptionHandlerColor (const char* name, float r, float g, float b);
    void callOptionHandlerXY (const char* name, int x, int y);
+   void callOptionHandlerVoid(const char* name);
    void callOptionHandler (const char* name, const char* value);
    int nOptions () const;
-
+   
    OsLock lock;
 protected:
-   enum OPTION_TYPE {OPTION_STRING, OPTION_INT, OPTION_BOOL, OPTION_FLOAT, OPTION_COLOR, OPTION_XY};
+   enum OPTION_TYPE {OPTION_STRING, OPTION_INT, OPTION_BOOL, OPTION_FLOAT, OPTION_COLOR, OPTION_XY, OPTION_VOID};
 
    int _parseInt (const char *str, int &val);
    int _parseBool (const char *str, int &val);
@@ -88,7 +91,8 @@ protected:
    RedBlackStringMap<optf_float_t, false> hMapFloat;
    RedBlackStringMap<optf_color_t, false> hMapColor;
    RedBlackStringMap<optf_xy_t, false> hMapXY;
-
+   RedBlackStringMap<optf_void_t, false> hMapVoid;
+   
    template <typename T> 
    void callOptionHandlerT (const char *name, T arg)
    {

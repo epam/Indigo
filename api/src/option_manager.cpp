@@ -59,6 +59,12 @@ void OptionManager::callOptionHandlerFloat (const char* name, float value) {
       callOptionHandlerT(name, value);
 }
 
+void OptionManager::callOptionHandlerVoid (const char* name)
+{
+   CHECK_OPT_DEFINED(name);
+   hMapVoid.at(name)();
+}
+
 void OptionManager::callOptionHandlerColor (const char* name, float r, float g, float b) {
    CHECK_OPT_DEFINED(name);
    CHECK_OPT_TYPE(name, OPTION_COLOR);
