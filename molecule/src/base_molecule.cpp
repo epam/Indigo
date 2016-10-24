@@ -1867,9 +1867,9 @@ int BaseMolecule::_transformTGroupToSGroup (int idx)
    QS_DEF(Array<int>, added_atoms);
    added_atoms.clear();
 
-   for (auto i = 0; i < base_sgs.size(); i++)
+   for (auto i = 0; i < su.atoms.size(); i++)
    {
-      int aidx = mapping[i];
+      int aidx = mapping[su.atoms[i]];
       if (aidx > -1)
       {
          added_atoms.push(aidx);
