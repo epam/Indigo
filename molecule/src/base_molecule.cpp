@@ -67,6 +67,7 @@ void BaseMolecule::clear ()
    _attachment_index.clear();
    sgroups.clear();
    tgroups.clear();
+   template_attachment_points.clear();
    Graph::clear();
    _hl_atoms.clear();
    _hl_bonds.clear();
@@ -1664,34 +1665,56 @@ void BaseMolecule::_fillTemplateSeqIds ()
 {
    QS_DEF(Array<int>, ignored_vertices);
    QS_DEF(Array<int>, vertex_ranks);
+   QS_DEF(Molecule, tmp);
 
-   ignored_vertices.clear_resize(this->vertexEnd());
+   tmp.clear();
+   tmp.clone_KeepIndices(*this);
+
+   ignored_vertices.clear_resize(tmp.vertexEnd());
    ignored_vertices.zerofill();
 
-   QS_DEF(Array<char>, apid);
-   apid.readString("Al", true);
+   QS_DEF(Array<char>, left_apid);
+   QS_DEF(Array<char>, right_apid);
+   QS_DEF(Array<char>, xlink_apid);
+   left_apid.readString("Al", true);
+   right_apid.readString("Br", true);
+   xlink_apid.readString("Cx", true);
 
-   vertex_ranks.clear_resize(this->vertexEnd());
-   for (auto i : vertices())
+   vertex_ranks.clear_resize(tmp.vertexEnd());
+   vertex_ranks.zerofill();
+
+   for (auto i : tmp.vertices())
       vertex_ranks[i] = i;
 
-   for (auto i : vertices())
+
+   for (auto i : tmp.vertices())
    {
-      if (!isTemplateAtom(i))
+      if (!tmp.isTemplateAtom(i))
       {
          ignored_vertices[i] = 1;
       }    
       else
       {
-         int left_neib = getTemplateAtomAttachmentPointById (i, apid);
-         if ( (left_neib == -1) || !isTemplateAtom(left_neib) ) 
+         int left_neib = tmp.getTemplateAtomAttachmentPointById (i, left_apid);
+
+         if ( (left_neib == -1) || !tmp.isTemplateAtom(left_neib) ) 
          {
             vertex_ranks[i] = -1;
+         }
+
+         int xlink_neib = tmp.getTemplateAtomAttachmentPointById (i, xlink_apid);
+
+         if (xlink_neib > -1)
+         {
+            int eidx = tmp.findEdgeIndex(i, xlink_neib);
+            if (eidx > -1)
+               tmp.removeEdge(eidx);
          }
       }
    }
 
-   DfsWalk walk(*this);
+   DfsWalk walk(tmp);
+
    walk.ignored_vertices = ignored_vertices.ptr();
    walk.vertex_ranks = vertex_ranks.ptr();
 
@@ -1703,7 +1726,7 @@ void BaseMolecule::_fillTemplateSeqIds ()
    QS_DEF(Array<int>, cycle_numbers);
    QS_DEF(Array<int>, atom_sequence);
 
-   branch_counters.clear_resize(this->vertexEnd());
+   branch_counters.clear_resize(tmp.vertexEnd());
    branch_counters.zerofill();
    cycle_numbers.clear();
    atom_sequence.clear();
@@ -1772,6 +1795,7 @@ void BaseMolecule::_fillTemplateSeqIds ()
       }
    }
 
+
    int seq_id = 1;
    for (i = 0; i < atom_sequence.size(); i++)
    {
@@ -1779,6 +1803,7 @@ void BaseMolecule::_fillTemplateSeqIds ()
       this->asMolecule().setTemplateAtomSeqid(v_idx, seq_id);
       seq_id += 1;
    }
+
 }
 
 int BaseMolecule::_addTemplate (TGroup &tgroup)

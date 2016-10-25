@@ -59,10 +59,12 @@ IMPL_ERROR(MoleculeTGroups, "molecule tgroups");
 
 MoleculeTGroups::MoleculeTGroups ()
 {
+   _tgroups.clear();
 }
 
 MoleculeTGroups::~MoleculeTGroups ()
 {
+   _tgroups.clear();
 }
 
 void MoleculeTGroups::clear ()
