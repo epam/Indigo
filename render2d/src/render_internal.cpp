@@ -615,10 +615,13 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent) {
             ti.text.appendString(" = ", false);
          }
          { const char *data = group.data.ptr();
-            if (*data == '\\') {
-               data++;
+            if (data != 0)
+            {
+               if (*data == '\\') {
+                  data++;
+               }
+               ti.text.appendString(data, true);
             }
-            ti.text.appendString(data, true);
          }
          ti.fontsize = FONT_SIZE_DATA_SGROUP;
          _cw.setTextItemSize(ti);
