@@ -26,6 +26,7 @@
 #include "molecule/alkanes.inc"
 #include "molecule/basic_elements.inc"
 #include "molecule/elements.h"
+#include "molecule/flags.inc"
 #include "molecule/multipliers.inc"
 #include "molecule/separators.inc"
 #include "molecule/token_types.inc"
@@ -45,6 +46,7 @@ MoleculeNameParser::DictionaryManager::DictionaryManager() {
    _readTable(alkanes_table, true);
    _readTable(multipliers_table, true);
    _readTable(separators_table);
+   _readTable(flags_table, true);
 
    _readBasicElementsTable();
 }
@@ -185,6 +187,10 @@ MoleculeNameParser::TokenType MoleculeNameParser::DictionaryManager::_tokenTypeF
    return TokenType::UNKNOWN;
 }
 
+/*
+Performs by-symbol input scan, determines basic tokens
+Text fragments require further processing
+*/
 void MoleculeNameParser::Parse::scan() {
    const DictionaryManager& dm = getMoleculeNameParserInstance().dictionaryManager;
    const SymbolDictionary& sd = dm.dictionary;
@@ -192,15 +198,18 @@ void MoleculeNameParser::Parse::scan() {
 
    const size_t length = input.length();
 
+   // A buffer for locant symbol(s)
+   string locant;
+
    /*
    If a symbol is a separator, convert it into a lexeme
-   If not, scan until either a next separator or an end of the string is reached,
-   then add a lexeme for text fragment
+   If not, scan until either a next separator, flag, or an end of the string
+   is reached, then add a lexeme for text fragment
    
    By this time we already know that brackets do match
    */
    for (size_t i = 0; i < length; i++) {
-      char ch = input.at(i);
+      char ch = input[i];
 
       // whitespace is a special case
       if (ch == ' ') {
@@ -208,15 +217,34 @@ void MoleculeNameParser::Parse::scan() {
          lexemes.push_back({ ch, token });
       }
 
+      /*
+      The input symbol is a separator; add a separator lexeme
+      */
       size_t pos = separators.find(ch);
       if (pos != separators.npos) {
          const auto& it = sd.find({ ch });
          if (it != sd.end()) {
+            // For locants, we need additional check if the number is multi-digit
+            if (std::isdigit(ch)) {
+               locant += ch;
+               while (std::isdigit(input[i + 1])) {
+                  locant += input[i + 1];
+                  ++i;
+               }
+               lexemes.push_back(Lexeme(locant, Token("separator", locant, TokenType::LOCANT)));
+               locant.clear();
+               continue;
+            }
             lexemes.push_back(Lexeme(ch, it->second));
          }
          continue;
       }
 
+      /*
+      The current fragment is a text fragment
+      Search until a next separator or the end of string, check the dictionary,
+      process text fragment
+      */
       size_t next = input.find_first_of(separators, i);
       if (next == input.npos) {
          string fragment = input.substr(i, length - i);
@@ -533,9 +561,45 @@ bool MoleculeNameParser::TreeBuilder::_processParse() {
       if (!_processBasicElement(lexeme)) {
          return false;
       }
+   } else if (tname == "flags") {
+      if (!_processFlags(lexeme)) {
+         return false;
+      }
    }
 
    return _processParse();
+}
+
+bool MoleculeNameParser::TreeBuilder::_processFlags(const Lexeme& lexeme) {
+   const string& name = lexeme.lexeme;
+
+   if (name == "cyclo") {
+      FragmentNodeBase* base = _getCurrentBase();
+      if (base == nullptr) {
+         return false;
+      }
+
+      if (base->cycle == true) {
+         return false;
+      }
+
+      base->cycle = true;
+      return true;
+   }
+
+   if (name == "cis" || name == "trans") {
+      if ((_current->type == FragmentNodeType::SUBSTITUENT) || (_current->type == FragmentNodeType::BASE)) {
+         FragmentNodeBase* base = dynamic_cast<FragmentNodeBase*>(_current);
+         if (name == "cis") {
+            base->isomerism = Isomerism::CIS;
+         } else {
+            base->isomerism = Isomerism::TRANS;
+         }
+         return true;
+      }
+   }
+
+   return false;
 }
 
 bool MoleculeNameParser::TreeBuilder::_processBasicElement(const Lexeme& lexeme) {
@@ -903,8 +967,8 @@ bool MoleculeNameParser::ResultBuilder::buildResult(Molecule& molecule) {
       _SMILES = _fragments.top();
       _fragments.pop();
       while (!_fragments.empty()) {
-         _SMILES.append(".");
-         _SMILES.append(_fragments.top());
+         _SMILES += ".";
+         _SMILES += _fragments.top();
          _fragments.pop();
       }
    } else {
@@ -954,7 +1018,7 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
    string fragment;
    const NodeType& nt = base->tokenType;
    if (nt == NodeType::SUFFIX) {
-      fragment.append(bond_sym);
+      fragment += bond_sym;
       _fragments.push(fragment);
       return true;
    }
@@ -967,11 +1031,16 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
       }
 
       const string& symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
-      fragment.append(symbol);
+      fragment += symbol;
 
       for (int i = 1; i < multipliers; i++) {
-         fragment.append(symbol);
+         fragment += symbol;
       }
+   }
+
+   if (base->cycle) {
+      fragment.insert(1, "1");
+      fragment.insert(fragment.length(), "1");
    }
 
    const Locants& locants = base->locants;
@@ -994,7 +1063,7 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
    */
    if (nt == NodeType::BASE) {
       if (locants.empty() && (base->bondOrder != BOND_SINGLE)) {
-         fragment.insert(1, bond_sym);
+         fragment.insert(base->cycle ? 2 : 1, bond_sym);
       }
    }
 

@@ -85,7 +85,12 @@ class DLLEXPORT MoleculeNameParser {
       needs re-naming and re-design
       */
       BASES,									// names of alkanes(-enes, -ynes)
-      SUFFIXES								// suffixes for alkanes(enes, -ynes)
+      SUFFIXES,								// suffixes for alkanes(enes, -ynes)
+
+      /*
+      Miscelaneous structure flags (cyclo-, cis-, trans-, etc.)
+      */
+      FLAG
    }; //enum class TokenType
 
    /*
@@ -251,6 +256,12 @@ class DLLEXPORT MoleculeNameParser {
       SUFFIX
    }; // enum class NodeType
 
+   enum class Isomerism : int {
+      NONE = 0,
+      CIS,
+      TRANS
+   };
+
    /*
    A node that represents a base structure
    Has multipliers that define how many basic elements or groups this structure has
@@ -274,6 +285,7 @@ class DLLEXPORT MoleculeNameParser {
       Multipliers multipliers;
       Element element;
       Locants locants;
+      Isomerism isomerism = Isomerism::NONE;
 
       /*
       A diff in total valency of the (sub)stucture
@@ -289,6 +301,9 @@ class DLLEXPORT MoleculeNameParser {
       Alkanes ending with -yl have 1 free bond
       */
       int freeAtomOrder = 0;
+
+      // true if the structure is a cycle
+      bool cycle = false;
 
       NodeType tokenType = NodeType::UNKNOWN;
    }; // class FragmentNodeBase
@@ -414,6 +429,7 @@ class DLLEXPORT MoleculeNameParser {
       bool _processFactorMultiplier(const Lexeme& lexeme);
       bool _processLocant(const Lexeme& lexeme);
       bool _processPunctuation(const Lexeme& lexeme);
+      bool _processFlags(const Lexeme& lexeme);
 
       // Converts std::string to int
       int _strToInt(const std::string& str);
