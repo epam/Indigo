@@ -1206,6 +1206,8 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
    QS_DEF(Array<int>, remove_atoms);
    QS_DEF(Array<int>, base_sgs);
    QS_DEF(Array<int>, sgs);
+   QS_DEF(Array<int>, sgs_to_remove);
+   QS_DEF(Array<int>, atoms_to_remove);
    QS_DEF(Array<int>, ap_points_atoms);
    QS_DEF(StringPool, ap_points_ids);
    QS_DEF(Array<int>, ap_ids);
@@ -1271,15 +1273,18 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
       sgs.clear();
       sgroups.findSGroups(SGroup::SG_TYPE, SGroup::SG_TYPE_SUP, sgs);
 
+      sgs_to_remove.clear();
+      atoms_to_remove.clear();
+
       for (int l = 0; l < sgs.size(); l++)
       {
-         Superatom &su = (Superatom &) this->sgroups.getSGroup(sgs[l]);
+         Superatom &su = (Superatom &) sgroups.getSGroup(sgs[l]);
 
 
          if (su.sa_class.size() > 3 && strncmp(su.sa_class.ptr(), "LGRP", 4) == 0)
          {
             if (remove_scsr_lgrp)
-               sgroups.remove(sgs[l]);
+               sgs_to_remove.push(sgs[l]);
             continue;
          }   
 
@@ -1353,7 +1358,6 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 
          if ( (out_bonds > ap_points_atoms.size()) || (out_bonds > used_att_points) )
          {
-            ignore_atoms.concat(remove_atoms);
             continue;
          }
 
@@ -1413,13 +1417,19 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          p.y = cp.y;
          setAtomXyz(idx, p);
 
-         sgroups.remove((sgs[l]));
 
-         removeAtoms(remove_atoms);
+         sgs_to_remove.push(sgs[l]);
+         atoms_to_remove.concat(remove_atoms);
       }
-
+      
       if (count_occur > 0)
          added_templates.push(i);
+
+      for (int j = 0; j < sgs_to_remove.size(); j++)
+         sgroups.remove(sgs_to_remove[j]);
+
+      if (atoms_to_remove.size() > 0)
+         removeAtoms(atoms_to_remove);
    }
 
    if (use_scsr_sgroups_only)
@@ -1686,7 +1696,6 @@ void BaseMolecule::_fillTemplateSeqIds ()
    for (auto i : tmp.vertices())
       vertex_ranks[i] = i;
 
-
    for (auto i : tmp.vertices())
    {
       if (!tmp.isTemplateAtom(i))
@@ -1703,7 +1712,6 @@ void BaseMolecule::_fillTemplateSeqIds ()
          }
 
          int xlink_neib = tmp.getTemplateAtomAttachmentPointById (i, xlink_apid);
-
          if (xlink_neib > -1)
          {
             int eidx = tmp.findEdgeIndex(i, xlink_neib);
@@ -1795,7 +1803,6 @@ void BaseMolecule::_fillTemplateSeqIds ()
       }
    }
 
-
    int seq_id = 1;
    for (i = 0; i < atom_sequence.size(); i++)
    {
@@ -1803,7 +1810,6 @@ void BaseMolecule::_fillTemplateSeqIds ()
       this->asMolecule().setTemplateAtomSeqid(v_idx, seq_id);
       seq_id += 1;
    }
-
 }
 
 int BaseMolecule::_addTemplate (TGroup &tgroup)
