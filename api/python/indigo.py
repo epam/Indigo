@@ -1222,7 +1222,7 @@ class IndigoObject(object):
     def toBuffer(self):
         c_size = c_int()
         c_buf = POINTER(c_byte)()
-        self.dispatcher._setSeqgissionId()
+        self.dispatcher._setSessionId()
         self.dispatcher._checkResult(Indigo._lib.indigoToBuffer(self.id, pointer(c_buf), pointer(c_size)))
         res = array("b")
         for i in range(c_size.value):
