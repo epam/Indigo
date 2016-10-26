@@ -2059,7 +2059,7 @@ class Indigo(object):
 
     def resetOptions(self):
         self._setSessionId()
-        self._checkResult(Indigo._lib.indigoResetOption())
+        self._checkResult(Indigo._lib.indigoResetOptions())
 
     def _checkResult(self, result):
         if result < 0:
