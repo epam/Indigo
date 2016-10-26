@@ -1628,7 +1628,7 @@ CEXPORT int indigoGetSubmolecule (int molecule, int nvertices, int *vertices)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      
+
       QS_DEF(Array<int>, vertices_arr);
       vertices_arr.copy(vertices, nvertices);
 

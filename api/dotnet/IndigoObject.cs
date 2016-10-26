@@ -1180,10 +1180,10 @@ namespace com.epam.indigo
 
         public String grossFormula()
         {
-            dispatcher.setSessionID();
             int gf = -1;
             try
             {
+                dispatcher.setSessionID();
                 gf = dispatcher.checkResult(_indigo_lib.indigoGrossFormula(self));
                 String result = new String(dispatcher.checkResult(_indigo_lib.indigoToString(gf)));
                 return result;
@@ -1318,9 +1318,9 @@ namespace com.epam.indigo
 
         public float alignAtoms(int[] atom_ids, float[] desired_xyz)
         {
-            dispatcher.setSessionID();
             if (atom_ids.Length * 3 != desired_xyz.Length)
                 throw new IndigoException("alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]");
+            dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoAlignAtoms(self, atom_ids.Length, atom_ids, desired_xyz));
         }
 
@@ -1440,9 +1440,9 @@ namespace com.epam.indigo
 
         public IndigoObject fingerprint(string type)
         {
-            dispatcher.setSessionID();
             if (type == null)
                 type = "";
+            dispatcher.setSessionID();
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoFingerprint(self, type)));
         }
 
@@ -1709,11 +1709,10 @@ namespace com.epam.indigo
 
         public byte[] toBuffer()
         {
-            dispatcher.setSessionID();
             byte* buf;
             int bufsize;
+            dispatcher.setSessionID();
             dispatcher.checkResult(_indigo_lib.indigoToBuffer(self, &buf, &bufsize));
-
             byte[] res = new byte[bufsize];
             for (int i = 0; i < bufsize; ++i)
                 res[i] = buf[i];
@@ -1723,7 +1722,7 @@ namespace com.epam.indigo
         public void append(IndigoObject obj)
         {
             dispatcher.setSessionID();
-           dispatcher.checkResult(_indigo_lib.indigoAppend(self, obj.self));
+            dispatcher.checkResult(_indigo_lib.indigoAppend(self, obj.self));
         }
 
         public void optimize()
@@ -1733,9 +1732,9 @@ namespace com.epam.indigo
 
         public void optimize(string options)
         {
-            dispatcher.setSessionID();
             if (options == null)
                 options = "";
+            dispatcher.setSessionID();
             dispatcher.checkResult(_indigo_lib.indigoOptimize(self, options));
         }
 
@@ -1746,9 +1745,9 @@ namespace com.epam.indigo
 
         public bool normalize(string options)
         {
-            dispatcher.setSessionID();
             if (options == null)
                 options = "";
+            dispatcher.setSessionID();
             return (dispatcher.checkResult(_indigo_lib.indigoNormalize(self, options)) == 1);
         }
 
@@ -1771,7 +1770,7 @@ namespace com.epam.indigo
            float pka = ptr[0];
            return pka;
         }
-     
+
         public float getBasicPkaValue(IndigoObject atom, int level, int min_level)
         {
            dispatcher.setSessionID();
@@ -1779,13 +1778,12 @@ namespace com.epam.indigo
            float pka = ptr[0];
            return pka;
         }
-     
+
         public int buildPkaModel(int level, float threshold, String filename)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoBuildPkaModel(level, threshold, filename));
         }
-
 
         public int expandAbbreviations()
         {

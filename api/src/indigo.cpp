@@ -213,9 +213,7 @@ CEXPORT void indigoSetErrorMessage (const char *message)
 int Indigo::addObject (IndigoObject *obj)
 {
    OsLocker lock(_objects_lock);
-
    int id = _next_id++;
-
    _objects.insert(id, obj);
    return id;
 }
@@ -223,10 +221,8 @@ int Indigo::addObject (IndigoObject *obj)
 void Indigo::removeObject (int id)
 {
    OsLocker lock(_objects_lock);
-
    if (_objects.at2(id) == 0)
       return;
-
    delete _objects.at(id);
    _objects.remove(id);
 }
