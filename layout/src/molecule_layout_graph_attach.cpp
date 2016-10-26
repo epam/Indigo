@@ -1003,9 +1003,12 @@ void MoleculeLayoutGraph::_calculatePositionsSingleDrawn (int vert_idx, Array<in
 
          if ((parity == MoleculeCisTrans::CIS) == (abs(to_draw_substituent - drawn_substituent) == 2))
             same_side = true;
-
-         int side_sign = MoleculeCisTrans::sameside(Vec3f(_layout_vertices[vert.neiVertex(drawn_idx)].pos), 
-            Vec3f(_layout_vertices[vert_idx].pos), Vec3f(_layout_vertices[drawn_substituent_idx].pos), Vec3f(positions[0]));
+         int side_sign = 0;
+         if ( (drawn_substituent_idx != -1) && (drawn_substituent != -1) )
+         {
+            side_sign = MoleculeCisTrans::sameside(Vec3f(_layout_vertices[vert.neiVertex(drawn_idx)].pos), 
+               Vec3f(_layout_vertices[vert_idx].pos), Vec3f(_layout_vertices[drawn_substituent_idx].pos), Vec3f(positions[0]));
+         }
 
          if (same_side)
          {
