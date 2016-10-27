@@ -34,6 +34,7 @@ MaxCommonSubgraph::MaxCommonSubgraph(Graph &subgraph, Graph &supergraph) :
    parametersForExact.isStopped = false;
    parametersForExact.maxIteration = -1;
    parametersForExact.numberOfSolutions = 0;
+   parametersForExact.throw_error_for_incorrect_map = false;
 
    parametersForApproximate.error = 0;
    parametersForApproximate.maxIteration = 1000;
@@ -433,7 +434,9 @@ bool MaxCommonSubgraph::ReCreation::insertSolution(const Array<int>& mapping){
             if(a != -1 && b != -1){
                c = _regraph.getPointIndex(a, b);
                if(c == -1){
-                  throw Error("input mapping incorrect");
+                   if (_context.parametersForExact.throw_error_for_incorrect_map) {
+                      throw Error("input mapping incorrect");
+                   }
                } else {
                   solution.set(c);
                   solution_g1.set(_regraph.getPoint(c)->getid1());

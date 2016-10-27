@@ -53,8 +53,10 @@ public:
       bool isStopped;
       //max iteration number
       int maxIteration;
-      //number of solutions that are finded by exact algorithm
+      //number of solutions that are found by exact algorithm
       int numberOfSolutions;
+      //throw error if input map is incorrect
+      bool throw_error_for_incorrect_map;
    };
 
    //parameters for approximate algorithm
