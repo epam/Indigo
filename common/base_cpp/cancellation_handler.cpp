@@ -64,9 +64,9 @@ void TimeoutCancellationHandler::reset (int mseconds)
 class CancellationHandlerWrapper
 {
 public:
-   CancellationHandlerWrapper () : handler(0) {}
+   CancellationHandlerWrapper () : handler(nullptr) {}
 
-   AutoPtr<CancellationHandler> handler;
+   std::unique_ptr<CancellationHandler> handler;
 };
 
 static _SessionLocalContainer<CancellationHandlerWrapper> cancellation_handler;
@@ -80,8 +80,7 @@ CancellationHandler* getCancellationHandler ()
 std::unique_ptr<CancellationHandler> resetCancellationHandler (CancellationHandler* handler)
 {
    CancellationHandlerWrapper &wrapper = cancellation_handler.getLocalCopy();
-   auto* prev_ptr = wrapper.handler.get() == 0 ? nullptr : wrapper.handler.release();
-   std::unique_ptr<CancellationHandler> prev(prev_ptr);
+   std::unique_ptr<CancellationHandler> prev(wrapper.handler.release());
    wrapper.handler.reset(handler);
    return prev;
 }

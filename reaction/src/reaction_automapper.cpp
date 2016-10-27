@@ -45,10 +45,7 @@ void ReactionAutomapper::automap(int mode) {
 
    QS_DEF(ObjArray< Array<int> >, mol_mappings);
    QS_DEF(Array<int>, react_mapping);
-   /*
-    * Set cancellation handler
-    */
-   AAMCancellationWrapper canc_wrapper(cancellation);
+   
    
    /*
     * Check input atom mapping (if any)
@@ -2054,6 +2051,5 @@ AAMCancellationWrapper::AAMCancellationWrapper(CancellationHandler* canc) {
 }
 
 AAMCancellationWrapper::~AAMCancellationWrapper() {
-    auto* prev = _prev.get() == nullptr ? nullptr: _prev.release();
-    resetCancellationHandler(prev);
+    resetCancellationHandler(_prev.release());
 }
