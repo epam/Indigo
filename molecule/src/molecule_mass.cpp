@@ -246,12 +246,20 @@ int MoleculeMass::_cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
     if (ec2.weight == 0)
         return -1;
     
-    if (ec2.elem == ELEM_H) // move hydrogen to the end
-        return -1;
-    if (ec1.elem == ELEM_H)
+    // carbon has the highest priority
+    if (ec2.elem == ELEM_C)
         return 1;
+    if (ec1.elem == ELEM_C)
+        return -1;
     
-    return ec1.elem - ec2.elem;
+    // hydrogen has the highest priority after carbon
+    if (ec2.elem == ELEM_H)
+        return 1;
+    if (ec1.elem == ELEM_H)
+        return -1;
+
+    // all elements are compared lexicographically
+    return strcmp(Element::toString(ec1.elem), Element::toString(ec2.elem));
 }
 
 
