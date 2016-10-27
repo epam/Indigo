@@ -1393,7 +1393,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                         continue;
                      }
 
-                     if (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1) 
+                     if (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1 && getAtomCharge(neighbors[k]) == 0) 
                      {
                         remove_atoms.push(neighbors[k]);
                         continue;
@@ -1580,7 +1580,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                         continue;
                      }
 
-                     if (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1) 
+                     if (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1 && getAtomCharge(neighbors[k]) == 0) 
                      {
                         remove_atoms.push(neighbors[k]);
                         continue;
@@ -1648,7 +1648,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                   if (getAtomNumber(v.neiVertex(k)) == ELEM_H)
                      continue;
    
-                  if (getAtomNumber(v.neiVertex(k)) == ELEM_O && v_n.degree() == 1) 
+                  if (getAtomNumber(v.neiVertex(k)) == ELEM_O && v_n.degree() == 1 && getAtomCharge(v.neiVertex(k)) == 0) 
                      continue;
                        
                   tinds.push(i);
@@ -1705,8 +1705,13 @@ void BaseMolecule::_fillTemplateSeqIds ()
       else
       {
          int left_neib = tmp.getTemplateAtomAttachmentPointById (i, left_apid);
+         int right_neib = tmp.getTemplateAtomAttachmentPointById (i, right_apid);
 
-         if ( (left_neib == -1) || !tmp.isTemplateAtom(left_neib) ) 
+         if (left_neib == -1) 
+         {
+            vertex_ranks[i] = -2;
+         }
+         else if (!tmp.isTemplateAtom(left_neib) && (right_neib != -1) )
          {
             vertex_ranks[i] = -1;
          }
