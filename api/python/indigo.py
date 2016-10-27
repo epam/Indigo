@@ -613,6 +613,14 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupDisplayOption(self.id, option))
 
+    def getRepeatingUnitSubscript(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetRepeatingUnitSubscript(self.id))
+
+    def getRepeatingUnitConnectivity(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetRepeatingUnitConnectivity(self.id))
+
     def getSGroupMultiplier(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoGetSGroupMultiplier(self.id))
@@ -1720,6 +1728,10 @@ class Indigo(object):
         Indigo._lib.indigoGetSGroupDisplayOption.argtypes = [c_int]
         Indigo._lib.indigoSetSGroupDisplayOption.restype = c_int
         Indigo._lib.indigoSetSGroupDisplayOption.argtypes = [c_int, c_int]
+        Indigo._lib.indigoGetRepeatingUnitSubscript.restype = c_char_p
+        Indigo._lib.indigoGetRepeatingUnitSubscript.argtypes = [c_int]
+        Indigo._lib.indigoGetRepeatingUnitConnectivity.restype = c_int
+        Indigo._lib.indigoGetRepeatingUnitConnectivity.argtypes = [c_int]
         Indigo._lib.indigoGetSGroupMultiplier.restype = c_int
         Indigo._lib.indigoGetSGroupMultiplier.argtypes = [c_int]
         Indigo._lib.indigoSetSGroupMultiplier.restype = c_int

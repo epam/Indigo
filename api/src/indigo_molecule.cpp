@@ -3125,6 +3125,26 @@ CEXPORT int indigoGetSGroupMultiplier (int sgroup)
    INDIGO_END(-1)
 }
 
+CEXPORT const char * indigoGetRepeatingUnitSubscript (int sgroup)
+{
+   INDIGO_BEGIN
+   {
+      RepeatingUnit &ru = IndigoRepeatingUnit::cast(self.getObject(sgroup)).get();
+      return ru.subscript.ptr();
+   }
+   INDIGO_END(0)
+}
+
+CEXPORT int indigoGetRepeatingUnitConnectivity (int sgroup)
+{
+   INDIGO_BEGIN
+   {
+      RepeatingUnit &ru = IndigoRepeatingUnit::cast(self.getObject(sgroup)).get();
+      return ru.connectivity;
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoSetSGroupMultiplier (int sgroup, int multiplier)
 {
    INDIGO_BEGIN

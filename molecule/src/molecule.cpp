@@ -1100,10 +1100,10 @@ int Molecule::getAtomValence (int idx)
 int Molecule::getAtomRadical (int idx)
 {
    if (_atoms[idx].number == ELEM_PSEUDO)
-      throw Error("getAtomValence() does not work on pseudo-atoms");
+      throw Error("getAtomRadical() does not work on pseudo-atoms");
 
    if (_atoms[idx].number == ELEM_RSITE)
-      throw Error("getAtomValence() does not work on R-sites");
+      throw Error("getAtomRadical() does not work on R-sites");
    
    if (_radicals.size() > idx && _radicals[idx] >= 0)
       return _radicals[idx];
