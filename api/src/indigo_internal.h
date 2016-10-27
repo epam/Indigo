@@ -311,9 +311,8 @@ public:
    int aam_cancellation_timeout; //default is zero - no timeout
 
    int cancellation_timeout; // default is 0 seconds - no timeout
-   TimeoutCancellationHandler timeout_cancellation_handler;
 
-   void resetCancellationHandler ();
+   void updateCancellationHandler ();
 
    void initMolfileSaver (MolfileSaver &saver);
    void initRxnfileSaver (RxnfileSaver &saver);
@@ -353,7 +352,7 @@ private:
 };
 
 #define INDIGO_BEGIN { Indigo &self = indigoGetInstance(); \
-      try { self.error_message.clear(); self.resetCancellationHandler(); 
+      try { self.error_message.clear(); self.updateCancellationHandler(); 
 
 #define INDIGO_END(fail) } \
       catch (Exception &ex)         \

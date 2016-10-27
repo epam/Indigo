@@ -231,7 +231,7 @@ public:
     ~AAMCancellationWrapper();
 private:
     AAMCancellationWrapper(const AAMCancellationWrapper&);
-    CancellationHandler* _prev;
+    std::unique_ptr<CancellationHandler> _prev;
 };
 
 }

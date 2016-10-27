@@ -66,7 +66,7 @@ class CancellationHandlerWrapper
 public:
    CancellationHandlerWrapper () : handler(0) {}
 
-   CancellationHandler* handler;
+   AutoPtr<CancellationHandler> handler;
 };
 
 static _SessionLocalContainer<CancellationHandlerWrapper> cancellation_handler;
@@ -74,23 +74,24 @@ static _SessionLocalContainer<CancellationHandlerWrapper> cancellation_handler;
 CancellationHandler* getCancellationHandler ()
 {
    CancellationHandlerWrapper &wrapper = cancellation_handler.getLocalCopy();
-   return wrapper.handler;
+   return wrapper.handler.get();
 }
 
-CancellationHandler* setCancellationHandler (CancellationHandler* handler)
+std::unique_ptr<CancellationHandler> resetCancellationHandler (CancellationHandler* handler)
 {
    CancellationHandlerWrapper &wrapper = cancellation_handler.getLocalCopy();
-   CancellationHandler* prev = wrapper.handler;
-   wrapper.handler = handler;
+   auto* prev_ptr = wrapper.handler.get() == 0 ? nullptr : wrapper.handler.release();
+   std::unique_ptr<CancellationHandler> prev(prev_ptr);
+   wrapper.handler.reset(handler);
    return prev;
 }
 
-AutoCancellationHandler::AutoCancellationHandler(CancellationHandler& hand) {
-   _prev = setCancellationHandler(&hand);
-}
-
-AutoCancellationHandler::~AutoCancellationHandler() {
-   setCancellationHandler(_prev);
-}
+//AutoCancellationHandler::AutoCancellationHandler(CancellationHandler& hand) {
+//   _prev = setCancellationHandler(&hand);
+//}
+//
+//AutoCancellationHandler::~AutoCancellationHandler() {
+//   setCancellationHandler(_prev);
+//}
 
 }

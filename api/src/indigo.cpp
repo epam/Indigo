@@ -35,8 +35,6 @@ CEXPORT const char * indigoVersion ()
 
 void Indigo::init ()
 {
-   timeout_cancellation_handler = 0;
-
    error_handler = 0;
    error_handler_context = 0;
    _next_id = 1001;
@@ -107,10 +105,9 @@ void Indigo::removeAllObjects ()
    _objects.clear();
 }
 
-void Indigo::resetCancellationHandler ()
+void Indigo::updateCancellationHandler ()
 {
-   timeout_cancellation_handler.reset(cancellation_timeout);
-   setCancellationHandler(&timeout_cancellation_handler);
+   resetCancellationHandler(new TimeoutCancellationHandler(cancellation_timeout));
 }
 
 void Indigo::initMolfileSaver (MolfileSaver &saver)

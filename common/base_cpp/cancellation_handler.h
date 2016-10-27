@@ -17,6 +17,7 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -52,18 +53,9 @@ private:
 
 // Global thread-local cancellation handler
 DLLEXPORT CancellationHandler* getCancellationHandler ();
-// Returns previous cancellation handler
-DLLEXPORT CancellationHandler* setCancellationHandler (CancellationHandler* handler);
-/*
- * Automatic cancellation handler can be used to store cancel callback within one code block
- */
-class DLLEXPORT AutoCancellationHandler {
-public:
-   AutoCancellationHandler(CancellationHandler& hand);
-   virtual ~AutoCancellationHandler();
-private:
-   CancellationHandler* _prev;
-};
+// Returns previous cancellation handler. 
+// TAKES Ownership!!!
+DLLEXPORT std::unique_ptr<CancellationHandler> resetCancellationHandler (CancellationHandler* handler);
 
 }
 
