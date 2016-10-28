@@ -80,7 +80,7 @@ CancellationHandler* getCancellationHandler ()
 std::unique_ptr<CancellationHandler> resetCancellationHandler (CancellationHandler* handler)
 {
    CancellationHandlerWrapper &wrapper = cancellation_handler.getLocalCopy();
-   std::unique_ptr<CancellationHandler> prev(wrapper.handler.release());
+   std::unique_ptr<CancellationHandler> prev (wrapper.handler.release());
    wrapper.handler.reset(handler);
    return prev;
 }

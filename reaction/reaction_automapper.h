@@ -229,9 +229,11 @@ class AAMCancellationWrapper {
 public:
     AAMCancellationWrapper(CancellationHandler*);
     ~AAMCancellationWrapper();
+    void reset();
 private:
     AAMCancellationWrapper(const AAMCancellationWrapper&);
     std::unique_ptr<CancellationHandler> _prev;
+    bool _contains;
 };
 
 }

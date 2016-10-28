@@ -46,6 +46,10 @@ void ReactionAutomapper::automap(int mode) {
    QS_DEF(ObjArray< Array<int> >, mol_mappings);
    QS_DEF(Array<int>, react_mapping);
    
+   /*
+    * Set cancellation
+    */
+   cancellation = getCancellationHandler();
    
    /*
     * Check input atom mapping (if any)
@@ -2045,11 +2049,17 @@ int RSubstructureMcs::_getTransposedBondIndex(BaseMolecule& mol, int bond) const
    return result;
 }
 
-AAMCancellationWrapper::AAMCancellationWrapper(CancellationHandler* canc) {
+AAMCancellationWrapper::AAMCancellationWrapper(CancellationHandler* canc):_contains(false) {
     _prev = resetCancellationHandler(canc);
-   
+    _contains = true;
 }
-
-AAMCancellationWrapper::~AAMCancellationWrapper() {
+void AAMCancellationWrapper::reset() {
     resetCancellationHandler(_prev.release());
+    _contains = false;
+}
+AAMCancellationWrapper::~AAMCancellationWrapper() {
+    if(_contains) {
+        reset();
+    }
+    
 }

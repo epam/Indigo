@@ -613,11 +613,13 @@ CEXPORT int indigoAutomap (int reaction, const char *mode)
       /*
        * Set cancellation handler
        */
-      AAMCancellationWrapper (timeout.release());
+      AAMCancellationWrapper aam_timeout(timeout.release());
       /*
        * Launch automap
        */
       ram.automap(nmode);
+      
+      aam_timeout.reset();
       
       return 1;
    }
