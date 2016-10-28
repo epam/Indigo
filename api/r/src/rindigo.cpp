@@ -142,10 +142,10 @@ REXPORT SEXP r_indigoSetOption(SEXP option, SEXP value)
    return result;
 }
 
-REXPORT SEXP r_indigoResetOption()
+REXPORT SEXP r_indigoResetOptions()
 {
    SEXP result = PROTECT(allocVector(INTSXP, 1));
-   int set_result = indigoResetOption();
+   int set_result = indigoResetOptions();
    
    INTEGER(result)[0] = set_result;
    UNPROTECT(1);

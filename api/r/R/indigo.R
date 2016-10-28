@@ -65,9 +65,9 @@ Indigo$methods(
   })
 
 Indigo$methods(
-  resetOption = function(){
+  resetOptions = function(){
     setSession()
-    obj_id = checkResult(.Call("r_indigoResetOption"))
+    obj_id = checkResult(.Call("r_indigoResetOptions"))
   })
 
 IndigoObject = setRefClass(
@@ -124,8 +124,8 @@ setOption <- function(option, value){
    obj_id = checkResult(.Call("r_indigoSetOption",  option, value))
 }
 
-resetOption <- function(){
-   obj_id = checkResult(.Call("r_indigoResetOption"))
+resetOptions <- function(){
+   obj_id = checkResult(.Call("r_indigoResetOptions"))
 }
 
 canonicalSmiles <- function(data) {

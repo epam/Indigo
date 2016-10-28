@@ -191,10 +191,10 @@ namespace com.epam.indigo
             checkResult(_indigo_lib.indigoSetOptionColor(name, value.R / 255.0f, value.G / 255.0f, value.B / 255.0f));
         }
 
-        public void resetOption()
+        public void resetOptions()
         {
             setSessionID();
-            checkResult(_indigo_lib.indigoResetOption());
+            checkResult(_indigo_lib.indigoResetOptions());
         }
 
         public IndigoObject writeFile(String filename)

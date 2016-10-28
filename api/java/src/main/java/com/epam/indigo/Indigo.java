@@ -464,9 +464,9 @@ public class Indigo {
         checkResult(this, _lib.indigoSetOptionFloat(option, (float) value));
     }
 
-    public void resetOption() {
+    public void resetOptions() {
         setSessionID();
-        checkResult(this, _lib.indigoResetOption());
+        checkResult(this, _lib.indigoResetOptions());
     }
 
     public IndigoObject writeFile(String filename) {
