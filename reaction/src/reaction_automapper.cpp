@@ -32,7 +32,7 @@ ignore_atom_charges(false),
 ignore_atom_valence(false),
 ignore_atom_isotopes(false),
 ignore_atom_radicals(false),
-cancellation(0),
+cancellation(nullptr),
 _initReaction(reaction),
 _maxMapUsed(0),
 _maxVertUsed(0),
@@ -275,7 +275,7 @@ void ReactionAutomapper::_createReactionMap(){
          /*
           * Check for cancellation
           */
-         if(cancellation && cancellation->isCancelled())
+         if(cancellation != nullptr && cancellation->isCancelled())
             break;
       }
       _usedVertices.zerofill();
@@ -1302,7 +1302,7 @@ void RSubstructureMcs::setUpFlags(const ReactionAutomapper& context) {
 bool RSubstructureMcs::searchSubstructure(Array<int>* map) {
    bool result = false;
 
-   if (_context.cancellation) {
+   if (_context.cancellation != nullptr) {
       try {
          result = SubstructureMcs::searchSubstructure(map);
       } catch (Exception&) {
@@ -1691,7 +1691,7 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
       return result;
 
    int proc = 1;
-   if (_context.cancellation) {
+   if (_context.cancellation != nullptr) {
       try {
          proc = emb_enum.process();
       } catch (Exception&) {
