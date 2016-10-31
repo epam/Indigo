@@ -12,7 +12,6 @@
 * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ***************************************************************************/
 
-#include <algorithm>
 #include <cctype>
 #include <cstdlib>
 #include <iostream>
@@ -964,11 +963,13 @@ bool MoleculeNameParser::ResultBuilder::buildResult(Molecule& molecule) {
    }
 
    if (!_fragments.empty()) {
-      _SMILES = _fragments.top();
+      const Fragment& frag = _fragments.top();
+      std::for_each(frag.begin(), frag.end(), [=](const auto& it) {_SMILES += it;});
       _fragments.pop();
       while (!_fragments.empty()) {
          _SMILES += ".";
-         _SMILES += _fragments.top();
+         const Fragment& frag = _fragments.top();
+         std::for_each(frag.begin(), frag.end(), [=](const auto& it) {_SMILES += it;});
          _fragments.pop();
       }
    } else {
@@ -982,6 +983,11 @@ bool MoleculeNameParser::ResultBuilder::buildResult(Molecule& molecule) {
    return true;
 }
 
+/*
+Processes a single node in the build tree
+Performs depth-first traversal
+Dispatches further processing depending on node's type
+*/
 bool MoleculeNameParser::ResultBuilder::_processNode(FragmentNode* node) {
    const Nodes& nodes = node->nodes;
    for (FragmentNode* frag : nodes) {
@@ -1004,6 +1010,10 @@ bool MoleculeNameParser::ResultBuilder::_processNode(FragmentNode* node) {
    return true;
 }
 
+/*
+Processes a base node. A base node contains information about structure or
+substituent base: number of locants, chemical element info, bonds, etc.
+*/
 bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base) {
    const Element& element = base->element;
    const int number = element.first;
@@ -1015,10 +1025,10 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
       bond_sym = "#";
    }
 
-   string fragment;
+   Fragment fragment;
    const NodeType& nt = base->tokenType;
    if (nt == NodeType::SUFFIX) {
-      fragment += bond_sym;
+      fragment.push_back(bond_sym);
       _fragments.push(fragment);
       return true;
    }
@@ -1031,39 +1041,43 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
       }
 
       const string& symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
-      fragment += symbol;
+      fragment.push_back(symbol);
 
       for (int i = 1; i < multipliers; i++) {
-         fragment += symbol;
+         fragment.push_back(symbol);
       }
    }
 
    if (base->cycle) {
-      fragment.insert(1, "1");
-      fragment.insert(fragment.length(), "1");
+      string& first = fragment.front();
+      first.insert(1, "1");
+      string& last = fragment.back();
+      last.insert(1, "1");
    }
 
    const Locants& locants = base->locants;
    if (!locants.empty()) {
       // locant positions are marked with pipe | for easier search and substitution
-      const char separator{ '|' };
+      const string placeholder = "|";
       int inserted{ 0 };
+      auto it = fragment.begin();
       for (int loc : locants) {
-         if (loc + inserted > fragment.length()) {
-            return false;
-         }
-         fragment.insert(loc + inserted, 1, separator);
+         std::advance(it, loc + inserted);
+         fragment.insert(it, placeholder);
+         it = fragment.begin();
          ++inserted;
       }
    }
 
    /*
    If there are no locants and the structure has double or triple bond, insert
-   it immediately after first atom
+   it immediately after the first atom
    */
    if (nt == NodeType::BASE) {
       if (locants.empty() && (base->bondOrder != BOND_SINGLE)) {
-         fragment.insert(base->cycle ? 2 : 1, bond_sym);
+         auto it = fragment.begin();
+         std::advance(it, 1);
+         fragment.insert(it, bond_sym);
       }
    }
 
@@ -1071,6 +1085,9 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
    return true;
 }
 
+/*
+Processes a substituent node. Any substituent might also be a base
+*/
 bool MoleculeNameParser::ResultBuilder::_processSubstNode(FragmentNodeSubstituent* subst) {
    if (subst->nodes.empty()) {
       return _processBaseNode(subst);
@@ -1082,8 +1099,20 @@ bool MoleculeNameParser::ResultBuilder::_processSubstNode(FragmentNodeSubstituen
    return false;
 }
 
+/*
+Combines bases and substituents
+1. The current base being processed is the top element on the _fragments stack
+Pop it off the stack
+Every substituent position is marked by | symbol
+2. Reverse iterate through child nodes in node's collection; substituents are
+pushed onto _fragments stack in reverse order
+Replace corresponding placeholders in base fragment by current substituent
+3. When all children/substituents for the current base are processed, push the
+result back onto stack; this will either be a complete result or a new substituent
+for further combine cycles
+*/
 bool MoleculeNameParser::ResultBuilder::_combine(FragmentNode* node) {
-   string base = _fragments.top();
+   Fragment base = _fragments.top();
    if (base.empty()) {
       return false;
    }
@@ -1094,25 +1123,29 @@ bool MoleculeNameParser::ResultBuilder::_combine(FragmentNode* node) {
    auto it = nodes.rbegin();
    ++it;
 
-   string fragment;
+   Fragment frag;
    while (it != nodes.rend()) {
-      const string s = _fragments.top();
+      Fragment f = _fragments.top();
       _fragments.pop();
 
       const NodeType& nt = dynamic_cast<FragmentNodeBase*>(*it)->tokenType;
       if (nt == NodeType::BASE) {
-         fragment = "(" + s + ")";
+         frag.push_back("(");
+         frag.splice(frag.end(), f);
+         frag.push_back(")");
       } else {
-         fragment = s;
+         frag = f;
       }
 
       const FragmentNodeSubstituent* subst = dynamic_cast<FragmentNodeSubstituent*>(*it);
       for (int i = 0; i < subst->fragmentMultiplier; i++) {
-         const size_t pos = base.find_last_of('|');
-         base.replace(pos, 1, fragment);
+         auto placeholder = this->find_last(base, "|");
+         placeholder = base.erase(placeholder);
+         base.insert(placeholder, frag.begin(), frag.end());
       }
 
       ++it;
+      frag.clear();
    }
 
    _fragments.push(base);
