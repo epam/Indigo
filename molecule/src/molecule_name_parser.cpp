@@ -964,12 +964,12 @@ bool MoleculeNameParser::ResultBuilder::buildResult(Molecule& molecule) {
 
    if (!_fragments.empty()) {
       const Fragment& frag = _fragments.top();
-      std::for_each(frag.begin(), frag.end(), [=](const auto& it) {_SMILES += it;});
+      std::for_each(frag.begin(), frag.end(), [=](const string& it) {_SMILES += it;});
       _fragments.pop();
       while (!_fragments.empty()) {
          _SMILES += ".";
          const Fragment& frag = _fragments.top();
-         std::for_each(frag.begin(), frag.end(), [=](const auto& it) {_SMILES += it;});
+         std::for_each(frag.begin(), frag.end(), [=](const string& it) {_SMILES += it;});
          _fragments.pop();
       }
    } else {
