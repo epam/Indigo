@@ -266,7 +266,7 @@ bool EmbeddingEnumerator::processNext ()
       else if (command == _RETURN0)
          return true;
 
-      if (_cancellation_handler != NULL)
+      if (_cancellation_handler != nullptr)
       {
          // Check only each 100th time
          if ((_cancellation_check_number % 100) == 0)

@@ -107,7 +107,11 @@ void Indigo::removeAllObjects ()
 
 void Indigo::updateCancellationHandler ()
 {
-   resetCancellationHandler(new TimeoutCancellationHandler(cancellation_timeout));
+    if (cancellation_timeout > 0) {
+        resetCancellationHandler(new TimeoutCancellationHandler(cancellation_timeout));
+    } else {
+        resetCancellationHandler(nullptr);
+    }
 }
 
 void Indigo::initMolfileSaver (MolfileSaver &saver)

@@ -368,7 +368,7 @@ bool MoleculeAutomorphismSearch::_check_automorphism (Graph &graph, const Array<
    const MoleculeAutomorphismSearch &self = *(MoleculeAutomorphismSearch *)context;
    Molecule &mol = (Molecule &)graph;
 
-   if (self._cancellation_handler != 0 && self._cancellation_handler->isCancelled())
+   if (self._cancellation_handler != nullptr && self._cancellation_handler->isCancelled())
       throw TimeoutException("%s", self._cancellation_handler->cancelledRequestMessage());
 
    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
