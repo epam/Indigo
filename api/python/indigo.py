@@ -2024,7 +2024,9 @@ class Indigo(object):
         Indigo._lib.indigoDbgInternalType.argtypes = [c_int]
         Indigo._lib.indigoNameToStructure.restype = c_int
         Indigo._lib.indigoNameToStructure.argtypes = [c_char_p, c_char_p]
-
+        Indigo._lib.indigoResetOptions.restype = c_int
+        Indigo._lib.indigoResetOptions.argtypes = None
+        
     def __del__(self):
         if hasattr(self, '_lib'):
             self._lib.indigoReleaseSessionId(self._sid)
