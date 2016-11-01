@@ -259,7 +259,7 @@ int MoleculeMass::_cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
         return -1;
 
     // all elements are compared lexicographically
-    return strcmp(Element::toString(ec1.elem), Element::toString(ec2.elem));
+    return strncmp(Element::toString(ec1.elem), Element::toString(ec2.elem), 3);
 }
 
 
@@ -276,7 +276,7 @@ void MoleculeMass::massComposition (Molecule &mol, Array<char> &str)
          v != mol.vertexEnd();
          v = mol.vertexNext(v))
     {
-        if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v))
+        if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v) || mol.isRSite(v))
         {
             continue;
         }

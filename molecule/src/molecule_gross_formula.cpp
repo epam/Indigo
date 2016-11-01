@@ -49,7 +49,7 @@ int MoleculeGrossFormula::_cmp_hill_no_carbon (_ElemCounter &ec1, _ElemCounter &
    if (ec2.counter == 0)
       return -1;
    // all elements are compared lexicographically
-   return strcmp(Element::toString(ec1.elem), Element::toString(ec2.elem));
+   return strncmp(Element::toString(ec1.elem), Element::toString(ec2.elem), 3);
 }
 
 // comparator implementing the Hill system with carbon:
