@@ -2030,7 +2030,7 @@ void RSubstructureMcs::_transposeInputMap(const Array<int>* map, Array<int>& inp
          }
       } else {
          for (int i = 0; i < map->size(); ++i) {
-            if (_invTransposition[i] >= 0)
+            if (_transposition[i] >= 0)
                input_map[_transposition[i]] = map->at(i);
          }
       }
