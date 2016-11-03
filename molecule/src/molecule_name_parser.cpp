@@ -287,7 +287,7 @@ void MoleculeNameParser::Parse::_processTextFragment(const string& fragment) {
    const size_t fLength = fragment.length();
 
    // global position inside the input string
-   int total = 0;
+   size_t total = 0;
 
    string buffer = fragment;
 
@@ -1062,6 +1062,9 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
       int inserted{ 0 };
       auto it = fragment.begin();
       for (int loc : locants) {
+         if (loc + inserted > fragment.size()) {
+            return false;
+         }
          std::advance(it, loc + inserted);
          fragment.insert(it, placeholder);
          it = fragment.begin();
