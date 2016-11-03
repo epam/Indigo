@@ -515,7 +515,7 @@ class DLLEXPORT MoleculeNameParser {
       Fragment::const_iterator find_last(const Fragment& frag, const std::string& what) const {
          Fragment tmp = frag;
          tmp.reverse();
-         int pos = 1;
+         size_t pos = 1;
          for (const std::string& s : tmp) {
             if (s == what) {
                break;
