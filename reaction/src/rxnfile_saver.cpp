@@ -198,13 +198,7 @@ void RxnfileSaver::_writeCatalystsHeader ()
 
 void RxnfileSaver::_writeMol (MolfileSaver &saver, int index) {
    
-   saver.reactionAtomMapping = &_brxn->getAAMArray(index);
-   saver.reactionAtomInversion = &_brxn->getInversionArray(index);
-   saver.reactionBondReactingCenter = &_brxn->getReactingCenterArray(index);
    saver.skip_date = skip_date;
-
-   if (_qrxn != 0)
-      saver.reactionAtomExactChange = &_qrxn->getExactChangeArray(index);
 
    if (_qrxn != 0)
    {

@@ -37,10 +37,6 @@ IMPL_ERROR(MolfileSaver, "molfile saver");
 CP_DEF(MolfileSaver);
 
 MolfileSaver::MolfileSaver (Output &output) :
-reactionAtomMapping(0),
-reactionAtomInversion(0),
-reactionAtomExactChange(0),
-reactionBondReactingCenter(0),
  _output(output),
  CP_INIT,
 TL_CP_GET(_atom_mapping),
@@ -449,12 +445,9 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
 
       int aam = 0, ecflag = 0, irflag = 0;
 
-      if (reactionAtomMapping != 0)
-         aam = reactionAtomMapping->at(i);
-      if (reactionAtomInversion != 0)
-         irflag = reactionAtomInversion->at(i);
-      if (reactionAtomExactChange != 0)
-         ecflag = reactionAtomExactChange->at(i);
+      aam = mol.reaction_atom_mapping[i];
+      irflag = mol.reaction_atom_inversion[i];
+      ecflag = mol.reaction_atom_exact_change[i];
 
       Vec3f &xyz = mol.getAtomXyz(i);
       int charge = mol.getAtomCharge(i);
@@ -667,9 +660,7 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       }
 
       int reacting_center = 0;
-
-      if(reactionBondReactingCenter != 0 && reactionBondReactingCenter->at(i) != 0)
-         reacting_center = reactionBondReactingCenter->at(i);
+      reacting_center = mol.reaction_bond_reacting_center[i];
 
       if (reacting_center != 0)
          out.printf(" RXCTR=%d", reacting_center);
@@ -1195,12 +1186,9 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             isotopes.push(i);
       }
 
-      if (reactionAtomMapping != 0)
-         aam = reactionAtomMapping->at(i);
-      if (reactionAtomInversion != 0)
-         irflag = reactionAtomInversion->at(i);
-      if (reactionAtomExactChange != 0)
-         ecflag = reactionAtomExactChange->at(i);
+      aam = mol.reaction_atom_mapping[i];
+      irflag = mol.reaction_atom_inversion[i];
+      ecflag = mol.reaction_atom_exact_change[i];
 
       int explicit_valence = -1;
 
@@ -1369,8 +1357,7 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       else if (indigo_topology == TOPOLOGY_CHAIN)
          topology = 2;
 
-      if(reactionBondReactingCenter != 0 && reactionBondReactingCenter->at(i) != 0)
-         reacting_center = reactionBondReactingCenter->at(i);
+      reacting_center = mol.reaction_bond_reacting_center[i];
 
       output.printfCR("%3d%3d%3d%3d%3d%3d%3d",
                 _atom_mapping[edge.beg], _atom_mapping[edge.end],

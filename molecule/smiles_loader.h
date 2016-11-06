@@ -46,7 +46,6 @@ public:
 
    void loadSMARTS (QueryMolecule &mol);
 
-   Array<int> * reaction_atom_mapping;
    Array<int> * ignorable_aam;
 
    bool inside_rsmiles;

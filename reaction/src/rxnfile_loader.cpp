@@ -222,13 +222,6 @@ void RxnfileLoader::_readCatalystsFooter(){
 
 void RxnfileLoader::_readMol (MolfileLoader &loader, int index) {
 
-   loader.reaction_atom_mapping = &_brxn->getAAMArray(index);
-   loader.reaction_atom_inversion = &_brxn->getInversionArray(index);
-   loader.reaction_bond_reacting_center = &_brxn->getReactingCenterArray(index);
-
-   if (_qrxn != 0)
-      loader.reaction_atom_exact_change = &_qrxn->getExactChangeArray(index);
-
    if (_qrxn != 0)
    {
       if (_v3000)

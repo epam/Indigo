@@ -129,6 +129,9 @@ struct Atom
       attorder, 
       query_props, 
       hydrogen_count, 
+      atom_mapping, 
+      atom_inversion, 
+      atom_exact_change, 
       x, y, z;
 };
 
@@ -216,6 +219,9 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
    splitStringIntoProperties(atom_array.Element()->Attribute("attachmentOrder"), atoms, &Atom::attorder);
    splitStringIntoProperties(atom_array.Element()->Attribute("mrvQueryProps"), atoms, &Atom::query_props);
    splitStringIntoProperties(atom_array.Element()->Attribute("mrvAlias"), atoms, &Atom::alias);
+   splitStringIntoProperties(atom_array.Element()->Attribute("mrvMap"), atoms, &Atom::atom_mapping);
+   splitStringIntoProperties(atom_array.Element()->Attribute("reactionStereo"), atoms, &Atom::atom_inversion);
+   splitStringIntoProperties(atom_array.Element()->Attribute("exactChage"), atoms, &Atom::atom_exact_change);
 
    // Read atoms as nested xml elements
    //   <atomArray>
@@ -294,6 +300,21 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
 
       if (hcount != 0)
          a.hydrogen_count = hcount;
+
+      const char *atom_map = elem->Attribute("mrvMap");
+
+      if (atom_map != 0)
+         a.atom_mapping = atom_map;
+
+      const char *atom_inv = elem->Attribute("reactionStereo");
+
+      if (atom_inv != 0)
+         a.atom_inversion = atom_inv;
+
+      const char *atom_exact = elem->Attribute("exactChange");
+
+      if (atom_exact != 0)
+         a.atom_exact_change = atom_exact;
 
       const char *x2 = elem->Attribute("x2");
       const char *y2 = elem->Attribute("y2");
@@ -671,6 +692,31 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
                sgroup.display_pos.y = _bmol->getAtomXyz(idx).y;
             }
          }
+
+         if (!a.atom_mapping.empty())
+         {
+            int val;
+            if (sscanf(a.atom_mapping.c_str(), "%d", &val) != 1)
+               throw Error("error parsing atom-atom mapping");
+            _bmol->reaction_atom_mapping[idx] = val;
+         }
+
+         if (!a.atom_inversion.empty())
+         {
+            if (strncmp(a.atom_inversion.c_str(), "Inv", 3) == 0)
+              _bmol->reaction_atom_inversion[idx] = 1;
+            else if (strncmp(a.atom_inversion.c_str(), "Ret", 3) == 0)
+              _bmol->reaction_atom_inversion[idx] = 2;
+         }
+
+         if (!a.atom_exact_change.empty())
+         {
+            int val;
+            if (sscanf(a.atom_exact_change.c_str(), "%d", &val) != 1)
+               throw Error("error parsing atom exact change flag");
+            _bmol->reaction_atom_exact_change[idx] = val;
+         }
+
       }
 /*
       if (!a.attorder.empty())
@@ -804,6 +850,16 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
 
       if (dir != 0)
          _bmol->setBondDirection(idx, dir);
+
+      const char *brcenter = elem->Attribute("mrvReactingCenter");
+
+      if (brcenter != 0)
+      {
+         int val;
+         if (sscanf(brcenter, "%d", &val) != 1)
+            throw Error("error parsing reacting center flag");
+         _bmol->reaction_bond_reacting_center[idx] = val;
+      }
    }
 
    // Implicit H counts

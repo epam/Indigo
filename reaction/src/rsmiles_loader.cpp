@@ -108,7 +108,6 @@ void RSmilesLoader::_loadReaction ()
    r_loader.ignore_closing_bond_direction_mismatch =
             ignore_closing_bond_direction_mismatch;
    r_loader.inside_rsmiles = true;
-   r_loader.reaction_atom_mapping = &rcnt_aam;
    r_loader.ignorable_aam = &rcnt_aam_ignorable;
    r_loader.smarts_mode = smarts_mode;
    r_loader.ignore_cistrans_errors = ignore_cistrans_errors;
@@ -124,6 +123,8 @@ void RSmilesLoader::_loadReaction ()
       rcnt.reset(new QueryMolecule());
       r_loader.loadQueryMolecule((QueryMolecule &)rcnt.ref());
    }
+   rcnt_aam.copy(rcnt.ref().reaction_atom_mapping);
+
    
    // read the catalysts (agents)
    buf.clear();
@@ -147,7 +148,6 @@ void RSmilesLoader::_loadReaction ()
    c_loader.ignore_closing_bond_direction_mismatch =
             ignore_closing_bond_direction_mismatch;
    c_loader.inside_rsmiles = true;
-   c_loader.reaction_atom_mapping = &ctlt_aam;
    c_loader.smarts_mode = smarts_mode;
    c_loader.ignore_cistrans_errors = ignore_cistrans_errors;
    c_loader.stereochemistry_options = stereochemistry_options;
@@ -162,6 +162,7 @@ void RSmilesLoader::_loadReaction ()
       ctlt.reset(new QueryMolecule());
       c_loader.loadQueryMolecule((QueryMolecule &)ctlt.ref());
    }
+   ctlt_aam.copy(ctlt.ref().reaction_atom_mapping);
 
    bool vbar = false;
 
@@ -185,7 +186,6 @@ void RSmilesLoader::_loadReaction ()
    p_loader.ignore_closing_bond_direction_mismatch =
             ignore_closing_bond_direction_mismatch;
    p_loader.inside_rsmiles = true;
-   p_loader.reaction_atom_mapping = &prod_aam;
    p_loader.ignorable_aam = &prod_aam_ignorable;
    p_loader.smarts_mode = smarts_mode;
    p_loader.ignore_cistrans_errors = ignore_cistrans_errors;
@@ -201,6 +201,7 @@ void RSmilesLoader::_loadReaction ()
       prod.reset(new QueryMolecule());
       p_loader.loadQueryMolecule((QueryMolecule &)prod.ref());
    }
+   prod_aam.copy(prod.ref().reaction_atom_mapping);
 
    QS_DEF(Array<int>, r_fragments);
    QS_DEF(Array<int>, c_fragments);

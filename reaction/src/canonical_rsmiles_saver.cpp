@@ -45,45 +45,24 @@ void CanonicalRSmilesSaver::saveReaction(Reaction &reaction_)
    if (reaction_.reactantsCount()) {
       j = reaction.addReactant();
       Molecule &mol = reaction.getMolecule(j);
-      Array<int> &aamArray = reaction.getAAMArray(j);
       for (auto i : reaction_.reactants) {
-         Array<int> &aamArray_ = reaction_.getAAMArray(i);
          mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
-         aamArray.reserve(aamArray.size() + aamArray_.size());
-         for (int i = 0; i < aamArray_.size(); ++i) {
-            aamArray.push();
-            aamArray.at(aamArray.size() - 1) = aamArray_.at(i);
-         }
       }
    }
 
    if (reaction_.catalystCount()) {
       j = reaction.addCatalyst();
       Molecule &mol = reaction.getMolecule(j);
-      Array<int> &aamArray = reaction.getAAMArray(j);
       for (auto i : reaction_.catalysts) {
-         Array<int> &aamArray_ = reaction_.getAAMArray(i);
          mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
-         aamArray.reserve(aamArray.size() + aamArray_.size());
-         for (int i = 0; i < aamArray_.size(); ++i) {
-            aamArray.push();
-            aamArray.at(aamArray.size() - 1) = aamArray_.at(i);
-         }
       }
    }
 
    if (reaction_.productsCount()) {
       j = reaction.addProduct();
       Molecule &mol = reaction.getMolecule(j);
-      Array<int> &aamArray = reaction.getAAMArray(j);
       for (auto i : reaction_.products) {
-         Array<int> &aamArray_ = reaction_.getAAMArray(i);
          mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
-         aamArray.reserve(aamArray.size() + aamArray_.size());
-         for (int i = 0; i < aamArray_.size(); ++i) {
-            aamArray.push();
-            aamArray.at(aamArray.size() - 1) = aamArray_.at(i);
-         }
       }
    }
 
@@ -127,8 +106,8 @@ void CanonicalRSmilesSaver::_writeMolecule(int i, CanonicalSmilesSaver &saver)
 {
    int j;
 
-   saver.initial_atom_atom_mapping = &_brxn->getAAMArray(i);
    saver.smarts_mode = smarts_mode;
+   saver.inside_rsmiles = true;
 
    if (_rxn != 0)
       saver.saveMolecule(_rxn->getMolecule(i));

@@ -164,9 +164,6 @@ protected:
    virtual void _addedBaseMolecule (int idx, int side, BaseMolecule &mol);
 
    PtrPool<BaseMolecule>  _allMolecules;
-   ObjArray< Array<int> > _atomAtomMapping;
-   ObjArray< Array<int> > _reactingCenters;
-   ObjArray< Array<int> > _inversionNumbers;
 
    Array<int> _types;
 

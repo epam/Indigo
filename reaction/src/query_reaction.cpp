@@ -29,7 +29,6 @@ QueryReaction::~QueryReaction ()
 void QueryReaction::clear ()
 {
    BaseReaction::clear();
-   _exactChanges.clear();
    _ignorableAAM.clear();
 }
 
@@ -40,20 +39,19 @@ QueryMolecule & QueryReaction::getQueryMolecule (int index)
 
 Array<int> & QueryReaction::getExactChangeArray (int index)
 {
-   return _exactChanges[index];
+   BaseMolecule &mol = *_allMolecules.at(index);
+   return mol.reaction_atom_exact_change;
 }
 
 int QueryReaction::getExactChange (int index, int atom)
 {
-   return _exactChanges[index][atom];
+   BaseMolecule &mol = *_allMolecules.at(index);
+   return mol.reaction_atom_exact_change[atom];
 }
 
 void QueryReaction::_addedBaseMolecule (int idx, int side, BaseMolecule &mol)
 {
    BaseReaction::_addedBaseMolecule(idx, side, mol);
-   _exactChanges.expand(idx + 1);
-   _exactChanges[idx].clear_resize(mol.vertexEnd());
-   _exactChanges[idx].zerofill();
    _ignorableAAM.expand(idx + 1);
    _ignorableAAM[idx].clear_resize(mol.vertexEnd());
    _ignorableAAM[idx].zerofill();
