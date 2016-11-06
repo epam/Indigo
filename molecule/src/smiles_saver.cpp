@@ -52,12 +52,12 @@ TL_CP_GET(_ban_slashes),
 TL_CP_GET(_cis_trans_parity)
 {
    vertex_ranks = 0;
-   atom_atom_mapping = 0;
    ignore_hydrogens = false;
    canonize_chiralities = false;
    write_extra_info = true;
    _mol = 0;
    smarts_mode = false;
+   inside_rsmiles = false;
    ignore_invalid_hcount = true;
    separate_rsites = true;
    rsite_indices_as_aam = true;
@@ -777,8 +777,8 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
       throw Error("undefined atom number");
    }
 
-   if (atom_atom_mapping != 0)
-      aam = atom_atom_mapping[idx];
+   if (inside_rsmiles)
+      aam = _bmol->reaction_atom_mapping[idx];
 
    if (atom_number != ELEM_C && atom_number != ELEM_P &&
        atom_number != ELEM_N && atom_number != ELEM_S &&
@@ -940,13 +940,12 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
             else if (hydro == 1)
                _output.printf("H");
          }
-         if (atom_atom_mapping != 0)
-         {
-            int aam = atom_atom_mapping[idx];
 
-            if (aam > 0)
-               _output.printf(":%d", aam);
-         }
+         int aam = _bmol->reaction_atom_mapping[idx];
+
+         if (aam > 0)
+            _output.printf(":%d", aam);
+
          break;
       }
       case QueryMolecule::ATOM_CHARGE:

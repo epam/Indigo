@@ -94,41 +94,44 @@ void BaseReaction::clear()
    _productCount = 0;
    _catalystCount = 0;
    _allMolecules.clear();
-   _atomAtomMapping.clear();
-   _reactingCenters.clear();
-   _inversionNumbers.clear();
    _types.clear();
    name.clear();
 }
 
 int BaseReaction::getAAM (int index, int atom)
 {
-   return _atomAtomMapping[index][atom];
+   BaseMolecule &mol = *_allMolecules.at(index);
+   return mol.reaction_atom_mapping[atom];
 }
 
 int BaseReaction::getReactingCenter(int index, int bond)
 {
-   return _reactingCenters[index][bond];
+   BaseMolecule &mol = *_allMolecules.at(index);
+   return mol.reaction_bond_reacting_center[bond];
 }
 
 int BaseReaction::getInversion (int index, int atom)
 {
-   return _inversionNumbers[index][atom];
+   BaseMolecule &mol = *_allMolecules.at(index);
+   return mol.reaction_atom_inversion[atom];
 }
 
 Array<int> & BaseReaction::getAAMArray (int index)
 {
-   return _atomAtomMapping[index];
+   BaseMolecule &mol = *_allMolecules.at(index);
+   return mol.reaction_atom_mapping;
 }
 
 Array<int> & BaseReaction::getReactingCenterArray (int index)
 {
-   return _reactingCenters[index];
+   BaseMolecule &mol = *_allMolecules.at(index);
+   return mol.reaction_bond_reacting_center;
 }
 
 Array<int> & BaseReaction::getInversionArray (int index)
 {
-   return _inversionNumbers[index];
+   BaseMolecule &mol = *_allMolecules.at(index);
+   return mol.reaction_atom_inversion;
 }
 
 int BaseReaction::addReactant ()
@@ -157,16 +160,6 @@ void BaseReaction::_addedBaseMolecule (int idx, int side, BaseMolecule &mol)
 
    _types.expand(idx + 1);
    _types[idx] = side;
-
-   _atomAtomMapping.expand(idx + 1);
-   _atomAtomMapping[idx].clear_resize(mol.vertexEnd());
-   _atomAtomMapping[idx].zerofill();
-   _reactingCenters.expand(idx + 1);
-   _reactingCenters[idx].clear_resize(mol.edgeEnd());
-   _reactingCenters[idx].zerofill();
-   _inversionNumbers.expand(idx + 1);
-   _inversionNumbers[idx].clear_resize(mol.vertexEnd());
-   _inversionNumbers[idx].zerofill();
 }
 
 int BaseReaction::findAtomByAAM (int mol_idx, int aam) 
@@ -234,7 +227,10 @@ int BaseReaction::_nextElement (int type, int index)
 void BaseReaction::clearAAM ()
 {
    for (int i = begin(); i < end(); i = next(i))
-      _atomAtomMapping[i].zerofill();
+   {
+      BaseMolecule &mol = *_allMolecules.at(i);
+      mol.reaction_atom_mapping.zerofill();
+   }
 }
 
 int BaseReaction::addReactantCopy (BaseMolecule& mol, Array<int>* mapping, Array<int> *inv_mapping)
@@ -312,16 +308,6 @@ void BaseReaction::clone (BaseReaction &other, Array<int> *mol_mapping, ObjArray
       if (mol_mapping != 0)
          mol_mapping->at(i) = index;
       
-      BaseMolecule &lmol = getBaseMolecule(index);
-      for(int j = lmol.vertexBegin(); j < lmol.vertexEnd(); j = lmol.vertexNext(j)) {
-         getAAMArray(index).at(j) = other.getAAM(i, mappings->at(i)[j]);
-         getInversionArray(index).at(j) = other.getInversion(i, mappings->at(i)[j]);
-      }
-      for (int j = lmol.edgeBegin(); j < lmol.edgeEnd(); j = lmol.edgeNext(j)) {
-         const Edge &edge = lmol.getEdge(j);
-         int edge_idx = other.getBaseMolecule(i).findEdgeIndex(mappings->at(i)[edge.beg], mappings->at(i)[edge.end]);
-         getReactingCenterArray(index).at(j) = other.getReactingCenter(i, edge_idx);
-      }
       // subclass' stuff
       _clone(other, index, i, mappings);
    }

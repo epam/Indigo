@@ -47,12 +47,6 @@ public:
    void loadCtab3000 (Molecule &mol);
    void loadQueryCtab3000 (QueryMolecule &mol);
 
-   // optional parameters for reaction
-   Array<int> * reaction_atom_mapping;
-   Array<int> * reaction_atom_inversion;
-   Array<int> * reaction_atom_exact_change;
-   Array<int> * reaction_bond_reacting_center;
-
    StereocentersOptions stereochemistry_options;
    bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
    bool skip_3d_chirality; // do not compute chirality from 3D coordinates

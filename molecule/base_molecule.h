@@ -252,6 +252,11 @@ public:
  
    Array<char> name;
 
+   Array<int> reaction_atom_mapping;
+   Array<int> reaction_atom_inversion;
+   Array<int> reaction_atom_exact_change;
+   Array<int> reaction_bond_reacting_center;
+
    static bool hasCoord (BaseMolecule &mol);
    static bool hasZCoord (BaseMolecule &mol);
 

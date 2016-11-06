@@ -40,7 +40,6 @@ TL_CP_GET(_atoms),
 TL_CP_GET(_bonds),
 TL_CP_GET(_polymer_repetitions)
 {
-   reaction_atom_mapping = 0;
    ignorable_aam = 0;
    inside_rsmiles = false;
    ignore_closing_bond_direction_mismatch = false;
@@ -1212,13 +1211,19 @@ void SmilesLoader::_loadParsedMolecule ()
         _scanner.readLine(_bmol->name, true);
    }
 
-   if (reaction_atom_mapping != 0)
+   _bmol->reaction_atom_mapping.clear_resize(_bmol->vertexCount() + 1);
+   _bmol->reaction_atom_mapping.zerofill();
+   if (inside_rsmiles)
    {
-      reaction_atom_mapping->clear_resize(_bmol->vertexCount());
-      reaction_atom_mapping->zerofill();
       for (i = 0; i < _atoms.size(); i++)
-         reaction_atom_mapping->at(i) = _atoms[i].aam;
+         _bmol->reaction_atom_mapping[i] = _atoms[i].aam;
    }
+   _bmol->reaction_atom_inversion.clear_resize(_bmol->vertexCount() + 1);
+   _bmol->reaction_atom_inversion.zerofill();
+   _bmol->reaction_atom_exact_change.clear_resize(_bmol->vertexCount() + 1);
+   _bmol->reaction_atom_exact_change.zerofill();
+   _bmol->reaction_bond_reacting_center.clear_resize(_bmol->edgeCount() + 1);
+   _bmol->reaction_bond_reacting_center.zerofill();
 
    if (ignorable_aam != 0)
    {

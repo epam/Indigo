@@ -110,16 +110,5 @@ void Reaction::unfoldHydrogens ()
    {
       Molecule &mol = getMolecule(i);
       mol.unfoldHydrogens(&markers, -1);
-      _atomAtomMapping[i].expand(markers.size());
-      _inversionNumbers[i].expand(markers.size());
-      for (j = mol.vertexBegin(); j != mol.vertexEnd(); j = mol.vertexNext(j))
-         if (markers[j])
-         {
-            _atomAtomMapping[i][j] = 0;
-            _inversionNumbers[i][j] = 0;
-            int edge_idx = mol.getVertex(j).neiEdge(mol.getVertex(j).neiBegin());
-            _reactingCenters[i].expand(edge_idx + 1);
-            _reactingCenters[i][edge_idx] = 0;
-         }
    }
 }

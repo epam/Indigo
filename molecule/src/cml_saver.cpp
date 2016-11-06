@@ -300,7 +300,7 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
                      val |= 1 << (idx - 1);
                      break;
                   }
-               }
+               } 
             }
    
             if (val > 0)
@@ -346,6 +346,25 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
 
             atomparity->LinkEndChild(new TiXmlText("1"));
          }
+        
+         if (_mol->reaction_atom_mapping[i] > 0)
+         {
+            atom->SetAttribute("mrvMap", _mol->reaction_atom_mapping[i]);
+         }
+
+         if (_mol->reaction_atom_inversion[i] > 0)
+         {
+            if (_mol->reaction_atom_inversion[i] == 1)
+              atom->SetAttribute("reactionStereo", "Inv");
+            else if (_mol->reaction_atom_inversion[i] == 2)
+              atom->SetAttribute("reactionStereo", "Ret");
+         }
+
+         if (_mol->reaction_atom_exact_change[i] > 0)
+         {
+            atom->SetAttribute("exactChange", "1");
+         }
+
       }
 
       int latest_ind = i;
@@ -460,6 +479,11 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
             buf.push(0);
             bondstereo->SetAttribute("atomRefs4", buf.ptr());
             bondstereo->LinkEndChild(new TiXmlText((parity == MoleculeCisTrans::CIS) ? "C" : "T"));
+         }
+
+         if (_mol->reaction_bond_reacting_center[i] > 0)
+         {
+            bond->SetAttribute("mrvReactingCenter", _mol->reaction_bond_reacting_center[i]);
          }
       }
    }

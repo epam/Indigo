@@ -48,10 +48,6 @@ TL_CP_GET(_hcount),
 TL_CP_GET(_sgroup_types),
 TL_CP_GET(_sgroup_mapping)
 {
-   reaction_atom_mapping = 0;
-   reaction_atom_inversion = 0;
-   reaction_atom_exact_change = 0;
-   reaction_bond_reacting_center = 0;
    _rgfile = false;
    treat_x_as_pseudoatom = false;
    skip_3d_chirality = false;
@@ -433,12 +429,9 @@ void MolfileLoader::_readCtab2000 ()
       if (stereo_care)
          _stereo_care_atoms[idx] = 1;
 
-      if (reaction_atom_mapping != 0)
-         reaction_atom_mapping->at(idx) = aam;
-      if (reaction_atom_inversion != 0)
-         reaction_atom_inversion->at(idx) = irflag;
-      if (reaction_atom_exact_change != 0)
-         reaction_atom_exact_change->at(idx) = ecflag;
+      _bmol->reaction_atom_mapping[idx] = aam;
+      _bmol->reaction_atom_inversion[idx] = irflag;
+      _bmol->reaction_atom_exact_change[idx] = ecflag;
    }
 
    int bond_idx;
@@ -450,6 +443,7 @@ void MolfileLoader::_readCtab2000 ()
       int order = _scanner.readIntFix(3);
       int stereo = _scanner.readIntFix(3);
       int topology = 0;
+      int rcenter = 0;
 
       try
       {
@@ -465,10 +459,7 @@ void MolfileLoader::_readCtab2000 ()
             if (!ignore_noncritical_query_features)
                throw Error("bond topology is allowed only for queries");
 
-         int rcenter = rest.readIntFix(3);
-
-         if (reaction_bond_reacting_center != 0)
-            reaction_bond_reacting_center->at(bond_idx) = rcenter;
+         rcenter = rest.readIntFix(3);
       }
       catch (Scanner::Error &)
       {
@@ -537,6 +528,8 @@ void MolfileLoader::_readCtab2000 ()
          _ignore_cistrans[bond_idx] = 1;
       else if (stereo != 0)
          throw Error("unknown number for bond stereo: %d", stereo);
+
+     _bmol->reaction_bond_reacting_center[bond_idx] = rcenter;
    }
 
    int n_3d_features = -1;
@@ -2565,14 +2558,9 @@ void MolfileLoader::_readCtab3000 ()
          if (_mol != 0)
             _mol->setAtomRadical(i, radical);
    
-         if (reaction_atom_inversion != 0)
-            reaction_atom_inversion->at(i) = irflag;
-   
-         if (reaction_atom_exact_change != 0)
-            reaction_atom_exact_change->at(i) = ecflag;
-   
-         if (reaction_atom_mapping != 0)
-            reaction_atom_mapping->at(i) = aamap;
+         _bmol->reaction_atom_inversion[i]= irflag;
+         _bmol->reaction_atom_exact_change[i] = ecflag;
+         _bmol->reaction_atom_mapping[i] = aamap;
    
          _bmol->setAtomXyz(i, x, y, z);
       }
@@ -2738,8 +2726,7 @@ void MolfileLoader::_readCtab3000 ()
                }
             }
          }
-         if (reaction_bond_reacting_center != 0)
-            reaction_bond_reacting_center->at(i) = reacting_center;
+         _bmol->reaction_bond_reacting_center[i] = reacting_center;
       }
 
       _scanner.readLine(str, true);
@@ -3579,12 +3566,12 @@ void MolfileLoader::_init ()
    _stereo_care_bonds.clear_resize(_bonds_num);
    _stereo_care_bonds.zerofill();
 
-   if (reaction_atom_mapping != 0)
-      reaction_atom_mapping->clear_resize(_atoms_num);
-   if (reaction_atom_inversion != 0)
-      reaction_atom_inversion->clear_resize(_atoms_num);
-   if (reaction_atom_exact_change != 0)
-      reaction_atom_exact_change->clear_resize(_atoms_num);
-   if (reaction_bond_reacting_center != 0)
-      reaction_bond_reacting_center->clear_resize(_bonds_num);
+   _bmol->reaction_atom_mapping.clear_resize(_atoms_num);
+   _bmol->reaction_atom_mapping.zerofill();
+   _bmol->reaction_atom_inversion.clear_resize(_atoms_num);
+   _bmol->reaction_atom_inversion.zerofill();
+   _bmol->reaction_atom_exact_change.clear_resize(_atoms_num);
+   _bmol->reaction_atom_exact_change.zerofill();
+   _bmol->reaction_bond_reacting_center.clear_resize(_bonds_num);
+   _bmol->reaction_bond_reacting_center.zerofill();
 }

@@ -74,6 +74,11 @@ void BaseMolecule::clear ()
    _bond_directions.clear();
    custom_collections.clear();
 
+   reaction_atom_mapping.clear();
+   reaction_atom_inversion.clear();
+   reaction_atom_exact_change.clear();
+   reaction_bond_reacting_center.clear();
+
    use_scsr_sgroups_only = false;
    remove_scsr_lgrp = false;
    use_scsr_name = false;
@@ -240,6 +245,34 @@ void BaseMolecule::_mergeWithSubmolecule_Sub (BaseMolecule &mol, const Array<int
    }
    else
       _xyz.zerofill();
+
+
+   reaction_atom_mapping.expandFill(vertexEnd(), 0);
+   reaction_atom_inversion.expandFill(vertexEnd(), 0);
+   reaction_atom_exact_change.expandFill(vertexEnd(), 0);
+   reaction_bond_reacting_center.expandFill(edgeEnd(), 0);
+
+   for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   {
+      if (mapping[i] < 0)
+         continue;
+
+      reaction_atom_mapping[mapping[i]] = mol.reaction_atom_mapping[i];
+      reaction_atom_inversion[mapping[i]] = mol.reaction_atom_inversion[i];
+      reaction_atom_exact_change[mapping[i]] = mol.reaction_atom_exact_change[i];
+   }
+
+   for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
+   {
+      const Edge &edge = mol.getEdge(j);
+
+      if ( (mapping[edge.beg] > -1) && (mapping[edge.end] > -1) )
+      {
+         int bond_idx = findEdgeIndex(mapping[edge.beg], mapping[edge.end]);
+         if (bond_idx > -1)
+            reaction_bond_reacting_center[bond_idx] = mol.reaction_bond_reacting_center[j];
+      }
+   }
 
 
    _bond_directions.expandFill(mol.edgeEnd(), 0);
@@ -826,6 +859,13 @@ int BaseMolecule::_addBaseAtom ()
    _xyz.expand(idx + 1);
    _xyz[idx].zero();
 
+   reaction_atom_mapping.expand(idx + 1);
+   reaction_atom_mapping[idx] = 0;
+   reaction_atom_inversion.expand(idx + 1);
+   reaction_atom_inversion[idx] = 0;
+   reaction_atom_exact_change.expand(idx + 1);
+   reaction_atom_exact_change[idx] = 0;
+
    updateEditRevision();
 
    return idx;
@@ -834,6 +874,9 @@ int BaseMolecule::_addBaseAtom ()
 int BaseMolecule::_addBaseBond (int beg, int end)
 {
    int idx = addEdge(beg, end);
+
+   reaction_bond_reacting_center.expand(idx + 1);
+   reaction_bond_reacting_center[idx] = 0;
 
    cis_trans.registerBond(idx);
    updateEditRevision();

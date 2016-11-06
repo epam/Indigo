@@ -60,8 +60,8 @@ void RSmilesSaver::_writeMolecule (int i)
    saver.write_extra_info = false;
    saver.separate_rsites = false;
    saver.rsite_indices_as_aam = false;
-   saver.atom_atom_mapping = _brxn->getAAMArray(i).ptr();
    saver.smarts_mode = smarts_mode;
+   saver.inside_rsmiles = true;
 
    if (_rxn != 0)
       saver.saveMolecule(_rxn->getMolecule(i));

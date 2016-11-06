@@ -28,7 +28,6 @@ public:
    ~CanonicalSmilesSaver ();
 
    bool find_invalid_stereo;
-   const Array<int> *initial_atom_atom_mapping;
 
    void saveMolecule (Molecule &mol);
 

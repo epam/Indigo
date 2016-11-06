@@ -76,7 +76,6 @@ protected:
 
    static int _compare(int &i1, int &i2, void *c);
 
-   ObjArray< Array<int> > _exactChanges;
    ObjArray< Array<int> > _ignorableAAM;
 
    virtual void _clone (BaseReaction &other, int index, int i, ObjArray< Array<int> >* mol_mappings);

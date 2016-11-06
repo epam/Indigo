@@ -34,7 +34,6 @@ TL_CP_GET(_initial_to_actual)
    ignore_invalid_hcount = false;
    ignore_hydrogens = true;
    canonize_chiralities = true;
-   initial_atom_atom_mapping = 0;
    _initial_to_actual.clear();
    _initial_to_actual.insert(0, 0);
    _aam_counter = 0;
@@ -112,27 +111,22 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol_)
 
    vertex_ranks = ranks.ptr();
 
-   if (initial_atom_atom_mapping) {
-      _actual_atom_atom_mapping.clear_resize(initial_atom_atom_mapping->size());
-      _actual_atom_atom_mapping.fill(0);
+   _actual_atom_atom_mapping.clear_resize(mol.vertexCount());
+   _actual_atom_atom_mapping.zerofill();
 
-      for (int i = 0; i < order.size(); ++i) {
-         int aam = initial_atom_atom_mapping->at(order[i]);
-         if (aam) {
-            if (!_initial_to_actual.find(aam)) {
-               _initial_to_actual.insert(aam, ++_aam_counter);
-               _actual_atom_atom_mapping[order[i]] = _aam_counter;
-            }
-            else {
-               _actual_atom_atom_mapping[order[i]] = _initial_to_actual.at(aam);
-            }
+   for (int i = 0; i < order.size(); ++i) {
+      int aam = mol.reaction_atom_mapping[order[i]];
+      if (aam) {
+         if (!_initial_to_actual.find(aam)) {
+            _initial_to_actual.insert(aam, ++_aam_counter);
+            _actual_atom_atom_mapping[order[i]] = _aam_counter;
+         }
+         else {
+            _actual_atom_atom_mapping[order[i]] = _initial_to_actual.at(aam);
          }
       }
-      atom_atom_mapping = _actual_atom_atom_mapping.ptr();
    }
-   else {
-      atom_atom_mapping = 0;
-   }
+   mol.reaction_atom_mapping.copy(_actual_atom_atom_mapping);
 
    SmilesSaver::saveMolecule(mol);
 }

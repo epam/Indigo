@@ -95,12 +95,6 @@ public:
                          // the number of implicit H for aromatic atoms
                          // (if it is required for correct de-aromatization) (default value is true)
 
-   // optional parameters for reaction
-   const Array<int>* reactionAtomMapping;
-   const Array<int>* reactionAtomInversion;
-   const Array<int>* reactionAtomExactChange;
-   const Array<int>* reactionBondReactingCenter;
-
    DECL_ERROR;
    
 protected:

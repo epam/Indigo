@@ -46,7 +46,6 @@ public:
    void saveQueryMolecule (QueryMolecule &mol);
 
    int *vertex_ranks;
-   const int *atom_atom_mapping;
 
    bool ignore_hydrogens;
    bool canonize_chiralities;
@@ -59,6 +58,8 @@ public:
    const Array<int> & writtenBonds ();
 
    static void writePseudoAtom (const char *label, Output &out);
+
+   bool inside_rsmiles;
 
    bool smarts_mode;
    bool ignore_invalid_hcount;
