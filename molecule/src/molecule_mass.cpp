@@ -21,6 +21,8 @@
 
 using namespace indigo;
 
+IMPL_ERROR(MoleculeMass, "mass");
+
 MoleculeMass::MoleculeMass()
 {
    relative_atomic_mass_map = NULL;
@@ -28,6 +30,11 @@ MoleculeMass::MoleculeMass()
 
 double MoleculeMass::molecularWeight (Molecule &mol)
 {
+   if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
+   {
+       throw Error("Cannot calculate mass for structure with repeating units");
+   }
+    
    mol.restoreAromaticHydrogens();
 
    double molmass = 0;
@@ -102,6 +109,11 @@ static int _isotopesCmp (int i1, int i2, void *context)
 
 double MoleculeMass::mostAbundantMass (Molecule &mol)
 {
+   if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
+   {
+      throw Error("Cannot calculate mass for structure with repeating units");
+   }
+    
    mol.restoreAromaticHydrogens();
 
    double molmass = 0;
@@ -183,6 +195,11 @@ double MoleculeMass::mostAbundantMass (Molecule &mol)
 
 double MoleculeMass::monoisotopicMass (Molecule &mol)
 {
+   if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
+   {
+      throw Error("Cannot calculate mass for structure with repeating units");
+   }
+    
    mol.restoreAromaticHydrogens();
 
    double molmass = 0;
@@ -212,6 +229,11 @@ double MoleculeMass::monoisotopicMass (Molecule &mol)
 
 int MoleculeMass::nominalMass (Molecule &mol)
 {
+   if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
+   {
+      throw Error("Cannot calculate mass for structure with repeating units");
+   }
+    
    mol.restoreAromaticHydrogens();
 
    int molmass = 0;
@@ -265,6 +287,11 @@ int MoleculeMass::_cmp (_ElemCounter &ec1, _ElemCounter &ec2, void *context)
 
 void MoleculeMass::massComposition (Molecule &mol, Array<char> &str)
 {
+    if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
+    {
+        throw Error("Cannot calculate mass for structure with repeating units");
+    }
+    
     Array<double> relativeMass;
     int impl_h = 0;
     relativeMass.clear_resize(ELEM_MAX);

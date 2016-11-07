@@ -75,49 +75,121 @@ int MoleculeGrossFormula::_cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void 
    return _cmp_hill_no_carbon(ec1, ec2, context);
 }
 
-void MoleculeGrossFormula::collect (BaseMolecule &mol, Array<int> &gross)
+void MoleculeGrossFormula::collect (BaseMolecule &mol, std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross)
 {
-   if (!mol.isQueryMolecule())
-      mol.asMolecule().restoreAromaticHydrogens();
+    if (!mol.isQueryMolecule())
+    {
+        mol.asMolecule().restoreAromaticHydrogens();
+    }
+    
+    // basic structure and all polymers
+    int grossFormulaSize = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) + 1;
+    QS_DEF(ObjArray<Array<int > >, filters);
+    filters.clear();
+    filters.resize(grossFormulaSize);
+    QS_DEF(ObjArray<Array<char> >, indices);
+    indices.clear();
+    indices.resize(grossFormulaSize);
+    
+    // first element is for old-style gross formula
+    indices[0].appendString(" ", true);
+    for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+    {
+        filters[0].push(i);
+    }
+    
+    // then polymer sgroups
+    for (int i = 1; i < grossFormulaSize; i++)
+    {
+        RepeatingUnit *ru = (RepeatingUnit *)&mol.sgroups.getSGroup(i - 1, SGroup::SG_TYPE_SRU);
+        filters[i].copy(ru->atoms);
+        indices[i].copy(ru->subscript.ptr(), ru->subscript.size() - 1); // Remove '0' symbol at the end
+        // Filter polymer atoms
+        for (int j = 0; j < filters[i].size(); j++)
+        {
+            int found_idx = filters[0].find(filters[i][j]);
+            if (found_idx > -1)
+            {
+                filters[0].remove(found_idx);
+            }
+        }
+    }
+    
+    // init ObjArray
+    while (gross.first.size() < grossFormulaSize){
+        gross.first.push();
+        gross.second.push();
+    }
+    
+    for (int i = 0; i < grossFormulaSize; i++)
+    {
+        gross.first[i].copy(indices[i]);
+        gross.second[i].clear_resize(ELEM_MAX);
+        gross.second[i].zerofill();
 
-   gross.clear_resize(ELEM_MAX);
-   gross.zerofill();
+        for (int j = mol.vertexBegin(); j < mol.vertexEnd(); j = mol.vertexNext(j))
+        {
+            if (filters[i].find(j) == -1)
+            {
+                continue;
+            }
+            if (mol.isPseudoAtom(j) || mol.isRSite(j) || mol.isTemplateAtom(j))
+            {
+                continue;
+            }
+            int number = mol.getAtomNumber(j);
 
-   for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
-   {
-      if (mol.isPseudoAtom(i) || mol.isRSite(i) || mol.isTemplateAtom(i)) 
-         continue;
-      int number = mol.getAtomNumber(i);
+            if (number > 0)
+                gross.second[i][number]++;
 
-      if (number > 0)
-         gross[number]++;
+            if (!mol.isQueryMolecule())
+            {
+                int implicit_h = mol.asMolecule().getImplicitH(j);
 
-      if (!mol.isQueryMolecule())
-      {
-         int implicit_h = mol.asMolecule().getImplicitH(i);
-
-         if (implicit_h >= 0)
-            gross[ELEM_H] += implicit_h;
-      }
-   }
+                if (implicit_h >= 0)
+                    gross.second[i][ELEM_H] += implicit_h;
+            }
+        }
+    }
 }
 
-void MoleculeGrossFormula::toString (const Array<int> &gross, Array<char> &str)
+void MoleculeGrossFormula::toString (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str)
 {
-   _toString(gross, str, _cmp);
+    ArrayOutput output(str);
+
+    for (int i = 0; i < gross.second.size(); i++)
+    {
+        _toString(gross.second[i], output, _cmp);
+    }
+    output.writeChar(0);
 }
 
-void MoleculeGrossFormula::toString_Hill (const Array<int> &gross, Array<char> &str)
+void MoleculeGrossFormula::toString_Hill (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str)
 {
-   if (gross[ELEM_C] == 0)
-      _toString(gross, str, _cmp_hill_no_carbon);
-   else
-      _toString(gross, str, _cmp_hill);
+    ArrayOutput output(str);
+    
+    // First base molecule
+    if (gross.second[0][ELEM_C] == 0)
+        _toString(gross.second[0], output, _cmp_hill_no_carbon);
+    else
+        _toString(gross.second[0], output, _cmp_hill);
+    
+    // Then polymers repeating units
+    for (int i = 1; i < gross.second.size(); i++)
+    {
+        output.writeChar('(');
+        if (gross.second[i][ELEM_C] == 0)
+            _toString(gross.second[i], output, _cmp_hill_no_carbon);
+        else
+            _toString(gross.second[i], output, _cmp_hill);
+        output.writeChar(')');
+        output.writeArray(gross.first[i]);
+    }
+    output.writeChar(0);
 }
 
 
-void MoleculeGrossFormula::_toString (const Array<int> &gross, Array<char> &str,
-                              int (*cmp)(_ElemCounter &, _ElemCounter &, void *))
+void MoleculeGrossFormula::_toString (const Array<int> &gross, ArrayOutput & output, int (*cmp)(_ElemCounter &, _ElemCounter &, void *))
 {
    QS_DEF(Array<_ElemCounter>, counters);
    int i;
@@ -134,8 +206,6 @@ void MoleculeGrossFormula::_toString (const Array<int> &gross, Array<char> &str,
 
    counters.qsort(cmp, 0);
 
-   ArrayOutput output(str);
-
    bool first_written = false;
 
    for (i = 0; i < counters.size(); i++)
@@ -151,7 +221,6 @@ void MoleculeGrossFormula::_toString (const Array<int> &gross, Array<char> &str,
          output.printf("%d", counters[i].counter);
       first_written = true;
    }
-   output.writeChar(0);
 }
 
 void MoleculeGrossFormula::fromString (Scanner &scanner, Array<int> &gross)

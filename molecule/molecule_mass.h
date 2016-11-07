@@ -24,6 +24,8 @@ class Molecule;
 // Molecular mass calculation
 class MoleculeMass
 {
+    DECL_ERROR;
+
 protected:
     struct _ElemCounter
     {

@@ -15,7 +15,10 @@
 #ifndef __molecule_gross_formula__
 #define __molecule_gross_formula__
 
+#include <utility>
+
 #include "base_cpp/array.h"
+#include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 
 namespace indigo {
@@ -30,9 +33,9 @@ class BaseMolecule;
 class DLLEXPORT MoleculeGrossFormula
 {
 public:
-   static void collect (BaseMolecule &molecule, Array<int> &gross);
-   static void toString (const Array<int> &gross, Array<char> &str);
-   static void toString_Hill (const Array<int> &gross, Array<char> &str);
+   static void collect (BaseMolecule &molecule, std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross);
+   static void toString (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str);
+   static void toString_Hill (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str);
    static void fromString (const char *str, Array<int> &gross);
    static void fromString (Scanner &scanner, Array<int> &gross);
 
@@ -47,7 +50,7 @@ protected:
       int counter;
    };
 
-   static void _toString (const Array<int> &gross, Array<char> &str,
+   static void _toString (const Array<int> &gross, ArrayOutput &output,
                           int (*cmp)(_ElemCounter &, _ElemCounter &, void *));
    static int _cmp      (_ElemCounter &ec1, _ElemCounter &ec2, void *context);
    static int _cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void *context);

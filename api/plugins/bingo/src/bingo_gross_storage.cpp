@@ -102,7 +102,7 @@ bool GrossStorage::tryCandidate (Array<int> &query_array, int id)
 
 void GrossStorage::calculateMolFormula (Molecule &mol, Array<char> &gross_formula)
 {
-   Array<int> gross_array;
+   std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > gross_array;
    MoleculeGrossFormula::collect(mol, gross_array);
    MoleculeGrossFormula::toString(gross_array, gross_formula);
 }
@@ -113,11 +113,11 @@ void GrossStorage::calculateRxnFormula (Reaction &rxn, Array<char> &gross_formul
 
    for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
    {
-      Array<int> mol_array;
+      std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > gross_array;
       Array<char> mol_formula;
 
-      MoleculeGrossFormula::collect(rxn.getBaseMolecule(i), mol_array);
-      MoleculeGrossFormula::toString(mol_array, mol_formula);
+      MoleculeGrossFormula::collect(rxn.getBaseMolecule(i), gross_array);
+      MoleculeGrossFormula::toString(gross_array, mol_formula);
 
       gross_formula.concat(mol_formula);
       if (rxn.next(i) != rxn.end())

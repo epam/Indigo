@@ -203,7 +203,7 @@ public:
 
    virtual void toString (Array<char> &str);
 
-   Array<int> gross;
+    std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > gross;
 };
 
 class IndigoReactionGross : public IndigoObject
@@ -214,7 +214,7 @@ public:
 
    virtual void toString (Array<char> &str);
 
-   std::pair<ObjArray<Array<int> >, ObjArray<Array<int> > > gross;
+   std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > gross;
 };
 
 

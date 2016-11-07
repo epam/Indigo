@@ -118,14 +118,6 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoClose(self.id))
 
-    def _next(self):
-        self.dispatcher._setSessionId()
-        newobj = self.dispatcher._checkResult(Indigo._lib.indigoNext(self.id))
-        if newobj == 0:
-            return None
-        else:
-            return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
-
     def hasNext(self):
         self.dispatcher._setSessionId()
         return bool(self.dispatcher._checkResult(Indigo._lib.indigoHasNext(self.id)))
