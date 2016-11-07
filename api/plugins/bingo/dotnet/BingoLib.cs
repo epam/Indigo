@@ -23,6 +23,8 @@ namespace com.epam.indigo
         int bingoSearchExact (int db, int query_obj, string options);
         int bingoSearchMolFormula (int db, string query, string options);
 
+        int bingoEnumerateId (int db);
+
         int bingoNext (int search_obj);
         int bingoGetCurrentId (int search_obj);
         float bingoGetCurrentSimilarityValue(int search_obj);

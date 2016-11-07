@@ -266,6 +266,16 @@ namespace com.epam.indigo
         }
 
         /// <summary>
+        /// Execute enumerate id operation
+        /// </summary>
+        /// <returns>Bingo enumerate id object instance</returns>
+        public BingoObject enumerateId()
+        {
+            _indigo.setSessionID();
+            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoEnumerateId(_id)), _indigo, _lib);
+        }
+
+        /// <summary>
         /// Perform exact search operation
         /// </summary>
         /// <param name="query">indigo object (molecule or reaction)</param>

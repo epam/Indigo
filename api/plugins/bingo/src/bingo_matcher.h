@@ -440,6 +440,24 @@ namespace bingo
 
       virtual void _setParameters (const char *params);
    };
+   
+   class EnumeratorMatcher : public BaseMatcher
+   {
+   public:
+      EnumeratorMatcher (BaseIndex &index);
+   
+      virtual bool next ();
+       
+      ~EnumeratorMatcher() {}
+      
+   protected:
+      virtual void _setParameters (const char * params) {};
+      virtual void _initPartition () {};
+      
+   private:
+      IndigoObject* _indigoObject;
+      int _id_numbers;
+   };
 };
 
 #endif // __bingo_matcher__

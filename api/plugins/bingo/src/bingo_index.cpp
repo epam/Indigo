@@ -39,6 +39,11 @@ Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query
       matcher->setQueryData(dynamic_cast<GrossQueryData *>(query_data));
       return matcher.release();
    }
+   else if (strcmp(type, "enum") == 0)
+   {
+      AutoPtr<EnumeratorMatcher> matcher(new EnumeratorMatcher(*this));
+      return matcher.release();
+   }
    else
       throw Exception("createMatcher: undefined type");
 
@@ -70,6 +75,11 @@ Matcher* ReactionIndex::createMatcher (const char *type, MatcherQueryData *query
       AutoPtr<RxnExactMatcher> matcher(new RxnExactMatcher(*this));
       matcher->setOptions(options);
       matcher->setQueryData(dynamic_cast<ExactQueryData *>(query_data));
+      return matcher.release();
+   }
+   else if (strcmp(type, "enum") == 0)
+   {
+      AutoPtr<EnumeratorMatcher> matcher(new EnumeratorMatcher(*this));
       return matcher.release();
    }
    else

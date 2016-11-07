@@ -249,6 +249,16 @@ public class Bingo {
 		return searchSim(query, min, max, null);
 	}
 
+	/**
+		Execute enumerate id operation
+
+		@return Bingo enumerate id object instance
+	*/
+	public BingoObject enumerateId() {
+		_indigo.setSessionID();
+		return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoEnumerateId(_id)), _indigo, _lib);
+	}
+
     /**
     	Perform exact search operation
 

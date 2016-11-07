@@ -460,6 +460,26 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
    BINGO_END(-1);
 }
 
+CEXPORT int bingoEnumerateId (int db)
+{
+   BINGO_BEGIN_DB(db)
+   {
+      Index &index = _bingo_instances.ref(db);
+      EnumeratorMatcher *matcher = dynamic_cast<EnumeratorMatcher *>(index.createMatcher("enum", nullptr, nullptr));
+
+      int search_id;
+      {
+         OsLocker searches_locker(_searches_lock);
+         search_id = _searches.add(matcher);
+         _searches_db.expand(search_id + 1);
+         _searches_db[search_id] = db;
+      }
+
+      return search_id;
+   }
+   BINGO_END(-1);
+}
+
 CEXPORT int bingoEndSearch (int search_obj)
 {
    BINGO_BEGIN_SEARCH(search_obj)
