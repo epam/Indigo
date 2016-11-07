@@ -1116,3 +1116,21 @@ bool MolGrossMatcher::_tryCurrent ()/* const */
 
    return gross_storage.tryCandidate(_query_array, _current_id);
 }
+
+
+EnumeratorMatcher::EnumeratorMatcher (BaseIndex &index) : BaseMatcher(index, (IndigoObject *&)_indigoObject)
+{
+    _id_numbers = index.getIdMapping().size();
+    _current_id = 0;
+}
+   
+bool EnumeratorMatcher::next ()
+{
+    if(_current_id < _id_numbers)
+    {
+        _current_id++;
+        return true;
+    }
+    
+    return false;
+}

@@ -34,6 +34,8 @@ public interface BingoLib extends Library
         int bingoSearchExact (int db, int query_obj, String options);
         int bingoSearchMolFormula (int db, String query, String options);
 
+        int bingoEnumerateId (int db);
+
         int bingoNext (int search_obj);
         int bingoGetCurrentId (int search_obj);
         float bingoGetCurrentSimilarityValue(int search_obj);
