@@ -15,7 +15,6 @@
 #ifndef __reaction_gross_formula__
 #define __reaction_gross_formula__
 
-
 #include <utility>
 
 #include "base_cpp/array.h"
@@ -36,8 +35,8 @@ class BaseReaction;
 class DLLEXPORT ReactionGrossFormula
 {
 public:
-   static void collect (BaseReaction &rxn, std::pair<ObjArray<Array<int> > , ObjArray<Array<int> > > &gross);
-   static void toString_Hill (const std::pair<ObjArray<Array<int> >, ObjArray<Array<int> > > &gross, Array<char> &str);
+   static void collect (BaseReaction &rxn, std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > &gross);
+   static void toString_Hill (const std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > &gross, Array<char> &str);
 };
     
 }

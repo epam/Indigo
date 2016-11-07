@@ -19,7 +19,7 @@
 
 using namespace indigo;
 
-void ReactionGrossFormula::collect (BaseReaction &rxn, std::pair<ObjArray<Array<int> > , ObjArray<Array<int> > > &gross)
+void ReactionGrossFormula::collect (BaseReaction &rxn, std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > &gross)
 {
     gross.first.clear();
     gross.first.resize(rxn.reactantsCount());
@@ -44,7 +44,7 @@ void ReactionGrossFormula::collect (BaseReaction &rxn, std::pair<ObjArray<Array<
     }
 }
 
-void ReactionGrossFormula::toString_Hill (const std::pair<ObjArray<Array<int> >, ObjArray<Array<int> > > &gross, Array<char> &str)
+void ReactionGrossFormula::toString_Hill (const std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > &gross, Array<char> &str)
 {
     ArrayOutput output(str);
     Array<char> temp_str;

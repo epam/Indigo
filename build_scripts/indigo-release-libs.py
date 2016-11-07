@@ -121,7 +121,7 @@ def build_libs(cl_args):
         environment_prefix = 'CC=gcc CXX=g++'
     command = "%s cmake -G \"%s\" %s %s" % (environment_prefix, args.generator, args.params, project_dir)
     print(command)
-    subprocess.call(command, shell=True)
+    check_call(command, shell=True)
 
     if args.nobuild:
         exit(0)
@@ -139,23 +139,23 @@ def build_libs(cl_args):
         if args.mtbuild:
             make_args += ' -j%s' % (multiprocessing.cpu_count())
 
-        subprocess.call("make package %s" % (make_args), shell=True)
-        subprocess.call("make install", shell=True)
+        check_call("make package %s" % (make_args), shell=True)
+        check_call("make install", shell=True)
     elif args.generator.find("Xcode") != -1:
-        subprocess.call("cmake --build . --target package --config %s" % (args.config), shell=True)
-        subprocess.call("cmake --build . --target install --config %s" % (args.config), shell=True)
+        check_call("cmake --build . --target package --config %s" % (args.config), shell=True)
+        check_call("cmake --build . --target install --config %s" % (args.config), shell=True)
     elif args.generator.find("Visual Studio") != -1:
         vsenv = os.environ
         if args.mtbuild:
             vsenv = dict(os.environ, CL='/MP')
-        subprocess.call("cmake --build . --target PACKAGE --config %s" % (args.config), env=vsenv, shell=True)
-        subprocess.call("cmake --build . --target INSTALL --config %s" % (args.config), shell=True)
+        check_call("cmake --build . --target PACKAGE --config %s" % (args.config), env=vsenv, shell=True)
+        check_call("cmake --build . --target INSTALL --config %s" % (args.config), shell=True)
     elif args.generator.find("MinGW Makefiles") != -1:
-        subprocess.call("mingw32-make package", shell=True)
-        subprocess.call("mingw32-make install", shell=True)
+        check_call("mingw32-make package", shell=True)
+        check_call("mingw32-make install", shell=True)
     else:
         print("Do not know how to run package and install target")
-    subprocess.call("ctest -V --timeout 20 -C %s ." % (args.config), shell=True)
+    check_call("ctest -V --timeout 20 -C %s ." % (args.config), shell=True)
 
     os.chdir(root)
     if not os.path.exists("dist"):
@@ -171,6 +171,7 @@ def build_libs(cl_args):
             zip_path_vec.append(zip_path)
 
     return(zip_path_vec)
+
 
 if __name__ == '__main__':
     build_libs(sys.argv[1:])

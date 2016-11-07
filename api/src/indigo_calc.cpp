@@ -67,7 +67,6 @@ CEXPORT double indigoMolecularWeight (int molecule)
    INDIGO_BEGIN
    {
       Molecule &mol = self.getObject(molecule).getMolecule();
-
       MoleculeMass mass;
       return mass.molecularWeight(mol);
    }
