@@ -116,7 +116,7 @@ void MoleculeGrossFormula::collect (BaseMolecule &mol, std::pair<ObjArray<Array<
     }
     
     // init ObjArray
-    while (gross.first.size() < grossFormulaSize){
+    while (gross.first.size() < grossFormulaSize) {
         gross.first.push();
         gross.second.push();
     }
@@ -127,24 +127,20 @@ void MoleculeGrossFormula::collect (BaseMolecule &mol, std::pair<ObjArray<Array<
         gross.second[i].clear_resize(ELEM_MAX);
         gross.second[i].zerofill();
 
-        for (int j = mol.vertexBegin(); j < mol.vertexEnd(); j = mol.vertexNext(j))
+        for (int j = 0; j < filters[i].size(); j++)
         {
-            if (filters[i].find(j) == -1)
+            if (mol.isPseudoAtom(filters[i][j]) || mol.isRSite(filters[i][j]) || mol.isTemplateAtom(filters[i][j]))
             {
                 continue;
             }
-            if (mol.isPseudoAtom(j) || mol.isRSite(j) || mol.isTemplateAtom(j))
-            {
-                continue;
-            }
-            int number = mol.getAtomNumber(j);
+            int number = mol.getAtomNumber(filters[i][j]);
 
             if (number > 0)
                 gross.second[i][number]++;
 
             if (!mol.isQueryMolecule())
             {
-                int implicit_h = mol.asMolecule().getImplicitH(j);
+                int implicit_h = mol.asMolecule().getImplicitH(filters[i][j]);
 
                 if (implicit_h >= 0)
                     gross.second[i][ELEM_H] += implicit_h;
