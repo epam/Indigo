@@ -91,7 +91,9 @@ class DLLEXPORT MoleculeNameParser {
       /*
       Miscelaneous structure flags (cyclo-, cis-, trans-, etc.)
       */
-      FLAG
+      FLAG,
+
+      SKELETAL_PREFIX
    }; //enum class TokenType
 
    /*
@@ -137,6 +139,8 @@ class DLLEXPORT MoleculeNameParser {
    // A trie for known pre-defined lexemes
    typedef Trie<Token> LexemesTrie;
 
+   typedef std::vector<std::string> TokenTypeStrings;
+
    /*
    A dictionary for managing various global symbol tables
    */
@@ -152,11 +156,11 @@ class DLLEXPORT MoleculeNameParser {
       DECL_ERROR;
 
       void _readBasicElementsTable();
+      void _readSkeletalAtomsTable();
       void _readTable(const char* table, bool useTrie = false);
       void _readTokenTypeStrings();
       void _addLexeme(const std::string& lexeme, const Token& token, bool useTrie);
 
-      typedef std::vector<std::string> TokenTypeStrings;
       TokenTypeStrings _tokenTypeStrings;
 
       TokenType _tokenTypeFromString(const std::string& s);
@@ -205,8 +209,8 @@ class DLLEXPORT MoleculeNameParser {
       bool _tryElision(const std::string& failure);
    }; // class Parse
 
-   enum class FragmentNodeType : int {
-      UNKNOWN = -1,
+   enum class FragmentClassType : int {
+      INVALID = -1,
       ROOT,
       BASE,
       SUBSTITUENT
@@ -239,14 +243,14 @@ class DLLEXPORT MoleculeNameParser {
       virtual void print(std::ostream& out) const;
 #endif
 
-      FragmentNodeType type = FragmentNodeType::UNKNOWN;
+      FragmentClassType classType = FragmentClassType::INVALID;
       FragmentNode* parent = nullptr;           // A handle to the parent; must not be freed
       Nodes nodes;                              // A list on nodes
    }; // class FragmentNode
 
    class FragmentNodeRoot : public FragmentNode {
    public:
-      inline FragmentNodeRoot() { type = FragmentNodeType::ROOT; }
+      inline FragmentNodeRoot() { classType = FragmentClassType::ROOT; }
       virtual ~FragmentNodeRoot() { }
 
 #ifdef DEBUG
@@ -262,9 +266,10 @@ class DLLEXPORT MoleculeNameParser {
    typedef std::pair<int, std::string> Element;
 
    enum class NodeType : int {
-      UNKNOWN = -1,
-      ELEMENT,
+      INVALID = -1,
       BASE,
+      ELEMENT,
+      SKELETAL,
       SUFFIX
    }; // enum class NodeType
 
@@ -299,25 +304,23 @@ class DLLEXPORT MoleculeNameParser {
       Locants locants;
       Isomerism isomerism = Isomerism::NONE;
 
-      /*
-      A diff in total valency of the (sub)stucture
-      Must correspond to the name grammar and syntax, and bonds count
-      */
-      int valencyDiff = 0;
+      // A bonding of an element
+      int bonding = 0;
 
-      int bondOrder = BOND_ZERO;		            // from base_molecule.h via molecule.h
+      // A bond type
+      int bondType = BOND_ZERO;
 
       /*
       The number of atom with free bond
       Alkanes ending with -ane don't have free bonds
       Alkanes ending with -yl have 1 free bond
       */
-      int freeAtomOrder = 0;
+      int freeAtoms = 0;
 
       // true if the structure is a cycle
       bool cycle = false;
 
-      NodeType tokenType = NodeType::UNKNOWN;
+      NodeType nodeType = NodeType::INVALID;
    }; // class FragmentNodeBase
 
    typedef std::vector<int> Positions;
@@ -329,7 +332,7 @@ class DLLEXPORT MoleculeNameParser {
    */
    class FragmentNodeSubstituent : public FragmentNodeBase {
    public:
-      inline FragmentNodeSubstituent() { type = FragmentNodeType::SUBSTITUENT; }
+      inline FragmentNodeSubstituent() { classType = FragmentClassType::SUBSTITUENT; }
       virtual ~FragmentNodeSubstituent() { }
 
 #ifdef DEBUG
@@ -442,18 +445,29 @@ class DLLEXPORT MoleculeNameParser {
       bool _processLocant(const Lexeme& lexeme);
       bool _processPunctuation(const Lexeme& lexeme);
       bool _processFlags(const Lexeme& lexeme);
+      bool _processSkeletal(const Lexeme& lexeme);
+      bool _processSkeletalPrefix(const Lexeme& lexeme);
 
       // Converts std::string to int
       int _strToInt(const std::string& str);
    }; // class TreeBuilder
 
    /*
+   As a single position in SMILES string may contain more than one symbol,
+   hence we need a collection of strings rather than a collection of symbols
+   */
+   typedef std::list<std::string> Fragment;
+   typedef std::stack<Fragment> Fragments;
+
+   typedef std::map<int, std::string> Elements;
+
+   /*
    Builds a resulting structure from a build tree
    Uses depth-first traversal
    */
-   class ResultBuilder : public NonCopyable {
+   class SmilesBuilder : public NonCopyable {
    public:
-      ResultBuilder(const Parse& input) : _treeBuilder{ input } { _initOrganicElements(); }
+      SmilesBuilder(const Parse& input) : _treeBuilder{ input } { _initOrganicElements(); }
 
       inline bool buildTree() { return _treeBuilder.processParse(); }
 
@@ -471,16 +485,9 @@ class DLLEXPORT MoleculeNameParser {
 
       std::string _SMILES;
 
-      typedef std::map<int, std::string> Elements;
       Elements _organicElements;
       void _initOrganicElements();
 
-      /*
-      As a single position in SMILES string may contain more than one symbol,
-      hence we need a collection of strings rather than a collection of symbols
-      */
-      typedef std::list<std::string> Fragment;
-      typedef std::stack<Fragment> Fragments;
       Fragments _fragments;
 
       /*
