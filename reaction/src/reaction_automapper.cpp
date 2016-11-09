@@ -423,17 +423,21 @@ bool ReactionAutomapper::_chooseBestMapping(BaseReaction& reaction, Array<int>& 
       _maxVertUsed = _usedVertices[0];
       _maxCompleteMap = map_complete;
       reaction.getAAMArray(product).copy(product_mapping);
-      /*
-       * Check if map covers all a reaction molecules
-       */
-      total_map_used = 0;
-      for (int i = 1; i < _usedVertices.size(); ++i) {
-         if(_usedVertices[i]) 
-            ++total_map_used;
-      }
-      if((total_map_used + _usedVertices[0]) >= (_usedVertices.size() - 1))
-         return true;
+     
    }
+   /*
+   * Check if map covers all a reaction molecules
+   */
+   total_map_used = 0;
+   for (int i = 1; i < _usedVertices.size(); ++i) {
+	   if (_usedVertices[i])
+		   ++total_map_used;
+   }
+   if (total_map_used >= (_usedVertices.size() - 1)) {
+	   reaction.getAAMArray(product).copy(product_mapping);
+	   return true;
+   }
+	   
    return false;
 }
 
