@@ -28,6 +28,7 @@
 #include "molecule/flags.inc"
 #include "molecule/multipliers.inc"
 #include "molecule/separators.inc"
+#include "molecule/skeletal.inc"
 #include "molecule/token_types.inc"
 
 using namespace std;
@@ -37,7 +38,7 @@ IMPL_ERROR(MoleculeNameParser, "indigo::MoleculeNameParser");
 IMPL_ERROR(MoleculeNameParser::DictionaryManager, "MoleculeNameParser::DictionaryManager");
 IMPL_ERROR(MoleculeNameParser::Parse, "MoleculeNameParser::Parse");
 IMPL_ERROR(MoleculeNameParser::TreeBuilder, "MoleculeNameParser::TreeBuilder");
-IMPL_ERROR(MoleculeNameParser::ResultBuilder, "MoleculeNameParser::ResultBuilder");
+IMPL_ERROR(MoleculeNameParser::SmilesBuilder, "MoleculeNameParser::SmilesBuilder");
 
 MoleculeNameParser::DictionaryManager::DictionaryManager() {
    _readTokenTypeStrings();
@@ -47,7 +48,50 @@ MoleculeNameParser::DictionaryManager::DictionaryManager() {
    _readTable(separators_table);
    _readTable(flags_table, true);
 
+   _readSkeletalAtomsTable();
    _readBasicElementsTable();
+}
+
+void MoleculeNameParser::DictionaryManager::_readSkeletalAtomsTable() {
+   TiXmlDocument doc;
+
+   doc.Parse(skeletal_table);
+   if (doc.Error()) {
+      throw Error("Cannot parse table %s", skeletal_table);
+   }
+
+   TiXmlHandle hdoc(&doc);
+   TiXmlHandle tokenTables = hdoc.FirstChild("tokenTables");
+   TiXmlElement* tokenTable = tokenTables.FirstChild("tokenTable").ToElement();
+   for (; tokenTable; tokenTable = tokenTable->NextSiblingElement()) {
+      const char* name = tokenTable->Attribute("name");
+      const char* type = tokenTable->Attribute("type");
+      if (!name || !type) {
+         throw Error("Cannot parse table");
+      }
+
+      TokenType tt = _tokenTypeFromString(type);
+
+      TiXmlElement* e = tokenTable->FirstChild("token")->ToElement();
+      for (; e; e = e->NextSiblingElement()) {
+         const char* lexeme = e->GetText();
+         const char* bonding = e->Attribute("bonding");
+         const char* symbol = e->Attribute("symbol");
+         if (!lexeme || !bonding || !symbol) {
+            throw Error("Cannot parse table %s", name);
+         }
+
+         /*
+         For skeletal atoms, we combine bonding number and symbol into one value
+         Values are separated by underscore _
+         */
+         string value = bonding;
+         value += '_';
+         value += symbol;
+
+         _addLexeme(lexeme, { name, value, tt }, true);
+      }
+   }
 }
 
 void MoleculeNameParser::DictionaryManager::_readBasicElementsTable() {
@@ -173,7 +217,7 @@ void MoleculeNameParser::DictionaryManager::_addLexeme(const string& lexeme, con
 
 /*
 Converts a token type name into token type value
-Returns TokenType::unknow if no matching found
+Returns TokenType::UNKNOWN if no matching found
 */
 MoleculeNameParser::TokenType MoleculeNameParser::DictionaryManager::_tokenTypeFromString(const string& s) {
    const auto& begin = std::begin(_tokenTypeStrings);
@@ -408,8 +452,8 @@ void MoleculeNameParser::FragmentNode::insert(FragmentNode* node) {
 void MoleculeNameParser::FragmentNode::print(ostream& out) const {
    out << "Parent: " << parent << endl;
 
-   if (type == FragmentNodeType::UNKNOWN) {
-      out << "Type: UNKNOWN" << endl;
+   if (classType == FragmentClassType::INVALID) {
+      out << "Type: INVALID" << endl;
    }
 }
 
@@ -462,7 +506,7 @@ ostream& operator<<(ostream& out, const MoleculeNameParser::FragmentNode* node) 
 #endif // DEBUG
 
 MoleculeNameParser::FragmentNodeBase::FragmentNodeBase() {
-   type = FragmentNodeType::BASE;
+   classType = FragmentClassType::BASE;
    element.first = ELEM_MIN;
 }
 
@@ -516,7 +560,7 @@ bool MoleculeNameParser::TreeBuilder::_upOneLevel() {
       return true;
    }
 
-   if (_current->type == FragmentNodeType::BASE) {
+   if (_current->classType == FragmentClassType::BASE) {
       if (!_current->parent) {
          return false;
       }
@@ -564,9 +608,74 @@ bool MoleculeNameParser::TreeBuilder::_processParse() {
       if (!_processFlags(lexeme)) {
          return false;
       }
+   } else if (tname == "skeletal") {
+      if (!_processSkeletal(lexeme)) {
+         return false;
+      }
    }
 
    return _processParse();
+}
+
+bool MoleculeNameParser::TreeBuilder::_processSkeletalPrefix(const Lexeme& lexeme) {
+   if (_current->classType != FragmentClassType::SUBSTITUENT) {
+      FragmentNodeSubstituent* subst = new FragmentNodeSubstituent;
+      if (!_current->parent->insertBefore(subst, _getCurrentBase())) {
+         return false;
+      }
+      _current = subst;
+   }
+
+   const Token& token = lexeme.token;
+   const string& value = token.value;
+   const size_t pos = value.find('_');
+   if (pos == string::npos) {
+      return false;
+   }
+
+   const string bonding = value.substr(0, pos);
+   const string symbol = value.substr(pos + 1);
+
+   FragmentNodeBase* base = dynamic_cast<FragmentNodeBase*>(_current);
+   base->element.first = indigo::Element::fromString(symbol.c_str());
+   base->element.second = symbol;
+   base->nodeType = NodeType::SKELETAL;
+   base->bondType = BOND_SINGLE;
+   base->bonding = _strToInt(bonding);
+   base->multipliers.push({ 1, TokenType::BASIC });
+
+   /*
+   We erase skeletal positions from base's locants list, as skeletals are not
+   substituents
+   */
+   FragmentNodeBase* levelBase = _getCurrentBase();
+   Locants& locants = levelBase->locants;
+   FragmentNodeSubstituent* subst = dynamic_cast<FragmentNodeSubstituent*>(_current);
+   for (int n : subst->positions) {
+      const auto& it = std::find(locants.begin(), locants.end(), n);
+      if (it != locants.end()) {
+         locants.erase(it);
+      }
+   }
+
+   _current = _getCurrentBase();
+   _startNewNode = true;
+   return true;
+}
+
+bool MoleculeNameParser::TreeBuilder::_processSkeletal(const Lexeme& lexeme) {
+   bool result = true;
+
+   switch (lexeme.token.type) {
+   case TokenType::SKELETAL_PREFIX: {
+      result = _processSkeletalPrefix(lexeme);
+   } break;
+
+   default:
+      break;
+   }
+
+   return result;
 }
 
 bool MoleculeNameParser::TreeBuilder::_processFlags(const Lexeme& lexeme) {
@@ -587,7 +696,7 @@ bool MoleculeNameParser::TreeBuilder::_processFlags(const Lexeme& lexeme) {
    }
 
    if (name == "cis" || name == "trans") {
-      if ((_current->type == FragmentNodeType::SUBSTITUENT) || (_current->type == FragmentNodeType::BASE)) {
+      if ((_current->classType == FragmentClassType::SUBSTITUENT) || (_current->classType == FragmentClassType::BASE)) {
          FragmentNodeBase* base = dynamic_cast<FragmentNodeBase*>(_current);
          if (name == "cis") {
             base->isomerism = Isomerism::CIS;
@@ -604,7 +713,7 @@ bool MoleculeNameParser::TreeBuilder::_processFlags(const Lexeme& lexeme) {
 bool MoleculeNameParser::TreeBuilder::_processBasicElement(const Lexeme& lexeme) {
    // FIXME
    // currently inserting basic element into base node
-   assert(_current->type == FragmentNodeType::BASE);
+   assert(_current->classType == FragmentClassType::BASE);
 
    const string& value = lexeme.token.value;
    const size_t pos = value.find('_');
@@ -619,8 +728,8 @@ bool MoleculeNameParser::TreeBuilder::_processBasicElement(const Lexeme& lexeme)
    FragmentNodeBase* base = dynamic_cast<FragmentNodeBase*>(_current);
    base->element.first = element;
    base->element.second = symbol;
-   base->tokenType = NodeType::ELEMENT;
-   base->multipliers.push({ 1, TokenType::BASIC});
+   base->nodeType = NodeType::ELEMENT;
+   base->multipliers.push({ 1, TokenType::BASIC });
 
    return true;
 }
@@ -631,38 +740,41 @@ Suffixes are -ane, -ene, -yne|-yn, -yl
 -ane means that all bonds are single, e.g. hexane CCCCCC
 -ene means that at least the first bond is double
 locants signify multiple atoms with double bonds, e.g. 2,4-hexadiene CC=CC=CC
--yne|-yl means that at least the first bond is triple
+-yne|-yn means that at least the first bond is triple
 locants signify multiple atoms with triple bonds, e.g. 2,4-hexadiyne CC#CC#CC
 */
 void MoleculeNameParser::TreeBuilder::_processSuffix(const Lexeme& lexeme) {
    FragmentNodeBase* base = dynamic_cast<FragmentNodeBase*>(_current);
-   if (base->tokenType == NodeType::UNKNOWN) {
-      base->tokenType = NodeType::SUFFIX;
+   if (base->nodeType == NodeType::INVALID) {
+      base->nodeType = NodeType::SUFFIX;
    }
 
    base->element.first = ELEM_C;
    base->element.second = "C";
 
+   // A stardard carbon bonding
+   const int carbonBonding = 4;
+
    if (lexeme.lexeme == "ane") {
-      base->bondOrder = BOND_SINGLE;
-      base->valencyDiff = 0;
-      base->freeAtomOrder = 0;
+      base->bondType = BOND_SINGLE;
+      base->bonding = carbonBonding - BOND_SINGLE;
+      base->freeAtoms = 0;
    }
    else if (lexeme.lexeme == "yl") {
-      base->bondOrder = BOND_SINGLE;
-      base->valencyDiff = 1;
-      base->freeAtomOrder = 1;
+      base->bondType = BOND_SINGLE;
+      base->bonding = carbonBonding - BOND_SINGLE - 1;
+      base->freeAtoms = 1;
    } else if (lexeme.lexeme == "ene") {
-      base->bondOrder = BOND_DOUBLE;
-      base->valencyDiff = 0;
-      base->freeAtomOrder = 0;
+      base->bondType = BOND_DOUBLE;
+      base->bonding = carbonBonding - BOND_DOUBLE;
+      base->freeAtoms = 0;
    } else if (lexeme.lexeme == "yne" || lexeme.lexeme == "yn") {
-      base->bondOrder = BOND_TRIPLE;
-      base->valencyDiff = 0;
-      base->freeAtomOrder = 0;
+      base->bondType = BOND_TRIPLE;
+      base->bonding = carbonBonding - BOND_TRIPLE;
+      base->freeAtoms = 0;
    }
 
-   if (_current->type == FragmentNodeType::SUBSTITUENT) {
+   if (_current->classType == FragmentClassType::SUBSTITUENT) {
       FragmentNodeBase* currentBase = _getCurrentBase();
       if (!currentBase) {
          throw Error("Can't get current level base node");
@@ -676,7 +788,7 @@ void MoleculeNameParser::TreeBuilder::_processSuffix(const Lexeme& lexeme) {
 
 bool MoleculeNameParser::TreeBuilder::_processAlkaneBase(const Lexeme& lexeme) {
    FragmentNodeBase* base = dynamic_cast<FragmentNodeBase*>(_current);
-   base->tokenType = NodeType::BASE;
+   base->nodeType = NodeType::BASE;
 
    int value = _strToInt(lexeme.token.value);
    base->multipliers.push({ value, TokenType::BASIC });
@@ -691,13 +803,13 @@ bool MoleculeNameParser::TreeBuilder::_processAlkaneSuffix(const Lexeme& lexeme)
       return true;
    }
 
-   if (_current->type == FragmentNodeType::SUBSTITUENT) {
+   if (_current->classType == FragmentClassType::SUBSTITUENT) {
       _current = _getCurrentBase();
       if (!_current) {
          return false;
       }
    }
-   else if (_current->type == FragmentNodeType::BASE) {
+   else if (_current->classType == FragmentClassType::BASE) {
       if (!_upOneLevel()) {
          return false;
       }
@@ -729,7 +841,7 @@ bool MoleculeNameParser::TreeBuilder::_processAlkane(const Lexeme& lexeme) {
 bool MoleculeNameParser::TreeBuilder::_processBasicMultiplier(const Lexeme& lexeme) {
    const int value = _strToInt(lexeme.token.value);
 
-   if (_current->type == FragmentNodeType::SUBSTITUENT) {
+   if (_current->classType == FragmentClassType::SUBSTITUENT) {
       FragmentNodeSubstituent* node = dynamic_cast<FragmentNodeSubstituent*>(_current);
       if (node->expectFragMultiplier) {
          if (value != node->positions.size()) {
@@ -745,7 +857,7 @@ bool MoleculeNameParser::TreeBuilder::_processBasicMultiplier(const Lexeme& lexe
 
    FragmentNodeBase* base = dynamic_cast<FragmentNodeBase*>(_current);
    base->multipliers.push({ value, lexeme.token.type });
-   base->tokenType = NodeType::BASE;
+   base->nodeType = NodeType::BASE;
 
    return true;
 }
@@ -753,7 +865,7 @@ bool MoleculeNameParser::TreeBuilder::_processBasicMultiplier(const Lexeme& lexe
 bool MoleculeNameParser::TreeBuilder::_processFactorMultiplier(const Lexeme& lexeme) {
    const int value = _strToInt(lexeme.token.value);
 
-   if (_current->type == FragmentNodeType::SUBSTITUENT) {
+   if (_current->classType == FragmentClassType::SUBSTITUENT) {
       FragmentNodeSubstituent* node = dynamic_cast<FragmentNodeSubstituent*>(_current);
       if (node->expectFragMultiplier) {
          if (node->fragmentMultiplier != 1) {
@@ -776,7 +888,7 @@ bool MoleculeNameParser::TreeBuilder::_processFactorMultiplier(const Lexeme& lex
       multipliers.pop();
       multipliers.push({ value, TokenType::BASIC });
    }
-   base->tokenType = NodeType::BASE;
+   base->nodeType = NodeType::BASE;
 
    return true;
 }
@@ -823,7 +935,7 @@ bool MoleculeNameParser::TreeBuilder::_processLocant(const Lexeme& lexeme) {
 
 bool MoleculeNameParser::TreeBuilder::_processPunctuation(const Lexeme& lexeme) {
    if (lexeme.lexeme == ",") {
-      if (_current->type != FragmentNodeType::SUBSTITUENT) {
+      if (_current->classType != FragmentClassType::SUBSTITUENT) {
          return false;
       }
       dynamic_cast<FragmentNodeSubstituent*>(_current)->expectFragMultiplier = true;
@@ -856,7 +968,7 @@ bool MoleculeNameParser::TreeBuilder::_processSeparator(const Lexeme& lexeme) {
       }
 
       FragmentNodeBase* base = new FragmentNodeBase;
-      base->tokenType = NodeType::BASE;
+      base->nodeType = NodeType::BASE;
       _current->insert(base);
       _current = base;
       _startNewNode = true;
@@ -895,7 +1007,7 @@ int MoleculeNameParser::TreeBuilder::_strToInt(const string& str) {
 
 // Retrieves current level's base; each level has only one base
 MoleculeNameParser::FragmentNodeBase* MoleculeNameParser::TreeBuilder::_getCurrentBase() {
-   if (_current->type == FragmentNodeType::BASE) {
+   if (_current->classType == FragmentClassType::BASE) {
       return dynamic_cast<FragmentNodeBase*>(_current);
    }
 
@@ -924,7 +1036,7 @@ MoleculeNameParser::FragmentNodeBase* MoleculeNameParser::TreeBuilder::_getParen
    return dynamic_cast<FragmentNodeBase*>(grand->nodes.back());
 }
 
-void MoleculeNameParser::ResultBuilder::_initOrganicElements() {
+void MoleculeNameParser::SmilesBuilder::_initOrganicElements() {
    _organicElements[ELEM_B] = "B";
    _organicElements[ELEM_C] = "C";
    _organicElements[ELEM_N] = "N";
@@ -940,7 +1052,7 @@ void MoleculeNameParser::ResultBuilder::_initOrganicElements() {
 Traverses the build tree in post-order depth-first order, creates
 SMILES representation and loads the SMILES into the resulting Molecule
 */
-bool MoleculeNameParser::ResultBuilder::buildResult(Molecule& molecule) {
+bool MoleculeNameParser::SmilesBuilder::buildResult(Molecule& molecule) {
    molecule.clear();
 
    const FragmentBuildTree& buildTree = _treeBuilder.buildTree;
@@ -988,20 +1100,19 @@ Processes a single node in the build tree
 Performs depth-first traversal
 Dispatches further processing depending on node's type
 */
-bool MoleculeNameParser::ResultBuilder::_processNode(FragmentNode* node) {
-   const Nodes& nodes = node->nodes;
-   for (FragmentNode* frag : nodes) {
+bool MoleculeNameParser::SmilesBuilder::_processNode(FragmentNode* node) {
+   for (FragmentNode* frag : node->nodes) {
       if (!_processNode(frag)) {
          return false;
       }
    }
 
-   FragmentNodeType type = node->type;
-   if (type == FragmentNodeType::BASE) {
+   FragmentClassType type = node->classType;
+   if (type == FragmentClassType::BASE) {
       if (!_processBaseNode(dynamic_cast<FragmentNodeBase*>(node))) {
          return false;
       }
-   } else if (type == FragmentNodeType::SUBSTITUENT) {
+   } else if (type == FragmentClassType::SUBSTITUENT) {
       if (!_processSubstNode(dynamic_cast<FragmentNodeSubstituent*>(node))) {
          return false;
       }
@@ -1014,25 +1125,26 @@ bool MoleculeNameParser::ResultBuilder::_processNode(FragmentNode* node) {
 Processes a base node. A base node contains information about structure or
 substituent base: number of locants, chemical element info, bonds, etc.
 */
-bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base) {
+bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base) {
    const Element& element = base->element;
    const int number = element.first;
 
    string bond_sym;
-   if (base->bondOrder == BOND_DOUBLE) {
+   if (base->bondType == BOND_DOUBLE) {
       bond_sym = "=";
-   } else if (base->bondOrder == BOND_TRIPLE) {
+   } else if (base->bondType == BOND_TRIPLE) {
       bond_sym = "#";
    }
 
    Fragment fragment;
-   const NodeType& nt = base->tokenType;
+   const NodeType& nt = base->nodeType;
    if (nt == NodeType::SUFFIX) {
       fragment.push_back(bond_sym);
       _fragments.push(fragment);
       return true;
    }
 
+   // Expand multipliers and insert a corresponding number of atoms into a base structure
    const int multipliers = base->combineMultipliers();
    if (multipliers >= 1) {
       bool organicElement = (_organicElements.find(number) != _organicElements.end());
@@ -1055,13 +1167,14 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
       last.insert(1, "1");
    }
 
+   // Insert placeholders for locants
    const Locants& locants = base->locants;
    if (!locants.empty()) {
-      // locant positions are marked with pipe | for easier search and substitution
+      // locant positions are marked with |
       const string placeholder = "|";
-      int inserted{ 0 };
+      size_t inserted{ 0 };
       auto it = fragment.begin();
-      for (int loc : locants) {
+      for (size_t loc : locants) {
          if (loc + inserted > fragment.size()) {
             return false;
          }
@@ -1077,7 +1190,7 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
    it immediately after the first atom
    */
    if (nt == NodeType::BASE) {
-      if (locants.empty() && (base->bondOrder != BOND_SINGLE)) {
+      if (locants.empty() && (base->bondType != BOND_SINGLE)) {
          auto it = fragment.begin();
          std::advance(it, 1);
          fragment.insert(it, bond_sym);
@@ -1091,7 +1204,7 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
 /*
 Processes a substituent node. Any substituent might also be a base
 */
-bool MoleculeNameParser::ResultBuilder::_processSubstNode(FragmentNodeSubstituent* subst) {
+bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituent* subst) {
    if (subst->nodes.empty()) {
       return _processBaseNode(subst);
    } else {
@@ -1114,7 +1227,7 @@ Replace corresponding placeholders in base fragment by current substituent
 result back onto stack; this will either be a complete result or a new substituent
 for further combine cycles
 */
-bool MoleculeNameParser::ResultBuilder::_combine(FragmentNode* node) {
+bool MoleculeNameParser::SmilesBuilder::_combine(FragmentNode* node) {
    Fragment base = _fragments.top();
    if (base.empty()) {
       return false;
@@ -1123,15 +1236,15 @@ bool MoleculeNameParser::ResultBuilder::_combine(FragmentNode* node) {
    _fragments.pop();
 
    const Nodes& nodes = node->nodes;
-   auto it = nodes.rbegin();
-   ++it;
+   auto nodes_it = nodes.rbegin();
+   ++nodes_it;
 
    Fragment frag;
-   while (it != nodes.rend()) {
+   while (nodes_it != nodes.rend()) {
       Fragment f = _fragments.top();
       _fragments.pop();
 
-      const NodeType& nt = dynamic_cast<FragmentNodeBase*>(*it)->tokenType;
+      const NodeType& nt = dynamic_cast<FragmentNodeBase*>(*nodes_it)->nodeType;
       if (nt == NodeType::BASE) {
          frag.push_back("(");
          frag.splice(frag.end(), f);
@@ -1140,20 +1253,39 @@ bool MoleculeNameParser::ResultBuilder::_combine(FragmentNode* node) {
          frag = f;
       }
 
-      const FragmentNodeSubstituent* subst = dynamic_cast<FragmentNodeSubstituent*>(*it);
+      const FragmentNodeSubstituent* subst = dynamic_cast<const FragmentNodeSubstituent*>(*nodes_it);
+      // Perform skeletal 'a' substitution in-place
+      if (nt == NodeType::SKELETAL) {
+         auto base_it = base.begin();
+         for (int pos : subst->positions) {
+            std::advance(base_it, pos - 1);
+            base_it = base.erase(base_it);
+            base.insert(base_it, frag.begin(), frag.end());
+            base_it = base.begin();
+         }
+
+         ++nodes_it;
+         frag.clear();
+         continue;
+      }
+
+      // Locants substitution
       for (int i = 0; i < subst->fragmentMultiplier; i++) {
          auto placeholder = this->find_last(base, "|");
+         if (placeholder == base.end()) {
+            return false;
+         }
          placeholder = base.erase(placeholder);
          base.insert(placeholder, frag.begin(), frag.end());
       }
 
-      ++it;
+      ++nodes_it;
       frag.clear();
    }
 
    _fragments.push(base);
-   if (node->type != FragmentNodeType::ROOT) {
-      dynamic_cast<FragmentNodeBase*>(node)->tokenType = NodeType::BASE;
+   if (node->classType != FragmentClassType::ROOT) {
+      dynamic_cast<FragmentNodeBase*>(node)->nodeType = NodeType::BASE;
    }
    return true;
 }
@@ -1176,15 +1308,14 @@ void MoleculeNameParser::parseMolecule(const char *name, Molecule &molecule) {
    parse.scan();
 
    if (parse.hasFailures) {
-      const Failures& failures = parse.failures;
       string message;
-      for (const string& f : failures) {
+      for (const string& f : parse.failures) {
          message += f + " ";
       }
       throw Error("Cannot parse input %s due to errors: %s", name, message.c_str());
    }
 
-   ResultBuilder builder(parse);
+   SmilesBuilder builder(parse);
    if (!builder.buildTree()) {
       molecule.clear();
       throw Error("Cannot construct the build tree for name %s", name);

@@ -308,7 +308,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          MoleculeNameParser parser;
          parser.parseMolecule(name.ptr(), static_cast<Molecule&>(mol));
          return;
-      } catch (Exception& e) {
+      } catch (Exception&) {
       }
 
       if (err_buf.size() > 0) {
