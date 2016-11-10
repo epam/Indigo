@@ -95,6 +95,8 @@ Superatom::Superatom ()
    sgroup_type = SGroup::SG_TYPE_SUP;
    contracted = -1;
    seqid = -1;
+   attachment_points.clear();
+   bond_connections.clear();
 }
 
 Superatom::~Superatom ()
@@ -125,10 +127,12 @@ IMPL_ERROR(MoleculeSGroups, "molecule sgroups");
 
 MoleculeSGroups::MoleculeSGroups ()
 {
+   _sgroups.clear();
 }
 
 MoleculeSGroups::~MoleculeSGroups ()
 {
+   _sgroups.clear();
 }
 
 void MoleculeSGroups::clear ()
