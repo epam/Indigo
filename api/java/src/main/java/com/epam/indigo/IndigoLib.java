@@ -443,6 +443,8 @@ public interface IndigoLib extends Library
    
    int indigoNameToStructure(String name, String params);
 
+   int indigoResetOptions();
+
    int indigoDbgBreakpoint ();
    Pointer indigoDbgInternalType (int object);
 }
