@@ -17,6 +17,7 @@
 #include "molecule/molecule.h"
 #include <algorithm> 
 #include <vector>
+#include <set>
 #include "base_cpp/profiling.h"
 #include "base_cpp/cancellation_handler.h"
 
@@ -256,6 +257,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
             _addCoef(v, base_point.size() - 1, ONE);
         }
         QS_DEF(Array<int>, vertex_list);
+        QS_DEF(Array<char>, debug_atoms);
         vertex_list.clear();
         for (int c = 0; c < component_count; c++) {
             vertex_list.clear();
@@ -263,22 +265,29 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
                 vertex_list.push(v);
                 break;
             }
-			int prev_vert = -1;
-			int prev_prev_vert = -1;
+            std::set<int> vertices;
+            std::set<int>::iterator it;
             while (true) {
-				int current_vert = vertex_list.top();
-                const Vertex& vert = _mol.getVertex(current_vert);
+                const Vertex& vert = _mol.getVertex(vertex_list.top());
                 bool found = false;
+
+            
+                // int prev = vertex_list.size() < 2 ? -1 : vertex_list[vertex_list.size() - 2];
                 for (int n = vert.neiBegin(); n != vert.neiEnd() && !found; n = vert.neiNext(n))
-                    if (in[c][vert.neiVertex(n)] && vert.neiVertex(n) != prev_vert && vert.neiVertex(n) != prev_prev_vert) {
+                {
+                    _mol.getAtomSymbol(vert.neiVertex(n), debug_atoms);
+                    if (in[c][vert.neiVertex(n)] && vertices.count(vert.neiVertex(n)) < 1) {
                         found = true;
                         vertex_list.push(vert.neiVertex(n));
+                        vertices.insert(vert.neiVertex(n));
                     }
+                    
+                    for (it = vertices.begin(); it != vertices.end(); ++it)
+                        printf("%d ", *it);
+                    printf("\n");
+                }
                 if (!found) break;
-				prev_prev_vert = prev_vert;
-				prev_vert = current_vert;
             }
-
             for (int i = 1; i < vertex_list.size() - 1; i++)
                 _calcCoef(vertex_list[i], vertex_list[0], vertex_list.top(), 1. - 1. * i / (vertex_list.size() - 1));
         }
