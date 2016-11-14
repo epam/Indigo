@@ -150,11 +150,16 @@ CEXPORT int indigoSdfAppend (int output, int molecule)
 void IndigoSmilesSaver::generateSmiles (IndigoObject &obj, Array<char> &out_buffer)
 {
    ArrayOutput output(out_buffer);
+   Indigo &indigo = indigoGetInstance();
+
    if (IndigoBaseMolecule::is(obj))
    {
       BaseMolecule &mol = obj.getBaseMolecule();
          
       SmilesSaver saver(output);
+
+      if (indigo.smiles_saving_smarts_mode)
+         saver.smarts_mode = true;
          
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());
@@ -167,6 +172,9 @@ void IndigoSmilesSaver::generateSmiles (IndigoObject &obj, Array<char> &out_buff
          
       RSmilesSaver saver(output);
          
+      if (indigo.smiles_saving_smarts_mode)
+         saver.smarts_mode = true;
+
       if (rxn.isQueryReaction())
          saver.saveQueryReaction(rxn.asQueryReaction());
       else
@@ -223,11 +231,16 @@ CEXPORT int indigoSmilesAppend (int output, int item)
 void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject &obj, Array<char> &out_buffer)
 {
    ArrayOutput output(out_buffer);
+   Indigo &indigo = indigoGetInstance();
+
    if (IndigoBaseMolecule::is(obj))
    {
       BaseMolecule &mol = obj.getBaseMolecule();
 
       CanonicalSmilesSaver saver(output);
+
+      if (indigo.smiles_saving_smarts_mode)
+         saver.smarts_mode = true;
 
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());
@@ -239,6 +252,9 @@ void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject &obj, Array<char> &
       BaseReaction &rxn = obj.getBaseReaction();
 
       CanonicalRSmilesSaver saver(output);
+
+      if (indigo.smiles_saving_smarts_mode)
+         saver.smarts_mode = true;
 
       if (rxn.isQueryReaction())
          saver.saveQueryReaction(rxn.asQueryReaction());

@@ -296,6 +296,7 @@ public:
    bool molfile_saving_add_implicit_h;
 
    bool smiles_saving_write_name;
+   bool smiles_saving_smarts_mode;
 
    Encoding filename_encoding;
 
