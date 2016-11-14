@@ -1067,7 +1067,7 @@ void CmlLoader::_loadSGroupElement (TiXmlElement *elem, std::unordered_map<std::
       return it->second;
    };
 
-   MoleculeSGroups *sgroups = &_mol->sgroups;
+   MoleculeSGroups *sgroups = &_bmol->sgroups;
 
    DataSGroup *dsg = 0;
    SGroup *gen = 0;
