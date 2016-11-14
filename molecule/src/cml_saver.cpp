@@ -480,6 +480,13 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
             bondstereo->SetAttribute("atomRefs4", buf.ptr());
             bondstereo->LinkEndChild(new TiXmlText((parity == MoleculeCisTrans::CIS) ? "C" : "T"));
          }
+         else if (_mol->cis_trans.isIgnored(i))
+         {
+            TiXmlElement * bondstereo = new TiXmlElement("bondStereo");
+            bond->LinkEndChild(bondstereo);
+            bondstereo->SetAttribute("convention", "MDL");
+            bondstereo->SetAttribute("conventionValue", "3");
+         }
 
          if (_mol->reaction_bond_reacting_center[i] != 0)
          {

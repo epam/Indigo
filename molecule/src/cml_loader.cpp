@@ -846,6 +846,14 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
             if ((text[0] == 'C' || text[0] == 'T') && text[1] == 0)
                have_cistrans_notation = true;
          }
+         else
+         {
+            const char *convention = bs_elem->Attribute("convention");
+            if (convention != 0)
+            {
+               have_cistrans_notation = true;
+            }
+         }
       }
 
       if (dir != 0)
@@ -966,6 +974,25 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
 
          if (bs_elem == 0)
             continue;
+
+         const char *convention = bs_elem->Attribute("convention");
+         if (convention != 0)
+         {
+            const char *convention_value = bs_elem->Attribute("conventionValue");
+            if (convention_value != 0)
+            {
+               if (strncmp(convention, "MDL", 3) == 0)
+               {
+                  int val;
+                  if (sscanf(convention_value, "%d", &val) != 1)
+                      throw Error("error conventionValue attribute");
+                  if (val == 3)
+                  {
+                     _bmol->cis_trans.ignore(bond_idx);
+                  }
+               }
+            }
+         }
 
          const char *text = bs_elem->GetText();
 
