@@ -68,6 +68,7 @@ void Indigo::init ()
    molfile_saving_add_implicit_h = true;
 
    smiles_saving_write_name = false;
+   smiles_saving_smarts_mode = false;
 
    aam_cancellation_timeout = 0;
    cancellation_timeout = 0;
