@@ -481,7 +481,7 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
             bondstereo->LinkEndChild(new TiXmlText((parity == MoleculeCisTrans::CIS) ? "C" : "T"));
          }
 
-         if (_mol->reaction_bond_reacting_center[i] > 0)
+         if (_mol->reaction_bond_reacting_center[i] != 0)
          {
             bond->SetAttribute("mrvReactingCenter", _mol->reaction_bond_reacting_center[i]);
          }
