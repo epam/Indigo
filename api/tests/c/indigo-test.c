@@ -31,36 +31,33 @@ int main (void)
     int r;
     int gf;
 
-    // r = indigoLoadReactionFromString("C");
+    r = indigoLoadReactionFromString("C");
     if (r < 0)
     {
         printf("Error handled: %s\n", indigoGetLastError());
     }
-    // indigoFree(r);
+    indigoFree(r);
 
-    // indigoSetErrorHandler(onError, 0);
-    // printf("%s\n", indigoVersion());
-    // m = indigoLoadMoleculeFromString("COC1=CC2=C(NC(=C2)C(O)(CC2=CN=CC=C2)CC2=CN=CC=C2)C=C1");
-    // printf("%s\n", indigoCanonicalSmiles(m));
-    // indigoFree(m);
+    indigoSetErrorHandler(onError, 0);
+    printf("%s\n", indigoVersion());
+    m = indigoLoadMoleculeFromString("COC1=CC2=C(NC(=C2)C(O)(CC2=CN=CC=C2)CC2=CN=CC=C2)C=C1");
+    printf("%s\n", indigoCanonicalSmiles(m));
+    indigoFree(m);
 
-    // m = indigoLoadMoleculeFromString(simple_mol);
-    // if (strcmp(indigoCanonicalSmiles(m), simple_mol) != 0)
-    // {
-    //     printf("Canonical SMILES is invalid for a molecule: %s != %s\n", simple_mol, indigoCanonicalSmiles(m));
-    //     exit(-1);
-    // }
-    // indigoFree(m);
+    m = indigoLoadMoleculeFromString(simple_mol);
+    if (strcmp(indigoCanonicalSmiles(m), simple_mol) != 0)
+    {
+        printf("Canonical SMILES is invalid for a molecule: %s != %s\n", simple_mol, indigoCanonicalSmiles(m));
+        exit(-1);
+    }
+    indigoFree(m);
 
-    // testTransform();
+    testTransform();
 
-    // r = indigoLoadReactionFromString("C.CC>>CC.C");
-    // gf = indigoGrossFormula(r);
-    // printf("%s\n", indigoToString(gf));
-    // indigoFree(gf);
-    // indigoFree(r);
-    m = indigoLoadMoleculeFromString("\n  Ketcher 11081615222D 1   1.00000     0.00000     0\n\n  5  5  0     0  0            999 V2000\n   -3.9392   -0.1000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.2571    1.5821    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3250    1.0500    0.0000 P   0  0  0  0  0  0  0  0  0  0  0  0\n    4.9250   -0.3000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.1429   -2.4821    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  2  0     0  0\n  2  3  2  0     0  0\n  3  4  1  0     0  0\n  3  5  2  0     0  0\n  5  1  2  0     0  0\nM  END\n");
-    indigoClean2d(m);
-    printf("%s\n", indigoMolfile(m));
+    r = indigoLoadReactionFromString("C.CC>>CC.C");
+    gf = indigoGrossFormula(r);
+    printf("%s\n", indigoToString(gf));
+    indigoFree(gf);
+    indigoFree(r);
     return 0;
 }
