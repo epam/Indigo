@@ -270,9 +270,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
             while (true) {
                 const Vertex& vert = _mol.getVertex(vertex_list.top());
                 bool found = false;
-
-            
-                // int prev = vertex_list.size() < 2 ? -1 : vertex_list[vertex_list.size() - 2];
+             
                 for (int n = vert.neiBegin(); n != vert.neiEnd() && !found; n = vert.neiNext(n))
                 {
                     _mol.getAtomSymbol(vert.neiVertex(n), debug_atoms);
@@ -281,10 +279,6 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
                         vertex_list.push(vert.neiVertex(n));
                         vertices.insert(vert.neiVertex(n));
                     }
-                    
-                    for (it = vertices.begin(); it != vertices.end(); ++it)
-                        printf("%d ", *it);
-                    printf("\n");
                 }
                 if (!found) break;
             }
