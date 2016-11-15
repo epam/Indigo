@@ -2231,7 +2231,7 @@ void MolfileSaver::_calcRSStereoDescriptor (BaseMolecule &mol, BaseMolecule &unf
 
    mol.stereocenters.get(idx, atom_idx, type, group, pyramid);
 
-   if (type == 0)
+   if (type <= MoleculeStereocenters::ATOM_ANY)
       return;
 
    parity = _getStereocenterParity (mol, atom_idx);
