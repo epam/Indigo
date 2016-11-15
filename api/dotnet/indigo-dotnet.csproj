@@ -91,13 +91,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <!-- <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "> -->
-  <ItemGroup Condition="'$(Win2010)' == '1'">
-    <EmbeddedResource Include="Properties\ResourcesWin2010.resx" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Win2012)' == '1'">
-    <EmbeddedResource Include="Properties\ResourcesWin2012.resx" />
-  </ItemGroup>
   <ItemGroup Condition="'$(Win2013)' == '1'">
     <EmbeddedResource Include="Properties\ResourcesWin2013.resx" />
   </ItemGroup>
@@ -111,26 +104,6 @@
     <EmbeddedResource Include="Properties\ResourcesMac.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup Condition="'$(Win2010)' == '1'">
-    <PreBuildEvent>
-      $(Copy) $(LibraryPath)\Win\x64\msvcr100.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x64\msvcp100.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x64\indigo.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x86\msvcr100.dll $(ProjectDir)Resource\Win\x86
-      $(Copy) $(LibraryPath)\Win\x86\msvcp100.dll $(ProjectDir)Resource\Win\x86
-      $(Copy) $(LibraryPath)\Win\x86\indigo.dll $(ProjectDir)Resource\Win\x86
-    </PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Win2012)' == '1'">
-    <PreBuildEvent>
-      $(Copy) $(LibraryPath)\Win\x64\msvcr110.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x64\msvcp110.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x64\indigo.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x86\msvcr110.dll $(ProjectDir)Resource\Win\x86
-      $(Copy) $(LibraryPath)\Win\x86\msvcp110.dll $(ProjectDir)Resource\Win\x86
-      $(Copy) $(LibraryPath)\Win\x86\indigo.dll $(ProjectDir)Resource\Win\x86
-    </PreBuildEvent>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Win2013)' == '1'">
     <PreBuildEvent>
       $(Copy) $(LibraryPath)\Win\x64\msvcr120.dll $(ProjectDir)Resource\Win\x64
@@ -143,10 +116,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Win2015)' == '1'">
     <PreBuildEvent>
-      $(Copy) $(LibraryPath)\Win\x64\msvcr140.dll $(ProjectDir)Resource\Win\x64
+      $(Copy) $(LibraryPath)\Win\x64\vcruntime140.dll $(ProjectDir)Resource\Win\x64
       $(Copy) $(LibraryPath)\Win\x64\msvcp140.dll $(ProjectDir)Resource\Win\x64
       $(Copy) $(LibraryPath)\Win\x64\indigo.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x86\msvcr140.dll $(ProjectDir)Resource\Win\x86
+      $(Copy) $(LibraryPath)\Win\x86\vcruntime140.dll $(ProjectDir)Resource\Win\x86
       $(Copy) $(LibraryPath)\Win\x86\msvcp140.dll $(ProjectDir)Resource\Win\x86
       $(Copy) $(LibraryPath)\Win\x86\indigo.dll $(ProjectDir)Resource\Win\x86
     </PreBuildEvent>
@@ -159,33 +132,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Mac)' == '1'">
     <PreBuildEvent>
-      $(Copy) $(LibraryPath)\Mac\10.7\libindigo.dylib $(ProjectDir)Resource\Mac\10.7
-    </PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup Condition="(('$(Win2010)' == '1') And ('$(Linux)' == '1') And ('$(Mac)' == '1'))">
-    <PreBuildEvent>
-      $(Copy) $(LibraryPath)\Win\x64\msvcr100.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x64\msvcp100.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x64\indigo.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x86\msvcr100.dll $(ProjectDir)Resource\Win\x86
-      $(Copy) $(LibraryPath)\Win\x86\msvcp100.dll $(ProjectDir)Resource\Win\x86
-      $(Copy) $(LibraryPath)\Win\x86\indigo.dll $(ProjectDir)Resource\Win\x86
-      $(Copy) $(LibraryPath)\Linux\x64\libindigo.so $(ProjectDir)Resource\Linux\x64
-      $(Copy) $(LibraryPath)\Linux\x86\libindigo.so $(ProjectDir)Resource\Linux\x86
-      $(Copy) $(LibraryPath)\Mac\10.7\libindigo.dylib $(ProjectDir)Resource\Mac\10.7
-    </PreBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup Condition="(('$(Win2012)' == '1') And ('$(Linux)' == '1') And ('$(Mac)' == '1'))">
-    <PreBuildEvent>
-      $(Copy) $(LibraryPath)\Win\x64\msvcr110.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x64\msvcp110.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x64\indigo.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x86\msvcr110.dll $(ProjectDir)Resource\Win\x86
-      $(Copy) $(LibraryPath)\Win\x86\msvcp110.dll $(ProjectDir)Resource\Win\x86
-      $(Copy) $(LibraryPath)\Win\x86\indigo.dll $(ProjectDir)Resource\Win\x86
-      $(Copy) $(LibraryPath)\Linux\x64\libindigo.so $(ProjectDir)Resource\Linux\x64
-      $(Copy) $(LibraryPath)\Linux\x86\libindigo.so $(ProjectDir)Resource\Linux\x86
-      $(Copy) $(LibraryPath)\Mac\10.5\libindigo.dylib $(ProjectDir)Resource\Mac\10.5
       $(Copy) $(LibraryPath)\Mac\10.7\libindigo.dylib $(ProjectDir)Resource\Mac\10.7
     </PreBuildEvent>
   </PropertyGroup>
@@ -205,10 +151,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="(('$(Win2015)' == '1') And ('$(Linux)' == '1') And ('$(Mac)' == '1'))">
     <PreBuildEvent>
-      $(Copy) $(LibraryPath)\Win\x64\msvcr140.dll $(ProjectDir)Resource\Win\x64
+      $(Copy) $(LibraryPath)\Win\x64\vcruntime140.dll $(ProjectDir)Resource\Win\x64
       $(Copy) $(LibraryPath)\Win\x64\msvcp140.dll $(ProjectDir)Resource\Win\x64
       $(Copy) $(LibraryPath)\Win\x64\indigo.dll $(ProjectDir)Resource\Win\x64
-      $(Copy) $(LibraryPath)\Win\x86\msvcr140.dll $(ProjectDir)Resource\Win\x86
+      $(Copy) $(LibraryPath)\Win\x86\vcruntime140.dll $(ProjectDir)Resource\Win\x86
       $(Copy) $(LibraryPath)\Win\x86\msvcp140.dll $(ProjectDir)Resource\Win\x86
       $(Copy) $(LibraryPath)\Win\x86\indigo.dll $(ProjectDir)Resource\Win\x86
       $(Copy) $(LibraryPath)\Linux\x64\libindigo.so $(ProjectDir)Resource\Linux\x64
