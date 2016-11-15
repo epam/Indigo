@@ -170,9 +170,11 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
    };
 
    QS_DEF(Array<int>, total_h_count);
+   QS_DEF(Array<int>, query_h_count);
    atoms_id.clear();
    atoms_id_int.clear();
    total_h_count.clear();
+   query_h_count.clear();
 
    const char *title = handle.Element()->Attribute("title");
 
@@ -399,6 +401,7 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
             }
    
             total_h_count.expandFill(idx + 1, -1);
+            query_h_count.expandFill(idx + 1, -1);
       
             atoms_id.emplace(a.id, idx);
       
@@ -466,6 +469,7 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
          else 
          {
             AutoPtr<QueryMolecule::Atom> atom;
+            int qhcount = -1;
    
             if (label == ELEM_PSEUDO)
             {
@@ -576,10 +580,12 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
                   {
                      BufferScanner qfscan(qf.ptr());
                      qfscan.skip(1);
-                     int total_h = qfscan.readInt1();
+                     qhcount = qfscan.readInt1();
+/*
                      if (total_h > 0)
                         atom.reset(QueryMolecule::Atom::und(atom.release(),
                                  new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_H, total_h)));
+*/
                   }
 
                   if (!strscan.isEOF())
@@ -643,6 +649,8 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
             idx = _qmol->addAtom(atom.release());
             atoms_id.emplace(a.id, idx);
             total_h_count.expandFill(idx + 1, -1);
+            query_h_count.expandFill(idx + 1, -1);
+            query_h_count[idx] = qhcount;
          }
 
 
@@ -891,6 +899,41 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
 
       if (_mol != 0)
          _mol->setImplicitH(i, h);
+   }
+
+   // Query H counts
+   if (_qmol != 0)
+   {
+      for (i = _bmol->vertexBegin(); i != _bmol->vertexEnd(); i = _bmol->vertexNext(i))
+      {
+         int expl_h = 0;
+         
+         if (query_h_count[i] >= 0)
+         {
+            // count explicit hydrogens
+            const Vertex &vertex = _bmol->getVertex(i);
+            
+            for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+            {
+               if (_bmol->getAtomNumber(vertex.neiVertex(j)) == ELEM_H)
+                  expl_h++;
+            }
+         }
+
+         if (query_h_count[i] == 0) 
+         {
+            // no hydrogens unless explicitly drawn
+            _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+               new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_H, expl_h)));
+         }
+         else if (query_h_count[i] > 0)
+         {
+            // (_hcount[k] - 1) or more atoms in addition to explicitly drawn
+            // no hydrogens unless explicitly drawn
+            _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+               new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_H, expl_h + query_h_count[i], 100)));
+         }
+      }
    }
 
    // Tetrahedral stereocenters
