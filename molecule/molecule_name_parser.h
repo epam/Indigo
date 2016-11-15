@@ -139,8 +139,6 @@ class DLLEXPORT MoleculeNameParser {
    // A trie for known pre-defined lexemes
    typedef Trie<Token> LexemesTrie;
 
-   typedef std::vector<std::string> TokenTypeStrings;
-
    /*
    A dictionary for managing various global symbol tables
    */
@@ -161,6 +159,7 @@ class DLLEXPORT MoleculeNameParser {
       void _readTokenTypeStrings();
       void _addLexeme(const std::string& lexeme, const Token& token, bool useTrie);
 
+      typedef std::vector<std::string> TokenTypeStrings;
       TokenTypeStrings _tokenTypeStrings;
 
       TokenType _tokenTypeFromString(const std::string& s);
@@ -549,7 +548,32 @@ class DLLEXPORT MoleculeNameParser {
          std::advance(result, frag.size() - pos);
          return result;
       }
-   }; // class ResultBuilder
+   }; // class SmilesBuilder
+
+   typedef unsigned long long int ParserOptionsType;
+
+   /*
+   Parsing options
+   Options might be listed in any order
+   Usage:
+      space ' ' is the separator
+      +OPTION to turn OPTION on
+      -OPTION to turn OPTION off
+   */
+   enum ParserOptions : ParserOptionsType {
+      /*
+      Follow strict IUPAC rules when parsing names
+      When strict rules are ON, names must comply with IUPAC recommendations,
+      i.e. names like 1,3-hexadiene will be rejected
+      Default: OFF
+      */
+      IUPAC_STRICT = 1ULL
+   };
+
+   ParserOptionsType _options = ParserOptions::IUPAC_STRICT;
+
+   // Turns a certain option on or off depending on input flag
+   void _setOption(const char* option);
 
    /*
    Checks if allowed opening and closing brackets match
@@ -568,6 +592,14 @@ public:
    No param check - did that on caller side
    */
    void parseMolecule(const char *name, Molecule &molecule);
+
+   const ParserOptionsType& getOptions() const { return _options; }
+
+   /*
+   Sets parsing options
+   Changes the 'options' parameter (via strtok())
+   */
+   void setOptions(char* options);
 
    DictionaryManager dictionaryManager;
 }; // class MoleculeNameParser

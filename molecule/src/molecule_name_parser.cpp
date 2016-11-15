@@ -138,10 +138,10 @@ void MoleculeNameParser::DictionaryManager::_readBasicElementsTable() {
          */
 
          char delim[] = "|";
-         char* fragment = ::strtok(const_cast<char*>(lexeme), delim);
+         char* fragment = std::strtok(const_cast<char*>(lexeme), delim);
          while (fragment) {
             _addLexeme(fragment, { name, value, tt }, true);
-            fragment = ::strtok(nullptr, delim);
+            fragment = std::strtok(nullptr, delim);
          }
       }
    }
@@ -195,10 +195,10 @@ void MoleculeNameParser::DictionaryManager::_readTable(const char* table, bool u
          // Symbols might have a separator '|', in which case we need to add
          // several symbols with the same token type into the dictionary
          char delim[] = "|";
-         char* fragment = ::strtok(const_cast<char*>(lexeme), delim);
+         char* fragment = std::strtok(const_cast<char*>(lexeme), delim);
          while (fragment) {
             _addLexeme(fragment, Token(name, value, tt), useTrie);
-            fragment = ::strtok(nullptr, delim);
+            fragment = std::strtok(nullptr, delim);
          }
          // all separators are 1-byte ASCII
          if (isSeparator) {
@@ -1347,6 +1347,40 @@ void MoleculeNameParser::_checkBrackets(const string& s) {
 
    if (level != 0) {
       throw Error("Opening and closing brackets don't match: %d", level);
+   }
+}
+
+/*
+Sets parsing options
+Changes the 'options' parameter (via strtok())
+*/
+void MoleculeNameParser::setOptions(char* options) {
+   // null check is on caller side
+
+   if (std::strlen(options) == 0) {
+      return;
+   }
+
+   char delim[] = " ";
+   char* option = std::strtok(options, delim);
+   while (option) {
+      _setOption(option);
+      option = std::strtok(nullptr, delim);
+   }
+}
+
+// Turns a certain option on or off depending on input flag
+void MoleculeNameParser::_setOption(const char* option) {
+   string buffer = option;
+   if ((buffer[0] != '+') && (buffer[0] != '-')) {
+      throw Error("Invalid option notation: %s", option);
+   }
+
+   bool on = (buffer[0] == '+') ? true : false;
+
+   if (std::move(buffer.substr(1)) == "IUPAC_STRICT") {
+      on ? _options |= ParserOptions::IUPAC_STRICT :
+         _options &= ~ParserOptions::IUPAC_STRICT;
    }
 }
 
