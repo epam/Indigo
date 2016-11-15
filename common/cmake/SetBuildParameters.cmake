@@ -48,7 +48,6 @@ elseif(APPLE)
     set(CMAKE_OSX_ARCHITECTURES "x86_64")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -arch x86_64")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -arch x86_64 -std=c++11 -stdlib=libc++")
-    # set(LINK_FLAGS "${LINK_FLAGS} -Wl,-no_compact_unwind") This option breaks exception handling on macOS when using libc++
 
     set(CMAKE_OSX_DEPLOYMENT_TARGET ${SUBSYSTEM_NAME})
     set(SDK_SUBSYSTEM_NAME ${SUBSYSTEM_NAME})

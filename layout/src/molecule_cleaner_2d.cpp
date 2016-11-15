@@ -266,6 +266,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
                 break;
             }
             std::set<int> vertices;
+            vertices.insert(vertex_list.top());
             std::set<int>::iterator it;
             while (true) {
                 const Vertex& vert = _mol.getVertex(vertex_list.top());
@@ -283,7 +284,9 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition) {
                 if (!found) break;
             }
             for (int i = 1; i < vertex_list.size() - 1; i++)
+            {
                 _calcCoef(vertex_list[i], vertex_list[0], vertex_list.top(), 1. - 1. * i / (vertex_list.size() - 1));
+            }
         }
     }
 
