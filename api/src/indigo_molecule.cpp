@@ -4221,6 +4221,13 @@ CEXPORT int indigoIterateAttachmentPoints (int molecule, int order)
    INDIGO_END(-1)
 }
 
+/*
+Converts a chemical name into a corresponding structure
+Returns -1 if parsing fails or no structure is found
+Parameters:
+name - a name to parse
+params - a string containing parsing options or nullptr if no options are changed
+*/
 CEXPORT int indigoNameToStructure(const char* name, const char* params)
 {
 	INDIGO_BEGIN
@@ -4230,6 +4237,17 @@ CEXPORT int indigoNameToStructure(const char* name, const char* params)
 		}
 
 		MoleculeNameParser &parser = getMoleculeNameParserInstance();
+      if (params) {
+         /*
+         Duplicate params string as we call destructive function strtok() on callee side
+         We can get rid of it if we have sustainable options in the future
+         */
+         char* options = ::strdup(params);
+         if (options) {
+            parser.setOptions(options);
+            ::free(options);
+         }
+      }
 
 		AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
 

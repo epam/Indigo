@@ -192,8 +192,13 @@ CEXPORT const char * indigoCdxml (int object);
 // (because MDLCT data usually contains zeroes)
 CEXPORT int indigoSaveMDLCT (int item, int output);
 
-// converts a chemical name into a corresponding structure
-// return -1 if parsing fails or no structure is found
+/*
+Converts a chemical name into a corresponding structure
+Returns -1 if parsing fails or no structure is found
+Parameters:
+   name - a name to parse
+   params - a string containing parsing options or nullptr if no options are changed
+*/
 CEXPORT int indigoNameToStructure(const char* name, const char* params);
 
 /* Reactions, query reactions */
