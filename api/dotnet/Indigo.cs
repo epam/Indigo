@@ -678,7 +678,7 @@ namespace com.epam.indigo
                     }
                     try
                     {
-                       dll_loader.loadLibrary(lib_path, "msvcr140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
+                       dll_loader.loadLibrary(lib_path, "vcruntime140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
                     }
                     catch
                     {
@@ -693,7 +693,7 @@ namespace com.epam.indigo
                     }
                     else if (vs2015)
                     {
-                       dll_loader.loadLibrary(lib_path, "msvcr140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
+                       dll_loader.loadLibrary(lib_path, "vcruntime140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
                        dll_loader.loadLibrary(lib_path, "msvcp140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
                        dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2015", false);
                     }

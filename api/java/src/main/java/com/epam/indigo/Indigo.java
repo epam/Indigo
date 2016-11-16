@@ -312,9 +312,9 @@ public class Indigo {
                     // File could have been already loaded
                 }
             }
-            if ((new File(getPathToBinary(path, "msvcr140.dll"))).exists()) {
+            if ((new File(getPathToBinary(path, "vcruntime140.dll"))).exists()) {
                 try {
-                    System.load(getPathToBinary(path, "msvcr140.dll"));
+                    System.load(getPathToBinary(path, "vcruntime140.dll"));
                 } catch (UnsatisfiedLinkError e) {
                     // File could have been already loaded
                 }
