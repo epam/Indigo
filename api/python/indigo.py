@@ -1325,8 +1325,8 @@ class Indigo(object):
             if os.path.exists(path + "/msvcr120.dll"):
                 Indigo._crt = CDLL(path + "/msvcr120.dll")
                 Indigo._crtp = CDLL(path + "/msvcp120.dll")
-            if os.path.exists(path + "/msvcr140.dll"):
-                Indigo._crt = CDLL(path + "/msvcr140.dll")
+            if os.path.exists(path + "/vcruntime140.dll"):
+                Indigo._crt = CDLL(path + "/vcruntime140.dll")
                 Indigo._crtp = CDLL(path + "/msvcp140.dll")
             Indigo._lib = CDLL(path + "/indigo.dll")
         elif platform.mac_ver()[0]:
