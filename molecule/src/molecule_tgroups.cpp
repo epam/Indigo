@@ -122,9 +122,11 @@ int MoleculeTGroups::findTGroup (const char *name)
    for (int i = _tgroups.begin(); i != _tgroups.end(); i = _tgroups.next(i))
    {
       TGroup &tgroup = *_tgroups.at(i);
-      BufferScanner sc(tgroup.tgroup_name);
-      if (sc.findWordIgnoreCase(name))
-         return i;
+      if (tgroup.tgroup_name.size() > 0 && name != 0)
+      {
+         if (strncmp(tgroup.tgroup_name.ptr(), name, tgroup.tgroup_name.size()) == 0) 
+            return i;
+      }
    }
    return -1;
 }
