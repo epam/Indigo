@@ -3,18 +3,9 @@
 EXEC_PROGRAM(xcodebuild ARGS -version OUTPUT_VARIABLE XCODE_VERSION)
 string(REGEX MATCH "[0-9][.][0-9]" XCODE_VERSION ${XCODE_VERSION})
 
-if(UNIVERSAL_BUILD)
-    set(SSNAME 10.8)
-else()
-    set(SSNAME ${SUBSYSTEM_NAME})
-endif()
+set(SSNAME ${SUBSYSTEM_NAME})
 
-if (${XCODE_VERSION} GREATER 4.2)
-    set(FRAMEWORK_PATH /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SSNAME}.sdk/System/Library/Frameworks)
-else()
-    set(FRAMEWORK_PATH /Developer/SDKs/MacOSX${SSNAME}.sdk/System/Library/Frameworks)
-endif()
-
+set(FRAMEWORK_PATH /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SSNAME}.sdk/System/Library/Frameworks)
 
 macro(ADD_FRAMEWORK fwname appname)
     set(FRAMEWORK_${fwname} ${FRAMEWORK_PATH}/${fwname}.framework)
