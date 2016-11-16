@@ -13,6 +13,7 @@ for line in open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", 
 
 presets = {
     "win32-2013": ("Visual Studio 12", ""),
+    "win32-2015": ("Visual Studio 14", ""),
     "win64-2013": ("Visual Studio 12 Win64", ""),
     "win64-2015": ("Visual Studio 14 Win64", ""),
     "win32-mingw": ("MinGW Makefiles", ""),
@@ -25,6 +26,7 @@ presets = {
     "mac10.9": ("Xcode", "-DSUBSYSTEM_NAME=10.9"),
     "mac10.10": ("Xcode", "-DSUBSYSTEM_NAME=10.10"),
     "mac10.11": ("Xcode", "-DSUBSYSTEM_NAME=10.11"),
+    "mac10.12": ("Xcode", "-DSUBSYSTEM_NAME=10.12"),
     "mac-universal": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.7"),
 }
 
