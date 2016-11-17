@@ -165,6 +165,7 @@ public interface IndigoLib extends Library
    int indigoAtomicNumber (int atom);
    int indigoIsotope (int atom);
    int indigoValence (int atom);
+   int indigoCheckValence (int atom);
    int indigoCountHydrogens (int atom, IntByReference valence);
    int indigoCountImplicitHydrogens (int item);
 

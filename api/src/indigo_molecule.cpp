@@ -1179,6 +1179,22 @@ CEXPORT int indigoValence (int atom)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoCheckValence (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      if (ia.mol.isPseudoAtom(ia.idx) || ia.mol.isRSite(ia.idx) || ia.mol.isTemplateAtom(ia.idx) )
+         return 1;
+      int res = ia.mol.getAtomValence_NoThrow(ia.idx, -100);
+      
+      return res != -100;
+   }
+   INDIGO_END(-1);
+}
+
+
 CEXPORT int indigoGetExplicitValence (int atom, int *valence)
 {
    INDIGO_BEGIN

@@ -133,6 +133,7 @@ namespace com.epam.indigo
         int indigoAtomicNumber(int atom);
         int indigoIsotope(int atom);
         int indigoValence(int atom);
+        int indigoCheckValence(int atom);
         int indigoCountHydrogens(int atom, int* hydro);
         int indigoCountImplicitHydrogens(int item);
 
