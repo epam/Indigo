@@ -97,7 +97,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</vesrsion>
+                <version>1.6.7</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -147,7 +147,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.4</version>
+                        <version>1.6</version>
                         <configuration>
                             <passphrase>${gpg.passhprase}</passphrase>
                             <gpgArguments>
