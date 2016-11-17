@@ -377,6 +377,7 @@ CEXPORT int indigoAtomicNumber (int atom);
 CEXPORT int indigoIsotope (int atom);
 // Not applicable to query molecules.
 CEXPORT int indigoValence (int atom);
+CEXPORT int indigoCheckValence (int atom);
 
 // Applicable to atoms, query atoms, and molecules. Can fail
 // (return zero) on query atoms where the number of hydrogens

@@ -406,6 +406,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoValence(self.id))
 
+    def checkValence(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoCheckValence(self.id))
+
     def countHydrogens(self):
         value = c_int()
         self.dispatcher._setSessionId()
@@ -1626,6 +1630,8 @@ class Indigo(object):
         Indigo._lib.indigoIsotope.argtypes = [c_int]
         Indigo._lib.indigoValence.restype = c_int
         Indigo._lib.indigoValence.argtypes = [c_int]
+        Indigo._lib.indigoCheckValence.restype = c_int
+        Indigo._lib.indigoCheckValence.argtypes = [c_int]
         Indigo._lib.indigoCountHydrogens.restype = c_int
         Indigo._lib.indigoCountHydrogens.argtypes = [c_int, POINTER(c_int)]
         Indigo._lib.indigoCountImplicitHydrogens.restype = c_int

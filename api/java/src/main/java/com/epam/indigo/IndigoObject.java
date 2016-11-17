@@ -413,6 +413,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoValence(self));
    }
 
+   public int checkValence ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoCheckValence(self));
+   }
+
    public Integer countHydrogens ()
    {
       IntByReference res = new IntByReference();
