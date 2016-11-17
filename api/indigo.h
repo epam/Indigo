@@ -377,7 +377,11 @@ CEXPORT int indigoAtomicNumber (int atom);
 CEXPORT int indigoIsotope (int atom);
 // Not applicable to query molecules.
 CEXPORT int indigoValence (int atom);
+// Returns zero if valence of the atom is wrong
 CEXPORT int indigoCheckValence (int atom);
+
+// Returns one if atom or bond belongs Query or has any query feature
+CEXPORT int indigoCheckQuery (int item);
 
 // Applicable to atoms, query atoms, and molecules. Can fail
 // (return zero) on query atoms where the number of hydrogens

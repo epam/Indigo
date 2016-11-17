@@ -31,6 +31,7 @@
 #include "base_cpp/scanner.h"
 #include "indigo_mapping.h"
 #include "molecule/molecule_name_parser.h"
+#include "molecule/molecule_savers.h"
 
 IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
 {
@@ -1194,6 +1195,52 @@ CEXPORT int indigoCheckValence (int atom)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoCheckQuery (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoAtom::is(obj))
+      {
+         IndigoAtom &ia = IndigoAtom::cast(obj);
+
+         if ( (ia.mol.reaction_atom_exact_change[ia.idx] != 0) ||
+              (ia.mol.reaction_atom_inversion[ia.idx] != 0) )
+            return 1;
+
+         int atom_number = ia.mol.getAtomNumber(ia.idx);
+         int atom_charge = ia.mol.getAtomCharge(ia.idx);
+         int hydrogens_count = MoleculeSavers::getHCount(ia.mol, ia.idx, atom_number, atom_charge);
+   
+         if (!ia.mol.isQueryMolecule())
+         {
+            if (hydrogens_count >= 0 && Molecule::shouldWriteHCount(ia.mol.asMolecule(), ia.idx) )
+               return 1;
+         }
+
+         if (ia.mol.isQueryMolecule())
+         {
+            return 1;
+         } 
+
+      }
+      else if (IndigoBond::is(obj))
+      {
+         IndigoBond &ib = IndigoBond::cast(obj);
+
+         if (ib.mol.reaction_bond_reacting_center[ib.idx] != 0) 
+            return 1;
+
+         if (ib.mol.isQueryMolecule())
+         {
+            return 1;
+         }
+      }
+      return 0;
+   }
+   INDIGO_END(-1);
+}
 
 CEXPORT int indigoGetExplicitValence (int atom, int *valence)
 {
