@@ -447,6 +447,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoCheckValence(self));
         }
 
+        public int checkQuery()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoCheckQuery(self));
+        }
+
         public int? countHydrogens()
         {
             int h;
