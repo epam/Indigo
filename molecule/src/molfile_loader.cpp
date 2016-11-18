@@ -335,6 +335,11 @@ void MolfileLoader::_readCtab2000 ()
 
          rest.skip(3); // skip atom stereo parity
          _hcount[k] = rest.readIntFix(3);
+
+         if (_hcount[k] > 0 && _qmol == 0)
+            if (!ignore_noncritical_query_features)
+               throw Error("only a query can have H count value");
+
          stereo_care = rest.readIntFix(3);
 
          if (stereo_care > 0 && _qmol == 0)
@@ -1869,7 +1874,6 @@ void MolfileLoader::_postLoad ()
       }
    }
 
-
    if (_mol != 0)
    {
       int k;
@@ -2395,6 +2399,12 @@ void MolfileLoader::_readCtab3000 ()
             else if (strcmp(prop, "HCOUNT") == 0)
             {
                int hcount = strscan.readInt1();
+
+               if (_qmol == 0)
+               {
+                   if (!ignore_noncritical_query_features)
+                      throw Error("H count is allowed only for queries");
+               }
                
                if (hcount == -1)
                   _hcount[i] = 1;

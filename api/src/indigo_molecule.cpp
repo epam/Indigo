@@ -1188,9 +1188,10 @@ CEXPORT int indigoCheckValence (int atom)
 
       if (ia.mol.isPseudoAtom(ia.idx) || ia.mol.isRSite(ia.idx) || ia.mol.isTemplateAtom(ia.idx) )
          return 1;
+
       int res = ia.mol.getAtomValence_NoThrow(ia.idx, -100);
       
-      return res != -100;
+      return res == -100 ? 0 : 1;
    }
    INDIGO_END(-1);
 }
@@ -1209,21 +1210,10 @@ CEXPORT int indigoCheckQuery (int item)
               (ia.mol.reaction_atom_inversion[ia.idx] != 0) )
             return 1;
 
-         int atom_number = ia.mol.getAtomNumber(ia.idx);
-         int atom_charge = ia.mol.getAtomCharge(ia.idx);
-         int hydrogens_count = MoleculeSavers::getHCount(ia.mol, ia.idx, atom_number, atom_charge);
-   
-         if (!ia.mol.isQueryMolecule())
-         {
-            if (hydrogens_count >= 0 && Molecule::shouldWriteHCount(ia.mol.asMolecule(), ia.idx) )
-               return 1;
-         }
-
          if (ia.mol.isQueryMolecule())
          {
             return 1;
          } 
-
       }
       else if (IndigoBond::is(obj))
       {
