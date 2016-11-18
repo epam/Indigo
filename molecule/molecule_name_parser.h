@@ -44,6 +44,28 @@ Session local instance of this class is used by public API indigoNameToStructure
 class DLLEXPORT MoleculeNameParser {
    DECL_ERROR;
 
+   typedef unsigned long long int ParserOptionsType;
+
+   /*
+   Parsing options
+   Options might be listed in any order
+   Usage:
+   space ' ' is the separator
+   +OPTION to turn OPTION on
+   -OPTION to turn OPTION off
+   */
+   enum ParserOptions : ParserOptionsType {
+      /*
+      Follow strict IUPAC rules when parsing names
+      When strict rules are ON, names must comply with IUPAC recommendations,
+      i.e. names like 1,3-hexadiene will be rejected
+      Default: OFF
+      */
+      IUPAC_STRICT = 1ULL
+   };
+
+   ParserOptionsType _options = 0ULL;
+
    /*
    Enum class of token types
    These types are assigned to tokens during lexical analysis
@@ -121,6 +143,8 @@ class DLLEXPORT MoleculeNameParser {
    struct Lexeme {
       std::string lexeme;				            // a lexeme
       Token       token;				            // a token
+
+      mutable bool processed = false;           // true if a lexeme was processed
 
       inline Lexeme() { }
       inline Lexeme(char ch, const Token& t) {
@@ -206,6 +230,8 @@ class DLLEXPORT MoleculeNameParser {
 
       // try to find a lexeme using an elision rule
       bool _tryElision(const std::string& failure);
+
+      void _preCheck();
    }; // class Parse
 
    enum class FragmentClassType : int {
@@ -342,21 +368,24 @@ class DLLEXPORT MoleculeNameParser {
       Positions positions;
 
       /*
-      First multiplier in a substituent must match the number of locant positions
-      in base structure. Next two fields control this behavior
-      Example:
-      2,3,3-trimethyl-octane (correct)
-      locants:		  2 3 3 (total 3)
-      first multiplier: tri (3)
+      With IUPAC_STRICT:
+         First multiplier in a substituent must match the number of locant positions
+         in base structure
+         Example:
+         2,3,3-trimethyl-octane (correct)
+         locants:		  2 3 3 (total 3)
+         first multiplier: tri (3)
 
-      2,4-ethyl-hexane (incorrect, should be: 2,4-diethyl-hexane)
-      locants:		  2 4 (total 2)
-      first multiplier: none (default 1)
+         2,4-ethyl-hexane (incorrect, should be: 2,4-diethyl-hexane)
+         locants:		  2 4 (total 2)
+         first multiplier: none (default 1)
       */
       int fragmentMultiplier = 1;
 
       // If true, next multiplier will be treated as fragment multiplier
       bool expectFragMultiplier = false;
+
+      int expectedMultiplierCount = 1;
    }; // class FragmentNodeSubstituent
 
    /*
@@ -392,6 +421,12 @@ class DLLEXPORT MoleculeNameParser {
 
    private:
       DECL_ERROR;
+
+      /*
+      Checks if certain option(s) are set
+      Returns true if condition matches
+      */
+      bool _checkParserOption(ParserOptionsType options);
 
       // Indicates that a next locant will start a new substituent node
       bool _startNewNode = true;
@@ -446,6 +481,8 @@ class DLLEXPORT MoleculeNameParser {
       bool _processFlags(const Lexeme& lexeme);
       bool _processSkeletal(const Lexeme& lexeme);
       bool _processSkeletalPrefix(const Lexeme& lexeme);
+
+      bool _processLocantRelaxed(const Lexeme& lexeme);
 
       // Converts std::string to int
       int _strToInt(const std::string& str);
@@ -549,28 +586,6 @@ class DLLEXPORT MoleculeNameParser {
          return result;
       }
    }; // class SmilesBuilder
-
-   typedef unsigned long long int ParserOptionsType;
-
-   /*
-   Parsing options
-   Options might be listed in any order
-   Usage:
-      space ' ' is the separator
-      +OPTION to turn OPTION on
-      -OPTION to turn OPTION off
-   */
-   enum ParserOptions : ParserOptionsType {
-      /*
-      Follow strict IUPAC rules when parsing names
-      When strict rules are ON, names must comply with IUPAC recommendations,
-      i.e. names like 1,3-hexadiene will be rejected
-      Default: OFF
-      */
-      IUPAC_STRICT = 1ULL
-   };
-
-   ParserOptionsType _options = ParserOptions::IUPAC_STRICT;
 
    // Turns a certain option on or off depending on input flag
    void _setOption(const char* option);
