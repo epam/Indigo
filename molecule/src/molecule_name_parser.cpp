@@ -1040,7 +1040,7 @@ bool MoleculeNameParser::ResultBuilder::_processBaseNode(FragmentNodeBase* base)
          organicElement = false;
       }
 
-      const string& symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
+      string symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
       fragment.push_back(symbol);
 
       for (int i = 1; i < multipliers; i++) {

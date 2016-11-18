@@ -105,8 +105,11 @@ class DLLEXPORT MoleculeNameParser {
       TokenType type = TokenType::UNKNOWN;
 
       inline Token() { }
-      inline Token(const std::string& n, const std::string& v, const TokenType& t) :
-         name{ n }, value{ v }, type{ t } { }
+      inline Token(const std::string& n, const std::string& v, const TokenType& t) {
+         name = n;
+         value = v;
+         type = t;
+      }
    }; // struct Token
 
    /*
@@ -118,8 +121,14 @@ class DLLEXPORT MoleculeNameParser {
       Token       token;				            // a token
 
       inline Lexeme() { }
-      inline Lexeme(char ch, const Token& t) : token{ t } { lexeme = ch; }
-      inline Lexeme(const std::string& l, const Token& t) : lexeme{ l }, token{ t } { }
+      inline Lexeme(char ch, const Token& t) {
+         lexeme = ch;
+         token = t;
+      }
+      inline Lexeme(const std::string& l, const Token& t) {
+         lexeme = l;
+         token = t;
+      }
    }; // class Lexeme
 
    // A dictionary of known pre-defined symbols
@@ -162,7 +171,9 @@ class DLLEXPORT MoleculeNameParser {
    */
    class Parse : public NonCopyable {
    public:
-      inline explicit Parse(const std::string& in) : input{ in } { }
+      inline explicit Parse(const std::string& in) {
+         input = in;
+      }
 
       /*
       Performs by-symbol input scan, determines basic tokens
