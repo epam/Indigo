@@ -15,6 +15,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <iostream>
+#include <iterator>
 
 #include "tinyxml.h"
 
@@ -551,6 +552,15 @@ void MoleculeNameParser::TreeBuilder::_initBuildTree() {
 }
 
 /*
+Checks if certain options are (un)set
+Returns true if condition matches
+*/
+bool MoleculeNameParser::TreeBuilder::_checkParserOption(ParserOptionsType options) {
+   const MoleculeNameParser& instance = getMoleculeNameParserInstance();
+   return (instance.getOptions() & options) == options;
+}
+
+/*
 Returns one level up in the tree, setting current node to the new
 level's base fragment
 Returns false if operation cannot be performed
@@ -577,6 +587,10 @@ Recursively calls itself until EndOfStream is reached or error occured
 */
 bool MoleculeNameParser::TreeBuilder::_processParse() {
    const Lexeme& lexeme = _parse->getNextLexeme();
+
+   if (lexeme.processed) {
+      return _processParse();
+   }
    
    if (lexeme.token.type == TokenType::END_OF_STREAM) {
       return true;
@@ -660,6 +674,7 @@ bool MoleculeNameParser::TreeBuilder::_processSkeletalPrefix(const Lexeme& lexem
 
    _current = _getCurrentBase();
    _startNewNode = true;
+   lexeme.processed = true;
    return true;
 }
 
@@ -692,6 +707,7 @@ bool MoleculeNameParser::TreeBuilder::_processFlags(const Lexeme& lexeme) {
       }
 
       base->cycle = true;
+      lexeme.processed = true;
       return true;
    }
 
@@ -703,6 +719,7 @@ bool MoleculeNameParser::TreeBuilder::_processFlags(const Lexeme& lexeme) {
          } else {
             base->isomerism = Isomerism::TRANS;
          }
+         lexeme.processed = true;
          return true;
       }
    }
@@ -711,9 +728,9 @@ bool MoleculeNameParser::TreeBuilder::_processFlags(const Lexeme& lexeme) {
 }
 
 bool MoleculeNameParser::TreeBuilder::_processBasicElement(const Lexeme& lexeme) {
-   // FIXME
-   // currently inserting basic element into base node
-   assert(_current->classType == FragmentClassType::BASE);
+   if (_current->classType != FragmentClassType::BASE) {
+      return false;
+   }
 
    const string& value = lexeme.token.value;
    const size_t pos = value.find('_');
@@ -731,6 +748,7 @@ bool MoleculeNameParser::TreeBuilder::_processBasicElement(const Lexeme& lexeme)
    base->nodeType = NodeType::ELEMENT;
    base->multipliers.push({ 1, TokenType::BASIC });
 
+   lexeme.processed = true;
    return true;
 }
 
@@ -800,6 +818,7 @@ bool MoleculeNameParser::TreeBuilder::_processAlkaneSuffix(const Lexeme& lexeme)
    _processSuffix(lexeme);
 
    if (_parse->peekNextToken(TokenType::CLOSING_BRACKET)) {
+      lexeme.processed = true;
       return true;
    }
 
@@ -815,6 +834,7 @@ bool MoleculeNameParser::TreeBuilder::_processAlkaneSuffix(const Lexeme& lexeme)
       }
    }
 
+   lexeme.processed = true;
    return true;
 }
 
@@ -851,6 +871,7 @@ bool MoleculeNameParser::TreeBuilder::_processBasicMultiplier(const Lexeme& lexe
          node->fragmentMultiplier = value;
          bool flag = _parse->peekNextToken(TokenType::FACTOR);
          node->expectFragMultiplier = flag;
+         lexeme.processed = true;
          return true;
       }
    }
@@ -859,6 +880,7 @@ bool MoleculeNameParser::TreeBuilder::_processBasicMultiplier(const Lexeme& lexe
    base->multipliers.push({ value, lexeme.token.type });
    base->nodeType = NodeType::BASE;
 
+   lexeme.processed = true;
    return true;
 }
 
@@ -872,6 +894,7 @@ bool MoleculeNameParser::TreeBuilder::_processFactorMultiplier(const Lexeme& lex
             node->fragmentMultiplier *= value;
          }
          node->expectFragMultiplier = false;
+         lexeme.processed = true;
          return true;
       }
    }
@@ -890,6 +913,7 @@ bool MoleculeNameParser::TreeBuilder::_processFactorMultiplier(const Lexeme& lex
    }
    base->nodeType = NodeType::BASE;
 
+   lexeme.processed = true;
    return true;
 }
 
@@ -930,6 +954,45 @@ bool MoleculeNameParser::TreeBuilder::_processLocant(const Lexeme& lexeme) {
    FragmentNodeBase* base = _getCurrentBase();
    base->locants.push_back(value);
 
+   if (!_checkParserOption(IUPAC_STRICT)) {
+      auto it = _parse->lexemes.begin();
+      std::advance(it, _parse->currentLexeme);
+
+      if ((it->token.type == TokenType::PUNCTUATION) && (it->lexeme == ",")) {
+         lexeme.processed = true;
+         return true;
+      }
+
+      while (!(it->token.type == TokenType::LOCANT ||
+         it->token.type == TokenType::SUFFIXES ||
+         it->token.type == TokenType::END_OF_STREAM)) {
+         ++it;
+      }
+
+      if (it->token.type == TokenType::END_OF_STREAM) {
+         return false;
+      }
+
+      if (it->token.type == TokenType::LOCANT) {
+         lexeme.processed = true;
+         return true;
+      }
+
+      if (subst->positions.size() == 1) {
+         return _processAlkaneSuffix(*it);
+      }
+
+      auto prev = std::prev(it);
+      if (prev->token.type == TokenType::BASIC) {
+         if (_processMultiplier(*prev)) {
+            return _processAlkaneSuffix(*it);
+         }
+      } else {
+         return false;
+      }
+   }
+
+   lexeme.processed = true;
    return true;
 }
 
@@ -939,6 +1002,7 @@ bool MoleculeNameParser::TreeBuilder::_processPunctuation(const Lexeme& lexeme) 
          return false;
       }
       dynamic_cast<FragmentNodeSubstituent*>(_current)->expectFragMultiplier = true;
+      lexeme.processed = true;
       return true;
    }
 
@@ -950,9 +1014,11 @@ bool MoleculeNameParser::TreeBuilder::_processPunctuation(const Lexeme& lexeme) 
    if (lexeme.lexeme == " ") {
       buildTree.addRoot();
       _initBuildTree();
+      lexeme.processed = true;
       return true;
    }
 
+   lexeme.processed = true;
    return true;
 }
 
