@@ -287,6 +287,7 @@ class DLLEXPORT MoleculeNameParser {
    typedef std::stack<Multiplier> Multipliers;
 
    typedef std::vector<int> Locants;
+   typedef std::vector<int> Skeletals;
 
    typedef std::pair<int, std::string> Element;
 
@@ -324,10 +325,11 @@ class DLLEXPORT MoleculeNameParser {
       virtual void print(std::ostream& out) const;
 #endif
 
-      Multipliers multipliers;
       Element element;
-      Locants locants;
       Isomerism isomerism = Isomerism::NONE;
+      Multipliers multipliers;
+      Locants locants;
+      Skeletals skeletals;
 
       // A bonding of an element
       int bonding = 0;
