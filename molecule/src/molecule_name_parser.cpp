@@ -139,10 +139,10 @@ void MoleculeNameParser::DictionaryManager::_readBasicElementsTable() {
          */
 
          char delim[] = "|";
-         char* fragment = std::strtok(const_cast<char*>(lexeme), delim);
+         char* fragment = ::strtok(const_cast<char*>(lexeme), delim);
          while (fragment) {
             _addLexeme(fragment, { name, value, tt }, true);
-            fragment = std::strtok(nullptr, delim);
+            fragment = ::strtok(nullptr, delim);
          }
       }
    }
@@ -196,10 +196,10 @@ void MoleculeNameParser::DictionaryManager::_readTable(const char* table, bool u
          // Symbols might have a separator '|', in which case we need to add
          // several symbols with the same token type into the dictionary
          char delim[] = "|";
-         char* fragment = std::strtok(const_cast<char*>(lexeme), delim);
+         char* fragment = ::strtok(const_cast<char*>(lexeme), delim);
          while (fragment) {
             _addLexeme(fragment, Token(name, value, tt), useTrie);
-            fragment = std::strtok(nullptr, delim);
+            fragment = ::strtok(nullptr, delim);
          }
          // all separators are 1-byte ASCII
          if (isSeparator) {
@@ -660,15 +660,18 @@ bool MoleculeNameParser::TreeBuilder::_processSkeletalPrefix(const Lexeme& lexem
 
    /*
    We erase skeletal positions from base's locants list, as skeletals are not
-   substituents
+   substituents, and move it into skeletals
    */
    FragmentNodeBase* levelBase = _getCurrentBase();
    Locants& locants = levelBase->locants;
+   Skeletals& skeletals = levelBase->skeletals;
    FragmentNodeSubstituent* subst = dynamic_cast<FragmentNodeSubstituent*>(_current);
    for (int n : subst->positions) {
       const auto& it = std::find(locants.begin(), locants.end(), n);
       if (it != locants.end()) {
+         int val = *it;
          locants.erase(it);
+         skeletals.push_back(val);
       }
    }
 
@@ -938,6 +941,11 @@ bool MoleculeNameParser::TreeBuilder::_processMultiplier(const Lexeme& lexeme) {
 }
 
 bool MoleculeNameParser::TreeBuilder::_processLocant(const Lexeme& lexeme) {
+   int value = _strToInt(lexeme.token.value);
+   if (value == 0) {
+      return false;
+   }
+
    if (_startNewNode) {
       FragmentNodeSubstituent* subst = new FragmentNodeSubstituent;
       if (!_current->parent->insertBefore(subst, _getCurrentBase())) {
@@ -946,7 +954,6 @@ bool MoleculeNameParser::TreeBuilder::_processLocant(const Lexeme& lexeme) {
       _current = subst;
       _startNewNode = false;
    }
-   int value = _strToInt(lexeme.token.value);
 
    FragmentNodeSubstituent* subst = dynamic_cast<FragmentNodeSubstituent*>(_current);
    subst->positions.push_back(value);
@@ -965,17 +972,26 @@ bool MoleculeNameParser::TreeBuilder::_processLocant(const Lexeme& lexeme) {
 
       while (!(it->token.type == TokenType::LOCANT ||
          it->token.type == TokenType::SUFFIXES ||
+         it->token.type == TokenType::SKELETAL_PREFIX ||
          it->token.type == TokenType::END_OF_STREAM)) {
          ++it;
       }
 
-      if (it->token.type == TokenType::END_OF_STREAM) {
+      switch (it->token.type) {
+      // shouldn't be here
+      case TokenType::END_OF_STREAM:
          return false;
-      }
 
-      if (it->token.type == TokenType::LOCANT) {
+      // mark lexeme as processed, continue with processing
+      case TokenType::SKELETAL_PREFIX:
+      case TokenType::LOCANT: {
          lexeme.processed = true;
          return true;
+      }
+
+      // fall through
+      default:
+         break;
       }
 
       if (subst->positions.size() == 1) {
@@ -984,9 +1000,10 @@ bool MoleculeNameParser::TreeBuilder::_processLocant(const Lexeme& lexeme) {
 
       auto prev = std::prev(it);
       if (prev->token.type == TokenType::BASIC) {
-         if (_processMultiplier(*prev)) {
-            return _processAlkaneSuffix(*it);
+         if (!_processMultiplier(*prev)) {
+            return false;
          }
+         return _processAlkaneSuffix(*it);
       } else {
          return false;
       }
@@ -1218,7 +1235,7 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base)
          organicElement = false;
       }
 
-      string symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
+      const string& symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
       fragment.push_back(symbol);
 
       for (int i = 1; i < multipliers; i++) {
@@ -1233,20 +1250,30 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base)
       last.insert(1, "1");
    }
 
+   // Insert placeholders for skeletals
+   const Skeletals& skeletals = base->skeletals;
+   if (!skeletals.empty()) {
+      // skeletals positions are marked with %
+      for (int n : skeletals) {
+         auto& it = fragment.begin();
+         std::advance(it, n);
+         it = std::prev(fragment.erase(it));
+         fragment.insert(it, "%");
+      }
+   }
+
    // Insert placeholders for locants
    const Locants& locants = base->locants;
    if (!locants.empty()) {
       // locant positions are marked with |
-      const string placeholder = "|";
       size_t inserted{ 0 };
-      auto it = fragment.begin();
       for (size_t loc : locants) {
+         auto& it = fragment.begin();
          if (loc + inserted > fragment.size()) {
             return false;
          }
          std::advance(it, loc + inserted);
-         fragment.insert(it, placeholder);
-         it = fragment.begin();
+         fragment.insert(it, "|");
          ++inserted;
       }
    }
@@ -1322,16 +1349,7 @@ bool MoleculeNameParser::SmilesBuilder::_combine(FragmentNode* node) {
       const FragmentNodeSubstituent* subst = dynamic_cast<const FragmentNodeSubstituent*>(*nodes_it);
       // Perform skeletal 'a' substitution in-place
       if (nt == NodeType::SKELETAL) {
-         auto base_it = base.begin();
-         for (int pos : subst->positions) {
-            std::advance(base_it, pos - 1);
-            base_it = base.erase(base_it);
-            base.insert(base_it, frag.begin(), frag.end());
-            base_it = base.begin();
-         }
-
          ++nodes_it;
-         frag.clear();
          continue;
       }
 
@@ -1428,10 +1446,10 @@ void MoleculeNameParser::setOptions(char* options) {
    }
 
    char delim[] = " ";
-   char* option = std::strtok(options, delim);
+   char* option = ::strtok(options, delim);
    while (option) {
       _setOption(option);
-      option = std::strtok(nullptr, delim);
+      option = ::strtok(nullptr, delim);
    }
 }
 

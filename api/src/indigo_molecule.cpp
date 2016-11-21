@@ -4242,7 +4242,7 @@ CEXPORT int indigoNameToStructure(const char* name, const char* params)
          Duplicate params string as we call destructive function strtok() on callee side
          We can get rid of it if we have sustainable options in the future
          */
-         char* options = ::strdup(params);
+         char* options = ::_strdup(params);
          if (options) {
             parser.setOptions(options);
             ::free(options);
