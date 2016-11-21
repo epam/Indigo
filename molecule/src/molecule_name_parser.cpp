@@ -1255,7 +1255,7 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base)
    if (!skeletals.empty()) {
       // skeletals positions are marked with %
       for (int n : skeletals) {
-         auto& it = fragment.begin();
+         auto it = fragment.begin();
          std::advance(it, n);
          it = std::prev(fragment.erase(it));
          fragment.insert(it, "%");
@@ -1268,7 +1268,7 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base)
       // locant positions are marked with |
       size_t inserted{ 0 };
       for (size_t loc : locants) {
-         auto& it = fragment.begin();
+         auto it = fragment.begin();
          if (loc + inserted > fragment.size()) {
             return false;
          }
@@ -1441,7 +1441,7 @@ Changes the 'options' parameter (via strtok())
 void MoleculeNameParser::setOptions(char* options) {
    // null check is on caller side
 
-   if (std::strlen(options) == 0) {
+   if (::strlen(options) == 0) {
       return;
    }
 
