@@ -915,6 +915,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoCanonicalSmiles(self.id))
 
+    def canonicalSmarts(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoCanonicalSmarts(self.id))
+
     def layeredCode(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoLayeredCode(self.id))
@@ -1005,6 +1009,10 @@ class IndigoObject(object):
     def smiles(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoSmiles(self.id))
+
+    def smarts(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoSmarts(self.id))
 
     def name(self):
         self.dispatcher._setSessionId()
@@ -1880,6 +1888,8 @@ class Indigo(object):
         Indigo._lib.indigoMassComposition.argtypes = [c_int]
         Indigo._lib.indigoCanonicalSmiles.restype = c_char_p
         Indigo._lib.indigoCanonicalSmiles.argtypes = [c_int]
+        Indigo._lib.indigoCanonicalSmarts.restype = c_char_p
+        Indigo._lib.indigoCanonicalSmarts.argtypes = [c_int]
         Indigo._lib.indigoLayeredCode.restype = c_char_p
         Indigo._lib.indigoLayeredCode.argtypes = [c_int]
         Indigo._lib.indigoSymmetryClasses.restype = POINTER(c_int)
@@ -1918,6 +1928,8 @@ class Indigo(object):
         Indigo._lib.indigoClean2d.argtypes = [c_int]
         Indigo._lib.indigoSmiles.restype = c_char_p
         Indigo._lib.indigoSmiles.argtypes = [c_int]
+        Indigo._lib.indigoSmarts.restype = c_char_p
+        Indigo._lib.indigoSmarts.argtypes = [c_int]
         Indigo._lib.indigoName.restype = c_char_p
         Indigo._lib.indigoName.argtypes = [c_int]
         Indigo._lib.indigoSetName.restype = c_int

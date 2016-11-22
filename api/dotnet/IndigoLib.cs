@@ -294,6 +294,8 @@ namespace com.epam.indigo
         int indigoUnfoldHydrogens(int item);
         int indigoLayout(int item);
         sbyte* indigoSmiles(int item);
+        sbyte* indigoSmarts(int item);
+        sbyte* indigoCanonicalSmarts(int item);
         int indigoExactMatch(int item1, int item2, string flags);
         int indigoSetTautomerRule(int id, string beg, string end);
         int indigoRemoveTautomerRule(int id);

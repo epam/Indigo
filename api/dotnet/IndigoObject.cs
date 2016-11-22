@@ -1377,6 +1377,18 @@ namespace com.epam.indigo
             return new String(dispatcher.checkResult(_indigo_lib.indigoSmiles(self)));
         }
 
+        public string smarts()
+        {
+            dispatcher.setSessionID();
+            return new String(dispatcher.checkResult(_indigo_lib.indigoSmarts(self)));
+        }
+
+        public string canonicalSmarts()
+        {
+            dispatcher.setSessionID();
+            return new String(dispatcher.checkResult(_indigo_lib.indigoCanonicalSmarts(self)));
+        }
+
         public String name()
         {
             dispatcher.setSessionID();

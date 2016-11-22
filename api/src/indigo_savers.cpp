@@ -150,16 +150,12 @@ CEXPORT int indigoSdfAppend (int output, int molecule)
 void IndigoSmilesSaver::generateSmiles (IndigoObject &obj, Array<char> &out_buffer)
 {
    ArrayOutput output(out_buffer);
-   Indigo &indigo = indigoGetInstance();
 
    if (IndigoBaseMolecule::is(obj))
    {
       BaseMolecule &mol = obj.getBaseMolecule();
          
       SmilesSaver saver(output);
-
-      if (indigo.smiles_saving_smarts_mode)
-         saver.smarts_mode = true;
          
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());
@@ -172,9 +168,6 @@ void IndigoSmilesSaver::generateSmiles (IndigoObject &obj, Array<char> &out_buff
          
       RSmilesSaver saver(output);
          
-      if (indigo.smiles_saving_smarts_mode)
-         saver.smarts_mode = true;
-
       if (rxn.isQueryReaction())
          saver.saveQueryReaction(rxn.asQueryReaction());
       else
@@ -182,6 +175,39 @@ void IndigoSmilesSaver::generateSmiles (IndigoObject &obj, Array<char> &out_buff
    }
    else
       throw IndigoError("%s can not be converted to SMILES", obj.debugInfo());
+   out_buffer.push(0);
+}
+
+void IndigoSmilesSaver::generateSmarts (IndigoObject &obj, Array<char> &out_buffer)
+{
+   ArrayOutput output(out_buffer);
+
+   if (IndigoBaseMolecule::is(obj))
+   {
+      BaseMolecule &mol = obj.getBaseMolecule();
+         
+      SmilesSaver saver(output);
+      saver.smarts_mode = true;
+         
+      if (mol.isQueryMolecule())
+         saver.saveQueryMolecule(mol.asQueryMolecule());
+      else
+         saver.saveMolecule(mol.asMolecule());
+   }
+   else if (IndigoBaseReaction::is(obj))
+   {
+      BaseReaction &rxn = obj.getBaseReaction();
+         
+      RSmilesSaver saver(output);
+      saver.smarts_mode = true;
+
+      if (rxn.isQueryReaction())
+         saver.saveQueryReaction(rxn.asQueryReaction());
+      else
+         saver.saveReaction(rxn.asReaction());
+   }
+   else
+      throw IndigoError("%s can not be converted to SMARTS", obj.debugInfo());
    out_buffer.push(0);
 }
 
@@ -231,16 +257,12 @@ CEXPORT int indigoSmilesAppend (int output, int item)
 void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject &obj, Array<char> &out_buffer)
 {
    ArrayOutput output(out_buffer);
-   Indigo &indigo = indigoGetInstance();
 
    if (IndigoBaseMolecule::is(obj))
    {
       BaseMolecule &mol = obj.getBaseMolecule();
 
       CanonicalSmilesSaver saver(output);
-
-      if (indigo.smiles_saving_smarts_mode)
-         saver.smarts_mode = true;
 
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());
@@ -253,9 +275,6 @@ void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject &obj, Array<char> &
 
       CanonicalRSmilesSaver saver(output);
 
-      if (indigo.smiles_saving_smarts_mode)
-         saver.smarts_mode = true;
-
       if (rxn.isQueryReaction())
          saver.saveQueryReaction(rxn.asQueryReaction());
       else
@@ -263,6 +282,39 @@ void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject &obj, Array<char> &
    }
    else
       throw IndigoError("%s can not be converted to SMILES", obj.debugInfo());
+   out_buffer.push(0);
+}
+
+void IndigoCanonicalSmilesSaver::generateSmarts(IndigoObject &obj, Array<char> &out_buffer)
+{
+   ArrayOutput output(out_buffer);
+
+   if (IndigoBaseMolecule::is(obj))
+   {
+      BaseMolecule &mol = obj.getBaseMolecule();
+
+      CanonicalSmilesSaver saver(output);
+      saver.smarts_mode = true;
+
+      if (mol.isQueryMolecule())
+         saver.saveQueryMolecule(mol.asQueryMolecule());
+      else
+         saver.saveMolecule(mol.asMolecule());
+   }
+   else if (IndigoBaseReaction::is(obj))
+   {
+      BaseReaction &rxn = obj.getBaseReaction();
+
+      CanonicalRSmilesSaver saver(output);
+      saver.smarts_mode = true;
+
+      if (rxn.isQueryReaction())
+         saver.saveQueryReaction(rxn.asQueryReaction());
+      else
+         saver.saveReaction(rxn.asReaction());
+   }
+   else
+      throw IndigoError("%s can not be converted to SMARTS", obj.debugInfo());
    out_buffer.push(0);
 }
 
