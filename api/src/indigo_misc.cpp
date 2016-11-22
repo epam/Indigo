@@ -186,6 +186,24 @@ CEXPORT const char * indigoCheckBadValence (int handle)
             return tmp.string.ptr();
          }
       }
+      else if (IndigoAtom::is(obj))
+      {
+         IndigoAtom &ia = IndigoAtom::cast(obj);
+   
+         if (ia.mol.isPseudoAtom(ia.idx) || ia.mol.isRSite(ia.idx) || ia.mol.isTemplateAtom(ia.idx) )
+            return "";
+   
+         try
+         {
+            int res = ia.mol.getAtomValence(ia.idx);
+         }
+         catch (Exception &e)
+         {
+            auto &tmp = self.getThreadTmpData();
+            tmp.string.readString(e.message(), true);
+            return tmp.string.ptr();
+         }
+      }
       else
          throw IndigoError("object %s is neither a molecule nor a reaction", obj.debugInfo());
       

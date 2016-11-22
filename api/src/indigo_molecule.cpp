@@ -1191,7 +1191,7 @@ CEXPORT int indigoCheckValence (int atom)
 
       int res = ia.mol.getAtomValence_NoThrow(ia.idx, -100);
       
-      return res == -100 ? 0 : 1;
+      return res == -100 ? 1 : 0;
    }
    INDIGO_END(-1);
 }
