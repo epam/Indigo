@@ -1375,6 +1375,18 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResultString(this, _lib.indigoSmiles(self));
    }
 
+   public String smarts()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoSmarts(self));
+   }
+
+   public String canonicalSmarts()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoCanonicalSmarts(self));
+   }
+
    public String name()
    {
       dispatcher.setSessionID();

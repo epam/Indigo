@@ -638,6 +638,8 @@ CEXPORT int indigoLayout(int object);
 CEXPORT int indigoClean2d(int object);
 
 CEXPORT const char * indigoSmiles (int item);
+CEXPORT const char * indigoSmarts (int item);
+CEXPORT const char * indigoCanonicalSmarts (int item);
 
 // Returns a "mapping" if there is an exact match, zero otherwise
 // The flags string consists of space-separated flags.

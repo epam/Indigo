@@ -99,12 +99,6 @@ static void indigoSetSmilesSavingWriteName (int enabled)
    self.smiles_saving_write_name = (enabled != 0);
 }
 
-static void indigoSetSmilesSavingSmartsMode (int enabled)
-{
-   Indigo &self = indigoGetInstance();
-   self.smiles_saving_smarts_mode = (enabled != 0);
-}
-
 static void indigoSetFilenameEncoding (const char *encoding)
 {
    Indigo &self = indigoGetInstance();
@@ -524,7 +518,6 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("molfile-saving-add-stereo-desc", indigoSetMolfileSavingAddStereoDesc);
    mgr.setOptionHandlerBool("molfile-saving-add-implicit-h", indigoSetMolfileSavingAddImplicitH);
    mgr.setOptionHandlerBool("smiles-saving-write-name", indigoSetSmilesSavingWriteName);
-   mgr.setOptionHandlerBool("smiles-saving-smarts-mode", indigoSetSmilesSavingSmartsMode);
    mgr.setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding);
    mgr.setOptionHandlerInt("fp-ord-qwords", indigoSetFPOrdQwords);
    mgr.setOptionHandlerInt("fp-sim-qwords", indigoSetFPSimQwords);

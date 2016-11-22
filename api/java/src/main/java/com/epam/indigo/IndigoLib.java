@@ -348,6 +348,9 @@ public interface IndigoLib extends Library
 
    Pointer indigoSmiles (int item);
 
+   Pointer indigoSmarts (int item);
+   Pointer indigoCanonicalSmarts (int item);
+
    int indigoExactMatch (int item1, int item2, String flags);
 
    int indigoSetTautomerRule (int id, String beg, String end);

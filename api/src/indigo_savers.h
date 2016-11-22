@@ -67,6 +67,8 @@ public:
 
    static void generateSmiles (IndigoObject &obj, Array<char> &out_buffer);
 
+   static void generateSmarts (IndigoObject &obj, Array<char> &out_buffer);
+
    static void append (Output &output, IndigoObject &object);
 
 protected:
@@ -80,6 +82,8 @@ public:
    virtual const char * debugInfo();
 
    static void generateSmiles(IndigoObject &obj, Array<char> &out_buffer);
+
+   static void generateSmarts(IndigoObject &obj, Array<char> &out_buffer);
 
 protected:
 };

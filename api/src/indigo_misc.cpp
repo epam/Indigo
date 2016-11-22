@@ -290,6 +290,33 @@ CEXPORT const char * indigoCanonicalSmiles (int item)
    INDIGO_END(0);
 }
 
+CEXPORT const char * indigoSmarts (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+      auto &tmp = self.getThreadTmpData();
+      IndigoSmilesSaver::generateSmarts(obj, tmp.string);
+
+      return tmp.string.ptr();
+   }
+   INDIGO_END(0);
+}
+
+CEXPORT const char * indigoCanonicalSmarts (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+      auto &tmp = self.getThreadTmpData();
+      IndigoCanonicalSmilesSaver::generateSmarts(obj, tmp.string);
+
+      return tmp.string.ptr();
+   }
+   INDIGO_END(0);
+}
+
+
 CEXPORT int indigoUnfoldHydrogens (int item)
 {
    INDIGO_BEGIN
