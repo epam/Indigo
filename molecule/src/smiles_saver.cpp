@@ -503,7 +503,7 @@ void SmilesSaver::_saveMolecule ()
          else if ((dir == 2 && v_idx == edge.end) || (dir == 1 && v_idx == edge.beg))
             _output.writeChar('\\');
          else if (smarts_mode)
-            _writeSmartsBond(e_idx, &_qmol->getBond(e_idx));
+            _writeSmartsBond(e_idx, &_qmol->getBond(e_idx), false);
          else if (bond_order == BOND_DOUBLE)
             _output.writeChar('=');
          else if (bond_order == BOND_TRIPLE)
@@ -998,9 +998,17 @@ void SmilesSaver::_writeSmartsAtom (int idx, QueryMolecule::Atom *atom, int chir
       _output.writeChar(']');
 }
 
-void SmilesSaver::_writeSmartsBond (int idx, QueryMolecule::Bond *bond) const
+void SmilesSaver::_writeSmartsBond (int idx, QueryMolecule::Bond *bond, bool has_or_parent) const
 {
    int i;
+
+   int qb = QueryMolecule::getQueryBondType(*bond);
+
+   if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
+   {
+      _output.writeString("-,=");
+      return;  
+   }
 
    switch (bond->type)
    {
@@ -1010,7 +1018,7 @@ void SmilesSaver::_writeSmartsBond (int idx, QueryMolecule::Bond *bond) const
       case QueryMolecule::OP_NOT:
       {
          _output.writeChar('!');
-         _writeSmartsBond(idx, (QueryMolecule::Bond *)bond->children[0]);
+         _writeSmartsBond(idx, (QueryMolecule::Bond *)bond->children[0], has_or_parent);
          break;
       }
       case QueryMolecule::OP_OR:
@@ -1019,7 +1027,17 @@ void SmilesSaver::_writeSmartsBond (int idx, QueryMolecule::Bond *bond) const
          {
             if (i > 0)
                _output.printf(",");
-            _writeSmartsBond(idx, (QueryMolecule::Bond *)bond->children[i]);
+            _writeSmartsBond(idx, (QueryMolecule::Bond *)bond->children[i], true);
+         }
+         break;
+      }
+      case QueryMolecule::OP_AND:
+      {
+         for (i = 0; i < bond->children.size(); i++)
+         {
+            if (i > 0)
+               _output.writeChar(has_or_parent ? '&' : ';');
+            _writeSmartsBond(idx, (QueryMolecule::Bond *)bond->children[i], has_or_parent);
          }
          break;
       }
