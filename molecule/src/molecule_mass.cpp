@@ -125,7 +125,7 @@ double MoleculeMass::mostAbundantMass (Molecule &mol)
             v != mol.vertexEnd(); 
             v = mol.vertexNext(v))
    {
-      if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v))
+      if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v) || mol.isRSite(v))
          continue;
 
       int number = mol.getAtomNumber(v);
@@ -208,7 +208,7 @@ double MoleculeMass::monoisotopicMass (Molecule &mol)
             v != mol.vertexEnd(); 
             v = mol.vertexNext(v))
    {
-      if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v))
+      if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v) || mol.isRSite(v))
          continue;
 
       int number = mol.getAtomNumber(v);
@@ -242,7 +242,7 @@ int MoleculeMass::nominalMass (Molecule &mol)
             v != mol.vertexEnd(); 
             v = mol.vertexNext(v))
    {
-      if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v))
+      if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v) || mol.isRSite(v))
          continue;  
 
       int number = mol.getAtomNumber(v);

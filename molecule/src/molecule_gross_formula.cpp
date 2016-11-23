@@ -72,6 +72,13 @@ int MoleculeGrossFormula::_cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void 
       return 1;
    if (ec1.elem == ELEM_H)
       return -1;
+
+   // RSites have lowest priority
+   if (ec2.elem == ELEM_RSITE)
+      return -1;
+   if (ec1.elem == ELEM_RSITE)
+      return 1;
+
    return _cmp_hill_no_carbon(ec1, ec2, context);
 }
 
@@ -124,12 +131,12 @@ void MoleculeGrossFormula::collect (BaseMolecule &mol, std::pair<ObjArray<Array<
     for (int i = 0; i < grossFormulaSize; i++)
     {
         gross.first[i].copy(indices[i]);
-        gross.second[i].clear_resize(ELEM_MAX);
+        gross.second[i].clear_resize(ELEM_RSITE + 1);
         gross.second[i].zerofill();
 
         for (int j = 0; j < filters[i].size(); j++)
         {
-            if (mol.isPseudoAtom(filters[i][j]) || mol.isRSite(filters[i][j]) || mol.isTemplateAtom(filters[i][j]))
+            if (mol.isPseudoAtom(filters[i][j]) || mol.isTemplateAtom(filters[i][j]))
             {
                 continue;
             }
@@ -138,7 +145,7 @@ void MoleculeGrossFormula::collect (BaseMolecule &mol, std::pair<ObjArray<Array<
             if (number > 0)
                 gross.second[i][number]++;
 
-            if (!mol.isQueryMolecule())
+            if (!mol.isQueryMolecule() && !mol.isRSite(filters[i][j]))
             {
                 int implicit_h = mol.asMolecule().getImplicitH(filters[i][j]);
 
@@ -217,6 +224,14 @@ void MoleculeGrossFormula::_toString (const Array<int> &gross, ArrayOutput & out
          output.printf("%d", counters[i].counter);
       first_written = true;
    }
+   if (gross[ELEM_RSITE] > 0)
+    {
+        output.writeString(" R#");
+        if (gross[ELEM_RSITE] > 1)
+        {
+            output.printf("%d", gross[ELEM_RSITE]);
+        }
+    }
 }
 
 void MoleculeGrossFormula::fromString (Scanner &scanner, Array<int> &gross)
