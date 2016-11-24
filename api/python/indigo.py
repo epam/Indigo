@@ -302,6 +302,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoIterateRGroups(self.id)))
 
+    def countRGroups(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoCountRGroups(self.id))
+
     def isPseudoatom(self):
         self.dispatcher._setSessionId()
         return bool(self.dispatcher._checkResult(Indigo._lib.indigoIsPseudoatom(self.id)))
@@ -1596,6 +1600,8 @@ class Indigo(object):
         Indigo._lib.indigoIterateAlleneCenters.argtypes = [c_int]
         Indigo._lib.indigoIterateRGroups.restype = c_int
         Indigo._lib.indigoIterateRGroups.argtypes = [c_int]
+        Indigo._lib.indigoCountRGroups.restype = c_int
+        Indigo._lib.indigoCountRGroups.argtypes = [c_int]
         Indigo._lib.indigoIsPseudoatom.restype = c_int
         Indigo._lib.indigoIsPseudoatom.argtypes = [c_int]
         Indigo._lib.indigoIsRSite.restype = c_int

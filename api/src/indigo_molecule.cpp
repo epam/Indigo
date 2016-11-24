@@ -1097,6 +1097,16 @@ CEXPORT int indigoIterateRGroupFragments (int rgroup)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoCountRGroups(int molecule)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      return mol.rgroups.getRGroupCount();
+   }
+   INDIGO_END(-1);
+}
+
 bool IndigoRGroupsIter::hasNext ()
 {
    bool result = false;
