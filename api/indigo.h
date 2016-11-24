@@ -333,6 +333,8 @@ CEXPORT int indigoIterateStereocenters (int molecule);
 CEXPORT int indigoIterateAlleneCenters (int molecule);
 CEXPORT int indigoIterateRGroups (int molecule);
 
+CEXPORT int indigoCountRGroups(int molecule);
+
 CEXPORT int indigoIsPseudoatom (int atom);
 CEXPORT int indigoIsRSite (int atom);
 
