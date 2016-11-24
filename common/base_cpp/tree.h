@@ -23,12 +23,12 @@ namespace indigo {
 class Tree : public NonCopyable {
 public:
 
-   Tree (int label)
+   explicit Tree (int label)
    {
       this->label = label;
    }
 
-   explicit Tree () : Tree(-1) {}
+   Tree () : Tree(-1) {}
 
    void insert (int label, int parent)
    {
@@ -48,6 +48,8 @@ public:
    ObjArray<Tree> & children () {
       return _children;
    }
+
+   inline const ObjArray<Tree> & children() const { return _children; }
 
    int label;
 

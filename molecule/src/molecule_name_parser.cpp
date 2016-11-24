@@ -511,6 +511,10 @@ MoleculeNameParser::FragmentNodeBase::FragmentNodeBase() {
    element.first = ELEM_MIN;
 }
 
+/*
+Returns the sum of multipliers stack
+This is a destructive operation
+*/
 int MoleculeNameParser::FragmentNodeBase::combineMultipliers() {
    int result = 0;
    while (!multipliers.empty()) {
@@ -589,6 +593,9 @@ bool MoleculeNameParser::TreeBuilder::_processParse() {
    const Lexeme& lexeme = _parse->getNextLexeme();
 
    if (lexeme.processed) {
+      if (lexeme.token.type == TokenType::SUFFIXES && lexeme.lexeme == "yl") {
+         _current = _getCurrentBase();
+      }
       return _processParse();
    }
    
@@ -637,6 +644,13 @@ bool MoleculeNameParser::TreeBuilder::_processSkeletalPrefix(const Lexeme& lexem
       if (!_current->parent->insertBefore(subst, _getCurrentBase())) {
          return false;
       }
+      subst->positions.push_back(1);
+      
+      FragmentNodeBase* levelBase = _getCurrentBase();
+      if (levelBase->locants.empty()) {
+         levelBase->locants.push_back(1);
+      }
+
       _current = subst;
    }
 
@@ -772,6 +786,10 @@ void MoleculeNameParser::TreeBuilder::_processSuffix(const Lexeme& lexeme) {
 
    base->element.first = ELEM_C;
    base->element.second = "C";
+
+   if (base->multipliers.empty()) {
+      base->multipliers.push({ 1, TokenType::BASIC });
+   }
 
    // A stardard carbon bonding
    const int carbonBonding = 4;
@@ -970,6 +988,11 @@ bool MoleculeNameParser::TreeBuilder::_processLocant(const Lexeme& lexeme) {
          return true;
       }
 
+      /*
+      Look for nearest suffix
+      Then, check previous multiplier. If it's not equal to expected multiplier,
+      continue to parse lexemes in order
+      */
       while (!(it->token.type == TokenType::LOCANT ||
          it->token.type == TokenType::SUFFIXES ||
          it->token.type == TokenType::SKELETAL_PREFIX ||
@@ -979,32 +1002,38 @@ bool MoleculeNameParser::TreeBuilder::_processLocant(const Lexeme& lexeme) {
 
       switch (it->token.type) {
       // shouldn't be here
-      case TokenType::END_OF_STREAM:
+      case TokenType::END_OF_STREAM: {
          return false;
+      } break;
 
       // mark lexeme as processed, continue with processing
       case TokenType::SKELETAL_PREFIX:
       case TokenType::LOCANT: {
          lexeme.processed = true;
          return true;
-      }
+      } break;
 
-      // fall through
-      default:
-         break;
-      }
-
-      if (subst->positions.size() == 1) {
-         return _processAlkaneSuffix(*it);
-      }
-
-      auto prev = std::prev(it);
-      if (prev->token.type == TokenType::BASIC) {
-         if (!_processMultiplier(*prev)) {
-            return false;
+      case TokenType::SUFFIXES: {
+         if (it->lexeme == "yl") {
+            lexeme.processed = true;
+            return true;
          }
-         return _processAlkaneSuffix(*it);
-      } else {
+
+         if (subst->positions.size() == 1) {
+            return _processAlkaneSuffix(*it);
+         }
+
+         auto prev = std::prev(it);
+         if (prev->token.type == TokenType::BASIC) {
+            if (!_processMultiplier(*prev)) {
+               lexeme.processed = false;
+               return true;
+            }
+            return _processAlkaneSuffix(*it);
+         }
+      } break;
+
+      default:
          return false;
       }
    }
@@ -1041,8 +1070,6 @@ bool MoleculeNameParser::TreeBuilder::_processPunctuation(const Lexeme& lexeme) 
 
 // Processes separator lexemes
 bool MoleculeNameParser::TreeBuilder::_processSeparator(const Lexeme& lexeme) {
-   bool result = true;
-
    switch (lexeme.token.type) {
    case TokenType::OPENING_BRACKET: {
       // empty brackets aren't allowed
@@ -1057,29 +1084,30 @@ bool MoleculeNameParser::TreeBuilder::_processSeparator(const Lexeme& lexeme) {
       _startNewNode = true;
    } break;
 
-   case TokenType::CLOSING_BRACKET:
+   case TokenType::CLOSING_BRACKET: {
       if (!_upOneLevel()) {
          return false;
       }
-      break;
+   } break;
 
    case TokenType::LOCANT: {
-      result = _processLocant(lexeme);
+      return _processLocant(lexeme);
    } break;
 
    // currently no-op
-   case TokenType::PRIME: {
-   } break;
+   case TokenType::PRIME:
+      break;
 
    case TokenType::PUNCTUATION: {
-      result = _processPunctuation(lexeme);
+      return _processPunctuation(lexeme);
    } break;
 
    default:
       break;
    }
 
-   return result;
+   lexeme.processed = true;
+   return true;
 }
 
 // Converts std::string to int
@@ -1131,6 +1159,35 @@ void MoleculeNameParser::SmilesBuilder::_initOrganicElements() {
    _organicElements[ELEM_Br] = "Br";
 }
 
+void MoleculeNameParser::SmilesBuilder::_traverse(const Tree& tree) {
+   const SmilesNode* sn = _pool[tree.label];
+
+   _SMILES += sn->str;
+   if (sn->bondType == BOND_DOUBLE) {
+      _SMILES += "=";
+   }
+
+   if (sn->bondType == BOND_TRIPLE) {
+      _SMILES += "#";
+   }
+
+   const ObjArray<Tree>& nodes = tree.children();
+   if (nodes.size() != 0) {
+      for (int i = 0; i < nodes.size(); i++) {
+         _SMILES += "(";
+         _traverse(nodes[i]);
+         _SMILES += ")";
+      }
+   }
+}
+
+void MoleculeNameParser::SmilesBuilder::_buildSmiles() {
+   const ObjArray<Tree>& nodes = _tree.children();
+   for (int i = 0; i < nodes.size(); i++) {
+      _traverse(nodes[i]);
+   }
+}
+
 /*
 Traverses the build tree in post-order depth-first order, creates
 SMILES representation and loads the SMILES into the resulting Molecule
@@ -1147,58 +1204,36 @@ bool MoleculeNameParser::SmilesBuilder::buildResult(Molecule& molecule) {
    // most time we'll have a sigle root
    for (FragmentNode* root : roots) {
       const Nodes& nodes = root->nodes;
-      for (FragmentNode* node : nodes) {
-         if (!_processNode(node)) {
-            return false;
-         }
-      }
-      if (!_combine(root)) {
+      if (!_processNodes(nodes, _tree)) {
          return false;
       }
    }
 
-   if (!_fragments.empty()) {
-      const Fragment& frag = _fragments.top();
-      std::for_each(frag.begin(), frag.end(), [=](const string& it) {_SMILES += it;});
-      _fragments.pop();
-      while (!_fragments.empty()) {
-         _SMILES += ".";
-         const Fragment& frag = _fragments.top();
-         std::for_each(frag.begin(), frag.end(), [=](const string& it) {_SMILES += it;});
-         _fragments.pop();
-      }
-   } else {
-      return false;
-   }
+   _buildSmiles();
 
    BufferScanner scanner(_SMILES.c_str());
    SmilesLoader loader(scanner);
    loader.loadMolecule(molecule);
 
+   _tree.children().clear();
+   _pool.clear();
+
    return true;
 }
 
-/*
-Processes a single node in the build tree
-Performs depth-first traversal
-Dispatches further processing depending on node's type
-*/
-bool MoleculeNameParser::SmilesBuilder::_processNode(FragmentNode* node) {
-   for (FragmentNode* frag : node->nodes) {
-      if (!_processNode(frag)) {
-         return false;
-      }
+bool MoleculeNameParser::SmilesBuilder::_processNodes(const Nodes& nodes, Tree& tree) {
+   auto node = nodes.rbegin();
+   if (!_processBaseNode(dynamic_cast<FragmentNodeBase*>(*node), tree)) {
+      return false;
    }
 
-   FragmentClassType type = node->classType;
-   if (type == FragmentClassType::BASE) {
-      if (!_processBaseNode(dynamic_cast<FragmentNodeBase*>(node))) {
+   ++node;
+   while (node != nodes.rend()) {
+      if (!_processSubstNode(dynamic_cast<FragmentNodeSubstituent*>(*node), tree)) {
          return false;
       }
-   } else if (type == FragmentClassType::SUBSTITUENT) {
-      if (!_processSubstNode(dynamic_cast<FragmentNodeSubstituent*>(node))) {
-         return false;
-      }
+
+      ++node;
    }
 
    return true;
@@ -1208,26 +1243,11 @@ bool MoleculeNameParser::SmilesBuilder::_processNode(FragmentNode* node) {
 Processes a base node. A base node contains information about structure or
 substituent base: number of locants, chemical element info, bonds, etc.
 */
-bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base) {
+bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base, Tree& tree) {
+   const NodeType& nt = base->nodeType;
    const Element& element = base->element;
    const int number = element.first;
 
-   string bond_sym;
-   if (base->bondType == BOND_DOUBLE) {
-      bond_sym = "=";
-   } else if (base->bondType == BOND_TRIPLE) {
-      bond_sym = "#";
-   }
-
-   Fragment fragment;
-   const NodeType& nt = base->nodeType;
-   if (nt == NodeType::SUFFIX) {
-      fragment.push_back(bond_sym);
-      _fragments.push(fragment);
-      return true;
-   }
-
-   // Expand multipliers and insert a corresponding number of atoms into a base structure
    const int multipliers = base->combineMultipliers();
    if (multipliers >= 1) {
       bool organicElement = (_organicElements.find(number) != _organicElements.end());
@@ -1236,141 +1256,92 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base)
       }
 
       const string& symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
-      fragment.push_back(symbol);
+      tree.insert(_pool.add(new SmilesNode(symbol, BOND_SINGLE)), tree.label);
 
       for (int i = 1; i < multipliers; i++) {
-         fragment.push_back(symbol);
+         tree.insert(_pool.add(new SmilesNode(symbol, BOND_SINGLE)), tree.label);
       }
    }
 
    if (base->cycle) {
-      string& first = fragment.front();
-      first.insert(1, "1");
-      string& last = fragment.back();
-      last.insert(1, "1");
+      const ObjArray<Tree>& nodes = tree.children();
+      SmilesNode* sn = _pool[nodes[0].label];
+      sn->str += "1";
+
+      sn = _pool[nodes[nodes.size() - 1].label];
+      sn->str += "1";
    }
 
-   // Insert placeholders for skeletals
-   const Skeletals& skeletals = base->skeletals;
-   if (!skeletals.empty()) {
-      // skeletals positions are marked with %
-      for (int n : skeletals) {
-         auto it = fragment.begin();
-         std::advance(it, n);
-         it = std::prev(fragment.erase(it));
-         fragment.insert(it, "%");
-      }
+   if (base->bondType != BOND_SINGLE) {
+      const ObjArray<Tree>& nodes = tree.children();
+      SmilesNode* sn = _pool[nodes[0].label];
+      sn->bondType = base->bondType;
    }
 
-   // Insert placeholders for locants
-   const Locants& locants = base->locants;
-   if (!locants.empty()) {
-      // locant positions are marked with |
-      size_t inserted{ 0 };
-      for (size_t loc : locants) {
-         auto it = fragment.begin();
-         if (loc + inserted > fragment.size()) {
-            return false;
-         }
-         std::advance(it, loc + inserted);
-         fragment.insert(it, "|");
-         ++inserted;
-      }
-   }
-
-   /*
-   If there are no locants and the structure has double or triple bond, insert
-   it immediately after the first atom
-   */
-   if (nt == NodeType::BASE) {
-      if (locants.empty() && (base->bondType != BOND_SINGLE)) {
-         auto it = fragment.begin();
-         std::advance(it, 1);
-         fragment.insert(it, bond_sym);
-      }
-   }
-
-   _fragments.push(fragment);
    return true;
 }
 
 /*
 Processes a substituent node. Any substituent might also be a base
 */
-bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituent* subst) {
-   if (subst->nodes.empty()) {
-      return _processBaseNode(subst);
-   } else {
-      return _combine(subst);
-   }
+bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituent* subst, Tree& tree) {
+   const Nodes& nodes = subst->nodes;
+   const Positions& positions = subst->positions;
 
-   // shouldn't reach here
-   return false;
-}
-
-/*
-Combines bases and substituents
-1. The current base being processed is the top element on the _fragments stack
-Pop it off the stack
-Every substituent position is marked by | symbol
-2. Reverse iterate through child nodes in node's collection; substituents are
-pushed onto _fragments stack in reverse order
-Replace corresponding placeholders in base fragment by current substituent
-3. When all children/substituents for the current base are processed, push the
-result back onto stack; this will either be a complete result or a new substituent
-for further combine cycles
-*/
-bool MoleculeNameParser::SmilesBuilder::_combine(FragmentNode* node) {
-   Fragment base = _fragments.top();
-   if (base.empty()) {
-      return false;
-   }
-
-   _fragments.pop();
-
-   const Nodes& nodes = node->nodes;
-   auto nodes_it = nodes.rbegin();
-   ++nodes_it;
-
-   Fragment frag;
-   while (nodes_it != nodes.rend()) {
-      Fragment f = _fragments.top();
-      _fragments.pop();
-
-      const NodeType& nt = dynamic_cast<FragmentNodeBase*>(*nodes_it)->nodeType;
-      if (nt == NodeType::BASE) {
-         frag.push_back("(");
-         frag.splice(frag.end(), f);
-         frag.push_back(")");
-      } else {
-         frag = f;
-      }
-
-      const FragmentNodeSubstituent* subst = dynamic_cast<const FragmentNodeSubstituent*>(*nodes_it);
-      // Perform skeletal 'a' substitution in-place
-      if (nt == NodeType::SKELETAL) {
-         ++nodes_it;
-         continue;
-      }
-
-      // Locants substitution
-      for (int i = 0; i < subst->fragmentMultiplier; i++) {
-         auto placeholder = this->find_last(base, "|");
-         if (placeholder == base.end()) {
+   if (!nodes.empty()) {
+      for (int pos : positions) {
+         Tree& leaf = tree.children()[pos];
+         if (!_processNodes(nodes, leaf)) {
             return false;
          }
-         placeholder = base.erase(placeholder);
-         base.insert(placeholder, frag.begin(), frag.end());
       }
 
-      ++nodes_it;
-      frag.clear();
+      return true;
    }
 
-   _fragments.push(base);
-   if (node->classType != FragmentClassType::ROOT) {
-      dynamic_cast<FragmentNodeBase*>(node)->nodeType = NodeType::BASE;
+   FragmentNodeBase* as_base = subst;
+   const Element& element = as_base->element;
+   const int number = element.first;
+   bool organicElement = (_organicElements.find(number) != _organicElements.end());
+
+   switch (subst->nodeType) {
+   case NodeType::SUFFIX: {
+      for (int pos : positions) {
+         const ObjArray<Tree>& nodes = tree.children();
+         SmilesNode* sn = _pool[nodes[pos - 1].label];
+         sn->bondType = as_base->bondType;
+      }
+   } break;
+
+   case NodeType::SKELETAL: {
+      string buffer = organicElement ? _organicElements[number] : "[" + element.second + "]";
+      for (int pos : positions) {
+         const Tree& node = _tree.children()[pos - 1];
+         SmilesNode* sn = _pool[node.label];
+         sn->str = buffer;
+      }
+   } break;
+
+   case NodeType::BASE: {
+      int multiplier = as_base->combineMultipliers();
+
+      for (int pos : positions) {
+         Tree& node = _tree.children()[pos - 1];
+
+         string buffer;
+         string symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
+         for (int i = 0; i < multiplier; i++) {
+            buffer += symbol;
+         }
+
+         node.insert(_pool.add(new SmilesNode(buffer, BOND_SINGLE)), node.label);
+      }
+   } break;
+
+   default:
+      break;
    }
+
    return true;
 }
 

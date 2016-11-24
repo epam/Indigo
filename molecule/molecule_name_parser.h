@@ -29,6 +29,8 @@
 #include "elements.h"
 #include "base_cpp/trie.h"
 #include "base_cpp/non_copyable.h"
+#include "base_cpp/obj_array.h"
+#include "base_cpp/tree.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -242,6 +244,8 @@ class DLLEXPORT MoleculeNameParser {
    }; // enum class FragmentNodeType
 
    class FragmentNode;
+   class FragmentNodeBase;
+   class FragmentNodeSubstituent;
    typedef std::list<FragmentNode*> Nodes;
 
    /*
@@ -335,7 +339,7 @@ class DLLEXPORT MoleculeNameParser {
       int bonding = 0;
 
       // A bond type
-      int bondType = BOND_ZERO;
+      int bondType = BOND_SINGLE;
 
       /*
       The number of atom with free bond
@@ -361,6 +365,9 @@ class DLLEXPORT MoleculeNameParser {
    public:
       inline FragmentNodeSubstituent() { classType = FragmentClassType::SUBSTITUENT; }
       virtual ~FragmentNodeSubstituent() { }
+
+      inline operator const FragmentNodeBase*() const { return dynamic_cast<const FragmentNodeBase*>(this); }
+      inline operator FragmentNodeBase*() { return dynamic_cast<FragmentNodeBase*>(this); }
 
 #ifdef DEBUG
       virtual void print(std::ostream& out) const;
@@ -490,14 +497,17 @@ class DLLEXPORT MoleculeNameParser {
       int _strToInt(const std::string& str);
    }; // class TreeBuilder
 
-   /*
-   As a single position in SMILES string may contain more than one symbol,
-   hence we need a collection of strings rather than a collection of symbols
-   */
-   typedef std::list<std::string> Fragment;
-   typedef std::stack<Fragment> Fragments;
-
    typedef std::map<int, std::string> Elements;
+
+   struct SmilesNode {
+      std::string str;
+      int bondType = BOND_ZERO;
+
+      inline SmilesNode(const std::string& s, int bond) {
+         str = s;
+         bondType = bond;
+      }
+   };
 
    /*
    Builds a resulting structure from a build tree
@@ -515,6 +525,7 @@ class DLLEXPORT MoleculeNameParser {
       */
       bool buildResult(Molecule& molecule);
 
+
    private:
       DECL_ERROR;
 
@@ -523,70 +534,28 @@ class DLLEXPORT MoleculeNameParser {
 
       std::string _SMILES;
 
+      Tree _tree;
+      PtrPool<SmilesNode> _pool;
+
+      void _buildSmiles();
+
+      void _traverse(const Tree& tree);
+
       Elements _organicElements;
       void _initOrganicElements();
 
-      Fragments _fragments;
-
-      /*
-      Processes a single node in the build tree
-      Performs depth-first traversal
-      Dispatches further processing depending on node's type
-      */
-      bool _processNode(FragmentNode* node);
+      bool _processNodes(const Nodes& nodes, Tree& tree);
 
       /*
       Processes a base node. A base node contains information about structure or
       substituent base: number of locants, chemical element info, bonds, etc.
       */
-      bool _processBaseNode(FragmentNodeBase* base);
+      bool _processBaseNode(FragmentNodeBase* base, Tree& tree);
 
       /*
       Processes a substituent node. Any substituent might also be a base
       */
-      bool _processSubstNode(FragmentNodeSubstituent* subst);
-
-      /*
-      Combines bases and substituents
-         1. The current base being processed is the top element on the _fragments stack
-            Pop it off the stack
-            Every substituent position is marked by | symbol
-         2. Reverse iterate through child nodes in node's collection; substituents are
-            pushed onto _fragments stack in reverse order
-            Replace corresponding placeholders in base fragment by current substituent
-         3. When all children/substituents for the current base are processed, push the
-            result back onto stack; this will either be a complete result or a new substituent
-            for further combine cycles
-      */
-      bool _combine(FragmentNode* node);
-
-      /*
-      Returns an iterator pointing at the last occurence of the given string in the list
-
-      Since we deal with a collection of strings rather than a collection of symbols,
-      we can't just use find_last_of() or a similar method to look for the last occurence
-      of placeholder symbol, nor can we convert list into string and perform a search (as
-      we'll lose match between indeces)
-      */
-      Fragment::const_iterator find_last(const Fragment& frag, const std::string& what) const {
-         Fragment tmp = frag;
-         tmp.reverse();
-         size_t pos = 1;
-         for (const std::string& s : tmp) {
-            if (s == what) {
-               break;
-            }
-            ++pos;
-         }
-
-         if (pos > frag.size()) {
-            return frag.end();
-         }
-
-         Fragment::const_iterator result = frag.begin();
-         std::advance(result, frag.size() - pos);
-         return result;
-      }
+      bool _processSubstNode(FragmentNodeSubstituent* subst, Tree& tree);
    }; // class SmilesBuilder
 
    // Turns a certain option on or off depending on input flag
