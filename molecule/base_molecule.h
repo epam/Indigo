@@ -144,6 +144,8 @@ public:
 
    int transformSCSRtoFullCTAB ();
    int transformFullCTABtoSCSR (ObjArray<TGroup> &templates);
+   int transformHELMtoSGroups(Array<char> &helm_class, Array<char> &name, Array<char> &code, Array<char> &natreplace,
+       StringPool &r_names);
 
    virtual bool  isRSite (int atom_idx) = 0;
    virtual dword getRSiteBits (int atom_idx) = 0;

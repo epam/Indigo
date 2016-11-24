@@ -927,6 +927,9 @@ CEXPORT int indigoReactionProductEnumerate (int reaction, int monomers);
 
 CEXPORT int indigoTransform (int reaction, int monomers);
 
+
+CEXPORT int indigoTransformHELMtoSCSR (int monomer);
+
 /* Debug functionality */
 
 // Returns internal type of an object

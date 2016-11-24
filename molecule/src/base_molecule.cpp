@@ -2468,3 +2468,84 @@ int BaseMolecule::bondCode (int edge_idx)
 {
    return getBondOrder(edge_idx);
 }
+
+
+int BaseMolecule::transformHELMtoSGroups(Array<char> &helm_class, Array<char> &name, Array<char> &code, Array<char> &natreplace,
+       StringPool &r_names)
+{
+   QS_DEF(Array<int>, sg_atoms);
+   sg_atoms.clear();
+
+   if (countRSites() > r_names.size())
+      throw Error("transformHELMtoSGroups: inconsistent number of R-sites and R-groups");
+
+   for (auto i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+   {
+      if (isRSite(i))
+         continue;
+      else
+         sg_atoms.push(i);
+   }
+
+   if (sg_atoms.size() == 0)
+      throw Error("transformHELMtoSGroups: atoms for base S-group are not found");
+
+   int idx = sgroups.addSGroup("SUP");      
+   Superatom &sg = (Superatom &)sgroups.getSGroup(idx);
+   sg.atoms.copy(sg_atoms);
+   sg.subscript.copy(name);
+   if (helm_class.size() > 6 && strncmp(helm_class.ptr(), "PEPTIDE", 7) == 0)
+      sg.sa_class.readString("AA", true);
+   else
+      sg.sa_class.copy(helm_class);
+   sg.sa_natreplace.copy(natreplace);
+
+   int idap;
+
+   for (auto i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+   {
+      if (isRSite(i))
+      {
+         QS_DEF(Array<int>, rg_list);
+         getAllowedRGroups(i, rg_list);
+         int r_num = rg_list[0] - 1;
+
+         int lvidx = sgroups.addSGroup("SUP");      
+         Superatom &lvsg = (Superatom &)sgroups.getSGroup(lvidx);
+         lvsg.atoms.push(i);
+         if (strncmp(r_names.at(r_num), "O", 1) == 0 && strlen(r_names.at(r_num)) == 1)
+            lvsg.subscript.readString("OH", true);
+         else
+            lvsg.subscript.readString(r_names.at(r_num), true);
+         lvsg.sa_class.readString("LGRP", true);
+         this->asMolecule().resetAtom(i, Element::fromString(r_names.at(r_num)));
+
+         int ap_idx;
+         const Vertex &v = getVertex(i);
+         for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+         {
+            if (sg_atoms.find(v.neiVertex(k)) != -1)
+            {
+               ap_idx = v.neiVertex(k);
+               int b_idx = findEdgeIndex(v.neiVertex(k), i);
+               sg.bonds.push(b_idx);
+               lvsg.bonds.push(b_idx);
+            }
+         }
+
+         int idap = sg.attachment_points.add();
+         Superatom::_AttachmentPoint &ap = sg.attachment_points.at(idap);
+         ap.aidx = ap_idx;
+         ap.lvidx = i;
+         if (r_num == 0)
+            ap.apid.readString("Al", true);
+         else if (r_num == 1)
+            ap.apid.readString("Br", true);
+         else if (r_num == 2)
+            ap.apid.readString("Cx", true);
+         else if (r_num == 3)
+            ap.apid.readString("Dx", true);
+      }
+   }
+   return 1;
+}
