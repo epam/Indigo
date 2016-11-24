@@ -34,6 +34,7 @@
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_standardize_options.h"
 #include "molecule/molecule_ionize.h"
+#include "molecule/molecule_mass_options.h"
 
 
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define 
@@ -281,6 +282,8 @@ public:
    PtrArray<TautomerRule> tautomer_rules;
    
    StereocentersOptions stereochemistry_options;
+   MassOptions mass_options;
+
    bool ignore_noncritical_query_features;
    bool treat_x_as_pseudoatom;
    bool skip_3d_chirality;
