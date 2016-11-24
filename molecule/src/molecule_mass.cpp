@@ -47,7 +47,14 @@ double MoleculeMass::molecularWeight (Molecule &mol)
    {
       if (mol.isPseudoAtom(v) || mol.isRSite(v) || mol.isTemplateAtom(v))
       {
-         continue;
+        if (mass_options.skip_error_on_pseudoatoms)
+        {
+          continue;
+        }
+        else
+        {
+          throw Error("Cannot calculate mass for structure with pseudoatoms, template atoms or RSites");
+        }
       }
 
       int number = mol.getAtomNumber(v);
@@ -126,7 +133,16 @@ double MoleculeMass::mostAbundantMass (Molecule &mol)
             v = mol.vertexNext(v))
    {
       if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v) || mol.isRSite(v))
-         continue;
+      {        
+        if (mass_options.skip_error_on_pseudoatoms)
+        {
+          continue;
+        }
+        else
+        {
+          throw Error("Cannot calculate mass for structure with pseudoatoms, template atoms or RSites");
+        }
+      }
 
       int number = mol.getAtomNumber(v);
       int isotope = mol.getAtomIsotope(v);
@@ -209,7 +225,16 @@ double MoleculeMass::monoisotopicMass (Molecule &mol)
             v = mol.vertexNext(v))
    {
       if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v) || mol.isRSite(v))
-         continue;
+      {
+        if (mass_options.skip_error_on_pseudoatoms)
+        {
+          continue;
+        }
+        else
+        {
+          throw Error("Cannot calculate mass for structure with pseudoatoms, template atoms or RSites");
+        }
+      }
 
       int number = mol.getAtomNumber(v);
       int isotope = mol.getAtomIsotope(v);
@@ -303,10 +328,17 @@ void MoleculeMass::massComposition (Molecule &mol, Array<char> &str)
          v != mol.vertexEnd();
          v = mol.vertexNext(v))
     {
-        if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v) || mol.isRSite(v))
+      if (mol.isPseudoAtom(v) || mol.isTemplateAtom(v) || mol.isRSite(v))
+      {
+        if (mass_options.skip_error_on_pseudoatoms)
         {
-            continue;
+          continue;
         }
+        else
+        {
+          throw Error("Cannot calculate mass for structure with pseudoatoms, template atoms or RSites");
+        }
+      }
         
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);

@@ -497,7 +497,13 @@ static void indigoResetBasicOptions ()
    Indigo &self = indigoGetInstance();
    self.standardize_options.reset();
    self.ionize_options = IonizeOptions();
-   self.init();   
+   self.init();
+}
+
+static void indigoMassSkipErrorOnPseudoatoms(int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.mass_options.skip_error_on_pseudoatoms = (enabled != 0);
 }
 
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
@@ -587,6 +593,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerInt("pKa-model-min-level", indigoSetPkaModelMinLevel);
        
    mgr.setOptionHandlerVoid("reset-basic-options", indigoResetBasicOptions);
+
+   mgr.setOptionHandlerBool("mass-skip-error-on-pseudoatoms", indigoMassSkipErrorOnPseudoatoms);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

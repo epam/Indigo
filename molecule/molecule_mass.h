@@ -16,7 +16,7 @@
 #define __molecule_mass_h__
 
 #include "base_cpp/red_black.h"
-
+#include "molecule/molecule_mass_options.h"
 namespace indigo {
 
 class Molecule;
@@ -37,6 +37,7 @@ protected:
 public:
 
     MoleculeMass();
+    MassOptions mass_options;
 
    const RedBlackMap<int, double> *relative_atomic_mass_map;
 
