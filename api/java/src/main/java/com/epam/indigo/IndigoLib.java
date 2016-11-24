@@ -448,6 +448,8 @@ public interface IndigoLib extends Library
    
    int indigoNameToStructure(String name, String params);
 
+   int indigoTransformHELMtoSCSR(int item);
+
    int indigoResetOptions();
 
    int indigoDbgBreakpoint ();

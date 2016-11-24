@@ -628,6 +628,17 @@ namespace com.epam.indigo
             return new IndigoObject(this, result, molecule);
         }
 
+        public IndigoObject transformHELMtoSCSR(IndigoObject item)
+        {
+            setSessionID();
+            int result = checkResult(_indigo_lib.indigoTransformHELMtoSCSR(item.self));
+            if (result == 0)
+            {
+                return null;
+            }
+            return new IndigoObject(this, result);
+        }
+
         public void free(int id)
         {
             setSessionID();

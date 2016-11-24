@@ -1766,6 +1766,8 @@ class Indigo(object):
         Indigo._lib.indigoTransformSCSRtoCTAB.argtypes = [c_int]
         Indigo._lib.indigoTransformCTABtoSCSR.restype = c_int
         Indigo._lib.indigoTransformCTABtoSCSR.argtypes = [c_int, c_int]
+        Indigo._lib.indigoTransformHELMtoSCSR.restype = c_int
+        Indigo._lib.indigoTransformHELMtoSCSR.argtypes = [c_int]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int
@@ -2382,3 +2384,7 @@ class Indigo(object):
     def buildPkaModel(self, level, threshold, filename):
         self._setSessionId()
         return self._checkResult(Indigo._lib.indigoBuildPkaModel(level, threshold, filename.encode(ENCODE_ENCODING)))
+
+    def transformHELMtoSCSR(self, item):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoTransformHELMtoSCSR(item.id)))

@@ -853,6 +853,15 @@ public class Indigo {
         return new IndigoObject(this, result);
     }
 
+    public IndigoObject transformHELMtoSCSR(IndigoObject item) {
+        setSessionId()
+        int result = checkResult(this, _lib.indigoTransformHELMtoSCSR(item.self))
+        if (result == 0)
+            return null;
+
+        return new IndigoObject(this, result);
+    }
+
     @Override
     protected void finalize() throws Throwable {
         if (!sessionReleased()) {
