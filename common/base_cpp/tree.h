@@ -53,6 +53,8 @@ public:
 
    int label;
 
+   inline Tree* find(int label) { return _find(label); }
+
 protected:
 
    Tree & _insert (int label)
