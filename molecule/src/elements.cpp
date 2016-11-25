@@ -469,6 +469,15 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
             hyd = -1;
       }
    }
+   else if (groupno == 2)
+   {
+      if (elem == ELEM_Be || elem == ELEM_Mg || elem == ELEM_Ca ||
+          elem == ELEM_Sr || elem == ELEM_Ba || elem == ELEM_Ra)
+      {
+         valence = 2;
+         hyd = 2 - rad - conn - abs(charge);
+      }
+   }
    else if (groupno == 3)
    {
       if (elem == ELEM_B || elem == ELEM_Al || elem == ELEM_Ga || elem == ELEM_In)
