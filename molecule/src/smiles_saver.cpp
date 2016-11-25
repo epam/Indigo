@@ -502,7 +502,7 @@ void SmilesSaver::_saveMolecule ()
             _output.writeChar('/');
          else if ((dir == 2 && v_idx == edge.end) || (dir == 1 && v_idx == edge.beg))
             _output.writeChar('\\');
-         else if (smarts_mode)
+         else if (smarts_mode && _qmol != 0)
             _writeSmartsBond(e_idx, &_qmol->getBond(e_idx), false);
          else if (bond_order == BOND_DOUBLE)
             _output.writeChar('=');
@@ -542,8 +542,11 @@ void SmilesSaver::_saveMolecule ()
          if (!smarts_mode)
             _writeAtom(v_idx, _atoms[v_idx].aromatic,
                        _atoms[v_idx].lowercase, _atoms[v_idx].chirality);
-         else
+         else if (_qmol != 0)
             _writeSmartsAtom(v_idx, &_qmol->getAtom(v_idx), _atoms[v_idx].chirality, 0, false);
+         else
+           throw Error("SMARTS format availble for query only");
+
 
          QS_DEF(Array<int>, closing);
 
