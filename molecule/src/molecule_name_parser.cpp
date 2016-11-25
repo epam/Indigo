@@ -1248,6 +1248,9 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base,
    const Element& element = base->element;
    const int number = element.first;
 
+   int item = -1;
+   int parent = tree.label;
+
    const int multipliers = base->combineMultipliers();
    if (multipliers >= 1) {
       bool organicElement = (_organicElements.find(number) != _organicElements.end());
@@ -1256,25 +1259,28 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base,
       }
 
       const string& symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
-      tree.insert(_pool.add(new SmilesNode(symbol, BOND_SINGLE)), tree.label);
+      item = _pool.add(new SmilesNode(symbol, BOND_SINGLE));
+      tree.insert(item, parent);
+      parent = item;
 
       for (int i = 1; i < multipliers; i++) {
-         tree.insert(_pool.add(new SmilesNode(symbol, BOND_SINGLE)), tree.label);
+         item = _pool.add(new SmilesNode(symbol, BOND_SINGLE));
+         tree.insert(item, parent);
+         parent = item;
       }
    }
 
    if (base->cycle) {
-      const ObjArray<Tree>& nodes = tree.children();
-      SmilesNode* sn = _pool[nodes[0].label];
+      SmilesNode* sn = _pool[tree.label];
       sn->str += "1";
 
-      sn = _pool[nodes[nodes.size() - 1].label];
+      sn = _pool[item];
       sn->str += "1";
    }
 
    if (base->bondType != BOND_SINGLE) {
       const ObjArray<Tree>& nodes = tree.children();
-      SmilesNode* sn = _pool[nodes[0].label];
+      SmilesNode* sn = _pool[tree.label];
       sn->bondType = base->bondType;
    }
 
@@ -1290,8 +1296,11 @@ bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituen
 
    if (!nodes.empty()) {
       for (int pos : positions) {
-         Tree& leaf = tree.children()[pos];
-         if (!_processNodes(nodes, leaf)) {
+         Tree* leaf = tree.find(pos);
+         if (!leaf)
+            return false;
+
+         if (!_processNodes(nodes, *leaf)) {
             return false;
          }
       }
@@ -1307,8 +1316,12 @@ bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituen
    switch (subst->nodeType) {
    case NodeType::SUFFIX: {
       for (int pos : positions) {
-         const ObjArray<Tree>& nodes = tree.children();
-         SmilesNode* sn = _pool[nodes[pos - 1].label];
+         Tree* leaf = tree.find(pos - 1);
+         if (!leaf) {
+            return false;
+         }
+
+         SmilesNode* sn = _pool[leaf->label];
          sn->bondType = as_base->bondType;
       }
    } break;
@@ -1316,8 +1329,12 @@ bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituen
    case NodeType::SKELETAL: {
       string buffer = organicElement ? _organicElements[number] : "[" + element.second + "]";
       for (int pos : positions) {
-         const Tree& node = _tree.children()[pos - 1];
-         SmilesNode* sn = _pool[node.label];
+         Tree* leaf = _tree.find(pos - 1);
+         if (!leaf) {
+            return false;
+         }
+
+         SmilesNode* sn = _pool[leaf->label];
          sn->str = buffer;
       }
    } break;
@@ -1326,7 +1343,10 @@ bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituen
       int multiplier = as_base->combineMultipliers();
 
       for (int pos : positions) {
-         Tree& node = _tree.children()[pos - 1];
+         Tree* leaf = _tree.find(pos - 1);
+         if (!leaf) {
+            return false;
+         }
 
          string buffer;
          string symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
@@ -1334,7 +1354,7 @@ bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituen
             buffer += symbol;
          }
 
-         node.insert(_pool.add(new SmilesNode(buffer, BOND_SINGLE)), node.label);
+         leaf->insert(_pool.add(new SmilesNode(buffer, BOND_SINGLE)), leaf->label);
       }
    } break;
 
