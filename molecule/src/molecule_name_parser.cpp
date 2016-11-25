@@ -1159,32 +1159,25 @@ void MoleculeNameParser::SmilesBuilder::_initOrganicElements() {
    _organicElements[ELEM_Br] = "Br";
 }
 
-void MoleculeNameParser::SmilesBuilder::_traverse(const Tree& tree) {
-   const SmilesNode* sn = _pool[tree.label];
+void MoleculeNameParser::SmilesBuilder::_buildSmiles(SmilesRoot& root) {
+   for (SmilesNode& node : root.nodes) {
+      _SMILES += node.str;
 
-   _SMILES += sn->str;
-   if (sn->bondType == BOND_DOUBLE) {
-      _SMILES += "=";
-   }
-
-   if (sn->bondType == BOND_TRIPLE) {
-      _SMILES += "#";
-   }
-
-   const ObjArray<Tree>& nodes = tree.children();
-   if (nodes.size() != 0) {
-      for (int i = 0; i < nodes.size(); i++) {
-         _SMILES += "(";
-         _traverse(nodes[i]);
-         _SMILES += ")";
+      if (node.bondType == BOND_DOUBLE) {
+         _SMILES += "=";
       }
-   }
-}
 
-void MoleculeNameParser::SmilesBuilder::_buildSmiles() {
-   const ObjArray<Tree>& nodes = _tree.children();
-   for (int i = 0; i < nodes.size(); i++) {
-      _traverse(nodes[i]);
+      if (node.bondType == BOND_TRIPLE) {
+         _SMILES += "#";
+      }
+
+      if (!node.roots.empty()) {
+         for (SmilesRoot& r : node.roots) {
+            _SMILES += "(";
+            _buildSmiles(r);
+            _SMILES += ")";
+         }
+      }
    }
 }
 
@@ -1204,32 +1197,29 @@ bool MoleculeNameParser::SmilesBuilder::buildResult(Molecule& molecule) {
    // most time we'll have a sigle root
    for (FragmentNode* root : roots) {
       const Nodes& nodes = root->nodes;
-      if (!_processNodes(nodes, _tree)) {
+      if (!_processNodes(nodes, _smilesTree)) {
          return false;
       }
    }
 
-   _buildSmiles();
+   _buildSmiles(_smilesTree);
 
    BufferScanner scanner(_SMILES.c_str());
    SmilesLoader loader(scanner);
    loader.loadMolecule(molecule);
 
-   _tree.children().clear();
-   _pool.clear();
-
    return true;
 }
 
-bool MoleculeNameParser::SmilesBuilder::_processNodes(const Nodes& nodes, Tree& tree) {
+bool MoleculeNameParser::SmilesBuilder::_processNodes(const Nodes& nodes, SmilesRoot& root) {
    auto node = nodes.rbegin();
-   if (!_processBaseNode(dynamic_cast<FragmentNodeBase*>(*node), tree)) {
+   if (!_processBaseNode(dynamic_cast<FragmentNodeBase*>(*node), root)) {
       return false;
    }
 
    ++node;
    while (node != nodes.rend()) {
-      if (!_processSubstNode(dynamic_cast<FragmentNodeSubstituent*>(*node), tree)) {
+      if (!_processSubstNode(dynamic_cast<FragmentNodeSubstituent*>(*node), root)) {
          return false;
       }
 
@@ -1243,13 +1233,10 @@ bool MoleculeNameParser::SmilesBuilder::_processNodes(const Nodes& nodes, Tree& 
 Processes a base node. A base node contains information about structure or
 substituent base: number of locants, chemical element info, bonds, etc.
 */
-bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base, Tree& tree) {
+bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base, SmilesRoot& root) {
    const NodeType& nt = base->nodeType;
    const Element& element = base->element;
    const int number = element.first;
-
-   int item = -1;
-   int parent = tree.label;
 
    const int multipliers = base->combineMultipliers();
    if (multipliers >= 1) {
@@ -1259,29 +1246,26 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base,
       }
 
       const string& symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
-      item = _pool.add(new SmilesNode(symbol, BOND_SINGLE));
-      tree.insert(item, parent);
-      parent = item;
+      SmilesNode node(symbol, BOND_SINGLE, &root);
+      root.nodes.push_back(std::move(node));
 
       for (int i = 1; i < multipliers; i++) {
-         item = _pool.add(new SmilesNode(symbol, BOND_SINGLE));
-         tree.insert(item, parent);
-         parent = item;
+         SmilesNode node(symbol, BOND_SINGLE, &root);
+         root.nodes.push_back(std::move(node));
       }
    }
 
    if (base->cycle) {
-      SmilesNode* sn = _pool[tree.label];
-      sn->str += "1";
+      SmilesNode& first = root.nodes.front();
+      first.str += "1";
 
-      sn = _pool[item];
-      sn->str += "1";
+      SmilesNode& last = root.nodes.back();
+      last.str += "1";
    }
 
    if (base->bondType != BOND_SINGLE) {
-      const ObjArray<Tree>& nodes = tree.children();
-      SmilesNode* sn = _pool[tree.label];
-      sn->bondType = base->bondType;
+      SmilesNode& sn = root.nodes.front();
+      sn.bondType = base->bondType;
    }
 
    return true;
@@ -1290,17 +1274,15 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base,
 /*
 Processes a substituent node. Any substituent might also be a base
 */
-bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituent* subst, Tree& tree) {
+bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituent* subst, SmilesRoot& root) {
    const Nodes& nodes = subst->nodes;
    const Positions& positions = subst->positions;
 
    if (!nodes.empty()) {
       for (int pos : positions) {
-         Tree* leaf = tree.find(pos);
-         if (!leaf)
-            return false;
-
-         if (!_processNodes(nodes, *leaf)) {
+         SmilesNode& sn = root.nodes.at(pos - 1);
+         sn.roots.push_back(SmilesRoot{ &sn });
+         if (!_processNodes(nodes, sn.roots.back())) {
             return false;
          }
       }
@@ -1316,26 +1298,16 @@ bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituen
    switch (subst->nodeType) {
    case NodeType::SUFFIX: {
       for (int pos : positions) {
-         Tree* leaf = tree.find(pos - 1);
-         if (!leaf) {
-            return false;
-         }
-
-         SmilesNode* sn = _pool[leaf->label];
-         sn->bondType = as_base->bondType;
+         SmilesNode& sn = root.nodes.at(pos - 1);
+         sn.bondType = as_base->bondType;
       }
    } break;
 
    case NodeType::SKELETAL: {
       string buffer = organicElement ? _organicElements[number] : "[" + element.second + "]";
       for (int pos : positions) {
-         Tree* leaf = _tree.find(pos - 1);
-         if (!leaf) {
-            return false;
-         }
-
-         SmilesNode* sn = _pool[leaf->label];
-         sn->str = buffer;
+         SmilesNode& sn = root.nodes.at(pos - 1);
+         sn.str = buffer;
       }
    } break;
 
@@ -1343,18 +1315,15 @@ bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituen
       int multiplier = as_base->combineMultipliers();
 
       for (int pos : positions) {
-         Tree* leaf = _tree.find(pos - 1);
-         if (!leaf) {
-            return false;
-         }
+         SmilesNode& sn = root.nodes.at(pos - 1);
+         SmilesRoot r(&sn);
 
-         string buffer;
          string symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
          for (int i = 0; i < multiplier; i++) {
-            buffer += symbol;
+            r.nodes.push_back({ symbol, BOND_SINGLE, &r });
          }
 
-         leaf->insert(_pool.add(new SmilesNode(buffer, BOND_SINGLE)), leaf->label);
+         sn.roots.push_back(std::move(r));
       }
    } break;
 

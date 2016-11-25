@@ -130,7 +130,8 @@ class DLLEXPORT MoleculeNameParser {
       std::string value;
       TokenType type = TokenType::UNKNOWN;
 
-      inline Token() { }
+      inline Token() = default;
+
       inline Token(const std::string& n, const std::string& v, const TokenType& t) {
          name = n;
          value = v;
@@ -148,7 +149,8 @@ class DLLEXPORT MoleculeNameParser {
 
       mutable bool processed = false;           // true if a lexeme was processed
 
-      inline Lexeme() { }
+      inline Lexeme() = default;
+
       inline Lexeme(char ch, const Token& t) {
          lexeme = ch;
          token = t;
@@ -260,7 +262,7 @@ class DLLEXPORT MoleculeNameParser {
    */
    class FragmentNode : NonCopyable {
    public:
-      inline FragmentNode() { }
+      FragmentNode() = default;
       virtual ~FragmentNode();
 
       // Inserts a new node before anchor position, returns status
@@ -280,7 +282,7 @@ class DLLEXPORT MoleculeNameParser {
    class FragmentNodeRoot : public FragmentNode {
    public:
       inline FragmentNodeRoot() { classType = FragmentClassType::ROOT; }
-      virtual ~FragmentNodeRoot() { }
+      virtual ~FragmentNodeRoot() = default;
 
 #ifdef DEBUG
       virtual void print(std::ostream& out) const;
@@ -317,7 +319,7 @@ class DLLEXPORT MoleculeNameParser {
    class FragmentNodeBase : public FragmentNode {
    public:
       FragmentNodeBase();
-      virtual ~FragmentNodeBase() { }
+      virtual ~FragmentNodeBase() = default;
 
       /*
       Returns the sum of multipliers stack
@@ -364,7 +366,7 @@ class DLLEXPORT MoleculeNameParser {
    class FragmentNodeSubstituent : public FragmentNodeBase {
    public:
       inline FragmentNodeSubstituent() { classType = FragmentClassType::SUBSTITUENT; }
-      virtual ~FragmentNodeSubstituent() { }
+      virtual ~FragmentNodeSubstituent() = default;
 
       inline operator const FragmentNodeBase*() const { return dynamic_cast<const FragmentNodeBase*>(this); }
       inline operator FragmentNodeBase*() { return dynamic_cast<FragmentNodeBase*>(this); }
@@ -499,13 +501,59 @@ class DLLEXPORT MoleculeNameParser {
 
    typedef std::map<int, std::string> Elements;
 
-   struct SmilesNode {
+   struct SmilesRoot;
+   struct SmilesNode : public NonCopyable {
+      std::vector<SmilesRoot> roots;
+      SmilesRoot* parent = nullptr;
+
       std::string str;
       int bondType = BOND_ZERO;
 
-      inline SmilesNode(const std::string& s, int bond) {
+      SmilesNode() = default;
+
+      inline SmilesNode(SmilesNode&& rhs) {
+         roots = std::move(rhs.roots);
+         parent = std::move(rhs.parent);
+         str = std::move(rhs.str);
+         bondType = std::move(rhs.bondType);
+      }
+
+      inline SmilesNode& operator=(SmilesNode&& rhs) {
+         roots = std::move(rhs.roots);
+         parent = std::move(rhs.parent);
+         str = std::move(rhs.str);
+         bondType = std::move(rhs.bondType);
+
+         return *this;
+      }
+
+      inline SmilesNode(const std::string& s, int bond, SmilesRoot* p) {
          str = s;
          bondType = bond;
+         parent = p;
+      }
+   };
+
+   struct SmilesRoot : public NonCopyable {
+      std::vector<SmilesNode> nodes;
+      SmilesNode* parent = nullptr;
+
+      SmilesRoot() = default;
+
+      inline SmilesRoot(SmilesRoot&& rhs) {
+         nodes = std::move(rhs.nodes);
+         parent = std::move(rhs.parent);
+      }
+
+      inline SmilesRoot& operator=(SmilesRoot&& rhs) {
+         nodes = std::move(rhs.nodes);
+         parent = std::move(rhs.parent);
+
+         return *this;
+      }
+
+      inline explicit SmilesRoot(SmilesNode* p) {
+         parent = p;
       }
    };
 
@@ -534,28 +582,25 @@ class DLLEXPORT MoleculeNameParser {
 
       std::string _SMILES;
 
-      Tree _tree;
-      PtrPool<SmilesNode> _pool;
+      SmilesRoot _smilesTree;
 
-      void _buildSmiles();
-
-      void _traverse(const Tree& tree);
+      void _buildSmiles(SmilesRoot& root);
 
       Elements _organicElements;
       void _initOrganicElements();
 
-      bool _processNodes(const Nodes& nodes, Tree& tree);
+      bool _processNodes(const Nodes& nodes, SmilesRoot& root);
 
       /*
       Processes a base node. A base node contains information about structure or
       substituent base: number of locants, chemical element info, bonds, etc.
       */
-      bool _processBaseNode(FragmentNodeBase* base, Tree& tree);
+      bool _processBaseNode(FragmentNodeBase* base, SmilesRoot& root);
 
       /*
       Processes a substituent node. Any substituent might also be a base
       */
-      bool _processSubstNode(FragmentNodeSubstituent* subst, Tree& tree);
+      bool _processSubstNode(FragmentNodeSubstituent* subst, SmilesRoot& root);
    }; // class SmilesBuilder
 
    // Turns a certain option on or off depending on input flag
