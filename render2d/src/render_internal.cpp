@@ -301,7 +301,7 @@ void MoleculeRenderInternal::render ()
    _applyBondOffset();
 
    _setBondCenter();
-
+   
    _renderLabels();
 
    _renderBonds();
@@ -686,7 +686,9 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent) {
       if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP) {
          const Superatom& group = (Superatom &)sgroup;
          Sgroup& sg = _data.sgroups.push();
-         _placeBrackets(sg, group.atoms);
+         QS_DEF(Array<Vec2f[2]>, brackets);
+         _placeBrackets(sg, group.atoms, brackets);
+         _loadBrackets(sg, brackets);
          int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
          TextItem& index = _data.textitems[tiIndex];
          index.fontsize = FONT_SIZE_ATTR;
@@ -712,7 +714,7 @@ void MoleculeRenderInternal::_initSGroups()
    _initSGroups(sgroups, Rect2f(_min, _max));
 }
 
-void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<Vec2f[2]>& coord, bool transformCoordinates)
+void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<Vec2f[2]>& coord)
 {
    for (int j = 0; j < coord.size(); ++j) {
       Vec2f a(coord[j][0]), b(coord[j][1]);
@@ -725,10 +727,6 @@ void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<Vec2f[2]>& co
       RenderItemBracket& bracket = _data.brackets.push();
       bracket.p0.copy(a);
       bracket.p1.copy(b);
-      if (transformCoordinates) {
-         _objCoordTransform(bracket.p0, a);
-         _objCoordTransform(bracket.p1, b);
-      }
       bracket.d.diff(bracket.p1, bracket.p0);
       bracket.length = bracket.d.length();
       bracket.d.normalize();
@@ -741,12 +739,58 @@ void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<Vec2f[2]>& co
    }
 }
 
+void MoleculeRenderInternal::_convertCoordinate(const Array<Vec2f[2]>& original, Array<Vec2f[2]>& converted)
+{
+    auto& left = original.at(0);
+    auto& right = original.at(1);
+    auto& adjLeft = converted.push();
+    auto& adjRight = converted.push();
+    
+    _objCoordTransform(adjLeft[0], left[0]);
+    _objCoordTransform(adjLeft[1], left[1]);
+    _objCoordTransform(adjRight[0], right[0]);
+    _objCoordTransform(adjRight[1], right[1]);
+}
+
+void MoleculeRenderInternal::_adjustBrackets(const Array<Vec2f[2]>& converted, Array<Vec2f[2]>& placed)
+{
+    const Vec2f* adjLeft = converted.at(0); 
+    const Vec2f* adjRight = converted.at(1);  
+    Vec2f* plcLeft = placed.at(0);  
+    Vec2f* plcRight = placed.at(1); 
+    
+    if(adjLeft[0].x < plcLeft[0].x)
+    {
+        plcLeft[0].x = adjLeft[0].x;
+        plcLeft[1].x = adjLeft[1].x;
+    }
+
+    if(adjLeft[0].y > plcLeft[0].y) plcLeft[0].y = adjLeft[0].y;
+    if(adjLeft[1].y < plcLeft[1].y) plcLeft[1].y = adjLeft[1].y;
+
+    if(adjRight[0].x > plcRight[0].x)
+    {
+        plcRight[0].x = adjRight[0].x;
+        plcRight[1].x = adjRight[1].x;
+    }
+
+    if(adjRight[0].y < plcRight[0].y) plcRight[0].y = adjRight[0].y;
+    if(adjRight[1].y > plcRight[1].y) plcRight[1].y = adjRight[1].y;
+}
+
 void MoleculeRenderInternal::_loadBracketsAuto(const SGroup& group, Sgroup& sg) {
-   if (group.brackets.size() == 0 || Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) < EPSILON) {
-      _placeBrackets(sg, group.atoms);
-   } else {
-      _loadBrackets(sg, group.brackets, true);
+    Array<Vec2f[2]> brackets;
+   _placeBrackets(sg, group.atoms, brackets);
+   
+   const bool isBracketsCoordinates = group.brackets.size() != 0 || Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) > EPSILON;
+   if (isBracketsCoordinates)
+   {
+       Array<Vec2f[2]> temp;
+       _convertCoordinate(group.brackets, temp);
+       _adjustBrackets(temp, brackets);
    }
+   
+   _loadBrackets(sg, brackets);
 }
 
 void MoleculeRenderInternal::_positionIndex(Sgroup& sg, int ti, bool lower)
@@ -762,10 +806,11 @@ void MoleculeRenderInternal::_positionIndex(Sgroup& sg, int ti, bool lower)
    index.bbp.addScaled(bracket.d, lower ? -yShift : yShift);
 }
 
-void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const Array<int>& atoms)
+void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const Array<int>& atoms, Array<Vec2f[2]>& brackets)
 {
-   QS_DEF(Array<Vec2f[2]>, brackets);
-   brackets.clear();
+   auto left = brackets.push();
+   auto right = brackets.push();
+    
    Vec2f min, max, a, b;
    for (int i = 0; i < atoms.size(); ++i) {
       int aid = atoms[i];
@@ -783,13 +828,10 @@ void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const Array<int>& atoms)
    float extent = _settings.unit * 3;
    min.sub(Vec2f(extent, extent));
    max.add(Vec2f(extent, extent));
-   Vec2f* const & left = brackets.push();
    left[0].set(min.x, max.y);
    left[1].set(min.x, min.y);
-   Vec2f* const & right = brackets.push();
    right[0].set(max.x, min.y);
    right[1].set(max.x, max.y);
-   _loadBrackets(sg, brackets, false);
 }
 
 void MoleculeRenderInternal::_cloneAndFillMappings() {
