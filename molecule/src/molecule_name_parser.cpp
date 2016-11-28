@@ -1271,6 +1271,53 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base,
    return true;
 }
 
+void MoleculeNameParser::SmilesBuilder::_calcHydrogens(const Element& element, int pos, SmilesRoot& root) {
+   int number = indigo::Element::fromString(element.second.c_str());
+   if (number == ELEM_C) {
+      return;
+   }
+
+   bool organicElement = (_organicElements.find(number) != _organicElements.end());
+
+   int connections = indigo::Element::getMaximumConnectivity(number, 0, 0, false);
+   int valence = indigo::Element::calcValenceMinusHyd(number, 0, 0, connections);
+
+   SmilesNode& sn = root.nodes.at(pos - 1);
+
+   string buffer;
+   if (!organicElement) {
+      int hydrogens = 0;
+
+      if (root.nodes.size() == 1) {
+         hydrogens = valence;
+      } else {
+         if (pos > 1) {
+            const SmilesNode& prev = root.nodes.at(pos - 2);
+
+            int prevBond = prev.bondType;
+            hydrogens = valence - prevBond - sn.bondType;
+         }
+         else {
+            hydrogens = valence - sn.bondType;
+         }
+      }
+
+      if (hydrogens > 0) {
+         char buff[2];
+         ::_itoa(hydrogens, buff, 10);
+         buffer += "[" + element.second + "H" + buff + "]";
+      }
+      else {
+         buffer += "[" + element.second + "]";
+      }
+   }
+   else {
+      buffer = _organicElements[number];
+   }
+
+   sn.str = buffer;
+}
+
 /*
 Processes a substituent node. Any substituent might also be a base
 */
@@ -1300,14 +1347,14 @@ bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituen
       for (int pos : positions) {
          SmilesNode& sn = root.nodes.at(pos - 1);
          sn.bondType = as_base->bondType;
+
+         _calcHydrogens(element, pos, root);
       }
    } break;
 
    case NodeType::SKELETAL: {
-      string buffer = organicElement ? _organicElements[number] : "[" + element.second + "]";
       for (int pos : positions) {
-         SmilesNode& sn = root.nodes.at(pos - 1);
-         sn.str = buffer;
+         _calcHydrogens(element, pos, root);
       }
    } break;
 
