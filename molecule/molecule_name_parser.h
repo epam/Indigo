@@ -234,8 +234,6 @@ class DLLEXPORT MoleculeNameParser {
 
       // try to find a lexeme using an elision rule
       bool _tryElision(const std::string& failure);
-
-      void _preCheck();
    }; // class Parse
 
    enum class FragmentClassType : int {
@@ -493,8 +491,6 @@ class DLLEXPORT MoleculeNameParser {
       bool _processSkeletal(const Lexeme& lexeme);
       bool _processSkeletalPrefix(const Lexeme& lexeme);
 
-      bool _processLocantRelaxed(const Lexeme& lexeme);
-
       // Converts std::string to int
       int _strToInt(const std::string& str);
    }; // class TreeBuilder
@@ -585,6 +581,8 @@ class DLLEXPORT MoleculeNameParser {
       SmilesRoot _smilesTree;
 
       void _buildSmiles(SmilesRoot& root);
+
+      void _calcHydrogens(const Element& element, int pos, SmilesRoot& root);
 
       Elements _organicElements;
       void _initOrganicElements();
