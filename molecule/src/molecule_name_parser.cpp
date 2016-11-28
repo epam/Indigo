@@ -1303,8 +1303,8 @@ void MoleculeNameParser::SmilesBuilder::_calcHydrogens(const Element& element, i
       }
 
       if (hydrogens > 0) {
-         char buff[2];
-         ::_itoa(hydrogens, buff, 10);
+         char buff[3];
+         ::sprintf(buff, "%d", hydrogens);
          buffer += "[" + element.second + "H" + buff + "]";
       }
       else {
