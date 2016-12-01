@@ -31,6 +31,7 @@
 #include "molecule/separators.inc"
 #include "molecule/skeletal.inc"
 #include "molecule/token_types.inc"
+#include "molecule/trivial.inc"
 
 using namespace std;
 using namespace indigo;
@@ -48,6 +49,7 @@ MoleculeNameParser::DictionaryManager::DictionaryManager() {
    _readTable(multipliers_table, true);
    _readTable(separators_table);
    _readTable(flags_table, true);
+   _readTable(trivial_table, true);
 
    _readSkeletalAtomsTable();
    _readBasicElementsTable();
@@ -592,19 +594,19 @@ Recursively calls itself until EndOfStream is reached or error occured
 bool MoleculeNameParser::TreeBuilder::_processParse() {
    const Lexeme& lexeme = _parse->getNextLexeme();
 
+   const TokenType& tt = lexeme.token.type;
    if (lexeme.processed) {
-      if (lexeme.token.type == TokenType::SUFFIXES && lexeme.lexeme == "yl") {
+      if (tt == TokenType::SUFFIXES && lexeme.lexeme == "yl") {
          _current = _getCurrentBase();
       }
       return _processParse();
    }
    
-   if (lexeme.token.type == TokenType::END_OF_STREAM) {
+   if (tt == TokenType::END_OF_STREAM) {
       return true;
    }
 
-   if ((lexeme.token.type == TokenType::UNKNOWN) ||
-       (lexeme.token.type == TokenType::TEXT)) {
+   if ((tt == TokenType::UNKNOWN) || (tt == TokenType::TEXT)) {
       return false;
    }
 
@@ -1381,6 +1383,29 @@ bool MoleculeNameParser::SmilesBuilder::_processSubstNode(FragmentNodeSubstituen
    return true;
 }
 
+bool MoleculeNameParser::SmilesBuilder::checkTrivial() {
+   bool good = true;
+   for (const Lexeme& l : _parse->lexemes) {
+      if (!(l.token.type == TokenType::TRIVIAL || l.token.type == TokenType::END_OF_STREAM)) {
+         good = false;
+         break;
+      }
+   }
+
+   return good;
+}
+
+void MoleculeNameParser::SmilesBuilder::buildTrivial(Molecule& molecule) {
+   molecule.clear();
+
+   // currently, build the first trivial name
+   const Lexeme& l = _parse->getNextLexeme();
+
+   BufferScanner scanner(l.token.value.c_str());
+   SmilesLoader loader(scanner);
+   loader.loadMolecule(molecule);
+}
+
 /*
 Main method for convertion from a chemical name into a Molecule object
 A given name undergoes several transformations:
@@ -1407,6 +1432,11 @@ void MoleculeNameParser::parseMolecule(const char *name, Molecule &molecule) {
    }
 
    SmilesBuilder builder(parse);
+   if (builder.checkTrivial()) {
+      builder.buildTrivial(molecule);
+      return;
+   }
+
    if (!builder.buildTree()) {
       molecule.clear();
       throw Error("Cannot construct the build tree for name %s", name);
