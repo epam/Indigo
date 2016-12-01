@@ -475,7 +475,9 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
           elem == ELEM_Sr || elem == ELEM_Ba || elem == ELEM_Ra)
       {
          valence = 2;
-         hyd = 0;
+         hyd = 2 - rad - conn - abs(charge);
+         if (hyd > 0)
+            hyd = 0;
       }
    }
    else if (groupno == 3)
