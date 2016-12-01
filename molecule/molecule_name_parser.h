@@ -117,7 +117,9 @@ class DLLEXPORT MoleculeNameParser {
       */
       FLAG,
 
-      SKELETAL_PREFIX
+      SKELETAL_PREFIX,
+
+      TRIVIAL
    }; //enum class TokenType
 
    /*
@@ -559,7 +561,10 @@ class DLLEXPORT MoleculeNameParser {
    */
    class SmilesBuilder : public NonCopyable {
    public:
-      SmilesBuilder(const Parse& input) : _treeBuilder{ input } { _initOrganicElements(); }
+      SmilesBuilder(const Parse& input) : _treeBuilder{ input } {
+         _parse = &input;
+         _initOrganicElements();
+      }
 
       inline bool buildTree() { return _treeBuilder.processParse(); }
 
@@ -569,12 +574,16 @@ class DLLEXPORT MoleculeNameParser {
       */
       bool buildResult(Molecule& molecule);
 
+      bool checkTrivial();
+      void buildTrivial(Molecule& molecule);
 
    private:
       DECL_ERROR;
 
       // The tree builder, which provides the build tree
       TreeBuilder _treeBuilder;
+
+      const Parse* _parse;
 
       std::string _SMILES;
 
