@@ -884,6 +884,18 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
          }
       }
    }
+   else if (groupno == 8)
+   {
+      if (elem == ELEM_He || elem == ELEM_Ne || elem == ELEM_Ar ||
+          elem == ELEM_Kr || elem == ELEM_Xe || elem == ELEM_Rn)
+      {
+         valence = 0;
+         hyd = 0 - rad - conn - abs(charge);
+         if (hyd > 0)
+            hyd = 0;
+      }
+   }
+
    
    if (hyd < 0)
    {
