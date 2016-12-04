@@ -1699,10 +1699,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          _transformTGroupToSGroup(new_templates[i]);
       }
 
-      for (auto i = 0; i < new_templates.size(); i++)
-      {
-         removeAtoms(new_templates);
-      }
+      removeAtoms(new_templates);
    }
 
    if (expand_mod_templates)
@@ -1942,6 +1939,9 @@ int BaseMolecule::_transformTGroupToSGroup (int idx)
       if (sgs.find(j) == -1)
          base_sgs.push(j);
    }
+
+   if (base_sgs.size() == 0)
+      throw Error("transformTGroupToSGroup(): wrong template structure found (no base SGroup detected)");
 
    if (base_sgs.size() > 1)
       throw Error("transformTGroupToSGroup(): wrong template structure found (more then one base SGroup detected)");
