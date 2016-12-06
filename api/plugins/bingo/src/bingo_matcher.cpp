@@ -143,7 +143,7 @@ BaseMatcher::~BaseMatcher ()
    else if (_current_obj && IndigoReaction::is(*_current_obj))
       ((IndexCurrentReaction *)_current_obj)->matcher_exist = false;
 
-   if (!_current_obj_used)
+   if (_current_obj && !_current_obj_used)
       delete _current_obj;
 }
 
@@ -1122,6 +1122,7 @@ EnumeratorMatcher::EnumeratorMatcher (BaseIndex &index) : BaseMatcher(index, (In
 {
     _id_numbers = index.getIdMapping().size();
     _current_id = 0;
+    _indigoObject = nullptr;
 }
    
 bool EnumeratorMatcher::next ()
