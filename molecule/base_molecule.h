@@ -374,8 +374,8 @@ protected:
 
    void _checkSgroupHierarchy(int pidx, int oidx);
 
-   int _transformTGroupToSGroup (int idx);
-   int _transformSGroupToTGroup (int idx);
+   int _transformTGroupToSGroup (int idx, int t_idx);
+   int _transformSGroupToTGroup (int idx, int &t_idx);
    int _addTemplate (TGroup &tgroup);
    void _fillTemplateSeqIds ();
    bool _isCTerminus (Superatom &su, int idx);

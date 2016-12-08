@@ -167,9 +167,12 @@ void BaseMolecule::mergeSGroupsWithSubmolecule (BaseMolecule &mol, Array<int> &m
             {
                for (int j = 0; j < supersa.bond_connections.size(); j++)
                {
-                Superatom::_BondConnection &bond = sa.bond_connections.push();
-                bond.bond_dir = supersa.bond_connections[j].bond_dir;
-                bond.bond_idx = edge_mapping[supersa.bond_connections[j].bond_idx];
+                  if (supersa.bond_connections[j].bond_idx > -1 && edge_mapping[supersa.bond_connections[j].bond_idx] > -1)
+                  {
+                     Superatom::_BondConnection &bond = sa.bond_connections.push();
+                     bond.bond_dir = supersa.bond_connections[j].bond_dir;
+                     bond.bond_idx = edge_mapping[supersa.bond_connections[j].bond_idx];
+                  }
                }
             }
             sa.subscript.copy(supersa.subscript);
@@ -403,6 +406,32 @@ void BaseMolecule::_flipSuperatomBond(Superatom &sa, int src_bond_idx, int new_b
          Superatom::_BondConnection &bond = sa.bond_connections[j];
          if (bond.bond_idx == src_bond_idx)
             bond.bond_idx = new_bond_idx;
+      }
+   }
+   if (sa.attachment_points.size() > 0)
+   {
+      for (int j = sa.attachment_points.begin(); j != sa.attachment_points.end(); j = sa.attachment_points.next(j))
+      {
+         Superatom::_AttachmentPoint &ap = sa.attachment_points.at(j);
+         const Edge &edge = getEdge(new_bond_idx);
+         if ( (edge.beg == ap.aidx) || (edge.end == ap.aidx) )
+
+         {
+            int ap_aidx = -1;
+            int ap_lvidx = -1;
+            if (sa.atoms.find(edge.beg) != -1)
+            {
+               ap_aidx = edge.beg;
+               ap_lvidx = edge.end;
+            }
+            else if (sa.atoms.find(edge.end) != -1)
+            {
+               ap_aidx = edge.end;
+               ap_lvidx = edge.beg;
+            }
+            ap.aidx = ap_aidx;
+            ap.lvidx = ap_lvidx;
+         }
       }
    }
 }
@@ -1225,12 +1254,11 @@ int BaseMolecule::transformSCSRtoFullCTAB ()
 
    for (auto i = 0; i < tinds.size(); i++)
    {
-      _transformTGroupToSGroup(tinds[i]);
+      _transformTGroupToSGroup(tinds[i], -1);
    }
 
    if (tinds.size() > 0)
    {
-      removeAtoms(tinds);
       tgroups.clear();
       template_attachment_points.clear();
    }
@@ -1245,7 +1273,9 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
    QS_DEF(Molecule, su_fragment);
    QS_DEF(Molecule, rep);
    QS_DEF(Array<int>, added_templates);
+   QS_DEF(Array<int>, added_template_occurs);
    QS_DEF(Array<int>, new_templates);
+   QS_DEF(Array<int>, new_template_occurs);
    QS_DEF(Array<int>, mapping);
    QS_DEF(Array<int>, su_mapping);
    QS_DEF(Array<int>, tm_mapping);
@@ -1263,6 +1293,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 
    added_templates.clear();
    new_templates.clear();
+   new_template_occurs.clear();
    ignore_atoms.clear();
 
    int seq_id = 1;
@@ -1322,6 +1353,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 
       sgs_to_remove.clear();
       atoms_to_remove.clear();
+      added_template_occurs.clear();
 
       for (int l = 0; l < sgs.size(); l++)
       {
@@ -1419,7 +1451,6 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          int idx = this->asMolecule().addAtom(-1);
          this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
          this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
-         seq_id++;
          count_occur++;
 
          for (int j = 0; j < ap_points_atoms.size(); j++)
@@ -1472,8 +1503,9 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          p.y = cp.y;
          setAtomXyz(idx, p);
 
-
          sgs_to_remove.push(sgs[l]);
+         added_template_occurs.push(idx);
+
          atoms_to_remove.concat(remove_atoms);
       }
       
@@ -1481,7 +1513,25 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          added_templates.push(i);
 
       for (int j = 0; j < sgs_to_remove.size(); j++)
-         sgroups.remove(sgs_to_remove[j]);
+      {
+         SGroup &sg = sgroups.getSGroup(sgs_to_remove[j]);
+
+         sgs.clear();
+         sgroups.findSGroups(SGroup::SG_ATOMS, sg.atoms, sgs);
+
+         for (int k= 0; k < sgs.size(); k++)
+         {
+            SGroup &sg_sim = sgroups.getSGroup(sgs[k]);
+            if ( (sg_sim.sgroup_type == SGroup::SG_TYPE_SUP) && (sg_sim.atoms.size() == sg.atoms.size()) )
+            {
+               sgroups.remove(sgs_to_remove[j]);
+            }
+            else if (sg_sim.sgroup_type == SGroup::SG_TYPE_SUP)
+            {
+               sg_sim.atoms.push(added_template_occurs[j]);
+            }
+         }
+      }
 
       if (atoms_to_remove.size() > 0)
          removeAtoms(atoms_to_remove);
@@ -1492,7 +1542,13 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 
    for (int l = 0; l < sgs.size(); l++)  
    {
-      new_templates.push(_transformSGroupToTGroup(sgs[l]));   //  Try to transform this Superatom into template
+      int templ_idx;
+      int templ_occ_ind = _transformSGroupToTGroup(sgs[l], templ_idx);   //  Try to transform this Superatom into template
+      if (templ_occ_ind > -1)
+      {
+         new_templates.push(templ_idx);
+         new_template_occurs.push(templ_occ_ind);
+      }
    }
 
    if (use_scsr_sgroups_only)
@@ -1672,7 +1728,15 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
              
          for (int j = 0; j < sgs.size(); j++)
          {
-            sgroups.remove((sgs[j]));
+            SGroup &sg = sgroups.getSGroup(sgs[j]);
+            if ( (sg.sgroup_type == SGroup::SG_TYPE_SUP) && (sg.atoms.size() == remove_atoms.size()) )
+            {
+               sgroups.remove((sgs[j]));
+            }
+            else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+            {
+               sg.atoms.push(idx);
+            }
          }
 
          removeAtoms(remove_atoms);
@@ -1687,7 +1751,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
       _addTemplate(templates.at(added_templates[i]));
    }
 
-   if (added_templates.size() > 0)
+   if ( (added_templates.size() + new_templates.size()) > 0)
    {
       _fillTemplateSeqIds();
    }
@@ -1696,10 +1760,9 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
    {
       for (auto i = 0; i < new_templates.size(); i++)
       {
-         _transformTGroupToSGroup(new_templates[i]);
+         _transformTGroupToSGroup(new_template_occurs[i], new_templates[i]);
+         tgroups.remove(new_templates[i]);
       }
-
-      removeAtoms(new_templates);
    }
 
    if (expand_mod_templates)
@@ -1747,14 +1810,39 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
    
       for (auto i = 0; i < tinds.size(); i++)
       {
-         _transformTGroupToSGroup(tinds[i]);
+         _transformTGroupToSGroup(tinds[i], -1);
       }
-   
-      if (tinds.size() > 0)
+
+      QS_DEF(Array<int>, rem_templ);
+      QS_DEF(Array<char>, ta_desc);
+      rem_templ.clear();
+      ta_desc.clear();
+      bool templ_used;
+      for (auto i = tgroups.begin(); i != tgroups.end(); i = tgroups.next(i))
       {
-         removeAtoms(tinds);
+         TGroup &tgroup = tgroups.getTGroup(i);
+         templ_used = false;
+         for (auto j : vertices())
+         {
+            if (isTemplateAtom(j))
+            {
+               getAtomDescription(j, ta_desc);
+               if (tgroup.tgroup_name.memcmp(ta_desc) == 0)
+               {
+                  templ_used = true; 
+                  break;   
+               }
+            }
+         }
+         if (!templ_used)
+            rem_templ.push(i); 
+      }
+      for (auto i = 0; i < rem_templ.size(); i++)
+      {
+         tgroups.remove(rem_templ[i]); 
       }
    }
+
    return result;
 }
 
@@ -1906,13 +1994,12 @@ void BaseMolecule::_fillTemplateSeqIds ()
 
 int BaseMolecule::_addTemplate (TGroup &tgroup)
 {
-   int result = 0;
    int idx = tgroups.addTGroup();
    (tgroups.getTGroup(idx)).copy(tgroup);
-   return result;
+   return idx;
 }
 
-int BaseMolecule::_transformTGroupToSGroup (int idx)
+int BaseMolecule::_transformTGroupToSGroup (int idx, int t_idx)
 {
    int result = 0;
    QS_DEF(Molecule, fragment);
@@ -1923,7 +2010,10 @@ int BaseMolecule::_transformTGroupToSGroup (int idx)
    QS_DEF(Array<int>, tg_atoms);
    QS_DEF(Array<int>, lvgroups);
 
-   int tg_idx = tgroups.findTGroup(getTemplateAtom(idx));
+   int tg_idx = t_idx;
+   if (t_idx == -1)
+      tg_idx = tgroups.findTGroup(getTemplateAtom(idx));
+ 
    TGroup &tgroup = tgroups.getTGroup(tg_idx);
    fragment.clear();
    fragment.clone_KeepIndices(*tgroup.fragment.get());
@@ -1973,8 +2063,8 @@ int BaseMolecule::_transformTGroupToSGroup (int idx)
       SGroup &lvg = fragment.sgroups.getSGroup(sgs[i]);
       for (int j = 0; j < lvgroups.size(); j++)
       {
-         if (lvg.atoms.find(lvgroups[j]) > -1)
-//              ( (lvg.atoms.size() == 1 && fragment.getAtomNumber(lvg.atoms[0]) == ELEM_H) ) )
+         if (lvg.atoms.find(lvgroups[j]) > -1) 
+//              (lvg.atoms.size() == 1 && fragment.getAtomNumber(lvg.atoms[0]) == ELEM_H) ) 
             fragment.removeSGroupWithBasis(sgs[i]);
       }
    }
@@ -1991,8 +2081,8 @@ int BaseMolecule::_transformTGroupToSGroup (int idx)
    }
 
    QS_DEF(Array<int>, added_atoms);
-   added_atoms.clear();
 
+   added_atoms.clear();
    for (auto i = 0; i < su.atoms.size(); i++)
    {
       int aidx = mapping[su.atoms[i]];
@@ -2035,17 +2125,32 @@ int BaseMolecule::_transformTGroupToSGroup (int idx)
       }
    }
 
+   QS_DEF(Array<int>, templ_atoms);
+   templ_atoms.clear();
+   templ_atoms.push(idx); 
+
+   sgs.clear();
+   sgroups.findSGroups(SGroup::SG_ATOMS, templ_atoms, sgs);
+
+   for (int i = 0; i < sgs.size(); i++)
+   {
+      SGroup &sg = sgroups.getSGroup(sgs[i]);
+      sg.atoms.concat(added_atoms);
+   }
+
+   removeAtom(idx);
+
    return result;
 }
 
-int BaseMolecule::_transformSGroupToTGroup (int sg_idx)
+int BaseMolecule::_transformSGroupToTGroup (int sg_idx, int &tg_idx)
 {
-   int tg_idx = -1;
    QS_DEF(Array<int>, remove_atoms);
    QS_DEF(Array<int>, mapping);
    QS_DEF(Array<int>, ap_points_atoms);
    QS_DEF(StringPool, ap_points_ids);
    QS_DEF(Array<int>, ap_ids);
+   QS_DEF(Array<int>, sgs);
 
    mapping.clear();
 
@@ -2103,14 +2208,30 @@ int BaseMolecule::_transformSGroupToTGroup (int sg_idx)
       }
    }
 
+   bool nterm_found = false;
+   bool cterm_found = false;
+   for (int k = ap_points_ids.begin(); k < ap_points_ids.end(); k = ap_points_ids.next(k))
+   {
+      if (strncmp(ap_points_ids.at(k), "Al", 2) == 0)
+         nterm_found = true; 
+      if (strncmp(ap_points_ids.at(k), "Br", 2) == 0)
+         cterm_found = true; 
+   }
+
+   if (!nterm_found || !cterm_found)
+      return -1;
+
+   if (su.sa_class.size() == 0)
+      return -1;
+   else if (strncmp(su.sa_class.ptr(), "AA", 2) != 0)
+      return -1;
+
    tg_idx = this->tgroups.addTGroup();
    TGroup &tg = this->tgroups.getTGroup(tg_idx);
    tg.tgroup_id = tg_idx;
 
-   if (su.sa_class.size() > 0)
-      tg.tgroup_class.copy(su.sa_class);
-   else
-      tg.tgroup_class.readString("AA", true);
+   tg.tgroup_class.copy(su.sa_class);
+
    if (su.subscript.size() > 0)
       tg.tgroup_name.copy(su.subscript);
    tg.tgroup_alias.clear();
@@ -2121,6 +2242,29 @@ int BaseMolecule::_transformSGroupToTGroup (int sg_idx)
    AutoPtr<BaseMolecule> new_fragment(this->neu());
    tg.fragment.reset(new_fragment.release());
    tg.fragment->makeSubmolecule(*this, su.atoms, &mapping, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS);
+
+   sgs.clear();
+   for (int j = tg.fragment->sgroups.begin(); j != tg.fragment->sgroups.end(); j = tg.fragment->sgroups.next(j))
+   {
+      SGroup &sg = tg.fragment->sgroups.getSGroup(j);
+      if (sg.sgroup_type != SGroup::SG_TYPE_SUP)
+      {
+         sgs.push(j);
+      }
+      else
+      {
+         Superatom &sg_sup = (Superatom &)sg;
+         if (sg_sup.sa_class.size() == 0)
+            sgs.push(j);
+         else if (strncmp(sg_sup.sa_class.ptr(), "AA", 2) != 0)
+            sgs.push(j);
+      }
+   }
+
+   for (int j = 0; j < sgs.size(); j++)
+   {
+      tg.fragment->sgroups.remove(sgs[j]);
+   }
 
    int idx = this->asMolecule().addAtom(-1);
    this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
@@ -2147,19 +2291,6 @@ int BaseMolecule::_transformSGroupToTGroup (int sg_idx)
             if (findEdgeIndex(neighbors[k], att_point_idx) != -1)
             {
                const Vertex &v_n = getVertex(neighbors[k]);
-/*
-               if (getAtomNumber(neighbors[k]) == ELEM_H)
-               {
-                  remove_atoms.push(neighbors[k]);
-                  continue;
-               }
-
-               if (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1 && getAtomCharge(neighbors[k]) == 0) 
-               {
-                  remove_atoms.push(neighbors[k]);
-                  continue;
-               }
-*/
                if (findEdgeIndex(neighbors[k], idx) == -1)
                   flipBond(neighbors[k], att_point_idx, idx);
                this->asMolecule().setTemplateAtomAttachmentOrder(idx, neighbors[k], ap_points_ids.at(ap_ids[j]));
@@ -2179,6 +2310,23 @@ int BaseMolecule::_transformSGroupToTGroup (int sg_idx)
    setAtomXyz(idx, p);
 
    remove_atoms.copy(su.atoms);
+
+   sgs.clear();
+   sgroups.findSGroups(SGroup::SG_ATOMS, su.atoms, sgs);
+             
+   for (int j = 0; j < sgs.size(); j++)
+   {
+      SGroup &sg = sgroups.getSGroup(sgs[j]);
+      if ( (sg.sgroup_type == SGroup::SG_TYPE_SUP) && (sg.atoms.size() == su.atoms.size()) )
+      {
+         sgroups.remove((sgs[j]));
+      }
+      else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+      {
+         sg.atoms.push(idx);
+      }
+   }
+
    removeAtoms(remove_atoms);
 
    return idx;

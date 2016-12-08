@@ -667,6 +667,7 @@ void Molecule::_removeAtoms (const Array<int> &indices, const int *mapping)
                _connectivity[nei] = -1;
          }
       }
+      _validateVertexConnectivity(idx, false);
    }
    updateEditRevision();
 }
