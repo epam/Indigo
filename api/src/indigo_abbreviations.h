@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 
 namespace indigo 
 {
@@ -41,7 +41,7 @@ public:
 
    void clear();
 	
-   ObjArray<Abbreviation> abbreviations;
+   PtrArray<Abbreviation> abbreviations;
 
 private:
    void loadDefault ();

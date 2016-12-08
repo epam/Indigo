@@ -57,7 +57,7 @@ void IndigoAbbreviations::loadDefault ()
    TiXmlElement *elem = handle.FirstChild("item").ToElement();
    for (; elem; elem = elem->NextSiblingElement())
    {
-      Abbreviation &abbr = abbreviations.push();
+      Abbreviation &abbr = abbreviations.add(new Abbreviation);
 
       const char *name = elem->Attribute("name");
       if (name)

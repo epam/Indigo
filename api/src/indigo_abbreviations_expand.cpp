@@ -66,7 +66,7 @@ struct AttPoint
 class AbbreviationExpander
 {
 public:
-   AbbreviationExpander (ObjArray<Abbreviation> &abbreviations) : abbreviations(abbreviations)
+   AbbreviationExpander (const PtrArray<Abbreviation> &abbreviations) : abbreviations(abbreviations)
    {
       ignore_case = false;
       tokenize_level = 0;
@@ -74,7 +74,7 @@ public:
    }
 
    // Settings
-   ObjArray<Abbreviation> &abbreviations;
+   const PtrArray<Abbreviation>& abbreviations;
    Direction tokenize_direction, expand_direction;
    int tokenize_level;
 
@@ -150,20 +150,20 @@ int AbbreviationExpander::scanSinlgeToken (const char *label, Token &dest)
       int best_abbreviation = -1;
       for (int i = 0; i < abbreviations.size(); i++)
       {
-         Abbreviation &cur = abbreviations[i];
+         const Abbreviation* cur = abbreviations[i];
 
-         std::vector<std::string> *aliases[2] = {NULL, NULL};
+         const std::vector<std::string> *aliases[2] = {NULL, NULL};
          if (tokenize_direction == LEFT)
          {
-            aliases[0] = &cur.left_aliases;
+            aliases[0] = &cur->left_aliases;
             if (tokenize_level == 2)
-               aliases[1] = &cur.left_aliases2;
+               aliases[1] = &cur->left_aliases2;
          }
          else if (tokenize_direction == RIGHT)
          {
-            aliases[0] = &cur.right_aliases;
+            aliases[0] = &cur->right_aliases;
             if (tokenize_level == 2)
-               aliases[1] = &cur.right_aliases2;
+               aliases[1] = &cur->right_aliases2;
          }
 
          for (int k = 0; k < 2; k++)
@@ -172,7 +172,7 @@ int AbbreviationExpander::scanSinlgeToken (const char *label, Token &dest)
                break;
             for (size_t j = 0; j < aliases[k]->size(); j++)
             {
-               std::string &alias = aliases[k]->at(j);
+               const std::string &alias = aliases[k]->at(j);
 
                if (alias.length() < best_matched_length)
                   continue;
@@ -401,7 +401,7 @@ bool AbbreviationExpander::tryExpandToken (TokenChain &tokens, size_t &offset, M
    else if (cur.type == Token::Pattern)
    {
       // Add pattern
-      BufferScanner scanner(abbreviations[cur.index].expansion.c_str());
+      BufferScanner scanner(abbreviations[cur.index]->expansion.c_str());
       SmilesLoader loader(scanner);
 
       Molecule abbr;
@@ -420,7 +420,7 @@ bool AbbreviationExpander::tryExpandToken (TokenChain &tokens, size_t &offset, M
             int id2 = bitGetOneHOIndex(bits);
             if (id1 != id2)
                throw Exception("Invalid abbreviations specification: %s", 
-                  abbreviations[cur.index].expansion.c_str());
+                  abbreviations[cur.index]->expansion.c_str());
             if (id1 != 0)
                id1--; // R == R1
 
