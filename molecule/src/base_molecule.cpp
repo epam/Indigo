@@ -2208,19 +2208,6 @@ int BaseMolecule::_transformSGroupToTGroup (int sg_idx, int &tg_idx)
       }
    }
 
-   bool nterm_found = false;
-   bool cterm_found = false;
-   for (int k = ap_points_ids.begin(); k < ap_points_ids.end(); k = ap_points_ids.next(k))
-   {
-      if (strncmp(ap_points_ids.at(k), "Al", 2) == 0)
-         nterm_found = true; 
-      if (strncmp(ap_points_ids.at(k), "Br", 2) == 0)
-         cterm_found = true; 
-   }
-
-   if (!nterm_found || !cterm_found)
-      return -1;
-
    if (su.sa_class.size() == 0)
       return -1;
    else if (strncmp(su.sa_class.ptr(), "AA", 2) != 0)
@@ -2355,8 +2342,6 @@ bool BaseMolecule::_isCTerminus (Superatom &su, int idx)
    if (!matcher.find())
       return false;
 
-//   printf(" CTerminus AA found !!!\n");
-
    mapping.clear();
    mapping.copy(matcher.getQueryMapping(), aminoacid.vertexEnd());
 
@@ -2388,8 +2373,6 @@ bool BaseMolecule::_isNTerminus (Superatom &su, int idx)
 
    if (!matcher.find())
       return false;
-
-//   printf(" NTerminus AA found !!!\n");
 
    mapping.clear();
    mapping.copy(matcher.getQueryMapping(), aminoacid.vertexEnd());
