@@ -420,7 +420,7 @@ class IndigoObject(object):
 
     def checkRGroups(self):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigocheckRGroups(self.id))
+        return self.dispatcher._checkResult(Indigo._lib.indigoCheckRGroups(self.id))
 
     def countHydrogens(self):
         value = c_int()
