@@ -771,7 +771,8 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       output.writeStringCR("M  V30 END COLLECTION");
    }
 
-   _checkSGroupIndices(mol);
+   QS_DEF(Array<int>, sgs_sorted);
+   _checkSGroupIndices(mol, sgs_sorted);
 
    if (mol.countSGroups() > 0)
    {
@@ -779,10 +780,11 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
       int idx = 1;
 
       output.writeStringCR("M  V30 BEGIN SGROUP");
-      for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+      for (i = 0; i < sgs_sorted.size(); i++)
       {
          ArrayOutput out(buf);
-         SGroup &sgroup = sgroups->getSGroup(i);
+         int sg_idx = sgs_sorted[i];
+         SGroup &sgroup = sgroups->getSGroup(sg_idx);
          _writeGenericSGroup3000(sgroup, idx++, out);
          if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
          {
@@ -1519,7 +1521,9 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
       sgroup_ids.push(i);
    }
 
-   _checkSGroupIndices(mol);
+
+   QS_DEF(Array<int>, sgs_sorted);
+   _checkSGroupIndices(mol, sgs_sorted);
 
    if (sgroup_ids.size() > 0)
    {
@@ -1786,27 +1790,71 @@ void MolfileSaver::_writeFormattedString(Output &output, Array<char> &str, int l
          output.writeChar(' ');
 }
 
-void MolfileSaver::_checkSGroupIndices (BaseMolecule &mol)
+void MolfileSaver::_checkSGroupIndices (BaseMolecule &mol, Array<int> &sgs_list)
 {
-   int max_idx = 0;
+   QS_DEF(Array<int>, orig_ids);
+   QS_DEF(Array<int>, added_ids);
 
+   int max_idx = 0;
+   sgs_list.clear();
+   orig_ids.clear();
+   added_ids.clear();
+ 
    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
    {
-      SGroup *sgroup = &mol.sgroups.getSGroup(i);
-      if (sgroup->original_group > 0)
+      SGroup &sgroup = mol.sgroups.getSGroup(i);
+      if (sgroup.original_group > 0)
       {
-         if (sgroup->original_group > max_idx)
-            max_idx = sgroup->original_group;
+         if (sgroup.original_group > max_idx)
+            max_idx = sgroup.original_group;
       }
    }
    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
    {
-      SGroup *sgroup = &mol.sgroups.getSGroup(i);
-      if (sgroup->original_group == 0)
+      SGroup &sgroup = mol.sgroups.getSGroup(i);
+      if (sgroup.original_group == 0)
       {
          max_idx++;
-         sgroup->original_group = max_idx;
+         sgroup.original_group = max_idx;
       }
+      orig_ids.push(sgroup.original_group);
+   }
+
+   for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+   {
+      SGroup &sgroup = mol.sgroups.getSGroup(i);
+      if (sgroup.parent_group == 0)
+      {
+         sgs_list.push(i);
+         added_ids.push(sgroup.original_group);
+      }
+      else
+      {
+         if (orig_ids.find(sgroup.parent_group)  == -1)
+         {
+            sgroup.parent_group = 0;
+            sgs_list.push(i);
+            added_ids.push(sgroup.original_group);
+         }
+      }
+   }
+
+   for (;;)
+   {
+      for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+      {
+         SGroup &sgroup = mol.sgroups.getSGroup(i);
+         if (sgroup.parent_group == 0)
+            continue;
+
+         if (added_ids.find(sgroup.parent_group) != -1)
+         {
+            sgs_list.push(i);
+            added_ids.push(sgroup.original_group);
+         }
+      }
+      if (sgs_list.size() == mol.countSGroups())
+        break;
    }
 }
 

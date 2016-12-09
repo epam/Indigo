@@ -110,7 +110,7 @@ protected:
    void _writeTGroup (Output &output, BaseMolecule &mol, int tg_idx);
    void _writeCtabHeader2000 (Output &output, BaseMolecule &mol);
    void _writeCtab2000 (Output &output, BaseMolecule &mol, bool query);
-   void _checkSGroupIndices (BaseMolecule &mol);
+   void _checkSGroupIndices (BaseMolecule &mol, Array<int> &sgs);
    void _writeRGroupIndices2000 (Output &output, BaseMolecule &mol);
    void _writeAttachmentValues2000 (Output &output, BaseMolecule &fragment);
    void _writeGenericSGroup3000 (SGroup &sgroup, int idx, Output &output);
