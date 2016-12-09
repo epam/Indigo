@@ -415,6 +415,8 @@ CEXPORT int indigoIterateGenericSGroups (int molecule);
 CEXPORT int indigoIterateRepeatingUnits (int molecule);
 CEXPORT int indigoIterateMultipleGroups (int molecule);
 
+CEXPORT int indigoIterateSGroups (int molecule);
+
 CEXPORT int indigoGetSuperatom (int molecule, int index);
 CEXPORT int indigoGetDataSGroup (int molecule, int index);
 CEXPORT int indigoGetGenericSGroup (int molecule, int index);
@@ -470,6 +472,11 @@ CEXPORT int indigoFindSGroups (int item, const char *property, const char *value
 
 CEXPORT int indigoGetSGroupType (int item);
 CEXPORT int indigoGetSGroupIndex (int item);
+
+CEXPORT int indigoGetSGroupOriginalId (int sgroup);
+CEXPORT int indigoSetSGroupOriginalId (int sgroup, int original);
+CEXPORT int indigoGetSGroupParentId (int sgroup);
+CEXPORT int indigoSetSGroupParentId (int sgroup, int parent);
 
 CEXPORT int indigoTransformSCSRtoCTAB (int item);
 CEXPORT int indigoTransformCTABtoSCSR (int molecule, int templates);

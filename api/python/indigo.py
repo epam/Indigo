@@ -474,6 +474,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoIterateMultipleGroups(self.id)))
 
+    def iterateSGroups(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoIterateSGroups(self.id)))
+
     def getSuperatom(self, index):
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoGetSuperatom(self.id, index)))
@@ -648,6 +652,22 @@ class IndigoObject(object):
     def getSGroupIndex(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoGetSGroupIndex(self.id))
+
+    def getSGroupOriginalId(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSGroupOriginalId(self.id))
+
+    def setSGroupOriginalId(self, original):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupOriginalId(self.id, original))
+
+    def getSGroupParentId(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetSGroupParentId(self.id))
+
+    def setSGroupParentId(self, parent):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupParentId(self.id, parent))
 
     def transformSCSRtoCTAB(self):
         self.dispatcher._setSessionId()
@@ -1680,6 +1700,8 @@ class Indigo(object):
         Indigo._lib.indigoIterateRepeatingUnits.argtypes = [c_int]
         Indigo._lib.indigoIterateMultipleGroups.restype = c_int
         Indigo._lib.indigoIterateMultipleGroups.argtypes = [c_int]
+        Indigo._lib.indigoIterateSGroups.restype = c_int
+        Indigo._lib.indigoIterateSGroups.argtypes = [c_int]
         Indigo._lib.indigoGetSuperatom.restype = c_int
         Indigo._lib.indigoGetSuperatom.argtypes = [c_int, c_int]
         Indigo._lib.indigoGetDataSGroup.restype = c_int
@@ -1762,6 +1784,14 @@ class Indigo(object):
         Indigo._lib.indigoGetSGroupType.argtypes = [c_int]
         Indigo._lib.indigoGetSGroupIndex.restype = c_int
         Indigo._lib.indigoGetSGroupIndex.argtypes = [c_int]
+        Indigo._lib.indigoGetSGroupOriginalId.restype = c_int
+        Indigo._lib.indigoGetSGroupOriginalId.argtypes = [c_int]
+        Indigo._lib.indigoSetSGroupOriginalId.restype = c_int
+        Indigo._lib.indigoSetSGroupOriginalId.argtypes = [c_int, c_int]
+        Indigo._lib.indigoGetSGroupParentId.restype = c_int
+        Indigo._lib.indigoGetSGroupParentId.argtypes = [c_int]
+        Indigo._lib.indigoSetSGroupParentId.restype = c_int
+        Indigo._lib.indigoSetSGroupParentId.argtypes = [c_int, c_int]
         Indigo._lib.indigoTransformSCSRtoCTAB.restype = c_int
         Indigo._lib.indigoTransformSCSRtoCTAB.argtypes = [c_int]
         Indigo._lib.indigoTransformCTABtoSCSR.restype = c_int

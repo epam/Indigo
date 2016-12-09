@@ -2104,6 +2104,8 @@ int BaseMolecule::_transformTGroupToSGroup (int idx, int t_idx)
 
          for (int i = 0; i < att_atoms.size(); i++)
          {
+            if (findEdgeIndex(att_atoms[i], idx) == -1)
+               continue;
             flipBond(att_atoms[i], idx, mapping[tg_atoms[i]]);
             if (isTemplateAtom(att_atoms[i]))
                _flipTemplateAtomAttachmentPoint(att_atoms[i], idx, mapping[tg_atoms[i]]);
@@ -2154,11 +2156,18 @@ int BaseMolecule::_transformSGroupToTGroup (int sg_idx, int &tg_idx)
 
    mapping.clear();
 
+   if (!sgroups.hasSGroup(sg_idx))
+      return -1;
+
    Superatom &su = (Superatom &) sgroups.getSGroup(sg_idx);
 
    ap_points_atoms.clear();
    ap_points_ids.clear();
    ap_ids.clear();
+
+   if (su.attachment_points.size() == 0 && su.bonds.size() == 0)
+      return -1;
+
    if (su.attachment_points.size() > 0)
    {
       for (int k = su.attachment_points.begin(); k < su.attachment_points.end(); k = su.attachment_points.next(k))

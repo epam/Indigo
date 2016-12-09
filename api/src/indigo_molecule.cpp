@@ -2459,7 +2459,12 @@ void IndigoSGroup::remove ()
 
 IndigoSGroup & IndigoSGroup::cast (IndigoObject &obj)
 {
-   if (obj.type == IndigoObject::SGROUP)
+   if (obj.type == IndigoObject::SGROUP ||
+       obj.type == IndigoObject::DATA_SGROUP ||
+       obj.type == IndigoObject::SUPERATOM ||
+       obj.type == IndigoObject::REPEATING_UNIT ||
+       obj.type == IndigoObject::MULTIPLE_GROUP ||
+       obj.type == IndigoObject::GENERIC_SGROUP)
       return (IndigoSGroup &)obj;
 
    throw IndigoError("%s is not a sgroup", obj.debugInfo());
@@ -2507,6 +2512,23 @@ IndigoObject * IndigoSGroupsIter::next ()
    AutoPtr<IndigoSGroup> sgroup(new IndigoSGroup(_mol, _refs[_idx]));
    return sgroup.release();
 }
+
+CEXPORT int indigoIterateSGroups (int molecule)
+{
+   INDIGO_BEGIN
+   {
+    QS_DEF(Array<int>, sgs);
+    sgs.clear();
+    BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+    for (auto i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    {
+       sgs.push(i);
+    }
+    return self.addObject(new IndigoSGroupsIter(mol, sgs));
+   }
+   INDIGO_END(-1)
+}
+
 
 IndigoTGroup::IndigoTGroup (BaseMolecule &mol_, int tg_idx_) :
 IndigoObject(TGROUP),
@@ -3281,6 +3303,79 @@ CEXPORT int indigoGetSGroupIndex (int sgroup)
    {
       IndigoSGroup &sg = IndigoSGroup::cast(self.getObject(sgroup));
       return sg.idx;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoGetSGroupOriginalId (int sgroup)
+{
+   INDIGO_BEGIN
+   {
+      IndigoSGroup &sg = IndigoSGroup::cast(self.getObject(sgroup));
+      return sg.get().original_group;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSGroupOriginalId (int sgroup, int new_original)
+{
+   INDIGO_BEGIN
+   {
+      IndigoSGroup &sgr = IndigoSGroup::cast(self.getObject(sgroup));
+
+      for (auto i = sgr.mol.sgroups.begin(); i != sgr.mol.sgroups.end(); i = sgr.mol.sgroups.next(i))
+      {
+         SGroup &sg = sgr.mol.sgroups.getSGroup(i);
+         if (sg.original_group == new_original && i != sgr.idx)
+            throw IndigoError("indigoSetSGroupOriginalId: duplicated sgroup id %d )", new_original);
+      }
+
+      int old_original = sgr.get().original_group;
+      if (old_original > 0)
+      {
+         for (auto i = sgr.mol.sgroups.begin(); i != sgr.mol.sgroups.end(); i = sgr.mol.sgroups.next(i))
+         {
+            SGroup &sg = sgr.mol.sgroups.getSGroup(i);
+            if (sg.parent_group == old_original)
+               sg.parent_group = new_original; 
+         }
+      }
+      sgr.get().original_group = new_original;
+
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoGetSGroupParentId (int sgroup)
+{
+   INDIGO_BEGIN
+   {
+      IndigoSGroup &sg = IndigoSGroup::cast(self.getObject(sgroup));
+      return sg.get().parent_group;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoSetSGroupParentId (int sgroup, int parent)
+{
+   INDIGO_BEGIN
+   {
+      IndigoSGroup &sgr = IndigoSGroup::cast(self.getObject(sgroup));
+
+      bool original_found = false;
+      for (auto i = sgr.mol.sgroups.begin(); i != sgr.mol.sgroups.end(); i = sgr.mol.sgroups.next(i))
+      {
+         SGroup &sg = sgr.mol.sgroups.getSGroup(i);
+         if (sg.original_group == parent)
+            original_found = true;
+      }
+      if (!original_found)
+         throw IndigoError("indigoSetSGroupParentId: sgroup with original id %d is not found)", parent);
+
+      sgr.get().parent_group = parent;
+
+      return 1;
    }
    INDIGO_END(-1)
 }

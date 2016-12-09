@@ -215,8 +215,17 @@ int MoleculeSGroups::addSGroup (int sg_type)
 
 SGroup & MoleculeSGroups::getSGroup (int idx)
 {
-   return *_sgroups.at(idx);
+   if (_sgroups.hasElement(idx))
+      return *_sgroups.at(idx);
+
+   throw Error("Sgroup with index %d is not found", idx);
 }
+
+bool MoleculeSGroups::hasSGroup (int idx)
+{
+   return _sgroups.hasElement(idx);
+}
+
 
 SGroup & MoleculeSGroups::getSGroup (int idx, int sg_type)
 {

@@ -212,6 +212,7 @@ public:
    int getSGroupCount ();
    int getSGroupCount (int sg_type);
    bool isPolimer();
+   bool hasSGroup(int idx);
 
    void buildTree(Tree &tree);
    bool getParentAtoms(int idx, Array<int> &target);
