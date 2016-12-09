@@ -104,7 +104,7 @@ void GrossStorage::calculateMolFormula (Molecule &mol, Array<char> &gross_formul
 {
    std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > gross_array;
    MoleculeGrossFormula::collect(mol, gross_array);
-   MoleculeGrossFormula::toString(gross_array, gross_formula);
+   MoleculeGrossFormula::toString(gross_array, gross_formula, false);
 }
 
 void GrossStorage::calculateRxnFormula (Reaction &rxn, Array<char> &gross_formula)
@@ -117,7 +117,7 @@ void GrossStorage::calculateRxnFormula (Reaction &rxn, Array<char> &gross_formul
       Array<char> mol_formula;
 
       MoleculeGrossFormula::collect(rxn.getBaseMolecule(i), gross_array);
-      MoleculeGrossFormula::toString(gross_array, mol_formula);
+      MoleculeGrossFormula::toString(gross_array, mol_formula, false);
 
       gross_formula.concat(mol_formula);
       if (rxn.next(i) != rxn.end())

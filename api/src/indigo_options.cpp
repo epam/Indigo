@@ -506,6 +506,12 @@ static void indigoMassSkipErrorOnPseudoatoms(int enabled)
    self.mass_options.skip_error_on_pseudoatoms = (enabled != 0);
 }
 
+static void indigoGrossFormulaAddRSites(int enabled)
+{
+   Indigo &self = indigoGetInstance();
+   self.gross_formula_options.add_rsites = (enabled != 0);
+}
+
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
@@ -591,10 +597,11 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerString("pKa-model", indigoSetPkaModel);
    mgr.setOptionHandlerInt("pKa-model-level", indigoSetPkaModelLevel);
    mgr.setOptionHandlerInt("pKa-model-min-level", indigoSetPkaModelMinLevel);
-       
+
    mgr.setOptionHandlerVoid("reset-basic-options", indigoResetBasicOptions);
 
    mgr.setOptionHandlerBool("mass-skip-error-on-pseudoatoms", indigoMassSkipErrorOnPseudoatoms);
+   mgr.setOptionHandlerBool("gross-formula-add-rsites", indigoGrossFormulaAddRSites);
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

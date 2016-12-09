@@ -16,7 +16,8 @@ IndigoMoleculeGross::~IndigoMoleculeGross()
 
 void IndigoMoleculeGross::toString (Array<char> &str)
 {
-   MoleculeGrossFormula::toString_Hill(gross, str);
+   Indigo &self = indigoGetInstance();
+   MoleculeGrossFormula::toString_Hill(gross, str, self.gross_formula_options.add_rsites);
 }
 
 IndigoReactionGross::IndigoReactionGross() : IndigoObject(GROSS_REACTION)
@@ -29,7 +30,8 @@ IndigoReactionGross::~IndigoReactionGross()
 
 void IndigoReactionGross::toString (Array<char> &str)
 {
-    ReactionGrossFormula::toString_Hill(gross, str);
+    Indigo &self = indigoGetInstance();
+    ReactionGrossFormula::toString_Hill(gross, str, self.gross_formula_options.add_rsites);
 }
 
 

@@ -35,6 +35,7 @@
 #include "molecule/molecule_standardize_options.h"
 #include "molecule/molecule_ionize.h"
 #include "molecule/molecule_mass_options.h"
+#include "molecule/molecule_gross_formula_options.h"
 
 
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define 
@@ -283,6 +284,7 @@ public:
    
    StereocentersOptions stereochemistry_options;
    MassOptions mass_options;
+   GrossFormulaOptions gross_formula_options;
 
    bool ignore_noncritical_query_features;
    bool treat_x_as_pseudoatom;

@@ -156,35 +156,35 @@ void MoleculeGrossFormula::collect (BaseMolecule &mol, std::pair<ObjArray<Array<
     }
 }
 
-void MoleculeGrossFormula::toString (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str)
+void MoleculeGrossFormula::toString (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str, bool add_rsites)
 {
     ArrayOutput output(str);
 
     for (int i = 0; i < gross.second.size(); i++)
     {
-        _toString(gross.second[i], output, _cmp);
+        _toString(gross.second[i], output, _cmp, add_rsites);
     }
     output.writeChar(0);
 }
 
-void MoleculeGrossFormula::toString_Hill (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str)
+void MoleculeGrossFormula::toString_Hill (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str, bool add_rsites)
 {
     ArrayOutput output(str);
     
     // First base molecule
     if (gross.second[0][ELEM_C] == 0)
-        _toString(gross.second[0], output, _cmp_hill_no_carbon);
+        _toString(gross.second[0], output, _cmp_hill_no_carbon, add_rsites);
     else
-        _toString(gross.second[0], output, _cmp_hill);
+        _toString(gross.second[0], output, _cmp_hill, add_rsites);
     
     // Then polymers repeating units
     for (int i = 1; i < gross.second.size(); i++)
     {
         output.writeChar('(');
         if (gross.second[i][ELEM_C] == 0)
-            _toString(gross.second[i], output, _cmp_hill_no_carbon);
+            _toString(gross.second[i], output, _cmp_hill_no_carbon, add_rsites);
         else
-            _toString(gross.second[i], output, _cmp_hill);
+            _toString(gross.second[i], output, _cmp_hill, add_rsites);
         output.writeChar(')');
         output.writeArray(gross.first[i]);
     }
@@ -192,7 +192,7 @@ void MoleculeGrossFormula::toString_Hill (const std::pair<ObjArray<Array<char> >
 }
 
 
-void MoleculeGrossFormula::_toString (const Array<int> &gross, ArrayOutput & output, int (*cmp)(_ElemCounter &, _ElemCounter &, void *))
+void MoleculeGrossFormula::_toString (const Array<int> &gross, ArrayOutput & output, int (*cmp)(_ElemCounter &, _ElemCounter &, void *), bool add_rsites)
 {
    QS_DEF(Array<_ElemCounter>, counters);
    int i;
@@ -224,7 +224,7 @@ void MoleculeGrossFormula::_toString (const Array<int> &gross, ArrayOutput & out
          output.printf("%d", counters[i].counter);
       first_written = true;
    }
-   if (gross[ELEM_RSITE] > 0)
+   if (add_rsites && gross[ELEM_RSITE] > 0)
     {
         output.writeString(" R#");
         if (gross[ELEM_RSITE] > 1)

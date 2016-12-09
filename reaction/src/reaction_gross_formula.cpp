@@ -44,7 +44,7 @@ void ReactionGrossFormula::collect (BaseReaction &rxn, std::pair<ObjArray<std::p
     }
 }
 
-void ReactionGrossFormula::toString_Hill (const std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > &gross, Array<char> &str)
+void ReactionGrossFormula::toString_Hill (const std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > &gross, Array<char> &str, bool add_rsites)
 {
     ArrayOutput output(str);
     Array<char> temp_str;
@@ -56,7 +56,7 @@ void ReactionGrossFormula::toString_Hill (const std::pair<ObjArray<std::pair<Obj
         {
             output.printf(" + ");
         }
-        MoleculeGrossFormula::toString_Hill(gross.first[i], temp_str);
+        MoleculeGrossFormula::toString_Hill(gross.first[i], temp_str, add_rsites);
         output.printf("%s", temp_str.ptr());
         first_written = true;
     }
@@ -68,7 +68,7 @@ void ReactionGrossFormula::toString_Hill (const std::pair<ObjArray<std::pair<Obj
         {
             output.printf(" + ");
         }
-        MoleculeGrossFormula::toString_Hill(gross.second[i], temp_str);
+        MoleculeGrossFormula::toString_Hill(gross.second[i], temp_str, add_rsites);
         output.printf("%s", temp_str.ptr());
         first_written = true;
     }

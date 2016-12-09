@@ -390,6 +390,9 @@ CEXPORT int indigoCheckValence (int atom);
 // Returns one if atom or bond belongs Query or has any query feature
 CEXPORT int indigoCheckQuery (int item);
 
+// Returns one if structure contains RGroup features (RSites, RGroups or attachment points
+CEXPORT int indigoCheckRGroups (int item);
+
 // Applicable to atoms, query atoms, and molecules. Can fail
 // (return zero) on query atoms where the number of hydrogens
 // is not definitely known. Otherwise, returns one and writes *hydro.

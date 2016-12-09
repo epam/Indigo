@@ -4353,3 +4353,26 @@ CEXPORT int indigoNameToStructure(const char* name, const char* params)
 	}
 	INDIGO_END(-1)
 }
+
+
+CEXPORT int indigoCheckRGroups(int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoBaseMolecule::is(obj))
+      {
+         if (indigoCountRSites(item) || indigoCountAttachmentPoints(item) || indigoCountRGroups(item))
+         {
+            return 1;
+         }
+      }
+      else
+      {
+         throw IndigoError("%s is not a base molecule", obj.debugInfo());
+      }
+      return 0;
+   }
+   INDIGO_END(-1);
+}
