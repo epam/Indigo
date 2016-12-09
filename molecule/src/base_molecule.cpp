@@ -1479,7 +1479,8 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                         continue;
                      }
 
-                     if (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1 && getAtomCharge(neighbors[k]) == 0) 
+                     if ( (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1 && getAtomCharge(neighbors[k]) == 0) &&
+                          getAtomNumber(att_point_idx) == ELEM_C )
                      {
                         remove_atoms.push(neighbors[k]);
                         continue;
@@ -1699,7 +1700,9 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                         continue;
                      }
 
-                     if (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1 && getAtomCharge(neighbors[k]) == 0) 
+
+                     if ( (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1 && getAtomCharge(neighbors[k]) == 0) &&
+                          getAtomNumber(att_point_idx) == ELEM_C )
                      {
                         remove_atoms.push(neighbors[k]);
                         continue;
