@@ -1633,6 +1633,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          int used_att_points = 0;
          for (int j = 0; j < remove_atoms.size(); j++)
          {
+            bool att_point_used = false;
             const Vertex &v = getVertex(remove_atoms[j]);
             for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
             {
@@ -1641,9 +1642,12 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                   out_bonds++;
                   for (int l = 0; l < ap_points_atoms.size(); l++)
                   {
-                      int att_point_idx = mapping[ap_points_atoms[l]];
-                      if (att_point_idx == remove_atoms[j])
-                         used_att_points += 1;
+                     int att_point_idx = mapping[ap_points_atoms[l]];
+                     if ((att_point_idx == remove_atoms[j]) && !att_point_used)
+                     {
+                        used_att_points += 1;
+                        att_point_used = true;
+                     }
                   }
                }
             }
