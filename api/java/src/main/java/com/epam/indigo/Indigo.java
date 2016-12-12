@@ -854,8 +854,8 @@ public class Indigo {
     }
 
     public IndigoObject transformHELMtoSCSR(IndigoObject item) {
-        setSessionId()
-        int result = checkResult(this, _lib.indigoTransformHELMtoSCSR(item.self))
+        setSessionID();
+        int result = checkResult(this, _lib.indigoTransformHELMtoSCSR(item.self));
         if (result == 0)
             return null;
 
