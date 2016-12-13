@@ -242,6 +242,18 @@ void MoleculeNameParser::Parse::scan() {
    const SymbolDictionary& sd = dm.dictionary;
    const string& separators = dm.separators;
 
+   // Check for trivial names
+   const string& trivial = input;
+   const auto& it = sd.find(trivial);
+   if (it != sd.end()) {
+      lexemes.push_back(Lexeme(it->first, it->second));
+
+      Token terminator("", "", TokenType::END_OF_STREAM);
+      lexemes.push_back(Lexeme("", terminator));
+
+      return;
+   }
+
    const size_t length = input.length();
 
    // A buffer for locant symbol(s)

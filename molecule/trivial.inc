@@ -12,6 +12,7 @@ static const char* trivial_table =
   "  <tokenTable name=\"trivial_aromatic\" type=\"trivial\">\n"
   "    <token value=\"C1C=CC=CC=1\">benzol</token>\n"
   "    <token value=\"C1C=CC=CC=1\">benzene</token>\n"
+  "    <token value=\"C1(C)C=CC=CC=1\">toluene</token>\n"
   "    <token value=\"C1(C)C=CC=CC=1\">toluol</token>\n"
   "    <token value=\"C1(C)C(C)=CC=CC=1\">xylol</token>\n"
   "    <token value=\"CC1C=C(C)C=C(C)C=1\">mezytylen</token>\n"
