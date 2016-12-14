@@ -31,7 +31,7 @@ public:
        CLEAN_TIMER_MS = 2000
     };
     MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose);
-    MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, Array<int>& selected_vertices);
+    MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, const Array<int>& selected_vertices);
     void clean(bool _clean_external_angles);
 private:
     bool _isZero();

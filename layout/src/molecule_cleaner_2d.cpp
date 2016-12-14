@@ -64,13 +64,14 @@ MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_dec
     active_points.fffill();
 }
 
-MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, Array<int>& selected_vertices)
+MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, const Array<int>& selected_vertices)
     : MoleculeCleaner2d(mol, use_biconnected_decompose) {
+    active_points.clear_resize(selected_vertices.size());
     active_points.zerofill();
     for (int i = 0; i < selected_vertices.size(); i++)
         active_points[selected_vertices[i]] = true;
 }
-    
+
 void MoleculeCleaner2d::_initBasePointValid() {
     is_valid_base.clear_resize(vertex_size);
     is_valid_base.zerofill();
