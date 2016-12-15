@@ -1794,31 +1794,61 @@ void MolfileSaver::_checkSGroupIndices (BaseMolecule &mol, Array<int> &sgs_list)
 {
    QS_DEF(Array<int>, orig_ids);
    QS_DEF(Array<int>, added_ids);
+   QS_DEF(Array<int>, sgs_mapping);
+   QS_DEF(Array<int>, sgs_changed);
 
    int max_idx = 0;
    sgs_list.clear();
    orig_ids.clear();
    added_ids.clear();
- 
+   sgs_mapping.clear_resize(mol.sgroups.end());
+   sgs_mapping.zerofill();
+   sgs_changed.clear_resize(mol.sgroups.end());
+   sgs_changed.zerofill();
+
+   int iw = 1; 
    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
    {
       SGroup &sgroup = mol.sgroups.getSGroup(i);
-      if (sgroup.original_group > 0)
+      if (sgroup.parent_group == 0)
       {
-         if (sgroup.original_group > max_idx)
-            max_idx = sgroup.original_group;
+         sgs_mapping[i] = iw;
+         iw++;
       }
    }
+   for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+   {
+      if (sgs_mapping[i] == 0)
+      {
+         sgs_mapping[i] = iw;
+         iw++;
+      }
+   }
+
+
    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
    {
       SGroup &sgroup = mol.sgroups.getSGroup(i);
       if (sgroup.original_group == 0)
       {
-         max_idx++;
-         sgroup.original_group = max_idx;
+         sgroup.original_group = sgs_mapping[i];
       }
+      else
+      {
+         for (int j = mol.sgroups.begin(); j != mol.sgroups.end(); j = mol.sgroups.next(j))
+         {
+            SGroup &sg = mol.sgroups.getSGroup(j);
+            if ( sg.parent_group == sgroup.original_group && sgs_changed[j] == 0)
+            {
+               sg.parent_group = sgs_mapping[i];
+               sgs_changed[j] = 1;
+            }
+         }
+         sgroup.original_group = sgs_mapping[i];
+      }   
       orig_ids.push(sgroup.original_group);
    }
+
 
    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
    {
@@ -1830,7 +1860,7 @@ void MolfileSaver::_checkSGroupIndices (BaseMolecule &mol, Array<int> &sgs_list)
       }
       else
       {
-         if (orig_ids.find(sgroup.parent_group)  == -1)
+         if (orig_ids.find(sgroup.parent_group)  == -1 || sgroup.parent_group == sgroup.original_group)
          {
             sgroup.parent_group = 0;
             sgs_list.push(i);
@@ -1845,6 +1875,9 @@ void MolfileSaver::_checkSGroupIndices (BaseMolecule &mol, Array<int> &sgs_list)
       {
          SGroup &sgroup = mol.sgroups.getSGroup(i);
          if (sgroup.parent_group == 0)
+            continue;
+
+         if (added_ids.find(sgroup.original_group) != -1)
             continue;
 
          if (added_ids.find(sgroup.parent_group) != -1)

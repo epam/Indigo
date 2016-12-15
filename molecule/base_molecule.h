@@ -348,7 +348,7 @@ protected:
 
    void _flipSGroupBond(SGroup &sgroup, int src_bond_idx, int new_bond_idx);
    void _flipSuperatomBond(Superatom &sa, int src_bond_idx, int new_bond_idx);
-   void _flipTemplateAtomAttachmentPoint(int idx, int atom_from, int atom_to);
+   void _flipTemplateAtomAttachmentPoint(int idx, int atom_from, Array<char> &ap_id, int atom_to);
    
    virtual void _mergeWithSubmolecule (BaseMolecule &mol, const Array<int> &vertices,
            const Array<int> *edges, const Array<int> &mapping, int skip_flags) = 0;
