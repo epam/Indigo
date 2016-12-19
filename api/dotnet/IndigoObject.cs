@@ -665,6 +665,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoSetSGroupDisplayOption(self, option));
         }
 
+        public int getSGroupSeqId()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetSGroupSeqId(self));
+        }
+
         public int getSGroupMultiplier()
         {
             dispatcher.setSessionID();
@@ -779,7 +785,7 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoSetSGroupOriginalId(self, original));
         }
 
-        public int getSGroupParent()
+        public int getSGroupParentId()
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoGetSGroupParentId(self));

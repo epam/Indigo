@@ -47,6 +47,11 @@ void MoleculeExactSubstructureMatcher::ignoreTargetAtom (int idx)
     _ee.ignoreSupergraphVertex(idx);
 }
 
+void MoleculeExactSubstructureMatcher::ignoreQueryAtom (int idx)
+{
+   _ee.ignoreSubgraphVertex(idx);
+}
+
 bool MoleculeExactSubstructureMatcher::find ()
 {
    int i;

@@ -211,6 +211,7 @@ public interface IndigoLib extends Library
    int indigoDeleteSGroupAttachmentPoint (int sgroup, int apidx);
    int indigoGetSGroupDisplayOption (int sgroup);
    int indigoSetSGroupDisplayOption (int sgroup, int option);
+   int indigoGetSGroupSeqId (int sgroup);
    int indigoGetSGroupMultiplier (int sgroup);
    int indigoSetSGroupMultiplier (int sgroup, int mult);
    int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,

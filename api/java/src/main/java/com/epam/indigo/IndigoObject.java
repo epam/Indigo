@@ -1084,6 +1084,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoGetSGroupDisplayOption(self));
    }
 
+   public int getSGroupSeqId()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoGetSGroupSeqId(self));
+   }
+
    public int setSGroupDisplayOption(int option)
    {
       dispatcher.setSessionID();

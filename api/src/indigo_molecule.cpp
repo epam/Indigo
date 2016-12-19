@@ -3200,6 +3200,18 @@ CEXPORT int indigoSetSGroupDisplayOption (int sgroup, int option)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoGetSGroupSeqId (int sgroup)
+{
+   INDIGO_BEGIN
+   {
+      Superatom &sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+      if (sup.seqid != -1)
+         return sup.seqid;
+      return 0;
+   }
+   INDIGO_END(0)
+}
+
 CEXPORT int indigoGetSGroupMultiplier (int sgroup)
 {
    INDIGO_BEGIN

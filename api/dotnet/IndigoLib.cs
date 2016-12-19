@@ -174,6 +174,7 @@ namespace com.epam.indigo
         int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);
         int indigoGetSGroupDisplayOption(int sgroup);
         int indigoSetSGroupDisplayOption(int sgroup, int option);
+        int indigoGetSGroupSeqId(int sgroup);
         int indigoGetSGroupMultiplier(int sgroup);
         int indigoSetSGroupMultiplier(int sgroup, int mult);
 

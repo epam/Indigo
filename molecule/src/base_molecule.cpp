@@ -1285,11 +1285,16 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
    QS_DEF(Array<int>, sgs_to_remove);
    QS_DEF(Array<int>, atoms_to_remove);
    QS_DEF(Array<int>, ap_points_atoms);
+   QS_DEF(Array<int>, ap_lgrp_atoms);
    QS_DEF(StringPool, ap_points_ids);
    QS_DEF(Array<int>, ap_ids);
    QS_DEF(Array<int>, ignore_atoms);
+   QS_DEF(Array<int>, ignore_query_atoms);
    QS_DEF(Array<char>, tg_alias);
    QS_DEF(Array<char>, tg_name);
+
+   QS_DEF(Array<int>, att_atoms);
+   QS_DEF(Array<int>, ap_neibs);
 
    added_templates.clear();
    new_templates.clear();
@@ -1317,6 +1322,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
       }
 
       ap_points_atoms.clear();
+      ap_lgrp_atoms.clear();
       ap_points_ids.clear();
       ap_ids.clear();
       for (int j = 0; j < base_sgs.size(); j++)
@@ -1332,6 +1338,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                {
                   Superatom::_AttachmentPoint &ap = su.attachment_points.at(k);
                   ap_points_atoms.push(ap.aidx);
+                  ap_lgrp_atoms.push(ap.lvidx);
                   ap_ids.push(ap_points_ids.add(ap.apid));
                }
             }
@@ -1340,9 +1347,12 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
             throw Error("Wrong template structure was found (base SGroup is not Superatom type)");
       }
 
+      ignore_query_atoms.clear();
       for (int j = 0; j < sgs.size(); j++)
       {
-         fragment.removeSGroupWithBasis(sgs[j]);
+         SGroup &sg = fragment.sgroups.getSGroup(sgs[j]);
+         ignore_query_atoms.concat(sg.atoms);         
+//         fragment.removeSGroupWithBasis(sgs[j]);
       }
 
       int count_occur = 0;
@@ -1398,6 +1408,11 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                matcher.ignoreTargetAtom(j);
          }
 
+         for (auto j = 0; j < ignore_query_atoms.size(); j++)
+         {
+            matcher.ignoreQueryAtom(ignore_query_atoms[j]);
+         }
+
          if (!matcher.find())   //  This is Superatom, but no suitable template is found
             continue;
 
@@ -1433,9 +1448,9 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                if (remove_atoms.find(v.neiVertex(k)) == -1)
                {
                   out_bonds++;
-                  for (int l = 0; l < ap_points_atoms.size(); l++)
+                  for (int m = 0; m < ap_points_atoms.size(); m++)
                   {
-                     int att_point_idx = mapping[ap_points_atoms[l]];
+                     int att_point_idx = mapping[ap_points_atoms[m]];
                      if (att_point_idx == remove_atoms[j] && !ap_used)
                      {
                         used_att_points += 1;
@@ -1451,6 +1466,23 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          {
             continue;
          }
+
+
+         bool lgrp_absent = false;
+         for (int m = 0; m < ap_points_atoms.size(); m++)
+         {
+            int att_point_idx = mapping[ap_points_atoms[m]];
+            const Vertex &v1 = getVertex(att_point_idx);
+            const Vertex &v2 = fragment.getVertex(ap_points_atoms[m]);
+            if (v1.degree() != v2.degree() && fragment.getAtomNumber(ap_lgrp_atoms[m]) != ELEM_H)
+               lgrp_absent = true;
+         }
+
+         if (lgrp_absent)
+         {
+            continue;
+         }
+
 
          int idx = this->asMolecule().addAtom(-1);
          this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
@@ -1594,6 +1626,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
       }
 
       ap_points_atoms.clear();
+      ap_lgrp_atoms.clear();
       ap_points_ids.clear();
       ap_ids.clear();
       for (int j = 0; j < base_sgs.size(); j++)
@@ -1609,6 +1642,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                {
                   Superatom::_AttachmentPoint &ap = su.attachment_points.at(k);
                   ap_points_atoms.push(ap.aidx);
+                  ap_lgrp_atoms.push(ap.lvidx);
                   ap_ids.push(ap_points_ids.add(ap.apid));
                }
             }
@@ -1617,9 +1651,12 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
             throw Error("Wrong template structure was found (base SGroup is not Superatom type)");
       }
 
+      ignore_query_atoms.clear();
       for (int j = 0; j < sgs.size(); j++)
       {
-         fragment.removeSGroupWithBasis(sgs[j]);
+         SGroup &sg = fragment.sgroups.getSGroup(sgs[j]);
+         ignore_query_atoms.concat(sg.atoms);         
+//         fragment.removeSGroupWithBasis(sgs[j]);
       }
 
       int count_occur = 0;
@@ -1633,6 +1670,11 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          for (int j = 0; j < ignore_atoms.size(); j++)
             matcher.ignoreTargetAtom(ignore_atoms[j]);
 
+         for (auto j = 0; j < ignore_query_atoms.size(); j++)
+         {
+            matcher.ignoreQueryAtom(ignore_query_atoms[j]);
+         }
+
          if (!matcher.find())
             break;
 
@@ -1645,25 +1687,13 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                remove_atoms.push(mapping[j]);
          }
 
-         // Check connectivity of matched atoms
-         bool conn_diff = false;
-         for (int j = fragment.vertexBegin(); j != fragment.vertexEnd(); j = fragment.vertexNext(j))
+         att_atoms.clear();
+         for (int l = 0; l < ap_points_atoms.size(); l++)
          {
-            if (mapping[j] > -1)
-            {
-               const Vertex &v1 = getVertex(mapping[j]);
-               const Vertex &v2 = fragment.getVertex(j);
-               if (v1.degree() != v2.degree())
-               {
-                  conn_diff = true;
-                  break;
-               } 
-            }
-         }
-         if (conn_diff)
-         {
-            ignore_atoms.concat(remove_atoms);
-            continue;
+            int att_point_idx = mapping[ap_points_atoms[l]];
+            if (att_point_idx > -1)
+               att_atoms.push(att_point_idx);
+
          }
 
          int out_bonds = 0;
@@ -1691,6 +1721,51 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          }
 
          if ( (out_bonds > ap_points_atoms.size()) || (out_bonds > used_att_points) )
+         {
+            ignore_atoms.concat(remove_atoms);
+            continue;
+         }
+
+         bool ap_closed = false;
+         ap_neibs.clear();
+         for (int l = 0; l < ap_points_atoms.size(); l++)
+         {
+            int att_point_idx = mapping[ap_points_atoms[l]];
+            const Vertex &v = getVertex(att_point_idx);
+            for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+            {
+               if (att_atoms.find(v.neiVertex(k)) != -1)
+               {
+                  ap_closed = true;
+               }
+               else if (ap_neibs.find(v.neiVertex(k)) != -1)
+               {
+                  ap_closed = true;
+               }
+               else
+               {
+                  ap_neibs.push(v.neiVertex(k));
+               }
+            }
+         }
+
+         if (ap_closed)
+         {
+            ignore_atoms.concat(remove_atoms);
+            continue;
+         }
+
+         bool lgrp_absent = false;
+         for (int m = 0; m < ap_points_atoms.size(); m++)
+         {
+            int att_point_idx = mapping[ap_points_atoms[m]];
+            const Vertex &v1 = getVertex(att_point_idx);
+            const Vertex &v2 = fragment.getVertex(ap_points_atoms[m]);
+            if (v1.degree() != v2.degree() && fragment.getAtomNumber(ap_lgrp_atoms[m]) != ELEM_H)
+               lgrp_absent = true;
+         }
+
+         if (lgrp_absent)
          {
             ignore_atoms.concat(remove_atoms);
             continue;
