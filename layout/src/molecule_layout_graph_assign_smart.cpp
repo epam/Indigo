@@ -447,11 +447,22 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle &cycle)
 
    }
 
+   /*
+    * A patrial fix for Ketcher issues 486 and 487
+    * 
+    * The _segment_smoothing_prepearing() contains an error which leads to
+    * a crash when cycles with double bonds are being processed. Currently,
+    * we skip smoothing altogether. This seems not to create any regressions
+    */
    QS_DEF(ObjArray<MoleculeLayoutSmoothingSegment>, segment);
    QS_DEF(Array<Vec2f>, rotation_point);
    QS_DEF(Array<int>, rotation_vertex);
-    
-   _segment_smoothing_prepearing(cycle, rotation_vertex, rotation_point, segment, layout);
+
+   segment.clear();
+   rotation_point.zerofill();
+   rotation_vertex.zerofill();
+
+//   _segment_smoothing_prepearing(cycle, rotation_vertex, rotation_point, segment, layout);
 
    int segment_count = segment.size();
 
