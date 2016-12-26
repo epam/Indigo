@@ -72,20 +72,13 @@ CEXPORT int indigoSetTautomerRule (int n, const char *beg, const char *end)
       if (n < 1 || n >= 32)
          throw IndigoError("tautomer rule index %d is out of range", n);
 
-      self.tautomer_rules.expand(n);
-      
-      if (self.tautomer_rules[n - 1] != 0)
-      {
-         delete self.tautomer_rules[n - 1];
-         self.tautomer_rules[n - 1] = 0;
-      }
-
       AutoPtr<TautomerRule> rule(new TautomerRule());
 
       _indigoParseTauCondition(beg, rule->aromaticity1, rule->list1);
       _indigoParseTauCondition(end, rule->aromaticity2, rule->list2);
-
-      self.tautomer_rules.set(n - 1, rule.release());
+      
+      self.tautomer_rules.expand(n);
+      self.tautomer_rules.reset(n - 1, rule.release());
       return 1;
    }
    INDIGO_END(-1)
