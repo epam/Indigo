@@ -66,7 +66,7 @@ void CmlSaver::_saveMolecule (BaseMolecule &mol, bool query)
    TiXmlPrinter printer;
    _doc->Accept(&printer);
    _output.printf("%s", printer.CStr());
-   doc.release();
+   doc.reset(nullptr);
 }
 
 void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool query)
