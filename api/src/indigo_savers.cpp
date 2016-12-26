@@ -100,11 +100,15 @@ void IndigoSaver::appendObject (IndigoObject &object)
 
 void IndigoSdfSaver::appendMolfile (Output &out, IndigoObject &obj)
 {
-   Indigo &indigo = indigoGetInstance();
+   if (IndigoBaseMolecule::is(obj)) {
+      Indigo &indigo = indigoGetInstance();
 
-   MolfileSaver saver(out);
-   indigo.initMolfileSaver(saver);
-   saver.saveBaseMolecule(obj.getBaseMolecule());
+      MolfileSaver saver(out);
+      indigo.initMolfileSaver(saver);
+      saver.saveBaseMolecule(obj.getBaseMolecule());
+   } else {
+      throw IndigoError("%s can not be converted to Molfile", obj.debugInfo());
+   }
 }
 
 void IndigoSdfSaver::append (Output &out, IndigoObject &obj)
@@ -150,11 +154,9 @@ CEXPORT int indigoSdfAppend (int output, int molecule)
 void IndigoSmilesSaver::generateSmiles (IndigoObject &obj, Array<char> &out_buffer)
 {
    ArrayOutput output(out_buffer);
-
    if (IndigoBaseMolecule::is(obj))
    {
       BaseMolecule &mol = obj.getBaseMolecule();
-         
       SmilesSaver saver(output);
          
       if (mol.isQueryMolecule())
@@ -165,7 +167,6 @@ void IndigoSmilesSaver::generateSmiles (IndigoObject &obj, Array<char> &out_buff
    else if (IndigoBaseReaction::is(obj))
    {
       BaseReaction &rxn = obj.getBaseReaction();
-         
       RSmilesSaver saver(output);
          
       if (rxn.isQueryReaction())

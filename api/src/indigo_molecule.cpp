@@ -56,8 +56,9 @@ bool IndigoBaseMolecule::is (IndigoObject &object)
 
    if (type == MOLECULE || type == QUERY_MOLECULE ||
        type == REACTION_MOLECULE || type == SCAFFOLD ||
-       type == RGROUP_FRAGMENT || type == RDF_MOLECULE || type == SMILES_MOLECULE || type == CML_MOLECULE ||
-       type == CDX_MOLECULE)
+       type == RGROUP_FRAGMENT || type == RDF_MOLECULE || 
+       type == SMILES_MOLECULE || type == CML_MOLECULE ||
+       type == CDX_MOLECULE || type == SUBMOLECULE)
       return true;
 
    if (type == ARRAY_ELEMENT)
@@ -3925,9 +3926,22 @@ IndigoSubmolecule::~IndigoSubmolecule ()
 {
 }
 
+void IndigoSubmolecule::_createSubMolecule() {
+   if(_submol.get() != 0) {
+      return;
+   }
+   if (mol.isQueryMolecule()) {
+      _submol.reset(new QueryMolecule());
+   } else {
+      _submol.reset(new Molecule());
+   }
+   _submol->makeEdgeSubmolecule(mol, vertices, edges, 0, 0);
+}
+
 BaseMolecule & IndigoSubmolecule::getBaseMolecule ()
 {
-   return mol;
+   _createSubMolecule();
+   return _submol.ref();
 }
 
 int IndigoSubmolecule::getIndex ()

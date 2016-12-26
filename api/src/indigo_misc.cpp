@@ -275,7 +275,7 @@ CEXPORT const char * indigoCheckAmbiguousH (int handle)
          }
       }
       else
-         throw IndigoError("object %s is meither a molecule nor a reaction", obj.debugInfo());
+         throw IndigoError("object %s is neither a molecule nor a reaction", obj.debugInfo());
 
       return "";
    }

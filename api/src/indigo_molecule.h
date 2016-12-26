@@ -601,6 +601,8 @@ public:
    Array<int> edges;
    BaseMolecule &mol;
 protected:
+   AutoPtr<BaseMolecule> _submol;
+   void _createSubMolecule();
 };
 
 class IndigoSubmoleculeAtomsIter : public IndigoObject
