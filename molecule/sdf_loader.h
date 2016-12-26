@@ -15,6 +15,7 @@
 #ifndef __sdf_loader__
 #define __sdf_loader__
 
+#include "base_cpp/io_base.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/properties_map.h"
@@ -36,7 +37,7 @@ public:
    bool isEOF ();
    void readNext ();
 
-   int tell ();
+   off_t_type tell ();
    int currentNumber ();
    int count ();
 

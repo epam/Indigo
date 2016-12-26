@@ -23,6 +23,8 @@
 #include "base_cpp/tlscont.h"
 #include "reusable_obj_array.h"
 
+#include <limits>
+
 using namespace indigo;
 
 enum { MAX_LINE_LENGTH = 1048576 };
@@ -242,7 +244,7 @@ float Scanner::readFloat (void)
 
 bool Scanner::tryReadFloat (float &value)
 {
-   int pos = tell();
+   off_t_type pos = tell();
    double res;
    
    if (!_readDouble(res, 0))
@@ -286,16 +288,16 @@ void Scanner::readWord (Array<char> &word, const char *delimiters)
 
 float Scanner::readFloatFix (int digits)
 {
-   int pos = tell();
+   off_t_type pos = tell();
    double res;
 
    if (!_readDouble(res, digits))
       throw Error("readFloatFix(): error parsing");
 
-   int rest = tell() - pos - digits;
+   off_t_type rest = tell() - pos - digits;
 
    // Check that the unread part contains only spaces
-   while (rest-- > 0)
+   while (rest-- > 0UL)
    {
       if (!isspace(readChar()))
          throw Error("readFloatFix(): garbage after the number");
@@ -477,14 +479,20 @@ unsigned int Scanner::readPackedUInt ()
 
 void Scanner::readAll (Array<char> &arr)
 {
-   arr.clear_resize(length() - tell());
+   const off_t_type size = length() - tell();
+   constexpr int max_int = std::numeric_limits<int>::max();
+   if (size > max_int) {
+      throw Error("Cannot read more than %d into memory", max_int);
+   }
+
+   arr.clear_resize(static_cast<int>(size));
 
    read(arr.size(), arr.ptr());
 }
 
 bool Scanner::isSingleLine (Scanner &scanner)
 {
-   int pos = scanner.tell();
+   off_t_type pos = scanner.tell();
 
    scanner.skipLine();
 
@@ -519,7 +527,7 @@ FileScanner::FileScanner (const char *format, ...)
 void FileScanner::_init (Encoding filename_encoding, const char *filename)
 {
    _file = 0;
-   _file_len = 0;
+   _file_len = 0UL;
 
    if (filename == 0)
       throw Error("null filename");
@@ -529,9 +537,15 @@ void FileScanner::_init (Encoding filename_encoding, const char *filename)
    if (_file == NULL)
       throw Error("can't open file %s. Error: %s", filename, strerror(errno));
 
-   fseek(_file, 0, SEEK_END);
-   _file_len = ftell(_file);
-   fseek(_file, 0, SEEK_SET);
+#ifdef _WIN32
+   _fseeki64(_file, 0UL, SEEK_END);
+   _file_len = _ftelli64(_file);
+   _fseeki64(_file, 0UL, SEEK_SET);
+#else
+   fseeko(_file, 0UL, SEEK_END);
+   _file_len = ftello(_file);
+   fseeko(_file, 0UL, SEEK_SET);
+#endif
    _invalidateCache();
 }
 
@@ -556,14 +570,18 @@ void FileScanner::_validateCache ()
       return;
 
    size_t nread = fread(_cache, 1, NELEM(_cache), _file);
-   _max_cache = nread;
+   _max_cache = static_cast<int>(nread);
    _cache_pos = 0;
 }
 
-int FileScanner::tell ()
+off_t_type FileScanner::tell ()
 {
    _validateCache();
-   return ftell(_file) - _max_cache + _cache_pos;
+#ifdef _WIN32
+   return _ftelli64(_file) - _max_cache + _cache_pos;
+#else
+   return ftello(_file) - _max_cache + _cache_pos;
+#endif
 }
 
 void FileScanner::read (int length, void *res)
@@ -600,24 +618,35 @@ void FileScanner::skip (int n)
    if (_cache_pos > _max_cache)
    {
       int delta = _cache_pos - _max_cache;
-      int res = fseek(_file, delta, SEEK_CUR);
+#ifdef _WIN32
+      off_t_type res = _fseeki64(_file, delta, SEEK_CUR);
+#else
+      off_t res = fseeko(_file, delta, SEEK_CUR);
+#endif
       _invalidateCache();
 
-      if (res != 0)
+      if (res != 0UL)
          throw Error("skip() passes after end of file");
    }
 }
 
-void FileScanner::seek (int pos, int from)
+void FileScanner::seek (off_t_type pos, int from)
 {
+#ifdef _WIN32
    if (from == SEEK_CUR)
-      fseek(_file, pos - _max_cache + _cache_pos, from);
+      _fseeki64(_file, pos - _max_cache + _cache_pos, from);
    else
-      fseek(_file, pos, from);
+      _fseeki64(_file, pos, from);
+#else
+   if (from == SEEK_CUR)
+      fseeko(_file, pos - _max_cache + _cache_pos, from);
+   else
+      fseeko(_file, pos, from);
+#endif
    _invalidateCache();
 }
 
-int FileScanner::length ()
+off_t_type FileScanner::length ()
 {
    return _file_len;
 }
@@ -701,12 +730,12 @@ int BufferScanner::lookNext ()
    return _buffer[_offset];
 }
 
-int BufferScanner::length ()
+off_t_type BufferScanner::length ()
 {
    return _size;
 }
 
-int BufferScanner::tell ()
+off_t_type BufferScanner::tell ()
 {
    return _offset;
 }
@@ -724,17 +753,17 @@ void BufferScanner::skip (int n)
       throw Error("skip() passes after end of buffer");
 }
 
-void BufferScanner::seek (int pos, int from)
+void BufferScanner::seek (off_t_type pos, int from)
 {
    if (from == SEEK_SET)
-      _offset = pos;
+      _offset = static_cast<int>(pos);
    else if (from == SEEK_CUR)
-      _offset += pos;
+      _offset += static_cast<int>(pos);
    else // SEEK_END
    {
       if (_size < 0)
          throw Error("can not seek from end: buffer is unlimited");
-      _offset = _size - pos;
+      _offset = _size - static_cast<int>(pos);
    }
 
    if ((_size >= 0 && _offset > _size) || _offset < 0)
@@ -785,7 +814,7 @@ int Scanner::findWord (ReusableObjArray< Array<char> > &words)
    QS_DEF(ReusableObjArray< Array<int> >, prefixes);
    QS_DEF(Array<int>, pos);
    int i;
-   int pos_saved = tell();
+   off_t_type pos_saved = tell();
    
    prefixes.clear();
    pos.clear();
@@ -838,7 +867,7 @@ int Scanner::findWordIgnoreCase (ReusableObjArray< Array<char> > &words)
    QS_DEF(ReusableObjArray< Array<int> >, prefixes);
    QS_DEF(Array<int>, pos);
    int i;
-   int pos_saved = tell();
+   off_t_type pos_saved = tell();
    
    prefixes.clear();
    pos.clear();

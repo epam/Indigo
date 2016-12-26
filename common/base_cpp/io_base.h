@@ -21,6 +21,21 @@
 #include <locale.h>
 #endif
 
+/*
+When compiled on Linux with -D_FILE_OFFSET_BITS=64, the type off_t is compiled into
+long long int
+For 64-bit builds on Linux, -D_FILE_OFFSET_BITS=64 is always defined
+
+Unfortunately, Windows defines its own off_t type as long, which makes it impossible
+to use off_t across all platforms
+With these directives, we use off_t as defined on Linux, and long long int on Windows
+*/
+#ifdef _WIN32
+   typedef __int64 off_t_type;
+#else
+   typedef off_t off_t_type;
+#endif
+
 namespace indigo
 {
    enum Encoding

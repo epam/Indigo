@@ -98,12 +98,12 @@ void LzwOutput::write (const void *data_, int size)
       _encoder.send(data[i]);
 }
  
-void LzwOutput::seek (int offset, int from)
+void LzwOutput::seek (off_t_type offset, int from)
 {
    throw Error("can not 'seek' in LZW-output");
 }
 
-int LzwOutput::tell ()
+off_t_type LzwOutput::tell ()
 {
    throw Error("can not 'tell' in LZW-output");
 }

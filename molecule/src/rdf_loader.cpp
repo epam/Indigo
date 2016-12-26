@@ -269,7 +269,7 @@ bool RdfLoader::_readLine(Scanner& scanner, Array<char>& buffer) {
    return true;
 }
 
-int RdfLoader::tell () {
+off_t_type RdfLoader::tell () {
    return _scanner->tell();
 }
 

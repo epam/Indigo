@@ -15,6 +15,7 @@
 #ifndef _RDF_LOADER_H__
 #define	_RDF_LOADER_H__
 
+#include "base_cpp/io_base.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/obj.h"
 #include "base_cpp/properties_map.h"
@@ -41,7 +42,7 @@ public:
    bool isEOF ();
    void readNext ();
    void readAt (int index);
-   int tell ();
+   off_t_type tell ();
    int currentNumber ();
    int count ();
 

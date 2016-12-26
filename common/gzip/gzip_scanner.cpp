@@ -168,7 +168,7 @@ void GZipScanner::skip (int length)
    read(length, dummy.ptr());
 }
 
-int GZipScanner::tell ()
+off_t_type GZipScanner::tell ()
 {
    return _uncompressed_total;
 }
@@ -184,7 +184,7 @@ bool GZipScanner::isEOF ()
    return _eof && (unsigned)_outbuf_start + _zstream.avail_out == (unsigned)_outbuf.size();
 }
 
-void GZipScanner::seek (int pos, int from)
+void GZipScanner::seek (off_t_type pos, int from)
 {
    throw Error("not implemented");
 }
@@ -208,7 +208,7 @@ int GZipScanner::lookNext ()
    throw Error("internal");
 }
 
-int GZipScanner::length ()
+off_t_type GZipScanner::length ()
 {
    throw Error("not implemented");
 }

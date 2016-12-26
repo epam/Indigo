@@ -93,17 +93,17 @@ int LzwScanner::lookNext ()
    throw Error("lookNext is not implemented");
 }
 
-void LzwScanner::seek (int pos, int from)
+void LzwScanner::seek (off_t_type pos, int from)
 {
    throw Error("seek is not implemented");
 }
 
-int LzwScanner::length ()
+off_t_type LzwScanner::length ()
 {
    throw Error("length is not implemented");
 }
 
-int LzwScanner::tell ()
+off_t_type LzwScanner::tell ()
 {
    throw Error("tell is not implemented");
 }

@@ -90,7 +90,7 @@ public:
 
    IndigoObject * at (int index);
 
-   int tell ();
+   off_t_type tell ();
 
    AutoPtr<SdfLoader> sdf_loader;
 
@@ -110,7 +110,7 @@ public:
 
    IndigoObject * at (int index);
 
-   int tell ();
+   off_t_type tell ();
 
    AutoPtr<RdfLoader> rdf_loader;
 protected:
@@ -154,7 +154,7 @@ public:
    IndigoMultilineSmilesLoader (const char *filename);
    virtual ~IndigoMultilineSmilesLoader ();
 
-   int tell ();
+   off_t_type tell ();
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
@@ -226,7 +226,7 @@ public:
 
    IndigoObject * at (int index);
 
-   int tell ();
+   off_t_type tell ();
 
    AutoPtr<MultipleCmlLoader> loader;
 protected:
@@ -284,7 +284,7 @@ public:
 
    IndigoObject * at (int index);
 
-   int tell ();
+   off_t_type tell ();
 
    AutoPtr<MultipleCdxLoader> loader;
 protected:

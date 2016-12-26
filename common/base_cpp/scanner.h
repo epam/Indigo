@@ -34,9 +34,9 @@ public:
    virtual void skip (int n) = 0;
    virtual bool isEOF () = 0;
    virtual int  lookNext () = 0;
-   virtual void seek (int pos, int from) = 0;
-   virtual int  length () = 0;
-   virtual int  tell () = 0;
+   virtual void seek (off_t_type pos, int from) = 0;
+   virtual off_t_type length () = 0;
+   virtual off_t_type tell () = 0;
 
    virtual byte readByte ();
    virtual void readAll (Array<char> &arr);
@@ -94,14 +94,14 @@ public:
    virtual bool isEOF ();
    virtual void skip (int n);
    virtual int  lookNext ();
-   virtual void seek (int pos, int from);
-   virtual int  length ();
-   virtual int  tell ();
+   virtual void seek (off_t_type pos, int from);
+   virtual off_t_type length ();
+   virtual off_t_type tell ();
 
    virtual char readChar ();
 private:
    FILE *_file;
-   int   _file_len;
+   off_t_type _file_len;
 
    unsigned char _cache[1024];
    int _cache_pos, _max_cache;
@@ -127,9 +127,9 @@ public:
    virtual void read (int length, void *res);
    virtual void skip (int n);
    virtual int  lookNext ();
-   virtual void seek (int pos, int from);
-   virtual int  length ();
-   virtual int  tell ();
+   virtual void seek (off_t_type pos, int from);
+   virtual off_t_type length ();
+   virtual off_t_type tell ();
    virtual byte readByte ();
 
    const void * curptr ();

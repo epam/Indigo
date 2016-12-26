@@ -31,8 +31,8 @@ public:
    virtual ~GZipOutput ();
 
    virtual void write (const void *data, int size);
-   virtual void seek  (int offset, int from);
-   virtual int  tell  ();
+   virtual void seek  (off_t_type offset, int from);
+   virtual off_t_type tell  ();
    virtual void flush ();
 
    DECL_ERROR;

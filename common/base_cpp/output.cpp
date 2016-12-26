@@ -241,14 +241,22 @@ void FileOutput::flush ()
    fflush(_file);
 }
 
-void FileOutput::seek (int offset, int from)
+void FileOutput::seek (off_t_type offset, int from)
 {
-   fseek(_file, offset, from);
+#ifdef _WIN32
+   _fseeki64(_file, offset, from);
+#else
+   fseeko(_file, offset, from);
+#endif
 }
 
-int FileOutput::tell ()
+off_t_type FileOutput::tell ()
 {
-   return ftell(_file);
+#ifdef _WIN32
+   return _ftelli64(_file);
+#else
+   return ftello(_file);
+#endif
 }
 
 ArrayOutput::ArrayOutput (Array<char> &arr) : _arr(arr)
@@ -268,7 +276,7 @@ void ArrayOutput::write (const void *data, int size)
    memcpy(_arr.ptr() + old_size, data, size);
 }
 
-int ArrayOutput::tell ()
+off_t_type ArrayOutput::tell ()
 {
    return _arr.size();
 }
@@ -277,7 +285,7 @@ void ArrayOutput::flush ()
 {
 }
 
-void ArrayOutput::seek (int offset, int from)
+void ArrayOutput::seek (off_t_type offset, int from)
 {
    throw Error("not implemented");
 }
@@ -314,7 +322,7 @@ void StandardOutput::seek (int offset, int from)
    throw Error("can not seek in standard output");
 }
 
-int StandardOutput::tell ()
+off_t_type StandardOutput::tell ()
 {
    return _count;
 }
@@ -336,12 +344,12 @@ void NullOutput::write (const void *data, int size)
 {
 }
 
-void NullOutput::seek  (int offset, int from)
+void NullOutput::seek  (off_t_type offset, int from)
 {
    throw Error("not implemented");
 }
 
-int NullOutput::tell  ()
+off_t_type NullOutput::tell  ()
 {
    throw Error("not implemented");
 }

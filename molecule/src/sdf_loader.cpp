@@ -62,7 +62,7 @@ SdfLoader::~SdfLoader()
       delete _scanner;
 }
 
-int SdfLoader::tell ()
+off_t_type SdfLoader::tell ()
 {
    return _scanner->tell();
 }

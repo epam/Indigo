@@ -229,7 +229,7 @@ bool IndigoSdfLoader::hasNext ()
    return !sdf_loader->isEOF();
 }
 
-int IndigoSdfLoader::tell ()
+off_t_type IndigoSdfLoader::tell ()
 {
    return sdf_loader->tell();
 }
@@ -281,7 +281,7 @@ IndigoObject * IndigoRdfLoader::at (int index)
 }
 
 
-int IndigoRdfLoader::tell ()
+off_t_type IndigoRdfLoader::tell ()
 {
    return rdf_loader->tell();
 }
@@ -432,7 +432,7 @@ bool IndigoMultilineSmilesLoader::hasNext ()
    return !_scanner->isEOF();
 }
 
-int IndigoMultilineSmilesLoader::tell ()
+off_t_type IndigoMultilineSmilesLoader::tell ()
 {
    return _scanner->tell();
 }
@@ -679,7 +679,7 @@ IndigoMultipleCmlLoader::~IndigoMultipleCmlLoader ()
 {
 }
 
-int IndigoMultipleCmlLoader::tell ()
+off_t_type IndigoMultipleCmlLoader::tell ()
 {
    return loader->tell();
 }
@@ -833,7 +833,7 @@ IndigoMultipleCdxLoader::~IndigoMultipleCdxLoader ()
 {
 }
 
-int IndigoMultipleCdxLoader::tell ()
+off_t_type IndigoMultipleCdxLoader::tell ()
 {
    return loader->tell();
 }
