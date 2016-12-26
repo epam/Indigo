@@ -16,11 +16,11 @@
 #define __molecule_cdxml_saver_h__
 
 #include "math/algebra.h"
-#include "base_cpp/tlscont.h"
 #include "base_cpp/properties_map.h"
+#include <memory>
 
-class TiXmlDocument;
 class TiXmlElement;
+class TiXmlDocument;
 
 namespace indigo {
 
@@ -31,6 +31,8 @@ class DLLEXPORT MoleculeCdxmlSaver
 {
 public:
    explicit MoleculeCdxmlSaver (Output &output);
+   
+   ~MoleculeCdxmlSaver();
 
    void saveMolecule (BaseMolecule &mol);
    enum {
@@ -76,14 +78,13 @@ protected:
    int _pages_height;
    float _max_page_height;
 
-   TiXmlDocument * _doc;
    TiXmlElement * _root;
    TiXmlElement * _page;
    TiXmlElement * _current;
    TiXmlElement * _fonttable;
    TiXmlElement * _colortable;
 
-   AutoPtr<TiXmlDocument> doc;
+   std::unique_ptr<TiXmlDocument> _doc;
 
 private:
    MoleculeCdxmlSaver (const MoleculeCdxmlSaver &); // no implicit copy

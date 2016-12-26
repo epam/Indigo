@@ -12,8 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include "base_cpp/output.h"
 #include "molecule/molecule_cdxml_saver.h"
+#include "base_cpp/output.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
@@ -29,9 +29,11 @@ MoleculeCdxmlSaver::MoleculeCdxmlSaver (Output &output) : _output(output)
    _bond_length = BOND_LENGTH;
    _max_page_height = 64;
    _pages_height = 1;
-   doc.reset(new TiXmlDocument());
-   _doc = doc.get();
-   _root = new TiXmlElement("CDXML");
+   
+}
+
+MoleculeCdxmlSaver::~MoleculeCdxmlSaver() {
+    
 }
 
 float MoleculeCdxmlSaver::pageHeight () const
@@ -46,8 +48,13 @@ float MoleculeCdxmlSaver::textLineHeight () const
 
 void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
 {
-   TiXmlDeclaration * decl = new TiXmlDeclaration("1.0", "UTF-8", "");
-   _doc->LinkEndChild(decl);
+    _doc.reset(new TiXmlDocument());
+//   _doc = doc.get();
+    
+   _root = new TiXmlElement("CDXML");
+   _doc->LinkEndChild(_root);
+   
+   _doc->LinkEndChild(new TiXmlDeclaration("1.0", "UTF-8", ""));
    TiXmlUnknown * doctype = new TiXmlUnknown();
    doctype->SetValue("!DOCTYPE CDXML SYSTEM \"http://www.cambridgesoft.com/xml/cdxml.dtd\" ");
    _doc->LinkEndChild(doctype);
@@ -59,7 +66,6 @@ void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
    _root->SetAttribute("BondLength", buf.ptr());
    _root->SetAttribute("LabelFont", "3");
    _root->SetAttribute("CaptionFont", "4");
-   _doc->LinkEndChild(_root);
 
    if (bounds != NULL)
    {
@@ -842,7 +848,8 @@ void MoleculeCdxmlSaver::endDocument ()
    TiXmlPrinter printer;
    _doc->Accept(&printer);
    _output.printf("%s", printer.CStr());
-   doc.release();
+   _doc.reset(nullptr);
+//   _doc = 0;
 }
 
 int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule &mol, int idx, int charge, int radical)
