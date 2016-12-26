@@ -16,6 +16,7 @@
 #define __molecule_cdxml_saver_h__
 
 #include "math/algebra.h"
+#include "base_cpp/tlscont.h"
 #include "base_cpp/properties_map.h"
 
 class TiXmlDocument;
@@ -68,7 +69,7 @@ public:
 
    DECL_ERROR;
 
-private:
+protected:
    Output   &_output;
 
    float _bond_length;
@@ -82,6 +83,9 @@ private:
    TiXmlElement * _fonttable;
    TiXmlElement * _colortable;
 
+   AutoPtr<TiXmlDocument> doc;
+
+private:
    MoleculeCdxmlSaver (const MoleculeCdxmlSaver &); // no implicit copy
 };
 

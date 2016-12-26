@@ -29,7 +29,8 @@ MoleculeCdxmlSaver::MoleculeCdxmlSaver (Output &output) : _output(output)
    _bond_length = BOND_LENGTH;
    _max_page_height = 64;
    _pages_height = 1;
-   _doc = new TiXmlDocument();
+   doc.reset(new TiXmlDocument());
+   _doc = doc.get();
    _root = new TiXmlElement("CDXML");
 }
 
@@ -841,6 +842,7 @@ void MoleculeCdxmlSaver::endDocument ()
    TiXmlPrinter printer;
    _doc->Accept(&printer);
    _output.printf("%s", printer.CStr());
+   doc.release();
 }
 
 int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule &mol, int idx, int charge, int radical)
