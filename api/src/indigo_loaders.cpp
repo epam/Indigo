@@ -35,28 +35,19 @@
 IndigoSdfLoader::IndigoSdfLoader (Scanner &scanner) :
 IndigoObject(SDF_LOADER)
 {
-   _own_scanner = 0;
-   sdf_loader = 0;
-   sdf_loader = new SdfLoader(scanner);
+   sdf_loader.reset(new SdfLoader(scanner));
 }
 
 IndigoSdfLoader::IndigoSdfLoader (const char *filename) :
 IndigoObject(SDF_LOADER)
 {
-   _own_scanner = 0;
-   sdf_loader = 0;
-
    // AutoPtr guard in case of exception in SdfLoader (happens in case of empty file)
-   AutoPtr<FileScanner> scanner(new FileScanner(indigoGetInstance().filename_encoding, filename));
-   sdf_loader = new SdfLoader(*scanner.get());
-   _own_scanner = scanner.release();
+   _own_scanner.reset(new FileScanner(indigoGetInstance().filename_encoding, filename));
+   sdf_loader.reset(new SdfLoader(_own_scanner.ref()));
 }
 
 IndigoSdfLoader::~IndigoSdfLoader ()
 {
-   delete sdf_loader;
-   if (_own_scanner != 0)
-      delete _own_scanner;
 }
 
 IndigoRdfData::IndigoRdfData (int type, Array<char> &data, int index, int offset) :
@@ -246,27 +237,18 @@ int IndigoSdfLoader::tell ()
 IndigoRdfLoader::IndigoRdfLoader (Scanner &scanner) :
 IndigoObject(RDF_LOADER)
 {
-   _own_scanner = 0;
-   rdf_loader = 0;
-
    rdf_loader = new RdfLoader(scanner);
 }
 
 IndigoRdfLoader::IndigoRdfLoader (const char *filename) :
 IndigoObject(RDF_LOADER)
 {
-   _own_scanner = 0;
-   rdf_loader = 0;
-   
-   _own_scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);
-   rdf_loader = new RdfLoader(*_own_scanner);
+   _own_scanner.reset(new FileScanner(indigoGetInstance().filename_encoding, filename));
+   rdf_loader.reset(new RdfLoader(_own_scanner.ref()));
 }
 
 IndigoRdfLoader::~IndigoRdfLoader ()
 {
-   delete rdf_loader;
-   if (_own_scanner != 0)
-      delete _own_scanner;
 }
 
 IndigoObject * IndigoRdfLoader::next ()
@@ -395,7 +377,6 @@ IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (Scanner &scanner) :
 IndigoObject(MULTILINE_SMILES_LOADER),
 CP_INIT, TL_CP_GET(_offsets)
 {
-   _own_scanner = false;
    _scanner = &scanner;
 
    _current_number = 0;
@@ -407,9 +388,8 @@ IndigoMultilineSmilesLoader::IndigoMultilineSmilesLoader (const char *filename) 
 IndigoObject(MULTILINE_SMILES_LOADER),
 CP_INIT, TL_CP_GET(_offsets)
 {
-   _scanner = 0;
-   _scanner = new FileScanner(indigoGetInstance().filename_encoding, filename);
-   _own_scanner = true;
+   _own_scanner.reset(new FileScanner(indigoGetInstance().filename_encoding, filename));
+   _scanner = _own_scanner.get();
 
    _current_number = 0;
    _max_offset = 0;
@@ -419,8 +399,6 @@ CP_INIT, TL_CP_GET(_offsets)
 
 IndigoMultilineSmilesLoader::~IndigoMultilineSmilesLoader ()
 {
-   if (_own_scanner)
-      delete _scanner;
 }
 
 void IndigoMultilineSmilesLoader::_advance ()
@@ -693,15 +671,12 @@ IndigoObject(MULTIPLE_CML_LOADER)
 IndigoMultipleCmlLoader::IndigoMultipleCmlLoader (const char *filename) :
 IndigoObject(MULTIPLE_CML_LOADER)
 {
-   _own_scanner = new FileScanner(filename);
-   loader = new MultipleCmlLoader(*_own_scanner);
+   _own_scanner.reset(new FileScanner(filename));
+   loader.reset(new MultipleCmlLoader(_own_scanner.ref()));
 }
 
 IndigoMultipleCmlLoader::~IndigoMultipleCmlLoader ()
 {
-   delete loader;
-   if (_own_scanner != 0)
-      delete _own_scanner;
 }
 
 int IndigoMultipleCmlLoader::tell ()
@@ -850,15 +825,12 @@ IndigoObject(MULTIPLE_CDX_LOADER)
 IndigoMultipleCdxLoader::IndigoMultipleCdxLoader (const char *filename) :
 IndigoObject(MULTIPLE_CDX_LOADER)
 {
-   _own_scanner = new FileScanner(filename);
-   loader = new MultipleCdxLoader(*_own_scanner);
+   _own_scanner.reset(new FileScanner(filename));
+   loader.reset(new MultipleCdxLoader(_own_scanner.ref()));
 }
 
 IndigoMultipleCdxLoader::~IndigoMultipleCdxLoader ()
 {
-   delete loader;
-   if (_own_scanner != 0)
-      delete _own_scanner;
 }
 
 int IndigoMultipleCdxLoader::tell ()

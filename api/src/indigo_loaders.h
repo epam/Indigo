@@ -92,10 +92,10 @@ public:
 
    int tell ();
 
-   SdfLoader *sdf_loader;
+   AutoPtr<SdfLoader> sdf_loader;
 
 protected:
-   Scanner  *_own_scanner;
+   AutoPtr<Scanner>  _own_scanner;
 };
 
 class IndigoRdfLoader : public IndigoObject
@@ -112,9 +112,9 @@ public:
 
    int tell ();
 
-   RdfLoader *rdf_loader;
+   AutoPtr<RdfLoader> rdf_loader;
 protected:
-   Scanner  *_own_scanner;
+   AutoPtr<Scanner>  _own_scanner;
 };
 
 class IndigoSmilesMolecule : public IndigoRdfData
@@ -165,7 +165,7 @@ public:
 protected:
    Scanner    *_scanner;
    Array<char> _str;
-   bool      _own_scanner;
+   AutoPtr<Scanner>      _own_scanner;
 
    void _advance ();
 
@@ -228,9 +228,9 @@ public:
 
    int tell ();
 
-   MultipleCmlLoader *loader;
+   AutoPtr<MultipleCmlLoader> loader;
 protected:
-   Scanner  *_own_scanner;
+   AutoPtr<Scanner>  _own_scanner;
 };
 
 namespace indigo
@@ -286,9 +286,9 @@ public:
 
    int tell ();
 
-   MultipleCdxLoader *loader;
+   AutoPtr<MultipleCdxLoader> loader;
 protected:
-   Scanner  *_own_scanner;
+   AutoPtr<Scanner>  _own_scanner;
 };
 
 #endif
