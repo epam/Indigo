@@ -26,19 +26,17 @@ IndigoScanner::IndigoScanner (Scanner *scanner) : IndigoObject(SCANNER), ptr(sca
 IndigoScanner::IndigoScanner (const char *str) : IndigoObject(SCANNER)
 {
    _buf.readString(str, false);
-   ptr = new BufferScanner(_buf);
+   ptr.reset(new BufferScanner(_buf));
 }
 
 IndigoScanner::IndigoScanner (const char *buf, int size) : IndigoObject(SCANNER)
 {
    _buf.copy(buf, size);
-   ptr = new BufferScanner(_buf);
+   ptr.reset(new BufferScanner(_buf));
 }
 
 IndigoScanner::~IndigoScanner ()
 {
-   if (ptr != 0) // can be zero after indigoClose()
-      delete ptr;
 }
 
 Scanner & IndigoScanner::get (IndigoObject &obj)
@@ -55,7 +53,7 @@ IndigoOutput::IndigoOutput (Output *output) : IndigoObject(OUTPUT), ptr(output)
 
 IndigoOutput::IndigoOutput () : IndigoObject(OUTPUT)
 {
-   ptr = new ArrayOutput(_buf);
+   ptr.reset(new ArrayOutput(_buf));
    _own_buf = true;
 }
 
@@ -69,16 +67,15 @@ void IndigoOutput::toString (Array<char> &str)
 
 IndigoOutput::~IndigoOutput ()
 {
-   delete ptr;
 }
 
 Output & IndigoOutput::get (IndigoObject &obj)
 {
    if (obj.type == OUTPUT)
    {
-      Output *ptr = ((IndigoOutput &)obj).ptr;
+      auto& ptr = ((IndigoOutput &)obj).ptr;
 
-      if (ptr == 0)
+      if (ptr.get() == nullptr)
          throw IndigoError("output stream has been closed");
       return *ptr;
    }
@@ -147,8 +144,7 @@ CEXPORT int indigoClose (int output)
       if (obj.type == IndigoObject::OUTPUT)
       {
          IndigoOutput &out = ((IndigoOutput &)obj);
-         delete out.ptr;
-         out.ptr = 0;
+         out.ptr.reset(nullptr);
          return 1;
       }
       else if (obj.type == IndigoObject::SAVER)

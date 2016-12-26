@@ -120,6 +120,12 @@ public:
       delete _ptrarray[idx];
       _ptrarray[idx] = 0;
    }
+   
+   void reset (int idx, T *obj)
+   {
+      reset(idx);
+      set(idx, obj);
+   }
 
    T * release (int idx)
    {

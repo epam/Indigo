@@ -37,7 +37,7 @@ void BingoAllocator::_create (const char *filename, size_t min_size, size_t max_
 
    _instances_lock.Lock();
    _instances.expand(index_id + 1);
-   _instances[index_id] = new BingoAllocator();
+   _instances.reset(index_id, new BingoAllocator());
    _instances_lock.Unlock();
    
    BingoAllocator *inst = _instances[index_id];
@@ -75,7 +75,7 @@ void BingoAllocator::_load (const char *filename, size_t alloc_off, ObjArray<MMF
 
    _instances_lock.Lock();
    _instances.expand(index_id + 1);
-   _instances[index_id] = new BingoAllocator();
+   _instances.reset(index_id, new BingoAllocator());
    _instances_lock.Unlock();
    
    BingoAllocator *inst = _instances[index_id];

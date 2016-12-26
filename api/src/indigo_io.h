@@ -16,6 +16,7 @@
 #define __indigo_io__
 
 #include "indigo_internal.h"
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -33,7 +34,7 @@ public:
 
    virtual ~IndigoScanner ();
 
-   Scanner *ptr;
+   std::unique_ptr<Scanner> ptr;
 protected:
    Array<char> _buf;
 };
@@ -49,7 +50,7 @@ public:
 
    static Output & get (IndigoObject &obj);
 
-   Output *ptr;
+   std::unique_ptr<Output> ptr;
 protected:
    bool        _own_buf;
    Array<char> _buf;
