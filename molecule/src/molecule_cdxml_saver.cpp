@@ -48,11 +48,8 @@ float MoleculeCdxmlSaver::textLineHeight () const
 
 void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
 {
-    _doc.reset(new TiXmlDocument());
-//   _doc = doc.get();
-    
-   _root = new TiXmlElement("CDXML");
-   _doc->LinkEndChild(_root);
+   _doc.reset(new TiXmlDocument());
+   AutoPtr<TiXmlElement> root(new TiXmlElement("CDXML"));
    
    _doc->LinkEndChild(new TiXmlDeclaration("1.0", "UTF-8", ""));
    TiXmlUnknown * doctype = new TiXmlUnknown();
@@ -63,9 +60,13 @@ void MoleculeCdxmlSaver::beginDocument (Bounds *bounds)
    ArrayOutput out(buf);
    out.printf("%f", _bond_length);
    buf.push(0);
-   _root->SetAttribute("BondLength", buf.ptr());
-   _root->SetAttribute("LabelFont", "3");
-   _root->SetAttribute("CaptionFont", "4");
+   
+   root->SetAttribute("BondLength", buf.ptr());
+   root->SetAttribute("LabelFont", "3");
+   root->SetAttribute("CaptionFont", "4");
+   
+   _root = root.get();
+   _doc->LinkEndChild(root.release());
 
    if (bounds != NULL)
    {
