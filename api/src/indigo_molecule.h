@@ -605,6 +605,7 @@ public:
 protected:
    BaseMolecule &_mol;
    AutoPtr<BaseMolecule> _submol;
+   int _submol_revision;
    void _createSubMolecule();
 };
 

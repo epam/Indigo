@@ -3927,7 +3927,7 @@ IndigoSubmolecule::~IndigoSubmolecule ()
 }
 
 void IndigoSubmolecule::_createSubMolecule() {
-   if(_submol.get() != 0) {
+   if(_submol.get() != 0 && _submol_revision == _mol.getEditRevision()) {
       return;
    }
    if (_mol.isQueryMolecule()) {
@@ -3936,6 +3936,7 @@ void IndigoSubmolecule::_createSubMolecule() {
       _submol.reset(new Molecule());
    }
    _submol->makeEdgeSubmolecule(_mol, vertices, edges, 0, 0);
+   _submol_revision = _mol.getEditRevision();
 }
 
 BaseMolecule & IndigoSubmolecule::getBaseMolecule ()
