@@ -674,6 +674,14 @@ public class Indigo {
         return extractCommonScaffold(toIndigoArray(structures), options);
     }
 
+    public IndigoObject rgroupComposition(IndigoObject molecule, String options) {
+        setSessionID();
+        int res = checkResult(this, molecule, _lib.indigoRGroupComposition(molecule.self, options));
+        if (res == 0)
+            return null;
+        return new IndigoObject(this, res);
+    }
+
     /**
      * Use createDecomposer() and decomposeMolecule()
      */

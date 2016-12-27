@@ -153,6 +153,7 @@ public interface IndigoLib extends Library
    int indigoAddStereocenter (int atom, int type, int v1, int v2, int v3, int v4);
 
    int indigoIterateRGroupFragments (int rgroup);
+   int indigoCountRGroups (int molecule);
    int indigoCountAttachmentPoints (int rgroup);
 
    Pointer indigoSymbol (int atom);
@@ -167,6 +168,7 @@ public interface IndigoLib extends Library
    int indigoValence (int atom);
    int indigoCheckValence (int atom);
    int indigoCheckQuery (int item);
+   int indigoCheckRGroups (int item);
    int indigoCountHydrogens (int atom, IntByReference valence);
    int indigoCountImplicitHydrogens (int item);
 
@@ -213,6 +215,9 @@ public interface IndigoLib extends Library
    int indigoSetSGroupDisplayOption (int sgroup, int option);
    int indigoGetSGroupSeqId (int sgroup);
    int indigoGetSGroupMultiplier (int sgroup);
+   Pointer indigoGetRepeatingUnitSubscript (int sgroup);
+   int indigoGetRepeatingUnitConnectivity (int sgroup);
+   int indigoGetRepeatingUnitMultiplier (int sgroup);
    int indigoSetSGroupMultiplier (int sgroup, int mult);
    int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
                                      float x3, float y3, float x4, float y4);
@@ -435,6 +440,7 @@ public interface IndigoLib extends Library
    int indigoMapMolecule (int match, int query_reaction_molecule);
 
    int indigoExtractCommonScaffold (int structures, String options);
+   int indigoRGroupComposition (int molecule, String options);
    int indigoAllScaffolds (int extracted);
    int indigoDecomposeMolecules (int scaffold, int structures);
    int indigoDecomposedMoleculeScaffold (int decomp);

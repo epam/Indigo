@@ -279,6 +279,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoIterateRGroupFragments(self)), this);
    }
 
+   public int countRGroups ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoCountRGroups(self));
+   }
+
+
    public int countAttachmentPoints ()
    {
       dispatcher.setSessionID();
@@ -423,6 +430,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoCheckQuery(self));
+   }
+
+   public int checkRGroups()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoCheckRGroups(self));
    }
 
    public Integer countHydrogens ()
@@ -1096,10 +1109,22 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSGroupDisplayOption(self, option));
    }
 
-   public int getSGroupMultiplier()
+   public String getRepeatingUnitSubscript()
    {
       dispatcher.setSessionID();
-      return Indigo.checkResult(this, _lib.indigoGetSGroupMultiplier(self));
+      return Indigo.checkResultString(this, _lib.indigoGetRepeatingUnitSubscript(self));
+   }
+
+   public int getRepeatingUnitMultiplier()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoGetRepeatingUnitMultiplier(self));
+   }
+
+   public int getRepeatingUnitConnectivity()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoGetRepeatingUnitConnectivity(self));
    }
 
    public int setSGroupMultiplier(int mult)
