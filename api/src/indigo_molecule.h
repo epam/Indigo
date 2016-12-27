@@ -593,14 +593,17 @@ public:
 
    virtual int getIndex ();
    virtual IndigoObject * clone ();
+   
+   BaseMolecule & getOriginalMolecule() {return _mol;};
 
    int idx; // not really a submolecule property, but included for convenience
             // of iterators that return submolecules
 
    Array<int> vertices;
    Array<int> edges;
-   BaseMolecule &mol;
+   
 protected:
+   BaseMolecule &_mol;
    AutoPtr<BaseMolecule> _submol;
    void _createSubMolecule();
 };

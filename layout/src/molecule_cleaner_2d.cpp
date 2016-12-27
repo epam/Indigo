@@ -66,7 +66,7 @@ MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_dec
 
 MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, const Array<int>& selected_vertices)
     : MoleculeCleaner2d(mol, use_biconnected_decompose) {
-    active_points.clear_resize(selected_vertices.size());
+    active_points.clear_resize(mol.vertexEnd());
     active_points.zerofill();
     for (int i = 0; i < selected_vertices.size(); i++)
         active_points[selected_vertices[i]] = true;

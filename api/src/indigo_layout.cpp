@@ -29,9 +29,23 @@ CEXPORT int indigoLayout (int object)
       IndigoObject &obj = self.getObject(object);
       int i;
 
-      if (IndigoBaseMolecule::is(obj) || obj.type == IndigoObject::SUBMOLECULE) {
-         BaseMolecule &mol = obj.getBaseMolecule();
-         MoleculeLayout ml(mol, self.smart_layout);
+      if (IndigoBaseMolecule::is(obj)) {
+         BaseMolecule *mol = &obj.getBaseMolecule();
+         Filter f;
+         if (obj.type == IndigoObject::SUBMOLECULE) {
+            IndigoSubmolecule &submol = (IndigoSubmolecule &)obj;
+            mol = &submol.getOriginalMolecule();
+            f.initNone(mol->vertexEnd());
+            for (int i = 0; i < submol.vertices.size(); i++) {
+               f.unhide(submol.vertices[i]);
+            }
+         }
+         MoleculeLayout ml(*mol, self.smart_layout);
+         
+         if (obj.type == IndigoObject::SUBMOLECULE) {
+            ml.filter = &f;
+         }
+         
          ml.max_iterations = self.layout_max_iterations;
          ml.bond_length = 1.6f;
          ml.layout_orientation = (layout_orientation_value) self.layout_orientation;
@@ -39,34 +53,20 @@ CEXPORT int indigoLayout (int object)
          TimeoutCancellationHandler cancellation(self.cancellation_timeout);
          ml.setCancellationHandler(&cancellation);
 
-         Filter f;
-         if (obj.type == IndigoObject::SUBMOLECULE)
-         {
-            IndigoSubmolecule &submol = (IndigoSubmolecule &)obj;
-            f.initNone(mol.vertexEnd());
-            for (int i = 0; i < submol.vertices.size(); i++)
-               f.unhide(submol.vertices[i]);
-            ml.filter = &f;
-         }
-
          ml.make();
       
          if (obj.type != IndigoObject::SUBMOLECULE)
          {
             // Not for submolecule yet
-            mol.clearBondDirections();
+            mol->clearBondDirections();
             try
             {
-               mol.stereocenters.markBonds();
-               mol.allene_stereo.markBonds();
+               mol->stereocenters.markBonds();
+               mol->allene_stereo.markBonds();
             } catch (Exception e) {}
-         }
-
-         if (obj.type != IndigoObject::SUBMOLECULE)
-         {
-            for (i = 1; i <= mol.rgroups.getRGroupCount(); i++)
+            for (i = 1; i <= mol->rgroups.getRGroupCount(); i++)
             {
-               RGroup &rgp = mol.rgroups.getRGroup(i);
+               RGroup &rgp = mol->rgroups.getRGroup(i);
 
                for (int j = rgp.fragments.begin(); j != rgp.fragments.end();
                         j = rgp.fragments.next(j))
@@ -107,20 +107,24 @@ CEXPORT int indigoClean2d(int object)
     INDIGO_BEGIN
     {
         IndigoObject &obj = self.getObject(object);
-
+        
         if (IndigoBaseMolecule::is(obj)) {
+            if (obj.type == IndigoObject::SUBMOLECULE) {
+               IndigoSubmolecule &submol = (IndigoSubmolecule &)obj;
+               BaseMolecule &orig_mol = submol.getOriginalMolecule();
+               MoleculeCleaner2d cleaner2d1(orig_mol, false, submol.vertices);
+               cleaner2d1.clean(false);
+               return 0;
+            }
             BaseMolecule &mol = obj.getBaseMolecule();
             MoleculeCleaner2d cleaner2d1(mol, false);
             cleaner2d1.clean(false);
             MoleculeCleaner2d cleaner2d2(mol, true);
             cleaner2d2.clean(true);
+        } else {
+           throw IndigoError("Clean2d can be executed only for molecules but %s was provided", obj.debugInfo());
         }
-        if (obj.type == IndigoObject::SUBMOLECULE) {
-            BaseMolecule &mol = obj.getBaseMolecule();
-            IndigoSubmolecule &submol = (IndigoSubmolecule &)obj;
-            MoleculeCleaner2d cleaner2d1(mol, false, submol.vertices);
-            cleaner2d1.clean(false);
-        }
+        
         return 0;
     }
     INDIGO_END(-1)

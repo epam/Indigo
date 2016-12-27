@@ -3897,7 +3897,7 @@ CEXPORT int indigoSetBondOrder (int bond, int order)
 
 IndigoSubmolecule::IndigoSubmolecule (BaseMolecule &mol_, Array<int> &vertices_, Array<int> &edges_) :
 IndigoObject(SUBMOLECULE),
-mol(mol_)
+_mol(mol_)
 {
    vertices.copy(vertices_);
    edges.copy(edges_);
@@ -3906,7 +3906,7 @@ mol(mol_)
 
 IndigoSubmolecule::IndigoSubmolecule (BaseMolecule &mol_, List<int> &vertices_, List<int> &edges_) :
 IndigoObject(SUBMOLECULE),
-mol(mol_)
+_mol(mol_)
 {
    int i;
    
@@ -3930,12 +3930,12 @@ void IndigoSubmolecule::_createSubMolecule() {
    if(_submol.get() != 0) {
       return;
    }
-   if (mol.isQueryMolecule()) {
+   if (_mol.isQueryMolecule()) {
       _submol.reset(new QueryMolecule());
    } else {
       _submol.reset(new Molecule());
    }
-   _submol->makeEdgeSubmolecule(mol, vertices, edges, 0, 0);
+   _submol->makeEdgeSubmolecule(_mol, vertices, edges, 0, 0);
 }
 
 BaseMolecule & IndigoSubmolecule::getBaseMolecule ()
@@ -3957,7 +3957,7 @@ IndigoObject * IndigoSubmolecule::clone ()
    AutoPtr<IndigoObject> res;
    BaseMolecule *newmol;
 
-   if (mol.isQueryMolecule())
+   if (_mol.isQueryMolecule())
    {
       res.reset(new IndigoQueryMolecule());
       newmol = &(((IndigoQueryMolecule *)res.get())->qmol);
@@ -3968,7 +3968,7 @@ IndigoObject * IndigoSubmolecule::clone ()
       newmol = &(((IndigoMolecule *)res.get())->mol);
    }
 
-   newmol->makeEdgeSubmolecule(mol, vertices, edges, 0, 0);
+   newmol->makeEdgeSubmolecule(_mol, vertices, edges, 0, 0);
    return res.release();
 }
 
@@ -3995,7 +3995,7 @@ IndigoObject * IndigoSubmoleculeAtomsIter::next ()
 
    _idx++;
 
-   return new IndigoAtom(_submol.mol, _submol.vertices[_idx]);
+   return new IndigoAtom(_submol.getOriginalMolecule(), _submol.vertices[_idx]);
 }
 
 IndigoSubmoleculeBondsIter::IndigoSubmoleculeBondsIter (IndigoSubmolecule &submol) :
@@ -4021,7 +4021,7 @@ IndigoObject * IndigoSubmoleculeBondsIter::next ()
 
    _idx++;
 
-   return new IndigoBond(_submol.mol, _submol.edges[_idx]);
+   return new IndigoBond(_submol.getOriginalMolecule(), _submol.edges[_idx]);
 }
 
 CEXPORT int indigoCountSSSR (int molecule)
