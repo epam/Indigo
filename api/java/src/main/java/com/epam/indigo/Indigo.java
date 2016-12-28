@@ -78,6 +78,7 @@ public class Indigo {
     public Indigo(String path) {
         _path = path;
         loadIndigo(path);
+        System.setProperty("jna.encoding", "UTF-8");
 
         _sid = _lib.indigoAllocSessionId();
     }
@@ -860,7 +861,14 @@ public class Indigo {
         return checkResult(this, _lib.indigoBuildPkaModel(level, threshold, filename));
     }
 
+    public IndigoObject nameToStructure(String name) {
+        return nameToStructure(name, "");
+    }
+
     public IndigoObject nameToStructure(String name, String params) {
+        if (params == null) {
+            params = "";
+        }
         setSessionID();
         int result = checkResult(this, _lib.indigoNameToStructure(name, params));
         if(result == 0)
