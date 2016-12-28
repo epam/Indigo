@@ -43,7 +43,7 @@ namespace com.epam.indigo
 		public String version ()
 		{
 			_indigo.setSessionID ();
-			return new String (_indigo.checkResult (_inchi_lib.indigoInchiVersion ()));
+			return _indigo.checkResult (_inchi_lib.indigoInchiVersion ());
 		}
 		
 		public int resetOptions ()
@@ -61,31 +61,31 @@ namespace com.epam.indigo
 		public String getInchi (IndigoObject molecule)
 		{
 			_indigo.setSessionID ();
-			return new String (_indigo.checkResult (_inchi_lib.indigoInchiGetInchi (molecule.self)));
+			return _indigo.checkResult (_inchi_lib.indigoInchiGetInchi (molecule.self));
 		}
 		
 		public String getInchiKey (String inchi_string)
 		{
 			_indigo.setSessionID ();
-			return new String (_indigo.checkResult (_inchi_lib.indigoInchiGetInchiKey (inchi_string)));
+			return _indigo.checkResult (_inchi_lib.indigoInchiGetInchiKey (inchi_string));
 		}
 		
 		public String getWarning ()
 		{
 			_indigo.setSessionID ();
-			return new String (_indigo.checkResult (_inchi_lib.indigoInchiGetWarning ()));
+			return _indigo.checkResult (_inchi_lib.indigoInchiGetWarning ());
 		}
 		
 		public String getLog ()
 		{
 			_indigo.setSessionID ();
-			return new String (_indigo.checkResult (_inchi_lib.indigoInchiGetLog ()));
+			return _indigo.checkResult (_inchi_lib.indigoInchiGetLog ());
 		}
 		
 		public String getAuxInfo ()
 		{
 			_indigo.setSessionID ();
-			return new String (_indigo.checkResult (_inchi_lib.indigoInchiGetAuxInfo ()));
+			return _indigo.checkResult (_inchi_lib.indigoInchiGetAuxInfo ());
 		}
 	}
 }

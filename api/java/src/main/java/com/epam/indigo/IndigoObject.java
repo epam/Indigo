@@ -1121,12 +1121,6 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResultString(this, _lib.indigoGetRepeatingUnitSubscript(self));
    }
 
-   public int getRepeatingUnitMultiplier()
-   {
-      dispatcher.setSessionID();
-      return Indigo.checkResult(this, _lib.indigoGetRepeatingUnitMultiplier(self));
-   }
-
    public int getRepeatingUnitConnectivity()
    {
       dispatcher.setSessionID();

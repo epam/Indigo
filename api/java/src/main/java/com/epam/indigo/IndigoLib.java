@@ -217,7 +217,6 @@ public interface IndigoLib extends Library
    int indigoGetSGroupMultiplier (int sgroup);
    Pointer indigoGetRepeatingUnitSubscript (int sgroup);
    int indigoGetRepeatingUnitConnectivity (int sgroup);
-   int indigoGetRepeatingUnitMultiplier (int sgroup);
    int indigoSetSGroupMultiplier (int sgroup, int mult);
    int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
                                      float x3, float y3, float x4, float y4);

@@ -83,13 +83,13 @@ namespace com.epam.indigo
             dispatcher.checkResult(_indigo_lib.indigoClose(self));
         }
 
-        public String molfile()
+        public string molfile()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoMolfile(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoMolfile(self));
         }
 
-        public void saveMolfile(String filename)
+        public void saveMolfile(string filename)
         {
             dispatcher.setSessionID();
             int s = dispatcher.checkResult(_indigo_lib.indigoWriteFile(filename));
@@ -97,13 +97,13 @@ namespace com.epam.indigo
             dispatcher.checkResult(_indigo_lib.indigoFree(s));
         }
 
-        public String cml()
+        public string cml()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoCml(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoCml(self));
         }
 
-        public void saveCml(String filename)
+        public void saveCml(string filename)
         {
             dispatcher.setSessionID();
             int s = dispatcher.checkResult(_indigo_lib.indigoWriteFile(filename));
@@ -111,13 +111,13 @@ namespace com.epam.indigo
             dispatcher.checkResult(_indigo_lib.indigoFree(s));
         }
 
-        public String cdxml()
+        public string cdxml()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoCdxml(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoCdxml(self));
         }
 
-        public void saveCdxml(String filename)
+        public void saveCdxml(string filename)
         {
             dispatcher.setSessionID();
             int s = dispatcher.checkResult(_indigo_lib.indigoWriteFile(filename));
@@ -199,13 +199,13 @@ namespace com.epam.indigo
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoIterateMolecules(self)), this);
         }
 
-        public String rxnfile()
+        public string rxnfile()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoRxnfile(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoRxnfile(self));
         }
 
-        public void saveRxnfile(String filename)
+        public void saveRxnfile(string filename)
         {
             dispatcher.setSessionID();
             int s = dispatcher.checkResult(_indigo_lib.indigoWriteFile(filename));
@@ -218,7 +218,7 @@ namespace com.epam.indigo
             automap("");
         }
 
-        public void automap(String mode)
+        public void automap(string mode)
         {
             if (mode == null)
                 mode = "";
@@ -308,6 +308,12 @@ namespace com.epam.indigo
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoIterateRGroupFragments(self)), this);
         }
 
+        public int countRGroups()                                          
+        {                                                                   
+            dispatcher.setSessionID();                                       
+            return dispatcher.checkResult(_indigo_lib.indigoCountRGroups(self));  
+        }     
+
         public int countAttachmentPoints()
         {
             dispatcher.setSessionID();
@@ -374,7 +380,7 @@ namespace com.epam.indigo
         public string symbol()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoSymbol(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoSymbol(self));
         }
 
         public int degree()
@@ -451,6 +457,12 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoCheckQuery(self));
+        }
+
+        public int checkRGroups()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoCheckRGroups(self));
         }
 
         public int? countHydrogens()
@@ -574,50 +586,62 @@ namespace com.epam.indigo
         public string description()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoDescription(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoDescription(self));
         }
 
         public string data()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoData(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoData(self));
         }
 
-        public IndigoObject addDataSGroup(int[] atoms, int[] bonds, String description, String data)
+        public IndigoObject addDataSGroup(int[] atoms, int[] bonds, string description, string data)
         {
             dispatcher.setSessionID();
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoAddDataSGroup(self, atoms.Length, atoms, bonds.Length, bonds, description, data)));
         }
 
-        public IndigoObject addDataSGroup(ICollection atoms, ICollection bonds, String description, String data)
+        public IndigoObject addDataSGroup(ICollection atoms, ICollection bonds, string description, string data)
         {
             return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
         }
 
-        public IndigoObject addSuperatom(int[] atoms, String name)
+        public IndigoObject addSuperatom(int[] atoms, string name)
         {
             dispatcher.setSessionID();
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoAddSuperatom(self, atoms.Length, atoms, name)));
         }
 
-        public IndigoObject addSuperatom(ICollection atoms, String name)
+        public IndigoObject addSuperatom(ICollection atoms, string name)
         {
             return addSuperatom(Indigo.toIntArray(atoms), name);
         }
 
-        public IndigoObject createSGroup(String type, IndigoObject mapping, String name)
+        public IndigoObject createSGroup(string type, IndigoObject mapping, string name)
         {
             dispatcher.setSessionID();
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoCreateSGroup(type, mapping.self, name)));
         }
 
-        public void setSGroupClass(String sgclass)
+        public string getRepeatingUnitSubscript()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetRepeatingUnitSubscript(self));
+        }
+
+        public int getRepeatingUnitConnectivity()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetRepeatingUnitConnectivity(self));
+        }
+
+        public void setSGroupClass(string sgclass)
         {
             dispatcher.setSessionID();
             dispatcher.checkResult(_indigo_lib.indigoSetSGroupClass(self, sgclass));
         }
 
-        public void setSGroupName(String sgname)
+        public void setSGroupName(string sgname)
         {
             dispatcher.setSessionID();
             dispatcher.checkResult(_indigo_lib.indigoSetSGroupName(self, sgname));
@@ -626,13 +650,13 @@ namespace com.epam.indigo
         public string getSGroupClass()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoGetSGroupClass(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoGetSGroupClass(self));
         }
 
         public string getSGroupName()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoGetSGroupName(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoGetSGroupName(self));
         }
 
         public int getSGroupNumCrossBonds()
@@ -641,7 +665,7 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoGetSGroupNumCrossBonds(self));
         }
 
-        public int addSGroupAttachmentPoint(int aidx, int lvidx, String apid)
+        public int addSGroupAttachmentPoint(int aidx, int lvidx, string apid)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoAddSGroupAttachmentPoint(self, aidx, lvidx, apid));
@@ -683,7 +707,7 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoSetSGroupMultiplier(self, mult));
         }
 
-        public int setSGroupData (String data)
+        public int setSGroupData (string data)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupData(self, data));
@@ -693,37 +717,37 @@ namespace com.epam.indigo
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupCoords(self, x, y));
         }
-        public int setSGroupDescription (String description)
+        public int setSGroupDescription (string description)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupDescription(self, description));
         }
-        public int setSGroupFieldName (String name)
+        public int setSGroupFieldName (string name)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupFieldName(self, name));
         }
-        public int setSGroupQueryCode (String querycode)
+        public int setSGroupQueryCode (string querycode)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupQueryCode(self, querycode));
         }
-        public int setSGroupQueryOper (String queryoper)
+        public int setSGroupQueryOper (string queryoper)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupQueryOper(self, queryoper));
         }
-        public int setSGroupDisplay (String option)
+        public int setSGroupDisplay (string option)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupDisplay(self, option));
         }
-        public int setSGroupLocation (String option)
+        public int setSGroupLocation (string option)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupLocation(self, option));
         }
-        public int setSGroupTag (String tag)
+        public int setSGroupTag (string tag)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupTag(self, tag));
@@ -733,7 +757,7 @@ namespace com.epam.indigo
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupTagAlign(self, tag_align));
         }
-        public int setSGroupDataType (String data_type)
+        public int setSGroupDataType (string data_type)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupDataType(self, data_type));
@@ -755,7 +779,7 @@ namespace com.epam.indigo
            return dispatcher.checkResult(_indigo_lib.indigoSetSGroupBrackets(self, brk_style, x1, y1, x2, y2, x3, y3, x4, y4));
         }
 
-        public IndigoObject findSGroups(String property, String value)
+        public IndigoObject findSGroups(string property, string value)
         {
             dispatcher.setSessionID();
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoFindSGroups(self, property, value)), this);
@@ -825,7 +849,7 @@ namespace com.epam.indigo
             setDataSGroupXY(x, y, "");
         }
 
-        public void setDataSGroupXY(float x, float y, String options)
+        public void setDataSGroupXY(float x, float y, string options)
         {
             dispatcher.setSessionID();
             dispatcher.checkResult(_indigo_lib.indigoSetDataSGroupXY(self, x, y, options));
@@ -1226,14 +1250,14 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoCountHeavyAtoms(self));
         }
 
-        public String grossFormula()
+        public string grossFormula()
         {
             int gf = -1;
             try
             {
                 dispatcher.setSessionID();
                 gf = dispatcher.checkResult(_indigo_lib.indigoGrossFormula(self));
-                String result = new String(dispatcher.checkResult(_indigo_lib.indigoToString(gf)));
+                string result = dispatcher.checkResult(_indigo_lib.indigoToString(gf));
                 return result;
             }
             finally
@@ -1261,10 +1285,16 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoMonoisotopicMass(self));
         }
 
+        public string massComposition()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoMassComposition(self));
+        }
+
         public string canonicalSmiles()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoCanonicalSmiles(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoCanonicalSmiles(self));
         }
 
         public int[] symmetryClasses()
@@ -1282,7 +1312,7 @@ namespace com.epam.indigo
         public string layeredCode()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoLayeredCode(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoLayeredCode(self));
         }
 
         public bool hasCoord()
@@ -1407,28 +1437,35 @@ namespace com.epam.indigo
             dispatcher.checkResult(_indigo_lib.indigoLayout(self));
         }
 
+        public void clean2d()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(_indigo_lib.indigoClean2d(self));
+        }
+
+
         public string smiles()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoSmiles(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoSmiles(self));
         }
 
         public string smarts()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoSmarts(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoSmarts(self));
         }
 
         public string canonicalSmarts()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoCanonicalSmarts(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoCanonicalSmarts(self));
         }
 
-        public String name()
+        public string name()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoName(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoName(self));
         }
 
         public void setName(string name)
@@ -1459,7 +1496,7 @@ namespace com.epam.indigo
         public string getProperty(string name)
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoGetProperty(self, name)));
+            return dispatcher.checkResult(_indigo_lib.indigoGetProperty(self, name));
         }
 
         public void setProperty(string name, string value)
@@ -1489,13 +1526,13 @@ namespace com.epam.indigo
         public string checkBadValence()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoCheckBadValence(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoCheckBadValence(self));
         }
 
         public string checkAmbiguousH()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoCheckAmbiguousH(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoCheckAmbiguousH(self));
         }
 
         public IndigoObject fingerprint(string type)
@@ -1515,7 +1552,7 @@ namespace com.epam.indigo
         public string rawData()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoRawData(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoRawData(self));
         }
 
         public int tell()
@@ -1761,10 +1798,10 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoIndex(self));
         }
 
-        public String toString()
+        public string toString()
         {
             dispatcher.setSessionID();
-            return new String(_indigo_lib.indigoToString(self));
+            return dispatcher.checkResult(_indigo_lib.indigoToString(self));
         }
 
         public byte[] toBuffer()
@@ -1839,7 +1876,7 @@ namespace com.epam.indigo
            return pka;
         }
 
-        public int buildPkaModel(int level, float threshold, String filename)
+        public int buildPkaModel(int level, float threshold, string filename)
         {
            dispatcher.setSessionID();
            return dispatcher.checkResult(_indigo_lib.indigoBuildPkaModel(level, threshold, filename));
@@ -1857,10 +1894,10 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoNameToStructure(name, parameters));
         }
 
-        public String dbgInternalType()
+        public string dbgInternalType()
         {
             dispatcher.setSessionID();
-            return new String(dispatcher.checkResult(_indigo_lib.indigoDbgInternalType(self)));
+            return dispatcher.checkResult(_indigo_lib.indigoDbgInternalType(self));
         }
     }
 }

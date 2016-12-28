@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.epam.indigo</groupId>
     <artifactId>indigo-inchi</artifactId>
-    <version>1.3.0beta.r14</version>
+    <version>1.3.0beta.r15</version>
     <packaging>jar</packaging>
 
     <name>Indigo InChI</name>

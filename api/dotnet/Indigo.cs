@@ -62,12 +62,151 @@ namespace com.epam.indigo
         public const int SG_TYPE_ANY = 14;
 
         private IndigoDllLoader dll_loader;
+        
+        private long _sid = -1;
+        private string _dllpath;
+        private int _dll_loader_id;
+        public IndigoLib _indigo_lib = null;
+
+        ~Indigo()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            if (dll_loader.isValid())
+            {
+                if (_sid >= 0)
+                {
+                    if (IndigoDllLoader.InstanceId == _dll_loader_id)
+                        _indigo_lib.indigoReleaseSessionId(_sid);
+                    _sid = -1;
+                }
+            }
+        }
+
+        public void setSessionID()
+        {
+            _indigo_lib.indigoSetSessionId(_sid);
+        }
+
+        public void dbgBreakpoint()
+        {
+            setSessionID();
+            _indigo_lib.indigoDbgBreakpoint();
+        }
+
+
+        public void free(int id)
+        {
+            setSessionID();
+            checkResult(_indigo_lib.indigoFree(id));
+        }
+
+        public string getDllPath()
+        {
+            return _dllpath;
+        }
+
+        public string dbgProfiling (bool whole_session)
+        {
+            setSessionID();
+            return checkResult(_indigo_lib.indigoDbgProfiling(whole_session ? 1 : 0));
+        }
+        
+        public void dbgResetProfiling (bool whole_session)
+        {
+            setSessionID();
+            checkResult(_indigo_lib.indigoDbgResetProfiling(whole_session ? 1 : 0));
+        }
+        
+        private static string _sbyteToStringUTF8(sbyte* input) 
+        {
+            /// return System.Text.Encoding.UTF8.GetString(System.Text.Encoding.Default.GetBytes(new String(input)));
+            return new String(input);
+        }
+
+        private static void _handleError(sbyte* message, Indigo self)
+        {
+            throw new IndigoException(_sbyteToStringUTF8(message));
+        }
+
+        private void init(string lib_path)
+        {
+            string libraryName;
+            dll_loader = IndigoDllLoader.Instance;
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    libraryName = "indigo.dll";
+
+                    bool vs2013 = true;
+                    bool vs2015 = true;
+
+                    try
+                    {
+                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
+                    }
+                    catch
+                    {
+                        vs2013 = false;
+                    }
+                    try
+                    {
+                       dll_loader.loadLibrary(lib_path, "vcruntime140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
+                    }
+                    catch
+                    {
+                        vs2015 = false;
+                    }
+
+                    if (vs2013)
+                    {
+                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
+                       dll_loader.loadLibrary(lib_path, "msvcp120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
+                       dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2013", false);
+                    }
+                    else if (vs2015)
+                    {
+                       dll_loader.loadLibrary(lib_path, "vcruntime140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
+                       dll_loader.loadLibrary(lib_path, "msvcp140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
+                       dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2015", false);
+                    }
+
+                    break;
+                case PlatformID.Unix:
+                    if (IndigoDllLoader.isMac())
+                    {
+                        libraryName = "libindigo.dylib";
+                        dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesMac", false);
+                    }
+                    else
+                    {
+                        libraryName = "libindigo.so";
+                        dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesLinux", false);
+                    }
+                    break;
+                default:
+                    throw new PlatformNotSupportedException(String.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
+            }
+
+            // Save instance id to check if session was allocated for this instance
+            _dll_loader_id = IndigoDllLoader.InstanceId;
+
+            _dllpath = lib_path;
+
+            _indigo_lib = dll_loader.getInterface<IndigoLib>(libraryName);
+
+            _sid = _indigo_lib.indigoAllocSessionId();
+            _indigo_lib.indigoSetSessionId(_sid);
+        }
 
         public float checkResult(float result)
         {
             if (result < 0)
             {
-                throw new IndigoException(new String(_indigo_lib.indigoGetLastError()));
+                throw new IndigoException(_sbyteToStringUTF8(_indigo_lib.indigoGetLastError()));
             }
 
             return result;
@@ -77,7 +216,7 @@ namespace com.epam.indigo
         {
             if (result < 0)
             {
-                throw new IndigoException(new String(_indigo_lib.indigoGetLastError()));
+                throw new IndigoException(_sbyteToStringUTF8(_indigo_lib.indigoGetLastError()));
             }
 
             return result;
@@ -87,27 +226,27 @@ namespace com.epam.indigo
         {
             if (result < 0)
             {
-                throw new IndigoException(new String(_indigo_lib.indigoGetLastError()));
+                throw new IndigoException(_sbyteToStringUTF8(_indigo_lib.indigoGetLastError()));
             }
 
             return result;
         }
 
-        public sbyte* checkResult(sbyte* result)
+        public string checkResult(sbyte* result)
         {
             if (result == null)
             {
-                throw new IndigoException(new String(_indigo_lib.indigoGetLastError()));
+                throw new IndigoException(_sbyteToStringUTF8(_indigo_lib.indigoGetLastError()));
             }
 
-            return result;
+            return _sbyteToStringUTF8(result);
         }
 
         public float* checkResult(float* result)
         {
             if (result == null)
             {
-                throw new IndigoException(new String(_indigo_lib.indigoGetLastError()));
+                throw new IndigoException(_sbyteToStringUTF8(_indigo_lib.indigoGetLastError()));
             }
 
             return result;
@@ -117,7 +256,7 @@ namespace com.epam.indigo
         {
             if (result == null)
             {
-                throw new IndigoException(new String(_indigo_lib.indigoGetLastError()));
+                throw new IndigoException(_sbyteToStringUTF8(_indigo_lib.indigoGetLastError()));
             }
 
             return result;
@@ -128,9 +267,9 @@ namespace com.epam.indigo
             return _sid;
         }
 
-        public String version()
+        public string version()
         {
-            return new String(_indigo_lib.indigoVersion());
+            return checkResult(_indigo_lib.indigoVersion());
         }
 
         public Indigo(string lib_path)
@@ -197,7 +336,7 @@ namespace com.epam.indigo
             checkResult(_indigo_lib.indigoResetOptions());
         }
 
-        public IndigoObject writeFile(String filename)
+        public IndigoObject writeFile(string filename)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoWriteFile(filename)));
@@ -221,7 +360,7 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoCreateQueryMolecule()));
         }
 
-        public IndigoObject loadMolecule(String str)
+        public IndigoObject loadMolecule(string str)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadMoleculeFromString(str)));
@@ -233,13 +372,13 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadMoleculeFromBuffer(buf, buf.Length)));
         }
 
-        public IndigoObject loadMoleculeFromFile(String path)
+        public IndigoObject loadMoleculeFromFile(string path)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadMoleculeFromFile(path)));
         }
 
-        public IndigoObject loadQueryMolecule(String str)
+        public IndigoObject loadQueryMolecule(string str)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadQueryMoleculeFromString(str)));
@@ -251,13 +390,13 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadQueryMoleculeFromBuffer(buf, buf.Length)));
         }
 
-        public IndigoObject loadQueryMoleculeFromFile(String path)
+        public IndigoObject loadQueryMoleculeFromFile(string path)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadQueryMoleculeFromFile(path)));
         }
 
-        public IndigoObject loadSmarts(String str)
+        public IndigoObject loadSmarts(string str)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadSmartsFromString(str)));
@@ -269,13 +408,13 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadSmartsFromBuffer(buf, buf.Length)));
         }
 
-        public IndigoObject loadSmartsFromFile(String path)
+        public IndigoObject loadSmartsFromFile(string path)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadSmartsFromFile(path)));
         }
 
-        public IndigoObject loadReaction(String str)
+        public IndigoObject loadReaction(string str)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadReactionFromString(str)));
@@ -287,13 +426,13 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadReactionFromBuffer(buf, buf.Length)));
         }
 
-        public IndigoObject loadReactionFromFile(String path)
+        public IndigoObject loadReactionFromFile(string path)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadReactionFromFile(path)));
         }
 
-        public IndigoObject loadQueryReaction(String str)
+        public IndigoObject loadQueryReaction(string str)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadQueryReactionFromString(str)));
@@ -305,13 +444,13 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadQueryReactionFromBuffer(buf, buf.Length)));
         }
 
-        public IndigoObject loadQueryReactionFromFile(String path)
+        public IndigoObject loadQueryReactionFromFile(string path)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadQueryReactionFromFile(path)));
         }
 
-        public IndigoObject loadReactionSmarts(String str)
+        public IndigoObject loadReactionSmarts(string str)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadReactionSmartsFromString(str)));
@@ -323,7 +462,7 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadReactionSmartsFromBuffer(buf, buf.Length)));
         }
 
-        public IndigoObject loadReactionSmartsFromFile(String path)
+        public IndigoObject loadReactionSmartsFromFile(string path)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadReactionSmartsFromFile(path)));
@@ -447,6 +586,24 @@ namespace com.epam.indigo
         {
             setSessionID();
             int res = checkResult(_indigo_lib.indigoExtractCommonScaffold(structures.self, options));
+            if (res == 0)
+                return null;
+            return new IndigoObject(this, res);
+        }
+
+        public IndigoObject rgroupComposition(IndigoObject structures, string options)
+        {
+            setSessionID();
+            int res = checkResult(_indigo_lib.indigoRGroupComposition(structures.self, options));
+            if (res == 0)
+                return null;
+            return new IndigoObject(this, res);
+        }
+
+        public IndigoObject getFragmentedMolecule(IndigoObject structures, string options)
+        {
+            setSessionID();
+            int res = checkResult(_indigo_lib.indigoGetFragmentedMolecule(structures.self, options));
             if (res == 0)
                 return null;
             return new IndigoObject(this, res);
@@ -639,136 +796,27 @@ namespace com.epam.indigo
             return new IndigoObject(this, result);
         }
 
-        public void free(int id)
-        {
+        public int buildPkaModel(int level, float threshold, String filename) {
             setSessionID();
-            checkResult(_indigo_lib.indigoFree(id));
+            return checkResult(_indigo_lib.indigoBuildPkaModel(level, threshold, filename));
         }
 
-        public String getDllPath()
+        public IndigoObject nameToStructure(string name, string parameters) 
         {
-            return _dllpath;
-        }
-
-        public String dbgProfiling (bool whole_session)
-        {
-            setSessionID();
-            return new String(checkResult(_indigo_lib.indigoDbgProfiling(whole_session ? 1 : 0)));
-        }
-        
-        public void dbgResetProfiling (bool whole_session)
-        {
-            setSessionID();
-            checkResult(_indigo_lib.indigoDbgResetProfiling(whole_session ? 1 : 0));
-        }
-        
-        private static void _handleError(sbyte* message, Indigo self)
-        {
-            throw new IndigoException(new String(message));
-        }
-
-        private void init(string lib_path)
-        {
-            string libraryName;
-            dll_loader = IndigoDllLoader.Instance;
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.Win32NT:
-                    libraryName = "indigo.dll";
-
-                    bool vs2013 = true;
-                    bool vs2015 = true;
-
-                    try
-                    {
-                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
-                    }
-                    catch
-                    {
-                        vs2013 = false;
-                    }
-                    try
-                    {
-                       dll_loader.loadLibrary(lib_path, "vcruntime140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
-                    }
-                    catch
-                    {
-                        vs2015 = false;
-                    }
-
-                    if (vs2013)
-                    {
-                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
-                       dll_loader.loadLibrary(lib_path, "msvcp120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
-                       dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2013", false);
-                    }
-                    else if (vs2015)
-                    {
-                       dll_loader.loadLibrary(lib_path, "vcruntime140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
-                       dll_loader.loadLibrary(lib_path, "msvcp140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
-                       dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2015", false);
-                    }
-
-                    break;
-                case PlatformID.Unix:
-                    if (IndigoDllLoader.isMac())
-                    {
-                        libraryName = "libindigo.dylib";
-                        dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesMac", false);
-                    }
-                    else
-                    {
-                        libraryName = "libindigo.so";
-                        dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesLinux", false);
-                    }
-                    break;
-                default:
-                    throw new PlatformNotSupportedException(String.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
+            if (parameters == null) {
+                parameters = "";
             }
-
-            // Save instance id to check if session was allocated for this instance
-            _dll_loader_id = IndigoDllLoader.InstanceId;
-
-            _dllpath = lib_path;
-
-            _indigo_lib = dll_loader.getInterface<IndigoLib>(libraryName);
-
-            _sid = _indigo_lib.indigoAllocSessionId();
-            _indigo_lib.indigoSetSessionId(_sid);
-        }
-
-        ~Indigo()
-        {
-            Dispose();
-        }
-
-        public void Dispose()
-        {
-            if (dll_loader.isValid())
-            {
-                if (_sid >= 0)
-                {
-                    if (IndigoDllLoader.InstanceId == _dll_loader_id)
-                        _indigo_lib.indigoReleaseSessionId(_sid);
-                    _sid = -1;
-                }
-            }
-        }
-
-        public void setSessionID()
-        {
-            _indigo_lib.indigoSetSessionId(_sid);
-        }
-
-        public void dbgBreakpoint()
-        {
             setSessionID();
-            _indigo_lib.indigoDbgBreakpoint();
+            int result = checkResult(_indigo_lib.indigoNameToStructure(name, parameters));
+            if(result == 0)
+                return null;
+
+            return new IndigoObject(this, result);
         }
 
-        private long _sid = -1;
-        private String _dllpath;
-        private int _dll_loader_id;
-        public IndigoLib _indigo_lib = null;
+        public IndigoObject nameToStructure(string name) 
+        {
+            return nameToStructure(name, "");
+        }
     }
 }
