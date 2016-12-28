@@ -153,6 +153,8 @@ void Molecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vert
          _bond_orders.expand(idx + 1);
          _bond_orders[idx] = mol._bond_orders[i];
       }
+   
+   _aromaticity.clear();
 }
 
 /*
