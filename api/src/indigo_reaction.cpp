@@ -293,7 +293,7 @@ IndigoReaction * IndigoReaction::cloneFrom (IndigoObject & obj)
       for (auto i = 0; i < mprops.size(); i++) {
          rxnptr->_monomersProperties.push().copy(mprops[i]);
       }
-   } catch (Exception &ex) {
+   } catch (Exception&) {
    }
 
    auto& props = obj.getProperties();
@@ -314,7 +314,7 @@ IndigoQueryReaction * IndigoQueryReaction::cloneFrom (IndigoObject & obj)
       for (auto i = 0; i < mprops.size(); i++) {
          rxnptr->_monomersProperties.push().copy(mprops[i]);
       }
-   } catch (Exception &ex) {
+   } catch (Exception&) {
    }
 
    auto& props = obj.getProperties();
@@ -342,7 +342,7 @@ int _indigoIterateReaction (int reaction, int subtype)
       try {
          MonomersProperties &map = obj.getMonomersProperties();
          return self.addObject(new IndigoReactionIter(rxn, map, subtype));
-      } catch (Exception &ex) {
+      } catch (Exception&) {
          return self.addObject(new IndigoReactionIter(rxn, subtype));
       }
    }
@@ -513,7 +513,7 @@ CEXPORT int indigoGetMolecule (int reaction, int index)
       try {
          MonomersProperties &map = obj.getMonomersProperties();
          return self.addObject(new IndigoReactionMolecule(rxn, map, index));
-      } catch (Exception &ex) {
+      } catch (Exception&) {
          return self.addObject(new IndigoReactionMolecule(rxn, index));
       }
    }

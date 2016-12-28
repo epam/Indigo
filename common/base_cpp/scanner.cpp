@@ -244,7 +244,7 @@ float Scanner::readFloat (void)
 
 bool Scanner::tryReadFloat (float &value)
 {
-   off_t_type pos = tell();
+   long long pos = tell();
    double res;
    
    if (!_readDouble(res, 0))
@@ -288,16 +288,16 @@ void Scanner::readWord (Array<char> &word, const char *delimiters)
 
 float Scanner::readFloatFix (int digits)
 {
-   off_t_type pos = tell();
+   long long pos = tell();
    double res;
 
    if (!_readDouble(res, digits))
       throw Error("readFloatFix(): error parsing");
 
-   off_t_type rest = tell() - pos - digits;
+   long long rest = tell() - pos - digits;
 
    // Check that the unread part contains only spaces
-   while (rest-- > 0UL)
+   while (rest-- > 0LL)
    {
       if (!isspace(readChar()))
          throw Error("readFloatFix(): garbage after the number");
@@ -479,7 +479,7 @@ unsigned int Scanner::readPackedUInt ()
 
 void Scanner::readAll (Array<char> &arr)
 {
-   const off_t_type size = length() - tell();
+   const long long size = length() - tell();
    constexpr int max_int = std::numeric_limits<int>::max();
    if (size > max_int) {
       throw Error("Cannot read more than %d into memory", max_int);
@@ -492,7 +492,7 @@ void Scanner::readAll (Array<char> &arr)
 
 bool Scanner::isSingleLine (Scanner &scanner)
 {
-   off_t_type pos = scanner.tell();
+   long long pos = scanner.tell();
 
    scanner.skipLine();
 
@@ -527,7 +527,7 @@ FileScanner::FileScanner (const char *format, ...)
 void FileScanner::_init (Encoding filename_encoding, const char *filename)
 {
    _file = 0;
-   _file_len = 0UL;
+   _file_len = 0LL;
 
    if (filename == 0)
       throw Error("null filename");
@@ -538,13 +538,13 @@ void FileScanner::_init (Encoding filename_encoding, const char *filename)
       throw Error("can't open file %s. Error: %s", filename, strerror(errno));
 
 #ifdef _WIN32
-   _fseeki64(_file, 0UL, SEEK_END);
+   _fseeki64(_file, 0LL, SEEK_END);
    _file_len = _ftelli64(_file);
-   _fseeki64(_file, 0UL, SEEK_SET);
+   _fseeki64(_file, 0LL, SEEK_SET);
 #else
-   fseeko(_file, 0UL, SEEK_END);
+   fseeko(_file, 0LL, SEEK_END);
    _file_len = ftello(_file);
-   fseeko(_file, 0UL, SEEK_SET);
+   fseeko(_file, 0LL, SEEK_SET);
 #endif
    _invalidateCache();
 }
@@ -574,7 +574,7 @@ void FileScanner::_validateCache ()
    _cache_pos = 0;
 }
 
-off_t_type FileScanner::tell ()
+long long FileScanner::tell ()
 {
    _validateCache();
 #ifdef _WIN32
@@ -619,18 +619,18 @@ void FileScanner::skip (int n)
    {
       int delta = _cache_pos - _max_cache;
 #ifdef _WIN32
-      off_t_type res = _fseeki64(_file, delta, SEEK_CUR);
+      long long res = _fseeki64(_file, delta, SEEK_CUR);
 #else
-      off_t res = fseeko(_file, delta, SEEK_CUR);
+      long long res = fseeko(_file, delta, SEEK_CUR);
 #endif
       _invalidateCache();
 
-      if (res != 0UL)
+      if (res != 0LL)
          throw Error("skip() passes after end of file");
    }
 }
 
-void FileScanner::seek (off_t_type pos, int from)
+void FileScanner::seek (long long pos, int from)
 {
 #ifdef _WIN32
    if (from == SEEK_CUR)
@@ -646,7 +646,7 @@ void FileScanner::seek (off_t_type pos, int from)
    _invalidateCache();
 }
 
-off_t_type FileScanner::length ()
+long long FileScanner::length ()
 {
    return _file_len;
 }
@@ -730,12 +730,12 @@ int BufferScanner::lookNext ()
    return _buffer[_offset];
 }
 
-off_t_type BufferScanner::length ()
+long long BufferScanner::length ()
 {
    return _size;
 }
 
-off_t_type BufferScanner::tell ()
+long long BufferScanner::tell ()
 {
    return _offset;
 }
@@ -753,7 +753,7 @@ void BufferScanner::skip (int n)
       throw Error("skip() passes after end of buffer");
 }
 
-void BufferScanner::seek (off_t_type pos, int from)
+void BufferScanner::seek (long long pos, int from)
 {
    if (from == SEEK_SET)
       _offset = static_cast<int>(pos);
@@ -814,7 +814,7 @@ int Scanner::findWord (ReusableObjArray< Array<char> > &words)
    QS_DEF(ReusableObjArray< Array<int> >, prefixes);
    QS_DEF(Array<int>, pos);
    int i;
-   off_t_type pos_saved = tell();
+   long long pos_saved = tell();
    
    prefixes.clear();
    pos.clear();
@@ -867,7 +867,7 @@ int Scanner::findWordIgnoreCase (ReusableObjArray< Array<char> > &words)
    QS_DEF(ReusableObjArray< Array<int> >, prefixes);
    QS_DEF(Array<int>, pos);
    int i;
-   off_t_type pos_saved = tell();
+   long long pos_saved = tell();
    
    prefixes.clear();
    pos.clear();

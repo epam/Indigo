@@ -79,7 +79,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
    if (_scanner->length() >= 2)
    {
       byte id[2];
-      int pos = _scanner->tell();
+      long long pos = _scanner->tell();
 
       _scanner->readCharsFix(2, (char *)id);
       _scanner->seek(pos, SEEK_SET);
@@ -125,7 +125,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
    if (_scanner->length() >= 4)
    {
       char id[3];
-      int pos = _scanner->tell();
+      long long pos = _scanner->tell();
 
       _scanner->readCharsFix(3, id);
       _scanner->seek(pos, SEEK_SET);
@@ -142,7 +142,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
 
    // check for CML format
    {
-      int pos = _scanner->tell();
+      long long pos = _scanner->tell();
       _scanner->skipSpace();
 
       if (_scanner->lookNext() == '<')

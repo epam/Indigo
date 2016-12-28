@@ -58,9 +58,9 @@ void MoleculeCdxLoader::loadMolecule (Molecule &mol)
 
 void MoleculeCdxLoader::_checkHeader ()
 {
-   int pos_saved = _scanner->tell();
+   long long pos_saved = _scanner->tell();
 
-   if ((_scanner->length() - pos_saved) < 8)
+   if ((_scanner->length() - pos_saved) < 8LL)
       return;
 
    char id[8];

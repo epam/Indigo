@@ -29,7 +29,6 @@ MoleculeCdxSaver::MoleculeCdxSaver (Output &output) : _output(output)
 void MoleculeCdxSaver::saveMolecule (Molecule &mol)
 {
    LocaleGuard locale_guard;
-   int i;
 
    _mol = &mol;
 

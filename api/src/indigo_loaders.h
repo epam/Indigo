@@ -24,9 +24,9 @@
 class IndigoRdfData : public IndigoObject
 {
 public:
-   IndigoRdfData (int type, Array<char> &data, int index, int offset);
+   IndigoRdfData (int type, Array<char> &data, int index, long long offset);
    IndigoRdfData (int type, Array<char> &data, PropertiesMap &properties,
-                  int index, int offset);
+                  int index, long long offset);
    virtual ~IndigoRdfData ();
 
    Array<char> & getRawData ();
@@ -34,7 +34,7 @@ public:
    virtual PropertiesMap& getProperties(){return _properties;}
 
    virtual int getIndex ();
-   int tell ();
+   long long tell ();
 
 protected:
    Array<char> _data;
@@ -42,14 +42,14 @@ protected:
    PropertiesMap _properties;
    bool _loaded;
    int _index;
-   int _offset;
+   long long _offset;
 };
 
 class IndigoRdfMolecule : public IndigoRdfData
 {
 public:
    IndigoRdfMolecule (Array<char> &data, PropertiesMap &properties,
-                      int index, int offset);
+                      int index, long long offset);
    virtual ~IndigoRdfMolecule ();
 
    virtual Molecule & getMolecule ();
@@ -65,7 +65,7 @@ class IndigoRdfReaction : public IndigoRdfData
 {
 public:
    IndigoRdfReaction (Array<char> &data, PropertiesMap &properties,
-                      int index, int offset);
+                      int index, long long offset);
    virtual ~IndigoRdfReaction ();
 
    virtual Reaction & getReaction ();
@@ -90,7 +90,7 @@ public:
 
    IndigoObject * at (int index);
 
-   off_t_type tell ();
+   long long tell ();
 
    AutoPtr<SdfLoader> sdf_loader;
 
@@ -110,7 +110,7 @@ public:
 
    IndigoObject * at (int index);
 
-   off_t_type tell ();
+   long long tell ();
 
    AutoPtr<RdfLoader> rdf_loader;
 protected:
@@ -120,7 +120,7 @@ protected:
 class IndigoSmilesMolecule : public IndigoRdfData
 {
 public:
-   IndigoSmilesMolecule (Array<char> &smiles, int index, int offset);
+   IndigoSmilesMolecule (Array<char> &smiles, int index, long long offset);
    virtual ~IndigoSmilesMolecule ();
 
    virtual Molecule & getMolecule ();
@@ -135,7 +135,7 @@ protected:
 class IndigoSmilesReaction : public IndigoRdfData
 {
 public:
-   IndigoSmilesReaction (Array<char> &data, int index, int offset);
+   IndigoSmilesReaction (Array<char> &data, int index, long long offset);
    virtual ~IndigoSmilesReaction ();
 
    virtual Reaction & getReaction ();
@@ -154,7 +154,7 @@ public:
    IndigoMultilineSmilesLoader (const char *filename);
    virtual ~IndigoMultilineSmilesLoader ();
 
-   off_t_type tell ();
+   long long tell ();
 
    virtual IndigoObject * next ();
    virtual bool hasNext ();
@@ -170,9 +170,9 @@ protected:
    void _advance ();
 
    CP_DECL;
-   TL_CP_DECL(Array<int>, _offsets);
+   TL_CP_DECL(Array<long long>, _offsets);
    int _current_number;
-   int _max_offset;
+   long long _max_offset;
 };
 
 namespace indigo
@@ -226,7 +226,7 @@ public:
 
    IndigoObject * at (int index);
 
-   off_t_type tell ();
+   long long tell ();
 
    AutoPtr<MultipleCmlLoader> loader;
 protected:
@@ -241,7 +241,7 @@ class MultipleCdxLoader;
 class IndigoCdxMolecule : public IndigoRdfData
 {
 public:
-   IndigoCdxMolecule (Array<char> &data_, PropertiesMap &properties, int index, int offset);
+   IndigoCdxMolecule (Array<char> &data_, PropertiesMap &properties, int index, long long offset);
    virtual ~IndigoCdxMolecule ();
 
    virtual Molecule & getMolecule ();
@@ -258,7 +258,7 @@ protected:
 class IndigoCdxReaction : public IndigoRdfData
 {
 public:
-   IndigoCdxReaction (Array<char> &data_, PropertiesMap &properties, int index, int offset);
+   IndigoCdxReaction (Array<char> &data_, PropertiesMap &properties, int index, long long offset);
    virtual ~IndigoCdxReaction ();
 
    virtual Reaction & getReaction ();
@@ -284,7 +284,7 @@ public:
 
    IndigoObject * at (int index);
 
-   off_t_type tell ();
+   long long tell ();
 
    AutoPtr<MultipleCdxLoader> loader;
 protected:

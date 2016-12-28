@@ -39,7 +39,7 @@ _scanner(scanner)
    properties.clear();
 
    _current_number = 0;
-   _max_offset = 0;
+   _max_offset = 0LL;
    _offsets.clear();
    _reaction = false;
 }
@@ -51,7 +51,7 @@ bool MultipleCdxLoader::isEOF ()
 
 void MultipleCdxLoader::readNext ()
 {
-   int beg;
+   long long beg = 0LL;
    int size;
 
    properties.clear();
@@ -71,7 +71,7 @@ void MultipleCdxLoader::readNext ()
       _max_offset = _scanner.tell();
 }
 
-int MultipleCdxLoader::tell ()
+long long MultipleCdxLoader::tell ()
 {
    return _scanner.tell();
 }
@@ -83,7 +83,7 @@ int MultipleCdxLoader::currentNumber ()
 
 int MultipleCdxLoader::count ()
 {
-   int offset = _scanner.tell();
+   long long offset = _scanner.tell();
    int cn = _current_number;
 
    if (offset != _max_offset)
@@ -132,7 +132,7 @@ bool MultipleCdxLoader::isReaction ()
 
 bool MultipleCdxLoader::_hasNextObject ()
 {
-   int pos;
+   long long pos = 0LL;
    int size;
 
    if (_scanner.isEOF())
@@ -141,16 +141,15 @@ bool MultipleCdxLoader::_hasNextObject ()
    return _findObject(pos, size);
 }
 
-bool MultipleCdxLoader::_findObject (int &beg, int &length)
+bool MultipleCdxLoader::_findObject (long long &beg, int &length)
 {
    if (_scanner.isEOF())
       return false;
 
-   int i;
-   int pos_saved = _scanner.tell();
+   long long pos_saved = _scanner.tell();
    
-   int fragment_pos = -1;
-   int reaction_pos = -1;
+   long long fragment_pos = -1LL;
+   long long reaction_pos = -1LL;
 
    _latest_text.clear();
    _checkHeader();
@@ -162,7 +161,7 @@ bool MultipleCdxLoader::_findObject (int &beg, int &length)
    int level = 1;
    int level_found = 0;
 
-   while (!_scanner.isEOF() && ((_scanner.length() - _scanner.tell()) > 1))
+   while (!_scanner.isEOF() && ((_scanner.length() - _scanner.tell()) > 1LL))
    {
       tag = _scanner.readBinaryWord();
 
@@ -198,18 +197,18 @@ bool MultipleCdxLoader::_findObject (int &beg, int &length)
       }
       if (level == level_found)
       {
-         if (reaction_pos != -1)
+         if (reaction_pos != -1LL)
          {
             beg = reaction_pos;
-            length = _scanner.tell() - reaction_pos;
+            length = static_cast<int>(_scanner.tell() - reaction_pos);
             _reaction = true;   
             _scanner.seek(pos_saved, SEEK_SET);
             return true;
          }
-         if (fragment_pos != -1)
+         if (fragment_pos != -1LL)
          {
             beg = fragment_pos;
-            length = _scanner.tell() - fragment_pos;
+            length = static_cast<int>(_scanner.tell() - fragment_pos);
             _reaction = false;   
             _scanner.seek(pos_saved, SEEK_SET);
             return true;
@@ -343,9 +342,9 @@ void MultipleCdxLoader::_skipObject ()
 
 void MultipleCdxLoader::_checkHeader ()
 {
-   int pos_saved = _scanner.tell();
+   long long pos_saved = _scanner.tell();
 
-   if ((_scanner.length() - pos_saved) < 8)
+   if ((_scanner.length() - pos_saved) < 8LL)
       return;
 
    char id[8];

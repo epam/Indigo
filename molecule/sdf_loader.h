@@ -15,7 +15,6 @@
 #ifndef __sdf_loader__
 #define __sdf_loader__
 
-#include "base_cpp/io_base.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/properties_map.h"
@@ -37,7 +36,7 @@ public:
    bool isEOF ();
    void readNext ();
 
-   off_t_type tell ();
+   long long tell ();
    int currentNumber ();
    int count ();
 
@@ -52,10 +51,10 @@ public:
 protected:
    Scanner *_scanner;
    bool     _own_scanner;
-   TL_CP_DECL(Array<int>, _offsets);
+   TL_CP_DECL(Array<long long>, _offsets);
    TL_CP_DECL(Array<char>, _preread);
    int _current_number;
-   int _max_offset;
+   long long _max_offset;
 };
 
 }

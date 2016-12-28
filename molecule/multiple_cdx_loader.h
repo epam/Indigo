@@ -19,7 +19,6 @@
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/properties_map.h"
 
-
 namespace indigo
 {
 
@@ -36,7 +35,7 @@ public:
    bool isEOF ();
    void readNext ();
    void readAt (int index);
-   int tell ();
+   long long tell ();
    int currentNumber ();
    int count ();
 
@@ -47,15 +46,15 @@ public:
    TL_CP_DECL(PropertiesMap, properties);
 
 protected:
-   TL_CP_DECL(Array<int>, _offsets);
+   TL_CP_DECL(Array<long long>, _offsets);
    TL_CP_DECL(Array<char>, _latest_text);
    Scanner &_scanner;
    int _current_number;
-   int _max_offset;
+   long long _max_offset;
    bool _reaction;
 
    void _checkHeader ();
-   bool _findObject (int &beg, int &length);
+   bool _findObject (long long &beg, int &length);
    bool _hasNextObject ();
    void _skipObject ();
    void _getObject ();

@@ -84,7 +84,7 @@ void MoleculeAutoLoader::loadQueryMolecule (QueryMolecule &qmol)
 
 bool MoleculeAutoLoader::tryMDLCT (Scanner &scanner, Array<char> &outbuf)
 {
-   int pos = scanner.tell();
+   long long pos = scanner.tell();
    bool endmark = false;
    QS_DEF(Array<char>, curline);
 
@@ -158,10 +158,10 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
    properties.clear();
 
    // check for GZip format
-   if (!query && _scanner->length() >= 2)
+   if (!query && _scanner->length() >= 2LL)
    {
       byte id[2];
-      int pos = _scanner->tell();
+      long long pos = _scanner->tell();
 
       _scanner->readCharsFix(2, (char *)id);
       _scanner->seek(pos, SEEK_SET);
@@ -204,10 +204,10 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
    }
 
    // check for ICM format
-   if (!query && _scanner->length() >= 4)
+   if (!query && _scanner->length() >= 4LL)
    {
       char id[3];
-      int pos = _scanner->tell();
+      long long pos = _scanner->tell();
 
       _scanner->readCharsFix(3, id);
       _scanner->seek(pos, SEEK_SET);
@@ -224,7 +224,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 
    // check for CML format
    {
-      int pos = _scanner->tell();
+      long long pos = _scanner->tell();
       _scanner->skipSpace();
 
       if (_scanner->lookNext() == '<')
@@ -249,7 +249,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       // check for InChI format
       {
          char prefix[6];
-         int  start = _scanner->tell();
+         long long start = _scanner->tell();
 
          bool inchi = false;
          {

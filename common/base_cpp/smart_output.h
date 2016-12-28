@@ -30,8 +30,8 @@ public:
    virtual ~SmartTableOutput ();
 
    virtual void write (const void *data, int size);
-   virtual void seek  (off_t_type offset, int from);
-   virtual off_t_type tell  ();
+   virtual void seek  (long long offset, int from);
+   virtual long long tell  ();
    virtual void flush ();
 
    void setLineFormat (const char *line_format);

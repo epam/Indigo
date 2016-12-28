@@ -31,8 +31,6 @@ ReactionCdxSaver::~ReactionCdxSaver ()
 
 void ReactionCdxSaver::saveReaction (Reaction &rxn)
 {
-   int i;
-
    MoleculeCdxSaver molsaver(_output);
 
    if (rxn.reactantsCount() > 0)

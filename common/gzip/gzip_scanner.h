@@ -31,12 +31,12 @@ public:
    virtual ~GZipScanner ();
 
    virtual void read  (int length, void *res);
-   virtual off_t_type tell  ();
+   virtual long long  tell  ();
    virtual bool isEOF ();
-   virtual void seek  (off_t_type pos, int from);
+   virtual void seek  (long long pos, int from);
    virtual int  lookNext ();
    virtual void skip (int length);
-   virtual off_t_type length ();
+   virtual long long length ();
    virtual void readAll (Array<char> &arr);
 
    DECL_ERROR;

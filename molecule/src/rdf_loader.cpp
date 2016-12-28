@@ -28,8 +28,8 @@ CP_INIT,
 TL_CP_GET(data),
 TL_CP_GET(properties),
 TL_CP_GET(_innerBuffer),
-_scanner(0),
-_isMolecule(false),
+_scanner{ nullptr },
+_isMolecule{ false },
 TL_CP_GET(_offsets) {
    data.clear();
    properties.clear();
@@ -39,7 +39,7 @@ TL_CP_GET(_offsets) {
     * Detect if input is gzipped
     */
    byte id[2];
-   int pos = scanner.tell();
+   long long pos = scanner.tell();
 
    scanner.readCharsFix(2, (char *) id);
    scanner.seek(pos, SEEK_SET);
@@ -53,7 +53,7 @@ TL_CP_GET(_offsets) {
    }
 
    _current_number = 0;
-   _max_offset = 0;
+   _max_offset = 0LL;
    _offsets.clear();
 }
 
@@ -67,7 +67,7 @@ bool RdfLoader::isEOF() {
 }
 
 int RdfLoader::count () {
-   int offset = _scanner->tell();
+   long long offset = _scanner->tell();
    int cn = _current_number;
 
    if (offset != _max_offset) {
@@ -269,7 +269,7 @@ bool RdfLoader::_readLine(Scanner& scanner, Array<char>& buffer) {
    return true;
 }
 
-off_t_type RdfLoader::tell () {
+long long RdfLoader::tell () {
    return _scanner->tell();
 }
 

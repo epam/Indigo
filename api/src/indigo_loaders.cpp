@@ -31,6 +31,7 @@
 #include "molecule/molecule_cdx_loader.h"
 #include "reaction/reaction_cdx_loader.h"
 
+#include <limits>
 
 IndigoSdfLoader::IndigoSdfLoader (Scanner &scanner) :
 IndigoObject(SDF_LOADER)
@@ -50,7 +51,7 @@ IndigoSdfLoader::~IndigoSdfLoader ()
 {
 }
 
-IndigoRdfData::IndigoRdfData (int type, Array<char> &data, int index, int offset) :
+IndigoRdfData::IndigoRdfData (int type, Array<char> &data, int index, long long offset) :
 IndigoObject(type)
 {
    _loaded = false;
@@ -61,7 +62,7 @@ IndigoObject(type)
 }
 
 IndigoRdfData::IndigoRdfData (int type, Array<char> &data, PropertiesMap &properties,
-                              int index, int offset) :
+                              int index, long long offset) :
 IndigoObject(type)
 {
    _loaded = false;
@@ -82,7 +83,7 @@ Array<char> & IndigoRdfData::getRawData ()
    return _data;
 }
 
-int IndigoRdfData::tell ()
+long long IndigoRdfData::tell ()
 {
    return _offset;
 }
@@ -94,7 +95,7 @@ int IndigoRdfData::getIndex ()
 
 
 IndigoRdfMolecule::IndigoRdfMolecule (Array<char> &data, PropertiesMap &properties,
-                                      int index, int offset) :
+                                      int index, long long offset) :
 IndigoRdfData(RDF_MOLECULE, data, properties, index, offset)
 {
 }
@@ -147,7 +148,7 @@ IndigoRdfMolecule::~IndigoRdfMolecule ()
 }
 
 IndigoRdfReaction::IndigoRdfReaction (Array<char> &data, PropertiesMap &properties,
-                                      int index, int offset) :
+                                      int index, long long offset) :
 IndigoRdfData(RDF_REACTION, data, properties, index, offset)
 {
 }
@@ -208,7 +209,7 @@ IndigoObject * IndigoSdfLoader::next ()
       return 0;
 
    int counter = sdf_loader->currentNumber();
-   int offset = sdf_loader->tell();
+   long long offset = sdf_loader->tell();
 
    sdf_loader->readNext();
 
@@ -221,7 +222,7 @@ IndigoObject * IndigoSdfLoader::at (int index)
    sdf_loader->readAt(index);
 
    return new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties,
-                                index, 0);
+                                index, 0LL);
 }
 
 bool IndigoSdfLoader::hasNext ()
@@ -229,7 +230,7 @@ bool IndigoSdfLoader::hasNext ()
    return !sdf_loader->isEOF();
 }
 
-off_t_type IndigoSdfLoader::tell ()
+long long IndigoSdfLoader::tell ()
 {
    return sdf_loader->tell();
 }
@@ -257,7 +258,7 @@ IndigoObject * IndigoRdfLoader::next ()
       return 0;
 
    int counter = rdf_loader->currentNumber();
-   int offset = rdf_loader->tell();
+   long long offset = rdf_loader->tell();
 
    rdf_loader->readNext();
 
@@ -274,14 +275,14 @@ IndigoObject * IndigoRdfLoader::at (int index)
    rdf_loader->readAt(index);
 
    if (rdf_loader->isMolecule())
-      return new IndigoRdfMolecule(rdf_loader->data, rdf_loader->properties, index, 0);
+      return new IndigoRdfMolecule(rdf_loader->data, rdf_loader->properties, index, 0LL);
    else
-      return new IndigoRdfReaction(rdf_loader->data, rdf_loader->properties, index, 0);
+      return new IndigoRdfReaction(rdf_loader->data, rdf_loader->properties, index, 0LL);
 
 }
 
 
-off_t_type IndigoRdfLoader::tell ()
+long long IndigoRdfLoader::tell ()
 {
    return rdf_loader->tell();
 }
@@ -291,7 +292,7 @@ bool IndigoRdfLoader::hasNext ()
    return !rdf_loader->isEOF();
 }
 
-IndigoSmilesMolecule::IndigoSmilesMolecule (Array<char> &smiles, int index, int offset) :
+IndigoSmilesMolecule::IndigoSmilesMolecule (Array<char> &smiles, int index, long long offset) :
 IndigoRdfData(SMILES_MOLECULE, smiles, index, offset)
 {
 }
@@ -332,7 +333,7 @@ IndigoObject * IndigoSmilesMolecule::clone ()
    return IndigoMolecule::cloneFrom(*this);
 }
 
-IndigoSmilesReaction::IndigoSmilesReaction (Array<char> &smiles, int index, int offset) :
+IndigoSmilesReaction::IndigoSmilesReaction (Array<char> &smiles, int index, long long offset) :
 IndigoRdfData(SMILES_REACTION, smiles, index, offset)
 {
 }
@@ -380,7 +381,7 @@ CP_INIT, TL_CP_GET(_offsets)
    _scanner = &scanner;
 
    _current_number = 0;
-   _max_offset = 0;
+   _max_offset = 0LL;
    _offsets.clear();
 }
 
@@ -392,7 +393,7 @@ CP_INIT, TL_CP_GET(_offsets)
    _scanner = _own_scanner.get();
 
    _current_number = 0;
-   _max_offset = 0;
+   _max_offset = 0LL;
    _offsets.clear();
 }
 
@@ -416,7 +417,7 @@ IndigoObject * IndigoMultilineSmilesLoader::next ()
    if (_scanner->isEOF())
       return 0;
 
-   int offset = _scanner->tell();
+   long long offset = _scanner->tell();
    int counter = _current_number;
 
    _advance();
@@ -432,14 +433,14 @@ bool IndigoMultilineSmilesLoader::hasNext ()
    return !_scanner->isEOF();
 }
 
-off_t_type IndigoMultilineSmilesLoader::tell ()
+long long IndigoMultilineSmilesLoader::tell ()
 {
    return _scanner->tell();
 }
 
 int IndigoMultilineSmilesLoader::count ()
 {
-   int offset = _scanner->tell();
+   long long offset = _scanner->tell();
    int cn = _current_number;
 
    if (offset != _max_offset)
@@ -515,6 +516,49 @@ CEXPORT int indigoTell (int handle)
    INDIGO_BEGIN
    {
       IndigoObject &obj = self.getObject(handle);
+      long long size = 0LL;
+
+      constexpr int max_int = std::numeric_limits<int>::max();
+
+      if (obj.type == IndigoObject::SDF_LOADER)
+         size = ((IndigoSdfLoader &)obj).tell();
+      else if (obj.type == IndigoObject::RDF_LOADER)
+         size = ((IndigoRdfLoader &)obj).tell();
+      else if (obj.type == IndigoObject::MULTILINE_SMILES_LOADER)
+         size = ((IndigoMultilineSmilesLoader &)obj).tell();
+      else if (obj.type == IndigoObject::RDF_MOLECULE ||
+               obj.type == IndigoObject::RDF_REACTION ||
+               obj.type == IndigoObject::SMILES_MOLECULE ||
+               obj.type == IndigoObject::SMILES_REACTION)
+         size = ((IndigoRdfData &)obj).tell();
+      else if (obj.type == IndigoObject::MULTIPLE_CML_LOADER)
+         size = ((IndigoMultipleCmlLoader &)obj).tell();
+      else if (obj.type == IndigoObject::CML_MOLECULE)
+         size = ((IndigoCmlMolecule &)obj).tell();
+      else if (obj.type == IndigoObject::CML_REACTION)
+         size = ((IndigoCmlReaction &)obj).tell();
+      else if (obj.type == IndigoObject::MULTIPLE_CDX_LOADER)
+         size = ((IndigoMultipleCdxLoader &)obj).tell();
+      else if (obj.type == IndigoObject::CDX_MOLECULE)
+         size = ((IndigoCdxMolecule &)obj).tell();
+      else if (obj.type == IndigoObject::CDX_REACTION)
+         size = ((IndigoCdxReaction &)obj).tell();
+      else
+         throw IndigoError("indigoTell(): not applicable to %s", obj.debugInfo());
+
+      if (size > max_int)
+         throw IndigoError("indigoTell(): file size exceeds %d bytes. Please use indigoTell64() instead", max_int);
+      else
+         return static_cast<int>(size);
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT long long indigoTell64(int handle)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(handle);
 
       if (obj.type == IndigoObject::SDF_LOADER)
          return ((IndigoSdfLoader &)obj).tell();
@@ -523,9 +567,9 @@ CEXPORT int indigoTell (int handle)
       if (obj.type == IndigoObject::MULTILINE_SMILES_LOADER)
          return ((IndigoMultilineSmilesLoader &)obj).tell();
       if (obj.type == IndigoObject::RDF_MOLECULE ||
-          obj.type == IndigoObject::RDF_REACTION ||
-          obj.type == IndigoObject::SMILES_MOLECULE ||
-          obj.type == IndigoObject::SMILES_REACTION)
+         obj.type == IndigoObject::RDF_REACTION ||
+         obj.type == IndigoObject::SMILES_MOLECULE ||
+         obj.type == IndigoObject::SMILES_REACTION)
          return ((IndigoRdfData &)obj).tell();
       if (obj.type == IndigoObject::MULTIPLE_CML_LOADER)
          return ((IndigoMultipleCmlLoader &)obj).tell();
@@ -540,7 +584,7 @@ CEXPORT int indigoTell (int handle)
       if (obj.type == IndigoObject::CDX_REACTION)
          return ((IndigoCdxReaction &)obj).tell();
 
-      throw IndigoError("indigoTell(): not applicable to %s", obj.debugInfo());
+      throw IndigoError("indigoTell64(): not applicable to %s", obj.debugInfo());
    }
    INDIGO_END(-1)
 }
@@ -679,7 +723,7 @@ IndigoMultipleCmlLoader::~IndigoMultipleCmlLoader ()
 {
 }
 
-off_t_type IndigoMultipleCmlLoader::tell ()
+long long IndigoMultipleCmlLoader::tell ()
 {
    return loader->tell();
 }
@@ -726,7 +770,7 @@ CEXPORT int indigoIterateCMLFile (const char *filename)
 }
 
 IndigoCdxMolecule::IndigoCdxMolecule (Array<char> &data, PropertiesMap &properties,
-                                      int index, int offset) :
+                                      int index, long long offset) :
 IndigoRdfData(CDX_MOLECULE, data, properties, index, offset)
 {
 }
@@ -771,7 +815,7 @@ const char * IndigoCdxMolecule::debugInfo ()
 }
 
 IndigoCdxReaction::IndigoCdxReaction (Array<char> &data, PropertiesMap &properties,
-                                      int index, int offset) :
+                                      int index, long long offset) :
 IndigoRdfData(CDX_REACTION, data, properties, index, offset)
 {
 }
@@ -833,7 +877,7 @@ IndigoMultipleCdxLoader::~IndigoMultipleCdxLoader ()
 {
 }
 
-off_t_type IndigoMultipleCdxLoader::tell ()
+long long IndigoMultipleCdxLoader::tell ()
 {
    return loader->tell();
 }
@@ -849,7 +893,7 @@ IndigoObject * IndigoMultipleCdxLoader::next ()
       return 0;
 
    int counter = loader->currentNumber();
-   int offset = loader->tell();
+   long long offset = loader->tell();
 
    loader->readNext();
 

@@ -73,12 +73,12 @@ void SmartTableOutput::write (const void *data, int size)
    }
 }
 
-void SmartTableOutput::seek (off_t_type offset, int from)
+void SmartTableOutput::seek (long long offset, int from)
 {
    throw Error("seek is not supported");
 }
 
-off_t_type SmartTableOutput::tell ()
+long long SmartTableOutput::tell ()
 {
    throw Error("tell is not supported");
 }

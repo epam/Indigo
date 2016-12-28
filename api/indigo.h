@@ -773,6 +773,7 @@ CEXPORT const char * indigoRawData (int item);
 // Applicable to items returned by SDF/RDF iterators.
 // Returns the offset in the SDF/RDF file.
 CEXPORT int indigoTell (int handle);
+CEXPORT long long indigoTell64(int handle);
 
 // Saves the molecule to an SDF output stream
 CEXPORT int indigoSdfAppend (int output, int item);

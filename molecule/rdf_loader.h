@@ -15,7 +15,6 @@
 #ifndef _RDF_LOADER_H__
 #define	_RDF_LOADER_H__
 
-#include "base_cpp/io_base.h"
 #include "base_cpp/tlscont.h"
 #include "base_cpp/obj.h"
 #include "base_cpp/properties_map.h"
@@ -42,7 +41,7 @@ public:
    bool isEOF ();
    void readNext ();
    void readAt (int index);
-   off_t_type tell ();
+   long long tell ();
    int currentNumber ();
    int count ();
 
@@ -78,9 +77,9 @@ protected:
    Scanner *_scanner;
    bool _isMolecule;
 
-   TL_CP_DECL(Array<int>, _offsets);
+   TL_CP_DECL(Array<long long>, _offsets);
    int _current_number;
-   int _max_offset;
+   long long _max_offset;
 };
 
 }

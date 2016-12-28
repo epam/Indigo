@@ -113,12 +113,12 @@ int GZipOutput::_deflate (int flush)
    return rc;
 }
 
-off_t_type GZipOutput::tell ()
+long long GZipOutput::tell ()
 {
    return _total_written;
 }
 
-void GZipOutput::seek (off_t_type offset, int from)
+void GZipOutput::seek (long long offset, int from)
 {
    throw Error("not imlemented");
 }
