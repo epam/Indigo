@@ -682,6 +682,14 @@ public class Indigo {
         return new IndigoObject(this, res);
     }
 
+    public IndigoObject getFragmentedMolecule(IndigoObject molecule, String options) {
+        setSessionID();
+        int res = checkResult(this, molecule, _lib.indigoGetFragmentedMolecule(molecule.self, options));
+        if (res == 0)
+            return null;
+        return new IndigoObject(this, res);
+    }
+
     /**
      * Use createDecomposer() and decomposeMolecule()
      */

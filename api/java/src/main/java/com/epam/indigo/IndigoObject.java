@@ -856,6 +856,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResultDouble(this, _lib.indigoMonoisotopicMass(self));
    }
 
+   public String massComposition()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoMassComposition(self));
+   }
+
    public String canonicalSmiles()
    {
       dispatcher.setSessionID();
@@ -1125,6 +1131,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoGetRepeatingUnitConnectivity(self));
+   }
+
+   public int getSGroupMultiplier()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoGetSGroupMultiplier(self));
    }
 
    public int setSGroupMultiplier(int mult)
@@ -1428,6 +1440,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       Indigo.checkResult(this, _lib.indigoLayout(self));
+   }
+
+   public void clean2d()
+   {
+      dispatcher.setSessionID();
+      Indigo.checkResult(this, _lib.indigoClean2d(self));
    }
 
    public String smiles()

@@ -333,6 +333,7 @@ public interface IndigoLib extends Library
    double indigoMolecularWeight (int molecule);
    double indigoMostAbundantMass (int molecule);
    double indigoMonoisotopicMass (int molecule);
+   Pointer indigoMassComposition (int molecule);
 
    Pointer indigoCanonicalSmiles (int molecule);
    Pointer indigoLayeredCode (int molecule);
@@ -358,6 +359,8 @@ public interface IndigoLib extends Library
    int indigoUnfoldHydrogens (int item);
 
    int indigoLayout (int object);
+
+   int indigoClean2d (int object);
 
    Pointer indigoSmiles (int item);
 
@@ -441,6 +444,7 @@ public interface IndigoLib extends Library
 
    int indigoExtractCommonScaffold (int structures, String options);
    int indigoRGroupComposition (int molecule, String options);
+   int indigoGetFragmentedMolecule (int molecule, String options);
    int indigoAllScaffolds (int extracted);
    int indigoDecomposeMolecules (int scaffold, int structures);
    int indigoDecomposedMoleculeScaffold (int decomp);
