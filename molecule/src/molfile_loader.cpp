@@ -2254,7 +2254,7 @@ void MolfileLoader::_readCtab3000 ()
    
             if (label == -1)
             {
-               int cur_pos = strscan.tell();
+               long long cur_pos = strscan.tell();
                QS_DEF(ReusableObjArray< Array<char> >, strs);
                strs.clear();
                strs.push().readString("CLASS", false);
@@ -2983,7 +2983,7 @@ void MolfileLoader::_readRGroups3000 ()
 
    while (!_scanner.isEOF())
    {
-      int next_block_pos = _scanner.tell();
+      long long next_block_pos = _scanner.tell();
 
       _scanner.readLine(str, true);
 
@@ -3019,7 +3019,7 @@ void MolfileLoader::_readRGroups3000 ()
 
          while (!_scanner.isEOF())
          {
-            int pos = _scanner.tell();
+            long long pos = _scanner.tell();
 
             _scanner.readLine(str, true);
             if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
@@ -3476,7 +3476,7 @@ void MolfileLoader::_readTGroups3000 ()
             }
              
 
-            int pos = _scanner.tell();
+            long long pos = _scanner.tell();
             _scanner.readLine(str, true);
             if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
             {
@@ -3527,9 +3527,9 @@ void MolfileLoader::_readSGroupDisplay (Scanner &scanner, DataSGroup &dsg)
    if (scanner.readChar() == 'U')
       dsg.display_units = true;
 
-   int cur = scanner.tell();
-   scanner.seek(0, SEEK_END);
-   int end = scanner.tell();
+   long long cur = scanner.tell();
+   scanner.seek(0LL, SEEK_END);
+   long long end = scanner.tell();
    scanner.seek(cur, SEEK_SET);
 
    scanner.skip(3);

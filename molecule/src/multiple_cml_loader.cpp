@@ -32,7 +32,7 @@ _scanner(scanner)
    _tags.push().readString("<reaction", false);
    _tags.push().readString("<molecule", false);
    _current_number = 0;
-   _max_offset = 0;
+   _max_offset = 0LL;
    _offsets.clear();
    _reaction = false;
 }
@@ -52,8 +52,8 @@ void MultipleCmlLoader::readNext ()
    _offsets.expand(_current_number + 1);
    _offsets[_current_number++] = _scanner.tell();
 
-   int beg = _scanner.tell();
-   int size;
+   long long beg = _scanner.tell();
+   long long size;
 
    if (k == 1)
    {
@@ -71,13 +71,13 @@ void MultipleCmlLoader::readNext ()
    }
 
    _scanner.seek(beg, SEEK_SET);
-   _scanner.read(size, data);
+   _scanner.read(static_cast<int>(size), data);
 
    if (_scanner.tell() > _max_offset)
       _max_offset = _scanner.tell();
 }
 
-int MultipleCmlLoader::tell ()
+long long MultipleCmlLoader::tell ()
 {
    return _scanner.tell();
 }
@@ -89,7 +89,7 @@ int MultipleCmlLoader::currentNumber ()
 
 int MultipleCmlLoader::count ()
 {
-   int offset = _scanner.tell();
+   long long offset = _scanner.tell();
    int cn = _current_number;
 
    if (offset != _max_offset)

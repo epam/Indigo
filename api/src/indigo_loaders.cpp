@@ -617,7 +617,7 @@ CEXPORT int indigoIterateSmilesFile (const char *filename)
 }
 
 
-IndigoCmlMolecule::IndigoCmlMolecule (Array<char> &data, int index, int offset) :
+IndigoCmlMolecule::IndigoCmlMolecule (Array<char> &data, int index, long long offset) :
 IndigoRdfData(CML_MOLECULE, data, index, offset)
 {
 }
@@ -661,7 +661,7 @@ const char * IndigoCmlMolecule::debugInfo ()
    return "<cml molecule>";
 }
 
-IndigoCmlReaction::IndigoCmlReaction (Array<char> &data, int index, int offset) :
+IndigoCmlReaction::IndigoCmlReaction (Array<char> &data, int index, long long offset) :
 IndigoRdfData(CML_REACTION, data, index, offset)
 {
 }
@@ -739,7 +739,7 @@ IndigoObject * IndigoMultipleCmlLoader::next ()
       return 0;
 
    int counter = loader->currentNumber();
-   int offset = loader->tell();
+   long long offset = loader->tell();
 
    loader->readNext();
 

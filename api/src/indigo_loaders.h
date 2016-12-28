@@ -183,7 +183,7 @@ class MultipleCmlLoader;
 class IndigoCmlMolecule : public IndigoRdfData
 {
 public:
-   IndigoCmlMolecule (Array<char> &data_, int index, int offset);
+   IndigoCmlMolecule (Array<char> &data_, int index, long long offset);
    virtual ~IndigoCmlMolecule ();
 
    virtual Molecule & getMolecule ();
@@ -200,7 +200,7 @@ protected:
 class IndigoCmlReaction : public IndigoRdfData
 {
 public:
-   IndigoCmlReaction (Array<char> &data_, int index, int offset);
+   IndigoCmlReaction (Array<char> &data_, int index, long long offset);
    virtual ~IndigoCmlReaction ();
 
    virtual Reaction & getReaction ();
