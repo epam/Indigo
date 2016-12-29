@@ -31,7 +31,6 @@ void PropertiesMap::copy(PropertiesMap& other) {
    }
 }
 void PropertiesMap::insert(const char* key, const char* value) {
-   int res;
    if (_properties.find(key)) {
       auto& val = _properties.at(key);
       if (value != 0)
@@ -101,7 +100,7 @@ PropertiesMap::PrAuto PropertiesMap::elements() {
 }
 
 
-PropertiesMap::PrIter::PrIter(PropertiesMap &owner, int idx): _owner(owner), AutoIterator(idx) {
+PropertiesMap::PrIter::PrIter(PropertiesMap &owner, int idx): AutoIterator(idx), _owner(owner)  {
 }
 
 PropertiesMap::PrIter & PropertiesMap::PrIter::operator++(){

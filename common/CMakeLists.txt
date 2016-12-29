@@ -40,4 +40,9 @@ include_directories(${ZLib_HEADERS_DIR})
 
 add_library(common OBJECT ${BaseC_src} ${BaseC_headers} ${BaseCpp_src} ${BaseCpp_headers} ${LZW_src} ${LZW_headers} ${Math_src} ${Math_headers})
 
+
+if(UNIX OR APPLE)
+    set(COMPILE_FLAGS "${COMPILE_FLAGS} -Wall")
+endif()
+
 set_target_properties(common PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")

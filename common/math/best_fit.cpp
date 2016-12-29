@@ -86,7 +86,7 @@ bool Transform3f::bestFit (int npoints, const Vec3f points[], const Vec3f goals[
 
       if (RTR.elements[0] > 2 * EPSILON)
       {
-         float norm_b0,norm_b1,norm_b2;
+//         float norm_b0,norm_b1,norm_b2;
          Vec3f a0, a1, a2;
          Vec3f b0, b1, b2;
          
@@ -96,8 +96,8 @@ bool Transform3f::bestFit (int npoints, const Vec3f points[], const Vec3f goals[
 
          R.matrixVectorMultiply(a0, b0);
          R.matrixVectorMultiply(a1, b1);
-         norm_b0 = b0.length();
-         norm_b1 = b1.length();
+//         norm_b0 = b0.length();
+//         norm_b1 = b1.length();
          Line3f l1, l2;
          float sqs1, sqs2;
          l1.bestFit(npoints, points, &sqs1);
@@ -115,7 +115,7 @@ bool Transform3f::bestFit (int npoints, const Vec3f points[], const Vec3f goals[
             b0.normalize();
             b1.normalize();
             b2.cross(b0, b1);
-            norm_b2 = b2.length();
+//            norm_b2 = b2.length();
             
             evectors_matrix.elements[2] = a2.x;
             evectors_matrix.elements[5] = a2.y;
