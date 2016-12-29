@@ -239,6 +239,10 @@ void SdfLoader::readAt (int index)
    else
    {
       _scanner->seek(_max_offset, SEEK_SET);
+      if (_scanner->isEOF()) {
+         throw Error("No such record index: %d", index);
+      }
+
       _preread.clear();
       _current_number = _offsets.size();
       do
