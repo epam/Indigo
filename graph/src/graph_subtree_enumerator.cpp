@@ -101,7 +101,6 @@ void GraphSubtreeEnumerator::_reverseSearch (int front_idx, int cur_maximal_crit
       // Update front
       int v = front_prev_value.v;
       const Vertex &vertex = _graph.getVertex(v);
-      int i = vertex.neiBegin();
       for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
       {
          int nei_v = vertex.neiVertex(i);

@@ -20,7 +20,7 @@ bool AutoIterator::operator!=( const AutoIterator &other ) const
    return false;
 }
 
-VertexIter::VertexIter( Graph &owner, int idx ) : _owner(owner), AutoIterator(idx)
+VertexIter::VertexIter( Graph &owner, int idx ) : AutoIterator(idx), _owner(owner) 
 {
 }
 
@@ -45,7 +45,7 @@ VertexIter VerticesAuto::end ()
    return VertexIter(_owner, _owner.vertexEnd());
 }
 
-EdgeIter::EdgeIter( Graph &owner, int idx ) : _owner(owner), AutoIterator(idx)
+EdgeIter::EdgeIter( Graph &owner, int idx ) : AutoIterator(idx), _owner(owner) 
 {
 }
 
@@ -70,7 +70,7 @@ EdgeIter EdgesAuto::end ()
    return EdgeIter(_owner, _owner.edgeEnd());
 }
 
-NeighborIter::NeighborIter(const Vertex &owner, int idx) : _owner(owner), AutoIterator(idx)
+NeighborIter::NeighborIter(const Vertex &owner, int idx) : AutoIterator(idx), _owner(owner) 
 {
 }
 

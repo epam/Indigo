@@ -68,20 +68,7 @@ const float frac1[25] = { 0,
                           1. / 23,
                           1. / 24 };
 
-static float asin_stable(float x) {
-    float x2 = x * x;
-    float res = 0;
-    float y = x;
-    for (int i = 0; i < 12; i++) {
-        res += y * frac1[2*i + 1];
-        y *= (1. - frac1[2*i + 2]) * x2;
-    }
-    return res;
-}
 
-static float acos_stable(float x) {
-    return PI / 2 - asin_stable(x);
-}
 
 struct Transform3f;
 
@@ -279,6 +266,21 @@ struct Vec2f
 
    DLLEXPORT static Vec2f get_circle_center(Vec2f p, Vec2f q, float angle);
    DLLEXPORT static Vec2f get_circle_center(Vec2f a, Vec2f b, Vec2f c);
+   
+   DLLEXPORT static float asin_stable(float x) {
+      float x2 = x * x;
+      float res = 0;
+      float y = x;
+      for (int i = 0; i < 12; i++) {
+         res += y * frac1[2*i + 1];
+         y *= (1. - frac1[2*i + 2]) * x2;
+      }
+      return res;
+   }
+
+   DLLEXPORT static float acos_stable(float x) {
+      return PI / 2 - asin_stable(x);
+   }
 };
 
 struct Rect2f {

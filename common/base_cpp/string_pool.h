@@ -50,7 +50,7 @@ public:
     */
    class PoolIter : public AutoIterator {
    public:
-      PoolIter(StringPool &owner, int idx): _owner(owner), AutoIterator(idx) {
+      PoolIter(StringPool &owner, int idx): AutoIterator(idx), _owner(owner)  {
       }
       PoolIter & operator++() {
          _idx = _owner.next(_idx);

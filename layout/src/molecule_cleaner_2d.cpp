@@ -808,10 +808,10 @@ float MoleculeCleaner2d::_energy() {
                     float alpha;
 
                     if (fabs(cos) < 0.5) {
-                        alpha = acos_stable(cos)* signcross;
+                        alpha = Vec2f::acos_stable(cos)* signcross;
                     }
                     else {
-                        alpha = asin_stable(sin);
+                        alpha = Vec2f::asin_stable(sin);
                         if (cos < 0) {
                             if (alpha > 0) alpha = PI - alpha;
                             else alpha = -PI - alpha;
@@ -901,10 +901,10 @@ float MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2) {
     float alpha;
 
     if (fabs(cos) < 0.5) {
-        alpha = acos_stable(cos)* signcross;
+        alpha = Vec2f::acos_stable(cos)* signcross;
     }
     else {
-        alpha = asin_stable(sin);
+        alpha = Vec2f::asin_stable(sin);
         if (cos < 0) {
             if (alpha > 0) alpha = PI - alpha;
             else alpha = -PI - alpha;
