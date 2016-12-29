@@ -3443,8 +3443,10 @@ void MolfileLoader::_readTGroups3000 ()
                   stop_char = strscan.readChar();
                   if (stop_char == '/' && !strscan.isEOF())
                   {
-                     strscan.readWord(word, 0);
+                     strscan.readWord(word, " /");
                      tgroup.tgroup_alias.copy(word);
+                     if (!strscan.isEOF())  // Skip stop char
+                        strscan.skip(1);
                   }
                }
             }
@@ -3455,7 +3457,10 @@ void MolfileLoader::_readTGroups3000 ()
 
             while (!strscan.isEOF())
             {
+               strscan.skipSpace();
                strscan.readWord(word, "=");
+               strscan.skip(1); // =
+               word.push(0);
                if (strcmp(word.ptr(), "COMMENT") == 0)
                {
                   _readStringInQuotes(strscan, &tgroup.tgroup_comment);

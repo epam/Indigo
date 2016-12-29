@@ -380,6 +380,8 @@ protected:
    void _fillTemplateSeqIds ();
    bool _isCTerminus (Superatom &su, int idx);
    bool _isNTerminus (Superatom &su, int idx);
+   int _createSGroupFromFragment (Array<int> &sg_atoms, const TGroup &tg, Array<int> &mapping);
+   bool isAtomBelongsSGroup(int idx);
 
    Array<int> _hl_atoms;
    Array<int> _hl_bonds;

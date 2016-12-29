@@ -131,6 +131,13 @@ bool MoleculeExactSubstructureMatcher::find_withHydrogens ()
    return false;
 }
 
+bool MoleculeExactSubstructureMatcher::findNext ()
+{
+   bool found = _ee.processNext();
+
+   return found;
+}
+
 void MoleculeExactSubstructureMatcher::_collectConnectedComponentsInfo ()
 {
    // Target vertices filter initialization
@@ -161,7 +168,7 @@ bool MoleculeExactSubstructureMatcher::_matchAtoms (Graph &subgraph, Graph &supe
    MoleculeExactSubstructureMatcher *self = (MoleculeExactSubstructureMatcher *)userdata;
    int flags = self->flags;
 
-   if (!(flags & MoleculeExactMatcher::CONDITION_FRAGMENTS))
+   if (flags & MoleculeExactMatcher::CONDITION_FRAGMENTS)
    {
       const GraphDecomposer &target_decomposer = self->_target_decomposer.ref();
       const GraphDecomposer &query_decomposer = self->_query_decomposer.ref();

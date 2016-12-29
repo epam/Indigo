@@ -16,6 +16,7 @@
 #include "base_cpp/auto_ptr.h"
 #include "molecule/base_molecule.h"
 #include "base_cpp/scanner.h"
+#include "molecule/elements.h"
 
 using namespace indigo;
 
@@ -33,12 +34,61 @@ void TGroup::clear()
 
 int TGroup::cmp (TGroup &tg1, TGroup &tg2, void *context)
 {
+   QS_DEF(Array<int>, lgrps)
+   QS_DEF(Array<int>, bgrps)
+
    if (tg1.fragment.get() == 0)
       return -1;
    if (tg2.fragment.get() == 0)
       return 1;
 
-   return tg2.fragment->vertexCount() - tg1.fragment->vertexCount();
+
+   lgrps.clear();
+   bgrps.clear();
+
+   tg1.fragment->sgroups.findSGroups(SGroup::SG_CLASS, "LGRP", lgrps);
+   for (auto i = tg1.fragment->sgroups.begin(); i != tg1.fragment->sgroups.end(); i = tg1.fragment->sgroups.next(i))
+   {
+      if (lgrps.find(i) == -1)
+         bgrps.push(i);
+   }
+
+   int non_hyd_count1 = 0;
+   for (auto i = 0; i < bgrps.size(); i++)
+   {
+       SGroup &sg = tg1.fragment->sgroups.getSGroup(bgrps[i]);
+       for (auto j = 0; j <sg.atoms.size(); j++)
+       if (tg1.fragment->getAtomNumber(sg.atoms[j]) != ELEM_H)
+          non_hyd_count1++;
+   }
+
+
+   lgrps.clear();
+   bgrps.clear();
+
+   tg2.fragment->sgroups.findSGroups(SGroup::SG_CLASS, "LGRP", lgrps);
+   for (auto i = tg2.fragment->sgroups.begin(); i != tg2.fragment->sgroups.end(); i = tg2.fragment->sgroups.next(i))
+   {
+      if (lgrps.find(i) == -1)
+         bgrps.push(i);
+   }
+
+   int non_hyd_count2 = 0;
+   for (auto i = 0; i < bgrps.size(); i++)
+   {
+       SGroup &sg = tg2.fragment->sgroups.getSGroup(bgrps[i]);
+       for (auto j = 0; j <sg.atoms.size(); j++)
+       if (tg2.fragment->getAtomNumber(sg.atoms[j]) != ELEM_H)
+          non_hyd_count2++;
+   }
+
+   if (non_hyd_count2 - non_hyd_count1 != 0)
+      return non_hyd_count2 - non_hyd_count1;
+
+   if ( (tg2.tgroup_class.size() > 1) && strncmp(tg2.tgroup_class.ptr(), "AA", 2) == 0)
+      return 1;
+   else
+      return -1;
 }
 
 void TGroup::copy (TGroup &other)

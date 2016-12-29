@@ -30,6 +30,7 @@ public:
 
    bool find ();
    bool find_withHydrogens ();
+   bool findNext ();
 
    const int * getQueryMapping ();
    void ignoreTargetAtom (int idx);
