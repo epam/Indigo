@@ -1797,7 +1797,6 @@ void MolfileSaver::_checkSGroupIndices (BaseMolecule &mol, Array<int> &sgs_list)
    QS_DEF(Array<int>, sgs_mapping);
    QS_DEF(Array<int>, sgs_changed);
 
-   int max_idx = 0;
    sgs_list.clear();
    orig_ids.clear();
    added_ids.clear();

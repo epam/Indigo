@@ -28,23 +28,24 @@ MoleculeCdxSaver::MoleculeCdxSaver (Output &output) : _output(output)
 
 void MoleculeCdxSaver::saveMolecule (Molecule &mol)
 {
-   LocaleGuard locale_guard;
-
-   _mol = &mol;
-
-
-   if (_mol->name.ptr() != 0)
-   {
-   }
-
-   bool have_hyz = _mol->have_xyz;
-   bool have_z = BaseMolecule::hasZCoord(*_mol);
-
-   if (_mol->vertexCount() > 0)
-   {
-   }
-
-   if (_mol->edgeCount() > 0)
-   {
-   }
+   throw Error("saveMolecule is not implemented for CDX saver");
+//   LocaleGuard locale_guard;
+//
+//   _mol = &mol;
+//
+//
+//   if (_mol->name.ptr() != 0)
+//   {
+//   }
+//
+//   bool have_hyz = _mol->have_xyz;
+//   bool have_z = BaseMolecule::hasZCoord(*_mol);
+//
+//   if (_mol->vertexCount() > 0)
+//   {
+//   }
+//
+//   if (_mol->edgeCount() > 0)
+//   {
+//   }
 }

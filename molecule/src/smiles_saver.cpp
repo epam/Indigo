@@ -767,7 +767,8 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
             _output.printf("[");
             for (int j = 0; j < list.size(); j++)
             {
-               const char *str = Element::toString(list[j]);
+               // TODO: check old str
+//               const char *str = Element::toString(list[j]);
                if (j != 0)
                   _output.printf(",");
                _output.printf("#%d", list[j]);
@@ -1171,7 +1172,7 @@ void SmilesSaver::_filterCisTransParity ()
          // N#Cc1cc2CC=Nc2\s1=C/c1ccc[nH]1).
 
          bool have_singlebond_beg = false, have_singlebond_end = false;
-         bool have_allowed_singlebond_beg = false, have_allowed_singlebond_end = false;
+//         bool have_allowed_singlebond_beg = false, have_allowed_singlebond_end = false;
 
          for (int j = beg.neiBegin(); j != beg.neiEnd(); j = beg.neiNext(j))
          {

@@ -1546,17 +1546,14 @@ void Molecule::checkForConsistency (Molecule &mol)
    // Try to restore hydrogens in aromatic cycles first
    mol.restoreAromaticHydrogens();
 
-   int i;
-   for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+   for (int i : mol.vertices())
    {
-      const Vertex &vertex = mol.getVertex(i);
-
       if (mol.isPseudoAtom(i) || mol.isRSite(i) || mol.isTemplateAtom(i))
          continue;
 
       // check that we are sure about valence
       // (if the radical is not set, it is calculated from the valence anyway)
-      int val = mol.getAtomValence(i);
+      mol.getAtomValence(i);
 
       // check that we are sure about implicit H counter and valence
       mol.getImplicitH(i);

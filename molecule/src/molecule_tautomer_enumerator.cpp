@@ -155,6 +155,7 @@ _currentRule(0)
       int v1 = _zebraPattern.addVertex();
       for(auto i : layeredMolecules.vertices())
       {
+         std::ignore = i;
          int v2 = _zebraPattern.addVertex();
          _zebraPattern.addEdge(v1, v2);
          v1 = v2;
@@ -320,7 +321,7 @@ bool TautomerEnumerator::refine_proc(const Molecule &uncleaned_fragments, Molecu
          {
             if(product.getAtomNumber(v_idx) != ELEM_H)
             {
-               int frags_idx = mapping.find(v_idx);
+//               int frags_idx = mapping.find(v_idx);
                try
                {
                   if(product.getAtomNumber(v_idx) != ELEM_N)

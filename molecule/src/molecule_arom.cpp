@@ -803,7 +803,6 @@ bool QueryMoleculeAromatizer::_acceptOutgoingDoubleBond (int atom, int bond)
       if (possible_c || possible_s)
       {
          int end = _basemol.getEdgeEnd(atom, bond);
-         int end_number = _basemol.getAtomNumber(end);
          if (possible_c)
          {
             // [O-][N+](=O)C1=CNC=C(Cl)C1=O (see CID 11850826)

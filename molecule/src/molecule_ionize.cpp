@@ -224,7 +224,6 @@ int MoleculePkaModel::buildPkaModel (int max_level, float threshold, const char 
       {
          const char * fp = acid_pkas.key(i);
          Array<float> &pkas = acid_pkas.value(i);
-         Array<int> &cids = acid_pka_cids.value(i);
          float pka_sum = 0.f;
          float pka_dev = 0.f;
          float pka_min = 100.f;
@@ -271,7 +270,6 @@ int MoleculePkaModel::buildPkaModel (int max_level, float threshold, const char 
       {
          const char * fp = basic_pkas.key(i);
          Array<float> &pkas = basic_pkas.value(i);
-         Array<int> &cids = basic_pka_cids.value(i);
          float pka_sum = 0.f;
          float pka_dev = 0.f;
          float pka_min = 100.f;
@@ -948,7 +946,6 @@ void MoleculePkaModel::_estimate_pKa_Advanced (Molecule &mol, const IonizeOption
 //   QS_DEF(Array<int>, can_order);
 //   QS_DEF(Molecule, can_mol);
    AromaticityOptions opts;
-   bool _dearomatize = false;
    int level = options.level;
    int min_level = options.min_level;
 
@@ -1181,7 +1178,7 @@ void MoleculePkaModel::getAtomLocalKey (Molecule &mol, int idx, Array<char> &fp)
 
    int a_lone = 0;
    mol.getVacantPiOrbitals(idx, &a_lone);
-   int a_hcnt = mol.getAtomTotalH(idx);
+   mol.getAtomTotalH(idx);
 
    int a_single_cnt = 0;
    int a_double_cnt = 0;

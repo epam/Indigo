@@ -1307,8 +1307,6 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
    new_template_occurs.clear();
    ignore_atoms.clear();
 
-   int seq_id = 1;
-
    templates.qsort(TGroup::cmp, 0);
 
 
@@ -1504,35 +1502,36 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                }
                for (int k = 0; k < neighbors.size(); k++)
                {
-                  if (findEdgeIndex(neighbors[k], att_point_idx) != -1)
+                  int v_k = neighbors[k];
+                  if (findEdgeIndex(v_k, att_point_idx) != -1)
                   {
-                     const Vertex &v_n = getVertex(neighbors[k]);
-                     if (getAtomNumber(neighbors[k]) == ELEM_H)
+                     const Vertex &v_n = getVertex(v_k);
+                     if (getAtomNumber(v_k) == ELEM_H)
                      {
-                        remove_atoms.push(neighbors[k]);
+                        remove_atoms.push(v_k);
                         continue;
                      }
 
-                     if ( (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1 && getAtomCharge(neighbors[k]) == 0) &&
+                     if ( (getAtomNumber(v_k) == ELEM_O && v_n.degree() == 1 && getAtomCharge(v_k) == 0) &&
                           getAtomNumber(att_point_idx) == ELEM_C )
                      {
-                        remove_atoms.push(neighbors[k]);
+                        remove_atoms.push(v_k);
                         continue;
                      }
 
-                     if (findEdgeIndex(neighbors[k], idx) == -1)
-                        flipBond(neighbors[k], att_point_idx, idx);
-                     this->asMolecule().setTemplateAtomAttachmentOrder(idx, neighbors[k], ap_points_ids.at(ap_ids[j]));
-                     if (isTemplateAtom(neighbors[k]))
+                     if (findEdgeIndex(v_k, idx) == -1)
+                        flipBond(v_k, att_point_idx, idx);
+                     this->asMolecule().setTemplateAtomAttachmentOrder(idx, v_k, ap_points_ids.at(ap_ids[j]));
+                     if (isTemplateAtom(v_k))
                      {
-                        int ap_count = getTemplateAtomAttachmentPointsCount(neighbors[k]);
+                        int ap_count = getTemplateAtomAttachmentPointsCount(v_k);
                         for (int m = 0; m < ap_count; m++)
                         {
-                           if (getTemplateAtomAttachmentPoint(neighbors[k], m) == att_point_idx)
+                           if (getTemplateAtomAttachmentPoint(v_k, m) == att_point_idx)
                            {
                               QS_DEF(Array<char>, ap_id);
-                              getTemplateAtomAttachmentPointId(neighbors[k], m, ap_id);
-                              _flipTemplateAtomAttachmentPoint(neighbors[k], att_point_idx, ap_id, idx);
+                              getTemplateAtomAttachmentPointId(v_k, m, ap_id);
+                              _flipTemplateAtomAttachmentPoint(v_k, att_point_idx, ap_id, idx);
                            }
                         }
                      }
@@ -1749,7 +1748,6 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
             bool wrong_bond_order = false;
             for (int j = 0; j < remove_atoms.size(); j++)
             {
-               bool ap_used = false;
                const Vertex &v = getVertex(remove_atoms[j]);
                for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
                {
@@ -1938,36 +1936,37 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                }
                for (int k = 0; k < neighbors.size(); k++)
                {
-                  if (findEdgeIndex(neighbors[k], att_point_idx) != -1)
+                  int v_k = neighbors[k];
+                  if (findEdgeIndex(v_k, att_point_idx) != -1)
                   {
-                     const Vertex &v_n = getVertex(neighbors[k]);
-                     if (getAtomNumber(neighbors[k]) == ELEM_H)
+                     const Vertex &v_n = getVertex(v_k);
+                     if (getAtomNumber(v_k) == ELEM_H)
                      {
-                        remove_atoms.push(neighbors[k]);
+                        remove_atoms.push(v_k);
                         continue;
                      }
 
 
-                     if ( (getAtomNumber(neighbors[k]) == ELEM_O && v_n.degree() == 1 && getAtomCharge(neighbors[k]) == 0) &&
+                     if ( (getAtomNumber(v_k) == ELEM_O && v_n.degree() == 1 && getAtomCharge(v_k) == 0) &&
                           getAtomNumber(att_point_idx) == ELEM_C )
                      {
-                        remove_atoms.push(neighbors[k]);
+                        remove_atoms.push(v_k);
                         continue;
                      }
 
-                     if (findEdgeIndex(neighbors[k], idx) == -1)
-                        flipBond(neighbors[k], att_point_idx, idx);
-                     this->asMolecule().setTemplateAtomAttachmentOrder(idx, neighbors[k], ap_points_ids.at(ap_ids[j]));
-                     if (isTemplateAtom(neighbors[k]))
+                     if (findEdgeIndex(v_k, idx) == -1)
+                        flipBond(v_k, att_point_idx, idx);
+                     this->asMolecule().setTemplateAtomAttachmentOrder(idx, v_k, ap_points_ids.at(ap_ids[j]));
+                     if (isTemplateAtom(v_k))
                      {
-                        int ap_count = getTemplateAtomAttachmentPointsCount(neighbors[k]);
+                        int ap_count = getTemplateAtomAttachmentPointsCount(v_k);
                         for (int m = 0; m < ap_count; m++)
                         {
-                           if (getTemplateAtomAttachmentPoint(neighbors[k], m) == att_point_idx)
+                           if (getTemplateAtomAttachmentPoint(v_k, m) == att_point_idx)
                            {
                               QS_DEF(Array<char>, ap_id);
-                              getTemplateAtomAttachmentPointId(neighbors[k], m, ap_id);
-                              _flipTemplateAtomAttachmentPoint(neighbors[k], att_point_idx, ap_id, idx);
+                              getTemplateAtomAttachmentPointId(v_k, m, ap_id);
+                              _flipTemplateAtomAttachmentPoint(v_k, att_point_idx, ap_id, idx);
                            }
                         }
                      }
@@ -2293,7 +2292,6 @@ bool BaseMolecule::isAtomBelongsSGroup(int idx)
 {
    QS_DEF(Array<int>, sgs);
    QS_DEF(Array<int>, atoms);
-   bool sg_found = false;
 
    sgs.clear();
    atoms.clear();
@@ -2433,6 +2431,7 @@ int BaseMolecule::_transformTGroupToSGroup (int idx, int t_idx)
                   {
                      getTemplateAtomAttachmentPointId(att_atoms[i], m, ap_id);
                      int added_bond = this->asMolecule().addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
+                     (void) added_bond;
 //printf("Add bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", added_bond, att_atoms[i], tg_atoms[i], mapping[tg_atoms[i]]);
 //printf("Flip AP  att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d, ap_id = %s\n", att_atoms[i], tg_atoms[i], mapping[tg_atoms[i]], ap_id.ptr());
                      _flipTemplateAtomAttachmentPoint(att_atoms[i], idx, ap_id, mapping[tg_atoms[i]]);
@@ -2654,22 +2653,22 @@ int BaseMolecule::_transformSGroupToTGroup (int sg_idx, int &tg_idx)
 
          for (int k = 0; k < neighbors.size(); k++)
          {
-            if (findEdgeIndex(neighbors[k], att_point_idx) != -1)
+            int v_n = v_n;
+            if (findEdgeIndex(v_n, att_point_idx) != -1)
             {
-               const Vertex &v_n = getVertex(neighbors[k]);
-               if (findEdgeIndex(neighbors[k], idx) == -1)
-                  flipBond(neighbors[k], att_point_idx, idx);
-               this->asMolecule().setTemplateAtomAttachmentOrder(idx, neighbors[k], ap_points_ids.at(ap_ids[j]));
-               if (isTemplateAtom(neighbors[k]))
+               if (findEdgeIndex(v_n, idx) == -1)
+                  flipBond(v_n, att_point_idx, idx);
+               this->asMolecule().setTemplateAtomAttachmentOrder(idx, v_n, ap_points_ids.at(ap_ids[j]));
+               if (isTemplateAtom(v_n))
                {
-                  int ap_count = getTemplateAtomAttachmentPointsCount(neighbors[k]);
+                  int ap_count = getTemplateAtomAttachmentPointsCount(v_n);
                   for (int m = 0; m < ap_count; m++)
                   {
-                     if (getTemplateAtomAttachmentPoint(neighbors[k], m) == att_point_idx)
+                     if (getTemplateAtomAttachmentPoint(v_n, m) == att_point_idx)
                      {
                         QS_DEF(Array<char>, ap_id);
-                        getTemplateAtomAttachmentPointId(neighbors[k], m, ap_id);
-                        _flipTemplateAtomAttachmentPoint(neighbors[k], att_point_idx, ap_id, idx);
+                        getTemplateAtomAttachmentPointId(v_n, m, ap_id);
+                        _flipTemplateAtomAttachmentPoint(v_n, att_point_idx, ap_id, idx);
                      }
                   }
                }
@@ -2775,7 +2774,6 @@ bool BaseMolecule::_isNTerminus (Superatom &su, int idx)
 
 int BaseMolecule::_createSGroupFromFragment (Array<int> &sg_atoms, const TGroup &tg, Array<int> &mapping)
 {
-   int result = 0;
    QS_DEF(Molecule, fragment);
    QS_DEF(Array<int>, sgs);
    QS_DEF(Array<int>, base_sgs);
@@ -2944,7 +2942,6 @@ void BaseMolecule::_removeBondsFromSuperatom (Superatom &sa, Array<int> &mapping
       for (int j = sa.bond_connections.size() - 1; j >= 0; j--)
       {
          Superatom::_BondConnection &bond = sa.bond_connections[j];
-         const Edge &edge = getEdge(bond.bond_idx);
          if (mapping[bond.bond_idx] == -1)
             sa.bond_connections.remove(j);
       }
@@ -3377,9 +3374,7 @@ int BaseMolecule::transformHELMtoSGroups(Array<char> &helm_class, Array<char> &n
       sg.sa_class.copy(helm_class);
    sg.sa_natreplace.copy(natreplace);
 
-   int idap;
-
-   for (auto i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+   for (auto i : vertices())
    {
       if (isRSite(i))
       {

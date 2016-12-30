@@ -14,6 +14,11 @@ include_directories(${Common_SOURCE_DIR} ${Molecule_SOURCE_DIR}/.. ${ZLib_HEADER
 
 add_library(molecule OBJECT ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZip_headers})
 
+
+if(UNIX OR APPLE)
+    set(COMPILE_FLAGS "${COMPILE_FLAGS} -Wall -Wno-unused-but-set-variable")
+endif()
+
 set_target_properties(molecule PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
 include_directories (../third_party/inchi/inchi_dll)

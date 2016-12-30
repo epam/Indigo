@@ -658,8 +658,6 @@ int MoleculeCisTrans::_getPairParity (int v1, int v2, const int *mapping, bool s
 
 int MoleculeCisTrans::applyMapping (int parity, const int *substituents, const int *mapping, bool sort)
 {
-   int sum = 0;
-
    int p1 = _getPairParity(substituents[0], substituents[1], mapping, sort);
    int p2 = _getPairParity(substituents[2], substituents[3], mapping, sort);
    if (p1 == 0 || p2 == 0)
@@ -679,11 +677,13 @@ int MoleculeCisTrans::getMappingParitySign (BaseMolecule &query, BaseMolecule &t
    int target_edge_idx = Graph::findMappedEdge(query, target, bond_idx, mapping);
    int target_parity = target.cis_trans.getParity(target_edge_idx);
 
-   if (target_parity == 0)
-      if (query_parity != 0)
+   if (target_parity == 0) {
+      if (query_parity != 0) {
          return -2; // Mapping is not valid
-      else
+      } else {
          return 0;
+      }
+   }
 
    const int *query_subst = query.cis_trans.getSubstituents(bond_idx);
    int query_subst_mapped[4];

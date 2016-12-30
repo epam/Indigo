@@ -25,6 +25,7 @@ IMPL_ERROR(MoleculeCdxLoader, "molecule CDX loader");
 CP_DEF(MoleculeCdxLoader);
 
 MoleculeCdxLoader::MoleculeCdxLoader (Scanner &scanner) :
+COORD_COEF(1.0/1857710.0),
 CP_INIT,
 TL_CP_GET(properties),
 TL_CP_GET(_nodes),
@@ -34,8 +35,7 @@ TL_CP_GET(_stereo_care_bonds),
 TL_CP_GET(_stereocenter_types),
 TL_CP_GET(_stereocenter_groups),
 TL_CP_GET(_sensible_bond_directions),
-TL_CP_GET(_ignore_cistrans),
-COORD_COEF(1.0/1857710.0)
+TL_CP_GET(_ignore_cistrans)
 {
    _scanner = &scanner;
 }
@@ -320,8 +320,6 @@ void MoleculeCdxLoader::_readNode (UINT32 node_id)
    UINT16 tag;
    UINT16 size;
    UINT32 id;
-
-   int node_type = 0;
 
    int level = 1;
 

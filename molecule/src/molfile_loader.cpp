@@ -2327,7 +2327,7 @@ void MolfileLoader::_readCtab3000 ()
                _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
          }
    
-         int hcount = 0;
+//         int hcount = 0;
          int irflag = 0;
          int ecflag = 0;
          int radical = 0;

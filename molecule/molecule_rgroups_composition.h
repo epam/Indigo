@@ -151,6 +151,7 @@ public:
             case ERASE: return "composed";
             case LEAVE: return "source";
             case ORDER: return "ordered";
+            default: throw Error("Unknown option %s", opt);
          }
       }
 

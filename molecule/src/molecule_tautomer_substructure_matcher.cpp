@@ -242,7 +242,7 @@ int MoleculeTautomerSubstructureMatcher::_embedding_common (int *core_sub, int *
       if(_needAromatize)
       {
          int layer = _masks.top().nextSetBit(0);
-         int enumPosition = _tautomerEnumerator.beginAromatized();
+         _tautomerEnumerator.beginAromatized();
          while(layer != -1)
          {
             // Magic! layer is a non-negative number. We know that we enumerate aromatized tautomers. That means that the range is [-1, -2, -3, ...]

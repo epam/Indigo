@@ -165,7 +165,7 @@ private:
          for(auto &n : next)
             n = -1;
       }
-      unsigned next[ALPHABET_SIZE];
+      int next[ALPHABET_SIZE];
    };
 
    class Trie

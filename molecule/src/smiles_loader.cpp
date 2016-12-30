@@ -1486,7 +1486,6 @@ bool SmilesLoader::_isAlleneLike (int i)
    if (_bmol->getVertex(i).degree() == 2)
    {
       int subst[4];
-      int subst2[4];
       int left, right;
       bool pure_h[4];
 

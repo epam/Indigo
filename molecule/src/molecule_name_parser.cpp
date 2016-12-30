@@ -899,7 +899,7 @@ bool MoleculeNameParser::TreeBuilder::_processBasicMultiplier(const Lexeme& lexe
    if (_current->classType == FragmentClassType::SUBSTITUENT) {
       FragmentNodeSubstituent* node = dynamic_cast<FragmentNodeSubstituent*>(_current);
       if (node->expectFragMultiplier) {
-         if (value != node->positions.size()) {
+         if (value != (int)node->positions.size()) {
             throw Error("Locants and fragment multiplier don't match");
          }
 

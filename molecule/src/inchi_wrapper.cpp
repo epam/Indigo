@@ -236,7 +236,7 @@ void InchiWrapper::parseInchiOutput(const InchiOutput &inchi_output, Molecule &m
             throw Molecule::Error("Indigo-InChI: NONE-typed bonds are not supported");
          if (bond_order >= INCHI_BOND_TYPE_ALTERN)
             throw Molecule::Error("Indigo-InChI: ALTERN-typed bonds are not supported");
-         int bond = mol.addBond(atom_indices[i], atom_indices[nei], bond_order);
+         mol.addBond(atom_indices[i], atom_indices[nei], bond_order);
       }
    }
 
@@ -401,7 +401,6 @@ void InchiWrapper::generateInchiInput(Molecule &mol, inchi_Input &input,
             bond_stereo = INCHI_BOND_STEREO_DOUBLE_EITHER;
          else
          {
-            int dir = mol.getBondDirection2(v, v_nei);
             if (mol.getBondDirection2(v, v_nei) == BOND_EITHER)
                bond_stereo = INCHI_BOND_STEREO_SINGLE_1EITHER;
             else if (mol.getBondDirection2(v_nei, v) == BOND_EITHER)

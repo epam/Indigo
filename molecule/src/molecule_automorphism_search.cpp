@@ -507,9 +507,9 @@ int MoleculeAutomorphismSearch::_compare_mapped (Graph &graph, const Array<int> 
       inv_mapping2[mapping2[i]] = i;
    }
 
-   int min_diff_beg = graph.vertexEnd();
-   int min_diff_end = graph.vertexEnd();
-   int diff_sign = 0;
+//   int min_diff_beg = graph.vertexEnd();
+//   int min_diff_end = graph.vertexEnd();
+//   int diff_sign = 0;
 
    // This function compares two mappings to select one of it 
    // according to the defined (here) order.

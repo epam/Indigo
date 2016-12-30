@@ -142,7 +142,6 @@ void MoleculeSGroups::clear ()
 
 void MoleculeSGroups::clear (int sg_type)
 {
-   int count = 0;
    for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
    {
      if (_sgroups.at(i)->sgroup_type == sg_type)

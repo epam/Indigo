@@ -1235,7 +1235,7 @@ QueryMolecule::Node* QueryMolecule::Node::_findSureConstraint (int what_type, in
       }
    case OP_NOT:
       {
-         Node *subnode = children[0]->_findSureConstraint(what_type, count);
+         children[0]->_findSureConstraint(what_type, count);
          return NULL; // Do not return anything in this case but increase count if found
       }
    case OP_NONE:
@@ -1294,6 +1294,8 @@ void QueryMolecule::Node::optimize ()
       break;
    case OP_NONE:
       return;
+   default:
+      break;
    }
    _optimize();
 }

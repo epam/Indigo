@@ -64,7 +64,7 @@ void HaworthProjectionFinder::_find (bool add_stereo)
       for (int i = 0; i < sssr_cnt; i++)
       {
          // Make an array with vertices and edges being corresponded to each other
-         const List<int> &v_list = _mol.sssrVertices(i);
+//         const List<int> &v_list = _mol.sssrVertices(i);
          const List<int> &e_list = _mol.sssrEdges(i);
 
          edges.clear();
@@ -110,7 +110,6 @@ bool HaworthProjectionFinder::_processRing (bool add_stereo, const Array<int> &v
    //    each angle is not small to form normal ring
    //    polygone is convex
    int sign = 0;
-   bool not_haworth = false;
    int vertical_count = 0, corner_count = 0;
    bool has_bold = false;
    for (int j = 0; j < vertices.size(); j++)
@@ -233,21 +232,23 @@ bool HaworthProjectionFinder::_processRing (bool add_stereo, const Array<int> &v
       int next_j = (j + 1) % vertices.size();
       int vpi = vertices[prev_j];
       int vni = vertices[next_j];
-
+      /*
       // Check corner
       //       ----  
       //      /    \ 
       //       \  /  
       //
+      */
       if (_mol.getBondDirection2(vpi, vi) == BOND_UP && _mol.getBondDirection2(vni, vi) == BOND_UP)
          has_bold = true;
       else
       {
-         // Check bold bond
+         /* Check bold bond
          //       -----
          //     /      \
          //     \      /
          //      ======
+         */
          int next2_j = (j + 2) % vertices.size();
          int vn2i = vertices[next2_j];
          if (_mol.getBondDirection2(vpi, vi) == BOND_UP && _mol.getBondDirection2(vn2i, vni) == BOND_UP)

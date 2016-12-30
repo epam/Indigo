@@ -27,7 +27,7 @@ InChICodeParser::InChICodeParser(const char *inchi_code)
 
    size_t pos = str.find("/h");
    // assert(pos != npos)
-   unsigned num = 0, from = -1;
+   int num = 0, from = -1;
    bool isValid;
    int type = STATIC;
    for (pos += 2; pos < str.size() && str[pos] != '/'; ++pos)

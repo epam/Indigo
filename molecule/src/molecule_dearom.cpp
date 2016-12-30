@@ -44,7 +44,7 @@ static int _dearomatizationParams = Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATIO
 CP_DEF(Dearomatizer);
 
 Dearomatizer::Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn, const AromaticityOptions &options) :
-   _graphMatching(molecule), _molecule(molecule), _aromaticGroups(molecule), _options(options),
+   _graphMatching(molecule), _molecule(molecule), _options(options), _aromaticGroups(molecule), 
    CP_INIT,
    TL_CP_GET(_aromaticGroupData),
    //TL_CP_GET(_edgesFixed),

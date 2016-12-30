@@ -44,7 +44,6 @@ void CmlSaver::saveQueryMolecule (QueryMolecule &mol)
 void CmlSaver::_saveMolecule (BaseMolecule &mol, bool query)
 {
    LocaleGuard locale_guard;
-   int i;
    AutoPtr<TiXmlDocument> doc(new TiXmlDocument());
    _doc = doc->GetDocument();
    _root = 0;

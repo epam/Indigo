@@ -155,8 +155,6 @@ void SdfLoader::readNext ()
          throw Error("data size exceeded the acceptable size %d bytes, Please check for correct file format", MAX_DATA_SIZE);
    }
    
-   long long properties_offset = last_offset;
-
    while (1)
    {
       if (strncmp(str.ptr(), "$$$$", 4) == 0)
