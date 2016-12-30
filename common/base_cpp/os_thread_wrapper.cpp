@@ -148,7 +148,7 @@ void OsCommandDispatcher::terminate ()
 
 OsCommand* OsCommandDispatcher::_getVacantCommand ()
 {
-   OsCommand *command;
+   OsCommand *command = nullptr;
    if (_availableCommands.size() == 0) {
       command = _allocateCommand();
       command->unique_id = _last_unique_command_id++;
@@ -224,8 +224,8 @@ void OsCommandDispatcher::_handleResultWithCheck (OsCommandResult *result)
 
 void OsCommandDispatcher::_onMsgHandleResult ()
 {
-   OsCommandResult *result;
-   OsCommand *command;
+   OsCommandResult *result = nullptr;
+   OsCommand *command = nullptr;
    int index, msg;
    void *param;
 
@@ -290,8 +290,8 @@ void OsCommandDispatcher::_wakeSuspended ()
 
 void OsCommandDispatcher::_onMsgHandleException (Exception *exception)
 {
-   OsCommandResult *result;
-   OsCommand *command;
+   OsCommandResult *result = nullptr;
+   OsCommand *command = nullptr;
 
    _recvCommandAndResult(result, command);
    _availableResults.add(result);
@@ -346,8 +346,8 @@ void OsCommandDispatcher::_threadFunc (void)
       int index;
       index = *(int *)param;
 
-      OsCommandResult *result;
-      OsCommand *command;
+      OsCommandResult *result = nullptr;
+      OsCommand *command = nullptr;
       _recvCommandAndResult(result, command);
 
       Exception *exception = NULL;
