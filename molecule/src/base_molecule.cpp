@@ -1572,7 +1572,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
             {
                sgroups.remove(sgs_to_remove[j]);
             }
-            else if (sg_sim.sgroup_type == SGroup::SG_TYPE_SUP)
+            else
             {
                sg_sim.atoms.push(added_template_occurs[j]);
             }
