@@ -249,10 +249,12 @@ bool MoleculeCisTrans::isGeomStereoBond (BaseMolecule &mol, int bond_idx,
       return false;
 
    // If double bond is inside single cycle with size 7 or smaller it can be just cis
+   // it requires additional check
+/*
    if ( (mol.getEdgeTopology(bond_idx) == TOPOLOGY_RING) && (mol.edgeSmallestRingSize(bond_idx) <= 7) &&
         (mol.vertexSmallestRingSize(beg_idx) <= 7) && (mol.vertexSmallestRingSize(end_idx) <= 7) )
       return false;
-       
+*/       
 
    substituents[0] = -1;
    substituents[1] = -1;
