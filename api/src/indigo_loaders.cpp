@@ -518,7 +518,7 @@ CEXPORT int indigoTell (int handle)
       IndigoObject &obj = self.getObject(handle);
       long long size = 0LL;
 
-      constexpr int max_int = std::numeric_limits<int>::max();
+      const int max_int = std::numeric_limits<int>::max();
 
       if (obj.type == IndigoObject::SDF_LOADER)
          size = ((IndigoSdfLoader &)obj).tell();
