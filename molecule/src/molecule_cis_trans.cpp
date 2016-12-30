@@ -248,6 +248,12 @@ bool MoleculeCisTrans::isGeomStereoBond (BaseMolecule &mol, int bond_idx,
        end.degree() < 2 || end.degree() > 3)
       return false;
 
+   // If double bond is inside single cycle with size 7 or smaller it can be just cis
+   if ( (mol.getEdgeTopology(bond_idx) == TOPOLOGY_RING) && (mol.edgeSmallestRingSize(bond_idx) <= 7) &&
+        (mol.vertexSmallestRingSize(beg_idx) <= 7) && (mol.vertexSmallestRingSize(end_idx) <= 7) )
+      return false;
+       
+
    substituents[0] = -1;
    substituents[1] = -1;
    substituents[2] = -1;
@@ -418,9 +424,8 @@ void MoleculeCisTrans::build (int *exclude_bonds)
 
       int *substituents = _bonds[i].substituents;
 
-
       // Ignore only bonds that can be cis-trans ?
-      // Ignore bonds marked bonds
+      // Ignore bonds marked as ignored
       if (exclude_bonds != 0 && exclude_bonds[i])
       {
          _bonds[i].ignored = 1;
@@ -434,7 +439,6 @@ void MoleculeCisTrans::build (int *exclude_bonds)
          have_xyz = false;
       if (!isGeomStereoBond(mol, i, substituents, have_xyz))
          continue;
-
 
       if (!sortSubstituents(mol, substituents, 0))
          continue;
