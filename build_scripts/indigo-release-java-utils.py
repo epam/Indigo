@@ -99,9 +99,9 @@ for filename in os.listdir(dist_dir):
                 shutil.copy(file, "lib")
         shutil.copy(join(root, "common/java/common-controls/dist/common-controls.jar"), "lib")
         if os.name == "nt" and os.path.exists("legio.sh"):
-            with open("legio.sh", "rb") as f:
+            with open("legio.sh", "r") as f:
                 text = f.read()
-            with open("legio.sh", "wb") as f:
+            with open("legio.sh", "w") as f:
                 f.write(text.replace("\r\n", "\n"))
         os.chdir(dist_dir)
         shutil.make_archive(fullLegioName, "zip", "legio")
