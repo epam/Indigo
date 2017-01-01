@@ -2066,14 +2066,15 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
             const Vertex &v = getVertex(i);
             for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
             {
-               if (!isTemplateAtom(v.neiVertex(k)))
+               int v_k = v.neiVertex(k);
+               if (!isTemplateAtom(v_k))
                {
-                  const Vertex &v_n = getVertex(v.neiVertex(k));
+                  const Vertex & v_n= getVertex(v_k);
    
-                  if (getAtomNumber(v.neiVertex(k)) == ELEM_H)
+                  if (getAtomNumber(v_k) == ELEM_H)
                      continue;
    
-                  if (getAtomNumber(v.neiVertex(k)) == ELEM_O && v_n.degree() == 1 && getAtomCharge(v.neiVertex(k)) == 0) 
+                  if (getAtomNumber(v_k) == ELEM_O && v_n.degree() == 1 && getAtomCharge(v_k) == 0) 
                      continue;
 
                   sgs.clear();
@@ -2082,7 +2083,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                   for (int l = 0; l < sgs.size(); l++)
                   {
                      Superatom &su = (Superatom &) sgroups.getSGroup(sgs[l]);
-                     if (su.atoms.find(v.neiVertex(k)) != -1)
+                     if (su.atoms.find(v_k) != -1)
                      {
                         mod_found = false;
                      }
@@ -2653,22 +2654,22 @@ int BaseMolecule::_transformSGroupToTGroup (int sg_idx, int &tg_idx)
 
          for (int k = 0; k < neighbors.size(); k++)
          {
-            int v_n = v_n;
-            if (findEdgeIndex(v_n, att_point_idx) != -1)
+            int v_k = neighbors[k];
+            if (findEdgeIndex(v_k, att_point_idx) != -1)
             {
-               if (findEdgeIndex(v_n, idx) == -1)
-                  flipBond(v_n, att_point_idx, idx);
-               this->asMolecule().setTemplateAtomAttachmentOrder(idx, v_n, ap_points_ids.at(ap_ids[j]));
-               if (isTemplateAtom(v_n))
+               if (findEdgeIndex(v_k, idx) == -1)
+                  flipBond(v_k, att_point_idx, idx);
+               this->asMolecule().setTemplateAtomAttachmentOrder(idx, v_k, ap_points_ids.at(ap_ids[j]));
+               if (isTemplateAtom(v_k))
                {
-                  int ap_count = getTemplateAtomAttachmentPointsCount(v_n);
+                  int ap_count = getTemplateAtomAttachmentPointsCount(v_k);
                   for (int m = 0; m < ap_count; m++)
                   {
-                     if (getTemplateAtomAttachmentPoint(v_n, m) == att_point_idx)
+                     if (getTemplateAtomAttachmentPoint(v_k, m) == att_point_idx)
                      {
                         QS_DEF(Array<char>, ap_id);
-                        getTemplateAtomAttachmentPointId(v_n, m, ap_id);
-                        _flipTemplateAtomAttachmentPoint(v_n, att_point_idx, ap_id, idx);
+                        getTemplateAtomAttachmentPointId(v_k, m, ap_id);
+                        _flipTemplateAtomAttachmentPoint(v_k, att_point_idx, ap_id, idx);
                      }
                   }
                }
@@ -3392,7 +3393,7 @@ int BaseMolecule::transformHELMtoSGroups(Array<char> &helm_class, Array<char> &n
          lvsg.sa_class.readString("LGRP", true);
          this->asMolecule().resetAtom(i, Element::fromString(r_names.at(r_num)));
 
-         int ap_idx;
+         int ap_idx = -1;
          const Vertex &v = getVertex(i);
          for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
          {
@@ -3404,7 +3405,10 @@ int BaseMolecule::transformHELMtoSGroups(Array<char> &helm_class, Array<char> &n
                lvsg.bonds.push(b_idx);
             }
          }
-
+         
+         if(ap_idx < 0) {
+            throw Error("internal error: attachment point was not found");
+         }
          int idap = sg.attachment_points.add();
          Superatom::_AttachmentPoint &ap = sg.attachment_points.at(idap);
          ap.aidx = ap_idx;
