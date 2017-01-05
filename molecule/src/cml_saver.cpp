@@ -104,7 +104,7 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
 
          int atom_number = _mol->getAtomNumber(i);
 
-         const char *atom_str;
+         const char *atom_str = nullptr;
 
          if (_mol->isRSite(i))
             atom_str = "R";
@@ -127,6 +127,9 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
             }
          }
 
+         if(atom_str == nullptr) {
+            throw Error("internal error: atom element was not set");
+         }
          TiXmlElement * atom = new TiXmlElement("atom");
          atomarray->LinkEndChild(atom);
 

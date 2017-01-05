@@ -129,7 +129,7 @@ bool HaworthProjectionFinder::_processRing (bool add_stereo, const Array<int> &v
          return false;
 
       int ring_cnt = 0;
-      int subs_cnt = 0, subs_bond_idx;
+      int subs_cnt = 0, subs_bond_idx = -1;
       for (int nei = v.neiBegin(); nei != v.neiEnd(); nei = v.neiNext(nei))
       {
          int b = v.neiEdge(nei);

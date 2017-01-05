@@ -139,7 +139,7 @@ bool LayeredMolecules::addLayersWithInvertedPath(const Dbitset &mask, const Arra
    QS_DEF(Dbitset, maskCopy);
    maskCopy.copy(mask);
 
-   int newTautomerIndex;
+   int newTautomerIndex = -1;
    while (!maskCopy.isEmpty())
    {
       newTautomerIndex = layers;

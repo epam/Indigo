@@ -62,7 +62,7 @@ bool TautomerChainFinder::enumeratePaths ()
    {
       int rc;
       bool zero_bond;
-      int arom_bond2, bond_type2;
+      int arom_bond2, bond_type2 =-1;
 
       if ((rc = isFeasiblePair(n1, n2, zero_bond, arom_bond2, bond_type2)) == 1)
       {
