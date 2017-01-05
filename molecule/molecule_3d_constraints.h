@@ -33,7 +33,7 @@ class QueryMolecule;
 class DLLEXPORT Molecule3dConstraints
 {
 public:
-   Molecule3dConstraints ();
+   Molecule3dConstraints (QueryMolecule& mol);
 
    void init ();
 
@@ -265,8 +265,7 @@ public:
    DECL_ERROR;
 
 protected:
-
-   QueryMolecule & _getMolecule ();
+   QueryMolecule& _mol;
    PtrArray<Base> _constraints;
 
    static void _buildSub (PtrArray<Base> &sub, const PtrArray<Base> &super, const int *mapping);

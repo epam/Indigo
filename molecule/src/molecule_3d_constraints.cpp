@@ -18,27 +18,15 @@
 
 using namespace indigo;
 
-QueryMolecule & Molecule3dConstraints::_getMolecule ()
-{
-   char dummy[sizeof(QueryMolecule)];
-   int offset = (int)((char *)(&((QueryMolecule *)dummy)->spatial_constraints) - dummy);
-
-   return *(QueryMolecule *)((char *)this - offset);
-}
-
 IMPL_ERROR(Molecule3dConstraints, "molecule 3d constraints");
 
-Molecule3dConstraints::Molecule3dConstraints ()
+Molecule3dConstraints::Molecule3dConstraints (QueryMolecule& mol):_mol(mol)
 {
 }
 
 void Molecule3dConstraints::init ()
 {
-   QueryMolecule &mol = _getMolecule();
-
-   int i;
-
-   for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+   for (int i : _mol.vertices())
    {
       AutoPtr<PointByAtom> constr;
 

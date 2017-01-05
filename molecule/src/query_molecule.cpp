@@ -20,7 +20,7 @@
 
 using namespace indigo;
 
-QueryMolecule::QueryMolecule ()
+QueryMolecule::QueryMolecule (): spatial_constraints(*this)
 {
 }
 
