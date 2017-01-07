@@ -1230,7 +1230,7 @@ void CmlLoader::_loadSGroupElement (TiXmlElement *elem, std::unordered_map<std::
                if (point_idx == 0)
                   pbrackets = dsg->brackets.push();
   
-               float x,y;
+               float x=0,y=0;
                const char *point_x = pPoint->Attribute("x");
                if (point_x != 0)
                {
@@ -1405,7 +1405,7 @@ void CmlLoader::_loadSGroupElement (TiXmlElement *elem, std::unordered_map<std::
                if (point_idx == 0)
                   pbrackets = gen->brackets.push();
   
-               float x,y;
+               float x=0,y=0;
                const char *point_x = pPoint->Attribute("x");
                if (point_x != 0)
                {
@@ -1487,7 +1487,7 @@ void CmlLoader::_loadSGroupElement (TiXmlElement *elem, std::unordered_map<std::
                if (point_idx == 0)
                   pbrackets = sru->brackets.push();
   
-               float x,y;
+               float x=0,y=0;
                const char *point_x = pPoint->Attribute("x");
                if (point_x != 0)
                {
@@ -1600,7 +1600,7 @@ void CmlLoader::_loadSGroupElement (TiXmlElement *elem, std::unordered_map<std::
                if (point_idx == 0)
                   pbrackets = mul->brackets.push();
   
-               float x,y;
+               float x=0,y=0;
                const char *point_x = pPoint->Attribute("x");
                if (point_x != 0)
                {
@@ -1689,7 +1689,7 @@ void CmlLoader::_loadSGroupElement (TiXmlElement *elem, std::unordered_map<std::
                if (point_idx == 0)
                   pbrackets = sup->brackets.push();
   
-               float x,y;
+               float x=0,y=0;
                const char *point_x = pPoint->Attribute("x");
                if (point_x != 0)
                {
