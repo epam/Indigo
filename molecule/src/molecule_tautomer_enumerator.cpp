@@ -33,6 +33,8 @@
 #include "reaction/reaction_transformation.h"
 #include "reaction/query_reaction.h"
 
+#include <tuple>
+
 using namespace indigo;
 
 TautomerEnumerator::TautomerEnumerator(Molecule &molecule, TautomerMethod method)
