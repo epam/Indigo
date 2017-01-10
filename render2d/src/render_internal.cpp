@@ -870,9 +870,9 @@ void MoleculeRenderInternal::_prepareSGroups()
                atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
                said = mol.asQueryMolecule().addAtom(atom.release());
             } else {
-               Molecule& mol = mol.asMolecule();
-               said = mol.addAtom(ELEM_PSEUDO);
-               mol.setPseudoAtom(said, group.subscript.ptr());
+               Molecule& amol = mol.asMolecule();
+               said = amol.addAtom(ELEM_PSEUDO);
+               amol.setPseudoAtom(said, group.subscript.ptr());
             }
             QS_DEF(RedBlackSet<int>, groupAtoms);
             groupAtoms.clear();
@@ -897,9 +897,9 @@ void MoleculeRenderInternal::_prepareSGroups()
                            QueryMolecule& qm = mol.asQueryMolecule();
                            bid = qm.addBond(said, naid, qm.getBond(nbid).clone());
                         } else {
-                           Molecule& mol = mol.asMolecule();
-                           bid = mol.addBond(said, naid, mol.getBondOrder(nbid));
-                           mol.setEdgeTopology(bid, mol.getBondTopology(nbid));
+                           Molecule& amol = mol.asMolecule();
+                           bid = amol.addBond(said, naid, amol.getBondOrder(nbid));
+                           amol.setEdgeTopology(bid, amol.getBondTopology(nbid));
                         }
                         if (_bondMappingInv.find(bid))
                            _bondMappingInv.remove(bid);
