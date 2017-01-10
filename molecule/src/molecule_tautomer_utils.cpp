@@ -31,31 +31,32 @@ bool MoleculeTautomerUtils::_isRepMetal (int elem)
 }
 
 // Count potential hydrogens (+, - charges or metal bonds)
-void MoleculeTautomerUtils::countHReplacements (BaseMolecule &g, Array<int> &h_rep_count)
+void MoleculeTautomerUtils::countHReplacements (BaseMolecule &m, Array<int> &h_rep_count)
 {
 
-   h_rep_count.clear_resize(g.vertexEnd());
+   h_rep_count.clear_resize(m.vertexEnd());
 
-   for (int i = g.vertexBegin(); i < g.vertexEnd(); i = g.vertexNext(i))
+   for (int i : m.vertices())
    {
-      const Vertex &vertex = g.getVertex(i);
+      const Vertex &vertex = m.getVertex(i);
 
       h_rep_count[i] = 0;
 
-      for (int bond_idx = vertex.neiBegin(); bond_idx != vertex.neiEnd(); bond_idx = vertex.neiNext(bond_idx))
-         if (_isRepMetal(g.getAtomNumber(vertex.neiVertex(bond_idx))))
+      for (int bond_idx : vertex.neighbors()) {
+         if (_isRepMetal(m.getAtomNumber(vertex.neiVertex(bond_idx))))
          {
-            int bond_type = g.getBondOrder(vertex.neiEdge(bond_idx));
+            int bond_type = m.getBondOrder(vertex.neiEdge(bond_idx));
 
             if (bond_type != BOND_AROMATIC)
                h_rep_count[i] += bond_type;
          }
+      }
 
-         // + or - charge also count as potential hydrogens
-         int charge = g.getAtomCharge(i);
+      // + or - charge also count as potential hydrogens
+      int charge = m.getAtomCharge(i);
 
-         if (charge != CHARGE_UNKNOWN)
-            h_rep_count[i] += abs(charge);
+      if (charge != CHARGE_UNKNOWN)
+         h_rep_count[i] += abs(charge);
    }
 }
 
