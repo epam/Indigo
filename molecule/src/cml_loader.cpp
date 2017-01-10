@@ -551,21 +551,23 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
                      BufferScanner qfscan(qf.ptr());
                      qfscan.skip(1);
                      int subst;
-                     if (qfscan.lookNext() == '*')
+                     if (qfscan.lookNext() == '*') {
                         subst = -2;
-                     else 
+                     } else { 
                         subst = qfscan.readInt1();
+                     }
 
-                        if (subst == 0)
-                           atom.reset(QueryMolecule::Atom::und(atom.release(),
-                                    new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, 0)));
-                        else if (subst == -2)
-                           atom.reset(QueryMolecule::Atom::und(atom.release(),
-                                   new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, 0)));
-                        else if (subst > 0)
-                           atom.reset(QueryMolecule::Atom::und(atom.release(),
-                                    new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS,
-                                           subst, (subst < 6 ? subst : 100))));
+                     if (subst == 0) {
+                        atom.reset(QueryMolecule::Atom::und(atom.release(),
+                                 new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, 0)));
+                     } else if (subst == -2) {
+                        atom.reset(QueryMolecule::Atom::und(atom.release(),
+                                new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, 0)));
+                     } else if (subst > 0) {
+                        atom.reset(QueryMolecule::Atom::und(atom.release(),
+                                 new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS,
+                                        subst, (subst < 6 ? subst : 100))));
+                     }
                   }
                   else if (strncmp(qf.ptr(), "u", 1) == 0)
                   {
