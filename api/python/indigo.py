@@ -23,6 +23,7 @@ ENCODE_ENCODING = 'utf-8'
 
 
 class IndigoException (Exception):
+
     def __init__(self, value):
         if sys.version_info > (3, 0):
             self.value = value.decode(DECODE_ENCODING)
@@ -34,6 +35,8 @@ class IndigoException (Exception):
 
 
 class IndigoObject(object):
+    """Docstring for class IndigoObject."""
+
     def __init__(self, dispatcher, id, parent=None):
         self.id = id
         self.dispatcher = dispatcher
@@ -411,14 +414,30 @@ class IndigoObject(object):
         return self.dispatcher._checkResult(Indigo._lib.indigoValence(self.id))
 
     def checkValence(self):
+
+        """
+        ::
+
+            Since version 1.3.0
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoCheckValence(self.id))
 
     def checkQuery(self):
+        """
+        ::
+
+            Since version 1.3.0
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoCheckQuery(self.id))
 
     def checkRGroups(self):
+        """
+        ::
+
+            Since version 1.3.0
+        """
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoCheckRGroups(self.id))
 
@@ -2418,6 +2437,20 @@ class Indigo(object):
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateTautomers(molecule.id, params)), molecule)
 
     def nameToStructure(self, name, params=None):
+        """
+        Converts a chemical name into a corresponding structure
+
+        Args:
+            * name - a name to parse
+            * params - a string containing parsing options or nullptr if no options are changed
+
+        Raises:
+            Exception if parsing fails or no structure is found
+
+        ::
+
+            Since version 1.3.0
+        """
         if params is None:
             params = ""
         self._setSessionId()
@@ -2428,5 +2461,10 @@ class Indigo(object):
         return self._checkResult(Indigo._lib.indigoBuildPkaModel(level, threshold, filename.encode(ENCODE_ENCODING)))
 
     def transformHELMtoSCSR(self, item):
+        """
+        ::
+
+            Since version 1.3.0
+        """
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoTransformHELMtoSCSR(item.id)))
