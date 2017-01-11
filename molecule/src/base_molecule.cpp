@@ -716,13 +716,19 @@ void BaseMolecule::removeAtoms (const Array<int> &indices)
    cis_trans.buildOnSubmolecule(*this, mapping.ptr());
    allene_stereo.removeAtoms(indices);
 
-   // highlighting
+   // highlighting and stereo
+   int b_idx;
    for (i = 0; i < indices.size(); i++)
    {
       const Vertex &vertex = getVertex(indices[i]);
       unhighlightAtom(indices[i]);
       for (j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
-         unhighlightBond(vertex.neiEdge(j));
+      {
+         b_idx = vertex.neiEdge(j);
+         unhighlightBond(b_idx);
+         if (getBondDirection(b_idx) > 0)
+            setBondDirection(b_idx, 0);
+      }
    }
 
    // subclass (Molecule or QueryMolecule) removes its data
@@ -784,6 +790,8 @@ void BaseMolecule::removeBonds (const Array<int> &indices)
    for (int i = 0; i < indices.size(); i++)
    {
       unhighlightBond(indices[i]);
+      if (getBondDirection(indices[i]) > 0)
+         setBondDirection(indices[i], 0);
       removeEdge(indices[i]);
    }
    updateEditRevision();
