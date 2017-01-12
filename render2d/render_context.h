@@ -101,6 +101,8 @@ public:
    int getHeight() const {return _height;}
 
    void cairoCheckStatus () const;
+   void cairoCheckSurfaceStatus () const;
+
 #ifdef _WIN32
    cairo_surface_t* createWin32Surface ();
    cairo_surface_t* createWin32PrintingSurfaceForHDC ();

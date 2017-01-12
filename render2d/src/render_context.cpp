@@ -211,15 +211,15 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int
       throw Error("mode not set");
    case MODE_PDF:
       _surface = cairo_pdf_surface_create_for_stream(writer, opt.output, _width, _height);
-      cairoCheckStatus();
+      cairoCheckSurfaceStatus();
       break;
    case MODE_SVG:
       _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
-      cairoCheckStatus();
+      cairoCheckSurfaceStatus();
       break;
    case MODE_PNG:
       _surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, _width, _height);
-      cairoCheckStatus();
+      cairoCheckSurfaceStatus();
       break;
    case MODE_HDC:
 #ifdef _WIN32
@@ -248,6 +248,14 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int
    default:
       throw Error("unknown mode: %d", mode);
    }
+}
+
+void RenderContext::cairoCheckSurfaceStatus () const
+{
+   cairo_status_t s;
+   s = cairo_surface_status(_surface);
+   if (s != CAIRO_STATUS_SUCCESS) 
+      throw Error("Cairo error: %s\n", cairo_status_to_string(s));
 }
 
 void RenderContext::init()
