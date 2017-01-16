@@ -412,14 +412,29 @@ void RenderContext::drawItemBackground (const RenderItem& item)
 {
    cairo_rectangle(_cr, item.bbp.x, item.bbp.y, item.bbsz.x, item.bbsz.y);
    cairoCheckStatus();
-   if (opt.backgroundColor.x >= 0 && opt.backgroundColor.y >= 0 && opt.backgroundColor.z >= 0)
+   if (opt.backgroundColor.x >= 0 && opt.backgroundColor.y >= 0 && opt.backgroundColor.z >= 0) {
       setSingleSource(opt.backgroundColor);
-   else
-      setSingleSource(CWC_WHITE);
-
-   checkPathNonEmpty();
-   cairo_fill(_cr);
-   cairoCheckStatus();
+      checkPathNonEmpty();
+      cairo_fill(_cr);
+      cairoCheckStatus();
+   } else {
+      /*
+       * By default, we use transparent background
+       * Fill the rectangle with the transparent color, invalidating it and 
+       * erasing everything underneath
+       */
+      cairo_save(_cr);
+      cairoCheckStatus();
+      cairo_set_source_rgba(_cr, 0, 0, 0, 0);
+      cairoCheckStatus();
+      cairo_set_operator(_cr, CAIRO_OPERATOR_SOURCE);
+      cairoCheckStatus();
+      cairo_fill(_cr);
+      cairoCheckStatus();
+      cairo_restore(_cr);
+      cairoCheckStatus();
+      return;
+   }
 }
 
 void RenderContext::drawTextItemText (const TextItem& ti)

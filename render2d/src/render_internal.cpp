@@ -301,14 +301,14 @@ void MoleculeRenderInternal::render ()
    _applyBondOffset();
 
    _setBondCenter();
-   
-   _renderLabels();
 
    _renderBonds();
 
    _renderRings();
 
    _renderSGroups();
+
+   _renderLabels();
 
    _renderBondIds();
 
@@ -610,19 +610,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent) {
          Sgroup& sg = _data.sgroups.push();
          int tii = _pushTextItem(sg, RenderItem::RIT_DATASGROUP);
          TextItem& ti = _data.textitems[tii];
-         if (group.tag != ' ') {
-            ti.text.push(group.tag);
-            ti.text.appendString(" = ", false);
-         }
-         { const char *data = group.data.ptr();
-            if (data != 0)
-            {
-               if (*data == '\\') {
-                  data++;
-               }
-               ti.text.appendString(data, true);
-            }
-         }
+         ti.text.copy(group.data);
+         ti.text.push(0);
          ti.fontsize = FONT_SIZE_DATA_SGROUP;
          _cw.setTextItemSize(ti);
 
@@ -717,16 +706,16 @@ void MoleculeRenderInternal::_initSGroups()
 void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<Vec2f[2]>& coord)
 {
    for (int j = 0; j < coord.size(); ++j) {
-      Vec2f a(coord[j][0]), b(coord[j][1]);
       int bracketId = _data.brackets.size();
       if (j == 0) {
-         sg.bibegin = bracketId, sg.bicount = 1;
+         sg.bibegin = bracketId;
+         sg.bicount = 1;
       } else {
          sg.bicount++;
       }
       RenderItemBracket& bracket = _data.brackets.push();
-      bracket.p0.copy(a);
-      bracket.p1.copy(b);
+      bracket.p0.copy(coord[j][0]);
+      bracket.p1.copy(coord[j][1]);
       bracket.d.diff(bracket.p1, bracket.p0);
       bracket.length = bracket.d.length();
       bracket.d.normalize();
@@ -752,32 +741,6 @@ void MoleculeRenderInternal::_convertCoordinate(const Array<Vec2f[2]>& original,
     _objCoordTransform(adjRight[1], right[1]);
 }
 
-void MoleculeRenderInternal::_adjustBrackets(const Array<Vec2f[2]>& converted, Array<Vec2f[2]>& placed)
-{
-    const Vec2f* adjLeft = converted.at(0); 
-    const Vec2f* adjRight = converted.at(1);  
-    Vec2f* plcLeft = placed.at(0);  
-    Vec2f* plcRight = placed.at(1); 
-    
-    if(adjLeft[0].x < plcLeft[0].x)
-    {
-        plcLeft[0].x = adjLeft[0].x;
-        plcLeft[1].x = adjLeft[1].x;
-    }
-
-    if(adjLeft[0].y > plcLeft[0].y) plcLeft[0].y = adjLeft[0].y;
-    if(adjLeft[1].y < plcLeft[1].y) plcLeft[1].y = adjLeft[1].y;
-
-    if(adjRight[0].x > plcRight[0].x)
-    {
-        plcRight[0].x = adjRight[0].x;
-        plcRight[1].x = adjRight[1].x;
-    }
-
-    if(adjRight[0].y < plcRight[0].y) plcRight[0].y = adjRight[0].y;
-    if(adjRight[1].y > plcRight[1].y) plcRight[1].y = adjRight[1].y;
-}
-
 void MoleculeRenderInternal::_loadBracketsAuto(const SGroup& group, Sgroup& sg) {
     Array<Vec2f[2]> brackets;
    _placeBrackets(sg, group.atoms, brackets);
@@ -787,9 +750,10 @@ void MoleculeRenderInternal::_loadBracketsAuto(const SGroup& group, Sgroup& sg) 
    {
        Array<Vec2f[2]> temp;
        _convertCoordinate(group.brackets, temp);
-       _adjustBrackets(temp, brackets);
+       _loadBrackets(sg, temp);
+       return;
    }
-   
+
    _loadBrackets(sg, brackets);
 }
 
@@ -1933,6 +1897,22 @@ void MoleculeRenderInternal::_renderSGroups ()
          _cw.drawGraphItem(_data.graphitems[j + sg.gibegin]);
       for (int j = 0; j < sg.bicount; ++j)
          _cw.drawBracket(_data.brackets[j + sg.bibegin]);
+   }
+
+   /*
+    * Additional fix for #44
+    * To avoid overlapping of sgroups brackets with atom labels,
+    * we draw a rectangle filled with background color at every
+    * atom label position
+    */
+   if(_data.sgroups.size() > 0) {
+      for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i)) {
+         const AtomDesc &desc = _ad(i);
+         for (int i = 0; i < desc.ticount; ++i) {
+            const TextItem &ti = _data.textitems[i + desc.tibegin];
+            _cw.drawItemBackground(ti);
+         }
+      }
    }
 }
 
