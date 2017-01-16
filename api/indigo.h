@@ -462,6 +462,7 @@ CEXPORT int indigoDeleteSGroupAttachmentPoint (int sgroup, int index);
 CEXPORT int indigoGetSGroupDisplayOption (int sgroup);
 CEXPORT int indigoSetSGroupDisplayOption (int sgroup, int option);
 CEXPORT int indigoGetSGroupSeqId (int sgroup);
+CEXPORT float * indigoGetSGroupCoords (int sgroup);
 
 CEXPORT int indigoGetSGroupMultiplier (int sgroup);
 CEXPORT int indigoSetSGroupMultiplier (int sgroup, int multiplier);

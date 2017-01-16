@@ -695,6 +695,16 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoGetSGroupSeqId(self));
         }
 
+        public float[] getSGroupCoords()
+        {
+            dispatcher.setSessionID();
+            float* ptr = dispatcher.checkResult(_indigo_lib.indigoGetSGroupCoords(self));
+            float[] res = new float[2];
+            res[0] = ptr[0];
+            res[1] = ptr[1];
+            return res;
+        }
+
         public int getSGroupMultiplier()
         {
             dispatcher.setSessionID();

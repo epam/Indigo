@@ -1109,6 +1109,13 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoGetSGroupSeqId(self));
    }
 
+   public float[] getSGroupCoords()
+   {
+      dispatcher.setSessionID();
+      Pointer ptr = Indigo.checkResultPointer(this, _lib.indigoGetSGroupCoords(self));
+      return ptr.getFloatArray(0, 2);
+   }
+
    public int setSGroupDisplayOption(int option)
    {
       dispatcher.setSessionID();

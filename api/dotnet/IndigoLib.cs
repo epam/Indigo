@@ -179,6 +179,7 @@ namespace com.epam.indigo
         int indigoGetSGroupDisplayOption(int sgroup);
         int indigoSetSGroupDisplayOption(int sgroup, int option);
         int indigoGetSGroupSeqId(int sgroup);
+        float* indigoGetSGroupCoords(int sgroup);
         int indigoGetSGroupMultiplier(int sgroup);
         int indigoSetSGroupMultiplier(int sgroup, int mult);
         int indigoSetSGroupData (int sgroup,  string data);

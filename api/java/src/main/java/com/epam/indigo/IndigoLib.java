@@ -220,6 +220,7 @@ public interface IndigoLib extends Library
    int indigoSetSGroupMultiplier (int sgroup, int mult);
    int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
                                      float x3, float y3, float x4, float y4);
+   Pointer indigoGetSGroupCoords(int sgroup);
 
    int indigoSetSGroupData (int sgroup,  String data);
    int indigoSetSGroupCoords (int sgroup, float x, float y);

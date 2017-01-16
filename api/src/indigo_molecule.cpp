@@ -3213,6 +3213,21 @@ CEXPORT int indigoGetSGroupSeqId (int sgroup)
    INDIGO_END(0)
 }
 
+CEXPORT float * indigoGetSGroupCoords (int sgroup) {
+   INDIGO_BEGIN
+   {
+      IndigoDataSGroup &ds = IndigoDataSGroup::cast(self.getObject(sgroup));
+
+      auto &tmp = self.getThreadTmpData();
+      auto& xy = ds.get().display_pos;
+      tmp.xyz[0] = xy.x;
+      tmp.xyz[1] = xy.y;
+      tmp.xyz[2] = 0.f;
+      return tmp.xyz;
+   }
+   INDIGO_END(0)
+}
+
 CEXPORT int indigoGetSGroupMultiplier (int sgroup)
 {
    INDIGO_BEGIN
