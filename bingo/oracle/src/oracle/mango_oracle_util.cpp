@@ -24,7 +24,7 @@
 #include "molecule/smiles_loader.h"
 #include "molecule/icm_loader.h"
 #include "molecule/icm_saver.h"
-#include "molecule/molecule_cml_saver.h"
+#include "molecule/cml_saver.h"
 #include "molecule/molfile_saver.h"
 #include "layout/molecule_layout.h"
 
@@ -439,7 +439,7 @@ ORAEXT OCILobLocator *oraMangoCML (OCIExtProcContext *ctx,
          }
 
          ArrayOutput output(icm);
-         MoleculeCmlSaver saver(output);
+         CmlSaver saver(output);
 
          saver.saveMolecule(mol);
 
