@@ -192,8 +192,7 @@ bool MangoExact::matchBinary (Scanner &scanner, Scanner *xyz_scanner)
    /*
     * Set up timeout for matching
     */
-   TimeoutCancellationHandler timeout(_context.timeout);
-   AutoCancellationHandler auto_cancel(timeout);
+   resetCancellationHandler(new TimeoutCancellationHandler(_context.timeout));
 
    MoleculeExactMatcher matcher(_query, _target);
 

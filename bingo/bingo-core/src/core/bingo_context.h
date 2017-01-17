@@ -75,7 +75,7 @@ public:
 
    PtrArray<TautomerRule> tautomer_rules;
 
-   RedBlackMap<int, float> relative_atomic_mass_map;
+   RedBlackMap<int, double> relative_atomic_mass_map;
 
    void setLoaderSettings (MoleculeAutoLoader &loader);
    void setLoaderSettings (ReactionAutoLoader &loader);

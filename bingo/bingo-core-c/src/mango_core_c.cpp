@@ -24,7 +24,7 @@
 #include "molecule/molecule_mass.h"
 #include "molecule/molecule_gross_formula.h"
 #include "molecule/icm_saver.h"
-#include "molecule/molecule_cml_saver.h"
+#include "molecule/cml_saver.h"
 
 #include "molecule/inchi_wrapper.h"
 
@@ -597,7 +597,7 @@ CEXPORT const char * mangoCML (const char *molecule, int molecule_len)
 
       ArrayOutput out(self.buffer);
 
-      MoleculeCmlSaver saver(out);
+      CmlSaver saver(out);
       saver.saveMolecule(target);
       out.writeByte(0);
       return self.buffer.ptr();
