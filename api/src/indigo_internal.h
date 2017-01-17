@@ -20,8 +20,6 @@
 #pragma warning(disable:4251)
 #endif
 
-#include <map>
-#include <string>
 #include <utility>
 
 #include "indigo.h"
@@ -64,19 +62,13 @@ namespace indigo
 }
 extern DLLEXPORT OptionManager & indigoGetOptionManager ();
 
-typedef std::map<int, std::string> IndigoObjectTypesMap;
-class IndigoObjectTypes : public IndigoObjectTypesMap, public NonCopyable {
-public:
-    IndigoObjectTypes();
-};
-
 class DLLEXPORT IndigoObject
 {
 public:
    explicit IndigoObject (int type_);
    virtual ~IndigoObject ();
 
-   enum
+   enum : int
    {
       SCANNER = 1,
       MOLECULE,
@@ -163,7 +155,8 @@ public:
       TAUTOMER_MOLECULE,
       TGROUP,
       TGROUPS_ITER,
-      GROSS_REACTION
+      GROSS_REACTION,
+      INDIGO_OBJECT_LAST_TYPE         // must be the last element in the enum
    };
 
    int type;

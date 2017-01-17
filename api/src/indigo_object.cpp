@@ -12,6 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include <map>
+
 #include "indigo_internal.h"
 #include "indigo_array.h"
 #include "base_cpp/output.h"
@@ -20,6 +22,111 @@
 #include "molecule/rdf_loader.h"
 #include "reaction/reaction.h"
 #include "base_cpp/properties_map.h"
+
+typedef std::map<int, const char* const> IndigoObjectTypesMap;
+class IndigoObjectTypes : public IndigoObjectTypesMap, public NonCopyable {
+public:
+    IndigoObjectTypes();
+};
+
+IndigoObjectTypes::IndigoObjectTypes() {
+   emplace(IndigoObject::SCANNER, "Scanner");
+   emplace(IndigoObject::MOLECULE, "Molecule");
+   emplace(IndigoObject::QUERY_MOLECULE, "QueryMolecule");
+   emplace(IndigoObject::REACTION, "Reaction");
+   emplace(IndigoObject::QUERY_REACTION, "QueryReaction");
+   emplace(IndigoObject::OUTPUT, "Output");
+   emplace(IndigoObject::REACTION_ITER, "ReactionIterator");
+   emplace(IndigoObject::REACTION_MOLECULE, "ReactionMolecule");
+   emplace(IndigoObject::GROSS_MOLECULE, "GrossMolecule");
+   emplace(IndigoObject::SDF_LOADER, "SDFLoader");
+   emplace(IndigoObject::SDF_SAVER, "SDFSaver");
+   emplace(IndigoObject::RDF_MOLECULE, "RDFMolecule");
+   emplace(IndigoObject::RDF_REACTION, "RDFReaction");
+   emplace(IndigoObject::RDF_LOADER, "RDFLoader");
+   emplace(IndigoObject::SMILES_MOLECULE, "SmilesMolecule");
+   emplace(IndigoObject::SMILES_REACTION, "SmilesReaction");
+   emplace(IndigoObject::MULTILINE_SMILES_LOADER, "MultilineSmilesLoader");
+   emplace(IndigoObject::ATOM, "Atom");
+   emplace(IndigoObject::ATOMS_ITER, "AtomsIterator");
+   emplace(IndigoObject::RGROUP, "RGroup");
+   emplace(IndigoObject::RGROUPS_ITER, "RGroupsIterator");
+   emplace(IndigoObject::RGROUP_FRAGMENT, "RGroupFragment");
+   emplace(IndigoObject::RGROUP_FRAGMENTS_ITER, "RGroupFragmentsIterator");
+   emplace(IndigoObject::ARRAY, "Array");
+   emplace(IndigoObject::ARRAY_ITER, "ArrayIterator");
+   emplace(IndigoObject::ARRAY_ELEMENT, "ArrayElement");
+   emplace(IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH_ITER, "MoleculeSubstructureMatcherIterator");
+   emplace(IndigoObject::MOLECULE_SUBSTRUCTURE_MATCHER, "MoleculeSubstructureMatcher");
+   emplace(IndigoObject::REACTION_SUBSTRUCTURE_MATCHER, "ReactionSubstructureMatcher");
+   emplace(IndigoObject::SCAFFOLD, "Scaffold");
+   emplace(IndigoObject::DECONVOLUTION, "Deconvolution");
+   emplace(IndigoObject::DECONVOLUTION_ELEM, "DeconvolutionElement");
+   emplace(IndigoObject::DECONVOLUTION_ITER, "DeconvolutionIterator");
+   emplace(IndigoObject::COMPOSITION_ELEM, "CompositionElement");
+   emplace(IndigoObject::COMPOSITION_ITER, "CompositionIterator");
+   emplace(IndigoObject::PROPERTIES_ITER, "PropertiesIterator");
+   emplace(IndigoObject::PROPERTY, "Property");
+   emplace(IndigoObject::FINGERPRINT, "Fingerprint");
+   emplace(IndigoObject::BOND, "Bond");
+   emplace(IndigoObject::BONDS_ITER, "BondsIterator");
+   emplace(IndigoObject::ATOM_NEIGHBOR, "AtomNeighbor");
+   emplace(IndigoObject::ATOM_NEIGHBORS_ITER, "AtomNeighborsIterator");
+   emplace(IndigoObject::SUPERATOM, "Superatom");
+   emplace(IndigoObject::SUPERATOMS_ITER, "SuperatomsIterator");
+   emplace(IndigoObject::DATA_SGROUP, "DataSGroup");
+   emplace(IndigoObject::DATA_SGROUPS_ITER, "DataSGroupsIterator");
+   emplace(IndigoObject::REPEATING_UNIT, "RepeatingUnit");
+   emplace(IndigoObject::REPEATING_UNITS_ITER, "RepeatingUnitsIterator");
+   emplace(IndigoObject::MULTIPLE_GROUP, "MultipleGroup");
+   emplace(IndigoObject::MULTIPLE_GROUPS_ITER, "MultipleGroupsIterator");
+   emplace(IndigoObject::GENERIC_SGROUP, "GenericSGroup");
+   emplace(IndigoObject::GENERIC_SGROUPS_ITER, "GenericSGroupsIterator");
+   emplace(IndigoObject::SGROUP_ATOMS_ITER, "SGroupAtomsIterator");
+   emplace(IndigoObject::SGROUP_BONDS_ITER, "SGroupBondsIterator");
+   emplace(IndigoObject::DECOMPOSITION, "Decomposition");
+   emplace(IndigoObject::COMPONENT, "Component");
+   emplace(IndigoObject::COMPONENTS_ITER, "ComponentsIterator");
+   emplace(IndigoObject::COMPONENT_ATOMS_ITER, "ComponentAtomsIterator");
+   emplace(IndigoObject::COMPONENT_BONDS_ITER, "ComponentBondsIterator");
+   emplace(IndigoObject::SUBMOLECULE, "Submolecule");
+   emplace(IndigoObject::SUBMOLECULE_ATOMS_ITER, "SubmoleculeAtomsIterator");
+   emplace(IndigoObject::SUBMOLECULE_BONDS_ITER, "SubmoleculeBondsIterator");
+   emplace(IndigoObject::MAPPING, "Mapping");
+   emplace(IndigoObject::REACTION_MAPPING, "ReactionMapping");
+   emplace(IndigoObject::SSSR_ITER, "SSSRIterator");
+   emplace(IndigoObject::SUBTREES_ITER, "SubtreesIterator");
+   emplace(IndigoObject::RINGS_ITER, "RingsIterator");
+   emplace(IndigoObject::EDGE_SUBMOLECULE_ITER, "EdgeSubmoleculeIterator");
+   emplace(IndigoObject::CML_MOLECULE, "CMLMolecule");
+   emplace(IndigoObject::CML_REACTION, "CMLReaction");
+   emplace(IndigoObject::MULTIPLE_CML_LOADER, "MultipleCMLLoader");
+   emplace(IndigoObject::SAVER, "Saver");
+   emplace(IndigoObject::ATTACHMENT_POINTS_ITER, "AttachmentPointsIterator");
+   emplace(IndigoObject::DECOMPOSITION_MATCH, "DecompositionMatch");
+   emplace(IndigoObject::DECOMPOSITION_MATCH_ITER, "DecompositionMatchIterator");
+   emplace(IndigoObject::CDX_MOLECULE, "CDXMolecule");
+   emplace(IndigoObject::CDX_REACTION, "CDXReaction");
+   emplace(IndigoObject::MULTIPLE_CDX_LOADER, "MultipleCDXLoader");
+   emplace(IndigoObject::CDX_SAVER, "CDXSaver");
+   emplace(IndigoObject::SGROUP, "SGroup");
+   emplace(IndigoObject::SGROUPS_ITER, "SGroupsIterator");
+   emplace(IndigoObject::TAUTOMER_ITER, "TautomerIterator");
+   emplace(IndigoObject::TAUTOMER_MOLECULE, "TautomerMolecule");
+   emplace(IndigoObject::TGROUP, "TGroup");
+   emplace(IndigoObject::TGROUPS_ITER, "TGroupsIterator");
+   emplace(IndigoObject::GROSS_REACTION, "GrossReaction");
+
+   if(size() != IndigoObject::INDIGO_OBJECT_LAST_TYPE - 1) {
+      throw Exception("IndigoObject type name dictionary is inconsistent");
+   }
+}
+
+_SessionLocalContainer<IndigoObjectTypes> IndigoObjectTypesDictionary;
+
+const IndigoObjectTypes& getObjectTypesMap() {
+   return IndigoObjectTypesDictionary.getLocalCopy();
+}
 
 IndigoObject::IndigoObject (int type_)
 {
@@ -30,6 +137,15 @@ IndigoObject::~IndigoObject ()
 {
 }
 
+const char* IndigoObject::getTypeName() const {
+   try {
+      const IndigoObjectTypes& types = getObjectTypesMap();
+      return types.at(type);
+   } catch (std::out_of_range&) {
+      return "NAME_UNKNOWN";
+   }
+}
+
 const char * IndigoObject::debugInfo ()
 {
    if (_dbg_info.get() != 0)
@@ -37,7 +153,7 @@ const char * IndigoObject::debugInfo ()
 
    _dbg_info.create();
    ArrayOutput out(_dbg_info.ref());
-   out.printf("<type %s (%d)>", getTypeName(), type);
+   out.printf("<%s>", getTypeName());
    out.writeChar(0);
    return _dbg_info->ptr();
 }
@@ -151,110 +267,4 @@ int IndigoObject::getIndex ()
 IndigoObject * IndigoObject::clone ()
 {
    throw IndigoError("%s is not cloneable", debugInfo());
-}
-
-_SessionLocalContainer<IndigoObjectTypes> IndigoObjectTypesDictionary;
-
-IndigoObjectTypes::IndigoObjectTypes() {
-   emplace(IndigoObject::SCANNER, "Scanner");
-   emplace(IndigoObject::MOLECULE, "Molecule");
-   emplace(IndigoObject::QUERY_MOLECULE, "QueryMolecule");
-   emplace(IndigoObject::REACTION, "Reaction");
-   emplace(IndigoObject::QUERY_REACTION, "QueryReaction");
-   emplace(IndigoObject::OUTPUT, "Output");
-   emplace(IndigoObject::REACTION_ITER, "ReactionIterator");
-   emplace(IndigoObject::REACTION_MOLECULE, "ReactionMolecule");
-   emplace(IndigoObject::GROSS_MOLECULE, "GrossMolecule");
-   emplace(IndigoObject::SDF_LOADER, "SDFLoader");
-   emplace(IndigoObject::SDF_SAVER, "SDFSaver");
-   emplace(IndigoObject::RDF_MOLECULE, "RDFMolecule");
-   emplace(IndigoObject::RDF_REACTION, "RDFReaction");
-   emplace(IndigoObject::RDF_LOADER, "RDFLoader");
-   emplace(IndigoObject::SMILES_MOLECULE, "SmilesMolecule");
-   emplace(IndigoObject::SMILES_REACTION, "SmilesReaction");
-   emplace(IndigoObject::MULTILINE_SMILES_LOADER, "MultilineSmilesLoader");
-   emplace(IndigoObject::ATOM, "Atom");
-   emplace(IndigoObject::ATOMS_ITER, "AtomsIterator");
-   emplace(IndigoObject::RGROUP, "RGroup");
-   emplace(IndigoObject::RGROUPS_ITER, "RGroupsIterator");
-   emplace(IndigoObject::RGROUP_FRAGMENT, "RGroupFragment");
-   emplace(IndigoObject::RGROUP_FRAGMENTS_ITER, "RGroupFragmentsIterator");
-   emplace(IndigoObject::ARRAY, "Array");
-   emplace(IndigoObject::ARRAY_ITER, "ArrayIterator");
-   emplace(IndigoObject::ARRAY_ELEMENT, "ArrayElement");
-   emplace(IndigoObject::MOLECULE_SUBSTRUCTURE_MATCH_ITER, "MoleculeSubstructureMatcherIterator");
-   emplace(IndigoObject::MOLECULE_SUBSTRUCTURE_MATCHER, "MoleculeSubstructureMatcher");
-   emplace(IndigoObject::REACTION_SUBSTRUCTURE_MATCHER, "ReactionSubstructureMatcher");
-   emplace(IndigoObject::SCAFFOLD, "Scaffold");
-   emplace(IndigoObject::DECONVOLUTION, "Deconvolution");
-   emplace(IndigoObject::DECONVOLUTION_ELEM, "DeconvolutionElement");
-   emplace(IndigoObject::DECONVOLUTION_ITER, "DeconvolutionIterator");
-   emplace(IndigoObject::COMPOSITION_ELEM, "CompositionElement");
-   emplace(IndigoObject::COMPOSITION_ITER, "CompositionIterator");
-   emplace(IndigoObject::PROPERTIES_ITER, "PropertiesIterator");
-   emplace(IndigoObject::PROPERTY, "Property");
-   emplace(IndigoObject::FINGERPRINT, "Fingerprint");
-   emplace(IndigoObject::BOND, "Bond");
-   emplace(IndigoObject::BONDS_ITER, "BondsIterator");
-   emplace(IndigoObject::ATOM_NEIGHBOR, "AtomNeighbor");
-   emplace(IndigoObject::ATOM_NEIGHBORS_ITER, "AtomNeighborsIterator");
-   emplace(IndigoObject::SUPERATOM, "Superatom");
-   emplace(IndigoObject::SUPERATOMS_ITER, "SuperatomsIterator");
-   emplace(IndigoObject::DATA_SGROUP, "DataSGroup");
-   emplace(IndigoObject::DATA_SGROUPS_ITER, "DataSGroupsIterator");
-   emplace(IndigoObject::REPEATING_UNIT, "RepeatingUnit");
-   emplace(IndigoObject::REPEATING_UNITS_ITER, "RepeatingUnitsIterator");
-   emplace(IndigoObject::MULTIPLE_GROUP, "MultipleGroup");
-   emplace(IndigoObject::MULTIPLE_GROUPS_ITER, "MultipleGroupsIterator");
-   emplace(IndigoObject::GENERIC_SGROUP, "GenericSGroup");
-   emplace(IndigoObject::GENERIC_SGROUPS_ITER, "GenericSGroupsIterator");
-   emplace(IndigoObject::SGROUP_ATOMS_ITER, "SGroupAtomsIterator");
-   emplace(IndigoObject::SGROUP_BONDS_ITER, "SGroupBondsIterator");
-   emplace(IndigoObject::DECOMPOSITION, "Decomposition");
-   emplace(IndigoObject::COMPONENT, "Component");
-   emplace(IndigoObject::COMPONENTS_ITER, "ComponentsIterator");
-   emplace(IndigoObject::COMPONENT_ATOMS_ITER, "ComponentAtomsIterator");
-   emplace(IndigoObject::COMPONENT_BONDS_ITER, "ComponentBondsIterator");
-   emplace(IndigoObject::SUBMOLECULE, "Submolecule");
-   emplace(IndigoObject::SUBMOLECULE_ATOMS_ITER, "SubmoleculeAtomsIterator");
-   emplace(IndigoObject::SUBMOLECULE_BONDS_ITER, "SubmoleculeBondsIterator");
-   emplace(IndigoObject::MAPPING, "Mapping");
-   emplace(IndigoObject::REACTION_MAPPING, "ReationMapping");
-   emplace(IndigoObject::SSSR_ITER, "SSSRIterator");
-   emplace(IndigoObject::SUBTREES_ITER, "SubtreesIterator");
-   emplace(IndigoObject::RINGS_ITER, "RingsIterator");
-   emplace(IndigoObject::EDGE_SUBMOLECULE_ITER, "EdgeSubmoleculeIterator");
-   emplace(IndigoObject::CML_MOLECULE, "CMLMolecule");
-   emplace(IndigoObject::CML_REACTION, "CMLReaction");
-   emplace(IndigoObject::MULTIPLE_CML_LOADER, "MultipleCMLLoader");
-   emplace(IndigoObject::SAVER, "Saver");
-   emplace(IndigoObject::ATTACHMENT_POINTS_ITER, "AttachmentPointsIterator");
-   emplace(IndigoObject::DECOMPOSITION_MATCH, "DecompositionMatch");
-   emplace(IndigoObject::DECOMPOSITION_MATCH_ITER, "DecompositionMatchIterator");
-   emplace(IndigoObject::CDX_MOLECULE, "CDXMolecule");
-   emplace(IndigoObject::CDX_REACTION, "CDXReaction");
-   emplace(IndigoObject::MULTIPLE_CDX_LOADER, "MultipleCDXLoader");
-   emplace(IndigoObject::CDX_SAVER, "CDXSaver");
-   emplace(IndigoObject::SGROUP, "SGroup");
-   emplace(IndigoObject::SGROUPS_ITER, "SGroupsIterator");
-   emplace(IndigoObject::TAUTOMER_ITER, "TautomerIterator");
-   emplace(IndigoObject::TAUTOMER_MOLECULE, "TautomerMolecule");
-   emplace(IndigoObject::TGROUP, "TGroup");
-   emplace(IndigoObject::TGROUPS_ITER, "TGroupsIterator");
-   emplace(IndigoObject::GROSS_REACTION, "GrossReaction");
-}
-
-const IndigoObjectTypes& getObjectTypesMap() {
-   return IndigoObjectTypesDictionary.getLocalCopy();
-}
-
-const char* IndigoObject::getTypeName() const {
-   const IndigoObjectTypes& types = getObjectTypesMap();
-
-   try {
-      const std::string& name = types.at(type);
-      return name.c_str();
-   } catch (std::out_of_range&) {
-      return "NAME_UNKNOWN";
-   }
 }
