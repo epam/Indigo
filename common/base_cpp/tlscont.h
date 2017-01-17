@@ -292,7 +292,7 @@ public:
 
 }
 
-// "Quasi-static" variable definition
+// "Quasi-static" variable definition. Calls clear() at the end
 #define QS_DEF(TYPE, name) \
    static ThreadSafeStaticObj<_ReusableVariablesPool< _GET_TYPE(TYPE) > > _POOL_##name; \
    int _POOL_##name##_idx;                                             \
@@ -300,6 +300,15 @@ public:
    _ReusableVariablesAutoRelease< _GET_TYPE(TYPE) > _POOL_##name##_auto_release;  \
    _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());      \
    name.clear();
+
+// "Quasi-static" variable definition. Calls clear_resize() at the end
+#define QS_DEF_RES(TYPE, name, len) \
+   static ThreadSafeStaticObj<_ReusableVariablesPool< _GET_TYPE(TYPE) > > _POOL_##name; \
+   int _POOL_##name##_idx;                                             \
+   _GET_TYPE(TYPE) &name = _POOL_##name->getVacant(_POOL_##name##_idx);           \
+   _ReusableVariablesAutoRelease< _GET_TYPE(TYPE) > _POOL_##name##_auto_release;  \
+   _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());      \
+   name.clear_resize(len);
 
 //
 // Reusable class members definition

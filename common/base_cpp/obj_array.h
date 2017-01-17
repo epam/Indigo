@@ -115,6 +115,11 @@ public:
          push();
       }
    }
+   
+   void clear_resize(int newSize) {
+      clear();
+      resize(newSize);
+   }
    void reserve (int size)
    {
       _array.reserve(size);
