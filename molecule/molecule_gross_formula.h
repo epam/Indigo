@@ -15,10 +15,10 @@
 #ifndef __molecule_gross_formula__
 #define __molecule_gross_formula__
 
-#include <utility>
 #include <memory>
 
 #include "base_cpp/array.h"
+#include "base_cpp/obj_array.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "molecule/molecule_gross_formula_options.h"
@@ -32,23 +32,36 @@ namespace indigo {
 
 class BaseMolecule;
 
-// Represents array of superunits gross formulas.
-typedef std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > GROSS_UNITS;
 
+
+
+class DLLEXPORT GrossFormulaUnit {
+public:
+   Array<char> multiplier;
+   Array<int> elems;
+};
+
+// Represents array of superunits gross formulas.
+typedef ObjArray<GrossFormulaUnit> GROSS_UNITS;
 
 class DLLEXPORT MoleculeGrossFormula
 {
 public:
+   
+   static void collect (BaseMolecule &molecule, Array<int> &gross);
    static std::unique_ptr<GROSS_UNITS> collect (BaseMolecule &molecule);
-   static void toString (GROSS_UNITS& gross, Array<char> &str, bool add_rsites);
-   static void toString_Hill (GROSS_UNITS & gross, Array<char> &str, bool add_rsites);
+   
+   static void toString (const Array<int> &gross, Array<char> &str, bool add_rsites = false);
+   static void toString (GROSS_UNITS& gross, Array<char> &str, bool add_rsites = false);
+   static void toString_Hill (GROSS_UNITS& gross, Array<char> &str, bool add_rsites = false);
    static void fromString (const char *str, Array<int> &gross);
    static void fromString (Scanner &scanner, Array<int> &gross);
 
    static bool leq  (const Array<int> &gross1, const Array<int> &gross2);
    static bool geq  (const Array<int> &gross1, const Array<int> &gross2);
    static bool equal (const Array<int> &gross1, const Array<int> &gross2);
-
+   
+   
 protected:
    struct _ElemCounter
    {
