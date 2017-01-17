@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -20,6 +20,8 @@
 #pragma warning(disable:4251)
 #endif
 
+#include <map>
+#include <string>
 #include <utility>
 
 #include "indigo.h"
@@ -61,6 +63,12 @@ namespace indigo
    typedef ObjArray<PropertiesMap> MonomersProperties;
 }
 extern DLLEXPORT OptionManager & indigoGetOptionManager ();
+
+typedef std::map<int, std::string> IndigoObjectTypesMap;
+class IndigoObjectTypes : public IndigoObjectTypesMap, public NonCopyable {
+public:
+    IndigoObjectTypes();
+};
 
 class DLLEXPORT IndigoObject
 {
@@ -159,6 +167,7 @@ public:
    };
 
    int type;
+   virtual const char* getTypeName() const;
 
    virtual const char * debugInfo ();
 
