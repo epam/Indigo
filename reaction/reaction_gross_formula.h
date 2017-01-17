@@ -18,9 +18,9 @@
 #include <utility>
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
+#include "molecule/molecule_gross_formula.h"
 
-#include "reaction/base_reaction.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -35,8 +35,8 @@ class BaseReaction;
 class DLLEXPORT ReactionGrossFormula
 {
 public:
-   static void collect (BaseReaction &rxn, std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > &gross);
-   static void toString_Hill (const std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > &gross, Array<char> &str, bool add_rsites);
+   static std::unique_ptr<std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS> > > collect (BaseReaction &rxn);
+   static void toString_Hill (std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS> > &gross, Array<char> &str, bool add_rsites);
 };
     
 }

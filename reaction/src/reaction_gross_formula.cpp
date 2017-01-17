@@ -14,37 +14,34 @@
 
 #include "reaction/reaction_gross_formula.h"
 #include "molecule/molecule_gross_formula.h"
+#include "reaction/base_reaction.h"
 
 #include "base_cpp/output.h"
 
 using namespace indigo;
 
-void ReactionGrossFormula::collect (BaseReaction &rxn, std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > &gross)
+std::unique_ptr<std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS > > > ReactionGrossFormula::collect (BaseReaction &rxn)
 {
-    gross.first.clear();
-    gross.first.resize(rxn.reactantsCount());
-    gross.second.clear();
-    gross.second.resize(rxn.productsCount());
-    int array_index = 0;
+   
+   std::unique_ptr<std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS > > > result (new std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS > >);
+   auto& gross = *result;
 
-    if (rxn.reactantsCount() > 0)
-    {
-        for (int i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
-        {
-            MoleculeGrossFormula::collect(rxn.getBaseMolecule(i), gross.first[array_index++]);
-        }
-    }
-    if (rxn.productsCount() > 0)
-    {
-        array_index = 0;
-        for (int i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
-        {
-            MoleculeGrossFormula::collect(rxn.getBaseMolecule(i), gross.second[array_index++]);
-        }
-    }
+   if (rxn.reactantsCount() > 0) {
+      for (int i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i)) {
+         auto mgross = MoleculeGrossFormula::collect(rxn.getBaseMolecule(i));
+         gross.first.add(mgross.release());
+      }
+   }
+   if (rxn.productsCount() > 0) {
+      for (int i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i)) {
+         auto mgross = MoleculeGrossFormula::collect(rxn.getBaseMolecule(i));
+         gross.second.add(mgross.release());
+      }
+   }
+   return result;
 }
 
-void ReactionGrossFormula::toString_Hill (const std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > &gross, Array<char> &str, bool add_rsites)
+void ReactionGrossFormula::toString_Hill (std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS> > &gross, Array<char> &str, bool add_rsites)
 {
     ArrayOutput output(str);
     Array<char> temp_str;
@@ -56,7 +53,7 @@ void ReactionGrossFormula::toString_Hill (const std::pair<ObjArray<std::pair<Obj
         {
             output.printf(" + ");
         }
-        MoleculeGrossFormula::toString_Hill(gross.first[i], temp_str, add_rsites);
+        MoleculeGrossFormula::toString_Hill(*gross.first[i], temp_str, add_rsites);
         output.printf("%s", temp_str.ptr());
         first_written = true;
     }
@@ -68,7 +65,7 @@ void ReactionGrossFormula::toString_Hill (const std::pair<ObjArray<std::pair<Obj
         {
             output.printf(" + ");
         }
-        MoleculeGrossFormula::toString_Hill(gross.second[i], temp_str, add_rsites);
+        MoleculeGrossFormula::toString_Hill(*gross.second[i], temp_str, add_rsites);
         output.printf("%s", temp_str.ptr());
         first_written = true;
     }

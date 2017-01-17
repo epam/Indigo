@@ -21,6 +21,7 @@
 #endif
 
 #include <utility>
+#include <memory>
 
 #include "indigo.h"
 
@@ -35,7 +36,7 @@
 #include "molecule/molecule_standardize_options.h"
 #include "molecule/molecule_ionize.h"
 #include "molecule/molecule_mass_options.h"
-#include "molecule/molecule_gross_formula_options.h"
+#include "molecule/molecule_gross_formula.h"
 
 
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define 
@@ -206,8 +207,8 @@ public:
    virtual ~IndigoMoleculeGross ();
 
    virtual void toString (Array<char> &str);
-
-    std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > gross;
+   
+   std::unique_ptr<GROSS_UNITS> gross;
 };
 
 class IndigoReactionGross : public IndigoObject
@@ -217,8 +218,8 @@ public:
    virtual ~IndigoReactionGross ();
 
    virtual void toString (Array<char> &str);
-
-   std::pair<ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > , ObjArray<std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > > > gross;
+   
+   std::unique_ptr<std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS> > > gross;
 };
 
 

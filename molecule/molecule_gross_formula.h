@@ -16,6 +16,7 @@
 #define __molecule_gross_formula__
 
 #include <utility>
+#include <memory>
 
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
@@ -31,12 +32,16 @@ namespace indigo {
 
 class BaseMolecule;
 
+// Represents array of superunits gross formulas.
+typedef std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > GROSS_UNITS;
+
+
 class DLLEXPORT MoleculeGrossFormula
 {
 public:
-   static void collect (BaseMolecule &molecule, std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross);
-   static void toString (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str, bool add_rsites);
-   static void toString_Hill (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str, bool add_rsites);
+   static std::unique_ptr<GROSS_UNITS> collect (BaseMolecule &molecule);
+   static void toString (GROSS_UNITS& gross, Array<char> &str, bool add_rsites);
+   static void toString_Hill (GROSS_UNITS & gross, Array<char> &str, bool add_rsites);
    static void fromString (const char *str, Array<int> &gross);
    static void fromString (Scanner &scanner, Array<int> &gross);
 

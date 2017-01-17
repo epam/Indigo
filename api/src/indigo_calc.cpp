@@ -17,7 +17,7 @@ IndigoMoleculeGross::~IndigoMoleculeGross()
 void IndigoMoleculeGross::toString (Array<char> &str)
 {
    Indigo &self = indigoGetInstance();
-   MoleculeGrossFormula::toString_Hill(gross, str, self.gross_formula_options.add_rsites);
+   MoleculeGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites);
 }
 
 IndigoReactionGross::IndigoReactionGross() : IndigoObject(GROSS_REACTION)
@@ -31,7 +31,7 @@ IndigoReactionGross::~IndigoReactionGross()
 void IndigoReactionGross::toString (Array<char> &str)
 {
     Indigo &self = indigoGetInstance();
-    ReactionGrossFormula::toString_Hill(gross, str, self.gross_formula_options.add_rsites);
+    ReactionGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites);
 }
 
 
@@ -45,7 +45,7 @@ CEXPORT int indigoGrossFormula (int object)
           BaseMolecule &mol = self.getObject(object).getBaseMolecule();
           AutoPtr<IndigoMoleculeGross> grossptr(new IndigoMoleculeGross());
 
-          MoleculeGrossFormula::collect(mol, grossptr->gross);
+          grossptr->gross = MoleculeGrossFormula::collect(mol);
           return self.addObject(grossptr.release());
       }
       else if (IndigoBaseReaction::is(indigoObject))
@@ -53,8 +53,8 @@ CEXPORT int indigoGrossFormula (int object)
           BaseReaction &rxn = self.getObject(object).getBaseReaction();
           AutoPtr<IndigoReactionGross> grossptr(new IndigoReactionGross());
           
-          ReactionGrossFormula::collect(rxn, grossptr->gross);
-          return self.addObject(grossptr.release());
+         grossptr->gross = ReactionGrossFormula::collect(rxn);
+         return self.addObject(grossptr.release());
       }
       else
       {

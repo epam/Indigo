@@ -23,7 +23,7 @@
 #endif
 
 namespace indigo {
-
+   
 class DLLEXPORT GrossFormulaOptions
 {
 public:

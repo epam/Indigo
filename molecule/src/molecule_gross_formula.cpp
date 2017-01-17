@@ -82,25 +82,24 @@ int MoleculeGrossFormula::_cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void 
    return _cmp_hill_no_carbon(ec1, ec2, context);
 }
 
-void MoleculeGrossFormula::collect (BaseMolecule &mol, std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross)
+std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect (BaseMolecule &mol)
 {
     if (!mol.isQueryMolecule())
     {
         mol.asMolecule().restoreAromaticHydrogens();
     }
     
+    std::unique_ptr<GROSS_UNITS> result (new GROSS_UNITS());
+    auto& gross = *result;
+    
     // basic structure and all polymers
     int grossFormulaSize = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) + 1;
-    QS_DEF(ObjArray<Array<int > >, filters);
-    filters.clear();
-    filters.resize(grossFormulaSize);
-    QS_DEF(ObjArray<Array<char> >, indices);
-    indices.clear();
-    indices.resize(grossFormulaSize);
+    QS_DEF_RES(ObjArray<Array<int > >, filters, grossFormulaSize);
+    QS_DEF_RES(ObjArray<Array<char> >, indices, grossFormulaSize);
     
     // first element is for old-style gross formula
     indices[0].appendString(" ", true);
-    for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+    for (int i : mol.vertices())
     {
         filters[0].push(i);
     }
@@ -154,9 +153,10 @@ void MoleculeGrossFormula::collect (BaseMolecule &mol, std::pair<ObjArray<Array<
             }
         }
     }
+    return result;
 }
 
-void MoleculeGrossFormula::toString (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str, bool add_rsites)
+void MoleculeGrossFormula::toString (GROSS_UNITS &gross, Array<char> &str, bool add_rsites)
 {
     ArrayOutput output(str);
 
@@ -167,7 +167,7 @@ void MoleculeGrossFormula::toString (const std::pair<ObjArray<Array<char> >, Obj
     output.writeChar(0);
 }
 
-void MoleculeGrossFormula::toString_Hill (const std::pair<ObjArray<Array<char> >, ObjArray<Array<int> > > &gross, Array<char> &str, bool add_rsites)
+void MoleculeGrossFormula::toString_Hill (GROSS_UNITS &gross, Array<char> &str, bool add_rsites)
 {
     ArrayOutput output(str);
     
