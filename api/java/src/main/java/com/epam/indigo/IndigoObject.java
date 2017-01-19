@@ -1296,6 +1296,30 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoSetSGroupParentId(self, parent));
    }
 
+   public int addTemplate(IndigoObject templates, String name)
+   {
+      if (name == null)
+         name = "";
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoAddTemplate(self, templates.self, name));
+   }
+
+   public int removeTemplate(String name)
+   {
+      if (name == null)
+         name = "";
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoRemoveTemplate(self, name));
+   }
+
+   public int findTemplate(String name)
+   {
+      if (name == null)
+         name = "";
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoFindTemplate(self, name));
+   }
+
    public int transformSCSRtoCTAB()
    {
       dispatcher.setSessionID();

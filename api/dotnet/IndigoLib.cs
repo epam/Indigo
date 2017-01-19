@@ -207,6 +207,10 @@ namespace com.epam.indigo
         int indigoGetSGroupParentId(int sgroup);
         int indigoSetSGroupParentId(int sgroup, int parent);
 
+        int indigoAddTemplate(int molecule, int templates, string name);
+        int indigoRemoveTemplate(int molecule, string name);
+        int indigoFindTemplate(int molecule, string name);
+
         int indigoTransformSCSRtoCTAB(int molecule);
         int indigoTransformCTABtoSCSR(int molecule, int templates);
 

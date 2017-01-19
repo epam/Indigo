@@ -1276,6 +1276,13 @@ int BaseMolecule::transformSCSRtoFullCTAB ()
       template_attachment_points.clear();
    }
 
+/*
+   StereocentersOptions stereochemistry_options;
+   stereocenters.buildFromBonds(stereochemistry_options, 0);
+   allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, 0);
+   cis_trans.build(0);
+*/
+
    return result;
 }
 
@@ -1609,7 +1616,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
    {
       for (auto i = 0; i < added_templates.size(); i++)
       {
-         _addTemplate(templates.at(added_templates[i]));
+         addTemplate(templates.at(added_templates[i]));
       }
       return result;
    }
@@ -2016,7 +2023,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 
    for (auto i = 0; i < added_templates.size(); i++)
    {
-      _addTemplate(templates.at(added_templates[i]));
+      addTemplate(templates.at(added_templates[i]));
    }
 
 /*
@@ -2140,7 +2147,12 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
          tgroups.remove(rem_templ[i]); 
       }
    }
-
+/*
+   StereocentersOptions stereochemistry_options;
+   stereocenters.buildFromBonds(stereochemistry_options, 0);
+   allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, 0);
+   cis_trans.build(0);
+*/
    return result;
 }
 
@@ -2290,7 +2302,7 @@ void BaseMolecule::_fillTemplateSeqIds ()
    }
 }
 
-int BaseMolecule::_addTemplate (TGroup &tgroup)
+int BaseMolecule::addTemplate (TGroup &tgroup)
 {
    int idx = tgroups.addTGroup();
    (tgroups.getTGroup(idx)).copy(tgroup);

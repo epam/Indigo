@@ -483,6 +483,10 @@ CEXPORT int indigoSetSGroupOriginalId (int sgroup, int original);
 CEXPORT int indigoGetSGroupParentId (int sgroup);
 CEXPORT int indigoSetSGroupParentId (int sgroup, int parent);
 
+CEXPORT int indigoAddTemplate (int molecule, int templates, const char *tname);
+CEXPORT int indigoRemoveTemplate (int molecule, const char *tname);
+CEXPORT int indigoFindTemplate (int molecule, const char *tname);
+
 CEXPORT int indigoTransformSCSRtoCTAB (int item);
 CEXPORT int indigoTransformCTABtoSCSR (int molecule, int templates);
 

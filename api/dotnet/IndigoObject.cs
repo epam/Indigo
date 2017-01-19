@@ -831,6 +831,24 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoSetSGroupParentId(self, parent));
         }
 
+        public int addTemplate(int molecule, int templates, string name)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoAddTemplate(self, templates.self, name));
+        }
+
+        public int removeTemplate(int molecule, string name)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoRemoveTemplate(self, name));
+        }
+
+        public int findTemplate(int molecule, string name)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoFindTemplate(self, name));
+        }
+
         public int transformSCSRtoCTAB()
         {
             dispatcher.setSessionID();

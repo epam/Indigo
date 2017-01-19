@@ -3408,6 +3408,54 @@ CEXPORT int indigoSetSGroupParentId (int sgroup, int parent)
    INDIGO_END(-1)
 }
 
+CEXPORT int indigoAddTemplate (int molecule, int templates, const char *tname)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      BaseMolecule &temp = self.getObject(templates).getBaseMolecule();
+      int tgidx = temp.tgroups.findTGroup(tname);
+      if (tgidx != -1) 
+      {
+         TGroup &tg = temp.tgroups.getTGroup(tgidx);
+         int idx = mol.addTemplate(tg);
+         return idx + 1;
+      }
+      return 0;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoRemoveTemplate (int molecule, const char *tname)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      int tgidx = mol.tgroups.findTGroup(tname);
+      if (tgidx != -1) 
+      {
+         mol.tgroups.remove(tgidx);
+      }
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoFindTemplate (int molecule, const char *tname)
+{
+   INDIGO_BEGIN
+   {
+      BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
+      int tgidx = mol.tgroups.findTGroup(tname);
+      if (tgidx != -1) 
+      {
+         return tgidx + 1;
+      }
+      return 0;
+   }
+   INDIGO_END(-1)
+}
+
 CEXPORT int indigoTransformSCSRtoCTAB (int molecule)
 {
    INDIGO_BEGIN

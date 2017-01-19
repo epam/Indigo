@@ -245,6 +245,10 @@ public interface IndigoLib extends Library
    int indigoGetSGroupParentId (int sgroup);
    int indigoSetSGroupParentId (int sgroup, int parent);
 
+   int indigoAddTemplate (int molecule, int templates, String name);
+   int indigoRemoveTemplate (int molecule, String name);
+   int indigoFindTemplate (int molecule, String name);
+
    int indigoTransformSCSRtoCTAB (int molecule);
    int indigoTransformCTABtoSCSR (int molecule, int templates);
 

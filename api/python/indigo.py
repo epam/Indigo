@@ -709,6 +709,18 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoSetSGroupParentId(self.id, parent))
 
+    def addTemplate(self, templates, name):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoAddTemplate(self.id, templates.id, name.encode(ENCODE_ENCODING)))
+
+    def removeTemplate(self, name):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoRemoveTemplate(self.id, name.encode(ENCODE_ENCODING)))
+
+    def findTemplate(self, name):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoFindTemplate(self.id, name.encode(ENCODE_ENCODING)))
+
     def transformSCSRtoCTAB(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoTransformSCSRtoCTAB(self.id))
@@ -1838,6 +1850,12 @@ class Indigo(object):
         Indigo._lib.indigoGetSGroupParentId.argtypes = [c_int]
         Indigo._lib.indigoSetSGroupParentId.restype = c_int
         Indigo._lib.indigoSetSGroupParentId.argtypes = [c_int, c_int]
+        Indigo._lib.indigoAddTemplate.restype = c_int
+        Indigo._lib.indigoAddTemplate.argtypes = [c_int, c_int, c_char_p]
+        Indigo._lib.indigoRemoveTemplate.restype = c_int
+        Indigo._lib.indigoRemoveTemplate.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoFindTemplate.restype = c_int
+        Indigo._lib.indigoFindTemplate.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoTransformSCSRtoCTAB.restype = c_int
         Indigo._lib.indigoTransformSCSRtoCTAB.argtypes = [c_int]
         Indigo._lib.indigoTransformCTABtoSCSR.restype = c_int

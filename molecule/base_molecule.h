@@ -339,6 +339,9 @@ public:
    int atomCode (int idx);
    int bondCode (int idx);
 
+   int addTemplate (TGroup &tgroup);
+
+
    DECL_ERROR;
 protected:
 
@@ -376,7 +379,6 @@ protected:
 
    int _transformTGroupToSGroup (int idx, int t_idx);
    int _transformSGroupToTGroup (int idx, int &t_idx);
-   int _addTemplate (TGroup &tgroup);
    void _fillTemplateSeqIds ();
    bool _isCTerminus (Superatom &su, int idx);
    bool _isNTerminus (Superatom &su, int idx);
