@@ -26,7 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Author:  Nemanja Lukic (nlukic@mips.com)
+ * Author:  Nemanja Lukic (nemanja.lukic@rt-rk.com)
  */
 
 #ifndef PIXMAN_MIPS_DSPR2_H
@@ -327,12 +327,6 @@ FAST_NEAREST_MAINLOOP_COMMON (mips_##name##_none_##op,                        \
 FAST_NEAREST_MAINLOOP_COMMON (mips_##name##_pad_##op,                         \
                               scaled_nearest_scanline_mips_##name##_##op,     \
                               src_type, uint8_t, dst_type, PAD, TRUE, FALSE)
-
-/* Provide entries for the fast path table */
-#define PIXMAN_MIPS_SIMPLE_NEAREST_A8_MASK_FAST_PATH(op,s,d,func)             \
-    SIMPLE_NEAREST_A8_MASK_FAST_PATH_COVER (op,s,d,func),                     \
-    SIMPLE_NEAREST_A8_MASK_FAST_PATH_NONE (op,s,d,func),                      \
-    SIMPLE_NEAREST_A8_MASK_FAST_PATH_PAD (op,s,d,func)
 
 /****************************************************************************/
 

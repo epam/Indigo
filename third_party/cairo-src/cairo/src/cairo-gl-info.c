@@ -32,6 +32,8 @@
 #include "cairoint.h"
 #include "cairo-gl-private.h"
 
+#include <errno.h>
+
 int
 _cairo_gl_get_version (void)
 {
@@ -69,6 +71,24 @@ _cairo_gl_get_flavor (void)
 	flavor = CAIRO_GL_FLAVOR_DESKTOP;
 
     return flavor;
+}
+
+unsigned long
+_cairo_gl_get_vbo_size (void)
+{
+    unsigned long vbo_size;
+
+    const char *env = getenv ("CAIRO_GL_VBO_SIZE");
+    if (env == NULL) {
+        vbo_size = CAIRO_GL_VBO_SIZE_DEFAULT;
+    } else {
+	errno = 0;
+	vbo_size = strtol (env, NULL, 10);
+	assert (errno == 0);
+	assert (vbo_size > 0);
+    }
+
+    return vbo_size;
 }
 
 cairo_bool_t

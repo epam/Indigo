@@ -526,6 +526,368 @@ _pixel_to_solid (cairo_image_surface_t *image, int x, int y)
     }
 }
 
+/* ========================================================================== */
+
+/* Index into filter table */
+typedef enum
+{
+    KERNEL_IMPULSE,
+    KERNEL_BOX,
+    KERNEL_LINEAR,
+    KERNEL_MITCHELL,
+    KERNEL_NOTCH,
+    KERNEL_CATMULL_ROM,
+    KERNEL_LANCZOS3,
+    KERNEL_LANCZOS3_STRETCHED,
+    KERNEL_TENT
+} kernel_t;
+
+/* Produce contribution of a filter of size r for pixel centered on x.
+   For a typical low-pass function this evaluates the function at x/r.
+   If the frequency is higher than 1/2, such as when r is less than 1,
+   this may need to integrate several samples, see cubic for examples.
+*/
+typedef double (* kernel_func_t) (double x, double r);
+
+/* Return maximum number of pixels that will be non-zero. Except for
+   impluse this is the maximum of 2 and the width of the non-zero part
+   of the filter rounded up to the next integer.
+*/
+typedef int (* kernel_width_func_t) (double r);
+
+/* Table of filters */
+typedef struct
+{
+    kernel_t		kernel;
+    kernel_func_t	func;
+    kernel_width_func_t	width;
+} filter_info_t;
+
+/* PIXMAN_KERNEL_IMPULSE: Returns pixel nearest the center.  This
+   matches PIXMAN_FILTER_NEAREST. This is useful if you wish to
+   combine the result of nearest in one direction with another filter
+   in the other.
+*/
+
+static double
+impulse_kernel (double x, double r)
+{
+    return 1;
+}
+
+static int
+impulse_width (double r)
+{
+    return 1;
+}
+
+/* PIXMAN_KERNEL_BOX: Intersection of a box of width r with square
+   pixels. This is the smallest possible filter such that the output
+   image contains an equal contribution from all the input
+   pixels. Lots of software uses this. The function is a trapazoid of
+   width r+1, not a box.
+
+   When r == 1.0, PIXMAN_KERNEL_BOX, PIXMAN_KERNEL_LINEAR, and
+   PIXMAN_KERNEL_TENT all produce the same filter, allowing
+   them to be exchanged at this point.
+*/
+
+static double
+box_kernel (double x, double r)
+{
+    return MAX (0.0, MIN (MIN (r, 1.0),
+			  MIN ((r + 1) / 2 - x, (r + 1) / 2 + x)));
+}
+
+static int
+box_width (double r)
+{
+    return r < 1.0 ? 2 : ceil(r + 1);
+}
+
+/* PIXMAN_KERNEL_LINEAR: Weighted sum of the two pixels nearest the
+   center, or a triangle of width 2. This matches
+   PIXMAN_FILTER_BILINEAR. This is useful if you wish to combine the
+   result of bilinear in one direction with another filter in the
+   other.  This is not a good filter if r > 1. You may actually want
+   PIXMAN_FILTER_TENT.
+
+   When r == 1.0, PIXMAN_KERNEL_BOX, PIXMAN_KERNEL_LINEAR, and
+   PIXMAN_KERNEL_TENT all produce the same filter, allowing
+   them to be exchanged at this point.
+*/
+
+static double
+linear_kernel (double x, double r)
+{
+    return MAX (1.0 - fabs(x), 0.0);
+}
+
+static int
+linear_width (double r)
+{
+    return 2;
+}
+
+/* Cubic functions described in the Mitchell-Netravali paper.
+   http://mentallandscape.com/Papers_siggraph88.pdf. This describes
+   all possible cubic functions that can be used for sampling.
+*/
+
+static double
+general_cubic (double x, double r, double B, double C)
+{
+    double ax;
+    if (r < 1.0)
+	return
+	    general_cubic(x * 2 - .5, r * 2, B, C) +
+	    general_cubic(x * 2 + .5, r * 2, B, C);
+
+    ax = fabs (x / r);
+
+    if (ax < 1)
+    {
+	return (((12 - 9 * B - 6 * C) * ax +
+		 (-18 + 12 * B + 6 * C)) * ax * ax +
+		(6 - 2 * B)) / 6;
+    }
+    else if (ax < 2)
+    {
+	return ((((-B - 6 * C) * ax +
+		 (6 * B + 30 * C)) * ax +
+		(-12 * B - 48 * C)) * ax +
+		(8 * B + 24 * C)) / 6;
+    }
+    else
+    {
+	return 0.0;
+    }
+}
+
+static int
+cubic_width (double r)
+{
+    return MAX (2, ceil (r * 4));
+}
+
+/* PIXMAN_KERNEL_CATMULL_ROM: Catmull-Rom interpolation. Often called
+   "cubic interpolation", "b-spline", or just "cubic" by other
+   software. This filter has negative values so it can produce ringing
+   and output pixels outside the range of input pixels. This is very
+   close to lanczos2 so there is no reason to supply that as well.
+*/
+
+static double
+cubic_kernel (double x, double r)
+{
+    return general_cubic (x, r, 0.0, 0.5);
+}
+
+/* PIXMAN_KERNEL_MITCHELL: Cubic recommended by the Mitchell-Netravali
+   paper.  This has negative values and because the values at +/-1 are
+   not zero it does not interpolate the pixels, meaning it will change
+   an image even if there is no translation.
+*/
+
+static double
+mitchell_kernel (double x, double r)
+{
+    return general_cubic (x, r, 1/3.0, 1/3.0);
+}
+
+/* PIXMAN_KERNEL_NOTCH: Cubic recommended by the Mitchell-Netravali
+   paper to remove postaliasing artifacts. This does not remove
+   aliasing already present in the source image, though it may appear
+   to due to it's excessive blurriness. In any case this is more
+   useful than gaussian for image reconstruction.
+*/
+
+static double
+notch_kernel (double x, double r)
+{
+    return general_cubic (x, r, 1.5, -0.25);
+}
+
+/* PIXMAN_KERNEL_LANCZOS3: lanczos windowed sinc function from -3 to
+   +3. Very popular with high-end software though I think any
+   advantage over cubics is hidden by quantization and programming
+   mistakes. You will see LANCZOS5 or even 7 sometimes.
+*/
+
+static double
+sinc (double x)
+{
+    return x ? sin (M_PI * x) / (M_PI * x) : 1.0;
+}
+
+static double
+lanczos (double x, double n)
+{
+    return fabs (x) < n ? sinc (x) * sinc (x * (1.0 / n)) : 0.0;
+}
+
+static double
+lanczos3_kernel (double x, double r)
+{
+    if (r < 1.0)
+	return
+	    lanczos3_kernel (x * 2 - .5, r * 2) +
+	    lanczos3_kernel (x * 2 + .5, r * 2);
+    else
+	return lanczos (x / r, 3.0);
+}
+
+static int
+lanczos3_width (double r)
+{
+    return MAX (2, ceil (r * 6));
+}
+
+/* PIXMAN_KERNEL_LANCZOS3_STRETCHED - The LANCZOS3 kernel widened by
+   4/3.  Recommended by Jim Blinn
+   http://graphics.cs.cmu.edu/nsp/course/15-462/Fall07/462/papers/jaggy.pdf
+*/
+
+static double
+nice_kernel (double x, double r)
+{
+    return lanczos3_kernel (x, r * (4.0/3));
+}
+
+static int
+nice_width (double r)
+{
+    return MAX (2.0, ceil (r * 8));
+}
+
+/* PIXMAN_KERNEL_TENT: Triangle of width 2r. Lots of software uses
+   this as a "better" filter, twice the size of a box but smaller than
+   a cubic.
+
+   When r == 1.0, PIXMAN_KERNEL_BOX, PIXMAN_KERNEL_LINEAR, and
+   PIXMAN_KERNEL_TENT all produce the same filter, allowing
+   them to be exchanged at this point.
+*/
+
+static double
+tent_kernel (double x, double r)
+{
+    if (r < 1.0)
+	return box_kernel(x, r);
+    else
+	return MAX (1.0 - fabs(x / r), 0.0);
+}
+
+static int
+tent_width (double r)
+{
+    return r < 1.0 ? 2 : ceil(2 * r);
+}
+
+
+static const filter_info_t filters[] =
+{
+    { KERNEL_IMPULSE,		impulse_kernel,   impulse_width },
+    { KERNEL_BOX,		box_kernel,       box_width },
+    { KERNEL_LINEAR,		linear_kernel,    linear_width },
+    { KERNEL_MITCHELL,		mitchell_kernel,  cubic_width },
+    { KERNEL_NOTCH,		notch_kernel,     cubic_width },
+    { KERNEL_CATMULL_ROM,	cubic_kernel,     cubic_width },
+    { KERNEL_LANCZOS3,		lanczos3_kernel,  lanczos3_width },
+    { KERNEL_LANCZOS3_STRETCHED,nice_kernel,      nice_width },
+    { KERNEL_TENT,		tent_kernel,	  tent_width }
+};
+
+/* Fills in one dimension of the filter array */
+static void get_filter(kernel_t filter, double r,
+		       int width, int subsample,
+		       pixman_fixed_t* out)
+{
+    int i;
+    pixman_fixed_t *p = out;
+    int n_phases = 1 << subsample;
+    double step = 1.0 / n_phases;
+    kernel_func_t func = filters[filter].func;
+
+    /* special-case the impulse filter: */
+    if (width <= 1)
+    {
+	for (i = 0; i < n_phases; ++i)
+	    *p++ = pixman_fixed_1;
+	return;
+    }
+
+    for (i = 0; i < n_phases; ++i)
+    {
+	double frac = (i + .5) * step;
+	/* Center of left-most pixel: */
+	double x1 = ceil (frac - width / 2.0 - 0.5) - frac + 0.5;
+	double total = 0;
+	pixman_fixed_t new_total = 0;
+	int j;
+
+	for (j = 0; j < width; ++j)
+	{
+	    double v = func(x1 + j, r);
+	    total += v;
+	    p[j] = pixman_double_to_fixed (v);
+	}
+
+	/* Normalize */
+        total = 1 / total;
+	for (j = 0; j < width; ++j)
+	    new_total += (p[j] *= total);
+
+	/* Put any error on center pixel */
+	p[width / 2] += (pixman_fixed_1 - new_total);
+
+	p += width;
+    }
+}
+
+
+/* Create the parameter list for a SEPARABLE_CONVOLUTION filter
+ * with the given kernels and scale parameters. 
+ */
+static pixman_fixed_t *
+create_separable_convolution (int *n_values,
+			      kernel_t xfilter,
+			      double sx,
+			      kernel_t yfilter,
+			      double sy)
+{
+    int xwidth, xsubsample, ywidth, ysubsample, size_x, size_y;
+    pixman_fixed_t *params;
+
+    xwidth = filters[xfilter].width(sx);
+    xsubsample = 0;
+    if (xwidth > 1)
+	while (sx * (1 << xsubsample) <= 128.0) xsubsample++;
+    size_x = (1 << xsubsample) * xwidth;
+
+    ywidth = filters[yfilter].width(sy);
+    ysubsample = 0;
+    if (ywidth > 1)
+	while (sy * (1 << ysubsample) <= 128.0) ysubsample++;
+    size_y = (1 << ysubsample) * ywidth;
+
+    *n_values = 4 + size_x + size_y;
+    params = malloc (*n_values * sizeof (pixman_fixed_t));
+    if (!params) return 0;
+
+    params[0] = pixman_int_to_fixed (xwidth);
+    params[1] = pixman_int_to_fixed (ywidth);
+    params[2] = pixman_int_to_fixed (xsubsample);
+    params[3] = pixman_int_to_fixed (ysubsample);
+
+    get_filter(xfilter, sx, xwidth, xsubsample, params + 4);
+    get_filter(yfilter, sy, ywidth, ysubsample, params + 4 + size_x);
+
+    return params;
+}
+
+/* ========================================================================== */
+
 static cairo_bool_t
 _pixman_image_set_properties (pixman_image_t *pixman_image,
 			      const cairo_pattern_t *pattern,
@@ -555,16 +917,58 @@ _pixman_image_set_properties (pixman_image_t *pixman_image,
     else
     {
 	pixman_filter_t pixman_filter;
+	kernel_t kernel;
+	double dx, dy;
+
+	/* Compute scale factors from the pattern matrix. These scale
+	 * factors are from user to pattern space, and as such they
+	 * are greater than 1.0 for downscaling and less than 1.0 for
+	 * upscaling. The factors are the size of an axis-aligned
+	 * rectangle with the same area as the parallelgram a 1x1
+	 * square transforms to.
+	 */
+	dx = hypot (pattern->matrix.xx, pattern->matrix.xy);
+	dy = hypot (pattern->matrix.yx, pattern->matrix.yy);
+
+	/* Clip at maximum pixman_fixed number. Besides making it
+	 * passable to pixman, this avoids errors from inf and nan.
+	 */
+	if (! (dx < 0x7FFF)) dx = 0x7FFF;
+	if (! (dy < 0x7FFF)) dy = 0x7FFF;
 
 	switch (pattern->filter) {
 	case CAIRO_FILTER_FAST:
 	    pixman_filter = PIXMAN_FILTER_FAST;
 	    break;
 	case CAIRO_FILTER_GOOD:
-	    pixman_filter = PIXMAN_FILTER_GOOD;
+	    pixman_filter = PIXMAN_FILTER_SEPARABLE_CONVOLUTION;
+	    kernel = KERNEL_BOX;
+	    /* Clip the filter size to prevent extreme slowness. This
+	       value could be raised if 2-pass filtering is done */
+	    if (dx > 16.0) dx = 16.0;
+	    if (dy > 16.0) dy = 16.0;
+	    /* Match the bilinear filter for scales > .75: */
+	    if (dx < 1.0/0.75) dx = 1.0;
+	    if (dy < 1.0/0.75) dy = 1.0;
 	    break;
 	case CAIRO_FILTER_BEST:
-	    pixman_filter = PIXMAN_FILTER_BEST;
+	    pixman_filter = PIXMAN_FILTER_SEPARABLE_CONVOLUTION;
+	    kernel = KERNEL_CATMULL_ROM; /* LANCZOS3 is better but not much */
+	    /* Clip the filter size to prevent extreme slowness. This
+	       value could be raised if 2-pass filtering is done */
+	    if (dx > 16.0) { dx = 16.0; kernel = KERNEL_BOX; }
+	    /* blur up to 2x scale, then blend to square pixels for larger: */
+	    else if (dx < 1.0) {
+		if (dx < 1.0/128) dx = 1.0/127;
+		else if (dx < 0.5) dx = 1.0 / (1.0 / dx - 1.0);
+		else dx = 1.0;
+	    }
+	    if (dy > 16.0) { dy = 16.0; kernel = KERNEL_BOX; }
+	    else if (dy < 1.0) {
+		if (dy < 1.0/128) dy = 1.0/127;
+		else if (dy < 0.5) dy = 1.0 / (1.0 / dy - 1.0);
+		else dy = 1.0;
+	    }
 	    break;
 	case CAIRO_FILTER_NEAREST:
 	    pixman_filter = PIXMAN_FILTER_NEAREST;
@@ -582,7 +986,17 @@ _pixman_image_set_properties (pixman_image_t *pixman_image,
 	    pixman_filter = PIXMAN_FILTER_BEST;
 	}
 
-	pixman_image_set_filter (pixman_image, pixman_filter, NULL, 0);
+	if (pixman_filter == PIXMAN_FILTER_SEPARABLE_CONVOLUTION) {
+	    int n_params;
+	    pixman_fixed_t *params;
+	    params = create_separable_convolution
+		(&n_params, kernel, dx, kernel, dy);
+	    pixman_image_set_filter (pixman_image, pixman_filter,
+				     params, n_params);
+	    free (params);
+	} else {
+	    pixman_image_set_filter (pixman_image, pixman_filter, NULL, 0);
+	}
     }
 
     {

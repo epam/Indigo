@@ -64,7 +64,7 @@ _cairo_skia_surface_create_similar (void *asurface,
 
     if (content == surface->image.base.content)
     {
-	config = surface->bitmap->getConfig ();
+	config = surface->bitmap->config ();
 	opaque = surface->bitmap->isOpaque ();
     }
     else if (! format_to_sk_config (_cairo_format_from_content (content),
@@ -207,9 +207,6 @@ sk_config_to_pixman_format_code (SkBitmap::Config config,
 
     case SkBitmap::kA8_Config:
 	return PIXMAN_a8;
-
-    case SkBitmap::kA1_Config:
-	return PIXMAN_a1;
     case SkBitmap::kRGB_565_Config:
 	return PIXMAN_r5g6b5;
     case SkBitmap::kARGB_4444_Config:
@@ -217,8 +214,6 @@ sk_config_to_pixman_format_code (SkBitmap::Config config,
 
     case SkBitmap::kNo_Config:
     case SkBitmap::kIndex8_Config:
-    case SkBitmap::kRLE_Index8_Config:
-    case SkBitmap::kConfigCount:
     default:
 	ASSERT_NOT_REACHED;
 	return (pixman_format_code_t) -1;
@@ -236,6 +231,7 @@ _cairo_skia_surface_create_internal (SkBitmap::Config config,
     cairo_skia_surface_t *surface;
     pixman_image_t *pixman_image;
     pixman_format_code_t pixman_format;
+    SkColorType colorType;
 
     surface = (cairo_skia_surface_t *) malloc (sizeof (cairo_skia_surface_t));
     if (unlikely (surface == NULL))
@@ -245,8 +241,10 @@ _cairo_skia_surface_create_internal (SkBitmap::Config config,
     pixman_image = pixman_image_create_bits (pixman_format,
 					     width, height,
 					     (uint32_t *) data, stride);
-    if (unlikely (pixman_image == NULL))
+    if (unlikely (pixman_image == NULL)) {
+	free (surface);
 	return (cairo_skia_surface_t *) _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
+    }
 
     _cairo_surface_init (&surface->image.base,
 			 &cairo_skia_surface_backend,
@@ -256,8 +254,9 @@ _cairo_skia_surface_create_internal (SkBitmap::Config config,
     _cairo_image_surface_init (&surface->image, pixman_image, pixman_format);
 
     surface->bitmap = new SkBitmap;
-    surface->bitmap->setConfig (config, width, height, surface->image.stride);
-    surface->bitmap->setIsOpaque (opaque);
+    colorType = SkBitmapConfigToColorType(config);
+    surface->bitmap->setAlphaType (opaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType);
+    surface->bitmap->setInfo (SkImageInfo::Make(width, height, colorType, kPremul_SkAlphaType), surface->image.stride);
     surface->bitmap->setPixels (surface->image.data);
 
     surface->image.base.is_clear = data == NULL;

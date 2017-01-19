@@ -82,7 +82,6 @@ _cairo_xcb_connection_shm_get_image (cairo_xcb_connection_t *connection,
 				     uint32_t offset)
 {
     xcb_shm_get_image_reply_t *reply;
-    xcb_generic_error_t *error;
 
     assert (connection->flags & CAIRO_XCB_HAS_SHM);
     reply = xcb_shm_get_image_reply (connection->xcb_connection,
@@ -93,12 +92,11 @@ _cairo_xcb_connection_shm_get_image (cairo_xcb_connection_t *connection,
 							(uint32_t) -1,
 							XCB_IMAGE_FORMAT_Z_PIXMAP,
 							shmseg, offset),
-				     &error);
+				     NULL);
     free (reply);
 
-    if (error) {
+    if (!reply) {
 	/* an error here should be impossible */
-	free (error);
 	return _cairo_error (CAIRO_STATUS_READ_ERROR);
     }
 

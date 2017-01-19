@@ -653,16 +653,34 @@ cairo_truetype_font_write_glyf_table (cairo_truetype_font_t *font,
 	if (unlikely (status))
 	    goto FAIL;
 
-        if (size != 0) {
-            status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
+	if (size > 1) {
+	    tt_glyph_data_t *glyph_data;
+	    int num_contours;
+
+	    status = font->backend->load_truetype_table (font->scaled_font_subset->scaled_font,
 							 TT_TAG_glyf, begin, buffer, &size);
 	    if (unlikely (status))
 		goto FAIL;
 
-            status = cairo_truetype_font_remap_composite_glyph (font, buffer, size);
-	    if (unlikely (status))
-		goto FAIL;
-        }
+	    glyph_data = (tt_glyph_data_t *) buffer;
+	    num_contours = (int16_t)be16_to_cpu (glyph_data->num_contours);
+	    if (num_contours < 0) {
+		status = cairo_truetype_font_remap_composite_glyph (font, buffer, size);
+		if (unlikely (status))
+		    goto FAIL;
+	    } else if (num_contours == 0) {
+		/* num_contours == 0 is undefined in the Opentype
+		 * spec. There are some embedded fonts that have a
+		 * space glyph with num_contours = 0 that fails on
+		 * some printers. The spec requires glyphs without
+		 * contours to have a 0 size glyph entry in the loca
+		 * table.
+		 *
+		 * If num_contours == 0, truncate the glyph to 0 size.
+		 */
+		_cairo_array_truncate (&font->output, _cairo_array_num_elements (&font->output) - size);
+	    }
+	}
     }
 
     status = cairo_truetype_font_align_output (font, &next);
@@ -1564,40 +1582,11 @@ _cairo_truetype_read_font_name (cairo_scaled_font_t  	 *scaled_font,
 	    goto fail;
     }
 
+    status = _cairo_escape_ps_name (&ps_name);
+    if (unlikely(status))
+	goto fail;
+
     free (name);
-
-    /* Ensure PS name is a valid PDF/PS name object. In PDF names are
-     * treated as UTF8 and non ASCII bytes, ' ', and '#' are encoded
-     * as '#' followed by 2 hex digits that encode the byte. By also
-     * encoding the characters in the reserved string we ensure the
-     * name is also PS compatible. */
-    if (ps_name) {
-	static const char *reserved = "()<>[]{}/%#\\";
-	char buf[128]; /* max name length is 127 bytes */
-	char *src = ps_name;
-	char *dst = buf;
-
-	while (*src && dst < buf + 127) {
-	    unsigned char c = *src;
-	    if (c < 0x21 || c > 0x7e || strchr (reserved, c)) {
-		if (dst + 4 > buf + 127)
-		    break;
-
-		snprintf (dst, 4, "#%02X", c);
-		src++;
-		dst += 3;
-	    } else {
-		*dst++ = *src++;
-	    }
-	}
-	*dst = 0;
-	free (ps_name);
-	ps_name = strdup (buf);
-	if (ps_name == NULL) {
-	    status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
-	    goto fail;
-	}
-    }
 
     *ps_name_out = ps_name;
     *font_name_out = family_name;

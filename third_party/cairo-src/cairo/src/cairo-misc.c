@@ -156,6 +156,8 @@ cairo_status_to_string (cairo_status_t status)
 	return "invalid operation during mesh pattern construction";
     case CAIRO_STATUS_DEVICE_FINISHED:
 	return "the target device has been finished";
+    case CAIRO_STATUS_JBIG2_GLOBAL_MISSING:
+	return "CAIRO_MIME_TYPE_JBIG2_GLOBAL_ID used but no CAIRO_MIME_TYPE_JBIG2_GLOBAL data provided";
     default:
     case CAIRO_STATUS_LAST_STATUS:
 	return "<unknown error status>";
@@ -757,6 +759,24 @@ _cairo_half_from_float (float f)
     }
 }
 
+#ifndef __BIONIC__
+# include <locale.h>
+
+const char *
+cairo_get_locale_decimal_point (void)
+{
+    struct lconv *locale_data = localeconv ();
+    return locale_data->decimal_point;
+}
+
+#else
+/* Android's Bionic libc doesn't provide decimal_point */
+const char *
+cairo_get_locale_decimal_point (void)
+{
+    return ".";
+}
+#endif
 
 #ifdef _WIN32
 

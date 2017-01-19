@@ -53,6 +53,7 @@
 #include "cairo-skia-private.h"
 #include "cairo-surface-backend-private.h"
 
+#include <SkPaint.h>
 #include <SkShader.h>
 #include <SkColorShader.h>
 #include <SkGradientShader.h>
@@ -236,15 +237,18 @@ surface_to_sk_bitmap (cairo_surface_t *surface, SkBitmap& bitmap)
 {
     cairo_image_surface_t *img = (cairo_image_surface_t *) surface;
     SkBitmap::Config config;
+    SkColorType colorType;
     bool opaque;
 
     if (unlikely (! format_to_sk_config (img->format, config, opaque)))
 	return false;
 
     bitmap.reset ();
-    bitmap.setConfig (config, img->width, img->height, img->stride);
-    bitmap.setIsOpaque (opaque);
+    bitmap.setAlphaType (opaque ? kOpaque_SkAlphaType : kPremul_SkAlphaType);
+    colorType = SkBitmapConfigToColorType(config);
+    bitmap.setInfo (SkImageInfo::Make(img->width, img->height, colorType, kPremul_SkAlphaType), img->stride);
     bitmap.setPixels (img->data);
+
 
     return true;
 }
@@ -330,9 +334,18 @@ source_to_sk_shader (cairo_skia_context_t *cr,
 	if (surface->type == CAIRO_SURFACE_TYPE_SKIA) {
 	    cairo_skia_surface_t *esurf = (cairo_skia_surface_t *) surface;
 
-	    shader = SkShader::CreateBitmapShader (*esurf->bitmap,
-						   extend_to_sk (pattern->extend),
-						   extend_to_sk (pattern->extend));
+		if (! _cairo_matrix_is_identity (&pattern->matrix))
+		{
+			SkMatrix localMatrix =  matrix_inverse_to_sk (pattern->matrix);
+			shader = SkShader::CreateBitmapShader (*esurf->bitmap,
+					extend_to_sk (pattern->extend),
+					extend_to_sk (pattern->extend),
+					&localMatrix);
+		} else {
+			shader = SkShader::CreateBitmapShader (*esurf->bitmap,
+					extend_to_sk (pattern->extend),
+					extend_to_sk (pattern->extend));
+		}
 	} else {
 	    SkBitmap bitmap;
 
@@ -351,9 +364,18 @@ source_to_sk_shader (cairo_skia_context_t *cr,
 	    if (unlikely (! surface_to_sk_bitmap (surface, bitmap)))
 		return NULL;
 
-	    shader = SkShader::CreateBitmapShader (bitmap,
-						   extend_to_sk (pattern->extend),
-						   extend_to_sk (pattern->extend));
+		if (! _cairo_matrix_is_identity (&pattern->matrix))
+		{
+			SkMatrix localMatrix = matrix_inverse_to_sk (pattern->matrix);
+			shader = SkShader::CreateBitmapShader (bitmap,
+					extend_to_sk (pattern->extend),
+					extend_to_sk (pattern->extend),
+					&localMatrix);
+		} else {
+			shader = SkShader::CreateBitmapShader (bitmap,
+			extend_to_sk (pattern->extend),
+			extend_to_sk (pattern->extend));
+		}
 	}
     } else if (pattern->type == CAIRO_PATTERN_TYPE_LINEAR
 	       /* || pattern->type == CAIRO_PATTERN_TYPE_RADIAL */)
@@ -382,8 +404,17 @@ source_to_sk_shader (cairo_skia_context_t *cr,
 			   SkFloatToScalar (linear->pd1.y));
 	    points[1].set (SkFloatToScalar (linear->pd2.x),
 			   SkFloatToScalar (linear->pd2.y));
-	    shader = SkGradientShader::CreateLinear (points, colors, pos, gradient->n_stops,
-						     extend_to_sk (pattern->extend));
+
+	    if(! _cairo_matrix_is_identity (&pattern->matrix))
+	    {
+		SkMatrix localMatrix = matrix_inverse_to_sk (pattern->matrix);
+	        shader = SkGradientShader::CreateLinear (points, colors, pos, gradient->n_stops,
+						     extend_to_sk (pattern->extend),
+						     0, &localMatrix);
+	    } else {
+	        shader = SkGradientShader::CreateLinear (points, colors, pos, gradient->n_stops,
+							extend_to_sk (pattern->extend));
+	    }
 	} else {
 	    // XXX todo -- implement real radial shaders in Skia
 	}
@@ -393,9 +424,6 @@ source_to_sk_shader (cairo_skia_context_t *cr,
 	    delete [] pos;
 	}
     }
-
-    if (shader && ! _cairo_matrix_is_identity (&pattern->matrix))
-	shader->setLocalMatrix (matrix_inverse_to_sk (pattern->matrix));
 
     return shader;
 }
@@ -446,6 +474,7 @@ _cairo_skia_context_set_source (void *abstract_cr,
 	cr->paint->setColor (color);
     } else {
 	SkShader *shader = source_to_sk_shader (cr, source);
+	bool fLevel = pattern_filter_to_sk (source);
 	if (shader == NULL) {
 	    UNSUPPORTED;
 	    return CAIRO_STATUS_SUCCESS;
@@ -454,7 +483,8 @@ _cairo_skia_context_set_source (void *abstract_cr,
 	cr->paint->setShader (shader);
 	shader->unref ();
 
-	cr->paint->setFilterBitmap (pattern_filter_to_sk (source));
+	cr->paint->setFilterLevel (fLevel ?
+				(SkPaint::kLow_FilterLevel) : (SkPaint::kNone_FilterLevel));
     }
 
     /* XXX change notification */
@@ -496,7 +526,8 @@ _cairo_skia_context_set_source_surface (void *abstract_cr,
 	cr->paint->setShader (shader);
 	shader->unref ();
 
-	cr->paint->setFilterBitmap (true);
+	cr->paint->setFilterLevel (true ?
+		(SkPaint::kLow_FilterLevel) : (SkPaint::kNone_FilterLevel));
 
 	return CAIRO_STATUS_SUCCESS;
     }
@@ -682,7 +713,7 @@ _cairo_skia_context_set_dash (void *abstract_cr,
 	    intervals[i++] = SkFloatToScalar (dashes[j]);
     } while (loop--);
 
-    SkDashPathEffect *dash = new SkDashPathEffect (intervals, num_dashes, SkFloatToScalar (offset));
+    SkDashPathEffect *dash = SkDashPathEffect::Create (intervals, num_dashes, SkFloatToScalar (offset));
 
     cr->paint->setPathEffect (dash);
     dash->unref ();
@@ -1264,7 +1295,7 @@ _cairo_skia_context_paint_with_alpha (void *abstract_cr,
     if (CAIRO_ALPHA_IS_OPAQUE (alpha))
 	return _cairo_skia_context_paint (cr);
 
-    cr->paint->setAlpha(SkScalarRound(255*alpha));
+    cr->paint->setAlpha(SkScalarRoundToInt(255*alpha));
     status = _cairo_skia_context_paint (cr);
     cr->paint->setAlpha(255);
 

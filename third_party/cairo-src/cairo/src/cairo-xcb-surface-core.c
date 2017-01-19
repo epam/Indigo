@@ -406,7 +406,7 @@ _cairo_xcb_surface_pixmap (cairo_xcb_surface_t *target,
     if (pixmap != NULL && pixmap->screen == target->screen)
 	return (cairo_xcb_pixmap_t *) cairo_surface_reference (&pixmap->base);
 
-    if (source->type == CAIRO_SURFACE_TYPE_XCB &&
+    if (_cairo_surface_is_xcb(source) &&
 	((cairo_xcb_surface_t *) source)->screen == target->screen)
     {
 	cairo_xcb_surface_t *xcb_source = (cairo_xcb_surface_t *) source;
@@ -573,7 +573,7 @@ _cairo_xcb_surface_core_copy_boxes (cairo_xcb_surface_t		*dst,
 						 src->x0 + x1,
 						 src->y0 + y1,
 						 x1, y1,
-						 x2 - x2, y2 - x2);
+						 x2 - x1, y2 - y1);
 	    }
 	}
     }

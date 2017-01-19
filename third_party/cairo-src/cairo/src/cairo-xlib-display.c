@@ -291,7 +291,7 @@ _cairo_xlib_device_create (Display *dpy)
      *
      *    1. The original bug that led to the buggy_repeat
      *    workaround. This was a bug that Owen Taylor investigated,
-     *    understood well, and characterized against carious X
+     *    understood well, and characterized against various X
      *    servers. Confirmed X servers with this bug include:
      *
      *		"XFree86" <= 40500000
@@ -491,12 +491,6 @@ _cairo_xlib_display_get_xrender_format (cairo_xlib_display_t	*display,
 {
     XRenderPictFormat *xrender_format;
 
-#if ! ATOMIC_OP_NEEDS_MEMORY_BARRIER
-    xrender_format = display->cached_xrender_formats[format];
-    if (likely (xrender_format != NULL))
-	return xrender_format;
-#endif
-
     xrender_format = display->cached_xrender_formats[format];
     if (xrender_format == NULL) {
 	int pict_format = PictStandardNUM;
@@ -574,7 +568,7 @@ _cairo_xlib_display_has_gradients (cairo_device_t *device)
  *
  * Restricts all future Xlib surfaces for this devices to the specified version
  * of the RENDER extension. This function exists solely for debugging purpose.
- * It let's you find out how cairo would behave with an older version of
+ * It lets you find out how cairo would behave with an older version of
  * the RENDER extension.
  *
  * Use the special values -1 and -1 for disabling the RENDER extension.

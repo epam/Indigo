@@ -198,7 +198,7 @@ _cairo_gl_context_fini_shaders (cairo_gl_context_t *ctx)
 {
     int i;
 
-    for (i = 0; i <= CAIRO_GL_VAR_TYPE_MAX; i++) {
+    for (i = 0; i < CAIRO_GL_VAR_TYPE_MAX; i++) {
 	if (ctx->vertex_shaders[i])
 	    ctx->dispatch.DeleteShader (ctx->vertex_shaders[i]);
     }
@@ -973,12 +973,12 @@ _cairo_gl_shader_bind_matrix (cairo_gl_context_t *ctx,
 {
     cairo_gl_dispatch_t *dispatch = &ctx->dispatch;
     float gl_m[9] = {
-	m->xx, m->xy, m->x0,
-	m->yx, m->yy, m->y0,
-	0,     0,     1
+	m->xx, m->yx, 0,
+	m->xy, m->yy, 0,
+	m->x0, m->y0, 1
     };
     assert (location != -1);
-    dispatch->UniformMatrix3fv (location, 1, GL_TRUE, gl_m);
+    dispatch->UniformMatrix3fv (location, 1, GL_FALSE, gl_m);
 }
 
 void

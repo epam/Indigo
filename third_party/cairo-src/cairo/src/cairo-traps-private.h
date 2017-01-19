@@ -91,8 +91,9 @@ cairo_private void
 _cairo_traps_translate (cairo_traps_t *traps, int x, int y);
 
 cairo_private void
-_cairo_traps_tessellate_triangle (cairo_traps_t *traps,
-				  const cairo_point_t t[3]);
+_cairo_traps_tessellate_triangle_with_edges (cairo_traps_t *traps,
+					     const cairo_point_t t[3],
+					     const cairo_point_t edges[4]);
 
 cairo_private void
 _cairo_traps_tessellate_convex_quad (cairo_traps_t *traps,
@@ -106,7 +107,8 @@ _cairo_traps_tessellate_rectangle (cairo_traps_t *traps,
 cairo_private void
 _cairo_traps_add_trap (cairo_traps_t *traps,
 		       cairo_fixed_t top, cairo_fixed_t bottom,
-		       cairo_line_t *left, cairo_line_t *right);
+		       const cairo_line_t *left,
+		       const cairo_line_t *right);
 
 cairo_private int
 _cairo_traps_contain (const cairo_traps_t *traps,

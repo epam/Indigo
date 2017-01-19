@@ -70,9 +70,12 @@ typedef struct _cairo_pdf_source_surface_entry {
     unsigned int id;
     unsigned char *unique_id;
     unsigned long unique_id_length;
+    cairo_operator_t operator;
     cairo_bool_t interpolate;
     cairo_bool_t stencil_mask;
+    cairo_bool_t smask;
     cairo_pdf_resource_t surface_res;
+    cairo_pdf_resource_t smask_res;
     int width;
     int height;
     cairo_rectangle_int_t extents;
@@ -92,6 +95,7 @@ typedef struct _cairo_pdf_pattern {
     cairo_pattern_t *pattern;
     cairo_pdf_resource_t pattern_res;
     cairo_pdf_resource_t gstate_res;
+    cairo_operator_t operator;
     cairo_bool_t is_shading;
 } cairo_pdf_pattern_t;
 
@@ -127,6 +131,13 @@ typedef struct _cairo_pdf_smask_group {
     cairo_scaled_font_t	 *scaled_font;
 } cairo_pdf_smask_group_t;
 
+typedef struct _cairo_pdf_jbig2_global {
+    unsigned char *id;
+    unsigned long id_length;
+    cairo_pdf_resource_t  res;
+    cairo_bool_t emitted;
+} cairo_pdf_jbig2_global_t;
+
 typedef struct _cairo_pdf_surface cairo_pdf_surface_t;
 
 struct _cairo_pdf_surface {
@@ -149,6 +160,7 @@ struct _cairo_pdf_surface {
     cairo_hash_table_t *all_surfaces;
     cairo_array_t smask_groups;
     cairo_array_t knockout_group;
+    cairo_array_t jbig2_global;
 
     cairo_scaled_font_subsets_t *font_subsets;
     cairo_array_t fonts;

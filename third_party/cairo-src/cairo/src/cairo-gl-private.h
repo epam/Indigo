@@ -93,8 +93,9 @@
 
 /* VBO size that we allocate, smaller size means we gotta flush more often,
  * but larger means hogging more memory and can cause trouble for drivers
- * (especially on embedded devices). */
-#define CAIRO_GL_VBO_SIZE (16*1024)
+ * (especially on embedded devices). Use the CAIRO_GL_VBO_SIZE environment
+ * variable to set this to a different size. */
+#define CAIRO_GL_VBO_SIZE_DEFAULT (1024*1024)
 
 typedef struct _cairo_gl_surface cairo_gl_surface_t;
 
@@ -361,6 +362,7 @@ struct _cairo_gl_context {
     cairo_gl_operand_t operands[2];
     cairo_bool_t spans;
 
+    unsigned int vbo_size;
     unsigned int vb_offset;
     unsigned int vertex_size;
     cairo_region_t *clip_region;
@@ -701,6 +703,9 @@ _cairo_gl_get_version (void);
 
 cairo_private cairo_gl_flavor_t
 _cairo_gl_get_flavor (void);
+
+cairo_private unsigned long
+_cairo_gl_get_vbo_size (void);
 
 cairo_private cairo_bool_t
 _cairo_gl_has_extension (const char *ext);

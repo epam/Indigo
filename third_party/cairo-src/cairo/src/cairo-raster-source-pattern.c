@@ -57,8 +57,6 @@
  * Other callbacks are provided for when the pattern is copied temporarily
  * during rasterisation, or more permanently as a snapshot in order to keep
  * the pixel data available for printing.
- *
- * Since: 1.12
  **/
 
 cairo_surface_t *

@@ -297,7 +297,9 @@ _cairo_gl_context_init (cairo_gl_context_t *ctx)
     if (unlikely (status))
         return status;
 
-    ctx->vb = malloc (CAIRO_GL_VBO_SIZE);
+    ctx->vbo_size = _cairo_gl_get_vbo_size();
+
+    ctx->vb = malloc (ctx->vbo_size);
     if (unlikely (ctx->vb == NULL)) {
 	    _cairo_cache_fini (&ctx->gradients);
 	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);

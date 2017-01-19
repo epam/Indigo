@@ -107,6 +107,9 @@ _cairo_format_from_pixman_format (pixman_format_code_t pixman_format)
 #if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,22,0)
     case PIXMAN_r8g8b8a8: case PIXMAN_r8g8b8x8:
 #endif
+#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,27,2)
+    case PIXMAN_a8r8g8b8_sRGB:
+#endif
     case PIXMAN_a8b8g8r8: case PIXMAN_x8b8g8r8: case PIXMAN_r8g8b8:
     case PIXMAN_b8g8r8:   case PIXMAN_b5g6r5:
     case PIXMAN_a1r5g5b5: case PIXMAN_x1r5g5b5: case PIXMAN_a1b5g5r5:
@@ -419,7 +422,7 @@ _cairo_image_surface_create_with_content (cairo_content_t	content,
  * <informalexample><programlisting>
  * int stride;
  * unsigned char *data;
- * #cairo_surface_t *surface;
+ * cairo_surface_t *surface;
  *
  * stride = cairo_format_stride_for_width (format, width);
  * data = malloc (stride * height);

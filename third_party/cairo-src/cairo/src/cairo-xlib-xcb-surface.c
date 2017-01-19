@@ -519,21 +519,6 @@ cairo_xlib_surface_create (Display     *dpy,
 								     width, height));
 }
 
-cairo_surface_t *
-cairo_xlib_surface_create_for_bitmap (Display  *dpy,
-				      Pixmap	bitmap,
-				      Screen   *scr,
-				      int	width,
-				      int	height)
-{
-    return _cairo_xlib_xcb_surface_create (dpy, scr, NULL, NULL,
-					   cairo_xcb_surface_create_for_bitmap (XGetXCBConnection (dpy),
-										(xcb_screen_t *) scr,
-										bitmap,
-										width, height));
-}
-
-#if CAIRO_HAS_XLIB_XRENDER_SURFACE
 static xcb_screen_t *
 _cairo_xcb_screen_from_root (xcb_connection_t *connection,
 			     xcb_window_t id)
@@ -548,6 +533,24 @@ _cairo_xcb_screen_from_root (xcb_connection_t *connection,
 
     return NULL;
 }
+
+cairo_surface_t *
+cairo_xlib_surface_create_for_bitmap (Display  *dpy,
+				      Pixmap	bitmap,
+				      Screen   *scr,
+				      int	width,
+				      int	height)
+{
+    xcb_connection_t *connection = XGetXCBConnection (dpy);
+    xcb_screen_t *screen = _cairo_xcb_screen_from_root (connection, (xcb_window_t) scr->root);
+    return _cairo_xlib_xcb_surface_create (dpy, scr, NULL, NULL,
+					   cairo_xcb_surface_create_for_bitmap (connection,
+										screen,
+										bitmap,
+										width, height));
+}
+
+#if CAIRO_HAS_XLIB_XRENDER_SURFACE
 cairo_surface_t *
 cairo_xlib_surface_create_with_xrender_format (Display		    *dpy,
 					       Drawable		    drawable,

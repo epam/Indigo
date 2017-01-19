@@ -307,10 +307,11 @@ __clip_to_surface (const cairo_traps_compositor_t *compositor,
     if (unlikely (status))
 	return status;
 
-    mask = _cairo_surface_create_similar_scratch (composite->surface,
-						  CAIRO_CONTENT_ALPHA,
-						  extents->width,
-						  extents->height);
+    mask = _cairo_surface_create_scratch (composite->surface,
+					  CAIRO_CONTENT_ALPHA,
+					  extents->width,
+					  extents->height,
+					  NULL);
     if (unlikely (mask->status)) {
 	_cairo_traps_fini (&traps);
 	return status;
@@ -371,11 +372,11 @@ traps_get_clip_surface (const cairo_traps_compositor_t *compositor,
 
     status = __clip_to_surface (compositor, composite, extents, &surface);
     if (status == CAIRO_INT_STATUS_UNSUPPORTED) {
-	surface = _cairo_surface_create_similar_solid (composite->surface,
-						       CAIRO_CONTENT_ALPHA,
-						       extents->width,
-						       extents->height,
-						       CAIRO_COLOR_WHITE);
+	surface = _cairo_surface_create_scratch (composite->surface,
+						 CAIRO_CONTENT_ALPHA,
+						 extents->width,
+						 extents->height,
+						 CAIRO_COLOR_WHITE);
 	if (unlikely (surface->status))
 	    return surface;
 
@@ -430,9 +431,10 @@ create_composite_mask (const cairo_traps_compositor_t *compositor,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    surface = _cairo_surface_create_similar_scratch (dst, CAIRO_CONTENT_ALPHA,
-						     extents->bounded.width,
-						     extents->bounded.height);
+    surface = _cairo_surface_create_scratch (dst, CAIRO_CONTENT_ALPHA,
+					     extents->bounded.width,
+					     extents->bounded.height,
+					     NULL);
     if (unlikely (surface->status))
 	return surface;
 
@@ -590,9 +592,10 @@ clip_and_composite_combine (const cairo_traps_compositor_t *compositor,
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
 
-    tmp = _cairo_surface_create_similar_scratch (dst, dst->content,
-						 extents->bounded.width,
-						 extents->bounded.height);
+    tmp = _cairo_surface_create_scratch (dst, dst->content,
+					 extents->bounded.width,
+					 extents->bounded.height,
+					 NULL);
     if (unlikely (tmp->status))
 	return tmp->status;
 
@@ -1206,7 +1209,9 @@ composite_aligned_boxes (const cairo_traps_compositor_t *compositor,
 					   &extents->source_sample_area))
     {
 	cairo_clip_t *recording_clip;
-	cairo_pattern_t *source = &extents->source_pattern.base;
+	const cairo_pattern_t *source = &extents->source_pattern.base;
+	const cairo_matrix_t *m;
+	cairo_matrix_t matrix;
 
 	/* XXX could also do tiling repeat modes... */
 
@@ -1225,10 +1230,17 @@ composite_aligned_boxes (const cairo_traps_compositor_t *compositor,
 		return status;
 	}
 
+	m = &source->matrix;
+	if (_cairo_surface_has_device_transform (dst)) {
+	    cairo_matrix_multiply (&matrix,
+				   &source->matrix,
+				   &dst->device_transform);
+	    m = &matrix;
+	}
+
 	recording_clip = _cairo_clip_from_boxes (boxes);
 	status = _cairo_recording_surface_replay_with_clip (recording_pattern_get_surface (source),
-							    &source->matrix,
-							    dst, recording_clip);
+							    m, dst, recording_clip);
 	_cairo_clip_destroy (recording_clip);
 
 	return status;
@@ -1381,7 +1393,7 @@ boxes_for_traps (cairo_boxes_t *boxes,
 		 cairo_traps_t *traps,
 		 cairo_antialias_t antialias)
 {
-    int i;
+    int i, j;
 
     /* first check that the traps are rectilinear */
     if (antialias == CAIRO_ANTIALIAS_NONE) {
@@ -1405,23 +1417,25 @@ boxes_for_traps (cairo_boxes_t *boxes,
 
     _cairo_boxes_init (boxes);
 
-    boxes->num_boxes    = traps->num_traps;
     boxes->chunks.base  = (cairo_box_t *) traps->traps;
-    boxes->chunks.count = traps->num_traps;
     boxes->chunks.size  = traps->num_traps;
 
     if (antialias != CAIRO_ANTIALIAS_NONE) {
-	for (i = 0; i < traps->num_traps; i++) {
+	for (i = j = 0; i < traps->num_traps; i++) {
 	    /* Note the traps and boxes alias so we need to take the local copies first. */
 	    cairo_fixed_t x1 = traps->traps[i].left.p1.x;
 	    cairo_fixed_t x2 = traps->traps[i].right.p1.x;
 	    cairo_fixed_t y1 = traps->traps[i].top;
 	    cairo_fixed_t y2 = traps->traps[i].bottom;
 
-	    boxes->chunks.base[i].p1.x = x1;
-	    boxes->chunks.base[i].p1.y = y1;
-	    boxes->chunks.base[i].p2.x = x2;
-	    boxes->chunks.base[i].p2.y = y2;
+	    if (x1 == x2 || y1 == y2)
+		    continue;
+
+	    boxes->chunks.base[j].p1.x = x1;
+	    boxes->chunks.base[j].p1.y = y1;
+	    boxes->chunks.base[j].p2.x = x2;
+	    boxes->chunks.base[j].p2.y = y2;
+	    j++;
 
 	    if (boxes->is_pixel_aligned) {
 		boxes->is_pixel_aligned =
@@ -1432,7 +1446,7 @@ boxes_for_traps (cairo_boxes_t *boxes,
     } else {
 	boxes->is_pixel_aligned = TRUE;
 
-	for (i = 0; i < traps->num_traps; i++) {
+	for (i = j = 0; i < traps->num_traps; i++) {
 	    /* Note the traps and boxes alias so we need to take the local copies first. */
 	    cairo_fixed_t x1 = traps->traps[i].left.p1.x;
 	    cairo_fixed_t x2 = traps->traps[i].right.p1.x;
@@ -1440,12 +1454,16 @@ boxes_for_traps (cairo_boxes_t *boxes,
 	    cairo_fixed_t y2 = traps->traps[i].bottom;
 
 	    /* round down here to match Pixman's behavior when using traps. */
-	    boxes->chunks.base[i].p1.x = _cairo_fixed_round_down (x1);
-	    boxes->chunks.base[i].p1.y = _cairo_fixed_round_down (y1);
-	    boxes->chunks.base[i].p2.x = _cairo_fixed_round_down (x2);
-	    boxes->chunks.base[i].p2.y = _cairo_fixed_round_down (y2);
+	    boxes->chunks.base[j].p1.x = _cairo_fixed_round_down (x1);
+	    boxes->chunks.base[j].p1.y = _cairo_fixed_round_down (y1);
+	    boxes->chunks.base[j].p2.x = _cairo_fixed_round_down (x2);
+	    boxes->chunks.base[j].p2.y = _cairo_fixed_round_down (y2);
+	    j += (boxes->chunks.base[j].p1.x != boxes->chunks.base[j].p2.x &&
+		  boxes->chunks.base[j].p1.y != boxes->chunks.base[j].p2.y);
 	}
     }
+    boxes->chunks.count = j;
+    boxes->num_boxes    = j;
 
     return CAIRO_INT_STATUS_SUCCESS;
 }

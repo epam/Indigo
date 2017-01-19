@@ -37,9 +37,9 @@
 #ifndef CAIRO_XCB_PRIVATE_H
 #define CAIRO_XCB_PRIVATE_H
 
-#include "cairo-xcb.h"
-
 #include "cairoint.h"
+
+#include "cairo-xcb.h"
 
 #include "cairo-cache-private.h"
 #include "cairo-compiler-private.h"
@@ -75,6 +75,7 @@ typedef struct _cairo_xcb_surface cairo_xcb_surface_t;
 typedef struct _cairo_xcb_picture cairo_xcb_picture_t;
 typedef struct _cairo_xcb_shm_mem_pool cairo_xcb_shm_mem_pool_t;
 typedef struct _cairo_xcb_shm_info cairo_xcb_shm_info_t;
+typedef struct _cairo_xcb_resources cairo_xcb_resources_t;
 
 struct _cairo_xcb_shm_info {
     cairo_xcb_connection_t *connection;
@@ -180,7 +181,8 @@ struct _cairo_xcb_font {
 struct _cairo_xcb_screen {
     cairo_xcb_connection_t *connection;
 
-    xcb_screen_t	    *xcb_screen;
+    xcb_screen_t	   *xcb_screen;
+    xcb_render_sub_pixel_t  subpixel_order;
 
     xcb_gcontext_t gc[GC_CACHE_SIZE];
     uint8_t gc_depths[GC_CACHE_SIZE];
@@ -199,6 +201,9 @@ struct _cairo_xcb_screen {
     cairo_list_t link;
     cairo_list_t surfaces;
     cairo_list_t pictures;
+
+    cairo_bool_t has_font_options;
+    cairo_font_options_t font_options;
 };
 
 struct _cairo_xcb_connection {
@@ -219,6 +224,7 @@ struct _cairo_xcb_connection {
     const xcb_setup_t *root;
     const xcb_query_extension_reply_t *render;
     const xcb_query_extension_reply_t *shm;
+    xcb_render_sub_pixel_t *subpixel_orders;
 
     cairo_list_t free_xids;
     cairo_freepool_t xid_pool;
@@ -236,6 +242,14 @@ struct _cairo_xcb_connection {
     cairo_list_t link;
 };
 
+struct _cairo_xcb_resources {
+    cairo_bool_t xft_antialias;
+    int xft_lcdfilter;
+    cairo_bool_t xft_hinting;
+    int xft_hintstyle;
+    int xft_rgba;
+};
+
 enum {
     CAIRO_XCB_HAS_RENDER			= 0x0001,
     CAIRO_XCB_RENDER_HAS_FILL_RECTANGLES	= 0x0002,
@@ -247,6 +261,8 @@ enum {
     CAIRO_XCB_RENDER_HAS_PDF_OPERATORS		= 0x0080,
     CAIRO_XCB_RENDER_HAS_EXTENDED_REPEAT	= 0x0100,
     CAIRO_XCB_RENDER_HAS_GRADIENTS		= 0x0200,
+    CAIRO_XCB_RENDER_HAS_FILTER_GOOD		= 0x0400,
+    CAIRO_XCB_RENDER_HAS_FILTER_BEST		= 0x0800,
 
     CAIRO_XCB_HAS_SHM				= 0x80000000,
 
@@ -259,13 +275,30 @@ enum {
 			    CAIRO_XCB_RENDER_HAS_FILTERS |
 			    CAIRO_XCB_RENDER_HAS_PDF_OPERATORS |
 			    CAIRO_XCB_RENDER_HAS_EXTENDED_REPEAT |
-			    CAIRO_XCB_RENDER_HAS_GRADIENTS,
+			    CAIRO_XCB_RENDER_HAS_GRADIENTS |
+			    CAIRO_XCB_RENDER_HAS_FILTER_GOOD |
+			    CAIRO_XCB_RENDER_HAS_FILTER_BEST,
     CAIRO_XCB_SHM_MASK    = CAIRO_XCB_HAS_SHM
 };
 
 #define CAIRO_XCB_SHM_SMALL_IMAGE 8192
 
 cairo_private extern const cairo_surface_backend_t _cairo_xcb_surface_backend;
+
+/**
+ * _cairo_surface_is_xcb:
+ * @surface: a #cairo_surface_t
+ *
+ * Checks if a surface is an #cairo_xcb_surface_t
+ *
+ * Return value: %TRUE if the surface is an xcb surface
+ **/
+static inline cairo_bool_t
+_cairo_surface_is_xcb (const cairo_surface_t *surface)
+{
+    /* _cairo_surface_nil sets a NULL backend so be safe */
+    return surface->backend && surface->backend->type == CAIRO_SURFACE_TYPE_XCB;
+}
 
 cairo_private cairo_xcb_connection_t *
 _cairo_xcb_connection_get (xcb_connection_t *connection);
@@ -341,6 +374,9 @@ _cairo_xcb_screen_get_gc (cairo_xcb_screen_t *screen,
 
 cairo_private void
 _cairo_xcb_screen_put_gc (cairo_xcb_screen_t *screen, int depth, xcb_gcontext_t gc);
+
+cairo_private cairo_font_options_t *
+_cairo_xcb_screen_get_font_options (cairo_xcb_screen_t *screen);
 
 cairo_private cairo_status_t
 _cairo_xcb_screen_store_linear_picture (cairo_xcb_screen_t *screen,
@@ -505,14 +541,13 @@ _cairo_xcb_connection_put_subimage (cairo_xcb_connection_t *connection,
 				    uint8_t depth,
 				    void *data);
 
-cairo_private cairo_status_t
+cairo_private xcb_get_image_reply_t *
 _cairo_xcb_connection_get_image (cairo_xcb_connection_t *connection,
 				 xcb_drawable_t src,
 				 int16_t src_x,
 				 int16_t src_y,
 				 uint16_t width,
-				 uint16_t height,
-				 xcb_get_image_reply_t **reply);
+				 uint16_t height);
 
 cairo_private void
 _cairo_xcb_connection_poly_fill_rectangle (cairo_xcb_connection_t *connection,
@@ -758,5 +793,9 @@ slim_hidden_proto (cairo_xcb_device_debug_get_precision);
 slim_hidden_proto_no_warn (cairo_xcb_device_debug_set_precision);
 slim_hidden_proto_no_warn (cairo_xcb_device_debug_cap_xrender_version);
 #endif
+
+cairo_private void
+_cairo_xcb_resources_get (cairo_xcb_screen_t *screen,
+			  cairo_xcb_resources_t *resources);
 
 #endif /* CAIRO_XCB_PRIVATE_H */

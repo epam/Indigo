@@ -62,10 +62,11 @@ _cairo_shape_mask_compositor_stroke (const cairo_compositor_t *_compositor,
 	return CAIRO_INT_STATUS_UNSUPPORTED;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
-    mask = _cairo_surface_create_similar_scratch (extents->surface,
-						  CAIRO_CONTENT_ALPHA,
-						  extents->bounded.width,
-						  extents->bounded.height);
+    mask = _cairo_surface_create_scratch (extents->surface,
+					  CAIRO_CONTENT_ALPHA,
+					  extents->bounded.width,
+					  extents->bounded.height,
+					  NULL);
     if (unlikely (mask->status))
 	return mask->status;
 
@@ -156,10 +157,11 @@ _cairo_shape_mask_compositor_fill (const cairo_compositor_t *_compositor,
     if (! extents->is_bounded)
 	return CAIRO_INT_STATUS_UNSUPPORTED;
 
-    mask = _cairo_surface_create_similar_scratch (extents->surface,
-						  CAIRO_CONTENT_ALPHA,
-						  extents->bounded.width,
-						  extents->bounded.height);
+    mask = _cairo_surface_create_scratch (extents->surface,
+					  CAIRO_CONTENT_ALPHA,
+					  extents->bounded.width,
+					  extents->bounded.height,
+					  NULL);
     if (unlikely (mask->status))
 	return mask->status;
 
@@ -248,10 +250,11 @@ _cairo_shape_mask_compositor_glyphs (const cairo_compositor_t *_compositor,
 	return CAIRO_INT_STATUS_UNSUPPORTED;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
-    mask = _cairo_surface_create_similar_scratch (extents->surface,
-						  CAIRO_CONTENT_ALPHA,
-						  extents->bounded.width,
-						  extents->bounded.height);
+    mask = _cairo_surface_create_scratch (extents->surface,
+					  CAIRO_CONTENT_ALPHA,
+					  extents->bounded.width,
+					  extents->bounded.height,
+					  NULL);
     if (unlikely (mask->status))
 	return mask->status;
 

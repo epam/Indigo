@@ -292,9 +292,7 @@ render_boxes (cairo_xlib_surface_t	*dst,
 	      const cairo_pattern_t	*pattern,
 	      cairo_boxes_t		*boxes)
 {
-    double pad;
-
-    if (_cairo_pattern_analyze_filter (pattern, &pad) != CAIRO_FILTER_NEAREST)
+    if (pattern->filter != CAIRO_FILTER_NEAREST)
 	return fallback_boxes (dst, pattern, boxes);
 
     switch (pattern->extend) {

@@ -455,17 +455,17 @@ _cairo_win32_display_surface_map_to_image (void                    *abstract_sur
 	surface->fallback =
 	    _cairo_win32_display_surface_create_for_dc (surface->win32.dc,
 							surface->win32.format,
-							surface->win32.extents.width,
-							surface->win32.extents.height);
+							surface->win32.extents.x + surface->win32.extents.width,
+							surface->win32.extents.y + surface->win32.extents.height);
 	if (unlikely (status = surface->fallback->status))
 	    goto err;
 
 	if (!BitBlt (to_win32_surface(surface->fallback)->dc,
-		     0, 0,
+		     surface->win32.extents.x, surface->win32.extents.y,
 		     surface->win32.extents.width,
 		     surface->win32.extents.height,
 		     surface->win32.dc,
-		     0, 0,
+		     surface->win32.extents.x, surface->win32.extents.y,
 		     SRCCOPY)) {
 	    status = _cairo_error (CAIRO_STATUS_DEVICE_ERROR);
 	    goto err;

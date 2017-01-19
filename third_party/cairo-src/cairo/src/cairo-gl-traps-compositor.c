@@ -333,10 +333,11 @@ traps_to_operand (void *_dst,
 	}
     }
 
-    mask = _cairo_surface_create_similar_scratch (_dst,
-						  CAIRO_CONTENT_COLOR_ALPHA,
-						  extents->width,
-						  extents->height);
+    mask = _cairo_surface_create_scratch (_dst,
+					  CAIRO_CONTENT_COLOR_ALPHA,
+					  extents->width,
+					  extents->height,
+					  NULL);
     if (unlikely (mask->status)) {
 	cairo_surface_destroy (image);
 	return mask->status;
@@ -445,10 +446,11 @@ tristrip_to_surface (void *_dst,
 	return (cairo_gl_surface_t *)image;
     }
 
-    mask = _cairo_surface_create_similar_scratch (_dst,
-						  CAIRO_CONTENT_COLOR_ALPHA,
-						  extents->width,
-						  extents->height);
+    mask = _cairo_surface_create_scratch (_dst,
+					  CAIRO_CONTENT_COLOR_ALPHA,
+					  extents->width,
+					  extents->height,
+					  NULL);
     if (unlikely (mask->status)) {
 	cairo_surface_destroy (image);
 	return (cairo_gl_surface_t *)mask;

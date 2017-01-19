@@ -1083,7 +1083,6 @@ spline_to (void *closure,
     _cairo_contour_add_point (&stroker->path, point);
 #endif
     if ((tangent->dx | tangent->dy) == 0) {
-	const cairo_point_t *inpt, *outpt;
 	struct stroke_contour *outer;
 	cairo_point_t t;
 	int clockwise;
@@ -1101,12 +1100,8 @@ spline_to (void *closure,
 
 	clockwise = join_is_clockwise (&stroker->current_face, &face);
 	if (clockwise) {
-	    inpt = &stroker->current_face.cw;
-	    outpt = &face.cw;
 	    outer = &stroker->cw;
 	} else {
-	    inpt = &stroker->current_face.ccw;
-	    outpt = &face.ccw;
 	    outer = &stroker->ccw;
 	}
 
@@ -1121,7 +1116,6 @@ spline_to (void *closure,
 	if ((face.dev_slope.x * stroker->current_face.dev_slope.x +
 	     face.dev_slope.y * stroker->current_face.dev_slope.y) < stroker->spline_cusp_tolerance)
 	{
-	    const cairo_point_t *inpt, *outpt;
 	    struct stroke_contour *outer;
 	    int clockwise = join_is_clockwise (&stroker->current_face, &face);
 
@@ -1134,12 +1128,8 @@ spline_to (void *closure,
 	    contour_add_point (stroker, &stroker->ccw, &stroker->current_face.ccw);
 
 	    if (clockwise) {
-		inpt = &stroker->current_face.cw;
-		outpt = &face.cw;
 		outer = &stroker->cw;
 	    } else {
-		inpt = &stroker->current_face.ccw;
-		outpt = &face.ccw;
 		outer = &stroker->ccw;
 	    }
 	    add_fan (stroker,

@@ -847,6 +847,9 @@ _cairo_path_fixed_interpret (const cairo_path_fixed_t		*path,
 	}
     } cairo_path_foreach_buf_end (buf, path);
 
+    if (path->needs_move_to && path->has_current_point)
+	return (*move_to) (closure, &path->current_point);
+
     return CAIRO_STATUS_SUCCESS;
 }
 

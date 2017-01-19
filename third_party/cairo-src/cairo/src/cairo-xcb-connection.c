@@ -77,6 +77,9 @@ typedef struct _cairo_xcb_xid {
 
 #define XCB_RENDER_HAS_PICTURE_TRANSFORM(surface)	XCB_RENDER_AT_LEAST((surface), 0, 6)
 #define XCB_RENDER_HAS_FILTERS(surface)			XCB_RENDER_AT_LEAST((surface), 0, 6)
+#define XCB_RENDER_HAS_FILTER_GOOD(surface) FALSE
+#define XCB_RENDER_HAS_FILTER_BEST(surface) FALSE
+#define XCB_RENDER_HAS_SUBPIXEL_ORDER(surface)		XCB_RENDER_AT_LEAST((surface), 0, 6)
 
 #define XCB_RENDER_HAS_EXTENDED_REPEAT(surface)	XCB_RENDER_AT_LEAST((surface), 0, 10)
 #define XCB_RENDER_HAS_GRADIENTS(surface)	XCB_RENDER_AT_LEAST((surface), 0, 10)
@@ -390,6 +393,12 @@ _cairo_xcb_connection_query_render (cairo_xcb_connection_t *connection)
     if (XCB_RENDER_HAS_FILTERS (version))
 	connection->flags |= CAIRO_XCB_RENDER_HAS_FILTERS;
 
+    if (XCB_RENDER_HAS_FILTER_GOOD (version))
+	connection->flags |= CAIRO_XCB_RENDER_HAS_FILTER_GOOD;
+
+    if (XCB_RENDER_HAS_FILTER_BEST (version))
+	connection->flags |= CAIRO_XCB_RENDER_HAS_FILTER_BEST;
+
     if (XCB_RENDER_HAS_PDF_OPERATORS (version))
 	connection->flags |= CAIRO_XCB_RENDER_HAS_PDF_OPERATORS;
 
@@ -398,6 +407,15 @@ _cairo_xcb_connection_query_render (cairo_xcb_connection_t *connection)
 
     if (XCB_RENDER_HAS_GRADIENTS (version))
 	connection->flags |= CAIRO_XCB_RENDER_HAS_GRADIENTS;
+
+    if (XCB_RENDER_HAS_SUBPIXEL_ORDER (version)) {
+	uint32_t screen;
+	uint32_t *subpixel = xcb_render_query_pict_formats_subpixels(formats);
+
+	/* The spec explicitly allows to have too few entries in the reply... */
+	for (screen = 0; screen < formats->num_subpixel && screen < connection->root->roots_len; screen++)
+	    connection->subpixel_orders[screen] = subpixel[screen];
+    }
 
     free (version);
 
@@ -573,6 +591,7 @@ _device_destroy (void *device)
     CAIRO_MUTEX_FINI (connection->shm_mutex);
     CAIRO_MUTEX_FINI (connection->screens_mutex);
 
+    free (connection->subpixel_orders);
     free (connection);
 }
 
@@ -676,6 +695,14 @@ _cairo_xcb_connection_get (xcb_connection_t *xcb_connection)
 
     connection->root = xcb_get_setup (xcb_connection);
     connection->render = NULL;
+    connection->subpixel_orders = calloc (connection->root->roots_len, sizeof(*connection->subpixel_orders));
+    if (unlikely (connection->subpixel_orders == NULL)) {
+	CAIRO_MUTEX_UNLOCK (connection->device.mutex);
+	_cairo_xcb_connection_destroy (connection);
+	connection = NULL;
+	goto unlock;
+    }
+
     ext = xcb_get_extension_data (xcb_connection, &xcb_render_id);
     if (ext != NULL && ext->present) {
 	status = _cairo_xcb_connection_query_render (connection);
@@ -882,6 +909,8 @@ cairo_xcb_device_debug_cap_xrender_version (cairo_device_t *device,
 			       CAIRO_XCB_RENDER_HAS_COMPOSITE_TRAPEZOIDS |
 			       CAIRO_XCB_RENDER_HAS_PICTURE_TRANSFORM |
 			       CAIRO_XCB_RENDER_HAS_FILTERS |
+			       CAIRO_XCB_RENDER_HAS_FILTER_GOOD |
+			       CAIRO_XCB_RENDER_HAS_FILTER_BEST |
 			       CAIRO_XCB_RENDER_HAS_PDF_OPERATORS |
 			       CAIRO_XCB_RENDER_HAS_EXTENDED_REPEAT |
 			       CAIRO_XCB_RENDER_HAS_GRADIENTS);

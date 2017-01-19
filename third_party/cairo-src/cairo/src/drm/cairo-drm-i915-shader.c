@@ -1467,42 +1467,6 @@ i915_shader_acquire_solid_surface (i915_shader_t *shader,
     return CAIRO_STATUS_SUCCESS;
 }
 
-static cairo_filter_t
-sampled_area (const cairo_surface_pattern_t *pattern,
-	      const cairo_rectangle_int_t *extents,
-	      cairo_rectangle_int_t *sample)
-{
-    cairo_rectangle_int_t surface_extents;
-    cairo_filter_t filter;
-    double x1, x2, y1, y2;
-    double pad;
-
-    x1 = extents->x;
-    y1 = extents->y;
-    x2 = extents->x + (int) extents->width;
-    y2 = extents->y + (int) extents->height;
-
-    if (_cairo_matrix_is_translation (&pattern->base.matrix)) {
-	x1 += pattern->base.matrix.x0; x2 += pattern->base.matrix.x0;
-	y1 += pattern->base.matrix.y0; y2 += pattern->base.matrix.y0;
-    } else {
-	_cairo_matrix_transform_bounding_box (&pattern->base.matrix,
-					      &x1, &y1, &x2, &y2,
-					      NULL);
-    }
-
-    filter = _cairo_pattern_analyze_filter (&pattern->base, &pad);
-    sample->x = floor (x1 - pad);
-    sample->y = floor (y1 - pad);
-    sample->width  = ceil (x2 + pad) - sample->x;
-    sample->height = ceil (y2 + pad) - sample->y;
-
-    if (_cairo_surface_get_extents (pattern->surface, &surface_extents))
-	_cairo_rectangle_intersect (sample, &surface_extents);
-
-    return filter;
-}
-
 static cairo_status_t
 i915_shader_acquire_surface (i915_shader_t *shader,
 			     union i915_shader_channel *src,
@@ -1524,7 +1488,8 @@ i915_shader_acquire_surface (i915_shader_t *shader,
 
     extend = pattern->base.extend;
     src->base.matrix = pattern->base.matrix;
-    filter = sampled_area (pattern, extents, &sample);
+    filter = pattern->base.filter;
+    _cairo_pattern_sampled_area(&pattern->base, extents, sample);
 
     if (surface->type == CAIRO_SURFACE_TYPE_DRM) {
 	if (surface->backend->type == CAIRO_SURFACE_TYPE_SUBSURFACE) {

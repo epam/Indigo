@@ -152,7 +152,9 @@ static const cairo_t _cairo_nil[] = {
     DEFINE_NIL_CONTEXT (CAIRO_STATUS_DEVICE_TYPE_MISMATCH),
     DEFINE_NIL_CONTEXT (CAIRO_STATUS_DEVICE_ERROR),
     DEFINE_NIL_CONTEXT (CAIRO_STATUS_INVALID_MESH_CONSTRUCTION),
-    DEFINE_NIL_CONTEXT (CAIRO_STATUS_DEVICE_FINISHED)
+    DEFINE_NIL_CONTEXT (CAIRO_STATUS_DEVICE_FINISHED),
+    DEFINE_NIL_CONTEXT (CAIRO_STATUS_JBIG2_GLOBAL_MISSING)
+
 };
 COMPILE_TIME_ASSERT (ARRAY_LENGTH (_cairo_nil) == CAIRO_STATUS_LAST_STATUS - 1);
 
@@ -228,6 +230,8 @@ cairo_create (cairo_surface_t *target)
 	return _cairo_create_in_error (_cairo_error (CAIRO_STATUS_NULL_POINTER));
     if (unlikely (target->status))
 	return _cairo_create_in_error (target->status);
+    if (unlikely (target->finished))
+	return _cairo_create_in_error (_cairo_error (CAIRO_STATUS_SURFACE_FINISHED));
 
     if (target->backend->create_context == NULL)
 	return _cairo_create_in_error (_cairo_error (CAIRO_STATUS_WRITE_ERROR));

@@ -106,6 +106,7 @@ _cairo_region_create_in_error (cairo_status_t status)
     case CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED:
     case CAIRO_STATUS_INVALID_MESH_CONSTRUCTION:
     case CAIRO_STATUS_DEVICE_FINISHED:
+    case CAIRO_STATUS_JBIG2_GLOBAL_MISSING:
     default:
 	_cairo_error_throw (CAIRO_STATUS_NO_MEMORY);
 	return (cairo_region_t *) &_cairo_region_nil;
@@ -839,18 +840,6 @@ cairo_region_translate (cairo_region_t *region,
     pixman_region32_translate (&region->rgn, dx, dy);
 }
 slim_hidden_def (cairo_region_translate);
-
-/**
- * cairo_region_overlap_t:
- * @CAIRO_REGION_OVERLAP_IN: The contents are entirely inside the region. (Since 1.10)
- * @CAIRO_REGION_OVERLAP_OUT: The contents are entirely outside the region. (Since 1.10)
- * @CAIRO_REGION_OVERLAP_PART: The contents are partially inside and
- *     partially outside the region. (Since 1.10)
- *
- * Used as the return value for cairo_region_contains_rectangle().
- *
- * Since: 1.10
- **/
 
 /**
  * cairo_region_contains_rectangle:

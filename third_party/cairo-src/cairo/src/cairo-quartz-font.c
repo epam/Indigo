@@ -81,9 +81,6 @@ static void (*CGFontGetGlyphsForUnicharsPtr) (CGFontRef, const UniChar[], const 
 static void (*CGContextSetAllowsFontSmoothingPtr) (CGContextRef, bool) = NULL;
 static bool (*CGContextGetAllowsFontSmoothingPtr) (CGContextRef) = NULL;
 
-/* Not public in the least bit */
-// static CGPathRef (*CGFontGetGlyphPathPtr) (CGFontRef fontRef, CGAffineTransform *textTransform, int unknown, CGGlyph glyph) = NULL;
-
 /* CGFontGetHMetrics isn't public, but the other functions are public/present in 10.5 */
 typedef struct {
     int ascent;
@@ -127,7 +124,6 @@ quartz_font_ensure_symbols(void)
     /* These have the same name in 10.4 and 10.5 */
     CGFontGetUnitsPerEmPtr = dlsym(RTLD_DEFAULT, "CGFontGetUnitsPerEm");
     CGFontGetGlyphAdvancesPtr = dlsym(RTLD_DEFAULT, "CGFontGetGlyphAdvances");
-    // CGFontGetGlyphPathPtr = dlsym(RTLD_DEFAULT, "CGFontGetGlyphPath");
 
     CGFontGetHMetricsPtr = dlsym(RTLD_DEFAULT, "CGFontGetHMetrics");
     CGFontGetAscentPtr = dlsym(RTLD_DEFAULT, "CGFontGetAscent");
@@ -144,7 +140,6 @@ quartz_font_ensure_symbols(void)
 	CGFontGetGlyphsForUnicharsPtr &&
 	CGFontGetUnitsPerEmPtr &&
 	CGFontGetGlyphAdvancesPtr &&
-	//CGFontGetGlyphPathPtr &&
 	(CGFontGetHMetricsPtr || (CGFontGetAscentPtr && CGFontGetDescentPtr && CGFontGetLeadingPtr)))
 	_cairo_quartz_font_symbols_present = TRUE;
 
@@ -241,12 +236,13 @@ _cairo_quartz_font_face_create_for_toy (cairo_toy_font_face_t   *toy_face,
     return CAIRO_STATUS_SUCCESS;
 }
 
-static void
+static cairo_bool_t
 _cairo_quartz_font_face_destroy (void *abstract_face)
 {
     cairo_quartz_font_face_t *font_face = (cairo_quartz_font_face_t*) abstract_face;
 
     CGFontRelease (font_face->cgFont);
+    return TRUE;
 }
 
 static const cairo_scaled_font_backend_t _cairo_quartz_scaled_font_backend;
@@ -564,8 +560,7 @@ _cairo_quartz_init_glyph_path (cairo_quartz_scaled_font_t *font,
 					-font->base.scale.yy,
 					0, 0);
 
-    // glyphPath = CGFontGetGlyphPathPtr (font_face->cgFont, &textMatrix, 0, glyph);
-    ctFont = CTFontCreateWithGraphicsFont (font_face->cgFont, 0.0, NULL, NULL);
+    ctFont = CTFontCreateWithGraphicsFont (font_face->cgFont, 1.0, NULL, NULL);
     glyphPath = CTFontCreatePathForGlyph (ctFont, glyph, &textMatrix);
     CFRelease (ctFont);
     if (!glyphPath)

@@ -351,10 +351,11 @@ _cairo_surface_subsurface_snapshot (void *abstract_surface)
 
     TRACE ((stderr, "%s: target=%d\n", __FUNCTION__, surface->target->unique_id));
 
-    clone = _cairo_surface_create_similar_scratch (surface->target,
-						   surface->target->content,
-						   surface->extents.width,
-						   surface->extents.height);
+    clone = _cairo_surface_create_scratch (surface->target,
+					   surface->target->content,
+					   surface->extents.width,
+					   surface->extents.height,
+					   NULL);
     if (unlikely (clone->status))
 	return clone;
 
@@ -465,7 +466,12 @@ cairo_surface_create_for_rectangle (cairo_surface_t *target,
     if (unlikely (surface == NULL))
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 
-    assert (_cairo_matrix_is_translation (&target->device_transform));
+    x *= target->device_transform.xx;
+    y *= target->device_transform.yy;
+
+    width *= target->device_transform.xx;
+    height *= target->device_transform.yy;
+
     x += target->device_transform.x0;
     y += target->device_transform.y0;
 
@@ -495,6 +501,10 @@ cairo_surface_create_for_rectangle (cairo_surface_t *target,
 
     surface->snapshot = NULL;
 
+    cairo_surface_set_device_scale (&surface->base,
+                                    target->device_transform.xx,
+                                    target->device_transform.yy);
+
     return &surface->base;
 }
 
@@ -515,14 +525,16 @@ _cairo_surface_create_for_rectangle_int (cairo_surface_t *target,
     if (unlikely (surface == NULL))
 	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_NO_MEMORY));
 
-    assert (_cairo_matrix_is_translation (&target->device_transform));
-
     _cairo_surface_init (&surface->base,
 			 &_cairo_surface_subsurface_backend,
 			 NULL, /* device */
 			 target->content);
 
     surface->extents = *extents;
+    surface->extents.x *= target->device_transform.xx;
+    surface->extents.y *= target->device_transform.yy;
+    surface->extents.width *= target->device_transform.xx;
+    surface->extents.height *= target->device_transform.yy;
     surface->extents.x += target->device_transform.x0;
     surface->extents.y += target->device_transform.y0;
 
@@ -530,6 +542,10 @@ _cairo_surface_create_for_rectangle_int (cairo_surface_t *target,
     surface->base.type = surface->target->type;
 
     surface->snapshot = NULL;
+
+    cairo_surface_set_device_scale (&surface->base,
+                                    target->device_transform.xx,
+                                    target->device_transform.yy);
 
     return &surface->base;
 }

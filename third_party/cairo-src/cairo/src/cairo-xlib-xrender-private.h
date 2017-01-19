@@ -96,6 +96,10 @@ __attribute__((__unused__)) static void   _void_consume_free   (Display *p, XID 
 #define PictOpBlendMaximum			    0x3e
 #endif
 
+#if !HAVE_XRENDERCREATESOLIDFILL
+#define XRenderCreateSolidFill				_int_consume
+#endif
+
 #if !HAVE_XRENDERCREATELINEARGRADIENT
 #define XRenderCreateLinearGradient			_int_consume
 

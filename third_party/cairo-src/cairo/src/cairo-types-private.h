@@ -113,7 +113,7 @@ struct _cairo_observer {
 };
 
 /**
- * cairo_hash_entry_t:
+ * _cairo_hash_entry:
  *
  * A #cairo_hash_entry_t contains both a key and a value for
  * #cairo_hash_table_t. User-derived types for #cairo_hash_entry_t must
@@ -158,7 +158,7 @@ struct _cairo_array {
 };
 
 /**
- * cairo_lcd_filter_t:
+ * _cairo_lcd_filter:
  * @CAIRO_LCD_FILTER_DEFAULT: Use the default LCD filter for
  *   font backend and target device
  * @CAIRO_LCD_FILTER_NONE: Do not perform LCD filtering

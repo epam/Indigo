@@ -132,11 +132,11 @@ _cairo_clip_get_surface (const cairo_clip_t *clip,
 	cairo_path_fixed_t path;
 	int i;
 
-	surface = _cairo_surface_create_similar_solid (target,
-						       CAIRO_CONTENT_ALPHA,
-						       clip->extents.width,
-						       clip->extents.height,
-						       CAIRO_COLOR_TRANSPARENT);
+	surface = _cairo_surface_create_scratch (target,
+						 CAIRO_CONTENT_ALPHA,
+						 clip->extents.width,
+						 clip->extents.height,
+						 CAIRO_COLOR_TRANSPARENT);
 	if (unlikely (surface->status))
 	    return surface;
 
@@ -162,11 +162,11 @@ _cairo_clip_get_surface (const cairo_clip_t *clip,
 	    return _cairo_surface_create_in_error (status);
 	}
     } else {
-	surface = _cairo_surface_create_similar_solid (target,
-						       CAIRO_CONTENT_ALPHA,
-						       clip->extents.width,
-						       clip->extents.height,
-						       CAIRO_COLOR_WHITE);
+	surface = _cairo_surface_create_scratch (target,
+						 CAIRO_CONTENT_ALPHA,
+						 clip->extents.width,
+						 clip->extents.height,
+						 CAIRO_COLOR_WHITE);
 	if (unlikely (surface->status))
 	    return surface;
     }

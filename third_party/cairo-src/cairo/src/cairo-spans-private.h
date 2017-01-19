@@ -53,7 +53,7 @@ struct _cairo_span_renderer {
 
     /* Render the spans on row y of the destination by whatever compositing
      * method is required. */
-    cairo_warn cairo_status_t
+    cairo_status_t
     (*render_rows) (void *abstract_renderer,
 		    int y, int height,
 		    const cairo_half_open_span_t	*coverages,

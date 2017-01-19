@@ -697,9 +697,9 @@ rasterize_bezier_patch (unsigned char *data, int width, int height, int stride, 
 			cairo_point_double_t p[4][4], double col[4][4])
 {
     double pv[4][2][4], cstart[4], cend[4], dcstart[4], dcend[4];
-    int vsteps, v, i, k;
+    int v, i, k;
 
-    vsteps = 1 << vshift;
+    v = 1 << vshift;
 
     /*
      * pv[i][0] is the function (represented using forward
@@ -724,11 +724,12 @@ rasterize_bezier_patch (unsigned char *data, int width, int height, int stride, 
     for (i = 0; i < 4; ++i) {
 	cstart[i]  = col[0][i];
 	cend[i]    = col[1][i];
-	dcstart[i] = (col[2][i] - col[0][i]) / vsteps;
-	dcend[i]   = (col[3][i] - col[1][i]) / vsteps;
+	dcstart[i] = (col[2][i] - col[0][i]) / v;
+	dcend[i]   = (col[3][i] - col[1][i]) / v;
     }
 
-    for (v = 0; v <= vsteps; ++v) {
+    v++;
+    while (v--) {
 	cairo_point_double_t nodes[4];
 	for (i = 0; i < 4; ++i) {
 	    nodes[i].x = pv[i][0][0];

@@ -507,7 +507,7 @@ _cairo_user_font_face_scaled_font_create (void                        *abstract_
 const cairo_font_face_backend_t _cairo_user_font_face_backend = {
     CAIRO_FONT_TYPE_USER,
     _cairo_user_font_face_create_for_toy,
-    NULL,	/* destroy */
+    _cairo_font_face_destroy,
     _cairo_user_font_face_scaled_font_create
 };
 

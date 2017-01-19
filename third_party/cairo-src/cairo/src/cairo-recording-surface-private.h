@@ -136,6 +136,8 @@ typedef struct _cairo_recording_surface {
     unsigned int *indices;
     unsigned int num_indices;
     cairo_bool_t optimize_clears;
+    cairo_bool_t has_bilevel_alpha;
+    cairo_bool_t has_only_op_over;
 
     struct bbtree {
 	cairo_box_t extents;
@@ -183,5 +185,11 @@ cairo_private cairo_status_t
 _cairo_recording_surface_get_ink_bbox (cairo_recording_surface_t *surface,
 				       cairo_box_t *bbox,
 				       const cairo_matrix_t *transform);
+
+cairo_private cairo_bool_t
+_cairo_recording_surface_has_only_bilevel_alpha (cairo_recording_surface_t *surface);
+
+cairo_private cairo_bool_t
+_cairo_recording_surface_has_only_op_over (cairo_recording_surface_t *surface);
 
 #endif /* CAIRO_RECORDING_SURFACE_H */

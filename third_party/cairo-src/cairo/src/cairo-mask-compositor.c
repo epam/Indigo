@@ -163,9 +163,10 @@ create_composite_mask (const cairo_mask_compositor_t *compositor,
     struct blt_in info;
     int i;
 
-    surface = _cairo_surface_create_similar_scratch (dst, CAIRO_CONTENT_ALPHA,
-						     extents->bounded.width,
-						     extents->bounded.height);
+    surface = _cairo_surface_create_scratch (dst, CAIRO_CONTENT_ALPHA,
+					     extents->bounded.width,
+					     extents->bounded.height,
+					     NULL);
     if (unlikely (surface->status))
 	return surface;
 
@@ -346,9 +347,10 @@ clip_and_composite_combine (const cairo_mask_compositor_t *compositor,
     cairo_status_t status;
     int clip_x, clip_y;
 
-    tmp = _cairo_surface_create_similar_scratch (dst, dst->content,
-						 extents->bounded.width,
-						 extents->bounded.height);
+    tmp = _cairo_surface_create_scratch (dst, dst->content,
+					 extents->bounded.width,
+					 extents->bounded.height,
+					 NULL);
     if (unlikely (tmp->status))
 	return tmp->status;
 

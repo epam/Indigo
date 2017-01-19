@@ -46,7 +46,7 @@
 
 #if (CAIRO_FIXED_BITS != 32)
 # error CAIRO_FIXED_BITS must be 32, and the type must be a 32-bit type.
-# error To remove this limitation, you will have to fix the tesselator.
+# error To remove this limitation, you will have to fix the tessellator.
 #endif
 
 #define CAIRO_FIXED_ONE        ((cairo_fixed_t)(1 << CAIRO_FIXED_FRAC_BITS))
@@ -312,7 +312,7 @@ _cairo_fixed_mul_div_floor (cairo_fixed_t a, cairo_fixed_t b, cairo_fixed_t c)
     return _cairo_int64_32_div (_cairo_int32x32_64_mul (a, b), c);
 }
 
-
+/* compute y from x so that (x,y), p1, and p2 are collinear */
 static inline cairo_fixed_t
 _cairo_edge_compute_intersection_y_for_x (const cairo_point_t *p1,
 					  const cairo_point_t *p2,
@@ -333,6 +333,7 @@ _cairo_edge_compute_intersection_y_for_x (const cairo_point_t *p1,
     return y;
 }
 
+/* compute x from y so that (x,y), p1, and p2 are collinear */
 static inline cairo_fixed_t
 _cairo_edge_compute_intersection_x_for_y (const cairo_point_t *p1,
 					  const cairo_point_t *p2,

@@ -808,7 +808,7 @@ _cairo_svg_document_emit_bitmap_glyph_data (cairo_svg_document_t	*document,
     _cairo_output_stream_printf (document->xml_node_glyphs, "<g");
     _cairo_svg_surface_emit_transform (document->xml_node_glyphs, " transform",
 				       &image->base.device_transform_inverse, NULL);
-    _cairo_output_stream_printf (document->xml_node_glyphs, ">/n");
+    _cairo_output_stream_printf (document->xml_node_glyphs, ">\n");
 
     for (y = 0, row = image->data, rows = image->height; rows; row += image->stride, rows--, y++) {
 	for (x = 0, byte = row, cols = (image->width + 7) / 8; cols; byte++, cols--) {
@@ -1117,6 +1117,9 @@ _cairo_surface_base64_encode_jpeg (cairo_surface_t       *surface,
     status = _cairo_image_info_get_jpeg_info (&image_info, mime_data, mime_data_length);
     if (unlikely (status))
 	return status;
+
+    if (image_info.num_components == 4)
+	return CAIRO_INT_STATUS_UNSUPPORTED;
 
     _cairo_output_stream_printf (output, "data:image/jpeg;base64,");
 

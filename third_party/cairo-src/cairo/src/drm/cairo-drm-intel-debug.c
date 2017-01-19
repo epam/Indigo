@@ -445,7 +445,7 @@ debug_variable_length_prim (struct debug_stream *stream)
     len = 1+(i+2)/2;
 
     fprintf (stderr, "%04x:  ", stream->offset);
-    fprintf (stderr, "3DPRIM, %s variable length %d indicies (%d dwords):\n", prim, i, len);
+    fprintf (stderr, "3DPRIM, %s variable length %d indices (%d dwords):\n", prim, i, len);
     for (i = 0; i < len; i++)
 	fprintf (stderr, "\t0x%08x\n",  ptr[i]);
     fprintf (stderr, "\n");

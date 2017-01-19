@@ -202,8 +202,7 @@ cairo_drm_device_get (struct udev_device *device)
     parent = udev_device_get_parent (device);
     pci_id = get_udev_property (parent, "PCI_ID");
     if (pci_id == NULL || sscanf (pci_id, "%x:%x", &vendor_id, &chip_id) != 2) {
-	dev = (cairo_drm_device_t *)
-	    _cairo_device_create_in_error (CAIRO_STATUS_DEVICE_ERROR);
+        dev = NULL;
 	goto DONE;
     }
 
@@ -239,6 +238,7 @@ cairo_drm_device_get (struct udev_device *device)
     if (fd == -1) {
 	/* XXX more likely to be a permissions issue... */
 	_cairo_error_throw (CAIRO_STATUS_FILE_NOT_FOUND);
+	dev = NULL;
 	goto DONE;
     }
 
@@ -249,7 +249,10 @@ cairo_drm_device_get (struct udev_device *device)
   DONE:
     CAIRO_MUTEX_UNLOCK (_cairo_drm_device_mutex);
 
-    return &dev->base;
+    if (dev == NULL)
+        return _cairo_device_create_in_error (CAIRO_STATUS_DEVICE_ERROR);
+    else
+        return &dev->base;
 }
 slim_hidden_def (cairo_drm_device_get);
 

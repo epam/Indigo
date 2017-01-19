@@ -100,7 +100,7 @@ set_clip_region (void *_surface,
     _cairo_xlib_surface_ensure_picture (surface);
 
     if (region != NULL) {
-	XRectangle stack_rects[CAIRO_STACK_ARRAY_LENGTH (sizeof (XRectangle))];
+	XRectangle stack_rects[CAIRO_STACK_ARRAY_LENGTH (XRectangle)];
 	XRectangle *rects = stack_rects;
 	int n_rects, i;
 
@@ -1287,6 +1287,9 @@ _cairo_xlib_surface_add_glyph (cairo_xlib_display_t *display,
 	    unsigned char   *d;
 	    unsigned char   *new, *n;
 
+	    if (c == 0)
+		break;
+
 	    new = malloc (c);
 	    if (!new) {
 		status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
@@ -1311,6 +1314,9 @@ _cairo_xlib_surface_add_glyph (cairo_xlib_display_t *display,
 	    unsigned int c = glyph_surface->stride * glyph_surface->height / 4;
 	    const uint32_t *d;
 	    uint32_t *new, *n;
+
+	    if (c == 0)
+		break;
 
 	    new = malloc (4 * c);
 	    if (unlikely (new == NULL)) {

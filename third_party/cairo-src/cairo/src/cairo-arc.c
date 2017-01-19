@@ -236,6 +236,10 @@ _cairo_arc_in_direction (cairo_t	  *cr,
 	    step = -step;
 	}
 
+	cairo_line_to (cr,
+		       xc + radius * cos (angle_min),
+		       yc + radius * sin (angle_min));
+
 	for (i = 0; i < segments; i++, angle_min += step) {
 	    _cairo_arc_segment (cr, xc, yc, radius,
 				angle_min, angle_min + step);

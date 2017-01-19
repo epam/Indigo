@@ -715,6 +715,21 @@ _cairo_truetype_get_style (cairo_scaled_font_t  	 *scaled_font,
 			   cairo_bool_t			 *bold,
 			   cairo_bool_t			 *italic);
 
+/**
+ * _cairo_escape_ps_name:
+ * @ps_name: returns the PostScript name with all invalid characters escaped
+ *
+ * Ensure that PostSript name is a valid PDF/PostSript name object.
+ * In PDF names are treated as UTF8 and non ASCII bytes, ' ',
+ * and '#' are encoded as '#' followed by 2 hex digits that
+ * encode the byte.
+ *
+ * Return value: %CAIRO_STATUS_SUCCESS if successful. Possible errors include
+ * %CAIRO_STATUS_NO_MEMORY.
+ **/
+cairo_private cairo_int_status_t
+_cairo_escape_ps_name (char **ps_name);
+
 #endif /* CAIRO_HAS_FONT_SUBSET */
 
 #endif /* CAIRO_SCALED_FONT_SUBSETS_PRIVATE_H */

@@ -37,8 +37,8 @@
 #ifndef CAIRO_XLIB_PRIVATE_H
 #define CAIRO_XLIB_PRIVATE_H
 
-#include "cairo-xlib.h"
 #include "cairo-xlib-xrender-private.h"
+#include "cairo-xlib.h"
 
 #include "cairo-compiler-private.h"
 #include "cairo-device-private.h"
@@ -81,7 +81,7 @@ struct _cairo_xlib_display {
 
     int render_major;
     int render_minor;
-    XRenderPictFormat *cached_xrender_formats[CAIRO_FORMAT_RGB16_565 + 1];
+    XRenderPictFormat *cached_xrender_formats[CAIRO_FORMAT_RGB30 + 1];
 
     int force_precision;
 
@@ -373,6 +373,8 @@ _cairo_xlib_font_close (cairo_xlib_font_t *font);
 
 #define CAIRO_RENDER_HAS_PICTURE_TRANSFORM(surface)	CAIRO_RENDER_AT_LEAST((surface), 0, 6)
 #define CAIRO_RENDER_HAS_FILTERS(surface)	CAIRO_RENDER_AT_LEAST((surface), 0, 6)
+#define CAIRO_RENDER_HAS_FILTER_GOOD(surface) FALSE
+#define CAIRO_RENDER_HAS_FILTER_BEST(surface) FALSE
 
 #define CAIRO_RENDER_HAS_EXTENDED_REPEAT(surface)	CAIRO_RENDER_AT_LEAST((surface), 0, 10)
 #define CAIRO_RENDER_HAS_GRADIENTS(surface)	CAIRO_RENDER_AT_LEAST((surface), 0, 10)

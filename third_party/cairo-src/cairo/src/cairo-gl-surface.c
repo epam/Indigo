@@ -261,6 +261,9 @@ _cairo_gl_get_image_format_and_type_gl (pixman_format_code_t pixman_format,
 	*type = GL_UNSIGNED_BYTE;
 	return TRUE;
 
+#if PIXMAN_VERSION >= PIXMAN_VERSION_ENCODE(0,27,2)
+    case PIXMAN_a8r8g8b8_sRGB:
+#endif
     case PIXMAN_a2b10g10r10:
     case PIXMAN_x2b10g10r10:
     case PIXMAN_a4r4g4b4:
@@ -680,6 +683,11 @@ cairo_gl_surface_create_for_texture (cairo_device_t	*abstract_device,
     status = _cairo_gl_context_acquire (abstract_device, &ctx);
     if (unlikely (status))
 	return _cairo_surface_create_in_error (status);
+
+    if (! _cairo_gl_surface_size_valid_for_context (ctx, width, height)) {
+	status = _cairo_gl_context_release (ctx, status);
+	return _cairo_surface_create_in_error (_cairo_error (CAIRO_STATUS_INVALID_SIZE));
+    }
 
     surface = (cairo_gl_surface_t *)
 	_cairo_gl_surface_create_scratch_for_texture (ctx, content,

@@ -42,6 +42,7 @@
 #include "cairo-box-inline.h"
 #include "cairo-boxes-private.h"
 #include "cairo-error-private.h"
+#include "cairo-line-private.h"
 #include "cairo-region-private.h"
 #include "cairo-slope-private.h"
 #include "cairo-traps-private.h"
@@ -149,9 +150,14 @@ _cairo_traps_grow (cairo_traps_t *traps)
 void
 _cairo_traps_add_trap (cairo_traps_t *traps,
 		       cairo_fixed_t top, cairo_fixed_t bottom,
-		       cairo_line_t *left, cairo_line_t *right)
+		       const cairo_line_t *left,
+		       const cairo_line_t *right)
 {
     cairo_trapezoid_t *trap;
+
+    assert (left->p1.y != left->p2.y);
+    assert (right->p1.y != right->p2.y);
+    assert (bottom > top);
 
     if (unlikely (traps->num_traps == traps->traps_size)) {
 	if (unlikely (! _cairo_traps_grow (traps)))
@@ -168,7 +174,8 @@ _cairo_traps_add_trap (cairo_traps_t *traps,
 static void
 _cairo_traps_add_clipped_trap (cairo_traps_t *traps,
 			       cairo_fixed_t _top, cairo_fixed_t _bottom,
-			       cairo_line_t *_left, cairo_line_t *_right)
+			       const cairo_line_t *_left,
+			       const cairo_line_t *_right)
 {
     /* Note: With the goofy trapezoid specification, (where an
      * arbitrary two points on the lines can specified for the left
@@ -386,23 +393,73 @@ _cairo_traps_tessellate_convex_quad (cairo_traps_t *traps,
     }
 }
 
-/* A triangle is simply a degenerate case of a convex
- * quadrilateral. We would not benefit from having any distinct
- * implementation of triangle vs. quadrilateral tessellation here. */
-void
-_cairo_traps_tessellate_triangle (cairo_traps_t *traps,
-				  const cairo_point_t t[3])
+static void add_tri (cairo_traps_t *traps,
+		     int y1, int y2,
+		     const cairo_line_t *left,
+		     const cairo_line_t *right)
 {
-    cairo_point_t quad[4];
+    if (y2 < y1) {
+	int tmp = y1;
+	y1 = y2;
+	y2 = tmp;
+    }
 
-    quad[0] = t[0];
-    quad[1] = t[0];
-    quad[2] = t[1];
-    quad[3] = t[2];
+    if (cairo_lines_compare_at_y (left, right, y1) > 0) {
+	const cairo_line_t *tmp = left;
+	left = right;
+	right = tmp;
+    }
 
-    _cairo_traps_tessellate_convex_quad (traps, quad);
+    _cairo_traps_add_clipped_trap (traps, y1, y2, left, right);
 }
 
+void
+_cairo_traps_tessellate_triangle_with_edges (cairo_traps_t *traps,
+					     const cairo_point_t t[3],
+					     const cairo_point_t edges[4])
+{
+    cairo_line_t lines[3];
+
+    if (edges[0].y <= edges[1].y) {
+	    lines[0].p1 = edges[0];
+	    lines[0].p2 = edges[1];
+    } else {
+	    lines[0].p1 = edges[1];
+	    lines[0].p2 = edges[0];
+    }
+
+    if (edges[2].y <= edges[3].y) {
+	    lines[1].p1 = edges[2];
+	    lines[1].p2 = edges[3];
+    } else {
+	    lines[1].p1 = edges[3];
+	    lines[1].p2 = edges[2];
+    }
+
+    if (t[1].y == t[2].y) {
+	add_tri (traps, t[0].y, t[1].y, &lines[0], &lines[1]);
+	return;
+    }
+
+    if (t[1].y <= t[2].y) {
+	    lines[2].p1 = t[1];
+	    lines[2].p2 = t[2];
+    } else {
+	    lines[2].p1 = t[2];
+	    lines[2].p2 = t[1];
+    }
+
+    if (((t[1].y - t[0].y) < 0) ^ ((t[2].y - t[0].y) < 0)) {
+	add_tri (traps, t[0].y, t[1].y, &lines[0], &lines[2]);
+	add_tri (traps, t[0].y, t[2].y, &lines[1], &lines[2]);
+    } else if (abs(t[1].y - t[0].y) < abs(t[2].y - t[0].y)) {
+	add_tri (traps, t[0].y, t[1].y, &lines[0], &lines[1]);
+	add_tri (traps, t[1].y, t[2].y, &lines[2], &lines[1]);
+    } else {
+	add_tri (traps, t[0].y, t[2].y, &lines[1], &lines[0]);
+	add_tri (traps, t[1].y, t[2].y, &lines[2], &lines[0]);
+    }
+}
 
 /**
  * _cairo_traps_init_boxes:

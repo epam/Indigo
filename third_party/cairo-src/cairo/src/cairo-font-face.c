@@ -67,6 +67,13 @@ const cairo_font_face_t _cairo_font_face_nil = {
     { 0, 0, 0, NULL },			/* user_data */
     NULL
 };
+const cairo_font_face_t _cairo_font_face_nil_file_not_found = {
+    { 0 },				/* hash_entry */
+    CAIRO_STATUS_FILE_NOT_FOUND,	/* status */
+    CAIRO_REFERENCE_COUNT_INVALID,	/* ref_count */
+    { 0, 0, 0, NULL },			/* user_data */
+    NULL
+};
 
 cairo_status_t
 _cairo_font_face_set_error (cairo_font_face_t *font_face,
@@ -115,7 +122,7 @@ cairo_font_face_t *
 cairo_font_face_reference (cairo_font_face_t *font_face)
 {
     if (font_face == NULL ||
-	    CAIRO_REFERENCE_COUNT_IS_INVALID (&font_face->ref_count))
+	CAIRO_REFERENCE_COUNT_IS_INVALID (&font_face->ref_count))
 	return font_face;
 
     /* We would normally assert that we have a reference here but we
@@ -127,6 +134,28 @@ cairo_font_face_reference (cairo_font_face_t *font_face)
     return font_face;
 }
 slim_hidden_def (cairo_font_face_reference);
+
+static inline cairo_bool_t
+__put(cairo_reference_count_t *v)
+{
+    int c, old;
+
+    c = CAIRO_REFERENCE_COUNT_GET_VALUE(v);
+    while (c != 1 && (old = _cairo_atomic_int_cmpxchg_return_old(&v->ref_count, c, c - 1)) != c)
+	c = old;
+
+    return c != 1;
+}
+
+cairo_bool_t
+_cairo_font_face_destroy (void *abstract_face)
+{
+#if 0 /* Nothing needs to be done, we can just drop the last reference */
+    cairo_font_face_t *font_face = abstract_face;
+    return _cairo_reference_count_dec_and_test (&font_face->ref_count);
+#endif
+    return TRUE;
+}
 
 /**
  * cairo_font_face_destroy:
@@ -142,22 +171,19 @@ void
 cairo_font_face_destroy (cairo_font_face_t *font_face)
 {
     if (font_face == NULL ||
-	    CAIRO_REFERENCE_COUNT_IS_INVALID (&font_face->ref_count))
+	CAIRO_REFERENCE_COUNT_IS_INVALID (&font_face->ref_count))
 	return;
 
     assert (CAIRO_REFERENCE_COUNT_HAS_REFERENCE (&font_face->ref_count));
-
-    if (! _cairo_reference_count_dec_and_test (&font_face->ref_count))
-	return;
-
-    if (font_face->backend->destroy)
-	font_face->backend->destroy (font_face);
 
     /* We allow resurrection to deal with some memory management for the
      * FreeType backend where cairo_ft_font_face_t and cairo_ft_unscaled_font_t
      * need to effectively mutually reference each other
      */
-    if (CAIRO_REFERENCE_COUNT_HAS_REFERENCE (&font_face->ref_count))
+    if (__put (&font_face->ref_count))
+	return;
+
+    if (! font_face->backend->destroy (font_face))
 	return;
 
     _cairo_user_data_array_fini (&font_face->user_data);
@@ -201,7 +227,7 @@ unsigned int
 cairo_font_face_get_reference_count (cairo_font_face_t *font_face)
 {
     if (font_face == NULL ||
-	    CAIRO_REFERENCE_COUNT_IS_INVALID (&font_face->ref_count))
+	CAIRO_REFERENCE_COUNT_IS_INVALID (&font_face->ref_count))
 	return 0;
 
     return CAIRO_REFERENCE_COUNT_GET_VALUE (&font_face->ref_count);
@@ -309,10 +335,11 @@ _cairo_unscaled_font_destroy (cairo_unscaled_font_t *unscaled_font)
 
     assert (CAIRO_REFERENCE_COUNT_HAS_REFERENCE (&unscaled_font->ref_count));
 
-    if (! _cairo_reference_count_dec_and_test (&unscaled_font->ref_count))
+    if (__put (&unscaled_font->ref_count))
 	return;
 
-    unscaled_font->backend->destroy (unscaled_font);
+    if (! unscaled_font->backend->destroy (unscaled_font))
+	return;
 
     free (unscaled_font);
 }

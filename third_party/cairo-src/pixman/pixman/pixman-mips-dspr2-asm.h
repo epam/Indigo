@@ -26,7 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * Author:  Nemanja Lukic (nlukic@mips.com)
+ * Author:  Nemanja Lukic (nemanja.lukic@rt-rk.com)
  */
 
 #ifndef PIXMAN_MIPS_DSPR2_ASM_H
@@ -72,6 +72,7 @@
 #define LEAF_MIPS32R2(symbol)                           \
                 .globl  symbol;                         \
                 .align  2;                              \
+                .hidden symbol;                         \
                 .type   symbol, @function;              \
                 .ent    symbol, 0;                      \
 symbol:         .frame  sp, 0, ra;                      \

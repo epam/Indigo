@@ -1206,10 +1206,12 @@ _cairo_scaled_font_subset_create_glyph_names (cairo_scaled_font_subset_t *subset
 
 	if (utf16_len == 1) {
 	    int ch = _cairo_unicode_to_winansi (utf16[0]);
-	    if (ch > 0 && _cairo_winansi_to_glyphname (ch))
+	    if (ch > 0 && _cairo_winansi_to_glyphname (ch)) {
 		strncpy (buf, _cairo_winansi_to_glyphname (ch), sizeof (buf));
-	    else
+		buf[sizeof (buf)-1] = '\0';
+	    } else {
 		snprintf (buf, sizeof (buf), "uni%04X", (int) utf16[0]);
+	    }
 
 	    _cairo_string_init_key (&key, buf);
 	    entry = _cairo_hash_table_lookup (names, &key.base);
@@ -1251,6 +1253,46 @@ CLEANUP_HASH:
 
 	free (subset->glyph_names);
 	subset->glyph_names = NULL;
+    }
+
+    return status;
+}
+
+cairo_int_status_t
+_cairo_escape_ps_name (char **ps_name)
+{
+    cairo_status_t status = CAIRO_STATUS_SUCCESS;
+
+    /* Ensure PS name is a valid PDF/PS name object. In PDF names are
+     * treated as UTF8 and non ASCII bytes, ' ', and '#' are encoded
+     * as '#' followed by 2 hex digits that encode the byte. By also
+     * encoding the characters in the reserved string we ensure the
+     * name is also PS compatible. */
+    if (*ps_name) {
+	static const char *reserved = "()<>[]{}/%#\\";
+	char buf[128]; /* max name length is 127 bytes */
+	char *src = *ps_name;
+	char *dst = buf;
+
+	while (*src && dst < buf + 127) {
+	    unsigned char c = *src;
+	    if (c < 0x21 || c > 0x7e || strchr (reserved, c)) {
+		if (dst + 4 > buf + 127)
+		    break;
+
+		snprintf (dst, 4, "#%02X", c);
+		src++;
+		dst += 3;
+	    } else {
+		*dst++ = *src++;
+	    }
+	}
+	*dst = 0;
+	free (*ps_name);
+	*ps_name = strdup (buf);
+	if (*ps_name == NULL) {
+	    status = _cairo_error (CAIRO_STATUS_NO_MEMORY);
+	}
     }
 
     return status;

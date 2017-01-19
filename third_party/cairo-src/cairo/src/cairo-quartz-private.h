@@ -83,6 +83,9 @@ typedef struct cairo_quartz_image_surface {
 cairo_private cairo_bool_t
 _cairo_quartz_verify_surface_size(int width, int height);
 
+cairo_private cairo_bool_t
+_cairo_surface_is_quartz (const cairo_surface_t *surface);
+
 cairo_private CGImageRef
 CairoQuartzCreateCGImage (cairo_format_t format,
 			      unsigned int width,

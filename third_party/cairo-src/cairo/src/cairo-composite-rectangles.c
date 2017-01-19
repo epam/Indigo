@@ -57,7 +57,7 @@ _cairo_composite_reduce_pattern (const cairo_pattern_t *src,
     if (dst->base.type == CAIRO_PATTERN_TYPE_SOLID)
 	return;
 
-    dst->base.filter = _cairo_pattern_analyze_filter (&dst->base, NULL),
+    dst->base.filter = _cairo_pattern_analyze_filter (&dst->base);
 
     tx = ty = 0;
     if (_cairo_matrix_is_pixman_translation (&dst->base.matrix,

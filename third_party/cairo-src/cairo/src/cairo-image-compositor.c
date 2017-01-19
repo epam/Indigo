@@ -279,8 +279,7 @@ fill_reduces_to_source (cairo_operator_t op,
 			uint32_t *pixel)
 {
     if (__fill_reduces_to_source (op, color, dst)) {
-	color_to_pixel (color, dst->pixman_format, pixel);
-	return TRUE;
+	return color_to_pixel (color, dst->pixman_format, pixel);
     }
 
     return FALSE;
@@ -309,6 +308,8 @@ fill_rectangles (void			*_dst,
 	}
     } else {
 	pixman_image_t *src = _pixman_image_for_color (color);
+	if (unlikely (src == NULL))
+	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
 	op = _pixman_operator (op);
 	for (i = 0; i < num_rects; i++) {
@@ -356,6 +357,8 @@ fill_boxes (void		*_dst,
     else
     {
 	pixman_image_t *src = _pixman_image_for_color (color);
+	if (unlikely (src == NULL))
+	    return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 
 	op = _pixman_operator (op);
 	for (chunk = &boxes->chunks; chunk; chunk = chunk->next) {
@@ -508,6 +511,8 @@ composite_boxes (void			*_dst,
 	    op = PIXMAN_OP_LERP_CLEAR;
 #else
 	    free_src = src = _pixman_image_for_color (CAIRO_COLOR_WHITE);
+	    if (unlikely (src == NULL))
+		return _cairo_error (CAIRO_STATUS_NO_MEMORY);
 	    op = PIXMAN_OP_OUT_REVERSE;
 #endif
 	} else if (op == CAIRO_OPERATOR_SOURCE) {
@@ -644,10 +649,17 @@ composite_traps (void			*_dst,
 {
     cairo_image_surface_t *dst = (cairo_image_surface_t *) _dst;
     cairo_image_source_t *src = (cairo_image_source_t *) abstract_src;
+    cairo_int_status_t status;
     pixman_image_t *mask;
     pixman_format_code_t format;
 
     TRACE ((stderr, "%s\n", __FUNCTION__));
+
+    /* pixman doesn't eliminate self-intersecting trapezoids/edges */
+    status = _cairo_bentley_ottmann_tessellate_traps (traps,
+						      CAIRO_FILL_RULE_WINDING);
+    if (status != CAIRO_INT_STATUS_SUCCESS)
+	    return status;
 
     /* Special case adding trapezoids onto a mask surface; we want to avoid
      * creating an intermediate temporary mask unnecessarily.
@@ -732,6 +744,31 @@ composite_tristrip (void			*_dst,
 
     if (strip->num_points < 3)
 	return CAIRO_STATUS_SUCCESS;
+
+    if (1) { /* pixman doesn't eliminate self-intersecting triangles/edges */
+	    cairo_int_status_t status;
+	    cairo_traps_t traps;
+	    int n;
+
+	    _cairo_traps_init (&traps);
+	    for (n = 0; n < strip->num_points; n++) {
+		    cairo_point_t p[4];
+
+		    p[0] = strip->points[0];
+		    p[1] = strip->points[1];
+		    p[2] = strip->points[2];
+		    p[3] = strip->points[0];
+
+		    _cairo_traps_tessellate_convex_quad (&traps, p);
+	    }
+	    status = composite_traps (_dst, op, abstract_src,
+				      src_x, src_y,
+				      dst_x, dst_y,
+				      extents, antialias, &traps);
+	    _cairo_traps_fini (&traps);
+
+	    return status;
+    }
 
     format = antialias == CAIRO_ANTIALIAS_NONE ? PIXMAN_a1 : PIXMAN_a8;
     if (dst->pixman_format == format &&
@@ -1252,7 +1289,7 @@ _cairo_image_mask_compositor_get (void)
 	compositor.draw_image_boxes = draw_image_boxes;
 	compositor.fill_rectangles = fill_rectangles;
 	compositor.fill_boxes = fill_boxes;
-	//compositor.check_composite = check_composite;
+	compositor.check_composite = check_composite;
 	compositor.composite = composite;
 	//compositor.lerp = lerp;
 	//compositor.check_composite_boxes = check_composite_boxes;
@@ -2205,10 +2242,10 @@ _fill_xrgb32_lerp_opaque_spans (void *abstract_renderer, int y, int h,
 				     spans[0].x, y, len, 1, r->u.fill.pixel);
 		    } else {
 			uint32_t *d = (uint32_t*)(r->u.fill.data + r->u.fill.stride*y + spans[0].x*4);
-			while (len--)
+			while (len-- > 0)
 			    *d++ = r->u.fill.pixel;
 		    }
-		} else while (len--) {
+		} else while (len-- > 0) {
 		    *d = lerp8x4 (r->u.fill.pixel, a, *d);
 		    d++;
 		}

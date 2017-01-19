@@ -301,8 +301,10 @@ _cairo_gl_pattern_texture_setup (cairo_gl_operand_t *operand,
        so we need to release this device while we paint it to the image. */
     if (src_is_gl_surface) {
 	status = _cairo_gl_context_release (ctx, status);
-	if (unlikely (status))
+	if (unlikely (status)) {
+	    _cairo_surface_unmap_image (&surface->base, image);
 	    goto fail;
+	}
     }
 
     status = _cairo_surface_offset_paint (&image->base, extents->x, extents->y,
@@ -310,8 +312,10 @@ _cairo_gl_pattern_texture_setup (cairo_gl_operand_t *operand,
 
     if (src_is_gl_surface) {
 	status = _cairo_gl_context_acquire (dst->base.device, &ctx);
-	if (unlikely (status))
+	if (unlikely (status)) {
+	    _cairo_surface_unmap_image (&surface->base, image);
 	    goto fail;
+	}
     }
 
     status = _cairo_surface_unmap_image (&surface->base, image);

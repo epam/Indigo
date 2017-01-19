@@ -244,6 +244,12 @@ cairo_egl_device_create (EGLDisplay dpy, EGLContext egl)
 	return _cairo_gl_context_create_in_error (status);
     }
 
+    /* Tune the default VBO size to reduce overhead on embedded devices.
+     * This smaller size means that flushing needs to be done more often,
+     * but it is less demanding of scarce memory on embedded devices.
+     */
+    ctx->base.vbo_size = 16*1024;
+
     eglMakeCurrent (dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
     return &ctx->base.base;

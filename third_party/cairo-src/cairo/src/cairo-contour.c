@@ -332,7 +332,6 @@ _cairo_contour_simplify (cairo_contour_t *contour, double tolerance)
     }
 
     /* stage2: polygon simplification using Douglas-Peucker */
-    simplified = FALSE;
     do {
 	last = &contour->chain.points[0];
 	iter_init (&furthest, contour);
