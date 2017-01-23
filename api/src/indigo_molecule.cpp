@@ -3803,10 +3803,14 @@ CEXPORT int indigoResetAtom (int atom, const char *symbol)
 
          if (elem > 0)
             mol.resetAtom(ia.idx, elem);
-         else
+         else if (!mol.isTemplateAtom(ia.idx))
          {
             mol.resetAtom(ia.idx, ELEM_PSEUDO);
             mol.setPseudoAtom(ia.idx, symbol);
+         }
+         else
+         {
+            mol.setTemplateAtomName(ia.idx, symbol);
          }
       }
       bmol.invalidateAtom(ia.idx, BaseMolecule::CHANGED_ATOM_NUMBER);

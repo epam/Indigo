@@ -345,6 +345,16 @@ void Molecule::setTemplateAtom (int idx, const char *text)
    updateEditRevision();
 }
 
+void Molecule::setTemplateAtomName (int idx, const char *text)
+{
+   if (_atoms[idx].number != ELEM_TEMPLATE)
+      throw Error("setTemplateAtomClass(): atom #%d is not a template atom", idx);
+
+   _TemplateOccurrence &occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
+   occur.name_idx = _template_names.add(text);
+   updateEditRevision();
+}
+
 void Molecule::setTemplateAtomClass (int idx, const char *text)
 {
    if (_atoms[idx].number != ELEM_TEMPLATE)

@@ -42,6 +42,7 @@ public:
    void setPseudoAtom (int idx, const char *text);
 
    void setTemplateAtom (int idx, const char *text);
+   void setTemplateAtomName (int idx, const char *text);
    void setTemplateAtomClass (int idx, const char *text);
    void setTemplateAtomSeqid (int idx, int seq_id);
    void setTemplateAtomDisplayOption (int idx, int contracted);
