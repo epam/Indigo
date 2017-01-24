@@ -82,6 +82,19 @@ int MoleculeGrossFormula::_cmp_hill (_ElemCounter &ec1, _ElemCounter &ec2, void 
    return _cmp_hill_no_carbon(ec1, ec2, context);
 }
 
+void MoleculeGrossFormula::collect (BaseMolecule &molecule, Array<int> &gross_out) {
+   auto res = collect(molecule);
+   auto& gross = *res;
+   gross_out.clear_resize(ELEM_RSITE + 1);
+   gross_out.zerofill();
+   for (int i =0; i < gross.size(); ++i) {
+      auto& unit = gross[i];
+      for (int j=0; j < unit.elems.size(); j++) {
+         gross_out[j] = unit.elems[j];
+      }
+   }
+}
+
 std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule &mol) {
    if (!mol.isQueryMolecule()) {
       mol.asMolecule().restoreAromaticHydrogens();
