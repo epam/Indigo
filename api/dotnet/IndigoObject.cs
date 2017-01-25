@@ -336,6 +336,14 @@ namespace com.epam.indigo
             return false;
         }
 
+        public bool isTemplateAtom()
+        {
+            dispatcher.setSessionID();
+            if (dispatcher.checkResult(_indigo_lib.indigoIsTemplateAtom(self)) == 1)
+                return true;
+            return false;
+        }
+
         public int stereocenterType()
         {
             dispatcher.setSessionID();
@@ -831,19 +839,19 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoSetSGroupParentId(self, parent));
         }
 
-        public int addTemplate(int molecule, int templates, string name)
+        public int addTemplate(int templates, string name)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoAddTemplate(self, templates.self, name));
         }
 
-        public int removeTemplate(int molecule, string name)
+        public int removeTemplate(string name)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoRemoveTemplate(self, name));
         }
 
-        public int findTemplate(int molecule, string name)
+        public int findTemplate(string name)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoFindTemplate(self, name));
@@ -859,6 +867,18 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoTransformCTABtoSCSR(self, templates.self));
+        }
+
+        public string getTemplateAtomClass()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetTemplateAtomClass(self));
+        }
+
+        public int setTemplateAtomClass(string name)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoSetTemplateAtomClass(self, name));
         }
 
         public void addStereocenter(int type, int v1, int v2, int v3)

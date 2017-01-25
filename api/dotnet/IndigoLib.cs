@@ -115,6 +115,8 @@ namespace com.epam.indigo
         int indigoCountAttachmentPoints(int rgroup);
         int indigoIsPseudoatom(int atom);
         int indigoIsRSite(int atom);
+        int indigoIsTemplateAtom(int atom);
+
         int indigoStereocenterType(int atom);
         int* indigoStereocenterPyramid(int atom);
         int indigoSingleAllowedRGroup(int rsite);
@@ -213,6 +215,9 @@ namespace com.epam.indigo
 
         int indigoTransformSCSRtoCTAB(int molecule);
         int indigoTransformCTABtoSCSR(int molecule, int templates);
+
+        sbyte* indigoGetTemplateAtomClass(int atom);
+        int indigoSetTemplateAtomClass(int atom, string name);
 
         float* indigoXYZ(int atom);
         int indigoSetXYZ(int atom, float x, float y, float z);

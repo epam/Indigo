@@ -304,6 +304,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResult(this, _lib.indigoIsRSite(self)) == 1;
    }
 
+   public boolean isTemplateAtom ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoIsTemplateAtom(self)) == 1;
+   }
+
    public int stereocenterType ()
    {
       dispatcher.setSessionID();
@@ -1330,6 +1336,20 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
    {
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoTransformCTABtoSCSR(self, templates.self));
+   }
+
+   public String getTemplateAtomClass()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoGetTemplateAtomClass(self));
+   }
+
+   public int setTemplateAtomClass(String name)
+   {
+      if (name == null)
+         name = "";
+      dispatcher.setSessionID();
+      return Indigo.checkResult(this, _lib.indigoSetTemplateAtomClass(self, name));
    }
 
    public int setSGroupBrackets(int brk_style, float x1, float y1, float x2, float y2,

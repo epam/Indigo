@@ -923,6 +923,19 @@ CEXPORT int indigoIsRSite (int atom)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoIsTemplateAtom (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      if (ia.mol.isTemplateAtom(ia.idx))
+         return 1;
+      return 0;
+   }
+   INDIGO_END(-1);
+}
+
 
 CEXPORT int indigoSingleAllowedRGroup (int rsite)
 {
@@ -3819,6 +3832,49 @@ CEXPORT int indigoResetAtom (int atom, const char *symbol)
    }
    INDIGO_END(-1)
 }
+
+CEXPORT const char * indigoGetTemplateAtomClass (int atom)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      BaseMolecule &bmol = ia.mol;
+      Molecule &mol = ia.mol.asMolecule();
+
+      if (mol.isTemplateAtom(ia.idx))
+      {
+         return ia.mol.getTemplateAtomClass(ia.idx);
+      }
+      else
+         throw IndigoError("indigoGetTemplateAtomClass(): atom %d is not template atom", ia.idx);
+ 
+      return "";
+   }
+   INDIGO_END(0)
+}
+
+CEXPORT int indigoSetTemplateAtomClass (int atom, const char *name)
+{
+   INDIGO_BEGIN
+   {
+      IndigoAtom &ia = IndigoAtom::cast(self.getObject(atom));
+
+      BaseMolecule &bmol = ia.mol;
+      Molecule &mol = ia.mol.asMolecule();
+
+      if (mol.isTemplateAtom(ia.idx))
+      {
+         mol.setTemplateAtomClass(ia.idx, name);
+      }
+      else
+         throw IndigoError("indigoSetTemplateAtomClass(): atom %d is not template atom", ia.idx);
+ 
+      return 1;
+   }
+   INDIGO_END(-1)
+}
+
 
 static void _parseRSites (const char *name, Array<int> &rsites)
 {

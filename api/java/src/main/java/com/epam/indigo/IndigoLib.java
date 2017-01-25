@@ -142,6 +142,7 @@ public interface IndigoLib extends Library
    int indigoIterateRGroups (int molecule);
    int indigoIsPseudoatom (int atom);
    int indigoIsRSite (int atom);
+   int indigoIsTemplateAtom (int atom);
 
    int indigoStereocenterType (int atom);
    int indigoStereocenterGroup (int atom);
@@ -251,6 +252,9 @@ public interface IndigoLib extends Library
 
    int indigoTransformSCSRtoCTAB (int molecule);
    int indigoTransformCTABtoSCSR (int molecule, int templates);
+
+   Pointer indigoGetTemplateAtomClass(int atom);
+   int indigoSetTemplateAtomClass(int atom, String name);
 
    int indigoResetCharge (int atom);
    int indigoResetExplicitValence (int atom);

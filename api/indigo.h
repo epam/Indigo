@@ -342,6 +342,7 @@ CEXPORT int indigoCountRGroups(int molecule);
 
 CEXPORT int indigoIsPseudoatom (int atom);
 CEXPORT int indigoIsRSite (int atom);
+CEXPORT int indigoIsTemplateAtom (int atom);
 
 // returns INDIGO_{ABS,OR,AND,EITHER}
 // or zero if the atom is not a stereoatom
@@ -556,6 +557,9 @@ CEXPORT int indigoValidateChirality (int handle);
 CEXPORT int indigoAddAtom (int molecule, const char *symbol);
 // Set a new atom instead of specified
 CEXPORT int indigoResetAtom (int atom, const char *symbol);
+
+CEXPORT const char * indigoGetTemplateAtomClass (int atom);
+CEXPORT int indigoSetTemplateAtomClass (int atom, const char *name);
 
 // Accepts Rsite name "R" (or just ""), "R1", "R2" or list with names "R1 R3"
 CEXPORT int indigoAddRSite (int molecule, const char *name);

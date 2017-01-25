@@ -317,6 +317,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return bool(self.dispatcher._checkResult(Indigo._lib.indigoIsRSite(self.id)))
 
+    def isTemplateAtom(self):
+        self.dispatcher._setSessionId()
+        return bool(self.dispatcher._checkResult(Indigo._lib.indigoIsTemplateAtom(self.id)))
+
     def stereocenterType(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoStereocenterType(self.id))
@@ -728,6 +732,14 @@ class IndigoObject(object):
     def transformCTABtoSCSR(self, templates):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoTransformCTABtoSCSR(self.id, templates.id))
+
+    def getTemplateAtomClass(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoGetTemplateAtomClass(self.id))
+
+    def setTemplateAtomClass(self, name):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoSetTemplateAtomClass(self.id, name.encode(ENCODE_ENCODING)))
 
     def clean2d(self):
         self.dispatcher._setSessionId()
@@ -1678,6 +1690,8 @@ class Indigo(object):
         Indigo._lib.indigoIsPseudoatom.argtypes = [c_int]
         Indigo._lib.indigoIsRSite.restype = c_int
         Indigo._lib.indigoIsRSite.argtypes = [c_int]
+        Indigo._lib.indigoIsTemplateAtom.restype = c_int
+        Indigo._lib.indigoIsTemplateAtom.argtypes = [c_int]
         Indigo._lib.indigoStereocenterType.restype = c_int
         Indigo._lib.indigoStereocenterType.argtypes = [c_int]
         Indigo._lib.indigoStereocenterGroup.restype = c_int
@@ -1862,6 +1876,10 @@ class Indigo(object):
         Indigo._lib.indigoTransformCTABtoSCSR.argtypes = [c_int, c_int]
         Indigo._lib.indigoTransformHELMtoSCSR.restype = c_int
         Indigo._lib.indigoTransformHELMtoSCSR.argtypes = [c_int]
+        Indigo._lib.indigoGetTemplateAtomClass.restype = c_char_p
+        Indigo._lib.indigoGetTemplateAtomClass.argtypes = [c_int]
+        Indigo._lib.indigoSetTemplateAtomClass.restype = c_int
+        Indigo._lib.indigoSetTemplateAtomClass.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoResetCharge.restype = c_int
         Indigo._lib.indigoResetCharge.argtypes = [c_int]
         Indigo._lib.indigoResetExplicitValence.restype = c_int
