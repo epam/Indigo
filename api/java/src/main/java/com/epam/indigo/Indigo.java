@@ -476,6 +476,11 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, _lib.indigoLoadMoleculeFromFile(path)));
     }
 
+    public IndigoObject loadMoleculeFromBuffer(byte[] buf) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, _lib.indigoLoadMoleculeFromBuffer(buf, buf.length)));
+    }
+
     public IndigoObject loadQueryMolecule(String str) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, _lib.indigoLoadQueryMoleculeFromString(str)));

@@ -1508,6 +1508,8 @@ class Indigo(object):
         Indigo._lib.indigoLoadMoleculeFromString.argtypes = [c_char_p]
         Indigo._lib.indigoLoadMoleculeFromFile.restype = c_int
         Indigo._lib.indigoLoadMoleculeFromFile.argtypes = [c_char_p]
+        Indigo._lib.indigoLoadMoleculeFromBuffer.restype = c_int
+        Indigo._lib.indigoLoadMoleculeFromBuffer.argtypes = [POINTER(c_byte), c_int]
         Indigo._lib.indigoLoadQueryMoleculeFromString.restype = c_int
         Indigo._lib.indigoLoadQueryMoleculeFromString.argtypes = [c_char_p]
         Indigo._lib.indigoLoadQueryMoleculeFromFile.restype = c_int
@@ -2264,6 +2266,33 @@ class Indigo(object):
     def loadMoleculeFromFile(self, filename):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadMoleculeFromFile(filename.encode(ENCODE_ENCODING))))
+
+    def loadMoleculeFromBuffer(self, data):
+        """
+        Loads molecule from given buffer. Automatically detects input format
+
+        Args:
+            * buf - byte array
+
+        Usage:
+            ```
+            with open (..), 'rb') as f:
+                m = indigo.loadMoleculeFromBuffer(f.read())
+            ```
+        Raises:
+            Exception if structure format is incorrect
+
+        ::
+
+            Since version 1.3.0
+        """
+        buf = map(ord, data)
+        values = (c_byte * len(buf))()
+        for i in range(len(buf)):
+            values[i] = buf[i]
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadMoleculeFromBuffer(values, len(buf))))
+
 
     def loadQueryMolecule(self, string):
         self._setSessionId()

@@ -378,6 +378,11 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadMoleculeFromFile(path)));
         }
 
+        public IndigoObject loadMoleculeFromBuffer(byte[] buf) {
+            setSessionID();
+            return new IndigoObject(this, checkResult(_indigo_lib._lib.indigoLoadMoleculeFromBuffer(buf, buf.length)));
+        }
+
         public IndigoObject loadQueryMolecule(string str)
         {
             setSessionID();
