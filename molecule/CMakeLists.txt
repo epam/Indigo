@@ -16,7 +16,7 @@ add_library(molecule OBJECT ${Molecule_src} ${Molecule_headers} ${GZip_src} ${GZ
 
 
 if(UNIX OR APPLE)
-    set(COMPILE_FLAGS "${COMPILE_FLAGS} -Wall -Wno-unused-but-set-variable")
+    set(COMPILE_FLAGS "${COMPILE_FLAGS} -Wall -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-strict-overflow")
 endif()
 
 set_target_properties(molecule PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
