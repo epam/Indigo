@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -30,7 +30,7 @@ public:
    void setVerticalSpacing(float spacing);
    void setAlignment(MultilineTextLayout::Alignment alignment);
    virtual void estimateSize ();
-   virtual void render ();
+   virtual void render (bool idle);
 
 private:
    float vSpace;

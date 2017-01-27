@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -61,7 +61,7 @@ void RenderItemFragment::init ()
 
 void RenderItemFragment::estimateSize ()
 { 
-   renderIdle();
+   _renderIdle();
    if (refAtom >= 0) {
       const Vec3f& v = mol->getAtomXyz(refAtom);
       Vec2f v2(v.x, v.y);
@@ -71,10 +71,22 @@ void RenderItemFragment::estimateSize ()
    }
 }
 
-void RenderItemFragment::render ()
+void RenderItemFragment::_renderIdle() {
+   _rc.initNullContext();
+   Vec2f bbmin, bbmax;
+   Vec2f pos;
+   render(true);
+   _rc.bbGetMin(bbmin);
+   _rc.bbGetMax(bbmax);
+   _rc.closeContext(true);
+   size.diff(bbmax, bbmin);
+   origin.copy(bbmin);
+}
+
+void RenderItemFragment::render (bool idle)
 {
    _rc.translate(-origin.x, -origin.y);
-   MoleculeRenderInternal rnd(_opt, _settings, _rc);
+   MoleculeRenderInternal rnd(_opt, _settings, _rc, idle);
    rnd.setMolecule(mol);
    rnd.setIsRFragment(isRFragment);
    rnd.setScaleFactor(_scaleFactor, _min, _max);

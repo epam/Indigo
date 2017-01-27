@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -46,7 +46,7 @@ void RenderItemHLine::estimateSize ()
    }
 }
 
-void RenderItemHLine::render ()
+void RenderItemHLine::render (bool idle)
 {                                     
    _rc.translate(-origin.x, -origin.y);
    _rc.storeTransform();
@@ -54,7 +54,7 @@ void RenderItemHLine::render ()
       RenderItemBase& item = _factory.getItem(items[i]);
       _rc.storeTransform();
       _rc.translate(0, 0.5f * (size.y - item.size.y) + item.referenceY);
-      item.render();
+      item.render(idle);
       _rc.restoreTransform();
       _rc.removeStoredTransform();
       _rc.translate(item.size.x + hSpace, 0);

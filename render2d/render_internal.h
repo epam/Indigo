@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -24,7 +24,10 @@ class RenderContext;
 
 class MoleculeRenderInternal {
 public:
-   MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw);
+   MoleculeRenderInternal (const RenderOptions& opt,
+                           const RenderSettings& settings,
+                           RenderContext& cw,
+                           bool idle);
    void setMolecule (BaseMolecule* mol);
    void setIsRFragment (bool isRFragment);
    void setScaleFactor (const float scaleFactor, const Vec2f& min, const Vec2f& max);
@@ -35,6 +38,9 @@ public:
 
    DECL_ERROR;
 private:
+
+   bool _idle = false;
+
    enum STEREOGROUPS_MODE {STEREOGROUPS_SHOW, STEREOGROUPS_HIDE};
    struct LocalOptions {
       STEREOGROUPS_MODE stereoMode;

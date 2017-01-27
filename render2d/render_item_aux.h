@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -27,10 +27,10 @@ public:
    virtual ~RenderItemAuxiliary ();
    DECL_ERROR;
 
-   virtual void estimateSize () { renderIdle(); }
+   virtual void estimateSize () { _renderIdle(); }
    virtual void setObjScale (float scale) {}
    virtual void init () {}
-   virtual void render ();
+   virtual void render (bool idle);
    virtual float getTotalBondLength () { return 0.0f; }
    virtual float getTotalClosestAtomDistance () { return 0.0f; }
    virtual int getBondCount ()  { return 0; }
@@ -41,12 +41,14 @@ public:
    BaseMolecule* mol;
    int rLabelIdx;
    float arrowLength;
+
 private:
-   void _drawRGroupLabel ();
-   void _drawRIfThen ();
-   void _drawText ();
+   void _drawRGroupLabel (bool idle);
+   void _drawRIfThen (bool idle);
+   void _drawText (bool idle);
    void _drawPlus ();
    void _drawArrow ();
+   void _renderIdle();
 };
 
 }

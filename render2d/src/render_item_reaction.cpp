@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -152,7 +152,7 @@ void RenderItemReaction::estimateSize ()
    }
 }
 
-void RenderItemReaction::render ()
+void RenderItemReaction::render (bool idle)
 {                                     
    _rc.translate(-origin.x, -origin.y);
    _rc.storeTransform();
@@ -162,7 +162,7 @@ void RenderItemReaction::render ()
          _rc.storeTransform();
          {
             _rc.translate(0, 0.5f * (size.y - reactants.size.y));
-            reactants.render();
+            reactants.render(idle);
          }
          _rc.restoreTransform();
          _rc.removeStoredTransform();
@@ -176,7 +176,7 @@ void RenderItemReaction::render ()
             _rc.storeTransform();
             {
                _rc.translate(0.5f * (_arrowWidth - catalysts.size.x), 0.5f * (size.y - arrow.size.y) - catalysts.size.y - catalystOffset);
-               catalysts.render();
+               catalysts.render(idle);
             }
             _rc.restoreTransform();
             _rc.removeStoredTransform();
@@ -186,7 +186,7 @@ void RenderItemReaction::render ()
             _rc.storeTransform();
             {
                _rc.translate(0.5f * (_arrowWidth - catalysts.size.x), 0.5f * (size.y + arrow.size.y) /*+ catalysts.size.y*/ + catalystOffset);
-               catalysts.render();
+               catalysts.render(idle);
             }
             _rc.restoreTransform();
             _rc.removeStoredTransform();
@@ -195,7 +195,7 @@ void RenderItemReaction::render ()
          {
             _rc.translate(0, 0.5f * (size.y - arrow.size.y));
             arrow.arrowLength = _arrowWidth;
-            arrow.render();
+            arrow.render(idle);
          }
          _rc.restoreTransform();
          _rc.removeStoredTransform();
@@ -208,7 +208,7 @@ void RenderItemReaction::render ()
          _rc.storeTransform();
          {
             _rc.translate(0, 0.5f * (size.y - products.size.y));
-            products.render();
+            products.render(idle);
          }
          _rc.restoreTransform();
          _rc.removeStoredTransform();

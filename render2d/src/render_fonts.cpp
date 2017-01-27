@@ -1,3 +1,17 @@
+/****************************************************************************
+* Copyright (C) 2009-2017 EPAM Systems
+*
+* This file is part of Indigo toolkit.
+*
+* This file may be distributed and/or modified under the terms of the
+* GNU General Public License version 3 as published by the Free Software
+* Foundation and appearing in the file LICENSE.GPL included in the
+* packaging of this file.
+*
+* This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+* WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+***************************************************************************/
+
 #include "math/algebra.h"
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
@@ -104,8 +118,33 @@ void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int size,
    ry = (float)-te.y_bearing;
 }
 
-void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool bold)
+void RenderContext::fontsDrawText(const TextItem& ti,
+                                  const Vec3f& color,
+                                  bool bold,
+                                  bool idle)
 {
+   /*
+    * cairo treats all surfaces as bounded and drops glyphs from a rendering
+    * path if they don't belong to the surface yet, making it difficult to
+    * calculate a desired surface size, which would include all elements of
+    * a chemical structure being rendered.
+    * Due to this limitation, we cannot calculate a size of the surface for
+    * "real" rendering.
+    * 
+    * If idle, we don't render glyphs for the text item. Rather, we calculate
+    * the bounding rectangle for the text item and add it to the cairo path.
+    * Later, glyphs will be rendered in a usual way during a "real" stage.
+    * 
+    * This also saves resources, as we don't make heavyweight glyph rendering
+    * twice.
+    */
+   if (idle) {
+      cairo_move_to(_cr, ti.bbp.x, ti.bbp.y);
+      cairo_rectangle(_cr, ti.bbp.x, ti.bbp.y, ti.bbsz.x, ti.bbsz.y);
+      bbIncludePath(false);
+      return;
+   }
+
    setSingleSource(color);
    moveTo(ti.bbp);
    cairo_matrix_t m;

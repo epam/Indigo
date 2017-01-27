@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -34,7 +34,7 @@ RenderItemAuxiliary::~RenderItemAuxiliary ()
 {
 }
 
-void RenderItemAuxiliary::_drawText ()
+void RenderItemAuxiliary::_drawText (bool idle)
 {                                  
    TextItem ti;
    ti.text.copy(text);
@@ -49,10 +49,10 @@ void RenderItemAuxiliary::_drawText ()
    }
    _rc.setTextItemSize(ti);
    ti.bbp.set(0,0);
-   _rc.drawTextItemText(ti);
+   _rc.drawTextItemText(ti, idle);
 }
 
-void RenderItemAuxiliary::_drawRGroupLabel ()
+void RenderItemAuxiliary::_drawRGroupLabel (bool idle)
 {
    BaseMolecule& bm = *mol;
    MoleculeRGroups& rgs = bm.rgroups;
@@ -65,7 +65,7 @@ void RenderItemAuxiliary::_drawRGroupLabel ()
    _rc.setTextItemSize(tiR);
    referenceY = tiR.bbsz.y / 2;
    tiR.bbp.set(0,0);
-   _rc.drawTextItemText(tiR);
+   _rc.drawTextItemText(tiR, idle);
 
    float ypos = tiR.bbp.y + tiR.bbsz.y + _settings.unit;
 
@@ -95,7 +95,7 @@ void RenderItemAuxiliary::_drawRGroupLabel ()
 
       _rc.setTextItemSize(tiOccurrence);
       tiOccurrence.bbp.set(0, ypos);
-      _rc.drawTextItemText(tiOccurrence);
+      _rc.drawTextItemText(tiOccurrence, idle);
 
       ypos += tiOccurrence.bbsz.y + _settings.unit;
    }
@@ -109,11 +109,11 @@ void RenderItemAuxiliary::_drawRGroupLabel ()
 
       _rc.setTextItemSize(tiRestH);
       tiRestH.bbp.set(0, ypos);
-      _rc.drawTextItemText(tiRestH);
+      _rc.drawTextItemText(tiRestH, idle);
    }
 }
 
-void RenderItemAuxiliary::_drawRIfThen ()
+void RenderItemAuxiliary::_drawRIfThen (bool idle)
 {
    BaseMolecule& bm = *mol;
    MoleculeRGroups& rgs = bm.rgroups;
@@ -130,7 +130,7 @@ void RenderItemAuxiliary::_drawRIfThen ()
          bprintf(tiIfThen.text, "IF R%d THEN R%d", i, rg.if_then); 
          _rc.setTextItemSize(tiIfThen);
          tiIfThen.bbp.set(0, ypos);
-         _rc.drawTextItemText(tiIfThen);
+         _rc.drawTextItemText(tiIfThen, idle);
 
          ypos += tiIfThen.bbsz.y + _settings.rGroupIfThenInterval;
       }
@@ -151,13 +151,25 @@ void RenderItemAuxiliary::_drawArrow ()
       _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize); 
 }
 
-void RenderItemAuxiliary::render ()
+void RenderItemAuxiliary::_renderIdle() {
+   _rc.initNullContext();
+   Vec2f bbmin, bbmax;
+   Vec2f pos;
+   render(true);
+   _rc.bbGetMin(bbmin);
+   _rc.bbGetMax(bbmax);
+   _rc.closeContext(true);
+   size.diff(bbmax, bbmin);
+   origin.copy(bbmin);
+}
+
+void RenderItemAuxiliary::render (bool idle)
 {
    _rc.translate(-origin.x, -origin.y);
    switch (type) {
       case AUX_COMMENT:
       case AUX_TITLE:
-         _drawText();
+         _drawText(idle);
          return;
       case AUX_RXN_PLUS:
          _drawPlus();
@@ -166,10 +178,10 @@ void RenderItemAuxiliary::render ()
          _drawArrow();
          return;
       case AUX_RGROUP_LABEL:
-         _drawRGroupLabel();
+         _drawRGroupLabel(idle);
          return;
       case AUX_RGROUP_IFTHEN:
-         _drawRIfThen();
+         _drawRIfThen(idle);
          return;
       default:
          throw Error("Item type not set or invalid");

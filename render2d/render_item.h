@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -34,7 +34,7 @@ public:
    virtual void estimateSize () = 0;
    virtual void setObjScale (float scale) = 0;
    virtual void init () = 0;
-   virtual void render () = 0;
+   virtual void render (bool idle) = 0;
    virtual float getTotalBondLength () = 0;
    virtual float getTotalClosestAtomDistance() = 0;
    virtual int getBondCount () = 0;
@@ -43,9 +43,8 @@ public:
    Vec2f size;
    Vec2f origin;
    float referenceY;
-protected:
-   void renderIdle ();
 
+protected:
    RenderItemFactory& _factory;
    RenderContext& _rc;
    const RenderSettings& _settings;

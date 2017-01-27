@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -25,17 +25,4 @@ RenderItemBase::RenderItemBase (RenderItemFactory& factory) : referenceY(0),
         _factory(factory),
         _rc(factory.rc), _settings(factory.rc._settings), _opt(factory.rc.opt)
 {
-}
-
-void RenderItemBase::renderIdle ()
-{
-   _rc.initNullContext();
-   Vec2f bbmin, bbmax;
-   Vec2f pos;
-   render();
-   _rc.bbGetMin(bbmin);
-   _rc.bbGetMax(bbmax);
-   _rc.closeContext(true);
-   size.diff(bbmax, bbmin);
-   origin.copy(bbmin);
 }

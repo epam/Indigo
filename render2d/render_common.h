@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -81,9 +81,10 @@ struct RenderItem {
    void clear();
 
    TYPE ritype;
-   Vec2f bbp;
-   Vec2f bbsz;
-   Vec2f relpos;
+   Vec2f bbp;               // a point to draw the text from
+   Vec2f bbsz;              // width and height of the text
+   Vec2f relpos;            // text bearing (positive if text is entirely on the
+                            // right and bottom from the bbp point)
    int color;
    bool highlighted;
    bool noBondOffset;

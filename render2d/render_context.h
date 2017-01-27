@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -51,11 +51,11 @@ public:
    void removeStoredTransform ();
    void drawRectangle (const Vec2f& p, const Vec2f& sz);
    void drawItemBackground (const RenderItem& item);
-   void drawTextItemText (const TextItem& ti);
-   void drawTextItemText (const TextItem& ti, const Vec3f& color);
-   void drawTextItemText (const TextItem& ti, const Vec3f& color, bool bold);
+   void drawTextItemText (const TextItem& ti, bool idle);
+   void drawTextItemText (const TextItem& ti, const Vec3f& color, bool idle);
+   void drawTextItemText (const TextItem& ti, const Vec3f& color, bool bold, bool idle);
    void drawBracket (RenderItemBracket& bracket);
-   void drawAttachmentPoint (RenderItemAttachmentPoint& ri);
+   void drawAttachmentPoint (RenderItemAttachmentPoint& ri, bool idle);
    void drawRSiteAttachmentIndex (RenderItemRSiteAttachmentIndex& ri);
    void drawLine (const Vec2f& v0, const Vec2f& v1);
    void fillHex (const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4, const Vec2f& v5);
@@ -116,7 +116,7 @@ public:
    double fontGetSize(FONT_SIZE size);
    void fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold);
    void fontsGetTextExtents(cairo_t* cr, const char* text, int size, float& dx, float& dy, float& rx, float& ry);
-   void fontsDrawText(const TextItem& ti, const Vec3f& color, bool bold);
+   void fontsDrawText(const TextItem& ti, const Vec3f& color, bool bold, bool idle);
 
    void bbIncludePoint (const Vec2f& v);
    void bbIncludePoint (double x, double y);

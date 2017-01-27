@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (C) 2009-2015 EPAM Systems
+* Copyright (C) 2009-2017 EPAM Systems
 *
 * This file is part of Indigo toolkit.
 *
@@ -437,7 +437,7 @@ void RenderContext::drawItemBackground (const RenderItem& item)
    }
 }
 
-void RenderContext::drawTextItemText (const TextItem& ti)
+void RenderContext::drawTextItemText (const TextItem& ti, bool idle)
 {
    Vec3f color;
    if (ti.ritype == RenderItem::RIT_AAM)
@@ -454,19 +454,24 @@ void RenderContext::drawTextItemText (const TextItem& ti)
       if (ti.highlighted && opt.highlightColorEnable)
          color.copy(opt.highlightColor);
    }
-   drawTextItemText (ti, color);
+   drawTextItemText (ti, color, idle);
 }
 
-void RenderContext::drawTextItemText (const TextItem& ti, const Vec3f& color)
+void RenderContext::drawTextItemText (const TextItem& ti,
+                                      const Vec3f& color,
+                                      bool idle)
 {
    bool bold = ti.highlighted && opt.highlightThicknessEnable;
-   drawTextItemText (ti, color, bold);
+   drawTextItemText (ti, color, bold, idle);
 }
 
-void RenderContext::drawTextItemText (const TextItem& ti, const Vec3f& color, bool bold)
+void RenderContext::drawTextItemText (const TextItem& ti,
+                                      const Vec3f& color,
+                                      bool bold,
+                                      bool idle)
 {
    fontsSetFont(_cr, ti.fontsize, bold);
-   fontsDrawText(ti, color, bold);
+   fontsDrawText(ti, color, bold, idle);
 }
 
 void RenderContext::drawLine (const Vec2f& v0, const Vec2f& v1)
@@ -687,7 +692,7 @@ void RenderContext::setGraphItemSizeSign (GraphItem& gi, GraphItem::TYPE type)
    gi.relpos.set(0, 0);
 }
 
-void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
+void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri, bool idle)
 {
    setSingleSource(ri.color);
    if (ri.highlighted && opt.highlightColorEnable)
@@ -734,7 +739,7 @@ void RenderContext::drawAttachmentPoint (RenderItemAttachmentPoint& ri)
       float sz = ti.bbsz.length();
       ti.bbp.addScaled(n, -(sz/2 + _settings.unit));
       ti.bbp.addScaled(ri.dir, -(sz/2 + waveWidth + _settings.unit));
-      drawTextItemText(ti);
+      drawTextItemText(ti, idle);
    }
 }
 

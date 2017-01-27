@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -191,9 +191,13 @@ IMPL_ERROR(MoleculeRenderInternal, "molecule render internal");
 
 CP_DEF(MoleculeRenderInternal);
 
-MoleculeRenderInternal::MoleculeRenderInternal (const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw) :
-_mol(NULL), _cw(cw), _settings(settings), _opt(opt), CP_INIT, TL_CP_GET(_data), TL_CP_GET(_atomMapping), TL_CP_GET(_atomMappingInv), TL_CP_GET(_bondMappingInv),
-isRFragment(false)
+MoleculeRenderInternal::MoleculeRenderInternal(const RenderOptions& opt,
+                                               const RenderSettings& settings,
+                                               RenderContext& cw,
+                                               bool idle) : _mol{ nullptr },
+   _cw{ cw }, _settings{ settings }, _opt{ opt }, CP_INIT, TL_CP_GET(_data),
+   TL_CP_GET(_atomMapping), TL_CP_GET(_atomMappingInv), TL_CP_GET(_bondMappingInv),
+   isRFragment{ false }, _idle{ idle }
 {
    _data.clear();
    _atomMapping.clear();
@@ -1328,7 +1332,7 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
          _cw.setTextItemSize(tiChiral);
          tiChiral.bbp.set((_max.x - _min.x) * _scale - tiChiral.bbsz.x, -tiChiral.bbsz.y * 2);
          _cw.setSingleSource(CWC_BASE);
-         _cw.drawTextItemText(tiChiral);
+         _cw.drawTextItemText(tiChiral, _idle);
          return;
       }
    }
@@ -1753,7 +1757,7 @@ void MoleculeRenderInternal::_renderBondIds ()
          _cw.setTextItemSize(ti, v);
          _extendRenderItem(ti, _settings.boundExtent);
          _cw.drawItemBackground(ti);
-         _cw.drawTextItemText(ti);
+         _cw.drawTextItemText(ti, _idle);
       }
    }
 
@@ -1771,7 +1775,7 @@ void MoleculeRenderInternal::_renderBondIds ()
          _cw.setTextItemSize(ti, v);
          _extendRenderItem(ti, _settings.boundExtent);
          _cw.drawItemBackground(ti);
-         _cw.drawTextItemText(ti);
+         _cw.drawTextItemText(ti, _idle);
       }
    }
    if (_opt.showNeighborArcs)
@@ -1808,7 +1812,7 @@ void MoleculeRenderInternal::_renderAtomIds ()
             if (ti.ritype == RenderItem::RIT_ATOMID)
             {
                _cw.drawItemBackground(ti);
-               _cw.drawTextItemText(ti);
+               _cw.drawTextItemText(ti, _idle);
             }
          }
       }
@@ -1846,7 +1850,7 @@ void MoleculeRenderInternal::_renderEmptyRFragment ()
    }
    _cw.setSingleSource(CWC_BASE);
    for (int i = 0; i < attachmentPointCount; ++i)
-      _cw.drawAttachmentPoint(_data.attachmentPoints[attachmentPointBegin + i]);
+      _cw.drawAttachmentPoint(_data.attachmentPoints[attachmentPointBegin + i], _idle);
 }
 
 void MoleculeRenderInternal::_renderLabels ()
@@ -1892,7 +1896,7 @@ void MoleculeRenderInternal::_renderSGroups ()
    for (int i = 0; i < _data.sgroups.size(); ++i) {
       const Sgroup& sg = _data.sgroups[i];
       for (int j = 0; j < sg.ticount; ++j)
-         _cw.drawTextItemText(_data.textitems[j + sg.tibegin]);
+         _cw.drawTextItemText(_data.textitems[j + sg.tibegin], _idle);
       for (int j = 0; j < sg.gicount; ++j)
          _cw.drawGraphItem(_data.graphitems[j + sg.gibegin]);
       for (int j = 0; j < sg.bicount; ++j)
@@ -2265,12 +2269,12 @@ void MoleculeRenderInternal::_drawAtom (const AtomDesc& desc)
    _cw.setSingleSource(desc.color);
    for (int i = 0; i < desc.ticount; ++i) {
       if (desc.hcolorSet)
-         _cw.drawTextItemText(_data.textitems[i + desc.tibegin], desc.hcolor);
+         _cw.drawTextItemText(_data.textitems[i + desc.tibegin], desc.hcolor, _idle);
       else
-         _cw.drawTextItemText(_data.textitems[i + desc.tibegin]);
+         _cw.drawTextItemText(_data.textitems[i + desc.tibegin], _idle);
    }
    for (int i = 0; i < desc.attachmentPointCount; ++i)
-      _cw.drawAttachmentPoint(_data.attachmentPoints[desc.attachmentPointBegin + i]);
+      _cw.drawAttachmentPoint(_data.attachmentPoints[desc.attachmentPointBegin + i], _idle);
    for (int i = 0; i < desc.rSiteAttachmentIndexCount; ++i)
       _cw.drawRSiteAttachmentIndex(_data.rSiteAttachmentIndices[desc.rSiteAttachmentIndexBegin + i]);
    for (int i = 0; i < desc.gicount; ++i) {
@@ -3468,7 +3472,7 @@ void MoleculeRenderInternal::_drawTopology (BondDescr& bd)
    c.addScaled(bd.norm, shift);
    c.addScaled(ti.bbsz, -0.5f);
    ti.bbp.copy(c);
-   _cw.drawTextItemText(ti);
+   _cw.drawTextItemText(ti, _idle);
 }
 
 void MoleculeRenderInternal::_drawReactingCenter (BondDescr& bd, int rc)

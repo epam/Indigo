@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -33,7 +33,7 @@ public:
       _scaleFactor = scale;
    }
    virtual void init ();
-   virtual void render ();
+   virtual void render (bool idle);
    virtual float getTotalBondLength ();
    virtual float getTotalClosestAtomDistance ();
    virtual int getBondCount ();
@@ -51,6 +51,8 @@ public:
 private:
    float _scaleFactor;
    Vec2f _min, _max;
+
+   void _renderIdle();
 };
 
 }

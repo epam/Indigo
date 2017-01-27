@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -55,7 +55,7 @@ void RenderItemColumn::estimateSize ()
    }
 }
 
-void RenderItemColumn::render ()
+void RenderItemColumn::render (bool idle)
 {
    _rc.translate(-origin.x, -origin.y);
    _rc.storeTransform();
@@ -63,7 +63,7 @@ void RenderItemColumn::render ()
       RenderItemBase& item = _factory.getItem(items[i]);
       _rc.storeTransform();
       _rc.translate(MultilineTextLayout::getRelativeOffset(alignment) * (size.x - item.size.x), 0);
-      item.render();
+      item.render(idle);
       _rc.restoreTransform();
       _rc.removeStoredTransform();
       _rc.translate(0, item.size.y + vSpace);

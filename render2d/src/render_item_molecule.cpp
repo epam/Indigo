@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  * 
  * This file is part of Indigo toolkit.
  * 
@@ -123,13 +123,13 @@ void RenderItemMolecule::estimateSize ()
       refAtomPos.copy(_factory.getItemFragment(_core).refAtomPos);
 }
 
-void RenderItemMolecule::render ()
+void RenderItemMolecule::render (bool idle)
 {                                     
    _rc.translate(-origin.x, -origin.y);
    float vSpace = _settings.layoutMarginVertical;
    for (int i = 0; i < items.size(); ++i) {
       RenderItemHLine& line = _factory.getItemHLine(items[i]);
-      line.render();
+      line.render(idle);
       _rc.translate(0, line.size.y + vSpace);
    }
 }

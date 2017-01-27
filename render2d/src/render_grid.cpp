@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -46,7 +46,7 @@ void RenderGrid::_drawComment ()
    {
       float diff = (float)(_width - 2 * outerMargin.x - commentSize.x);
       _rc.translate(diff * _cnvOpt.commentAlign.getBboxRelativeOffset(), 0);
-      _factory.getItem(comment).render();
+      _factory.getItem(comment).render(false);
    }
    _rc.restoreTransform();
    _rc.removeStoredTransform();
@@ -169,7 +169,7 @@ void RenderGrid::draw ()
                   _rc.translate(0.5f * (cellsz.x - size.x * scale), 0.5f * (maxsz.y - size.y) * scale);
                }
                _rc.scale(scale);
-               _factory.getItem(objs[i]).render();
+               _factory.getItem(objs[i]).render(false);
             }
             _rc.restoreTransform();
             _rc.removeStoredTransform();
@@ -178,7 +178,7 @@ void RenderGrid::draw ()
             if (enableTitles) {
                Vec2f titleSize(_factory.getItem(titles[i]).size);
                _rc.translate(_cnvOpt.titleAlign.getBboxRelativeOffset() * (cellsz.x - titleSize.x), 0.5f * (maxTitleSize.y - titleSize.y));
-               _factory.getItem(titles[i]).render();
+               _factory.getItem(titles[i]).render(false);
             }
          }
          _rc.restoreTransform();

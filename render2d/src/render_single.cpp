@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2009-2015 EPAM Systems
+ * Copyright (C) 2009-2017 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -43,7 +43,7 @@ void RenderSingle::_drawObj ()
    {
       _rc.translate((objArea.x - objSize.x * scale) / 2, (objArea.y - objSize.y * scale) / 2);
       _rc.scale(scale);
-      _factory.getItem(obj).render();
+      _factory.getItem(obj).render(false);
    }
    _rc.restoreTransform();
    _rc.removeStoredTransform();
@@ -58,7 +58,7 @@ void RenderSingle::_drawComment ()
    {
       float diff = (float)(width - 2 * outerMargin.x - commentSize.x);
       _rc.translate(diff * _cnvOpt.commentAlign.getBboxRelativeOffset(), 0);
-      _factory.getItem(comment).render();
+      _factory.getItem(comment).render(false);
    }
    _rc.restoreTransform();
    _rc.removeStoredTransform();
