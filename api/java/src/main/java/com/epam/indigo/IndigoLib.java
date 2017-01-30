@@ -190,6 +190,7 @@ public interface IndigoLib extends Library
    int indigoIterateRepeatingUnits (int molecule);
    int indigoIterateMultipleGroups (int molecule);
    int indigoIterateSGroups (int molecule);
+   int indigoIterateTGroups (int molecule);
 
    int indigoGetSuperatom (int molecule, int index);
    int indigoGetDataSGroup (int molecule, int index);
@@ -249,6 +250,10 @@ public interface IndigoLib extends Library
    int indigoAddTemplate (int molecule, int templates, String name);
    int indigoRemoveTemplate (int molecule, String name);
    int indigoFindTemplate (int molecule, String name);
+
+   Pointer indigoGetTGroupClass(int tgroup);
+   Pointer indigoGetTGroupName(int tgroup);
+   Pointer indigoGetTGroupAlias(int tgroup);
 
    int indigoTransformSCSRtoCTAB (int molecule);
    int indigoTransformCTABtoSCSR (int molecule, int templates);

@@ -154,6 +154,7 @@ namespace com.epam.indigo
         int indigoIterateRepeatingUnits(int item);
         int indigoIterateMultipleGroups(int item);
         int indigoIterateSGroups(int item);
+        int indigoIterateTGroups(int item);
 
         int indigoGetDataSGroup(int mol, int idx);
         int indigoGetSuperatom(int mol, int idx);
@@ -212,6 +213,10 @@ namespace com.epam.indigo
         int indigoAddTemplate(int molecule, int templates, string name);
         int indigoRemoveTemplate(int molecule, string name);
         int indigoFindTemplate(int molecule, string name);
+
+        sbyte* indigoGetTGroupClass(int tgroup);
+        sbyte* indigoGetTGroupName(int tgroup);
+        sbyte* indigoGetTGroupAlias(int tgroup);
 
         int indigoTransformSCSRtoCTAB(int molecule);
         int indigoTransformCTABtoSCSR(int molecule, int templates);

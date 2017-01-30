@@ -991,6 +991,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoIterateSGroups(self)), this);
    }
 
+   public IndigoObject iterateTGroups()
+   {
+      dispatcher.setSessionID();
+      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoIterateTGroups(self)), this);
+   }
+
    public IndigoObject getDataSGroup(int index)
    {
       dispatcher.setSessionID();
@@ -1324,6 +1330,24 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
          name = "";
       dispatcher.setSessionID();
       return Indigo.checkResult(this, _lib.indigoFindTemplate(self, name));
+   }
+
+   public String getTGroupClass()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoGetTGroupClass(self));
+   }
+
+   public String getTGroupName()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoGetTGroupName(self));
+   }
+
+   public String getTGroupAlias()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoGetTGroupAlias(self));
    }
 
    public int transformSCSRtoCTAB()

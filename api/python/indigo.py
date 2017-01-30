@@ -505,6 +505,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoIterateSGroups(self.id)))
 
+    def iterateTGroups(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoIterateTGroups(self.id)))
+
     def getSuperatom(self, index):
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoGetSuperatom(self.id, index)))
@@ -724,6 +728,18 @@ class IndigoObject(object):
     def findTemplate(self, name):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoFindTemplate(self.id, name.encode(ENCODE_ENCODING)))
+
+    def getTGroupClass(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetTGroupClass(self.id))
+
+    def getTGroupName(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetTGroupName(self.id))
+
+    def getTGroupAlias(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoGetTGroupAlias(self.id))
 
     def transformSCSRtoCTAB(self):
         self.dispatcher._setSessionId()
@@ -1772,6 +1788,8 @@ class Indigo(object):
         Indigo._lib.indigoIterateMultipleGroups.argtypes = [c_int]
         Indigo._lib.indigoIterateSGroups.restype = c_int
         Indigo._lib.indigoIterateSGroups.argtypes = [c_int]
+        Indigo._lib.indigoIterateTGroups.restype = c_int
+        Indigo._lib.indigoIterateTGroups.argtypes = [c_int]
         Indigo._lib.indigoGetSuperatom.restype = c_int
         Indigo._lib.indigoGetSuperatom.argtypes = [c_int, c_int]
         Indigo._lib.indigoGetDataSGroup.restype = c_int
@@ -1872,6 +1890,12 @@ class Indigo(object):
         Indigo._lib.indigoRemoveTemplate.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoFindTemplate.restype = c_int
         Indigo._lib.indigoFindTemplate.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoGetTGroupClass.restype = c_char_p
+        Indigo._lib.indigoGetTGroupClass.argtypes = [c_int]
+        Indigo._lib.indigoGetTGroupName.restype = c_char_p
+        Indigo._lib.indigoGetTGroupName.argtypes = [c_int]
+        Indigo._lib.indigoGetTGroupAlias.restype = c_char_p
+        Indigo._lib.indigoGetTGroupAlias.argtypes = [c_int]
         Indigo._lib.indigoTransformSCSRtoCTAB.restype = c_int
         Indigo._lib.indigoTransformSCSRtoCTAB.argtypes = [c_int]
         Indigo._lib.indigoTransformCTABtoSCSR.restype = c_int

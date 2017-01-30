@@ -3469,6 +3469,44 @@ CEXPORT int indigoFindTemplate (int molecule, const char *tname)
    INDIGO_END(-1)
 }
 
+CEXPORT const char * indigoGetTGroupClass (int tgroup)
+{
+   INDIGO_BEGIN
+   {
+      TGroup &tg = IndigoTGroup::cast(self.getObject(tgroup)).get();
+      if (tg.tgroup_class.size() < 1)
+         return "";
+      return tg.tgroup_class.ptr();
+   }
+   INDIGO_END(0)
+}
+
+CEXPORT const char * indigoGetTGroupName (int tgroup)
+{
+   INDIGO_BEGIN
+   {
+      TGroup &tg = IndigoTGroup::cast(self.getObject(tgroup)).get();
+      if (tg.tgroup_name.size() < 1)
+         return "";
+      return tg.tgroup_name.ptr();
+      
+   }
+   INDIGO_END(0)
+}
+
+CEXPORT const char * indigoGetTGroupAlias (int tgroup)
+{
+   INDIGO_BEGIN
+   {
+      TGroup &tg = IndigoTGroup::cast(self.getObject(tgroup)).get();
+      if (tg.tgroup_alias.size() < 1)
+         return "";
+      return tg.tgroup_alias.ptr();
+      
+   }
+   INDIGO_END(0)
+}
+
 CEXPORT int indigoTransformSCSRtoCTAB (int molecule)
 {
    INDIGO_BEGIN

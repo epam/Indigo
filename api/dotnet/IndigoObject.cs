@@ -561,6 +561,12 @@ namespace com.epam.indigo
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoIterateSGroups(self)), this);
         }
 
+        public IndigoObject iterateTGroups()
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoIterateTGroups(self)), this);
+        }
+
         public IndigoObject getDataSGroup(int index)
         {
             dispatcher.setSessionID();
@@ -855,6 +861,24 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoFindTemplate(self, name));
+        }
+
+        public string getTGroupClass()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetTGroupClass(self));
+        }
+
+        public string getTGroupName()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetTGroupName(self));
+        }
+
+        public string getTGroupAlias()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoGetTGroupAlias(self));
         }
 
         public int transformSCSRtoCTAB()
