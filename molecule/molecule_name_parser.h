@@ -173,14 +173,6 @@ class DLLEXPORT MoleculeNameParser {
    A dictionary for managing various global symbol tables
    */
    class DictionaryManager : public NonCopyable {
-   public:
-      DictionaryManager();
-
-      LexemesTrie lexemesTrie;		            // global trie of pre-defined lexemes
-      SymbolDictionary dictionary;		         // global dictionary of pre-defined symbols
-      std::string separators;		               // a string of separator characters
-
-   private:
       DECL_ERROR;
 
       void _readBasicElementsTable();
@@ -189,24 +181,50 @@ class DLLEXPORT MoleculeNameParser {
       void _readTokenTypeStrings();
       void _addLexeme(const std::string& lexeme, const Token& token, bool useTrie);
 
+      LexemesTrie _lexemesTrie;		            // global trie of pre-defined lexemes
+      SymbolDictionary _dictionary;		         // global dictionary of pre-defined symbols
+      std::string _separators;		            // a string of separator characters
+
       typedef std::vector<std::string> TokenTypeStrings;
       TokenTypeStrings _tokenTypeStrings;
 
       TokenType _tokenTypeFromString(const std::string& s);
+
+   public:
+      DictionaryManager();
+
+      inline const LexemesTrie& getLexemesTrie() const { return _lexemesTrie; }
+      inline const SymbolDictionary& getSymbolDictionary() const { return _dictionary; }
+      inline const std::string& getSeparators() const { return _separators; }
    }; // class DictionaryManager
 
    typedef std::vector<std::string> Failures;
    typedef std::vector<Lexeme> Lexemes;
-      
+
    /*
    A product of parsing process
    Keeps dictionaries of lexemes and tokens
    */
    class Parse : public NonCopyable {
+      DECL_ERROR;
+
+      bool _hasFailures = false;		            // failure flag
+      mutable size_t _currentLexeme = 0;        // A pointer to the current position in the stream of lexemes
+      std::string _input;					         // an input string as-is
+      Lexemes _lexemes;				               // a list of lexemes that form the input
+      Failures _failures;					         // a list of fragments failed to having being parsed
+
+      /*
+      Splits a fragment into smaller lexemes
+      Sets up the failure flag if unparsable fragment is encountered
+      */
+      void _processTextFragment(const std::string& fragment);
+
+      // try to find a lexeme using an elision rule
+      bool _tryElision(const std::string& failure);
+
    public:
-      inline explicit Parse(const std::string& in) {
-         input = in;
-      }
+      inline explicit Parse(const std::string& in) { _input = in; }
 
       /*
       Performs by-symbol input scan, determines basic tokens
@@ -219,23 +237,10 @@ class DLLEXPORT MoleculeNameParser {
       // Returns true if next lexeme's token type equals to input
       bool peekNextToken(TokenType peek) const;
 
-      bool hasFailures = false;		            // failure flag
-      mutable size_t currentLexeme = 0;         // A pointer to the current position in the stream of lexemes
-      std::string input;					         // an input string as-is
-      Lexemes		lexemes;				            // a list of lexemes that form the input
-      Failures failures;					         // a list of fragments failed to having being parsed
-
-   private:
-      DECL_ERROR;
-
-      /*
-      Splits a fragment into smaller lexemes
-      Sets up the failure flag if unparsable fragment is encountered
-      */
-      void _processTextFragment(const std::string& fragment);
-
-      // try to find a lexeme using an elision rule
-      bool _tryElision(const std::string& failure);
+      inline const Lexemes& getLexemes() const { return _lexemes; }
+      inline const size_t& getCurrentLexeme() const { return _currentLexeme; }
+      inline const Failures& getFailures() const { return _failures; }
+      inline bool hasFailures() const { return _hasFailures; }
    }; // class Parse
 
    enum class FragmentClassType : int {
@@ -261,6 +266,12 @@ class DLLEXPORT MoleculeNameParser {
    to create Molecule objects
    */
    class FragmentNode : NonCopyable {
+      FragmentNode* _parent = nullptr;          // A handle to the parent; must not be freed
+      Nodes _nodes;                             // A list on nodes
+
+   protected:
+      FragmentClassType _classType = FragmentClassType::INVALID;
+
    public:
       FragmentNode() = default;
       virtual ~FragmentNode();
@@ -270,18 +281,23 @@ class DLLEXPORT MoleculeNameParser {
 
       // Inserts a new node at the end of the list
       void insert(FragmentNode* node);
+
+      inline const FragmentClassType& getFragmentClassType() const { return _classType; }
+
+      inline const FragmentNode* const getParent() const { return _parent; }
+      inline FragmentNode* const getParent() { return _parent; }
+      inline void setParent(FragmentNode* parent) { _parent = parent; }
+
+      inline const Nodes& getNodes() const { return _nodes; }
+
 #ifdef DEBUG
       virtual void print(std::ostream& out) const;
 #endif
-
-      FragmentClassType classType = FragmentClassType::INVALID;
-      FragmentNode* parent = nullptr;           // A handle to the parent; must not be freed
-      Nodes nodes;                              // A list on nodes
    }; // class FragmentNode
 
    class FragmentNodeRoot : public FragmentNode {
    public:
-      inline FragmentNodeRoot() { classType = FragmentClassType::ROOT; }
+      inline FragmentNodeRoot() { _classType = FragmentClassType::ROOT; }
       virtual ~FragmentNodeRoot() = default;
 
 #ifdef DEBUG
@@ -317,6 +333,30 @@ class DLLEXPORT MoleculeNameParser {
    Any additional atoms or elements will be stored as substituents
    */
    class FragmentNodeBase : public FragmentNode {
+      Element _element;
+      Isomerism _isomerism = Isomerism::NONE;
+      Multipliers _multipliers;
+      Locants _locants;
+      Skeletals _skeletals;
+
+      // A bonding of an element
+      int _bonding = 0;
+
+      // A bond type
+      int _bondType = BOND_SINGLE;
+
+      /*
+      The number of atom with free bond
+      Alkanes ending with -ane don't have free bonds
+      Alkanes ending with -yl have 1 free bond
+      */
+      int _freeAtoms = 0;
+
+      // true if the structure is a cycle
+      bool _cycle = false;
+
+      NodeType _nodeType = NodeType::INVALID;
+
    public:
       FragmentNodeBase();
       virtual ~FragmentNodeBase() = default;
@@ -327,33 +367,36 @@ class DLLEXPORT MoleculeNameParser {
       */
       int combineMultipliers();
 
+      inline const Locants& getLocants() const { return _locants; }
+      inline Locants& getLocants() { return _locants; }
+
+      inline const Multipliers& getMultipliers() const { return _multipliers; }
+      inline Multipliers& getMultipliers() { return _multipliers; }
+
+      inline const Skeletals& getSkeletals() const { return _skeletals; }
+      inline Skeletals& getSkeletals() { return _skeletals; }
+
+      inline const Element& getElement() const { return _element; }
+      inline void setElement(const Element& element) { _element = element; }
+
+      inline const NodeType& getNodeType() const { return _nodeType; }
+      inline void setNodeType(const NodeType& type) { _nodeType = type; }
+
+      inline int getBondType() const { return _bondType; }
+      inline void setBondType(const int& type) { _bondType = type; }
+
+      inline void setBonding(const int& bonding) { _bonding = bonding; }
+
+      inline bool isCycle() const { return _cycle; }
+      inline void setCycle(bool cycle) { _cycle = cycle; }
+
+      inline void setIsomerism(const Isomerism& type) { _isomerism = type; }
+
+      inline void setFreeAtoms(int number) { _freeAtoms = number; }
+
 #ifdef DEBUG
       virtual void print(std::ostream& out) const;
 #endif
-
-      Element element;
-      Isomerism isomerism = Isomerism::NONE;
-      Multipliers multipliers;
-      Locants locants;
-      Skeletals skeletals;
-
-      // A bonding of an element
-      int bonding = 0;
-
-      // A bond type
-      int bondType = BOND_SINGLE;
-
-      /*
-      The number of atom with free bond
-      Alkanes ending with -ane don't have free bonds
-      Alkanes ending with -yl have 1 free bond
-      */
-      int freeAtoms = 0;
-
-      // true if the structure is a cycle
-      bool cycle = false;
-
-      NodeType nodeType = NodeType::INVALID;
    }; // class FragmentNodeBase
 
    typedef std::vector<int> Positions;
@@ -364,39 +407,48 @@ class DLLEXPORT MoleculeNameParser {
    substituent will be applied
    */
    class FragmentNodeSubstituent : public FragmentNodeBase {
+      // Positions of this substituent inside its base
+      Positions _positions;
+
+      /*
+      With IUPAC_STRICT:
+      First multiplier in a substituent must match the number of locant positions
+      in base structure
+      Example:
+      2,3,3-trimethyl-octane (correct)
+      locants:		  2 3 3 (total 3)
+      first multiplier: tri (3)
+
+      2,4-ethyl-hexane (incorrect, should be: 2,4-diethyl-hexane)
+      locants:		  2 4 (total 2)
+      first multiplier: none (default 1)
+      */
+      int _fragmentMultiplier = 1;
+
+      // If true, next multiplier will be treated as fragment multiplier
+      bool _expectFragMultiplier = false;
+
+      int _expectedMultiplierCount = 1;
+
    public:
-      inline FragmentNodeSubstituent() { classType = FragmentClassType::SUBSTITUENT; }
+      inline FragmentNodeSubstituent() { _classType = FragmentClassType::SUBSTITUENT; }
       virtual ~FragmentNodeSubstituent() = default;
 
       inline operator const FragmentNodeBase*() const { return dynamic_cast<const FragmentNodeBase*>(this); }
       inline operator FragmentNodeBase*() { return dynamic_cast<FragmentNodeBase*>(this); }
 
+      inline const Positions& getPositions() const { return _positions; }
+      inline Positions& getPositions() { return _positions; }
+
+      inline bool isExpectingFragMultiplier() const { return _expectFragMultiplier; }
+      inline void setExpectingFragMultiplier(bool value) { _expectFragMultiplier = value; }
+
+      inline int getFragmentMultiplier() const { return _fragmentMultiplier; }
+      inline void setFragmentMultiplier(int value) { _fragmentMultiplier = value; }
+
 #ifdef DEBUG
       virtual void print(std::ostream& out) const;
 #endif
-
-      // Positions of this substituent inside its base
-      Positions positions;
-
-      /*
-      With IUPAC_STRICT:
-         First multiplier in a substituent must match the number of locant positions
-         in base structure
-         Example:
-         2,3,3-trimethyl-octane (correct)
-         locants:		  2 3 3 (total 3)
-         first multiplier: tri (3)
-
-         2,4-ethyl-hexane (incorrect, should be: 2,4-diethyl-hexane)
-         locants:		  2 4 (total 2)
-         first multiplier: none (default 1)
-      */
-      int fragmentMultiplier = 1;
-
-      // If true, next multiplier will be treated as fragment multiplier
-      bool expectFragMultiplier = false;
-
-      int expectedMultiplierCount = 1;
    }; // class FragmentNodeSubstituent
 
    /*
@@ -406,16 +458,19 @@ class DLLEXPORT MoleculeNameParser {
    structures that must be handled separately
    */
    class FragmentBuildTree : public NonCopyable {
+      // A handle to current build tree; must not be freed
+      FragmentNode* _currentRoot = nullptr;
+
+      Nodes _roots;
+
    public:
       FragmentBuildTree();
       virtual ~FragmentBuildTree();
 
       void addRoot();
 
-      // A handle to current build tree; must not be freed
-      FragmentNode* currentRoot = nullptr;
-
-      Nodes roots;
+      inline FragmentNode* const getCurrentRoot() const { return _currentRoot; }
+      inline const Nodes& getRoots() const { return _roots; }
    }; // class FragmentBuildTree
 
    /*
@@ -423,14 +478,6 @@ class DLLEXPORT MoleculeNameParser {
    Builds all trees in one pass, consequently reading the lexemes stream
    */
    class TreeBuilder : public NonCopyable {
-   public:
-      inline TreeBuilder(const Parse& input) : _parse{ &input } { }
-
-      bool processParse();
-
-      FragmentBuildTree buildTree;
-
-   private:
       DECL_ERROR;
 
       /*
@@ -448,11 +495,13 @@ class DLLEXPORT MoleculeNameParser {
       // A handle to Parse object; must not be freed
       const Parse* _parse;
 
+      FragmentBuildTree _buildTree;
+
       // Retrieves current level's base; each level has only one base
-      FragmentNodeBase* _getCurrentBase();
+      FragmentNodeBase* const _getCurrentBase();
 
       // Retrieves upper level's base, if any; each level has only one base
-      FragmentNodeBase* _getParentBase();
+      FragmentNodeBase* const _getParentBase();
 
       /*
       The implementation of parse processing
@@ -495,6 +544,13 @@ class DLLEXPORT MoleculeNameParser {
 
       // Converts std::string to int
       int _strToInt(const std::string& str);
+
+   public:
+      inline TreeBuilder(const Parse& input) : _parse{ &input } { }
+
+      bool processParse();
+
+      inline const FragmentBuildTree& getBuildTree() const { return _buildTree; }
    }; // class TreeBuilder
 
    typedef std::map<int, std::string> Elements;
@@ -560,24 +616,6 @@ class DLLEXPORT MoleculeNameParser {
    Uses depth-first traversal
    */
    class SmilesBuilder : public NonCopyable {
-   public:
-      SmilesBuilder(const Parse& input) : _treeBuilder{ input } {
-         _parse = &input;
-         _initOrganicElements();
-      }
-
-      inline bool buildTree() { return _treeBuilder.processParse(); }
-
-      /*
-      Traverses the build tree in post-order depth-first order, creates
-      SMILES representation and loads the SMILES into the resulting Molecule
-      */
-      bool buildResult(Molecule& molecule);
-
-      bool checkTrivial();
-      void buildTrivial(Molecule& molecule);
-
-   private:
       DECL_ERROR;
 
       // The tree builder, which provides the build tree
@@ -608,6 +646,23 @@ class DLLEXPORT MoleculeNameParser {
       Processes a substituent node. Any substituent might also be a base
       */
       bool _processSubstNode(FragmentNodeSubstituent* subst, SmilesRoot& root);
+
+   public:
+      SmilesBuilder(const Parse& input) : _treeBuilder{ input } {
+         _parse = &input;
+         _initOrganicElements();
+      }
+
+      inline bool buildTree() { return _treeBuilder.processParse(); }
+
+      /*
+      Traverses the build tree in post-order depth-first order, creates
+      SMILES representation and loads the SMILES into the resulting Molecule
+      */
+      bool buildResult(Molecule& molecule);
+
+      bool checkTrivial();
+      void buildTrivial(Molecule& molecule);
    }; // class SmilesBuilder
 
    // Turns a certain option on or off depending on input flag
