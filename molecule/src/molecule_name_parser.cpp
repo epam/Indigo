@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (C) 2009-2016 EPAM Systems
+* Copyright (C) 2009-2017 EPAM Systems
 *
 * This file is part of Indigo toolkit.
 *
