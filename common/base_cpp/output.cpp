@@ -317,7 +317,7 @@ void StandardOutput::write (const void *data, int size)
    _count += size;
 }
 
-void StandardOutput::seek (int offset, int from)
+void StandardOutput::seek (long long offset, int from)
 {
    throw Error("can not seek in standard output");
 }

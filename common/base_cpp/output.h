@@ -99,7 +99,7 @@ public:
    virtual ~StandardOutput ();
 
    virtual void write (const void *data, int size);
-   virtual void seek  (int offset, int from);
+   virtual void seek  (long long offset, int from);
    virtual long long tell  ();
    virtual void flush ();
 protected:
