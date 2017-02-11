@@ -32,7 +32,8 @@ public:
     };
     MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose);
     MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_decompose, const Array<int>& selected_vertices);
-    void clean(bool _clean_external_angles);
+	static void clean(BaseMolecule& mol);
+	void do_clean(bool _clean_external_angles);
 private:
     bool _isZero();
     void _updatePosition(int i);

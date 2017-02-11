@@ -113,16 +113,22 @@ CEXPORT int indigoClean2d(int object)
                IndigoSubmolecule &submol = (IndigoSubmolecule &)obj;
                BaseMolecule &orig_mol = submol.getOriginalMolecule();
                MoleculeCleaner2d cleaner2d1(orig_mol, false, submol.vertices);
-               cleaner2d1.clean(false);
+               cleaner2d1.do_clean(false);
                return 0;
             }
             BaseMolecule &mol = obj.getBaseMolecule();
-            MoleculeCleaner2d cleaner2d1(mol, false);
-            cleaner2d1.clean(false);
-            MoleculeCleaner2d cleaner2d2(mol, true);
-            cleaner2d2.clean(true);
+			MoleculeCleaner2d::clean(mol);
         } else {
-           throw IndigoError("Clean2d can be executed only for molecules but %s was provided", obj.debugInfo());
+			if (IndigoBaseReaction::is(obj)) {
+				BaseReaction &rxn = obj.getBaseReaction();
+				for (int i = rxn.begin(); i < rxn.end(); i = rxn.next(i))
+				{
+					MoleculeCleaner2d::clean(rxn.getBaseMolecule(i));
+				}
+
+			}
+            else
+				throw IndigoError("Clean2d can be executed only for molecules but %s was provided", obj.debugInfo());
         }
         
         return 0;

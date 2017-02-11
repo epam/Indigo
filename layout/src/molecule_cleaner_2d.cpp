@@ -652,7 +652,7 @@ void MoleculeCleaner2d::_updateGradient2() {
         if (active_points[base_point[i]]) gradient[i] = _energyDiff(base_point[i]);
 }
 
-void MoleculeCleaner2d::clean(bool _clean_external_angles) {
+void MoleculeCleaner2d::do_clean(bool _clean_external_angles) {
     if (_isZero()) return;
     if (is_trivial) return; // nothing to do for biconnected graph
     clean_external_angles = _clean_external_angles;
@@ -927,4 +927,11 @@ bool MoleculeCleaner2d::_isZero() {
         is_zero = is_zero & _mol.getAtomXyz(v).y == 0;
     }
     return is_zero;
+}
+
+void MoleculeCleaner2d::clean(BaseMolecule& mol) {
+	MoleculeCleaner2d cleaner2d1(mol, false);
+	cleaner2d1.do_clean(false);
+	MoleculeCleaner2d cleaner2d2(mol, true);
+	cleaner2d2.do_clean(true);
 }
