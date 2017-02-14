@@ -21,6 +21,7 @@
 #include "indigo_reaction.h"
 #include "layout/molecule_cleaner_2d.h"
 #include <vector>
+#include <algorithm>
 
 CEXPORT int indigoLayout (int object)
 {
@@ -112,12 +113,34 @@ CEXPORT int indigoClean2d(int object)
             if (obj.type == IndigoObject::SUBMOLECULE) {
                IndigoSubmolecule &submol = (IndigoSubmolecule &)obj;
                BaseMolecule &orig_mol = submol.getOriginalMolecule();
-               MoleculeCleaner2d cleaner2d1(orig_mol, false, submol.vertices);
-               cleaner2d1.do_clean(false);
-               return 0;
-            }
-            BaseMolecule &mol = obj.getBaseMolecule();
-			MoleculeCleaner2d::clean(mol);
+
+			   std::vector<int> orig_vertices;
+			   for (int v : orig_mol.vertices()) orig_vertices.push_back(v);
+			   std::vector<int> submol_vertices;
+			   for (int i = 0; i < submol.vertices.size(); i++) submol_vertices.push_back(submol.vertices[i]);
+			   std::sort(orig_vertices.begin(), orig_vertices.end());
+			   std::sort(submol_vertices.begin(), submol_vertices.end());
+			   bool is_same = orig_vertices.size() == submol_vertices.size();
+			   if (is_same)
+			   {
+				   for (int i = 0; i < orig_vertices.size(); i++)
+					   is_same &= orig_vertices[i] == submol_vertices[i];
+			   }
+			   if (is_same)
+			   {
+				   MoleculeCleaner2d::clean(orig_mol);
+			   }
+			   else
+			   {
+				   MoleculeCleaner2d cleaner2d1(orig_mol, false, submol.vertices);
+				   cleaner2d1.do_clean(false);
+			   }
+			}
+			else 
+			{
+				BaseMolecule &mol = obj.getBaseMolecule();
+				MoleculeCleaner2d::clean(mol);
+			}
         } else {
 			if (IndigoBaseReaction::is(obj)) {
 				BaseReaction &rxn = obj.getBaseReaction();
