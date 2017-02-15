@@ -18,4 +18,5 @@ static const char* token_types_table =
   "  <tokenType>flag</tokenType>\n"
   "  <tokenType>skeletal_prefix</tokenType>\n"
   "  <tokenType>trivial</tokenType>\n"
+  "  <tokenType>acids</tokenType>\n"
   "</tokenTypes>\n";

@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <list>
 #include <map>
+#include <regex>
 #include <stack>
 #include <string>
 #include <vector>
@@ -119,8 +120,46 @@ class DLLEXPORT MoleculeNameParser {
 
       SKELETAL_PREFIX,
 
-      TRIVIAL
+      TRIVIAL,
+
+      ACID
    }; //enum class TokenType
+
+   /*
+   Order of substitutive name components and classes is as follows:
+               PREFIX                | PARENT | ENDING |        SUFFIX
+   DETACHABLE DE_HYDRO NONDETACHABLE |        |        | FUNCTIONAL CUMMULATIVE
+   */
+
+   /*
+   Substitutive name components
+   */
+   enum class NameComponent : int {
+      PREFIX,
+      PARENT,
+      ENDING,
+      SUFFIX
+   };
+
+   /*
+   Classes of substitutive name components
+   */
+   enum class ComponentClass : int {
+      DETACHABLE,
+      DE_HYDRO,
+      NONDETACHABLE,
+      FUNCTIONAL,
+      CUMMULATIVE
+   };
+
+   /*
+   A substitutive name part
+   */
+   struct SubstNamePart {
+      std::string    lexeme;
+      NameComponent  component;
+      ComponentClass klass;
+   };
 
    /*
    A struct denoting a token
@@ -169,6 +208,8 @@ class DLLEXPORT MoleculeNameParser {
    // A trie for known pre-defined lexemes
    typedef Trie<Token> LexemesTrie;
 
+   typedef std::vector<std::regex> Regexes;
+
    /*
    A dictionary for managing various global symbol tables
    */
@@ -187,8 +228,10 @@ class DLLEXPORT MoleculeNameParser {
 
       typedef std::vector<std::string> TokenTypeStrings;
       TokenTypeStrings _tokenTypeStrings;
-
       TokenType _tokenTypeFromString(const std::string& s);
+
+      Regexes _regexes;
+      void _readRegexesTable();
 
    public:
       DictionaryManager();
@@ -196,6 +239,7 @@ class DLLEXPORT MoleculeNameParser {
       inline const LexemesTrie& getLexemesTrie() const { return _lexemesTrie; }
       inline const SymbolDictionary& getSymbolDictionary() const { return _dictionary; }
       inline const std::string& getSeparators() const { return _separators; }
+      inline const Regexes& getRegexes() const { return _regexes; }
    }; // class DictionaryManager
 
    typedef std::vector<std::string> Failures;

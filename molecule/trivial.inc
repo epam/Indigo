@@ -138,6 +138,7 @@ static const char* trivial_table =
   "  </tokenTable>\n"
   "\n"
   "  <tokenTable name=\"trivial_dicarboxylic_acids\" type=\"trivial\">\n"
+  "    <token value=\"O=C(O)O\">carbonic acid</token>\n"
   "    <token value=\"C(O)(=O)C(O)=O\">oxalic acid</token>\n"
   "    <token value=\"C(O)(=O)CC(O)=O\">malonic acid</token>\n"
   "    <token value=\"C(O)(=O)CCC(O)=O\">succinic acid</token>\n"

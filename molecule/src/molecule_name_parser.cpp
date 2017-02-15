@@ -28,6 +28,7 @@
 #include "molecule/elements.h"
 #include "molecule/flags.inc"
 #include "molecule/multipliers.inc"
+#include "molecule/regexes.inc"
 #include "molecule/separators.inc"
 #include "molecule/skeletal.inc"
 #include "molecule/token_types.inc"
@@ -53,6 +54,40 @@ MoleculeNameParser::DictionaryManager::DictionaryManager() {
 
    _readSkeletalAtomsTable();
    _readBasicElementsTable();
+   _readRegexesTable();
+}
+
+void MoleculeNameParser::DictionaryManager::_readRegexesTable() {
+   TiXmlDocument doc;
+
+   doc.Parse(regexes_table);
+   if (doc.Error()) {
+      throw Error("Cannot parse table %s", regexes_table);
+   }
+
+   TiXmlHandle hdoc(&doc);
+   TiXmlHandle tokenTables = hdoc.FirstChild("tokenTables");
+   const TiXmlElement* tokenTable = tokenTables.FirstChild("tokenTable").ToElement();
+   for (; tokenTable; tokenTable = tokenTable->NextSiblingElement()) {
+      const char* name = tokenTable->Attribute("name");
+      const char* type = tokenTable->Attribute("type");
+      if (!name || !type) {
+         throw Error("Cannot parse table");
+      }
+
+      TokenType tt = _tokenTypeFromString(type);
+
+      const TiXmlElement* e = tokenTable->FirstChild("token")->ToElement();
+      for (; e; e = e->NextSiblingElement()) {
+         const char* r = e->GetText();
+         const char* smiles = e->Attribute("smiles");
+         if (!r || !smiles) {
+            throw Error("Cannot parse table %s", name);
+         }
+
+         _regexes.push_back(regex(r));
+      }
+   }
 }
 
 void MoleculeNameParser::DictionaryManager::_readSkeletalAtomsTable() {
@@ -236,15 +271,22 @@ MoleculeNameParser::TokenType MoleculeNameParser::DictionaryManager::_tokenTypeF
 /*
 Performs by-symbol input scan, determines basic tokens
 Text fragments require further processing
+
+1. Check if the whole input is a trivial name
+2. Match regexes
+3. Scan and tokenize
 */
 void MoleculeNameParser::Parse::scan() {
    const DictionaryManager& dm = getMoleculeNameParserInstance().dictionaryManager;
    const SymbolDictionary& sd = dm.getSymbolDictionary();
    const string& separators = dm.getSeparators();
 
-   // Check for trivial names
-   const string& trivial = _input;
-   const auto& it = sd.find(trivial);
+   /*
+   1. Check if the whole input is a trivial name
+      In that case, lexemes stream will contain a single lexeme
+   */
+   string input_copy = _input;
+   const auto& it = sd.find(input_copy);
    if (it != sd.end()) {
       _lexemes.push_back(Lexeme(it->first, it->second));
 
@@ -254,7 +296,25 @@ void MoleculeNameParser::Parse::scan() {
       return;
    }
 
-   const size_t length = _input.length();
+   /*
+   2. Search for regexes
+      Either an input name may be based on some trivial name or
+      it may contain some characteristic element, e.g. an acid name
+
+      If a regex is found, we delete 
+   */
+   const Regexes& regexes = dm.getRegexes();
+   for (const regex& r : regexes) {
+      smatch match;
+      if (regex_search(input_copy, match, r)) {
+         for (int i = 0; i < match.size(); i++) {
+            const string& submatch = match[i];
+            
+         }
+      }
+   }
+   
+   const size_t length = input_copy.length();
 
    // A buffer for locant symbol(s)
    string locant;
@@ -267,7 +327,7 @@ void MoleculeNameParser::Parse::scan() {
    By this time we already know that brackets do match
    */
    for (size_t i = 0; i < length; i++) {
-      char ch = _input[i];
+      char ch = input_copy[i];
 
       // whitespace is a special case
       if (ch == ' ') {
@@ -285,8 +345,8 @@ void MoleculeNameParser::Parse::scan() {
             // For locants, we need additional check if the number is multi-digit
             if (std::isdigit(ch)) {
                locant += ch;
-               while (std::isdigit(_input[i + 1])) {
-                  locant += _input[i + 1];
+               while (std::isdigit(input_copy[i + 1])) {
+                  locant += input_copy[i + 1];
                   ++i;
                }
                _lexemes.push_back(Lexeme(locant, Token("separator", locant, TokenType::LOCANT)));
@@ -303,13 +363,13 @@ void MoleculeNameParser::Parse::scan() {
       Search until a next separator or the end of string, check the dictionary,
       process text fragment
       */
-      size_t next = _input.find_first_of(separators, i);
-      if (next == _input.npos) {
-         string fragment = _input.substr(i, length - i);
+      size_t next = input_copy.find_first_of(separators, i);
+      if (next == input_copy.npos) {
+         string fragment = input_copy.substr(i, length - i);
          _processTextFragment(fragment);
          break;
       } else {
-         string fragment = _input.substr(i, next - i);
+         string fragment = input_copy.substr(i, next - i);
          _processTextFragment(fragment);
          i = next - 1;
          continue;
@@ -429,7 +489,7 @@ bool MoleculeNameParser::Parse::_tryElision(const string& failure) {
             tryout = failure;
             tryout += ch;
             if (!root.isWord(tryout)) {
-               return false;
+               continue;
             }
          }
       }
