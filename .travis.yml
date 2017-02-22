@@ -1,9 +1,6 @@
 language: python
 dist: trusty
-sudo: false
-python:
-  - 2.7
-  - 3.6
+sudo: required
 os:
   - linux
   - osx
