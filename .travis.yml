@@ -1,9 +1,10 @@
-language: python
+language: cpp
 dist: trusty
 sudo: required
+compiler: clang
 os:
   - linux
 before_script:
-  - sudo apt-get update -qq && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev
+  - sudo apt-get update -qq && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev python
 script:
   - python build_scripts/indigo-release-libs.py
