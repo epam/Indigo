@@ -77,6 +77,7 @@ def build_libs(cl_args):
             preset = 'linux{}'.format(platform.architecture()[0][:2])
         elif system == 'Windows':
             preset = ''
+            auto_vs = True
         else:
             raise NotImplementedError('Unsupported OS: {}'.format(system))
         if preset:
@@ -162,7 +163,7 @@ def build_libs(cl_args):
     elif args.generator.find("Xcode") != -1:
         check_call("cmake --build . --target package --config %s" % (args.config), shell=True)
         check_call("cmake --build . --target install --config %s" % (args.config), shell=True)
-    elif args.generator.find("Visual Studio") != -1:
+    elif args.generator.find("Visual Studio") != -1 or auto_vs:
         vsenv = os.environ
         if args.mtbuild:
             vsenv = dict(os.environ, CL='/MP')
