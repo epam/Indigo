@@ -1,14 +1,11 @@
 language: cpp
 dist: trusty
 sudo: required
+compiler: clang
 os:
   - linux
-  - osx
-branches:
-  only:
-  - master
 before_script:
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo add-apt-repository ppa:ubuntu-toolchain-r/test && sudo apt-get update -qq && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev python gcc-6 g++-6; fi
+  - sudo apt-get update -qq && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev python
 script:
   - python build_scripts/indigo-release-libs.py
 notifications:
