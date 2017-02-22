@@ -30,6 +30,10 @@ namespace indigo
 class Scanner;
 class Molecule;
 
+/*
+ * Loader for JSON format
+ */
+
 class DLLEXPORT MoleculeJsonLoader: public NonCopyable
 {
 public:
