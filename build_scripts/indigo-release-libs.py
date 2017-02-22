@@ -1,5 +1,6 @@
 import multiprocessing
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -68,9 +69,26 @@ def build_libs(cl_args):
 
     if args.preset:
         args.generator, args.params = presets[args.preset]
-    if not args.generator:
-        print("Generator must be specified")
-        exit()
+    else:
+        system = platform.system()
+        if system == 'Darwin':
+            preset = 'mac{}'.format(platform.mac_ver()[0])
+        elif system == 'Linux':
+            preset = 'linux{}'.format(platform.architecture()[0])
+        elif system == 'Windows':
+            preset = ''
+        else:
+            raise NotImplementedError('Unsupported OS: {}'.format(system))
+        if preset:
+            print("Auto-selecting preset: {}".format(preset))
+            args.generator, args.params = presets[preset]
+        else:
+            print("Preset is no selected, continuing with empty generator and params...")
+            args.generator, args.params = '', ''
+
+    # if not args.generator:
+    #     print("Generator must be specified")
+    #     exit()
 
     cur_dir = os.path.abspath(os.path.dirname(__file__))
     root = os.path.join(cur_dir, "..")
@@ -117,9 +135,9 @@ def build_libs(cl_args):
     os.chdir(full_build_dir)
 
     environment_prefix = ''
-    if (args.preset.find('linux') != -1 and args.preset.find('universal') != -1):
+    if args.preset and (args.preset.find('linux') != -1 and args.preset.find('universal') != -1):
         environment_prefix = 'CC=gcc CXX=g++'
-    command = "%s cmake -G \"%s\" %s %s" % (environment_prefix, args.generator, args.params, project_dir)
+    command = "%s cmake %s %s %s" % (environment_prefix, '-G \"%s\"' % args.generator if args.generator else '', args.params, project_dir)
     print(command)
     check_call(command, shell=True)
 

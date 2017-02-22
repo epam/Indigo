@@ -1,0 +1,13 @@
+language: python
+dist: trusty
+sudo: false
+python:
+  - 2.7
+  - 3.6
+os:
+  - linux
+  - osx
+before_script:
+  - if [ $TRAVIS_OS_NAME == linux ]; then travis_retry apt-get update -qq && apt-get install -y libfreetype6-dev libfontconfig1-dev; fi
+script:
+  - python build_scripts/indigo-release-libs.py
