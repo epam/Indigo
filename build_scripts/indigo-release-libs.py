@@ -74,7 +74,7 @@ def build_libs(cl_args):
         if system == 'Darwin':
             preset = 'mac{}'.format(platform.mac_ver()[0])
         elif system == 'Linux':
-            preset = 'linux{}'.format(platform.architecture()[0])
+            preset = 'linux{}'.format(platform.architecture()[0][:2])
         elif system == 'Windows':
             preset = ''
         else:
