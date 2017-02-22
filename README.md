@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/epam/Indigo.svg?branch=master)](https://travis-ci.org/epam/Indigo)
+
 # EPAM Indigo projects #
 
 Copyright (c) 2009-2015 EPAM Systems
@@ -37,17 +39,17 @@ or execute preconfigured scripts that does all the job.
 
 ## Bingo build instructions ##
 
-To generate project configuration, build the source code, and create the archives for 
+To generate project configuration, build the source code, and create the archives for
 installation you need to execute build_scripts\bingo-release.py:
 
 	build_scripts\bingo-release.py --preset=linux32 --dbms=[postgres|oracle|sqlserver]
 
 The are different cmake presets:
-	linux32, linux64, win32, win64, mac10.5, mac10.6 (for 10.7 also)
+	linux32, linux64, win32, win64, mac10.7 (and also all later mac10.x versions)
 
 ## Indigo build instructions ##
 
-To generate project configuration, build the source code, and create the archives for 
+To generate project configuration, build the source code, and create the archives for
 installation you need to execute build_scripts\indigo-release-libs.py and
 build_scripts\indigo-release-utils.py:
 
@@ -70,7 +72,8 @@ build_scripts\indigo-release-utils.py:
 ### Other
 
 There are different cmake presets:
-	win32-2013, win64-2013, win64-2015, win32-mingw, linux32, linux32-universal, linux64, linux64-universal, mac10.6, mac10.7, mac10.8, mac10.9, mac10.10, mac-universal
+	win32-2013, win64-2013, win32-2015, win64-2015, win32-mingw, linux32, linux32-universal, linux64,
+	linux64-universal, mac10.7, mac10.8, mac10.9, mac10.10, mac10.11, mac10.12
 
 ### Wrappers
 
