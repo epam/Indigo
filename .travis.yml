@@ -3,8 +3,7 @@ dist: trusty
 sudo: required
 os:
   - linux
-  # - osx
 before_script:
-  - if [ $TRAVIS_OS_NAME == linux ]; then travis_retry sudo apt-get update -qq && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev; fi
+  - sudo apt-get update -qq && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev
 script:
   - python build_scripts/indigo-release-libs.py
