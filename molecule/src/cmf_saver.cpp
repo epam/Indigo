@@ -641,7 +641,7 @@ void CmfSaver::_encodeAtom (Molecule &mol, int idx, const int *mapping)
 
    if (!mol.isRSite(idx) && !mol.isPseudoAtom(idx))
    {
-      if (mol.getAtomAromaticity(idx) == ATOM_AROMATIC && (charge != 0 || (number != ELEM_C && number != ELEM_O)))
+      if (mol.isExplicitValenceSet(idx) || (mol.getAtomAromaticity(idx) == ATOM_AROMATIC && (charge != 0 || (number != ELEM_C && number != ELEM_O))))
       {
          try
          {
