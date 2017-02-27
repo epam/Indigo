@@ -380,7 +380,7 @@ namespace com.epam.indigo
 
         public IndigoObject loadMoleculeFromBuffer(byte[] buf) {
             setSessionID();
-            return new IndigoObject(this, checkResult(_indigo_lib._lib.indigoLoadMoleculeFromBuffer(buf, buf.length)));
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadMoleculeFromBuffer(buf, buf.Length)));
         }
 
         public IndigoObject loadQueryMolecule(string str)

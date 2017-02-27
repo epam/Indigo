@@ -845,7 +845,7 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoSetSGroupParentId(self, parent));
         }
 
-        public int addTemplate(int templates, string name)
+        public int addTemplate(IndigoObject templates, string name)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoAddTemplate(self, templates.self, name));
