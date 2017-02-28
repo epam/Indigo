@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/epam/Indigo.svg?branch=master)](https://travis-ci.org/epam/Indigo)
+[![Build Status](https://travis-ci.org/epam/Indigo.svg?branch=master)](https://travis-ci.org/epam/Indigo) [![Build Status](https://ci.appveyor.com/api/projects/status/github/epam/indigo?branch=master&svg=true)](https://ci.appveyor.com/project/mkviatkovskii/indigo)
 
 # EPAM Indigo projects #
 
