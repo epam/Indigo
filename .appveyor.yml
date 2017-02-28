@@ -1,0 +1,10 @@
+version: '{build}'
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+environment:
+  PATH: '%PATH%;C:\Program Files\CMake\bin;C:\Python36-x64;'
+build_script:
+- cmd: python build_scripts/indigo-release-libs.py

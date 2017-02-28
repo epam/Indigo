@@ -72,7 +72,7 @@ def build_libs(cl_args):
     else:
         system = platform.system()
         if system == 'Darwin':
-            preset = 'mac{}'.format(platform.mac_ver()[0])
+            preset = 'mac{}'.format('.'.join(platform.mac_ver()[0].split('.')[:2]))
         elif system == 'Linux':
             preset = 'linux{}'.format(platform.architecture()[0][:2])
         elif system == 'Windows':
