@@ -12,6 +12,7 @@ before_script:
 script:
   - if [ $TRAVIS_OS_NAME == linux ]; then CC=/usr/bin/gcc-6 CXX=/usr/bin/g++-6 python build_scripts/indigo-release-libs.py; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then python build_scripts/indigo-release-libs.py; fi
+  - python build_scripts/indigo-make-by-libs.py --type=python
 after_success:
   - if [ $TRAVIS_OS_NAME == linux ]; then export INDIGO_ZIP_SUFFIX=linux; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then export INDIGO_ZIP_SUFFIX=mac; fi
