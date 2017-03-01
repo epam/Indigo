@@ -424,7 +424,7 @@ bool MoleculeNameParser::Parse::_tryElision(const string& failure) {
       tryout.replace(tryout.length() - 1, 1, { ch });
       if (!root.isWord(tryout)) {
          tryout = failure;
-         tryout.insert(0, 1, { ch });
+         tryout.insert(0, 1, ch);
          if (!root.isWord(tryout)) {
             tryout = failure;
             tryout += ch;
