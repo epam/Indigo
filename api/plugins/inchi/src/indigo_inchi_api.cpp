@@ -135,6 +135,12 @@ void indigoInchiSetInchiOptions (const char *options)
    inchi_wrapper.setOptions(options);
 }
 
+void indigoInchiGetInchiOptions (char *options, int len)
+{
+   InchiWrapper &inchi_wrapper = indigoInchiGetInstance().inchi;
+   inchi_wrapper.getOptions(options, len);
+}
+
 class _IndigoInchiOptionsHandlersSetter
 {
 public:
@@ -146,7 +152,7 @@ _IndigoInchiOptionsHandlersSetter::_IndigoInchiOptionsHandlersSetter ()
    OptionManager &mgr = indigoGetOptionManager();
    OsLocker locker(mgr.lock);
 
-   mgr.setOptionHandlerString("inchi-options", indigoInchiSetInchiOptions);
+   mgr.setOptionHandlerString("inchi-options", indigoInchiSetInchiOptions, indigoInchiGetInchiOptions);
 }
 
 _IndigoInchiOptionsHandlersSetter _indigo_inchi_options_handlers_setter;

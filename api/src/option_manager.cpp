@@ -33,12 +33,12 @@ void OptionManager::callOptionHandlerInt (const char* name, int value) {
 
    if (typeMap.at(name) == OPTION_BOOL && (value == 0 || value == 1))
    {
-      hMapBool.at(name)(value);
+      boolSetters.at(name)(value);
       return;
    }
 
    if (typeMap.at(name) == OPTION_INT)
-      hMapInt.at(name)(value);
+      intSetters.at(name)(value);
    else
       callOptionHandlerT(name, value);
 }
@@ -46,7 +46,7 @@ void OptionManager::callOptionHandlerInt (const char* name, int value) {
 void OptionManager::callOptionHandlerBool (const char* name, int value) {
    CHECK_OPT_DEFINED(name);
    if (typeMap.at(name) == OPTION_BOOL)
-      hMapBool.at(name)(value);
+      boolSetters.at(name)(value);
    else
       callOptionHandlerT(name, value);
 }
@@ -54,7 +54,7 @@ void OptionManager::callOptionHandlerBool (const char* name, int value) {
 void OptionManager::callOptionHandlerFloat (const char* name, float value) {
    CHECK_OPT_DEFINED(name);
    if (typeMap.at(name) == OPTION_FLOAT)
-      hMapFloat.at(name)(value);
+      floatSetters.at(name)(value);
    else
       callOptionHandlerT(name, value);
 }
@@ -62,19 +62,61 @@ void OptionManager::callOptionHandlerFloat (const char* name, float value) {
 void OptionManager::callOptionHandlerVoid (const char* name)
 {
    CHECK_OPT_DEFINED(name);
-   hMapVoid.at(name)();
+   voidFunctions.at(name)();
 }
 
 void OptionManager::callOptionHandlerColor (const char* name, float r, float g, float b) {
    CHECK_OPT_DEFINED(name);
    CHECK_OPT_TYPE(name, OPTION_COLOR);
-   hMapColor.at(name)(r, g, b);
+   colorSetters.at(name)(r, g, b);
 }
 
 void OptionManager::callOptionHandlerXY (const char* name, int x, int y) {
    CHECK_OPT_DEFINED(name);
    CHECK_OPT_TYPE(name, OPTION_XY);
-   hMapXY.at(name)(x, y);
+   xySetters.at(name)(x, y);
+}
+
+void OptionManager::GetOptionValueInt (const char* name, int& value)
+{
+   CHECK_OPT_DEFINED(name);
+   CHECK_OPT_TYPE(name, OPTION_INT);
+   intGetters.at(name)(value);
+}
+
+void OptionManager::GetOptionValueStr (const char* name, char* value, int len)
+{
+    CHECK_OPT_DEFINED(name);
+    CHECK_OPT_TYPE(name, OPTION_STRING);
+    stringGetters.at(name)(value, len);
+}
+
+void OptionManager::GetOptionValueBool (const char* name, int& value)
+{
+    CHECK_OPT_DEFINED(name);
+    CHECK_OPT_TYPE(name, OPTION_BOOL);
+    boolGetters.at(name)(value);
+}
+
+void OptionManager::GetOptionValueFloat (const char* name, float& value)
+{
+    CHECK_OPT_DEFINED(name);
+    CHECK_OPT_TYPE(name, OPTION_FLOAT);
+    floatGetters.at(name)(value);
+}
+
+void OptionManager::GetOptionValueColor (const char* name, float& r, float& g, float& b)
+{
+    CHECK_OPT_DEFINED(name);
+    CHECK_OPT_TYPE(name, OPTION_COLOR);
+    colorGetters.at(name)(r, g, b);
+}
+
+void OptionManager::GetOptionValueXY (const char* name, int& x, int& y)
+{
+    CHECK_OPT_DEFINED(name);
+    CHECK_OPT_TYPE(name, OPTION_XY);
+    xyGetters.at(name)(x, y);
 }
 
 bool OptionManager::hasOptionHandler (const char* name) {
@@ -90,32 +132,32 @@ void OptionManager::callOptionHandler (const char* name, const char* value) {
    switch (type)
    {
    case OPTION_STRING:
-      hMapString.at(name)(value);
+      stringSetters.at(name)(value);
       break;
    case OPTION_INT:
       if (_parseInt(value, x) < 0)
          throw Error("Cannot recognize \"%s\" as an integer value", value);
-      hMapInt.at(name)(x);
+      intSetters.at(name)(x);
       break;
    case OPTION_BOOL:
       if (_parseBool(value, x) < 0)
          throw Error("Cannot recognize \"%s\" as a boolean value", value);
-      hMapBool.at(name)(x);
+      boolSetters.at(name)(x);
       break;
    case OPTION_FLOAT:
       if (_parseFloat(value, f) < 0)
          throw Error("Cannot recognize \"%s\" as a float value", value);
-      hMapFloat.at(name)(f);
+      floatSetters.at(name)(f);
       break;
    case OPTION_COLOR:
       if (_parseColor(value, r, g, b) < 0)
          throw Error("Cannot recognize \"%s\" as a color value", value);
-      hMapColor.at(name)(r, g, b);
+      colorSetters.at(name)(r, g, b);
       break;
    case OPTION_XY:
       if (_parseSize(value, x, y) < 0)
          throw Error("Cannot recognize \"%s\" as a pair of integers", value);
-      hMapXY.at(name)(x, y);
+      xySetters.at(name)(x, y);
       break;
    default:
       throw Error("Option type not supported");

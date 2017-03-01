@@ -41,6 +41,7 @@ public:
 
    // Input parameters
    void setOptions (const char *opt);
+   void getOptions (char *opt, int len);
 
    // Output additional results
    Array<char> warning, log, auxInfo;

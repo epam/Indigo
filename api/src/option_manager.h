@@ -25,12 +25,22 @@ using namespace indigo;
 #define DECL_SET_OPT_HANDLER(suffix, ftype, type, map)               \
    DLLEXPORT void setOptionHandler##suffix (const char* name, ftype func);     \
 
-#define DEF_SET_OPT_HANDLER(suffix, ftype, type, map)                \
+#define DEF_HANDLER(suffix, ftype, type, map)                \
    void setOptionHandler##suffix (const char* name, ftype func) {    \
       if (typeMap.find(name))                                        \
          throw Error("Option \"%s\" already defined", name);         \
       typeMap.insert(name, type);                                    \
       map.insert(name, func);                                        \
+   }
+                                                         
+
+#define DEF_SET_GET_OPT_HANDLERS(suffix, fSetType, fGetType, type, mapSet, mapGet)            \
+   void setOptionHandler##suffix (const char* name, fSetType setFunc, fGetType getFunc) {    \
+      if (typeMap.find(name))                                                                \
+         throw Error("Option \"%s\" already defined", name);                                 \
+      typeMap.insert(name, type);                                                            \
+      mapSet.insert(name, setFunc);                                                          \
+      mapGet.insert(name, getFunc);                                                          \
    }
 
 #define CHECK_OPT_DEFINED(name) \
@@ -41,26 +51,85 @@ using namespace indigo;
       if (typeMap.at(name) != type) \
          throw Error("Property type mismatch", name)
 
+#define SETTER_GETTER_BOOL_OPTION(option)                                    \
+   [](int enabled) {                                               \
+      option = (enabled != 0);                                     \
+   },                                                              \
+   [](int& enabled) {                                              \
+      enabled = (option != 0);                                     \
+   }
+
+#define SETTER_GETTER_INT_OPTION(option)                             \
+   [](int value) {                                                 \
+      option = value;                                              \
+   },                                                              \
+   [](int& value) {                                                \
+      value = option;                                              \
+   }
+
+#define SETTER_GETTER_FLOAT_OPTION(option)                                   \
+   [](float value) {                                               \
+      option = value;                                              \
+   },                                                              \
+   [](float& value) {                                              \
+      value = option;                                              \
+   }
+
+#define SETTER_GETTER_COLOR_OPTION(option)                                   \
+   [](float r, float g, float b) {                                 \
+      option.set(r, g, b);                                         \
+   },                                                              \
+   [](float& r, float& g, float& b) {                              \
+      r = option.x;                                                \
+      g = option.y;                                                \
+      b = option.z;                                                \
+   }
+
+#define SETTER_GETTER_XY_OPTION(optionX, optionY)                            \
+   [](int x, int y) {                                              \
+      optionX = x;                                                 \
+      optionY = y;                                                 \
+   },                                                              \
+   [](int& x, int& y) {                                            \
+      x = optionX;                                                 \
+      y = optionY;                                                 \
+   }
+
+#define SETTER_GETTER_STR_OPTION(option)                                     \
+   [](const char* value) {                                         \
+      option.readString(value, true);                              \
+   },                                                              \
+   [](char* value, int len) {                                      \
+      copyStrValue(option, value, len);                            \
+   }
+
 class OptionManager {
 public:
-   typedef void (*optf_string_t) (const char* value);
-   typedef void (*optf_int_t) (int value);
-   typedef void (*optf_bool_t) (int value);
-   typedef void (*optf_float_t) (float value);
-   typedef void (*optf_color_t) (float r, float g, float b);
-   typedef void (*optf_xy_t) (int x, int y);
-   typedef void (*optf_void_t) ();
+    typedef void (*optf_string_t) (const char*);
+    typedef void (*optf_int_t) (int);
+    typedef void (*optf_bool_t) (int);
+    typedef void (*optf_float_t) (float);
+    typedef void (*optf_color_t) (float, float, float);
+    typedef void (*optf_xy_t) (int, int);
+    typedef void (*optf_void_t) ();
+
+    typedef void (*get_optf_string_t) (char*, int);
+    typedef void (*get_optf_int_t) (int&);
+    typedef void (*get_optf_bool_t) (int&);
+    typedef void (*get_optf_float_t) (float&);
+    typedef void (*get_optf_color_t) (float&, float&, float&);
+    typedef void (*get_optf_xy_t) (int&, int&);
+
    OptionManager ();
 
    DECL_ERROR;
-   DEF_SET_OPT_HANDLER(String, optf_string_t, OPTION_STRING, hMapString)
-   DEF_SET_OPT_HANDLER(Int, optf_int_t, OPTION_INT, hMapInt)
-   DEF_SET_OPT_HANDLER(Bool, optf_bool_t, OPTION_BOOL, hMapBool)
-   DEF_SET_OPT_HANDLER(Float, optf_float_t, OPTION_FLOAT, hMapFloat)
-   DEF_SET_OPT_HANDLER(Color, optf_color_t, OPTION_COLOR, hMapColor)
-   DEF_SET_OPT_HANDLER(XY, optf_xy_t, OPTION_XY, hMapXY)
-   DEF_SET_OPT_HANDLER(Void, optf_void_t, OPTION_VOID, hMapVoid)
-
+   DEF_SET_GET_OPT_HANDLERS(String, optf_string_t, get_optf_string_t, OPTION_STRING, stringSetters, stringGetters)
+   DEF_SET_GET_OPT_HANDLERS(Int, optf_int_t, get_optf_int_t, OPTION_INT, intSetters, intGetters)
+   DEF_SET_GET_OPT_HANDLERS(Bool, optf_bool_t, get_optf_bool_t, OPTION_BOOL, boolSetters, boolGetters)
+   DEF_SET_GET_OPT_HANDLERS(Float, optf_float_t, get_optf_float_t, OPTION_FLOAT, floatSetters, floatGetters)
+   DEF_SET_GET_OPT_HANDLERS(Color, optf_color_t, get_optf_color_t, OPTION_COLOR, colorSetters, colorGetters)
+   DEF_SET_GET_OPT_HANDLERS(XY, optf_xy_t, get_optf_xy_t, OPTION_XY, xySetters, xyGetters)
+   DEF_HANDLER(Void, optf_void_t, OPTION_VOID, voidFunctions)
 
    bool hasOptionHandler (const char* name);
 
@@ -71,8 +140,16 @@ public:
    void callOptionHandlerXY (const char* name, int x, int y);
    void callOptionHandlerVoid(const char* name);
    void callOptionHandler (const char* name, const char* value);
+
+   void GetOptionValueStr (const char* name, char* value, int len);
+   void GetOptionValueInt (const char* name, int& value);
+   void GetOptionValueBool (const char* name, int& value);
+   void GetOptionValueFloat (const char* name, float& value);
+   void GetOptionValueColor (const char* name, float& r, float& g, float& b);
+   void GetOptionValueXY (const char* name, int& x, int& y);
+
    int nOptions () const;
-   
+
    OsLock lock;
 protected:
    enum OPTION_TYPE {OPTION_STRING, OPTION_INT, OPTION_BOOL, OPTION_FLOAT, OPTION_COLOR, OPTION_XY, OPTION_VOID};
@@ -85,14 +162,22 @@ protected:
 
    RedBlackStringMap<OPTION_TYPE, false> typeMap;
 
-   RedBlackStringMap<optf_string_t, false> hMapString;
-   RedBlackStringMap<optf_int_t, false> hMapInt;
-   RedBlackStringMap<optf_bool_t, false> hMapBool;
-   RedBlackStringMap<optf_float_t, false> hMapFloat;
-   RedBlackStringMap<optf_color_t, false> hMapColor;
-   RedBlackStringMap<optf_xy_t, false> hMapXY;
-   RedBlackStringMap<optf_void_t, false> hMapVoid;
+   RedBlackStringMap<optf_string_t, false> stringSetters;
+   RedBlackStringMap<optf_int_t, false> intSetters;
+   RedBlackStringMap<optf_bool_t, false> boolSetters;
+   RedBlackStringMap<optf_float_t, false> floatSetters;
+   RedBlackStringMap<optf_color_t, false> colorSetters;
+   RedBlackStringMap<optf_xy_t, false> xySetters;
    
+   RedBlackStringMap<optf_void_t, false> voidFunctions;
+
+   RedBlackStringMap<get_optf_string_t, false> stringGetters;
+   RedBlackStringMap<get_optf_int_t, false> intGetters;
+   RedBlackStringMap<get_optf_bool_t, false> boolGetters;
+   RedBlackStringMap<get_optf_float_t, false> floatGetters;
+   RedBlackStringMap<get_optf_color_t, false> colorGetters;
+   RedBlackStringMap<get_optf_xy_t, false> xyGetters;
+
    template <typename T> 
    void callOptionHandlerT (const char *name, T arg)
    {

@@ -234,12 +234,6 @@ CEXPORT int indigoTransform (int reaction, int monomers)
    INDIGO_END(-1)
 }
 
-void indigoProductEnumeratorSetMultistepReactionFlag (int is_multistep_reactions)
-{
-   Indigo &self = indigoGetInstance();
-   self.rpe_params.is_multistep_reactions = (is_multistep_reactions != 0);
-}
-
 void indigoProductEnumeratorSetOneTubeMode (const char *mode_string)
 {
    Indigo &self = indigoGetInstance();
@@ -251,36 +245,21 @@ void indigoProductEnumeratorSetOneTubeMode (const char *mode_string)
       throw IndigoError("%s is bad reaction product enumerator mode string", mode_string);
 }
 
-void indigoProductEnumeratorSetSelfReactionFlag (int is_self_react)
+static void copyString(const char* source, char* dest, int len)
 {
-   Indigo &self = indigoGetInstance();
-   self.rpe_params.is_self_react = (is_self_react != 0);
+    if(strlen(source) > len)
+        throw IndigoError("invalid string value len: expected len: %d, actual len: %d", len, strlen(source));
+    strcpy(dest, source);
 }
 
-void indigoProductEnumeratorSetMaximumSearchDepth (int max_depth)
+void indigoProductEnumeratorGetOneTubeMode (char *mode_string, int len)
 {
-   Indigo &self = indigoGetInstance();
-   self.rpe_params.max_deep_level = max_depth;
+   Indigo &self = indigoGetInstance();   
+   if(self.rpe_params.is_one_tube)
+       copyString("one-tube", mode_string, len);
+   else
+       copyString("grid", mode_string, len);
 }
-
-void indigoProductEnumeratorSetMaximumProductsCount (int max_pr_cnt)
-{
-   Indigo &self = indigoGetInstance();
-   self.rpe_params.max_product_count = max_pr_cnt;
-}
-
-void indigoProductEnumeratorSetLayoutFlag (int layout_flag)
-{
-   Indigo &self = indigoGetInstance();
-   self.rpe_params.is_layout = (layout_flag != 0);
-}
-
-void indigoProductEnumeratorSetTransformLayoutFlag (int transform_layout_flag)
-{
-   Indigo &self = indigoGetInstance();
-   self.rpe_params.transform_is_layout = (transform_layout_flag != 0);
-}
-
 
 class _IndigoRPEOptionsHandlersSetter
 {
@@ -293,14 +272,16 @@ _IndigoRPEOptionsHandlersSetter::_IndigoRPEOptionsHandlersSetter ()
 {
    OptionManager &mgr = indigoGetOptionManager();
    OsLocker locker(mgr.lock);
+   
+   #define indigo indigoGetInstance()
 
-   mgr.setOptionHandlerBool("rpe-multistep-reactions", indigoProductEnumeratorSetMultistepReactionFlag);
-   mgr.setOptionHandlerString("rpe-mode", indigoProductEnumeratorSetOneTubeMode);
-   mgr.setOptionHandlerBool("rpe-self-reaction", indigoProductEnumeratorSetSelfReactionFlag);
-   mgr.setOptionHandlerInt("rpe-max-depth", indigoProductEnumeratorSetMaximumSearchDepth);
-   mgr.setOptionHandlerInt("rpe-max-products-count", indigoProductEnumeratorSetMaximumProductsCount);
-   mgr.setOptionHandlerBool("rpe-layout", indigoProductEnumeratorSetLayoutFlag);
-   mgr.setOptionHandlerBool("transform-layout", indigoProductEnumeratorSetTransformLayoutFlag);
+   mgr.setOptionHandlerBool("rpe-multistep-reactions", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_multistep_reactions));
+   mgr.setOptionHandlerString("rpe-mode", indigoProductEnumeratorSetOneTubeMode, indigoProductEnumeratorGetOneTubeMode);
+   mgr.setOptionHandlerBool("rpe-self-reaction", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_self_react));
+   mgr.setOptionHandlerInt("rpe-max-depth", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_deep_level));
+   mgr.setOptionHandlerInt("rpe-max-products-count", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_product_count));
+   mgr.setOptionHandlerBool("rpe-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_layout));
+   mgr.setOptionHandlerBool("transform-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.transform_is_layout));
 }
 
 _IndigoRPEOptionsHandlersSetter _indigo_rpe_options_handlers_setter;
