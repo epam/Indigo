@@ -1,21 +1,26 @@
 language: cpp
 dist: trusty
 sudo: required
-compiler: clang
 os:
   - linux
   - osx
 branches:
   only:
-  - master
+  - ci_mar17
 before_script:
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test && sudo apt-get update -qq && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev python gcc-6 g++-6 && sudo ln -fs /usr/bin/gcc-6 /usr/bin/gcc && sudo ln -fs /usr/bin/g++-6 /usr/bin/g++; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test && sudo apt-get update -qq && sudo apt-get install -y libfreetype6-dev libfontconfig1-dev python gcc-6 g++-6; fi # && sudo ln -fs /usr/bin/gcc-6 /usr/bin/gcc && sudo ln -fs /usr/bin/g++-6 /usr/bin/g++;
 script:
-  - python build_scripts/indigo-release-libs.py
+  - if [ $TRAVIS_OS_NAME == linux ]; then CC=/usr/bin/gcc-6 CXX=/usr/bin/g++-6 python build_scripts/indigo-release-libs.py; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then python build_scripts/indigo-release-libs.py; fi
+after_success:
+  - if [ $TRAVIS_OS_NAME == linux ]; then export INDIGO_ZIP_SUFFIX=linux; $MD5SUBfi
+  - if [ $TRAVIS_OS_NAME == osx ]; then export INDIGO_ZIP_SUFFIX=mac; fi
+  - export INDIGO_PYTHON_SHA1_SUM=`shasum -a 1 dist/indigo-python-*-$INDIGO_ZIP_SUFFIX.zip | awk '{print $1}'`
+  - curl -H "X-JFrog-Art-Api:$INDIGO_ARTIFACTORY_API_KEY" -H "X-Checksum-Sha1:$INDIGO_PYTHON_SHA1_SUM" -X PUT "https://artifactory.epam.com/artifactory/EPM-LSOP/indigo/releases/latest/indigo-python-latest-ZIP_SUFFIX.zip" -T dist/indigo-python-*-$INDIGO_ZIP_SUFFIX.zip
 notifications:
   webhooks:
     urls:
-      - https://webhooks.gitter.im/e/66027894f79a647d01ef
+      - https://webhooks.gitter.im/e/$INDIGO_GITTER_KEY
     on_success: change
     on_failure: always
     on_start: never
