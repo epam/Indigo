@@ -16,7 +16,7 @@ after_success:
   - if [ $TRAVIS_OS_NAME == linux ]; then export INDIGO_ZIP_SUFFIX=linux; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then export INDIGO_ZIP_SUFFIX=mac; fi
   - export INDIGO_PYTHON_SHA1_SUM=`shasum -a 1 dist/indigo-python-*-$INDIGO_ZIP_SUFFIX.zip | awk '{print $1}'`
-  - curl -H "X-JFrog-Art-Api:$INDIGO_ARTIFACTORY_API_KEY" -H "X-Checksum-Sha1:$INDIGO_PYTHON_SHA1_SUM" -X PUT "https://artifactory.epam.com/artifactory/EPM-LSOP/indigo/releases/latest/indigo-python-latest-ZIP_SUFFIX.zip" -T dist/indigo-python-*-$INDIGO_ZIP_SUFFIX.zip
+  - curl -H "X-JFrog-Art-Api:$INDIGO_ARTIFACTORY_API_KEY" -H "X-Checksum-Sha1:$INDIGO_PYTHON_SHA1_SUM" -X PUT "https://artifactory.epam.com/artifactory/EPM-LSOP/indigo/releases/latest/indigo-python-latest-$ZIP_SUFFIX.zip" -T dist/indigo-python-*-$INDIGO_ZIP_SUFFIX.zip
 notifications:
   webhooks:
     urls:
