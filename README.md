@@ -54,20 +54,20 @@ installation you need to execute build_scripts\indigo-release-libs.py and
 build_scripts\indigo-release-utils.py:
 
 
-### Linux (gcc 4.7+)
+### Linux (GCC 4.9+ or Clang 3.5+)
 
 	build_scripts\indigo-release-libs.py --preset=linux64
 	build_scripts\indigo-release-utils.py --preset=linux64
 
-### Windows (Microsoft Visual Studio 2013+)
+### Windows (Microsoft Visual Studio 2013+ or MinGW with GCC version 4.9+)
 
 	build_scripts\indigo-release-libs.py --preset=win64-2013
 	build_scripts\indigo-release-utils.py --preset=win64-2013
 
-### Mac OS (Clang 3.0+)
+### Mac OS (Clang 3.5+)
 
-	build_scripts\indigo-release-libs.py --preset=mac10.10
-	build_scripts\indigo-release-utils.py --preset=mac10.10
+	build_scripts\indigo-release-libs.py --preset=mac10.12
+	build_scripts\indigo-release-utils.py --preset=mac10.102
 
 ### Other
 
