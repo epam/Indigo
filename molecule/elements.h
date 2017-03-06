@@ -142,12 +142,12 @@ enum
    ELEM_Ds,
    ELEM_Rg,
    ELEM_Cn,
-   ELEM_Uut,
+   ELEM_Nh,       // ELEM_Uut
    ELEM_Fl,
-   ELEM_Uup,
+   ELEM_Mc,       // ELEM_Uup
    ELEM_Lv,
-   ELEM_Uus,
-   ELEM_Uuo,
+   ELEM_Ts,       // ELEM_Uus
+   ELEM_Og,       // ELEM_Uuo
    ELEM_MAX,
    ELEM_PSEUDO,   // pseudoatom
    ELEM_RSITE,    // 'R' atom

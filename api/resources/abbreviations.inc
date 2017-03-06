@@ -31,7 +31,6 @@ static const char *default_abbreviations_xml =
   "	<item name=\"Ms\" expansion=\"CS([*])(=O)=O\"/>\n"
   "	<item name=\"Cys\" expansion=\"SC[C@H](N[*:1])C([*:2])=O\"/>\n"
   "	<item name=\"Pr\" expansion=\"*CCC\"/>\n"
-  "	<item name=\"Ts\" expansion=\"CC1=CC=C(C=C1)S([*])(=O)=O\"/>\n"
   "	<item name=\"t-Bu\" expansion=\"CC(C)(C)[*]\"/>\n"
   "	<item name=\"Bu\" expansion=\"CCCC[*]\">\n"
   "		<alias>Bu</alias><alias>n-Bu</alias></item>\n"

@@ -189,12 +189,12 @@ void Element::_initAllPeriodic ()
    INIT(Ds, 7, 3);
    INIT(Rg, 7, 3);
    INIT(Cn, 7, 3);
-   INIT(Uut, 7, 3);
+   INIT(Nh, 7, 3);
    INIT(Fl, 7, 4);
-   INIT(Uup, 7, 5);
+   INIT(Mc, 7, 5);
    INIT(Lv, 7, 6);
-   INIT(Uus, 7, 7);
-   INIT(Uuo, 7, 8);
+   INIT(Ts, 7, 7);
+   INIT(Og, 7, 8);
    #undef INIT
 }
 
@@ -902,7 +902,7 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
    else if (groupno == 8)
    {
       if (elem == ELEM_He || elem == ELEM_Ne || elem == ELEM_Ar ||
-          elem == ELEM_Kr || elem == ELEM_Xe || elem == ELEM_Rn || elem == ELEM_Uuo)
+          elem == ELEM_Kr || elem == ELEM_Xe || elem == ELEM_Rn || elem == ELEM_Og)
       {
          valence = 0;
          hyd = 0 - rad - conn - abs(charge);

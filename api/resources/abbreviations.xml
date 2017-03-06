@@ -30,7 +30,6 @@
 	<item name="Ms" expansion="CS([*])(=O)=O"/>
 	<item name="Cys" expansion="SC[C@H](N[*:1])C([*:2])=O"/>
 	<item name="Pr" expansion="*CCC"/>
-	<item name="Ts" expansion="CC1=CC=C(C=C1)S([*])(=O)=O"/>
 	<item name="t-Bu" expansion="CC(C)(C)[*]"/>
 	<item name="Bu" expansion="CCCC[*]">
 		<alias>Bu</alias><alias>n-Bu</alias></item>
