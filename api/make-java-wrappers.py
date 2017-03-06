@@ -1,14 +1,12 @@
 import os
 import shutil
 from os.path import *
-import re
 import subprocess
 
 from optparse import OptionParser
 
 parser = OptionParser(description='Indigo Java libraries build script')
 parser.add_option('--suffix', '-s', help='archive suffix', default="")
-parser.add_option('--doc', default=False, action='store_true', help='Put documentation into the archive')
 
 (args, left_args) = parser.parse_args()
 
@@ -49,12 +47,12 @@ shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-nosql-%s.j
 
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "java")
-if args.doc:
-	doc_dir = join(api_dir, '..', 'doc')
-	shutil.copytree(os.path.join(doc_dir, 'build', 'html'), os.path.join('java', 'doc'))
 
 shutil.copy(os.path.join(root, "common", "jna", "jna.jar"), "java")
 
-archive_name = "indigo-java-%s" % (version + args.suffix)
+archive_name = "./indigo-java-%s" % (version + args.suffix)
 os.rename("java", archive_name)
-subprocess.check_call("zip -r -9 -m %s.zip %s" % (archive_name, archive_name), shell=True)
+if os.path.exists(archive_name + ".zip"):
+    os.remove(archive_name + ".zip")
+shutil.make_archive(archive_name, 'zip', os.path.dirname(archive_name), archive_name)
+shutil.rmtree(archive_name)
