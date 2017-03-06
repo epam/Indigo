@@ -785,10 +785,11 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
       }
 
       const char *query_type = elem->Attribute("queryType");
+      const char *topology = elem->Attribute("topology");
 
       if (_mol != 0)
       {
-         if (query_type == 0)
+         if ( (query_type == 0) && (topology == 0) )
             idx = _mol->addBond_Silent(beg, end, order_val);
          else
             throw Error("'query type' bonds are allowed only for queries");
