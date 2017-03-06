@@ -180,6 +180,21 @@ static void indigoGetPkaModel (char *model, int len)
        setStrValue("advanced", model, len);
 }
 
+
+static void indigoSetMaxEmbeddings (int value)
+{
+   Indigo &self = indigoGetInstance();
+   if (value <= 0)
+      throw IndigoError("Maximum allowed embeddings limit must be positive.");
+   self.max_embeddings = value;
+}
+
+static void indigoGetMaxEmbeddings (int& value)
+{
+   Indigo &self = indigoGetInstance();
+   value = self.max_embeddings;
+}
+
 static void indigoResetBasicOptions ()
 {
    Indigo &self = indigoGetInstance();
@@ -218,7 +233,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerString("layout-orientation", indigoSetLayoutOrientation, indigoGetLayoutOrientation);
 
    mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness, indigoGetEmbeddingUniqueness);
-   mgr.setOptionHandlerInt("max-embeddings", SETTER_GETTER_INT_OPTION(indigo.max_embeddings));
+   mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings, indigoGetMaxEmbeddings);
 
    mgr.setOptionHandlerInt("layout-max-iterations", SETTER_GETTER_INT_OPTION(indigo.layout_max_iterations));
 
