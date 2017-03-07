@@ -1,10 +1,11 @@
 PROJECT(InChI)
 
-file (GLOB InChI_src inchi_dll/*.c)
-file (GLOB InChI_headers inchi_dll/*.h)
-
-add_library(inchi STATIC ${InChI_src} ${InChI_headers})
-set_target_properties(inchi PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+file (GLOB INCHI_BASE_src INCHI_BASE/src/*.c)
+file (GLOB INCHI_BASE_headers INCHI_BASE/src/*.h)
+file (GLOB INCHI_API_src INCHI_API/libinchi/src/*.c)
+file (GLOB INCHI_API_headers INCHI_API/libinchi/s*.h)
+add_library(inchi STATIC ${INCHI_BASE_src} ${INCHI_BASE_headers} ${INCHI_API_src} ${INCHI_API_headers})
+set_target_properties(inchi PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DTARGET_API_LIB")
 
 set_property(TARGET inchi PROPERTY FOLDER "third_party")
 if (NOT NO_STATIC)

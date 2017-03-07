@@ -19,6 +19,7 @@ if(UNIX OR APPLE)
     set(COMPILE_FLAGS "${COMPILE_FLAGS} -Wall -Wno-unused-but-set-variable -Wno-strict-aliasing -Wno-strict-overflow")
 endif()
 
-set_target_properties(molecule PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+set_target_properties(molecule PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DTARGET_API_LIB")
 
-include_directories (../third_party/inchi/inchi_dll)
+include_directories (../third_party/inchi/INCHI_BASE/src)
+# include_directories (../third_party/inchi/INCHI_API/libinchi/src)

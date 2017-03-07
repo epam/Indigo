@@ -12,7 +12,7 @@ include_directories(${IndigoInchi_SOURCE_DIR}
 	${Indigo_SOURCE_DIR}/src
 	${Common_SOURCE_DIR}
 	${Common_SOURCE_DIR}/..
-	${InChI_SOURCE_DIR}/inchi_dll)
+	${InChI_SOURCE_DIR}/INCHI_BASE/src)
 include(DefineTest)
 
 add_library(indigo-inchi-Obj OBJECT ${IndigoInchi_src} ${IndigoInchi_headers})
