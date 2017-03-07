@@ -62,6 +62,9 @@ def join_archives(names, destname):
 
 def join_archives_by_pattern(pattern, destname):
     archives = []
+    print(os.curdir)
+    print(pattern)
+    print(os.listdir(os.curdir))
     for f in os.listdir(os.curdir):
         if re.match(pattern, f):
             archives.append(os.path.splitext(f)[0])
@@ -178,4 +181,5 @@ if __name__ == '__main__':
                     if args.type is not None:
                         for g in args.type.split(','):
                             if gen.find(g) != -1:
-                                subprocess.check_call('"%s" %s -s "-%s"' % (sys.executable, os.path.join(api_dir, gen), w), shell=True)
+                                command = '"%s" %s -s "-%s"' % (sys.executable, os.path.join(api_dir, gen), w)
+                                subprocess.check_call(command, shell=True)

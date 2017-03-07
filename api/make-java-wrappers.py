@@ -40,7 +40,7 @@ subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
 subprocess.check_call("mvn clean package -Dmaven.test.skip=true", shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-inchi-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-inchi.jar'))
 
-os.chdir(os.path.join(api_dir, "plugins", "bingo", "java")) # TODO: Update when folder will be changed to nosql
+os.chdir(os.path.join(api_dir, "plugins", "bingo", "java"))  # TODO: Update when folder will be changed to nosql
 subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
 subprocess.check_call("mvn clean package -Dmaven.test.skip=true", shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-nosql-%s.jar' % version), os.path.join(dist_dir, 'java', 'bingo-nosql.jar'))
@@ -56,3 +56,4 @@ if os.path.exists(archive_name + ".zip"):
     os.remove(archive_name + ".zip")
 shutil.make_archive(archive_name, 'zip', os.path.dirname(archive_name), archive_name)
 shutil.rmtree(archive_name)
+print('Archive {}.zip created'.format(archive_name))
