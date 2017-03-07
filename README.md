@@ -56,8 +56,8 @@ build_scripts\indigo-release-utils.py:
 
 ### Linux (GCC 4.9+ or Clang 3.5+)
 
-	build_scripts\indigo-release-libs.py --preset=linux64
-	build_scripts\indigo-release-utils.py --preset=linux64
+	build_scripts/indigo-release-libs.py --preset=linux64
+	build_scripts/indigo-release-utils.py --preset=linux64
 
 ### Windows (Microsoft Visual Studio 2013+ or MinGW with GCC version 4.9+)
 
@@ -66,8 +66,8 @@ build_scripts\indigo-release-utils.py:
 
 ### Mac OS (Clang 3.5+)
 
-	build_scripts\indigo-release-libs.py --preset=mac10.12
-	build_scripts\indigo-release-utils.py --preset=mac10.102
+	build_scripts/indigo-release-libs.py --preset=mac10.12
+	build_scripts/indigo-release-utils.py --preset=mac10.102
 
 ### Other
 
