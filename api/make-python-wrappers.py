@@ -34,10 +34,10 @@ shutil.copytree(os.path.join(api_dir, "libs", "shared"),
                 ignore=shutil.ignore_patterns("*.lib"))
 
 shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), dest)
-
 os.chdir(dist_dir)
 if os.path.exists(archive_name + ".zip"):
     os.remove(archive_name + ".zip")
 shutil.make_archive(archive_name, 'zip', os.path.dirname(archive_name), archive_name)
 shutil.rmtree(archive_name)
-print('Archive {}.zip created'.format(archive_name))
+full_archive_name = os.path.normpath(os.path.join(dist_dir, archive_name))
+print('Archive {}.zip created'.format(full_archive_name))

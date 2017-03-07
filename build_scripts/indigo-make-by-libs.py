@@ -62,9 +62,6 @@ def join_archives(names, destname):
 
 def join_archives_by_pattern(pattern, destname):
     archives = []
-    print(os.curdir)
-    print(pattern)
-    print(os.listdir(os.curdir))
     for f in os.listdir(os.curdir):
         if re.match(pattern, f):
             archives.append(os.path.splitext(f)[0])
@@ -87,7 +84,7 @@ def clear_libs():
 def unpack_to_libs(name):
     with zipfile.ZipFile('{}.zip'.format(name)) as zf:
         zf.extractall(libs_dir)
-        unzipped_folder = os.path.join(libs_dir, zf.namelist()[0])
+        unzipped_folder = os.path.join(libs_dir, os.path.basename(name))
         shutil.move(os.path.join(unzipped_folder, 'shared'), libs_dir)
         shutil.rmtree(unzipped_folder)
 
@@ -181,5 +178,6 @@ if __name__ == '__main__':
                     if args.type is not None:
                         for g in args.type.split(','):
                             if gen.find(g) != -1:
-                                command = '"%s" %s -s "-%s"' % (sys.executable, os.path.join(api_dir, gen), w)
+                                command = '"%s" "%s" -s "-%s"' % (sys.executable, os.path.join(api_dir, gen), w)
+                                print(command)
                                 subprocess.check_call(command, shell=True)
