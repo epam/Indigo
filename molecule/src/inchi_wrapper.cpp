@@ -68,7 +68,7 @@ private:
 
 const char* InchiWrapper::version()
 {
-	return INCHI_NAME " version " INCHI_VERSION APP_DESCRIPTION;
+	return APP_DESCRIPTION;
 }
 
 InchiWrapper::InchiWrapper()
