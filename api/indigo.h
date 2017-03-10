@@ -100,6 +100,8 @@ CEXPORT int indigoGetOptionFloat (const char *name, float* value);
 CEXPORT int indigoGetOptionColor (const char *name, float* r, float* g, float* b);
 CEXPORT int indigoGetOptionXY (const char *name, int* x, int* y);
 
+CEXPORT int indigoGetOptionType(const char* name, char* value, int len);
+
 /* Basic input-output */
 
 // indigoRead*** return a new reader object.

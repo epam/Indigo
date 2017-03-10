@@ -77,46 +77,69 @@ void OptionManager::callOptionHandlerXY (const char* name, int x, int y) {
    xySetters.at(name)(x, y);
 }
 
-void OptionManager::GetOptionValueInt (const char* name, int& value)
+void OptionManager::getOptionValueInt (const char* name, int& value)
 {
    CHECK_OPT_DEFINED(name);
    CHECK_OPT_TYPE(name, OPTION_INT);
    intGetters.at(name)(value);
 }
 
-void OptionManager::GetOptionValueStr (const char* name, char* value, int len)
+void OptionManager::getOptionValueStr (const char* name, char* value, int len)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_STRING);
     stringGetters.at(name)(value, len);
 }
 
-void OptionManager::GetOptionValueBool (const char* name, int& value)
+void OptionManager::getOptionValueBool (const char* name, int& value)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_BOOL);
     boolGetters.at(name)(value);
 }
 
-void OptionManager::GetOptionValueFloat (const char* name, float& value)
+void OptionManager::getOptionValueFloat (const char* name, float& value)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_FLOAT);
     floatGetters.at(name)(value);
 }
 
-void OptionManager::GetOptionValueColor (const char* name, float& r, float& g, float& b)
+void OptionManager::getOptionValueColor (const char* name, float& r, float& g, float& b)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_COLOR);
     colorGetters.at(name)(r, g, b);
 }
 
-void OptionManager::GetOptionValueXY (const char* name, int& x, int& y)
+void OptionManager::getOptionValueXY (const char* name, int& x, int& y)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_XY);
     xyGetters.at(name)(x, y);
+}
+
+void OptionManager::getOptionType(const char* name, char* value, int len)
+{
+    CHECK_OPT_DEFINED(name);
+    if (!typeMap.find(name))
+      throw Error("Property \"%s\" not defined", name);
+ 
+    auto copyString = [](const char* source, char* dest, int len){
+      if(strlen(source) > len)
+        throw Error("invalid string value len: expected len: %d, actual len: %d", len, strlen(source));
+      memset (dest, ' ', len);
+      strcpy(dest, source);  
+    };
+    switch(typeMap.at(name))
+    {
+        case OPTION_STRING: copyString("str", value, len); break;
+        case OPTION_INT: copyString("int", value, len); break;
+        case OPTION_BOOL: copyString("bool", value, len); break;
+        case OPTION_FLOAT: copyString("float", value, len); break;
+        case OPTION_COLOR: copyString("color", value, len); break;
+        case OPTION_XY: copyString("xy", value, len); break;       
+    }
 }
 
 bool OptionManager::hasOptionHandler (const char* name) {

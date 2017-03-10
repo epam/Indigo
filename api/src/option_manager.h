@@ -141,14 +141,16 @@ public:
    void callOptionHandlerVoid(const char* name);
    void callOptionHandler (const char* name, const char* value);
 
-   void GetOptionValueStr (const char* name, char* value, int len);
-   void GetOptionValueInt (const char* name, int& value);
-   void GetOptionValueBool (const char* name, int& value);
-   void GetOptionValueFloat (const char* name, float& value);
-   void GetOptionValueColor (const char* name, float& r, float& g, float& b);
-   void GetOptionValueXY (const char* name, int& x, int& y);
+   void getOptionValueStr (const char* name, char* value, int len);
+   void getOptionValueInt (const char* name, int& value);
+   void getOptionValueBool (const char* name, int& value);
+   void getOptionValueFloat (const char* name, float& value);
+   void getOptionValueColor (const char* name, float& r, float& g, float& b);
+   void getOptionValueXY (const char* name, int& x, int& y);
 
    int nOptions () const;
+   
+   void getOptionType(const char* name, char* value, int len);
 
    OsLock lock;
 protected:

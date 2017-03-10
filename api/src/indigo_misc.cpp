@@ -113,7 +113,7 @@ CEXPORT int indigoGetOption (const char *name, char *value, int len)
    {
       if(value)
       {
-        indigoGetOptionManager().GetOptionValueStr(name, value, len);
+        indigoGetOptionManager().getOptionValueStr(name, value, len);
         return 1;
       }
    }
@@ -126,7 +126,7 @@ CEXPORT int indigoGetOptionInt (const char *name, int* value)
    {
       if(value)
       {
-        indigoGetOptionManager().GetOptionValueInt(name, *value);
+        indigoGetOptionManager().getOptionValueInt(name, *value);
         return 1;
       }
    }
@@ -139,7 +139,7 @@ CEXPORT int indigoGetOptionBool (const char *name, int* value)
    {
       if(value)
       {
-        indigoGetOptionManager().GetOptionValueBool(name, *value);
+        indigoGetOptionManager().getOptionValueBool(name, *value);
         return 1;
       }
    }
@@ -152,7 +152,7 @@ CEXPORT int indigoGetOptionFloat (const char *name, float* value)
    {
       if(value)
       {
-        indigoGetOptionManager().GetOptionValueFloat(name, *value);
+        indigoGetOptionManager().getOptionValueFloat(name, *value);
         return 1;
       }
    }
@@ -165,7 +165,7 @@ CEXPORT int indigoGetOptionColor (const char *name, float* r, float* g, float* b
    {
       if(r && g && b)
       {
-        indigoGetOptionManager().GetOptionValueColor(name, *r, *g, *b);
+        indigoGetOptionManager().getOptionValueColor(name, *r, *g, *b);
         return 1;
       }
    }
@@ -178,7 +178,20 @@ CEXPORT int indigoGetOptionXY (const char *name, int* x, int* y)
    {
       if(x && y)
       {
-        indigoGetOptionManager().GetOptionValueXY(name, *x, *y);
+        indigoGetOptionManager().getOptionValueXY(name, *x, *y);
+        return 1;
+      }
+   }
+   INDIGO_END(-1)
+}
+
+CEXPORT int indigoGetOptionType(const char* name, char* value, int len)
+{
+    INDIGO_BEGIN
+   {
+      if(value)
+      {
+        indigoGetOptionManager().getOptionType(name, value, len);
         return 1;
       }
    }
