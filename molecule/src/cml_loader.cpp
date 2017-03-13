@@ -21,7 +21,17 @@
 
 using namespace indigo;
 
+static float readFloat(const char* point_str) {
+   float res = 0;
+   if (point_str != 0) {
+      BufferScanner strscan(point_str);
+      res = strscan.readFloat();
+   }
+   return res;
+}
+
 IMPL_ERROR(CmlLoader, "CML loader");
+
 
 CmlLoader::CmlLoader (Scanner &scanner)
 {
@@ -131,15 +141,15 @@ struct Atom
       hydrogen_count, 
       atom_mapping, 
       atom_inversion, 
-      atom_exact_change, 
-      x, y, z;
+      atom_exact_change,
+      x,y,z;
 };
 
 // This methods splits a space-separated string and writes each values into an arbitrary string
 // property of Atom structure for each atom in the specified list
 static void splitStringIntoProperties (const char *s, std::vector<Atom> &atoms, std::string Atom::*property)
 {
-   if (!s)
+   if (s == 0)
       return;
 
    std::stringstream stream(s);
@@ -205,11 +215,6 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
    splitStringIntoProperties(atom_array.Element()->Attribute("elementType"), atoms, &Atom::element_type);
    splitStringIntoProperties(atom_array.Element()->Attribute("mrvPseudo"), atoms, &Atom::label);
    splitStringIntoProperties(atom_array.Element()->Attribute("hydrogenCount"), atoms, &Atom::hydrogen_count);
-   splitStringIntoProperties(atom_array.Element()->Attribute("x2"), atoms, &Atom::x);
-   splitStringIntoProperties(atom_array.Element()->Attribute("y2"), atoms, &Atom::y);
-   splitStringIntoProperties(atom_array.Element()->Attribute("x3"), atoms, &Atom::x);
-   splitStringIntoProperties(atom_array.Element()->Attribute("y3"), atoms, &Atom::y);
-   splitStringIntoProperties(atom_array.Element()->Attribute("z3"), atoms, &Atom::z);
    splitStringIntoProperties(atom_array.Element()->Attribute("isotope"), atoms, &Atom::isotope);
    splitStringIntoProperties(atom_array.Element()->Attribute("isotopeNumber"), atoms, &Atom::isotope);
    splitStringIntoProperties(atom_array.Element()->Attribute("formalCharge"), atoms, &Atom::formal_charge);
@@ -224,6 +229,11 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
    splitStringIntoProperties(atom_array.Element()->Attribute("mrvMap"), atoms, &Atom::atom_mapping);
    splitStringIntoProperties(atom_array.Element()->Attribute("reactionStereo"), atoms, &Atom::atom_inversion);
    splitStringIntoProperties(atom_array.Element()->Attribute("exactChage"), atoms, &Atom::atom_exact_change);
+   splitStringIntoProperties(atom_array.Element()->Attribute("x2"), atoms, &Atom::x);
+   splitStringIntoProperties(atom_array.Element()->Attribute("y2"), atoms, &Atom::y);
+   splitStringIntoProperties(atom_array.Element()->Attribute("x3"), atoms, &Atom::x);
+   splitStringIntoProperties(atom_array.Element()->Attribute("y3"), atoms, &Atom::y);
+   splitStringIntoProperties(atom_array.Element()->Attribute("z3"), atoms, &Atom::z);
 
    // Read atoms as nested xml elements
    //   <atomArray>
@@ -317,27 +327,29 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
 
       if (atom_exact != 0)
          a.atom_exact_change = atom_exact;
-
+      
+      /*
+       * Read coordinates
+       */
       const char *x2 = elem->Attribute("x2");
       const char *y2 = elem->Attribute("y2");
 
-      if (x2 != 0 && y2 != 0)
-      {
+      if (x2 != 0 && y2 != 0) {
          a.x = x2;
          a.y = y2;
+      } else {
+         const char *x3 = elem->Attribute("x3");
+         const char *y3 = elem->Attribute("y3");
+         const char *z3 = elem->Attribute("z3");
+
+         if (x3 != 0 && y3 != 0 && z3 != 0) {
+            a.x = x3;
+            a.y = y3;
+            a.z = z3;
+         }
       }
-
-      const char *x3 = elem->Attribute("x3");
-      const char *y3 = elem->Attribute("y3");
-      const char *z3 = elem->Attribute("z3");
-
-      if (x3 != 0 && y3 != 0 && z3 != 0)
-      {
-         a.x = x3;
-         a.y = y3;
-         a.z = z3;
-      }
-
+      
+      
       const char *rgroupref = elem->Attribute("rgroupRef");
 
       if (rgroupref != 0)
@@ -675,18 +687,19 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
                if (val & (1 << att_idx))
                   _bmol->addAttachmentPoint(att_idx + 1, idx);
          }
-
-         if (!a.x.empty())
-            if (sscanf(a.x.c_str(), "%f", &_bmol->getAtomXyz(idx).x) != 1)
-               throw Error("error parsing x");
-   
-         if (!a.y.empty())
-            if (sscanf(a.y.c_str(), "%f", &_bmol->getAtomXyz(idx).y) != 1)
-               throw Error("error parsing y");
-   
-         if (!a.z.empty())
-            if (sscanf(a.z.c_str(), "%f", &_bmol->getAtomXyz(idx).z) != 1)
-               throw Error("error parsing z");
+         Vec3f a_pos;
+         
+         if (!a.x.empty()) {
+            a_pos.x = readFloat(a.x.c_str());
+         }
+         if (!a.y.empty()) {
+            a_pos.y = readFloat(a.y.c_str());
+         }
+         if (!a.z.empty()) {
+            a_pos.z = readFloat(a.z.c_str());
+         }
+         
+         _bmol->setAtomXyz(idx, a_pos);
 
          if (!a.alias.empty())
          {
@@ -1233,19 +1246,12 @@ void CmlLoader::_loadSGroupElement (TiXmlElement *elem, std::unordered_map<std::
                if (point_idx == 0)
                   pbrackets = dsg->brackets.push();
   
-               float x=0,y=0;
                const char *point_x = pPoint->Attribute("x");
-               if (point_x != 0)
-               {
-                  BufferScanner strscan(point_x);
-                  x = strscan.readFloat();
-               }
                const char *point_y = pPoint->Attribute("y");
-               if (point_y != 0)
-               {
-                  BufferScanner strscan(point_y);
-                  y = strscan.readFloat();
-               }
+
+               float x = readFloat(point_x);
+               float y = readFloat(point_y);
+               
                pbrackets[point_idx].x = x;
                pbrackets[point_idx].y = y;
                point_idx++;
@@ -1692,19 +1698,12 @@ void CmlLoader::_loadSGroupElement (TiXmlElement *elem, std::unordered_map<std::
                if (point_idx == 0)
                   pbrackets = sup->brackets.push();
   
-               float x=0,y=0;
                const char *point_x = pPoint->Attribute("x");
-               if (point_x != 0)
-               {
-                  BufferScanner strscan(point_x);
-                  x = strscan.readFloat();
-               }
                const char *point_y = pPoint->Attribute("y");
-               if (point_y != 0)
-               {
-                  BufferScanner strscan(point_y);
-                  y = strscan.readFloat();
-               }
+
+               float x = readFloat(point_x);
+               float y = readFloat(point_y);
+               
                pbrackets[point_idx].x = x;
                pbrackets[point_idx].y = y;
                point_idx++;
