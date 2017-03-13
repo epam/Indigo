@@ -1925,8 +1925,17 @@ bool QueryMolecule::collectAtomList (QueryMolecule::Atom& qa, Array<int>& list, 
       QueryMolecule::Atom* qap = &qa;
       if (notList) {
          qap = qa.child(0);
-         if (qap->type != QueryMolecule::OP_OR)
+         if ( (qap->type != QueryMolecule::OP_OR) && qa.children.size() > 1)
+         {
             return false;
+         }
+         else  // Single NOT atom
+         {
+            if (qap->type != QueryMolecule::ATOM_NUMBER || qap->value_min != qap->value_max)
+              return false;
+            list.push(qap->value_min);
+            return true;
+         }
       }
       for (int i = 0; i < qap->children.size(); ++i) {
          QueryMolecule::Atom& qc = *qap->child(i);
