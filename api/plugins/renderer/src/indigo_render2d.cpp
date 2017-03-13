@@ -59,20 +59,6 @@ IndigoRenderer::~IndigoRenderer ()
 {
 }
 
-static void copyStrValue(const Array<char>& source, char* dest, int len)
-{
-    if(source.sizeInBytes() > len)
-        throw IndigoError("invalid string value len: expected len: %d, actual len: %d", len, source.size());
-    memcpy(dest, source.ptr(), source.sizeInBytes());
-}
-
-static void copyString(const char* source, char* dest, int len)
-{
-    if(strlen(source) > len)
-        throw IndigoError("invalid string value len: expected len: %d, actual len: %d", len, strlen(source));
-    strcpy(dest, source);
-}
-
 #define SET_POSITIVE_FLOAT_OPTION(option, error)                   \
    [](float value) {                                               \
       if (value <= 0.0f)                                           \
@@ -126,11 +112,11 @@ void indigoRenderSetOutputFormat (const char *format)
    rp.rOpt.mode = indigoRenderMapOutputFormat(format);
 }
 
-void indigoRenderGetOutputFormat (char *format, int len)
+void indigoRenderGetOutputFormat (Array<char>& value)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    const char* mode = indigoRenderOutputFormatToString(rp.rOpt.mode);
-   copyString(mode, format, len);
+   value.readString(mode, true);
 }
 
 void indigoRenderSetStereoStyle (const char* mode)
@@ -145,14 +131,14 @@ void indigoRenderSetStereoStyle (const char* mode)
    rp.rOpt.stereoMode = (STEREO_STYLE)stereoStyleMap.at(mode);
 }
 
-void indigoRenderGetStereoStyle (char* mode, int len)
+void indigoRenderGetStereoStyle (Array<char>& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     switch(rp.rOpt.stereoMode)
     {
-        case STEREO_STYLE_EXT: copyString("ext", mode, len); break;
-        case STEREO_STYLE_OLD: copyString("old", mode, len); break;
-        case STEREO_STYLE_NONE: copyString("none", mode, len); break;
+        case STEREO_STYLE_EXT: value.readString("ext", true); break;
+        case STEREO_STYLE_OLD: value.readString("old", true); break;
+        case STEREO_STYLE_NONE: value.readString("none", true); break;
     }
 }
 
@@ -169,15 +155,15 @@ void indigoRenderSetLabelMode (const char* mode)
    rp.rOpt.labelMode = (LABEL_MODE)labelMap.at(mode);
 }
 
-void indigoRenderGetLabelMode (char* mode, int len)
+void indigoRenderGetLabelMode (Array<char>& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     switch(rp.rOpt.labelMode)
     {
-        case LABEL_MODE_NONE: copyString("none", mode, len); break;
-        case LABEL_MODE_HETERO: copyString("hetero", mode, len); break;
-        case LABEL_MODE_TERMINAL_HETERO: copyString("terminal-hetero", mode, len); break;
-        case LABEL_MODE_ALL: copyString("all", mode, len); break;
+        case LABEL_MODE_NONE: value.readString("none", true); break;
+        case LABEL_MODE_HETERO: value.readString("hetero", true); break;
+        case LABEL_MODE_TERMINAL_HETERO: value.readString("terminal-hetero", true); break;
+        case LABEL_MODE_ALL: value.readString("all", true); break;
     }
 }
 
@@ -192,13 +178,13 @@ void indigoRenderSetCatalystsPlacement (const char* mode)
    rp.rOpt.agentsBelowArrow = agentPlacementMap.at(mode) != 0;
 }
 
-void indigoRenderGetCatalystsPlacement (char* mode, int len)
+void indigoRenderGetCatalystsPlacement (Array<char>& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     if(rp.rOpt.agentsBelowArrow)
-        copyString("above-and-below", mode, len);
+        value.readString("above-and-below", true);
     else
-        copyString("above", mode, len);
+        value.readString("above", true);
 }
 
 void indigoRenderSetSuperatomMode (const char* mode)
@@ -212,13 +198,13 @@ void indigoRenderSetSuperatomMode (const char* mode)
    rp.rOpt.collapseSuperatoms = stereoAtomMode.at(mode) != 0;
 }
 
-void indigoRenderGetSuperatomMode (char* mode, int len)
+void indigoRenderGetSuperatomMode (Array<char>& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     if(rp.rOpt.collapseSuperatoms)
-        copyString("collapse", mode, len);
+        value.readString("collapse", true);
     else
-        copyString("expand", mode, len);
+        value.readString("expand", true);
 }
 
 static MultilineTextLayout _parseTextLayout (const char *text)
@@ -253,18 +239,18 @@ static MultilineTextLayout _parseTextLayout (const char *text)
       throw IndigoError("Option value is invalid");
 }
 
-static void layoutToText (const MultilineTextLayout& layout, char *text, int len)
+static void layoutToText (const MultilineTextLayout& layout, Array<char>& value)
 {
     switch(layout.bbox_alignment)
     {
-        case MultilineTextLayout::Left: copyString("left", text, len); break;
-        case MultilineTextLayout::Right: copyString("right", text, len); break;
+        case MultilineTextLayout::Left: value.readString("left", true); break;
+        case MultilineTextLayout::Right: value.readString("right", true); break;
         case MultilineTextLayout::Center:
             switch(layout.inbox_alignment)
             {
-                case MultilineTextLayout::Left: copyString("center-left", text, len); break;
-                case MultilineTextLayout::Right: copyString("center-right", text, len); break;
-                case MultilineTextLayout::Center: copyString("center", text, len); break;
+                case MultilineTextLayout::Left: value.readString("center-left", true); break;
+                case MultilineTextLayout::Right: value.readString("center-right", true); break;
+                case MultilineTextLayout::Center: value.readString("center", true); break;
             }
             break;
     }
@@ -276,10 +262,10 @@ void indigoRenderSetCommentAlignment (const char *text)
    rp.cnvOpt.commentAlign = _parseTextLayout(text);
 }
 
-void indigoRenderGetCommentAlignment (char *text, int len)
+void indigoRenderGetCommentAlignment (Array<char>& value)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   layoutToText(rp.cnvOpt.commentAlign, text, len);
+   layoutToText(rp.cnvOpt.commentAlign, value);
 }
 
 void indigoRenderSetTitleAlignment (const char *text)
@@ -288,10 +274,10 @@ void indigoRenderSetTitleAlignment (const char *text)
    rp.cnvOpt.titleAlign = _parseTextLayout(text);
 }
 
-void indigoRenderGetTitleAlignment (char *text, int len)
+void indigoRenderGetTitleAlignment (Array<char>& value)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
-   layoutToText(rp.cnvOpt.titleAlign, text, len);
+   layoutToText(rp.cnvOpt.titleAlign, value);
 }
 
 void indigoRenderSetCommentPosition (const char* pos)
@@ -305,13 +291,13 @@ void indigoRenderSetCommentPosition (const char* pos)
    rp.cnvOpt.commentPos = (COMMENT_POS)map.at(pos);
 }
 
-void indigoRenderGetCommentPosition (char *pos, int len)
+void indigoRenderGetCommentPosition (Array<char>& value)
 {
    RenderParams& rp = indigoRendererGetInstance().renderParams;
    if(rp.cnvOpt.commentPos == COMMENT_POS_TOP)
-       copyString("top", pos, len);
+       value.readString("top", true);
    else
-       copyString("bottom", pos, len);
+       value.readString("bottom", true);
 }
 
 RenderCdxmlContext& getCdxmlContext() {
@@ -333,13 +319,13 @@ void indigoRenderSetCdxmlPropertiesKeyAlignment(const char* value)
       throw IndigoError("Option value alignment is invalid");
 }
 
-void indigoRenderGetCdxmlPropertiesKeyAlignment(char* value, int len)
+void indigoRenderGetCdxmlPropertiesKeyAlignment(Array<char>& value)
 {
     RenderCdxmlContext& context = getCdxmlContext();
     if(context.keyAlignment == RenderCdxmlContext::ALIGNMENT_LEFT)
-        copyString("left", value, len);
+        value.readString("left", true);
     else
-        copyString("right", value, len);
+        value.readString("right", true);
 }
 
 CEXPORT int indigoRender (int object, int output)

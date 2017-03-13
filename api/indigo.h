@@ -93,14 +93,14 @@ CEXPORT int indigoSetOptionColor (const char *name, float r, float g, float b);
 CEXPORT int indigoSetOptionXY (const char *name, int x, int y);
 CEXPORT int indigoResetOptions ();
 
-CEXPORT int indigoGetOption (const char *name, char *value, int len);
+CEXPORT const char* indigoGetOption (const char *name);
 CEXPORT int indigoGetOptionInt (const char *name, int* value);
 CEXPORT int indigoGetOptionBool (const char *name, int* value);
 CEXPORT int indigoGetOptionFloat (const char *name, float* value);
 CEXPORT int indigoGetOptionColor (const char *name, float* r, float* g, float* b);
 CEXPORT int indigoGetOptionXY (const char *name, int* x, int* y);
 
-CEXPORT int indigoGetOptionType(const char* name, char* value, int len);
+CEXPORT const char* indigoGetOptionType(const char* name);
 
 /* Basic input-output */
 

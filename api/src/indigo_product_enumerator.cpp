@@ -252,13 +252,13 @@ static void copyString(const char* source, char* dest, int len)
     strcpy(dest, source);
 }
 
-void indigoProductEnumeratorGetOneTubeMode (char *mode_string, int len)
+void indigoProductEnumeratorGetOneTubeMode (Array<char>& value)
 {
    Indigo &self = indigoGetInstance();   
    if(self.rpe_params.is_one_tube)
-       copyString("one-tube", mode_string, len);
+       value.readString("one-tube", true);
    else
-       copyString("grid", mode_string, len);
+       value.readString("grid", true);
 }
 
 class _IndigoRPEOptionsHandlersSetter

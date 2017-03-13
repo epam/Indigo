@@ -51,7 +51,7 @@ using namespace indigo;
       if (typeMap.at(name) != type) \
          throw Error("Property type mismatch", name)
 
-#define SETTER_GETTER_BOOL_OPTION(option)                                    \
+#define SETTER_GETTER_BOOL_OPTION(option)                          \
    [](int enabled) {                                               \
       option = (enabled != 0);                                     \
    },                                                              \
@@ -59,7 +59,7 @@ using namespace indigo;
       enabled = (option != 0);                                     \
    }
 
-#define SETTER_GETTER_INT_OPTION(option)                             \
+#define SETTER_GETTER_INT_OPTION(option)                           \
    [](int value) {                                                 \
       option = value;                                              \
    },                                                              \
@@ -67,7 +67,7 @@ using namespace indigo;
       value = option;                                              \
    }
 
-#define SETTER_GETTER_FLOAT_OPTION(option)                                   \
+#define SETTER_GETTER_FLOAT_OPTION(option)                         \
    [](float value) {                                               \
       option = value;                                              \
    },                                                              \
@@ -75,7 +75,7 @@ using namespace indigo;
       value = option;                                              \
    }
 
-#define SETTER_GETTER_COLOR_OPTION(option)                                   \
+#define SETTER_GETTER_COLOR_OPTION(option)                         \
    [](float r, float g, float b) {                                 \
       option.set(r, g, b);                                         \
    },                                                              \
@@ -85,7 +85,7 @@ using namespace indigo;
       b = option.z;                                                \
    }
 
-#define SETTER_GETTER_XY_OPTION(optionX, optionY)                            \
+#define SETTER_GETTER_XY_OPTION(optionX, optionY)                  \
    [](int x, int y) {                                              \
       optionX = x;                                                 \
       optionY = y;                                                 \
@@ -95,12 +95,12 @@ using namespace indigo;
       y = optionY;                                                 \
    }
 
-#define SETTER_GETTER_STR_OPTION(option)                                     \
+#define SETTER_GETTER_STR_OPTION(option)                           \
    [](const char* value) {                                         \
       option.readString(value, true);                              \
    },                                                              \
-   [](char* value, int len) {                                      \
-      copyStrValue(option, value, len);                            \
+   [](Array<char>& value) {                                        \
+      option.copy(value);                                          \
    }
 
 class OptionManager {
@@ -113,7 +113,7 @@ public:
     typedef void (*optf_xy_t) (int, int);
     typedef void (*optf_void_t) ();
 
-    typedef void (*get_optf_string_t) (char*, int);
+    typedef void (*get_optf_string_t) (Array<char>& value);
     typedef void (*get_optf_int_t) (int&);
     typedef void (*get_optf_bool_t) (int&);
     typedef void (*get_optf_float_t) (float&);
@@ -141,7 +141,7 @@ public:
    void callOptionHandlerVoid(const char* name);
    void callOptionHandler (const char* name, const char* value);
 
-   void getOptionValueStr (const char* name, char* value, int len);
+   void getOptionValueStr (const char* name, Array<char>& value);
    void getOptionValueInt (const char* name, int& value);
    void getOptionValueBool (const char* name, int& value);
    void getOptionValueFloat (const char* name, float& value);
@@ -150,7 +150,7 @@ public:
 
    int nOptions () const;
    
-   void getOptionType(const char* name, char* value, int len);
+   void getOptionType(const char* name, Array<char>& value);
 
    OsLock lock;
 protected:

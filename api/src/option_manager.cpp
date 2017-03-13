@@ -84,11 +84,12 @@ void OptionManager::getOptionValueInt (const char* name, int& value)
    intGetters.at(name)(value);
 }
 
-void OptionManager::getOptionValueStr (const char* name, char* value, int len)
+void OptionManager::getOptionValueStr (const char* name, Array<char>& value)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_STRING);
-    stringGetters.at(name)(value, len);
+    stringGetters.at(name)(value);
+    value.push(0);
 }
 
 void OptionManager::getOptionValueBool (const char* name, int& value)
@@ -119,7 +120,7 @@ void OptionManager::getOptionValueXY (const char* name, int& x, int& y)
     xyGetters.at(name)(x, y);
 }
 
-void OptionManager::getOptionType(const char* name, char* value, int len)
+void OptionManager::getOptionType(const char* name, Array<char>& value)
 {
     CHECK_OPT_DEFINED(name);
     if (!typeMap.find(name))
@@ -133,12 +134,12 @@ void OptionManager::getOptionType(const char* name, char* value, int len)
     };
     switch(typeMap.at(name))
     {
-        case OPTION_STRING: copyString("str", value, len); break;
-        case OPTION_INT: copyString("int", value, len); break;
-        case OPTION_BOOL: copyString("bool", value, len); break;
-        case OPTION_FLOAT: copyString("float", value, len); break;
-        case OPTION_COLOR: copyString("color", value, len); break;
-        case OPTION_XY: copyString("xy", value, len); break;       
+        case OPTION_STRING: value.readString("str", true); break;
+        case OPTION_INT: value.readString("int", true); break;
+        case OPTION_BOOL: value.readString("bool", true); break;
+        case OPTION_FLOAT: value.readString("float", true); break;
+        case OPTION_COLOR: value.readString("color", true); break;
+        case OPTION_XY: value.readString("xy", true); break;       
     }
 }
 

@@ -102,11 +102,9 @@ void InchiWrapper::setOptions(const char *opt)
 #endif
 }
 
-void InchiWrapper::getOptions (char *opt, int len)
+void InchiWrapper::getOptions (Array<char>& value)
 {
-    if(options.sizeInBytes() > len)
-        throw Error("invalid options string len: expected len: %d, actual len: %d", len, options.size());
-    memcpy(opt, options.ptr(), options.sizeInBytes());
+    options.copy(value);
 }
 
 static inchi_BondType getInchiBondType (int bond_order)

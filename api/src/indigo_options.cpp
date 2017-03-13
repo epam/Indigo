@@ -35,19 +35,19 @@ static void indigoSetMolfileSavingMode (const char *mode)
       throw IndigoError("unknown value: %s", mode);
 }
 
-static void indigoGetMolfileSavingMode (char *mode, int len)
+static void indigoGetMolfileSavingMode (Array<char>& value)
 {
     Indigo &self = indigoGetInstance();
     switch(self.molfile_saving_mode)
     {
         case MolfileSaver::MODE_2000: 
-            setStrValue("2000", mode, len); 
+            value.readString("2000", true); 
         break;
         case MolfileSaver::MODE_3000: 
-            setStrValue("3000", mode, len); 
+            value.readString("3000", true); 
         break;
         case MolfileSaver::MODE_AUTO: 
-            setStrValue("auto", mode, len); 
+            value.readString("auto", true); 
         break;
     }
 }
@@ -63,13 +63,13 @@ static void indigoSetFilenameEncoding (const char *encoding)
       throw IndigoError("unknown value: %s", encoding);
 }
 
-static void indigoGetFilenameEncoding (char *encoding, int len)
+static void indigoGetFilenameEncoding (Array<char>& value)
 {
    Indigo &self = indigoGetInstance();
    if(self.filename_encoding == ENCODING_ASCII)
-       setStrValue("ASCII", encoding, len);
+       value.readString("ASCII", true);
    else
-       setStrValue("UTF-8", encoding, len);
+       value.readString("UTF-8", true);
 }
 
 static void indigoSetLayoutOrientation(const char *orientation)
@@ -85,14 +85,14 @@ static void indigoSetLayoutOrientation(const char *orientation)
         throw IndigoError("unknown value: %s", orientation);
 }
 
-static void indigoGetLayoutOrientation(char *orientation, int len)
+static void indigoGetLayoutOrientation(Array<char>& value)
 {
     Indigo &self = indigoGetInstance();
     switch(self.layout_orientation)
     {
-        case 0: setStrValue("unspecified", orientation, len); break;
-        case 1: setStrValue("horizontal", orientation, len); break;
-        case 2: setStrValue("vertical", orientation, len); break;
+        case 0: value.readString("unspecified", true); break;
+        case 1: value.readString("horizontal", true); break;
+        case 2: value.readString("vertical", true); break;
     }
 }
 
@@ -117,15 +117,15 @@ static void indigoSetEmbeddingUniqueness(const char *mode)
       throw IndigoError("unknown value: %s", mode);
 }
 
-static void indigoGetEmbeddingUniqueness(char *mode, int len)
+static void indigoGetEmbeddingUniqueness(Array<char>& value)
 {
    Indigo &self = indigoGetInstance();
    if(self.find_unique_embeddings == false)
-       setStrValue("none", mode, len);
+       value.readString("none", true);
    else if(self.embedding_edges_uniqueness == false)
-       setStrValue("atoms", mode, len);
+       value.readString("atoms", true);
    else 
-       setStrValue("bonds", mode, len);
+       value.readString("bonds", true);
 }
 
 static void indigoSetLayoutHorIntervalFactor(float value)
@@ -151,13 +151,13 @@ static void indigoSetAromaticityModel (const char *model)
       throw IndigoError("unknown value: %s. Allowed values are \"basic\", \"generic\"", model);
 }
 
-static void indigoGetAromaticityModel (char *model, int len)
+static void indigoGetAromaticityModel (Array<char>& value)
 {
    Indigo &self = indigoGetInstance();
    if(self.arom_options.method == AromaticityOptions::BASIC)
-       setStrValue("basic", model, len);
+       value.readString("basic", true);
    else
-       setStrValue("generic", model, len);
+       value.readString("generic", true);
 }
 
 static void indigoSetPkaModel (const char *model)
@@ -171,13 +171,13 @@ static void indigoSetPkaModel (const char *model)
       throw IndigoError("unknown value: %s. Allowed values are \"simple\", \"advanced\"", model);
 }
 
-static void indigoGetPkaModel (char *model, int len)
+static void indigoGetPkaModel (Array<char>& value)
 {
    Indigo &self = indigoGetInstance();
    if(self.ionize_options.model == IonizeOptions::PKA_MODEL_SIMPLE)
-       setStrValue("simple", model, len);
+       value.readString("simple", true);
    else 
-       setStrValue("advanced", model, len);
+       value.readString("advanced", true);
 }
 
 

@@ -107,17 +107,15 @@ CEXPORT int indigoSetOptionXY (const char *name, int x, int y)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoGetOption (const char *name, char *value, int len)
+CEXPORT const char* indigoGetOption (const char *name)
 {
    INDIGO_BEGIN
    {
-      if(value)
-      {
-        indigoGetOptionManager().getOptionValueStr(name, value, len);
-        return 1;
-      }
+        auto &tmp = self.getThreadTmpData();
+        indigoGetOptionManager().getOptionValueStr(name, tmp.string);
+        return tmp.string.ptr();
    }
-   INDIGO_END(-1)
+   INDIGO_END(0)
 }
 
 CEXPORT int indigoGetOptionInt (const char *name, int* value)
@@ -185,17 +183,15 @@ CEXPORT int indigoGetOptionXY (const char *name, int* x, int* y)
    INDIGO_END(-1)
 }
 
-CEXPORT int indigoGetOptionType(const char* name, char* value, int len)
+CEXPORT const char* indigoGetOptionType(const char* name)
 {
-    INDIGO_BEGIN
+   INDIGO_BEGIN
    {
-      if(value)
-      {
-        indigoGetOptionManager().getOptionType(name, value, len);
-        return 1;
-      }
+        auto &tmp = self.getThreadTmpData();
+        indigoGetOptionManager().getOptionType(name, tmp.string);
+        return tmp.string.ptr();
    }
-   INDIGO_END(-1)
+   INDIGO_END(0)
 }
 
 CEXPORT int indigoResetOptions ()

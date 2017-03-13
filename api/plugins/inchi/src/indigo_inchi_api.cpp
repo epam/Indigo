@@ -135,10 +135,10 @@ void indigoInchiSetInchiOptions (const char *options)
    inchi_wrapper.setOptions(options);
 }
 
-void indigoInchiGetInchiOptions (char *options, int len)
+void indigoInchiGetInchiOptions (Array<char>& value)
 {
    InchiWrapper &inchi_wrapper = indigoInchiGetInstance().inchi;
-   inchi_wrapper.getOptions(options, len);
+   inchi_wrapper.getOptions(value);
 }
 
 class _IndigoInchiOptionsHandlersSetter

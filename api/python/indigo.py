@@ -1506,8 +1506,8 @@ class Indigo(object):
         Indigo._lib.indigoSetOptionColor.argtypes = [c_char_p, c_float, c_float, c_float]
         Indigo._lib.indigoSetOptionXY.restype = c_int
         Indigo._lib.indigoSetOptionXY.argtypes = [c_char_p, c_int, c_int]
-        Indigo._lib.indigoGetOption.restype = c_int
-        Indigo._lib.indigoGetOption.argtypes = [c_char_p, c_char_p, c_int]
+        Indigo._lib.indigoGetOption.restype = c_char_p
+        Indigo._lib.indigoGetOption.argtypes = [c_char_p]
         Indigo._lib.indigoGetOptionInt.restype = c_int
         Indigo._lib.indigoGetOptionInt.argtypes = [c_char_p, POINTER(c_int)]
         Indigo._lib.indigoGetOptionBool.argtypes = [c_char_p, POINTER(c_int)]
@@ -1518,8 +1518,8 @@ class Indigo(object):
         Indigo._lib.indigoGetOptionColor.restype = c_int
         Indigo._lib.indigoGetOptionXY.argtypes = [c_char_p, POINTER(c_int), POINTER(c_int)]
         Indigo._lib.indigoGetOptionXY.restype = c_int
-        Indigo._lib.indigoGetOptionType.restype = c_int
-        Indigo._lib.indigoGetOptionType.argtypes = [c_char_p, c_char_p, c_int]
+        Indigo._lib.indigoGetOptionType.restype = c_char_p
+        Indigo._lib.indigoGetOptionType.argtypes = [c_char_p]
         Indigo._lib.indigoReadFile.restype = c_int
         Indigo._lib.indigoReadFile.argtypes = [c_char_p]
         Indigo._lib.indigoLoadString.restype = c_int
@@ -2238,15 +2238,11 @@ class Indigo(object):
     def getOption(self, option):
         self._setSessionId()
 
-        valueType = ' ' * 8
-        self._checkResult(Indigo._lib.indigoGetOptionType(option.encode(ENCODE_ENCODING), valueType, 8))
-        valueType = valueType.rstrip()[:-1]
+        valueType = self._checkResultString(Indigo._lib.indigoGetOptionType(option.encode(ENCODE_ENCODING)))
         
         if valueType == 'str': 
-            value = ' ' * 256
-            self._checkResult(Indigo._lib.indigoGetOption(option.encode(ENCODE_ENCODING), value, 256))
-            value = value.rstrip()
-            return value
+            return self._checkResultString(Indigo._lib.indigoGetOption(option.encode(ENCODE_ENCODING))) 
+
         elif valueType == 'int':
             value = c_int()
             self._checkResult(Indigo._lib.indigoGetOptionInt(option.encode(ENCODE_ENCODING), pointer(value)))
