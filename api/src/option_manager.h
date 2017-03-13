@@ -100,7 +100,7 @@ using namespace indigo;
       option.readString(value, true);                              \
    },                                                              \
    [](Array<char>& value) {                                        \
-      option.copy(value);                                          \
+      value.copy(option);                                          \
    }
 
 class OptionManager {
