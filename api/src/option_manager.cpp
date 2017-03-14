@@ -11,6 +11,7 @@
  * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
+#include <string>
 
 #include "option_manager.h"
 #include "base_cpp/scanner.h"
@@ -87,9 +88,60 @@ void OptionManager::getOptionValueInt (const char* name, int& value)
 void OptionManager::getOptionValueStr (const char* name, Array<char>& value)
 {
     CHECK_OPT_DEFINED(name);
-    CHECK_OPT_TYPE(name, OPTION_STRING);
-    stringGetters.at(name)(value);
-    value.push(0);
+    
+    switch(typeMap.at(name))
+    {
+        case OPTION_STRING: 
+        {
+            CHECK_OPT_TYPE(name, OPTION_STRING);
+            stringGetters.at(name)(value); 
+            break;
+        }
+        case OPTION_INT: 
+        {
+            int tmp;
+            getOptionValueInt(name, tmp);
+            auto strValue = std::to_string(tmp);
+            value.readString(strValue.c_str(), true); 
+            break;
+        }
+        case OPTION_BOOL:
+        {
+            int tmp;
+            getOptionValueBool(name, tmp);
+            std::string strValue = "false";
+            if (tmp == 1) strValue = "true";
+            value.readString(strValue.c_str(), true); 
+            break;
+        }
+        case OPTION_FLOAT: 
+        {
+            float tmp;
+            getOptionValueFloat(name, tmp);
+            auto strValue = std::to_string(tmp);
+            value.readString(strValue.c_str(), true); 
+            break;
+        }
+        case OPTION_COLOR: 
+        {
+            float r, g, b;
+            getOptionValueColor (name, r, g, b);
+            auto strValue = "["+std::to_string(r)+", "+std::to_string(g)+", "+std::to_string(b)+"]";
+            value.readString(strValue.c_str(), true); 
+            break;
+        }
+        case OPTION_XY: 
+        {
+            int x, y;
+            getOptionValueXY (name, x, y);
+            auto strValue = "["+std::to_string(x)+", "+std::to_string(y)+"]";
+            value.readString(strValue.c_str(), true); 
+            break;
+        }
+        default:
+            throw Error("Property type mismatch", name);
+            break;
+    }
 }
 
 void OptionManager::getOptionValueBool (const char* name, int& value)

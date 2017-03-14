@@ -101,6 +101,7 @@ using namespace indigo;
    },                                                              \
    [](Array<char>& value) {                                        \
       value.copy(option);                                          \
+      value.push(0);                                               \
    }
 
 class OptionManager {
