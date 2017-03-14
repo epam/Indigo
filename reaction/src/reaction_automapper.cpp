@@ -25,6 +25,23 @@
 
 using namespace indigo;
 
+// Structure to keep result of product atom mapping
+struct MapStatus {
+   // Number of used reactants
+   int reactant_usage;
+   // Number reducing steps
+   int number_steps;
+};
+
+static int nonZeroValues(Array<int>& data) {
+   int res = 0;
+   for(int i = 0; i < data.size(); ++i) {
+      if (data[i] > 0)
+         ++res;
+   }
+   return res;
+}
+
 IMPL_ERROR(ReactionAutomapper, "Reaction automapper");
 
 ReactionAutomapper::ReactionAutomapper(BaseReaction& reaction):
@@ -237,11 +254,9 @@ void ReactionAutomapper::_initMappings(BaseReaction& reaction){
 
 void ReactionAutomapper::_createReactionMap(){
    QS_DEF(ObjArray< Array<int> >, reactant_permutations);
-   QS_DEF(Array<int>, product_mapping_tmp);
    
    BaseReaction& reaction = _reactionCopy.ref();
    
-
    ReactionMapMatchingData react_map_match(reaction);
    react_map_match.createAtomMatchingData();
 
@@ -255,7 +270,7 @@ void ReactionAutomapper::_createReactionMap(){
    _createPermutations(reaction, reactant_permutations);
 
    for(int product = reaction.productBegin(); product < reaction.productEnd(); product = reaction.productNext(product)){
-      product_mapping_tmp.clear_resize(reaction.getAAMArray(product).size());
+      react_map_match.product_mapping.clear_resize(reaction.getAAMArray(product).size());
 
       _maxMapUsed = 0;
       _maxVertUsed = 0;
@@ -263,14 +278,15 @@ void ReactionAutomapper::_createReactionMap(){
 
       for(int pmt = 0; pmt < reactant_permutations.size(); pmt++) {
          reaction_clone->clone(reaction, 0, 0, 0);
+         react_map_match.used_vertices.copy(_usedVertices);
          /*
           * Apply new permutation
           */
-         int map_complete = _handleWithProduct(reactant_permutations[pmt], product_mapping_tmp, reaction_clone.ref(), product, react_map_match);
+         int map_complete = _handleWithProduct(reactant_permutations[pmt], reaction_clone.ref(), product, react_map_match);
          /*
           * Collect statistic and choose the best mapping
           */
-         if(_chooseBestMapping(reaction, product_mapping_tmp, product, map_complete))
+         if(_chooseBestMapping(reaction, react_map_match, product, map_complete))
             break;
          /*
           * Check for cancellation
@@ -290,27 +306,28 @@ void ReactionAutomapper::_createReactionMap(){
    }
 }
 
-void ReactionAutomapper::_cleanReactants(BaseReaction& reaction) {
-   for(int react = reaction.reactantBegin(); react < reaction.reactantEnd(); react = reaction.reactantNext(react)) {
-      BaseMolecule& rmol = reaction.getBaseMolecule(react);
-      for(int vert = rmol.vertexBegin(); vert < rmol.vertexEnd();) {
-         if(_usedVertices[reaction.getAAM(react, vert)]) {
-            int next_vert = rmol.vertexNext(vert);
-            rmol.removeAtom(vert);
-            vert = next_vert;
-            continue;
-         }
-         vert = rmol.vertexNext(vert);
-      }
-   }
-}
+//void ReactionAutomapper::_cleanReactants(BaseReaction& reaction) {
+//   for(int react = reaction.reactantBegin(); react < reaction.reactantEnd(); react = reaction.reactantNext(react)) {
+//      BaseMolecule& rmol = reaction.getBaseMolecule(react);
+//      for(int vert = rmol.vertexBegin(); vert < rmol.vertexEnd();) {
+//         if(_usedVertices[reaction.getAAM(react, vert)]) {
+//            int next_vert = rmol.vertexNext(vert);
+//            rmol.removeAtom(vert);
+//            vert = next_vert;
+//            continue;
+//         }
+//         vert = rmol.vertexNext(vert);
+//      }
+//   }
+//}
 
-int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Array<int>& product_mapping_tmp, BaseReaction& reaction, int product, ReactionMapMatchingData& react_map_match) {
+int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, BaseReaction& reaction, int product, ReactionMapMatchingData& rmd) {
    
    QS_DEF(Array<int>, matching_map);
    QS_DEF(Array<int>, rsub_map_in);
    QS_DEF(Array<int>, rsub_map_out);
    QS_DEF(Array<int>, vertices_to_remove);
+   auto& product_mapping_tmp = rmd.product_mapping;
    int map_complete = 0;
 
    BaseReaction& _reaction = _reactionCopy.ref();
@@ -327,11 +344,11 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
 
    product_mapping_tmp.zerofill();
    
-   _usedVertices[0] = 0;
    int previuosly_used= -1;
+   int used_vertices_num = 0;
    
-   while(previuosly_used != _usedVertices[0]) {
-      previuosly_used = _usedVertices[0];
+   while(previuosly_used != used_vertices_num) {
+      previuosly_used = used_vertices_num;
       
       for(int perm_idx = 0; perm_idx < reactant_cons.size(); perm_idx++) {
          int react = reactant_cons.at(perm_idx);
@@ -345,7 +362,7 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
          bool map_exc = false;
          if(_mode != AAM_REGEN_DISCARD){
             for(int m : product_cut.vertices()){
-               react_map_match.getAtomMap(product, react, m, &matching_map);
+               rmd.getAtomMap(product, react, m, &matching_map);
 
                for(int k = 0; k < matching_map.size();k++) {
                   rsub_map_in[matching_map[k]] = m;
@@ -379,10 +396,11 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
                   continue;
 
                cur_used = true;
-               product_mapping_tmp[v] = reaction.getAAM(react, j);
-               if (_usedVertices[product_mapping_tmp[v]] == 0) {
-                  _usedVertices[product_mapping_tmp[v]] = 1;
-                  ++_usedVertices[0];
+               int r_map = reaction.getAAM(react, j);
+               product_mapping_tmp[v] = r_map;
+               if (rmd.used_vertices[r_map] == 0) {
+                  rmd.used_vertices[r_map] = 1;
+                  ++used_vertices_num;
                }
                product_cut.removeAtom(v);
             }
@@ -399,7 +417,7 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
           */
          vertices_to_remove.clear();
          for(int k : reactant_r.vertices()) {
-            if(_usedVertices[reaction.getAAM(react, k)] > 0)
+            if(rmd.used_vertices[reaction.getAAM(react, k)] > 0)
                vertices_to_remove.push(k);
          }
          reactant_r.removeAtoms(vertices_to_remove);
@@ -408,33 +426,24 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
    return map_complete;
 }
 
-bool ReactionAutomapper::_chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping,  int product, int map_complete) {
-   int map_used = 0, total_map_used;
-   for (int map_idx = 0; map_idx < product_mapping.size(); ++map_idx)
-      if (product_mapping[map_idx] > 0) 
-         ++map_used;
-      
-         
+bool ReactionAutomapper::_chooseBestMapping(BaseReaction& reaction, ReactionMapMatchingData& rmd,  int product, int map_complete) {
+   int map_used = nonZeroValues(rmd.product_mapping);
+   int total_map_used = nonZeroValues(rmd.used_vertices);
+   
    bool map_u = map_used > _maxMapUsed;
    bool map_c = (map_used == _maxMapUsed) && (map_complete > _maxCompleteMap);
-   bool map_v = (map_used == _maxMapUsed) && (map_complete == _maxCompleteMap) && (_usedVertices[0] > _maxVertUsed); 
+   bool map_v = (map_used == _maxMapUsed) && (map_complete == _maxCompleteMap) && (total_map_used > _maxVertUsed);
+   
    if(map_u || map_c || map_v){
       _maxMapUsed = map_used;
-      _maxVertUsed = _usedVertices[0];
+      _maxVertUsed = total_map_used;
       _maxCompleteMap = map_complete;
-      reaction.getAAMArray(product).copy(product_mapping);
-     
-   }
-   /*
-   * Check if map covers all a reaction molecules
-   */
-   total_map_used = 0;
-   for (int i = 1; i < _usedVertices.size(); ++i) {
-	   if (_usedVertices[i])
-		   ++total_map_used;
+      
+      reaction.getAAMArray(product).copy(rmd.product_mapping);
+      _usedVertices.copy(rmd.used_vertices);
    }
    if (total_map_used >= (_usedVertices.size() - 1)) {
-	   reaction.getAAMArray(product).copy(product_mapping);
+	   reaction.getAAMArray(product).copy(rmd.product_mapping);
 	   return true;
    }
 	   

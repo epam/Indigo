@@ -25,7 +25,8 @@ namespace indigo {
 class BaseReaction;
 
 //util class for keeping map generating from aam in reaction
-class ReactionMapMatchingData{
+class ReactionMapMatchingData {
+   
 public:
    ReactionMapMatchingData(BaseReaction& r);
    //sets maps for atoms in molecules
@@ -47,6 +48,16 @@ public:
    int endBondMap() const; 
    int nextBondMap(int mol_idx, int opposite_idx, int bond_idx) const;
    bool getBondMap(int mol_idx, int opposite_idx, int bond_idx, Array<int>* mapping) const;
+   
+   /*
+    * Map for current loop
+    */
+   Array<int> product_mapping;
+   /*
+    * Map for currently used vertices
+    */
+   Array<int> used_vertices;
+   
 
 private:
    BaseReaction& _reaction;
@@ -113,8 +124,8 @@ private:
 
    void _cleanReactants(BaseReaction& reaction);
 
-   int _handleWithProduct(const Array<int>& reactant_cons, Array<int>& product_mapping_tmp, BaseReaction& reaction, int product, ReactionMapMatchingData& react_map_match) ;
-   bool _chooseBestMapping(BaseReaction& reaction, Array<int>& product_mapping, int product, int map_complete);
+   int _handleWithProduct(const Array<int>& reactant_cons,  BaseReaction& reaction, int product, ReactionMapMatchingData& react_map_match) ;
+   bool _chooseBestMapping(BaseReaction& reaction, ReactionMapMatchingData& react_map_match, int product, int map_complete);
    bool _checkAtomMapping(bool change_rc, bool change_aam, bool change_rc_null);
 
    //arranges all maps to AAM
