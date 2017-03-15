@@ -88,6 +88,14 @@ public:
       MIN_PERMUTATION_SIZE = 3
    };
    
+   // Structure to keep result of product atom mapping
+    struct MapStatus {
+      // Number of used reactants
+      int reactant_usage;
+      // Number reducing steps
+      int number_steps;
+   };
+   
    ReactionAutomapper(BaseReaction& reaction);
    //main method for searching AAM
    void automap(int mode);
@@ -124,8 +132,8 @@ private:
 
    void _cleanReactants(BaseReaction& reaction);
 
-   int _handleWithProduct(const Array<int>& reactant_cons,  BaseReaction& reaction, int product, ReactionMapMatchingData& react_map_match) ;
-   bool _chooseBestMapping(BaseReaction& reaction, ReactionMapMatchingData& react_map_match, int product, int map_complete);
+   MapStatus _handleWithProduct(int product, BaseReaction&, const Array<int>& reactant_cons,   ReactionMapMatchingData&) ;
+   bool _chooseBestMapping(int product, BaseReaction&, ReactionMapMatchingData&,  MapStatus&);
    bool _checkAtomMapping(bool change_rc, bool change_aam, bool change_rc_null);
 
    //arranges all maps to AAM
