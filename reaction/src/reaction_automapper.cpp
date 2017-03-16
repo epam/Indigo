@@ -40,8 +40,9 @@ static int calculateMatchingBonds(int prod_idx, BaseReaction& reaction, Array<in
    
    RedBlackMap<int, int> unique_map;
    for (int i = 0; i < product_map.size(); ++i) {
-      if(product_map[i] > 0) {
-         unique_map.insert(product_map[i], i);
+      int pm = product_map[i];
+      if(pm > 0 && !unique_map.find(pm)) {
+         unique_map.insert(pm, i);
       }
    }
    
@@ -474,7 +475,7 @@ bool calculateAndApplyExtremum(Array<Extremum>& expressions) {
    for (int i = 0; i < expressions.size(); ++i) {
       auto& ex = expressions[i];
       bool prev = true;
-      for (int j = i - 1; j < i && j >=0; j++) {
+      for (int j = 0; j < i; j++) {
          auto& prev_ex = expressions[j];
          prev &= (*prev_ex.left == *prev_ex.right);
       }
@@ -506,10 +507,10 @@ bool ReactionAutomapper::_chooseBestMapping(int product, BaseReaction& reaction,
    
    QS_DEF(Array<Extremum>, expressions);
    expressions.push(Extremum{left: &_maxStatus.map_used,       right: &map_used, max: true});
-   expressions.push(Extremum{left: &_maxStatus.matching_bonds,       right: &matching_bonds, max: true});
+   expressions.push(Extremum{left: &_maxStatus.matching_bonds, right: &matching_bonds, max: true});
    expressions.push(Extremum{left: &_maxStatus.total_map_used, right: &total_map_used, max: true});
    expressions.push(Extremum{left: &_maxStatus.reactant_usage, right: &status.reactant_usage, max: true});
-   expressions.push(Extremum{left: &_maxStatus.number_steps, right: &status.number_steps, max: false});
+   expressions.push(Extremum{left: &_maxStatus.number_steps,   right: &status.number_steps, max: false});
    
    if (calculateAndApplyExtremum(expressions)) {
       reaction.getAAMArray(product).copy(rmd.product_mapping);
