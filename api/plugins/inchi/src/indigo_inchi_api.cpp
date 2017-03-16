@@ -67,10 +67,33 @@ CEXPORT int indigoInchiLoadMolecule(const char *inchi_string)
       AutoPtr<IndigoMolecule> mol_obj(new IndigoMolecule());
 
       const char *aux_prefix = "AuxInfo";
-      if (strncmp(inchi_string, aux_prefix, strlen(aux_prefix)) == 0)
-         inchi_wrapper.loadMoleculeFromAux(inchi_string, mol_obj->mol);
+      auto &tmp = self.getThreadTmpData();
+
+      BufferScanner scanner(inchi_string);
+      if (Scanner::isSingleLine(scanner))
+      {
+         scanner.readLine(tmp.string, true);
+   
+         if (strncmp(tmp.string.ptr(), aux_prefix, strlen(aux_prefix)) == 0)
+            inchi_wrapper.loadMoleculeFromAux(inchi_string, mol_obj->mol);
+         else
+            inchi_wrapper.loadMoleculeFromInchi(tmp.string.ptr(), mol_obj->mol);
+      }
       else
-         inchi_wrapper.loadMoleculeFromInchi(inchi_string, mol_obj->mol);
+      {  
+         while (!scanner.isEOF())
+         {
+            scanner.readLine(tmp.string, true);
+            if (strncmp(tmp.string.ptr(), aux_prefix, strlen(aux_prefix)) == 0)
+            {
+               inchi_wrapper.loadMoleculeFromAux(inchi_string, mol_obj->mol);
+               break;
+            }
+            else
+               inchi_wrapper.loadMoleculeFromInchi(tmp.string.ptr(), mol_obj->mol);
+         }
+      }
+
       return self.addObject(mol_obj.release());
    }
    INDIGO_END(-1)

@@ -271,6 +271,9 @@ void InchiWrapper::parseInchiOutput(const InchiOutput &inchi_output, Molecule &m
 
       int idx = atom_indices[i];
       mol.setAtomCharge(idx, inchi_atom.charge);
+
+      mol.setAtomXyz(idx, inchi_atom.x, inchi_atom.y, inchi_atom.z);
+
       if (inchi_atom.isotopic_mass)
       {
          int default_iso = Element::getDefaultIsotope(mol.getAtomNumber(idx));
