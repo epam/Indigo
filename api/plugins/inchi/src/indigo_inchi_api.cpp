@@ -75,7 +75,7 @@ CEXPORT int indigoInchiLoadMolecule(const char *inchi_string)
          scanner.readLine(tmp.string, true);
    
          if (strncmp(tmp.string.ptr(), aux_prefix, strlen(aux_prefix)) == 0)
-            inchi_wrapper.loadMoleculeFromAux(inchi_string, mol_obj->mol);
+            inchi_wrapper.loadMoleculeFromAux(tmp.string.ptr(), mol_obj->mol);
          else
             inchi_wrapper.loadMoleculeFromInchi(tmp.string.ptr(), mol_obj->mol);
       }
@@ -86,7 +86,7 @@ CEXPORT int indigoInchiLoadMolecule(const char *inchi_string)
             scanner.readLine(tmp.string, true);
             if (strncmp(tmp.string.ptr(), aux_prefix, strlen(aux_prefix)) == 0)
             {
-               inchi_wrapper.loadMoleculeFromAux(inchi_string, mol_obj->mol);
+               inchi_wrapper.loadMoleculeFromAux(tmp.string.ptr(), mol_obj->mol);
                break;
             }
             else
