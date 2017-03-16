@@ -78,8 +78,8 @@ InchiWrapper::InchiWrapper()
 
 void InchiWrapper::clear()
 {
-   options.clear();
-   options.push(0);
+   // Set option to process empty structure by default
+   setOptions("/WarnOnEmptyStructure");
 
    warning.clear();
    log.clear();
