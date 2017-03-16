@@ -424,22 +424,83 @@ ReactionAutomapper::MapStatus ReactionAutomapper::_handleWithProduct(int product
    return status;
 }
 
+struct Extremum {
+   int* left;
+   int* right;
+   bool max;
+};
+/*
+ * Calculates the extremum of expressions
+ * 
+ * if A > B then
+ *    store max values
+ * else if A = B and C > D then
+ *    store max values
+ * else if A = B and C = D and E > F then
+ *    store max values
+ * else if etc....
+ *    
+ * 
+ * 
+ */
+bool calculateAndApplyExtremum(Array<Extremum>& expressions) {
+   bool res_b = false;
+   for (int i = 0; i < expressions.size(); ++i) {
+      auto& ex = expressions[i];
+      bool prev = true;
+      for (int j = i - 1; j < i && j >=0; j++) {
+         auto& prev_ex = expressions[j];
+         prev &= (*prev_ex.left == *prev_ex.right);
+      }
+      bool b_val;
+      if (ex.max) {
+         b_val = prev & (*ex.right > *ex.left);
+      } else {
+         b_val = prev & (*ex.right < *ex.left);
+      }
+      
+      res_b |= b_val;
+      if (res_b) {
+         break;
+      }
+   }
+   if (res_b) {
+      for (int i = 0; i < expressions.size(); ++i) {
+         auto& ex = expressions[i];
+         *ex.left = *ex.right;
+      }
+   }
+   return res_b;
+}
+
 bool ReactionAutomapper::_chooseBestMapping(int product, BaseReaction& reaction, ReactionMapMatchingData& rmd,  MapStatus& status) {
    int map_used = nonZeroValues(rmd.product_mapping);
    int total_map_used = nonZeroValues(rmd.used_vertices);
    
-   bool map_u = map_used > _maxMapUsed;
-   bool map_c = (map_used == _maxMapUsed) && (status.reactant_usage > _maxCompleteMap);
-   bool map_v = (map_used == _maxMapUsed) && (status.reactant_usage == _maxCompleteMap) && (total_map_used > _maxVertUsed);
+   QS_DEF(Array<Extremum>, expressions);
    
-   if(map_u || map_c || map_v){
-      _maxMapUsed = map_used;
-      _maxVertUsed = total_map_used;
-      _maxCompleteMap = status.reactant_usage;
-      
+   expressions.push(Extremum{left: &_maxMapUsed,      right: &map_used, max: true});
+   expressions.push(Extremum{left: &_maxVertUsed,     right: &total_map_used, max: true});
+   expressions.push(Extremum{left: &_maxCompleteMap,  right: &status.reactant_usage, max: true});
+   
+   if (calculateAndApplyExtremum(expressions)) {
       reaction.getAAMArray(product).copy(rmd.product_mapping);
       _usedVertices.copy(rmd.used_vertices);
    }
+   
+   
+//   bool map_u = map_used > _maxMapUsed;
+//   bool map_c = (map_used == _maxMapUsed) && (status.reactant_usage > _maxCompleteMap);
+//   bool map_v = (map_used == _maxMapUsed) && (status.reactant_usage == _maxCompleteMap) && (total_map_used > _maxVertUsed);
+//   
+//   if(map_u || map_c || map_v){
+//      _maxMapUsed = map_used;
+//      _maxVertUsed = total_map_used;
+//      _maxCompleteMap = status.reactant_usage;
+//      
+//      reaction.getAAMArray(product).copy(rmd.product_mapping);
+//      _usedVertices.copy(rmd.used_vertices);
+//   }
    if (total_map_used >= (_usedVertices.size() - 1)) {
 	   reaction.getAAMArray(product).copy(rmd.product_mapping);
 	   return true;
