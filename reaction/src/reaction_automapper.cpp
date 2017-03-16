@@ -34,6 +34,39 @@ static int nonZeroValues(Array<int>& data) {
    return res;
 }
 
+
+static int calculateMatchingBonds(int prod_idx, BaseReaction& reaction, Array<int>& product_map) {
+   int res = 0;
+   
+   RedBlackMap<int, int> unique_map;
+   for (int i = 0; i < product_map.size(); ++i) {
+      if(product_map[i] > 0) {
+         unique_map.insert(product_map[i], i);
+      }
+   }
+   
+   auto& product = reaction.getBaseMolecule(prod_idx);
+   
+   for (auto react_idx : reaction.reactants) {
+      auto& reactant = reaction.getBaseMolecule(react_idx);
+      for(auto r_bond : reactant.edges()) {
+         auto& r_edge = reactant.getEdge(r_bond);
+         int beg_aam = reaction.getAAM(react_idx, r_edge.beg);
+         int end_aam = reaction.getAAM(react_idx, r_edge.end);
+         if (unique_map.find(beg_aam) && unique_map.find(end_aam)) {
+            int p_bond = product.findEdgeIndex(unique_map.at(beg_aam), unique_map.at(end_aam));
+            if (p_bond >=0 && reactant.getBondOrder(r_bond) == product.getBondOrder(p_bond)) {
+               ++res;
+            }
+         }
+      }
+   }
+   
+   
+   return res;
+}
+
+
 IMPL_ERROR(ReactionAutomapper, "Reaction automapper");
 
 ReactionAutomapper::ReactionAutomapper(BaseReaction& reaction):
@@ -43,9 +76,6 @@ ignore_atom_isotopes(false),
 ignore_atom_radicals(false),
 cancellation(nullptr),
 _initReaction(reaction),
-_maxMapUsed(0),
-_maxVertUsed(0),
-_maxCompleteMap(0),
 _mode(AAM_REGEN_DISCARD){
 }
 
@@ -263,10 +293,8 @@ void ReactionAutomapper::_createReactionMap(){
 
    for(int product = reaction.productBegin(); product < reaction.productEnd(); product = reaction.productNext(product)){
       react_map_match.product_mapping.clear_resize(reaction.getAAMArray(product).size());
-
-      _maxMapUsed = 0;
-      _maxVertUsed = 0;
-      _maxCompleteMap = 0;
+      
+      _maxStatus = {0, 0, 0, 0, 0};
 
       for(int pmt = 0; pmt < reactant_permutations.size(); pmt++) {
          reaction_clone->clone(reaction, 0, 0, 0);
@@ -321,9 +349,7 @@ ReactionAutomapper::MapStatus ReactionAutomapper::_handleWithProduct(int product
    QS_DEF(Array<int>, vertices_to_remove);
    QS_DEF(Array<int>, reactant_usage);
    
-   MapStatus status;
-   status.number_steps = 0;
-   status.reactant_usage = 0;
+   MapStatus status = {0, 0, 0, 0, 0};
    
    reactant_usage.resize(reactant_cons.size());
    reactant_usage.zerofill();
@@ -430,7 +456,7 @@ struct Extremum {
    bool max;
 };
 /*
- * Calculates the extremum of expressions
+ * Calculates the conditional extremum of expressions
  * 
  * if A > B then
  *    store max values
@@ -476,12 +502,14 @@ bool calculateAndApplyExtremum(Array<Extremum>& expressions) {
 bool ReactionAutomapper::_chooseBestMapping(int product, BaseReaction& reaction, ReactionMapMatchingData& rmd,  MapStatus& status) {
    int map_used = nonZeroValues(rmd.product_mapping);
    int total_map_used = nonZeroValues(rmd.used_vertices);
+   int matching_bonds = calculateMatchingBonds(product, reaction, rmd.product_mapping);
    
    QS_DEF(Array<Extremum>, expressions);
-   
-   expressions.push(Extremum{left: &_maxMapUsed,      right: &map_used, max: true});
-   expressions.push(Extremum{left: &_maxVertUsed,     right: &total_map_used, max: true});
-   expressions.push(Extremum{left: &_maxCompleteMap,  right: &status.reactant_usage, max: true});
+   expressions.push(Extremum{left: &_maxStatus.map_used,       right: &map_used, max: true});
+   expressions.push(Extremum{left: &_maxStatus.matching_bonds,       right: &matching_bonds, max: true});
+   expressions.push(Extremum{left: &_maxStatus.total_map_used, right: &total_map_used, max: true});
+   expressions.push(Extremum{left: &_maxStatus.reactant_usage, right: &status.reactant_usage, max: true});
+   expressions.push(Extremum{left: &_maxStatus.number_steps, right: &status.number_steps, max: false});
    
    if (calculateAndApplyExtremum(expressions)) {
       reaction.getAAMArray(product).copy(rmd.product_mapping);

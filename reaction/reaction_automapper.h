@@ -94,6 +94,12 @@ public:
       int reactant_usage;
       // Number reducing steps
       int number_steps;
+      // Number of map used in a product
+      int map_used;
+      // number of total map used within reaction
+      int total_map_used;
+      // Number of matching bonds by order
+      int matching_bonds;
    };
    
    ReactionAutomapper(BaseReaction& reaction);
@@ -149,17 +155,18 @@ private:
    void _removeUnusedInfo(BaseReaction& reaction, int mol_idx, bool aam_presented) const;
    void _removeSmallComponents(BaseMolecule& mol) const ;
    void _createPermutations(BaseReaction& reaction, ObjArray< Array<int> > &);
+   
    //all permutation
    static void _permutation(Array<int>& ,ObjArray< Array<int> > &);
 
 
    BaseReaction& _initReaction;
+   
    AutoPtr<BaseReaction> _reactionCopy;
 
    Array<int> _usedVertices;
-   int _maxMapUsed;
-   int _maxVertUsed;
-   int _maxCompleteMap;
+   MapStatus _maxStatus;
+   
    int _mode;
 };
 
