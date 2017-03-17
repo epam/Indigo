@@ -1,7 +1,7 @@
 FROM java:openjdk-8-jre
 MAINTAINER  Artem Malykh "Artem_Malykh@epam.com"
 
-ENV SOLR_VERSION 5.5.2
+ENV SOLR_VERSION 5.5.4
 ENV SOLR solr-$SOLR_VERSION
 ENV SOLR_USER solr
 ENV SOLR_STARTUP_PARAMS ""

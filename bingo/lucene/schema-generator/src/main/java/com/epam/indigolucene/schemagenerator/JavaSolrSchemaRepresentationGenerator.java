@@ -1,7 +1,6 @@
 package com.epam.indigolucene.schemagenerator;
 
 public class JavaSolrSchemaRepresentationGenerator {
-
     public static void main(String[] args) throws Exception {
         String schemaClassName = args[0];
         String schemaFilePath  = args[1];
