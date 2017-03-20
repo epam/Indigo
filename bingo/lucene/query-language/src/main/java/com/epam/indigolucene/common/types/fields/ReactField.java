@@ -1,6 +1,5 @@
 package com.epam.indigolucene.common.types.fields;
 import com.epam.indigo.IndigoObject;
-import com.epam.indigolucene.common.types.fields.Field;
 import com.epam.indigolucene.common.types.values.ReactValue;
 
 public class ReactField<S> extends Field<S, IndigoObject, ReactValue> {
