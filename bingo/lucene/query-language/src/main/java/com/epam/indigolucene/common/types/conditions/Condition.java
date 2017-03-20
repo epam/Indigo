@@ -3,6 +3,7 @@ package com.epam.indigolucene.common.types.conditions;
 import com.epam.indigolucene.common.types.conditions.logicalconditions.AndCondition;
 import com.epam.indigolucene.common.types.conditions.logicalconditions.OrCondition;
 import com.epam.indigolucene.common.types.conditions.molconditions.MolStructureCondition;
+import com.epam.indigolucene.common.types.conditions.reactconditions.ReactStructureCondition;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -41,6 +42,10 @@ public interface Condition<S> {
      * @return
      */
     default List<MolStructureCondition<S>> molStructureConditions() {
+        return new LinkedList<>();
+    }
+
+    default List<ReactStructureCondition<S>> reactStructureConditions() {
         return new LinkedList<>();
     }
 
