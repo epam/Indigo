@@ -1978,6 +1978,8 @@ int QueryMolecule::parseQueryAtom (QueryMolecule& qm, int aid, Array<int>& list)
    QueryMolecule::Atom* qc = stripKnownAttrs(qa);
    if (qc != NULL && isNotAtom(*qc, ELEM_H))
       return QUERY_ATOM_A;
+   if (qc != NULL && isNotAtom(*qc, ELEM_C))
+      return QUERY_ATOM_QH;
    bool notList = false;
    if (collectAtomList(qa, list, notList) || 
       (qa.type == QueryMolecule::OP_NOT && collectAtomList(*qa.child(0), list, notList) && !notList)) { // !notList is to check there's no double negation
@@ -1986,8 +1988,21 @@ int QueryMolecule::parseQueryAtom (QueryMolecule& qm, int aid, Array<int>& list)
       notList = notList || qa.type == QueryMolecule::OP_NOT;
       if (!notList && list.size() == 5 && list[0] == ELEM_F && list[1] == ELEM_Cl && list[2] == ELEM_Br && list[3] == ELEM_I && list[4] == ELEM_At)
          return QUERY_ATOM_X;
+      if (!notList && list.size() == 6 && list[0] == ELEM_F && list[1] == ELEM_Cl && list[2] == ELEM_Br && list[3] == ELEM_I && list[4] == ELEM_At && list[5] == ELEM_H)
+         return QUERY_ATOM_XH;
       if (notList && list.size() == 2 && ((list[0] == ELEM_C && list[1] == ELEM_H) || (list[0] == ELEM_H && list[1] == ELEM_C)))
          return QUERY_ATOM_Q;
+      if (notList && list.size() == 17 && list[0] == ELEM_C && list[1] == ELEM_N && list[2] == ELEM_O && list[3] == ELEM_F &&
+                                          list[4] == ELEM_P && list[5] == ELEM_S && list[6] == ELEM_Cl && list[7] == ELEM_Se && list[8] == ELEM_Br &&
+                                          list[9] == ELEM_I && list[10] == ELEM_At && list[11] == ELEM_He && list[12] == ELEM_Ne && list[13] == ELEM_Ar &&
+                                          list[14] == ELEM_Kr && list[15] == ELEM_Xe && list[16] == ELEM_Rn)
+         return QUERY_ATOM_M;
+      if (notList && list.size() == 18 && list[0] == ELEM_C && list[1] == ELEM_N && list[2] == ELEM_O && list[3] == ELEM_F &&
+                                          list[4] == ELEM_P && list[5] == ELEM_S && list[6] == ELEM_Cl && list[7] == ELEM_Se && list[8] == ELEM_Br &&
+                                          list[9] == ELEM_I && list[10] == ELEM_At && list[11] == ELEM_He && list[12] == ELEM_Ne && list[13] == ELEM_Ar &&
+                                          list[14] == ELEM_Kr && list[15] == ELEM_Xe && list[16] == ELEM_Rn && list[17] == ELEM_H)
+         return QUERY_ATOM_MH;
+
       return notList ? QUERY_ATOM_NOTLIST : QUERY_ATOM_LIST;
    }
    return -1;

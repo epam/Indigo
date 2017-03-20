@@ -285,7 +285,9 @@ public:
 
    bool possibleNitrogenV5 (int idx);
 
-   enum QUERY_ATOM {QUERY_ATOM_A, QUERY_ATOM_X, QUERY_ATOM_Q, QUERY_ATOM_LIST, QUERY_ATOM_NOTLIST};
+   enum QUERY_ATOM {QUERY_ATOM_A, QUERY_ATOM_X, QUERY_ATOM_Q, QUERY_ATOM_M,
+                    QUERY_ATOM_AH, QUERY_ATOM_XH, QUERY_ATOM_QH, QUERY_ATOM_MH,
+                    QUERY_ATOM_LIST, QUERY_ATOM_NOTLIST};
    enum QUERY_BOND {QUERY_BOND_DOUBLE_OR_AROMATIC = 0, QUERY_BOND_SINGLE_OR_AROMATIC, QUERY_BOND_SINGLE_OR_DOUBLE, QUERY_BOND_ANY};
    static bool isKnownAttr (QueryMolecule::Atom& qa);
    static bool isNotAtom (QueryMolecule::Atom& qa, int elem);
