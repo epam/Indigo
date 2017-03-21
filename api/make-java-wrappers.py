@@ -26,23 +26,23 @@ if os.path.exists("java"):
 os.mkdir('java')
 
 os.chdir(os.path.join(api_dir, "java"))
-subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
-subprocess.check_call("mvn clean package install -Dmaven.test.skip=true", shell=True)
+subprocess.check_call("mvn -q versions:set -DnewVersion=%s" % version, shell=True)
+subprocess.check_call("mvn -q clean package install -Dmaven.test.skip=true", shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "renderer", "java"))
-subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
-subprocess.check_call("mvn clean package -Dmaven.test.skip=true", shell=True)
+subprocess.check_call("mvn -q versions:set -DnewVersion=%s" % version, shell=True)
+subprocess.check_call("mvn -q clean package -Dmaven.test.skip=true", shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-renderer-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-renderer.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "inchi", "java"))
-subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
-subprocess.check_call("mvn clean package -Dmaven.test.skip=true", shell=True)
+subprocess.check_call("mvn -q versions:set -DnewVersion=%s" % version, shell=True)
+subprocess.check_call("mvn -q clean package -Dmaven.test.skip=true", shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-inchi-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-inchi.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "bingo", "java"))  # TODO: Update when folder will be changed to nosql
-subprocess.check_call("mvn versions:set -DnewVersion=%s" % version, shell=True)
-subprocess.check_call("mvn clean package -Dmaven.test.skip=true", shell=True)
+subprocess.check_call("mvn -q versions:set -DnewVersion=%s" % version, shell=True)
+subprocess.check_call("mvn -q clean package -Dmaven.test.skip=true", shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-nosql-%s.jar' % version), os.path.join(dist_dir, 'java', 'bingo-nosql.jar'))
 
 os.chdir(dist_dir)
