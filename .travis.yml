@@ -7,7 +7,6 @@ os:
 branches:
   only:
   - master
-  - ci-travis
 addons:
   apt:
     sources:
