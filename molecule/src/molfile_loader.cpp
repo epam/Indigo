@@ -284,11 +284,35 @@ void MolfileLoader::_readCtab2000 ()
             throw Error("'X' label is allowed only for queries");
          atom_type = _ATOM_X;
       }
+      else if (buf[0] == 'X' && buf[1] == 'H' && buf[2] == 0)
+      {
+         if (_qmol == 0)
+            throw Error("'XH' label is allowed only for queries");
+         atom_type = _ATOM_XH;
+      }
       else if (buf[0] == 'Q' && buf[1] == 0)
       {
          if (_qmol == 0)
             throw Error("'Q' label is allowed only for queries");
          atom_type = _ATOM_Q;
+      }
+      else if (buf[0] == 'Q' && buf[1] == 'H' && buf[2] == 0)
+      {
+         if (_qmol == 0)
+            throw Error("'QH' label is allowed only for queries");
+         atom_type = _ATOM_QH;
+      }
+      else if (buf[0] == 'M' && buf[1] == 0)
+      {
+         if (_qmol == 0)
+            throw Error("'M' label is allowed only for queries");
+         atom_type = _ATOM_M;
+      }
+      else if (buf[0] == 'M' && buf[1] == 'H' && buf[2] == 0)
+      {
+         if (_qmol == 0)
+            throw Error("'MH' label is allowed only for queries");
+         atom_type = _ATOM_MH;
       }
       else if (buf[0] == 'L' && buf[1] == 0)
       {
@@ -388,6 +412,9 @@ void MolfileLoader::_readCtab2000 ()
          else if (atom_type == _ATOM_A)
             atom.reset(QueryMolecule::Atom::nicht(
                         new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+         else if (atom_type == _ATOM_QH)
+            atom.reset(QueryMolecule::Atom::nicht(
+                        new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
          else if (atom_type == _ATOM_Q)
             atom.reset(QueryMolecule::Atom::und(
                            QueryMolecule::Atom::nicht(
@@ -404,6 +431,65 @@ void MolfileLoader::_readCtab2000 ()
             atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br));
             atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I));
             atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At));
+         }
+         else if (atom_type == _ATOM_XH)
+         {
+            atom.reset(new QueryMolecule::Atom());
+
+            atom->type = QueryMolecule::OP_OR;
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl));
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br));
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I));
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At));
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+         }
+         else if (atom_type == _ATOM_MH)
+         {
+            atom.reset(new QueryMolecule::Atom());
+
+            atom->type = QueryMolecule::OP_NOT;
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C));
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_O)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_P)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_S)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Se)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_He)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ne)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ar)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Kr)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Xe)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Rn));
+         }
+         else if (atom_type == _ATOM_M)
+         {
+            atom.reset(new QueryMolecule::Atom());
+
+            atom->type = QueryMolecule::OP_NOT;
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C));
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_O)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_P)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_S)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Se)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_He)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ne)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ar)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Kr)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Xe)),
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Rn));
+            atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
          }
          else if (atom_type == _ATOM_R)
             atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
@@ -2181,7 +2267,7 @@ void MolfileLoader::_readCtab3000 ()
             else
                throw Error("bad word: %s", buf.ptr());
    
-            bool was_a = false, was_q = false;
+            bool was_a = false, was_q = false, was_x = false, was_m = false;
    
             while (1)
             {
@@ -2192,16 +2278,50 @@ void MolfileLoader::_readCtab3000 ()
                   throw Error("'A' inside atom list, if present, must be single");
                if (was_q)
                   throw Error("'Q' inside atom list, if present, must be single");
+               if (was_x)
+                  throw Error("'X' inside atom list, if present, must be single");
+               if (was_m)
+                  throw Error("'M' inside atom list, if present, must be single");
    
                if (buf.size() == 2 && buf[0] == 'A')
                {
                   was_a = true;
                   atom_type = _ATOM_A;
                }
+               else if (buf.size() == 3 && buf[0] == 'A' && buf[1] == 'H')
+               {
+                  was_a = true;
+                  atom_type = _ATOM_AH;
+               }
                else if (buf.size() == 2 && buf[0] == 'Q')
                {
                   was_q = true;
                   atom_type = _ATOM_Q;
+               }
+               else if (buf.size() == 3 && buf[0] == 'Q' && buf[1] == 'H')
+               {
+                  was_a = true;
+                  atom_type = _ATOM_QH;
+               }
+               else if (buf.size() == 2 && buf[0] == 'X')
+               {
+                  was_q = true;
+                  atom_type = _ATOM_X;
+               }
+               else if (buf.size() == 3 && buf[0] == 'X' && buf[1] == 'H')
+               {
+                  was_a = true;
+                  atom_type = _ATOM_XH;
+               }
+               else if (buf.size() == 2 && buf[0] == 'M')
+               {
+                  was_q = true;
+                  atom_type = _ATOM_M;
+               }
+               else if (buf.size() == 3 && buf[0] == 'M' && buf[1] == 'H')
+               {
+                  was_a = true;
+                  atom_type = _ATOM_MH;
                }
                else
                {
@@ -2229,6 +2349,13 @@ void MolfileLoader::_readCtab3000 ()
    
             atom_type = _ATOM_Q;
          }
+         else if (buf.size() == 3 && buf[0] == 'Q' && buf[1] == 'H')
+         {
+            if (_qmol == 0)
+               throw Error("'QH' atom is allowed only for queries");
+   
+            atom_type = _ATOM_QH;
+         }
          else if (buf.size() == 2 && buf[0] == 'A')
          {
             if (_qmol == 0)
@@ -2236,12 +2363,40 @@ void MolfileLoader::_readCtab3000 ()
    
             atom_type = _ATOM_A;
          }
+         else if (buf.size() == 3 && buf[0] == 'A' && buf[1] == 'H')
+         {
+            if (_qmol == 0)
+               throw Error("'AH' atom is allowed only for queries");
+   
+            atom_type = _ATOM_AH;
+         }
          else if (buf.size() == 2 && buf[0] == 'X' && !treat_x_as_pseudoatom)
          {
             if (_qmol == 0)
                throw Error("'X' atom is allowed only for queries");
    
             atom_type = _ATOM_X;
+         }
+         else if (buf.size() == 3 && buf[0] == 'X' && buf[2] == 'H' && !treat_x_as_pseudoatom)
+         {
+            if (_qmol == 0)
+               throw Error("'XH' atom is allowed only for queries");
+   
+            atom_type = _ATOM_XH;
+         }
+         else if (buf.size() == 2 && buf[0] == 'M')
+         {
+            if (_qmol == 0)
+               throw Error("'M' atom is allowed only for queries");
+   
+            atom_type = _ATOM_M;
+         }
+         else if (buf.size() == 3 && buf[0] == 'M' && buf[1] == 'H')
+         {
+            if (_qmol == 0)
+               throw Error("'MH' atom is allowed only for queries");
+   
+            atom_type = _ATOM_MH;
          }
          else if (buf.size() == 3 && buf[0] == 'R' && buf[1] == '#')
          {
@@ -2317,12 +2472,78 @@ void MolfileLoader::_readCtab3000 ()
                atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At));
                _qmol->addAtom(atom.release());
             }
+            else if (atom_type == _ATOM_XH)
+            {
+               AutoPtr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+               
+               atom->type = QueryMolecule::OP_OR;
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl));
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br));
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I));
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At));
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+               _qmol->addAtom(atom.release());
+            }
+            else if (atom_type == _ATOM_QH)
+               _qmol->addAtom(QueryMolecule::Atom::nicht(
+                           new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
             else if (atom_type == _ATOM_Q)
                _qmol->addAtom(QueryMolecule::Atom::und(
                               QueryMolecule::Atom::nicht(
                                  new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
                               QueryMolecule::Atom::nicht(
                                  new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C))));
+            else if (atom_type == _ATOM_MH)
+            {
+               AutoPtr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+
+               atom->type = QueryMolecule::OP_NOT;
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C));
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_O)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_P)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_S)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Se)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_He)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ne)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ar)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Kr)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Xe)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Rn));
+
+               _qmol->addAtom(atom.release());
+            }
+            else if (atom_type == _ATOM_M)
+            {
+               AutoPtr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+
+               atom->type = QueryMolecule::OP_NOT;
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C));
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_O)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_P)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_S)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Se)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_He)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ne)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ar)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Kr)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Xe)),
+               atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Rn));
+
+               _qmol->addAtom(atom.release());
+            }
             else // _ATOM_R
                _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
          }

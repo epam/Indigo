@@ -419,6 +419,16 @@ void MolfileSaver::_writeCtab (Output &output, BaseMolecule &mol, bool query)
             out.writeChar('Q');
          else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
             out.writeChar('X');
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_M)
+            out.writeChar('M');
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_AH)
+            out.writeString("AH");
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_QH)
+            out.writeString("QH");
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_XH)
+            out.writeString("XH");
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_MH)
+            out.writeString("MH");
          else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
                   query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
          {
@@ -1156,6 +1166,28 @@ void MolfileSaver::_writeCtab2000 (Output &output, BaseMolecule &mol, bool query
             label[0] = 'Q';
          else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
             label[0] = 'X';
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_M)
+            label[0] = 'M';
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_AH)
+         {
+            label[0] = 'A';
+            label[1] = 'H';
+         }
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_QH)
+         {
+            label[0] = 'Q';
+            label[1] = 'H';
+         }
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_XH)
+         {
+            label[0] = 'X';
+            label[1] = 'H';
+         }
+         else if (query_atom_type == QueryMolecule::QUERY_ATOM_MH)
+         {
+            label[0] = 'M';
+            label[1] = 'H';
+         }
          else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST ||
                   query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
          {

@@ -1996,12 +1996,12 @@ int QueryMolecule::parseQueryAtom (QueryMolecule& qm, int aid, Array<int>& list)
                                           list[4] == ELEM_P && list[5] == ELEM_S && list[6] == ELEM_Cl && list[7] == ELEM_Se && list[8] == ELEM_Br &&
                                           list[9] == ELEM_I && list[10] == ELEM_At && list[11] == ELEM_He && list[12] == ELEM_Ne && list[13] == ELEM_Ar &&
                                           list[14] == ELEM_Kr && list[15] == ELEM_Xe && list[16] == ELEM_Rn)
-         return QUERY_ATOM_M;
+         return QUERY_ATOM_MH;
       if (notList && list.size() == 18 && list[0] == ELEM_C && list[1] == ELEM_N && list[2] == ELEM_O && list[3] == ELEM_F &&
                                           list[4] == ELEM_P && list[5] == ELEM_S && list[6] == ELEM_Cl && list[7] == ELEM_Se && list[8] == ELEM_Br &&
                                           list[9] == ELEM_I && list[10] == ELEM_At && list[11] == ELEM_He && list[12] == ELEM_Ne && list[13] == ELEM_Ar &&
                                           list[14] == ELEM_Kr && list[15] == ELEM_Xe && list[16] == ELEM_Rn && list[17] == ELEM_H)
-         return QUERY_ATOM_MH;
+         return QUERY_ATOM_M;
 
       return notList ? QUERY_ATOM_NOTLIST : QUERY_ATOM_LIST;
    }
