@@ -1,4 +1,3 @@
-import multiprocessing
 import os
 import platform
 import shutil
@@ -21,6 +20,18 @@ if not hasattr(subprocess, 'check_call'):
     check_call = check_call_replacement
 else:
     check_call = subprocess.check_call
+
+
+def get_cpu_count():
+    cpu_count = 1
+    if os.name == 'java':
+        from java.lang import Runtime
+        runtime = Runtime.getRuntime()
+        cpu_count = runtime.availableProcessors()
+    else:
+        import multiprocessing
+        cpu_count = multiprocessing.cpu_count()
+    return cpu_count
 
 
 def build_libs(cl_args):
@@ -70,9 +81,15 @@ def build_libs(cl_args):
     if args.preset:
         args.generator, args.params = presets[args.preset]
     else:
-        system = platform.system()
-        if system == 'Darwin':
-            preset = 'mac{}'.format('.'.join(platform.mac_ver()[0].split('.')[:2]))
+        if os.name == 'java':
+            from java.lang import System
+            system = System.getProperty("os.name")
+        else:
+            system = platform.system()
+
+        if system in ('Darwin', 'Mac OS X'):
+            mac_version = platform.mac_ver()[0] if os.name != 'java' else System.getProperty('os.version')
+            preset = 'mac{}'.format('.'.join(mac_version.split('.')[:2]))
         elif system == 'Linux':
             preset = 'linux{}'.format(platform.architecture()[0][:2])
         elif system == 'Windows':
@@ -156,7 +173,7 @@ def build_libs(cl_args):
             make_args += ' VERBOSE=1'
 
         if args.mtbuild:
-            make_args += ' -j%s' % (multiprocessing.cpu_count())
+            make_args += ' -j{} '.format(get_cpu_count())
 
         check_call("make package %s" % (make_args), shell=True)
         check_call("make install", shell=True)

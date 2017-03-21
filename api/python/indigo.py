@@ -2364,13 +2364,15 @@ class Indigo(object):
 
             Since version 1.3.0
         """
-        buf = map(ord, data)
+        if sys.version_info[0] < 3:
+            buf = map(ord, data)
+        else:
+            buf = data
         values = (c_byte * len(buf))()
         for i in range(len(buf)):
             values[i] = buf[i]
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadMoleculeFromBuffer(values, len(buf))))
-
 
     def loadQueryMolecule(self, string):
         self._setSessionId()
