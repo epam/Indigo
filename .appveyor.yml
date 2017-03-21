@@ -4,6 +4,7 @@ pull_requests:
 branches:
   only:
   - master
+  - ci-appveyor
 environment:
   PATH: '%PATH%;C:\Program Files\CMake\bin;C:\Python36-x64;'
 build_script:
