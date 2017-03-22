@@ -2025,7 +2025,7 @@ bool QueryMolecule::queryAtomIsSpecial (QueryMolecule& qm, int aid) {
       if ( (query_atom_type == QueryMolecule::QUERY_ATOM_Q) || (query_atom_type == QueryMolecule::QUERY_ATOM_QH) ||
            (query_atom_type == QueryMolecule::QUERY_ATOM_X) || (query_atom_type == QueryMolecule::QUERY_ATOM_XH) ||
            (query_atom_type == QueryMolecule::QUERY_ATOM_M) || (query_atom_type == QueryMolecule::QUERY_ATOM_MH) ||
-           (query_atom_type == QueryMolecule::QUERY_ATOM_A) || (query_atom_type == QueryMolecule::QUERY_ATOM_AH) ) 
+           (query_atom_type == QueryMolecule::QUERY_ATOM_AH) ) 
       {
          return true;
       } 

@@ -1620,8 +1620,6 @@ void SmilesSaver::_writePseudoAtoms ()
             if (QueryMolecule::queryAtomIsSpecial(*_qmol, _written_atoms[i]))
             {
                query_atom_type = QueryMolecule::parseQueryAtom(*_qmol, _written_atoms[i], list);
-               if (query_atom_type != QueryMolecule::QUERY_ATOM_A)
-                  break;
             }
          }
       }
