@@ -278,6 +278,12 @@ void MolfileLoader::_readCtab2000 ()
       }
       else if (buf[0] == 'A' && buf[1] == 0)
          atom_type = _ATOM_A; // will later become 'any atom' or pseudo atom
+      else if (buf[0] == 'A' && buf[1] == 'H' && buf[2] == 0)
+      {
+         if (_qmol == 0)
+            throw Error("'AH' label is allowed only for queries");
+         atom_type = _ATOM_AH;
+      }
       else if (buf[0] == 'X' && buf[1] == 0 && !treat_x_as_pseudoatom)
       {
          if (_qmol == 0)
@@ -412,6 +418,11 @@ void MolfileLoader::_readCtab2000 ()
          else if (atom_type == _ATOM_A)
             atom.reset(QueryMolecule::Atom::nicht(
                         new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+         else if (atom_type == _ATOM_AH)
+         {
+            atom.reset(new QueryMolecule::Atom());
+            atom->type = QueryMolecule::OP_NONE;
+         }
          else if (atom_type == _ATOM_QH)
             atom.reset(QueryMolecule::Atom::nicht(
                         new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -2460,6 +2471,12 @@ void MolfileLoader::_readCtab3000 ()
             else if (atom_type == _ATOM_A)
                _qmol->addAtom(QueryMolecule::Atom::nicht(
                            new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+            else if (atom_type == _ATOM_AH)
+            {
+               AutoPtr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+               atom->type = QueryMolecule::OP_NONE;
+               _qmol->addAtom(atom.release());
+            }
             else if (atom_type == _ATOM_X)
             {
                AutoPtr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());

@@ -1976,6 +1976,8 @@ QueryMolecule::Atom* QueryMolecule::stripKnownAttrs (QueryMolecule::Atom& qa) {
 int QueryMolecule::parseQueryAtom (QueryMolecule& qm, int aid, Array<int>& list) {
    QueryMolecule::Atom& qa = qm.getAtom(aid);
    QueryMolecule::Atom* qc = stripKnownAttrs(qa);
+   if (qa.type == QueryMolecule::OP_NONE)
+      return QUERY_ATOM_AH;
    if (qc != NULL && isNotAtom(*qc, ELEM_H))
       return QUERY_ATOM_A;
    bool notList = false;

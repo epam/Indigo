@@ -510,12 +510,13 @@ void SmilesLoader::_readOtherStuff ()
                         atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                         _qmol->resetAtom(i, QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
                      }
-/*
                      else if (label.size() == 3 && label[0] == 'A' && label[1] == 'H')
                      {
-                        atom_type = _ATOM_AH;
+                        AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        
+                        x_atom->type = QueryMolecule::OP_NONE;
+                        _qmol->resetAtom(i, x_atom.release());
                      }
-*/
                      else if (label.size() == 2 && label[0] == 'X')
                      {
                         AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());

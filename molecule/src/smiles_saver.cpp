@@ -741,6 +741,13 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    {
       if (_qmol != 0)
       {
+         // Check special atom
+         if (QueryMolecule::queryAtomIsSpecial(*_qmol, idx))
+         {
+            _output.printf("*");
+            return; 
+         }
+
          // Check for !H meaning any atom in SMILES
          int value;
          if (_qmol->getAtom(idx).sureValueInv(QueryMolecule::ATOM_NUMBER, value))
@@ -754,13 +761,6 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
                return;
             }
          }
-         // Check special atom
-         if (QueryMolecule::queryAtomIsSpecial(*_qmol, idx))
-         {
-            _output.printf("*");
-            return; 
-         }
-
          // Check atom list
 
          QS_DEF(Array<int>, list);
