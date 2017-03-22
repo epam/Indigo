@@ -295,6 +295,7 @@ public:
    static bool collectAtomList (Atom& qa, Array<int>& list, bool& notList);
    static int parseQueryAtom (QueryMolecule& qm, int aid, Array<int>& list);
    static bool queryAtomIsRegular (QueryMolecule& qm, int aid);
+   static bool queryAtomIsSpecial (QueryMolecule& qm, int aid);
    static Bond* getBondOrderTerm (Bond& qb, bool& complex);
    static bool isOrBond (Bond& qb, int type1, int type2);
    static bool isSingleOrDouble (Bond& qb);

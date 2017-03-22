@@ -58,6 +58,7 @@ public:
    const Array<int> & writtenBonds ();
 
    static void writePseudoAtom (const char *label, Output &out);
+   void writeSpecialAtom (int aid, Output &out);
 
    bool inside_rsmiles;
 

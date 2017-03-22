@@ -754,27 +754,24 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
                return;
             }
          }
+         // Check special atom
+         if (QueryMolecule::queryAtomIsSpecial(*_qmol, idx))
+         {
+            _output.printf("*");
+            return; 
+         }
 
          // Check atom list
+
          QS_DEF(Array<int>, list);
 
          bool not_list;
-         if (QueryMolecule::collectAtomList(_qmol->getAtom(idx), list, not_list) && !not_list)
+         if (QueryMolecule::collectAtomList(_qmol->getAtom(idx), list, not_list))
          {
             if (list.size() < 1)
                throw Error("atom list size is zero");
-
-            _output.printf("[");
-            for (int j = 0; j < list.size(); j++)
-            {
-               // TODO: check old str
-//               const char *str = Element::toString(list[j]);
-               if (j != 0)
-                  _output.printf(",");
-               _output.printf("#%d", list[j]);
-            }
-            _output.printf("]");
-            return;
+            if (list.size() > 0)
+               throw Error("atom list can be used only with smarts_mode");
          }
       }
 
@@ -1606,6 +1603,9 @@ void SmilesSaver::_writeRadicals ()
 void SmilesSaver::_writePseudoAtoms ()
 {
    BaseMolecule &mol = *_bmol;
+   QS_DEF(Array<int>, list);
+   int query_atom_type;
+
    int i;
 
    if (_attachment_indices.size() == 0)
@@ -1615,6 +1615,15 @@ void SmilesSaver::_writePseudoAtoms ()
          if (mol.isPseudoAtom(_written_atoms[i]) ||
              (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0))
             break;
+         if (_qmol != 0)
+         {
+            if (QueryMolecule::queryAtomIsSpecial(*_qmol, _written_atoms[i]))
+            {
+               query_atom_type = QueryMolecule::parseQueryAtom(*_qmol, _written_atoms[i], list);
+               if (query_atom_type != QueryMolecule::QUERY_ATOM_A)
+                  break;
+            }
+         }
       }
 
       if (i == _written_atoms.size())
@@ -1635,6 +1644,8 @@ void SmilesSaver::_writePseudoAtoms ()
       else if (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0)
          // ChemAxon's Extended SMILES notation for R-sites
          _output.printf("_R%d", mol.getSingleAllowedRGroup(_written_atoms[i]));
+      else if ( (_qmol != 0) && (QueryMolecule::queryAtomIsSpecial(*_qmol, _written_atoms[i])))
+         writeSpecialAtom(_written_atoms[i], _output);
    }
 
    for (i = 0; i < _attachment_indices.size(); i++)
@@ -1658,6 +1669,29 @@ void SmilesSaver::writePseudoAtom (const char *label, Output &out)
 
       out.writeChar(*label);
    } while (*(++label) != 0);
+//   out.writeString("_p");
+}
+
+void SmilesSaver::writeSpecialAtom (int aid, Output &out)
+{
+   QS_DEF(Array<int>, list);
+   int query_atom_type;
+
+   query_atom_type = QueryMolecule::parseQueryAtom(*_qmol, aid, list);
+   if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
+      out.writeString("Q_e");
+   else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
+      out.writeString("X_p");
+   else if (query_atom_type == QueryMolecule::QUERY_ATOM_M)
+      out.writeString("M_p");
+   else if (query_atom_type == QueryMolecule::QUERY_ATOM_AH)
+      out.writeString("AH_p");
+   else if (query_atom_type == QueryMolecule::QUERY_ATOM_QH)
+      out.writeString("QH_p");
+   else if (query_atom_type == QueryMolecule::QUERY_ATOM_XH)
+      out.writeString("XH_p");
+   else if (query_atom_type == QueryMolecule::QUERY_ATOM_MH)
+      out.writeString("MH_p");
 }
 
 void SmilesSaver::_writeHighlighting ()
