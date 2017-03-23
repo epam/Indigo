@@ -383,15 +383,26 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
 
 
       if ( (label == -1) && (strncmp(a.element_type.c_str(), "R", 1) == 0) )
-      {
          label = ELEM_RSITE;
-      }
       else if ( (label == -1) && (strncmp(a.element_type.c_str(), "*", 1) == 0) )
-      {
          label = ELEM_ATTPOINT;
+      else if (!a.label.empty())
+      {
+         if (label == -1)    
+            label = ELEM_PSEUDO;
+         else if (label == ELEM_C)
+         {
+            if ( (strncmp(a.label.c_str(), "AH", 2) == 0) || (strncmp(a.label.c_str(), "QH", 2) == 0) ||
+                 (strncmp(a.label.c_str(), "XH", 2) == 0) || (strncmp(a.label.c_str(), "MH", 2) == 0) ||
+                 (strncmp(a.label.c_str(), "X", 1) == 0) || (strncmp(a.label.c_str(), "M", 1) == 0) )
+            {
+            }
+            else
+               label = ELEM_PSEUDO;
+         }
       }
-      else if ( (label == -1) || (!a.label.empty()) )
-         label = ELEM_PSEUDO;
+      else if (label == -1)
+        label = ELEM_PSEUDO;
 
       int idx;
       if (label == ELEM_ATTPOINT)      
@@ -526,15 +537,115 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
             }
             else if ( !a.query_props.empty() && (strncmp(a.query_props.c_str(), "A", 1) == 0) )  // _ATOM_A
             {
+                atom.get()->removeConstraints(QueryMolecule::ATOM_NUMBER);
                 atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             }
             else if ( !a.query_props.empty() && (strncmp(a.query_props.c_str(), "Q", 1) == 0) )  // _ATOM_Q
             {
+                atom.get()->removeConstraints(QueryMolecule::ATOM_NUMBER);
                 atom.reset(QueryMolecule::Atom::und(
                               QueryMolecule::Atom::nicht(
                                      new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
                               QueryMolecule::Atom::nicht(
                                      new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C))));
+            }
+
+            if (label == ELEM_C  && !a.label.empty())
+            {
+                if (strncmp(a.label.c_str(), "AH", 2) == 0)
+                {
+                   AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                   x_atom->type = QueryMolecule::OP_NONE;
+                   atom.get()->removeConstraints(QueryMolecule::ATOM_NUMBER);
+                   atom.reset(x_atom.release());
+                }
+                else if (strncmp(a.label.c_str(), "QH", 2) == 0)
+                {
+                   atom.get()->removeConstraints(QueryMolecule::ATOM_NUMBER);
+                   atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
+                }
+                else if (strncmp(a.label.c_str(), "XH", 2) == 0)
+                {
+                   AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                     
+                   x_atom->type = QueryMolecule::OP_OR;
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl));
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br));
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I));
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At));
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+
+                   atom.get()->removeConstraints(QueryMolecule::ATOM_NUMBER);
+                   atom.reset(x_atom.release());
+                }
+                else if (strncmp(a.label.c_str(), "X", 1) == 0)
+                {
+                   AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                     
+                   x_atom->type = QueryMolecule::OP_OR;
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl));
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br));
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I));
+                   x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At));
+
+                   atom.get()->removeConstraints(QueryMolecule::ATOM_NUMBER);
+                   atom.reset(x_atom.release());
+                }
+                else if (strncmp(a.label.c_str(), "MH", 2) == 0)
+                {
+                   AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                   
+                   x_atom->type = QueryMolecule::OP_AND;
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_O)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_P)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_S)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Se)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_He)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ne)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ar)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Kr)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Xe)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Rn)));
+
+                   atom.get()->removeConstraints(QueryMolecule::ATOM_NUMBER);
+                   atom.reset(x_atom.release());
+                }
+                else if (strncmp(a.label.c_str(), "M", 1) == 0)
+                {
+                   AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                   
+                   x_atom->type = QueryMolecule::OP_AND;
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_N)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_O)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_P)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_S)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Cl)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Se)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Br)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_I)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_At)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_He)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ne)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Ar)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Kr)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Xe)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_Rn)));
+                   x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+
+                   atom.get()->removeConstraints(QueryMolecule::ATOM_NUMBER);
+                   atom.reset(x_atom.release());
+                }
             }
             else if (!a.query_props.empty())  // Query features
             {

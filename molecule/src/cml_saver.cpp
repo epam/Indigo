@@ -144,6 +144,28 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
          atom->SetAttribute("id", buf.ptr());
          atom->SetAttribute("elementType", atom_str);
 
+         if (qmol != 0)
+         {
+            QS_DEF(Array<int>, list);
+
+            int query_atom_type;
+            if ((query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list)) != -1)
+            {
+               if (query_atom_type == QueryMolecule::QUERY_ATOM_AH)
+                  atom->SetAttribute("mrvPseudo", "AH");
+               else if (query_atom_type == QueryMolecule::QUERY_ATOM_QH)
+                  atom->SetAttribute("mrvPseudo", "QH");
+               else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
+                  atom->SetAttribute("mrvPseudo", "X");
+               else if (query_atom_type == QueryMolecule::QUERY_ATOM_XH)
+                  atom->SetAttribute("mrvPseudo", "XH");
+               else if (query_atom_type == QueryMolecule::QUERY_ATOM_M)
+                  atom->SetAttribute("mrvPseudo", "M");
+               else if (query_atom_type == QueryMolecule::QUERY_ATOM_MH)
+                  atom->SetAttribute("mrvPseudo", "MH");
+            }
+         }
+
          if (_mol->getAtomIsotope(i) > 0)
          {
             atom->SetAttribute("isotope", _mol->getAtomIsotope(i));
