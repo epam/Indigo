@@ -1603,8 +1603,6 @@ void SmilesSaver::_writeRadicals ()
 void SmilesSaver::_writePseudoAtoms ()
 {
    BaseMolecule &mol = *_bmol;
-   QS_DEF(Array<int>, list);
-   int query_atom_type;
 
    int i;
 
@@ -1619,7 +1617,7 @@ void SmilesSaver::_writePseudoAtoms ()
          {
             if (QueryMolecule::queryAtomIsSpecial(*_qmol, _written_atoms[i]))
             {
-               query_atom_type = QueryMolecule::parseQueryAtom(*_qmol, _written_atoms[i], list);
+               break;
             }
          }
       }

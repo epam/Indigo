@@ -524,6 +524,18 @@ void CmlLoader::_loadMoleculeElement (TiXmlHandle &handle)
 
                atom.reset(atomlist.release());
             }
+            else if ( !a.query_props.empty() && (strncmp(a.query_props.c_str(), "A", 1) == 0) )  // _ATOM_A
+            {
+                atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+            }
+            else if ( !a.query_props.empty() && (strncmp(a.query_props.c_str(), "Q", 1) == 0) )  // _ATOM_Q
+            {
+                atom.reset(QueryMolecule::Atom::und(
+                              QueryMolecule::Atom::nicht(
+                                     new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
+                              QueryMolecule::Atom::nicht(
+                                     new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C))));
+            }
             else if (!a.query_props.empty())  // Query features
             {
                BufferScanner strscan(a.query_props.c_str());

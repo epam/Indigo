@@ -124,6 +124,10 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
                {
                   atom_str = Element::toString(list[0]);
                }
+               if (QueryMolecule::queryAtomIsSpecial(*qmol, i) || query_atom_type == QueryMolecule::QUERY_ATOM_A) 
+               {
+                  atom_str = Element::toString(ELEM_C);
+               }
             }
          }
 
@@ -247,6 +251,10 @@ void CmlSaver::_addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool 
                   }
                   out.writeString(": ");
                }
+               else if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
+                  out.writeString("A");
+               else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
+                  out.writeString("Q");
             }
 
             int rbc;
