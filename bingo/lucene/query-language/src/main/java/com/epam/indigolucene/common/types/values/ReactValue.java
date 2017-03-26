@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by floatingpoint on 19.03.17.
+ * Created by Filipp Pisarev on 19.03.17.
  */
 public class ReactValue<S> extends Value<ReactField<S>>{
     IndigoObject obj;
