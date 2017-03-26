@@ -94,7 +94,8 @@ public class SolrConnection5 implements SolrConnection {
 
     private SolrQuery getRawSolrQuery() {
         SolrQuery res = new SolrQuery();
-        if (!query.getCondition().molStructureConditions().isEmpty()) {
+        if (!query.getCondition().molStructureConditions().isEmpty() ||
+                !query.getCondition().reactStructureConditions().isEmpty()) {
             String jq = Base64.encodeBase64String(query.toJson().toJSONString().getBytes());
             res.setParam(Query.JSON_QUERY_PARAM, jq);
             res.set("defType", "chemparsernew");
