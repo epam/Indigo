@@ -4,8 +4,10 @@ import com.epam.indigo.IndigoObject;
 import com.epam.indigolucene.common.CollectionRepresentation;
 import com.epam.indigolucene.common.types.DocumentRepresentation;
 import com.epam.indigolucene.common.types.fields.MolField;
+import com.epam.indigolucene.common.types.fields.ReactField;
 import com.epam.indigolucene.common.types.fields.StringField;
 import com.epam.indigolucene.common.types.values.MolValue;
+import com.epam.indigolucene.common.types.values.ReactValue;
 import com.epam.indigolucene.common.types.values.StringValue;
 import com.epam.indigolucene.common.types.values.Value;
 import com.epam.indigolucene.common.utils.Utils;
@@ -109,6 +111,7 @@ public class GeneratorWorker {
 
     static {
         fieldTypeName2FieldType.put("T_serMol",        new TypeMappingInfo(MolField.class,     MolValue.class,    IndigoObject.class, true, true));
+        fieldTypeName2FieldType.put("T_serReact",        new TypeMappingInfo(ReactField.class,     ReactValue.class,    IndigoObject.class, true, true));
         fieldTypeName2FieldType.put("solr.StrField",   new TypeMappingInfo(StringField.class,  StringValue.class, String.class,       true, false));
         fieldTypeName2FieldType.put("solr.TextField",   new TypeMappingInfo(StringField.class,  StringValue.class, String.class,       true, false));
     }
