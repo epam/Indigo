@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static indexer.data.generated.TestSchema.CONTENT_TYPE;
 import static indexer.data.generated.TestSchema.MOL;
+import static indexer.data.generated.TestSchema.REACT;
 
 /**
  * Created by Artem Malykh on 24.02.16.
@@ -35,12 +36,13 @@ public class ConditionTest extends BaseTest {
 
     //TODO: change for some real rare mol for test set.
     private static final String RARE_MOL = BENZOL;
-
+    private static final String RARE_REACTION = REACTION;
     @Test
     public void test1() throws Exception {
         long before = System.currentTimeMillis();
         logger.info("Warming up query");
         TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(MOL.unsafeHasSubstructure(RARE_MOL)).limit(1).processWith(lst -> logger.info(lst.size()));
+        //TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(REACT.unsafeHasSubstructure(RARE_REACTION)).limit(1).processWith(lst -> logger.info(lst.size()));
         logger.info("Took approx. " + (System.currentTimeMillis() - before) + " ms ");
 
         benchmarkMol(BENZOL,   BENZOL_BIG_LIMIT);
@@ -69,7 +71,7 @@ public class ConditionTest extends BaseTest {
     public void testTextSearch() throws Exception {
         testCollection.removeAll();
 
-        String[] variousTextValues = {"val1", "val2"};
+        String[] variousTextValues = {"val1", "val2", "react"};
         //logger.info("adding documents from set " + "" + " with string values...");
         try (SolrUploadStream ustream = testCollection.uploadStream()) {
             for (String variousTextValue : variousTextValues) {
@@ -82,6 +84,11 @@ public class ConditionTest extends BaseTest {
                 emptyDocument.setContentType(variousTextValue);
                 emptyDocument.setMol(IndigoHolder.getIndigo().loadMolecule(RARE_MOL));
                 ustream.addDocument(emptyDocument);
+
+                emptyDocument = TestSchema.createEmptyDocument();
+                emptyDocument.setContentType(variousTextValue);
+                emptyDocument.setReact(IndigoHolder.getIndigo().loadReaction(RARE_REACTION));
+                ustream.addDocument(emptyDocument);
             }
         }
         logger.info("done");
@@ -91,16 +98,23 @@ public class ConditionTest extends BaseTest {
         testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[0])).
                               filter(MOL.unsafeHasSubstructure(RARE_MOL)).
                               processWith(lst -> result.addAll(lst));
-
-        logger.info(result + " : " + result.size());
-        Assert.assertTrue(result.size() == 1);
-
-        result.clear();
-        testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[0])).
-                              processWith(lst -> result.addAll(lst));
-
+        System.out.println("Result " + result);
         logger.info(result + " : " + result.size());
         Assert.assertTrue(result.size() == 2);
+        result.clear();
+
+        testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[2])).
+                filter(REACT.unsafeHasSubstructure(RARE_REACTION)).
+                processWith(lst -> result.addAll(lst));
+        logger.info(result + " : " + result.size());
+        Assert.assertTrue(result.size() == 1);
+        result.clear();
+
+        testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[0])).
+                              processWith(lst -> result.addAll(lst));
+        logger.info(result + " : " + result.size());
+        Assert.assertTrue(result.size() == 0);
+        result.clear();
     }
 
     protected void benchmarkMol(String mol, int limit) throws Exception {

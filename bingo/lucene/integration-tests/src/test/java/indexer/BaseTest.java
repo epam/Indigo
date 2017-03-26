@@ -33,6 +33,7 @@ public class BaseTest {
 
     public static final String BENZOL         = "c1ccccc1";
     public static final String TEST_CORE_NAME = "moldocs";
+    public static final String REACTION = "CC=O.CCCN>>CCC\\N=C\\C.O";
 
 
     CollectionRepresentation<TestSchema> testCollection;
