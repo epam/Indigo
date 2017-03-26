@@ -4,6 +4,7 @@ import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigolucene.common.IndigoHolder;
 import com.epam.indigolucene.common.types.conditions.molconditions.MolStructureCondition;
+import com.epam.indigolucene.common.types.conditions.reactconditions.ReactStructureCondition;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.search.IndexSearcher;
@@ -16,7 +17,6 @@ import org.apache.solr.search.SolrConstantScoreQuery;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Artem Malykh on 31.03.16.
@@ -24,6 +24,7 @@ import java.util.Map;
 public class ChemFilter extends SolrConstantScoreQuery implements PostFilter {
 
     private List<MolStructureCondition> molConditions;
+    private List<ReactStructureCondition> reactConditions;
     private int cost;
     private long offset;
     private long limit;
@@ -33,6 +34,7 @@ public class ChemFilter extends SolrConstantScoreQuery implements PostFilter {
     public ChemFilter(Query filter, com.epam.indigolucene.common.query.Query originalQuery) {
         super(new QueryWrapperFilter(filter));
         molConditions = originalQuery.getCondition().molStructureConditions();
+        reactConditions = originalQuery.getCondition().reactStructureConditions();
         offset = originalQuery.getOffset();
         //TODO: workaraund against solr 'start' parameter cuts results after filtering. Very inefficient since it enlarges number of documents to filter.
         limit = originalQuery.getLimit() + offset;
@@ -53,7 +55,7 @@ public class ChemFilter extends SolrConstantScoreQuery implements PostFilter {
                 if (checkLimit()) {
                     LeafReader reader = context.reader();
                     Document curDoc = reader.document(doc);
-                    if (checkMol(curDoc)) {
+                    if (checkChem(curDoc)) {
                         totalDocsFound++;
                         super.collect(doc);
                     }
@@ -62,15 +64,25 @@ public class ChemFilter extends SolrConstantScoreQuery implements PostFilter {
         };
     }
 
-    private boolean checkMol(Document curDoc) {
+    private boolean checkChem(Document curDoc) {
         Indigo indigo = IndigoHolder.getIndigo();
-    for (MolStructureCondition molCondition : molConditions) {
-        byte[] serializedMol = curDoc.getField(molCondition.getFieldName()).binaryValue().bytes;
+
+        for (MolStructureCondition molCondition : molConditions) {
+            byte[] serializedMol = curDoc.getField(molCondition.getFieldName()).binaryValue().bytes;
             IndigoObject mol = indigo.unserialize(serializedMol);
+            //If no molecule found, keep digging for reactions
             if (!molCondition.match(mol)) {
-                return false;
+                for (ReactStructureCondition reactCondition : reactConditions) {
+                    byte[] serializedReact = curDoc.getField(reactCondition.getFieldName()).binaryValue().bytes;
+                    IndigoObject react = indigo.unserialize(serializedReact);
+                    if (!reactCondition.match(react)) {
+                        return false;
+                    }
+                }
             }
+
         }
+
         return true;
     }
 
