@@ -712,7 +712,11 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    if (_bmol->isRSite(idx))
    {
       if (rsite_indices_as_aam && _bmol->getRSiteBits(idx) != 0)
-         _output.printf("[*:%d]",  _bmol->getSingleAllowedRGroup(idx));
+      {      
+         QS_DEF(Array<int>, allowed_rgroups);
+         _bmol->getAllowedRGroups(idx, allowed_rgroups);
+         _output.printf("[*:%d]", allowed_rgroups[0]);
+      }
       else
          _output.printf("[*]");
          
@@ -765,11 +769,9 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
 
          QS_DEF(Array<int>, list);
 
-         bool not_list;
-         if (QueryMolecule::collectAtomList(_qmol->getAtom(idx), list, not_list))
+         int query_atom_type;
+         if ( (query_atom_type = QueryMolecule::parseQueryAtom(*_qmol, idx, list)) != -1)
          {
-            if (list.size() < 1)
-               throw Error("atom list size is zero");
             if (list.size() > 0)
                throw Error("atom list can be used only with smarts_mode");
          }
@@ -1639,7 +1641,17 @@ void SmilesSaver::_writePseudoAtoms ()
          writePseudoAtom(mol.getPseudoAtom(_written_atoms[i]), _output);
       else if (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0)
          // ChemAxon's Extended SMILES notation for R-sites
-         _output.printf("_R%d", mol.getSingleAllowedRGroup(_written_atoms[i]));
+         // and added support of multiple R-groups on one R-site
+      {      
+         QS_DEF(Array<int>, allowed_rgroups);
+         mol.getAllowedRGroups(_written_atoms[i], allowed_rgroups);
+         for (int j = 0; j < allowed_rgroups.size(); j++)
+         {
+            _output.printf("_R%d", allowed_rgroups[j]);
+            if (j < allowed_rgroups.size() - 1)
+               _output.printf(",");
+         }
+      }
       else if ( (_qmol != 0) && (QueryMolecule::queryAtomIsSpecial(*_qmol, _written_atoms[i])))
          writeSpecialAtom(_written_atoms[i], _output);
    }

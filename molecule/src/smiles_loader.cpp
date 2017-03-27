@@ -463,6 +463,19 @@ void SmilesLoader::_readOtherStuff ()
                   if (_qmol != 0)
                      _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
                   _bmol->allowRGroupOnRSite(i, rnum);
+
+                  // check multiple R-sites notation
+                  BufferScanner strscan(label.ptr());
+                  QS_DEF(Array<char>, word);
+                  strscan.readWord(word, ",");
+                  if (!strscan.isEOF())
+                  {
+                     strscan.skip(1);
+                     strscan.readWord(word, ",");
+                     if (word.size() >= 3 && strncmp(word.ptr(), "_R", 2) == 0 &&
+                        sscanf(word.ptr() + 2, "%d", &rnum) == 1)
+                        _bmol->allowRGroupOnRSite(i, rnum);
+                  }
                }
                else if (label.size() > 4 && strncmp(label.ptr(), "_AP", 3) == 0 &&
                         sscanf(label.ptr() + 3, "%d", &rnum) == 1)
