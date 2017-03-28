@@ -467,11 +467,10 @@ void SmilesLoader::_readOtherStuff ()
                   // check multiple R-sites notation
                   BufferScanner strscan(label.ptr());
                   QS_DEF(Array<char>, word);
-                  strscan.readWord(word, ",");
-                  if (!strscan.isEOF())
+                  while (!strscan.isEOF())
                   {
                      strscan.skip(1);
-                     strscan.readWord(word, ",");
+                     strscan.readWord(word, ",;");
                      if (word.size() >= 3 && strncmp(word.ptr(), "_R", 2) == 0 &&
                         sscanf(word.ptr() + 2, "%d", &rnum) == 1)
                         _bmol->allowRGroupOnRSite(i, rnum);
@@ -1303,13 +1302,22 @@ void SmilesLoader::_loadParsedMolecule ()
       _forbidHydrogens();
 
    if (!inside_rsmiles)
+   {
       for (i = 0; i < _atoms.size(); i++)
+      {
          if (_atoms[i].star_atom && _atoms[i].aam != 0)
          {
             if (_qmol != 0)
                _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
             _bmol->allowRGroupOnRSite(i, _atoms[i].aam);
          }
+         else if (_atoms[i].label == ELEM_RSITE)
+         {
+            if (_atoms[i].rsite_num != 0)
+               _bmol->allowRGroupOnRSite(i, _atoms[i].rsite_num);
+         }
+      }
+   }
 
    if (_qmol != 0)
       // Replace implicit H with explicit one at required stereocenter
@@ -2242,20 +2250,30 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
 
          if (strchr("buhenafg", scanner.lookNext()) == NULL)
          {
-            if (qatom.get() == 0)
-               throw Error("'R' specifier is allowed only for query molecules");
-
-            if (isdigit(scanner.lookNext()))
+            if (qatom.get() != 0)
             {
-               int rc = scanner.readUnsigned();
-
-               if (rc == 0)
-                  subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0));
+               if (isdigit(scanner.lookNext()))
+               {
+                  int rc = scanner.readUnsigned();
+   
+                  if (rc == 0)
+                     subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0));
+                  else
+                     subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_SSSR_RINGS, rc));
+               }
                else
-                  subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_SSSR_RINGS, rc));
+                  subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 1, 100));
             }
             else
-               subatom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 1, 100));
+            {
+               // Check possible Biovia Draw R-sites notaion
+               if (isdigit(scanner.lookNext()))
+               {
+                  int rc = scanner.readUnsigned();
+                  atom.label = ELEM_RSITE;
+                  atom.rsite_num = rc;
+               }
+            }
          }
          else
             element = Element::fromTwoChars('R', scanner.readChar());
@@ -2616,6 +2634,7 @@ SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :
    polymer_index = -1;
 
    parent = -1;
+   rsite_num = 0;
 }
 
 SmilesLoader::_AtomDesc::~_AtomDesc ()

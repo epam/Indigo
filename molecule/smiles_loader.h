@@ -101,6 +101,7 @@ protected:
       bool starts_polymer;
       bool ends_polymer;
       int  polymer_index;
+      int  rsite_num;
    };
 
    struct _BondDesc
