@@ -86,6 +86,7 @@ public:
    static void generateSmarts(IndigoObject &obj, Array<char> &out_buffer);
 
 protected:
+   static void _saveComplexMolecule(Molecule &mol, Array<char> &out_buffer);
 };
 
 class IndigoCmlSaver : public IndigoSaver
