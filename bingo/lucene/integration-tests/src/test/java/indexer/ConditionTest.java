@@ -1,5 +1,7 @@
 package indexer;
 
+import com.epam.indigo.Indigo;
+import com.epam.indigo.IndigoObject;
 import com.epam.indigolucene.common.IndigoHolder;
 import com.epam.indigolucene.common.SolrUploadStream;
 import com.epam.indigolucene.common.query.BeforeGroup;
@@ -67,11 +69,42 @@ public class ConditionTest extends BaseTest {
         query.processWith(lst -> logger.info(lst.size()));
     }
 
+
+    @Test
+    public void testReactionTextSearch() throws Exception{
+        testCollection.removeAll();
+        String[] variousReactTextValues = {"react1", "react2"};
+
+        Indigo indigo = new Indigo();
+        IndigoObject rxn = indigo.loadReaction(RARE_REACTION);
+
+        try (SolrUploadStream ustream = testCollection.uploadStream()) {
+            for (String variousTextValue : variousReactTextValues) {
+                TestSchemaDocument emptyDocument = TestSchema.createEmptyDocument();
+
+                emptyDocument = TestSchema.createEmptyDocument();
+                emptyDocument.setContentType(variousTextValue);
+                emptyDocument.setReact(rxn);
+                ustream.addDocument(emptyDocument);
+            }
+        }
+        logger.info("done");
+
+        List<Map<String, Object>> result = new LinkedList<>();
+
+        testCollection.find().filter(CONTENT_TYPE.startsWith(variousReactTextValues[0])).
+                filter(REACT.unsafeHasSubstructure(RARE_REACTION)).
+                processWith(lst -> result.addAll(lst));
+        logger.info(result + " : " + result.size());
+        Assert.assertTrue(result.size() == 1);
+        result.clear();
+    }
+
     @Test
     public void testTextSearch() throws Exception {
         testCollection.removeAll();
 
-        String[] variousTextValues = {"val1", "val2", "react"};
+        String[] variousTextValues = {"val1", "val2"};
         //logger.info("adding documents from set " + "" + " with string values...");
         try (SolrUploadStream ustream = testCollection.uploadStream()) {
             for (String variousTextValue : variousTextValues) {
@@ -84,15 +117,9 @@ public class ConditionTest extends BaseTest {
                 emptyDocument.setContentType(variousTextValue);
                 emptyDocument.setMol(IndigoHolder.getIndigo().loadMolecule(RARE_MOL));
                 ustream.addDocument(emptyDocument);
-
-                emptyDocument = TestSchema.createEmptyDocument();
-                emptyDocument.setContentType(variousTextValue);
-                emptyDocument.setReact(IndigoHolder.getIndigo().loadReaction(RARE_REACTION));
-                ustream.addDocument(emptyDocument);
             }
         }
         logger.info("done");
-
 
         List<Map<String, Object>> result = new LinkedList<>();
         testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[0])).
@@ -103,12 +130,6 @@ public class ConditionTest extends BaseTest {
         Assert.assertTrue(result.size() == 2);
         result.clear();
 
-        testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[2])).
-                filter(REACT.unsafeHasSubstructure(RARE_REACTION)).
-                processWith(lst -> result.addAll(lst));
-        logger.info(result + " : " + result.size());
-        Assert.assertTrue(result.size() == 1);
-        result.clear();
 
         testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[0])).
                               processWith(lst -> result.addAll(lst));
