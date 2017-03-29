@@ -4,6 +4,7 @@ import com.epam.indigolucene.common.types.conditions.logicalconditions.AndCondit
 import com.epam.indigolucene.common.types.conditions.logicalconditions.OrCondition;
 import com.epam.indigolucene.common.types.conditions.molconditions.MolMatchesExactlyCondition;
 import com.epam.indigolucene.common.types.conditions.molconditions.MolHasSubstructureCondition;
+import com.epam.indigolucene.common.types.conditions.reactconditions.ReactHasSubstructureCondition;
 import com.epam.indigolucene.common.types.conditions.stringconditions.StringStartsWithCondition;
 import org.json.simple.JSONObject;
 
@@ -42,6 +43,7 @@ public abstract class AbstractCondition<S> implements Condition<S> {
     static {
         fromJsonConverters.put(AndCondition.OP_AND, AndCondition::andFromJson);
         fromJsonConverters.put(OrCondition.OP_OR, OrCondition::orFromJson);
+        fromJsonConverters.put(ReactHasSubstructureCondition.OP_SUBSTRUCTURE, ReactHasSubstructureCondition::reactHasStructureFromJson);
         fromJsonConverters.put(MolHasSubstructureCondition.OP_SUBSTRUCTURE, MolHasSubstructureCondition::molHasStructureFromJson);
         fromJsonConverters.put(MolMatchesExactlyCondition.OP_EXACT, MolMatchesExactlyCondition::molMatchesExactlyFromJson);
         fromJsonConverters.put(StringStartsWithCondition.OP_STARTS_WITH, StringStartsWithCondition::stringStartsWithFromJson);
