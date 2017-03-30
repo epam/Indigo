@@ -42,7 +42,7 @@ public class ReactHasSubstructureCondition<S> extends ReactStructureCondition<S>
         return OP_SUBSTRUCTURE;
     }
 
-    public static <S> ReactHasSubstructureCondition<S>  reactHasSubstructureCondition(JSONObject json) {
+    public static <S> ReactHasSubstructureCondition<S>reactHasStructureFromJson(JSONObject json) {
         String qreact = (String) json.get(QREACT);
         String fieldName = (String) json.get(FieldCondition.FIELD_NAME);
         Boolean not = (Boolean) json.get(NOT);
@@ -85,7 +85,6 @@ public class ReactHasSubstructureCondition<S> extends ReactStructureCondition<S>
     public List<ReactStructureCondition<S>> reactStructureConditions() {
         List<ReactStructureCondition<S>> res = new LinkedList<>();
         res.add(this);
-
         return res;
     }
 
