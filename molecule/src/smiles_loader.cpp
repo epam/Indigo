@@ -1316,6 +1316,10 @@ void SmilesLoader::_loadParsedMolecule ()
             if (_atoms[i].rsite_num != 0)
                _bmol->allowRGroupOnRSite(i, _atoms[i].rsite_num);
          }
+         else if (_atoms[i].star_atom && _atoms[i].label == ELEM_PSEUDO)
+         {
+            _mol->setPseudoAtom(i, "A");
+         }
       }
    }
 
@@ -2321,12 +2325,23 @@ void SmilesLoader::_readAtom (Array<char> &atom_str, bool first_in_brackets,
       else if (next == '*')
       {
          atom.star_atom = true;
-         if (qatom.get() == 0)
-            atom.label = ELEM_RSITE;
-         else
-            subatom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom
-               (QueryMolecule::ATOM_NUMBER, ELEM_H)));
          scanner.skip(1);
+         if (first_in_brackets && atom_str.size() < 2 && !smarts_mode) 
+         {
+            atom.label = ELEM_RSITE;
+         }
+         else if (first_in_brackets && scanner.lookNext() == ':' && !inside_rsmiles) 
+         {
+            atom.label = ELEM_RSITE;
+         }
+         else
+         {
+            if (qatom.get() == 0)
+               atom.label = ELEM_PSEUDO;
+            else
+               subatom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom
+                  (QueryMolecule::ATOM_NUMBER, ELEM_H)));
+         }
       }
       else if (next == '#')
       {

@@ -733,10 +733,15 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
 
    if (_bmol->isPseudoAtom(idx)) // pseudo-atom
    {
-      _output.printf("[*");
-      _writeChirality(chirality);
-      _writeCharge(charge);
-      _output.printf("]");
+      if ( (chirality == 0) && (charge == 0) )
+         _output.printf("*");
+      else
+      {
+         _output.printf("[*");
+         _writeChirality(chirality);
+         _writeCharge(charge);
+         _output.printf("]");
+      }
 
       return;
    }
@@ -758,10 +763,15 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
          {
             if (value == ELEM_H)
             {
-               _output.printf("[*");
-               _writeChirality(chirality);
-               _writeCharge(charge);
-               _output.printf("]");
+               if ( (chirality == 0) && (charge == 0) )
+                  _output.printf("*");
+               else
+               {                   
+                  _output.printf("[*");
+                  _writeChirality(chirality);
+                  _writeCharge(charge);
+                  _output.printf("]");
+               }
                return;
             }
          }
