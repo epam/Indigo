@@ -65,8 +65,8 @@ public class ChemFilter extends SolrConstantScoreQuery implements PostFilter {
         Indigo indigo = IndigoHolder.getIndigo();
 
         for (ChemStructureCondition chemCondition : chemConditions) {
-            byte[] serializedMol = curDoc.getField(chemCondition.getFieldName()).binaryValue().bytes;
-            IndigoObject chem = indigo.unserialize(serializedMol);
+            byte[] serializedChem = curDoc.getField(chemCondition.getFieldName()).binaryValue().bytes;
+            IndigoObject chem = indigo.unserialize(serializedChem);
             if (!chemCondition.match(chem)) {
                 return false;
             }
