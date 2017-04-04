@@ -22,7 +22,7 @@ import static indexer.data.generated.TestSchema.REACT;
  * Created by Filipp Pisarev on 30/03/2017.
  */
 public class ReactionConditionTest extends BaseTest {
-    private static final Logger logger = Logger.getLogger(MoleculeConditionTest.class);
+    private static final Logger logger = Logger.getLogger(ReactionConditionTest.class);
 
     private static final int REACITON_SMALL_LIMIT = 2;
     private static final int REACTION_BIG_LIMIT = 2000;
@@ -59,7 +59,7 @@ public class ReactionConditionTest extends BaseTest {
     public void testReactionTextSearch() throws Exception{
         testCollection.removeAll();
         String[] variousReactTextValues = {"react1", "react2"};
-
+        String[] array1, array2;
 
         try (SolrUploadStream ustream = testCollection.uploadStream()) {
             for (String variousTextValue : variousReactTextValues) {
