@@ -254,41 +254,6 @@ CEXPORT int indigoSmilesAppend (int output, int item)
    INDIGO_END(-1)
 }
 
-void IndigoCanonicalSmilesSaver::_saveComplexMolecule(Molecule &mol, Array<char> &buffer)
-{
-    std::vector<std::pair<int, std::string>> molecules;
-    ArrayOutput output(buffer);
-    CanonicalSmilesSaver saver(output);
-    
-    for(int i=0; i<mol.countComponents(); i++)
-    {
-        Molecule submol;
-        Filter filter(mol.getDecomposition().ptr(), Filter::EQ, i);
-        submol.makeSubmolecule(mol, filter, 0, 0);
-        
-        saver.saveMolecule(submol);
-        std::string smile(buffer.ptr(), buffer.size());
-        molecules.push_back(std::make_pair(mol.getAtomNumber(i), smile));
-        buffer.clear();
-    } 
-    
-    auto comparison = [](const std::pair<int, std::string>& p1, const std::pair<int, std::string>& p2)->bool
-    {
-        if(p1.first > p2.first) return true;
-        if(p1.first == p2.first) return p1.second > p2.second;
-        return false;
-    };
-    std::sort(molecules.begin(), molecules.end(), comparison);
-    
-    for(int i=0; i<molecules.size(); i++)
-    {
-        output.writeString(molecules[i].second.c_str());
-        if(i<molecules.size()-1)
-            output.writeChar('.');
-    }
-}
-
-
 //
 // IndigoCanonicalSmilesSaver
 //
@@ -307,10 +272,7 @@ void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject &obj, Array<char> &
          saver.saveQueryMolecule(mol.asQueryMolecule());
       else
       {
-         if(mol.countComponents() > 2)
-            _saveComplexMolecule(mol.asMolecule(), out_buffer);
-         else
-            saver.saveMolecule(mol.asMolecule());
+         saver.saveMolecule(mol.asMolecule());
       }
    }
    else if (IndigoBaseReaction::is(obj))
@@ -338,7 +300,7 @@ void IndigoCanonicalSmilesSaver::generateSmarts(IndigoObject &obj, Array<char> &
       BaseMolecule &mol = obj.getBaseMolecule();
 
       CanonicalSmilesSaver saver(output);
-      saver.smarts_mode = true;
+      saver.setSmartsMode(true);
 
       if (mol.isQueryMolecule())
          saver.saveQueryMolecule(mol.asQueryMolecule());

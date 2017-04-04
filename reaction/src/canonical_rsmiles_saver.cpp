@@ -106,8 +106,8 @@ void CanonicalRSmilesSaver::_writeMolecule(int i, CanonicalSmilesSaver &saver)
 {
    int j;
 
-   saver.smarts_mode = smarts_mode;
-   saver.inside_rsmiles = true;
+   saver.setSmartsMode(smarts_mode);
+   saver.setInsideRsmiles(true);
 
    if (_rxn != 0)
       saver.saveMolecule(_rxn->getMolecule(i));
