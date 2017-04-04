@@ -1,15 +1,9 @@
 package com.epam.indigolucene.common.types.conditions;
 
-import com.epam.indigolucene.common.types.conditions.AbstractCondition;
-import com.epam.indigolucene.common.types.conditions.Condition;
-import com.epam.indigolucene.common.types.conditions.molconditions.MolStructureCondition;
-import com.epam.indigolucene.common.types.conditions.reactconditions.ReactStructureCondition;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -32,18 +26,10 @@ public abstract class BinaryCondition<S> extends AbstractCondition<S> {
     }
 
     @Override
-    public List<MolStructureCondition<S>> molStructureConditions() {
-        List<MolStructureCondition<S>> res = new LinkedList<>();
-        res.addAll(operand1.molStructureConditions());
-        res.addAll(operand2.molStructureConditions());
-        return res;
-    }
-
-    @Override
-    public List<ReactStructureCondition<S>> reactStructureConditions() {
-        List<ReactStructureCondition<S>> res = new LinkedList<>();
-        res.addAll(operand1.reactStructureConditions());
-        res.addAll(operand2.reactStructureConditions());
+    public List<ChemStructureCondition<S>> chemStructureConditions() {
+        List<ChemStructureCondition<S>> res = new LinkedList<>();
+        res.addAll(operand1.chemStructureConditions());
+        res.addAll(operand2.chemStructureConditions());
         return res;
     }
 

@@ -2,15 +2,11 @@ package com.epam.indigolucene.common.types.conditions.stringconditions;
 
 import com.epam.indigolucene.common.types.conditions.Condition;
 import com.epam.indigolucene.common.types.conditions.FieldCondition;
-import com.epam.indigolucene.common.types.conditions.molconditions.MolStructureCondition;
-import com.epam.indigolucene.common.types.fields.Field;
 import com.epam.indigolucene.common.types.fields.StringField;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Artem Malykh on 24.02.16.

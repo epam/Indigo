@@ -20,9 +20,9 @@ public class SubstructureValueSourceParser extends ValueSourceParser {
 
     @Override
     public ValueSource parse(FunctionQParser fp) throws SyntaxError {
-        byte[] qMolBytes = Base64.decode(fp.parseArg());
-        IndigoObject qMol = IndigoHolder.getIndigo().loadQueryMolecule(qMolBytes);
+        byte[] qChemBytes = Base64.decode(fp.parseArg());
+        IndigoObject qReact = IndigoHolder.getIndigo().loadQueryReaction(qChemBytes);
         String fieldName = fp.parseArg();
-        return new SubstrucureValue(qMol, fieldName);
+        return new SubstrucureValue(qReact, fieldName);
     }
 }

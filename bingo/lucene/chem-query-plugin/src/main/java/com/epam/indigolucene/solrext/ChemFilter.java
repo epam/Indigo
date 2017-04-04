@@ -3,8 +3,7 @@ package com.epam.indigolucene.solrext;
 import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigolucene.common.IndigoHolder;
-import com.epam.indigolucene.common.types.conditions.molconditions.MolStructureCondition;
-import com.epam.indigolucene.common.types.conditions.reactconditions.ReactStructureCondition;
+import com.epam.indigolucene.common.types.conditions.ChemStructureCondition;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.search.IndexSearcher;
@@ -23,8 +22,7 @@ import java.util.List;
  */
 public class ChemFilter extends SolrConstantScoreQuery implements PostFilter {
 
-    private List<MolStructureCondition> molConditions;
-    private List<ReactStructureCondition> reactConditions;
+    private List<ChemStructureCondition> chemConditions;
     private int cost;
     private long offset;
     private long limit;
@@ -33,8 +31,7 @@ public class ChemFilter extends SolrConstantScoreQuery implements PostFilter {
 
     public ChemFilter(Query filter, com.epam.indigolucene.common.query.Query originalQuery) {
         super(new QueryWrapperFilter(filter));
-        molConditions = originalQuery.getCondition().molStructureConditions();
-        reactConditions = originalQuery.getCondition().reactStructureConditions();
+        chemConditions = originalQuery.getCondition().chemStructureConditions();
         offset = originalQuery.getOffset();
         //TODO: workaraund against solr 'start' parameter cuts results after filtering. Very inefficient since it enlarges number of documents to filter.
         limit = originalQuery.getLimit() + offset;
@@ -67,22 +64,13 @@ public class ChemFilter extends SolrConstantScoreQuery implements PostFilter {
     private boolean checkChem(Document curDoc) {
         Indigo indigo = IndigoHolder.getIndigo();
 
-        for (MolStructureCondition molCondition : molConditions) {
-            byte[] serializedMol = curDoc.getField(molCondition.getFieldName()).binaryValue().bytes;
-            IndigoObject mol = indigo.unserialize(serializedMol);
-            //If no molecule found, keep digging for reactions
-            if (!molCondition.match(mol)) {
-                for (ReactStructureCondition reactCondition : reactConditions) {
-                    byte[] serializedReact = curDoc.getField(reactCondition.getFieldName()).binaryValue().bytes;
-                    IndigoObject react = indigo.unserialize(serializedReact);
-                    if (!reactCondition.match(react)) {
-                        return false;
-                    }
-                }
+        for (ChemStructureCondition chemCondition : chemConditions) {
+            byte[] serializedMol = curDoc.getField(chemCondition.getFieldName()).binaryValue().bytes;
+            IndigoObject chem = indigo.unserialize(serializedMol);
+            if (!chemCondition.match(chem)) {
+                return false;
             }
-
         }
-
         return true;
     }
 

@@ -1,7 +1,5 @@
 package com.epam.indigolucene.solrext;
 
-import com.epam.indigolucene.common.types.conditions.AbstractCondition;
-import com.epam.indigolucene.common.types.conditions.Condition;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Query;

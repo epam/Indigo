@@ -10,10 +10,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.util.ObjectReleaseTracker;
 
 import java.io.IOException;
 import java.util.*;
@@ -94,8 +92,7 @@ public class SolrConnection5 implements SolrConnection {
 
     private SolrQuery getRawSolrQuery() {
         SolrQuery res = new SolrQuery();
-        if (!query.getCondition().molStructureConditions().isEmpty() ||
-                !query.getCondition().reactStructureConditions().isEmpty()) {
+        if (!query.getCondition().chemStructureConditions().isEmpty()) {
             String jq = Base64.encodeBase64String(query.toJson().toJSONString().getBytes());
             res.setParam(Query.JSON_QUERY_PARAM, jq);
             res.set("defType", "chemparsernew");

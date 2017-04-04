@@ -2,21 +2,20 @@ package com.epam.indigolucene.common.types.conditions.molconditions;
 
 import com.epam.indigo.IndigoObject;
 import com.epam.indigolucene.common.IndigoHolder;
+import com.epam.indigolucene.common.types.conditions.ChemStructureCondition;
 import com.epam.indigolucene.common.types.conditions.Condition;
 import com.epam.indigolucene.common.types.conditions.FieldCondition;
 import com.epam.indigolucene.common.types.fields.MolField;
 import com.epam.indigolucene.common.utils.Utils;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Artem Malykh on 03.03.16.
  */
-public class MolMatchesExactlyCondition<S> extends MolStructureCondition<S> {
+public class MolMatchesExactlyCondition<S> extends ChemStructureCondition<S> {
     public static final String OP_EXACT = "exact";
     public static final String QMOL         = "qMolString";
     public static float SUBSTRUCTURE_MATCHES = 1.0f;
@@ -88,8 +87,8 @@ public class MolMatchesExactlyCondition<S> extends MolStructureCondition<S> {
     }
 
     @Override
-    public List<MolStructureCondition<S>> molStructureConditions() {
-        List<MolStructureCondition<S>> res = new LinkedList<>();
+    public List<ChemStructureCondition<S>> chemStructureConditions() {
+        List<ChemStructureCondition<S>> res = new LinkedList<>();
         res.add(this);
         return res;
     }

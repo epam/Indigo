@@ -1,7 +1,5 @@
 package indexer;
 
-import com.epam.indigo.Indigo;
-import com.epam.indigo.IndigoObject;
 import com.epam.indigolucene.common.IndigoHolder;
 import com.epam.indigolucene.common.SolrUploadStream;
 import com.epam.indigolucene.commonconfig.ServiceConfig;
@@ -15,8 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static indexer.data.generated.TestSchema.CONTENT_TYPE;
 import static indexer.data.generated.TestSchema.REACT;
+import static indexer.data.generated.TestSchema.CONTENT_TYPE;
 
 /**
  * Created by Filipp Pisarev on 30/03/2017.
@@ -59,7 +57,6 @@ public class ReactionConditionTest extends BaseTest {
     public void testReactionTextSearch() throws Exception{
         testCollection.removeAll();
         String[] variousReactTextValues = {"react1", "react2"};
-        String[] array1, array2;
 
         try (SolrUploadStream ustream = testCollection.uploadStream()) {
             for (String variousTextValue : variousReactTextValues) {

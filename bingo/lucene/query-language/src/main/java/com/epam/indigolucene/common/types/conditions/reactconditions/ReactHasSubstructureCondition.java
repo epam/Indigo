@@ -3,6 +3,7 @@ package com.epam.indigolucene.common.types.conditions.reactconditions;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigolucene.common.IndigoHolder;
 import com.epam.indigolucene.common.types.conditions.FieldCondition;
+import com.epam.indigolucene.common.types.conditions.ChemStructureCondition;
 import com.epam.indigolucene.common.types.fields.ReactField;
 import com.epam.indigolucene.common.utils.Utils;
 import org.json.simple.JSONObject;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Created by Filipp Pisarev on 20.03.17.
  */
-public class ReactHasSubstructureCondition<S> extends ReactStructureCondition<S> {
+public class ReactHasSubstructureCondition<S> extends ChemStructureCondition<S> {
     public static final String OP_SUBSTRUCTURE   = "subs";
     public static final String QREACT = "qReactString";
 
@@ -82,8 +83,8 @@ public class ReactHasSubstructureCondition<S> extends ReactStructureCondition<S>
     }
 
     @Override
-    public List<ReactStructureCondition<S>> reactStructureConditions() {
-        List<ReactStructureCondition<S>> res = new LinkedList<>();
+    public List<ChemStructureCondition<S>> chemStructureConditions() {
+        List<ChemStructureCondition<S>> res = new LinkedList<>();
         res.add(this);
         return res;
     }
