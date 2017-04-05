@@ -1,4 +1,4 @@
-package indexer;
+package indexer.reactionTest;
 
 import com.epam.indigolucene.common.IndigoHolder;
 import com.epam.indigolucene.common.SolrUploadStream;
@@ -18,7 +18,7 @@ import static indexer.data.generated.TestSchema.*;
 /**
  * Created by Filipp Pisarev on 30/03/2017.
  */
-public class ReactionConditionTest extends BaseTest {
+public class ReactionConditionTest extends ReactionBaseTest {
     private static final Logger logger = Logger.getLogger(ReactionConditionTest.class);
 
     private static final int REACITON_SMALL_LIMIT = 2;
@@ -35,8 +35,8 @@ public class ReactionConditionTest extends BaseTest {
         TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(REACT.unsafeHasSubstructure(RARE_REACTION)).limit(1).processWith(lst -> logger.info(lst.size()));
         logger.info("Took approx. " + (System.currentTimeMillis() - before) + " ms ");
 
-        benchmarkMol(BENZOL, REACTION_BIG_LIMIT);
-        benchmarkMol(BENZOL, REACITON_SMALL_LIMIT);
+        benchmarkMol(RARE_REACTION, REACTION_BIG_LIMIT);
+        benchmarkMol(RARE_REACTION, REACITON_SMALL_LIMIT);
         benchmarkMol(RARE_REACTION, RARE_REACTION_LIMIT);
         /**
          * 60k   --- 1700, ?,   230, 61
@@ -77,11 +77,10 @@ public class ReactionConditionTest extends BaseTest {
 
         testCollection.find().filter(CONTENT_TYPE.startsWith(variousReactTextValues[0])).
                 filter(REACT.unsafeHasSubstructure(RARE_REACTION)).
-                dropField(MOL).
-                dropField(MOL_ID).
                 processWith(lst -> result.addAll(lst));
         logger.info(result + " : " + result.size());
-        Assert.assertTrue(result.size() == 1);
+        System.out.println(result.size());
+        Assert.assertTrue(result.size() == 2);
         result.clear();
     }
 

@@ -1,4 +1,4 @@
-package indexer;
+package indexer.moleculeTest;
 
 import com.epam.indigo.IndigoException;
 import com.epam.indigolucene.common.CollectionRepresentation;
@@ -28,8 +28,8 @@ import java.io.IOException;
  * Base tests with some useful methods for testing.
  * Created by Artem_Malykh on 9/9/2015.
  */
-public class BaseTest {
-    private static final Logger logger = Logger.getLogger(BaseTest.class);
+public class MoleculeBaseTest {
+    private static final Logger logger = Logger.getLogger(MoleculeBaseTest.class);
 
     public static final String BENZOL         = "c1ccccc1";
     public static final String TEST_CORE_NAME = "moldocs";

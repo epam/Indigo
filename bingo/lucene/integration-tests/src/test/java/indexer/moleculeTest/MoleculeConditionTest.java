@@ -1,4 +1,4 @@
-package indexer;
+package indexer.moleculeTest;
 
 import com.epam.indigolucene.common.IndigoHolder;
 import com.epam.indigolucene.common.SolrUploadStream;
@@ -25,7 +25,7 @@ import static indexer.data.generated.TestSchema.MOL;
  * for quick checks working of plugin. This class should be redone.
  */
 //TODO: move to core package
-public class MoleculeConditionTest extends BaseTest {
+public class MoleculeConditionTest extends MoleculeBaseTest {
     private static final Logger logger = Logger.getLogger(MoleculeConditionTest.class);
 
     private static final int BENZOL_SMALL_LIMIT = 2;
