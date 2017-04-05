@@ -14,11 +14,11 @@ import java.util.Map;
 /**
  * Created by Artem Malykh on 01.03.16.
  */
-public class SubstrucureValue extends ValueSource {
+public class SubstructureValue extends ValueSource {
     private final IndigoObject qChem;
     private String fieldName;
 
-    public SubstrucureValue(IndigoObject qChem, String fieldName) {
+    public SubstructureValue(IndigoObject qChem, String fieldName) {
         this.qChem = qChem;
         this.fieldName = fieldName;
     }
@@ -67,7 +67,7 @@ public class SubstrucureValue extends ValueSource {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SubstrucureValue that = (SubstrucureValue) o;
+        SubstructureValue that = (SubstructureValue) o;
 
         if (qChem != null ? !qChem.equals(that.qChem) : that.qChem != null) return false;
         return fieldName != null ? fieldName.equals(that.fieldName) : that.fieldName == null;

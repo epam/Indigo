@@ -23,6 +23,6 @@ public class SubstructureValueSourceParser extends ValueSourceParser {
         byte[] qChemBytes = Base64.decode(fp.parseArg());
         IndigoObject qReact = IndigoHolder.getIndigo().loadQueryReaction(qChemBytes);
         String fieldName = fp.parseArg();
-        return new SubstrucureValue(qReact, fieldName);
+        return new SubstructureValue(qReact, fieldName);
     }
 }

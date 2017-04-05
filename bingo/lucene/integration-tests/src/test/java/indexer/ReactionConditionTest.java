@@ -13,8 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static indexer.data.generated.TestSchema.REACT;
-import static indexer.data.generated.TestSchema.CONTENT_TYPE;
+import static indexer.data.generated.TestSchema.*;
 
 /**
  * Created by Filipp Pisarev on 30/03/2017.
@@ -78,6 +77,8 @@ public class ReactionConditionTest extends BaseTest {
 
         testCollection.find().filter(CONTENT_TYPE.startsWith(variousReactTextValues[0])).
                 filter(REACT.unsafeHasSubstructure(RARE_REACTION)).
+                dropField(MOL).
+                dropField(MOL_ID).
                 processWith(lst -> result.addAll(lst));
         logger.info(result + " : " + result.size());
         Assert.assertTrue(result.size() == 1);
