@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Filipp Pisarev on 20.03.17.
  */
 public class ReactHasSubstructureCondition<S> extends ChemStructureCondition<S> {
-    public static final String OP_SUBSTRUCTURE   = "subs";
+    public static final String OP_SUBSTRUCTURE   = "reactsubs";
     public static final String QREACT = "qReactString";
 
     public static int SUBSTRUCTURE_REAL_MATCH_COST = 100;

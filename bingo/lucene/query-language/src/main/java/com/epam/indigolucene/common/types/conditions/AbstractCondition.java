@@ -43,8 +43,8 @@ public abstract class AbstractCondition<S> implements Condition<S> {
     static {
         fromJsonConverters.put(AndCondition.OP_AND, AndCondition::andFromJson);
         fromJsonConverters.put(OrCondition.OP_OR, OrCondition::orFromJson);
-        fromJsonConverters.put(ReactHasSubstructureCondition.OP_SUBSTRUCTURE, ReactHasSubstructureCondition::reactHasStructureFromJson);
         fromJsonConverters.put(MolHasSubstructureCondition.OP_SUBSTRUCTURE, MolHasSubstructureCondition::molHasStructureFromJson);
+        fromJsonConverters.put(ReactHasSubstructureCondition.OP_SUBSTRUCTURE, ReactHasSubstructureCondition::reactHasStructureFromJson);
         fromJsonConverters.put(MolMatchesExactlyCondition.OP_EXACT, MolMatchesExactlyCondition::molMatchesExactlyFromJson);
         fromJsonConverters.put(StringStartsWithCondition.OP_STARTS_WITH, StringStartsWithCondition::stringStartsWithFromJson);
     }

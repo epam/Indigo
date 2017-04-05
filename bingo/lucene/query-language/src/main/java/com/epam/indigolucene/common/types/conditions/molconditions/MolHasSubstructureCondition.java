@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Artem Malykh on 20.02.16.
  */
 public class MolHasSubstructureCondition<S> extends ChemStructureCondition<S> {
-    public static final String OP_SUBSTRUCTURE = "subs";
+    public static final String OP_SUBSTRUCTURE = "molsubs";
     public static final String QMOL         = "qMolString";
 
     public static int SUBSTRUCTURE_REAL_MATCH_COST = 100;
