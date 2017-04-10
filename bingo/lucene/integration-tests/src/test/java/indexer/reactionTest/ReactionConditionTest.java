@@ -26,7 +26,7 @@ public class ReactionConditionTest extends ReactionBaseTest {
     private static final int RARE_REACTION_LIMIT = 2000;
 
     private static final String CORE_NAME = "moldocs";
-    private static final String RARE_REACTION = REACTION;
+    private static final String RARE_REACTION = "[I-].[Na+].C=CCBr>>[Na+].[Br-].C=CCI";
 
     @Test
     public void reactionBenchmarkTest() throws Exception {
@@ -51,6 +51,39 @@ public class ReactionConditionTest extends ReactionBaseTest {
          */
     }
 
+    //@Test
+    public void testExactMatchesSearch() throws Exception {
+        testCollection.removeAll();
+        String[] variousTextValues = {"matchReaction", "react"};
+
+        try(SolrUploadStream ustream = testCollection.uploadStream()) {
+            for(String varTextValue:variousTextValues) {
+                TestSchemaDocument emptyDocument;
+                emptyDocument = TestSchema.createEmptyDocument();
+                emptyDocument.setContentType(varTextValue);
+                emptyDocument.setReact(IndigoHolder.getIndigo().loadReaction(REACTION));
+                ustream.addDocument(emptyDocument);
+
+                emptyDocument = TestSchema.createEmptyDocument();
+                emptyDocument.setContentType(varTextValue);
+                emptyDocument.setReact(IndigoHolder.getIndigo().loadReaction( "CBr>>CClC"));
+                ustream.addDocument(emptyDocument);
+            }
+        }
+
+        logger.info("done");
+
+        List<Map<String, Object>> result = new LinkedList<>();
+
+        testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[0])).
+                filter(REACT.unsafeExactMatches(REACTION)).
+                processWith(lst -> result.addAll(lst));
+        logger.info(result + " : " + result.size());
+        System.out.println(result.size());
+        Assert.assertTrue(result.size() == 1);
+        result.clear();
+    }
+
 
     @Test
     public void testReactionTextSearch() throws Exception{
@@ -67,7 +100,7 @@ public class ReactionConditionTest extends ReactionBaseTest {
 
                 emptyDocument = TestSchema.createEmptyDocument();
                 emptyDocument.setContentType(variousTextValue);
-                emptyDocument.setReact(IndigoHolder.getIndigo().loadReaction(RARE_REACTION));
+                emptyDocument.setReact(IndigoHolder.getIndigo().loadReaction("CBr>>CClC"));
                 ustream.addDocument(emptyDocument);
             }
         }
@@ -75,12 +108,12 @@ public class ReactionConditionTest extends ReactionBaseTest {
 
         List<Map<String, Object>> result = new LinkedList<>();
 
-        testCollection.find().filter(CONTENT_TYPE.startsWith(variousReactTextValues[0])).
-                filter(REACT.unsafeHasSubstructure(RARE_REACTION)).
+        testCollection.find().
+                filter(REACT.unsafeHasSubstructure(REACTION)).
                 processWith(lst -> result.addAll(lst));
         logger.info(result + " : " + result.size());
         System.out.println(result.size());
-        Assert.assertTrue(result.size() == 2);
+        Assert.assertTrue(result.size() == 4);
         result.clear();
     }
 

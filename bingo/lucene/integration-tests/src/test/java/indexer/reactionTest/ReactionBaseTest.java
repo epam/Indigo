@@ -31,7 +31,7 @@ public class ReactionBaseTest {
     private static final Logger logger = Logger.getLogger(ReactionBaseTest.class);
 
     public static final String TEST_CORE_NAME = "moldocs";
-    public static final String REACTION = "[I-].[Na+].C=CCBr>>[Na+].[Br-].C=CCI";
+    public static final String REACTION = "CBr>>CCl";
 
 
     CollectionRepresentation<TestSchema> testCollection;
