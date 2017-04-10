@@ -51,7 +51,7 @@ public class ReactionConditionTest extends ReactionBaseTest {
          */
     }
 
-    //@Test
+    @Test
     public void testExactMatchesSearch() throws Exception {
         testCollection.removeAll();
         String[] variousTextValues = {"matchReaction", "react"};
