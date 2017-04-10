@@ -2,6 +2,7 @@ package com.epam.indigolucene.common.types.fields.searchable;
 
 import com.epam.indigo.IndigoObject;
 import com.epam.indigolucene.common.types.conditions.reactconditions.ReactHasSubstructureCondition;
+import com.epam.indigolucene.common.types.conditions.reactconditions.ReactMatchesExactlyCondition;
 import com.epam.indigolucene.common.types.fields.ReactField;
 
 /**
@@ -18,5 +19,13 @@ public class SearchableReactField<S> extends ReactField<S> {
 
     public ReactHasSubstructureCondition<S> unsafeHasSubstructure(String substructure) {
         return new ReactHasSubstructureCondition<>(this, substructure);
+    }
+
+    public ReactMatchesExactlyCondition<S> exactMatches(IndigoObject match) {
+        return new ReactMatchesExactlyCondition<>(this, match);
+    }
+
+    public ReactMatchesExactlyCondition<S> unsafeExactMatches(String match) {
+        return new ReactMatchesExactlyCondition<>(this, match);
     }
 }
