@@ -130,17 +130,17 @@ try (SolrUploadStream<TestSchema> uStream = TestSchema.collection(<url>, <core_n
 
 ## Running Tests ## 
 
-If you have a desire to run some tests(to make sure that functionality you want to use is working properly) just run a command presented below in**integration-tests**directory
+If you have a desire to run some tests(to make sure that functionality you want to use is working properly) just run a command presented below in **integration-tests** directory
 ```bash
 mvn test
 ```
 
 For more specific approach(if You want to run a single test class), use that command instead: 
- ```bash
+ ```text
  mvn -Dtest=<Your_test_classname> test
  ```
  
  And for running a specific test method inside a test class use: 
- ```bash
+ ```text
  mvn -Dtest=<Your_test_classname>#<class_test_method> test
  ```
