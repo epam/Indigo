@@ -35,9 +35,9 @@ public class ReactionConditionTest extends ReactionBaseTest {
         TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(REACT.unsafeHasSubstructure(RARE_REACTION)).limit(1).processWith(lst -> logger.info(lst.size()));
         logger.info("Took approx. " + (System.currentTimeMillis() - before) + " ms ");
 
-        benchmarkMol(RARE_REACTION, REACTION_BIG_LIMIT);
-        benchmarkMol(RARE_REACTION, REACITON_SMALL_LIMIT);
-        benchmarkMol(RARE_REACTION, RARE_REACTION_LIMIT);
+        benchmarkReaction(RARE_REACTION, REACTION_BIG_LIMIT);
+        benchmarkReaction(RARE_REACTION, REACITON_SMALL_LIMIT);
+        benchmarkReaction(RARE_REACTION, RARE_REACTION_LIMIT);
         /**
          * 60k   --- 1700, ?,   230, 61
          * 90k   --- 1700, ?,   299, 62
@@ -86,7 +86,7 @@ public class ReactionConditionTest extends ReactionBaseTest {
 
 
     @Test
-    public void testReactionTextSearch() throws Exception{
+    public void testReactionSubstructureSearch() throws Exception{
         testCollection.removeAll();
         String[] variousReactTextValues = {"react1", "react2"};
 
@@ -117,7 +117,7 @@ public class ReactionConditionTest extends ReactionBaseTest {
         result.clear();
     }
 
-    protected void benchmarkMol(String reaction, int limit) throws Exception {
+    protected void benchmarkReaction(String reaction, int limit) throws Exception {
         long before = System.currentTimeMillis();
         logger.info("Searching " + reaction + " with limit " + limit);
         TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(REACT.unsafeHasSubstructure(reaction)).limit(limit).processWith(lst -> logger.info("returned results: " + lst.size()));
