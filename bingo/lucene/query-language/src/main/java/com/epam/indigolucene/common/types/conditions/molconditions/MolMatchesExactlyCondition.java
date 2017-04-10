@@ -16,7 +16,7 @@ import java.util.List;
  * Created by Artem Malykh on 03.03.16.
  */
 public class MolMatchesExactlyCondition<S> extends ChemStructureCondition<S> {
-    public static final String OP_EXACT = "exact";
+    public static final String OP_EXACT = "molexact";
     public static final String QMOL         = "qMolString";
     public static float SUBSTRUCTURE_MATCHES = 1.0f;
 
