@@ -66,8 +66,7 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol)
             submol.makeSubmolecule(mol, filter, 0, 0);
 
             _processMolecule(submol);
-            _smilesSaver->saveMolecule(submol);
-
+           
             std::string smile(_buffer.ptr(), _buffer.size());
             molecules.push_back(std::make_pair(mol.getAtomNumber(i), smile));
             _buffer.clear();
@@ -91,8 +90,8 @@ void CanonicalSmilesSaver::saveMolecule (Molecule &mol)
     else
     {
         _processMolecule(mol);
-        _smilesSaver->saveMolecule(mol);
         _output.write(_buffer.ptr(), _buffer.size());
+        _buffer.clear();
     }
 }
 
@@ -180,6 +179,7 @@ void CanonicalSmilesSaver::_processMolecule (Molecule &mol_)
       }
    }
    mol.reaction_atom_mapping.copy(_actual_atom_atom_mapping);
+   _smilesSaver->saveMolecule(mol);
 }
 
 void CanonicalSmilesSaver::setSmartsMode(bool smarts_mode)
