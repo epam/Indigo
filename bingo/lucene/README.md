@@ -40,6 +40,7 @@ cp dist/chem-query-plugin-<version>.jar <your-solr-path>/plugin
 
 Now you can do queries, but you will need a client.
 
+
 ### Creating client ###
 
 Clients for chem query solr plugin are done in typesafe way (we build a small type-safe DSL), so they are parametrized by schema of your solr collection(s).
@@ -126,3 +127,20 @@ try (SolrUploadStream<TestSchema> uStream = TestSchema.collection(<url>, <core_n
     uStream.addDocument(emptyDocument);
 }
 ```
+
+## Running Tests ## 
+
+If you have a desire to run some tests(to make sure that functionality you want to use is working properly) just run a command presented below in**integration-tests**directory
+```bash
+mvn test
+```
+
+For more specific approach(if You want to run a single test class), use that command instead: 
+ ```bash
+ mvn -Dtest=<Your_test_classname> test
+ ```
+ 
+ And for running a specific test method inside a test class use: 
+ ```bash
+ mvn -Dtest=<Your_test_classname>#<class_test_method> test
+ ```
