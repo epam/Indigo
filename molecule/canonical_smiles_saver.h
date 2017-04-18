@@ -46,7 +46,7 @@ public:
    DECL_ERROR;
 
 protected:
-   void _processMolecule (Molecule &mol);
+   void _processMolecule (Molecule &mol, Molecule &prcmol);
    typedef RedBlackMap<int, int> MapIntInt;
 
    CP_DECL;   
@@ -58,6 +58,7 @@ protected:
    Array<char> _buffer;
    std::unique_ptr<ArrayOutput> _arrayOutput;
    std::unique_ptr<SmilesSaver> _smilesSaver;
+   Array<int> _ranks;
 };
 
 }
