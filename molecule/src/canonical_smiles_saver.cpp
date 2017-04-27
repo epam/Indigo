@@ -22,8 +22,6 @@
 #include "molecule/elements.h"
 #include "molecule/molecule_dearom.h"
 
-#include <vector>
-#include <string>
 #include <algorithm>
 
 using namespace indigo;
@@ -54,43 +52,77 @@ CanonicalSmilesSaver::~CanonicalSmilesSaver ()
 }
 
 void CanonicalSmilesSaver::saveMolecule (Molecule &mol)
-{        
+{
     if(mol.countComponents() > MAX_NUMBER_OF_COMPONENTS)
-    {        
-        std::vector<std::pair<int, std::string>> molecules;
-        Molecule newMol;
-
-        for(int i=mol.countComponents()-1; i>=0; i--)
+    {
+        typedef std::unique_ptr<Molecule> MoleculePtr;
+        typedef std::pair<MoleculePtr, std::vector<int>> ProcMol;
+        std::vector<ProcMol> molecules(mol.countComponents());
+        for(int i=0; i<mol.countComponents(); i++)
         {
-            Molecule submol, prcmol;
+            Molecule submol;
+            molecules[i].first = MoleculePtr(new Molecule());
             Filter filter(mol.getDecomposition().ptr(), Filter::EQ, i);
             submol.makeSubmolecule(mol, filter, 0, 0);
 
-            _processMolecule(submol, prcmol);
-            newMol.mergeWithMolecule(prcmol, 0);
-        } 
-        _smilesSaver->saveMolecule(newMol);
-
+            _processMolecule(submol, *molecules[i].first, molecules[i].second);
+        }
+        
+        auto comporator = [&](ProcMol& m1, ProcMol& m2)
+        {                    
+            if(m1.first->vertexCount() > m2.first->vertexCount()) return true;
+            if(m1.first->vertexCount() == m2.first->vertexCount())
+            {
+                _smilesSaver->vertex_ranks = &m1.second[0];
+                _smilesSaver->saveMolecule(*m1.first);
+                std::string smile1(_buffer.ptr(), _buffer.size());
+                _buffer.clear();
+                _smilesSaver->vertex_ranks = &m2.second[0];
+                _smilesSaver->saveMolecule(*m2.first);
+                std::string smile2(_buffer.ptr(), _buffer.size());
+                _buffer.clear();
+                return smile1<smile2;   
+            }
+            return false;
+        };
+        
+        std::sort(molecules.begin(), molecules.end(), comporator);
+        
+        Molecule allMolecules;
+        std::vector<int> allRanks;
+        int shift=0;
+        for(auto& mol : molecules)
+        {
+            auto& ranks = mol.second;
+            for(auto& rank : ranks) 
+                rank+=shift;
+            shift += ranks.size();
+            allRanks.insert(allRanks.end(), ranks.begin(), ranks.end());
+            allMolecules.mergeWithMolecule(*mol.first, 0);
+        }       
+                
+        _smilesSaver->vertex_ranks = &allRanks[0];
+        _smilesSaver->saveMolecule(allMolecules);
     }
     else
     {
         Molecule prcmol;
-        _processMolecule(mol, prcmol);
+        std::vector<int> ranks;
+        _processMolecule(mol, prcmol, ranks);
+        _smilesSaver->vertex_ranks = &ranks[0];
         _smilesSaver->saveMolecule(prcmol);
     }
     _output.write(_buffer.ptr(), _buffer.size());
     _buffer.clear();
-    _ranks.clear();
 }
 
-void CanonicalSmilesSaver::_processMolecule (Molecule &mol, Molecule &prcmol)
+void CanonicalSmilesSaver::_processMolecule (Molecule &mol, Molecule &prcmol, std::vector<int>& ranks)
 {
    if (mol.vertexCount() < 1)
       return;
 
    QS_DEF(Array<int>, ignored);
    QS_DEF(Array<int>, order);
-   QS_DEF(Array<int>, ranks);
 
    int i;
 
@@ -143,13 +175,11 @@ void CanonicalSmilesSaver::_processMolecule (Molecule &mol, Molecule &prcmol)
       if (prcmol.stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY && of.invalidStereocenter(i))
          prcmol.stereocenters.remove(i);
 
-   ranks.clear_resize(prcmol.vertexEnd());
+   ranks.clear();
+   ranks.resize(prcmol.vertexEnd());
 
    for (i = 0; i < order.size(); i++)
       ranks[order[i]] = i;
-
-   _ranks.concat(ranks.ptr(), ranks.size());
-   _smilesSaver->vertex_ranks = _ranks.ptr();
 
    _actual_atom_atom_mapping.clear_resize(prcmol.vertexCount());
    _actual_atom_atom_mapping.zerofill();

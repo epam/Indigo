@@ -20,6 +20,7 @@
 #include "base_cpp/output.h"
 
 #include <memory>
+#include <vector>
 
 namespace indigo {
 
@@ -46,8 +47,9 @@ public:
    DECL_ERROR;
 
 protected:
-   void _processMolecule (Molecule &mol, Molecule &prcmol);
    typedef RedBlackMap<int, int> MapIntInt;
+
+   void _processMolecule (Molecule &mol, Molecule &prcmol, std::vector<int>& ranks);
 
    CP_DECL;   
    TL_CP_DECL(Array<int>, _actual_atom_atom_mapping);
@@ -58,7 +60,6 @@ protected:
    Array<char> _buffer;
    std::unique_ptr<ArrayOutput> _arrayOutput;
    std::unique_ptr<SmilesSaver> _smilesSaver;
-   Array<int> _ranks;
 };
 
 }
