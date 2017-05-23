@@ -129,8 +129,8 @@ try (SolrUploadStream<TestSchema> uStream = TestSchema.collection(<url>, <core_n
 ```
 
 ## Running Tests ## 
-
-If you have a desire to run some tests(to make sure that functionality you want to use is working properly) just run a command presented below in **integration-tests** directory
+### integration tests ###
+If You have a desire to run some tests(to make sure that functionality you want to use is working properly) just run a command presented below in **integration-tests** directory
 ```bash
 mvn test
 ```
@@ -144,3 +144,15 @@ For more specific approach(if You want to run a single test class), use that com
  ```text
  mvn -Dtest=<Your_test_classname>#<class_test_method> test
  ```
+ ### benchmarks tests ###
+ In case of running benchmark test, first head to 'benchmark-tests' folder,  then run 
+ ```text
+  mvn clean install
+ ```
+ Afterwards 
+ 
+ ```text
+ java -jar target/benchmarks.jar
+ ```
+ 
+ <b>NB</b>: It is highly recommended to close all other apps for better test results
