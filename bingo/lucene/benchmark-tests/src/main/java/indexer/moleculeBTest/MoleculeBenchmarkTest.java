@@ -55,6 +55,7 @@ public class MoleculeBenchmarkTest {
             }
         }
         public CollectionRepresentation<TestSchema> testCollection;
+        public List<Map<String, Object>> result;
         public final  String BENZOL = "c1ccccc1";
         public final String CORE_NAME = "moldocs";
     }
@@ -63,10 +64,9 @@ public class MoleculeBenchmarkTest {
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.SECONDS)
     public void molSimilaritySearchBenchmark(SolrAndMoleculesData solrMolData, Blackhole blackhole) throws Exception {
-        List<Map<String, Object>> result = new LinkedList<>();
+        solrMolData.result = new LinkedList<>();
         solrMolData.testCollection.find().filter(MOL.unsafeIsSimilarTo(solrMolData.BENZOL)).
-                processWith(result::addAll);
-        blackhole.consume(result);
+                processWith(solrMolData.result::addAll);
+        blackhole.consume(solrMolData.result);
     }
-
 }
