@@ -21,11 +21,9 @@
     <fieldtype name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
     <fieldtype name="string" class="solr.StrField" indexed="true"/>
     <fieldtype name="strings" class="solr.StrField" multiValued="true"/>
-    <!--Serialized molecule -->
-    <fieldtype name="T_serMol" class="solr.BinaryField" indexed="false" stored="true"/>
-    <fieldtype name="T_molId" class="solr.TextField" indexed="false" stored="true"/>
-    <fieldtype name="T_serReact" class="solr.BinaryField" indexed="false" stored="true"/>
-    <fieldtype name="T_reactId" class="solr.TextField" indexed="false" stored="true"/>
+    <!--Serialized chemical -->
+    <fieldtype name="T_serChem" class="solr.BinaryField" indexed="false" stored="true"/>
+    <fieldtype name="T_chemId" class="solr.TextField" indexed="false" stored="true"/>
     <fieldtype name="T_fingerprint" class="solr.TextField" multiValued="true" indexed="true" stored="true">
         <similarity class="com.epam.indigolucene.solrext.ChemSimilarity"/>>
     </fieldtype>
@@ -38,12 +36,9 @@
     <!--<field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />-->
     <!--<uniqueKey>id</uniqueKey>-->
     <field name="_version_" type="long" indexed="true" stored="true"/>
-    <field name="mol" type="T_serMol"/>
-    <field name="molId" type="T_molId"/>
-    <field name="mol_fingerprint" type="T_fingerprint"  termVectors="true" termPositions="true" termOffsets="true"/>
-    <field name="react" type="T_serReact"/>
-    <field name="reactId" type="T_reactId"/>
-    <field name="react_fingerprint" type="T_fingerprint"  termVectors="true" termPositions="true" termOffsets="true"/>
+    <field name="chem" type="T_serChem"/>
+    <field name="chemId" type="T_chemId"/>
+    <field name="chem_fingerprint" type="T_fingerprint"  termVectors="true" termPositions="true" termOffsets="true"/>
     <field name="contentType" type="string"/>
     <field name="testMultiVal" type="strings"/>
     <field name="docId" type="T_docId"/>
