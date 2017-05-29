@@ -70,7 +70,7 @@ public class ReactionBaseTest {
             for (IndigoObject react : IndigoHolder.getIndigo().iterateSDFile(fileName)) {
                 try {
                     TestSchemaDocument doc = TestSchema.createEmptyDocument();
-                    doc.setReact(react);
+                    doc.setChem(react);
                     uploadStream.addDocument(doc);
                     System.out.println(react.smiles());
                 } catch (Exception e) {
@@ -89,7 +89,7 @@ public class ReactionBaseTest {
                     IndigoObject indigoObject = IndigoHolder.getIndigo().loadReaction(smilesLine);
                     TestSchemaDocument emptyDocument = TestSchema.createEmptyDocument();
 
-                    emptyDocument.setReact(indigoObject);
+                    emptyDocument.setChem(indigoObject);
 
                     uploadStream.addDocument(emptyDocument);
                 } catch (IndigoException e) {

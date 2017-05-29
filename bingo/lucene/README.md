@@ -147,7 +147,7 @@ For more specific approach(if You want to run a single test class), use that com
  ### benchmarks tests ###
  In case of running benchmark test, first head to 'benchmark-tests' folder,  then run 
  ```text
-  mvn clean install
+ mvn clean install
  ```
  Afterwards 
  

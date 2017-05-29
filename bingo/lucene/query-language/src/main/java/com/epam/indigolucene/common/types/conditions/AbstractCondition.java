@@ -2,10 +2,8 @@ package com.epam.indigolucene.common.types.conditions;
 
 import com.epam.indigolucene.common.types.conditions.logicalconditions.AndCondition;
 import com.epam.indigolucene.common.types.conditions.logicalconditions.OrCondition;
-import com.epam.indigolucene.common.types.conditions.molconditions.MolMatchesExactlyCondition;
-import com.epam.indigolucene.common.types.conditions.molconditions.MolHasSubstructureCondition;
-import com.epam.indigolucene.common.types.conditions.reactconditions.ReactHasSubstructureCondition;
-import com.epam.indigolucene.common.types.conditions.reactconditions.ReactMatchesExactlyCondition;
+import com.epam.indigolucene.common.types.conditions.chemconditions.ChemMatchesExactlyCondition;
+import com.epam.indigolucene.common.types.conditions.chemconditions.ChemHasSubstructureCondition;
 import com.epam.indigolucene.common.types.conditions.stringconditions.StringStartsWithCondition;
 import org.json.simple.JSONObject;
 
@@ -44,10 +42,8 @@ public abstract class AbstractCondition<S> implements Condition<S> {
     static {
         fromJsonConverters.put(AndCondition.OP_AND, AndCondition::andFromJson);
         fromJsonConverters.put(OrCondition.OP_OR, OrCondition::orFromJson);
-        fromJsonConverters.put(MolHasSubstructureCondition.OP_SUBSTRUCTURE, MolHasSubstructureCondition::molHasStructureFromJson);
-        fromJsonConverters.put(ReactHasSubstructureCondition.OP_SUBSTRUCTURE, ReactHasSubstructureCondition::reactHasStructureFromJson);
-        fromJsonConverters.put(MolMatchesExactlyCondition.OP_EXACT, MolMatchesExactlyCondition::molMatchesExactlyFromJson);
-        fromJsonConverters.put(ReactMatchesExactlyCondition.OP_EXACT, ReactMatchesExactlyCondition::reactMatchesExactlyFromJson);
+        fromJsonConverters.put(ChemHasSubstructureCondition.OP_SUBSTRUCTURE, ChemHasSubstructureCondition::chemHasStructureFromJson);
+        fromJsonConverters.put(ChemMatchesExactlyCondition.OP_EXACT, ChemMatchesExactlyCondition::chemMatchesExactlyFromJson);
         fromJsonConverters.put(StringStartsWithCondition.OP_STARTS_WITH, StringStartsWithCondition::stringStartsWithFromJson);
     }
 

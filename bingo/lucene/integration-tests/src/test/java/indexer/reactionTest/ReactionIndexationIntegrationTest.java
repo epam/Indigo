@@ -36,7 +36,7 @@ public class ReactionIndexationIntegrationTest extends ReactionBaseTest {
 
         testCollection.removeAll();
         try (SolrUploadStream<TestSchema> uStream = TestSchema.collection(ServiceConfig.SERVICE_URL, "").uploadStream()) {
-            emptyDocument.setMol(indigo.loadReaction(REACTION));
+            emptyDocument.setChem(indigo.loadReaction(REACTION));
             uStream.addDocument(emptyDocument);
         }
     }

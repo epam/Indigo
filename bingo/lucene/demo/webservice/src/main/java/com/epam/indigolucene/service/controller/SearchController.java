@@ -39,12 +39,12 @@ public class SearchController {
     @RequestMapping(value = "/findBySubstructure", method = RequestMethod.POST)
     public final Result<List<MoleculeData>> findSubstructure(@RequestBody final SimpleStructureQuery query) throws Exception {
         List<MoleculeData> res = new LinkedList<>();
-        molCollection.find().filter(TestSchema.MOL.unsafeHasSubstructure(query.getStructure()))
+        molCollection.find().filter(TestSchema.CHEM.unsafeHasSubstructure(query.getStructure()))
                             .limit(query.getLimit())
                             .offset(query.getOffset()).processWith(maps -> {
                                 for (Map<String, Object> map : maps) {
-                                    IndigoObject io = IndigoHolder.getIndigo().unserialize((byte[]) map.get(TestSchema.MOL.getName()));
-                                    res.add(new MoleculeData((String) map.get(TestSchema.MOL_ID.getName()), io.smiles()));
+                                    IndigoObject io = IndigoHolder.getIndigo().unserialize((byte[]) map.get(TestSchema.CHEM.getName()));
+                                    res.add(new MoleculeData((String) map.get(TestSchema.CHEM_ID.getName()), io.smiles()));
                                 }
                             });
         return Result.success(res);
@@ -54,12 +54,12 @@ public class SearchController {
     @RequestMapping(value = "/findExact", method = RequestMethod.POST)
     public final Result<List<MoleculeData>> findExact(@RequestBody final SimpleStructureQuery query) throws Exception {
         List<MoleculeData> res = new LinkedList<>();
-        molCollection.find().filter(TestSchema.MOL.unsafeExactMatches(query.getStructure()))
+        molCollection.find().filter(TestSchema.CHEM.unsafeExactMatches(query.getStructure()))
                 .limit(query.getLimit())
                 .offset(query.getOffset()).processWith(maps -> {
             for (Map<String, Object> map : maps) {
-                IndigoObject io = IndigoHolder.getIndigo().unserialize((byte[]) map.get(TestSchema.MOL.getName()));
-                res.add(new MoleculeData((String) map.get(TestSchema.MOL_ID.getName()), io.smiles()));
+                IndigoObject io = IndigoHolder.getIndigo().unserialize((byte[]) map.get(TestSchema.CHEM.getName()));
+                res.add(new MoleculeData((String) map.get(TestSchema.CHEM_ID.getName()), io.smiles()));
             }
         });
         return Result.success(res);
@@ -69,13 +69,13 @@ public class SearchController {
     @RequestMapping(value = "/findSubstructureNotExact", method = RequestMethod.POST)
     public final Result<List<MoleculeData>> findSubstructureNotExact(@RequestBody final SimpleStructureQuery query) throws Exception {
         List<MoleculeData> res = new LinkedList<>();
-        molCollection.find().filter(TestSchema.MOL.unsafeExactMatches(query.getStructure()).not().
-                                    and(TestSchema.MOL.unsafeHasSubstructure(query.getStructure())))
+        molCollection.find().filter(TestSchema.CHEM.unsafeExactMatches(query.getStructure()).not().
+                                    and(TestSchema.CHEM.unsafeHasSubstructure(query.getStructure())))
                 .limit(query.getLimit())
                 .offset(query.getOffset()).processWith(maps -> {
             for (Map<String, Object> map : maps) {
-                IndigoObject io = IndigoHolder.getIndigo().unserialize((byte[]) map.get(TestSchema.MOL.getName()));
-                res.add(new MoleculeData((String) map.get(TestSchema.MOL_ID.getName()), io.smiles()));
+                IndigoObject io = IndigoHolder.getIndigo().unserialize((byte[]) map.get(TestSchema.CHEM.getName()));
+                res.add(new MoleculeData((String) map.get(TestSchema.CHEM_ID.getName()), io.smiles()));
             }
         });
         return Result.success(res);

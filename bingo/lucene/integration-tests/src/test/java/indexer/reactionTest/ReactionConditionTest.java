@@ -13,7 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static indexer.data.generated.TestSchema.*;
+import static indexer.data.generated.TestSchema.CONTENT_TYPE;
+import static indexer.data.generated.TestSchema.CHEM;
 
 /**
  * Created by Filipp Pisarev on 30/03/2017.
@@ -32,7 +33,7 @@ public class ReactionConditionTest extends ReactionBaseTest {
     public void reactionBenchmarkTest() throws Exception {
         long before = System.currentTimeMillis();
         logger.info("Warming up query");
-        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(REACT.unsafeHasSubstructure(RARE_REACTION)).limit(1).processWith(lst -> logger.info(lst.size()));
+        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(CHEM.unsafeHasSubstructure(RARE_REACTION)).limit(1).processWith(lst -> logger.info(lst.size()));
         logger.info("Took approx. " + (System.currentTimeMillis() - before) + " ms ");
 
         benchmarkReaction(RARE_REACTION, REACTION_BIG_LIMIT);
@@ -61,12 +62,12 @@ public class ReactionConditionTest extends ReactionBaseTest {
                 TestSchemaDocument emptyDocument;
                 emptyDocument = TestSchema.createEmptyDocument();
                 emptyDocument.setContentType(varTextValue);
-                emptyDocument.setReact(IndigoHolder.getIndigo().loadReaction(REACTION));
+                emptyDocument.setChem(IndigoHolder.getIndigo().loadReaction(REACTION));
                 ustream.addDocument(emptyDocument);
 
                 emptyDocument = TestSchema.createEmptyDocument();
                 emptyDocument.setContentType(varTextValue);
-                emptyDocument.setReact(IndigoHolder.getIndigo().loadReaction( "CBr>>CClC"));
+                emptyDocument.setChem(IndigoHolder.getIndigo().loadReaction( "CBr>>CClC"));
                 ustream.addDocument(emptyDocument);
             }
         }
@@ -76,7 +77,7 @@ public class ReactionConditionTest extends ReactionBaseTest {
         List<Map<String, Object>> result = new LinkedList<>();
 
         testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[0])).
-                filter(REACT.unsafeExactMatches(REACTION)).
+                filter(CHEM.unsafeExactMatches(REACTION)).
                 processWith(lst -> result.addAll(lst));
         logger.info(result + " : " + result.size());
         System.out.println(result.size());
@@ -95,12 +96,12 @@ public class ReactionConditionTest extends ReactionBaseTest {
                 TestSchemaDocument emptyDocument;
                 emptyDocument = TestSchema.createEmptyDocument();
                 emptyDocument.setContentType(variousTextValue);
-                emptyDocument.setReact(IndigoHolder.getIndigo().loadReaction(REACTION));
+                emptyDocument.setChem(IndigoHolder.getIndigo().loadReaction(REACTION));
                 ustream.addDocument(emptyDocument);
 
                 emptyDocument = TestSchema.createEmptyDocument();
                 emptyDocument.setContentType(variousTextValue);
-                emptyDocument.setReact(IndigoHolder.getIndigo().loadReaction("CBr>>CClC"));
+                emptyDocument.setChem(IndigoHolder.getIndigo().loadReaction("CBr>>CClC"));
                 ustream.addDocument(emptyDocument);
             }
         }
@@ -109,7 +110,7 @@ public class ReactionConditionTest extends ReactionBaseTest {
         List<Map<String, Object>> result = new LinkedList<>();
 
         testCollection.find().
-                filter(REACT.unsafeHasSubstructure(REACTION)).
+                filter(CHEM.unsafeHasSubstructure(REACTION)).
                 processWith(lst -> result.addAll(lst));
         logger.info(result + " : " + result.size());
         System.out.println(result.size());
@@ -120,7 +121,7 @@ public class ReactionConditionTest extends ReactionBaseTest {
     protected void benchmarkReaction(String reaction, int limit) throws Exception {
         long before = System.currentTimeMillis();
         logger.info("Searching " + reaction + " with limit " + limit);
-        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(REACT.unsafeHasSubstructure(reaction)).limit(limit).processWith(lst -> logger.info("returned results: " + lst.size()));
+        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(CHEM.unsafeHasSubstructure(reaction)).limit(limit).processWith(lst -> logger.info("returned results: " + lst.size()));
         logger.info("Took approx. " + (System.currentTimeMillis() - before) + " ms ");
     }
 }

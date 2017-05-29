@@ -72,7 +72,7 @@ public class MoleculeBaseTest {
             for (IndigoObject mol : IndigoHolder.getIndigo().iterateSDFile(fileName)) {
                 try {
                     TestSchemaDocument doc = TestSchema.createEmptyDocument();
-                    doc.setMol(mol);
+                    doc.setChem(mol);
                     uploadStream.addDocument(doc);
                     System.out.println(mol.smiles());
                 } catch (Exception e) {
@@ -91,7 +91,7 @@ public class MoleculeBaseTest {
                     IndigoObject indigoObject = IndigoHolder.getIndigo().loadMolecule(smilesLine);
                     TestSchemaDocument emptyDocument = TestSchema.createEmptyDocument();
 
-                    emptyDocument.setMol(indigoObject);
+                    emptyDocument.setChem(indigoObject);
 
                     uploadStream.addDocument(emptyDocument);
                 } catch (IndigoException e) {

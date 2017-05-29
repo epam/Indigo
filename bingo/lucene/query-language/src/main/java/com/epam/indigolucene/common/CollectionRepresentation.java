@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
  * Created by Artem Malykh on 28.03.16.
  */
 public class CollectionRepresentation<S> {
-
-
     private String url;
     private String coreName;
     Set<String> fieldNames;

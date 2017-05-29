@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 
 /**
  * This field encapsulate conditions which are based on some value of type T
- * Example: MolSimilarTo is based on similarity score.
+ * Example: ChemSimilarTo is based on similarity score.
  * Results of such queries can be further postfiltered on client
  * Created by Artem Malykh on 19.04.16.
  */

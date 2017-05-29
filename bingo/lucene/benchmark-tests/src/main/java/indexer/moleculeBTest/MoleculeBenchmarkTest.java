@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static indexer.data.generated.TestSchema.MOL;
+import static indexer.data.generated.TestSchema.CHEM;
 
 /**
  * The MoleculeBenchmarkTest class contains benchmark tests for all currently available molecular structure
@@ -50,7 +50,7 @@ public class MoleculeBenchmarkTest {
             try (SolrUploadStream ustream = testCollection.uploadStream()) {
                 TestSchemaDocument emptyDocument = TestSchema.createEmptyDocument();
                 emptyDocument.setContentType("molValue");
-                emptyDocument.setMol(IndigoHolder.getIndigo().loadMolecule(BENZOL));
+                emptyDocument.setChem(IndigoHolder.getIndigo().loadMolecule(BENZOL));
                 ustream.addDocument(emptyDocument);
             }
         }
@@ -65,8 +65,9 @@ public class MoleculeBenchmarkTest {
     @OutputTimeUnit(TimeUnit.SECONDS)
     public void molSimilaritySearchBenchmark(SolrAndMoleculesData solrMolData, Blackhole blackhole) throws Exception {
         solrMolData.result = new LinkedList<>();
-        solrMolData.testCollection.find().filter(MOL.unsafeIsSimilarTo(solrMolData.BENZOL)).
-                processWith(solrMolData.result::addAll);
+        solrMolData.testCollection.find().filter(CHEM.unsafeIsSimilarTo(solrMolData.BENZOL)).
+               processWith(solrMolData.result::addAll);
+
         blackhole.consume(solrMolData.result);
     }
 }

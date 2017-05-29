@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import static indexer.data.generated.TestSchema.CONTENT_TYPE;
-import static indexer.data.generated.TestSchema.MOL;
+import static indexer.data.generated.TestSchema.CHEM;
 
 
 /**
@@ -36,12 +36,12 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
 
     //TODO: change for some real rare mol for test set.
     private static final String RARE_MOL = BENZOL;
-    private static final String RARE_REACTION = REACTION;
+
     @Test
     public void test1() throws Exception {
         long before = System.currentTimeMillis();
         logger.info("Warming up query");
-        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(MOL.unsafeHasSubstructure(RARE_MOL)).limit(1).processWith(lst -> logger.info(lst.size()));
+        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(CHEM.unsafeHasSubstructure(RARE_MOL)).limit(1).processWith(lst -> logger.info(lst.size()));
         logger.info("Took approx. " + (System.currentTimeMillis() - before) + " ms ");
 
         benchmarkMol(BENZOL,   BENZOL_BIG_LIMIT);
@@ -62,7 +62,7 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
 
     @Test
     public void testSimilarSearch() throws Exception {
-        BeforeGroup<TestSchema> query = testCollection.find().filter(MOL.unsafeIsSimilarTo(RARE_MOL)).limit(2);
+        BeforeGroup<TestSchema> query = testCollection.find().filter(CHEM.unsafeIsSimilarTo(RARE_MOL)).limit(2);
         query.processWith(lst -> logger.info(lst.size()));
     }
 
@@ -78,12 +78,12 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
             for (String variousTextValue : variousTextValues) {
                 TestSchemaDocument emptyDocument = TestSchema.createEmptyDocument();
                 emptyDocument.setContentType(variousTextValue);
-                emptyDocument.setMol(IndigoHolder.getIndigo().loadMolecule(BENZOL));
+                emptyDocument.setChem(IndigoHolder.getIndigo().loadMolecule(BENZOL));
                 ustream.addDocument(emptyDocument);
 
                 emptyDocument = TestSchema.createEmptyDocument();
                 emptyDocument.setContentType(variousTextValue);
-                emptyDocument.setMol(IndigoHolder.getIndigo().loadMolecule(RARE_MOL));
+                emptyDocument.setChem(IndigoHolder.getIndigo().loadMolecule(RARE_MOL));
                 ustream.addDocument(emptyDocument);
             }
         }
@@ -91,7 +91,7 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
 
         List<Map<String, Object>> result = new LinkedList<>();
         testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[0])).
-                              filter(MOL.unsafeHasSubstructure(RARE_MOL)).
+                              filter(CHEM.unsafeHasSubstructure(RARE_MOL)).
                               processWith(lst -> result.addAll(lst));
         System.out.println("Result " + result);
         logger.info(result + " : " + result.size());
@@ -109,7 +109,7 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
     protected void benchmarkMol(String mol, int limit) throws Exception {
         long before = System.currentTimeMillis();
         logger.info("Searching " + mol + " with limit " + limit);
-        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(MOL.unsafeHasSubstructure(mol)).limit(limit).processWith(lst -> logger.info("returned results: " + lst.size()));
+        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(CHEM.unsafeHasSubstructure(mol)).limit(limit).processWith(lst -> logger.info("returned results: " + lst.size()));
         logger.info("Took approx. " + (System.currentTimeMillis() - before) + " ms ");
     }
 }

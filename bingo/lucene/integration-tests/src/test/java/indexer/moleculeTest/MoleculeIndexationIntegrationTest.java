@@ -43,7 +43,7 @@ public class MoleculeIndexationIntegrationTest extends MoleculeBaseTest {
         testCollection.removeAll();
         try (SolrUploadStream<TestSchema> uStream = TestSchema.collection(ServiceConfig.SERVICE_URL, "").uploadStream()) {
             //emptyDocument.setTestMultiVal(Arrays.asList("a", "b"));
-            emptyDocument.setMol(indigo.loadMolecule(BENZOL));
+            emptyDocument.setChem(indigo.loadMolecule(BENZOL));
             uStream.addDocument(emptyDocument);
         }
     }

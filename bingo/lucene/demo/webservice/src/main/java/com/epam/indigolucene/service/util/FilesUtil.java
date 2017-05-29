@@ -51,8 +51,8 @@ public class FilesUtil {
                     for (IndigoObject indigoObject : fileIterators.get(i).apply(IndigoHolder.getIndigo(), fileName)) {
                         try {
                             TestSchemaDocument emptyDocument = TestSchema.createEmptyDocument();
-                            emptyDocument.setMol(indigoObject);
-                            emptyDocument.setMolId(UUID.randomUUID().toString());
+                            emptyDocument.setChem(indigoObject);
+                            emptyDocument.setChemId(UUID.randomUUID().toString());
                             testSchemaSolrUploadStream.addDocument(emptyDocument);
                             records++;
                         } catch (Exception e) {
