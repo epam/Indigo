@@ -185,6 +185,7 @@ void RenderOptions::clear()
    agentsBelowArrow = true;
    collapseSuperatoms = false;
    atomColorProp.clear();
+   isStereoBondBold = true;
 }
 
 IMPL_ERROR(MoleculeRenderInternal, "molecule render internal");
@@ -2172,7 +2173,7 @@ void MoleculeRenderInternal::_initBoldStereoBonds ()
       for (int j = v2.neiBegin(); j < v2.neiEnd(); j = v2.neiNext(j))
          if (v2.neiEdge(j) != i && _bd(v2.neiEdge(j)).stereodir == BOND_UP && _bd(v2.neiEdge(j)).end == d.end)
             hasNeighboringUpBond2 = true;
-      if (hasNeighboringUpBond1 && hasNeighboringUpBond2)
+      if (hasNeighboringUpBond1 && hasNeighboringUpBond2 && _opt.isStereoBondBold)
          d.stereodir = BOND_STEREO_BOLD;
    }
 }

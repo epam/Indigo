@@ -450,6 +450,7 @@ public:
    bool collapseSuperatoms;
    Array<char> atomColorProp;
    AutoPtr<RenderCdxmlContext> cdxml_context;
+   bool isStereoBondBold;
 private:
    RenderOptions (const RenderOptions& );
 };
