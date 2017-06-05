@@ -589,6 +589,7 @@ _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("render-highlighted-labels-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.highlightedLabelsVisible));
    mgr.setOptionHandlerBool("render-bold-bond-detection", SETTER_GETTER_BOOL_OPTION(rp.rOpt.boldBondDetection));
    mgr.setOptionHandlerBool("stereo-bond-bold", SETTER_GETTER_BOOL_OPTION(rp.rOpt.isStereoBondBold));
+   mgr.setOptionHandlerBool("double-cross-bond", SETTER_GETTER_BOOL_OPTION(rp.rOpt.isDoubleCrossBond));
 
    mgr.setOptionHandlerFloat("render-bond-length", SETTER_GETTER_FLOAT_OPTION(rp.cnvOpt.bondLength));
    mgr.setOptionHandlerFloat("render-relative-thickness", SET_POSITIVE_FLOAT_OPTION(rp.relativeThickness, "relative thickness must be positive"));

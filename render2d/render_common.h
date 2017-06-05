@@ -451,6 +451,7 @@ public:
    Array<char> atomColorProp;
    AutoPtr<RenderCdxmlContext> cdxml_context;
    bool isStereoBondBold;
+   bool isDoubleCrossBond;
 private:
    RenderOptions (const RenderOptions& );
 };
