@@ -186,6 +186,7 @@ void RenderOptions::clear()
    collapseSuperatoms = false;
    atomColorProp.clear();
    isStereoBondBold = true;
+   isDoubleCrossBond = true;
 }
 
 IMPL_ERROR(MoleculeRenderInternal, "molecule render internal");
@@ -3803,7 +3804,7 @@ void MoleculeRenderInternal::_bondDouble (BondDescr& bd, const BondEnd& be1, con
    if (bd.stereodir == BOND_STEREO_BOLD) {
       _bondBoldStereo(bd, be1, be2);
       _cw.drawLine(coord[2], coord[3]);
-   } else if (bd.cistrans) {
+   } else if (bd.cistrans && _opt.isDoubleCrossBond) {
       _cw.drawLine(coord[0], coord[3]);
       _cw.drawLine(coord[2], coord[1]);
    } else {
