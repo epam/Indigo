@@ -2,9 +2,10 @@ package com.epam.indigolucene.schemagenerator;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
-
 /**
- * Created by Artem Malykh on 25.03.16.
+ * This class is a Java class representation of Solr's schema.xml
+ * @author Artem Malykh
+ * @since 2016-03-17
  */
 @XmlRootElement(name = "schema")
 public class XMLSolrSchemaRepresentation {
