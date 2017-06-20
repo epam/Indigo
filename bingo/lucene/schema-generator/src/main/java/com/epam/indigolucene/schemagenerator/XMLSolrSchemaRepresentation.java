@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * This class is a Java class representation of Solr's schema.xml
  * @author Artem Malykh
- * @since 2016-03-17
+ * created on 2016-03-17
  */
 @XmlRootElement(name = "schema")
 public class XMLSolrSchemaRepresentation {

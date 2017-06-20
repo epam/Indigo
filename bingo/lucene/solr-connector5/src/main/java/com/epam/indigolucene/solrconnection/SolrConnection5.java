@@ -19,10 +19,12 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-
 /**
- * Created by Artem Malykh on 22.03.16.
+ * Actual Solr-connection implementation. In here represented all the methods you want to see in order to have
+ * a good, friendly communication with Solr server.
+ *
+ * @author Artem Malykh
+ * created on 2016-03-22
  */
 public class SolrConnection5 implements SolrConnection {
     private Query query;
