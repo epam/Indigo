@@ -6,9 +6,12 @@ import com.epam.indigolucene.common.utils.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
-
 /**
- * Created by Artem Malykh on 28.03.16.
+ * MolValue class maintain a value of a molecule along with "toMap" method, which
+ * returns a map structure of field name and fingerprint num. representation
+ *
+ * @author Artem Malykh
+ * created on 2016-03-28
  */
 public class MolValue<S> extends Value<MolField<S>> {
     IndigoObject obj;

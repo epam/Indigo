@@ -11,9 +11,12 @@ import org.json.simple.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
-
 /**
- * Created by Filipp Pisarev on 07/04/2017.
+ * Represents a condition of exact search for reactions. Used as returning object on exact
+ * search invocation from reaction type of Solr's schema.xml class representation.
+ *
+ * @author Filipp Pisarev
+ * created on 2017-04-07
  */
 public class ReactMatchesExactlyCondition<S> extends ChemStructureCondition<S>{
     public static final String OP_EXACT = "reactexact";

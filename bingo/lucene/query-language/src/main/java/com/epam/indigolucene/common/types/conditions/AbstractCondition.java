@@ -15,9 +15,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
 /**
- * Created by Artem Malykh on 20.02.16.
+ * Abstract class for providing a basic methods implementation, such as from JSON converters for different kind of
+ * conditions.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-20
  */
 public abstract class AbstractCondition<S> implements Condition<S> {
     public static final String OPERATION_NAME = "opName";

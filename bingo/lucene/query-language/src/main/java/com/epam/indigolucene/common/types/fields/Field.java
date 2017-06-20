@@ -1,7 +1,10 @@
 package com.epam.indigolucene.common.types.fields;
-
 /**
- * Created by Artem Malykh on 20.02.16.
+ * A basis class for any field representation of Solr's schema.xml. Widely used for extension in a different kinds of
+ * more specific fields.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-20
  */
 public abstract class Field<S, Vs, Vt> {
     protected String name;

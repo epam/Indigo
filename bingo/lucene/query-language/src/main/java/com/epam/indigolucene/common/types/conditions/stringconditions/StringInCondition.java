@@ -7,9 +7,12 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 /**
- * Created by Artem Malykh on 24.02.16.
+ * Represents a condition of "string in" of a SearchableStringField. Used as returning object on "in"
+ * invocation from searchable string type of Solr's schema.xml class representation.
+ *
+ * @author Artem Malykh
+ * created on 2016-04-24
  */
 public class StringInCondition<S> extends FieldCondition<S> {
     public static final String OP_STRING_IN = "string_in";

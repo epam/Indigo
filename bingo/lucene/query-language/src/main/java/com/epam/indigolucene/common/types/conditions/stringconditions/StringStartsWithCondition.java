@@ -9,8 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by Artem Malykh on 24.02.16.
- * This class represents condition for filtering strings starting from specified string.
+ * Represents a condition of "string starts with" of a SearchableStringField. Used as returning object on "starts with"
+ * invocation from searchable string type of Solr's schema.xml class representation.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-16
  */
 public class StringStartsWithCondition<S> extends FieldCondition<S> {
     public static final String OP_STARTS_WITH = "startsWith";

@@ -4,7 +4,10 @@ import com.epam.indigolucene.common.types.fields.Field;
 import org.json.simple.JSONObject;
 
 /**
- * Created by Artem Malykh on 20.02.16.
+ * This class encapsulates field representation used in queries to solr.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-20
  */
 public abstract class FieldCondition<S> extends AbstractCondition<S> {
     public static final String FIELD_NAME = "fieldName";

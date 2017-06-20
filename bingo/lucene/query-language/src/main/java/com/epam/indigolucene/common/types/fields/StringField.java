@@ -3,9 +3,11 @@ package com.epam.indigolucene.common.types.fields;
 import com.epam.indigolucene.common.types.values.StringValue;
 
 import java.util.List;
-
 /**
- * Created by Artem Malykh on 20.02.16.
+ * String field type representation for Solr's schmea.xml.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-16
  */
 public class StringField<S> extends Field<S, String, StringValue> implements MultipliableField<String, StringValue> {
 

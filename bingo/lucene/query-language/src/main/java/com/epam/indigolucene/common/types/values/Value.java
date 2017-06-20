@@ -5,7 +5,10 @@ import com.epam.indigolucene.common.types.fields.Field;
 import java.util.Map;
 
 /**
- * Created by enny on 28.03.16.
+ * A class which is a basis for other value classes, e.g. "ReactValue".
+ *
+ * @author enny
+ * created on 2016-03-28
  */
 public abstract class Value<F extends Field> {
     protected F field;

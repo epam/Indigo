@@ -6,9 +6,12 @@ import com.epam.indigolucene.common.types.conditions.molconditions.MolMatchesExa
 import com.epam.indigolucene.common.types.conditions.similarityconditions.MolSimilarTo;
 import com.epam.indigolucene.common.types.fields.MolField;
 import com.epam.indigolucene.common.types.fields.SimilaritySearchField;
-
 /**
- * Created by Artem Malykh on 30.03.16.
+ * This class is a type of "mol" field representation of Solr's schema.xml. All search methods for molecule are returned
+ * from here.
+ *
+ * @author Artem Malykh
+ * created on 2016-03-30
  */
 public class SearchableMolField<S> extends MolField<S> implements SimilaritySearchField<S, IndigoObject, MolSimilarTo<S>> {
     public SearchableMolField(String name, boolean isMultiple) {

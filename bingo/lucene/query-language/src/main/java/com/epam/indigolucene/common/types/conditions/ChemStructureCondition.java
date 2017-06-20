@@ -3,9 +3,11 @@ package com.epam.indigolucene.common.types.conditions;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigolucene.common.types.conditions.FieldCondition;
 import com.epam.indigolucene.common.types.fields.Field;
-
 /**
- * Created by Artem Malykh on 25.02.16.
+ * ChemStructureCondition class provides a methods for chemical structure comparison.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-25
  */
 public abstract class ChemStructureCondition<S> extends FieldCondition<S> {
 

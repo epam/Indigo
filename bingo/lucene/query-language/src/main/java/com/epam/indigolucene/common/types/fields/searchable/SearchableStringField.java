@@ -5,9 +5,12 @@ import com.epam.indigolucene.common.types.conditions.stringconditions.StringStar
 import com.epam.indigolucene.common.types.fields.StringField;
 
 import java.util.Collection;
-
 /**
- * Created by Artem Malykh on 30.03.16.
+ * This class is a type of all searchable string fields of Solr's schema.xml. All string manipulation methods are
+ * returned from here.
+ *
+ * @author Artem Malykh
+ * created on 2016-03-30
  */
 public class SearchableStringField<S> extends StringField<S> {
     public SearchableStringField(String name, boolean isMultiple) {

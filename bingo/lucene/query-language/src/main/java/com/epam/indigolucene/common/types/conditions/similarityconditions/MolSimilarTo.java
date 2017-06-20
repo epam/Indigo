@@ -11,10 +11,12 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.function.Function;
-
 /**
- * This class encapsulates condition of similarity between molecules.
- * Created by Artem Malykh on 12.04.16.
+ * Represents a condition of similarity search for molecules. Used as returning object on similarity
+ * search invocation from molecule type of Solr's schema.xml class representation.
+ *
+ * @author Artem Malykh
+ * created on 2016-04-12
  */
 public class MolSimilarTo<S> extends FieldCondition<S> implements PostFilterable<S, Float> {
     public static final String OP_MOLECULE_SIMILAR = "mol_sim";

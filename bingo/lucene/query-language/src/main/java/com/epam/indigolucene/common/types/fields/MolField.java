@@ -3,9 +3,11 @@ package com.epam.indigolucene.common.types.fields;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigolucene.common.types.values.MolValue;
 import com.epam.indigolucene.common.types.conditions.molconditions.MolHasSubstructureCondition;
-
 /**
- * Created by Artem Malykh on 20.02.16.
+ * "mol" field representation of Solr's schema.xml.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-20
  */
 public class MolField<S> extends Field<S, IndigoObject, MolValue> {
     public MolField(String name, boolean isMultiple) {

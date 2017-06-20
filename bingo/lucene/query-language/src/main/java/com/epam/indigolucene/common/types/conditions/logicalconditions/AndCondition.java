@@ -4,10 +4,11 @@ import com.epam.indigolucene.common.types.conditions.AbstractCondition;
 import com.epam.indigolucene.common.types.conditions.BinaryCondition;
 import com.epam.indigolucene.common.types.conditions.Condition;
 import org.json.simple.JSONObject;
-
 /**
- * Created by Artem Malykh on 20.02.16.
- * Represents 'and' condition
+ * Represents an and condition in a query for Solr-server
+ *
+ * @author Artem Malykh
+ * created on 2016-02-20
  */
 public class AndCondition<S> extends BinaryCondition<S> {
     public static final String OP_AND = "OP_AND";

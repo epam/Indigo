@@ -1,10 +1,13 @@
 package com.epam.indigolucene.common.types;
 
 import java.util.Map;
-
 /**
- * Created by Artem Malykh on 28.03.16.
+ * Solr's document fields representation interface.
+ *
+ * @author Artem Malykh
+ * created on 2016-03-28
  */
+@FunctionalInterface
 public interface DocumentRepresentation<S> {
     Map<String, Object> fieldsMap();
 }

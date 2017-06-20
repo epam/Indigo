@@ -16,7 +16,11 @@ import java.util.Map;
 import static indexer.data.generated.TestSchema.*;
 
 /**
- * Created by Filipp Pisarev on 30/03/2017.
+ * The ReactionConditionTest class contains integration tests for all currently available molecular structure
+ * search methods.
+ *
+ * @author Filipp Pisarev
+ * @since 2017-03-30
  */
 public class ReactionConditionTest extends ReactionBaseTest {
     private static final Logger logger = Logger.getLogger(ReactionConditionTest.class);

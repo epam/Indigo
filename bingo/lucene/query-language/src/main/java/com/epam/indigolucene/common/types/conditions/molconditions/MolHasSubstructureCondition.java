@@ -10,9 +10,12 @@ import org.json.simple.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
-
 /**
- * Created by Artem Malykh on 20.02.16.
+ * Represents a condition of substructure search for molecules. Used as returning object on substructure
+ * search invocation from molecule type of Solr's schema.xml class representation.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-20
  */
 public class MolHasSubstructureCondition<S> extends ChemStructureCondition<S> {
     public static final String OP_SUBSTRUCTURE = "molsubs";

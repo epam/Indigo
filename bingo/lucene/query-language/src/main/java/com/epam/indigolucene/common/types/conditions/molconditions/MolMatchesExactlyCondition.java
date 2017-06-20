@@ -11,9 +11,12 @@ import org.json.simple.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
-
 /**
- * Created by Artem Malykh on 03.03.16.
+ * Represents a condition of exact search for molecules. Used as returning object on exact search invocation from
+ * molecule type of Solr's schema.xml class representation.
+ *
+ * @author Artem Malykh
+ * created on 2016-03-03
  */
 public class MolMatchesExactlyCondition<S> extends ChemStructureCondition<S> {
     public static final String OP_EXACT = "molexact";

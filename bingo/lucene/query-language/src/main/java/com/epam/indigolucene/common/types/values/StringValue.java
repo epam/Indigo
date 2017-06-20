@@ -3,9 +3,11 @@ package com.epam.indigolucene.common.types.values;
 import com.epam.indigolucene.common.types.fields.StringField;
 
 import java.util.*;
-
 /**
- * Created by enny on 28.03.16.
+ * StringValue class maintain a value of a string field along with ability of setting multiple values.
+ *
+ * @author enny
+ * created on 2016-03-28
  */
 public class StringValue<S> extends Value<StringField<S>> implements MultipliableValue<String>{
     private List<String> val;

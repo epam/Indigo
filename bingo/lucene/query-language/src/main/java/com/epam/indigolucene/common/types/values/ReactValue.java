@@ -6,9 +6,12 @@ import com.epam.indigolucene.common.utils.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
-
 /**
- * Created by Filipp Pisarev on 19.03.17.
+ * ReactValue class maintain a value of a reaction along with "toMap" method, which
+ * returns a map structure of field name and fingerprint num. representation
+ *
+ * @author Filipp Pisarev
+ * created on 2017-03-19
  */
 public class ReactValue<S> extends Value<ReactField<S>>{
     IndigoObject obj;

@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 /**
- * Created by Artem Malykh on 20.02.16.
+ * Class provides a methods for OR and AND conditions addition for queries to Solr-server.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-20
  */
 public abstract class BinaryCondition<S> extends AbstractCondition<S> {
     public static String FIRST_OPERAND = "op1";

@@ -7,10 +7,11 @@ import org.json.simple.JSONObject;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
 /**
  * This class encapsulates condition used in queries to solr.
- * Created by Artem Malykh on 12.04.16.
+ *
+ * @author Artem Malykh
+ * created on 2016-04-12
  */
 public interface Condition<S> {
     String operationName();

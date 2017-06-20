@@ -10,9 +10,12 @@ import org.json.simple.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
-
 /**
- * Created by Filipp Pisarev on 20.03.17.
+ * Represents a condition of substructure search for reactions. Used as returning object on substructure
+ * search invocation from reaction type of Solr's schema.xml class representation.
+ *
+ * @author Filipp Pisarev
+ * created on 2017-03-20
  */
 public class ReactHasSubstructureCondition<S> extends ChemStructureCondition<S> {
     public static final String OP_SUBSTRUCTURE   = "reactsubs";

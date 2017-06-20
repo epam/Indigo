@@ -6,7 +6,10 @@ import com.epam.indigolucene.common.types.conditions.Condition;
 import org.json.simple.JSONObject;
 
 /**
- * Created by Artem_Malykh on 20.02.16.
+ * Represents an or condition in a query for Solr-server
+ *
+ * @author Artem Malykh
+ * created on 2016-02-20
  */
 public class OrCondition<S> extends BinaryCondition<S> {
     public static final String OP_OR = "OR";
