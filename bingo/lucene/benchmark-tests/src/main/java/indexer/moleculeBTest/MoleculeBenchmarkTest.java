@@ -9,14 +9,7 @@ import indexer.data.generated.TestSchema;
 import indexer.data.generated.TestSchemaDocument;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.LinkedList;
@@ -31,7 +24,7 @@ import static indexer.data.generated.TestSchema.MOL;
  * search methods.
  *
  * @author Filipp Pisarev
- * @since 2017-04-17
+ * created on 2017-04-17
  */
 public class MoleculeBenchmarkTest {
 
@@ -46,7 +39,6 @@ public class MoleculeBenchmarkTest {
         public void doSetup() throws Exception {
             SolrConnectionFactory.init(SolrConnection5.class);
             testCollection = TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME);
-
             try (SolrUploadStream ustream = testCollection.uploadStream()) {
                 TestSchemaDocument emptyDocument = TestSchema.createEmptyDocument();
                 emptyDocument.setContentType("molValue");
@@ -63,10 +55,39 @@ public class MoleculeBenchmarkTest {
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.SECONDS)
+    @Fork(3)
+    @Warmup(iterations=1)
+    @Measurement(iterations=2)
     public void molSimilaritySearchBenchmark(SolrAndMoleculesData solrMolData, Blackhole blackhole) throws Exception {
         solrMolData.result = new LinkedList<>();
         solrMolData.testCollection.find().filter(MOL.unsafeIsSimilarTo(solrMolData.BENZOL)).
                 processWith(solrMolData.result::addAll);
         blackhole.consume(solrMolData.result);
     }
-}
+
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    @Fork(3)
+    @Warmup(iterations=1)
+    @Measurement(iterations=2)
+    public void molExactMatchSearchBenchmark(SolrAndMoleculesData solrMolData, Blackhole blackhole) throws Exception {
+        solrMolData.result = new LinkedList<>();
+        solrMolData.testCollection.find().filter(MOL.unsafeExactMatches(solrMolData.BENZOL)).
+                processWith(solrMolData.result::addAll);
+        blackhole.consume(solrMolData.result);
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.SECONDS)
+    @Fork(3)
+    @Warmup(iterations=1)
+    @Measurement(iterations=2)
+    public void molSubstructureSearchBenchmarks(SolrAndMoleculesData solrMolData, Blackhole blackhole) throws Exception {
+        solrMolData.result = new LinkedList<>();
+        solrMolData.testCollection.find().filter(MOL.unsafeHasSubstructure(solrMolData.BENZOL)).
+                processWith(solrMolData.result::addAll);
+        blackhole.consume(solrMolData.result);
+    }
+ }

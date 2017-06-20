@@ -36,12 +36,12 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
 
     //TODO: change for some real rare mol for test set.
     private static final String RARE_MOL = BENZOL;
-    private static final String RARE_REACTION = REACTION;
+
     @Test
     public void test1() throws Exception {
         long before = System.currentTimeMillis();
         logger.info("Warming up query");
-        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(MOL.unsafeHasSubstructure(RARE_MOL)).limit(1).processWith(lst -> logger.info(lst.size()));
+        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(MOL.unsafeIsSimilarTo(RARE_MOL)).limit(1).processWith(lst -> logger.info(lst.size()));
         logger.info("Took approx. " + (System.currentTimeMillis() - before) + " ms ");
 
         benchmarkMol(BENZOL,   BENZOL_BIG_LIMIT);
@@ -62,8 +62,11 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
 
     @Test
     public void testSimilarSearch() throws Exception {
+        List<Map<String, Object>> result = new LinkedList<>();
         BeforeGroup<TestSchema> query = testCollection.find().filter(MOL.unsafeIsSimilarTo(RARE_MOL)).limit(2);
-        query.processWith(lst -> logger.info(lst.size()));
+        query.processWith(lst -> result.addAll(lst));
+        logger.info("Search is complete");
+        result.stream().map((e) -> "Chemical element is found: " + e).forEach(System.out::println);
     }
 
 

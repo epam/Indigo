@@ -16,8 +16,6 @@
   -->
 
 <schema name="moldocs" version="1.5">
-
-
     <fieldtype name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
     <fieldtype name="string" class="solr.StrField" indexed="true"/>
     <fieldtype name="strings" class="solr.StrField" multiValued="true"/>
@@ -46,4 +44,7 @@
     <field name="testMultiVal" type="strings"/>
     <field name="docId" type="T_docId"/>
     <field name="docUrl" type="T_docUrl"/>
+
+
 </schema>
+
