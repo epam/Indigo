@@ -3,7 +3,10 @@ package com.epam.indigolucene.common;
 import com.epam.indigo.Indigo;
 
 /**
- * Created by Artem_Malykh on 10/1/2015.
+ * Indigo instance giver(if you ask very kindly).
+ *
+ * @author Artem Malykh
+ * created on 2015-01-10
  */
 public class IndigoHolder {
     private static class Helper {

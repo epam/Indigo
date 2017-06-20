@@ -24,10 +24,11 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 /**
- * Class for various utilities
- * Created by Artem_Malykh on 8/14/2015.
+ * Class represents a collection of useful methods for overall project such as encoding, fingerprint coding etc...
+ *
+ * @author Artem Malykh
+ * created on 2015-08-14
  */
 public class Utils {
     private static byte[] BASE_62_ALPHABET = {48,

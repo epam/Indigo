@@ -4,10 +4,11 @@ import com.epam.indigolucene.common.exceptions.CommitException;
 import com.epam.indigolucene.common.exceptions.DocumentAdditionException;
 import com.epam.indigolucene.common.query.SolrConnection;
 import com.epam.indigolucene.common.types.DocumentRepresentation;
-
 /**
- * Created by Artem Malykh on 29.03.16.
- * Represents upload stream
+ * Represents upload stream.
+ *
+ * @author Artem Malykh
+ * created on 2016-03-29
  */
 public class SolrUploadStream<S> implements AutoCloseable {
     private SolrConnection conn;

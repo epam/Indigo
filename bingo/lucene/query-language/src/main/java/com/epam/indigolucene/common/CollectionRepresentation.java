@@ -10,9 +10,12 @@ import com.epam.indigolucene.common.types.DocumentRepresentation;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 /**
- * Created by Artem Malykh on 28.03.16.
+ * This class provides a functionality for deleting and uploading Solr's documents along with find method, which represents
+ * a field, on which search is executed,
+ *
+ * @author Artem Malykh
+ * created on 2016-03-28
  */
 public class CollectionRepresentation<S> {
 
