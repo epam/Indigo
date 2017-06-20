@@ -1,7 +1,10 @@
 package com.epam.indigolucene.common.query;
 
 /**
- * Created by Artem Malykh on 23.03.16.
+ * A factory pattern. This class provides an instance of SolrConnection along with connection class initialization.
+ *
+ * @author Artem Malykh
+ * created on 2016-03-23
  */
 public class SolrConnectionFactory {
     private static SolrConnection instance;

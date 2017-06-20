@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-
 /**
- * Created by Artem Malykh on 24.02.16.
+ *  Main purpose of this class is to provide an easy query manipulation mechanisms, such as field inclusion, field
+ *  deletion, set of return results limit, offset, Solr-server connection instantiation and result processing.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-24
  */
 //TODO: This is a service class, should not be public
 public class BeforeGroup<S> {

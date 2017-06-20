@@ -9,7 +9,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by Artem Malykh on 24.02.16.
+ * Query class is a simple query to a Solr-server representation with a few additional JSON-conversion methods.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-24
  */
 public class Query {
     public static String JSON_QUERY_PARAM = "chemQueryJson";
