@@ -2,10 +2,11 @@ package com.epam.indigolucene.solrext;
 
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.DefaultSimilarity;
-
 /**
- * This class encapsulated chem similarity.
- * Created by Artem Malykh on 19.04.16.
+ * Solr's similarity definition representation.
+ *
+ * @author Artem Malykh
+ * created on 2016-04-19
  */
 public class ChemSimilarity extends ClassicSimilarity {
 

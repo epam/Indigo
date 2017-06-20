@@ -14,10 +14,11 @@ import org.apache.solr.search.SyntaxError;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-
 /**
- * Created by Artem Malykh on 25.02.16.
+ * Custom query parser implementation.
+ *
+ * @author Artem Malykh
+ * created on 2016-02-16
  */
 public class ChemQueryParserPluginNew extends QParserPlugin  {
     private static final Logger logger = Logger.getLogger(ChemQueryParserPluginNew.class);

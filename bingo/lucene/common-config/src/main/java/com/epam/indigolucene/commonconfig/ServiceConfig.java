@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Some config constants
+ * Some config constants, such as solr server full address.
  * Created by Artem_Malykh on 8/13/2015.
  */
 public class ServiceConfig {

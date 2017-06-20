@@ -16,9 +16,11 @@ import org.apache.solr.search.SolrConstantScoreQuery;
 
 import java.io.IOException;
 import java.util.List;
-
 /**
- * Created by Artem Malykh on 31.03.16.
+ * This class encapsulates main logic of additional query parameters parsing, such as offset, limit,  etc.
+ *
+ * @author Artem Malykh
+ * created on 2016-03-31
  */
 public class ChemFilter extends SolrConstantScoreQuery implements PostFilter {
 
@@ -63,7 +65,6 @@ public class ChemFilter extends SolrConstantScoreQuery implements PostFilter {
 
     private boolean checkChem(Document curDoc) {
         Indigo indigo = IndigoHolder.getIndigo();
-
         for (ChemStructureCondition chemCondition : chemConditions) {
             byte[] serializedChem = curDoc.getField(chemCondition.getFieldName()).binaryValue().bytes;
             IndigoObject chem = indigo.unserialize(serializedChem);

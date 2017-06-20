@@ -8,9 +8,11 @@ import org.apache.solr.search.FunctionQParser;
 import org.apache.solr.search.SyntaxError;
 import org.apache.solr.search.ValueSourceParser;
 import org.restlet.engine.util.Base64;
-
 /**
- * Created by Artem Malykh on 01.03.16.
+ * Parsing of chemical values and transforming them to Substructure value form.
+ *
+ * @author Artem Malykh
+ * created on 2016-03-01
  */
 public class SubstructureValueSourceParser extends ValueSourceParser {
     @Override

@@ -25,7 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Base tests with some useful methods for testing.
+ * Base tests with some useful methods for extended testing.
  * Created by Artem_Malykh on 9/9/2015.
  */
 public class MoleculeBaseTest {

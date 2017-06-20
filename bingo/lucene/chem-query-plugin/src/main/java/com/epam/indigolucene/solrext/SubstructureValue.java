@@ -10,9 +10,11 @@ import org.apache.lucene.queries.function.ValueSource;
 
 import java.io.IOException;
 import java.util.Map;
-
 /**
- * Created by Artem Malykh on 01.03.16.
+ * This class represents a methods for substructure value determination.
+ *
+ * @author Artem Malykh
+ * created on 2016-03-01
  */
 public class SubstructureValue extends ValueSource {
     private final IndigoObject qChem;
