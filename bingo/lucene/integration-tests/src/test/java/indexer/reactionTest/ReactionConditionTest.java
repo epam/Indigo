@@ -2,6 +2,7 @@ package indexer.reactionTest;
 
 import com.epam.indigolucene.common.IndigoHolder;
 import com.epam.indigolucene.common.SolrUploadStream;
+import com.epam.indigolucene.common.query.BeforeGroup;
 import com.epam.indigolucene.commonconfig.ServiceConfig;
 import indexer.data.generated.TestSchema;
 import indexer.data.generated.TestSchemaDocument;
@@ -119,6 +120,15 @@ public class ReactionConditionTest extends ReactionBaseTest {
         System.out.println(result.size());
         Assert.assertTrue(result.size() == 4);
         result.clear();
+    }
+
+    @Test
+    public void testSimilarSearch() throws Exception{
+        List<Map<String, Object>> result = new LinkedList<>();
+        BeforeGroup<TestSchema> query = testCollection.find().filter(REACT.unsafeIsSimilarTo(RARE_REACTION)).limit(2);
+        query.processWith(result::addAll);
+        logger.info("Search is complete");
+        result.stream().map((e) -> "Chemical element is found: " + e).forEach(System.out::println);
     }
 
     protected void benchmarkReaction(String reaction, int limit) throws Exception {

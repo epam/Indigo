@@ -57,17 +57,17 @@ public class Utils {
         return Utils.generateSequence(nums, " AND ", (stringBuilder, s) -> stringBuilder.append(fingerprintFieldName).append(":").append("\"").append(s).append("\"").append(" AND "));
     }
 
-    public static String produceSolrSimilarityQuery(IndigoObject mol, String fingerprintFieldName, boolean negate) {
-        mol.aromatize();
-        List<String> nums = fingerprintToBitNums(mol.fingerprint());
+    public static String produceSolrSimilarityQuery(IndigoObject chem, String fingerprintFieldName, boolean negate) {
+        chem.aromatize();
+        List<String> nums = fingerprintToBitNums(chem.fingerprint());
         if (negate) {
             nums = nums.stream().map(s -> "-" + s).collect(Collectors.toList());
         }
         return Utils.generateSequence(nums, " OR ", (stringBuilder, s) -> stringBuilder.append(fingerprintFieldName).append(":").append("\"").append(s).append("\"").append(" OR "));
     }
 
-    public static String produceSolrSimilarityQuery(IndigoObject mol, String fingerprintFieldName) {
-        return produceSolrSimilarityQuery(mol, fingerprintFieldName, false);
+    public static String produceSolrSimilarityQuery(IndigoObject chem, String fingerprintFieldName) {
+        return produceSolrSimilarityQuery(chem, fingerprintFieldName, false);
     }
 
     /**
