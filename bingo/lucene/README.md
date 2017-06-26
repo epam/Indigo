@@ -144,8 +144,8 @@ For more specific approach(if You want to run a single test class), use that com
  ```text
  mvn -Dtest=<Your_test_classname>#<class_test_method> test
  ```
- ### benchmarks tests ###
- In case of running benchmark test, first head to 'benchmark-tests' folder,  then run 
+ ### benchmark tests ###
+ In case if You want to run benchmark tests, first head to 'benchmark-tests' folder,  then run 
  ```text
   mvn clean install
  ```
@@ -155,4 +155,4 @@ For more specific approach(if You want to run a single test class), use that com
  java -jar target/benchmarks.jar
  ```
  
- <b>NB</b>: It is highly recommended to close all other apps for better test results
+ <b>NB</b>: It is highly recommended to close all other apps for more accurate test results
