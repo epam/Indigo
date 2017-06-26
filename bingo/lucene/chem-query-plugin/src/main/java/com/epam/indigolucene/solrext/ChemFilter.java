@@ -17,7 +17,7 @@ import org.apache.solr.search.SolrConstantScoreQuery;
 import java.io.IOException;
 import java.util.List;
 /**
- * This class encapsulates main logic of additional query parameters parsing, such as offset, limit,  etc.
+ * This class encapsulates main logic of server-side additional query parameters parsing, such as offset, limit,  etc.
  *
  * @author Artem Malykh
  * created on 2016-03-31

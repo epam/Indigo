@@ -25,7 +25,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 /**
- * Class represents a collection of useful methods for overall project such as encoding, fingerprint coding etc...
+ * Class represents a collection of useful methods for overall project such as encoding, fingerprint coding, etc...
  *
  * @author Artem Malykh
  * created on 2015-08-14

@@ -5,7 +5,7 @@ import com.epam.indigolucene.common.exceptions.DocumentAdditionException;
 import com.epam.indigolucene.common.query.SolrConnection;
 import com.epam.indigolucene.common.types.DocumentRepresentation;
 /**
- * Represents upload stream.
+ * Represents upload stream. Maintains such operations as document adding, connection closing.
  *
  * @author Artem Malykh
  * created on 2016-03-29

@@ -15,7 +15,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 /**
- * Custom query parser implementation.
+ * Server-side custom query parser implementation.
  *
  * @author Artem Malykh
  * created on 2016-02-16

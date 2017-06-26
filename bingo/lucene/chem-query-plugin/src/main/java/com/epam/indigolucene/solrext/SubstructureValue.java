@@ -11,7 +11,7 @@ import org.apache.lucene.queries.function.ValueSource;
 import java.io.IOException;
 import java.util.Map;
 /**
- * This class represents a methods for substructure value determination.
+ * This class represents a server-side methods for substructure value determination.
  *
  * @author Artem Malykh
  * created on 2016-03-01

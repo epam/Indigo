@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * MultipliableValue class maintain a value of a structures, which can have multiple values  along with "toMap" method.
+ * MultipliableValue class maintain a value of a structures, which can have multiple values along with "toMap" method.
  *
  * @author enny
  * created on 2016-04-01

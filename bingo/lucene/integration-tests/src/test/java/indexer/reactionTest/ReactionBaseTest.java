@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
+ * Useful methods for extended testing.
  * Created by philipppisarev on 05/04/2017.
  */
 public class ReactionBaseTest {
