@@ -212,6 +212,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    
    mgr.setOptionHandlerBool("ignore-stereochemistry-errors", SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.ignore_errors));
    mgr.setOptionHandlerBool("ignore-noncritical-query-features", SETTER_GETTER_BOOL_OPTION(indigo.ignore_noncritical_query_features));
+   mgr.setOptionHandlerBool("ignore-no-chiral-flag", SETTER_GETTER_BOOL_OPTION(indigo.ignore_no_chiral_flag));
    mgr.setOptionHandlerBool("treat-x-as-pseudoatom", SETTER_GETTER_BOOL_OPTION(indigo.treat_x_as_pseudoatom));
    mgr.setOptionHandlerBool("skip-3d-chirality", SETTER_GETTER_BOOL_OPTION(indigo.skip_3d_chirality));
    mgr.setOptionHandlerBool("deconvolution-aromatization", SETTER_GETTER_BOOL_OPTION(indigo.deconvolution_aromatization));

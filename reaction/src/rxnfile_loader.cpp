@@ -26,6 +26,7 @@ IMPL_ERROR(RxnfileLoader, "RXN loader");
 RxnfileLoader::RxnfileLoader (Scanner& scanner): _scanner(scanner){
    _v3000 = false;
    ignore_noncritical_query_features = false;
+   ignore_no_chiral_flag = false;
 }
 
 RxnfileLoader::~RxnfileLoader(){
@@ -54,6 +55,7 @@ void RxnfileLoader::_loadReaction(){
    molfileLoader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
    molfileLoader.stereochemistry_options = stereochemistry_options;
    molfileLoader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+   molfileLoader.ignore_no_chiral_flag = ignore_no_chiral_flag;
    _readRxnHeader();
 
    _readReactantsHeader();

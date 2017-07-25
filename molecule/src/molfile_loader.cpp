@@ -52,6 +52,7 @@ TL_CP_GET(_sgroup_mapping)
    treat_x_as_pseudoatom = false;
    skip_3d_chirality = false;
    ignore_noncritical_query_features = false;
+   ignore_no_chiral_flag = false;
 }
 
 void MolfileLoader::loadMolecule (Molecule &mol)
@@ -187,6 +188,9 @@ void MolfileLoader::_readCtabHeader ()
       _chiral = false;
       _v2000 = true;
    }
+
+   if (ignore_no_chiral_flag)
+      _chiral = true;
 }
 
 int MolfileLoader::_getElement (const char *buf)
@@ -2227,6 +2231,9 @@ void MolfileLoader::_readCtab3000 ()
       throw Error("error parsing COUNTS line");
 
    _chiral = (chiral_int != 0);
+
+   if (ignore_no_chiral_flag)
+      _chiral = true;
 
    _init();
 

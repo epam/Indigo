@@ -41,6 +41,7 @@ void Indigo::init ()
 
    stereochemistry_options.reset();
    ignore_noncritical_query_features = false;
+   ignore_no_chiral_flag = false;
    treat_x_as_pseudoatom = false;
    skip_3d_chirality = false;
    deconvolution_aromatization = true;

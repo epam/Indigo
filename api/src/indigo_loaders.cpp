@@ -112,6 +112,7 @@ Molecule & IndigoRdfMolecule::getMolecule ()
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
       loader.skip_3d_chirality = self.skip_3d_chirality;
       loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
+      loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
       loader.loadMolecule(_mol);
       _loaded = true;
    }
@@ -164,6 +165,7 @@ Reaction & IndigoRdfReaction::getReaction ()
       loader.stereochemistry_options = self.stereochemistry_options;
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
       loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
+      loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
       loader.loadReaction(_rxn);
       _loaded = true;
    }

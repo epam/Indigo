@@ -38,6 +38,7 @@ public:
    bool treat_x_as_pseudoatom;
    StereocentersOptions stereochemistry_options;
    bool ignore_noncritical_query_features;
+   bool ignore_no_chiral_flag;
    
    DECL_ERROR;
 protected:

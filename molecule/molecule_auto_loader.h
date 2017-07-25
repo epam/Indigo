@@ -51,6 +51,7 @@ public:
    bool ignore_noncritical_query_features;
    bool treat_x_as_pseudoatom;
    bool skip_3d_chirality;
+   bool ignore_no_chiral_flag;
 
    // Loaded properties
    CP_DECL;

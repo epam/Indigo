@@ -32,6 +32,7 @@ void ReactionAutoLoader::_init ()
    stereochemistry_options.reset();
    ignore_noncritical_query_features = false;
    ignore_cistrans_errors = false;
+   ignore_no_chiral_flag = false;
 }
 
 IMPL_ERROR(ReactionAutoLoader, "reaction auto loader");
@@ -95,6 +96,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          loader2.stereochemistry_options = stereochemistry_options;
          loader2.ignore_noncritical_query_features = ignore_noncritical_query_features;
          loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+         loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
          if (query)
             loader2.loadQueryReaction((QueryReaction &)reaction);
          else
@@ -113,6 +115,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          loader.stereochemistry_options = stereochemistry_options;
          loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+         loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
          if (query)
             loader.loadQueryReaction((QueryReaction &)reaction);
          else
@@ -183,6 +186,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
       loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
       loader.stereochemistry_options = stereochemistry_options;
       loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+      loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
       if (query)
          loader.loadQueryReaction((QueryReaction &)reaction);
       else
