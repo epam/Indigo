@@ -58,8 +58,6 @@ public class SolrConnection5 implements SolrConnection {
         this.query = query;
     }
 
-
-
     @Override
     public List<Map<String, Object>> results() throws IOException, SolrServerException {
         SolrQuery q = getRawSolrQuery();
@@ -72,22 +70,19 @@ public class SolrConnection5 implements SolrConnection {
 
         results.addAll(res);
 
-        Function<Map<String, Object>, Map<String, Object>> postMapper = (Function<Map<String, Object>, Map<String, Object>>) query.getCondition().getPostMappers(results).stream().reduce(Function.identity(), new BinaryOperator<Function<Map<String, Object>, Map<String, Object>>>() {
-            @Override
-            public Function<Map<String, Object>, Map<String, Object>> apply(Function<Map<String, Object>, Map<String, Object>> f1, Function<Map<String, Object>, Map<String, Object>> f2) {
-                return f1.compose(f2);
-            }
-        });
+        BinaryOperator<Function<Map<String, Object>, Map<String, Object>>> operatorCompose = Function::compose;
 
-        Predicate<Map<String, Object>> postFilter = (Predicate<Map<String, Object>>) query.getCondition().
-                                                          getPostFilters().
-                                                          stream().
-                                                          reduce((Predicate<Map<String, Object>>) stringStringMap -> true, new BinaryOperator<Predicate<Map<String, Object>>>() {
-                                                              @Override
-                                                              public Predicate<Map<String, Object>> apply(Predicate<Map<String, Object>> mapPredicate, Predicate<Map<String, Object>> mapPredicate2) {
-                                                                  return mapPredicate.and(mapPredicate2);
-                                                              }
-                                                          });
+        Function<Map<String, Object>, Map<String, Object>> postMapper =
+                (Function<Map<String, Object>, Map<String, Object>>) query.getCondition().getPostMappers(results)
+                        .stream()
+                        .reduce(Function.identity(), operatorCompose);
+
+        BinaryOperator<Predicate<Map<String, Object>>> operatorAnd = Predicate::and;
+
+        Predicate<Map<String, Object>> postFilter = (Predicate<Map<String, Object>>) query.getCondition()
+                .getPostFilters()
+                .stream()
+                .reduce((Predicate<Map<String, Object>>) stringStringMap -> true, operatorAnd);
 
         return results.stream().map(postMapper).filter(postFilter).collect(Collectors.toList());
     }
@@ -126,17 +121,15 @@ public class SolrConnection5 implements SolrConnection {
         res.setRows(query.getLimit());
         res.set("limit", query.getLimit() + "");
         return res;
-
-
     }
 
-    private void addDocumentInternal(HttpSolrClient client, String coreName, Map<String, Object> fieldsMap, boolean commitNow) throws IOException, SolrServerException {
+    private void addDocumentInternal(HttpSolrClient client, String coreName, Map<String, Object> fieldsMap,
+                                     boolean commitNow) throws IOException, SolrServerException {
         SolrInputDocument res = new SolrInputDocument();
 
         for (Map.Entry<String, Object> kv : fieldsMap.entrySet()) {
             String fieldName  = kv.getKey();
             Object fieldValue = kv.getValue();
-
             res.addField(fieldName, fieldValue);
         }
 

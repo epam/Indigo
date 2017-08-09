@@ -79,11 +79,10 @@ public class GeneratorWorker {
          */
         boolean alwaysSearchable;
 
-
-
         boolean multiple;
 
-        public TypeMappingInfo(Class clazz, Class valueClazz, Class valueTypedSourceClazz, boolean byAlias, boolean alwaysSearchable) {
+        public TypeMappingInfo(Class clazz, Class valueClazz, Class valueTypedSourceClazz,
+                               boolean byAlias, boolean alwaysSearchable) {
             this.fieldClazz = clazz;
             this.valueClazz = valueClazz;
             this.valueTypedSourceClazz = valueTypedSourceClazz;
@@ -110,18 +109,18 @@ public class GeneratorWorker {
     }
 
     static {
-        fieldTypeName2FieldType.put("T_serMol",        new TypeMappingInfo(MolField.class,     MolValue.class,    IndigoObject.class, true, true));
-        fieldTypeName2FieldType.put("T_serReact",        new TypeMappingInfo(ReactField.class,     ReactValue.class,    IndigoObject.class, true, true));
-        fieldTypeName2FieldType.put("solr.StrField",   new TypeMappingInfo(StringField.class,  StringValue.class, String.class,       true, false));
-        fieldTypeName2FieldType.put("solr.TextField",   new TypeMappingInfo(StringField.class,  StringValue.class, String.class,       true, false));
+        fieldTypeName2FieldType.put("T_serMol", new TypeMappingInfo(MolField.class, MolValue.class, IndigoObject.class, true, true));
+        fieldTypeName2FieldType.put("T_serReact", new TypeMappingInfo(ReactField.class, ReactValue.class, IndigoObject.class, true, true));
+        fieldTypeName2FieldType.put("solr.StrField", new TypeMappingInfo(StringField.class, StringValue.class, String.class, true, false));
+        fieldTypeName2FieldType.put("solr.TextField", new TypeMappingInfo(StringField.class, StringValue.class, String.class, true, false));
     }
 
-    public GeneratorWorker(String schemaClassName, String schemaFilePath, String outputFolder, String packageName) throws Exception {
+    public GeneratorWorker(String schemaClassName, String schemaFilePath,
+                           String outputFolder, String packageName) throws Exception {
         this.schemaClassName = schemaClassName;
         this.filePath = schemaFilePath;
         this.outputFolder = outputFolder;
         this.packageName = packageName;
-
 
         JAXBContext jc = JAXBContext.newInstance(XMLSolrSchemaRepresentation.class);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
@@ -145,10 +144,7 @@ public class GeneratorWorker {
     }
 
     public JDefinedClass generateSchemaClass() throws JClassAlreadyExistsException, IOException {
-
-
         String fullClassName = getFullClassName(schemaClassName, packageName);
-
         JDefinedClass schemaClass = cm._class(fullClassName);
 
         schemaClass.annotate(Generated.class).param("value", JavaSolrSchemaRepresentationGenerator.class.getName());
@@ -177,20 +173,22 @@ public class GeneratorWorker {
         }
 
         JClass  collectionMethodType = cm.ref(CollectionRepresentation.class).narrow(schemaClass);
-        JMethod collectionMethod = schemaClass.method(JMod.PUBLIC | JMod.STATIC,
-                collectionMethodType,
-                COLLECTION);
+        JMethod collectionMethod = schemaClass.method(JMod.PUBLIC | JMod.STATIC, collectionMethodType, COLLECTION);
 
         JVar collectionUrlParam      = collectionMethod.param(String.class, URL);
         JVar collectionCoreNameParam = collectionMethod.param(String.class, CORE_NAME);
 
-        collectionMethod.body()._return(JExpr._new(cm.ref(CollectionRepresentation.class).narrow(schemaClass)).arg(collectionUrlParam).arg(collectionCoreNameParam).arg(fieldNames));
-
+        collectionMethod
+                .body()
+                ._return(JExpr
+                        ._new(cm.ref(CollectionRepresentation.class).narrow(schemaClass))
+                        .arg(collectionUrlParam)
+                        .arg(collectionCoreNameParam)
+                        .arg(fieldNames));
 
         JClass documentClass = cm.ref(packageName + "." + getDocumentClassName(schemaClassName));
         JMethod createEmptyDocumentMethod = schemaClass.method(JMod.PUBLIC | JMod.STATIC,
-                documentClass,
-                "createEmptyDocument");
+                documentClass, "createEmptyDocument");
 
         createEmptyDocumentMethod.body()._return(JExpr._new(documentClass));
 
@@ -241,7 +239,9 @@ public class GeneratorWorker {
         return solrTypeName.endsWith("fingerprint");
     }
 
-    private TypeMappingInfo getMappingClassFinal(TypeMappingInfo tm, boolean indexed, boolean multiValued) throws ClassNotFoundException {
+    private TypeMappingInfo getMappingClassFinal(TypeMappingInfo tm, boolean indexed, boolean multiValued)
+            throws ClassNotFoundException {
+
         if (tm == null) {
             return null;
         }
@@ -261,9 +261,10 @@ public class GeneratorWorker {
 
     //TODO: return list of objects already containing classes fields are mapped to and names
     private Map<String, TypeMappingInfo> getPresentableFields() {
-        return  parsedSolrSchema.fields.stream().filter(f -> getBaseMappingClass(f) != null).collect(Collectors.toMap(
-                field -> field.name,
-                (Function<XMLSolrSchemaRepresentation.Field, TypeMappingInfo>) field -> getBaseMappingClass(field)
+        return  parsedSolrSchema.fields.stream()
+                .filter(f -> getBaseMappingClass(f) != null)
+                .collect(Collectors.toMap(field -> field.name,
+                        (Function<XMLSolrSchemaRepresentation.Field, TypeMappingInfo>) field -> getBaseMappingClass(field)
         ));
     }
 
@@ -281,7 +282,9 @@ public class GeneratorWorker {
         return schemaClassName + DOC_POSTFIX;
     }
 
-    public void generateDocumentRepresentation(JClass schemaClass) throws JClassAlreadyExistsException, IOException, ClassNotFoundException {
+    public void generateDocumentRepresentation(JClass schemaClass)
+            throws JClassAlreadyExistsException, IOException, ClassNotFoundException {
+
         JCodeModel cm = new JCodeModel();
         JDefinedClass docClass = cm._class(getFullClassName(getDocumentClassName(schemaClassName), packageName));
 
