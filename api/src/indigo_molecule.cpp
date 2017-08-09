@@ -3534,6 +3534,7 @@ CEXPORT int indigoTransformCTABtoSCSR (int molecule, int templates)
          tg.copy(temp.tgroups.getTGroup(i));
       }
 
+      mol.ignore_chem_templates = self.scsr_ignore_chem_templates;
       mol.transformFullCTABtoSCSR(tgs);
 
       return 1;

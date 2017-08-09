@@ -296,6 +296,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
 
    mgr.setOptionHandlerBool("mass-skip-error-on-pseudoatoms", SETTER_GETTER_BOOL_OPTION(indigo.mass_options.skip_error_on_pseudoatoms));
    mgr.setOptionHandlerBool("gross-formula-add-rsites", SETTER_GETTER_BOOL_OPTION(indigo.gross_formula_options.add_rsites));
+
+   mgr.setOptionHandlerBool("scsr-ignore-chem-templates", SETTER_GETTER_BOOL_OPTION(indigo.scsr_ignore_chem_templates));
 }
 
 _IndigoBasicOptionsHandlersSetter::~_IndigoBasicOptionsHandlersSetter ()

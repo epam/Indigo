@@ -337,6 +337,8 @@ public:
 
    IonizeOptions ionize_options;
 
+   bool scsr_ignore_chem_templates;
+
 protected:
 
    RedBlackMap<int, IndigoObject *> _objects;

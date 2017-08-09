@@ -247,6 +247,7 @@ public:
    bool remove_scsr_lgrp = false;
    bool use_scsr_name = false;
    bool expand_mod_templates = false;
+   bool ignore_chem_templates = false;
 
    MoleculeRGroups rgroups;
 

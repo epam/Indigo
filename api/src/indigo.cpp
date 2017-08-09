@@ -80,6 +80,8 @@ void Indigo::init ()
 
    arom_options = AromaticityOptions();
 
+   scsr_ignore_chem_templates = false;
+
    // Update global index
    static ThreadSafeStaticObj<OsLock> lock;
    {
