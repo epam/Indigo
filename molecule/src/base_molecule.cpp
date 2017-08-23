@@ -28,6 +28,7 @@
 
 #include "molecule/smiles_saver.h"
 #include "molecule/molecule_tautomer_enumerator.h"
+#include "molecule/inchi_wrapper.h"
 
 #include "graph/dfs_walk.h"
 
@@ -1328,6 +1329,16 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
 
    AromaticityOptions arom_opt;
 
+   QS_DEF(Molecule, target);
+   QS_DEF(Molecule, query);
+
+   InchiWrapper indigo_inchi;
+   QS_DEF(Array<char>, inchi_target);
+   QS_DEF(Array<char>, inchi_query);
+   QS_DEF(Array<int>, mapping_out);
+
+   indigo_inchi.setOptions("/SNon");
+
    bool arom = this->asMolecule().aromatize(arom_opt);
 
    templates.qsort(TGroup::cmp, 0);
@@ -1511,6 +1522,39 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                continue;
 
 
+            bool charged = false;
+            for (int j = 0; j < remove_atoms.size(); j++)
+            {
+               if (this->asMolecule().getAtomCharge(remove_atoms[j]) != 0)
+                  charged = true;
+            }
+//            if (charged)
+//               continue;
+
+           target.clear();
+           target.makeSubmolecule(*this, remove_atoms, 0);
+
+           if (charged)
+           {
+              for (auto j : target.vertices())
+              {
+                 if (target.asMolecule().getAtomCharge(j) != 0)
+                    target.asMolecule().setAtomCharge(j, 0);
+              }
+           }
+
+           query.clear();
+           query.makeSubmolecule(fragment, query_atoms, 0);
+
+           indigo_inchi.saveMoleculeIntoInchi(target, inchi_target);
+           indigo_inchi.saveMoleculeIntoInchi(query, inchi_query);
+
+           int inchi_comp = inchi_target.memcmp(inchi_query);
+
+           if (inchi_comp != 0)
+              continue;
+
+/*
             bool wrong_bond_order = false;
             for (int j = 0; j < remove_atoms.size(); j++)
             {
@@ -1531,7 +1575,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
             }
             if (wrong_bond_order)
                continue;
-
+*/
   
             bool ap_closed = false;
             ap_neibs.clear();
@@ -1587,14 +1631,6 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
             if (y_delta_found)
                continue;
    
-            bool charged = false;
-            for (int j = 0; j < remove_atoms.size(); j++)
-            {
-               if (this->asMolecule().getAtomCharge(remove_atoms[j]) != 0)
-                  charged = true;
-            }
-//            if (charged)
-//               continue;
 
             templ_found = true;
 
@@ -2100,6 +2136,9 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
             continue;
       }
 
+      if (arom)
+         fragment.aromatize(arom_opt);
+
       sgs.clear();
       base_sgs.clear();
       fragment.sgroups.findSGroups(SGroup::SG_CLASS, "LGRP", sgs);
@@ -2232,6 +2271,54 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
                continue;
 
 
+            bool charged = false;
+            for (int j = 0; j < remove_atoms.size(); j++)
+            {
+               if (this->asMolecule().getAtomCharge(remove_atoms[j]) != 0)
+                  charged = true;
+            }
+//            if (charged)
+//               continue;
+
+            bool isotopic = false;
+            for (int j = 0; j < remove_atoms.size(); j++)
+            {
+               if (this->asMolecule().getAtomIsotope(remove_atoms[j]) != 0)
+               {
+                  isotopic = true;
+               }
+            }
+
+
+           target.clear();
+           target.makeSubmolecule(*this, remove_atoms, 0);
+
+           if (charged || isotopic)
+           {
+              for (auto j : target.vertices())
+              {
+                 if (target.asMolecule().getAtomCharge(j) != 0)
+                    target.asMolecule().setAtomCharge(j, 0);
+                 if (isotopic)
+                 {
+                    if (target.asMolecule().getAtomIsotope(j) != 0)
+                       target.asMolecule().setAtomIsotope(j, 0);
+                 }
+              }
+           }
+
+           query.clear();
+           query.makeSubmolecule(fragment, query_atoms, 0);
+
+           indigo_inchi.saveMoleculeIntoInchi(target, inchi_target);
+           indigo_inchi.saveMoleculeIntoInchi(query, inchi_query);
+
+           int inchi_comp = inchi_target.memcmp(inchi_query);
+
+           if (inchi_comp != 0)
+              continue;
+
+/*
             bool wrong_bond_order = false;
             for (int j = 0; j < remove_atoms.size(); j++)
             {
@@ -2252,7 +2339,7 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
             }
             if (wrong_bond_order)
                continue;
-
+*/
   
             bool ap_closed = false;
             ap_neibs.clear();
@@ -2307,15 +2394,6 @@ int BaseMolecule::transformFullCTABtoSCSR (ObjArray<TGroup> &templates)
             }
             if (y_delta_found)
                continue;
-   
-            bool charged = false;
-            for (int j = 0; j < remove_atoms.size(); j++)
-            {
-               if (this->asMolecule().getAtomCharge(remove_atoms[j]) != 0)
-                  charged = true;
-            }
-//            if (charged)
-//               continue;
 
             templ_found = true;
 

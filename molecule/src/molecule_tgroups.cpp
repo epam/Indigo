@@ -47,6 +47,7 @@ int TGroup::cmp (TGroup &tg1, TGroup &tg2, void *context)
    bgrps.clear();
 
    tg1.fragment->sgroups.findSGroups(SGroup::SG_CLASS, "LGRP", lgrps);
+   int lgrps1_count = lgrps.size();
    for (auto i = tg1.fragment->sgroups.begin(); i != tg1.fragment->sgroups.end(); i = tg1.fragment->sgroups.next(i))
    {
       if (lgrps.find(i) == -1)
@@ -62,11 +63,11 @@ int TGroup::cmp (TGroup &tg1, TGroup &tg2, void *context)
           non_hyd_count1++;
    }
 
-
    lgrps.clear();
    bgrps.clear();
 
    tg2.fragment->sgroups.findSGroups(SGroup::SG_CLASS, "LGRP", lgrps);
+   int lgrps2_count = lgrps.size();
    for (auto i = tg2.fragment->sgroups.begin(); i != tg2.fragment->sgroups.end(); i = tg2.fragment->sgroups.next(i))
    {
       if (lgrps.find(i) == -1)
@@ -82,13 +83,20 @@ int TGroup::cmp (TGroup &tg1, TGroup &tg2, void *context)
           non_hyd_count2++;
    }
 
-   if (non_hyd_count2 - non_hyd_count1 != 0)
+   if ((non_hyd_count2 - non_hyd_count1) != 0)
       return non_hyd_count2 - non_hyd_count1;
+
+   if ((lgrps2_count - lgrps1_count) != 0)
+      return lgrps2_count - lgrps1_count;
+
+   if ((tg1.tgroup_alias.size() - tg2.tgroup_alias.size()) != 0) 
+      return tg1.tgroup_alias.size() - tg2.tgroup_alias.size();
 
    if ( (tg2.tgroup_class.size() > 1) && strncmp(tg2.tgroup_class.ptr(), "AA", 2) == 0)
       return 1;
    else
       return -1;
+
 }
 
 void TGroup::copy (TGroup &other)
