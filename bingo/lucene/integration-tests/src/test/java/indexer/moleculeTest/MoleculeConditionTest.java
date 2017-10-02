@@ -41,7 +41,10 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
     public void test1() throws Exception {
         long before = System.currentTimeMillis();
         logger.info("Warming up query");
-        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(MOL.unsafeIsSimilarTo(RARE_MOL)).limit(1).processWith(lst -> logger.info(lst.size()));
+        testCollection.find()
+                .filter(MOL.unsafeIsSimilarTo(RARE_MOL))
+                .limit(1)
+                .processWith(lst -> logger.info(lst.size()));
         logger.info("Took approx. " + (System.currentTimeMillis() - before) + " ms ");
 
         benchmarkMol(BENZOL,   BENZOL_BIG_LIMIT);
@@ -76,7 +79,6 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
         testCollection.removeAll();
 
         String[] variousTextValues = {"val1", "val2"};
-        //logger.info("adding documents from set " + "" + " with string values...");
         try (SolrUploadStream ustream = testCollection.uploadStream()) {
             for (String variousTextValue : variousTextValues) {
                 TestSchemaDocument emptyDocument = TestSchema.createEmptyDocument();
@@ -93,17 +95,19 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
         logger.info("done");
 
         List<Map<String, Object>> result = new LinkedList<>();
-        testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[0])).
-                              filter(MOL.unsafeHasSubstructure(RARE_MOL)).
-                              processWith(lst -> result.addAll(lst));
-        System.out.println("Result " + result);
+        testCollection.find()
+                .filter(CONTENT_TYPE.startsWith(variousTextValues[0]))
+                .filter(MOL.unsafeHasSubstructure(RARE_MOL))
+                .processWith(lst -> result.addAll(lst));
+
         logger.info(result + " : " + result.size());
         Assert.assertTrue(result.size() == 2);
         result.clear();
 
+        testCollection.find()
+                .filter(CONTENT_TYPE.startsWith(variousTextValues[0]))
+                .processWith(lst -> result.addAll(lst));
 
-        testCollection.find().filter(CONTENT_TYPE.startsWith(variousTextValues[0])).
-                              processWith(lst -> result.addAll(lst));
         logger.info(result + " : " + result.size());
         Assert.assertTrue(result.size() == 0);
         result.clear();
@@ -112,7 +116,10 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
     protected void benchmarkMol(String mol, int limit) throws Exception {
         long before = System.currentTimeMillis();
         logger.info("Searching " + mol + " with limit " + limit);
-        TestSchema.collection(ServiceConfig.SERVICE_URL, CORE_NAME).find().filter(MOL.unsafeHasSubstructure(mol)).limit(limit).processWith(lst -> logger.info("returned results: " + lst.size()));
+        testCollection.find()
+                .filter(MOL.unsafeHasSubstructure(mol))
+                .limit(limit)
+                .processWith(lst -> logger.info("returned results: " + lst.size()));
         logger.info("Took approx. " + (System.currentTimeMillis() - before) + " ms ");
     }
 }

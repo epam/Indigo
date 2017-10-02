@@ -25,7 +25,7 @@ public class MoleculeIndexationIntegrationTest extends MoleculeBaseTest {
     private long MAX_AVERAGE = 15;
 
     static Logger logger = Logger.getLogger(MoleculeIndexationIntegrationTest.class);
-    private static Indigo indigo;
+    public static Indigo indigo;
 
     @BeforeClass
     public static void init() throws IOException, SolrServerException {
