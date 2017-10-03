@@ -1,14 +1,11 @@
 package indexer.moleculeTest;
 
 import com.epam.indigo.Indigo;
-import com.epam.indigolucene.common.SolrUploadStream;
 import com.epam.indigolucene.common.query.SolrConnectionFactory;
 import com.epam.indigolucene.commonconfig.ServiceConfig;
 import com.epam.indigolucene.solrconnection.SolrConnection5;
 import com.epam.indigolucene.solrconnection.elastic.ElasticConnection;
 import indexer.data.generated.TestSchema;
-import indexer.data.generated.TestSchemaDocument;
-import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.AfterClass;
 import org.junit.Before;

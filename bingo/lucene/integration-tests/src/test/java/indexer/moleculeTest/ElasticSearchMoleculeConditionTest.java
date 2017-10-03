@@ -5,7 +5,6 @@ import com.epam.indigolucene.commonconfig.ServiceConfig;
 import com.epam.indigolucene.solrconnection.SolrConnection5;
 import com.epam.indigolucene.solrconnection.elastic.ElasticConnection;
 import indexer.data.generated.TestSchema;
-import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.*;
 
