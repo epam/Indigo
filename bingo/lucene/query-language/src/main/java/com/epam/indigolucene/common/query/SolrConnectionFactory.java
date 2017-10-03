@@ -33,4 +33,8 @@ public class SolrConnectionFactory {
         }
         return instance;
     }
+
+    public static void clear() {
+        SolrConnectionFactory.clazz = null;
+    }
 }

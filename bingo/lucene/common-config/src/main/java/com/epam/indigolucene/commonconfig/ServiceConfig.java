@@ -27,6 +27,7 @@ import java.util.Properties;
  */
 public class ServiceConfig {
     public static final String SERVICE_URL;
+    public static final String ELASTIC_URL;
     public static final String STATIC_DIR;
     public static final String GUI_URL;
     public static final String OUTER_IP;
@@ -44,6 +45,7 @@ public class ServiceConfig {
             try {
                 props.load(is);
                 SERVICE_URL = props.getProperty("service.url");
+                ELASTIC_URL = props.getProperty("elastic.url");
                 GUI_URL = props.getProperty("gui.url");
                 STATIC_DIR = props.getProperty("static.dir");
                 UPLOAD_DIR = props.getProperty("upload.dir");

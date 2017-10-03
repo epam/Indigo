@@ -13,6 +13,9 @@
         <tests.url>http://127.0.0.1</tests.url>
         <gui.url>${base.url}:80</gui.url>
         <service.url>${base.url}:8983/solr/moldocs</service.url>
+        <elastic.url>${base.url}:9300/moldocs/docs</elastic.url>
+        <elastic.index>moldocs</elastic.index>
+        <elastic.type>docs</elastic.type>
         <frontend.dir>${project.basedir}/../simple-front-end</frontend.dir>
         <static.dir>${frontend.dir}/src/main/webapp/WebContent</static.dir>
         <upload.dir>/opt/solr/uploads</upload.dir>
@@ -27,8 +30,9 @@
         <module>common-config</module>
         <module>schema-generator</module>
         <module>solr-connector5</module>
-    <module>benchmark-tests</module>
-  </modules>
+        <module>solr-connectorES</module>
+        <module>benchmark-tests</module>
+    </modules>
 
     <build>
         <plugins>

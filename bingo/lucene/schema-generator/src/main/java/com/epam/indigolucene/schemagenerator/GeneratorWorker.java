@@ -288,16 +288,13 @@ public class GeneratorWorker {
         JCodeModel cm = new JCodeModel();
         JDefinedClass docClass = cm._class(getFullClassName(getDocumentClassName(schemaClassName), packageName));
 
-
         docClass._implements(cm.ref(DocumentRepresentation.class).narrow(schemaClass));
 
         docClass.constructor(JMod.PUBLIC);
 
         JClass fieldsMapType = cm.ref(Map.class).narrow(String.class).narrow(Object.class);
 
-        JMethod fieldsMapMethod = docClass.method(JMod.PUBLIC,
-                fieldsMapType,
-                "fieldsMap");
+        JMethod fieldsMapMethod = docClass.method(JMod.PUBLIC, fieldsMapType, "fieldsMap");
 
         fieldsMapMethod.annotate(Override.class);
 
@@ -309,16 +306,15 @@ public class GeneratorWorker {
         for (String fieldName : presentableFields.keySet()) {
             TypeMappingInfo fieldMappingInfo = presentableFields.get(fieldName);
 
-
             JClass valueRepresentationClass = cm.ref(fieldMappingInfo.valueClazz).narrow(schemaClass);
-            JClass valueSorceClass          = cm.ref(fieldMappingInfo.valueTypedSourceClazz);
+            JClass valueSorceClass = cm.ref(fieldMappingInfo.valueTypedSourceClazz);
+
             if (fieldMappingInfo.isMultiple()) {
                 valueSorceClass = cm.ref(List.class).narrow(valueSorceClass);
             }
-            JFieldRef schemaField           = schemaClass.staticRef(fromCamelCaseToUderscore(fieldName));
 
+            JFieldRef schemaField = schemaClass.staticRef(fromCamelCaseToUderscore(fieldName));
             JFieldVar fld = docClass.field(JMod.PRIVATE, valueRepresentationClass, fieldName);
-
 
             JMethod setter = docClass.method(JMod.PUBLIC, docClass, getFieldSetterName(fieldName));
 
@@ -331,7 +327,6 @@ public class GeneratorWorker {
         }
 
         fieldsMapMethod.body()._return(res);
-
 
         cm.build(new File(outputFolder), System.out);
     }
