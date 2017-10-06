@@ -3,7 +3,6 @@ package indexer.moleculeTest;
 import com.epam.indigolucene.common.IndigoHolder;
 import com.epam.indigolucene.common.SolrUploadStream;
 import com.epam.indigolucene.common.query.BeforeGroup;
-import com.epam.indigolucene.commonconfig.ServiceConfig;
 import indexer.data.generated.TestSchema;
 import indexer.data.generated.TestSchemaDocument;
 import org.apache.log4j.Logger;
@@ -16,7 +15,6 @@ import java.util.Map;
 
 import static indexer.data.generated.TestSchema.CONTENT_TYPE;
 import static indexer.data.generated.TestSchema.MOL;
-
 
 /**
  * Created by Artem Malykh on 24.02.16.
@@ -31,8 +29,6 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
     private static final int BENZOL_SMALL_LIMIT = 2;
     private static final int BENZOL_BIG_LIMIT   = 2000;
     private static final int RARE_MOL_LIMIT     = 2000;
-
-    private static final String CORE_NAME = "moldocs";
 
     //TODO: change for some real rare mol for test set.
     private static final String RARE_MOL = BENZOL;
@@ -50,7 +46,7 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
         benchmarkMol(BENZOL,   BENZOL_BIG_LIMIT);
         benchmarkMol(BENZOL,   BENZOL_SMALL_LIMIT);
         benchmarkMol(RARE_MOL, RARE_MOL_LIMIT);
-        /**
+        /*
          * 60k   --- 1700, ?,   230, 61
          * 90k   --- 1700, ?,   299, 62
          * 350k  --- 2000, 85,  329, 110d
@@ -67,12 +63,10 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
     public void testSimilarSearch() throws Exception {
         List<Map<String, Object>> result = new LinkedList<>();
         BeforeGroup<TestSchema> query = testCollection.find().filter(MOL.unsafeIsSimilarTo(RARE_MOL)).limit(2);
-        query.processWith(lst -> result.addAll(lst));
+        query.processWith(result::addAll);
         logger.info("Search is complete");
         result.stream().map((e) -> "Chemical element is found: " + e).forEach(System.out::println);
     }
-
-
 
     @Test
     public void testMoleculeTextSearch() throws Exception {
@@ -98,7 +92,7 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
         testCollection.find()
                 .filter(CONTENT_TYPE.startsWith(variousTextValues[0]))
                 .filter(MOL.unsafeHasSubstructure(RARE_MOL))
-                .processWith(lst -> result.addAll(lst));
+                .processWith(result::addAll);
 
         logger.info(result + " : " + result.size());
         Assert.assertTrue(result.size() == 2);
@@ -106,14 +100,14 @@ public class MoleculeConditionTest extends MoleculeBaseTest {
 
         testCollection.find()
                 .filter(CONTENT_TYPE.startsWith(variousTextValues[0]))
-                .processWith(lst -> result.addAll(lst));
+                .processWith(result::addAll);
 
         logger.info(result + " : " + result.size());
         Assert.assertTrue(result.size() == 0);
         result.clear();
     }
 
-    protected void benchmarkMol(String mol, int limit) throws Exception {
+    private void benchmarkMol(String mol, int limit) throws Exception {
         long before = System.currentTimeMillis();
         logger.info("Searching " + mol + " with limit " + limit);
         testCollection.find()

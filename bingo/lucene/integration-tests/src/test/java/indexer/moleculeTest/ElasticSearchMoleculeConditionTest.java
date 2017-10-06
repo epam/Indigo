@@ -10,12 +10,6 @@ import org.junit.*;
 
 import java.io.IOException;
 
-
-/**
- * Note! These are not fully functional tests yet. This suit was rather experimental board
- * for quick checks working of plugin. This class should be redone.
- */
-//TODO: move to core package
 public class ElasticSearchMoleculeConditionTest extends MoleculeConditionTest {
 
     @BeforeClass

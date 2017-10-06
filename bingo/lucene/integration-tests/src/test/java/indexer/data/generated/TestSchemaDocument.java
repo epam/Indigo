@@ -11,9 +11,7 @@ import com.epam.indigolucene.common.types.values.StringValue;
 import com.epam.indigolucene.common.utils.Utils;
 import indexer.data.generated.TestSchema;
 
-public class TestSchemaDocument
-    implements DocumentRepresentation<TestSchema>
-{
+public class TestSchemaDocument implements DocumentRepresentation<TestSchema> {
 
     private StringValue<TestSchema> molId;
     private StringValue<TestSchema> docId;
@@ -23,9 +21,6 @@ public class TestSchemaDocument
     private MolValue<TestSchema> mol;
     private StringValue<TestSchema> contentType;
     private StringValue<TestSchema> reactId;
-
-    public TestSchemaDocument() {
-    }
 
     @Override
     public Map<String, Object> fieldsMap() {

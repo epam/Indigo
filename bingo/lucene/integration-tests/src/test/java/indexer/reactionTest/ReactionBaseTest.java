@@ -31,16 +31,16 @@ import java.io.IOException;
 public class ReactionBaseTest {
     private static final Logger logger = Logger.getLogger(ReactionBaseTest.class);
 
-    public static final String TEST_CORE_NAME = "moldocs";
-    public static final String REACTION = "CBr>>CCl";
+    static final String TEST_CORE_NAME = "moldocs";
+    static final String REACTION = "CBr>>CCl";
 
 
     CollectionRepresentation<TestSchema> testCollection;
 
     public static class IndexingStatistics {
-        public final long totalTime;
-        public final long averageTime;
-        public final long totalItems;
+        final long totalTime;
+        final long averageTime;
+        final long totalItems;
 
         public IndexingStatistics(long totalTime, long averageTime, long totalItems) {
             this.totalTime = totalTime;
@@ -59,14 +59,12 @@ public class ReactionBaseTest {
         SolrConnectionFactory.init(SolrConnection5.class);
     }
 
-
-
     @Before
     public void before() throws IOException, SolrServerException {
         testCollection = TestSchema.collection(ServiceConfig.SERVICE_URL, TEST_CORE_NAME);
     }
 
-    protected void indexSDFile(String fileName) throws Exception {
+    void indexSDFile(String fileName) throws Exception {
         try (SolrUploadStream<TestSchema> uploadStream = testCollection.uploadStream()) {
             for (IndigoObject react : IndigoHolder.getIndigo().iterateSDFile(fileName)) {
                 try {
@@ -81,7 +79,7 @@ public class ReactionBaseTest {
         }
     }
 
-    protected void indexSmilesFile(String fileName) throws Exception {
+    void indexSmilesFile(String fileName) throws Exception {
         try (SolrUploadStream<TestSchema> uploadStream = testCollection.uploadStream()) {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String smilesLine;
@@ -94,7 +92,8 @@ public class ReactionBaseTest {
 
                     uploadStream.addDocument(emptyDocument);
                 } catch (IndigoException e) {
-
+                    logger.error(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }

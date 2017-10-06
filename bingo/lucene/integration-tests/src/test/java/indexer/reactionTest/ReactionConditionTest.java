@@ -29,7 +29,6 @@ public class ReactionConditionTest extends ReactionBaseTest {
     private static final int REACTION_BIG_LIMIT = 2000;
     private static final int RARE_REACTION_LIMIT = 2000;
 
-    private static final String CORE_NAME = "moldocs";
     private static final String RARE_REACTION = "[I-].[Na+].C=CCBr>>[Na+].[Br-].C=CCI";
 
     @Test
@@ -71,13 +70,12 @@ public class ReactionConditionTest extends ReactionBaseTest {
         testCollection.find()
                 .filter(CONTENT_TYPE.startsWith(variousTextValues[0]))
                 .filter(REACT.unsafeExactMatches(REACTION))
-                .processWith(lst -> result.addAll(lst));
+                .processWith(result::addAll);
         logger.info(result + " : " + result.size());
         System.out.println(result.size());
         Assert.assertTrue(result.size() == 1);
         result.clear();
     }
-
 
     @Test
     public void testReactionSubstructureSearch() throws Exception {
@@ -90,7 +88,7 @@ public class ReactionConditionTest extends ReactionBaseTest {
 
         testCollection.find()
                 .filter(REACT.unsafeHasSubstructure(REACTION))
-                .processWith(lst -> result.addAll(lst));
+                .processWith(result::addAll);
         logger.info(result + " : " + result.size());
         System.out.println(result.size());
         Assert.assertTrue(result.size() == 4);

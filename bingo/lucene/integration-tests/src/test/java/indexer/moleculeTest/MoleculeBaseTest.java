@@ -31,15 +31,15 @@ import java.io.IOException;
 public class MoleculeBaseTest {
     private static final Logger logger = Logger.getLogger(MoleculeBaseTest.class);
 
-    public static final String BENZOL         = "c1ccccc1";
-    public static final String TEST_CORE_NAME = "moldocs";
+    static final String BENZOL         = "c1ccccc1";
+    static final String TEST_CORE_NAME = "moldocs";
 
     CollectionRepresentation<TestSchema> testCollection;
 
     public static class IndexingStatistics {
-        public final long totalTime;
-        public final long averageTime;
-        public final long totalItems;
+        final long totalTime;
+        final long averageTime;
+        final long totalItems;
 
         public IndexingStatistics(long totalTime, long averageTime, long totalItems) {
             this.totalTime = totalTime;
@@ -65,7 +65,7 @@ public class MoleculeBaseTest {
         testCollection = TestSchema.collection(ServiceConfig.SERVICE_URL, TEST_CORE_NAME);
     }
 
-    protected void indexSDFile(String fileName) throws Exception {
+    void indexSDFile(String fileName) throws Exception {
         try (SolrUploadStream<TestSchema> uploadStream = testCollection.uploadStream()) {
             for (IndigoObject mol : IndigoHolder.getIndigo().iterateSDFile(fileName)) {
                 try {
@@ -80,7 +80,7 @@ public class MoleculeBaseTest {
         }
     }
 
-    protected void indexSmilesFile(String fileName) throws Exception {
+    void indexSmilesFile(String fileName) throws Exception {
         try (SolrUploadStream<TestSchema> uploadStream = testCollection.uploadStream()) {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String smilesLine;
@@ -93,7 +93,8 @@ public class MoleculeBaseTest {
 
                     uploadStream.addDocument(emptyDocument);
                 } catch (IndigoException e) {
-
+                    logger.error(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }

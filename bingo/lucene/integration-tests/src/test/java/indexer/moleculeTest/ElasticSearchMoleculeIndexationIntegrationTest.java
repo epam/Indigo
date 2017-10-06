@@ -1,6 +1,5 @@
 package indexer.moleculeTest;
 
-import com.epam.indigo.Indigo;
 import com.epam.indigolucene.common.query.SolrConnectionFactory;
 import com.epam.indigolucene.commonconfig.ServiceConfig;
 import com.epam.indigolucene.solrconnection.SolrConnection5;
@@ -18,7 +17,6 @@ public class ElasticSearchMoleculeIndexationIntegrationTest extends MoleculeInde
 
     @BeforeClass
     public static void beforeClass() {
-        indigo = new Indigo();
         SolrConnectionFactory.clear();
         SolrConnectionFactory.init(ElasticConnection.class);
     }
