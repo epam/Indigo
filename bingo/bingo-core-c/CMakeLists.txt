@@ -10,7 +10,7 @@ set(BingoCoreC_HEADERS_DIR ${BingoCoreC_SOURCE_DIR}/src CACHE INTERNAL "include 
 include(ConfigureCommon)
 
 include_directories(../src ../src/core ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR} ${BingoCore_HEADERS_DIR}
-	${Common_SOURCE_DIR}/../api/plugins/inchi/src ${InChI_SOURCE_DIR}/inchi_dll)
+	${Common_SOURCE_DIR}/../api/plugins/inchi/src ${InChI_SOURCE_DIR}/INCHI_BASE/src)
 
 add_library(bingo-core-c STATIC ${BingoCoreC_src} ${BingoCoreC_headers})
 target_link_libraries(bingo-core-c bingo-core inchi)
