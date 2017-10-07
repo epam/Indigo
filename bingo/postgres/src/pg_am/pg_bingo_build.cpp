@@ -163,7 +163,7 @@ bingo_build(PG_FUNCTION_ARGS) {
       */
       BingoPgWrapper func_namespace;
 #if PG_VERSION_NUM / 100 >= 906
-      const char* schema_name = "public";
+      const char* schema_name = "bingo";
 #else
       const char* schema_name = func_namespace.getFuncNameSpace(fcinfo->flinfo->fn_oid);
 #endif
@@ -266,7 +266,7 @@ bingo_buildempty(PG_FUNCTION_ARGS) {
        */
       BingoPgWrapper func_namespace;
 #if PG_VERSION_NUM / 100 >= 906
-      const char* schema_name = "public";
+      const char* schema_name = "bingo";
 #else
       const char* schema_name = func_namespace.getFuncNameSpace(fcinfo->flinfo->fn_oid);
 #endif
