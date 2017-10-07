@@ -17,31 +17,49 @@ extern "C" {
 #include "bingo_pg_text.h"
 
 
+#if PG_VERSION_NUM / 100 < 906
 extern "C" {
+   
 BINGO_FUNCTION_EXPORT(bingo_insert);
 
 BINGO_FUNCTION_EXPORT(bingo_bulkdelete);
 
 BINGO_FUNCTION_EXPORT(bingo_vacuumcleanup);
 }
+#endif
 
 
 /*
  *	Insert an index tuple into a hash table.
  *
  */
+#if PG_VERSION_NUM / 100 >= 906
+bool bingo_insert (  Relation index,
+                     Datum *values,
+                     bool *isnull,
+                     ItemPointer ht_ctid,
+                     Relation heapRelation,
+                     IndexUniqueCheck checkUnique) {
+#else
 Datum
 bingo_insert(PG_FUNCTION_ARGS) {
    Relation index = (Relation) PG_GETARG_POINTER(0);
    Datum *values = (Datum *) PG_GETARG_POINTER(1);
    bool isnull = *((bool*) PG_GETARG_POINTER(2));
    ItemPointer ht_ctid = (ItemPointer) PG_GETARG_POINTER(3);
+#endif
+
+
 
    /*
     * Skip inserting null tuples
     */
    if(isnull)
+#if PG_VERSION_NUM / 100 >= 906
+      return false;
+#else
       PG_RETURN_BOOL(false);
+#endif
 
    bool result = false;
 
@@ -87,7 +105,12 @@ bingo_insert(PG_FUNCTION_ARGS) {
    //
    //	pfree(itup);
 
-   PG_RETURN_BOOL(result);
+#if PG_VERSION_NUM / 100 >= 906
+      return result;
+#else
+      PG_RETURN_BOOL(result);
+#endif
+      
 }
 
 
@@ -98,12 +121,21 @@ bingo_insert(PG_FUNCTION_ARGS) {
  *
  * Result: a palloc'd struct containing statistical info for VACUUM displays.
  */
+
+
+#if PG_VERSION_NUM / 100 >= 906
+IndexBulkDeleteResult * bingo_bulkdelete (   IndexVacuumInfo *info,
+                                             IndexBulkDeleteResult *stats,
+                                             IndexBulkDeleteCallback bulk_del_cb,
+                                             void *cb_state) {
+#else
 Datum
 bingo_bulkdelete(PG_FUNCTION_ARGS) {
    IndexVacuumInfo *info = (IndexVacuumInfo *) PG_GETARG_POINTER(0);
    IndexBulkDeleteResult *stats = (IndexBulkDeleteResult *) PG_GETARG_POINTER(1);
    IndexBulkDeleteCallback bulk_del_cb = (IndexBulkDeleteCallback) PG_GETARG_POINTER(2);
    void *cb_state = (void *) PG_GETARG_POINTER(3);
+#endif
 
    elog(NOTICE, "bingo.index: start bulk delete");
    
@@ -147,21 +179,25 @@ bingo_bulkdelete(PG_FUNCTION_ARGS) {
        * Write new structures number
        */
       bingo_index.writeMetaInfo();
-
-      if (stats == NULL)
-         stats = (IndexBulkDeleteResult *) palloc0(sizeof (IndexBulkDeleteResult));
-
-      stats->estimated_count = false;
-      stats->tuples_removed = tuples_removed;
-
+      /*
+      * Always return null since no index values are removed
+      */
+//      if (stats == NULL)
+//         stats = (IndexBulkDeleteResult *) palloc0(sizeof (IndexBulkDeleteResult));
+//
+//      stats->estimated_count = false;
+//      stats->tuples_removed = tuples_removed;
    }
    PG_BINGO_END
    /*
     * Always return null since no index values are removed
     */
+#if PG_VERSION_NUM / 100 >= 906
+   return NULL;
+#else
    PG_RETURN_POINTER(NULL);
+#endif
 
-//   PG_RETURN_POINTER(stats);
 }
 
 /*
@@ -169,9 +205,14 @@ bingo_bulkdelete(PG_FUNCTION_ARGS) {
  *
  * Result: a palloc'd struct containing statistical info for VACUUM displays.
  */
+#if PG_VERSION_NUM / 100 >= 906
+IndexBulkDeleteResult * bingo_vacuumcleanup (IndexVacuumInfo *info, IndexBulkDeleteResult *stats) {
+#else
 Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS) {
    IndexVacuumInfo *info = (IndexVacuumInfo *) PG_GETARG_POINTER(0);
    IndexBulkDeleteResult *stats = (IndexBulkDeleteResult *) PG_GETARG_POINTER(1);
+#endif
+
    Relation rel = info->index;
    BlockNumber num_pages = 0;
 
@@ -179,7 +220,11 @@ Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS) {
    /*
     * Always return null since no index values are removed
     */
+#if PG_VERSION_NUM / 100 >= 906
+   return NULL;
+#else
    PG_RETURN_POINTER(NULL);
+#endif
 //   /* 
 //    * If bulkdelete wasn't called, return NULL signifying no change
 //    * Note: this covers the analyze_only case too

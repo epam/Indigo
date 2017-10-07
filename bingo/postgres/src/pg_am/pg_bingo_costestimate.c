@@ -6,6 +6,12 @@
 #include "nodes/relation.h"
 #include "optimizer/cost.h"
 
+#if PG_VERSION_NUM / 100 >= 902
+#include "optimizer/predtest.h"
+#include "utils/selfuncs.h"
+#include "utils/spccache.h"
+#endif
+
 /*
 #include "catalog/index.h"
 #include "access/sysattr.h"
@@ -60,7 +66,7 @@
  */
 
 static void
-genericcostestimate(PlannerInfo *root,
+bingo_genericcostestimate(PlannerInfo *root,
 					IndexOptInfo *index, List *indexQuals,
 					RelOptInfo *outer_rel,
 					double numIndexTuples,
@@ -616,7 +622,7 @@ bingo_costestimate(PG_FUNCTION_ARGS) {
 */
 
 
-   genericcostestimate(root, index, indexQuals, outer_rel, 1.0,
+   bingo_genericcostestimate(root, index, indexQuals, outer_rel, 1.0,
    					indexStartupCost, indexTotalCost,
    					indexSelectivity, indexCorrelation);
 #endif
@@ -660,7 +666,18 @@ bingo_costestimate(PG_FUNCTION_ARGS) {
    PG_RETURN_VOID();
 }
 
-
+void bingo_costestimate96 ( struct PlannerInfo *root,
+                            struct IndexPath *path,
+                            double loop_count,
+                            Cost *indexStartupCost,
+                            Cost *indexTotalCost,
+                            Selectivity *indexSelectivity,
+                            double *indexCorrelation) {
+    genericcostestimate92(root, path, loop_count, 1.0,
+						indexStartupCost, indexTotalCost,
+						indexSelectivity, indexCorrelation);
+    
+}
 /*
 Datum
 bingo_costestimate(PG_FUNCTION_ARGS) {
@@ -700,4 +717,4 @@ bingo_costestimate(PG_FUNCTION_ARGS) {
 */
 
 //Node	   *newNodeMacroHolder;
-char	   *BufferBlocks;
+//char	   *BufferBlocks;

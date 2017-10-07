@@ -8,6 +8,12 @@ extern "C"  {
 #include "utils/relcache.h"
 #include "storage/bufmgr.h"
 #include "catalog/index.h"
+#include "catalog/pg_type.h"
+   
+#if PG_VERSION_NUM / 100 >= 906
+#include "access/amapi.h"
+#endif
+   
 }
 
 #include "bingo_pg_fix_post.h"
@@ -20,7 +26,10 @@ extern "C"  {
 #include "base_cpp/tlscont.h"
 
 
-
+enum {
+   BINGO_AM_STRATEGIES = 7,
+   BINGO_AM_SUPPORT = 7
+};
 
 using namespace indigo;
 
@@ -29,9 +38,74 @@ extern "C" {
    PG_MODULE_MAGIC;
 #endif
 
+   
+#if PG_VERSION_NUM / 100 >= 906
+BINGO_FUNCTION_EXPORT(bingo_handler);
+IndexBuildResult * bingo_build (Relation, Relation, struct IndexInfo *);
+void bingo_buildempty(Relation );
+bool bingo_insert ( Relation, Datum *, bool *, ItemPointer, Relation, IndexUniqueCheck );
+IndexBulkDeleteResult * bingo_bulkdelete (IndexVacuumInfo *, IndexBulkDeleteResult *, IndexBulkDeleteCallback, void *);
+IndexBulkDeleteResult * bingo_vacuumcleanup (IndexVacuumInfo *, IndexBulkDeleteResult *);
+void bingo_costestimate96 ( struct PlannerInfo *, struct IndexPath *, double , Cost *, Cost *, Selectivity *, double *);
+bytea * bingo_options (Datum, bool);
+bool bingo_validate (Oid);
+IndexScanDesc bingo_beginscan (Relation, int, int );
+void bingo_rescan (IndexScanDesc, ScanKey, int, ScanKey, int);
+void bingo_endscan (IndexScanDesc);
+bool bingo_gettuple (IndexScanDesc, ScanDirection);
+   
+#else
 BINGO_FUNCTION_EXPORT(bingo_build);
-
 BINGO_FUNCTION_EXPORT(bingo_buildempty);
+#endif
+   
+}
+
+
+
+/*
+ * Bingo handler function: return IndexAmRoutine with access method parameters
+ * and callbacks.
+ */
+Datum
+bingo_handler(PG_FUNCTION_ARGS)
+{
+   IndexAmRoutine *amroutine = makeNode(IndexAmRoutine);
+
+   amroutine->amstrategies = BINGO_AM_STRATEGIES;
+   amroutine->amsupport = BINGO_AM_SUPPORT;
+   amroutine->amcanorder = false;
+   amroutine->amcanorderbyop = false;
+   amroutine->amcanbackward = true;
+   amroutine->amcanunique = false;
+   amroutine->amcanmulticol = false;
+   amroutine->amoptionalkey = false;
+   amroutine->amsearcharray = false;
+   amroutine->amsearchnulls = false;
+   amroutine->amstorage = false;
+   amroutine->amclusterable = false;
+   amroutine->ampredlocks = false;
+   amroutine->amkeytype = INT4OID;
+
+   amroutine->ambuild = bingo_build;
+   amroutine->ambuildempty = bingo_buildempty;
+   amroutine->aminsert = bingo_insert;
+   amroutine->ambulkdelete = bingo_bulkdelete;
+   amroutine->amvacuumcleanup = bingo_vacuumcleanup;
+   amroutine->amcanreturn = NULL;
+   amroutine->amcostestimate = bingo_costestimate96;
+   amroutine->amoptions = bingo_options;
+   amroutine->amproperty = NULL;
+   amroutine->amvalidate = bingo_validate;
+   amroutine->ambeginscan = bingo_beginscan;
+   amroutine->amrescan = bingo_rescan;
+   amroutine->amgettuple = bingo_gettuple;
+   amroutine->amendscan = bingo_endscan;
+   amroutine->amgetbitmap = NULL;
+   amroutine->ammarkpos = NULL;
+   amroutine->amrestrpos = NULL;
+
+   PG_RETURN_POINTER(amroutine);
 }
 
 static void bingoIndexCallback(Relation index,
@@ -49,11 +123,16 @@ static void bingoIndexCallback(Relation index,
 /*
  * Bingo build the index
  */
+#if PG_VERSION_NUM / 100 >= 906
+IndexBuildResult *bingo_build (Relation heap, Relation index, struct IndexInfo *indexInfo) {
+#else
 Datum
 bingo_build(PG_FUNCTION_ARGS) {
    Relation heap = (Relation) PG_GETARG_POINTER(0);
    Relation index = (Relation) PG_GETARG_POINTER(1);
    IndexInfo *indexInfo = (IndexInfo *) PG_GETARG_POINTER(2);
+#endif
+
 //   BlockNumber relpages;
    IndexBuildResult *result = 0;
    double reltuples = 0;
@@ -82,7 +161,12 @@ bingo_build(PG_FUNCTION_ARGS) {
       * Initialize the bingo index metadata page and initial blocks
       */
       BingoPgWrapper func_namespace;
+#if PG_VERSION_NUM / 100 >= 906
+      const char* schema_name = "public";
+#else
       const char* schema_name = func_namespace.getFuncNameSpace(fcinfo->flinfo->fn_oid);
+#endif
+      
       BingoPgWrapper rel_namespace;
       const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
 
@@ -109,8 +193,11 @@ bingo_build(PG_FUNCTION_ARGS) {
       result->index_tuples = 1;
    }
    PG_BINGO_END
-
+#if PG_VERSION_NUM / 100 >= 906
+   return result;
+#else
    PG_RETURN_POINTER(result);
+#endif
 }
 /*
  * Bingo build callback. Accepts heap relation.
@@ -143,9 +230,16 @@ static void bingoIndexCallback(Relation index,
    PG_BINGO_END
 }
 
+
+#if PG_VERSION_NUM / 100 >= 906
+void bingo_buildempty(Relation index) {
+#else
 Datum
 bingo_buildempty(PG_FUNCTION_ARGS) {
    Relation index = (Relation) PG_GETARG_POINTER(0);
+#endif
+   
+
 
    elog(NOTICE, "start bingo empty build ");
 
@@ -170,13 +264,24 @@ bingo_buildempty(PG_FUNCTION_ARGS) {
        * Initialize the bingo index metadata page and initial blocks
        */
       BingoPgWrapper func_namespace;
+#if PG_VERSION_NUM / 100 >= 906
+      const char* schema_name = "public";
+#else
       const char* schema_name = func_namespace.getFuncNameSpace(fcinfo->flinfo->fn_oid);
+#endif
       BingoPgWrapper rel_namespace;
       const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
 
       BingoPgBuild build_engine(index, schema_name, index_schema, true);
    }
    PG_BINGO_END
-
+#if PG_VERSION_NUM / 100 < 906
    PG_RETURN_VOID();
+#endif
+   
+}
+
+
+bool bingo_validate (Oid opclassoid) {
+   return true;
 }

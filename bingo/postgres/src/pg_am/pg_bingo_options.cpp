@@ -29,9 +29,12 @@ extern "C" {
 
 
 
+#if PG_VERSION_NUM / 100 < 906
 extern "C" {
 BINGO_FUNCTION_EXPORT(bingo_options);
 }
+#endif
+
 
 
 #define RELOPT_KIND_BINGO 1<<8
@@ -613,18 +616,26 @@ bingo_reloptions(Datum reloptions, bool validate) {
    return (bytea *) rdopts;
 }
 
+#if PG_VERSION_NUM / 100 >= 906
+bytea * bingo_options (Datum reloptions, bool validate) {
+#else
 Datum
 bingo_options(PG_FUNCTION_ARGS) {
    Datum reloptions = PG_GETARG_DATUM(0);
    bool validate = PG_GETARG_BOOL(1);
+#endif
+
 
    bytea *result;
 
    result = bingo_reloptions(reloptions, validate);
-
+#if PG_VERSION_NUM / 100 >= 906
+   return result;
+#else
   if (result)
       PG_RETURN_BYTEA_P(result);
    PG_RETURN_NULL();
+#endif
 }
 //Datum
 //bingo_options(PG_FUNCTION_ARGS) {
