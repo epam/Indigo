@@ -617,7 +617,7 @@ bingo_reloptions(Datum reloptions, bool validate) {
 }
 
 #if PG_VERSION_NUM / 100 >= 906
-bytea * bingo_options (Datum reloptions, bool validate) {
+CEXPORT bytea * bingo_options (Datum reloptions, bool validate) {
 #else
 Datum
 bingo_options(PG_FUNCTION_ARGS) {

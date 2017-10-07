@@ -22,6 +22,7 @@ extern "C" {
 
 
 #if PG_VERSION_NUM / 100 < 906
+
 extern "C" {
 BINGO_FUNCTION_EXPORT(bingo_beginscan);
 
@@ -52,7 +53,7 @@ BINGO_FUNCTION_EXPORT(bingo_endscan);
  */
 
 #if PG_VERSION_NUM / 100 >= 906
-IndexScanDesc bingo_beginscan (Relation rel,
+CEXPORT IndexScanDesc bingo_beginscan (Relation rel,
                               int keysz,
                               int norderbys) {
 
@@ -108,7 +109,7 @@ bingo_beginscan(PG_FUNCTION_ARGS) {
  * Rescan an index relation
  */
 #if PG_VERSION_NUM / 100 >= 906
-void bingo_rescan (IndexScanDesc scan,
+CEXPORT void bingo_rescan (IndexScanDesc scan,
           ScanKey scankey,
           int nkeys,
           ScanKey orderbys,
@@ -147,7 +148,7 @@ bingo_rescan(PG_FUNCTION_ARGS) {
  */
 
 #if PG_VERSION_NUM / 100 >= 906
-void bingo_endscan (IndexScanDesc scan) {
+CEXPORT void bingo_endscan (IndexScanDesc scan) {
 #else
 Datum
 bingo_endscan(PG_FUNCTION_ARGS) {
@@ -213,7 +214,7 @@ bingo_endscan(PG_FUNCTION_ARGS) {
  * Get a tuples by a chain
  */
 #if PG_VERSION_NUM / 100 >= 906
-bool bingo_gettuple (IndexScanDesc scan,
+CEXPORT bool bingo_gettuple (IndexScanDesc scan,
             ScanDirection dir) {
 #else
 Datum

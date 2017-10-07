@@ -41,18 +41,19 @@ extern "C" {
    
 #if PG_VERSION_NUM / 100 >= 906
 BINGO_FUNCTION_EXPORT(bingo_handler);
-IndexBuildResult * bingo_build (Relation, Relation, struct IndexInfo *);
-void bingo_buildempty(Relation );
-bool bingo_insert ( Relation, Datum *, bool *, ItemPointer, Relation, IndexUniqueCheck );
-IndexBulkDeleteResult * bingo_bulkdelete (IndexVacuumInfo *, IndexBulkDeleteResult *, IndexBulkDeleteCallback, void *);
-IndexBulkDeleteResult * bingo_vacuumcleanup (IndexVacuumInfo *, IndexBulkDeleteResult *);
-void bingo_costestimate96 ( struct PlannerInfo *, struct IndexPath *, double , Cost *, Cost *, Selectivity *, double *);
-bytea * bingo_options (Datum, bool);
-bool bingo_validate (Oid);
-IndexScanDesc bingo_beginscan (Relation, int, int );
-void bingo_rescan (IndexScanDesc, ScanKey, int, ScanKey, int);
-void bingo_endscan (IndexScanDesc);
-bool bingo_gettuple (IndexScanDesc, ScanDirection);
+
+CEXPORT IndexBuildResult * bingo_build (Relation, Relation, struct IndexInfo *);
+CEXPORT void bingo_buildempty(Relation );
+CEXPORT bool bingo_insert ( Relation, Datum *, bool *, ItemPointer, Relation, IndexUniqueCheck );
+CEXPORT IndexBulkDeleteResult * bingo_bulkdelete (IndexVacuumInfo *, IndexBulkDeleteResult *, IndexBulkDeleteCallback, void *);
+CEXPORT IndexBulkDeleteResult * bingo_vacuumcleanup (IndexVacuumInfo *, IndexBulkDeleteResult *);
+CEXPORT void bingo_costestimate96 ( struct PlannerInfo *, struct IndexPath *, double , Cost *, Cost *, Selectivity *, double *);
+CEXPORT bytea * bingo_options (Datum, bool);
+CEXPORT bool bingo_validate (Oid);
+CEXPORT IndexScanDesc bingo_beginscan (Relation, int, int );
+CEXPORT void bingo_rescan (IndexScanDesc, ScanKey, int, ScanKey, int);
+CEXPORT void bingo_endscan (IndexScanDesc);
+CEXPORT bool bingo_gettuple (IndexScanDesc, ScanDirection);
    
 #else
 BINGO_FUNCTION_EXPORT(bingo_build);
@@ -124,7 +125,7 @@ static void bingoIndexCallback(Relation index,
  * Bingo build the index
  */
 #if PG_VERSION_NUM / 100 >= 906
-IndexBuildResult *bingo_build (Relation heap, Relation index, struct IndexInfo *indexInfo) {
+CEXPORT IndexBuildResult *bingo_build (Relation heap, Relation index, struct IndexInfo *indexInfo) {
 #else
 Datum
 bingo_build(PG_FUNCTION_ARGS) {
@@ -232,7 +233,7 @@ static void bingoIndexCallback(Relation index,
 
 
 #if PG_VERSION_NUM / 100 >= 906
-void bingo_buildempty(Relation index) {
+CEXPORT void bingo_buildempty(Relation index) {
 #else
 Datum
 bingo_buildempty(PG_FUNCTION_ARGS) {
@@ -282,6 +283,6 @@ bingo_buildempty(PG_FUNCTION_ARGS) {
 }
 
 
-bool bingo_validate (Oid opclassoid) {
+CEXPORT bool bingo_validate (Oid opclassoid) {
    return true;
 }

@@ -34,7 +34,7 @@ BINGO_FUNCTION_EXPORT(bingo_vacuumcleanup);
  *
  */
 #if PG_VERSION_NUM / 100 >= 906
-bool bingo_insert (  Relation index,
+CEXPORT bool bingo_insert (  Relation index,
                      Datum *values,
                      bool *isnull,
                      ItemPointer ht_ctid,
@@ -124,7 +124,7 @@ bingo_insert(PG_FUNCTION_ARGS) {
 
 
 #if PG_VERSION_NUM / 100 >= 906
-IndexBulkDeleteResult * bingo_bulkdelete (   IndexVacuumInfo *info,
+CEXPORT IndexBulkDeleteResult * bingo_bulkdelete (   IndexVacuumInfo *info,
                                              IndexBulkDeleteResult *stats,
                                              IndexBulkDeleteCallback bulk_del_cb,
                                              void *cb_state) {
@@ -206,7 +206,7 @@ bingo_bulkdelete(PG_FUNCTION_ARGS) {
  * Result: a palloc'd struct containing statistical info for VACUUM displays.
  */
 #if PG_VERSION_NUM / 100 >= 906
-IndexBulkDeleteResult * bingo_vacuumcleanup (IndexVacuumInfo *info, IndexBulkDeleteResult *stats) {
+CEXPORT IndexBulkDeleteResult * bingo_vacuumcleanup (IndexVacuumInfo *info, IndexBulkDeleteResult *stats) {
 #else
 Datum bingo_vacuumcleanup(PG_FUNCTION_ARGS) {
    IndexVacuumInfo *info = (IndexVacuumInfo *) PG_GETARG_POINTER(0);
