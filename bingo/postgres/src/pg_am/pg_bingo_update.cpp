@@ -45,7 +45,7 @@ Datum
 bingo_insert(PG_FUNCTION_ARGS) {
    Relation index = (Relation) PG_GETARG_POINTER(0);
    Datum *values = (Datum *) PG_GETARG_POINTER(1);
-   bool isnull = *((bool*) PG_GETARG_POINTER(2));
+   bool isnull = ((bool*) PG_GETARG_POINTER(2));
    ItemPointer ht_ctid = (ItemPointer) PG_GETARG_POINTER(3);
 #endif
 
@@ -54,7 +54,7 @@ bingo_insert(PG_FUNCTION_ARGS) {
    /*
     * Skip inserting null tuples
     */
-   if(isnull)
+   if(*isnull)
 #if PG_VERSION_NUM / 100 >= 906
       return false;
 #else
