@@ -6,8 +6,10 @@ import com.epam.indigolucene.common.exceptions.RemoveException;
 import com.epam.indigolucene.common.query.Query;
 import com.epam.indigolucene.common.query.SolrConnection;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -20,7 +22,10 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Source:      ElasticConnection.java
@@ -40,19 +45,6 @@ public class ElasticConnection implements SolrConnection {
 
     private static final String CUT_REGEXP = "\\{[\\p{Punct}|\\w| ]*}";
     private static final String SKIP_REGEXP = "\\{[\\p{Punct}|\\w| ]*}\\w*$";
-
-    private TransportClient getTransportClient() throws UnknownHostException, MalformedURLException {
-        if (client == null) {
-            synchronized (this) {
-                if (client == null) {
-                    URL mUrl = new URL(url);
-                    client = new PreBuiltTransportClient(Settings.EMPTY)
-                            .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(mUrl.getHost()), mUrl.getPort()));
-                }
-            }
-        }
-        return client;
-    }
 
     @Override
     public List<Map<String, Object>> results() throws Exception {
@@ -102,8 +94,12 @@ public class ElasticConnection implements SolrConnection {
     @Override
     public void removeAll() throws RemoveException {
         try {
-            getTransportClient().admin().indices().delete(new DeleteIndexRequest(coreName)).actionGet();
-        } catch (UnknownHostException | MalformedURLException e) {
+            IndicesAdminClient indicesAdminClient = getTransportClient().admin().indices();
+            if (indicesAdminClient.exists(new IndicesExistsRequest(coreName)).get().isExists()) {
+                indicesAdminClient.delete(new DeleteIndexRequest(coreName)).actionGet();
+                indicesAdminClient.prepareCreate(coreName).get();
+            }
+        } catch (UnknownHostException | MalformedURLException | InterruptedException | ExecutionException e) {
             throw new RemoveException(e);
         }
     }
@@ -127,5 +123,18 @@ public class ElasticConnection implements SolrConnection {
     @Override
     public void setQuery(Query query) {
         this.query = query;
+    }
+
+    private TransportClient getTransportClient() throws UnknownHostException, MalformedURLException {
+        if (client == null) {
+            synchronized (this) {
+                if (client == null) {
+                    URL mUrl = new URL(url);
+                    client = new PreBuiltTransportClient(Settings.EMPTY)
+                            .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(mUrl.getHost()), mUrl.getPort()));
+                }
+            }
+        }
+        return client;
     }
 }

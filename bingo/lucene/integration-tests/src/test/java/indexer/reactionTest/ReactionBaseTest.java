@@ -6,9 +6,7 @@ import com.epam.indigolucene.common.CollectionRepresentation;
 import com.epam.indigolucene.common.IndigoHolder;
 import com.epam.indigolucene.common.SolrUploadStream;
 import com.epam.indigolucene.common.exceptions.RemoveException;
-import com.epam.indigolucene.common.query.SolrConnectionFactory;
 import com.epam.indigolucene.commonconfig.ServiceConfig;
-import com.epam.indigolucene.solrconnection.SolrConnection5;
 import indexer.data.generated.TestSchema;
 import indexer.data.generated.TestSchemaDocument;
 import org.apache.log4j.BasicConfigurator;
@@ -17,7 +15,6 @@ import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,7 +30,6 @@ public class ReactionBaseTest {
 
     static final String TEST_CORE_NAME = "moldocs";
     static final String REACTION = "CBr>>CCl";
-
 
     CollectionRepresentation<TestSchema> testCollection;
 
@@ -52,11 +48,6 @@ public class ReactionBaseTest {
     static {
         BasicConfigurator.configure();
         Logger.getRootLogger().setLevel(Level.INFO);
-    }
-
-    @BeforeClass
-    public static void beforeClass() {
-        SolrConnectionFactory.init(SolrConnection5.class);
     }
 
     @Before

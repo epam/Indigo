@@ -6,11 +6,11 @@ import com.epam.indigolucene.common.query.SolrConnectionFactory;
 import com.epam.indigolucene.solrconnection.SolrConnection5;
 import indexer.data.generated.TestSchema;
 import indexer.data.generated.TestSchemaDocument;
-import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.net.URL;
 
 /**
  * Created by Filipp Pisarev on 05/04/2017.
@@ -18,10 +18,12 @@ import java.io.IOException;
  */
 public class ReactionIndexationIntegrationTest extends ReactionBaseTest {
 
+    private static final Logger logger = Logger.getLogger(ReactionIndexationIntegrationTest.class);
     private static Indigo indigo = new Indigo();
 
     @BeforeClass
-    public static void init() throws IOException, SolrServerException {
+    public static void beforeClass() {
+        SolrConnectionFactory.clear();
         SolrConnectionFactory.init(SolrConnection5.class);
     }
 
@@ -38,11 +40,23 @@ public class ReactionIndexationIntegrationTest extends ReactionBaseTest {
 
     @Test
     public void indexChemul() throws Exception {
-        indexSDFile(ReactionIndexationIntegrationTest.class.getClassLoader().getResource("all_chemul.sd").getFile());
+        URL url = ReactionIndexationIntegrationTest.class.getClassLoader().getResource("all_chemul.sd");
+        if (url != null) {
+            indexSDFile(url.getFile());
+        } else {
+            logger.error("indexChemul() test: file all_chemul.sd isn't found");
+            System.err.println("indexChemul() test: file all_chemul.sd isn't found");
+        }
     }
 
     //@Test
     public void indexPubchem10M() throws Exception {
-        indexSmilesFile(ReactionIndexationIntegrationTest.class.getClassLoader().getResource("pubchem_slice_10000000.smiles").getFile());
+        URL url = ReactionIndexationIntegrationTest.class.getClassLoader().getResource("pubchem_slice_10000000.smiles");
+        if (url != null) {
+            indexSmilesFile(url.getFile());
+        } else {
+            logger.error("indexPubchem10M() test: file pubchem_slice_10000000.smiles isn't found");
+            System.err.println("indexPubchem10M() test: file pubchem_slice_10000000.smiles isn't found");
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.epam.indigolucene.common.query;
 
+import java.io.IOException;
+
 /**
  * A factory pattern. This class provides an instance of SolrConnection along with connection class initialization.
  *
@@ -35,6 +37,14 @@ public class SolrConnectionFactory {
     }
 
     public static void clear() {
-        SolrConnectionFactory.clazz = null;
+        try {
+            if (instance != null)
+                instance.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            SolrConnectionFactory.clazz = null;
+            instance = null;
+        }
     }
 }

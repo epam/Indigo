@@ -3,17 +3,15 @@ package indexer.moleculeTest;
 import com.epam.indigo.Indigo;
 import com.epam.indigolucene.common.SolrUploadStream;
 import com.epam.indigolucene.common.query.SolrConnectionFactory;
-import com.epam.indigolucene.commonconfig.ServiceConfig;
-
 import com.epam.indigolucene.solrconnection.SolrConnection5;
 import indexer.data.generated.TestSchema;
 import indexer.data.generated.TestSchemaDocument;
+import indexer.reactionTest.ReactionIndexationIntegrationTest;
 import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.net.URL;
 
 /**
  * Indexation tests.performance test
@@ -21,11 +19,12 @@ import java.io.IOException;
  */
 public class MoleculeIndexationIntegrationTest extends MoleculeBaseTest {
 
-    static Logger logger = Logger.getLogger(MoleculeIndexationIntegrationTest.class);
+    private static final Logger logger = Logger.getLogger(MoleculeIndexationIntegrationTest.class);
     private static Indigo indigo = new Indigo();
 
     @BeforeClass
-    public static void init() throws IOException, SolrServerException {
+    public static void beforeClass() {
+        SolrConnectionFactory.clear();
         SolrConnectionFactory.init(SolrConnection5.class);
     }
 
@@ -34,7 +33,7 @@ public class MoleculeIndexationIntegrationTest extends MoleculeBaseTest {
         TestSchemaDocument emptyDocument = TestSchema.createEmptyDocument();
 
         testCollection.removeAll();
-        try (SolrUploadStream<TestSchema> uStream = TestSchema.collection(ServiceConfig.SERVICE_URL, "").uploadStream()) {
+        try (SolrUploadStream<TestSchema> uStream = testCollection.uploadStream()) {
             emptyDocument.setMol(indigo.loadMolecule(BENZOL));
             uStream.addDocument(emptyDocument);
         }
@@ -42,11 +41,23 @@ public class MoleculeIndexationIntegrationTest extends MoleculeBaseTest {
 
     @Test
     public void indexChemul() throws Exception {
-        indexSDFile(MoleculeIndexationIntegrationTest.class.getClassLoader().getResource("all_chemul.sd").getFile());
+        URL url = ReactionIndexationIntegrationTest.class.getClassLoader().getResource("all_chemul.sd");
+        if (url != null) {
+            indexSDFile(url.getFile());
+        } else {
+            logger.error("indexChemul() test: file all_chemul.sd isn't found");
+            System.err.println("indexChemul() test: file all_chemul.sd isn't found");
+        }
     }
 
     //@Test
     public void indexPubchem10M() throws Exception {
-        indexSmilesFile(MoleculeIndexationIntegrationTest.class.getClassLoader().getResource("pubchem_slice_10000000.smiles").getFile());
+        URL url = ReactionIndexationIntegrationTest.class.getClassLoader().getResource("pubchem_slice_10000000.smiles");
+        if (url != null) {
+            indexSmilesFile(url.getFile());
+        } else {
+            logger.error("indexPubchem10M() test: file pubchem_slice_10000000.smiles isn't found");
+            System.err.println("indexPubchem10M() test: file pubchem_slice_10000000.smiles isn't found");
+        }
     }
 }

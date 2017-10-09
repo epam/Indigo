@@ -2,11 +2,9 @@ package indexer.reactionTest;
 
 import com.epam.indigolucene.common.query.SolrConnectionFactory;
 import com.epam.indigolucene.commonconfig.ServiceConfig;
-import com.epam.indigolucene.solrconnection.SolrConnection5;
 import com.epam.indigolucene.solrconnection.elastic.ElasticConnection;
 import indexer.data.generated.TestSchema;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,12 +17,6 @@ public class ElasticSearchReactionIndexationIntegrationTest extends ReactionInde
     public static void init() throws IOException, SolrServerException {
         SolrConnectionFactory.clear();
         SolrConnectionFactory.init(ElasticConnection.class);
-    }
-
-    @AfterClass
-    public static void destroy() {
-        SolrConnectionFactory.clear();
-        SolrConnectionFactory.init(SolrConnection5.class);
     }
 
     @Before
