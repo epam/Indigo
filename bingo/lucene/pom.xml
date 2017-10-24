@@ -34,6 +34,7 @@
         <module>solr-connector5</module>
         <module>solr-connectorES</module>
         <module>benchmark-tests</module>
+        <module>load-tests</module>
     </modules>
 
     <build>
