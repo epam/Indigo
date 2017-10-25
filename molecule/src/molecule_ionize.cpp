@@ -1155,9 +1155,25 @@ void MoleculePkaModel::_checkCanonicalOrder(Molecule &mol, Molecule &can_mol, Ar
 
 void MoleculePkaModel::getAtomLocalKey (Molecule &mol, int idx, Array<char> &fp)
 {
-   QS_DEF(Array<char>, key);
+   QS_DEF(Array<int>, feature_set);
+   if(!getAtomLocalFeatureSet(mol, idx, feature_set))
+      return;
 
-   if (mol.isPseudoAtom(idx) || mol.isRSite(idx) || mol.isTemplateAtom(idx)) 
+   QS_DEF(Array<char>, key);
+   key.clear();
+   ArrayOutput output(key);
+
+   for(int i = 0; i < feature_set.size(); i++)
+      output.printf("%d", feature_set[i]);
+
+   output.writeChar(0);
+
+   fp.appendString(key.ptr(), true);
+}
+
+bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule & mol, int idx, Array<int> & fp)
+{
+   if (mol.isPseudoAtom(idx) || mol.isRSite(idx) || mol.isTemplateAtom(idx))
    {
       QS_DEF(Array<char>, a_desc);
       mol.getAtomDescription(idx, a_desc);
@@ -1167,7 +1183,7 @@ void MoleculePkaModel::getAtomLocalKey (Molecule &mol, int idx, Array<char> &fp)
    int a_num  = mol.getAtomNumber(idx);
    // Just bypass the hyfrogen atom
    if (a_num == ELEM_H)
-      return;
+      return false;
 
    int a_val  = mol.getAtomValence(idx);
    int a_chg  = mol.getAtomCharge(idx);
@@ -1177,14 +1193,16 @@ void MoleculePkaModel::getAtomLocalKey (Molecule &mol, int idx, Array<char> &fp)
    int a_conn = mol.getAtomConnectivity(idx);
 
    int a_lone = 0;
-   mol.getVacantPiOrbitals(idx, &a_lone);
+   int group = Element::group(mol.getAtomNumber(idx));
+   mol.getVacantPiOrbitals(group, a_chg, a_rad, a_conn, &a_lone);
+
    mol.getAtomTotalH(idx);
 
    int a_single_cnt = 0;
    int a_double_cnt = 0;
    int a_aromatic_cnt = 0;
    int a_triple_cnt = 0;
-   int a_coord_cnt =0;
+   int a_coord_cnt = 0;
 
    const Vertex &vertex = mol.getVertex(idx);
    for (auto i : vertex.neighbors())
@@ -1203,20 +1221,13 @@ void MoleculePkaModel::getAtomLocalKey (Molecule &mol, int idx, Array<char> &fp)
          a_coord_cnt++;
    }
 
-   key.clear();
-   ArrayOutput output(key);
-//   output.printf("%d%d%d%d%d%d%d%d%d%d%d%d%d%d", 
-//            a_num, a_val, a_chg, a_rad, a_iso, a_arom, a_lone, a_hcnt,
-//            a_conn, a_single_cnt, a_double_cnt, a_aromatic_cnt, a_triple_cnt, a_coord_cnt);
-   output.printf("%d%d%d%d%d%d%d%d%d%d%d%d%d", 
-            a_num, a_val, a_chg, a_rad, a_iso, a_arom, a_lone, 
-            a_conn, a_single_cnt, a_double_cnt, a_aromatic_cnt, a_triple_cnt, a_coord_cnt);
+   int feature_set[] = {a_num, a_val, a_chg, a_rad, a_iso,
+                        a_arom, a_lone, a_conn, a_single_cnt,
+                        a_double_cnt, a_aromatic_cnt, a_triple_cnt, a_coord_cnt};
 
-   output.writeChar(0);
+   fp.copy(feature_set, sizeof(feature_set) / sizeof(*feature_set));
 
-   fp.appendString(key.ptr(), true);
-
-   return;
+   return true;
 }
 
 float MoleculePkaModel::getAcidPkaValue (Molecule &mol, int idx, int level,  int min_level)

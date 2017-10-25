@@ -18,6 +18,7 @@
 #include "base_cpp/tlscont.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/red_black.h"
+#include "base_molecule.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -48,6 +49,7 @@ public:
                       Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas);
    static void getAtomLocalFingerprint (Molecule &mol, int idx, Array<char> &fp, int level);
    static void getAtomLocalKey (Molecule &mol, int idx, Array<char> &fp);
+   static bool getAtomLocalFeatureSet(BaseMolecule &mol, int idx, Array<int> &fp);
    static int buildPkaModel (int level, float threshold, const char * filename);
 
    static float getAcidPkaValue (Molecule &mol, int idx, int level, int min_level);
