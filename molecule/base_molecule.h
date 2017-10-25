@@ -116,6 +116,7 @@ public:
    virtual int getAtomValence        (int idx) = 0; // >= 0 -- valence, -1 is not set explicitly
    virtual int getAtomSubstCount     (int idx) = 0;
    virtual int getAtomRingBondsCount (int idx) = 0; // >= 0 -- ring bonds count, -1 -- not sure
+   virtual int getAtomConnectivity   (int idx) = 0;
 
    int getAtomRadical_NoThrow (int idx, int fallback);
    int getAtomValence_NoThrow (int idx, int fallback);

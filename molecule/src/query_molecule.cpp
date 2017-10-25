@@ -151,6 +151,10 @@ int QueryMolecule::getAtomRingBondsCount (int idx)
    return -1;
 }
 
+int QueryMolecule::getAtomConnectivity (int idx) {
+   return 0;
+}
+
 bool QueryMolecule::atomNumberBelongs (int idx, const int *numbers, int count)
 {
    return _atoms[idx]->sureValueBelongs(ATOM_NUMBER, numbers, count);

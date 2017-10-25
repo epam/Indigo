@@ -250,6 +250,7 @@ public:
    virtual int getAtomValence        (int idx);
    virtual int getAtomSubstCount     (int idx);
    virtual int getAtomRingBondsCount (int idx);
+   virtual int getAtomConnectivity (int idx);
 
    virtual int getAtomMaxH   (int idx);
    virtual int getAtomMinH   (int idx);

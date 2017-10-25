@@ -324,6 +324,10 @@ int LayeredMolecules::getAtomRingBondsCount(int idx)
    return _proto.getAtomSubstCount(idx);
 }
 
+int LayeredMolecules::getAtomConnectivity (int idx) {
+   return 0;
+}
+
 int LayeredMolecules::getAtomMaxH(int idx)
 {
    return getAtomTotalH(idx);

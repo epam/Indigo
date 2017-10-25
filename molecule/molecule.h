@@ -81,6 +81,7 @@ public:
    virtual int getAtomValence (int idx);
    virtual int getAtomSubstCount (int idx);
    virtual int getAtomRingBondsCount (int idx);
+   virtual int getAtomConnectivity (int idx);
 
    virtual int getAtomMaxH   (int idx);
    virtual int getAtomMinH   (int idx);
@@ -109,7 +110,6 @@ public:
    int getImplicitH_NoThrow (int idx, int fallback);
    int calcImplicitHForConnectivity (int idx, int conn);
 
-   int getAtomConnectivity (int idx);
    int getAtomConnectivity_noImplH (int idx);
    int getAtomConnectivity_NoThrow (int idx, int fallback);
    int calcAtomConnectivity_noImplH (int idx);
