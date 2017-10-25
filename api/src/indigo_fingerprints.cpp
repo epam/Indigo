@@ -55,6 +55,16 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       builder.skip_any_bonds = true;
       builder.skip_any_atoms_bonds = true;
    }
+   else if (strcasecmp(type, "chem") == 0)
+   {
+      // chemical similarity
+      builder.skip_tau = true;
+      builder.skip_ext = true;
+      builder.skip_ord = true;
+      builder.skip_any_atoms = true;
+      builder.skip_any_bonds = true;
+      builder.skip_any_atoms_bonds = true;
+   }
    else if (strcasecmp(type, "sub") == 0)
    {
       // substructure
@@ -99,6 +109,12 @@ void _indigoParseReactionFingerprintType (ReactionFingerprintBuilder &builder, c
    if (type == 0 || *type == 0 || strcasecmp(type, "sim") == 0)
    {
       // similarity
+      builder.skip_ext = true;
+      builder.skip_ord = true;
+   }
+   else if (strcasecmp(type, "chem") == 0)
+   {
+      // chemical similarity
       builder.skip_ext = true;
       builder.skip_ord = true;
    }

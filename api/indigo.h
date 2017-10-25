@@ -749,6 +749,8 @@ CEXPORT const char * indigoCheckAmbiguousH (int handle);
 // The following fingerprint types are available:
 //   "sim"     -- "Similarity fingerprint", useful for calculating
 //                 similarity measures (the default)
+//   "chem"    -- "Chemical similarity fingerprint", useful for calculating
+//                 similarity measures when chemical characteristics are of concern
 //   "sub"     -- "Substructure fingerprint", useful for substructure screening
 //   "sub-res" -- "Resonance substructure fingerprint", useful for resonance
 //                 substructure screening

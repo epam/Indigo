@@ -187,6 +187,16 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       this->skip_any_bonds = true;
       this->skip_any_atoms_bonds = true;
    }
+   else if (strcasecmp(type, "chem") == 0)
+   {
+      // chemical similarity
+      this->skip_tau = true;
+      this->skip_ext = true;
+      this->skip_ord = true;
+      this->skip_any_atoms = true;
+      this->skip_any_bonds = true;
+      this->skip_any_atoms_bonds = true;
+   }
    else if (strcasecmp(type, "sub") == 0)
    {
       // substructure
@@ -594,6 +604,30 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
    
    if (!skip_ext && _parameters.ext)
       _calcExtraBits(mol);
+
+   if (!skip_chem)
+   {
+      QS_DEF(Array<int>, feature_set);
+      for (int vi = mol.vertexBegin(); vi != mol.vertexEnd(); vi = mol.vertexNext(vi))
+      {
+         // No exception should ever be thrown since `vi` iterates only through
+         // valid atoms (not template, R, pseudo atoms)
+         // Added the try-catch just to be sure
+         try
+         {
+            MoleculePkaModel::getAtomLocalFeatureSet(mol, vi, feature_set);
+         } catch (indigo::Exception &e) {
+            // `vi` correspond to an invalid atom, nothing to add to the fingerprint
+            continue;
+         }
+
+         for (int i = 0; i < feature_set.size(); i++)
+         {
+            int bits_per_fragment = 1;  // By analogy with "sim"
+            _setBits((dword) feature_set[i], getChem(), _parameters.fingerprintSizeChem(), bits_per_fragment);
+         }
+      }
+   }
 }
 
 void MoleculeFingerprintBuilder::_calcExtraBits (BaseMolecule &mol)
@@ -698,16 +732,22 @@ byte * MoleculeFingerprintBuilder::getSim ()
    return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd();
 }
 
-byte * MoleculeFingerprintBuilder::getTau ()
+byte * MoleculeFingerprintBuilder::getChem ()
 {
    return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd() +
           _parameters.fingerprintSizeSim();
 }
 
+byte * MoleculeFingerprintBuilder::getTau ()
+{
+   return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd() +
+          _parameters.fingerprintSizeSim() + _parameters.fingerprintSizeChem();
+}
+
 byte * MoleculeFingerprintBuilder::getAny ()
 {
    return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd() +
-        _parameters.fingerprintSizeSim() + _parameters.fingerprintSizeTau();
+        _parameters.fingerprintSizeSim() + _parameters.fingerprintSizeChem() + _parameters.fingerprintSizeTau();
 }
 
 int MoleculeFingerprintBuilder::countBits_Sim ()
