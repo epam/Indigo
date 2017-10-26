@@ -130,6 +130,10 @@ protected:
    void _calculateFragmentVertexDegree (BaseMolecule &mol, const Array<int> &vertices, const Array<int> &edges);
    int _calculateFragmentExternalConn (BaseMolecule &mol, const Array<int> &vertices, const Array<int> &edges);
 
+   enum {
+      CHEM_FINGERPRINT_FEATURE_BITS_SALT = 1024  /* 100 < 1024; 1024 * 13 < DWORD_MAX */
+   };
+
    BaseMolecule &_mol;
    const MoleculeFingerprintParameters &_parameters;
 

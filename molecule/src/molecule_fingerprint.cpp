@@ -608,7 +608,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
    if (!skip_chem)
    {
       QS_DEF(Array<int>, feature_set);
-      for (int vi = mol.vertexBegin(); vi != mol.vertexEnd(); vi = mol.vertexNext(vi))
+      for(auto vi : mol.vertices())
       {
          // No exception should ever be thrown since `vi` iterates only through
          // valid atoms (not template, R, pseudo atoms)
@@ -621,11 +621,10 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
             continue;
          }
 
-         const dword salt = 1024;  // 100 < salt < DWORD_MAX / 30
          for (int i = 0; i < feature_set.size(); i++)
          {
             int bits_per_fragment = 1;  // By analogy with "sim"
-            dword hash = (dword) feature_set[i] + salt * i;
+            dword hash = (dword) feature_set[i] + i * CHEM_FINGERPRINT_FEATURE_BITS_SALT;
             _setBits(hash, getChem(), _parameters.fingerprintSizeChem(), bits_per_fragment);
          }
       }
