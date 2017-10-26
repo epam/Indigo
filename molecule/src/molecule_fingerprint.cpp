@@ -621,10 +621,12 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
             continue;
          }
 
+         const dword salt = 1024;  // 100 < salt < DWORD_MAX / 30
          for (int i = 0; i < feature_set.size(); i++)
          {
             int bits_per_fragment = 1;  // By analogy with "sim"
-            _setBits((dword) feature_set[i], getChem(), _parameters.fingerprintSizeChem(), bits_per_fragment);
+            dword hash = (dword) feature_set[i] + salt * i;
+            _setBits(hash, getChem(), _parameters.fingerprintSizeChem(), bits_per_fragment);
          }
       }
    }
