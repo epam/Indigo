@@ -51,6 +51,7 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       builder.skip_tau = true;
       builder.skip_ext = true;
       builder.skip_ord = true;
+      builder.skip_chem = true;
       builder.skip_any_atoms = true;
       builder.skip_any_bonds = true;
       builder.skip_any_atoms_bonds = true;
@@ -70,6 +71,7 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       // substructure
       builder.skip_sim = true;
       builder.skip_tau = true;
+      builder.skip_chem = true;
    }
    else if (strcasecmp(type, "sub-res") == 0)
    {
@@ -77,6 +79,7 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       builder.skip_sim = true;
       builder.skip_tau = true;
       builder.skip_ord = true;
+      builder.skip_chem = true;
       builder.skip_any_atoms = true;
       builder.skip_ext_charge = true;
    }
@@ -85,6 +88,7 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       // tautomer
       builder.skip_ord = true;
       builder.skip_sim = true;
+      builder.skip_chem = true;
 
       // tautomer fingerprint part does already contain all necessary any-bits
       builder.skip_any_atoms = true;

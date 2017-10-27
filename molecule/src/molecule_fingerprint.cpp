@@ -183,6 +183,7 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       this->skip_tau = true;
       this->skip_ext = true;
       this->skip_ord = true;
+      this->skip_chem = true;
       this->skip_any_atoms = true;
       this->skip_any_bonds = true;
       this->skip_any_atoms_bonds = true;
@@ -202,6 +203,7 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       // substructure
       this->skip_sim = true;
       this->skip_tau = true;
+      this->skip_chem = true;
    }
    else if (strcasecmp(type, "sub-res") == 0)
    {
@@ -209,6 +211,7 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       this->skip_sim = true;
       this->skip_tau = true;
       this->skip_ord = true;
+      this->skip_chem = true;
       this->skip_any_atoms = true;
       this->skip_ext_charge = true;
    }
@@ -217,6 +220,7 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       // tautomer
       this->skip_ord = true;
       this->skip_sim = true;
+      this->skip_chem = true;
 
       // tautomer fingerprint part does already contain all necessary any-bits
       this->skip_any_atoms = true;
