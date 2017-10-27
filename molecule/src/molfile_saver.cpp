@@ -2299,6 +2299,7 @@ void MolfileSaver::_addCIPSgroups (BaseMolecule &mol, Array<int> &atom_cip_desc,
          sgroup.display_pos.x = mol.getAtomXyz(i).x;
          sgroup.display_pos.y = mol.getAtomXyz(i).y;
          sgroup.detached = true;
+         sgroup.relative = true;
       }
    }
 
@@ -2323,6 +2324,7 @@ void MolfileSaver::_addCIPSgroups (BaseMolecule &mol, Array<int> &atom_cip_desc,
          sgroup.display_pos.x = (mol.getAtomXyz(beg).x + mol.getAtomXyz(end).x) / 2;
          sgroup.display_pos.y = (mol.getAtomXyz(beg).y + mol.getAtomXyz(end).y) / 2;
          sgroup.detached = true;
+         sgroup.relative = true;
       }
    }
 }
