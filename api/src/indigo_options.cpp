@@ -229,6 +229,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding, indigoGetFilenameEncoding);
    mgr.setOptionHandlerInt("fp-ord-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.ord_qwords));
    mgr.setOptionHandlerInt("fp-sim-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.sim_qwords));
+   mgr.setOptionHandlerInt("fp-chem-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.chem_qwords));
    mgr.setOptionHandlerInt("fp-any-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.any_qwords));
    mgr.setOptionHandlerInt("fp-tau-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.tau_qwords));
    mgr.setOptionHandlerBool("fp-ext-enabled", SETTER_GETTER_BOOL_OPTION(indigo.fp_params.ext));

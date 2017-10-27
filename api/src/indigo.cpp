@@ -52,6 +52,7 @@ void Indigo::init ()
    filename_encoding = ENCODING_ASCII;
    fp_params.any_qwords = 15;
    fp_params.sim_qwords = 8;
+   fp_params.chem_qwords = 50;
    fp_params.tau_qwords = 10;
    fp_params.ord_qwords = 25;
    fp_params.ext = true;
