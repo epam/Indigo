@@ -117,12 +117,6 @@ void _indigoParseReactionFingerprintType (ReactionFingerprintBuilder &builder, c
       builder.skip_ext = true;
       builder.skip_ord = true;
    }
-   else if (strcasecmp(type, "chem") == 0)
-   {
-      // chemical similarity
-      builder.skip_ext = true;
-      builder.skip_ord = true;
-   }
    else if (strcasecmp(type, "sub") == 0)
       // substructure
       builder.skip_sim = true;
@@ -133,7 +127,7 @@ void _indigoParseReactionFingerprintType (ReactionFingerprintBuilder &builder, c
       // full (non-query) fingerprint, do not skip anything
    }
    else
-      throw IndigoError("unknown molecule fingerprint type: %s", type);
+      throw IndigoError("unknown reaction fingerprint type: %s", type);
 }
 
 CEXPORT int indigoFingerprint (int item, const char *type)
