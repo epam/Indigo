@@ -59,6 +59,7 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
    else if (strcasecmp(type, "chem") == 0)
    {
       // chemical similarity
+      builder.skip_sim = true;
       builder.skip_tau = true;
       builder.skip_ext = true;
       builder.skip_ord = true;

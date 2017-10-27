@@ -191,6 +191,7 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
    else if (strcasecmp(type, "chem") == 0)
    {
       // chemical similarity
+      this->skip_sim = true;
       this->skip_tau = true;
       this->skip_ext = true;
       this->skip_ord = true;
