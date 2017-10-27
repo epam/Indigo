@@ -36,6 +36,7 @@ insert into CONFIG_INT values(0, 'FP_ORD_SIZE', 25);
 insert into CONFIG_INT values(0, 'FP_ANY_SIZE', 15);
 insert into CONFIG_INT values(0, 'FP_TAU_SIZE', 10);
 insert into CONFIG_INT values(0, 'FP_SIM_SIZE', 8);
+insert into CONFIG_INT values(0, 'FP_CHEM_SIZE', 50);
 insert into CONFIG_INT values(0, 'FP_STORAGE_CHUNK', 1024);
 insert into CONFIG_INT values(0, 'SUB_SCREENING_MAX_BITS', 8);
 insert into CONFIG_INT values(0, 'SUB_SCREENING_PASS_MARK', 128);

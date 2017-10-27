@@ -357,6 +357,7 @@ void BingoOracleContext::fingerprintLoadParameters (OracleEnv &env)
    configGetInt(env, "FP_ORD_SIZE", fp_parameters.ord_qwords);
    configGetInt(env, "FP_TAU_SIZE", fp_parameters.tau_qwords);
    configGetInt(env, "FP_SIM_SIZE", fp_parameters.sim_qwords);
+   configGetInt(env, "FP_CHEM_SIZE", fp_parameters.chem_qwords);
    configGetInt(env, "FP_ANY_SIZE", fp_parameters.any_qwords);
    fp_parameters.ext = true;
    fp_parameters_ready = true;

@@ -1454,6 +1454,8 @@ namespace indigo
                 BingoConfig.getInt(connection, bingo_schema, "FP_TAU_SIZE", id));
             BingoCore.setConfigInt("FP_SIM_SIZE",
                 BingoConfig.getInt(connection, bingo_schema, "FP_SIM_SIZE", id));
+            BingoCore.setConfigInt("FP_CHEM_SIZE",
+                BingoConfig.getInt(connection, bingo_schema, "FP_CHEM_SIZE", id));
 
             BingoCore.setConfigInt("SUB_SCREENING_MAX_BITS",
                 BingoConfig.getInt(connection, bingo_schema, "SUB_SCREENING_MAX_BITS", id));

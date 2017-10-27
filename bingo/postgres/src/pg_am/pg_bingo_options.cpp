@@ -211,6 +211,13 @@ static relopt_int intRelOpts[] =
 	},
 	{
 		{
+			"fp_chem_size",
+			"",
+			RELOPT_KIND_BINGO
+		}, -1, 0, 2000000000
+	},
+	{
+		{
 			"sub_screening_max_bits",
 			"",
 			RELOPT_KIND_BINGO
@@ -592,6 +599,8 @@ bingo_reloptions(Datum reloptions, bool validate) {
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, fp_tau_size)},
       {"fp_sim_size", RELOPT_TYPE_INT,
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, fp_sim_size)},
+      {"fp_chem_size", RELOPT_TYPE_INT,
+              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, fp_chem_size)},
       {"sub_screening_max_bits", RELOPT_TYPE_INT,
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, sub_screening_max_bits)},
       {"sim_screening_pass_mark", RELOPT_TYPE_INT,
@@ -696,6 +705,7 @@ bingo_options(PG_FUNCTION_ARGS) {
 //      Helpers::mapParameter(attributes, "fp_any_size", rdopts->index_parameters.fp_any_size);
 //      Helpers::mapParameter(attributes, "fp_tau_size", rdopts->index_parameters.fp_tau_size);
 //      Helpers::mapParameter(attributes, "fp_sim_size", rdopts->index_parameters.fp_sim_size);
+//      Helpers::mapParameter(attributes, "fp_chem_size", rdopts->index_parameters.fp_chem_size);
 //      Helpers::mapParameter(attributes, "sub_screening_max_bits", rdopts->index_parameters.sub_screening_max_bits);
 //      Helpers::mapParameter(attributes, "sim_screening_pass_mark", rdopts->index_parameters.sim_screening_pass_mark);
 //
