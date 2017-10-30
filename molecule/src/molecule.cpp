@@ -26,6 +26,7 @@ using namespace indigo;
 Molecule::Molecule ()
 {
    _aromatized = false;
+   _ignore_bad_valence = false;
 }
 
 Molecule::~Molecule ()
@@ -55,6 +56,7 @@ void Molecule::clear ()
    _template_classes.clear();
 
    _aromatized = false;
+   _ignore_bad_valence = false;
    updateEditRevision();
 }
 
@@ -785,6 +787,9 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
    if (_atoms[idx].number == ELEM_RSITE)
       throw Error("getImplicitH() does not work on R-sites");
 
+   if (_atoms[idx].number == ELEM_TEMPLATE)
+      throw Error("getImplicitH() does not work on template atoms");
+
    if (use_cache)
    {
       if (_implicit_h.size() > idx && _implicit_h[idx] >= 0)
@@ -836,9 +841,15 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
       }
       else
          throw Error("internal: unsure connectivity on an aliphatic atom");
+
       if (impl_h < 0)
-         throw Element::Error("can not calculate implicit hydrogens on aromatic %s, charge %d, degree %d, %d radical electrons",
-                 Element::toString(atom.number), atom.charge, getVertex(idx).degree(), Element::radicalElectrons(radical));
+      {
+         if (_ignore_bad_valence)
+           impl_h = 0;
+         else
+           throw Element::Error("can not calculate implicit hydrogens on aromatic %s, charge %d, degree %d, %d radical electrons",
+                   Element::toString(atom.number), atom.charge, getVertex(idx).degree(), Element::radicalElectrons(radical));
+      }
    }
    else
    {
@@ -850,8 +861,13 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
          impl_h = _valence[idx] - Element::calcValenceMinusHyd(atom.number, 0, 0, conn);
 
          if (impl_h < 0)
-            throw Element::Error("explicit valence %d specified on %s, but %d bonds are drawn",
+         {
+            if (_ignore_bad_valence)
+               impl_h = 0;
+            else
+               throw Element::Error("explicit valence %d specified on %s, but %d bonds are drawn",
                        _valence[idx], Element::toString(atom.number), conn);
+         }
       }
       else if (isNitrogenV5(idx))
       {
@@ -892,7 +908,10 @@ int Molecule::_getImplicitHForConnectivity (int idx, int conn, bool use_cache)
             // no information about implicit H, but sure about radical --
             // this is a commmon situtation for Molfiles or non-bracketed SMILES atoms.
             // Will throw an error on 5-valent carbon and such.
-            Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
+            if (_ignore_bad_valence)
+               Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, false);
+            else
+               Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
          }
       }
    }
@@ -945,6 +964,11 @@ int Molecule::getAtomCharge (int idx)
 int Molecule::getAtomIsotope (int idx)
 {
    return _atoms[idx].isotope;
+}
+
+void Molecule::setIgnoreBadValenceFlag (bool flag)
+{
+   _ignore_bad_valence = flag;
 }
 
 int Molecule::getAtomValence (int idx)
@@ -1095,7 +1119,10 @@ int Molecule::getAtomValence (int idx)
          // no information about implicit H, but sure about radical --
          // this is a commmon situtation for Molfiles or non-bracketed SMILES atoms.
          // Will throw an error on 5-valent carbon and such.
-         Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
+         if (_ignore_bad_valence)
+            Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, false);
+         else
+            Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
 
       _implicit_h.expandFill(idx + 1, -1);
       _implicit_h[idx] = impl_h;
@@ -1117,6 +1144,9 @@ int Molecule::getAtomRadical (int idx)
 
    if (_atoms[idx].number == ELEM_RSITE)
       throw Error("getAtomRadical() does not work on R-sites");
+
+   if (_atoms[idx].number == ELEM_TEMPLATE)
+      throw Error("getAtomRadical() does not work on template atoms");
    
    if (_radicals.size() > idx && _radicals[idx] >= 0)
       return _radicals[idx];

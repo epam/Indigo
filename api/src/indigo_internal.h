@@ -293,6 +293,8 @@ public:
    bool treat_x_as_pseudoatom;
    bool skip_3d_chirality;
    bool ignore_no_chiral_flag;
+   bool ignore_closing_bond_direction_mismatch;
+   bool ignore_bad_valence;
 
    bool deconvolution_aromatization;
    bool deco_save_ap_bond_orders;

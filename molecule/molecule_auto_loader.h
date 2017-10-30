@@ -52,6 +52,7 @@ public:
    bool treat_x_as_pseudoatom;
    bool skip_3d_chirality;
    bool ignore_no_chiral_flag;
+   bool ignore_bad_valence;
 
    // Loaded properties
    CP_DECL;

@@ -40,6 +40,7 @@ void MoleculeAutoLoader::_init ()
    skip_3d_chirality = false;
    ignore_cistrans_errors = false;
    ignore_no_chiral_flag = false;
+   ignore_bad_valence = false;
 }
 
 IMPL_ERROR(MoleculeAutoLoader, "molecule auto loader");
@@ -76,6 +77,7 @@ MoleculeAutoLoader::~MoleculeAutoLoader ()
 void MoleculeAutoLoader::loadMolecule (Molecule &mol)
 {
    _loadMolecule(mol, false);
+   mol.setIgnoreBadValenceFlag(ignore_bad_valence);
 }
 
 void MoleculeAutoLoader::loadQueryMolecule (QueryMolecule &qmol)

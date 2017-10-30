@@ -150,6 +150,8 @@ public:
 
    bool isAromatized ();
 
+   void setIgnoreBadValenceFlag (bool flag);
+
    // Check 
    bool isNitrogenV5 (int atom_index);
    bool isNitrogenV5ForConnectivity (int atom_index, int conn);
@@ -214,6 +216,8 @@ protected:
    StringPool _template_names;
 
    bool _aromatized;
+
+   bool _ignore_bad_valence;
 
    virtual void _mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vertices,
                                        const Array<int> *edges, const Array<int> &mapping, 
