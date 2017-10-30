@@ -2296,8 +2296,8 @@ void MolfileSaver::_addCIPSgroups (BaseMolecule &mol, Array<int> &atom_cip_desc,
             sgroup.data.readString("(s)", true);
 
          sgroup.name.readString("INDIGO_CIP_DESC", true);
-         sgroup.display_pos.x = mol.getAtomXyz(i).x;
-         sgroup.display_pos.y = mol.getAtomXyz(i).y;
+         sgroup.display_pos.x = 0.0;
+         sgroup.display_pos.y = 0.0;
          sgroup.detached = true;
          sgroup.relative = true;
       }
@@ -2321,8 +2321,8 @@ void MolfileSaver::_addCIPSgroups (BaseMolecule &mol, Array<int> &atom_cip_desc,
             sgroup.data.readString("(Z)", true);
 
          sgroup.name.readString("INDIGO_CIP_DESC", true);
-         sgroup.display_pos.x = (mol.getAtomXyz(beg).x + mol.getAtomXyz(end).x) / 2;
-         sgroup.display_pos.y = (mol.getAtomXyz(beg).y + mol.getAtomXyz(end).y) / 2;
+         sgroup.display_pos.x = 0.0;
+         sgroup.display_pos.y = 0.0;
          sgroup.detached = true;
          sgroup.relative = true;
       }
