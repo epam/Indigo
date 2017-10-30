@@ -56,6 +56,7 @@ TL_CP_GET(_ord_hashes)
    
    skip_ord = false;
    skip_sim = false;
+   skip_chem = false;
    skip_tau = false;
    skip_ext = false;
    skip_ext_charge = false;
