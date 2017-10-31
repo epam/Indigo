@@ -12,6 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include <map>
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 
@@ -614,6 +615,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
    if (!skip_chem)
    {
       QS_DEF(Array<int>, feature_set);
+      std::map<dword, int> counters;
       for(auto vi : mol.vertices())
       {
          // No exception should ever be thrown since `vi` iterates only through
@@ -627,12 +629,21 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
             continue;
          }
 
-         for (int i = 0; i < feature_set.size(); i++)
-         {
-            int bits_per_fragment = 1;  // By analogy with "sim"
-            dword hash = (dword) feature_set[i] + i * CHEM_FINGERPRINT_FEATURE_BITS_SALT;
-            _setBits(hash, getChem(), _parameters.fingerprintSizeChem(), bits_per_fragment);
-         }
+         dword key = 1;
+         key = key * 37 + feature_set[4]; // iso
+         key = key * 37 + feature_set[2]; // charge
+         key = key * 37 + feature_set[3]; // radical
+         key = key * 37 + feature_set[7]; // degree
+
+         auto pair = counters.find(key);
+         int value = (pair != counters.end()) ? pair->second : 0;
+         counters[key] = value + 1;  // Increment the counter for the particular key
+      }
+
+      for(auto pair : counters) {
+         dword key = pair.first;
+         int count = pair.second;
+         _setBits(key, getChem(), _parameters.fingerprintSizeChem(), count);
       }
    }
 }
