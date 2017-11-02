@@ -27,6 +27,7 @@ RxnfileLoader::RxnfileLoader (Scanner& scanner): _scanner(scanner){
    _v3000 = false;
    ignore_noncritical_query_features = false;
    ignore_no_chiral_flag = false;
+   ignore_bad_valence = false;
 }
 
 RxnfileLoader::~RxnfileLoader(){
@@ -56,6 +57,7 @@ void RxnfileLoader::_loadReaction(){
    molfileLoader.stereochemistry_options = stereochemistry_options;
    molfileLoader.ignore_noncritical_query_features = ignore_noncritical_query_features;
    molfileLoader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+   molfileLoader.ignore_bad_valence = ignore_bad_valence;
    _readRxnHeader();
 
    _readReactantsHeader();

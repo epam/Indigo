@@ -53,6 +53,7 @@ TL_CP_GET(_sgroup_mapping)
    skip_3d_chirality = false;
    ignore_noncritical_query_features = false;
    ignore_no_chiral_flag = false;
+   ignore_bad_valence = false;
 }
 
 void MolfileLoader::loadMolecule (Molecule &mol)
@@ -62,6 +63,8 @@ void MolfileLoader::loadMolecule (Molecule &mol)
    _mol = &mol;
    _qmol = 0;
    _loadMolecule();
+
+   mol.setIgnoreBadValenceFlag(ignore_bad_valence);
 
    if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
       mol.stereocenters.buildFrom3dCoordinates(stereochemistry_options);

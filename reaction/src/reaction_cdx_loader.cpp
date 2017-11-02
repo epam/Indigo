@@ -24,6 +24,7 @@ IMPL_ERROR(ReactionCdxLoader, "reaction CDX loader");
 
 ReactionCdxLoader::ReactionCdxLoader (Scanner &scanner) : _scanner(scanner)
 {
+   ignore_bad_valence = false;
 }
 
 ReactionCdxLoader::~ReactionCdxLoader ()

@@ -33,6 +33,7 @@ void ReactionAutoLoader::_init ()
    ignore_noncritical_query_features = false;
    ignore_cistrans_errors = false;
    ignore_no_chiral_flag = false;
+   ignore_bad_valence = false;
 }
 
 IMPL_ERROR(ReactionAutoLoader, "reaction auto loader");
@@ -97,6 +98,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          loader2.ignore_noncritical_query_features = ignore_noncritical_query_features;
          loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
+         loader2.ignore_bad_valence = ignore_bad_valence;
          if (query)
             loader2.loadQueryReaction((QueryReaction &)reaction);
          else
@@ -116,6 +118,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          loader.stereochemistry_options = stereochemistry_options;
          loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
          loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+         loader.ignore_bad_valence = ignore_bad_valence;
          if (query)
             loader.loadQueryReaction((QueryReaction &)reaction);
          else
@@ -154,6 +157,7 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
          {
             ReactionCmlLoader loader(*_scanner);
             loader.stereochemistry_options = stereochemistry_options;
+
             if (query)
                throw Error("CML queries not supported");
             loader.loadReaction((Reaction &)reaction);
@@ -173,6 +177,8 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
              ignore_closing_bond_direction_mismatch;
       loader.ignore_cistrans_errors = ignore_cistrans_errors;
       loader.stereochemistry_options = stereochemistry_options;
+      loader.ignore_bad_valence = ignore_bad_valence;
+
       if (query)
          loader.loadQueryReaction((QueryReaction &)reaction);
       else
@@ -187,6 +193,8 @@ void ReactionAutoLoader::_loadReaction (BaseReaction &reaction, bool query)
       loader.stereochemistry_options = stereochemistry_options;
       loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
       loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+      loader.ignore_bad_valence = ignore_bad_valence;
+
       if (query)
          loader.loadQueryReaction((QueryReaction &)reaction);
       else

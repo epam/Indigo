@@ -47,6 +47,7 @@ public:
    void loadMolecule (Molecule &mol);
 
    StereocentersOptions stereochemistry_options;
+   bool ignore_bad_valence;
 
    const float COORD_COEF;
 

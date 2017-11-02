@@ -574,7 +574,7 @@ genericcostestimate92(PlannerInfo *root,
 }
 #endif
 
-#if PG_VERSION_NUM / 100 == 904
+#if PG_VERSION_NUM / 100 >= 904
 	PGDLLEXPORT PG_FUNCTION_INFO_V1(bingo_costestimate);
 #else
 	PG_FUNCTION_INFO_V1(bingo_costestimate);

@@ -36,6 +36,7 @@ public:
    void loadReaction (Reaction &rxn);
 
    StereocentersOptions stereochemistry_options;
+   bool ignore_bad_valence;
 
 protected:
    Scanner &_scanner;

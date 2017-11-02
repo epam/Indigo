@@ -42,6 +42,7 @@ BingoContext::BingoContext (int id_)
    allow_non_unique_dearomatization.setName("allow-non-unique-dearomatization");
    zero_unknown_aromatic_hydrogens.setName("zero-unknown-aromatic-hydrogens");
    reject_invalid_structures.setName("reject-invalid-structures");
+   ignore_bad_valence.setName("ignore-bad-valence");
 }
 
 void BingoContext::reset ()
@@ -64,6 +65,7 @@ void BingoContext::reset ()
    allow_non_unique_dearomatization.reset();
    zero_unknown_aromatic_hydrogens.reset();
    reject_invalid_structures.reset();
+   ignore_bad_valence.reset();
 }
 
 BingoContext::~BingoContext ()
@@ -216,6 +218,7 @@ void BingoContext::setLoaderSettings (MoleculeAutoLoader &loader)
    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
    loader.stereochemistry_options = getStereocentersOptions();
    loader.ignore_cistrans_errors = ignore_cistrans_errors;
+   loader.ignore_bad_valence = ignore_bad_valence;
 }
 
 void BingoContext::setLoaderSettings(SmilesLoader &loader)
@@ -223,6 +226,7 @@ void BingoContext::setLoaderSettings(SmilesLoader &loader)
    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
    loader.stereochemistry_options = getStereocentersOptions();
    loader.ignore_cistrans_errors = ignore_cistrans_errors;
+   loader.ignore_bad_valence = ignore_bad_valence;
 }
 
 void BingoContext::setLoaderSettings(ReactionAutoLoader &loader)
@@ -231,6 +235,7 @@ void BingoContext::setLoaderSettings(ReactionAutoLoader &loader)
    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
    loader.stereochemistry_options = getStereocentersOptions();
    loader.ignore_cistrans_errors = ignore_cistrans_errors;
+   loader.ignore_bad_valence = ignore_bad_valence;
 }
 
 void BingoContext::setLoaderSettings(RSmilesLoader &loader)
@@ -238,5 +243,6 @@ void BingoContext::setLoaderSettings(RSmilesLoader &loader)
    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
    loader.stereochemistry_options = getStereocentersOptions();
    loader.ignore_cistrans_errors = ignore_cistrans_errors;
+   loader.ignore_bad_valence = ignore_bad_valence;
 }
 

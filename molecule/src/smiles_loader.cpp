@@ -44,6 +44,7 @@ TL_CP_GET(_polymer_repetitions)
    inside_rsmiles = false;
    ignore_closing_bond_direction_mismatch = false;
    ignore_cistrans_errors = false;
+   ignore_bad_valence = false;
    _mol = 0;
    _qmol = 0;
    _bmol = 0;
@@ -66,6 +67,8 @@ void SmilesLoader::loadMolecule (Molecule &mol)
    _mol = &mol;
    _qmol = 0;
    _loadMolecule();
+
+   mol.setIgnoreBadValenceFlag(ignore_bad_valence);
 }
 
 void SmilesLoader::loadQueryMolecule (QueryMolecule &mol)

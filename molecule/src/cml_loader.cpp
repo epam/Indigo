@@ -52,6 +52,8 @@ void CmlLoader::loadMolecule (Molecule &mol)
    _mol = &mol;
    _qmol = 0;
    _loadMolecule();
+
+   mol.setIgnoreBadValenceFlag(ignore_bad_valence);
 }
 
 void CmlLoader::loadQueryMolecule (QueryMolecule &mol)

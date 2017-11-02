@@ -50,6 +50,7 @@ public:
    void loadQueryMolecule (QueryMolecule &mol);
 
    StereocentersOptions stereochemistry_options;
+   bool ignore_bad_valence;
 
 protected:
    Scanner *_scanner;

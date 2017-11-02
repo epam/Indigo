@@ -1011,8 +1011,16 @@ int Molecule::getAtomValence (int idx)
          return val;
       }
 
-      throw Element::Error("can not calculate valence of %s (%d aromatic bonds, min connectivity %d, charge %d)",
-              Element::toString(atom.number), n_arom, min_conn, atom.charge);
+      if (_ignore_bad_valence)
+      {
+         val = min_conn;
+         _valence.expandFill(idx + 1, -1);
+         _valence[idx] = val;
+         return val;
+      }
+      else
+         throw Element::Error("can not calculate valence of %s (%d aromatic bonds, min connectivity %d, charge %d)",
+                 Element::toString(atom.number), n_arom, min_conn, atom.charge);
    }
 
    int radical = -1;
@@ -1094,7 +1102,6 @@ int Molecule::getAtomValence (int idx)
             valence = conn + impl_h;
             unusual_valence = true;
          }
-
       }
    }
    else

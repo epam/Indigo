@@ -25,6 +25,7 @@ IMPL_ERROR(ReactionCmlLoader, "reaction CML loader");
 
 ReactionCmlLoader::ReactionCmlLoader (Scanner &scanner) : _scanner(scanner)
 {
+   ignore_bad_valence = false;
 }
 
 ReactionCmlLoader::~ReactionCmlLoader ()
@@ -72,6 +73,7 @@ void ReactionCmlLoader::loadReaction (Reaction &rxn)
       TiXmlHandle handle(elem);
       CmlLoader loader(handle);
       loader.stereochemistry_options = stereochemistry_options;
+      loader.ignore_bad_valence = ignore_bad_valence;
       loader.loadMolecule(mol);
       rxn.addReactantCopy(mol, 0, 0);
    }
@@ -84,6 +86,7 @@ void ReactionCmlLoader::loadReaction (Reaction &rxn)
       TiXmlHandle handle(elem);
       CmlLoader loader(handle);
       loader.stereochemistry_options = stereochemistry_options;
+      loader.ignore_bad_valence = ignore_bad_valence;
       loader.loadMolecule(mol);
       rxn.addProductCopy(mol, 0, 0);
    }
@@ -96,6 +99,7 @@ void ReactionCmlLoader::loadReaction (Reaction &rxn)
       TiXmlHandle handle(elem);
       CmlLoader loader(handle);
       loader.stereochemistry_options = stereochemistry_options;
+      loader.ignore_bad_valence = ignore_bad_valence;
       loader.loadMolecule(mol);
       rxn.addCatalystCopy(mol, 0, 0);
    }

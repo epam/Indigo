@@ -38,6 +38,7 @@ TL_CP_GET(_sensible_bond_directions),
 TL_CP_GET(_ignore_cistrans)
 {
    _scanner = &scanner;
+   ignore_bad_valence = false;
 }
 
 void MoleculeCdxLoader::loadMolecule (Molecule &mol)
@@ -53,6 +54,7 @@ void MoleculeCdxLoader::loadMolecule (Molecule &mol)
    {
      _checkHeader();
      _loadMolecule();
+     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
    }
 }
 
