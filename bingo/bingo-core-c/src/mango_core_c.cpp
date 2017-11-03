@@ -27,6 +27,8 @@
 #include "molecule/cml_saver.h"
 
 #include "molecule/inchi_wrapper.h"
+#include "molecule/molecule_standardize.h"
+#include "molecule/molecule_standardize_options.h"
 
 using namespace indigo::bingo_core;
 
@@ -902,3 +904,30 @@ CEXPORT const char* mangoInChIKey(const char* inchi)
    BINGO_END(0, 0)
 }
 
+CEXPORT const char * mangoStandardize (const char *molecule, int molecule_len, const char *options)
+{
+   BINGO_BEGIN
+   {
+      BufferScanner scanner(molecule, molecule_len);
+
+      QS_DEF(Molecule, target);
+
+      MoleculeAutoLoader loader(scanner);
+      self.bingo_context->setLoaderSettings(loader);
+      loader.loadMolecule(target);
+
+      StandardizeOptions st_options;
+      st_options.parseFromString(options);
+
+      MoleculeStandardizer::standardize(target, st_options);
+
+      ArrayOutput out(self.buffer);
+
+      MolfileSaver saver(out);
+
+      saver.saveMolecule(target);
+      out.writeByte(0);
+      return self.buffer.ptr();
+   }
+   BINGO_END(0, 0)
+}

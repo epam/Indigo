@@ -15,6 +15,7 @@
 #ifndef __molecule_standardize_options__
 #define __molecule_standardize_options__
 
+#include "base_cpp/tlscont.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -29,6 +30,8 @@ public:
    StandardizeOptions ();
 
    void reset ();
+
+   void parseFromString (const char * options);
 
    // Sets or repairs the stereo on a molecule to a standard form using the coordinates
    // as the guide. Default is false.

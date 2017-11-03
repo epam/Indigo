@@ -153,6 +153,7 @@ CEXPORT int mangoIndexProcess (
    int (*get_next_record_cb) (void *context),
    void (*process_result_cb) (void *context),
    void (*process_error_cb) (int id, void *context), void *context );
+CEXPORT const char * mangoStandardize (const char *molecule, int molecule_len, const char *options);
 
 /*
  * Ringo core interface

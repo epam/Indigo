@@ -37,6 +37,8 @@ BINGO_FUNCTION_EXPORT(compactmolecule);
 BINGO_FUNCTION_EXPORT(inchi);
 
 BINGO_FUNCTION_EXPORT(inchikey);
+
+BINGO_FUNCTION_EXPORT(standardize);
 }
 
 
@@ -401,6 +403,40 @@ Datum inchikey(PG_FUNCTION_ARGS) {
 
       if(bingo_result == 0) {
          CORE_HANDLE_WARNING(0, 1, "bingo.inchikey", bingoGetError());
+         PG_RETURN_NULL();
+      }
+
+      BingoPgText result_text;
+      result_text.initFromString(bingo_result);
+      result = result_text.release();
+   }
+   PG_BINGO_END
+
+   if (result == 0)
+      PG_RETURN_NULL();
+
+   PG_RETURN_TEXT_P(result);
+}
+
+Datum standardize(PG_FUNCTION_ARGS) {
+   Datum mol_datum = PG_GETARG_DATUM(0);
+   Datum options_datum = PG_GETARG_DATUM(1);
+
+   void* result = 0;
+   PG_BINGO_BEGIN
+   {
+      BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
+      bingo_handler.setFunctionName("standardize");
+
+      BingoPgText mol_text(mol_datum);
+      BingoPgText st_options(options_datum);
+
+      int buf_size;
+      const char* mol_buf = mol_text.getText(buf_size);
+      const char* bingo_result = mangoStandardize(mol_buf, buf_size, st_options.getString());
+
+      if(bingo_result == 0) {
+         CORE_HANDLE_WARNING(0, 1, "bingo.standardize", bingoGetError());
          PG_RETURN_NULL();
       }
 

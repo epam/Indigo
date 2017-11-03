@@ -939,11 +939,7 @@ void MoleculeStandardizer::_removeMolecule(BaseMolecule &mol)
 
 void MoleculeStandardizer::_clearStereo(BaseMolecule &mol)
 {
-   for (auto i : mol.vertices())
-   {
-      if (mol.stereocenters.exists(i))
-         mol.stereocenters.setType(i, 0, 0);
-   }
+   mol.stereocenters.clear();
 
    for (auto i : mol.edges())
    {
