@@ -106,6 +106,10 @@ void CanonicalRSmilesSaver::_writeMolecule(int i, CanonicalSmilesSaver &saver)
 {
    int j;
 
+   saver.write_extra_info = false;
+   saver.separate_rsites = false;
+   saver.rsite_indices_as_aam = false;
+
    saver.smarts_mode = smarts_mode;
    saver.inside_rsmiles = true;
 
