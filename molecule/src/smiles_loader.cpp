@@ -1319,10 +1319,14 @@ void SmilesLoader::_loadParsedMolecule ()
             if (_atoms[i].rsite_num != 0)
                _bmol->allowRGroupOnRSite(i, _atoms[i].rsite_num);
          }
-         else if (_atoms[i].star_atom && _atoms[i].label == ELEM_PSEUDO)
-         {
-            _mol->setPseudoAtom(i, "A");
-         }
+      }
+   }
+
+   for (i = 0; i < _atoms.size(); i++)
+   {
+      if (_atoms[i].star_atom && _atoms[i].label == ELEM_PSEUDO)
+      {
+         _mol->setPseudoAtom(i, "A");
       }
    }
 
