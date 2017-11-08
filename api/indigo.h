@@ -168,7 +168,9 @@ CEXPORT int indigoRemove (int item);
 CEXPORT int indigoCreateMolecule (void);
 CEXPORT int indigoCreateQueryMolecule (void);
 
-CEXPORT int indigoLoadFromString (const char *string, int query, const char *mineType);
+CEXPORT int indigoLoadStructureFromString (const char *string, const char * params);
+CEXPORT int indigoLoadStructureFromBuffer (const byte *string, int bufferSize, const char * params);
+CEXPORT int indigoLoadStructureFromFile (const char *filename, const char * params);
 
 CEXPORT int indigoLoadMolecule  (int source);
 CEXPORT int indigoLoadMoleculeFromString (const char *string);

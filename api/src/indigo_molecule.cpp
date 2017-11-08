@@ -12,6 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include <fstream>
+
 #include "indigo_molecule.h"
 #include "indigo_io.h"
 #include "indigo_array.h"
@@ -528,7 +530,7 @@ CEXPORT int indigoLoadSmarts (int source)
    INDIGO_END(-1);
 }
 
-bool isReacton(const char *string)
+static bool isReacton(const char *string)
 {
     auto isIn = [](const char *source, const char *pattern)->bool
     {
@@ -540,64 +542,90 @@ bool isReacton(const char *string)
         return strncmp(source, pattern, strlen(pattern))==0;
     };
     
-    return isIn(string, ">>") || startWith (string, "$RXN") || isIn(string, "<reactantList>");
+    return isIn(string, ">>") || startWith(string, "$RXN") || isIn(string, "<reactantList>");
 }
 
-CEXPORT int indigoLoadFromString (const char *string, int query, const char *mineType)
+CEXPORT int indigoLoadStructureFromString(const char *string, const char * params)
 {
-   INDIGO_BEGIN
-   {
-       if(strncmp(string, "InChI", strlen("InChI"))==0)
-       {
-           return indigoLoadMoleculeFromString(string);
-       }
-       else 
-       {
-           bool isReaction = isReacton(string);
-           if(std::string(mineType) == "chemical/x-daylight-smarts")
-           {
-               if(isReaction)
-                   return indigoLoadReactionSmartsFromString(string);
-               else
-                   return indigoLoadSmartsFromString(string);
-           }
-           else
-           {
-               if((bool)query)
-               {
-                   if(isReaction)
-                        return indigoLoadQueryReactionFromString(string);
-                   else
-                        return indigoLoadQueryMoleculeFromString(string);
-               }
-               else
-               {
-                   try
-                   {
-                       if(isReaction)
-                            return indigoLoadReactionFromString(string);
-                       else
-                            return indigoLoadMoleculeFromString(string);
-                   }
-                   catch(Exception& e)
-                   {
-                       if(std::string(e.message()).find("query") == std::string::npos
-                         && std::string(e.message()).find("queries") == std::string::npos)
-                       {
-                           throw e;
-                       }
-                       
-                       if(isReaction)
-                        return indigoLoadQueryReactionFromString(string);
-                       else
-                        return indigoLoadQueryMoleculeFromString(string);
-                   }
-               }
-               
-           }
-       }
-   }
-   INDIGO_END(-1);
+    INDIGO_BEGIN
+    {
+        if (strncmp(string, "InChI", strlen("InChI")) == 0)
+        {
+            return indigoLoadMoleculeFromString(string);
+        }
+
+        const std::string strParams(params ? params : "");
+        bool isQuery  = (strParams.find("query") != std::string::npos) ? true : false;
+        bool isSmarts = (strParams.find("smarts") != std::string::npos) ? true : false;
+        bool isReaction = isReacton(string);
+
+        if (isSmarts)
+        {
+            if (isReaction)
+                return indigoLoadReactionSmartsFromString(string);
+            else
+                return indigoLoadSmartsFromString(string);
+        }
+
+        if (isQuery)
+        {
+            if (isReaction)
+                return indigoLoadQueryReactionFromString(string);
+            else
+                return indigoLoadQueryMoleculeFromString(string);
+        }
+
+        try
+        {
+            if (isReaction)
+                return indigoLoadReactionFromString(string);
+            else
+                return indigoLoadMoleculeFromString(string);
+        }
+        catch (Exception& e)
+        {
+            if (std::string(e.message()).find("query") == std::string::npos
+                && std::string(e.message()).find("queries") == std::string::npos)
+            {
+                throw e;
+            }
+
+            if (isReaction)
+                return indigoLoadQueryReactionFromString(string);
+            else
+                return indigoLoadQueryMoleculeFromString(string);
+        }
+
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadStructureFromBuffer(const byte *buff, int bufferSize, const char * params)
+{
+// FIXME:
+    return indigoLoadStructureFromString((const char *)(buff), params);
+}
+
+static std::string readFileContent(const char * filename)
+{
+    std::ifstream istrm(filename, std::ios::binary);
+    if (!istrm.is_open())
+        throw IndigoError("No such file or directory: '%s'", filename);
+
+    std::string fileContent{std::istreambuf_iterator<char>(istrm),
+                            std::istreambuf_iterator<char>()};
+    return fileContent;
+}
+
+CEXPORT int indigoLoadStructureFromFile(const char *filename, const char * params)
+{
+// FIXME:
+    INDIGO_BEGIN
+    {
+        std::string fileContent = readFileContent(filename);
+        return indigoLoadStructureFromBuffer((const byte *)fileContent.data(), fileContent.size(), params);
+    }
+    INDIGO_END(-1);
 }
 
 IndigoMoleculeComponent::IndigoMoleculeComponent (BaseMolecule &mol_, int index_) :

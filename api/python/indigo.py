@@ -1567,6 +1567,12 @@ class Indigo(object):
         Indigo._lib.indigoLoadReactionSmartsFromString.argtypes = [c_char_p]
         Indigo._lib.indigoLoadReactionSmartsFromFile.restype = c_int
         Indigo._lib.indigoLoadReactionSmartsFromFile.argtypes = [c_char_p]
+        Indigo._lib.indigoLoadStructureFromString.restype = c_int
+        Indigo._lib.indigoLoadStructureFromString.argtypes = [c_char_p, c_char_p]
+        Indigo._lib.indigoLoadStructureFromBuffer.restype = c_int
+        Indigo._lib.indigoLoadStructureFromBuffer.argtypes = [POINTER(c_byte), c_int, c_char_p]
+        Indigo._lib.indigoLoadStructureFromFile.restype = c_int
+        Indigo._lib.indigoLoadStructureFromFile.argtypes = [c_char_p, c_char_p]
         Indigo._lib.indigoCreateReaction.restype = c_int
         Indigo._lib.indigoCreateReaction.argtypes = None
         Indigo._lib.indigoCreateQueryReaction.restype = c_int
@@ -2422,6 +2428,29 @@ class Indigo(object):
     def loadReactionSmartsFromFile(self, filename):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadReactionSmartsFromFile(filename.encode(ENCODE_ENCODING))))
+
+    def loadStructure(self, structureStr, parameter = None):
+        self._setSessionId()
+        parameter = '' if parameter is None else parameter 
+        return self.IndigoObject(self, 
+                                 self._checkResult(Indigo._lib.indigoLoadStructureFromString(structureStr.encode(ENCODE_ENCODING),
+                                                                                             parameter)))
+        
+    def loadStructureFromBuffer(self, structureData, parameter = None):
+        if sys.version_info[0] < 3:
+            buf = map(ord, structureData)
+        else:
+            buf = structureData
+        values = (c_byte * len(buf))()
+        for i in range(len(buf)):
+            values[i] = buf[i]
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadStructureFromBuffer(values, len(buf), parameter)))
+    
+    def loadStructureFromFile(self, filename, parameter = None):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadStructureFromFile(filename.encode(ENCODE_ENCODING), 
+                                                                                                 parameter)))
 
     def createReaction(self):
         self._setSessionId()
