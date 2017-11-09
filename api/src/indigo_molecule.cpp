@@ -12,8 +12,6 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#include <fstream>
-
 #include "indigo_molecule.h"
 #include "indigo_io.h"
 #include "indigo_array.h"
@@ -34,6 +32,8 @@
 #include "indigo_mapping.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molecule_savers.h"
+#include "gzip/gzip_scanner.h"
+
 
 IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
 {
@@ -600,30 +600,48 @@ CEXPORT int indigoLoadStructureFromString(const char *string, const char * param
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadStructureFromBuffer(const byte *buff, int bufferSize, const char * params)
+static void readAllDataToString(Scanner & scanner, Array<char> & dataBuf)
 {
-// FIXME:
-    return indigoLoadStructureFromString((const char *)(buff), params);
+    // check GZip format
+    if (scanner.length() >= 2)
+    {
+       byte id[2];
+       long long pos = scanner.tell();
+
+       scanner.readCharsFix(2, (char *)id);
+       scanner.seek(pos, SEEK_SET);
+
+       if (id[0] == 0x1f && id[1] == 0x8b)
+       {
+          GZipScanner gzscanner(scanner);
+          gzscanner.readAll(dataBuf);
+
+          return;
+       }
+    }
+
+    scanner.readAll(dataBuf);
+    dataBuf.push('\0');
 }
 
-static std::string readFileContent(const char * filename)
+CEXPORT int indigoLoadStructureFromBuffer(const byte *buff, int bufferSize, const char * params)
 {
-    std::ifstream istrm(filename, std::ios::binary);
-    if (!istrm.is_open())
-        throw IndigoError("No such file or directory: '%s'", filename);
+    BufferScanner scanner(buff, bufferSize);
+    Array<char> arr;
+    readAllDataToString(scanner, arr);
 
-    std::string fileContent{std::istreambuf_iterator<char>(istrm),
-                            std::istreambuf_iterator<char>()};
-    return fileContent;
+    return indigoLoadStructureFromString(arr.ptr(), params);
 }
 
 CEXPORT int indigoLoadStructureFromFile(const char *filename, const char * params)
 {
-// FIXME:
     INDIGO_BEGIN
     {
-        std::string fileContent = readFileContent(filename);
-        return indigoLoadStructureFromBuffer((const byte *)fileContent.data(), fileContent.size(), params);
+        FileScanner scanner(self.filename_encoding, filename);
+        Array<char> arr;
+        readAllDataToString(scanner, arr);
+
+        return indigoLoadStructureFromString(arr.ptr(), params);
     }
     INDIGO_END(-1);
 }
