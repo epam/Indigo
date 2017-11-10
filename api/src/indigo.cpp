@@ -82,6 +82,9 @@ void Indigo::init ()
 
    scsr_ignore_chem_templates = false;
 
+   ignore_closing_bond_direction_mismatch = false;
+   ignore_bad_valence = false;
+
    // Update global index
    static ThreadSafeStaticObj<OsLock> lock;
    {
