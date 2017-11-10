@@ -73,6 +73,8 @@ void Molecule::_mergeWithSubmolecule (BaseMolecule &bmol, const Array<int> &vert
            const Array<int> *edges, const Array<int> &mapping, int skip_flags)
 {
    Molecule &mol = bmol.asMolecule();
+   _ignore_bad_valence = mol.getIgnoreBadValenceFlag();
+
    int i;
 
    // atoms and pseudo-atoms and connectivities and implicit H counters
@@ -964,6 +966,11 @@ int Molecule::getAtomCharge (int idx)
 int Molecule::getAtomIsotope (int idx)
 {
    return _atoms[idx].isotope;
+}
+
+bool Molecule::getIgnoreBadValenceFlag ()
+{
+   return _ignore_bad_valence;
 }
 
 void Molecule::setIgnoreBadValenceFlag (bool flag)

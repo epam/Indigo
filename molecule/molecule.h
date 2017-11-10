@@ -150,6 +150,7 @@ public:
 
    bool isAromatized ();
 
+   bool getIgnoreBadValenceFlag ();
    void setIgnoreBadValenceFlag (bool flag);
 
    // Check 
