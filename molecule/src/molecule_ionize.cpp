@@ -1171,6 +1171,22 @@ void MoleculePkaModel::getAtomLocalKey (Molecule &mol, int idx, Array<char> &fp)
    fp.appendString(key.ptr(), true);
 }
 
+/**
+ * Writes atom features to `fp`:
+ *   0. atom number
+ *   1. atom valence
+ *   2. atom charge
+ *   3. atom radical
+ *   4. atom isotope
+ *   5. atom aromaticity
+ *   6. lone pair count
+ *   7. connectivity
+ *   8. single bond count
+ *   9. double bond count
+ *  10. aromatic bond count
+ *  11. triple bond count
+ *  12. zero bond count
+ * */
 bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule & mol, int idx, Array<int> & fp)
 {
    if (mol.isPseudoAtom(idx) || mol.isRSite(idx) || mol.isTemplateAtom(idx))

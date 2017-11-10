@@ -630,6 +630,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
          }
 
          dword key = 1;
+         key = key * 37 + feature_set[0]; // number
          key = key * 37 + feature_set[4]; // iso
          key = key * 37 + feature_set[2]; // charge
          key = key * 37 + feature_set[3]; // radical
@@ -639,6 +640,56 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
          int value = (pair != counters.end()) ? pair->second : 0;
          counters[key] = value + 1;  // Increment the counter for the particular key
       }
+
+      QS_DEF(Array<int>, feature_set1);
+      QS_DEF(Array<int>, feature_set2);
+      for(auto ei : mol.edges())
+      {
+         try
+         {
+            MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).beg, feature_set1);
+            MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).end, feature_set2);
+         } catch (indigo::Exception &e) {
+            continue;
+         }
+
+
+         Array<int> * fs1;
+         Array<int> * fs2;
+         if(feature_set1.memcmp(feature_set2) < 0)
+         {
+            fs1 = &feature_set1;
+            fs2 = &feature_set2;
+         } else
+         {
+            fs1 = &feature_set2;
+            fs2 = &feature_set1;
+         }
+
+         dword key = 1;
+
+         key = key * 37 + mol.getBondOrder(ei);
+         key = key * 37 + mol.getBondDirection(ei);
+         key = key * 37 + (*fs1)[7];
+         key = key * 37 + (*fs2)[7];
+
+         key = key * 37 + (*fs1)[0]; // number
+         key = key * 37 + (*fs1)[4]; // iso
+         key = key * 37 + (*fs1)[2]; // charge
+         key = key * 37 + (*fs1)[3]; // radical
+         key = key * 37 + (*fs1)[7]; // degree
+
+         key = key * 37 + (*fs2)[0]; // number
+         key = key * 37 + (*fs2)[4]; // iso
+         key = key * 37 + (*fs2)[2]; // charge
+         key = key * 37 + (*fs2)[3]; // radical
+         key = key * 37 + (*fs2)[7]; // degree
+
+         auto pair = counters.find(key);
+         int value = (pair != counters.end()) ? pair->second : 0;
+         counters[key] = value + 1;  // Increment the counter for the particular key
+      }
+
 
       for(auto pair : counters) {
          dword key = pair.first;
