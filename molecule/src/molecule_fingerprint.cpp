@@ -614,18 +614,18 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
 
    if (!skip_chem)
    {
-      QS_DEF(Array<int>, feature_set);
       std::map<dword, int> counters;
+
+      QS_DEF(Array<int>, feature_set);
       for(auto vi : mol.vertices())
       {
-         // No exception should ever be thrown since `vi` iterates only through
-         // valid atoms (not template, R, pseudo atoms)
-         // Added the try-catch just to be sure
+         // No exception should ever be thrown, added the try-catch just to be sure
          try
          {
             MoleculePkaModel::getAtomLocalFeatureSet(mol, vi, feature_set);
-         } catch (indigo::Exception &e) {
-            // `vi` correspond to an invalid atom, nothing to add to the fingerprint
+         }
+         catch (indigo::Exception &e)
+         {
             continue;
          }
 
@@ -638,40 +638,39 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
 
          auto pair = counters.find(key);
          int value = (pair != counters.end()) ? pair->second : 0;
-         counters[key] = value + 1;  // Increment the counter for the particular key
+         counters[key] = value + 1;  // increment the counter for the key
       }
 
       QS_DEF(Array<int>, feature_set1);
       QS_DEF(Array<int>, feature_set2);
       for(auto ei : mol.edges())
       {
+         // No exception should ever be thrown, added the try-catch just to be sure
          try
          {
             MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).beg, feature_set1);
             MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).end, feature_set2);
-         } catch (indigo::Exception &e) {
+         }
+         catch (indigo::Exception &e)
+         {
             continue;
          }
 
-
-         Array<int> * fs1;
-         Array<int> * fs2;
+         Array<int> * fs1, * fs2;  // ordered `feature_set1` and `feature_set2`
          if(feature_set1.memcmp(feature_set2) < 0)
          {
             fs1 = &feature_set1;
             fs2 = &feature_set2;
-         } else
+         }
+         else
          {
             fs1 = &feature_set2;
             fs2 = &feature_set1;
          }
 
          dword key = 1;
-
          key = key * 37 + mol.getBondOrder(ei);
          key = key * 37 + mol.getBondDirection(ei);
-         key = key * 37 + (*fs1)[7];
-         key = key * 37 + (*fs2)[7];
 
          key = key * 37 + (*fs1)[0]; // number
          key = key * 37 + (*fs1)[4]; // iso
@@ -687,11 +686,11 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
 
          auto pair = counters.find(key);
          int value = (pair != counters.end()) ? pair->second : 0;
-         counters[key] = value + 1;  // Increment the counter for the particular key
+         counters[key] = value + 1;  // increment the counter for the key
       }
 
-
-      for(auto pair : counters) {
+      for(auto pair : counters)
+      {
          dword key = pair.first;
          int count = pair.second;
          _setBits(key, getChem(), _parameters.fingerprintSizeChem(), count);
