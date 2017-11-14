@@ -1261,8 +1261,6 @@ CEXPORT int indigoCheckQuery (int item)
 }
 
 
-///////////////////////////////////////////////////////////
-
 static bool isQueryMolecula(int objId)
 {
     INDIGO_BEGIN
@@ -1270,15 +1268,16 @@ static bool isQueryMolecula(int objId)
         IndigoObject &obj = self.getObject(objId);
 
         if (obj.type == IndigoObject::QUERY_MOLECULE || obj.type == IndigoObject::QUERY_REACTION)
-            return 1;
+            return true;
 
         auto checkAllIter = [](int objIter, int (*CheckFunc)(int)) {
             while (indigoHasNext(objIter))
             {
                 int id = indigoNext(objIter);
                 if (CheckFunc(id))
-                    return 1;
+                    return true;
             }
+            return false;
         };
 
         int atomIter = indigoIterateAtoms(objId);
