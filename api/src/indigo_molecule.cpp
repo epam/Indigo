@@ -12,6 +12,8 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include <string>
+
 #include "indigo_molecule.h"
 #include "indigo_io.h"
 #include "indigo_array.h"
@@ -1256,6 +1258,205 @@ CEXPORT int indigoCheckQuery (int item)
       return 0;
    }
    INDIGO_END(-1);
+}
+
+
+///////////////////////////////////////////////////////////
+
+static bool isQueryMolecula(int objId)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject &obj = self.getObject(objId);
+
+        if (obj.type == IndigoObject::QUERY_MOLECULE || obj.type == IndigoObject::QUERY_REACTION)
+            return 1;
+
+        auto checkAllIter = [](int objIter, int (*CheckFunc)(int)) {
+            while (indigoHasNext(objIter))
+            {
+                int id = indigoNext(objIter);
+                if (CheckFunc(id))
+                    return 1;
+            }
+        };
+
+        int atomIter = indigoIterateAtoms(objId);
+        int bondIter = indigoIterateBonds(objId);
+        return checkAllIter(atomIter, indigoCheckQuery) || checkAllIter(bondIter, indigoCheckQuery);
+
+    }
+    INDIGO_END(0)
+}
+
+static int checkQuery(int objId, std::string & message)
+{
+    if (isQueryMolecula(objId))
+    {
+        message = "Structure contains query features";
+        return 1;
+    }
+
+    return 0;
+}
+
+
+class CheckCounter
+{
+public:
+
+    virtual void operator()(int objId)
+    {
+        counter++;
+    }
+
+    int getResults() const
+    {
+        return counter;
+    }
+
+    static std::string printContainProperty(int cnt, const std::string & propertyMess)
+    {
+        return "Structure contains " + std::to_string(cnt)
+                    + " atom" + (cnt > 1 ? "s" : "") + " with " + propertyMess;
+    }
+
+
+protected:
+    int counter = { 0 };
+    const std::string propertyMess;
+};
+
+static void mapIndigoIterator(int iter, CheckCounter & checkOp)
+{
+    while (indigoHasNext(iter))
+    {
+        int id = indigoNext(iter);
+        checkOp(id);
+    }
+}
+
+class CheckValence : public CheckCounter
+{
+public:
+    void operator()(int objId)
+    {
+        if (indigoCheckValence(objId))
+            counter++;
+    }
+};
+
+static int checkValence(int obj, std::string & errMessage)
+{
+    if (isQueryMolecula(obj))
+    {
+        errMessage = "Structure contains query features, so valency could not be checked";
+        return 1;
+    }
+
+    // TODO:
+//    if ( ??? 'rgroups')
+//    {
+//        errMessage = "Structure contains RGroup components, so valency could not be checked";
+//        return 1;
+//    }
+
+    int atoms = indigoIterateAtoms(obj);
+    CheckValence chValence;
+    mapIndigoIterator(atoms, chValence);
+
+    int errorCnt = chValence.getResults();
+    if (errorCnt)
+        errMessage = CheckCounter::printContainProperty(errorCnt, "bad valence");
+
+    return errorCnt;
+}
+
+
+class CheckRadicals : public CheckCounter
+{
+public:
+    void operator()(int objId)
+    {
+        int electrons = 0;
+        if (!indigoIsRSite(objId) && indigoGetRadicalElectrons(objId, &electrons))
+            counter += electrons ? 1 : 0;
+    }
+};
+
+
+static int checkRadicals(int objId, std::string & message)
+{
+    //radicalElectrons(atom)
+
+    int atoms = indigoIterateAtoms(objId);
+    CheckRadicals checkRadicals;
+    mapIndigoIterator(atoms, checkRadicals);
+
+    int cnt = checkRadicals.getResults();
+    if (cnt)
+        message = CheckCounter::printContainProperty(cnt, "radical electrons");
+
+
+    return cnt;
+}
+
+
+
+static void addPropertyResult(const std::string & propertyName,
+                             const std::string & errMessage,
+                             Array<char> & respons)
+{
+    respons.appendString("\"", true);
+    respons.appendString(propertyName.c_str(), true);
+    respons.appendString("\": \"", true);
+    respons.appendString(errMessage.c_str(), true);
+    respons.appendString("\"", true);
+}
+
+typedef int (*PropertyChecker)(int, std::string &);
+typedef std::pair<std::string, PropertyChecker> PropertyCheck;
+
+static std::vector<PropertyCheck> propertyList = { std::make_pair("valence",  checkValence),
+                                                   std::make_pair("query",    checkQuery),
+                                                   std::make_pair("radicals", checkRadicals)};
+
+CEXPORT const char * indigoCheckStructure(int obj, const char * params)
+{
+
+    INDIGO_BEGIN
+    {
+        auto &tmp = self.getThreadTmpData();
+        Array<char> & respons = tmp.string;
+        respons.clear();
+        respons.appendString("{", true);
+
+        int totalErrNum = 0;
+
+        const std::string propParams(params);
+        for (auto & property : propertyList)
+        {
+            if (propParams.find(property.first) != std::string::npos)
+            {
+                int propertyErrNum = 0;
+                std::string errMessage;
+                if ((propertyErrNum = property.second(obj, errMessage)))
+                {
+                    if (totalErrNum)
+                        respons.appendString(", ", true);
+                    totalErrNum += propertyErrNum;
+
+                    addPropertyResult(property.first, errMessage, respons);
+                }
+            }
+        }
+
+        respons.appendString("}", true);
+
+        return respons.ptr();
+    }
+    INDIGO_END(0)
+    //INDIGO_END_CHECKMSG("", "fail");
 }
 
 CEXPORT int indigoGetExplicitValence (int atom, int *valence)
