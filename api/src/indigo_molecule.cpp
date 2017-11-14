@@ -1353,12 +1353,11 @@ static int checkValence(int obj, std::string & errMessage)
         return 1;
     }
 
-    // TODO:
-//    if ( ??? 'rgroups')
-//    {
-//        errMessage = "Structure contains RGroup components, so valency could not be checked";
-//        return 1;
-//    }
+    if (indigoCheckRGroups(obj))
+    {
+        errMessage = "Structure contains RGroup components, so valency could not be checked";
+        return 1;
+    }
 
     int atoms = indigoIterateAtoms(obj);
     CheckValence chValence;
@@ -1386,8 +1385,6 @@ public:
 
 static int checkRadicals(int objId, std::string & message)
 {
-    //radicalElectrons(atom)
-
     int atoms = indigoIterateAtoms(objId);
     CheckRadicals checkRadicals;
     mapIndigoIterator(atoms, checkRadicals);
@@ -1400,6 +1397,17 @@ static int checkRadicals(int objId, std::string & message)
     return cnt;
 }
 
+
+static int checkRGroups(int objId, std::string & message)
+{
+    if (indigoCheckRGroups(objId))
+    {
+        message = "Structure contains RGroup components";
+        return 1;
+    }
+
+    return 0;
+}
 
 
 static void addPropertyResult(const std::string & propertyName,
@@ -1418,7 +1426,8 @@ typedef std::pair<std::string, PropertyChecker> PropertyCheck;
 
 static std::vector<PropertyCheck> propertyList = { std::make_pair("valence",  checkValence),
                                                    std::make_pair("query",    checkQuery),
-                                                   std::make_pair("radicals", checkRadicals)};
+                                                   std::make_pair("radicals", checkRadicals),
+                                                   std::make_pair("rgroups",  checkRGroups) };
 
 CEXPORT const char * indigoCheckStructure(int obj, const char * params)
 {
