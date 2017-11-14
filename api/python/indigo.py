@@ -445,11 +445,9 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoCheckRGroups(self.id))
 
-    def checkStructure(self):
+    def checkStructure(self, params):
         self.dispatcher._setSessionId()
-        return self.dispatcher._checkResult(Indigo._lib.indigoCheckRGroups(self.id))
-
-    indigoCheckStructure
+        return self.dispatcher._checkResultString(Indigo._lib.indigoCheckStructure(self.id, params))
 
     def countHydrogens(self):
         value = c_int()
@@ -1778,6 +1776,8 @@ class Indigo(object):
         Indigo._lib.indigoCheckQuery.argtypes = [c_int]
         Indigo._lib.indigoCheckRGroups.restype = c_int
         Indigo._lib.indigoCheckRGroups.argtypes = [c_int]
+        Indigo._lib.indigoCheckStructure.restype = c_char_p
+        Indigo._lib.indigoCheckStructure.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoCountHydrogens.restype = c_int
         Indigo._lib.indigoCountHydrogens.argtypes = [c_int, POINTER(c_int)]
         Indigo._lib.indigoCountImplicitHydrogens.restype = c_int
