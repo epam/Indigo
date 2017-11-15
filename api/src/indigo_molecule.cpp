@@ -1464,7 +1464,6 @@ static int getMolfile(int objId, Array<char> & buff)
 
 static int checkStereo(int objId, std::string & message)
 {
-
     indigoSetOptionBool("ignore-stereochemistry-errors", 0);
 
     try
@@ -1485,7 +1484,6 @@ static int checkStereo(int objId, std::string & message)
     }
 
     return 0;
-
 }
 
 static int check3d(int objId, std::string & message)
@@ -1499,13 +1497,37 @@ static int check3d(int objId, std::string & message)
     return 0;
 }
 
-
 static int checkSgroups(int objId, std::string & message)
 {
     int groups = indigoIterateDataSGroups(objId);
     if (indigoHasNext(groups) > 0)
     {
         message = "Structure has SGroups";
+        return 1;
+    }
+
+    return 0;
+}
+
+static int checkChiral(int objId, std::string & message)
+{
+    if (indigoIsChiral(objId))
+    {
+        message = "Structure has Chiral flag";
+        return 1;
+    }
+
+    return 0;
+}
+
+static int checkV3000(int objId, std::string & message)
+{
+    Array<char> buff;
+    getMolfile(objId, buff);
+    const std::string molfile(buff.ptr());
+    if (molfile.find("V3000") != std::string::npos)
+    {
+        message = "Structure supports only Molfile V3000";
         return 1;
     }
 
@@ -1535,7 +1557,9 @@ static std::vector<PropertyCheck> propertyList = { std::make_pair("valence",    
                                                    std::make_pair("ambiguous_h", checkAmbigousH),
                                                    std::make_pair("stereo",      checkStereo),
                                                    std::make_pair("3d",          check3d),
-                                                   std::make_pair("sgroups",     checkSgroups) };
+                                                   std::make_pair("sgroups",     checkSgroups),
+                                                   std::make_pair("chiral",      checkChiral) ,
+                                                   std::make_pair("V3000",       checkV3000) };
 
 CEXPORT const char * indigoCheckStructure(int obj, const char * params)
 {
