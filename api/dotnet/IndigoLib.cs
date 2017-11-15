@@ -45,6 +45,9 @@ namespace com.epam.indigo
         int indigoLoadSmartsFromString(string str);
         int indigoLoadSmartsFromFile(string filename);
         int indigoLoadSmartsFromBuffer(byte[] buffer, int size);
+        int indigoLoadStructureFromString(string str, string params);
+        int indigoLoadStructureFromFile(string path, string params);
+        int indigoLoadStructureFromBuffer(byte[] buf, int bufsize, string params);
         int indigoSaveMolfile(int molecule, int output);
         int indigoSaveMolfileToFile(int molecule, string filename);
         sbyte* indigoMolfile(int molecule);

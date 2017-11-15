@@ -556,6 +556,26 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, _lib.indigoLoadReactionSmartsFromFile(path)));
     }
 
+    public IndigoObject loadStructure(String str, String params) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, _lib.indigoLoadStructureFromString(str, params)));
+    }
+
+    public IndigoObject loadStructure(byte[] buf, String params) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, _lib.indigoLoadStructureFromBuffer(buf, buf.length, params)));
+    }
+
+    public IndigoObject loadStructureFromFile(String path, String params) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, _lib.indigoLoadStructureFromFile(path, params)));
+    }
+
+    public IndigoObject loadStructureFromBuffer(byte[] buf, String params) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, _lib.indigoLoadStructureFromBuffer(buf, buf.length, params)));
+    }
+
     public IndigoObject createReaction() {
         setSessionID();
         return new IndigoObject(this, checkResult(this, _lib.indigoCreateReaction()));

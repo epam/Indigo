@@ -473,6 +473,29 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadReactionSmartsFromFile(path)));
         }
 
+        public IndigoObject loadStructure(string str, string params)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromString(str, params)));
+        }
+
+        public IndigoObject loadStructure(byte[] buf, string params)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromBuffer(buf, buf.Length, params)));
+        }
+
+        public IndigoObject loadStructureFromFile(string path, string params)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromFile(path, params)));
+        }
+
+        public IndigoObject loadStructureFromBuffer(byte[] buf, string params) {
+            setSessionID();
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromBuffer(buf, buf.Length, params)));
+        }
+
         public IndigoObject createReaction()
         {
             setSessionID();

@@ -69,6 +69,10 @@ public interface IndigoLib extends Library
    int indigoLoadSmartsFromFile   (String filename);
    int indigoLoadSmartsFromBuffer (byte[] buffer, int size);
 
+   int indigoLoadStructureFromString (String str, String params);
+   int indigoLoadStructureFromFile   (String filename, String params);
+   int indigoLoadStructureFromBuffer (byte[] buffer, int size, String params);
+   
    int indigoSaveMolfile (int molecule, int output);
    int indigoSaveMolfileToFile (int molecule, String filename);
    Pointer indigoMolfile (int molecule);
