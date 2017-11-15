@@ -1371,6 +1371,19 @@ static int checkValence(int obj, std::string & errMessage)
 }
 
 
+static int checkPseudoatoms(int objId, std::string & message)
+{
+    int atoms = indigoIteratePseudoatoms(objId);
+    CheckCounter check;
+    mapIndigoIterator(atoms, check);
+
+    int cnt = check.getResults();
+    if (cnt)
+        message = "Structure contains " + std::to_string(cnt) + " pseudoatom" + (cnt > 1 ? "s" : "");
+
+    return cnt;
+}
+
 class CheckRadicals : public CheckCounter
 {
 public:
@@ -1385,6 +1398,13 @@ public:
 
 static int checkRadicals(int objId, std::string & message)
 {
+    std::string dummyStr;
+    if (checkPseudoatoms(objId, dummyStr))
+    {
+        message = "Structure contains pseudoatoms, so radicals could not be checked";
+        return 1;
+    }
+
     int atoms = indigoIterateAtoms(objId);
     CheckRadicals checkRadicals;
     mapIndigoIterator(atoms, checkRadicals);
@@ -1408,18 +1428,6 @@ static int checkRGroups(int objId, std::string & message)
     return 0;
 }
 
-static int checkPseudoatoms(int objId, std::string & message)
-{
-    int atoms = indigoIteratePseudoatoms(objId);
-    CheckCounter check;
-    mapIndigoIterator(atoms, check);
-
-    int cnt = check.getResults();
-    if (cnt)
-        message = "Structure contains " + std::to_string(cnt) + " pseudoatom" + (cnt > 1 ? "s" : "");
-
-    return cnt;
-}
 
 static int checkAmbigousH(int objId, std::string & message)
 {
