@@ -35,6 +35,8 @@
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molecule_savers.h"
 
+#include "indigo_savers.h"
+
 IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
 {
 }
@@ -1447,6 +1449,44 @@ static int checkAmbigousH(int objId, std::string & message)
     return 0;
 }
 
+static int getMolfile(int objId, Array<char> & buff)
+{
+    INDIGO_BEGIN
+    {
+        ArrayOutput output(buff);
+        IndigoObject &obj = self.getObject(objId);
+
+        IndigoSdfSaver::appendMolfile(output, obj);
+        return 0;
+    }
+    INDIGO_END(0)
+}
+
+static int checkStereo(int objId, std::string & message)
+{
+
+    indigoSetOptionBool("ignore-stereochemistry-errors", 0);
+
+    try
+    {
+        Array<char> buff;
+        getMolfile(objId, buff);
+        const char * molfile = buff.ptr();
+
+        if (isQueryMolecula(objId))
+            indigoLoadQueryMoleculeFromString(molfile);
+        else
+            indigoLoadMoleculeFromString(molfile);
+    }
+    catch (Exception &ex)
+    {
+        message = "Structure has stereochemistry errors";
+        return 1;
+    }
+
+    return 0;
+
+}
 
 
 static void addPropertyResult(const std::string & propertyName,
@@ -1468,7 +1508,8 @@ static std::vector<PropertyCheck> propertyList = { std::make_pair("valence",    
                                                    std::make_pair("radicals",    checkRadicals),
                                                    std::make_pair("rgroups",     checkRGroups),
                                                    std::make_pair("pseudoatoms", checkPseudoatoms),
-                                                   std::make_pair("ambiguous_h", checkAmbigousH), };
+                                                   std::make_pair("ambiguous_h", checkAmbigousH),
+                                                   std::make_pair("stereo",      checkStereo) };
 
 CEXPORT const char * indigoCheckStructure(int obj, const char * params)
 {
