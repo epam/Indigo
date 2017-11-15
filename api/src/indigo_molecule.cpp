@@ -1488,6 +1488,30 @@ static int checkStereo(int objId, std::string & message)
 
 }
 
+static int check3d(int objId, std::string & message)
+{
+    if (isQueryMolecula(objId))
+    {
+        message = "Structure has Z coordinates";
+        return 1;
+    }
+
+    return 0;
+}
+
+
+static int checkSgroups(int objId, std::string & message)
+{
+    int groups = indigoIterateDataSGroups(objId);
+    if (indigoHasNext(groups) > 0)
+    {
+        message = "Structure has SGroups";
+        return 1;
+    }
+
+    return 0;
+}
+
 
 static void addPropertyResult(const std::string & propertyName,
                              const std::string & errMessage,
@@ -1509,7 +1533,9 @@ static std::vector<PropertyCheck> propertyList = { std::make_pair("valence",    
                                                    std::make_pair("rgroups",     checkRGroups),
                                                    std::make_pair("pseudoatoms", checkPseudoatoms),
                                                    std::make_pair("ambiguous_h", checkAmbigousH),
-                                                   std::make_pair("stereo",      checkStereo) };
+                                                   std::make_pair("stereo",      checkStereo),
+                                                   std::make_pair("3d",          check3d),
+                                                   std::make_pair("sgroups",     checkSgroups) };
 
 CEXPORT const char * indigoCheckStructure(int obj, const char * params)
 {
