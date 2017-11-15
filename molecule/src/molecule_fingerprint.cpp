@@ -622,7 +622,8 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
          // No exception should ever be thrown, added the try-catch just to be sure
          try
          {
-            MoleculePkaModel::getAtomLocalFeatureSet(mol, vi, feature_set);
+            bool res = MoleculePkaModel::getAtomLocalFeatureSet(mol, vi, feature_set);
+            if(!res) continue;  // skippable atom
          }
          catch (indigo::Exception &e)
          {
@@ -648,8 +649,9 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
          // No exception should ever be thrown, added the try-catch just to be sure
          try
          {
-            MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).beg, feature_set1);
-            MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).end, feature_set2);
+            bool res1 = MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).beg, feature_set1);
+            bool res2 = MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).end, feature_set2);
+            if (!res1 || !res2) continue;  // skippable atoms
          }
          catch (indigo::Exception &e)
          {
