@@ -1303,6 +1303,7 @@ static int checkQuery(int objId, std::string & message)
 class CheckCounter
 {
 public:
+    virtual ~CheckCounter() = default;
 
     virtual void operator()(int objId)
     {
@@ -1319,7 +1320,6 @@ public:
         return "Structure contains " + std::to_string(cnt)
                     + " atom" + (cnt > 1 ? "s" : "") + " with " + propertyMess;
     }
-
 
 protected:
     int counter = { 0 };
@@ -1393,7 +1393,6 @@ static int checkRadicals(int objId, std::string & message)
     if (cnt)
         message = CheckCounter::printContainProperty(cnt, "radical electrons");
 
-
     return cnt;
 }
 
@@ -1408,6 +1407,38 @@ static int checkRGroups(int objId, std::string & message)
 
     return 0;
 }
+
+static int checkPseudoatoms(int objId, std::string & message)
+{
+    int atoms = indigoIteratePseudoatoms(objId);
+    CheckCounter check;
+    mapIndigoIterator(atoms, check);
+
+    int cnt = check.getResults();
+    if (cnt)
+        message = "Structure contains " + std::to_string(cnt) + " pseudoatom" + (cnt > 1 ? "s" : "");
+
+    return cnt;
+}
+
+static int checkAmbigousH(int objId, std::string & message)
+{
+    if (isQueryMolecula(objId))
+    {
+        message = "Structure contains query features, so ambiguous H could not be checked";
+        return 1;
+    }
+
+    const char * strAmb = indigoCheckAmbiguousH(objId);
+    if (strAmb && strAmb[0])
+    {
+        message = "Structure has ambiguous hydrogens";
+        return 1;
+    }
+
+    return 0;
+}
+
 
 
 static void addPropertyResult(const std::string & propertyName,
@@ -1424,10 +1455,12 @@ static void addPropertyResult(const std::string & propertyName,
 typedef int (*PropertyChecker)(int, std::string &);
 typedef std::pair<std::string, PropertyChecker> PropertyCheck;
 
-static std::vector<PropertyCheck> propertyList = { std::make_pair("valence",  checkValence),
-                                                   std::make_pair("query",    checkQuery),
-                                                   std::make_pair("radicals", checkRadicals),
-                                                   std::make_pair("rgroups",  checkRGroups) };
+static std::vector<PropertyCheck> propertyList = { std::make_pair("valence",     checkValence),
+                                                   std::make_pair("query",       checkQuery),
+                                                   std::make_pair("radicals",    checkRadicals),
+                                                   std::make_pair("rgroups",     checkRGroups),
+                                                   std::make_pair("pseudoatoms", checkPseudoatoms),
+                                                   std::make_pair("ambiguous_h", checkAmbigousH), };
 
 CEXPORT const char * indigoCheckStructure(int obj, const char * params)
 {
