@@ -615,6 +615,7 @@ static void readAllDataToString(Scanner & scanner, Array<char> & dataBuf)
        {
           GZipScanner gzscanner(scanner);
           gzscanner.readAll(dataBuf);
+          dataBuf.push('\0');
 
           return;
        }
