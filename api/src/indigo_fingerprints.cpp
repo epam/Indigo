@@ -101,6 +101,7 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       if (query)
          throw IndigoError("there can not be 'full' fingerprint of a query molecule");
       // full (non-query) fingerprint, do not skip anything
+      builder.skip_chem = true;  // for backward compatibility
    }
    else
       throw IndigoError("unknown molecule fingerprint type: %s", type);

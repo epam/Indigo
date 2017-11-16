@@ -235,6 +235,7 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       if (query)
          throw Error("there can not be 'full' fingerprint of a query molecule");
       // full (non-query) fingerprint, do not skip anything
+      this->skip_chem = true; // for backward compatibility
    }
    else
       throw Error("unknown molecule fingerprint type: %s", type);
