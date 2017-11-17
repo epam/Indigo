@@ -1534,6 +1534,237 @@ static int checkV3000(int objId, std::string & message)
     return 0;
 }
 
+/////
+//def check_atoms_overlapping(mol):
+//    def calc_dist(a, b):
+//        return sqrt(sum((a - b) ** 2 for a, b in zip(a, b)))
+//
+//    mean_dist = 0
+//    for bond in mol.iterateBonds():
+//        a = bond.source().xyz()
+//        b = bond.destination().xyz()
+//        dist = calc_dist(a, b)
+//        mean_dist += dist
+//    if mol.countBonds() > 0:
+//        mean_dist = mean_dist / mol.countBonds()
+//    if not mean_dist and mol.countBonds():
+//        return True
+//    atom_xyz = []
+//    for atom in mol.iterateAtoms():
+//        a = atom.xyz()
+//        for b in atom_xyz:
+//            dist = calc_dist(a, b)
+//            if mean_dist and dist / mean_dist < 0.25:
+//                return True
+//        atom_xyz.append(a)
+//    return False
+//////
+
+static float calcDist(const float * srcPos, const float * dstPos)
+{
+    float sqSum = (srcPos[0] - dstPos[0]) * (srcPos[0] - dstPos[0]);
+    sqSum += (srcPos[1] - dstPos[1]) * (srcPos[1] - dstPos[1]);
+    sqSum += (srcPos[2] - dstPos[2]) * (srcPos[2] - dstPos[2]);
+
+    return sqrt(sqSum);
+}
+
+class SumBondDist : public CheckCounter
+{
+public:
+    void operator()(int id)
+    {
+        counter++;
+        bondMeanDist += bondLen(id);
+    }
+
+    float bondMeanDist = { 0 };
+
+private:
+    float bondLen(int bondId)
+    {
+        // TODO:
+//        IndigoBond &ib = IndigoBond::cast(self.getObject(bondId));
+//        IndigoAtom sourceAtom(ib.mol, ib.mol.getEdge(ib.idx).beg));
+//        IndigoAtom destinAtom(ib.mol, ib.mol.getEdge(ib.idx).end));
+//        Vec3f & srcPos = mol.getAtomXyz(sourceAtom.idx);
+//        Vec3f & dstPos = mol.getAtomXyz(destinAtom.idx);
+
+        int source = indigoSource(bondId);
+        int destin = indigoDestination(bondId);
+
+        const float * posTmp = indigoXYZ(source);
+        std::vector<float> srcPos({posTmp[0], posTmp[1], posTmp[2]});
+        posTmp = indigoXYZ(destin);
+        std::vector<float> dstPos({posTmp[0], posTmp[1], posTmp[2]});
+
+        return calcDist(srcPos.data(), dstPos.data());
+    }
+};
+
+// indigo_api.py
+static bool isMoleculeAtomsOverlapping(int molId)
+{
+    int bondsIter = indigoIterateBonds(molId);
+    SumBondDist sumDist;
+    mapIndigoIterator(bondsIter, sumDist);
+
+    //int bondNum = sumDist.getResults();
+    int bondNum = indigoCountBonds(molId);
+
+    float meanDist = 0;
+    if (bondNum > 0)
+    {
+        meanDist = sumDist.bondMeanDist / (float)bondNum;
+        float minValue = 0.001f;
+        if (meanDist < minValue)
+            return true;
+    }
+
+    if (meanDist == 0)
+        return false;
+
+    std::vector<std::vector<float>> atomPosList;
+
+    int atomIter = indigoIterateAtoms(molId);
+    while (indigoHasNext(atomIter))
+    {
+        int atomId = indigoNext(atomIter);
+        const float * atomPos = indigoXYZ(atomId);
+        for (auto it = atomPosList.begin(); it != atomPosList.end(); it++)
+        {
+            float dist = calcDist(atomPos, it->data());
+            if (dist / meanDist > 0.25f)
+                return true;
+        }
+
+        atomPosList.push_back(std::vector<float>({atomPos[0], atomPos[1], atomPos[2]}));
+    }
+    return false;
+}
+
+static int checkOverlappingAtoms(int objId, std::string & message)
+{
+    if (isMoleculeAtomsOverlapping(objId))
+    {
+        message = "Structure contains overlapping atoms";
+        return 1;
+    }
+
+    return 0;
+}
+
+
+static void getBondCoords(int bondId,
+                          std::vector<float> & srcPos,
+                          std::vector<float> & dstPos)
+{
+    int source = indigoSource(bondId);
+    int destin = indigoDestination(bondId);
+
+    const float * posTmp = indigoXYZ(source);
+    srcPos = std::vector<float>({posTmp[0], posTmp[1], posTmp[2]});
+    posTmp = indigoXYZ(destin);
+    dstPos = std::vector<float>({posTmp[0], posTmp[1], posTmp[2]});
+}
+
+
+static int side(const std::vector<float> & a,
+                const std::vector<float> & b,
+                const std::vector<float> & c)
+{
+    float d = (c[1] - a[1]) * (b[0] - a[0]) - (b[1] - a[1]) * (c[0] - a[0]);
+    return (d > 0 ? 1 : (d < 0 ? -1 : 0));
+}
+
+static bool is_point_in_closed_segment(const std::vector<float> & a,
+                                       const std::vector<float> & b,
+                                       const std::vector<float> & c)
+{
+    //""" Returns True if c is inside closed segment, False otherwise.
+    //    a, b, c are expected to be collinear"""
+
+    if (a[0] < b[0])
+        return a[0] <= c[0] && c[0] <= b[0];
+
+    if (b[0] < a[0])
+        return b[0] <= c[0] && c[0] <= a[0];
+
+    if (a[1] < b[1])
+        return a[1] <= c[1] && c[1] <= b[1];
+
+    if (b[1] < a[1])
+        return b[1] <= c[1] && c[1] <= a[1];
+
+    return (a[0] == c[0] and a[1] == c[1]);
+}
+
+static bool closedSegmentIntersect(const std::vector<float> & a,
+                                   const std::vector<float> & b,
+                                   const std::vector<float> & c,
+                                   const std::vector<float> & d)
+{
+    //""" Verifies if closed segments a, b, c, d do intersect"""
+    if (a == c || a == d || b == c || b == d)
+        return false;
+
+    int s1 = side(a, b, c);
+    int s2 = side(a, b, d);
+    //# All points are collinear
+    if (s1 == 0 && s2 == 0)
+    {
+        return (is_point_in_closed_segment(a, b, c) ||
+                is_point_in_closed_segment(a, b, d) ||
+                is_point_in_closed_segment(c, d, a) ||
+                is_point_in_closed_segment(c, d, b));
+    }
+
+    //# No touching and on the same side
+    if (s1 && s1 == s2)
+        return false;
+
+    s1 = side(c, d, a);
+    s2 = side(c, d, b);
+    //# No touching and on the same side
+    if (s1 && s1 == s2)
+        return false;
+
+    return true;
+}
+
+// indigo_api.py
+static bool isMoleculeBondsOverlapping(int molId)
+{
+    int bondNum = indigoCountBonds(molId);
+
+    for (int b1 = 0; b1 < bondNum - 1; b1++)
+    {
+        for (int b2 = b1 + 1; b2 < bondNum; b2++)
+        {
+            std::vector<float> a, b;
+            getBondCoords(indigoGetBond(molId, b1), a, b);
+
+            std::vector<float> c, d;
+            getBondCoords(indigoGetBond(molId, b2), c, d);
+
+            if (closedSegmentIntersect(a, b, c, d))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+static int checkOverlappingBonds(int objId, std::string & message)
+{
+    if (isMoleculeBondsOverlapping(objId))
+    {
+        message = "Structure contains overlapping bonds";
+        return 1;
+    }
+
+    return 0;
+}
 
 static void addPropertyResult(const std::string & propertyName,
                              const std::string & errMessage,
@@ -1559,7 +1790,9 @@ static std::vector<PropertyCheck> propertyList = { std::make_pair("valence",    
                                                    std::make_pair("3d",          check3d),
                                                    std::make_pair("sgroups",     checkSgroups),
                                                    std::make_pair("chiral",      checkChiral) ,
-                                                   std::make_pair("V3000",       checkV3000) };
+                                                   std::make_pair("V3000",       checkV3000),
+                                                   std::make_pair("overlapping_atoms", checkOverlappingAtoms),
+                                                   std::make_pair("overlapping_bonds", checkOverlappingBonds) };
 
 CEXPORT const char * indigoCheckStructure(int obj, const char * params)
 {
