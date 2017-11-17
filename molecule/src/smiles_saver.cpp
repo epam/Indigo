@@ -1567,6 +1567,10 @@ void SmilesSaver::_writeStereogroups ()
          }
       }
    }
+
+   if (!mol.isChrial())
+       _output.printf(",r");
+
 }
 
 void SmilesSaver::_writeRadicals ()
