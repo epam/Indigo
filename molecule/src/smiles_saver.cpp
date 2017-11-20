@@ -843,7 +843,16 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
          if (hydro < 0 && !ignore_invalid_hcount)
             throw Error("unsure hydrogen count on atom #%d", idx);
       }
-      _output.writeChar('[');
+      if (chirality > 0 && hydro > 1)
+      {
+         if (charge != 0 || isotope > 0 || aam > 0)
+           _output.writeChar('[');
+         else
+           need_brackets = false;
+      }
+      else
+         _output.writeChar('[');
+
    }
 
    if (isotope > 0)
@@ -859,7 +868,11 @@ void SmilesSaver::_writeAtom (int idx, bool aromatic, bool lowercase, int chiral
    else
       _output.printf("%s", elem);
 
-   _writeChirality(chirality);
+   if (!need_brackets)
+      return;
+
+   if (hydro < 2)
+      _writeChirality(chirality);
 
    if (hydro > 1)
       _output.printf("H%d", hydro);
