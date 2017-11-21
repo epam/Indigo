@@ -1616,7 +1616,7 @@ static bool isMoleculeAtomsOverlapping(int molId)
     if (bondNum > 0)
     {
         meanDist = sumDist.bondMeanDist / (float)bondNum;
-        float minValue = 0.001f;
+        float minValue = 0.0001f;
         if (meanDist < minValue)
             return true;
     }
@@ -1634,7 +1634,7 @@ static bool isMoleculeAtomsOverlapping(int molId)
         for (auto it = atomPosList.begin(); it != atomPosList.end(); it++)
         {
             float dist = calcDist(atomPos, it->data());
-            if (dist / meanDist > 0.25f)
+            if (dist / meanDist < 0.25f)
                 return true;
         }
 
@@ -1732,20 +1732,53 @@ static bool closedSegmentIntersect(const std::vector<float> & a,
     return true;
 }
 
+
+typedef std::vector<std::pair<std::vector<float>, std::vector<float>>> BondCoordinates;
+
+class BondCoord : public CheckCounter
+{
+public:
+    BondCoord(int molId, BondCoordinates & bondCoordList)
+        : molId(molId),
+          bondCoords(bondCoordList)
+    {}
+
+    void operator()(int id)
+    {
+        std::vector<float> src, dst;
+        getBondCoords(id, src, dst);
+
+        bondCoords[counter] = make_pair(src, dst);
+        counter++;
+    }
+
+private:
+    int molId;
+    BondCoordinates & bondCoords;
+};
+
+
 // indigo_api.py
 static bool isMoleculeBondsOverlapping(int molId)
 {
     int bondNum = indigoCountBonds(molId);
 
+    BondCoordinates bondCoordList(bondNum);
+
+    int bondsIter = indigoIterateBonds(molId);
+    BondCoord calcBondCoord(molId, bondCoordList);
+    mapIndigoIterator(bondsIter, calcBondCoord);
+
+
     for (int b1 = 0; b1 < bondNum - 1; b1++)
     {
+        const std::vector<float> & a = bondCoordList[b1].first;
+        const std::vector<float> & b = bondCoordList[b1].second;
+
         for (int b2 = b1 + 1; b2 < bondNum; b2++)
         {
-            std::vector<float> a, b;
-            getBondCoords(indigoGetBond(molId, b1), a, b);
-
-            std::vector<float> c, d;
-            getBondCoords(indigoGetBond(molId, b2), c, d);
+            const std::vector<float> & c = bondCoordList[b2].first;
+            const std::vector<float> & d = bondCoordList[b2].second;
 
             if (closedSegmentIntersect(a, b, c, d))
                 return true;
