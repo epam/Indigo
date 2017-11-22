@@ -49,6 +49,7 @@ class TautomerSuperStructure;
 struct MoleculeFingerprintParameters
 {
    bool ext;
+   bool use_chem_similarity;
    int ord_qwords, any_qwords, tau_qwords, sim_qwords;
 
    int fingerprintSize    () const { return (ext ? 3 : 0) + (ord_qwords + any_qwords + tau_qwords + sim_qwords) * 8; }
@@ -117,6 +118,8 @@ protected:
       bool use_atoms, bool use_bonds, int subgraph_type, dword &bits_to_set);
 
    void _makeFingerprint (BaseMolecule &mol);
+   void _makeFingerprint_calcOrd(BaseMolecule &mol);
+   void _makeFingerprint_calcChem(BaseMolecule &mol);
    void _calcExtraBits (BaseMolecule &mol);
 
    void _setTauBits (const char *str, int nbits);

@@ -545,59 +545,67 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       _tau_super_structure = 0;
    
    if (!skip_ord || !skip_any_atoms || !skip_any_atoms_bonds ||
-       !skip_any_bonds || !skip_tau || !skip_sim)  // TODO: check for `use_chem_similarity`
-   {
-      QS_DEF(Filter, vfilter);
-      vfilter.initAll(mol_for_enumeration->vertexEnd());
+       !skip_any_bonds || !skip_tau ||
+       !skip_sim && !_parameters.use_chem_similarity && _parameters.sim_qwords > 0)
+      _makeFingerprint_calcOrd(*mol_for_enumeration);
 
-      // remove (possible) hydrogens
-      for (auto v : mol_for_enumeration->vertices())
-         if (mol_for_enumeration->possibleAtomNumber(v, ELEM_H))
-            vfilter.hide(v);
-
-      _initHashCalculations(*mol_for_enumeration, vfilter);
-
-      CycleEnumerator ce(*mol_for_enumeration);
-      GraphSubtreeEnumerator se(*mol_for_enumeration);
-
-      ce.vfilter = &vfilter;
-      se.vfilter = &vfilter;
-
-      bool sim_only = skip_ord && skip_tau && skip_any_atoms &&
-                      skip_any_atoms_bonds && skip_any_bonds;
-
-      _is_cycle = true;
-      ce.context = this;
-      ce.max_length = sim_only ? 6 : 8;
-      ce.cb_handle_cycle = _handleCycle;
-      ce.process();
-   
-      _is_cycle = false;
-      se.context = this;
-      se.min_vertices = 1;
-      se.max_vertices = sim_only ? 5 : 7;
-      se.handle_maximal = false;
-      se.maximal_critera_value_callback = _maximalSubgraphCriteriaValue;
-      se.callback = _handleTree;
-      se.process();
-
-      // Set hash bits
-      for (auto it : _ord_hashes)
-      {
-         int bits_per_fragment = it.first.bits_per_fragment + (bitLog2Dword(it.second) - 1);
-         // Heuristic: if a fragment has high frequency and they are close to each other (like in substructure query)
-         // then there should be larger fragment with lower frequency
-         if (bits_per_fragment > 8)
-            bits_per_fragment = 8;
-         _setBits(it.first.hash, getOrd(), _parameters.fingerprintSizeOrd(), bits_per_fragment);
-      }
-   }
-   
    if (!skip_ext && _parameters.ext)
       _calcExtraBits(mol);
 
-   if (!skip_sim)  // TODO: check for `use_chem_similarity`
+   if (!skip_sim && _parameters.use_chem_similarity && _parameters.sim_qwords > 0)
+      _makeFingerprint_calcChem(mol);
+}
+
+void MoleculeFingerprintBuilder::_makeFingerprint_calcOrd(BaseMolecule &mol)
+{
+   QS_DEF(Filter, vfilter);
+   vfilter.initAll(mol.vertexEnd());
+
+   // remove (possible) hydrogens
+   for (auto v : mol.vertices())
+      if (mol.possibleAtomNumber(v, ELEM_H))
+         vfilter.hide(v);
+
+   _initHashCalculations(mol, vfilter);
+
+   CycleEnumerator ce(mol);
+   GraphSubtreeEnumerator se(mol);
+
+   ce.vfilter = &vfilter;
+   se.vfilter = &vfilter;
+
+   bool sim_only = skip_ord && skip_tau && skip_any_atoms &&
+                   skip_any_atoms_bonds && skip_any_bonds;
+
+   _is_cycle = true;
+   ce.context = this;
+   ce.max_length = sim_only ? 6 : 8;
+   ce.cb_handle_cycle = _handleCycle;
+   ce.process();
+
+   _is_cycle = false;
+   se.context = this;
+   se.min_vertices = 1;
+   se.max_vertices = sim_only ? 5 : 7;
+   se.handle_maximal = false;
+   se.maximal_critera_value_callback = _maximalSubgraphCriteriaValue;
+   se.callback = _handleTree;
+   se.process();
+
+   // Set hash bits
+   for (auto it : _ord_hashes)
    {
+      int bits_per_fragment = it.first.bits_per_fragment + (bitLog2Dword(it.second) - 1);
+      // Heuristic: if a fragment has high frequency and they are close to each other (like in substructure query)
+      // then there should be larger fragment with lower frequency
+      if (bits_per_fragment > 8)
+         bits_per_fragment = 8;
+      _setBits(it.first.hash, getOrd(), _parameters.fingerprintSizeOrd(), bits_per_fragment);
+   }
+}
+
+void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule &mol)
+{
       std::map<dword, int> counters;
 
       QS_DEF(Array<int>, feature_set);
@@ -682,7 +690,6 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
          _setBits(key, getSim(), _parameters.fingerprintSizeSim(), count);
       }
    }
-}
 
 void MoleculeFingerprintBuilder::_calcExtraBits (BaseMolecule &mol)
 {
