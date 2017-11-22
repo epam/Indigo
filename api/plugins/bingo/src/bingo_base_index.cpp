@@ -2,6 +2,8 @@
 #include "bingo_mmf.h"
 #include "bingo_ptr.h"
 
+#include "indigo_fingerprints.h"
+
 #include <sstream>
 #include <string>
 #include <limits.h>
@@ -171,6 +173,57 @@ int BaseIndex::add (/* const */ IndexObject &obj, int obj_id, DatabaseLockData &
    {
       profTimerStart(t_in, "prepare_obj_data");      
       _prepareIndexData(obj, _obj_data);
+   }
+   
+   WriteLock wlock(lock_data);
+   profTimerStart(t_after, "exclusive_write");   
+
+   {
+      profTimerStart(t_in, "add_obj_data");   
+      _insertIndexData(_obj_data);
+   }
+
+   {
+      profTimerStart(t_in, "mapping_changing_1");      
+      if (obj_id == -1)
+      {
+         int i = _header->first_free_id;
+         while (back_id_mapping.get(i) != (size_t)-1)
+            i++;
+         
+         _header->first_free_id = i;
+
+         obj_id = _header->first_free_id;
+      }
+   }
+
+   int base_id = _header->object_count;
+   _header->object_count++;
+   {
+      profTimerStart(t_in, "mapping_changing_2");    
+      _mappingAdd(obj_id, base_id);
+   }
+   
+   return obj_id;
+}
+
+int BaseIndex::addWithExtFP (/* const */ IndexObject &obj, int obj_id, DatabaseLockData &lock_data, IndigoObject &fp)
+{
+   if (_read_only)
+      throw Exception("insert fail: Read only index can't be changed");
+
+   BingoMapping & back_id_mapping = _back_id_mapping_ptr.ref();
+
+   {
+      WriteLock wlock(lock_data);
+      if (obj_id != -1 && back_id_mapping.get(obj_id) != (size_t)-1)
+            throw Exception("insert fail: This id was already used");
+   }
+
+   _ObjectIndexData _obj_data;
+   {
+      profTimerStart(t_in, "prepare_obj_data");      
+      _prepareIndexDataWithExtFP(obj, _obj_data, fp);
    }
    
    WriteLock wlock(lock_data);
@@ -436,6 +489,37 @@ bool BaseIndex::_prepareIndexData (IndexObject &obj, _ObjectIndexData &obj_data)
       profTimerStart(t, "prepare_fp");
       if (!obj.buildFingerprint(_fp_params, &obj_data.sub_fp, &obj_data.sim_fp))
          return false;
+   }
+
+   if (!obj.buildHash(obj_data.hash))
+      return false;
+
+   return true;
+}
+
+bool BaseIndex::_prepareIndexDataWithExtFP (IndexObject &obj, _ObjectIndexData &obj_data, IndigoObject &fp)
+{
+   {
+      profTimerStart(t, "prepare_cf");
+      if (!obj.buildCfString(obj_data.cf_str))
+         return false;
+   }
+
+   {
+      profTimerStart(t, "prepare_formula");
+      if (!obj.buildGrossString(obj_data.gross_str))
+         return false;
+   }
+
+   {
+      profTimerStart(t, "prepare_fp");
+      if (!obj.buildFingerprint(_fp_params, &obj_data.sub_fp, 0))
+         return false;
+      IndigoFingerprint &ext_fp = IndigoFingerprint::cast(fp);
+      if (8 *_fp_params.sim_qwords == ext_fp.bytes.size())
+         obj_data.sim_fp.copy(ext_fp.bytes);
+      else
+         throw Exception("insert fail: external fingerprint is incompatible with current database");
    }
 
    if (!obj.buildHash(obj_data.hash))

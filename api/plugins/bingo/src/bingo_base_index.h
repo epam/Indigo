@@ -12,6 +12,7 @@
 #include "bingo_gross_storage.h"
 #include "bingo_sim_storge.h"
 #include "bingo_lock.h"
+#include "indigo_internal.h"
 
 #define BINGO_VERSION "v0.72"
 
@@ -29,11 +30,15 @@ namespace bingo
 
       virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data, const char *options) = 0;
 
+      virtual Matcher* createMatcherWithExtFP (const char *type, MatcherQueryData *query_data, const char *options, IndigoObject &fp) = 0;
+
       virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options, int index_id) = 0;
 
       virtual void load (const char *location, const char *options, int index_id) = 0;
 
       virtual int add (IndexObject &obj, int obj_id, DatabaseLockData &lock_data) = 0;
+
+      virtual int addWithExtFP (IndexObject &obj, int obj_id, DatabaseLockData &lock_data, IndigoObject &fp) = 0;
 
       virtual void optimize () = 0;
 
@@ -73,6 +78,8 @@ namespace bingo
       virtual void load (const char *location, const char *options, int index_id);
       
       virtual int add (IndexObject &obj, int obj_id, DatabaseLockData &lock_data);
+
+      virtual int addWithExtFP (IndexObject &obj, int obj_id, DatabaseLockData &lock_data, IndigoObject &fp);
 
       virtual void optimize ();
 
@@ -152,6 +159,8 @@ namespace bingo
                             std::map<std::string, std::string> &option_map);
 
       bool _prepareIndexData (IndexObject &obj, _ObjectIndexData &obj_data);
+
+      bool _prepareIndexDataWithExtFP (IndexObject &obj, _ObjectIndexData &obj_data, IndigoObject &fp);
 
       void _insertIndexData(_ObjectIndexData &obj_data);
 

@@ -25,12 +25,15 @@ public interface BingoLib extends Library
 
         int bingoInsertRecordObj (int db, int obj);
         int bingoInsertRecordObjWithId(int db, int obj, int id);
+        int bingoInsertRecordObjWithExtFP (int db, int obj, int ext_fp);
+        int bingoInsertRecordObjWithIdAndExtFP(int db, int obj, int ext_fp, int id);
         int bingoDeleteRecord (int db, int index);
 
         int bingoOptimize (int db);
 
         int bingoSearchSub (int db, int query_obj, String options);
         int bingoSearchSim (int db, int query_obj, float min, float max, String options);
+        int bingoSearchSimWithExtFP (int db, int query_obj, float min, float max, int ext_fp, String options);
         int bingoSearchExact (int db, int query_obj, String options);
         int bingoSearchMolFormula (int db, String query, String options);
 

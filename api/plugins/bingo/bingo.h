@@ -29,6 +29,8 @@ CEXPORT int bingoCloseDatabase (int db);
 //
 CEXPORT int bingoInsertRecordObj (int db, int obj);
 CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id);
+CEXPORT int bingoInsertRecordObjWithExtFP (int db, int obj, int fp);
+CEXPORT int bingoInsertRecordObjWithIdAndExtFP (int db, int obj, int id, int fp);
 CEXPORT int bingoDeleteRecord (int db, int id);
 CEXPORT int bingoGetRecordObj (int db, int id);
 
@@ -40,6 +42,7 @@ CEXPORT int bingoSearchSub (int db, int query_obj, const char *options);
 CEXPORT int bingoSearchExact (int db, int query_obj, const char *options);
 CEXPORT int bingoSearchMolFormula (int db, const char *query, const char *options);
 CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const char *options);
+CEXPORT int bingoSearchSimWithExtFP (int db, int query_obj, float min, float max, int fp, const char *options);
 
 CEXPORT int bingoEnumerateId (int db);
 

@@ -50,6 +50,22 @@ Matcher* MoleculeIndex::createMatcher (const char *type, MatcherQueryData *query
    return 0;
 }
 
+Matcher* MoleculeIndex::createMatcherWithExtFP (const char *type, MatcherQueryData *query_data, const char *options, IndigoObject &fp)
+{
+   if (strcmp(type, "sim") == 0)
+   {
+      AutoPtr<MoleculeSimMatcher> matcher(new MoleculeSimMatcher(*this));
+      matcher->setOptions(options);
+      matcher->setQueryDataWithExtFP(dynamic_cast<SimilarityQueryData *>(query_data), fp);
+      return matcher.release();
+   }
+   else
+      throw Exception("createMatcher: undefined type");
+
+   return 0;
+}
+
+
 ReactionIndex::ReactionIndex () : BaseIndex(REACTION)
 {
 }
@@ -80,6 +96,21 @@ Matcher* ReactionIndex::createMatcher (const char *type, MatcherQueryData *query
    else if (strcmp(type, "enum") == 0)
    {
       AutoPtr<EnumeratorMatcher> matcher(new EnumeratorMatcher(*this));
+      return matcher.release();
+   }
+   else
+      throw Exception("createMatcher: undefined type");
+
+   return 0;
+}
+
+Matcher* ReactionIndex::createMatcherWithExtFP (const char *type, MatcherQueryData *query_data, const char *options, IndigoObject &fp)
+{
+   if (strcmp(type, "sim") == 0)
+   {
+      AutoPtr<ReactionSimMatcher> matcher(new ReactionSimMatcher(*this));
+      matcher->setOptions(options);
+      matcher->setQueryDataWithExtFP(dynamic_cast<SimilarityQueryData *>(query_data), fp);
       return matcher.release();
    }
    else

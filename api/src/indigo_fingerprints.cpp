@@ -166,6 +166,33 @@ CEXPORT int indigoFingerprint (int item, const char *type)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoFingerprintExt (const char *fp_ext, int size)
+{
+   INDIGO_BEGIN
+   {
+      if (strlen(fp_ext) >= size*2)
+      {
+         QS_DEF(Array<byte>, data);
+         byte inp;
+         data.clear();
+         for (auto i = 0; i < size; i++)
+         {
+            if (sscanf(fp_ext + 2*i, "%02x", &inp) == 1)
+               data.push(inp);
+            else
+               throw IndigoError("indigoFingerprintExt(): input fingerprint is incorrect");
+         }
+      
+         AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
+         fp->bytes.copy(data.ptr(), size);
+         return self.addObject(fp.release());
+      }
+      else
+         throw IndigoError("indigoFingerprintExt(): length of input string is wrong");
+   }
+   INDIGO_END(-1);
+}
+
 void IndigoFingerprint::toString (Array<char> &str)
 {
    ArrayOutput output(str);
@@ -178,7 +205,6 @@ void IndigoFingerprint::toString (Array<char> &str)
 void IndigoFingerprint::toBuffer (Array<char> &buf)
 {
    buf.copy((char *)bytes.ptr(), bytes.size());
-
 }
 
 static float _indigoSimilarity2 (const byte *arr1, const byte *arr2, int size, const char *metrics)

@@ -185,6 +185,31 @@ public class Bingo {
 		return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithId(_id, record.self, id));
 	}
 
+    /**
+       	Insert a structure into the database and returns id of this structure
+
+        @param record Indigo object with a chemical structure (molecule or reaction)
+        @param ext_fp Indigo object with a external similarity fingerprint (molecule or reaction)
+        @return record id
+    */
+	public int insert(IndigoObject record, IndigoObject ext_fp) {
+	   _indigo.setSessionID();
+	   return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithExtFP(_id, record.self, ext_fp.self));
+	}
+
+    /**
+        Inserts a structure under a specified id
+
+        @param record Indigo object with a chemical structure (molecule or reaction)
+        @param id record id
+        @param ext_fp Indigo object with a external similarity fingerprint (molecule or reaction)
+        @return inserted record id
+    */
+	public int insert(IndigoObject record, IndigoObject ext_fp, int id) {
+		_indigo.setSessionID();
+		return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithIdAndExtFP(_id, record.self, ext_fp.self, id));
+	}
+
 	/**
         Delete a record by id
 
@@ -235,6 +260,24 @@ public class Bingo {
 		}
 		_indigo.setSessionID();
 		return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSim(_id, query.self, min, max, metric)), _indigo, _lib);
+	}
+
+	/**
+		Execute similarity search operation
+
+		@param query indigo object (molecule or reaction)
+		@param min Minimum similarity value
+		@param max Maximum similairy value
+		@param ext_fp Indigo object with a external similarity fingerprint (molecule or reaction)
+		@param metric Default value is "tanimoto"
+		@return Bingo search object instance
+	*/
+	public BingoObject searchSim(IndigoObject query, float min, float max, IndigoObject ext_fp, String metric) {
+		if (metric == null) {
+			metric = "tanimoto";
+		}
+		_indigo.setSessionID();
+		return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSimWithExtFP(_id, query.self, min, max, ext_fp.self, metric)), _indigo, _lib);
 	}
 
 	/**

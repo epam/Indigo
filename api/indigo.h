@@ -769,6 +769,9 @@ CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2);
 //Return one bits string for the fingerprint object
 CEXPORT const char* indigoOneBitsList (int fingerprint);
 
+// Returns a 'fingerprint' object created from HEX sting
+CEXPORT int indigoFingerprintExt (const char *fp_ext, int size);
+
 // Accepts two molecules, two reactions, or two fingerprints.
 // Returns the similarity measure between them.
 // Metrics: "tanimoto", "tversky", "tversky <alpha> <beta>", "euclid-sub" or "normalized-edit"

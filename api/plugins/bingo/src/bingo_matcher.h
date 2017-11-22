@@ -7,6 +7,7 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 #include "indigo_match.h"
+#include "indigo_fingerprints.h"
 
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molecule_exact_matcher.h"
@@ -285,6 +286,8 @@ namespace bingo
       virtual bool next ();
       
       void setQueryData (SimilarityQueryData *query_data);
+
+      void setQueryDataWithExtFP (SimilarityQueryData *query_data, IndigoObject &fp);
 
       ~BaseSimilarityMatcher();
 

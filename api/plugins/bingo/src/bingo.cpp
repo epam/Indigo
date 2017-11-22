@@ -19,6 +19,7 @@
 #include "indigo_internal.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
+#include "indigo_fingerprints.h"
 #include "indigo_cpp.h"
 #include "bingo_internal.h"
 
@@ -139,6 +140,42 @@ static int _insertObjectToDatabase (int db, Indigo &self, Index &bingo_index, In
    return -1;
 }
 
+static int _insertObjectWithExtFPToDatabase (int db, Indigo &self, Index &bingo_index, IndigoObject &indigo_obj, int obj_id, IndigoObject &fp)
+{
+   profTimerStart(t, "_insertObjectWithExtFPToDatabase");
+   if (bingo_index.getType() == Index::MOLECULE)
+   {
+
+      profTimerStart(t1, "_preadd");
+      if (!IndigoMolecule::is(indigo_obj))
+         throw BingoException("insertObjectWithExtFPToDatabase: Only molecule objects can be added to molecule index");
+
+      indigo_obj.getBaseMolecule().aromatize(self.arom_options);
+
+      IndexMolecule ind_mol(indigo_obj.getMolecule());
+      profTimerStop(t1);
+
+      int id = bingo_index.addWithExtFP(ind_mol, obj_id, *_lockers[db], fp);
+      return id;
+   }
+   else if (bingo_index.getType() == Index::REACTION)
+   {
+      if (!IndigoReaction::is(indigo_obj))
+         throw BingoException("insertObjectWithExtFPToDatabase: Only reaction objects can be added to reaction index");
+
+      indigo_obj.getBaseReaction().aromatize(self.arom_options);
+
+      IndexReaction ind_rxn(indigo_obj.getReaction());
+
+      int id = bingo_index.addWithExtFP(ind_rxn, obj_id, *_lockers[db], fp);
+      return id;
+   }
+   else
+      throw BingoException("insertObjectWithExtFPToDatabase: Incorrect database");
+
+   return -1;
+}
+
 Matcher& getMatcher (int id)
 {
    if (id < _searches.begin() || id >= _searches.end() || !_searches.hasElement(id))
@@ -209,6 +246,43 @@ CEXPORT int bingoInsertRecordObjWithId (int db, int obj, int id)
       Index &bingo_index = _bingo_instances.ref(db);
 
       return _insertObjectToDatabase (db, self, bingo_index, indigo_obj, id);
+   }
+   BINGO_END(-1);
+}
+
+CEXPORT int bingoInsertRecordObjWithExtFP (int db, int obj, int fp)
+{
+   BINGO_BEGIN_DB(db)
+   {
+      IndigoObject &indigo_obj = self.getObject(obj);
+      Index &bingo_index = _bingo_instances.ref(db);
+      IndigoObject &ext_fp = self.getObject(fp);
+
+
+      long obj_id = -1;
+      auto& properties = indigo_obj.getProperties();
+
+      const char *key_name = bingo_index.getIdPropertyName();
+
+      if (key_name != 0 && properties.contains(key_name))
+      {
+         obj_id = strtol(properties.at(key_name), NULL, 10);
+      }
+
+      return _insertObjectWithExtFPToDatabase (db, self, bingo_index, indigo_obj, obj_id, ext_fp);
+   }
+   BINGO_END(-1);
+}
+
+CEXPORT int bingoInsertRecordObjWithIdAndExtFP (int db, int obj, int id, int fp)
+{
+   BINGO_BEGIN_DB(db)
+   {
+      IndigoObject &indigo_obj = self.getObject(obj);
+      Index &bingo_index = _bingo_instances.ref(db);
+      IndigoObject &ext_fp = self.getObject(fp);
+
+      return _insertObjectWithExtFPToDatabase (db, self, bingo_index, indigo_obj, id, ext_fp);
    }
    BINGO_END(-1);
 }
@@ -444,6 +518,57 @@ CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const c
 
          ReactionIndex &bingo_index = dynamic_cast<ReactionIndex &>(_bingo_instances.ref(db));
          ReactionSimMatcher *matcher = dynamic_cast<ReactionSimMatcher *>(bingo_index.createMatcher("sim", query_data.release(), options));
+
+         int search_id;
+         {
+            OsLocker searches_locker(_searches_lock);
+            search_id = _searches.add(matcher);
+            _searches_db.expand(search_id + 1);
+            _searches_db[search_id] = db;
+         }
+
+         return search_id;
+      }
+      else
+         throw BingoException("bingoSearchSub: only query molecule and query reaction can be set as query object");
+   }
+   BINGO_END(-1);
+}
+
+CEXPORT int bingoSearchSimWithExtFP (int db, int query_obj, float min, float max, int fp, const char *options)
+{
+   BINGO_BEGIN_DB(db)
+   {
+      IndigoObject &obj = *(self.getObject(query_obj).clone());
+      IndigoObject &ext_fp = self.getObject(fp);
+
+      if (IndigoMolecule::is(obj))
+      {
+         obj.getBaseMolecule().aromatize(self.arom_options);
+
+         AutoPtr<MoleculeSimilarityQueryData> query_data(new MoleculeSimilarityQueryData(obj.getMolecule(), min, max));
+
+         MoleculeIndex &bingo_index = dynamic_cast<MoleculeIndex &>(_bingo_instances.ref(db));
+         MoleculeSimMatcher *matcher = dynamic_cast<MoleculeSimMatcher *>(bingo_index.createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
+
+         int search_id;
+         {
+            OsLocker searches_locker(_searches_lock);
+            search_id = _searches.add(matcher);
+            _searches_db.expand(search_id + 1);
+            _searches_db[search_id] = db;
+         }
+
+         return search_id;
+      }
+      else if (IndigoReaction::is(obj))
+      {
+         obj.getBaseReaction().aromatize(self.arom_options);
+
+         AutoPtr<ReactionSimilarityQueryData> query_data(new ReactionSimilarityQueryData(obj.getReaction(), min, max));
+
+         ReactionIndex &bingo_index = dynamic_cast<ReactionIndex &>(_bingo_instances.ref(db));
+         ReactionSimMatcher *matcher = dynamic_cast<ReactionSimMatcher *>(bingo_index.createMatcherWithExtFP("sim", query_data.release(), options, ext_fp));
 
          int search_id;
          {

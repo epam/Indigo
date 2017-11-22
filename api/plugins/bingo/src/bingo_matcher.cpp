@@ -701,6 +701,39 @@ void BaseSimilarityMatcher::setQueryData (SimilarityQueryData *query_data)
       _containers_count += sim_storage.getCellSize(i);
 }
 
+void BaseSimilarityMatcher::setQueryDataWithExtFP (SimilarityQueryData *query_data, IndigoObject &fp)
+{
+   _query_data.reset(query_data);
+
+   const MoleculeFingerprintParameters & fp_params = _index.getFingerprintParams();
+   IndigoFingerprint &ext_fp = IndigoFingerprint::cast(fp);
+   if (_index.getFingerprintParams().fingerprintSizeSim() == ext_fp.bytes.size())
+      _query_fp.copy(ext_fp.bytes);
+   else
+      throw Exception("BaseSimilarityMatcher: external fingerprint is incompatible with current database");
+
+   SimStorage &sim_storage = _index.getSimStorage();
+
+   int query_bit_count = bitGetOnesCount(_query_fp.ptr(), _fp_size);
+
+   if (sim_storage.isSmallBase())
+      return;
+
+   sim_storage.getCellsInterval(_query_fp.ptr(), *_sim_coef.get(), _query_data->getMin(), _min_cell, _max_cell);
+
+   _first_cell = sim_storage.firstFitCell(query_bit_count, _min_cell, _max_cell);
+   _current_cell = _first_cell;
+
+   if (_part_count != -1 && _part_id != -1)
+   {
+      while (((_current_cell % _part_count) != _part_id - 1) && (_current_cell != -1))
+         _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
+   }
+   _containers_count = 0;
+   for (int i = _min_cell; i <= _max_cell; i++)
+      _containers_count += sim_storage.getCellSize(i);
+}
+
 void BaseSimilarityMatcher::_setParameters (const char *parameters)
 {
    if (_query_data.get() != 0)
