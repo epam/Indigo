@@ -65,7 +65,6 @@ insert into [$(bingo)].CONFIG values(0, 'FP_ORD_SIZE', '25');
 insert into [$(bingo)].CONFIG values(0, 'FP_ANY_SIZE', '15');
 insert into [$(bingo)].CONFIG values(0, 'FP_TAU_SIZE', '10');
 insert into [$(bingo)].CONFIG values(0, 'FP_SIM_SIZE', '8');
-insert into [$(bingo)].CONFIG values(0, 'FP_CHEM_SIZE', '0');
 insert into [$(bingo)].CONFIG values(0, 'SUB_SCREENING_MAX_BITS', '8');
 insert into [$(bingo)].CONFIG values(0, 'KEEP_CACHE', '0');
 insert into [$(bingo)].CONFIG values(0, 'SIM_SCREENING_PASS_MARK', '128');

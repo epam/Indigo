@@ -167,8 +167,6 @@ CEXPORT int bingoSetConfigInt (const char *name, int value)
             self.bingo_context->fp_parameters.tau_qwords = value;
          else if (strcasecmp(name, "FP_SIM_SIZE") == 0)
             self.bingo_context->fp_parameters.sim_qwords = value;
-         else if (strcasecmp(name, "FP_CHEM_SIZE") == 0)
-            self.bingo_context->fp_parameters.chem_qwords = value;
          else if (strcasecmp(name, "SUB_SCREENING_MAX_BITS") == 0)
             self.sub_screening_max_bits = value;
          else if (strcasecmp(name, "SIM_SCREENING_PASS_MARK") == 0)

@@ -57,7 +57,6 @@ TL_CP_GET(_ord_hashes)
    
    skip_ord = false;
    skip_sim = false;
-   skip_chem = false;
    skip_tau = false;
    skip_ext = false;
    skip_ext_charge = false;
@@ -185,18 +184,6 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       this->skip_tau = true;
       this->skip_ext = true;
       this->skip_ord = true;
-      this->skip_chem = true;
-      this->skip_any_atoms = true;
-      this->skip_any_bonds = true;
-      this->skip_any_atoms_bonds = true;
-   }
-   else if (strcasecmp(type, "chem") == 0)
-   {
-      // chemical similarity
-      this->skip_sim = true;
-      this->skip_tau = true;
-      this->skip_ext = true;
-      this->skip_ord = true;
       this->skip_any_atoms = true;
       this->skip_any_bonds = true;
       this->skip_any_atoms_bonds = true;
@@ -206,7 +193,6 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       // substructure
       this->skip_sim = true;
       this->skip_tau = true;
-      this->skip_chem = true;
    }
    else if (strcasecmp(type, "sub-res") == 0)
    {
@@ -214,7 +200,6 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       this->skip_sim = true;
       this->skip_tau = true;
       this->skip_ord = true;
-      this->skip_chem = true;
       this->skip_any_atoms = true;
       this->skip_ext_charge = true;
    }
@@ -223,7 +208,6 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       // tautomer
       this->skip_ord = true;
       this->skip_sim = true;
-      this->skip_chem = true;
 
       // tautomer fingerprint part does already contain all necessary any-bits
       this->skip_any_atoms = true;
@@ -235,7 +219,6 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       if (query)
          throw Error("there can not be 'full' fingerprint of a query molecule");
       // full (non-query) fingerprint, do not skip anything
-      this->skip_chem = true; // for backward compatibility
    }
    else
       throw Error("unknown molecule fingerprint type: %s", type);
@@ -562,7 +545,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       _tau_super_structure = 0;
    
    if (!skip_ord || !skip_any_atoms || !skip_any_atoms_bonds ||
-       !skip_any_bonds || !skip_tau || !skip_sim)
+       !skip_any_bonds || !skip_tau || !skip_sim)  // TODO: check for `use_chem_similarity`
    {
       QS_DEF(Filter, vfilter);
       vfilter.initAll(mol_for_enumeration->vertexEnd());
@@ -613,7 +596,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
    if (!skip_ext && _parameters.ext)
       _calcExtraBits(mol);
 
-   if (!skip_chem)
+   if (!skip_sim)  // TODO: check for `use_chem_similarity`
    {
       std::map<dword, int> counters;
 
@@ -696,7 +679,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       {
          dword key = pair.first;
          int count = pair.second;
-         _setBits(key, getChem(), _parameters.fingerprintSizeChem(), count);
+         _setBits(key, getSim(), _parameters.fingerprintSizeSim(), count);
       }
    }
 }
@@ -803,22 +786,16 @@ byte * MoleculeFingerprintBuilder::getSim ()
    return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd();
 }
 
-byte * MoleculeFingerprintBuilder::getChem ()
+byte * MoleculeFingerprintBuilder::getTau ()
 {
    return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd() +
           _parameters.fingerprintSizeSim();
 }
 
-byte * MoleculeFingerprintBuilder::getTau ()
-{
-   return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd() +
-          _parameters.fingerprintSizeSim() + _parameters.fingerprintSizeChem();
-}
-
 byte * MoleculeFingerprintBuilder::getAny ()
 {
    return _total_fingerprint.ptr() + _parameters.fingerprintSizeExt() + _parameters.fingerprintSizeOrd() +
-        _parameters.fingerprintSizeSim() + _parameters.fingerprintSizeChem() + _parameters.fingerprintSizeTau();
+        _parameters.fingerprintSizeSim() + _parameters.fingerprintSizeTau();
 }
 
 int MoleculeFingerprintBuilder::countBits_Sim ()

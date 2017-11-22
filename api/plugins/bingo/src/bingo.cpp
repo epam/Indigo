@@ -57,7 +57,6 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *opt
    fp_params.ord_qwords = 25;
    fp_params.tau_qwords = 0;
    fp_params.sim_qwords = 8;
-   fp_params.chem_qwords = 0;
 
    AutoPtr<Index> context;
    std::string loc_dir(location);

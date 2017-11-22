@@ -14,7 +14,6 @@ insert into bingo_config(cname, cvalue) values ('FP_ORD_SIZE', '25');
 insert into bingo_config(cname, cvalue) values ('FP_ANY_SIZE', '15');
 insert into bingo_config(cname, cvalue) values ('FP_TAU_SIZE', '10');
 insert into bingo_config(cname, cvalue) values ('FP_SIM_SIZE', '8');
-insert into bingo_config(cname, cvalue) values ('FP_CHEM_SIZE', '0');
 insert into bingo_config(cname, cvalue) values ('SUB_SCREENING_MAX_BITS', '8');
 insert into bingo_config(cname, cvalue) values ('SIM_SCREENING_PASS_MARK', '128');
 insert into bingo_config(cname, cvalue) values ('NTHREADS', '-1');

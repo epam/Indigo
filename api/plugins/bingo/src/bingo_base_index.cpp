@@ -143,7 +143,6 @@ void BaseIndex::load (const char *location, const char *options, int index_id)
    _fp_params.any_qwords = _properties.ref().getULong("fp_any");
    _fp_params.tau_qwords = _properties.ref().getULong("fp_tau");
    _fp_params.sim_qwords = _properties.ref().getULong("fp_sim");
-   _fp_params.chem_qwords = _properties.ref().getULong("fp_chem");
 
    //unsigned long cf_block_size = _properties->getULong("cf_block_size");
 
@@ -460,7 +459,6 @@ void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params,
    _properties.ref().add("fp_any", _fp_params.any_qwords);
    _properties.ref().add("fp_tau", _fp_params.tau_qwords);
    _properties.ref().add("fp_sim", _fp_params.sim_qwords);
-   _properties.ref().add("fp_chem", _fp_params.chem_qwords);
 
    _properties.ref().add("cf_block_size", cf_block_size);
 

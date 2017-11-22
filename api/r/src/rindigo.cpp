@@ -199,7 +199,6 @@ REXPORT void setFingerprintParams()
 {
    indigoSetOptionInt("fp-ord-qwords", 25);
    indigoSetOptionInt("fp-sim-qwords", 8);
-   indigoSetOptionInt("fp-chem-qwords", 0);
    indigoSetOptionInt("fp-any-qwords", 15);
    indigoSetOptionInt("fp-tau-qwords", 0);
    indigoSetOptionInt("fp-ext-enabled", 0);

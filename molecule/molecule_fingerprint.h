@@ -33,7 +33,7 @@ namespace indigo {
 
 class TautomerSuperStructure;
 
-// Fingerprint consists of 6 parts: EXT + ORD + ANY + TAU + SIM + CHEM.
+// Fingerprint consists of 5 parts: EXT + ORD + ANY + TAU + SIM.
 // EXT is always 3 bytes long, other parts' sizes are configured.
 // ORD, ANY, and SIM parts are build up from fragments.
 // Each fragments goes to:
@@ -49,13 +49,12 @@ class TautomerSuperStructure;
 struct MoleculeFingerprintParameters
 {
    bool ext;
-   int ord_qwords, any_qwords, tau_qwords, sim_qwords, chem_qwords;
+   int ord_qwords, any_qwords, tau_qwords, sim_qwords;
 
-   int fingerprintSize    () const { return (ext ? 3 : 0) + (ord_qwords + any_qwords + tau_qwords + sim_qwords + chem_qwords) * 8; }
+   int fingerprintSize    () const { return (ext ? 3 : 0) + (ord_qwords + any_qwords + tau_qwords + sim_qwords) * 8; }
    int fingerprintSizeExt () const { return (ext ? 3 : 0); }
    int fingerprintSizeOrd () const { return ord_qwords * 8; }
    int fingerprintSizeSim () const { return sim_qwords * 8; }
-   int fingerprintSizeChem() const { return chem_qwords * 8; }
    int fingerprintSizeTau () const { return tau_qwords * 8; }
    int fingerprintSizeAny () const { return any_qwords * 8; }
 
@@ -74,7 +73,6 @@ public:
 
    bool skip_ord; // don't build 'ordinary' part of the fingerprint
    bool skip_sim; // don't build 'similarity' part of the fingerprint
-   bool skip_chem;// don't build 'chem similarity' part of the fingerprint
    bool skip_tau; // don't build 'tautomer' part of the fingerprint
    bool skip_ext; // don't build 'extra' part of the fingerprint
    bool skip_ext_charge; // don't store information about charges in 'extra' part
@@ -88,7 +86,6 @@ public:
    const byte * get ();
    byte * getOrd ();
    byte * getSim ();
-   byte * getChem();
    byte * getTau ();
    byte * getAny ();
    

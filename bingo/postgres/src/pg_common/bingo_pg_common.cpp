@@ -117,7 +117,6 @@ void BingoPgCommon::setDefaultOptions() {
    bingoSetConfigInt("FP_ANY_SIZE", 15);
    bingoSetConfigInt("FP_TAU_SIZE", 10);
    bingoSetConfigInt("FP_SIM_SIZE", 8);
-   bingoSetConfigInt("FP_CHEM_SIZE", 0);
    bingoSetConfigInt("SUB_SCREENING_MAX_BITS", 8);
    bingoSetConfigInt("SIM_SCREENING_PASS_MARK", 128);
 

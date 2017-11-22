@@ -114,10 +114,6 @@ void BingoPgConfig::updateByIndexConfig(PG_OBJECT index_ptr) {
       name_key = _rawConfig.findOrInsert("fp_sim_size");
       _toString(options.fp_sim_size, _rawConfig.value(name_key));
    }
-   if(options.fp_chem_size >= 0) {
-      name_key = _rawConfig.findOrInsert("fp_chem_size");
-      _toString(options.fp_chem_size, _rawConfig.value(name_key));
-   }
    if(options.fp_tau_size >= 0) {
       name_key = _rawConfig.findOrInsert("fp_tau_size");
       _toString(options.fp_tau_size, _rawConfig.value(name_key));

@@ -51,18 +51,6 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       builder.skip_tau = true;
       builder.skip_ext = true;
       builder.skip_ord = true;
-      builder.skip_chem = true;
-      builder.skip_any_atoms = true;
-      builder.skip_any_bonds = true;
-      builder.skip_any_atoms_bonds = true;
-   }
-   else if (strcasecmp(type, "chem") == 0)
-   {
-      // chemical similarity
-      builder.skip_sim = true;
-      builder.skip_tau = true;
-      builder.skip_ext = true;
-      builder.skip_ord = true;
       builder.skip_any_atoms = true;
       builder.skip_any_bonds = true;
       builder.skip_any_atoms_bonds = true;
@@ -72,7 +60,6 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       // substructure
       builder.skip_sim = true;
       builder.skip_tau = true;
-      builder.skip_chem = true;
    }
    else if (strcasecmp(type, "sub-res") == 0)
    {
@@ -80,7 +67,6 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       builder.skip_sim = true;
       builder.skip_tau = true;
       builder.skip_ord = true;
-      builder.skip_chem = true;
       builder.skip_any_atoms = true;
       builder.skip_ext_charge = true;
    }
@@ -89,7 +75,6 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       // tautomer
       builder.skip_ord = true;
       builder.skip_sim = true;
-      builder.skip_chem = true;
 
       // tautomer fingerprint part does already contain all necessary any-bits
       builder.skip_any_atoms = true;
@@ -101,7 +86,6 @@ void _indigoParseMoleculeFingerprintType (MoleculeFingerprintBuilder &builder, c
       if (query)
          throw IndigoError("there can not be 'full' fingerprint of a query molecule");
       // full (non-query) fingerprint, do not skip anything
-      builder.skip_chem = true;  // for backward compatibility
    }
    else
       throw IndigoError("unknown molecule fingerprint type: %s", type);
@@ -128,7 +112,7 @@ void _indigoParseReactionFingerprintType (ReactionFingerprintBuilder &builder, c
       // full (non-query) fingerprint, do not skip anything
    }
    else
-      throw IndigoError("unknown reaction fingerprint type: %s", type);
+      throw IndigoError("unknown molecule fingerprint type: %s", type);
 }
 
 CEXPORT int indigoFingerprint (int item, const char *type)

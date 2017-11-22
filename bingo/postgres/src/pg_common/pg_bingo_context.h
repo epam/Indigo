@@ -59,7 +59,6 @@ typedef struct BingoIndexOptions {
    int fp_any_size;
    int fp_tau_size;
    int fp_sim_size;
-   int fp_chem_size;
    int sub_screening_max_bits;
    int sim_screening_pass_mark;
    int nthreads;
