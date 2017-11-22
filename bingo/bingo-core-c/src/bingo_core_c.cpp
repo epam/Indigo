@@ -171,6 +171,8 @@ CEXPORT int bingoSetConfigInt (const char *name, int value)
             self.sub_screening_max_bits = value;
          else if (strcasecmp(name, "SIM_SCREENING_PASS_MARK") == 0)
             self.sim_screening_pass_mark = value;
+         else if (strcasecmp(name, "USE_CHEM_SIMILARITY") == 0)
+            self.bingo_context->fp_parameters.use_chem_similarity = (value != 0);
          else
             set = false;
 

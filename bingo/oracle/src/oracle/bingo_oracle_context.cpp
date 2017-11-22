@@ -360,8 +360,9 @@ void BingoOracleContext::fingerprintLoadParameters (OracleEnv &env)
    configGetInt(env, "FP_ANY_SIZE", fp_parameters.any_qwords);
    fp_parameters.ext = true;
    fp_parameters_ready = true;
-   
+
    configGetInt(env, "FP_STORAGE_CHUNK", fp_chunk_qwords);
+   configGetInt(env, "USE_CHEM_SIMILARITY", fp_parameters.use_chem_similarity);
 }
 
 void BingoOracleContext::longOpInit (OracleEnv &env, int total, const char *operation,

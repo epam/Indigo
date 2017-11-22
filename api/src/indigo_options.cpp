@@ -234,6 +234,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("fp-ext-enabled", SETTER_GETTER_BOOL_OPTION(indigo.fp_params.ext));
    mgr.setOptionHandlerBool("smart-layout", SETTER_GETTER_BOOL_OPTION(indigo.smart_layout));
    mgr.setOptionHandlerString("layout-orientation", indigoSetLayoutOrientation, indigoGetLayoutOrientation);
+   mgr.setOptionHandlerBool("use-chem-similarity", SETTER_GETTER_BOOL_OPTION(indigo.fp_params.use_chem_similarity));
 
    mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness, indigoGetEmbeddingUniqueness);
    mgr.setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings, indigoGetMaxEmbeddings);

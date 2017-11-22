@@ -181,6 +181,13 @@ static relopt_int intRelOpts[] =
          RELOPT_KIND_BINGO
       }, -1, 0, 1
    },
+	{
+      {
+            "use_chem_similarity",
+            "",
+            RELOPT_KIND_BINGO
+      }, -1, 0, 1
+	},
    {
 		{
 			"fp_ord_size",

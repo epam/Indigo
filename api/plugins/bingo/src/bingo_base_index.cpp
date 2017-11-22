@@ -139,6 +139,7 @@ void BaseIndex::load (const char *location, const char *options, int index_id)
       throw Exception("Loading databse: wrong type propety");
    
    _fp_params.ext = (_properties.ref().getULong("fp_ext") != 0);
+   _fp_params.use_chem_similarity = (_properties.ref().getULong("fp_use_chem") != 0);
    _fp_params.ord_qwords = _properties.ref().getULong("fp_ord");
    _fp_params.any_qwords = _properties.ref().getULong("fp_any");
    _fp_params.tau_qwords = _properties.ref().getULong("fp_tau");
@@ -455,6 +456,7 @@ void BaseIndex::_saveProperties (const MoleculeFingerprintParameters &fp_params,
    _properties.ref().add("base_type", (_type == MOLECULE ? _molecule_type : _reaction_type));
 
    _properties.ref().add("fp_ext", _fp_params.ext);
+   _properties.ref().add("fp_use_chem", _fp_params.use_chem_similarity);
    _properties.ref().add("fp_ord", _fp_params.ord_qwords);
    _properties.ref().add("fp_any", _fp_params.any_qwords);
    _properties.ref().add("fp_tau", _fp_params.tau_qwords);

@@ -1459,6 +1459,9 @@ namespace indigo
                 BingoConfig.getInt(connection, bingo_schema, "SUB_SCREENING_MAX_BITS", id));
             BingoCore.setConfigInt("SIM_SCREENING_PASS_MARK",
                 BingoConfig.getInt(connection, bingo_schema, "SIM_SCREENING_PASS_MARK", id));
+
+            BingoCore.setConfigInt("USE_CHEM_SIMILARITY",
+                BingoConfig.getInt(connection, bingo_schema, "USE_CHEM_SIMILARITY", id));
          }
          if ((flags & ContextFlags.CMF) != 0)
          {

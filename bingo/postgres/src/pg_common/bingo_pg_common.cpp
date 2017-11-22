@@ -119,6 +119,7 @@ void BingoPgCommon::setDefaultOptions() {
    bingoSetConfigInt("FP_SIM_SIZE", 8);
    bingoSetConfigInt("SUB_SCREENING_MAX_BITS", 8);
    bingoSetConfigInt("SIM_SCREENING_PASS_MARK", 128);
+   bingoSetConfigInt("USE_CHEM_SIMILARITY", 0);
 
    bingoAddTautomerRule(1, "N,O,P,S,As,Se,Sb,Te", "N,O,P,S,As,Se,Sb,Te");
    bingoAddTautomerRule(2, "0C", "N,O,P,S");

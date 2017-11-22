@@ -55,6 +55,7 @@ void Indigo::init ()
    fp_params.tau_qwords = 10;
    fp_params.ord_qwords = 25;
    fp_params.ext = true;
+   fp_params.use_chem_similarity = false;
 
    embedding_edges_uniqueness = false;
    find_unique_embeddings = true;
