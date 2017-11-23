@@ -177,7 +177,7 @@ CEXPORT int indigoFingerprintExt (const char *fp_ext, int size)
          data.clear();
          for (auto i = 0; i < size; i++)
          {
-            if (sscanf(fp_ext + 2*i, "%02x", &inp) == 1)
+            if (sscanf(fp_ext + 2*i, "%02hhx", &inp) == 1)
                data.push(inp);
             else
                throw IndigoError("indigoFingerprintExt(): input fingerprint is incorrect");
