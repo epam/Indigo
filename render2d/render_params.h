@@ -38,6 +38,7 @@ public:
 
    float relativeThickness;
    float bondLineWidthFactor;
+   bool smart_layout = false;
    RENDER_MODE rmode;
 
    AutoPtr<BaseMolecule> mol;

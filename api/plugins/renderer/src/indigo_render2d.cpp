@@ -336,6 +336,7 @@ CEXPORT int indigoRender (int object, int output)
       // If there are molecules/reactions in the arrays then current call will 
       // rendere a grid -> needs to clear it
       rp.clearArrays();
+      rp.smart_layout = self.smart_layout;
 
       IndigoObject &obj = self.getObject(object);
 
