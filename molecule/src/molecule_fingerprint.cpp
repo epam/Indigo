@@ -353,7 +353,7 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
    if (subgraph_type == TautomerSuperStructure::ORIGINAL)
    {
       // SIM is made of: rings of size up to 6, trees of size up to 4 edges
-      if (use_atoms && use_bonds && !skip_sim && _parameters.sim_qwords > 0)
+      if (use_atoms && use_bonds && !skip_sim && _parameters.sim_qwords > 0 && !_parameters.use_chem_similarity)
       {
          set_sim = true;
          if (vertices.size() > 6)
@@ -545,9 +545,8 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       _tau_super_structure = 0;
    
    if (!skip_ord || !skip_any_atoms || !skip_any_atoms_bonds ||
-       !skip_any_bonds || !skip_tau ||
-       !skip_sim && !_parameters.use_chem_similarity && _parameters.sim_qwords > 0)
-      _makeFingerprint_calcOrd(*mol_for_enumeration);
+       !skip_any_bonds || !skip_tau || !skip_sim)
+      _makeFingerprint_calcOrdSim(*mol_for_enumeration);
 
    if (!skip_ext && _parameters.ext)
       _calcExtraBits(mol);
@@ -556,7 +555,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       _makeFingerprint_calcChem(mol);
 }
 
-void MoleculeFingerprintBuilder::_makeFingerprint_calcOrd(BaseMolecule &mol)
+void MoleculeFingerprintBuilder::_makeFingerprint_calcOrdSim(BaseMolecule &mol)
 {
    QS_DEF(Filter, vfilter);
    vfilter.initAll(mol.vertexEnd());

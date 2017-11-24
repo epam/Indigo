@@ -118,7 +118,7 @@ protected:
       bool use_atoms, bool use_bonds, int subgraph_type, dword &bits_to_set);
 
    void _makeFingerprint (BaseMolecule &mol);
-   void _makeFingerprint_calcOrd(BaseMolecule &mol);
+   void _makeFingerprint_calcOrdSim(BaseMolecule &mol);
    void _makeFingerprint_calcChem(BaseMolecule &mol);
    void _calcExtraBits (BaseMolecule &mol);
 
