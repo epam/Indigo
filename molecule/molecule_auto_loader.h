@@ -61,6 +61,7 @@ public:
    DECL_ERROR;
 
    static bool tryMDLCT (Scanner &scanner, Array<char> &outbuf);
+   static void readAllDataToString(Scanner & scanner, Array<char> &dataBuf);
 
 protected:
    Scanner *_scanner;

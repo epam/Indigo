@@ -156,6 +156,31 @@ bool MoleculeAutoLoader::tryMDLCT (Scanner &scanner, Array<char> &outbuf)
    return endmark;
 }
 
+void MoleculeAutoLoader::readAllDataToString(Scanner & scanner, Array<char> & dataBuf)
+{
+    // check GZip format
+    if (scanner.length() >= 2)
+    {
+       byte id[2];
+       long long pos = scanner.tell();
+
+       scanner.readCharsFix(2, (char *)id);
+       scanner.seek(pos, SEEK_SET);
+
+       if (id[0] == 0x1f && id[1] == 0x8b)
+       {
+          GZipScanner gzscanner(scanner);
+          gzscanner.readAll(dataBuf);
+          dataBuf.push('\0');
+
+          return;
+       }
+    }
+
+    scanner.readAll(dataBuf);
+    dataBuf.push('\0');
+}
+
 void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 {
    properties.clear();

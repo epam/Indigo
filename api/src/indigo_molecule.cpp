@@ -32,7 +32,6 @@
 #include "indigo_mapping.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molecule_savers.h"
-#include "gzip/gzip_scanner.h"
 
 
 IndigoBaseMolecule::IndigoBaseMolecule (int type_) : IndigoObject(type_)
@@ -600,36 +599,11 @@ CEXPORT int indigoLoadStructureFromString(const char *string, const char * param
     INDIGO_END(-1);
 }
 
-static void readAllDataToString(Scanner & scanner, Array<char> & dataBuf)
-{
-    // check GZip format
-    if (scanner.length() >= 2)
-    {
-       byte id[2];
-       long long pos = scanner.tell();
-
-       scanner.readCharsFix(2, (char *)id);
-       scanner.seek(pos, SEEK_SET);
-
-       if (id[0] == 0x1f && id[1] == 0x8b)
-       {
-          GZipScanner gzscanner(scanner);
-          gzscanner.readAll(dataBuf);
-          dataBuf.push('\0');
-
-          return;
-       }
-    }
-
-    scanner.readAll(dataBuf);
-    dataBuf.push('\0');
-}
-
 CEXPORT int indigoLoadStructureFromBuffer(const byte *buff, int bufferSize, const char * params)
 {
     BufferScanner scanner(buff, bufferSize);
     Array<char> arr;
-    readAllDataToString(scanner, arr);
+    MoleculeAutoLoader::readAllDataToString(scanner, arr);
 
     return indigoLoadStructureFromString(arr.ptr(), params);
 }
@@ -640,7 +614,7 @@ CEXPORT int indigoLoadStructureFromFile(const char *filename, const char * param
     {
         FileScanner scanner(self.filename_encoding, filename);
         Array<char> arr;
-        readAllDataToString(scanner, arr);
+        MoleculeAutoLoader::readAllDataToString(scanner, arr);
 
         return indigoLoadStructureFromString(arr.ptr(), params);
     }
