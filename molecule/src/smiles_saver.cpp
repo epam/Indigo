@@ -649,46 +649,7 @@ bool SmilesSaver::_shouldWriteAromaticBond (int e_idx)
    if (_bmol->getBondTopology(e_idx) != TOPOLOGY_RING)
       return true;
 
-   // We need to check that the bond belongs to some aromatic ring
-   // with all lowercase atoms. That is done for not to miss aromatic
-   // bonds that belong (oddly enough) to some aliphatic SSSR ring
-   // and do not belong to any aromatic SSSR ring
-   if (_aromatic_bonds.size() == 0)
-   {
-      // enumerate SSSR rings
-      CycleBasis basis;
-      
-      basis.create(*_bmol);
-      _aromatic_bonds.clear_resize(_bmol->edgeEnd());
-      _aromatic_bonds.zerofill();
-      
-      for (int i = 0; i < basis.getCyclesCount(); i++)
-      {
-         const Array<int> &cycle = basis.getCycle(i);
-         int j;
-
-         for (j = 0; j < cycle.size(); j++)
-         {
-            int idx = cycle[j];
-            const Edge &edge = _bmol->getEdge(idx);
-            if (!_atoms[edge.beg].lowercase || !_atoms[edge.end].lowercase)
-               break;
-            if (_mol->getBondOrder(idx) != BOND_AROMATIC)
-               break;
-         }
-
-         if (j == cycle.size()) // all-lowercase aromatic ring
-         {
-            for (j = 0; j < cycle.size(); j++)
-               _aromatic_bonds[cycle[j]] = 1;
-         }
-      }
-   }
-
-   if (_aromatic_bonds[e_idx] != 0)
-      return false;
-
-   return true;
+   return false;
 }
 
 

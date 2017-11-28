@@ -1413,6 +1413,7 @@ void SmilesLoader::_markAromaticBonds ()
       {
          int idx = cycle[j];
          const Edge &edge = _bmol->getEdge(idx);
+
          if (!_atoms[edge.beg].aromatic || !_atoms[edge.end].aromatic)
             break;
          if (_bonds[idx].type == BOND_SINGLE || _bonds[idx].type == BOND_DOUBLE || _bonds[idx].type == BOND_TRIPLE)
@@ -1445,6 +1446,50 @@ void SmilesLoader::_markAromaticBonds ()
       }
    }
 
+   for (i = 0; i < basis.getCyclesCount(); i++)
+   {
+      const Array<int> &cycle = basis.getCycle(i);
+      int j;
+      bool needs_modification = false;
+
+      for (j = 0; j < cycle.size(); j++)
+      {
+         int idx = cycle[j];
+         const Edge &edge = _bmol->getEdge(idx);
+
+         if (!_atoms[edge.beg].aromatic || !_atoms[edge.end].aromatic)
+         {
+            needs_modification = false;
+            break;
+         }
+         if (_bonds[idx].type == BOND_SINGLE || _bonds[idx].type == BOND_DOUBLE || _bonds[idx].type == BOND_TRIPLE)
+            continue;
+         if (_qmol != 0 && !_qmol->possibleBondOrder(_bonds[idx].index, BOND_AROMATIC))
+            continue;
+         if (_bonds[idx].type == -1)
+            needs_modification = true;
+      }
+
+      if (needs_modification)
+      {
+         for (j = 0; j < cycle.size(); j++)
+         {
+            int idx = cycle[j];
+            const Edge &edge = _bmol->getEdge(idx);
+            if ( (_bonds[idx].type == -1) && (_atoms[edge.beg].aromatic && _atoms[edge.end].aromatic) )
+            {
+               _bonds[idx].type = BOND_AROMATIC;
+               int bond_index = _bonds[idx].index;
+               if (_mol != 0)
+                  _mol->setBondOrder_Silent(bond_index, BOND_AROMATIC);
+               if (_qmol != 0)
+                  _qmol->resetBond(bond_index, QueryMolecule::Bond::und(_qmol->releaseBond(bond_index),
+                          new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
+            }
+         }
+      }
+   }
+
    // mark the rest 'empty' bonds as single
    for (i = 0; i < _bonds.size(); i++)
    {
@@ -1458,7 +1503,6 @@ void SmilesLoader::_markAromaticBonds ()
                     new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE)));
       }
    }
-
 }
 
 
