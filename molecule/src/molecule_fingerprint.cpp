@@ -605,102 +605,102 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcOrdSim(BaseMolecule &mol)
 
 void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule &mol)
 {
-      // For `mol.getAtomConnectivity(idx)` to return consistent
-      // results on aromatic compounds
+   // For `mol.getAtomConnectivity(idx)` to return consistent
+   // results on aromatic compounds
+   try
+   {
+      mol.asMolecule().invalidateHCounters();
+   }
+   catch (indigo::Exception & e)
+   {
+      // Since `mol` is (probably) `QueryMolecule`,
+      // connectivity doesn't matter anyway
+   }
+
+   std::map<dword, int> counters;
+
+   QS_DEF(Array<int>, feature_set);
+   for(auto vi : mol.vertices())
+   {
+      // No exception should ever be thrown, added the try-catch just to be sure
       try
       {
-         mol.asMolecule().invalidateHCounters();
+         bool res = MoleculePkaModel::getAtomLocalFeatureSet(mol, vi, feature_set);
+         if(!res) continue;  // skippable atom
       }
-      catch (indigo::Exception & e)
+      catch (indigo::Exception &e)
       {
-         // Since `mol` is (probably) `QueryMolecule`,
-         // connectivity doesn't matter anyway
+         continue;
       }
 
-      std::map<dword, int> counters;
+      dword key = 1;
+      key = key * 37 + feature_set[0]; // number
+      key = key * 37 + feature_set[4]; // iso
+      key = key * 37 + feature_set[2]; // charge
+      key = key * 37 + feature_set[3]; // radical
+      key = key * 37 + feature_set[7]; // degree
 
-      QS_DEF(Array<int>, feature_set);
-      for(auto vi : mol.vertices())
-      {
-         // No exception should ever be thrown, added the try-catch just to be sure
-         try
-         {
-            bool res = MoleculePkaModel::getAtomLocalFeatureSet(mol, vi, feature_set);
-            if(!res) continue;  // skippable atom
-         }
-         catch (indigo::Exception &e)
-         {
-            continue;
-         }
-
-         dword key = 1;
-         key = key * 37 + feature_set[0]; // number
-         key = key * 37 + feature_set[4]; // iso
-         key = key * 37 + feature_set[2]; // charge
-         key = key * 37 + feature_set[3]; // radical
-         key = key * 37 + feature_set[7]; // degree
-
-         auto pair = counters.find(key);
-         int value = (pair != counters.end()) ? pair->second : 0;
-         counters[key] = value + 1;  // increment the counter for the key
-      }
-
-      QS_DEF(Array<int>, feature_set1);
-      QS_DEF(Array<int>, feature_set2);
-      for(auto ei : mol.edges())
-      {
-         // No exception should ever be thrown, added the try-catch just to be sure
-         try
-         {
-            bool res1 = MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).beg, feature_set1);
-            bool res2 = MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).end, feature_set2);
-            if (!res1 || !res2) continue;  // skippable atoms
-         }
-         catch (indigo::Exception &e)
-         {
-            continue;
-         }
-
-         Array<int> * fs1, * fs2;  // ordered `feature_set1` and `feature_set2`
-         if(feature_set1.memcmp(feature_set2) < 0)
-         {
-            fs1 = &feature_set1;
-            fs2 = &feature_set2;
-         }
-         else
-         {
-            fs1 = &feature_set2;
-            fs2 = &feature_set1;
-         }
-
-         dword key = 1;
-         key = key * 37 + mol.getBondOrder(ei);
-         key = key * 37 + mol.getBondDirection(ei);
-
-         key = key * 37 + (*fs1)[0]; // number
-         key = key * 37 + (*fs1)[4]; // iso
-         key = key * 37 + (*fs1)[2]; // charge
-         key = key * 37 + (*fs1)[3]; // radical
-         key = key * 37 + (*fs1)[7]; // degree
-
-         key = key * 37 + (*fs2)[0]; // number
-         key = key * 37 + (*fs2)[4]; // iso
-         key = key * 37 + (*fs2)[2]; // charge
-         key = key * 37 + (*fs2)[3]; // radical
-         key = key * 37 + (*fs2)[7]; // degree
-
-         auto pair = counters.find(key);
-         int value = (pair != counters.end()) ? pair->second : 0;
-         counters[key] = value + 1;  // increment the counter for the key
-      }
-
-      for(auto pair : counters)
-      {
-         dword key = pair.first;
-         int count = pair.second;
-         _setBits(key, getSim(), _parameters.fingerprintSizeSim(), count);
-      }
+      auto pair = counters.find(key);
+      int value = (pair != counters.end()) ? pair->second : 0;
+      counters[key] = value + 1;  // increment the counter for the key
    }
+
+   QS_DEF(Array<int>, feature_set1);
+   QS_DEF(Array<int>, feature_set2);
+   for(auto ei : mol.edges())
+   {
+      // No exception should ever be thrown, added the try-catch just to be sure
+      try
+      {
+         bool res1 = MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).beg, feature_set1);
+         bool res2 = MoleculePkaModel::getAtomLocalFeatureSet(mol, mol.getEdge(ei).end, feature_set2);
+         if (!res1 || !res2) continue;  // skippable atoms
+      }
+      catch (indigo::Exception &e)
+      {
+         continue;
+      }
+
+      Array<int> * fs1, * fs2;  // ordered `feature_set1` and `feature_set2`
+      if(feature_set1.memcmp(feature_set2) < 0)
+      {
+         fs1 = &feature_set1;
+         fs2 = &feature_set2;
+      }
+      else
+      {
+         fs1 = &feature_set2;
+         fs2 = &feature_set1;
+      }
+
+      dword key = 1;
+      key = key * 37 + mol.getBondOrder(ei);
+      key = key * 37 + mol.getBondDirection(ei);
+
+      key = key * 37 + (*fs1)[0]; // number
+      key = key * 37 + (*fs1)[4]; // iso
+      key = key * 37 + (*fs1)[2]; // charge
+      key = key * 37 + (*fs1)[3]; // radical
+      key = key * 37 + (*fs1)[7]; // degree
+
+      key = key * 37 + (*fs2)[0]; // number
+      key = key * 37 + (*fs2)[4]; // iso
+      key = key * 37 + (*fs2)[2]; // charge
+      key = key * 37 + (*fs2)[3]; // radical
+      key = key * 37 + (*fs2)[7]; // degree
+
+      auto pair = counters.find(key);
+      int value = (pair != counters.end()) ? pair->second : 0;
+      counters[key] = value + 1;  // increment the counter for the key
+   }
+
+   for(auto pair : counters)
+   {
+      dword key = pair.first;
+      int count = pair.second;
+      _setBits(key, getSim(), _parameters.fingerprintSizeSim(), count);
+   }
+}
 
 void MoleculeFingerprintBuilder::_calcExtraBits (BaseMolecule &mol)
 {
