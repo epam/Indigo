@@ -1,6 +1,6 @@
 /****************************************************************************
  * Copyright (C) 2009-2015 EPAM Systems
- * 
+ *
  * This file is part of Indigo toolkit.
  * 
  * This file may be distributed and/or modified under the terms of the
@@ -1210,7 +1210,15 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule & mol, int idx, Array
 
    int a_lone = 0;
    int group = Element::group(mol.getAtomNumber(idx));
-   mol.getVacantPiOrbitals(group, a_chg, a_rad, a_conn, &a_lone);
+
+   try
+   {
+      mol.getVacantPiOrbitals(group, a_chg, a_rad, a_conn, &a_lone);
+   }
+   catch (indigo::Exception & e)
+   {
+      a_lone = -1;  // The atom is aromatic
+   }
 
    mol.getAtomTotalH(idx);
 

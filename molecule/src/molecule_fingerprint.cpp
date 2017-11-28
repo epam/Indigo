@@ -605,6 +605,18 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcOrdSim(BaseMolecule &mol)
 
 void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule &mol)
 {
+      // For `mol.getAtomConnectivity(idx)` to return consistent
+      // results on aromatic compounds
+      try
+      {
+         mol.asMolecule().invalidateHCounters();
+      }
+      catch (indigo::Exception & e)
+      {
+         // Since `mol` is (probably) `QueryMolecule`,
+         // connectivity doesn't matter anyway
+      }
+
       std::map<dword, int> counters;
 
       QS_DEF(Array<int>, feature_set);
