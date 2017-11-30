@@ -36,6 +36,7 @@
 #include "molecule/elements.h"
 
 #include "molecule/inchi_wrapper.h"
+#include "base_cpp/cancellation_handler.h"
 
 static void _mangoUpdateMolecule(Molecule &target, const char *options, BingoOracleContext &context)
 {
@@ -65,6 +66,8 @@ static OCIString * _mangoSMILES (OracleEnv &env, const Array<char> &target_buf, 
    profTimerStop(tload);
 
    _mangoUpdateMolecule(target, options, context);
+
+   resetCancellationHandler(new TimeoutCancellationHandler(context.timeout));
 
    if (canonical)
       MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
