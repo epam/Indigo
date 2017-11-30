@@ -11,7 +11,7 @@ file(GLOB Bingo_src src/oracle/*.cpp)
 file(GLOB Bingo_headers src/oracle/*.h)
 
 include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${OCI_INCLUDE_DIRS} ${ZLib_HEADERS_DIR} ${BingoCore_HEADERS_DIR}
-	${InChI_SOURCE_DIR}/inchi_dll)
+	${InChI_SOURCE_DIR}/INCHI_BASE/src)
 
 add_library(bingo-oracle-shared SHARED ${Bingo_src} ${Bingo_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
 
