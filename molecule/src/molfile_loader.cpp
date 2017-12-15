@@ -2984,6 +2984,19 @@ void MolfileLoader::_readCtab3000 ()
                      break;
                }
             }
+            else if (strcmp(prop.ptr(), "DISP") == 0)
+            {
+               while (!strscan.isEOF())
+               {
+                  char c = strscan.readChar();
+                  if (c == ' ')
+                     break;
+               }
+            }
+            else
+            {
+               throw Error("unsupported property of CTAB3000 (in BOND block): %s", prop.ptr());
+            }
          }
          _bmol->reaction_bond_reacting_center[i] = reacting_center;
       }
