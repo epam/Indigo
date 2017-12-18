@@ -69,7 +69,7 @@ insert into [$(bingo)].CONFIG values(0, 'FP_SIM_SIZE', '8');
 insert into [$(bingo)].CONFIG values(0, 'SUB_SCREENING_MAX_BITS', '8');
 insert into [$(bingo)].CONFIG values(0, 'KEEP_CACHE', '0');
 insert into [$(bingo)].CONFIG values(0, 'SIM_SCREENING_PASS_MARK', '128');
-insert into [$(bingo)].CONFIG values(0, 'USE_CHEM_SIMILARITY', '0');
+insert into [$(bingo)].CONFIG values(0, 'SIMILARITY_TYPE', 'SIM');
 go
 
 create table [$(bingo)].CONFIG_BIN (n int not null, name varchar(100) not null, value varbinary(max), primary key(n, name));

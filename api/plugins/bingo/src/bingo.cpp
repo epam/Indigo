@@ -53,7 +53,7 @@ static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *opt
    MoleculeFingerprintParameters fp_params;
 
    fp_params.ext = false;
-   fp_params.use_chem_similarity = false;
+   fp_params.similarity_type = SimilarityType::SIM;
    fp_params.any_qwords = 15;
    fp_params.ord_qwords = 25;
    fp_params.tau_qwords = 0;

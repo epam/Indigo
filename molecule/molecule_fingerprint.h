@@ -46,10 +46,18 @@ class TautomerSuperStructure;
 //     and with all bond types discarded
 // EXT part is build up from some element, isotope, and charge counters
 
+enum SimilarityType
+{
+   SIM = 0,
+   CHEM = 1,
+   ECFP2, ECFP4, ECFP6,
+   FCFP2, FCFP4, FCFP6,
+};
+
 struct MoleculeFingerprintParameters
 {
    bool ext;
-   bool use_chem_similarity;
+   SimilarityType similarity_type;
    int ord_qwords, any_qwords, tau_qwords, sim_qwords;
 
    int fingerprintSize    () const { return (ext ? 3 : 0) + (ord_qwords + any_qwords + tau_qwords + sim_qwords) * 8; }
@@ -96,6 +104,9 @@ public:
                         bool use_atoms, bool use_bonds, dword hash);
 
    void parseFingerprintType(const char *type, bool query);
+
+   static SimilarityType parseSimilarityType(const char * type);
+   static const char * printSimilarityType(SimilarityType type);
 
    CancellationHandler* cancellation;
 

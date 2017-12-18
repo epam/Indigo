@@ -224,6 +224,46 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char *type, bool que
       throw Error("unknown molecule fingerprint type: %s", type);
 }
 
+/**
+ * Accepted types: 'SIM', 'CHEM', 'ECFP2', 'ECFP4', 'ECFP6', 'FCFP2', 'FCFP4', 'FCFP6'
+ * */
+SimilarityType MoleculeFingerprintBuilder::parseSimilarityType(const char * type) {
+   if(type == 0 || *type == 0)
+      return SimilarityType::SIM;
+   else if(strcasecmp(type, "SIM") == 0)
+      return SimilarityType::SIM;
+   else if(strcasecmp(type, "CHEM") == 0)
+      return SimilarityType::CHEM;
+   else if(strcasecmp(type, "ECFP2") == 0)
+      return SimilarityType::ECFP2;
+   else if(strcasecmp(type, "ECFP4") == 0)
+      return SimilarityType::ECFP4;
+   else if(strcasecmp(type, "ECFP6") == 0)
+      return SimilarityType::ECFP6;
+   else if(strcasecmp(type, "FCFP2") == 0)
+      return SimilarityType::FCFP2;
+   else if(strcasecmp(type, "FCFP4") == 0)
+      return SimilarityType::FCFP4;
+   else if(strcasecmp(type, "FCFP6") == 0)
+      return SimilarityType::FCFP6;
+   else
+      throw Exception("Unknown similarity type '%s'", type);
+}
+
+const char * MoleculeFingerprintBuilder::printSimilarityType(SimilarityType type) {
+   switch(type) {
+      case SimilarityType::SIM   : return "SIM";
+      case SimilarityType::CHEM  : return "CHEM";
+      case SimilarityType::ECFP2 : return "ECFP2";
+      case SimilarityType::ECFP4 : return "ECFP4";
+      case SimilarityType::ECFP6 : return "ECFP6";
+      case SimilarityType::FCFP2 : return "FCFP2";
+      case SimilarityType::FCFP4 : return "FCFP4";
+      case SimilarityType::FCFP6 : return "FCFP6";
+      default: return nullptr;
+   }
+}
+
 bool MoleculeFingerprintBuilder::_handleCycle (Graph &graph,
         const Array<int> &vertices, const Array<int> &edges, void *context)
 {
@@ -353,7 +393,8 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits (BaseMolecule &
    if (subgraph_type == TautomerSuperStructure::ORIGINAL)
    {
       // SIM is made of: rings of size up to 6, trees of size up to 4 edges
-      if (use_atoms && use_bonds && !skip_sim && _parameters.sim_qwords > 0 && !_parameters.use_chem_similarity)
+      if (use_atoms && use_bonds && !skip_sim && _parameters.sim_qwords > 0 &&
+            _parameters.similarity_type == SimilarityType::SIM)
       {
          set_sim = true;
          if (vertices.size() > 6)
@@ -551,7 +592,8 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
    if (!skip_ext && _parameters.ext)
       _calcExtraBits(mol);
 
-   if (!skip_sim && _parameters.use_chem_similarity && _parameters.sim_qwords > 0)
+   if (!skip_sim && _parameters.sim_qwords > 0 &&
+         _parameters.similarity_type == SimilarityType::CHEM)
       _makeFingerprint_calcChem(mol);
 }
 

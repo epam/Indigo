@@ -115,7 +115,7 @@ void BingoOracleContext::_loadConfigParameters (OracleEnv &env)
 
    configGetIntDef(env, "REJECT_INVALID_STRUCTURES", val, 0);
    reject_invalid_structures = (val != 0);
-   
+
    configGetIntDef(env, "IGNORE_BAD_VALENCE", val, 0);
    ignore_bad_valence = (val != 0);
 
@@ -365,6 +365,10 @@ void BingoOracleContext::fingerprintLoadParameters (OracleEnv &env)
    fp_parameters_ready = true;
 
    configGetInt(env, "FP_STORAGE_CHUNK", fp_chunk_qwords);
+
+   QS_DEF(Array<char>, value);
+   configGetString(env, "SIMILARITY_TYPE", value);
+   fp_parameters.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(value.ptr);
 }
 
 void BingoOracleContext::longOpInit (OracleEnv &env, int total, const char *operation,

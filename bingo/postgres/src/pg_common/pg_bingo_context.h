@@ -13,6 +13,8 @@ extern "C" {
 #undef printf
 #endif
 
+#include "molecule/molecule_fingerprint.h"
+
 typedef struct BingoMetaPageData {
    int bingo_index_version;
    int n_molecules;
@@ -54,7 +56,7 @@ typedef struct BingoIndexOptions {
    int zero_unknown_aromatic_hydrogens;
    int reject_invalid_structures;
    int ignore_bad_valence;
-   int use_chem_similarity;
+   indigo::SimilarityType similarity_type;
 
    int fp_ord_size;
    int fp_any_size;

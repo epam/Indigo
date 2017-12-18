@@ -1,3 +1,4 @@
+#include <molecule/molecule_fingerprint.h>
 #include "bingo_pg_fix_pre.h"
 
 extern "C" {
@@ -102,9 +103,10 @@ void BingoPgConfig::updateByIndexConfig(PG_OBJECT index_ptr) {
       name_key = _rawConfig.findOrInsert("ignore_bad_valence");
       _toString(options.ignore_bad_valence, _rawConfig.value(name_key));
    }
-   if (options.use_chem_similarity >= 0) {
-      name_key = _rawConfig.findOrInsert("use_chem_similarity");
-      _toString(options.use_chem_similarity, _rawConfig.value(name_key));
+   if (options.similarity_type != indigo::SimilarityType::SIM) {
+      name_key = _rawConfig.findOrInsert("similarity_type");
+      ArrayOutput ao(_rawConfig.value(name_key));
+      ao.printf("%s", MoleculeFingerprintBuilder::printSimilarityType(options.similarity_type));
    }
    if (options.fp_any_size >= 0) {
       name_key = _rawConfig.findOrInsert("fp_any_size");
