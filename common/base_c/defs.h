@@ -88,7 +88,7 @@ typedef unsigned char byte;
 #endif
 
 #if defined(_WIN32)  && !defined(__MINGW32__)
-#define qword unsigned _int64
+#define qword unsigned __int64
 #else
 #define qword unsigned long long
 #endif
