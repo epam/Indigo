@@ -327,12 +327,14 @@ void MoleculeCisTrans::restoreSubstituents (int bond_idx)
    _Bond &bond = _bonds[bond_idx];
    int *substituents = bond.substituents;
 
-   if (!isGeomStereoBond(mol, bond_idx, substituents, false))
-      throw Error("restoreSubstituents(): not a cis-trans bond");
-
    if (!bond.ignored)
+   {
+      if (!isGeomStereoBond(mol, bond_idx, substituents, false))
+         throw Error("restoreSubstituents(): not a cis-trans bond");
+
       if (!sortSubstituents(mol, substituents, 0))
          throw Error("can't sort restored substituents");
+   }
 }
 
 void MoleculeCisTrans::registerUnfoldedHydrogen (int atom_idx, int added_hydrogen)
