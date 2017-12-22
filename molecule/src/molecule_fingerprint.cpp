@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 #include <map>
+#include <molecule/molecule_morgan_fingerprint_builder.h>
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 
@@ -592,9 +593,43 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
    if (!skip_ext && _parameters.ext)
       _calcExtraBits(mol);
 
-   if (!skip_sim && _parameters.sim_qwords > 0 &&
-         _parameters.similarity_type == SimilarityType::CHEM)
-      _makeFingerprint_calcChem(mol);
+   if (!skip_sim && _parameters.sim_qwords > 0) {
+      switch (_parameters.similarity_type) {
+         case SimilarityType::CHEM :
+            _makeFingerprint_calcChem(mol);
+            break;
+         case SimilarityType::ECFP2 : {
+            MoleculeMorganFingerprintBuilder builder(mol);
+            builder.writeFingerprintECFP(2, getSim(), _parameters.fingerprintSizeSim());
+         }
+            break;
+         case SimilarityType::ECFP4 : {
+            MoleculeMorganFingerprintBuilder builder(mol);
+            builder.writeFingerprintECFP(4, getSim(), _parameters.fingerprintSizeSim());
+         }
+            break;
+         case SimilarityType::ECFP6 : {
+            MoleculeMorganFingerprintBuilder builder(mol);
+            builder.writeFingerprintECFP(6, getSim(), _parameters.fingerprintSizeSim());
+         }
+            break;
+         case SimilarityType::FCFP2 : {
+            MoleculeMorganFingerprintBuilder builder(mol);
+            builder.writeFingerprintFCFP(2, getSim(), _parameters.fingerprintSizeSim());
+         }
+            break;
+         case SimilarityType::FCFP4 : {
+            MoleculeMorganFingerprintBuilder builder(mol);
+            builder.writeFingerprintFCFP(4, getSim(), _parameters.fingerprintSizeSim());
+         }
+            break;
+         case SimilarityType::FCFP6 : {
+            MoleculeMorganFingerprintBuilder builder(mol);
+            builder.writeFingerprintFCFP(6, getSim(), _parameters.fingerprintSizeSim());
+         }
+            break;
+      }
+   }
 }
 
 void MoleculeFingerprintBuilder::_makeFingerprint_calcOrdSim(BaseMolecule &mol)
