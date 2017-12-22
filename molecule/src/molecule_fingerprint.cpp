@@ -265,6 +265,18 @@ const char * MoleculeFingerprintBuilder::printSimilarityType(SimilarityType type
    }
 }
 
+int MoleculeFingerprintBuilder::getSimilarityTypeOrder(SimilarityType type) {
+   switch(type) {
+      case SimilarityType::ECFP2 : return 2;
+      case SimilarityType::ECFP4 : return 4;
+      case SimilarityType::ECFP6 : return 6;
+      case SimilarityType::FCFP2 : return 2;
+      case SimilarityType::FCFP4 : return 4;
+      case SimilarityType::FCFP6 : return 6;
+      default: return -1;
+   }
+}
+
 bool MoleculeFingerprintBuilder::_handleCycle (Graph &graph,
         const Array<int> &vertices, const Array<int> &edges, void *context)
 {
@@ -594,39 +606,24 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       _calcExtraBits(mol);
 
    if (!skip_sim && _parameters.sim_qwords > 0) {
-      switch (_parameters.similarity_type) {
+      SimilarityType similarityType = _parameters.similarity_type;
+      int order = getSimilarityTypeOrder(similarityType);
+
+      MoleculeMorganFingerprintBuilder builder(mol);  // lazy
+
+      switch (similarityType) {
          case SimilarityType::CHEM :
             _makeFingerprint_calcChem(mol);
             break;
-         case SimilarityType::ECFP2 : {
-            MoleculeMorganFingerprintBuilder builder(mol);
-            builder.writeFingerprintECFP(2, getSim(), _parameters.fingerprintSizeSim());
-         }
+         case SimilarityType::ECFP2 :
+         case SimilarityType::ECFP4 :
+         case SimilarityType::ECFP6 :
+            builder.writeFingerprintECFP(order, getSim(), _parameters.fingerprintSizeSim());
             break;
-         case SimilarityType::ECFP4 : {
-            MoleculeMorganFingerprintBuilder builder(mol);
-            builder.writeFingerprintECFP(4, getSim(), _parameters.fingerprintSizeSim());
-         }
-            break;
-         case SimilarityType::ECFP6 : {
-            MoleculeMorganFingerprintBuilder builder(mol);
-            builder.writeFingerprintECFP(6, getSim(), _parameters.fingerprintSizeSim());
-         }
-            break;
-         case SimilarityType::FCFP2 : {
-            MoleculeMorganFingerprintBuilder builder(mol);
-            builder.writeFingerprintFCFP(2, getSim(), _parameters.fingerprintSizeSim());
-         }
-            break;
-         case SimilarityType::FCFP4 : {
-            MoleculeMorganFingerprintBuilder builder(mol);
-            builder.writeFingerprintFCFP(4, getSim(), _parameters.fingerprintSizeSim());
-         }
-            break;
-         case SimilarityType::FCFP6 : {
-            MoleculeMorganFingerprintBuilder builder(mol);
-            builder.writeFingerprintFCFP(6, getSim(), _parameters.fingerprintSizeSim());
-         }
+         case SimilarityType::FCFP2 :
+         case SimilarityType::FCFP4 :
+         case SimilarityType::FCFP6 :
+            builder.writeFingerprintECFP(order, getSim(), _parameters.fingerprintSizeSim());
             break;
       }
    }

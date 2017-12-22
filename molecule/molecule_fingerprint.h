@@ -107,6 +107,7 @@ public:
 
    static SimilarityType parseSimilarityType(const char * type);
    static const char * printSimilarityType(SimilarityType type);
+   static int getSimilarityTypeOrder(SimilarityType type);
 
    CancellationHandler* cancellation;
 
