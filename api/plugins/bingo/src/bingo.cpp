@@ -659,6 +659,51 @@ CEXPORT int bingoEstimateRemainingResultsCount (int search_obj)
    BINGO_END(-1);
 }
 
+CEXPORT int bingoContainersCount (int search_obj)
+{
+   BINGO_BEGIN_SEARCH(search_obj)
+   {
+      return getMatcher(search_obj).containersCount();
+   }
+   BINGO_END(-1);
+}
+
+CEXPORT int bingoCellsCount (int search_obj)
+{
+   BINGO_BEGIN_SEARCH(search_obj)
+   {
+      return getMatcher(search_obj).cellsCount();
+   }
+   BINGO_END(-1);
+}
+
+CEXPORT int bingoCurrentCell (int search_obj)
+{
+   BINGO_BEGIN_SEARCH(search_obj)
+   {
+      return getMatcher(search_obj).currentCell();
+   }
+   BINGO_END(-1);
+}
+
+CEXPORT int bingoMinCell (int search_obj)
+{
+   BINGO_BEGIN_SEARCH(search_obj)
+   {
+      return getMatcher(search_obj).minCell();
+   }
+   BINGO_END(-1);
+}
+
+CEXPORT int bingoMaxCell (int search_obj)
+{
+   BINGO_BEGIN_SEARCH(search_obj)
+   {
+      return getMatcher(search_obj).maxCell();
+   }
+   BINGO_END(-1);
+}
+
 CEXPORT int bingoEstimateRemainingResultsCountError (int search_obj)
 {
    BINGO_BEGIN_SEARCH(search_obj)

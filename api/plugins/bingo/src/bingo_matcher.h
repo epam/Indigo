@@ -173,6 +173,11 @@ namespace bingo
       
       virtual int esimateRemainingResultsCount (int &delta) = 0;
       virtual float esimateRemainingTime (float &delta) = 0;
+      virtual int containersCount () = 0;
+      virtual int cellsCount () = 0;
+      virtual int currentCell () = 0;
+      virtual int minCell () = 0;
+      virtual int maxCell () = 0;
 
       virtual ~Matcher () {};
    };
@@ -194,6 +199,11 @@ namespace bingo
       
       virtual int esimateRemainingResultsCount (int &delta);
       virtual float esimateRemainingTime (float &delta);
+      virtual int containersCount ();
+      virtual int cellsCount ();
+      virtual int currentCell ();
+      virtual int minCell ();
+      virtual int maxCell ();
 
    protected:
       BaseIndex &_index;
@@ -293,6 +303,12 @@ namespace bingo
 
       virtual int esimateRemainingResultsCount (int &delta);
       virtual float esimateRemainingTime (float &delta);
+
+      virtual int containersCount ();
+      virtual int cellsCount ();
+      virtual int currentCell ();
+      virtual int minCell ();
+      virtual int maxCell ();
 
       virtual float currentSimValue ();
       

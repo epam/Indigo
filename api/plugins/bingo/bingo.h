@@ -57,6 +57,11 @@ CEXPORT float bingoGetCurrentSimilarityValue (int search_obj);
 CEXPORT int bingoEstimateRemainingResultsCount (int search_obj);
 CEXPORT int bingoEstimateRemainingResultsCountError (int search_obj);
 CEXPORT int bingoEstimateRemainingTime (int search_obj, float *time_sec);
+CEXPORT int bingoContainersCount (int search_obj);
+CEXPORT int bingoCellsCount (int search_obj);
+CEXPORT int bingoCurrentCell (int search_obj);
+CEXPORT int bingoMinCell (int search_obj);
+CEXPORT int bingoMaxCell (int search_obj);
 
 
 // This method return IndigoObject that represents current object.

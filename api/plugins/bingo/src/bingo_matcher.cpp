@@ -173,6 +173,31 @@ float BaseMatcher::currentSimValue ()
    throw Exception("BaseMatcher: Matcher does not support this method");
 }
 
+int BaseMatcher::containersCount ()
+{
+   throw Exception("BaseMatcher: Matcher does not support this method");
+}
+
+int BaseMatcher::cellsCount ()
+{
+   throw Exception("BaseMatcher: Matcher does not support this method");
+}
+
+int BaseMatcher::currentCell ()
+{
+   throw Exception("BaseMatcher: Matcher does not support this method");
+}
+
+int BaseMatcher::minCell ()
+{
+   throw Exception("BaseMatcher: Matcher does not support this method");
+}
+
+int BaseMatcher::maxCell ()
+{
+   throw Exception("BaseMatcher: Matcher does not support this method");
+}
+
 void BaseMatcher::setOptions (const char * options)
 {
    std::map<std::string, std::string> option_map;
@@ -817,6 +842,31 @@ float BaseSimilarityMatcher::esimateRemainingTime (float &delta)
    delta = error * left_cont_count;
 
    return _match_time_esimate.mean() * left_cont_count;
+}
+
+int BaseSimilarityMatcher::containersCount ()
+{
+   return _containers_count;
+}
+
+int BaseSimilarityMatcher::cellsCount ()
+{
+   return _max_cell - _min_cell + 1;
+}
+
+int BaseSimilarityMatcher::currentCell ()
+{
+   return _current_cell;
+}
+
+int BaseSimilarityMatcher::minCell ()
+{
+   return _min_cell;
+}
+
+int BaseSimilarityMatcher::maxCell ()
+{
+   return _max_cell;
 }
 
 float BaseSimilarityMatcher::currentSimValue ()

@@ -82,6 +82,16 @@ class Bingo(object):
         self._lib.bingoEstimateRemainingResultsCountError.argtypes = [c_int]
         self._lib.bingoEstimateRemainingTime.restype = c_int
         self._lib.bingoEstimateRemainingTime.argtypes = [c_int, POINTER(c_float)]
+        self._lib.bingoContainersCount.restype = c_int
+        self._lib.bingoContainersCount.argtypes = [c_int]
+        self._lib.bingoCellsCount.restype = c_int
+        self._lib.bingoCellsCount.argtypes = [c_int]
+        self._lib.bingoCurrentCell.restype = c_int
+        self._lib.bingoCurrentCell.argtypes = [c_int]
+        self._lib.bingoMinCell.restype = c_int
+        self._lib.bingoMinCell.argtypes = [c_int]
+        self._lib.bingoMaxCell.restype = c_int
+        self._lib.bingoMaxCell.argtypes = [c_int]
 
     def __del__(self):
         self.close()
@@ -263,3 +273,23 @@ class BingoObject(object):
         value = c_float()
         Bingo._checkResult(self._indigo, self._bingo._lib.bingoEstimateRemainingTime(self._id, pointer(value)))
         return value.value
+
+    def containersCount(self):
+        self._indigo._setSessionId()
+        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoContainersCount(self._id))
+
+    def cellsCount(self):
+        self._indigo._setSessionId()
+        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoCellsCount(self._id))
+
+    def currentCell(self):
+        self._indigo._setSessionId()
+        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoCurrentCell(self._id))
+
+    def minCell(self):
+        self._indigo._setSessionId()
+        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoMinCell(self._id))
+
+    def maxCell(self):
+        self._indigo._setSessionId()
+        return Bingo._checkResult(self._indigo, self._bingo._lib.bingoMaxCell(self._id))
