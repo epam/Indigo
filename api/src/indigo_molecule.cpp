@@ -1345,6 +1345,10 @@ CEXPORT int indigoCheckQuery (int item)
          {
             return 1;
          }
+      } else if (IndigoQueryMolecule::is(obj)) {
+         return 1;
+      } else if (IndigoQueryReaction::is(obj)) {
+         return 1;
       }
       return 0;
    }
