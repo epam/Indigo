@@ -16,6 +16,7 @@
 
 #include "base_cpp/profiling.h"
 #include "gzip/gzip_scanner.h"
+#include "base_cpp/cancellation_handler.h"
 
 using namespace indigo::bingo_core;
 
@@ -58,6 +59,16 @@ BingoCore& BingoCore::getInstance ()
 {
    TL_GET(BingoCore, self);
    return self;
+}
+
+
+void BingoCore::updateCancellationHandler ()
+{
+    if (bingo_context != 0 && bingo_context->timeout > 0) {
+        resetCancellationHandler(new TimeoutCancellationHandler(bingo_context->timeout));
+    } else {
+        resetCancellationHandler(nullptr);
+    }
 }
 
 CEXPORT const char * bingoGetVersion ()

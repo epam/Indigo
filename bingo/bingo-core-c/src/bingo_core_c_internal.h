@@ -53,6 +53,7 @@ public:
    void reset ();
 
    static BingoCore& getInstance ();
+   void updateCancellationHandler();
 
    Array<char> error;
    Array<char> warning;
@@ -102,7 +103,7 @@ public:
    byte *test_ptr;
 };
 
-#define BINGO_BEGIN { BingoCore &self = BingoCore::getInstance(); try { self.error.clear();
+#define BINGO_BEGIN { BingoCore &self = BingoCore::getInstance(); try { self.error.clear(); self.updateCancellationHandler();
 
 #define BINGO_END(success, fail) } catch (Exception &ex) \
       { self.error.readString(ex.message(), true); \

@@ -29,7 +29,6 @@
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_standardize_options.h"
-#include "base_cpp/cancellation_handler.h"
 
 using namespace indigo::bingo_core;
 
@@ -535,8 +534,6 @@ CEXPORT const char * mangoSMILES (const char *target_buf, int target_buf_len, in
       MoleculeAutoLoader loader(scanner);
       self.bingo_context->setLoaderSettings(loader);
       loader.loadMolecule(target);
-
-      resetCancellationHandler(new TimeoutCancellationHandler(self.bingo_context->timeout));
 
       if (canonical)
          MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
