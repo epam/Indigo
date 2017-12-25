@@ -1144,3 +1144,44 @@ CEXPORT int indigoTransformHELMtoSCSR (int object)
    }
    INDIGO_END(-1);
 }
+
+
+CEXPORT int indigoCheckQuery (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoAtom::is(obj))
+      {
+         IndigoAtom &ia = IndigoAtom::cast(obj);
+
+         if ( (ia.mol.reaction_atom_exact_change[ia.idx] != 0) ||
+              (ia.mol.reaction_atom_inversion[ia.idx] != 0) )
+            return 1;
+
+         if (ia.mol.isQueryMolecule())
+         {
+            return 1;
+         } 
+      }
+      else if (IndigoBond::is(obj))
+      {
+         IndigoBond &ib = IndigoBond::cast(obj);
+
+         if (ib.mol.reaction_bond_reacting_center[ib.idx] != 0) 
+            return 1;
+
+         if (ib.mol.isQueryMolecule())
+         {
+            return 1;
+         }
+      } else if (IndigoQueryMolecule::is(obj)) {
+         return 1;
+      } else if (IndigoQueryReaction::is(obj)) {
+         return 1;
+      }
+      return 0;
+   }
+   INDIGO_END(-1);
+}
