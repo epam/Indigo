@@ -16,6 +16,8 @@
 #ifndef PROJECT_MOLECULE_MORGAN_FINGERPRINT_H
 #define PROJECT_MOLECULE_MORGAN_FINGERPRINT_H
 
+#include <set>
+#include <vector>
 #include <base_cpp/array.h>
 #include "base_c/defs.h"
 #include "base_molecule.h"
@@ -51,7 +53,7 @@ protected:
     *  - the number of attached hydrogens (both implicit and explicit)
     *  - whether the atom is contained in at least one ring
     *  */
-   dword initialStateCallback_ECFP(BaseMolecule &mol, int idx);
+   static dword initialStateCallback_ECFP(BaseMolecule &mol, int idx);
 
    /**
     * FCFP: (6 bits)
@@ -62,7 +64,7 @@ protected:
     *  - aromatic
     *  - halogen
     *  */
-   dword initialStateCallback_FCFP(BaseMolecule &mol, int idx);
+   static dword initialStateCallback_FCFP(BaseMolecule &mol, int idx);
 
 private:
    typedef struct BondDescriptor {

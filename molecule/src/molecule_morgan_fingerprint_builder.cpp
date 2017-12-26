@@ -90,9 +90,9 @@ void MoleculeMorganFingerprintBuilder::initDescriptors(InitialStateCallback init
 
       const Vertex &vertex = mol.getVertex(idx);
 
-      for(auto& nei : vertex.neighbors()) {
-         int edge_idx = vertex.neiEdge(nei);
-         int vertex_idx = vertex.neiVertex(nei);
+      for(int nei_idx : vertex.neighbors()) {
+         int edge_idx = vertex.neiEdge(nei_idx);
+         int vertex_idx = vertex.neiVertex(nei_idx);
 
          int bond_type = mol.getBondOrder(edge_idx);
 
@@ -139,7 +139,7 @@ void MoleculeMorganFingerprintBuilder::buildDescriptors(int fp_depth) {
 void MoleculeMorganFingerprintBuilder::calculateNewAtomDescriptors(int iterationNumber) {
    for (auto &atom : atom_descriptors) {
       std::sort(atom.bond_descriptors.begin(), atom.bond_descriptors.end(),
-                [](const BondDescriptor &bd1, const BondDescriptor &bd2) {
+                [&](const BondDescriptor &bd1, const BondDescriptor &bd2) {
                    return bondDescriptorCmp(bd1, bd2) < 0;
                 });
 
@@ -160,8 +160,8 @@ void MoleculeMorganFingerprintBuilder::calculateNewAtomDescriptors(int iteration
 
 dword MoleculeMorganFingerprintBuilder::initialStateCallback_ECFP(BaseMolecule &mol, int idx) {
    int nonhydrogen_neighbors = 0;
-   for(auto& nei : mol.getVertex(idx).neighbors()) {
-      if (mol.getAtomNumber(nei) != ELEM_H)
+   for(int nei_idx : mol.getVertex(idx).neighbors()) {
+      if (mol.getAtomNumber(nei_idx) != ELEM_H)
          nonhydrogen_neighbors += 1;
    }
 
