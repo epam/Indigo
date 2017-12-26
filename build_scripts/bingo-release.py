@@ -131,17 +131,16 @@ if args.dbms != 'sqlserver':
         if ext == ".zip":
             os.remove(join(full_build_dir, f))
 
-    subprocess.check_call("cmake --build . --config %s" % args.config, shell=True)
-
     if args.generator.find("Unix Makefiles") != -1:
         make_args = ''
-
         if args.mtbuild:
             make_args += ' -j{} '.format(get_cpu_count())
 
-        subprocess.check_call("make package %s" % (make_args), shell=True)
+        subprocess.check_call("cmake --build . --config %s -- %s" % (args.config, make_args), shell=True)
+        subprocess.check_call("make package", shell=True)
         subprocess.check_call("make install", shell=True)
     elif args.generator.find("Xcode") != -1:
+        subprocess.check_call("cmake --build . --config %s" % args.config, shell=True)
         subprocess.check_call("cmake --build . --target package --config %s" % args.config, shell=True)
         subprocess.check_call("cmake --build . --target install --config %s" % args.config, shell=True)
     elif args.generator.find("Visual Studio") != -1:
@@ -149,7 +148,8 @@ if args.dbms != 'sqlserver':
         if args.mtbuild:
             vsenv = dict(os.environ, CL='/MP')
 
-        subprocess.check_call("cmake --build . --target PACKAGE --config %s" % args.config, env=vsenv, shell=True)
+        subprocess.check_call("cmake --build . --config %s" % args.config, env=vsenv, shell=True)
+        subprocess.check_call("cmake --build . --target PACKAGE --config %s" % args.config,  shell=True)
         subprocess.check_call("cmake --build . --target INSTALL --config %s" % args.config, shell=True)
     else:
         print("Do not know how to run package and install target")
