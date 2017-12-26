@@ -62,13 +62,12 @@ BingoCore& BingoCore::getInstance ()
 }
 
 
-void BingoCore::updateCancellationHandler ()
+int BingoCore::getTimeout ()
 {
-    if (bingo_context != 0 && bingo_context->timeout > 0) {
-        resetCancellationHandler(new TimeoutCancellationHandler(bingo_context->timeout));
-    } else {
-        resetCancellationHandler(nullptr);
-    }
+   if (bingo_context != 0 && bingo_context->timeout > 0) {
+      return bingo_context->timeout;
+   }
+   return 0;
 }
 
 CEXPORT const char * bingoGetVersion ()

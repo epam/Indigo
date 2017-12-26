@@ -57,6 +57,12 @@ DLLEXPORT CancellationHandler* getCancellationHandler ();
 // TAKES Ownership!!!
 DLLEXPORT std::unique_ptr<CancellationHandler> resetCancellationHandler (CancellationHandler* handler);
 
+
+class AutoCancellationHandler {
+public:
+   AutoCancellationHandler(CancellationHandler*);
+   ~AutoCancellationHandler();
+};
 }
 
 #ifdef _WIN32

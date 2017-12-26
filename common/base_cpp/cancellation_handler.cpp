@@ -85,12 +85,12 @@ std::unique_ptr<CancellationHandler> resetCancellationHandler (CancellationHandl
    return prev;
 }
 
-//AutoCancellationHandler::AutoCancellationHandler(CancellationHandler& hand) {
-//   _prev = setCancellationHandler(&hand);
-//}
-//
-//AutoCancellationHandler::~AutoCancellationHandler() {
-//   setCancellationHandler(_prev);
-//}
+AutoCancellationHandler::AutoCancellationHandler(CancellationHandler* hand) {
+   resetCancellationHandler(hand);
+}
+
+AutoCancellationHandler::~AutoCancellationHandler() {
+   resetCancellationHandler(nullptr);
+}
 
 }

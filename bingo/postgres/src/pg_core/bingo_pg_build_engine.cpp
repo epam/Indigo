@@ -52,12 +52,15 @@ const char* BingoPgBuildEngine::getDictionary(int& size) {
 int BingoPgBuildEngine::getNthreads() {
    // TO DISABLE THREADS UNCOMMENT THIS
 //   return 1;
-   int result;
-   _setBingoContext();
+   
+   if (!nThreads.hasValue()) {
+      _setBingoContext();
+      int result;
+      bingoGetConfigInt("nthreads", &result);
+      nThreads.set(result);
+   }
 
-   bingoGetConfigInt("nthreads", &result);
-
-   return result;
+   return nThreads.get();
 }
 
 

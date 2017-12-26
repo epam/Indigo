@@ -19,6 +19,7 @@ extern "C" {
 
 #include "bingo_pg_text.h"
 #include "bingo_pg_search_engine.h"
+#include "base_cpp/nullable.h"
 
 //class BingoPgText;
 class BingoPgIndex;
@@ -70,6 +71,7 @@ protected:
    indigo::ObjArray<StructCache>* _structCaches;
    int _currentCache;
    int _fpSize;
+   indigo::Nullable<int> nThreads;
 };
 
 

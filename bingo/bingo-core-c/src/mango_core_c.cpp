@@ -404,7 +404,7 @@ CEXPORT int mangoMatchTargetBinary (const char *target_bin, int target_bin_len,
 {
    profTimerStart(t0, "match.match_target_binary");
 
-   BINGO_BEGIN
+   BINGO_BEGIN_TIMEOUT
    {
       if (self.mango_search_type == BingoCore::_UNDEF)
          throw BingoError("Undefined search type");
@@ -523,7 +523,7 @@ CEXPORT const char * mangoSMILES (const char *target_buf, int target_buf_len, in
 {
    profTimerStart(t0, "smiles");
 
-   BINGO_BEGIN
+   BINGO_BEGIN_TIMEOUT
    {
       _mangoCheckPseudoAndCBDM(self);
 
