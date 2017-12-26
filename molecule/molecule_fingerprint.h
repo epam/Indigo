@@ -50,8 +50,8 @@ enum SimilarityType
 {
    SIM = 0,
    CHEM = 1,
-   ECFP2, ECFP4, ECFP6,
-   FCFP2, FCFP4, FCFP6,
+   ECFP2, ECFP4, ECFP6, ECFP8,
+   FCFP2, FCFP4, FCFP6, FCFP8,
 };
 
 struct MoleculeFingerprintParameters

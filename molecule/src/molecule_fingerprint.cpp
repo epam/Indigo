@@ -241,12 +241,16 @@ SimilarityType MoleculeFingerprintBuilder::parseSimilarityType(const char * type
       return SimilarityType::ECFP4;
    else if(strcasecmp(type, "ECFP6") == 0)
       return SimilarityType::ECFP6;
+   else if(strcasecmp(type, "ECFP8") == 0)
+      return SimilarityType::ECFP8;
    else if(strcasecmp(type, "FCFP2") == 0)
       return SimilarityType::FCFP2;
    else if(strcasecmp(type, "FCFP4") == 0)
       return SimilarityType::FCFP4;
    else if(strcasecmp(type, "FCFP6") == 0)
       return SimilarityType::FCFP6;
+   else if(strcasecmp(type, "FCFP8") == 0)
+      return SimilarityType::FCFP8;
    else
       throw Exception("Unknown similarity type '%s'", type);
 }
@@ -258,21 +262,25 @@ const char * MoleculeFingerprintBuilder::printSimilarityType(SimilarityType type
       case SimilarityType::ECFP2 : return "ECFP2";
       case SimilarityType::ECFP4 : return "ECFP4";
       case SimilarityType::ECFP6 : return "ECFP6";
+      case SimilarityType::ECFP8 : return "ECFP8";
       case SimilarityType::FCFP2 : return "FCFP2";
       case SimilarityType::FCFP4 : return "FCFP4";
       case SimilarityType::FCFP6 : return "FCFP6";
+      case SimilarityType::FCFP8 : return "FCFP8";
       default: return nullptr;
    }
 }
 
 int MoleculeFingerprintBuilder::getSimilarityTypeOrder(SimilarityType type) {
    switch(type) {
-      case SimilarityType::ECFP2 : return 2;
-      case SimilarityType::ECFP4 : return 4;
-      case SimilarityType::ECFP6 : return 6;
-      case SimilarityType::FCFP2 : return 2;
-      case SimilarityType::FCFP4 : return 4;
-      case SimilarityType::FCFP6 : return 6;
+      case SimilarityType::ECFP2 : return 1;
+      case SimilarityType::ECFP4 : return 2;
+      case SimilarityType::ECFP6 : return 3;
+      case SimilarityType::ECFP8 : return 4;
+      case SimilarityType::FCFP2 : return 1;
+      case SimilarityType::FCFP4 : return 2;
+      case SimilarityType::FCFP6 : return 3;
+      case SimilarityType::FCFP8 : return 4;
       default: return -1;
    }
 }
@@ -618,11 +626,13 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
          case SimilarityType::ECFP2 :
          case SimilarityType::ECFP4 :
          case SimilarityType::ECFP6 :
+         case SimilarityType::ECFP8 :
             builder.writeFingerprintECFP(order, getSim(), _parameters.fingerprintSizeSim());
             break;
          case SimilarityType::FCFP2 :
          case SimilarityType::FCFP4 :
          case SimilarityType::FCFP6 :
+         case SimilarityType::FCFP8 :
             builder.writeFingerprintECFP(order, getSim(), _parameters.fingerprintSizeSim());
             break;
       }
