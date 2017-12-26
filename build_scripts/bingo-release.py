@@ -10,6 +10,18 @@ from zipfile import ZipFile
 import sys
 
 
+def get_cpu_count():
+    cpu_count = 1
+    if os.name == 'java':
+        from java.lang import Runtime
+        runtime = Runtime.getRuntime()
+        cpu_count = runtime.availableProcessors()
+    else:
+        import multiprocessing
+        cpu_count = multiprocessing.cpu_count()
+    return cpu_count
+
+
 def shortenDBMS(dbms):
     if dbms == 'postgres':
         return 'pg'
@@ -56,6 +68,7 @@ parser.add_option('--dbms', help='DMBS (oracle, postgres or sqlserver)')
 parser.add_option('--nobuild', default=False, action="store_true", help='configure without building', dest="nobuild")
 parser.add_option('--clean', default=False, action="store_true", help='delete all the build data', dest="clean")
 parser.add_option('--preset', type="choice", dest="preset", choices=list(presets.keys()), help='build preset %s' % (str(presets.keys())))
+parser.add_option('--no-multithreaded-build', dest='mtbuild', default=True, action='store_false', help='Use only 1 core to build')
 
 (args, left_args) = parser.parse_args()
 if len(left_args) > 0:
@@ -121,13 +134,22 @@ if args.dbms != 'sqlserver':
     subprocess.check_call("cmake --build . --config %s" % args.config, shell=True)
 
     if args.generator.find("Unix Makefiles") != -1:
-        subprocess.check_call("make package", shell=True)
+        make_args = ''
+
+        if args.mtbuild:
+            make_args += ' -j{} '.format(get_cpu_count())
+
+        subprocess.check_call("make package %s" % (make_args), shell=True)
         subprocess.check_call("make install", shell=True)
     elif args.generator.find("Xcode") != -1:
         subprocess.check_call("cmake --build . --target package --config %s" % args.config, shell=True)
         subprocess.check_call("cmake --build . --target install --config %s" % args.config, shell=True)
     elif args.generator.find("Visual Studio") != -1:
-        subprocess.check_call("cmake --build . --target PACKAGE --config %s" % args.config, shell=True)
+        vsenv = os.environ
+        if args.mtbuild:
+            vsenv = dict(os.environ, CL='/MP')
+
+        subprocess.check_call("cmake --build . --target PACKAGE --config %s" % args.config, env=vsenv, shell=True)
         subprocess.check_call("cmake --build . --target INSTALL --config %s" % args.config, shell=True)
     else:
         print("Do not know how to run package and install target")
