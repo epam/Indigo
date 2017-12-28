@@ -63,7 +63,7 @@ BINGO_FUNCTION_EXPORT(bingo_buildempty);
 }
 
 
-
+#if PG_VERSION_NUM / 100 >= 906
 /*
  * Bingo handler function: return IndexAmRoutine with access method parameters
  * and callbacks.
@@ -108,6 +108,7 @@ bingo_handler(PG_FUNCTION_ARGS)
 
    PG_RETURN_POINTER(amroutine);
 }
+#endif
 
 static void bingoIndexCallback(Relation index,
         HeapTuple htup,
