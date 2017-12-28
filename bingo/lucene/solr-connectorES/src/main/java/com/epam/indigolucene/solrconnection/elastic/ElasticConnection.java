@@ -43,6 +43,12 @@ public class ElasticConnection implements SolrConnection {
     private String coreName;
     private String type = "docs";
 
+    private final Settings settings = Settings.builder()
+            .put("cluster.name", "moldocs")
+            .put("client.transport.sniff", false)
+            .put("node.ingest", true)
+            .build();
+
     private static final String CUT_REGEXP = "\\{[\\p{Punct}|\\w| ]*}";
     private static final String SKIP_REGEXP = "\\{[\\p{Punct}|\\w| ]*}\\w*$";
 
@@ -107,7 +113,7 @@ public class ElasticConnection implements SolrConnection {
     @Override
     public void close() throws IOException {
         getTransportClient().close();
-        client = null; /* TODO: FIX THIS!!!*/
+        client = null; /* TODO: FIX THIS!!! */
     }
 
     @Override
@@ -130,7 +136,7 @@ public class ElasticConnection implements SolrConnection {
             synchronized (this) {
                 if (client == null) {
                     URL mUrl = new URL(url);
-                    client = new PreBuiltTransportClient(Settings.EMPTY)
+                    client = new PreBuiltTransportClient(settings)
                             .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(mUrl.getHost()), mUrl.getPort()));
                 }
             }

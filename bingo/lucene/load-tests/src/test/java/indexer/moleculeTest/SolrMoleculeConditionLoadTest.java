@@ -34,7 +34,7 @@ public class SolrMoleculeConditionLoadTest extends MoleculeBaseLoadTest {
     private static final String MOL_FILE_100K = "pubchem_slice_100k.smiles";
     private static final String MOL_FILE_10K = "pubchem_slice_10k.smiles";
 
-    private static final String MOL_FILE_NAME = MOL_FILE_10K;
+    private static final String MOL_FILE_NAME = MOL_FILE_1MILLION;
 
     static final String TEST_CORE_NAME = "moldocs";
 

@@ -1,0 +1,31 @@
+FROM java:openjdk-8-jre
+
+ENV SOLR_USER solr
+
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get update && \
+    apt-get -y install lsof && \
+    groupadd -r $SOLR_USER && \
+    useradd -r -g $SOLR_USER $SOLR_USER
+
+# Install elasticSearch
+ENV ELASTIC elasticsearch-5.5.0
+ENV ELASTIC_DIR /usr/share/elasticsearch
+
+RUN apt-get -y install software-properties-common
+
+COPY elasticsearch-5.5.0.tar.gz ./elasticsearch-5.5.0.tar.gz
+RUN mkdir $ELASTIC_DIR && \
+    #curl -L -O https://artifacts.elastic.co/downloads/elasticsearch/$ELASTIC.tar.gz && \
+    tar -xvf $ELASTIC.tar.gz -C $ELASTIC_DIR && \
+    cp -rf $ELASTIC_DIR/$ELASTIC/* $ELASTIC_DIR/ && \
+    rm -rf $ELASTIC_DIR/$ELASTIC
+
+ENV PATH=$PATH:$ELASTIC_DIR/bin
+CMD ["elasticsearch"]
+
+COPY scripts/indigo-lucene-elastic-startup.sh $ELASTIC_DIR/elastic-startup.sh
+
+RUN chmod +x $ELASTIC_DIR/startup.sh
+
+WORKDIR $ELASTIC_DIR
