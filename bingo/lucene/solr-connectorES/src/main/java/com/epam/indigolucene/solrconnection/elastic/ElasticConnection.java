@@ -44,9 +44,10 @@ public class ElasticConnection implements SolrConnection {
     private String type = "docs";
 
     private final Settings settings = Settings.builder()
-            .put("cluster.name", "moldocs")
-            .put("client.transport.sniff", false)
-            .put("node.ingest", true)
+            .put("cluster.name", "my-cluster")
+            .put("node.name", "moldocs")
+            .put("client.transport.sniff", true)
+//            .put("node.ingest", true)
             .build();
 
     private static final String CUT_REGEXP = "\\{[\\p{Punct}|\\w| ]*}";
