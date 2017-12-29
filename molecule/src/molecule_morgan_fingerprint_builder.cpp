@@ -160,7 +160,9 @@ void MoleculeMorganFingerprintBuilder::calculateNewAtomDescriptors(int iteration
 
 dword MoleculeMorganFingerprintBuilder::initialStateCallback_ECFP(BaseMolecule &mol, int idx) {
    int nonhydrogen_neighbors = 0;
-   for(int nei_idx : mol.getVertex(idx).neighbors()) {
+   const Vertex &vertex = mol.getVertex(idx);
+   for(auto i : vertex.neighbors()) {
+      int nei_idx = vertex.neiVertex(i);
       if (mol.getAtomNumber(nei_idx) != ELEM_H)
          nonhydrogen_neighbors += 1;
    }
