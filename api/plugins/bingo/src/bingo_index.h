@@ -13,6 +13,7 @@ namespace bingo
       
       virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data, const char *options);
       virtual Matcher* createMatcherWithExtFP (const char *type, MatcherQueryData *query_data, const char *options, IndigoObject &fp);
+      virtual Matcher* createMatcherTopN (const char *type, MatcherQueryData *query_data, const char *options, int limit);
    };
    
    class ReactionIndex : public BaseIndex
@@ -22,6 +23,7 @@ namespace bingo
 
       virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data, const char *options);
       virtual Matcher* createMatcherWithExtFP (const char *type, MatcherQueryData *query_data, const char *options, IndigoObject &fp);
+      virtual Matcher* createMatcherTopN (const char *type, MatcherQueryData *query_data, const char *options, int limit);
    };
 };
 

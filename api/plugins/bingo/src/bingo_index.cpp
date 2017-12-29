@@ -65,6 +65,21 @@ Matcher* MoleculeIndex::createMatcherWithExtFP (const char *type, MatcherQueryDa
    return 0;
 }
 
+Matcher* MoleculeIndex::createMatcherTopN (const char *type, MatcherQueryData *query_data, const char *options, int limit)
+{
+   if (strcmp(type, "sim") == 0)
+   {
+      AutoPtr<MoleculeTopNSimMatcher> matcher(new MoleculeTopNSimMatcher(*this));
+      matcher->setOptions(options);
+      matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
+      matcher->setLimit(limit);
+      return matcher.release();
+   }
+   else
+      throw Exception("createMatcher: undefined type");
+
+   return 0;
+}
 
 ReactionIndex::ReactionIndex () : BaseIndex(REACTION)
 {
@@ -119,3 +134,18 @@ Matcher* ReactionIndex::createMatcherWithExtFP (const char *type, MatcherQueryDa
    return 0;
 }
 
+Matcher* ReactionIndex::createMatcherTopN (const char *type, MatcherQueryData *query_data, const char *options, int limit)
+{
+   if (strcmp(type, "sim") == 0)
+   {
+      AutoPtr<ReactionTopNSimMatcher> matcher(new ReactionTopNSimMatcher(*this));
+      matcher->setOptions(options);
+      matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
+      matcher->setLimit(limit);
+      return matcher.release();
+   }
+   else
+      throw Exception("createMatcher: undefined type");
+
+   return 0;
+}

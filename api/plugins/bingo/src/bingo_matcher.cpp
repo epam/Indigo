@@ -28,6 +28,11 @@ QueryObject &GrossQueryData::getQueryObject ()
    return _obj;
 }
 
+void SimilarityQueryData::setMin (float min)
+{
+   throw Exception("SimilarityQueryData does not support this method");
+}
+
 MoleculeSimilarityQueryData::MoleculeSimilarityQueryData (/* const */ Molecule &qmol, float min_coef, float max_coef) : 
    _obj(qmol), _min(min_coef), _max(max_coef)
 {
@@ -48,6 +53,11 @@ float MoleculeSimilarityQueryData::getMax () const
    return _max;
 }
 
+void MoleculeSimilarityQueryData::setMin (float min)
+{
+   _min = min;
+}
+
 ReactionSimilarityQueryData::ReactionSimilarityQueryData (/* const */ Reaction &qrxn, float min_coef, float max_coef) : 
    _obj(qrxn), _min(min_coef), _max(max_coef)
 {
@@ -66,6 +76,11 @@ float ReactionSimilarityQueryData::getMin () const
 float ReactionSimilarityQueryData::getMax () const
 {
    return _max;
+}
+
+void ReactionSimilarityQueryData::setMin (float min)
+{
+   _min = min;
 }
 
 MoleculeExactQueryData::MoleculeExactQueryData (/* const */ Molecule &mol) : _obj(mol)
@@ -194,6 +209,11 @@ int BaseMatcher::minCell ()
 }
 
 int BaseMatcher::maxCell ()
+{
+   throw Exception("BaseMatcher: Matcher does not support this method");
+}
+
+void BaseMatcher::resetThresholdLimit (float min)
 {
    throw Exception("BaseMatcher: Matcher does not support this method");
 }
@@ -759,6 +779,43 @@ void BaseSimilarityMatcher::setQueryDataWithExtFP (SimilarityQueryData *query_da
       _containers_count += sim_storage.getCellSize(i);
 }
 
+void BaseSimilarityMatcher::resetThresholdLimit (float min)
+{
+   SimStorage &sim_storage = _index.getSimStorage();
+
+   int query_bit_count = bitGetOnesCount(_query_fp.ptr(), _fp_size);
+
+   _query_data->setMin(min);
+
+   _min_cell = -1;
+   _max_cell = -1;
+   _first_cell = -1;
+   _containers_count = 0;
+   _current_id = -1;
+   _current_cell = 0;
+   _current_container = -1;
+   _current_portion_id = 0;
+   _current_portion.clear();
+   _current_sim_value = -1;
+
+   if (sim_storage.isSmallBase())
+      return;
+
+   sim_storage.getCellsInterval(_query_fp.ptr(), *_sim_coef.get(), min, _min_cell, _max_cell);
+
+   _first_cell = sim_storage.firstFitCell(query_bit_count, _min_cell, _max_cell);
+   _current_cell = _first_cell;
+
+   if (_part_count != -1 && _part_id != -1)
+   {
+      while (((_current_cell % _part_count) != _part_id - 1) && (_current_cell != -1))
+         _current_cell = sim_storage.nextFitCell(query_bit_count, _first_cell, _min_cell, _max_cell, _current_cell);
+   }
+   _containers_count = 0;
+   for (int i = _min_cell; i <= _max_cell; i++)
+      _containers_count += sim_storage.getCellSize(i);
+}
+
 void BaseSimilarityMatcher::_setParameters (const char *parameters)
 {
    if (_query_data.get() != 0)
@@ -887,6 +944,353 @@ ReactionSimMatcher::ReactionSimMatcher (/*const */ BaseIndex &index) : BaseSimil
 {
 }
 
+TopNSimMatcher::TopNSimMatcher (BaseIndex &index, IndigoObject *& current_obj ) : BaseSimilarityMatcher(index, current_obj)
+{
+   _idx = -1;
+   _limit = 0;
+   _result_ids.clear();
+   _result_sims.clear();
+}
+
+bool TopNSimMatcher::next ()
+{
+   if (_idx < 0)
+   {
+      _findTopN ();
+      if (_result_ids.size() > 0)
+      {
+         _idx = 0;
+      }   
+   }
+
+   if (_idx >= 0 && _idx < _result_ids.size() )
+   {
+      _current_id = _result_ids[_idx];
+      _current_sim_value = _result_sims[_idx];
+      _idx++;
+
+      bool is_obj_exist = _isCurrentObjectExist();
+
+      if (!is_obj_exist)
+      {
+         return false;
+      }
+     
+      _loadCurrentObject();
+
+      return true;
+   }
+ 
+   return false;
+}
+
+void TopNSimMatcher::_findTopN ()
+{
+   QS_DEF(Array<float>, thrs);
+   QS_DEF(Array<int>, nhits_per_block);
+   QS_DEF(Array<int>, blocks);
+   QS_DEF(Array<int>, cells);
+
+   thrs.clear();
+   nhits_per_block.clear();
+   blocks.clear();
+   cells.clear();
+
+   SimStorage &sim_storage = _index.getSimStorage();
+
+   float thr_low_limit = _query_data->getMin();
+   int   hits_limit = _limit;
+
+   _initModelDistribution(thrs, nhits_per_block);
+
+   blocks.clear_resize(thrs.size());
+   cells.clear_resize(thrs.size());
+   _current_results.clear();
+
+   bool already_found = false;
+   bool too_many = false;
+   float thr_proc = 0.0f;
+   float cur_thr  = 0.0f;
+   float thr_too_many = 0.0f;
+   int nhits = 0;
+   int start_iter = thrs.size();
+
+   int cont_count = 0;
+   int cells_count = 0;
+   int min_cell = 0;
+   int max_cell = 0;
+   int cur_cell = 0;
+
+   int i;
+   int cnt = 0;
+
+   for (i = 0; i < thrs.size(); i++)
+   {
+      if (too_many)
+      {
+         if (thr_proc == 0.0f)
+            cur_thr = thr_too_many + (1.0f - thr_too_many)/2;
+         else
+            cur_thr = thr_too_many + (thr_proc - thr_too_many)/2;
+      }
+      else
+         cur_thr = thrs[i];
+
+      resetThresholdLimit(cur_thr);
+
+      cont_count = containersCount();
+      blocks[i] = cont_count;
+      cells_count = cellsCount();
+      cells[i] = cells_count;
+      min_cell = minCell();
+      max_cell = maxCell();
+
+      if ( (cont_count > 0) && (nhits == 0) )
+      {
+         cnt = 0;
+         _current_results.clear();
+
+         SimResult *res = 0;
+
+         while (BaseSimilarityMatcher::next())
+         {
+            cnt++;
+            res = &_current_results.push();
+            res->id = _current_id;
+            res->sim_value = _current_sim_value;
+            cur_cell = currentCell();
+            if ( (cnt > hits_limit * 2) && ((max_cell - cur_cell) > cells_count/2) )
+            {
+               thr_too_many = cur_thr;
+               too_many = true;
+               break;
+            }
+            else
+               too_many = false;
+         }
+        
+         if (too_many)
+            continue;
+
+         if ( (cnt >= hits_limit) || (cur_thr <= thr_low_limit) )
+         {
+            already_found = true;
+            break;
+         }
+
+         nhits = (cnt/cont_count);
+
+         if ( (nhits == 0) && (cnt > 0) )
+            nhits = 1;
+
+         thr_proc = cur_thr;
+         nhits_per_block[i] = nhits;
+         if (i < thrs.size() - 2)
+            start_iter = i + 1;
+         else 
+         {
+            already_found = true;
+            break;
+         }
+           
+         if (thr_too_many > 0.0) 
+         {
+            thrs[i] = thr_proc;
+            thrs[start_iter] = thr_proc - (thr_proc - thr_too_many)/2;
+            if (start_iter < thrs.size() - 2)
+               thrs[start_iter + 1] = thr_too_many;
+         }    
+      }
+      else if ( (cont_count == 0) && sim_storage.isSmallBase() )
+      {
+         cnt = 0;
+         _current_results.clear();
+
+         SimResult *res = 0;
+
+         while (BaseSimilarityMatcher::next())
+         {
+            cnt++;
+            res = &_current_results.push();
+            res->id = _current_id;
+            res->sim_value = _current_sim_value;
+
+            if (cnt > hits_limit * 2)
+            {
+               thr_too_many = cur_thr;
+               too_many = true;
+               break;
+            }
+            else
+               too_many = false;
+         }
+        
+         if (too_many)
+            continue;
+
+         if ( (cnt >= hits_limit) || (cur_thr <= thr_low_limit) )
+         {
+            already_found = true;
+            break;
+         }
+      }
+      else if (cont_count == 0)
+         continue;
+      else
+      {
+         nhits_per_block[i] = nhits_per_block[i-1] * 2;
+      }
+   }
+
+   if (!already_found)
+   {
+      bool adjusted = false;
+      float next_thr = 0.0f;
+      float prev_thr = 0.0f;
+
+      i = start_iter;
+ 
+      while (i < thrs.size())
+      {
+         if ( (blocks[i] * nhits_per_block[i] < hits_limit) && (i < (thrs.size() - 1)) && (!adjusted) )
+         {
+            i++;
+            continue;
+         }   
+
+         cur_thr = thrs[i];
+
+         if ( (blocks[i] * nhits_per_block[i] > 2 * hits_limit) && (!adjusted) )
+         {
+            next_thr = cur_thr + (thrs[i - 1] - cur_thr)/2;
+            prev_thr = cur_thr;
+            cur_thr = next_thr;
+            adjusted = true;
+         }
+
+         too_many = false;
+
+         resetThresholdLimit(cur_thr);
+
+         cont_count = containersCount();
+         cells_count = cellsCount();
+         cells[i] = cells_count;
+         min_cell = minCell();
+         max_cell = maxCell();
+
+         if (cont_count > 0)
+         {
+            cnt = 0;
+            _current_results.clear();
+
+            SimResult *res = 0;
+
+            while (BaseSimilarityMatcher::next())
+            {
+               cnt++;
+               res = &_current_results.push();
+               res->id = _current_id;
+               res->sim_value = _current_sim_value;
+               cur_cell = currentCell();
+               if ( (cnt > hits_limit * 2) && (max_cell - cur_cell) > cells_count/2)
+               {
+                  next_thr = cur_thr + (thr_proc - cur_thr)/2;
+                  thr_too_many = cur_thr;
+                  thrs[i] = next_thr;
+                  too_many = true;
+                  adjusted = true;
+                  break;
+               }
+            } 
+
+            if ( ((cnt >= hits_limit) || (cur_thr <= thr_low_limit)) && (!too_many) )
+               break;
+         }
+         else
+            i++; 
+
+         if (!too_many)
+         {
+            thr_proc = cur_thr;
+            nhits_per_block[i] = cnt/cont_count;
+            if (i < (thrs.size() - 2))
+               nhits_per_block[i + 1] = nhits_per_block[i] * 2;
+
+            if (thr_too_many > 0.0)
+            {
+               next_thr = cur_thr - (cur_thr - thr_too_many)/2;
+               thrs[i] = next_thr;
+            }
+            else if (i < (thrs.size() - 2))
+            {
+               if ( (hits_limit - cnt) < (nhits_per_block[i + 1] * (blocks[i + 1] - cont_count)) )
+               {
+                  next_thr = cur_thr - (cur_thr - thrs[i + 1])/2;
+                  thrs[i] = next_thr;
+                  adjusted = true;
+               }
+               else
+               {
+                  i++;
+                  next_thr = thrs[i];
+               }
+            }
+         }
+
+         cur_thr = next_thr;
+      }
+   }
+
+   if (_current_results.size() > 0)
+   {
+      _current_results.qsort(_cmp_sim_res, 0); 
+
+      for (i = 0; i < _current_results.size(); i++)
+      {
+         _result_ids.push(_current_results[i].id);
+         _result_sims.push(_current_results[i].sim_value);
+
+         if (i == (hits_limit - 1))
+            break;
+      }
+   }
+}
+
+int TopNSimMatcher::_cmp_sim_res(SimResult &res1, SimResult &res2, void *context)
+{
+   if ( (res1.sim_value - res2.sim_value) > 0.0 )
+      return -1;
+   else if ( (res1.sim_value - res2.sim_value) < 0.0 )
+      return 1;
+
+   return 0;
+}
+
+void TopNSimMatcher::_initModelDistribution(Array<float> &model_thrs, Array<int> &model_nhits_per_block)
+{
+   for (int i = 0; i < 9; i++)
+   {
+      model_thrs.push(1.0 - 0.1 * (i + 1));
+      model_nhits_per_block.push(5 * 2^(i));
+   }
+}
+
+void TopNSimMatcher::setLimit (int limit)
+{
+   _limit = limit;
+}
+
+TopNSimMatcher::~TopNSimMatcher()
+{
+}
+
+MoleculeTopNSimMatcher::MoleculeTopNSimMatcher (BaseIndex &index) : TopNSimMatcher(index, (IndigoObject *&)_current_mol), _current_mol(new IndexCurrentMolecule(_current_mol))
+{
+}
+
+ReactionTopNSimMatcher::ReactionTopNSimMatcher (BaseIndex &index) : TopNSimMatcher(index, (IndigoObject *&)_current_rxn), _current_rxn(new IndexCurrentReaction(_current_rxn))
+{
+}
 
 BaseExactMatcher::BaseExactMatcher (BaseIndex &index, IndigoObject *& current_obj) : BaseMatcher(index, current_obj)
 {

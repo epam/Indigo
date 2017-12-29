@@ -35,6 +35,7 @@ namespace bingo
    public:
       virtual float getMin () const = 0;
       virtual float getMax () const = 0;
+      virtual void setMin (float min);
    };
 
    class SubstructureQueryData : public MatcherQueryData
@@ -63,8 +64,8 @@ namespace bingo
       virtual /*const*/ QueryObject &getQueryObject () /*const*/ ;
 
       virtual float getMin () const ;
-
       virtual float getMax () const ;
+      virtual void setMin (float min);
 
    private:
       SimilarityMoleculeQuery _obj;
@@ -80,8 +81,8 @@ namespace bingo
       virtual /*const*/ QueryObject &getQueryObject () /*const*/ ;
 
       virtual float getMin () const ;
-
       virtual float getMax () const ;
+      virtual void setMin (float min);
 
    protected:
       SimilarityReactionQuery _obj;
@@ -170,6 +171,7 @@ namespace bingo
       virtual const Index & getIndex () = 0;
       virtual float currentSimValue () = 0;
       virtual void setOptions (const char * options) = 0;
+      virtual void resetThresholdLimit (float min) = 0;
       
       virtual int esimateRemainingResultsCount (int &delta) = 0;
       virtual float esimateRemainingTime (float &delta) = 0;
@@ -196,6 +198,7 @@ namespace bingo
       virtual float currentSimValue ();
       
       virtual void setOptions (const char * options);
+      virtual void resetThresholdLimit (float min);
       
       virtual int esimateRemainingResultsCount (int &delta);
       virtual float esimateRemainingTime (float &delta);
@@ -303,6 +306,7 @@ namespace bingo
 
       virtual int esimateRemainingResultsCount (int &delta);
       virtual float esimateRemainingTime (float &delta);
+      virtual void resetThresholdLimit (float min);
 
       virtual int containersCount ();
       virtual int cellsCount ();
@@ -311,9 +315,12 @@ namespace bingo
       virtual int maxCell ();
 
       virtual float currentSimValue ();
+
+   protected:
+      float _current_sim_value;
+      AutoPtr<SimilarityQueryData> _query_data;
       
    private:
-      /* const */ AutoPtr<SimilarityQueryData> _query_data;
       int _fp_size;
 
       int _min_cell;
@@ -326,7 +333,7 @@ namespace bingo
       Array<SimResult> _current_portion;
       int _current_portion_id;
 
-      float _current_sim_value;
+      //float _current_sim_value;
 
 
       AutoPtr<SimCoef> _sim_coef;
@@ -354,6 +361,45 @@ namespace bingo
    {
    public:
       ReactionSimMatcher(/*const */ BaseIndex &index);
+   private:
+      IndexCurrentReaction *_current_rxn;
+   };
+
+   class TopNSimMatcher : public BaseSimilarityMatcher
+   {
+   public:
+      TopNSimMatcher (/*const */ BaseIndex &index, IndigoObject *& current_obj);
+
+      virtual bool next ();
+      void setLimit(int limit);
+     
+      ~TopNSimMatcher ();
+   protected:
+      void _findTopN ();
+      void _initModelDistribution(Array<float> &thrs, Array<int> &nhits_per_block);
+      static int _cmp_sim_res(SimResult &res1, SimResult &res2, void *context);
+
+   private:
+      int _idx;
+      int _limit;
+      Array<SimResult> _current_results;
+      Array<int> _result_ids;
+      Array<float> _result_sims;
+   };
+
+   class MoleculeTopNSimMatcher : public TopNSimMatcher
+   {
+   public:
+      MoleculeTopNSimMatcher (/*const */ BaseIndex &index);
+   private:
+      IndexCurrentMolecule *_current_mol;
+   };
+
+
+   class ReactionTopNSimMatcher : public TopNSimMatcher
+   {
+   public:
+      ReactionTopNSimMatcher(/*const */ BaseIndex &index);
    private:
       IndexCurrentReaction *_current_rxn;
    };

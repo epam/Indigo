@@ -44,6 +44,8 @@ CEXPORT int bingoSearchMolFormula (int db, const char *query, const char *option
 CEXPORT int bingoSearchSim (int db, int query_obj, float min, float max, const char *options);
 CEXPORT int bingoSearchSimWithExtFP (int db, int query_obj, float min, float max, int fp, const char *options);
 
+CEXPORT int bingoSearchSimTopN (int db, int query_obj, int limit, float min, const char *options);
+
 CEXPORT int bingoEnumerateId (int db);
 
 //
