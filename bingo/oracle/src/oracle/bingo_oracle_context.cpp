@@ -115,6 +115,9 @@ void BingoOracleContext::_loadConfigParameters (OracleEnv &env)
 
    configGetIntDef(env, "REJECT_INVALID_STRUCTURES", val, 0);
    reject_invalid_structures = (val != 0);
+   
+   configGetIntDef(env, "IGNORE_BAD_VALENCE", val, 0);
+   ignore_bad_valence = (val != 0);
 
    QS_DEF(Array<char>, cmfdict);
    
