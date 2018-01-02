@@ -16,6 +16,7 @@
 #define __nullable__
 
 #include "base_cpp/exception.h"
+#include "base_cpp/array.h"
 
 namespace indigo
 {
@@ -26,12 +27,12 @@ template <typename T>
 class Nullable
 {
 public:
-   Nullable () : _has_value(false), variable_name("<Undefined>") {}
+   Nullable () : _has_value(false) { variable_name.readString("<Undefined>", true);}
 
    const T& get () const
    {
       if (!_has_value)
-         throw Error("%s variable was not set");
+         throw Error("\"%s\" variable was not set", variable_name.ptr());
       return _value;
    }
 
@@ -64,7 +65,7 @@ public:
 
    void setName (const char *name)
    {
-      variable_name = name;
+      variable_name.readString(name, true);
    }
 
    DECL_TPL_ERROR(NullableError);
@@ -72,7 +73,7 @@ public:
 private:
    T _value;
    bool _has_value;
-   const char *variable_name;
+   Array<char> variable_name;
 };
 
 }
