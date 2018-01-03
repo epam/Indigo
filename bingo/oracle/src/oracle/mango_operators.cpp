@@ -484,7 +484,7 @@ ORAEXT OCIString * oraMangoGrossCalc (OCIExtProcContext *ctx,
 {
    OCIString *result = NULL;
 
-   ORABLOCK_BEGIN
+   ORA_SAFEBLOCK_BEGIN("mangoGrossCalc")
    {
       *return_ind = OCI_IND_NULL;
 
@@ -493,6 +493,7 @@ ORAEXT OCIString * oraMangoGrossCalc (OCIExtProcContext *ctx,
       if (target_ind == OCI_IND_NOTNULL)
       {
          MangoOracleContext &context = MangoOracleContext::get(env, 0, false);
+         block_throw_error = context.context().reject_invalid_structures.get();
 
          QS_DEF(Array<char>, target_buf);
          OracleLOB target_lob(env, target_loc);
@@ -506,7 +507,7 @@ ORAEXT OCIString * oraMangoGrossCalc (OCIExtProcContext *ctx,
          // This is needed for Oracle 9. Returning NULL drops the extproc.
          OCIStringAssignText(env.envhp(), env.errhp(), (text *)"nil", 3, &result);
    }
-   ORABLOCK_END
+   ORA_SAFEBLOCK_END
 
    return result;
 }
@@ -518,7 +519,7 @@ ORAEXT OCINumber * oraMangoGross (OCIExtProcContext *ctx, int context_id,
 {
    OCINumber *result = NULL;
 
-   ORABLOCK_BEGIN
+   ORA_SAFEBLOCK_BEGIN("mangoGross")
    {
       *return_ind = OCI_IND_NULL;
 
@@ -530,6 +531,7 @@ ORAEXT OCINumber * oraMangoGross (OCIExtProcContext *ctx, int context_id,
       if (target_ind == OCI_IND_NOTNULL)
       {
          MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
+         block_throw_error = context.context().reject_invalid_structures.get();
 
          QS_DEF(Array<char>, target_buf);
 
@@ -546,7 +548,7 @@ ORAEXT OCINumber * oraMangoGross (OCIExtProcContext *ctx, int context_id,
       else
          *return_ind = OCI_IND_NOTNULL;
    }
-   ORABLOCK_END
+   ORA_SAFEBLOCK_END
 
    return result;
 }
