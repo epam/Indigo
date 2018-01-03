@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "oracle/ora_logger.h"
 #include "base_c/defs.h"
@@ -100,4 +101,25 @@ bool OracleLogger::initIfClosed (const char *filename)
       return true;
 
    return init(filename);
+}
+
+
+void OracleLogger::dbgPrintfTS (const char *format, ... )
+{
+   va_list args;
+
+   va_start(args, format);
+   dbgPrintfVTS(format, args);
+   va_end(args);
+}
+
+void OracleLogger::dbgPrintfVTS (const char *format, va_list args)
+{
+   time_t tm = time(NULL);
+   const struct tm *lt = localtime(&tm);
+
+   dbgPrintf("[%02d.%02d.%4d %02d:%02d:%02d] ",
+           lt->tm_mday, lt->tm_mon + 1, lt->tm_year + 1900, lt->tm_hour, lt->tm_min, lt->tm_sec);
+
+   dbgPrintfV(format, args);
 }

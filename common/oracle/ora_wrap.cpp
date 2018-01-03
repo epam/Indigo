@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <oci.h>
 #include <string.h>
-#include <time.h>
 
 // oci.h on Solaris has typedef-ed dword.
 // We define it in order to avoid conflict with base_c/defs.h
@@ -366,14 +365,8 @@ void OracleEnv::dbgPrintfTS (const char *format, ... )
 {
    va_list args;
 
-   time_t tm = time(NULL);
-   const struct tm *lt = localtime(&tm);
-
-   _logger.dbgPrintf("[%02d.%02d.%4d %02d:%02d:%02d] ",
-           lt->tm_mday, lt->tm_mon + 1, lt->tm_year + 1900, lt->tm_hour, lt->tm_min, lt->tm_sec);
-
    va_start(args, format);
-   _logger.dbgPrintfV(format, args);
+   _logger.dbgPrintfVTS(format, args);
    va_end(args);
 }
 

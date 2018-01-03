@@ -37,6 +37,10 @@ public:
    int dbgPrintf (const char *format, ...);
 
    int dbgPrintfV (const char *format, va_list args);
+   
+   void dbgPrintfTS(const char *format, ...);
+   
+   void dbgPrintfVTS (const char *format, va_list args);
 
 private:
    FILE *_file;

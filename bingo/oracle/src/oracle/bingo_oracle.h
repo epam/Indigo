@@ -42,6 +42,26 @@ extern const char *log_filename;
    catch (OracleError &error) { error.raise(logger, ctx); }                 \
    catch (...) { OracleError(-1, "unknown exception").raise(logger, ctx); }                  
 
+#define ORA_SAFEBLOCK_BEGIN(name) \
+   logger.initIfClosed(log_filename); \
+   bool block_throw_error = false; \
+   const char* block_name = name; \
+   try { try
+
+#define ORA_SAFEBLOCK_END \
+catch (Exception &e) { throw OracleError(-1, "Error: %s", e.message());} \
+   }                                                                     \
+   catch (OracleError &error) {                                          \
+      if (block_throw_error) { error.raise(logger, ctx); } else {        \
+         logger.dbgPrintfTS("%s: %s\n", block_name, error.message());      \
+      }                                                                  \
+   }                                                                     \
+   catch (...) { if (block_throw_error) {                                \
+      OracleError(-1, "unknown exception").raise(logger, ctx);           \
+   } else {                                                              \
+      logger.dbgPrintfTS("%s: unknown exception\n", block_name);           \
+   } }
+
 #define ORA_TRY_FETCH_BEGIN \
    try
 
