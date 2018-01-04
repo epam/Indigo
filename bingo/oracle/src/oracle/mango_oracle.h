@@ -51,29 +51,41 @@ extern const char *bad_molecule_warning_rowid;
 
 #define CATCH_READ_TARGET_MOL(action) \
    } \
-   catch (Scanner::Error  &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
-   catch (MolfileLoader::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
-   catch (Element::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
-   catch (Graph::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
-   catch (MoleculeStereocenters::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;}  \
-   catch (MoleculeCisTrans::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
-   catch (SmilesLoader::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
-   catch (IcmLoader::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
-   catch (Molecule::Error &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
-   catch (DearomatizationException &e) { env.dbgPrintf(bad_molecule_warning, e.message()); action;} \
+   catch (Scanner::Error  &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (MolfileLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (Element::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (Graph::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (MoleculeStereocenters::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;}  \
+   catch (MoleculeCisTrans::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (SmilesLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (IcmLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (Molecule::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (DearomatizationException &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (MoleculeAutoLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (DearomatizationsGroups::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (MoleculePiSystemsMatcher::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (SkewSymmetricNetwork::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (EmbeddingEnumerator::TimeoutException &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} 
+   
+   
 
 #define CATCH_READ_TARGET_MOL_ROWID(rowid, action) \
    } \
-   catch (Scanner::Error  &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
-   catch (MolfileLoader::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
-   catch (Element::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
-   catch (Graph::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
-   catch (MoleculeStereocenters::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;}  \
-   catch (MoleculeCisTrans::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
-   catch (SmilesLoader::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
-   catch (IcmLoader::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
-   catch (Molecule::Error &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
-   catch (DearomatizationException &e) { env.dbgPrintf(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (Scanner::Error  &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (MolfileLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (Element::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (Graph::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (MoleculeStereocenters::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;}  \
+   catch (MoleculeCisTrans::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (SmilesLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (IcmLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (Molecule::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (DearomatizationException &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (MoleculeAutoLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (DearomatizationsGroups::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (MoleculePiSystemsMatcher::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (SkewSymmetricNetwork::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
+   catch (EmbeddingEnumerator::TimeoutException &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} 
 
 
 #endif

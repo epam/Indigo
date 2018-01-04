@@ -139,7 +139,7 @@ static OCINumber * _mangoCommon (OCIExtProcContext *ctx, int context_id,
 {
    OCINumber *result = NULL;
 
-   ORA_SAFEBLOCK_BEGIN("search")
+   ORABLOCK_BEGIN
    {
       *return_ind = OCI_IND_NULL;
 
@@ -153,7 +153,6 @@ static OCINumber * _mangoCommon (OCIExtProcContext *ctx, int context_id,
       if (target_ind == OCI_IND_NOTNULL)
       {
          MangoOracleContext &context = MangoOracleContext::get(env, context_id, false);
-         block_throw_error = context.context().reject_invalid_structures.get();
 
          QS_DEF(Array<char>, query_buf);
          QS_DEF(Array<char>, target_buf);
@@ -173,7 +172,7 @@ static OCINumber * _mangoCommon (OCIExtProcContext *ctx, int context_id,
       else
          *return_ind = OCI_IND_NOTNULL;
    }
-   ORA_SAFEBLOCK_END
+   ORABLOCK_END
 
    return result;
 }
