@@ -166,7 +166,11 @@ public:
    catch (RSmilesLoader::Error &e) { action;} \
    catch (Molecule::Error &e) { action;} \
    catch (Reaction::Error &e) { action;} \
-   catch (ReactionAutoLoader::Error &e) { action;} 
+   catch (ReactionAutoLoader::Error &e) { action;} \
+   catch (EmbeddingEnumerator::TimeoutException &e) { action;} \
+   catch (DearomatizationsGroups::Error&e) {action;} \
+   catch (MoleculePiSystemsMatcher::Error&e) {action;} \
+   catch (SkewSymmetricNetwork::Error&e) {action;}
 
 }
 }
