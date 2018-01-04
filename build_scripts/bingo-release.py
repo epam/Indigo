@@ -41,6 +41,15 @@ def shortenGenerator(generator):
         result = generator.replace('MinGW Makefiles', 'mmake')
     return result.replace(' ', '')
 
+def getBingoVersion():
+    version = "unknown"
+
+    for line in open(os.path.join(os.path.dirname(__file__), "..","bingo","bingo-core","src","core", "bingo_version.h")):
+        m = re.search('BINGO_VERSION "(.*)-.*"', line)
+        if m:
+            version = m.group(1)
+    return version
+
 presets = {
     "win32-2013": ("Visual Studio 12", ""),
     "win32-2015": ("Visual Studio 14", ""),
@@ -222,11 +231,7 @@ else:
     dist_dir = join(root, "dist")
 
     # Get version
-    version = ""
-    for line in open(join('bingo', "bingo-version.cmake")):
-        m = re.search('SET\(BINGO_VERSION "([^\"]*)\"', line)
-        if m:
-            version = m.group(1)
+    version = getBingoVersion()
 
     if not os.path.exists(join(root, 'dist', 'bingo-sqlserver-%s' % version)):
         os.makedirs(join(root, 'dist', 'bingo-sqlserver-%s' % version, 'bingo-sqlserver-%s' % version))
