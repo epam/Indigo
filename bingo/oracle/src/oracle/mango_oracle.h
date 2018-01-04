@@ -80,10 +80,10 @@ extern const char *bad_molecule_warning_rowid;
    catch (IcmLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
    catch (Molecule::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
    catch (DearomatizationException &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
-   catch (MoleculeAutoLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
-   catch (MoleculePiSystemsMatcher::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
-   catch (SkewSymmetricNetwork::Error &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} \
-   catch (EmbeddingEnumerator::TimeoutException &e) { env.dbgPrintfTS(bad_molecule_warning, e.message()); action;} 
+   catch (MoleculeAutoLoader::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (MoleculePiSystemsMatcher::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (SkewSymmetricNetwork::Error &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} \
+   catch (EmbeddingEnumerator::TimeoutException &e) { env.dbgPrintfTS(bad_molecule_warning_rowid, rowid, e.message()); action;} 
 
 
 #endif

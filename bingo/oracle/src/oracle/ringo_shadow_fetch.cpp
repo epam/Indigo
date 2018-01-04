@@ -15,8 +15,13 @@
 #include "base_cpp/output.h"
 #include "oracle/ringo_shadow_fetch.h"
 #include "core/ringo_matchers.h"
-
 #include "oracle/ringo_fetch_context.h"
+#include "oracle/ringo_oracle.h"
+#include "molecule/molfile_loader.h"
+#include "molecule/elements.h"
+#include "reaction/rxnfile_loader.h"
+#include "molecule/molecule_pi_systems_matcher.h"
+#include "graph/embedding_enumerator.h"
 
 IMPL_ERROR(RingoShadowFetch, "ringo shadow fetch");
 
@@ -206,28 +211,33 @@ void RingoShadowFetch::fetch (OracleEnv &env, int maxrows)
       }
 
       bool have_match = false;
-
-      if (_fetch_type == _NON_SUBSTRUCTURE)
+      
+      TRY_READ_TARGET_RXN
       {
-         RingoSubstructure &instance = _context.substructure;
-         QS_DEF(Array<char>, crf);
 
-         _lob_crf->readAll(crf, false);
-         
-         if (!instance.matchBinary(crf))
-            have_match = true;
+         if (_fetch_type == _NON_SUBSTRUCTURE)
+         {
+            RingoSubstructure &instance = _context.substructure;
+            QS_DEF(Array<char>, crf);
+
+            _lob_crf->readAll(crf, false);
+
+            if (!instance.matchBinary(crf))
+               have_match = true;
+         }
+         else if (_fetch_type == _EXACT)
+         {
+            RingoExact &instance = _context.exact;
+            QS_DEF(Array<char>, crf);
+
+            _lob_crf->readAll(crf, false);
+
+            have_match = (instance.matchBinary(crf) == (_right_part == 1));
+         }
+         else
+            throw Error("unexpected fetch type %d", _fetch_type);
       }
-      else if (_fetch_type == _EXACT)
-      {
-         RingoExact &instance = _context.exact;
-         QS_DEF(Array<char>, crf);
-
-         _lob_crf->readAll(crf, false);
-
-         have_match = (instance.matchBinary(crf) == (_right_part == 1));
-      }
-      else
-         throw Error("unexpected fetch type %d", _fetch_type);
+      CATCH_READ_TARGET_RXN(have_match=false)
 
       if (have_match)
          matched.add(_rowid);

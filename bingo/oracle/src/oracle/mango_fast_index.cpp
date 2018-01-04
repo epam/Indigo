@@ -25,6 +25,12 @@
 #include "base_cpp/scanner.h"
 #include "oracle/rowid_loader.h"
 #include "base_c/bitarray.h"
+#include "bingo_oracle.h"
+#include "molecule/molfile_loader.h"
+#include "molecule/elements.h"
+#include "molecule/smiles_loader.h"
+#include "molecule/icm_loader.h"
+#include "molecule/molecule_auto_loader.h"
 
 IMPL_ERROR(MangoFastIndex, "mango fast fetch");
 
@@ -89,32 +95,38 @@ void MangoFastIndex::_match (OracleEnv &env, int idx)
    bool res = false;
 
    profTimerStart(tall, "match");
-   if (_fetch_type == _SUBSTRUCTURE)
+   
+   TRY_READ_TARGET_MOL 
    {
-      QS_DEF(Array<char>, xyz_buf);
-      
-      if (_context.substructure.needCoords())
+           
+      if (_fetch_type == _SUBSTRUCTURE)
       {
-         OraRowidText rid;
+         QS_DEF(Array<char>, xyz_buf);
 
-         _decompressRowid(stored, rid);
-         if (_loadCoords(env, rid.ptr(), xyz_buf))
+         if (_context.substructure.needCoords())
          {
-            BufferScanner xyz_scanner(xyz_buf);
+            OraRowidText rid;
 
-            res = _context.substructure.matchBinary(scanner, &xyz_scanner);
+            _decompressRowid(stored, rid);
+            if (_loadCoords(env, rid.ptr(), xyz_buf))
+            {
+               BufferScanner xyz_scanner(xyz_buf);
+
+               res = _context.substructure.matchBinary(scanner, &xyz_scanner);
+            }
+            else
+               // no XYZ --> skip the molecule
+               res = false;
          }
          else
-            // no XYZ --> skip the molecule
-            res = false;
+            res = _context.substructure.matchBinary(scanner, 0);
       }
-      else
-         res = _context.substructure.matchBinary(scanner, 0);
-   }
-   else if (_fetch_type == _TAUTOMER_SUBSTRUCTURE)
-      res = _context.tautomer.matchBinary(scanner);
-   else // _fetch_type == _SIMILARITY
-      res = _context.similarity.matchBinary(scanner);
+      else if (_fetch_type == _TAUTOMER_SUBSTRUCTURE)
+         res = _context.tautomer.matchBinary(scanner);
+      else // _fetch_type == _SIMILARITY
+         res = _context.similarity.matchBinary(scanner);
+   } 
+   CATCH_READ_TARGET_MOL(res = false) 
 
    profTimerStop(tall);
    

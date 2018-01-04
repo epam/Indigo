@@ -22,6 +22,11 @@
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/mango_fetch_context.h"
 #include "base_cpp/profiling.h"
+#include "molecule/molfile_loader.h"
+#include "molecule/elements.h"
+#include "molecule/smiles_loader.h"
+#include "molecule/icm_loader.h"
+#include "molecule/molecule_auto_loader.h"
 
 IMPL_ERROR(MangoShadowFetch, "mango shadow fetch");
 
@@ -419,96 +424,101 @@ void MangoShadowFetch::fetch (OracleEnv &env, int maxrows)
       }
 
       bool have_match = false;
-
-      if (_fetch_type == _NON_SUBSTRUCTURE)
+      
+      TRY_READ_TARGET_MOL
       {
-         MangoSubstructure &instance = _context.substructure;
-         QS_DEF(Array<char>, cmf);
 
-         _lob_cmf->readAll(cmf, false);
-         
-         if (_need_xyz)
+         if (_fetch_type == _NON_SUBSTRUCTURE)
          {
-            if (_statement->gotNull(3)) // xyz == NULL?
+            MangoSubstructure &instance = _context.substructure;
+            QS_DEF(Array<char>, cmf);
+
+            _lob_cmf->readAll(cmf, false);
+
+            if (_need_xyz)
+            {
+               if (_statement->gotNull(3)) // xyz == NULL?
+                  have_match = true;
+               else
+               {
+                  QS_DEF(Array<char>, xyz);
+
+                  _lob_xyz->readAll(xyz, false);
+                  if (!instance.matchBinary(cmf, &xyz))
+                     have_match = true;
+               }
+            }
+            else if (!instance.matchBinary(cmf, 0))
                have_match = true;
+         }
+         else if (_fetch_type == _NON_TAUTOMER_SUBSTRUCTURE)
+         {
+            MangoTautomer &instance = _context.tautomer;
+            QS_DEF(Array<char>, cmf);
+
+            _lob_cmf->readAll(cmf, false);
+
+            if (!instance.matchBinary(cmf))
+               have_match = true;
+         }
+         else if (_fetch_type == _TAUTOMER)
+         {
+            MangoTautomer &instance = _context.tautomer;
+            QS_DEF(Array<char>, cmf);
+
+            _lob_cmf->readAll(cmf, false);
+
+            if (instance.matchBinary(cmf) == (_right_part == 1))
+               have_match = true;
+         }
+         else if (_fetch_type == _EXACT)
+         {
+            MangoExact &instance = _context.exact;
+            QS_DEF(Array<char>, cmf);
+
+            profTimerStart(tlobread, "exact.lobread");
+            _lob_cmf->readAll(cmf, false);
+            profTimerStop(tlobread);
+
+            if (_need_xyz)
+            {
+               if (_statement->gotNull(3)) // xyz == NULL?
+                  have_match = (_right_part == 0);
+               else
+               {
+                  QS_DEF(Array<char>, xyz);
+
+                  profTimerStart(txyzlobread, "exact.xyzlobread");
+                  _lob_xyz->readAll(xyz, false);
+                  profTimerStop(txyzlobread);
+
+                  profTimerStart(tmatch, "exact.match");
+                  if (instance.matchBinary(cmf, &xyz) == (_right_part == 1))
+                     have_match = true;
+               }
+            }
             else
             {
-               QS_DEF(Array<char>, xyz);
-
-               _lob_xyz->readAll(xyz, false);
-               if (!instance.matchBinary(cmf, &xyz))
+               profTimerStart(tmatch, "exact.match");
+               if (instance.matchBinary(cmf, 0) == (_right_part == 1))
                   have_match = true;
             }
          }
-         else if (!instance.matchBinary(cmf, 0))
-            have_match = true;
-      }
-      else if (_fetch_type == _NON_TAUTOMER_SUBSTRUCTURE)
-      {
-         MangoTautomer &instance = _context.tautomer;
-         QS_DEF(Array<char>, cmf);
-
-         _lob_cmf->readAll(cmf, false);
-
-         if (!instance.matchBinary(cmf))
-            have_match = true;
-      }
-      else if (_fetch_type == _TAUTOMER)
-      {
-         MangoTautomer &instance = _context.tautomer;
-         QS_DEF(Array<char>, cmf);
-
-         _lob_cmf->readAll(cmf, false);
-
-         if (instance.matchBinary(cmf) == (_right_part == 1))
-            have_match = true;
-      }
-      else if (_fetch_type == _EXACT)
-      {
-         MangoExact &instance = _context.exact;
-         QS_DEF(Array<char>, cmf);
-
-         profTimerStart(tlobread, "exact.lobread");
-         _lob_cmf->readAll(cmf, false);
-         profTimerStop(tlobread);
-
-         if (_need_xyz)
+         else if (_fetch_type == _GROSS)
          {
-            if (_statement->gotNull(3)) // xyz == NULL?
-               have_match = (_right_part == 0);
-            else
-            {
-               QS_DEF(Array<char>, xyz);
+            MangoGross &instance = _context.gross;
 
-               profTimerStart(txyzlobread, "exact.xyzlobread");
-               _lob_xyz->readAll(xyz, false);
-               profTimerStop(txyzlobread);
-
-               profTimerStart(tmatch, "exact.match");
-               if (instance.matchBinary(cmf, &xyz) == (_right_part == 1))
-                  have_match = true;
-            }
+            if (instance.checkGross(_gross) == (_right_part == 1))
+               have_match = true;
+         }
+         else if (_fetch_type == _MASS)
+         {
+            have_match = true;
          }
          else
-         {
-            profTimerStart(tmatch, "exact.match");
-            if (instance.matchBinary(cmf, 0) == (_right_part == 1))
-               have_match = true;
-         }
+            throw Error("unexpected fetch type %d", _fetch_type);
       }
-      else if (_fetch_type == _GROSS)
-      {
-         MangoGross &instance = _context.gross;
-
-         if (instance.checkGross(_gross) == (_right_part == 1))
-            have_match = true;
-      }
-      else if (_fetch_type == _MASS)
-      {
-         have_match = true;
-      }
-      else
-         throw Error("unexpected fetch type %d", _fetch_type);
+      CATCH_READ_TARGET_MOL(have_match = false)
 
       if (have_match)
          matched.add(_rowid);

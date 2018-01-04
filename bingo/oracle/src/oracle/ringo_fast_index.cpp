@@ -20,6 +20,12 @@
 #include "oracle/ringo_fetch_context.h"
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/rowid_loader.h"
+#include "oracle/ringo_oracle.h"
+#include "molecule/molfile_loader.h"
+#include "molecule/elements.h"
+#include "reaction/rxnfile_loader.h"
+#include "molecule/molecule_pi_systems_matcher.h"
+#include "graph/embedding_enumerator.h"
 
 IMPL_ERROR(RingoFastIndex, "ringo fast fetch");
 
@@ -68,8 +74,17 @@ void RingoFastIndex::_match (OracleEnv &env, int idx)
    scanner.skip(scanner.readByte()); // skip the compessed rowid
    
    profTimerStart(tall, "match");
-   bool res = _context.substructure.matchBinary(scanner);
+   bool res = false;
+   
+   TRY_READ_TARGET_RXN
+   {
+      res = _context.substructure.matchBinary(scanner);
+   }
+   CATCH_READ_TARGET_RXN(res = false)
+   
    profTimerStop(tall);
+   
+   
    
    if (res)
    {
