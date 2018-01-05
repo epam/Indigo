@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 
 project(IndigoAll C CXX)
 
-ENABLE_TESTING()
+if (NOT DEFINED ENV{DISABLE_INDIGO_TESTS})
+	ENABLE_TESTING()
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
 
@@ -52,7 +54,10 @@ LIBRARY_NAME(indigo)
 LIBRARY_NAME(indigo-inchi)
 LIBRARY_NAME(indigo-renderer)
 LIBRARY_NAME(bingo)
+
+if (NOT DEFINED ENV{DISABLE_INDIGO_TESTS})
 add_test(dlopen-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/dlopen-test ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-inchi_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo-renderer_NAME} ${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${bingo_NAME})
+endif()
 
 if(UNIX AND NOT APPLE AND CHECK_ABI)
 add_test(abi-test-indigo "file" "${Indigo_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/${indigo_NAME}")
@@ -67,3 +72,4 @@ endif()
 
 INCLUDE(CPack)
 INCLUDE(CTest)
+
