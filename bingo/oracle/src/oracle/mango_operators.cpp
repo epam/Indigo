@@ -556,7 +556,7 @@ ORAEXT OCINumber * oraMangoGross (OCIExtProcContext *ctx, int context_id,
 static OCINumber * _mangoMass (OracleEnv &env, MangoOracleContext &context,
         const Array<char> &target_buf, const char *type)
 {
-   float molmass = 0;
+   double molmass = 0;
    TRY_READ_TARGET_MOL
    {
       QS_DEF(Molecule, target);
