@@ -46,7 +46,7 @@ CEXPORT IndexBuildResult * bingo_build (Relation, Relation, struct IndexInfo *);
 CEXPORT void bingo_buildempty(Relation );
 #if PG_VERSION_NUM / 100 >= 1000
 CEXPORT bool bingo_insert ( Relation, Datum *, bool *, ItemPointer, Relation, IndexUniqueCheck,struct IndexInfo * );
-CEXPORT amcostestimate_function bingo_costestimate101;
+CEXPORT void bingo_costestimate101 (struct PlannerInfo *, struct IndexPath *,double ,Cost *,Cost *,Selectivity *,double *,double *);
 #else
 CEXPORT bool bingo_insert ( Relation, Datum *, bool *, ItemPointer, Relation, IndexUniqueCheck );
 CEXPORT void bingo_costestimate96 ( struct PlannerInfo *, struct IndexPath *, double , Cost *, Cost *, Selectivity *, double *);

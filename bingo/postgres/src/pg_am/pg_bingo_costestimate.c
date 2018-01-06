@@ -696,21 +696,11 @@ void bingo_costestimate101 (struct PlannerInfo *root,
 										 double *indexCorrelation,
 										 double *indexPages){
     
-    List       *qinfos;
-     GenericCosts costs;
- 
-     /* Do preliminary analysis of indexquals */
-     qinfos = deconstruct_indexquals(path);
- 
-     MemSet(&costs, 0, sizeof(costs));
- 
-     genericcostestimate(root, path, loop_count, qinfos, &costs);
- 
-     *indexStartupCost = costs.indexStartupCost;
-     *indexTotalCost = costs.indexTotalCost;
-     *indexSelectivity = costs.indexSelectivity;
-     *indexCorrelation = costs.indexCorrelation;
-  *indexPages = costs.numIndexPages;
+    genericcostestimate92(root, path, loop_count, 1.0,
+						indexStartupCost, indexTotalCost,
+						indexSelectivity, indexCorrelation);
+    
+    *indexPages = 1;
     
 }
 /*
