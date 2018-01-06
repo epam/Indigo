@@ -113,8 +113,11 @@ bingo_genericcostestimate(PlannerInfo *root,
 		{
 			Node	   *predQual = (Node *) lfirst(l);
 			List	   *oneQual = list_make1(predQual);
-
-			if (!predicate_implied_by(oneQual, indexQuals))
+#if PG_VERSION_NUM / 100 >= 1000
+			if (!predicate_implied_by(oneQual, indexQuals,true))
+#else
+                        if (!predicate_implied_by(oneQual, indexQuals))
+#endif                            
 				predExtraQuals = list_concat(predExtraQuals, oneQual);
 		}
 		/* list_concat avoids modifying the passed-in indexQuals list */
@@ -336,8 +339,11 @@ add_predicate_to_quals(IndexOptInfo *index, List *indexQuals)
 	{
 		Node	   *predQual = (Node *) lfirst(lc);
 		List	   *oneQual = list_make1(predQual);
-
-		if (!predicate_implied_by(oneQual, indexQuals))
+#if PG_VERSION_NUM / 100 >= 1000
+		if (!predicate_implied_by(oneQual, indexQuals, true))
+#else
+                if (!predicate_implied_by(oneQual, indexQuals))
+#endif
 			predExtraQuals = list_concat(predExtraQuals, oneQual);
 	}
 	/* list_concat avoids modifying the passed-in indexQuals list */
@@ -676,6 +682,35 @@ void bingo_costestimate96 ( struct PlannerInfo *root,
     genericcostestimate92(root, path, loop_count, 1.0,
 						indexStartupCost, indexTotalCost,
 						indexSelectivity, indexCorrelation);
+    
+}
+
+
+
+void bingo_costestimate101 (struct PlannerInfo *root,
+										 struct IndexPath *path,
+										 double loop_count,
+										 Cost *indexStartupCost,
+										 Cost *indexTotalCost,
+										 Selectivity *indexSelectivity,
+										 double *indexCorrelation,
+										 double *indexPages){
+    
+    List       *qinfos;
+     GenericCosts costs;
+ 
+     /* Do preliminary analysis of indexquals */
+     qinfos = deconstruct_indexquals(path);
+ 
+     MemSet(&costs, 0, sizeof(costs));
+ 
+     genericcostestimate(root, path, loop_count, qinfos, &costs);
+ 
+     *indexStartupCost = costs.indexStartupCost;
+     *indexTotalCost = costs.indexTotalCost;
+     *indexSelectivity = costs.indexSelectivity;
+     *indexCorrelation = costs.indexCorrelation;
+  *indexPages = costs.numIndexPages;
     
 }
 /*

@@ -44,10 +44,16 @@ BINGO_FUNCTION_EXPORT(bingo_handler);
 
 CEXPORT IndexBuildResult * bingo_build (Relation, Relation, struct IndexInfo *);
 CEXPORT void bingo_buildempty(Relation );
+#if PG_VERSION_NUM / 100 >= 1000
+CEXPORT bool bingo_insert ( Relation, Datum *, bool *, ItemPointer, Relation, IndexUniqueCheck,struct IndexInfo * );
+CEXPORT amcostestimate_function bingo_costestimate101;
+#else
 CEXPORT bool bingo_insert ( Relation, Datum *, bool *, ItemPointer, Relation, IndexUniqueCheck );
+CEXPORT void bingo_costestimate96 ( struct PlannerInfo *, struct IndexPath *, double , Cost *, Cost *, Selectivity *, double *);
+#endif
 CEXPORT IndexBulkDeleteResult * bingo_bulkdelete (IndexVacuumInfo *, IndexBulkDeleteResult *, IndexBulkDeleteCallback, void *);
 CEXPORT IndexBulkDeleteResult * bingo_vacuumcleanup (IndexVacuumInfo *, IndexBulkDeleteResult *);
-CEXPORT void bingo_costestimate96 ( struct PlannerInfo *, struct IndexPath *, double , Cost *, Cost *, Selectivity *, double *);
+
 CEXPORT bytea * bingo_options (Datum, bool);
 CEXPORT bool bingo_validate (Oid);
 CEXPORT IndexScanDesc bingo_beginscan (Relation, int, int );
@@ -94,7 +100,16 @@ bingo_handler(PG_FUNCTION_ARGS)
    amroutine->ambulkdelete = bingo_bulkdelete;
    amroutine->amvacuumcleanup = bingo_vacuumcleanup;
    amroutine->amcanreturn = NULL;
+   
+#if PG_VERSION_NUM / 100 >= 1000
+   amroutine->amcostestimate = bingo_costestimate101;
+   amroutine->amcanparallel = false;
+   amroutine->amestimateparallelscan = NULL;
+   amroutine->aminitparallelscan = NULL;
+   amroutine->amparallelrescan = NULL;
+#else
    amroutine->amcostestimate = bingo_costestimate96;
+#endif
    amroutine->amoptions = bingo_options;
    amroutine->amproperty = NULL;
    amroutine->amvalidate = bingo_validate;
