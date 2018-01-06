@@ -228,7 +228,7 @@ Datum gross(PG_FUNCTION_ARGS) {
 Datum getweight(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
    Datum options_datum = PG_GETARG_DATUM(1);
-   float result = 0;
+   double result = 0;
 
    PG_BINGO_BEGIN
    {
@@ -241,7 +241,7 @@ Datum getweight(PG_FUNCTION_ARGS){
       int buf_len, bingo_res;
       const char* buf = mol_text.getText(buf_len);
 
-      bingo_res = mangoMass(buf, buf_len, mol_options.getString(), &result);
+      bingo_res = mangoMassD(buf, buf_len, mol_options.getString(), &result);
 
       if(bingo_res < 1) {
          CORE_HANDLE_WARNING(0, 1, "bingo.getweight", bingoGetError());
@@ -251,13 +251,13 @@ Datum getweight(PG_FUNCTION_ARGS){
    }
    PG_BINGO_END
 
-   PG_RETURN_FLOAT4(result);
+   PG_RETURN_FLOAT8(result);
 }
 
 Datum getmass(PG_FUNCTION_ARGS){
    Datum mol_datum = PG_GETARG_DATUM(0);
    
-   float result = 0;
+   double result = 0;
    PG_BINGO_BEGIN
    {
       BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
@@ -267,7 +267,7 @@ Datum getmass(PG_FUNCTION_ARGS){
       int buf_len, bingo_res;
       const char* buf = mol_text.getText(buf_len);
 
-      bingo_res = mangoMass(buf, buf_len, 0, &result);
+      bingo_res = mangoMassD(buf, buf_len, 0, &result);
       if(bingo_res < 1) {
          CORE_HANDLE_WARNING(0, 1, "bingo.getmass", bingoGetError());
          PG_RETURN_NULL();
@@ -276,7 +276,7 @@ Datum getmass(PG_FUNCTION_ARGS){
    }
    PG_BINGO_END
 
-   PG_RETURN_FLOAT4(result);
+   PG_RETURN_FLOAT8(result);
 }
 
 Datum fingerprint(PG_FUNCTION_ARGS){

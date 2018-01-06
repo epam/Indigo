@@ -142,6 +142,7 @@ CEXPORT int mangoNeedCoords ();
 CEXPORT byte mangoExactNeedComponentMatching ();
 CEXPORT const char * mangoTauGetQueryGross ();
 CEXPORT int mangoMass (const char *target_buf, int target_buf_len, const char *type, float *out);
+CEXPORT int mangoMassD (const char *target_buf, int target_buf_len, const char *type, double *out);
 CEXPORT const char* mangoGross (const char *target_buf, int target_buf_len);
 CEXPORT const char* mangoGrossGetConditions ();
 CEXPORT const char * mangoCheckMolecule (const char *molecule, int molecule_len);
