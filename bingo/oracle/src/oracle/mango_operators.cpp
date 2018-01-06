@@ -566,6 +566,7 @@ static OCINumber * _mangoMass (OracleEnv &env, MangoOracleContext &context,
 
       bingo_context.setLoaderSettings(loader);
 
+      loader.skip_3d_chirality = true;
       loader.loadMolecule(target);
 
       MoleculeMass mass_calulator;
