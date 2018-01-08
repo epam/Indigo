@@ -55,11 +55,8 @@ Datum smiles(PG_FUNCTION_ARGS) {
       int buf_size;
       const char* mol_buf = mol_text.getText(buf_size);
       const char* bingo_result = mangoSMILES(mol_buf, buf_size, 0);
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.smiles", bingoGetError());
-         PG_RETURN_NULL();
-      }
-
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "smiles", PG_RETURN_NULL());
+      
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
       result = result_text.release();
@@ -85,11 +82,7 @@ Datum cansmiles(PG_FUNCTION_ARGS) {
       int buf_size;
       const char* mol_buf = mol_text.getText(buf_size);
       const char* bingo_result = mangoSMILES(mol_buf, buf_size, 1);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.cansmiles", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "cansmiles", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
@@ -116,11 +109,7 @@ Datum molfile(PG_FUNCTION_ARGS) {
       int buf_size;
       const char* mol_buf = mol_text.getText(buf_size);
       const char* bingo_result = mangoMolfile(mol_buf, buf_size);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.molfile", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "molfile", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
@@ -146,11 +135,7 @@ Datum cml(PG_FUNCTION_ARGS) {
       int buf_size;
       const char* mol_buf = mol_text.getText(buf_size);
       const char* bingo_result = mangoCML(mol_buf, buf_size);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.cml", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "cml", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
@@ -207,11 +192,7 @@ Datum gross(PG_FUNCTION_ARGS) {
       const char* mol_buf = mol_text.getText(buf_size);
 
       const char* bingo_result = mangoGross(mol_buf, buf_size);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.gross", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "gross", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
@@ -242,11 +223,7 @@ Datum getweight(PG_FUNCTION_ARGS){
       const char* buf = mol_text.getText(buf_len);
 
       bingo_res = mangoMassD(buf, buf_len, mol_options.getString(), &result);
-
-      if(bingo_res < 1) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.getweight", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_res < 1, "getweight", PG_RETURN_NULL());
 
    }
    PG_BINGO_END
@@ -268,10 +245,7 @@ Datum getmass(PG_FUNCTION_ARGS){
       const char* buf = mol_text.getText(buf_len);
 
       bingo_res = mangoMassD(buf, buf_len, 0, &result);
-      if(bingo_res < 1) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.getmass", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_res < 1, "getmass", PG_RETURN_NULL());
 
    }
    PG_BINGO_END
@@ -297,11 +271,7 @@ Datum fingerprint(PG_FUNCTION_ARGS){
 
       int res_buf;
       const char* bingo_result = mangoFingerprint(mol_buf, buf_size, mol_options.getString(), &res_buf);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.fingerprint", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "fingerprint", PG_RETURN_NULL());
 
       BingoPgText result_data;
       result_data.initFromBuffer(bingo_result, res_buf);
@@ -333,11 +303,7 @@ Datum compactmolecule(PG_FUNCTION_ARGS){
 
       int res_buf;
       const char* bingo_result = mangoICM(mol_buf, buf_size, options_xyz, &res_buf);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.compactmolecule", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "compactmolecule", PG_RETURN_NULL());
 
       BingoPgText result_data;
       result_data.initFromBuffer(bingo_result, res_buf);
@@ -370,11 +336,7 @@ Datum inchi(PG_FUNCTION_ARGS){
 
       int res_buf;
       const char* bingo_result = mangoInChI(mol_buf, buf_size, mol_options.getString(), &res_buf);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.inchi", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "inchi", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
@@ -400,11 +362,7 @@ Datum inchikey(PG_FUNCTION_ARGS) {
       const char* mol_buf = mol_text.getString();
 
       const char* bingo_result = mangoInChIKey(mol_buf);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.inchikey", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "inchikey", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
@@ -434,11 +392,7 @@ Datum standardize(PG_FUNCTION_ARGS) {
       int buf_size;
       const char* mol_buf = mol_text.getText(buf_size);
       const char* bingo_result = mangoStandardize(mol_buf, buf_size, st_options.getString());
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.standardize", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "standardize", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
