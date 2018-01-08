@@ -46,11 +46,7 @@ Datum aam(PG_FUNCTION_ARGS) {
       int buf_size;
       const char* react_buf = react_text.getText(buf_size);
       const char* bingo_result = ringoAAM(react_buf, buf_size, aam_mode.getString());
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.AAM", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "aam", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
@@ -79,11 +75,7 @@ Datum rxnfile(PG_FUNCTION_ARGS) {
       int buf_size;
       const char* react_buf = react_text.getText(buf_size);
       const char* bingo_result = ringoRxnfile(react_buf, buf_size);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.rxnfile", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "rxnfile", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
@@ -111,11 +103,7 @@ Datum rcml(PG_FUNCTION_ARGS) {
       int buf_size;
       const char* react_buf = react_text.getText(buf_size);
       const char* bingo_result = ringoRCML(react_buf, buf_size);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.rcml", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "rcml", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
@@ -172,11 +160,7 @@ Datum rsmiles(PG_FUNCTION_ARGS) {
       int buf_size;
       const char* react_buf = react_text.getText(buf_size);
       const char* bingo_result = ringoRSMILES(react_buf, buf_size);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.rsmiles", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "rsmiles", PG_RETURN_NULL());
 
       BingoPgText result_text;
       result_text.initFromString(bingo_result);
@@ -208,11 +192,7 @@ Datum rfingerprint(PG_FUNCTION_ARGS){
 
       int res_buf;
       const char* bingo_result = ringoFingerprint(r_buf, buf_size, react_options.getString(), &res_buf);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.rfingerprint", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "rfingerprint", PG_RETURN_NULL());
 
       BingoPgText result_data;
       result_data.initFromBuffer(bingo_result, res_buf);
@@ -244,11 +224,7 @@ Datum compactreaction(PG_FUNCTION_ARGS){
 
       int res_buf;
       const char* bingo_result = ringoICR(r_buf, buf_size, options_xyz, &res_buf);
-
-      if(bingo_result == 0) {
-         CORE_HANDLE_WARNING(0, 1, "bingo.compactreaction", bingoGetError());
-         PG_RETURN_NULL();
-      }
+      CORE_HANDLE_REJECT_WARNING(bingo_result == 0, "compactreaction", PG_RETURN_NULL());
 
       BingoPgText result_data;
       result_data.initFromBuffer(bingo_result, res_buf);
