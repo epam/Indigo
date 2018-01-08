@@ -22,6 +22,7 @@
 #include "oracle/rowid_loader.h"
 #include "oracle/ringo_oracle.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/molecule_auto_loader.h"
 #include "molecule/elements.h"
 #include "reaction/rxnfile_loader.h"
 #include "molecule/molecule_pi_systems_matcher.h"

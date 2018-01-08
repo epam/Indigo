@@ -26,6 +26,7 @@
 #include "reaction/reaction_auto_loader.h"
 #include "ringo_oracle.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/molecule_auto_loader.h"
 #include "reaction/rxnfile_loader.h"
 #include "layout/reaction_layout.h"
 #include "oracle/bingo_oracle_context.h"

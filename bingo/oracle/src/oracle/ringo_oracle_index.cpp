@@ -23,6 +23,7 @@
 #include "molecule/cmf_saver.h"
 #include "reaction/crf_saver.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/molecule_auto_loader.h"
 #include "reaction/rxnfile_loader.h"
 #include "reaction/reaction_auto_loader.h"
 #include "oracle/rowid_saver.h"

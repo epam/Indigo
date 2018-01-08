@@ -59,6 +59,7 @@ extern const char *bad_reaction_warning_rowid;;
    catch (MoleculeCisTrans::Error &e) { env.dbgPrintfTS(bad_reaction_warning, e.message()); action;} \
    catch (RxnfileLoader::Error &e) { env.dbgPrintfTS(bad_reaction_warning, e.message()); action;} \
    catch (Molecule::Error &e) { env.dbgPrintfTS(bad_reaction_warning, e.message()); action;} \
+   catch (MoleculeAutoLoader::Error &e) { env.dbgPrintfTS(bad_reaction_warning, e.message()); action;} \
    catch (DearomatizationException &e) { env.dbgPrintfTS(bad_reaction_warning, e.message()); action;} \
    catch (MoleculePiSystemsMatcher::Error &e) { env.dbgPrintfTS(bad_reaction_warning, e.message()); action;} \
    catch (SkewSymmetricNetwork::Error &e) { env.dbgPrintfTS(bad_reaction_warning, e.message()); action;} \
@@ -74,6 +75,7 @@ extern const char *bad_reaction_warning_rowid;;
    catch (MoleculeCisTrans::Error &e) { env.dbgPrintfTS(bad_reaction_warning_rowid, rowid, e.message()); action;} \
    catch (RxnfileLoader::Error &e) { env.dbgPrintfTS(bad_reaction_warning_rowid, rowid, e.message()); action;} \
    catch (Molecule::Error &e) { env.dbgPrintfTS(bad_reaction_warning_rowid, rowid, e.message()); action;} \
+   catch (MoleculeAutoLoader::Error &e) { env.dbgPrintfTS(bad_reaction_warning_rowid, rowid, e.message()); action;} \
    catch (DearomatizationException &e) { env.dbgPrintfTS(bad_reaction_warning_rowid, rowid, e.message()); action;} \
    catch (MoleculePiSystemsMatcher::Error &e) { env.dbgPrintfTS(bad_reaction_warning_rowid, rowid, e.message()); action;} \
    catch (SkewSymmetricNetwork::Error &e) { env.dbgPrintfTS(bad_reaction_warning_rowid, rowid, e.message()); action;} \
