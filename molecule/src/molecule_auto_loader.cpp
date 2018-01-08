@@ -342,7 +342,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       }
 
       if (err_buf.size() > 0) {
-         throw Exception(err_buf.ptr());
+         throw Error(err_buf.ptr());
       }
    }
 

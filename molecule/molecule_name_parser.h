@@ -44,6 +44,7 @@ The base class for NameToStructure feature
 Session local instance of this class is used by public API indigoNameToStructure
 */
 class DLLEXPORT MoleculeNameParser {
+public:
    DECL_ERROR;
 
    typedef unsigned long long int ParserOptionsType;
