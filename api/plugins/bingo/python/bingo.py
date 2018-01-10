@@ -64,6 +64,8 @@ class Bingo(object):
         self._lib.bingoSearchSimWithExtFP.argtypes = [c_int, c_int, c_float, c_float, c_int, c_char_p]
         self._lib.bingoSearchSimTopN.restype = c_int
         self._lib.bingoSearchSimTopN.argtypes = [c_int, c_int, c_int, c_float, c_char_p]
+        self._lib.bingoSearchSimTopNWithExtFP.restype = c_int
+        self._lib.bingoSearchSimTopNWithExtFP.argtypes = [c_int, c_int, c_int, c_float, c_int, c_char_p]
         self._lib.bingoEnumerateId.restype = c_int
         self._lib.bingoEnumerateId.argtypes = [c_int]
         self._lib.bingoNext.restype = c_int
@@ -218,15 +220,42 @@ class Bingo(object):
             Bingo._checkResult(self._indigo, self._lib.bingoSearchSimTopN(self._id, query.id, limit, minSim, metric.encode('ascii'))),
             self._indigo, self)
 
-    def topN(self, query, limit, minSim, metric='tanimoto'):
+    def searchSimTopNWithExtFP(self, query, limit, minSim, etx_fp, metric='tanimoto'):
+        self._indigo._setSessionId()
+        if not metric:
+            metric = 'tanimoto'
+        return BingoObject(
+            Bingo._checkResult(self._indigo, self._lib.bingoSearchSimTopNWithExtFP(self._id, query.id, limit, minSim, ext_fp.id, metric.encode('ascii'))),
+            self._indigo, self)
+
+    def topN(self, query, limit, minSim, ext_fp, metric='tanimoto'):
         self._indigo._setSessionId()
         topn_ids = []
         topn_sims = []
         if not metric:
-            metric = 'tanimoto'
+           metric = 'tanimoto'
         search = BingoObject(
             Bingo._checkResult(self._indigo, self._lib.bingoSearchSimTopN(self._id, query.id, limit, minSim, metric.encode('ascii'))),
             self._indigo, self)
+
+        while search.next():
+           cur_sim = search.getCurrentSimilarityValue()
+           cur_id = search.getCurrentId()
+           topn_ids.append(cur_id)
+           topn_sims.append(cur_sim)
+
+        return topn_ids, topn_sims
+
+    def topNWithExtFP(self, query, limit, minSim, ext_fp, metric='tanimoto'):
+        self._indigo._setSessionId()
+        topn_ids = []
+        topn_sims = []
+        if not metric:
+           metric = 'tanimoto'
+        search = BingoObject(
+            Bingo._checkResult(self._indigo, self._lib.bingoSearchSimTopNWithExtFP(self._id, query.id, limit, minSim, ext_fp.id, metric.encode('ascii'))),
+            self._indigo, self)
+
         while search.next():
            cur_sim = search.getCurrentSimilarityValue()
            cur_id = search.getCurrentId()

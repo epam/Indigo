@@ -34,6 +34,8 @@ namespace bingo
 
       virtual Matcher* createMatcherTopN (const char *type, MatcherQueryData *query_data, const char *options, int limit) = 0;
 
+      virtual Matcher* createMatcherTopNWithExtFP (const char *type, MatcherQueryData *query_data, const char *options, int limit, IndigoObject &fp) = 0;
+
       virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options, int index_id) = 0;
 
       virtual void load (const char *location, const char *options, int index_id) = 0;

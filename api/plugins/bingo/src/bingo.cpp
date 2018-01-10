@@ -637,6 +637,57 @@ CEXPORT int bingoSearchSimTopN (int db, int query_obj, int limit, float min, con
    BINGO_END(-1);
 }
 
+CEXPORT int bingoSearchSimTopNWithExtFP (int db, int query_obj, int limit, float min, int fp, const char *options)
+{
+   BINGO_BEGIN_DB(db)
+   {
+      IndigoObject &obj = *(self.getObject(query_obj).clone());
+      IndigoObject &ext_fp = self.getObject(fp);
+
+      if (IndigoMolecule::is(obj))
+      {
+         obj.getBaseMolecule().aromatize(self.arom_options);
+
+         AutoPtr<MoleculeSimilarityQueryData> query_data(new MoleculeSimilarityQueryData(obj.getMolecule(), min, 1.0));
+
+         MoleculeIndex &bingo_index = dynamic_cast<MoleculeIndex &>(_bingo_instances.ref(db));
+         MoleculeTopNSimMatcher *matcher = dynamic_cast<MoleculeTopNSimMatcher *>(bingo_index.createMatcherTopNWithExtFP("sim", query_data.release(), options, limit, ext_fp));
+
+         int search_id;
+         {
+            OsLocker searches_locker(_searches_lock);
+            search_id = _searches.add(matcher);
+            _searches_db.expand(search_id + 1);
+            _searches_db[search_id] = db;
+         }
+
+         return search_id;
+      }
+      else if (IndigoReaction::is(obj))
+      {
+         obj.getBaseReaction().aromatize(self.arom_options);
+
+         AutoPtr<ReactionSimilarityQueryData> query_data(new ReactionSimilarityQueryData(obj.getReaction(), min, 1.0));
+
+         ReactionIndex &bingo_index = dynamic_cast<ReactionIndex &>(_bingo_instances.ref(db));
+         ReactionTopNSimMatcher *matcher = dynamic_cast<ReactionTopNSimMatcher *>(bingo_index.createMatcherTopNWithExtFP("sim", query_data.release(), options, limit, ext_fp));
+
+         int search_id;
+         {
+            OsLocker searches_locker(_searches_lock);
+            search_id = _searches.add(matcher);
+            _searches_db.expand(search_id + 1);
+            _searches_db[search_id] = db;
+         }
+
+         return search_id;
+      }
+      else
+         throw BingoException("bingoSearchSimTopN: only query molecule and query reaction can be set as query object");
+
+   }
+   BINGO_END(-1);
+}
 
 CEXPORT int bingoEnumerateId (int db)
 {

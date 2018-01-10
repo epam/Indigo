@@ -81,6 +81,22 @@ Matcher* MoleculeIndex::createMatcherTopN (const char *type, MatcherQueryData *q
    return 0;
 }
 
+Matcher* MoleculeIndex::createMatcherTopNWithExtFP (const char *type, MatcherQueryData *query_data, const char *options, int limit, IndigoObject &fp)
+{
+   if (strcmp(type, "sim") == 0)
+   {
+      AutoPtr<MoleculeTopNSimMatcher> matcher(new MoleculeTopNSimMatcher(*this));
+      matcher->setOptions(options);
+      matcher->setQueryDataWithExtFP(dynamic_cast<SimilarityQueryData *>(query_data), fp);
+      matcher->setLimit(limit);
+      return matcher.release();
+   }
+   else
+      throw Exception("createMatcher: undefined type");
+
+   return 0;
+}
+
 ReactionIndex::ReactionIndex () : BaseIndex(REACTION)
 {
 }
@@ -141,6 +157,22 @@ Matcher* ReactionIndex::createMatcherTopN (const char *type, MatcherQueryData *q
       AutoPtr<ReactionTopNSimMatcher> matcher(new ReactionTopNSimMatcher(*this));
       matcher->setOptions(options);
       matcher->setQueryData(dynamic_cast<SimilarityQueryData *>(query_data));
+      matcher->setLimit(limit);
+      return matcher.release();
+   }
+   else
+      throw Exception("createMatcher: undefined type");
+
+   return 0;
+}
+
+Matcher* ReactionIndex::createMatcherTopNWithExtFP (const char *type, MatcherQueryData *query_data, const char *options, int limit, IndigoObject &fp)
+{
+   if (strcmp(type, "sim") == 0)
+   {
+      AutoPtr<ReactionTopNSimMatcher> matcher(new ReactionTopNSimMatcher(*this));
+      matcher->setOptions(options);
+      matcher->setQueryDataWithExtFP(dynamic_cast<SimilarityQueryData *>(query_data), fp);
       matcher->setLimit(limit);
       return matcher.release();
    }
