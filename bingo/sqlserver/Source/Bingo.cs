@@ -1425,6 +1425,8 @@ namespace indigo
              BingoConfig.getInt(connection, bingo_schema, "ignore-closing-bond-direction-mismatch", id));
          BingoCore.setConfigInt("reject-invalid-structures",
              BingoConfig.getInt(connection, bingo_schema, "reject-invalid-structures", id));
+         BingoCore.setConfigInt("ignore-bad-valence",
+             BingoConfig.getInt(connection, bingo_schema, "ignore-bad-valence", id));
 
          if ((flags & ContextFlags.NTHREADS) != 0)
          {
