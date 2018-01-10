@@ -476,6 +476,7 @@ CEXPORT int indigoLoadMolecule (int source)
       loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
       loader.skip_3d_chirality = self.skip_3d_chirality;
       loader.ignore_closing_bond_direction_mismatch = self.ignore_closing_bond_direction_mismatch;
+      loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
       loader.ignore_bad_valence = self.ignore_bad_valence;
 
       AutoPtr<IndigoMolecule> molptr(new IndigoMolecule());
