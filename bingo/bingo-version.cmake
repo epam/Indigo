@@ -1,4 +1,4 @@
-set(BINGO_DEFAULT_VERSION "1.8.0.dev2.r5" CACHE INTERNAL "versions" FORCE)
+set(BINGO_DEFAULT_VERSION "1.8.0.beta.r0" CACHE INTERNAL "versions" FORCE)
 set(BINGO_MAX_REVISION 500)
 
 find_package(Git)
