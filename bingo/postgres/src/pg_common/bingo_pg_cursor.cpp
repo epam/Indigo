@@ -53,7 +53,9 @@ BingoPgCursor::~BingoPgCursor() {
       SPI_finish();
       SPI_pop_conditional(_pushed);
    }
-   BINGO_PG_HANDLE(throw Error("internal error: can not close the cursor: %s", message));
+   BINGO_PG_HANDLE(elog(WARNING, "internal error: can not close the cursor: %s", message));
+   // Can not throw error from destructor
+
 }
 
 bool BingoPgCursor::next() {
