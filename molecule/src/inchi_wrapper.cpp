@@ -172,6 +172,14 @@ void InchiWrapper::loadMoleculeFromInchi(const char *inchi_string, Molecule &mol
       throw Error("Indigo-InChI: InChI loading failed: %s. Code: %d.", 
          inchi_output.szMessage, retcode);
 
+   // Check stereo options
+   _stereo_opt = _STEREO_ABS;
+   std::string str (inchi_string);
+   if (str.find("/s2") != std::string::npos)
+      _stereo_opt = _STEREO_REL;
+   else if (str.find("/s3") != std::string::npos)
+      _stereo_opt = _STEREO_RAC;
+
    InchiOutput output;
    output.atom = inchi_output.atom;
    output.stereo0D = inchi_output.stereo0D;
@@ -237,11 +245,23 @@ void InchiWrapper::parseInchiOutput(const InchiOutput &inchi_output, Molecule &m
             // Add bond only once
             continue;
          int bond_order = inchi_atom.bond_type[bi];
+         int bond_stereo = abs(inchi_atom.bond_stereo[bi]);
          if (bond_order == INCHI_BOND_TYPE_NONE)
             throw Molecule::Error("Indigo-InChI: NONE-typed bonds are not supported");
          if (bond_order >= INCHI_BOND_TYPE_ALTERN)
             throw Molecule::Error("Indigo-InChI: ALTERN-typed bonds are not supported");
-         mol.addBond(atom_indices[i], atom_indices[nei], bond_order);
+         int bond_idx = mol.addBond(atom_indices[i], atom_indices[nei], bond_order);
+
+         if (bond_stereo == 1)
+            mol.setBondDirection(bond_idx, BOND_UP);
+         else if (bond_stereo == 6)
+            mol.setBondDirection(bond_idx, BOND_DOWN);
+         else if (bond_stereo == 4)
+            mol.setBondDirection(bond_idx, BOND_EITHER);
+         else if (bond_stereo == 3)
+            mol.cis_trans.ignore(bond_idx);
+         else if (bond_stereo != 0)
+            throw Error("unknown number for bond stereo: %d", bond_stereo);
       }
    }
 
@@ -338,7 +358,8 @@ void InchiWrapper::parseInchiOutput(const InchiOutput &inchi_output, Molecule &m
       }
       else if (stereo0D.type == INCHI_StereoType_Tetrahedral)
       {
-         if (stereo0D.parity != INCHI_PARITY_ODD && stereo0D.parity != INCHI_PARITY_EVEN)
+
+         if (stereo0D.parity == INCHI_PARITY_NONE)
             continue;
 
          int pyramid[4];
@@ -359,10 +380,19 @@ void InchiWrapper::parseInchiOutput(const InchiOutput &inchi_output, Molecule &m
          if (stereo0D.parity == INCHI_PARITY_ODD)
             std::swap(pyramid[0], pyramid[1]);
 
-         mol.stereocenters.add(stereo0D.central_atom, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
+         if (stereo0D.parity == INCHI_PARITY_ODD || stereo0D.parity == INCHI_PARITY_EVEN)
+         {
+            if (_stereo_opt == _STEREO_ABS) 
+               mol.stereocenters.add(stereo0D.central_atom, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
+            else if (_stereo_opt == _STEREO_REL) 
+               mol.stereocenters.add(stereo0D.central_atom, MoleculeStereocenters::ATOM_OR, 0, pyramid);
+            else if (_stereo_opt == _STEREO_RAC) 
+               mol.stereocenters.add(stereo0D.central_atom, MoleculeStereocenters::ATOM_AND, 0, pyramid);
+         }
+         else if (stereo0D.parity == INCHI_PARITY_UNKNOWN || stereo0D.parity == INCHI_PARITY_UNDEFINED)
+             mol.stereocenters.add(stereo0D.central_atom, MoleculeStereocenters::ATOM_ANY, 0, pyramid);
       }
    }
-
 }
 
 void InchiWrapper::generateInchiInput(Molecule &mol, inchi_Input &input,
@@ -405,14 +435,26 @@ void InchiWrapper::generateInchiInput(Molecule &mol, inchi_Input &input,
          atom.bond_type[nei_idx] = getInchiBondType(mol.getBondOrder(edge_idx));
 
          int bond_stereo = INCHI_BOND_STEREO_NONE;
+
+         int direction1 = mol.getBondDirection2(v, v_nei);
+         int direction2 = mol.getBondDirection2(v_nei, v);
+
          if (mol.cis_trans.isIgnored(edge_idx))
             bond_stereo = INCHI_BOND_STEREO_DOUBLE_EITHER;
          else
          {
-            if (mol.getBondDirection2(v, v_nei) == BOND_EITHER)
+            if (direction1 == BOND_EITHER)
                bond_stereo = INCHI_BOND_STEREO_SINGLE_1EITHER;
-            else if (mol.getBondDirection2(v_nei, v) == BOND_EITHER)
+            else if (direction2 == BOND_EITHER)
                bond_stereo = INCHI_BOND_STEREO_SINGLE_2EITHER;
+            else if (direction1 == BOND_UP)
+               bond_stereo = INCHI_BOND_STEREO_SINGLE_1UP;
+            else if (direction2 == BOND_UP)
+               bond_stereo = INCHI_BOND_STEREO_SINGLE_2UP;
+            else if (direction1 == BOND_DOWN)
+               bond_stereo = INCHI_BOND_STEREO_SINGLE_1DOWN;
+            else if (direction2 == BOND_DOWN)
+               bond_stereo = INCHI_BOND_STEREO_SINGLE_2DOWN;
          }
          atom.bond_stereo[nei_idx] = bond_stereo;
          nei_idx++;
@@ -486,6 +528,10 @@ void InchiWrapper::generateInchiInput(Molecule &mol, inchi_Input &input,
       mol.stereocenters.get(v, type, group, pyramid);
       if (type == MoleculeStereocenters::ATOM_ANY)
          continue;
+      if (type == MoleculeStereocenters::ATOM_AND)
+         setOptions("/SRac");
+      else if (type == MoleculeStereocenters::ATOM_OR)
+         setOptions("/SRel");
 
       for (int i = 0; i < 4; i++)
          if (pyramid[i] != -1)

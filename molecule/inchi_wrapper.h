@@ -20,6 +20,8 @@
 
 #include "inchi_api.h"
 
+#include <string>
+
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable:4251)
@@ -64,8 +66,17 @@ public:
 
    DECL_EXCEPTION_NO_EXP(Error);
 
+protected:
+   enum
+   {
+      _STEREO_ABS = 1,
+      _STEREO_REL,
+      _STEREO_RAC
+   };
+
 private:
    Array<char> options;
+   int _stereo_opt;
 };
 
 }
