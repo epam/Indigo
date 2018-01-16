@@ -617,24 +617,34 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
       SimilarityType similarityType = _parameters.similarity_type;
       int order = getSimilarityTypeOrder(similarityType);
 
-      MoleculeMorganFingerprintBuilder builder(mol);  // lazy
+      if(order > 0) {  // Morgan fingerprints
+         MoleculeMorganFingerprintBuilder builder(mol);
 
-      switch (similarityType) {
-         case SimilarityType::CHEM :
-            _makeFingerprint_calcChem(mol);
-            break;
-         case SimilarityType::ECFP2 :
-         case SimilarityType::ECFP4 :
-         case SimilarityType::ECFP6 :
-         case SimilarityType::ECFP8 :
-            builder.writeFingerprintECFP(order, getSim(), _parameters.fingerprintSizeSim());
-            break;
-         case SimilarityType::FCFP2 :
-         case SimilarityType::FCFP4 :
-         case SimilarityType::FCFP6 :
-         case SimilarityType::FCFP8 :
-            builder.writeFingerprintECFP(order, getSim(), _parameters.fingerprintSizeSim());
-            break;
+         QS_DEF(Array<byte>, buf);
+         buf.resize(_parameters.fingerprintSizeSim());
+
+         switch (similarityType) {
+            case SimilarityType::ECFP2 :
+            case SimilarityType::ECFP4 :
+            case SimilarityType::ECFP6 :
+            case SimilarityType::ECFP8 :
+               builder.packFingerprintECFP(order, buf);
+               break;
+            case SimilarityType::FCFP2 :
+            case SimilarityType::FCFP4 :
+            case SimilarityType::FCFP6 :
+            case SimilarityType::FCFP8 :
+               builder.packFingerprintFCFP(order, buf);
+               break;
+         }
+
+         memcpy(getSim(), buf.ptr(), static_cast<size_t>(_parameters.fingerprintSizeSim()));
+      } else {
+         switch (similarityType) {
+            case SimilarityType::CHEM :
+               _makeFingerprint_calcChem(mol);
+               break;
+         }
       }
    }
 }

@@ -31,12 +31,14 @@ public:
    void calculateDescriptorsECFP(int fp_depth, Array<dword> &res);
    void calculateDescriptorsFCFP(int fp_depth, Array<dword> &res);
 
-   void writeFingerprintECFP(int fp_depth, byte *fp, int size);
-   void writeFingerprintFCFP(int fp_depth, byte *fp, int size);
+   void packFingerprintECFP(int fp_depth, Array <byte> &res);
+   void packFingerprintFCFP(int fp_depth, Array <byte> &res);
+
+private:
+   enum {MAGIC_HASH_NUMBER = 37};
 
    static void setBits(dword hash, byte *fp, int size);
 
-protected:
    typedef dword (*InitialStateCallback)(BaseMolecule &mol, int idx);
 
    void initDescriptors(MoleculeMorganFingerprintBuilder::InitialStateCallback initialStateCallback);
@@ -66,7 +68,6 @@ protected:
     *  */
    static dword initialStateCallback_FCFP(BaseMolecule &mol, int idx);
 
-private:
    typedef struct BondDescriptor {
       int bond_type;
       int vertex_idx;

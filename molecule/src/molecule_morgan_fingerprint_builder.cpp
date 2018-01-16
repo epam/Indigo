@@ -46,21 +46,35 @@ void MoleculeMorganFingerprintBuilder::calculateDescriptorsFCFP(int fp_depth, Ar
    }
 }
 
-void MoleculeMorganFingerprintBuilder::writeFingerprintECFP(int fp_depth, byte *fp, int size) {
+void MoleculeMorganFingerprintBuilder::packFingerprintECFP(int fp_depth, Array<byte> &res) {
+   int size = res.sizeInBytes();
+
+   if(0 == size)
+      throw Exception("Resulting array [res] must not be empty");
+
    initDescriptors(initialStateCallback_ECFP);
    buildDescriptors(fp_depth);
+   
+   res.zerofill();
 
    for(auto& feature : features) {
-      setBits(feature.hash, fp, size);
+      setBits(feature.hash, res.ptr(), size);
    }
 }
 
-void MoleculeMorganFingerprintBuilder::writeFingerprintFCFP(int fp_depth, byte *fp, int size) {
+void MoleculeMorganFingerprintBuilder::packFingerprintFCFP(int fp_depth, Array<byte> &res) {
+   int size = res.sizeInBytes();
+
+   if(0 == size)
+      throw Exception("Resulting array [res] must not be empty");
+
    initDescriptors(initialStateCallback_FCFP);
    buildDescriptors(fp_depth);
 
+   res.zerofill();
+
    for(auto& feature : features) {
-      setBits(feature.hash, fp, size);
+      setBits(feature.hash, res.ptr(), size);
    }
 }
 
@@ -143,14 +157,14 @@ void MoleculeMorganFingerprintBuilder::calculateNewAtomDescriptors(int iteration
                    return bondDescriptorCmp(bd1, bd2) < 0;
                 });
 
-      atom.new_descr.hash = (dword) iterationNumber * 37 + atom.descr.hash;
+      atom.new_descr.hash = (dword) iterationNumber * MAGIC_HASH_NUMBER + atom.descr.hash;
       atom.new_descr.bond_set.clear();
 
       for (auto &bond : atom.bond_descriptors) {
          FeatureDescriptor &descr = atom_descriptors[bond.vertex_idx].descr;
 
-         atom.new_descr.hash = 37 * atom.new_descr.hash + bond.bond_type;
-         atom.new_descr.hash = 37 * atom.new_descr.hash + descr.hash;
+         atom.new_descr.hash = MAGIC_HASH_NUMBER * atom.new_descr.hash + bond.bond_type;
+         atom.new_descr.hash = MAGIC_HASH_NUMBER * atom.new_descr.hash + descr.hash;
 
          atom.new_descr.bond_set.insert(bond.edge_idx);
          atom.new_descr.bond_set.insert(descr.bond_set.begin(), descr.bond_set.end());
@@ -170,25 +184,19 @@ dword MoleculeMorganFingerprintBuilder::initialStateCallback_ECFP(BaseMolecule &
    double atomic_weight = Element::getStandardAtomicWeight(mol.getAtomNumber(idx));
 
    dword key = 1;
-   key = key * 37 + nonhydrogen_neighbors;
-   key = key * 37 + mol.getAtomValence(idx) - mol.getAtomTotalH(idx);
-   key = key * 37 + mol.getAtomNumber(idx);
-   key = key * 37 + (int) std::round(atomic_weight);
-   key = key * 37 + mol.getAtomCharge(idx);
-   key = key * 37 + mol.getAtomTotalH(idx);
-   key = key * 37 + mol.vertexInRing(idx);
+   key = key * MAGIC_HASH_NUMBER + nonhydrogen_neighbors;
+   key = key * MAGIC_HASH_NUMBER + mol.getAtomValence(idx) - mol.getAtomTotalH(idx);
+   key = key * MAGIC_HASH_NUMBER + mol.getAtomNumber(idx);
+   key = key * MAGIC_HASH_NUMBER + (int) std::round(atomic_weight);
+   key = key * MAGIC_HASH_NUMBER + mol.getAtomCharge(idx);
+   key = key * MAGIC_HASH_NUMBER + mol.getAtomTotalH(idx);
+   key = key * MAGIC_HASH_NUMBER + mol.vertexInRing(idx);
 
    return key;
 }
 
-// TODO - some atom characteristics need implementing
 dword MoleculeMorganFingerprintBuilder::initialStateCallback_FCFP(BaseMolecule &mol, int idx) {
-   throw Exception("FCFP is not implemented");
-
-   mol.getVertex(0).neiEdge(0);
-   mol.getEdge(0);
-   mol.getAtomAromaticity(0) == ATOM_AROMATIC;
-   Element::isHalogen(mol.getAtomNumber(idx));
+   throw Exception("FCFP is not implemented");  // TODO: implement ionizability
 
    dword key = 0;
 
