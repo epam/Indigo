@@ -300,8 +300,13 @@ bool MoleculeElectronsLocalizer::_setConstraintSetForAtoms ()
    _finder->setNodeSetCapacity(_PRIMARY_ATOMS_SET, atoms_prim);
    _finder->setNodeSetCapacity(_SECONDARY_ATOMS_SET, atoms_sec);
    _finder->setNodeSetCapacity(_SUM_ATOMS_SET, atoms_sum);
-   _finder->setNodeSetCapacity(_CONSTRAINED_ATOMS_SET, _constrained_saturated_atoms + 
-      _constrained_primary_atoms + _constrained_secondary_atoms);
+
+   if (_constrained_saturated_atoms + _constrained_primary_atoms + _constrained_secondary_atoms < 0)
+      _finder->setNodeSetCapacity(_CONSTRAINED_ATOMS_SET, 0);
+   else
+      _finder->setNodeSetCapacity(_CONSTRAINED_ATOMS_SET, _constrained_saturated_atoms + 
+         _constrained_primary_atoms + _constrained_secondary_atoms);
+
    return true;
 }
 
@@ -708,8 +713,10 @@ bool MoleculeElectronsLocalizer::_fixAtomConnectivityAndLonepairs (int atom,
 
    _finder->setNodeCapacity(info.atom_node, 0, _PRIMARY_ATOMS_SET);
    _finder->setNodeCapacity(info.atom_node, 0, _SECONDARY_ATOMS_SET);
-   _finder->setNodeCapacity(info.atom_node, added_connectivity + lonepairs, 
-      _CONSTRAINED_ATOMS_SET);
+   if (added_connectivity + lonepairs < 0)
+      _finder->setNodeCapacity(info.atom_node, 0, _CONSTRAINED_ATOMS_SET);
+   else
+      _finder->setNodeCapacity(info.atom_node, added_connectivity + lonepairs, _CONSTRAINED_ATOMS_SET);
 
    int lonepairs_prim, lonepairs_sec;
    _splitLonepairs(atom, lonepairs, &lonepairs_prim, &lonepairs_sec);

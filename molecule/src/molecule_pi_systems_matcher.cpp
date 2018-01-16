@@ -316,9 +316,8 @@ void MoleculePiSystemsMatcher::_extractPiSystem (int pi_system_index)
    {
       int original_v = pi_system.mapping[v];
       int delta = _connectivity[original_v] - conn[v];
-      if (delta < 0)
-         throw Error("Internal error: delta must be >= 0");
-      ps.setImplicitH(v, ps.getImplicitH(v) + delta);
+      if (delta > 0)
+         ps.setImplicitH(v, ps.getImplicitH(v) + delta);
    }
 
    pi_system.localizations.clear();
