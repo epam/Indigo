@@ -66,6 +66,7 @@ presets = {
     "mac10.10": ("Xcode", "-DSUBSYSTEM_NAME=10.10"),
     "mac10.11": ("Xcode", "-DSUBSYSTEM_NAME=10.11"),
     "mac10.12": ("Xcode", "-DSUBSYSTEM_NAME=10.12"),
+    "mac10.13": ("Xcode", "-DSUBSYSTEM_NAME=10.13"),
     "mac-universal": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.7"),
 }
 
