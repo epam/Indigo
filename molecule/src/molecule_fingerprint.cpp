@@ -243,6 +243,10 @@ SimilarityType MoleculeFingerprintBuilder::parseSimilarityType(const char * type
       return SimilarityType::ECFP6;
    else if(strcasecmp(type, "ECFP8") == 0)
       return SimilarityType::ECFP8;
+   else
+      throw Exception("Unknown similarity type '%s'", type);
+
+   /* TODO: implement FCFP fingerprints
    else if(strcasecmp(type, "FCFP2") == 0)
       return SimilarityType::FCFP2;
    else if(strcasecmp(type, "FCFP4") == 0)
@@ -253,6 +257,7 @@ SimilarityType MoleculeFingerprintBuilder::parseSimilarityType(const char * type
       return SimilarityType::FCFP8;
    else
       throw Exception("Unknown similarity type '%s'", type);
+   */
 }
 
 const char * MoleculeFingerprintBuilder::printSimilarityType(SimilarityType type) {
