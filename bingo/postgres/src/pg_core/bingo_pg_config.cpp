@@ -24,6 +24,10 @@ using namespace indigo;
 
 IMPL_ERROR(BingoPgConfig, "bingo postgres config");
 
+BingoPgConfig::BingoPgConfig() {
+   _stringParams.insert("SIMILARITY_TYPE");
+}
+
 void BingoPgConfig::readDefaultConfig(const char* schema_name) {
    _rawConfig.clear();
    _tauParameters.clear();
@@ -154,7 +158,12 @@ void BingoPgConfig::setUpBingoConfiguration() {
     * Iterate through all the configs
     */
    for (int c_idx = _rawConfig.begin(); c_idx != _rawConfig.end(); c_idx = _rawConfig.next(c_idx)) {
-      bingoSetConfigInt(_rawConfig.key(c_idx), _getNumericValue(c_idx));
+      const char* key = _rawConfig.key(c_idx);
+      if(_stringParams.find(_rawConfig.key(c_idx))) {
+         bingoSetConfigBin(_rawConfig.key(c_idx), _rawConfig.value(c_idx).ptr(), 0);
+      } else {
+         bingoSetConfigInt(_rawConfig.key(c_idx), _getNumericValue(c_idx));
+      }
    }
 
    for (int c_idx = _tauParameters.begin(); c_idx != _tauParameters.end(); c_idx = _tauParameters.next(c_idx)) {

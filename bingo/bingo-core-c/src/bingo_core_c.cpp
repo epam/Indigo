@@ -275,6 +275,11 @@ CEXPORT int bingoSetConfigBin (const char *name, const char *value, int len)
          BufferScanner scanner(value, len);
          self.bingo_context->cmf_dict.load(scanner);
       }
+      else if (strcasecmp(name, "SIMILARITY_TYPE") == 0 || strcasecmp(name, "SIMILARITY-TYPE") == 0)
+      {
+         self.bingo_context->fp_parameters.similarity_type =
+               MoleculeFingerprintBuilder::parseSimilarityType(value);
+      }
       else
          throw BingoError("unknown parameter name: %s", name);
    }

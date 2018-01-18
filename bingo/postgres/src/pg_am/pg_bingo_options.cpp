@@ -296,11 +296,19 @@ static relopt_real realRelOpts[] =
 	{{NULL}}
 };
 
-static relopt_string stringRelOpts[] =
-{
-	/* list terminator */
-	{{NULL}}
-};
+//static relopt_string stringRelOpts[] =
+//{
+//	{
+//		{
+//				"similarity_type",
+//				"",
+//				RELOPT_KIND_BINGO,
+//                                AccessExclusiveLock
+//		}, 3, false, nullptr, "SIM"
+//	},
+//	/* list terminator */
+//	{{NULL}}
+//};
 
 static relopt_gen **relOpts = NULL;
 
@@ -413,8 +421,8 @@ initialize_reloptions(void) {
       j++;
    for (i = 0; realRelOpts[i].gen.name; i++)
       j++;
-   for (i = 0; stringRelOpts[i].gen.name; i++)
-      j++;
+//   for (i = 0; stringRelOpts[i].gen.name; i++)
+//      j++;
    j += num_custom_options;
 
    if (relOpts)
@@ -444,12 +452,12 @@ initialize_reloptions(void) {
       j++;
    }
 
-   for (i = 0; stringRelOpts[i].gen.name; i++) {
-      relOpts[j] = &stringRelOpts[i].gen;
-      relOpts[j]->type = RELOPT_TYPE_STRING;
-      relOpts[j]->namelen = strlen(relOpts[j]->name);
-      j++;
-   }
+//   for (i = 0; stringRelOpts[i].gen.name; i++) {
+//      relOpts[j] = &stringRelOpts[i].gen;
+//      relOpts[j]->type = RELOPT_TYPE_STRING;
+//      relOpts[j]->namelen = strlen(relOpts[j]->name);
+//      j++;
+//   }
 
    for (i = 0; i < num_custom_options; i++) {
       relOpts[j] = custom_options[i];

@@ -12,7 +12,7 @@ namespace indigo {
 
 class BingoPgConfig {
 public:
-   BingoPgConfig(){}
+   BingoPgConfig();
    ~BingoPgConfig(){}
 
    void readDefaultConfig(const char* schema_name);
@@ -35,6 +35,7 @@ private:
    void _toString(int value, indigo::Array<char>&);
 
    indigo::RedBlackStringObjMap< indigo::Array<char> > _rawConfig;
+   indigo::RedBlackStringObjMap< indigo::Array<char> > _stringParams;
    
    class TauParameter{
    public:
