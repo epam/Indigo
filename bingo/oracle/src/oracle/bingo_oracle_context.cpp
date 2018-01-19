@@ -365,10 +365,6 @@ void BingoOracleContext::fingerprintLoadParameters (OracleEnv &env)
    fp_parameters_ready = true;
 
    configGetInt(env, "FP_STORAGE_CHUNK", fp_chunk_qwords);
-
-   QS_DEF(Array<char>, value);
-   configGetString(env, "SIMILARITY_TYPE", value);
-   fp_parameters.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(value.ptr);
 }
 
 void BingoOracleContext::longOpInit (OracleEnv &env, int total, const char *operation,

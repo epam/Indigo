@@ -298,13 +298,6 @@ static relopt_real realRelOpts[] =
 
 static relopt_string stringRelOpts[] =
 {
-	{
-		{
-				"similarity_type",
-				"",
-				RELOPT_KIND_BINGO
-		}, 3, false, nullptr, "SIM"
-	},
 	/* list terminator */
 	{{NULL}}
 };
@@ -600,8 +593,6 @@ bingo_reloptions(Datum reloptions, bool validate) {
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, reject_invalid_structures)},
       {"ignore_bad_valence", RELOPT_TYPE_INT,
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, ignore_bad_valence)},
-      {"similarity_type", RELOPT_TYPE_INT,
-              offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, similarity_type)},
       {"fp_ord_size", RELOPT_TYPE_INT,
               offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, fp_ord_size)},
       {"fp_any_size", RELOPT_TYPE_INT,

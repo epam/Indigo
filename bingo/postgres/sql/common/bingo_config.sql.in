@@ -18,7 +18,6 @@ insert into bingo_config(cname, cvalue) values ('SUB_SCREENING_MAX_BITS', '8');
 insert into bingo_config(cname, cvalue) values ('SIM_SCREENING_PASS_MARK', '128');
 insert into bingo_config(cname, cvalue) values ('NTHREADS', '-1');
 insert into bingo_config(cname, cvalue) values ('TIMEOUT', '60000');
-insert into bingo_config(cname, cvalue) values ('SIMILARITY_TYPE', 'SIM');
 
 
 create table bingo_tau_config(rule_idx integer, tau_beg text, tau_end text);
