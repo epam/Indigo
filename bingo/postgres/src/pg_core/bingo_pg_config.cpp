@@ -146,7 +146,7 @@ void BingoPgConfig::replaceInsertParameter(uintptr_t  name_datum, uintptr_t  val
 
    int name_key = _rawConfig.findOrInsert(pname_text.getString());
    
-   _rawConfig.value(name_key).readString(value_text.getString(), false);
+   _rawConfig.value(name_key).readString(value_text.getString(), true);
 }
 
 
