@@ -50,14 +50,19 @@ static Array<int> _searches_db;
 
 static int _bingoCreateOrLoadDatabaseFile (const char *location, const char *options, bool create, const char *type = 0)
 {
-   MoleculeFingerprintParameters fp_params;
+   Indigo &self = indigoGetInstance();
+   MoleculeFingerprintParameters fp_params(self.fp_params);
 
+   /*
+    * Since tautomer and resonance searches are not implemented yet,
+    * tautomer and extended fingerprint parts are turned off
+    *
+    * Jira tickets:
+    *    - https://jiraeu.epam.com/browse/IND-602
+    *    - https://jiraeu.epam.com/browse/IND-603
+    * */
    fp_params.ext = false;
-   fp_params.similarity_type = SimilarityType::SIM;
-   fp_params.any_qwords = 15;
-   fp_params.ord_qwords = 25;
    fp_params.tau_qwords = 0;
-   fp_params.sim_qwords = 8;
 
    AutoPtr<Index> context;
    std::string loc_dir(location);
