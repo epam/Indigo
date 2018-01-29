@@ -68,13 +68,13 @@ private:
     *  */
    static dword initialStateCallback_FCFP(BaseMolecule &mol, int idx);
 
-   typedef struct BondDescriptor {
+   struct BondDescriptor {
       int bond_type;
       int vertex_idx;
       int edge_idx;
    };
 
-   typedef struct FeatureDescriptor {
+   struct FeatureDescriptor{
       dword hash;
       std::set<int> bond_set;
 
@@ -83,7 +83,7 @@ private:
       bool operator<(const FeatureDescriptor &rhs) const;
    };
 
-   typedef struct AtomDescriptor {
+   struct AtomDescriptor {
       FeatureDescriptor descr;
       FeatureDescriptor new_descr;
       std::vector<BondDescriptor> bond_descriptors;

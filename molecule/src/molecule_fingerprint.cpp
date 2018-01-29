@@ -641,14 +641,21 @@ void MoleculeFingerprintBuilder::_makeFingerprint (BaseMolecule &mol)
             case SimilarityType::FCFP8 :
                builder.packFingerprintFCFP(order, buf);
                break;
+            default:
+               throw Error("Unknown Morgan similarity type %s", similarityType);
          }
 
          memcpy(getSim(), buf.ptr(), static_cast<size_t>(_parameters.fingerprintSizeSim()));
       } else {
          switch (similarityType) {
+            case SimilarityType::SIM:
+               // Has already been calculated in `_makeFingerprint_calcOrdSim(...)`
+               break;
             case SimilarityType::CHEM :
                _makeFingerprint_calcChem(mol);
                break;
+            default:
+               throw Error("Unknown non-Morgan similarity type %s", similarityType);
          }
       }
    }
