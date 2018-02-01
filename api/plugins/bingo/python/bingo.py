@@ -228,7 +228,7 @@ class Bingo(object):
             Bingo._checkResult(self._indigo, self._lib.bingoSearchSimTopNWithExtFP(self._id, query.id, limit, minSim, ext_fp.id, metric.encode('ascii'))),
             self._indigo, self)
 
-    def topN(self, query, limit, minSim, ext_fp, metric='tanimoto'):
+    def topN(self, query, limit, minSim, metric='tanimoto'):
         self._indigo._setSessionId()
         topn_ids = []
         topn_sims = []
