@@ -408,7 +408,7 @@ public interface IndigoLib extends Library
    Pointer indigoCheckBadValence (int handle);
    Pointer indigoCheckAmbiguousH (int handle);
    int indigoFingerprint (int item, String type);
-   int indigoFingerprintExt (String type, int size);
+   int indigoFingerprintExt (IndigoObject buffer);
    int indigoCountBits (int fingerprint);
    int indigoCommonBits (int fingerprint1, int fingerprint2);
    float indigoSimilarity (int item1, int item2, String metrics);

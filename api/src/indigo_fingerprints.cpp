@@ -24,6 +24,7 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 #include "base_cpp/scanner.h"
+#include "indigo_io.h"
 
 IndigoFingerprint::IndigoFingerprint () : IndigoObject(FINGERPRINT)
 {
@@ -150,29 +151,22 @@ CEXPORT int indigoFingerprint (int item, const char *type)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoFingerprintExt (const char *fp_ext, int size)
+CEXPORT int indigoFingerprintExt(int buffer)
 {
    INDIGO_BEGIN
    {
-      if (strlen(fp_ext) >= size*2)
-      {
-         QS_DEF(Array<byte>, data);
-         byte inp;
-         data.clear();
-         for (auto i = 0; i < size; i++)
-         {
-            if (sscanf(fp_ext + 2*i, "%02hhx", &inp) == 1)
-               data.push(inp);
-            else
-               throw IndigoError("indigoFingerprintExt(): input fingerprint is incorrect");
-         }
-      
-         AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
-         fp->bytes.copy(data.ptr(), size);
-         return self.addObject(fp.release());
-      }
-      else
-         throw IndigoError("indigoFingerprintExt(): length of input string is wrong");
+      Scanner &scan = IndigoScanner::get(self.getObject(buffer));
+
+      const int size = self.fp_params.fingerprintSizeSim();
+
+      if(scan.length() != size)
+         throw IndigoError("indigoFingerprintExt(): input size %d does not match "
+                                 "the expected length of similarity fingerprint %d", scan.length(), size);
+
+      AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
+      fp->bytes.resize(size);
+      scan.read(size, fp->bytes.ptr());
+      return self.addObject(fp.release());
    }
    INDIGO_END(-1);
 }

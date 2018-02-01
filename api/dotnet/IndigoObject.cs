@@ -1615,10 +1615,10 @@ namespace com.epam.indigo
             return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoFingerprint(self, type)));
         }
 
-        public IndigoObject fingerprint(string ext_fp, int size)
+        public IndigoObject fingerprint(IndigoObject buffer)
         {
             dispatcher.setSessionID();
-            return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoFingerprintExt(ext_fp, size)));
+            return new IndigoObject(dispatcher, dispatcher.checkResult(_indigo_lib.indigoFingerprintExt(buffer.self)));
         }
 
         public int countBits()

@@ -344,7 +344,7 @@ namespace com.epam.indigo
         sbyte* indigoCheckAmbiguousH(int handle);
 
         int indigoFingerprint(int item, string type);
-        int indigoFingerprintExt(string ext_fp, int size);
+        int indigoFingerprintExt(IndigoObject buffer);
         int indigoCountBits(int fingerprint);
         int indigoCommonBits(int fingerprint1, int fingerprint2);
         float indigoSimilarity(int molecule1, int molecule2, string metrics);
