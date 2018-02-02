@@ -774,6 +774,9 @@ CEXPORT const char* indigoOneBitsList (int fingerprint);
 // Returns a 'fingerprint' object with data from 'buffer'
 CEXPORT int indigoLoadFingerprint(int buffer);
 
+// Constructs a 'fingerprint' object from a normalized array of double descriptors
+CEXPORT int indigoLoadFingerprintFromDescriptors(const double *arr, int arr_len, int size, double density);
+
 // Accepts two molecules, two reactions, or two fingerprints.
 // Returns the similarity measure between them.
 // Metrics: "tanimoto", "tversky", "tversky <alpha> <beta>", "euclid-sub" or "normalized-edit"

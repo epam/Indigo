@@ -2122,6 +2122,8 @@ class Indigo(object):
         Indigo._lib.indigoFingerprint.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoLoadFingerprint.restype = c_int
         Indigo._lib.indigoLoadFingerprint.argtypes = [c_int]
+        Indigo._lib.indigoLoadFingerprintFromDescriptors.restype = c_int
+        Indigo._lib.indigoLoadFingerprintFromDescriptors.argtypes = [POINTER(c_double), c_int, c_int, c_double]
         Indigo._lib.indigoCountBits.restype = c_int
         Indigo._lib.indigoCountBits.argtypes = [c_int]
         Indigo._lib.indigoRawData.restype = c_char_p
@@ -2448,6 +2450,24 @@ class Indigo(object):
     def loadFingerprint(self, buffer):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadFingerprint(buffer.id)))
+
+    def loadFingerprintFromDescriptors(self, descriptors, size, density):
+        """ Packs a list of molecule descriptors into a fingerprint object
+
+        :param descriptors:  list of normalized numbers (roughly) between 0.0 and 1.0
+        :param size:         size of the fingerprint in bytes
+        :param density:      approximate density of '1's vs `0`s in the fingerprint
+        :return:             a fingerprint object
+        """
+        self._setSessionId()
+        length = len(descriptors)
+
+        descr_arr = (c_double * length)()
+        for i in range(length):
+            descr_arr[i] = descriptors[i]
+
+        result = Indigo._lib.indigoLoadFingerprintFromDescriptors(descr_arr, length, size, density)
+        return self.IndigoObject(self, self._checkResult(result))
 
     def createReaction(self):
         self._setSessionId()

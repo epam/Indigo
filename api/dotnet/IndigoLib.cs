@@ -345,6 +345,7 @@ namespace com.epam.indigo
 
         int indigoFingerprint(int item, string type);
         int indigoLoadFingerprint(int buffer);
+        int indigoLoadFingerprintFromDescriptors(double[] arr, int arr_len, int size, double density);
         int indigoCountBits(int fingerprint);
         int indigoCommonBits(int fingerprint1, int fingerprint2);
         float indigoSimilarity(int molecule1, int molecule2, string metrics);

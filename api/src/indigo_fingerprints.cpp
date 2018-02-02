@@ -166,6 +166,35 @@ CEXPORT int indigoLoadFingerprint(int buffer)
    INDIGO_END(-1);
 }
 
+CEXPORT int indigoLoadFingerprintFromDescriptors(const double *arr, int arr_len, int size, double density)
+{
+   INDIGO_BEGIN
+   {
+      QS_DEF(Array<byte>, data);
+      data.resize(size);
+      data.zerofill();
+
+      const int bit_size = 8 * size;
+
+      for (int i = 0; i < arr_len; i++) {
+         int set_bits_num = (int) round(arr[i] * (density * 10) * bit_size / arr_len);
+
+         int hash = i;
+         for (auto cnt = 0; cnt < set_bits_num; cnt++)
+         {
+            hash = (hash * 0x8088405 + 1) % bit_size;
+            bitSetBit(data.ptr(), hash, 1);
+         }
+      }
+
+      AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
+      fp->bytes.copy(data.ptr(), size);
+
+      return self.addObject(fp.release());
+   }
+   INDIGO_END(-1);
+}
+
 void IndigoFingerprint::toString (Array<char> &str)
 {
    ArrayOutput output(str);
