@@ -1617,12 +1617,6 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoFingerprint(self, type)));
    }
 
-   public IndigoObject fingerprint (IndigoObject buffer)
-   {
-      dispatcher.setSessionID();
-      return new IndigoObject(dispatcher, Indigo.checkResult(this, _lib.indigoFingerprintExt(buffer.self)));
-   }
-
    public int countBits ()
    {
       dispatcher.setSessionID();

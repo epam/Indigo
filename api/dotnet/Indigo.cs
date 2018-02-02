@@ -496,6 +496,12 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromBuffer(buf, buf.Length, params)));
         }
 
+        public IndigoObject loadFingerprint(IndigoObject buffer)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadFingerprint(buffer.self)));
+        }
+
         public IndigoObject createReaction()
         {
             setSessionID();

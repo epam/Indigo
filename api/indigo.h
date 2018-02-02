@@ -771,8 +771,8 @@ CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2);
 //Return one bits string for the fingerprint object
 CEXPORT const char* indigoOneBitsList (int fingerprint);
 
-// Returns a 'fingerprint' object with data from  'buffer'
-CEXPORT int indigoFingerprintExt(int buffer);
+// Returns a 'fingerprint' object with data from 'buffer'
+CEXPORT int indigoLoadFingerprint(int buffer);
 
 // Accepts two molecules, two reactions, or two fingerprints.
 // Returns the similarity measure between them.

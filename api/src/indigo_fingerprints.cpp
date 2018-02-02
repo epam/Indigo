@@ -151,17 +151,12 @@ CEXPORT int indigoFingerprint (int item, const char *type)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoFingerprintExt(int buffer)
+CEXPORT int indigoLoadFingerprint(int buffer)
 {
    INDIGO_BEGIN
    {
       Scanner &scan = IndigoScanner::get(self.getObject(buffer));
-
-      const int size = self.fp_params.fingerprintSizeSim();
-
-      if(scan.length() != size)
-         throw IndigoError("indigoFingerprintExt(): input size %d does not match "
-                                 "the expected length of similarity fingerprint %d", scan.length(), size);
+      long long int size = scan.length();
 
       AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
       fp->bytes.resize(size);

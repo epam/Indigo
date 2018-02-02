@@ -1175,13 +1175,6 @@ class IndigoObject(object):
             return None
         return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
 
-    def fingerprintExt(self, buffer):
-        self.dispatcher._setSessionId()
-        newobj = self.dispatcher._checkResult(Indigo._lib.indigoFingerprintExt(buffer.id))
-        if newobj == 0:
-            return None
-        return self.dispatcher.IndigoObject(self.dispatcher, newobj, self)
-
     def countBits(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoCountBits(self.id))
@@ -2127,8 +2120,8 @@ class Indigo(object):
         Indigo._lib.indigoCheckAmbiguousH.argtypes = [c_int]
         Indigo._lib.indigoFingerprint.restype = c_int
         Indigo._lib.indigoFingerprint.argtypes = [c_int, c_char_p]
-        Indigo._lib.indigoFingerprintExt.restype = c_int
-        Indigo._lib.indigoFingerprintExt.argtypes = [c_int]
+        Indigo._lib.indigoLoadFingerprint.restype = c_int
+        Indigo._lib.indigoLoadFingerprint.argtypes = [c_int]
         Indigo._lib.indigoCountBits.restype = c_int
         Indigo._lib.indigoCountBits.argtypes = [c_int]
         Indigo._lib.indigoRawData.restype = c_char_p
@@ -2451,6 +2444,10 @@ class Indigo(object):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadStructureFromFile(filename.encode(ENCODE_ENCODING), 
                                                                                                  parameter)))
+
+    def loadFingerprint(self, buffer):
+        self._setSessionId()
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadFingerprint(buffer.id)))
 
     def createReaction(self):
         self._setSessionId()
