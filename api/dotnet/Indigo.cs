@@ -473,27 +473,27 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadReactionSmartsFromFile(path)));
         }
 
-        public IndigoObject loadStructure(string str, string params)
+        public IndigoObject loadStructure(string str, string options)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromString(str, params)));
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromString(str, options)));
         }
 
-        public IndigoObject loadStructure(byte[] buf, string params)
+        public IndigoObject loadStructure(byte[] buf, string options)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromBuffer(buf, buf.Length, params)));
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromBuffer(buf, buf.Length, options)));
         }
 
-        public IndigoObject loadStructureFromFile(string path, string params)
+        public IndigoObject loadStructureFromFile(string path, string options)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromFile(path, params)));
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromFile(path, options)));
         }
 
-        public IndigoObject loadStructureFromBuffer(byte[] buf, string params) {
+        public IndigoObject loadStructureFromBuffer(byte[] buf, string options) {
             setSessionID();
-            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromBuffer(buf, buf.Length, params)));
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromBuffer(buf, buf.Length, options)));
         }
 
         public IndigoObject loadFingerprint(IndigoObject buffer)
