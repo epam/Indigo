@@ -504,9 +504,9 @@ namespace com.epam.indigo
 
         public IndigoObject loadFingerprintFromDescriptors(double[] descriptors, int size, double density)
         {
-            dispatcher.setSessionID();
-            auto result = _indigo_lib.indigoLoadFingerprintFromDescriptors(descriptors, descriptors.Length, size, density);
-            return new IndigoObject(dispatcher, dispatcher.checkResult(result));
+            setSessionID();
+            int result = _indigo_lib.indigoLoadFingerprintFromDescriptors(descriptors, descriptors.Length, size, density);
+            return new IndigoObject(this, checkResult(result));
         }
 
         public IndigoObject createReaction()
