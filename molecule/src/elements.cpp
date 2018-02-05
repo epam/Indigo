@@ -464,7 +464,9 @@ bool Element::calcValence (int elem, int charge, int radical, int conn, int &val
          else if (charge == 0 && conn == 1)
             hyd = 0;
          else if (charge == 0 && conn == 0)
-            hyd = 0; // elemental hydrogen, hmm... well, OK
+            hyd = 1;   // elemental hydrogen, hmm... well, OK -- behaviour changed 
+                       // Allow implicit H for H, so single H is considered as molecule H2 now
+                       // in accordance with Biovia Draw model
          else
             hyd = -1;
       }
