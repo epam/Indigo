@@ -772,7 +772,7 @@ CEXPORT int indigoCommonBits (int fingerprint1, int fingerprint2);
 CEXPORT const char* indigoOneBitsList (int fingerprint);
 
 // Returns a 'fingerprint' object with data from 'buffer'
-CEXPORT int indigoLoadFingerprint(int buffer);
+CEXPORT int indigoLoadFingerprintFromBuffer(const byte *buffer, int size);
 
 // Constructs a 'fingerprint' object from a normalized array of double descriptors
 CEXPORT int indigoLoadFingerprintFromDescriptors(const double *arr, int arr_len, int size, double density);

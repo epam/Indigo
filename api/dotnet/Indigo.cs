@@ -496,10 +496,10 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromBuffer(buf, buf.Length, options)));
         }
 
-        public IndigoObject loadFingerprint(IndigoObject buffer)
+        public IndigoObject loadFingerprint(byte[] buf)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadFingerprint(buffer.self)));
+            return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadFingerprintFromBuffer(buf, buf.Length)));
         }
 
         public IndigoObject loadFingerprintFromDescriptors(double[] descriptors, int size, double density)

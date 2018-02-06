@@ -2120,8 +2120,8 @@ class Indigo(object):
         Indigo._lib.indigoCheckAmbiguousH.argtypes = [c_int]
         Indigo._lib.indigoFingerprint.restype = c_int
         Indigo._lib.indigoFingerprint.argtypes = [c_int, c_char_p]
-        Indigo._lib.indigoLoadFingerprint.restype = c_int
-        Indigo._lib.indigoLoadFingerprint.argtypes = [c_int]
+        Indigo._lib.indigoLoadFingerprintFromBuffer.restype = c_int
+        Indigo._lib.indigoLoadFingerprintFromBuffer.argtypes = [POINTER(c_byte), c_int]
         Indigo._lib.indigoLoadFingerprintFromDescriptors.restype = c_int
         Indigo._lib.indigoLoadFingerprintFromDescriptors.argtypes = [POINTER(c_double), c_int, c_int, c_double]
         Indigo._lib.indigoCountBits.restype = c_int
@@ -2447,9 +2447,22 @@ class Indigo(object):
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadStructureFromFile(filename.encode(ENCODE_ENCODING), 
                                                                                                  parameter)))
 
-    def loadFingerprint(self, buffer):
+    def loadFingerprintFromBuffer(self, buffer):
+        """ Creates a fingerprint from the supplied binary data
+
+        :param buffer:  a list of bytes
+        :return:        a fingerprint object
+
+        Since version 1.3.0
+        """
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadFingerprint(buffer.id)))
+        length = len(buffer)
+
+        values = (c_byte * length)()
+        for i in range(length):
+            values[i] = buffer[i]
+
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadFingerprintFromBuffer(values, length)))
 
     def loadFingerprintFromDescriptors(self, descriptors, size, density):
         """ Packs a list of molecule descriptors into a fingerprint object
@@ -2458,6 +2471,8 @@ class Indigo(object):
         :param size:         size of the fingerprint in bytes
         :param density:      approximate density of '1's vs `0`s in the fingerprint
         :return:             a fingerprint object
+
+        Since version 1.3.0
         """
         self._setSessionId()
         length = len(descriptors)

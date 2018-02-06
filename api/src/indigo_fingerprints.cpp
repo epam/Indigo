@@ -151,16 +151,12 @@ CEXPORT int indigoFingerprint (int item, const char *type)
    INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadFingerprint(int buffer)
+CEXPORT int indigoLoadFingerprintFromBuffer(const byte *buffer, int size)
 {
    INDIGO_BEGIN
    {
-      Scanner &scan = IndigoScanner::get(self.getObject(buffer));
-      long long int size = scan.length();
-
       AutoPtr<IndigoFingerprint> fp(new IndigoFingerprint());
-      fp->bytes.resize(size);
-      scan.read(size, fp->bytes.ptr());
+      fp->bytes.copy(buffer, size);
       return self.addObject(fp.release());
    }
    INDIGO_END(-1);
