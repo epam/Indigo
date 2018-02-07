@@ -330,6 +330,47 @@ namespace com.epam.indigo
             checkResult(_indigo_lib.indigoSetOptionColor(name, value.R / 255.0f, value.G / 255.0f, value.B / 255.0f));
         }
 
+
+        public string getOption(string option) 
+        {
+           setSessionID();
+           return checkResult(_indigo_lib.indigoGetOption(option));
+        }
+        
+        public int? getOptionInt(string option) 
+        {
+          setSessionID();
+          int res;
+          if (checkResult(_indigo_lib.indigoGetOptionInt(option, &res)) == 1) {
+             return res;
+          }
+          return null;
+        }
+        
+        public bool getOptionBool(string option) 
+        {
+          setSessionID();
+          int res;
+          checkResult(_indigo_lib.indigoGetOptionBool(option, &res));
+          return res > 0;
+        }
+        
+        public float? getOptionFloat(string option) 
+        {
+          setSessionID();
+          float res;
+          if (checkResult(_indigo_lib.indigoGetOptionFloat(option, &res)) == 1) {
+             return res;
+          }
+          return null;
+        }
+        
+        public string getOptionType(string option) 
+        {
+           setSessionID();
+           return checkResult(_indigo_lib.indigoGetOptionType(option));
+        }        
+
         public void resetOptions()
         {
             setSessionID();
