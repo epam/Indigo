@@ -118,24 +118,29 @@ void OptionManager::getOptionValueStr (const char* name, Array<char>& value)
         {
             float tmp;
             getOptionValueFloat(name, tmp);
-            auto strValue = std::to_string(tmp);
-            value.readString(strValue.c_str(), true); 
+            std::stringstream strValue;
+            strValue << tmp;
+            value.readString(strValue.str().c_str(), true); 
             break;
         }
         case OPTION_COLOR: 
         {
             float r, g, b;
             getOptionValueColor (name, r, g, b);
-            auto strValue = "["+std::to_string(r)+", "+std::to_string(g)+", "+std::to_string(b)+"]";
-            value.readString(strValue.c_str(), true); 
+            std::stringstream coords;
+            
+            coords << "[" << r << ", " << g << ", " << b << "]";
+            value.readString(coords.str().c_str(), true); 
             break;
         }
         case OPTION_XY: 
         {
             int x, y;
             getOptionValueXY (name, x, y);
-            auto strValue = "["+std::to_string(x)+", "+std::to_string(y)+"]";
-            value.readString(strValue.c_str(), true); 
+            std::stringstream coords;
+            
+            coords << "[" << x << ", " << y <<  "]";
+            value.readString(coords.str().c_str(), true); 
             break;
         }
         default:
