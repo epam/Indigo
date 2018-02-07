@@ -37,7 +37,6 @@ void Indigo::init ()
 {
    error_handler = 0;
    error_handler_context = 0;
-   _next_id = 1001;
 
    stereochemistry_options.reset();
    ignore_noncritical_query_features = false;
@@ -97,7 +96,7 @@ void Indigo::init ()
 }
 
 
-Indigo::Indigo ()
+Indigo::Indigo (): _next_id(1001)
 {
    init();
 }
