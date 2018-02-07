@@ -2269,21 +2269,9 @@ class Indigo(object):
         self._checkResult(Indigo._lib.indigoGetOptionFloat(option.encode(ENCODE_ENCODING), pointer(value)))
         return value.value
 
-    def getOptionColor(self, option):
+    def getOptionType(self, option):
         self._setSessionId()
-        r = c_float()
-        g = c_float()
-        b = c_float()
-        self._checkResult(Indigo._lib.indigoGetOptionColor(option.encode(ENCODE_ENCODING), pointer(r), pointer(g), pointer(b)))
-        return (r.value, g.value, b.value)
-
-    def getOptionXY(self, option):
-        self._setSessionId()
-        x = c_int()
-        y = c_int()
-        self._checkResult(Indigo._lib.indigoGetOptionXY(option.encode(ENCODE_ENCODING), pointer(x), pointer(y)))
-        return (x.value, y.value)
-        
+        return self._checkResultString(Indigo._lib.indigoGetOptionType(option.encode(ENCODE_ENCODING))) 
 
     def resetOptions(self):
         self._setSessionId()
