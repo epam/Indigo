@@ -16,6 +16,7 @@ package com.epam.indigo;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
@@ -36,6 +37,13 @@ public interface IndigoLib extends Library
    int indigoSetOptionFloat (String name, float value);
    int indigoSetOptionColor (String name, float r, float g, float b);
    int indigoSetOptionXY (String name, int x, int y);
+   
+   Pointer indigoGetOption(String name);
+   int indigoGetOptionInt(String name, IntByReference value);
+   int indigoGetOptionBool(String name, IntByReference value);
+   int indigoGetOptionFloat(String name, FloatByReference value);
+   Pointer indigoGetOptionType(String name);
+
    int indigoResetOption ();
 
    int indigoReadFile (String filename);

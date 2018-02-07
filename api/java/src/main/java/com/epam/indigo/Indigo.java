@@ -16,6 +16,8 @@ package com.epam.indigo;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.FloatByReference;
+import com.sun.jna.ptr.IntByReference;
 
 import java.io.*;
 import java.security.MessageDigest;
@@ -435,6 +437,42 @@ public class Indigo {
         setSessionID();
         checkResult(this, _lib.indigoSetOptionFloat(option, (float) value));
     }
+    
+    public String getOption(String option) {
+       setSessionID();
+       return Indigo.checkResultString(this, _lib.indigoGetOption(option));
+    }
+    
+    public Integer getOptionInt(String option) {
+      setSessionID();
+      IntByReference res = new IntByReference();
+      if (Indigo.checkResult(this, _lib.indigoGetOptionInt(option, res)) == 1) {
+         return res.getValue();
+      }
+      return null;
+    }
+    
+    public boolean getOptionBool(String option) {
+      setSessionID();
+      IntByReference res = new IntByReference();
+      Indigo.checkResult(this, _lib.indigoGetOptionBool(option, res));
+      return res.getValue() > 0;
+    }
+    
+    public Float getOptionFloat(String option) {
+      setSessionID();
+      FloatByReference res = new FloatByReference();
+      if (Indigo.checkResult(this, _lib.indigoGetOptionFloat(option, res)) == 1) {
+         return res.getValue();
+      }
+      return null;
+    }
+    
+    public String getOptionType(String option) {
+       setSessionID();
+       return Indigo.checkResultString(this, _lib.indigoGetOptionType(option));
+    }
+    
 
     public void resetOptions() {
         setSessionID();
