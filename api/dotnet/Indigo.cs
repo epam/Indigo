@@ -473,10 +473,20 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadReactionSmartsFromFile(path)));
         }
 
+        public IndigoObject loadStructure(string str) 
+        {
+            return loadStructure(str, "");
+        }
+
         public IndigoObject loadStructure(string str, string options)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromString(str, options)));
+        }
+
+        public IndigoObject loadStructure(byte[] buf) 
+        {
+            return loadStructure(buf, "");
         }
 
         public IndigoObject loadStructure(byte[] buf, string options)
@@ -485,10 +495,19 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromBuffer(buf, buf.Length, options)));
         }
 
+        public IndigoObject loadStructureFromFile(string path) 
+        {
+            return loadStructureFromFile(path, "");
+        }
+
         public IndigoObject loadStructureFromFile(string path, string options)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromFile(path, options)));
+        }
+
+        public IndigoObject loadStructureFromBuffer(byte[] buf) {
+            return loadStructureFromBuffer(buf, "");
         }
 
         public IndigoObject loadStructureFromBuffer(byte[] buf, string options) {
