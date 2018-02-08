@@ -576,7 +576,7 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, _lib.indigoLoadStructureFromBuffer(buf, buf.length, params)));
     }
 
-    public IndigoObject loadFingerprint (byte[] buf) {
+    public IndigoObject loadFingerprintFromBuffer (byte[] buf) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, _lib.indigoLoadFingerprintFromBuffer(buf, buf.length)));
     }

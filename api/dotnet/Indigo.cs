@@ -496,7 +496,7 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadStructureFromBuffer(buf, buf.Length, options)));
         }
 
-        public IndigoObject loadFingerprint(byte[] buf)
+        public IndigoObject loadFingerprintFromBuffer(byte[] buf)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadFingerprintFromBuffer(buf, buf.Length)));
