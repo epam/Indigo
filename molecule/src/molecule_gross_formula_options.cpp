@@ -27,5 +27,6 @@ GrossFormulaOptions::GrossFormulaOptions ()
 void GrossFormulaOptions::reset ()
 {
    add_rsites = false;
+   add_isotopes = false;
 }
 

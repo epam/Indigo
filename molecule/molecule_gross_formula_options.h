@@ -33,6 +33,7 @@ public:
 
    // Add R# to gross formula string if molecule contains RSites. Default is false.
    bool add_rsites;
+   bool add_isotopes;
 };
 
 }

@@ -35,7 +35,7 @@ class BaseReaction;
 class DLLEXPORT ReactionGrossFormula
 {
 public:
-   static std::unique_ptr<std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS> > > collect (BaseReaction &rxn);
+   static std::unique_ptr<std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS> > > collect (BaseReaction &rxn, bool add_isotopes = false);
    static void toString_Hill (std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS> > &gross, Array<char> &str, bool add_rsites);
 };
     

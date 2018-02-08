@@ -20,7 +20,7 @@
 
 using namespace indigo;
 
-std::unique_ptr<std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS > > > ReactionGrossFormula::collect (BaseReaction &rxn)
+std::unique_ptr<std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS > > > ReactionGrossFormula::collect (BaseReaction &rxn, bool add_isotopes)
 {
    
    std::unique_ptr<std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS > > > result (new std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS > >);
@@ -28,13 +28,13 @@ std::unique_ptr<std::pair<PtrArray<GROSS_UNITS> , PtrArray<GROSS_UNITS > > > Rea
 
    if (rxn.reactantsCount() > 0) {
       for (int i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i)) {
-         auto mgross = MoleculeGrossFormula::collect(rxn.getBaseMolecule(i));
+         auto mgross = MoleculeGrossFormula::collect(rxn.getBaseMolecule(i), add_isotopes);
          gross.first.add(mgross.release());
       }
    }
    if (rxn.productsCount() > 0) {
       for (int i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i)) {
-         auto mgross = MoleculeGrossFormula::collect(rxn.getBaseMolecule(i));
+         auto mgross = MoleculeGrossFormula::collect(rxn.getBaseMolecule(i), add_isotopes);
          gross.second.add(mgross.release());
       }
    }
