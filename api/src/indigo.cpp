@@ -12,6 +12,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
+#include "locale.h"
 #include "indigo_internal.h"
 
 #include "base_cpp/output.h"
@@ -155,13 +156,14 @@ CEXPORT qword indigoAllocSessionId ()
    qword id = TL_ALLOC_SESSION_ID();
    Indigo &indigo = indigo_self.getLocalCopy(id);
    indigo.init();
-
+   setlocale(LC_NUMERIC, "C");
    return id;
 }
 
 CEXPORT void indigoSetSessionId (qword id)
 {
    TL_SET_SESSION_ID(id);
+   setlocale(LC_NUMERIC, "C");
 }
 
 CEXPORT void indigoReleaseSessionId (qword id)
