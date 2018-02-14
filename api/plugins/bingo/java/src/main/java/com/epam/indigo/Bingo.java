@@ -192,7 +192,7 @@ public class Bingo {
         @param ext_fp Indigo object with a external similarity fingerprint (molecule or reaction)
         @return record id
     */
-	public int insert(IndigoObject record, IndigoObject ext_fp) {
+	public int insertWithExtFP(IndigoObject record, IndigoObject ext_fp) {
 	   _indigo.setSessionID();
 	   return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithExtFP(_id, record.self, ext_fp.self));
 	}
@@ -205,9 +205,9 @@ public class Bingo {
         @param ext_fp Indigo object with a external similarity fingerprint (molecule or reaction)
         @return inserted record id
     */
-	public int insert(IndigoObject record, IndigoObject ext_fp, int id) {
+	public int insertWithExtFP(IndigoObject record, IndigoObject ext_fp, int id) {
 		_indigo.setSessionID();
-		return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithIdAndExtFP(_id, record.self, ext_fp.self, id));
+		return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithIdAndExtFP(_id, record.self, id, ext_fp.self));
 	}
 
 	/**

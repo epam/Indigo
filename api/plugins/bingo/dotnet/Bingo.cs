@@ -205,7 +205,7 @@ namespace com.epam.indigo
         /// <param name="record">Indigo object with a chemical structure (molecule or reaction)</param>
         /// <param name="ext_fp">Indigo object with a external similarity fingerprint</param>
         /// <returns>record id</returns>
-        public int insert(IndigoObject record, IndigoObject ext_fp)
+        public int insertWithExtFP(IndigoObject record, IndigoObject ext_fp)
         {
            _indigo.setSessionID();
            return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithExtFP(_id, record.self, ext_fp.self));
@@ -218,10 +218,10 @@ namespace com.epam.indigo
         /// <param name="ext_fp">Indigo object with a external similarity fingerprint</param>
         /// <param name="id">record id</param>
         /// <returns> inserted record id</returns>
-        public int insert(IndigoObject record, IndigoObject ext_fp, int id)
+        public int insertWithExtFP(IndigoObject record, IndigoObject ext_fp, int id)
         {
            _indigo.setSessionID();
-           return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithIdAndExtFP(_id, record.self, ext_fp.self, id));
+           return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithIdAndExtFP(_id, record.self, id, ext_fp.self));
         }
 
         /// <summary>

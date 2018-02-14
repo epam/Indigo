@@ -176,7 +176,7 @@ class Bingo(object):
             return Bingo._checkResult(self._indigo, self._lib.bingoInsertRecordObjWithExtFP(self._id, indigoObject.id, ext_fp.id))
         else:
             return Bingo._checkResult(self._indigo,
-                                      self._lib.bingoInsertRecordObjWithId(self._id, indigoObject.id, ext_fp.id, index))
+                                      self._lib.bingoInsertRecordObjWithIdAndExtFP(self._id, indigoObject.id, index, ext_fp.id))
 
     def delete(self, index):
         self._indigo._setSessionId()
