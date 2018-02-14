@@ -374,7 +374,7 @@ int MoleculeGrossFormula::_isotopeCount (BaseMolecule &mol)
 
       if (isotope > 0 && number > 0)
       {
-         key = isotope << 8 + number;
+         key = (isotope << 8) + number;
       }
       else if (number > 0)
          key = number;
