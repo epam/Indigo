@@ -53,6 +53,9 @@ void RGroup::copy (RGroup &other)
 
 bool RGroup::occurrenceSatisfied (int value)
 {
+   if (occurrence.size() == 0)
+      return true;
+
    for (int i = 0; i < occurrence.size(); i++)
       if (value >= (occurrence[i] >> 16) && value <= (occurrence[i] & 0xFFFF))
          return true;

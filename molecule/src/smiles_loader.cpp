@@ -748,6 +748,197 @@ void SmilesLoader::_readOtherStuff ()
                s.setType(atom, MoleculeStereocenters::ATOM_AND, 1);
          }
       }
+      else if ( (c == 'R') && (_scanner.lookNext() == 'G') )
+      {
+         // RGroup block found
+         _scanner.skip(1);
+
+         if (_scanner.readChar() != ':')
+            throw Error("colon expected after 'RG'");
+
+         MoleculeRGroups *rgroups = &_bmol->rgroups;
+         QS_DEF(Array<char>, label);
+
+         while (1)
+         {
+            if ( (_scanner.lookNext() == '_') || (_scanner.lookNext() == 'L') )
+               label.clear();
+            else if (_scanner.lookNext() == '|')
+               break;
+ 
+            while (1)
+            {
+               if (_scanner.isEOF())
+                  throw Error("end of input while reading RG block");
+               c = _scanner.readChar();
+               if (c == '=')
+                  break;
+               label.push(c);
+            }
+
+            if (label.size() > 0)
+            {
+               label.push(0);
+               int rnum;
+
+               if (label.size() > 3 && strncmp(label.ptr(), "_R", 2) == 0 &&
+                   sscanf(label.ptr() + 2, "%d", &rnum) == 1)
+               {
+                  // RGroup description found
+                  QS_DEF(Array<char>, rgdesc);
+                  RGroup &rgroup = rgroups->getRGroup(rnum);
+
+                  while (1)
+                  {
+                     if (_scanner.isEOF())
+                        throw Error("end of input while reading RG block");
+
+                     if (_scanner.lookNext() == '{')
+                     {
+                        _scanner.skip(1);
+                        _scanner.readWord(rgdesc, "}");
+                        _scanner.skip(1);
+                     }
+                     else if (_scanner.lookNext() == ',')
+                     {
+                        _scanner.skip(1);
+                        continue;
+                     }
+                     else if ((_scanner.lookNext() == '_') ||
+                              (_scanner.lookNext() == 'L') ||
+                              (_scanner.lookNext() == '|'))
+                     {
+                        break;
+                     }
+                     else
+                     {
+                        _scanner.skip(1);
+                        continue;
+                     }
+   
+
+                     if (rgdesc.size() > 0)
+                     {
+                        rgdesc.pop();
+
+                        AutoPtr<BaseMolecule> fragment(_bmol->neu());
+                        BufferScanner rg_scanner(rgdesc);
+                        SmilesLoader rg_loader(rg_scanner);
+
+                        if (_bmol->isQueryMolecule())
+                        {
+                           rg_loader.loadQueryMolecule(fragment.get()->asQueryMolecule());
+                        }
+                        else
+                        {
+                           rg_loader.loadMolecule(fragment.get()->asMolecule());
+                        }
+
+                        rgroup.fragments.add(fragment.release());
+                     }
+                  }
+               }
+               else if (label.size() > 3 && strncmp(label.ptr(), "LOG", 3) == 0)
+               {
+                  // RGroup logic block found
+                  while (1)
+                  {
+                     label.clear();
+                     if ( (_scanner.lookNext() == '{') || (_scanner.lookNext() == '_') )
+                     {
+                        if (_scanner.lookNext() == '{')
+                           _scanner.skip(1);
+
+                        while (1)
+                        {
+                           if (_scanner.isEOF())
+                              throw Error("end of input while reading LOG block");
+                           c = _scanner.readChar();
+                           if (c == ':')
+                              break;
+                           label.push(c);
+                        }
+                     }
+                     else if (_scanner.lookNext() == '}')
+                     {
+                        _scanner.skip(1);
+                        break;
+                     }
+                     else
+                        break;
+
+                     if (label.size() > 0)
+                     {
+                        label.push(0);
+                        int rnum;
+
+                        if (label.size() > 3 && strncmp(label.ptr(), "_R", 2) == 0 &&
+                           sscanf(label.ptr() + 2, "%d", &rnum) == 1)
+                        {
+                           RGroup &rgroup = rgroups->getRGroup(rnum);
+
+                           int if_then = 0;
+                           int rest_h  = 0;
+                           QS_DEF(Array<char>, occurrence_str);
+
+                           if (_scanner.lookNext() == '_')
+                           {
+                              label.clear();
+                              while (1)
+                              {
+                                 if (_scanner.isEOF())
+                                    throw Error("end of input while reading LOG block");
+                                 c = _scanner.lookNext();
+                                 if (c == ';')
+                                    break;
+                                 label.push(c);
+                                 _scanner.skip(1);
+                              }
+                              label.push(0);
+
+                              if (label.size() > 3 && strncmp(label.ptr(), "_R", 2) == 0 &&
+                                 sscanf(label.ptr() + 2, "%d", &rnum) == 1)
+                              {
+                                 if_then = rnum;
+                              }
+                           }
+
+                           rgroup.if_then = if_then;
+
+
+                           if (_scanner.lookNext() == ';')
+                           {
+                              _scanner.skip(1);
+                              if (_scanner.lookNext() == 'H')
+                              {
+                                 rest_h  = 1;                     
+                                 _scanner.skip(1);
+                              }
+                           }   
+
+                           rgroup.rest_h = rest_h;
+
+                           if (_scanner.lookNext() == ';')
+                           {
+                              _scanner.skip(1);
+                              if (_scanner.lookNext() == '.')
+                              {
+                                 _scanner.skip(1);
+                                 break;
+                              }
+                           }   
+
+                           _scanner.readWord(occurrence_str, ".}");
+                           _readRGroupOccurrenceRanges(occurrence_str.ptr(), rgroup.occurrence);
+
+                           _scanner.skip(1);
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
    }
 
    if (to_remove.size() > 0)
@@ -2681,6 +2872,51 @@ int SmilesLoader::_parseCurly (Array<char> &curly, int &repetitions)
    }
    return 0;
 }
+
+void SmilesLoader::_readRGroupOccurrenceRanges (const char *str, Array<int> &ranges)
+{
+   int beg = -1, end = -1;
+   int add_beg = 0, add_end = 0;
+
+   while (*str != 0)
+   {
+      if (*str == '>')
+      {
+         end = 0xFFFF;
+         add_beg = 1;
+      } else if (*str == '<')
+      {
+         beg = 0;
+         add_end = -1;
+      } else if (isdigit(*str))
+      {
+         sscanf(str, "%d", beg == -1 ? &beg : &end);
+         while (isdigit(*str))
+            str++;
+         continue;
+      } else if (*str == ',')
+      {
+         if (end == -1)
+            end = beg;
+         else
+            beg += add_beg, end += add_end;
+         ranges.push((beg << 16) | end);
+         beg = end = -1;
+         add_beg = add_end = 0;
+      }
+      str++;
+   }
+
+   if (beg == -1 && end == -1)
+      return;
+
+   if (end == -1)
+      end = beg;
+   else
+      beg += add_beg, end += add_end;
+   ranges.push((beg << 16) | end);
+}
+
 
 SmilesLoader::_AtomDesc::_AtomDesc (Pool<List<int>::Elem> &neipool) :
                neighbors(neipool)

@@ -985,11 +985,13 @@ void MolfileLoader::_readCtab2000 ()
             QS_DEF(Array<char>, occurrence_str);
 
             RGroup &rgroup = _bmol->rgroups.getRGroup(rgroup_idx);
+            rgroup.clear();
 
             rgroup.if_then = if_then;
             rgroup.rest_h = rest_h;
 
             _scanner.readLine(occurrence_str, true);
+
             _readRGroupOccurrenceRanges(occurrence_str.ptr(), rgroup.occurrence);
          }
          else if (strncmp(chars, "APO", 3) == 0)
@@ -2126,12 +2128,14 @@ void MolfileLoader::_postLoad ()
 
    _bmol->cis_trans.build(_ignore_cistrans.ptr());
 
+// Remove adding default R-group logic behavior
+/*
    int n_rgroups = _bmol->rgroups.getRGroupCount();
    for (i = 1; i <= n_rgroups; i++)
       if (_bmol->rgroups.getRGroup(i).occurrence.size() == 0 &&
           _bmol->rgroups.getRGroup(i).fragments.size() > 0)
          _bmol->rgroups.getRGroup(i).occurrence.push((1 << 16) | 0xFFFF);
-
+*/
    _bmol->have_xyz = true;
 }
 

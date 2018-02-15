@@ -25,6 +25,7 @@
 #include "molecule/molecule_arom_match.h"
 #include "graph/cycle_basis.h"
 #include "molecule/molecule_savers.h"
+#include "molecule/canonical_smiles_saver.h"
 
 using namespace indigo;
 
@@ -630,6 +631,7 @@ void SmilesSaver::_saveMolecule ()
       _writeRadicals();
       _writePseudoAtoms();
       _writeHighlighting();
+      _writeRGroups();
 
       if (_comma)
          _output.writeChar('|');
@@ -1736,6 +1738,130 @@ void SmilesSaver::_writeHighlighting ()
    }
 }
 
+void SmilesSaver::_writeRGroups ()
+{
+  if (_bmol->rgroups.getRGroupCount() > 0)
+   {
+      MoleculeRGroups &rgroups = _bmol->rgroups;
+      int n_rgroups = rgroups.getRGroupCount();
+      bool first_rg = true;
+      bool rlogic_found = false;
+
+      for (int i = 1; i <= n_rgroups; i++)
+      {
+         RGroup &rgroup = rgroups.getRGroup(i);
+
+         if (rgroup.fragments.size() == 0)
+            continue;
+
+         bool empty_fragments = true;
+         PtrPool<BaseMolecule> &frags = rgroup.fragments;
+         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
+         {
+            BaseMolecule *fragment = frags[j];
+            if (fragment->vertexCount() > 0)
+               empty_fragments = false;
+         }
+         if (empty_fragments)
+            continue;
+
+         if (first_rg)
+         {
+            _startExtension();
+            _output.writeString("RG:");
+            first_rg = false;
+         }
+         _output.printf("_R%d=",i);
+
+         bool first_fr = true;
+
+         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
+         {
+            if (!first_fr)
+               _output.writeString(",");
+            else
+               first_fr = false;
+         
+            BaseMolecule *fragment = frags[j];
+            Array<char> out_buffer;
+            ArrayOutput fr_out(out_buffer);
+
+            if (ignore_hydrogens)
+            {
+               CanonicalSmilesSaver fr_saver(fr_out);
+               if (_qmol != 0)
+                  fr_saver.saveQueryMolecule(fragment->asQueryMolecule());
+               else
+                  fr_saver.saveMolecule(fragment->asMolecule());
+            }
+            else
+            {
+               SmilesSaver fr_saver(fr_out);
+               if (_qmol != 0)
+                  fr_saver.saveQueryMolecule(fragment->asQueryMolecule());
+               else
+                  fr_saver.saveMolecule(fragment->asMolecule());
+            }
+
+            _output.writeString("{");
+            _output.writeArray(out_buffer);
+            _output.writeString("}");
+         }
+         if (i < n_rgroups)
+            _output.writeString(",");
+
+         if ( (rgroup.if_then > 0) || (rgroup.rest_h > 0) || (rgroup.occurrence.size() > 0) )
+            rlogic_found = true;
+      }
+      if (rlogic_found)
+      {
+         _output.writeString(",LOG={");
+
+         for (int i = 1; i <= n_rgroups; i++)
+         {
+            if (i > 1)
+               _output.writeString(".");
+
+            RGroup &rgroup = rgroups.getRGroup(i);
+            _output.printf("_R%d:",i);
+
+            if (rgroup.if_then > 0)
+               _output.printf("_R%d;",rgroup.if_then);
+            else
+               _output.printf(";");
+
+            if (rgroup.rest_h > 0)
+               _output.printf("H;");
+            else
+               _output.printf(";");
+
+            if (rgroup.occurrence.size() > 0)
+               _writeOccurrenceRanges(_output, rgroup.occurrence);
+         }
+         _output.writeString("}");
+      }
+   }
+}
+
+void SmilesSaver::_writeOccurrenceRanges (Output &out, const Array<int> &occurrences)
+{
+   for (int i = 0; i < occurrences.size(); i++)
+   {
+      int occurrence = occurrences[i];
+
+      if ((occurrence & 0xFFFF) == 0xFFFF)
+         out.printf(">%d", (occurrence >> 16) - 1);
+      else if ((occurrence >> 16) == (occurrence & 0xFFFF))
+         out.printf("%d", occurrence >> 16);
+      else if ((occurrence >> 16) == 0)
+         out.printf("<%d", (occurrence & 0xFFFF) + 1);
+      else
+         out.printf("%d-%d", occurrence >> 16, occurrence & 0xFFFF);
+
+      if (i != occurrences.size() - 1)
+         out.printf(",");
+   }
+}
 
 int SmilesSaver::writtenComponents ()
 {

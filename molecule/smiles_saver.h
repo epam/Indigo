@@ -109,6 +109,7 @@ protected:
    void _writeRadicals ();
    void _writePseudoAtoms ();
    void _writeHighlighting ();
+   void _writeRGroups ();
    bool _shouldWriteAromaticBond (int bond_idx);
    void _startExtension ();
 
@@ -118,6 +119,8 @@ protected:
 
    void _checkSRU ();
    void _checkRGroupsAndAttachmentPoints ();
+
+   void _writeOccurrenceRanges (Output &out, const Array<int> &occurrences);
 
    struct _DBond // directed bond (near cis-trans bond)
    {
