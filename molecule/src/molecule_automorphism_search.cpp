@@ -1225,7 +1225,7 @@ void MoleculeAutomorphismSearch::_markComplicatedStereocentersAsValid (Molecule 
 
    SpanningTree sp_tree(mol, 0);
    sp_tree.markAllEdgesInCycles(single_bond_bridge_mark.ptr(), 0);
-   for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i++)
+   for (int i : mol.edges())
       if (mol.getBondOrder(i) != BOND_SINGLE)
          single_bond_bridge_mark[i] = 0;
 
@@ -1238,7 +1238,7 @@ void MoleculeAutomorphismSearch::_markComplicatedStereocentersAsValid (Molecule 
    QS_DEF(Array<int>, undef_stereo_in_component);
    undef_stereo_in_component.clear();
 
-   for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
+   for (int v : mol.vertices())
    {
       int comp = decomposition[v];
 
@@ -1253,7 +1253,7 @@ void MoleculeAutomorphismSearch::_markComplicatedStereocentersAsValid (Molecule 
 
    // Mark stereocenters as valid if there are more then 1 
    // undefined stereocenter in the component
-   for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
+   for (int v : mol.vertices())
    {
       int comp = decomposition[v];
 
