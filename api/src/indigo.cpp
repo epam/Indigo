@@ -163,7 +163,6 @@ CEXPORT qword indigoAllocSessionId ()
 CEXPORT void indigoSetSessionId (qword id)
 {
    TL_SET_SESSION_ID(id);
-   setlocale(LC_NUMERIC, "C");
 }
 
 CEXPORT void indigoReleaseSessionId (qword id)
