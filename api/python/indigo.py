@@ -445,6 +445,16 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoCheckRGroups(self.id))
 
+    def checkChirality(self):
+
+        """
+        ::
+
+            Since version 1.3.0
+        """
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoCheckChirality(self.id))
+
     def countHydrogens(self):
         value = c_int()
         self.dispatcher._setSessionId()
@@ -2118,6 +2128,8 @@ class Indigo(object):
         Indigo._lib.indigoCheckBadValence.argtypes = [c_int]
         Indigo._lib.indigoCheckAmbiguousH.restype = c_char_p
         Indigo._lib.indigoCheckAmbiguousH.argtypes = [c_int]
+        Indigo._lib.indigoCheckChirality.restype = c_int
+        Indigo._lib.indigoCheckChirality.argtypes = [c_int]
         Indigo._lib.indigoFingerprint.restype = c_int
         Indigo._lib.indigoFingerprint.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoLoadFingerprintFromBuffer.restype = c_int

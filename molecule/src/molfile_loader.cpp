@@ -184,6 +184,7 @@ void MolfileLoader::_readCtabHeader ()
       else
          throw Error("bad molfile version : %s", version);
 
+      _bmol->setChiralFlag(chiral_int);
       _chiral = (chiral_int != 0);
    }
    catch (Scanner::Error &)

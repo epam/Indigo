@@ -64,6 +64,7 @@ void BaseMolecule::clear ()
 {
    have_xyz = false;
    name.clear();
+   _chiral_flag = -1;
    stereocenters.clear();
    cis_trans.clear();
    allene_stereo.clear();
@@ -3728,6 +3729,16 @@ int BaseMolecule::getEditRevision ()
 void BaseMolecule::updateEditRevision ()
 {
    _edit_revision++;
+}
+
+int BaseMolecule::getChiralFlag ()
+{
+   return _chiral_flag;
+}
+
+void BaseMolecule::setChiralFlag (int flag)
+{
+   _chiral_flag = flag;
 }
 
 int BaseMolecule::getBondDirection (int idx) const

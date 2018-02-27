@@ -1185,3 +1185,27 @@ CEXPORT int indigoCheckQuery (int item)
    }
    INDIGO_END(-1);
 }
+
+CEXPORT int indigoCheckChirality (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoBaseMolecule::is(obj))
+      {
+         BaseMolecule &bmol = obj.getBaseMolecule();
+         int chiral_flag = bmol.getChiralFlag();
+         if (chiral_flag == -1)
+         {
+            return 1;
+         }
+         else if ( (chiral_flag > 0) && (bmol.stereocenters.size() == 0) )
+         {
+            return 0;
+         }
+      }
+      return 1;
+   }
+   INDIGO_END(-1);
+}

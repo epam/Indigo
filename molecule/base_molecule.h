@@ -343,6 +343,8 @@ public:
 
    int addTemplate (TGroup &tgroup);
 
+   int getChiralFlag ();
+   void setChiralFlag (int flag);
 
    DECL_ERROR;
 protected:
@@ -396,6 +398,8 @@ protected:
    bool _rGroupFragment;
 
    ObjArray< Array<int> > _attachment_index;
+
+   int _chiral_flag = -1;
 
    // When molecule gets edited then edit revision is increased.
    // If edit revision is the same then molecule wasn't edited

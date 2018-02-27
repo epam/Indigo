@@ -349,6 +349,7 @@ namespace com.epam.indigo
         int indigoClearProperties(int handle);
         sbyte* indigoCheckBadValence(int handle);
         sbyte* indigoCheckAmbiguousH(int handle);
+        int indigoCheckChirality(int handle);
 
         int indigoFingerprint(int item, string type);
         int indigoLoadFingerprintFromBuffer(byte[] buffer, int size);

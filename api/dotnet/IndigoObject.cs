@@ -1607,6 +1607,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoCheckAmbiguousH(self));
         }
 
+        public int checkChirality()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoCheckChirality(self));
+        }
+
         public IndigoObject fingerprint(string type)
         {
             if (type == null)

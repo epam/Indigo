@@ -652,6 +652,7 @@ CEXPORT const int * indigoSymmetryClasses (int molecule, int *count_out);
 CEXPORT int indigoHasCoord (int molecule);
 CEXPORT int indigoHasZCoord (int molecule);
 CEXPORT int indigoIsChiral (int molecule);
+CEXPORT int indigoCheckChirality (int molecule);
 
 CEXPORT int indigoIsPossibleFischerProjection (int molecule, const char *options);
 
