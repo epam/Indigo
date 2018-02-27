@@ -271,7 +271,7 @@ void MolfileSaver::_writeCtabHeader2000 (Output &output, BaseMolecule &mol)
 {
    int chiral = 0;
 
-   if (!no_chiral && mol.isChrial())
+   if (!no_chiral && mol.isChiral())
       chiral = 1;
 
    output.printfCR("%3d%3d%3d%3d%3d%3d%3d%3d%3d%3d%3d V2000",

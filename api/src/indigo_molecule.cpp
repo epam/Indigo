@@ -1890,7 +1890,7 @@ CEXPORT int indigoIsChiral (int molecule)
    INDIGO_BEGIN
    {
       BaseMolecule &mol = self.getObject(molecule).getBaseMolecule();
-      return mol.isChrial();
+      return mol.isChiral();
    }
    INDIGO_END(-1)
 }

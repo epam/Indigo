@@ -230,7 +230,7 @@ public:
 
    bool have_xyz;
 
-   bool isChrial ();
+   bool isChiral ();
 
    struct TemplateAttPoint
    {

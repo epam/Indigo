@@ -684,7 +684,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment (BaseMolecule &mol, const Vec2f &o
       }
    }
 
-   if (mol.isChrial())
+   if (mol.isChiral())
    {
       Vec2f chiral_pos(max_coord.x, max_coord.y);
       Vec2f bbox(scale * chiral_pos.x, -scale * chiral_pos.y);

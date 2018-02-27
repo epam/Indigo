@@ -1544,7 +1544,7 @@ void SmilesSaver::_writeStereogroups ()
       }
    }
 
-   if (!mol.isChrial())
+   if (!mol.isChiral())
        _output.printf(",r");
 
 }

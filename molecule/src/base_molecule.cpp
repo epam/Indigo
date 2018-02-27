@@ -3762,7 +3762,7 @@ void BaseMolecule::clearBondDirections ()
    _bond_directions.clear();
 }
 
-bool BaseMolecule::isChrial ()
+bool BaseMolecule::isChiral ()
 {
    // Molecule is Chiral if it has at least one Abs stereocenter and all the stereocenters are Abs or Any
    return stereocenters.size() != 0 && stereocenters.haveAllAbsAny() && stereocenters.haveAbs();
