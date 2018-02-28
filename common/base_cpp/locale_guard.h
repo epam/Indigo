@@ -17,7 +17,10 @@
 
 #if defined(__linux__) || defined(__APPLE__)
 #include <locale.h>
-#endif
+#if defined(__APPLE__)
+#include <xlocale.h>
+#endif // __APPLE__
+#endif // __linux__ || __APPLE__
 
 namespace indigo
 {
