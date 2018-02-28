@@ -1209,3 +1209,40 @@ CEXPORT int indigoCheckChirality (int item)
    }
    INDIGO_END(-1);
 }
+
+CEXPORT int indigoCheck3DStereo (int item)
+{
+   INDIGO_BEGIN
+   {
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoBaseMolecule::is(obj))
+      {
+         BaseMolecule &bmol = obj.getBaseMolecule();
+
+         bool stereo_3d = true;
+  
+         if ( (bmol.stereocenters.size() > 0) && BaseMolecule::hasZCoord(bmol) )
+         {
+            for (auto i : bmol.vertices())
+            {
+               if (!bmol.stereocenters.exists(i))
+               {
+                  const Vertex &vertex = bmol.getVertex(i);
+
+                  for (auto j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
+                     if (bmol.getBondDirection2(i, vertex.neiVertex(j)) > 0)
+                        stereo_3d = false;
+               }
+            }                          
+         }
+         else
+            stereo_3d = false;
+
+         if (stereo_3d)
+            return 1;
+      }
+      return 0;
+   }
+   INDIGO_END(-1);
+}

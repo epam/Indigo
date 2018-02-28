@@ -1613,6 +1613,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoCheckChirality(self));
         }
 
+        public int check3DStereo()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoCheck3DStereo(self));
+        }
+
         public IndigoObject fingerprint(string type)
         {
             if (type == null)

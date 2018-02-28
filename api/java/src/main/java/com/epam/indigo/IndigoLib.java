@@ -183,6 +183,7 @@ public interface IndigoLib extends Library
    int indigoCheckQuery (int item);
    int indigoCheckRGroups (int item);
    int indigoCheckChirality (int item);
+   int indigoCheck3DStereo (int item);
    int indigoCountHydrogens (int atom, IntByReference valence);
    int indigoCountImplicitHydrogens (int item);
 
