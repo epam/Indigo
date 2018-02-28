@@ -654,6 +654,7 @@ CEXPORT int indigoHasZCoord (int molecule);
 CEXPORT int indigoIsChiral (int molecule);
 CEXPORT int indigoCheckChirality (int molecule);
 CEXPORT int indigoCheck3DStereo (int molecule);
+CEXPORT int indigoCheckStereo (int molecule);
 
 CEXPORT int indigoIsPossibleFischerProjection (int molecule, const char *options);
 

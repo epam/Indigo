@@ -465,6 +465,16 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoCheck3DStereo(self.id))
 
+    def checkStereo(self):
+
+        """
+        ::
+
+            Since version 1.3.0
+        """
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResult(Indigo._lib.indigoCheckStereo(self.id))
+
     def countHydrogens(self):
         value = c_int()
         self.dispatcher._setSessionId()
@@ -2142,6 +2152,8 @@ class Indigo(object):
         Indigo._lib.indigoCheckChirality.argtypes = [c_int]
         Indigo._lib.indigoCheck3DStereo.restype = c_int
         Indigo._lib.indigoCheck3DStereo.argtypes = [c_int]
+        Indigo._lib.indigoCheckStereo.restype = c_int
+        Indigo._lib.indigoCheckStereo.argtypes = [c_int]
         Indigo._lib.indigoFingerprint.restype = c_int
         Indigo._lib.indigoFingerprint.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoLoadFingerprintFromBuffer.restype = c_int

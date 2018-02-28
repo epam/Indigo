@@ -1619,6 +1619,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoCheck3DStereo(self));
         }
 
+        public int checkStereo()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoCheckStereo(self));
+        }
+
         public IndigoObject fingerprint(string type)
         {
             if (type == null)
