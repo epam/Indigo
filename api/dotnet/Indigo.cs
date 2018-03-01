@@ -61,6 +61,8 @@ namespace com.epam.indigo
         public const int SG_TYPE_FOR = 13;
         public const int SG_TYPE_ANY = 14;
 
+        public const uint MAX_SIZE = 1000000000;
+
         private IndigoDllLoader dll_loader;
         
         private long _sid = -1;
@@ -120,11 +122,24 @@ namespace com.epam.indigo
             setSessionID();
             checkResult(_indigo_lib.indigoDbgResetProfiling(whole_session ? 1 : 0));
         }
-        
+
+        private static int strLen(sbyte* input)
+        {
+            int res = 0;
+            do
+            {
+                if (input[res] == 0)
+                {
+                    break;
+                }
+                res++;
+            } while (res < MAX_SIZE);
+            return res;
+        }
+
         private static string _sbyteToStringUTF8(sbyte* input) 
         {
-            /// return System.Text.Encoding.UTF8.GetString(System.Text.Encoding.Default.GetBytes(new String(input)));
-            return new String(input);
+            return new string(input, 0, strLen(input), Encoding.UTF8);
         }
 
         private static void _handleError(sbyte* message, Indigo self)
