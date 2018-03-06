@@ -917,6 +917,16 @@ namespace com.epam.indigo
             return new IndigoObject(this, result);
         }
 
+        public IndigoObject iterateTautomers(IndigoObject molecule, string parameters)
+        {
+            setSessionID();
+            int result = checkResult(_indigo_lib.indigoIterateTautomers(molecule.self, parameters));
+            if (result == 0)
+                return null;
+
+            return new IndigoObject(this, result, molecule);
+        }
+
         public int buildPkaModel(int level, float threshold, String filename) {
             setSessionID();
             return checkResult(_indigo_lib.indigoBuildPkaModel(level, threshold, filename));
