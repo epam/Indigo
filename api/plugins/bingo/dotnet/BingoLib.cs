@@ -23,6 +23,8 @@ namespace com.epam.indigo
         int bingoSearchSub (int db, int query_obj, string options);
         int bingoSearchSim (int db, int query_obj, float min, float max, string options);
         int bingoSearchSimWithExtFP (int db, int query_obj, float min, float max, int ext_fp, string options);
+        int bingoSearchSimTopN(int db, int query_obj, int limit, float minSim, string options);
+        int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float minSim, int ext_fp, string options);
         int bingoSearchExact (int db, int query_obj, string options);
         int bingoSearchMolFormula (int db, string query, string options);
 

@@ -299,7 +299,7 @@ namespace com.epam.indigo
         /// <param name="ext_fp">Indigo object with a external similarity fingerprint</param>
         /// <param name="metric">Default value is "tanimoto"</param>
         /// <returns>Bingo search object instance</returns>
-        public BingoObject searchSim(IndigoObject query, float min, float max, IndigoObject ext_fp, string metric)
+        public BingoObject searchSimWithExtFP(IndigoObject query, float min, float max, IndigoObject ext_fp, string metric)
         {
             if (metric == null)
             {
@@ -308,6 +308,72 @@ namespace com.epam.indigo
             _indigo.setSessionID();
             return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSimWithExtFP(_id, query.self, min, max, ext_fp.self, metric)), _indigo, _lib);
         }
+
+        /// <summary>
+        /// Execute similarity search for most similar structures (defined by limit)
+        /// </summary>
+        /// <param name="query"> indigo object (molecule or reaction)</param>
+        /// <param name="limit"> Number of structures</param>
+        /// <param name="minSim"> Minimum similarity value</param>
+        /// <param name="metric"> Default value is "tanimoto"</param>
+        /// <returns> Bingo search object instance</returns>
+
+        public BingoObject searchSimTopN(IndigoObject query, int limit, float minSim, String metric)
+        {
+            if (metric == null)
+            {
+                metric = "tanimoto";
+            }
+            _indigo.setSessionID();
+            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSimTopN(_id, query.self, limit, minSim, metric)), _indigo, _lib);
+        }
+        /// <summary>
+        /// Execute similarity search for most similar structures (defined by limit)
+        /// </summary>
+        /// <param name="query"> indigo object (molecule or reaction)</param>
+		/// <param name="limit"> Number of structures</param>
+		/// <param name="minSim"> Minimum similarity value</param>
+		/// <returns>Bingo search object instance</returns>
+
+        public BingoObject searchSimTopN(IndigoObject query, int limit, float minSim)
+        {
+            return searchSimTopN(query, limit, minSim, null);
+        }
+
+        /// <summary>
+        /// Execute similarity search for most similar structures with external fingerprint
+        /// </summary>
+        /// <param name="query"> indigo object (molecule or reaction)</param>
+        /// <param name="limit"> Number of structures</param>
+        /// <param name="minSim"> Minimum similarity value</param>
+        /// <param name="metric"> Default value is "tanimoto"</param>
+        /// <param name="extFp"> Indigo object with a external similarity fingerprint (molecule or reaction)</param>
+        /// <returns> Bingo search object instance</returns>
+
+        public BingoObject searchSimTopNWithExtFP(IndigoObject query, int limit, float minSim, IndigoObject extFp, String metric)
+        {
+            if (metric == null)
+            {
+                metric = "tanimoto";
+            }
+            _indigo.setSessionID();
+            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSimTopNWithExtFP(_id, query.self, limit, minSim, extFp.self, metric)), _indigo, _lib);
+        }
+
+        /// <summary>
+        /// Execute similarity search for most similar structures with external fingerprint
+        /// </summary>
+        /// <param name="query"> indigo object (molecule or reaction)</param>
+        /// <param name="limit"> Number of structures</param>
+        /// <param name="minSim"> Minimum similarity value</param>
+        /// <param name="extFp"> Indigo object with a external similarity fingerprint (molecule or reaction)</param>
+        /// <returns> Bingo search object instance</returns>
+
+        public BingoObject searchSimTopNWithExtFP(IndigoObject query, int limit, float minSim, IndigoObject extFp)
+        {
+            return searchSimTopNWithExtFP(query, limit, minSim, extFp, null);
+        }
+
 
         /// <summary>
         /// Execute enumerate id operation
