@@ -969,7 +969,7 @@ void SmilesLoader::_parseMolecule ()
    {
       int next = _scanner.lookNext();
 
-      if (isspace(next))
+      if ( (isspace(next)) || next == '|')
          break;
 
       _BondDesc *bond = 0;
