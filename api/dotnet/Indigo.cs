@@ -643,6 +643,11 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoCreateArray()));
         }
 
+        public float similarity(IndigoObject obj1, IndigoObject obj2)
+        {
+            return similarity(obj1, obj2, "");
+        }
+
         public float similarity(IndigoObject obj1, IndigoObject obj2, string metrics)
         {
             setSessionID();
