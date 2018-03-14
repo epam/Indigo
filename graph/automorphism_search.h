@@ -71,7 +71,7 @@ public:
 
    enum
    {
-      INFINITY = 0x7FFF
+      AUTOMORPHISM_INFINITY = 0x7FFF
    };
 
    DECL_ERROR;

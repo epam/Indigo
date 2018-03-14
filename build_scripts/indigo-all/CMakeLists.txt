@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.8)
 
 project(IndigoAll C CXX)
 
@@ -20,6 +20,9 @@ message(STATUS "**** Bingo ****")
 add_subdirectory(../bingo "${CMAKE_CURRENT_BINARY_DIR}/bingo")
 
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+IF(MSVC)
+	SET(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
+ENDIF()
 INCLUDE(InstallRequiredSystemLibraries)
 FOREACH(lib ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})
     INSTALL(FILES ${lib} DESTINATION "shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}" COMPONENT shared)
@@ -31,7 +34,6 @@ else()
     set(COMPONENTS shared)
 endif()
 
-# Uncomment it in CMake 2.8.8:  http://www.gccxml.org/Bug/view.php?id=12129
 SET(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
 
 SET(CPACK_COMPONENTS_ALL ${COMPONENTS})

@@ -142,7 +142,7 @@ void AutomorphismSearch::_prepareGraph (Graph &graph)
    {
       _graph.addVertex();
       _inv_mapping[_mapping[i]] = i;
-      _ptn.push(INFINITY);
+      _ptn.push(AUTOMORPHISM_INFINITY);
 
       while (buckets.size() <= ranks[i])
          buckets.push(0);
@@ -284,7 +284,7 @@ void AutomorphismSearch::process (Graph &graph)
 
       for (i = 0; i < _n; i++)
          if (_ptn[i] != 0)
-            _ptn[i] = INFINITY;
+            _ptn[i] = AUTOMORPHISM_INFINITY;
          else
             numcells++;
 
@@ -536,7 +536,7 @@ void AutomorphismSearch::_recover (int level)
 
    for (i = 0; i < _n; ++i)
       if (_ptn[i] > level)
-         _ptn[i] = INFINITY;
+         _ptn[i] = AUTOMORPHISM_INFINITY;
 
    if (getcanon)
    {
