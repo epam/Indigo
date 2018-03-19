@@ -133,8 +133,8 @@ def build_libs(cl_args):
     if args.findcairo:
         args.params += ' -DUSE_SYSTEM_PIXMAN=TRUE'
 
-    if not args.withStatic:
-        args.params += ' -DNO_STATIC=TRUE'
+    if args.withStatic:
+        args.params += ' -DWITH_STATIC=TRUE'
 
     if args.preset and args.preset.find('universal') != -1:
         args.params += ' -DUNIVERSAL_BUILD=TRUE'

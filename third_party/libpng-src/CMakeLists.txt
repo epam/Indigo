@@ -34,7 +34,7 @@ if (NOT PNG_FOUND)
 
     set_target_properties(png PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
     set_property(TARGET png PROPERTY FOLDER "third_party")
-    if (NOT NO_STATIC)
+    if (WITH_STATIC)
         pack_static(png)
     endif()
 endif()

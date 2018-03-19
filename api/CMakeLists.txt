@@ -21,7 +21,7 @@ add_library(indigoObj OBJECT ${Indigo_src} ${Indigo_headers})
 set_target_properties(indigoObj PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
 #Indigo static
-if (NOT NO_STATIC)
+if (WITH_STATIC)
     add_library(indigo STATIC $<TARGET_OBJECTS:indigoObj> $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
     SET_TARGET_PROPERTIES(indigo PROPERTIES OUTPUT_NAME "indigo-static")
     target_link_libraries(indigo tinyxml z inchi)

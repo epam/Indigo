@@ -17,7 +17,7 @@ include_directories(${Bingo_SOURCE_DIR}
 include(DefineTest)
 
 # Bingo static
-if (NOT NO_STATIC)
+if (WITH_STATIC)
 	add_library(bingo STATIC ${Bingo_src} ${Bingo_headers})
 	if(UNIX AND NOT APPLE)
 		SET_TARGET_PROPERTIES(bingo PROPERTIES LINK_FLAGS -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/bingo.so.map)

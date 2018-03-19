@@ -14,7 +14,7 @@ add_library(indigo-renderer-Obj OBJECT ${IndigoRenderer_src} ${IndigoRenderer_he
 set_target_properties(indigo-renderer-Obj PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
 # Indigo Renderer static
-if (NOT NO_STATIC)
+if (WITH_STATIC)
 	add_library(indigo-renderer STATIC $<TARGET_OBJECTS:render2d> $<TARGET_OBJECTS:indigo-renderer-Obj>)
 	if(UNIX AND NOT APPLE)
 		SET_TARGET_PROPERTIES(indigo-renderer PROPERTIES LINK_FLAGS -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/indigo_renderer.so.map)

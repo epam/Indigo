@@ -10,6 +10,6 @@ file (GLOB CommonOracle_headers *.h)
 add_library(common-oracle ${CommonOracle_src} ${CommonOracle_headers})
 set_target_properties(common-oracle PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
-if (NOT NO_STATIC)
+if (WITH_STATIC)
     pack_static(common-oracle)
 endif()

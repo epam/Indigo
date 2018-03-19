@@ -19,7 +19,7 @@ add_library(indigo-inchi-Obj OBJECT ${IndigoInchi_src} ${IndigoInchi_headers})
 set_target_properties(indigo-inchi-Obj PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
 # Indigo InChI static
-if (NOT NO_STATIC)
+if (WITH_STATIC)
 	add_library(indigo-inchi STATIC $<TARGET_OBJECTS:indigo-inchi-Obj>)
 	if(UNIX AND NOT APPLE)
 		SET_TARGET_PROPERTIES(indigo-inchi PROPERTIES LINK_FLAGS -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/indigo_inchi.so.map)

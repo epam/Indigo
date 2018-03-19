@@ -28,7 +28,7 @@ if (NOT ZLIB_FOUND)
 
     set_target_properties(z PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
     set_property(TARGET z PROPERTY FOLDER "third_party")
-    if (NOT NO_STATIC)
+    if (WITH_STATIC)
         pack_static(z)
     endif()
 

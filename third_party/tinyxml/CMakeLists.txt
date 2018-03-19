@@ -19,7 +19,7 @@ if (NOT TINYXML_FOUND)
 
     set_target_properties(tinyxml PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
     set_property(TARGET tinyxml PROPERTY FOLDER "third_party")
-    if (NOT NO_STATIC)
+    if (WITH_STATIC)
         pack_static(tinyxml)
     endif()
 else()

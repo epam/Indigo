@@ -19,8 +19,7 @@ endmacro()
 
 macro(PACK_SHARED proj)
     install(TARGETS ${proj}
-        DESTINATION shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
-        COMPONENT shared)
+        RUNTIME DESTINATION shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME} COMPONENT shared)
 endmacro()
 
 macro(PACK_EXECUTABLE proj)
