@@ -6,9 +6,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${COMMON_OUTPUT_PATH}/lib
 message(STATUS "Common output dir: ${CMAKE_BINARY_DIR}/${COMMON_OUTPUT_PATH}")
 
 macro(PACK_STATIC proj)
-    install(TARGETS ${proj}
-        DESTINATION static/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
-        COMPONENT static)
+    install(TARGETS ${proj} DESTINATION static/${SYSTEM_NAME}/${SUBSYSTEM_NAME} COMPONENT static)
     if(MSVC)
         get_target_property (output_name ${proj} "OUTPUT_NAME")
         if (NOT output_name)
@@ -18,8 +16,7 @@ macro(PACK_STATIC proj)
 endmacro()
 
 macro(PACK_SHARED proj)
-    install(TARGETS ${proj}
-        RUNTIME DESTINATION shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME} COMPONENT shared)
+    install(TARGETS ${proj} DESTINATION shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME} COMPONENT shared)
 endmacro()
 
 macro(PACK_EXECUTABLE proj)
