@@ -1476,8 +1476,6 @@ class Indigo(object):
                 Indigo._crt = CDLL(path + "/msvcr120.dll")
                 Indigo._crtp = CDLL(path + "/msvcp120.dll")
             if os.path.exists(path + "/vcruntime140.dll"):
-                if os.path.exists(path + "/ucrtbase.dll"):
-                    Indigo._ucrt = CDLL(path + "/ucrtbase.dll")
                 Indigo._crt = CDLL(path + "/vcruntime140.dll")
                 Indigo._crtp = CDLL(path + "/msvcp140.dll")
             Indigo._lib = CDLL(path + "/indigo.dll")

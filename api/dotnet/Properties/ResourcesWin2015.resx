@@ -127,9 +127,6 @@
   <data name="Win/x64/vcruntime140.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\Win\x64\vcruntime140.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Win/x64/ucrtbase.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Win\x64\ucrtbase.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Win/x86/vcruntime140.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\Win\x86\vcruntime140.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -138,8 +135,5 @@
   </data>
   <data name="Win/x86/msvcp140.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resource\Win\x86\msvcp140.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Win/x86/ucrtbase.dll" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resource\Win\x86\ucrtbase.dll;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

@@ -186,7 +186,6 @@ namespace com.epam.indigo
                     {
                        dll_loader.loadLibrary(lib_path, "vcruntime140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
                        dll_loader.loadLibrary(lib_path, "msvcp140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
-                       dll_loader.loadLibrary(lib_path, "ucrtbase.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
                        dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2015", false);
                     }
 
