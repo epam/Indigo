@@ -85,9 +85,9 @@ def unpack_to_libs(name):
     with zipfile.ZipFile('{}.zip'.format(name)) as zf:
         zf.extractall(libs_dir)
         unzipped_folder = os.path.join(libs_dir, os.path.basename(name))
-        shutil.move(os.path.join(unzipped_folder, 'shared'), libs_dir)
-        shutil.rmtree(unzipped_folder)
-
+        for os_name in os.listdir(os.path.join(unzipped_folder, 'shared')):
+            shutil.copytree(os.path.join(unzipped_folder, 'shared', os_name), os.path.join(libs_dir, 'shared', os_name))
+        shutil.rmtree(unzipped_folder, ignore_errors=True)
 
 @contextmanager
 def cwd(path):
@@ -142,7 +142,6 @@ if __name__ == '__main__':
 
     # Find indigo version
     version = getIndigoVersion()
-
     with cwd(os.path.join(os.path.split(__file__)[0], '..', 'dist')):
 
         if need_join_archieves:
