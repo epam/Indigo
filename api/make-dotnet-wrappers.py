@@ -7,11 +7,8 @@ import subprocess
 from get_indigo_version import getIndigoVersion
 
 
-if os.name == 'nt':
-    msbuildcommand = 'msbuild /t:Rebuild /p:Configuration=Release'
-else:
-    # Mono
-    msbuildcommand = 'xbuild /t:Rebuild /p:Configuration=Release'
+msbuildcommand = 'msbuild /t:Rebuild /p:Configuration=Release'
+
 
 parser = OptionParser(description='Indigo .NET libraries build script')
 parser.add_option('--suffix', '-s', help='archive suffix', default="")
