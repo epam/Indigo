@@ -715,10 +715,15 @@ void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text)
 
 void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text, const char *alignment)
 {
+   QS_DEF(Array<char>, buf);
+   buf.readString(text, false);
+   if (buf.size() < 1)
+      return;
+   buf.clear();
+
    TiXmlElement * t = new TiXmlElement("t");
    _current->LinkEndChild(t);
 
-   QS_DEF(Array<char>, buf);
    ArrayOutput out(buf);
    out.printf("%f %f", _bond_length * pos.x, -_bond_length * pos.y);
    buf.push(0);
@@ -737,10 +742,15 @@ void MoleculeCdxmlSaver::addText (const Vec2f &pos, const char *text, const char
 
 void MoleculeCdxmlSaver::addTitle (const Vec2f &pos, const char *text)
 {
+   QS_DEF(Array<char>, buf);
+   buf.readString(text, false);
+   if (buf.size() < 1)
+      return;
+   buf.clear();
+
    TiXmlElement * t = new TiXmlElement("t");
    _current->LinkEndChild(t);
 
-   QS_DEF(Array<char>, buf);
    ArrayOutput out(buf);
    out.printf("%f %f", _bond_length * pos.x, -_bond_length * pos.y);
    buf.push(0);
