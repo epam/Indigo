@@ -41,6 +41,7 @@ void MoleculeAutoLoader::_init ()
    ignore_cistrans_errors = false;
    ignore_no_chiral_flag = false;
    ignore_bad_valence = false;
+   treat_stereo_as = 0;
 }
 
 IMPL_ERROR(MoleculeAutoLoader, "molecule auto loader");
@@ -207,6 +208,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          loader2.skip_3d_chirality = skip_3d_chirality;
          loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
+         loader2.treat_stereo_as = treat_stereo_as;
          loader2.loadMolecule((Molecule &)mol);
          return;
       }
@@ -224,6 +226,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          loader.skip_3d_chirality = skip_3d_chirality;
          loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
          loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+         loader.treat_stereo_as = treat_stereo_as;
 
          if (query)
             loader.loadQueryMolecule((QueryMolecule &)mol);
@@ -379,6 +382,8 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
       loader.skip_3d_chirality = skip_3d_chirality;
       loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
       loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+      loader.treat_stereo_as = treat_stereo_as;
+
 
       if (query)
          loader.loadQueryMolecule((QueryMolecule &)mol);

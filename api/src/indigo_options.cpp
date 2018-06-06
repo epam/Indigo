@@ -195,6 +195,39 @@ static void indigoGetMaxEmbeddings (int& value)
    value = self.max_embeddings;
 }
 
+static void indigoSetStereoOption (const char *option)
+{
+   Indigo &self = indigoGetInstance();
+   if (strcasecmp(option, "abs") == 0)
+      self.treat_stereo_as = MoleculeStereocenters::ATOM_ABS;
+   else if (strcasecmp(option, "rel") == 0)
+      self.treat_stereo_as = MoleculeStereocenters::ATOM_OR;
+   else if (strcasecmp(option, "rac") == 0)
+      self.treat_stereo_as = MoleculeStereocenters::ATOM_AND;
+   else if (strcasecmp(option, "any") == 0)
+      self.treat_stereo_as = MoleculeStereocenters::ATOM_ANY;
+   else if (strcasecmp(option, "ucf") == 0)
+      self.treat_stereo_as = 0;
+   else
+      throw IndigoError("unknown value: %s. Allowed values are \"abs\", \"rel\", \"rac\", \"any\", \"ucf\"", option);
+}
+
+static void indigoGetStereoOption (Array<char>& option)
+{
+   Indigo &self = indigoGetInstance();
+   if (self.treat_stereo_as == 0)
+       option.readString("ucf", true);
+   else if (self.treat_stereo_as == MoleculeStereocenters::ATOM_ABS)
+       option.readString("abs", true);
+   else if (self.treat_stereo_as == MoleculeStereocenters::ATOM_OR)
+       option.readString("rel", true);
+   else if (self.treat_stereo_as == MoleculeStereocenters::ATOM_AND)
+       option.readString("rac", true);
+   else if (self.treat_stereo_as == MoleculeStereocenters::ATOM_ANY)
+       option.readString("any", true);
+}
+
+
 static void indigoResetBasicOptions ()
 {
    Indigo &self = indigoGetInstance();
@@ -213,6 +246,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("ignore-stereochemistry-errors", SETTER_GETTER_BOOL_OPTION(indigo.stereochemistry_options.ignore_errors));
    mgr.setOptionHandlerBool("ignore-noncritical-query-features", SETTER_GETTER_BOOL_OPTION(indigo.ignore_noncritical_query_features));
    mgr.setOptionHandlerBool("ignore-no-chiral-flag", SETTER_GETTER_BOOL_OPTION(indigo.ignore_no_chiral_flag));
+   mgr.setOptionHandlerString("treat-stereo-as", indigoSetStereoOption, indigoGetStereoOption);
    mgr.setOptionHandlerBool("ignore-closing-bond-direction-mismatch", SETTER_GETTER_BOOL_OPTION(indigo.ignore_closing_bond_direction_mismatch));
    mgr.setOptionHandlerBool("ignore-bad-valence", SETTER_GETTER_BOOL_OPTION(indigo.ignore_bad_valence));
    mgr.setOptionHandlerBool("treat-x-as-pseudoatom", SETTER_GETTER_BOOL_OPTION(indigo.treat_x_as_pseudoatom));
@@ -221,7 +255,8 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter ()
    mgr.setOptionHandlerBool("deco-save-ap-bond-orders", SETTER_GETTER_BOOL_OPTION(indigo.deco_save_ap_bond_orders));
    mgr.setOptionHandlerBool("deco-ignore-errors", SETTER_GETTER_BOOL_OPTION(indigo.deco_ignore_errors));
    mgr.setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode, indigoGetMolfileSavingMode);
-   mgr.setOptionHandlerBool("molfile-saving-no-chiral", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_no_chiral));
+   mgr.setOptionHandlerInt("molfile-saving-no-chiral", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_no_chiral));
+   mgr.setOptionHandlerInt("molfile-saving-chiral-flag", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_chiral_flag));
    mgr.setOptionHandlerBool("molfile-saving-skip-date", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_skip_date));
    mgr.setOptionHandlerBool("molfile-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_stereo_desc));
    mgr.setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));

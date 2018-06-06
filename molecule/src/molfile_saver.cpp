@@ -44,6 +44,7 @@ TL_CP_GET(_bond_mapping)
 {
    mode = MODE_AUTO;
    no_chiral = false;
+   chiral_flag = -1;
    skip_date = false;
    add_stereo_desc = false;
    add_implicit_h = true;
@@ -273,6 +274,8 @@ void MolfileSaver::_writeCtabHeader2000 (Output &output, BaseMolecule &mol)
 
    if (!no_chiral && mol.isChiral())
       chiral = 1;
+   if (chiral_flag != -1)
+      chiral = chiral_flag;
 
    output.printfCR("%3d%3d%3d%3d%3d%3d%3d%3d%3d%3d%3d V2000",
       mol.vertexCount(), mol.edgeCount(), 0, 0, chiral, 0, 0, 0, 0, 0, 999);

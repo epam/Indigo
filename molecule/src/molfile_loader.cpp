@@ -54,6 +54,7 @@ TL_CP_GET(_sgroup_mapping)
    ignore_noncritical_query_features = false;
    ignore_no_chiral_flag = false;
    ignore_bad_valence = false;
+   treat_stereo_as = 0;
 }
 
 void MolfileLoader::loadMolecule (Molecule &mol)
@@ -2099,14 +2100,22 @@ void MolfileLoader::_postLoad ()
    _bmol->stereocenters.buildFromBonds(stereochemistry_options, _sensible_bond_directions.ptr());
    _bmol->allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
 
-
-   if (!_chiral)
+   if (!_chiral && treat_stereo_as == 0)
       for (i = 0; i < _atoms_num; i++)
       {
          int type = _bmol->stereocenters.getType(i);
 
          if (type == MoleculeStereocenters::ATOM_ABS)
             _bmol->stereocenters.setType(i, MoleculeStereocenters::ATOM_AND, 1);
+      }
+
+   if (treat_stereo_as != 0)
+      for (i = 0; i < _atoms_num; i++)
+      {
+         int type = _bmol->stereocenters.getType(i);
+
+         if (type == MoleculeStereocenters::ATOM_ABS)
+            _bmol->stereocenters.setType(i, treat_stereo_as, 1);
       }
    
    for (i = 0; i < _atoms_num; i++)

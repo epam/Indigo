@@ -293,6 +293,8 @@ public:
    bool treat_x_as_pseudoatom;
    bool skip_3d_chirality;
    bool ignore_no_chiral_flag;
+   int  treat_stereo_as;
+
    bool ignore_closing_bond_direction_mismatch;
    bool ignore_bad_valence;
 
@@ -302,6 +304,7 @@ public:
 
    int  molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
    bool molfile_saving_no_chiral;
+   int  molfile_saving_chiral_flag;
    bool molfile_saving_skip_date;
    bool molfile_saving_add_stereo_desc;
    bool molfile_saving_add_implicit_h;

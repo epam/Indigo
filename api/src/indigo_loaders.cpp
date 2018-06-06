@@ -113,6 +113,7 @@ Molecule & IndigoRdfMolecule::getMolecule ()
       loader.skip_3d_chirality = self.skip_3d_chirality;
       loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
       loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
+      loader.treat_stereo_as = self.treat_stereo_as;
       loader.ignore_bad_valence = self.ignore_bad_valence;
       loader.loadMolecule(_mol);
       _loaded = true;
@@ -167,6 +168,7 @@ Reaction & IndigoRdfReaction::getReaction ()
       loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
       loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
       loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
+      loader.treat_stereo_as = self.treat_stereo_as;
       loader.ignore_bad_valence = self.ignore_bad_valence;
       loader.loadReaction(_rxn);
       _loaded = true;

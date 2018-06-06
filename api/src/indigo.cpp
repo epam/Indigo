@@ -42,6 +42,7 @@ void Indigo::init ()
    stereochemistry_options.reset();
    ignore_noncritical_query_features = false;
    ignore_no_chiral_flag = false;
+   treat_stereo_as = 0;
    treat_x_as_pseudoatom = false;
    skip_3d_chirality = false;
    deconvolution_aromatization = true;
@@ -49,6 +50,7 @@ void Indigo::init ()
    deco_ignore_errors = true;
    molfile_saving_mode = 0;
    molfile_saving_no_chiral = false;
+   molfile_saving_chiral_flag = -1;
    filename_encoding = ENCODING_ASCII;
    fp_params.any_qwords = 15;
    fp_params.sim_qwords = 8;
@@ -129,6 +131,7 @@ void Indigo::initMolfileSaver (MolfileSaver &saver)
    saver.no_chiral = molfile_saving_no_chiral;
    saver.add_stereo_desc = molfile_saving_add_stereo_desc;
    saver.add_implicit_h = molfile_saving_add_implicit_h;
+   saver.chiral_flag = molfile_saving_chiral_flag;
 }
 
 void Indigo::initRxnfileSaver (RxnfileSaver &saver)
