@@ -187,7 +187,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
    properties.clear();
 
    // check for GZip format
-   if (!query && _scanner->length() >= 2LL)
+   if (_scanner->length() >= 2LL)
    {
       byte id[2];
       long long pos = _scanner->tell();
@@ -209,7 +209,12 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          loader2.skip_3d_chirality = skip_3d_chirality;
          loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
          loader2.treat_stereo_as = treat_stereo_as;
-         loader2.loadMolecule((Molecule &)mol);
+
+         if (query)
+            loader2.loadQueryMolecule((QueryMolecule &)mol);
+         else
+            loader2.loadMolecule((Molecule &)mol);
+
          return;
       }
    }
