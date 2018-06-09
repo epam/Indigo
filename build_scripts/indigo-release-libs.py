@@ -107,10 +107,6 @@ def build_libs(cl_args):
             print("Preset is no selected, continuing with empty generator and params...")
             args.generator, args.params = '', ''
 
-    # if not args.generator:
-    #     print("Generator must be specified")
-    #     exit()
-
     cur_dir = os.path.abspath(os.path.dirname(__file__))
     root = os.path.join(cur_dir, "..")
     project_dir = os.path.join(cur_dir, "indigo-all")
