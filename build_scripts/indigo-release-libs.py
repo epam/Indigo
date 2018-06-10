@@ -153,6 +153,8 @@ def build_libs(cl_args):
 
     environment_prefix = ''
     if args.preset and (args.preset.find('linux') != -1 and args.preset.find('universal') != -1):
+        if args.preset.find('32') != -1:
+            os.environ['LD_FLAGS'] = '{} {}'.format(os.environ.get('LD_FLAGS', ''), '-m32')
         environment_prefix = 'CC=gcc CXX=g++'
     command = "%s cmake %s %s %s" % (environment_prefix, '-G \"%s\"' % args.generator if args.generator else '', args.params, project_dir)
     print(command)

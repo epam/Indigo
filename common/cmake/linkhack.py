@@ -39,7 +39,7 @@ def getIndigoStdSyms():
 
 
 def linux(compiler, linkFlags, objFiles, linkLibraries, target):
-    libstdcppPath = subprocess.Popen('g++ -print-file-name=libstdc++.a', shell=True, stdout=subprocess.PIPE).communicate()[0].replace('\n', '')
+    libstdcppPath = subprocess.Popen('{} {} -print-file-name=libstdc++.a'.format(compiler, os.environ.get('LD_FLAGS', '')), shell=True, stdout=subprocess.PIPE).communicate()[0].replace('\n', '')
 
     # Find dist root
     libRoot = os.path.dirname(target)
@@ -67,7 +67,6 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
             subprocess.call('objcopy --redefine-syms indigostd.syms libstdc++.a libindigostdcpp.a', shell=True)
             linkLibraries = linkLibraries + ' -Wl,--whole-archive libindigostdcpp.a -Wl,--no-whole-archive '
             break
-
     os.remove('libstdc++.a')
 
     for library in os.listdir(libRoot):
@@ -82,7 +81,7 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
             continue
         libFile = os.path.join(libRoot, library)
         subprocess.call('objcopy --redefine-syms indigostd.syms %s' % (libFile), shell=True)
-
+    linkFlags = '{} {}'.format(linkFlags, os.environ.get('LD_FLAGS', ''))
     verboseParam = ''
     if 'VERBOSE' in os.environ:
         verboseParam = ' -v '
@@ -93,7 +92,7 @@ def linux(compiler, linkFlags, objFiles, linkLibraries, target):
         print(linkCommand)
         stderr = subprocess.PIPE
         stdout = subprocess.PIPE
-    subprocess.call(linkCommand, shell=True, stderr=stderr, stdout=stdout)
+    return subprocess.check_call(linkCommand, shell=True, stderr=stderr, stdout=stdout)
 
 
 def main():
