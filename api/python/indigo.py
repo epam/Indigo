@@ -2448,14 +2448,14 @@ class Indigo(object):
         self._setSessionId()
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadReactionSmartsFromFile(filename.encode(ENCODE_ENCODING))))
 
-    def loadStructure(self, structureStr, parameter = None):
+    def loadStructure(self, structureStr, parameter=None):
         self._setSessionId()
-        parameter = '' if parameter is None else parameter 
+        parameter = '' if parameter is None else parameter
         return self.IndigoObject(self, 
                                  self._checkResult(Indigo._lib.indigoLoadStructureFromString(structureStr.encode(ENCODE_ENCODING),
-                                                                                             parameter)))
+                                                                                             parameter.encode(ENCODE_ENCODING))))
         
-    def loadStructureFromBuffer(self, structureData, parameter = None):
+    def loadStructureFromBuffer(self, structureData, parameter=None):
         if sys.version_info[0] < 3:
             buf = map(ord, structureData)
         else:
@@ -2464,12 +2464,14 @@ class Indigo(object):
         for i in range(len(buf)):
             values[i] = buf[i]
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadStructureFromBuffer(values, len(buf), parameter)))
+        parameter = '' if parameter is None else parameter
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadStructureFromBuffer(values, len(buf), parameter.encode(ENCODE_ENCODING))))
     
-    def loadStructureFromFile(self, filename, parameter = None):
+    def loadStructureFromFile(self, filename, parameter=None):
         self._setSessionId()
+        parameter = '' if parameter is None else parameter
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadStructureFromFile(filename.encode(ENCODE_ENCODING), 
-                                                                                                 parameter)))
+                                                                                                 parameter.encode(ENCODE_ENCODING))))
 
     def loadFingerprintFromBuffer(self, buffer):
         """ Creates a fingerprint from the supplied binary data
