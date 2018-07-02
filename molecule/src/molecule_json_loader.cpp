@@ -61,6 +61,6 @@ void MoleculeJsonLoader::loadMolecule(Molecule &mol) {
          }
       }
    } else {
-      throw Error("unknown type: %s", type);
+      throw Error("unknown type: %s", type.c_str());
    }
 }
