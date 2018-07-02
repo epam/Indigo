@@ -681,16 +681,17 @@ void StructureChecker::_checkBond (BaseMolecule &mol, Molecule &target, int idx,
 
       bool added = false;
       const Edge &e1 = mol.getEdge(idx);
-      Vec2f &a1 = mol.getAtomXyz(e1.beg).projectZ();
-      Vec2f &b1 = mol.getAtomXyz(e1.end).projectZ();
+      Vec2f a1, b1, a2, b2;
+      Vec2f::projectZ(a1, mol.getAtomXyz(e1.beg));
+      Vec2f::projectZ(b1, mol.getAtomXyz(e1.end));
 
       for (auto i : mol.edges())
       {
          if ( (i != idx) && (_overlapped_bond_ids.find(i) == -1) )
          {
             const Edge &e2 = mol.getEdge(i);
-            Vec2f &a2 = mol.getAtomXyz(e2.beg).projectZ();
-            Vec2f &b2 = mol.getAtomXyz(e2.end).projectZ();
+            Vec2f::projectZ(a2, mol.getAtomXyz(e2.beg));
+            Vec2f::projectZ(b2, mol.getAtomXyz(e2.end));
             if ( (Vec2f::dist(a1, a2) < 0.01*mean_dist) || (Vec2f::dist(b1, b2) < 0.01*mean_dist) ||
                  (Vec2f::dist(a1, b2) < 0.01*mean_dist) || (Vec2f::dist(b1, a2) < 0.01*mean_dist) )
                continue;
