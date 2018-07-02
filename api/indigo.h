@@ -407,6 +407,9 @@ CEXPORT int indigoCheckQuery (int item);
 // Returns one if structure contains RGroup features (RSites, RGroups or attachment points
 CEXPORT int indigoCheckRGroups (int item);
 
+// Returns check result for Indigo object for requested properties
+CEXPORT const char * indigoCheck (int item, const char *props);
+
 // Applicable to atoms, query atoms, and molecules. Can fail
 // (return zero) on query atoms where the number of hydrogens
 // is not definitely known. Otherwise, returns one and writes *hydro.

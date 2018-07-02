@@ -117,6 +117,12 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher.IndigoObject(self.dispatcher, self.dispatcher._checkResult(Indigo._lib.indigoClone(self.id)))
 
+    def check(self, props=''):
+        if props is None:
+            props = ''
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoCheck(self.id, props.encode(ENCODE_ENCODING)))
+
     def close(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoClose(self.id))
@@ -1660,6 +1666,8 @@ class Indigo(object):
         Indigo._lib.indigoDbgBreakpoint.argtypes = None
         Indigo._lib.indigoClone.restype = c_int
         Indigo._lib.indigoClone.argtypes = [c_int]
+        Indigo._lib.indigoCheck.restype = c_char_p
+        Indigo._lib.indigoCheck.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoClose.restype = c_int
         Indigo._lib.indigoClose.argtypes = [c_int]
         Indigo._lib.indigoNext.restype = c_int

@@ -35,6 +35,7 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_ionize.h"
 #include "molecule/molecule_automorphism_search.h"
+#include "molecule/structure_checker.h"
 
 #define CHECKRGB(r, g, b) \
 if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
@@ -1290,4 +1291,78 @@ CEXPORT int indigoCheckStereo (int item)
       return 0;
    }
    INDIGO_END(-1);
+}
+
+CEXPORT const char * indigoCheck (int item, const char *props)
+{
+   INDIGO_BEGIN
+   {
+      auto &tmp = self.getThreadTmpData();
+      ArrayOutput out(tmp.string);
+      StructureChecker ch(out);
+      ch.parseCheckTypes(props);
+
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoBaseMolecule::is(obj))
+      {
+         BaseMolecule &bmol = obj.getBaseMolecule();
+
+         if (bmol.isQueryMolecule())
+         {
+            QueryMolecule &qmol = bmol.asQueryMolecule();
+            ch.checkQueryMolecule(qmol);
+         }
+         else
+         {
+            Molecule &mol = bmol.asMolecule();
+            ch.checkMolecule(mol);
+         }
+      }
+      else if (IndigoBaseReaction::is(obj))
+      {
+         BaseReaction &brxn = obj.getBaseReaction();
+      }
+      else if (IndigoAtom::is(obj))
+      {
+         IndigoAtom &ia = IndigoAtom::cast(obj);
+         QS_DEF(Array<int>, atoms);
+         atoms.clear();
+         atoms.push(ia.getIndex() + 1);
+         ch.addAtomSelection(atoms);
+
+         if (ia.mol.isQueryMolecule())
+         {
+            QueryMolecule &qmol = ia.mol.asQueryMolecule();
+            ch.checkQueryMolecule(qmol);
+         }
+         else
+         {
+            Molecule &mol = ia.mol.asMolecule();
+            ch.checkMolecule(mol);
+         }
+      }
+      else if (IndigoBond::is(obj))
+      {
+         IndigoBond &ib = IndigoBond::cast(obj);
+         QS_DEF(Array<int>, bonds);
+         bonds.clear();
+         bonds.push(ib.getIndex() + 1);
+         ch.addBondSelection(bonds);
+
+         if (ib.mol.isQueryMolecule())
+         {
+            QueryMolecule &qmol = ib.mol.asQueryMolecule();
+            ch.checkQueryMolecule(qmol);
+         }
+         else
+         {
+            Molecule &mol = ib.mol.asMolecule();
+            ch.checkMolecule(mol);
+         }
+      }
+
+     return tmp.string.ptr();
+   }
+   INDIGO_END(0);
 }
