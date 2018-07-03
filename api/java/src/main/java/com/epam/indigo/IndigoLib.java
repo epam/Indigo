@@ -188,6 +188,8 @@ public interface IndigoLib extends Library
    int indigoCountHydrogens (int atom, IntByReference valence);
    int indigoCountImplicitHydrogens (int item);
 
+   Pointer indigoCheck (int item, String type);
+
    int indigoGetReactingCenter (int reaction, int reaction_bond, IntByReference rc);
    int indigoSetReactingCenter (int reaction, int reaction_bond, int rc);
 
