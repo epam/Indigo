@@ -464,6 +464,8 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
    public String check(String type)
    {
+      if (type == null)
+         type = "";
       dispatcher.setSessionID();
       return Indigo.checkResultString(this, _lib.indigoCheck(self, type));
    }

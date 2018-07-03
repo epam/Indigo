@@ -1627,6 +1627,8 @@ namespace com.epam.indigo
 
         public string check(string type)
         {
+            if (type == null)
+                type = "";
             dispatcher.setSessionID();
             return dispatcher.checkResult(_indigo_lib.indigoCheck(self, type));
         }

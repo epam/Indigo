@@ -303,7 +303,7 @@ void StructureChecker::_parseSelection (Scanner &sc, Array<int> &ids)
 void StructureChecker::_checkMolecule (BaseMolecule &mol, bool query)
 {
    QS_DEF(Molecule, target);
-   bool _saved_valence_flag;
+   bool _saved_valence_flag = false;
    check_result = 0;
 
    if ( (check_flags & CHECK_LOAD) && (mol.vertexCount() == 0) )
