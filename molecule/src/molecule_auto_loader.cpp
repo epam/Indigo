@@ -338,6 +338,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          err_buf.appendString(e.message(), true);
       }
 
+
       // We fall down to IUPAC name conversion if SMILES loading threw an exception
       try {
          Array<char> name;
@@ -346,7 +347,7 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
          MoleculeNameParser parser;
          parser.parseMolecule(name.ptr(), static_cast<Molecule&>(mol));
          return;
-      } catch (Exception&) {
+      } catch (...) {
       }
 
       if (err_buf.size() > 0) {
