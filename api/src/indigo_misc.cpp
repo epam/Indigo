@@ -36,6 +36,7 @@
 #include "molecule/molecule_ionize.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/structure_checker.h"
+#include "reaction/reaction_checker.h"
 
 #define CHECKRGB(r, g, b) \
 if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
@@ -1299,13 +1300,14 @@ CEXPORT const char * indigoCheck (int item, const char *props)
    {
       auto &tmp = self.getThreadTmpData();
       ArrayOutput out(tmp.string);
-      StructureChecker ch(out);
-      ch.parseCheckTypes(props);
 
       IndigoObject &obj = self.getObject(item);
 
       if (IndigoBaseMolecule::is(obj))
       {
+         StructureChecker ch(out);
+         ch.parseCheckTypes(props);
+
          BaseMolecule &bmol = obj.getBaseMolecule();
 
          if (bmol.isQueryMolecule())
@@ -1321,10 +1323,17 @@ CEXPORT const char * indigoCheck (int item, const char *props)
       }
       else if (IndigoBaseReaction::is(obj))
       {
+         ReactionChecker ch(out);
+         ch.setCheckTypes(props);
+
          BaseReaction &brxn = obj.getBaseReaction();
+         ch.checkBaseReaction(brxn);
       }
       else if (IndigoAtom::is(obj))
       {
+         StructureChecker ch(out);
+         ch.parseCheckTypes(props);
+
          IndigoAtom &ia = IndigoAtom::cast(obj);
          QS_DEF(Array<int>, atoms);
          atoms.clear();
@@ -1344,6 +1353,9 @@ CEXPORT const char * indigoCheck (int item, const char *props)
       }
       else if (IndigoBond::is(obj))
       {
+         StructureChecker ch(out);
+         ch.parseCheckTypes(props);
+
          IndigoBond &ib = IndigoBond::cast(obj);
          QS_DEF(Array<int>, bonds);
          bonds.clear();
@@ -1361,6 +1373,7 @@ CEXPORT const char * indigoCheck (int item, const char *props)
             ch.checkMolecule(mol);
          }
       }
+      out.writeChar(0);
 
      return tmp.string.ptr();
    }

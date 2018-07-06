@@ -26,7 +26,7 @@ class BaseMolecule;
 class Scanner;
 class Output;
 
-class StructureChecker
+class DLLEXPORT StructureChecker
 {
 public:
    enum
@@ -121,9 +121,13 @@ public:
    
    StructureChecker (Output &output);
 
-   void checkMolecule (Scanner &scanner, const char *params);
+   void checkStructure (Scanner &scanner, const char *params);
+
+   void checkBaseMolecule (BaseMolecule &mol);
    void checkMolecule (Molecule &mol);
    void checkQueryMolecule (QueryMolecule &mol);
+
+   void checkMolecule(BaseMolecule &mol, bool query);
 
    void parseCheckTypes (const char *params);
    void addAtomSelection (Array<int> &atoms);
@@ -131,26 +135,27 @@ public:
 
    void buildCheckResult ();
 
+   void clearCheckResult ();
+
    static const char * typeToString(dword check_type);
    static dword getType(const char * check_type);
 
    dword check_flags;
    dword check_result;
-   
+ 
    float mean_dist;
 
    DECL_ERROR;
 
 protected:
-   void _checkMolecule(BaseMolecule &mol, bool query);
    void _parseSelection (Scanner &sc, Array<int> &ids);
    void _checkAtom(BaseMolecule &mol, Molecule &target, int idx, bool query);
    void _checkBond(BaseMolecule &mol, Molecule &target, int idx, bool query);
 
-   ObjArray<CheckResult> _results;   
-
    Array<int> _selected_atoms;
    Array<int> _selected_bonds;
+
+   ObjArray<CheckResult> _results;   
 
    Array<int> _bad_val_ids;
    Array<int> _rad_ids;

@@ -24,10 +24,7 @@
 #include "third_party/rapidjson/stringbuffer.h"
 #include <sstream>
 
-
 using namespace indigo;
-using namespace rapidjson;
-//#include "third_party/json/json.hpp"
 
 IMPL_ERROR(StructureChecker, "Structure checker");
 
@@ -108,23 +105,49 @@ StructureChecker::StructureChecker (Output &output) : _output(output)
    _results.clear();
 }
 
-void StructureChecker::checkMolecule (Scanner &scanner, const char *params)
+void StructureChecker::checkStructure (Scanner &scanner, const char *params)
 {
 
+}
+
+void StructureChecker::checkBaseMolecule (BaseMolecule &mol)
+{
+   _results.clear();
+   checkMolecule(mol, mol.isQueryMolecule());
+   buildCheckResult();
 }
 
 void StructureChecker::checkMolecule (Molecule &mol)
 {
    _results.clear();
-   _checkMolecule(mol, false);
+   checkMolecule(mol, false);
    buildCheckResult();
 }
 
 void StructureChecker::checkQueryMolecule (QueryMolecule &mol)
 {
    _results.clear();
-   _checkMolecule(mol, true);
+   checkMolecule(mol, true);
    buildCheckResult();
+}
+
+void StructureChecker::clearCheckResult ()
+{
+   _results.clear();   
+   _bad_val_ids.clear();
+   _rad_ids.clear();
+   _atom_qf_ids.clear();
+   _bond_qf_ids.clear();
+   _pseudo_ids.clear();
+   _sg_atom_ids.clear();
+   _sg_bond_ids.clear();
+   _atom_3d_ids.clear();
+   _overlapped_atom_ids.clear();
+   _overlapped_bond_ids.clear();
+   _atom_amb_h_ids.clear();
+   _atom_3d_stereo_ids.clear();
+   _atom_wrong_stereo_ids.clear();
+   _atom_undefined_stereo_ids.clear();
 }
 
 bool StructureChecker::CheckType::compare (const char *text) const
@@ -218,6 +241,7 @@ void StructureChecker::addBondSelection (Array<int> &bonds)
 
 void StructureChecker::buildCheckResult ()
 {
+   using namespace rapidjson;
    std::stringstream result;
 //   json j;
    StringBuffer s;
@@ -226,7 +250,6 @@ void StructureChecker::buildCheckResult ()
    if (check_result == 0)
    {
       _output.writeString("{}");
-      _output.writeChar(0);
       return;
    }
 
@@ -275,12 +298,10 @@ void StructureChecker::buildCheckResult ()
    {
       result << s.GetString();
       _output.printf("%s", result.str().c_str());
-      _output.writeChar(0);
    }
    else
    {
       _output.writeString("{}");
-      _output.writeChar(0);
    }
 }
 
@@ -300,7 +321,7 @@ void StructureChecker::_parseSelection (Scanner &sc, Array<int> &ids)
    }
 }
 
-void StructureChecker::_checkMolecule (BaseMolecule &mol, bool query)
+void StructureChecker::checkMolecule (BaseMolecule &mol, bool query)
 {
    QS_DEF(Molecule, target);
    bool _saved_valence_flag = false;
@@ -363,7 +384,14 @@ void StructureChecker::_checkMolecule (BaseMolecule &mol, bool query)
       {
          if (!target.stereocenters.exists(i) && target.stereocenters.isPossibleStereocenter(i))
          {
-            target.stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+            try
+            {
+               target.stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+            }
+            catch (Exception &e)
+            {
+               // Just ignore this stereo center
+            }
          }
       }                          
 
