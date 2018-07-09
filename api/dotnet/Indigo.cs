@@ -529,6 +529,17 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(_indigo_lib.indigoLoadReactionSmartsFromFile(path)));
         }
 
+        public string checkStructure(string str) 
+        {
+            return checkStructure(str, "");
+        }
+
+        public string checkStructure(string str, string options)
+        {
+            setSessionID();
+            return checkResult(_indigo_lib.indigoCheckStructure(str, options));
+        }
+
         public IndigoObject loadStructure(string str) 
         {
             return loadStructure(str, "");

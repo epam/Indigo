@@ -1668,6 +1668,8 @@ class Indigo(object):
         Indigo._lib.indigoClone.argtypes = [c_int]
         Indigo._lib.indigoCheck.restype = c_char_p
         Indigo._lib.indigoCheck.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoCheckStructure.restype = c_char_p
+        Indigo._lib.indigoCheckStructure.argtypes = [c_char_p, c_char_p]
         Indigo._lib.indigoClose.restype = c_int
         Indigo._lib.indigoClose.argtypes = [c_int]
         Indigo._lib.indigoNext.restype = c_int
@@ -2480,6 +2482,12 @@ class Indigo(object):
         parameter = '' if parameter is None else parameter
         return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoLoadStructureFromFile(filename.encode(ENCODE_ENCODING), 
                                                                                                  parameter.encode(ENCODE_ENCODING))))
+
+    def checkStructure(self, structure, props=''):
+        if props is None:
+            props = ''
+        self._setSessionId()
+        return self._checkResultString(Indigo._lib.indigoCheckStructure(structure.encode(ENCODE_ENCODING), props.encode(ENCODE_ENCODING)))
 
     def loadFingerprintFromBuffer(self, buffer):
         """ Creates a fingerprint from the supplied binary data

@@ -190,6 +190,8 @@ public interface IndigoLib extends Library
 
    Pointer indigoCheck (int item, String type);
 
+   Pointer indigoCheckStructure (String structure, String type);
+
    int indigoGetReactingCenter (int reaction, int reaction_bond, IntByReference rc);
    int indigoSetReactingCenter (int reaction, int reaction_bond, int rc);
 

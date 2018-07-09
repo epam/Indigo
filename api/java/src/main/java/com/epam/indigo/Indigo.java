@@ -594,6 +594,15 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, _lib.indigoLoadReactionSmartsFromFile(path)));
     }
 
+    public String checkStructure(String str) {
+        return checkStructure(str, "");
+    }
+
+    public String checkStructure(String str, String params) {
+        setSessionID();
+        return checkResultString(this, _lib.indigoCheckStructure(str, params));
+    }
+
     public IndigoObject loadStructure(String str) {
         return loadStructure(str, "");
     }

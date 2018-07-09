@@ -335,6 +335,13 @@ void StructureChecker::checkMolecule (BaseMolecule &mol, bool query)
       return;
    }
 
+   else if (!BaseMolecule::hasCoord(mol) && mol.vertexCount() > 1)
+   {
+      check_result |= CHECK_COORD;
+      CheckResult *res = &_results.push();
+      res->m_id = CHECK_MSG_ZERO_COORD;
+   }
+
    if ( (check_flags & CHECK_CHIRAL_FLAG) && (mol.getChiralFlag() > 0) && (mol.stereocenters.size() == 0) )
    {
       check_result |= CHECK_CHIRAL_FLAG;
@@ -683,12 +690,6 @@ void StructureChecker::_checkAtom (BaseMolecule &mol, Molecule &target, int idx,
             }
          }
       }
-   }
-   else if (!BaseMolecule::hasCoord(mol) && mol.vertexCount() > 1)
-   {
-      check_result |= CHECK_COORD;
-      CheckResult *res = &_results.push();
-      res->m_id = CHECK_MSG_ZERO_COORD;
    }
 }
 

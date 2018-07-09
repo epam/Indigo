@@ -1625,6 +1625,11 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoCheckStereo(self));
         }
 
+        public string check()
+        {
+            return check("");
+        }
+
         public string check(string type)
         {
             if (type == null)

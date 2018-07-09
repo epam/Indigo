@@ -410,6 +410,9 @@ CEXPORT int indigoCheckRGroups (int item);
 // Returns check result for Indigo object for requested properties
 CEXPORT const char * indigoCheck (int item, const char *props);
 
+// Returns check result for structure against requested properties
+CEXPORT const char * indigoCheckStructure (const char *structure, const char *props);
+
 // Applicable to atoms, query atoms, and molecules. Can fail
 // (return zero) on query atoms where the number of hydrogens
 // is not definitely known. Otherwise, returns one and writes *hydro.
