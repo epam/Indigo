@@ -28,6 +28,7 @@
 #include "molecule/inchi_wrapper.h"
 #include "base_cpp/output.h"
 #include "molecule/molecule_name_parser.h"
+#include "molecule/molecule_json_loader.h"
 
 using namespace indigo;
 
@@ -281,6 +282,31 @@ void MoleculeAutoLoader::_loadMolecule (BaseMolecule &mol, bool query)
 
       _scanner->seek(pos, SEEK_SET);
    }
+
+   // check json format
+   {
+      long long pos = _scanner->tell();
+      _scanner->skipSpace();
+
+      if (_scanner->lookNext() == '{')
+      {
+         if (_scanner->findWord("molecule"))
+         {
+            _scanner->seek(pos, SEEK_SET);
+            try {
+               MoleculeJsonLoader loader(*_scanner);
+               if (query)
+                  loader.loadQueryMolecule((QueryMolecule &)mol);
+               else
+                  loader.loadMolecule((Molecule &)mol);
+               return;
+            } catch (...) {
+            }
+         }
+      }
+      _scanner->seek(pos, SEEK_SET);
+   }
+
 
    // check for single line formats
    if (Scanner::isSingleLine(*_scanner)) {

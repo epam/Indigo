@@ -90,6 +90,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
       return Indigo.checkResultString(this, _lib.indigoCml(self));
    }
 
+   public String json ()
+   {
+      dispatcher.setSessionID();
+      return Indigo.checkResultString(this, _lib.indigoJson(self));
+   }
+
    public void saveCml (String filename)
    {
       dispatcher.setSessionID();

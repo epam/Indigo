@@ -163,6 +163,10 @@ class IndigoObject(object):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(Indigo._lib.indigoCdxml(self.id))
 
+    def json(self):
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(Indigo._lib.indigoJson(self.id))
+
     def saveMDLCT(self, output):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoSaveMDLCT(self.id, output.id))
@@ -1692,6 +1696,8 @@ class Indigo(object):
         Indigo._lib.indigoSaveCdxmlToFile.argtypes = [c_int, c_char_p]
         Indigo._lib.indigoCdxml.restype = c_char_p
         Indigo._lib.indigoCdxml.argtypes = [c_int]
+        Indigo._lib.indigoJson.restype = c_char_p
+        Indigo._lib.indigoJson.argtypes = [c_int]
         Indigo._lib.indigoSaveMDLCT.restype = c_int
         Indigo._lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
         Indigo._lib.indigoAddReactant.restype = c_int

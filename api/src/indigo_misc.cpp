@@ -38,6 +38,9 @@
 #include "molecule/structure_checker.h"
 #include "reaction/reaction_checker.h"
 
+#include "molecule/molecule_json_saver.h"
+#include "molecule/molecule_json_loader.h"
+
 #define CHECKRGB(r, g, b) \
 if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6) \
    throw IndigoError("Some of the color components are out of range [0..1]")
@@ -1401,3 +1404,36 @@ CEXPORT const char * indigoCheckStructure (const char *structure, const char *pr
    }
    INDIGO_END(0);
 }
+
+CEXPORT const char * indigoJson (int item)
+{
+   INDIGO_BEGIN
+   {
+      auto &tmp = self.getThreadTmpData();
+      ArrayOutput out(tmp.string);
+
+      IndigoObject &obj = self.getObject(item);
+
+      if (IndigoBaseMolecule::is(obj))
+      {
+         MoleculeJsonSaver jn(out);
+
+         BaseMolecule &bmol = obj.getBaseMolecule();
+
+         if (bmol.isQueryMolecule())
+         {
+            QueryMolecule &qmol = bmol.asQueryMolecule();
+            jn.saveQueryMolecule(qmol);
+         }
+         else
+         {
+            Molecule &mol = bmol.asMolecule();
+            jn.saveMolecule(mol);
+         }
+      }
+      out.writeChar(0);
+      return tmp.string.ptr();
+   }
+   INDIGO_END(0);
+}
+

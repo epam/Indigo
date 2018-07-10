@@ -1,5 +1,5 @@
 /****************************************************************************
- * Copyright (C) 2015 EPAM Systems
+ * Copyright (C) 2009-2015 EPAM Systems
  *
  * This file is part of Indigo toolkit.
  *
@@ -12,48 +12,34 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  ***************************************************************************/
 
-#ifndef __molecule_json_loader__
-#define __molecule_json_loader__
+#ifndef __molecule_json_saver_h__
+#define __molecule_json_saver_h__
 
-#include "base_c/defs.h"
-#include "base_cpp/exception.h"
-#include "base_cpp/non_copyable.h"
+namespace indigo {
 
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable:4251)
-#endif
-
-namespace indigo
-{
-
-class Scanner;
 class Molecule;
 class QueryMolecule;
+class Output;
 
-/*
- * Loader for JSON format
- */
-
-class DLLEXPORT MoleculeJsonLoader: public NonCopyable
+class DLLEXPORT MoleculeJsonSaver
 {
 public:
+   explicit MoleculeJsonSaver (Output &output);
+
+   void saveMolecule (Molecule &mol);
+   void saveQueryMolecule (QueryMolecule &qmol);
 
    DECL_ERROR;
 
-   explicit MoleculeJsonLoader (Scanner &scanner);
-   void loadMolecule (Molecule &mol);
-   void loadQueryMolecule (QueryMolecule &qmol);
-   
-private:
-   Scanner& _scanner;
-};
+protected:
+   Molecule *_mol;
+   Output   &_output;
 
+private:
+   MoleculeJsonSaver (const MoleculeJsonSaver &); // no implicit copy
+};
 
 }
 
-#ifdef _WIN32
-#pragma warning(pop)
 #endif
 
-#endif

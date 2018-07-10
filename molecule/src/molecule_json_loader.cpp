@@ -4,17 +4,21 @@
 #include "molecule/elements.h"
 #include <unordered_map>
 
+#include "third_party/rapidjson/document.h"
+
 using namespace indigo;
 using namespace std;
-#include "third_party/json/json.hpp"
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Scanner &scanner) : _scanner(scanner) {
 }
 
+void MoleculeJsonLoader::loadQueryMolecule(QueryMolecule &qmol) {
+}
+
 void MoleculeJsonLoader::loadMolecule(Molecule &mol) {
-   using json = nlohmann::json;
+   using namespace rapidjson;
    /*
     * Read all into a buffer. TODO create a stream reader
     */
@@ -26,34 +30,57 @@ void MoleculeJsonLoader::loadMolecule(Molecule &mol) {
     */
    unordered_map<string, int> atom_map;
 
-   auto data = json::parse(buf.ptr());
+   Document data;
+
+//   auto data = json::parse(buf.ptr());
+   if (data.Parse(buf.ptr()).HasParseError())
+      throw Error("Error at parsing JSON: %s", buf.ptr());
+
    /*
     * Everything in a root. TODO: move root as a separate structure
     */
-   auto& root = data["root"];
+   const Value& root = data["root"];
    
-   auto type = root["type"].get<std::string>();
-   
+   std::string type = root["type"].GetString();
+                      
    if (type.compare("molecule") == 0) {
-      auto& atoms = root["atoms"];
+      const Value &atoms = root["atoms"];
       /*
        * Parse atoms
        */
-      for (auto& a : atoms) {
-         auto label = a["label"].get<std::string>();
+      for (SizeType i = 0; i < atoms.Size(); i++)
+      {
+         const Value& a = atoms[i];
+         std::string label = a["label"].GetString();
          auto atom_idx = mol.addAtom(Element::fromString(label.c_str()));
-         atom_map.insert(make_pair(a["id"].get<std::string>(), atom_idx));
+         atom_map.insert(make_pair(a["id"].GetString(), atom_idx));
+
+         const Value& coords = a["location"];
+
+         if (coords.Size() > 0)
+         {
+            Vec3f a_pos;
+            a_pos.x = coords[0].GetDouble();
+            a_pos.y = coords[1].GetDouble();
+            a_pos.z = coords[2].GetDouble();
+            mol.setAtomXyz(atom_idx, a_pos);
+         }
+
       }
       
       /*
        * Parse bonds
        */
-      auto& bonds = root["bonds"];
-      for (auto& b : bonds) {
-         auto refs = b["refs"].get<vector<string> >();
-         auto order = b["order"].get<int>();
-         if(refs.size() > 1) {
-            mol.addBond(atom_map.at(refs[0]), atom_map.at(refs[1]), order);
+      const Value &bonds = root["bonds"];
+      for (SizeType i = 0; i < bonds.Size(); i++)
+      {
+         const Value& b = bonds[i];
+         const Value& refs = b["atoms"];
+         auto order = b["order"].GetInt();
+         if(refs.Size() > 1) {
+            const Value& a1 = refs[0]; 
+            const Value& a2 = refs[1]; 
+            mol.addBond(atom_map.at(a1.GetString()), atom_map.at(a2.GetString()), order);
          } else {
             /*
              * TODO
