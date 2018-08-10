@@ -269,6 +269,8 @@ void MoleculeRenderInternal::setQueryReactionComponentProperties (const Array<in
 
 void MoleculeRenderInternal::render ()
 {
+   _precalcScale();
+
    _initCoordinates();
 
    _initBondData();
@@ -3909,4 +3911,61 @@ void MoleculeRenderInternal::_bondTriple (BondDescr& bd, const BondEnd& be1, con
    _cw.drawLine(vl1, vl2);
 
    bd.extP = bd.extN = _settings.bondSpace * 2 + _settings.bondLineWidth / 2;
+}
+
+void MoleculeRenderInternal::_precalcScale()
+{
+    // Check structure for long atom labels (pseudoatoms, SMARTS) and change scale to fix
+    // the issue with labels overlapping each other
+    long long int max_output_length = 4;
+    BaseMolecule& bm = *_mol;
+
+    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i)) {
+        long long int output_length = 0;
+        Array<int> iarr;
+        Array<char> carr;
+        if (bm.isPseudoAtom(i)) {
+            carr.readString(bm.getPseudoAtom(i), true);
+            output_length = carr.size();
+        } else if (bm.isTemplateAtom(i)) {
+            carr.readString(bm.getTemplateAtom(i), true);
+            output_length = carr.size();
+        } else if (bm.isRSite(i)) {
+            output_length = 0;
+            QS_DEF(Array<int>, rg);
+            bm.getAllowedRGroups(i, rg);
+            if (rg.size() == 0) {
+                output_length += 1;
+            } else {
+                for (int j = 0; j < rg.size(); ++j) {
+                    if (j > 0) {
+                        output_length += 1;
+                    }
+                    output_length += 2;
+                }
+            }
+        } else if (_mol->isQueryMolecule()) {
+            QueryMolecule &qmol = _mol->asQueryMolecule();
+            int queryLabel = QueryMolecule::parseQueryAtom(qmol, i, iarr);
+            if (queryLabel < 0) {
+                bm.getAtomDescription(i, carr);
+                output_length = carr.size();
+            } else if (!QueryMolecule::queryAtomIsRegular(qmol, i) && !bm.isPseudoAtom(i) && queryLabel >= 0 && !bm.isTemplateAtom(i)) {
+                output_length = 1;
+                for (int j = 0; j < iarr.size(); ++j) {
+                    if (j > 0) {
+                        output_length += 1;
+                    }
+                    output_length += strlen(Element::toString(iarr[j]));
+                }
+                output_length += 1;
+            }
+        } else {
+                output_length = strlen(Element::toString(bm.getAtomNumber(i)));
+            }
+        if (output_length > max_output_length) {
+            max_output_length = output_length;
+        }
+    }
+    _scale = __max(_scale, float(max_output_length) / (float)10.0);
 }

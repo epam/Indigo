@@ -151,6 +151,7 @@ private:
    int _parseColorString (Scanner& str, float& r, float& g, float& b);
 
    void _cloneAndFillMappings();
+   void _precalcScale();
 
    //TODO: remove dublicate with _placeBrackets(..)
    inline Rect2f _bound(Array<int>& atoms) const {
