@@ -39,6 +39,9 @@ endif()
 
 # Bingo shared
 add_library(bingo-shared SHARED ${Bingo_src} ${Bingo_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c)
+if (MSVC OR MINGW)
+	set_target_properties(bingo-shared PROPERTIES PREFIX "")
+endif()
 if (UNIX AND NOT APPLE)
 	if(${SUBSYSTEM_NAME} MATCHES "x64")
 		set(LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
