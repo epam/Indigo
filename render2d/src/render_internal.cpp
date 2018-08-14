@@ -3919,7 +3919,9 @@ void MoleculeRenderInternal::_precalcScale()
     // the issue with labels overlapping each other
     long long int max_output_length = 4;
     BaseMolecule& bm = *_mol;
-
+    Array<long long int> output_lengths;
+    int max_index = -1;
+    output_lengths.resize(bm.vertexCount());
     for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i)) {
         long long int output_length = 0;
         Array<int> iarr;
@@ -3950,7 +3952,7 @@ void MoleculeRenderInternal::_precalcScale()
             if (queryLabel < 0) {
                 bm.getAtomDescription(i, carr);
                 output_length = carr.size();
-            } else if (!QueryMolecule::queryAtomIsRegular(qmol, i) && !bm.isPseudoAtom(i) && queryLabel >= 0 && !bm.isTemplateAtom(i)) {
+            } else if (!QueryMolecule::queryAtomIsRegular(qmol, i)) {
                 output_length = 1;
                 for (int j = 0; j < iarr.size(); ++j) {
                     if (j > 0) {
@@ -3959,13 +3961,27 @@ void MoleculeRenderInternal::_precalcScale()
                     output_length += strlen(Element::toString(iarr[j]));
                 }
                 output_length += 1;
-            }
-        } else {
+            } else {
                 output_length = strlen(Element::toString(bm.getAtomNumber(i)));
             }
-        if (output_length > max_output_length) {
-            max_output_length = output_length;
+        } else {
+            output_length = strlen(Element::toString(bm.getAtomNumber(i)));
+        }
+        output_lengths[i] = output_length;
+        if (max_output_length < output_lengths[i]) {
+            max_output_length = output_lengths[i];
+            max_index = i;
         }
     }
-    _scale = __max(_scale, float(max_output_length) / (float)10.0);
+    float scale_modificator = 1.0;
+    if (max_index >= 0) {
+        const Vertex& max_length_vertex = bm.getVertex(max_index);
+        for (auto nei = max_length_vertex.neiBegin(); nei != max_length_vertex.neiEnd(); nei = max_length_vertex.neiNext(nei)) {
+            if (max_output_length - output_lengths[max_length_vertex.neiVertex(nei)] > 10) {
+                scale_modificator = 2.0;
+                break;
+            }
+        }
+    }
+    _scale = __max(_scale, float(max_output_length) / ((float)10.0 * scale_modificator));
 }
