@@ -2,6 +2,8 @@
 #include "molecule/molecule.h"
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
+
+#include <string>
 #include <unordered_map>
 
 #include "third_party/rapidjson/document.h"
