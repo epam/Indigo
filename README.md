@@ -55,6 +55,9 @@ build_scripts\indigo-release-utils.py:
 
 
 ### Linux (GCC 4.9+ or Clang 3.5+)
+	Apt Reqirements:
+        sudo apt install cmake libfreetype6-dev libxft-dev
+        sudo ldconfig	
 
 	build_scripts/indigo-release-libs.py --preset=linux64
 	build_scripts/indigo-release-utils.py --preset=linux64
