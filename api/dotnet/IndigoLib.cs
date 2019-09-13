@@ -354,6 +354,7 @@ namespace com.epam.indigo
         int indigoCheckStereo(int handle);
 
         sbyte* indigoCheck(int item, string type);
+        sbyte* indigoCheckStructure (string structure, string type);
 
         int indigoFingerprint(int item, string type);
         int indigoLoadFingerprintFromBuffer(byte[] buffer, int size);
