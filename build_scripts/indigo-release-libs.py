@@ -42,7 +42,7 @@ def build_libs(cl_args):
         "win64-2013": ("Visual Studio 12 Win64", ""),
         "win64-2015": ("Visual Studio 14 Win64", ""),
         "win64-2017": ("Visual Studio 15 Win64", ""),
-        "win64-2019": ("Visual Studio 16 2019", "-A Win64"),
+        "win64-2019": ("Visual Studio 16 2019", ""),
         "win32-mingw": ("MinGW Makefiles", "-DSUBSYSTEM_NAME=x86"),
         "win64-mingw": ("MinGW Makefiles", "-DSUBSYSTEM_NAME=x64"),
         "linux32": ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
