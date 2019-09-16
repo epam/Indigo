@@ -53,12 +53,12 @@ elseif(APPLE)
     set(SDK_SUBSYSTEM_NAME ${SUBSYSTEM_NAME})
     message(STATUS "Deployment target: ${CMAKE_OSX_DEPLOYMENT_TARGET}")
 
-    #if (${XCODE_VERSION} GREATER 4.2)
-    set(CMAKE_OSX_SYSROOT /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SDK_SUBSYSTEM_NAME}.sdk)
-    #else()
-    #    set(CMAKE_OSX_SYSROOT /Developer/SDKs/MacOSX${SDK_SUBSYSTEM_NAME}.sdk)
-    #endif()
-
+    if (DEFINED ENV{UNIVERSAL} OR UNIVERSAL_BUILD)
+        set(CMAKE_OSX_SYSROOT /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk)
+    else()
+        set(CMAKE_OSX_SYSROOT /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SDK_SUBSYSTEM_NAME}.sdk)
+    endif()
+    
     message(STATUS "SDK: ${CMAKE_OSX_SYSROOT}")
 endif()
 
