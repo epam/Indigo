@@ -103,6 +103,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(_indigo_lib.indigoCml(self));
         }
 
+        public string json()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(_indigo_lib.indigoJson(self));
+        }
+
         public void saveCml(string filename)
         {
             dispatcher.setSessionID();
