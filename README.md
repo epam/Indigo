@@ -2,8 +2,8 @@
 
 # EPAM Indigo projects #
 
-Copyright (c) 2009-2015 EPAM Systems
-GNU General Public License version 3
+Copyright (c) 2009 to present EPAM Systems
+Apache License version 2.0
 
 ## Introduction ##
 
