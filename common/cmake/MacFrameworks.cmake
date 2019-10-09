@@ -3,7 +3,11 @@
 EXEC_PROGRAM(xcodebuild ARGS -version OUTPUT_VARIABLE XCODE_VERSION)
 string(REGEX MATCH "[0-9][.][0-9]" XCODE_VERSION ${XCODE_VERSION})
 
-set(SSNAME ${SUBSYSTEM_NAME})
+if(DEFINED ENV{UNIVERSAL} OR UNIVERSAL_BUILD)
+    set(SSNAME "")
+else()
+    set(SSNAME ${SUBSYSTEM_NAME})
+endif()
 
 set(FRAMEWORK_PATH /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SSNAME}.sdk/System/Library/Frameworks)
 

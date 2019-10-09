@@ -7,7 +7,7 @@ import subprocess
 from get_indigo_version import getIndigoVersion
 
 
-msbuildcommand = 'msbuild /t:Rebuild /p:Configuration=Release'
+msbuildcommand = 'msbuild /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU"'
 
 
 parser = OptionParser(description='Indigo .NET libraries build script')
