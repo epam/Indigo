@@ -46,7 +46,7 @@ subprocess.check_call("mvn -q clean package -Dmaven.test.skip=true", shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-nosql-%s.jar' % version), os.path.join(dist_dir, 'java', 'bingo-nosql.jar'))
 
 os.chdir(dist_dir)
-shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), "java")
+shutil.copy(os.path.join(api_dir, "LICENSE"), "java")
 
 shutil.copy(os.path.join(root, "common", "jna", "jna.jar"), "java")
 

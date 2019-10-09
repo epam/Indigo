@@ -42,7 +42,7 @@ for filename in os.listdir(dist_dir):
             shutil.copy(join("launch.bat"), join(dist_dir, "chemdiff", fullChemdiffName,"launch.bat"))
         else:
             shutil.copy(join("chemdiff.sh"), join(dist_dir, "chemdiff", fullChemdiffName,"chemdiff.sh"))
-        shutil.copy(join("LICENSE.GPL"), join(dist_dir, "chemdiff", fullChemdiffName, "LICENSE.GPL"))
+        shutil.copy(join("LICENSE"), join(dist_dir, "chemdiff", fullChemdiffName, "LICENSE"))
         shutil.copytree(join(root, "utils", "chemdiff", "examples"), join(dist_dir, "chemdiff", fullChemdiffName, "examples"))
         os.chdir(join(dist_dir, "chemdiff", fullChemdiffName))
         os.mkdir("lib")
@@ -90,7 +90,7 @@ for filename in os.listdir(dist_dir):
             shutil.copy(join("launch.bat"), join(dist_dir, "legio", fullLegioName,"launch.bat"))
         else:
             shutil.copy(join("legio.sh"), join(dist_dir, "legio", fullLegioName,"legio.sh"))
-        shutil.copy(join("LICENSE.GPL"), join(dist_dir, "legio", fullLegioName, "LICENSE.GPL"))
+        shutil.copy(join("LICENSE"), join(dist_dir, "legio", fullLegioName, "LICENSE"))
         shutil.copytree(join(root, "utils", "legio", "examples"), join(dist_dir, "legio", fullLegioName, "examples"))
         os.chdir(join(dist_dir, "legio", fullLegioName))
         os.mkdir("lib")

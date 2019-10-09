@@ -1,7 +1,7 @@
 !define WEB_SITE "http://epam.com/opensource/indigo/chemdiff"
 !define APP_NAME "ChemDiff"
 !define COMP_NAME "EPAM Systems"
-!define COPYRIGHT "EPAM Systems © 2010"
+!define COPYRIGHT "EPAM Systems ï¿½ 2010"
 !define DESCRIPTION "ChemDiff is an Indigo-based utility for visual comparison of two files containing multiple structures."
 
 SetCompressor /SOLID lzma
@@ -46,7 +46,7 @@ SetCompressor /SOLID lzma
 ;Pages
  
   !insertmacro MUI_PAGE_WELCOME
-  !insertmacro MUI_PAGE_LICENSE "LICENSE.GPL"
+  !insertmacro MUI_PAGE_LICENSE "LICENSE"
   !insertmacro MULTIUSER_PAGE_INSTALLMODE
   !insertmacro MUI_PAGE_DIRECTORY
  

@@ -1,14 +1,18 @@
-@rem Copyright (C) 2009-2015 EPAM Systems
+@rem Copyright (C) from 2009 to Present EPAM Systems.
 @rem 
 @rem This file is part of Indigo toolkit.
 @rem 
-@rem This file may be distributed and/or modified under the terms of the
-@rem GNU General Public License version 3 as published by the Free Software
-@rem Foundation and appearing in the file LICENSE.GPL included in the
-@rem packaging of this file.
+@rem Licensed under the Apache License, Version 2.0 (the "License");
+@rem you may not use this file except in compliance with the License.
+@rem You may obtain a copy of the License at
 @rem 
-@rem This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-@rem WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+@rem http://www.apache.org/licenses/LICENSE-2.0
+@rem 
+@rem Unless required by applicable law or agreed to in writing, software
+@rem distributed under the License is distributed on an "AS IS" BASIS,
+@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@rem See the License for the specific language governing permissions and
+@rem limitations under the License.
 
 @echo off
 set libdir=%CD%/lib

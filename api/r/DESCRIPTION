@@ -6,7 +6,7 @@ Authors@R: c(person(given = "Mikhail", family = "Kviatkovskii", role = c("cre"),
         email = "Mikhail_Kviatkovskii@epam.com"))
 Description: R Package for Indigo Toolkit
 NeedsCompile: Yes
-License: GPL-2 | GPL-3
+License: Apache License 2.0
 URL: http://lifescience.opensource.epam.com/indigo/api
 Author: Mikhail Kviatkovskii [cre]
 Maintainer: Mikhail Kviatkovskii <Mikhail_Kviatkovskii@epam.com>

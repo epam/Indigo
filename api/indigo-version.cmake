@@ -1,9 +1,9 @@
-set(INDIGO_DEFAULT_VERSION "1.3.0beta.r0")
+set(INDIGO_DEFAULT_VERSION "1.4.0beta.r0")
 set(INDIGO_MAX_REVISION 500)
 
 find_package(Git)
-if(GIT_EXECUTABLE) 
-   EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match "indigo-*" 
+if(GIT_EXECUTABLE)
+   EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match "indigo-*"
                     OUTPUT_VARIABLE INDIGO_FULL_VERSION
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})

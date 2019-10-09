@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.epam.indigo</groupId>
     <artifactId>indigo-renderer</artifactId>
-    <version>1.3.0beta.r382</version>
+    <version>1.4.0beta.r0</version>
     <packaging>jar</packaging>
 
     <name>Indigo Renderer</name>
@@ -11,8 +11,8 @@
 
     <licenses>
         <license>
-            <name>GNU General Public License v3</name>
-            <url>http://www.gnu.org/licenses/gpl.html</url>
+            <name>Apache License Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
             <distribution>repo</distribution>
         </license>
     </licenses>

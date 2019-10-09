@@ -33,7 +33,7 @@ shutil.copytree(os.path.join(api_dir, "libs", "shared"),
                 os.path.join(dest, "lib"),
                 ignore=shutil.ignore_patterns("*.lib"))
 
-shutil.copy(os.path.join(api_dir, "LICENSE.GPL"), dest)
+shutil.copy(os.path.join(api_dir, "LICENSE"), dest)
 os.chdir(dist_dir)
 if os.path.exists(archive_name + ".zip"):
     os.remove(archive_name + ".zip")

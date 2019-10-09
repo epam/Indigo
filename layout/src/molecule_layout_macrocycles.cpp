@@ -1,15 +1,19 @@
 /****************************************************************************
-* Copyright (C) 2009-2015 EPAM Systems
-* 
-* This file is part of Indigo toolkit.
-* 
-* This file may be distributed and/or modified under the terms of the
-* GNU General Public License version 3 as published by the Free Software
-* Foundation and appearing in the file LICENSE.GPL included in the
-* packaging of this file.
-* 
-* This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-* WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ * Copyright (C) from 2009 to Present EPAM Systems.
+ * 
+ * This file is part of Indigo toolkit.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 ***************************************************************************/
 
 #include "layout/molecule_layout_macrocycles.h"
@@ -157,7 +161,8 @@ bool MoleculeLayoutMacrocycles::canApply (BaseMolecule &mol)
 
    return true;
 }
-
+
+
 float sqr(float x) {return x*x;}
 
 int improvement(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, bool profi, bool do_dist, float multiplier, int worstVertex) {
@@ -464,7 +469,8 @@ void MoleculeLayoutMacrocycles::smoothing2(int vertex_count, int cycle_size, int
 }
 
 
-
+
+
 float MoleculeLayoutMacrocycles::badness(int ind, int molSize, int *rotateAngle, int *edgeLenght, int *vertexNumber, Vec2f *p, int diff) {
    float eps = 1e-9;
    float result = 0;
@@ -577,7 +583,8 @@ void rotate(float* ar, int ar_length, int shift) {
    memcpy(temp.ptr() + ar_length - shift, ar, shift * sizeof(float));
    memcpy(ar, temp.ptr(), ar_length * sizeof(float));
 }
-
+
+
 float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
 {
    {
@@ -1033,7 +1040,8 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
 
    return bestBadness;
 }
-
+
+
 float MoleculeLayoutMacrocycles::depictionCircle() {
 
    int cisCount = 0;
