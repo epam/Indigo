@@ -23,12 +23,12 @@ static const int _type_len = 30;
 static const char *_mmf_file = "mmf_storage";
 static const char *_version_prop = "version";
 static const char *_read_only_prop = "read_only";
-static const char *_max_mmf_size_prop = "mmf_size";
-static const char *_min_mmf_size_prop = "first_mmf_size";
+static const char *_max_mmf_size_prop = "max_mmf_size";
+static const char *_min_mmf_size_prop = "min_mmf_size";
 static const char *_mt_size_prop = "mt_size";
 static const char *_id_key_prop = "key";
 static const size_t _min_mmf_size = 33554432; // 32Mb
-static const size_t _max_mmf_size = 536870912; // 500Mb
+static const size_t _max_mmf_size = 536870912; // 512Mb
 static const int _small_base_size = 10000;
 static const int _sim_mt_size = 50000;
 
