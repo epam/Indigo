@@ -2716,7 +2716,7 @@ class Indigo(object):
 
     def iterateTautomers(self, molecule, params):
         self._setSessionId()
-        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateTautomers(molecule.id, params)), molecule)
+        return self.IndigoObject(self, self._checkResult(Indigo._lib.indigoIterateTautomers(molecule.id, params.encode(ENCODE_ENCODING))), molecule)
 
     def nameToStructure(self, name, params=None):
         """
