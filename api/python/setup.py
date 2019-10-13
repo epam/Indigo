@@ -30,6 +30,9 @@ Operating System :: POSIX :: Linux
 Operating System :: MacOS
 """
 
+LONG_DESCRIPTION = 'Indigo is a universal molecular toolkit that can be used for molecular fingerprinting, substructure search, and molecular visualization.\
+Also capable of performing a molecular similarity search, it is 100% open source and provides enhanced stereochemistry support for end users, \
+as well as a documented API for developers.'
 
 INDIGO_LIBS = None
 
@@ -61,15 +64,22 @@ setup(
     name='epam.indigo',
     version='1.4.0-beta',
     description='Indigo universal cheminformatics toolkit',
-    author='EPAM Systems Lifescience Department',
+    author='EPAM Systems Life Science Department',
     author_email='lifescience.opensource@epam.com',
     maintainer='Mikhail Kviatkovskii',
     maintainer_email='Mikhail_Kviatkovskii@epam.com',
     packages=['indigo', ],
     license="Apache-2.0",
-    url="http://github.com/epam/indigo.git",
+    url="https://lifescience.opensource.epam.com/indigo/index.html",
     package_dir={'indigo': 'indigo'},
     package_data={'indigo': [INDIGO_LIBS, ]},
     classifiers=[_f for _f in CLASSIFIERS.split('\n') if _f],
     platforms=["Windows", "Linux", "Mac OS-X"],
+    long_description=LONG_DESCRIPTION,
+    project_urls={
+        "Bug Tracker": "https://github.com/epam/indigo/issues",
+        "Documentation": "https://lifescience.opensource.epam.com/indigo/api/index.html",
+        "Source Code": "https://github.com/epam/indigo/",
+    },
+    download_url='https://pypi.org/project/epam.indigo'
 )
