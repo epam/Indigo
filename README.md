@@ -18,12 +18,15 @@ This repository includes:
   - indigo-cano: Canonical SMILES generator
   - indigo-deco: R-Group deconvolution utility
 
-Detailed documentations is available at <http://lifescience.opensource.epam.com>
+Detailed documentation is available at <http://lifescience.opensource.epam.com>
 
-## Download binaries ##
-* Python: <https://pypi.org/project/epam.indigo/>
-* Java: <https://search.maven.org/search?q=g:com.epam.indigo>
+## Download ##
+<https://lifescience.opensource.epam.com/download/indigo/index.html>
+
+Bindings:
 * .NET: <https://www.nuget.org/packages/Indigo.Net>
+* Java: <https://search.maven.org/search?q=g:com.epam.indigo>
+* Python: <https://pypi.org/project/epam.indigo/>
 
 ## Source code organization ##
 
@@ -72,8 +75,8 @@ sudo yum install cmake freetype-devel fontconfig-devel
 ```
 Build libraries and utils:
 ```bash
-build_scripts/indigo-release-libs.py --preset=linux64
-build_scripts/indigo-release-utils.py --preset=linux64
+python build_scripts/indigo-release-libs.py --preset=linux64
+python build_scripts/indigo-release-utils.py --preset=linux64
 ```
 ### Windows (Microsoft Visual Studio 2013+ or MinGW with GCC version 4.9+)
 ```bash
