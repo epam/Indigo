@@ -40,7 +40,7 @@ if sys.argv[1] == 'bdist_wheel':
     for opt in sys.argv[2:]:
         if opt.startswith('--plat-name'):
             name = opt.split('=')[1]
-            if name.startswith('macosx_10_7'):
+            if name.startswith('macosx_10_7_intel'):
                 INDIGO_LIBS = 'lib/Mac/10.7/*.dylib'
             elif name == 'manylinux1_x86_64':
                 INDIGO_LIBS = 'lib/Linux/x64/*.so'
@@ -53,7 +53,7 @@ if sys.argv[1] == 'bdist_wheel':
             break
 
 if not INDIGO_LIBS:
-    raise ValueError('Wrong --plat-name value! Should be one of: macosx_10_7, manylinux1_x86_64, manylinux1_i686, win_amd64, win32')
+    raise ValueError('Wrong --plat-name value! Should be one of: macosx_10_7_intel, manylinux1_x86_64, manylinux1_i686, win_amd64, win32')
 
 if os.path.exists('build'):
     distutils.dir_util.remove_tree('build')
@@ -76,10 +76,11 @@ setup(
     classifiers=[_f for _f in CLASSIFIERS.split('\n') if _f],
     platforms=["Windows", "Linux", "Mac OS-X"],
     long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/plain',
     project_urls={
         "Bug Tracker": "https://github.com/epam/indigo/issues",
         "Documentation": "https://lifescience.opensource.epam.com/indigo/api/index.html",
         "Source Code": "https://github.com/epam/indigo/",
     },
-    download_url='https://pypi.org/project/epam.indigo'
+    download_url='https://pypi.org/project/epam.indigo',
 )

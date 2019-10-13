@@ -63,7 +63,7 @@ def make_wheels(api_dir, dest):
     subprocess.check_call([sys.executable, 'setup.py', 'bdist_wheel', '--plat-name=win_amd64'])
     subprocess.check_call([sys.executable, 'setup.py', 'bdist_wheel', '--plat-name=manylinux1_x86_64'])
     subprocess.check_call([sys.executable, 'setup.py', 'bdist_wheel', '--plat-name=manylinux1_i686'])
-    subprocess.check_call([sys.executable, 'setup.py', 'bdist_wheel', '--plat-name=macosx_10_7'])
+    subprocess.check_call([sys.executable, 'setup.py', 'bdist_wheel', '--plat-name=macosx_10_7_intel'])
     os.chdir(cur_dir)
 
 
