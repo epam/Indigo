@@ -41,7 +41,7 @@ correct references you need to use CMake configurations from the build_scripts d
 
 ## Build instructions ##
 
-All the cmake projects are placed in build_scripts directories. You can use them manually,
+All the CMake projects are placed in `build_scripts` directories. You can use them manually,
 or execute preconfigured scripts that does all the job.
 
 ## Bingo build instructions ##
@@ -62,7 +62,7 @@ installation you need to execute `build_scripts/indigo-release-libs.py` and
 
 
 ### Linux (GCC 4.9+ or Clang 3.5+)
-Apt-based requirements (Debian or Ubuntu):
+APT-based requirements (Debian or Ubuntu):
 ```bash
 sudo apt install cmake libfreetype6-dev libfontconfig1-dev
 ```
