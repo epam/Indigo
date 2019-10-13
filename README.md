@@ -21,9 +21,9 @@ This repository includes:
 Detailed documentations is available at <http://lifescience.opensource.epam.com>
 
 ## Download binaries ##
-* Python: https://pypi.org/project/epam.indigo/
-* Java: https://search.maven.org/search?q=g:com.epam.indigo
-* .NET: https://www.nuget.org/packages/Indigo.Net
+* Python: <https://pypi.org/project/epam.indigo/>
+* Java: <https://search.maven.org/search?q=g:com.epam.indigo>
+* .NET: <https://www.nuget.org/packages/Indigo.Net>
 
 ## Source code organization ##
 
@@ -47,7 +47,7 @@ or execute preconfigured scripts that does all the job.
 ## Bingo build instructions ##
 
 To generate project configuration, build the source code, and create the archives for
-installation you need to execute build_scripts\bingo-release.py:
+installation you need to execute `build_scripts/bingo-release.py`:
 ```bash
 python build_scripts/bingo-release.py --preset=linux32 --dbms=[postgres|oracle|sqlserver]
 ```
@@ -77,13 +77,13 @@ build_scripts/indigo-release-utils.py --preset=linux64
 ```
 ### Windows (Microsoft Visual Studio 2013+ or MinGW with GCC version 4.9+)
 ```bash
-python build_scripts\indigo-release-libs.py --preset=win64-2013
-python build_scripts\indigo-release-utils.py --preset=win64-2013
+python build_scripts/indigo-release-libs.py --preset=win64-2013
+python build_scripts/indigo-release-utils.py --preset=win64-2013
 ```
 ### Mac OS (Clang 3.5+)
 ```bash
-python build_scripts/indigo-release-libs.py --preset=mac10.12
-python build_scripts/indigo-release-utils.py --preset=mac10.12
+python build_scripts/indigo-release-libs.py --preset=mac10.14
+python build_scripts/indigo-release-utils.py --preset=mac10.14
 ```
 ### Other
 
