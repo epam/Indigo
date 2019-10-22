@@ -1,8 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Text;
-namespace com.epam.indigo
+﻿namespace com.epam.indigo
 {
     public unsafe interface IndigoLib
     {

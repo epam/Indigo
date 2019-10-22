@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
-using System.IO;
-using System.Drawing;
-using System.Diagnostics;
 using System.Collections;
+using System.Drawing;
 
 namespace com.epam.indigo
 {

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 using System.Resources;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Diagnostics;
 
 namespace com.epam.indigo
 {
