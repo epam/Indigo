@@ -15,36 +15,36 @@ namespace com.epam.indigo
         {
             [DllImport("kernel32")]
             public static extern IntPtr LoadLibrary(string lpFileName);
-            [DllImport("kernel32.dll")]
+            [DllImport("kernel32")]
             public static extern int FreeLibrary(IntPtr module);
-            [DllImport("kernel32.dll")]
+            [DllImport("kernel32")]
             public static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
-            [DllImport("kernel32.dll")]
+            [DllImport("kernel32")]
             public static extern int GetLastError();
         }
 
         class LinuxLoader
         {
-            [DllImport("libdl.so")]
+            [DllImport("dl")]
             public static extern IntPtr dlopen([MarshalAs(UnmanagedType.LPTStr)] string filename, int flags);
-            [DllImport("libdl.so")]
+            [DllImport("dl")]
             public static extern int dlclose(IntPtr handle);
-            [DllImport("libdl.so")]
+            [DllImport("dl")]
             public static extern IntPtr dlsym(IntPtr libraryPointer, string procedureName);
-            [DllImport("libdl.so")]
+            [DllImport("dl")]
             public static extern string dlerror();
         }
 
 
         class MacLoader
         {
-            [DllImport("libdl.dylib")]
+            [DllImport("dl")]
             public static extern IntPtr dlopen(string filename, int flags);
-            [DllImport("libdl.dylib")]
+            [DllImport("dl")]
             public static extern int dlclose(IntPtr handle);
-            [DllImport("libdl.dylib")]
+            [DllImport("dl")]
             public static extern IntPtr dlsym(IntPtr libraryPointer, string procedureName);
-            [DllImport("libdl.dylib")]
+            [DllImport("dl")]
             public static extern string dlerror();
         }
 
@@ -308,7 +308,8 @@ namespace com.epam.indigo
             string tmp_filename = Path.GetTempFileName();
             string new_full_path = Path.Combine(dir, new_dll_name);
             FileInfo file = new FileInfo(new_full_path);
-            file.Directory.Create();
+            if (!file.Directory.Exists)
+                file.Directory.Create();
             // Check if file already exists
             if (!file.Exists || file.Length == 0) {
                 File.WriteAllBytes(tmp_filename, ba);
