@@ -25,13 +25,13 @@ namespace com.epam.indigo
 
         class LinuxLoader
         {
-            [DllImport("libdl.so.2")]
+            [DllImport("libdl.so")]
             public static extern IntPtr dlopen([MarshalAs(UnmanagedType.LPTStr)] string filename, int flags);
-            [DllImport("libdl.so.2")]
+            [DllImport("libdl.so")]
             public static extern int dlclose(IntPtr handle);
-            [DllImport("libdl.so.2")]
+            [DllImport("libdl.so")]
             public static extern IntPtr dlsym(IntPtr libraryPointer, string procedureName);
-            [DllImport("libdl.so.2")]
+            [DllImport("libdl.so")]
             public static extern string dlerror();
         }
 
