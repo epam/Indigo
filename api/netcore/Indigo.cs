@@ -147,56 +147,29 @@ namespace com.epam.indigo
         private void init(string lib_path)
         {
             string libraryName;
+            string libraryPrefix;
             dll_loader = IndigoDllLoader.Instance;
             switch (Environment.OSVersion.Platform)
             {
                 case PlatformID.Win32NT:
-                    libraryName = "indigo.dll";
-
-                    bool vs2013 = true;
-                    bool vs2015 = true;
-
-                    try
-                    {
-                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
-                    }
-                    catch
-                    {
-                        vs2013 = false;
-                    }
-                    try
-                    {
-                       dll_loader.loadLibrary(lib_path, "vcruntime140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
-                    }
-                    catch
-                    {
-                        vs2015 = false;
-                    }
-
-                    if (vs2013)
-                    {
-                       dll_loader.loadLibrary(lib_path, "msvcr120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
-                       dll_loader.loadLibrary(lib_path, "msvcp120.dll", "com.epam.indigo.Properties.ResourcesWin2013", false);
-                       dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2013", false);
-                    }
-                    else if (vs2015)
-                    {
-                       dll_loader.loadLibrary(lib_path, "vcruntime140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
-                       dll_loader.loadLibrary(lib_path, "msvcp140.dll", "com.epam.indigo.Properties.ResourcesWin2015", false);
-                       dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesWin2015", false);
-                    }
-
+                    libraryPrefix = (IntPtr.Size == 8) ? "Win.x64" : "Win.x86";
+                    libraryName = string.Format("{0}.{1}", libraryPrefix, "indigo.dll");
+                    dll_loader.loadLibrary(string.Format("{0}.{1}", libraryPrefix, "vcruntime140.dll"));
+                    dll_loader.loadLibrary(string.Format("{0}.{1}", libraryPrefix, "msvcp140.dll"));
+                    dll_loader.loadLibrary(string.Format("{0}.{1}", libraryPrefix, "concrt140.dll"));
+                    dll_loader.loadLibrary(libraryName);
                     break;
                 case PlatformID.Unix:
                     if (IndigoDllLoader.isMac())
                     {
-                        libraryName = "libindigo.dylib";
-                        dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesMac", false);
+                        libraryName = "Mac.10.7.libindigo.dylib";
+                        dll_loader.loadLibrary(libraryName);
                     }
                     else
                     {
-                        libraryName = "libindigo.so";
-                        dll_loader.loadLibrary(lib_path, libraryName, "com.epam.indigo.Properties.ResourcesLinux", false);
+                        libraryPrefix = (IntPtr.Size == 8) ? "Linux.x64" : "Linux.x86";
+                        libraryName = string.Format("{0}.{1}", libraryPrefix, "libindigo.so");
+                        dll_loader.loadLibrary(libraryName);
                     }
                     break;
                 default:

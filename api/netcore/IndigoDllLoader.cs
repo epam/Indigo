@@ -222,62 +222,31 @@ namespace com.epam.indigo
             return (detectUnixKernel() == "Darwin");
         }
 
-        public void loadLibrary(String path, String dll_name, string resource_name, bool make_unique_dll_name)
+        public void loadLibrary(String path)
         {
             lock (_sync_object)
             {
                 DllData data = null;
-                if (_loaded_dlls.TryGetValue(dll_name, out data))
+                if (_loaded_dlls.TryGetValue(path, out data))
                 {
                     // Library has already been loaded
                     if (data.lib_path != path)
-                        throw new IndigoException(
-                     String.Format("Library {0} has already been loaded by different path {1}",
-                     dll_name, data.lib_path)
-                        );
+                        throw new IndigoException(String.Format("Library {0} has already been loaded by different path {1}", path, data.lib_path));
                     return;
                 }
-
-                String subprefix = null;
-
-                switch (Environment.OSVersion.Platform)
-                {
-                    case PlatformID.Win32NT:
-                        subprefix = (IntPtr.Size == 8) ? "Win/x64/" : "Win/x86/";
-                        break;
-                    case PlatformID.Unix:
-                        if (isMac())
-                        {
-                            subprefix = "Mac/10.6/";
-                        }
-                        else
-                        {
-                            subprefix = (IntPtr.Size == 8) ? "Linux/x64/" : "Linux/x86/";
-                        }
-                        break;
-                    default:
-                        throw new PlatformNotSupportedException(String.Format(
-                            "Unsupported platform: {0}",
-                            Environment.OSVersion.Platform
-                        )
-                        );
-                }
-
+               
                 data = new DllData();
                 data.lib_path = path;
-                data.file_name = _getPathToBinary(path, subprefix + dll_name,
-                resource_name, Assembly.GetCallingAssembly(), make_unique_dll_name);
+                data.file_name = _getPathToBinary(path);
 
                 data.file_name = data.file_name.Replace('/', '\\');
 
                 data.handle = LibraryLoader.LoadLibrary(data.file_name);
 
                 if (data.handle == IntPtr.Zero)
-                    throw new Exception("Cannot load library " + dll_name +
-                        " from the temporary file " + data.file_name.Replace('\\', '/') + ": " + LibraryLoader.GetLastError()
-                    );
+                    throw new Exception("Cannot load library " + path + " from the temporary file " + data.file_name.Replace('\\', '/') + ": " + LibraryLoader.GetLastError());
 
-                _loaded_dlls.Add(dll_name, data);
+                _loaded_dlls.Add(path, data);
 
                 _dll_handles.Add(data);
             }
@@ -302,44 +271,36 @@ namespace com.epam.indigo
             return (_instance != null);
         }
 
-        string _getPathToBinary(String path, String filename, String resource_name,
-           Assembly resource_assembly, bool make_unique_dll_name)
+        string _getPathToBinary(String path)
         {
             if (path == null)
-                return _extractFromAssembly(filename, resource_name, resource_assembly, make_unique_dll_name);
-            return Path.Combine(path, filename);
+                return _extractFromAssembly(path);
+            return Path.Combine(path);
         }
 
         String _getTemporaryDirectory(Assembly resource_assembly)
         {
             String dir;
-            dir = Path.Combine(Path.GetTempPath(), "GGA_indigo");
+            dir = Path.Combine(Path.GetTempPath(), "EPAM_indigo");
             dir = Path.Combine(dir, resource_assembly.GetName().Name);
             dir = Path.Combine(dir, resource_assembly.GetName().Version.ToString());
             return dir;
         }
 
-        String _extractFromAssembly(String filename, String resource_name,
-           Assembly resource_assembly, bool make_unique_dll_name)
+        String _extractFromAssembly(String filename)
         {
-            ResourceManager manager = new ResourceManager(resource_name, resource_assembly);
-
-            Object file_data = manager.GetObject(filename);
-            if (file_data == null)
+            System.IO.Stream fs = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(filename);
+            string scriptContents = new StreamReader(fs).ReadToEnd();
+            if (scriptContents == null)
                 throw new IndigoException("Internal error: there is no resource " + filename);
 
-            String tmpdir_path = _getTemporaryDirectory(resource_assembly);
-            String version = resource_assembly.GetName().Version.ToString();
+            String tmpdir_path = _getTemporaryDirectory(Assembly.GetCallingAssembly());
             // Make per-version-unique dependent dll name
             String path = Path.Combine(tmpdir_path, filename);
             String dir = Path.GetDirectoryName(path);
             String name = Path.GetFileName(path);
 
-            String new_dll_name;
-            if (make_unique_dll_name)
-                new_dll_name = version + "_" + name;
-            else
-                new_dll_name = name;
+            String new_dll_name = Assembly.GetCallingAssembly().GetName().Version.ToString() + "_" + name;
 
             // This temporary file is used to avoid inter-process
             // race condition when concurrently stating many processes
@@ -350,7 +311,7 @@ namespace com.epam.indigo
             file.Directory.Create();
             // Check if file already exists
             if (!file.Exists || file.Length == 0) {
-                File.WriteAllBytes(tmp_filename, (byte[]) file_data);
+                File.WriteAllText(tmp_filename, scriptContents); 
                 // file is ready to be moved.. lets check again
                 if (!file.Exists || file.Length == 0) {
                     File.Move(tmp_filename, file.FullName);
