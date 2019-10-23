@@ -238,11 +238,10 @@ namespace com.epam.indigo
                 data = new DllData();
                 data.lib_path = path;
                 data.file_name = _getPathToBinary(path, filename);
-
                 data.handle = LibraryLoader.LoadLibrary(data.file_name.Replace('/', '\\'));
-
                 if (data.handle == IntPtr.Zero)
-                    throw new Exception("Cannot load library " + path + " from the temporary file " + data.file_name.Replace('\\', '/') + ": " + LibraryLoader.GetLastError());
+                    throw new Exception(string.format("Cannot load library {0} from the temporary file {1}: {2}",
+                                                      filename, data.file_name.Replace('\\', '/'), LibraryLoader.GetLastError()));
 
                 _loaded_dlls.Add(filename, data);
 
