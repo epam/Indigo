@@ -1,8 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFrameworks>netcoreapp2.0;netstandard2.1;net20;net35;net40;net45;</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.4.0-beta</Version>
+    <Authors>EPAM Systems Life Science Department</Authors>
+    <Company>EPAM Systems</Company>
+    <Description>Universal cheminformatics toolkit</Description>
+    <Copyright>2009</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://lifescience.opensource.epam.com/indigo/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/epam/indigo</RepositoryUrl>
+    <PackageTags>cheminformatics, chemistry</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

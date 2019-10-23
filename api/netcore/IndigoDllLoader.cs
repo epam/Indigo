@@ -296,7 +296,8 @@ namespace com.epam.indigo
 
             string tmpdir_path = _getTemporaryDirectory(Assembly.GetCallingAssembly());
             // Make per-version-unique dependent dll name
-            string outputPath = Path.Combine(tmpdir_path, inputPath, filename);
+            string outputPath = Path.Combine(tmpdir_path, inputPath);
+            outputPath = Path.Combine(outputPath, filename);
             string dir = Path.GetDirectoryName(outputPath);
             string name = Path.GetFileName(outputPath);
 
@@ -411,11 +412,15 @@ namespace com.epam.indigo
             WrappedInterface result = new WrappedInterface();
 
             Type itype = typeof(IT);
-            AppDomain cd = System.Threading.Thread.GetDomain();
             AssemblyName an = new AssemblyName();
             an.Name = itype.Name + "_" + dll_name.Replace('.', '_');
+#if NET20 || NET35 || NET40
+            AssemblyBuilder ab = System.Threading.Thread.GetDomain().DefineDynamicAssembly(an, AssemblyBuilderAccess.Run);
+            ModuleBuilder mb = ab.DefineDynamicModule(an.Name, false);
+#else
             AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(an, AssemblyBuilderAccess.Run);
             ModuleBuilder mb = ab.DefineDynamicModule(an.Name);
+#endif
             TypeBuilder tb = mb.DefineType(an.Name, TypeAttributes.Class |
                TypeAttributes.Public);
             tb.AddInterfaceImplementation(itype);
