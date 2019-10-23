@@ -222,31 +222,29 @@ namespace com.epam.indigo
             return (detectUnixKernel() == "Darwin");
         }
 
-        public void loadLibrary(String path)
+        public void loadLibrary(string path, string filename)
         {
             lock (_sync_object)
             {
                 DllData data = null;
-                if (_loaded_dlls.TryGetValue(path, out data))
+                if (_loaded_dlls.TryGetValue(filename, out data))
                 {
                     // Library has already been loaded
                     if (data.lib_path != path)
-                        throw new IndigoException(String.Format("Library {0} has already been loaded by different path {1}", path, data.lib_path));
+                        throw new IndigoException(string.Format("Library {0} has already been loaded by different path {1}", path, data.lib_path));
                     return;
                 }
                
                 data = new DllData();
                 data.lib_path = path;
-                data.file_name = _getPathToBinary(path);
+                data.file_name = _getPathToBinary(path, filename);
 
-                data.file_name = data.file_name.Replace('/', '\\');
-
-                data.handle = LibraryLoader.LoadLibrary(data.file_name);
+                data.handle = LibraryLoader.LoadLibrary(data.file_name.Replace('/', '\\'));
 
                 if (data.handle == IntPtr.Zero)
                     throw new Exception("Cannot load library " + path + " from the temporary file " + data.file_name.Replace('\\', '/') + ": " + LibraryLoader.GetLastError());
 
-                _loaded_dlls.Add(path, data);
+                _loaded_dlls.Add(filename, data);
 
                 _dll_handles.Add(data);
             }
@@ -271,47 +269,50 @@ namespace com.epam.indigo
             return (_instance != null);
         }
 
-        string _getPathToBinary(String path)
+        string _getPathToBinary(string path, string filename)
         {
-            if (path == null)
-                return _extractFromAssembly(path);
-            return Path.Combine(path);
+            return _extractFromAssembly(path, filename);
         }
 
-        String _getTemporaryDirectory(Assembly resource_assembly)
+        string _getTemporaryDirectory(Assembly resource_assembly)
         {
-            String dir;
+            string dir;
             dir = Path.Combine(Path.GetTempPath(), "EPAM_indigo");
             dir = Path.Combine(dir, resource_assembly.GetName().Name);
             dir = Path.Combine(dir, resource_assembly.GetName().Version.ToString());
             return dir;
         }
 
-        String _extractFromAssembly(String filename)
+        string _extractFromAssembly(string inputPath, string filename)
         {
-            System.IO.Stream fs = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(filename);
-            string scriptContents = new StreamReader(fs).ReadToEnd();
-            if (scriptContents == null)
-                throw new IndigoException("Internal error: there is no resource " + filename);
+            string resource = string.Format("{0}.{1}", inputPath, filename);
+            Stream fs = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource);
+            if (fs == null)
+                throw new IndigoException("Internal error: there is no resource " + resource);
+            byte[] ba = new byte[fs.Length];
+            fs.Read(ba, 0, ba.Length);
+            fs.Close();
+            if (ba == null)
+                throw new IndigoException("Internal error: there is no resource " + resource);
 
-            String tmpdir_path = _getTemporaryDirectory(Assembly.GetCallingAssembly());
+            string tmpdir_path = _getTemporaryDirectory(Assembly.GetCallingAssembly());
             // Make per-version-unique dependent dll name
-            String path = Path.Combine(tmpdir_path, filename);
-            String dir = Path.GetDirectoryName(path);
-            String name = Path.GetFileName(path);
+            string outputPath = Path.Combine(tmpdir_path, filename);
+            string dir = Path.GetDirectoryName(outputPath);
+            string name = Path.GetFileName(outputPath);
 
-            String new_dll_name = Assembly.GetCallingAssembly().GetName().Version.ToString() + "_" + name;
+            string new_dll_name = Assembly.GetCallingAssembly().GetName().Version.ToString() + "_" + name;
 
             // This temporary file is used to avoid inter-process
             // race condition when concurrently stating many processes
             // on the same machine for the first time.
-            String tmp_filename = Path.GetTempFileName();
-            String new_full_path = Path.Combine(dir, new_dll_name);
+            string tmp_filename = Path.GetTempFileName();
+            string new_full_path = Path.Combine(dir, new_dll_name);
             FileInfo file = new FileInfo(new_full_path);
             file.Directory.Create();
             // Check if file already exists
             if (!file.Exists || file.Length == 0) {
-                File.WriteAllText(tmp_filename, scriptContents); 
+                File.WriteAllBytes(tmp_filename, ba);
                 // file is ready to be moved.. lets check again
                 if (!file.Exists || file.Length == 0) {
                     File.Move(tmp_filename, file.FullName);
@@ -433,7 +434,7 @@ namespace com.epam.indigo
                     arg_types[i] = parameters[i].ParameterType;
 
                 Type delegate_ret_type = m.ReturnType;
-                if (delegate_ret_type == typeof(String))
+                if (delegate_ret_type == typeof(string))
                     delegate_ret_type = typeof(sbyte*);
 
                 List<Type> signature = new List<Type>();
@@ -444,7 +445,7 @@ namespace com.epam.indigo
                 if (!signature_to_name.TryGetValue(signature, out call_delegate))
                 {
                     // Check if type was already created
-                    string delegate_type_name = String.Format("delegate_{0}", signature_to_name.Count);
+                    string delegate_type_name = string.Format("delegate_{0}", signature_to_name.Count);
                     call_delegate = createDelegateType(delegate_type_name, mb, delegate_ret_type, arg_types);
                     signature_to_name.Add(signature, call_delegate);
                 }
@@ -455,7 +456,7 @@ namespace com.epam.indigo
 
                 IntPtr proc = LibraryLoader.GetProcAddress(dll_handle, m.Name);
                 if (proc == IntPtr.Zero)
-                    throw new IndigoException(String.Format("Cannot find procedure {0} in the library {1}",
+                    throw new IndigoException(string.Format("Cannot find procedure {0} in the library {1}",
                        m.Name, dll_name));
                 Delegate proc_delegate = Marshal.GetDelegateForFunctionPointer(proc, call_delegate);
                 result.delegates.Add(delegate_field_name, proc_delegate);
@@ -470,10 +471,10 @@ namespace com.epam.indigo
                     il.Emit(OpCodes.Ldarg, i);
                 MethodInfo infoMethod = proc_delegate.GetType().GetMethod("Invoke", arg_types);
                 il.EmitCall(OpCodes.Callvirt, infoMethod, null);
-                // Automatically convert sbyte* to String
-                if (m.ReturnType == typeof(String))
+                // Automatically convert sbyte* to string
+                if (m.ReturnType == typeof(string))
                 {
-                    Type str_type = typeof(String);
+                    Type str_type = typeof(string);
                     ConstructorInfo ci = str_type.GetConstructor(new Type[] { typeof(sbyte*) });
                     il.Emit(OpCodes.Newobj, ci);
                 }

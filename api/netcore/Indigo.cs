@@ -152,24 +152,25 @@ namespace com.epam.indigo
             switch (Environment.OSVersion.Platform)
             {
                 case PlatformID.Win32NT:
-                    libraryPrefix = (IntPtr.Size == 8) ? "Win.x64" : "Win.x86";
-                    libraryName = string.Format("{0}.{1}", libraryPrefix, "indigo.dll");
-                    dll_loader.loadLibrary(string.Format("{0}.{1}", libraryPrefix, "vcruntime140.dll"));
-                    dll_loader.loadLibrary(string.Format("{0}.{1}", libraryPrefix, "msvcp140.dll"));
-                    dll_loader.loadLibrary(string.Format("{0}.{1}", libraryPrefix, "concrt140.dll"));
-                    dll_loader.loadLibrary(libraryName);
+                    libraryPrefix = (IntPtr.Size == 8) ? "indigo.Resource.Win.x64" : "indigo.Resource.Win.x86";
+                    libraryName = "indigo.dll";
+                    dll_loader.loadLibrary(libraryPrefix, "vcruntime140.dll");
+                    dll_loader.loadLibrary(libraryPrefix, "msvcp140.dll");
+                    dll_loader.loadLibrary(libraryPrefix, "concrt140.dll");
+                    dll_loader.loadLibrary(libraryPrefix, libraryName);
                     break;
                 case PlatformID.Unix:
                     if (IndigoDllLoader.isMac())
                     {
-                        libraryName = "Mac.10.7.libindigo.dylib";
-                        dll_loader.loadLibrary(libraryName);
+                        libraryPrefix = "indigo.Resource.Mac.10.7";
+                        libraryName = "libindigo.dylib";
+                        dll_loader.loadLibrary(libraryPrefix, libraryName);
                     }
                     else
                     {
-                        libraryPrefix = (IntPtr.Size == 8) ? "Linux.x64" : "Linux.x86";
-                        libraryName = string.Format("{0}.{1}", libraryPrefix, "libindigo.so");
-                        dll_loader.loadLibrary(libraryName);
+                        libraryPrefix = (IntPtr.Size == 8) ? "indigo.Resource.Linux.x64" : "indigo.Resource.Linux.x86";
+                        libraryName = "libindigo.so";
+                        dll_loader.loadLibrary(libraryPrefix, libraryName);
                     }
                     break;
                 default:
