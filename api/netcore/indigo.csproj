@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netstandard2.1;net20;net35;net40;net45;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;netstandard2.1;net20</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.4.0-beta</Version>
     <Authors>EPAM Systems Life Science Department</Authors>
