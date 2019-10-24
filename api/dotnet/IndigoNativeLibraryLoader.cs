@@ -204,25 +204,25 @@ namespace com.epam.indigo
                 data.lib_path = path;
                 data.file_name = _getPathToBinary(path, filename);
                 // updateSystemPath(data);
-                if (load)
-                {
-                    switch (Environment.OSVersion.Platform)
-                    {
-                        case PlatformID.Win32NT:
-                            updateSystemPath(data);
-                            break;
-                        case PlatformID.Unix:
-                            if (!_loadedLibraries.ContainsKey(data.file_name))
-                            {
-                                var handle = LibraryLoader.LoadLibrary(data.file_name);
-                                if (handle == null)
-                                    throw new IndigoException(string.Format("LoadLibrary error: null handle for library {0}", data.file_name));
-                                _loadedLibraries[data.file_name] = handle;
-                            }        
-                            break;
-                        throw new PlatformNotSupportedException(string.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
-                    }
-                }
+                //if (load)
+                //{
+                //    switch (Environment.OSVersion.Platform)
+                //    {
+                //        case PlatformID.Win32NT:
+                //            updateSystemPath(data);
+                //            break;
+                //        case PlatformID.Unix:
+                //            if (!_loadedLibraries.ContainsKey(data.file_name))
+                //            {
+                //                var handle = LibraryLoader.LoadLibrary(data.file_name);
+                //                if (handle == null)
+                //                    throw new IndigoException(string.Format("LoadLibrary error: null handle for library {0}", data.file_name));
+                //                _loadedLibraries[data.file_name] = handle;
+                //            }        
+                //            break;
+                //        throw new PlatformNotSupportedException(string.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
+                //    }
+                //}
             }
         }
 
@@ -278,14 +278,13 @@ namespace com.epam.indigo
             return _extractFromAssembly(path, filename);
         }
 
-        string _getTemporaryDirectory(Assembly resource_assembly)
-        {
-            string dir;
-            dir = Path.Combine(Path.GetTempPath(), "EPAM_indigo");
-            dir = Path.Combine(dir, resource_assembly.GetName().Name);
-            dir = Path.Combine(dir, resource_assembly.GetName().Version.ToString());
-            return dir;
-        }
+        //string _getTemporaryDirectory(Assembly resource_assembly)
+        //{
+        //    dir = Path.Combine(Path.GetTempPath(), "EPAM_indigo");
+        //    dir = Path.Combine(dir, resource_assembly.GetName().Name);
+        //    dir = Path.Combine(dir, resource_assembly.GetName().Version.ToString());
+        //    return dir;
+        //}
 
         string _extractFromAssembly(string inputPath, string filename)
         {
@@ -299,9 +298,9 @@ namespace com.epam.indigo
             if (ba == null)
                 throw new IndigoException("Internal error: there is no resource " + resource);
 
-            string tmpdir_path = _getTemporaryDirectory(Assembly.GetCallingAssembly());
+            //string tmpdir_path = _getTemporaryDirectory(Assembly.GetCallingAssembly());
             // Make per-version-unique dependent dll name
-            string outputPath = Path.Combine(tmpdir_path, inputPath);
+            string outputPath = Path.GetDirectoryName(Assembly.GetAssembly(typeof(IndigoNativeLibraryLoader)).Location); // Path.Combine(tmpdir_path, inputPath);
             outputPath = Path.Combine(outputPath, filename);
             string dir = Path.GetDirectoryName(outputPath);
             string name = Path.GetFileName(outputPath);
