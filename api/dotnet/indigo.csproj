@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netstandard2.1;net20</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net20</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.4.0-beta</Version>
     <Authors>EPAM Systems Life Science Department</Authors>
@@ -12,6 +12,7 @@
     <PackageProjectUrl>https://lifescience.opensource.epam.com/indigo/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/epam/indigo</RepositoryUrl>
     <PackageTags>cheminformatics, chemistry</PackageTags>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -25,6 +26,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resource\Linux\x64\libindigo.so" />
+    <None Remove="Resource\Linux\x86\libindigo.so" />
+    <None Remove="Resource\Mac\10.7\libindigo.dylib" />
     <None Remove="Resource\Win\x64\concrt140.dll" />
     <None Remove="Resource\Win\x64\indigo.dll" />
     <None Remove="Resource\Win\x64\msvcp140.dll" />
@@ -32,10 +36,19 @@
     <None Remove="Resource\Win\x86\concrt140.dll" />
     <None Remove="Resource\Win\x86\indigo.dll" />
     <None Remove="Resource\Win\x86\msvcp140.dll" />
-    <None Remove="Resource\Win\x86\vcruntime140.dll" />
+    <None Remove="Resource\Win\x86\vcruntime140.dll" />    
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resource\Linux\x64\libindigo.so">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resource\Linux\x86\libindigo.so">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resource\Mac\10.7\libindigo.dylib">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resource\Win\x64\concrt140.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -61,5 +74,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)/prebuild.ps1" />
+  </Target>
 
 </Project>
