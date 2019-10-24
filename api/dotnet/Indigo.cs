@@ -64,7 +64,6 @@ namespace com.epam.indigo
         private long _sid = -1;
         private string _dllpath;
         private int _dll_loader_id;
-        public IndigoLib IndigoLib = null;
 
         ~Indigo()
         {
@@ -174,6 +173,8 @@ namespace com.epam.indigo
             }
 
             _dllpath = lib_path;
+            _sid = IndigoLib.indigoAllocSessionId();
+            setSessionID();
         }
 
         public float checkResult(float result)
