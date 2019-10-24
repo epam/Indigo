@@ -27,7 +27,6 @@ namespace com.epam.indigo
 
         public void Dispose()
         {
-            Console.WriteLine("IndigoObject.Dispose(self={0}, dispatcher._sid={1})", self, dispatcher.getSID());
             if (dispatcher == null)
             {
                 // This happens exclusively in 32-bit .NET environment

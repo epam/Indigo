@@ -72,7 +72,6 @@ namespace com.epam.indigo
 
         public void Dispose()
         {
-            // Console.WriteLine("Indigo.Dispose(_sid={0})", _sid);
             if (_sid >= 0)
             {
                 IndigoLib.indigoReleaseSessionId(_sid);
