@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace com.epam.indigo
 {
@@ -127,6 +128,7 @@ namespace com.epam.indigo
     {
         private static volatile IndigoNativeLibraryLoader _instance;
         private static object _global_sync_root = new Object();
+        private static Dictionary<string, IntPtr> _loadedLibraries = new Dictionary<string, IntPtr>();
 
         public static IndigoNativeLibraryLoader Instance
         {
@@ -194,7 +196,7 @@ namespace com.epam.indigo
             return (detectUnixKernel() == "Darwin");
         }
 
-        public void loadLibrary(string path, string filename)
+        public void loadLibrary(string path, string filename, bool load = false)
         {
             lock (_sync_object)
             {
@@ -202,43 +204,61 @@ namespace com.epam.indigo
                 data.lib_path = path;
                 data.file_name = _getPathToBinary(path, filename);
                 // updateSystemPath(data);
-                Console.WriteLine(data.file_name);
-                LibraryLoader.LoadLibrary(data.file_name);
+                if (load)
+                {
+                    switch (Environment.OSVersion.Platform)
+                    {
+                        case PlatformID.Win32NT:
+                            updateSystemPath(data);
+                            break;
+                        case PlatformID.Unix:
+                            if (!_loadedLibraries.ContainsKey(data.file_name))
+                            {
+                                var handle = LibraryLoader.LoadLibrary(data.file_name);
+                                if (handle == null)
+                                    throw new IndigoException(string.Format("LoadLibrary error: null handle for library {0}", data.file_name));
+                                _loadedLibraries[data.file_name] = handle;
+                            }        
+                            break;
+                        throw new PlatformNotSupportedException(string.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
+                    }
+                }
             }
         }
 
-        //private static void updateSystemPath(DllData data)
-        //{
-        //    string newEnvPath = Directory.GetParent(data.file_name).ToString();
-        //    string envPathSep;
-        //    string pathVariableName;
-        //    switch (Environment.OSVersion.Platform)
-        //    {
-        //        case PlatformID.Win32NT:
-        //            envPathSep =  ";";
-        //            pathVariableName = "PATH";
-        //            break;
-        //        case PlatformID.Unix:
-        //            envPathSep =  ":";
-        //            if (isMac())
-        //            {
-        //                pathVariableName = "DYLD_LIBRARY_PATH";
-        //            }
-        //            else
-        //            {
-        //                pathVariableName = "LD_LIBRARY_PATH";
-        //            }
-        //            break;
-        //        default:
-        //            throw new PlatformNotSupportedException(string.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
-        //    }
-        //    var pathEnv = Environment.GetEnvironmentVariable(pathVariableName);
-        //    if (!pathEnv.Contains(newEnvPath))
-        //    {
-        //        pathEnv = Directory.GetParent(data.file_name) + envPathSep + pathEnv;
-        //        Environment.SetEnvironmentVariable(pathVariableName, pathEnv, EnvironmentVariableTarget.Process);
-        //    }
-        //}
+        private static void updateSystemPath(DllData data)
+        {
+            string newEnvPath = Directory.GetParent(data.file_name).ToString();
+            string envPathSep;
+            string pathVariableName;
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    envPathSep = ";";
+                    pathVariableName = "PATH";
+                    break;
+                case PlatformID.Unix:
+                    envPathSep = ":";
+                    if (isMac())
+                    {
+                        pathVariableName = "DYLD_LIBRARY_PATH";
+                    }
+                    else
+                    {
+                        pathVariableName = "LD_LIBRARY_PATH";
+                    }
+                    break;
+                default:
+                    throw new PlatformNotSupportedException(string.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
+            }
+            var pathEnv = Environment.GetEnvironmentVariable(pathVariableName);
+            if (pathEnv == null || !pathEnv.Contains(newEnvPath))
+            {
+                pathEnv = Directory.GetParent(data.file_name) + envPathSep + pathEnv;
+                Environment.SetEnvironmentVariable(pathVariableName, pathEnv, EnvironmentVariableTarget.Process);
+                Console.WriteLine(Environment.GetEnvironmentVariable(pathVariableName));
+            }
+        }
 
         ~IndigoNativeLibraryLoader()
         {

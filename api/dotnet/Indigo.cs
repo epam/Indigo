@@ -144,6 +144,7 @@ namespace com.epam.indigo
         {
             string libraryName;
             string libraryPrefix;
+
             switch (Environment.OSVersion.Platform)
             {
                 case PlatformID.Win32NT:
@@ -152,20 +153,20 @@ namespace com.epam.indigo
                     IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "vcruntime140.dll");
                     IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "msvcp140.dll");
                     IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "concrt140.dll");
-                    IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, libraryName);
+                    IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, libraryName, true);
                     break;
                 case PlatformID.Unix:
                     if (IndigoNativeLibraryLoader.isMac())
                     {
                         libraryPrefix = "indigo.Resource.Mac.10.7";
                         libraryName = "libindigo.dylib";
-                        IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, libraryName);
+                        IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, libraryName, true);
                     }
                     else
                     {
                         libraryPrefix = (IntPtr.Size == 8) ? "indigo.Resource.Linux.x64" : "indigo.Resource.Linux.x86";
                         libraryName = "libindigo.so";
-                        IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, libraryName);
+                        IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, libraryName, true);
                     }
                     break;
                 default:
