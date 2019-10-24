@@ -73,7 +73,7 @@ namespace com.epam.indigo
 
         public void Dispose()
         {
-            Console.WriteLine("Indigo.Dispose(_sid={})", _sid);
+            // Console.WriteLine("Indigo.Dispose(_sid={0})", _sid);
             if (_sid >= 0)
             {
                 IndigoLib.indigoReleaseSessionId(_sid);
@@ -903,7 +903,7 @@ namespace com.epam.indigo
             return new IndigoObject(this, result, molecule);
         }
 
-        public int buildPkaModel(int level, float threshold, String filename)
+        public int buildPkaModel(int level, float threshold, string filename)
         {
             setSessionID();
             return checkResult(IndigoLib.indigoBuildPkaModel(level, threshold, filename));

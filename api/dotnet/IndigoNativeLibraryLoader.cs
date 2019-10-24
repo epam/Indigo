@@ -84,14 +84,41 @@ namespace com.epam.indigo
                 var data = new DllData();
                 data.lib_path = path;
                 data.file_name = _getPathToBinary(path, filename);
-                string newEnvPath = Directory.GetParent(data.file_name).ToString();
-                var pathEnv = Environment.GetEnvironmentVariable("PATH");
-                if (!pathEnv.Contains(newEnvPath))
-                {
-                    string envPathSep = (Environment.OSVersion.Platform == PlatformID.Win32NT) ? ";" : ":"; 
-                    pathEnv += envPathSep + Directory.GetParent(data.file_name);                    
-                    Environment.SetEnvironmentVariable("PATH", pathEnv, EnvironmentVariableTarget.Process);
-                }
+                updateSystemPath(data);
+            }
+        }
+
+        private static void updateSystemPath(DllData data)
+        {
+            string newEnvPath = Directory.GetParent(data.file_name).ToString();
+            string envPathSep;
+            string pathVariableName;
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    envPathSep =  ";";
+                    pathVariableName = "PATH";
+                    break;
+                case PlatformID.Unix:
+                    envPathSep =  ":";
+                    if (isMac())
+                    {
+                        pathVariableName = "DYLD_LIBRARY_PATH";
+                    }
+                    else
+                    {
+                        pathVariableName = "LD_LIBRARY_PATH";
+                    }
+                    break;
+                default:
+                    throw new PlatformNotSupportedException(string.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
+            }
+            var pathEnv = Environment.GetEnvironmentVariable(pathVariableName);
+            if (!pathEnv.Contains(newEnvPath))
+            {
+                pathEnv = Directory.GetParent(data.file_name) + envPathSep + pathEnv;
+                Environment.SetEnvironmentVariable(pathVariableName, pathEnv, EnvironmentVariableTarget.Process);
+                // Console.WriteLine(Environment.GetEnvironmentVariable(pathVariableName));
             }
         }
 
