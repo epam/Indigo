@@ -4,7 +4,124 @@ using System.IO;
 using System.Reflection;
 
 namespace com.epam.indigo
-{   
+{
+    class LibraryLoader
+    {
+        class WindowsLoader
+        {
+            [DllImport("kernel32")]
+            public static extern IntPtr LoadLibrary(string lpFileName);
+            [DllImport("kernel32")]
+            public static extern int FreeLibrary(IntPtr module);
+            [DllImport("kernel32")]
+            public static extern IntPtr GetProcAddress(IntPtr hModule, string procedureName);
+            [DllImport("kernel32")]
+            public static extern int GetLastError();
+        }
+
+        class LinuxLoader
+        {
+            [DllImport("dl")]
+            public static extern IntPtr dlopen([MarshalAs(UnmanagedType.LPTStr)] string filename, int flags);
+            [DllImport("dl")]
+            public static extern int dlclose(IntPtr handle);
+            [DllImport("dl")]
+            public static extern IntPtr dlsym(IntPtr libraryPointer, string procedureName);
+            [DllImport("dl")]
+            public static extern string dlerror();
+        }
+
+
+        class MacLoader
+        {
+            [DllImport("dl")]
+            public static extern IntPtr dlopen(string filename, int flags);
+            [DllImport("dl")]
+            public static extern int dlclose(IntPtr handle);
+            [DllImport("dl")]
+            public static extern IntPtr dlsym(IntPtr libraryPointer, string procedureName);
+            [DllImport("dl")]
+            public static extern string dlerror();
+        }
+
+
+        public static IntPtr LoadLibrary(string filename)
+        {
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    return WindowsLoader.LoadLibrary(filename);
+                case PlatformID.Unix:
+                    if (IndigoNativeLibraryLoader.isMac())
+                    {
+                        return MacLoader.dlopen(filename.Replace("\\", "/"), 0x8 | 0x1); // RTLD_GLOBAL | RTLD_NOW
+                    }
+                    else
+                    {
+                        return LinuxLoader.dlopen(filename.Replace("\\", "/"), 0x00100 | 0x00002); // RTLD_GLOBAL | RTLD_NOW
+                    }
+            }
+            return IntPtr.Zero;
+        }
+
+        public static int FreeLibrary(IntPtr handle)
+        {
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    return WindowsLoader.FreeLibrary(handle);
+                case PlatformID.Unix:
+                    if (IndigoNativeLibraryLoader.isMac())
+                    {
+                        return MacLoader.dlclose(handle);
+                    }
+                    else
+                    {
+                        return LinuxLoader.dlclose(handle);
+                    }
+            }
+            return 0;
+        }
+
+        public static IntPtr GetProcAddress(IntPtr library, string procedureName)
+        {
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    return WindowsLoader.GetProcAddress(library, procedureName);
+                case PlatformID.Unix:
+                    if (IndigoNativeLibraryLoader.isMac())
+                    {
+                        return MacLoader.dlsym(library, procedureName);
+                    }
+                    else
+                    {
+                        return LinuxLoader.dlsym(library, procedureName);
+                    }
+            }
+            return IntPtr.Zero;
+        }
+
+        public static string GetLastError()
+        {
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    return WindowsLoader.GetLastError().ToString();
+                case PlatformID.Unix:
+                    if (IndigoNativeLibraryLoader.isMac())
+                    {
+                        return MacLoader.dlerror();
+                    }
+                    else
+                    {
+                        return LinuxLoader.dlerror();
+                    }
+            }
+            return null;
+        }
+    }
+
     // Singleton Native Library loader
     public class IndigoNativeLibraryLoader
     {
@@ -84,43 +201,44 @@ namespace com.epam.indigo
                 var data = new DllData();
                 data.lib_path = path;
                 data.file_name = _getPathToBinary(path, filename);
-                updateSystemPath(data);
+                // updateSystemPath(data);
+                Console.WriteLine(data.file_name);
+                LibraryLoader.LoadLibrary(data.file_name);
             }
         }
 
-        private static void updateSystemPath(DllData data)
-        {
-            string newEnvPath = Directory.GetParent(data.file_name).ToString();
-            string envPathSep;
-            string pathVariableName;
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.Win32NT:
-                    envPathSep =  ";";
-                    pathVariableName = "PATH";
-                    break;
-                case PlatformID.Unix:
-                    envPathSep =  ":";
-                    if (isMac())
-                    {
-                        pathVariableName = "DYLD_LIBRARY_PATH";
-                    }
-                    else
-                    {
-                        pathVariableName = "LD_LIBRARY_PATH";
-                    }
-                    break;
-                default:
-                    throw new PlatformNotSupportedException(string.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
-            }
-            var pathEnv = Environment.GetEnvironmentVariable(pathVariableName);
-            if (!pathEnv.Contains(newEnvPath))
-            {
-                pathEnv = Directory.GetParent(data.file_name) + envPathSep + pathEnv;
-                Environment.SetEnvironmentVariable(pathVariableName, pathEnv, EnvironmentVariableTarget.Process);
-                // Console.WriteLine(Environment.GetEnvironmentVariable(pathVariableName));
-            }
-        }
+        //private static void updateSystemPath(DllData data)
+        //{
+        //    string newEnvPath = Directory.GetParent(data.file_name).ToString();
+        //    string envPathSep;
+        //    string pathVariableName;
+        //    switch (Environment.OSVersion.Platform)
+        //    {
+        //        case PlatformID.Win32NT:
+        //            envPathSep =  ";";
+        //            pathVariableName = "PATH";
+        //            break;
+        //        case PlatformID.Unix:
+        //            envPathSep =  ":";
+        //            if (isMac())
+        //            {
+        //                pathVariableName = "DYLD_LIBRARY_PATH";
+        //            }
+        //            else
+        //            {
+        //                pathVariableName = "LD_LIBRARY_PATH";
+        //            }
+        //            break;
+        //        default:
+        //            throw new PlatformNotSupportedException(string.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
+        //    }
+        //    var pathEnv = Environment.GetEnvironmentVariable(pathVariableName);
+        //    if (!pathEnv.Contains(newEnvPath))
+        //    {
+        //        pathEnv = Directory.GetParent(data.file_name) + envPathSep + pathEnv;
+        //        Environment.SetEnvironmentVariable(pathVariableName, pathEnv, EnvironmentVariableTarget.Process);
+        //    }
+        //}
 
         ~IndigoNativeLibraryLoader()
         {
