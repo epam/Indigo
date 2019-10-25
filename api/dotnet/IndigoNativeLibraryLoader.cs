@@ -102,11 +102,19 @@ namespace com.epam.indigo
 
         string _getPathToBinary(string path, string filename)
         {
-            string outputFilePath = Path.Combine(_getPathToAssembly(), filename);
+            string outputFilePath = Path.Combine(_getPathToAssembly(), filename);            
             if (!File.Exists(outputFilePath)) 
             {
+                // If there is no ibrary on filesystem
                 return _extractFromAssembly(path, filename);
             }
+            byte[] outputFilePathBytes = File.ReadAllBytes(outputFilePath);
+            byte [] resourceBytes = getBinaryResource(string.Format("{0}.{1}", path, filename));
+            if (!Compare(resourceBytes, outputFilePathBytes)) {
+                // If library on filesystem differs from current (like old version)
+                File.WriteAllBytes(outputFilePath, resourceBytes);
+            }
+            // If current version of library is already on filesystem
             return outputFilePath;
         }
 
@@ -115,9 +123,35 @@ namespace com.epam.indigo
             return Path.GetDirectoryName(Assembly.GetAssembly(typeof(IndigoNativeLibraryLoader)).Location);
         }
 
-        string _extractFromAssembly(string inputPath, string filename)
+        private unsafe bool Compare(byte[] a, byte[] b)
         {
-            string resource = string.Format("{0}.{1}", inputPath, filename);
+            if (a.Length != b.Length) return false;
+            int len = a.Length;
+            unsafe
+            {
+                fixed (byte* ap = a, bp = b)
+                {
+                    long* alp = (long*)ap, blp = (long*)bp;
+                    for (; len >= 8; len -= 8)
+                    {
+                        if (*alp != *blp) return false;
+                        alp++;
+                        blp++;
+                    }
+                    byte* ap2 = (byte*)alp, bp2 = (byte*)blp;
+                    for (; len > 0; len--)
+                    {
+                        if (*ap2 != *bp2) return false;
+                        ap2++;
+                        bp2++;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private byte[] getBinaryResource(string resource)
+        {
             Stream fs = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource);
             if (fs == null)
                 throw new IndigoException("Internal error: there is no resource " + resource);
@@ -126,6 +160,12 @@ namespace com.epam.indigo
             fs.Close();
             if (ba == null)
                 throw new IndigoException("Internal error: there is no resource " + resource);
+            return ba;
+        }
+
+        string _extractFromAssembly(string inputPath, string filename)
+        {
+            byte[] ba = getBinaryResource(string.Format("{0}.{1}", inputPath, filename));
 
             string outputPath = Path.Combine(_getPathToAssembly(), filename);
             string dir = Path.GetDirectoryName(outputPath);
