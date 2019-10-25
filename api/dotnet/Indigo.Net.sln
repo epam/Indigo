@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Indigo.Net", "Indigo.Net.csproj", "{037E10A5-4233-4243-97C5-1E670C5822C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "indigo-tests", "..\tests\dotnet\indigo-tests.csproj", "{F619195F-E4D0-428E-B7F0-1C92646DE1BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Indigo.Net.Tests", "..\tests\dotnet\Indigo.Net.Tests.csproj", "{F619195F-E4D0-428E-B7F0-1C92646DE1BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

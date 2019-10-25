@@ -6,3 +6,12 @@ api/src/indigo_version.h
 third_party/cairo-src/cairo/src/cairo-features.h
 _projects/
 
+/api/dotnet/.vs/indigo/v16
+/api/dotnet/bin/Release
+/api/dotnet/obj
+/api/dotnet/Resource
+/api/tests/dotnet/bin
+/api/tests/dotnet/obj
+/.idea
+/api/dotnet/.vs/indigo/DesignTimeBuild
+/api/dotnet/.vs/Indigo.Net/v16
