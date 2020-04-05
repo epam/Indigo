@@ -9,7 +9,7 @@ namespace com.epam.indigo
         [TestMethod]
         public void TestIndigoVersion()
         {
-            Indigo indigo = new Indigo();
+            var indigo = new Indigo();
             Console.WriteLine(indigo.getSID());
             Assert.AreNotEqual(indigo.version(), null);
             Console.WriteLine(indigo.version());
@@ -19,19 +19,19 @@ namespace com.epam.indigo
         [TestMethod]
         public void TestIndigoSmiles()
         {
-            Indigo indigo = new Indigo();
+            var indigo = new Indigo();
             Console.WriteLine(indigo.getSID());
             var molecule = indigo.loadMolecule("c1ccccc1");
             Console.WriteLine(molecule.self);
-            Assert.AreEqual(molecule.smiles(), "c1ccccc1");                        
+            Assert.AreEqual(molecule.smiles(), "c1ccccc1");
             indigo.Dispose();
         }
 
         [TestMethod]
         public void TestIndigoMultipleInstances()
         {
-            Indigo indigo1 = new Indigo();
-            Indigo indigo2 = new Indigo();
+            var indigo1 = new Indigo();
+            var indigo2 = new Indigo();
             Console.WriteLine(indigo1.getSID());
             Console.WriteLine(indigo2.getSID());
             Assert.AreNotEqual(indigo1.getSID(), indigo2.getSID());

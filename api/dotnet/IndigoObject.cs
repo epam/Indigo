@@ -55,7 +55,7 @@ namespace com.epam.indigo
             Dispose();
         }
 
-        public Indigo indigo ()
+        public Indigo indigo()
         {
             return dispatcher;
         }

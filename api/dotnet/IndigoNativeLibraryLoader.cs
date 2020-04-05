@@ -1,44 +1,11 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using System;
 using System.IO;
-using System.Reflection;
 
 namespace com.epam.indigo
 {
-    // Singleton Native Library loader
     public class IndigoNativeLibraryLoader
     {
-        private static volatile IndigoNativeLibraryLoader _instance;
-        private static object _global_sync_root = new Object();
-
-        public static IndigoNativeLibraryLoader Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    lock (_global_sync_root)
-                    {
-                        if (_instance == null)
-                            _instance = new IndigoNativeLibraryLoader();
-                    }
-                }
-
-                return _instance;
-            }
-        }
-
-        class DllData
-        {
-            public string file_name;
-            public string lib_path;
-        }
-
-        // Mapping from the DLL name to the handle.
-        // DLL handles in the loading order
-        // Local synchronization object
-        Object _sync_object = new Object();
-
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         struct utsname
         {
@@ -77,119 +44,97 @@ namespace com.epam.indigo
             return (detectUnixKernel() == "Darwin");
         }
 
-        public void loadLibrary(string path, string filename, bool load = false)
+        public static IntPtr LoadLibrary(string inputPath, bool addAssemblyFolder = false)
         {
-            lock (_sync_object)
+            var actualPath = inputPath;
+            if (addAssemblyFolder)
             {
-                var data = new DllData();
-                data.lib_path = path;
-                data.file_name = _getPathToBinary(path, filename);
+                var assemblyPath = new Uri(typeof(IndigoNativeLibraryLoader).Assembly.CodeBase).LocalPath;
+                var assemblyFolder = Path.GetDirectoryName(assemblyPath);
+                actualPath = Path.Combine(assemblyFolder, inputPath);
             }
-        }
 
-        ~IndigoNativeLibraryLoader()
-        {
-            lock (_global_sync_root)
+            Console.WriteLine(string.Format("IndigoNativeLibraryLoader.LoadLibrary({0})", actualPath));
+            IntPtr result;
+            string errorMessage = "";
+
+            if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
             {
-                _instance = null;
-            }
-        }
-
-        public bool isValid()
-        {
-            return (_instance != null);
-        }
-
-        string _getPathToBinary(string path, string filename)
-        {
-            string outputFilePath = Path.Combine(_getPathToAssembly(), filename);            
-            if (!File.Exists(outputFilePath)) 
-            {
-                // If there is no ibrary on filesystem
-                return _extractFromAssembly(path, filename);
-            }
-            byte[] outputFilePathBytes = File.ReadAllBytes(outputFilePath);
-            byte [] resourceBytes = getBinaryResource(string.Format("{0}.{1}", path, filename));
-            if (!Compare(resourceBytes, outputFilePathBytes)) {
-                // If library on filesystem differs from current (like old version)
-                File.WriteAllBytes(outputFilePath, resourceBytes);
-            }
-            // If current version of library is already on filesystem
-            return outputFilePath;
-        }
-
-        string _getPathToAssembly()
-        {
-            return Path.GetDirectoryName(Assembly.GetAssembly(typeof(IndigoNativeLibraryLoader)).Location);
-        }
-
-        private unsafe bool Compare(byte[] a, byte[] b)
-        {
-            if (a.Length != b.Length) return false;
-            int len = a.Length;
-            unsafe
-            {
-                fixed (byte* ap = a, bp = b)
+                result = Windows.LoadLibrary(actualPath);
+                if (result == IntPtr.Zero)
                 {
-                    long* alp = (long*)ap, blp = (long*)bp;
-                    for (; len >= 8; len -= 8)
+                    errorMessage = Windows.GetLastError().ToString();
+                }
+            }
+            else if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
+            {
+                if (isMac())
+                {
+                    result = MacOS.dlopen(actualPath, RTLD_GLOBAL + RTLD_LAZY);
+                    if (result == IntPtr.Zero)
                     {
-                        if (*alp != *blp) return false;
-                        alp++;
-                        blp++;
+                        errorMessage = Marshal.PtrToStringAnsi(MacOS.dlerror());
                     }
-                    byte* ap2 = (byte*)alp, bp2 = (byte*)blp;
-                    for (; len > 0; len--)
+                }
+                else
+                {
+                    result = Linux.dlopen(actualPath, RTLD_GLOBAL + RTLD_LAZY);
+                    if (result == IntPtr.Zero)
                     {
-                        if (*ap2 != *bp2) return false;
-                        ap2++;
-                        bp2++;
+                        errorMessage = Marshal.PtrToStringAnsi(Linux.dlerror());
                     }
                 }
             }
-            return true;
-        }
-
-        private byte[] getBinaryResource(string resource)
-        {
-            Stream fs = Assembly.GetExecutingAssembly().GetManifestResourceStream(resource);
-            if (fs == null)
-                throw new IndigoException("Internal error: there is no resource " + resource);
-            byte[] ba = new byte[fs.Length];
-            fs.Read(ba, 0, ba.Length);
-            fs.Close();
-            if (ba == null)
-                throw new IndigoException("Internal error: there is no resource " + resource);
-            return ba;
-        }
-
-        string _extractFromAssembly(string inputPath, string filename)
-        {
-            byte[] ba = getBinaryResource(string.Format("{0}.{1}", inputPath, filename));
-
-            string outputPath = Path.Combine(_getPathToAssembly(), filename);
-            string dir = Path.GetDirectoryName(outputPath);
-            string name = Path.GetFileName(outputPath);
-
-            // This temporary file is used to avoid inter-process
-            // race condition when concurrently stating many processes
-            // on the same machine for the first time.
-            string tmp_filename = Path.GetTempFileName();
-            string new_full_path = Path.Combine(dir, name);
-            FileInfo file = new FileInfo(new_full_path);
-            if (!file.Directory.Exists)
-                file.Directory.Create();
-            // Check if file already exists
-            if (!file.Exists || file.Length == 0) {
-                File.WriteAllBytes(tmp_filename, ba);
-                // file is ready to be moved.. lets check again
-                if (!file.Exists || file.Length == 0) {
-                    File.Move(tmp_filename, file.FullName);
-                } else {
-                    File.Delete(tmp_filename);
-                }
+            else
+            {
+                throw new PlatformNotSupportedException("Not supported OS, only Windows, Linux and macOS are supported");
             }
-            return file.FullName;
+
+            if (result == IntPtr.Zero)
+            {
+                throw new SystemException(string.Format("Could not load library {0}: error {1}", inputPath, errorMessage));
+            }
+
+            return result;
+        }
+
+        const int RTLD_LAZY = 1;
+        const int RTLD_GLOBAL = 8;
+
+        private static class Windows
+        {
+            [DllImport("kernel32.dll")]
+            internal static extern IntPtr LoadLibrary(string filename);
+
+            [DllImport("kernel32.dll")]
+            internal static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
+
+            [DllImport("kernel32.dll")]
+            internal static extern int GetLastError();
+        }
+
+        private static class Linux
+        {
+            [DllImport("libdl.so")]
+            internal static extern IntPtr dlopen(string filename, int flags);
+
+            [DllImport("libdl.so")]
+            internal static extern IntPtr dlerror();
+
+            [DllImport("libdl.so")]
+            internal static extern IntPtr dlsym(IntPtr handle, string symbol);
+        }
+
+        private static class MacOS
+        {
+            [DllImport("libSystem.dylib")]
+            internal static extern IntPtr dlopen(string filename, int flags);
+
+            [DllImport("libSystem.dylib")]
+            internal static extern IntPtr dlerror();
+
+            [DllImport("libSystem.dylib")]
+            internal static extern IntPtr dlsym(IntPtr handle, string symbol);
         }
     }
 }

@@ -60,7 +60,7 @@ namespace com.epam.indigo
 
         public const uint MAX_SIZE = 1000000000;
 
-      
+
         private long _sid = -1;
         private string _dllpath;
         private int _dll_loader_id;
@@ -128,7 +128,7 @@ namespace com.epam.indigo
             return res;
         }
 
-        private static string _sbyteToStringUTF8(sbyte* input) 
+        private static string _sbyteToStringUTF8(sbyte* input)
         {
             return new string(input, 0, strLen(input), Encoding.UTF8);
         }
@@ -140,39 +140,6 @@ namespace com.epam.indigo
 
         private void init(string lib_path)
         {
-            string libraryName;
-            string libraryPrefix;
-
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.Win32NT:
-                    libraryPrefix = (IntPtr.Size == 8) ? "Indigo.Net.Resource.Win.x64" : "Indigo.Net.Resource.Win.x86";
-                    libraryName = "indigo.dll";
-                    IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "vcruntime140.dll");
-                    IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "vcruntime140_1.dll");
-                    IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "msvcp140.dll");
-                    IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "concrt140.dll");
-                    IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, libraryName, true);
-                    break;
-                case PlatformID.Unix:
-                    if (IndigoNativeLibraryLoader.isMac())
-                    {
-                        libraryPrefix = "Indigo.Net.Resource.Mac.10.7";
-                        libraryName = "libindigo.dylib";
-                        IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, libraryName, true);
-                    }
-                    else
-                    {
-                        libraryPrefix = (IntPtr.Size == 8) ? "Indigo.Net.Resource.Linux.x64" : "Indigo.Net.Resource.Linux.x86";
-                        libraryName = "libindigo.so";
-                        IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, libraryName, true);
-                    }
-                    break;
-                default:
-                    throw new PlatformNotSupportedException(String.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
-            }
-
-            _dllpath = lib_path;
             _sid = IndigoLib.indigoAllocSessionId();
             setSessionID();
         }
