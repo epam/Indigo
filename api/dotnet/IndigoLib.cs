@@ -12,6 +12,10 @@ namespace com.epam.indigo
             {
                 if (System.Environment.Is64BitProcess)
                 {
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/vcruntime140.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/vcruntime140_1.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/msvcp140.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/concrt140.dll", true);
                     IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/indigo.dll", true);
                 }
                 else

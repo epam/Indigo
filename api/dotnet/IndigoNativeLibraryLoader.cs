@@ -53,8 +53,9 @@ namespace com.epam.indigo
                 var assemblyFolder = Path.GetDirectoryName(assemblyPath);
                 actualPath = Path.Combine(assemblyFolder, inputPath);
             }
-
+#if DEBUG
             Console.WriteLine(string.Format("IndigoNativeLibraryLoader.LoadLibrary({0})", actualPath));
+#endif
             IntPtr result;
             string errorMessage = "";
 
@@ -87,12 +88,16 @@ namespace com.epam.indigo
             }
             else
             {
-                throw new PlatformNotSupportedException("Not supported OS, only Windows, Linux and macOS are supported");
+                var fullErrorMessage = "Not supported OS, only Windows, Linux and macOS are supported";
+                System.Console.WriteLine(fullErrorMessage);
+                throw new SystemException(fullErrorMessage);
             }
 
             if (result == IntPtr.Zero)
             {
-                throw new SystemException(string.Format("Could not load library {0}: error {1}", inputPath, errorMessage));
+                var fullErrorMessage = string.Format("Could not load library {0}: error {1}", inputPath, errorMessage);
+                System.Console.WriteLine(fullErrorMessage);
+                throw new SystemException(fullErrorMessage);
             }
 
             return result;

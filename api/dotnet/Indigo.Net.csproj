@@ -54,7 +54,7 @@
 		</Content>
 		<Content Include="lib/Win/x64/msvcp140.dll">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/libWin/x64/msvcp140.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/lib/Win/x64/msvcp140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="lib/Win/x64/vcruntime140.dll">
