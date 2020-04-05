@@ -149,6 +149,7 @@ namespace com.epam.indigo
                     libraryPrefix = (IntPtr.Size == 8) ? "Indigo.Net.Resource.Win.x64" : "Indigo.Net.Resource.Win.x86";
                     libraryName = "indigo.dll";
                     IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "vcruntime140.dll");
+                    IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "vcruntime140_1.dll");
                     IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "msvcp140.dll");
                     IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, "concrt140.dll");
                     IndigoNativeLibraryLoader.Instance.loadLibrary(libraryPrefix, libraryName, true);

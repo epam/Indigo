@@ -1,82 +1,88 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.4.0-beta</Version>
-    <Authors>EPAM Systems Life Science Department</Authors>
-    <Company>EPAM Systems</Company>
-    <Description>Universal cheminformatics toolkit</Description>
-    <Copyright>2009</Copyright>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://lifescience.opensource.epam.com/indigo/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/epam/indigo</RepositoryUrl>
-    <PackageTags>cheminformatics, chemistry</PackageTags>
-    <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Version>1.4.0-beta</Version>
+		<Authors>EPAM Systems Life Science Department</Authors>
+		<Company>EPAM Systems</Company>
+		<Description>Universal cheminformatics toolkit</Description>
+		<Copyright>2009</Copyright>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageProjectUrl>https://lifescience.opensource.epam.com/indigo/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/epam/indigo</RepositoryUrl>
+		<PackageTags>cheminformatics, chemistry</PackageTags>
+		<Platforms>AnyCPU</Platforms>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants />
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants />
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants />
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants />
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Resource\Linux\x64\libindigo.so" />
-    <None Remove="Resource\Linux\x86\libindigo.so" />
-    <None Remove="Resource\Mac\10.7\libindigo.dylib" />
-    <None Remove="Resource\Win\x64\concrt140.dll" />
-    <None Remove="Resource\Win\x64\indigo.dll" />
-    <None Remove="Resource\Win\x64\msvcp140.dll" />
-    <None Remove="Resource\Win\x64\vcruntime140.dll" />
-    <None Remove="Resource\Win\x86\concrt140.dll" />
-    <None Remove="Resource\Win\x86\indigo.dll" />
-    <None Remove="Resource\Win\x86\msvcp140.dll" />
-    <None Remove="Resource\Win\x86\vcruntime140.dll" />    
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Resource\Linux\x64\libindigo.so" />
+		<None Remove="Resource\Linux\x86\libindigo.so" />
+		<None Remove="Resource\Mac\10.7\libindigo.dylib" />
+		<None Remove="Resource\Win\x64\concrt140.dll" />
+		<None Remove="Resource\Win\x64\indigo.dll" />
+		<None Remove="Resource\Win\x64\msvcp140.dll" />
+		<None Remove="Resource\Win\x64\vcruntime140.dll" />
+		<None Remove="Resource\Win\x86\concrt140.dll" />
+		<None Remove="Resource\Win\x86\indigo.dll" />
+		<None Remove="Resource\Win\x86\msvcp140.dll" />
+		<None Remove="Resource\Win\x86\vcruntime140.dll" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Resource\Linux\x64\libindigo.so">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Linux\x86\libindigo.so">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Mac\10.7\libindigo.dylib">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Win\x64\concrt140.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Win\x64\indigo.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Win\x64\msvcp140.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Win\x64\vcruntime140.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Win\x86\concrt140.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Win\x86\indigo.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Win\x86\msvcp140.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Win\x86\vcruntime140.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Resource\Linux\x64\libindigo.so">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Linux\x86\libindigo.so">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Mac\10.7\libindigo.dylib">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Win\x64\concrt140.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Win\x64\indigo.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Win\x64\msvcp140.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Win\x64\vcruntime140.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Win\x64\vcruntime140_1.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Win\x86\concrt140.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Win\x86\indigo.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Win\x86\msvcp140.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Win\x86\vcruntime140.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Resource\Win\x86\vcruntime140_1.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)/prebuild.ps1" />
-  </Target>
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="powershell -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)/prebuild.ps1" />
+	</Target>
 
 </Project>

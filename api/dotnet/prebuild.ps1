@@ -23,10 +23,13 @@ touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Win/x64/concrt140.dll
 touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Win/x64/indigo.dll"))
 touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Win/x64/msvcp140.dll"))
 touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Win/x64/vcruntime140.dll"))
+touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Win/x64/vcruntime140_1.dll"))
 touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Win/x86/concrt140.dll"))
 touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Win/x86/indigo.dll"))
 touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Win/x86/msvcp140.dll"))
 touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Win/x86/vcruntime140.dll"))
+touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Win/x86/vcruntime140_1.dll"))
+
 
 if (!${result}) {
     throw "No native libraries found in resource folder '${resourceFolder}', only stubs created. Please add native libraries first"

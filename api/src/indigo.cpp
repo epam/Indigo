@@ -380,12 +380,3 @@ CEXPORT qword indigoDbgProfilingGetCounter (const char *name, int whole_session)
    }
    INDIGO_END(-1);
 }
-
-#ifndef _win32
-typedef BOOL bool
-typedef
-BOOL WINAPI DllMain(
-    _In_ HINSTANCE hinstDLL,
-    _In_ DWORD     fdwReason,
-    _In_ LPVOID    lpvReserved
-);
