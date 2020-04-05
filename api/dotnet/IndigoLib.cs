@@ -12,28 +12,28 @@ namespace com.epam.indigo
             {
                 if (System.Environment.Is64BitProcess)
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("Resource/Win/x64/indigo.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/indigo.dll", true);
                 }
                 else
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("Resource/Win/x86/indigo.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/indigo.dll", true);
                 }
             }
             else if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
             {
                 if (IndigoNativeLibraryLoader.isMac())
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("Resource/Mac/10.7/libindigo.dylib", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Mac/10.7/libindigo.dylib", true);
                 }
                 else
                 {
                     if (System.Environment.Is64BitProcess)
                     {
-                        IndigoNativeLibraryLoader.LoadLibrary("Resource/Linux/x64/libindigo.dylib", true);
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/libindigo.dylib", true);
                     }
                     else
                     {
-                        IndigoNativeLibraryLoader.LoadLibrary("Resource/Linux/x86/libindigo.dylibo", true);
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/libindigo.dylibo", true);
                     }
                 }
             }

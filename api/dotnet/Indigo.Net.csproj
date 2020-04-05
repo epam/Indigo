@@ -27,45 +27,71 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="Resource\Linux\x64\libindigo.so">
+		<Content Include="lib/Linux/x64/libindigo.so">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Linux/x64/libindigo.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Linux\x86\libindigo.so">
+		</Content>
+		<Content Include="lib/Linux/x86/libindigo.so">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Linux/x86/libindigo.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Mac\10.7\libindigo.dylib">
+		</Content>
+		<Content Include="lib/Mac/10.7/libindigo.dylib">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Mac/10.7/libindigo.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Win\x64\concrt140.dll">
+		</Content>
+		<Content Include="lib/Win/x64/concrt140.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Win/x64/concrt140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Win\x64\indigo.dll">
+		</Content>
+		<Content Include="lib/Win/x64/indigo.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Win/x64/indigo.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Win\x64\msvcp140.dll">
+		</Content>
+		<Content Include="lib/Win/x64/msvcp140.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libWin/x64/msvcp140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Win\x64\vcruntime140.dll">
+		</Content>
+		<Content Include="lib/Win/x64/vcruntime140.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Win/x64/vcruntime140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Win\x64\vcruntime140_1.dll">
+		</Content>
+		<Content Include="lib/Win/x64/vcruntime140_1.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Win/x64/vcruntime140_1.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Win\x86\concrt140.dll">
+		</Content>
+		<Content Include="lib/Win/x86/concrt140.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Win/x86/concrt140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Win\x86\indigo.dll">
+		</Content>
+		<Content Include="lib/Win/x86/indigo.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Win/x86/indigo.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Win\x86\msvcp140.dll">
+		</Content>
+		<Content Include="lib/Win/x86/msvcp140.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Win/x86/msvcp140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Win\x86\vcruntime140.dll">
+		</Content>
+		<Content Include="lib/Win/x86/vcruntime140.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Win/x86/vcruntime140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-		<EmbeddedResource Include="Resource\Win\x86\vcruntime140_1.dll">
+		</Content>
+		<Content Include="lib/Win/x86/vcruntime140_1.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/lib/Win/x86/vcruntime140_1.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
+		</Content>
 	</ItemGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">

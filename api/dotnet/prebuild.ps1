@@ -13,7 +13,7 @@ function touchIfNotExists {param(${checkedPath})
     }
 }
 
-${resourceFolder} = [IO.Path]::GetFullPath("${PSScriptRoot}/Resource")
+${resourceFolder} = [IO.Path]::GetFullPath("${PSScriptRoot}/lib")
 echo "Checking for native Indigo libraries in Resource folder ${resourceFolder}..."
 ${result} = 0
 touchIfNotExists([IO.Path]::GetFullPath("${resourceFolder}/Linux/x64/libindigo.so"))
