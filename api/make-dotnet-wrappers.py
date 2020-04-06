@@ -80,11 +80,11 @@ if __name__ == '__main__':
     parser = OptionParser(description='Indigo .NET libraries build script')
     parser.add_option('--suffix', '-s', help='archive suffix', default="")
     (args, left_args) = parser.parse_args()
-
-    wrappers = (args.suffix[1:], )
-    print(wrappers)
-    if 'universal' in wrappers:
-        wrappers = ('win', 'linux', 'mac')
+    wrapper = args.suffix
+    if  wrapper == "universal":
+        explicit_wrappers = ('win', 'linux', 'mac')
+    else:
+        explicit_wrappers = tuple(wrapper, )
 
     api_dir = abspath(dirname(__file__))
     root = join(api_dir, "..")
@@ -106,16 +106,16 @@ if __name__ == '__main__':
 
     # Copy native libraries to Indigo.Net
     indigoDotNetPath = join(api_dir, 'dotnet')
-    copy_libs(libraryPath, indigoDotNetPath, wrappers)
+    copy_libs(libraryPath, indigoDotNetPath, explicit_wrappers)
     # Copy native libraries to IndigoRenderer.Net
     indigoRendererDotNetPath = join(api_dir, "plugins", "renderer", "dotnet")
-    copy_libs(libraryPath, indigoRendererDotNetPath, wrappers)
+    copy_libs(libraryPath, indigoRendererDotNetPath, explicit_wrappers)
     # Copy native libraries to IndigoInchi.Net
     indigoInchiDotNetPath = join(api_dir, "plugins", "inchi", "dotnet")
-    copy_libs(libraryPath, indigoInchiDotNetPath, wrappers)
+    copy_libs(libraryPath, indigoInchiDotNetPath, explicit_wrappers)
     # Copy native libraries to Bingo.Net
     bingoDotNetPath = join(api_dir, "plugins", "bingo", "dotnet")
-    copy_libs(libraryPath, bingoDotNetPath, wrappers)
+    copy_libs(libraryPath, bingoDotNetPath, explicit_wrappers)
 
     # Build
     os.chdir(indigoDotNetPath)
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     shutil.copy(join(indigoRendererDotNetPath, 'bin', 'Release', 'IndigoRenderer.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
     shutil.copy(join(indigoInchiDotNetPath, 'bin', 'Release', 'IndigoInchi.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
     shutil.copy(join(bingoDotNetPath, 'bin', 'Release', 'Bingo.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
-    archive_name = "./indigo-dotnet-{}-nupkg".format(indigoDotNetVersion)
+    archive_name = "./indigo-dotnet-{}-nupkg-{}".format(indigoDotNetVersion, wrapper)
     os.rename("dotnet_nupkg", archive_name)
     if os.path.exists(archive_name + ".zip"):
         os.remove(archive_name + ".zip")
@@ -145,11 +145,14 @@ if __name__ == '__main__':
             shutil.rmtree(target_dir)
         os.mkdir(target_dir)
         shutil.copy(os.path.join(api_dir, "LICENSE"), target_dir)
-        shutil.copy(join(indigoDotNetPath, 'bin', 'Release', dotnet_target, 'Indigo.Net.dll'), target_dir)
-        shutil.copy(join(indigoRendererDotNetPath, 'bin', 'Release', dotnet_target, 'IndigoRenderer.Net.dll'), target_dir)
-        shutil.copy(join(indigoInchiDotNetPath, 'bin', 'Release', dotnet_target, 'IndigoInchi.Net.dll'), target_dir)
-        shutil.copy(join(bingoDotNetPath, 'bin', 'Release', dotnet_target, 'Bingo.Net.dll'), target_dir)
-        archive_name = "./indigo-dotnet-{}-{}".format(indigoVersion, dotnet_target)
+        ignore_patterns = shutil.ignore_patterns('*.json', 'test.db')
+        shutil.copytree(join(indigoDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns, dirs_exist_ok=True)
+        shutil.copytree(join(indigoRendererDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns,  dirs_exist_ok=True)
+        shutil.copytree(join(indigoInchiDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns,  dirs_exist_ok=True)
+        shutil.copytree(join(bingoDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns, dirs_exist_ok=True)
+        archive_name = "./indigo-dotnet-{}-{}-{}".format(indigoVersion, dotnet_target, wrapper)
+        if os.path.exists(archive_name):
+            shutil.rmtree(archive_name)
         os.rename(target_dir, archive_name)
         if os.path.exists(archive_name + ".zip"):
             os.remove(archive_name + ".zip")

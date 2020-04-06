@@ -50,7 +50,7 @@ shutil.copy(os.path.join(api_dir, "LICENSE"), "java")
 
 shutil.copy(os.path.join(root, "common", "jna", "jna.jar"), "java")
 
-archive_name = "./indigo-java-%s" % (version + args.suffix)
+archive_name = "./indigo-java-%s-%s" % (version, args.suffix)
 os.rename("java", archive_name)
 if os.path.exists(archive_name + ".zip"):
     os.remove(archive_name + ".zip")

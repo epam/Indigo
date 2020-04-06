@@ -177,6 +177,6 @@ if __name__ == '__main__':
                     if args.type is not None:
                         for g in args.type.split(','):
                             if gen.find(g) != -1:
-                                command = '"%s" "%s" -s "-%s"' % (sys.executable, os.path.join(api_dir, gen), w)
+                                command = '"%s" "%s" -s "%s"' % (sys.executable, os.path.join(api_dir, gen), w)
                                 print(command)
                                 subprocess.check_call(command, shell=True)
