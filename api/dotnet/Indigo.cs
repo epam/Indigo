@@ -1,8 +1,8 @@
 using System;
-using System.Text;
-using System.Runtime.InteropServices;
 using System.Collections;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace com.epam.indigo
 {
@@ -62,8 +62,8 @@ namespace com.epam.indigo
 
 
         private long _sid = -1;
-        private string _dllpath;
-        private int _dll_loader_id;
+        private readonly string _dllpath;
+        private readonly int _dll_loader_id;
 
         ~Indigo()
         {
@@ -542,13 +542,18 @@ namespace com.epam.indigo
         public IndigoObject exactMatch(IndigoObject obj1, IndigoObject obj2, string flags)
         {
             if (flags == null)
+            {
                 flags = "";
+            }
 
             setSessionID();
             int match = checkResult(IndigoLib.indigoExactMatch(obj1.self, obj2.self, flags));
 
             if (match == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(this, match, new IndigoObject[] { obj1, obj2 });
         }
 
@@ -595,7 +600,10 @@ namespace com.epam.indigo
         {
             setSessionID();
             if (metrics == null)
+            {
                 metrics = "";
+            }
+
             return checkResult(IndigoLib.indigoSimilarity(obj1.self, obj2.self, metrics));
         }
 
@@ -651,7 +659,10 @@ namespace com.epam.indigo
             setSessionID();
             int res = checkResult(IndigoLib.indigoExtractCommonScaffold(structures.self, options));
             if (res == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(this, res);
         }
 
@@ -660,7 +671,10 @@ namespace com.epam.indigo
             setSessionID();
             int res = checkResult(IndigoLib.indigoRGroupComposition(structures.self, options));
             if (res == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(this, res);
         }
 
@@ -669,7 +683,10 @@ namespace com.epam.indigo
             setSessionID();
             int res = checkResult(IndigoLib.indigoGetFragmentedMolecule(structures.self, options));
             if (res == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(this, res);
         }
 
@@ -679,7 +696,9 @@ namespace com.epam.indigo
 
             IndigoObject arr = createArray();
             foreach (IndigoObject obj in collection)
+            {
                 arr.arrayAdd(obj);
+            }
 
             return arr;
         }
@@ -687,13 +706,17 @@ namespace com.epam.indigo
         public static int[] toIntArray(ICollection collection)
         {
             if (collection == null)
+            {
                 return new int[0];
+            }
 
             int[] res = new int[collection.Count];
             int i = 0;
 
             foreach (object x in collection)
+            {
                 res[i++] = Convert.ToInt32(x);
+            }
 
             return res;
         }
@@ -701,13 +724,17 @@ namespace com.epam.indigo
         public static float[] toFloatArray(ICollection collection)
         {
             if (collection == null)
+            {
                 return new float[0];
+            }
 
             float[] res = new float[collection.Count];
             int i = 0;
 
             foreach (object x in collection)
+            {
                 res[i++] = Convert.ToSingle(x);
+            }
 
             return res;
         }
@@ -867,7 +894,9 @@ namespace com.epam.indigo
             setSessionID();
             int result = checkResult(IndigoLib.indigoIterateTautomers(molecule.self, parameters));
             if (result == 0)
+            {
                 return null;
+            }
 
             return new IndigoObject(this, result, molecule);
         }
@@ -887,7 +916,9 @@ namespace com.epam.indigo
             setSessionID();
             int result = checkResult(IndigoLib.indigoNameToStructure(name, parameters));
             if (result == 0)
+            {
                 return null;
+            }
 
             return new IndigoObject(this, result);
         }

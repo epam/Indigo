@@ -1,13 +1,13 @@
-﻿using System.Runtime.InteropServices;
-using System;
+﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace com.epam.indigo
 {
     public class IndigoNativeLibraryLoader
     {
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        struct utsname
+        private struct utsname
         {
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
             public string sysname;
@@ -34,12 +34,11 @@ namespace com.epam.indigo
 
         private static string detectUnixKernel()
         {
-            utsname uts;
-            uname(out uts);
+            uname(out utsname uts);
             return uts.sysname.ToString();
         }
 
-        static public bool isMac()
+        public static bool isMac()
         {
             return (detectUnixKernel() == "Darwin");
         }
@@ -103,8 +102,8 @@ namespace com.epam.indigo
             return result;
         }
 
-        const int RTLD_LAZY = 1;
-        const int RTLD_GLOBAL = 8;
+        private const int RTLD_LAZY = 1;
+        private const int RTLD_GLOBAL = 8;
 
         private static class Windows
         {

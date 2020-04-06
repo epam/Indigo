@@ -8,7 +8,7 @@ namespace com.epam.indigo
     public unsafe class BingoObject : IDisposable
     {
         private int _id;
-        private Indigo _indigo;
+        private readonly Indigo _indigo;
         private IDisposable _reference;
 
         internal BingoObject(int id, Indigo indigo)
@@ -46,8 +46,8 @@ namespace com.epam.indigo
 
         internal int id
         {
-            get { return _id; }
-            set { _id = value; }
+            get => _id;
+            set => _id = value;
         }
 
         /// <summary>

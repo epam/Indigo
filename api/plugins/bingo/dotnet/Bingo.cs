@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
-using System.IO;
 
 namespace com.epam.indigo
 {
@@ -12,7 +9,7 @@ namespace com.epam.indigo
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public unsafe class Bingo : IDisposable
     {
-        private Indigo _indigo;
+        private readonly Indigo _indigo;
         private int _id;
 
         private Bingo(Indigo indigo, int id)
@@ -292,7 +289,7 @@ namespace com.epam.indigo
         /// <param name="metric"> Default value is "tanimoto"</param>
         /// <returns> Bingo search object instance</returns>
 
-        public BingoObject searchSimTopN(IndigoObject query, int limit, float minSim, String metric)
+        public BingoObject searchSimTopN(IndigoObject query, int limit, float minSim, string metric)
         {
             if (metric == null)
             {
@@ -324,7 +321,7 @@ namespace com.epam.indigo
         /// <param name="extFp"> Indigo object with a external similarity fingerprint (molecule or reaction)</param>
         /// <returns> Bingo search object instance</returns>
 
-        public BingoObject searchSimTopNWithExtFP(IndigoObject query, int limit, float minSim, IndigoObject extFp, String metric)
+        public BingoObject searchSimTopNWithExtFP(IndigoObject query, int limit, float minSim, IndigoObject extFp, string metric)
         {
             if (metric == null)
             {

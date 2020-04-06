@@ -6,8 +6,8 @@ namespace com.epam.indigo
     public unsafe class IndigoObject : IDisposable, IEnumerable
     {
         public int self;
-        private Indigo dispatcher;
-        private object parent; // to prevent GC killing the parent object
+        private readonly Indigo dispatcher;
+        private readonly object parent; // to prevent GC killing the parent object
 
         public IndigoObject(Indigo dispatcher, int id) : this(dispatcher, id, null)
         {
@@ -216,7 +216,10 @@ namespace com.epam.indigo
         public void automap(string mode)
         {
             if (mode == null)
+            {
                 mode = "";
+            }
+
             dispatcher.setSessionID();
             dispatcher.checkResult(IndigoLib.indigoAutomap(self, mode));
         }
@@ -239,7 +242,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
 
             if (dispatcher.checkResult(IndigoLib.indigoGetReactingCenter(self, bond.self, &c)) == 1)
+            {
                 return (ReactingCenter)c;
+            }
+
             throw new IndigoException("reactingCenter(): unexpected result");
         }
 
@@ -319,7 +325,10 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             if (dispatcher.checkResult(IndigoLib.indigoIsPseudoatom(self)) == 1)
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -327,7 +336,10 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             if (dispatcher.checkResult(IndigoLib.indigoIsRSite(self)) == 1)
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -335,7 +347,10 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             if (dispatcher.checkResult(IndigoLib.indigoIsTemplateAtom(self)) == 1)
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -358,7 +373,10 @@ namespace com.epam.indigo
 
             int[] res = new int[4];
             for (int i = 0; i < 4; ++i)
+            {
                 res[i] = pyramid_ptr[i];
+            }
+
             return res;
         }
 
@@ -398,7 +416,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
 
             if (dispatcher.checkResult(IndigoLib.indigoGetCharge(self, &c)) == 1)
+            {
                 return c;
+            }
+
             return null;
         }
 
@@ -408,7 +429,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
 
             if (dispatcher.checkResult(IndigoLib.indigoGetExplicitValence(self, &c)) == 1)
+            {
                 return c;
+            }
+
             return null;
         }
 
@@ -418,7 +442,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
 
             if (dispatcher.checkResult(IndigoLib.indigoGetRadicalElectrons(self, &c)) == 1)
+            {
                 return c;
+            }
+
             return null;
         }
 
@@ -428,7 +455,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
 
             if (dispatcher.checkResult(IndigoLib.indigoGetRadical(self, &c)) == 1)
+            {
                 return c;
+            }
+
             return null;
         }
 
@@ -474,7 +504,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
 
             if (dispatcher.checkResult(IndigoLib.indigoCountHydrogens(self, &h)) == 1)
+            {
                 return h;
+            }
+
             return null;
         }
 
@@ -1372,7 +1405,10 @@ namespace com.epam.indigo
 
             int[] res = new int[count];
             for (int i = 0; i < count; ++i)
+            {
                 res[i] = classes[i];
+            }
+
             return res;
         }
 
@@ -1464,7 +1500,10 @@ namespace com.epam.indigo
         public float alignAtoms(int[] atom_ids, float[] desired_xyz)
         {
             if (atom_ids.Length * 3 != desired_xyz.Length)
+            {
                 throw new IndigoException("alignAtoms(): desired_xyz[] must be exactly 3 times bigger than atom_ids[]");
+            }
+
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoAlignAtoms(self, atom_ids.Length, atom_ids, desired_xyz));
         }
@@ -1550,7 +1589,10 @@ namespace com.epam.indigo
 
             byte[] res = new byte[bufsize];
             for (int i = 0; i < bufsize; ++i)
+            {
                 res[i] = buf[i];
+            }
+
             return res;
         }
 
@@ -1628,7 +1670,10 @@ namespace com.epam.indigo
         public string check(string type)
         {
             if (type == null)
+            {
                 type = "";
+            }
+
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoCheck(self, type));
         }
@@ -1636,7 +1681,10 @@ namespace com.epam.indigo
         public IndigoObject fingerprint(string type)
         {
             if (type == null)
+            {
                 type = "";
+            }
+
             dispatcher.setSessionID();
             return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoFingerprint(self, type)));
         }
@@ -1755,7 +1803,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             int res = dispatcher.checkResult(IndigoLib.indigoMatch(self, query.self));
             if (res == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(dispatcher, res, this);
         }
 
@@ -1788,7 +1839,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             int mapped = dispatcher.checkResult(IndigoLib.indigoMapAtom(self, query_atom.self));
             if (mapped == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(dispatcher, mapped);
         }
 
@@ -1797,7 +1851,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             int mapped = dispatcher.checkResult(IndigoLib.indigoMapMolecule(self, query_reaction_molecule.self));
             if (mapped == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(dispatcher, mapped);
         }
 
@@ -1806,7 +1863,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             int mapped = dispatcher.checkResult(IndigoLib.indigoMapBond(self, query_bond.self));
             if (mapped == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(dispatcher, mapped);
         }
 
@@ -1845,7 +1905,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             int res = dispatcher.checkResult(IndigoLib.indigoDecomposeMolecule(self, mol.self));
             if (res == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(dispatcher, res, this);
         }
 
@@ -1854,7 +1917,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             int res = dispatcher.checkResult(IndigoLib.indigoIterateDecompositions(self));
             if (res == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(dispatcher, res, this);
         }
 
@@ -1870,7 +1936,10 @@ namespace com.epam.indigo
                 dispatcher.setSessionID();
                 int next = dispatcher.checkResult(IndigoLib.indigoNext(self));
                 if (next == 0)
+                {
                     break;
+                }
+
                 yield return new IndigoObject(dispatcher, next, this);
             }
         }
@@ -1880,7 +1949,10 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             int next = dispatcher.checkResult(IndigoLib.indigoNext(self));
             if (next == 0)
+            {
                 return null;
+            }
+
             return new IndigoObject(dispatcher, next, this);
         }
 
@@ -1910,7 +1982,10 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoToBuffer(self, &buf, &bufsize));
             byte[] res = new byte[bufsize];
             for (int i = 0; i < bufsize; ++i)
+            {
                 res[i] = buf[i];
+            }
+
             return res;
         }
 
@@ -1928,7 +2003,10 @@ namespace com.epam.indigo
         public void optimize(string options)
         {
             if (options == null)
+            {
                 options = "";
+            }
+
             dispatcher.setSessionID();
             dispatcher.checkResult(IndigoLib.indigoOptimize(self, options));
         }
@@ -1941,7 +2019,10 @@ namespace com.epam.indigo
         public bool normalize(string options)
         {
             if (options == null)
+            {
                 options = "";
+            }
+
             dispatcher.setSessionID();
             return (dispatcher.checkResult(IndigoLib.indigoNormalize(self, options)) == 1);
         }
