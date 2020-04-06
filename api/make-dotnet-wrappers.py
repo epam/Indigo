@@ -75,7 +75,7 @@ def copy_libs(native_library_path, target_basepath, wrappers):
 
 
 if __name__ == '__main__':
-    msbuild_command = ['msbuild', '-t:restore', '/t:Rebuild', '/p:Configuration=Release']
+    msbuild_command = ['dotnet', 'build', '-t:restore', '/t:Rebuild', '/p:Configuration=Release']
 
     parser = OptionParser(description='Indigo .NET libraries build script')
     parser.add_option('--suffix', '-s', help='archive suffix', default="")
