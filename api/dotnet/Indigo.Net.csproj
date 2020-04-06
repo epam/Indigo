@@ -1,8 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants />
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants />
+	</PropertyGroup>
+
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0</TargetFrameworks>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Version>1.4.0</Version>
 		<Authors>EPAM Systems Life Science Department</Authors>
 		<Company>EPAM Systems</Company>
@@ -15,16 +24,6 @@
 		<Platforms>AnyCPU</Platforms>
 		<RepositoryType>git</RepositoryType>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<DefineConstants />
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<DefineConstants />
 	</PropertyGroup>
 
 	<ItemGroup>

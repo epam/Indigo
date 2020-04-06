@@ -46,6 +46,25 @@ namespace com.epam.indigo
         }
 
         [TestMethod]
+        public void IndigoInchiTest()
+        {
+            var indigo = new Indigo();
+            var indigoInchi = new IndigoInchi(indigo);
+            var m = indigo.loadMolecule("C");
+            Assert.AreEqual("InChI=1S/CH4/h1H4", indigoInchi.getInchi(m));
+        }
+
+        [TestMethod]
+        public void IndigoRendererTest()
+        {
+            var indigo = new Indigo();
+            var indigoRenderer = new IndigoRenderer(indigo);
+            indigo.setOption("render-output-format", "png");
+            var m = indigo.loadMolecule("C");
+            Assert.IsTrue(indigoRenderer.renderToBuffer(m).Length > 0);
+        }
+
+        [TestMethod]
         public void TestBingo()
         {
             try

@@ -18,6 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\dotnet\Indigo.Net.csproj" />
     <ProjectReference Include="..\..\plugins\bingo\dotnet\Bingo.Net.csproj" />
+    <ProjectReference Include="..\..\plugins\inchi\dotnet\IndigoInchi.Net.csproj" />
+    <ProjectReference Include="..\..\plugins\renderer\dotnet\IndigoRenderer.Net.csproj" />
   </ItemGroup>
 
 
