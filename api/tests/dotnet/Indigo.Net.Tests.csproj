@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\dotnet\Indigo.Net.csproj" />
+    <ProjectReference Include="..\..\plugins\bingo\dotnet\Bingo.Net.csproj" />
   </ItemGroup>
 
 

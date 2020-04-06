@@ -14,6 +14,7 @@
 		<PackageTags>cheminformatics chemistry indigo substructure similarity</PackageTags>
 		<Platforms>AnyCPU</Platforms>
 		<RepositoryType>git</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

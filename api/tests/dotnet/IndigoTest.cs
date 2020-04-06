@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace com.epam.indigo
@@ -42,6 +43,26 @@ namespace com.epam.indigo
             Assert.AreEqual(molecule1.smiles(), molecule2.canonicalSmiles());
             indigo2.Dispose();
             indigo1.Dispose();
+        }
+
+        [TestMethod]
+        public void TestBingo()
+        {
+            try
+            {
+                var indigo = new Indigo();
+                var bingo = Bingo.createDatabaseFile(indigo, "test.db", "molecule");
+                bingo.close();
+                System.Console.WriteLine(bingo.version());
+                Assert.IsTrue(bingo.version().Length > 0);
+            }
+            finally
+            {
+                if (File.Exists("test.db"))
+                {
+                    File.Delete("test.db");
+                }
+            }
         }
     }
 }

@@ -1,48 +1,129 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
 
 #pragma warning disable 1591
 
 namespace com.epam.indigo
 {
-    public unsafe interface BingoLib
+    public unsafe class BingoLib
     {
-        int bingoCreateDatabaseFile(string location, string type, string options);
-        int bingoLoadDatabaseFile(string location, string options);
-        int bingoCloseDatabase(int db);
+        static BingoLib()
+        {
+            if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
+            {
+                if (System.Environment.Is64BitProcess)
+                {
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/bingo.dll", true);
+                }
+                else
+                {
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/bingo.dll", true);
+                }
+            }
+            else if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
+            {
+                if (IndigoNativeLibraryLoader.isMac())
+                {
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Mac/10.7/bingo.dylib", true);
+                }
+                else
+                {
+                    if (System.Environment.Is64BitProcess)
+                    {
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/bingo.dylib", true);
+                    }
+                    else
+                    {
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/bingo.dylibo", true);
+                    }
+                }
+            }
+            else
+            {
+                throw new PlatformNotSupportedException();
+            }
+        }
 
-        int bingoInsertRecordObj (int db, int obj);
-        int bingoInsertRecordObjWithId(int db, int obj, int id);
-        int bingoInsertRecordObjWithExtFP (int db, int obj, int ext_fp);
-        int bingoInsertRecordObjWithIdAndExtFP(int db, int obj, int ext_fp, int id);
-        int bingoDeleteRecord (int db, int index);
+        [DllImport("bingo")]
+        public static extern int bingoCreateDatabaseFile(string location, string type, string options);
 
-        int bingoOptimize (int db);
+        [DllImport("bingo")]
+        public static extern int bingoLoadDatabaseFile(string location, string options);
 
-        int bingoSearchSub (int db, int query_obj, string options);
-        int bingoSearchSim (int db, int query_obj, float min, float max, string options);
-        int bingoSearchSimWithExtFP (int db, int query_obj, float min, float max, int ext_fp, string options);
-        int bingoSearchSimTopN(int db, int query_obj, int limit, float minSim, string options);
-        int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float minSim, int ext_fp, string options);
-        int bingoSearchExact (int db, int query_obj, string options);
-        int bingoSearchMolFormula (int db, string query, string options);
+        [DllImport("bingo")]
+        public static extern int bingoCloseDatabase(int db);
 
-        int bingoEnumerateId (int db);
 
-        int bingoNext (int search_obj);
-        int bingoGetCurrentId (int search_obj);
-        float bingoGetCurrentSimilarityValue(int search_obj);
+        [DllImport("bingo")]
+        public static extern int bingoInsertRecordObj(int db, int obj);
 
-        int bingoEstimateRemainingResultsCount (int search_obj);
-        int bingoEstimateRemainingResultsCountError (int search_obj);
-        int bingoEstimateRemainingTime (int search_obj, float *time_sec);
+        [DllImport("bingo")]
+        public static extern int bingoInsertRecordObjWithId(int db, int obj, int id);
 
-        int bingoGetObject (int search_obj);
-        int bingoEndSearch (int search_obj);
+        [DllImport("bingo")]
+        public static extern int bingoInsertRecordObjWithExtFP(int db, int obj, int ext_fp);
 
-        int bingoGetRecordObj (int db, int obj_id);
+        [DllImport("bingo")]
+        public static extern int bingoInsertRecordObjWithIdAndExtFP(int db, int obj, int ext_fp, int id);
 
-        string bingoVersion();
+        [DllImport("bingo")]
+        public static extern int bingoDeleteRecord(int db, int index);
+
+        [DllImport("bingo")]
+        public static extern int bingoOptimize(int db);
+
+        [DllImport("bingo")]
+        public static extern int bingoSearchSub(int db, int query_obj, string options);
+
+        [DllImport("bingo")]
+        public static extern int bingoSearchSim(int db, int query_obj, float min, float max, string options);
+
+        [DllImport("bingo")]
+        public static extern int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max, int ext_fp, string options);
+
+        [DllImport("bingo")]
+        public static extern int bingoSearchSimTopN(int db, int query_obj, int limit, float minSim, string options);
+
+        [DllImport("bingo")]
+        public static extern int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float minSim, int ext_fp, string options);
+
+        [DllImport("bingo")]
+        public static extern int bingoSearchExact(int db, int query_obj, string options);
+
+        [DllImport("bingo")]
+        public static extern int bingoSearchMolFormula(int db, string query, string options);
+
+        [DllImport("bingo")]
+        public static extern int bingoEnumerateId(int db);
+
+        [DllImport("bingo")]
+        public static extern int bingoNext(int search_obj);
+
+        [DllImport("bingo")]
+        public static extern int bingoGetCurrentId(int search_obj);
+
+        [DllImport("bingo")]
+        public static extern float bingoGetCurrentSimilarityValue(int search_obj);
+
+        [DllImport("bingo")]
+        public static extern int bingoEstimateRemainingResultsCount(int search_obj);
+
+        [DllImport("bingo")]
+        public static extern int bingoEstimateRemainingResultsCountError(int search_obj);
+
+        [DllImport("bingo")]
+        public static extern int bingoEstimateRemainingTime(int search_obj, float* time_sec);
+
+        [DllImport("bingo")]
+        public static extern int bingoGetObject(int search_obj);
+
+        [DllImport("bingo")]
+        public static extern int bingoEndSearch(int search_obj);
+
+        [DllImport("bingo")]
+        public static extern int bingoGetRecordObj(int db, int obj_id);
+
+        [DllImport("bingo")]
+        public static extern sbyte* bingoVersion();
     }
 }
