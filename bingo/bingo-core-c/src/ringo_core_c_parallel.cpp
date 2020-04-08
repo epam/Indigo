@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,8 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "bingo_core_c_internal.h"
 #include "ringo_core_c_parallel.h"
+#include "bingo_core_c_internal.h"
 
 #include <string.h>
 
@@ -26,34 +26,33 @@ using namespace indigo::bingo_core;
 //
 // MangoIndexingCommandResult
 //
-void RingoIndexingCommandResult::clear ()
+void RingoIndexingCommandResult::clear()
 {
-   IndexingCommandResult::clear();
-   per_reaction_index.clear();
+    IndexingCommandResult::clear();
+    per_reaction_index.clear();
 }
 
-BingoIndex& RingoIndexingCommandResult::getIndex (int index)
+BingoIndex& RingoIndexingCommandResult::getIndex(int index)
 {
-   per_reaction_index.resize(index + 1);
-   return per_reaction_index[index];
+    per_reaction_index.resize(index + 1);
+    return per_reaction_index[index];
 }
 
 //
 // MangoIndexingDispatcher
 //
-RingoIndexingDispatcher::RingoIndexingDispatcher (BingoCore &core) : 
-   IndexingDispatcher(core, HANDLING_ORDER_ANY, true, 30)
+RingoIndexingDispatcher::RingoIndexingDispatcher(BingoCore& core) : IndexingDispatcher(core, HANDLING_ORDER_ANY, true, 30)
 {
 }
 
-void RingoIndexingDispatcher::_exposeCurrentResult (int index, IndexingCommandResult &res)
+void RingoIndexingDispatcher::_exposeCurrentResult(int index, IndexingCommandResult& res)
 {
-   RingoIndexingCommandResult &result = (RingoIndexingCommandResult &)res;
-   _core.ringo_index = &result.per_reaction_index[index];
-   _core.index_record_data_id = result.ids[index];
+    RingoIndexingCommandResult& result = (RingoIndexingCommandResult&)res;
+    _core.ringo_index = &result.per_reaction_index[index];
+    _core.index_record_data_id = result.ids[index];
 }
 
-OsCommandResult* RingoIndexingDispatcher::_allocateResult  ()
+OsCommandResult* RingoIndexingDispatcher::_allocateResult()
 {
-   return new RingoIndexingCommandResult();
+    return new RingoIndexingCommandResult();
 }

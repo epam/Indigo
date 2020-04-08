@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,64 +24,64 @@
 #include "molecule/molecule.h"
 #include "reaction/base_reaction.h"
 
-namespace indigo {
-
-// Stereo changes during reaction
-enum
+namespace indigo
 {
-   STEREO_UNMARKED = 0,
-   STEREO_INVERTS  = 1,
-   STEREO_RETAINS  = 2
-};
 
+    // Stereo changes during reaction
+    enum
+    {
+        STEREO_UNMARKED = 0,
+        STEREO_INVERTS = 1,
+        STEREO_RETAINS = 2
+    };
 
-// Reacting centers
-enum
-{
-   RC_NOT_CENTER     = -1,
-   RC_UNMARKED       =  0,
-   RC_CENTER         =  1,
-   RC_UNCHANGED      =  2,
-   RC_MADE_OR_BROKEN =  4,
-   RC_ORDER_CHANGED  =  8,
-   RC_TOTAL          = 16
-};
+    // Reacting centers
+    enum
+    {
+        RC_NOT_CENTER = -1,
+        RC_UNMARKED = 0,
+        RC_CENTER = 1,
+        RC_UNCHANGED = 2,
+        RC_MADE_OR_BROKEN = 4,
+        RC_ORDER_CHANGED = 8,
+        RC_TOTAL = 16
+    };
 
-class DLLEXPORT Reaction : public BaseReaction {
-public:
+    class DLLEXPORT Reaction : public BaseReaction
+    {
+    public:
+        Reaction();
+        virtual ~Reaction();
 
-   Reaction ();
-   virtual ~Reaction ();
+        virtual void clear();
 
-   virtual void clear();
+        virtual BaseReaction* neu();
 
-   virtual BaseReaction * neu ();
+        Molecule& getMolecule(int index);
 
-   Molecule & getMolecule (int index);
+        virtual bool aromatize(const AromaticityOptions& options);
+        virtual bool dearomatize(const AromaticityOptions& options);
 
-   virtual bool aromatize (const AromaticityOptions &options);
-   virtual bool dearomatize (const AromaticityOptions &options);
+        virtual Reaction& asReaction();
 
-   virtual Reaction & asReaction ();
+        /*
+        void dearomatizeBonds();
+        void aromatizeQueryBonds();
+        bool isAllConnected() const;*/
 
-   /*
-   void dearomatizeBonds();
-   void aromatizeQueryBonds();
-   bool isAllConnected() const;*/
+        static void saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types);
+        static void loadBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types);
 
-   static void saveBondOrders (Reaction& reaction, ObjArray< Array<int> > &bond_types);
-   static void loadBondOrders (Reaction& reaction, ObjArray< Array<int> > &bond_types);
+        static void checkForConsistency(Reaction& rxn);
 
-   static void checkForConsistency (Reaction &rxn);
+        void unfoldHydrogens();
 
-   void unfoldHydrogens ();
+        DECL_ERROR;
 
-   DECL_ERROR;
+    protected:
+        virtual int _addBaseMolecule(int side);
+    };
 
-protected:
-   virtual int _addBaseMolecule (int side);
-};
-
-}
+} // namespace indigo
 
 #endif

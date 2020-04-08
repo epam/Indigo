@@ -1,5 +1,5 @@
-#include "postgres.h"
 #include "fmgr.h"
+#include "postgres.h"
 //
 ///*
 //#include "bingo_postgres.h"
@@ -7,50 +7,50 @@
 //
 //
 //
-//PG_FUNCTION_INFO_V1(bingo_in);
-//Datum      bingo_in(PG_FUNCTION_ARGS);
+// PG_FUNCTION_INFO_V1(bingo_in);
+// Datum      bingo_in(PG_FUNCTION_ARGS);
 //
-//PG_FUNCTION_INFO_V1(bingo_out);
-//Datum      bingo_out(PG_FUNCTION_ARGS);
+// PG_FUNCTION_INFO_V1(bingo_out);
+// Datum      bingo_out(PG_FUNCTION_ARGS);
 //
-//PG_FUNCTION_INFO_V1(bingo_compress);
-//Datum      bingo_compress(PG_FUNCTION_ARGS);
+// PG_FUNCTION_INFO_V1(bingo_compress);
+// Datum      bingo_compress(PG_FUNCTION_ARGS);
 //
-//PG_FUNCTION_INFO_V1(bingo_decompress);
-//Datum      bingo_decompress(PG_FUNCTION_ARGS);
+// PG_FUNCTION_INFO_V1(bingo_decompress);
+// Datum      bingo_decompress(PG_FUNCTION_ARGS);
 //
-//PG_FUNCTION_INFO_V1(bingo_consistent);
-//Datum      bingo_consistent(PG_FUNCTION_ARGS);
+// PG_FUNCTION_INFO_V1(bingo_consistent);
+// Datum      bingo_consistent(PG_FUNCTION_ARGS);
 //
-//PG_FUNCTION_INFO_V1(bingo_union);
-//Datum      bingo_union(PG_FUNCTION_ARGS);
+// PG_FUNCTION_INFO_V1(bingo_union);
+// Datum      bingo_union(PG_FUNCTION_ARGS);
 //
-//PG_FUNCTION_INFO_V1(bingo_same);
-//Datum      bingo_same(PG_FUNCTION_ARGS);
+// PG_FUNCTION_INFO_V1(bingo_same);
+// Datum      bingo_same(PG_FUNCTION_ARGS);
 //
-//PG_FUNCTION_INFO_V1(bingo_penalty);
-//Datum      bingo_penalty(PG_FUNCTION_ARGS);
+// PG_FUNCTION_INFO_V1(bingo_penalty);
+// Datum      bingo_penalty(PG_FUNCTION_ARGS);
 //
-//PG_FUNCTION_INFO_V1(bingo_picksplit);
-//Datum      bingo_picksplit(PG_FUNCTION_ARGS);
+// PG_FUNCTION_INFO_V1(bingo_picksplit);
+// Datum      bingo_picksplit(PG_FUNCTION_ARGS);
 //
-//Datum
-//bingo_in(PG_FUNCTION_ARGS)
+// Datum
+// bingo_in(PG_FUNCTION_ARGS)
 //{
 //   elog(ERROR, "not implemented");
 //   PG_RETURN_DATUM(0);
 //}
 //
-//Datum
-//bingo_out(PG_FUNCTION_ARGS)
+// Datum
+// bingo_out(PG_FUNCTION_ARGS)
 //{
 //   elog(ERROR, "not implemented");
 //   PG_RETURN_DATUM(0);
 //}
 //
 ///*
-//static void
-//makesign(BITVECP sign, TRGM *a)
+// static void
+// makesign(BITVECP sign, TRGM *a)
 //{
 //   int4      k,
 //            len = ARRNELEM(a);
@@ -67,8 +67,8 @@
 //}
 //*/
 //
-//Datum
-//bingo_compress(PG_FUNCTION_ARGS)
+// Datum
+// bingo_compress(PG_FUNCTION_ARGS)
 //{
 ///*
 //   GISTENTRY  *entry = (GISTENTRY *) PG_GETARG_POINTER(0);
@@ -114,8 +114,8 @@
 //
 //}
 //
-//Datum
-//bingo_decompress(PG_FUNCTION_ARGS)
+// Datum
+// bingo_decompress(PG_FUNCTION_ARGS)
 //{
 ///*
 //   GISTENTRY  *entry = (GISTENTRY *) PG_GETARG_POINTER(0);
@@ -140,8 +140,8 @@
 //*/
 //}
 //
-//Datum
-//bingo_consistent(PG_FUNCTION_ARGS)
+// Datum
+// bingo_consistent(PG_FUNCTION_ARGS)
 //{
 //   /*GISTENTRY  *entry = (GISTENTRY *) PG_GETARG_POINTER(0);
 //   text      *query = PG_GETARG_TEXT_P(1);
@@ -210,8 +210,8 @@
 //}
 //
 ///*
-//static int4
-//unionkey(BITVECP sbase, TRGM *add)
+// static int4
+// unionkey(BITVECP sbase, TRGM *add)
 //{
 //   int4      i;
 //
@@ -241,8 +241,8 @@
 //*/
 //
 //
-//Datum
-//bingo_union(PG_FUNCTION_ARGS)
+// Datum
+// bingo_union(PG_FUNCTION_ARGS)
 //{
 ///*
 //   GistEntryVector *entryvec = (GistEntryVector *) PG_GETARG_POINTER(0);
@@ -276,8 +276,8 @@
 //*/
 //}
 //
-//Datum
-//bingo_same(PG_FUNCTION_ARGS)
+// Datum
+// bingo_same(PG_FUNCTION_ARGS)
 //{
 ///*
 //   TRGM      *a = (TRGM *) PG_GETARG_POINTER(0);
@@ -337,8 +337,8 @@
 //}
 //
 ///*
-//static int4
-//sizebitvec(BITVECP sign)
+// static int4
+// sizebitvec(BITVECP sign)
 //{
 //   int4      size = 0,
 //            i;
@@ -348,8 +348,8 @@
 //   return size;
 //}
 //
-//static int
-//hemdistsign(BITVECP a, BITVECP b)
+// static int
+// hemdistsign(BITVECP a, BITVECP b)
 //{
 //   int         i,
 //            diff,
@@ -364,8 +364,8 @@
 //}
 //
 //
-//static int
-//hemdist(TRGM *a, TRGM *b)
+// static int
+// hemdist(TRGM *a, TRGM *b)
 //{
 //   if (ISALLTRUE(a))
 //   {
@@ -381,8 +381,8 @@
 //}
 // */
 //
-//Datum
-//bingo_penalty(PG_FUNCTION_ARGS)
+// Datum
+// bingo_penalty(PG_FUNCTION_ARGS)
 //{
 ///*
 //   GISTENTRY  *origentry = (GISTENTRY *) PG_GETARG_POINTER(0); // always ISSIGNKEY
@@ -412,7 +412,7 @@
 //}
 //
 ///*
-//typedef struct
+// typedef struct
 //{
 //   bool      allistrue;
 //   BITVEC      sign;
@@ -420,8 +420,8 @@
 //*/
 //
 ///*
-//static void
-//fillcache(CACHESIGN *item, TRGM *key)
+// static void
+// fillcache(CACHESIGN *item, TRGM *key)
 //{
 //   item->allistrue = false;
 //   if (ISARRKEY(key))
@@ -433,14 +433,14 @@
 //}
 //
 //#define WISH_F(a,b,c) (double)( -(double)(((a)-(b))*((a)-(b))*((a)-(b)))*(c) )
-//typedef struct
+// typedef struct
 //{
 //   OffsetNumber pos;
 //   int4      cost;
 //} SPLITCOST;
 //
-//static int
-//comparecost(const void *a, const void *b)
+// static int
+// comparecost(const void *a, const void *b)
 //{
 //   if (((SPLITCOST *) a)->cost == ((SPLITCOST *) b)->cost)
 //      return 0;
@@ -451,8 +451,8 @@
 //
 //
 ///*
-//static int
-//hemdistcache(CACHESIGN *a, CACHESIGN *b)
+// static int
+// hemdistcache(CACHESIGN *a, CACHESIGN *b)
 //{
 //   if (a->allistrue)
 //   {
@@ -468,8 +468,8 @@
 //}
 //*/
 //
-//Datum
-//bingo_picksplit(PG_FUNCTION_ARGS)
+// Datum
+// bingo_picksplit(PG_FUNCTION_ARGS)
 //{
 ///*
 //   GistEntryVector *entryvec = (GistEntryVector *) PG_GETARG_POINTER(0);

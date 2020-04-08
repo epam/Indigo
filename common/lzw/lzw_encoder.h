@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,63 +25,61 @@
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-class DLLEXPORT LzwEncoder
+namespace indigo
 {
-public:
 
-   DECL_ERROR;
+    class DLLEXPORT LzwEncoder
+    {
+    public:
+        DECL_ERROR;
 
-   LzwEncoder( LzwDict &NewDict, Output &NewOut );
+        LzwEncoder(LzwDict& NewDict, Output& NewOut);
 
-   void start( void );
-   
-   void send( int NextSymbol );
-   
-   void finish( void );
+        void start(void);
 
-   ~LzwEncoder( void );
+        void send(int NextSymbol);
 
-private:
+        void finish(void);
 
-   LzwDict &_dict;            
+        ~LzwEncoder(void);
 
-   BitOutWorker _bitout;
+    private:
+        LzwDict& _dict;
 
-   int _string;
+        BitOutWorker _bitout;
 
-   byte _char;
+        int _string;
 
-   bool _isFinished;
+        byte _char;
 
-   // no implicit copy
-   LzwEncoder( const LzwEncoder & );
+        bool _isFinished;
 
-};
+        // no implicit copy
+        LzwEncoder(const LzwEncoder&);
+    };
 
-class LzwOutput : public Output
-{
-public:
-   LzwOutput (LzwEncoder &encoder);
+    class LzwOutput : public Output
+    {
+    public:
+        LzwOutput(LzwEncoder& encoder);
 
-   virtual void write (const void *data, int size);
-   virtual void writeByte (byte value);
-   virtual void seek  (long long offset, int from);
-   virtual long long tell  ();
-   virtual void flush ();
-private:
-   LzwEncoder &_encoder; 
-};
+        virtual void write(const void* data, int size);
+        virtual void writeByte(byte value);
+        virtual void seek(long long offset, int from);
+        virtual long long tell();
+        virtual void flush();
 
-}
+    private:
+        LzwEncoder& _encoder;
+    };
+
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)
 #endif
 
-#endif 
-
+#endif

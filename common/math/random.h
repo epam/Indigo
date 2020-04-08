@@ -1,29 +1,31 @@
 #ifndef _RANDOM_H_
 #define _RANDOM_H_
-namespace indigo {
-   
-   class Random {
-private:
-   unsigned long long randSeed;
-public:
-   Random();
-   Random(int seed);
+namespace indigo
+{
 
-   void setSeed(unsigned long long x);
+    class Random
+    {
+    private:
+        unsigned long long randSeed;
 
-   unsigned int next();
-   unsigned int next(int mod);
-   unsigned int nextBounded(int l, int r);
-   unsigned int nextLarge(int mod);
+    public:
+        Random();
+        Random(int seed);
 
-   unsigned long long nextLong();
-   unsigned long long nextLong(unsigned long long mod);
+        void setSeed(unsigned long long x);
 
-   double nextDouble();
-   double nextDoubleBounded(double l, double r);
+        unsigned int next();
+        unsigned int next(int mod);
+        unsigned int nextBounded(int l, int r);
+        unsigned int nextLarge(int mod);
 
-};
+        unsigned long long nextLong();
+        unsigned long long nextLong(unsigned long long mod);
 
-}
+        double nextDouble();
+        double nextDoubleBounded(double l, double r);
+    };
+
+} // namespace indigo
 
 #endif

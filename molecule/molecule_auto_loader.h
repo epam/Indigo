@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,67 +20,68 @@
 #define __molecule_auto_loader__
 
 #include "base_cpp/array.h"
-#include "base_cpp/tlscont.h"
-#include "base_cpp/red_black.h"
 #include "base_cpp/properties_map.h"
+#include "base_cpp/red_black.h"
+#include "base_cpp/tlscont.h"
 #include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-class Scanner;
-class Molecule;
-class QueryMolecule;
-class BaseMolecule;
-
-class DLLEXPORT MoleculeAutoLoader
+namespace indigo
 {
-public:
-   MoleculeAutoLoader (Scanner &scanner);
-   MoleculeAutoLoader (const Array<char> &arr);
-   MoleculeAutoLoader (const char *str);
 
-   ~MoleculeAutoLoader ();
+    class Scanner;
+    class Molecule;
+    class QueryMolecule;
+    class BaseMolecule;
 
-   void loadMolecule (Molecule &mol);
-   void loadQueryMolecule (QueryMolecule &qmol);
+    class DLLEXPORT MoleculeAutoLoader
+    {
+    public:
+        MoleculeAutoLoader(Scanner& scanner);
+        MoleculeAutoLoader(const Array<char>& arr);
+        MoleculeAutoLoader(const char* str);
 
-   StereocentersOptions stereochemistry_options;
-   bool ignore_cistrans_errors;
-   bool ignore_closing_bond_direction_mismatch;
-   bool ignore_noncritical_query_features;
-   bool treat_x_as_pseudoatom;
-   bool skip_3d_chirality;
-   bool ignore_no_chiral_flag;
-   bool ignore_bad_valence;
-   int  treat_stereo_as;
+        ~MoleculeAutoLoader();
 
-   // Loaded properties
-   CP_DECL;
-   TL_CP_DECL(PropertiesMap, properties);
+        void loadMolecule(Molecule& mol);
+        void loadQueryMolecule(QueryMolecule& qmol);
 
-   DECL_ERROR;
+        StereocentersOptions stereochemistry_options;
+        bool ignore_cistrans_errors;
+        bool ignore_closing_bond_direction_mismatch;
+        bool ignore_noncritical_query_features;
+        bool treat_x_as_pseudoatom;
+        bool skip_3d_chirality;
+        bool ignore_no_chiral_flag;
+        bool ignore_bad_valence;
+        int treat_stereo_as;
 
-   static bool tryMDLCT (Scanner &scanner, Array<char> &outbuf);
-   static void readAllDataToString(Scanner & scanner, Array<char> &dataBuf);
+        // Loaded properties
+        CP_DECL;
+        TL_CP_DECL(PropertiesMap, properties);
 
-protected:
-   Scanner *_scanner;
-   bool     _own_scanner;
+        DECL_ERROR;
 
-   void _init ();
-   bool _isSingleLine ();
-   void _loadMolecule (BaseMolecule &mol, bool query);
-private:
-   MoleculeAutoLoader (const MoleculeAutoLoader &); // no implicit copy
+        static bool tryMDLCT(Scanner& scanner, Array<char>& outbuf);
+        static void readAllDataToString(Scanner& scanner, Array<char>& dataBuf);
 
-};
+    protected:
+        Scanner* _scanner;
+        bool _own_scanner;
 
-}
+        void _init();
+        bool _isSingleLine();
+        void _loadMolecule(BaseMolecule& mol, bool query);
+
+    private:
+        MoleculeAutoLoader(const MoleculeAutoLoader&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)

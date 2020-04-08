@@ -1,20 +1,20 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ***************************************************************************/ 
+ ***************************************************************************/
 
 #ifndef __molecule_inchi_layers_h__
 #define __molecule_inchi_layers_h__
@@ -23,151 +23,143 @@
 #include "base_cpp/exception.h"
 #include "molecule/molecule_inchi_utils.h"
 
-namespace indigo {
-
-class Molecule;
-class Output;
-class MoleculeStereocenters;
-
-// Namespace with layers
-// Each layers are independent and contains all 
-// nessesary information 
-namespace MoleculeInChILayers
+namespace indigo
 {
 
-// Abtract layer
-class AbstractLayer
-{
-public:
-   AbstractLayer ();
-   virtual ~AbstractLayer () {};
+    class Molecule;
+    class Output;
+    class MoleculeStereocenters;
 
-   // Method for constructing internal layer information
-   void construct (Molecule &mol);
+    // Namespace with layers
+    // Each layers are independent and contains all
+    // nessesary information
+    namespace MoleculeInChILayers
+    {
 
-   DECL_ERROR;
-protected:
-   Molecule& _getMolecule ();
+        // Abtract layer
+        class AbstractLayer
+        {
+        public:
+            AbstractLayer();
+            virtual ~AbstractLayer(){};
 
-   virtual void _construct () {};
+            // Method for constructing internal layer information
+            void construct(Molecule& mol);
 
-private:
-   Molecule *_mol;
-};
+            DECL_ERROR;
 
-// Main layer formula
-class MainLayerFormula : public AbstractLayer
-{
-public:
-   void printFormula (Array<char> &result);
+        protected:
+            Molecule& _getMolecule();
 
-   static int compareComponentsAtomsCountNoH       (MainLayerFormula &comp1, 
-                                                    MainLayerFormula &comp2);
-   static int compareComponentsTotalHydrogensCount (MainLayerFormula &comp1, 
-                                                    MainLayerFormula &comp2);
-protected:
-   virtual void _construct ();
+            virtual void _construct(){};
 
-private:
-   Array<int> _atoms_count;
+        private:
+            Molecule* _mol;
+        };
 
-   void _printAtom (Output &output, int label) const;
-   void _collectAtomsCount ();
-};
+        // Main layer formula
+        class MainLayerFormula : public AbstractLayer
+        {
+        public:
+            void printFormula(Array<char>& result);
 
-// Main layer connections
-class MainLayerConnections : public AbstractLayer
-{
-public:
-   void printConnectionTable (Array<char> &result);
+            static int compareComponentsAtomsCountNoH(MainLayerFormula& comp1, MainLayerFormula& comp2);
+            static int compareComponentsTotalHydrogensCount(MainLayerFormula& comp1, MainLayerFormula& comp2);
 
-   int  compareMappings (const MoleculeInChIUtils::Mapping &m1, 
-                         const MoleculeInChIUtils::Mapping &m2);
+        protected:
+            virtual void _construct();
 
-   static int compareComponentsConnectionTables (MainLayerConnections &comp1,
-                                                 MainLayerConnections &comp2);
+        private:
+            Array<int> _atoms_count;
 
-protected:
-   virtual void _construct ();
+            void _printAtom(Output& output, int label) const;
+            void _collectAtomsCount();
+        };
 
-private:
-   Array<int> _connection_table;
+        // Main layer connections
+        class MainLayerConnections : public AbstractLayer
+        {
+        public:
+            void printConnectionTable(Array<char>& result);
 
-   void _linearizeConnectionTable ();
-};
+            int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);
 
-// Layer with hydrogens
-class HydrogensLayer : public AbstractLayer
-{
-public:
-   static int compareComponentsHydrogens (HydrogensLayer &comp1, 
-                                          HydrogensLayer &comp2);
+            static int compareComponentsConnectionTables(MainLayerConnections& comp1, MainLayerConnections& comp2);
 
-   bool checkAutomorphism (const Array<int> &mapping);
-   int  compareMappings (MoleculeInChIUtils::Mapping &m1, 
-                         MoleculeInChIUtils::Mapping &m2);
+        protected:
+            virtual void _construct();
 
-   void print (Array<char> &result);
+        private:
+            Array<int> _connection_table;
 
-protected:
-   virtual void _construct ();
+            void _linearizeConnectionTable();
+        };
 
-private:
-   // Number of immobile hydrogens for each atom
-   Array<int> _per_atom_immobile;
-   // Atom indices in the 'mol' to avoid vertexBegin/vertexEnd iterations
-   // when comparing components
-   Array<int> _atom_indices; 
+        // Layer with hydrogens
+        class HydrogensLayer : public AbstractLayer
+        {
+        public:
+            static int compareComponentsHydrogens(HydrogensLayer& comp1, HydrogensLayer& comp2);
 
-   // TODO: Mobile hydrogens, fixed hydrogens
-};
+            bool checkAutomorphism(const Array<int>& mapping);
+            int compareMappings(MoleculeInChIUtils::Mapping& m1, MoleculeInChIUtils::Mapping& m2);
 
-// Cis-trans stereochemistry
-class CisTransStereochemistryLayer : public AbstractLayer
-{
-public:
-   void print (Array<char> &result);
+            void print(Array<char>& result);
 
-   bool checkAutomorphism (const Array<int> &mapping);
-   int  compareMappings (const MoleculeInChIUtils::Mapping &m1, 
-                         const MoleculeInChIUtils::Mapping &m2);
+        protected:
+            virtual void _construct();
 
-   static int compareComponents (CisTransStereochemistryLayer &comp1, 
-                                 CisTransStereochemistryLayer &comp2);
-protected:
-   virtual void _construct ();
+        private:
+            // Number of immobile hydrogens for each atom
+            Array<int> _per_atom_immobile;
+            // Atom indices in the 'mol' to avoid vertexBegin/vertexEnd iterations
+            // when comparing components
+            Array<int> _atom_indices;
 
-private:
-   Array<int> bond_is_cis_trans;
-};
+            // TODO: Mobile hydrogens, fixed hydrogens
+        };
 
-// Tetrahedral stereochemistry
-class TetrahedralStereochemistryLayer : public AbstractLayer
-{
-public:
-   void print (Array<char> &result);
+        // Cis-trans stereochemistry
+        class CisTransStereochemistryLayer : public AbstractLayer
+        {
+        public:
+            void print(Array<char>& result);
 
-   void printEnantiomers (Array<char> &result);
+            bool checkAutomorphism(const Array<int>& mapping);
+            int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);
 
-   bool checkAutomorphism (const Array<int> &mapping);
-   int  compareMappings (const MoleculeInChIUtils::Mapping &m1, 
-                         const MoleculeInChIUtils::Mapping &m2);
+            static int compareComponents(CisTransStereochemistryLayer& comp1, CisTransStereochemistryLayer& comp2);
 
-   static int compareComponentsEnantiomers (TetrahedralStereochemistryLayer &comp1, 
-                                            TetrahedralStereochemistryLayer &comp2);
+        protected:
+            virtual void _construct();
 
-   static int compareComponents (TetrahedralStereochemistryLayer &comp1, 
-                                 TetrahedralStereochemistryLayer &comp2);
-private:
-   int _getMappingSign (const MoleculeStereocenters &stereocenters, 
-      const MoleculeInChIUtils::Mapping *m, int index);
+        private:
+            Array<int> bond_is_cis_trans;
+        };
 
-   int _getFirstSign ();
-};
+        // Tetrahedral stereochemistry
+        class TetrahedralStereochemistryLayer : public AbstractLayer
+        {
+        public:
+            void print(Array<char>& result);
 
-};
+            void printEnantiomers(Array<char>& result);
 
-}
+            bool checkAutomorphism(const Array<int>& mapping);
+            int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);
+
+            static int compareComponentsEnantiomers(TetrahedralStereochemistryLayer& comp1, TetrahedralStereochemistryLayer& comp2);
+
+            static int compareComponents(TetrahedralStereochemistryLayer& comp1, TetrahedralStereochemistryLayer& comp2);
+
+        private:
+            int _getMappingSign(const MoleculeStereocenters& stereocenters, const MoleculeInChIUtils::Mapping* m, int index);
+
+            int _getFirstSign();
+        };
+
+    }; // namespace MoleculeInChILayers
+
+} // namespace indigo
 
 #endif // __molecule_inchi_layers_h__
-

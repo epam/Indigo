@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,86 +25,87 @@ OsLock _SIDManager::_lock;
 
 IMPL_ERROR(_SIDManager, "TLS");
 
-_SIDManager& _SIDManager::getInst (void)
+_SIDManager& _SIDManager::getInst(void)
 {
-   return _instance;
+    return _instance;
 }
 
-_SIDManager::~_SIDManager (void)
+_SIDManager::~_SIDManager(void)
 {
-   qword *pId;
-   osTlsGetValue((void**)&pId, _tlsIdx);
-   delete pId;
-   osTlsFree(_tlsIdx);
+    qword* pId;
+    osTlsGetValue((void**)&pId, _tlsIdx);
+    delete pId;
+    osTlsFree(_tlsIdx);
 }
 
-void _SIDManager::setSessionId (qword id)
-{    
-   OsLocker locker(_lock);
+void _SIDManager::setSessionId(qword id)
+{
+    OsLocker locker(_lock);
 
-   if (!_allSIDs.find(id))
-      _allSIDs.insert(id);
+    if (!_allSIDs.find(id))
+        _allSIDs.insert(id);
 
-   qword *pId = _getID();
-   if (pId == NULL)
-   {
-      pId = new qword(id);
-      osTlsSetValue(_tlsIdx, (void*)pId);
-   }
-   else
-      *pId = id;
+    qword* pId = _getID();
+    if (pId == NULL)
+    {
+        pId = new qword(id);
+        osTlsSetValue(_tlsIdx, (void*)pId);
+    }
+    else
+        *pId = id;
 }
 
-qword _SIDManager::allocSessionId  (void)
+qword _SIDManager::allocSessionId(void)
 {
-   OsLocker locker(_lock);
+    OsLocker locker(_lock);
 
-   qword id;
-   if (_vacantSIDs.size() > 0)
-      id = _vacantSIDs.pop();
-   else {
-      while (_allSIDs.find(_lastNewSID))
-         ++_lastNewSID;
+    qword id;
+    if (_vacantSIDs.size() > 0)
+        id = _vacantSIDs.pop();
+    else
+    {
+        while (_allSIDs.find(_lastNewSID))
+            ++_lastNewSID;
 
-      id = _lastNewSID;
-      _allSIDs.insert(id);
+        id = _lastNewSID;
+        _allSIDs.insert(id);
 
-      ++_lastNewSID;
-   }
-   return id;
+        ++_lastNewSID;
+    }
+    return id;
 }
 
-qword _SIDManager::getSessionId (void)
+qword _SIDManager::getSessionId(void)
 {
-   qword *pId = _getID(); 
-   qword id;
-   if (pId == NULL) 
-   {
-      id = allocSessionId();
-      setSessionId(id);
-   } 
-   else
-      id = *pId;
+    qword* pId = _getID();
+    qword id;
+    if (pId == NULL)
+    {
+        id = allocSessionId();
+        setSessionId(id);
+    }
+    else
+        id = *pId;
 
-   return id;
+    return id;
 }
 
-void _SIDManager::releaseSessionId (qword id)
+void _SIDManager::releaseSessionId(qword id)
 {
-   OsLocker locker(_lock);
+    OsLocker locker(_lock);
 
-   _vacantSIDs.push(id);
+    _vacantSIDs.push(id);
 }
 
-qword * _SIDManager::_getID (void) const
+qword* _SIDManager::_getID(void) const
 {
-   void* pId;
-   osTlsGetValue(&pId, _tlsIdx);
-   return (qword *)pId;
+    void* pId;
+    osTlsGetValue(&pId, _tlsIdx);
+    return (qword*)pId;
 }
 
-_SIDManager::_SIDManager (void) : _lastNewSID(0)
+_SIDManager::_SIDManager(void) : _lastNewSID(0)
 {
-   if (osTlsAlloc(&_tlsIdx) == 0)
-      throw Error("can't allocate thread local storage cell");
-}    
+    if (osTlsAlloc(&_tlsIdx) == 0)
+        throw Error("can't allocate thread local storage cell");
+}

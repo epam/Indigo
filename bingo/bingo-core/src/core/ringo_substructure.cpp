@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,231 +16,229 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "core/ringo_matchers.h"
-#include "core/bingo_context.h"
-#include "base_cpp/scanner.h"
+#include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
+#include "base_cpp/scanner.h"
+#include "core/bingo_context.h"
+#include "core/ringo_matchers.h"
+#include "layout/reaction_layout.h"
+#include "molecule/molecule_fingerprint.h"
+#include "reaction/crf_loader.h"
+#include "reaction/reaction_auto_loader.h"
+#include "reaction/reaction_automapper.h"
+#include "reaction/reaction_fingerprint.h"
+#include "reaction/reaction_substructure_matcher.h"
+#include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
 #include "reaction/rxnfile_saver.h"
-#include "reaction/reaction_substructure_matcher.h"
-#include "reaction/reaction_automapper.h"
-#include "molecule/molecule_fingerprint.h"
-#include "reaction/reaction_fingerprint.h"
-#include "reaction/crf_loader.h"
-#include "base_cpp/output.h"
-#include "reaction/reaction_auto_loader.h"
-#include "layout/reaction_layout.h"
-#include "reaction/rsmiles_loader.h"
 
 IMPL_ERROR(RingoSubstructure, "reaction substructure");
 
-RingoSubstructure::RingoSubstructure (BingoContext &context) :
-_context(context)
+RingoSubstructure::RingoSubstructure(BingoContext& context) : _context(context)
 {
-   preserve_bonds_on_highlighting = false;
-   _smarts = false;
+    preserve_bonds_on_highlighting = false;
+    _smarts = false;
 }
 
-RingoSubstructure::~RingoSubstructure ()
+RingoSubstructure::~RingoSubstructure()
 {
 }
 
-bool RingoSubstructure::parse (const char *params)
+bool RingoSubstructure::parse(const char* params)
 {
-   preserve_bonds_on_highlighting = false;
-   return true;
+    preserve_bonds_on_highlighting = false;
+    return true;
 }
 
-void RingoSubstructure::loadQuery (const Array<char> &buf)
+void RingoSubstructure::loadQuery(const Array<char>& buf)
 {
-   BufferScanner scanner(buf);
+    BufferScanner scanner(buf);
 
-   loadQuery(scanner);
+    loadQuery(scanner);
 }
 
-void RingoSubstructure::loadQuery (const char *str)
+void RingoSubstructure::loadQuery(const char* str)
 {
-   BufferScanner scanner(str);
+    BufferScanner scanner(str);
 
-   loadQuery(scanner);
+    loadQuery(scanner);
 }
 
-void RingoSubstructure::loadQuery (Scanner &scanner)
+void RingoSubstructure::loadQuery(Scanner& scanner)
 {
-   QS_DEF(QueryReaction, source);
+    QS_DEF(QueryReaction, source);
 
-   ReactionAutoLoader loader(scanner);
-   _context.setLoaderSettings(loader);
-   loader.loadQueryReaction(source);
+    ReactionAutoLoader loader(scanner);
+    _context.setLoaderSettings(loader);
+    loader.loadQueryReaction(source);
 
-   _initQuery(source, _query_reaction);
-   _query_data_valid = false;
-   _smarts = false;
+    _initQuery(source, _query_reaction);
+    _query_data_valid = false;
+    _smarts = false;
 }
 
-void RingoSubstructure::loadSMARTS (Scanner &scanner)
+void RingoSubstructure::loadSMARTS(Scanner& scanner)
 {
-   RSmilesLoader loader(scanner);
-   QS_DEF(QueryReaction, source);
+    RSmilesLoader loader(scanner);
+    QS_DEF(QueryReaction, source);
 
-   loader.smarts_mode = true;
-   loader.loadQueryReaction(source);
+    loader.smarts_mode = true;
+    loader.loadQueryReaction(source);
 
-   _initSmartsQuery(source, _query_reaction);
-   _query_data_valid = false;
-   _smarts = true;
+    _initSmartsQuery(source, _query_reaction);
+    _query_data_valid = false;
+    _smarts = true;
 }
 
-void RingoSubstructure::loadSMARTS (const Array<char> &buf)
+void RingoSubstructure::loadSMARTS(const Array<char>& buf)
 {
-   BufferScanner scanner(buf);
+    BufferScanner scanner(buf);
 
-   loadSMARTS(scanner);
+    loadSMARTS(scanner);
 }
 
-void RingoSubstructure::loadSMARTS (const char *str)
+void RingoSubstructure::loadSMARTS(const char* str)
 {
-   BufferScanner scanner(str);
+    BufferScanner scanner(str);
 
-   loadSMARTS(scanner);
+    loadSMARTS(scanner);
 }
 
-void RingoSubstructure::_initQuery (QueryReaction &query_in, QueryReaction &query_out)
+void RingoSubstructure::_initQuery(QueryReaction& query_in, QueryReaction& query_out)
 {
-   query_out.makeTransposedForSubstructure(query_in);
+    query_out.makeTransposedForSubstructure(query_in);
 
-   ReactionAutomapper ram(query_out);
-   ram.correctReactingCenters(true);
+    ReactionAutomapper ram(query_out);
+    ram.correctReactingCenters(true);
 
-   query_out.aromatize(AromaticityOptions::BASIC);
+    query_out.aromatize(AromaticityOptions::BASIC);
 
-   _nei_query_counters.calculate(query_out);
-} 
-
-void RingoSubstructure::_initSmartsQuery (QueryReaction &query_in, QueryReaction &query_out)
-{
-   query_out.makeTransposedForSubstructure(query_in);
-
-   ReactionAutomapper ram(query_out);
-   ram.correctReactingCenters(true);
-
-   _nei_query_counters.calculate(query_out);
-} 
-
-void RingoSubstructure::_validateQueryData ()
-{
-   if (_query_data_valid)
-      return;
-
-   ReactionFingerprintBuilder builder(_query_reaction, _context.fp_parameters);
-   
-   builder.query = true;
-   builder.skip_sim = true;
-   builder.process();
-   
-   _query_fp.copy(builder.get(), _context.fp_parameters.fingerprintSizeExtOrdSim() * 2);
-   
-   _query_data_valid = true;
+    _nei_query_counters.calculate(query_out);
 }
 
-void RingoSubstructure::_initTarget (bool from_database)
+void RingoSubstructure::_initSmartsQuery(QueryReaction& query_in, QueryReaction& query_out)
 {
-   if (preserve_bonds_on_highlighting)
-      Reaction::saveBondOrders(_target_reaction, _target_bond_types);
+    query_out.makeTransposedForSubstructure(query_in);
 
-   if (!from_database)
-   {
-      ReactionAutomapper ram(_target_reaction);
-      ram.correctReactingCenters(true);
-      _target_reaction.aromatize(AromaticityOptions::BASIC);
-   }
-   _nei_target_counters.calculate(_target_reaction);
-} 
+    ReactionAutomapper ram(query_out);
+    ram.correctReactingCenters(true);
 
-bool RingoSubstructure::matchBinary (const Array<char> &buf)
-{
-   BufferScanner scanner(buf);
-
-   return matchBinary(scanner);
+    _nei_query_counters.calculate(query_out);
 }
 
-
-bool RingoSubstructure::matchBinary (Scanner &scanner)
+void RingoSubstructure::_validateQueryData()
 {
-   CrfLoader loader(_context.cmf_dict, scanner);
+    if (_query_data_valid)
+        return;
 
-   loader.loadReaction(_target_reaction);
-   _initTarget(true);
+    ReactionFingerprintBuilder builder(_query_reaction, _context.fp_parameters);
 
-   ReactionSubstructureMatcher rsm(_target_reaction);
-   rsm.setQuery(_query_reaction);
-   rsm.highlight = true;
-   if (_smarts)
-      rsm.use_daylight_aam_mode = true;
-   //rsm.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
+    builder.query = true;
+    builder.skip_sim = true;
+    builder.process();
 
-   return rsm.find();
+    _query_fp.copy(builder.get(), _context.fp_parameters.fingerprintSizeExtOrdSim() * 2);
+
+    _query_data_valid = true;
 }
 
-void RingoSubstructure::loadTarget (const Array<char> &buf)
+void RingoSubstructure::_initTarget(bool from_database)
 {
-   BufferScanner scanner(buf);
+    if (preserve_bonds_on_highlighting)
+        Reaction::saveBondOrders(_target_reaction, _target_bond_types);
 
-   return loadTarget(scanner);
+    if (!from_database)
+    {
+        ReactionAutomapper ram(_target_reaction);
+        ram.correctReactingCenters(true);
+        _target_reaction.aromatize(AromaticityOptions::BASIC);
+    }
+    _nei_target_counters.calculate(_target_reaction);
 }
 
-void RingoSubstructure::loadTarget (const char *str)
+bool RingoSubstructure::matchBinary(const Array<char>& buf)
 {
-   BufferScanner scanner(str);
+    BufferScanner scanner(buf);
 
-   return loadTarget(scanner);
+    return matchBinary(scanner);
 }
 
-void RingoSubstructure::loadTarget (Scanner &scanner)
+bool RingoSubstructure::matchBinary(Scanner& scanner)
 {
-   ReactionAutoLoader loader(scanner);
+    CrfLoader loader(_context.cmf_dict, scanner);
 
-   _context.setLoaderSettings(loader);
-   loader.loadReaction(_target_reaction);
-   _initTarget(false);
+    loader.loadReaction(_target_reaction);
+    _initTarget(true);
+
+    ReactionSubstructureMatcher rsm(_target_reaction);
+    rsm.setQuery(_query_reaction);
+    rsm.highlight = true;
+    if (_smarts)
+        rsm.use_daylight_aam_mode = true;
+    // rsm.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
+
+    return rsm.find();
 }
 
-bool RingoSubstructure::matchLoadedTarget ()
+void RingoSubstructure::loadTarget(const Array<char>& buf)
 {
-   ReactionSubstructureMatcher rsm(_target_reaction);
+    BufferScanner scanner(buf);
 
-   rsm.highlight = true;
-
-   rsm.setQuery(_query_reaction);
-   //rsm.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
-   if (_smarts)
-      rsm.use_daylight_aam_mode = true;
-
-   return rsm.find();
+    return loadTarget(scanner);
 }
 
-void RingoSubstructure::getHighlightedTarget (Array<char> &buf)
+void RingoSubstructure::loadTarget(const char* str)
 {
-   ArrayOutput output(buf);
-   RxnfileSaver saver(output);
+    BufferScanner scanner(str);
 
-   if (!Reaction::haveCoord(_target_reaction))
-   {
-      profTimerStart(t, "match.layout");
-      ReactionLayout layout(_target_reaction);
-
-      layout.make();
-      _target_reaction.markStereocenterBonds();
-   }
-
-   if (preserve_bonds_on_highlighting)
-      Reaction::loadBondOrders(_target_reaction, _target_bond_types);
-
-   saver.saveReaction(_target_reaction);
+    return loadTarget(scanner);
 }
 
-const byte * RingoSubstructure::getQueryFingerprint ()
+void RingoSubstructure::loadTarget(Scanner& scanner)
 {
-   _validateQueryData();
-   return _query_fp.ptr();
+    ReactionAutoLoader loader(scanner);
+
+    _context.setLoaderSettings(loader);
+    loader.loadReaction(_target_reaction);
+    _initTarget(false);
+}
+
+bool RingoSubstructure::matchLoadedTarget()
+{
+    ReactionSubstructureMatcher rsm(_target_reaction);
+
+    rsm.highlight = true;
+
+    rsm.setQuery(_query_reaction);
+    // rsm.setNeiCounters(&_nei_query_counters, &_nei_target_counters);
+    if (_smarts)
+        rsm.use_daylight_aam_mode = true;
+
+    return rsm.find();
+}
+
+void RingoSubstructure::getHighlightedTarget(Array<char>& buf)
+{
+    ArrayOutput output(buf);
+    RxnfileSaver saver(output);
+
+    if (!Reaction::haveCoord(_target_reaction))
+    {
+        profTimerStart(t, "match.layout");
+        ReactionLayout layout(_target_reaction);
+
+        layout.make();
+        _target_reaction.markStereocenterBonds();
+    }
+
+    if (preserve_bonds_on_highlighting)
+        Reaction::loadBondOrders(_target_reaction, _target_bond_types);
+
+    saver.saveReaction(_target_reaction);
+}
+
+const byte* RingoSubstructure::getQueryFingerprint()
+{
+    _validateQueryData();
+    return _query_fp.ptr();
 }

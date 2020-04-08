@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,29 +21,29 @@
 
 #include "base_cpp/exception.h"
 
-namespace indigo {
-
-class Scanner;
-class Reaction;
-
-class IcrLoader
+namespace indigo
 {
-public:
 
-   // external dictionary, internal decoder
-   explicit IcrLoader (Scanner &scanner);
+    class Scanner;
+    class Reaction;
 
-   void loadReaction (Reaction &reaction);
+    class IcrLoader
+    {
+    public:
+        // external dictionary, internal decoder
+        explicit IcrLoader(Scanner& scanner);
 
-   DECL_ERROR;
+        void loadReaction(Reaction& reaction);
 
-protected:
-   Scanner &_scanner;
+        DECL_ERROR;
 
-private:
-   IcrLoader (const IcrLoader &); // no implicit copy
-};
+    protected:
+        Scanner& _scanner;
 
-}
+    private:
+        IcrLoader(const IcrLoader&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif

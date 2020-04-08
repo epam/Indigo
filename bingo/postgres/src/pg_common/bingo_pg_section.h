@@ -2,13 +2,13 @@
 #define _BINGO_PG_SECTION_H__
 
 #include "base_cpp/array.h"
-#include "base_cpp/ptr_array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/exception.h"
-#include "pg_bingo_context.h"
+#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "bingo_pg_buffer_cache.h"
 #include "bingo_postgres.h"
+#include "pg_bingo_context.h"
 
 class BingoPgIndex;
 class BingoPgFpData;
@@ -24,76 +24,82 @@ class BingoPgExternalBitset;
  *    fp buffers (fp count) |
  *    binary buffers (dynamic)
  */
-class BingoPgSection {
+class BingoPgSection
+{
 public:
+    enum
+    {
+        SECTION_META_PAGES = 2,
+        SECTION_BITSNUMBER_PAGES = 16,
+        SECTION_BITS_PER_BLOCK = 4000 /* 4000 * sizeof(unsigned short) < 8K*/
+    };
+    BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset);
+    ~BingoPgSection();
 
-   enum {
-      SECTION_META_PAGES = 2,
-      SECTION_BITSNUMBER_PAGES = 16,
-      SECTION_BITS_PER_BLOCK = 4000 /* 4000 * sizeof(unsigned short) < 8K*/
-   };
-   BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset);
-   ~BingoPgSection();
+    void clear();
 
-   void clear();
+    /*
+     * Returns true if section can be extended
+     */
+    bool isExtended();
+    /*
+     * Add a structure to current section
+     */
+    void addStructure(BingoPgFpData&);
 
-   /*
-    * Returns true if section can be extended 
-    */
-   bool isExtended();
-   /*
-    * Add a structure to current section
-    */
-   void addStructure(BingoPgFpData&);
+    /*
+     * Getters
+     */
+    int getPagesCount() const;
+    int getStructuresNumber() const
+    {
+        return _sectionInfo.n_structures;
+    }
 
-   /*
-    * Getters
-    */
-   int getPagesCount() const;
-   int getStructuresNumber() const {return _sectionInfo.n_structures;}
-   
-   void getSectionStructures(BingoPgExternalBitset& section_bitset);
-   void removeStructure(int mol_idx);
-   bool isStructureRemoved(int mol_idx);
-   
-   BingoPgBufferCacheMap& getMapBufferCache(int map_idx);
-   BingoPgBufferCacheFp& getFpBufferCache(int fp_idx);
-   BingoPgBufferCacheBin& getBinBufferCache(int bin_idx);
+    void getSectionStructures(BingoPgExternalBitset& section_bitset);
+    void removeStructure(int mol_idx);
+    bool isStructureRemoved(int mol_idx);
 
-   void readSectionBitsCount(indigo::Array<int>& bits_count);
+    BingoPgBufferCacheMap& getMapBufferCache(int map_idx);
+    BingoPgBufferCacheFp& getFpBufferCache(int fp_idx);
+    BingoPgBufferCacheBin& getBinBufferCache(int bin_idx);
 
-   const BingoSectionInfoData& getSectionInfo() const { return _sectionInfo;};
+    void readSectionBitsCount(indigo::Array<int>& bits_count);
 
-   DECL_ERROR;
+    const BingoSectionInfoData& getSectionInfo() const
+    {
+        return _sectionInfo;
+    };
+
+    DECL_ERROR;
 
 private:
-   BingoPgSection(const BingoPgSection&); //no implicit copy
+    BingoPgSection(const BingoPgSection&); // no implicit copy
 
-   void _setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, int map_idx);
-   void _setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx);
-   void _setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data);
-   void _setBitsCountData(unsigned short bits_count);
+    void _setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, int map_idx);
+    void _setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx);
+    void _setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data);
+    void _setBitsCountData(unsigned short bits_count);
 
-   BingoPgBufferCacheBin* _getBufferBin(int idx);
-   
-   PG_OBJECT _index;
-   int _offset;
-   int _idxStrategy;
+    BingoPgBufferCacheBin* _getBufferBin(int idx);
 
-   BingoSectionInfoData _sectionInfo;
-   BingoPgBuffer _sectionInfoBuffer;
-   indigo::AutoPtr<BingoPgBufferCacheFp> _existStructures;
-   
-   indigo::PtrArray<BingoPgBufferCacheFp> _buffersFp;
-   indigo::PtrArray<BingoPgBufferCacheMap> _buffersMap;
-   indigo::PtrArray<BingoPgBufferCacheBin> _buffersBin;
-   
-   indigo::Array<int> _offsetFp;
-   indigo::Array<int> _offsetMap;
-   indigo::Array<int> _offsetBin;
+    PG_OBJECT _index;
+    int _offset;
+    int _idxStrategy;
 
-   indigo::ObjArray<BingoPgBuffer> _bitsCountBuffers;
+    BingoSectionInfoData _sectionInfo;
+    BingoPgBuffer _sectionInfoBuffer;
+    indigo::AutoPtr<BingoPgBufferCacheFp> _existStructures;
+
+    indigo::PtrArray<BingoPgBufferCacheFp> _buffersFp;
+    indigo::PtrArray<BingoPgBufferCacheMap> _buffersMap;
+    indigo::PtrArray<BingoPgBufferCacheBin> _buffersBin;
+
+    indigo::Array<int> _offsetFp;
+    indigo::Array<int> _offsetMap;
+    indigo::Array<int> _offsetBin;
+
+    indigo::ObjArray<BingoPgBuffer> _bitsCountBuffers;
 };
 
 #endif /* BINGO_PG_SECTION1_H */
-

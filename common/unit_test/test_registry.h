@@ -2,27 +2,24 @@
 #ifndef TESTREGISTRY_H
 #define TESTREGISTRY_H
 
-
 #include "base_cpp/ptr_array.h"
 namespace indigo
 {
 
-class Test;
-class TestResult;
+    class Test;
+    class TestResult;
 
-class TestRegistry {
-public:
+    class TestRegistry
+    {
+    public:
+        TestRegistry();
 
-    TestRegistry();
-    
-    void add (Test* test);
-    void run (TestResult& result);
-        
-private:
-    PtrArray<Test> _tests;
-};
-}
+        void add(Test* test);
+        void run(TestResult& result);
 
+    private:
+        PtrArray<Test> _tests;
+    };
+} // namespace indigo
 
 #endif
-

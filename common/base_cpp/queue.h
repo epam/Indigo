@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,69 +20,70 @@
 #define __queue_h__
 
 #include "base_c/defs.h"
-#include "base_cpp/exception.h"
 #include "base_cpp/array.h"
+#include "base_cpp/exception.h"
 
-namespace indigo {
-
-DECL_EXCEPTION(QueueError);
-
-// Queue with fixed max length
-template <typename T> class Queue
+namespace indigo
 {
-public:
-   DECL_TPL_ERROR(QueueError);
 
-   explicit Queue (void)
-   {
-      _start = 0;
-      _end = 0;
-   }
+    DECL_EXCEPTION(QueueError);
 
-   void setLength (int max_size)
-   {
-      _array.resize(max_size);
-   }
+    // Queue with fixed max length
+    template <typename T> class Queue
+    {
+    public:
+        DECL_TPL_ERROR(QueueError);
 
-   void clear  (void)
-   {
-      _start = 0;
-      _end = 0;
-   }
+        explicit Queue(void)
+        {
+            _start = 0;
+            _end = 0;
+        }
 
-   bool isEmpty (void)
-   {
-      return _start == _end;
-   }
+        void setLength(int max_size)
+        {
+            _array.resize(max_size);
+        }
 
-   T & push (const T& elem)
-   {
-      int idx = (_end + 1) % _array.size();
-      if (idx == _start)
-         throw Error("queue is full");
-      int end = _end;
-      _array[_end] = elem;
-      _end = idx;
-      return _array[end];
-   }
-   
-   T& pop (void)
-   {
-      if (isEmpty())
-         throw Error("queue is empty");
-      int idx = _start;
-      _start = (_start + 1) % _array.size();
-      return _array[idx];
-   }
+        void clear(void)
+        {
+            _start = 0;
+            _end = 0;
+        }
 
-protected:
-   Array<T> _array;
-   int _start, _end;
+        bool isEmpty(void)
+        {
+            return _start == _end;
+        }
 
-private:
-   Queue (const Queue &); // no implicit copy
-};
+        T& push(const T& elem)
+        {
+            int idx = (_end + 1) % _array.size();
+            if (idx == _start)
+                throw Error("queue is full");
+            int end = _end;
+            _array[_end] = elem;
+            _end = idx;
+            return _array[end];
+        }
 
-}
+        T& pop(void)
+        {
+            if (isEmpty())
+                throw Error("queue is empty");
+            int idx = _start;
+            _start = (_start + 1) % _array.size();
+            return _array[idx];
+        }
+
+    protected:
+        Array<T> _array;
+        int _start, _end;
+
+    private:
+        Queue(const Queue&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif // __queue_h__

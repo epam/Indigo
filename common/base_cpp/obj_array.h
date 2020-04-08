@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,161 +21,168 @@
 
 #include "base_cpp/array.h"
 
-namespace indigo {
-
-template <typename T> class ObjArray
+namespace indigo
 {
-public:
-   explicit ObjArray ()
-   {
-   }
 
-   ~ObjArray ()
-   {
-      while (size() > 0)
-         pop();
-   }
+    template <typename T> class ObjArray
+    {
+    public:
+        explicit ObjArray()
+        {
+        }
 
-   const T & operator[] (int index) const
-   {
-      return _array[index];
-   }
+        ~ObjArray()
+        {
+            while (size() > 0)
+                pop();
+        }
 
-   T & operator[] (int index)
-   {
-      return _array[index];
-   }
+        const T& operator[](int index) const
+        {
+            return _array[index];
+        }
 
-   const T & at (int index) const
-   {
-      return (*this)[index];
-   }
+        T& operator[](int index)
+        {
+            return _array[index];
+        }
 
-   T & at (int index)
-   {
-      return (*this)[index];
-   }
+        const T& at(int index) const
+        {
+            return (*this)[index];
+        }
 
-   int size (void) const { return _array.size(); }
+        T& at(int index)
+        {
+            return (*this)[index];
+        }
 
-   T & push ()
-   {
-      void *addr = &_array.push();
+        int size(void) const
+        {
+            return _array.size();
+        }
 
-      new (addr) T();
+        T& push()
+        {
+            void* addr = &_array.push();
 
-      return _array.top();
-   }
+            new (addr) T();
 
-   template <typename A> T & push (A &a)
-   {
-      void *addr = &_array.push();
+            return _array.top();
+        }
 
-      new (addr) T(a);
+        template <typename A> T& push(A& a)
+        {
+            void* addr = &_array.push();
 
-      return _array.top();
-   }
+            new (addr) T(a);
 
-   template <typename A, typename B> T & push (A &a, B *b)
-   {
-      void *addr = &_array.push();
+            return _array.top();
+        }
 
-      new (addr) T(a, b);
+        template <typename A, typename B> T& push(A& a, B* b)
+        {
+            void* addr = &_array.push();
 
-      return _array.top();
-   }
+            new (addr) T(a, b);
 
-   template <typename A, typename B, typename C> T & push (A &a, B &b, C &c)
-   {
-      void *addr = &_array.push();
+            return _array.top();
+        }
 
-      new (addr) T(a, b, c);
+        template <typename A, typename B, typename C> T& push(A& a, B& b, C& c)
+        {
+            void* addr = &_array.push();
 
-      return _array.top();
-   }
+            new (addr) T(a, b, c);
 
-   template <typename A, typename B, typename C> T & push (A *a, B b, C c)
-   {
-      void *addr = &_array.push();
+            return _array.top();
+        }
 
-      new (addr) T(a, b, c);
+        template <typename A, typename B, typename C> T& push(A* a, B b, C c)
+        {
+            void* addr = &_array.push();
 
-      return _array.top();
-   }
+            new (addr) T(a, b, c);
 
-   void clear ()
-   {
-      while (size() > 0)
-         pop();
-   }
+            return _array.top();
+        }
 
-   void resize (int newSize)
-   {
-      while  (newSize < size()) {
-         pop();
-      }
+        void clear()
+        {
+            while (size() > 0)
+                pop();
+        }
 
-      while  (newSize > size()) {
-         push();
-      }
-   }
-   
-   void clear_resize(int newSize) {
-      clear();
-      resize(newSize);
-   }
-   void reserve (int size)
-   {
-      _array.reserve(size);
-   }
+        void resize(int newSize)
+        {
+            while (newSize < size())
+            {
+                pop();
+            }
 
-   void expand (int newSize)
-   {
-      while  (newSize > size()) {
-         push();
-      }
-   }
+            while (newSize > size())
+            {
+                push();
+            }
+        }
 
-   void remove (int idx)
-   {
-      _array[idx].~T();
-      _array.remove(idx);
-   }
+        void clear_resize(int newSize)
+        {
+            clear();
+            resize(newSize);
+        }
+        void reserve(int size)
+        {
+            _array.reserve(size);
+        }
 
-   T & top ()
-   {
-      return _array.top();
-   }
+        void expand(int newSize)
+        {
+            while (newSize > size())
+            {
+                push();
+            }
+        }
 
-   const T & top () const
-   {
-      return _array.top();
-   }
+        void remove(int idx)
+        {
+            _array[idx].~T();
+            _array.remove(idx);
+        }
 
-   void pop ()
-   {
-      _array.top().~T();
-      _array.pop();
-   }
+        T& top()
+        {
+            return _array.top();
+        }
 
-   template <typename T1, typename T2>
-   void qsort (int (*cmp)(T1, T2, void *), void *context)
-   {
-      _array.qsort(cmp, context);
-   }
-   
-   const T * ptr () const
-   {
-      return _array.ptr();
-   }
+        const T& top() const
+        {
+            return _array.top();
+        }
 
-protected:
+        void pop()
+        {
+            _array.top().~T();
+            _array.pop();
+        }
 
-   Array<T> _array;
-private:
-   ObjArray (const ObjArray &); // no implicit copy
-};
+        template <typename T1, typename T2> void qsort(int (*cmp)(T1, T2, void*), void* context)
+        {
+            _array.qsort(cmp, context);
+        }
 
-}
+        const T* ptr() const
+        {
+            return _array.ptr();
+        }
+
+    protected:
+        Array<T> _array;
+
+    private:
+        ObjArray(const ObjArray&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif

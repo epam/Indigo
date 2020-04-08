@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,57 +25,57 @@
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-class DLLEXPORT LzwDecoder
+namespace indigo
 {
-public:
-   DECL_ERROR;
 
-   LzwDecoder( LzwDict &NewDict, Scanner &NewIn );
+    class DLLEXPORT LzwDecoder
+    {
+    public:
+        DECL_ERROR;
 
-   bool isEOF( void );
+        LzwDecoder(LzwDict& NewDict, Scanner& NewIn);
 
-   int get( void );
+        bool isEOF(void);
 
-private:
+        int get(void);
 
-   LzwDict &_dict;
+    private:
+        LzwDict& _dict;
 
-   BitInWorker _bitin;
+        BitInWorker _bitin;
 
-   CP_DECL;
-   TL_CP_DECL(Array<byte>, _symbolsBuf);
+        CP_DECL;
+        TL_CP_DECL(Array<byte>, _symbolsBuf);
 
-   // no implicit copy
-   LzwDecoder( const LzwDecoder & );
+        // no implicit copy
+        LzwDecoder(const LzwDecoder&);
+    };
 
-};
+    class LzwScanner : public Scanner
+    {
+    public:
+        LzwScanner(LzwDecoder& decoder);
 
-class LzwScanner : public Scanner
-{
-public:
-   LzwScanner (LzwDecoder &decoder);
+        virtual void read(int length, void* res);
+        virtual void skip(int n);
+        virtual bool isEOF();
+        virtual int lookNext();
+        virtual void seek(long long pos, int from);
+        virtual long long length();
+        virtual long long tell();
 
-   virtual void read (int length, void *res);
-   virtual void skip (int n);
-   virtual bool isEOF ();
-   virtual int  lookNext ();
-   virtual void seek (long long pos, int from);
-   virtual long long length ();
-   virtual long long tell ();
+        virtual byte readByte();
 
-   virtual byte readByte ();
+        DECL_ERROR;
 
-   DECL_ERROR;
-private:
-   LzwDecoder &_decoder;
-};
+    private:
+        LzwDecoder& _decoder;
+    };
 
-}
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)

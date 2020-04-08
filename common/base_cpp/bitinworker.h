@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,35 +24,32 @@
 namespace indigo
 {
 
-class Scanner;
+    class Scanner;
 
-class DLLEXPORT BitInWorker
-{
-public:
+    class DLLEXPORT BitInWorker
+    {
+    public:
+        BitInWorker(int StartBits, Scanner& NewIn);
 
-   BitInWorker( int StartBits, Scanner &NewIn ); 
+        bool readBits(int& Code);
 
-   bool readBits( int &Code );
+        bool isEOF(void);
 
-   bool isEOF( void );
+        ~BitInWorker(void);
 
-   ~BitInWorker( void );
+    private:
+        int _bits; /* Code size */
 
-private:
+        int _bitBufferCount;
 
-   int _bits;                       /* Code size */
+        dword _bitBuffer;
 
-   int _bitBufferCount;             
+        Scanner& _scanner;
 
-   dword _bitBuffer;        
+        BitInWorker(const BitInWorker&);
+    };
 
-   Scanner &_scanner;
-
-   BitInWorker( const BitInWorker & );
-
-};
-
-}
+} // namespace indigo
 
 #endif /* __bitinworker_h__ */
 

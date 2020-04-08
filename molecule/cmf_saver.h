@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,95 +26,95 @@
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-class Output;
-
-class DLLEXPORT CmfSaver
+namespace indigo
 {
-public:
 
-   // external dictionary, internal encoder
-   explicit CmfSaver (LzwDict &dict, Output &output);
+    class Output;
 
-   // external dictionary, external encoder
-   explicit CmfSaver (LzwEncoder &encoder);
+    class DLLEXPORT CmfSaver
+    {
+    public:
+        // external dictionary, internal encoder
+        explicit CmfSaver(LzwDict& dict, Output& output);
 
-   // no dictionary, no encoder
-   explicit CmfSaver (Output &output);
+        // external dictionary, external encoder
+        explicit CmfSaver(LzwEncoder& encoder);
 
-   void saveMolecule (Molecule &mol);
-   void saveXyz (Output &output);
+        // no dictionary, no encoder
+        explicit CmfSaver(Output& output);
 
-   const Array<int> & getAtomSequence ();
+        void saveMolecule(Molecule& mol);
+        void saveXyz(Output& output);
 
-   int *atom_flags;
-   int *bond_flags;
+        const Array<int>& getAtomSequence();
 
-   bool save_bond_dirs;
-   bool save_highlighting;
-   bool save_mapping;
+        int* atom_flags;
+        int* bond_flags;
 
-   DECL_ERROR;
+        bool save_bond_dirs;
+        bool save_highlighting;
+        bool save_mapping;
 
-   struct VecRange
-   {
-      Vec3f xyz_min, xyz_range;
-      bool have_z;
-   };
-protected:
+        DECL_ERROR;
 
-   void _init ();
-   void _encode (byte symbol);
+        struct VecRange
+        {
+            Vec3f xyz_min, xyz_range;
+            bool have_z;
+        };
 
-   void _encodeAtom (Molecule &mol, int idx, const int *mapping);
-   void _encodeBond (Molecule &mol, int idx, const int *mapping);
-   void _encodeCycleNumer (int n);
+    protected:
+        void _init();
+        void _encode(byte symbol);
 
-   void _writeFloatInRange (Output &output, float v, float min, float range);
+        void _encodeAtom(Molecule& mol, int idx, const int* mapping);
+        void _encodeBond(Molecule& mol, int idx, const int* mapping);
+        void _encodeCycleNumer(int n);
 
-   struct Mapping
-   {
-      Array<int> *atom_mapping, *bond_mapping;
-   };
+        void _writeFloatInRange(Output& output, float v, float min, float range);
 
-   void _encodeString (const Array<char> &str);
-   void _encodeUIntArray (const Array<int> &data, const Array<int> &mapping);
-   void _encodeUIntArray (const Array<int> &data);
-   void _encodeUIntArraySkipNegative (const Array<int> &data);
+        struct Mapping
+        {
+            Array<int>*atom_mapping, *bond_mapping;
+        };
 
-   void _encodeExtSection (Molecule &mol, const Mapping &mapping);
-   void _encodeBaseSGroup (Molecule &mol, SGroup &sgroup, const Mapping &mapping);
+        void _encodeString(const Array<char>& str);
+        void _encodeUIntArray(const Array<int>& data, const Array<int>& mapping);
+        void _encodeUIntArray(const Array<int>& data);
+        void _encodeUIntArraySkipNegative(const Array<int>& data);
 
-   //void _encodeSGroups (Molecule &mol, const Mapping &mapping);
-   void _writeSGroupsXyz (Molecule &mol, Output &output, const VecRange &range);
-   void _writeBaseSGroupXyz (Output &output, SGroup &sgroup, const VecRange &range);
+        void _encodeExtSection(Molecule& mol, const Mapping& mapping);
+        void _encodeBaseSGroup(Molecule& mol, SGroup& sgroup, const Mapping& mapping);
 
-   void _writeVec3f (Output &output, const Vec3f &pos, const VecRange &range);
-   void _writeVec2f (Output &output, const Vec2f &pos, const VecRange &range);
-   void _writeDir2f (Output &output, const Vec2f &dir, const VecRange &range);
+        // void _encodeSGroups (Molecule &mol, const Mapping &mapping);
+        void _writeSGroupsXyz(Molecule& mol, Output& output, const VecRange& range);
+        void _writeBaseSGroupXyz(Output& output, SGroup& sgroup, const VecRange& range);
 
-   void _updateSGroupsXyzMinMax (Molecule &mol, Vec3f &min, Vec3f &max);
-   void _updateBaseSGroupXyzMinMax (SGroup &sgroup, Vec3f &min, Vec3f &max);
+        void _writeVec3f(Output& output, const Vec3f& pos, const VecRange& range);
+        void _writeVec2f(Output& output, const Vec2f& pos, const VecRange& range);
+        void _writeDir2f(Output& output, const Vec2f& dir, const VecRange& range);
 
-   CP_DECL;
-   TL_CP_DECL(Array<int>, _atom_sequence);
+        void _updateSGroupsXyzMinMax(Molecule& mol, Vec3f& min, Vec3f& max);
+        void _updateBaseSGroupXyzMinMax(SGroup& sgroup, Vec3f& min, Vec3f& max);
 
-   Output     *_output;
-   Obj<LzwEncoder> _encoder_obj;
-   LzwEncoder *_ext_encoder;
-   Obj<LzwOutput> _encoder_output_obj;
+        CP_DECL;
+        TL_CP_DECL(Array<int>, _atom_sequence);
 
-   Molecule *_mol;
+        Output* _output;
+        Obj<LzwEncoder> _encoder_obj;
+        LzwEncoder* _ext_encoder;
+        Obj<LzwOutput> _encoder_output_obj;
 
-private:
-   CmfSaver (const CmfSaver &); // no implicit copy
-};
+        Molecule* _mol;
 
-}
+    private:
+        CmfSaver(const CmfSaver&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)

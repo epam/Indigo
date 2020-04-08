@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,69 +19,69 @@
 #ifndef __molecule_tautomer_matcher__
 #define __molecule_tautomer_matcher__
 
+#include "base_cpp/auto_ptr.h"
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule_tautomer.h"
-#include "base_cpp/auto_ptr.h"
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-class Molecule;
-class AromaticityMatcher;
-
-class DLLEXPORT MoleculeTautomerMatcher
+namespace indigo
 {
-public:
-   DECL_ERROR;
 
-   bool highlight;
+    class Molecule;
+    class AromaticityMatcher;
 
-   AromaticityOptions arom_options;
+    class DLLEXPORT MoleculeTautomerMatcher
+    {
+    public:
+        DECL_ERROR;
 
-   MoleculeTautomerMatcher (Molecule &target, bool substructure);
+        bool highlight;
 
-   void setQuery (BaseMolecule &query);
+        AromaticityOptions arom_options;
 
-   void setRulesList (const PtrArray<TautomerRule> *rules_list);
-   void setRules (int rules_set, bool force_hydrogens, bool ring_chain, TautomerMethod method);
+        MoleculeTautomerMatcher(Molecule& target, bool substructure);
 
-   bool find ();
+        void setQuery(BaseMolecule& query);
 
-   const int * getQueryMapping ();
+        void setRulesList(const PtrArray<TautomerRule>* rules_list);
+        void setRules(int rules_set, bool force_hydrogens, bool ring_chain, TautomerMethod method);
 
-   static void parseConditions (const char *tautomer_text, int &rules, bool &force_hydrogens, bool &ring_chain, TautomerMethod &method);
+        bool find();
 
-   static int countNonHydrogens (BaseMolecule &molecule);
+        const int* getQueryMapping();
 
-protected:
+        static void parseConditions(const char* tautomer_text, int& rules, bool& force_hydrogens, bool& ring_chain, TautomerMethod& method);
 
-   bool _find (bool substructure);
+        static int countNonHydrogens(BaseMolecule& molecule);
 
-   static bool _checkRules (TautomerSearchContext &context, int first1, int first2, int last1, int last2);
+    protected:
+        bool _find(bool substructure);
 
-   bool _substructure;
-   bool _force_hydrogens;
-   bool _ring_chain;
-   TautomerMethod _method;
-   int  _rules;
+        static bool _checkRules(TautomerSearchContext& context, int first1, int first2, int last1, int last2);
 
-   const PtrArray<TautomerRule> *_rules_list;
-   AutoPtr<TautomerSearchContext> _context;
-   Molecule &_target_src;
-   AutoPtr<BaseMolecule> _query;
+        bool _substructure;
+        bool _force_hydrogens;
+        bool _ring_chain;
+        TautomerMethod _method;
+        int _rules;
 
-   Obj<TautomerSuperStructure> _target;
-   BaseMolecule *_supermol;
+        const PtrArray<TautomerRule>* _rules_list;
+        AutoPtr<TautomerSearchContext> _context;
+        Molecule& _target_src;
+        AutoPtr<BaseMolecule> _query;
 
-   Obj<GraphDecomposer> _query_decomposer;
-   Obj<GraphDecomposer> _target_decomposer;
-};
+        Obj<TautomerSuperStructure> _target;
+        BaseMolecule* _supermol;
 
-}
+        Obj<GraphDecomposer> _query_decomposer;
+        Obj<GraphDecomposer> _target_decomposer;
+    };
+
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)

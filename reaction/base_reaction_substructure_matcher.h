@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,150 +19,150 @@
 #ifndef __base_reaction__substructure_matcher__
 #define __base_reaction__substructure_matcher__
 
-#include "base_cpp/red_black.h"
-#include "base_cpp/tlscont.h"
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/obj.h"
+#include "base_cpp/red_black.h"
+#include "base_cpp/tlscont.h"
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule_arom_match.h"
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-class Reaction;
-class ReactionAtomNeighbourhoodCounters;
-class BaseReaction;
-class Graph;
-class BaseMolecule;
-class Molecule;
-
-typedef RedBlackMap<int, int> RedBlackIntMap;
-
-class DLLEXPORT BaseReactionSubstructureMatcher
+namespace indigo
 {
-protected:
-   class _Matcher;
-   
-public:
-   BaseReactionSubstructureMatcher (Reaction &target);
 
-   void setQuery (BaseReaction &query);
-   void setNeiCounters (const ReactionAtomNeighbourhoodCounters *query_counters,
-      const ReactionAtomNeighbourhoodCounters *target_counters);
+    class Reaction;
+    class ReactionAtomNeighbourhoodCounters;
+    class BaseReaction;
+    class Graph;
+    class BaseMolecule;
+    class Molecule;
 
-   bool highlight;
-   bool use_aromaticity_matcher;
+    typedef RedBlackMap<int, int> RedBlackIntMap;
 
-   AromaticityOptions arom_options;
+    class DLLEXPORT BaseReactionSubstructureMatcher
+    {
+    protected:
+        class _Matcher;
 
-   bool find ();
+    public:
+        BaseReactionSubstructureMatcher(Reaction& target);
 
-   int getTargetMoleculeIndex (int query_molecule_idx);
-   const int * getQueryMoleculeMapping (int query_mol_idx);
+        void setQuery(BaseReaction& query);
+        void setNeiCounters(const ReactionAtomNeighbourhoodCounters* query_counters, const ReactionAtomNeighbourhoodCounters* target_counters);
 
-   DECL_ERROR;
+        bool highlight;
+        bool use_aromaticity_matcher;
 
-   bool (*match_atoms) (BaseReaction &query_, Reaction &target,
-                        int sub_mol_idx, int sub_atom_idx, int super_mol_idx, int super_atom_idx, void *context);
+        AromaticityOptions arom_options;
 
-   bool (*match_bonds) (BaseReaction &query_, Reaction &target,
-                        int sub_mol_idx, int sub_atom_idx, int super_mol_idx, int super_atom_idx,
-                        AromaticityMatcher *am, void *context);
+        bool find();
 
-   void (*remove_atom) (BaseMolecule &submol, int sub_idx, AromaticityMatcher *am);
+        int getTargetMoleculeIndex(int query_molecule_idx);
+        const int* getQueryMoleculeMapping(int query_mol_idx);
 
-   void (*add_bond) (BaseMolecule &submol, Molecule &supermol,
-                      int sub_idx, int super_idx, AromaticityMatcher *am);
+        DECL_ERROR;
 
-   bool (*prepare) (BaseReaction &query_, Reaction &target, void *context);
+        bool (*match_atoms)(BaseReaction& query_, Reaction& target, int sub_mol_idx, int sub_atom_idx, int super_mol_idx, int super_atom_idx, void* context);
 
-   bool (*prepare_ee) (EmbeddingEnumerator &ee, BaseMolecule &submol, Molecule &supermol,
-                       void *context);
+        bool (*match_bonds)(BaseReaction& query_, Reaction& target, int sub_mol_idx, int sub_atom_idx, int super_mol_idx, int super_atom_idx,
+                            AromaticityMatcher* am, void* context);
 
-   void *context;
+        void (*remove_atom)(BaseMolecule& submol, int sub_idx, AromaticityMatcher* am);
 
-protected:
+        void (*add_bond)(BaseMolecule& submol, Molecule& supermol, int sub_idx, int super_idx, AromaticityMatcher* am);
 
-   void _initMap (BaseReaction &reaction, int side, RedBlackMap<int, int> &aam_map);
-   virtual bool _checkAAM ();
-   void _highlight ();
-   bool _match_stereo;
+        bool (*prepare)(BaseReaction& query_, Reaction& target, void* context);
 
-   enum
-   {
-      _FIRST_SIDE,
-      _SECOND_SIDE,
-      _SECOND_SIDE_REST,
-      _CONTINUE,
-      _NO_WAY,
-      _RETURN
-   };
+        bool (*prepare_ee)(EmbeddingEnumerator& ee, BaseMolecule& submol, Molecule& supermol, void* context);
 
-   class _Matcher
-   {
-   public:
-      _Matcher (BaseReactionSubstructureMatcher &context);
-      _Matcher (const _Matcher &other);
+        void* context;
 
-      int  nextPair ();
-      void setMode (int mode) { _mode = mode; }
-      int  getMode () { return _mode; }
-      bool addPair (int mol1_idx, int mol2_idx, const Array<int> &core1, const Array<int> &core2, bool from_first_side);
-      void restore ();
+    protected:
+        void _initMap(BaseReaction& reaction, int side, RedBlackMap<int, int>& aam_map);
+        virtual bool _checkAAM();
+        void _highlight();
+        bool _match_stereo;
 
-      bool match_stereo;
+        enum
+        {
+            _FIRST_SIDE,
+            _SECOND_SIDE,
+            _SECOND_SIDE_REST,
+            _CONTINUE,
+            _NO_WAY,
+            _RETURN
+        };
 
-      int _current_molecule_1, _current_molecule_2;
+        class _Matcher
+        {
+        public:
+            _Matcher(BaseReactionSubstructureMatcher& context);
+            _Matcher(const _Matcher& other);
 
-      CP_DECL;
-      TL_CP_DECL(Array<int>, _current_core_1);
-      TL_CP_DECL(Array<int>, _current_core_2);
+            int nextPair();
+            void setMode(int mode)
+            {
+                _mode = mode;
+            }
+            int getMode()
+            {
+                return _mode;
+            }
+            bool addPair(int mol1_idx, int mol2_idx, const Array<int>& core1, const Array<int>& core2, bool from_first_side);
+            void restore();
 
-   protected:
-      int _nextPair ();
+            bool match_stereo;
 
-      bool _initEnumerator (BaseMolecule &mol_1, Molecule &mol_2);
+            int _current_molecule_1, _current_molecule_2;
 
-      static int _embedding (Graph &subgraph, Graph &supergraph, int *core_sub, int *core_super, void *userdata);
-      static bool _matchAtoms (Graph &subgraph, Graph &supergraph, const int *core_sub, int sub_idx, int super_idx, void *userdata);
-      static bool _matchBonds (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
-      static void _removeAtom (Graph &subgraph, int sub_idx, void *userdata);
-      static void _addBond (Graph &subgraph, Graph &supergraph, int sub_idx, int super_idx, void *userdata);
+            CP_DECL;
+            TL_CP_DECL(Array<int>, _current_core_1);
+            TL_CP_DECL(Array<int>, _current_core_2);
 
-      BaseReactionSubstructureMatcher &_context;
-      AutoPtr<AromaticityMatcher> _am;
+        protected:
+            int _nextPair();
 
-      Obj<EmbeddingEnumerator> _enumerator;
-      int _mode;
-      int _selected_molecule_1;
-      int _selected_molecule_2;
-      TL_CP_DECL(Array<int>, _mapped_aams);
-   };
+            bool _initEnumerator(BaseMolecule& mol_1, Molecule& mol_2);
 
-   Reaction &_target;
+            static int _embedding(Graph& subgraph, Graph& supergraph, int* core_sub, int* core_super, void* userdata);
+            static bool _matchAtoms(Graph& subgraph, Graph& supergraph, const int* core_sub, int sub_idx, int super_idx, void* userdata);
+            static bool _matchBonds(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata);
+            static void _removeAtom(Graph& subgraph, int sub_idx, void* userdata);
+            static void _addBond(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata);
 
-   CP_DECL;
-   TL_CP_DECL(PtrArray<_Matcher>, _matchers);
-   TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_1);
-   TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_2);
-   TL_CP_DECL(Array<int>, _molecule_core_1);
-   TL_CP_DECL(Array<int>, _molecule_core_2);
-   TL_CP_DECL(RedBlackIntMap, _aam_core_first_side);
+            BaseReactionSubstructureMatcher& _context;
+            AutoPtr<AromaticityMatcher> _am;
 
-   int _first_side;
-   int _second_side;
+            Obj<EmbeddingEnumerator> _enumerator;
+            int _mode;
+            int _selected_molecule_1;
+            int _selected_molecule_2;
+            TL_CP_DECL(Array<int>, _mapped_aams);
+        };
 
-   BaseReaction *_query;
+        Reaction& _target;
 
-   const ReactionAtomNeighbourhoodCounters
-      *_query_nei_counters, *_target_nei_counters;
-};
+        CP_DECL;
+        TL_CP_DECL(PtrArray<_Matcher>, _matchers);
+        TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_1);
+        TL_CP_DECL(RedBlackIntMap, _aam_to_second_side_2);
+        TL_CP_DECL(Array<int>, _molecule_core_1);
+        TL_CP_DECL(Array<int>, _molecule_core_2);
+        TL_CP_DECL(RedBlackIntMap, _aam_core_first_side);
 
-}
+        int _first_side;
+        int _second_side;
+
+        BaseReaction* _query;
+
+        const ReactionAtomNeighbourhoodCounters *_query_nei_counters, *_target_nei_counters;
+    };
+
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)

@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,35 +24,39 @@
 
 #include <zlib.h>
 
-namespace indigo {
-
-class GZipOutput : public Output
+namespace indigo
 {
-public:
-   enum { CHUNK_SIZE = 32768 };
 
-   explicit GZipOutput (Output &dest, int level);
-   virtual ~GZipOutput ();
+    class GZipOutput : public Output
+    {
+    public:
+        enum
+        {
+            CHUNK_SIZE = 32768
+        };
 
-   virtual void write (const void *data, int size);
-   virtual void seek  (long long offset, int from);
-   virtual long long tell  ();
-   virtual void flush ();
+        explicit GZipOutput(Output& dest, int level);
+        virtual ~GZipOutput();
 
-   DECL_ERROR;
-   
-protected:
-   Output  &_dest;
-   z_stream _zstream;
-   int _total_written;
+        virtual void write(const void* data, int size);
+        virtual void seek(long long offset, int from);
+        virtual long long tell();
+        virtual void flush();
 
-   int _deflate (int flush);
+        DECL_ERROR;
 
-   CP_DECL;
-   TL_CP_DECL(Array<Bytef>, _outbuf);
-   TL_CP_DECL(Array<Bytef>, _inbuf);
-};
+    protected:
+        Output& _dest;
+        z_stream _zstream;
+        int _total_written;
 
-}
+        int _deflate(int flush);
+
+        CP_DECL;
+        TL_CP_DECL(Array<Bytef>, _outbuf);
+        TL_CP_DECL(Array<Bytef>, _inbuf);
+    };
+
+} // namespace indigo
 
 #endif

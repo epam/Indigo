@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,47 +18,47 @@
 
 #include "indigo.h"
 
-#define WRAPPER_LOAD_FROM_STRING(name)            \
-CEXPORT int name##FromString (const char *string) \
-{                                                 \
-   int source = indigoReadString(string);         \
-   int result;                                    \
-                                                  \
-   if (source <= 0)                               \
-      return -1;                                  \
-                                                  \
-   result = name(source);                         \
-   indigoFree(source);                            \
-   return result;                                 \
-}
+#define WRAPPER_LOAD_FROM_STRING(name)                                                                                                                         \
+    CEXPORT int name##FromString(const char* string)                                                                                                           \
+    {                                                                                                                                                          \
+        int source = indigoReadString(string);                                                                                                                 \
+        int result;                                                                                                                                            \
+                                                                                                                                                               \
+        if (source <= 0)                                                                                                                                       \
+            return -1;                                                                                                                                         \
+                                                                                                                                                               \
+        result = name(source);                                                                                                                                 \
+        indigoFree(source);                                                                                                                                    \
+        return result;                                                                                                                                         \
+    }
 
-#define WRAPPER_LOAD_FROM_FILE(name)              \
-CEXPORT int name##FromFile(const char *filename)  \
-{                                                 \
-   int source = indigoReadFile(filename);         \
-   int result;                                    \
-                                                  \
-   if (source <= 0)                               \
-      return -1;                                  \
-                                                  \
-   result = name(source);                         \
-   indigoFree(source);                            \
-   return result;                                 \
-}
+#define WRAPPER_LOAD_FROM_FILE(name)                                                                                                                           \
+    CEXPORT int name##FromFile(const char* filename)                                                                                                           \
+    {                                                                                                                                                          \
+        int source = indigoReadFile(filename);                                                                                                                 \
+        int result;                                                                                                                                            \
+                                                                                                                                                               \
+        if (source <= 0)                                                                                                                                       \
+            return -1;                                                                                                                                         \
+                                                                                                                                                               \
+        result = name(source);                                                                                                                                 \
+        indigoFree(source);                                                                                                                                    \
+        return result;                                                                                                                                         \
+    }
 
-#define WRAPPER_LOAD_FROM_BUFFER(name)            \
-CEXPORT int name##FromBuffer(const char *buf, int size) \
-{                                                 \
-   int source = indigoReadBuffer(buf, size);      \
-   int result;                                    \
-                                                  \
-   if (source <= 0)                               \
-      return -1;                                  \
-                                                  \
-   result = name(source);                         \
-   indigoFree(source);                            \
-   return result;                                 \
-}
+#define WRAPPER_LOAD_FROM_BUFFER(name)                                                                                                                         \
+    CEXPORT int name##FromBuffer(const char* buf, int size)                                                                                                    \
+    {                                                                                                                                                          \
+        int source = indigoReadBuffer(buf, size);                                                                                                              \
+        int result;                                                                                                                                            \
+                                                                                                                                                               \
+        if (source <= 0)                                                                                                                                       \
+            return -1;                                                                                                                                         \
+                                                                                                                                                               \
+        result = name(source);                                                                                                                                 \
+        indigoFree(source);                                                                                                                                    \
+        return result;                                                                                                                                         \
+    }
 
 WRAPPER_LOAD_FROM_STRING(indigoLoadMolecule)
 WRAPPER_LOAD_FROM_FILE(indigoLoadMolecule)
@@ -84,122 +84,122 @@ WRAPPER_LOAD_FROM_STRING(indigoLoadReactionSmarts)
 WRAPPER_LOAD_FROM_FILE(indigoLoadReactionSmarts)
 WRAPPER_LOAD_FROM_BUFFER(indigoLoadReactionSmarts)
 
-CEXPORT int indigoSaveMolfileToFile (int molecule, const char *filename)
+CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename)
 {
-   int f = indigoWriteFile(filename);
-   int res;
+    int f = indigoWriteFile(filename);
+    int res;
 
-   if (f == -1)
-      return -1;
+    if (f == -1)
+        return -1;
 
-   res = indigoSaveMolfile(molecule, f);
+    res = indigoSaveMolfile(molecule, f);
 
-   indigoFree(f);
-   return res;
+    indigoFree(f);
+    return res;
 }
 
-CEXPORT int indigoSaveCmlToFile (int molecule, const char *filename)
+CEXPORT int indigoSaveCmlToFile(int molecule, const char* filename)
 {
-   int f = indigoWriteFile(filename);
-   int res;
+    int f = indigoWriteFile(filename);
+    int res;
 
-   if (f == -1)
-      return -1;
+    if (f == -1)
+        return -1;
 
-   res = indigoSaveCml(molecule, f);
+    res = indigoSaveCml(molecule, f);
 
-   indigoFree(f);
-   return res;
+    indigoFree(f);
+    return res;
 }
 
-CEXPORT const char * indigoMolfile (int molecule)
+CEXPORT const char* indigoMolfile(int molecule)
 {
-   int b = indigoWriteBuffer();
-   const char *res;
+    int b = indigoWriteBuffer();
+    const char* res;
 
-   if (b == -1)
-      return 0;
+    if (b == -1)
+        return 0;
 
-   if (indigoSaveMolfile(molecule, b) == -1)
-      return 0;
+    if (indigoSaveMolfile(molecule, b) == -1)
+        return 0;
 
-   res = indigoToString(b);
-   indigoFree(b);
-   return res;
+    res = indigoToString(b);
+    indigoFree(b);
+    return res;
 }
 
-CEXPORT const char * indigoCml (int molecule)
+CEXPORT const char* indigoCml(int molecule)
 {
-   int b = indigoWriteBuffer();
-   const char *res;
+    int b = indigoWriteBuffer();
+    const char* res;
 
-   if (b == -1)
-      return 0;
+    if (b == -1)
+        return 0;
 
-   if (indigoSaveCml(molecule, b) == -1)
-      return 0;
+    if (indigoSaveCml(molecule, b) == -1)
+        return 0;
 
-   res = indigoToString(b);
-   indigoFree(b);
-   return res;
+    res = indigoToString(b);
+    indigoFree(b);
+    return res;
 }
 
-CEXPORT int indigoSaveRxnfileToFile (int reaction, const char *filename)
+CEXPORT int indigoSaveRxnfileToFile(int reaction, const char* filename)
 {
-   int f = indigoWriteFile(filename);
-   int res;
+    int f = indigoWriteFile(filename);
+    int res;
 
-   if (f == -1)
-      return -1;
+    if (f == -1)
+        return -1;
 
-   res = indigoSaveRxnfile(reaction, f);
+    res = indigoSaveRxnfile(reaction, f);
 
-   indigoFree(f);
-   return res;
+    indigoFree(f);
+    return res;
 }
 
-CEXPORT const char * indigoRxnfile (int molecule)
+CEXPORT const char* indigoRxnfile(int molecule)
 {
-   int b = indigoWriteBuffer();
-   const char *res;
+    int b = indigoWriteBuffer();
+    const char* res;
 
-   if (b == -1)
-      return 0;
+    if (b == -1)
+        return 0;
 
-   if (indigoSaveRxnfile(molecule, b) == -1)
-      return 0;
+    if (indigoSaveRxnfile(molecule, b) == -1)
+        return 0;
 
-   res = indigoToString(b);
-   indigoFree(b);
-   return res;
+    res = indigoToString(b);
+    indigoFree(b);
+    return res;
 }
 
-CEXPORT int indigoSaveCdxmlToFile (int item, const char *filename)
+CEXPORT int indigoSaveCdxmlToFile(int item, const char* filename)
 {
-   int f = indigoWriteFile(filename);
-   int res;
+    int f = indigoWriteFile(filename);
+    int res;
 
-   if (f == -1)
-      return -1;
+    if (f == -1)
+        return -1;
 
-   res = indigoSaveCdxml(item, f);
+    res = indigoSaveCdxml(item, f);
 
-   indigoFree(f);
-   return res;
+    indigoFree(f);
+    return res;
 }
 
-CEXPORT const char * indigoCdxml (int item)
+CEXPORT const char* indigoCdxml(int item)
 {
-   int b = indigoWriteBuffer();
-   const char *res;
+    int b = indigoWriteBuffer();
+    const char* res;
 
-   if (b == -1)
-      return 0;
+    if (b == -1)
+        return 0;
 
-   if (indigoSaveCdxml(item, b) == -1)
-      return 0;
+    if (indigoSaveCdxml(item, b) == -1)
+        return 0;
 
-   res = indigoToString(b);
-   indigoFree(b);
-   return res;
+    res = indigoToString(b);
+    indigoFree(b);
+    return res;
 }

@@ -2,70 +2,69 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "indigo.h"
 #include "indigo-renderer.h"
+#include "indigo.h"
 
-void onError (const char *message, void *context)
+void onError(const char* message, void* context)
 {
-   fprintf(stderr, "Error: %s\n", message);
-   exit(-1);
+    fprintf(stderr, "Error: %s\n", message);
+    exit(-1);
 }
 
 #ifdef WIN32
 #include <Windows.h>
 #endif
 
-void testHDC ()
+void testHDC()
 {
-   int buffer_object;
-   char *raw_ptr;
-   int size;
+    int buffer_object;
+    char* raw_ptr;
+    int size;
 #ifdef WIN32
-   HDC hdc, hdc2;
+    HDC hdc, hdc2;
 #endif
-   int hdc_buffer_object;
-   int molecule;
+    int hdc_buffer_object;
+    int molecule;
 
-   molecule = indigoLoadMoleculeFromString("C1=CC=CC=C1");
-   indigoSetOption("render-output-format", "png");
-   indigoSetOption("render-background-color", "255, 255, 255");
-   indigoRenderToFile(molecule, "indigo-renderer-test.png");
+    molecule = indigoLoadMoleculeFromString("C1=CC=CC=C1");
+    indigoSetOption("render-output-format", "png");
+    indigoSetOption("render-background-color", "255, 255, 255");
+    indigoRenderToFile(molecule, "indigo-renderer-test.png");
 
-   buffer_object = indigoWriteBuffer();
-   indigoRender(molecule, buffer_object);
+    buffer_object = indigoWriteBuffer();
+    indigoRender(molecule, buffer_object);
 
-   indigoToBuffer(buffer_object, &raw_ptr, &size);
-   //<Copy the raw_ptr data anywhere>
-   indigoFree(buffer_object);
+    indigoToBuffer(buffer_object, &raw_ptr, &size);
+    //<Copy the raw_ptr data anywhere>
+    indigoFree(buffer_object);
 
 #ifdef WIN32
-   hdc = GetWindowDC(NULL);
-   hdc2 = CreateCompatibleDC(hdc);
+    hdc = GetWindowDC(NULL);
+    hdc2 = CreateCompatibleDC(hdc);
 
-   hdc_buffer_object = indigoRenderWriteHDC(hdc2, 0);
-   indigoRender(molecule, hdc_buffer_object);
-   indigoFree(hdc_buffer_object);
+    hdc_buffer_object = indigoRenderWriteHDC(hdc2, 0);
+    indigoRender(molecule, hdc_buffer_object);
+    indigoFree(hdc_buffer_object);
 #endif
 
-   indigoFree(molecule);
-
+    indigoFree(molecule);
 }
 
-int main (void)
+int main(void)
 {
-   int m;
-   
-   indigoSetErrorHandler(onError, 0);
-   printf("%s\n", indigoVersion());
-   m = indigoLoadMoleculeFromString("COC1=CC2=C(NC(=C2)C(O)(CC2=CN=CC=C2)CC2=CN=CC=C2)C=C1");
-   printf("%s\n", indigoCanonicalSmiles(m));
+    int m;
 
-   indigoSetOption("render-output-format", "png");
-   indigoSetOption("render-atom-ids-visible", "true"); 
-   indigoSetOption("render-bond-ids-visible", "true"); 
-   indigoSetOption("render-background-color", "255, 255, 255"); 
-   indigoRenderToFile(m, "indigo-renderer-test.png"); 
+    indigoSetErrorHandler(onError, 0);
+    printf("%s\n", indigoVersion());
+    m = indigoLoadMoleculeFromString("COC1=CC2=C(NC(=C2)C(O)(CC2=CN=CC=C2)CC2=CN=CC=C2)C=C1");
+    printf("%s\n", indigoCanonicalSmiles(m));
 
-   testHDC();
-   return 0;
+    indigoSetOption("render-output-format", "png");
+    indigoSetOption("render-atom-ids-visible", "true");
+    indigoSetOption("render-bond-ids-visible", "true");
+    indigoSetOption("render-background-color", "255, 255, 255");
+    indigoRenderToFile(m, "indigo-renderer-test.png");
+
+    testHDC();
+    return 0;
 }

@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,19 +17,19 @@
  ***************************************************************************/
 
 #include "molecule/molecule_ionize.h"
+#include "base_cpp/output.h"
+#include "base_cpp/queue.h"
+#include "base_cpp/scanner.h"
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
-#include "molecule/smiles_loader.h"
+#include "molecule/molecule_automorphism_search.h"
+#include "molecule/molecule_substructure_matcher.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
-#include "base_cpp/scanner.h"
 #include "molecule/query_molecule.h"
-#include "molecule/molecule_substructure_matcher.h"
-#include "base_cpp/output.h"
 #include "molecule/sdf_loader.h"
-#include "base_cpp/queue.h"
-#include "molecule/molecule_automorphism_search.h"
+#include "molecule/smiles_loader.h"
 
 using namespace indigo;
 
@@ -37,1142 +37,1149 @@ MoleculePkaModel MoleculePkaModel::_model;
 
 IMPL_ERROR(MoleculePkaModel, "Molecule Pka Model");
 
-MoleculePkaModel::MoleculePkaModel ()
+MoleculePkaModel::MoleculePkaModel()
 {
-//   _loadSimplePkaModel();
-//   _loadAdvancedPkaModel();
+    //   _loadSimplePkaModel();
+    //   _loadAdvancedPkaModel();
 }
 
-void MoleculePkaModel::estimate_pKa (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
-                      Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas)
+void MoleculePkaModel::estimate_pKa(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites, Array<float>& acid_pkas,
+                                    Array<float>& basic_pkas)
 {
-   if (options.model == IonizeOptions::PKA_MODEL_SIMPLE)
-   {
-      if (!_model.simple_model_ready)
-         _loadSimplePkaModel();  
-      _estimate_pKa_Simple(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
-   }
-   else if (options.model == IonizeOptions::PKA_MODEL_ADVANCED)
-   {
-      if (!_model.advanced_model_ready)
-         _loadAdvancedPkaModel();  
-      _estimate_pKa_Advanced(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
-   }
-   else
-      throw Error("Unsupported pKa model: %d", options.model);
+    if (options.model == IonizeOptions::PKA_MODEL_SIMPLE)
+    {
+        if (!_model.simple_model_ready)
+            _loadSimplePkaModel();
+        _estimate_pKa_Simple(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
+    }
+    else if (options.model == IonizeOptions::PKA_MODEL_ADVANCED)
+    {
+        if (!_model.advanced_model_ready)
+            _loadAdvancedPkaModel();
+        _estimate_pKa_Advanced(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
+    }
+    else
+        throw Error("Unsupported pKa model: %d", options.model);
 }
 
-int MoleculePkaModel::buildPkaModel (int max_level, float threshold, const char * filename)
+int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* filename)
 {
-//   QS_DEF(Array<int>, order);
-//   QS_DEF(Molecule, can_mol);
-   QS_DEF(Array<char>, fp);
-   RedBlackStringObjMap<Array <float> > acid_pkas;
-   RedBlackStringObjMap<Array <float> > basic_pkas;
-   RedBlackStringObjMap<Array <int> > acid_pka_cids;
-   RedBlackStringObjMap<Array <int> > basic_pka_cids;
-   AromaticityOptions opts;
+    //   QS_DEF(Array<int>, order);
+    //   QS_DEF(Molecule, can_mol);
+    QS_DEF(Array<char>, fp);
+    RedBlackStringObjMap<Array<float>> acid_pkas;
+    RedBlackStringObjMap<Array<float>> basic_pkas;
+    RedBlackStringObjMap<Array<int>> acid_pka_cids;
+    RedBlackStringObjMap<Array<int>> basic_pka_cids;
+    AromaticityOptions opts;
 
-   const char * a_pka_sites_id = "ACID PKA SITES";
-   const char * a_pka_values_id = "ACID PKA VALUES";
-   const char * b_pka_sites_id = "BASIC PKA SITES";
-   const char * b_pka_values_id = "BASIC PKA VALUES";
-   const char * compound_cid = "PUBCHEM_COMPOUND_CID";
+    const char* a_pka_sites_id = "ACID PKA SITES";
+    const char* a_pka_values_id = "ACID PKA VALUES";
+    const char* b_pka_sites_id = "BASIC PKA SITES";
+    const char* b_pka_values_id = "BASIC PKA VALUES";
+    const char* compound_cid = "PUBCHEM_COMPOUND_CID";
 
-   Molecule mol;
-   int level = 0;
+    Molecule mol;
+    int level = 0;
 
-   _model.adv_a_pkas.clear();
-   _model.adv_b_pkas.clear();
+    _model.adv_a_pkas.clear();
+    _model.adv_b_pkas.clear();
 
-   for (;;)
-   {
-      FileScanner scanner(filename);
-      SdfLoader loader(scanner);
+    for (;;)
+    {
+        FileScanner scanner(filename);
+        SdfLoader loader(scanner);
 
-      int a_count = 0;
-      int b_count = 0;
-      acid_pkas.clear();
-      basic_pkas.clear();
-      acid_pka_cids.clear();
-      basic_pka_cids.clear();
+        int a_count = 0;
+        int b_count = 0;
+        acid_pkas.clear();
+        basic_pkas.clear();
+        acid_pka_cids.clear();
+        basic_pka_cids.clear();
 
-      int mol_count = 0;
-      while (!loader.isEOF())
-      {
-         mol_count++;
-         loader.readNext();
-         BufferScanner scanner(loader.data);
-         MolfileLoader mol_loader(scanner);
-         mol_loader.stereochemistry_options.ignore_errors = true;
-         mol_loader.loadMolecule(mol);
+        int mol_count = 0;
+        while (!loader.isEOF())
+        {
+            mol_count++;
+            loader.readNext();
+            BufferScanner scanner(loader.data);
+            MolfileLoader mol_loader(scanner);
+            mol_loader.stereochemistry_options.ignore_errors = true;
+            mol_loader.loadMolecule(mol);
 
-         int cid = 0;
-         if (loader.properties.contains(compound_cid))
-         {
-            BufferScanner scan_cid(loader.properties.at(compound_cid));
-            cid = scan_cid.readInt();
-         }
-
-
-//         mol.aromatize(opts);
-//         _checkCanonicalOrder(mol, can_mol, order);
-         _removeExtraHydrogens(mol);
-
-         if (loader.properties.contains(a_pka_sites_id))
-         {
-            const char *aids = loader.properties.at(a_pka_sites_id);
-            const char *apkas = loader.properties.at(a_pka_values_id);
-
-            BufferScanner scan_aids(aids);
-            Array<int> a_sites;
-            while (!scan_aids.isEOF())
+            int cid = 0;
+            if (loader.properties.contains(compound_cid))
             {
-              int idx = scan_aids.readInt1() - 1;
-              a_sites.push(idx);
-            }
-            BufferScanner scan_apka(apkas);
-            Array<float> a_pka;
-            while (!scan_apka.isEOF())
-            {
-              float val = scan_apka.readFloat();
-              a_pka.push(val);
+                BufferScanner scan_cid(loader.properties.at(compound_cid));
+                cid = scan_cid.readInt();
             }
 
-            if (a_sites.size() > 1)
+            //         mol.aromatize(opts);
+            //         _checkCanonicalOrder(mol, can_mol, order);
+            _removeExtraHydrogens(mol);
+
+            if (loader.properties.contains(a_pka_sites_id))
             {
-//               printf("Warning: multiple acid sites detected. Skip this compound (%d)\n", cid);
+                const char* aids = loader.properties.at(a_pka_sites_id);
+                const char* apkas = loader.properties.at(a_pka_values_id);
+
+                BufferScanner scan_aids(aids);
+                Array<int> a_sites;
+                while (!scan_aids.isEOF())
+                {
+                    int idx = scan_aids.readInt1() - 1;
+                    a_sites.push(idx);
+                }
+                BufferScanner scan_apka(apkas);
+                Array<float> a_pka;
+                while (!scan_apka.isEOF())
+                {
+                    float val = scan_apka.readFloat();
+                    a_pka.push(val);
+                }
+
+                if (a_sites.size() > 1)
+                {
+                    //               printf("Warning: multiple acid sites detected. Skip this compound (%d)\n", cid);
+                }
+                else
+                {
+                    for (int i = 0; i < a_sites.size(); i++)
+                    {
+                        fp.clear();
+                        //                  int idx = order.find(a_sites[i]);
+                        int idx = a_sites[i];
+                        float val = a_pka[i];
+
+                        getAtomLocalFingerprint(mol, idx, fp, level);
+
+                        if (fp.size() == 0)
+                            continue;
+
+                        if (!acid_pkas.find(fp.ptr()))
+                        {
+                            acid_pkas.insert(fp.ptr());
+                            acid_pka_cids.insert(fp.ptr());
+                            a_count++;
+                        }
+                        acid_pkas.at(fp.ptr()).push(val);
+                        acid_pka_cids.at(fp.ptr()).push(cid);
+                    }
+                }
             }
+
+            if (loader.properties.contains(b_pka_sites_id))
+            {
+
+                const char* bids = loader.properties.at(b_pka_sites_id);
+                const char* bpkas = loader.properties.at(b_pka_values_id);
+
+                BufferScanner scan_bids(bids);
+                Array<int> b_sites;
+                while (!scan_bids.isEOF())
+                {
+                    int idx = scan_bids.readInt1() - 1;
+                    b_sites.push(idx);
+                }
+                BufferScanner scan_bpka(bpkas);
+                Array<float> b_pka;
+                while (!scan_bpka.isEOF())
+                {
+                    float val = scan_bpka.readFloat();
+                    b_pka.push(val);
+                }
+
+                if (b_sites.size() > 1)
+                {
+                    //               printf("Warning: multiple protonation sites detected. Skip this compound (%d)\n", cid);
+                }
+                else
+                {
+                    for (int i = 0; i < b_sites.size(); i++)
+                    {
+                        fp.clear();
+                        //                  int idx = order.find(b_sites[i]);
+                        int idx = b_sites[i];
+                        float val = b_pka[i];
+
+                        getAtomLocalFingerprint(mol, idx, fp, level);
+
+                        if (fp.size() == 0)
+                            continue;
+
+                        if (!basic_pkas.find(fp.ptr()))
+                        {
+                            basic_pkas.insert(fp.ptr());
+                            basic_pka_cids.insert(fp.ptr());
+                            b_count++;
+                        }
+                        basic_pkas.at(fp.ptr()).push(val);
+                        basic_pka_cids.at(fp.ptr()).push(cid);
+                    }
+                }
+            }
+        }
+
+        bool model_ready = true;
+        float max_deviation = 0.f;
+
+        for (int i = 0; i < acid_pkas.size(); i++)
+        {
+            const char* fp = acid_pkas.key(i);
+            Array<float>& pkas = acid_pkas.value(i);
+            float pka_sum = 0.f;
+            float pka_dev = 0.f;
+            float pka_min = 100.f;
+            float pka_max = -100.f;
+            for (int k = 0; k < pkas.size(); k++)
+            {
+                float val = pkas.at(k);
+                pka_sum = pka_sum + val;
+                if (pka_min > val)
+                    pka_min = val;
+                if (pka_max < val)
+                    pka_max = val;
+            }
+
+            if ((pka_max - pka_sum / pkas.size()) > (pka_sum / pkas.size() - pka_min))
+                pka_dev = pka_max - pka_sum / pkas.size();
             else
-            {
-               for (int i = 0; i < a_sites.size(); i++)
-               {
-                  fp.clear();
-//                  int idx = order.find(a_sites[i]);
-                  int idx = a_sites[i];
-                  float val = a_pka[i];
-      
-                  getAtomLocalFingerprint (mol, idx, fp, level);
-        
-                  if (fp.size() == 0)
-                     continue;
-         
-                  if (!acid_pkas.find(fp.ptr()))
-                  {
-                     acid_pkas.insert(fp.ptr());
-                     acid_pka_cids.insert(fp.ptr());
-                     a_count++;
-                  }
-                  acid_pkas.at(fp.ptr()).push(val);
-                  acid_pka_cids.at(fp.ptr()).push(cid);
-               }
-            }
-         }
-   
-         if (loader.properties.contains(b_pka_sites_id))
-         {
+                pka_dev = pka_sum / pkas.size() - pka_min;
 
-            const char *bids = loader.properties.at(b_pka_sites_id);
-            const char *bpkas = loader.properties.at(b_pka_values_id);
-      
-            BufferScanner scan_bids(bids);
-            Array<int> b_sites;
-            while (!scan_bids.isEOF())
+            if (pka_dev > max_deviation)
+                max_deviation = pka_dev;
+
+            if (_model.adv_a_pkas.find(fp))
+                _model.adv_a_pkas.remove(fp);
+            _model.adv_a_pkas.insert(fp);
+            _model.adv_a_pkas.at(fp).push(pka_sum / pkas.size());
+            _model.adv_a_pkas.at(fp).push(pka_dev);
+
+            //         printf("      {PKA_ACID, \"%s\", %5.2f, %4.2f},\n", fp, pka_sum/pkas.size(), pka_dev);
+
+            /*
+                     for (int k = 0; k < cids.size(); k++)
+                     {
+                        printf("%d ", cids.at(k));
+                        printf("\n");
+                     }
+            */
+            if (pka_dev > threshold)
+                model_ready = false;
+        }
+
+        for (int i = 0; i < basic_pkas.size(); i++)
+        {
+            const char* fp = basic_pkas.key(i);
+            Array<float>& pkas = basic_pkas.value(i);
+            float pka_sum = 0.f;
+            float pka_dev = 0.f;
+            float pka_min = 100.f;
+            float pka_max = -100.f;
+            for (int k = 0; k < pkas.size(); k++)
             {
-              int idx = scan_bids.readInt1() - 1;
-              b_sites.push(idx);
-            }
-            BufferScanner scan_bpka(bpkas);
-            Array<float> b_pka;
-            while (!scan_bpka.isEOF())
-            {
-              float val = scan_bpka.readFloat();
-              b_pka.push(val);
+                float val = pkas.at(k);
+                pka_sum = pka_sum + val;
+                if (pka_min > val)
+                    pka_min = val;
+                if (pka_max < val)
+                    pka_max = val;
             }
 
-            if (b_sites.size() > 1)
-            {
-//               printf("Warning: multiple protonation sites detected. Skip this compound (%d)\n", cid);
-            }
+            if ((pka_max - pka_sum / pkas.size()) > (pka_sum / pkas.size() - pka_min))
+                pka_dev = pka_max - pka_sum / pkas.size();
             else
-            {
-               for (int i = 0; i < b_sites.size(); i++)
-               {
-                  fp.clear();
-//                  int idx = order.find(b_sites[i]);
-                  int idx = b_sites[i];
-                  float val = b_pka[i];
-      
-                  getAtomLocalFingerprint (mol, idx, fp, level);
-         
-                  if (fp.size() == 0)
-                     continue;
-         
-                  if (!basic_pkas.find(fp.ptr()))
-                  {
-                     basic_pkas.insert(fp.ptr());
-                     basic_pka_cids.insert(fp.ptr());
-                     b_count++;
-                  }
-                  basic_pkas.at(fp.ptr()).push(val);
-                  basic_pka_cids.at(fp.ptr()).push(cid);
-               }
-            }
-         }
-      }
+                pka_dev = pka_sum / pkas.size() - pka_min;
 
-      bool model_ready = true;
-      float max_deviation = 0.f;
-   
-      for (int i = 0; i < acid_pkas.size(); i++)
-      {
-         const char * fp = acid_pkas.key(i);
-         Array<float> &pkas = acid_pkas.value(i);
-         float pka_sum = 0.f;
-         float pka_dev = 0.f;
-         float pka_min = 100.f;
-         float pka_max = -100.f;
-         for (int k = 0; k < pkas.size(); k++)
-         {
-            float val = pkas.at(k);
-            pka_sum = pka_sum + val;
-            if (pka_min > val)
-               pka_min = val;
-            if (pka_max < val)
-               pka_max = val;
-         }
+            if (pka_dev > max_deviation)
+                max_deviation = pka_dev;
 
-         if ((pka_max - pka_sum/pkas.size()) > (pka_sum/pkas.size() - pka_min))
-            pka_dev = pka_max - pka_sum/pkas.size();
-         else
-            pka_dev = pka_sum/pkas.size() - pka_min;
+            if (_model.adv_b_pkas.find(fp))
+                _model.adv_b_pkas.remove(fp);
+            _model.adv_b_pkas.insert(fp);
+            _model.adv_b_pkas.at(fp).push(pka_sum / pkas.size());
+            _model.adv_b_pkas.at(fp).push(pka_dev);
 
-         if (pka_dev > max_deviation)
-            max_deviation = pka_dev;
-           
+            //         printf("      {PKA_BASIC, \"%s\", %5.2f, %4.2f},\n", fp, pka_sum/pkas.size(), pka_dev);
 
-         if (_model.adv_a_pkas.find(fp))
-             _model.adv_a_pkas.remove(fp);
-         _model.adv_a_pkas.insert(fp);
-         _model.adv_a_pkas.at(fp).push(pka_sum /pkas.size());
-         _model.adv_a_pkas.at(fp).push(pka_dev);
-
-//         printf("      {PKA_ACID, \"%s\", %5.2f, %4.2f},\n", fp, pka_sum/pkas.size(), pka_dev);
-
-/*
-         for (int k = 0; k < cids.size(); k++)
-         {
-            printf("%d ", cids.at(k));
-            printf("\n");
-         }
-*/ 
-         if (pka_dev > threshold) 
-            model_ready = false;
-      }
-      
-      for (int i = 0; i < basic_pkas.size(); i++)
-      {
-         const char * fp = basic_pkas.key(i);
-         Array<float> &pkas = basic_pkas.value(i);
-         float pka_sum = 0.f;
-         float pka_dev = 0.f;
-         float pka_min = 100.f;
-         float pka_max = -100.f;
-         for (int k = 0; k < pkas.size(); k++)
-         {
-            float val = pkas.at(k);
-            pka_sum = pka_sum + val;
-            if (pka_min > val)
-               pka_min = val;
-            if (pka_max < val)
-               pka_max = val;
-         }
-
-         if ((pka_max - pka_sum/pkas.size()) > (pka_sum/pkas.size() - pka_min))
-            pka_dev = pka_max - pka_sum/pkas.size();
-         else
-            pka_dev = pka_sum/pkas.size() - pka_min;
-
-
-         if (pka_dev > max_deviation)
-            max_deviation = pka_dev;
-
-         if (_model.adv_b_pkas.find(fp))
-            _model.adv_b_pkas.remove(fp);
-         _model.adv_b_pkas.insert(fp);
-         _model.adv_b_pkas.at(fp).push(pka_sum / pkas.size());
-         _model.adv_b_pkas.at(fp).push(pka_dev);
-           
-//         printf("      {PKA_BASIC, \"%s\", %5.2f, %4.2f},\n", fp, pka_sum/pkas.size(), pka_dev);
-
-/*
-         for (int k = 0; k < cids.size(); k++)
-         {
-            printf("%d ", cids.at(k));
-            printf("\n");
-         }
-*/  
-         if (pka_dev > threshold) 
-            model_ready = false;
-      }
-/*   
-      printf("Model level = %d, number of molecules in model file  = %d\n", level, mol_count);
-      printf("                  number of unique acid fingeprints  = %d\n", a_count);
-      printf("                  number of unique basic fingeprints = %d\n", b_count);
-      printf("                  number of acid fingeprints included  = %d\n", _model.adv_a_pkas.size());
-      printf("                  number of basic fingeprints included = %d\n", _model.adv_b_pkas.size());
-      printf("                  maximum deviation for model          = %4.2f\n", max_deviation);
-*/
-      if (model_ready)
-      {
-         break;
-      }
-      else
-      {
-         if (level >= max_level)
-         {
-            level = -1;
+            /*
+                     for (int k = 0; k < cids.size(); k++)
+                     {
+                        printf("%d ", cids.at(k));
+                        printf("\n");
+                     }
+            */
+            if (pka_dev > threshold)
+                model_ready = false;
+        }
+        /*
+              printf("Model level = %d, number of molecules in model file  = %d\n", level, mol_count);
+              printf("                  number of unique acid fingeprints  = %d\n", a_count);
+              printf("                  number of unique basic fingeprints = %d\n", b_count);
+              printf("                  number of acid fingeprints included  = %d\n", _model.adv_a_pkas.size());
+              printf("                  number of basic fingeprints included = %d\n", _model.adv_b_pkas.size());
+              printf("                  maximum deviation for model          = %4.2f\n", max_deviation);
+        */
+        if (model_ready)
+        {
             break;
-         }
-         else
-         {
-            level++;
-            _model.max_deviations.push(max_deviation);
-         }
-      }
-   }
+        }
+        else
+        {
+            if (level >= max_level)
+            {
+                level = -1;
+                break;
+            }
+            else
+            {
+                level++;
+                _model.max_deviations.push(max_deviation);
+            }
+        }
+    }
 
-   _model.level = level;
-   _model.advanced_model_ready = true;
+    _model.level = level;
+    _model.advanced_model_ready = true;
 
-   return level;
+    return level;
 }
-
 
 void MoleculePkaModel::_loadSimplePkaModel()
 {
-   struct _PkaDef
-   {
-      const char *acid;
-      float pka;
-      const char *basic;
-   };
+    struct _PkaDef
+    {
+        const char* acid;
+        float pka;
+        const char* basic;
+    };
 
-   /*  Roger Sayle, Physiological ionization and pKa prediction,
-   *   http://www.daylight.com/meetings/emug00/Sayle/pkapredict.html
-   */
-   static _PkaDef simple_pka_model[] = 
-   {
-      {"[F;!H0]", 3.18f, "[F-]"},
-      {"[Cl;!H0]", -6.50f, "[Cl-]"},
-      {"[Br;!H0]", -8.50f, "[Br-]"},
-      {"[I;!H0]", -9.00f, "[I-]"},
-      {"[c;!H0]", 43.00f, "[c-]"},
-      {"[$([C]#N);!H0]", 9.30f, "[$([C-]#N)]"},
-      {"[C;!H0]", 50.00f, "[C-]"},
-      {"[nH;!H0]", 16.50f, "[n-]"},
-      {"[$([N]=N=*);!H0]", -99.99f, "[$([N-]=N=*)]"},
-      {"[$([N]C=O);!H0]", 22.00f, "[$([N-]C=O)]"},
-      {"[$([N]S(=O)=O);!H0]", 10.10f, "[$([N-]S(=O)=O)]"},
-      {"[N;!H0]", 32.50f, "[N-]"},
-      {"[nH2+;!H0]", -3.80f, "[nH]"}, 
-      {"[nH+;!H0]", 5.23f, "[n]"},
-      {"[$([NH+]#*);!H0]", -12.00f, "[$([N]#*)]"},
-      {"[$([NH+]=C(N)N);!H0]", 14.4f, "[$([N]=C(N)N)]"},
-      {"[$([NH+]=C(N)a);!H0]", 11.6f, "[$([N]=C(N)a)]"},
-      {"[$([NH+]=CN);!H0]", 12.4f, "[$([N]=CN)]"},
-      {"[$([NH+]=*);!H0]", -99.99f, "[$([N]=*)]"},
-      {"[$([NH+]a);!H0]", 4.69f, "[$([N]a)]"},
-      {"[$([NH+]C=O);!H0]", 4.74f, "[$([N]C=O)]"},
-      {"[$([NH+]C=N);!H0]", -99.99f, "[$([N]C=N)]"},
-      {"[$([NH+]S(=O)=O);!H0]", -99.99f, "[$([N]S(=O)=O)]"},
-      {"[NH+;!H0]", 10.5f, "[N]"},
-      {"[NH2+;!H0]", 11.1f, "[$([N](C)C)]"},
-      {"[NH3+;!H0]", 10.6f, "[NH2]"},
-      {"[NH4+;!H0]", 9.25f, "[NH3]"},
-      {"[OH2;!H0]", 15.70f, "[OH-]"},
-      {"[$([O]c);!H0]", 10.00f, "[O-]a"},
-      {"[$([O]C(=O)[O-]);!H0]", 10.33f, "[$([O-]C(=O)[O-])]"},
-      {"[$([O]C(=O)a);!H0]", 4.20f, "[$([O-]C(=O)a)]"},
-      {"[$([O]C=O);!H0]", 4.80f, "[$([O-]C=O)]"},
-      {"[$([O]C);!H0]", 15.50f, "[$([O-]C)]"},
-      {"[$([O]N(=O)=O);!H0]", -1.40f, "[$([O-]N(=O)=O)]"},
-      {"[$([O][N+]=O);!H0]", -12.00f, "[$([O-][N+]=O)]"},
-      {"[$([O]NC=O);!H0]", 9.40f, "[$([O-]NC=O)]"},
-      {"[$([O]N=*);!H0]", 12.34f, "[$([O-]N=*)]"},
-      {"[$([O]N(*)*);!H0]", 5.2f, "[$([O-]N(*)*)]"},
-      {"[$([O]N);!H0]", 5.96f, "[$([O-]N)]"},
-      {"[$([O]P([O-])([O-]));!H0]", 12.50f, "[$([O-]P([O-])([O-]))]"},
-      {"[$([O]P([O-])=O);!H0]", 6.70f, "[$([O-]P([O-])=O)]"},
-      {"[$([O]P=O);!H0]", 2.00f, "[$([O-]P=O)]"},
-      {"[$([O]P[O-]);!H0]", 99.99f, "[$([O-]P[O-])]"},
-      {"[$([O]Pa);!H0]", 2.10f, "[$([O-]Pa)]"},
-      {"[$([O]P);!H0]", 3.08f, "[$([O-]P)]"},
-      {"[$([O]S(=O)(=O)[O-]);!H0]", 2.0f, "[$([O-]S(=O)(=O)[O-])]"},
-      {"[$([O]S(=O)(=O));!H0]", -99.99f, "[$([O-]S(=O)(=O))]"},
-      {"[$([O]S(=O)[O-]);!H0]", 7.20f, "[$([O-]S(=O)[O-])]"},
-      {"[$([O]S(=O));!H0]", 1.80f, "[$([O-]S(=O))]"},
-      {"[O;!H0]", 99.99f, "[O-]"},
-      {"[OH+;!H0]", -1.74f, "[O]"},
-      {"[P;!H0]", 29.00f, "[P-]"},
-      {"[P+;!H0]", -13.00f, "[P]"},
-      {"[$([S]*=O);!H0]", 3.52f, "[$([S-]*=O)]"},
-      {"[$([S]a);!H0]", 6.52f, "[$([S-]a)]"},
-      {"[SH2;!H0]", 7.00f, "[SH-]"},
-      {"[S;!H0]", 12.00f, "[S-]"},
-      {"[SH+;!H0]", -7.00f, "[S]"},
-   };
+    /*  Roger Sayle, Physiological ionization and pKa prediction,
+     *   http://www.daylight.com/meetings/emug00/Sayle/pkapredict.html
+     */
+    static _PkaDef simple_pka_model[] = {
+        {"[F;!H0]", 3.18f, "[F-]"},
+        {"[Cl;!H0]", -6.50f, "[Cl-]"},
+        {"[Br;!H0]", -8.50f, "[Br-]"},
+        {"[I;!H0]", -9.00f, "[I-]"},
+        {"[c;!H0]", 43.00f, "[c-]"},
+        {"[$([C]#N);!H0]", 9.30f, "[$([C-]#N)]"},
+        {"[C;!H0]", 50.00f, "[C-]"},
+        {"[nH;!H0]", 16.50f, "[n-]"},
+        {"[$([N]=N=*);!H0]", -99.99f, "[$([N-]=N=*)]"},
+        {"[$([N]C=O);!H0]", 22.00f, "[$([N-]C=O)]"},
+        {"[$([N]S(=O)=O);!H0]", 10.10f, "[$([N-]S(=O)=O)]"},
+        {"[N;!H0]", 32.50f, "[N-]"},
+        {"[nH2+;!H0]", -3.80f, "[nH]"},
+        {"[nH+;!H0]", 5.23f, "[n]"},
+        {"[$([NH+]#*);!H0]", -12.00f, "[$([N]#*)]"},
+        {"[$([NH+]=C(N)N);!H0]", 14.4f, "[$([N]=C(N)N)]"},
+        {"[$([NH+]=C(N)a);!H0]", 11.6f, "[$([N]=C(N)a)]"},
+        {"[$([NH+]=CN);!H0]", 12.4f, "[$([N]=CN)]"},
+        {"[$([NH+]=*);!H0]", -99.99f, "[$([N]=*)]"},
+        {"[$([NH+]a);!H0]", 4.69f, "[$([N]a)]"},
+        {"[$([NH+]C=O);!H0]", 4.74f, "[$([N]C=O)]"},
+        {"[$([NH+]C=N);!H0]", -99.99f, "[$([N]C=N)]"},
+        {"[$([NH+]S(=O)=O);!H0]", -99.99f, "[$([N]S(=O)=O)]"},
+        {"[NH+;!H0]", 10.5f, "[N]"},
+        {"[NH2+;!H0]", 11.1f, "[$([N](C)C)]"},
+        {"[NH3+;!H0]", 10.6f, "[NH2]"},
+        {"[NH4+;!H0]", 9.25f, "[NH3]"},
+        {"[OH2;!H0]", 15.70f, "[OH-]"},
+        {"[$([O]c);!H0]", 10.00f, "[O-]a"},
+        {"[$([O]C(=O)[O-]);!H0]", 10.33f, "[$([O-]C(=O)[O-])]"},
+        {"[$([O]C(=O)a);!H0]", 4.20f, "[$([O-]C(=O)a)]"},
+        {"[$([O]C=O);!H0]", 4.80f, "[$([O-]C=O)]"},
+        {"[$([O]C);!H0]", 15.50f, "[$([O-]C)]"},
+        {"[$([O]N(=O)=O);!H0]", -1.40f, "[$([O-]N(=O)=O)]"},
+        {"[$([O][N+]=O);!H0]", -12.00f, "[$([O-][N+]=O)]"},
+        {"[$([O]NC=O);!H0]", 9.40f, "[$([O-]NC=O)]"},
+        {"[$([O]N=*);!H0]", 12.34f, "[$([O-]N=*)]"},
+        {"[$([O]N(*)*);!H0]", 5.2f, "[$([O-]N(*)*)]"},
+        {"[$([O]N);!H0]", 5.96f, "[$([O-]N)]"},
+        {"[$([O]P([O-])([O-]));!H0]", 12.50f, "[$([O-]P([O-])([O-]))]"},
+        {"[$([O]P([O-])=O);!H0]", 6.70f, "[$([O-]P([O-])=O)]"},
+        {"[$([O]P=O);!H0]", 2.00f, "[$([O-]P=O)]"},
+        {"[$([O]P[O-]);!H0]", 99.99f, "[$([O-]P[O-])]"},
+        {"[$([O]Pa);!H0]", 2.10f, "[$([O-]Pa)]"},
+        {"[$([O]P);!H0]", 3.08f, "[$([O-]P)]"},
+        {"[$([O]S(=O)(=O)[O-]);!H0]", 2.0f, "[$([O-]S(=O)(=O)[O-])]"},
+        {"[$([O]S(=O)(=O));!H0]", -99.99f, "[$([O-]S(=O)(=O))]"},
+        {"[$([O]S(=O)[O-]);!H0]", 7.20f, "[$([O-]S(=O)[O-])]"},
+        {"[$([O]S(=O));!H0]", 1.80f, "[$([O-]S(=O))]"},
+        {"[O;!H0]", 99.99f, "[O-]"},
+        {"[OH+;!H0]", -1.74f, "[O]"},
+        {"[P;!H0]", 29.00f, "[P-]"},
+        {"[P+;!H0]", -13.00f, "[P]"},
+        {"[$([S]*=O);!H0]", 3.52f, "[$([S-]*=O)]"},
+        {"[$([S]a);!H0]", 6.52f, "[$([S-]a)]"},
+        {"[SH2;!H0]", 7.00f, "[SH-]"},
+        {"[S;!H0]", 12.00f, "[S-]"},
+        {"[SH+;!H0]", -7.00f, "[S]"},
+    };
 
-   _model.acids.clear();
-   _model.basics.clear();
-   _model.a_pkas.clear();
-   _model.b_pkas.clear();
+    _model.acids.clear();
+    _model.basics.clear();
+    _model.a_pkas.clear();
+    _model.b_pkas.clear();
 
-   for (auto i = 0; i < NELEM(simple_pka_model); i++)
-   {
-      BufferScanner scanner(simple_pka_model[i].acid);
-      SmilesLoader loader(scanner);
-      QueryMolecule &acid = _model.acids.push();
-      loader.loadSMARTS(acid);
-      _model.a_pkas.push(simple_pka_model[i].pka);
-   }
+    for (auto i = 0; i < NELEM(simple_pka_model); i++)
+    {
+        BufferScanner scanner(simple_pka_model[i].acid);
+        SmilesLoader loader(scanner);
+        QueryMolecule& acid = _model.acids.push();
+        loader.loadSMARTS(acid);
+        _model.a_pkas.push(simple_pka_model[i].pka);
+    }
 
-   for (auto i = 0; i < NELEM(simple_pka_model); i++)
-   {
-      BufferScanner scanner(simple_pka_model[i].basic);
-      SmilesLoader loader(scanner);
-      QueryMolecule &basic = _model.basics.push();
-      loader.loadSMARTS(basic);
-      _model.b_pkas.push(simple_pka_model[i].pka);
-   }
+    for (auto i = 0; i < NELEM(simple_pka_model); i++)
+    {
+        BufferScanner scanner(simple_pka_model[i].basic);
+        SmilesLoader loader(scanner);
+        QueryMolecule& basic = _model.basics.push();
+        loader.loadSMARTS(basic);
+        _model.b_pkas.push(simple_pka_model[i].pka);
+    }
 
-   _model.simple_model_ready = true;
+    _model.simple_model_ready = true;
 }
 
 void MoleculePkaModel::_loadAdvancedPkaModel()
 {
-   enum PkaType { PKA_ACID, PKA_BASIC };
+    enum PkaType
+    {
+        PKA_ACID,
+        PKA_BASIC
+    };
 
-   struct _PkaDef
-   {
-      PkaType  type;
-      const char *a_fp;
-      float pka;
-      float deviation;
-   };
+    struct _PkaDef
+    {
+        PkaType type;
+        const char* a_fp;
+        float pka;
+        float deviation;
+    };
 
-   static _PkaDef advanced_pka_model[] =
-   {
-      {PKA_ACID, "8200022210000",  5.31, 10.19},
-      {PKA_ACID, "7300021310000",  8.94, 7.84},
-      {PKA_ACID, "6400020401000",  8.76, 4.51},
-      {PKA_ACID, "6400020410000", 10.21, 0.00},
-      {PKA_ACID, "16200022210000",  6.72, 3.77},
-      {PKA_ACID, "6400020411000", 12.84, 2.80},
-      {PKA_ACID, "7300021311000",  1.72, 0.55},
-      {PKA_ACID, "6400020420000",  6.93, 3.75},
-      {PKA_ACID, "33500020531000",  6.27, 0.00},
-      {PKA_ACID, "7300021320000",  7.08, 4.58},
-      {PKA_ACID, "82-10023110000",  3.06, 1.23},
-      {PKA_BASIC, "7300021310000",  7.52, 7.77},
-      {PKA_BASIC, "7300021320000",  7.77, 11.57},
-      {PKA_BASIC, "7300021311000",  5.39, 8.91},
-      {PKA_BASIC, "7300021330000",  7.84, 6.14},
-      {PKA_BASIC, "82-10023110000",  4.65, 0.00},
-      {PKA_BASIC, "7410020421000",  0.79, 0.00},
-      {PKA_BASIC, "7410020410000",  8.86, 0.00},
-      {PKA_ACID, "8200022210000|6400020421000",  4.82, 5.80},
-      {PKA_ACID, "8200022210000|6400020410010",  3.70, 0.00},
-      {PKA_ACID, "7300021310000|6400020410010",  1.10, 0.00},
-      {PKA_ACID, "6400020401000|8200022201000", 13.27, 0.00},
-      {PKA_ACID, "8200022210000|6400020411000",  3.75, 0.00},
-      {PKA_ACID, "6400020410000|7410020421000", 10.21, 0.00},
-      {PKA_ACID, "16200022210000|6400020421000",  4.30, 2.32},
-      {PKA_ACID, "8200022210000|6400020410000", 10.33, 0.00},
-      {PKA_ACID, "6400020411000|64000204400008200022201000", 10.04, 0.00},
-      {PKA_ACID, "8200022210000|6400020420000", 13.56, 1.94},
-      {PKA_ACID, "7300021311000|64000204110006400020411000",  2.27, 0.00},
-      {PKA_ACID, "7300021311000|64000204110007300021320000",  1.17, 0.00},
-      {PKA_ACID, "6400020411000|64000204100008200022201000", 13.57, 0.00},
-      {PKA_ACID, "7300021310000|6400020421000", 14.05, 1.05},
-      {PKA_ACID, "8200022210000|7300021320000",  8.70, 0.00},
-      {PKA_ACID, "6400020420000|64000204100007410020421000",  8.46, 0.00},
-      {PKA_ACID, "16200022210000|6400020420000",  9.14, 0.87},
-      {PKA_ACID, "33500020531000|6400020410000640002041000082000222010008200022210000",  6.27, 0.00},
-      {PKA_ACID, "8200022210000|16600020622000",  2.17, 1.57},
-      {PKA_ACID, "6400020401000|6400020411000",  4.25, 0.00},
-      {PKA_ACID, "8200022210000|7300021311000", 12.42, 0.00},
-      {PKA_ACID, "8200022210000|6400020430000", 12.85, 1.30},
-      {PKA_ACID, "7300021320000|64000204210006400020421000",  7.54, 3.65},
-      {PKA_ACID, "7300021310000|16600020622000",  8.34, 1.14},
-      {PKA_ACID, "7300021320000|64000204110006400020421000", 11.65, 0.00},
-      {PKA_ACID, "7300021320000|64000204110006400020411000", 11.12, 0.00},
-      {PKA_ACID, "82-10023110000|6400020421000",  3.06, 1.23},
-      {PKA_ACID, "8200022210000|16400020421000",  1.30, 0.00},
-      {PKA_ACID, "8200022210000|5300020330000",  8.83, 0.00},
-      {PKA_ACID, "6400020420000|64000204210006400020421000",  6.55, 4.13},
-      {PKA_ACID, "6400020411000|64000204110006400020411000", 14.90, 0.00},
-      {PKA_ACID, "7300021320000|166000206220006400020421000",  5.42, 2.92},
-      {PKA_ACID, "8200022210000|15500020531000",  6.30, 0.10},
-      {PKA_ACID, "7300021320000|64000204210007300021330000",  3.60, 0.00},
-      {PKA_BASIC, "7300021310000|6400020430000",  9.33, 2.06},
-      {PKA_BASIC, "7300021310000|6400020420000",  9.93, 4.59},
-      {PKA_BASIC, "7300021320000|64000204200006400020430000", 10.12, 1.48},
-      {PKA_BASIC, "7300021310000|6400020410000", 10.66, 0.00},
-      {PKA_BASIC, "7300021310000|8200022220000", 12.50, 0.00},
-      {PKA_BASIC, "7300021311000|6400020421000", 11.15, 6.54},
-      {PKA_BASIC, "7300021320000|64000204200006400020420000", 10.27, 2.23},
-      {PKA_BASIC, "7300021320000|64000204100006400020410000", 10.73, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000",  5.83, 5.69},
-      {PKA_BASIC, "7300021311000|64000204110006400020411000",  5.07, 6.98},
-      {PKA_BASIC, "7300021311000|64000204110008200022220000", -2.00, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110007300021320000",  2.49, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000",  5.34, 7.34},
-      {PKA_BASIC, "7300021320000|64000204100006400020420000",  9.42, 1.22},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020410000",  9.80, 0.00},
-      {PKA_BASIC, "82-10023110000|7410020440000",  4.65, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110007300021311000",  2.86, 0.62},
-      {PKA_BASIC, "7300021320000|64000204210006400020421000",  5.05, 5.36},
-      {PKA_BASIC, "7300021320000|64000204110006400020411000", -0.30, 3.50},
-      {PKA_BASIC, "7300021310000|6400020440000", 10.01, 1.71},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020420000",  9.42, 1.17},
-      {PKA_BASIC, "7300021320000|64000204110006400020421000",  3.95, 3.20},
-      {PKA_BASIC, "7410020421000|6400020411000640002041100082-10023110000",  0.79, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020420000",  9.00, 2.16},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020421000",  5.97, 6.03},
-      {PKA_BASIC, "7300021310000|6400020421000",  3.71, 6.28},
-      {PKA_BASIC, "7300021311000|64000204210007300021320000",  1.60, 0.00},
-      {PKA_BASIC, "7300021310000|7300021320000",  8.79, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000",  8.74, 2.18},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000",  8.30, 3.08},
-      {PKA_BASIC, "7300021320000|64000204300006400020430000", 10.73, 0.33},
-      {PKA_BASIC, "7300021320000|1440002044000014400020440000",  7.55, 0.00},
-      {PKA_BASIC, "7300021320000|166000206220006400020421000", 11.68, 0.00},
-      {PKA_BASIC, "7300021320000|64000204100006400020421000",  4.26, 0.59},
-      {PKA_BASIC, "7300021311000|64000204210007300021311000",  2.37, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020421000",  4.47, 0.65},
-      {PKA_BASIC, "7300021330000|640002041000064000204300006400020430000",  6.75, 2.95},
-      {PKA_BASIC, "7300021320000|64000204100006400020430000", 10.36, 0.63},
-      {PKA_BASIC, "7300021320000|64000204210006400020430000",  9.06, 3.30},
-      {PKA_BASIC, "7300021320000|64000204400006400020440000", 11.07, 0.00},
-      {PKA_BASIC, "7300021320000|64000204210006400020440000",  7.00, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020421000",  8.68, 3.54},
-      {PKA_BASIC, "7300021311000|64000204200006400020421000",  9.58, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204400006400020440000", 11.25, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020420000",  5.20, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020430000",  8.76, 0.00},
-      {PKA_BASIC, "7410020410000|6400020430000",  8.86, 0.00},
-      {PKA_BASIC, "7300021330000|640002042100064000204210008200022210000",  5.50, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020440000",  2.00, 0.10},
-      {PKA_BASIC, "7300021320000|64000204100006400020440000",  7.50, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204210006400020421000",  3.40, 0.00},
-      {PKA_BASIC, "7300021311000|64000204100006400020421000",  4.80, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204210006400020421000",  1.70, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020440000",  9.67, 0.00},
-      {PKA_BASIC, "7300021330000|640002042100064000204210007300021330000",  4.50, 0.00},
-      {PKA_BASIC, "7300021330000|640002042100064000204210006400020430000",  8.26, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000",  8.19, 4.01},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020430000",  8.80, 0.00},
-      {PKA_BASIC, "7300021320000|64000204110007300021330000",  1.70, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204300006400020430000",  6.66, 0.00},
-      {PKA_ACID, "8200022210000|6400020421000|640002043000082000222010008200022210000",  2.97, 2.02},
-      {PKA_ACID, "8200022210000|6400020421000|640002042000082000222010008200022210000",  3.90, 2.42},
-      {PKA_ACID, "8200022210000|6400020410010|73000213000108200022210000",  3.70, 0.00},
-      {PKA_ACID, "7300021310000|6400020410010|73000213000107300021310000",  1.10, 0.00},
-      {PKA_ACID, "6400020401000|8200022201000|6400020401000", 13.27, 0.00},
-      {PKA_ACID, "8200022210000|6400020411000|82000222010008200022210000",  3.75, 0.00},
-      {PKA_ACID, "6400020410000|7410020421000|640002041000082-100231100008200022201000", 10.21, 0.00},
-      {PKA_ACID, "16200022210000|6400020421000|16200022201000162000222100007300021310000",  2.95, 0.00},
-      {PKA_ACID, "8200022210000|6400020410000|8200022210000", 10.33, 0.00},
-      {PKA_ACID, "6400020411000|64000204400008200022201000|1710002311000017100023110000171000231100006400020411000", 10.04, 0.00},
-      {PKA_ACID, "8200022210000|6400020421000|640002044000082000222010008200022210000",  2.93, 3.71},
-      {PKA_ACID, "8200022210000|6400020421000|640002041100082000222010008200022210000",  4.31, 1.13},
-      {PKA_ACID, "8200022210000|6400020420000|64000204400008200022210000", 12.31, 0.07},
-      {PKA_ACID, "7300021311000|64000204110006400020411000|730002131100073000213110007300021320000",  2.27, 0.00},
-      {PKA_ACID, "7300021311000|64000204110007300021320000|640002041100073000213110007300021311000",  1.17, 0.00},
-      {PKA_ACID, "6400020411000|64000204100008200022201000|6400020411000", 13.57, 0.00},
-      {PKA_ACID, "16200022210000|6400020421000|1620002221000064000204100008200022201000",  3.33, 0.00},
-      {PKA_ACID, "8200022210000|6400020421000|640002041000082000222010008200022210000",  4.76, 0.00},
-      {PKA_ACID, "7300021310000|6400020421000|640002041000073000213100008200022201000", 15.10, 0.00},
-      {PKA_ACID, "8200022210000|7300021320000|64000204210008200022210000",  8.70, 0.00},
-      {PKA_ACID, "6400020420000|64000204100007410020421000|640002042000082-100231100008200022201000",  8.46, 0.00},
-      {PKA_ACID, "8200022210000|6400020420000|64000204100008200022210000", 15.50, 0.00},
-      {PKA_ACID, "16200022210000|6400020420000|162000222100006400020420000",  9.00, 0.73},
-      {PKA_ACID, "8200022210000|6400020420000|64000204200008200022210000", 14.60, 0.70},
-      {PKA_ACID, "33500020531000|6400020410000640002041000082000222010008200022210000|33500020531000",  6.27, 0.00},
-      {PKA_ACID, "8200022210000|16600020622000|6400020420000820002220100082000222010008200022210000",  1.45, 0.05},
-      {PKA_ACID, "8200022210000|6400020421000|640002041001082000222010008200022210000",  2.23, 0.39},
-      {PKA_ACID, "8200022210000|6400020420000|64000204100108200022210000", 13.60, 0.00},
-      {PKA_ACID, "6400020401000|6400020411000|64000204010006400020421000",  4.25, 0.00},
-      {PKA_ACID, "8200022210000|6400020421000|640002042100082000222010008200022210000",  3.50, 2.85},
-      {PKA_ACID, "8200022210000|6400020420000|64000204110008200022210000", 15.50, 0.00},
-      {PKA_ACID, "8200022210000|7300021311000|64000204210008200022210000", 12.42, 0.00},
-      {PKA_ACID, "8200022210000|6400020430000|640002042000064000204200008200022210000", 14.15, 0.00},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|64000204200007300021320000820002220100073000213200008200022201000",  4.01, 0.00},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|64000204200007300021320000820002220100064000204200008200022201000",  9.62, 0.00},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|64000204210007300021320000820002220100073000213200008200022201000",  7.14, 3.25},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|64000204300007300021320000820002220100073000213200008200022201000",  8.96, 0.00},
-      {PKA_ACID, "7300021310000|16600020622000|6400020421000730002131000082000222010008200022201000",  8.34, 1.14},
-      {PKA_ACID, "8200022210000|6400020430000|640002042000064000204300008200022210000", 13.90, 0.00},
-      {PKA_ACID, "7300021320000|64000204110006400020421000|6400020411000730002132000064000204110008200022201000", 11.65, 0.00},
-      {PKA_ACID, "8200022210000|6400020421000|640002041100064000204110008200022210000",  9.19, 2.04},
-      {PKA_ACID, "7300021320000|64000204110006400020411000|640002041100073000213200006400020411000", 11.12, 0.00},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|64000204400007300021320000820002220100082000222010008200022220000",  6.13, 0.00},
-      {PKA_ACID, "8200022210000|6400020430000|640002042000082000222100008200022220000", 12.61, 0.00},
-      {PKA_ACID, "8200022210000|6400020430000|640002041100064000204300008200022210000", 12.22, 0.00},
-      {PKA_ACID, "8200022210000|6400020430000|640002043000082000222100008200022220000", 12.11, 0.03},
-      {PKA_ACID, "82-10023110000|6400020421000|640002042000082-100231100008200022201000",  2.82, 0.99},
-      {PKA_ACID, "8200022210000|6400020421000|640002042100064000204210008200022210000",  6.15, 5.73},
-      {PKA_ACID, "8200022210000|6400020421000|640002041100064000204210008200022210000",  8.56, 4.49},
-      {PKA_ACID, "8200022210000|16400020421000|640002042100082000222010008200022210000",  1.30, 0.00},
-      {PKA_ACID, "8200022210000|16600020622000|6400020421000820002220100082000222010008200022210000",  2.53, 1.83},
-      {PKA_ACID, "16200022210000|6400020421000|1620002221000064000204110006400020411000",  6.62, 0.00},
-      {PKA_ACID, "8200022210000|5300020330000|640002042100082000222100008200022210000",  8.83, 0.00},
-      {PKA_ACID, "6400020420000|64000204210006400020421000|64000204200006400020420000820002220100064000204200008200022201000",  5.20, 0.06},
-      {PKA_ACID, "6400020420000|64000204210006400020421000|64000204200008200022201000820002222000082000222010008200022220000",  5.10, 0.00},
-      {PKA_ACID, "6400020420000|64000204210006400020421000|64000204100006400020420000820002220100082000222010008200022220000", 10.68, 0.00},
-      {PKA_ACID, "8200022210000|6400020420000|64000204300008200022210000", 12.81, 0.90},
-      {PKA_ACID, "6400020411000|64000204110006400020411000|640002041100064000204110006400020411000", 14.90, 0.00},
-      {PKA_ACID, "7300021310000|6400020421000|640002042100073000213100008200022201000", 13.00, 0.00},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|64000204210007300021320000820002220100073000213300008200022201000",  7.89, 0.00},
-      {PKA_ACID, "16200022210000|6400020420000|162000222100006400020421000",  9.43, 0.00},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|64000204200007300021320000820002220100073000213300008200022201000",  7.20, 0.00},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|64000204110007300021320000820002220100073000213300008200022201000",  6.70, 0.00},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|64000204400007300021320000820002220100073000213200008200022201000",  7.72, 0.29},
-      {PKA_ACID, "7300021320000|166000206220006400020421000|6400020421000730002132000082000222010008200022201000162000222200007300021311000",  7.20, 0.00},
-      {PKA_ACID, "8200022210000|15500020531000|8200022201000820002221000082000222100008200022220000",  6.30, 0.10},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|64000204400007300021320000820002220100073000213300008200022201000",  8.45, 0.00},
-      {PKA_ACID, "7300021320000|166000206220006400020421000|640002042100073000213200008200022201000820002220100064000204110007300021311000",  6.70, 0.00},
-      {PKA_ACID, "7300021320000|166000206220006400020421000|640002044000073000213200008200022201000820002220100064000204110006400020421000",  3.55, 1.05},
-      {PKA_ACID, "7300021320000|166000206220006400020421000|640002042100073000213200008200022201000820002220100064000204210008200022220000",  5.00, 0.00},
-      {PKA_ACID, "7300021320000|166000206220006400020421000|640002042100073000213200008200022201000820002220100073000213110007300021311000",  7.40, 0.00},
-      {PKA_ACID, "82-10023110000|6400020421000|640002043000082-100231100008200022201000",  3.40, 0.00},
-      {PKA_ACID, "7300021320000|166000206220006400020421000|640002042100073000213200008200022201000820002220100064000204210008200022201000",  4.57, 0.00},
-      {PKA_ACID, "7300021320000|64000204210007300021330000|73000213200007300021320000820002220100064000204200006400020420000",  3.60, 0.00},
-      {PKA_ACID, "7300021320000|64000204210006400020421000|73000213110007300021320000820002220100064000204210008200022201000",  9.69, 0.00},
-      {PKA_ACID, "82-10023110000|6400020421000|640002042100082-100231100008200022201000",  3.20, 0.00},
-      {PKA_BASIC, "7300021310000|6400020430000|640002042000064000204210007300021310000",  9.21, 1.61},
-      {PKA_BASIC, "7300021310000|6400020420000|64000204210007300021310000",  8.73, 1.05},
-      {PKA_BASIC, "7300021310000|6400020430000|640002042100064000204300007300021310000",  9.53, 0.43},
-      {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020420000730002132000064000204200006400020421000", 10.67, 0.05},
-      {PKA_BASIC, "7300021310000|6400020410000|7300021310000", 10.66, 0.00},
-      {PKA_BASIC, "7300021310000|8200022220000|64000204100007300021310000", 12.50, 0.00},
-      {PKA_BASIC, "7300021311000|6400020421000|730002131100073000213100007300021310000", 13.60, 0.00},
-      {PKA_BASIC, "7300021310000|6400020420000|64000204100107300021310000",  5.34, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020420000|7300021320000",  8.04, 0.00},
-      {PKA_BASIC, "7300021311000|6400020421000|640002041000073000213100007300021311000", 12.10, 0.00},
-      {PKA_BASIC, "7300021310000|6400020420000|64000204100007300021310000", 10.65, 0.00},
-      {PKA_BASIC, "7300021320000|64000204100006400020410000|7300021320000", 10.73, 0.00},
-      {PKA_BASIC, "7300021310000|6400020420000|64000204200007300021310000", 10.36, 2.56},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|73000213100007300021310000730002131100073000213100007300021311000", 11.52, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110008200022220000",  0.80, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110008200022220000|640002041100073000213110006400020411000", -2.00, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020411000|1620002222000073000213110006400020411000",  2.52, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110007300021320000|640002041100073000213110006400020411000",  2.49, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110007300021320000",  6.99, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|64000204110007300021311000162000222200007300021310000",  5.36, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|73000213100007300021311000730002131100073000213100007300021311000",  5.00, 0.00},
-      {PKA_BASIC, "7300021310000|6400020420000|64000204110007300021310000",  9.49, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020420000|64000204200007300021320000", 11.29, 0.00},
-      {PKA_BASIC, "7300021320000|64000204100006400020420000|73000213200006400020421000", 10.10, 0.00},
-      {PKA_BASIC, "7300021310000|6400020430000|640002041000064000204100007300021310000", 10.63, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020410000|7300021330000",  9.80, 0.00},
-      {PKA_BASIC, "82-10023110000|7410020440000|64000204100006400020410000640002041000082-10023110000",  4.65, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020421000730002131100073000213200008200022201000",  3.26, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110006400020411000",  5.54, 6.51},
-      {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110007300021311000",  1.23, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110007300021311000|640002041100073000213110006400020411000",  2.24, 0.00},
-      {PKA_BASIC, "7300021320000|64000204210006400020421000|64000204110007300021320000820002220100073000213200008200022201000",  9.45, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|73000213100007300021311000730002131100064000204110007410020421000",  0.35, 0.00},
-      {PKA_BASIC, "7300021320000|64000204110006400020411000|640002041100073000213200006400020411000", -0.30, 3.50},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100073000213100007300021311000",  3.45, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002131100064000204110007300021310000",  5.71, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110007300021330000",  6.95, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020420000|640002042100073000213200006400020421000",  9.89, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|73000213100007300021311000730002133000064000204200008200022201000",  9.20, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110007300021310000730002131100073000213100007300021311000",  6.84, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020420000|640002042000073000213200006400020420000", 10.55, 2.05},
-      {PKA_BASIC, "7300021310000|6400020440000|6400020410000640002041000064000204210007300021310000", 10.21, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020420000|73000213300006400020421000",  9.89, 0.00},
-      {PKA_BASIC, "7300021311000|6400020421000|730002131000073000213110007300021330000", 14.30, 0.00},
-      {PKA_BASIC, "7300021310000|6400020430000|640002041000064000204200007300021310000", 10.63, 0.07},
-      {PKA_BASIC, "7300021310000|6400020440000|6400020410000640002041000064000204100007300021310000", 10.68, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020420000|640002041000073000213200006400020410000", 10.84, 0.00},
-      {PKA_BASIC, "7300021310000|6400020440000|6400020420000640002042000064000204200007300021310000",  8.30, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110006400020421000",  5.19, 4.46},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|64000204110007300021311000171000231100006400020411000",  0.49, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110009100023110000", -0.44, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002132000064000204210007300021320000",  8.70, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002131100064000204210007300021320000", 10.20, 0.00},
-      {PKA_BASIC, "7300021320000|64000204110006400020421000|6400020411000730002132000064000204110008200022201000",  0.75, 0.00},
-      {PKA_BASIC, "7410020421000|6400020411000640002041100082-10023110000|640002041100074100204210006400020411000",  0.79, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110006400020421000",  4.86, 4.36},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110007300021310000",  6.82, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204100006400020411000",  4.81, 3.36},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020421000730002131100064000204110007300021310000",  5.77, 0.72},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110007300021320000",  3.39, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020421000730002131100064000204100007300021320000",  8.36, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020430000730002132000064000204200006400020421000",  9.66, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020420000|730002133000064000204200006400020420000",  9.20, 1.82},
-      {PKA_BASIC, "7300021320000|64000204200006400020420000|640002042000073000213200006400020421000", 10.19, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020421000|730002133000073000213300008200022201000", 12.00, 0.00},
-      {PKA_BASIC, "7300021310000|6400020430000|640002042000064000204200007300021310000", 10.61, 0.03},
-      {PKA_BASIC, "7300021310000|6400020440000|6400020410000640002041000064000204200007300021310000", 10.85, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020420000|73000213300006400020420000",  9.27, 1.02},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020420000|730002133000064000204100006400020410000", 10.35, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002131100064000204210007300021311000",  4.05, 0.00},
-      {PKA_BASIC, "7300021310000|6400020421000|640002041100064000204110007300021310000",  3.74, 2.72},
-      {PKA_BASIC, "7300021310000|6400020421000|640002041100064000204210007300021310000",  3.23, 3.48},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110006400020411000", 12.68, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210007300021320000|6400020411000640002042100073000213110007300021311000",  1.60, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204210007300021320000",  2.27, 0.00},
-      {PKA_BASIC, "7300021320000|64000204110006400020421000|6400020411000730002132000064000204110006400020411000",  3.59, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110008200022220000",  3.28, 0.00},
-      {PKA_BASIC, "7300021310000|7300021320000|64000204210007300021310000",  8.79, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020421000730002133000064000204210006400020421000", 10.70, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204100006400020411000730002131100073000213100007300021311000",  4.82, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002042000064000204100006400020420000", 10.21, 0.01},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020410000730002133000064000204200006400020420000",  9.06, 1.39},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020420000730002133000064000204200006400020421000",  8.35, 0.00},
-      {PKA_BASIC, "7300021320000|64000204300006400020430000|64000204100006400020410000730002132000064000204100006400020410000", 11.05, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020410000730002133000064000204100006400020410000", 10.75, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020420000730002133000064000204200006400020420000",  8.50, 1.97},
-      {PKA_BASIC, "7300021320000|1440002044000014400020440000|6400020410000640002041000064000204100007300021320000640002041000064000204100006400020410000",  7.55, 0.00},
-      {PKA_BASIC, "7300021320000|166000206220006400020421000|640002042100073000213200008200022201000820002220100064000204210008200022201000", 11.68, 0.00},
-      {PKA_BASIC, "7300021320000|64000204110006400020421000|7300021311000730002132000064000204110006400020421000",  6.60, 0.25},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002132000064000204110006400020421000",  5.53, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002132000064000204210007300021330000",  8.77, 0.00},
-      {PKA_BASIC, "7300021320000|64000204100006400020421000|730002132000064000204110006400020411000",  4.85, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110006400020420000",  5.51, 0.38},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204100006400020421000",  7.14, 0.57},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020421000730002131100064000204100006400020411000",  6.40, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204100006400020411000730002131100064000204100006400020411000",  6.04, 1.39},
-      {PKA_BASIC, "7300021311000|64000204110006400020411000|640002042100073000213110006400020421000",  6.15, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210007300021311000|6400020411000640002042100073000213110006400020411000",  2.37, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002131100064000204110006400020421000",  3.43, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110007300021311000|640002042100073000213110006400020411000",  3.47, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100064000204100007300021320000",  6.19, 0.00},
-      {PKA_BASIC, "7300021320000|64000204210006400020421000|64000204110006400020411000730002132000064000204100008200022201000",  0.50, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020421000|6400020421000730002132000064000204110006400020411000",  4.39, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020421000|730002133000064000204110006400020411000",  5.36, 6.13},
-      {PKA_BASIC, "7300021320000|64000204200006400020421000|6400020410000730002132000064000204110006400020411000",  5.12, 0.00},
-      {PKA_BASIC, "7300021310000|6400020421000|640002042100064000204210007300021310000",  6.94, 3.05},
-      {PKA_BASIC, "7300021310000|6400020420000|64000204300007300021310000",  9.70, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020411000730002131100073000213100007300021311000", 10.77, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020420000|730002133000064000204200006400020421000",  6.84, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204300006400020430000|73000213300006400020420000640002042000064000204200006400020420000",  6.75, 2.95},
-      {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020420000730002132000064000204200006400020420000", 11.06, 0.16},
-      {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020430000730002132000064000204200006400020420000", 10.30, 0.00},
-      {PKA_BASIC, "7300021320000|64000204100006400020430000|730002132000064000204100006400020420000", 10.99, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020421000730002131100064000204110006400020421000",  4.36, 1.67},
-      {PKA_BASIC, "7300021320000|64000204210006400020421000|64000204110006400020421000730002132000064000204110008200022201000", -0.31, 0.00},
-      {PKA_BASIC, "7300021320000|64000204110006400020421000|6400020411000730002132000064000204110006400020421000",  2.23, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204210006400020421000",  4.88, 0.03},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002132000064000204210007300021311000",  8.20, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100064000204110007300021310000",  7.34, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204210007300021310000",  7.62, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100073000213200007300021320000",  4.48, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100064000204200007300021320000",  6.18, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020421000|6400020411000730002132000064000204110006400020411000",  4.17, 0.00},
-      {PKA_BASIC, "7300021320000|64000204210006400020430000|64000204110006400020411000730002132000064000204100006400020410000",  5.77, 0.00},
-      {PKA_BASIC, "7300021320000|64000204100006400020420000|73000213200006400020430000",  9.95, 0.00},
-      {PKA_BASIC, "7300021320000|64000204210006400020421000|64000204110007300021320000820002220100073000213300008200022201000",  9.50, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110007300021310000730002131100073000213300008200022201000",  4.25, 0.03},
-      {PKA_BASIC, "7300021310000|6400020430000|640002041000064000204300007300021310000",  9.32, 0.12},
-      {PKA_BASIC, "7300021311000|6400020421000|730002131100073000213110007300021330000",  4.61, 0.00},
-      {PKA_BASIC, "7300021320000|64000204400006400020440000|6400020410000640002041000064000204200007300021320000640002041000064000204100006400020420000", 11.07, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204100006400020411000730002131100064000204110006400020421000",  5.83, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002133000064000204210006400020421000",  9.12, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002131100064000204210007300021310000",  3.70, 0.10},
-      {PKA_BASIC, "7300021320000|64000204210006400020440000|640002041100064000204110007300021320000640002041000064000204100006400020410000",  7.00, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020421000|64000204100007300021330000640002041000064000204110006400020411000",  6.57, 0.00},
-      {PKA_BASIC, "7300021320000|64000204100006400020430000|730002132000064000204100006400020430000", 10.05, 0.09},
-      {PKA_BASIC, "7300021311000|64000204200006400020421000|6400020420000730002131100073000213100007300021320000",  9.58, 0.00},
-      {PKA_BASIC, "7300021310000|6400020430000|640002042000064000204400007300021310000", 10.17, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204400006400020440000|7300021330000640002041000064000204100006400020420000640002041000064000204100006400020420000", 11.25, 0.00},
-      {PKA_BASIC, "7300021320000|64000204100006400020421000|730002132000064000204110006400020421000",  3.67, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002042000064000204210008200022210000", 11.38, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020420000|730002131100073000213200006400020430000",  5.20, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020421000|64000204100007300021330000640002041000064000204110006400020421000",  7.24, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020430000730002132000064000204100006400020410000",  9.12, 0.48},
-      {PKA_BASIC, "7300021311000|64000204210006400020430000|73000213100007300021311000730002132000064000204300008200022210000",  8.76, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100064000204110006400020421000",  5.48, 4.28},
-      {PKA_BASIC, "7300021320000|64000204210006400020421000|64000204110006400020411000730002132000064000204110006400020411000",  0.79, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020421000|730002133000064000204110006400020421000",  4.83, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110007300021311000730002132000073000213300008200022201000",  6.90, 0.00},
-      {PKA_BASIC, "7410020410000|6400020430000|640002042000064000204210007410020410000",  8.86, 0.00},
-      {PKA_BASIC, "7300021330000|640002042100064000204210008200022210000|64000204110006400020430000730002133000064000204210008200022201000",  5.50, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|162000222200006400020420000730002131100064000204110006400020420000",  2.10, 0.00},
-      {PKA_BASIC, "7300021320000|64000204300006400020430000|64000204200006400020420000730002132000064000204200006400020420000", 10.40, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100064000204210007300021320000",  5.23, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020421000|6400020420000730002132000064000204100006400020421000",  4.20, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020440000|640002042100073000213110007300021320000640002041000064000204210006400020430000",  2.00, 0.10},
-      {PKA_BASIC, "7300021320000|64000204100006400020440000|7300021320000640002042000064000204210006400020421000",  7.50, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020440000730002131100064000204110006400020440000",  3.58, 0.00},
-      {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204210007300021310000730002131100073000213100007300021311000",  6.60, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020420000730002132000064000204200006400020430000",  8.90, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204210006400020421000|73000213300006400020411000640002042100064000204200008200022201000",  3.40, 0.00},
-      {PKA_BASIC, "7300021311000|64000204100006400020421000|730002131100064000204200007300021311000",  4.80, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002043000064000204200006400020421000",  7.35, 0.55},
-      {PKA_BASIC, "7300021310000|6400020430000|640002042100064000204210007300021310000",  7.28, 0.02},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002042000064000204200006400020421000",  6.53, 0.47},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020421000|64000204200007300021330000640002042000064000204110008200022201000", 12.22, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002042000064000204200006400020430000",  9.03, 0.82},
-      {PKA_BASIC, "7300021330000|640002042000064000204210006400020421000|640002043000073000213300006400020411000640002042100064000204210007300021311000",  1.70, 0.00},
-      {PKA_BASIC, "7300021320000|64000204200006400020440000|64000204300007300021320000640002041000064000204100006400020410000",  9.67, 0.00},
-      {PKA_BASIC, "7300021330000|640002042100064000204210007300021330000|6400020411000640002041100073000213300006400020430000820002220100064000204210006400020421000",  4.50, 0.00},
-      {PKA_BASIC, "7300021320000|64000204100006400020420000|73000213200006400020420000",  8.20, 0.00},
-      {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204200006400020421000",  6.40, 0.00},
-      {PKA_BASIC, "7300021320000|64000204210006400020421000|73000213100007300021311000730002132000064000204210007300021320000", 10.40, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002042000064000204210006400020430000",  7.80, 0.00},
-      {PKA_BASIC, "7300021330000|640002042100064000204210006400020430000|6400020411000640002042100073000213300006400020420000820002220100064000204300006400020440000",  8.26, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020411000730002133000064000204200006400020420000",  7.64, 0.00},
-      {PKA_BASIC, "7300021320000|64000204210006400020430000|64000204100007300021320000820002220100064000204200006400020421000", 12.36, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000|64000204200007300021330000640002044000064000204400008200022220000", 12.20, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020410000730002133000064000204100006400020420000",  6.56, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000|64000204100007300021330000640002044000064000204300006400020440000",  7.70, 1.82},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000|64000204200007300021330000640002043000064000204200006400020421000",  6.60, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000|64000204300007300021330000640002043000064000204200006400020440000",  9.54, 0.00},
-      {PKA_BASIC, "7300021330000|640002041000064000204100006400020430000|730002133000064000204200006400020430000",  8.80, 0.00},
-      {PKA_BASIC, "7300021320000|64000204110007300021330000|6400020421000730002132000064000204200006400020420000",  1.70, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204300006400020430000|640002043000073000213300006400020420000640002043000064000204200006400020430000",  6.66, 0.00},
-      {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000|64000204110007300021330000640002042000064000204400006400020440000",  5.40, 0.00},
-   };
+    static _PkaDef advanced_pka_model[] = {
+        {PKA_ACID, "8200022210000", 5.31, 10.19},
+        {PKA_ACID, "7300021310000", 8.94, 7.84},
+        {PKA_ACID, "6400020401000", 8.76, 4.51},
+        {PKA_ACID, "6400020410000", 10.21, 0.00},
+        {PKA_ACID, "16200022210000", 6.72, 3.77},
+        {PKA_ACID, "6400020411000", 12.84, 2.80},
+        {PKA_ACID, "7300021311000", 1.72, 0.55},
+        {PKA_ACID, "6400020420000", 6.93, 3.75},
+        {PKA_ACID, "33500020531000", 6.27, 0.00},
+        {PKA_ACID, "7300021320000", 7.08, 4.58},
+        {PKA_ACID, "82-10023110000", 3.06, 1.23},
+        {PKA_BASIC, "7300021310000", 7.52, 7.77},
+        {PKA_BASIC, "7300021320000", 7.77, 11.57},
+        {PKA_BASIC, "7300021311000", 5.39, 8.91},
+        {PKA_BASIC, "7300021330000", 7.84, 6.14},
+        {PKA_BASIC, "82-10023110000", 4.65, 0.00},
+        {PKA_BASIC, "7410020421000", 0.79, 0.00},
+        {PKA_BASIC, "7410020410000", 8.86, 0.00},
+        {PKA_ACID, "8200022210000|6400020421000", 4.82, 5.80},
+        {PKA_ACID, "8200022210000|6400020410010", 3.70, 0.00},
+        {PKA_ACID, "7300021310000|6400020410010", 1.10, 0.00},
+        {PKA_ACID, "6400020401000|8200022201000", 13.27, 0.00},
+        {PKA_ACID, "8200022210000|6400020411000", 3.75, 0.00},
+        {PKA_ACID, "6400020410000|7410020421000", 10.21, 0.00},
+        {PKA_ACID, "16200022210000|6400020421000", 4.30, 2.32},
+        {PKA_ACID, "8200022210000|6400020410000", 10.33, 0.00},
+        {PKA_ACID, "6400020411000|64000204400008200022201000", 10.04, 0.00},
+        {PKA_ACID, "8200022210000|6400020420000", 13.56, 1.94},
+        {PKA_ACID, "7300021311000|64000204110006400020411000", 2.27, 0.00},
+        {PKA_ACID, "7300021311000|64000204110007300021320000", 1.17, 0.00},
+        {PKA_ACID, "6400020411000|64000204100008200022201000", 13.57, 0.00},
+        {PKA_ACID, "7300021310000|6400020421000", 14.05, 1.05},
+        {PKA_ACID, "8200022210000|7300021320000", 8.70, 0.00},
+        {PKA_ACID, "6400020420000|64000204100007410020421000", 8.46, 0.00},
+        {PKA_ACID, "16200022210000|6400020420000", 9.14, 0.87},
+        {PKA_ACID, "33500020531000|6400020410000640002041000082000222010008200022210000", 6.27, 0.00},
+        {PKA_ACID, "8200022210000|16600020622000", 2.17, 1.57},
+        {PKA_ACID, "6400020401000|6400020411000", 4.25, 0.00},
+        {PKA_ACID, "8200022210000|7300021311000", 12.42, 0.00},
+        {PKA_ACID, "8200022210000|6400020430000", 12.85, 1.30},
+        {PKA_ACID, "7300021320000|64000204210006400020421000", 7.54, 3.65},
+        {PKA_ACID, "7300021310000|16600020622000", 8.34, 1.14},
+        {PKA_ACID, "7300021320000|64000204110006400020421000", 11.65, 0.00},
+        {PKA_ACID, "7300021320000|64000204110006400020411000", 11.12, 0.00},
+        {PKA_ACID, "82-10023110000|6400020421000", 3.06, 1.23},
+        {PKA_ACID, "8200022210000|16400020421000", 1.30, 0.00},
+        {PKA_ACID, "8200022210000|5300020330000", 8.83, 0.00},
+        {PKA_ACID, "6400020420000|64000204210006400020421000", 6.55, 4.13},
+        {PKA_ACID, "6400020411000|64000204110006400020411000", 14.90, 0.00},
+        {PKA_ACID, "7300021320000|166000206220006400020421000", 5.42, 2.92},
+        {PKA_ACID, "8200022210000|15500020531000", 6.30, 0.10},
+        {PKA_ACID, "7300021320000|64000204210007300021330000", 3.60, 0.00},
+        {PKA_BASIC, "7300021310000|6400020430000", 9.33, 2.06},
+        {PKA_BASIC, "7300021310000|6400020420000", 9.93, 4.59},
+        {PKA_BASIC, "7300021320000|64000204200006400020430000", 10.12, 1.48},
+        {PKA_BASIC, "7300021310000|6400020410000", 10.66, 0.00},
+        {PKA_BASIC, "7300021310000|8200022220000", 12.50, 0.00},
+        {PKA_BASIC, "7300021311000|6400020421000", 11.15, 6.54},
+        {PKA_BASIC, "7300021320000|64000204200006400020420000", 10.27, 2.23},
+        {PKA_BASIC, "7300021320000|64000204100006400020410000", 10.73, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000", 5.83, 5.69},
+        {PKA_BASIC, "7300021311000|64000204110006400020411000", 5.07, 6.98},
+        {PKA_BASIC, "7300021311000|64000204110008200022220000", -2.00, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110007300021320000", 2.49, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000", 5.34, 7.34},
+        {PKA_BASIC, "7300021320000|64000204100006400020420000", 9.42, 1.22},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020410000", 9.80, 0.00},
+        {PKA_BASIC, "82-10023110000|7410020440000", 4.65, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110007300021311000", 2.86, 0.62},
+        {PKA_BASIC, "7300021320000|64000204210006400020421000", 5.05, 5.36},
+        {PKA_BASIC, "7300021320000|64000204110006400020411000", -0.30, 3.50},
+        {PKA_BASIC, "7300021310000|6400020440000", 10.01, 1.71},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020420000", 9.42, 1.17},
+        {PKA_BASIC, "7300021320000|64000204110006400020421000", 3.95, 3.20},
+        {PKA_BASIC, "7410020421000|6400020411000640002041100082-10023110000", 0.79, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020420000", 9.00, 2.16},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020421000", 5.97, 6.03},
+        {PKA_BASIC, "7300021310000|6400020421000", 3.71, 6.28},
+        {PKA_BASIC, "7300021311000|64000204210007300021320000", 1.60, 0.00},
+        {PKA_BASIC, "7300021310000|7300021320000", 8.79, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000", 8.74, 2.18},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000", 8.30, 3.08},
+        {PKA_BASIC, "7300021320000|64000204300006400020430000", 10.73, 0.33},
+        {PKA_BASIC, "7300021320000|1440002044000014400020440000", 7.55, 0.00},
+        {PKA_BASIC, "7300021320000|166000206220006400020421000", 11.68, 0.00},
+        {PKA_BASIC, "7300021320000|64000204100006400020421000", 4.26, 0.59},
+        {PKA_BASIC, "7300021311000|64000204210007300021311000", 2.37, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020421000", 4.47, 0.65},
+        {PKA_BASIC, "7300021330000|640002041000064000204300006400020430000", 6.75, 2.95},
+        {PKA_BASIC, "7300021320000|64000204100006400020430000", 10.36, 0.63},
+        {PKA_BASIC, "7300021320000|64000204210006400020430000", 9.06, 3.30},
+        {PKA_BASIC, "7300021320000|64000204400006400020440000", 11.07, 0.00},
+        {PKA_BASIC, "7300021320000|64000204210006400020440000", 7.00, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020421000", 8.68, 3.54},
+        {PKA_BASIC, "7300021311000|64000204200006400020421000", 9.58, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204400006400020440000", 11.25, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020420000", 5.20, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020430000", 8.76, 0.00},
+        {PKA_BASIC, "7410020410000|6400020430000", 8.86, 0.00},
+        {PKA_BASIC, "7300021330000|640002042100064000204210008200022210000", 5.50, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020440000", 2.00, 0.10},
+        {PKA_BASIC, "7300021320000|64000204100006400020440000", 7.50, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204210006400020421000", 3.40, 0.00},
+        {PKA_BASIC, "7300021311000|64000204100006400020421000", 4.80, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204210006400020421000", 1.70, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020440000", 9.67, 0.00},
+        {PKA_BASIC, "7300021330000|640002042100064000204210007300021330000", 4.50, 0.00},
+        {PKA_BASIC, "7300021330000|640002042100064000204210006400020430000", 8.26, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000", 8.19, 4.01},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020430000", 8.80, 0.00},
+        {PKA_BASIC, "7300021320000|64000204110007300021330000", 1.70, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204300006400020430000", 6.66, 0.00},
+        {PKA_ACID, "8200022210000|6400020421000|640002043000082000222010008200022210000", 2.97, 2.02},
+        {PKA_ACID, "8200022210000|6400020421000|640002042000082000222010008200022210000", 3.90, 2.42},
+        {PKA_ACID, "8200022210000|6400020410010|73000213000108200022210000", 3.70, 0.00},
+        {PKA_ACID, "7300021310000|6400020410010|73000213000107300021310000", 1.10, 0.00},
+        {PKA_ACID, "6400020401000|8200022201000|6400020401000", 13.27, 0.00},
+        {PKA_ACID, "8200022210000|6400020411000|82000222010008200022210000", 3.75, 0.00},
+        {PKA_ACID, "6400020410000|7410020421000|640002041000082-100231100008200022201000", 10.21, 0.00},
+        {PKA_ACID, "16200022210000|6400020421000|16200022201000162000222100007300021310000", 2.95, 0.00},
+        {PKA_ACID, "8200022210000|6400020410000|8200022210000", 10.33, 0.00},
+        {PKA_ACID, "6400020411000|64000204400008200022201000|1710002311000017100023110000171000231100006400020411000", 10.04, 0.00},
+        {PKA_ACID, "8200022210000|6400020421000|640002044000082000222010008200022210000", 2.93, 3.71},
+        {PKA_ACID, "8200022210000|6400020421000|640002041100082000222010008200022210000", 4.31, 1.13},
+        {PKA_ACID, "8200022210000|6400020420000|64000204400008200022210000", 12.31, 0.07},
+        {PKA_ACID, "7300021311000|64000204110006400020411000|730002131100073000213110007300021320000", 2.27, 0.00},
+        {PKA_ACID, "7300021311000|64000204110007300021320000|640002041100073000213110007300021311000", 1.17, 0.00},
+        {PKA_ACID, "6400020411000|64000204100008200022201000|6400020411000", 13.57, 0.00},
+        {PKA_ACID, "16200022210000|6400020421000|1620002221000064000204100008200022201000", 3.33, 0.00},
+        {PKA_ACID, "8200022210000|6400020421000|640002041000082000222010008200022210000", 4.76, 0.00},
+        {PKA_ACID, "7300021310000|6400020421000|640002041000073000213100008200022201000", 15.10, 0.00},
+        {PKA_ACID, "8200022210000|7300021320000|64000204210008200022210000", 8.70, 0.00},
+        {PKA_ACID, "6400020420000|64000204100007410020421000|640002042000082-100231100008200022201000", 8.46, 0.00},
+        {PKA_ACID, "8200022210000|6400020420000|64000204100008200022210000", 15.50, 0.00},
+        {PKA_ACID, "16200022210000|6400020420000|162000222100006400020420000", 9.00, 0.73},
+        {PKA_ACID, "8200022210000|6400020420000|64000204200008200022210000", 14.60, 0.70},
+        {PKA_ACID, "33500020531000|6400020410000640002041000082000222010008200022210000|33500020531000", 6.27, 0.00},
+        {PKA_ACID, "8200022210000|16600020622000|6400020420000820002220100082000222010008200022210000", 1.45, 0.05},
+        {PKA_ACID, "8200022210000|6400020421000|640002041001082000222010008200022210000", 2.23, 0.39},
+        {PKA_ACID, "8200022210000|6400020420000|64000204100108200022210000", 13.60, 0.00},
+        {PKA_ACID, "6400020401000|6400020411000|64000204010006400020421000", 4.25, 0.00},
+        {PKA_ACID, "8200022210000|6400020421000|640002042100082000222010008200022210000", 3.50, 2.85},
+        {PKA_ACID, "8200022210000|6400020420000|64000204110008200022210000", 15.50, 0.00},
+        {PKA_ACID, "8200022210000|7300021311000|64000204210008200022210000", 12.42, 0.00},
+        {PKA_ACID, "8200022210000|6400020430000|640002042000064000204200008200022210000", 14.15, 0.00},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|64000204200007300021320000820002220100073000213200008200022201000", 4.01, 0.00},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|64000204200007300021320000820002220100064000204200008200022201000", 9.62, 0.00},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|64000204210007300021320000820002220100073000213200008200022201000", 7.14, 3.25},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|64000204300007300021320000820002220100073000213200008200022201000", 8.96, 0.00},
+        {PKA_ACID, "7300021310000|16600020622000|6400020421000730002131000082000222010008200022201000", 8.34, 1.14},
+        {PKA_ACID, "8200022210000|6400020430000|640002042000064000204300008200022210000", 13.90, 0.00},
+        {PKA_ACID, "7300021320000|64000204110006400020421000|6400020411000730002132000064000204110008200022201000", 11.65, 0.00},
+        {PKA_ACID, "8200022210000|6400020421000|640002041100064000204110008200022210000", 9.19, 2.04},
+        {PKA_ACID, "7300021320000|64000204110006400020411000|640002041100073000213200006400020411000", 11.12, 0.00},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|64000204400007300021320000820002220100082000222010008200022220000", 6.13, 0.00},
+        {PKA_ACID, "8200022210000|6400020430000|640002042000082000222100008200022220000", 12.61, 0.00},
+        {PKA_ACID, "8200022210000|6400020430000|640002041100064000204300008200022210000", 12.22, 0.00},
+        {PKA_ACID, "8200022210000|6400020430000|640002043000082000222100008200022220000", 12.11, 0.03},
+        {PKA_ACID, "82-10023110000|6400020421000|640002042000082-100231100008200022201000", 2.82, 0.99},
+        {PKA_ACID, "8200022210000|6400020421000|640002042100064000204210008200022210000", 6.15, 5.73},
+        {PKA_ACID, "8200022210000|6400020421000|640002041100064000204210008200022210000", 8.56, 4.49},
+        {PKA_ACID, "8200022210000|16400020421000|640002042100082000222010008200022210000", 1.30, 0.00},
+        {PKA_ACID, "8200022210000|16600020622000|6400020421000820002220100082000222010008200022210000", 2.53, 1.83},
+        {PKA_ACID, "16200022210000|6400020421000|1620002221000064000204110006400020411000", 6.62, 0.00},
+        {PKA_ACID, "8200022210000|5300020330000|640002042100082000222100008200022210000", 8.83, 0.00},
+        {PKA_ACID, "6400020420000|64000204210006400020421000|64000204200006400020420000820002220100064000204200008200022201000", 5.20, 0.06},
+        {PKA_ACID, "6400020420000|64000204210006400020421000|64000204200008200022201000820002222000082000222010008200022220000", 5.10, 0.00},
+        {PKA_ACID, "6400020420000|64000204210006400020421000|64000204100006400020420000820002220100082000222010008200022220000", 10.68, 0.00},
+        {PKA_ACID, "8200022210000|6400020420000|64000204300008200022210000", 12.81, 0.90},
+        {PKA_ACID, "6400020411000|64000204110006400020411000|640002041100064000204110006400020411000", 14.90, 0.00},
+        {PKA_ACID, "7300021310000|6400020421000|640002042100073000213100008200022201000", 13.00, 0.00},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|64000204210007300021320000820002220100073000213300008200022201000", 7.89, 0.00},
+        {PKA_ACID, "16200022210000|6400020420000|162000222100006400020421000", 9.43, 0.00},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|64000204200007300021320000820002220100073000213300008200022201000", 7.20, 0.00},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|64000204110007300021320000820002220100073000213300008200022201000", 6.70, 0.00},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|64000204400007300021320000820002220100073000213200008200022201000", 7.72, 0.29},
+        {PKA_ACID, "7300021320000|166000206220006400020421000|6400020421000730002132000082000222010008200022201000162000222200007300021311000", 7.20, 0.00},
+        {PKA_ACID, "8200022210000|15500020531000|8200022201000820002221000082000222100008200022220000", 6.30, 0.10},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|64000204400007300021320000820002220100073000213300008200022201000", 8.45, 0.00},
+        {PKA_ACID, "7300021320000|166000206220006400020421000|640002042100073000213200008200022201000820002220100064000204110007300021311000", 6.70, 0.00},
+        {PKA_ACID, "7300021320000|166000206220006400020421000|640002044000073000213200008200022201000820002220100064000204110006400020421000", 3.55, 1.05},
+        {PKA_ACID, "7300021320000|166000206220006400020421000|640002042100073000213200008200022201000820002220100064000204210008200022220000", 5.00, 0.00},
+        {PKA_ACID, "7300021320000|166000206220006400020421000|640002042100073000213200008200022201000820002220100073000213110007300021311000", 7.40, 0.00},
+        {PKA_ACID, "82-10023110000|6400020421000|640002043000082-100231100008200022201000", 3.40, 0.00},
+        {PKA_ACID, "7300021320000|166000206220006400020421000|640002042100073000213200008200022201000820002220100064000204210008200022201000", 4.57, 0.00},
+        {PKA_ACID, "7300021320000|64000204210007300021330000|73000213200007300021320000820002220100064000204200006400020420000", 3.60, 0.00},
+        {PKA_ACID, "7300021320000|64000204210006400020421000|73000213110007300021320000820002220100064000204210008200022201000", 9.69, 0.00},
+        {PKA_ACID, "82-10023110000|6400020421000|640002042100082-100231100008200022201000", 3.20, 0.00},
+        {PKA_BASIC, "7300021310000|6400020430000|640002042000064000204210007300021310000", 9.21, 1.61},
+        {PKA_BASIC, "7300021310000|6400020420000|64000204210007300021310000", 8.73, 1.05},
+        {PKA_BASIC, "7300021310000|6400020430000|640002042100064000204300007300021310000", 9.53, 0.43},
+        {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020420000730002132000064000204200006400020421000", 10.67, 0.05},
+        {PKA_BASIC, "7300021310000|6400020410000|7300021310000", 10.66, 0.00},
+        {PKA_BASIC, "7300021310000|8200022220000|64000204100007300021310000", 12.50, 0.00},
+        {PKA_BASIC, "7300021311000|6400020421000|730002131100073000213100007300021310000", 13.60, 0.00},
+        {PKA_BASIC, "7300021310000|6400020420000|64000204100107300021310000", 5.34, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020420000|7300021320000", 8.04, 0.00},
+        {PKA_BASIC, "7300021311000|6400020421000|640002041000073000213100007300021311000", 12.10, 0.00},
+        {PKA_BASIC, "7300021310000|6400020420000|64000204100007300021310000", 10.65, 0.00},
+        {PKA_BASIC, "7300021320000|64000204100006400020410000|7300021320000", 10.73, 0.00},
+        {PKA_BASIC, "7300021310000|6400020420000|64000204200007300021310000", 10.36, 2.56},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|73000213100007300021310000730002131100073000213100007300021311000", 11.52, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110008200022220000", 0.80, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110008200022220000|640002041100073000213110006400020411000", -2.00, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020411000|1620002222000073000213110006400020411000", 2.52, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110007300021320000|640002041100073000213110006400020411000", 2.49, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110007300021320000", 6.99, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|64000204110007300021311000162000222200007300021310000", 5.36, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|73000213100007300021311000730002131100073000213100007300021311000", 5.00, 0.00},
+        {PKA_BASIC, "7300021310000|6400020420000|64000204110007300021310000", 9.49, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020420000|64000204200007300021320000", 11.29, 0.00},
+        {PKA_BASIC, "7300021320000|64000204100006400020420000|73000213200006400020421000", 10.10, 0.00},
+        {PKA_BASIC, "7300021310000|6400020430000|640002041000064000204100007300021310000", 10.63, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020410000|7300021330000", 9.80, 0.00},
+        {PKA_BASIC, "82-10023110000|7410020440000|64000204100006400020410000640002041000082-10023110000", 4.65, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020421000730002131100073000213200008200022201000", 3.26, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110006400020411000", 5.54, 6.51},
+        {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110007300021311000", 1.23, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110007300021311000|640002041100073000213110006400020411000", 2.24, 0.00},
+        {PKA_BASIC, "7300021320000|64000204210006400020421000|64000204110007300021320000820002220100073000213200008200022201000", 9.45, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|73000213100007300021311000730002131100064000204110007410020421000", 0.35, 0.00},
+        {PKA_BASIC, "7300021320000|64000204110006400020411000|640002041100073000213200006400020411000", -0.30, 3.50},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100073000213100007300021311000", 3.45, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002131100064000204110007300021310000", 5.71, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110007300021330000", 6.95, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020420000|640002042100073000213200006400020421000", 9.89, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|73000213100007300021311000730002133000064000204200008200022201000", 9.20, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110007300021310000730002131100073000213100007300021311000", 6.84, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020420000|640002042000073000213200006400020420000", 10.55, 2.05},
+        {PKA_BASIC, "7300021310000|6400020440000|6400020410000640002041000064000204210007300021310000", 10.21, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020420000|73000213300006400020421000", 9.89, 0.00},
+        {PKA_BASIC, "7300021311000|6400020421000|730002131000073000213110007300021330000", 14.30, 0.00},
+        {PKA_BASIC, "7300021310000|6400020430000|640002041000064000204200007300021310000", 10.63, 0.07},
+        {PKA_BASIC, "7300021310000|6400020440000|6400020410000640002041000064000204100007300021310000", 10.68, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020420000|640002041000073000213200006400020410000", 10.84, 0.00},
+        {PKA_BASIC, "7300021310000|6400020440000|6400020420000640002042000064000204200007300021310000", 8.30, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020411000|640002041100073000213110006400020421000", 5.19, 4.46},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|64000204110007300021311000171000231100006400020411000", 0.49, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110009100023110000", -0.44, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002132000064000204210007300021320000", 8.70, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002131100064000204210007300021320000", 10.20, 0.00},
+        {PKA_BASIC, "7300021320000|64000204110006400020421000|6400020411000730002132000064000204110008200022201000", 0.75, 0.00},
+        {PKA_BASIC, "7410020421000|6400020411000640002041100082-10023110000|640002041100074100204210006400020411000", 0.79, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110006400020421000", 4.86, 4.36},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110007300021310000", 6.82, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204100006400020411000", 4.81, 3.36},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020421000730002131100064000204110007300021310000", 5.77, 0.72},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110007300021320000", 3.39, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020421000730002131100064000204100007300021320000", 8.36, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020430000730002132000064000204200006400020421000", 9.66, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020420000|730002133000064000204200006400020420000", 9.20, 1.82},
+        {PKA_BASIC, "7300021320000|64000204200006400020420000|640002042000073000213200006400020421000", 10.19, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020421000|730002133000073000213300008200022201000", 12.00, 0.00},
+        {PKA_BASIC, "7300021310000|6400020430000|640002042000064000204200007300021310000", 10.61, 0.03},
+        {PKA_BASIC, "7300021310000|6400020440000|6400020410000640002041000064000204200007300021310000", 10.85, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020420000|73000213300006400020420000", 9.27, 1.02},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020420000|730002133000064000204100006400020410000", 10.35, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002131100064000204210007300021311000", 4.05, 0.00},
+        {PKA_BASIC, "7300021310000|6400020421000|640002041100064000204110007300021310000", 3.74, 2.72},
+        {PKA_BASIC, "7300021310000|6400020421000|640002041100064000204210007300021310000", 3.23, 3.48},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110006400020411000", 12.68, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210007300021320000|6400020411000640002042100073000213110007300021311000", 1.60, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204210007300021320000", 2.27, 0.00},
+        {PKA_BASIC, "7300021320000|64000204110006400020421000|6400020411000730002132000064000204110006400020411000", 3.59, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110008200022220000", 3.28, 0.00},
+        {PKA_BASIC, "7300021310000|7300021320000|64000204210007300021310000", 8.79, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020421000730002133000064000204210006400020421000", 10.70, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204100006400020411000730002131100073000213100007300021311000", 4.82, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002042000064000204100006400020420000", 10.21, 0.01},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020410000730002133000064000204200006400020420000", 9.06, 1.39},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020420000730002133000064000204200006400020421000", 8.35, 0.00},
+        {PKA_BASIC, "7300021320000|64000204300006400020430000|64000204100006400020410000730002132000064000204100006400020410000", 11.05, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020410000730002133000064000204100006400020410000", 10.75, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020420000730002133000064000204200006400020420000", 8.50, 1.97},
+        {PKA_BASIC, "7300021320000|1440002044000014400020440000|6400020410000640002041000064000204100007300021320000640002041000064000204100006400020410000",
+         7.55, 0.00},
+        {PKA_BASIC, "7300021320000|166000206220006400020421000|640002042100073000213200008200022201000820002220100064000204210008200022201000", 11.68, 0.00},
+        {PKA_BASIC, "7300021320000|64000204110006400020421000|7300021311000730002132000064000204110006400020421000", 6.60, 0.25},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002132000064000204110006400020421000", 5.53, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002132000064000204210007300021330000", 8.77, 0.00},
+        {PKA_BASIC, "7300021320000|64000204100006400020421000|730002132000064000204110006400020411000", 4.85, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204110006400020420000", 5.51, 0.38},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204100006400020421000", 7.14, 0.57},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020421000730002131100064000204100006400020411000", 6.40, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204100006400020411000730002131100064000204100006400020411000", 6.04, 1.39},
+        {PKA_BASIC, "7300021311000|64000204110006400020411000|640002042100073000213110006400020421000", 6.15, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210007300021311000|6400020411000640002042100073000213110006400020411000", 2.37, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002131100064000204110006400020421000", 3.43, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110007300021311000|640002042100073000213110006400020411000", 3.47, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100064000204100007300021320000", 6.19, 0.00},
+        {PKA_BASIC, "7300021320000|64000204210006400020421000|64000204110006400020411000730002132000064000204100008200022201000", 0.50, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020421000|6400020421000730002132000064000204110006400020411000", 4.39, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020421000|730002133000064000204110006400020411000", 5.36, 6.13},
+        {PKA_BASIC, "7300021320000|64000204200006400020421000|6400020410000730002132000064000204110006400020411000", 5.12, 0.00},
+        {PKA_BASIC, "7300021310000|6400020421000|640002042100064000204210007300021310000", 6.94, 3.05},
+        {PKA_BASIC, "7300021310000|6400020420000|64000204300007300021310000", 9.70, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020411000730002131100073000213100007300021311000", 10.77, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020420000|730002133000064000204200006400020421000", 6.84, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204300006400020430000|73000213300006400020420000640002042000064000204200006400020420000", 6.75, 2.95},
+        {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020420000730002132000064000204200006400020420000", 11.06, 0.16},
+        {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020430000730002132000064000204200006400020420000", 10.30, 0.00},
+        {PKA_BASIC, "7300021320000|64000204100006400020430000|730002132000064000204100006400020420000", 10.99, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020421000730002131100064000204110006400020421000", 4.36, 1.67},
+        {PKA_BASIC, "7300021320000|64000204210006400020421000|64000204110006400020421000730002132000064000204110008200022201000", -0.31, 0.00},
+        {PKA_BASIC, "7300021320000|64000204110006400020421000|6400020411000730002132000064000204110006400020421000", 2.23, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204210006400020421000", 4.88, 0.03},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002132000064000204210007300021311000", 8.20, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100064000204110007300021310000", 7.34, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204210007300021310000", 7.62, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100073000213200007300021320000", 4.48, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100064000204200007300021320000", 6.18, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020421000|6400020411000730002132000064000204110006400020411000", 4.17, 0.00},
+        {PKA_BASIC, "7300021320000|64000204210006400020430000|64000204110006400020411000730002132000064000204100006400020410000", 5.77, 0.00},
+        {PKA_BASIC, "7300021320000|64000204100006400020420000|73000213200006400020430000", 9.95, 0.00},
+        {PKA_BASIC, "7300021320000|64000204210006400020421000|64000204110007300021320000820002220100073000213300008200022201000", 9.50, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110007300021310000730002131100073000213300008200022201000", 4.25, 0.03},
+        {PKA_BASIC, "7300021310000|6400020430000|640002041000064000204300007300021310000", 9.32, 0.12},
+        {PKA_BASIC, "7300021311000|6400020421000|730002131100073000213110007300021330000", 4.61, 0.00},
+        {PKA_BASIC, "7300021320000|64000204400006400020440000|6400020410000640002041000064000204200007300021320000640002041000064000204100006400020420000",
+         11.07, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204100006400020411000730002131100064000204110006400020421000", 5.83, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002133000064000204210006400020421000", 9.12, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|7300021311000730002131100064000204210007300021310000", 3.70, 0.10},
+        {PKA_BASIC, "7300021320000|64000204210006400020440000|640002041100064000204110007300021320000640002041000064000204100006400020410000", 7.00, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020421000|64000204100007300021330000640002041000064000204110006400020411000", 6.57, 0.00},
+        {PKA_BASIC, "7300021320000|64000204100006400020430000|730002132000064000204100006400020430000", 10.05, 0.09},
+        {PKA_BASIC, "7300021311000|64000204200006400020421000|6400020420000730002131100073000213100007300021320000", 9.58, 0.00},
+        {PKA_BASIC, "7300021310000|6400020430000|640002042000064000204400007300021310000", 10.17, 0.00},
+        {PKA_BASIC,
+         "7300021330000|640002041000064000204400006400020440000|7300021330000640002041000064000204100006400020420000640002041000064000204100006400020420000",
+         11.25, 0.00},
+        {PKA_BASIC, "7300021320000|64000204100006400020421000|730002132000064000204110006400020421000", 3.67, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002042000064000204210008200022210000", 11.38, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020420000|730002131100073000213200006400020430000", 5.20, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020421000|64000204100007300021330000640002041000064000204110006400020421000", 7.24, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020430000730002132000064000204100006400020410000", 9.12, 0.48},
+        {PKA_BASIC, "7300021311000|64000204210006400020430000|73000213100007300021311000730002132000064000204300008200022210000", 8.76, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100064000204110006400020421000", 5.48, 4.28},
+        {PKA_BASIC, "7300021320000|64000204210006400020421000|64000204110006400020411000730002132000064000204110006400020411000", 0.79, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020421000|730002133000064000204110006400020421000", 4.83, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110007300021311000730002132000073000213300008200022201000", 6.90, 0.00},
+        {PKA_BASIC, "7410020410000|6400020430000|640002042000064000204210007410020410000", 8.86, 0.00},
+        {PKA_BASIC, "7300021330000|640002042100064000204210008200022210000|64000204110006400020430000730002133000064000204210008200022201000", 5.50, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|162000222200006400020420000730002131100064000204110006400020420000", 2.10, 0.00},
+        {PKA_BASIC, "7300021320000|64000204300006400020430000|64000204200006400020420000730002132000064000204200006400020420000", 10.40, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020421000730002131100064000204210007300021320000", 5.23, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020421000|6400020420000730002132000064000204100006400020421000", 4.20, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020440000|640002042100073000213110007300021320000640002041000064000204210006400020430000", 2.00, 0.10},
+        {PKA_BASIC, "7300021320000|64000204100006400020440000|7300021320000640002042000064000204210006400020421000", 7.50, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204110006400020440000730002131100064000204110006400020440000", 3.58, 0.00},
+        {PKA_BASIC, "7300021311000|64000204210006400020421000|64000204210007300021310000730002131100073000213100007300021311000", 6.60, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020430000|6400020420000730002132000064000204200006400020430000", 8.90, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204210006400020421000|73000213300006400020411000640002042100064000204200008200022201000", 3.40, 0.00},
+        {PKA_BASIC, "7300021311000|64000204100006400020421000|730002131100064000204200007300021311000", 4.80, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002043000064000204200006400020421000", 7.35, 0.55},
+        {PKA_BASIC, "7300021310000|6400020430000|640002042100064000204210007300021310000", 7.28, 0.02},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002042000064000204200006400020421000", 6.53, 0.47},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020421000|64000204200007300021330000640002042000064000204110008200022201000", 12.22, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002042000064000204200006400020430000", 9.03, 0.82},
+        {PKA_BASIC, "7300021330000|640002042000064000204210006400020421000|640002043000073000213300006400020411000640002042100064000204210007300021311000",
+         1.70, 0.00},
+        {PKA_BASIC, "7300021320000|64000204200006400020440000|64000204300007300021320000640002041000064000204100006400020410000", 9.67, 0.00},
+        {PKA_BASIC,
+         "7300021330000|640002042100064000204210007300021330000|6400020411000640002041100073000213300006400020430000820002220100064000204210006400020421000",
+         4.50, 0.00},
+        {PKA_BASIC, "7300021320000|64000204100006400020420000|73000213200006400020420000", 8.20, 0.00},
+        {PKA_BASIC, "7300021311000|64000204110006400020421000|6400020411000730002131100064000204200006400020421000", 6.40, 0.00},
+        {PKA_BASIC, "7300021320000|64000204210006400020421000|73000213100007300021311000730002132000064000204210007300021320000", 10.40, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204200006400020430000|7300021330000640002042000064000204210006400020430000", 7.80, 0.00},
+        {PKA_BASIC,
+         "7300021330000|640002042100064000204210006400020430000|6400020411000640002042100073000213300006400020420000820002220100064000204300006400020440000",
+         8.26, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020411000730002133000064000204200006400020420000", 7.64, 0.00},
+        {PKA_BASIC, "7300021320000|64000204210006400020430000|64000204100007300021320000820002220100064000204200006400020421000", 12.36, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000|64000204200007300021330000640002044000064000204400008200022220000", 12.20, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020420000|6400020410000730002133000064000204100006400020420000", 6.56, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000|64000204100007300021330000640002044000064000204300006400020440000", 7.70, 1.82},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000|64000204200007300021330000640002043000064000204200006400020421000", 6.60, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000|64000204300007300021330000640002043000064000204200006400020440000", 9.54, 0.00},
+        {PKA_BASIC, "7300021330000|640002041000064000204100006400020430000|730002133000064000204200006400020430000", 8.80, 0.00},
+        {PKA_BASIC, "7300021320000|64000204110007300021330000|6400020421000730002132000064000204200006400020420000", 1.70, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204300006400020430000|640002043000073000213300006400020420000640002043000064000204200006400020430000",
+         6.66, 0.00},
+        {PKA_BASIC, "7300021330000|640002042000064000204200006400020430000|64000204110007300021330000640002042000064000204400006400020440000", 5.40, 0.00},
+    };
 
-   _model.adv_a_pkas.clear();
-   _model.adv_b_pkas.clear();
+    _model.adv_a_pkas.clear();
+    _model.adv_b_pkas.clear();
 
-   for (auto i = 0; i < NELEM(advanced_pka_model); i++)
-   {
-      if (advanced_pka_model[i].type == PKA_ACID)
-      {
-         if (_model.adv_a_pkas.find(advanced_pka_model[i].a_fp))
-            _model.adv_a_pkas.remove(advanced_pka_model[i].a_fp);
+    for (auto i = 0; i < NELEM(advanced_pka_model); i++)
+    {
+        if (advanced_pka_model[i].type == PKA_ACID)
+        {
+            if (_model.adv_a_pkas.find(advanced_pka_model[i].a_fp))
+                _model.adv_a_pkas.remove(advanced_pka_model[i].a_fp);
 
-         _model.adv_a_pkas.insert(advanced_pka_model[i].a_fp);
-         _model.adv_a_pkas.at(advanced_pka_model[i].a_fp).push(advanced_pka_model[i].pka);
-         _model.adv_a_pkas.at(advanced_pka_model[i].a_fp).push(advanced_pka_model[i].deviation);
-      }
-      else if (advanced_pka_model[i].type == PKA_BASIC)
-      {
-         if (_model.adv_b_pkas.find(advanced_pka_model[i].a_fp))
-            _model.adv_b_pkas.remove(advanced_pka_model[i].a_fp);
+            _model.adv_a_pkas.insert(advanced_pka_model[i].a_fp);
+            _model.adv_a_pkas.at(advanced_pka_model[i].a_fp).push(advanced_pka_model[i].pka);
+            _model.adv_a_pkas.at(advanced_pka_model[i].a_fp).push(advanced_pka_model[i].deviation);
+        }
+        else if (advanced_pka_model[i].type == PKA_BASIC)
+        {
+            if (_model.adv_b_pkas.find(advanced_pka_model[i].a_fp))
+                _model.adv_b_pkas.remove(advanced_pka_model[i].a_fp);
 
-         _model.adv_b_pkas.insert(advanced_pka_model[i].a_fp);
-         _model.adv_b_pkas.at(advanced_pka_model[i].a_fp).push(advanced_pka_model[i].pka);
-         _model.adv_b_pkas.at(advanced_pka_model[i].a_fp).push(advanced_pka_model[i].deviation);
-      }
-   }
-   _model.advanced_model_ready = true;
+            _model.adv_b_pkas.insert(advanced_pka_model[i].a_fp);
+            _model.adv_b_pkas.at(advanced_pka_model[i].a_fp).push(advanced_pka_model[i].pka);
+            _model.adv_b_pkas.at(advanced_pka_model[i].a_fp).push(advanced_pka_model[i].deviation);
+        }
+    }
+    _model.advanced_model_ready = true;
 }
 
-void MoleculePkaModel::_estimate_pKa_Simple (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
-                      Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas)
+void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
+                                            Array<float>& acid_pkas, Array<float>& basic_pkas)
 {
-//   QS_DEF(Array<int>, can_order);
-//   QS_DEF(Molecule, can_mol);
-   QS_DEF(Array<int>, ignore_atoms);
-   QS_DEF(Array<int>, mapping);
-   AromaticityOptions opts;
+    //   QS_DEF(Array<int>, can_order);
+    //   QS_DEF(Molecule, can_mol);
+    QS_DEF(Array<int>, ignore_atoms);
+    QS_DEF(Array<int>, mapping);
+    AromaticityOptions opts;
 
-//   _checkCanonicalOrder(mol, can_mol, can_order);
+    //   _checkCanonicalOrder(mol, can_mol, can_order);
 
-   if (!mol.isAromatized())
-   {
-      mol.aromatize(opts);
-   }
+    if (!mol.isAromatized())
+    {
+        mol.aromatize(opts);
+    }
 
-   MoleculeSubstructureMatcher matcher(mol);
-   matcher.fmcache = new MoleculeSubstructureMatcher::FragmentMatchCache;
-   matcher.use_aromaticity_matcher = true;
-   ignore_atoms.clear();
-   for (auto i = 0; i < _model.acids.size(); i++)
-   {
-      matcher.setQuery(_model.acids[i]);
+    MoleculeSubstructureMatcher matcher(mol);
+    matcher.fmcache = new MoleculeSubstructureMatcher::FragmentMatchCache;
+    matcher.use_aromaticity_matcher = true;
+    ignore_atoms.clear();
+    for (auto i = 0; i < _model.acids.size(); i++)
+    {
+        matcher.setQuery(_model.acids[i]);
 
-      for (int j = 0; j < ignore_atoms.size(); j++)
-         matcher.ignoreTargetAtom(ignore_atoms[j]);
+        for (int j = 0; j < ignore_atoms.size(); j++)
+            matcher.ignoreTargetAtom(ignore_atoms[j]);
 
-      if (!matcher.find())
-         continue;
-
-      for (;;)
-      {
-         mapping.clear();
-         mapping.copy(matcher.getQueryMapping(), _model.acids[i].vertexEnd());
-         for (int j = 0; j < mapping.size(); j++)
-         {
-            if (mapping[j] > -1)
-            {
-               acid_sites.push(mapping[j]);
-               acid_pkas.push(_model.a_pkas[i]);
-               ignore_atoms.push(mapping[j]);
-            }  
-         }
-         if (!matcher.findNext())
-            break;
-      }
-   }
-
-   ignore_atoms.clear();
-   for (auto i = 0; i < _model.basics.size(); i++)
-   {
-      matcher.setQuery(_model.basics[i]);
-
-      for (int j = 0; j < ignore_atoms.size(); j++)
-         matcher.ignoreTargetAtom(ignore_atoms[j]);
-
-      if (!matcher.find())
-         continue;
-
-      for (;;)
-      {
-         mapping.clear();
-         mapping.copy(matcher.getQueryMapping(), _model.basics[i].vertexEnd());
-         for (int j = 0; j < mapping.size(); j++)
-         {
-            if (mapping[j] > -1)
-            {
-               basic_sites.push(mapping[j]);
-               basic_pkas.push(_model.b_pkas[i]);
-               ignore_atoms.push(mapping[j]);
-            }  
-         }
-         if (!matcher.findNext())
-            break;
-      }
-   }
-}
-
-void MoleculePkaModel::_estimate_pKa_Advanced (Molecule &mol, const IonizeOptions &options, Array<int> &acid_sites,
-                      Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas)
-{
-//   QS_DEF(Array<int>, can_order);
-//   QS_DEF(Molecule, can_mol);
-   AromaticityOptions opts;
-   int level = options.level;
-   int min_level = options.min_level;
-
-//   _checkCanonicalOrder(mol, can_mol, can_order);
-
-   for (auto i : mol.vertices())
-   {
-      int a_lone = 0;
-      mol.getVacantPiOrbitals(i, &a_lone);
-      int a_hcnt = mol.getAtomTotalH(i);
-
-      if (a_hcnt > 0)
-      {
-         float a_pka = getAcidPkaValue(mol, i, level, min_level);
-         acid_sites.push(i);
-         acid_pkas.push(a_pka);
-//         printf("Acid site: atom index = %d, pKa = %f\n",  can_order[i], a_pka);
-      }
-
-      if (a_lone > 0)
-      {
-         float b_pka = getBasicPkaValue(mol, i, level, min_level);
-         basic_sites.push(i);
-         basic_pkas.push(b_pka);
-//         printf("Basic site: atom index = %d, pKa = %f\n",  can_order[i], b_pka);
-      }
-   }
-}
-
-int MoleculePkaModel::_asc_cmp_cb (int &v1, int &v2, void *context)
-{
-   QS_DEF(Array<char>, key1);
-   QS_DEF(Array<char>, key2);
-   int res = 0;
-
-   Molecule &mol = *(Molecule *)context;
-   key1.clear();
-   key2.clear();
-   getAtomLocalKey (mol, v1, key1);
-   getAtomLocalKey (mol, v2, key2);
-
-   res = strcmp(key1.ptr(), key2.ptr());
-   if (res != 0)
-      return res;
-   else
-   {
-      const Vertex &v3 = mol.getVertex(v1);
-      for (auto i : v3.neighbors())
-      {
-          getAtomLocalKey (mol, v3.neiVertex(i), key1);;
-      }
-
-      const Vertex &v4 = mol.getVertex(v2);
-      for (auto i : v4.neighbors())
-      {
-          getAtomLocalKey (mol, v4.neiVertex(i), key2);;
-      }
-      res = strcmp(key1.ptr(), key2.ptr());
-   }
-   return res;
-}
-
-void MoleculePkaModel::getAtomLocalFingerprint (Molecule &mol, int idx, Array<char> &fp, int level)
-{
-   QS_DEF(Array<int>, included_atoms);
-   QS_DEF(Array<int>, dist_atoms);
-   QS_DEF(Queue<int>, bfs_queue);
-
-   QS_DEF(Array<char>, n_key);
-   QS_DEF(Array<char>, bond);
-
-   QS_DEF(Array<int>, neibs_atoms);
-   QS_DEF(Array<int>, neibs_bonds);
-
-   fp.clear();
-   bfs_queue.setLength(mol.vertexEnd());
-   bfs_queue.clear();
-   included_atoms.clear();
-   dist_atoms.clear_resize(mol.vertexEnd());
-   dist_atoms.zerofill();
-
-
-   n_key.clear();
-   getAtomLocalKey (mol, idx, n_key);
-   if (n_key.size() != 0)
-      fp.appendString(n_key.ptr(), true);
-
-   if (level == 0)
-   {
-      return;
-   }
-   else
-   {
-      int cur_level = 0;
-      // Mark new layer after root atom
-      fp.appendString("|", true);
-      bfs_queue.push(idx);
-      
-      while (!bfs_queue.isEmpty())
-      {
-         int next = bfs_queue.pop();
-         int dist = dist_atoms.at(next);
-         if (dist == level)
+        if (!matcher.find())
             continue;
-         if (dist > cur_level)
-         {
-            cur_level = dist;
-            // Mark next new layer
-            fp.appendString("|", true);
-         }
 
-         const Vertex &v = mol.getVertex(next);
-
-         neibs_atoms.clear();
-         neibs_bonds.clear();
-
-         for (auto i : v.neighbors())
-         {
-           neibs_atoms.push(v.neiVertex(i));
-         }
-         neibs_atoms.qsort(_asc_cmp_cb, &mol);
-
-
-         for (auto i = 0; i < neibs_atoms.size(); i++)
-         {
-            for (auto j : v.neighbors())
+        for (;;)
+        {
+            mapping.clear();
+            mapping.copy(matcher.getQueryMapping(), _model.acids[i].vertexEnd());
+            for (int j = 0; j < mapping.size(); j++)
             {
-               if (neibs_atoms[i] == v.neiVertex(j))
-                  neibs_bonds.push(v.neiEdge(j));
+                if (mapping[j] > -1)
+                {
+                    acid_sites.push(mapping[j]);
+                    acid_pkas.push(_model.a_pkas[i]);
+                    ignore_atoms.push(mapping[j]);
+                }
             }
-         }
+            if (!matcher.findNext())
+                break;
+        }
+    }
 
+    ignore_atoms.clear();
+    for (auto i = 0; i < _model.basics.size(); i++)
+    {
+        matcher.setQuery(_model.basics[i]);
 
-//         for (auto i : v.neighbors())
-         for (auto i = 0; i < neibs_atoms.size(); i++)
-         {
-            if (included_atoms.find(neibs_atoms[i]) == -1) 
+        for (int j = 0; j < ignore_atoms.size(); j++)
+            matcher.ignoreTargetAtom(ignore_atoms[j]);
+
+        if (!matcher.find())
+            continue;
+
+        for (;;)
+        {
+            mapping.clear();
+            mapping.copy(matcher.getQueryMapping(), _model.basics[i].vertexEnd());
+            for (int j = 0; j < mapping.size(); j++)
             {
-               bfs_queue.push(neibs_atoms[i]);
-               included_atoms.push(neibs_atoms[i]);
-               dist_atoms[neibs_atoms[i]] = dist + 1;
-               bond.clear();
-               ArrayOutput tmp(bond);
-               n_key.clear();
-               getAtomLocalKey(mol, neibs_atoms[i], n_key);
-               if (n_key.size() == 0)
-                  continue;
-              
-//               int order = mol.getBondOrder(neibs_bonds[i]);
-//               tmp.printf(":%d:", order);
-//               tmp.writeChar(0);
-      
-//               fp.appendString(bond.ptr(), true);
-               fp.appendString(n_key.ptr(), true);
+                if (mapping[j] > -1)
+                {
+                    basic_sites.push(mapping[j]);
+                    basic_pkas.push(_model.b_pkas[i]);
+                    ignore_atoms.push(mapping[j]);
+                }
             }
-         }
-      }
-      // Remove empty layer, if it was created
-      if (fp[fp.size() - 2]  == '|')
-         fp.remove(fp.size() - 2);
-   }
-   return;
+            if (!matcher.findNext())
+                break;
+        }
+    }
 }
 
-void MoleculePkaModel::_removeExtraHydrogens(Molecule &mol)
+void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
+                                              Array<float>& acid_pkas, Array<float>& basic_pkas)
 {
-   QS_DEF(Array<int>, to_remove);
+    //   QS_DEF(Array<int>, can_order);
+    //   QS_DEF(Molecule, can_mol);
+    AromaticityOptions opts;
+    int level = options.level;
+    int min_level = options.min_level;
 
-   to_remove.clear();
-   for (auto i : mol.vertices())
-      if (mol.convertableToImplicitHydrogen(i))
-         to_remove.push(i);
+    //   _checkCanonicalOrder(mol, can_mol, can_order);
 
-   if (to_remove.size() > 0)
-      mol.removeAtoms(to_remove);
+    for (auto i : mol.vertices())
+    {
+        int a_lone = 0;
+        mol.getVacantPiOrbitals(i, &a_lone);
+        int a_hcnt = mol.getAtomTotalH(i);
+
+        if (a_hcnt > 0)
+        {
+            float a_pka = getAcidPkaValue(mol, i, level, min_level);
+            acid_sites.push(i);
+            acid_pkas.push(a_pka);
+            //         printf("Acid site: atom index = %d, pKa = %f\n",  can_order[i], a_pka);
+        }
+
+        if (a_lone > 0)
+        {
+            float b_pka = getBasicPkaValue(mol, i, level, min_level);
+            basic_sites.push(i);
+            basic_pkas.push(b_pka);
+            //         printf("Basic site: atom index = %d, pKa = %f\n",  can_order[i], b_pka);
+        }
+    }
 }
 
-void MoleculePkaModel::_checkCanonicalOrder(Molecule &mol, Molecule &can_mol, Array<int> &order)
+int MoleculePkaModel::_asc_cmp_cb(int& v1, int& v2, void* context)
 {
-   QS_DEF(Array<int>, to_remove);
-   QS_DEF(Array<int>, ignored);
+    QS_DEF(Array<char>, key1);
+    QS_DEF(Array<char>, key2);
+    int res = 0;
 
-   ignored.clear_resize(mol.vertexEnd());
-   ignored.zerofill();
-   to_remove.clear();
+    Molecule& mol = *(Molecule*)context;
+    key1.clear();
+    key2.clear();
+    getAtomLocalKey(mol, v1, key1);
+    getAtomLocalKey(mol, v2, key2);
 
-   for (auto i : mol.vertices())
-      if (mol.convertableToImplicitHydrogen(i))
-         to_remove.push(i);
+    res = strcmp(key1.ptr(), key2.ptr());
+    if (res != 0)
+        return res;
+    else
+    {
+        const Vertex& v3 = mol.getVertex(v1);
+        for (auto i : v3.neighbors())
+        {
+            getAtomLocalKey(mol, v3.neiVertex(i), key1);
+            ;
+        }
 
-   if (to_remove.size() > 0)
-      mol.removeAtoms(to_remove);
-
-   MoleculeAutomorphismSearch as;
-
-   as.detect_invalid_cistrans_bonds = false;
-   as.detect_invalid_stereocenters = false;
-   as.find_canonical_ordering = true;
-   as.ignored_vertices = ignored.ptr();
-   as.process(mol);
-   as.getCanonicalNumbering(order);
-   can_mol.makeSubmolecule(mol, order, NULL);
-
-//   printMolfile(mol);
-//   printMolfile(can_mol);
+        const Vertex& v4 = mol.getVertex(v2);
+        for (auto i : v4.neighbors())
+        {
+            getAtomLocalKey(mol, v4.neiVertex(i), key2);
+            ;
+        }
+        res = strcmp(key1.ptr(), key2.ptr());
+    }
+    return res;
 }
 
-void MoleculePkaModel::getAtomLocalKey (Molecule &mol, int idx, Array<char> &fp)
+void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, Array<char>& fp, int level)
 {
-   QS_DEF(Array<int>, feature_set);
-   if(!getAtomLocalFeatureSet(mol, idx, feature_set))
-      return;
+    QS_DEF(Array<int>, included_atoms);
+    QS_DEF(Array<int>, dist_atoms);
+    QS_DEF(Queue<int>, bfs_queue);
 
-   QS_DEF(Array<char>, key);
-   key.clear();
-   ArrayOutput output(key);
+    QS_DEF(Array<char>, n_key);
+    QS_DEF(Array<char>, bond);
 
-   for(int i = 0; i < feature_set.size(); i++)
-      output.printf("%d", feature_set[i]);
+    QS_DEF(Array<int>, neibs_atoms);
+    QS_DEF(Array<int>, neibs_bonds);
 
-   output.writeChar(0);
+    fp.clear();
+    bfs_queue.setLength(mol.vertexEnd());
+    bfs_queue.clear();
+    included_atoms.clear();
+    dist_atoms.clear_resize(mol.vertexEnd());
+    dist_atoms.zerofill();
 
-   fp.appendString(key.ptr(), true);
+    n_key.clear();
+    getAtomLocalKey(mol, idx, n_key);
+    if (n_key.size() != 0)
+        fp.appendString(n_key.ptr(), true);
+
+    if (level == 0)
+    {
+        return;
+    }
+    else
+    {
+        int cur_level = 0;
+        // Mark new layer after root atom
+        fp.appendString("|", true);
+        bfs_queue.push(idx);
+
+        while (!bfs_queue.isEmpty())
+        {
+            int next = bfs_queue.pop();
+            int dist = dist_atoms.at(next);
+            if (dist == level)
+                continue;
+            if (dist > cur_level)
+            {
+                cur_level = dist;
+                // Mark next new layer
+                fp.appendString("|", true);
+            }
+
+            const Vertex& v = mol.getVertex(next);
+
+            neibs_atoms.clear();
+            neibs_bonds.clear();
+
+            for (auto i : v.neighbors())
+            {
+                neibs_atoms.push(v.neiVertex(i));
+            }
+            neibs_atoms.qsort(_asc_cmp_cb, &mol);
+
+            for (auto i = 0; i < neibs_atoms.size(); i++)
+            {
+                for (auto j : v.neighbors())
+                {
+                    if (neibs_atoms[i] == v.neiVertex(j))
+                        neibs_bonds.push(v.neiEdge(j));
+                }
+            }
+
+            //         for (auto i : v.neighbors())
+            for (auto i = 0; i < neibs_atoms.size(); i++)
+            {
+                if (included_atoms.find(neibs_atoms[i]) == -1)
+                {
+                    bfs_queue.push(neibs_atoms[i]);
+                    included_atoms.push(neibs_atoms[i]);
+                    dist_atoms[neibs_atoms[i]] = dist + 1;
+                    bond.clear();
+                    ArrayOutput tmp(bond);
+                    n_key.clear();
+                    getAtomLocalKey(mol, neibs_atoms[i], n_key);
+                    if (n_key.size() == 0)
+                        continue;
+
+                    //               int order = mol.getBondOrder(neibs_bonds[i]);
+                    //               tmp.printf(":%d:", order);
+                    //               tmp.writeChar(0);
+
+                    //               fp.appendString(bond.ptr(), true);
+                    fp.appendString(n_key.ptr(), true);
+                }
+            }
+        }
+        // Remove empty layer, if it was created
+        if (fp[fp.size() - 2] == '|')
+            fp.remove(fp.size() - 2);
+    }
+    return;
+}
+
+void MoleculePkaModel::_removeExtraHydrogens(Molecule& mol)
+{
+    QS_DEF(Array<int>, to_remove);
+
+    to_remove.clear();
+    for (auto i : mol.vertices())
+        if (mol.convertableToImplicitHydrogen(i))
+            to_remove.push(i);
+
+    if (to_remove.size() > 0)
+        mol.removeAtoms(to_remove);
+}
+
+void MoleculePkaModel::_checkCanonicalOrder(Molecule& mol, Molecule& can_mol, Array<int>& order)
+{
+    QS_DEF(Array<int>, to_remove);
+    QS_DEF(Array<int>, ignored);
+
+    ignored.clear_resize(mol.vertexEnd());
+    ignored.zerofill();
+    to_remove.clear();
+
+    for (auto i : mol.vertices())
+        if (mol.convertableToImplicitHydrogen(i))
+            to_remove.push(i);
+
+    if (to_remove.size() > 0)
+        mol.removeAtoms(to_remove);
+
+    MoleculeAutomorphismSearch as;
+
+    as.detect_invalid_cistrans_bonds = false;
+    as.detect_invalid_stereocenters = false;
+    as.find_canonical_ordering = true;
+    as.ignored_vertices = ignored.ptr();
+    as.process(mol);
+    as.getCanonicalNumbering(order);
+    can_mol.makeSubmolecule(mol, order, NULL);
+
+    //   printMolfile(mol);
+    //   printMolfile(can_mol);
+}
+
+void MoleculePkaModel::getAtomLocalKey(Molecule& mol, int idx, Array<char>& fp)
+{
+    QS_DEF(Array<int>, feature_set);
+    if (!getAtomLocalFeatureSet(mol, idx, feature_set))
+        return;
+
+    QS_DEF(Array<char>, key);
+    key.clear();
+    ArrayOutput output(key);
+
+    for (int i = 0; i < feature_set.size(); i++)
+        output.printf("%d", feature_set[i]);
+
+    output.writeChar(0);
+
+    fp.appendString(key.ptr(), true);
 }
 
 /**
@@ -1191,224 +1198,221 @@ void MoleculePkaModel::getAtomLocalKey (Molecule &mol, int idx, Array<char> &fp)
  *  11. triple bond count
  *  12. zero bond count
  * */
-bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule & mol, int idx, Array<int> & fp)
+bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<int>& fp)
 {
-   if (mol.isPseudoAtom(idx) || mol.isRSite(idx) || mol.isTemplateAtom(idx))
-   {
-      QS_DEF(Array<char>, a_desc);
-      mol.getAtomDescription(idx, a_desc);
-      throw Error("pKa model can't used with atom : %s", a_desc.ptr());
-   }
+    if (mol.isPseudoAtom(idx) || mol.isRSite(idx) || mol.isTemplateAtom(idx))
+    {
+        QS_DEF(Array<char>, a_desc);
+        mol.getAtomDescription(idx, a_desc);
+        throw Error("pKa model can't used with atom : %s", a_desc.ptr());
+    }
 
-   int a_num  = mol.getAtomNumber(idx);
-   // Just bypass the hyfrogen atom
-   if (a_num == ELEM_H)
-      return false;
+    int a_num = mol.getAtomNumber(idx);
+    // Just bypass the hyfrogen atom
+    if (a_num == ELEM_H)
+        return false;
 
-   int a_val  = mol.getAtomValence(idx);
-   int a_chg  = mol.getAtomCharge(idx);
-   int a_rad  = mol.getAtomRadical(idx);
-   int a_iso  = mol.getAtomIsotope(idx);
-   int a_arom = mol.getAtomAromaticity(idx);
-   int a_conn = mol.getAtomConnectivity(idx);
+    int a_val = mol.getAtomValence(idx);
+    int a_chg = mol.getAtomCharge(idx);
+    int a_rad = mol.getAtomRadical(idx);
+    int a_iso = mol.getAtomIsotope(idx);
+    int a_arom = mol.getAtomAromaticity(idx);
+    int a_conn = mol.getAtomConnectivity(idx);
 
-   int a_lone = 0;
-   int group = Element::group(mol.getAtomNumber(idx));
+    int a_lone = 0;
+    int group = Element::group(mol.getAtomNumber(idx));
 
-   try
-   {
-      mol.getVacantPiOrbitals(group, a_chg, a_rad, a_conn, &a_lone);
-   }
-   catch (indigo::Exception & e)
-   {
-      a_lone = -1;  // The atom is aromatic
-   }
+    try
+    {
+        mol.getVacantPiOrbitals(group, a_chg, a_rad, a_conn, &a_lone);
+    }
+    catch (indigo::Exception& e)
+    {
+        a_lone = -1; // The atom is aromatic
+    }
 
-   mol.getAtomTotalH(idx);
+    mol.getAtomTotalH(idx);
 
-   int a_single_cnt = 0;
-   int a_double_cnt = 0;
-   int a_aromatic_cnt = 0;
-   int a_triple_cnt = 0;
-   int a_coord_cnt = 0;
+    int a_single_cnt = 0;
+    int a_double_cnt = 0;
+    int a_aromatic_cnt = 0;
+    int a_triple_cnt = 0;
+    int a_coord_cnt = 0;
 
-   const Vertex &vertex = mol.getVertex(idx);
-   for (auto i : vertex.neighbors())
-   {
-      int order = mol.getBondOrder(vertex.neiEdge(i));
+    const Vertex& vertex = mol.getVertex(idx);
+    for (auto i : vertex.neighbors())
+    {
+        int order = mol.getBondOrder(vertex.neiEdge(i));
 
-      if (order == BOND_SINGLE)
-         a_single_cnt++;
-      else if (order == BOND_DOUBLE)
-         a_double_cnt++;
-      else if (order == BOND_AROMATIC)
-         a_aromatic_cnt++;
-      else if (order == BOND_TRIPLE)
-         a_triple_cnt++;
-      else if (order == BOND_ZERO)
-         a_coord_cnt++;
-   }
+        if (order == BOND_SINGLE)
+            a_single_cnt++;
+        else if (order == BOND_DOUBLE)
+            a_double_cnt++;
+        else if (order == BOND_AROMATIC)
+            a_aromatic_cnt++;
+        else if (order == BOND_TRIPLE)
+            a_triple_cnt++;
+        else if (order == BOND_ZERO)
+            a_coord_cnt++;
+    }
 
-   int feature_set[] = {a_num, a_val, a_chg, a_rad, a_iso,
-                        a_arom, a_lone, a_conn, a_single_cnt,
-                        a_double_cnt, a_aromatic_cnt, a_triple_cnt, a_coord_cnt};
+    int feature_set[] = {a_num, a_val, a_chg, a_rad, a_iso, a_arom, a_lone, a_conn, a_single_cnt, a_double_cnt, a_aromatic_cnt, a_triple_cnt, a_coord_cnt};
 
-   fp.copy(feature_set, sizeof(feature_set) / sizeof(*feature_set));
+    fp.copy(feature_set, sizeof(feature_set) / sizeof(*feature_set));
 
-   return true;
+    return true;
 }
 
-float MoleculePkaModel::getAcidPkaValue (Molecule &mol, int idx, int level,  int min_level)
+float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int min_level)
 {
-   QS_DEF(Array<char>, fp);
-   QS_DEF(Array<int>, level_pos);
-   fp.clear();
-   level_pos.clear();
-   float pka = 100.f;
+    QS_DEF(Array<char>, fp);
+    QS_DEF(Array<int>, level_pos);
+    fp.clear();
+    level_pos.clear();
+    float pka = 100.f;
 
-   int a_num  = mol.getAtomNumber(idx);
-   if (a_num == ELEM_H)
-      return pka;
+    int a_num = mol.getAtomNumber(idx);
+    if (a_num == ELEM_H)
+        return pka;
 
-   getAtomLocalFingerprint (mol, idx, fp, level);
-//   printf("Acid site: atom index = %d, fp = %s\n",  idx, fp.ptr());
+    getAtomLocalFingerprint(mol, idx, fp, level);
+    //   printf("Acid site: atom index = %d, fp = %s\n",  idx, fp.ptr());
 
-   if (_model.adv_a_pkas.find(fp.ptr()))
-   {  
-      pka = _model.adv_a_pkas.at(fp.ptr())[0];
-//      printf("Acid site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level, pka,
-//             _model.adv_a_pkas.at(fp.ptr())[1]);
-   }
-   else
-   {
-      int levels = fp.count('|');
-      int beg = 0;
-      int end = fp.size();
-      for (int i = 0; i < levels; i++)
-      {
-        beg = fp.find(beg + 1, end, '|');
-        level_pos.push(beg);
-      }
+    if (_model.adv_a_pkas.find(fp.ptr()))
+    {
+        pka = _model.adv_a_pkas.at(fp.ptr())[0];
+        //      printf("Acid site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level, pka,
+        //             _model.adv_a_pkas.at(fp.ptr())[1]);
+    }
+    else
+    {
+        int levels = fp.count('|');
+        int beg = 0;
+        int end = fp.size();
+        for (int i = 0; i < levels; i++)
+        {
+            beg = fp.find(beg + 1, end, '|');
+            level_pos.push(beg);
+        }
 
-      for (int i = 0; i < level_pos.size(); i++)
-      {
-         if ((level_pos.size() - i - 1) < min_level)
-            break;
-         int next_layer = level_pos[level_pos.size() - i - 1];
-         fp.remove(next_layer, fp.size() - next_layer - 1);
+        for (int i = 0; i < level_pos.size(); i++)
+        {
+            if ((level_pos.size() - i - 1) < min_level)
+                break;
+            int next_layer = level_pos[level_pos.size() - i - 1];
+            fp.remove(next_layer, fp.size() - next_layer - 1);
 
-//         printf("Try FP = %s level = %d\n", fp.ptr(), level_pos.size() - i);
+            //         printf("Try FP = %s level = %d\n", fp.ptr(), level_pos.size() - i);
 
-         if (_model.adv_a_pkas.find(fp.ptr()))
-         {
-            pka = _model.adv_a_pkas.at(fp.ptr())[0];
-//            printf("Acid site found: fp = %s level = %d pka = %4.2f, dev = %4.2f\n", fp.ptr(), level_pos.size() - i, pka,
-//                   _model.adv_a_pkas.at(fp.ptr())[1]);
-            break;
-         }
-      }
-   }
+            if (_model.adv_a_pkas.find(fp.ptr()))
+            {
+                pka = _model.adv_a_pkas.at(fp.ptr())[0];
+                //            printf("Acid site found: fp = %s level = %d pka = %4.2f, dev = %4.2f\n", fp.ptr(), level_pos.size() - i, pka,
+                //                   _model.adv_a_pkas.at(fp.ptr())[1]);
+                break;
+            }
+        }
+    }
 
-   return pka;
+    return pka;
 }
 
-float MoleculePkaModel::getBasicPkaValue (Molecule &mol, int idx, int level, int min_level)
+float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int min_level)
 {
-   QS_DEF(Array<char>, fp);
-   QS_DEF(Array<int>, level_pos);
-   fp.clear();
-   level_pos.clear();
-   float pka = -100.f;
-   
-   int a_num  = mol.getAtomNumber(idx);
-   if (a_num == ELEM_H)
-      return pka;
+    QS_DEF(Array<char>, fp);
+    QS_DEF(Array<int>, level_pos);
+    fp.clear();
+    level_pos.clear();
+    float pka = -100.f;
 
-   getAtomLocalFingerprint (mol, idx, fp, level);
-//   printf("Basic site: atom index = %d, fp = %s\n",  idx, fp.ptr());
+    int a_num = mol.getAtomNumber(idx);
+    if (a_num == ELEM_H)
+        return pka;
 
-   if (_model.adv_b_pkas.find(fp.ptr()))
-   {
-      pka = (_model.adv_b_pkas.at(fp.ptr())[0]);
-//      printf("Basic site found: fp = %s  pka = %4.2f, dev = %4.2f\n",  fp.ptr(), pka,
-//              _model.adv_b_pkas.at(fp.ptr())[1]);
-   }
-   else
-   {
-      int levels = fp.count('|');
-      int beg = 0;
-      int end = fp.size();
-      for (int i = 0; i < levels; i++)
-      {
-        beg = fp.find(beg + 1, end, '|');
-        level_pos.push(beg);
-      }
+    getAtomLocalFingerprint(mol, idx, fp, level);
+    //   printf("Basic site: atom index = %d, fp = %s\n",  idx, fp.ptr());
 
-      for (int i = 0; i < level_pos.size(); i++)
-      {
-         if ((level_pos.size() - i - 1) < min_level)
-            break;
-         int next_layer = level_pos[level_pos.size() - i - 1];
-         fp.remove(next_layer, fp.size() - next_layer - 1);
-         if (_model.adv_b_pkas.find(fp.ptr()))
-         {
-            pka = _model.adv_b_pkas.at(fp.ptr())[0];
-//            printf("Basic site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level_pos.size() - i, pka,
-//                   _model.adv_b_pkas.at(fp.ptr())[1]);
-            break;
-         }
-      }
-   }
+    if (_model.adv_b_pkas.find(fp.ptr()))
+    {
+        pka = (_model.adv_b_pkas.at(fp.ptr())[0]);
+        //      printf("Basic site found: fp = %s  pka = %4.2f, dev = %4.2f\n",  fp.ptr(), pka,
+        //              _model.adv_b_pkas.at(fp.ptr())[1]);
+    }
+    else
+    {
+        int levels = fp.count('|');
+        int beg = 0;
+        int end = fp.size();
+        for (int i = 0; i < levels; i++)
+        {
+            beg = fp.find(beg + 1, end, '|');
+            level_pos.push(beg);
+        }
 
-   return pka;
+        for (int i = 0; i < level_pos.size(); i++)
+        {
+            if ((level_pos.size() - i - 1) < min_level)
+                break;
+            int next_layer = level_pos[level_pos.size() - i - 1];
+            fp.remove(next_layer, fp.size() - next_layer - 1);
+            if (_model.adv_b_pkas.find(fp.ptr()))
+            {
+                pka = _model.adv_b_pkas.at(fp.ptr())[0];
+                //            printf("Basic site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level_pos.size() - i, pka,
+                //                   _model.adv_b_pkas.at(fp.ptr())[1]);
+                break;
+            }
+        }
+    }
+
+    return pka;
 }
-
 
 IMPL_ERROR(MoleculeIonizer, "Molecule Ionizer");
 
 CP_DEF(MoleculeIonizer);
-MoleculeIonizer::MoleculeIonizer():
-CP_INIT{
+MoleculeIonizer::MoleculeIonizer() : CP_INIT
+{
 }
 
-bool MoleculeIonizer::ionize (Molecule &mol, float ph, float ph_toll, const IonizeOptions &options)
+bool MoleculeIonizer::ionize(Molecule& mol, float ph, float ph_toll, const IonizeOptions& options)
 {
-   QS_DEF(Array<int>, acid_sites);
-   QS_DEF(Array<int>, basic_sites);
-   QS_DEF(Array<float>, acid_pkas);
-   QS_DEF(Array<float>, basic_pkas);
+    QS_DEF(Array<int>, acid_sites);
+    QS_DEF(Array<int>, basic_sites);
+    QS_DEF(Array<float>, acid_pkas);
+    QS_DEF(Array<float>, basic_pkas);
 
-   acid_sites.clear();
-   basic_sites.clear();
-   acid_pkas.clear();
-   basic_pkas.clear();
+    acid_sites.clear();
+    basic_sites.clear();
+    acid_pkas.clear();
+    basic_pkas.clear();
 
-   MoleculePkaModel::estimate_pKa(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
+    MoleculePkaModel::estimate_pKa(mol, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
 
-   if (acid_sites.size() > 0 || basic_sites.size() > 0)
-      _setCharges(mol, ph, ph_toll, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
+    if (acid_sites.size() > 0 || basic_sites.size() > 0)
+        _setCharges(mol, ph, ph_toll, options, acid_sites, basic_sites, acid_pkas, basic_pkas);
 
-   return true;
+    return true;
 }
 
-void MoleculeIonizer::_setCharges (Molecule &mol, float pH, float pH_toll, const IonizeOptions &options, Array<int> &acid_sites,
-                      Array<int> &basic_sites, Array<float> &acid_pkas, Array<float> &basic_pkas)
+void MoleculeIonizer::_setCharges(Molecule& mol, float pH, float pH_toll, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
+                                  Array<float>& acid_pkas, Array<float>& basic_pkas)
 {
-   for (auto i = 0; i < acid_sites.size(); i++)
-   {
-      if ((acid_pkas[i] - pH) < pH_toll)
-      {
-         mol.setAtomCharge(acid_sites[i], mol.getAtomCharge(acid_sites[i]) - 1);
-//         printf("Acid site: atom index = %d, pKa = %f\n",  acid_sites[i], acid_pkas[i]);
-      }
-   }
+    for (auto i = 0; i < acid_sites.size(); i++)
+    {
+        if ((acid_pkas[i] - pH) < pH_toll)
+        {
+            mol.setAtomCharge(acid_sites[i], mol.getAtomCharge(acid_sites[i]) - 1);
+            //         printf("Acid site: atom index = %d, pKa = %f\n",  acid_sites[i], acid_pkas[i]);
+        }
+    }
 
-   for (auto i = 0; i < basic_sites.size(); i++)
-   {
-      if ((basic_pkas[i] - pH) > -pH_toll)
-      {
-         mol.setAtomCharge(basic_sites[i], mol.getAtomCharge(basic_sites[i]) + 1);
-//         printf("Basic site: atom index = %d, pKa = %f\n",  basic_sites[i], basic_pkas[i]);
-      }
-   }
+    for (auto i = 0; i < basic_sites.size(); i++)
+    {
+        if ((basic_pkas[i] - pH) > -pH_toll)
+        {
+            mol.setAtomCharge(basic_sites[i], mol.getAtomCharge(basic_sites[i]) + 1);
+            //         printf("Basic site: atom index = %d, pKa = %f\n",  basic_sites[i], basic_pkas[i]);
+        }
+    }
 }

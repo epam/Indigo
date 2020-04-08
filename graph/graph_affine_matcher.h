@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,35 +21,35 @@
 
 #include "base_cpp/array.h"
 
-namespace indigo {
-
-class Graph;
-struct Vec3f;
-
-class GraphAffineMatcher
+namespace indigo
 {
-public:
-   // takes mapping from subgraph to supergraph
-   GraphAffineMatcher (Graph &subgraph, Graph &supergraph, const int *mapping);
 
-   bool match (float rms_threshold);
+    class Graph;
+    struct Vec3f;
 
-   void (*cb_get_xyz) (Graph &graph, int vertex_idx, Vec3f &pos);
+    class GraphAffineMatcher
+    {
+    public:
+        // takes mapping from subgraph to supergraph
+        GraphAffineMatcher(Graph& subgraph, Graph& supergraph, const int* mapping);
 
-   const Array<int> *fixed_vertices;
+        bool match(float rms_threshold);
 
-   DECL_ERROR;
+        void (*cb_get_xyz)(Graph& graph, int vertex_idx, Vec3f& pos);
 
-protected:
+        const Array<int>* fixed_vertices;
 
-   Graph &_subgraph;
-   Graph &_supergraph;
-   const int   *_mapping;
+        DECL_ERROR;
 
-private:
-   GraphAffineMatcher (const GraphAffineMatcher &); // guess what? tip: look at any other class
-};
+    protected:
+        Graph& _subgraph;
+        Graph& _supergraph;
+        const int* _mapping;
 
-}
+    private:
+        GraphAffineMatcher(const GraphAffineMatcher&); // guess what? tip: look at any other class
+    };
+
+} // namespace indigo
 
 #endif

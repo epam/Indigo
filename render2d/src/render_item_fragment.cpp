@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,129 +16,131 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "molecule/molecule.h"
-#include "molecule/query_molecule.h"
+#include "render_item_fragment.h"
 #include "base_cpp/output.h"
 #include "layout/metalayout.h"
+#include "molecule/molecule.h"
+#include "molecule/query_molecule.h"
 #include "render_context.h"
 #include "render_internal.h"
 #include "render_item_factory.h"
-#include "render_item_fragment.h"
 
 using namespace indigo;
 
 IMPL_ERROR(RenderItemFragment, "RenderItemFragment");
 
-RenderItemFragment::RenderItemFragment (RenderItemFactory& factory) : 
-   RenderItemBase(factory),
-   mol(NULL),
-   aam(NULL),
-   reactingCenters(NULL),
-   inversionArray(NULL),
-   exactChangeArray(NULL),
-   refAtom(-1),
-   _scaleFactor(1.0f),
-   isRFragment(false)
+RenderItemFragment::RenderItemFragment(RenderItemFactory& factory)
+    : RenderItemBase(factory), mol(NULL), aam(NULL), reactingCenters(NULL), inversionArray(NULL), exactChangeArray(NULL), refAtom(-1), _scaleFactor(1.0f),
+      isRFragment(false)
 {
 }
 
-RenderItemFragment::~RenderItemFragment ()
+RenderItemFragment::~RenderItemFragment()
 {
 }
 
-void RenderItemFragment::init ()
+void RenderItemFragment::init()
 {
-   _min.set(0,0);
-   _max.set(0,0);
-   for (int i = mol->vertexBegin(); i < mol->vertexEnd(); i = mol->vertexNext(i)) {
-      const Vec3f& v = mol->getAtomXyz(i);
-      Vec2f v2(v.x, v.y);
-      if (i == mol->vertexBegin()) {
-         _min.copy(v2);
-         _max.copy(v2);
-      } else {
-         _min.min(v2);
-         _max.max(v2);
-      }
-   }
+    _min.set(0, 0);
+    _max.set(0, 0);
+    for (int i = mol->vertexBegin(); i < mol->vertexEnd(); i = mol->vertexNext(i))
+    {
+        const Vec3f& v = mol->getAtomXyz(i);
+        Vec2f v2(v.x, v.y);
+        if (i == mol->vertexBegin())
+        {
+            _min.copy(v2);
+            _max.copy(v2);
+        }
+        else
+        {
+            _min.min(v2);
+            _max.max(v2);
+        }
+    }
 }
 
-void RenderItemFragment::estimateSize ()
-{ 
-   _renderIdle();
-   if (refAtom >= 0) {
-      const Vec3f& v = mol->getAtomXyz(refAtom);
-      Vec2f v2(v.x, v.y);
-      refAtomPos.set(v2.x - _min.x, _max.y - v2.y);
-      refAtomPos.scale(_scaleFactor);
-      refAtomPos.sub(origin);
-   }
-}
-
-void RenderItemFragment::_renderIdle() {
-   _rc.initNullContext();
-   Vec2f bbmin, bbmax;
-   Vec2f pos;
-   render(true);
-   _rc.bbGetMin(bbmin);
-   _rc.bbGetMax(bbmax);
-   _rc.closeContext(true);
-   size.diff(bbmax, bbmin);
-   origin.copy(bbmin);
-}
-
-void RenderItemFragment::render (bool idle)
+void RenderItemFragment::estimateSize()
 {
-   _rc.translate(-origin.x, -origin.y);
-   MoleculeRenderInternal rnd(_opt, _settings, _rc, idle);
-   rnd.setMolecule(mol);
-   rnd.setIsRFragment(isRFragment);
-   rnd.setScaleFactor(_scaleFactor, _min, _max);
-   rnd.setReactionComponentProperties(aam, reactingCenters, inversionArray);
-   rnd.setQueryReactionComponentProperties(exactChangeArray);
-   rnd.render();
+    _renderIdle();
+    if (refAtom >= 0)
+    {
+        const Vec3f& v = mol->getAtomXyz(refAtom);
+        Vec2f v2(v.x, v.y);
+        refAtomPos.set(v2.x - _min.x, _max.y - v2.y);
+        refAtomPos.scale(_scaleFactor);
+        refAtomPos.sub(origin);
+    }
 }
 
-static float get2dDist (const Vec3f& v1, const Vec3f& v2)
+void RenderItemFragment::_renderIdle()
 {
-   return sqrt((v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y));
+    _rc.initNullContext();
+    Vec2f bbmin, bbmax;
+    Vec2f pos;
+    render(true);
+    _rc.bbGetMin(bbmin);
+    _rc.bbGetMax(bbmax);
+    _rc.closeContext(true);
+    size.diff(bbmax, bbmin);
+    origin.copy(bbmin);
 }
 
-float RenderItemFragment::getTotalBondLength ()
+void RenderItemFragment::render(bool idle)
 {
-   float sum = 0.0;
-   for (int i = mol->edgeBegin(); i < mol->edgeEnd(); i = mol->edgeNext(i)) {
-      const Edge& edge = mol->getEdge(i);
-      sum += get2dDist(mol->getAtomXyz(edge.beg), mol->getAtomXyz(edge.end));
-   }
-   return sum;
+    _rc.translate(-origin.x, -origin.y);
+    MoleculeRenderInternal rnd(_opt, _settings, _rc, idle);
+    rnd.setMolecule(mol);
+    rnd.setIsRFragment(isRFragment);
+    rnd.setScaleFactor(_scaleFactor, _min, _max);
+    rnd.setReactionComponentProperties(aam, reactingCenters, inversionArray);
+    rnd.setQueryReactionComponentProperties(exactChangeArray);
+    rnd.render();
+}
+
+static float get2dDist(const Vec3f& v1, const Vec3f& v2)
+{
+    return sqrt((v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y));
+}
+
+float RenderItemFragment::getTotalBondLength()
+{
+    float sum = 0.0;
+    for (int i = mol->edgeBegin(); i < mol->edgeEnd(); i = mol->edgeNext(i))
+    {
+        const Edge& edge = mol->getEdge(i);
+        sum += get2dDist(mol->getAtomXyz(edge.beg), mol->getAtomXyz(edge.end));
+    }
+    return sum;
 }
 
 float RenderItemFragment::getTotalClosestAtomDistance()
 {
-   if (mol->vertexCount() < 2)
-      return 0;
-   float sum = 0.0;
-   for (int i = mol->vertexBegin(); i < mol->vertexEnd(); i = mol->vertexNext(i)) {
-      float minDist = -1;
-      for (int j = mol->vertexBegin(); j < mol->vertexEnd(); j = mol->vertexNext(j)) {
-         if (i == j)
-            continue;
-         float dist = get2dDist(mol->getAtomXyz(i), mol->getAtomXyz(j));
-         if (minDist < 0 || dist < minDist)
-            minDist = dist;
-      }
-      sum += minDist;
-   }
-   return sum;
+    if (mol->vertexCount() < 2)
+        return 0;
+    float sum = 0.0;
+    for (int i = mol->vertexBegin(); i < mol->vertexEnd(); i = mol->vertexNext(i))
+    {
+        float minDist = -1;
+        for (int j = mol->vertexBegin(); j < mol->vertexEnd(); j = mol->vertexNext(j))
+        {
+            if (i == j)
+                continue;
+            float dist = get2dDist(mol->getAtomXyz(i), mol->getAtomXyz(j));
+            if (minDist < 0 || dist < minDist)
+                minDist = dist;
+        }
+        sum += minDist;
+    }
+    return sum;
 }
 
-int RenderItemFragment::getBondCount ()
+int RenderItemFragment::getBondCount()
 {
-   return mol->edgeCount();
+    return mol->edgeCount();
 }
 
-int RenderItemFragment::getAtomCount ()
+int RenderItemFragment::getAtomCount()
 {
-   return mol->vertexCount();
+    return mol->vertexCount();
 }

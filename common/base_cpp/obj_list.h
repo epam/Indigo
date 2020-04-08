@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,117 +21,127 @@
 
 #include "base_cpp/list.h"
 
-namespace indigo {
-
-template <typename T> class ObjList
+namespace indigo
 {
-public:
 
-   typedef typename List<T>::Elem Elem;
+    template <typename T> class ObjList
+    {
+    public:
+        typedef typename List<T>::Elem Elem;
 
-   ObjList ()
-   {
-   }
+        ObjList()
+        {
+        }
 
-   explicit ObjList (Pool<Elem> &pool) : _list(pool)
-   {
-   }
+        explicit ObjList(Pool<Elem>& pool) : _list(pool)
+        {
+        }
 
-   ~ObjList ()
-   {
-      clear();
-   }
+        ~ObjList()
+        {
+            clear();
+        }
 
-   int add ()
-   {     
-      int idx = _list.add();
+        int add()
+        {
+            int idx = _list.add();
 
-      new (&_list[idx]) T();
+            new (&_list[idx]) T();
 
-      return idx;      
-   }
+            return idx;
+        }
 
-   template <typename A> int add (A &a)
-   {     
-      int idx = _list.add();
+        template <typename A> int add(A& a)
+        {
+            int idx = _list.add();
 
-      new (&_list[idx]) T(a);
+            new (&_list[idx]) T(a);
 
-      return idx;      
-   }
+            return idx;
+        }
 
-   int insertAfter (int existing)
-   {
-      int idx = _list.insertAfter(existing);
+        int insertAfter(int existing)
+        {
+            int idx = _list.insertAfter(existing);
 
-      new (&_list[idx]) T();
+            new (&_list[idx]) T();
 
-      return idx;
-   }
+            return idx;
+        }
 
-   template <typename A> int insertAfter (int existing, A &a)
-   {
-      int idx = _list.insertAfter(existing);
+        template <typename A> int insertAfter(int existing, A& a)
+        {
+            int idx = _list.insertAfter(existing);
 
-      new (&_list[idx]) T(a);
+            new (&_list[idx]) T(a);
 
-      return idx;
-   }
+            return idx;
+        }
 
-   int insertBefore (int existing)
-   {
-      int idx = _list.insertBefore(existing);
+        int insertBefore(int existing)
+        {
+            int idx = _list.insertBefore(existing);
 
-      new (&_list[idx]) T();
+            new (&_list[idx]) T();
 
-      return idx;
-   }
+            return idx;
+        }
 
-   template <typename A> int insertBefore (int existing, A &a)
-   {
-      int idx = _list.insertBefore(existing);
+        template <typename A> int insertBefore(int existing, A& a)
+        {
+            int idx = _list.insertBefore(existing);
 
-      new (&_list[idx]) T(a);
+            new (&_list[idx]) T(a);
 
-      return idx;
-   }
+            return idx;
+        }
 
-   void remove (int idx)
-   {
-      _list[idx].~T();
-      _list.remove(idx);
-   }
+        void remove(int idx)
+        {
+            _list[idx].~T();
+            _list.remove(idx);
+        }
 
-   int size  () const { return _list.size(); }
-   int begin () const { return _list.begin(); }
-   int end () const { return _list.end(); }
-   int next (int idx) const { return _list.next(idx); }
+        int size() const
+        {
+            return _list.size();
+        }
+        int begin() const
+        {
+            return _list.begin();
+        }
+        int end() const
+        {
+            return _list.end();
+        }
+        int next(int idx) const
+        {
+            return _list.next(idx);
+        }
 
-   void clear ()
-   {
-      while (_list.size() > 0)
-         remove(_list.tail());
-   }
+        void clear()
+        {
+            while (_list.size() > 0)
+                remove(_list.tail());
+        }
 
-   T & operator [] (int index) const
-   {                        
-      return _list[index];
-   }
+        T& operator[](int index) const
+        {
+            return _list[index];
+        }
 
-   T & at (int index) const
-   {                        
-      return _list[index];
-   }
+        T& at(int index) const
+        {
+            return _list[index];
+        }
 
-protected:
+    protected:
+        List<T> _list;
 
-   List<T> _list;
+    private:
+        ObjList(const ObjList<T>&); // no implicit copy
+    };
 
-private:
-
-   ObjList (const ObjList<T> & ); // no implicit copy
-};
-
-}
+} // namespace indigo
 
 #endif

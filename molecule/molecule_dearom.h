@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,312 +20,325 @@
 #define __molecule_dearom_h__
 
 #include "base_cpp/array.h"
-#include "base_cpp/exception.h"
-#include "base_cpp/tlscont.h"
-#include "base_cpp/gray_codes.h"
 #include "base_cpp/d_bitset.h"
+#include "base_cpp/exception.h"
+#include "base_cpp/gray_codes.h"
+#include "base_cpp/tlscont.h"
 #include "graph/graph_perfect_matching.h"
 #include "molecule/molecule_arom.h"
 
-namespace indigo {
-
-class BaseMolecule;
-class Molecule;
-class Scanner;
-class Output;
-
-DECL_EXCEPTION(DearomatizationException);
-DECL_EXCEPTION2(NonUniqueDearomatizationException, DearomatizationException);
-
-// Storage for dearomatizations
-class DearomatizationsStorage
+namespace indigo
 {
-   friend class DearomatizationsStorageWrapper;
-public:
-   DECL_ERROR2(DearomatizationException);
 
-   explicit DearomatizationsStorage ();
+    class BaseMolecule;
+    class Molecule;
+    class Scanner;
+    class Output;
 
-   void clear                   (void);
-   void clearIndices            (void);
-   void clearBondsState         (void);
+    DECL_EXCEPTION(DearomatizationException);
+    DECL_EXCEPTION2(NonUniqueDearomatizationException, DearomatizationException);
 
-   void setGroupsCount           (int groupsCount);
-   void setGroup                 (int group, int boundsCount, const int *bonds, 
-                                  int heteroAtomsCount, const int *hetroAtoms);
-   void addGroupDearomatization  (int group, const byte *dearomBondsState);
-   void addGroupHeteroAtomsState (int group, const byte *heteroAtomsState);
+    // Storage for dearomatizations
+    class DearomatizationsStorage
+    {
+        friend class DearomatizationsStorageWrapper;
 
-   int         getGroupDearomatizationsCount (int group) const;
-   byte*       getGroupDearomatization       (int group, int dearomatizationIndex);
-   const int*  getGroupBonds                 (int group) const;
-   int         getGroupBondsCount            (int group) const;
+    public:
+        DECL_ERROR2(DearomatizationException);
 
-   int         getGroupHeterAtomsStateCount  (int group) const;
-   const byte* getGroupHeterAtomsState       (int group, int index) const;
-   const int*  getGroupHeteroAtoms           (int group) const;
-   int         getGroupHeteroAtomsCount      (int group) const;
+        explicit DearomatizationsStorage();
 
-   int         getGroupsCount                (void) const;
+        void clear(void);
+        void clearIndices(void);
+        void clearBondsState(void);
 
-   void        saveBinary                    (Output &output) const;
-   void        loadBinary                    (Scanner &scanner);
+        void setGroupsCount(int groupsCount);
+        void setGroup(int group, int boundsCount, const int* bonds, int heteroAtomsCount, const int* hetroAtoms);
+        void addGroupDearomatization(int group, const byte* dearomBondsState);
+        void addGroupHeteroAtomsState(int group, const byte* heteroAtomsState);
 
-   int         getDearomatizationParams      (void)         { return _dearomParams; }
-   void        setDearomatizationParams      (int params)   { _dearomParams = params; }
+        int getGroupDearomatizationsCount(int group) const;
+        byte* getGroupDearomatization(int group, int dearomatizationIndex);
+        const int* getGroupBonds(int group) const;
+        int getGroupBondsCount(int group) const;
 
-protected:
-   struct PseudoArray
-   {
-      int count;
-      int offset;
-   };
-   struct Group
-   {
-      PseudoArray aromBondsIndices;
-      PseudoArray dearomBondsState;
-      PseudoArray heteroAtomsIndices;
-      PseudoArray heteroAtomsState;
-   };
-protected:
-   Array<int>   _aromBondsArray;            // Bonds used in this connectivity group
-   Array<int>   _heteroAtomsIndicesArray;   // Heteroatoms indices
-   Array<Group> _aromaticGroups;
+        int getGroupHeterAtomsStateCount(int group) const;
+        const byte* getGroupHeterAtomsState(int group, int index) const;
+        const int* getGroupHeteroAtoms(int group) const;
+        int getGroupHeteroAtomsCount(int group) const;
 
-   // Data for I/O
-   Array<byte>  _dearomBondsStateArray;     // Array of array of dearomatization configuration
-   Array<byte>  _heteroAtomsStateArray;     // States for heteroatoms
-   byte         _dearomParams;
-};
+        int getGroupsCount(void) const;
 
-// Class for handling aromatic groups in molecule (contains helpful functions)
-class DearomatizationsGroups
-{
-public:
-   // Constants for Prepare function
-   enum 
-   {
-      GET_HETERATOMS_INDICES  =  0x01,
-      GET_VERTICES_FILTER     =  0x02
-   };
-   struct GROUP_DATA
-   {
-      Array<int> bonds;
-      Array<int> bondsInvMapping;
-      Array<int> vertices;
-      Array<int> verticesFilter;
-      Array<int> heteroAtoms;
-      Array<int> heteroAtomsInvMapping;
-   };
-public:
-   DearomatizationsGroups (BaseMolecule &molecule);
+        void saveBinary(Output& output) const;
+        void loadBinary(Scanner& scanner);
 
-   // for flags see GET_***
-   void getGroupData            (int group, int flags, GROUP_DATA *data);
-   // Construct bondsInvMapping, vertices and heteroAtomsInvMapping
-   void getGroupDataFromStorage (DearomatizationsStorage &storage, int group, GROUP_DATA *data);
+        int getDearomatizationParams(void)
+        {
+            return _dearomParams;
+        }
+        void setDearomatizationParams(int params)
+        {
+            _dearomParams = params;
+        }
 
-   int  detectAromaticGroups (const int *atom_external_conn);
-   void constructGroups      (DearomatizationsStorage &storage, bool needHeteroAtoms);
+    protected:
+        struct PseudoArray
+        {
+            int count;
+            int offset;
+        };
+        struct Group
+        {
+            PseudoArray aromBondsIndices;
+            PseudoArray dearomBondsState;
+            PseudoArray heteroAtomsIndices;
+            PseudoArray heteroAtomsState;
+        };
 
-   bool* getAcceptDoubleBonds (void);
-   bool  isAcceptDoubleBond   (int atom);
+    protected:
+        Array<int> _aromBondsArray;          // Bonds used in this connectivity group
+        Array<int> _heteroAtomsIndicesArray; // Heteroatoms indices
+        Array<Group> _aromaticGroups;
 
-   DECL_ERROR2(DearomatizationException);
-protected:
-   void _detectAromaticGroups (int v_idx, const int *atom_external_conn);
+        // Data for I/O
+        Array<byte> _dearomBondsStateArray; // Array of array of dearomatization configuration
+        Array<byte> _heteroAtomsStateArray; // States for heteroatoms
+        byte _dearomParams;
+    };
 
-   int _getFixedConnectivitySpecific (int label, int charge, int min_conn, int n_arom);
-protected:
-   BaseMolecule &_molecule;
-   int _aromaticGroups;
+    // Class for handling aromatic groups in molecule (contains helpful functions)
+    class DearomatizationsGroups
+    {
+    public:
+        // Constants for Prepare function
+        enum
+        {
+            GET_HETERATOMS_INDICES = 0x01,
+            GET_VERTICES_FILTER = 0x02
+        };
+        struct GROUP_DATA
+        {
+            Array<int> bonds;
+            Array<int> bondsInvMapping;
+            Array<int> vertices;
+            Array<int> verticesFilter;
+            Array<int> heteroAtoms;
+            Array<int> heteroAtomsInvMapping;
+        };
 
-   // Additional data stored here to prevent reallocatoins
-   CP_DECL;
-   TL_CP_DECL(Array<int>,  _vertexAromaticGroupIndex);
-   TL_CP_DECL(Array<bool>, _vertexIsAcceptDoubleEdge);
-   TL_CP_DECL(Array<bool>, _vertexIsAcceptSingleEdge);
-   TL_CP_DECL(Array<int>,  _vertexProcessed);
+    public:
+        DearomatizationsGroups(BaseMolecule& molecule);
 
-   TL_CP_DECL(Array<int>, _groupVertices);
-   TL_CP_DECL(Array<int>, _groupEdges);
-   TL_CP_DECL(Array<int>, _groupHeteroAtoms);
-   TL_CP_DECL(GROUP_DATA, _groupData);
-};
+        // for flags see GET_***
+        void getGroupData(int group, int flags, GROUP_DATA* data);
+        // Construct bondsInvMapping, vertices and heteroAtomsInvMapping
+        void getGroupDataFromStorage(DearomatizationsStorage& storage, int group, GROUP_DATA* data);
 
-// Molecule dearomatization class.
-class Dearomatizer
-{
-public:
-   enum { 
-      PARAMS_NO_DEAROMATIZATIONS,
-      PARAMS_SAVE_ALL_DEAROMATIZATIONS, // Store all dearomatizations
-      PARAMS_SAVE_ONE_DEAROMATIZATION,  // Store just one dearomatization for every heteroatom configuration
-      PARAMS_SAVE_JUST_HETERATOMS       // Store just heteroatoms configuration
-   }; 
-public:
-   explicit Dearomatizer (BaseMolecule &molecule, const int *atom_external_conn, const AromaticityOptions &options);
-   virtual ~Dearomatizer ();
+        int detectAromaticGroups(const int* atom_external_conn);
+        void constructGroups(DearomatizationsStorage& storage, bool needHeteroAtoms);
 
-   void  enumerateDearomatizations  (DearomatizationsStorage &dearomatizations);
+        bool* getAcceptDoubleBonds(void);
+        bool isAcceptDoubleBond(int atom);
 
-   static void setDearomatizationParams      (int params);
+        DECL_ERROR2(DearomatizationException);
 
-protected:
-   class GraphMatchingFixed : public GraphPerfectMatching
-   {
-   public:
-      GraphMatchingFixed (BaseMolecule &molecule);
+    protected:
+        void _detectAromaticGroups(int v_idx, const int* atom_external_conn);
 
-      void setFixedInfo (const Dbitset *edgesFixed, const Dbitset *verticesFixed);
+        int _getFixedConnectivitySpecific(int label, int charge, int min_conn, int n_arom);
 
-      virtual bool checkVertex (int v_idx);
-      virtual bool checkEdge   (int e_idx);
+    protected:
+        BaseMolecule& _molecule;
+        int _aromaticGroups;
 
-   protected:
-      const Dbitset *_edgesFixed;
-      const Dbitset *_verticesFixed;
-   };
+        // Additional data stored here to prevent reallocatoins
+        CP_DECL;
+        TL_CP_DECL(Array<int>, _vertexAromaticGroupIndex);
+        TL_CP_DECL(Array<bool>, _vertexIsAcceptDoubleEdge);
+        TL_CP_DECL(Array<bool>, _vertexIsAcceptSingleEdge);
+        TL_CP_DECL(Array<int>, _vertexProcessed);
 
-protected:
-   GraphMatchingFixed  _graphMatching;
+        TL_CP_DECL(Array<int>, _groupVertices);
+        TL_CP_DECL(Array<int>, _groupEdges);
+        TL_CP_DECL(Array<int>, _groupHeteroAtoms);
+        TL_CP_DECL(GROUP_DATA, _groupData);
+    };
 
-   BaseMolecule &_molecule;
-   const AromaticityOptions &_options;
-   int _connectivityGroups;
-   int _activeGroup;
+    // Molecule dearomatization class.
+    class Dearomatizer
+    {
+    public:
+        enum
+        {
+            PARAMS_NO_DEAROMATIZATIONS,
+            PARAMS_SAVE_ALL_DEAROMATIZATIONS, // Store all dearomatizations
+            PARAMS_SAVE_ONE_DEAROMATIZATION,  // Store just one dearomatization for every heteroatom configuration
+            PARAMS_SAVE_JUST_HETERATOMS       // Store just heteroatoms configuration
+        };
 
-   DearomatizationsGroups              _aromaticGroups;
-   DearomatizationsStorage            *_dearomatizations;
+    public:
+        explicit Dearomatizer(BaseMolecule& molecule, const int* atom_external_conn, const AromaticityOptions& options);
+        virtual ~Dearomatizer();
 
-   CP_DECL;
-   TL_CP_DECL(DearomatizationsGroups::GROUP_DATA, _aromaticGroupData);
-   /*TL_CP_DECL(*/Dbitset/*,    */_edgesFixed/*)*/;
-   /*TL_CP_DECL(*/Dbitset/*,    */_verticesFixed/*)*/;
-   TL_CP_DECL(Array<int>, _submoleculeMapping);
+        void enumerateDearomatizations(DearomatizationsStorage& dearomatizations);
 
-protected:
-   void _initEdges         (void);
-   void _initVertices      (void);
+        static void setDearomatizationParams(int params);
 
-   void _prepareGroup      (int group, Molecule &submolecule);
+    protected:
+        class GraphMatchingFixed : public GraphPerfectMatching
+        {
+        public:
+            GraphMatchingFixed(BaseMolecule& molecule);
 
-   void _fixHeteratom       (int atom_idx, bool toFix);
-   void _processMatching    (Molecule &submolecule, int group, 
-                             const byte* hetroAtomsState);
-   void _enumerateMatching  (void);
-   void _handleMatching     (void);
-};
+            void setFixedInfo(const Dbitset* edgesFixed, const Dbitset* verticesFixed);
 
-// Dearomatization matcher with delayed initialization
-class DearomatizationMatcher
-{
-public:
-   DECL_ERROR2(DearomatizationException);
+            virtual bool checkVertex(int v_idx);
+            virtual bool checkEdge(int e_idx);
 
-   DearomatizationMatcher (DearomatizationsStorage &dearomatizations, BaseMolecule &molecule,
-      const int *atom_external_conn);
+        protected:
+            const Dbitset* _edgesFixed;
+            const Dbitset* _verticesFixed;
+        };
 
-   bool isAbleToFixBond (int edge_idx, int type);
-   bool fixBond         (int edge_idx, int type);
-   void unfixBond       (int edge_idx);
-   void unfixBondByAtom (int atom_idx);
+    protected:
+        GraphMatchingFixed _graphMatching;
 
-protected:
-   void _prepare        (void);
-   void _prepareGroup   (int group);
+        BaseMolecule& _molecule;
+        const AromaticityOptions& _options;
+        int _connectivityGroups;
+        int _activeGroup;
 
-   void _generateUsedVertices    (void);
-   bool _tryToChangeActiveIndex  (int dearom_idx, int group, byte *groupEdgesPtr, byte *groupEdgesStatePtr);
-   bool _fixBondInMatching (int group, int indexInGroup, int type);
+        DearomatizationsGroups _aromaticGroups;
+        DearomatizationsStorage* _dearomatizations;
 
-protected:
-   struct GroupExData
-   {
-      int offsetInEdgesState;   // Offset in matched edges state
-      int activeEdgeState; 
-      int offsetInVertices;
-      int verticesUsed;
-      bool needPrepare;
-   };
-   // Graph edge matching class to support current dearomatization
-   class GraphMatchingEdgeFixed : public GraphPerfectMatching
-   {
-   public:
-      GraphMatchingEdgeFixed (BaseMolecule &molecule);
+        CP_DECL;
+        TL_CP_DECL(DearomatizationsGroups::GROUP_DATA, _aromaticGroupData);
+        /*TL_CP_DECL(*/ Dbitset /*,    */ _edgesFixed /*)*/;
+        /*TL_CP_DECL(*/ Dbitset /*,    */ _verticesFixed /*)*/;
+        TL_CP_DECL(Array<int>, _submoleculeMapping);
 
-      void setExtraInfo (byte *edgesEdges);
+    protected:
+        void _initEdges(void);
+        void _initVertices(void);
 
-      virtual bool checkEdge   (int e_idx);
-   protected:
-      byte *_edgesState;
-   };
-   // Graph edge matching class to find dearomatization by heteroatoms state
-   class GraphMatchingVerticesFixed : public GraphPerfectMatching
-   {
-   public:
-      GraphMatchingVerticesFixed (BaseMolecule &molecule);
+        void _prepareGroup(int group, Molecule& submolecule);
 
-      void setVerticesState   (const byte *verticesState);
-      void setVerticesMapping (int  *verticesMapping);
-      void setVerticesAccept  (bool *verticesAcceptDoubleBond);
+        void _fixHeteratom(int atom_idx, bool toFix);
+        void _processMatching(Molecule& submolecule, int group, const byte* hetroAtomsState);
+        void _enumerateMatching(void);
+        void _handleMatching(void);
+    };
 
-      virtual bool checkVertex (int v_idx);
-   protected:
-      const byte *_verticesState;
-      int  *_verticesMapping;
-      bool *_verticesAcceptDoubleBond;
-   };
+    // Dearomatization matcher with delayed initialization
+    class DearomatizationMatcher
+    {
+    public:
+        DECL_ERROR2(DearomatizationException);
 
-protected:
-   BaseMolecule &_molecule;
-   DearomatizationsStorage &_dearomatizations;
-   GraphMatchingEdgeFixed   _graphMatchingFixedEdges;
-   DearomatizationsGroups   _aromaticGroups;
+        DearomatizationMatcher(DearomatizationsStorage& dearomatizations, BaseMolecule& molecule, const int* atom_external_conn);
 
-   CP_DECL;
-   TL_CP_DECL(Array<byte>,        _matchedEdges);      // Edges that have already been matched
-   TL_CP_DECL(Array<byte>,        _matchedEdgesState); // State of such edges
-   TL_CP_DECL(Array<GroupExData>, _groupExInfo);       // Additional data for group
-   TL_CP_DECL(Array<int>,         _verticesInGroup);
-   TL_CP_DECL(Dbitset,            _verticesAdded);
-   TL_CP_DECL(Array<int>,         _edges2GroupMapping);
-   TL_CP_DECL(Array<int>,         _edges2IndexInGroupMapping);
-   TL_CP_DECL(Array<byte>,        _correctEdgesArray);
-   TL_CP_DECL(Array<int>,         _verticesFixCount);
-   TL_CP_DECL(DearomatizationsGroups::GROUP_DATA, _aromaticGroupsData);
+        bool isAbleToFixBond(int edge_idx, int type);
+        bool fixBond(int edge_idx, int type);
+        void unfixBond(int edge_idx);
+        void unfixBondByAtom(int atom_idx);
 
-   bool              _needPrepare;
-   int               _lastAcceptedEdge;
-   int               _lastAcceptedEdgeType;
-};
+    protected:
+        void _prepare(void);
+        void _prepareGroup(int group);
 
-class MoleculeDearomatizer
-{
-public:
-   MoleculeDearomatizer (Molecule &mol, DearomatizationsStorage &dearomatizations);
+        void _generateUsedVertices(void);
+        bool _tryToChangeActiveIndex(int dearom_idx, int group, byte* groupEdgesPtr, byte* groupEdgesStatePtr);
+        bool _fixBondInMatching(int group, int indexInGroup, int type);
 
-   // Function dearomatizes as much as possible.
-   // Returns true if all bonds were dearomatized, false overwise
-   static bool dearomatizeMolecule (Molecule &mol, const AromaticityOptions &options);
+    protected:
+        struct GroupExData
+        {
+            int offsetInEdgesState; // Offset in matched edges state
+            int activeEdgeState;
+            int offsetInVertices;
+            int verticesUsed;
+            bool needPrepare;
+        };
+        // Graph edge matching class to support current dearomatization
+        class GraphMatchingEdgeFixed : public GraphPerfectMatching
+        {
+        public:
+            GraphMatchingEdgeFixed(BaseMolecule& molecule);
 
-   static bool restoreHydrogens (Molecule &mol, const AromaticityOptions &options);
-   static bool restoreHydrogens (Molecule &mol, bool unambiguous_only);
+            void setExtraInfo(byte* edgesEdges);
 
-   void dearomatizeGroup (int group, int dearomatization_index);
-   void restoreHydrogens (int group, int dearomatization_index);
+            virtual bool checkEdge(int e_idx);
 
-private:
-   DearomatizationsStorage &_dearomatizations;
-   Molecule &_mol;
+        protected:
+            byte* _edgesState;
+        };
+        // Graph edge matching class to find dearomatization by heteroatoms state
+        class GraphMatchingVerticesFixed : public GraphPerfectMatching
+        {
+        public:
+            GraphMatchingVerticesFixed(BaseMolecule& molecule);
 
-   int _countDoubleBonds (int group, int dearomatization_index);
-   int _getBestDearomatization (int group);
+            void setVerticesState(const byte* verticesState);
+            void setVerticesMapping(int* verticesMapping);
+            void setVerticesAccept(bool* verticesAcceptDoubleBond);
 
-   CP_DECL;
-   TL_CP_DECL(Array<int>, vertex_connectivity);
-};
+            virtual bool checkVertex(int v_idx);
 
-}
+        protected:
+            const byte* _verticesState;
+            int* _verticesMapping;
+            bool* _verticesAcceptDoubleBond;
+        };
+
+    protected:
+        BaseMolecule& _molecule;
+        DearomatizationsStorage& _dearomatizations;
+        GraphMatchingEdgeFixed _graphMatchingFixedEdges;
+        DearomatizationsGroups _aromaticGroups;
+
+        CP_DECL;
+        TL_CP_DECL(Array<byte>, _matchedEdges);       // Edges that have already been matched
+        TL_CP_DECL(Array<byte>, _matchedEdgesState);  // State of such edges
+        TL_CP_DECL(Array<GroupExData>, _groupExInfo); // Additional data for group
+        TL_CP_DECL(Array<int>, _verticesInGroup);
+        TL_CP_DECL(Dbitset, _verticesAdded);
+        TL_CP_DECL(Array<int>, _edges2GroupMapping);
+        TL_CP_DECL(Array<int>, _edges2IndexInGroupMapping);
+        TL_CP_DECL(Array<byte>, _correctEdgesArray);
+        TL_CP_DECL(Array<int>, _verticesFixCount);
+        TL_CP_DECL(DearomatizationsGroups::GROUP_DATA, _aromaticGroupsData);
+
+        bool _needPrepare;
+        int _lastAcceptedEdge;
+        int _lastAcceptedEdgeType;
+    };
+
+    class MoleculeDearomatizer
+    {
+    public:
+        MoleculeDearomatizer(Molecule& mol, DearomatizationsStorage& dearomatizations);
+
+        // Function dearomatizes as much as possible.
+        // Returns true if all bonds were dearomatized, false overwise
+        static bool dearomatizeMolecule(Molecule& mol, const AromaticityOptions& options);
+
+        static bool restoreHydrogens(Molecule& mol, const AromaticityOptions& options);
+        static bool restoreHydrogens(Molecule& mol, bool unambiguous_only);
+
+        void dearomatizeGroup(int group, int dearomatization_index);
+        void restoreHydrogens(int group, int dearomatization_index);
+
+    private:
+        DearomatizationsStorage& _dearomatizations;
+        Molecule& _mol;
+
+        int _countDoubleBonds(int group, int dearomatization_index);
+        int _getBestDearomatization(int group);
+
+        CP_DECL;
+        TL_CP_DECL(Array<int>, vertex_connectivity);
+    };
+
+} // namespace indigo
 
 #endif // __molecule_dearom_h__

@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,208 +21,209 @@
 
 #include "base_cpp/pool.h"
 
-namespace indigo {
-
-template <typename T> class List
+namespace indigo
 {
-public:
-   struct Elem
-   {
-      int prev;
-      int next;
-      T   item;
-   };
 
-   explicit List () : _pool(new Pool<Elem>), _size(0), _head(-1), _tail(-1), _own_pool(true)
-   {
-   }
-   
-   explicit List (Pool<Elem> &pool) : _pool(&pool), _size(0), _head(-1), _tail(-1), _own_pool(false)
-   {
-   }
+    template <typename T> class List
+    {
+    public:
+        struct Elem
+        {
+            int prev;
+            int next;
+            T item;
+        };
 
-   ~List ()
-   {
-      clear();
-      if (_own_pool)
-         delete _pool;
-   }
+        explicit List() : _pool(new Pool<Elem>), _size(0), _head(-1), _tail(-1), _own_pool(true)
+        {
+        }
 
-   int add ()
-   {
-      if (_size == 0)
-      {
-         _head = _pool->add();
-         _tail = _head;
+        explicit List(Pool<Elem>& pool) : _pool(&pool), _size(0), _head(-1), _tail(-1), _own_pool(false)
+        {
+        }
 
-         Elem &elem = _pool->at(_head);
+        ~List()
+        {
+            clear();
+            if (_own_pool)
+                delete _pool;
+        }
 
-         elem.prev = -1;
-         elem.next = -1;
-      }
-      else
-      {
-         int idx = _pool->add();
-         Elem &elem = _pool->at(idx);
+        int add()
+        {
+            if (_size == 0)
+            {
+                _head = _pool->add();
+                _tail = _head;
 
-         _pool->at(_tail).next = idx;
-         elem.prev = _tail;
-         elem.next = -1;
-         _tail = idx;
-      }
+                Elem& elem = _pool->at(_head);
 
-      _size++;
-      return _tail;
-   }
+                elem.prev = -1;
+                elem.next = -1;
+            }
+            else
+            {
+                int idx = _pool->add();
+                Elem& elem = _pool->at(idx);
 
-   int add (const T &item) 
-   {
-      int idx = add();
+                _pool->at(_tail).next = idx;
+                elem.prev = _tail;
+                elem.next = -1;
+                _tail = idx;
+            }
 
-      _pool->at(idx).item = item;
-      return idx;
-   }
+            _size++;
+            return _tail;
+        }
 
-   int insertAfter (int existing)
-   {
-      _pool->at(existing); // will throw if the element does not exist
+        int add(const T& item)
+        {
+            int idx = add();
 
-      int  idx = _pool->add();
-      Elem &ex = _pool->at(existing);
-      Elem &elem = _pool->at(idx);
+            _pool->at(idx).item = item;
+            return idx;
+        }
 
-      elem.next = ex.next;
-      elem.prev = existing;
-      ex.next = idx;
+        int insertAfter(int existing)
+        {
+            _pool->at(existing); // will throw if the element does not exist
 
-      if (elem.next != -1)
-         _pool->at(elem.next).prev = idx;
+            int idx = _pool->add();
+            Elem& ex = _pool->at(existing);
+            Elem& elem = _pool->at(idx);
 
-      if (_tail == existing)
-         _tail = idx;
+            elem.next = ex.next;
+            elem.prev = existing;
+            ex.next = idx;
 
-      _size++;
-      return idx;
-   }
+            if (elem.next != -1)
+                _pool->at(elem.next).prev = idx;
 
-   int insertBefore (int existing)
-   {
-      _pool->at(existing); // will throw if the element does not exist
-      
-      int  idx = _pool->add();
-      Elem &ex = _pool->at(existing);
-      Elem &elem = _pool->at(idx);
+            if (_tail == existing)
+                _tail = idx;
 
-      elem.prev = ex.prev;
-      elem.next = existing;
-      ex.prev = idx;
+            _size++;
+            return idx;
+        }
 
-      if (elem.prev != -1)
-         _pool->at(elem.prev).next = idx;
+        int insertBefore(int existing)
+        {
+            _pool->at(existing); // will throw if the element does not exist
 
-      if (_head == existing)
-         _head = idx;
+            int idx = _pool->add();
+            Elem& ex = _pool->at(existing);
+            Elem& elem = _pool->at(idx);
 
-      _size++;
-      return idx;
-   }
+            elem.prev = ex.prev;
+            elem.next = existing;
+            ex.prev = idx;
 
-   void remove (int idx)
-   {
-      Elem &elem = _pool->at(idx);
+            if (elem.prev != -1)
+                _pool->at(elem.prev).next = idx;
 
-      if (elem.prev != -1)
-         _pool->at(elem.prev).next = elem.next;
-      else
-         _head = elem.next;
+            if (_head == existing)
+                _head = idx;
 
-      if (elem.next != -1)
-         _pool->at(elem.next).prev = elem.prev;
-      else
-         _tail = elem.prev;
+            _size++;
+            return idx;
+        }
 
-      _pool->remove(idx);
-      _size--;
-   }
+        void remove(int idx)
+        {
+            Elem& elem = _pool->at(idx);
 
-   int size () const
-   {
-      return _size;
-   }
+            if (elem.prev != -1)
+                _pool->at(elem.prev).next = elem.next;
+            else
+                _head = elem.next;
 
-   int begin () const
-   {
-      if (_head == -1)
-         return _pool->end();
+            if (elem.next != -1)
+                _pool->at(elem.next).prev = elem.prev;
+            else
+                _tail = elem.prev;
 
-      return _head;
-   }
+            _pool->remove(idx);
+            _size--;
+        }
 
-   int end () const
-   {
-      return _pool->end();
-   }
+        int size() const
+        {
+            return _size;
+        }
 
-   int next (int idx) const
-   {
-      int res = _pool->at(idx).next;
+        int begin() const
+        {
+            if (_head == -1)
+                return _pool->end();
 
-      if (res == -1)
-         return _pool->end();
+            return _head;
+        }
 
-      return res;
-   }
+        int end() const
+        {
+            return _pool->end();
+        }
 
-   int prev (int idx) const
-   {
-      return _pool->at(idx).prev;
-   }
+        int next(int idx) const
+        {
+            int res = _pool->at(idx).next;
 
-   int tail () const
-   {
-      return _tail;
-   }
+            if (res == -1)
+                return _pool->end();
 
-   void clear ()
-   {
-      if (_own_pool)
-         _pool->clear();
-      // or there may be other lists using the same _pool
-      else while (_tail != -1)
-      {
-         int iter = _tail;
+            return res;
+        }
 
-         _tail = _pool->at(iter).prev;
-         _pool->remove(iter);
-      }
-      
-      _size = 0;
-      _head = -1;
-      _tail = -1;
-   }
+        int prev(int idx) const
+        {
+            return _pool->at(idx).prev;
+        }
 
-   T & operator [] (int index) const
-   {                        
-      return _pool->at(index).item;
-   }
+        int tail() const
+        {
+            return _tail;
+        }
 
-   T & at (int index) const
-   {                        
-      return _pool->at(index).item;
-   }
+        void clear()
+        {
+            if (_own_pool)
+                _pool->clear();
+            // or there may be other lists using the same _pool
+            else
+                while (_tail != -1)
+                {
+                    int iter = _tail;
 
-protected:
-   Pool<Elem> *_pool; // the element pool may be shared amongst lists
-   int         _size;
-   int         _head;
-   int         _tail;
-   bool        _own_pool;
+                    _tail = _pool->at(iter).prev;
+                    _pool->remove(iter);
+                }
 
-private:
+            _size = 0;
+            _head = -1;
+            _tail = -1;
+        }
 
-   List (const List<T> & ); // no implicit copy
-};
+        T& operator[](int index) const
+        {
+            return _pool->at(index).item;
+        }
 
-}
+        T& at(int index) const
+        {
+            return _pool->at(index).item;
+        }
+
+    protected:
+        Pool<Elem>* _pool; // the element pool may be shared amongst lists
+        int _size;
+        int _head;
+        int _tail;
+        bool _own_pool;
+
+    private:
+        List(const List<T>&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif

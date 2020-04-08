@@ -1,16 +1,16 @@
-/* 
+/*
  */
 
 #ifndef _BINGO_PG_BUILD_H__
 #define _BINGO_PG_BUILD_H__
 
 #include "base_cpp/auto_ptr.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/exception.h"
+#include "base_cpp/obj_array.h"
 
-#include "bingo_postgres.h"
-#include "bingo_pg_index.h"
 #include "bingo_pg_build_engine.h"
+#include "bingo_pg_index.h"
+#include "bingo_postgres.h"
 
 class BingoPgText;
 class BingoPgConfig;
@@ -18,57 +18,57 @@ class BingoPgConfig;
 /*
  * Class for building and updating the bingo index
  */
-class BingoPgBuild {
+class BingoPgBuild
+{
 public:
-   enum {
-      MAX_CACHE_SIZE=1000
-   };
-   BingoPgBuild(PG_OBJECT index, const char* schema_name,const char* index_schema, bool new_index);
-   ~BingoPgBuild();
+    enum
+    {
+        MAX_CACHE_SIZE = 1000
+    };
+    BingoPgBuild(PG_OBJECT index, const char* schema_name, const char* index_schema, bool new_index);
+    ~BingoPgBuild();
 
-   /*
-    * Inserts a new structure into the index
-    * Returns true if insertion was successfull
-    */
-   void insertStructure(PG_OBJECT item_ptr, uintptr_t text_ptr);
-   bool insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr);
-   void insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_ptr);
-   void flush();
+    /*
+     * Inserts a new structure into the index
+     * Returns true if insertion was successfull
+     */
+    void insertStructure(PG_OBJECT item_ptr, uintptr_t text_ptr);
+    bool insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr);
+    void insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_ptr);
+    void flush();
 
-   DECL_ERROR;
+    DECL_ERROR;
 
 private:
-   BingoPgBuild(const BingoPgBuild&); //no implicit copy
-   
-//   static void _errorHandler(const char* message, void* context);
+    BingoPgBuild(const BingoPgBuild&); // no implicit copy
 
-   void _prepareBuilding(const char* schema_name, const char* index_schema);
-   void _prepareUpdating();
+    //   static void _errorHandler(const char* message, void* context);
 
-   /*
-    * Index relation
-    */
-   PG_OBJECT _index;
+    void _prepareBuilding(const char* schema_name, const char* index_schema);
+    void _prepareUpdating();
 
-   /*
-    * Buffers section handler
-    */
-   BingoPgIndex _bufferIndex;
+    /*
+     * Index relation
+     */
+    PG_OBJECT _index;
 
-   indigo::AutoPtr<BingoPgBuildEngine> fp_engine;
+    /*
+     * Buffers section handler
+     */
+    BingoPgIndex _bufferIndex;
 
-   /*
-    * There are two possible uses - build(true) and update(false)
-    */
-   bool _buildingState;
+    indigo::AutoPtr<BingoPgBuildEngine> fp_engine;
 
-   indigo::ObjArray<BingoPgBuildEngine::StructCache> _parrallelCache;
+    /*
+     * There are two possible uses - build(true) and update(false)
+     */
+    bool _buildingState;
 
-//#ifdef BINGO_PG_INTEGRITY_DEBUG
-//   indigo::AutoPtr<FileOutput> debug_fileoutput;
-//#endif
+    indigo::ObjArray<BingoPgBuildEngine::StructCache> _parrallelCache;
 
+    //#ifdef BINGO_PG_INTEGRITY_DEBUG
+    //   indigo::AutoPtr<FileOutput> debug_fileoutput;
+    //#endif
 };
 
 #endif /* BINGO_PG_BUILD_H */
-

@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,8 +17,8 @@
  ***************************************************************************/
 
 #include "graph/dfs_walk.h"
-#include "graph/graph.h"
 #include "base_cpp/array.h"
+#include "graph/graph.h"
 
 using namespace indigo;
 
@@ -26,232 +26,226 @@ IMPL_ERROR(DfsWalk, "DFS walk");
 
 CP_DEF(DfsWalk);
 
-DfsWalk::DfsWalk (const Graph &graph) :
-_graph(graph),
-CP_INIT,
-TL_CP_GET(_vertices),
-TL_CP_GET(_edges),
-TL_CP_GET(_v_seq),
-TL_CP_GET(_root_vertices),
-TL_CP_GET(_closures),
-TL_CP_GET(_class_dist_from_exit)
+DfsWalk::DfsWalk(const Graph& graph)
+    : _graph(graph), CP_INIT, TL_CP_GET(_vertices), TL_CP_GET(_edges), TL_CP_GET(_v_seq), TL_CP_GET(_root_vertices), TL_CP_GET(_closures),
+      TL_CP_GET(_class_dist_from_exit)
 {
-   ignored_vertices = 0;
-   vertex_ranks = 0;
-   vertex_classes = 0;
-   _root_vertices.resize(graph.vertexEnd());
-   _root_vertices.zerofill();
+    ignored_vertices = 0;
+    vertex_ranks = 0;
+    vertex_classes = 0;
+    _root_vertices.resize(graph.vertexEnd());
+    _root_vertices.zerofill();
 }
 
-DfsWalk::~DfsWalk ()
+DfsWalk::~DfsWalk()
 {
 }
 
-void DfsWalk::mustBeRootVertex (int v_idx)
+void DfsWalk::mustBeRootVertex(int v_idx)
 {
-   _root_vertices[v_idx] = 1;
+    _root_vertices[v_idx] = 1;
 }
 
-void DfsWalk::walk ()
+void DfsWalk::walk()
 {
-   QS_DEF(Array<int>, v_stack);
-   int i, j;
+    QS_DEF(Array<int>, v_stack);
+    int i, j;
 
-   if (vertex_ranks != 0 && vertex_classes != 0)
-      throw Error("you can not specify both vertex_ranks and vertex_classes");
+    if (vertex_ranks != 0 && vertex_classes != 0)
+        throw Error("you can not specify both vertex_ranks and vertex_classes");
 
-   _vertices.clear_resize(_graph.vertexEnd());
-   _edges.clear_resize(_graph.edgeEnd());
-   _vertices.zerofill();
-   _edges.zerofill();
-   _closures.clear();
+    _vertices.clear_resize(_graph.vertexEnd());
+    _edges.clear_resize(_graph.edgeEnd());
+    _vertices.zerofill();
+    _edges.zerofill();
+    _closures.clear();
 
-   v_stack.clear();
-   _v_seq.clear();
-   
-   while (1)
-   {
-      if (v_stack.size() < 1)
-      {
-         int selected = -1;
+    v_stack.clear();
+    _v_seq.clear();
 
-         for (i = _graph.vertexBegin(); i != _graph.vertexEnd(); i = _graph.vertexNext(i))
-         {
-            if (ignored_vertices != 0 && ignored_vertices[i] != 0)
-               continue;
-            if (_vertices[i].dfs_state != 0)
-               continue;
-            if (vertex_classes != 0 && vertex_classes[i] >= 0)
-               continue;
-            if (vertex_ranks == 0)
+    while (1)
+    {
+        if (v_stack.size() < 1)
+        {
+            int selected = -1;
+
+            for (i = _graph.vertexBegin(); i != _graph.vertexEnd(); i = _graph.vertexNext(i))
             {
-               selected = i;
-               break;
+                if (ignored_vertices != 0 && ignored_vertices[i] != 0)
+                    continue;
+                if (_vertices[i].dfs_state != 0)
+                    continue;
+                if (vertex_classes != 0 && vertex_classes[i] >= 0)
+                    continue;
+                if (vertex_ranks == 0)
+                {
+                    selected = i;
+                    break;
+                }
+                if (selected == -1 || vertex_ranks[i] < vertex_ranks[selected])
+                    selected = i;
             }
-            if (selected == -1 || vertex_ranks[i] < vertex_ranks[selected])
-               selected = i;
-         }
-         if (selected == -1)
-            break;
-         _vertices[selected].parent_vertex = -1;
-         _vertices[selected].parent_edge = -1;
-         v_stack.push(selected);
-      }
-      
-      int v_idx = v_stack.pop();
-      int parent_vertex = _vertices[v_idx].parent_vertex;
+            if (selected == -1)
+                break;
+            _vertices[selected].parent_vertex = -1;
+            _vertices[selected].parent_edge = -1;
+            v_stack.push(selected);
+        }
 
-      {
-         SeqElem &seq_elem = _v_seq.push();
+        int v_idx = v_stack.pop();
+        int parent_vertex = _vertices[v_idx].parent_vertex;
 
-         seq_elem.idx = v_idx;
-         seq_elem.parent_vertex = parent_vertex;
-         seq_elem.parent_edge = _vertices[v_idx].parent_edge;
-      }
-   
-      _vertices[v_idx].dfs_state = 2;
+        {
+            SeqElem& seq_elem = _v_seq.push();
 
-      const Vertex &vertex = _graph.getVertex(v_idx);
-      QS_DEF(Array<VertexEdge>, nei);
+            seq_elem.idx = v_idx;
+            seq_elem.parent_vertex = parent_vertex;
+            seq_elem.parent_edge = _vertices[v_idx].parent_edge;
+        }
 
-      nei.clear();
-      
-      for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
-      {
-         int nei_v = vertex.neiVertex(i);
+        _vertices[v_idx].dfs_state = 2;
 
-         if (ignored_vertices != 0 && ignored_vertices[nei_v] != 0)
-            continue;
-         if (_root_vertices[nei_v] == 1 && _vertices[nei_v].dfs_state == 0)
-            continue;
+        const Vertex& vertex = _graph.getVertex(v_idx);
+        QS_DEF(Array<VertexEdge>, nei);
 
-         VertexEdge &ve = nei.push();
+        nei.clear();
 
-         ve.e = vertex.neiEdge(i);
-         ve.v = nei_v;
-      }
+        for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+        {
+            int nei_v = vertex.neiVertex(i);
 
-      if (vertex_ranks != 0)
-         nei.qsort(_cmp_ranks, vertex_ranks);
+            if (ignored_vertices != 0 && ignored_vertices[nei_v] != 0)
+                continue;
+            if (_root_vertices[nei_v] == 1 && _vertices[nei_v].dfs_state == 0)
+                continue;
 
-      if (vertex_classes != 0 && vertex_classes[v_idx] >= 0)
-      {
-         // prefer not to leave the class if possible
-         _current_class = vertex_classes[v_idx];
-         nei.qsort(_cmp_classes, this);
-      }
+            VertexEdge& ve = nei.push();
 
-      for (i = 0; i < nei.size(); i++)
-      {
-         int edge_idx = nei[i].e;
-         int nei_idx = nei[i].v;
+            ve.e = vertex.neiEdge(i);
+            ve.v = nei_v;
+        }
 
-         if (nei_idx == parent_vertex)
-            continue;
-         
-         if (_vertices[nei_idx].dfs_state == 2)
-         {
-            _edges[edge_idx].closing_cycle = 1;
-            Edge &e = _closures.push();
-            e.beg = v_idx;
-            e.end = nei_idx;
+        if (vertex_ranks != 0)
+            nei.qsort(_cmp_ranks, vertex_ranks);
 
-            _vertices[nei_idx].openings++;
-            _vertices[v_idx].branches++;
+        if (vertex_classes != 0 && vertex_classes[v_idx] >= 0)
+        {
+            // prefer not to leave the class if possible
+            _current_class = vertex_classes[v_idx];
+            nei.qsort(_cmp_classes, this);
+        }
 
-            SeqElem &seq_elem = _v_seq.push();
-            
-            seq_elem.idx = nei_idx;
-            seq_elem.parent_vertex = v_idx;
-            seq_elem.parent_edge = edge_idx;
-         }
-         else
-         {
-            if (_vertices[nei_idx].dfs_state == 1) 
+        for (i = 0; i < nei.size(); i++)
+        {
+            int edge_idx = nei[i].e;
+            int nei_idx = nei[i].v;
+
+            if (nei_idx == parent_vertex)
+                continue;
+
+            if (_vertices[nei_idx].dfs_state == 2)
             {
-               j = v_stack.find(nei_idx);
+                _edges[edge_idx].closing_cycle = 1;
+                Edge& e = _closures.push();
+                e.beg = v_idx;
+                e.end = nei_idx;
 
-               if (j == -1) 
-                  throw Error("internal: removing vertex from stack");
+                _vertices[nei_idx].openings++;
+                _vertices[v_idx].branches++;
 
-               v_stack.remove(j);
+                SeqElem& seq_elem = _v_seq.push();
 
-               int parent = _vertices[nei_idx].parent_vertex;
-
-               if (parent >= 0)
-                  _vertices[parent].branches--;
+                seq_elem.idx = nei_idx;
+                seq_elem.parent_vertex = v_idx;
+                seq_elem.parent_edge = edge_idx;
             }
+            else
+            {
+                if (_vertices[nei_idx].dfs_state == 1)
+                {
+                    j = v_stack.find(nei_idx);
 
-            _vertices[v_idx].branches++;
-            _vertices[nei_idx].parent_vertex = v_idx;
-            _vertices[nei_idx].parent_edge = edge_idx;
-            _vertices[nei_idx].dfs_state = 1;
-            v_stack.push(nei_idx);
-         }
-      }
-   }
+                    if (j == -1)
+                        throw Error("internal: removing vertex from stack");
+
+                    v_stack.remove(j);
+
+                    int parent = _vertices[nei_idx].parent_vertex;
+
+                    if (parent >= 0)
+                        _vertices[parent].branches--;
+                }
+
+                _vertices[v_idx].branches++;
+                _vertices[nei_idx].parent_vertex = v_idx;
+                _vertices[nei_idx].parent_edge = edge_idx;
+                _vertices[nei_idx].dfs_state = 1;
+                v_stack.push(nei_idx);
+            }
+        }
+    }
 }
 
-const Array<DfsWalk::SeqElem> & DfsWalk::getSequence () const
+const Array<DfsWalk::SeqElem>& DfsWalk::getSequence() const
 {
-   return _v_seq;
+    return _v_seq;
 }
 
-bool DfsWalk::isClosure (int e_idx) const
+bool DfsWalk::isClosure(int e_idx) const
 {
-   return _edges[e_idx].closing_cycle != 0;
+    return _edges[e_idx].closing_cycle != 0;
 }
 
-int DfsWalk::numBranches (int v_idx) const
+int DfsWalk::numBranches(int v_idx) const
 {
-   return _vertices[v_idx].branches;
+    return _vertices[v_idx].branches;
 }
 
-int DfsWalk::numOpenings (int v_idx) const
+int DfsWalk::numOpenings(int v_idx) const
 {
-   return _vertices[v_idx].openings;
+    return _vertices[v_idx].openings;
 }
 
-void DfsWalk::calcMapping (Array<int> &mapping) const
+void DfsWalk::calcMapping(Array<int>& mapping) const
 {
-   int i, counter = 0;
-   
-   mapping.clear_resize(_graph.vertexEnd());
-   mapping.fffill();
+    int i, counter = 0;
 
-   for (i = 0; i < _v_seq.size(); i++)
-   {
-      if (mapping[_v_seq[i].idx] == -1)
-         mapping[_v_seq[i].idx] = counter++;
-   }
+    mapping.clear_resize(_graph.vertexEnd());
+    mapping.fffill();
+
+    for (i = 0; i < _v_seq.size(); i++)
+    {
+        if (mapping[_v_seq[i].idx] == -1)
+            mapping[_v_seq[i].idx] = counter++;
+    }
 }
 
-int DfsWalk::_cmp_ranks (VertexEdge &ve1, VertexEdge &ve2, void *context)
+int DfsWalk::_cmp_ranks(VertexEdge& ve1, VertexEdge& ve2, void* context)
 {
-   int *ranks = (int *)context;
+    int* ranks = (int*)context;
 
-   return ranks[ve2.v] - ranks[ve1.v];
+    return ranks[ve2.v] - ranks[ve1.v];
 }
 
-int DfsWalk::_cmp_classes (VertexEdge &ve1, VertexEdge &ve2, void *context)
+int DfsWalk::_cmp_classes(VertexEdge& ve1, VertexEdge& ve2, void* context)
 {
-   DfsWalk *self = (DfsWalk *)context;
+    DfsWalk* self = (DfsWalk*)context;
 
-   if (self->vertex_classes[ve1.v] == self->_current_class)
-      return 1;
-   if (self->vertex_classes[ve2.v] == self->_current_class)
-      return -1;
-   return 0;
+    if (self->vertex_classes[ve1.v] == self->_current_class)
+        return 1;
+    if (self->vertex_classes[ve2.v] == self->_current_class)
+        return -1;
+    return 0;
 }
 
-void DfsWalk::getNeighborsClosing (int v_idx, Array<int> &res)
+void DfsWalk::getNeighborsClosing(int v_idx, Array<int>& res)
 {
-   int i;
+    int i;
 
-   res.clear();
-   for (i = 0; i < _closures.size(); i++)
-   {
-      if (_closures[i].end == v_idx)
-         res.push(_closures[i].beg);
-   }
+    res.clear();
+    for (i = 0; i < _closures.size(); i++)
+    {
+        if (_closures[i].end == v_idx)
+            res.push(_closures[i].beg);
+    }
 }

@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,15 +24,15 @@
 class IndigoMapping : public IndigoObject
 {
 public:
-   IndigoMapping (BaseMolecule &from, BaseMolecule &to);
-   virtual ~IndigoMapping ();
-   static IndigoMapping & cast (IndigoObject &obj);
+    IndigoMapping(BaseMolecule& from, BaseMolecule& to);
+    virtual ~IndigoMapping();
+    static IndigoMapping& cast(IndigoObject& obj);
 
-   BaseMolecule &from;
-   BaseMolecule &to;
-   Array<int> mapping;
+    BaseMolecule& from;
+    BaseMolecule& to;
+    Array<int> mapping;
 
-   virtual IndigoObject * clone ();
+    virtual IndigoObject* clone();
 
 protected:
 };
@@ -40,16 +40,16 @@ protected:
 class IndigoReactionMapping : public IndigoObject
 {
 public:
-   IndigoReactionMapping (BaseReaction &from, BaseReaction &to);
-   virtual ~IndigoReactionMapping ();
+    IndigoReactionMapping(BaseReaction& from, BaseReaction& to);
+    virtual ~IndigoReactionMapping();
 
-   BaseReaction &from;
-   BaseReaction &to;
-   
-   Array< int > mol_mapping;
-   ObjArray< Array<int> > mappings;
+    BaseReaction& from;
+    BaseReaction& to;
 
-   virtual IndigoObject * clone ();
+    Array<int> mol_mapping;
+    ObjArray<Array<int>> mappings;
+
+    virtual IndigoObject* clone();
 };
 
 #endif

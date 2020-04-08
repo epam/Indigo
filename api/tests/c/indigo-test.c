@@ -4,13 +4,13 @@
 
 #include "indigo.h"
 
-void onError (const char *message, void *context)
+void onError(const char* message, void* context)
 {
     fprintf(stderr, "Error: %s\n", message);
     exit(-1);
 }
 
-void testTransform ()
+void testTransform()
 {
     int molecule = indigoLoadMoleculeFromString("[O-][C+]1CCCC1[N+]([O-])=O");
     int transformation = indigoLoadReactionSmartsFromString("[*;+:1]-[*;-:2]>>[*:1]=[*:2]");
@@ -24,10 +24,10 @@ void testTransform ()
     indigoFree(transformation);
 }
 
-int main (void)
+int main(void)
 {
     int m;
-    const char *simple_mol = "CCCCCCCCCCC";
+    const char* simple_mol = "CCCCCCCCCCC";
     int r;
     int gf;
 

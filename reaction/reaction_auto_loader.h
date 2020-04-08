@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,47 +22,48 @@
 #include "base_cpp/array.h"
 #include "molecule/molecule_stereocenter_options.h"
 
-namespace indigo {
-
-class Scanner;
-class BaseReaction;
-class Reaction;
-class QueryReaction;
-
-class DLLEXPORT ReactionAutoLoader
+namespace indigo
 {
-public:
-   ReactionAutoLoader (Scanner &scanner);
-   ReactionAutoLoader (const Array<char> &arr);
-   ReactionAutoLoader (const char *);
 
-   ~ReactionAutoLoader ();
+    class Scanner;
+    class BaseReaction;
+    class Reaction;
+    class QueryReaction;
 
-   void loadReaction (Reaction &reaction);
-   void loadQueryReaction (QueryReaction &reaction);
+    class DLLEXPORT ReactionAutoLoader
+    {
+    public:
+        ReactionAutoLoader(Scanner& scanner);
+        ReactionAutoLoader(const Array<char>& arr);
+        ReactionAutoLoader(const char*);
 
-   bool treat_x_as_pseudoatom;
-   bool ignore_closing_bond_direction_mismatch;
-   StereocentersOptions stereochemistry_options;
-   bool ignore_cistrans_errors;
-   bool ignore_noncritical_query_features;
-   bool ignore_no_chiral_flag;
-   bool ignore_bad_valence;
+        ~ReactionAutoLoader();
 
-   DECL_ERROR;
+        void loadReaction(Reaction& reaction);
+        void loadQueryReaction(QueryReaction& reaction);
 
-protected:
-   Scanner *_scanner;
-   bool     _own_scanner;
+        bool treat_x_as_pseudoatom;
+        bool ignore_closing_bond_direction_mismatch;
+        StereocentersOptions stereochemistry_options;
+        bool ignore_cistrans_errors;
+        bool ignore_noncritical_query_features;
+        bool ignore_no_chiral_flag;
+        bool ignore_bad_valence;
 
-   void _init ();
-   void _loadReaction (BaseReaction &reaction, bool query);
-   bool _isSingleLine ();
-   
-private:
-   ReactionAutoLoader (const ReactionAutoLoader &); // no implicit copy
-};
+        DECL_ERROR;
 
-}
+    protected:
+        Scanner* _scanner;
+        bool _own_scanner;
+
+        void _init();
+        void _loadReaction(BaseReaction& reaction, bool query);
+        bool _isSingleLine();
+
+    private:
+        ReactionAutoLoader(const ReactionAutoLoader&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif

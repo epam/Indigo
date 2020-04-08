@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,85 +18,85 @@
 
 #include "core/ringo_index.h"
 
-#include "base_cpp/output.h"
 #include "base_cpp/os_sync_wrapper.h"
-#include "core/mango_index.h"
+#include "base_cpp/output.h"
 #include "core/bingo_context.h"
-#include "reaction/reaction_fingerprint.h"
-#include "reaction/reaction_automapper.h"
-#include "reaction/crf_saver.h"
-#include "reaction/reaction_auto_loader.h"
-#include "reaction/reaction.h"
+#include "core/mango_index.h"
 #include "core/ringo_matchers.h"
+#include "reaction/crf_saver.h"
+#include "reaction/reaction.h"
+#include "reaction/reaction_auto_loader.h"
+#include "reaction/reaction_automapper.h"
+#include "reaction/reaction_fingerprint.h"
 
-void RingoIndex::prepare (Scanner &rxnfile, Output &output, OsLock *lock_for_exclusive_access)
+void RingoIndex::prepare(Scanner& rxnfile, Output& output, OsLock* lock_for_exclusive_access)
 {
-   QS_DEF(Reaction, reaction);
-      
-   ReactionAutoLoader rrd(rxnfile);
-   _context->setLoaderSettings(rrd);
-   rrd.loadReaction(reaction);
+    QS_DEF(Reaction, reaction);
 
-   // Skip all SGroups
-   for (int mol_idx = reaction.begin(); mol_idx != reaction.end(); mol_idx = reaction.next(mol_idx)) 
-      reaction.getBaseMolecule(mol_idx).clearSGroups();
+    ReactionAutoLoader rrd(rxnfile);
+    _context->setLoaderSettings(rrd);
+    rrd.loadReaction(reaction);
 
-   Reaction::checkForConsistency(reaction);
+    // Skip all SGroups
+    for (int mol_idx = reaction.begin(); mol_idx != reaction.end(); mol_idx = reaction.next(mol_idx))
+        reaction.getBaseMolecule(mol_idx).clearSGroups();
 
-   ReactionAutomapper ram(reaction);
-   ram.correctReactingCenters(true);
+    Reaction::checkForConsistency(reaction);
 
-   reaction.aromatize(AromaticityOptions::BASIC);
+    ReactionAutomapper ram(reaction);
+    ram.correctReactingCenters(true);
 
-   _hash = RingoExact::calculateHash(reaction);
-   {
-      ArrayOutput out(_hash_str);
-      out.printf("%02X", _hash);
-      _hash_str.push(0);
-   }
+    reaction.aromatize(AromaticityOptions::BASIC);
 
-   if (!skip_calculate_fp)
-   {
-      ReactionFingerprintBuilder builder(reaction, _context->fp_parameters);
+    _hash = RingoExact::calculateHash(reaction);
+    {
+        ArrayOutput out(_hash_str);
+        out.printf("%02X", _hash);
+        _hash_str.push(0);
+    }
 
-      builder.process();
-      _fp.copy(builder.get(), _context->fp_parameters.fingerprintSizeExtOrdSim() * 2);
-   }
+    if (!skip_calculate_fp)
+    {
+        ReactionFingerprintBuilder builder(reaction, _context->fp_parameters);
 
-   ArrayOutput output_crf(_crf);
-   {
-      // CrfSaver modifies _context->cmf_dict and 
-      // requires exclusive access for this
-      OsLockerNullable locker(lock_for_exclusive_access);
-      CrfSaver saver(_context->cmf_dict, output_crf);
-      saver.saveReaction(reaction);
-   }
+        builder.process();
+        _fp.copy(builder.get(), _context->fp_parameters.fingerprintSizeExtOrdSim() * 2);
+    }
 
-   output.writeArray(_crf);
+    ArrayOutput output_crf(_crf);
+    {
+        // CrfSaver modifies _context->cmf_dict and
+        // requires exclusive access for this
+        OsLockerNullable locker(lock_for_exclusive_access);
+        CrfSaver saver(_context->cmf_dict, output_crf);
+        saver.saveReaction(reaction);
+    }
+
+    output.writeArray(_crf);
 }
 
-const byte * RingoIndex::getFingerprint ()
+const byte* RingoIndex::getFingerprint()
 {
-   return _fp.ptr();
+    return _fp.ptr();
 }
 
-const Array<char> & RingoIndex::getCrf ()
+const Array<char>& RingoIndex::getCrf()
 {
-   return _crf;
+    return _crf;
 }
 
-dword RingoIndex::getHash ()
+dword RingoIndex::getHash()
 {
-   return _hash;
+    return _hash;
 }
 
-const char * RingoIndex::getHashStr ()
+const char* RingoIndex::getHashStr()
 {
-   return _hash_str.ptr();
+    return _hash_str.ptr();
 }
 
-void RingoIndex::clear ()
+void RingoIndex::clear()
 {
-   _fp.clear();
-   _crf.clear();
+    _fp.clear();
+    _crf.clear();
 }

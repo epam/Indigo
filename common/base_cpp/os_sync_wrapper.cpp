@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,80 +24,79 @@ using namespace indigo;
 // osLock
 //
 
-OsLock::OsLock ()
+OsLock::OsLock()
 {
-   osMutexCreate(&_mutex);
+    osMutexCreate(&_mutex);
 }
 
-OsLock::~OsLock ()
+OsLock::~OsLock()
 {
-   osMutexDelete(&_mutex);
+    osMutexDelete(&_mutex);
 }
 
-void OsLock::Lock ()
+void OsLock::Lock()
 {
-   osMutexLock(&_mutex);
+    osMutexLock(&_mutex);
 }
 
-void OsLock::Unlock ()
+void OsLock::Unlock()
 {
-   osMutexUnlock(&_mutex);
+    osMutexUnlock(&_mutex);
 }
 
 //
 // Semaphore wrapper
 //
-OsSemaphore::OsSemaphore  (int initial_count, int max_count)
+OsSemaphore::OsSemaphore(int initial_count, int max_count)
 {
-   osSemaphoreCreate(&_sem, initial_count, max_count);
+    osSemaphoreCreate(&_sem, initial_count, max_count);
 }
 
-OsSemaphore::~OsSemaphore ()
+OsSemaphore::~OsSemaphore()
 {
-   osSemaphoreDelete(&_sem);
+    osSemaphoreDelete(&_sem);
 }
 
-void OsSemaphore::Wait  ()
+void OsSemaphore::Wait()
 {
-   osSemaphoreWait(&_sem);
+    osSemaphoreWait(&_sem);
 }
 
-void OsSemaphore::Post ()
+void OsSemaphore::Post()
 {
-   osSemaphorePost(&_sem);
+    osSemaphorePost(&_sem);
 }
 
 //
 // Message system
 //
 
-void OsMessageSystem::SendMsg (int message, void *param)
+void OsMessageSystem::SendMsg(int message, void* param)
 {
-   OsLocker locker(_sendLock);
+    OsLocker locker(_sendLock);
 
-   _localMessage = message;
-   _localParam = param;
+    _localMessage = message;
+    _localParam = param;
 
-   _sendSem.Post();
-   _finishRecvSem.Wait();
+    _sendSem.Post();
+    _finishRecvSem.Wait();
 }
 
-void OsMessageSystem::RecvMsg (int *message, void **result)
+void OsMessageSystem::RecvMsg(int* message, void** result)
 {
-   OsLocker locker(_recvLock);
+    OsLocker locker(_recvLock);
 
-   // Wait for sending
-   _sendSem.Wait();
+    // Wait for sending
+    _sendSem.Wait();
 
-   *message = _localMessage;
-   if (result != NULL)
-      *result = _localParam;
+    *message = _localMessage;
+    if (result != NULL)
+        *result = _localParam;
 
-   _finishRecvSem.Post();
+    _finishRecvSem.Post();
 }
 
-OsMessageSystem::OsMessageSystem() :
-   _sendSem(0, 1), _finishRecvSem(0, 1)
+OsMessageSystem::OsMessageSystem() : _sendSem(0, 1), _finishRecvSem(0, 1)
 {
 }
 
@@ -107,9 +106,9 @@ OsMessageSystem::OsMessageSystem() :
 
 namespace indigo
 {
-DLLEXPORT OsLock & osStaticObjConstructionLock ()
-{
-   static OsLock _static_obj_construction_lock;
-   return _static_obj_construction_lock;
-}
-}
+    DLLEXPORT OsLock& osStaticObjConstructionLock()
+    {
+        static OsLock _static_obj_construction_lock;
+        return _static_obj_construction_lock;
+    }
+} // namespace indigo

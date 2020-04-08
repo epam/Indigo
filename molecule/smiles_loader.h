@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,174 +20,168 @@
 #define __smiles_loader__
 
 #include "base_cpp/exception.h"
-#include "molecule/molecule.h"
 #include "base_cpp/tlscont.h"
-#include "molecule/query_molecule.h"
+#include "molecule/molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/query_molecule.h"
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-class Scanner;
-class BaseMolecule;
-class Molecule;
-class QueryMolecule;
-
-class DLLEXPORT SmilesLoader
+namespace indigo
 {
-public:
-   DECL_ERROR;
 
-   SmilesLoader (Scanner &scanner);
-   ~SmilesLoader ();
+    class Scanner;
+    class BaseMolecule;
+    class Molecule;
+    class QueryMolecule;
 
-   void loadMolecule      (Molecule &mol);
-   void loadQueryMolecule (QueryMolecule &mol);
+    class DLLEXPORT SmilesLoader
+    {
+    public:
+        DECL_ERROR;
 
-   void loadSMARTS (QueryMolecule &mol);
+        SmilesLoader(Scanner& scanner);
+        ~SmilesLoader();
 
-   Array<int> * ignorable_aam;
+        void loadMolecule(Molecule& mol);
+        void loadQueryMolecule(QueryMolecule& mol);
 
-   bool inside_rsmiles;
+        void loadSMARTS(QueryMolecule& mol);
 
-   bool smarts_mode;
+        Array<int>* ignorable_aam;
 
-   // set to true to accept buggy SMILES like 'N/C=C\1CCCN[C@H]\1S'
-   // (see http://groups.google.com/group/indigo-bugs/browse_thread/thread/de7da07a3a5cb3ee
-   //  for details)
-   bool ignore_closing_bond_direction_mismatch;
+        bool inside_rsmiles;
 
-   StereocentersOptions stereochemistry_options;
-   bool ignore_cistrans_errors;
-   bool ignore_bad_valence;
+        bool smarts_mode;
 
-protected:
+        // set to true to accept buggy SMILES like 'N/C=C\1CCCN[C@H]\1S'
+        // (see http://groups.google.com/group/indigo-bugs/browse_thread/thread/de7da07a3a5cb3ee
+        //  for details)
+        bool ignore_closing_bond_direction_mismatch;
 
-   enum
-   {
-      _ANY_BOND = -2
-   };
+        StereocentersOptions stereochemistry_options;
+        bool ignore_cistrans_errors;
+        bool ignore_bad_valence;
 
+    protected:
+        enum
+        {
+            _ANY_BOND = -2
+        };
 
-   enum
-   {
-      _POLYMER_START = 1,
-      _POLYMER_END = 2
-   };
-   
-   class DLLEXPORT _AtomDesc
-   {
-   public:
-      _AtomDesc (Pool<List<int>::Elem> &neipool);
-      ~_AtomDesc ();
+        enum
+        {
+            _POLYMER_START = 1,
+            _POLYMER_END = 2
+        };
 
-      void pending (int cycle);
-      void closure (int cycle, int end);
+        class DLLEXPORT _AtomDesc
+        {
+        public:
+            _AtomDesc(Pool<List<int>::Elem>& neipool);
+            ~_AtomDesc();
 
-      List<int> neighbors;
-      int parent;
+            void pending(int cycle);
+            void closure(int cycle, int end);
 
-      int label;
-      int isotope;
-      int charge;
-      int hydrogens;
-      int chirality;
-      int aromatic;
-      int aam;
-      bool ignorable_aam;
-      bool brackets;
+            List<int> neighbors;
+            int parent;
 
-      bool star_atom;
+            int label;
+            int isotope;
+            int charge;
+            int hydrogens;
+            int chirality;
+            int aromatic;
+            int aam;
+            bool ignorable_aam;
+            bool brackets;
 
-      bool starts_polymer;
-      bool ends_polymer;
-      int  polymer_index;
-      int  rsite_num;
-   };
+            bool star_atom;
 
-   struct _BondDesc
-   {
-      int beg;
-      int end;
-      int type;
-      int dir; // 0 -- undirected; 1 -- goes 'up' from beg to end, 2 -- goes 'down'
-      int topology;
-      int index;
-   };
+            bool starts_polymer;
+            bool ends_polymer;
+            int polymer_index;
+            int rsite_num;
+        };
 
-   struct _CycleDesc
-   {
-      void clear ()
-      {
-         beg = -1;
-         pending_bond = -1;
-         pending_bond_str = -1;
-      }
+        struct _BondDesc
+        {
+            int beg;
+            int end;
+            int type;
+            int dir; // 0 -- undirected; 1 -- goes 'up' from beg to end, 2 -- goes 'down'
+            int topology;
+            int index;
+        };
 
-      int beg;
-      int pending_bond;
-      int pending_bond_str; // index in pending_bonds_pool;
-   };
+        struct _CycleDesc
+        {
+            void clear()
+            {
+                beg = -1;
+                pending_bond = -1;
+                pending_bond_str = -1;
+            }
 
-   Scanner &_scanner;
+            int beg;
+            int pending_bond;
+            int pending_bond_str; // index in pending_bonds_pool;
+        };
 
-   CP_DECL;
-   TL_CP_DECL(Array<int>, _atom_stack);
-   TL_CP_DECL(Array<_CycleDesc>, _cycles);
-   TL_CP_DECL(StringPool, _pending_bonds_pool);
-   TL_CP_DECL(Pool<List<int>::Elem>, _neipool);
-   TL_CP_DECL(ObjArray<_AtomDesc>, _atoms);
-   TL_CP_DECL(Array<_BondDesc>, _bonds);
-   TL_CP_DECL(Array<int>, _polymer_repetitions);
+        Scanner& _scanner;
 
-   int  _balance;
-   int  _current_compno;
-   bool _inside_smarts_component;
+        CP_DECL;
+        TL_CP_DECL(Array<int>, _atom_stack);
+        TL_CP_DECL(Array<_CycleDesc>, _cycles);
+        TL_CP_DECL(StringPool, _pending_bonds_pool);
+        TL_CP_DECL(Pool<List<int>::Elem>, _neipool);
+        TL_CP_DECL(ObjArray<_AtomDesc>, _atoms);
+        TL_CP_DECL(Array<_BondDesc>, _bonds);
+        TL_CP_DECL(Array<int>, _polymer_repetitions);
 
-   BaseMolecule  *_bmol;
-   QueryMolecule *_qmol;
-   Molecule      *_mol;
+        int _balance;
+        int _current_compno;
+        bool _inside_smarts_component;
 
-   void _loadMolecule ();
-   void _parseMolecule ();
-   void _loadParsedMolecule ();
+        BaseMolecule* _bmol;
+        QueryMolecule* _qmol;
+        Molecule* _mol;
 
-   void _calcStereocenters ();
-   void _calcCisTrans ();
-   void _readOtherStuff ();
-   void _markAromaticBonds ();
-   void _setRadicalsAndHCounts ();
-   void _forbidHydrogens ();
-   void _addExplicitHForStereo ();
-   void _addLigandsForStereo ();
-   bool _isAlleneLike (int i);
-   void _handleCurlyBrace (_AtomDesc &atom, bool &inside_polymer);
-   void _handlePolymerRepetition (int i);
+        void _loadMolecule();
+        void _parseMolecule();
+        void _loadParsedMolecule();
 
-   void _readAtom (Array<char> &atom_str, bool first_in_brackets,
-                   _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
+        void _calcStereocenters();
+        void _calcCisTrans();
+        void _readOtherStuff();
+        void _markAromaticBonds();
+        void _setRadicalsAndHCounts();
+        void _forbidHydrogens();
+        void _addExplicitHForStereo();
+        void _addLigandsForStereo();
+        bool _isAlleneLike(int i);
+        void _handleCurlyBrace(_AtomDesc& atom, bool& inside_polymer);
+        void _handlePolymerRepetition(int i);
 
-   bool _readAtomLogic (Array<char> &atom_str, bool first_in_brackets,
-                   _AtomDesc &atom, AutoPtr<QueryMolecule::Atom> &qatom);
+        void _readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom);
 
-   int _parseCurly (Array<char> &curly, int &repetitions);
+        bool _readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom);
 
-   void _readBond (Array<char> &bond_str, _BondDesc &bond,
-                   AutoPtr<QueryMolecule::Bond> &qbond);
-   void _readBondSub (Array<char> &bond_str, _BondDesc &bond,
-                      AutoPtr<QueryMolecule::Bond> &qbond);
-   void _readRGroupOccurrenceRanges (const char *str, Array<int> &ranges);
+        int _parseCurly(Array<char>& curly, int& repetitions);
 
+        void _readBond(Array<char>& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond);
+        void _readBondSub(Array<char>& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond);
+        void _readRGroupOccurrenceRanges(const char* str, Array<int>& ranges);
 
-private:
-   SmilesLoader (const SmilesLoader &); // no implicit copy
-};
+    private:
+        SmilesLoader(const SmilesLoader&); // no implicit copy
+    };
 
-}
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)

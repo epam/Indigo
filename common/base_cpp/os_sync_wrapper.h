@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,153 +23,154 @@
 #include "base_c/os_sync.h"
 #include "base_cpp/exception.h"
 
-namespace indigo {
-
-// os_mutex wrapper
-class DLLEXPORT OsLock
+namespace indigo
 {
-public:
-   OsLock  ();
-   ~OsLock ();
 
-   void Lock ();
-   void Unlock ();
-private:
-   os_mutex _mutex;
-};
+    // os_mutex wrapper
+    class DLLEXPORT OsLock
+    {
+    public:
+        OsLock();
+        ~OsLock();
 
-// Automatic lock/unlock
+        void Lock();
+        void Unlock();
 
-template <typename T, bool lock_can_be_null>
-class OsLockerT
-{
-public:
-   OsLockerT (T *lock) : _lock(lock)
-   {
-      if (_lock != NULL)
-         _lock->Lock();
-      else if (!lock_can_be_null)
-         throw Exception("Passed lock object pointer is NULL");
-   }
+    private:
+        os_mutex _mutex;
+    };
 
-   OsLockerT (T &lock) : _lock(&lock)
-   {
-      _lock->Lock();
-   }
+    // Automatic lock/unlock
 
-   ~OsLockerT ()
-   {
-      if (_lock != NULL)
-         _lock->Unlock();
-   }
+    template <typename T, bool lock_can_be_null> class OsLockerT
+    {
+    public:
+        OsLockerT(T* lock) : _lock(lock)
+        {
+            if (_lock != NULL)
+                _lock->Lock();
+            else if (!lock_can_be_null)
+                throw Exception("Passed lock object pointer is NULL");
+        }
 
-private:
-   T *_lock;
-};
-typedef OsLockerT<OsLock, false>       OsLocker;
-typedef OsLockerT<OsLock, true>        OsLockerNullable;
+        OsLockerT(T& lock) : _lock(&lock)
+        {
+            _lock->Lock();
+        }
 
-//
-// Semaphore wrapper
-//
-class DLLEXPORT OsSemaphore
-{
-public:
-   OsSemaphore  (int initial_count, int max_count);
-   ~OsSemaphore ();
+        ~OsLockerT()
+        {
+            if (_lock != NULL)
+                _lock->Unlock();
+        }
 
-   void Wait ();
-   void Post ();
-private:
-   os_semaphore _sem;
-};
+    private:
+        T* _lock;
+    };
+    typedef OsLockerT<OsLock, false> OsLocker;
+    typedef OsLockerT<OsLock, true> OsLockerNullable;
 
-//
-// Message system
-//
+    //
+    // Semaphore wrapper
+    //
+    class DLLEXPORT OsSemaphore
+    {
+    public:
+        OsSemaphore(int initial_count, int max_count);
+        ~OsSemaphore();
 
-class OsMessageSystem
-{
-public:
-   OsMessageSystem ();
+        void Wait();
+        void Post();
 
-   void SendMsg (int message, void *param = 0);
-   void RecvMsg (int *message, void **result = 0);
-private:
+    private:
+        os_semaphore _sem;
+    };
 
-   OsSemaphore _sendSem;
-   OsSemaphore _finishRecvSem;
+    //
+    // Message system
+    //
 
-   OsLock  _sendLock;
-   OsLock  _recvLock;
+    class OsMessageSystem
+    {
+    public:
+        OsMessageSystem();
 
-   volatile int _localMessage;
-   void * volatile _localParam;
-};
+        void SendMsg(int message, void* param = 0);
+        void RecvMsg(int* message, void** result = 0);
 
-//
-// Thread-safe static local variables initialization object 
-//
+    private:
+        OsSemaphore _sendSem;
+        OsSemaphore _finishRecvSem;
 
-DLLEXPORT OsLock & osStaticObjConstructionLock ();
+        OsLock _sendLock;
+        OsLock _recvLock;
 
-// Local static variables with constructors should have OsLock
-// guard to avoid thread conflicts.
-// This object should be declared as ONLY static object because
-// _was_created variable should be zero by default.
-template <typename T>
-class ThreadSafeStaticObj
-{
-public:
-   ~ThreadSafeStaticObj()
-   {
-      if (_was_created)
-      {
-         _obj->~T();
-         _obj = 0;
-         _was_created = false;
-      }
-   }
+        volatile int _localMessage;
+        void* volatile _localParam;
+    };
 
-   T * ptr ()
-   {
-      return _ptr();
-   }
-   T & ref ()
-   {
-      return *_ptr();
-   }
-   T * operator -> ()
-   {
-      return ptr();
-   }
+    //
+    // Thread-safe static local variables initialization object
+    //
 
-private:
-   void _ensureInitialized ()
-   {
-      if (!_was_created)
-      {
-         OsLocker locker(osStaticObjConstructionLock());
+    DLLEXPORT OsLock& osStaticObjConstructionLock();
 
-         if (!_was_created)
-         {
-            _obj = new ((void *)_obj_data) T;
-            _was_created = true;
-         }
-      }
-   }
+    // Local static variables with constructors should have OsLock
+    // guard to avoid thread conflicts.
+    // This object should be declared as ONLY static object because
+    // _was_created variable should be zero by default.
+    template <typename T> class ThreadSafeStaticObj
+    {
+    public:
+        ~ThreadSafeStaticObj()
+        {
+            if (_was_created)
+            {
+                _obj->~T();
+                _obj = 0;
+                _was_created = false;
+            }
+        }
 
-   T * _ptr ()
-   {
-      _ensureInitialized();
-      return _obj;
-   }
+        T* ptr()
+        {
+            return _ptr();
+        }
+        T& ref()
+        {
+            return *_ptr();
+        }
+        T* operator->()
+        {
+            return ptr();
+        }
 
-   T *_obj;
-   char _obj_data[sizeof(T)];
-   volatile bool _was_created; // Zero for static objects
-};
+    private:
+        void _ensureInitialized()
+        {
+            if (!_was_created)
+            {
+                OsLocker locker(osStaticObjConstructionLock());
 
-}
+                if (!_was_created)
+                {
+                    _obj = new ((void*)_obj_data) T;
+                    _was_created = true;
+                }
+            }
+        }
+
+        T* _ptr()
+        {
+            _ensureInitialized();
+            return _obj;
+        }
+
+        T* _obj;
+        char _obj_data[sizeof(T)];
+        volatile bool _was_created; // Zero for static objects
+    };
+
+} // namespace indigo
 
 #endif // __os_sync_wrapper_h__

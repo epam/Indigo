@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,220 +33,266 @@ struct OCIRowid;
 struct OCIRaw;
 struct OCINumber;
 
-namespace indigo {
-
-class OracleLogger;
-class OracleLOB;
-class OracleRowID;
-class OracleRaw;
-
-class OracleError : public Exception
+namespace indigo
 {
-public:
-   explicit OracleError (OCIError *errhp, int oracle_rc, const char *message, int my_rc);
-   explicit OracleError (int my_rc, const char *format, ...);
 
-   void raise (OracleLogger &logger, OCIExtProcContext *ctx);
-};
+    class OracleLogger;
+    class OracleLOB;
+    class OracleRowID;
+    class OracleRaw;
 
-class OracleLogger;
+    class OracleError : public Exception
+    {
+    public:
+        explicit OracleError(OCIError* errhp, int oracle_rc, const char* message, int my_rc);
+        explicit OracleError(int my_rc, const char* format, ...);
 
-class OracleEnv
-{
-public:
-   explicit OracleEnv (OCIExtProcContext *ctx, OracleLogger &logger);
-   explicit OracleEnv (const char *name, const char *password, const char *base, OracleLogger &logger, bool object_mode = false);
-   virtual ~OracleEnv ();
+        void raise(OracleLogger& logger, OCIExtProcContext* ctx);
+    };
 
-   inline OCIEnv    * envhp () {return _envhp;}
-   inline OCISvcCtx * svchp () {return _svchp;}
-   inline OCIError  * errhp () {return _errhp;}
-   inline OCIExtProcContext * ctx () {return _ctx;}
-   inline OracleLogger & logger () {return _logger;}
+    class OracleLogger;
 
-   void callOCI (int rc);
+    class OracleEnv
+    {
+    public:
+        explicit OracleEnv(OCIExtProcContext* ctx, OracleLogger& logger);
+        explicit OracleEnv(const char* name, const char* password, const char* base, OracleLogger& logger, bool object_mode = false);
+        virtual ~OracleEnv();
 
-   void dbgPrintf (const char *format, ...);
-   void dbgPrintfTS (const char *format, ...);
+        inline OCIEnv* envhp()
+        {
+            return _envhp;
+        }
+        inline OCISvcCtx* svchp()
+        {
+            return _svchp;
+        }
+        inline OCIError* errhp()
+        {
+            return _errhp;
+        }
+        inline OCIExtProcContext* ctx()
+        {
+            return _ctx;
+        }
+        inline OracleLogger& logger()
+        {
+            return _logger;
+        }
 
-   static int ociMajorVersion ();
-   
-   int serverMajorVersion ();
+        void callOCI(int rc);
 
-private:
-   OCIEnv    *_envhp;
-   OCISvcCtx *_svchp;
-   OCIError  *_errhp;
-   OCIExtProcContext *_ctx;
+        void dbgPrintf(const char* format, ...);
+        void dbgPrintfTS(const char* format, ...);
 
-   OracleLogger &_logger;
-};
+        static int ociMajorVersion();
 
-class OracleStatement
-{
-public:
-   explicit OracleStatement (OracleEnv &env);
-   virtual ~OracleStatement ();
+        int serverMajorVersion();
 
-   void prepare ();
+    private:
+        OCIEnv* _envhp;
+        OCISvcCtx* _svchp;
+        OCIError* _errhp;
+        OCIExtProcContext* _ctx;
 
-   void defineIntByPos    (int pos, int *value);
-   void defineFloatByPos  (int pos, float *value);
-   void defineBlobByPos   (int pos, OracleLOB &lob);
-   void defineClobByPos   (int pos, OracleLOB &lob);
-   void defineRowidByPos  (int pos, OracleRowID &rowid);
-   void defineRawByPos    (int pos, OracleRaw &raw);
-   void defineStringByPos (int pos, char *string, int max_len);
-   void bindIntByName    (const char *name, int *value);
-   void bindFloatByName  (const char *name, float *value);
-   void bindBlobByName   (const char *name, OracleLOB &lob);
-   void bindBlobPtrByName (const char *name, OCILobLocator **lob, short *indicators);
-   void bindClobByName   (const char *name, OracleLOB &lob);
-   void bindRawByName    (const char *name, OracleRaw &raw);
-   void bindRawPtrByName (const char *name, OCIRaw *raw, int maxsize, short *indicators);
-   void bindStringByName (const char *name, const char *string, int max_len);
+        OracleLogger& _logger;
+    };
 
-   void execute ();
-   void executeMultiple (int iter);
-   bool executeAllowNoData ();
+    class OracleStatement
+    {
+    public:
+        explicit OracleStatement(OracleEnv& env);
+        virtual ~OracleStatement();
 
-   bool gotNull (int pos);
+        void prepare();
 
-   bool fetch   ();
-   
-   void getRowID (OracleRowID &rowid);
+        void defineIntByPos(int pos, int* value);
+        void defineFloatByPos(int pos, float* value);
+        void defineBlobByPos(int pos, OracleLOB& lob);
+        void defineClobByPos(int pos, OracleLOB& lob);
+        void defineRowidByPos(int pos, OracleRowID& rowid);
+        void defineRawByPos(int pos, OracleRaw& raw);
+        void defineStringByPos(int pos, char* string, int max_len);
+        void bindIntByName(const char* name, int* value);
+        void bindFloatByName(const char* name, float* value);
+        void bindBlobByName(const char* name, OracleLOB& lob);
+        void bindBlobPtrByName(const char* name, OCILobLocator** lob, short* indicators);
+        void bindClobByName(const char* name, OracleLOB& lob);
+        void bindRawByName(const char* name, OracleRaw& raw);
+        void bindRawPtrByName(const char* name, OCIRaw* raw, int maxsize, short* indicators);
+        void bindStringByName(const char* name, const char* string, int max_len);
 
-   void append (const char *format, ...);
-   void append_v (const char *format, va_list args);
+        void execute();
+        void executeMultiple(int iter);
+        bool executeAllowNoData();
 
-   OCIStmt * get () {return _statement;}
+        bool gotNull(int pos);
 
-   const char* getString () const {return _query;}
+        bool fetch();
 
-   static void executeSingle (OracleEnv &env, const char *format, ...);
-   static void executeSingle_BindString (OracleEnv &env, const char *bind, const char *value, const char *format, ...);
-   static bool executeSingleInt (int &result, OracleEnv &env, const char *format, ...);
-   static bool executeSingleFloat (float &result, OracleEnv &env, const char *format, ...);
-   static bool executeSingleString (Array<char> &result, OracleEnv &env, const char *format, ...);
-   static bool executeSingleBlob (Array<char> &result, OracleEnv &env, const char *format, ...);
-   static bool executeSingleClob (Array<char> &result, OracleEnv &env, const char *format, ...);
+        void getRowID(OracleRowID& rowid);
 
-private:
-   OracleEnv &_env;
-   OCIStmt   *_statement;
-   char       _query[10240];
-   int        _query_len;
-   short      _indicators[64];
-};
+        void append(const char* format, ...);
+        void append_v(const char* format, va_list args);
 
-class OracleLOB
-{
-public:
-   explicit OracleLOB (OracleEnv &env);
-   explicit OracleLOB (OracleEnv &env, OCILobLocator *lob);
-   virtual ~OracleLOB ();
+        OCIStmt* get()
+        {
+            return _statement;
+        }
 
-   void createTemporaryBLOB ();
-   void createTemporaryCLOB ();
+        const char* getString() const
+        {
+            return _query;
+        }
 
-   inline OCILobLocator *  get    () {return _lob; }
-   inline OCILobLocator ** getRef () {return &_lob; }
+        static void executeSingle(OracleEnv& env, const char* format, ...);
+        static void executeSingle_BindString(OracleEnv& env, const char* bind, const char* value, const char* format, ...);
+        static bool executeSingleInt(int& result, OracleEnv& env, const char* format, ...);
+        static bool executeSingleFloat(float& result, OracleEnv& env, const char* format, ...);
+        static bool executeSingleString(Array<char>& result, OracleEnv& env, const char* format, ...);
+        static bool executeSingleBlob(Array<char>& result, OracleEnv& env, const char* format, ...);
+        static bool executeSingleClob(Array<char>& result, OracleEnv& env, const char* format, ...);
 
-   void enableBuffering ();
-   void disableBuffering ();
-   void flush ();
-   void openReadonly ();
-   void openReadWrite ();
-   
-   int  getLength ();
-   void readAll (Array<char> &arr, bool add_zero);
+    private:
+        OracleEnv& _env;
+        OCIStmt* _statement;
+        char _query[10240];
+        int _query_len;
+        short _indicators[64];
+    };
 
-   void read  (int start, char *buffer, int buffer_size);
-   void write (int start, const char *buffer, int bytes);
-   void write (int start, const Array<char> &data);
+    class OracleLOB
+    {
+    public:
+        explicit OracleLOB(OracleEnv& env);
+        explicit OracleLOB(OracleEnv& env, OCILobLocator* lob);
+        virtual ~OracleLOB();
 
-   void trim (int length);
-   inline void doNotDelete () {_delete_desc = false;}
+        void createTemporaryBLOB();
+        void createTemporaryCLOB();
 
-private:
-   OCILobLocator *_lob;
-   bool _delete_desc;
-   bool _delete_tmp;
-   bool _is_buffered;
-   bool _flushed;
-   bool _opened;
+        inline OCILobLocator* get()
+        {
+            return _lob;
+        }
+        inline OCILobLocator** getRef()
+        {
+            return &_lob;
+        }
 
-   int  _buffered_read_start_pos;
+        void enableBuffering();
+        void disableBuffering();
+        void flush();
+        void openReadonly();
+        void openReadWrite();
 
-   OracleEnv &_env;
-};
+        int getLength();
+        void readAll(Array<char>& arr, bool add_zero);
 
-class OracleRowID
-{
-public:
-   explicit OracleRowID (OracleEnv &env);
-   virtual ~OracleRowID ();
+        void read(int start, char* buffer, int buffer_size);
+        void write(int start, const char* buffer, int bytes);
+        void write(int start, const Array<char>& data);
 
-   inline OCIRowid *get() {return _rowid;}
-   inline OCIRowid **getRef () {return &_rowid;}
-protected:
-   OracleEnv &_env;
+        void trim(int length);
+        inline void doNotDelete()
+        {
+            _delete_desc = false;
+        }
 
-   OCIRowid *_rowid;
-};
+    private:
+        OCILobLocator* _lob;
+        bool _delete_desc;
+        bool _delete_tmp;
+        bool _is_buffered;
+        bool _flushed;
+        bool _opened;
 
-class OracleRaw
-{
-public:
-   explicit OracleRaw (OracleEnv &env);
-   virtual ~OracleRaw ();
+        int _buffered_read_start_pos;
 
-   inline OCIRaw  *get    () {return  _raw;}
-   inline OCIRaw **getRef () {return &_raw;}
+        OracleEnv& _env;
+    };
 
-   char *getDataPtr ();
+    class OracleRowID
+    {
+    public:
+        explicit OracleRowID(OracleEnv& env);
+        virtual ~OracleRowID();
 
-   int getAllocSize ();
-   int getSize ();
+        inline OCIRowid* get()
+        {
+            return _rowid;
+        }
+        inline OCIRowid** getRef()
+        {
+            return &_rowid;
+        }
 
-   void assignBytes (const char *buffer, int length);
-   void resize (int new_size);
-protected:
-   OracleEnv &_env;
-   int _size;
+    protected:
+        OracleEnv& _env;
 
-   OCIRaw *_raw;
-};
+        OCIRowid* _rowid;
+    };
 
-class OraRowidText
-{
-public:
-   OraRowidText ();
+    class OracleRaw
+    {
+    public:
+        explicit OracleRaw(OracleEnv& env);
+        virtual ~OracleRaw();
 
-   char * ptr () {return t;}
-   int length ();
+        inline OCIRaw* get()
+        {
+            return _raw;
+        }
+        inline OCIRaw** getRef()
+        {
+            return &_raw;
+        }
 
-private:
-   char t[19];
+        char* getDataPtr();
 
-};
+        int getAllocSize();
+        int getSize();
 
-class OracleExtproc
-{
-public:
-   static OCINumber * createInt (OracleEnv &env, int value);
-   static OCINumber * createDouble (OracleEnv &env, double value);
+        void assignBytes(const char* buffer, int length);
+        void resize(int new_size);
 
-};
+    protected:
+        OracleEnv& _env;
+        int _size;
 
-class OracleUtil
-{
-public:
-   static int    numberToInt    (OracleEnv &env, OCINumber *number);
-   static float  numberToFloat  (OracleEnv &env, OCINumber *number);
-   static double numberToDouble (OracleEnv &env, OCINumber *number);
-};
+        OCIRaw* _raw;
+    };
 
-}
+    class OraRowidText
+    {
+    public:
+        OraRowidText();
+
+        char* ptr()
+        {
+            return t;
+        }
+        int length();
+
+    private:
+        char t[19];
+    };
+
+    class OracleExtproc
+    {
+    public:
+        static OCINumber* createInt(OracleEnv& env, int value);
+        static OCINumber* createDouble(OracleEnv& env, double value);
+    };
+
+    class OracleUtil
+    {
+    public:
+        static int numberToInt(OracleEnv& env, OCINumber* number);
+        static float numberToFloat(OracleEnv& env, OCINumber* number);
+        static double numberToDouble(OracleEnv& env, OCINumber* number);
+    };
+
+} // namespace indigo
 
 #endif

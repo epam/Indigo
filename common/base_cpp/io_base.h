@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,31 +27,31 @@
 
 namespace indigo
 {
-   enum Encoding
-   {
-      ENCODING_ASCII = 1,
-      ENCODING_UTF8 = 2
-   };
+    enum Encoding
+    {
+        ENCODING_ASCII = 1,
+        ENCODING_UTF8 = 2
+    };
 
-   FILE *openFile( Encoding filename_encoding, const char *filename, const char *mode);
+    FILE* openFile(Encoding filename_encoding, const char* filename, const char* mode);
 
 #if defined(_WIN32) && !defined(__MINGW32__)
-   _locale_t getCLocale ();
+    _locale_t getCLocale();
 
-   class CLocale
-   {
-   public:
-      CLocale ();
-      ~CLocale ();
+    class CLocale
+    {
+    public:
+        CLocale();
+        ~CLocale();
 
-      _locale_t get ();
+        _locale_t get();
 
-      static CLocale instance;
+        static CLocale instance;
 
-   protected:
-      _locale_t _locale;
-   };
+    protected:
+        _locale_t _locale;
+    };
 #endif
-};
+}; // namespace indigo
 
 #endif
