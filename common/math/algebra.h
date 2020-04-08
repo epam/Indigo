@@ -269,7 +269,7 @@ namespace indigo
 
         DLLEXPORT static float acos_stable(float x)
         {
-            return M_PI_2 - asin_stable(x);
+            return (M_PI / 2) - asin_stable(x);
         }
     };
 
