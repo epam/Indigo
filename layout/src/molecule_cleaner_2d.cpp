@@ -772,7 +772,7 @@ void MoleculeCleaner2d::_updateGradient()
                             Vec2f alphadv = ((vec1 + vec2) * (-l1 * l2) + (vec1 * l2 / l1 + vec2 * l1 / l2) * dot) * acosd / (l1 * l1 * l2 * l2) * signcross;
 
                             float alpha = acos(cos) * signcross;
-                            float target_alpha = (2 * PI / 3) * signcross;
+                            float target_alpha = (2 * M_PI / 3) * signcross;
 
                             pregradient[i] += alphadv * (alpha - target_alpha) * 2;
                             pregradient[v1] += alphadv1 * (alpha - target_alpha) * 2;
@@ -941,10 +941,10 @@ float MoleculeCleaner2d::_energy()
                         if (angles[b + 1] < angles[b])
                             std::swap(angles[b], angles[b + 1]);
 
-                angles.push(angles[0] + 2 * PI);
+                angles.push(angles[0] + 2 * M_PI);
                 if (vert.degree() > 2)
                 {
-                    float target_angle = 2 * PI / angles.size();
+                    float target_angle = 2 * M_PI / angles.size();
                     for (int j = 0; j < angles.size() - 1; j++)
                     {
                         float diff = angles[j + 1] - angles[j] - target_angle;
@@ -957,10 +957,10 @@ float MoleculeCleaner2d::_energy()
                     float diff1 = angles[2] - angles[1];
                     if (diff0 > diff1)
                         std::swap(diff0, diff1);
-                    float target_angle0 = 2 * PI / 3;
-                    float target_angle1 = 4 * PI / 3;
+                    float target_angle0 = 2 * M_PI / 3;
+                    float target_angle1 = 4 * M_PI / 3;
                     if (_is_straightline_vertex[i])
-                        target_angle0 = target_angle1 = PI;
+                        target_angle0 = target_angle1 = M_PI;
                     result += (diff0 - target_angle0) * (diff0 - target_angle0);
                     result += (diff1 - target_angle1) * (diff1 - target_angle1);
                 }
@@ -1005,17 +1005,17 @@ float MoleculeCleaner2d::_energy()
                             if (cos < 0)
                             {
                                 if (alpha > 0)
-                                    alpha = PI - alpha;
+                                    alpha = M_PI - alpha;
                                 else
-                                    alpha = -PI - alpha;
+                                    alpha = -M_PI - alpha;
                             }
                         }
 
                         float target_alpha;
                         if (_is_straightline_vertex[i])
-                            target_alpha = alpha > 0 ? PI : -PI;
+                            target_alpha = alpha > 0 ? M_PI : -M_PI;
                         else
-                            target_alpha = (2 * PI / 3) * signcross;
+                            target_alpha = (2 * M_PI / 3) * signcross;
                         result += (alpha - target_alpha) * (alpha - target_alpha);
                     }
                 }
@@ -1113,17 +1113,17 @@ float MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2)
         if (cos < 0)
         {
             if (alpha > 0)
-                alpha = PI - alpha;
+                alpha = M_PI - alpha;
             else
-                alpha = -PI - alpha;
+                alpha = -M_PI - alpha;
         }
     }
 
     float target_alpha;
     if (_is_straightline_vertex[i])
-        target_alpha = alpha > 0 ? PI : -PI;
+        target_alpha = alpha > 0 ? M_PI : -M_PI;
     else
-        target_alpha = (2 * PI / 3) * signcross;
+        target_alpha = (2 * M_PI / 3) * signcross;
 
     return (alpha - target_alpha) * (alpha - target_alpha);
 }

@@ -24,7 +24,6 @@
 
 namespace indigo
 {
-
     struct MoleculeChainFingerprintParameters
     {
         MoleculeChainFingerprintParameters()

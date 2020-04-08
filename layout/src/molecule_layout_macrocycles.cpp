@@ -192,7 +192,7 @@ int improvement(int ind, int molSize, int* rotateAngle, int* edgeLenght, int* ve
     if (rotateAngle[worstVertex] != 0)
     {
         Vec2f a = (p2 - p1) / sqrt(12.0f);
-        a.rotate(PI / 2 * rotateAngle[worstVertex]);
+        a.rotate(M_PI / 2 * rotateAngle[worstVertex]);
         p3 += a;
     }
     else
@@ -220,7 +220,7 @@ int improvement(int ind, int molSize, int* rotateAngle, int* edgeLenght, int* ve
         if (rotateAngle[worstVertex] != 0)
         {
             float angle = acos(Vec2f::cross(p1 - p[worstVertex], p2 - p[worstVertex]) / (Vec2f::dist(p1, p[worstVertex]) * Vec2f::dist(p2, p[worstVertex])));
-            // if (angle < 2 * PI / 3) coef3 /= 10;
+            // if (angle < 2 * M_PI / 3) coef3 /= 10;
         }
 
         // if (!isIntersec(x[worstVertex], y[worstVertex], x3, y3, x1, y1, x2, y2)) coef3 *= 10;
@@ -242,7 +242,7 @@ int improvement(int ind, int molSize, int* rotateAngle, int* edgeLenght, int* ve
                         if (dist < 1 && dist > eps)
                         {
                             Vec2f normal = (p[(i + 1) % ind] - p[i]);
-                            normal.rotate(PI / 2);
+                            normal.rotate(M_PI / 2);
                             float c = Vec2f::cross(p[i], p[(i + 1) % ind]);
                             float s = normal.length();
 
@@ -379,28 +379,28 @@ void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cy
         if ((p[prev_vertex] - p[base_vertex]).length() < 2 * EPSILON || (p[next_vertex] - p[base_vertex]).length() < 2 * EPSILON)
             return;
         float current_angle = p[base_vertex].calc_angle(p[next_vertex], p[prev_vertex]);
-        while (current_angle > 2 * PI)
-            current_angle -= 2 * PI;
+        while (current_angle > 2 * M_PI)
+            current_angle -= 2 * M_PI;
         while (current_angle < 0)
-            current_angle += 2 * PI;
+            current_angle += 2 * M_PI;
 
         float current_target_angle = _target_angle[vertex_number[base_vertex]];
         if (rotate_angle[base_vertex] < 0)
-            current_target_angle = 2 * PI - current_target_angle;
+            current_target_angle = 2 * M_PI - current_target_angle;
         float anti_current_target_angle;
-        if (current_target_angle > PI)
+        if (current_target_angle > M_PI)
         {
             if (current_angle > current_target_angle)
-                anti_current_target_angle = 2 * PI;
+                anti_current_target_angle = 2 * M_PI;
             else
-                anti_current_target_angle = PI;
+                anti_current_target_angle = M_PI;
         }
         else
         {
             if (current_angle < current_target_angle)
                 anti_current_target_angle = 0;
             else
-                anti_current_target_angle = PI;
+                anti_current_target_angle = M_PI;
         }
 
         float better_change_angle = 0;
@@ -446,9 +446,9 @@ void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cy
         {
             float angle = current_angle;
             while (angle < 0)
-                angle += 2 * PI;
-            while (angle >= 2 * PI)
-                angle -= 2 * PI;
+                angle += 2 * M_PI;
+            while (angle >= 2 * M_PI)
+                angle -= 2 * M_PI;
 
             for (int i = next_vertex; i < vertex_count; i++)
                 angle -= p[base_vertex].calc_angle(p[i], p[i + 1]);
@@ -633,7 +633,7 @@ float MoleculeLayoutMacrocycles::badness(int ind, int molSize, int* rotateAngle,
     for (int i = 0; i < ind; i++)
         perimeter += (p[(i + 1) % ind] - p[i]).length();
 
-    result += (perimeter * perimeter / 4 / PI / square - 1) / 5;
+    result += (perimeter * perimeter / 4 / M_PI / square - 1) / 5;
 
     // printf("%5.5f\n", result);
     return result + 1000.0 * add;
@@ -699,7 +699,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
         return 1e9;
     unsigned short(&minRotates)[max_size][max_size][2][max_size][max_size] = data.minRotates;
     // first : number of edge
-    // second : summary angle of rotation (in PI/3 times)
+    // second : summary angle of rotation (in M_PI/3 times)
     // third : last rotation is contraclockwise
     // fourth : x-coordinate
     // fifth : y-coordinate
@@ -1050,9 +1050,9 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                 else
                     rot_result[k] = rot_result[k + 1] + 1;
 
-                float l = k * (sqrt(3.0) + 1.5) * PI / 12;
+                float l = k * (sqrt(3.0) + 1.5) * M_PI / 12;
                 Vec2f vec(y_result[k] - init_y, 0);
-                vec.rotate(PI / 3);
+                vec.rotate(M_PI / 3);
                 vec += Vec2f(x_result[k] - init_x, 0);
                 float x = vec.length();
 
@@ -1063,7 +1063,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                 {
 
                     float L = eps;
-                    float R = 2 * PI - eps;
+                    float R = 2 * M_PI - eps;
 
                     while (R - L > eps)
                     {
@@ -1078,7 +1078,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                 }
 
                 p_result[k] = 2;
-                int is_cis_better = (alpha < PI / 3 * (rot_result[k] - init_rot) + PI / length) ^ (!p_result[k + 1]);
+                int is_cis_better = (alpha < M_PI / 3 * (rot_result[k] - init_rot) + M_PI / length) ^ (!p_result[k + 1]);
 
                 int add = 0;
                 if (abs(_vertex_weight[k]) > WEIGHT_FACTOR)
@@ -1171,7 +1171,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
         for (int i = 0; i <= ind; i++)
         {
             p[i] = Vec2f(y_result[vertexNumber[i]], 0);
-            p[i].rotate(PI / 3);
+            p[i].rotate(M_PI / 3);
             p[i] += Vec2f(x_result[vertexNumber[i]], 0);
         }
 
@@ -1190,11 +1190,11 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
             float max_x = p[ind].x;
             if (max_x <= 0)
                 max_x = 1;
-            float radii = max_x / (2 * PI);
+            float radii = max_x / (2 * M_PI);
 
             for (int i = 0; i <= ind; i++)
             {
-                float angle = 2 * PI * (p[i].x) / max_x;
+                float angle = 2 * M_PI * (p[i].x) / max_x;
                 p[i].set(radii - p[i].y / 2, 0);
                 p[i].rotate(angle);
             }
@@ -1428,7 +1428,7 @@ float MoleculeLayoutMacrocycles::depictionCircle()
     //   for (int i = 0; i < length; i++)
     //    diff += (up[i] && up[(i + 1) % length]) || (!up[i] && !up[(i + 1) % length] && (up[(i - 1 + length) % length] == up[(i + 2) % length]));
 
-    float r = length * sqrt(3.0) / 2 / (2 * PI);
+    float r = length * sqrt(3.0) / 2 / (2 * M_PI);
 
     QS_DEF(Array<Vec2f>, p);
     p.clear_resize(length + 1);
@@ -1442,7 +1442,7 @@ float MoleculeLayoutMacrocycles::depictionCircle()
             rr -= 0.25;
 
         p[i] = Vec2f(rr, 0);
-        p[i].rotate(2 * PI / length * i);
+        p[i].rotate(2 * M_PI / length * i);
     }
 
     QS_DEF(Array<int>, rotateAngle);
@@ -1471,7 +1471,7 @@ float MoleculeLayoutMacrocycles::depictionCircle()
     for (i = 0; i < length; i++)
         vertexNumber[i] = i;
 
-    /*float angle = PI * 2 * rand() / RAND_MAX;
+    /*float angle = M_PI * 2 * rand() / RAND_MAX;
     float sn = sin(angle);
     float cs = cos(angle);
     for (int i = 0; i < molSize; i++) {

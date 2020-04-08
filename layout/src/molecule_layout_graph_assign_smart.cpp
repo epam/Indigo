@@ -574,7 +574,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
     if (easy_case) {
     for (int i = 0; i < size; i++) {
     layout.getPos(cycle.getVertex(i)) = Vec2f(1, 0);
-    layout.getPos(cycle.getVertex(i)).rotate(2 * PI / size * i);
+    layout.getPos(cycle.getVertex(i)).rotate(2 * M_PI / size * i);
     }
 
     for (int i = 0; i < size; i++)
@@ -603,7 +603,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
             if (prev_layout_component < 0 && next_layout_component < 0)
             {
-                layout.setTargetAngle(i, 2 * PI / 3);
+                layout.setTargetAngle(i, 2 * M_PI / 3);
                 layout.setAngleImportance(i, 0.2);
             }
             else if ((prev_layout_component < 0) ^ (next_layout_component < 0))
@@ -652,11 +652,11 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                 angle -= (calc_segment.getIntPosition(prev_vertex) - calc_segment.getIntPosition(calc_vertex)).tiltAngle2();
 
                 while (angle < 0)
-                    angle += 2 * PI;
-                while (angle >= 2 * PI)
-                    angle -= 2 * PI;
+                    angle += 2 * M_PI;
+                while (angle >= 2 * M_PI)
+                    angle -= 2 * M_PI;
 
-                layout.setTargetAngle(i, PI - angle / 2);
+                layout.setTargetAngle(i, M_PI - angle / 2);
             }
             else if (prev_layout_component == next_layout_component)
             {
@@ -664,18 +664,18 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                 angle -= (getPos(cycle.getVertexC(i + 1)) - getPos(cycle.getVertexC(i))).tiltAngle2();
 
                 while (angle < 0)
-                    angle += 2 * PI;
-                while (angle >= 2 * PI)
-                    angle -= 2 * PI;
-                if (angle > PI)
-                    angle = 2 * PI - angle;
+                    angle += 2 * M_PI;
+                while (angle >= 2 * M_PI)
+                    angle -= 2 * M_PI;
+                if (angle > M_PI)
+                    angle = 2 * M_PI - angle;
 
                 layout.setTargetAngle(i, angle);
             }
             // temporary value
             else
             {
-                layout.setTargetAngle(i, PI);
+                layout.setTargetAngle(i, M_PI);
                 layout.setAngleImportance(i, 0.2);
             }
         }
@@ -1151,7 +1151,7 @@ void MoleculeLayoutGraphSmart::_segment_calculate_target_angle(const MoleculeLay
         Vec2f p3 = layout.getPos(rotation_vertex[(i + 1) % segments_count]);
         target_angle[i] = p2.calc_angle(p3, p1);
         while (target_angle[i] < 0)
-            target_angle[i] += 2 * PI;
+            target_angle[i] += 2 * M_PI;
     }
 
     for (int i = 0; i < segments_count; i++)
@@ -1159,10 +1159,10 @@ void MoleculeLayoutGraphSmart::_segment_calculate_target_angle(const MoleculeLay
         {
             if (segment[i].is_start(v))
                 if (segment[i]._graph.getVertex(v).degree() > 2)
-                    target_angle[i] = PI;
+                    target_angle[i] = M_PI;
             if (segment[i].is_finish(v))
                 if (segment[i]._graph.getVertex(v).degree() > 2)
-                    target_angle[(i + 1) % segments_count] = PI;
+                    target_angle[(i + 1) % segments_count] = M_PI;
         }
 }
 
@@ -1591,14 +1591,14 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
     Vec2f this_point(point[move_vertex]);
     Vec2f next_point(point[(move_vertex + 1) % segments_count]);
 
-    if (fabs(target_angle[move_vertex] - PI) > 0.01)
+    if (fabs(target_angle[move_vertex] - M_PI) > 0.01)
     {
         Vec2f chord(next_point - prev_point);
 
         Vec2f center(prev_point + chord / 2);
         Vec2f rot_chord(chord);
         rot_chord.rotate(1, 0);
-        center += rot_chord / tan(PI - target_angle[move_vertex]) / 2;
+        center += rot_chord / tan(M_PI - target_angle[move_vertex]) / 2;
 
         float radii = (prev_point - center).length();
         float dist = (this_point - center).length();
@@ -1616,7 +1616,7 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
 
         Vec2f chord(next_point - prev_point);
         chord.rotate(1, 0);
-        center += chord * (target_angle[move_vertex] - PI) * l1 * l2 / (l1 + l2);
+        center += chord * (target_angle[move_vertex] - M_PI) * l1 * l2 / (l1 + l2);
 
         move_vector += (center - this_point);
     }
@@ -1694,8 +1694,8 @@ void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& touching_s
         change[i] += _get_len_derivative(point[i1] - point[i], get_length(i), false) * (is_simple_component(i) ? 1 : 5);
         change[i] += _get_len_derivative(point[i_1] - point[i], get_length(i_1), false) * (is_simple_component(i_1) ? 1 : 5);
 
-        if (fabs(target_angle[i] - PI) > eps)
-            change[i] += _get_angle_derivative(point[i] - point[i_1], point[i1] - point[i], PI - target_angle[i], false);
+        if (fabs(target_angle[i] - M_PI) > eps)
+            change[i] += _get_angle_derivative(point[i] - point[i_1], point[i1] - point[i], M_PI - target_angle[i], false);
     }
 
     for (int i = 0; i < cycle_length; i++)
@@ -1781,9 +1781,9 @@ Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point,
         if (cos < 0)
         {
             if (alpha > 0)
-                alpha = PI - alpha;
+                alpha = M_PI - alpha;
             else
-                alpha = -PI - alpha;
+                alpha = -M_PI - alpha;
         }
     }
     // float diff = fabs(alpha) > fabs(target_angle) ? alpha / target_angle - 1 : target_angle / alpha - 1;

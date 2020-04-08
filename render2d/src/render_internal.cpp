@@ -1967,7 +1967,7 @@ void MoleculeRenderInternal::_renderRings()
                 if (_edgeIsHighlighted(be.bid))
                     _cw.setHighlight();
                 float a0 = ring.angles[k], a1 = ring.angles[(k + 1) % ring.bondEnds.size()];
-                if (fabs(a1 - a0) > PI)
+                if (fabs(a1 - a0) > M_PI)
                     _cw.drawArc(ring.center, r, __max(a0, a1), __min(a0, a1));
                 else
                     _cw.drawArc(ring.center, r, __min(a0, a1), __max(a0, a1));

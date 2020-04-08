@@ -301,7 +301,7 @@ bool Transform3f::rotationVecVec(const Vec3f& v1, const Vec3f& v2)
     if (dot > 1 - EPSILON)
         ang = 0;
     else if (dot < -1 + EPSILON)
-        ang = -PI;
+        ang = -M_PI;
     else
         ang = -(float)acos(dot);
 

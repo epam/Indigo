@@ -195,7 +195,7 @@ void convertMolfile(char* path, char* filename, FileOutput& cpp_file)
             cur_angle = v.tiltAngle2() - i_angle;
 
             if (cur_angle < 0.f)
-                cur_angle += 2 * PI;
+                cur_angle += 2 * M_PI;
 
             if (max_angle < cur_angle)
             {
@@ -252,9 +252,9 @@ void convertMolfile(char* path, char* filename, FileOutput& cpp_file)
                 float angle4 = cur_v4v.tiltAngle2() - angle1;
 
                 if (angle3 < 0)
-                    angle3 += 2 * PI;
+                    angle3 += 2 * M_PI;
                 if (angle4 < 0)
-                    angle4 += 2 * PI;
+                    angle4 += 2 * M_PI;
 
                 cur_v1 = inter;
 

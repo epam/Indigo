@@ -37,7 +37,6 @@
 
 namespace indigo
 {
-
     // Session identifiers manager.
     // Every thread have local session ID that corresponds to the all
     // local session variables.

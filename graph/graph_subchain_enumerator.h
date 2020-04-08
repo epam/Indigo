@@ -24,7 +24,6 @@
 
 namespace indigo
 {
-
     class GraphSubchainEnumerator
     {
     public:

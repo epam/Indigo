@@ -577,7 +577,7 @@ void MoleculeLayoutGraph::_buildOutline(void)
             if (fabs(cur_angle) < EPS_ANGLE)
                 cur_angle = 0;
             if (cur_angle < 0.f)
-                cur_angle += 2 * PI;
+                cur_angle += 2 * M_PI;
 
             if (max_angle < cur_angle)
             {
@@ -639,9 +639,9 @@ void MoleculeLayoutGraph::_buildOutline(void)
                 float angle4 = cur_v4v.tiltAngle2() - angle1;
 
                 if (angle3 < 0)
-                    angle3 += 2 * PI;
+                    angle3 += 2 * M_PI;
                 if (angle4 < 0)
-                    angle4 += 2 * PI;
+                    angle4 += 2 * M_PI;
 
                 cur_v1 = inter;
 

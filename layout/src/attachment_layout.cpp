@@ -60,7 +60,7 @@ AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const 
             _vertices_l[i] = v1;
     }
 
-    _alpha = (2 * PI - sum) / _attached_bc.size();
+    _alpha = (2 * M_PI - sum) / _attached_bc.size();
     // TODO: what if negative?
 
     // find the one component which is drawn and put it to the end

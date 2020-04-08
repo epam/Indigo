@@ -628,7 +628,7 @@ void RenderContext::drawTriangleZigzag(const Vec2f& v0, const Vec2f& v1, const V
 void RenderContext::drawCircle(const Vec2f& center, const float r)
 {
     cairo_new_path(_cr);
-    cairo_arc(_cr, center.x, center.y, r, 0, 2 * PI);
+    cairo_arc(_cr, center.x, center.y, r, 0, 2 * M_PI);
     cairoCheckStatus();
     checkPathNonEmpty();
     bbIncludePath(true);
@@ -639,7 +639,7 @@ void RenderContext::drawCircle(const Vec2f& center, const float r)
 
 void RenderContext::fillCircle(const Vec2f& center, const float r)
 {
-    cairo_arc(_cr, center.x, center.y, r, 0, 2 * PI);
+    cairo_arc(_cr, center.x, center.y, r, 0, 2 * M_PI);
     cairoCheckStatus();
     checkPathNonEmpty();
     bbIncludePath(false);

@@ -19,32 +19,20 @@
 #ifndef _ALGEBRA_H_
 #define _ALGEBRA_H_
 
-#include <math.h>
+#include <cmath>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
 
 #define SQR(x) ((x) * (x))
 
-#define DEG2RAD(x) ((x)*PI / 180)
-#define RAD2DEG(x) ((x)*180 / PI)
-
-#ifdef INFINITY
-#undef INFINITY
-#endif
-
-#ifdef PI
-#undef PI
-#endif
+#define DEG2RAD(x) ((x)*M_PI / 180)
+#define RAD2DEG(x) ((x)*180 / M_PI)
 
 namespace indigo
 {
 
     const float EPSILON = 0.000001f;
-
-    const float PI = 3.14159265358979323846f;
-
-    const float INFINITY = 1000000.f;
 
     // frac of type 1/n for acos_stable
     const float frac1[25] = {0,       1.,      1. / 2,  1. / 3,  1. / 4,  1. / 5,  1. / 6,  1. / 7,  1. / 8,  1. / 9,  1. / 10, 1. / 11, 1. / 12,
@@ -281,7 +269,7 @@ namespace indigo
 
         DLLEXPORT static float acos_stable(float x)
         {
-            return PI / 2 - asin_stable(x);
+            return M_PI_2 - asin_stable(x);
         }
     };
 

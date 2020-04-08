@@ -119,7 +119,7 @@ float Vec2f::tiltAngle2()
 
     if (y >= 0)
         return acos(x / l);
-    return 2 * PI - acos(x / l);
+    return 2 * M_PI - acos(x / l);
 }
 
 float Vec2f::calc_angle(Vec2f a, Vec2f b)
@@ -149,9 +149,9 @@ float Vec2f::calc_angle(Vec2f a, Vec2f b)
         if (dot < 0)
         {
             if (cross >= 0)
-                angle = PI - angle;
+                angle = M_PI - angle;
             else
-                angle = -PI - angle;
+                angle = -M_PI - angle;
         }
     }
 
@@ -162,7 +162,7 @@ float Vec2f::calc_angle_pos(Vec2f a, Vec2f b)
 {
     float angle = this->calc_angle(a, b);
     if (angle < 0)
-        angle += 2 * PI;
+        angle += 2 * M_PI;
     return angle;
 }
 
@@ -298,7 +298,7 @@ float Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r)
         return dist(p, r);
 
     Vec2f normal = r - q;
-    normal.rotate(PI / 2);
+    normal.rotate(M_PI / 2);
     float c = cross(q, r);
     float s = normal.length();
 
@@ -320,7 +320,7 @@ Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, float angle)
 
     Vec2f vec(q - p);
 
-    return (p + q) / 2 + vec / tan((PI - angle) / 2);
+    return (p + q) / 2 + vec / tan((M_PI - angle) / 2);
 }
 
 Vec2f Vec2f::get_circle_center(Vec2f a, Vec2f p, Vec2f q)

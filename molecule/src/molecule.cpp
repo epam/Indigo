@@ -1769,7 +1769,7 @@ bool Molecule::isPossibleFischerProjection(const char* options)
                     Vec3f::angle(bond1, bond2, angle);
                 }
 
-                if ((fabs(angle - PI / 2.f) < EPSILON) || (fabs(angle - PI) < EPSILON))
+                if ((fabs(angle - M_PI / 2.f) < EPSILON) || (fabs(angle - M_PI) < EPSILON))
                     ncount++;
             }
             if (ncount == 4)

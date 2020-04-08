@@ -682,7 +682,7 @@ int MoleculeStereocenters::_onPlane(const Vec3f& v1, const Vec3f& v2, const Vec3
 
     float angle_sum = a12 + a23 + a13;
 
-    if (fabs(angle_sum - 2 * PI) < eps)
+    if (fabs(angle_sum - 2 * M_PI) < eps)
         return 0;
 
     p.cross(v2u, v3u);
