@@ -271,7 +271,6 @@ void TautomerSuperStructure::_findMinDistance(int source, int maxDist, Array<int
     parents.resize(vertexEnd());
 
     // Fill distances by infinity
-    const int INFINITY = 100000;
     for (int j = 0; j < distances.size(); j++)
         distances[j] = INFINITY;
     QS_DEF(Queue<int>, front);
