@@ -6,18 +6,18 @@ if (NOT DEFINED ENV{DISABLE_INDIGO_TESTS})
 	ENABLE_TESTING()
 endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/common/cmake/)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../common/cmake/)
 
 INCLUDE(ConfigureCommon)
 
 message(STATUS "**** Indigo ****")
-add_subdirectory(build_scripts/indigo "${CMAKE_CURRENT_BINARY_DIR}/indigo")
+add_subdirectory(../indigo "${CMAKE_CURRENT_BINARY_DIR}/indigo")
 message(STATUS "**** Indigo-inchi ****")
-add_subdirectory(build_scripts/indigo-inchi "${CMAKE_CURRENT_BINARY_DIR}/indigo-inchi")
+add_subdirectory(../indigo-inchi "${CMAKE_CURRENT_BINARY_DIR}/indigo-inchi")
 message(STATUS "**** Indigo-renderer ****")
-add_subdirectory(build_scripts/indigo-renderer "${CMAKE_CURRENT_BINARY_DIR}/indigo-renderer")
+add_subdirectory(../indigo-renderer "${CMAKE_CURRENT_BINARY_DIR}/indigo-renderer")
 message(STATUS "**** Bingo ****")
-add_subdirectory(build_scripts/bingo "${CMAKE_CURRENT_BINARY_DIR}/bingo")
+add_subdirectory(../bingo "${CMAKE_CURRENT_BINARY_DIR}/bingo")
 
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
 INCLUDE(InstallRequiredSystemLibraries)

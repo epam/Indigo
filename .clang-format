@@ -1,0 +1,6 @@
+BasedOnStyle: Microsoft
+Language: Cpp
+ColumnLimit: 160
+PointerAlignment: Left
+NamespaceIndentation: All
+AccessModifierOffset: -4
