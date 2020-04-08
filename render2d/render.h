@@ -20,6 +20,7 @@
 #define __render_h__
 
 #include "render_internal.h"
+#include "render_item_factory.h"
 
 namespace indigo
 {
@@ -39,8 +40,8 @@ namespace indigo
         float _getScale(int w, int h);
         float _getMaxScale(int w, int h);
         virtual float _getScaleGivenSize(int w, int h) = 0;
-        virtual int _getDefaultWidth(const float s) = 0;
-        virtual int _getDefaultHeight(const float s) = 0;
+        virtual int _getDefaultWidth(float s) = 0;
+        virtual int _getDefaultHeight(float s) = 0;
 
         int minMarg;
         RenderContext& _rc;
