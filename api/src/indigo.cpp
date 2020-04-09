@@ -17,6 +17,8 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "indigo_version.h"
+
 #include "locale.h"
 
 #include "base_cpp/output.h"

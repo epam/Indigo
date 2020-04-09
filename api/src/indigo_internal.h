@@ -45,7 +45,6 @@
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define
  * should be compared with indigoVersion() to ensure libraries binary
  * compatibility. */
-#include "indigo_version.h"
 
 using namespace indigo;
 

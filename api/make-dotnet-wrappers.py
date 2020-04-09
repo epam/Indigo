@@ -1,3 +1,4 @@
+import fnmatch
 from optparse import OptionParser
 import os
 from os.path import join, abspath, dirname
@@ -74,6 +75,22 @@ def copy_libs(native_library_path, target_basepath, wrappers):
         shutil.copytree(os.path.join(native_library_path, 'Mac'), join(target_basepath, "lib", "Mac"))
 
 
+def copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        if not os.path.exists(dst):
+            os.makedirs(dst)
+        if ignore:
+            for pattern in ignore:
+                if fnmatch.fnmatch(item, pattern):
+                    continue
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy(s, d)
+
+
 if __name__ == '__main__':
     msbuild_command = ['dotnet', 'build', '-t:restore', '/t:Rebuild', '/p:Configuration=Release']
 
@@ -81,7 +98,7 @@ if __name__ == '__main__':
     parser.add_option('--suffix', '-s', help='archive suffix', default="")
     (args, left_args) = parser.parse_args()
     wrapper = args.suffix
-    if  wrapper == "universal":
+    if wrapper == "universal":
         explicit_wrappers = ('win', 'linux', 'mac')
     else:
         explicit_wrappers = (wrapper, )
@@ -116,10 +133,11 @@ if __name__ == '__main__':
     os.chdir(indigoDotNetPath)
     subprocess.check_call(msbuild_command + ['Indigo.Net.sln', ])
 
+    os.chdir(dist_dir)
+
     # Zip nupkg
     if wrapper == 'universal':
         indigoDotNetVersion = xml_to_dict(os.path.join(indigoDotNetPath, 'Indigo.Net.csproj'))['PropertyGroup']['Version']
-        os.chdir(dist_dir)
         if os.path.exists("dotnet_nupkg"):
             shutil.rmtree("dotnet_nupkg")
         os.mkdir('dotnet_nupkg')
@@ -144,11 +162,11 @@ if __name__ == '__main__':
             shutil.rmtree(target_dir)
         os.mkdir(target_dir)
         shutil.copy(os.path.join(api_dir, "LICENSE"), target_dir)
-        ignore_patterns = shutil.ignore_patterns('*.json', 'test.db')
-        shutil.copytree(join(indigoDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns, dirs_exist_ok=True)
-        shutil.copytree(join(indigoRendererDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns,  dirs_exist_ok=True)
-        shutil.copytree(join(indigoInchiDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns,  dirs_exist_ok=True)
-        shutil.copytree(join(bingoDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns, dirs_exist_ok=True)
+        ignore_patterns = ('*.json', 'test.db')
+        copytree(join(indigoDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns)
+        copytree(join(indigoRendererDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns)
+        copytree(join(indigoInchiDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns)
+        copytree(join(bingoDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns)
         archive_name = "./indigo-dotnet-{}-{}-{}".format(indigoVersion, dotnet_target, wrapper)
         if os.path.exists(archive_name):
             shutil.rmtree(archive_name)
