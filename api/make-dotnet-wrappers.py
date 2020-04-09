@@ -117,24 +117,25 @@ if __name__ == '__main__':
     subprocess.check_call(msbuild_command + ['Indigo.Net.sln', ])
 
     # Zip nupkg
-    indigoDotNetVersion = xml_to_dict(os.path.join(indigoDotNetPath, 'Indigo.Net.csproj'))['PropertyGroup']['Version']
-    os.chdir(dist_dir)
-    if os.path.exists("dotnet_nupkg"):
-        shutil.rmtree("dotnet_nupkg")
-    os.mkdir('dotnet_nupkg')
-    shutil.copy(os.path.join(api_dir, "LICENSE"), "dotnet_nupkg")
-    shutil.copy(join(indigoDotNetPath, 'bin', 'Release', 'Indigo.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
-    shutil.copy(join(indigoRendererDotNetPath, 'bin', 'Release', 'IndigoRenderer.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
-    shutil.copy(join(indigoInchiDotNetPath, 'bin', 'Release', 'IndigoInchi.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
-    shutil.copy(join(bingoDotNetPath, 'bin', 'Release', 'Bingo.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
-    archive_name = "./indigo-dotnet-{}-nupkg-{}".format(indigoDotNetVersion, wrapper)
-    os.rename("dotnet_nupkg", archive_name)
-    if os.path.exists(archive_name + ".zip"):
-        os.remove(archive_name + ".zip")
-    shutil.make_archive(archive_name, 'zip', os.path.dirname(archive_name), archive_name)
-    shutil.rmtree(archive_name)
-    full_archive_name = os.path.normpath(os.path.join(dist_dir, archive_name))
-    print('Archive {}.zip created'.format(full_archive_name))
+    if wrapper == 'universal':
+        indigoDotNetVersion = xml_to_dict(os.path.join(indigoDotNetPath, 'Indigo.Net.csproj'))['PropertyGroup']['Version']
+        os.chdir(dist_dir)
+        if os.path.exists("dotnet_nupkg"):
+            shutil.rmtree("dotnet_nupkg")
+        os.mkdir('dotnet_nupkg')
+        shutil.copy(os.path.join(api_dir, "LICENSE"), "dotnet_nupkg")
+        shutil.copy(join(indigoDotNetPath, 'bin', 'Release', 'Indigo.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
+        shutil.copy(join(indigoRendererDotNetPath, 'bin', 'Release', 'IndigoRenderer.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
+        shutil.copy(join(indigoInchiDotNetPath, 'bin', 'Release', 'IndigoInchi.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
+        shutil.copy(join(bingoDotNetPath, 'bin', 'Release', 'Bingo.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
+        archive_name = "./indigo-dotnet-{}-nupkg-{}".format(indigoDotNetVersion, wrapper)
+        os.rename("dotnet_nupkg", archive_name)
+        if os.path.exists(archive_name + ".zip"):
+            os.remove(archive_name + ".zip")
+        shutil.make_archive(archive_name, 'zip', os.path.dirname(archive_name), archive_name)
+        shutil.rmtree(archive_name)
+        full_archive_name = os.path.normpath(os.path.join(dist_dir, archive_name))
+        print('Archive {}.zip created'.format(full_archive_name))
 
     # Zip libraries per .NET target
     for dotnet_target in ("netstandard2.0",):
