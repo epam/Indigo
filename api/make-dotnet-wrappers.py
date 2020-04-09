@@ -62,16 +62,16 @@ def xml_to_dict(path):
 
 
 def copy_libs(native_library_path, target_basepath, wrappers):
-    if os.path.exists(join(target_basepath, "Resource")):
-        shutil.rmtree(join(target_basepath, "Resource"))
-    os.mkdir(join(target_basepath, "Resource"))
+    if os.path.exists(join(target_basepath, "lib")):
+        shutil.rmtree(join(target_basepath, "lib"))
+    os.mkdir(join(target_basepath, "lib"))
 
     if 'win' in wrappers:
-        shutil.copytree(os.path.join(native_library_path, 'Win'), join(target_basepath, "Resource", "Win"))
+        shutil.copytree(os.path.join(native_library_path, 'Win'), join(target_basepath, "lib", "Win"))
     if 'linux' in wrappers:
-        shutil.copytree(os.path.join(native_library_path, 'Linux'), join(target_basepath, "Resource", "Linux"))
+        shutil.copytree(os.path.join(native_library_path, 'Linux'), join(target_basepath, "lib", "Linux"))
     if 'mac' in wrappers:
-        shutil.copytree(os.path.join(native_library_path, 'Mac'), join(target_basepath, "Resource", "Mac"))
+        shutil.copytree(os.path.join(native_library_path, 'Mac'), join(target_basepath, "lib", "Mac"))
 
 
 if __name__ == '__main__':
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     if  wrapper == "universal":
         explicit_wrappers = ('win', 'linux', 'mac')
     else:
-        explicit_wrappers = tuple(wrapper, )
+        explicit_wrappers = (wrapper, )
 
     api_dir = abspath(dirname(__file__))
     root = join(api_dir, "..")
@@ -96,11 +96,6 @@ if __name__ == '__main__':
 
     # Find indigo version
     indigoVersion = getIndigoVersion()
-
-    os.chdir(dist_dir)
-    if os.path.exists("dotnet_nupkg"):
-        shutil.rmtree("dotnet_nupkg")
-    os.mkdir('dotnet_nupkg')
 
     libraryPath = join(api_dir, 'libs', 'shared')
 
@@ -124,6 +119,9 @@ if __name__ == '__main__':
     # Zip nupkg
     indigoDotNetVersion = xml_to_dict(os.path.join(indigoDotNetPath, 'Indigo.Net.csproj'))['PropertyGroup']['Version']
     os.chdir(dist_dir)
+    if os.path.exists("dotnet_nupkg"):
+        shutil.rmtree("dotnet_nupkg")
+    os.mkdir('dotnet_nupkg')
     shutil.copy(os.path.join(api_dir, "LICENSE"), "dotnet_nupkg")
     shutil.copy(join(indigoDotNetPath, 'bin', 'Release', 'Indigo.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
     shutil.copy(join(indigoRendererDotNetPath, 'bin', 'Release', 'IndigoRenderer.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")

@@ -10,10 +10,15 @@ _projects/
 /api/dotnet/bin/
 /api/dotnet/lib/
 /api/dotnet/obj
-/api/dotnet/Resource
 /api/tests/dotnet/bin
 /api/tests/dotnet/obj
 /.idea
 /api/plugins/bingo/dotnet/bin/
 /api/plugins/bingo/dotnet/lib/
 /api/plugins/bingo/dotnet/obj/
+/api/plugins/renderer/dotnet/bin/
+/api/plugins/renderer/dotnet/lib/
+/api/plugins/renderer/dotnet/obj/
+/api/plugins/inchi/dotnet/bin/
+/api/plugins/inchi/dotnet/lib/
+/api/plugins/inchi/dotnet/obj/
