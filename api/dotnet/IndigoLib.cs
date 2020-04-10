@@ -20,10 +20,14 @@ namespace com.epam.indigo
                 }
                 else
                 {
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/vcruntime140.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/vcruntime140_1.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/msvcp140.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/concrt140.dll", true);
                     IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/indigo.dll", true);
                 }
             }
-            else if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
+            else if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
             {
                 if (IndigoNativeLibraryLoader.isMac())
                 {
@@ -33,11 +37,11 @@ namespace com.epam.indigo
                 {
                     if (System.Environment.Is64BitProcess)
                     {
-                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/libindigo.dylib", true);
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/libindigo.so", true);
                     }
                     else
                     {
-                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/libindigo.dylibo", true);
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/libindigo.so", true);
                     }
                 }
             }
