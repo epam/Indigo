@@ -92,7 +92,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 
 if __name__ == '__main__':
-    msbuild_command = ['dotnet', 'build', '-t:restore', '/t:Rebuild', '/p:Configuration=Release']
+    msbuild_command = ['dotnet', 'build', '-t:Build', '-t:Pack', '-p:Configuration=Release']
 
     parser = OptionParser(description='Indigo .NET libraries build script')
     parser.add_option('--suffix', '-s', help='archive suffix', default="")
