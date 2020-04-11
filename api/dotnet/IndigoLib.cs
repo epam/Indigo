@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -8,40 +9,42 @@ namespace com.epam.indigo
     {
         static IndigoLib()
         {
+            var assemblyFolder = Path.GetDirectoryName(new Uri(typeof(IndigoLib).Assembly.CodeBase).LocalPath);
+
             if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
             {
                 if (System.Environment.Is64BitProcess)
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/vcruntime140.dll", true);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/vcruntime140_1.dll", true);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/msvcp140.dll", true);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/concrt140.dll", true);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/indigo.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/vcruntime140.dll", assemblyFolder);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/vcruntime140_1.dll", assemblyFolder);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/msvcp140.dll", assemblyFolder);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/concrt140.dll", assemblyFolder);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/indigo.dll", assemblyFolder);
                 }
                 else
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/vcruntime140.dll", true);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/vcruntime140_1.dll", true);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/msvcp140.dll", true);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/concrt140.dll", true);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/indigo.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/vcruntime140.dll", assemblyFolder);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/vcruntime140_1.dll", assemblyFolder);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/msvcp140.dll", assemblyFolder);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/concrt140.dll", assemblyFolder);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/indigo.dll", assemblyFolder);
                 }
             }
             else if (System.Environment.OSVersion.Platform == System.PlatformID.Unix)
             {
                 if (IndigoNativeLibraryLoader.isMac())
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Mac/10.7/libindigo.dylib", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Mac/10.7/libindigo.dylib", assemblyFolder);
                 }
                 else
                 {
                     if (System.Environment.Is64BitProcess)
                     {
-                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/libindigo.so", true);
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/libindigo.so", assemblyFolder);
                     }
                     else
                     {
-                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/libindigo.so", true);
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/libindigo.so", assemblyFolder);
                     }
                 }
             }

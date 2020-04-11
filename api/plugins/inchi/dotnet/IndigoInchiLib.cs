@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 
 namespace com.epam.indigo
 {
@@ -10,32 +9,34 @@ namespace com.epam.indigo
     {
         static IndigoInchiLib()
         {
+            var assemblyFolder = Path.GetDirectoryName(new Uri(typeof(IndigoInchiLib).Assembly.CodeBase).LocalPath);
+
             if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
             {
                 if (System.Environment.Is64BitProcess)
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/indigo-inchi.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/indigo-inchi.dll", assemblyFolder);
                 }
                 else
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/indigo-inchi.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/indigo-inchi.dll", assemblyFolder);
                 }
             }
             else if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
             {
                 if (IndigoNativeLibraryLoader.isMac())
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Mac/10.7/indigo-inchi.dylib", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Mac/10.7/indigo-inchi.dylib", assemblyFolder);
                 }
                 else
                 {
                     if (Environment.Is64BitProcess)
                     {
-                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/indigo-inchi.dylib", true);
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/indigo-inchi.so", assemblyFolder);
                     }
                     else
                     {
-                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/indigo-inchi.dylibo", true);
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/indigo-inchi.so", assemblyFolder);
                     }
                 }
             }

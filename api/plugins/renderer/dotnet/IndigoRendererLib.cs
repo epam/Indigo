@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -8,32 +9,34 @@ namespace com.epam.indigo
     {
         static IndigoRendererLib()
         {
+            var assemblyFolder = Path.GetDirectoryName(new Uri(typeof(IndigoRendererLib).Assembly.CodeBase).LocalPath);
+
             if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
             {
                 if (System.Environment.Is64BitProcess)
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/indigo-renderer.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/indigo-renderer.dll", assemblyFolder);
                 }
                 else
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/indigo-renderer.dll", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/indigo-renderer.dll", assemblyFolder);
                 }
             }
             else if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
             {
                 if (IndigoNativeLibraryLoader.isMac())
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Mac/10.7/indigo-renderer.dylib", true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Mac/10.7/indigo-renderer.dylib", assemblyFolder);
                 }
                 else
                 {
                     if (Environment.Is64BitProcess)
                     {
-                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/indigo-renderer.dylib", true);
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/indigo-renderer.so", assemblyFolder);
                     }
                     else
                     {
-                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/indigo-renderer.dylibo", true);
+                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/indigo-renderer.so", assemblyFolder);
                     }
                 }
             }
