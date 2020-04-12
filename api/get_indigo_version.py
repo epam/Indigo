@@ -12,5 +12,4 @@ def getIndigoVersion():
                 version = m.group(1)
     elif 'INDIGO_VERSION' in os.environ:
         version = os.environ['INDIGO_VERSION']
-
     return version
