@@ -43,7 +43,7 @@ namespace com.epam.indigo
             return (detectUnixKernel() == "Darwin");
         }
 
-        public static IntPtr LoadLibrary(string inputPath, string customAssemblyFolder = null)
+        public static IntPtr LoadLibrary(string inputPath, string customAssemblyFolder = null, bool optional = false)
         {
             var actualPath = inputPath;
             if (customAssemblyFolder != null)
@@ -90,7 +90,7 @@ namespace com.epam.indigo
                 throw new SystemException(fullErrorMessage);
             }
 
-            if (result == IntPtr.Zero)
+            if (result == IntPtr.Zero && !optional)
             {
                 var fullErrorMessage = string.Format("Could not load library {0}: error {1}", actualPath, errorMessage) ;
                 System.Console.WriteLine(fullErrorMessage);

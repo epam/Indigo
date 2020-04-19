@@ -15,18 +15,18 @@ namespace com.epam.indigo
             {
                 if (System.Environment.Is64BitProcess)
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/vcruntime140.dll", assemblyFolder);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/vcruntime140_1.dll", assemblyFolder);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/msvcp140.dll", assemblyFolder);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/concrt140.dll", assemblyFolder);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/vcruntime140.dll", assemblyFolder, true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/vcruntime140_1.dll", assemblyFolder, true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/msvcp140.dll", assemblyFolder, true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/concrt140.dll", assemblyFolder, true);
                     IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/indigo.dll", assemblyFolder);
                 }
                 else
                 {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/vcruntime140.dll", assemblyFolder);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/vcruntime140_1.dll", assemblyFolder);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/msvcp140.dll", assemblyFolder);
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/concrt140.dll", assemblyFolder);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/vcruntime140.dll", assemblyFolder, true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/vcruntime140_1.dll", assemblyFolder, true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/msvcp140.dll", assemblyFolder, true);
+                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/concrt140.dll", assemblyFolder, true);
                     IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/indigo.dll", assemblyFolder);
                 }
             }
