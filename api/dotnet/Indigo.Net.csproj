@@ -27,69 +27,88 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="lib/Linux/x64/libindigo.so">
+		<PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="libindigo.so">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Linux/x64/libindigo.so</PackagePath>
+			<PackagePath>lib/netstandard2.0/libindigo.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Linux/x86/libindigo.so">
+		<Content Include="libindigo.dylib">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Linux/x86/libindigo.so</PackagePath>
+			<PackagePath>lib/netstandard2.0/libindigo.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Mac/10.7/libindigo.dylib">
+		<Content Include="indigo.dll">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Mac/10.7/libindigo.dylib</PackagePath>
+			<PackagePath>lib/netstandard2.0/indigo.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Win/x64/concrt140.dll">
+		<Content Include="concrt140.dll">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Win/x64/concrt140.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/concrt140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Win/x64/indigo.dll">
+		<Content Include="msvcp140.dll">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Win/x64/indigo.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/msvcp140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Win/x64/msvcp140.dll">
+		<Content Include="vcruntime140.dll">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Win/x64/msvcp140.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/vcruntime140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Win/x64/vcruntime140.dll">
+		<Content Include="vcruntime140_1.dll">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Win/x64/vcruntime140.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/vcruntime140_1.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Win/x64/vcruntime140_1.dll">
+		<Content Include="libindigo-inchi.so">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Win/x64/vcruntime140_1.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/libindigo-inchi.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Win/x86/concrt140.dll">
+		<Content Include="libindigo-inchi.dylib">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Win/x86/concrt140.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/libindigo-inchi.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Win/x86/indigo.dll">
+		<Content Include="indigo-inchi.dll">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Win/x86/indigo.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/indigo-inchi.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Win/x86/msvcp140.dll">
+		<Content Include="libindigo-renderer.so">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Win/x86/msvcp140.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/libindigo-irenderer.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Win/x86/vcruntime140.dll">
+		<Content Include="libindigo-renderer.dylib">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Win/x86/vcruntime140.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/libindigo-renderer.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="lib/Win/x86/vcruntime140_1.dll">
+		<Content Include="indigo-renderer.dll">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/lib/Win/x86/vcruntime140_1.dll</PackagePath>
+			<PackagePath>lib/netstandard2.0/indigo-renderer.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="libbingo.so">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libbingo.so</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="libbingo.dylib">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libbingo.dylib</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="bingo.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/bingo.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>

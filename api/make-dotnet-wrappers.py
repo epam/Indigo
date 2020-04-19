@@ -68,11 +68,17 @@ def copy_libs(native_library_path, target_basepath, wrappers):
     os.mkdir(join(target_basepath, "lib"))
 
     if 'win' in wrappers:
-        shutil.copytree(os.path.join(native_library_path, 'Win'), join(target_basepath, "lib", "Win"))
+        for f in os.listdir(os.path.join(native_library_path, 'Win', "x64")):
+            if f.endswith('.dll'):
+                shutil.copy(os.path.join(native_library_path, 'Win', "x64", f), target_basepath)
     if 'linux' in wrappers:
-        shutil.copytree(os.path.join(native_library_path, 'Linux'), join(target_basepath, "lib", "Linux"))
+        for f in os.listdir(os.path.join(native_library_path, 'Linux', "x64")):
+            if f.endswith('.so'):
+                shutil.copy(os.path.join(native_library_path, 'Linux', "x64", f), target_basepath)
     if 'mac' in wrappers:
-        shutil.copytree(os.path.join(native_library_path, 'Mac'), join(target_basepath, "lib", "Mac"))
+        for f in os.listdir(os.path.join(native_library_path, 'Mac', "10.7")):
+            if f.endswith('.dylib'):
+                shutil.copy(os.path.join(native_library_path, 'Mac', "10.7", f), target_basepath)
 
 
 def copytree(src, dst, symlinks=False, ignore=None):
@@ -119,15 +125,6 @@ if __name__ == '__main__':
     # Copy native libraries to Indigo.Net
     indigoDotNetPath = join(api_dir, 'dotnet')
     copy_libs(libraryPath, indigoDotNetPath, explicit_wrappers)
-    # Copy native libraries to IndigoRenderer.Net
-    indigoRendererDotNetPath = join(api_dir, "plugins", "renderer", "dotnet")
-    copy_libs(libraryPath, indigoRendererDotNetPath, explicit_wrappers)
-    # Copy native libraries to IndigoInchi.Net
-    indigoInchiDotNetPath = join(api_dir, "plugins", "inchi", "dotnet")
-    copy_libs(libraryPath, indigoInchiDotNetPath, explicit_wrappers)
-    # Copy native libraries to Bingo.Net
-    bingoDotNetPath = join(api_dir, "plugins", "bingo", "dotnet")
-    copy_libs(libraryPath, bingoDotNetPath, explicit_wrappers)
 
     # Build
     os.chdir(indigoDotNetPath)
@@ -136,16 +133,13 @@ if __name__ == '__main__':
     os.chdir(dist_dir)
 
     # Zip nupkg
-    if wrapper == 'universal':
+    if wrapper == 'universal' or True:
         indigoDotNetVersion = xml_to_dict(os.path.join(indigoDotNetPath, 'Indigo.Net.csproj'))['PropertyGroup']['Version']
         if os.path.exists("dotnet_nupkg"):
             shutil.rmtree("dotnet_nupkg")
         os.mkdir('dotnet_nupkg')
         shutil.copy(os.path.join(api_dir, "LICENSE"), "dotnet_nupkg")
         shutil.copy(join(indigoDotNetPath, 'bin', 'Release', 'Indigo.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
-        shutil.copy(join(indigoRendererDotNetPath, 'bin', 'Release', 'IndigoRenderer.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
-        shutil.copy(join(indigoInchiDotNetPath, 'bin', 'Release', 'IndigoInchi.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
-        shutil.copy(join(bingoDotNetPath, 'bin', 'Release', 'Bingo.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
         archive_name = "./indigo-dotnet-{}-nupkg-{}".format(indigoDotNetVersion, wrapper)
         os.rename("dotnet_nupkg", archive_name)
         if os.path.exists(archive_name + ".zip"):
@@ -164,9 +158,6 @@ if __name__ == '__main__':
         shutil.copy(os.path.join(api_dir, "LICENSE"), target_dir)
         ignore_patterns = ('*.json', 'test.db')
         copytree(join(indigoDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns)
-        copytree(join(indigoRendererDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns)
-        copytree(join(indigoInchiDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns)
-        copytree(join(bingoDotNetPath, 'bin', 'Release', dotnet_target), target_dir, ignore=ignore_patterns)
         archive_name = "./indigo-dotnet-{}-{}-{}".format(indigoVersion, dotnet_target, wrapper)
         if os.path.exists(archive_name):
             shutil.rmtree(archive_name)

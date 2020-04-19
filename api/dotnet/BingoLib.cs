@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Security;
 
 #pragma warning disable 1591
@@ -9,45 +7,6 @@ namespace com.epam.indigo
 {
     public unsafe class BingoLib
     {
-        static BingoLib()
-        {
-            var assemblyFolder = Path.GetDirectoryName(new Uri(typeof(BingoLib).Assembly.CodeBase).LocalPath);
-
-            if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
-            {
-                if (System.Environment.Is64BitProcess)
-                {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x64/bingo.dll", assemblyFolder);
-                }
-                else
-                {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Win/x86/bingo.dll", assemblyFolder);
-                }
-            }
-            else if (System.Environment.OSVersion.Platform == System.PlatformID.Win32NT)
-            {
-                if (IndigoNativeLibraryLoader.isMac())
-                {
-                    IndigoNativeLibraryLoader.LoadLibrary("lib/Mac/10.7/bingo.dylib", assemblyFolder);
-                }
-                else
-                {
-                    if (Environment.Is64BitProcess)
-                    {
-                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x64/bingo.so", assemblyFolder);
-                    }
-                    else
-                    {
-                        IndigoNativeLibraryLoader.LoadLibrary("lib/Linux/x86/bingo.so", assemblyFolder);
-                    }
-                }
-            }
-            else
-            {
-                throw new PlatformNotSupportedException();
-            }
-        }
-
         [DllImport("bingo"), SuppressUnmanagedCodeSecurity]
         public static extern int bingoCreateDatabaseFile(string location, string type, string options);
 

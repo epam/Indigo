@@ -14,6 +14,7 @@ namespace com.epam.indigo
         public IndigoInchi(Indigo indigo)
         {
             _indigo = indigo;
+            resetOptions(); // Preloads native library to register renderer options
         }
 
         public String version()

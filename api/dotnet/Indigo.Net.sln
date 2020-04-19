@@ -5,14 +5,6 @@ VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Indigo.Net", "Indigo.Net.csproj", "{037E10A5-4233-4243-97C5-1E670C5822C7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Indigo.Net.Tests", "..\tests\dotnet\Indigo.Net.Tests.csproj", "{F619195F-E4D0-428E-B7F0-1C92646DE1BB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bingo.Net", "..\plugins\bingo\dotnet\Bingo.Net.csproj", "{0CB1D4BB-8358-4BA3-A826-D58781662B8C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IndigoInchi.Net", "..\plugins\inchi\dotnet\IndigoInchi.Net.csproj", "{9802F950-FE48-4439-AB85-86CC09877E3B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IndigoRenderer.Net", "..\plugins\renderer\dotnet\IndigoRenderer.Net.csproj", "{352932AF-684C-436B-9A69-885FE64F05AA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,22 +15,6 @@ Global
 		{037E10A5-4233-4243-97C5-1E670C5822C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{037E10A5-4233-4243-97C5-1E670C5822C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{037E10A5-4233-4243-97C5-1E670C5822C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F619195F-E4D0-428E-B7F0-1C92646DE1BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F619195F-E4D0-428E-B7F0-1C92646DE1BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F619195F-E4D0-428E-B7F0-1C92646DE1BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F619195F-E4D0-428E-B7F0-1C92646DE1BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0CB1D4BB-8358-4BA3-A826-D58781662B8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CB1D4BB-8358-4BA3-A826-D58781662B8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CB1D4BB-8358-4BA3-A826-D58781662B8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CB1D4BB-8358-4BA3-A826-D58781662B8C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9802F950-FE48-4439-AB85-86CC09877E3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9802F950-FE48-4439-AB85-86CC09877E3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9802F950-FE48-4439-AB85-86CC09877E3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9802F950-FE48-4439-AB85-86CC09877E3B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{352932AF-684C-436B-9A69-885FE64F05AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{352932AF-684C-436B-9A69-885FE64F05AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{352932AF-684C-436B-9A69-885FE64F05AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{352932AF-684C-436B-9A69-885FE64F05AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

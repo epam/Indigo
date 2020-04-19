@@ -15,7 +15,7 @@ namespace com.epam.indigo
         public IndigoRenderer(Indigo indigo)
         {
             _indigo = indigo;
-            System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(IndigoRendererLib).TypeHandle); // Force calling static constructor, see https://stackoverflow.com/questions/2658561/is-runclassconstructor-guaranteed-to-run-a-types-static-constructor-only-once
+            reset(); // Preloads native library to register renderer options
         }
 
         public void renderToFile(IndigoObject obj, string filename)
@@ -51,7 +51,6 @@ namespace com.epam.indigo
         public Bitmap renderToBitmap(IndigoObject obj)
         {
             _indigo.setSessionID();
-
             _indigo.checkResult(IndigoLib.indigoSetOption("render-output-format", "png"));
             byte[] res = renderToBuffer(obj);
 
@@ -65,7 +64,6 @@ namespace com.epam.indigo
         public Metafile renderToMetafile(IndigoObject obj)
         {
             _indigo.setSessionID();
-
             _indigo.checkResult(IndigoLib.indigoSetOption("render-output-format", "emf"));
             byte[] res = renderToBuffer(obj);
 
@@ -83,6 +81,7 @@ namespace com.epam.indigo
                     if (refatoms.Length != items.count())
                         throw new IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects");
 
+                _indigo.setSessionID();
                 _indigo.checkResult(IndigoRendererLib.indigoRenderGrid(items.self, refatoms, ncolumns, bufh.self));
                 return bufh.toBuffer();
             }
@@ -94,7 +93,14 @@ namespace com.epam.indigo
                 if (refatoms.Length != items.count())
                     throw new IndigoException("renderGridToFile(): refatoms[] size must be equal to the number of objects");
 
+            _indigo.setSessionID();
             _indigo.checkResult(IndigoRendererLib.indigoRenderGridToFile(items.self, refatoms, ncolumns, filename));
+        }
+
+        public void reset()
+        {
+            _indigo.setSessionID();
+            _indigo.checkResult(IndigoRendererLib.indigoRenderReset());
         }
 
         public static void SaveMetafile(Metafile mf, Stream stream)
