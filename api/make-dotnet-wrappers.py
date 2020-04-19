@@ -63,9 +63,12 @@ def xml_to_dict(path):
 
 
 def copy_libs(native_library_path, target_basepath, wrappers):
-    if os.path.exists(join(target_basepath, "lib")):
-        shutil.rmtree(join(target_basepath, "lib"))
-    os.mkdir(join(target_basepath, "lib"))
+    print('Cleaning up previous native libraries in ' + target_basepath)
+    for f in os.listdir(target_basepath):
+        if os.path.splitext(f)[1] in ('.dll', '.so', '.dylib'):
+            print('Removing ' + os.path.join(target_basepath, f))
+            os.remove(os.path.join(target_basepath, f))
+    print('Cleaning up finished')
 
     if 'win' in wrappers:
         for f in os.listdir(os.path.join(native_library_path, 'Win', "x64")):
@@ -133,7 +136,7 @@ if __name__ == '__main__':
     os.chdir(dist_dir)
 
     # Zip nupkg
-    if wrapper == 'universal' or True:
+    if wrapper == 'universal':
         indigoDotNetVersion = xml_to_dict(os.path.join(indigoDotNetPath, 'Indigo.Net.csproj'))['PropertyGroup']['Version']
         if os.path.exists("dotnet_nupkg"):
             shutil.rmtree("dotnet_nupkg")
