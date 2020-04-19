@@ -17,6 +17,7 @@ def updatePomVersion(pomFile, newVersion):
             if oldVersion != newVersion:
                 print('Updating Indigo version from {0} to {1} in {2}...'.format(oldVersion, newVersion, pomFile))
                 child.text = newVersion
+                versionChanged = True
             else:
                 print('Indigo version in {0} remains {1}...'.format(pomFile, newVersion))
             break
@@ -66,9 +67,6 @@ def main(newVersion):
     updatePomVersion(os.path.join(INDIGO_PATH, 'api', 'plugins', 'inchi', 'java', 'pom.xml'), indigoVersion)
     updatePomVersion(os.path.join(INDIGO_PATH, 'api', 'plugins', 'renderer', 'java', 'pom.xml'), indigoVersion)
     updateCsProjVersion(os.path.join(INDIGO_PATH, 'api', 'dotnet', 'Indigo.Net.csproj'), indigoVersion)
-    updateCsProjVersion(os.path.join(INDIGO_PATH, 'api', 'plugins', 'bingo', 'dotnet', 'Bingo.Net.csproj'), indigoVersion)
-    updateCsProjVersion(os.path.join(INDIGO_PATH, 'api', 'plugins', 'inchi', 'dotnet', 'IndigoInchi.Net.csproj'), indigoVersion)
-    updateCsProjVersion(os.path.join(INDIGO_PATH, 'api', 'plugins', 'renderer', 'dotnet', 'IndigoRenderer.Net.csproj'), indigoVersion)
     updateSetupPyVersion(os.path.join(INDIGO_PATH, 'api', 'python', 'setup.py'), indigoVersion)
 
 
