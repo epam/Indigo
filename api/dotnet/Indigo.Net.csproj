@@ -83,7 +83,7 @@
 		</Content>
 		<Content Include="libindigo-renderer.so">
 			<Pack>true</Pack>
-			<PackagePath>lib/netstandard2.0/libindigo-irenderer.so</PackagePath>
+			<PackagePath>lib/netstandard2.0/libindigo-renderer.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 		<Content Include="libindigo-renderer.dylib">
