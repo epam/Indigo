@@ -85,6 +85,7 @@ if(MINGW)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi")
         set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi")
         message(STATUS "Clang: using libc++")
+    endif()
 endif()
 
 message(STATUS "CMAKE_C_FLAGS ${CMAKE_C_FLAGS}")
