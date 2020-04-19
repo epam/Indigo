@@ -3,7 +3,7 @@ set(INDIGO_MAX_REVISION 500)
 
 find_package(Git)
 if(GIT_EXECUTABLE)
-   EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match 'indigo-*'
+   EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match indigo-*
                     OUTPUT_VARIABLE INDIGO_FULL_VERSION
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
