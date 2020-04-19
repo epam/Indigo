@@ -1454,7 +1454,13 @@ class Indigo(object):
 
     # Python embeds path into .pyc code if method is marked with @staticmethod
     # This causes an error when Indigo is loaded from different places by relative path
-    def _initStatic(self, path = None):        
+    def _initStatic(self, path = None):
+
+        def cdll_if_exists(cdll_path_):
+            if os.path.exists(cdll_path_):
+                return CDLL(cdll_path_)
+            return None
+
         paths = []
         if not path:
             cur_file = os.path.abspath(__file__)
@@ -1487,10 +1493,10 @@ class Indigo(object):
                 else:
                     raise IndigoException("unknown platform " + arch)
                 if os.path.exists(os.path.join(path, 'indigo.dll')):
-                    Indigo._crt = CDLL(os.path.join(path, "vcruntime140.dll"))
-                    Indigo._crt_1 = CDLL(os.path.join(path, "vcruntime140_1.dll"))
-                    Indigo._crtp = CDLL(os.path.join(path, "msvcp140.dll"))
-                    Indigo._crtc = CDLL(os.path.join(path, "concrt140.dll"))
+                    Indigo._crt = cdll_if_exists(os.path.join(path, "vcruntime140.dll"))
+                    Indigo._crt_1 = cdll_if_exists(os.path.join(path, "vcruntime140_1.dll"))
+                    Indigo._crtp = cdll_if_exists(os.path.join(path, "msvcp140.dll"))
+                    Indigo._crtc = cdll_if_exists(os.path.join(path, "concrt140.dll"))
                     Indigo._lib = CDLL(os.path.join(path, "indigo.dll"))
                     indigoFound = True
                     Indigo.dllpath = path
