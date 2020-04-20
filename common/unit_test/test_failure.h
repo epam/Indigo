@@ -4,31 +4,28 @@
 #include "base_cpp/array.h"
 namespace indigo
 {
-class Failure
-{
-public:
-    Failure (const char* exception, const char* message, const char* testName,
-             const char* fileName, int lineNumber);
+    class Failure
+    {
+    public:
+        Failure(const char* exception, const char* message, const char* testName, const char* fileName, int lineNumber);
 
-    int getLineNumber() const;
-    const char* getMessage() const;
-    const char* getTestName() const;
-    const char* getFileName() const;
-    const char* getException() const;
+        int getLineNumber() const;
+        const char* getMessage() const;
+        const char* getTestName() const;
+        const char* getFileName() const;
+        const char* getException() const;
 
-    ~Failure(){}
+        ~Failure()
+        {
+        }
 
+    private:
+        Array<char> _message;
+        Array<char> _testName;
+        Array<char> _fileName;
+        Array<char> _exception;
+        int _lineNumber;
+    };
 
-
-private:
-    
-    Array<char> _message;
-    Array<char> _testName;
-    Array<char> _fileName;
-    Array<char> _exception;
-    int _lineNumber;
-};
-
-}
+} // namespace indigo
 #endif
-

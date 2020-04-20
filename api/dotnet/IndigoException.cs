@@ -1,30 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.Serialization;
 
 namespace com.epam.indigo
 {
-   public class IndigoException : Exception
-   {
-      public IndigoException ()
-         : base()
-      {
-      }
+    public class IndigoException : Exception
+    {
+        public IndigoException()
+           : base()
+        {
+        }
 
-      public IndigoException (string message)
-         : base(message)
-      {
-      }
+        public IndigoException(string message)
+           : base(message)
+        {
+        }
 
-      protected IndigoException (SerializationInfo info, StreamingContext context)
-         : base(info, context)
-      {
-      }
+        protected IndigoException(SerializationInfo info, StreamingContext context)
+           : base(info, context)
+        {
+        }
 
-      public IndigoException (string message, Exception innerException)
-         : base(message, innerException)
-      {
-      }
-   }
+        public IndigoException(string message, Exception innerException)
+           : base(message, innerException)
+        {
+        }
+    }
 }

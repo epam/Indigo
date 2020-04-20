@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,25 +22,28 @@
 #include "base_cpp/array.h"
 #include "base_cpp/queue.h"
 
-namespace indigo {
+namespace indigo
+{
 
-class Graph;
-class ShortestPathFinder {
-public:
-   explicit ShortestPathFinder (const Graph &graph);
+    class Graph;
+    class ShortestPathFinder
+    {
+    public:
+        explicit ShortestPathFinder(const Graph& graph);
 
-   void *check_vertex_context;   
-   bool (*cb_check_vertex)(const Graph &graph, int v_idx, void *context);
-   void *check_edge_context;   
-   bool (*cb_check_edge)(const Graph &graph, int e_idx, void *context);
+        void* check_vertex_context;
+        bool (*cb_check_vertex)(const Graph& graph, int v_idx, void* context);
+        void* check_edge_context;
+        bool (*cb_check_edge)(const Graph& graph, int e_idx, void* context);
 
-   bool find (Array<int>& vertices, Array<int>& edges, int u, int v);
-private:   
-   Queue<int> queue;
-   Array<int> prev;
-   const Graph &_graph;
-};
+        bool find(Array<int>& vertices, Array<int>& edges, int u, int v);
 
-}
+    private:
+        Queue<int> queue;
+        Array<int> prev;
+        const Graph& _graph;
+    };
+
+} // namespace indigo
 
 #endif

@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,61 +19,59 @@
 #ifndef __molecule_rgroups__
 #define __molecule_rgroups__
 
-#include "base_cpp/red_black.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_pool.h"
+#include "base_cpp/red_black.h"
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-class BaseMolecule;
-
-struct RGroup
+namespace indigo
 {
-   explicit RGroup ();
-   ~RGroup ();
-   void clear();
 
-   void copy (RGroup &other);
+    class BaseMolecule;
 
-   bool occurrenceSatisfied (int value);
+    struct RGroup
+    {
+        explicit RGroup();
+        ~RGroup();
+        void clear();
 
-   PtrPool<BaseMolecule> fragments;
-   int if_then;
-   int rest_h;
-   Array<int> occurrence;
+        void copy(RGroup& other);
 
-protected:
-   explicit RGroup (RGroup &other);
-};
+        bool occurrenceSatisfied(int value);
 
-class DLLEXPORT MoleculeRGroups
-{
-public:
+        PtrPool<BaseMolecule> fragments;
+        int if_then;
+        int rest_h;
+        Array<int> occurrence;
 
-   MoleculeRGroups ();
-   ~MoleculeRGroups ();
+    protected:
+        explicit RGroup(RGroup& other);
+    };
 
-   DECL_ERROR;
+    class DLLEXPORT MoleculeRGroups
+    {
+    public:
+        MoleculeRGroups();
+        ~MoleculeRGroups();
 
-   void copyRGroupsFromMolecule (MoleculeRGroups &other);
+        DECL_ERROR;
 
-   RGroup &getRGroup  (int idx);
-   int getRGroupCount () const;
+        void copyRGroupsFromMolecule(MoleculeRGroups& other);
 
-   void clear ();
+        RGroup& getRGroup(int idx);
+        int getRGroupCount() const;
 
-protected:
-   
-   ObjArray<RGroup> _rgroups;
-};
+        void clear();
 
+    protected:
+        ObjArray<RGroup> _rgroups;
+    };
 
-}
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)

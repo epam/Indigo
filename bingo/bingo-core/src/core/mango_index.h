@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,14 +21,14 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
-#include "core/mango_matchers.h"
 #include "core/bingo_index.h"
+#include "core/mango_matchers.h"
 
 using namespace indigo;
 
 namespace indigo
 {
-   class Scanner;
+    class Scanner;
 }
 
 class BingoContext;
@@ -36,54 +36,54 @@ class BingoContext;
 class MangoIndex : public BingoIndex
 {
 public:
-   void prepare (Scanner &molfile, Output &output, OsLock *lock_for_exclusive_access);
+    void prepare(Scanner& molfile, Output& output, OsLock* lock_for_exclusive_access);
 
-   const Array<char> & getCmf () const;
-   const Array<char> & getXyz () const;
+    const Array<char>& getCmf() const;
+    const Array<char>& getXyz() const;
 
-   const MangoExact::Hash & getHash () const;
+    const MangoExact::Hash& getHash() const;
 
-   const char * getGrossString () const;
-   const char * getCountedElementsString () const;
-   const Array<int> & getCountedElements () const;
+    const char* getGrossString() const;
+    const char* getCountedElementsString() const;
+    const Array<int>& getCountedElements() const;
 
-   const byte * getFingerprint () const;
+    const byte* getFingerprint() const;
 
-   const char * getFingerprint_Sim_Str () const;
-   
-   float getMolecularMass() const;
+    const char* getFingerprint_Sim_Str() const;
 
-   int getFpSimilarityBitsCount () const;
+    float getMolecularMass() const;
 
-   static const int counted_elements[6];
+    int getFpSimilarityBitsCount() const;
 
-   void clear ();
+    static const int counted_elements[6];
+
+    void clear();
 
 private:
-   // CMF-packed aromatized molecule and coordinates
-   Array<char> _cmf;
-   Array<char> _xyz;
+    // CMF-packed aromatized molecule and coordinates
+    Array<char> _cmf;
+    Array<char> _xyz;
 
-   // hash for exact match
-   MangoExact::Hash _hash; 
+    // hash for exact match
+    MangoExact::Hash _hash;
 
-   // gross formula
-   Array<int> _gross;
-   Array<char> _gross_str;
+    // gross formula
+    Array<int> _gross;
+    Array<char> _gross_str;
 
-   Array<byte> _fp;
-   Array<char> _fp_sim_str;
-           
-   // comma-separated list of selected counters 
-   // (for non-exact gross formula search)
-   Array<char> _counted_elems_str;
-   Array<int>  _counted_elem_counters;
+    Array<byte> _fp;
+    Array<char> _fp_sim_str;
 
-   // Molecular mass
-   float _molecular_mass;
+    // comma-separated list of selected counters
+    // (for non-exact gross formula search)
+    Array<char> _counted_elems_str;
+    Array<int> _counted_elem_counters;
 
-   // Number of one bits in similarity fingerprint
-   int _fp_sim_bits_count;
+    // Molecular mass
+    float _molecular_mass;
+
+    // Number of one bits in similarity fingerprint
+    int _fp_sim_bits_count;
 };
 
 #endif

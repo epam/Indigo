@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,89 +23,109 @@
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-DECL_EXCEPTION(PtrPoolError);
-
-template <typename T> class PtrPool
+namespace indigo
 {
-public:
-   explicit PtrPool ()
-   {
-   }
 
-   virtual ~PtrPool ()
-   {
-      clear();
-   }
+    DECL_EXCEPTION(PtrPoolError);
 
-   DECL_TPL_ERROR(PtrPoolError);
+    template <typename T> class PtrPool
+    {
+    public:
+        explicit PtrPool()
+        {
+        }
 
-   int add (T *obj)
-   {
-      return _ptrpool.add(obj);
-   }
+        virtual ~PtrPool()
+        {
+            clear();
+        }
 
-   void remove (int idx)
-   {
-      delete _ptrpool[idx];
-      _ptrpool.remove(idx);
-   }
+        DECL_TPL_ERROR(PtrPoolError);
 
-   bool hasElement(int idx) const
-   {
-      return _ptrpool.hasElement(idx);
-   }
+        int add(T* obj)
+        {
+            return _ptrpool.add(obj);
+        }
 
-   int size () const
-   {
-      return _ptrpool.size();
-   }
+        void remove(int idx)
+        {
+            delete _ptrpool[idx];
+            _ptrpool.remove(idx);
+        }
 
-   int begin () const
-   {
-      return _ptrpool.begin();
-   }
+        bool hasElement(int idx) const
+        {
+            return _ptrpool.hasElement(idx);
+        }
 
-   int end () const
-   {
-      return _ptrpool.end();
-   }
+        int size() const
+        {
+            return _ptrpool.size();
+        }
 
-   int next (int i) const
-   {
-      return _ptrpool.next(i);
-   }
+        int begin() const
+        {
+            return _ptrpool.begin();
+        }
 
-   void clear (void)
-   {
-      int i;
+        int end() const
+        {
+            return _ptrpool.end();
+        }
 
-      for (i = _ptrpool.begin(); i != _ptrpool.end(); i = _ptrpool.next(i))
-         delete _ptrpool[i];
+        int next(int i) const
+        {
+            return _ptrpool.next(i);
+        }
 
-      _ptrpool.clear();
-   }
+        void clear(void)
+        {
+            int i;
 
-   const T *  operator[] (int index) const { return _ptrpool[index]; }
-         T *& operator[] (int index)       { return _ptrpool[index]; }
+            for (i = _ptrpool.begin(); i != _ptrpool.end(); i = _ptrpool.next(i))
+                delete _ptrpool[i];
 
-   const T *  at (int index) const { return _ptrpool[index]; }
-         T *& at (int index)       { return _ptrpool[index]; }
+            _ptrpool.clear();
+        }
 
-   const T& ref (int index) const { return *_ptrpool[index]; }
-         T& ref (int index)       { return *_ptrpool[index]; }
+        const T* operator[](int index) const
+        {
+            return _ptrpool[index];
+        }
+        T*& operator[](int index)
+        {
+            return _ptrpool[index];
+        }
 
-protected:
-   Pool<T *> _ptrpool;
-private:
-   PtrPool (const PtrPool &); // no implicit copy
-};
+        const T* at(int index) const
+        {
+            return _ptrpool[index];
+        }
+        T*& at(int index)
+        {
+            return _ptrpool[index];
+        }
 
-}
+        const T& ref(int index) const
+        {
+            return *_ptrpool[index];
+        }
+        T& ref(int index)
+        {
+            return *_ptrpool[index];
+        }
+
+    protected:
+        Pool<T*> _ptrpool;
+
+    private:
+        PtrPool(const PtrPool&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)

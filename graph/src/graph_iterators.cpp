@@ -3,94 +3,94 @@
 
 using namespace indigo;
 
-AutoIterator::AutoIterator( int idx ) : _idx(idx)
+AutoIterator::AutoIterator(int idx) : _idx(idx)
 {
 }
 
 int AutoIterator::operator*() const
 {
-   return _idx;
+    return _idx;
 }
 
-bool AutoIterator::operator!=( const AutoIterator &other ) const
+bool AutoIterator::operator!=(const AutoIterator& other) const
 {
-   if (_idx != other._idx)
-      return true;
+    if (_idx != other._idx)
+        return true;
 
-   return false;
+    return false;
 }
 
-VertexIter::VertexIter( Graph &owner, int idx ) : AutoIterator(idx), _owner(owner) 
-{
-}
-
-VertexIter & VertexIter::operator++()
-{
-   _idx = _owner.vertexNext(_idx);
-
-   return *this;
-}
-
-VerticesAuto::VerticesAuto (Graph &owner) : _owner(owner)
+VertexIter::VertexIter(Graph& owner, int idx) : AutoIterator(idx), _owner(owner)
 {
 }
 
-VertexIter VerticesAuto::begin ()
+VertexIter& VertexIter::operator++()
 {
-   return VertexIter(_owner, _owner.vertexBegin());
+    _idx = _owner.vertexNext(_idx);
+
+    return *this;
 }
 
-VertexIter VerticesAuto::end ()
-{
-   return VertexIter(_owner, _owner.vertexEnd());
-}
-
-EdgeIter::EdgeIter( Graph &owner, int idx ) : AutoIterator(idx), _owner(owner) 
+VerticesAuto::VerticesAuto(Graph& owner) : _owner(owner)
 {
 }
 
-EdgeIter & EdgeIter::operator++()
+VertexIter VerticesAuto::begin()
 {
-   _idx = _owner.edgeNext(_idx);
-
-   return *this;
+    return VertexIter(_owner, _owner.vertexBegin());
 }
 
-EdgesAuto::EdgesAuto (Graph &owner) : _owner(owner)
+VertexIter VerticesAuto::end()
 {
+    return VertexIter(_owner, _owner.vertexEnd());
 }
 
-EdgeIter EdgesAuto::begin ()
-{
-   return EdgeIter(_owner, _owner.edgeBegin());
-}
-
-EdgeIter EdgesAuto::end ()
-{
-   return EdgeIter(_owner, _owner.edgeEnd());
-}
-
-NeighborIter::NeighborIter(const Vertex &owner, int idx) : AutoIterator(idx), _owner(owner) 
+EdgeIter::EdgeIter(Graph& owner, int idx) : AutoIterator(idx), _owner(owner)
 {
 }
 
-NeighborIter & NeighborIter::operator++ ()
+EdgeIter& EdgeIter::operator++()
 {
-   _idx = _owner.neiNext(_idx);
+    _idx = _owner.edgeNext(_idx);
 
-   return *this;
+    return *this;
 }
 
-NeighborsAuto::NeighborsAuto (const Vertex &owner) : _owner(owner)
+EdgesAuto::EdgesAuto(Graph& owner) : _owner(owner)
 {
 }
 
-NeighborIter NeighborsAuto::begin ()
+EdgeIter EdgesAuto::begin()
 {
-   return NeighborIter(_owner, _owner.neiBegin());
+    return EdgeIter(_owner, _owner.edgeBegin());
 }
 
-NeighborIter NeighborsAuto::end ()
+EdgeIter EdgesAuto::end()
 {
-   return NeighborIter(_owner, _owner.neiEnd());
+    return EdgeIter(_owner, _owner.edgeEnd());
+}
+
+NeighborIter::NeighborIter(const Vertex& owner, int idx) : AutoIterator(idx), _owner(owner)
+{
+}
+
+NeighborIter& NeighborIter::operator++()
+{
+    _idx = _owner.neiNext(_idx);
+
+    return *this;
+}
+
+NeighborsAuto::NeighborsAuto(const Vertex& owner) : _owner(owner)
+{
+}
+
+NeighborIter NeighborsAuto::begin()
+{
+    return NeighborIter(_owner, _owner.neiBegin());
+}
+
+NeighborIter NeighborsAuto::end()
+{
+    return NeighborIter(_owner, _owner.neiEnd());
 }

@@ -1,39 +1,39 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-***************************************************************************/
+ ***************************************************************************/
 
-#include "base_cpp/red_black.h"
 #include "base_cpp/obj.h"
-#include "graph/graph_subchain_enumerator.h"
+#include "base_cpp/red_black.h"
 #include "graph/biconnected_decomposer.h"
+#include "graph/graph_subchain_enumerator.h"
 #include "graph/path_enumerator.h"
 #include "layout/molecule_layout_graph.h"
 #include "layout/refinement_state.h"
 
 using namespace indigo;
 
-bool MoleculeLayoutGraph::_edge_check(Graph &graph, int e_idx, void *context_)
+bool MoleculeLayoutGraph::_edge_check(Graph& graph, int e_idx, void* context_)
 {
-    EnumContext &context = *(EnumContext *)context_;
+    EnumContext& context = *(EnumContext*)context_;
     if (!context.graph->getLayoutEdge(e_idx).is_cyclic)
     {
         if (context.graph->_n_fixed > 0)
         {
-            const Edge &edge = context.graph->getEdge(e_idx);
+            const Edge& edge = context.graph->getEdge(e_idx);
 
             if (context.graph->_fixed_vertices[edge.beg] && context.graph->_fixed_vertices[edge.end])
                 return false;
@@ -44,9 +44,9 @@ bool MoleculeLayoutGraph::_edge_check(Graph &graph, int e_idx, void *context_)
     return false;
 }
 
-bool MoleculeLayoutGraph::_path_handle(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context_)
+bool MoleculeLayoutGraph::_path_handle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context_)
 {
-    EnumContext &context = *(EnumContext *)context_;
+    EnumContext& context = *(EnumContext*)context_;
     int i;
 
     for (i = 0; i < edges.size(); i++)
@@ -54,7 +54,7 @@ bool MoleculeLayoutGraph::_path_handle(Graph &graph, const Array<int> &vertices,
         {
             if (context.graph->_n_fixed > 0)
             {
-                const Edge &edge = context.graph->getEdge(edges[i]);
+                const Edge& edge = context.graph->getEdge(edges[i]);
 
                 if (context.graph->_fixed_vertices[edge.beg] && context.graph->_fixed_vertices[edge.end])
                     continue;
@@ -65,7 +65,7 @@ bool MoleculeLayoutGraph::_path_handle(Graph &graph, const Array<int> &vertices,
 }
 
 // Split graph in two branches by acyclic edge (its vertices are in different branches)
-void MoleculeLayoutGraph::_makeBranches(Array<int> &branches, int edge, Filter &filter) const
+void MoleculeLayoutGraph::_makeBranches(Array<int>& branches, int edge, Filter& filter) const
 {
     branches.clear_resize(vertexEnd());
     branches.zerofill();
@@ -83,7 +83,7 @@ void MoleculeLayoutGraph::_makeBranches(Array<int> &branches, int edge, Filter &
         v = dfs_stack.top();
         branches[v] = 1;
 
-        const Vertex &vert = getVertex(v);
+        const Vertex& vert = getVertex(v);
         bool no_push = true;
 
         for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
@@ -112,7 +112,7 @@ bool MoleculeLayoutGraph::_allowRotateAroundVertex(int idx) const
 {
     if (_molecule != 0)
     {
-        const Vertex &v = getVertex(idx);
+        const Vertex& v = getVertex(idx);
 
         if (v.degree() == 2)
         {
@@ -129,7 +129,8 @@ bool MoleculeLayoutGraph::_allowRotateAroundVertex(int idx) const
 }
 
 // Increase minimal distance between vertices
-void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer &bc_decomposer, const PtrArray<MoleculeLayoutGraph> &bc_components, const Array<int> &bc_tree)
+void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_decomposer, const PtrArray<MoleculeLayoutGraph>& bc_components,
+                                             const Array<int>& bc_tree)
 {
     RefinementState beg_state(*this);
     RefinementState best_state(*this);
@@ -228,10 +229,12 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer &bc_dec
 
                 context.iterationNumber = 0;
 
-                try {
+                try
+                {
                     path_enum.process();
                 }
-                catch (Error) {
+                catch (Error)
+                {
                     // iterations limit reached
                 }
 
@@ -264,7 +267,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer &bc_dec
             n_improvements++;
 
             // Try to flip branch
-            const Edge &edge = getEdge(edges.key(i));
+            const Edge& edge = getEdge(edges.key(i));
 
             if (_molecule != 0 && _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[edges.key(i)].ext_idx]) != 0)
                 continue;
@@ -286,7 +289,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer &bc_dec
         }
 
         if (improved)
-        {// finished becouse of flipped
+        { // finished becouse of flipped
             beg_state.copy(best_state);
             continue;
         }
@@ -301,7 +304,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer &bc_dec
             n_improvements += 3;
 
             // Try to rotate one branch by 10 degrees in both directions around both vertices
-            const Edge &edge = getEdge(edges.key(i));
+            const Edge& edge = getEdge(edges.key(i));
 
             if (_molecule != 0 && _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[edges.key(i)].ext_idx]) != 0)
                 continue;
@@ -367,8 +370,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer &bc_dec
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
-                if (new_state.dist > beg_state.dist && new_state.energy + 20 < beg_state.energy &&
-                    new_state.energy < best_state.energy - 0.00001)
+                if (new_state.dist > beg_state.dist && new_state.energy + 20 < beg_state.energy && new_state.energy < best_state.energy - 0.00001)
                 {
                     improved = true;
                     best_state.copy(new_state);
@@ -382,7 +384,8 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer &bc_dec
 
     if (_n_fixed == 0)
     {
-        if (!beg_state.is_small_cycle()) {
+        if (!beg_state.is_small_cycle())
+        {
             int center = -1;
             long max_code = 0;
 
@@ -395,16 +398,19 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer &bc_dec
 
             beg_state.calcHeight();
 
-            if (layout_orientation != UNCPECIFIED) {
-                new_state.rotateLayout(beg_state, center, beg_state.calc_best_angle() / PI * 180);
+            if (layout_orientation != UNCPECIFIED)
+            {
+                new_state.rotateLayout(beg_state, center, beg_state.calc_best_angle() / M_PI * 180);
                 beg_state.copy(new_state);
 
-                if (layout_orientation == VERTICAL) {
+                if (layout_orientation == VERTICAL)
+                {
                     new_state.rotateLayout(beg_state, center, 90);
                     beg_state.copy(new_state);
                 }
             }
-            else {
+            else
+            {
 
                 for (float angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
                 {
@@ -435,7 +441,7 @@ void MoleculeLayoutGraph::_excludeDandlingIntersections()
     // Find dandling edges
     for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
     {
-        const Vertex &vert = getVertex(i);
+        const Vertex& vert = getVertex(i);
 
         if (vert.degree() == 1)
             edges.push(vert.neiEdge(vert.neiBegin()));
@@ -443,7 +449,7 @@ void MoleculeLayoutGraph::_excludeDandlingIntersections()
 
     for (i = 0; i < edges.size(); i++)
     {
-        const Edge &edge1 = getEdge(edges[i]);
+        const Edge& edge1 = getEdge(edges[i]);
 
         if (getVertex(edge1.beg).degree() == 1)
         {
@@ -460,7 +466,7 @@ void MoleculeLayoutGraph::_excludeDandlingIntersections()
         {
             res = _calcIntersection(edges[i], edges[j]);
 
-            const Edge &edge2 = getEdge(edges[j]);
+            const Edge& edge2 = getEdge(edges[j]);
 
             if (getVertex(edge2.beg).degree() == 1)
             {
@@ -516,4 +522,3 @@ void MoleculeLayoutGraph::_excludeDandlingIntersections()
         }
     }
 }
-

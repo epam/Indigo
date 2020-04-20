@@ -64,13 +64,10 @@ if (UNIX AND NOT APPLE)
         set_target_properties(indigo-renderer-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
         endif()
 endif()
-if (MSVC OR MINGW)
-    target_link_libraries(indigo-renderer-shared cairo pixman png z indigo-shared)
-	set_property(TARGET indigo-renderer-shared PROPERTY LINK_INTERFACE_LIBRARIES "cairo;pixman;png;z;indigo-shared")
-else()
-    target_link_libraries(indigo-renderer-shared cairo pixman png z)
-	set_property(TARGET indigo-renderer-shared PROPERTY LINK_INTERFACE_LIBRARIES "cairo;pixman;png;z")
-endif()
+
+target_link_libraries(indigo-renderer-shared cairo pixman png z indigo-shared)
+set_property(TARGET indigo-renderer-shared PROPERTY LINK_INTERFACE_LIBRARIES "cairo;pixman;png;z;indigo-shared")
+
 set_property(TARGET indigo-renderer-shared PROPERTY FOLDER "indigo-renderer")
 
 if(MSVC)

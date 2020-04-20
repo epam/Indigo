@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,70 +19,71 @@
 #ifndef __molecule_tgroups__
 #define __molecule_tgroups__
 
-#include "base_cpp/tlscont.h"
-#include "base_cpp/red_black.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_pool.h"
+#include "base_cpp/red_black.h"
+#include "base_cpp/tlscont.h"
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-class BaseMolecule;
-
-class TGroup
+namespace indigo
 {
-public:
-   Array<char> tgroup_class;
-   Array<char> tgroup_name;
-   Array<char> tgroup_alias;
-   Array<char> tgroup_comment;
-   Array<char> tgroup_natreplace;
-   int tgroup_id;
 
-   TGroup ();
-   ~TGroup ();
+    class BaseMolecule;
 
-   void copy (TGroup &other);
-   void clear();
-   static int cmp (TGroup &tg1, TGroup &tg2, void *context);
+    class TGroup
+    {
+    public:
+        Array<char> tgroup_class;
+        Array<char> tgroup_name;
+        Array<char> tgroup_alias;
+        Array<char> tgroup_comment;
+        Array<char> tgroup_natreplace;
+        int tgroup_id;
 
-   AutoPtr<BaseMolecule> fragment;
+        TGroup();
+        ~TGroup();
 
-private:
-   TGroup (const TGroup &);
-};
+        void copy(TGroup& other);
+        void clear();
+        static int cmp(TGroup& tg1, TGroup& tg2, void* context);
 
-class DLLEXPORT MoleculeTGroups
-{
-public:
-   MoleculeTGroups ();
-   ~MoleculeTGroups ();
+        AutoPtr<BaseMolecule> fragment;
 
-   DECL_ERROR;
+    private:
+        TGroup(const TGroup&);
+    };
 
-   int addTGroup ();
-   TGroup &getTGroup (int idx);
-   int getTGroupCount ();
+    class DLLEXPORT MoleculeTGroups
+    {
+    public:
+        MoleculeTGroups();
+        ~MoleculeTGroups();
 
-   void remove(int idx);
-   void clear ();
+        DECL_ERROR;
 
-   void copyTGroupsFromMolecule (MoleculeTGroups &other);
-   int findTGroup(const char *name);
+        int addTGroup();
+        TGroup& getTGroup(int idx);
+        int getTGroupCount();
 
-   int begin();
-   int end();
-   int next(int i);
+        void remove(int idx);
+        void clear();
 
-protected:
-   PtrPool<TGroup> _tgroups;
-};
+        void copyTGroupsFromMolecule(MoleculeTGroups& other);
+        int findTGroup(const char* name);
 
-}
+        int begin();
+        int end();
+        int next(int i);
+
+    protected:
+        PtrPool<TGroup> _tgroups;
+    };
+
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)

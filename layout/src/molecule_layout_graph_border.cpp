@@ -1,20 +1,20 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-***************************************************************************/
+ ***************************************************************************/
 
 #include "layout/molecule_layout_graph.h"
 #include <math/random.h>
@@ -25,7 +25,7 @@ using namespace indigo;
 //   0 - no intersection
 //   1 - intersection
 //  -1 - unknown. Ray is too near to the one of the points
-static int _isRayIntersectWithCheck(float a, float b, const Vec2f &p, const Vec2f &v1, const Vec2f &v2, bool check_precision)
+static int _isRayIntersectWithCheck(float a, float b, const Vec2f& p, const Vec2f& v1, const Vec2f& v2, bool check_precision)
 {
     // Ray x=at+p.x, y=bt+p.y, t>=0 and segment [V1,V2];
     float a11, a12, a21, a22, b1, b2;
@@ -90,14 +90,14 @@ static int _isRayIntersectWithCheck(float a, float b, const Vec2f &p, const Vec2
     return 1;
 }
 
-static bool _isRayIntersect(float a, float b, const Vec2f &p, const Vec2f &v1, const Vec2f &v2)
+static bool _isRayIntersect(float a, float b, const Vec2f& p, const Vec2f& v1, const Vec2f& v2)
 {
     return _isRayIntersectWithCheck(a, b, p, v1, v2, false) == 1;
 }
 
 // Check if point is outside biconnected component
 // By calculating number of intersections of ray
-bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f &p) const
+bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f& p) const
 {
     Random rand(SOME_MAGIC_INT_FOR_RANDOM_3);
     int i, count = 0;
@@ -125,7 +125,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f &p) const
         {
             for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             {
-                const Vec2f &pos = getPos(i);
+                const Vec2f& pos = getPos(i);
 
                 if (_layout_vertices[i].type == ELEMENT_BOUNDARY && fabs((pos.x - p.x) / a - (pos.y - p.y) / b) < 0.1f)
                 {
@@ -141,7 +141,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f &p) const
         }
         else
         {
-            const Array<Vec2f> &outline = *_outline.get();
+            const Array<Vec2f>& outline = *_outline.get();
 
             for (i = 0; i < outline.size(); i++)
             {
@@ -168,17 +168,16 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f &p) const
         {
             if (_layout_edges[i].type == ELEMENT_BOUNDARY)
             {
-                const Edge &edge = getEdge(i);
+                const Edge& edge = getEdge(i);
 
                 if (_isRayIntersect(a, b, p, getPos(edge.beg), getPos(edge.end)))
                     count++;
             }
-
         }
     }
     else
     {
-        const Array<Vec2f> &outline = *_outline.get();
+        const Array<Vec2f>& outline = *_outline.get();
 
         for (i = 0; i < outline.size(); i++)
             if (_isRayIntersect(a, b, p, outline[i], outline[(i + 1) % outline.size()]))
@@ -192,7 +191,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f &p) const
 
 // Check if point is outside cycle
 // By calculating number of intersections of ray
-bool MoleculeLayoutGraphSimple::_isPointOutsideCycle(const Cycle &cycle, const Vec2f &p) const
+bool MoleculeLayoutGraphSimple::_isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const
 {
     Random rand(SOME_MAGIC_INT_FOR_RANDOM_3);
     int i, count = 0;
@@ -219,7 +218,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutsideCycle(const Cycle &cycle, const V
 
         for (i = 0; i < cycle.vertexCount(); i++)
         {
-            const Vec2f &pos = getPos(cycle.getVertex(i));
+            const Vec2f& pos = getPos(cycle.getVertex(i));
 
             if (fabs((pos.x - p.x) / a - (pos.y - p.y) / b) < EPSILON)
             {
@@ -238,8 +237,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutsideCycle(const Cycle &cycle, const V
     count = 0;
 
     for (i = 0; i < cycle.vertexCount(); i++)
-        if (_isRayIntersect(a, b, p, getPos(cycle.getVertex(i)),
-            getPos(cycle.getVertex((i + 1) % cycle.vertexCount()))))
+        if (_isRayIntersect(a, b, p, getPos(cycle.getVertex(i)), getPos(cycle.getVertex((i + 1) % cycle.vertexCount()))))
             count++;
 
     if (count & 1)
@@ -248,7 +246,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutsideCycle(const Cycle &cycle, const V
 }
 
 // The same but with mapping
-bool MoleculeLayoutGraph::_isPointOutsideCycleEx(const Cycle &cycle, const Vec2f &p, const Array<int> &mapping) const
+bool MoleculeLayoutGraph::_isPointOutsideCycleEx(const Cycle& cycle, const Vec2f& p, const Array<int>& mapping) const
 {
     Random rand(SOME_MAGIC_INT_FOR_RANDOM_3);
     // TODO: check that point 'p' is equal to the one of cycle points (sometimes it happens)
@@ -270,8 +268,8 @@ bool MoleculeLayoutGraph::_isPointOutsideCycleEx(const Cycle &cycle, const Vec2f
 
         for (int i = 0; i < cycle.vertexCount(); i++)
         {
-            int ret = _isRayIntersectWithCheck(a, b, p, getPos(mapping[cycle.getVertex(i)]),
-                getPos(mapping[cycle.getVertex((i + 1) % cycle.vertexCount())]), true);
+            int ret =
+                _isRayIntersectWithCheck(a, b, p, getPos(mapping[cycle.getVertex(i)]), getPos(mapping[cycle.getVertex((i + 1) % cycle.vertexCount())]), true);
             if (ret == -1)
             {
                 // Ray is too near to the point. Choose another one point
@@ -297,7 +295,7 @@ bool MoleculeLayoutGraph::_isPointOutsideCycleEx(const Cycle &cycle, const Vec2f
 }
 
 // Extract component border
-void MoleculeLayoutGraphSimple::_getBorder(Cycle &border) const
+void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
 {
     QS_DEF(Array<int>, vertices);
     QS_DEF(Array<int>, edges);
@@ -324,7 +322,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle &border) const
 
     while (edge.end != vertices[0])
     {
-        const Vertex &vert = getVertex(edge.end);
+        const Vertex& vert = getVertex(edge.end);
         bool found = false;
 
         for (int i = vert.neiBegin(); !found && i < vert.neiEnd(); i = vert.neiNext(i))
@@ -353,7 +351,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle &border) const
 }
 
 // Split border in two parts by two vertices
-void MoleculeLayoutGraphSimple::_splitBorder(int v1, int v2, Array<int> &part1v, Array<int> &part1e, Array<int> &part2v, Array<int> &part2e) const
+void MoleculeLayoutGraphSimple::_splitBorder(int v1, int v2, Array<int>& part1v, Array<int>& part1e, Array<int>& part2v, Array<int>& part2e) const
 {
     Cycle border;
 
@@ -399,12 +397,12 @@ void MoleculeLayoutGraphSimple::_splitBorder(int v1, int v2, Array<int> &part1v,
 
 // Cycle enumerator callback
 // Check if cycle is boundary and mark vertices and edges as boundary/internal
-bool MoleculeLayoutGraph::_border_cb(Graph &graph, const Array<int> &vertices, const Array<int> &edges, void *context)
+bool MoleculeLayoutGraph::_border_cb(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context)
 {
-    MoleculeLayoutGraph &self = *(MoleculeLayoutGraph *)context;
+    MoleculeLayoutGraph& self = *(MoleculeLayoutGraph*)context;
     Cycle cycle(vertices, edges);
 
-    //cycle.canonize();
+    // cycle.canonize();
 
     int i;
     QS_DEF(Array<int>, types);
@@ -421,7 +419,7 @@ bool MoleculeLayoutGraph::_border_cb(Graph &graph, const Array<int> &vertices, c
     for (i = self.vertexBegin(); i < self.vertexEnd(); i = self.vertexNext(i))
         if (types[i] == ELEMENT_INTERNAL)
             if (self._isPointOutsideCycle(cycle, self.getPos(i)))
-                return true; //continue
+                return true; // continue
 
     // Check edge centers are inside cycle
     types.clear_resize(self.edgeEnd());
@@ -436,12 +434,12 @@ bool MoleculeLayoutGraph::_border_cb(Graph &graph, const Array<int> &vertices, c
         if (types[i] == ELEMENT_INTERNAL)
         {
             Vec2f p;
-            const Edge &edge = self.getEdge(i);
+            const Edge& edge = self.getEdge(i);
 
             p.lineCombin2(self.getPos(edge.beg), 0.5f, self.getPos(edge.end), 0.5f);
 
             if (self._isPointOutsideCycle(cycle, p))
-                return true; //continue
+                return true; // continue
         }
 
     // Mark edges and bonds
@@ -460,44 +458,50 @@ bool MoleculeLayoutGraph::_border_cb(Graph &graph, const Array<int> &vertices, c
     return false;
 }
 
-
 // Check if point is outside biconnected component
 // By calculating number of intersections of ray
-bool MoleculeLayoutGraphSmart::_isPointOutside(const Vec2f &p) const
+bool MoleculeLayoutGraphSmart::_isPointOutside(const Vec2f& p) const
 {
     //   return true;
     QS_DEF(Array<Vec2f>, point);
     Cycle surround_cycle;
     _getSurroundCycle(surround_cycle, p);
 
-    if (surround_cycle.vertexCount() == 0) return 0;
+    if (surround_cycle.vertexCount() == 0)
+        return 0;
 
     return _isPointOutsideCycle(surround_cycle, p);
 }
 
 // Check if point is outside cycle
 // By calculating number of intersections of ray
-bool MoleculeLayoutGraphSmart::_isPointOutsideCycle(const Cycle &cycle, const Vec2f &p) const
+bool MoleculeLayoutGraphSmart::_isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const
 {
     QS_DEF(Array<Vec2f>, point);
     float rotate_angle = 0;
     int size = cycle.vertexCount();
     point.resize(size + 1);
-    for (int i = 0; i <= size; i++) point[i] = _layout_vertices[cycle.getVertexC(i)].pos - p;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i <= size; i++)
+        point[i] = _layout_vertices[cycle.getVertexC(i)].pos - p;
+    for (int i = 0; i < size; i++)
+    {
         float cs = Vec2f::dot(point[i], point[i + 1]) / (point[i].length() * point[i + 1].length());
-        if (cs > 1) cs = 1;
-        if (cs < -1) cs = -1;
+        if (cs > 1)
+            cs = 1;
+        if (cs < -1)
+            cs = -1;
         float angle = acos(cs);
-        if (Vec2f::cross(point[i], point[i + 1]) < 0) angle = -angle;
+        if (Vec2f::cross(point[i], point[i + 1]) < 0)
+            angle = -angle;
         rotate_angle += angle;
     }
 
-    // if point is outside, rotate angle is equals to 0. If point is inside rotate angle is equals to 2*PI of -2*PI
-    return fabs(rotate_angle) < PI;
+    // if point is outside, rotate angle is equals to 0. If point is inside rotate angle is equals to 2*M_PI of -2*M_PI
+    return fabs(rotate_angle) < M_PI;
 }
 
-float MoleculeLayoutGraphSmart::_get_square() {
+float MoleculeLayoutGraphSmart::_get_square()
+{
 
     Cycle cycle;
     _getBorder(cycle);
@@ -509,17 +513,18 @@ float MoleculeLayoutGraphSmart::_get_square() {
     for (int i = 1; i < len - 1; i++)
         sq += Vec2f::cross(getPos(cycle.getVertex(i)) - getPos(cycle.getVertex(0)), getPos(cycle.getVertex(i + 1)) - getPos(cycle.getVertex(0)));
 
-    //printf("sq = %.20f\n", sq);
+    // printf("sq = %.20f\n", sq);
 
     return fabs(sq / 2);
 }
 
 // Extract component border
-void MoleculeLayoutGraphSmart::_getBorder(Cycle &border) const
+void MoleculeLayoutGraphSmart::_getBorder(Cycle& border) const
 {
     Vec2f outside_point(0, 0);
     for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-        if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN) {
+        if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN)
+        {
             outside_point.max(_layout_vertices[i].pos);
         }
 
@@ -527,7 +532,7 @@ void MoleculeLayoutGraphSmart::_getBorder(Cycle &border) const
     _getSurroundCycle(border, outside_point);
 }
 
-void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle &cycle, Vec2f p) const
+void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
 {
     QS_DEF(Array<int>, vertices);
     QS_DEF(Array<int>, edges);
@@ -548,33 +553,41 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle &cycle, Vec2f p) const
 
     float sn = 0;
     float cs = 0;
-    while (sn == 0 && cs == 0) {
-        sn = 2.0*rand.nextDouble() - 1;
-        cs = 2.0*rand.nextDouble() - 1;
+    while (sn == 0 && cs == 0)
+    {
+        sn = 2.0 * rand.nextDouble() - 1;
+        cs = 2.0 * rand.nextDouble() - 1;
     }
-    float len = sqrt(sn*sn + cs*cs);
+    float len = sqrt(sn * sn + cs * cs);
     sn /= len;
     cs /= len;
 
     pos.resize(vertexEnd());
-    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i)) if (getVertexType(i) != ELEMENT_NOT_DRAWN) {
-        pos[i].copy(getPos(i) - p);
-    }
+    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+        if (getVertexType(i) != ELEMENT_NOT_DRAWN)
+        {
+            pos[i].copy(getPos(i) - p);
+        }
 
     for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-        if (getVertexType(i) != ELEMENT_NOT_DRAWN) {
+        if (getVertexType(i) != ELEMENT_NOT_DRAWN)
+        {
             pos[i].rotate(sn, cs);
         }
 
     int first_edge = -1;
     float first_edge_x = 1e20;
     for (int i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
-        if (_layout_edges[i].type != ELEMENT_NOT_DRAWN) {
+        if (_layout_edges[i].type != ELEMENT_NOT_DRAWN)
+        {
             Edge e = getEdge(i);
-            if (pos[e.beg].y * pos[e.end].y <= 0) {
+            if (pos[e.beg].y * pos[e.end].y <= 0)
+            {
                 float mid_x = (pos[e.beg].x * pos[e.end].y - pos[e.end].x * pos[e.beg].y) / (pos[e.end].y - pos[e.beg].y);
-                if (fabs(mid_x) < eps) return;
-                if (mid_x > 0 && (first_edge == -1 || mid_x < first_edge_x)) {
+                if (fabs(mid_x) < eps)
+                    return;
+                if (mid_x > 0 && (first_edge == -1 || mid_x < first_edge_x))
+                {
                     first_edge = i;
                     first_edge_x = mid_x;
                 }
@@ -583,17 +596,21 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle &cycle, Vec2f p) const
 
     int firts_vertex = -1;
     if (first_edge != -1)
-        if (pos[getEdge(first_edge).beg].y < pos[getEdge(first_edge).end].y) firts_vertex = getEdge(first_edge).beg;
-        else firts_vertex = getEdge(first_edge).end;
-    else {
-        // in this case no edges are intersecs (OX) ray 
+        if (pos[getEdge(first_edge).beg].y < pos[getEdge(first_edge).end].y)
+            firts_vertex = getEdge(first_edge).beg;
+        else
+            firts_vertex = getEdge(first_edge).end;
+    else
+    {
+        // in this case no edges are intersecs (OX) ray
         // and so p is outside point
         // Then we are looking for border
         // and we can take the lowest vertex as the start vertex for searching of surround cycle
         float first_vertex_y;
         for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
             if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN)
-                if (firts_vertex == -1 || pos[i].y < first_vertex_y) {
+                if (firts_vertex == -1 || pos[i].y < first_vertex_y)
+                {
                     first_vertex_y = pos[i].y;
                     firts_vertex = i;
                 }
@@ -601,9 +618,12 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle &cycle, Vec2f p) const
         // and now lets find first edge...
 
         int second_vertex = -1;
-        for (int i = getVertex(firts_vertex).neiBegin(); i != getVertex(firts_vertex).neiEnd(); i = getVertex(firts_vertex).neiNext(i)) {
+        for (int i = getVertex(firts_vertex).neiBegin(); i != getVertex(firts_vertex).neiEnd(); i = getVertex(firts_vertex).neiNext(i))
+        {
             int new_vertex = getVertex(firts_vertex).neiVertex(i);
-            if (isVertexDrawn(new_vertex) && (second_vertex == -1 || Vec2f::cross(pos[second_vertex] - pos[firts_vertex], pos[new_vertex] - pos[firts_vertex]) > 0)) {
+            if (isVertexDrawn(new_vertex) &&
+                (second_vertex == -1 || Vec2f::cross(pos[second_vertex] - pos[firts_vertex], pos[new_vertex] - pos[firts_vertex]) > 0))
+            {
                 second_vertex = new_vertex;
                 first_edge = getVertex(firts_vertex).neiEdge(i);
             }
@@ -613,7 +633,8 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle &cycle, Vec2f p) const
     vertices.push(firts_vertex);
     edges.push(first_edge);
 
-    while (true) {
+    while (true)
+    {
         int current_vertex = vertices.top();
         int current_edge = edges.top();
 
@@ -621,36 +642,45 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle &cycle, Vec2f p) const
         int next_edge = -1;
         int next_vertex2 = current_vertex;
 
-        for (int i = getVertex(next_vertex).neiBegin(); i != getVertex(next_vertex).neiEnd(); i = getVertex(next_vertex).neiNext(i)) {
+        for (int i = getVertex(next_vertex).neiBegin(); i != getVertex(next_vertex).neiEnd(); i = getVertex(next_vertex).neiNext(i))
+        {
             int try_vertex = getVertex(next_vertex).neiVertex(i);
-            if (isVertexDrawn(try_vertex) && try_vertex != current_vertex) {
+            if (isVertexDrawn(try_vertex) && try_vertex != current_vertex)
+            {
                 bool need_to_update = false;
-                if (next_vertex2 == current_vertex) {
+                if (next_vertex2 == current_vertex)
+                {
                     need_to_update = true;
                 }
-                else {
-                    if (Vec2f::cross(pos[next_vertex2] - pos[next_vertex], pos[current_vertex] - pos[next_vertex]) >= 0) {
+                else
+                {
+                    if (Vec2f::cross(pos[next_vertex2] - pos[next_vertex], pos[current_vertex] - pos[next_vertex]) >= 0)
+                    {
                         need_to_update = Vec2f::cross(pos[next_vertex2] - pos[next_vertex], pos[try_vertex] - pos[next_vertex]) >= 0 &&
-                            Vec2f::cross(pos[try_vertex] - pos[next_vertex], pos[current_vertex] - pos[next_vertex]) >= 0;
+                                         Vec2f::cross(pos[try_vertex] - pos[next_vertex], pos[current_vertex] - pos[next_vertex]) >= 0;
                     }
-                    else {
+                    else
+                    {
                         need_to_update = Vec2f::cross(pos[next_vertex2] - pos[next_vertex], pos[try_vertex] - pos[next_vertex]) >= 0 ||
-                            Vec2f::cross(pos[try_vertex] - pos[next_vertex], pos[current_vertex] - pos[next_vertex]) >= 0;
+                                         Vec2f::cross(pos[try_vertex] - pos[next_vertex], pos[current_vertex] - pos[next_vertex]) >= 0;
                     }
                 }
-                if (need_to_update) {
+                if (need_to_update)
+                {
                     next_vertex2 = try_vertex;
                     next_edge = getVertex(next_vertex).neiEdge(i);
                 }
             }
         }
 
-
-        if (next_vertex == vertices[0] && next_edge == edges[0]) break;
-        else {
+        if (next_vertex == vertices[0] && next_edge == edges[0])
+            break;
+        else
+        {
             vertices.push(next_vertex);
             edges.push(next_edge);
-            if (vertices.size() > vertexCount()) {
+            if (vertices.size() > vertexCount())
+            {
                 vertices.clear_resize(0);
                 edges.clear_resize(0);
                 break;
@@ -659,5 +689,5 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle &cycle, Vec2f p) const
     }
 
     cycle.copy(vertices, edges);
-    //cycle.canonize();
+    // cycle.canonize();
 }

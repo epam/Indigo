@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,143 +23,165 @@
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-namespace indigo {
-
-DECL_EXCEPTION(PtrArrayError);
-
-template <typename T> class PtrArray
+namespace indigo
 {
-public:
-   explicit PtrArray ()
-   {
-   }
 
-   virtual ~PtrArray ()
-   {
-      clear();
-   }
+    DECL_EXCEPTION(PtrArrayError);
 
-   DECL_TPL_ERROR(PtrArrayError);
+    template <typename T> class PtrArray
+    {
+    public:
+        explicit PtrArray()
+        {
+        }
 
-   T & add (T *obj)
-   {
-      _ptrarray.push(obj);
-      return *obj;
-   }
+        virtual ~PtrArray()
+        {
+            clear();
+        }
 
-   T * pop (void)
-   {
-      return _ptrarray.pop();
-   }
+        DECL_TPL_ERROR(PtrArrayError);
 
-   T * top (void)
-   {
-      return at(size() - 1);
-   }
+        T& add(T* obj)
+        {
+            _ptrarray.push(obj);
+            return *obj;
+        }
 
-   void expand (int newsize)
-   {
-      while (_ptrarray.size() < newsize)
-         _ptrarray.push(0);
-   }
+        T* pop(void)
+        {
+            return _ptrarray.pop();
+        }
 
-   void clear (void)
-   {
-      int i;
+        T* top(void)
+        {
+            return at(size() - 1);
+        }
 
-      for (i = 0; i < _ptrarray.size(); i++)
-      {
-         if (_ptrarray[i] == 0)
-            continue;
+        void expand(int newsize)
+        {
+            while (_ptrarray.size() < newsize)
+                _ptrarray.push(0);
+        }
 
-         delete _ptrarray[i];
-         _ptrarray[i] = 0;
-      }
-      _ptrarray.clear();
-   }
+        void clear(void)
+        {
+            int i;
 
-   int size () const { return _ptrarray.size(); }
+            for (i = 0; i < _ptrarray.size(); i++)
+            {
+                if (_ptrarray[i] == 0)
+                    continue;
 
-   void resize (const int newsize)
-   {
-      int i, oldsize = _ptrarray.size();
-      for (int i = newsize; i < oldsize; i++)
-      {
-         if (_ptrarray[i] == 0)
-            continue;
+                delete _ptrarray[i];
+                _ptrarray[i] = 0;
+            }
+            _ptrarray.clear();
+        }
 
-         delete _ptrarray[i];
-         _ptrarray[i] = 0;         
-      }
-      _ptrarray.resize(newsize);
-      for (i = oldsize; i < newsize; i++)
-         _ptrarray[i] = 0;
-   }
+        int size() const
+        {
+            return _ptrarray.size();
+        }
 
-   void removeLast ()
-   {
-      delete _ptrarray.pop();
-   }
+        void resize(const int newsize)
+        {
+            int i, oldsize = _ptrarray.size();
+            for (int i = newsize; i < oldsize; i++)
+            {
+                if (_ptrarray[i] == 0)
+                    continue;
 
-   void remove (int idx)
-   {
-      delete _ptrarray[idx];
+                delete _ptrarray[i];
+                _ptrarray[i] = 0;
+            }
+            _ptrarray.resize(newsize);
+            for (i = oldsize; i < newsize; i++)
+                _ptrarray[i] = 0;
+        }
 
-      _ptrarray.remove(idx);
-   }
+        void removeLast()
+        {
+            delete _ptrarray.pop();
+        }
 
-   void set (int idx, T *obj)
-   {
-      if (_ptrarray[idx] != 0)
-         throw Error("object #%d already set", idx);
-      
-      _ptrarray[idx] = obj;
-   }
+        void remove(int idx)
+        {
+            delete _ptrarray[idx];
 
-   void reset (int idx)
-   {
-      delete _ptrarray[idx];
-      _ptrarray[idx] = 0;
-   }
-   
-   void reset (int idx, T *obj)
-   {
-      reset(idx);
-      set(idx, obj);
-   }
+            _ptrarray.remove(idx);
+        }
 
-   T * release (int idx)
-   {
-      T *result = _ptrarray[idx];
-      _ptrarray[idx] = 0;
-      return result;
-   }
+        void set(int idx, T* obj)
+        {
+            if (_ptrarray[idx] != 0)
+                throw Error("object #%d already set", idx);
 
-   void qsort (int (*cmp)(T * const &, T * const &, const void *), const void *context)
-   {
-      _ptrarray.qsort(cmp, context);
-   }
+            _ptrarray[idx] = obj;
+        }
 
-   
-   const T *  operator[] (int index) const { return _ptrarray[index]; }
-         T *& operator[] (int index)       { return _ptrarray[index]; }
+        void reset(int idx)
+        {
+            delete _ptrarray[idx];
+            _ptrarray[idx] = 0;
+        }
 
-   const T *  at (int index) const { return _ptrarray[index]; }
-         T *& at (int index)       { return _ptrarray[index]; }
+        void reset(int idx, T* obj)
+        {
+            reset(idx);
+            set(idx, obj);
+        }
 
-   const T * const* ptr () const { return _ptrarray.ptr(); }
-               T ** ptr ()       { return _ptrarray.ptr(); }
+        T* release(int idx)
+        {
+            T* result = _ptrarray[idx];
+            _ptrarray[idx] = 0;
+            return result;
+        }
 
-protected:
-   Array<T *> _ptrarray;
-private:
-   PtrArray (const PtrArray &); // no implicit copy
-};
+        void qsort(int (*cmp)(T* const&, T* const&, const void*), const void* context)
+        {
+            _ptrarray.qsort(cmp, context);
+        }
 
-}
+        const T* operator[](int index) const
+        {
+            return _ptrarray[index];
+        }
+        T*& operator[](int index)
+        {
+            return _ptrarray[index];
+        }
+
+        const T* at(int index) const
+        {
+            return _ptrarray[index];
+        }
+        T*& at(int index)
+        {
+            return _ptrarray[index];
+        }
+
+        const T* const* ptr() const
+        {
+            return _ptrarray.ptr();
+        }
+        T** ptr()
+        {
+            return _ptrarray.ptr();
+        }
+
+    protected:
+        Array<T*> _ptrarray;
+
+    private:
+        PtrArray(const PtrArray&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)

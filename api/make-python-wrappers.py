@@ -18,7 +18,7 @@ def make_zips(api_dir, dist_dir):
     if not os.path.exists(dist_dir):
         os.mkdir(dist_dir)
 
-    archive_name = "./indigo-python-" + version + args.suffix
+    archive_name = "./indigo-python-%s-%s" % (version, args.suffix)
 
     dest = os.path.join(dist_dir, archive_name)
     if os.path.exists(dest):

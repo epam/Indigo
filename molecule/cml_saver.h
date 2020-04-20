@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,46 +24,45 @@
 class TiXmlDocument;
 class TiXmlElement;
 
-namespace indigo {
-
-class Molecule;
-class QueryMolecule;
-class Output;
-class SGroup;
-
-class CmlSaver
+namespace indigo
 {
-public:
-   explicit CmlSaver (Output &output);
 
-   void saveMolecule (Molecule &mol);
-   void saveQueryMolecule (QueryMolecule &mol);
-   bool skip_cml_tag; // skips <?xml> and <cml> tags
+    class Molecule;
+    class QueryMolecule;
+    class Output;
+    class SGroup;
 
-   DECL_ERROR;
+    class CmlSaver
+    {
+    public:
+        explicit CmlSaver(Output& output);
 
-protected:
-   void _saveMolecule(BaseMolecule &mol, bool query);
-   void _addMoleculeElement (TiXmlElement *elem, BaseMolecule &mol, bool query);
-   void _addSgroupElement (TiXmlElement *elem, BaseMolecule &mol, SGroup &sgroup);
-   void _addRgroups (TiXmlElement *elem, BaseMolecule &mol, bool query);
-   void _addRgroupElement (TiXmlElement *elem, RGroup &rgroup, bool query);
+        void saveMolecule(Molecule& mol);
+        void saveQueryMolecule(QueryMolecule& mol);
+        bool skip_cml_tag; // skips <?xml> and <cml> tags
 
-   bool _getRingBondCountFlagValue (QueryMolecule &qmol, int idx, int &value);
-   bool _getSubstitutionCountFlagValue (QueryMolecule &qmol, int idx, int &value);
-   void _writeOccurrenceRanges (Output &out, const Array<int> &occurrences);
+        DECL_ERROR;
 
-   Output   &_output;
+    protected:
+        void _saveMolecule(BaseMolecule& mol, bool query);
+        void _addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool query);
+        void _addSgroupElement(TiXmlElement* elem, BaseMolecule& mol, SGroup& sgroup);
+        void _addRgroups(TiXmlElement* elem, BaseMolecule& mol, bool query);
+        void _addRgroupElement(TiXmlElement* elem, RGroup& rgroup, bool query);
 
-   TiXmlDocument * _doc;
-   TiXmlElement * _root;
+        bool _getRingBondCountFlagValue(QueryMolecule& qmol, int idx, int& value);
+        bool _getSubstitutionCountFlagValue(QueryMolecule& qmol, int idx, int& value);
+        void _writeOccurrenceRanges(Output& out, const Array<int>& occurrences);
 
-private:
+        Output& _output;
 
-   CmlSaver (const CmlSaver &); // no implicit copy
-};
+        TiXmlDocument* _doc;
+        TiXmlElement* _root;
 
-}
+    private:
+        CmlSaver(const CmlSaver&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif
-

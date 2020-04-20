@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,76 +28,74 @@ using namespace indigo;
 
 namespace ingido
 {
-   class BingoContext;
-   class OracleEnv;
-   class SharedMemory;
-}
+    class BingoContext;
+    class OracleEnv;
+    class SharedMemory;
+} // namespace ingido
 
 class BingoOracleContext : public BingoContext
 {
 public:
-   
-   explicit BingoOracleContext (OracleEnv &env, int id);
-   virtual ~BingoOracleContext ();
-   
-   BingoStorage storage;
-   WarningsTable warnings;
+    explicit BingoOracleContext(OracleEnv& env, int id);
+    virtual ~BingoOracleContext();
 
-   int sim_screening_pass_mark;
-   int sub_screening_pass_mark;
-   int sub_screening_max_bits;
+    BingoStorage storage;
+    WarningsTable warnings;
 
-   static BingoOracleContext & get (OracleEnv &env, int id, bool lock, bool *config_reloaded);
+    int sim_screening_pass_mark;
+    int sub_screening_pass_mark;
+    int sub_screening_max_bits;
 
-   bool configGetInt    (OracleEnv &env, const char *name, int &value);
-   void configSetInt    (OracleEnv &env, const char *name, int value);
-   bool configGetIntDef (OracleEnv &env, const char *name, int &value, int default_value);
-   bool configGetFloat  (OracleEnv &env, const char *name, float &value);
-   void configSetFloat  (OracleEnv &env, const char *name, float value);
-   bool configGetString (OracleEnv &env, const char *name, Array<char> &value);
-   void configSetString (OracleEnv &env, const char *name, const char *value);
-   bool configGetBlob   (OracleEnv &env, const char *name, Array<char> &value);
-   void configSetBlob   (OracleEnv &env, const char *name, const Array<char> &value);
-   bool configGetClob   (OracleEnv &env, const char *name, Array<char> &value);
-   void configSetClob   (OracleEnv &env, const char *name, const Array<char> &value);
+    static BingoOracleContext& get(OracleEnv& env, int id, bool lock, bool* config_reloaded);
 
-   void configResetAll    (OracleEnv &env);
-   void configReset       (OracleEnv &env, const char *name);
+    bool configGetInt(OracleEnv& env, const char* name, int& value);
+    void configSetInt(OracleEnv& env, const char* name, int value);
+    bool configGetIntDef(OracleEnv& env, const char* name, int& value, int default_value);
+    bool configGetFloat(OracleEnv& env, const char* name, float& value);
+    void configSetFloat(OracleEnv& env, const char* name, float value);
+    bool configGetString(OracleEnv& env, const char* name, Array<char>& value);
+    void configSetString(OracleEnv& env, const char* name, const char* value);
+    bool configGetBlob(OracleEnv& env, const char* name, Array<char>& value);
+    void configSetBlob(OracleEnv& env, const char* name, const Array<char>& value);
+    bool configGetClob(OracleEnv& env, const char* name, Array<char>& value);
+    void configSetClob(OracleEnv& env, const char* name, const Array<char>& value);
 
-   void tautomerLoadRules         (OracleEnv &env);
-   void fingerprintLoadParameters (OracleEnv &env);
-   
-   void saveCmfDict (OracleEnv &env);
-   void saveRidDict (OracleEnv &env);
+    void configResetAll(OracleEnv& env);
+    void configReset(OracleEnv& env, const char* name);
 
-   void longOpInit   (OracleEnv &env, int total, const char *operation, const char *target, const char *units);
-   void longOpUpdate (OracleEnv &env, int sofar);
+    void tautomerLoadRules(OracleEnv& env);
+    void fingerprintLoadParameters(OracleEnv& env);
 
-   void parseParameters (OracleEnv &env, const char *str);
+    void saveCmfDict(OracleEnv& env);
+    void saveRidDict(OracleEnv& env);
 
-   void atomicMassLoad (OracleEnv &env);
-   void atomicMassSave (OracleEnv &env);
+    void longOpInit(OracleEnv& env, int total, const char* operation, const char* target, const char* units);
+    void longOpUpdate(OracleEnv& env, int sofar);
 
-   void setLogTableWithColumns (OracleEnv &env, const char *tableWithColumns);
+    void parseParameters(OracleEnv& env, const char* str);
 
-   void lock (OracleEnv &env);
-   void unlock (OracleEnv &env);
+    void atomicMassLoad(OracleEnv& env);
+    void atomicMassSave(OracleEnv& env);
+
+    void setLogTableWithColumns(OracleEnv& env, const char* tableWithColumns);
+
+    void lock(OracleEnv& env);
+    void unlock(OracleEnv& env);
 
 protected:
-   bool        _config_changed;
+    bool _config_changed;
 
-   int         _longop_slno;
-   int         _longop_rindex;
-   Array<char> _longop_operation;
-   Array<char> _longop_units;
-   Array<char> _longop_target;    // actually, it is the source table
-   int         _longop_total;
+    int _longop_slno;
+    int _longop_rindex;
+    Array<char> _longop_operation;
+    Array<char> _longop_units;
+    Array<char> _longop_target; // actually, it is the source table
+    int _longop_total;
 
-   Array<char> _id;
-   SharedMemory *_shmem;
+    Array<char> _id;
+    SharedMemory* _shmem;
 
-   void _loadConfigParameters (OracleEnv &env);
+    void _loadConfigParameters(OracleEnv& env);
 };
-
 
 #endif

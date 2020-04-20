@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,39 +21,40 @@
 
 #include "base_cpp/exception.h"
 
-namespace indigo {
-
-class Graph;
-struct Vec3f;
-
-class EdgeRotationMatcher
+namespace indigo
 {
-public:
-   // takes mapping from subgraph to supergraph
-   EdgeRotationMatcher (Graph &subgraph, Graph &supergraph, const int *mapping);
 
-   void (*cb_get_xyz)    (Graph &graph, int vertex_idx, Vec3f &pos);
-   bool (*cb_can_rotate) (Graph &graph, int edge_idx);
-   bool equalize_edges;
+    class Graph;
+    struct Vec3f;
 
-   bool match (float rsm_threshold, float eps);
+    class EdgeRotationMatcher
+    {
+    public:
+        // takes mapping from subgraph to supergraph
+        EdgeRotationMatcher(Graph& subgraph, Graph& supergraph, const int* mapping);
 
-   DECL_ERROR;
+        void (*cb_get_xyz)(Graph& graph, int vertex_idx, Vec3f& pos);
+        bool (*cb_can_rotate)(Graph& graph, int edge_idx);
+        bool equalize_edges;
 
-protected:
-   struct _DirEdge
-   {
-      int idx, beg, end;
-   };
+        bool match(float rsm_threshold, float eps);
 
-   Graph &_subgraph;
-   Graph &_supergraph;
-   const int   *_mapping;
+        DECL_ERROR;
 
-private:
-   EdgeRotationMatcher (const EdgeRotationMatcher &); // no implicit copy
-};
+    protected:
+        struct _DirEdge
+        {
+            int idx, beg, end;
+        };
 
-}
+        Graph& _subgraph;
+        Graph& _supergraph;
+        const int* _mapping;
+
+    private:
+        EdgeRotationMatcher(const EdgeRotationMatcher&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif

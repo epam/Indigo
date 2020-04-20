@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,135 +19,138 @@
 #ifndef __scanner_h__
 #define __scanner_h__
 
-#include <stdio.h>
 #include "base_cpp/array.h"
 #include "base_cpp/io_base.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/reusable_obj_array.h"
+#include <stdio.h>
 
-namespace indigo {
-
-class DLLEXPORT Scanner
+namespace indigo
 {
-public:
-   DECL_ERROR;
 
-   virtual ~Scanner ();
+    class DLLEXPORT Scanner
+    {
+    public:
+        DECL_ERROR;
 
-   virtual void read (int length, void *res) = 0;
-   virtual void skip (int n) = 0;
-   virtual bool isEOF () = 0;
-   virtual int  lookNext () = 0;
-   virtual void seek (long long pos, int from) = 0;
-   virtual long long length () = 0;
-   virtual long long tell () = 0;
+        virtual ~Scanner();
 
-   virtual byte readByte ();
-   virtual void readAll (Array<char> &arr);
+        virtual void read(int length, void* res) = 0;
+        virtual void skip(int n) = 0;
+        virtual bool isEOF() = 0;
+        virtual int lookNext() = 0;
+        virtual void seek(long long pos, int from) = 0;
+        virtual long long length() = 0;
+        virtual long long tell() = 0;
 
-   void read (int length, Array<char> &buf);
+        virtual byte readByte();
+        virtual void readAll(Array<char>& arr);
 
-   void readLine (Array<char> &out, bool append_zero);
-   void appendLine (Array<char> &out, bool append_zero);
-   bool skipLine ();
-   
-   virtual char readChar ();
-   word  readBinaryWord ();
-   int   readBinaryInt ();
-   dword readBinaryDword ();
-   float readBinaryFloat ();
-   short readPackedShort ();
-   unsigned int readPackedUInt ();
+        void read(int length, Array<char>& buf);
 
-   void  readCharsFix (int n, char *chars_out);
-   float readFloatFix (int digits);
-   int   readIntFix (int digits);
-   void  skipSpace ();
+        void readLine(Array<char>& out, bool append_zero);
+        void appendLine(Array<char>& out, bool append_zero);
+        bool skipLine();
 
-   void  skipUntil (const char *delimiters);
+        virtual char readChar();
+        word readBinaryWord();
+        int readBinaryInt();
+        dword readBinaryDword();
+        float readBinaryFloat();
+        short readPackedShort();
+        unsigned int readPackedUInt();
 
-   float readFloat (void);
-   bool  tryReadFloat (float &value);
-   int readInt (void);
-   int readInt1 (void);
-   int readUnsigned ();
+        void readCharsFix(int n, char* chars_out);
+        float readFloatFix(int digits);
+        int readIntFix(int digits);
+        void skipSpace();
 
-   // when delimiters = 0, any isspace() character is considered delimiter
-   void readWord (Array<char> &word, const char *delimiters);
+        void skipUntil(const char* delimiters);
 
-   bool findWord (const char *word);
-   int findWord (ReusableObjArray< Array<char> > &words);
-   bool findWordIgnoreCase (const char *word);
-   int findWordIgnoreCase (ReusableObjArray< Array<char> > &words);
+        float readFloat(void);
+        bool tryReadFloat(float& value);
+        int readInt(void);
+        int readInt1(void);
+        int readUnsigned();
 
-   static bool isSingleLine (Scanner &scanner);
+        // when delimiters = 0, any isspace() character is considered delimiter
+        void readWord(Array<char>& word, const char* delimiters);
 
-protected:
-   bool _readDouble (double &res, int max);
-   void _prefixFunction (Array<char> &str, Array<int> &prefix);
-};
+        bool findWord(const char* word);
+        int findWord(ReusableObjArray<Array<char>>& words);
+        bool findWordIgnoreCase(const char* word);
+        int findWordIgnoreCase(ReusableObjArray<Array<char>>& words);
 
-class DLLEXPORT FileScanner : public Scanner
-{
-public:
-   FileScanner (Encoding filename_encoding, const char *filename);
-   explicit FileScanner (const char *format, ...);
-   virtual ~FileScanner ();
+        static bool isSingleLine(Scanner& scanner);
 
-   virtual void read (int length, void *res);
-   virtual bool isEOF ();
-   virtual void skip (int n);
-   virtual int  lookNext ();
-   virtual void seek (long long pos, int from);
-   virtual long long length ();
-   virtual long long tell ();
+    protected:
+        bool _readDouble(double& res, int max);
+        void _prefixFunction(Array<char>& str, Array<int>& prefix);
+    };
 
-   virtual char readChar ();
-private:
-   FILE *_file;
-   long long _file_len;
+    class DLLEXPORT FileScanner : public Scanner
+    {
+    public:
+        FileScanner(Encoding filename_encoding, const char* filename);
+        explicit FileScanner(const char* format, ...);
+        virtual ~FileScanner();
 
-   unsigned char _cache[1024];
-   int _cache_pos, _max_cache;
+        virtual void read(int length, void* res);
+        virtual bool isEOF();
+        virtual void skip(int n);
+        virtual int lookNext();
+        virtual void seek(long long pos, int from);
+        virtual long long length();
+        virtual long long tell();
 
-   void _validateCache ();
-   void _invalidateCache ();
-   void _init (Encoding filename_encoding, const char *filename);
+        virtual char readChar();
 
-   // no implicit copy
-   FileScanner (const FileScanner &);
-};
+    private:
+        FILE* _file;
+        long long _file_len;
 
-class DLLEXPORT BufferScanner : public Scanner
-{
-public:
-   explicit BufferScanner (const char *buffer, int buffer_size);
-   explicit BufferScanner (const byte *buffer, int buffer_size);
-   explicit BufferScanner (const char *str);
-   explicit BufferScanner (const Array<char> &arr);
-   virtual ~BufferScanner ();
+        unsigned char _cache[1024];
+        int _cache_pos, _max_cache;
 
-   virtual bool isEOF ();
-   virtual void read (int length, void *res);
-   virtual void skip (int n);
-   virtual int  lookNext ();
-   virtual void seek (long long pos, int from);
-   virtual long long length ();
-   virtual long long tell ();
-   virtual byte readByte ();
+        void _validateCache();
+        void _invalidateCache();
+        void _init(Encoding filename_encoding, const char* filename);
 
-   const void * curptr ();
-private:
-   const char *_buffer;
-   int   _size;
-   int   _offset;
-                                         
-   void _init (const char *buffer, int length);
+        // no implicit copy
+        FileScanner(const FileScanner&);
+    };
 
-   // no implicit copy
-   BufferScanner (const BufferScanner &);
-};
+    class DLLEXPORT BufferScanner : public Scanner
+    {
+    public:
+        explicit BufferScanner(const char* buffer, int buffer_size);
+        explicit BufferScanner(const byte* buffer, int buffer_size);
+        explicit BufferScanner(const char* str);
+        explicit BufferScanner(const Array<char>& arr);
+        virtual ~BufferScanner();
 
-}
+        virtual bool isEOF();
+        virtual void read(int length, void* res);
+        virtual void skip(int n);
+        virtual int lookNext();
+        virtual void seek(long long pos, int from);
+        virtual long long length();
+        virtual long long tell();
+        virtual byte readByte();
+
+        const void* curptr();
+
+    private:
+        const char* _buffer;
+        int _size;
+        int _offset;
+
+        void _init(const char* buffer, int length);
+
+        // no implicit copy
+        BufferScanner(const BufferScanner&);
+    };
+
+} // namespace indigo
 
 #endif

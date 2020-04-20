@@ -3,80 +3,80 @@
 
 #include "base_cpp/auto_iter.h"
 
-namespace indigo 
+namespace indigo
 {
-   class Graph;
-   class Vertex;
-   struct Edge;
+    class Graph;
+    class Vertex;
+    struct Edge;
 
-   class VertexIter : public AutoIterator
-   {
-   public:
-      VertexIter (Graph &owner, int idx);
+    class VertexIter : public AutoIterator
+    {
+    public:
+        VertexIter(Graph& owner, int idx);
 
-      VertexIter & operator++ ();
+        VertexIter& operator++();
 
-   private:
-      Graph &_owner;
-   };
+    private:
+        Graph& _owner;
+    };
 
-   class VerticesAuto
-   {
-   public:
-      VerticesAuto (Graph &owner);
+    class VerticesAuto
+    {
+    public:
+        VerticesAuto(Graph& owner);
 
-      VertexIter begin ();
-      VertexIter end ();
+        VertexIter begin();
+        VertexIter end();
 
-   private:
-      Graph &_owner;
-   };
+    private:
+        Graph& _owner;
+    };
 
-   class EdgeIter : public AutoIterator
-   {
-   public:
-      EdgeIter (Graph &owner, int idx);
+    class EdgeIter : public AutoIterator
+    {
+    public:
+        EdgeIter(Graph& owner, int idx);
 
-      EdgeIter & operator++ ();
+        EdgeIter& operator++();
 
-   private:
-      Graph &_owner;
-   };
+    private:
+        Graph& _owner;
+    };
 
-   class EdgesAuto
-   {
-   public:
-      EdgesAuto (Graph &owner);
+    class EdgesAuto
+    {
+    public:
+        EdgesAuto(Graph& owner);
 
-      EdgeIter begin ();
-      EdgeIter end ();
+        EdgeIter begin();
+        EdgeIter end();
 
-   private:
-      Graph &_owner;
-   };
+    private:
+        Graph& _owner;
+    };
 
-   class NeighborIter : public AutoIterator
-   {
-   public:
-      NeighborIter(const Vertex &owner, int idx);
+    class NeighborIter : public AutoIterator
+    {
+    public:
+        NeighborIter(const Vertex& owner, int idx);
 
-      NeighborIter & operator++ ();
+        NeighborIter& operator++();
 
-   private:
-      const Vertex &_owner;
-   };
+    private:
+        const Vertex& _owner;
+    };
 
-   class NeighborsAuto
-   {
-   public:
-      NeighborsAuto ( const Vertex &owner);
+    class NeighborsAuto
+    {
+    public:
+        NeighborsAuto(const Vertex& owner);
 
-      NeighborIter begin ();
-      NeighborIter end ();
+        NeighborIter begin();
+        NeighborIter end();
 
-   private:
-      const Vertex &_owner;
-   };
-};
+    private:
+        const Vertex& _owner;
+    };
+}; // namespace indigo
 
 #endif //__graph_iterators_h__

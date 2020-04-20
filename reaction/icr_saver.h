@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,38 +19,38 @@
 #ifndef __icr_saver__
 #define __icr_saver__
 
-namespace indigo {
-
-class Reaction;
-class Output;
-
 #include "base_cpp/exception.h"
 
-class IcrSaver
+namespace indigo
 {
-public:
-   static const char *VERSION1, *VERSION2;
+    class Reaction;
+    class Output;
 
-   static bool checkVersion (const char *prefix);
+    class IcrSaver
+    {
+    public:
+        static const char *VERSION1, *VERSION2;
 
-   explicit IcrSaver (Output &output);
+        static bool checkVersion(const char* prefix);
 
-   void saveReaction (Reaction &reaction);
+        explicit IcrSaver(Output& output);
 
-   bool save_xyz;
-   bool save_bond_dirs;
-   bool save_highlighting;
-   bool save_ordering;
+        void saveReaction(Reaction& reaction);
 
-   DECL_ERROR;
+        bool save_xyz;
+        bool save_bond_dirs;
+        bool save_highlighting;
+        bool save_ordering;
 
-protected:
-   Output &_output;
+        DECL_ERROR;
 
-private:
-   IcrSaver (const IcrSaver &); // no implicit copy
-};
+    protected:
+        Output& _output;
 
-}
+    private:
+        IcrSaver(const IcrSaver&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif

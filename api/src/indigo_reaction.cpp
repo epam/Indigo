@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,749 +16,743 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "indigo_io.h"
-#include "indigo_molecule.h"
 #include "indigo_reaction.h"
-#include "indigo_mapping.h"
-#include "reaction/reaction_auto_loader.h"
-#include "reaction/rxnfile_saver.h"
-#include "base_cpp/output.h"
-#include "reaction/reaction_automapper.h"
 #include "base_cpp/auto_ptr.h"
+#include "base_cpp/output.h"
 #include "indigo_array.h"
-#include "reaction/rsmiles_loader.h"
+#include "indigo_io.h"
+#include "indigo_mapping.h"
+#include "indigo_molecule.h"
 #include "reaction/canonical_rsmiles_saver.h"
+#include "reaction/reaction_auto_loader.h"
+#include "reaction/reaction_automapper.h"
+#include "reaction/rsmiles_loader.h"
+#include "reaction/rxnfile_saver.h"
 
 //
 // IndigoBaseReaction
 //
-IndigoBaseReaction::IndigoBaseReaction (int type_) : IndigoObject(type_)
+IndigoBaseReaction::IndigoBaseReaction(int type_) : IndigoObject(type_)
 {
 }
 
-IndigoBaseReaction::~IndigoBaseReaction ()
+IndigoBaseReaction::~IndigoBaseReaction()
 {
 }
 
-bool IndigoBaseReaction::is (IndigoObject &obj)
+bool IndigoBaseReaction::is(IndigoObject& obj)
 {
-   int type = obj.type;
+    int type = obj.type;
 
-   if (type == REACTION || type == QUERY_REACTION ||
-       type == RDF_REACTION || type == SMILES_REACTION || type == CML_REACTION)
-      return true;
+    if (type == REACTION || type == QUERY_REACTION || type == RDF_REACTION || type == SMILES_REACTION || type == CML_REACTION)
+        return true;
 
-   if (type == ARRAY_ELEMENT)
-      return is(((IndigoArrayElement &)obj).get());
+    if (type == ARRAY_ELEMENT)
+        return is(((IndigoArrayElement&)obj).get());
 
-   return false;
+    return false;
 }
 
-const char * IndigoBaseReaction::debugInfo ()
+const char* IndigoBaseReaction::debugInfo()
 {
-   return "<base reaction>";
+    return "<base reaction>";
 }
 
 //
 // IndigoBaseReaction
 //
 
-IndigoReaction::IndigoReaction () : IndigoBaseReaction(REACTION)
+IndigoReaction::IndigoReaction() : IndigoBaseReaction(REACTION)
 {
 }
 
-const char * IndigoReaction::debugInfo ()
+const char* IndigoReaction::debugInfo()
 {
-   return "<reaction>";
+    return "<reaction>";
 }
 
-IndigoReaction::~IndigoReaction ()
+IndigoReaction::~IndigoReaction()
 {
 }
 
-Reaction & IndigoReaction::getReaction ()
+Reaction& IndigoReaction::getReaction()
 {
-   return rxn;
+    return rxn;
 }
 
-BaseReaction & IndigoReaction::getBaseReaction ()
+BaseReaction& IndigoReaction::getBaseReaction()
 {
-   return rxn;
+    return rxn;
 }
 
-const char * IndigoReaction::getName ()
+const char* IndigoReaction::getName()
 {
-   if (rxn.name.ptr() == 0)
-      return "";
-   return rxn.name.ptr();
+    if (rxn.name.ptr() == 0)
+        return "";
+    return rxn.name.ptr();
 }
 
 //
 // IndigoQueryReaction
 //
 
-IndigoQueryReaction::IndigoQueryReaction () : IndigoBaseReaction(QUERY_REACTION)
+IndigoQueryReaction::IndigoQueryReaction() : IndigoBaseReaction(QUERY_REACTION)
 {
 }
 
-const char * IndigoQueryReaction::debugInfo ()
+const char* IndigoQueryReaction::debugInfo()
 {
-   return "<query reaction>";
+    return "<query reaction>";
 }
 
-IndigoQueryReaction::~IndigoQueryReaction ()
+IndigoQueryReaction::~IndigoQueryReaction()
 {
 }
 
-BaseReaction & IndigoQueryReaction::getBaseReaction ()
+BaseReaction& IndigoQueryReaction::getBaseReaction()
 {
-   return rxn;
+    return rxn;
 }
 
-QueryReaction & IndigoQueryReaction::getQueryReaction ()
+QueryReaction& IndigoQueryReaction::getQueryReaction()
 {
-   return rxn;
+    return rxn;
 }
 
-const char * IndigoQueryReaction::getName ()
+const char* IndigoQueryReaction::getName()
 {
-   if (rxn.name.ptr() == 0)
-      return "";
-   return rxn.name.ptr();
+    if (rxn.name.ptr() == 0)
+        return "";
+    return rxn.name.ptr();
 }
 
 //
 // IndigoReactionMolecule
 //
 
-IndigoReactionMolecule::IndigoReactionMolecule (BaseReaction &reaction, int index) :
-IndigoObject(REACTION_MOLECULE),
-rxn(reaction),
-idx(index)
+IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, int index) : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index)
 {
 }
 
-IndigoReactionMolecule::IndigoReactionMolecule (BaseReaction &reaction, MonomersProperties &map, int index) :
-IndigoObject(REACTION_MOLECULE),
-rxn(reaction),
-idx(index)
+IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, MonomersProperties& map, int index)
+    : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index)
 {
-   if (index < map.size()) {
-      _properties.copy(map.at(index));
-   }
+    if (index < map.size())
+    {
+        _properties.copy(map.at(index));
+    }
 }
 
-const char * IndigoReactionMolecule::debugInfo ()
+const char* IndigoReactionMolecule::debugInfo()
 {
-   return "<reaction molecule>";
+    return "<reaction molecule>";
 }
 
-IndigoReactionMolecule::~IndigoReactionMolecule ()
+IndigoReactionMolecule::~IndigoReactionMolecule()
 {
 }
 
-BaseMolecule & IndigoReactionMolecule::getBaseMolecule ()
+BaseMolecule& IndigoReactionMolecule::getBaseMolecule()
 {
-   return rxn.getBaseMolecule(idx);
+    return rxn.getBaseMolecule(idx);
 }
 
-Molecule & IndigoReactionMolecule::getMolecule ()
+Molecule& IndigoReactionMolecule::getMolecule()
 {
-   return rxn.getBaseMolecule(idx).asMolecule();
+    return rxn.getBaseMolecule(idx).asMolecule();
 }
 
-QueryMolecule & IndigoReactionMolecule::getQueryMolecule ()
+QueryMolecule& IndigoReactionMolecule::getQueryMolecule()
 {
-   return rxn.getBaseMolecule(idx).asQueryMolecule();
+    return rxn.getBaseMolecule(idx).asQueryMolecule();
 }
 
-int IndigoReactionMolecule::getIndex ()
+int IndigoReactionMolecule::getIndex()
 {
-   return idx;
+    return idx;
 }
 
-IndigoObject * IndigoReactionMolecule::clone ()
+IndigoObject* IndigoReactionMolecule::clone()
 {
-   if (rxn.isQueryReaction())
-      return IndigoQueryMolecule::cloneFrom(*this);
-   else
-      return IndigoMolecule::cloneFrom(*this); 
+    if (rxn.isQueryReaction())
+        return IndigoQueryMolecule::cloneFrom(*this);
+    else
+        return IndigoMolecule::cloneFrom(*this);
 }
 
-void IndigoReactionMolecule::remove ()
+void IndigoReactionMolecule::remove()
 {
-   rxn.remove(idx);
+    rxn.remove(idx);
 }
 
 //
 // IndigoReactionIter
 //
 
-IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, MonomersProperties &map, int subtype) :
-IndigoObject(REACTION_ITER),
-_rxn(rxn),
-_map(&map)
+IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, MonomersProperties& map, int subtype) : IndigoObject(REACTION_ITER), _rxn(rxn), _map(&map)
 {
-   _subtype = subtype;
-   _idx = -1;
+    _subtype = subtype;
+    _idx = -1;
 }
 
-IndigoReactionIter::IndigoReactionIter (BaseReaction &rxn, int subtype) :
-IndigoObject(REACTION_ITER),
-_rxn(rxn),
-_map(nullptr)
+IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, int subtype) : IndigoObject(REACTION_ITER), _rxn(rxn), _map(nullptr)
 {
-   _subtype = subtype;
-   _idx = -1;
+    _subtype = subtype;
+    _idx = -1;
 }
 
-const char * IndigoReactionIter::debugInfo ()
+const char* IndigoReactionIter::debugInfo()
 {
-   return "<reaction molecule iterator>";
+    return "<reaction molecule iterator>";
 }
 
-IndigoReactionIter::~IndigoReactionIter ()
+IndigoReactionIter::~IndigoReactionIter()
 {
 }
 
-int IndigoReactionIter::_begin ()
+int IndigoReactionIter::_begin()
 {
-   if (_subtype == REACTANTS)
-      return _rxn.reactantBegin();
-   if (_subtype == PRODUCTS)
-      return _rxn.productBegin();
-   if (_subtype == CATALYSTS)
-      return _rxn.catalystBegin();
+    if (_subtype == REACTANTS)
+        return _rxn.reactantBegin();
+    if (_subtype == PRODUCTS)
+        return _rxn.productBegin();
+    if (_subtype == CATALYSTS)
+        return _rxn.catalystBegin();
 
-   return _rxn.begin();
+    return _rxn.begin();
 }
 
-int IndigoReactionIter::_end ()
+int IndigoReactionIter::_end()
 {
-   if (_subtype == REACTANTS)
-      return _rxn.reactantEnd();
-   if (_subtype == PRODUCTS)
-      return _rxn.productEnd();
-   if (_subtype == CATALYSTS)
-      return _rxn.catalystEnd();
+    if (_subtype == REACTANTS)
+        return _rxn.reactantEnd();
+    if (_subtype == PRODUCTS)
+        return _rxn.productEnd();
+    if (_subtype == CATALYSTS)
+        return _rxn.catalystEnd();
 
-   return _rxn.end();
+    return _rxn.end();
 }
 
-int IndigoReactionIter::_next (int i)
+int IndigoReactionIter::_next(int i)
 {
-   if (_subtype == REACTANTS)
-      return _rxn.reactantNext(i);
-   if (_subtype == PRODUCTS)
-      return _rxn.productNext(i);
-   if (_subtype == CATALYSTS)
-      return _rxn.catalystNext(i);
+    if (_subtype == REACTANTS)
+        return _rxn.reactantNext(i);
+    if (_subtype == PRODUCTS)
+        return _rxn.productNext(i);
+    if (_subtype == CATALYSTS)
+        return _rxn.catalystNext(i);
 
-   return _rxn.next(i);
+    return _rxn.next(i);
 }
 
-IndigoObject * IndigoReactionIter::next ()
+IndigoObject* IndigoReactionIter::next()
 {
-   if (_idx == -1)
-   {
-      _idx = _begin();
-   }
-   else
-      _idx = _next(_idx);
+    if (_idx == -1)
+    {
+        _idx = _begin();
+    }
+    else
+        _idx = _next(_idx);
 
-   if (_idx == _end())
-      return 0;
+    if (_idx == _end())
+        return 0;
 
-   if (_map) {
-      return new IndigoReactionMolecule(_rxn, *_map, _idx);
-   } else {
-      return new IndigoReactionMolecule(_rxn, _idx);
-   }
+    if (_map)
+    {
+        return new IndigoReactionMolecule(_rxn, *_map, _idx);
+    }
+    else
+    {
+        return new IndigoReactionMolecule(_rxn, _idx);
+    }
 }
 
-bool IndigoReactionIter::hasNext ()
+bool IndigoReactionIter::hasNext()
 {
-   if (_idx == -1)
-      return _begin() != _end();
+    if (_idx == -1)
+        return _begin() != _end();
 
-   return _next(_idx) != _end();
+    return _next(_idx) != _end();
 }
 
-IndigoReaction * IndigoReaction::cloneFrom (IndigoObject & obj)
+IndigoReaction* IndigoReaction::cloneFrom(IndigoObject& obj)
 {
-   Reaction &rxn = obj.getReaction();
+    Reaction& rxn = obj.getReaction();
 
-   AutoPtr<IndigoReaction> rxnptr;
-   rxnptr.reset(new IndigoReaction());
-   rxnptr->rxn.clone(rxn, 0, 0, 0);
+    AutoPtr<IndigoReaction> rxnptr;
+    rxnptr.reset(new IndigoReaction());
+    rxnptr->rxn.clone(rxn, 0, 0, 0);
 
-   try {
-      MonomersProperties &mprops = obj.getMonomersProperties();
-      for (auto i = 0; i < mprops.size(); i++) {
-         rxnptr->_monomersProperties.push().copy(mprops[i]);
-      }
-   } catch (Exception&) {
-   }
+    try
+    {
+        MonomersProperties& mprops = obj.getMonomersProperties();
+        for (auto i = 0; i < mprops.size(); i++)
+        {
+            rxnptr->_monomersProperties.push().copy(mprops[i]);
+        }
+    }
+    catch (Exception&)
+    {
+    }
 
-   auto& props = obj.getProperties();
-   rxnptr->copyProperties(props);
-   return rxnptr.release();
+    auto& props = obj.getProperties();
+    rxnptr->copyProperties(props);
+    return rxnptr.release();
 }
 
-IndigoQueryReaction * IndigoQueryReaction::cloneFrom (IndigoObject & obj)
+IndigoQueryReaction* IndigoQueryReaction::cloneFrom(IndigoObject& obj)
 {
-   QueryReaction &rxn = obj.getQueryReaction();
+    QueryReaction& rxn = obj.getQueryReaction();
 
-   AutoPtr<IndigoQueryReaction> rxnptr;
-   rxnptr.reset(new IndigoQueryReaction());
-   rxnptr->rxn.clone(rxn, 0, 0, 0);
+    AutoPtr<IndigoQueryReaction> rxnptr;
+    rxnptr.reset(new IndigoQueryReaction());
+    rxnptr->rxn.clone(rxn, 0, 0, 0);
 
-   try {
-      MonomersProperties &mprops = obj.getMonomersProperties();
-      for (auto i = 0; i < mprops.size(); i++) {
-         rxnptr->_monomersProperties.push().copy(mprops[i]);
-      }
-   } catch (Exception&) {
-   }
+    try
+    {
+        MonomersProperties& mprops = obj.getMonomersProperties();
+        for (auto i = 0; i < mprops.size(); i++)
+        {
+            rxnptr->_monomersProperties.push().copy(mprops[i]);
+        }
+    }
+    catch (Exception&)
+    {
+    }
 
-   auto& props = obj.getProperties();
-   rxnptr->copyProperties(props);
-   return rxnptr.release();
+    auto& props = obj.getProperties();
+    rxnptr->copyProperties(props);
+    return rxnptr.release();
 }
 
-IndigoObject * IndigoReaction::clone ()
+IndigoObject* IndigoReaction::clone()
 {
-   return cloneFrom(*this);
+    return cloneFrom(*this);
 }
 
-IndigoObject * IndigoQueryReaction::clone ()
+IndigoObject* IndigoQueryReaction::clone()
 {
-   return cloneFrom(*this);
+    return cloneFrom(*this);
 }
 
-int _indigoIterateReaction (int reaction, int subtype)
+int _indigoIterateReaction(int reaction, int subtype){INDIGO_BEGIN{IndigoObject& obj = self.getObject(reaction);
+BaseReaction& rxn = obj.getBaseReaction();
+
+try
 {
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(reaction);
-      BaseReaction &rxn = obj.getBaseReaction();
-
-      try {
-         MonomersProperties &map = obj.getMonomersProperties();
-         return self.addObject(new IndigoReactionIter(rxn, map, subtype));
-      } catch (Exception&) {
-         return self.addObject(new IndigoReactionIter(rxn, subtype));
-      }
-   }
-   INDIGO_END(-1)
+    MonomersProperties& map = obj.getMonomersProperties();
+    return self.addObject(new IndigoReactionIter(rxn, map, subtype));
 }
-
-CEXPORT int indigoLoadReaction (int source)
+catch (Exception&)
 {
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(source);
-      Scanner &scanner = IndigoScanner::get(obj);
-
-      ReactionAutoLoader loader(scanner);
-
-      loader.stereochemistry_options = self.stereochemistry_options;
-      loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-      loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
-
-      AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
-      loader.loadReaction(rxnptr->rxn);
-      return self.addObject(rxnptr.release());
-   }
-   INDIGO_END(-1)
+    return self.addObject(new IndigoReactionIter(rxn, subtype));
+}
+}
+INDIGO_END(-1)
 }
 
-CEXPORT int indigoLoadQueryReaction (int source)
+CEXPORT int indigoLoadReaction(int source){INDIGO_BEGIN{IndigoObject& obj = self.getObject(source);
+Scanner& scanner = IndigoScanner::get(obj);
+
+ReactionAutoLoader loader(scanner);
+
+loader.stereochemistry_options = self.stereochemistry_options;
+loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
+
+AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
+loader.loadReaction(rxnptr->rxn);
+return self.addObject(rxnptr.release());
+}
+INDIGO_END(-1)
+}
+
+CEXPORT int indigoLoadQueryReaction(int source){INDIGO_BEGIN{IndigoObject& obj = self.getObject(source);
+Scanner& scanner = IndigoScanner::get(obj);
+
+ReactionAutoLoader loader(scanner);
+
+loader.stereochemistry_options = self.stereochemistry_options;
+loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+
+AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+loader.loadQueryReaction(rxnptr->rxn);
+return self.addObject(rxnptr.release());
+}
+INDIGO_END(-1)
+}
+
+CEXPORT int indigoIterateReactants(int reaction)
 {
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(source);
-      Scanner &scanner = IndigoScanner::get(obj);
-
-      ReactionAutoLoader loader(scanner);
-
-      loader.stereochemistry_options = self.stereochemistry_options;
-      loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-
-      AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
-      loader.loadQueryReaction(rxnptr->rxn);
-      return self.addObject(rxnptr.release());
-   }
-   INDIGO_END(-1)
+    return _indigoIterateReaction(reaction, IndigoReactionIter::REACTANTS);
 }
 
-CEXPORT int indigoIterateReactants (int reaction)
+CEXPORT int indigoIterateProducts(int reaction)
 {
-   return _indigoIterateReaction(reaction, IndigoReactionIter::REACTANTS);
+    return _indigoIterateReaction(reaction, IndigoReactionIter::PRODUCTS);
 }
 
-CEXPORT int indigoIterateProducts (int reaction)
+CEXPORT int indigoIterateCatalysts(int reaction)
 {
-   return _indigoIterateReaction(reaction, IndigoReactionIter::PRODUCTS);
+    return _indigoIterateReaction(reaction, IndigoReactionIter::CATALYSTS);
 }
 
-CEXPORT int indigoIterateCatalysts (int reaction)
+CEXPORT int indigoIterateMolecules(int reaction)
 {
-   return _indigoIterateReaction(reaction, IndigoReactionIter::CATALYSTS);
+    return _indigoIterateReaction(reaction, IndigoReactionIter::MOLECULES);
 }
 
-CEXPORT int indigoIterateMolecules (int reaction)
+CEXPORT int indigoCreateReaction(void)
 {
-   return _indigoIterateReaction(reaction, IndigoReactionIter::MOLECULES);
+    INDIGO_BEGIN
+    {
+        return self.addObject(new IndigoReaction());
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoCreateReaction (void)
+CEXPORT int indigoCreateQueryReaction(void)
 {
-   INDIGO_BEGIN
-   {
-      return self.addObject(new IndigoReaction());
-   }
-   INDIGO_END(-1);
+    INDIGO_BEGIN
+    {
+        return self.addObject(new IndigoQueryReaction());
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoCreateQueryReaction (void)
+CEXPORT int indigoAddReactant(int reaction, int molecule)
 {
-   INDIGO_BEGIN
-   {
-      return self.addObject(new IndigoQueryReaction());
-   }
-   INDIGO_END(-1);
+    INDIGO_BEGIN
+    {
+        BaseReaction& rxn = self.getObject(reaction).getBaseReaction();
+
+        rxn.addReactantCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoAddReactant (int reaction, int molecule)
+CEXPORT int indigoAddProduct(int reaction, int molecule)
 {
-   INDIGO_BEGIN
-   {
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+    INDIGO_BEGIN
+    {
+        BaseReaction& rxn = self.getObject(reaction).getBaseReaction();
 
-      rxn.addReactantCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
-      return 1;
-   }
-   INDIGO_END(-1);
+        rxn.addProductCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoAddProduct (int reaction, int molecule)
+CEXPORT int indigoAddCatalyst(int reaction, int molecule)
 {
-   INDIGO_BEGIN
-   {
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
+    INDIGO_BEGIN
+    {
+        BaseReaction& rxn = self.getObject(reaction).getBaseReaction();
 
-      rxn.addProductCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
-      return 1;
-   }
-   INDIGO_END(-1);
+        rxn.addCatalystCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoAddCatalyst (int reaction, int molecule)
+CEXPORT int indigoCountReactants(int reaction)
 {
-   INDIGO_BEGIN
-   {
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-
-      rxn.addCatalystCopy(self.getObject(molecule).getBaseMolecule(), 0, 0);
-      return 1;
-   }
-   INDIGO_END(-1);
+    INDIGO_BEGIN
+    {
+        return self.getObject(reaction).getBaseReaction().reactantsCount();
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoCountReactants (int reaction)
+CEXPORT int indigoCountProducts(int reaction)
 {
-   INDIGO_BEGIN
-   {
-      return self.getObject(reaction).getBaseReaction().reactantsCount();
-   }
-   INDIGO_END(-1);
+    INDIGO_BEGIN
+    {
+        return self.getObject(reaction).getBaseReaction().productsCount();
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoCountProducts (int reaction)
+CEXPORT int indigoCountCatalysts(int reaction)
 {
-   INDIGO_BEGIN
-   {
-      return self.getObject(reaction).getBaseReaction().productsCount();
-   }
-   INDIGO_END(-1);
+    INDIGO_BEGIN
+    {
+        return self.getObject(reaction).getBaseReaction().catalystCount();
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoCountCatalysts (int reaction)
+CEXPORT int indigoCountMolecules(int handle)
 {
-   INDIGO_BEGIN
-   {
-      return self.getObject(reaction).getBaseReaction().catalystCount();
-   }
-   INDIGO_END(-1);
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(handle);
+
+        if (IndigoBaseReaction::is(obj))
+            return obj.getBaseReaction().count();
+
+        throw IndigoError("can not count molecules of %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoCountMolecules (int handle)
+CEXPORT int indigoGetMolecule(int reaction, int index){INDIGO_BEGIN{IndigoObject& obj = self.getObject(reaction);
+BaseReaction& rxn = obj.getBaseReaction();
+
+try
 {
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(handle);
-
-      if (IndigoBaseReaction::is(obj))
-         return obj.getBaseReaction().count();
-      
-      throw IndigoError("can not count molecules of %s", obj.debugInfo());
-   }
-   INDIGO_END(-1);
+    MonomersProperties& map = obj.getMonomersProperties();
+    return self.addObject(new IndigoReactionMolecule(rxn, map, index));
 }
-
-CEXPORT int indigoGetMolecule (int reaction, int index)
+catch (Exception&)
 {
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(reaction);
-      BaseReaction &rxn = obj.getBaseReaction();
-      
-      try {
-         MonomersProperties &map = obj.getMonomersProperties();
-         return self.addObject(new IndigoReactionMolecule(rxn, map, index));
-      } catch (Exception&) {
-         return self.addObject(new IndigoReactionMolecule(rxn, index));
-      }
-   }
-   INDIGO_END(-1)
+    return self.addObject(new IndigoReactionMolecule(rxn, index));
+}
+}
+INDIGO_END(-1)
 }
 
-CEXPORT int indigoMapMolecule (int handle, int molecule)
+CEXPORT int indigoMapMolecule(int handle, int molecule)
 {
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(handle);
-      if (obj.type != IndigoObject::REACTION_MAPPING)
-         throw IndigoError("%s is not a reaction mapping object", obj.debugInfo());
-      IndigoReactionMapping &mapping = (IndigoReactionMapping &)obj;
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(handle);
+        if (obj.type != IndigoObject::REACTION_MAPPING)
+            throw IndigoError("%s is not a reaction mapping object", obj.debugInfo());
+        IndigoReactionMapping& mapping = (IndigoReactionMapping&)obj;
 
-      IndigoObject &mol_obj = self.getObject(molecule);
-      if (mol_obj.type != IndigoObject::REACTION_MOLECULE)
-         throw IndigoError("%s is not a reaction molecule object", mol_obj.debugInfo());
-      IndigoReactionMolecule &mol = (IndigoReactionMolecule &)mol_obj;
-      
-      if (&mol.rxn != &mapping.from)
-         throw IndigoError("%s molecule doesn't correspond to a mapping %s", 
-            mol.debugInfo(), mapping.debugInfo());
+        IndigoObject& mol_obj = self.getObject(molecule);
+        if (mol_obj.type != IndigoObject::REACTION_MOLECULE)
+            throw IndigoError("%s is not a reaction molecule object", mol_obj.debugInfo());
+        IndigoReactionMolecule& mol = (IndigoReactionMolecule&)mol_obj;
 
-      int target_index = mapping.mol_mapping[mol.getIndex()];
+        if (&mol.rxn != &mapping.from)
+            throw IndigoError("%s molecule doesn't correspond to a mapping %s", mol.debugInfo(), mapping.debugInfo());
 
-      return self.addObject(new IndigoReactionMolecule(mapping.to, target_index));
-   }
-   INDIGO_END(-1)
+        int target_index = mapping.mol_mapping[mol.getIndex()];
+
+        return self.addObject(new IndigoReactionMolecule(mapping.to, target_index));
+    }
+    INDIGO_END(-1)
 }
 
-static int readAAMOptions(const char* mode, ReactionAutomapper& ram) {
-   int nmode = ReactionAutomapper::AAM_REGEN_DISCARD;
-   
-   if (mode == 0 || mode[0] == 0)
-      return nmode;
-
-   QS_DEF(Array<char>, word);
-   BufferScanner scanner(mode);
-
-   while (1) {
-      scanner.skipSpace();
-
-      if (scanner.isEOF())
-         break;
-
-      scanner.readWord(word, 0);
-
-      if (strcasecmp(word.ptr(), "discard") == 0)
-         nmode = ReactionAutomapper::AAM_REGEN_DISCARD;
-      else if (strcasecmp(word.ptr(), "alter") == 0)
-         nmode = ReactionAutomapper::AAM_REGEN_ALTER;
-      else if (strcasecmp(word.ptr(), "keep") == 0)
-         nmode = ReactionAutomapper::AAM_REGEN_KEEP;
-      else if (strcasecmp(word.ptr(), "clear") == 0) 
-         nmode = ReactionAutomapper::AAM_REGEN_CLEAR;
-      else if (strcasecmp(word.ptr(), "ignore_charges") == 0)
-         ram.ignore_atom_charges = true;
-      else if (strcasecmp(word.ptr(), "ignore_isotopes") == 0)
-         ram.ignore_atom_isotopes = true;
-      else if (strcasecmp(word.ptr(), "ignore_radicals") == 0)
-         ram.ignore_atom_radicals = true;
-      else if (strcasecmp(word.ptr(), "ignore_valence") == 0)
-         ram.ignore_atom_valence = true;
-      else
-         throw IndigoError("indigoAutomap(): unknown mode: %s", word.ptr());
-   }
-
-   return nmode;
-}
-
-CEXPORT int indigoAutomap (int reaction, const char *mode)
+static int readAAMOptions(const char* mode, ReactionAutomapper& ram)
 {
-   INDIGO_BEGIN
-   {
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      ReactionAutomapper ram(rxn);
-      ram.arom_options = self.arom_options;
-      /*
-       * Read options
-       */
-      int nmode = readAAMOptions(mode, ram);
-      /*
-       * Clear AAM if required
-       */
-      if(nmode == ReactionAutomapper::AAM_REGEN_CLEAR) {
-         rxn.clearAAM();
-         return 0;
-      }
-      /*
-       * Set timeout
-       */
-      std::unique_ptr<TimeoutCancellationHandler> timeout(nullptr);
-      if(self.aam_cancellation_timeout > 0) {
-         timeout.reset(new TimeoutCancellationHandler(self.aam_cancellation_timeout));
-      }
-      /*
-       * Set cancellation handler
-       */
-      AAMCancellationWrapper aam_timeout(timeout.release());
-      /*
-       * Launch automap
-       */
-      ram.automap(nmode);
-      
-      aam_timeout.reset();
-      
-      return 1;
-   }
-   INDIGO_END(-1);
+    int nmode = ReactionAutomapper::AAM_REGEN_DISCARD;
+
+    if (mode == 0 || mode[0] == 0)
+        return nmode;
+
+    QS_DEF(Array<char>, word);
+    BufferScanner scanner(mode);
+
+    while (1)
+    {
+        scanner.skipSpace();
+
+        if (scanner.isEOF())
+            break;
+
+        scanner.readWord(word, 0);
+
+        if (strcasecmp(word.ptr(), "discard") == 0)
+            nmode = ReactionAutomapper::AAM_REGEN_DISCARD;
+        else if (strcasecmp(word.ptr(), "alter") == 0)
+            nmode = ReactionAutomapper::AAM_REGEN_ALTER;
+        else if (strcasecmp(word.ptr(), "keep") == 0)
+            nmode = ReactionAutomapper::AAM_REGEN_KEEP;
+        else if (strcasecmp(word.ptr(), "clear") == 0)
+            nmode = ReactionAutomapper::AAM_REGEN_CLEAR;
+        else if (strcasecmp(word.ptr(), "ignore_charges") == 0)
+            ram.ignore_atom_charges = true;
+        else if (strcasecmp(word.ptr(), "ignore_isotopes") == 0)
+            ram.ignore_atom_isotopes = true;
+        else if (strcasecmp(word.ptr(), "ignore_radicals") == 0)
+            ram.ignore_atom_radicals = true;
+        else if (strcasecmp(word.ptr(), "ignore_valence") == 0)
+            ram.ignore_atom_valence = true;
+        else
+            throw IndigoError("indigoAutomap(): unknown mode: %s", word.ptr());
+    }
+
+    return nmode;
 }
 
-CEXPORT int indigoGetAtomMappingNumber (int reaction, int reaction_atom)
+CEXPORT int indigoAutomap(int reaction, const char* mode)
 {
-   INDIGO_BEGIN
-   {
-      IndigoAtom &ia = IndigoAtom::cast(self.getObject(reaction_atom));
+    INDIGO_BEGIN
+    {
+        BaseReaction& rxn = self.getObject(reaction).getBaseReaction();
+        ReactionAutomapper ram(rxn);
+        ram.arom_options = self.arom_options;
+        /*
+         * Read options
+         */
+        int nmode = readAAMOptions(mode, ram);
+        /*
+         * Clear AAM if required
+         */
+        if (nmode == ReactionAutomapper::AAM_REGEN_CLEAR)
+        {
+            rxn.clearAAM();
+            return 0;
+        }
+        /*
+         * Set timeout
+         */
+        std::unique_ptr<TimeoutCancellationHandler> timeout(nullptr);
+        if (self.aam_cancellation_timeout > 0)
+        {
+            timeout.reset(new TimeoutCancellationHandler(self.aam_cancellation_timeout));
+        }
+        /*
+         * Set cancellation handler
+         */
+        AAMCancellationWrapper aam_timeout(timeout.release());
+        /*
+         * Launch automap
+         */
+        ram.automap(nmode);
 
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      int mol_idx = rxn.findMolecule(&ia.mol);
+        aam_timeout.reset();
 
-      if (mol_idx == -1)
-         throw IndigoError("indigoGetAtomMapping(): input atom not found in the reaction");
-
-      return rxn.getAAM(mol_idx, ia.idx);
-   }
-   INDIGO_END(-1);
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoSetAtomMappingNumber (int reaction, int reaction_atom, int number)
+CEXPORT int indigoGetAtomMappingNumber(int reaction, int reaction_atom)
 {
-   INDIGO_BEGIN
-   {
-      IndigoAtom &ia = IndigoAtom::cast(self.getObject(reaction_atom));
+    INDIGO_BEGIN
+    {
+        IndigoAtom& ia = IndigoAtom::cast(self.getObject(reaction_atom));
 
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      int mol_idx = rxn.findMolecule(&ia.mol);
+        BaseReaction& rxn = self.getObject(reaction).getBaseReaction();
+        int mol_idx = rxn.findMolecule(&ia.mol);
 
-      if (mol_idx == -1)
-         throw IndigoError("indigoSetAtomMapping(): input atom not found in the reaction");
-      if (number < 0)
-         throw IndigoError("indigoSetAtomMapping(): mapping number cannot be negative");
+        if (mol_idx == -1)
+            throw IndigoError("indigoGetAtomMapping(): input atom not found in the reaction");
 
-      rxn.getAAMArray(mol_idx).at(ia.idx) = number;
-      return 0;
-   }
-   INDIGO_END(-1);
+        return rxn.getAAM(mol_idx, ia.idx);
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoGetReactingCenter (int reaction, int reaction_bond, int*rc) {
-   INDIGO_BEGIN
-   {
-      IndigoBond &ib = IndigoBond::cast(self.getObject(reaction_bond));
-
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      int mol_idx = rxn.findMolecule(&ib.mol);
-
-      if (mol_idx == -1)
-         throw IndigoError("indigoGetReactingCenter(): input bond not found in the reaction");
-
-      *rc = rxn.getReactingCenter(mol_idx, ib.idx);
-      return 1;
-   }
-   INDIGO_END(-1);
-}
-
-CEXPORT int indigoSetReactingCenter (int reaction, int reaction_bond, int rc) {
-   INDIGO_BEGIN
-   {
-      IndigoBond &ib = IndigoBond::cast(self.getObject(reaction_bond));
-
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      int mol_idx = rxn.findMolecule(&ib.mol);
-
-      if (mol_idx == -1)
-         throw IndigoError("indigoSetReactingCenter(): input bond not found in the reaction");
-      if (rc < -1 || rc > RC_TOTAL)
-         throw IndigoError("indigoSetReactingCenter(): invalid or unsupported reacting center: %d", rc);
-
-      rxn.getReactingCenterArray(mol_idx).at(ib.idx) = rc;
-      return 1;
-   }
-   INDIGO_END(-1);
-}
-
-CEXPORT int indigoClearAAM (int reaction)
+CEXPORT int indigoSetAtomMappingNumber(int reaction, int reaction_atom, int number)
 {
-   INDIGO_BEGIN
-   {
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      rxn.clearAAM();
-      return 0;
-   }
-   INDIGO_END(-1);
+    INDIGO_BEGIN
+    {
+        IndigoAtom& ia = IndigoAtom::cast(self.getObject(reaction_atom));
+
+        BaseReaction& rxn = self.getObject(reaction).getBaseReaction();
+        int mol_idx = rxn.findMolecule(&ia.mol);
+
+        if (mol_idx == -1)
+            throw IndigoError("indigoSetAtomMapping(): input atom not found in the reaction");
+        if (number < 0)
+            throw IndigoError("indigoSetAtomMapping(): mapping number cannot be negative");
+
+        rxn.getAAMArray(mol_idx).at(ia.idx) = number;
+        return 0;
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoCorrectReactingCenters (int reaction)
+CEXPORT int indigoGetReactingCenter(int reaction, int reaction_bond, int* rc)
 {
-   INDIGO_BEGIN
-   {
-      BaseReaction &rxn = self.getObject(reaction).getBaseReaction();
-      ReactionAutomapper ram(rxn);
-      ram.arom_options = self.arom_options;
-      ram.correctReactingCenters(true);
-      return 0;
-   }
-   INDIGO_END(-1);
+    INDIGO_BEGIN
+    {
+        IndigoBond& ib = IndigoBond::cast(self.getObject(reaction_bond));
+
+        BaseReaction& rxn = self.getObject(reaction).getBaseReaction();
+        int mol_idx = rxn.findMolecule(&ib.mol);
+
+        if (mol_idx == -1)
+            throw IndigoError("indigoGetReactingCenter(): input bond not found in the reaction");
+
+        *rc = rxn.getReactingCenter(mol_idx, ib.idx);
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
-
-CEXPORT int indigoLoadReactionSmarts (int source)
+CEXPORT int indigoSetReactingCenter(int reaction, int reaction_bond, int rc)
 {
-   INDIGO_BEGIN
-   {
-      IndigoObject &obj = self.getObject(source);
-      RSmilesLoader loader(IndigoScanner::get(obj));
+    INDIGO_BEGIN
+    {
+        IndigoBond& ib = IndigoBond::cast(self.getObject(reaction_bond));
 
-      AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+        BaseReaction& rxn = self.getObject(reaction).getBaseReaction();
+        int mol_idx = rxn.findMolecule(&ib.mol);
 
-      QueryReaction &qrxn = rxnptr->rxn;
+        if (mol_idx == -1)
+            throw IndigoError("indigoSetReactingCenter(): input bond not found in the reaction");
+        if (rc < -1 || rc > RC_TOTAL)
+            throw IndigoError("indigoSetReactingCenter(): invalid or unsupported reacting center: %d", rc);
 
-      loader.smarts_mode = true;
-      loader.loadQueryReaction(qrxn);
-      return self.addObject(rxnptr.release());
-   }
-   INDIGO_END(-1);
+        rxn.getReactingCenterArray(mol_idx).at(ib.idx) = rc;
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT const char * indigoCanonicalRSmiles(int reaction)
+CEXPORT int indigoClearAAM(int reaction)
 {
-   INDIGO_BEGIN
-   {
-   Reaction &react = self.getObject(reaction).getReaction();
-
-   auto &tmp = self.getThreadTmpData();
-   ArrayOutput output(tmp.string);
-   CanonicalRSmilesSaver saver(output);
-
-   saver.saveReaction(react);
-   tmp.string.push(0);
-   return tmp.string.ptr();
+    INDIGO_BEGIN
+    {
+        BaseReaction& rxn = self.getObject(reaction).getBaseReaction();
+        rxn.clearAAM();
+        return 0;
+    }
+    INDIGO_END(-1);
 }
-   INDIGO_END(0);
+
+CEXPORT int indigoCorrectReactingCenters(int reaction)
+{
+    INDIGO_BEGIN
+    {
+        BaseReaction& rxn = self.getObject(reaction).getBaseReaction();
+        ReactionAutomapper ram(rxn);
+        ram.arom_options = self.arom_options;
+        ram.correctReactingCenters(true);
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadReactionSmarts(int source)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        RSmilesLoader loader(IndigoScanner::get(obj));
+
+        AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+
+        QueryReaction& qrxn = rxnptr->rxn;
+
+        loader.smarts_mode = true;
+        loader.loadQueryReaction(qrxn);
+        return self.addObject(rxnptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT const char* indigoCanonicalRSmiles(int reaction)
+{
+    INDIGO_BEGIN
+    {
+        Reaction& react = self.getObject(reaction).getReaction();
+
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput output(tmp.string);
+        CanonicalRSmilesSaver saver(output);
+
+        saver.saveReaction(react);
+        tmp.string.push(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
 }

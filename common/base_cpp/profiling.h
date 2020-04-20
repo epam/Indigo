@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,141 +20,146 @@
 #define __profiling_h__
 
 #include "base_c/nano.h"
-#include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
+#include "base_cpp/os_sync_wrapper.h"
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
-#define _PROF_GET_NAME_INDEX(var_name, name) \
-   static int var_name##_name_index;                             \
-   if (var_name##_name_index == 0)                               \
-   {                                                             \
-      indigo::OsLocker locker(indigo::_profiling_global_lock);   \
-      if (var_name##_name_index == 0) {                          \
-         indigo::ProfilingSystem &inst = indigo::ProfilingSystem::getInstance(); \
-         var_name##_name_index = inst.getNameIndex(name);        \
-      }                                                          \
-   }
-   
+#define _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
+    static int var_name##_name_index;                                                                                                                          \
+    if (var_name##_name_index == 0)                                                                                                                            \
+    {                                                                                                                                                          \
+        indigo::OsLocker locker(indigo::_profiling_global_lock);                                                                                               \
+        if (var_name##_name_index == 0)                                                                                                                        \
+        {                                                                                                                                                      \
+            indigo::ProfilingSystem& inst = indigo::ProfilingSystem::getInstance();                                                                            \
+            var_name##_name_index = inst.getNameIndex(name);                                                                                                   \
+        }                                                                                                                                                      \
+    }
 
-#define profTimerStart(var_name, name) \
-   _PROF_GET_NAME_INDEX(var_name, name)   \
-   indigo::_ProfilingTimer var_name##_timer(var_name##_name_index)
+#define profTimerStart(var_name, name)                                                                                                                         \
+    _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                       \
+    indigo::_ProfilingTimer var_name##_timer(var_name##_name_index)
 
-#define profTimerStop(var_name) \
-   var_name##_timer.stop()
+#define profTimerStop(var_name) var_name##_timer.stop()
 
-#define profTimerGetTime(var_name) \
-   var_name##_timer.getTime()
+#define profTimerGetTime(var_name) var_name##_timer.getTime()
 
-#define profTimerGetTimeSec(var_name) \
-   var_name##_timer.getTimeSec()
+#define profTimerGetTimeSec(var_name) var_name##_timer.getTimeSec()
 
-#define profIncTimer(name, dt) \
-   do {                               \
-      _PROF_GET_NAME_INDEX(var_name, name)   \
-      indigo::ProfilingSystem &inst = indigo::ProfilingSystem::getInstance(); \
-      inst.addTimer(var_name##_name_index, dt); \
-   } while (false)
+#define profIncTimer(name, dt)                                                                                                                                 \
+    do                                                                                                                                                         \
+    {                                                                                                                                                          \
+        _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
+        indigo::ProfilingSystem& inst = indigo::ProfilingSystem::getInstance();                                                                                \
+        inst.addTimer(var_name##_name_index, dt);                                                                                                              \
+    } while (false)
 
-#define profIncCounter(name, count) \
-   do {                                       \
-      _PROF_GET_NAME_INDEX(var_name, name)   \
-      indigo::ProfilingSystem &inst = indigo::ProfilingSystem::getInstance(); \
-      inst.addCounter(var_name##_name_index, count); \
-   } while (false)
+#define profIncCounter(name, count)                                                                                                                            \
+    do                                                                                                                                                         \
+    {                                                                                                                                                          \
+        _PROF_GET_NAME_INDEX(var_name, name)                                                                                                                   \
+        indigo::ProfilingSystem& inst = indigo::ProfilingSystem::getInstance();                                                                                \
+        inst.addCounter(var_name##_name_index, count);                                                                                                         \
+    } while (false)
 
-#define profTimersReset()        indigo::ProfilingSystem::getInstance().reset(false)
+#define profTimersReset() indigo::ProfilingSystem::getInstance().reset(false)
 #define profTimersResetSession() indigo::ProfilingSystem::getInstance().reset(true)
 
 #define profGetStatistics(output, all) indigo::ProfilingSystem::getInstance().getStatistics(output, all)
 
-namespace indigo {
-class Output;
-
-class DLLEXPORT ProfilingSystem
+namespace indigo
 {
-public:
-   static ProfilingSystem& getInstance ();
+    class Output;
 
-   static int getNameIndex (const char *name, bool add_if_not_exists = true);
+    class DLLEXPORT ProfilingSystem
+    {
+    public:
+        static ProfilingSystem& getInstance();
 
-   void addTimer      (int name_index, qword dt);
-   void addCounter    (int name_index, int value);
-   void reset         (bool all);
-   void getStatistics (Output &output, bool get_all);
+        static int getNameIndex(const char* name, bool add_if_not_exists = true);
 
-   bool  hasLabel            (const char *name);
-   float getLabelExecTime    (const char *name, bool total = false);
-   qword getLabelValue       (const char *name, bool total = false);
-   qword getLabelCallCount   (const char *name, bool total = false);
+        void addTimer(int name_index, qword dt);
+        void addCounter(int name_index, int value);
+        void reset(bool all);
+        void getStatistics(Output& output, bool get_all);
 
-   DECL_ERROR;
-private:
-   struct Record
-   {
-      enum { TYPE_TIMER, TYPE_COUNTER };
+        bool hasLabel(const char* name);
+        float getLabelExecTime(const char* name, bool total = false);
+        qword getLabelValue(const char* name, bool total = false);
+        qword getLabelCallCount(const char* name, bool total = false);
 
-      struct Data {
-         qword count, value, max_value;
-         double square_sum;
+        DECL_ERROR;
 
-         Data();
+    private:
+        struct Record
+        {
+            enum
+            {
+                TYPE_TIMER,
+                TYPE_COUNTER
+            };
 
-         void reset ();
+            struct Data
+            {
+                qword count, value, max_value;
+                double square_sum;
 
-         void add (qword value);
-      };
+                Data();
 
-      Data current, total;
+                void reset();
 
-      int type;
+                void add(qword value);
+            };
 
-      void reset (bool all);
-   };
+            Data current, total;
 
-   static int _recordsCmp (int idx1, int idx2, void *context);
+            int type;
 
-   void _printTimerData (const Record::Data &data, Output &output);
-   void _printCounterData (const Record::Data &data, Output &output);
+            void reset(bool all);
+        };
 
-   bool _hasLabelIndex (int name_index);
-   void _ensureRecordExistanceLocked (int name_index);
+        static int _recordsCmp(int idx1, int idx2, void* context);
 
-   ObjArray<Record> _records;
-   Array<int> _sorted_records;
-   OsLock _lock;
+        void _printTimerData(const Record::Data& data, Output& output);
+        void _printCounterData(const Record::Data& data, Output& output);
 
-   static ObjArray< Array<char> > _names;
-};
+        bool _hasLabelIndex(int name_index);
+        void _ensureRecordExistanceLocked(int name_index);
 
-// This class shouldn't be used explicitly
-class DLLEXPORT _ProfilingTimer
-{
-public:
-   _ProfilingTimer   (int name_index);
-   ~_ProfilingTimer  ();
+        ObjArray<Record> _records;
+        Array<int> _sorted_records;
+        OsLock _lock;
 
-   qword stop    ();
-   qword getTime () const;
-   float getTimeSec () const;
+        static ObjArray<Array<char>> _names;
+    };
 
-private:
-   int _name_index;
-   qword _start_time, _dt;
-};
+    // This class shouldn't be used explicitly
+    class DLLEXPORT _ProfilingTimer
+    {
+    public:
+        _ProfilingTimer(int name_index);
+        ~_ProfilingTimer();
 
-extern DLLEXPORT OsLock _profiling_global_lock;
+        qword stop();
+        qword getTime() const;
+        float getTimeSec() const;
 
-}
+    private:
+        int _name_index;
+        qword _start_time, _dt;
+    };
+
+    extern DLLEXPORT OsLock _profiling_global_lock;
+
+} // namespace indigo
 
 #ifdef _WIN32
 #pragma warning(pop)
 #endif
 
 #endif // __profiling_h__
-

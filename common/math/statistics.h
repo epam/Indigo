@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,27 +21,28 @@
 
 #include "base_c/defs.h"
 
-namespace indigo {
-
-class DLLEXPORT MeanEstimator
+namespace indigo
 {
-public:
-   MeanEstimator ();
 
-   void addValue (float value);
+    class DLLEXPORT MeanEstimator
+    {
+    public:
+        MeanEstimator();
 
-   int getCount () const;
-   // Manual change of the count parameter to avoid a lot addValue(0)
-   void setCount (int count);
+        void addValue(float value);
 
-   float mean () const;
-   float meanEsimationError () const;
+        int getCount() const;
+        // Manual change of the count parameter to avoid a lot addValue(0)
+        void setCount(int count);
 
-private:
-   int _count;
-   float _sum, _sum_sq;
-};
+        float mean() const;
+        float meanEsimationError() const;
 
-}
+    private:
+        int _count;
+        float _sum, _sum_sq;
+    };
+
+} // namespace indigo
 
 #endif // _statistics_h_

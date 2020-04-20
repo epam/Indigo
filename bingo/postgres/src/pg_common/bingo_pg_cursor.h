@@ -8,30 +8,30 @@
 struct ItemPointerData;
 class BingoPgText;
 
-class BingoPgCursor {
+class BingoPgCursor
+{
 public:
-   BingoPgCursor(const char *format, ...);
-   BingoPgCursor(indigo::Array<char>& query_str);
-   virtual ~BingoPgCursor();
+    BingoPgCursor(const char* format, ...);
+    BingoPgCursor(indigo::Array<char>& query_str);
+    virtual ~BingoPgCursor();
 
-   bool next();
-   
-   void getId(int arg_idx, ItemPointerData&);
-   void getText(int arg_idx, BingoPgText&);
-   uintptr_t  getDatum(int arg_idx);
-   unsigned int getArgOid(int arg_idx);
+    bool next();
 
-   DECL_ERROR;
+    void getId(int arg_idx, ItemPointerData&);
+    void getText(int arg_idx, BingoPgText&);
+    uintptr_t getDatum(int arg_idx);
+    unsigned int getArgOid(int arg_idx);
+
+    DECL_ERROR;
+
 private:
-   BingoPgCursor(const BingoPgCursor&); //no implicit copy
+    BingoPgCursor(const BingoPgCursor&); // no implicit copy
 
-   void _init(indigo::Array<char>& query_str);
+    void _init(indigo::Array<char>& query_str);
 
-   indigo::Array<char> _cursorName;
-   PG_OBJECT _cursorPtr;
-   bool _pushed;
-
+    indigo::Array<char> _cursorName;
+    PG_OBJECT _cursorPtr;
+    bool _pushed;
 };
 
 #endif /* BINGO_PG_CURSOR_H */
-

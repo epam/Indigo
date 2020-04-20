@@ -1,7 +1,6 @@
 # This module assumes that you have installed all the
 # libs files in the <source root>/dist directory
 from contextlib import contextmanager
-from distutils.dir_util import copy_tree
 from optparse import OptionParser
 import os
 import re
@@ -38,6 +37,18 @@ def move_dir_content(src_dir, dest_dir):
             shutil.move(f2, destf2)
 
 
+def copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        if not os.path.exists(dst):
+            os.makedirs(dst)
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy(s, d)
+
+
 def join_archives(names, destname):
     if os.path.exists(destname):
         shutil.rmtree(destname)
@@ -53,9 +64,9 @@ def join_archives(names, destname):
         os.makedirs(name)
         with zipfile.ZipFile(zf_name) as zf:
             zf.extractall(name)
-        copy_tree(name, destname)
+        copytree(name, destname)
         shutil.rmtree(name)
-        os.remove(zf_name)
+        # os.remove(zf_name)
     shutil.make_archive(destname, 'zip', os.path.dirname(destname), destname)
     shutil.rmtree(destname)
 
@@ -177,6 +188,6 @@ if __name__ == '__main__':
                     if args.type is not None:
                         for g in args.type.split(','):
                             if gen.find(g) != -1:
-                                command = '"%s" "%s" -s "-%s"' % (sys.executable, os.path.join(api_dir, gen), w)
+                                command = '"%s" "%s" -s "%s"' % (sys.executable, os.path.join(api_dir, gen), w)
                                 print(command)
                                 subprocess.check_call(command, shell=True)

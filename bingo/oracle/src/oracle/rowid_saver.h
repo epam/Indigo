@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,40 +23,37 @@
 #include "lzw/lzw_dictionary.h"
 #include "lzw/lzw_encoder.h"
 
-#include "oracle/rowid_symbol_codes.h"
 #include "base_cpp/obj.h"
+#include "oracle/rowid_symbol_codes.h"
 
 using namespace indigo;
 
 namespace indigo
 {
-   class Output;
+    class Output;
 }
 
 class RowIDSaver
 {
 
 public:
+    DECL_ERROR;
 
-   DECL_ERROR;
+    RowIDSaver(LzwDict& NewDict, Output& NewOut);
 
-   RowIDSaver( LzwDict &NewDict, Output &NewOut );
-
-   void saveRowID( const char *RowID );
+    void saveRowID(const char* RowID);
 
 private:
+    void _encodeSymbol(char Symbol);
 
-   void _encodeSymbol( char Symbol );
+    void _encode(int NextSymbol);
 
-   void _encode( int NextSymbol );
+    Obj<LzwEncoder> _encoder_obj;
 
-   Obj<LzwEncoder> _encoder_obj;
+    LzwEncoder* _encoder;
 
-   LzwEncoder *_encoder;
-
-   // no implicit copy
-   RowIDSaver( const RowIDSaver & );
-
+    // no implicit copy
+    RowIDSaver(const RowIDSaver&);
 };
 
 #endif /* __rowid_saver_h__ */

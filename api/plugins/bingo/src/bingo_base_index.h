@@ -1,18 +1,18 @@
 #ifndef __bingo_base_index__
 #define __bingo_base_index__
 
-#include "molecule/molecule_fingerprint.h"
-#include "bingo_object.h"
-#include "bingo_fp_storage.h"
 #include "bingo_cf_storage.h"
-#include "bingo_mmf_storage.h"
-#include "bingo_mapping.h"
-#include "bingo_properties.h"
 #include "bingo_exact_storage.h"
+#include "bingo_fp_storage.h"
 #include "bingo_gross_storage.h"
-#include "bingo_sim_storge.h"
 #include "bingo_lock.h"
+#include "bingo_mapping.h"
+#include "bingo_mmf_storage.h"
+#include "bingo_object.h"
+#include "bingo_properties.h"
+#include "bingo_sim_storge.h"
 #include "indigo_internal.h"
+#include "molecule/molecule_fingerprint.h"
 
 #define BINGO_VERSION "v0.72"
 
@@ -20,164 +20,168 @@ using namespace indigo;
 
 namespace bingo
 {
-   class Matcher;
-   class MatcherQueryData;
+    class Matcher;
+    class MatcherQueryData;
 
-   class Index
-   {
-   public:
-      typedef enum {MOLECULE, REACTION, UNKNOWN} IndexType;
+    class Index
+    {
+    public:
+        typedef enum
+        {
+            MOLECULE,
+            REACTION,
+            UNKNOWN
+        } IndexType;
 
-      virtual Matcher* createMatcher (const char *type, MatcherQueryData *query_data, const char *options) = 0;
+        virtual Matcher* createMatcher(const char* type, MatcherQueryData* query_data, const char* options) = 0;
 
-      virtual Matcher* createMatcherWithExtFP (const char *type, MatcherQueryData *query_data, const char *options, IndigoObject &fp) = 0;
+        virtual Matcher* createMatcherWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, IndigoObject& fp) = 0;
 
-      virtual Matcher* createMatcherTopN (const char *type, MatcherQueryData *query_data, const char *options, int limit) = 0;
+        virtual Matcher* createMatcherTopN(const char* type, MatcherQueryData* query_data, const char* options, int limit) = 0;
 
-      virtual Matcher* createMatcherTopNWithExtFP (const char *type, MatcherQueryData *query_data, const char *options, int limit, IndigoObject &fp) = 0;
+        virtual Matcher* createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp) = 0;
 
-      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options, int index_id) = 0;
+        virtual void create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id) = 0;
 
-      virtual void load (const char *location, const char *options, int index_id) = 0;
+        virtual void load(const char* location, const char* options, int index_id) = 0;
 
-      virtual int add (IndexObject &obj, int obj_id, DatabaseLockData &lock_data) = 0;
+        virtual int add(IndexObject& obj, int obj_id, DatabaseLockData& lock_data) = 0;
 
-      virtual int addWithExtFP (IndexObject &obj, int obj_id, DatabaseLockData &lock_data, IndigoObject &fp) = 0;
+        virtual int addWithExtFP(IndexObject& obj, int obj_id, DatabaseLockData& lock_data, IndigoObject& fp) = 0;
 
-      virtual void optimize () = 0;
+        virtual void optimize() = 0;
 
-      virtual void remove (int id) = 0;
-   
-      virtual const byte * getObjectCf (int id, int &len) = 0;
+        virtual void remove(int id) = 0;
 
-      virtual const char * getIdPropertyName () = 0;
+        virtual const byte* getObjectCf(int id, int& len) = 0;
 
-      virtual const char * getVersion () = 0;
+        virtual const char* getIdPropertyName() = 0;
 
-      virtual IndexType getType () const = 0;
+        virtual const char* getVersion() = 0;
 
-      virtual ~Index () {};
-   };
+        virtual IndexType getType() const = 0;
 
-   class BaseIndex : public Index
-   {
-   private:   
-      struct _Header
-      {
-         BingoAddr properties_offset;
-         BingoAddr mapping_offset;
-         BingoAddr back_mapping_offset;
-         BingoAddr cf_offset;
-         BingoAddr sub_offset;
-         BingoAddr sim_offset;
-         BingoAddr exact_offset;
-         BingoAddr gross_offset;
-         int object_count;
-         int first_free_id;
-      };
+        virtual ~Index(){};
+    };
 
-   public:
-      virtual void create (const char *location, const MoleculeFingerprintParameters &fp_params, const char *options, int index_id);
+    class BaseIndex : public Index
+    {
+    private:
+        struct _Header
+        {
+            BingoAddr properties_offset;
+            BingoAddr mapping_offset;
+            BingoAddr back_mapping_offset;
+            BingoAddr cf_offset;
+            BingoAddr sub_offset;
+            BingoAddr sim_offset;
+            BingoAddr exact_offset;
+            BingoAddr gross_offset;
+            int object_count;
+            int first_free_id;
+        };
 
-      virtual void load (const char *location, const char *options, int index_id);
-      
-      virtual int add (IndexObject &obj, int obj_id, DatabaseLockData &lock_data);
+    public:
+        virtual void create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id);
 
-      virtual int addWithExtFP (IndexObject &obj, int obj_id, DatabaseLockData &lock_data, IndigoObject &fp);
+        virtual void load(const char* location, const char* options, int index_id);
 
-      virtual void optimize ();
+        virtual int add(IndexObject& obj, int obj_id, DatabaseLockData& lock_data);
 
-      virtual void remove (int id);
+        virtual int addWithExtFP(IndexObject& obj, int obj_id, DatabaseLockData& lock_data, IndigoObject& fp);
 
-      const MoleculeFingerprintParameters & getFingerprintParams () const;
+        virtual void optimize();
 
-      TranspFpStorage & getSubStorage ();
+        virtual void remove(int id);
 
-      SimStorage & getSimStorage ();
+        const MoleculeFingerprintParameters& getFingerprintParams() const;
 
-      ExactStorage & getExactStorage ();
-      
-      GrossStorage & getGrossStorage ();
+        TranspFpStorage& getSubStorage();
 
-      BingoArray<int> & getIdMapping ();
+        SimStorage& getSimStorage();
 
-      BingoMapping & getBackIdMapping ();
+        ExactStorage& getExactStorage();
 
-      ByteBufferStorage & getCfStorage ();
+        GrossStorage& getGrossStorage();
 
-      int getObjectsCount () const;
+        BingoArray<int>& getIdMapping();
 
-      virtual const byte * getObjectCf (int id, int &len);
+        BingoMapping& getBackIdMapping();
 
-      virtual const char * getIdPropertyName ();
+        ByteBufferStorage& getCfStorage();
 
-      virtual const char * getVersion ();
+        int getObjectsCount() const;
 
-      virtual IndexType getType () const;
+        virtual const byte* getObjectCf(int id, int& len);
 
-      static IndexType determineType (const char *location);
+        virtual const char* getIdPropertyName();
 
-      virtual ~BaseIndex ();
+        virtual const char* getVersion();
 
-   protected:
-      BaseIndex (IndexType type);
-      IndexType _type;
-      bool _read_only;
+        virtual IndexType getType() const;
 
-   private:
-      struct _ObjectIndexData 
-      {
-         Array<byte> sub_fp;
-         Array<byte> sim_fp;
-         Array<char> cf_str;
-         Array<char> gross_str;
-         dword hash;
-      };
+        static IndexType determineType(const char* location);
 
-      MMFStorage _mmf_storage;
-      BingoPtr<_Header> _header;
-      BingoPtr< BingoArray<int> > _id_mapping_ptr;
-      BingoPtr<BingoMapping> _back_id_mapping_ptr;
-      BingoPtr<TranspFpStorage> _sub_fp_storage;
-      BingoPtr<SimStorage> _sim_fp_storage;
-      BingoPtr<ExactStorage> _exact_storage;
-      BingoPtr<GrossStorage> _gross_storage;
-      BingoPtr<ByteBufferStorage> _cf_storage;
-      BingoPtr<Properties> _properties;
-      
-      MoleculeFingerprintParameters _fp_params;
-      std::string _location;
+        virtual ~BaseIndex();
 
-      int _index_id;
+    protected:
+        BaseIndex(IndexType type);
+        IndexType _type;
+        bool _read_only;
 
-      static void _checkOptions (std::map<std::string, std::string> &option_map, bool is_create);
+    private:
+        struct _ObjectIndexData
+        {
+            Array<byte> sub_fp;
+            Array<byte> sim_fp;
+            Array<char> cf_str;
+            Array<char> gross_str;
+            dword hash;
+        };
 
-      static size_t _getMinMMfSize (std::map<std::string, std::string> &option_map);
+        MMFStorage _mmf_storage;
+        BingoPtr<_Header> _header;
+        BingoPtr<BingoArray<int>> _id_mapping_ptr;
+        BingoPtr<BingoMapping> _back_id_mapping_ptr;
+        BingoPtr<TranspFpStorage> _sub_fp_storage;
+        BingoPtr<SimStorage> _sim_fp_storage;
+        BingoPtr<ExactStorage> _exact_storage;
+        BingoPtr<GrossStorage> _gross_storage;
+        BingoPtr<ByteBufferStorage> _cf_storage;
+        BingoPtr<Properties> _properties;
 
-      static size_t _getMaxMMfSize (std::map<std::string, std::string> &option_map);
+        MoleculeFingerprintParameters _fp_params;
+        std::string _location;
 
-      static bool _getAccessType (std::map<std::string, std::string> &option_map);
+        int _index_id;
 
-      void _saveProperties (const MoleculeFingerprintParameters &fp_params, int sub_block_size, 
-                            int sim_block_size, int cf_block_size, 
-                            std::map<std::string, std::string> &option_map);
+        static void _checkOptions(std::map<std::string, std::string>& option_map, bool is_create);
 
-      bool _prepareIndexData (IndexObject &obj, _ObjectIndexData &obj_data);
+        static size_t _getMinMMfSize(std::map<std::string, std::string>& option_map);
 
-      bool _prepareIndexDataWithExtFP (IndexObject &obj, _ObjectIndexData &obj_data, IndigoObject &fp);
+        static size_t _getMaxMMfSize(std::map<std::string, std::string>& option_map);
 
-      void _insertIndexData(_ObjectIndexData &obj_data);
+        static bool _getAccessType(std::map<std::string, std::string>& option_map);
 
-      void _mappingCreate ();
+        void _saveProperties(const MoleculeFingerprintParameters& fp_params, int sub_block_size, int sim_block_size, int cf_block_size,
+                             std::map<std::string, std::string>& option_map);
 
-      void _mappingLoad ();
+        bool _prepareIndexData(IndexObject& obj, _ObjectIndexData& obj_data);
 
-      void _mappingAssign (int obj_id, int base_id);
+        bool _prepareIndexDataWithExtFP(IndexObject& obj, _ObjectIndexData& obj_data, IndigoObject& fp);
 
-      void _mappingAdd (int obj_id, int base_id);
+        void _insertIndexData(_ObjectIndexData& obj_data);
 
-      void _mappingRemove (int obj_id);
-   };
-};
+        void _mappingCreate();
+
+        void _mappingLoad();
+
+        void _mappingAssign(int obj_id, int base_id);
+
+        void _mappingAdd(int obj_id, int base_id);
+
+        void _mappingRemove(int obj_id);
+    };
+}; // namespace bingo
 
 #endif // __bingo_base_index__

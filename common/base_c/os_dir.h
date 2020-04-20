@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,39 +22,40 @@
 #include "base_c/defs.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-enum
-{
-   OS_DIR_OK,
-   OS_DIR_NOTDIR,
-   OS_DIR_EXISTS,
-   OS_DIR_NOTFOUND,
-   OS_DIR_END,
-   OS_DIR_OTHER
-};
+    enum
+    {
+        OS_DIR_OK,
+        OS_DIR_NOTDIR,
+        OS_DIR_EXISTS,
+        OS_DIR_NOTFOUND,
+        OS_DIR_END,
+        OS_DIR_OTHER
+    };
 
-DLLEXPORT int osDirExists (const char *dirname);
-DLLEXPORT int osDirCreate (const char *dirname);
+    DLLEXPORT int osDirExists(const char* dirname);
+    DLLEXPORT int osDirCreate(const char* dirname);
 
-const char * osDirLastError (char *buf, int max_size);
+    const char* osDirLastError(char* buf, int max_size);
 
-typedef struct
-{
-   const char *dirname;
-   char path[1024];
-   void *dirstream;
+    typedef struct
+    {
+        const char* dirname;
+        char path[1024];
+        void* dirstream;
 #ifdef _WIN32
-   char first[1024];
+        char first[1024];
 #else
-   const char *pattern;
+    const char* pattern;
 #endif
-} OsDirIter;
+    } OsDirIter;
 
-int osDirSearch (const char *dirname, const char *pattern, OsDirIter *iter);
-int osDirNext   (OsDirIter *iter);
-void osDirClose  (OsDirIter *iter);
+    int osDirSearch(const char* dirname, const char* pattern, OsDirIter* iter);
+    int osDirNext(OsDirIter* iter);
+    void osDirClose(OsDirIter* iter);
 
 #ifdef __cplusplus
 }

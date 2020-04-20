@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
-using System.IO;
 
 namespace com.epam.indigo
 {
@@ -12,17 +9,14 @@ namespace com.epam.indigo
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public unsafe class Bingo : IDisposable
     {
-        private Indigo _indigo;
-        private BingoLib _lib;
-        private IndigoDllLoader _dllLoader;
+        private readonly Indigo _indigo;
         private int _id;
 
-        private Bingo(Indigo indigo, int id, BingoLib lib)
+        private Bingo(Indigo indigo, int id)
         {
             _indigo = indigo;
-            _lib = lib;
             _id = id;
-            _dllLoader = IndigoDllLoader.Instance;
+            version(); // Preloads native library
         }
 
         /// <summary>
@@ -38,10 +32,10 @@ namespace com.epam.indigo
         /// </summary>
         public void Dispose()
         {
-            if (_id >= 0 && _dllLoader != null && _dllLoader.isValid() && _indigo != null && _lib != null)
+            if (_id >= 0)
             {
                 _indigo.setSessionID();
-                Bingo.checkResult(_indigo, _lib.bingoCloseDatabase(_id));
+                Bingo.checkResult(BingoLib.bingoCloseDatabase(_id));
                 _id = -1;
             }
         }
@@ -54,64 +48,44 @@ namespace com.epam.indigo
             Dispose();
         }
 
-        internal static int checkResult(Indigo indigo, int result)
+        internal static int checkResult(int result)
         {
             if (result < 0)
             {
-                throw new BingoException(new String(indigo._indigo_lib.indigoGetLastError()));
+                throw new BingoException(new string(IndigoLib.indigoGetLastError()));
             }
 
             return result;
         }
 
-        internal static float checkResult(Indigo indigo, float result)
+        internal static float checkResult(float result)
         {
             if (result < 0.0)
             {
-                throw new BingoException(new String(indigo._indigo_lib.indigoGetLastError()));
+                throw new BingoException(new string(IndigoLib.indigoGetLastError()));
             }
 
             return result;
         }
 
-        internal static string checkResult(Indigo indigo, string result)
+        internal static string checkResult(string result)
         {
             if (result == null)
             {
-                throw new BingoException(new String(indigo._indigo_lib.indigoGetLastError()));
+                throw new BingoException(new string(IndigoLib.indigoGetLastError()));
             }
 
             return result;
         }
 
-        private static BingoLib getLib(Indigo indigo)
+        public static string checkResult(sbyte* result)
         {
-            String dllpath = indigo.getDllPath();
-            string libraryName;
-            IndigoDllLoader dll_loader = IndigoDllLoader.Instance;
-            switch (Environment.OSVersion.Platform)
+            if (result == null)
             {
-                case PlatformID.Win32NT:
-                    libraryName = "bingo.dll";
-                    dll_loader.loadLibrary(dllpath, libraryName, "com.epam.indigo.Properties.ResourcesWin", false);
-                    break;
-                case PlatformID.Unix:
-                    if (IndigoDllLoader.isMac())
-                    {
-                        libraryName = "libbingo.dylib";
-                        dll_loader.loadLibrary(dllpath, libraryName, "com.epam.indigo.Properties.ResourcesMac", false);
-                    }
-                    else
-                    {
-                        libraryName = "libbingo.so";
-                        dll_loader.loadLibrary(dllpath, libraryName, "com.epam.indigo.Properties.ResourcesLinux", false);
-                    }
-                    break;
-                default:
-                    throw new PlatformNotSupportedException(String.Format("Unsupported platform: {0}", Environment.OSVersion.Platform));
+                throw new BingoException(new string(IndigoLib.indigoGetLastError()));
             }
 
-            return dll_loader.getInterface<BingoLib>(libraryName);
+            return new string(result);
         }
 
         /// <summary>
@@ -129,9 +103,8 @@ namespace com.epam.indigo
             {
                 options = "";
             }
-            BingoLib lib = Bingo.getLib(indigo);
-            int databaseID = Bingo.checkResult(indigo, lib.bingoCreateDatabaseFile(location, type, options));
-            return new Bingo(indigo, databaseID, lib);
+            int databaseID = checkResult(BingoLib.bingoCreateDatabaseFile(location, type, options));
+            return new Bingo(indigo, databaseID);
         }
 
         /// <summary>
@@ -159,10 +132,9 @@ namespace com.epam.indigo
             {
                 options = "";
             }
-            BingoLib lib = Bingo.getLib(indigo);
             indigo.setSessionID();
-            int databaseID = Bingo.checkResult(indigo, lib.bingoLoadDatabaseFile(location, options));
-            return new Bingo(indigo, databaseID, lib);
+            int databaseID = checkResult(BingoLib.bingoLoadDatabaseFile(location, options));
+            return new Bingo(indigo, databaseID);
         }
 
         /// <summary>
@@ -183,8 +155,8 @@ namespace com.epam.indigo
         /// <returns>record id</returns>
         public int insert(IndigoObject record)
         {
-           _indigo.setSessionID();
-           return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObj(_id, record.self));
+            _indigo.setSessionID();
+            return checkResult(BingoLib.bingoInsertRecordObj(_id, record.self));
         }
 
         /// <summary>
@@ -195,8 +167,8 @@ namespace com.epam.indigo
         /// <returns> inserted record id</returns>
         public int insert(IndigoObject record, int id)
         {
-           _indigo.setSessionID();
-           return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithId(_id, record.self, id));
+            _indigo.setSessionID();
+            return checkResult(BingoLib.bingoInsertRecordObjWithId(_id, record.self, id));
         }
 
         /// <summary>
@@ -207,8 +179,8 @@ namespace com.epam.indigo
         /// <returns>record id</returns>
         public int insertWithExtFP(IndigoObject record, IndigoObject ext_fp)
         {
-           _indigo.setSessionID();
-           return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithExtFP(_id, record.self, ext_fp.self));
+            _indigo.setSessionID();
+            return checkResult(BingoLib.bingoInsertRecordObjWithExtFP(_id, record.self, ext_fp.self));
         }
 
         /// <summary>
@@ -220,8 +192,8 @@ namespace com.epam.indigo
         /// <returns> inserted record id</returns>
         public int insertWithExtFP(IndigoObject record, IndigoObject ext_fp, int id)
         {
-           _indigo.setSessionID();
-           return Bingo.checkResult(_indigo, _lib.bingoInsertRecordObjWithIdAndExtFP(_id, record.self, id, ext_fp.self));
+            _indigo.setSessionID();
+            return checkResult(BingoLib.bingoInsertRecordObjWithIdAndExtFP(_id, record.self, id, ext_fp.self));
         }
 
         /// <summary>
@@ -230,8 +202,8 @@ namespace com.epam.indigo
         /// <param name="id">Record id</param>
         public void delete(int id)
         {
-           _indigo.setSessionID();
-           Bingo.checkResult(_indigo, _lib.bingoDeleteRecord(_id, id));
+            _indigo.setSessionID();
+            checkResult(BingoLib.bingoDeleteRecord(_id, id));
         }
 
         /// <summary>
@@ -247,7 +219,7 @@ namespace com.epam.indigo
                 options = "";
             }
             _indigo.setSessionID();
-            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSub(_id, query.self, options)), _indigo, _lib);
+            return new BingoObject(Bingo.checkResult(BingoLib.bingoSearchSub(_id, query.self, options)), _indigo);
         }
 
         /// <summary>
@@ -275,7 +247,7 @@ namespace com.epam.indigo
                 metric = "tanimoto";
             }
             _indigo.setSessionID();
-            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSim(_id, query.self, min, max, metric)), _indigo, _lib);
+            return new BingoObject(Bingo.checkResult(BingoLib.bingoSearchSim(_id, query.self, min, max, metric)), _indigo);
         }
 
         /// <summary>
@@ -306,7 +278,7 @@ namespace com.epam.indigo
                 metric = "tanimoto";
             }
             _indigo.setSessionID();
-            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSimWithExtFP(_id, query.self, min, max, ext_fp.self, metric)), _indigo, _lib);
+            return new BingoObject(Bingo.checkResult(BingoLib.bingoSearchSimWithExtFP(_id, query.self, min, max, ext_fp.self, metric)), _indigo);
         }
 
         /// <summary>
@@ -318,14 +290,14 @@ namespace com.epam.indigo
         /// <param name="metric"> Default value is "tanimoto"</param>
         /// <returns> Bingo search object instance</returns>
 
-        public BingoObject searchSimTopN(IndigoObject query, int limit, float minSim, String metric)
+        public BingoObject searchSimTopN(IndigoObject query, int limit, float minSim, string metric)
         {
             if (metric == null)
             {
                 metric = "tanimoto";
             }
             _indigo.setSessionID();
-            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSimTopN(_id, query.self, limit, minSim, metric)), _indigo, _lib);
+            return new BingoObject(Bingo.checkResult(BingoLib.bingoSearchSimTopN(_id, query.self, limit, minSim, metric)), _indigo);
         }
         /// <summary>
         /// Execute similarity search for most similar structures (defined by limit)
@@ -350,14 +322,14 @@ namespace com.epam.indigo
         /// <param name="extFp"> Indigo object with a external similarity fingerprint (molecule or reaction)</param>
         /// <returns> Bingo search object instance</returns>
 
-        public BingoObject searchSimTopNWithExtFP(IndigoObject query, int limit, float minSim, IndigoObject extFp, String metric)
+        public BingoObject searchSimTopNWithExtFP(IndigoObject query, int limit, float minSim, IndigoObject extFp, string metric)
         {
             if (metric == null)
             {
                 metric = "tanimoto";
             }
             _indigo.setSessionID();
-            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchSimTopNWithExtFP(_id, query.self, limit, minSim, extFp.self, metric)), _indigo, _lib);
+            return new BingoObject(Bingo.checkResult(BingoLib.bingoSearchSimTopNWithExtFP(_id, query.self, limit, minSim, extFp.self, metric)), _indigo);
         }
 
         /// <summary>
@@ -382,7 +354,7 @@ namespace com.epam.indigo
         public BingoObject enumerateId()
         {
             _indigo.setSessionID();
-            return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoEnumerateId(_id)), _indigo, _lib);
+            return new BingoObject(Bingo.checkResult(BingoLib.bingoEnumerateId(_id)), _indigo);
         }
 
         /// <summary>
@@ -392,7 +364,7 @@ namespace com.epam.indigo
         /// <returns>Bingo search object instance</returns>
         public BingoObject searchExact(IndigoObject query)
         {
-           return searchExact(query, null);
+            return searchExact(query, null);
         }
 
         /// <summary>
@@ -403,12 +375,12 @@ namespace com.epam.indigo
         /// <returns>Bingo search object instance</returns>
         public BingoObject searchExact(IndigoObject query, string options)
         {
-           if (options == null)
-           {
-              options = "";
-           }
-           _indigo.setSessionID();
-           return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchExact(_id, query.self, options)), _indigo, _lib);
+            if (options == null)
+            {
+                options = "";
+            }
+            _indigo.setSessionID();
+            return new BingoObject(Bingo.checkResult(BingoLib.bingoSearchExact(_id, query.self, options)), _indigo);
         }
 
         /// <summary>
@@ -419,12 +391,12 @@ namespace com.epam.indigo
         /// <returns>Bingo search object instance</returns>
         public BingoObject searchMolFormula(string query, string options)
         {
-           if (options == null)
-           {
-              options = "";
-           }
-           _indigo.setSessionID();
-           return new BingoObject(Bingo.checkResult(_indigo, _lib.bingoSearchMolFormula(_id, query, options)), _indigo, _lib);
+            if (options == null)
+            {
+                options = "";
+            }
+            _indigo.setSessionID();
+            return new BingoObject(Bingo.checkResult(BingoLib.bingoSearchMolFormula(_id, query, options)), _indigo);
         }
 
         /// <summary>
@@ -434,16 +406,16 @@ namespace com.epam.indigo
         /// <returns>Bingo search object instance</returns>
         public BingoObject searchMolFormula(string query)
         {
-           return searchMolFormula(query, null);
+            return searchMolFormula(query, null);
         }
 
         /// <summary>
         /// Post-process index optimization
         /// </summary>
-        public void optimize ()
+        public void optimize()
         {
-           _indigo.setSessionID();
-           Bingo.checkResult(_indigo, _lib.bingoOptimize(_id));
+            _indigo.setSessionID();
+            checkResult(BingoLib.bingoOptimize(_id));
         }
 
         /// <summary>
@@ -453,8 +425,8 @@ namespace com.epam.indigo
         /// <returns>Indigo object</returns>
         public IndigoObject getRecordById(int id)
         {
-           _indigo.setSessionID();
-           return new IndigoObject(_indigo, Bingo.checkResult(_indigo, _lib.bingoGetRecordObj(_id, id))); ;
+            _indigo.setSessionID();
+            return new IndigoObject(_indigo, checkResult(BingoLib.bingoGetRecordObj(_id, id)));
         }
 
         /// <summary>
@@ -464,7 +436,7 @@ namespace com.epam.indigo
         public string version()
         {
             _indigo.setSessionID();
-            return Bingo.checkResult(_indigo, _lib.bingoVersion());
+            return checkResult(BingoLib.bingoVersion());
         }
     }
 }

@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,40 +24,42 @@
 
 #ifdef _WIN32
 #pragma warning(push)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 #endif
 
 class DLLEXPORT IndigoScanner : public IndigoObject
 {
 public:
-   IndigoScanner (Scanner *scanner);
-   IndigoScanner (const char *str);
-   IndigoScanner (const char *buf, int size);
+    IndigoScanner(Scanner* scanner);
+    IndigoScanner(const char* str);
+    IndigoScanner(const char* buf, int size);
 
-   static Scanner & get (IndigoObject &obj);
+    static Scanner& get(IndigoObject& obj);
 
-   virtual ~IndigoScanner ();
+    virtual ~IndigoScanner();
 
-   std::unique_ptr<Scanner> ptr;
+    std::unique_ptr<Scanner> ptr;
+
 protected:
-   Array<char> _buf;
+    Array<char> _buf;
 };
 
 class DLLEXPORT IndigoOutput : public IndigoObject
 {
 public:
-   IndigoOutput ();
-   IndigoOutput (Output *output);
-   virtual ~IndigoOutput ();
+    IndigoOutput();
+    IndigoOutput(Output* output);
+    virtual ~IndigoOutput();
 
-   virtual void toString (Array<char> &str);
+    virtual void toString(Array<char>& str);
 
-   static Output & get (IndigoObject &obj);
+    static Output& get(IndigoObject& obj);
 
-   std::unique_ptr<Output> ptr;
+    std::unique_ptr<Output> ptr;
+
 protected:
-   bool        _own_buf;
-   Array<char> _buf;
+    bool _own_buf;
+    Array<char> _buf;
 };
 
 #ifdef _WIN32

@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,36 +20,33 @@
 #define __rowid_loader_h__
 
 #include "base_cpp/bitinworker.h"
-#include "lzw/lzw_dictionary.h"
 #include "lzw/lzw_decoder.h"
+#include "lzw/lzw_dictionary.h"
 
 using namespace indigo;
 
 namespace indigo
 {
-   class Molecule;
-   class Scanner;
-}
+    class Molecule;
+    class Scanner;
+} // namespace indigo
 
 class RowIDLoader
 {
 public:
+    DECL_ERROR;
 
-   DECL_ERROR;
+    RowIDLoader(LzwDict& NewDict, Scanner& NewIn);
 
-   RowIDLoader( LzwDict &NewDict, Scanner &NewIn );
-
-   void loadRowID( Array<char> &RowId );
+    void loadRowID(Array<char>& RowId);
 
 private:
+    int _getNextCode(void);
 
-   int _getNextCode( void );
+    LzwDecoder _decoder;
 
-   LzwDecoder _decoder;
-
-   // no implicit copy
-   RowIDLoader( const RowIDLoader & );
-
+    // no implicit copy
+    RowIDLoader(const RowIDLoader&);
 };
 
 #endif /* __rowid_loader_h__ */

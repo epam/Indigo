@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,31 +19,41 @@
 #ifndef __molecule_json_saver_h__
 #define __molecule_json_saver_h__
 
-namespace indigo {
+#include <sstream>
 
-class Molecule;
-class QueryMolecule;
-class Output;
+#include "third_party/rapidjson/stringbuffer.h"
+#include "third_party/rapidjson/writer.h"
 
-class DLLEXPORT MoleculeJsonSaver
+#include "base_cpp/locale_guard.h"
+#include "base_cpp/output.h"
+#include "molecule/elements.h"
+#include "molecule/molecule.h"
+
+namespace indigo
 {
-public:
-   explicit MoleculeJsonSaver (Output &output);
 
-   void saveMolecule (Molecule &mol);
-   void saveQueryMolecule (QueryMolecule &qmol);
+    class Molecule;
+    class QueryMolecule;
+    class Output;
 
-   DECL_ERROR;
+    class DLLEXPORT MoleculeJsonSaver
+    {
+    public:
+        explicit MoleculeJsonSaver(Output& output);
 
-protected:
-   Molecule *_mol;
-   Output   &_output;
+        void saveMolecule(Molecule& mol);
+        void saveQueryMolecule(QueryMolecule& qmol);
 
-private:
-   MoleculeJsonSaver (const MoleculeJsonSaver &); // no implicit copy
-};
+        DECL_ERROR;
 
-}
+    protected:
+        Molecule* _mol;
+        Output& _output;
+
+    private:
+        MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy
+    };
+
+} // namespace indigo
 
 #endif
-

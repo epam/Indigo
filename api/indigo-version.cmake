@@ -1,9 +1,9 @@
-set(INDIGO_DEFAULT_VERSION "1.4.0beta.r0")
+set(INDIGO_DEFAULT_VERSION "1.4.0-beta")
 set(INDIGO_MAX_REVISION 500)
 
 find_package(Git)
 if(GIT_EXECUTABLE)
-   EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match "indigo-*"
+   EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match indigo-*
                     OUTPUT_VARIABLE INDIGO_FULL_VERSION
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
@@ -12,7 +12,7 @@ if(GIT_EXECUTABLE)
 		if (${INDIGO_REVISION} GREATER ${INDIGO_MAX_REVISION})
 			message(SEND_ERROR "Indigo revision ${INDIGO_REVISION} is greater than max revision ${INDIGO_MAX_REVISION}. Please create appropriate version tag" )
 		endif()
-   		string(REGEX REPLACE "indigo-(.+)-(.+)-(.+)" "\\1.r\\2-\\3" INDIGO_FULL_VERSION ${INDIGO_FULL_VERSION})
+   		string(REGEX REPLACE "indigo-(.+)-(.+)-(.+)" "\\1.\\2-\\3" INDIGO_FULL_VERSION ${INDIGO_FULL_VERSION})
    		string(REGEX REPLACE "(.+)-(.+)" "\\1" INDIGO_VERSION ${INDIGO_FULL_VERSION})
    	else()
    		set(INDIGO_VERSION "${INDIGO_DEFAULT_VERSION}")

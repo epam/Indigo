@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,40 +16,36 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "base_cpp/output.h"
 #include "molecule/molecule_cdx_saver.h"
-#include "molecule/molecule.h"
-#include "molecule/elements.h"
-#include "base_cpp/locale_guard.h"
 
 using namespace indigo;
 
 IMPL_ERROR(MoleculeCdxSaver, "molecule CDX saver");
 
-MoleculeCdxSaver::MoleculeCdxSaver (Output &output) : _output(output)
+MoleculeCdxSaver::MoleculeCdxSaver(Output& output) : _output(output)
 {
 }
 
-void MoleculeCdxSaver::saveMolecule (Molecule &mol)
+void MoleculeCdxSaver::saveMolecule(Molecule& mol)
 {
-   throw Error("saveMolecule is not implemented for CDX saver");
-//   LocaleGuard locale_guard;
-//
-//   _mol = &mol;
-//
-//
-//   if (_mol->name.ptr() != 0)
-//   {
-//   }
-//
-//   bool have_hyz = _mol->have_xyz;
-//   bool have_z = BaseMolecule::hasZCoord(*_mol);
-//
-//   if (_mol->vertexCount() > 0)
-//   {
-//   }
-//
-//   if (_mol->edgeCount() > 0)
-//   {
-//   }
+    throw Error("saveMolecule is not implemented for CDX saver");
+    //   LocaleGuard locale_guard;
+    //
+    //   _mol = &mol;
+    //
+    //
+    //   if (_mol->name.ptr() != 0)
+    //   {
+    //   }
+    //
+    //   bool have_hyz = _mol->have_xyz;
+    //   bool have_z = BaseMolecule::hasZCoord(*_mol);
+    //
+    //   if (_mol->vertexCount() > 0)
+    //   {
+    //   }
+    //
+    //   if (_mol->edgeCount() > 0)
+    //   {
+    //   }
 }

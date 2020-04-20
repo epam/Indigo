@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,11 +19,11 @@
 #ifndef __mango_fetch_context__
 #define __mango_fetch_context__
 
-#include "core/mango_matchers.h"
 #include "base_cpp/auto_ptr.h"
+#include "core/mango_matchers.h"
 #include "oracle/mango_fast_index.h"
-#include "oracle/mango_shadow_fetch.h"
 #include "oracle/mango_oracle.h"
+#include "oracle/mango_shadow_fetch.h"
 
 using namespace indigo;
 
@@ -32,41 +32,43 @@ class MangoShadowFetch;
 class MangoFetchContext
 {
 public:
-   MangoFetchContext (int id, MangoOracleContext &context, const Array<char> &query_id);
+    MangoFetchContext(int id, MangoOracleContext& context, const Array<char>& query_id);
 
-   AutoPtr<MangoFastIndex>   fast_index;
-   AutoPtr<MangoShadowFetch> shadow_fetch;
+    AutoPtr<MangoFastIndex> fast_index;
+    AutoPtr<MangoShadowFetch> shadow_fetch;
 
-   BingoFetchEngine *fetch_engine;
+    BingoFetchEngine* fetch_engine;
 
-   MangoSubstructure substructure;
-   MangoSimilarity   similarity;
-   MangoExact        exact;
-   MangoTautomer     tautomer;
-   MangoGross        gross;
-   MangoMass         mass;
+    MangoSubstructure substructure;
+    MangoSimilarity similarity;
+    MangoExact exact;
+    MangoTautomer tautomer;
+    MangoGross gross;
+    MangoMass mass;
 
-   int         id;
-   int         context_id;
-   bool        fresh; // 'true' after selectivity calculation and before index start
+    int id;
+    int context_id;
+    bool fresh; // 'true' after selectivity calculation and before index start
 
-   static MangoFetchContext & create (MangoOracleContext &context, const Array<char> &query_id);
-   static MangoFetchContext & get (int id);
-   static MangoFetchContext * findFresh (int context_id, const Array<char> &query_id);
-   static void remove (int id);
-   static void removeByContextID (int id);
+    static MangoFetchContext& create(MangoOracleContext& context, const Array<char>& query_id);
+    static MangoFetchContext& get(int id);
+    static MangoFetchContext* findFresh(int context_id, const Array<char>& query_id);
+    static void remove(int id);
+    static void removeByContextID(int id);
 
-   inline MangoOracleContext & context () {return _context;}
+    inline MangoOracleContext& context()
+    {
+        return _context;
+    }
 
-   DECL_ERROR;
+    DECL_ERROR;
 
 protected:
-   Array<char> _query_id;
-   MangoOracleContext & _context;
+    Array<char> _query_id;
+    MangoOracleContext& _context;
 
-   TL_DECL(PtrArray<MangoFetchContext>, _instances);
-   static OsLock _instances_lock;
+    TL_DECL(PtrArray<MangoFetchContext>, _instances);
+    static OsLock _instances_lock;
 };
-
 
 #endif

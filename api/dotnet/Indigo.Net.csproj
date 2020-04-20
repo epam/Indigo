@@ -1,0 +1,120 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants />
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants />
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<Version>1.4.0-beta.63</Version>
+		<Authors>EPAM Systems Life Science Department</Authors>
+		<Company>EPAM Systems</Company>
+		<Description>Universal cheminformatics toolkit</Description>
+		<Copyright>2009</Copyright>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageProjectUrl>https://lifescience.opensource.epam.com/indigo/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/epam/indigo</RepositoryUrl>
+		<PackageTags>cheminformatics chemistry indigo substructure similarity</PackageTags>
+		<Platforms>AnyCPU</Platforms>
+		<RepositoryType>git</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="libindigo.so">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libindigo.so</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="libindigo.dylib">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libindigo.dylib</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="indigo.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/indigo.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="concrt140.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/concrt140.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="msvcp140.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/msvcp140.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="vcruntime140.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/vcruntime140.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="vcruntime140_1.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/vcruntime140_1.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="libindigo-inchi.so">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libindigo-inchi.so</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="libindigo-inchi.dylib">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libindigo-inchi.dylib</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="indigo-inchi.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/indigo-inchi.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="libindigo-renderer.so">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libindigo-renderer.so</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="libindigo-renderer.dylib">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libindigo-renderer.dylib</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="indigo-renderer.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/indigo-renderer.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="libbingo.so">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libbingo.so</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="libbingo.dylib">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/libbingo.dylib</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="bingo.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib/netstandard2.0/bingo.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="powershell -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)/prebuild.ps1" />
+	</Target>
+
+</Project>

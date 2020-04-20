@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,32 +19,32 @@
 #ifndef __canonical_smiles_saver__
 #define __canonical_smiles_saver__
 
-#include "molecule/smiles_saver.h"
 #include "base_cpp/exception.h"
+#include "molecule/smiles_saver.h"
 
-namespace indigo {
-
-class DLLEXPORT CanonicalSmilesSaver : public SmilesSaver
+namespace indigo
 {
-public:
 
-   explicit CanonicalSmilesSaver (Output &output);
-   ~CanonicalSmilesSaver ();
+    class DLLEXPORT CanonicalSmilesSaver : public SmilesSaver
+    {
+    public:
+        explicit CanonicalSmilesSaver(Output& output);
+        ~CanonicalSmilesSaver();
 
-   bool find_invalid_stereo;
+        bool find_invalid_stereo;
 
-   void saveMolecule (Molecule &mol);
+        void saveMolecule(Molecule& mol);
 
-   DECL_ERROR;
+        DECL_ERROR;
 
-protected:
-   typedef RedBlackMap<int, int> MapIntInt;
+    protected:
+        typedef RedBlackMap<int, int> MapIntInt;
 
-   TL_CP_DECL(Array<int>, _actual_atom_atom_mapping);
-   TL_CP_DECL(MapIntInt, _initial_to_actual);
-   int _aam_counter;
-};
+        TL_CP_DECL(Array<int>, _actual_atom_atom_mapping);
+        TL_CP_DECL(MapIntInt, _initial_to_actual);
+        int _aam_counter;
+    };
 
-}
+} // namespace indigo
 
 #endif

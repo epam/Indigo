@@ -29,7 +29,7 @@ ENCODE_ENCODING = 'utf-8'
 class IndigoException (Exception):
 
     def __init__(self, value):
-        if sys.version_info > (3, 0):
+        if sys.version_info > (3, 0) and not isinstance(value, str):
             self.value = value.decode(DECODE_ENCODING)
         else:
             self.value = value
@@ -1455,60 +1455,69 @@ class Indigo(object):
     # Python embeds path into .pyc code if method is marked with @staticmethod
     # This causes an error when Indigo is loaded from different places by relative path
     def _initStatic(self, path = None):
+
+        def cdll_if_exists(cdll_path_):
+            if os.path.exists(cdll_path_):
+                return CDLL(cdll_path_)
+            return None
+
+        paths = []
         if not path:
             cur_file = os.path.abspath(__file__)
-            dirname = os.path.dirname(cur_file)
-            if not dirname:
-                dirname = '.'
-            path = dirname + '/lib'
-        if os.name == 'posix' and not platform.mac_ver()[0] and not platform.system().startswith("CYGWIN"):
-            arch = platform.architecture()[0]
-            path += "/Linux"
-            if arch == '32bit':
-                path += "/x86"
-            elif arch == '64bit':
-                path += "/x64"
-            else:
-                raise IndigoException("unknown platform " + arch)
-            Indigo._lib = CDLL(path + "/libindigo.so", mode=RTLD_GLOBAL)
-        elif os.name == 'nt' or platform.system().startswith("CYGWIN"):
-            arch = platform.architecture()[0]
-            path += "/Win"
-            if arch == '32bit':
-                path += "/x86"
-            elif arch == '64bit':
-                path += "/x64"
-            else:
-                raise IndigoException("unknown platform " + arch)
-            if os.path.exists(path + "/msvcr100.dll"):
-                Indigo._crt = CDLL(path + "/msvcr100.dll")
-                Indigo._crtp = CDLL(path + "/msvcp100.dll")
-            if os.path.exists(path + "/msvcr110.dll"):
-                Indigo._crt = CDLL(path + "/msvcr110.dll")
-                Indigo._crtp = CDLL(path + "/msvcp110.dll")
-            if os.path.exists(path + "/msvcr120.dll"):
-                Indigo._crt = CDLL(path + "/msvcr120.dll")
-                Indigo._crtp = CDLL(path + "/msvcp120.dll")
-            if os.path.exists(path + "/vcruntime140.dll"):
-                Indigo._crt = CDLL(path + "/vcruntime140.dll")
-                Indigo._crtp = CDLL(path + "/msvcp140.dll")
-            Indigo._lib = CDLL(path + "/indigo.dll")
-        elif platform.mac_ver()[0]:
-            path += "/Mac/"
-            mac_ver = '.'.join(platform.mac_ver()[0].split('.')[:2])
-            current_mac_ver = int(mac_ver.split('.')[1])
-            using_mac_ver = None
-            for version in reversed(range(5, current_mac_ver + 1)):
-                if os.path.exists(path + '/10.' + str(version)):
-                    using_mac_ver = str(version)
-                    break
-            if (using_mac_ver is None):
-                raise IndigoException("no binaries for this version of Mac OS X: " + mac_ver)
-            path += '/10.' + using_mac_ver
-            Indigo._lib = CDLL(path + "/libindigo.dylib", mode=RTLD_GLOBAL)
+            paths = [os.path.join(os.path.dirname(cur_file), 'lib'), os.path.join(os.path.dirname(os.path.dirname(cur_file)), 'lib')]
         else:
-            raise IndigoException("unsupported OS: " + os.name)
-        Indigo.dllpath = path
+            paths.append(path)
+
+        indigoFound = False
+        for path in paths:
+            if os.name == 'posix' and not platform.mac_ver()[0] and not platform.system().startswith("CYGWIN"):
+                arch = platform.architecture()[0]
+                path = os.path.join(path, "Linux")
+                if arch == '32bit':
+                    path = os.path.join(path, "x86")
+                elif arch == '64bit':
+                    path = os.path.join(path, "x64")
+                else:
+                    raise IndigoException("unknown platform " + arch)
+                if os.path.exists(os.path.join(path, "libindigo.so")):                    
+                    Indigo._lib = CDLL(os.path.join(path, "libindigo.so"), mode=RTLD_GLOBAL)
+                    indigoFound = True
+                    Indigo.dllpath = path
+            elif os.name == 'nt' or platform.system().startswith("CYGWIN"):
+                arch = platform.architecture()[0]
+                path = os.path.join(path, "Win")
+                if arch == '32bit':
+                    path = os.path.join(path, "x86")
+                elif arch == '64bit':
+                    path = os.path.join(path, "x64")
+                else:
+                    raise IndigoException("unknown platform " + arch)
+                if os.path.exists(os.path.join(path, 'indigo.dll')):
+                    Indigo._crt = cdll_if_exists(os.path.join(path, "vcruntime140.dll"))
+                    Indigo._crt_1 = cdll_if_exists(os.path.join(path, "vcruntime140_1.dll"))
+                    Indigo._crtp = cdll_if_exists(os.path.join(path, "msvcp140.dll"))
+                    Indigo._crtc = cdll_if_exists(os.path.join(path, "concrt140.dll"))
+                    Indigo._lib = CDLL(os.path.join(path, "indigo.dll"))
+                    indigoFound = True
+                    Indigo.dllpath = path
+            elif platform.mac_ver()[0]:
+                path = os.path.join(path, "Mac")
+                mac_ver = '.'.join(platform.mac_ver()[0].split('.')[:2])
+                current_mac_ver = int(mac_ver.split('.')[1])
+                using_mac_ver = None
+                for version in reversed(range(5, current_mac_ver + 1)):
+                    if os.path.exists(os.path.join(path, '10.' + str(version))):
+                        using_mac_ver = str(version)
+                        break
+                if using_mac_ver:
+                    path = os.path.join(path, '10.' + using_mac_ver)
+                    Indigo._lib = CDLL(os.path.join(path, "libindigo.dylib"), mode=RTLD_GLOBAL)
+                    indigoFound = True
+                    Indigo.dllpath = path
+            else:
+                raise IndigoException("unsupported OS: " + os.name)
+        if not indigoFound:
+            raise IndigoException("Could not find native libraries for target OS in search directories: {}".format(os.pathsep.join(paths)))
 
     def _setSessionId(self):
         Indigo._lib.indigoSetSessionId(self._sid)

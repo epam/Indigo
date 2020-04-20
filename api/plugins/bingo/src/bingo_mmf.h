@@ -1,45 +1,44 @@
 #ifndef __bingo_mmf__
 #define __bingo_mmf__
 
-#include <stdio.h>
 #include <new>
+#include <stdio.h>
 #include <string>
 
 namespace bingo
 {
-   class MMFile
-   {
-   public:
-      MMFile ();
-      
-      ~MMFile ();
-      
-      void open (const char *filename, size_t buf_size, bool create_flag, bool read_only);
+    class MMFile
+    {
+    public:
+        MMFile();
 
-      void resize (size_t new_size);
+        ~MMFile();
 
-      void * ptr ();
+        void open(const char* filename, size_t buf_size, bool create_flag, bool read_only);
 
-      const char * name ();
+        void resize(size_t new_size);
 
-      size_t size();
+        void* ptr();
 
-      void close ();
+        const char* name();
 
-   private:
+        size_t size();
+
+        void close();
+
+    private:
 #ifdef _WIN32
-      void *_h_map_file;
-      void *_h_file;
+        void* _h_map_file;
+        void* _h_file;
 #elif (defined __GNUC__ || defined __APPLE__)
-      int _fd;
-#endif      
-      void *_ptr;
-      std::string _filename;
-      size_t _len;
+        int _fd;
+#endif
+        void* _ptr;
+        std::string _filename;
+        size_t _len;
 
-      static char * _getSystemErrorMsg ();
-
-   };
-};
+        static char* _getSystemErrorMsg();
+    };
+}; // namespace bingo
 
 #endif // __bingo_mmf__
