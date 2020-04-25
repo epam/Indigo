@@ -101,8 +101,6 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 
 if __name__ == '__main__':
-    msbuild_command = ['dotnet', 'build', '-t:Build', '-t:Pack', '-p:Configuration=Release']
-
     parser = OptionParser(description='Indigo .NET libraries build script')
     parser.add_option('--suffix', '-s', help='archive suffix', default="")
     (args, left_args) = parser.parse_args()
@@ -126,12 +124,16 @@ if __name__ == '__main__':
     libraryPath = join(api_dir, 'libs', 'shared')
 
     # Copy native libraries to Indigo.Net
-    indigoDotNetPath = join(api_dir, 'dotnet')
-    copy_libs(libraryPath, indigoDotNetPath, explicit_wrappers)
+    indigoDotNetPath = join(api_dir, "dotnet")
+    indigoDotNetNativeLibPath = join(indigoDotNetPath, "lib", "netstandard2.0")
+    if not os.path.exists(indigoDotNetNativeLibPath):
+        os.makedirs(indigoDotNetNativeLibPath)
+    copy_libs(libraryPath, indigoDotNetNativeLibPath, explicit_wrappers)
 
     # Build
     os.chdir(indigoDotNetPath)
-    subprocess.check_call(msbuild_command + ['Indigo.Net.sln', ])
+    msbuild_command = ['dotnet', 'build', '-t:Build', '-t:Pack', '-p:Configuration=Release', 'Indigo.Net.sln']
+    subprocess.check_call(msbuild_command)
 
     os.chdir(dist_dir)
 

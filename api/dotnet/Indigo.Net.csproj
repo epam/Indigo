@@ -1,18 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<DefineConstants />
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<DefineConstants />
-	</PropertyGroup>
-
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0</TargetFrameworks>
-		<Version>1.4.0-beta.63</Version>
+		<Version>1.4.0-beta.13</Version>
 		<Authors>EPAM Systems Life Science Department</Authors>
 		<Company>EPAM Systems</Company>
 		<Description>Universal cheminformatics toolkit</Description>
@@ -24,6 +14,7 @@
 		<Platforms>AnyCPU</Platforms>
 		<RepositoryType>git</RepositoryType>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,89 +22,89 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="libindigo.so">
+		<Content Include="lib/netstandard2.0/libindigo.so">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/libindigo.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="libindigo.dylib">
+		<Content Include="lib/netstandard2.0/libindigo.dylib">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/libindigo.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="indigo.dll">
+		<Content Include="lib/netstandard2.0/indigo.dll">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/indigo.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="concrt140.dll">
+		<Content Include="lib/netstandard2.0/concrt140.dll">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/concrt140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="msvcp140.dll">
+		<Content Include="lib/netstandard2.0/msvcp140.dll">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/msvcp140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="vcruntime140.dll">
+		<Content Include="lib/netstandard2.0/vcruntime140.dll">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/vcruntime140.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="vcruntime140_1.dll">
+		<Content Include="lib/netstandard2.0/vcruntime140_1.dll">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/vcruntime140_1.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="libindigo-inchi.so">
+		<Content Include="lib/netstandard2.0/libindigo-inchi.so">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/libindigo-inchi.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="libindigo-inchi.dylib">
+		<Content Include="lib/netstandard2.0/libindigo-inchi.dylib">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/libindigo-inchi.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="indigo-inchi.dll">
+		<Content Include="lib/netstandard2.0/indigo-inchi.dll">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/indigo-inchi.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="libindigo-renderer.so">
+		<Content Include="lib/netstandard2.0/libindigo-renderer.so">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/libindigo-renderer.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="libindigo-renderer.dylib">
+		<Content Include="lib/netstandard2.0/libindigo-renderer.dylib">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/libindigo-renderer.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="indigo-renderer.dll">
+		<Content Include="lib/netstandard2.0/indigo-renderer.dll">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/indigo-renderer.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="libbingo.so">
+		<Content Include="lib/netstandard2.0/libbingo.so">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/libbingo.so</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="libbingo.dylib">
+		<Content Include="lib/netstandard2.0/libbingo.dylib">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/libbingo.dylib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="bingo.dll">
+		<Content Include="lib/netstandard2.0/bingo.dll">
 			<Pack>true</Pack>
 			<PackagePath>lib/netstandard2.0/bingo.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	<Target BeforeTargets="PreBuildEvent" Name="PreBuild">
 		<Exec Command="powershell -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)/prebuild.ps1" />
 	</Target>
 
