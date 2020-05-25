@@ -1,0 +1,6 @@
+{
+  "errors" : [ {
+    "status" : 403,
+    "message" : "'epm-lsop' is blocked due to recurrent login failures, please try again in 4 seconds"
+  } ]
+}

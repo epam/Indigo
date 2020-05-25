@@ -1,0 +1,19 @@
+.CodeMirror {
+	&:extend(.form-control all);
+	&:extend(.search label.props textarea);
+	font-family: inherit;
+	height: @input-height-base;
+
+	&-focused {
+		&:extend(.form-control:focus);
+	}
+	&-placeholder {
+		color: @input-color-placeholder;
+	}
+	&-lines, pre {
+		padding: 0;
+	}
+	&-hints {
+		background: #ff0000;
+	}
+}

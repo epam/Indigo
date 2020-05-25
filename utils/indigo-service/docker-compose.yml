@@ -1,0 +1,67 @@
+version: "2.1"
+services:
+  db:
+    build:
+      context: ./
+      dockerfile: ./db/Dockerfile
+    networks:
+      default:
+        aliases:
+          - indigo_db
+
+  service:
+    build:
+      context: ./
+      dockerfile: ./service/Dockerfile
+    environment:
+      - PYTHONPATH=${INDIGO_SERVICE_PYTHONPATH:-/srv/indigo-python}
+    volumes_from:
+      - indigo_builder
+    networks:
+      default:
+        aliases:
+          - indigo_service
+    restart: always
+    command: supervisord -n
+
+  front:
+    build:
+      context: ./
+      dockerfile: ./nginx/Dockerfile
+    links:
+      - service
+    ports:
+      - "${INDIGO_SERVICE_PORT:-8080}:80"
+    restart: always
+
+  indigo_builder:
+    build:
+      context: indigo-builder
+      args:
+        - ARTIFACTORY_API_KEY
+    volumes:
+      - /var/src
+
+  test:
+    build:
+      context: ./
+      dockerfile: ./service/test/Dockerfile
+    environment:
+      - INDIGO_SERVICE_URL
+      - IGNORE_PATTERN
+    command: python3 -u /srv/api/test/tests.py
+
+#  debug:
+#    build:
+#      context: ./
+#      dockerfile: ./service/Dockerfile
+#    environment:
+#      - PYTHONPATH=${INDIGO_SERVICE_PYTHONPATH:-/srv/indigo-python}
+#      - INDIGO_UWSGI_RUN_PARAMETERS=--plugin python3 --py-autoreload=1
+#    volumes:
+#      - ./service/:/srv/api/
+#    networks:
+#      default:
+#        aliases:
+#          - indigo_service
+#    command: supervisord -n

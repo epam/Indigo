@@ -1,0 +1,10 @@
+database:
+  url: localhost
+  db: test
+  user: tarquin
+  pass: postgres
+  schema: public
+general:
+  buffer_size: 10000
+  structure_column: m
+  properties_column: p

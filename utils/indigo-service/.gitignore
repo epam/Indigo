@@ -1,0 +1,8 @@
+/extra
+.DS_Store
+*.pyc
+*.pyo
+*.swp
+*.class
+dump.rdb
+.idea
