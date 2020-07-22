@@ -24,6 +24,8 @@
 
 // Helper classes for parallelized indexing
 
+class BingoIndex;
+
 namespace indigo
 {
     namespace bingo_core
