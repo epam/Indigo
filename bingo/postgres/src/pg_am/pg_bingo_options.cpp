@@ -3,6 +3,7 @@
 
 extern "C"
 {
+#include "postgres.h"
 #include "access/reloptions.h"
 #include "access/relscan.h"
 #include "catalog/index.h"
@@ -12,7 +13,6 @@ extern "C"
 #include "fmgr.h"
 #include "optimizer/cost.h"
 #include "optimizer/plancat.h"
-#include "postgres.h"
 #include "storage/bufmgr.h"
 #include "utils/array.h"
 #include "utils/builtins.h"

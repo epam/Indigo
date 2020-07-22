@@ -2,10 +2,10 @@
 
 extern "C"
 {
+#include "postgres.h"
 #include "catalog/pg_type.h"
 #include "executor/spi.h"
 #include "fmgr.h"
-#include "postgres.h"
 #include "storage/itemptr.h"
 }
 

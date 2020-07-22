@@ -2,11 +2,11 @@
 
 extern "C"
 {
+#include "postgres.h"
 #include "access/htup.h"
 #include "catalog/index.h"
 #include "catalog/pg_type.h"
 #include "fmgr.h"
-#include "postgres.h"
 #include "storage/bufmgr.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"

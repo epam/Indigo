@@ -1,10 +1,11 @@
 #include <ctype.h>
 #include <math.h>
 
+#include "postgres.h"
 #include "fmgr.h"
 #include "nodes/relation.h"
 #include "optimizer/cost.h"
-#include "postgres.h"
+
 
 #if PG_VERSION_NUM / 100 >= 902
 #include "optimizer/predtest.h"

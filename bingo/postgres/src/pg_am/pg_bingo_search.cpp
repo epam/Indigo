@@ -2,11 +2,11 @@
 
 extern "C"
 {
+#include "postgres.h"
 #include "access/relscan.h"
 #include "access/skey.h"
 #include "fmgr.h"
 #include "miscadmin.h"
-#include "postgres.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
 }
