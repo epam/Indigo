@@ -271,14 +271,17 @@ void TautomerSuperStructure::_findMinDistance(int source, int maxDist, Array<int
     parents.resize(vertexEnd());
 
     // Fill distances by infinity
-    for (int j = 0; j < distances.size(); j++)
+    for (int j = 0; j < distances.size(); j++) {
         distances[j] = INFINITY;
+        parents[j] = -1;
+    }
     QS_DEF(Queue<int>, front);
     front.clear();
     front.setLength(vertexEnd());
 
     distances[source] = 0;
     parents[source] = -1;
+    
     front.push(source);
     while (!front.isEmpty())
     {
@@ -300,35 +303,38 @@ void TautomerSuperStructure::_findMinDistance(int source, int maxDist, Array<int
     }
     for (int j = 0; j < dest.size(); j++)
     {
+        int cur = dest[j];
+        int cur_dest = dest[j];
         // Check chain
-        if (distances[dest[j]] != INFINITY)
+        if (distances[cur_dest] != INFINITY)
         {
             int inRingCount = 0;
             int doubleBondsCount = 0, tripleBondsCount = 0;
-
-            int cur = dest[j];
+            
             int prev = parents[cur];
             while (prev != -1)
             {
                 int edge_idx = findEdgeIndex(cur, prev);
-                if (Molecule::getBondTopology(edge_idx) == TOPOLOGY_RING)
-                    inRingCount++;
-                if (Molecule::getBondOrder(edge_idx) == BOND_DOUBLE)
-                    doubleBondsCount++;
-                if (Molecule::getBondOrder(edge_idx) == BOND_TRIPLE)
-                    tripleBondsCount++;
+                if(edge_idx >= 0) {
+                  if (Molecule::getBondTopology(edge_idx) == TOPOLOGY_RING)
+                      inRingCount++;
+                  if (Molecule::getBondOrder(edge_idx) == BOND_DOUBLE)
+                      doubleBondsCount++;
+                  if (Molecule::getBondOrder(edge_idx) == BOND_TRIPLE)
+                      tripleBondsCount++;
+                }
 
                 cur = prev;
                 prev = parents[prev];
             }
 
             if (inRingCount > 1)
-                distances[dest[j]] = 2 * INFINITY;
+                distances[cur_dest] = 2 * INFINITY;
             else if (inRingCount == 0)
                 if (doubleBondsCount > 1 || tripleBondsCount > 0)
-                    distances[dest[j]] = 2 * INFINITY;
+                    distances[cur_dest] = 2 * INFINITY;
         }
-        result[j] = distances[dest[j]];
+        result[j] = distances[cur_dest];
     }
 }
 
