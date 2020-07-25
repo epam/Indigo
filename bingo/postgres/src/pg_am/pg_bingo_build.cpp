@@ -183,7 +183,12 @@ Datum bingo_build(PG_FUNCTION_ARGS)
          */
         BINGO_PG_TRY
         {
-            reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
+            #if PG_VERSION_NUM / 100 >= 1100
+                reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine, NULL);
+            #else
+                reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
+            #endif
+            
         }
         BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", message));
 

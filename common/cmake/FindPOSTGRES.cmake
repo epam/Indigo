@@ -7,6 +7,7 @@ FIND_PATH(POSTGRES_INCLUDE_DIRS postgres.h
     $ENV{BINGO_PG_DIR}/include/server
     $ENV{BINGO_PG_DIR}/server
     $ENV{BINGO_PG_DIR}/include/postgresql/server
+	$ENV{BINGO_PG_DIR}/src/include
     /usr/local/include/server
     /usr/include/postgres/ENV{BINGO_PG_VERSION}/server
     /usr/include/postgresql/ENV{BINGO_PG_VERSION}/server
