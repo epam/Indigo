@@ -283,8 +283,11 @@ void BingoPgBuffer::formIndexTuple(void* map_data, int size)
     {
         Page page = BufferGetPage(getBuffer());
         Datum map_datum = PointerGetDatum(map_data);
-
+        #if PG_VERSION_NUM / 100 >= 1200
+        TupleDesc index_desc = CreateTemplateTupleDesc(1);
+        #else
         TupleDesc index_desc = CreateTemplateTupleDesc(1, false);
+        #endif
 
         #if PG_VERSION_NUM / 100 >= 1100
             index_desc->attrs[0].attlen = size;

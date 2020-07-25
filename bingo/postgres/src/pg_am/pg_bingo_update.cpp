@@ -8,6 +8,9 @@ extern "C"
 #include "storage/bufmgr.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
+#if PG_VERSION_NUM / 100 >= 1200
+#include "access/genam.h"
+#endif
 }
 
 #include "bingo_pg_fix_post.h"
@@ -30,7 +33,7 @@ extern "C"
 #endif
 
 /*
- *	Insert an index tuple into a hash table.
+ *	Insert an index tuple into a bingo table.
  *
  */
 #if PG_VERSION_NUM / 100 >= 1000

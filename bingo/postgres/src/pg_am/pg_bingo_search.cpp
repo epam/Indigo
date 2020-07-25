@@ -9,6 +9,9 @@ extern "C"
 #include "miscadmin.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
+#if PG_VERSION_NUM / 100 >= 1200
+    #include "access/genam.h"
+#endif
 }
 
 #include "bingo_pg_fix_post.h"
@@ -229,7 +232,12 @@ Datum bingo_gettuple(PG_FUNCTION_ARGS)
         /*
          * Fetch to the next item
          */
-        result = search_engine->next(scan, &scan->xs_ctup.t_self);
+        #if PG_VERSION_NUM / 100 >= 1200
+            result = search_engine->next(scan, &scan->xs_heaptid);
+        #else
+            result = search_engine->next(scan, &scan->xs_ctup.t_self);
+        #endif
+        
     }
     PG_BINGO_HANDLE(delete search_engine; scan->opaque = NULL);
     /*

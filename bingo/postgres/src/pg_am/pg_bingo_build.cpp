@@ -14,6 +14,10 @@ extern "C"
 #if PG_VERSION_NUM / 100 >= 906
 #include "access/amapi.h"
 #endif
+
+#if PG_VERSION_NUM / 100 >= 1200
+#include "access/tableam.h"
+#endif
 }
 
 #include "bingo_pg_fix_post.h"
@@ -183,7 +187,9 @@ Datum bingo_build(PG_FUNCTION_ARGS)
          */
         BINGO_PG_TRY
         {
-            #if PG_VERSION_NUM / 100 >= 1100
+            #if PG_VERSION_NUM / 100 >= 1200
+                reltuples = table_index_build_scan(heap, index, indexInfo, true, true, bingoIndexCallback, (void*)&build_engine, NULL);
+            #elif PG_VERSION_NUM / 100 >= 1100
                 reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine, NULL);
             #else
                 reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
