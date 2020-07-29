@@ -11,12 +11,8 @@
 #include "optimizer/predtest.h"
 #endif
 #include "optimizer/cost.h"
-
-
-#if PG_VERSION_NUM / 100 >= 902
 #include "utils/selfuncs.h"
 #include "utils/spccache.h"
-#endif
 
 /*
 #include "access/sysattr.h"
@@ -310,7 +306,35 @@
 //      */
 //     *indexCorrelation = -1.0;
 // }
-#if PG_VERSION_NUM / 100 < 1200
+
+
+
+
+#if PG_VERSION_NUM / 100 >= 1200
+
+void bingo_costestimate120(struct PlannerInfo* root, struct IndexPath* path, double loop_count, Cost* indexStartupCost, Cost* indexTotalCost,
+                           Selectivity* indexSelectivity, double* indexCorrelation, double* indexPages) {
+
+
+    GenericCosts costs;
+    MemSet(&costs, 0, sizeof(costs));
+	costs.numIndexTuples = 1;
+    costs.numIndexPages = 1;
+    genericcostestimate(root, path, loop_count, &costs);
+
+    costs.indexTotalCost = 1;
+    costs.indexCorrelation = -1;
+    costs.numIndexPages = 1;
+
+    *indexStartupCost = costs.indexStartupCost;
+	*indexTotalCost = costs.indexTotalCost;
+	*indexSelectivity = costs.indexSelectivity;
+	*indexCorrelation = costs.indexCorrelation;
+    *indexPages = costs.numIndexPages;
+}
+
+#else
+
 static List* add_predicate_to_quals(IndexOptInfo* index, List* indexQuals)
 {
     List* predExtraQuals = NIL;
@@ -333,6 +357,7 @@ static List* add_predicate_to_quals(IndexOptInfo* index, List* indexQuals)
     /* list_concat avoids modifying the passed-in indexQuals list */
     return list_concat(predExtraQuals, indexQuals);
 }
+
 static void genericcostestimate92(PlannerInfo* root, IndexPath* path, double loop_count, double numIndexTuples, Cost* indexStartupCost, Cost* indexTotalCost,
                                   Selectivity* indexSelectivity, double* indexCorrelation)
 {
@@ -542,47 +567,43 @@ static void genericcostestimate92(PlannerInfo* root, IndexPath* path, double loo
      */
     *indexCorrelation = -1.0;
 }
-#endif
 
-#if PG_VERSION_NUM / 100 >= 904
-PGDLLEXPORT PG_FUNCTION_INFO_V1(bingo_costestimate);
-#else
-PG_FUNCTION_INFO_V1(bingo_costestimate);
-PGDLLEXPORT Datum bingo_costestimate(PG_FUNCTION_ARGS);
-#endif
-Datum bingo_costestimate(PG_FUNCTION_ARGS)
+void bingo_costestimate96(struct PlannerInfo* root, struct IndexPath* path, double loop_count, Cost* indexStartupCost, Cost* indexTotalCost,
+                          Selectivity* indexSelectivity, double* indexCorrelation)
 {
-    PlannerInfo* root = (PlannerInfo*)PG_GETARG_POINTER(0);
-    IndexPath* path = (IndexPath*)PG_GETARG_POINTER(1);
-    double loop_count = PG_GETARG_FLOAT8(2);
-    Cost* indexStartupCost = (Cost*)PG_GETARG_POINTER(3);
-    Cost* indexTotalCost = (Cost*)PG_GETARG_POINTER(4);
-    Selectivity* indexSelectivity = (Selectivity*)PG_GETARG_POINTER(5);
-    double* indexCorrelation = (double*)PG_GETARG_POINTER(6);
-
-#if PG_VERSION_NUM / 100 >= 1200
-    double *indexPages = (double*)PG_GETARG_POINTER(7);
-    GenericCosts costs;
-    MemSet(&costs, 0, sizeof(costs));
-	costs.numIndexTuples = 1;
-    costs.numIndexPages = 1;
-    genericcostestimate(root, path, loop_count, &costs);
-
-    costs.indexTotalCost = 1;
-    costs.indexCorrelation = -1;
-    costs.numIndexPages = 1;
-
-    *indexStartupCost = costs.indexStartupCost;
-	*indexTotalCost = costs.indexTotalCost;
-	*indexSelectivity = costs.indexSelectivity;
-	*indexCorrelation = costs.indexCorrelation;
-    *indexPages = costs.numIndexPages;
-#else
     genericcostestimate92(root, path, loop_count, 1.0, indexStartupCost, indexTotalCost, indexSelectivity, indexCorrelation);
+}
+
+void bingo_costestimate101(struct PlannerInfo* root, struct IndexPath* path, double loop_count, Cost* indexStartupCost, Cost* indexTotalCost,
+                           Selectivity* indexSelectivity, double* indexCorrelation, double* indexPages)
+{
+
+    genericcostestimate92(root, path, loop_count, 1.0, indexStartupCost, indexTotalCost, indexSelectivity, indexCorrelation);
+
+    *indexPages = 1;
+}
 #endif
 
-    PG_RETURN_VOID();
-}
+
+
+
+
+// #if PG_VERSION_NUM / 100 >= 904
+// PGDLLEXPORT PG_FUNCTION_INFO_V1(bingo_costestimate);
+// Datum bingo_costestimate(PG_FUNCTION_ARGS)
+// {
+//     PlannerInfo* root = (PlannerInfo*)PG_GETARG_POINTER(0);
+//     IndexPath* path = (IndexPath*)PG_GETARG_POINTER(1);
+//     double loop_count = PG_GETARG_FLOAT8(2);
+//     Cost* indexStartupCost = (Cost*)PG_GETARG_POINTER(3);
+//     Cost* indexTotalCost = (Cost*)PG_GETARG_POINTER(4);
+//     Selectivity* indexSelectivity = (Selectivity*)PG_GETARG_POINTER(5);
+//     double* indexCorrelation = (double*)PG_GETARG_POINTER(6);
+
+//     genericcostestimate92(root, path, loop_count, 1.0, indexStartupCost, indexTotalCost, indexSelectivity, indexCorrelation);
+
+//     PG_RETURN_VOID();
+// }
 
 // Datum bingo_costestimate(PG_FUNCTION_ARGS)
 // {
@@ -663,20 +684,6 @@ Datum bingo_costestimate(PG_FUNCTION_ARGS)
 //     PG_RETURN_VOID();
 // }
 
-void bingo_costestimate96(struct PlannerInfo* root, struct IndexPath* path, double loop_count, Cost* indexStartupCost, Cost* indexTotalCost,
-                          Selectivity* indexSelectivity, double* indexCorrelation)
-{
-    genericcostestimate92(root, path, loop_count, 1.0, indexStartupCost, indexTotalCost, indexSelectivity, indexCorrelation);
-}
-
-void bingo_costestimate101(struct PlannerInfo* root, struct IndexPath* path, double loop_count, Cost* indexStartupCost, Cost* indexTotalCost,
-                           Selectivity* indexSelectivity, double* indexCorrelation, double* indexPages)
-{
-
-    genericcostestimate92(root, path, loop_count, 1.0, indexStartupCost, indexTotalCost, indexSelectivity, indexCorrelation);
-
-    *indexPages = 1;
-}
 
 
 /*

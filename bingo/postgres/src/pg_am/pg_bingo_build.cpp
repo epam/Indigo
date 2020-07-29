@@ -48,7 +48,11 @@ extern "C"
 
     CEXPORT IndexBuildResult* bingo_build(Relation, Relation, struct IndexInfo*);
     CEXPORT void bingo_buildempty(Relation);
-#if PG_VERSION_NUM / 100 >= 1000
+
+#if PG_VERSION_NUM / 100 >= 1200
+    CEXPORT bool bingo_insert(Relation, Datum*, bool*, ItemPointer, Relation, IndexUniqueCheck, struct IndexInfo*);
+    CEXPORT void bingo_costestimate120(struct PlannerInfo*, struct IndexPath*, double, Cost*, Cost*, Selectivity*, double*, double*);
+#elif PG_VERSION_NUM / 100 >= 1000
     CEXPORT bool bingo_insert(Relation, Datum*, bool*, ItemPointer, Relation, IndexUniqueCheck, struct IndexInfo*);
     CEXPORT void bingo_costestimate101(struct PlannerInfo*, struct IndexPath*, double, Cost*, Cost*, Selectivity*, double*, double*);
 #else
@@ -103,14 +107,20 @@ Datum bingo_handler(PG_FUNCTION_ARGS)
     amroutine->amcanreturn = NULL;
 
 #if PG_VERSION_NUM / 100 >= 1000
-    amroutine->amcostestimate = bingo_costestimate101;
     amroutine->amcanparallel = false;
     amroutine->amestimateparallelscan = NULL;
     amroutine->aminitparallelscan = NULL;
     amroutine->amparallelrescan = NULL;
+#endif
+
+#if PG_VERSION_NUM / 100 >= 1200
+    amroutine->amcostestimate = bingo_costestimate120;
+#elif PG_VERSION_NUM / 100 >= 1000
+    amroutine->amcostestimate = bingo_costestimate101;
 #else
     amroutine->amcostestimate = bingo_costestimate96;
 #endif
+
     amroutine->amoptions = bingo_options;
     amroutine->amproperty = NULL;
     amroutine->amvalidate = bingo_validate;
