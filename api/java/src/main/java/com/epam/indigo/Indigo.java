@@ -1,14 +1,14 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
- * 
+ *
  * This file is part of Indigo toolkit.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,8 +75,8 @@ public class Indigo {
     public static final int OS_LINUX = 3;
     public static final int OS_SOLARIS = 4;
     private boolean _session_released = false;
-    private static int _os = 0;
-    private static String _dllpath = "";
+    private static int _os;
+    private static String _dllpath;
     private static IndigoLib _lib = null;
     private String _path;
     private long _sid;
@@ -138,7 +138,7 @@ public class Indigo {
         int i = 0;
 
         for (Integer x : collection)
-            res[i++] = x.intValue();
+            res[i++] = x;
 
         return res;
     }
@@ -151,13 +151,13 @@ public class Indigo {
         int i = 0;
 
         for (Float x : collection)
-            res[i++] = x.floatValue();
+            res[i++] = x;
 
         return res;
     }
 
     private static String getHashString(InputStream input) throws NoSuchProviderException, NoSuchAlgorithmException, IOException {
-        String res = "";
+        StringBuilder res = new StringBuilder();
         MessageDigest algorithm = MessageDigest.getInstance("MD5");
         algorithm.reset();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -172,16 +172,16 @@ public class Indigo {
 
         algorithm.update(buffer.toByteArray());
         byte[] hashArray = algorithm.digest();
-        String tmp = "";
-        for (int i = 0; i < hashArray.length; i++) {
-            tmp = (Integer.toHexString(0xFF & hashArray[i]));
+        String tmp;
+        for (byte b : hashArray) {
+            tmp = (Integer.toHexString(0xFF & b));
             if (tmp.length() == 1) {
-                res += "0" + tmp;
+                res.append("0").append(tmp);
             } else {
-                res += tmp;
+                res.append(tmp);
             }
         }
-        return res;
+        return res.toString();
     }
 
     public static String extractFromJar(Class cls, String path, String filename) {
@@ -199,7 +199,7 @@ public class Indigo {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             byte[] buffer = new byte[4096];
             int len;
-            while ((len = stream.read(buffer)) > -1 ) {
+            while ((len = stream.read(buffer)) > -1) {
                 baos.write(buffer, 0, len);
             }
             baos.flush();
@@ -222,7 +222,7 @@ public class Indigo {
             dllfile = new File(tmpdir.getAbsoluteFile() + File.separator + filename);
             if (!dllfile.exists()) {
                 FileOutputStream outstream = new FileOutputStream(dllfile);
-                byte buf[] = new byte[4096];
+                byte[] buf = new byte[4096];
 
                 while ((len = is2.read(buf)) > 0)
                     outstream.write(buf, 0, len);
@@ -230,23 +230,17 @@ public class Indigo {
                 outstream.close();
                 is2.close();
             }
-        } catch (IOException e) {
-            return null;
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        } catch (NoSuchProviderException e) {
+        } catch (IOException | NoSuchAlgorithmException | NoSuchProviderException e) {
             return null;
         }
 
-        String p;
+        String fullpath;
 
         try {
-            p = dllfile.getCanonicalPath();
+            fullpath = dllfile.getCanonicalPath();
         } catch (IOException e) {
             return null;
         }
-
-        final String fullpath = p;
 
         return fullpath;
     }
@@ -271,9 +265,9 @@ public class Indigo {
             return;
 
         if (_os == OS_LINUX || _os == OS_SOLARIS)
-            _lib = (IndigoLib) Native.loadLibrary(getPathToBinary(path, "libindigo.so"), IndigoLib.class);
+            _lib = Native.load(getPathToBinary(path, "libindigo.so"), IndigoLib.class);
         else if (_os == OS_MACOS)
-            _lib = (IndigoLib) Native.loadLibrary(getPathToBinary(path, "libindigo.dylib"), IndigoLib.class);
+            _lib = Native.load(getPathToBinary(path, "libindigo.dylib"), IndigoLib.class);
         else // _os == OS_WINDOWS
         {
             if ((new File(getPathToBinary(path, "vcruntime140.dll"))).exists()) {
@@ -304,7 +298,7 @@ public class Indigo {
                     // File could have been already loaded
                 }
             }
-            _lib = (IndigoLib) Native.loadLibrary(getPathToBinary(path, "indigo.dll"), IndigoLib.class);
+            _lib = Native.load(getPathToBinary(path, "indigo.dll"), IndigoLib.class);
         }
     }
 
@@ -441,42 +435,42 @@ public class Indigo {
         setSessionID();
         checkResult(this, _lib.indigoSetOptionFloat(option, (float) value));
     }
-    
+
     public String getOption(String option) {
-       setSessionID();
-       return Indigo.checkResultString(this, _lib.indigoGetOption(option));
+        setSessionID();
+        return Indigo.checkResultString(this, _lib.indigoGetOption(option));
     }
-    
+
     public Integer getOptionInt(String option) {
-      setSessionID();
-      IntByReference res = new IntByReference();
-      if (Indigo.checkResult(this, _lib.indigoGetOptionInt(option, res)) == 1) {
-         return res.getValue();
-      }
-      return null;
+        setSessionID();
+        IntByReference res = new IntByReference();
+        if (Indigo.checkResult(this, _lib.indigoGetOptionInt(option, res)) == 1) {
+            return res.getValue();
+        }
+        return null;
     }
-    
+
     public boolean getOptionBool(String option) {
-      setSessionID();
-      IntByReference res = new IntByReference();
-      Indigo.checkResult(this, _lib.indigoGetOptionBool(option, res));
-      return res.getValue() > 0;
+        setSessionID();
+        IntByReference res = new IntByReference();
+        Indigo.checkResult(this, _lib.indigoGetOptionBool(option, res));
+        return res.getValue() > 0;
     }
-    
+
     public Float getOptionFloat(String option) {
-      setSessionID();
-      FloatByReference res = new FloatByReference();
-      if (Indigo.checkResult(this, _lib.indigoGetOptionFloat(option, res)) == 1) {
-         return res.getValue();
-      }
-      return null;
+        setSessionID();
+        FloatByReference res = new FloatByReference();
+        if (Indigo.checkResult(this, _lib.indigoGetOptionFloat(option, res)) == 1) {
+            return res.getValue();
+        }
+        return null;
     }
-    
+
     public String getOptionType(String option) {
-       setSessionID();
-       return Indigo.checkResultString(this, _lib.indigoGetOptionType(option));
+        setSessionID();
+        return Indigo.checkResultString(this, _lib.indigoGetOptionType(option));
     }
-    
+
 
     public void resetOptions() {
         setSessionID();
@@ -643,7 +637,7 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, _lib.indigoLoadStructureFromBuffer(buf, buf.length, params)));
     }
 
-    public IndigoObject loadFingerprintFromBuffer (byte[] buf) {
+    public IndigoObject loadFingerprintFromBuffer(byte[] buf) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, _lib.indigoLoadFingerprintFromBuffer(buf, buf.length)));
     }
@@ -842,9 +836,9 @@ public class Indigo {
         Object[] guard = new Object[]{this, reaction, monomers};
 
         IndigoObject monomersArrayArray = createArray();
-        for (Iterable<IndigoObject> iter: monomers) {
+        for (Iterable<IndigoObject> iter : monomers) {
             IndigoObject monomersArray = createArray();
-            for (IndigoObject monomer: iter) {
+            for (IndigoObject monomer : iter) {
                 monomersArray.arrayAdd(monomer);
             }
             monomersArrayArray.arrayAdd(monomersArray);
@@ -949,6 +943,7 @@ public class Indigo {
 
         return new IndigoObject(this, result, reader);
     }
+
     public IndigoObject iterateTautomers(IndigoObject molecule, String params) {
         setSessionID();
         int result = checkResult(this, _lib.indigoIterateTautomers(molecule.self, params));
@@ -973,7 +968,7 @@ public class Indigo {
         }
         setSessionID();
         int result = checkResult(this, _lib.indigoNameToStructure(name, params));
-        if(result == 0)
+        if (result == 0)
             return null;
 
         return new IndigoObject(this, result);
