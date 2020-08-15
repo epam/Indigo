@@ -27,6 +27,7 @@ import com.sun.jna.ptr.PointerByReference;
 public interface IndigoLib extends Library {
     String indigoVersion();
 
+    @SuppressWarnings("checkstyle:Indentation")
     long indigoAllocSessionId();
 
     void indigoSetSessionId(long id);
@@ -133,6 +134,7 @@ public interface IndigoLib extends Library {
 
     Pointer indigoJson(int object);
 
+    @SuppressWarnings("checkstyle:Indentation")
     int indigoSaveCdxml(int object, int output);
 
     int indigoSaveCdxmlToFile(int object, String filename);
@@ -343,8 +345,14 @@ public interface IndigoLib extends Library {
 
     Pointer indigoData(int data_sgroup);
 
-    int indigoAddDataSGroup(int molecule, int natoms, int[] atoms,
-                            int nbonds, int[] bonds, String description, String data);
+    int indigoAddDataSGroup(
+            int molecule,
+            int natoms,
+            int[] atoms,
+            int nbonds,
+            int[] bonds,
+            String description,
+            String data);
 
     int indigoSetDataSGroupXY(int sgroup, float x, float y, String options);
 
@@ -378,8 +386,17 @@ public interface IndigoLib extends Library {
 
     int indigoSetSGroupMultiplier(int sgroup, int mult);
 
-    int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y1, float x2, float y2,
-                                float x3, float y3, float x4, float y4);
+    int indigoSetSGroupBrackets(
+            int sgroup,
+            int brk_style,
+            float x1,
+            float y1,
+            float x2,
+            float y2,
+            float x3,
+            float y3,
+            float x4,
+            float y4);
 
     Pointer indigoGetSGroupCoords(int sgroup);
 
@@ -597,7 +614,8 @@ public interface IndigoLib extends Library {
 
     int indigoGetSubmolecule(int molecule, int nvertices, int[] vertices);
 
-    int indigoCreateEdgeSubmolecule(int molecule, int nvertices, int[] vertices, int nedges, int[] edges);
+    int indigoCreateEdgeSubmolecule(
+            int molecule, int nvertices, int[] vertices, int nedges, int[] edges);
 
     int indigoRemoveAtoms(int molecule, int nvertices, int[] vertices);
 

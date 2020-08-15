@@ -19,7 +19,7 @@
 package com.epam.indigo;
 
 public class IndigoException extends RuntimeException {
-    Object obj;
+    final Object obj;
 
     // You may wonder what object we are keeping here and why.
     // Here is the answer: we are keeping the object that raised the exception,
@@ -39,8 +39,8 @@ public class IndigoException extends RuntimeException {
     // object (which can be thrown from every Indigo or IndigoObject method).
     // As long as the JVM sees that the reference is still used somewhere
     // afterwards the method call, it does not garbage-collect the object.
-    public IndigoException(Object obj_, String message) {
+    public IndigoException(Object obj, String message) {
         super(message);
-        obj = obj_;
+        this.obj = obj;
     }
 }
