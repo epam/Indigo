@@ -4,6 +4,7 @@ sudo: required
 os:
   - linux
   - osx
+  - windows
 branches:
   only:
   - master
@@ -20,7 +21,8 @@ addons:
 script:
   - if [ $TRAVIS_OS_NAME == linux ]; then CC=/usr/bin/gcc-6 CXX=/usr/bin/g++-6 python build_scripts/indigo-release-libs.py; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then python build_scripts/indigo-release-libs.py; fi
-  - python build_scripts/indigo-make-by-libs.py --type=python
+  - if [ $TRAVIS_OS_NAME == windows ]; then python build_scripts/indigo-release-libs.py; fi
+  - python build_scripts/indigo-make-by-libs.py
 notifications:
   webhooks:
     urls:
