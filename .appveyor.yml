@@ -5,7 +5,7 @@ branches:
   only:
   - master
 environment:
-  PATH: '%PATH%;C:\Program Files\CMake\bin;C:\Python36-x64;'
+  PATH: '%PATH%;C:\Program Files\CMake\bin;C:\Python36-x64;C:\Program Files (x86)\Java\jdk1.8.0;'
 build_script:
 - cmd: python build_scripts/indigo-release-libs.py
 - cmd: python build_scripts/indigo-make-by-libs.py --type=python,java
