@@ -27,7 +27,7 @@ os.mkdir('java')
 
 os.chdir(os.path.join(api_dir, "java"))
 subprocess.check_call("mvn -q versions:set -DnewVersion=%s" % version, shell=True)
-subprocess.check_call("mvn -q clean package install -Dmaven.test.skip=true", shell=True)
+subprocess.check_call("mvn -q clean package install", shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "renderer", "java"))
