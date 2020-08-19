@@ -175,7 +175,7 @@ public class Indigo {
         return res.toString();
     }
 
-    public static String extractFromJar(Class<Indigo> cls, String path, String filename) {
+    public static String extractFromJar(Class<?> cls, String path, String filename) {
         InputStream stream = cls.getResourceAsStream(Paths.get(path, filename).toString());
 
         if (stream == null) return null;
