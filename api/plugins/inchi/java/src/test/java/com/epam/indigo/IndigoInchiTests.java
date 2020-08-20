@@ -11,7 +11,7 @@ public class IndigoInchiTests {
     @Test
     @DisplayName("Loading molecule from string and getting inchi")
     void loadMoleculeFromSMILES() {
-        Indigo indigo = new Indigo();
+        Indigo indigo = new Indigo(System.getProperty("user.dir") + "/../../libs/shared");
         IndigoInchi indigoInchi = new IndigoInchi(indigo);
         IndigoObject indigoObject = indigo.loadMolecule("C1=CC=CC=C1");
         String inchi = indigoInchi.getInchi(indigoObject);

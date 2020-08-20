@@ -12,7 +12,7 @@ public class BingoTests {
     @DisplayName("Testing loading of the bingo dll")
     @Disabled
     void checkBingoVersion() {
-        Indigo indigo = new Indigo();
+        Indigo indigo = new Indigo(System.getProperty("user.dir") + "/../../libs/shared");
         Bingo bingo = new Bingo(indigo, "", "");
         assertEquals(
                 "",

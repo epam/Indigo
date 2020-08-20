@@ -10,7 +10,7 @@ public class IndigoTests {
     @Test
     @DisplayName("Loading molecule from string and comparing canonical smiles")
     void loadMoleculeFromSMILES() {
-        Indigo indigo = new Indigo();
+        Indigo indigo = new Indigo(System.getProperty("user.dir") + "/../libs/shared");
         IndigoObject indigoObject = indigo.loadMolecule("C1=CC=CC=C1");
 
         assertEquals(
