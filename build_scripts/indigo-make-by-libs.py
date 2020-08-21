@@ -93,6 +93,7 @@ def unpack_to_libs(name, libs_dir):
         zf.extractall(libs_dir)
         unzipped_folder = os.path.join(libs_dir, os.path.basename(name))
         for os_name in os.listdir(os.path.join(unzipped_folder, 'shared')):
+            print('Copying ' + os.path.join(unzipped_folder, 'shared', os_name) + ' to ' + os.path.join(libs_dir, 'shared', os_name))
             shutil.copytree(os.path.join(unzipped_folder, 'shared', os_name), os.path.join(libs_dir, 'shared', os_name))
         shutil.rmtree(unzipped_folder, ignore_errors=True)
 
@@ -188,6 +189,7 @@ def main():
                     if args.type is not None:
                         for g in args.type.split(','):
                             if gen.find(g) != -1:
+                                print(os.listdir(libs_dir))
                                 command = '"%s" "%s" -s "%s"' % (sys.executable, os.path.join(api_dir, gen), w)
                                 print(command)
                                 subprocess.check_call(command, shell=True)
