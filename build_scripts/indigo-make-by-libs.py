@@ -93,7 +93,6 @@ def unpack_to_libs(name, libs_dir):
         zf.extractall(libs_dir)
         unzipped_folder = os.path.join(libs_dir, os.path.basename(name))
         for os_name in os.listdir(os.path.join(unzipped_folder, 'shared')):
-            print('Copying ' + os.path.join(unzipped_folder, 'shared', os_name) + ' to ' + os.path.join(libs_dir, 'shared', os_name))
             shutil.copytree(os.path.join(unzipped_folder, 'shared', os_name), os.path.join(libs_dir, 'shared', os_name))
         shutil.rmtree(unzipped_folder, ignore_errors=True)
 
@@ -133,9 +132,12 @@ def main():
     parser.add_option('--libonlyname', help='extract only the library into api/lib')
     parser.add_option('--config', default="Release", help='project configuration')
     parser.add_option('--type', default='python,java,dotnet', help='wrapper (dotnet, java, python)')
+    parser.add_option('--wrappers-arch', default='win,linux,mac,universal',
+                      help='wrappers arch (win, linux, mac, universal')
 
     (args, left_args) = parser.parse_args()
 
+    required_wrappers_arches = args.wrappers_arch.split(',')
     if not args.type:
         args.type = 'python,java,dotnet'
 
@@ -171,6 +173,8 @@ def main():
         libs_dir = os.path.join(api_dir, "libs")
 
         for w, libs in wrappers:
+            if not w in required_wrappers_arches:
+                continue
             clear_libs(libs_dir)
             if args.libonlyname and w != args.libonlyname:
                 continue
@@ -189,7 +193,6 @@ def main():
                     if args.type is not None:
                         for g in args.type.split(','):
                             if gen.find(g) != -1:
-                                print(os.listdir(libs_dir))
                                 command = '"%s" "%s" -s "%s"' % (sys.executable, os.path.join(api_dir, gen), w)
                                 print(command)
                                 subprocess.check_call(command, shell=True)
