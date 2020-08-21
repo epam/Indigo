@@ -13,7 +13,7 @@ public class IndigoInchiTests {
     @Test
     @DisplayName("Loading molecule from string and getting inchi")
     void loadMoleculeFromSMILES() {
-        Indigo indigo = new Indigo(Paths.get(System.getProperty("user.dir"), "..", "..", "libs", "shared").normalize().toAbsolutePath().toString());
+        Indigo indigo = new Indigo(Paths.get(System.getProperty("user.dir"), "..", "..", "..", "libs", "shared").normalize().toAbsolutePath().toString());
         IndigoInchi indigoInchi = new IndigoInchi(indigo);
         IndigoObject indigoObject = indigo.loadMolecule("C1=CC=CC=C1");
         String inchi = indigoInchi.getInchi(indigoObject);

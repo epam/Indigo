@@ -14,7 +14,7 @@ public class BingoTests {
     @DisplayName("Testing loading of the bingo dll")
     @Disabled
     void checkBingoVersion() {
-        Indigo indigo = new Indigo(Paths.get(System.getProperty("user.dir"), "..", "..", "libs", "shared").normalize().toAbsolutePath().toString());
+        Indigo indigo = new Indigo(Paths.get(System.getProperty("user.dir"), "..", "..", "..", "libs", "shared").normalize().toAbsolutePath().toString());
         Bingo bingo = new Bingo(indigo, "", "");
         assertEquals(
                 "",
