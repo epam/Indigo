@@ -20,7 +20,6 @@ package com.epam.indigo;
 
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
-import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
 import java.io.IOException;
