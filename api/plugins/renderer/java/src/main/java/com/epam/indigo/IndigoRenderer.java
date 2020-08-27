@@ -19,7 +19,7 @@
 package com.epam.indigo;
 
 import com.sun.jna.Native;
-import org.apache.commons.lang3.SystemUtils;
+import com.sun.jna.Platform;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,11 +99,11 @@ public class IndigoRenderer {
         if (lib != null)
             return;
 
-        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_SUN_OS)
+        if (Platform.isLinux() || Platform.isSolaris())
             lib = Native.load(getPathToBinary(path, "libindigo-renderer.so"), IndigoRendererLib.class);
-        else if (SystemUtils.IS_OS_MAC)
+        else if (Platform.isMac())
             lib = Native.load(getPathToBinary(path, "libindigo-renderer.dylib"), IndigoRendererLib.class);
-        else if (SystemUtils.IS_OS_WINDOWS)
+        else if (Platform.isWindows())
             lib = Native.load(getPathToBinary(path, "indigo-renderer.dll"), IndigoRendererLib.class);
     }
 

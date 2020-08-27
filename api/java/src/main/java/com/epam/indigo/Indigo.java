@@ -19,11 +19,10 @@
 package com.epam.indigo;
 
 import com.sun.jna.Native;
+import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.SystemUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -138,12 +137,24 @@ public class Indigo {
 
     public static int[] toIntArray(Collection<Integer> collection) {
         if (collection == null) return new int[0];
-        return (int[]) ArrayUtils.toPrimitive(collection);
+
+        int[] res = new int[collection.size()];
+        int i = 0;
+
+        for (Integer x : collection) res[i++] = x;
+
+        return res;
     }
 
     public static float[] toFloatArray(Collection<Float> collection) {
         if (collection == null) return new float[0];
-        return (float[]) ArrayUtils.toPrimitive(collection);
+
+        float[] res = new float[collection.size()];
+        int i = 0;
+
+        for (Float x : collection) res[i++] = x;
+
+        return res;
     }
 
     private static String getHashString(InputStream input)
@@ -244,11 +255,11 @@ public class Indigo {
     private static synchronized void loadIndigo(String path) {
         if (lib != null) return;
 
-        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_SUN_OS)
+        if (Platform.isLinux() || Platform.isSolaris())
             lib = Native.load(getPathToBinary(path, LIBINDIGO_SO), IndigoLib.class);
-        else if (SystemUtils.IS_OS_MAC)
+        else if (Platform.isMac())
             lib = Native.load(getPathToBinary(path, LIBINDIGO_DYLIB), IndigoLib.class);
-        else if (SystemUtils.IS_OS_WINDOWS) {
+        else if (Platform.isWindows()) {
             if (Files.exists(Paths.get(getPathToBinary(path, VCRUNTIME_140_DLL)))) {
                 try {
                     System.load(getPathToBinary(path, VCRUNTIME_140_DLL));
@@ -291,14 +302,14 @@ public class Indigo {
 
     private static String getDllPath() {
         String path = "";
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (Platform.isWindows()) {
             path += "Win";
             path += File.separator;
             String archstr = System.getProperty("os.arch");
             if (archstr.equals("x86") || archstr.equals("i386")) path += "x86";
             else if (archstr.equals("x86_64") || archstr.equals("amd64")) path += "x64";
             else throw new Error("architecture not recognized");
-        } else if (SystemUtils.IS_OS_MAC) {
+        } else if (Platform.isMac()) {
             path += "Mac";
             path += File.separator;
             String version = System.getProperty("os.version");
@@ -323,14 +334,14 @@ public class Indigo {
                         "Indigo cannot find native libraries for Mac OS X 10." + minorVersion);
             }
             path += "10." + usingVersion;
-        } else if (SystemUtils.IS_OS_LINUX) {
+        } else if (Platform.isLinux()) {
             path += "Linux";
             path += File.separator;
             String archstr = System.getProperty("os.arch");
             if (archstr.equals("x86") || archstr.equals("i386")) path += "x86";
             else if (archstr.equals("x86_64") || archstr.equals("amd64")) path += "x64";
             else throw new Error("architecture not recognized");
-        } else if (SystemUtils.IS_OS_SUN_OS) {
+        } else if (Platform.isSolaris()) {
             path += "Sun";
             path += File.separator;
             String model = System.getProperty("sun.arch.data.model");

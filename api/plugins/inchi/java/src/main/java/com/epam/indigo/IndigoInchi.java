@@ -19,6 +19,7 @@
 package com.epam.indigo;
 
 import com.sun.jna.Native;
+import com.sun.jna.Platform;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
@@ -91,11 +92,11 @@ public class IndigoInchi {
         if (lib != null)
             return;
 
-        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_SUN_OS)
+        if (Platform.isLinux() || Platform.isSolaris())
             lib = Native.load(getPathToBinary(path, "libindigo-inchi.so"), IndigoInchiLib.class);
-        else if (SystemUtils.IS_OS_MAC)
+        else if (Platform.isMac())
             lib = Native.load(getPathToBinary(path, "libindigo-inchi.dylib"), IndigoInchiLib.class);
-        else if (SystemUtils.IS_OS_WINDOWS)
+        else if (Platform.isWindows())
             lib = Native.load(getPathToBinary(path, "indigo-inchi.dll"), IndigoInchiLib.class);
     }
 
