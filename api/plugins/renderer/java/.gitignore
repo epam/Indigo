@@ -1,3 +1,3 @@
 *.iml
 .idea
-.mvn
+.mvn/wrapper/*.jar
