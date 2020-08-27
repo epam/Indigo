@@ -244,9 +244,9 @@ public class Indigo {
             if (res != null) return res;
             path = "lib";
         }
-        Path newPath = Paths.get(path, dllpath, filename);
+        path = path + File.separator + dllpath + File.separator + filename;
         try {
-            return newPath.toFile().getCanonicalPath();
+            return new File(path).getCanonicalPath();
         } catch (IOException e) {
             return path;
         }
