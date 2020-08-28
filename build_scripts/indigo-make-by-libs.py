@@ -132,9 +132,12 @@ def main():
     parser.add_option('--libonlyname', help='extract only the library into api/lib')
     parser.add_option('--config', default="Release", help='project configuration')
     parser.add_option('--type', default='python,java,dotnet', help='wrapper (dotnet, java, python)')
+    parser.add_option('--wrappers-arch', default='win,linux,mac,universal',
+                      help='wrappers arch (win, linux, mac, universal')
 
     (args, left_args) = parser.parse_args()
 
+    required_wrappers_arches = args.wrappers_arch.split(',')
     if not args.type:
         args.type = 'python,java,dotnet'
 
@@ -170,6 +173,8 @@ def main():
         libs_dir = os.path.join(api_dir, "libs")
 
         for w, libs in wrappers:
+            if not w in required_wrappers_arches:
+                continue
             clear_libs(libs_dir)
             if args.libonlyname and w != args.libonlyname:
                 continue
