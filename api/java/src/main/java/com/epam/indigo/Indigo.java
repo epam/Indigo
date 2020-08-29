@@ -187,7 +187,7 @@ public class Indigo {
     }
 
     public static String extractFromJar(Class<?> cls, String path, String filename) {
-        InputStream stream = cls.getResourceAsStream(Paths.get(path, filename).toString());
+        InputStream stream = cls.getResourceAsStream(path + "/" + filename);
 
         if (stream == null) return null;
 
@@ -240,9 +240,9 @@ public class Indigo {
 
     private static String getPathToBinary(String path, String filename) {
         if (path == null) {
-            String res = extractFromJar(Indigo.class, File.separator + dllpath, filename);
+            String res = extractFromJar(Indigo.class, "/" + dllpath, filename);
             if (res != null) return res;
-            path = "lib";
+            throw new RuntimeException("Couldn't extract native lib " + filename + " from jar");
         }
         path = path + File.separator + dllpath + File.separator + filename;
         try {

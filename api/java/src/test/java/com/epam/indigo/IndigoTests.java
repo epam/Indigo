@@ -1,6 +1,5 @@
 package com.epam.indigo;
 
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,7 @@ public class IndigoTests {
     @Test
     @DisplayName("Loading molecule from string and comparing canonical smiles")
     void loadMoleculeFromSMILES() {
-        Indigo indigo = new Indigo(Paths.get(System.getProperty("user.dir"), "..", "libs", "shared").normalize().toAbsolutePath().toString());
+        Indigo indigo = new Indigo();
         IndigoObject indigoObject = indigo.loadMolecule("C1=CC=CC=C1");
 
         assertEquals(
