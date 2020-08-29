@@ -47,6 +47,14 @@ endif()
 
 # Indigo Renderer shared
 add_library(indigo-renderer-shared SHARED $<TARGET_OBJECTS:render2d> $<TARGET_OBJECTS:indigo-renderer-Obj> ${Common_SOURCE_DIR}/hacks/memcpy.c)
+
+# Copy shared library to indigo/api/libs/shared/ folder, that is used by python tests and wrappers generation
+add_custom_command(
+		TARGET indigo-renderer-shared
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:indigo-renderer-shared> ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/)
+
 SET_TARGET_PROPERTIES(indigo-renderer-shared PROPERTIES OUTPUT_NAME "indigo-renderer")
 if (MSVC OR MINGW)
 	set_target_properties(indigo-renderer-shared PROPERTIES PREFIX "")
