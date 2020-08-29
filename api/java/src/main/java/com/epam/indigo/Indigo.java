@@ -260,28 +260,28 @@ public class Indigo {
         else if (Platform.isMac())
             lib = Native.load(getPathToBinary(path, LIBINDIGO_DYLIB), IndigoLib.class);
         else if (Platform.isWindows()) {
-            if (Files.exists(Paths.get(getPathToBinary(path, VCRUNTIME_140_DLL)))) {
+            if ((new File(getPathToBinary(path, VCRUNTIME_140_DLL))).exists()) {
                 try {
                     System.load(getPathToBinary(path, VCRUNTIME_140_DLL));
                 } catch (UnsatisfiedLinkError e) {
                     // File could have been already loaded
                 }
             }
-            if (Files.exists(Paths.get(getPathToBinary(path, VCRUNTIME_140_1_DLL)))) {
+            if ((new File(getPathToBinary(path, VCRUNTIME_140_1_DLL))).exists()) {
                 try {
                     System.load(getPathToBinary(path, VCRUNTIME_140_1_DLL));
                 } catch (UnsatisfiedLinkError e) {
                     // File could have been already loaded
                 }
             }
-            if (Files.exists(Paths.get(getPathToBinary(path, MSVCP_140_DLL)))) {
+            if ((new File(getPathToBinary(path, MSVCP_140_DLL))).exists()) {
                 try {
                     System.load(getPathToBinary(path, MSVCP_140_DLL));
                 } catch (UnsatisfiedLinkError e) {
                     // File could have been already loaded
                 }
             }
-            if (Files.exists(Paths.get(getPathToBinary(path, CONCRT_140_DLL)))) {
+            if ((new File(getPathToBinary(path, CONCRT_140_DLL))).exists()) {
                 try {
                     System.load(getPathToBinary(path, CONCRT_140_DLL));
                 } catch (UnsatisfiedLinkError e) {
