@@ -25,24 +25,26 @@ if os.path.exists("java"):
     shutil.rmtree("java")
 os.mkdir('java')
 
+mvn_cmd = 'mvnw.cmd' if os.name == 'nt' else './mvnw'
+
 os.chdir(os.path.join(api_dir, "java"))
-subprocess.check_call("mvn -q versions:set -DnewVersion=%s" % version, shell=True)
-subprocess.check_call("mvn -q clean package install -Dmaven.test.skip=true", shell=True)
+subprocess.check_call("%s -q versions:set -DnewVersion=%s" % (mvn_cmd, version), shell=True)
+subprocess.check_call("%s -q clean package install" % mvn_cmd, shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "renderer", "java"))
-subprocess.check_call("mvn -q versions:set -DnewVersion=%s" % version, shell=True)
-subprocess.check_call("mvn -q clean package -Dmaven.test.skip=true", shell=True)
+subprocess.check_call("%s -q versions:set -DnewVersion=%s" % (mvn_cmd, version), shell=True)
+subprocess.check_call("%s -q clean package" % mvn_cmd, shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-renderer-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-renderer.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "inchi", "java"))
-subprocess.check_call("mvn -q versions:set -DnewVersion=%s" % version, shell=True)
-subprocess.check_call("mvn -q clean package -Dmaven.test.skip=true", shell=True)
+subprocess.check_call("%s -q versions:set -DnewVersion=%s" % (mvn_cmd, version), shell=True)
+subprocess.check_call("%s -q clean package" % mvn_cmd, shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-inchi-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-inchi.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "bingo", "java"))  # TODO: Update when folder will be changed to nosql
-subprocess.check_call("mvn -q versions:set -DnewVersion=%s" % version, shell=True)
-subprocess.check_call("mvn -q clean package -Dmaven.test.skip=true", shell=True)
+subprocess.check_call("%s -q versions:set -DnewVersion=%s" % (mvn_cmd, version), shell=True)
+subprocess.check_call("%s -q clean package" % mvn_cmd, shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-nosql-%s.jar' % version), os.path.join(dist_dir, 'java', 'bingo-nosql.jar'))
 
 os.chdir(dist_dir)
