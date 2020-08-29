@@ -39,6 +39,14 @@ endif()
 
 # Bingo shared
 add_library(bingo-shared SHARED ${Bingo_src} ${Bingo_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c)
+
+# Copy shared library to indigo/api/libs/shared/ folder, that is used by python tests and wrappers generation
+add_custom_command(
+		TARGET bingo-shared
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:bingo-shared> ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/)
+
 if (MSVC OR MINGW)
 	set_target_properties(bingo-shared PROPERTIES PREFIX "")
 endif()

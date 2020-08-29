@@ -35,6 +35,13 @@ endif()
 # Indigo shared
 add_library(indigo-shared SHARED $<TARGET_OBJECTS:indigoObj> $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction> ${Common_SOURCE_DIR}/hacks/memcpy.c)
 
+# Copy shared library to indigo/api/libs/shared/ folder, that is used by python tests and wrappers generation
+add_custom_command(
+        TARGET indigo-shared
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:indigo-shared> ${CMAKE_CURRENT_SOURCE_DIR}/libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/)
+
 SET_TARGET_PROPERTIES(indigo-shared PROPERTIES OUTPUT_NAME "indigo")
 set_target_properties(indigo-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 if (APPLE)
