@@ -4148,7 +4148,7 @@ void MoleculeRenderInternal::_precalcScale()
     BaseMolecule& bm = *_mol;
     Array<long long int> output_lengths;
     int max_index = -1;
-    output_lengths.resize(bm.vertexCount());
+    output_lengths.resize(_mol->vertexEnd());
     for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
     {
         long long int output_length = 0;

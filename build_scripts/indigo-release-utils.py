@@ -20,7 +20,8 @@ presets = {
     "win64-2015": ("Visual Studio 14 Win64", ""),
     "win64-2017": ("Visual Studio 15 Win64", ""),
     "win64-2019": ("Visual Studio 16 2019", ""),
-    "win32-mingw": ("MinGW Makefiles", ""),
+    "win32-mingw": ("MinGW Makefiles", "-DSUBSYSTEM_NAME=x86"),
+    "win64-mingw": ("MinGW Makefiles", "-DSUBSYSTEM_NAME=x64"),
     "linux32": ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux32-universal": ("Unix Makefiles", "-DSUBSYSTEM_NAME=x86"),
     "linux64": ("Unix Makefiles", "-DSUBSYSTEM_NAME=x64"),
@@ -65,6 +66,8 @@ if args.generator.find("Unix Makefiles") != -1:
 
 if args.preset and args.preset.find('universal') != -1:
     args.params += ' -DUNIVERSAL_BUILD=TRUE'
+
+args.params += ' -DWITH_STATIC=TRUE'
 
 build_dir = (args.generator + " " + args.params)
 build_dir = "indigo_utils_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")

@@ -47,6 +47,14 @@ endif()
 
 # Indigo InChI shared
 add_library(indigo-inchi-shared SHARED $<TARGET_OBJECTS:indigo-inchi-Obj> ${Common_SOURCE_DIR}/hacks/memcpy.c)
+
+# Copy shared library to indigo/api/libs/shared/ folder, that is used by python tests and wrappers generation
+add_custom_command(
+		TARGET indigo-inchi-shared
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:indigo-inchi-shared> ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/shared/${SYSTEM_NAME}/${SUBSYSTEM_NAME}/)
+
 target_link_libraries(indigo-inchi-shared inchi)
 SET_TARGET_PROPERTIES(indigo-inchi-shared PROPERTIES OUTPUT_NAME "indigo-inchi")
 if (MSVC OR MINGW)
