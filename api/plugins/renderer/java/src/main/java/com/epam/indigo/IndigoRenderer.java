@@ -22,6 +22,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Platform;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class IndigoRenderer {
@@ -78,14 +79,14 @@ public class IndigoRenderer {
         lib.indigoRenderReset();
     }
 
-    private static String getPathToBinary(String path, String filename) {
+    private static String getPathToBinary(String path, String filename) throws FileNotFoundException {
         String dllpath = Indigo.getPlatformDependentPath();
 
         if (path == null) {
-            String res = Indigo.extractFromJar(IndigoRenderer.class, File.separator + dllpath, filename);
+            String res = Indigo.extractFromJar(IndigoRenderer.class, "/" + dllpath, filename);
             if (res != null)
                 return res;
-            path = "lib";
+            throw new FileNotFoundException("Couldn't extract native lib " + filename + " from jar");
         }
         path = path + File.separator + dllpath + File.separator + filename;
         try {
@@ -98,13 +99,16 @@ public class IndigoRenderer {
     private synchronized static void loadLibrary(String path) {
         if (lib != null)
             return;
-
-        if (Platform.isLinux() || Platform.isSolaris())
-            lib = Native.load(getPathToBinary(path, "libindigo-renderer.so"), IndigoRendererLib.class);
-        else if (Platform.isMac())
-            lib = Native.load(getPathToBinary(path, "libindigo-renderer.dylib"), IndigoRendererLib.class);
-        else if (Platform.isWindows())
-            lib = Native.load(getPathToBinary(path, "indigo-renderer.dll"), IndigoRendererLib.class);
+        try {
+            if (Platform.isLinux() || Platform.isSolaris())
+                lib = Native.load(getPathToBinary(path, "libindigo-renderer.so"), IndigoRendererLib.class);
+            else if (Platform.isMac())
+                lib = Native.load(getPathToBinary(path, "libindigo-renderer.dylib"), IndigoRendererLib.class);
+            else if (Platform.isWindows())
+                lib = Native.load(getPathToBinary(path, "indigo-renderer.dll"), IndigoRendererLib.class);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     final Indigo indigo;

@@ -22,6 +22,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Platform;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class IndigoInchi {
@@ -70,14 +71,14 @@ public class IndigoInchi {
         return Indigo.checkResultString(this, lib.indigoInchiGetAuxInfo());
     }
 
-    private static String getPathToBinary(String path, String filename) {
+    private static String getPathToBinary(String path, String filename) throws FileNotFoundException {
         String dllpath = Indigo.getPlatformDependentPath();
 
         if (path == null) {
-            String res = Indigo.extractFromJar(IndigoInchi.class, File.separator + dllpath, filename);
+            String res = Indigo.extractFromJar(IndigoInchi.class, "/" + dllpath, filename);
             if (res != null)
                 return res;
-            path = "lib";
+            throw new FileNotFoundException("Couldn't extract native lib " + filename + " from jar");
         }
         path = path + File.separator + dllpath + File.separator + filename;
         try {
@@ -91,12 +92,16 @@ public class IndigoInchi {
         if (lib != null)
             return;
 
-        if (Platform.isLinux() || Platform.isSolaris())
-            lib = Native.load(getPathToBinary(path, "libindigo-inchi.so"), IndigoInchiLib.class);
-        else if (Platform.isMac())
-            lib = Native.load(getPathToBinary(path, "libindigo-inchi.dylib"), IndigoInchiLib.class);
-        else if (Platform.isWindows())
-            lib = Native.load(getPathToBinary(path, "indigo-inchi.dll"), IndigoInchiLib.class);
+        try {
+            if (Platform.isLinux() || Platform.isSolaris())
+                lib = Native.load(getPathToBinary(path, "libindigo-inchi.so"), IndigoInchiLib.class);
+            else if (Platform.isMac())
+                lib = Native.load(getPathToBinary(path, "libindigo-inchi.dylib"), IndigoInchiLib.class);
+            else if (Platform.isWindows())
+                lib = Native.load(getPathToBinary(path, "indigo-inchi.dll"), IndigoInchiLib.class);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     final Indigo indigo;

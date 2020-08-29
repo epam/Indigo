@@ -93,7 +93,11 @@ public class Indigo {
 
     public Indigo(String path) {
         this.path = path;
-        loadIndigo(path);
+        try {
+            loadIndigo(path);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e.getMessage());
+        }
         System.setProperty("jna.encoding", "UTF-8");
 
         sid = lib.indigoAllocSessionId();
@@ -238,11 +242,11 @@ public class Indigo {
         }
     }
 
-    private static String getPathToBinary(String path, String filename) {
+    private static String getPathToBinary(String path, String filename) throws FileNotFoundException{
         if (path == null) {
             String res = extractFromJar(Indigo.class, "/" + dllpath, filename);
             if (res != null) return res;
-            throw new RuntimeException("Couldn't extract native lib " + filename + " from jar");
+            throw new FileNotFoundException("Couldn't extract native lib " + filename + " from jar");
         }
         path = path + File.separator + dllpath + File.separator + filename;
         try {
@@ -252,7 +256,7 @@ public class Indigo {
         }
     }
 
-    private static synchronized void loadIndigo(String path) {
+    private static synchronized void loadIndigo(String path) throws FileNotFoundException {
         if (lib != null) return;
 
         if (Platform.isLinux() || Platform.isSolaris())
@@ -260,33 +264,33 @@ public class Indigo {
         else if (Platform.isMac())
             lib = Native.load(getPathToBinary(path, LIBINDIGO_DYLIB), IndigoLib.class);
         else if (Platform.isWindows()) {
-            if ((new File(getPathToBinary(path, VCRUNTIME_140_DLL))).exists()) {
-                try {
-                    System.load(getPathToBinary(path, VCRUNTIME_140_DLL));
-                } catch (UnsatisfiedLinkError e) {
-                    // File could have been already loaded
-                }
+            try {
+                System.load(getPathToBinary(path, VCRUNTIME_140_DLL));
+            } catch (UnsatisfiedLinkError e) {
+                // File could have been already loaded
+            } catch (FileNotFoundException e) {
+                // ignore, not all native windows dlls are available
             }
-            if ((new File(getPathToBinary(path, VCRUNTIME_140_1_DLL))).exists()) {
-                try {
-                    System.load(getPathToBinary(path, VCRUNTIME_140_1_DLL));
-                } catch (UnsatisfiedLinkError e) {
-                    // File could have been already loaded
-                }
+            try {
+                System.load(getPathToBinary(path, VCRUNTIME_140_1_DLL));
+            } catch (UnsatisfiedLinkError e) {
+                // File could have been already loaded
+            } catch (FileNotFoundException e) {
+                // ignore, not all native windows dlls are available
             }
-            if ((new File(getPathToBinary(path, MSVCP_140_DLL))).exists()) {
-                try {
-                    System.load(getPathToBinary(path, MSVCP_140_DLL));
-                } catch (UnsatisfiedLinkError e) {
-                    // File could have been already loaded
-                }
+            try {
+                System.load(getPathToBinary(path, MSVCP_140_DLL));
+            } catch (UnsatisfiedLinkError e) {
+                // File could have been already loaded
+            } catch (FileNotFoundException e) {
+                // ignore, not all native windows dlls are available
             }
-            if ((new File(getPathToBinary(path, CONCRT_140_DLL))).exists()) {
-                try {
-                    System.load(getPathToBinary(path, CONCRT_140_DLL));
-                } catch (UnsatisfiedLinkError e) {
-                    // File could have been already loaded
-                }
+            try {
+                System.load(getPathToBinary(path, CONCRT_140_DLL));
+            } catch (UnsatisfiedLinkError e) {
+                // File could have been already loaded
+            } catch (FileNotFoundException e) {
+                // ignore, not all native windows dlls are available
             }
             lib = Native.load(getPathToBinary(path, INDIGO_DLL), IndigoLib.class);
         }

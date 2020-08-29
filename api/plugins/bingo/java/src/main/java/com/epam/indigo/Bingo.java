@@ -22,6 +22,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Platform;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Bingo {
@@ -50,22 +51,26 @@ public class Bingo {
         if (lib != null)
             return;
 
-        if (Platform.isLinux() || Platform.isSolaris())
-            lib = Native.load(getPathToBinary(path, "libbingo.so"), BingoLib.class);
-        else if (Platform.isMac())
-            lib = Native.load(getPathToBinary(path, "libbingo.dylib"), BingoLib.class);
-        else if (Platform.isWindows())
-            lib = Native.load(getPathToBinary(path, "bingo.dll"), BingoLib.class);
+        try {
+            if (Platform.isLinux() || Platform.isSolaris())
+                lib = Native.load(getPathToBinary(path, "libbingo.so"), BingoLib.class);
+            else if (Platform.isMac())
+                lib = Native.load(getPathToBinary(path, "libbingo.dylib"), BingoLib.class);
+            else if (Platform.isWindows())
+                lib = Native.load(getPathToBinary(path, "bingo.dll"), BingoLib.class);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
-    private static String getPathToBinary(String path, String filename) {
+    private static String getPathToBinary(String path, String filename) throws FileNotFoundException {
         String dllpath = Indigo.getPlatformDependentPath();
 
         if (path == null) {
-            String res = Indigo.extractFromJar(Bingo.class, File.separator + dllpath, filename);
+            String res = Indigo.extractFromJar(Bingo.class, "/" + dllpath, filename);
             if (res != null)
                 return res;
-            path = "lib";
+            throw new FileNotFoundException("Couldn't extract native lib " + filename + " from jar");
         }
         path = path + File.separator + dllpath + File.separator + filename;
         try {
