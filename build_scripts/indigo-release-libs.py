@@ -57,6 +57,7 @@ def build_libs(cl_args):
         "mac10.12": ("Xcode", "-DSUBSYSTEM_NAME=10.12"),
         "mac10.13": ("Xcode", "-DSUBSYSTEM_NAME=10.13"),
         "mac10.14": ("Xcode", "-DSUBSYSTEM_NAME=10.14"),
+        "mac10.15": ("Xcode", "-DSUBSYSTEM_NAME=10.15"),
         "mac-universal": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.7"),
     }
 
