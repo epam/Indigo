@@ -51,11 +51,11 @@ public class Bingo {
 
         try {
             if (Platform.isLinux() || Platform.isSolaris())
-                lib = Native.load(IndigoUtils.getPathToBinary(Bingo.class, path, Indigo.getPlatformDependentPath(), "libbingo.so"), BingoLib.class);
+                lib = Native.load(IndigoUtils.getPathToBinary(Bingo.class, Indigo.getPlatformDependentPath(), path, "libbingo.so"), BingoLib.class);
             else if (Platform.isMac())
-                lib = Native.load(IndigoUtils.getPathToBinary(Bingo.class, path, Indigo.getPlatformDependentPath(), "libbingo.dylib"), BingoLib.class);
+                lib = Native.load(IndigoUtils.getPathToBinary(Bingo.class, Indigo.getPlatformDependentPath(), path, "libbingo.dylib"), BingoLib.class);
             else if (Platform.isWindows())
-                lib = Native.load(IndigoUtils.getPathToBinary(Bingo.class, path, Indigo.getPlatformDependentPath(), "bingo.dll"), BingoLib.class);
+                lib = Native.load(IndigoUtils.getPathToBinary(Bingo.class, Indigo.getPlatformDependentPath(), path, "bingo.dll"), BingoLib.class);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e.getMessage());
         }

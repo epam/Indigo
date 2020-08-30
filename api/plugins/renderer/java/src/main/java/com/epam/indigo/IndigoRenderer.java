@@ -82,11 +82,11 @@ public class IndigoRenderer {
             return;
         try {
             if (Platform.isLinux() || Platform.isSolaris())
-                lib = Native.load(IndigoUtils.getPathToBinary(IndigoRenderer.class, path, Indigo.getPlatformDependentPath(), "libindigo-renderer.so"), IndigoRendererLib.class);
+                lib = Native.load(IndigoUtils.getPathToBinary(IndigoRenderer.class, Indigo.getPlatformDependentPath(), path, "libindigo-renderer.so"), IndigoRendererLib.class);
             else if (Platform.isMac())
-                lib = Native.load(IndigoUtils.getPathToBinary(IndigoRenderer.class, path, Indigo.getPlatformDependentPath(), "libindigo-renderer.dylib"), IndigoRendererLib.class);
+                lib = Native.load(IndigoUtils.getPathToBinary(IndigoRenderer.class, Indigo.getPlatformDependentPath(), path, "libindigo-renderer.dylib"), IndigoRendererLib.class);
             else if (Platform.isWindows())
-                lib = Native.load(IndigoUtils.getPathToBinary(IndigoRenderer.class, path, Indigo.getPlatformDependentPath(), "indigo-renderer.dll"), IndigoRendererLib.class);
+                lib = Native.load(IndigoUtils.getPathToBinary(IndigoRenderer.class, Indigo.getPlatformDependentPath(), path, "indigo-renderer.dll"), IndigoRendererLib.class);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e.getMessage());
         }
