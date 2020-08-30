@@ -71,34 +71,17 @@ public class IndigoInchi {
         return Indigo.checkResultString(this, lib.indigoInchiGetAuxInfo());
     }
 
-    private static String getPathToBinary(String path, String filename) throws FileNotFoundException {
-        String dllpath = Indigo.getPlatformDependentPath();
-
-        if (path == null) {
-            String res = Indigo.extractFromJar(IndigoInchi.class, "/" + dllpath, filename);
-            if (res != null)
-                return res;
-            throw new FileNotFoundException("Couldn't extract native lib " + filename + " from jar");
-        }
-        path = path + File.separator + dllpath + File.separator + filename;
-        try {
-            return (new File(path)).getCanonicalPath();
-        } catch (IOException e) {
-            return path;
-        }
-    }
-
     private synchronized static void loadLibrary(String path) {
         if (lib != null)
             return;
 
         try {
             if (Platform.isLinux() || Platform.isSolaris())
-                lib = Native.load(getPathToBinary(path, "libindigo-inchi.so"), IndigoInchiLib.class);
+                lib = Native.load(IndigoUtils.getPathToBinary(IndigoInchi.class, Indigo.getPlatformDependentPath(), path, "libindigo-inchi.so"), IndigoInchiLib.class);
             else if (Platform.isMac())
-                lib = Native.load(getPathToBinary(path, "libindigo-inchi.dylib"), IndigoInchiLib.class);
+                lib = Native.load(IndigoUtils.getPathToBinary(IndigoInchi.class, Indigo.getPlatformDependentPath(), path, "libindigo-inchi.dylib"), IndigoInchiLib.class);
             else if (Platform.isWindows())
-                lib = Native.load(getPathToBinary(path, "indigo-inchi.dll"), IndigoInchiLib.class);
+                lib = Native.load(IndigoUtils.getPathToBinary(IndigoInchi.class, Indigo.getPlatformDependentPath(), path, "indigo-inchi.dll"), IndigoInchiLib.class);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e.getMessage());
         }

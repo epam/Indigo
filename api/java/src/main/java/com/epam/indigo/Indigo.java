@@ -25,11 +25,6 @@ import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
 public class Indigo {
@@ -73,18 +68,15 @@ public class Indigo {
     // JNA does not allow throwing exception from callbacks, thus we can not
     // use the error handler and we have to check the error codes. Below are
     // four functions to ease checking them.
-    public static final String VCRUNTIME_140_1_DLL = "vcruntime140_1.dll";
-    public static final String VCRUNTIME_140_DLL = "vcruntime140.dll";
-    public static final String MSVCP_140_DLL = "msvcp140.dll";
-    public static final String CONCRT_140_DLL = "concrt140.dll";
     public static final String INDIGO_DLL = "indigo.dll";
     public static final String LIBINDIGO_SO = "libindigo.so";
     public static final String LIBINDIGO_DYLIB = "libindigo.dylib";
+    public static final String[] WIN_DLLS = {"vcruntime140.dll", "vcruntime140_1.dll", "msvcp140.dll", "concrt140.dll"};
     private static final String dllpath;
     private static IndigoLib lib = null;
 
     static {
-        dllpath = getDllPath();
+        dllpath = IndigoUtils.getDllPath();
     }
 
     private boolean session_released = false;
@@ -161,138 +153,24 @@ public class Indigo {
         return res;
     }
 
-    private static String getHashString(InputStream input)
-            throws NoSuchAlgorithmException, IOException {
-        StringBuilder res = new StringBuilder();
-        MessageDigest algorithm = MessageDigest.getInstance("MD5");
-        algorithm.reset();
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-        int nRead;
-        byte[] data = new byte[4096];
-
-        while ((nRead = input.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-        buffer.flush();
-
-        algorithm.update(buffer.toByteArray());
-        byte[] hashArray = algorithm.digest();
-        String tmp;
-        for (byte b : hashArray) {
-            tmp = (Integer.toHexString(0xFF & b));
-            if (tmp.length() == 1) {
-                res.append("0").append(tmp);
-            } else {
-                res.append(tmp);
-            }
-        }
-        return res.toString();
-    }
-
-    public static String extractFromJar(Class<?> cls, String path, String filename) {
-        InputStream stream = cls.getResourceAsStream(path + "/" + filename);
-
-        if (stream == null) return null;
-
-        Path tmpdir_path;
-        final File tmpdir;
-        final File dllfile;
-
-        try {
-            // Clone input stream to calculate its hash and copy to temporary folder
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[4096];
-            int len;
-            while ((len = stream.read(buffer)) > -1) {
-                baos.write(buffer, 0, len);
-            }
-            baos.flush();
-            InputStream is1 = new ByteArrayInputStream(baos.toByteArray());
-            InputStream is2 = new ByteArrayInputStream(baos.toByteArray());
-            baos.close();
-
-            // Calculate md5 hash string to name temporary folder
-            String streamHashString = getHashString(is1);
-            is1.close();
-            tmpdir_path =
-                    Paths.get(System.getProperty("java.io.tmpdir"), "indigo" + streamHashString);
-            Files.createDirectories(tmpdir_path);
-
-            // Copy library to temporary folder
-            Path dllpath = Paths.get(tmpdir_path.toString(), filename);
-            dllfile = dllpath.toFile();
-            if (Files.notExists(dllpath)) {
-                FileOutputStream outstream = new FileOutputStream(dllfile);
-                byte[] buf = new byte[4096];
-
-                while ((len = is2.read(buf)) > 0) outstream.write(buf, 0, len);
-
-                outstream.close();
-                is2.close();
-            }
-        } catch (IOException | NoSuchAlgorithmException e) {
-            return null;
-        }
-
-        try {
-            return dllfile.getCanonicalPath();
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    private static String getPathToBinary(String path, String filename) throws FileNotFoundException{
-        if (path == null) {
-            String res = extractFromJar(Indigo.class, "/" + dllpath, filename);
-            if (res != null) return res;
-            throw new FileNotFoundException("Couldn't extract native lib " + filename + " from jar");
-        }
-        path = path + File.separator + dllpath + File.separator + filename;
-        try {
-            return new File(path).getCanonicalPath();
-        } catch (IOException e) {
-            return path;
-        }
-    }
-
     private static synchronized void loadIndigo(String path) throws FileNotFoundException {
         if (lib != null) return;
 
         if (Platform.isLinux() || Platform.isSolaris())
-            lib = Native.load(getPathToBinary(path, LIBINDIGO_SO), IndigoLib.class);
+            lib = Native.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, LIBINDIGO_SO), IndigoLib.class);
         else if (Platform.isMac())
-            lib = Native.load(getPathToBinary(path, LIBINDIGO_DYLIB), IndigoLib.class);
+            lib = Native.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, LIBINDIGO_DYLIB), IndigoLib.class);
         else if (Platform.isWindows()) {
-            try {
-                System.load(getPathToBinary(path, VCRUNTIME_140_DLL));
-            } catch (UnsatisfiedLinkError e) {
-                // File could have been already loaded
-            } catch (FileNotFoundException e) {
-                // ignore, not all native windows dlls are available
+            for (String dllName: WIN_DLLS) {
+                try {
+                    System.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, dllName));
+                } catch (UnsatisfiedLinkError e) {
+                    // File could have been already loaded
+                } catch (FileNotFoundException e) {
+                    // ignore, not all native windows dlls are available
+                }
             }
-            try {
-                System.load(getPathToBinary(path, VCRUNTIME_140_1_DLL));
-            } catch (UnsatisfiedLinkError e) {
-                // File could have been already loaded
-            } catch (FileNotFoundException e) {
-                // ignore, not all native windows dlls are available
-            }
-            try {
-                System.load(getPathToBinary(path, MSVCP_140_DLL));
-            } catch (UnsatisfiedLinkError e) {
-                // File could have been already loaded
-            } catch (FileNotFoundException e) {
-                // ignore, not all native windows dlls are available
-            }
-            try {
-                System.load(getPathToBinary(path, CONCRT_140_DLL));
-            } catch (UnsatisfiedLinkError e) {
-                // File could have been already loaded
-            } catch (FileNotFoundException e) {
-                // ignore, not all native windows dlls are available
-            }
-            lib = Native.load(getPathToBinary(path, INDIGO_DLL), IndigoLib.class);
+            lib = Native.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, INDIGO_DLL), IndigoLib.class);
         }
     }
 
@@ -302,59 +180,6 @@ public class Indigo {
 
     public static IndigoLib getLibrary() {
         return lib;
-    }
-
-    private static String getDllPath() {
-        String path = "";
-        if (Platform.isWindows()) {
-            path += "Win";
-            path += File.separator;
-            String archstr = System.getProperty("os.arch");
-            if (archstr.equals("x86") || archstr.equals("i386")) path += "x86";
-            else if (archstr.equals("x86_64") || archstr.equals("amd64")) path += "x64";
-            else throw new Error("architecture not recognized");
-        } else if (Platform.isMac()) {
-            path += "Mac";
-            path += File.separator;
-            String version = System.getProperty("os.version");
-            int minorVersion = Integer.parseInt(version.split("\\.")[1]);
-            Integer usingVersion = null;
-
-            for (int i = minorVersion; i >= 5; i--) {
-                if (Indigo.class.getResourceAsStream(
-                                File.separator
-                                        + path
-                                        + "10."
-                                        + i
-                                        + File.separator
-                                        + LIBINDIGO_DYLIB)
-                        != null) {
-                    usingVersion = i;
-                    break;
-                }
-            }
-            if (usingVersion == null) {
-                throw new Error(
-                        "Indigo cannot find native libraries for Mac OS X 10." + minorVersion);
-            }
-            path += "10." + usingVersion;
-        } else if (Platform.isLinux()) {
-            path += "Linux";
-            path += File.separator;
-            String archstr = System.getProperty("os.arch");
-            if (archstr.equals("x86") || archstr.equals("i386")) path += "x86";
-            else if (archstr.equals("x86_64") || archstr.equals("amd64")) path += "x64";
-            else throw new Error("architecture not recognized");
-        } else if (Platform.isSolaris()) {
-            path += "Sun";
-            path += File.separator;
-            String model = System.getProperty("sun.arch.data.model");
-
-            if (model.equals("32")) path += "sparc32";
-            else path += "sparc64";
-        } else throw new Error("Operating system not recognized");
-
-        return path;
     }
 
     public boolean sessionReleased() {
