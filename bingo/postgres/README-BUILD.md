@@ -9,7 +9,7 @@ You should specify the PostgreSQL directory by setting the special environment v
 For example
 ```
 	export BINGO_PG_DIR=/var/lib/postgresql
-	export BINGO_PG_VERSION=9.5
+	export BINGO_PG_VERSION=12
 ```
 
 ## Build
@@ -33,7 +33,7 @@ python build_scripts/bingo-release.py --preset=linux64 --dbms=postgres
   On Windows, (Microsoft Visual Studio 2013 is required)
 
 	set BINGO_PG_DIR=<path-to-postgres>
-	set BINGO_PG_VERSION=9.2
+	set BINGO_PG_VERSION=12
 	cd <path-to-indigo>/build_scripts/bingo-postgres
 	cmake-gui .
 	<change the compiler>
