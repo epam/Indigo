@@ -31,8 +31,10 @@ namespace indigo
 {
     class OracleEnv;
     class SharedMemory;
+    class OracleStatement;
+    class OracleLOB;
+    class OracleEnv;
 } // namespace indigo
-
 class BingoFingerprints
 {
 public:

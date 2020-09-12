@@ -19,6 +19,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
 #include "base_cpp/scanner.h"
+#include "oracle/ora_wrap.h"
 #include "oracle/bingo_oracle.h"
 
 #include "layout/molecule_layout.h"

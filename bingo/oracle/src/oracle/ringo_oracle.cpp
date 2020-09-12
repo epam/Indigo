@@ -16,11 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "oracle/ora_wrap.h"
 #include "oracle/ringo_oracle.h"
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/output.h"
 #include "oracle/bingo_oracle_context.h"
 #include "oracle/ringo_shadow_table.h"
+
 
 const char* bad_reaction_warning = "WARNING: bad reaction: %s\n";
 const char* bad_reaction_warning_rowid = "WARNING: bad reaction %s: %s\n";

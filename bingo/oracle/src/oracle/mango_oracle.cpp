@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "oracle/ora_wrap.h"
 #include "oracle/mango_oracle.h"
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/output.h"
