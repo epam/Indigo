@@ -19,4 +19,16 @@ public class IndigoTests {
                 indigoObject.canonicalSmiles(),
                 "C1=CC=CC=C1 is the same as C1C=CC=CC=1");
     }
+
+    @Test
+    @DisplayName("Loading molecule and getting one bits list")
+    void getOneBitsList() {
+        Indigo indigo = new Indigo();
+        IndigoObject indigoObject = indigo.loadMolecule("C1=CC=CC=C1");
+
+        assertEquals(
+                "1698 1719 1749 1806 1909 1914 1971 2056",
+                indigoObject.fingerprint().oneBitsList(),
+                "same one bits as in string 1698 1719 1749 1806 1909 1914 1971 205");
+    }
 }
