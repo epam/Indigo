@@ -674,6 +674,8 @@ public interface IndigoLib extends Library {
 
     int indigoFingerprint(int item, String type);
 
+    Pointer indigoOneBitsList(int fingerprint);
+
     int indigoLoadFingerprintFromBuffer(byte[] buffer, int size);
 
     int indigoLoadFingerprintFromDescriptors(double[] arr, int arr_len, int size, double density);
