@@ -11,6 +11,10 @@ public class IndigoRecord {
     final List<Short> fingerprint;
     byte[] cmf;
 
+    public IndigoRecord() {
+        this.fingerprint = null;
+    }
+
 
     public IndigoRecord(IndigoObject indObject) {
         this.fingerprint = new ArrayList<>();
