@@ -1,4 +1,6 @@
-package com.epam.indigo;
+package com.epam.indigo.model;
+
+import com.epam.indigo.IndigoObject;
 
 import java.util.ArrayList;
 import java.util.List;

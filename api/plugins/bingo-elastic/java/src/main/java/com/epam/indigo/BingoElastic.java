@@ -1,21 +1,26 @@
 package com.epam.indigo;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.epam.indigo.elastic.ElasticCollector;
+import com.epam.indigo.elastic.ElasticRepository;
+import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.predicate.ExactMatchPredicate;
+import com.epam.indigo.predicate.RangeQueryPredicate;
 
 public class BingoElastic {
 
-    public boolean test() {
-        return false;
-    }
 
     public static void main(String[] args) {
         IndigoRecord target = new IndigoRecord();
 
-        Stream.of(new IndigoRecord())
+        final ElasticRepository elasticRepository = new ElasticRepository();
+
+        elasticRepository
+                .stream()
                 .filter(new ExactMatchPredicate<>(target))
                 .filter(new RangeQueryPredicate<>("moleculeWeight", 1, 100))
-                .collect(Collectors.toList()).stream().map(x -> this.test());
+                .collect(new ElasticCollector());
+
+
     }
 }
 

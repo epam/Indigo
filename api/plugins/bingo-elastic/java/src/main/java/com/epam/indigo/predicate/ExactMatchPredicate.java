@@ -1,4 +1,6 @@
-package com.epam.indigo;
+package com.epam.indigo.predicate;
+
+import com.epam.indigo.model.IndigoRecord;
 
 import java.util.function.Predicate;
 

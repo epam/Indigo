@@ -1,5 +1,8 @@
-package com.epam.indigo;
+package com.epam.indigo.elastic;
 
+import com.epam.indigo.model.IndigoRecord;
+
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -7,27 +10,27 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public class ElasticCollector
-        implements Collector<Integer, A, R> {
+public class ElasticCollector<T extends IndigoRecord>
+        implements Collector<Integer, List<T>, List<T>> {
 
 
     @Override
-    public Supplier<A> supplier() {
+    public Supplier<List<T>> supplier() {
         return null;
     }
 
     @Override
-    public BiConsumer<A, Integer> accumulator() {
+    public BiConsumer<List<T>, Integer> accumulator() {
         return null;
     }
 
     @Override
-    public BinaryOperator<A> combiner() {
+    public BinaryOperator<List<T>> combiner() {
         return null;
     }
 
     @Override
-    public Function<A, R> finisher() {
+    public Function<List<T>, List<T>> finisher() {
         return null;
     }
 
