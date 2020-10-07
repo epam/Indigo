@@ -5,6 +5,7 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 public class ElasticRepository<T extends IndigoRecord> {
@@ -16,7 +17,7 @@ public class ElasticRepository<T extends IndigoRecord> {
     }
 
     public boolean createIndex() {
-// need to get T and all annotationd in order to create index?
+// need to get T and all annotations in order to create index?
 //        or instance of T
 //        this.
         return false;
@@ -34,5 +35,15 @@ public class ElasticRepository<T extends IndigoRecord> {
 
     public Stream<T> stream() {
         return null;
+    }
+
+
+// ??
+//  List<Record> readFromSDF() autodetect
+//
+
+
+    public boolean indexRecords(List<IndigoRecord> records) {
+        return false;
     }
 }
