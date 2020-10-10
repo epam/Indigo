@@ -1,5 +1,6 @@
 package com.epam.indigo.model;
 
+import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.annotation.NestedObject;
 import com.epam.indigo.model.annotation.RangeQuery;
 import com.epam.indigo.model.annotation.WildcardQuery;
@@ -14,8 +15,12 @@ public class CustomIndigoRecord extends IndigoRecord {
     @WildcardQuery
     private String customTag;
 
-    @NestedObject
+    @NestedObject(fieldName = "nested-list")
     private List<Integer> ints;
+
+    public CustomIndigoRecord(IndigoObject indObject) {
+        super(indObject);
+    }
 
     public int getMoleculeWeight() {
         return moleculeWeight;

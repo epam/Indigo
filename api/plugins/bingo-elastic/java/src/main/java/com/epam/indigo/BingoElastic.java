@@ -1,31 +1,46 @@
 package com.epam.indigo;
 
-import com.epam.indigo.elastic.ElasticCollector;
 import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.ExactMatchPredicate;
-import com.epam.indigo.predicate.RangeQueryPredicate;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BingoElastic {
 
+    static Indigo indigo = new Indigo();
 
-    public static void main(String[] args) {
-        IndigoRecord target = new IndigoRecord();
+    public static void main(String[] args) throws IOException {
+        ElasticRepository.ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepository.ElasticRepositoryBuilder();
+        ElasticRepository<IndigoRecord> repository = builder
+                .withHostName("localhost")
+                .withPort(9200)
+                .withScheme("http")
+                .build();
 
-        final ElasticRepository<IndigoRecord> elasticRepository = new ElasticRepository<>();
 
+        IndigoObject indigoObject = indigo.loadMolecule("C1=CC=CC=C1");
+        IndigoRecord indigoRecord = new IndigoRecord(indigoObject);
+        indigoRecord.addCustomObject("custom_tag", "MY_FAV_MOL");
+        IndigoRecord[] records = new IndigoRecord[]{indigoRecord};
+        repository.indexRecords(Arrays.asList(records));
 
-        List<IndigoRecord> results = elasticRepository
+        IndigoObject targetObject = indigo.loadMolecule("C1C=CC=CC=1");
+        IndigoRecord target = new IndigoRecord(targetObject);
+
+        List<IndigoRecord> results = repository
                 .stream()
                 .filter(new ExactMatchPredicate<>(target))
-                .filter(new RangeQueryPredicate<>("name", 1, 100))
-                .collect(ElasticCollector.toList());
+//                .filter(new RangeQueryPredicate<>("name", 1, 100))
+                .collect(Collectors.toList());
 
         for (IndigoRecord c : results) {
-            System.out.println(c.getCmf());
+            System.out.println(c.get_id());
         }
+
     }
 
 

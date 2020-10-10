@@ -14,8 +14,6 @@ public class ExactMatchPredicate<T extends IndigoRecord> implements Predicate<T>
 
     @Override
     public boolean test(T t) {
-// add user intent to exact match for molecule
-// lazy
 //        todo check with industry wise lazy predicates
         return true;
     }

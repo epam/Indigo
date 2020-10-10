@@ -3,19 +3,32 @@ package com.epam.indigo.model;
 import com.epam.indigo.IndigoObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class IndigoRecord {
 
+    private String cml;
     // Internal Elastic ID
-    String _id = null;
+    private String _id = null;
 
-    final List<Short> fingerprint;
-    byte[] cmf;
-//    custom map/dict think about it as JSON
+    private final short[] fingerprint;
+    private byte[] cmf;
+    //    custom map/dict think about it as JSON
 //    object to be string?
     Map<String, Object> objects;
+
+    public IndigoRecord(String id, Map<String, Object> sourceAsMap) {
+        this._id = id;
+        this.objects = sourceAsMap;
+        this.fingerprint = null;
+    }
+
+    public static IndigoRecord fromMap(String _id, Map<String, Object> sourceAsMap) {
+        IndigoRecord indigoRecord = new IndigoRecord(_id, sourceAsMap);
+        return indigoRecord;
+    }
 
     public String get_id() {
         return _id;
@@ -25,7 +38,7 @@ public class IndigoRecord {
         this._id = _id;
     }
 
-    public List<Short> getFingerprint() {
+    public short[] getFingerprint() {
         return fingerprint;
     }
 
@@ -37,22 +50,32 @@ public class IndigoRecord {
         this.cmf = cmf;
     }
 
+    public String getCml() {
+        return cml;
+    }
+
     public Map<String, Object> getObjects() {
         return objects;
     }
 
-    public IndigoRecord() {
-        this.fingerprint = null;
-    }
-
-
     public IndigoRecord(IndigoObject indObject) {
-        this.fingerprint = new ArrayList<>();
+        List<Short> fin = new ArrayList<>();
 
         String[] oneBits = indObject.fingerprint("sim").oneBitsList().split(" ");
+        this.objects = new HashMap<>();
+        this.cml = indObject.cml();
         for (String oneBit : oneBits) {
-            fingerprint.add(Short.parseShort(oneBit));
+            fin.add(Short.parseShort(oneBit));
         }
+        this.fingerprint = new short[fin.size()];
+        int i = 0;
+        for (Short bit : fin) {
+            this.fingerprint[i++] = bit;
+        }
+    }
+
+    public void addCustomObject(String key, Object object) {
+        this.objects.put(key, object);
     }
 
 
