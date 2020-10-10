@@ -64,7 +64,8 @@ public class IndigoRecord {
 
         String[] oneBits = indObject.fingerprint("sim").oneBitsList().split(" ");
         this.objects = new HashMap<>();
-        this.cml = indObject.cml();
+        this.cml = indObject.cml(); // todo: remove?
+        this.cmf = indObject.serialize();
         for (String oneBit : oneBits) {
             fin.add(Short.parseShort(oneBit));
         }
