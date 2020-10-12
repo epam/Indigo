@@ -1,10 +1,12 @@
 package com.epam.indigo;
 
 import com.epam.indigo.elastic.ElasticRepository;
+import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.ExactMatchPredicate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +42,17 @@ public class BingoElastic {
         for (IndigoRecord c : results) {
             System.out.println(c.getInternalID());
         }
+
+
+//        IndigoRecord mol = Helpers.loadFromFile("/Users/ruslan_khyurri/IdeaProjects/Indigo/api/plugins/bingo-elastic/java/composition1.mol");
+//        List<IndigoRecord> records = new ArrayList<>();
+//        records.add(mol);
+//        repository.indexRecords(records);
+//        try {
+//            List<IndigoRecord> records = Helpers.loadFromSdf("/Users/ruslan_khyurri/IdeaProjects/Indigo/api/plugins/bingo-elastic/java/rand_queries_small.sdf");
+//        } catch (Exception e) {
+//            System.out.println(e);
+//        }
 
     }
 

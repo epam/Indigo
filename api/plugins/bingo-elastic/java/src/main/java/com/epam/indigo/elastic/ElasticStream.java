@@ -156,9 +156,9 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         } catch (IOException e) {
             System.out.println(e);
         }
-        for (SearchHit hit : hits) {
-            collector.accumulator().accept(container, (T) IndigoRecord.fromMap(hit.getId(), hit.getSourceAsMap()));
-        }
+//        for (SearchHit hit : hits) {
+//            collector.accumulator().accept(container, (T) IndigoRecord.fromMap(hit.getId(), hit.getSourceAsMap()));
+//        }
         return (R) container;
     }
 

@@ -14,31 +14,39 @@ public class Helpers {
         return null;
     }
 
-    public static IndigoRecord loadFromFile(String molfile) {
-        Indigo indigo = new Indigo();
-        IndigoRecord curObject = new IndigoRecord(
-                indigo.loadMoleculeFromFile(molfile)
+    protected static IndigoRecord loadFromIndigoObject(IndigoObject indigoObject) throws Exception {
+        IndigoRecord.IndigoRecordBuilder builder = new IndigoRecord.IndigoRecordBuilder().withIndigoObject(
+                indigoObject
         );
-        return curObject;
-    }
-
-    public static List<IndigoRecord> loadFromSdf(String molfile) {
-        return loadFromSdf(molfile, true);
-    }
-
-    public static List<IndigoRecord> loadFromSdf(String sdfFile, Boolean skipErrors) {
-        Indigo indigo = new Indigo();
-        List<IndigoRecord> recordList = new ArrayList<>();
-        for (IndigoObject comp : indigo.iterateSDFile(sdfFile)) {
-            try {
-                recordList.add(new IndigoRecord(comp));
-            } catch (Exception e) {
-                // todo: change to indigo exception
-                if (!skipErrors) {
-                    throw e;
-                }
-            }
+        for (IndigoObject prop : indigoObject.iterateProperties()) {
+            builder.withCustomObject(prop.name(), prop.rawData());
         }
-        return recordList;
+        return builder.build();
     }
+
+    public static IndigoRecord loadFromFile(String molfile) throws Exception {
+        Indigo indigo = new Indigo();
+        IndigoObject object = indigo.loadMoleculeFromFile(molfile);
+        return loadFromIndigoObject(object);
+    }
+
+//    public static List<IndigoRecord> loadFromSdf(String sdfFile) {
+//        return loadFromSdf(sdfFile, true);
+//    }
+
+//    public static List<IndigoRecord> loadFromSdf(String sdfFile, Boolean skipErrors) {
+//        Indigo indigo = new Indigo();
+//        List<IndigoRecord> recordList = new ArrayList<>();
+//        for (IndigoObject comp : indigo.iterateSDFile(sdfFile)) {
+//            try {
+//                recordList.add(new IndigoRecord(comp));
+//            } catch (Exception e) {
+//                // todo: change to indigo exception
+//                if (!skipErrors) {
+//                    throw e;
+//                }
+//            }
+//        }
+//        return recordList;
+//    }
 }
