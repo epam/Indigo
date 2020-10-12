@@ -38,7 +38,7 @@ public class BingoElastic {
                 .collect(Collectors.toList());
 
         for (IndigoRecord c : results) {
-            System.out.println(c.get_id());
+            System.out.println(c.getInternalID());
         }
 
     }
