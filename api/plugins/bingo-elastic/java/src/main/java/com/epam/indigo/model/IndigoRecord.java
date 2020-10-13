@@ -61,6 +61,7 @@ public class IndigoRecord {
             return this;
         }
 
+
         public IndigoRecord build() throws Exception {
             IndigoRecord record = new IndigoRecord();
             operations.forEach(operation -> operation.accept(record));
@@ -73,54 +74,53 @@ public class IndigoRecord {
                 throw new Exception("Fingerprint is required field");
             }
         }
-
     }
 
 
-    public String getInternalID() {
-        return internalID;
-    }
-
-    public short[] getFingerprint() {
-        return fingerprint;
-    }
-
-    public byte[] getCmf() {
-        return cmf;
-    }
-
-    public String getCml() {
-        return cml;
-    }
-
-    public Map<String, Object> getObjects() {
-        return objects;
-    }
-
-    public IndigoRecord() {
-
-    }
-
-    public IndigoRecord(IndigoObject indObject) {
-        // TODO: remove
-        List<Short> fin = new ArrayList<>();
-
-        String[] oneBits = indObject.fingerprint("sim").oneBitsList().split(" ");
-        this.objects = new HashMap<>();
-        this.cmf = indObject.serialize();
-        for (String oneBit : oneBits) {
-            fin.add(Short.parseShort(oneBit));
+        public String getInternalID() {
+            return internalID;
         }
-        this.fingerprint = new short[fin.size()];
-        int i = 0;
-        for (Short bit : fin) {
-            this.fingerprint[i++] = bit;
+
+        public short[] getFingerprint() {
+            return fingerprint;
         }
-    }
 
-    public void addCustomObject(String key, Object object) {
-        this.objects.put(key, object);
-    }
+        public byte[] getCmf() {
+            return cmf;
+        }
 
-}
+        public String getCml() {
+            return cml;
+        }
+
+        public Map<String, Object> getObjects() {
+            return objects;
+        }
+
+        public IndigoRecord() {
+
+        }
+
+        public IndigoRecord(IndigoObject indObject) {
+            // TODO: remove
+            List<Short> fin = new ArrayList<>();
+
+            String[] oneBits = indObject.fingerprint("sim").oneBitsList().split(" ");
+            this.objects = new HashMap<>();
+            this.cmf = indObject.serialize();
+            for (String oneBit : oneBits) {
+                fin.add(Short.parseShort(oneBit));
+            }
+            this.fingerprint = new short[fin.size()];
+            int i = 0;
+            for (Short bit : fin) {
+                this.fingerprint[i++] = bit;
+            }
+        }
+
+        public void addCustomObject(String key, Object object) {
+            this.objects.put(key, object);
+        }
+
+    }
 
