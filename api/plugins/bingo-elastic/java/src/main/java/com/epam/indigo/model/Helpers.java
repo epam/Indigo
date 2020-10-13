@@ -30,23 +30,42 @@ public class Helpers {
         return loadFromIndigoObject(object);
     }
 
-//    public static List<IndigoRecord> loadFromSdf(String sdfFile) {
-//        return loadFromSdf(sdfFile, true);
-//    }
+    public static List<IndigoRecord> loadFromSdf(String sdfFile) {
+        return loadFromSdf(sdfFile, true);
+    }
 
-//    public static List<IndigoRecord> loadFromSdf(String sdfFile, Boolean skipErrors) {
-//        Indigo indigo = new Indigo();
-//        List<IndigoRecord> recordList = new ArrayList<>();
-//        for (IndigoObject comp : indigo.iterateSDFile(sdfFile)) {
-//            try {
-//                recordList.add(new IndigoRecord(comp));
-//            } catch (Exception e) {
-//                // todo: change to indigo exception
-//                if (!skipErrors) {
-//                    throw e;
-//                }
-//            }
-//        }
-//        return recordList;
-//    }
+    public static List<IndigoRecord> loadFromSdf(String sdfFile, Boolean skipErrors) {
+        Indigo indigo = new Indigo();
+        List<IndigoRecord> recordList = new ArrayList<>();
+        for (IndigoObject comp : indigo.iterateSDFile(sdfFile)) {
+            try {
+                recordList.add(new IndigoRecord(comp));
+            } catch (Exception e) {
+                // todo: change to indigo exception
+                if (!skipErrors) {
+                    throw e;
+                }
+            }
+        }
+        return recordList;
+    }
+
+    public static IndigoRecord loadFromSmiles(String smiles) throws Exception {
+        Indigo indigo = new Indigo();
+        IndigoObject indigoObject = indigo.loadMolecule(smiles);
+        return loadFromIndigoObject(indigoObject);
+    }
+
+    public static List<IndigoRecord> loadFromSmilesFile(String smilesFile) {
+        Indigo indigo = new Indigo();
+        List<IndigoRecord> recordList = new ArrayList<>();
+        for (IndigoObject item : indigo.iterateSmilesFile(smilesFile)) {
+            try {
+                recordList.add(loadFromIndigoObject(item));
+            } catch (Exception e) {
+                // todo: add error catching here
+            }
+        }
+        return recordList;
+    }
 }

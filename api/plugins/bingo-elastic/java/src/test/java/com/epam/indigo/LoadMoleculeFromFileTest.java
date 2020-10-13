@@ -5,14 +5,13 @@ import com.epam.indigo.model.IndigoRecord;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class LoadFromSDFTest {
-
+public class LoadMoleculeFromFileTest {
     @Test
-    @DisplayName("Testing creation of creation of IndigoRecord")
+    @DisplayName("Testing creation of IndigoRecord from mol file")
     void testLoad() throws Exception {
         IndigoRecord indigoRecord = Helpers.loadFromFile("src/test/resources/composition1.mol");
-        assertEquals(null, indigoRecord.getFingerprint());
+        assertNotNull(indigoRecord.getFingerprint());
     }
 }
