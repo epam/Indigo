@@ -7,6 +7,9 @@ import com.epam.indigo.model.annotation.WildcardQuery;
 
 import java.util.List;
 
+/**
+ * @experimental
+ */
 public class CustomIndigoRecord extends IndigoRecord {
 
     @RangeQuery
@@ -19,7 +22,7 @@ public class CustomIndigoRecord extends IndigoRecord {
     private List<Integer> ints;
 
     public CustomIndigoRecord(IndigoObject indObject) {
-        super(indObject);
+
     }
 
     public int getMoleculeWeight() {

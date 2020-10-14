@@ -1,22 +1,22 @@
 package com.epam.indigo;
 
 import com.epam.indigo.elastic.ElasticRepository;
+import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.ExactMatchPredicate;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Example of usage for Bingo Elastic
+ */
 public class BingoElastic {
 
-    static Indigo indigo = new Indigo();
-
-    public static void main(String[] args) throws IOException {
-        ElasticRepository.ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepository.ElasticRepositoryBuilder();
+    public static void main(String[] args) throws Exception {
+        ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepositoryBuilder();
         ElasticRepository<IndigoRecord> repository = builder
                 .withHostName("localhost")
                 .withPort(9200)
@@ -24,14 +24,12 @@ public class BingoElastic {
                 .build();
 
 
-        IndigoObject indigoObject = indigo.loadMolecule("C1=CC=CC=C1");
-        IndigoRecord indigoRecord = new IndigoRecord(indigoObject);
+        IndigoRecord indigoRecord = Helpers.loadFromSmiles("C1=CC=CC=C1");
         indigoRecord.addCustomObject("custom_tag", "MY_FAV_MOL");
         IndigoRecord[] records = new IndigoRecord[]{indigoRecord};
         repository.indexRecords(Arrays.asList(records));
 
-        IndigoObject targetObject = indigo.loadMolecule("C1C=CC=CC=1");
-        IndigoRecord target = new IndigoRecord(targetObject);
+        IndigoRecord target = Helpers.loadFromSmiles("C1C=CC=CC=1");
 
         List<IndigoRecord> results = repository
                 .stream()
@@ -44,15 +42,6 @@ public class BingoElastic {
         }
 
 
-//        IndigoRecord mol = Helpers.loadFromFile("/Users/ruslan_khyurri/IdeaProjects/Indigo/api/plugins/bingo-elastic/java/composition1.mol");
-//        List<IndigoRecord> records = new ArrayList<>();
-//        records.add(mol);
-//        repository.indexRecords(records);
-//        try {
-//            List<IndigoRecord> records = Helpers.loadFromSdf("/Users/ruslan_khyurri/IdeaProjects/Indigo/api/plugins/bingo-elastic/java/rand_queries_small.sdf");
-//        } catch (Exception e) {
-//            System.out.println(e);
-//        }
 
     }
 

@@ -180,7 +180,7 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
 
     @Override
     public Stream<T> stream() {
-        return new ElasticStream<T>(this.elasticClient, this.indexName);
+        return new ElasticStream<>(this.elasticClient, this.indexName);
     }
 
     @Override
@@ -192,6 +192,7 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();
             {
+//                todo need to iterate over fields and add content where exists
                 builder.array("fingerprint", t.getFingerprint());
                 builder.field("cml", t.getCml());
                 for (Map.Entry<String, Object> e : t.getObjects().entrySet()) {

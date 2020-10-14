@@ -19,7 +19,7 @@ public class IndigoRecord {
     private byte[] cmf;
     //    custom map/dict think about it as JSON
     //    object to be string?
-    Map<String, Object> objects;
+    private final Map<String, Object> objects = new HashMap<>();
 
     public static class IndigoRecordBuilder {
         private List<Consumer<IndigoRecord>> operations;
@@ -100,23 +100,6 @@ public class IndigoRecord {
 
     public IndigoRecord() {
 
-    }
-
-    public IndigoRecord(IndigoObject indObject) {
-        // TODO: remove
-        List<Short> fin = new ArrayList<>();
-
-        String[] oneBits = indObject.fingerprint("sim").oneBitsList().split(" ");
-        this.objects = new HashMap<>();
-        this.cmf = indObject.serialize();
-        for (String oneBit : oneBits) {
-            fin.add(Short.parseShort(oneBit));
-        }
-        this.fingerprint = new short[fin.size()];
-        int i = 0;
-        for (Short bit : fin) {
-            this.fingerprint[i++] = bit;
-        }
     }
 
     public void addCustomObject(String key, Object object) {
