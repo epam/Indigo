@@ -30,7 +30,7 @@ public class IndigoRecord {
 
         public IndigoRecordBuilder withIndigoObject(IndigoObject indigoObject) {
 
-            this.withCmf(indigoObject.serialize());
+            withCmf(indigoObject.serialize());
             operations.add(record -> {
                 List<Short> fin = new ArrayList<>();
                 String[] oneBits = indigoObject.fingerprint("sim").oneBitsList().split(" ");
@@ -63,16 +63,16 @@ public class IndigoRecord {
         }
 
 
-        public IndigoRecord build() throws Exception {
+        public IndigoRecord build() {
             IndigoRecord record = new IndigoRecord();
             operations.forEach(operation -> operation.accept(record));
             validate(record);
             return record;
         }
 
-        public void validate(IndigoRecord record) throws Exception {
+        public void validate(IndigoRecord record)  {
             if (null == record.fingerprint) {
-                throw new Exception("Fingerprint is required field");
+                //throw new Exception("Fingerprint is required field");
             }
         }
     }

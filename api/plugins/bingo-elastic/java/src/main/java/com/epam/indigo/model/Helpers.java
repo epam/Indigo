@@ -2,27 +2,44 @@ package com.epam.indigo.model;
 
 import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
-import com.epam.indigo.model.IndigoRecord.IndigoRecordBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Helpers {
 
-    protected static IndigoRecord loadFromIndigoObject(IndigoObject indigoObject) throws Exception {
-        IndigoRecordBuilder builder = new IndigoRecordBuilder().withIndigoObject(
-                indigoObject
-        );
-        for (IndigoObject prop : indigoObject.iterateProperties()) {
-            builder.withCustomObject(prop.name(), prop.rawData());
-        }
-        return builder.build();
+class Accumulate {
+
+    protected List<IndigoRecord> acc;
+    protected Boolean skipErrors;
+
+    public Accumulate(Boolean skipErrors) {
+        acc = new ArrayList<>();
+        this.skipErrors = skipErrors;
     }
 
-    public static IndigoRecord loadFromFile(String molfile) throws Exception {
+    public void add(IndigoRecord record) throws Exception {
+        try {
+            acc.add(record);
+        } catch (Exception e) {
+            if (!skipErrors) {
+                throw e;
+            }
+        }
+    }
+
+    public List<IndigoRecord> getAcc() {
+        return acc;
+    }
+
+}
+
+
+public class Helpers {
+
+
+    public static IndigoRecord loadFromFile(String molfile) {
         Indigo indigo = new Indigo();
-        IndigoObject object = indigo.loadMoleculeFromFile(molfile);
-        return loadFromIndigoObject(object);
+        return (new FromIndigoObject(indigo.loadMoleculeFromFile(molfile))).get();
     }
 
     public static List<IndigoRecord> loadFromSdf(String sdfFile) throws Exception {
@@ -31,36 +48,29 @@ public class Helpers {
 
     public static List<IndigoRecord> loadFromSdf(String sdfFile, Boolean skipErrors) throws Exception {
         Indigo indigo = new Indigo();
-        List<IndigoRecord> recordList = new ArrayList<>();
+        Accumulate acc = new Accumulate(skipErrors);
         for (IndigoObject comp : indigo.iterateSDFile(sdfFile)) {
-            try {
-                recordList.add(loadFromIndigoObject(comp));
-            } catch (Exception e) {
-                // todo: change to indigo exception
-                if (!skipErrors) {
-                    throw e;
-                }
-            }
+            acc.add((new FromIndigoObject(comp)).get());
         }
-        return recordList;
+        return acc.getAcc();
     }
 
     public static IndigoRecord loadFromSmiles(String smiles) throws Exception {
         Indigo indigo = new Indigo();
         IndigoObject indigoObject = indigo.loadMolecule(smiles);
-        return loadFromIndigoObject(indigoObject);
+        return (new FromIndigoObject(indigoObject)).get();
     }
 
-    public static List<IndigoRecord> loadFromSmilesFile(String smilesFile) {
+    public static List<IndigoRecord> loadFromSmilesFile(String smilesFile) throws Exception {
+        return loadFromSmilesFile(smilesFile, true);
+    }
+
+    public static List<IndigoRecord> loadFromSmilesFile(String smilesFile, Boolean skipErrors) throws Exception {
         Indigo indigo = new Indigo();
-        List<IndigoRecord> recordList = new ArrayList<>();
-        for (IndigoObject item : indigo.iterateSmilesFile(smilesFile)) {
-            try {
-                recordList.add(loadFromIndigoObject(item));
-            } catch (Exception e) {
-                // todo: add error catching here
-            }
+        Accumulate acc = new Accumulate(skipErrors);
+        for (IndigoObject comp : indigo.iterateSmilesFile(smilesFile)) {
+            acc.add((new FromIndigoObject(comp)).get());
         }
-        return recordList;
+        return acc.getAcc();
     }
 }
