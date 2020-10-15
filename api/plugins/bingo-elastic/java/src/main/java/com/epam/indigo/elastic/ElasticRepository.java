@@ -183,6 +183,12 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
         return new ElasticStream<>(this.elasticClient, this.indexName);
     }
 
+    public boolean indexRecord(T record) throws IOException {
+        List<T> rec = new ArrayList<>();
+        rec.add(record);
+        return indexRecords(rec);
+    }
+
     @Override
     public boolean indexRecords(List<T> records) throws IOException {
         if (!checkIfIndexExists())
