@@ -73,4 +73,17 @@ public class Helpers {
         }
         return acc.getAcc();
     }
+
+    public static List<IndigoRecord> loadFromCmlFile(String cmlFile) throws Exception {
+        return loadFromCmlFile(cmlFile, true);
+    }
+
+    public static List<IndigoRecord> loadFromCmlFile(String cmlFile, Boolean skipErrors) throws Exception {
+        Indigo indigo = new Indigo();
+        Accumulate acc = new Accumulate(skipErrors);
+        for (IndigoObject comp : indigo.iterateCMLFile(cmlFile)) {
+            acc.add((new FromIndigoObject(comp)).get());
+        }
+        return acc.getAcc();
+    }
 }
