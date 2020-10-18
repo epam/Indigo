@@ -5,7 +5,6 @@ import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.FilterPredicate;
 import com.epam.indigo.predicate.IndigoPredicate;
 import com.epam.indigo.predicate.SimilarityMatch;
-import com.epam.indigo.predicate.TopNPredicate;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -166,9 +165,6 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
             Script script = null;
             for (IndigoPredicate<? super T> predicate : this.predicates) {
-                if (predicate instanceof TopNPredicate) {
-                    searchSourceBuilder.size(((TopNPredicate<?>) predicate).getTopN());
-                }
                 if (predicate instanceof SimilarityMatch) {
                     if (!similarityRequested) {
                         similarityRequested = true;
