@@ -2,6 +2,7 @@ package com.epam.indigo;
 
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ public class LoadMoleculeFromSmilesTest {
             // todo: uncomment
             //assertEquals(indigoObject.fingerprint(), targetIndigoObject.fingerprint());
         } catch (Exception e) {
-            // todo assert fail
+            Assertions.fail();
         }
     }
 
@@ -36,7 +37,7 @@ public class LoadMoleculeFromSmilesTest {
             );
             assertEquals(50, indigoRecordList.size());
         } catch (Exception e) {
-            // todo assert fail
+            Assertions.fail();
         }
     }
 

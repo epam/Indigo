@@ -12,4 +12,6 @@ public interface GenericRepository<T extends IndigoRecord> {
 
     boolean indexRecords(List<T> records) throws IOException;
 
+    boolean deleteAllRecords() throws IOException;
+
 }

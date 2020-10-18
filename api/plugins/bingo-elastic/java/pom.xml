@@ -6,7 +6,7 @@
     <version>1.4.0-beta.63</version>
     <packaging>jar</packaging>
 
-    <name>Indigo NoSQL</name>
+    <name>Bingo Elastic</name>
     <description>Elasticsearch chemistry database search tool</description>
     <url>http://lifescience.opensource.epam.com/indigo/api</url>
 
@@ -39,12 +39,18 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.9.1</version>
+            <version>7.9.2</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.6.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>1.14.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

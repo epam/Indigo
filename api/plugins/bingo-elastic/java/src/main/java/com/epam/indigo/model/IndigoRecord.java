@@ -14,15 +14,15 @@ public class IndigoRecord {
     private String cml;
     // Internal Elastic ID
     private String internalID = null;
-
-    private short[] fingerprint;
+    private float score;
+    private List<Integer> fingerprint;
     private byte[] cmf;
     //    custom map/dict think about it as JSON
     //    object to be string?
     private final Map<String, Object> objects = new HashMap<>();
 
     public static class IndigoRecordBuilder {
-        private List<Consumer<IndigoRecord>> operations;
+        private final List<Consumer<IndigoRecord>> operations;
 
         public IndigoRecordBuilder() {
             this.operations = new ArrayList<>();
@@ -32,16 +32,13 @@ public class IndigoRecord {
 
             withCmf(indigoObject.serialize());
             operations.add(record -> {
-                List<Short> fin = new ArrayList<>();
+                List<Integer> fin = new ArrayList<>();
                 String[] oneBits = indigoObject.fingerprint("sim").oneBitsList().split(" ");
                 for (String oneBit : oneBits) {
-                    fin.add(Short.parseShort(oneBit));
+                    fin.add(Integer.parseInt(oneBit));
                 }
-                record.fingerprint = new short[fin.size()];
-                int i = 0;
-                for (Short bit : fin) {
-                    record.fingerprint[i++] = bit;
-                }
+                record.fingerprint = new ArrayList<>();
+                record.fingerprint.addAll(fin);
             });
 
             return this;
@@ -52,13 +49,23 @@ public class IndigoRecord {
             return this;
         }
 
-        public IndigoRecordBuilder withFingerprint(short[] fingerprint) {
+        public IndigoRecordBuilder withFingerprint(List<Integer> fingerprint) {
             operations.add(record -> record.fingerprint = fingerprint);
             return this;
         }
 
         public IndigoRecordBuilder withCmf(byte[] cmf) {
             operations.add(record -> record.cmf = cmf);
+            return this;
+        }
+
+        public IndigoRecordBuilder withId(String id) {
+            operations.add(record -> record.internalID = id);
+            return this;
+        }
+
+        public IndigoRecordBuilder withScore(float score) {
+            operations.add(record -> record.score = score);
             return this;
         }
 
@@ -70,7 +77,7 @@ public class IndigoRecord {
             return record;
         }
 
-        public void validate(IndigoRecord record)  {
+        public void validate(IndigoRecord record) {
             if (null == record.fingerprint) {
                 //throw new Exception("Fingerprint is required field");
             }
@@ -82,7 +89,7 @@ public class IndigoRecord {
         return internalID;
     }
 
-    public short[] getFingerprint() {
+    public List<Integer> getFingerprint() {
         return fingerprint;
     }
 
@@ -96,6 +103,10 @@ public class IndigoRecord {
 
     public Map<String, Object> getObjects() {
         return objects;
+    }
+
+    public float getScore() {
+        return score;
     }
 
     public IndigoRecord() {

@@ -4,7 +4,7 @@ import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
-import com.epam.indigo.predicate.ExactMatchPredicate;
+import com.epam.indigo.predicate.ExactMatch;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class BingoElastic {
 
     public static void main(String[] args) throws Exception {
-        ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepositoryBuilder();
+        ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepositoryBuilder<>();
         ElasticRepository<IndigoRecord> repository = builder
                 .withHostName("localhost")
                 .withPort(9200)
@@ -33,7 +33,7 @@ public class BingoElastic {
 
         List<IndigoRecord> results = repository
                 .stream()
-                .filter(new ExactMatchPredicate<>(target))
+                .filter(new ExactMatch<>(target))
 //                .filter(new RangeQueryPredicate<>("name", 1, 100))
                 .collect(Collectors.toList());
 
@@ -41,10 +41,8 @@ public class BingoElastic {
             System.out.println(c.getInternalID());
         }
 
-
-
-
     }
+}
 
 
 //    1. Provide code generators from fav formats? from sdf
@@ -58,5 +56,5 @@ public class BingoElastic {
 //    add kinda schema for sanity checks on field types
 //
 
-}
+
 

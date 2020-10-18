@@ -2,15 +2,17 @@ package com.epam.indigo.model;
 
 import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
+import com.epam.indigo.model.IndigoRecord.IndigoRecordBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 class Accumulate {
 
-    protected List<IndigoRecord> acc;
-    protected Boolean skipErrors;
+    protected final List<IndigoRecord> acc;
+    protected final Boolean skipErrors;
 
     public Accumulate(Boolean skipErrors) {
         acc = new ArrayList<>();
@@ -85,5 +87,19 @@ public class Helpers {
             acc.add((new FromIndigoObject(comp)).get());
         }
         return acc.getAcc();
+    }
+
+    public static IndigoRecord fromSource(String id, Map<String, Object> source, float score) {
+        IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordBuilder();
+        for (Map.Entry<String, Object> entry : source.entrySet()) {
+            if (entry.getKey().equals("fingerprint")) {
+                indigoRecordBuilder.withFingerprint((List<Integer>) ((List<Object>)entry.getValue()).get(0));
+            } else {
+                indigoRecordBuilder.withCustomObject(entry.getKey(), entry.getValue());
+            }
+        }
+        indigoRecordBuilder.withScore(score);
+        indigoRecordBuilder.withId(id);
+        return indigoRecordBuilder.build();
     }
 }

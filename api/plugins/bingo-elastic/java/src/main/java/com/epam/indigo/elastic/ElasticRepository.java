@@ -8,9 +8,11 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -44,48 +46,48 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     }
 
     public static class ElasticRepositoryBuilder<T extends IndigoRecord> {
-        private List<Consumer<ElasticRepository>> operations;
+        private final List<Consumer<ElasticRepository<T>>> operations;
 
         public ElasticRepositoryBuilder() {
             this.operations = new ArrayList<>();
         }
 
-        public ElasticRepositoryBuilder withIndexName(String indexName) {
+        public ElasticRepositoryBuilder<T> withIndexName(String indexName) {
             operations.add(repo -> repo.indexName = indexName);
             return this;
         }
 
-        public ElasticRepositoryBuilder withHostName(String hostName) {
+        public ElasticRepositoryBuilder<T> withHostName(String hostName) {
             operations.add(repo -> repo.hostName = hostName);
             return this;
         }
 
-        public ElasticRepositoryBuilder withPort(Integer port) {
+        public ElasticRepositoryBuilder<T> withPort(Integer port) {
             operations.add(repo -> repo.port = port);
             return this;
         }
 
-        public ElasticRepositoryBuilder withScheme(String scheme) {
+        public ElasticRepositoryBuilder<T> withScheme(String scheme) {
             operations.add(repo -> repo.scheme = scheme);
             return this;
         }
 
-        public ElasticRepositoryBuilder withUserName(String userName) {
+        public ElasticRepositoryBuilder<T> withUserName(String userName) {
             operations.add(repo -> repo.userName = userName);
             return this;
         }
 
-        public ElasticRepositoryBuilder withPassword(String password) {
+        public ElasticRepositoryBuilder<T> withPassword(String password) {
             operations.add(repo -> repo.password = password);
             return this;
         }
 
-        public ElasticRepositoryBuilder withRestClient(RestHighLevelClient restHighLevelClient) {
+        public ElasticRepositoryBuilder<T> withRestClient(RestHighLevelClient restHighLevelClient) {
             operations.add(repo -> repo.elasticClient = restHighLevelClient);
             return this;
         }
 
-        public ElasticRepositoryBuilder withIgnoreSSL(boolean ignoreSSL) {
+        public ElasticRepositoryBuilder<T> withIgnoreSSL(boolean ignoreSSL) {
             operations.add(repo -> repo.ignoreSSL = ignoreSSL);
             return this;
         }
@@ -154,7 +156,7 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 builder.endObject();
                 builder.startObject("fingerprint_len");
                 {
-                    builder.field("type", "short");
+                    builder.field("type", "integer");
                 }
                 builder.endObject();
                 builder.startObject("cmf");
@@ -170,11 +172,11 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
 
         try {
             CreateIndexResponse createIndexResponse = this.elasticClient.indices().create(request, RequestOptions.DEFAULT);
+            return createIndexResponse.isAcknowledged();
         } catch (IOException e) {
 //            TODO logging
             throw e;
         }
-        return false;
     }
 
 
@@ -200,6 +202,7 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             {
 //                todo need to iterate over fields and add content where exists
                 builder.array("fingerprint", t.getFingerprint());
+                builder.field("fingerprint_len", t.getFingerprint().size());
                 builder.field("cml", t.getCml());
                 for (Map.Entry<String, Object> e : t.getObjects().entrySet()) {
                     builder.field(e.getKey(), e.getValue());
@@ -221,5 +224,18 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             }
         });
         return true;
+    }
+
+
+    @Override
+    public boolean deleteAllRecords() throws IOException {
+        DeleteIndexRequest request = new DeleteIndexRequest(this.indexName);
+        try {
+            AcknowledgedResponse delete = this.elasticClient.indices().delete(request, RequestOptions.DEFAULT);
+            return delete.isAcknowledged();
+        } catch (IOException e) {
+//            TODO logging
+            throw e;
+        }
     }
 }
