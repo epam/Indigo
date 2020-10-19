@@ -41,7 +41,7 @@ public class FullUsageTest {
 
     @Test
     @DisplayName("Testing full usage, indexing, searching")
-    public void fullUsasge() {
+    public void fullUsage() {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
             repository.indexRecords(indigoRecordList);

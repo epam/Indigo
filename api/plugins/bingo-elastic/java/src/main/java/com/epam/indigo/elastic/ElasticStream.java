@@ -153,9 +153,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         return null;
     }
 
-    @Override
-    public <R, A> R collect(Collector<? super T, A, R> collector) {
-        A container = collector.supplier().get();
+    public SearchRequest compileRequest() {
         SearchRequest searchRequest = new SearchRequest(this.indexName);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         boolean similarityRequested = false;
@@ -193,6 +191,13 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
             searchSourceBuilder.query(QueryBuilders.scriptScoreQuery(boolQueryBuilder, script));
         }
         searchRequest.source(searchSourceBuilder);
+        return searchRequest;
+    }
+
+    @Override
+    public <R, A> R collect(Collector<? super T, A, R> collector) {
+        A container = collector.supplier().get();
+        SearchRequest searchRequest = compileRequest();
         SearchHit[] hits = new SearchHit[0];
         try {
             SearchResponse searchResponse = this.elasticClient.search(searchRequest, RequestOptions.DEFAULT);
