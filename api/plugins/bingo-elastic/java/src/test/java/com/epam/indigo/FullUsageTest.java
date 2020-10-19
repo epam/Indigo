@@ -5,7 +5,6 @@ import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.TanimotoSimilarityMatch;
-import com.epam.indigo.predicate.TopNPredicate;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
@@ -50,7 +49,7 @@ public class FullUsageTest {
             IndigoRecord target = indigoRecordList.get(0);
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new TanimotoSimilarityMatch<>(target))
-                    .filter(new TopNPredicate<>(requestSize))
+                    .limit(requestSize)
                     .collect(Collectors.toList());
             assertEquals(requestSize, similarRecords.size());
             assertEquals(1.0f, similarRecords.get(0).getScore());

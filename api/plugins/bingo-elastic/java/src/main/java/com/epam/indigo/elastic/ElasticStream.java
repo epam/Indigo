@@ -5,7 +5,6 @@ import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.FilterPredicate;
 import com.epam.indigo.predicate.IndigoPredicate;
 import com.epam.indigo.predicate.SimilarityMatch;
-import com.epam.indigo.predicate.TopNPredicate;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -25,7 +24,7 @@ import java.util.stream.*;
 public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     private final RestHighLevelClient elasticClient;
-
+    private int size = 10;
     private final List<IndigoPredicate<? super T>> predicates = new ArrayList<>();
     private final String indexName;
 
@@ -105,7 +104,8 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     @Override
     public Stream<T> limit(long maxSize) {
-        return null;
+        this.size = (int) maxSize;
+        return this;
     }
 
     @Override
@@ -163,9 +163,6 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
             Script script = null;
             for (IndigoPredicate<? super T> predicate : this.predicates) {
-                if (predicate instanceof TopNPredicate) {
-                    searchSourceBuilder.size(((TopNPredicate<?>) predicate).getTopN());
-                }
                 if (predicate instanceof SimilarityMatch) {
                     if (!similarityRequested) {
                         similarityRequested = true;
@@ -187,7 +184,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
             if (script == null) {
                 script = generateIdentityScore();
             }
-
+            searchSourceBuilder.size(this.size);
             searchSourceBuilder.query(QueryBuilders.scriptScoreQuery(boolQueryBuilder, script));
         }
         searchRequest.source(searchSourceBuilder);
