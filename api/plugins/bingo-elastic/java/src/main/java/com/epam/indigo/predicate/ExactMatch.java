@@ -1,12 +1,24 @@
 package com.epam.indigo.predicate;
 
 import com.epam.indigo.model.IndigoRecord;
+import org.elasticsearch.script.Script;
 
-public class ExactMatch<T extends IndigoRecord> extends IndigoPredicate<T> {
+import java.util.HashMap;
+import java.util.Map;
 
-    private final T target;
+public class ExactMatch<T extends IndigoRecord> extends SimilarityMatch<T> {
 
     public ExactMatch(T target) {
-        this.target = target;
+        super(target);
+    }
+
+    @Override
+    public Script generateScript() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("source", "_score / params.a");
+        Map<String, Object> params = new HashMap<>();
+        params.put("a", getTarget().getFingerprint().size());
+        map.put("params", params);
+        return Script.parse(map);
     }
 }
