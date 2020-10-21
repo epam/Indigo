@@ -3,12 +3,9 @@ package com.epam.indigo;
 import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
-import com.epam.indigo.predicate.EuclidSimilarityMatch;
 import com.epam.indigo.predicate.TanimotoSimilarityMatch;
-import com.epam.indigo.predicate.TverskySimilarityMatch;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.junit.jupiter.api.*;
-import com.epam.indigo.Bingo;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import java.io.IOException;
@@ -16,8 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LoadMoleculeFromFileTest {
 
@@ -117,8 +113,10 @@ public class LoadMoleculeFromFileTest {
             IndigoRecord indigoTestRecord = Helpers.loadFromSmiles(needle);
             repository.indexRecords(indigoRecordList);
             TimeUnit.SECONDS.sleep(5);
+
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new TanimotoSimilarityMatch<>(indigoTestRecord, 1))
+                    .limit(1)
                     .collect(Collectors.toList());
 
             for (IndigoObject indigoObject : indigo.iterateSmilesFile(testFile)) {
@@ -127,14 +125,14 @@ public class LoadMoleculeFromFileTest {
 
             // Similar
             BingoObject result = bingoDb.searchSim(indigo.loadMolecule(needle), 1, 1);
-            Integer bingoFound = 0;
-            while (result.next()) {
-                bingoFound++;
-            }
-            assertEquals(bingoFound, similarRecords.size());
+            result.next();
+            IndigoObject bingoFound = result.getIndigoObject();
+            IndigoRecord elasticFound = similarRecords.get(0);
+            IndigoObject indigoElasticFound = indigo.loadBuffer(elasticFound.getCmf());
+            indigoElasticFound.equals(bingoFound);
 
         } catch (Exception e) {
-            Assertions.fail();
+            Assertions.fail(e);
         }
     }
 

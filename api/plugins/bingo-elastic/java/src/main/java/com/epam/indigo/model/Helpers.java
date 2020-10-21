@@ -90,6 +90,7 @@ public class Helpers {
     }
 
     public static IndigoRecord fromSource(String id, Map<String, Object> source, float score) {
+        Indigo indigo = new Indigo();
         IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordBuilder();
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             if (entry.getKey().equals("fingerprint")) {
@@ -100,6 +101,8 @@ public class Helpers {
         }
         indigoRecordBuilder.withScore(score);
         indigoRecordBuilder.withId(id);
+        Object cmf = source.get("cmf");
+        indigoRecordBuilder.withCmf(cmf);
         return indigoRecordBuilder.build();
     }
 }

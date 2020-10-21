@@ -2,6 +2,7 @@ package com.epam.indigo.model;
 
 import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
+import com.epam.indigo.model.fields.Cmf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,6 +60,12 @@ public class IndigoRecord {
             return this;
         }
 
+        public IndigoRecordBuilder withCmf(Object cmf) {
+            Cmf indigoCmf = new Cmf(cmf);
+            operations.add(record -> record.cmf = indigoCmf.toByteArray());
+            return this;
+        }
+
         public IndigoRecordBuilder withId(String id) {
             operations.add(record -> record.internalID = id);
             return this;
@@ -95,10 +102,6 @@ public class IndigoRecord {
 
     public byte[] getCmf() {
         return cmf;
-    }
-
-    public String getCml() {
-        return cml;
     }
 
     public Map<String, Object> getObjects() {
