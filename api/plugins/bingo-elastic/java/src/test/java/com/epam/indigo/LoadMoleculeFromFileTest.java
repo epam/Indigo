@@ -9,6 +9,7 @@ import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -34,8 +35,8 @@ public class LoadMoleculeFromFileTest {
                 .build();
     }
 
-    @BeforeAll
-    public static void setUpBingoNoSQL() {
+    @BeforeEach
+    public void setUpBingoNoSQL() {
         indigo = new Indigo();
         bingoDb = Bingo.createDatabaseFile(indigo, "src/test/resources/bingo_nosql", "molecule");
     }
@@ -59,6 +60,17 @@ public class LoadMoleculeFromFileTest {
         }
     }
 
+
+    /**
+     * Use this method to test additional/custom fields loaded into record
+     * @param record
+     * @param requiredFields
+     */
+    protected void testAdditionalFields(IndigoRecord record, HashMap<String, String> requiredFields) {
+        Assertions.fail();
+    }
+
+
     @Test
     @DisplayName("Testing creation of IndigoRecord from mol file")
     void testLoadFromMol() throws Exception {
@@ -71,6 +83,17 @@ public class LoadMoleculeFromFileTest {
     public void testLoadFromCml() throws Exception {
         List<IndigoRecord> indigoRecordList = Helpers.loadFromCmlFile("src/test/resources/tetrahedral-all.cml");
         assertEquals(163, indigoRecordList.size());
+    }
+
+    @Test
+    @DisplayName("Testing creation of IndigoRecord from cml file with name")
+    public void testLoadFromCmlWithName() throws Exception {
+        List<IndigoRecord> indigoRecordList = Helpers.loadFromCmlFile("src/test/resources/tetrahedral-named.cml");
+        repository.indexRecords(indigoRecordList);
+        TimeUnit.SECONDS.sleep(5);
+        List<IndigoRecord> indigoRecordResult = repository.stream().collect(Collectors.toList());
+        assertEquals(1, indigoRecordList.size());
+        assertEquals("tetrahedralTitle", indigoRecordList.get(0).getField("name").toString());
     }
 
     @Test

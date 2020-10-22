@@ -5,33 +5,37 @@ import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
-public class Cmf {
+final public class Field implements FieldInterface {
 
-    byte[] cmf;
+    protected byte[] field;
 
-    public Cmf(byte[] cmf) {
-        this.cmf = cmf;
+    public Field(byte[] field) {
+        this.field = field;
     }
 
-    public Cmf(Object cmf) {
+    public Field(Object object) {
         try {
-            this.cmf = convertToByteArray(cmf);
+            this.field = convertToByteArray(object);
         } catch (IOException e) {
             // TODO: throw exception to the next level?
             System.out.println(e);
-            this.cmf = new byte[0];
+            this.field = new byte[0];
         }
     }
 
-    protected byte[] convertToByteArray(Object cmf) throws IOException {
+    final protected byte[] convertToByteArray(Object object) throws IOException {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutput out = new ObjectOutputStream(bos)) {
-            out.writeObject(cmf);
+            out.writeObject(object);
             return bos.toByteArray();
         }
     }
 
     public byte[] toByteArray() {
-        return cmf;
+        return field;
+    }
+
+    public String toString() {
+        return new String(field);
     }
 
 }

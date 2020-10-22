@@ -2,7 +2,8 @@ package com.epam.indigo.model;
 
 import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
-import com.epam.indigo.model.fields.Cmf;
+import com.epam.indigo.model.fields.Field;
+import com.epam.indigo.model.fields.FieldNotFoundException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +31,6 @@ public class IndigoRecord {
         }
 
         public IndigoRecordBuilder withIndigoObject(IndigoObject indigoObject) {
-
             withCmf(indigoObject.serialize());
             operations.add(record -> {
                 List<Integer> fin = new ArrayList<>();
@@ -61,8 +61,8 @@ public class IndigoRecord {
         }
 
         public IndigoRecordBuilder withCmf(Object cmf) {
-            Cmf indigoCmf = new Cmf(cmf);
-            operations.add(record -> record.cmf = indigoCmf.toByteArray());
+            Field cmfField = new Field(cmf);
+            operations.add(record -> record.cmf = cmfField.toByteArray());
             return this;
         }
 
@@ -124,6 +124,14 @@ public class IndigoRecord {
         return session.unserialize(getCmf());
     }
 
+
+    public Field getField(String field) throws FieldNotFoundException {
+        Object value = objects.get(field);
+        if (null == value) {
+            throw new FieldNotFoundException();
+        }
+        return new Field(value);
+    }
 
 }
 
