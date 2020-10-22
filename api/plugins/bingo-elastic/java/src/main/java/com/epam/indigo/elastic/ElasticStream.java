@@ -2,6 +2,7 @@ package com.epam.indigo.elastic;
 
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.predicate.ExactMatch;
 import com.epam.indigo.predicate.FilterPredicate;
 import com.epam.indigo.predicate.IndigoPredicate;
 import com.epam.indigo.predicate.SimilarityMatch;
@@ -21,6 +22,12 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
+/**
+ * Implementation of JDK Stream API
+ * Limited number of operations supported at the moment, check out usage example in README for better understanding
+ * @param <T>
+ * @experimental
+ */
 public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     private final RestHighLevelClient elasticClient;
@@ -166,10 +173,17 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
                 if (predicate instanceof SimilarityMatch) {
                     if (!similarityRequested) {
                         similarityRequested = true;
-                        QueryBuilder[] shouldClauses = generateShouldClauses(((SimilarityMatch<?>) predicate).getTarget());
-                        for (QueryBuilder should : shouldClauses) {
-                            boolQueryBuilder.should(should);
+                        QueryBuilder[] clauses = generateClauses(((SimilarityMatch<?>) predicate).getTarget());
+                        if (predicate instanceof  ExactMatch) {
+                            for (QueryBuilder should : clauses) {
+                                boolQueryBuilder.must(should);
+                            }
+                        } else {
+                            for (QueryBuilder should : clauses) {
+                                boolQueryBuilder.should(should);
+                            }
                         }
+
 //                        TODO implement proper mm based on threshold ask
 //                        boolQueryBuilder.minimumShouldMatch((int) (((SimilarityMatch<?>) predicate).getThreshold() * 100));
                         script = ((SimilarityMatch<?>) predicate).generateScript();
@@ -291,7 +305,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     }
 
-    private QueryBuilder[] generateShouldClauses(IndigoRecord target) {
+    private QueryBuilder[] generateClauses(IndigoRecord target) {
         List<Integer> fingerprint = target.getFingerprint();
         QueryBuilder[] bits = new QueryBuilder[fingerprint.size()];
         for (int i = 0; i < bits.length; ++i) {

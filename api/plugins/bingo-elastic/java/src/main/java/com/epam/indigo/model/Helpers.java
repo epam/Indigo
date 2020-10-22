@@ -35,7 +35,9 @@ class Accumulate {
 
 }
 
-
+/**
+ * Helpers class, that have ability to create @link {com.epam.indigo.model.IndigoRecord} from popular formats like SDF, MOL, Smiles, etc
+ */
 public class Helpers {
 
 
