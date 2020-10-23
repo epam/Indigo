@@ -33,7 +33,7 @@ public class TverskySimilarityMatch<T extends IndigoRecord> extends SimilarityMa
     @Override
     public Script generateScript() {
         Map<String, Object> map = new HashMap<>();
-        map.put("source", "_score / ((params.a - _score) * params.alpha + (doc['fingerprint_len'].value - _score) * params.beta)");
+        map.put("source", "_score / ((params.a - _score) * params.alpha + (doc['fingerprint_len'].value - _score) * params.beta + _score)");
         Map<String, Object> params = new HashMap<>();
         params.put("a", getTarget().getFingerprint().size());
         params.put("alpha", this.alpha);

@@ -153,6 +153,7 @@ public class LoadMoleculeFromFileTest {
             IndigoObject bingoFound = result.getIndigoObject();
             IndigoRecord elasticFound = similarRecords.get(0);
             IndigoObject indigoElasticFound = indigo.loadBuffer(elasticFound.getCmf());
+//            TODO need to compare fields, equals wouldn't work here
             assertTrue(indigoElasticFound.equals(bingoFound));
 
         } catch (Exception e) {

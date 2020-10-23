@@ -9,11 +9,9 @@ final public class Field implements FieldInterface {
 
     protected final Object field;
 
-
     public Field(Object object) {
         field = object;
     }
-
 
     public byte[] toByteArray() {
         try {
