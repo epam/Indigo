@@ -6,13 +6,7 @@ import com.epam.indigo.model.fields.CustomObject;
 
 public class FromIndigoObject {
 
-    final IndigoObject indigoObject;
-
-    public FromIndigoObject(IndigoObject indigoObject) {
-        this.indigoObject = indigoObject;
-    }
-
-    public IndigoRecord get() throws BingoElasticException {
+    public static IndigoRecord build(IndigoObject indigoObject) throws BingoElasticException {
 
         IndigoRecord.IndigoRecordBuilder builder = new IndigoRecord.IndigoRecordBuilder().withIndigoObject(
                 indigoObject

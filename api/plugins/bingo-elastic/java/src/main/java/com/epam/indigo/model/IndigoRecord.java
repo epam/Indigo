@@ -18,7 +18,9 @@ public class IndigoRecord {
     // Internal Elastic ID
     private String internalID = null;
     private float score;
+    // todo: rename? and add ability to extend?
     private List<Integer> fingerprint;
+
     private byte[] cmf;
     //    custom map/dict think about it as JSON
     //    object to be string?
@@ -61,6 +63,11 @@ public class IndigoRecord {
             return this;
         }
 
+        /**
+         * @deprecated
+         * @param cmf
+         * @return
+         */
         public IndigoRecordBuilder withCmf(Object cmf) {
             Field cmfField = new Field(cmf);
             operations.add(record -> record.cmf = cmfField.toByteArray());

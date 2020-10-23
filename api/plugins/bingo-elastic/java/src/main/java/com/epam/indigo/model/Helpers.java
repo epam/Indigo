@@ -6,6 +6,7 @@ import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.IndigoRecord.IndigoRecordBuilder;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class Helpers {
     public static IndigoRecord loadFromFile(String molFile) {
         Indigo indigo = new Indigo();
         try {
-            return (new FromIndigoObject(indigo.loadMoleculeFromFile(molFile))).get();
+            return FromIndigoObject.build(indigo.loadMoleculeFromFile(molFile));
         } catch (BingoElasticException e) {
 //            TODO logging
             System.out.println(e);
@@ -61,7 +62,7 @@ public class Helpers {
         Indigo indigo = new Indigo();
         Accumulate acc = new Accumulate(skipErrors);
         for (IndigoObject comp : indigo.iterateSDFile(sdfFile)) {
-            acc.add((new FromIndigoObject(comp)).get());
+            acc.add(FromIndigoObject.build(comp));
         }
         return acc.getAcc();
     }
@@ -69,7 +70,7 @@ public class Helpers {
     public static IndigoRecord loadFromSmiles(String smiles) throws Exception {
         Indigo indigo = new Indigo();
         IndigoObject indigoObject = indigo.loadMolecule(smiles);
-        return (new FromIndigoObject(indigoObject)).get();
+        return FromIndigoObject.build(indigoObject);
     }
 
     public static List<IndigoRecord> loadFromSmilesFile(String smilesFile) throws Exception {
@@ -80,7 +81,7 @@ public class Helpers {
         Indigo indigo = new Indigo();
         Accumulate acc = new Accumulate(skipErrors);
         for (IndigoObject comp : indigo.iterateSmilesFile(smilesFile)) {
-            acc.add((new FromIndigoObject(comp)).get());
+            acc.add(FromIndigoObject.build(comp));
         }
         return acc.getAcc();
     }
@@ -93,7 +94,7 @@ public class Helpers {
         Indigo indigo = new Indigo();
         Accumulate acc = new Accumulate(skipErrors);
         for (IndigoObject comp : indigo.iterateCMLFile(cmlFile)) {
-            acc.add((new FromIndigoObject(comp)).get());
+            acc.add(FromIndigoObject.build(comp));
         }
         return acc.getAcc();
     }
@@ -109,7 +110,7 @@ public class Helpers {
         }
         indigoRecordBuilder.withScore(score);
         indigoRecordBuilder.withId(id);
-        Object cmf = source.get("cmf");
+        byte[] cmf = Base64.getDecoder().decode(source.get("cmf").toString());
         indigoRecordBuilder.withCmf(cmf);
         return indigoRecordBuilder.build();
     }

@@ -218,12 +218,14 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 builder.field("fingerprint_len", t.getFingerprint().size());
                 builder.field("cmf", t.getCmf());
                 for (Map.Entry<String, Object> e : t.getObjects().entrySet()) {
+                    // todo: allow extend by users?
                     builder.field(e.getKey(), e.getValue());
                 }
             }
             builder.endObject();
             request.add(new IndexRequest(this.indexName)
                     .source(builder));
+
         }
         this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, new ActionListener<BulkResponse>() {
             @Override
