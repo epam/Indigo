@@ -5,6 +5,7 @@ import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.fields.Field;
 import com.epam.indigo.model.fields.FieldNotFoundException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
