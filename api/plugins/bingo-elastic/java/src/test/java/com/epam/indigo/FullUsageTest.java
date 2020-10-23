@@ -4,23 +4,26 @@ import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.predicate.EuclidSimilarityMatch;
 import com.epam.indigo.predicate.ExactMatch;
 import com.epam.indigo.predicate.TanimotoSimilarityMatch;
+import com.epam.indigo.predicate.TverskySimilarityMatch;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FullUsageTest {
 
     protected static ElasticRepository<IndigoRecord> repository;
     private static ElasticsearchContainer elasticsearchContainer;
+    private static final Random random = new Random();
 
 
     @BeforeAll
@@ -32,6 +35,7 @@ public class FullUsageTest {
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
+                .withRefreshInterval("1s")
                 .build();
     }
 
@@ -53,7 +57,7 @@ public class FullUsageTest {
             repository.indexRecords(indigoRecordList);
             TimeUnit.SECONDS.sleep(5);
             int requestSize = 20;
-            IndigoRecord target = indigoRecordList.get(0);
+            IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new TanimotoSimilarityMatch<>(target))
                     .limit(requestSize)
@@ -73,13 +77,51 @@ public class FullUsageTest {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
             repository.indexRecords(indigoRecordList);
             TimeUnit.SECONDS.sleep(5);
-            IndigoRecord target = indigoRecordList.get(0);
+            IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new ExactMatch<>(target))
                     .collect(Collectors.toList());
             assertEquals(1, similarRecords.size());
             assertEquals(1.0f, similarRecords.get(0).getScore());
             assertArrayEquals(target.getFingerprint().toArray(), similarRecords.get(0).getFingerprint().toArray());
+        } catch (Exception exception) {
+            Assertions.fail("Exception happened during test " + exception.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Testing tversky match")
+    public void tversky() {
+        try {
+            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            repository.indexRecords(indigoRecordList);
+            TimeUnit.SECONDS.sleep(5);
+            IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
+            List<IndigoRecord> similarRecords = repository.stream()
+                    .filter(new TverskySimilarityMatch<>(target, 0.5f, 0.5f))
+                    .collect(Collectors.toList());
+            assertEquals(10, similarRecords.size());
+            assertEquals(1.0f, similarRecords.get(0).getScore());
+            assertArrayEquals(target.getFingerprint().toArray(), similarRecords.get(0).getFingerprint().toArray());
+        } catch (Exception exception) {
+            Assertions.fail("Exception happened during test " + exception.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Testing euclid with threshold match")
+    public void euclidWithThreshold() {
+        try {
+            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            repository.indexRecords(indigoRecordList);
+            TimeUnit.SECONDS.sleep(5);
+            float threshold = 0.5f;
+            IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
+            List<IndigoRecord> similarRecords = repository.stream()
+                    .filter(new EuclidSimilarityMatch<>(target, threshold))
+                    .collect(Collectors.toList());
+
+            for (IndigoRecord similarRecord : similarRecords) assertTrue(similarRecord.getScore() >= threshold);
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }

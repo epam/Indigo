@@ -1,5 +1,6 @@
 package com.epam.indigo.model;
 
+import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.IndigoRecord.IndigoRecordBuilder;
@@ -43,7 +44,13 @@ public class Helpers {
 
     public static IndigoRecord loadFromFile(String molfile) {
         Indigo indigo = new Indigo();
-        return (new FromIndigoObject(indigo.loadMoleculeFromFile(molfile))).get();
+        try {
+            return (new FromIndigoObject(indigo.loadMoleculeFromFile(molfile))).get();
+        } catch (BingoElasticException e) {
+//            TODO logging
+            System.out.println(e);
+        }
+        return null;
     }
 
     public static List<IndigoRecord> loadFromSdf(String sdfFile) throws Exception {
@@ -91,7 +98,7 @@ public class Helpers {
         return acc.getAcc();
     }
 
-    public static IndigoRecord fromSource(String id, Map<String, Object> source, float score) {
+    public static IndigoRecord fromSource(String id, Map<String, Object> source, float score) throws BingoElasticException {
         IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordBuilder();
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             if (entry.getKey().equals("fingerprint")) {

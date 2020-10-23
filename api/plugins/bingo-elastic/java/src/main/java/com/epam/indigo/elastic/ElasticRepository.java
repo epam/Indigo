@@ -34,11 +34,12 @@ import java.util.stream.Stream;
 /**
  * Class responsible for all operations with Elasticsearch
  * Have ability to index, delete, produce stream for further operations like similarity match, filtering on extra textual fields, etc
+ *
  * @param <T>
  */
 public class ElasticRepository<T extends IndigoRecord> implements GenericRepository<T> {
 
-    private String indexName;
+    private String indexName = "bingo";
     private String hostName;
     private int port;
     private String scheme;
@@ -46,6 +47,9 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     private String password;
     private RestHighLevelClient elasticClient;
     private boolean ignoreSSL;
+    private int numShards = 1;
+    private int numReplicas = 1;
+    private String refreshInterval = "5m";
 
     private ElasticRepository() {
     }
@@ -97,6 +101,21 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             return this;
         }
 
+        public ElasticRepositoryBuilder<T> withShards(int numShards) {
+            operations.add(repo -> repo.numShards = numShards);
+            return this;
+        }
+
+        public ElasticRepositoryBuilder<T> withReplicas(int numReplicas) {
+            operations.add(repo -> repo.numReplicas = numReplicas);
+            return this;
+        }
+
+        public ElasticRepositoryBuilder<T> withRefreshInterval(String refreshInterval) {
+            operations.add(repo -> repo.refreshInterval = refreshInterval);
+            return this;
+        }
+
         public ElasticRepository<T> build() {
             ElasticRepository<T> repository = new ElasticRepository<>();
             operations.forEach(operation -> operation.accept(repository));
@@ -113,9 +132,6 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                             .setDefaultCredentialsProvider(credentialsProvider));
                 }
                 repository.elasticClient = new RestHighLevelClient(builder);
-            }
-            if (repository.indexName == null) {
-                repository.indexName = "bingo";
             }
 //            TODO?
 //            validate(repository);
@@ -135,19 +151,11 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
 
     private boolean createIndex(T t) throws IOException {
         CreateIndexRequest request = new CreateIndexRequest(this.indexName);
-//        TODO how to think about number of shards?
         request.settings(Settings.builder()
-                        .put("index.number_of_shards", 3)
-                        .put("index.number_of_replicas", 1)
-//                .put("refresh_interval", "5m")
+                .put("index.number_of_shards", this.numShards)
+                .put("index.number_of_replicas", this.numReplicas)
+                .put("refresh_interval", this.refreshInterval)
         );
-
-// analyse fields to create proper index
-//        Field[] fields = t.getClass().getFields();
-//        for (Field f : fields) {
-//            String fieldName = f.getName();
-//
-//        }
         XContentBuilder builder = XContentFactory.jsonBuilder();
         builder.startObject();
         {

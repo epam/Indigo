@@ -1,11 +1,11 @@
 package com.epam.indigo.model;
 
+import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.fields.Field;
 import com.epam.indigo.model.fields.FieldNotFoundException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,16 +78,16 @@ public class IndigoRecord {
         }
 
 
-        public IndigoRecord build() {
+        public IndigoRecord build() throws BingoElasticException {
             IndigoRecord record = new IndigoRecord();
             operations.forEach(operation -> operation.accept(record));
             validate(record);
             return record;
         }
 
-        public void validate(IndigoRecord record) {
+        public void validate(IndigoRecord record) throws BingoElasticException {
             if (null == record.fingerprint) {
-                //throw new Exception("Fingerprint is required field");
+                throw new BingoElasticException("Fingerprint is required field");
             }
         }
     }

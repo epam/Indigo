@@ -4,11 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.nio.charset.StandardCharsets;
 
 final public class Field implements FieldInterface {
 
-    protected Object field;
+    protected final Object field;
 
 
     public Field(Object object) {

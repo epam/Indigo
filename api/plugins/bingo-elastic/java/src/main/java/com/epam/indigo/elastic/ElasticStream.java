@@ -1,5 +1,6 @@
 package com.epam.indigo.elastic;
 
+import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.ExactMatch;
@@ -25,6 +26,7 @@ import java.util.stream.*;
 /**
  * Implementation of JDK Stream API
  * Limited number of operations supported at the moment, check out usage example in README for better understanding
+ *
  * @param <T>
  * @experimental
  */
@@ -169,12 +171,13 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         } else {
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
             Script script = null;
+            float threshold = 0.0f;
             for (IndigoPredicate<? super T> predicate : this.predicates) {
                 if (predicate instanceof SimilarityMatch) {
                     if (!similarityRequested) {
                         similarityRequested = true;
                         QueryBuilder[] clauses = generateClauses(((SimilarityMatch<?>) predicate).getTarget());
-                        if (predicate instanceof  ExactMatch) {
+                        if (predicate instanceof ExactMatch) {
                             for (QueryBuilder should : clauses) {
                                 boolQueryBuilder.must(should);
                             }
@@ -186,6 +189,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
 //                        TODO implement proper mm based on threshold ask
 //                        boolQueryBuilder.minimumShouldMatch((int) (((SimilarityMatch<?>) predicate).getThreshold() * 100));
+                        threshold = ((SimilarityMatch<? super T>) predicate).getThreshold();
                         script = ((SimilarityMatch<?>) predicate).generateScript();
                     } else {
                         throw new IllegalArgumentException("Several similarity matches requested, couldn't process query");
@@ -198,6 +202,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
             if (script == null) {
                 script = generateIdentityScore();
             }
+            searchSourceBuilder.minScore(threshold);
             searchSourceBuilder.size(this.size);
             searchSourceBuilder.query(QueryBuilders.scriptScoreQuery(boolQueryBuilder, script));
         }
@@ -213,13 +218,17 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         try {
             SearchResponse searchResponse = this.elasticClient.search(searchRequest, RequestOptions.DEFAULT);
             hits = searchResponse.getHits().getHits();
+            for (SearchHit hit : hits) {
+                collector.accumulator().accept(container, (T) Helpers.fromSource(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
+            }
         } catch (IOException e) {
 //            TODO logging
             System.out.println(e);
+        } catch (BingoElasticException e) {
+//            TODO logging
+            System.out.println(e);
         }
-        for (SearchHit hit : hits) {
-            collector.accumulator().accept(container, (T) Helpers.fromSource(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
-        }
+
         return (R) container;
     }
 

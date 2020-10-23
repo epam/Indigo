@@ -32,6 +32,7 @@ public class LoadMoleculeFromFileTest {
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
+                .withRefreshInterval("1s")
                 .build();
     }
 
@@ -55,7 +56,7 @@ public class LoadMoleculeFromFileTest {
     public void deleteIndex() throws IOException {
         try {
             repository.deleteAllRecords();
-        } catch (ElasticsearchStatusException e) {
+        } catch (ElasticsearchStatusException ignored) {
 
         }
     }
@@ -152,7 +153,7 @@ public class LoadMoleculeFromFileTest {
             IndigoObject bingoFound = result.getIndigoObject();
             IndigoRecord elasticFound = similarRecords.get(0);
             IndigoObject indigoElasticFound = indigo.loadBuffer(elasticFound.getCmf());
-            indigoElasticFound.equals(bingoFound);
+            assertTrue(indigoElasticFound.equals(bingoFound));
 
         } catch (Exception e) {
             Assertions.fail(e);

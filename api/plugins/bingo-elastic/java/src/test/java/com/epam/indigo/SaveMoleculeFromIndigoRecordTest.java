@@ -29,6 +29,7 @@ public class SaveMoleculeFromIndigoRecordTest {
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
+                .withRefreshInterval("1s")
                 .build();
     }
 
