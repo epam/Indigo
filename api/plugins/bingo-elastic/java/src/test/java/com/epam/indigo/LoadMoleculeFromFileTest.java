@@ -107,7 +107,6 @@ public class LoadMoleculeFromFileTest {
     @Test
     @DisplayName("Testing creation of IndigoRecord from sdf file with names")
     void testLoadFromSdfWithName() throws Exception {
-        Indigo indigo = new Indigo();
         List<IndigoRecord> indigoRecordList =
                 Helpers.loadFromSdf("src/test/resources/zinc-slice.sdf");
         repository.indexRecord(indigoRecordList.get(0));
