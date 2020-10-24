@@ -4,10 +4,7 @@ import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
-import com.epam.indigo.predicate.EuclidSimilarityMatch;
-import com.epam.indigo.predicate.ExactMatch;
-import com.epam.indigo.predicate.TanimotoSimilarityMatch;
-import com.epam.indigo.predicate.TverskySimilarityMatch;
+import com.epam.indigo.predicate.*;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
@@ -21,10 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class FullUsageTest {
 
+    private static final Random random = new Random();
     protected static ElasticRepository<IndigoRecord> repository;
     private static ElasticsearchContainer elasticsearchContainer;
-    private static final Random random = new Random();
-
 
     @BeforeAll
     public static void setUpElastic() {
@@ -39,14 +35,14 @@ public class FullUsageTest {
                 .build();
     }
 
-    @AfterEach
-    public void deleteIndex() throws IOException {
-        repository.deleteAllRecords();
-    }
-
     @AfterAll
     public static void tearDownElastic() {
         elasticsearchContainer.stop();
+    }
+
+    @AfterEach
+    public void deleteIndex() throws IOException {
+        repository.deleteAllRecords();
     }
 
     @Test
@@ -122,6 +118,27 @@ public class FullUsageTest {
                     .collect(Collectors.toList());
 
             for (IndigoRecord similarRecord : similarRecords) assertTrue(similarRecord.getScore() >= threshold);
+        } catch (Exception exception) {
+            Assertions.fail("Exception happened during test " + exception.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Testing tanimoto and keyword query")
+    public void keywordQueryWithTanimoto() {
+        try {
+            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            IndigoRecord indigoRecord = indigoRecordList.get(0);
+            indigoRecord.addCustomObject("tag", "test");
+            repository.indexRecord(indigoRecord);
+            TimeUnit.SECONDS.sleep(5);
+            IndigoRecord target = indigoRecordList.get(0);
+            List<IndigoRecord> similarRecords = repository.stream()
+                    .filter(new TanimotoSimilarityMatch<>(target))
+                    .filter(new KeywordQuery<>("tag", "test"))
+                    .collect(Collectors.toList());
+
+            assertEquals(1, similarRecords.size());
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }

@@ -9,13 +9,14 @@ import com.epam.indigo.predicate.TanimotoSimilarityMatch;
 import com.epam.indigo.predicate.TverskySimilarityMatch;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BingoNoSQLVersusElasticTest {
 
@@ -37,12 +38,6 @@ public class BingoNoSQLVersusElasticTest {
                 .build();
     }
 
-    @BeforeEach
-    public void setUpBingoNoSQL() {
-        indigo = new Indigo();
-        bingoDb = Bingo.createDatabaseFile(indigo, "src/test/resources/bingo_nosql", "molecule");
-    }
-
     @AfterAll
     public static void tearDownElastic() {
         elasticsearchContainer.stop();
@@ -51,6 +46,12 @@ public class BingoNoSQLVersusElasticTest {
     @AfterAll
     public static void tearDownBingoNoSQL() {
 
+    }
+
+    @BeforeEach
+    public void setUpBingoNoSQL() {
+        indigo = new Indigo();
+        bingoDb = Bingo.createDatabaseFile(indigo, "src/test/resources/bingo_nosql", "molecule");
     }
 
     @AfterEach

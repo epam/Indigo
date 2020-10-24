@@ -33,9 +33,9 @@ import java.util.stream.*;
 public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     private final RestHighLevelClient elasticClient;
-    private int size = 10;
     private final List<IndigoPredicate<? super T>> predicates = new ArrayList<>();
     private final String indexName;
+    private int size = 10;
 
     public ElasticStream(RestHighLevelClient elasticClient, String indexName) {
         this.elasticClient = elasticClient;
@@ -51,117 +51,6 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         return this;
     }
 
-    @Override
-    public <R> Stream<R> map(Function<? super T, ? extends R> mapper) {
-        return null;
-    }
-
-    @Override
-    public IntStream mapToInt(ToIntFunction<? super T> mapper) {
-        return null;
-    }
-
-    @Override
-    public LongStream mapToLong(ToLongFunction<? super T> mapper) {
-        return null;
-    }
-
-    @Override
-    public DoubleStream mapToDouble(ToDoubleFunction<? super T> mapper) {
-        return null;
-    }
-
-    @Override
-    public <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper) {
-        return null;
-    }
-
-    @Override
-    public IntStream flatMapToInt(Function<? super T, ? extends IntStream> mapper) {
-        return null;
-    }
-
-    @Override
-    public LongStream flatMapToLong(Function<? super T, ? extends LongStream> mapper) {
-        return null;
-    }
-
-    @Override
-    public DoubleStream flatMapToDouble(Function<? super T, ? extends DoubleStream> mapper) {
-        return null;
-    }
-
-    @Override
-    public Stream<T> distinct() {
-        return null;
-    }
-
-    @Override
-    public Stream<T> sorted() {
-        return null;
-    }
-
-    @Override
-    public Stream<T> sorted(Comparator<? super T> comparator) {
-        return null;
-    }
-
-    @Override
-    public Stream<T> peek(Consumer<? super T> action) {
-        return null;
-    }
-
-    @Override
-    public Stream<T> limit(long maxSize) {
-        this.size = (int) maxSize;
-        return this;
-    }
-
-    @Override
-    public Stream<T> skip(long n) {
-        return null;
-    }
-
-    @Override
-    public void forEach(Consumer<? super T> action) {
-
-    }
-
-    @Override
-    public void forEachOrdered(Consumer<? super T> action) {
-
-    }
-
-    @Override
-    public Object[] toArray() {
-        return new Object[0];
-    }
-
-    @Override
-    public <A> A[] toArray(IntFunction<A[]> generator) {
-        return null;
-    }
-
-    @Override
-    public T reduce(T identity, BinaryOperator<T> accumulator) {
-        return null;
-    }
-
-    @Override
-    public Optional<T> reduce(BinaryOperator<T> accumulator) {
-        return Optional.empty();
-    }
-
-    @Override
-    public <U> U reduce(U identity, BiFunction<U, ? super T, U> accumulator, BinaryOperator<U> combiner) {
-        return null;
-    }
-
-    @Override
-    public <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner) {
-        return null;
-    }
-
     public SearchRequest compileRequest() {
         SearchRequest searchRequest = new SearchRequest(this.indexName);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -174,27 +63,25 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
             float threshold = 0.0f;
             for (IndigoPredicate<? super T> predicate : this.predicates) {
                 if (predicate instanceof SimilarityMatch) {
-                    if (!similarityRequested) {
-                        similarityRequested = true;
-                        QueryBuilder[] clauses = generateClauses(((SimilarityMatch<?>) predicate).getTarget());
-                        if (predicate instanceof ExactMatch) {
-                            for (QueryBuilder should : clauses) {
-                                boolQueryBuilder.must(should);
-                            }
-                        } else {
-                            for (QueryBuilder should : clauses) {
-                                boolQueryBuilder.should(should);
-                            }
+                    if (similarityRequested)
+                        throw new BingoElasticException("Several similarity matches requested, couldn't create query");
+                    similarityRequested = true;
+                    QueryBuilder[] clauses = generateClauses(((SimilarityMatch<?>) predicate).getTarget());
+                    if (predicate instanceof ExactMatch) {
+                        for (QueryBuilder should : clauses) {
+                            boolQueryBuilder.must(should);
                         }
-
-//                        TODO implement proper mm based on threshold ask
-//                        boolQueryBuilder.minimumShouldMatch((int) (((SimilarityMatch<?>) predicate).getThreshold() * 100));
-                        threshold = ((SimilarityMatch<? super T>) predicate).getThreshold();
-                        script = ((SimilarityMatch<?>) predicate).generateScript();
                     } else {
-                        throw new IllegalArgumentException("Several similarity matches requested, couldn't process query");
+                        for (QueryBuilder should : clauses) {
+                            boolQueryBuilder.should(should);
+                        }
                     }
+//                        TODO implement proper mm based on threshold ask
+//                   boolQueryBuilder.minimumShouldMatch((int) (((SimilarityMatch<?>) predicate).getThreshold() * 100));
+                    threshold = ((SimilarityMatch<? super T>) predicate).getThreshold();
+                    script = ((SimilarityMatch<?>) predicate).generateScript();
                 }
+
                 if (predicate instanceof FilterPredicate) {
                     boolQueryBuilder.must(((FilterPredicate<?>) predicate).generateQuery());
                 }
@@ -211,10 +98,21 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
     }
 
     @Override
+    public Stream<T> limit(long maxSize) {
+        this.size = (int) maxSize;
+        return this;
+    }
+
+    @Override
+    public boolean isParallel() {
+        return false;
+    }
+
+    @Override
     public <R, A> R collect(Collector<? super T, A, R> collector) {
         A container = collector.supplier().get();
         SearchRequest searchRequest = compileRequest();
-        SearchHit[] hits = new SearchHit[0];
+        SearchHit[] hits;
         try {
             SearchResponse searchResponse = this.elasticClient.search(searchRequest, RequestOptions.DEFAULT);
             hits = searchResponse.getHits().getHits();
@@ -222,96 +120,9 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
                 collector.accumulator().accept(container, (T) Helpers.fromSource(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
             }
         } catch (IOException e) {
-//            TODO logging
-            System.out.println(e);
-        } catch (BingoElasticException e) {
-//            TODO logging
-            System.out.println(e);
+            throw new BingoElasticException("Couldn't complete search in Elasticsearch", e.getCause());
         }
-
         return (R) container;
-    }
-
-
-    @Override
-    public Optional<T> min(Comparator<? super T> comparator) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<T> max(Comparator<? super T> comparator) {
-        return Optional.empty();
-    }
-
-    @Override
-    public long count() {
-        return 0;
-    }
-
-    @Override
-    public boolean anyMatch(Predicate<? super T> predicate) {
-        return false;
-    }
-
-    @Override
-    public boolean allMatch(Predicate<? super T> predicate) {
-        return false;
-    }
-
-    @Override
-    public boolean noneMatch(Predicate<? super T> predicate) {
-        return false;
-    }
-
-    @Override
-    public Optional<T> findFirst() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<T> findAny() {
-        return Optional.empty();
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return null;
-    }
-
-    @Override
-    public Spliterator<T> spliterator() {
-        return null;
-    }
-
-    @Override
-    public boolean isParallel() {
-//        no support to collect records in parallel for now
-        return false;
-    }
-
-    @Override
-    public Stream<T> sequential() {
-        return null;
-    }
-
-    @Override
-    public Stream<T> parallel() {
-        return null;
-    }
-
-    @Override
-    public Stream<T> unordered() {
-        return null;
-    }
-
-    @Override
-    public Stream<T> onClose(Runnable closeHandler) {
-        return null;
-    }
-
-    @Override
-    public void close() {
-
     }
 
     private QueryBuilder[] generateClauses(IndigoRecord target) {
@@ -327,5 +138,186 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         Map<String, Object> map = new HashMap<>();
         map.put("source", "_score");
         return Script.parse(map);
+    }
+
+
+    @Override
+    public Optional<T> min(Comparator<? super T> comparator) {
+        throw new BingoElasticException("min() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Optional<T> max(Comparator<? super T> comparator) {
+        throw new BingoElasticException("max() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public long count() {
+        throw new BingoElasticException("count() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public boolean anyMatch(Predicate<? super T> predicate) {
+        throw new BingoElasticException("anyMatch() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public boolean allMatch(Predicate<? super T> predicate) {
+        throw new BingoElasticException("allMatch() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public boolean noneMatch(Predicate<? super T> predicate) {
+        throw new BingoElasticException("noneMatch() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Optional<T> findFirst() {
+        throw new BingoElasticException("findFirst() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Optional<T> findAny() {
+        throw new BingoElasticException("findAny() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        throw new BingoElasticException("iterator() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Spliterator<T> spliterator() {
+        throw new BingoElasticException("spliterator() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public <R> Stream<R> map(Function<? super T, ? extends R> mapper) {
+        throw new BingoElasticException("map() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public IntStream mapToInt(ToIntFunction<? super T> mapper) {
+        throw new BingoElasticException("mapToInt() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public LongStream mapToLong(ToLongFunction<? super T> mapper) {
+        throw new BingoElasticException("mapToLong() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public DoubleStream mapToDouble(ToDoubleFunction<? super T> mapper) {
+        throw new BingoElasticException("mapToDouble() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper) {
+        throw new BingoElasticException("flatMap() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public IntStream flatMapToInt(Function<? super T, ? extends IntStream> mapper) {
+        throw new BingoElasticException("flatMapToInt() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public LongStream flatMapToLong(Function<? super T, ? extends LongStream> mapper) {
+        throw new BingoElasticException("flatMapToLong() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public DoubleStream flatMapToDouble(Function<? super T, ? extends DoubleStream> mapper) {
+        throw new BingoElasticException("flatMapToDouble() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Stream<T> distinct() {
+        throw new BingoElasticException("distinct() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Stream<T> sorted() {
+        throw new BingoElasticException("sorted() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Stream<T> sorted(Comparator<? super T> comparator) {
+        throw new BingoElasticException("sorted() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Stream<T> peek(Consumer<? super T> action) {
+        throw new BingoElasticException("peek() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Stream<T> skip(long n) {
+        throw new BingoElasticException("skip() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action) {
+        throw new BingoElasticException("forEach() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public void forEachOrdered(Consumer<? super T> action) {
+        throw new BingoElasticException("forEachOrdered() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Object[] toArray() {
+        throw new BingoElasticException("toArray() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public <A> A[] toArray(IntFunction<A[]> generator) {
+        throw new BingoElasticException("toArray() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public T reduce(T identity, BinaryOperator<T> accumulator) {
+        throw new BingoElasticException("reduce() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Optional<T> reduce(BinaryOperator<T> accumulator) {
+        throw new BingoElasticException("reduce() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public <U> U reduce(U identity, BiFunction<U, ? super T, U> accumulator, BinaryOperator<U> combiner) {
+        throw new BingoElasticException("reduce() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner) {
+        throw new BingoElasticException("collect() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Stream<T> sequential() {
+        throw new BingoElasticException("sequential() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Stream<T> parallel() {
+        throw new BingoElasticException("parallel() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Stream<T> unordered() {
+        throw new BingoElasticException("unordered() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public Stream<T> onClose(Runnable closeHandler) {
+        throw new BingoElasticException("onClose() operation on this stream isn't implemented");
+    }
+
+    @Override
+    public void close() {
+        throw new BingoElasticException("close() operation on this stream isn't implemented");
     }
 }

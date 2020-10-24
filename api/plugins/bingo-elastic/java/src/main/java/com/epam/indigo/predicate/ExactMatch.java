@@ -15,10 +15,12 @@ public class ExactMatch<T extends IndigoRecord> extends SimilarityMatch<T> {
     @Override
     public Script generateScript() {
         Map<String, Object> map = new HashMap<>();
-        map.put("source", "_score / params.a");
-        Map<String, Object> params = new HashMap<>();
-        params.put("a", getTarget().getFingerprint().size());
-        map.put("params", params);
+        map.put("source", "_score / doc['fingerprint_len'].value");
         return Script.parse(map);
+    }
+
+    @Override
+    public float getThreshold() {
+        return 1.0f;
     }
 }

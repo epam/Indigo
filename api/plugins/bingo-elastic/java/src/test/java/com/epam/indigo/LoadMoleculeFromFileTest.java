@@ -36,12 +36,6 @@ public class LoadMoleculeFromFileTest {
                 .build();
     }
 
-    @BeforeEach
-    public void setUpBingoNoSQL() {
-        indigo = new Indigo();
-        bingoDb = Bingo.createDatabaseFile(indigo, "src/test/resources/bingo_nosql", "molecule");
-    }
-
     @AfterAll
     public static void tearDownElastic() {
         elasticsearchContainer.stop();
@@ -50,6 +44,12 @@ public class LoadMoleculeFromFileTest {
     @AfterAll
     public static void tearDownBingoNoSQL() {
 
+    }
+
+    @BeforeEach
+    public void setUpBingoNoSQL() {
+        indigo = new Indigo();
+        bingoDb = Bingo.createDatabaseFile(indigo, "src/test/resources/bingo_nosql", "molecule");
     }
 
     @AfterEach
@@ -64,6 +64,7 @@ public class LoadMoleculeFromFileTest {
 
     /**
      * Use this method to test additional/custom fields loaded into record
+     *
      * @param record
      * @param requiredFields
      */
@@ -163,13 +164,10 @@ public class LoadMoleculeFromFileTest {
             // Similar
             BingoObject result = bingoDb.searchSim(indigo.loadMolecule(needle), 1, 1);
             result.next();
-//            IndigoObject bingoFound = result.getIndigoObject();
-//            IndigoRecord elasticFound = similarRecords.get(0);
-//            IndigoObject indigoElasticFound = indigo.loadBuffer(elasticFound.getCmf());
-//            TODO need to compare fields, equals wouldn't work here
-            //indigoElasticFound.fingerprint("sim");
-//            bingoFound.fingerprint("sim");
-            //Equals(indigoElasticFound.fingerprint("sim"), bingoFound.fingerprint("sim"));
+            IndigoObject bingoFound = result.getIndigoObject();
+            IndigoRecord elasticFound = similarRecords.get(0);
+            IndigoObject indigoElasticFound = indigo.unserialize(elasticFound.getCmf());
+            assertTrue(indigo.similarity(bingoFound, indigoElasticFound) == 1.0f);
 
         } catch (Exception e) {
             Assertions.fail(e);

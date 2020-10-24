@@ -45,13 +45,7 @@ public class Helpers {
 
     public static IndigoRecord loadFromFile(String molFile) {
         Indigo indigo = new Indigo();
-        try {
-            return FromIndigoObject.build(indigo.loadMoleculeFromFile(molFile));
-        } catch (BingoElasticException e) {
-//            TODO logging
-            System.out.println(e);
-        }
-        return null;
+        return FromIndigoObject.build(indigo.loadMoleculeFromFile(molFile));
     }
 
     public static List<IndigoRecord> loadFromSdf(String sdfFile) throws Exception {
@@ -103,14 +97,14 @@ public class Helpers {
         IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordBuilder();
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             if (entry.getKey().equals("fingerprint")) {
-                indigoRecordBuilder.withFingerprint((List<Integer>) ((List<Object>)entry.getValue()).get(0));
+                indigoRecordBuilder.withFingerprint((List<Integer>) ((List<Object>) entry.getValue()).get(0));
             } else {
                 indigoRecordBuilder.withCustomObject(entry.getKey(), entry.getValue());
             }
         }
         indigoRecordBuilder.withScore(score);
         indigoRecordBuilder.withId(id);
-        byte[] cmf = Base64.getDecoder().decode(source.get("cmf").toString());
+        byte[] cmf = Base64.getDecoder().decode((String) source.get("cmf"));
         indigoRecordBuilder.withCmf(cmf);
         return indigoRecordBuilder.build();
     }

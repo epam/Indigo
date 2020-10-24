@@ -1,5 +1,6 @@
 package com.epam.indigo.elastic;
 
+import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.GenericRepository;
 import com.epam.indigo.model.IndigoRecord;
 import org.apache.http.HttpHost;
@@ -26,6 +27,7 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -52,6 +54,116 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     private String refreshInterval = "5m";
 
     private ElasticRepository() {
+    }
+
+    private boolean checkIfIndexExists() throws IOException {
+        try {
+            return this.elasticClient.indices().exists(new GetIndexRequest(this.indexName), RequestOptions.DEFAULT);
+        } catch (IOException e) {
+//            TODO logging
+            throw e;
+        }
+    }
+
+    private boolean createIndex(T t) throws IOException {
+        CreateIndexRequest request = new CreateIndexRequest(this.indexName);
+        request.settings(Settings.builder()
+                .put("index.number_of_shards", this.numShards)
+                .put("index.number_of_replicas", this.numReplicas)
+                .put("refresh_interval", this.refreshInterval)
+        );
+        XContentBuilder builder = XContentFactory.jsonBuilder();
+        builder.startObject();
+        {
+            builder.startObject("properties");
+            {
+                builder.startObject("fingerprint");
+                {
+                    builder.field("type", "keyword");
+                    builder.field("similarity", "boolean");
+                }
+                builder.endObject();
+                builder.startObject("fingerprint_len");
+                {
+                    builder.field("type", "integer");
+                }
+                builder.endObject();
+                builder.startObject("cmf");
+                {
+                    builder.field("type", "binary");
+                }
+                builder.endObject();
+            }
+            builder.endObject();
+        }
+        builder.endObject();
+        request.mapping(builder);
+
+        try {
+            CreateIndexResponse createIndexResponse = this.elasticClient.indices().create(request, RequestOptions.DEFAULT);
+            return createIndexResponse.isAcknowledged();
+        } catch (IOException e) {
+            throw new BingoElasticException("Couldn't create index in Elasticsearch", e.getCause());
+        }
+    }
+
+    @Override
+    public Stream<T> stream() {
+        return new ElasticStream<>(this.elasticClient, this.indexName);
+    }
+
+    public boolean indexRecord(T record) throws IOException {
+        List<T> rec = new ArrayList<>();
+        rec.add(record);
+        return indexRecords(rec);
+    }
+
+    @Override
+    public boolean indexRecords(List<T> records) throws IOException {
+        if (!checkIfIndexExists())
+            createIndex(records.get(0));
+        BulkRequest request = new BulkRequest();
+        for (T t : records) {
+            XContentBuilder builder = XContentFactory.jsonBuilder();
+            builder.startObject();
+            {
+//                todo need to iterate over fields and add content where exists
+                builder.array("fingerprint", t.getFingerprint());
+                builder.field("fingerprint_len", t.getFingerprint().size());
+                builder.field("cmf", Base64.getEncoder().encodeToString(t.getCmf()));
+                for (Map.Entry<String, Object> e : t.getObjects().entrySet()) {
+                    // todo: allow extend by users?
+                    builder.field(e.getKey(), e.getValue());
+                }
+            }
+            builder.endObject();
+            request.add(new IndexRequest(this.indexName)
+                    .source(builder));
+
+        }
+        this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, new ActionListener<BulkResponse>() {
+            @Override
+            public void onResponse(BulkResponse bulkItemResponses) {
+                System.out.println("Bulk indexed completed");
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                throw new BingoElasticException("Couldn't index records in Elasticsearch", e.getCause());
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public boolean deleteAllRecords() throws IOException {
+        DeleteIndexRequest request = new DeleteIndexRequest(this.indexName);
+        try {
+            AcknowledgedResponse delete = this.elasticClient.indices().delete(request, RequestOptions.DEFAULT);
+            return delete.isAcknowledged();
+        } catch (IOException e) {
+            throw new BingoElasticException("Couldn't delete records in Elasticsearch", e.getCause());
+        }
     }
 
     public static class ElasticRepositoryBuilder<T extends IndigoRecord> {
@@ -136,121 +248,6 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
 //            TODO?
 //            validate(repository);
             return repository;
-        }
-    }
-
-
-    private boolean checkIfIndexExists() throws IOException {
-        try {
-            return this.elasticClient.indices().exists(new GetIndexRequest(this.indexName), RequestOptions.DEFAULT);
-        } catch (IOException e) {
-//            TODO logging
-            throw e;
-        }
-    }
-
-    private boolean createIndex(T t) throws IOException {
-        CreateIndexRequest request = new CreateIndexRequest(this.indexName);
-        request.settings(Settings.builder()
-                .put("index.number_of_shards", this.numShards)
-                .put("index.number_of_replicas", this.numReplicas)
-                .put("refresh_interval", this.refreshInterval)
-        );
-        XContentBuilder builder = XContentFactory.jsonBuilder();
-        builder.startObject();
-        {
-            builder.startObject("properties");
-            {
-                builder.startObject("fingerprint");
-                {
-                    builder.field("type", "keyword");
-                    builder.field("similarity", "boolean");
-                }
-                builder.endObject();
-                builder.startObject("fingerprint_len");
-                {
-                    builder.field("type", "integer");
-                }
-                builder.endObject();
-                builder.startObject("cmf");
-                {
-                    builder.field("type", "binary");
-                }
-                builder.endObject();
-            }
-            builder.endObject();
-        }
-        builder.endObject();
-        request.mapping(builder);
-
-        try {
-            CreateIndexResponse createIndexResponse = this.elasticClient.indices().create(request, RequestOptions.DEFAULT);
-            return createIndexResponse.isAcknowledged();
-        } catch (IOException e) {
-//            TODO logging
-            throw e;
-        }
-    }
-
-
-    @Override
-    public Stream<T> stream() {
-        return new ElasticStream<>(this.elasticClient, this.indexName);
-    }
-
-    public boolean indexRecord(T record) throws IOException {
-        List<T> rec = new ArrayList<>();
-        rec.add(record);
-        return indexRecords(rec);
-    }
-
-    @Override
-    public boolean indexRecords(List<T> records) throws IOException {
-        if (!checkIfIndexExists())
-            createIndex(records.get(0));
-        BulkRequest request = new BulkRequest();
-        for (T t : records) {
-            XContentBuilder builder = XContentFactory.jsonBuilder();
-            builder.startObject();
-            {
-//                todo need to iterate over fields and add content where exists
-                builder.array("fingerprint", t.getFingerprint());
-                builder.field("fingerprint_len", t.getFingerprint().size());
-                builder.field("cmf", t.getCmf());
-                for (Map.Entry<String, Object> e : t.getObjects().entrySet()) {
-                    // todo: allow extend by users?
-                    builder.field(e.getKey(), e.getValue());
-                }
-            }
-            builder.endObject();
-            request.add(new IndexRequest(this.indexName)
-                    .source(builder));
-
-        }
-        this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, new ActionListener<BulkResponse>() {
-            @Override
-            public void onResponse(BulkResponse bulkItemResponses) {
-                System.out.println("Bulk indexed completed");
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                System.out.println(e);
-            }
-        });
-        return true;
-    }
-
-
-    @Override
-    public boolean deleteAllRecords() throws IOException {
-        DeleteIndexRequest request = new DeleteIndexRequest(this.indexName);
-        try {
-            AcknowledgedResponse delete = this.elasticClient.indices().delete(request, RequestOptions.DEFAULT);
-            return delete.isAcknowledged();
-        } catch (IOException e) {
-//            TODO logging
-            throw e;
         }
     }
 }

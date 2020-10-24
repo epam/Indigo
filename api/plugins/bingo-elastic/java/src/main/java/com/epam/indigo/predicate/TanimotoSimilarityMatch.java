@@ -12,6 +12,10 @@ public class TanimotoSimilarityMatch<T extends IndigoRecord> extends SimilarityM
         super(target, threshold);
     }
 
+    public TanimotoSimilarityMatch(T target) {
+        super(target);
+    }
+
     @Override
     public Script generateScript() {
         Map<String, Object> map = new HashMap<>();
@@ -20,9 +24,5 @@ public class TanimotoSimilarityMatch<T extends IndigoRecord> extends SimilarityM
         params.put("a", getTarget().getFingerprint().size());
         map.put("params", params);
         return Script.parse(map);
-    }
-
-    public TanimotoSimilarityMatch(T target) {
-        super(target);
     }
 }

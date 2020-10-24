@@ -14,17 +14,55 @@ import java.util.function.Consumer;
 
 public class IndigoRecord {
 
-    private String cml;
+    //    custom map/dict think about it as JSON
+    //    object to be string?
+    private final Map<String, Object> objects = new HashMap<>();
     // Internal Elastic ID
     private String internalID = null;
     private float score;
     // todo: rename? and add ability to extend?
     private List<Integer> fingerprint;
-
     private byte[] cmf;
-    //    custom map/dict think about it as JSON
-    //    object to be string?
-    private final Map<String, Object> objects = new HashMap<>();
+
+    public IndigoRecord() {
+
+    }
+
+    public String getInternalID() {
+        return internalID;
+    }
+
+    public List<Integer> getFingerprint() {
+        return fingerprint;
+    }
+
+    public byte[] getCmf() {
+        return cmf;
+    }
+
+    public Map<String, Object> getObjects() {
+        return objects;
+    }
+
+    public float getScore() {
+        return score;
+    }
+
+    public void addCustomObject(String key, Object object) {
+        this.objects.put(key, object);
+    }
+
+    public IndigoObject getIndigoObject(Indigo session) {
+        return session.unserialize(getCmf());
+    }
+
+    public Field getField(String field) throws FieldNotFoundException {
+        Object value = objects.get(field);
+        if (null == value) {
+            throw new FieldNotFoundException();
+        }
+        return new Field(value);
+    }
 
     public static class IndigoRecordBuilder {
         private final List<Consumer<IndigoRecord>> operations;
@@ -63,16 +101,16 @@ public class IndigoRecord {
             return this;
         }
 
-        /**
-         * @deprecated
-         * @param cmf
-         * @return
-         */
-        public IndigoRecordBuilder withCmf(Object cmf) {
-            Field cmfField = new Field(cmf);
-            operations.add(record -> record.cmf = cmfField.toByteArray());
-            return this;
-        }
+//        /**
+//         * @deprecated
+//         * @param cmf
+//         * @return
+//         */
+//        public IndigoRecordBuilder withCmf(Object cmf) {
+//            Field cmfField = new Field(cmf);
+//            operations.add(record -> record.cmf = cmfField.toByteArray());
+//            return this;
+//        }
 
         public IndigoRecordBuilder withId(String id) {
             operations.add(record -> record.internalID = id);
@@ -97,48 +135,6 @@ public class IndigoRecord {
                 throw new BingoElasticException("Fingerprint is required field");
             }
         }
-    }
-
-
-    public String getInternalID() {
-        return internalID;
-    }
-
-    public List<Integer> getFingerprint() {
-        return fingerprint;
-    }
-
-    public byte[] getCmf() {
-        return cmf;
-    }
-
-    public Map<String, Object> getObjects() {
-        return objects;
-    }
-
-    public float getScore() {
-        return score;
-    }
-
-    public IndigoRecord() {
-
-    }
-
-    public void addCustomObject(String key, Object object) {
-        this.objects.put(key, object);
-    }
-
-    public IndigoObject getIndigoObject(Indigo session) {
-        return session.loadMoleculeFromBuffer(getCmf());
-    }
-
-
-    public Field getField(String field) throws FieldNotFoundException {
-        Object value = objects.get(field);
-        if (null == value) {
-            throw new FieldNotFoundException();
-        }
-        return new Field(value);
     }
 
 }

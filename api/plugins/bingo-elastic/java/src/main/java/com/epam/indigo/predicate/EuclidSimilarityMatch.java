@@ -12,6 +12,10 @@ public class EuclidSimilarityMatch<T extends IndigoRecord> extends SimilarityMat
         super(target, threshold);
     }
 
+    public EuclidSimilarityMatch(T target) {
+        super(target);
+    }
+
     @Override
     public Script generateScript() {
         Map<String, Object> map = new HashMap<>();
@@ -20,9 +24,5 @@ public class EuclidSimilarityMatch<T extends IndigoRecord> extends SimilarityMat
         params.put("a", getTarget().getFingerprint().size());
         map.put("params", params);
         return Script.parse(map);
-    }
-
-    public EuclidSimilarityMatch(T target) {
-        super(target);
     }
 }

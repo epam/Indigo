@@ -53,7 +53,7 @@ public class SaveMoleculeFromIndigoRecordTest {
             List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
             assertEquals(1, collect.size());
         } catch (Exception exception) {
-            System.out.println(exception);
+            Assertions.fail(exception);
         }
     }
 
@@ -67,7 +67,7 @@ public class SaveMoleculeFromIndigoRecordTest {
             List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
             assertEquals(10, collect.size());
         } catch (Exception exception) {
-            System.out.println(exception);
+            Assertions.fail(exception);
         }
     }
 
@@ -81,7 +81,7 @@ public class SaveMoleculeFromIndigoRecordTest {
             List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
             assertEquals(10, collect.size());
         } catch (Exception exception) {
-            System.out.println(exception);
+            Assertions.fail(exception);
         }
     }
 
@@ -95,7 +95,7 @@ public class SaveMoleculeFromIndigoRecordTest {
             List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
             assertEquals(1, collect.size());
         } catch (Exception exception) {
-            System.out.println(exception);
+            Assertions.fail(exception);
         }
     }
 
