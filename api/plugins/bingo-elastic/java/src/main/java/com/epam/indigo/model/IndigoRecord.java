@@ -129,7 +129,7 @@ public class IndigoRecord {
     }
 
     public IndigoObject getIndigoObject(Indigo session) {
-        return session.unserialize(getCmf());
+        return session.loadMoleculeFromBuffer(getCmf());
     }
 
 

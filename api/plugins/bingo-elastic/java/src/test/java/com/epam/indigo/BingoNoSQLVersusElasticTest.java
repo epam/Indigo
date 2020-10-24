@@ -3,8 +3,10 @@ package com.epam.indigo;
 import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.predicate.EuclidSimilarityMatch;
 import com.epam.indigo.predicate.ExactMatch;
 import com.epam.indigo.predicate.TanimotoSimilarityMatch;
+import com.epam.indigo.predicate.TverskySimilarityMatch;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,7 +63,7 @@ public class BingoNoSQLVersusElasticTest {
     }
 
     @Test
-    @DisplayName("Compare results from CDF")
+    @DisplayName("Compare results by similarity and exact match (compound exists)")
     public void compareResultsFromCDF() throws Exception {
         String smiles = "CC(=C)C(=O)NC1C=CC=CC=1C([O-])=O";
         IndigoObject bingoNeedle = indigo.loadMolecule(smiles);
@@ -76,17 +78,57 @@ public class BingoNoSQLVersusElasticTest {
             bingoDb.insert(indigoObject);
         }
 
-        // Tanimoto
+        // Exact match
         List<IndigoRecord> indigoResult = repository.stream().limit(1).filter(
                 new ExactMatch<>(elasticNeedle)).collect(Collectors.toList());
 
+        assertTrue(indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles().equals(smiles));
 
-        BingoObject bingoObjectResult = bingoDb.searchExact(bingoNeedle);
+        // Tanimoto bingo
+        BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.9f, 1, "tanimoto");
         bingoObjectResult.next();
         IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
 
-        assertEquals(indigoObjectResult.oneBitsList(),
-                indigo.loadMoleculeFromBuffer(indigoResult.get(0).getCmf()).oneBitsList());
+        assertTrue(indigoObjectResult.canonicalSmiles().equals("CC(=C)C(=O)Nc1ccccc1C([O-])=O"));
+        assertFalse(bingoObjectResult.next());
+
+        // Tanimoto elastic
+        indigoResult = repository.stream().limit(10).filter(
+                new TanimotoSimilarityMatch<>(Helpers.loadFromSmiles(smiles), 0.99f))
+                .collect(Collectors.toList());
+        assertTrue(indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles().equals(smiles));
+        assertEquals(1, indigoResult.size());
+
+        // Euclid bingo
+        bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.95f, 1, "euclid-sub");
+        bingoObjectResult.next();
+        indigoObjectResult = bingoObjectResult.getIndigoObject();
+
+        assertTrue(indigoObjectResult.canonicalSmiles().equals("CC(=C)C(=O)Nc1ccccc1C([O-])=O"));
+        assertFalse(bingoObjectResult.next());
+
+        // Euclid elastic
+        indigoResult = repository.stream().limit(10).filter(
+                new EuclidSimilarityMatch<>(Helpers.loadFromSmiles(smiles), 0.95f))
+                .collect(Collectors.toList());
+        assertTrue(indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles().equals(smiles));
+        assertEquals(6, indigoResult.size());
+
+        // Tversky bingo
+        bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.95f, 1, "euclid-sub");
+        bingoObjectResult.next();
+        indigoObjectResult = bingoObjectResult.getIndigoObject();
+
+        assertTrue(indigoObjectResult.canonicalSmiles().equals("CC(=C)C(=O)Nc1ccccc1C([O-])=O"));
+        assertFalse(bingoObjectResult.next());
+
+        // Tversky elastic
+        indigoResult = repository.stream().limit(10).filter(
+                new TverskySimilarityMatch<>(Helpers.loadFromSmiles(smiles), 1, 1, 1))
+                .collect(Collectors.toList());
+        assertTrue(indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles().equals(smiles));
+        assertEquals(1, indigoResult.size());
+
     }
 
 }
