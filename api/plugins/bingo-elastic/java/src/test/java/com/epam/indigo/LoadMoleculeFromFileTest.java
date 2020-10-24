@@ -64,9 +64,6 @@ public class LoadMoleculeFromFileTest {
 
     /**
      * Use this method to test additional/custom fields loaded into record
-     *
-     * @param record
-     * @param requiredFields
      */
     protected void testAdditionalFields(IndigoRecord record, HashMap<String, String> requiredFields) {
         Assertions.fail();
@@ -167,7 +164,7 @@ public class LoadMoleculeFromFileTest {
             IndigoObject bingoFound = result.getIndigoObject();
             IndigoRecord elasticFound = similarRecords.get(0);
             IndigoObject indigoElasticFound = indigo.unserialize(elasticFound.getCmf());
-            assertTrue(indigo.similarity(bingoFound, indigoElasticFound) == 1.0f);
+            assertEquals(indigo.similarity(bingoFound, indigoElasticFound), 1.0f);
 
         } catch (Exception e) {
             Assertions.fail(e);

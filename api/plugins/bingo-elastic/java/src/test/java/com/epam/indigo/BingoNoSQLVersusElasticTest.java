@@ -83,21 +83,21 @@ public class BingoNoSQLVersusElasticTest {
         List<IndigoRecord> indigoResult = repository.stream().limit(1).filter(
                 new ExactMatch<>(elasticNeedle)).collect(Collectors.toList());
 
-        assertTrue(indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles().equals(smiles));
+        assertEquals(smiles, indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
 
         // Tanimoto bingo
         BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.9f, 1, "tanimoto");
         bingoObjectResult.next();
         IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
 
-        assertTrue(indigoObjectResult.canonicalSmiles().equals("CC(=C)C(=O)Nc1ccccc1C([O-])=O"));
+        assertEquals(indigoObjectResult.canonicalSmiles(), "CC(=C)C(=O)Nc1ccccc1C([O-])=O");
         assertFalse(bingoObjectResult.next());
 
         // Tanimoto elastic
         indigoResult = repository.stream().limit(10).filter(
                 new TanimotoSimilarityMatch<>(Helpers.loadFromSmiles(smiles), 0.99f))
                 .collect(Collectors.toList());
-        assertTrue(indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles().equals(smiles));
+        assertEquals(smiles, indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
         assertEquals(1, indigoResult.size());
 
         // Euclid bingo
@@ -105,14 +105,14 @@ public class BingoNoSQLVersusElasticTest {
         bingoObjectResult.next();
         indigoObjectResult = bingoObjectResult.getIndigoObject();
 
-        assertTrue(indigoObjectResult.canonicalSmiles().equals("CC(=C)C(=O)Nc1ccccc1C([O-])=O"));
+        assertEquals(indigoObjectResult.canonicalSmiles(), "CC(=C)C(=O)Nc1ccccc1C([O-])=O");
         assertFalse(bingoObjectResult.next());
 
         // Euclid elastic
         indigoResult = repository.stream().limit(10).filter(
                 new EuclidSimilarityMatch<>(Helpers.loadFromSmiles(smiles), 0.95f))
                 .collect(Collectors.toList());
-        assertTrue(indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles().equals(smiles));
+        assertEquals(smiles, indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
         assertEquals(6, indigoResult.size());
 
         // Tversky bingo
@@ -120,14 +120,14 @@ public class BingoNoSQLVersusElasticTest {
         bingoObjectResult.next();
         indigoObjectResult = bingoObjectResult.getIndigoObject();
 
-        assertTrue(indigoObjectResult.canonicalSmiles().equals("CC(=C)C(=O)Nc1ccccc1C([O-])=O"));
+        assertEquals(indigoObjectResult.canonicalSmiles(), "CC(=C)C(=O)Nc1ccccc1C([O-])=O");
         assertFalse(bingoObjectResult.next());
 
         // Tversky elastic
         indigoResult = repository.stream().limit(10).filter(
                 new TverskySimilarityMatch<>(Helpers.loadFromSmiles(smiles), 1, 1, 1))
                 .collect(Collectors.toList());
-        assertTrue(indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles().equals(smiles));
+        assertEquals(smiles, indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
         assertEquals(1, indigoResult.size());
 
     }

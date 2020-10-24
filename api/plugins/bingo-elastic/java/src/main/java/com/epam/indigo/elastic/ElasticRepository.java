@@ -60,8 +60,7 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
         try {
             return this.elasticClient.indices().exists(new GetIndexRequest(this.indexName), RequestOptions.DEFAULT);
         } catch (IOException e) {
-//            TODO logging
-            throw e;
+            throw new BingoElasticException("Couldn't check if index exists", e.getCause());
         }
     }
 
