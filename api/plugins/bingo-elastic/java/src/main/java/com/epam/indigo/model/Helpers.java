@@ -11,37 +11,20 @@ import java.util.List;
 import java.util.Map;
 
 
-class Accumulate {
+/**
+ * Helpers class, that have ability to create {@link com.epam.indigo.model.IndigoRecord} from popular formats like SDF, MOL, Smiles, etc
+ */
+public class Helpers {
 
-    protected final List<IndigoRecord> acc;
-    protected final Boolean skipErrors;
-
-    public Accumulate(Boolean skipErrors) {
-        acc = new ArrayList<>();
-        this.skipErrors = skipErrors;
-    }
-
-    public void add(IndigoRecord record) throws Exception {
+    protected static void loadOrThrow(List<IndigoRecord> acc, IndigoObject comp, Boolean skipErrors) {
         try {
-            acc.add(record);
+            acc.add(FromIndigoObject.build(comp));
         } catch (Exception e) {
             if (!skipErrors) {
                 throw e;
             }
         }
     }
-
-    public List<IndigoRecord> getAcc() {
-        return acc;
-    }
-
-}
-
-/**
- * Helpers class, that have ability to create {@link com.epam.indigo.model.IndigoRecord} from popular formats like SDF, MOL, Smiles, etc
- */
-public class Helpers {
-
 
     public static IndigoRecord loadFromFile(String molFile) {
         Indigo indigo = new Indigo();
@@ -54,14 +37,14 @@ public class Helpers {
 
     public static List<IndigoRecord> loadFromSdf(String sdfFile, Boolean skipErrors) throws Exception {
         Indigo indigo = new Indigo();
-        Accumulate acc = new Accumulate(skipErrors);
+        List<IndigoRecord> acc = new ArrayList<>();
         for (IndigoObject comp : indigo.iterateSDFile(sdfFile)) {
-            acc.add(FromIndigoObject.build(comp));
+            loadOrThrow(acc, comp, skipErrors);
         }
-        return acc.getAcc();
+        return acc;
     }
 
-    public static IndigoRecord loadFromSmiles(String smiles) throws Exception {
+    public static IndigoRecord loadFromSmiles(String smiles) {
         Indigo indigo = new Indigo();
         IndigoObject indigoObject = indigo.loadMolecule(smiles);
         return FromIndigoObject.build(indigoObject);
@@ -73,11 +56,11 @@ public class Helpers {
 
     public static List<IndigoRecord> loadFromSmilesFile(String smilesFile, Boolean skipErrors) throws Exception {
         Indigo indigo = new Indigo();
-        Accumulate acc = new Accumulate(skipErrors);
+        List<IndigoRecord> acc = new ArrayList<>();
         for (IndigoObject comp : indigo.iterateSmilesFile(smilesFile)) {
-            acc.add(FromIndigoObject.build(comp));
+            loadOrThrow(acc, comp, skipErrors);
         }
-        return acc.getAcc();
+        return acc;
     }
 
     public static List<IndigoRecord> loadFromCmlFile(String cmlFile) throws Exception {
@@ -86,11 +69,11 @@ public class Helpers {
 
     public static List<IndigoRecord> loadFromCmlFile(String cmlFile, Boolean skipErrors) throws Exception {
         Indigo indigo = new Indigo();
-        Accumulate acc = new Accumulate(skipErrors);
+        List<IndigoRecord> acc = new ArrayList<>();
         for (IndigoObject comp : indigo.iterateCMLFile(cmlFile)) {
-            acc.add(FromIndigoObject.build(comp));
+            loadOrThrow(acc, comp, skipErrors);
         }
-        return acc.getAcc();
+        return acc;
     }
 
     public static IndigoRecord fromElastic(String id, Map<String, Object> source, float score) throws BingoElasticException {
