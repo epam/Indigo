@@ -9,7 +9,7 @@ abstract public class NoSQLElasticCompareAbstract {
     protected static ElasticRepository<IndigoRecord> repository;
     protected static ElasticsearchContainer elasticsearchContainer;
     protected static Bingo bingoDb;
-    protected static Indigo indigo = new Indigo();
+    protected static final Indigo indigo = new Indigo();
 
     public static void setUpDataStore() {
         elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.2");

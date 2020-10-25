@@ -16,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CompareSmallFile extends NoSQLElasticCompareAbstract {
 
-    protected static String testSdfFile = "src/test/resources/zinc-slice.sdf";
+    protected static final String testSdfFile = "src/test/resources/zinc-slice.sdf";
 
-    protected static String smiles[] = new String[]{"CC(=C)C(=O)NC1C=CC=CC=1C([O-])=O"};
+    protected static final String[] smiles = new String[]{"CC(=C)C(=O)NC1C=CC=CC=1C([O-])=O"};
 
     protected static IndigoObject bingoNeedle;
     protected static IndigoRecord elasticNeedle;
@@ -115,8 +115,11 @@ public class CompareSmallFile extends NoSQLElasticCompareAbstract {
     @DisplayName("Exact match")
     public void exactMatch() {
 
-        List<IndigoRecord> indigoResult = repository.stream().limit(1).filter(
-                new ExactMatch<>(elasticNeedle)).collect(Collectors.toList());
+        List<IndigoRecord> indigoResult = repository
+                .stream()
+                .filter(new ExactMatch<>(elasticNeedle))
+                .limit(1)
+                .collect(Collectors.toList());
 
         assertEquals(smiles[0], indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
     }

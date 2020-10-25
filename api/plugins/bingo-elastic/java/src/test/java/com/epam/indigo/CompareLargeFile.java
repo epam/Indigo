@@ -3,25 +3,24 @@ package com.epam.indigo;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.ExactMatch;
-import org.junit.Ignore;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Ignore
 public class CompareLargeFile extends NoSQLElasticCompareAbstract {
 
-    protected static String test100SmilesFile = "src/test/resources/pubchem_slice_100000.smiles";
-    protected static String smiles[] = new String[]{
+    protected static final String test100SmilesFile = "src/test/resources/pubchem_slice_100000.smiles";
+    protected static final String[] smiles = new String[]{
             "CC(=C)C(=O)NC1C=CC=CC=1C([O-])=O",
             "NC(C=CC=CCCCCCCCC)C"
     };
 
-    private static void loadFile()  {
+    private static void loadFile() {
         long noSQLTotal = System.nanoTime();
         for (IndigoObject indigoObject : indigo.iterateSmilesFile(test100SmilesFile)) {
             bingoDb.insert(indigoObject);
@@ -39,7 +38,7 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
         assertTrue(elasticTotal < noSQLTotal);
 
         try {
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.SECONDS.sleep(5);
         } catch (InterruptedException e) {
             Assertions.fail(e);
         }
@@ -85,13 +84,16 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
         assertTrue(bingoObjectResult.next());
 
         long elasticTotal = System.nanoTime();
-        // TODO: no results found
-        List<IndigoRecord> indigoResult = repository.stream().limit(1).filter(
-                new ExactMatch<>(elasticNeedle)).collect(Collectors.toList());
+        List<IndigoRecord> indigoResult = repository
+                .stream()
+                .filter(new ExactMatch<>(elasticNeedle))
+                .limit(1)
+                .collect(Collectors.toList());
         elasticTotal = System.nanoTime() - elasticTotal;
 
-        assertTrue(elasticTotal < noSQLTotal);
+        assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(), indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
 
-        // assertEquals(smiles[1], indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
+        System.out.println(noSQLTotal - elasticTotal);
+        assertTrue(elasticTotal < noSQLTotal);
     }
 }
