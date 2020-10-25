@@ -63,6 +63,7 @@ repository.indexRecords(records);
 ```
 
 *CAVEAT*: Elasticsearch doesn't have strict notion of commit, so records might appear in the index later on
+
 Read more about it here -  https://www.elastic.co/guide/en/elasticsearch/reference/master/index-modules.html#index-refresh-interval-setting
 
 #### Retrieve similar records from Elasticsearch
@@ -75,3 +76,25 @@ List<IndigoRecord> similarRecords = repository.stream()
 ```
 
 In this case we requested top-20 most similar molecules compared to `target` based on Tanimoto similarity metric
+
+#### Custom fields for molecule records
+
+Indexing records with custom text tag
+
+```
+List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+IndigoRecord indigoRecord = indigoRecordList.get(0);
+indigoRecord.addCustomObject("tag", "test");
+repository.indexRecord(indigoRecord);
+```
+
+Searching similar molecules to the target and filtering only those that have value of the `tag` equals to `test`
+
+```
+List<IndigoRecord> similarRecords = repository.stream()
+                    .filter(new TanimotoSimilarityMatch<>(target))
+                    .filter(new KeywordQuery<>("tag", "test"))
+                    .collect(Collectors.toList());
+```
+
+you could also use similarly wildcard and range queries
