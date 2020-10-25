@@ -579,10 +579,16 @@ namespace com.epam.indigo
             setSessionID();
             checkResult(IndigoLib.indigoClearTautomerRules());
         }
-
-        public IndigoObject unserialize(byte[] buf)
+        
+        public IndigoObject deserialize(byte[] buf)
         {
             return new IndigoObject(this, checkResult(IndigoLib.indigoUnserialize(buf, buf.Length)));
+        }
+        
+        [Obsolete("unserialize() is deprecated, please use deserialize() instead.")] 
+        public IndigoObject unserialize(byte[] buf)
+        {
+            return deserialize(buf);
         }
 
         public IndigoObject createArray()
