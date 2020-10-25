@@ -51,7 +51,44 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         return this;
     }
 
-    public SearchRequest compileRequest() {
+    @Override
+    public Stream<T> limit(long maxSize) {
+        this.size = (int) maxSize;
+        return this;
+    }
+
+    @Override
+    public boolean isParallel() {
+        return false;
+    }
+
+    @Override
+    public <R, A> R collect(Collector<? super T, A, R> collector) {
+        A container = collector.supplier().get();
+        SearchRequest searchRequest = compileRequest();
+        SearchHit[] hits;
+        try {
+            SearchResponse searchResponse = this.elasticClient.search(searchRequest, RequestOptions.DEFAULT);
+            hits = searchResponse.getHits().getHits();
+            for (SearchHit hit : hits) {
+                collector.accumulator().accept(container, (T) Helpers.fromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
+            }
+        } catch (IOException e) {
+            throw new BingoElasticException("Couldn't complete search in Elasticsearch", e.getCause());
+        }
+        return (R) container;
+    }
+
+    private QueryBuilder[] generateClauses(IndigoRecord target) {
+        List<Integer> fingerprint = target.getFingerprint();
+        QueryBuilder[] bits = new QueryBuilder[fingerprint.size()];
+        for (int i = 0; i < bits.length; ++i) {
+            bits[i] = QueryBuilders.termQuery("fingerprint", fingerprint.get(i));
+        }
+        return bits;
+    }
+
+    private SearchRequest compileRequest() {
         SearchRequest searchRequest = new SearchRequest(this.indexName);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         boolean similarityRequested = false;
@@ -95,43 +132,6 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         }
         searchRequest.source(searchSourceBuilder);
         return searchRequest;
-    }
-
-    @Override
-    public Stream<T> limit(long maxSize) {
-        this.size = (int) maxSize;
-        return this;
-    }
-
-    @Override
-    public boolean isParallel() {
-        return false;
-    }
-
-    @Override
-    public <R, A> R collect(Collector<? super T, A, R> collector) {
-        A container = collector.supplier().get();
-        SearchRequest searchRequest = compileRequest();
-        SearchHit[] hits;
-        try {
-            SearchResponse searchResponse = this.elasticClient.search(searchRequest, RequestOptions.DEFAULT);
-            hits = searchResponse.getHits().getHits();
-            for (SearchHit hit : hits) {
-                collector.accumulator().accept(container, (T) Helpers.fromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
-            }
-        } catch (IOException e) {
-            throw new BingoElasticException("Couldn't complete search in Elasticsearch", e.getCause());
-        }
-        return (R) container;
-    }
-
-    private QueryBuilder[] generateClauses(IndigoRecord target) {
-        List<Integer> fingerprint = target.getFingerprint();
-        QueryBuilder[] bits = new QueryBuilder[fingerprint.size()];
-        for (int i = 0; i < bits.length; ++i) {
-            bits[i] = QueryBuilders.termQuery("fingerprint", fingerprint.get(i));
-        }
-        return bits;
     }
 
     private Script generateIdentityScore() {

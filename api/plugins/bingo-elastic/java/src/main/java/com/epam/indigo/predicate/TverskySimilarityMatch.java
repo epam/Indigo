@@ -29,7 +29,6 @@ public class TverskySimilarityMatch<T extends IndigoRecord> extends SimilarityMa
         this.beta = 0.5f;
     }
 
-    //    tversky <alpha> <beta>: c / ((a - c) * alpha + (b - c) * beta)
     @Override
     public Script generateScript() {
         Map<String, Object> map = new HashMap<>();
