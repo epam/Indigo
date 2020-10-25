@@ -2,7 +2,6 @@ package com.epam.indigo.model;
 
 import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.IndigoObject;
-import com.epam.indigo.model.fields.CustomObject;
 
 public class FromIndigoObject {
 
@@ -11,7 +10,9 @@ public class FromIndigoObject {
         IndigoRecord.IndigoRecordBuilder builder = new IndigoRecord.IndigoRecordBuilder().withIndigoObject(
                 indigoObject
         );
-        CustomObject.map(indigoObject, builder);
+        for (IndigoObject prop : indigoObject.iterateProperties()) {
+            builder.withCustomObject(prop.name(), prop.rawData());
+        }
         return builder.build();
     }
 

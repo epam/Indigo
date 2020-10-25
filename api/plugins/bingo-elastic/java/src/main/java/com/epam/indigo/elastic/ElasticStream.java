@@ -117,7 +117,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
             SearchResponse searchResponse = this.elasticClient.search(searchRequest, RequestOptions.DEFAULT);
             hits = searchResponse.getHits().getHits();
             for (SearchHit hit : hits) {
-                collector.accumulator().accept(container, (T) Helpers.fromSource(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
+                collector.accumulator().accept(container, (T) Helpers.fromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
             }
         } catch (IOException e) {
             throw new BingoElasticException("Couldn't complete search in Elasticsearch", e.getCause());

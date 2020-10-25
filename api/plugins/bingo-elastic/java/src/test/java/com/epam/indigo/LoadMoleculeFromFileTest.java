@@ -92,7 +92,7 @@ public class LoadMoleculeFromFileTest {
         TimeUnit.SECONDS.sleep(5);
         List<IndigoRecord> indigoRecordResult = repository.stream().collect(Collectors.toList());
         assertEquals(1, indigoRecordList.size());
-        assertEquals("tetrahedralTitle", indigoRecordList.get(0).getField("name").toString());
+        assertEquals("tetrahedralTitle", indigoRecordList.get(0).getName());
     }
 
     @Test
@@ -111,7 +111,7 @@ public class LoadMoleculeFromFileTest {
         assertEquals(721, indigoRecordList.size());
         TimeUnit.SECONDS.sleep(5);
         List<IndigoRecord> indigoRecordResult = repository.stream().limit(1).collect(Collectors.toList());
-        assertEquals("ZINC03099968", indigoRecordResult.get(0).getField("name").toString());
+        assertEquals("ZINC03099968", indigoRecordResult.get(0).getName());
     }
 
 

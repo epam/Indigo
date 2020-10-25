@@ -23,6 +23,7 @@ public class IndigoRecord {
     // todo: rename? and add ability to extend?
     private List<Integer> fingerprint;
     private byte[] cmf;
+    private String name;
 
     public IndigoRecord() {
 
@@ -38,6 +39,10 @@ public class IndigoRecord {
 
     public byte[] getCmf() {
         return cmf;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Map<String, Object> getObjects() {
@@ -73,6 +78,7 @@ public class IndigoRecord {
 
         public IndigoRecordBuilder withIndigoObject(IndigoObject indigoObject) {
             withCmf(indigoObject.serialize());
+            withName(indigoObject.name());
             operations.add(record -> {
                 List<Integer> fin = new ArrayList<>();
                 String[] oneBits = indigoObject.fingerprint("sim").oneBitsList().split(" ");
@@ -101,16 +107,10 @@ public class IndigoRecord {
             return this;
         }
 
-//        /**
-//         * @deprecated
-//         * @param cmf
-//         * @return
-//         */
-//        public IndigoRecordBuilder withCmf(Object cmf) {
-//            Field cmfField = new Field(cmf);
-//            operations.add(record -> record.cmf = cmfField.toByteArray());
-//            return this;
-//        }
+        public IndigoRecordBuilder withName(String name) {
+            operations.add(record -> record.name = name);
+            return this;
+        }
 
         public IndigoRecordBuilder withId(String id) {
             operations.add(record -> record.internalID = id);

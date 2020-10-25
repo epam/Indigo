@@ -93,7 +93,7 @@ public class Helpers {
         return acc.getAcc();
     }
 
-    public static IndigoRecord fromSource(String id, Map<String, Object> source, float score) throws BingoElasticException {
+    public static IndigoRecord fromElastic(String id, Map<String, Object> source, float score) throws BingoElasticException {
         IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordBuilder();
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             if (entry.getKey().equals("fingerprint")) {
@@ -106,6 +106,7 @@ public class Helpers {
         indigoRecordBuilder.withId(id);
         byte[] cmf = Base64.getDecoder().decode((String) source.get("cmf"));
         indigoRecordBuilder.withCmf(cmf);
+        indigoRecordBuilder.withName((String) source.get("name"));
         return indigoRecordBuilder.build();
     }
 }

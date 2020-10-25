@@ -130,6 +130,7 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 builder.array("fingerprint", t.getFingerprint());
                 builder.field("fingerprint_len", t.getFingerprint().size());
                 builder.field("cmf", Base64.getEncoder().encodeToString(t.getCmf()));
+                builder.field("name", t.getName());
                 for (Map.Entry<String, Object> e : t.getObjects().entrySet()) {
                     // todo: allow extend by users?
                     builder.field(e.getKey(), e.getValue());
