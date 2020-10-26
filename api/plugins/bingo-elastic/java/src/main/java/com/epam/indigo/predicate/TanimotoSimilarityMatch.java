@@ -25,4 +25,10 @@ public class TanimotoSimilarityMatch<T extends IndigoRecord> extends SimilarityM
         map.put("params", params);
         return Script.parse(map);
     }
+
+    @Override
+    public String getMinimumShouldMatch(int length) {
+        double mm = Math.floor((getThreshold() * (getTarget().getFingerprint().size() + 1)) / (1.0f + getThreshold())) / length;
+        return (int) (mm * 100) + "%";
+    }
 }

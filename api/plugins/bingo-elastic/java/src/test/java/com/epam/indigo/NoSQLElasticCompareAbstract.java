@@ -19,6 +19,7 @@ abstract public class NoSQLElasticCompareAbstract {
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
+                .withReplicas(0)
                 .withRefreshInterval("1s")
                 .build();
         bingoDb = Bingo.createDatabaseFile(indigo, "src/test/resources/bingo_nosql", "molecule");
