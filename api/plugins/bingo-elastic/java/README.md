@@ -15,7 +15,9 @@ We are supporting 7.9.x Elasticsearch and most major distributions available (AW
 
 *TBD test against other 7.x versions*
 
-#### Installation
+### Installation
+
+#### Dependency
 
 Add dependency to your Maven POM file like this:
 
@@ -34,6 +36,20 @@ compile group: 'com.epam.indigo', name: 'bingo-elastic', version: 'VERSION'
 ```
 
 it will work the same for other major dependency managers
+
+#### Elastisearch installation
+
+You could use any favourite Elasticsearch distribution:
+
+- [Open Distro Elasticsearch](https://opendistro.github.io/for-elasticsearch-docs/docs/install/)
+- [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html)
+- many many more available on premise and as cloud products & services
+
+Something simple could be done as following:
+
+```
+docker run -p 9200:9200 --env "discovery.type=single-node" --env "opendistro_security.disabled=true" amazon/opendistro-for-elasticsearch:latest
+```
 
 ### Usage 
 
