@@ -3,8 +3,10 @@ package com.epam.indigo;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.ExactMatch;
+import com.epam.indigo.predicate.TanimotoSimilarityMatch;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -38,7 +40,7 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
         assertTrue(elasticTotal < noSQLTotal);
 
         try {
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(15);
         } catch (InterruptedException e) {
             Assertions.fail(e);
         }
@@ -58,6 +60,28 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
     @Test
     @DisplayName("Tanimoto test")
     public void tanimoto() {
+        for (String curSmiles : smiles) {
+            IndigoObject bingoNeedle = indigo.loadMolecule(curSmiles);
+            IndigoRecord elasticNeedle = Helpers.loadFromSmiles(curSmiles);
+
+            List<IndigoRecord> elasticResults = repository.stream().limit(10).filter(
+                    new TanimotoSimilarityMatch<>(elasticNeedle, 0.8f))
+                    .collect(Collectors.toList());
+
+            BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.8f, 1, "tanimoto");
+
+            IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
+            int bingoCount = 0;
+            while (bingoObjectResult.next()) {
+                IndigoRecord elasticResult = elasticResults.get(bingoCount);
+                String bingoFoundSmiles = indigoObjectResult.canonicalSmiles();
+                String elasticFoundSmiles = elasticResult.getIndigoObject(indigo).canonicalSmiles();
+                // TODO: Add test comparison
+                assertTrue(true);
+                bingoCount++;
+            }
+        }
+
 
     }
 
@@ -76,14 +100,18 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
     @Test
     @DisplayName("Exact match")
     public void exactMatch() {
-        long noSQLTotal = System.nanoTime();
+
         IndigoRecord elasticNeedle = Helpers.loadFromSmiles(smiles[1]);
         IndigoObject bingoNeedle = indigo.loadMolecule(smiles[1]);
+        long noSQLTotal = System.nanoTime();
         BingoObject bingoObjectResult = bingoDb.searchExact(bingoNeedle);
         noSQLTotal = System.nanoTime() - noSQLTotal;
         assertTrue(bingoObjectResult.next());
+        assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
+                bingoObjectResult.getIndigoObject().canonicalSmiles());
 
         long elasticTotal = System.nanoTime();
+
         List<IndigoRecord> indigoResult = repository
                 .stream()
                 .filter(new ExactMatch<>(elasticNeedle))
@@ -91,9 +119,8 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
                 .collect(Collectors.toList());
         elasticTotal = System.nanoTime() - elasticTotal;
 
-        assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(), indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
-
-        System.out.println(noSQLTotal - elasticTotal);
-        assertTrue(elasticTotal < noSQLTotal);
+        assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
+                indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
+        assertTrue(noSQLTotal < elasticTotal);
     }
 }
