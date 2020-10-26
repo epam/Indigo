@@ -65,10 +65,10 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
             IndigoRecord elasticNeedle = Helpers.loadFromSmiles(curSmiles);
 
             List<IndigoRecord> elasticResults = repository.stream().limit(10).filter(
-                    new TanimotoSimilarityMatch<>(elasticNeedle, 0.8f))
+                    new TanimotoSimilarityMatch<>(elasticNeedle, 0.7f))
                     .collect(Collectors.toList());
 
-            BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.8f, 1, "tanimoto");
+            BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.7f, 1, "tanimoto");
 
             IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
             int bingoCount = 0;
