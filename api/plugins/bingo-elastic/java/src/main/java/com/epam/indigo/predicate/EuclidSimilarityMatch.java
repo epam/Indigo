@@ -25,4 +25,10 @@ public class EuclidSimilarityMatch<T extends IndigoRecord> extends SimilarityMat
         map.put("params", params);
         return Script.parse(map);
     }
+
+    @Override
+    public String getMinimumShouldMatch(int length) {
+        double mm = Math.floor(getThreshold() * getTarget().getFingerprint().size()) / length;
+        return (int) (mm * 100) + "%";
+    }
 }

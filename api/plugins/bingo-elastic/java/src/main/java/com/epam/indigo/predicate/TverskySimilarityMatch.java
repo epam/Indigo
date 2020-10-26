@@ -40,4 +40,12 @@ public class TverskySimilarityMatch<T extends IndigoRecord> extends SimilarityMa
         map.put("params", params);
         return Script.parse(map);
     }
+
+    @Override
+    public String getMinimumShouldMatch(int length) {
+        double top = this.alpha * getTarget().getFingerprint().size() + this.beta;
+        double down = getThreshold() + this.alpha + this.beta - 1.0f;
+        double mm = Math.floor((top / down)) / length;
+        return (int) (mm * 100) + "%";
+    }
 }

@@ -38,7 +38,7 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
         assertTrue(elasticTotal < noSQLTotal);
 
         try {
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
         } catch (InterruptedException e) {
             Assertions.fail(e);
         }

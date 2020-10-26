@@ -27,4 +27,5 @@ public abstract class SimilarityMatch<T extends IndigoRecord> extends IndigoPred
 
     public abstract Script generateScript();
 
+    public abstract String getMinimumShouldMatch(int length);
 }

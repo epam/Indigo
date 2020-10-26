@@ -55,10 +55,9 @@ public class FullUsageTest {
             int requestSize = 20;
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new TanimotoSimilarityMatch<>(target))
+                    .filter(new TanimotoSimilarityMatch<>(target, 0.8f))
                     .limit(requestSize)
                     .collect(Collectors.toList());
-            assertEquals(requestSize, similarRecords.size());
             assertEquals(1.0f, similarRecords.get(0).getScore());
             assertArrayEquals(target.getFingerprint().toArray(), similarRecords.get(0).getFingerprint().toArray());
         } catch (Exception exception) {
@@ -93,12 +92,11 @@ public class FullUsageTest {
             repository.indexRecords(indigoRecordList);
             TimeUnit.SECONDS.sleep(5);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
+            float threshold = 0.8f;
             List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new TverskySimilarityMatch<>(target, 0.5f, 0.5f))
+                    .filter(new TverskySimilarityMatch<>(target, threshold, 0.5f, 0.5f))
                     .collect(Collectors.toList());
-            assertEquals(10, similarRecords.size());
-            assertEquals(1.0f, similarRecords.get(0).getScore());
-            assertArrayEquals(target.getFingerprint().toArray(), similarRecords.get(0).getFingerprint().toArray());
+            for (IndigoRecord similarRecord : similarRecords) assertTrue(similarRecord.getScore() >= threshold);
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }

@@ -10,6 +10,8 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.flush.FlushRequest;
+import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -152,6 +154,11 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 throw new BingoElasticException("Couldn't index records in Elasticsearch", e.getCause());
             }
         });
+//        TODO do we need it?
+        FlushRequest flushRequest = new FlushRequest();
+        this.elasticClient.indices().flush(flushRequest, RequestOptions.DEFAULT);
+        ForceMergeRequest forceMergeRequest = new ForceMergeRequest();
+        this.elasticClient.indices().forcemerge(forceMergeRequest, RequestOptions.DEFAULT);
         return true;
     }
 

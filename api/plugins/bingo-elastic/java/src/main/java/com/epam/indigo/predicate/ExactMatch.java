@@ -20,6 +20,11 @@ public class ExactMatch<T extends IndigoRecord> extends SimilarityMatch<T> {
     }
 
     @Override
+    public String getMinimumShouldMatch(int length) {
+        return "100%";
+    }
+
+    @Override
     public float getThreshold() {
         return 1.0f;
     }

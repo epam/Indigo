@@ -105,16 +105,16 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
                     similarityRequested = true;
                     QueryBuilder[] clauses = generateClauses(((SimilarityMatch<?>) predicate).getTarget());
                     if (predicate instanceof ExactMatch) {
-                        for (QueryBuilder should : clauses) {
-                            boolQueryBuilder.must(should);
+                        for (QueryBuilder clause : clauses) {
+                            boolQueryBuilder.must(clause);
                         }
+                        boolQueryBuilder.must(QueryBuilders.termQuery("fingerprint_len", clauses.length).boost(0.0f));
                     } else {
-                        for (QueryBuilder should : clauses) {
-                            boolQueryBuilder.should(should);
+                        for (QueryBuilder clause : clauses) {
+                            boolQueryBuilder.should(clause);
                         }
+                        boolQueryBuilder.minimumShouldMatch(((SimilarityMatch<?>) predicate).getMinimumShouldMatch(clauses.length));
                     }
-//                        TODO implement proper mm based on threshold ask
-//                   boolQueryBuilder.minimumShouldMatch((int) (((SimilarityMatch<?>) predicate).getThreshold() * 100));
                     threshold = ((SimilarityMatch<? super T>) predicate).getThreshold();
                     script = ((SimilarityMatch<?>) predicate).generateScript();
                 }
