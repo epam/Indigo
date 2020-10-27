@@ -48,3 +48,4 @@ api/plugins/renderer/java/pom.xml.versionsBackup
 api/plugins/renderer/java/target/
 api/tests/dotnet/bin/
 api/tests/dotnet/obj/
+**/venv/
