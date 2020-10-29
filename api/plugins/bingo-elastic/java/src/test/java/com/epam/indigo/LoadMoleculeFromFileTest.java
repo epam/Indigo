@@ -106,11 +106,12 @@ public class LoadMoleculeFromFileTest {
     @DisplayName("Testing creation of IndigoRecord from sdf file with names")
     void testLoadFromSdfWithName() throws Exception {
         List<IndigoRecord> indigoRecordList =
-                Helpers.loadFromSdf("src/test/resources/zinc-slice.sdf");
+                Helpers.loadFromSdf("src/test/resources/zinc-slice.sdf.gz");
         repository.indexRecord(indigoRecordList.get(0));
         assertEquals(721, indigoRecordList.size());
         TimeUnit.SECONDS.sleep(5);
-        List<IndigoRecord> indigoRecordResult = repository.stream().limit(1).collect(Collectors.toList());
+        List<IndigoRecord> indigoRecordResult = repository.stream()
+                .limit(1).collect(Collectors.toList());
         assertEquals("ZINC03099968", indigoRecordResult.get(0).getName());
     }
 

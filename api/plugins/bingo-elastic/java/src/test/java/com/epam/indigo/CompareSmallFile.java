@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CompareSmallFile extends NoSQLElasticCompareAbstract {
 
-    protected static final String testSdfFile = "src/test/resources/zinc-slice.sdf";
+    protected static final String testSdfFile = "src/test/resources/zinc-slice.sdf.gz";
 
     protected static final String[] smiles = new String[]{"CC(=C)C(=O)NC1C=CC=CC=1C([O-])=O"};
 
@@ -24,7 +24,7 @@ public class CompareSmallFile extends NoSQLElasticCompareAbstract {
     protected static IndigoRecord elasticNeedle;
 
     @BeforeAll
-    public static void setUp() throws Exception {
+    public static void setUp() {
         setUpDataStore();
         loadFile();
         bingoNeedle = indigo.loadMolecule(smiles[0]);
@@ -60,15 +60,14 @@ public class CompareSmallFile extends NoSQLElasticCompareAbstract {
         bingoObjectResult.next();
         IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
 
-        assertEquals(indigoObjectResult.canonicalSmiles(), "CC(=C)C(=O)Nc1ccccc1C([O-])=O");
-        assertFalse(bingoObjectResult.next());
-
         // Tanimoto elastic
         List<IndigoRecord>  indigoResult = repository.stream().limit(10).filter(
-                new TanimotoSimilarityMatch<>(elasticNeedle, 0.99f))
+                new TanimotoSimilarityMatch<>(elasticNeedle, 0.9f))
                 .collect(Collectors.toList());
-        assertEquals(smiles[0], indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
+        assertEquals(indigoObjectResult.canonicalSmiles(), indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
         assertEquals(1, indigoResult.size());
+        assertFalse(bingoObjectResult.next());
+
     }
 
     @Test
@@ -80,15 +79,14 @@ public class CompareSmallFile extends NoSQLElasticCompareAbstract {
         bingoObjectResult.next();
         IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
 
-        assertEquals(indigoObjectResult.canonicalSmiles(), "CC(=C)C(=O)Nc1ccccc1C([O-])=O");
-        assertFalse(bingoObjectResult.next());
-
         // Euclid elastic
         List<IndigoRecord> indigoResult = repository.stream().limit(10).filter(
                 new EuclidSimilarityMatch<>(elasticNeedle, 0.95f))
                 .collect(Collectors.toList());
-        assertEquals(smiles[0], indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
-        assertEquals(6, indigoResult.size());
+        assertEquals(1, indigoResult.size());
+        assertEquals(indigoObjectResult.canonicalSmiles(),
+                indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
+        assertFalse(bingoObjectResult.next());
     }
 
     @Test
@@ -100,15 +98,14 @@ public class CompareSmallFile extends NoSQLElasticCompareAbstract {
         bingoObjectResult.next();
         IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
 
-        assertEquals(indigoObjectResult.canonicalSmiles(), "CC(=C)C(=O)Nc1ccccc1C([O-])=O");
-        assertFalse(bingoObjectResult.next());
-
         // Tversky elastic
         List<IndigoRecord> indigoResult = repository.stream().limit(10).filter(
-                new TverskySimilarityMatch<>(elasticNeedle, 1, 1, 1))
+                new TverskySimilarityMatch<>(elasticNeedle, 0.95f, 1, 1))
                 .collect(Collectors.toList());
-        assertEquals(smiles[0], indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
+        assertEquals(indigoObjectResult.canonicalSmiles(),
+                indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
         assertEquals(1, indigoResult.size());
+        assertFalse(bingoObjectResult.next());
     }
 
     @Test
@@ -121,7 +118,8 @@ public class CompareSmallFile extends NoSQLElasticCompareAbstract {
                 .limit(1)
                 .collect(Collectors.toList());
 
-        assertEquals(smiles[0], indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
+        assertEquals(elasticNeedle.getIndigoObject(indigo).canonicalSmiles(),
+                indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
     }
 
 }

@@ -8,7 +8,6 @@ import org.elasticsearch.common.collect.Tuple;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -66,23 +65,17 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
             IndigoObject bingoNeedle = indigo.loadMolecule(curSmiles);
             IndigoRecord elasticNeedle = Helpers.loadFromSmiles(curSmiles);
 
-            List<IndigoRecord> elasticResults = repository.stream().limit(10).filter(
+            List<IndigoRecord> elasticResults = repository.stream().limit(30).filter(
                     new TanimotoSimilarityMatch<>(elasticNeedle, 0.7f))
                     .collect(Collectors.toList());
 
             BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.7f, 1, "tanimoto");
 
             IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
-            int bingoCount = 0;
             List<Tuple<String, Float>> elasticListResult = new ArrayList<>();
             List<Tuple<String, Float>> nosqlListResult = new ArrayList<>();
             while (bingoObjectResult.next()) {
-                //IndigoRecord elasticResult = elasticResults.get(bingoCount);
                 String bingoFoundSmiles = indigoObjectResult.canonicalSmiles();
-                //String elasticFoundSmiles = elasticResult.getIndigoObject(indigo).canonicalSmiles();
-                // TODO: Add test comparison
-                //assertTrue(true);
-                //bingoCount++;
                 Tuple<String, Float> noSQLTuple = new Tuple<>(bingoFoundSmiles, bingoObjectResult.getCurrentSimilarityValue());
                 nosqlListResult.add(noSQLTuple);
             }
@@ -90,7 +83,7 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
                 Tuple<String, Float> elasticTuple = new Tuple<>(indigoRecordResult.getIndigoObject(indigo).canonicalSmiles(), indigoRecordResult.getScore());
                 elasticListResult.add(elasticTuple);
             }
-            System.out.println("");
+            assertEquals(elasticResults.size(), nosqlListResult.size());
         }
 
 
