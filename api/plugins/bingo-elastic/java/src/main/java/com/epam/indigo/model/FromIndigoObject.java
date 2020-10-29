@@ -6,7 +6,7 @@ import com.epam.indigo.IndigoObject;
 public class FromIndigoObject {
 
     public static IndigoRecord build(IndigoObject indigoObject) throws BingoElasticException {
-
+        indigoObject.aromatize();
         IndigoRecord.IndigoRecordBuilder builder = new IndigoRecord.IndigoRecordBuilder().withIndigoObject(
                 indigoObject
         );

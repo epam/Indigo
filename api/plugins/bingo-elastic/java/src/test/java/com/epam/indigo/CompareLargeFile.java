@@ -4,9 +4,11 @@ import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.ExactMatch;
 import com.epam.indigo.predicate.TanimotoSimilarityMatch;
+import org.elasticsearch.common.collect.Tuple;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -72,14 +74,23 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
 
             IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
             int bingoCount = 0;
+            List<Tuple<String, Float>> elasticListResult = new ArrayList<>();
+            List<Tuple<String, Float>> nosqlListResult = new ArrayList<>();
             while (bingoObjectResult.next()) {
-                IndigoRecord elasticResult = elasticResults.get(bingoCount);
+                //IndigoRecord elasticResult = elasticResults.get(bingoCount);
                 String bingoFoundSmiles = indigoObjectResult.canonicalSmiles();
-                String elasticFoundSmiles = elasticResult.getIndigoObject(indigo).canonicalSmiles();
+                //String elasticFoundSmiles = elasticResult.getIndigoObject(indigo).canonicalSmiles();
                 // TODO: Add test comparison
-                assertTrue(true);
-                bingoCount++;
+                //assertTrue(true);
+                //bingoCount++;
+                Tuple<String, Float> noSQLTuple = new Tuple<>(bingoFoundSmiles, bingoObjectResult.getCurrentSimilarityValue());
+                nosqlListResult.add(noSQLTuple);
             }
+            for (IndigoRecord indigoRecordResult : elasticResults) {
+                Tuple<String, Float> elasticTuple = new Tuple<>(indigoRecordResult.getIndigoObject(indigo).canonicalSmiles(), indigoRecordResult.getScore());
+                elasticListResult.add(elasticTuple);
+            }
+            System.out.println("");
         }
 
 

@@ -18,7 +18,6 @@ public class Helpers {
 
     protected static void loadOrThrow(List<IndigoRecord> acc, IndigoObject comp, Boolean skipErrors) {
         try {
-            comp.aromatize();
             acc.add(FromIndigoObject.build(comp));
         } catch (Exception e) {
             if (!skipErrors) {
