@@ -94,7 +94,7 @@ public class CompareSmallFile extends NoSQLElasticCompareAbstract {
     public void tversky() {
 
         // Tversky bingo
-        BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.95f, 1, "euclid-sub");
+        BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.95f, 1, "tversky");
         bingoObjectResult.next();
         IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
 

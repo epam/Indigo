@@ -2,12 +2,13 @@ package com.epam.indigo;
 
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
-import com.epam.indigo.predicate.ExactMatch;
-import com.epam.indigo.predicate.TanimotoSimilarityMatch;
+import com.epam.indigo.predicate.*;
 import org.elasticsearch.common.collect.Tuple;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CompareLargeFile extends NoSQLElasticCompareAbstract {
 
     protected static final String test100SmilesFile = "src/test/resources/pubchem_slice_100000.smiles";
+
     protected static final String[] smiles = new String[]{
             "CC(=C)C(=O)NC1C=CC=CC=1C([O-])=O",
             "NC(C=CC=CCCCCCCCC)C"
@@ -58,47 +60,79 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
         tearDownDataStore();
     }
 
+    protected List<Tuple<String, Float>> bingoNoSQLSimilarity(String similarity, IndigoObject bingoNeedle, float threshold) {
+
+        BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, threshold, 1, similarity);
+
+        List<Tuple<String, Float>> nosqlListResult = new ArrayList<>();
+        IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
+        while (bingoObjectResult.next()) {
+            String bingoFoundSmiles = indigoObjectResult.canonicalSmiles();
+            nosqlListResult.add(new Tuple<>(bingoFoundSmiles, bingoObjectResult.getCurrentSimilarityValue()));
+        }
+        Collections.sort(nosqlListResult, new Comparator<Tuple<String, Float>>() {
+            public int compare(Tuple<String, Float> o1, Tuple<String, Float> o2) {
+                return (int) (o1.v2() - o2.v2());
+            }
+        });
+        return nosqlListResult;
+    }
+
+    protected List<Tuple<String, Float>> elasticSimilarity(SimilarityMatch<IndigoRecord> similarity, IndigoRecord elasticNeedle) {
+        List<Tuple<String, Float>> elasticListResult = new ArrayList<>();
+        List<IndigoRecord> elasticResults = repository.stream().limit(1000)
+                .filter(similarity)
+                .collect(Collectors.toList());
+        for (IndigoRecord indigoRecordResult : elasticResults) {
+            Tuple<String, Float> elasticTuple = new Tuple<>(indigoRecordResult.getIndigoObject(indigo).canonicalSmiles(), indigoRecordResult.getScore());
+            elasticListResult.add(elasticTuple);
+        }
+        return elasticListResult;
+    }
+
     @Test
     @DisplayName("Tanimoto test")
     public void tanimoto() {
         for (String curSmiles : smiles) {
             IndigoObject bingoNeedle = indigo.loadMolecule(curSmiles);
             IndigoRecord elasticNeedle = Helpers.loadFromSmiles(curSmiles);
+            float threshold = 0.7f;
 
-            List<IndigoRecord> elasticResults = repository.stream().limit(30).filter(
-                    new TanimotoSimilarityMatch<>(elasticNeedle, 0.7f))
-                    .collect(Collectors.toList());
+            List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new TanimotoSimilarityMatch<>(elasticNeedle, threshold), elasticNeedle);
+            List<Tuple<String, Float>> nosqlListResult = bingoNoSQLSimilarity("tanimoto", bingoNeedle, threshold);
 
-            BingoObject bingoObjectResult = bingoDb.searchSim(bingoNeedle, 0.7f, 1, "tanimoto");
-
-            IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
-            List<Tuple<String, Float>> elasticListResult = new ArrayList<>();
-            List<Tuple<String, Float>> nosqlListResult = new ArrayList<>();
-            while (bingoObjectResult.next()) {
-                String bingoFoundSmiles = indigoObjectResult.canonicalSmiles();
-                Tuple<String, Float> noSQLTuple = new Tuple<>(bingoFoundSmiles, bingoObjectResult.getCurrentSimilarityValue());
-                nosqlListResult.add(noSQLTuple);
-            }
-            for (IndigoRecord indigoRecordResult : elasticResults) {
-                Tuple<String, Float> elasticTuple = new Tuple<>(indigoRecordResult.getIndigoObject(indigo).canonicalSmiles(), indigoRecordResult.getScore());
-                elasticListResult.add(elasticTuple);
-            }
-            assertEquals(elasticResults.size(), nosqlListResult.size());
+            assertEquals(elasticListResult.size(), nosqlListResult.size());
         }
-
-
     }
 
     @Test
     @DisplayName("Euclid test")
     public void euclid() {
+        for (String curSmiles : smiles) {
+            IndigoObject bingoNeedle = indigo.loadMolecule(curSmiles);
+            IndigoRecord elasticNeedle = Helpers.loadFromSmiles(curSmiles);
+            float threshold = 0.9f;
 
+            List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new EuclidSimilarityMatch<>(elasticNeedle, threshold), elasticNeedle);
+            List<Tuple<String, Float>> nosqlListResult = bingoNoSQLSimilarity("euclid-sub", bingoNeedle, threshold);
+
+            assertEquals(elasticListResult.size(), nosqlListResult.size());
+        }
     }
 
     @Test
     @DisplayName("Tversky test")
     public void tversky() {
+        for (String curSmiles : smiles) {
+            IndigoObject bingoNeedle = indigo.loadMolecule(curSmiles);
+            IndigoRecord elasticNeedle = Helpers.loadFromSmiles(curSmiles);
+            float threshold = 0.9f;
 
+            List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new TverskySimilarityMatch<>(elasticNeedle, threshold, 0.5f, 0.5f), elasticNeedle);
+            List<Tuple<String, Float>> nosqlListResult = bingoNoSQLSimilarity("tversky", bingoNeedle, threshold);
+
+            assertEquals(elasticListResult.get(0).v1(), nosqlListResult.get(0).v1());
+        }
     }
 
     @Test
