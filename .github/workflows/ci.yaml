@@ -11,7 +11,7 @@ jobs:
         with:
           lfs: true
       - name: Checkout LFS
-          run: git lfs pull
+        run: git lfs pull
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
@@ -26,7 +26,7 @@ jobs:
         with:
           lfs: true
       - name: Checkout LFS
-          run: git lfs pull
+        run: git lfs pull
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
@@ -39,7 +39,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          lfs: true
+        lfs: true
       - name: Checkout LFS
         run: git lfs pull
       - name: Build native libs
