@@ -7,10 +7,12 @@ branches:
 platform:
   - x64
 environment:
-  PATH: '%PATH%;C:\Program Files\CMake\bin;C:\Python36-x64;'
+  PATH: 'C:\Python39-x64;%PATH%;C:\Program Files\CMake\bin;'
 before_build:
-- git lfs pull
+  - git lfs pull
 build_script:
-- cmd: python build_scripts/indigo-release-libs.py --preset=win64-2015
-- cmd: python build_scripts/indigo-make-by-libs.py --type=python,java
-- cmd: python api/tests/python/test.py
+  - cmd: python build_scripts/indigo-release-libs.py --preset=win64-2015
+  - cmd: python build_scripts/indigo-make-by-libs.py --type=python,java
+  - cmd: python api/tests/python/test.py -j junit_report.xml
+after_build:
+  - cmd: type junit_report.xml
