@@ -1,0 +1,32 @@
+C1=CC=[As]C=C1
+  c1cccc[as]1
+   c1cccc[as]1
+     c1cccc[as]1
+C1=CC=C2C(=C1)C=CC=C2[As]3C4=CC=CC=C4C5=CC=CC=C53
+  c1cccc2c(cccc21)-[as]1c2ccccc2c2ccccc12
+   c1cccc2c(cccc21)-[as]1c2ccccc2c2ccccc12
+     c1cccc2c(cccc21)-[as]1c2ccccc2c2ccccc12
+C[Se+]1C=CC=C1
+  C[se+]1cccc1
+   C[se+]1cccc1
+     C[se+]1cccc1
+[B-](F)(F)(F)F.CCC1=CC(=[Se+]C2=CC=CC=C21)C(C)(C)C
+  CCc1cc([se+]c2ccccc21)C(C)(C)C.F[B-](F)(F)F
+   CCc1cc([se+]c2ccccc21)C(C)(C)C.F[B-](F)(F)F
+     CCc1cc([se+]c2ccccc21)C(C)(C)C.F[B-](F)(F)F
+C1=CC2=C3C(=C1)[Se]C4=CC=CC5=C4C(=CC=C5)[Se](=O)C3=CC=C2
+  O=[Se]1c2cccc3cccc([Se]c4cccc5cccc1c54)c32
+   O=[Se]1c2cccc3cccc([Se]c4cccc5cccc1c54)c32
+     O=[Se]1c2cccc3cccc([Se]c4cccc5cccc1c54)c32
+CN(C)CC1=C(C2=CC=CC=C2[Se]1(Cl)Cl)Cl
+  CN(C)CC1=C(Cl)c2ccccc2[Se]1(Cl)Cl
+   CN(C)CC1=C(Cl)c2ccccc2[Se]1(Cl)Cl
+     CN(C)CC1=C(Cl)c2ccccc2[Se]1(Cl)Cl
+CC1=C(C=[Se](C(=C1)C#N)C)C
+  Cc1cc(C#N)[se](C)cc1C
+   Cc1cc(C#N)[se](C)cc1C
+     Cc1cc(C#N)[se](C)cc1C
+CC1=NC2=CC=CC=C2[Se]1
+  Cc1[n]c2ccccc2[se]1
+   Cc1[n]c2ccccc2[se]1
+     Cc1[n]c2ccccc2[se]1
