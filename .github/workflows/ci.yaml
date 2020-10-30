@@ -16,6 +16,9 @@ jobs:
         run: python build_scripts/indigo-make-by-libs.py --type=python
       - name: Test
         run: python api/tests/python/test.py -j junit_report.xml
+      - name: Test report
+        if: ${{ always() }}
+        run: cat junit_report.xml
   build_windows:
     runs-on: windows-latest
     steps:
@@ -29,6 +32,9 @@ jobs:
         run: python build_scripts/indigo-make-by-libs.py --type=python
       - name: Test
         run: python api/tests/python/test.py -j junit_report.xml
+      - name: Test report
+        if: ${{ always() }}
+        run: type junit_report.xml
   build_macos:
     runs-on: macos-latest
     steps:
@@ -42,3 +48,6 @@ jobs:
         run: python build_scripts/indigo-make-by-libs.py --type=python
       - name: Test
         run: python api/tests/python/test.py -j junit_report.xml
+      - name: Test report
+        if: ${{ always() }}
+        run: cat junit_report.xml

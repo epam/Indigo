@@ -87,20 +87,17 @@ if 'INDIGO_COVERAGE' in os.environ:
 else:
     cur_path = os.path.abspath(os.path.dirname(__file__))
     distPaths = [
-        os.path.normpath(os.path.join(cur_path, '../../../../../indigo/dist/')),
-        os.path.normpath(os.path.join(cur_path, '../../../indigo/dist/')),
-        os.path.normpath(os.path.join(cur_path, '../../dist/')),
-        os.path.normpath(os.path.join(cur_path, '../../indigo/dist/'))
+        os.path.normpath(os.path.join(cur_path, '../../../../dist')),
     ]
     success = False
 
-    indigo_tests_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+    indigo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+    print(f"indigo_tests_root: {indigo_root}")
     if isIronPython():
         if not 'INDIGO_PATH' in os.environ:
             import clr
             target_framework = 'netstandard2.0'
-            dll_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_tests_root, "indigo/api/dotnet/bin/Release/{}/Indigo.Net.dll".format(target_framework))))
+            dll_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_root, "api/dotnet/bin/Release/{}/Indigo.Net.dll".format(target_framework))))
             if not os.path.exists(dll_full_path):
                 for distPath in distPaths:
                     if not dir_exists(distPath):
@@ -131,11 +128,11 @@ else:
 
     elif isJython():
         if not 'INDIGO_PATH' in os.environ:
-            dll_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_tests_root, "indigo/api/java/target/indigo-%s.jar" % getIndigoVersion())))
-            rdll_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_tests_root, "indigo/api/plugins/renderer/java/target/indigo-renderer-%s.jar" % getIndigoVersion())))
-            idll_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_tests_root, "indigo/api/plugins/inchi/java/target/indigo-inchi-%s.jar" % getIndigoVersion())))
-            bdll_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_tests_root, "indigo/api/plugins/bingo/java/target/bingo-nosql-%s.jar" % getIndigoVersion())))
-            jna_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_tests_root, "indigo/common/jna/jna.jar")))
+            dll_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_root, "api/java/target/indigo-%s.jar" % getIndigoVersion())))
+            rdll_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_root, "api/plugins/renderer/java/target/indigo-renderer-%s.jar" % getIndigoVersion())))
+            idll_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_root, "api/plugins/inchi/java/target/indigo-inchi-%s.jar" % getIndigoVersion())))
+            bdll_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_root, "api/plugins/bingo/java/target/bingo-nosql-%s.jar" % getIndigoVersion())))
+            jna_full_path = os.path.normpath(os.path.abspath(os.path.join(indigo_root, "common/jna/jna.jar")))
 
             if not (os.path.exists(dll_full_path) and os.path.exists(rdll_full_path) and os.path.exists(idll_full_path) and os.path.exists(bdll_full_path) and os.path.exists(jna_full_path)):
                 for distPath in distPaths:
@@ -176,24 +173,27 @@ else:
 
     else:
         if 'INDIGO_PATH' not in os.environ:
-            dll_full_path = os.path.normpath(os.path.join(indigo_tests_root, "indigo/api/python"))
-            rdll_full_path = os.path.normpath(os.path.join(indigo_tests_root, "indigo/api/plugins/renderer/python"))
-            idll_full_path = os.path.normpath(os.path.join(indigo_tests_root, "indigo/api/plugins/inchi/python"))
-            bdll_full_path = os.path.normpath(os.path.join(indigo_tests_root, "indigo/api/plugins/bingo/python"))
+            dll_full_path = os.path.normpath(os.path.join(indigo_root, "api/python"))
+            rdll_full_path = os.path.normpath(os.path.join(indigo_root, "api/plugins/renderer/python"))
+            idll_full_path = os.path.normpath(os.path.join(indigo_root, "api/plugins/inchi/python"))
+            bdll_full_path = os.path.normpath(os.path.join(indigo_root, "api/plugins/bingo/python"))
             _lib_path = os.path.join(dll_full_path, 'lib')
             if os.path.exists(_lib_path):
                 shutil.rmtree(_lib_path)
-            _shared_libs_path = os.path.join(indigo_tests_root, 'indigo/api/libs/shared')
+            _shared_libs_path = os.path.join(indigo_root, 'api/libs/shared')
             if os.path.exists(_shared_libs_path) and len(os.listdir(_shared_libs_path)) > 0:
                 shutil.copytree(_shared_libs_path, _lib_path)
             if not os.path.exists(os.path.join(dll_full_path, 'lib')):
                 for distPath in distPaths:
                     distPath = os.path.normpath(distPath)
+                    print(distPath)
                     if not os.path.exists(distPath):
                         continue
+                    print(os.listdir(distPath))
                     dll_full_path = '%s/python' % (distPath)
                     for item in os.listdir(distPath):
-                        if item.startswith('indigo-python-') and item.endswith('.zip') and (item.find(getPlatform()) != -1 or item.find('universal') != -1):
+                        print(item)
+                        if item.startswith('indigo-python-') and item.endswith('.zip') and (getPlatform() in item or 'universal' in item):
                             curdir = os.path.abspath(os.curdir)
                             os.chdir(distPath)
                             top_file = item.replace('.zip', '')
