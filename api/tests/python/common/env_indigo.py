@@ -92,7 +92,6 @@ else:
     success = False
 
     indigo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-    print(f"indigo_tests_root: {indigo_root}")
     if isIronPython():
         if not 'INDIGO_PATH' in os.environ:
             import clr
