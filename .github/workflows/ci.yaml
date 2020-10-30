@@ -1,0 +1,35 @@
+name: CI
+
+on: [ push, pull_request ]
+
+jobs:
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build native libs
+        run: python build_scripts/indigo-release-libs.py
+      - name: Build wrappers
+        run: python build_scripts/indigo-make-by-libs.py --type=python
+      - name: Test
+        run: python api/tests/python/test.py -j junit_report.xml
+  build_linux:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build native libs
+        run: python build_scripts/indigo-release-libs.py
+      - name: Build wrappers
+        run: python build_scripts/indigo-make-by-libs.py --type=python
+      - name: Test
+        run: python api/tests/python/test.py -j junit_report.xml
+  build_macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build native libs
+        run: python build_scripts/indigo-release-libs.py
+      - name: Build wrappers
+        run: python build_scripts/indigo-make-by-libs.py --type=python
+      - name: Test
+        run: python api/tests/python/test.py -j junit_report.xml
