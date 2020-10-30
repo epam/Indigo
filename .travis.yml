@@ -18,6 +18,7 @@ addons:
     - libfontconfig1-dev
     - python
 before_install:
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew install git-lfs; fi
   - git lfs pull
 script:
   - if [ $TRAVIS_OS_NAME == linux ]; then CC=/usr/bin/gcc-6 CXX=/usr/bin/g++-6 python build_scripts/indigo-release-libs.py; fi
