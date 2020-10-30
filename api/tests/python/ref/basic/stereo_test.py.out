@@ -1,0 +1,15 @@
+****** Check wrong chiral flag ********
+Structure is chiral      = 0
+Chiral flag consistency  = 0
+3D stereo centetrs exist = 0
+Undefined stereo centers exist = 0
+****** Check stereogenic center ********
+Structure is chiral      = 0
+Chiral flag consistency  = 1
+3D stereo centetrs exist = 0
+Undefined stereo centers exist = 1
+****** Check 3D stereo center ********
+Structure is chiral      = 1
+Chiral flag consistency  = 1
+3D stereo centetrs exist = 1
+Undefined stereo centers exist = 0
