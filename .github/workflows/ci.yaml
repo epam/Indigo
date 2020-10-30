@@ -18,7 +18,7 @@ jobs:
         run: python build_scripts/indigo-make-by-libs.py --type=python
       - name: Test
         run: python api/tests/python/test.py -j junit_report.xml
-  build_linux:
+  build_windows:
     runs-on: windows-latest
     steps:
       - name: Checkout
