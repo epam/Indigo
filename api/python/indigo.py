@@ -2344,6 +2344,7 @@ class Indigo(object):
 
         indigoFound = False
         for path in paths:
+            print(path)
             if (
                 os.name == "posix"
                 and not platform.mac_ver()[0]
@@ -2372,6 +2373,8 @@ class Indigo(object):
                     path = os.path.join(path, "x64")
                 else:
                     raise IndigoException("unknown platform " + arch)
+                print(path)
+                prit(os.listdir(path))
                 if os.path.exists(os.path.join(path, "indigo.dll")):
                     Indigo._crt = cdll_if_exists(
                         os.path.join(path, "vcruntime140.dll")
