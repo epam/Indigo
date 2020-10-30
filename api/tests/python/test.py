@@ -238,7 +238,7 @@ def main():
         msg = ''
         if failed_stderr:
             test_status = "[ERROR]"
-            tests_status = 1
+            tests_status |= 2
         elif not base_exists:
             test_status = "[NEW]"
         elif not ndiffcnt:
@@ -247,9 +247,8 @@ def main():
             spacer_len += 2
         else:
             test_status = "[FAILED]"
-            # TODO: Uncomment this when tests should pass
-            # if root != 'todo':
-            #     tests_status = 1
+            if root != 'todo':
+                tests_status |= 1
 
         print("%s%s\t%.2f sec" % (spacer * spacer_len, test_status, tspent))
         if diff_file and file_exists(diff_file):

@@ -185,13 +185,10 @@ else:
             if not os.path.exists(os.path.join(dll_full_path, 'lib')):
                 for distPath in distPaths:
                     distPath = os.path.normpath(distPath)
-                    print(distPath)
                     if not os.path.exists(distPath):
                         continue
-                    print(os.listdir(distPath))
                     dll_full_path = '%s/python' % (distPath)
                     for item in os.listdir(distPath):
-                        print(item)
                         if item.startswith('indigo-python-') and item.endswith('.zip') and (getPlatform() in item or 'universal' in item):
                             curdir = os.path.abspath(os.curdir)
                             os.chdir(distPath)

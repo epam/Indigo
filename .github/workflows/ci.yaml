@@ -1,6 +1,10 @@
 name: CI
 
-on: [ push ]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
   build_linux:
@@ -13,7 +17,7 @@ jobs:
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
-        run: python build_scripts/indigo-make-by-libs.py --type=python
+        run: python build_scripts/indigo-make-by-libs.py --type=python,java
       - name: Test
         run: python api/tests/python/test.py -j junit_report.xml
       - name: Test report
@@ -29,7 +33,7 @@ jobs:
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
-        run: python build_scripts/indigo-make-by-libs.py --type=python
+        run: python build_scripts/indigo-make-by-libs.py --type=python,java
       - name: Test
         run: python api/tests/python/test.py -j junit_report.xml
       - name: Test report
@@ -45,7 +49,7 @@ jobs:
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
-        run: python build_scripts/indigo-make-by-libs.py --type=python
+        run: python build_scripts/indigo-make-by-libs.py --type=python,java
       - name: Test
         run: python api/tests/python/test.py -j junit_report.xml
       - name: Test report
