@@ -11,3 +11,4 @@ environment:
 build_script:
 - cmd: python build_scripts/indigo-release-libs.py --preset=win64-2015
 - cmd: python build_scripts/indigo-make-by-libs.py --type=python,java
+- cmd: python api/tests/python/test.py
