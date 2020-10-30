@@ -24,6 +24,7 @@
 #ifndef _WIN32
 #include <pthread.h>
 #ifdef __APPLE__
+#include <mach_init.h>
 #include <mach/semaphore.h>
 #include <mach/task.h>
 #else

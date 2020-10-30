@@ -10,8 +10,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
-      - name: Checkout LFS
-        run: git lfs pull
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
@@ -25,8 +23,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
-      - name: Checkout LFS
-        run: git lfs pull
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
@@ -40,8 +36,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           lfs: true
-      - name: Checkout LFS
-        run: git lfs pull
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
