@@ -6,7 +6,12 @@ jobs:
   build_linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+      - name: Checkout LFS
+          run: git lfs pull
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
@@ -16,7 +21,12 @@ jobs:
   build_linux:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+      - name: Checkout LFS
+          run: git lfs pull
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
@@ -26,7 +36,12 @@ jobs:
   build_macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+      - name: Checkout LFS
+        run: git lfs pull
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
