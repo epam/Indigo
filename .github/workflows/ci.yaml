@@ -51,16 +51,16 @@ jobs:
         if: ${{ always() }}
         run: type junit_report.xml
       - name: Publish Unit Test Results
-          uses: EnricoMi/publish-unit-test-result-action@v1.3
-          if: always()
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            check_name: Unit Test Results
-            comment_title: Unit Test Statistics
-            hide_comments: all but latest
-            files: junit_report.xml
-            report_individual_runs: true
-            deduplicate_classes_by_file_name: false
+        uses: EnricoMi/publish-unit-test-result-action@v1.3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: Unit Test Results
+          comment_title: Unit Test Statistics
+          hide_comments: all but latest
+          files: junit_report.xml
+          report_individual_runs: true
+          deduplicate_classes_by_file_name: false
   build_macos:
     runs-on: macos-latest
     steps:
@@ -78,13 +78,13 @@ jobs:
         if: ${{ always() }}
         run: cat junit_report.xml
       - name: Publish Unit Test Results
-          uses: EnricoMi/publish-unit-test-result-action@v1.3
-          if: always()
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            check_name: Unit Test Results
-            comment_title: Unit Test Statistics
-            hide_comments: all but latest
-            files: junit_report.xml
-            report_individual_runs: true
-            deduplicate_classes_by_file_name: false
+        uses: EnricoMi/publish-unit-test-result-action@v1.3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: Unit Test Results
+          comment_title: Unit Test Statistics
+          hide_comments: all but latest
+          files: junit_report.xml
+          report_individual_runs: true
+          deduplicate_classes_by_file_name: false
