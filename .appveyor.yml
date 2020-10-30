@@ -8,6 +8,8 @@ platform:
   - x64
 environment:
   PATH: '%PATH%;C:\Program Files\CMake\bin;C:\Python36-x64;'
+before_build:
+- git lfs pull
 build_script:
 - cmd: python build_scripts/indigo-release-libs.py --preset=win64-2015
 - cmd: python build_scripts/indigo-make-by-libs.py --type=python,java
