@@ -12,7 +12,7 @@ import java.util.Map;
  * @see <a href="https://en.wikipedia.org/wiki/Jaccard_index#Tanimoto_similarity_and_distance">Tanimoto_similarity_and_distance</a>
  * @param <T>
  */
-public class SimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
+public final class SimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
 
     public SimilarityMatch(T target, float threshold) {
         super(target, threshold);

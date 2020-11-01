@@ -7,7 +7,7 @@ import org.elasticsearch.script.Script;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EuclidSimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
+public final class EuclidSimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
 
     public EuclidSimilarityMatch(T target, float threshold) {
         super(target, threshold);

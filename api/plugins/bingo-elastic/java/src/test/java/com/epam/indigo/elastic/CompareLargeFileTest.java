@@ -33,9 +33,7 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
         noSQLTotal = System.nanoTime() - noSQLTotal;
         long elasticTotal = System.nanoTime();
         try {
-            List<IndigoRecord> indigoRecordList =
-                    Helpers.loadFromSmilesFile(test100SmilesFile, false);
-            repository.indexRecords(indigoRecordList, indigoRecordList.size());
+            repository.indexRecords(Helpers.iterateSmiles(test100SmilesFile), 100);
         } catch (Exception e) {
             Assertions.fail(e);
         }

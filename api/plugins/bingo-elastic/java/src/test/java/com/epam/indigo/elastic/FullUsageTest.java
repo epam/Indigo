@@ -1,7 +1,6 @@
 package com.epam.indigo.elastic;
 
 import com.epam.indigo.Indigo;
-import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -78,6 +78,10 @@ public class FullUsageTest {
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new ExactMatch<>(target))
+                    .limit(20)
+                    .collect(Collectors.toList())
+                    .stream()
+                    .filter(ExactMatch.exactMatchAfterChecker(target, indigo))
                     .collect(Collectors.toList());
             assertEquals(1, similarRecords.size());
             assertEquals(1.0f, similarRecords.get(0).getScore());
@@ -86,6 +90,7 @@ public class FullUsageTest {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
     }
+
 
     @Test
     @DisplayName("Testing tversky match")
@@ -158,9 +163,7 @@ public class FullUsageTest {
                     .limit(20)
                     .collect(Collectors.toList())
                     .stream()
-//                    TODO refine and add sugar into helpers?
-                    .filter(x -> indigo.substructureMatcher(x.getIndigoObject(indigo))
-                                       .match(indigo.loadQueryMolecule(target.getIndigoObject(indigo).canonicalSmiles())) != null)
+                    .filter(SubstructureMatch.substructureMatchAfterChecker(target, indigo))
                     .collect(Collectors.toList());
 
             assertEquals(1, records.size());
