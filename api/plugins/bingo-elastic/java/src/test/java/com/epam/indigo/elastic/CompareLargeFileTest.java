@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CompareLargeFile extends NoSQLElasticCompareAbstract {
+public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
 
     protected static final String test100SmilesFile = "src/test/resources/pubchem_slice_100000.smiles";
 

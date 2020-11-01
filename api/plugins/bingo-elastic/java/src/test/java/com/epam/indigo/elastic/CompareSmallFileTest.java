@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class CompareSmallFile extends NoSQLElasticCompareAbstract {
+public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
 
     protected static final String testSdfFile = "src/test/resources/zinc-slice.sdf.gz";
 

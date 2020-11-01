@@ -137,33 +137,51 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
         });
     }
 
+    public Iterable<List<T>> splitToBatches(Iterable<T> records, int batchSize) {
+        return () -> new Iterator<List<T>>() {
+            @Override
+            public boolean hasNext() {
+                return records.iterator().hasNext();
+            }
+            @Override
+            public List<T> next() {
+                List<T> acc = new ArrayList<>();
+                while(records.iterator().hasNext() && acc.size() < batchSize) {
+                    acc.add(records.iterator().next());
+                }
+                return acc;
+            }
+        };
+    }
+
     @Override
-    public void indexRecords(Iterable<T> records, int batchSize, ActionListener<BulkResponse> actionListener) throws IOException {
+    public void indexRecords(Iterable<T> flatRecords, int batchSize, ActionListener<BulkResponse> actionListener) throws IOException {
         if (!checkIfIndexExists())
             createIndex();
         BulkRequest request = new BulkRequest();
-        for (T t : records) {
-//            TODO if acc is of batchSize
+        for (List<T> records : splitToBatches(flatRecords, batchSize)) {
+            for (T t : records) {
 //            TODO send bulk async
-            XContentBuilder builder = XContentFactory.jsonBuilder();
-            builder.startObject();
-            {
+                XContentBuilder builder = XContentFactory.jsonBuilder();
+                builder.startObject();
+                {
 //                todo need to iterate over fields and add content where exists
-                builder.array(SIM_FINGERPRINT, t.getSimFingerprint());
-                builder.field(SIM_FINGERPRINT_LEN, t.getSimFingerprint().size());
-                builder.array(SUB_FINGERPRINT, t.getSubFingerprint());
-                builder.field(SUB_FINGERPRINT_LEN, t.getSubFingerprint().size());
-                builder.field(CMF, Base64.getEncoder().encodeToString(t.getCmf()));
-                builder.field(NAME, t.getName());
-                for (Map.Entry<String, Object> e : t.getObjects().entrySet()) {
-                    // todo: allow extend by users?
-                    builder.field(e.getKey(), e.getValue());
+                    builder.array(SIM_FINGERPRINT, t.getSimFingerprint());
+                    builder.field(SIM_FINGERPRINT_LEN, t.getSimFingerprint().size());
+                    builder.array(SUB_FINGERPRINT, t.getSubFingerprint());
+                    builder.field(SUB_FINGERPRINT_LEN, t.getSubFingerprint().size());
+                    builder.field(CMF, Base64.getEncoder().encodeToString(t.getCmf()));
+                    builder.field(NAME, t.getName());
+                    for (Map.Entry<String, Object> e : t.getObjects().entrySet()) {
+                        // todo: allow extend by users?
+                        builder.field(e.getKey(), e.getValue());
+                    }
                 }
-            }
-            builder.endObject();
-            request.add(new IndexRequest(this.indexName)
-                    .source(builder));
+                builder.endObject();
+                request.add(new IndexRequest(this.indexName)
+                        .source(builder));
 
+            }
         }
 //        TODO default action listener
         this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);

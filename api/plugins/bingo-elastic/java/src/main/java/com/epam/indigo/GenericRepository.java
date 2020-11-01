@@ -3,7 +3,6 @@ package com.epam.indigo;
 import com.epam.indigo.model.IndigoRecord;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.client.Response;
 
 import java.io.IOException;
 import java.util.stream.Stream;
