@@ -4,6 +4,7 @@ import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.IndigoRecordIterator;
 import com.epam.indigo.predicate.*;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -55,11 +56,11 @@ public class FullUsageTest {
             int requestSize = 20;
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new TanimotoSimilarityMatch<>(target, 0.8f))
+                    .filter(new SimilarityMatch<>(target, 0.8f))
                     .limit(requestSize)
                     .collect(Collectors.toList());
             assertEquals(1.0f, similarRecords.get(0).getScore());
-            assertArrayEquals(target.getFingerprint().toArray(), similarRecords.get(0).getFingerprint().toArray());
+            assertArrayEquals(target.getSimFingerprint().toArray(), similarRecords.get(0).getSimFingerprint().toArray());
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
@@ -78,7 +79,7 @@ public class FullUsageTest {
                     .collect(Collectors.toList());
             assertEquals(1, similarRecords.size());
             assertEquals(1.0f, similarRecords.get(0).getScore());
-            assertArrayEquals(target.getFingerprint().toArray(), similarRecords.get(0).getFingerprint().toArray());
+            assertArrayEquals(target.getSimFingerprint().toArray(), similarRecords.get(0).getSimFingerprint().toArray());
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
@@ -132,11 +133,29 @@ public class FullUsageTest {
             TimeUnit.SECONDS.sleep(5);
             IndigoRecord target = indigoRecordList.get(0);
             List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new TanimotoSimilarityMatch<>(target))
+                    .filter(new SimilarityMatch<>(target))
                     .filter(new KeywordQuery<>("tag", "test"))
                     .collect(Collectors.toList());
 
             assertEquals(1, similarRecords.size());
+        } catch (Exception exception) {
+            Assertions.fail("Exception happened during test " + exception.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Testing substructure search")
+    public void substructureSearch() {
+        try {
+            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            repository.indexRecords(indigoRecordList);
+            TimeUnit.SECONDS.sleep(5);
+            IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
+            List<IndigoRecord> records = repository.stream()
+                    .filter(new SubstructureMatch<>(target))
+                    .collect(Collectors.toList());
+
+            assertEquals(1, records.size());
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }

@@ -7,10 +7,15 @@ import org.elasticsearch.script.Script;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExactMatch<T extends IndigoRecord> extends BaseMatch<T> {
+public class SubstructureMatch<T extends IndigoRecord> extends BaseMatch<T> {
 
-    public ExactMatch(T target) {
+    public SubstructureMatch(T target) {
         super(target);
+    }
+
+    @Override
+    public String getFingerprintName() {
+        return NamingConstants.SUB_FINGERPRINT;
     }
 
     @Override
@@ -23,15 +28,5 @@ public class ExactMatch<T extends IndigoRecord> extends BaseMatch<T> {
     @Override
     public String getMinimumShouldMatch(int length) {
         return "100%";
-    }
-
-    @Override
-    public float getThreshold() {
-        return 1.0f;
-    }
-
-    @Override
-    public String getFingerprintName() {
-        return NamingConstants.SUB_FINGERPRINT;
     }
 }

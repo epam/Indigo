@@ -5,10 +5,7 @@ import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.IndigoRecord.IndigoRecordBuilder;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -16,7 +13,7 @@ import java.util.Map;
  */
 public class Helpers {
 
-    protected static void loadOrThrow(List<IndigoRecord> acc, IndigoObject comp, Boolean skipErrors) {
+    protected static void loadOrThrow(List<IndigoRecord> acc, IndigoObject comp, boolean skipErrors) {
         try {
             acc.add(FromIndigoObject.build(comp));
         } catch (Exception e) {
@@ -24,6 +21,10 @@ public class Helpers {
                 throw e;
             }
         }
+    }
+
+    protected static IndigoRecord load(IndigoObject comp) {
+        return FromIndigoObject.build(comp);
     }
 
     public static IndigoRecord loadFromFile(String molFile) {
@@ -35,13 +36,34 @@ public class Helpers {
         return loadFromSdf(sdfFile, true);
     }
 
-    public static List<IndigoRecord> loadFromSdf(String sdfFile, Boolean skipErrors) throws Exception {
+    public static List<IndigoRecord> loadFromSdf(String sdfFile, boolean skipErrors) {
         Indigo indigo = new Indigo();
         List<IndigoRecord> acc = new ArrayList<>();
         for (IndigoObject comp : indigo.iterateSDFile(sdfFile)) {
             loadOrThrow(acc, comp, skipErrors);
         }
         return acc;
+    }
+
+    public static Iterable<IndigoRecord> iterateSdf(String sdfFile) {
+        Indigo indigo = new Indigo();
+        IndigoObject indigoObject = indigo.iterateSDFile(sdfFile);
+        return new Iterable<IndigoRecord>() {
+            @Override
+            public Iterator<IndigoRecord> iterator() {
+                return new Iterator<IndigoRecord>() {
+                    @Override
+                    public boolean hasNext() {
+                        return indigoObject.hasNext();
+                    }
+
+                    @Override
+                    public IndigoRecord next() {
+                        return load(indigoObject.next());
+                    }
+                };
+            }
+        };
     }
 
     public static IndigoRecord loadFromSmiles(String smiles) {
@@ -54,7 +76,7 @@ public class Helpers {
         return loadFromSmilesFile(smilesFile, true);
     }
 
-    public static List<IndigoRecord> loadFromSmilesFile(String smilesFile, Boolean skipErrors) throws Exception {
+    public static List<IndigoRecord> loadFromSmilesFile(String smilesFile, boolean skipErrors) throws Exception {
         Indigo indigo = new Indigo();
         List<IndigoRecord> acc = new ArrayList<>();
         for (IndigoObject comp : indigo.iterateSmilesFile(smilesFile)) {
@@ -67,7 +89,7 @@ public class Helpers {
         return loadFromCmlFile(cmlFile, true);
     }
 
-    public static List<IndigoRecord> loadFromCmlFile(String cmlFile, Boolean skipErrors) throws Exception {
+    public static List<IndigoRecord> loadFromCmlFile(String cmlFile, boolean skipErrors) throws Exception {
         Indigo indigo = new Indigo();
         List<IndigoRecord> acc = new ArrayList<>();
         for (IndigoObject comp : indigo.iterateCMLFile(cmlFile)) {
@@ -79,17 +101,19 @@ public class Helpers {
     public static IndigoRecord fromElastic(String id, Map<String, Object> source, float score) throws BingoElasticException {
         IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordBuilder();
         for (Map.Entry<String, Object> entry : source.entrySet()) {
-            if (entry.getKey().equals("fingerprint")) {
-                indigoRecordBuilder.withFingerprint((List<Integer>) ((List<Object>) entry.getValue()).get(0));
+            if (entry.getKey().equals(NamingConstants.SIM_FINGERPRINT)) {
+                indigoRecordBuilder.withSimFingerprint((List<Integer>) ((List<Object>) entry.getValue()).get(0));
+            } else if (entry.getKey().equals(NamingConstants.SUB_FINGERPRINT)) {
+                indigoRecordBuilder.withSubFingerprint((List<Integer>) ((List<Object>) entry.getValue()).get(0));
             } else {
                 indigoRecordBuilder.withCustomObject(entry.getKey(), entry.getValue());
             }
         }
         indigoRecordBuilder.withScore(score);
         indigoRecordBuilder.withId(id);
-        byte[] cmf = Base64.getDecoder().decode((String) source.get("cmf"));
+        byte[] cmf = Base64.getDecoder().decode((String) source.get(NamingConstants.CMF));
         indigoRecordBuilder.withCmf(cmf);
-        indigoRecordBuilder.withName((String) source.get("name"));
+        indigoRecordBuilder.withName((String) source.get(NamingConstants.NAME));
         return indigoRecordBuilder.build();
     }
 }

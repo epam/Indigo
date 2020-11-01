@@ -3,7 +3,7 @@ package com.epam.indigo;
 import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
-import com.epam.indigo.predicate.TanimotoSimilarityMatch;
+import com.epam.indigo.predicate.SimilarityMatch;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -74,7 +74,7 @@ public class LoadMoleculeFromFileTest {
     @DisplayName("Testing creation of IndigoRecord from mol file")
     void testLoadFromMol() throws Exception {
         IndigoRecord indigoRecord = Helpers.loadFromFile("src/test/resources/composition1.mol");
-        assertNotNull(indigoRecord.getFingerprint());
+        assertNotNull(indigoRecord.getSimFingerprint());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class LoadMoleculeFromFileTest {
             IndigoRecord indigoTestRecord = Helpers.loadFromSmiles(smiles);
             TimeUnit.SECONDS.sleep(5);
             List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new TanimotoSimilarityMatch<>(indigoTestRecord, 1))
+                    .filter(new SimilarityMatch<>(indigoTestRecord, 1))
                     .collect(Collectors.toList());
             assertEquals(1, similarRecords.size());
 
@@ -151,7 +151,7 @@ public class LoadMoleculeFromFileTest {
             TimeUnit.SECONDS.sleep(5);
 
             List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new TanimotoSimilarityMatch<>(indigoTestRecord, 1))
+                    .filter(new SimilarityMatch<>(indigoTestRecord, 1))
                     .limit(1)
                     .collect(Collectors.toList());
 

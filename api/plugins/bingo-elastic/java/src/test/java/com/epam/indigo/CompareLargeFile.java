@@ -7,8 +7,6 @@ import org.elasticsearch.common.collect.Tuple;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -70,15 +68,11 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
             String bingoFoundSmiles = indigoObjectResult.canonicalSmiles();
             nosqlListResult.add(new Tuple<>(bingoFoundSmiles, bingoObjectResult.getCurrentSimilarityValue()));
         }
-        Collections.sort(nosqlListResult, new Comparator<Tuple<String, Float>>() {
-            public int compare(Tuple<String, Float> o1, Tuple<String, Float> o2) {
-                return (int) (o1.v2() - o2.v2());
-            }
-        });
+        nosqlListResult.sort((o1, o2) -> (int) (o1.v2() - o2.v2()));
         return nosqlListResult;
     }
 
-    protected List<Tuple<String, Float>> elasticSimilarity(SimilarityMatch<IndigoRecord> similarity, IndigoRecord elasticNeedle) {
+    protected List<Tuple<String, Float>> elasticSimilarity(BaseMatch<IndigoRecord> similarity, IndigoRecord elasticNeedle) {
         List<Tuple<String, Float>> elasticListResult = new ArrayList<>();
         List<IndigoRecord> elasticResults = repository.stream().limit(1000)
                 .filter(similarity)
@@ -98,7 +92,7 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
             IndigoRecord elasticNeedle = Helpers.loadFromSmiles(curSmiles);
             float threshold = 0.7f;
 
-            List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new TanimotoSimilarityMatch<>(elasticNeedle, threshold), elasticNeedle);
+            List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new SimilarityMatch<>(elasticNeedle, threshold), elasticNeedle);
             List<Tuple<String, Float>> nosqlListResult = bingoNoSQLSimilarity("tanimoto", bingoNeedle, threshold);
 
             assertEquals(elasticListResult.size(), nosqlListResult.size());

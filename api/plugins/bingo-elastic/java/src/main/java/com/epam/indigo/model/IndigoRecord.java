@@ -21,7 +21,9 @@ public class IndigoRecord {
     private String internalID = null;
     private float score;
     // todo: rename? and add ability to extend?
-    private List<Integer> fingerprint;
+    private List<Integer> simFingerprint;
+    private List<Integer> subFingerprint;
+//    TODO add tau fingerprint, add support for other fingerprints
     private byte[] cmf;
     private String name;
 
@@ -33,8 +35,12 @@ public class IndigoRecord {
         return internalID;
     }
 
-    public List<Integer> getFingerprint() {
-        return fingerprint;
+    public List<Integer> getSimFingerprint() {
+        return simFingerprint;
+    }
+
+    public List<Integer> getSubFingerprint() {
+        return subFingerprint;
     }
 
     public byte[] getCmf() {
@@ -85,8 +91,15 @@ public class IndigoRecord {
                 for (String oneBit : oneBits) {
                     fin.add(Integer.parseInt(oneBit));
                 }
-                record.fingerprint = new ArrayList<>();
-                record.fingerprint.addAll(fin);
+                record.simFingerprint = new ArrayList<>();
+                record.simFingerprint.addAll(fin);
+                fin.clear();
+                oneBits = indigoObject.fingerprint("sub").oneBitsList().split(" ");
+                for (String oneBit : oneBits) {
+                    fin.add(Integer.parseInt(oneBit));
+                }
+                record.subFingerprint = new ArrayList<>();
+                record.subFingerprint.addAll(fin);
             });
 
             return this;
@@ -97,8 +110,13 @@ public class IndigoRecord {
             return this;
         }
 
-        public IndigoRecordBuilder withFingerprint(List<Integer> fingerprint) {
-            operations.add(record -> record.fingerprint = fingerprint);
+        public IndigoRecordBuilder withSimFingerprint(List<Integer> simFingerprint) {
+            operations.add(record -> record.simFingerprint = simFingerprint);
+            return this;
+        }
+
+        public IndigoRecordBuilder withSubFingerprint(List<Integer> subFingerprint) {
+            operations.add(record -> record.subFingerprint = subFingerprint);
             return this;
         }
 
@@ -131,7 +149,10 @@ public class IndigoRecord {
         }
 
         public void validate(IndigoRecord record) throws BingoElasticException {
-            if (null == record.fingerprint) {
+            if (null == record.simFingerprint) {
+                throw new BingoElasticException("Fingerprint is required field");
+            }
+            if (null == record.subFingerprint) {
                 throw new BingoElasticException("Fingerprint is required field");
             }
         }

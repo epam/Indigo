@@ -3,10 +3,11 @@ package com.epam.indigo.elastic;
 import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.NamingConstants;
 import com.epam.indigo.predicate.ExactMatch;
 import com.epam.indigo.predicate.FilterPredicate;
 import com.epam.indigo.predicate.IndigoPredicate;
-import com.epam.indigo.predicate.SimilarityMatch;
+import com.epam.indigo.predicate.BaseMatch;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -79,11 +80,10 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         return (R) container;
     }
 
-    private QueryBuilder[] generateClauses(IndigoRecord target) {
-        List<Integer> fingerprint = target.getFingerprint();
+    private QueryBuilder[] generateClauses(List<Integer> fingerprint, String field) {
         QueryBuilder[] bits = new QueryBuilder[fingerprint.size()];
         for (int i = 0; i < bits.length; ++i) {
-            bits[i] = QueryBuilders.termQuery("fingerprint", fingerprint.get(i));
+            bits[i] = QueryBuilders.termQuery(field, fingerprint.get(i));
         }
         return bits;
     }
@@ -99,24 +99,25 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
             Script script = null;
             float threshold = 0.0f;
             for (IndigoPredicate<? super T> predicate : this.predicates) {
-                if (predicate instanceof SimilarityMatch) {
+                if (predicate instanceof BaseMatch) {
                     if (similarityRequested)
                         throw new BingoElasticException("Several similarity matches requested, couldn't create query");
                     similarityRequested = true;
-                    QueryBuilder[] clauses = generateClauses(((SimilarityMatch<?>) predicate).getTarget());
-                    if (predicate instanceof ExactMatch) {
-                        for (QueryBuilder clause : clauses) {
+                   if (predicate instanceof ExactMatch) {
+                       QueryBuilder[] clauses = generateClauses(((ExactMatch<? super T>) predicate).getTarget().getSubFingerprint(), ((BaseMatch<? super T>) predicate).getFingerprintName());
+                       for (QueryBuilder clause : clauses) {
                             boolQueryBuilder.must(clause);
                         }
-                        boolQueryBuilder.must(QueryBuilders.termQuery("fingerprint_len", clauses.length).boost(0.0f));
+                        boolQueryBuilder.must(QueryBuilders.termQuery(NamingConstants.SUB_FINGERPRINT_LEN, clauses.length).boost(0.0f));
                     } else {
-                        for (QueryBuilder clause : clauses) {
+                       QueryBuilder[] clauses = generateClauses(((BaseMatch<? super T>) predicate).getTarget().getSimFingerprint(), ((BaseMatch<? super T>) predicate).getFingerprintName());
+                       for (QueryBuilder clause : clauses) {
                             boolQueryBuilder.should(clause);
                         }
-                        boolQueryBuilder.minimumShouldMatch(((SimilarityMatch<?>) predicate).getMinimumShouldMatch(clauses.length));
+                        boolQueryBuilder.minimumShouldMatch(((BaseMatch<?>) predicate).getMinimumShouldMatch(clauses.length));
                     }
-                    threshold = ((SimilarityMatch<? super T>) predicate).getThreshold();
-                    script = ((SimilarityMatch<?>) predicate).generateScript();
+                    threshold = ((BaseMatch<? super T>) predicate).getThreshold();
+                    script = ((BaseMatch<?>) predicate).generateScript();
                 }
 
                 if (predicate instanceof FilterPredicate) {

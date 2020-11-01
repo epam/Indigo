@@ -1,31 +1,45 @@
 package com.epam.indigo.predicate;
 
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.NamingConstants;
 import org.elasticsearch.script.Script;
 
-public abstract class SimilarityMatch<T extends IndigoRecord> extends IndigoPredicate<T> {
+import java.util.HashMap;
+import java.util.Map;
 
-    private final T target;
-    private final float threshold;
-
-    public SimilarityMatch(T target) {
-        this(target, 0.0f);
-    }
+/**
+ * Similarity match based on Tanimoto metric
+ * @see https://en.wikipedia.org/wiki/Jaccard_index#Tanimoto_similarity_and_distance
+ * @param <T>
+ */
+public class SimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
 
     public SimilarityMatch(T target, float threshold) {
-        this.target = target;
-        this.threshold = threshold;
+        super(target, threshold);
     }
 
-    public T getTarget() {
-        return target;
+    public SimilarityMatch(T target) {
+        super(target);
     }
 
-    public float getThreshold() {
-        return threshold;
+    @Override
+    public Script generateScript() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("source", "_score / (params.a + doc['" + NamingConstants.SIM_FINGERPRINT_LEN + "'].value - _score)");
+        Map<String, Object> params = new HashMap<>();
+        params.put("a", getTarget().getSimFingerprint().size());
+        map.put("params", params);
+        return Script.parse(map);
     }
 
-    public abstract Script generateScript();
+    @Override
+    public String getMinimumShouldMatch(int length) {
+        double mm = Math.floor((getThreshold() * (getTarget().getSimFingerprint().size() + 1)) / (1.0f + getThreshold())) / length;
+        return (int) (mm * 100) + "%";
+    }
 
-    public abstract String getMinimumShouldMatch(int length);
+    @Override
+    public String getFingerprintName() {
+        return NamingConstants.SIM_FINGERPRINT;
+    }
 }

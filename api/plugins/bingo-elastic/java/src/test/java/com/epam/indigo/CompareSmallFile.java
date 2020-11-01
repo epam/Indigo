@@ -4,7 +4,7 @@ import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.EuclidSimilarityMatch;
 import com.epam.indigo.predicate.ExactMatch;
-import com.epam.indigo.predicate.TanimotoSimilarityMatch;
+import com.epam.indigo.predicate.SimilarityMatch;
 import com.epam.indigo.predicate.TverskySimilarityMatch;
 import org.junit.jupiter.api.*;
 
@@ -62,7 +62,7 @@ public class CompareSmallFile extends NoSQLElasticCompareAbstract {
 
         // Tanimoto elastic
         List<IndigoRecord>  indigoResult = repository.stream().limit(10).filter(
-                new TanimotoSimilarityMatch<>(elasticNeedle, 0.9f))
+                new SimilarityMatch<>(elasticNeedle, 0.9f))
                 .collect(Collectors.toList());
         assertEquals(indigoObjectResult.canonicalSmiles(), indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
         assertEquals(1, indigoResult.size());

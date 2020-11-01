@@ -8,7 +8,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.flush.FlushRequest;
 import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeRequest;
@@ -34,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import static com.epam.indigo.model.NamingConstants.*;
 
 /**
  * Class responsible for all operations with Elasticsearch
@@ -78,18 +79,29 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
         {
             builder.startObject("properties");
             {
-                builder.startObject("fingerprint");
+                builder.startObject(SIM_FINGERPRINT);
                 {
                     builder.field("type", "keyword");
                     builder.field("similarity", "boolean");
                 }
                 builder.endObject();
-                builder.startObject("fingerprint_len");
+                builder.startObject(SIM_FINGERPRINT_LEN);
                 {
                     builder.field("type", "integer");
                 }
                 builder.endObject();
-                builder.startObject("cmf");
+                builder.startObject(SUB_FINGERPRINT);
+                {
+                    builder.field("type", "keyword");
+                    builder.field("similarity", "boolean");
+                }
+                builder.endObject();
+                builder.startObject(SUB_FINGERPRINT_LEN);
+                {
+                    builder.field("type", "integer");
+                }
+                builder.endObject();
+                builder.startObject(CMF);
                 {
                     builder.field("type", "binary");
                 }
@@ -120,19 +132,21 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     }
 
     @Override
-    public boolean indexRecords(List<T> records) throws IOException {
+    public boolean indexRecords(Iterable<T> records, T record) throws IOException {
         if (!checkIfIndexExists())
-            createIndex(records.get(0));
+            createIndex(record);
         BulkRequest request = new BulkRequest();
         for (T t : records) {
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();
             {
 //                todo need to iterate over fields and add content where exists
-                builder.array("fingerprint", t.getFingerprint());
-                builder.field("fingerprint_len", t.getFingerprint().size());
-                builder.field("cmf", Base64.getEncoder().encodeToString(t.getCmf()));
-                builder.field("name", t.getName());
+                builder.array(SIM_FINGERPRINT, t.getSimFingerprint());
+                builder.field(SIM_FINGERPRINT_LEN, t.getSimFingerprint().size());
+                builder.array(SUB_FINGERPRINT, t.getSubFingerprint());
+                builder.field(SUB_FINGERPRINT_LEN, t.getSubFingerprint().size());
+                builder.field(CMF, Base64.getEncoder().encodeToString(t.getCmf()));
+                builder.field(NAME, t.getName());
                 for (Map.Entry<String, Object> e : t.getObjects().entrySet()) {
                     // todo: allow extend by users?
                     builder.field(e.getKey(), e.getValue());
@@ -143,27 +157,25 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                     .source(builder));
 
         }
-        this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, new ActionListener<BulkResponse>() {
-            @Override
-            public void onResponse(BulkResponse bulkItemResponses) {
-                System.out.println("Bulk indexed completed");
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                throw new BingoElasticException("Couldn't index records in Elasticsearch", e.getCause());
-            }
-        });
+        boolean success = false;
+        BulkResponse bulk = this.elasticClient.bulk(request, RequestOptions.DEFAULT);
+//        bulk.getItems();
+        success = bulk.hasFailures();
 //        TODO do we need it?
         FlushRequest flushRequest = new FlushRequest();
         this.elasticClient.indices().flush(flushRequest, RequestOptions.DEFAULT);
         ForceMergeRequest forceMergeRequest = new ForceMergeRequest();
         this.elasticClient.indices().forcemerge(forceMergeRequest, RequestOptions.DEFAULT);
-        return true;
+        return success;
     }
 
     @Override
-    public boolean deleteAllRecords() throws IOException {
+    public boolean indexRecords(List<T> records) throws IOException {
+        return indexRecords(records, records.get(0));
+    }
+
+    @Override
+    public boolean deleteAllRecords() {
         DeleteIndexRequest request = new DeleteIndexRequest(this.indexName);
         try {
             AcknowledgedResponse delete = this.elasticClient.indices().delete(request, RequestOptions.DEFAULT);
