@@ -25,7 +25,7 @@ jobs:
       - name: Build wrappers
         run: python build_scripts/indigo-make-by-libs.py --type=python,java
       - name: Test
-        run: python api/tests/python/test.py -j junit_report.xml
+        run: python api/tests/python/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
@@ -50,7 +50,7 @@ jobs:
       - name: Build wrappers
         run: python build_scripts/indigo-make-by-libs.py --type=python,java
       - name: Test
-        run: python api/tests/python/test.py -j junit_report.xml
+        run: python api/tests/python/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
@@ -75,7 +75,7 @@ jobs:
       - name: Build wrappers
         run: python build_scripts/indigo-make-by-libs.py --type=python,java
       - name: Test
-        run: python api/tests/python/test.py -j junit_report.xml
+        run: python api/tests/python/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
