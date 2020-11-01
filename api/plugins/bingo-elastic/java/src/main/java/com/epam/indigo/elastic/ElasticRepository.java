@@ -138,16 +138,19 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     }
 
     public Iterable<List<T>> splitToBatches(Iterable<T> records, int batchSize) {
+
+        Iterator<T> instRecords = records.iterator();
         return () -> new Iterator<List<T>>() {
+
             @Override
             public boolean hasNext() {
-                return records.iterator().hasNext();
+                return instRecords.hasNext();
             }
             @Override
             public List<T> next() {
                 List<T> acc = new ArrayList<>();
-                while(records.iterator().hasNext() && acc.size() < batchSize) {
-                    acc.add(records.iterator().next());
+                while(instRecords.hasNext() && acc.size() < batchSize) {
+                    acc.add(instRecords.next());
                 }
                 return acc;
             }
