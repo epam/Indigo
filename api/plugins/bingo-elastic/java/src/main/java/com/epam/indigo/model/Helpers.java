@@ -48,20 +48,15 @@ public class Helpers {
     public static Iterable<IndigoRecord> iterateSdf(String sdfFile) {
         Indigo indigo = new Indigo();
         IndigoObject indigoObject = indigo.iterateSDFile(sdfFile);
-        return new Iterable<IndigoRecord>() {
+        return () -> new Iterator<IndigoRecord>() {
             @Override
-            public Iterator<IndigoRecord> iterator() {
-                return new Iterator<IndigoRecord>() {
-                    @Override
-                    public boolean hasNext() {
-                        return indigoObject.hasNext();
-                    }
+            public boolean hasNext() {
+                return indigoObject.hasNext();
+            }
 
-                    @Override
-                    public IndigoRecord next() {
-                        return load(indigoObject.next());
-                    }
-                };
+            @Override
+            public IndigoRecord next() {
+                return load(indigoObject.next());
             }
         };
     }

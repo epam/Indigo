@@ -22,9 +22,11 @@ public class FullUsageTest {
     private static final Random random = new Random();
     protected static ElasticRepository<IndigoRecord> repository;
     private static ElasticsearchContainer elasticsearchContainer;
+    private static Indigo indigo;
 
     @BeforeAll
     public static void setUpElastic() {
+        indigo = new Indigo();
         elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.2");
         elasticsearchContainer.start();
         ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepositoryBuilder<>();
@@ -152,7 +154,12 @@ public class FullUsageTest {
             TimeUnit.SECONDS.sleep(5);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> records = repository.stream()
-                    .filter(new SubstructureMatch<>(target))
+                    .filter(new ExactMatch<>(target))
+                    .limit(20)
+                    .collect(Collectors.toList())
+                    .stream()
+//                    TODO
+                    .filter(x -> indigo.substructureMatcher(x.getIndigoObject(indigo)).match(indigo.loadMolecule(target.getCmf())).hasNext())
                     .collect(Collectors.toList());
 
             assertEquals(1, records.size());

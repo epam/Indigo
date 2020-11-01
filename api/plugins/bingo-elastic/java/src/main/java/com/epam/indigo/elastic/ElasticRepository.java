@@ -8,6 +8,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.flush.FlushRequest;
 import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeRequest;
@@ -67,7 +68,7 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
         }
     }
 
-    private boolean createIndex(T t) throws IOException {
+    private boolean createIndex() throws IOException {
         CreateIndexRequest request = new CreateIndexRequest(this.indexName);
         request.settings(Settings.builder()
                 .put("index.number_of_shards", this.numShards)
@@ -128,15 +129,17 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     public boolean indexRecord(T record) throws IOException {
         List<T> rec = new ArrayList<>();
         rec.add(record);
-        return indexRecords(rec);
+        return indexRecords(rec, 1);
     }
 
     @Override
-    public boolean indexRecords(Iterable<T> records, T record) throws IOException {
+    public void indexRecords(Iterable<T> records, int batchSize, ActionListener actionListener) throws IOException {
         if (!checkIfIndexExists())
-            createIndex(record);
+            createIndex();
         BulkRequest request = new BulkRequest();
         for (T t : records) {
+//            TODO if acc is of batchSize
+//            TODO send bulk async
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();
             {
@@ -158,6 +161,8 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
 
         }
         boolean success = false;
+//        TODO default action listener
+        this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);
         BulkResponse bulk = this.elasticClient.bulk(request, RequestOptions.DEFAULT);
 //        bulk.getItems();
         success = bulk.hasFailures();
@@ -170,8 +175,8 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     }
 
     @Override
-    public boolean indexRecords(List<T> records) throws IOException {
-        return indexRecords(records, records.get(0));
+    public void indexRecords(List<T> records, int batchSize) throws IOException {
+        return indexRecords(records, batchSize);
     }
 
     @Override
