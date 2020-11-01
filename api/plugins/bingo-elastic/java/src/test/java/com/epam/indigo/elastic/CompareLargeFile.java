@@ -1,5 +1,7 @@
-package com.epam.indigo;
+package com.epam.indigo.elastic;
 
+import com.epam.indigo.BingoObject;
+import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.*;
@@ -33,7 +35,7 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
         try {
             List<IndigoRecord> indigoRecordList =
                     Helpers.loadFromSmilesFile(test100SmilesFile, false);
-            repository.indexRecords(indigoRecordList);
+            repository.indexRecords(indigoRecordList, indigoRecordList.size());
         } catch (Exception e) {
             Assertions.fail(e);
         }
@@ -139,7 +141,7 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
         BingoObject bingoObjectResult = bingoDb.searchExact(bingoNeedle);
         noSQLTotal = System.nanoTime() - noSQLTotal;
         assertTrue(bingoObjectResult.next());
-        assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
+        Assertions.assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
                 bingoObjectResult.getIndigoObject().canonicalSmiles());
 
         long elasticTotal = System.nanoTime();
@@ -151,7 +153,7 @@ public class CompareLargeFile extends NoSQLElasticCompareAbstract {
                 .collect(Collectors.toList());
         elasticTotal = System.nanoTime() - elasticTotal;
 
-        assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
+        Assertions.assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
                 indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
         assertTrue(noSQLTotal < elasticTotal);
     }

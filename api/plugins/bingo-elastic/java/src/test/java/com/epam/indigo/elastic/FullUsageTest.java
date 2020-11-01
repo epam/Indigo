@@ -1,10 +1,10 @@
-package com.epam.indigo;
+package com.epam.indigo.elastic;
 
+import com.epam.indigo.Indigo;
 import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
-import com.epam.indigo.model.IndigoRecordIterator;
 import com.epam.indigo.predicate.*;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -53,7 +53,7 @@ public class FullUsageTest {
     public void fullUsage() {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
-            repository.indexRecords(indigoRecordList);
+            repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
             int requestSize = 20;
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
@@ -73,7 +73,7 @@ public class FullUsageTest {
     public void exactMatch() {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
-            repository.indexRecords(indigoRecordList);
+            repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> similarRecords = repository.stream()
@@ -92,7 +92,7 @@ public class FullUsageTest {
     public void tversky() {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
-            repository.indexRecords(indigoRecordList);
+            repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             float threshold = 0.8f;
@@ -110,7 +110,7 @@ public class FullUsageTest {
     public void euclidWithThreshold() {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
-            repository.indexRecords(indigoRecordList);
+            repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
             float threshold = 0.5f;
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
@@ -150,16 +150,17 @@ public class FullUsageTest {
     public void substructureSearch() {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
-            repository.indexRecords(indigoRecordList);
+            repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> records = repository.stream()
-                    .filter(new ExactMatch<>(target))
+                    .filter(new SubstructureMatch<>(target))
                     .limit(20)
                     .collect(Collectors.toList())
                     .stream()
 //                    TODO
-                    .filter(x -> indigo.substructureMatcher(x.getIndigoObject(indigo)).match(indigo.loadMolecule(target.getCmf())).hasNext())
+                    .filter(x -> indigo.substructureMatcher(x.getIndigoObject(indigo))
+                                       .match(indigo.loadQueryMolecule(target.getIndigoObject(indigo).canonicalSmiles())) != null)
                     .collect(Collectors.toList());
 
             assertEquals(1, records.size());

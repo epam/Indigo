@@ -10,16 +10,11 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.flush.FlushRequest;
-import org.elasticsearch.action.admin.indices.forcemerge.ForceMergeRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.*;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
@@ -28,10 +23,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -126,14 +118,27 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
         return new ElasticStream<>(this.elasticClient, this.indexName);
     }
 
-    public boolean indexRecord(T record) throws IOException {
-        List<T> rec = new ArrayList<>();
-        rec.add(record);
-        return indexRecords(rec, 1);
+    void indexRecord(T record) throws IOException {
+        indexRecords(Collections.singletonList(record), 1);
     }
 
     @Override
-    public void indexRecords(Iterable<T> records, int batchSize, ActionListener actionListener) throws IOException {
+    public void indexRecords(Iterable<T> records, int batchSize) throws IOException {
+        indexRecords(records, batchSize, new ActionListener<BulkResponse>() {
+            @Override
+            public void onResponse(BulkResponse bulkResponse) {
+//                TODO do nothing
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+//              TODO do nothing
+            }
+        });
+    }
+
+    @Override
+    public void indexRecords(Iterable<T> records, int batchSize, ActionListener<BulkResponse> actionListener) throws IOException {
         if (!checkIfIndexExists())
             createIndex();
         BulkRequest request = new BulkRequest();
@@ -160,23 +165,13 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                     .source(builder));
 
         }
-        boolean success = false;
 //        TODO default action listener
         this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);
-        BulkResponse bulk = this.elasticClient.bulk(request, RequestOptions.DEFAULT);
-//        bulk.getItems();
-        success = bulk.hasFailures();
 //        TODO do we need it?
-        FlushRequest flushRequest = new FlushRequest();
-        this.elasticClient.indices().flush(flushRequest, RequestOptions.DEFAULT);
-        ForceMergeRequest forceMergeRequest = new ForceMergeRequest();
-        this.elasticClient.indices().forcemerge(forceMergeRequest, RequestOptions.DEFAULT);
-        return success;
-    }
-
-    @Override
-    public void indexRecords(List<T> records, int batchSize) throws IOException {
-        return indexRecords(records, batchSize);
+//        FlushRequest flushRequest = new FlushRequest();
+//        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT);
+//        ForceMergeRequest forceMergeRequest = new ForceMergeRequest();
+//        this.elasticClient.indices().forcemerge(forceMergeRequest, RequestOptions.DEFAULT);
     }
 
     @Override

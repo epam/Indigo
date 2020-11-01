@@ -1,5 +1,7 @@
-package com.epam.indigo;
+package com.epam.indigo.elastic;
 
+import com.epam.indigo.BingoObject;
+import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.EuclidSimilarityMatch;
@@ -12,7 +14,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class CompareSmallFile extends NoSQLElasticCompareAbstract {
 
@@ -39,7 +42,7 @@ public class CompareSmallFile extends NoSQLElasticCompareAbstract {
         try {
             List<IndigoRecord> indigoRecordList =
                     Helpers.loadFromSdf(testSdfFile);
-            repository.indexRecords(indigoRecordList);
+            repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
         } catch (Exception e) {
             Assertions.fail(e);
@@ -61,7 +64,7 @@ public class CompareSmallFile extends NoSQLElasticCompareAbstract {
         IndigoObject indigoObjectResult = bingoObjectResult.getIndigoObject();
 
         // Tanimoto elastic
-        List<IndigoRecord>  indigoResult = repository.stream().limit(10).filter(
+        List<IndigoRecord> indigoResult = repository.stream().limit(10).filter(
                 new SimilarityMatch<>(elasticNeedle, 0.9f))
                 .collect(Collectors.toList());
         assertEquals(indigoObjectResult.canonicalSmiles(), indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());

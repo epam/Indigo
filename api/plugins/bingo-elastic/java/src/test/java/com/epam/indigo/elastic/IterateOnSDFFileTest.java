@@ -1,4 +1,4 @@
-package com.epam.indigo;
+package com.epam.indigo.elastic;
 
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
@@ -17,9 +17,7 @@ public class IterateOnSDFFileTest {
     void testLoadFromMol() throws Exception {
         Iterable<IndigoRecord> indigoRecords = Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf");
         int count = 0;
-        Iterator<IndigoRecord> it = indigoRecords.iterator();
-        while (it.hasNext()) {
-            it.next();
+        for (IndigoRecord indigoRecord : indigoRecords) {
             count++;
         }
         assertEquals(371, count);

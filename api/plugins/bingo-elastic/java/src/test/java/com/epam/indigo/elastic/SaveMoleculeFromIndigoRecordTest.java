@@ -1,6 +1,5 @@
-package com.epam.indigo;
+package com.epam.indigo.elastic;
 
-import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
@@ -62,7 +61,7 @@ public class SaveMoleculeFromIndigoRecordTest {
     public void saveFromSdfFile() {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
-            repository.indexRecords(indigoRecordList);
+            repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
             List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
             assertEquals(10, collect.size());
@@ -76,7 +75,7 @@ public class SaveMoleculeFromIndigoRecordTest {
     public void saveFromCmlFile() {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromCmlFile("src/test/resources/tetrahedral-all.cml");
-            repository.indexRecords(indigoRecordList);
+            repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
             List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
             assertEquals(10, collect.size());

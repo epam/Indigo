@@ -1,5 +1,7 @@
-package com.epam.indigo;
+package com.epam.indigo.elastic;
 
+import com.epam.indigo.Bingo;
+import com.epam.indigo.Indigo;
 import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.model.IndigoRecord;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;

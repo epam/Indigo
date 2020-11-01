@@ -1,5 +1,9 @@
-package com.epam.indigo;
+package com.epam.indigo.elastic;
 
+import com.epam.indigo.Bingo;
+import com.epam.indigo.BingoObject;
+import com.epam.indigo.Indigo;
+import com.epam.indigo.IndigoObject;
 import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
@@ -88,7 +92,7 @@ public class LoadMoleculeFromFileTest {
     @DisplayName("Testing creation of IndigoRecord from cml file with name")
     public void testLoadFromCmlWithName() throws Exception {
         List<IndigoRecord> indigoRecordList = Helpers.loadFromCmlFile("src/test/resources/tetrahedral-named.cml");
-        repository.indexRecords(indigoRecordList);
+        repository.indexRecords(indigoRecordList, indigoRecordList.size());
         TimeUnit.SECONDS.sleep(5);
         List<IndigoRecord> indigoRecordResult = repository.stream().collect(Collectors.toList());
         assertEquals(1, indigoRecordList.size());
@@ -147,7 +151,7 @@ public class LoadMoleculeFromFileTest {
             );
             assertEquals(50, indigoRecordList.size());
             IndigoRecord indigoTestRecord = Helpers.loadFromSmiles(needle);
-            repository.indexRecords(indigoRecordList);
+            repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
 
             List<IndigoRecord> similarRecords = repository.stream()

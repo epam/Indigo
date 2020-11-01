@@ -2,9 +2,10 @@ package com.epam.indigo;
 
 import com.epam.indigo.model.IndigoRecord;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.client.Response;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Stream;
 
 public interface GenericRepository<T extends IndigoRecord> {
@@ -13,9 +14,7 @@ public interface GenericRepository<T extends IndigoRecord> {
 
     void indexRecords(Iterable<T> records, int batchSize) throws IOException;
 
-    void indexRecords(Iterable<T> records, int batchSize, ActionListener actionListener) throws IOException;
-
-    void indexRecords(List<T> records, int batchSize, ActionListener actionListener) throws IOException;
+    void indexRecords(Iterable<T> records, int batchSize, ActionListener<BulkResponse> actionListener) throws IOException;
 
     boolean deleteAllRecords() throws IOException;
 
