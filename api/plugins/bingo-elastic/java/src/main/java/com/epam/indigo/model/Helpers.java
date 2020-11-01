@@ -45,22 +45,6 @@ public class Helpers {
         return acc;
     }
 
-    public static Iterable<IndigoRecord> iterateSdf(String sdfFile) {
-        Indigo indigo = new Indigo();
-        IndigoObject indigoObject = indigo.iterateSDFile(sdfFile);
-        return () -> new Iterator<IndigoRecord>() {
-            @Override
-            public boolean hasNext() {
-                return indigoObject.hasNext();
-            }
-
-            @Override
-            public IndigoRecord next() {
-                return load(indigoObject.next());
-            }
-        };
-    }
-
     public static IndigoRecord loadFromSmiles(String smiles) {
         Indigo indigo = new Indigo();
         IndigoObject indigoObject = indigo.loadMolecule(smiles);
@@ -111,4 +95,40 @@ public class Helpers {
         indigoRecordBuilder.withName((String) source.get(NamingConstants.NAME));
         return indigoRecordBuilder.build();
     }
+
+    /****************************************************************************************
+     *
+     *  ITERABLE HELPERS
+     *
+     ***************************************************************************************/
+
+    protected static Iterable<IndigoRecord> iterateIndigoObject(IndigoObject indigoObject) {
+        return () -> new Iterator<IndigoRecord>() {
+            @Override
+            public boolean hasNext() {
+                return indigoObject.hasNext();
+            }
+
+            @Override
+            public IndigoRecord next() {
+                return load(indigoObject.next());
+            }
+        };
+    }
+
+    public static Iterable<IndigoRecord> iterateSdf(String sdfFile) {
+        Indigo indigo = new Indigo();
+        return iterateIndigoObject(indigo.iterateSDFile(sdfFile));
+    }
+
+    public static Iterable<IndigoRecord> iterateSmiles(String smilesFile) {
+        Indigo indigo = new Indigo();
+        return iterateIndigoObject(indigo.iterateSmilesFile(smilesFile));
+    }
+
+    public static Iterable<IndigoRecord> iterateCml(String cmlFile) {
+        Indigo indigo = new Indigo();
+        return iterateIndigoObject(indigo.iterateCMLFile(cmlFile));
+    }
+
 }
