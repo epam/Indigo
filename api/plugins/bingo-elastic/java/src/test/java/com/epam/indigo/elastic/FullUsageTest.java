@@ -158,7 +158,7 @@ public class FullUsageTest {
                     .limit(20)
                     .collect(Collectors.toList())
                     .stream()
-//                    TODO
+//                    TODO refine and add sugar into helpers?
                     .filter(x -> indigo.substructureMatcher(x.getIndigoObject(indigo))
                                        .match(indigo.loadQueryMolecule(target.getIndigoObject(indigo).canonicalSmiles())) != null)
                     .collect(Collectors.toList());

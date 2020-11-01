@@ -7,7 +7,7 @@ import org.elasticsearch.script.Script;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SubstructureMatch<T extends IndigoRecord> extends BaseMatch<T> {
+public class SubstructureMatch<T extends IndigoRecord> extends ExactMatch<T> {
 
     public SubstructureMatch(T target) {
         super(target);
