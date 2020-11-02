@@ -7,7 +7,7 @@ import org.elasticsearch.script.Script;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TverskySimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
+public final class TverskySimilarityMatch<T extends IndigoRecord> extends BaseMatch<T> {
 
     private final float alpha;
     private final float beta;

@@ -86,12 +86,42 @@ Read more about it here -  https://www.elastic.co/guide/en/elasticsearch/referen
 
 ```
 List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new TanimotoSimilarityMatch<>(target))
+                    .filter(new SimilarityMatch<>(target))
                     .limit(20)
                     .collect(Collectors.toList());
 ```
 
 In this case we requested top-20 most similar molecules compared to `target` based on Tanimoto similarity metric
+
+#### Find exact records from Elasticsearch
+
+```
+List<IndigoRecord> exactRecords = repository.stream()
+                    .filter(new ExactMatch<>(target))
+                    .limit(20)
+                    .collect(Collectors.toList())
+                    .stream()
+                    .filter(ExactMatch.exactMatchAfterChecker(target, indigo))
+                    .collect(Collectors.toList());
+```
+
+In this case we requested top-20 candidate molecules with exact same fingerprint to `target`. After that we used `ExactMatch.exactMatchAfterChecker`, 
+which double checked exact match based on actual molecule
+
+#### Subsctructure match of the records from Elasticsearch
+
+```
+List<IndigoRecord> substructureMatchRecords = repository.stream()
+                   .filter(new SubstructureMatch<>(target))
+                   .limit(20)
+                   .collect(Collectors.toList())
+                   .stream()
+                   .filter(SubstructureMatch.substructureMatchAfterChecker(target, indigo))
+                   .collect(Collectors.toList());
+```
+
+In this case we requested top-20 candidate molecules with exact same fingerprint to `target`. After that we used `SubstructureMatch.substructureMatchAfterChecker`, 
+which double checked substructure match based on actual molecule and it's graph representation
 
 #### Custom fields for molecule records
 

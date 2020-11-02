@@ -1,11 +1,13 @@
 package com.epam.indigo.predicate;
 
+import com.epam.indigo.Indigo;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.model.NamingConstants;
 import org.elasticsearch.script.Script;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class ExactMatch<T extends IndigoRecord> extends BaseMatch<T> {
 
@@ -33,5 +35,9 @@ public class ExactMatch<T extends IndigoRecord> extends BaseMatch<T> {
     @Override
     public String getFingerprintName() {
         return NamingConstants.SUB_FINGERPRINT;
+    }
+
+    public static Predicate<IndigoRecord> exactMatchAfterChecker(IndigoRecord target, Indigo indigo) {
+        return candidate -> indigo.exactMatch(target.getIndigoObject(indigo), candidate.getIndigoObject(indigo)) != null;
     }
 }
