@@ -24,7 +24,7 @@ jobs:
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
-        run: python build_scripts/indigo-make-by-libs.py --type=python,java
+        run: python build_scripts/indigo-make-by-libs.py --type=python
       - name: Test
         run: python api/tests/python/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
