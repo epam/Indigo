@@ -116,13 +116,13 @@ jobs:
         with:
           name: indigo-libs-macos
       - name: Update packages version
-        run: python3 indigo/build_scripts/indigo-update-version.py
+        run: python3 build_scripts/indigo-update-version.py
       - name: Build Python wrappers
-        run: python3 indigo/build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal
+        run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal
       - name: Build Java wrapers
-        run: python3 indigo/build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal
+        run: python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal
       - name: Build .NET wrapers
-        run: python3 indigo/build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal
+        run: python3 build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal
       - name: Upload wrappers
         uses: actions/upload-artifact@v2
         with:
