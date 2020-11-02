@@ -1,5 +1,7 @@
 name: docker-buildpack-centos
 
+on: [workflow_dispatch]
+
 jobs:
   login:
     runs-on: ubuntu-latest
