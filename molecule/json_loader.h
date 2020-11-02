@@ -16,46 +16,42 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __molecule_json_loader__
-#define __molecule_json_loader__
+#ifndef json_loader_hpp
+#define json_loader_hpp
 
-#include "base_c/defs.h"
-#include "base_cpp/exception.h"
-#include "base_cpp/non_copyable.h"
+#include "base_cpp/properties_map.h"
+#include "base_cpp/red_black.h"
+#include "base_cpp/tlscont.h"
 #include "third_party/rapidjson/document.h"
 
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
-
+using namespace rapidjson;
 namespace indigo
 {
-
     class Scanner;
-    class Molecule;
-    class QueryMolecule;
-
-    /*
-     * Loader for JSON format
-     */
-
-    class DLLEXPORT MoleculeJsonLoader : public NonCopyable
+    class JSONLoader
     {
     public:
+        JSONLoader( Scanner& scanner );
+        ~JSONLoader();
+        
+        bool hasNext();
+        const Value& next();
+        const Value& at( int index );
+        
+        int currentNumber();
+        int count();
+        
+        void readAt( int index );
+        CP_DECL;
         DECL_ERROR;
-        explicit MoleculeJsonLoader( const rapidjson::Value& molecule );
-        void loadMolecule( Molecule& mol );
-        void loadQueryMolecule( QueryMolecule& qmol );
-
-    private:
-        const rapidjson::Value& _molecule;
+        
+    protected:
+        Scanner* _scanner;
+        int _current_number;
+        Document _data;
+        const Value* _nodes;
     };
-
+    
 } // namespace indigo
 
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
-
-#endif
+#endif /* json_loader_hpp */

@@ -56,6 +56,7 @@ namespace indigo
     class Output;
     class Scanner;
     class SdfLoader;
+    class JSONLoader;
     class RdfLoader;
     class MolfileSaver;
     class RxnfileSaver;
@@ -82,6 +83,10 @@ public:
         REACTION_ITER,
         REACTION_MOLECULE,
         GROSS_MOLECULE,
+        JSON_LOADER,
+        JSON_SAVER,
+        JSON_MOLECULE,
+        JSON_REACTION,
         SDF_LOADER,
         SDF_SAVER,
         RDF_MOLECULE,

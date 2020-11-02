@@ -28,6 +28,9 @@
 #include "molecule/multiple_cml_loader.h"
 #include "molecule/rdf_loader.h"
 #include "molecule/sdf_loader.h"
+#include "molecule/json_loader.h"
+#include "molecule/molecule_json_loader.h"
+
 #include "molecule/smiles_loader.h"
 #include "reaction/reaction_cdx_loader.h"
 #include "reaction/reaction_cml_loader.h"
@@ -35,6 +38,38 @@
 #include "reaction/rxnfile_loader.h"
 
 #include <limits>
+
+IndigoJSONLoader::IndigoJSONLoader( Scanner& scanner ) : IndigoObject( JSON_LOADER )
+{
+    json_loader.reset( new JSONLoader( scanner ));
+}
+
+IndigoJSONLoader::IndigoJSONLoader(const char* filename) : IndigoObject(JSON_LOADER)
+{
+    _own_scanner.reset(new FileScanner(indigoGetInstance().filename_encoding, filename));
+    json_loader.reset(new JSONLoader(_own_scanner.ref()));
+}
+
+IndigoJSONLoader::~IndigoJSONLoader()
+{
+}
+
+IndigoObject* IndigoJSONLoader::next()
+{
+    if( !json_loader->hasNext() ) return NULL;
+    return new IndigoJSONMolecule( json_loader->next(), json_loader->currentNumber() );
+}
+
+IndigoObject* IndigoJSONLoader::at(int index)
+{
+    if( json_loader->currentNumber() >= index ) return NULL;
+    return new IndigoJSONMolecule( json_loader->at( index ), json_loader->currentNumber() );
+}
+
+bool IndigoJSONLoader::hasNext()
+{
+    return json_loader->hasNext();
+}
 
 IndigoSdfLoader::IndigoSdfLoader(Scanner& scanner) : IndigoObject(SDF_LOADER)
 {
@@ -50,6 +85,35 @@ IndigoSdfLoader::IndigoSdfLoader(const char* filename) : IndigoObject(SDF_LOADER
 
 IndigoSdfLoader::~IndigoSdfLoader()
 {
+}
+
+IndigoObject* IndigoSdfLoader::next()
+{
+    if (sdf_loader->isEOF())
+        return 0;
+    
+    int counter = sdf_loader->currentNumber();
+    long long offset = sdf_loader->tell();
+    
+    sdf_loader->readNext();
+    
+    return new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties, counter, offset);
+}
+
+IndigoObject* IndigoSdfLoader::at(int index)
+{
+    sdf_loader->readAt(index);
+    return new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties, index, 0LL);
+}
+
+bool IndigoSdfLoader::hasNext()
+{
+    return !sdf_loader->isEOF();
+}
+
+long long IndigoSdfLoader::tell()
+{
+    return sdf_loader->tell();
 }
 
 IndigoRdfData::IndigoRdfData(int type, Array<char>& data, int index, long long offset) : IndigoObject(type)
@@ -91,6 +155,45 @@ int IndigoRdfData::getIndex()
     return _index;
 }
 
+IndigoJSONMolecule::IndigoJSONMolecule( const rapidjson::Value& node, int index )
+: IndigoObject( JSON_MOLECULE ), _node( node ), _loaded( false )
+{
+    
+}
+
+Molecule& IndigoJSONMolecule::getMolecule()
+{
+    if( !_loaded )
+    {
+        MoleculeJsonLoader loader( _node );
+        loader.loadMolecule( _mol );
+        _loaded = true;
+    }
+    return _mol;
+}
+
+BaseMolecule& IndigoJSONMolecule::getBaseMolecule()
+{
+    return getMolecule();
+}
+
+IndigoObject* IndigoJSONMolecule::clone()
+{
+    return IndigoMolecule::cloneFrom(*this);
+}
+
+
+const char* IndigoJSONMolecule::getName()
+{
+    if (getMolecule().name.ptr() == 0)
+        return "";
+    return getMolecule().name.ptr();
+}
+
+IndigoJSONMolecule::~IndigoJSONMolecule()
+{
+}
+
 IndigoRdfMolecule::IndigoRdfMolecule(Array<char>& data, PropertiesMap& properties, int index, long long offset)
     : IndigoRdfData(RDF_MOLECULE, data, properties, index, offset)
 {
@@ -103,7 +206,6 @@ Molecule& IndigoRdfMolecule::getMolecule()
         Indigo& self = indigoGetInstance();
         BufferScanner scanner(_data);
         MolfileLoader loader(scanner);
-
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
         loader.skip_3d_chirality = self.skip_3d_chirality;
@@ -114,7 +216,6 @@ Molecule& IndigoRdfMolecule::getMolecule()
         loader.loadMolecule(_mol);
         _loaded = true;
     }
-
     return _mol;
 }
 
@@ -201,36 +302,6 @@ IndigoObject* IndigoRdfReaction::clone()
 
 IndigoRdfReaction::~IndigoRdfReaction()
 {
-}
-
-IndigoObject* IndigoSdfLoader::next()
-{
-    if (sdf_loader->isEOF())
-        return 0;
-
-    int counter = sdf_loader->currentNumber();
-    long long offset = sdf_loader->tell();
-
-    sdf_loader->readNext();
-
-    return new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties, counter, offset);
-}
-
-IndigoObject* IndigoSdfLoader::at(int index)
-{
-    sdf_loader->readAt(index);
-
-    return new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties, index, 0LL);
-}
-
-bool IndigoSdfLoader::hasNext()
-{
-    return !sdf_loader->isEOF();
-}
-
-long long IndigoSdfLoader::tell()
-{
-    return sdf_loader->tell();
 }
 
 IndigoRdfLoader::IndigoRdfLoader(Scanner& scanner) : IndigoObject(RDF_LOADER)
@@ -469,11 +540,24 @@ IndigoObject* IndigoMultilineSmilesLoader::at(int index)
     return next();
 }
 
-CEXPORT int indigoIterateSDF(int reader){INDIGO_BEGIN{IndigoObject& obj = self.getObject(reader);
-
-return self.addObject(new IndigoSdfLoader(IndigoScanner::get(obj)));
+CEXPORT int indigoIterateSDF(int reader)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(reader);
+        return self.addObject(new IndigoSdfLoader(IndigoScanner::get(obj)));
+    }
+    INDIGO_END(-1)
 }
-INDIGO_END(-1)
+
+CEXPORT int indigoIterateJSON(int reader)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(reader);
+        return self.addObject(new IndigoJSONLoader(IndigoScanner::get(obj)));
+    }
+    INDIGO_END(-1)
 }
 
 CEXPORT int indigoIterateRDF(int reader){INDIGO_BEGIN{IndigoObject& obj = self.getObject(reader);

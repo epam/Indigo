@@ -2,67 +2,37 @@
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
-
 #include <string>
 #include <unordered_map>
 
-#include "third_party/rapidjson/document.h"
-
+using namespace rapidjson;
 using namespace indigo;
 using namespace std;
 
+
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
-MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner) : _scanner(scanner)
+MoleculeJsonLoader::MoleculeJsonLoader(const Value& molecule) : _molecule( molecule )
 {
 }
 
-void MoleculeJsonLoader::loadQueryMolecule(QueryMolecule& qmol)
+void MoleculeJsonLoader::loadQueryMolecule( QueryMolecule& qmol )
 {
 }
 
-void MoleculeJsonLoader::loadMolecule(Molecule& mol)
+void MoleculeJsonLoader::loadMolecule( Molecule& mol )
 {
-    using namespace rapidjson;
-    /*
-     * Read all into a buffer. TODO create a stream reader
-     */
-    Array<char> buf;
-    _scanner.readAll(buf);
-    buf.push(0);
-    /*
-     * Map between ids and vertices
-     */
-    unordered_map<string, int> atom_map;
-
-    Document data;
-
-    //   auto data = json::parse(buf.ptr());
-    if (data.Parse(buf.ptr()).HasParseError())
-        throw Error("Error at parsing JSON: %s", buf.ptr());
-
-    /*
-     * Everything in a root. TODO: move root as a separate structure
-     */
-    const Value& root = data["root"];
-
-    std::string type = root["type"].GetString();
-
-    if (type.compare("molecule") == 0)
+    std::string type = _molecule["type"].GetString();
+    if( type.compare("molecule") == 0 )
     {
-        const Value& atoms = root["atoms"];
-        /*
-         * Parse atoms
-         */
+        // parse atoms
+        const Value& atoms = _molecule["atoms"];
         for (SizeType i = 0; i < atoms.Size(); i++)
         {
             const Value& a = atoms[i];
             std::string label = a["label"].GetString();
             auto atom_idx = mol.addAtom(Element::fromString(label.c_str()));
-            atom_map.insert(make_pair(a["id"].GetString(), atom_idx));
-
             const Value& coords = a["location"];
-
             if (coords.Size() > 0)
             {
                 Vec3f a_pos;
@@ -71,33 +41,68 @@ void MoleculeJsonLoader::loadMolecule(Molecule& mol)
                 a_pos.z = coords[2].GetDouble();
                 mol.setAtomXyz(atom_idx, a_pos);
             }
-        }
-
-        /*
-         * Parse bonds
-         */
-        const Value& bonds = root["bonds"];
-        for (SizeType i = 0; i < bonds.Size(); i++)
-        {
-            const Value& b = bonds[i];
-            const Value& refs = b["atoms"];
-            auto order = b["order"].GetInt();
-            if (refs.Size() > 1)
+            
+            if( a.HasMember("charge"))
             {
-                const Value& a1 = refs[0];
-                const Value& a2 = refs[1];
-                mol.addBond(atom_map.at(a1.GetString()), atom_map.at(a2.GetString()), order);
+                mol.setAtomCharge_Silent( atom_idx, a["charge"].GetInt() );
             }
-            else
+            
+            if( a.HasMember("explicitValence"))
             {
-                /*
-                 * TODO
-                 */
+                mol.setExplicitValence(atom_idx, a["explicitValence"].GetInt());
+            }
+        }
+        
+        //parse bonds
+        if( _molecule.HasMember("bonds") )
+        {
+            const Value& bonds = _molecule["bonds"];
+            for (SizeType i = 0; i < bonds.Size(); i++)
+            {
+                const Value& b = bonds[i];
+                const Value& refs = b["atoms"];
+                
+                int stereo = 0;
+                if( b.HasMember("stereo") )
+                {
+                    stereo = b["stereo"].GetInt();
+                }
+                
+                int order = b["type"].GetInt();
+                if( refs.Size() > 1 )
+                {
+                    int a1 = refs[0].GetInt();
+                    int a2 = refs[1].GetInt();
+                    int bond_idx = mol.addBond_Silent(a1, a2, order);
+                    if( stereo )
+                    {
+                        switch ( stereo ) {
+                            case 1:
+                                mol.setBondDirection( bond_idx, BOND_UP );
+                                break;
+                            case 3:
+                                mol.cis_trans.ignore( bond_idx );
+                                break;
+                            case 4:
+                                mol.setBondDirection( bond_idx, BOND_EITHER);
+                                break;
+                            case 6:
+                                mol.setBondDirection( bond_idx, BOND_DOWN );
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                } else
+                {
+                    // TODO:
+                }
             }
         }
     }
     else
     {
-        throw Error("unknown type: %s", type.c_str());
+            throw Error("unknown type: %s", type.c_str());
     }
+    printf("explicit: %d\n", mol.getExplicitValence( 7 ));
 }
