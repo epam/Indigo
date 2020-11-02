@@ -161,9 +161,10 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     public void indexRecords(Iterable<T> flatRecords, int batchSize, ActionListener<BulkResponse> actionListener) throws IOException {
         if (!checkIfIndexExists())
             createIndex();
-        BulkRequest request = new BulkRequest();
+
         for (List<T> records : splitToBatches(flatRecords, batchSize)) {
             for (T t : records) {
+                BulkRequest request = new BulkRequest();
 //            TODO send bulk async
                 XContentBuilder builder = XContentFactory.jsonBuilder();
                 builder.startObject();
@@ -183,11 +184,10 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 builder.endObject();
                 request.add(new IndexRequest(this.indexName)
                         .source(builder));
-
+                // TODO default action listener
+                this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);
             }
         }
-//        TODO default action listener
-        this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);
 //        TODO do we need it?
 //        FlushRequest flushRequest = new FlushRequest();
 //        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT);
