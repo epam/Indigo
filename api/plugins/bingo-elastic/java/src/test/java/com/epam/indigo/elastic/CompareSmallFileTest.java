@@ -4,10 +4,7 @@ import com.epam.indigo.BingoObject;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
-import com.epam.indigo.predicate.EuclidSimilarityMatch;
-import com.epam.indigo.predicate.ExactMatch;
-import com.epam.indigo.predicate.SimilarityMatch;
-import com.epam.indigo.predicate.TverskySimilarityMatch;
+import com.epam.indigo.predicate.*;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
@@ -43,7 +40,7 @@ public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
             List<IndigoRecord> indigoRecordList =
                     Helpers.loadFromSdf(testSdfFile);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
         } catch (Exception e) {
             Assertions.fail(e);
         }
@@ -118,11 +115,32 @@ public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
         List<IndigoRecord> indigoResult = repository
                 .stream()
                 .filter(new ExactMatch<>(elasticNeedle))
-                .limit(1)
+                .limit(20)
+                .collect(Collectors.toList())
+                .stream()
+                .filter(ExactMatch.exactMatchAfterChecker(elasticNeedle, indigo))
                 .collect(Collectors.toList());
 
         assertEquals(elasticNeedle.getIndigoObject(indigo).canonicalSmiles(),
                 indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
+        assertEquals(1, indigoResult.size());
+    }
+
+    @Test
+    @DisplayName("Substructure match")
+    public void substructureMatch() {
+        List<IndigoRecord> indigoResult = repository
+                .stream()
+                .filter(new SubstructureMatch<>(elasticNeedle))
+                .limit(20)
+                .collect(Collectors.toList())
+                .stream()
+                .filter(SubstructureMatch.substructureMatchAfterChecker(elasticNeedle, indigo))
+                .collect(Collectors.toList());
+
+        assertEquals(elasticNeedle.getIndigoObject(indigo).canonicalSmiles(),
+                indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
+        assertEquals(1, indigoResult.size());
     }
 
 }

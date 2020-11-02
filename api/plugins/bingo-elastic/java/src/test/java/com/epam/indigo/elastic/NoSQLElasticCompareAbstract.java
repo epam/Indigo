@@ -39,4 +39,6 @@ abstract public class NoSQLElasticCompareAbstract {
     public abstract void tversky();
 
     public abstract void exactMatch();
+
+    public abstract void substructureMatch();
 }

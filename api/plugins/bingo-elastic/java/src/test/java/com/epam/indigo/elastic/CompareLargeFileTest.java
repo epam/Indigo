@@ -140,7 +140,7 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
         BingoObject bingoObjectResult = bingoDb.searchExact(bingoNeedle);
         noSQLTotal = System.nanoTime() - noSQLTotal;
         assertTrue(bingoObjectResult.next());
-        Assertions.assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
+        assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
                 bingoObjectResult.getIndigoObject().canonicalSmiles());
 
         long elasticTotal = System.nanoTime();
@@ -148,12 +148,46 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
         List<IndigoRecord> indigoResult = repository
                 .stream()
                 .filter(new ExactMatch<>(elasticNeedle))
-                .limit(1)
+                .limit(20)
+                .collect(Collectors.toList())
+                .stream()
+                .filter(ExactMatch.exactMatchAfterChecker(elasticNeedle, indigo))
                 .collect(Collectors.toList());
         elasticTotal = System.nanoTime() - elasticTotal;
 
-        Assertions.assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
+        assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
                 indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
+        assertEquals(1, indigoResult.size());
+        assertTrue(noSQLTotal < elasticTotal);
+    }
+
+    @Test
+    @DisplayName("Substructure match")
+    public void substructureMatch() {
+        IndigoRecord elasticNeedle = Helpers.loadFromSmiles(smiles[1]);
+        IndigoObject bingoNeedle = indigo.loadQueryMolecule(smiles[1]);
+        long noSQLTotal = System.nanoTime();
+        BingoObject bingoObjectResult = bingoDb.searchSub(bingoNeedle);
+        noSQLTotal = System.nanoTime() - noSQLTotal;
+        assertTrue(bingoObjectResult.next());
+        assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
+                bingoObjectResult.getIndigoObject().canonicalSmiles());
+
+        long elasticTotal = System.nanoTime();
+
+        List<IndigoRecord> indigoResult = repository
+                .stream()
+                .filter(new SubstructureMatch<>(elasticNeedle))
+                .limit(20)
+                .collect(Collectors.toList())
+                .stream()
+                .filter(SubstructureMatch.substructureMatchAfterChecker(elasticNeedle, indigo))
+                .collect(Collectors.toList());
+        elasticTotal = System.nanoTime() - elasticTotal;
+
+        assertEquals(indigo.loadMolecule(smiles[1]).canonicalSmiles(),
+                indigoResult.get(0).getIndigoObject(indigo).canonicalSmiles());
+        assertEquals(1, indigoResult.size());
         assertTrue(noSQLTotal < elasticTotal);
     }
 }
