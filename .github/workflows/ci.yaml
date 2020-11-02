@@ -99,7 +99,7 @@ jobs:
           name: indigo-libs-macos
           path: dist/indigo-libs-*.zip
   build_wrappers:
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
     needs: [build_linux, build_windows, build_macos]
     container: epmlsop/indigo-tester-debian-buster:latest
     steps:
