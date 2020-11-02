@@ -33,6 +33,11 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "Linux Test Report"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-linux
+          path: dist/indigo-libs-*.zip
   build_windows:
     runs-on: windows-latest
     steps:
@@ -49,7 +54,7 @@ jobs:
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
-        run: python build_scripts/indigo-make-by-libs.py --type=python,java
+        run: python build_scripts/indigo-make-by-libs.py --type=python
       - name: Test
         run: python api/tests/python/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
@@ -58,6 +63,11 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "Windows Test Report"
+      - name: Upload artifacts
+          uses: actions/upload-artifact@v2
+          with:
+            name: indigo-libs-windows
+            path: dist/indigo-libs-*.zip
   build_macos:
     runs-on: macos-latest
     steps:
@@ -74,7 +84,7 @@ jobs:
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Build wrappers
-        run: python build_scripts/indigo-make-by-libs.py --type=python,java
+        run: python build_scripts/indigo-make-by-libs.py --type=python
       - name: Test
         run: python api/tests/python/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
@@ -83,3 +93,41 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "macOS Test Report"
+      - name: Upload artifacts
+          uses: actions/upload-artifact@v2
+          with:
+            name: indigo-libs-macos
+            path: dist/indigo-libs-*.zip
+  build_wrappers:
+    runs_on: ubuntu-latest
+    needs: [build_linux, build_windows, build_macos]
+    container: epmlsop/indigo-tester-debian-buster:latest
+    steps:
+      - name: Download Linux native libs
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-libs-linux
+      - name: Download Windows native libs
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-libs-windows
+      - name: Download macOS native libs
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-libs-macos
+      - name: Update packages version
+        run: python3 indigo/build_scripts/indigo-update-version.py
+      - name: Build Python wrappers
+        run: python3 indigo/build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal
+      - name: Build Java wrapers
+        run: python3 indigo/build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal
+      - name: Build .NET wrapers
+        run: python3 indigo/build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal
+      - name: Upload wrappers
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-macos
+          path: |
+            dist/indigo-python-*.zip
+            dist/indigo-java-*.zip
+            dist/indigo-dotnet-*.zip
