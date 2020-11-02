@@ -64,10 +64,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "Windows Test Report"
       - name: Upload artifacts
-          uses: actions/upload-artifact@v2
-          with:
-            name: indigo-libs-windows
-            path: dist/indigo-libs-*.zip
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-windows
+          path: dist/indigo-libs-*.zip
   build_macos:
     runs-on: macos-latest
     steps:
@@ -94,10 +94,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "macOS Test Report"
       - name: Upload artifacts
-          uses: actions/upload-artifact@v2
-          with:
-            name: indigo-libs-macos
-            path: dist/indigo-libs-*.zip
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-macos
+          path: dist/indigo-libs-*.zip
   build_wrappers:
     runs_on: ubuntu-latest
     needs: [build_linux, build_windows, build_macos]
