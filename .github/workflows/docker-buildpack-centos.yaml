@@ -1,6 +1,10 @@
 name: docker-buildpack-centos
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
 
 jobs:
   login:
