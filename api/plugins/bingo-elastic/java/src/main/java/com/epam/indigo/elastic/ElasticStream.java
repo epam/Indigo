@@ -3,11 +3,7 @@ package com.epam.indigo.elastic;
 import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
-import com.epam.indigo.model.NamingConstants;
-import com.epam.indigo.predicate.BaseMatch;
-import com.epam.indigo.predicate.ExactMatch;
-import com.epam.indigo.predicate.FilterPredicate;
-import com.epam.indigo.predicate.IndigoPredicate;
+import com.epam.indigo.predicate.*;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -105,8 +101,8 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
                     if (similarityRequested)
                         throw new BingoElasticException("Several similarity matches requested, couldn't create query");
                     similarityRequested = true;
-                    if (predicate instanceof ExactMatch) {
-                        QueryBuilder[] clauses = generateClauses(((ExactMatch<? super T>) predicate).getTarget().getSubFingerprint(), ((BaseMatch<? super T>) predicate).getFingerprintName());
+                    if (predicate instanceof ExactMatch || predicate instanceof SubstructureMatch) {
+                        QueryBuilder[] clauses = generateClauses(((BaseMatch<? super T>) predicate).getTarget().getSubFingerprint(), ((BaseMatch<? super T>) predicate).getFingerprintName());
                         for (QueryBuilder clause : clauses) {
                             boolQueryBuilder.must(clause);
                         }

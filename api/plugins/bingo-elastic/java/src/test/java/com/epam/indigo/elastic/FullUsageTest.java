@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -161,7 +160,7 @@ public class FullUsageTest {
                     .limit(20)
                     .collect(Collectors.toList())
                     .stream()
-                    .filter(candidate -> SubstructureMatch.substructureMatchAfterChecker(target, candidate, indigo))
+                    .filter(SubstructureMatch.substructureMatchAfterChecker(target, indigo))
                     .collect(Collectors.toList());
 
             assertEquals(1, records.size());
