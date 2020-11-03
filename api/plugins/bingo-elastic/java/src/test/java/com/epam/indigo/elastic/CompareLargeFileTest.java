@@ -8,8 +8,7 @@ import com.epam.indigo.predicate.*;
 import org.elasticsearch.common.collect.Tuple;
 import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -41,7 +40,7 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
         elasticTotal = System.nanoTime() - elasticTotal;
 
         try {
-            TimeUnit.SECONDS.sleep(60);
+            TimeUnit.SECONDS.sleep(180);
         } catch (InterruptedException e) {
             Assertions.fail(e);
         }
@@ -68,7 +67,7 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
             String bingoFoundSmiles = indigoObjectResult.canonicalSmiles();
             nosqlListResult.add(new Tuple<>(bingoFoundSmiles, bingoObjectResult.getCurrentSimilarityValue()));
         }
-        nosqlListResult.sort((o1, o2) -> (int) (o1.v2() - o2.v2()));
+        Collections.sort(nosqlListResult, (o1, o2) -> -Float.compare(o1.v2(), o2.v2()));
         return nosqlListResult;
     }
 
@@ -109,7 +108,9 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
 
             List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new EuclidSimilarityMatch<>(elasticNeedle, threshold), elasticNeedle);
             List<Tuple<String, Float>> nosqlListResult = bingoNoSQLSimilarity("euclid-sub", bingoNeedle, threshold);
-
+            HashSet<Tuple<String, Float>> nosql = new HashSet<>(nosqlListResult);
+            HashSet<Tuple<String, Float>> elastic = new HashSet<>(elasticListResult);
+            nosql.removeAll(elastic);
             assertEquals(elasticListResult.size(), nosqlListResult.size());
         }
     }
