@@ -19,10 +19,10 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build indigo
-        run: mvnw clean install
+        run: mvn clean install
         working-directory: api/java
       - name: Build bingo-nosql
-        run: mvnw clean install 
+        run: mvn clean install 
         working-directory: api/plugins/bingo/java
       - name: Build bingo-elastic
         run: mvn -B test --file pom.xml
