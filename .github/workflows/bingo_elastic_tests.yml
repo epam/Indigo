@@ -18,7 +18,9 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build indigo
+      - name: Build indigo 
+        run: python build_scripts/indigo-release-libs.py --preset=linux64
+      - name: Build indigo java api
         run: mvn clean install
         working-directory: api/java
       - name: Build bingo-nosql
