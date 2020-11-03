@@ -103,6 +103,10 @@ jobs:
     needs: [build_linux, build_windows, build_macos]
     container: epmlsop/indigo-tester-debian-buster:latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
       - name: pre-ls
         run: ls
       - name: Create folder for native libs
@@ -123,7 +127,7 @@ jobs:
           name: indigo-libs-macos
           path: dist/
       - name: ls
-        run: ls
+        run: ls && ls dist
       - name: Build Python wrappers
         run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal
       - name: Build Java wrapers
