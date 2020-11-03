@@ -37,9 +37,9 @@ public class SubstructureMatch<T extends IndigoRecord> extends BaseMatch<T> {
         return NamingConstants.SUB_FINGERPRINT;
     }
 
-    public static Predicate<IndigoRecord> substructureMatchAfterChecker(IndigoRecord target, Indigo indigo) {
-        return candidate -> indigo
-                .substructureMatcher(candidate.getIndigoObject(indigo))
-                .match(indigo.loadQueryMolecule(target.getIndigoObject(indigo).canonicalSmiles())) != null;
+    public static boolean substructureMatchAfterChecker(IndigoRecord target, IndigoRecord candidate, Indigo indigo) {
+        return indigo
+                .substructureMatcher(target.getIndigoObject(indigo))
+                .match(indigo.loadQueryMolecule(candidate.getIndigoObject(indigo).canonicalSmiles())) != null;
     }
 }

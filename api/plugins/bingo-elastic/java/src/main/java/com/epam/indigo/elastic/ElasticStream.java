@@ -24,6 +24,8 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
+import static com.epam.indigo.model.NamingConstants.*;
+
 /**
  * Implementation of JDK Stream API
  * Limited number of operations supported at the moment, check out usage example in README for better understanding
@@ -108,7 +110,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
                         for (QueryBuilder clause : clauses) {
                             boolQueryBuilder.must(clause);
                         }
-                        boolQueryBuilder.must(QueryBuilders.termQuery(NamingConstants.SUB_FINGERPRINT_LEN, clauses.length).boost(0.0f));
+                        boolQueryBuilder.must(QueryBuilders.termQuery(SUB_FINGERPRINT_LEN, clauses.length).boost(0.0f));
                     } else {
                         QueryBuilder[] clauses = generateClauses(((BaseMatch<? super T>) predicate).getTarget().getSimFingerprint(), ((BaseMatch<? super T>) predicate).getFingerprintName());
                         for (QueryBuilder clause : clauses) {
@@ -127,6 +129,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
             if (script == null) {
                 script = generateIdentityScore();
             }
+            searchSourceBuilder.fetchSource(new String[]{"*"}, new String[]{SIM_FINGERPRINT, SIM_FINGERPRINT_LEN, SUB_FINGERPRINT_LEN, SUB_FINGERPRINT});
             searchSourceBuilder.minScore(threshold);
             searchSourceBuilder.size(this.size);
             searchSourceBuilder.query(QueryBuilders.scriptScoreQuery(boolQueryBuilder, script));

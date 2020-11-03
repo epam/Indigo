@@ -54,7 +54,7 @@ public class FullUsageTest {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
             int requestSize = 20;
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> similarRecords = repository.stream()
@@ -62,7 +62,6 @@ public class FullUsageTest {
                     .limit(requestSize)
                     .collect(Collectors.toList());
             assertEquals(1.0f, similarRecords.get(0).getScore());
-            assertArrayEquals(target.getSimFingerprint().toArray(), similarRecords.get(0).getSimFingerprint().toArray());
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
@@ -74,7 +73,7 @@ public class FullUsageTest {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new ExactMatch<>(target))
@@ -85,7 +84,6 @@ public class FullUsageTest {
                     .collect(Collectors.toList());
             assertEquals(1, similarRecords.size());
             assertEquals(1.0f, similarRecords.get(0).getScore());
-            assertArrayEquals(target.getSimFingerprint().toArray(), similarRecords.get(0).getSimFingerprint().toArray());
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
@@ -98,7 +96,7 @@ public class FullUsageTest {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             float threshold = 0.8f;
             List<IndigoRecord> similarRecords = repository.stream()
@@ -137,7 +135,7 @@ public class FullUsageTest {
             IndigoRecord indigoRecord = indigoRecordList.get(0);
             indigoRecord.addCustomObject("tag", "test");
             repository.indexRecord(indigoRecord);
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
             IndigoRecord target = indigoRecordList.get(0);
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new SimilarityMatch<>(target))
@@ -156,14 +154,14 @@ public class FullUsageTest {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> records = repository.stream()
                     .filter(new SubstructureMatch<>(target))
                     .limit(20)
                     .collect(Collectors.toList())
                     .stream()
-                    .filter(SubstructureMatch.substructureMatchAfterChecker(target, indigo))
+                    .filter(candidate -> SubstructureMatch.substructureMatchAfterChecker(target, candidate, indigo))
                     .collect(Collectors.toList());
 
             assertEquals(1, records.size());

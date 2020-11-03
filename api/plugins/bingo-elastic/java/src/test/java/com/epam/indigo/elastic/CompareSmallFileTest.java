@@ -135,7 +135,7 @@ public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
                 .limit(20)
                 .collect(Collectors.toList())
                 .stream()
-                .filter(SubstructureMatch.substructureMatchAfterChecker(elasticNeedle, indigo))
+                .filter(candidate -> SubstructureMatch.substructureMatchAfterChecker(elasticNeedle, candidate, indigo))
                 .collect(Collectors.toList());
 
         assertEquals(elasticNeedle.getIndigoObject(indigo).canonicalSmiles(),

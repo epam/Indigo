@@ -23,7 +23,7 @@ public class IndigoRecord {
     // todo: rename? and add ability to extend?
     private List<Integer> simFingerprint;
     private List<Integer> subFingerprint;
-//    TODO add tau fingerprint, add support for other fingerprints
+    //    TODO add tau fingerprint, add support for other fingerprints
     private byte[] cmf;
     private String name;
 
@@ -149,11 +149,13 @@ public class IndigoRecord {
         }
 
         public void validate(IndigoRecord record) throws BingoElasticException {
-            if (null == record.simFingerprint) {
-                throw new BingoElasticException("Fingerprint is required field");
-            }
-            if (null == record.subFingerprint) {
-                throw new BingoElasticException("Fingerprint is required field");
+            if (record.internalID == null) {
+                if (null == record.simFingerprint) {
+                    throw new BingoElasticException("Fingerprint is required field");
+                }
+                if (null == record.subFingerprint) {
+                    throw new BingoElasticException("Fingerprint is required field");
+                }
             }
         }
     }

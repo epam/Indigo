@@ -181,7 +181,7 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
                 .limit(20)
                 .collect(Collectors.toList())
                 .stream()
-                .filter(SubstructureMatch.substructureMatchAfterChecker(elasticNeedle, indigo))
+                .filter(candidate -> SubstructureMatch.substructureMatchAfterChecker(elasticNeedle, candidate, indigo))
                 .collect(Collectors.toList());
         elasticTotal = System.nanoTime() - elasticTotal;
 
