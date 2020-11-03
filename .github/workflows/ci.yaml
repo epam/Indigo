@@ -103,18 +103,25 @@ jobs:
     needs: [build_linux, build_windows, build_macos]
     container: epmlsop/indigo-tester-debian-buster:latest
     steps:
+      - name: pre-ls
+        run: ls
+      - name: Create folder for native libs
+        run: mkdir dist
       - name: Download Linux native libs
         uses: actions/download-artifact@v2
         with:
           name: indigo-libs-linux
+          path: dist/
       - name: Download Windows native libs
         uses: actions/download-artifact@v2
         with:
           name: indigo-libs-windows
+          path: dist/
       - name: Download macOS native libs
         uses: actions/download-artifact@v2
         with:
           name: indigo-libs-macos
+          path: dist/
       - name: ls
         run: ls
       - name: Build Python wrappers
