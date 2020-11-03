@@ -115,8 +115,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: indigo-libs-macos
-      - name: Update packages version
-        run: python3 build_scripts/indigo-update-version.py
+      - name: ls
+        run: ls
       - name: Build Python wrappers
         run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal
       - name: Build Java wrapers
