@@ -118,7 +118,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-          run: git fetch --tags
+        run: git fetch --tags
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download Linux native libs
