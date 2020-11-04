@@ -16,6 +16,8 @@ jobs:
         with:
           lfs: true
           fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags
 #      - name: Cache Build
 #        id: cache-build-linux
 #        uses: actions/cache@v2
@@ -47,6 +49,8 @@ jobs:
         with:
           lfs: true
           fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags
 #      - name: Cache Build
 #        id: cache-build-windows
 #        uses: actions/cache@v2
@@ -78,6 +82,8 @@ jobs:
         with:
           lfs: true
           fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags
 #      - name: Cache Build
 #        id: cache-build-macos
 #        uses: actions/cache@v2
@@ -111,6 +117,8 @@ jobs:
         with:
           lfs: true
           fetch-depth: 500
+      - name: Git fetch tags
+          run: git fetch --tags
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download Linux native libs
