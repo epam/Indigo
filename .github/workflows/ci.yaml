@@ -91,7 +91,7 @@ jobs:
 #          path: build
 #          key: ${{ github.ref }}-${{ runner.os }}-build
       - name: Build native libs
-        run: python build_scripts/indigo-release-libs.py
+        run: python build_scripts/indigo-release-libs.py --preset=mac-universal
 #      - name: Build wrappers
 #        run: python build_scripts/indigo-make-by-libs.py --type=python
 #      - name: Test
