@@ -149,7 +149,7 @@ jobs:
       - name: Upload wrappers
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-libs-macos
+          name: indigo-wrappers
           path: |
             dist/indigo-python-*.zip
             dist/indigo-java-*.zip
