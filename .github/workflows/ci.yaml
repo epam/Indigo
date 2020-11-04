@@ -126,7 +126,7 @@ jobs:
           name: indigo-wrappers
           path: dist/
       - name: Test
-        run: python3 api/tests/python.test.py -j junit_report.xml -e todo
+        run: python3 api/tests/python/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
