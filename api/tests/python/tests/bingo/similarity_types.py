@@ -32,15 +32,15 @@ m1 = indigo.loadMolecule(s1)
 m2 = indigo.loadMolecule(s2)
 m3 = indigo.loadMolecule(s3)
 
-if dir_exists(joinPath("out", 'tempdb')):
-    rmdir(joinPath("out", 'tempdb'))
-makedirs(joinPath("out", 'tempdb'))
+if dir_exists(joinPath("out", 'similarity_types')):
+    rmdir(joinPath("out", 'similarity_types'))
+makedirs(joinPath("out", 'similarity_types'))
 
 supported_similarity_types = ["sim", "chem", "ecfp2", "ecfp4", "ecfp6", "ecfp8"]
 for sim_type in supported_similarity_types:
     indigo.setOption("similarity-type", sim_type)
 
-    bingo = Bingo.createDatabaseFile(indigo, joinPath("out", 'tempdb', sim_type), 'molecule', '')
+    bingo = Bingo.createDatabaseFile(indigo, joinPath("out", 'similarity_types', sim_type), 'molecule', '')
     bingo.insert(m1)
     bingo.insert(m2)
     bingo.insert(m3)
