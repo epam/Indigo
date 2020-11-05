@@ -1,0 +1,5 @@
+*.iml
+.idea
+.mvn/wrapper/*.jar
+/target/
+src/test/resources/bingo_nosql

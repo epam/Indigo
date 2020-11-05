@@ -10,13 +10,16 @@ Licensed under the [Apache License version 2.0](LICENSE)
 ## Introduction ##
 
 This repository includes:
+
 * Bingo: Chemistry search engine for Oracle, Microsoft SQL Server and PostgreSQL databases
+* Bingo-elastic: Set of APIs for efficient chemistry search in Elasticsearch
+  - Java API. Full README is available [here](/api/plugins/bingo-elastic/java/README.md)
 * Indigo: Universal cheminformatics library with bindings to .NET, Java and Python, and the following tools:
-    * Legio: GUI application for combinatorial chemistry
-    * ChemDiff: Visual comparison of two SDF or SMILES files
-    * indigo-depict: Molecule and reaction rendering utility
-    * indigo-cano: Canonical SMILES generator
-    * indigo-deco: R-Group deconvolution utility
+  - Legio: GUI application for combinatorial chemistry
+  - ChemDiff: Visual comparison of two SDF or SMILES files
+  - indigo-depict: Molecule and reaction rendering utility
+  - indigo-cano: Canonical SMILES generator
+  - indigo-deco: R-Group deconvolution utility
 
 Detailed documentation is available at <http://lifescience.opensource.epam.com>
 
