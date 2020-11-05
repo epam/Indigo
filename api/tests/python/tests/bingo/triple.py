@@ -21,8 +21,9 @@ smilesList = [
     'C'
 ]
 
-if not os.path.exists(joinPath("out", 'tempdb')):
-    makedirs(joinPath("out", 'tempdb'))
+if dir_exists(joinPath("out", 'tempdb')):
+    joinPath("out", 'tempdb')
+makedirs(joinPath("out", 'tempdb'))
 
 for qs in smilesList:
     bingo = Bingo.createDatabaseFile(indigo, joinPath("out", 'tempdb'), 'molecule', '')

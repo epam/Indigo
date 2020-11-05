@@ -181,6 +181,8 @@ jobs:
           path: dist/
 #      - name: Unzip .NET wrapper
 #        run: apt install -y unzip && cd dist && unzip indigo-dotnet-*-netstandard2.0-universal.zip && echo LD_LIBRARY_PATH=$(realpath $(/usr/bin/find . -type d -name "indigo-dotnet-*")/lib/netstandard2.0) >> $GITHUB_ENV && cd ..
+      - name: Install required dependencies
+        run: apt install -y libc6-dev libgdiplus libx11-dev
       - name: Test
         run: ipy -X:ExceptionDetail api/tests/python/test.py -j junit_report.xml -e todo || true
       - name: Publish Test Report

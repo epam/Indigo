@@ -32,8 +32,9 @@ m1 = indigo.loadMolecule(s1)
 m2 = indigo.loadMolecule(s2)
 m3 = indigo.loadMolecule(s3)
 
-if not os.path.exists(joinPath("out", 'tempdb')):
-    os.mkdir(joinPath("out", 'tempdb'))
+if dir_exists(joinPath("out", 'tempdb')):
+    rmdir(joinPath("out", 'tempdb'))
+makedirs(joinPath("out", 'tempdb'))
 
 supported_similarity_types = ["sim", "chem", "ecfp2", "ecfp4", "ecfp6", "ecfp8"]
 for sim_type in supported_similarity_types:

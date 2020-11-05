@@ -4,8 +4,9 @@ sys.path.append('../../common')
 from env_indigo import *
 
 
-if not os.path.exists(joinPath("out")):
-    os.makedirs(joinPath("out"))
+if dir_exists(joinPath("out")):
+    rmdir(joinPath("out"))
+makedirs(joinPath("out"))
 
 indigo = Indigo()
 dbname = joinPath('out', 'append-mol-db')

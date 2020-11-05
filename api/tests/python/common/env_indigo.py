@@ -80,6 +80,7 @@ def rmdir(path):
     else:
         shutil.rmtree(path)
 
+
 def cdll_indigo(path):
     def lib_name():
         return "{}{}{}".format(prefix, lib, suffix)
