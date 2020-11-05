@@ -1,0 +1,4 @@
+**** Merge aromatized and dearomatized structures
+c1ccccc1.C1C=CC=CC=1
+C1C=CC=CC=1.c1ccccc1
+C1C=CC=CC=1.c1ccccc1

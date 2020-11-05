@@ -1,0 +1,24 @@
+Highlighting:
+  Atoms: [0, 4, 5]
+  Bonds: [4, 5]
+Highlighting:
+  Atoms: []
+  Bonds: [4, 5]
+Highlighting:
+  Atoms: []
+  Bonds: []
+Highlighting:
+  Atoms: [0, 4, 5]
+  Bonds: [4, 5]
+Highlighting:
+  Atoms: []
+  Bonds: []
+Highlighting:
+  Atoms: [0, 1, 2, 3, 4, 5]
+  Bonds: []
+Highlighting:
+  Atoms: [0, 1, 2, 3, 4, 5]
+  Bonds: [0, 1, 2, 3, 4, 5]
+*** Highlighting carbons ***
+*** Highlighting target ***
+P(OCC1C(N)=NC(C)=NC=1)(O)(O)=O |ha:4,5,hb:4|

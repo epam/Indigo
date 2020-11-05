@@ -1,0 +1,29 @@
+Cl.C1CCCCC1
+Cl.C1=CC=CC=C1
+  ([Cl]).([c]): 6
+  ([Cl]).([c]) (opt): 6
+  [Cl].[c]: 6
+  [Cl].[c] (opt): 6
+Cl.c1ccccc1
+  ([Cl]).([c]): 6
+  ([Cl]).([c]) (opt): 6
+  [Cl].[c]: 6
+  [Cl].[c] (opt): 6
+Clc1ccccc1
+  ([Cl].[c]): 6
+  ([Cl].[c]) (opt): 6
+  [Cl].[c]: 6
+  [Cl].[c] (opt): 6
+ClC1=CC=CC=C1
+  ([Cl].[c]): 6
+  ([Cl].[c]) (opt): 6
+  [Cl].[c]: 6
+  [Cl].[c] (opt): 6
+ClC1CCC=CC1
+Cl.ClC1=CC=CC=C1
+  ([Cl]).([c]): 6
+  ([Cl]).([c]) (opt): 6
+  ([Cl].[c]): 6
+  ([Cl].[c]) (opt): 6
+  [Cl].[c]: 12
+  [Cl].[c] (opt): 12

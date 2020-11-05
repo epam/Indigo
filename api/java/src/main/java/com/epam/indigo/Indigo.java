@@ -524,7 +524,15 @@ public class Indigo {
         return checkResult(guard, lib.indigoCommonBits(fingerprint1.self, fingerprint2.self));
     }
 
+    /**
+     * @deprecated Use {@link #deserialize(byte[])} instead
+     */
+    @Deprecated
     public IndigoObject unserialize(byte[] data) {
+        return deserialize(data);
+    }
+
+    public IndigoObject deserialize(byte[] data) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, lib.indigoUnserialize(data, data.length)));
     }

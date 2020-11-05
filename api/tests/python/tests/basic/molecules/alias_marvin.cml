@@ -1,0 +1,9 @@
+<molecule>
+    <atomArray>
+        <atom id="a0" elementType="C" x2="-6.545" y2="11.66" />
+        <atom id="a1" elementType="C" mrvAlias="Alias" x2="-5.005" y2="11.66" />
+    </atomArray>
+    <bondArray>
+        <bond atomRefs2="a0 a1" order="1" />
+    </bondArray>
+</molecule>

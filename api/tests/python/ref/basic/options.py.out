@@ -1,0 +1,29 @@
+***** Get options check *****
+***** String *****
+ASCII
+str
+UTF-8
+test comment
+***** Integer *****
+10000
+int
+100
+100
+***** Boolean *****
+False
+bool
+True
+true
+***** Float *****
+1.400
+float
+21.333
+21.333
+***** Color *****
+[-1, -1, -1]
+color
+[255, 255.3, 255]
+***** XY *****
+[-1, -1]
+xy
+[-1, -1]

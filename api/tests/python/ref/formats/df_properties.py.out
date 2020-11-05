@@ -1,0 +1,28 @@
+********* Save and load molecule properties from SDF ****
+********* Initial properties
+test1: test1
+test0: test0
+test2: test2
+0test02: 0test02
+********* Properties after SDF reload
+test1: test1
+test0: test0
+test2: test2
+0test02: 0test02
+********* Properties after RDF reload
+test1: test1
+test0: test0
+test2: test2
+0test02: 0test02
+********* Test remove properties
+********* Remove test1
+test0: test0
+test2: test2
+0test02: 0test02
+********* Remove test2
+test0: test0
+0test02: 0test02
+********* Add new property test000
+test0: test0
+0test02: 0test02
+test000: test000
