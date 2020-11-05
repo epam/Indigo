@@ -180,7 +180,7 @@ jobs:
           name: indigo-wrappers
           path: dist/
       - name: Unzip .NET wrapper
-        run: cd dist && unzip indigo-dotnet-*-netstandard2.0-universal.zip && echo LD_LIBRARY_PATH=$(realpath $(/usr/bin/find . -type d -name "indigo-dotnet-*")/lib/netstandard2.0) >> $GITHUB_ENV && cd ..
+        run: apt install -y unzip && cd dist && unzip indigo-dotnet-*-netstandard2.0-universal.zip && echo LD_LIBRARY_PATH=$(realpath $(/usr/bin/find . -type d -name "indigo-dotnet-*")/lib/netstandard2.0) >> $GITHUB_ENV && cd ..
       - name: Test
         run: ipy -X:ExceptionDetail api/tests/python/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
