@@ -14,7 +14,10 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.*;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
@@ -127,12 +130,12 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
         indexRecords(records, batchSize, new ActionListener<BulkResponse>() {
             @Override
             public void onResponse(BulkResponse bulkResponse) {
-//                TODO do nothing
+//                do nothing
             }
 
             @Override
             public void onFailure(Exception e) {
-//              TODO do nothing
+//              do nothing
             }
         });
     }
@@ -146,10 +149,11 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             public boolean hasNext() {
                 return instRecords.hasNext();
             }
+
             @Override
             public List<T> next() {
                 List<T> acc = new ArrayList<>();
-                while(instRecords.hasNext() && acc.size() < batchSize) {
+                while (instRecords.hasNext() && acc.size() < batchSize) {
                     acc.add(instRecords.next());
                 }
                 return acc;
@@ -165,11 +169,9 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
         for (List<T> records : splitToBatches(flatRecords, batchSize)) {
             for (T t : records) {
                 BulkRequest request = new BulkRequest();
-//            TODO send bulk async
                 XContentBuilder builder = XContentFactory.jsonBuilder();
                 builder.startObject();
                 {
-//                todo need to iterate over fields and add content where exists
                     builder.array(SIM_FINGERPRINT, t.getSimFingerprint());
                     builder.field(SIM_FINGERPRINT_LEN, t.getSimFingerprint().size());
                     builder.array(SUB_FINGERPRINT, t.getSubFingerprint());
@@ -184,7 +186,6 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 builder.endObject();
                 request.add(new IndexRequest(this.indexName)
                         .source(builder));
-                // TODO default action listener
                 this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);
             }
         }
@@ -285,9 +286,21 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 }
                 repository.elasticClient = new RestHighLevelClient(builder);
             }
-//            TODO?
-//            validate(repository);
+            validate(repository);
             return repository;
+        }
+
+        private void validate(ElasticRepository<T> repository) {
+            boolean ping;
+            try {
+                ping = repository.elasticClient.ping(RequestOptions.DEFAULT);
+                if (!ping) {
+                    throw new BingoElasticException("Elasticsearch isn't started at " + repository.hostName + ":" + repository.port);
+                }
+            } catch (IOException e) {
+                throw new BingoElasticException("Elasticsearch isn't started at " + repository.hostName + ":" + repository.port);
+            }
+
         }
     }
 }

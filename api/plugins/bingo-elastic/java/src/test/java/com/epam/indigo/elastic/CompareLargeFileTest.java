@@ -108,9 +108,6 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
 
             List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new EuclidSimilarityMatch<>(elasticNeedle, threshold), elasticNeedle);
             List<Tuple<String, Float>> nosqlListResult = bingoNoSQLSimilarity("euclid-sub", bingoNeedle, threshold);
-            HashSet<Tuple<String, Float>> nosql = new HashSet<>(nosqlListResult);
-            HashSet<Tuple<String, Float>> elastic = new HashSet<>(elasticListResult);
-            nosql.removeAll(elastic);
             assertEquals(elasticListResult.size(), nosqlListResult.size());
         }
     }
@@ -125,8 +122,7 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
 
             List<Tuple<String, Float>> elasticListResult = elasticSimilarity(new TverskySimilarityMatch<>(elasticNeedle, threshold, 0.5f, 0.5f), elasticNeedle);
             List<Tuple<String, Float>> nosqlListResult = bingoNoSQLSimilarity("tversky", bingoNeedle, threshold);
-            // TODO: 392 vs 393
-            // assertEquals(elasticListResult.get(0).v1(), nosqlListResult.get(0).v1());
+            assertEquals(elasticListResult.size(), nosqlListResult.size());
         }
     }
 
