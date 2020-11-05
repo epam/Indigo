@@ -4,7 +4,7 @@ sys.path.append(os.path.normpath(os.path.join(os.path.abspath(__file__), '..', '
 from env_indigo import *
 
 if not os.path.exists(joinPath("out")):
-    os.makedirs(joinPath("out"))
+    makedirs(joinPath("out"))
 
 indigo = Indigo()
 bingo = Bingo.createDatabaseFile(indigo, joinPath('out', 'db_molecule_sim'), 'molecule', '')

@@ -80,6 +80,41 @@ def rmdir(path):
     else:
         shutil.rmtree(path)
 
+def cdll_indigo(path):
+    def lib_name():
+        return "{}{}{}".format(prefix, lib, suffix)
+
+    prefix = None
+    suffix = None
+    runtimes_folder = None
+    libs = ['indigo',
+                   'indigo-renderer',
+                   'indigo-inchi',
+                   'bingo']
+    libs_instances = []
+    if getPlatform() == 'win':
+        prefix = ''
+        suffix = '.dll'
+        # runtimes_folder = 'win-x64'
+        libs += ['vcruntime140', 'vcruntime_140_1',
+                      'msvcp140', 'concrt140']
+    elif getPlatform() == 'linux':
+        prefix = 'lib'
+        suffix = '.so'
+        # runtimes_folder = 'linux-x64'
+    elif getPlatform() == 'mac':
+        prefix = 'lib'
+        suffix = '.dylib'
+        # runtimes_folder = 'osx-x64'
+    else:
+        raise RuntimeError('Invalid platform: {}'.format(getPlatform()))
+
+    import ctypes
+    for lib in libs:
+        lib_path = os.path.normpath(os.path.join(path, '..', 'lib', 'netstandard2.0', lib_name()))
+        if file_exists(lib_path):
+            libs_instances.append(ctypes.CDLL(lib_path))
+    return libs_instances
 
 if 'INDIGO_COVERAGE' in os.environ:
     from indigo_coverage import IndigoCoverageWrapper as Indigo, IndigoObjectCoverageWrapper as IndigoObject, IndigoException, IndigoRenderer, IndigoInchi
@@ -121,6 +156,7 @@ else:
 
         import clr
         for item in os.environ['INDIGO_PATH'].split(os.pathsep):
+            cdll_indigo(item)
             clr.AddReferenceToFileAndPath(item)
         from com.epam.indigo import *
         success = True
@@ -309,10 +345,10 @@ def getRefFilepath(filename):
     with inspectStackLock:
         frm = inspect.stack()[1][1]
     ref_path = os.path.abspath(os.path.join(os.path.dirname(frm), 'ref'))
-    if os.path.isfile(os.path.join(ref_path, filename)):
+    if file_exists(os.path.join(ref_path, filename)):
         return os.path.normpath(os.path.abspath(os.path.join(ref_path, filename)))
     sys_name = getPlatform()
-    if os.path.isfile(os.path.join(ref_path, sys_name, filename)):
+    if file_exists(os.path.join(ref_path, sys_name, filename)):
         return os.path.normpath(os.path.abspath(os.path.join(ref_path, sys_name, filename)))
 
     raise RuntimeError('Can not find a file "%s" neither at "%s" or "%s"' % (filename, ref_path, os.path.abspath(os.path.join(ref_path, sys_name))))
