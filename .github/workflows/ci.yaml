@@ -190,7 +190,6 @@ jobs:
   test_windows_python:
     runs-on: windows-latest
     needs: build_wrappers
-    container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -217,7 +216,6 @@ jobs:
   test_macos_python:
     runs-on: macos-latest
     needs: build_wrappers
-    container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
