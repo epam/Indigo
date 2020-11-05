@@ -1,0 +1,31 @@
+name: docker-images-build-push
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push buildpack-centos7
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./.ci/docker/buildpack-centos7/Dockerfile
+          push: true
+          tags: epmlsop/buildpack-centos7:latest
+      - name: Build and push indigo-tester
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./.ci/docker/indigo-tester/Dockerfile
+          push: true
+          tags: epmlsop/indigo-tester:latest

@@ -14,9 +14,9 @@ def testReload (mol):
     return molfile2
 
 
-if not os.path.exists(joinPath("out")):
-    os.mkdir(joinPath("out"))
-
+if dir_exists(joinPath("out")):
+    rmdir(joinPath("out"))
+makedirs(joinPath("out"))
 
 print("********* Save and load molecule properties from SDF ****")
 sdf_file_name = joinPath("out", "sdf-properties.sdf")
