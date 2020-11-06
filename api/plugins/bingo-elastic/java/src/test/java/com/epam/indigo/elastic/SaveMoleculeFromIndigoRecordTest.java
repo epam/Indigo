@@ -1,8 +1,12 @@
 package com.epam.indigo.elastic;
 
+import com.epam.indigo.BingoElasticException;
+import com.epam.indigo.Indigo;
+import com.epam.indigo.IndigoObject;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.IndigoRecord.IndigoRecordBuilder;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
@@ -11,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SaveMoleculeFromIndigoRecordTest {
 
@@ -96,6 +100,20 @@ public class SaveMoleculeFromIndigoRecordTest {
         } catch (Exception exception) {
             Assertions.fail(exception);
         }
+    }
+
+    @Test
+    @DisplayName("Test empty molecule save")
+    public void saveEmptyMolecule() {
+        Indigo session = new Indigo();
+        IndigoObject mol = session.createMolecule();
+        Exception exception = assertThrows(BingoElasticException.class, () -> {
+            (new IndigoRecordBuilder()).withIndigoObject(mol).build();
+        });
+        String expectedMessage = "Building IndigoRecords from empty IndigoObject is not supported";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+
     }
 
 }

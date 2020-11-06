@@ -8,6 +8,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -203,6 +204,12 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             AcknowledgedResponse delete = this.elasticClient.indices().delete(request, RequestOptions.DEFAULT);
             return delete.isAcknowledged();
         } catch (IOException e) {
+            throw new BingoElasticException("Couldn't delete records in Elasticsearch", e.getCause());
+        } catch (ElasticsearchStatusException e) {
+            if (e.status().name().equals("NOT_FOUND")) {
+                // skip error on empty index
+                return true;
+            }
             throw new BingoElasticException("Couldn't delete records in Elasticsearch", e.getCause());
         }
     }
