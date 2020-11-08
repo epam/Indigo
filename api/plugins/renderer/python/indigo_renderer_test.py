@@ -6,7 +6,7 @@ from indigo_renderer import IndigoRenderer
 
 
 class TestRenderer(unittest.TestCase):
-    def test_upper(self):
+    def test_init(self):
         indigo = Indigo()
         indigo_render = IndigoRenderer(indigo)
         self.assertIsNotNone(indigo_render)
