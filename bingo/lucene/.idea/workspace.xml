@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:maven" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:maven" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:bingo" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:maven" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:bingo" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:lucene" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:maven" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:bingo" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:lucene" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:demo" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:maven" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:bingo" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:lucene" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:demo" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:webservice" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:maven" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:bingo" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:lucene" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:integration-tests" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:maven" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:utils" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:maven" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:utils" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:indigo-service-uploader" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:maven" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:utils" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:indigo-service-uploader" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:java" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:feature" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:feature" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:ci" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a5243575-82e9-4072-a9ea-17decd3421d8" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.m2/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Concept.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/benchmark-tests/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/benchmark-tests/src/main/java/indexer/data/generated/TestSchema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/benchmark-tests/src/main/java/indexer/data/generated/TestSchemaDocument.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/benchmark-tests/src/main/java/indexer/moleculeBTest/MoleculeBenchmarkTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/benchmark-tests/src/main/java/indexer/reactionBTest/ReactionBenchmarkTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/benchmark-tests/src/main/resources/schema.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chem-query-plugin/assembly.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chem-query-plugin/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chem-query-plugin/src/main/java/com/epam/indigolucene/solrext/ChemFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chem-query-plugin/src/main/java/com/epam/indigolucene/solrext/ChemQueryParserPluginNew.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chem-query-plugin/src/main/java/com/epam/indigolucene/solrext/ChemSimilarity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chem-query-plugin/src/main/java/com/epam/indigolucene/solrext/SubstructureValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/chem-query-plugin/src/main/java/com/epam/indigolucene/solrext/SubstructureValueSourceParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-config/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-config/src/main/java/com/epam/indigolucene/commonconfig/ServiceConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/common-config/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/schema.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/solrconfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/chem-data/test.smiles" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/conf/schema.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/conf/solrconfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/docker/Dockerfile-demo-solr" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/docker/docker-compose.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/docker/scripts/indigo-lucene-startup.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/docker/Dockerfile-demo-webservice" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/docker/Dockerfile-webservice-builder" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/docker/scripts/build-demo-webservice.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/docker/scripts/deploy-webservice-demo.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/profiles/docker-compose/webservice.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/profiles/localhost/webservice.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/controller/SearchController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/exceptions/UnknownFileFormatException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/generated/TestSchema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/generated/TestSchemaDocument.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/indexer/Indexer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/model/MoleculeData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/model/Result.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/model/SimpleStructureQuery.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/swagger/MvcConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/swagger/SwaggerConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/java/com/epam/indigolucene/service/util/FilesUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/resources/conf/webservice/applicationContext-config.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/resources/demo-config.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/resources/log4j.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/webapp/WEB-INF/applicationContext.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/webapp/WEB-INF/molsearcher-servlet.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/src/main/webapp/WEB-INF/web.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo/webservice/webapp/WEB-INF/classes/webservice.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/Dockerfile-builder" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/Dockerfile-debug" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/Dockerfile-prod" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/Dockerfile-solr-base" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/build-base-image.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/docker-compose.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/scripts/build-all.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/scripts/build-chem-query.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/scripts/indigo-lucene-startup.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/src/test/java/indexer/data/generated/TestSchema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/src/test/java/indexer/data/generated/TestSchemaDocument.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/src/test/java/indexer/moleculeTest/MoleculeBaseTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/src/test/java/indexer/moleculeTest/MoleculeConditionTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/src/test/java/indexer/moleculeTest/MoleculeIndexationIntegrationTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/src/test/java/indexer/reactionTest/ReactionBaseTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/src/test/java/indexer/reactionTest/ReactionConditionTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/src/test/java/indexer/reactionTest/ReactionIndexationIntegrationTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/src/test/resources/bigSchema.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/integration-tests/src/test/resources/schema.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/CollectionRepresentation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/IndigoHolder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/SolrUploadStream.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/exceptions/CommitException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/exceptions/DocumentAdditionException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/exceptions/RemoveException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/query/BeforeGroup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/query/Query.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/query/SolrConnection.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/query/SolrConnectionFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/DocumentRepresentation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/AbstractCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/BinaryCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/ChemStructureCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/Condition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/FieldCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/PostFilterable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/logicalconditions/AndCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/logicalconditions/OrCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/molconditions/MolHasSubstructureCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/molconditions/MolMatchesExactlyCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/reactconditions/ReactHasSubstructureCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/reactconditions/ReactMatchesExactlyCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/similarityconditions/MolSimilarTo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/similarityconditions/ReactSimilarTo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/stringconditions/StringInCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/conditions/stringconditions/StringStartsWithCondition.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/fields/Field.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/fields/MolField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/fields/MultipliableField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/fields/ReactField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/fields/SimilaritySearchField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/fields/StringField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/fields/searchable/SearchableMolField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/fields/searchable/SearchableReactField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/fields/searchable/SearchableStringField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/values/MolValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/values/MultipliableValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/values/ReactValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/values/StringValue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/types/values/Value.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/java/com/epam/indigolucene/common/utils/Utils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/resources/META-INF/beans.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/query-language/src/main/resources/common.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rebuild-restart.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/schema-generator/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/schema-generator/src/main/java/com/epam/indigolucene/schemagenerator/GeneratorWorker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/schema-generator/src/main/java/com/epam/indigolucene/schemagenerator/JavaSolrSchemaRepresentationGenerator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/schema-generator/src/main/java/com/epam/indigolucene/schemagenerator/XMLSolrSchemaRepresentation.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/schema-generator/src/main/java/com/epam/indigolucene/schemagenerator/generated/TSchema.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/schema-generator/src/main/java/com/epam/indigolucene/schemagenerator/generated/TSchemaDocument.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/schema-generator/src/test/resources/testSchema.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/solr-connector5/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/solr-connector5/src/main/java/com/epam/indigolucene/solrconnection/SolrConnection5.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="JupyterTrust" id="d6b9083f-72ce-4f84-86a9-558c8bcd0c86" />
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="84jq298a" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="$APPLICATION_HOME_DIR$/plugins/maven/lib/maven3" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
+  </component>
+  <component name="ProjectId" id="1g83fxDVsRmAZ6QTvaNXVkyfYV5" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a5243575-82e9-4072-a9ea-17decd3421d8" name="Default Changelist" comment="" />
+      <created>1597482498481</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1597482498481</updated>
+      <workItem from="1597482501000" duration="2705000" />
+      <workItem from="1597505903479" duration="3000" />
+      <workItem from="1604754052548" duration="5961000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="100" y="123" width="1592" height="817" key="DiffContextDialog" timestamp="1604764782637">
+      <screen x="0" y="23" width="1792" height="1017" />
+    </state>
+    <state x="100" y="123" width="1592" height="817" key="DiffContextDialog/0.23.1792.1017@0.23.1792.1017" timestamp="1604764782637" />
+    <state width="1750" height="277" key="GridCell.Tab.0.bottom" timestamp="1604766305354">
+      <screen x="0" y="23" width="1792" height="1017" />
+    </state>
+    <state width="1750" height="277" key="GridCell.Tab.0.bottom/0.23.1792.1017@0.23.1792.1017" timestamp="1604766305354" />
+    <state width="1750" height="277" key="GridCell.Tab.0.center" timestamp="1604766305354">
+      <screen x="0" y="23" width="1792" height="1017" />
+    </state>
+    <state width="1750" height="277" key="GridCell.Tab.0.center/0.23.1792.1017@0.23.1792.1017" timestamp="1604766305354" />
+    <state width="1750" height="277" key="GridCell.Tab.0.left" timestamp="1604766305354">
+      <screen x="0" y="23" width="1792" height="1017" />
+    </state>
+    <state width="1750" height="277" key="GridCell.Tab.0.left/0.23.1792.1017@0.23.1792.1017" timestamp="1604766305354" />
+    <state width="1750" height="277" key="GridCell.Tab.0.right" timestamp="1604766305354">
+      <screen x="0" y="23" width="1792" height="1017" />
+    </state>
+    <state width="1750" height="277" key="GridCell.Tab.0.right/0.23.1792.1017@0.23.1792.1017" timestamp="1604766305354" />
+    <state x="609" y="204" key="VCS.ChangeListViewerDialog" timestamp="1604763078707">
+      <screen x="0" y="23" width="1792" height="1017" />
+    </state>
+    <state x="609" y="204" key="VCS.ChangeListViewerDialog/0.23.1792.1017@0.23.1792.1017" timestamp="1604763078707" />
+    <state x="594" y="286" width="646" height="490" key="find.popup" timestamp="1604763234016">
+      <screen x="0" y="23" width="1792" height="1017" />
+    </state>
+    <state x="594" y="286" width="646" height="490" key="find.popup/0.23.1792.1017@0.23.1792.1017" timestamp="1604763234016" />
+  </component>
+</project>
