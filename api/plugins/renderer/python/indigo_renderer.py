@@ -16,8 +16,10 @@
 # limitations under the License.
 
 import os
+import platform
+from ctypes import CDLL, POINTER, c_char_p, c_int
 
-from indigo import *
+from indigo import IndigoException
 
 
 class IndigoRenderer(object):
