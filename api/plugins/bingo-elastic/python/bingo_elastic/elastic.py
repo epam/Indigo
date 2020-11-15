@@ -1,11 +1,11 @@
-from typing import Dict, Generator, Union, Tuple
+from typing import Dict, Generator, Tuple, Union
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError, RequestError
 from elasticsearch.helpers import parallel_bulk, streaming_bulk
 
 from bingo_elastic.model.record import IndigoRecord
-from bingo_elastic.predicates import BaseMatch
+from bingo_elastic.predicates import BaseMatch, ExactMatch
 
 
 class ElasticRepository:
@@ -105,11 +105,7 @@ class ElasticRepository:
             pass
 
     def filter(
-        self,
-        *args: BaseMatch,
-        similarity: BaseMatch = None,
-        limit=20,
-        **kwargs
+        self, similarity: Union[BaseMatch, ExactMatch] = None, limit=20, **kwargs
     ) -> Generator[IndigoRecord, None, None]:
         query = self.__compile(similarity=similarity, limit=limit)
         res = self.el_client.search(index=self.index_name, body=query)

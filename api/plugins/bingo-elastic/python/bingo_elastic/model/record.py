@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, List, Union
 
-from indigo import IndigoObject, Indigo
+from indigo import Indigo, IndigoObject
 
 logger = logging.getLogger("bingo_elastic")
 
@@ -23,16 +23,13 @@ class WithIndigoObject:
             try:
                 fp_ = [
                     int(feature)
-                    for feature in value.fingerprint(fp)
-                    .oneBitsList()
-                    .split(" ")
+                    for feature in value.fingerprint(fp).oneBitsList().split(" ")
                 ]
                 setattr(instance, f"{fp}_fingerprint", fp_)
                 setattr(instance, f"{fp}_fingerprint_len", len(fp_))
             except ValueError:
                 raise ValueError(
-                    "Building IndigoRecords from empty "
-                    "IndigoObject is not supported"
+                    "Building IndigoRecords from empty " "IndigoObject is not supported"
                 )
         setattr(instance, "name", value.name())
         setattr(instance, "cmf", " ".join(map(str, list(value.serialize()))))

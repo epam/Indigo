@@ -1,8 +1,9 @@
 from pathlib import Path
 from typing import Generator, Union
 
-from bingo_elastic.model.record import IndigoRecord
 from indigo import Indigo, IndigoObject
+
+from bingo_elastic.model.record import IndigoRecord
 
 
 def iterate_file(
@@ -38,9 +39,7 @@ def iterate_sdf(file: Union[Path, str]) -> Generator:
 
 
 def iterate_smiles(file: Union[Path, str]) -> Generator:
-    yield from iterate_file(
-        Path(file) if type(file) == str else file, "smiles"
-    )
+    yield from iterate_file(Path(file) if type(file) == str else file, "smiles")
 
 
 def iterate_cml(file: Union[Path, str]) -> Generator:

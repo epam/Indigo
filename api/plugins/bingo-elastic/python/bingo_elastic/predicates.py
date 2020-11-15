@@ -1,6 +1,23 @@
-from bingo_elastic.model.record import IndigoRecord
+import math
 from abc import ABCMeta, abstractmethod
-from typing import Dict
+from functools import lru_cache
+from typing import Dict, List
+
+from bingo_elastic.model.record import IndigoRecord
+
+
+def clauses(fingerprint, fingerprint_name) -> List[Dict]:
+    return [
+        {
+            "term": {
+                fingerprint_name: {
+                    "value": clause,
+                    "boost": 1.0,
+                }
+            }
+        }
+        for clause in fingerprint
+    ]
 
 
 class BaseMatch(metaclass=ABCMeta):
@@ -8,25 +25,22 @@ class BaseMatch(metaclass=ABCMeta):
         self._target = target
         self._threshold = threshold
 
+    @property
+    @lru_cache(maxsize=None)
+    def clauses(self) -> List[Dict]:
+        return clauses(self._target.sim_fingerprint, "sim_fingerprint")
+
     def compile(self) -> Dict:
         return {
             "query": {
                 "script_score": {
                     "query": {
                         "bool": {
-                            "should": [
-                                {
-                                    "term": {
-                                        "sim_fingerprint": {
-                                            "value": clause,
-                                            "boost": 1.0,
-                                        }
-                                    }
-                                }
-                                for clause in self._target.sim_fingerprint
-                            ],
+                            "should": self.clauses,
                             "adjust_pure_negative": True,
-                            "minimum_should_match": self.min_should_match,
+                            "minimum_should_match": self.min_should_match(
+                                len(self.clauses)
+                            ),
                             "boost": 1.0,
                         }
                     },
@@ -36,9 +50,9 @@ class BaseMatch(metaclass=ABCMeta):
             "min_score": self._threshold,
         }
 
-    @property
-    def min_should_match(self) -> str:
-        return "100%"
+    @abstractmethod
+    def min_should_match(self, length: int):
+        pass
 
     @property
     @abstractmethod
@@ -53,13 +67,23 @@ class TanimotoSimilarityMatch(BaseMatch):
 
     @property
     def script(self) -> Dict:
-        r = {
+        return {
             "source": "_score / (params.a + "
-                      "doc['sim_fingerprint_len'].value - _score)",
+            "doc['sim_fingerprint_len'].value - _score)",
             "lang": "painless",
             "params": {"a": len(self._target.sim_fingerprint)},
         }
-        return r
+
+    def min_should_match(self, length: int) -> str:
+        mm = (
+            math.floor(
+                (self._threshold * (len(self.target.sim_fingerprint) + 1))
+                / (1.0 + self._threshold)
+            )
+            / length
+        )
+
+        return f"{int(mm*100)}%"
 
 
 class EuclidSimilarityMatch(BaseMatch):
@@ -71,10 +95,19 @@ class EuclidSimilarityMatch(BaseMatch):
             "params": {"a": len(self._target.sim_fingerprint)},
         }
 
+    def min_should_match(self, length: int):
+        mm = (math.floor(self._threshold * len(self._target.sim_fingerprint))) / length
+
+        return f"{int(mm*100)}%"
+
 
 class TverskySimilarityMatch(BaseMatch):
     def __init__(
-        self, target: IndigoRecord, threshold: float, alpha: float, beta: float
+        self,
+        target: IndigoRecord,
+        threshold: float,
+        alpha: float = 0.5,
+        beta: float = 0.5,
     ):
         super().__init__(target, threshold)
         self._alpha = alpha
@@ -92,6 +125,42 @@ class TverskySimilarityMatch(BaseMatch):
                 "alpha": self._alpha,
                 "beta": self._beta,
             },
+        }
+
+    def min_should_match(self, length: int) -> str:
+        top = self._alpha * len(self._target.sim_fingerprint) + self._beta
+        down = self._threshold + self._alpha + self._beta - 1.0
+        mm = math.floor((top / down)) / length
+        return f"{int(mm*100)}%"
+
+
+class ExactMatch:
+    def __init__(self, target):
+        self._target = target
+
+    @property
+    @lru_cache(maxsize=None)
+    def clauses(self) -> List[Dict]:
+        return clauses(self._target.sub_fingerprint, "sub_fingerprint")
+
+    def compile(self) -> Dict:
+        return {
+            "query": {
+                "script_score": {
+                    "query": {
+                        "bool": {
+                            "must": self.clauses,
+                            "adjust_pure_negative": True,
+                            "boost": 1.0,
+                        }
+                    },
+                    "script": {
+                        "source": "_score / doc['sub_fingerprint_len'].value",
+                        "lang": "painless",
+                    },
+                }
+            },
+            "min_score": 1,
         }
 
 
