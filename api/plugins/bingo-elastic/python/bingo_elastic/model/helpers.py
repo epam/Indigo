@@ -5,7 +5,9 @@ from bingo_elastic.model.record import IndigoRecord
 from indigo import Indigo, IndigoObject
 
 
-def iterate_file(file: Path, iterator: str = None) -> Generator:
+def iterate_file(
+    file: Path, iterator: str = None
+) -> Generator[IndigoRecord, None, None]:
     """
     :param file:
     :param iterator: supported iterators sdf, smiles, smi, cml.

@@ -1,17 +1,11 @@
-from typing import Dict, Generator, Optional, TypeVar, Union
+from typing import Dict, Generator, Union, Tuple
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError, RequestError
 from elasticsearch.helpers import parallel_bulk, streaming_bulk
 
 from bingo_elastic.model.record import IndigoRecord
-
-SIM_FINGERPRINT = "sim_fingerprint"
-SIM_FINGERPRINT_LEN = "sim_fingerprint_len"
-SUB_FINGERPRINT = "sub_fingerprint"
-SUB_FINGERPRINT_LEN = "sub_fingerprint_len"
-CMF = "cmf"
-NAME = "name"
+from bingo_elastic.predicates import BaseMatch
 
 
 class ElasticRepository:
@@ -79,17 +73,17 @@ class ElasticRepository:
         body = {
             "mappings": {
                 "properties": {
-                    SIM_FINGERPRINT: {
+                    "sim_fingerprint": {
                         "type": "keyword",
                         "similarity": "boolean",
                     },
-                    SIM_FINGERPRINT_LEN: {"type": "integer"},
-                    SUB_FINGERPRINT: {
+                    "sim_fingerprint_len": {"type": "integer"},
+                    "sub_fingerprint": {
                         "type": "keyword",
                         "similarity": "boolean",
                     },
-                    SUB_FINGERPRINT_LEN: {"type": "integer"},
-                    CMF: {"type": "binary"},
+                    "sub_fingerprint_len": {"type": "integer"},
+                    "cmf": {"type": "binary"},
                 }
             }
         }
@@ -110,22 +104,31 @@ class ElasticRepository:
         except NotFoundError:
             pass
 
-    def filter(self, *args):
-        # todo: return Filter
-        el_filter = Filter(self)
+    def filter(
+        self,
+        *args: BaseMatch,
+        similarity: BaseMatch = None,
+        limit=20,
+        **kwargs
+    ) -> Generator[IndigoRecord, None, None]:
+        query = self.__compile(similarity=similarity, limit=limit)
+        res = self.el_client.search(index=self.index_name, body=query)
+        for el_response in res.get("hits", {}).get("hits", []):
+            yield IndigoRecord(elastic_response=el_response)
 
-
-class Filter:
-    def __init__(self, rep: ElasticRepository):
-        self.rep = rep
-        self.filter_ = {}
-
-    def filter(self, *args):
-        pass
-
-    def collect(self):
-        res = self.__compile()
-        pass
-
-    def __compile(self):
-        pass
+    def __compile(self, similarity: BaseMatch = None, limit: int = 20) -> Dict:
+        query = {
+            "size": limit,
+            "_source": {
+                "includes": ["*"],
+                "excludes": [
+                    "sim_fingerprint",
+                    "sim_fingerprint_len",
+                    "sub_fingerprint_len",
+                    "sub_fingerprint",
+                ],
+            },
+        }
+        if similarity:
+            query = {**query, **similarity.compile()}
+        return query
