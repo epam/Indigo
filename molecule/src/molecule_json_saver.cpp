@@ -25,6 +25,7 @@ IMPL_ERROR(MoleculeJsonSaver, "molecule json saver");
 MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output)
 {
 }
+
 void MoleculeJsonSaver::saveQueryMolecule(QueryMolecule& qmol)
 {
 }

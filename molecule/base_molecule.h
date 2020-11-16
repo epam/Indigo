@@ -57,9 +57,15 @@ namespace indigo
         BOND_SINGLE = 1,
         BOND_DOUBLE = 2,
         BOND_TRIPLE = 3,
-        BOND_AROMATIC = 4
+        BOND_AROMATIC = 4,
+        _BOND_SINGLE_OR_DOUBLE = 5,
+        _BOND_SINGLE_OR_AROMATIC = 6,
+        _BOND_DOUBLE_OR_AROMATIC = 7,
+        _BOND_ANY = 8,
+        _BOND_COORDINATION = 9,
+        _BOND_HYDROGEN = 10
     };
-
+    
     enum
     {
         BOND_UP = 1,

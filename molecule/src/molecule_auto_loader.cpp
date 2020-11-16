@@ -328,10 +328,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     if( mol_node )
                     {
                         MoleculeJsonLoader loader( *mol_node );
-                        if (query)
-                            loader.loadQueryMolecule((QueryMolecule&)mol);
-                        else
-                            loader.loadMolecule((Molecule&)mol);
+                        loader.loadMolecule(mol);
 
                     } else
                     {

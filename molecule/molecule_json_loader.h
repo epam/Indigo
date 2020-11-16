@@ -33,6 +33,7 @@ namespace indigo
 {
 
     class Scanner;
+    class BaseMolecule;
     class Molecule;
     class QueryMolecule;
 
@@ -45,11 +46,19 @@ namespace indigo
     public:
         DECL_ERROR;
         explicit MoleculeJsonLoader( const rapidjson::Value& molecule );
-        void loadMolecule( Molecule& mol );
-        void loadQueryMolecule( QueryMolecule& qmol );
+        void loadMolecule( BaseMolecule& mol );
+        int addAtomToMoleculeQuery( const char* label, int element, int charge, int valence, int radical, int isotope );
+        int addBondToMoleculeQuery( int beg, int end, int order );
+        void validateMoleculeBond( int order );
+        void parseAtoms( const rapidjson::Value& atoms, BaseMolecule& mol );
+        void parseBonds( const rapidjson::Value& bonds, BaseMolecule& mol );
+        void parseSGroups( const rapidjson::Value& sgroups, BaseMolecule& mol );
 
     private:
         const rapidjson::Value& _molecule;
+        Molecule* _pmol;
+        QueryMolecule* _pqmol;
+
     };
 
 } // namespace indigo
