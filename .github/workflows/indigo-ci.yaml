@@ -1,9 +1,10 @@
-name: CI
+name: Indigo CI
 
 on:
   push:
     branches:
       - master
+  workflow_dispatch:
   pull_request:
 
 jobs:
@@ -179,10 +180,6 @@ jobs:
         with:
           name: indigo-wrappers
           path: dist/
-#      - name: Unzip .NET wrapper
-#        run: apt install -y unzip && cd dist && unzip indigo-dotnet-*-netstandard2.0-universal.zip && echo LD_LIBRARY_PATH=$(realpath $(/usr/bin/find . -type d -name "indigo-dotnet-*")/lib/netstandard2.0) >> $GITHUB_ENV && cd ..
-      - name: Install required dependencies
-        run: apt install -y libc6-dev libgdiplus libx11-dev
       - name: Test
         run: ipy -X:ExceptionDetail api/tests/python/test.py -j junit_report.xml -e todo || true
       - name: Publish Test Report
@@ -217,6 +214,36 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "Windows Python Test Report"
+  test_windows_java:
+    runs-on: windows-latest
+    needs: build_wrappers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags
+      - name: Create folder for native libs
+        run: mkdir dist
+      - name: Download wrappers
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-wrappers
+          path: dist/
+      - name: Install Jython
+        run: |
+          Invoke-WebRequest -Uri https://repo1.maven.org/maven2/org/python/jython-installer/2.7.2/jython-installer-2.7.2.jar -OutFile jython-installer.jar
+          java -jar jython-installer.jar -s -d C:/jython
+      - name: Test
+        run: C:/jython/jython api/tests/python/test.py -j junit_report.xml -e todo || true
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "Windows Python Test Report"
   test_macos_python:
     runs-on: macos-latest
     needs: build_wrappers
@@ -243,3 +270,8 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "macOS Python Test Report"
+  publish:
+    if: startsWith(github.ref, 'refs/tags/indigo-')
+    runs-on: ubuntu
+    needs: [test_linux_python, test_linux_java, test_linux_dotnet, test_windows_python, test_macos_python]
+    container: epmlsop/indigo-tester:latest
