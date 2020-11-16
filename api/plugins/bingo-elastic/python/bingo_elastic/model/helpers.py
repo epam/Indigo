@@ -39,7 +39,9 @@ def iterate_sdf(file: Union[Path, str]) -> Generator:
 
 
 def iterate_smiles(file: Union[Path, str]) -> Generator:
-    yield from iterate_file(Path(file) if type(file) == str else file, "smiles")
+    yield from iterate_file(
+        Path(file) if type(file) == str else file, "smiles"
+    )
 
 
 def iterate_cml(file: Union[Path, str]) -> Generator:

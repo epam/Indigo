@@ -6,6 +6,7 @@ from elasticsearch.helpers import parallel_bulk, streaming_bulk
 
 from bingo_elastic.model.record import IndigoRecord
 from bingo_elastic.predicates import BaseMatch, ExactMatch
+from bingo_elastic.queries import query_factory
 
 
 class ElasticRepository:
@@ -41,6 +42,12 @@ class ElasticRepository:
     ) -> Generator[Dict, None, None]:
         for record in records:
             yield record.as_dict()
+
+    def index_record(self, record: IndigoRecord):
+        def gen():
+            yield record
+
+        return self.index_records(gen(), chunk_size=1)
 
     def index_records(self, records: Generator, chunk_size: int = 500):
         self.create_index()
@@ -105,14 +112,19 @@ class ElasticRepository:
             pass
 
     def filter(
-        self, similarity: Union[BaseMatch, ExactMatch] = None, limit=20, **kwargs
+        self,
+        similarity: Union[BaseMatch, ExactMatch] = None,
+        limit=20,
+        **kwargs
     ) -> Generator[IndigoRecord, None, None]:
-        query = self.__compile(similarity=similarity, limit=limit)
+        query = self.__compile(similarity=similarity, limit=limit, **kwargs)
         res = self.el_client.search(index=self.index_name, body=query)
         for el_response in res.get("hits", {}).get("hits", []):
             yield IndigoRecord(elastic_response=el_response)
 
-    def __compile(self, similarity: BaseMatch = None, limit: int = 20) -> Dict:
+    def __compile(
+        self, similarity: BaseMatch = None, limit: int = 20, **kwargs
+    ) -> Dict:
         query = {
             "size": limit,
             "_source": {
@@ -127,4 +139,8 @@ class ElasticRepository:
         }
         if similarity:
             query = {**query, **similarity.compile()}
+        for k, v in kwargs.items():
+            pass
+            #query = {**query, **query_factory(k, v).compile()}
+
         return query

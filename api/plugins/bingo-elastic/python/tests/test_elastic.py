@@ -34,3 +34,14 @@ def test_similarity_matches(
             loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
             == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
         )
+
+
+def test_filter_by_name(
+        elastic_repository: ElasticRepository,
+        indigo_fixture: Indigo,
+        loaded_sdf: IndigoRecord,
+):
+    mol = indigo_fixture.loadMoleculeFromFile("resources/composition1.mol")
+    elastic_repository.index_record(IndigoRecord(indigo_object=mol))
+    result = elastic_repository.filter(name="Composition1")
+    pass

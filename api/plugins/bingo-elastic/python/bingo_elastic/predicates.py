@@ -96,7 +96,9 @@ class EuclidSimilarityMatch(BaseMatch):
         }
 
     def min_should_match(self, length: int):
-        mm = (math.floor(self._threshold * len(self._target.sim_fingerprint))) / length
+        mm = (
+            math.floor(self._threshold * len(self._target.sim_fingerprint))
+        ) / length
 
         return f"{int(mm*100)}%"
 
