@@ -12,7 +12,6 @@ def clauses(fingerprint, fingerprint_name) -> List[Dict]:
             "term": {
                 fingerprint_name: {
                     "value": clause,
-                    "boost": 1.0,
                 }
             }
         }
@@ -37,11 +36,9 @@ class BaseMatch(metaclass=ABCMeta):
                     "query": {
                         "bool": {
                             "should": self.clauses,
-                            "adjust_pure_negative": True,
                             "minimum_should_match": self.min_should_match(
                                 len(self.clauses)
-                            ),
-                            "boost": 1.0,
+                            )
                         }
                     },
                     "script": self.script,
@@ -70,7 +67,6 @@ class TanimotoSimilarityMatch(BaseMatch):
         return {
             "source": "_score / (params.a + "
             "doc['sim_fingerprint_len'].value - _score)",
-            "lang": "painless",
             "params": {"a": len(self._target.sim_fingerprint)},
         }
 
@@ -91,7 +87,6 @@ class EuclidSimilarityMatch(BaseMatch):
     def script(self) -> Dict:
         return {
             "source": "_score / params.a",
-            "lang": "painless",
             "params": {"a": len(self._target.sim_fingerprint)},
         }
 
@@ -119,7 +114,6 @@ class TverskySimilarityMatch(BaseMatch):
             "source": "_score / ((params.a - _score) * "
             "params.alpha + (doc['sim_fingerprint_len'].value - "
             "_score) * params.beta + _score)",
-            "lang": "painless",
             "params": {
                 "a": len(self._target.sim_fingerprint),
                 "alpha": self._alpha,
@@ -149,14 +143,11 @@ class ExactMatch:
                 "script_score": {
                     "query": {
                         "bool": {
-                            "must": self.clauses,
-                            "adjust_pure_negative": True,
-                            "boost": 1.0,
+                            "must": self.clauses
                         }
                     },
                     "script": {
-                        "source": "_score / doc['sub_fingerprint_len'].value",
-                        "lang": "painless",
+                        "source": "_score / doc['sub_fingerprint_len'].value"
                     },
                 }
             },

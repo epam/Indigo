@@ -16,7 +16,7 @@ class ElasticRepository:
         self,
         *,
         host: Union[str, list[str]] = "localhost",
-        port: int = 9300,
+        port: int = 9200,
         scheme: str = ""
     ) -> None:
         """
