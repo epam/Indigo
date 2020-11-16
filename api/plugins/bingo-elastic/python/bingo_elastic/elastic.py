@@ -137,10 +137,11 @@ class ElasticRepository:
                 ],
             },
         }
+
         if similarity:
-            query = {**query, **similarity.compile()}
+            similarity.compile(query)
+
         for k, v in kwargs.items():
-            pass
-            #query = {**query, **query_factory(k, v).compile()}
+            query_factory(k, v).compile(query)
 
         return query

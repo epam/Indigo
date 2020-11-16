@@ -4,6 +4,7 @@ from functools import lru_cache
 from typing import Dict, List
 
 from bingo_elastic.model.record import IndigoRecord
+from bingo_elastic.utils import head_by_path
 
 
 def clauses(fingerprint, fingerprint_name) -> List[Dict]:
@@ -29,23 +30,18 @@ class BaseMatch(metaclass=ABCMeta):
     def clauses(self) -> List[Dict]:
         return clauses(self._target.sim_fingerprint, "sim_fingerprint")
 
-    def compile(self) -> Dict:
-        return {
-            "query": {
-                "script_score": {
-                    "query": {
-                        "bool": {
-                            "should": self.clauses,
-                            "minimum_should_match": self.min_should_match(
-                                len(self.clauses)
-                            )
-                        }
-                    },
-                    "script": self.script,
-                }
-            },
-            "min_score": self._threshold,
-        }
+    def compile(self, query: Dict) -> None:
+        bool_head = \
+            head_by_path(query, ("query", "script_score", "query", "bool"))
+        if not bool_head.get("should"):
+            bool_head["should"] = []
+        bool_head["should"] += self.clauses
+        bool_head["minimum_should_match"] = \
+            self.min_should_match(len(self.clauses))
+
+        script_score_head = head_by_path(query, ("query", "script_score"))
+        script_score_head["script"] = self.script
+        query["min_score"] = self._threshold
 
     @abstractmethod
     def min_should_match(self, length: int):
@@ -139,22 +135,17 @@ class ExactMatch:
     def clauses(self) -> List[Dict]:
         return clauses(self._target.sub_fingerprint, "sub_fingerprint")
 
-    def compile(self) -> Dict:
-        return {
-            "query": {
-                "script_score": {
-                    "query": {
-                        "bool": {
-                            "must": self.clauses
-                        }
-                    },
-                    "script": {
-                        "source": "_score / doc['sub_fingerprint_len'].value"
-                    },
-                }
-            },
-            "min_score": 1,
+    def compile(self, query) -> None:
+        bool_head = \
+            head_by_path(query, ("query", "script_score", "query", "bool"))
+        if not bool_head.get("must"):
+            bool_head["must"] = []
+        bool_head["must"] += self.clauses
+        script_score_head = head_by_path(query, ("query", "script_score"))
+        script_score_head["script"] = {
+            "source": "_score / doc['sub_fingerprint_len'].value"
         }
+        query["min_score"] = 1
 
 
 # Alias to default similarity match

@@ -44,4 +44,23 @@ def test_filter_by_name(
     mol = indigo_fixture.loadMoleculeFromFile("resources/composition1.mol")
     elastic_repository.index_record(IndigoRecord(indigo_object=mol))
     result = elastic_repository.filter(name="Composition1")
-    pass
+    for item in result:
+        assert item.name == "Composition1"
+
+    result = elastic_repository.filter(
+        similarity=TanimotoSimilarityMatch(
+            IndigoRecord(indigo_object=mol), 0.1))
+
+    i = 0
+    for _ in result:
+        i += 1
+    assert i == 20
+
+    result = elastic_repository.filter(
+        similarity=TanimotoSimilarityMatch(
+            IndigoRecord(indigo_object=mol), 0.1),
+        name="Composition1")
+
+    for item in result:
+        assert item.name == "Composition1"
+
