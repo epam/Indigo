@@ -9,9 +9,7 @@ def test_iterate_sdf():
         if 0 == step:
             sdf = helpers.iterate_sdf("resources/rand_queries_small.sdf")
         else:
-            sdf = helpers.iterate_file(
-                Path("resources/rand_queries_small.sdf")
-            )
+            sdf = helpers.iterate_file(Path("resources/rand_queries_small.sdf"))
         i = 0
         for i, _ in enumerate(sdf, start=1):
             pass
@@ -25,9 +23,7 @@ def test_iterate_smiles():
         if 0 == step:
             smiles = helpers.iterate_smiles("resources/pubchem_slice_50.smi")
         else:
-            smiles = helpers.iterate_file(
-                Path("resources/pubchem_slice_50.smi")
-            )
+            smiles = helpers.iterate_file(Path("resources/pubchem_slice_50.smi"))
         i = 0
         for i, _ in enumerate(smiles, start=1):
             pass

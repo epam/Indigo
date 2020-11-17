@@ -19,23 +19,12 @@ We are supporting 7.9.x Elasticsearch and most major distributions available (AW
 
 #### Dependency
 
-Add dependency to your Maven POM file like this:
+Install dependency using pip
 
 ```
-<dependency>
-    <groupId>com.epam.indigo</groupId>
-    <artifactId>bingo-elastic</artifactId>
-    <version>VERSION</version>
-</dependency>
+pip install bingo-elastic
 ```
 
-Gradle:
-
-```
-compile group: 'com.epam.indigo', name: 'bingo-elastic', version: 'VERSION'
-```
-
-it will work the same for other major dependency managers
 
 #### Elastisearch installation
 

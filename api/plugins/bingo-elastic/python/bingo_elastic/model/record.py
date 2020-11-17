@@ -1,14 +1,16 @@
 import logging
 from typing import Dict, List, Union
 
-from indigo import IndigoObject
+from indigo import Indigo, IndigoObject
 
 logger = logging.getLogger("bingo_elastic")
 
 
 class WithElasticResponse:
     def __set__(self, instance: object, value: Dict):
-        pass
+        el_src = value["_source"]
+        setattr(instance, "name", el_src.get("name"))
+        setattr(instance, "cmf", el_src.get("cmf"))
 
 
 class WithIndigoObject:
@@ -19,27 +21,29 @@ class WithIndigoObject:
         )
         for fp in fps:
             try:
-                setattr(
-                    instance,
-                    f"{fp}_fingerprint",
-                    [
-                        int(feature)
-                        for feature in value.fingerprint("sim")
-                        .oneBitsList()
-                        .split(" ")
-                    ],
-                )
+                fp_ = [
+                    int(feature)
+                    for feature in value.fingerprint(fp)
+                    .oneBitsList()
+                    .split(" ")
+                ]
+                setattr(instance, f"{fp}_fingerprint", fp_)
+                setattr(instance, f"{fp}_fingerprint_len", len(fp_))
             except ValueError:
                 raise ValueError(
                     "Building IndigoRecords from empty "
                     "IndigoObject is not supported"
                 )
         setattr(instance, "name", value.name())
-        setattr(instance, "cmf", str(bytes(value.serialize())))
+        setattr(instance, "cmf", " ".join(map(str, list(value.serialize()))))
 
 
 class IndigoRecord:
 
+    cmf = None
+    name = None
+    sim_fingerprint = None
+    sub_fingerprint = None
     indigo_object = WithIndigoObject()
     elastic_response = WithElasticResponse()
 
@@ -61,3 +65,6 @@ class IndigoRecord:
 
     def as_dict(self) -> Dict:
         return self.__dict__
+
+    def as_indigo_object(self, session: Indigo):
+        return session.unserialize(list(map(int, self.cmf.split(" "))))

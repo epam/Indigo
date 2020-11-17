@@ -1,11 +1,14 @@
 from pathlib import Path
 from typing import Generator, Union
 
-from bingo_elastic.model.record import IndigoRecord
 from indigo import Indigo, IndigoObject
 
+from bingo_elastic.model.record import IndigoRecord
 
-def iterate_file(file: Path, iterator: str = None) -> Generator:
+
+def iterate_file(
+    file: Path, iterator: str = None
+) -> Generator[IndigoRecord, None, None]:
     """
     :param file:
     :param iterator: supported iterators sdf, smiles, smi, cml.

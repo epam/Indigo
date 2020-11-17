@@ -1,6 +1,12 @@
+import time
+from pathlib import Path
+
 import pytest
-from bingo_elastic.elastic import ElasticRepository
 from indigo import Indigo
+
+from bingo_elastic.elastic import ElasticRepository
+from bingo_elastic.model.helpers import iterate_file
+from bingo_elastic.model.record import IndigoRecord
 
 
 @pytest.fixture
@@ -16,3 +22,11 @@ def elastic_repository() -> ElasticRepository:
 @pytest.fixture(autouse=True)
 def clear_index(elastic_repository: ElasticRepository):
     elastic_repository.delete_all_records()
+
+
+@pytest.fixture
+def loaded_sdf(elastic_repository: ElasticRepository) -> IndigoRecord:
+    sdf = iterate_file(Path("resources/rand_queries_small.sdf"))
+    elastic_repository.index_records(sdf, chunk_size=10)
+    time.sleep(5)
+    return next(iterate_file(Path("resources/rand_queries_small.sdf")))
