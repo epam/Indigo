@@ -270,8 +270,8 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "macOS Python Test Report"
-  publish:
-    if: startsWith(github.ref, 'refs/tags/indigo-')
-    runs-on: ubuntu
-    needs: [test_linux_python, test_linux_java, test_linux_dotnet, test_windows_python, test_macos_python]
-    container: epmlsop/indigo-tester:latest
+#  publish:
+#    if: startsWith(github.ref, 'refs/tags/indigo-')
+#    runs-on: ubuntu
+#    needs: [test_linux_python, test_linux_java, test_linux_dotnet, test_windows_python, test_macos_python]
+#    container: epmlsop/indigo-tester:latest
