@@ -134,13 +134,14 @@ public class FullUsageTest {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
             IndigoRecord indigoRecord = indigoRecordList.get(0);
-            indigoRecord.addCustomObject("tag", "test");
-            repository.indexRecord(indigoRecord);
+            indigoRecord.addCustomObject("tag", "Test");
+            repository.indexRecords(indigoRecordList, 1000);
             TimeUnit.SECONDS.sleep(10);
             IndigoRecord target = indigoRecordList.get(0);
+            // TODO: think about genious
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new SimilarityMatch<>(target))
-                    .filter(new KeywordQuery<>("tag", "test"))
+                    .filter(new KeywordQuery<>("tag", "Test"))
                     .collect(Collectors.toList());
 
             assertEquals(1, similarRecords.size());
@@ -166,6 +167,27 @@ public class FullUsageTest {
                     .collect(Collectors.toList());
 
             assertEquals(1, records.size());
+        } catch (Exception exception) {
+            Assertions.fail("Exception happened during test " + exception.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Testing rangeQuery search")
+    public void rangeSearch() {
+        try {
+            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            int i = 0;
+            for (IndigoRecord record : indigoRecordList) {
+                record.addCustomObject("ind_number", i++);
+            }
+            repository.indexRecords(indigoRecordList, 1000);
+            TimeUnit.SECONDS.sleep(10);
+            List<IndigoRecord> records = repository.stream()
+                                .filter(new RangeQuery<>("ind_number", 1, 10))
+                                .limit(20)
+                                .collect(Collectors.toList());
+            assertEquals(records.size(), 10);
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }

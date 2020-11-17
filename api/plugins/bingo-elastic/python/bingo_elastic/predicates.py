@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Dict, List
 
 from bingo_elastic.model.record import IndigoRecord
-from bingo_elastic.utils import head_by_path
+from bingo_elastic.utils import PostprocessType, head_by_path
 
 
 def clauses(fingerprint, fingerprint_name) -> List[Dict]:
@@ -30,14 +30,18 @@ class BaseMatch(metaclass=ABCMeta):
     def clauses(self) -> List[Dict]:
         return clauses(self._target.sim_fingerprint, "sim_fingerprint")
 
-    def compile(self, query: Dict) -> None:
-        bool_head = \
-            head_by_path(query, ("query", "script_score", "query", "bool"))
+    def compile(
+        self, query: Dict, postprocess_actions: PostprocessType = None
+    ) -> None:
+        bool_head = head_by_path(
+            query, ("query", "script_score", "query", "bool")
+        )
         if not bool_head.get("should"):
             bool_head["should"] = []
         bool_head["should"] += self.clauses
-        bool_head["minimum_should_match"] = \
-            self.min_should_match(len(self.clauses))
+        bool_head["minimum_should_match"] = self.min_should_match(
+            len(self.clauses)
+        )
 
         script_score_head = head_by_path(query, ("query", "script_score"))
         script_score_head["script"] = self.script
@@ -135,9 +139,12 @@ class ExactMatch:
     def clauses(self) -> List[Dict]:
         return clauses(self._target.sub_fingerprint, "sub_fingerprint")
 
-    def compile(self, query) -> None:
-        bool_head = \
-            head_by_path(query, ("query", "script_score", "query", "bool"))
+    def compile(
+        self, query, postprocess_actions: PostprocessType = None
+    ) -> None:
+        bool_head = head_by_path(
+            query, ("query", "script_score", "query", "bool")
+        )
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"] += self.clauses

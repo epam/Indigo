@@ -1,6 +1,6 @@
-import time
 from pathlib import Path
 
+from bingo_elastic.queries import RangeQuery
 from indigo import Indigo
 
 from bingo_elastic.elastic import ElasticRepository, IndigoRecord
@@ -64,3 +64,25 @@ def test_filter_by_name(
     for item in result:
         assert item.name == "Composition1"
 
+
+def test_substructure_search(
+        elastic_repository: ElasticRepository,
+        indigo_fixture: Indigo,
+        loaded_sdf: IndigoRecord):
+    result = elastic_repository.filter(substructure=loaded_sdf)
+    for item in result:
+        assert item.as_indigo_object(indigo_fixture).canonicalSmiles() == \
+               loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
+
+
+def test_range_search(
+        elastic_repository: ElasticRepository,
+        indigo_fixture: Indigo):
+    for i, item in enumerate(iterate_file(Path("resources/rand_queries_small.sdf"))):
+        item.ind_number = i
+        elastic_repository.index_record(item)
+    result = elastic_repository.filter(RangeQuery("ind_number", 1, 10))
+    i = 0
+    for _ in result:
+        i += 1
+    assert i == 10

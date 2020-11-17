@@ -1,12 +1,15 @@
-from typing import Dict, Generator, Tuple, Union
+from typing import Dict, Generator, Union
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError, RequestError
 from elasticsearch.helpers import parallel_bulk, streaming_bulk
+from indigo import Indigo
 
 from bingo_elastic.model.record import IndigoRecord
 from bingo_elastic.predicates import BaseMatch, ExactMatch
-from bingo_elastic.queries import query_factory
+from bingo_elastic.queries import (CompilableQuery, KeywordQuery, RangeQuery,
+                                   query_factory)
+from bingo_elastic.utils import PostprocessType
 
 
 class ElasticRepository:
@@ -113,18 +116,44 @@ class ElasticRepository:
 
     def filter(
         self,
+        *args: CompilableQuery,
         similarity: Union[BaseMatch, ExactMatch] = None,
+        substructure: IndigoRecord = None,
         limit=20,
         **kwargs
     ) -> Generator[IndigoRecord, None, None]:
-        query = self.__compile(similarity=similarity, limit=limit, **kwargs)
+
+        # actions needed to be called on elastic_search result
+        postprocess_actions: PostprocessType = []
+
+        query = self.__compile(
+            *args,
+            similarity=similarity,
+            substructure=substructure,
+            limit=limit,
+            postprocess_actions=postprocess_actions,
+            **kwargs
+        )
         res = self.el_client.search(index=self.index_name, body=query)
+        indigo_session = Indigo()
         for el_response in res.get("hits", {}).get("hits", []):
-            yield IndigoRecord(elastic_response=el_response)
+            record = IndigoRecord(elastic_response=el_response)
+            for fn in postprocess_actions:
+                record = fn(record, indigo_session)
+                if not record:
+                    continue
+            yield record
 
     def __compile(
-        self, similarity: BaseMatch = None, limit: int = 20, **kwargs
+        self,
+        *args: CompilableQuery,
+        similarity: BaseMatch = None,
+        substructure: IndigoRecord = None,
+        limit: int = 20,
+        postprocess_actions: PostprocessType = None,
+        **kwargs
     ) -> Dict:
+
         query = {
             "size": limit,
             "_source": {
@@ -137,10 +166,25 @@ class ElasticRepository:
                 ],
             },
         }
+        if similarity and substructure:
+            # todo: enable search by similarity and substructure together
+            raise AttributeError(
+                "similarity and substructure search " "is not supported"
+            )
 
         if similarity:
-            similarity.compile(query)
-
+            similarity.compile(query, postprocess_actions)
+        elif substructure:
+            query_factory("substructure", substructure).compile(
+                query, postprocess_actions
+            )
+        for v in args:
+            if not isinstance(v, CompilableQuery):
+                raise AttributeError(
+                    "Only CompilableQuery instances are "
+                    "allowed as positional arguments"
+                )
+            v.compile(query)
         for k, v in kwargs.items():
             query_factory(k, v).compile(query)
 
