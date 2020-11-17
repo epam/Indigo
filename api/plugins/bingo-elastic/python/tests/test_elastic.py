@@ -1,6 +1,8 @@
+import time
+
 from pathlib import Path
 
-from bingo_elastic.queries import RangeQuery
+from bingo_elastic.queries import RangeQuery, WildcardQuery
 from indigo import Indigo
 
 from bingo_elastic.elastic import ElasticRepository, IndigoRecord
@@ -43,6 +45,7 @@ def test_filter_by_name(
 ):
     mol = indigo_fixture.loadMoleculeFromFile("resources/composition1.mol")
     elastic_repository.index_record(IndigoRecord(indigo_object=mol))
+    time.sleep(1)
     result = elastic_repository.filter(name="Composition1")
     for item in result:
         assert item.name == "Composition1"
@@ -86,3 +89,15 @@ def test_range_search(
     for _ in result:
         i += 1
     assert i == 10
+
+
+def test_wildcard_search(
+        elastic_repository: ElasticRepository,
+        indigo_fixture: Indigo,
+        loaded_sdf: IndigoRecord):
+    mol = indigo_fixture.loadMoleculeFromFile("resources/composition1.mol")
+    elastic_repository.index_record(IndigoRecord(indigo_object=mol))
+    time.sleep(1)
+    result = elastic_repository.filter(WildcardQuery("name", "Comp*"))
+    for item in result:
+        assert item.name == "Composition1"

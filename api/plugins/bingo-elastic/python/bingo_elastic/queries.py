@@ -9,6 +9,18 @@ from bingo_elastic.predicates import clauses
 from bingo_elastic.utils import PostprocessType, head_by_path
 
 
+def default_script_score(query: Dict) -> None:
+    script_score_head = head_by_path(
+        query,
+        (
+            "query",
+            "script_score",
+        ),
+    )
+    if not script_score_head.get("script"):
+        script_score_head["script"] = {"source": "_score"}
+
+
 class CompilableQuery(metaclass=ABCMeta):
     def __init__(self, *args, **kwargs):
         pass
@@ -39,20 +51,11 @@ class KeywordQuery(CompilableQuery):
         bool_head["must"].append(
             {
                 "term": {
-                    # TODO: think about genius
                     f"{self._key}.keyword": {"value": self._value, "boost": 0}
                 }
             }
         )
-        script_score_head = head_by_path(
-            query,
-            (
-                "query",
-                "script_score",
-            ),
-        )
-        if not script_score_head.get("script"):
-            script_score_head["script"] = {"source": "_score"}
+        default_script_score(query)
 
 
 class SubstructureQuery(CompilableQuery):
@@ -96,7 +99,6 @@ class SubstructureQuery(CompilableQuery):
             "source": "_score / doc['sub_fingerprint_len'].value"
         }
         query["min_score"] = 1
-        # register postprocess action
         postprocess_actions.append(getattr(self, "postprocess"))
 
 
@@ -130,15 +132,34 @@ class RangeQuery(CompilableQuery):
                 }
             }
         )
-        script_score_head = head_by_path(
-            query,
-            (
-                "query",
-                "script_score",
-            ),
+        default_script_score(query)
+
+
+class WildcardQuery(CompilableQuery):
+
+    def __init__(self, field: str, wildcard: str, *args, **kwargs) -> None:
+        self.field = field
+        self.wildcard = wildcard
+        super().__init__(*args, **kwargs)
+
+    def compile(
+        self, query: Dict, postprocess_actions: PostprocessType = None
+    ) -> None:
+        bool_head = head_by_path(
+            query, ("query", "script_score", "query", "bool")
         )
-        if not script_score_head.get("script"):
-            script_score_head["script"] = {"source": "_score"}
+        if not bool_head.get("must"):
+            bool_head["must"] = []
+        bool_head["must"].append(
+            {
+                "wildcard": {
+                    f"{self.field}":
+                        {"wildcard": self.wildcard,
+                         "boost": 1}
+                }
+            }
+        )
+        default_script_score(query)
 
 
 def query_factory(*args, **kwargs) -> CompilableQuery:
