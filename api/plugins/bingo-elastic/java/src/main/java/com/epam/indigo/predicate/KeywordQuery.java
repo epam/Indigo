@@ -17,6 +17,6 @@ public class KeywordQuery<T extends IndigoRecord> extends FilterPredicate<T> {
 
     @Override
     public QueryBuilder generateQuery() {
-        return QueryBuilders.termQuery(field, text).boost(0.0f);
+        return QueryBuilders.matchQuery(field, text).boost(0.0f);
     }
 }

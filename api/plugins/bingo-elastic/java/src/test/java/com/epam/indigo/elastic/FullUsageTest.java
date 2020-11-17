@@ -134,17 +134,46 @@ public class FullUsageTest {
         try {
             List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
             IndigoRecord indigoRecord = indigoRecordList.get(0);
-            indigoRecord.addCustomObject("tag", "Test");
-            repository.indexRecords(indigoRecordList, 1000);
+            String test = "Test";
+            String fieldName = "tag";
+            indigoRecord.addCustomObject(fieldName, test);
+            repository.indexRecords(indigoRecordList, 100);
             TimeUnit.SECONDS.sleep(10);
             IndigoRecord target = indigoRecordList.get(0);
-            // TODO: think about genious
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new SimilarityMatch<>(target))
-                    .filter(new KeywordQuery<>("tag", "Test"))
+                    .filter(new KeywordQuery<>(fieldName, test))
                     .collect(Collectors.toList());
 
             assertEquals(1, similarRecords.size());
+        } catch (Exception exception) {
+            Assertions.fail("Exception happened during test " + exception.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Testing tanimoto and range query")
+    public void rangeQueryWithTanimoto() {
+        try {
+            Random r = new Random();
+            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            String fieldName = "weight";
+            int cnt = 0;
+            for (IndigoRecord rec: indigoRecordList) {
+                int weight = r.nextInt(1000);
+                if (weight >= 10 && weight <= 100)
+                    cnt++;
+                rec.addCustomObject(fieldName, weight);
+            }
+            repository.indexRecords(indigoRecordList, 100);
+            TimeUnit.SECONDS.sleep(10);
+            IndigoRecord target = indigoRecordList.get(0);
+            List<IndigoRecord> similarRecords = repository.stream()
+                    .filter(new SimilarityMatch<>(target))
+                    .filter(new RangeQuery<>(fieldName, 10, 100))
+                    .collect(Collectors.toList());
+
+            assertEquals(Math.min(10, cnt), similarRecords.size());
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
