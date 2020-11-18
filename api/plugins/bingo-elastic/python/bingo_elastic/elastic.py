@@ -7,9 +7,8 @@ from elasticsearch.helpers import parallel_bulk, streaming_bulk
 from indigo import Indigo
 
 from bingo_elastic.model.record import IndigoRecord
-from bingo_elastic.predicates import BaseMatch, ExactMatch
-from bingo_elastic.queries import (CompilableQuery, KeywordQuery, RangeQuery,
-                                   query_factory)
+from bingo_elastic.queries import (CompilableQuery,
+                                   query_factory, BaseMatch, ExactMatch)
 from bingo_elastic.utils import PostprocessType
 
 
@@ -117,7 +116,6 @@ class ElasticRepository:
 
     def filter(
         self,
-        *args: CompilableQuery,
         similarity: Union[BaseMatch, ExactMatch] = None,
         substructure: IndigoRecord = None,
         limit=20,
@@ -128,7 +126,6 @@ class ElasticRepository:
         postprocess_actions: PostprocessType = []
 
         query = self.__compile(
-            *args,
             similarity=similarity,
             substructure=substructure,
             limit=limit,
@@ -147,7 +144,6 @@ class ElasticRepository:
 
     def __compile(
         self,
-        *args: CompilableQuery,
         similarity: BaseMatch = None,
         substructure: IndigoRecord = None,
         limit: int = 20,
@@ -179,13 +175,7 @@ class ElasticRepository:
             query_factory("substructure", substructure).compile(
                 query, postprocess_actions
             )
-        for v in args:
-            if not isinstance(v, CompilableQuery):
-                raise AttributeError(
-                    "Only CompilableQuery instances are "
-                    "allowed as positional arguments"
-                )
-            v.compile(query)
+
         for k, v in kwargs.items():
             query_factory(k, v).compile(query)
 

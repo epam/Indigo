@@ -8,7 +8,7 @@ from indigo import Indigo
 
 from bingo_elastic.elastic import ElasticRepository, IndigoRecord
 from bingo_elastic.model.helpers import iterate_file
-from bingo_elastic.predicates import (
+from bingo_elastic.queries import (
     EuclidSimilarityMatch,
     TanimotoSimilarityMatch,
     TverskySimilarityMatch,
@@ -88,7 +88,7 @@ def test_range_search(
     for i, item in enumerate(iterate_file(Path(resource_loader("resources/rand_queries_small.sdf")))):
         item.ind_number = i
         elastic_repository.index_record(item)
-    result = elastic_repository.filter(RangeQuery("ind_number", 1, 10))
+    result = elastic_repository.filter(ind_number=RangeQuery(1, 10))
     i = 0
     for _ in result:
         i += 1
@@ -103,6 +103,6 @@ def test_wildcard_search(
     mol = indigo_fixture.loadMoleculeFromFile(resource_loader("resources/composition1.mol"))
     elastic_repository.index_record(IndigoRecord(indigo_object=mol))
     time.sleep(1)
-    result = elastic_repository.filter(WildcardQuery("name", "Comp*"))
+    result = elastic_repository.filter(name=WildcardQuery("Comp*"))
     for item in result:
         assert item.name == "Composition1"

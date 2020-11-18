@@ -151,23 +151,33 @@ indigo_record.internal_id = 10001
 Searching similar molecules to the target and filtering only those that have value of the `chembl_id` equals to `CHEMBL2063090`
 
 ```
+from bingo_elastic.queries import KeywordQuery
+
 alg = TanimotoSimilarityMatch(target)
+result = elastic_repository.filter(similarity=alg,
+                                   chembl_id=KeywordQuery("CHEMBL2063090"))
+```
+
+Or you can just write:
+
+```
 result = elastic_repository.filter(similarity=alg,
                                    chembl_id="CHEMBL2063090")
 ```
+
 
 You could also use similarly wildcard and range queries
 
 ```
 from bingo_elastic.queries import WildcardQuery
 
-result = elastic_repository.filter(WildcardQuery("chembl_id", "CHEMBL2063*"))
+result = elastic_repository.filter(chembl_id=WildcardQuery("CHEMBL2063*"))
 
 ```
 
 ```
 from bingo_elastic.queries import RangeQuery
 
-result = elastic_repository.filter(RangeQuery("internal_id", 1000, 100000))
+result = elastic_repository.filter(internal_id=RangeQuery(1000, 100000))
 
 ```

@@ -1,7 +1,6 @@
 from typing import Callable
 
 import pytest
-from indigo import Indigo
 
 from bingo_elastic.model import record
 
