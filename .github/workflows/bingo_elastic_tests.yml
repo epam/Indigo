@@ -22,7 +22,7 @@ jobs:
       - name: Setup elasticsearch
         run: docker run -d -p 9200:9200 --env "discovery.type=single-node" --env "opendistro_security.disabled=true" amazon/opendistro-for-elasticsearch:latest
       - name: Wait elastic is ready
-        run: sleep 1m
+        run: sleep 30s
       - name: Run tests
         run: poetry run pytest tests
         working-directory: api/plugins/bingo-elastic/python
