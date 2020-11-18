@@ -19,6 +19,11 @@ jobs:
       - name: Install dependencies
         run: poetry install
         working-directory: api/plugins/bingo-elastic/python
+      - name: setup elasticsearch
+        run: docker run -p 9200:9200 --env "discovery.type=single-node" --env "opendistro_security.disabled=true" amazon/opendistro-for-elasticsearch:latest
+      - name: Run tests
+        run: poetry run pytest tests
+        working-directory: api/plugins/bingo-elastic/python
 
 #
 #  bingo_elastic_tests_java:
