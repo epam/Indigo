@@ -1,4 +1,5 @@
-from typing import Dict, Generator, Union
+from ast import Str
+from typing import Dict, Generator, Union, List
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError, RequestError
@@ -19,9 +20,9 @@ class ElasticRepository:
     def __init__(
         self,
         *,
-        host: Union[str, list[str]] = "localhost",
+        host: Union[str, List[Str]] = "localhost",
         port: int = 9200,
-        scheme: str = ""
+        scheme: Str = ""
     ) -> None:
         """
         :param host: host or list of hosts

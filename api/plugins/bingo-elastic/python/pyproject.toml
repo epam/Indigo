@@ -5,11 +5,9 @@ description = "Bingo API for using with Elasticsearch"
 authors = ["EPAM Systems Life Science Department"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 "epam.indigo" = "^1.4.0-beta.0"
 elasticsearch = "^7.9.1"
-elasticsearch-dsl = "^7.3.0"
-simplejson = "^3.17.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"

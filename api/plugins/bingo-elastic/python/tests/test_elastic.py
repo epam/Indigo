@@ -1,6 +1,7 @@
 import time
 
 from pathlib import Path
+from typing import Callable
 
 from bingo_elastic.queries import RangeQuery, WildcardQuery
 from indigo import Indigo
@@ -15,8 +16,9 @@ from bingo_elastic.predicates import (
 )
 
 
-def test_create_index(elastic_repository: ElasticRepository):
-    sdf = iterate_file(Path("resources/rand_queries_small.sdf"))
+def test_create_index(elastic_repository: ElasticRepository,
+                      resource_loader: Callable[[str], str]):
+    sdf = iterate_file(Path(resource_loader("resources/rand_queries_small.sdf")))
     elastic_repository.index_records(sdf, chunk_size=10)
 
 
@@ -42,8 +44,9 @@ def test_filter_by_name(
         elastic_repository: ElasticRepository,
         indigo_fixture: Indigo,
         loaded_sdf: IndigoRecord,
+        resource_loader: Callable[[str], str]
 ):
-    mol = indigo_fixture.loadMoleculeFromFile("resources/composition1.mol")
+    mol = indigo_fixture.loadMoleculeFromFile(resource_loader("resources/composition1.mol"))
     elastic_repository.index_record(IndigoRecord(indigo_object=mol))
     time.sleep(1)
     result = elastic_repository.filter(name="Composition1")
@@ -80,8 +83,9 @@ def test_substructure_search(
 
 def test_range_search(
         elastic_repository: ElasticRepository,
-        indigo_fixture: Indigo):
-    for i, item in enumerate(iterate_file(Path("resources/rand_queries_small.sdf"))):
+        indigo_fixture: Indigo,
+        resource_loader: Callable[[str], str]):
+    for i, item in enumerate(iterate_file(Path(resource_loader("resources/rand_queries_small.sdf")))):
         item.ind_number = i
         elastic_repository.index_record(item)
     result = elastic_repository.filter(RangeQuery("ind_number", 1, 10))
@@ -94,8 +98,9 @@ def test_range_search(
 def test_wildcard_search(
         elastic_repository: ElasticRepository,
         indigo_fixture: Indigo,
-        loaded_sdf: IndigoRecord):
-    mol = indigo_fixture.loadMoleculeFromFile("resources/composition1.mol")
+        loaded_sdf: IndigoRecord,
+        resource_loader: Callable[[str], str]):
+    mol = indigo_fixture.loadMoleculeFromFile(resource_loader("resources/composition1.mol"))
     elastic_repository.index_record(IndigoRecord(indigo_object=mol))
     time.sleep(1)
     result = elastic_repository.filter(WildcardQuery("name", "Comp*"))
