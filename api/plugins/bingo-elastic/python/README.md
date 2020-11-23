@@ -118,16 +118,18 @@ Supported similarity algorithms:
 - `SimilarityMatch` or `TanimotoSimilarityMatch`
 - `EuclidSimilarityMatch`
 - `TverskySimilarityMatch`
-- `ExactMatch`
 
 #### Find exact records from Elasticsearch
 
 ```
-alg = TanimotoSimilarityMatch(target)
-exact_records = repository.filter(similarity=alg, limit=20)
+exact_records = repository.filter(exact=target, limit=20)
 ```
 
 In this case we requested top-20 candidate molecules with exact same fingerprint to `target`.
+`target` should be an instance of `IndigoRecord` class. 
+
+
+
 
 #### Subsctructure match of the records from Elasticsearch
 
