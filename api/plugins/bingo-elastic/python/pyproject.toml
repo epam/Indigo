@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "bingo-elastic"
-version = "0.1.0"
+name = "bingo_elastic"
+version = "1.4.1"
 description = "Bingo API for using with Elasticsearch"
 authors = ["EPAM Systems Life Science Department"]
 
