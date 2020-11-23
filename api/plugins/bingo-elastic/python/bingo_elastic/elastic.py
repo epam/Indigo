@@ -1,5 +1,5 @@
 from ast import Str
-from typing import Dict, Generator, Union, List
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError, RequestError
@@ -7,8 +7,7 @@ from elasticsearch.helpers import parallel_bulk, streaming_bulk
 from indigo import Indigo
 
 from bingo_elastic.model.record import IndigoRecord
-from bingo_elastic.queries import (CompilableQuery,
-                                   query_factory, BaseMatch, ExactMatch)
+from bingo_elastic.queries import BaseMatch, ExactMatch, query_factory
 from bingo_elastic.utils import PostprocessType
 
 
@@ -21,23 +20,33 @@ class ElasticRepository:
         *,
         host: Union[str, List[Str]] = "localhost",
         port: int = 9200,
-        scheme: Str = ""
+        scheme: Str = "",
+        http_auth: Optional[Tuple[Str]] = None,
+        ssl_context: Any = None
     ) -> None:
         """
         :param host: host or list of hosts
         :param port:
         :param scheme: http or https
+        :param http_auth:
+        :param ssl_context:
         """
-        args = {
+        arguments = {
             "port": port,
             "scheme": "https" if scheme == "https" else "http",
         }
         if type(host) == str:
-            args["host"] = host
+            arguments["host"] = host
         else:
-            args["hosts"] = host
+            arguments["hosts"] = host
 
-        self.el_client = Elasticsearch(**args)
+        if http_auth:
+            arguments["http_auth"] = http_auth
+
+        if ssl_context:
+            arguments["ssl_context"] = ssl_context
+
+        self.el_client = Elasticsearch(**arguments)
 
     @staticmethod
     def __prepare(
@@ -116,9 +125,10 @@ class ElasticRepository:
 
     def filter(
         self,
-        similarity: Union[BaseMatch, ExactMatch] = None,
+        similarity: Union[BaseMatch] = None,
+        exact: IndigoRecord = None,
         substructure: IndigoRecord = None,
-        limit=20,
+        limit=10,
         **kwargs
     ) -> Generator[IndigoRecord, None, None]:
 
@@ -127,6 +137,7 @@ class ElasticRepository:
 
         query = self.__compile(
             similarity=similarity,
+            exact=exact,
             substructure=substructure,
             limit=limit,
             postprocess_actions=postprocess_actions,
@@ -145,8 +156,9 @@ class ElasticRepository:
     def __compile(
         self,
         similarity: BaseMatch = None,
+        exact: IndigoRecord = None,
         substructure: IndigoRecord = None,
-        limit: int = 20,
+        limit: int = 10,
         postprocess_actions: PostprocessType = None,
         **kwargs
     ) -> Dict:
@@ -165,12 +177,15 @@ class ElasticRepository:
         }
         if similarity and substructure:
             # todo: enable search by similarity and substructure together
+            # todo: add exact check also
             raise AttributeError(
                 "similarity and substructure search " "is not supported"
             )
 
         if similarity:
             similarity.compile(query, postprocess_actions)
+        elif exact:
+            query_factory("exact", exact).compile(query, postprocess_actions)
         elif substructure:
             query_factory("substructure", substructure).compile(
                 query, postprocess_actions

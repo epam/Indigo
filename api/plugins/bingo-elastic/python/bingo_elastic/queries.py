@@ -1,7 +1,7 @@
 import math
 from abc import ABCMeta, abstractmethod
 from functools import lru_cache
-from typing import Dict, List, Optional, Union, Any
+from typing import Any, Dict, List, Optional, Union
 
 from indigo import Indigo
 
@@ -46,9 +46,7 @@ class CompilableQuery(metaclass=ABCMeta):
 
 
 class KeywordQuery(CompilableQuery):
-    def __init__(
-        self, value: str
-    ):
+    def __init__(self, value: str):
         self._value = value
 
     def compile(
@@ -113,9 +111,7 @@ class SubstructureQuery(CompilableQuery):
 
 
 class RangeQuery(CompilableQuery):
-    def __init__(
-        self, lower: int, upper: int
-    ) -> None:
+    def __init__(self, lower: int, upper: int) -> None:
         self.lower = lower
         self.upper = upper
 
@@ -135,7 +131,6 @@ class RangeQuery(CompilableQuery):
                         "to": self.upper,
                         "include_lower": True,
                         "include_upper": True,
-                        "boost": 1,
                     }
                 }
             }
@@ -144,7 +139,6 @@ class RangeQuery(CompilableQuery):
 
 
 class WildcardQuery(CompilableQuery):
-
     def __init__(self, wildcard: str) -> None:
         self.wildcard = wildcard
 
@@ -157,13 +151,7 @@ class WildcardQuery(CompilableQuery):
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"].append(
-            {
-                "wildcard": {
-                    f"{self.field}":
-                        {"wildcard": self.wildcard,
-                         "boost": 1}
-                }
-            }
+            {"wildcard": {f"{self.field}": {"wildcard": self.wildcard}}}
         )
         default_script_score(query)
 
@@ -278,7 +266,7 @@ class TverskySimilarityMatch(BaseMatch):
         return f"{int(mm*100)}%"
 
 
-class ExactMatch:
+class ExactMatch(CompilableQuery):
     def __init__(self, target):
         self._target = target
 
@@ -309,7 +297,9 @@ SimilarityMatch = TanimotoSimilarityMatch
 
 def query_factory(key: str, value: Any) -> CompilableQuery:
 
-    if key == "substructure":
+    if key == "exact":
+        return ExactMatch(value)
+    elif key == "substructure":
         return SubstructureQuery(key, value)
     elif isinstance(value, CompilableQuery):
         value.field = key

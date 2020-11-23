@@ -107,15 +107,15 @@ For indexing one record the the method `ElasticRepository.index_record` can be u
 #### Retrieve similar records from Elasticsearch
 
 ```
-from bingo_elastic.predicates import TanimotoSimilarityMatch
-alg = TanimotoSimilarityMatch(target, 0.9)
+from bingo_elastic.predicates import SimilarityMatch
+alg = SimilarityMatch(target, 0.9)
 similar_records = repository.filter(similarity=alg, limit=20)
 ```
 
 In this case we requested top-20 most similar molecules compared to `target` based on Tanimoto similarity metric
 
 Supported similarity algorithms:
-- `TanimotoSimilarityMatch`
+- `SimilarityMatch` or `TanimotoSimilarityMatch`
 - `EuclidSimilarityMatch`
 - `TverskySimilarityMatch`
 - `ExactMatch`
@@ -135,7 +135,7 @@ In this case we requested top-20 candidate molecules with exact same fingerprint
 exact_records = repository.filter(substructure=target)
 ```
 
-In this case we requested top-20 candidate molecules with exact same fingerprint to `target`.
+In this case we requested top-10 candidate molecules with exact same fingerprint to `target`.
 
 #### Custom fields for molecule records
 
@@ -162,7 +162,7 @@ Or you can just write:
 
 ```
 result = elastic_repository.filter(similarity=alg,
-                                   chembl_id="CHEMBL2063090")
+                                   chembl_id=RangeQuery(1, 10000))
 ```
 
 
