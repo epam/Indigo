@@ -1,6 +1,5 @@
 import os
 import re
-import runpy
 import shutil
 import subprocess
 import sys
@@ -134,6 +133,7 @@ def main():
     parser.add_option('--type', default='python,java,dotnet', help='wrapper (dotnet, java, python)')
     parser.add_option('--wrappers-arch', default='win,linux,mac,universal',
                       help='wrappers arch (win, linux, mac, universal')
+    parser.add_option('--publish', action='store_true', default=False, help='Required for later publishing Java artifacts to Maven Central')
 
     (args, left_args) = parser.parse_args()
 
@@ -173,7 +173,7 @@ def main():
         libs_dir = os.path.join(api_dir, "libs")
 
         for w, libs in wrappers:
-            if not w in required_wrappers_arches:
+            if w not in required_wrappers_arches:
                 continue
             clear_libs(libs_dir)
             if args.libonlyname and w != args.libonlyname:
@@ -193,7 +193,8 @@ def main():
                     if args.type is not None:
                         for g in args.type.split(','):
                             if gen.find(g) != -1:
-                                command = '"%s" "%s" -s "%s"' % (sys.executable, os.path.join(api_dir, gen), w)
+                                publish = '--publish' if args.publish else ''
+                                command = '"%s" "%s" -s "%s" %s' % (sys.executable, os.path.join(api_dir, gen), w, publish)
                                 print(command)
                                 subprocess.check_call(command, shell=True)
 

@@ -64,6 +64,8 @@ def make_wheels(api_dir, dest):
     subprocess.check_call([sys.executable, 'setup.py', 'bdist_wheel', '--plat-name=manylinux1_x86_64'])
     # subprocess.check_call([sys.executable, 'setup.py', 'bdist_wheel', '--plat-name=manylinux1_i686'])
     subprocess.check_call([sys.executable, 'setup.py', 'bdist_wheel', '--plat-name=macosx_10_7_intel'])
+    if sys.argv[3] == '--publish':
+        subprocess.check_call(['twine', 'upload', '-u', '__token__', '-p', os.environ['PYPI_TOKEN'], 'dist/*.whl'])
     os.chdir(cur_dir)
 
 
@@ -72,5 +74,5 @@ if __name__ == '__main__':
     root = os.path.normpath(os.path.join(api_dir, ".."))
     dist_dir = os.path.join(root, "dist")
     make_zips(api_dir, dist_dir)
-    if sys.argv[1] == '-s': # and sys.argv[2] == '-universal':
+    if sys.argv[1] == '-s' and sys.argv[2] == '-universal':
         make_wheels(api_dir, os.path.join(dist_dir, 'epam.indigo'))

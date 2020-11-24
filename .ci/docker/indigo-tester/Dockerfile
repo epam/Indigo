@@ -45,7 +45,6 @@ RUN apt update && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 Pillow
     python3 -m pip install --upgrade Pillow pip setuptools wheel twine && \
-    apt purge -y gpg unzip python3-pip && \
     apt autoremove -y
 
 ENV JAVA_HOME=/opt/jdk
@@ -57,7 +56,10 @@ RUN git --version && \
     twine --version && \
     wheel version && \
     java -version && \
+    mvn --version && \
+    gpg --version && \
     jython --version && \
     dotnet --version && \
+    dotnet nuget --version && \
     ipy -V && \
     powershell --version
