@@ -48,7 +48,7 @@ RUN apt update && \
     apt autoremove -y
 
 ENV JAVA_HOME=/opt/jdk
-ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython:
+ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython
 
 # Check
 RUN git --version && \

@@ -125,8 +125,6 @@ def main():
 
     wrappers_gen = ["make-java-wrappers.py", "make-python-wrappers.py", 'make-dotnet-wrappers.py']
 
-    # runpy.run_path(os.path.join(os.path.dirname(__file__), 'indigo-update-version.py'), run_name="__main__")
-
     parser = OptionParser(description='Indigo libraries repacking')
     parser.add_option('--libonlyname', help='extract only the library into api/lib')
     parser.add_option('--config', default="Release", help='project configuration')

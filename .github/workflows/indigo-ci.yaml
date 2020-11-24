@@ -110,17 +110,17 @@ jobs:
           path: |
             dist/indigo-python-*.zip
       - name: Upload test wrappers for Java
-          uses: actions/upload-artifact@v2
-          with:
-            name: indigo-test-wrappers-java
-            path: |
-              dist/indigo-java-*.zip
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-test-wrappers-java
+          path: |
+            dist/indigo-java-*.zip
       - name: Upload test wrappers for .NET
-          uses: actions/upload-artifact@v2
-          with:
-            name: indigo-test-wrappers-dotnet
-            path: |
-              dist/indigo-dotnet-*.zip
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-test-wrappers-dotnet
+          path: |
+            dist/indigo-dotnet-*.zip
   test_linux_python:
     runs-on: ubuntu-latest
     needs: build_wrappers
@@ -228,7 +228,6 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "Windows Python Test Report"
-
 #  test_windows_java:
 #    runs-on: windows-latest
 #    needs: build_wrappers
