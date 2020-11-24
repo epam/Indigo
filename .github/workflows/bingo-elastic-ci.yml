@@ -1,5 +1,11 @@
-name: bingo_elastic_tests
-on: push
+name: Bingo-Elastic CI
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+  pull_request:
 
 jobs:
   bingo_elastic_tests:
@@ -29,4 +35,3 @@ jobs:
       - name: Build bingo-elastic
         run: mvn -B test --file pom.xml
         working-directory: api/plugins/bingo-elastic/java
-   

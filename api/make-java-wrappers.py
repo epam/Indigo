@@ -4,15 +4,25 @@ from os.path import *
 import subprocess
 
 from optparse import OptionParser
+import xml.etree.ElementTree as ElementTree
 
 parser = OptionParser(description='Indigo Java libraries build script')
 parser.add_option('--suffix', '-s', help='archive suffix', default="")
-
+parser.add_option('--publish', help='Publish jar',  default=False, action='store_true')
 (args, left_args) = parser.parse_args()
 
+
 # Find indigo version
-from get_indigo_version import getIndigoVersion
-version = getIndigoVersion()
+def get_pom_version_from_curdir():
+    tree = ElementTree.parse(os.path.join(os.curdir, 'pom.xml'))
+    ElementTree.register_namespace('', 'http://maven.apache.org/POM/4.0.0')
+    root = tree.getroot()
+    version = None
+    for child in root:
+        if child.tag.endswith('version'):
+            version = child.text
+    return version
+
 
 api_dir = abspath(dirname(__file__))
 root = join(api_dir, "..")
@@ -27,25 +37,33 @@ os.mkdir('java')
 
 mvn_cmd = 'mvnw.cmd' if os.name == 'nt' else './mvnw'
 
+publish = '' if not args.publish else 'deploy -P sign-artifacts -Dgpg.passphrase={} -Dossrh.user={} -Dossrh.password={}'.format(
+    os.environ['GPG_PASSPHRASE'], os.environ['MAVEN_USER'], os.environ['MAVEN_PASSWORD'])
+
 os.chdir(os.path.join(api_dir, "java"))
-subprocess.check_call("%s -q versions:set -DnewVersion=%s" % (mvn_cmd, version), shell=True)
-subprocess.check_call("%s -q clean package install" % mvn_cmd, shell=True)
+version = get_pom_version_from_curdir()
+subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "renderer", "java"))
-subprocess.check_call("%s -q versions:set -DnewVersion=%s" % (mvn_cmd, version), shell=True)
-subprocess.check_call("%s -q clean package" % mvn_cmd, shell=True)
+version = get_pom_version_from_curdir()
+subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-renderer-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-renderer.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "inchi", "java"))
-subprocess.check_call("%s -q versions:set -DnewVersion=%s" % (mvn_cmd, version), shell=True)
-subprocess.check_call("%s -q clean package" % mvn_cmd, shell=True)
+version = get_pom_version_from_curdir()
+subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-inchi-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-inchi.jar'))
 
-os.chdir(os.path.join(api_dir, "plugins", "bingo", "java"))  # TODO: Update when folder will be changed to nosql
-subprocess.check_call("%s -q versions:set -DnewVersion=%s" % (mvn_cmd, version), shell=True)
-subprocess.check_call("%s -q clean package" % mvn_cmd, shell=True)
+os.chdir(os.path.join(api_dir, "plugins", "bingo", "java"))
+version = get_pom_version_from_curdir()
+subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-nosql-%s.jar' % version), os.path.join(dist_dir, 'java', 'bingo-nosql.jar'))
+
+if args.publish:
+    os.chdir(os.path.join(api_dir, "plugins", "bingo-elastic", "java"))
+    version = get_pom_version_from_curdir()
+    subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
 
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE"), "java")

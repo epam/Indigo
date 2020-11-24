@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.epam.indigo</groupId>
     <artifactId>bingo-elastic</artifactId>
-    <version>1.4.0-beta.86</version>
+    <version>1.4.0-beta</version>
     <packaging>jar</packaging>
 
     <name>Bingo Elastic</name>
@@ -123,7 +123,7 @@
                 <configuration>
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
         </plugins>
@@ -168,6 +168,13 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                    <passphrase>${gpg.passphrase}</passphrase>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

@@ -9,7 +9,7 @@ ARG IRONPYTHON_VERSION=2.7.10
 
 RUN apt update && \
     apt upgrade -y && \
-    apt install -y --no-install-recommends git git-lfs python3 python3-pip curl gpg libfreetype6 libfontconfig1 unzip libc6-dev libgdiplus libx11-dev && \
+    apt install -y --no-install-recommends git git-lfs python3 python3-pip python3-distutils curl gpg libfreetype6 libfontconfig1 unzip libc6-dev libgdiplus libx11-dev && \
     # Java JDK
     curl -OL https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk${JDK_VERSION_MAJOR}-${JDK_VERSION_MINOR}/OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
     tar -xzf OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
@@ -44,8 +44,7 @@ RUN apt update && \
     ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh  /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 Pillow
-    python3 -m pip install Pillow && \
-    apt purge -y gpg unzip python3-pip && \
+    python3 -m pip install --upgrade Pillow pip setuptools wheel twine && \
     apt autoremove -y
 
 ENV JAVA_HOME=/opt/jdk
@@ -54,8 +53,13 @@ ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython
 # Check
 RUN git --version && \
     python3 --version && \
+    twine --version && \
+    wheel version && \
     java -version && \
+    mvn --version && \
+    gpg --version && \
     jython --version && \
     dotnet --version && \
+    dotnet nuget --version && \
     ipy -V && \
     powershell --version

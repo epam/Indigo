@@ -1,4 +1,4 @@
-name: docker-images-build-push
+name: Indigo Docker images preparation
 
 on:
   push:
