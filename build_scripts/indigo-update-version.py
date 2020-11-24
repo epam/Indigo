@@ -63,7 +63,10 @@ def update_setup_py_version(setup_py_file, new_version):
 
 def main():
     sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'api'))
-    new_version = __import__('get_indigo_version').getIndigoVersion()
+    if len(sys.argv) < 2:
+        new_version = __import__('get_indigo_version').getIndigoVersion()
+    else:
+        new_version = sys.argv[1]
     update_pom_version(os.path.join(INDIGO_PATH, 'api', 'java', 'pom.xml'), new_version)
     update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'bingo', 'java', 'pom.xml'), new_version)
     update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'inchi', 'java', 'pom.xml'), new_version)

@@ -44,16 +44,18 @@ RUN apt update && \
     ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh  /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 Pillow
-    python3 -m pip install Pillow && \
+    python3 -m pip install --upgrade Pillow pip setuptools wheel twine && \
     apt purge -y gpg unzip python3-pip && \
     apt autoremove -y
 
 ENV JAVA_HOME=/opt/jdk
-ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython
+ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython:
 
 # Check
 RUN git --version && \
     python3 --version && \
+    twine --version && \
+    wheel version && \
     java -version && \
     jython --version && \
     dotnet --version && \
