@@ -1,4 +1,12 @@
-from typing import Dict, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
+
+from indigo import Indigo
+
+from bingo_elastic.model.record import IndigoRecord
+
+PostprocessType = List[
+    Callable[[IndigoRecord, Indigo], Optional[IndigoRecord]]
+]
 
 
 def head_by_path(obj: Dict, path: Tuple) -> Dict:

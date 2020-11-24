@@ -45,91 +45,141 @@ docker run -p 9200:9200 --env "discovery.type=single-node" --env "opendistro_sec
 #### Create ElasticRepository
 
 ```
-ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepositoryBuilder<>();
-        repository = builder
-                .withHostName("localhost")
-                .withPort(9200)
-                .withScheme("http")
-                .build();
+repository = ElasticRepository(host="127.0.0.1", port=9200)
 ```
 
 Other customisations like SSL, custom number of shards/replicas, refresh interval, and many more are supported
 
 #### Read Indigo records from file
 
+IndigoRecord can be created from IndigoObject.
+ 
+Full usage example: 
 ```
-List<IndigoRecord> records = Helpers.loadFromCmlFile("/tmp/file.cml");
+from bingo_elastic.model.record import IndigoRecord
+from indigo import Indigo
+
+indigo = Indigo()
+compound = indigo.loadMoleculeFromFile("composition.mol")
+indigo_record = IndigoRecord(indigo_object=compound)
 ```
+
+`bingo_elastic` provides helpers to load sdf, cml, smiles and smi files
+
+```
+from bingo_elastic.model import helpers
+
+sdf = helpers.iterate_sdf("compounds.sdf")
+cml = helpers.iterate_cml("compounds.cml")
+smi = helpers.iterate_smiles("compounds.smi")
+```
+
+Also function `helpers.iterate_file(file: Path)` is available. This function 
+selects correct iterate function by file extension. The `file` argument must 
+be `pathlib.Path` instance
+
+```
+from bingo_elastic.model import helpers
+from pathlib import Path
+
+sdf = helpers.iterate_file(Path("compounds.sdf"))
+```
+
 
 #### Index records into Elasticsearch
 
+Full usage example: 
+
 ```
-repository.indexRecords(records);
+from bingo_elastic.model import helpers
+from pathlib import Path
+
+repository = ElasticRepository(host="127.0.0.1", port=9200)
+sdf = helpers.iterate_file(Path("compounds.sdf"))
+repository.index_records(sdf);
 ```
 
 *CAVEAT*: Elasticsearch doesn't have strict notion of commit, so records might appear in the index later on
-
 Read more about it here -  https://www.elastic.co/guide/en/elasticsearch/reference/master/index-modules.html#index-refresh-interval-setting
+
+For indexing one record the the method `ElasticRepository.index_record` can be used 
 
 #### Retrieve similar records from Elasticsearch
 
 ```
-List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new SimilarityMatch<>(target))
-                    .limit(20)
-                    .collect(Collectors.toList());
+from bingo_elastic.predicates import SimilarityMatch
+alg = SimilarityMatch(target, 0.9)
+similar_records = repository.filter(similarity=alg, limit=20)
 ```
 
 In this case we requested top-20 most similar molecules compared to `target` based on Tanimoto similarity metric
 
+Supported similarity algorithms:
+- `SimilarityMatch` or `TanimotoSimilarityMatch`
+- `EuclidSimilarityMatch`
+- `TverskySimilarityMatch`
+
 #### Find exact records from Elasticsearch
 
 ```
-List<IndigoRecord> exactRecords = repository.stream()
-                    .filter(new ExactMatch<>(target))
-                    .limit(20)
-                    .collect(Collectors.toList())
-                    .stream()
-                    .filter(ExactMatch.exactMatchAfterChecker(target, indigo))
-                    .collect(Collectors.toList());
+exact_records = repository.filter(exact=target, limit=20)
 ```
 
-In this case we requested top-20 candidate molecules with exact same fingerprint to `target`. After that we used `ExactMatch.exactMatchAfterChecker`, 
-which double checked exact match based on actual molecule
+In this case we requested top-20 candidate molecules with exact same fingerprint to `target`.
+`target` should be an instance of `IndigoRecord` class. 
+
+
+
 
 #### Subsctructure match of the records from Elasticsearch
 
 ```
-List<IndigoRecord> substructureMatchRecords = repository.stream()
-                   .filter(new SubstructureMatch<>(target))
-                   .limit(20)
-                   .collect(Collectors.toList())
-                   .stream()
-                   .filter(SubstructureMatch.substructureMatchAfterChecker(target, indigo))
-                   .collect(Collectors.toList());
+exact_records = repository.filter(substructure=target)
 ```
 
-In this case we requested top-20 candidate molecules with exact same fingerprint to `target`. After that we used `SubstructureMatch.substructureMatchAfterChecker`, 
-which double checked substructure match based on actual molecule and it's graph representation
+In this case we requested top-10 candidate molecules with exact same fingerprint to `target`.
 
 #### Custom fields for molecule records
 
-Indexing records with custom text tag
+Indexing records with custom fields
 
 ```
-List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
-IndigoRecord indigoRecord = indigoRecordList.get(0);
-indigoRecord.addCustomObject("tag", "test");
-repository.indexRecord(indigoRecord);
+indigo_record = IndigoRecord(indigo_object=compound)
+indigo_record.chembl_id = "CHEMBL2063090"
+indigo_record.compound_key = "GRAZOPREVIR"
+indigo_record.internal_id = 10001
 ```
 
-Searching similar molecules to the target and filtering only those that have value of the `tag` equals to `test`
+Searching similar molecules to the target and filtering only those that have value of the `chembl_id` equals to `CHEMBL2063090`
 
 ```
-List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new TanimotoSimilarityMatch<>(target))
-                    .filter(new KeywordQuery<>("tag", "test"))
-                    .collect(Collectors.toList());
+from bingo_elastic.queries import KeywordQuery
+
+alg = TanimotoSimilarityMatch(target)
+result = elastic_repository.filter(similarity=alg,
+                                   chembl_id=KeywordQuery("CHEMBL2063090"))
 ```
 
-you could also use similarly wildcard and range queries
+Or you can just write:
+
+```
+result = elastic_repository.filter(similarity=alg,
+                                   chembl_id=RangeQuery(1, 10000))
+```
+
+
+You could also use similarly wildcard and range queries
+
+```
+from bingo_elastic.queries import WildcardQuery
+
+result = elastic_repository.filter(chembl_id=WildcardQuery("CHEMBL2063*"))
+
+```
+
+```
+from bingo_elastic.queries import RangeQuery
+
+result = elastic_repository.filter(internal_id=RangeQuery(1000, 100000))
+
+```

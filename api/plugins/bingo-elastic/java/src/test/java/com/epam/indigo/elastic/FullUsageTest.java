@@ -1,12 +1,10 @@
 package com.epam.indigo.elastic;
 
 import com.epam.indigo.Indigo;
-import com.epam.indigo.IndigoObject;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.*;
-import org.junit.Ignore;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
@@ -199,5 +197,49 @@ public class FullUsageTest {
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
+    }
+
+    @Test
+    @DisplayName("Testing RangeQuery search")
+    public void rangeSearch() {
+        try {
+            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            int i = 0;
+            for (IndigoRecord record : indigoRecordList) {
+                record.addCustomObject("ind_number", i++);
+            }
+            repository.indexRecords(indigoRecordList, 1000);
+            TimeUnit.SECONDS.sleep(10);
+            List<IndigoRecord> records = repository.stream()
+                                .filter(new RangeQuery<>("ind_number", 1, 10))
+                                .limit(20)
+                                .collect(Collectors.toList());
+            assertEquals(records.size(), 10);
+        } catch (Exception exception) {
+            Assertions.fail("Exception happened during test " + exception.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Testing WildcardQuery search")
+    public void wildcardSearch() {
+
+        try {
+            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            IndigoRecord indigoRecord = indigoRecordList.get(0);
+            String test = "Test";
+            String fieldName = "tag";
+            indigoRecord.addCustomObject(fieldName, test);
+            repository.indexRecords(indigoRecordList, 100);
+            TimeUnit.SECONDS.sleep(10);
+            List<IndigoRecord> similarRecords = repository.stream()
+                    .filter(new WildcardQuery<>(fieldName, "T*t"))
+                    .collect(Collectors.toList());
+
+            assertEquals(1, similarRecords.size());
+        } catch (Exception exception) {
+            Assertions.fail("Exception happened during test " + exception.getMessage());
+        }
+
     }
 }

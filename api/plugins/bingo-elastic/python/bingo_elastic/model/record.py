@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Union
+from typing import Dict, List
 
 from indigo import Indigo, IndigoObject
 

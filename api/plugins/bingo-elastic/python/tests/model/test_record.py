@@ -1,5 +1,6 @@
+from typing import Callable
+
 import pytest
-from indigo import Indigo
 
 from bingo_elastic.model import record
 
@@ -18,7 +19,11 @@ def test_create(indigo_fixture):
     assert len(indigo_record.cmf) == 140
 
 
-def test_create_with_name(indigo_fixture):
-    mol = indigo_fixture.loadMoleculeFromFile("resources/composition1.mol")
+def test_create_with_name(
+    indigo_fixture, resource_loader: Callable[[str], str]
+):
+    mol = indigo_fixture.loadMoleculeFromFile(
+        resource_loader("resources/composition1.mol")
+    )
     indigo_record = record.IndigoRecord(indigo_object=mol)
     assert indigo_record.name == "Composition1"
