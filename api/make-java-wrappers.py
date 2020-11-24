@@ -60,6 +60,11 @@ version = get_pom_version_from_curdir()
 subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-nosql-%s.jar' % version), os.path.join(dist_dir, 'java', 'bingo-nosql.jar'))
 
+if args.publish:
+    os.chdir(os.path.join(api_dir, "plugins", "bingo-elastic", "java"))
+    version = get_pom_version_from_curdir()
+    subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
+
 os.chdir(dist_dir)
 shutil.copy(os.path.join(api_dir, "LICENSE"), "java")
 

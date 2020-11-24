@@ -94,6 +94,7 @@ def main():
 
     update_pom_version(os.path.join(INDIGO_PATH, 'api', 'java', 'pom.xml'), new_version)
     update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'bingo', 'java', 'pom.xml'), new_version)
+    update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'bingo-elastic', 'java', 'pom.xml'), new_version)
     update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'inchi', 'java', 'pom.xml'), new_version)
     update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'renderer', 'java', 'pom.xml'), new_version)
     update_csproj_version(os.path.join(INDIGO_PATH, 'api', 'dotnet', 'Indigo.Net.csproj'), new_version)
