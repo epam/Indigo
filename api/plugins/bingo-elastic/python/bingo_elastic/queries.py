@@ -59,8 +59,11 @@ class KeywordQuery(CompilableQuery):
             bool_head["must"] = []
         bool_head["must"].append(
             {
-                "term": {
-                    f"{self.field}.keyword": {"value": self._value, "boost": 0}
+                "match": {
+                    self.field: {
+                        "query": self._value,
+                        "boost": 0
+                    }
                 }
             }
         )

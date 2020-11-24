@@ -134,7 +134,7 @@ In this case we requested top-20 candidate molecules with exact same fingerprint
 #### Subsctructure match of the records from Elasticsearch
 
 ```
-exact_records = repository.filter(substructure=target)
+submatch_records = repository.filter(substructure=target)
 ```
 
 In this case we requested top-10 candidate molecules with exact same fingerprint to `target`.
