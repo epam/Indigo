@@ -6,26 +6,41 @@ import xml.etree.cElementTree as ElementTree
 INDIGO_PATH = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir))
 
 
-def update_pom_version(pomFile, newVersion):
-    tree = ElementTree.parse(pomFile)
+def update_pom_version(pom_file, new_version_tuple):
+    version_prefix, version_suffix, commits, _ = new_version_tuple
+    new_version = version_prefix
+    if version_suffix:
+        new_version += "-{}".format(version_suffix)
+    if commits:
+        dot_symbol = '.' if not version_suffix else ''
+        new_version += "{}{}".format(dot_symbol, commits)
+
+    tree = ElementTree.parse(pom_file)
     ElementTree.register_namespace('', 'http://maven.apache.org/POM/4.0.0')
     root = tree.getroot()
     version_changed = False
     for child in root:
         if child.tag.endswith('version'):
             old_version = child.text
-            if old_version != newVersion:
-                print('Updating Indigo version from {0} to {1} in {2}...'.format(old_version, newVersion, pomFile))
-                child.text = newVersion
+            if old_version != new_version:
+                print('Updating Indigo version from {0} to {1} in {2}...'.format(old_version, new_version, pom_file))
+                child.text = new_version
                 version_changed = True
             else:
-                print('Indigo version in {0} remains {1}...'.format(pomFile, newVersion))
+                print('Indigo version in {0} remains {1}...'.format(pom_file, new_version))
             break
     if version_changed:
-        tree.write(pomFile)
+        tree.write(pom_file)
 
 
-def update_csproj_version(csproj_file, new_version):
+def update_csproj_version(csproj_file, new_version_tuple):
+    version_prefix, version_suffix, commits, _ = new_version_tuple
+    new_version = version_prefix
+    if version_suffix:
+        new_version += "-{}".format(version_suffix)
+    if commits:
+        new_version += ".{}".format(commits)
+
     tree = ElementTree.parse(csproj_file)
     root = tree.getroot()
     version_changed = False
@@ -46,7 +61,19 @@ def update_csproj_version(csproj_file, new_version):
         tree.write(csproj_file)
 
 
-def update_setup_py_version(setup_py_file, new_version):
+def update_setup_py_version(setup_py_file, new_version_tuple):
+    version_prefix, version_suffix, commits, _ = new_version_tuple
+    new_version = version_prefix
+    if version_suffix:
+        if version_suffix == 'alpha':
+            version_suffix = 'a'
+        elif version_suffix == 'beta':
+            version_suffix = 'b'
+        new_version += "{}".format(version_suffix)
+    if commits:
+        dot_symbol = '.' if not version_suffix else ''
+        new_version += "{}{}".format(dot_symbol, commits)
+
     with open(setup_py_file) as f:
         data = f.read()
     vr = re.compile('version="(.+)"')
@@ -62,11 +89,9 @@ def update_setup_py_version(setup_py_file, new_version):
 
 
 def main():
-    sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'api'))
-    if len(sys.argv) < 2:
-        new_version = __import__('get_indigo_version').getIndigoVersion()
-    else:
-        new_version = sys.argv[1]
+    sys.path.append(os.path.join(INDIGO_PATH, 'api'))
+    new_version = __import__('get_indigo_version').get_indigo_version_tuple_from_git()
+
     update_pom_version(os.path.join(INDIGO_PATH, 'api', 'java', 'pom.xml'), new_version)
     update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'bingo', 'java', 'pom.xml'), new_version)
     update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'inchi', 'java', 'pom.xml'), new_version)
