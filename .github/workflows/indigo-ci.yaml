@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - master
-    push:
-      tags:
-        - 'indigo-*'
+    tags:
+      - 'indigo-*'
   workflow_dispatch:
   pull_request:
 
