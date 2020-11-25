@@ -42,22 +42,22 @@ publish = '' if not args.publish else 'deploy -P sign-artifacts -Dgpg.passphrase
 
 os.chdir(os.path.join(api_dir, "java"))
 version = get_pom_version_from_curdir()
-subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
+subprocess.check_call("%s -X -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "renderer", "java"))
 version = get_pom_version_from_curdir()
-subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
+subprocess.check_call("%s -X -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-renderer-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-renderer.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "inchi", "java"))
 version = get_pom_version_from_curdir()
-subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
+subprocess.check_call("%s -X -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'indigo-inchi-%s.jar' % version), os.path.join(dist_dir, 'java', 'indigo-inchi.jar'))
 
 os.chdir(os.path.join(api_dir, "plugins", "bingo", "java"))
 version = get_pom_version_from_curdir()
-subprocess.check_call("%s -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
+subprocess.check_call("%s -X -B clean package verify install %s" % (mvn_cmd, publish), shell=True)
 shutil.copy(os.path.join(os.path.abspath(os.curdir), 'target', 'bingo-nosql-%s.jar' % version), os.path.join(dist_dir, 'java', 'bingo-nosql.jar'))
 
 if args.publish:
