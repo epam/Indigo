@@ -1,8 +1,6 @@
 name: Indigo CI
 
-on:
-  push:
-    branches:
+on: push
 
 jobs:
   publish:
