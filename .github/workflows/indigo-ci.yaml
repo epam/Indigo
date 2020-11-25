@@ -298,10 +298,8 @@ jobs:
           apt install -y gnupg
           mkdir /root/.m2
           echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
-          cat /root/.m2/settings.xml
           echo ${GPG_PRIVATE_KEY} > gpg.key
           gpg --batch --import gpg.key
           rm gpg.key
           gpg --list-keys
-          mvn help:effective-settings
           python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal --publish
