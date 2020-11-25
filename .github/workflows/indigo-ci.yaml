@@ -289,6 +289,7 @@ jobs:
           GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
         run: |
+          mkdir ~/.m2
           echo ${MAVEN_SETTINGS} > ~/.m2/settings.xml
           echo ${GPG_PRIVATE_KEY} > gpg.key
           gpg --import gpg.key
