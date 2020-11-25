@@ -9,7 +9,8 @@ ARG IRONPYTHON_VERSION=2.7.10
 
 RUN apt update && \
     apt upgrade -y && \
-    apt install -y --no-install-recommends git git-lfs python3 python3-pip python3-distutils curl gpg libfreetype6 libfontconfig1 unzip libc6-dev libgdiplus libx11-dev && \
+    apt install -y --no-install-recommends git git-lfs python3 python3-pip python3-distutils curl libfreetype6 libfontconfig1 unzip libc6-dev libgdiplus libx11-dev && \
+    apt install -y gnupg && \
     # Java JDK
     curl -OL https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk${JDK_VERSION_MAJOR}-${JDK_VERSION_MINOR}/OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
     tar -xzf OpenJDK8U-jdk_x64_linux_hotspot_${JDK_VERSION_MAJOR}${JDK_VERSION_MINOR}.tar.gz && \
