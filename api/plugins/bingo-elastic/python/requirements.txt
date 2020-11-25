@@ -1,2 +1,0 @@
-epam.indigo
-elasticsearch
