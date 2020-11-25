@@ -1,9 +1,13 @@
+import logging
 from pathlib import Path
 from typing import Generator, Union
 
 from indigo import Indigo, IndigoObject
 
 from bingo_elastic.model.record import IndigoRecord
+
+
+logger = logging.getLogger("bingo_elastic")
 
 
 def iterate_file(
@@ -31,7 +35,10 @@ def iterate_file(
 
     indigo_object: IndigoObject
     for indigo_object in getattr(Indigo(), iterator_fn)(str(file)):
-        yield IndigoRecord(indigo_object=indigo_object)
+        try:
+            yield IndigoRecord(indigo_object=indigo_object)
+        except Exception as err_:
+            logger.exception(err_)
 
 
 def iterate_sdf(file: Union[Path, str]) -> Generator:
