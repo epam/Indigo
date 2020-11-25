@@ -96,12 +96,6 @@ public class Helpers {
         return indigoRecordBuilder.build();
     }
 
-    /****************************************************************************************
-     *
-     *  ITERABLE HELPERS
-     *
-     ***************************************************************************************/
-
     protected static Iterable<IndigoRecord> iterateIndigoObject(IndigoObject indigoObject) {
         return () -> new Iterator<IndigoRecord>() {
             @Override

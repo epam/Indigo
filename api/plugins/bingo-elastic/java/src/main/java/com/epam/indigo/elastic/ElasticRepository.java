@@ -36,8 +36,6 @@ import static com.epam.indigo.model.NamingConstants.*;
 /**
  * Class responsible for all operations with Elasticsearch
  * Have ability to index, delete, produce stream for further operations like similarity match, filtering on extra textual fields, etc
- *
- * @param <T>
  */
 public class ElasticRepository<T extends IndigoRecord> implements GenericRepository<T> {
 

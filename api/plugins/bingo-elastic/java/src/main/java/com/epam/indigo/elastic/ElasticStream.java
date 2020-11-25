@@ -25,9 +25,6 @@ import static com.epam.indigo.model.NamingConstants.*;
 /**
  * Implementation of JDK Stream API
  * Limited number of operations supported at the moment, check out usage example in README for better understanding
- *
- * @param <T>
- * @experimental
  */
 public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 

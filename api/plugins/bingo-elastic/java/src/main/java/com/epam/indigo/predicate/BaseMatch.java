@@ -5,7 +5,6 @@ import org.elasticsearch.script.Script;
 
 /**
  * Base class for match, all different matches should be extended from this one
- * @param <T>
  */
 public abstract class BaseMatch<T extends IndigoRecord> extends IndigoPredicate<T> {
 

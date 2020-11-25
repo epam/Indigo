@@ -9,8 +9,6 @@ import java.util.List;
 
 /**
  * Not recommended for current usage, stick with {@link com.epam.indigo.model.IndigoRecord} instead
- *
- * @experimental
  */
 @Deprecated
 public class CustomIndigoRecord extends IndigoRecord {
