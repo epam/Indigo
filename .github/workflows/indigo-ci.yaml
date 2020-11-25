@@ -4,7 +4,6 @@ on: push
 
 jobs:
   publish:
-    if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
     container: epmlsop/indigo-tester:latest
     steps:
