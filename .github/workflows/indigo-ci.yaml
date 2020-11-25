@@ -2,6 +2,7 @@ name: Indigo CI
 
 on:
   push:
+    branches:
 
 jobs:
   publish:
