@@ -1,3 +1,4 @@
+import indigo
 import logging
 from typing import Dict, List
 
@@ -21,6 +22,8 @@ class WithIndigoObject:
         )
         for fp in fps:
             try:
+                setattr(instance, f"{fp}_fingerprint", [])
+                setattr(instance, f"{fp}_fingerprint_len", 0)
                 fp_ = [
                     int(feature)
                     for feature in value.fingerprint(fp)
@@ -30,12 +33,16 @@ class WithIndigoObject:
                 setattr(instance, f"{fp}_fingerprint", fp_)
                 setattr(instance, f"{fp}_fingerprint_len", len(fp_))
             except ValueError:
-                raise ValueError(
-                    "Building IndigoRecords from empty "
-                    "IndigoObject is not supported"
-                )
+                pass
+            except indigo.IndigoException:
+                pass
+
         setattr(instance, "name", value.name())
-        setattr(instance, "cmf", " ".join(map(str, list(value.serialize()))))
+        try:
+            setattr(instance, "cmf",
+                    " ".join(map(str, list(value.serialize()))))
+        except indigo.IndigoException:
+            pass
 
 
 class IndigoRecord:
