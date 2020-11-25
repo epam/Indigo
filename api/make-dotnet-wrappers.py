@@ -143,7 +143,7 @@ if __name__ == '__main__':
         indigoDotNetVersion = xml_to_dict(os.path.join(indigoDotNetPath, 'Indigo.Net.csproj'))['PropertyGroup']['Version']
         nupkg_path = join(indigoDotNetPath, 'bin', 'Release', 'Indigo.Net.{}.nupkg'.format(indigoDotNetVersion))
         if args.publish:
-            subprocess.check_call(['dotnet', 'nuget', 'push', nupkg_path, '-api-key',
+            subprocess.check_call(['dotnet', 'nuget', 'push', nupkg_path, '--api-key',
                                    os.environ['NUGET_API_KEY'], '--source', 'https://api.nuget.org/v3/index.json'])
         shutil.copy(nupkg_path, os.curdir)
 
