@@ -91,6 +91,8 @@ jobs:
         with:
           name: indigo-libs-macos
           path: dist/
+      - name: Update Wrappers version
+        run: python3 build_scripts/indigo-update-version.py
       - name: Build Python wrappers
         run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal
       - name: Build Java wrapers
@@ -268,7 +270,7 @@ jobs:
         run: git fetch --tags
       - name: Create folder for native libs
         run: mkdir dist
-      - name: Download Python public wrappers
+      - name: Download native shared libraries
         uses: actions/download-artifact@v2
         with:
           name: indigo-native-shared-libs

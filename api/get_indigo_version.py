@@ -25,7 +25,6 @@ def get_indigo_version_tuple_from_git():
     version_raw = subprocess.check_output(r'git describe --tags --long --match "indigo-*" | sed -r "s/indigo-(.+)-(.+)-(.+)/\1\\n\2\\n\3/"', shell=True).decode('utf-8').strip()
     version_splitted = version_raw.split('\n')
 
-    print(version_splitted)
     version = version_splitted[0]
     version_suffix = None
     commits = None

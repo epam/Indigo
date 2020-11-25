@@ -1,3 +1,4 @@
+import glob
 import os
 import shutil
 import subprocess
@@ -68,7 +69,14 @@ def make_wheels(api_dir, dest):
     if args.publish:
         subprocess.check_call(['twine', 'upload', '-u', '__token__', '-p', os.environ['PYPI_TOKEN'], 'dist/*.whl'])
     os.chdir(cur_dir)
-
+    shutil.rmtree(os.path.join(dest, 'build'))
+    shutil.rmtree(os.path.join(dest, 'epam.indigo.egg-info'))
+    shutil.rmtree(os.path.join(dest, 'indigo'))
+    os.remove(os.path.join(dest, 'LICENSE'))
+    os.remove(os.path.join(dest, 'setup.py'))
+    for file in glob.glob(os.path.join(dest, 'dist', '*.whl')):
+        shutil.move(file, os.path.join(cur_dir, os.path.basename(file)))
+    shutil.rmtree(os.path.join(cur_dir, 'epam.indigo'))
 
 if __name__ == '__main__':
     api_dir = os.path.abspath(os.path.dirname(__file__))
