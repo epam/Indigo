@@ -72,6 +72,7 @@ class ElasticRepository:
             pass
             # TODO: add post processing
 
+    # TODO: chunk size and thread count based on actual CPU values
     def index_records_parallel(
         self,
         records: Generator,

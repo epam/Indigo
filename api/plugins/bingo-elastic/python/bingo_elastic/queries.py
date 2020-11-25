@@ -55,6 +55,7 @@ class KeywordQuery(CompilableQuery):
         bool_head = head_by_path(
             query, ("query", "script_score", "query", "bool")
         )
+        # TODO think about filter
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"].append(
@@ -124,6 +125,7 @@ class RangeQuery(CompilableQuery):
         bool_head = head_by_path(
             query, ("query", "script_score", "query", "bool")
         )
+        # TODO think about filter
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"].append(
@@ -151,6 +153,7 @@ class WildcardQuery(CompilableQuery):
         bool_head = head_by_path(
             query, ("query", "script_score", "query", "bool")
         )
+        # TODO think about filter
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"].append(
