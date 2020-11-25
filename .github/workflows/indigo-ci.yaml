@@ -11,8 +11,11 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
         run: |
+          echo SHELL=$SHELL
+          echo BASH_VERSION=$BASH_VERSION
+          env
           apt install -y gnupg
-          echo -e ${GPG_PRIVATE_KEY} > gpg.key
+          echo ${GPG_PRIVATE_KEY} > gpg.key
           cat gpg.key
           gpg --batch --import --verbose gpg.key
           rm gpg.key
