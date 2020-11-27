@@ -1,14 +1,16 @@
 from typing import Callable
 
-import pytest
-
 from bingo_elastic.model import record
 
 
 def test_empty_create(indigo_fixture):
     mol = indigo_fixture.createMolecule()
-    with pytest.raises(ValueError):
-        record.IndigoRecord(indigo_object=mol)
+    err_instance = record.record_errors.get()
+    assert not len(err_instance)
+    record.IndigoRecord(indigo_object=mol)
+    assert len(err_instance)
+    record_id, error = err_instance.pop()
+    assert isinstance(error, ValueError)
 
 
 def test_create(indigo_fixture):

@@ -131,3 +131,32 @@ def test_wildcard_search(
     result = elastic_repository.filter(name=WildcardQuery("Comp*"))
     for item in result:
         assert item.name == "Composition1"
+
+
+def test_custom_fields(
+    elastic_repository: ElasticRepository,
+    indigo_fixture: Indigo,
+    loaded_sdf: IndigoRecord,
+    resource_loader: Callable[[str], str],
+):
+
+    mol = indigo_fixture.loadMoleculeFromFile(
+        resource_loader("resources/composition1.mol")
+    )
+    rec = IndigoRecord(indigo_object=mol,
+                       PUBCHEM_IUPAC_INCHIKEY="RDHQFKQIGNGIED-UHFFFAOYSA-N")
+    elastic_repository.index_record(rec)
+    time.sleep(1)
+    result = elastic_repository.filter(
+        PUBCHEM_IUPAC_INCHIKEY="RDHQFKQIGNGIED-UHFFFAOYSA-N"
+    )
+    for item in result:
+        assert item.PUBCHEM_IUPAC_INCHIKEY == "RDHQFKQIGNGIED-UHFFFAOYSA-N"
+
+
+#TODO: create pubchem test
+# def test_pubchem(indigo_fixture: Indigo,
+#                  resource_loader: Callable[[str], str],):
+#     iterator = iterate_file(Path(resource_loader("resources/pubchem_1.sdf")))
+#     for item in iterator:
+#         pass
