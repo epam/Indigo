@@ -10,6 +10,21 @@
     <description>Elasticsearch chemistry database search tool</description>
     <url>http://lifescience.opensource.epam.com/indigo/api</url>
 
+    <developers>
+        <developer>
+            <id>konstantin_perikov</id>
+            <name>Konstantin Perikov</name>
+            <email>konstantin_perikov@epam.com</email>
+            <timezone>UTC</timezone>
+        </developer>
+        <developer>
+            <id>ruslan_khyurri</id>
+            <name>Ruslan Khyurri</name>
+            <email>ruslan_khyurri@epam.com</email>
+            <timezone>UTC+3</timezone>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
