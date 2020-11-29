@@ -4,11 +4,12 @@ import com.epam.indigo.Bingo;
 import com.epam.indigo.BingoObject;
 import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
-import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.predicate.ExactMatch;
 import com.epam.indigo.predicate.SimilarityMatch;
 import org.elasticsearch.ElasticsearchStatusException;
+import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
@@ -37,6 +38,7 @@ public class LoadMoleculeFromFileTest {
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
                 .withRefreshInterval("1s")
+                .withRefreshPolicy(RefreshPolicy.IMMEDIATE)
                 .build();
     }
 
@@ -58,11 +60,7 @@ public class LoadMoleculeFromFileTest {
 
     @AfterEach
     public void deleteIndex() throws IOException {
-        try {
-            repository.deleteAllRecords();
-        } catch (ElasticsearchStatusException ignored) {
-
-        }
+        repository.deleteAllRecords();
     }
 
 
@@ -76,7 +74,7 @@ public class LoadMoleculeFromFileTest {
 
     @Test
     @DisplayName("Testing creation of IndigoRecord from mol file")
-    void testLoadFromMol() throws Exception {
+    void testLoadFromMol() {
         IndigoRecord indigoRecord = Helpers.loadFromFile("src/test/resources/composition1.mol");
         assertNotNull(indigoRecord.getSimFingerprint());
     }
@@ -93,7 +91,6 @@ public class LoadMoleculeFromFileTest {
     public void testLoadFromCmlWithName() throws Exception {
         List<IndigoRecord> indigoRecordList = Helpers.loadFromCmlFile("src/test/resources/tetrahedral-named.cml");
         repository.indexRecords(indigoRecordList, indigoRecordList.size());
-        TimeUnit.SECONDS.sleep(5);
         List<IndigoRecord> indigoRecordResult = repository.stream().collect(Collectors.toList());
         assertEquals(1, indigoRecordList.size());
         assertEquals("tetrahedralTitle", indigoRecordList.get(0).getName());
@@ -113,7 +110,6 @@ public class LoadMoleculeFromFileTest {
                 Helpers.loadFromSdf("src/test/resources/zinc-slice.sdf.gz");
         repository.indexRecord(indigoRecordList.get(0));
         assertEquals(721, indigoRecordList.size());
-        TimeUnit.SECONDS.sleep(5);
         List<IndigoRecord> indigoRecordResult = repository.stream()
                 .limit(1).collect(Collectors.toList());
         assertEquals("ZINC03099968", indigoRecordResult.get(0).getName());
@@ -128,11 +124,55 @@ public class LoadMoleculeFromFileTest {
             IndigoRecord indigoRecord = Helpers.loadFromSmiles(smiles);
             repository.indexRecord(indigoRecord);
             IndigoRecord indigoTestRecord = Helpers.loadFromSmiles(smiles);
-            TimeUnit.SECONDS.sleep(5);
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new SimilarityMatch<>(indigoTestRecord, 1))
                     .collect(Collectors.toList());
             assertEquals(1, similarRecords.size());
+
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+    }
+
+    @Test
+    @DisplayName("Testing indexing and retrieving exact match for empty fingerprint molecules")
+    void testExactMatchOnEmptyFingerprint() {
+        try {
+            String smiles1 = "[H][H]";
+            IndigoRecord indigoRecord1 = Helpers.loadFromSmiles(smiles1);
+            String smiles2 = "[H][H][H]";
+            IndigoRecord indigoRecord2 = Helpers.loadFromSmiles(smiles2);
+            repository.indexRecord(indigoRecord1);
+            repository.indexRecord(indigoRecord2);
+            List<IndigoRecord> exactMatchRecords = repository.stream()
+                    .filter(new ExactMatch<>(indigoRecord1))
+                    .collect(Collectors.toList())
+                    .stream()
+                    .filter(ExactMatch.exactMatchAfterChecker(indigoRecord1, indigo))
+                    .collect(Collectors.toList());
+            assertEquals(1, exactMatchRecords.size());
+            assertEquals(smiles1, indigo.loadMolecule(exactMatchRecords.get(0).getCmf()).canonicalSmiles());
+
+        } catch (Exception e) {
+            Assertions.fail();
+        }
+    }
+
+    @Test
+    @DisplayName("Testing indexing and retrieving similar match for empty fingerprint molecules")
+    void testSimMatchOnEmptyFingerprint() {
+        try {
+            String smiles1 = "[H][H]";
+            IndigoRecord indigoRecord1 = Helpers.loadFromSmiles(smiles1);
+            String smiles2 = "[H][H][H]";
+            IndigoRecord indigoRecord2 = Helpers.loadFromSmiles(smiles2);
+            repository.indexRecord(indigoRecord1);
+            repository.indexRecord(indigoRecord2);
+            List<IndigoRecord> simMatchRecords = repository.stream()
+                    .filter(new SimilarityMatch<>(indigoRecord1))
+                    .collect(Collectors.toList());
+            assertEquals(1, simMatchRecords.size());
+            assertEquals(smiles1, indigo.loadMolecule(simMatchRecords.get(0).getCmf()).canonicalSmiles());
 
         } catch (Exception e) {
             Assertions.fail();
@@ -152,7 +192,6 @@ public class LoadMoleculeFromFileTest {
             assertEquals(50, indigoRecordList.size());
             IndigoRecord indigoTestRecord = Helpers.loadFromSmiles(needle);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
-            TimeUnit.SECONDS.sleep(5);
 
             List<IndigoRecord> similarRecords = repository.stream()
                     .filter(new SimilarityMatch<>(indigoTestRecord, 1))
@@ -168,7 +207,7 @@ public class LoadMoleculeFromFileTest {
             result.next();
             IndigoObject bingoFound = result.getIndigoObject();
             IndigoRecord elasticFound = similarRecords.get(0);
-            IndigoObject indigoElasticFound = indigo.unserialize(elasticFound.getCmf());
+            IndigoObject indigoElasticFound = indigo.deserialize(elasticFound.getCmf());
             assertEquals(indigo.similarity(bingoFound, indigoElasticFound), 1.0f);
 
         } catch (Exception e) {

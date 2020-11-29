@@ -64,7 +64,7 @@ public class IndigoRecord {
     }
 
     public IndigoObject getIndigoObject(Indigo session) {
-        return session.unserialize(getCmf());
+        return session.deserialize(getCmf());
     }
 
     public Field getField(String field) throws FieldNotFoundException {
@@ -86,30 +86,24 @@ public class IndigoRecord {
             withCmf(indigoObject.serialize());
             withName(indigoObject.name());
             operations.add(record -> {
-                List<Integer> fin = new ArrayList<>();
-                String simBitList = indigoObject.fingerprint("sim").oneBitsList();
-                String subBitList = indigoObject.fingerprint("sub").oneBitsList();
-                String[] oneBits = simBitList.split(" ");
-
-                if (simBitList.length() == 0 || subBitList.length() == 0) {
-                    throw new BingoElasticException("Building IndigoRecords from empty IndigoObject is not supported");
-                }
-
-                for (String oneBit : oneBits) {
-                    fin.add(Integer.parseInt(oneBit));
-                }
-                record.simFingerprint = new ArrayList<>();
-                record.simFingerprint.addAll(fin);
-                fin.clear();
-                oneBits = subBitList.split(" ");
-                for (String oneBit : oneBits) {
-                    fin.add(Integer.parseInt(oneBit));
-                }
-                record.subFingerprint = new ArrayList<>();
-                record.subFingerprint.addAll(fin);
+                record.subFingerprint = addFingerprint(indigoObject, "sub");
+                record.simFingerprint = addFingerprint(indigoObject, "sim");
             });
 
             return this;
+        }
+
+        private List<Integer> addFingerprint(IndigoObject indigoObject, String fingerprintType) {
+            List<Integer> result = new ArrayList<>();
+            String bitList = indigoObject.fingerprint(fingerprintType).oneBitsList();
+            if (bitList.isEmpty()) {
+                return result;
+            }
+            String[] oneBits = bitList.split(" ");
+            for (String oneBit : oneBits) {
+                result.add(Integer.parseInt(oneBit));
+            }
+            return result;
         }
 
         public IndigoRecordBuilder withCustomObject(String key, Object object) {
@@ -156,14 +150,8 @@ public class IndigoRecord {
         }
 
         public void validate(IndigoRecord record) throws BingoElasticException {
-            if (record.internalID == null) {
-                if (null == record.simFingerprint) {
-                    throw new BingoElasticException("Fingerprint is required field");
-                }
-                if (null == record.subFingerprint) {
-                    throw new BingoElasticException("Fingerprint is required field");
-                }
-            }
+            if (record.cmf.length == 0)
+                throw new BingoElasticException("Creation of IndgioRecord from empty IndigoObject isn't supported");
         }
     }
 

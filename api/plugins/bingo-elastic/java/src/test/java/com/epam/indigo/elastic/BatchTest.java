@@ -2,6 +2,7 @@ package com.epam.indigo.elastic;
 
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import org.elasticsearch.action.support.WriteRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,7 @@ public class BatchTest {
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
-                .withReplicas(0)
-                .withRefreshInterval("1s")
+                .withRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                 .build();
     }
 

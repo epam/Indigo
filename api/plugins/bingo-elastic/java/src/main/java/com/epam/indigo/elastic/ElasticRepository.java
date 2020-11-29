@@ -14,6 +14,7 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
@@ -48,8 +49,9 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     private RestHighLevelClient elasticClient;
     private boolean ignoreSSL;
     private int numShards = 1;
-    private int numReplicas = 1;
+    private int numReplicas = 0;
     private String refreshInterval = "5m";
+    private WriteRequest.RefreshPolicy refreshPolicy;
 
     private ElasticRepository() {
     }
@@ -184,15 +186,11 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 }
                 builder.endObject();
                 request.add(new IndexRequest(this.indexName)
-                        .source(builder));
+                        .source(builder))
+                        .setRefreshPolicy(this.refreshPolicy);
                 this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);
             }
         }
-//        TODO do we need it?
-//        FlushRequest flushRequest = new FlushRequest();
-//        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT);
-//        ForceMergeRequest forceMergeRequest = new ForceMergeRequest();
-//        this.elasticClient.indices().forcemerge(forceMergeRequest, RequestOptions.DEFAULT);
     }
 
     @Override
@@ -274,6 +272,19 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             return this;
         }
 
+        /**
+         *
+         * @param refreshPolicy different type of policy
+         *                      NONE - no refresh, will be eventually refreshed
+         *                      IMMEDIATE - good for testing, immediately refresh the index with records
+         *                      WAIT_UNTIL - good for real use case of frequent writes/reads
+         *
+         */
+        public ElasticRepositoryBuilder<T> withRefreshPolicy(WriteRequest.RefreshPolicy refreshPolicy) {
+            operations.add(repo -> repo.refreshPolicy = refreshPolicy);
+            return this;
+        }
+
         public ElasticRepository<T> build() {
             ElasticRepository<T> repository = new ElasticRepository<>();
             operations.forEach(operation -> operation.accept(repository));
@@ -290,6 +301,9 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                             .setDefaultCredentialsProvider(credentialsProvider));
                 }
                 repository.elasticClient = new RestHighLevelClient(builder);
+            }
+            if (repository.refreshPolicy == null) {
+                repository.refreshPolicy = WriteRequest.RefreshPolicy.WAIT_UNTIL;
             }
             validate(repository);
             return repository;

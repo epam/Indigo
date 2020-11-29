@@ -8,7 +8,6 @@ import com.epam.indigo.predicate.*;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,7 +39,6 @@ public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
             List<IndigoRecord> indigoRecordList =
                     Helpers.loadFromSdf(testSdfFile);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
-            TimeUnit.SECONDS.sleep(10);
         } catch (Exception e) {
             Assertions.fail(e);
         }

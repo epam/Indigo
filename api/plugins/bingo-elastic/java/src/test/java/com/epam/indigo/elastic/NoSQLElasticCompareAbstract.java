@@ -2,8 +2,8 @@ package com.epam.indigo.elastic;
 
 import com.epam.indigo.Bingo;
 import com.epam.indigo.Indigo;
-import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.model.IndigoRecord;
+import org.elasticsearch.action.support.WriteRequest;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 abstract public class NoSQLElasticCompareAbstract {
@@ -21,8 +21,7 @@ abstract public class NoSQLElasticCompareAbstract {
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
-                .withReplicas(0)
-                .withRefreshInterval("1s")
+                .withRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                 .build();
         bingoDb = Bingo.createDatabaseFile(indigo, "src/test/resources/bingo_nosql", "molecule");
 
