@@ -154,6 +154,23 @@ def test_custom_fields(
         assert item.PUBCHEM_IUPAC_INCHIKEY == "RDHQFKQIGNGIED-UHFFFAOYSA-N"
 
 
+def test_search_empty_fingerprint(
+    elastic_repository: ElasticRepository,
+    indigo_fixture: Indigo,
+    loaded_sdf: IndigoRecord,
+    resource_loader: Callable[[str], str],
+):
+    mol = indigo_fixture.loadMolecule("[H][H]")
+    rec = IndigoRecord(indigo_object=mol)
+    elastic_repository.index_record(rec)
+    time.sleep(1)
+    result = elastic_repository.filter(exact=rec)
+    assert (
+            "[H][H]" == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
+    )
+
+
+
 #TODO: create pubchem test
 # def test_pubchem(indigo_fixture: Indigo,
 #                  resource_loader: Callable[[str], str],):
