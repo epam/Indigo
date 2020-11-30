@@ -1,72 +1,61 @@
+from typing import Callable, Dict, List, Optional
 from uuid import uuid4
 
 import indigo
-from typing import Dict, List, Tuple
-from contextvars import ContextVar
-
 from indigo import Indigo, IndigoObject
 
 
-class RecordErrorStack:
-    def __init__(self):
-        self.__stack = []
-
-    def put(self, record_id: str, error: Exception) -> None:
-        self.__stack.append((record_id, error))
-
-    def pop(self) -> Tuple[str, Exception]:
-        return self.__stack.pop()
-
-    def view(self):
-        for record_id, error in self.__stack[::-1]:
-            yield record_id, error
-
-    def __len__(self):
-        return len(self.__stack)
+def skip_errors(instance: object, err: BaseException) -> None:
+    """
+    Empty handler to skip errors
+    """
+    pass
 
 
-record_errors: ContextVar[RecordErrorStack] = ContextVar(
-    "error_context", default=RecordErrorStack()
-)
+def check_error(instance: object, error: BaseException) -> None:
+    if instance.error_handler:
+        instance.error_handler(instance, error)
+    else:
+        raise error
 
 
 class WithElasticResponse:
     def __set__(self, instance: object, value: Dict):
         el_src = value["_source"]
-        for key, value in el_src.items():
-            setattr(instance, key, value)
+        for arg, val in el_src.items():
+            setattr(instance, arg, val)
 
 
 class WithIndigoObject:
     def __set__(self, instance: object, value: IndigoObject) -> None:
-        fps = (
+        fingerprints = (
             "sim",
             "sub",
         )
-        for fp in fps:
+        for f_print in fingerprints:
             try:
-                setattr(instance, f"{fp}_fingerprint", [])
-                setattr(instance, f"{fp}_fingerprint_len", 0)
+                setattr(instance, f"{f_print}_fingerprint", [])
+                setattr(instance, f"{f_print}_fingerprint_len", 0)
                 fp_ = [
                     int(feature)
-                    for feature in value.fingerprint(fp)
+                    for feature in value.fingerprint(f_print)
                     .oneBitsList()
                     .split(" ")
                 ]
-                setattr(instance, f"{fp}_fingerprint", fp_)
-                setattr(instance, f"{fp}_fingerprint_len", len(fp_))
+                setattr(instance, f"{f_print}_fingerprint", fp_)
+                setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
             except ValueError as err_:
-                record_errors.get().put(instance.record_id, err_)
+                check_error(instance, err_)
             except indigo.IndigoException as err_:
-                record_errors.get().put(instance.record_id, err_)
+                check_error(instance, err_)
 
         setattr(instance, "name", value.name())
         try:
             setattr(
                 instance, "cmf", " ".join(map(str, list(value.serialize())))
             )
-        except indigo.IndigoException:
-            record_errors.get().put(instance.record_id, err_)
+        except indigo.IndigoException as err_:
+            check_error(instance, err_)
 
 
 class IndigoRecord:
@@ -78,6 +67,7 @@ class IndigoRecord:
     indigo_object = WithIndigoObject()
     elastic_response = WithElasticResponse()
     record_id: str = None
+    error_handler: Optional[Callable[[object, BaseException], None]] = None
 
     def __init__(self, **kwargs) -> None:
         """
@@ -90,13 +80,32 @@ class IndigoRecord:
         :type sim_fingerprint: List[int]
         :param sub_fingerprint: similarity fingerprint (sub)
         :type sub_fingerprint: List[int]
+        :param error_handler: lambda for catching exceptions
+        :type error_handler: Optional[Callable[[object, BaseException], None]]
+        :param skip_errors: if True, all errors will be skipped,
+                            no error_handler is required
+        :type skip_errors: bool
         """
+
+        # First check if skip_errors flag passed
+        # If no flag passed add error_handler function from arguments
+        if kwargs.get("skip_errors", False):
+            self.error_handler = skip_errors
+        else:
+            self.error_handler = kwargs.get("error_handler", None)
+
         self.record_id = uuid4().hex
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+        for arg, val in kwargs.items():
+            setattr(self, arg, val)
 
     def as_dict(self) -> Dict:
-        return self.__dict__
+        # Add system fields here to exclude from indexing
+        filtered_fields = {"error_handler", "skip_errors"}
+        return {
+            key: value
+            for key, value in self.__dict__.items()
+            if key not in filtered_fields
+        }
 
     def as_indigo_object(self, session: Indigo):
         return session.deserialize(list(map(int, self.cmf.split(" "))))

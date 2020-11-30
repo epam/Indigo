@@ -59,23 +59,16 @@ class KeywordQuery(CompilableQuery):
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"].append(
-            {
-                "match": {
-                    self.field: {
-                        "query": self._value,
-                        "boost": 0
-                    }
-                }
-            }
+            {"match": {self.field: {"query": self._value, "boost": 0}}}
         )
         default_script_score(query)
 
 
 class SubstructureQuery(CompilableQuery):
     def __init__(self, key: str, value: IndigoRecord):
-        if type(value) != IndigoRecord:
+        if not isinstance(value, IndigoRecord):
             raise AttributeError(
-                "Argument for substructure search " "must be IndigoRecord"
+                "Argument for substructure search must be IndigoRecord"
             )
         self._key = key
         self._value = value
@@ -281,6 +274,16 @@ class ExactMatch(CompilableQuery):
     def clauses(self) -> List[Dict]:
         return clauses(self._target.sub_fingerprint, "sub_fingerprint")
 
+    def postprocess(
+        self, record: IndigoRecord, indigo: Indigo
+    ) -> Optional[IndigoRecord]:
+        if indigo.substructureMatcher(record.as_indigo_object(indigo)).match(
+            indigo.loadQueryMolecule(
+                self._target.as_indigo_object(indigo).canonicalSmiles()
+            )
+        ):
+            return record
+
     def compile(
         self, query, postprocess_actions: PostprocessType = None
     ) -> None:
@@ -295,6 +298,7 @@ class ExactMatch(CompilableQuery):
             "source": "_score / doc['sub_fingerprint_len'].value"
         }
         query["min_score"] = 1
+        postprocess_actions.append(getattr(self, "postprocess"))
 
 
 # Alias to default similarity match

@@ -22,7 +22,9 @@ class ElasticRepository:
         port: int = 9200,
         scheme: Str = "",
         http_auth: Optional[Tuple[Str]] = None,
-        ssl_context: Any = None
+        ssl_context: Any = None,
+        request_timeout: int = 60,
+        retry_on_timeout: bool = True
     ) -> None:
         """
         :param host: host or list of hosts
@@ -30,10 +32,14 @@ class ElasticRepository:
         :param scheme: http or https
         :param http_auth:
         :param ssl_context:
+        :param timeout:
+        :param retry_on_timeout:
         """
         arguments = {
             "port": port,
             "scheme": "https" if scheme == "https" else "http",
+            "request_timeout": request_timeout,
+            "retry_on_timeout": retry_on_timeout,
         }
         if type(host) == str:
             arguments["host"] = host

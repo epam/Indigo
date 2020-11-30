@@ -1,3 +1,5 @@
+import pytest
+
 from typing import Callable
 
 from bingo_elastic.model import record
@@ -5,12 +7,18 @@ from bingo_elastic.model import record
 
 def test_empty_create(indigo_fixture):
     mol = indigo_fixture.createMolecule()
-    err_instance = record.record_errors.get()
-    assert not len(err_instance)
-    record.IndigoRecord(indigo_object=mol)
-    assert len(err_instance)
-    record_id, error = err_instance.pop()
-    assert isinstance(error, ValueError)
+    with pytest.raises(Exception):
+        record.IndigoRecord(indigo_object=mol)
+
+    def err_handler(instance: object, err_: BaseException) -> None:
+        assert isinstance(instance.record_id, str)
+        assert isinstance(err_, ValueError)
+
+    record.IndigoRecord(indigo_object=mol,
+                        error_handler=err_handler)
+
+    record.IndigoRecord(indigo_object=mol,
+                        skip_errors=True)
 
 
 def test_create(indigo_fixture):
@@ -23,7 +31,8 @@ def test_create(indigo_fixture):
 
 def test_create_without_fingerprint(indigo_fixture):
     mol = indigo_fixture.loadMolecule("[H][H]")
-    indigo_record = record.IndigoRecord(indigo_object=mol)
+    indigo_record = record.IndigoRecord(indigo_object=mol,
+                                        skip_errors=True)
     assert len(indigo_record.sim_fingerprint) == 0
     assert len(indigo_record.sub_fingerprint) == 0
 

@@ -2,6 +2,8 @@ import time
 from pathlib import Path
 from typing import Callable
 
+import pytest
+from bingo_elastic.model.record import skip_errors
 from indigo import Indigo
 
 from bingo_elastic.elastic import ElasticRepository, IndigoRecord
@@ -157,23 +159,37 @@ def test_custom_fields(
 def test_search_empty_fingerprint(
     elastic_repository: ElasticRepository,
     indigo_fixture: Indigo,
-    loaded_sdf: IndigoRecord,
     resource_loader: Callable[[str], str],
 ):
-    mol = indigo_fixture.loadMolecule("[H][H]")
-    rec = IndigoRecord(indigo_object=mol)
-    elastic_repository.index_record(rec)
-    time.sleep(1)
-    result = elastic_repository.filter(exact=rec)
+    for smile in ["[H][H]", "[H][F]"]:
+        rec = IndigoRecord(
+            indigo_object=indigo_fixture.loadMolecule(smile),
+            skip_errors=True
+        )
+        elastic_repository.index_record(rec)
+    time.sleep(5)
+    result = elastic_repository.filter(
+        exact=IndigoRecord(
+            indigo_object=indigo_fixture.loadMolecule("[H][H]"),
+            skip_errors=True
+        )
+    )
+
     assert (
             "[H][H]" == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
     )
+    with pytest.raises(StopIteration):
+        next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
 
 
-
-#TODO: create pubchem test
+# # TODO: create pubchem test
 # def test_pubchem(indigo_fixture: Indigo,
-#                  resource_loader: Callable[[str], str],):
-#     iterator = iterate_file(Path(resource_loader("resources/pubchem_1.sdf")))
-#     for item in iterator:
-#         pass
+#                  resource_loader: Callable[[str], str],
+#                  elastic_repository: ElasticRepository,):
+#
+#     iterator = iterate_file(
+#         Path(resource_loader("resources/pubchem_1.sdf")),
+#         error_handler=skip_errors
+#     )
+#     elastic_repository.index_records(iterator)
+#     pass
