@@ -24,10 +24,14 @@ This repository includes:
 
 Detailed documentation is available at <http://lifescience.opensource.epam.com>
 
+Changelogs could be found here:
+* [Indigo API](/api/CHANGELOG.md)
+* [Bingo](/bingo/CHANGELOG.md)
+
 ## Download ##
 <https://lifescience.opensource.epam.com/download/indigo/index.html>
 
-### Bindings:
+### Bindings in public repositories:
 * .NET: <https://www.nuget.org/packages/Indigo.Net>
 * Java: <https://search.maven.org/search?q=g:com.epam.indigo>
 * Python: <https://pypi.org/project/epam.indigo/>
@@ -52,10 +56,10 @@ To build the project from the sources, the following tools should be installed:
 
 * GIT 1.8.2+
 * GIT-LFS, so GIT can handle Large File Storage. Refer to <https://github.com/git-lfs/git-lfs/wiki/Installation>
-* C/C++ compiler
-    * Linux:   GCC version 4.9+ (GCC 4.8.4 is used in builds) or Clang version 3.5+
-    * Windows: Visual Studio 2013+ (2015 is used in builds) or MinGW with GCC version 4.9+
-    * macOS:   Clang 3.5+ (AppleClang 9.1.0 is used in builds)
+* C/C++ compiler with C++11 support
+    * Linux:   GCC version 4.9+ or Clang version 3.5+
+    * Windows: Visual Studio 2013+ or MinGW with GCC version 4.9+
+    * macOS:   Clang 3.5+
 * CMake 3.0+
 * Python 2.7+
 * JDK 1.8+
