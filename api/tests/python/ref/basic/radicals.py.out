@@ -1,0 +1,68 @@
+****** Basic ********
+C1C=CC=C1
+0
+0
+2
+True
+[C]1C=CC=C1 |^3:0|
+1
+True
+[CH]1C=CC=C1 |^1:0|
+2
+True
+[C]1C=CC=C1 |^4:0|
+****** SDF ********
+[CH]1CCCC1 |^1:0|
+ 0: Doublet with 1 electrons
+ 1: None with 0 electrons
+ 2: None with 0 electrons
+ 3: None with 0 electrons
+ 4: None with 0 electrons
+[CH]1CCCC1 |^1:0|
+ 0: Doublet with 1 electrons
+ 1: None with 0 electrons
+ 2: None with 0 electrons
+ 3: None with 0 electrons
+ 4: None with 0 electrons
+[CH]1CCCC1 |^1:0|
+ 0: Doublet with 1 electrons
+ 1: None with 0 electrons
+ 2: None with 0 electrons
+ 3: None with 0 electrons
+ 4: None with 0 electrons
+[C]1CCCC1 |^3:0|
+ 0: Singlet with 2 electrons
+ 1: None with 0 electrons
+ 2: None with 0 electrons
+ 3: None with 0 electrons
+ 4: None with 0 electrons
+[C]1CCCC1 |^3:0|
+ 0: Singlet with 2 electrons
+ 1: None with 0 electrons
+ 2: None with 0 electrons
+ 3: None with 0 electrons
+ 4: None with 0 electrons
+[C]1CCCC1 |^3:0|
+ 0: Singlet with 2 electrons
+ 1: None with 0 electrons
+ 2: None with 0 electrons
+ 3: None with 0 electrons
+ 4: None with 0 electrons
+[C]1CCCC1 |^4:0|
+ 0: Triplet with 2 electrons
+ 1: None with 0 electrons
+ 2: None with 0 electrons
+ 3: None with 0 electrons
+ 4: None with 0 electrons
+[C]1CCCC1 |^4:0|
+ 0: Triplet with 2 electrons
+ 1: None with 0 electrons
+ 2: None with 0 electrons
+ 3: None with 0 electrons
+ 4: None with 0 electrons
+[C]1CCCC1 |^4:0|
+ 0: Triplet with 2 electrons
+ 1: None with 0 electrons
+ 2: None with 0 electrons
+ 3: None with 0 electrons
+ 4: None with 0 electrons

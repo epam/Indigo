@@ -1,0 +1,67 @@
+*** Creating temporary database ****
+v0.72
+Inserted index: 100
+Index optimized
+** searchSub(C) **
+0
+1
+2
+100
+** searchSub(C) **
+0
+1
+2
+*** Deleting record with incorrect index ***
+BingoException: There is no object with this id
+*** Loading existing database ****
+** searchSim(C1CCCCC1) **
+0 0 0.0
+0
+1.0
+C1CCCCC1
+1
+1.0
+C1CCCCC1
+** searchSim(C1CCCCC1) **
+0 0 0.0
+0
+1.0
+C1CCCCC1
+1
+1.0
+C1CCCCC1
+** searchSim(C1CCCCC1) **
+0 0 0.0
+0
+1.0
+C1CCCCC1
+1
+1.0
+C1CCCCC1
+** searchSim(C1CCCCC1) **
+0 0 0.0
+0
+1.0
+C1CCCCC1
+1
+1.0
+C1CCCCC1
+** searchSim(C1CCCCC1) **
+0 0 0.0
+0
+1.0
+C1CCCCC1
+1
+1.0
+C1CCCCC1
+*** Loading non-existent database ***
+BingoException: BingoIndex: determineType(): Database format is not compatible with this version.
+*** Using closed database ***
+BingoException: bingo: Incorrect database object
+*** Simple exact search ****
+** searchExact(ICCCCOC(c1ccc([N+](=O)[O-])c([N+](=O)[O-])c1)=O) **
+0
+** searchExact(CCCC) **
+1
+*** Simple enumerate id ****
+number of molecules: 3

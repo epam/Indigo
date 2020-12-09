@@ -1,0 +1,40 @@
+*** Wiggly bonds ***
+CC(O)(N)C |w:1,r|
+False
+*** Chrial ***
+C[C@@](S)(O)N
+True
+*** Not chrial ***
+C[C@@](S)(O)N |&1:1,r|
+False
+*** Relative save/load ***
+C[C@@](S)(O)N |&1:1,r|
+C[C@](N)(O)S |&1:1,r|
+*** Either cis-trans ***
+CC=CN
+CC=CN
+C/C=C/N
+C/C=C\N
+*** Aromatic cis-trans ***
+O=CC=C1N=c2c(cccc2)=N1
+O=CC=C1N=c2ccccc2=N1
+CN=c1c(=N/C=C\C=O)cccc1
+CN=c1ccccc1=N/C=C\C=O
+ON=c1c(=NO)c(=O)c2c(cccc2)c1=O
+ON=c1c(=NO)c(=O)c2ccccc2c1=O
+*** Closing with cis-trans constraint ***
+CCSc1nc2OC=Nc3c(-c2nn1)cccc3
+CCSc1nc2OC=Nc3c(-c2nn1)cccc3
+*** Atom lists ***
+[#6,#7,#8]c1nc2ccccc2n1
+SMILES saver: atom list can be used only with smarts_mode
+[C,N,O]c1nc2ccccc2n1
+SMILES saver: atom list can be used only with smarts_mode
+[c,n,o]c1nc2ccccc2n1
+SMILES saver: undefined atom number
+C1=CC=CC2=C1N=C(N2)[*;#6,#7,#8]
+SMILES saver: atom list can be used only with smarts_mode
+C1=CC=CC2=C1N=C(N2)[*;C,N,O]
+SMILES saver: atom list can be used only with smarts_mode
+C1=CC=CC2=C1N=C(N2)[*;c,n,o]
+SMILES saver: undefined atom number

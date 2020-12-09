@@ -103,6 +103,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
 if __name__ == '__main__':
     parser = OptionParser(description='Indigo .NET libraries build script')
     parser.add_option('--suffix', '-s', help='archive suffix', default="")
+    parser.add_option('--publish', help='Publish jar',  default=False, action='store_true')
     (args, left_args) = parser.parse_args()
     wrapper = args.suffix
     if wrapper == "universal":
@@ -140,19 +141,11 @@ if __name__ == '__main__':
     # Zip nupkg
     if wrapper == 'universal':
         indigoDotNetVersion = xml_to_dict(os.path.join(indigoDotNetPath, 'Indigo.Net.csproj'))['PropertyGroup']['Version']
-        if os.path.exists("dotnet_nupkg"):
-            shutil.rmtree("dotnet_nupkg")
-        os.mkdir('dotnet_nupkg')
-        shutil.copy(os.path.join(api_dir, "LICENSE"), "dotnet_nupkg")
-        shutil.copy(join(indigoDotNetPath, 'bin', 'Release', 'Indigo.Net.{}.nupkg'.format(indigoDotNetVersion)), "dotnet_nupkg")
-        archive_name = "./indigo-dotnet-{}-nupkg-{}".format(indigoDotNetVersion, wrapper)
-        os.rename("dotnet_nupkg", archive_name)
-        if os.path.exists(archive_name + ".zip"):
-            os.remove(archive_name + ".zip")
-        shutil.make_archive(archive_name, 'zip', os.path.dirname(archive_name), archive_name)
-        shutil.rmtree(archive_name)
-        full_archive_name = os.path.normpath(os.path.join(dist_dir, archive_name))
-        print('Archive {}.zip created'.format(full_archive_name))
+        nupkg_path = join(indigoDotNetPath, 'bin', 'Release', 'Indigo.Net.{}.nupkg'.format(indigoDotNetVersion))
+        if args.publish:
+            subprocess.check_call(['dotnet', 'nuget', 'push', nupkg_path, '--api-key',
+                                   os.environ['NUGET_API_KEY'], '--source', 'https://api.nuget.org/v3/index.json'])
+        shutil.copy(nupkg_path, os.curdir)
 
     # Zip libraries per .NET target
     for dotnet_target in ("netstandard2.0",):

@@ -1,0 +1,22 @@
+<molecule title="">
+    <atomArray>
+        <atom id="a0" elementType="C" x2="10.4183" y2="-6.4762" />
+        <atom id="a1" elementType="C" x2="10.4183" y2="-5.4738" />
+        <atom id="a2" elementType="C" x2="11.1236" y2="-4.7685" />
+        <atom id="a3" elementType="C" x2="11.1239" y2="-7.1815" />
+        <atom id="a4" elementType="Br" x2="12.1262" y2="-7.1815" />
+        <atom id="a5" elementType="Br" x2="12.8316" y2="-6.4762" />
+        <atom id="a6" elementType="C" x2="12.8316" y2="-5.4738" />
+        <atom id="a7" elementType="C" x2="12.1262" y2="-4.7685" />
+    </atomArray>
+    <bondArray>
+        <bond atomRefs2="a7 a2" order="1" />
+        <bond atomRefs2="a6 a7" order="1" />
+        <bond atomRefs2="a5 a6" order="1" />
+        <bond atomRefs2="a4 a5" order="1" />
+        <bond atomRefs2="a3 a4" order="1" />
+        <bond atomRefs2="a0 a3" order="1" />
+        <bond atomRefs2="a1 a2" order="1" />
+        <bond atomRefs2="a0 a1" order="1" />
+    </bondArray>
+</molecule>

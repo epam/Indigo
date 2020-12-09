@@ -1,5 +1,12 @@
 set(UNIVERSAL_BUILD FALSE CACHE BOOL "Indigo C++11 universal build without dependency on libstdc++")
 
+# Use ccache if possible
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+    message(STATUS "Using ccache: ${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+endif()
+
 if(NOT MSVC AND NOT BINGO)
     set(VISIBILITY_HIDDEN YES)
 endif()
