@@ -27,6 +27,7 @@
 #include "base_cpp/scanner.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/cml_saver.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_cdxml_saver.h"
 #include "molecule/molfile_saver.h"
 #include "molecule/smiles_saver.h"
@@ -526,7 +527,31 @@ return 1;
 INDIGO_END(-1)
 }
 
-CEXPORT int indigoSaveCml(int item, int output){INDIGO_BEGIN{IndigoObject& obj = self.getObject(item);
+CEXPORT int indigoSaveJson( int item, int output )
+{
+    INDIGO_BEGIN{IndigoObject& obj = self.getObject(item);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        if (IndigoBaseMolecule::is(obj))
+        {
+            MoleculeJsonSaver saver(out);
+            BaseMolecule& mol = obj.getBaseMolecule();
+            saver.saveMolecule( mol );
+            out.flush();
+            return 1;
+        }
+        if (IndigoBaseReaction::is(obj))
+        {
+            // reaction not implemented yet
+            return 1;
+        }
+        throw IndigoError("indigoSaveCml(): expected molecule or reaction, got %s", obj.debugInfo());
+    }
+    INDIGO_END(-1)
+}
+
+CEXPORT int indigoSaveCml(int item, int output)
+{
+INDIGO_BEGIN{IndigoObject& obj = self.getObject(item);
 Output& out = IndigoOutput::get(self.getObject(output));
 
 if (IndigoBaseMolecule::is(obj))

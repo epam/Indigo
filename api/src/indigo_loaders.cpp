@@ -39,6 +39,7 @@
 
 #include <limits>
 
+/*
 IndigoJSONLoader::IndigoJSONLoader( Scanner& scanner ) : IndigoObject( JSON_LOADER )
 {
     json_loader.reset( new JSONLoader( scanner ));
@@ -57,19 +58,20 @@ IndigoJSONLoader::~IndigoJSONLoader()
 IndigoObject* IndigoJSONLoader::next()
 {
     if( !json_loader->hasNext() ) return NULL;
-    return new IndigoJSONMolecule( json_loader->next(), json_loader->currentNumber() );
+    return new IndigoJSONMolecule( json_loader->next(), json_loader->rgroups(), json_loader->currentNumber() );
 }
 
 IndigoObject* IndigoJSONLoader::at(int index)
 {
     if( json_loader->currentNumber() >= index ) return NULL;
-    return new IndigoJSONMolecule( json_loader->at( index ), json_loader->currentNumber() );
+    return new IndigoJSONMolecule( json_loader->at( index ), json_loader->rgroups(), json_loader->currentNumber() );
 }
 
 bool IndigoJSONLoader::hasNext()
 {
     return json_loader->hasNext();
 }
+*/
 
 IndigoSdfLoader::IndigoSdfLoader(Scanner& scanner) : IndigoObject(SDF_LOADER)
 {
@@ -155,8 +157,8 @@ int IndigoRdfData::getIndex()
     return _index;
 }
 
-IndigoJSONMolecule::IndigoJSONMolecule( const rapidjson::Value& node, int index )
-: IndigoObject( JSON_MOLECULE ), _node( node ), _loaded( false )
+IndigoJSONMolecule::IndigoJSONMolecule( rapidjson::Value& node, rapidjson::Value& rgroups, int index )
+: IndigoObject( JSON_MOLECULE ), _node( node ), _rgroups( rgroups ), _loaded( false )
 {
     
 }
@@ -165,7 +167,7 @@ Molecule& IndigoJSONMolecule::getMolecule()
 {
     if( !_loaded )
     {
-        MoleculeJsonLoader loader( _node );
+        MoleculeJsonLoader loader( _node, _rgroups );
         loader.loadMolecule( _mol );
         _loaded = true;
     }
@@ -546,16 +548,6 @@ CEXPORT int indigoIterateSDF(int reader)
     {
         IndigoObject& obj = self.getObject(reader);
         return self.addObject(new IndigoSdfLoader(IndigoScanner::get(obj)));
-    }
-    INDIGO_END(-1)
-}
-
-CEXPORT int indigoIterateJSON(int reader)
-{
-    INDIGO_BEGIN
-    {
-        IndigoObject& obj = self.getObject(reader);
-        return self.addObject(new IndigoJSONLoader(IndigoScanner::get(obj)));
     }
     INDIGO_END(-1)
 }

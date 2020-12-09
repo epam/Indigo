@@ -99,6 +99,7 @@ protected:
     AutoPtr<Scanner> _own_scanner;
 };
 
+/*
 class IndigoJSONLoader : public IndigoObject
 {
 public:
@@ -112,7 +113,7 @@ public:
     
 protected:
     AutoPtr<Scanner> _own_scanner;
-};
+};*/
 
 
 class IndigoRdfLoader : public IndigoObject
@@ -139,7 +140,7 @@ protected:
 class IndigoJSONMolecule : public IndigoObject
 {
 public:
-    IndigoJSONMolecule( const rapidjson::Value& node, int index );
+    IndigoJSONMolecule( rapidjson::Value& node, rapidjson::Value& rgroups, int index );
     virtual ~IndigoJSONMolecule();
     virtual Molecule& getMolecule();
     virtual BaseMolecule& getBaseMolecule();
@@ -148,7 +149,8 @@ public:
     
 protected:
     Molecule _mol;
-    const rapidjson::Value& _node;
+    rapidjson::Value& _node;
+    rapidjson::Value& _rgroups;
     bool _loaded;
 };
 

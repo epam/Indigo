@@ -29,7 +29,7 @@ IMPL_ERROR(JSONLoader, "JSON loader");
 
 CP_DEF(JSONLoader);
 
-JSONLoader::JSONLoader( Scanner& scanner ) : CP_INIT, _current_number( 0 ), _nodes( nullptr )
+JSONLoader::JSONLoader( Scanner& scanner ) : CP_INIT, _current_number( 0 ), _molecules( kArrayType ), _rgroups( kArrayType )
 {
     Array<char> buf;
     scanner.readAll(buf);
@@ -40,7 +40,18 @@ JSONLoader::JSONLoader( Scanner& scanner ) : CP_INIT, _current_number( 0 ), _nod
     {
         const Value& root = _data["root"];
         const Value& nodes = root["nodes"];
-        _nodes = &nodes;
+        for( int i = 0; i < nodes.Size(); ++ i  )
+        {
+            const char* node_name = nodes[i]["$ref"].GetString();
+            Value& node = _data[ node_name ];
+            std::string type = node["type"].GetString();
+            if( type.compare("molecule") == 0 )
+              _molecules.PushBack( node, _data.GetAllocator());
+            else if( type.compare("rgroup") == 0 )
+              _rgroups.PushBack( node, _data.GetAllocator() );
+            else
+                throw Error("Unknow node type: %s", type.c_str());
+        }
     } else
         throw Error("Error at parsing JSON. No root element: %s", buf.ptr());
 }
@@ -56,13 +67,12 @@ bool JSONLoader::hasNext()
 
 const Value& JSONLoader::next()
 {
-    const char* node_name = (*_nodes)[_current_number++]["$ref"].GetString();
-    return _data[ node_name ];
+    return _molecules[_current_number++];
 }
 
 const Value& JSONLoader::at( int index )
 {
-    return (*_nodes)[index];
+    return _molecules[index];
 }
 
 int JSONLoader::currentNumber()
@@ -72,9 +82,12 @@ int JSONLoader::currentNumber()
 
 int JSONLoader::count()
 {
-    return _nodes == nullptr ? 0 : _nodes->Size();
+    return _molecules.Size();
 }
 
-
+const Value& JSONLoader::rgroups()
+{
+    return _rgroups;
+}
 
 

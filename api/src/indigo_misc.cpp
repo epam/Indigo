@@ -1334,6 +1334,7 @@ CEXPORT const char* indigoCheckStructure(const char* structure, const char* prop
     INDIGO_END(0);
 }
 
+/*
 CEXPORT const char* indigoJson(int item)
 {
     INDIGO_BEGIN
@@ -1364,4 +1365,4 @@ CEXPORT const char* indigoJson(int item)
         return tmp.string.ptr();
     }
     INDIGO_END(0);
-}
+}*/

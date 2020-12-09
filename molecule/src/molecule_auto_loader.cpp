@@ -301,7 +301,8 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     _scanner->readAll(buf);
                     buf.push(0);
                     Document data;
-                    const Value* mol_node = NULL;
+                    Value rgroups(kArrayType);
+                    Value mol_nodes(kArrayType);
                     if ( data.Parse(buf.ptr()).HasParseError())
                       throw Error("Error at parsing JSON: %s", buf.ptr());
                     if( data.HasMember( "root" ) )
@@ -312,22 +313,23 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                         for( int i = 0; i < nodes.Size(); ++i )
                         {
                             const char* node_name = nodes[i]["$ref"].GetString();
-                            const Value& node = data[ node_name ];
+                            Value& node = data[ node_name ];
                             std::string node_type = node["type"].GetString();
                             if( node_type.compare("molecule") == 0 )
                             {
-                                mol_node = &node;
-                                break;
-                            }
+                                mol_nodes.PushBack( node, data.GetAllocator() );
+                            } else if (node_type.compare("rgroup") == 0 )
+                            {
+                                rgroups.PushBack( node, data.GetAllocator() );
+                            } else
+                                throw Error("Unknows JSON node: %s", node_type.c_str());
                         }
                     } else
+                        throw Error("Ketcher's JSON has no root node");
+                    if( mol_nodes.Size() )
                     {
-                        const Value& node = data;
-                        mol_node = &node;
-                    }
-                    if( mol_node )
-                    {
-                        MoleculeJsonLoader loader( *mol_node );
+                        MoleculeJsonLoader loader( mol_nodes, rgroups );
+                        loader.stereochemistry_options = stereochemistry_options;
                         loader.loadMolecule(mol);
 
                     } else

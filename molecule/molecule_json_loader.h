@@ -23,6 +23,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/non_copyable.h"
 #include "third_party/rapidjson/document.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -45,17 +46,19 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        explicit MoleculeJsonLoader( const rapidjson::Value& molecule );
+        explicit MoleculeJsonLoader( rapidjson::Value& molecule, rapidjson::Value& rgroups );
         void loadMolecule( BaseMolecule& mol );
         int addAtomToMoleculeQuery( const char* label, int element, int charge, int valence, int radical, int isotope );
         int addBondToMoleculeQuery( int beg, int end, int order );
         void validateMoleculeBond( int order );
         void parseAtoms( const rapidjson::Value& atoms, BaseMolecule& mol );
-        void parseBonds( const rapidjson::Value& bonds, BaseMolecule& mol );
-        void parseSGroups( const rapidjson::Value& sgroups, BaseMolecule& mol );
+        void parseBonds( const rapidjson::Value& bonds, BaseMolecule& mol, int atom_base_idx );
+        void parseSGroups( const rapidjson::Value& sgroups, BaseMolecule& mol, int sg_parent = 0 );
+        StereocentersOptions stereochemistry_options;
 
     private:
-        const rapidjson::Value& _molecule;
+        rapidjson::Value& _mol_nodes;
+        rapidjson::Value& _rgroups;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
 

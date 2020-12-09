@@ -23,11 +23,11 @@
 
 #include "third_party/rapidjson/stringbuffer.h"
 #include "third_party/rapidjson/writer.h"
-
+#include "molecule/base_molecule.h"
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
-#include "molecule/molecule.h"
+#include <set>
 
 namespace indigo
 {
@@ -39,15 +39,17 @@ namespace indigo
     class DLLEXPORT MoleculeJsonSaver
     {
     public:
-        explicit MoleculeJsonSaver(Output& output);
-
-        void saveMolecule(Molecule& mol);
-        void saveQueryMolecule(QueryMolecule& qmol);
+        explicit MoleculeJsonSaver( Output& output );
+        void saveMolecule( BaseMolecule& mol );
+        void saveAtoms( BaseMolecule* mol_base, rapidjson::Writer<rapidjson::StringBuffer>& writer );
+        void saveBonds( BaseMolecule* mol_base, rapidjson::Writer<rapidjson::StringBuffer>& writer );
+        void saveRGroup( PtrPool<BaseMolecule>& fragments, int rgnum, rapidjson::Writer<rapidjson::StringBuffer>& writer );
 
         DECL_ERROR;
 
     protected:
-        Molecule* _mol;
+        Molecule* _pmol;
+        QueryMolecule* _pqmol;
         Output& _output;
 
     private:

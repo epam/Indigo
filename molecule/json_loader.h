@@ -37,6 +37,7 @@ namespace indigo
         bool hasNext();
         const Value& next();
         const Value& at( int index );
+        const Value& rgroups();
         
         int currentNumber();
         int count();
@@ -49,7 +50,8 @@ namespace indigo
         Scanner* _scanner;
         int _current_number;
         Document _data;
-        const Value* _nodes;
+        Value _molecules;
+        Value _rgroups;
     };
     
 } // namespace indigo
