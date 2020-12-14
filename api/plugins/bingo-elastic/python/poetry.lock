@@ -66,7 +66,7 @@ d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 
 [[package]]
 name = "certifi"
-version = "2020.11.8"
+version = "2020.12.5"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -90,7 +90,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "elasticsearch"
-version = "7.10.0"
+version = "7.10.1"
 description = "Python client for Elasticsearch"
 category = "main"
 optional = false
@@ -108,7 +108,7 @@ requests = ["requests (>=2.4.0,<3.0.0)"]
 
 [[package]]
 name = "epam.indigo"
-version = "1.4.0b0"
+version = "1.4.1"
 description = "Indigo universal cheminformatics toolkit"
 category = "main"
 optional = false
@@ -116,7 +116,7 @@ python-versions = "*"
 
 [[package]]
 name = "importlib-metadata"
-version = "3.0.0"
+version = "3.1.1"
 description = "Read metadata from Python packages"
 category = "dev"
 optional = false
@@ -126,8 +126,8 @@ python-versions = ">=3.6"
 zipp = ">=0.5"
 
 [package.extras]
-docs = ["sphinx", "rst.linker"]
-testing = ["packaging", "pep517", "importlib-resources (>=1.3)"]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
 
 [[package]]
 name = "isort"
@@ -192,7 +192,7 @@ python-versions = "*"
 
 [[package]]
 name = "packaging"
-version = "20.4"
+version = "20.8"
 description = "Core utilities for Python packages"
 category = "dev"
 optional = false
@@ -200,7 +200,6 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [package.dependencies]
 pyparsing = ">=2.0.2"
-six = "*"
 
 [[package]]
 name = "pathspec"
@@ -362,7 +361,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "e87c49ea8689a71718c2313a32e441b99427d56785b27badba22758ded36db7c"
+content-hash = "0ead23e0d14c0dc2d7daad7e6c13417ce51892c1f9b72daac4cd593d77095d87"
 
 [metadata.files]
 appdirs = [
@@ -385,8 +384,8 @@ black = [
     {file = "black-20.8b1.tar.gz", hash = "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"},
 ]
 certifi = [
-    {file = "certifi-2020.11.8-py2.py3-none-any.whl", hash = "sha256:1f422849db327d534e3d0c5f02a263458c3955ec0aae4ff09b95f195c59f4edd"},
-    {file = "certifi-2020.11.8.tar.gz", hash = "sha256:f05def092c44fbf25834a51509ef6e631dc19765ab8a57b4e7ab85531f0a9cf4"},
+    {file = "certifi-2020.12.5-py2.py3-none-any.whl", hash = "sha256:719a74fb9e33b9bd44cc7f3a8d94bc35e4049deebe19ba7d8e108280cfd59830"},
+    {file = "certifi-2020.12.5.tar.gz", hash = "sha256:1a4995114262bffbc2413b159f2a1a480c969de6e6eb13ee966d470af86af59c"},
 ]
 click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
@@ -397,24 +396,17 @@ colorama = [
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 elasticsearch = [
-    {file = "elasticsearch-7.10.0-py2.py3-none-any.whl", hash = "sha256:9a21bfa7dc6a0b0dc142088bd653d8ce5ab284b4f7a3ded716185adf5276a7fe"},
-    {file = "elasticsearch-7.10.0.tar.gz", hash = "sha256:9053ca99bc9db84f5d80e124a79a32dfa0f7079b2112b546a03241c0dbeda36d"},
+    {file = "elasticsearch-7.10.1-py2.py3-none-any.whl", hash = "sha256:4ebd34fd223b31c99d9f3b6b6236d3ac18b3046191a37231e8235b06ae7db955"},
+    {file = "elasticsearch-7.10.1.tar.gz", hash = "sha256:a725dd923d349ca0652cf95d6ce23d952e2153740cf4ab6daf4a2d804feeed48"},
 ]
 "epam.indigo" = [
-    {file = "epam.indigo-1.4.0b0-py2-none-macosx_10_7_intel.whl", hash = "sha256:d13068e02759b147eaea0ef88454ec7e3b81c80d6601aeee078dd0c2bcae501f"},
-    {file = "epam.indigo-1.4.0b0-py2-none-manylinux1_i686.whl", hash = "sha256:d5d53a28400df1c832d72f5241d1e142326b919b1d4a3a5cdea2067d19af41af"},
-    {file = "epam.indigo-1.4.0b0-py2-none-manylinux1_x86_64.whl", hash = "sha256:3c56087291b301f4d7105395d5d2c805fe5af49b63a0b808f27b7ec96bebdd01"},
-    {file = "epam.indigo-1.4.0b0-py2-none-win32.whl", hash = "sha256:2d04682d9e9204e9ad7c6ad56fd2174e1cfd492b8c58671c272570128ee7951d"},
-    {file = "epam.indigo-1.4.0b0-py2-none-win_amd64.whl", hash = "sha256:865713b5775e89d8a446cf0bb45ff8a955b012260b4de17e9c739f4f6bb52d34"},
-    {file = "epam.indigo-1.4.0b0-py3-none-macosx_10_7_intel.whl", hash = "sha256:8988b0608cc1f72feebdef025c85dfbf6b93f9b7fa89d3b58ce481ff86b6827b"},
-    {file = "epam.indigo-1.4.0b0-py3-none-manylinux1_i686.whl", hash = "sha256:831ab4cfdb568b137d6ad6d11bf1adcf68b7d7742ab9f77cf7ee1a1f4d0554b1"},
-    {file = "epam.indigo-1.4.0b0-py3-none-manylinux1_x86_64.whl", hash = "sha256:cdfa6bcae37144bacf6a3a91282bd1174b1c378819bdb79b279bd0ad854b41c2"},
-    {file = "epam.indigo-1.4.0b0-py3-none-win32.whl", hash = "sha256:ee792810df4eee90d69c88d3f2a07b852b36f9f9de2215ee38612c54784a9cd8"},
-    {file = "epam.indigo-1.4.0b0-py3-none-win_amd64.whl", hash = "sha256:fc422dc1d0923f5fe98eab72f6912b9cda3a394b2887c1b27daf9960460df650"},
+    {file = "epam.indigo-1.4.1-py3-none-macosx_10_7_intel.whl", hash = "sha256:9669d7320b549f185aae44343fd298fdd95e2d214b6be39946c4573529592fbd"},
+    {file = "epam.indigo-1.4.1-py3-none-manylinux1_x86_64.whl", hash = "sha256:9740d377c18084d39895186a9b4017be93e907623f348512b40a58db2b7eaef2"},
+    {file = "epam.indigo-1.4.1-py3-none-win_amd64.whl", hash = "sha256:d96ac686d1776a6900953bf6aff4ad1e114ba017aea66999c848f8b5d9c37d65"},
 ]
 importlib-metadata = [
-    {file = "importlib_metadata-3.0.0-py2.py3-none-any.whl", hash = "sha256:fc3b3f9697703d3833d2803162d60cbe8b9f57b5da5e6496ac81e3cb82bd8d9c"},
-    {file = "importlib_metadata-3.0.0.tar.gz", hash = "sha256:d582eb5c35b2f16c78e365e0f89e369f36af38fdaad0146208aa973c693ba247"},
+    {file = "importlib_metadata-3.1.1-py3-none-any.whl", hash = "sha256:6112e21359ef8f344e7178aa5b72dc6e62b38b0d008e6d3cb212c5b84df72013"},
+    {file = "importlib_metadata-3.1.1.tar.gz", hash = "sha256:b0c2d3b226157ae4517d9625decf63591461c66b3a808c2666d538946519d170"},
 ]
 isort = [
     {file = "isort-5.6.4-py3-none-any.whl", hash = "sha256:dcab1d98b469a12a1a624ead220584391648790275560e1a43e54c5dceae65e7"},
@@ -472,8 +464,8 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 packaging = [
-    {file = "packaging-20.4-py2.py3-none-any.whl", hash = "sha256:998416ba6962ae7fbd6596850b80e17859a5753ba17c32284f67bfff33784181"},
-    {file = "packaging-20.4.tar.gz", hash = "sha256:4357f74f47b9c12db93624a82154e9b120fa8293699949152b22065d556079f8"},
+    {file = "packaging-20.8-py2.py3-none-any.whl", hash = "sha256:24e0da08660a87484d1602c30bb4902d74816b6985b93de36926f5bc95741858"},
+    {file = "packaging-20.8.tar.gz", hash = "sha256:78598185a7008a470d64526a8059de9aaa449238f280fc9eb6b13ba6c4109093"},
 ]
 pathspec = [
     {file = "pathspec-0.8.1-py2.py3-none-any.whl", hash = "sha256:aa0cb481c4041bf52ffa7b0d8fa6cd3e88a2ca4879c533c9153882ee2556790d"},
