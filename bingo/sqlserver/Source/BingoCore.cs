@@ -8,7 +8,6 @@ using System.Collections;
 using System.IO;
 using System.Text;
 using Microsoft.Win32;
-using com.epam.indigo;
 
 namespace indigo
 {
@@ -30,8 +29,8 @@ namespace indigo
          {
             if (_lib == null)
             {
-               IndigoDllLoader.Instance.loadLibrary(null, "bingo-core-c.dll", "indigo.resource", false);
-               _lib = IndigoDllLoader.Instance.getInterface<BingoCoreLib>("bingo-core-c.dll");
+               BingoDllLoader.Instance.loadLibrary(null, "bingo-core-c.dll", "indigo.resource", false);
+               _lib = BingoDllLoader.Instance.getInterface<BingoCoreLib>("bingo-core-c.dll");
             }
             return _lib;
          }
