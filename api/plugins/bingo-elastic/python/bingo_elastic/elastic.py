@@ -3,11 +3,11 @@ from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError, RequestError
-from elasticsearch.helpers import parallel_bulk, streaming_bulk
+from elasticsearch.helpers import streaming_bulk
 from indigo import Indigo
 
 from bingo_elastic.model.record import IndigoRecord
-from bingo_elastic.queries import BaseMatch, ExactMatch, query_factory
+from bingo_elastic.queries import BaseMatch, query_factory
 from bingo_elastic.utils import PostprocessType
 
 
@@ -41,7 +41,7 @@ class ElasticRepository:
             "request_timeout": request_timeout,
             "retry_on_timeout": retry_on_timeout,
         }
-        if type(host) == str:
+        if isinstance(host, str):
             arguments["host"] = host
         else:
             arguments["hosts"] = host
@@ -69,33 +69,16 @@ class ElasticRepository:
 
     def index_records(self, records: Generator, chunk_size: int = 500):
         self.create_index()
-        for ok, action in streaming_bulk(
+        # pylint: disable=unused-variable
+        for is_ok, action in streaming_bulk(
             self.el_client,
             self.__prepare(records),
             index=self.index_name,
             chunk_size=chunk_size,
         ):
             pass
-            # TODO: add post processing
-
-    # TODO: chunk size and thread count based on actual CPU values
-    def index_records_parallel(
-        self,
-        records: Generator,
-        chunk_size: int = 500,
-        thread_count: int = 4,
-    ) -> None:
-        self.create_index()
-        yield from parallel_bulk(
-            self.el_client,
-            records,
-            chunk_size=chunk_size,
-            thread_count=thread_count,
-        )
 
     def create_index(self) -> None:
-        # TODO: add number of shards
-        # TODO: check index, compare with java version
         body = {
             "mappings": {
                 "properties": {
@@ -154,12 +137,13 @@ class ElasticRepository:
         indigo_session = Indigo()
         for el_response in res.get("hits", {}).get("hits", []):
             record = IndigoRecord(elastic_response=el_response)
-            for fn in postprocess_actions:
-                record = fn(record, indigo_session)
+            for action_fn in postprocess_actions:
+                record = action_fn(record, indigo_session)
                 if not record:
                     continue
             yield record
 
+    # pylint: disable=no-self-use,too-many-arguments
     def __compile(
         self,
         similarity: BaseMatch = None,
@@ -183,8 +167,6 @@ class ElasticRepository:
             },
         }
         if similarity and substructure:
-            # todo: enable search by similarity and substructure together
-            # todo: add exact check also
             raise AttributeError(
                 "similarity and substructure search " "is not supported"
             )
@@ -198,7 +180,7 @@ class ElasticRepository:
                 query, postprocess_actions
             )
 
-        for k, v in kwargs.items():
-            query_factory(k, v).compile(query)
+        for key, value in kwargs.items():
+            query_factory(key, value).compile(query)
 
         return query

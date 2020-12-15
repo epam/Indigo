@@ -5,11 +5,11 @@ import indigo
 from indigo import Indigo, IndigoObject
 
 
+# pylint: disable=unused-argument
 def skip_errors(instance: object, err: BaseException) -> None:
     """
     Empty handler to skip errors
     """
-    pass
 
 
 def check_error(instance: object, error: BaseException) -> None:
