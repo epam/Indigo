@@ -24,8 +24,10 @@
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_cml_loader.h"
+#include "reaction/reaction_json_loader.h"
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
+#include <string>
 
 using namespace indigo;
 
@@ -171,6 +173,80 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
 
         _scanner->seek(pos, SEEK_SET);
     }
+    
+    // check for JSON-KET format
+    
+    {
+        long long pos = _scanner->tell();
+        _scanner->skipSpace();
+        if (_scanner->lookNext() == '{')
+        {
+            if (_scanner->findWord("arrow"))
+            {
+                using namespace rapidjson;
+                _scanner->seek(pos, SEEK_SET);
+                {
+                    Array<char> buf;
+                    _scanner->readAll(buf);
+                    buf.push(0);
+                    Document data;
+                    Value rgroups(kArrayType);
+                    Value mol_nodes(kArrayType);
+                    Value pluses(kArrayType);
+                    Value arrows(kArrayType);
+                    if ( data.Parse(buf.ptr()).HasParseError())
+                        throw Error("Error at parsing JSON: %s", buf.ptr());
+                    if( data.HasMember( "root" ) )
+                    {
+                        Value& root = data["root"];
+                        Value& nodes = root["nodes"];
+                        // rewind to first molecule node
+                        for( int i = 0; i < nodes.Size(); ++i )
+                        {
+                            Value& rnode = nodes[i];
+                            if( rnode.HasMember( "$ref") )
+                            {
+                                const char* node_name = rnode["$ref"].GetString();
+                                Value& node = data[ node_name ];
+                                std::string node_type = node["type"].GetString();
+                                if( node_type.compare("molecule") == 0 )
+                                {
+                                    mol_nodes.PushBack( node, data.GetAllocator() );
+                                } else if (node_type.compare("rgroup") == 0 )
+                                {
+                                    rgroups.PushBack( node, data.GetAllocator() );
+                                } else
+                                    throw Error("Unknows JSON node: %s", node_type.c_str());
+                            } else if( rnode.HasMember("type") )
+                            {
+                                std::string node_type = rnode["type"].GetString();
+                                if( node_type == "arrow" )
+                                    arrows.PushBack( rnode, data.GetAllocator() );
+                                else if( node_type == "plus" )
+                                    pluses.PushBack( rnode, data.GetAllocator() );
+                                else
+                                    throw Error("Unknown reaction node: %s", node_type.c_str());
+                            } else
+                                throw Error("Unknows JSON node");
+                        }
+                    } else
+                        throw Error("Ketcher's JSON has no root node");
+                    if( mol_nodes.Size() )
+                    {
+                        ReactionJsonLoader loader(mol_nodes, rgroups, pluses, arrows );
+                        loader.stereochemistry_options = stereochemistry_options;
+                        loader.loadReaction( reaction );
+                    } else
+                    {
+                        throw Error("Molecule JSON description not found");
+                    }
+                    return;
+                }
+            }
+        }
+        _scanner->seek(pos, SEEK_SET);
+    }
+
 
     // check for SMILES format
     if (Scanner::isSingleLine(*_scanner))

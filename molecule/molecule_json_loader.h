@@ -37,6 +37,7 @@ namespace indigo
     class BaseMolecule;
     class Molecule;
     class QueryMolecule;
+    class SGroup;
 
     /*
      * Loader for JSON format
@@ -53,7 +54,9 @@ namespace indigo
         void validateMoleculeBond( int order );
         void parseAtoms( const rapidjson::Value& atoms, BaseMolecule& mol );
         void parseBonds( const rapidjson::Value& bonds, BaseMolecule& mol, int atom_base_idx );
-        void parseSGroups( const rapidjson::Value& sgroups, BaseMolecule& mol, int sg_parent = 0 );
+        void parseSGroups( const rapidjson::Value& sgroups, BaseMolecule& mol );
+        void handleRepetitions( SGroup* sgroup, BaseMolecule& bmol, int rc, int start, int end );
+
         StereocentersOptions stereochemistry_options;
 
     private:

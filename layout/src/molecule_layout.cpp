@@ -412,6 +412,15 @@ BaseMolecule& MoleculeLayout::_getMol(int id)
 {
     return *_map[id];
 }
+
+void MoleculeLayout::updateSGroups()
+{
+    _updateDataSGroups();
+    _updateMultipleGroups();
+    _updateRepeatingUnits();
+}
+
+
 void MoleculeLayout::make()
 {
     _make();
