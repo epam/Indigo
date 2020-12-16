@@ -1,7 +1,7 @@
 import math
 from abc import ABCMeta, abstractmethod
 from functools import lru_cache
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 from indigo import Indigo
 
@@ -55,31 +55,24 @@ class KeywordQuery(CompilableQuery):
         bool_head = head_by_path(
             query, ("query", "script_score", "query", "bool")
         )
-        # TODO think about filter
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"].append(
-            {
-                "match": {
-                    self.field: {
-                        "query": self._value,
-                        "boost": 0
-                    }
-                }
-            }
+            {"match": {self.field: {"query": self._value, "boost": 0}}}
         )
         default_script_score(query)
 
 
 class SubstructureQuery(CompilableQuery):
     def __init__(self, key: str, value: IndigoRecord):
-        if type(value) != IndigoRecord:
+        if not isinstance(value, IndigoRecord):
             raise AttributeError(
-                "Argument for substructure search " "must be IndigoRecord"
+                "Argument for substructure search must be IndigoRecord"
             )
         self._key = key
         self._value = value
 
+    # pylint: disable=inconsistent-return-statements
     def postprocess(
         self, record: IndigoRecord, indigo: Indigo
     ) -> Optional[IndigoRecord]:
@@ -125,7 +118,6 @@ class RangeQuery(CompilableQuery):
         bool_head = head_by_path(
             query, ("query", "script_score", "query", "bool")
         )
-        # TODO think about filter
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"].append(
@@ -153,7 +145,6 @@ class WildcardQuery(CompilableQuery):
         bool_head = head_by_path(
             query, ("query", "script_score", "query", "bool")
         )
-        # TODO think about filter
         if not bool_head.get("must"):
             bool_head["must"] = []
         bool_head["must"].append(
@@ -172,6 +163,7 @@ class BaseMatch(metaclass=ABCMeta):
     def clauses(self) -> List[Dict]:
         return clauses(self._target.sim_fingerprint, "sim_fingerprint")
 
+    # pylint: disable=unused-argument
     def compile(
         self, query: Dict, postprocess_actions: PostprocessType = None
     ) -> None:
@@ -213,7 +205,7 @@ class TanimotoSimilarityMatch(BaseMatch):
         }
 
     def min_should_match(self, length: int) -> str:
-        mm = (
+        min_match = (
             math.floor(
                 (self._threshold * (len(self.target.sim_fingerprint) + 1))
                 / (1.0 + self._threshold)
@@ -221,7 +213,7 @@ class TanimotoSimilarityMatch(BaseMatch):
             / length
         )
 
-        return f"{int(mm*100)}%"
+        return f"{int(min_match*100)}%"
 
 
 class EuclidSimilarityMatch(BaseMatch):
@@ -233,11 +225,11 @@ class EuclidSimilarityMatch(BaseMatch):
         }
 
     def min_should_match(self, length: int):
-        mm = (
+        min_match = (
             math.floor(self._threshold * len(self._target.sim_fingerprint))
         ) / length
 
-        return f"{int(mm*100)}%"
+        return f"{int(min_match*100)}%"
 
 
 class TverskySimilarityMatch(BaseMatch):
@@ -268,8 +260,8 @@ class TverskySimilarityMatch(BaseMatch):
     def min_should_match(self, length: int) -> str:
         top = self._alpha * len(self._target.sim_fingerprint) + self._beta
         down = self._threshold + self._alpha + self._beta - 1.0
-        mm = math.floor((top / down)) / length
-        return f"{int(mm*100)}%"
+        min_match = math.floor((top / down)) / length
+        return f"{int(min_match*100)}%"
 
 
 class ExactMatch(CompilableQuery):
@@ -280,6 +272,17 @@ class ExactMatch(CompilableQuery):
     @lru_cache(maxsize=None)
     def clauses(self) -> List[Dict]:
         return clauses(self._target.sub_fingerprint, "sub_fingerprint")
+
+    # pylint: disable=inconsistent-return-statements
+    def postprocess(
+        self, record: IndigoRecord, indigo: Indigo
+    ) -> Optional[IndigoRecord]:
+        if indigo.substructureMatcher(record.as_indigo_object(indigo)).match(
+            indigo.loadQueryMolecule(
+                self._target.as_indigo_object(indigo).canonicalSmiles()
+            )
+        ):
+            return record
 
     def compile(
         self, query, postprocess_actions: PostprocessType = None
@@ -295,6 +298,7 @@ class ExactMatch(CompilableQuery):
             "source": "_score / doc['sub_fingerprint_len'].value"
         }
         query["min_score"] = 1
+        postprocess_actions.append(getattr(self, "postprocess"))
 
 
 # Alias to default similarity match
@@ -305,16 +309,16 @@ def query_factory(key: str, value: Any) -> CompilableQuery:
 
     if key == "exact":
         return ExactMatch(value)
-    elif key == "substructure":
+    if key == "substructure":
         return SubstructureQuery(key, value)
-    elif isinstance(value, CompilableQuery):
+    if isinstance(value, CompilableQuery):
         value.field = key
         return value
-    elif type(value) == str:
+    if isinstance(value, str):
         value = KeywordQuery(value)
         value.field = key
         return value
-    else:
-        raise AttributeError(
-            f"Unsupported request with key: {key}, value: {value}",
-        )
+
+    raise AttributeError(
+        f"Unsupported request with key: {key}, value: {value}",
+    )
