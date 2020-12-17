@@ -93,9 +93,19 @@ public class LoadMoleculeFromFileTest {
     public void testLoadFromCmlWithName() throws Exception {
         List<IndigoRecord> indigoRecordList = Helpers.loadFromCmlFile("src/test/resources/tetrahedral-named.cml");
         repository.indexRecords(indigoRecordList, indigoRecordList.size());
-        List<IndigoRecord> indigoRecordResult = repository.stream().collect(Collectors.toList());
-        assertEquals(1, indigoRecordList.size());
-        assertEquals("tetrahedralTitle", indigoRecordList.get(0).getName());
+        repository.refreshIndex(new ActionListener<RefreshResponse>() {
+            @Override
+            public void onResponse(RefreshResponse refreshResponse) {
+                List<IndigoRecord> indigoRecordResult = repository.stream().collect(Collectors.toList());
+                assertEquals(1, indigoRecordList.size());
+                assertEquals("tetrahedralTitle", indigoRecordList.get(0).getName());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Assertions.fail(e);
+            }
+        });
     }
 
     @Test
@@ -112,9 +122,19 @@ public class LoadMoleculeFromFileTest {
                 Helpers.loadFromSdf("src/test/resources/zinc-slice.sdf.gz");
         repository.indexRecord(indigoRecordList.get(0));
         assertEquals(721, indigoRecordList.size());
-        List<IndigoRecord> indigoRecordResult = repository.stream()
-                .limit(1).collect(Collectors.toList());
-        assertEquals("ZINC03099968", indigoRecordResult.get(0).getName());
+
+        repository.refreshIndex(new ActionListener<RefreshResponse>() {
+            @Override
+            public void onResponse(RefreshResponse refreshResponse) {
+                List<IndigoRecord> indigoRecordResult = repository.stream()
+                        .limit(1).collect(Collectors.toList());
+                assertEquals("ZINC03099968", indigoRecordResult.get(0).getName());
+            }
+            @Override
+            public void onFailure(Exception e) {
+                Assertions.fail(e);
+            }
+        });
     }
 
 
@@ -142,7 +162,7 @@ public class LoadMoleculeFromFileTest {
             });
 
         } catch (Exception e) {
-            Assertions.fail();
+            Assertions.fail(e);
         }
     }
 
@@ -156,17 +176,27 @@ public class LoadMoleculeFromFileTest {
             IndigoRecord indigoRecord2 = Helpers.loadFromSmiles(smiles2);
             repository.indexRecord(indigoRecord1);
             repository.indexRecord(indigoRecord2);
-            List<IndigoRecord> exactMatchRecords = repository.stream()
-                    .filter(new ExactMatch<>(indigoRecord1))
-                    .collect(Collectors.toList())
-                    .stream()
-                    .filter(ExactMatch.exactMatchAfterChecker(indigoRecord1, indigo))
-                    .collect(Collectors.toList());
-            assertEquals(1, exactMatchRecords.size());
-            assertEquals(smiles1, indigo.loadMolecule(exactMatchRecords.get(0).getCmf()).canonicalSmiles());
+            repository.refreshIndex(new ActionListener<RefreshResponse>() {
+                @Override
+                public void onResponse(RefreshResponse refreshResponse) {
+                    List<IndigoRecord> exactMatchRecords = repository.stream()
+                            .filter(new ExactMatch<>(indigoRecord1))
+                            .collect(Collectors.toList())
+                            .stream()
+                            .filter(ExactMatch.exactMatchAfterChecker(indigoRecord1, indigo))
+                            .collect(Collectors.toList());
+                    assertEquals(1, exactMatchRecords.size());
+                    assertEquals(smiles1, indigo.loadMolecule(exactMatchRecords.get(0).getCmf()).canonicalSmiles());
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Assertions.fail(e);
+                }
+            });
 
         } catch (Exception e) {
-            Assertions.fail();
+            Assertions.fail(e);
         }
     }
 
@@ -180,14 +210,24 @@ public class LoadMoleculeFromFileTest {
             IndigoRecord indigoRecord2 = Helpers.loadFromSmiles(smiles2);
             repository.indexRecord(indigoRecord1);
             repository.indexRecord(indigoRecord2);
-            List<IndigoRecord> simMatchRecords = repository.stream()
-                    .filter(new SimilarityMatch<>(indigoRecord1))
-                    .collect(Collectors.toList());
-            assertEquals(1, simMatchRecords.size());
-            assertEquals(smiles1, indigo.loadMolecule(simMatchRecords.get(0).getCmf()).canonicalSmiles());
+            repository.refreshIndex(new ActionListener<RefreshResponse>() {
+                @Override
+                public void onResponse(RefreshResponse refreshResponse) {
+                    List<IndigoRecord> simMatchRecords = repository.stream()
+                            .filter(new SimilarityMatch<>(indigoRecord1))
+                            .collect(Collectors.toList());
+                    assertEquals(1, simMatchRecords.size());
+                    assertEquals(smiles1, indigo.loadMolecule(simMatchRecords.get(0).getCmf()).canonicalSmiles());
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Assertions.fail(e);
+                }
+            });
 
         } catch (Exception e) {
-            Assertions.fail();
+            Assertions.fail(e);
         }
     }
 
@@ -204,23 +244,33 @@ public class LoadMoleculeFromFileTest {
             assertEquals(50, indigoRecordList.size());
             IndigoRecord indigoTestRecord = Helpers.loadFromSmiles(needle);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
+            repository.refreshIndex(new ActionListener<RefreshResponse>() {
+                @Override
+                public void onResponse(RefreshResponse refreshResponse) {
+                    List<IndigoRecord> similarRecords = repository.stream()
+                            .filter(new SimilarityMatch<>(indigoTestRecord, 1))
+                            .limit(1)
+                            .collect(Collectors.toList());
 
-            List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new SimilarityMatch<>(indigoTestRecord, 1))
-                    .limit(1)
-                    .collect(Collectors.toList());
+                    for (IndigoObject indigoObject : indigo.iterateSmilesFile(testFile)) {
+                        bingoDb.insert(indigoObject);
+                    }
 
-            for (IndigoObject indigoObject : indigo.iterateSmilesFile(testFile)) {
-                bingoDb.insert(indigoObject);
-            }
+                    // Similar
+                    BingoObject result = bingoDb.searchSim(indigo.loadMolecule(needle), 1, 1);
+                    result.next();
+                    IndigoObject bingoFound = result.getIndigoObject();
+                    IndigoRecord elasticFound = similarRecords.get(0);
+                    IndigoObject indigoElasticFound = indigo.deserialize(elasticFound.getCmf());
+                    assertEquals(indigo.similarity(bingoFound, indigoElasticFound), 1.0f);
+                }
 
-            // Similar
-            BingoObject result = bingoDb.searchSim(indigo.loadMolecule(needle), 1, 1);
-            result.next();
-            IndigoObject bingoFound = result.getIndigoObject();
-            IndigoRecord elasticFound = similarRecords.get(0);
-            IndigoObject indigoElasticFound = indigo.deserialize(elasticFound.getCmf());
-            assertEquals(indigo.similarity(bingoFound, indigoElasticFound), 1.0f);
+                @Override
+                public void onFailure(Exception e) {
+                    Assertions.fail(e);
+                }
+            });
+
 
         } catch (Exception e) {
             Assertions.fail(e);
