@@ -9,6 +9,8 @@ import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.ExactMatch;
 import com.epam.indigo.predicate.SimilarityMatch;
 import org.elasticsearch.ElasticsearchStatusException;
+import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -123,11 +125,21 @@ public class LoadMoleculeFromFileTest {
             String smiles = "O(C(C[N+](C)(C)C)CC([O-])=O)C(=O)C";
             IndigoRecord indigoRecord = Helpers.loadFromSmiles(smiles);
             repository.indexRecord(indigoRecord);
-            IndigoRecord indigoTestRecord = Helpers.loadFromSmiles(smiles);
-            List<IndigoRecord> similarRecords = repository.stream()
-                    .filter(new SimilarityMatch<>(indigoTestRecord, 1))
-                    .collect(Collectors.toList());
-            assertEquals(1, similarRecords.size());
+            repository.refreshIndex(new ActionListener<RefreshResponse>() {
+                @Override
+                public void onResponse(RefreshResponse refreshResponse) {
+                    IndigoRecord indigoTestRecord = Helpers.loadFromSmiles(smiles);
+                    List<IndigoRecord> similarRecords = repository.stream()
+                            .filter(new SimilarityMatch<>(indigoTestRecord, 1))
+                            .collect(Collectors.toList());
+                    assertEquals(1, similarRecords.size());
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Assertions.fail();
+                }
+            });
 
         } catch (Exception e) {
             Assertions.fail();

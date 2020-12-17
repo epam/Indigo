@@ -6,6 +6,10 @@ import com.epam.indigo.IndigoObject;
 public class FromIndigoObject {
 
     public static IndigoRecord build(IndigoObject indigoObject) throws BingoElasticException {
+        return build(indigoObject, error -> {});
+    }
+
+    public static IndigoRecord build(IndigoObject indigoObject, ErrorHandler errorHandler) {
         indigoObject.aromatize();
         IndigoRecord.IndigoRecordBuilder builder = new IndigoRecord.IndigoRecordBuilder().withIndigoObject(
                 indigoObject
@@ -13,6 +17,7 @@ public class FromIndigoObject {
         for (IndigoObject prop : indigoObject.iterateProperties()) {
             builder.withCustomObject(prop.name(), prop.rawData());
         }
+        builder.withErrorHandler(errorHandler);
         return builder.build();
     }
 

@@ -2,6 +2,7 @@ package com.epam.indigo.model;
 
 import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.Indigo;
+import com.epam.indigo.IndigoException;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.fields.Field;
 import com.epam.indigo.model.fields.FieldNotFoundException;
@@ -11,6 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+class SkipErrorsHandler implements ErrorHandler {
+    @Override
+    public void handle(IndigoException error) {
+
+    }
+}
 
 public class IndigoRecord {
 
@@ -27,9 +35,13 @@ public class IndigoRecord {
     private byte[] cmf;
     private String name;
 
-    public IndigoRecord() {
+    // Skip errors when IndigoRecord cannot be created
+    private Boolean skipErrors = false;
 
-    }
+    // Error handler called when IndigoRecord cannot be created
+    private ErrorHandler errorHandler;
+
+    public IndigoRecord() {}
 
     public String getInternalID() {
         return internalID;
@@ -138,6 +150,16 @@ public class IndigoRecord {
 
         public IndigoRecordBuilder withScore(float score) {
             operations.add(record -> record.score = score);
+            return this;
+        }
+
+        public IndigoRecordBuilder withErrorHandler(ErrorHandler errorHandler) {
+            operations.add(record -> record.errorHandler = errorHandler);
+            return this;
+        }
+
+        public IndigoRecordBuilder withSkipErrors(Boolean skipErrors) {
+            operations.add(record -> record.skipErrors = skipErrors);
             return this;
         }
 

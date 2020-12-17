@@ -11,6 +11,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -208,6 +210,11 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             }
             throw new BingoElasticException("Couldn't delete records in Elasticsearch", e.getCause());
         }
+    }
+
+    public void refreshIndex(ActionListener<RefreshResponse> actionListener) {
+        RefreshRequest request = new RefreshRequest(this.indexName);
+        elasticClient.indices().refreshAsync(request, RequestOptions.DEFAULT, actionListener);
     }
 
     public static class ElasticRepositoryBuilder<T extends IndigoRecord> {
