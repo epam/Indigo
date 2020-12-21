@@ -2781,12 +2781,12 @@ CEXPORT int indigoAddDataSGroup(int molecule, int natoms, int* atoms, int nbonds
         int idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
         DataSGroup& dsg = (DataSGroup&)mol.sgroups.getSGroup(idx);
         int i;
-        if (atoms != 0)
-            for (i = 0; i < natoms; i++)
-                dsg.atoms.push(atoms[i]);
-        if (bonds != 0)
-            for (i = 0; i < nbonds; i++)
-                dsg.bonds.push(bonds[i]);
+        if (atoms != NULL)
+            dsg.atoms.concat(atoms, natoms);
+
+        if (bonds != NULL)
+            dsg.bonds.concat(bonds, nbonds);
+
         if (data != 0)
             dsg.data.readString(data, true);
         if (name != 0)
@@ -2805,11 +2805,11 @@ CEXPORT int indigoAddSuperatom(int molecule, int natoms, int* atoms, const char*
         int idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
         Superatom& satom = (Superatom&)mol.sgroups.getSGroup(idx);
         satom.subscript.appendString(name, true);
-        if (atoms == 0)
+        if (atoms == NULL)
             throw IndigoError("indigoAddSuperatom(): atoms were not specified");
 
-        for (int i = 0; i < natoms; i++)
-            satom.atoms.push(atoms[i]);
+        else
+            satom.atoms.concat(atoms, natoms);
 
         return self.addObject(new IndigoSuperatom(mol, idx));
     }
