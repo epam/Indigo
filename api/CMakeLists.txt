@@ -68,6 +68,7 @@ if (NOT PACK_INDIGO_NOT)
 endif()
 if (NOT DEFINED ENV{DISABLE_INDIGO_TESTS})
 DEFINE_TEST(indigo-c-test-shared "tests/c/indigo-test.c" indigo-shared)
+DEFINE_TEST(indigo-c-test-shared-issue-269 "tests/c/indigo-test-issue-269.c" indigo-shared)
 endif()
 
 add_executable(dlopen-test ${Indigo_SOURCE_DIR}/tests/c/dlopen-test.c)
