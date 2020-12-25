@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "indigo.h"
-#include "indigo-test-issue-269.h"
+#include "molecule/structure_checker2.h"
 
 const char* FAILED_MOLECULE_STRING = "The molecule\n"
                                      "  Ketcher 12222012222D 1   1.00000     0.00000     0\n"
@@ -101,20 +101,26 @@ const char* GOOD_MOLECULE_STRING = " The molecule\n"
                                    " 11 36  1  1     0  0\n"
                                    "M END\n";
 
-
 int test(int negative)
 {
-    int qm = indigoLoadQueryMoleculeFromString(negative? FAILED_MOLECULE_STRING : GOOD_MOLECULE_STRING);
+    int qm = indigoLoadQueryMoleculeFromString(negative ? FAILED_MOLECULE_STRING : GOOD_MOLECULE_STRING);
     if (qm < 0)
     {
         fprintf(stderr, "Error: can't parse input; %d is returned by indigoLoadQueryMoleculeFromString\n", qm);
     }
-    const char * result = indigoCheck(qm, "");
+    const char* result = indigoCheck(qm, 0);
     printf(!result ? "NULL" : result);
     indigoFree(qm);
     return 0;
 }
 
+int test2(int negative)
+{
+    indigo::StructureChecker2 checker;
+    const char* result = checker.check(negative ? FAILED_MOLECULE_STRING : GOOD_MOLECULE_STRING, "").toJson();
+    printf(!result ? "NULL" : result);
+    return 0;
+}
 
 void onError(const char* message, void* context)
 {
@@ -122,13 +128,14 @@ void onError(const char* message, void* context)
     exit(-1);
 }
 
-
 int main(void)
 {
     indigoSetErrorHandler(onError, 0);
     printf("Issue #269 input -- negative test\n");
     test(1);
-    //printf("\n\nPositive test\n");
-    //test(0);
+    printf("\n\nTest2 -- negative test\n");
+    test2(1);
+    // printf("\n\nPositive test\n");
+    // test(0);
     return 0;
 }

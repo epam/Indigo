@@ -27,7 +27,7 @@
 #include <memory>
 #include <utility>
 
-#include "indigo.h"
+#include "api/indigo.h"
 
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/exception.h"

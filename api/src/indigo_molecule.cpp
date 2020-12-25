@@ -54,7 +54,7 @@ IndigoMolecule::IndigoMolecule() : IndigoBaseMolecule(MOLECULE)
 {
 }
 
-bool IndigoBaseMolecule::is(IndigoObject& object)
+bool IndigoBaseMolecule::is(const IndigoObject& object)
 {
     int type = object.type;
 
