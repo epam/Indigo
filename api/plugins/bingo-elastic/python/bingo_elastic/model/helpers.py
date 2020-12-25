@@ -3,14 +3,14 @@ from typing import Callable, Generator, Optional, Union
 
 from indigo import Indigo, IndigoObject
 
-from bingo_elastic.model.record import IndigoRecord
+from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 
 
 def iterate_file(
     file: Path,
     iterator: str = None,
     error_handler: Optional[Callable[[object, BaseException], None]] = None,
-) -> Generator[IndigoRecord, None, None]:
+) -> Generator[IndigoRecordMolecule, None, None]:
     """
     :param file:
     :param iterator: supported iterators sdf, smiles, smi, cml.
@@ -35,7 +35,7 @@ def iterate_file(
 
     indigo_object: IndigoObject
     for indigo_object in getattr(Indigo(), iterator_fn)(str(file)):
-        yield IndigoRecord(
+        yield IndigoRecordMolecule(
             indigo_object=indigo_object, error_handler=error_handler
         )
 

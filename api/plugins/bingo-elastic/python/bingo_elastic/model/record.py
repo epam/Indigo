@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Callable, Dict, List, Optional
 from uuid import uuid4
 
@@ -6,13 +8,13 @@ from indigo import Indigo, IndigoObject
 
 
 # pylint: disable=unused-argument
-def skip_errors(instance: object, err: BaseException) -> None:
+def skip_errors(instance: IndigoRecord, err: BaseException) -> None:
     """
     Empty handler to skip errors
     """
 
 
-def check_error(instance: object, error: BaseException) -> None:
+def check_error(instance: IndigoRecord, error: BaseException) -> None:
     if instance.error_handler:
         instance.error_handler(instance, error)
     else:
@@ -20,14 +22,14 @@ def check_error(instance: object, error: BaseException) -> None:
 
 
 class WithElasticResponse:
-    def __set__(self, instance: object, value: Dict):
+    def __set__(self, instance: IndigoRecord, value: Dict):
         el_src = value["_source"]
         for arg, val in el_src.items():
             setattr(instance, arg, val)
 
 
 class WithIndigoObject:
-    def __set__(self, instance: object, value: IndigoObject) -> None:
+    def __set__(self, instance: IndigoRecord, value: IndigoObject) -> None:
         fingerprints = (
             "sim",
             "sub",
@@ -58,8 +60,14 @@ class WithIndigoObject:
             check_error(instance, err_)
 
 
-class IndigoRecord:
-
+class IndigoRecord():
+    """
+    Base class for IndigoObject representation.
+    This class could not be instantiated directly, use one of the following
+    subclasses:
+        - IndigoRecordMolecule
+        - IndigoRecordReaction
+    """
     cmf: bytes = None
     name: str = None
     sim_fingerprint: List[str] = None
@@ -109,3 +117,11 @@ class IndigoRecord:
 
     def as_indigo_object(self, session: Indigo):
         return session.deserialize(list(map(int, self.cmf.split(" "))))
+
+
+class IndigoRecordMolecule(IndigoRecord):
+    pass
+
+
+class IndigoRecordReaction(IndigoRecord):
+    pass

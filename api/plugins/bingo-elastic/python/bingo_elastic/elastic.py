@@ -1,4 +1,5 @@
 from ast import Str
+from enum import Enum
 from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 from elasticsearch import Elasticsearch
@@ -6,17 +7,38 @@ from elasticsearch.exceptions import NotFoundError, RequestError
 from elasticsearch.helpers import streaming_bulk
 from indigo import Indigo
 
-from bingo_elastic.model.record import IndigoRecord
+from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule, \
+    IndigoRecordReaction
 from bingo_elastic.queries import BaseMatch, query_factory
 from bingo_elastic.utils import PostprocessType
 
 
+class IndexName(Enum):
+
+    BINGO_MOLECULE = "bingo-molecule"
+    BINGO_REACTION = "bingo-reaction"
+
+
+def get_index_name(record: IndigoRecord) -> IndexName:
+    if isinstance(record, IndigoRecordMolecule):
+        return IndexName.BINGO_MOLECULE
+    if isinstance(record, IndigoRecordReaction):
+        return IndexName.BINGO_REACTION
+    raise AttributeError("Unknown IndigoRecord type %s", record)
+
+
+def elastic_repository_molecule(*args, **kwargs):
+    return ElasticRepository(IndexName.BINGO_MOLECULE, *args, **kwargs)
+
+
+def elastic_repository_reaction(*args, **kwargs):
+    return ElasticRepository(IndexName.BINGO_REACTION, *args, **kwargs)
+
+
 class ElasticRepository:
-
-    index_name = "bingo"
-
     def __init__(
         self,
+        index_name: IndexName,
         *,
         host: Union[str, List[Str]] = "localhost",
         port: int = 9200,
@@ -27,6 +49,7 @@ class ElasticRepository:
         retry_on_timeout: bool = True
     ) -> None:
         """
+        :param index_name: use function  get_index_name for setting this argument
         :param host: host or list of hosts
         :param port:
         :param scheme: http or https
@@ -52,13 +75,19 @@ class ElasticRepository:
         if ssl_context:
             arguments["ssl_context"] = ssl_context
 
+        self.index_name = index_name.value
+
         self.el_client = Elasticsearch(**arguments)
 
-    @staticmethod
     def __prepare(
+        self,
         records: Generator[IndigoRecord, None, None]
     ) -> Generator[Dict, None, None]:
         for record in records:
+            if get_index_name(record).value != self.index_name:
+                raise ValueError("Index %s doesn't support store value of type %s",
+                                 self.index_name,
+                                 type(record))
             yield record.as_dict()
 
     def index_record(self, record: IndigoRecord):
