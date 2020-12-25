@@ -183,15 +183,15 @@ namespace indigo
 
         int memcmp(const Array<T>& other) const
         {
+            size_t min_length = std::min(_length, other._length);
+            int result = ::memcmp(_array, other._array, min_length * sizeof(T));
+            if (result != 0)
+                return result;
             if (_length < other._length)
                 return -1;
             if (_length > other._length)
-                return -1;
-
-            if (_length == 0)
-                return 0;
-
-            return ::memcmp(_array, other._array, _length * sizeof(T));
+                return +1;
+            return 0;
         }
 
         void remove(int idx, int span = 1)
