@@ -3,7 +3,7 @@ from typing import Callable, Generator, Optional, Union
 
 from indigo import Indigo, IndigoObject
 
-from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
+from bingo_elastic.model.record import IndigoRecordMolecule
 
 
 def iterate_file(
