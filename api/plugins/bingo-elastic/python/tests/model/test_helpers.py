@@ -1,6 +1,12 @@
 from pathlib import Path
+from typing import Union
 
 import bingo_elastic.model.helpers as helpers
+from bingo_elastic.model.record import (
+    IndigoRecordReaction,
+    IndigoRecordMolecule,
+)
+from indigo import Indigo
 
 
 def test_iterate_sdf(resource_loader):
@@ -57,5 +63,15 @@ def test_iterate_cml(resource_loader):
     assert results[0] == results[1]
 
 
-def test_iterate_rxn(resource_loader):
-    rxn = helpers.iterate_file(Path(resource_loader("reactions/q_43.rxn")))
+def test_load_reaction(indigo_fixture, resource_loader) -> None:
+    reaction = helpers.load_reaction(
+        resource_loader("reactions/rheadb/58029.rxn"), indigo_fixture
+    )
+    assert isinstance(reaction, IndigoRecordReaction)
+
+
+def test_load_molucule(indigo_fixture, resource_loader) -> None:
+    molecule = helpers.load_molecule(
+        resource_loader("molecules/composition1.mol"), indigo_fixture
+    )
+    assert isinstance(molecule, IndigoRecordMolecule)

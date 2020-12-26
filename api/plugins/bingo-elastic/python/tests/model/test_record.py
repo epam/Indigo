@@ -8,6 +8,7 @@ from bingo_elastic.model.record import (
     IndigoRecordReaction,
     as_iob,
 )
+
 from bingo_elastic.queries import SimilarityMatch
 
 
@@ -52,9 +53,9 @@ def test_create_reaction(
     elastic_repository_reaction: ElasticRepository,
     indigo_fixture,
     resource_loader,
-):
+) -> None:
     reaction = indigo_fixture.loadReactionFromFile(
-        resource_loader("reactions/rheadb_58029.rxn")
+        resource_loader("reactions/rheadb/58029.rxn")
     )
     indigo_reaction = IndigoRecordReaction(indigo_object=reaction)
     test_smiles = set(

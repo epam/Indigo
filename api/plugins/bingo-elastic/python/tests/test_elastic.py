@@ -1,18 +1,24 @@
 import time
 from pathlib import Path
+from typing import List
 
 import pytest
-from indigo import Indigo
+from indigo import Indigo, IndigoObject
 
 from bingo_elastic.elastic import ElasticRepository
-from bingo_elastic.model.helpers import iterate_file
-from bingo_elastic.model.record import IndigoRecordMolecule
+from bingo_elastic.model.helpers import (
+    iterate_file,
+    load_reaction,
+    load_molecule,
+)
+from bingo_elastic.model.record import IndigoRecordMolecule, as_iob
 from bingo_elastic.queries import (
     EuclidSimilarityMatch,
     RangeQuery,
     TanimotoSimilarityMatch,
     TverskySimilarityMatch,
     WildcardQuery,
+    ExactMatch,
 )
 
 
@@ -190,14 +196,47 @@ def test_search_empty_fingerprint(
         next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
 
 
-# # TODO: create pubchem test
-# def test_pubchem(indigo_fixture: Indigo,
-#                  resource_loader: Callable[[str], str],
-#                  elastic_repository: ElasticRepository,):
-#
-#     iterator = iterate_file(
-#         Path(resource_loader("resources/pubchem_1.sdf")),
-#         error_handler=skip_errors
-#     )
-#     elastic_repository.index_records(iterator)
-#     pass
+def test_similaririty_matches_reactions(
+    elastic_repository_reaction: ElasticRepository,
+    loaded_rxns,
+    resource_loader,
+    indigo_fixture,
+) -> None:
+
+    reaction = indigo_fixture.loadReactionFromFile(
+        resource_loader("reactions/rheadb/50353.rxn")
+    )
+
+    reaction_rec = IndigoRecordMolecule(indigo_object=reaction)
+
+    for found_reaction in elastic_repository_reaction.filter(
+        similarity=TanimotoSimilarityMatch(reaction_rec, 0.99)
+    ):
+        assert (
+            as_iob(found_reaction, indigo_fixture).countReactants()
+            == reaction.countReactants()
+        )
+
+    for found_reaction in elastic_repository_reaction.filter(
+        similarity=EuclidSimilarityMatch(reaction_rec, 0.99)
+    ):
+        assert (
+            as_iob(found_reaction, indigo_fixture).countReactants()
+            == reaction.countReactants()
+        )
+
+    for found_reaction in elastic_repository_reaction.filter(
+        similarity=TverskySimilarityMatch(reaction_rec, 0.99)
+    ):
+        assert (
+            as_iob(found_reaction, indigo_fixture).countReactants()
+            == reaction.countReactants()
+        )
+
+    for found_reaction in elastic_repository_reaction.filter(
+        exact=reaction_rec
+    ):
+        assert (
+            as_iob(found_reaction, indigo_fixture).countReactants()
+            == reaction.countReactants()
+        )

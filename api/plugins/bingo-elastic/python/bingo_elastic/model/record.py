@@ -51,7 +51,11 @@ class WithIndigoObject:
             except indigo.IndigoException as err_:
                 check_error(instance, err_)
 
-        setattr(instance, "name", value.name())
+        try:
+            setattr(instance, "name", value.name())
+        except indigo.IndigoException as err_:
+            pass
+
         try:
             setattr(
                 instance, "cmf", " ".join(map(str, list(value.serialize())))

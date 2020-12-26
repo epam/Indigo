@@ -6,11 +6,9 @@ import pytest
 from indigo import Indigo
 
 from bingo_elastic.elastic import ElasticRepository, IndexName
-from bingo_elastic.model.helpers import iterate_file
+from bingo_elastic.model.helpers import iterate_file, load_reaction
 from bingo_elastic.model.record import (
-    IndigoRecord,
     IndigoRecordMolecule,
-    IndigoRecordReaction,
 )
 
 
@@ -48,8 +46,12 @@ def elastic_repository_reaction() -> ElasticRepository:
 
 
 @pytest.fixture(autouse=True)
-def clear_index(elastic_repository_molecule: ElasticRepository):
+def clear_index(
+    elastic_repository_molecule: ElasticRepository,
+    elastic_repository_reaction: ElasticRepository,
+):
     elastic_repository_molecule.delete_all_records()
+    elastic_repository_reaction.delete_all_records()
 
 
 @pytest.fixture
@@ -64,3 +66,17 @@ def loaded_sdf(
     return next(
         iterate_file(Path(resource_loader("molecules/rand_queries_small.sdf")))
     )
+
+
+@pytest.fixture
+def loaded_rxns(
+    elastic_repository_reaction: ElasticRepository,
+    resource_loader: Callable[[str], str],
+    indigo_fixture,
+):
+    for file_ in Path(resource_loader("reactions/rheadb")).iterdir():
+        if file_.suffix == ".rxn":
+            reaction_file = load_reaction(file_, indigo_fixture)
+            elastic_repository_reaction.index_record(reaction_file)
+
+    time.sleep(5)

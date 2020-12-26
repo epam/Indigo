@@ -3,7 +3,10 @@ from typing import Callable, Generator, Optional, Union
 
 from indigo import Indigo, IndigoObject
 
-from bingo_elastic.model.record import IndigoRecordMolecule
+from bingo_elastic.model.record import (
+    IndigoRecordMolecule,
+    IndigoRecordReaction,
+)
 
 
 def iterate_file(
@@ -71,3 +74,23 @@ def iterate_cml(
         "cml",
         error_handler=error_handler,
     )
+
+
+def load_molecule(
+    file_: Union[str, Path], session: Indigo
+) -> IndigoRecordMolecule:
+    """
+    Helper for loading molecules from file into IndigoRecordMolecule object
+    """
+    molecule = session.loadMoleculeFromFile(file_)
+    return IndigoRecordMolecule(indigo_object=molecule)
+
+
+def load_reaction(
+    file_: Union[str, Path], session: Indigo
+) -> IndigoRecordReaction:
+    """
+    Helper for loading reactions into IndigoRecordReaction object
+    """
+    reaction = session.loadReactionFromFile(str(file_))
+    return IndigoRecordReaction(indigo_object=reaction)
