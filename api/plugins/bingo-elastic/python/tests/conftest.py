@@ -7,7 +7,8 @@ from indigo import Indigo
 
 from bingo_elastic.elastic import ElasticRepository, IndexName
 from bingo_elastic.model.helpers import iterate_file
-from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
+from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule, \
+    IndigoRecordReaction
 
 
 @pytest.fixture()
@@ -32,6 +33,11 @@ def indigo_fixture() -> Indigo:
 @pytest.fixture
 def elastic_repository_molecule() -> ElasticRepository:
     return ElasticRepository(IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200)
+
+
+@pytest.fixture
+def elastic_repository_reaction() -> ElasticRepository:
+    return ElasticRepository(IndexName.BINGO_REACTION, host="127.0.0.1", port=9200)
 
 
 @pytest.fixture(autouse=True)

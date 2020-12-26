@@ -104,7 +104,7 @@ def test_substructure_search(
 def test_range_search(
     elastic_repository_molecule: ElasticRepository,
     indigo_fixture: Indigo,
-        resource_loader,
+    resource_loader,
 ):
     for i, item in enumerate(
         iterate_file(Path(resource_loader("molecules/rand_queries_small.sdf")))

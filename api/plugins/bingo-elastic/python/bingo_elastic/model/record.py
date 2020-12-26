@@ -125,3 +125,13 @@ class IndigoRecordMolecule(IndigoRecord):
 
 class IndigoRecordReaction(IndigoRecord):
     pass
+
+
+def as_iob(indigo_record: IndigoRecord, session: Indigo) -> IndigoObject:
+    """Function extracts IndigoObject from IndigoRecord
+    Short alias to IndigoRecord.as_indigo_object
+    :param indigo_record:
+    :param session:
+    :return:
+    """
+    return indigo_record.as_indigo_object(session)
