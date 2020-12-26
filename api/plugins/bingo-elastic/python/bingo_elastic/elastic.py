@@ -7,8 +7,11 @@ from elasticsearch.exceptions import NotFoundError, RequestError
 from elasticsearch.helpers import streaming_bulk
 from indigo import Indigo
 
-from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule, \
-    IndigoRecordReaction
+from bingo_elastic.model.record import (
+    IndigoRecord,
+    IndigoRecordMolecule,
+    IndigoRecordReaction,
+)
 from bingo_elastic.queries import BaseMatch, query_factory
 from bingo_elastic.utils import PostprocessType
 
@@ -24,7 +27,7 @@ def get_index_name(record: IndigoRecord) -> IndexName:
         return IndexName.BINGO_MOLECULE
     if isinstance(record, IndigoRecordReaction):
         return IndexName.BINGO_REACTION
-    raise AttributeError("Unknown IndigoRecord type %s", record)
+    raise AttributeError(f"Unknown IndigoRecord type {record}")
 
 
 def elastic_repository_molecule(*args, **kwargs):
@@ -46,7 +49,7 @@ class ElasticRepository:
         http_auth: Optional[Tuple[Str]] = None,
         ssl_context: Any = None,
         request_timeout: int = 60,
-        retry_on_timeout: bool = True
+        retry_on_timeout: bool = True,
     ) -> None:
         """
         :param index_name: use function  get_index_name for setting this argument
@@ -80,14 +83,14 @@ class ElasticRepository:
         self.el_client = Elasticsearch(**arguments)
 
     def __prepare(
-        self,
-        records: Generator[IndigoRecord, None, None]
+        self, records: Generator[IndigoRecord, None, None]
     ) -> Generator[Dict, None, None]:
         for record in records:
             if get_index_name(record).value != self.index_name:
-                raise ValueError("Index %s doesn't support store value of type %s",
-                                 self.index_name,
-                                 type(record))
+                raise ValueError(
+                    f"Index {self.index_name} doesn't support store value "
+                    f"of type {type(record)}"
+                )
             yield record.as_dict()
 
     def index_record(self, record: IndigoRecord):
@@ -148,7 +151,7 @@ class ElasticRepository:
         exact: IndigoRecord = None,
         substructure: IndigoRecord = None,
         limit=10,
-        **kwargs
+        **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
 
         # actions needed to be called on elastic_search result
@@ -160,7 +163,7 @@ class ElasticRepository:
             substructure=substructure,
             limit=limit,
             postprocess_actions=postprocess_actions,
-            **kwargs
+            **kwargs,
         )
         res = self.el_client.search(index=self.index_name, body=query)
         indigo_session = Indigo()
@@ -180,7 +183,7 @@ class ElasticRepository:
         substructure: IndigoRecord = None,
         limit: int = 10,
         postprocess_actions: PostprocessType = None,
-        **kwargs
+        **kwargs,
     ) -> Dict:
 
         query = {

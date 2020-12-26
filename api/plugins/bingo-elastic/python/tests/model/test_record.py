@@ -1,11 +1,13 @@
 from time import sleep
-from typing import Callable
 
 import pytest
-from bingo_elastic.elastic import ElasticRepository
 
-from bingo_elastic.model.record import IndigoRecordReaction, \
-    IndigoRecordMolecule, as_iob
+from bingo_elastic.elastic import ElasticRepository
+from bingo_elastic.model.record import (
+    IndigoRecordMolecule,
+    IndigoRecordReaction,
+    as_iob,
+)
 from bingo_elastic.queries import SimilarityMatch
 
 
@@ -18,11 +20,9 @@ def test_empty_create(indigo_fixture):
         assert isinstance(instance.record_id, str)
         assert isinstance(err_, ValueError)
 
-    IndigoRecordMolecule(indigo_object=mol,
-                        error_handler=err_handler)
+    IndigoRecordMolecule(indigo_object=mol, error_handler=err_handler)
 
-    IndigoRecordMolecule(indigo_object=mol,
-                        skip_errors=True)
+    IndigoRecordMolecule(indigo_object=mol, skip_errors=True)
 
 
 def test_create(indigo_fixture):
@@ -35,15 +35,12 @@ def test_create(indigo_fixture):
 
 def test_create_without_fingerprint(indigo_fixture):
     mol = indigo_fixture.loadMolecule("[H][H]")
-    indigo_record = IndigoRecordMolecule(indigo_object=mol,
-                                        skip_errors=True)
+    indigo_record = IndigoRecordMolecule(indigo_object=mol, skip_errors=True)
     assert len(indigo_record.sim_fingerprint) == 0
     assert len(indigo_record.sub_fingerprint) == 0
 
 
-def test_create_with_name(
-        indigo_fixture, resource_loader
-):
+def test_create_with_name(indigo_fixture, resource_loader):
     mol = indigo_fixture.loadMoleculeFromFile(
         resource_loader("molecules/composition1.mol")
     )
@@ -54,22 +51,26 @@ def test_create_with_name(
 def test_create_reaction(
     elastic_repository_reaction: ElasticRepository,
     indigo_fixture,
-    resource_loader
+    resource_loader,
 ):
     reaction = indigo_fixture.loadReactionFromFile(
         resource_loader("reactions/rheadb_58029.rxn")
     )
     indigo_reaction = IndigoRecordReaction(indigo_object=reaction)
-    test_smiles = set([
-        reactant.canonicalSmiles() for reactant in reaction.iterateReactants()
-    ])
+    test_smiles = set(
+        [
+            reactant.canonicalSmiles()
+            for reactant in reaction.iterateReactants()
+        ]
+    )
     count_reactants = reaction.countReactants()
     count_products = reaction.countProducts()
     assert isinstance(indigo_reaction, IndigoRecordReaction)
     elastic_repository_reaction.index_record(indigo_reaction)
     sleep(1)
     for found_react in elastic_repository_reaction.filter(
-            similarity=SimilarityMatch(indigo_reaction, 0.9)):
+        similarity=SimilarityMatch(indigo_reaction, 0.9)
+    ):
         found_react = as_iob(found_react, indigo_fixture)
         assert count_products == found_react.countProducts()
         assert count_reactants == found_react.countReactants()

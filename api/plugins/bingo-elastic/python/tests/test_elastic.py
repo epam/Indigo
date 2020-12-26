@@ -2,14 +2,18 @@ import time
 from pathlib import Path
 
 import pytest
-from bingo_elastic.model.record import IndigoRecordMolecule
 from indigo import Indigo
 
 from bingo_elastic.elastic import ElasticRepository
 from bingo_elastic.model.helpers import iterate_file
-from bingo_elastic.queries import (EuclidSimilarityMatch, RangeQuery,
-                                   TanimotoSimilarityMatch,
-                                   TverskySimilarityMatch, WildcardQuery)
+from bingo_elastic.model.record import IndigoRecordMolecule
+from bingo_elastic.queries import (
+    EuclidSimilarityMatch,
+    RangeQuery,
+    TanimotoSimilarityMatch,
+    TverskySimilarityMatch,
+    WildcardQuery,
+)
 
 
 def test_create_index(
@@ -60,7 +64,9 @@ def test_filter_by_name(
     mol = indigo_fixture.loadMoleculeFromFile(
         resource_loader("molecules/composition1.mol")
     )
-    elastic_repository_molecule.index_record(IndigoRecordMolecule(indigo_object=mol))
+    elastic_repository_molecule.index_record(
+        IndigoRecordMolecule(indigo_object=mol)
+    )
     time.sleep(1)
     result = elastic_repository_molecule.filter(name="Composition1")
     for item in result:
@@ -122,12 +128,14 @@ def test_wildcard_search(
     elastic_repository_molecule: ElasticRepository,
     indigo_fixture: Indigo,
     loaded_sdf: IndigoRecordMolecule,
-        resource_loader,
+    resource_loader,
 ):
     mol = indigo_fixture.loadMoleculeFromFile(
         resource_loader("molecules/composition1.mol")
     )
-    elastic_repository_molecule.index_record(IndigoRecordMolecule(indigo_object=mol))
+    elastic_repository_molecule.index_record(
+        IndigoRecordMolecule(indigo_object=mol)
+    )
     time.sleep(1)
     result = elastic_repository_molecule.filter(name=WildcardQuery("Comp*"))
     for item in result:
@@ -138,14 +146,15 @@ def test_custom_fields(
     elastic_repository_molecule: ElasticRepository,
     indigo_fixture: Indigo,
     loaded_sdf: IndigoRecordMolecule,
-        resource_loader,
+    resource_loader,
 ):
 
     mol = indigo_fixture.loadMoleculeFromFile(
         resource_loader("molecules/composition1.mol")
     )
-    rec = IndigoRecordMolecule(indigo_object=mol,
-                       PUBCHEM_IUPAC_INCHIKEY="RDHQFKQIGNGIED-UHFFFAOYSA-N")
+    rec = IndigoRecordMolecule(
+        indigo_object=mol, PUBCHEM_IUPAC_INCHIKEY="RDHQFKQIGNGIED-UHFFFAOYSA-N"
+    )
     elastic_repository_molecule.index_record(rec)
     time.sleep(1)
     result = elastic_repository_molecule.filter(
@@ -158,24 +167,24 @@ def test_custom_fields(
 def test_search_empty_fingerprint(
     elastic_repository_molecule: ElasticRepository,
     indigo_fixture: Indigo,
-        resource_loader,
+    resource_loader,
 ):
     for smile in ["[H][H]", "[H][F]"]:
         rec = IndigoRecordMolecule(
-            indigo_object=indigo_fixture.loadMolecule(smile),
-            skip_errors=True
+            indigo_object=indigo_fixture.loadMolecule(smile), skip_errors=True
         )
         elastic_repository_molecule.index_record(rec)
     time.sleep(5)
     result = elastic_repository_molecule.filter(
         exact=IndigoRecordMolecule(
             indigo_object=indigo_fixture.loadMolecule("[H][H]"),
-            skip_errors=True
+            skip_errors=True,
         )
     )
 
     assert (
-            "[H][H]" == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
+        "[H][H]"
+        == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
     )
     with pytest.raises(StopIteration):
         next(result).as_indigo_object(indigo_fixture).canonicalSmiles()

@@ -60,7 +60,7 @@ class WithIndigoObject:
             check_error(instance, err_)
 
 
-class IndigoRecord():
+class IndigoRecord:
     """
     Base class for IndigoObject representation.
     This class could not be instantiated directly, use one of the following
@@ -68,6 +68,7 @@ class IndigoRecord():
         - IndigoRecordMolecule
         - IndigoRecordReaction
     """
+
     cmf: bytes = None
     name: str = None
     sim_fingerprint: List[str] = None

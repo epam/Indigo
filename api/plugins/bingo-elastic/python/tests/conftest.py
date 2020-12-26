@@ -7,8 +7,11 @@ from indigo import Indigo
 
 from bingo_elastic.elastic import ElasticRepository, IndexName
 from bingo_elastic.model.helpers import iterate_file
-from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule, \
-    IndigoRecordReaction
+from bingo_elastic.model.record import (
+    IndigoRecord,
+    IndigoRecordMolecule,
+    IndigoRecordReaction,
+)
 
 
 @pytest.fixture()
@@ -32,12 +35,16 @@ def indigo_fixture() -> Indigo:
 
 @pytest.fixture
 def elastic_repository_molecule() -> ElasticRepository:
-    return ElasticRepository(IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200)
+    return ElasticRepository(
+        IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200
+    )
 
 
 @pytest.fixture
 def elastic_repository_reaction() -> ElasticRepository:
-    return ElasticRepository(IndexName.BINGO_REACTION, host="127.0.0.1", port=9200)
+    return ElasticRepository(
+        IndexName.BINGO_REACTION, host="127.0.0.1", port=9200
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -48,7 +55,7 @@ def clear_index(elastic_repository_molecule: ElasticRepository):
 @pytest.fixture
 def loaded_sdf(
     elastic_repository_molecule: ElasticRepository,
-        resource_loader,
+    resource_loader,
 ) -> IndigoRecordMolecule:
     resource = resource_loader("molecules/rand_queries_small.sdf")
     sdf = iterate_file(Path(resource))

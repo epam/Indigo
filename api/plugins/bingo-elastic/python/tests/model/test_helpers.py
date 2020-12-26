@@ -58,8 +58,4 @@ def test_iterate_cml(resource_loader):
 
 
 def test_iterate_rxn(resource_loader):
-    rxn = helpers.iterate_file(
-        Path(resource_loader("reactions/q_43.rxn"))
-    )
-
-
+    rxn = helpers.iterate_file(Path(resource_loader("reactions/q_43.rxn")))
