@@ -1,14 +1,14 @@
 #
 # Copyright (C) from 2009 to Present EPAM Systems.
-# 
+#
 # This file is part of Indigo toolkit.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ class BingoException(Exception):
 
     def __str__(self):
         if sys.version_info > (3, 0):
-            return repr(self.value.decode('ascii'))  
+            return repr(self.value.decode('ascii'))
         else:
             return repr(self.value)
 
@@ -126,7 +126,7 @@ class Bingo(object):
     def _checkResultString (indigo, result):
         res = Bingo._checkResultPtr(indigo, result)
         if sys.version_info >= (3, 0):
-            return res.decode('ascii')  
+            return res.decode('ascii')
         else:
             return res.encode('ascii')
 
@@ -258,7 +258,7 @@ class BingoObject(object):
         self._id = objId
         self._indigo = indigo
         self._bingo = bingo
-        
+
     def __del__(self):
         self.close()
 
@@ -317,3 +317,18 @@ class BingoObject(object):
     def maxCell(self):
         self._indigo._setSessionId()
         return Bingo._checkResult(self._indigo, self._bingo._lib.bingoMaxCell(self._id))
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        next_item = self.next()
+        if next_item:
+            return self
+        raise StopIteration
