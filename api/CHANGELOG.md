@@ -1,3 +1,18 @@
+# Indigo 1.4.2
+*28 Dec 2020*
+
+## New features and improvements:
+* bingo-elastic: python: 
+  * catch and log Indigo exceptions on `iterate_file` added
+  * PyLint checking added
+* bingo-nosql: python:
+  * added context manager and iterator for BingoObject
+
+## Bugfixes
+* api: build: reduce list of exported symbols for Indigo shared library on Linux to hide libstdc++ symbols (#276)
+* api: java: fix load native libs on Windows (#261) (Thanks to @00Green27)
+
+
 # Indigo 1.4.1
 *25 Nov 2020*
 
