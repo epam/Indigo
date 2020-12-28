@@ -22,6 +22,8 @@
 #include "api/src/indigo_reaction.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/molecule_automorphism_search.h"
+#include "third_party/rapidjson/stringbuffer.h"
+#include "third_party/rapidjson/writer.h"
 #include <functional>
 #include <regex>
 #include <string>
@@ -178,10 +180,11 @@ void StructureChecker2::CheckResult::message(CheckMessageCode code)
     messages.push_back(m);
 }
 
-void StructureChecker2::CheckResult::_toJson(Writer<StringBuffer>& writer)
+using namespace rapidjson;
+static void _toJson(const StructureChecker2::CheckResult& data, Writer<StringBuffer>& writer)
 {
     writer.StartArray();
-    for (auto msg : messages)
+    for (auto msg : data.messages)
     {
         writer.StartObject();
         writer.Key("code");
@@ -206,7 +209,7 @@ void StructureChecker2::CheckResult::_toJson(Writer<StringBuffer>& writer)
         if (!msg.subresult.isEmpty())
         {
             writer.Key("subresult");
-            msg.subresult._toJson(writer);
+            _toJson(msg.subresult, writer);
         }
         writer.EndObject();
     }
@@ -217,7 +220,7 @@ const char* StructureChecker2::CheckResult::toJson()
     std::stringstream result;
     StringBuffer s;
     Writer<StringBuffer> writer(s);
-    _toJson(writer);
+    _toJson(*this, writer);
     return s.GetString();
 }
 

@@ -21,15 +21,11 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
-#include "third_party/rapidjson/stringbuffer.h"
-#include "third_party/rapidjson/writer.h"
 #include <string>
 #include <vector>
 #include <unordered_set>
 
 class IndigoObject;
-
-using namespace rapidjson;
 
 namespace indigo
 {
@@ -117,14 +113,7 @@ namespace indigo
             void message(CheckMessageCode code, const std::unordered_set<int>& ids);
             void message(CheckMessageCode code);
             const char* toJson();
-            inline const CheckMessage* operator[](const size_t i)
-            {
-                return i < messages.size() ? &messages[i] : nullptr;
-            }
-
-        private:
             std::vector<CheckMessage> messages;
-            void _toJson(Writer<StringBuffer>& writer);
         };
 
         struct DLLEXPORT CheckMessage
