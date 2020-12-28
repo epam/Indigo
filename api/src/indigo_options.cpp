@@ -246,7 +246,7 @@ static void indigoResetBasicOptions()
 
 _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter()
 {
-    OptionManager& mgr = indigoGetOptionManager();
+    IndigoOptionManager& mgr = indigoGetOptionManager();
     OsLocker locker(mgr.lock);
 
 #define indigo indigoGetInstance()

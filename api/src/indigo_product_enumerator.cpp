@@ -269,7 +269,7 @@ public:
 
 _IndigoRPEOptionsHandlersSetter::_IndigoRPEOptionsHandlersSetter()
 {
-    OptionManager& mgr = indigoGetOptionManager();
+    IndigoOptionManager& mgr = indigoGetOptionManager();
     OsLocker locker(mgr.lock);
 
 #define indigo indigoGetInstance()
