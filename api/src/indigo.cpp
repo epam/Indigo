@@ -231,9 +231,9 @@ CEXPORT void indigoSetErrorMessage(const char* message)
 int Indigo::addObject(IndigoObject* obj)
 {
     OsLocker lock(_objects_lock);
-    int id = _next_id++;
-    _objects.insert(id, obj);
-    return id;
+    obj->id = _next_id++;
+    _objects.insert(obj->id, obj);
+    return obj->id;
 }
 
 void Indigo::removeObject(int id)

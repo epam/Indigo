@@ -56,8 +56,16 @@ namespace indigo
             CHECK_AMBIGUOUS_H = 0x00010000,  // Check ambiguous H existance
             CHECK_COORD = 0x00020000,        // Check coordinates existance
             CHECK_V3000 = 0x00040000,        // Check v3000 format
-            CHECK_ALL = -1                   // Check all features
+            CHECK_ALL = -1                   // Check all features (default)
         };
+
+        static constexpr const char* checkTypeName[] = {"none",      "load",         "valence",      "radical", "pseudoatom", "stereo",
+                                                        "query",     "overlap_atom", "overlap_bond", "rgroup",  "sgroup",     "tgroup",
+                                                        "chirality", "chiral_flag",  "3d_coord",     "charge",  "salt",       "ambigous_h",
+                                                        "coord",     "v3000",        "all"}; // non-letter( e.g comma, space(s))-delimited textual params, e.g.
+                                                                                             // check(item, "load, valence, radical")
+                                                                                             // is equivalent to
+                                                                                             // check(item, CHECK_LOAD | CHECK_VALECE | CHECK_RADICAL)
 
         enum CheckMessageCode
         {
@@ -71,7 +79,8 @@ namespace indigo
             CHECK_MSG_3D_STEREO,
             CHECK_MSG_UNDEFINED_STEREO,
             CHECK_MSG_IGNORE_STEREO_ERROR,
-            CHECK_MSG_QUERY,
+            CHECK_MSG_QUERY_ATOM,
+            CHECK_MSG_QUERY_BOND,
             CHECK_MSG_IGNORE_QUERY_FEATURE,
             CHECK_MSG_OVERLAP_ATOM,
             CHECK_MSG_OVERLAP_BOND,
@@ -102,12 +111,11 @@ namespace indigo
 
         StructureChecker2();
 
-        CheckResult check(const char* item, const char* params);
-        CheckResult check(int item, const char* params);
-        CheckResult check(const IndigoObject& item, const char* params);
-        CheckResult check(const IndigoObject& item, int params);
-
-        void checkMolecule(const BaseMolecule& mol, CheckResult& result);
+        CheckResult check(const char* item, const char* params = 0);
+        CheckResult check(int item, int check_types = CHECK_ALL, const std::vector<int>& selected_atoms = std::vector<int>(),
+                          const std::vector<int>& selected_bonds = std::vector<int>());
+        CheckResult check(const IndigoObject& item, int check_types = CHECK_ALL, const std::vector<int>& selected_atoms = std::vector<int>(),
+                          const std::vector<int>& selected_bonds = std::vector<int>());
 
         DECL_ERROR;
 
