@@ -21,10 +21,15 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
+#include "third_party/rapidjson/stringbuffer.h"
+#include "third_party/rapidjson/writer.h"
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 class IndigoObject;
+
+using namespace rapidjson;
 
 namespace indigo
 {
@@ -59,17 +64,18 @@ namespace indigo
             CHECK_ALL = -1                   // Check all features (default)
         };
 
-        static constexpr const char* checkTypeName[] = {"none",      "load",         "valence",      "radical", "pseudoatom", "stereo",
-                                                        "query",     "overlap_atom", "overlap_bond", "rgroup",  "sgroup",     "tgroup",
-                                                        "chirality", "chiral_flag",  "3d_coord",     "charge",  "salt",       "ambigous_h",
-                                                        "coord",     "v3000",        "all"}; // non-letter( e.g comma, space(s))-delimited textual params, e.g.
-                                                                                             // check(item, "load, valence, radical")
-                                                                                             // is equivalent to
-                                                                                             // check(item, CHECK_LOAD | CHECK_VALECE | CHECK_RADICAL)
+        static constexpr const char* checkTypeName[] = {"none",         "load",         "valence", "radical",    "pseudoatom", "stereo",    "query",
+                                                        "overlap_atom", "overlap_bond", "rgroup",  "sgroup",     "tgroup",     "chirality", "chiral_flag",
+                                                        "3d_coord",     "charge",       "salt",    "ambigous_h", "coord",      "v3000",     "all"};
+        // See below check(char *, char *):
+        // check("molecule text", "load, valence, radical, atoms 1 2 3, bonds 4 5 6, tgroup"
+        // is equivalent to
+        // check(the_molecule, check_flags = CHECK_LOAD | CHECK_VALECE | CHECK_RADICAL | CHECK_TGROUP, selected_atoms=[1,2,3], selected_bonds=[4,5,6]);
 
-        enum CheckMessageCode
+        enum class CheckMessageCode
         {
-            CHECK_MSG_LOAD = 1,
+            CHECK_MSG_NONE,
+            CHECK_MSG_LOAD,
             CHECK_MSG_VALENCE,
             CHECK_MSG_IGNORE_VALENCE_ERROR,
             CHECK_MSG_RADICAL,
@@ -92,29 +98,50 @@ namespace indigo
             CHECK_MSG_EMPTY,
             CHECK_MSG_AMBIGUOUS_H,
             CHECK_MSG_3D_COORD,
-            CHECK_MSG_ZERO_COORD
+            CHECK_MSG_ZERO_COORD,
+            CHECK_MSG_REACTION,
+            CHECK_MSG_CHIRALITY,
+            CHECK_MSG_CHARGE_NOT_IMPL,
+            CHECK_MSG_SALT_NOT_IMPL,
+            CHECK_MSG_V3000
+        };
+
+        struct DLLEXPORT CheckMessage;
+
+        class DLLEXPORT CheckResult
+        {
+        public:
+            bool isEmpty() const;
+            void message(CheckMessageCode code, int index, const CheckResult& subresult);
+            void message(CheckMessageCode code, const std::vector<int>& ids);
+            void message(CheckMessageCode code, const std::unordered_set<int>& ids);
+            void message(CheckMessageCode code);
+            const char* toJson();
+            inline const CheckMessage* operator[](const size_t i)
+            {
+                return i < messages.size() ? &messages[i] : nullptr;
+            }
+
+        private:
+            std::vector<CheckMessage> messages;
+            void _toJson(Writer<StringBuffer>& writer);
         };
 
         struct DLLEXPORT CheckMessage
         {
-            CheckMessageCode code;
+            CheckMessageCode code = StructureChecker2::CheckMessageCode::CHECK_MSG_NONE;
             std::string message;
-        };
-
-        struct DLLEXPORT CheckResult
-        {
-            int error;
-            std::vector<CheckMessage> messages;
-            const char* toJson();
-            const char* toYaml();
+            int index = -1;
+            std::vector<int> ids;
+            CheckResult subresult;
         };
 
         StructureChecker2();
 
         CheckResult check(const char* item, const char* params = 0);
-        CheckResult check(int item, int check_types = CHECK_ALL, const std::vector<int>& selected_atoms = std::vector<int>(),
+        CheckResult check(int item, int check_flags = CHECK_ALL, const std::vector<int>& selected_atoms = std::vector<int>(),
                           const std::vector<int>& selected_bonds = std::vector<int>());
-        CheckResult check(const IndigoObject& item, int check_types = CHECK_ALL, const std::vector<int>& selected_atoms = std::vector<int>(),
+        CheckResult check(const IndigoObject& item, int check_flags = CHECK_ALL, const std::vector<int>& selected_atoms = std::vector<int>(),
                           const std::vector<int>& selected_bonds = std::vector<int>());
 
         DECL_ERROR;
