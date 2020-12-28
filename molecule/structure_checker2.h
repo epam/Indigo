@@ -112,7 +112,7 @@ namespace indigo
             void message(CheckMessageCode code, const std::vector<int>& ids);
             void message(CheckMessageCode code, const std::unordered_set<int>& ids);
             void message(CheckMessageCode code);
-            const char* toJson();
+            std::string toJson();
             std::vector<CheckMessage> messages;
         };
 

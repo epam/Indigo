@@ -43,30 +43,41 @@ static CheckParams check_params_from_string(const char* params)
     size_t len = sizeof(StructureChecker2::checkTypeName) / sizeof(*StructureChecker2::checkTypeName);
     if (params)
     {
-        std::cmatch sm1;
+        std::smatch sm1;
         std::unordered_set<std::string> words;
-        while (std::regex_search(params, sm1, std::regex(R"(\b(\w+)\b)", std::regex_constants::icase)))
+        std::string s(params);
+        std::regex rx1(R"(\b(\w+)\b)", std::regex_constants::icase);
+        while (std::regex_search(s, sm1, rx1))
         {
             words.insert(sm1[1]);
+            s = sm1.suffix();
         }
-        for (int i = 0, t = 1; i < len; i++, t << 1)
+        r.check_flags = StructureChecker2::CHECK_NONE;
+        for (int i = 0; i < len; i++)
         {
             if (words.find(std::string(StructureChecker2::checkTypeName[i])) != words.end())
             {
-                r.check_flags |= t;
+                r.check_flags |= 1 << i;
             }
         }
         r.check_flags = !r.check_flags || r.check_flags & 1 << (len - 1) ? StructureChecker2::CHECK_ALL
                                                                          : (r.check_flags == 1 ? StructureChecker2::CHECK_NONE : r.check_flags >> 1);
 
-        std::cmatch sm2;
-        while (std::regex_search(params, sm2, std::regex(R"(\b(atoms|bonds)(?:\b+(\d+)\b+)+)", std::regex_constants::icase)))
+        std::smatch sm2;
+        s = params;
+        std::regex rx2(R"(\b(atoms|bonds)\b((?:\W+\b\d+\b\W*?)+))", std::regex_constants::icase);
+        std::regex rx3(R"(\b(\d+)\b)");
+        std::smatch sm3;
+        while (std::regex_search(s, sm2, rx2))
         {
             std::vector<int>& vec = std::tolower(sm2[1].str()[0]) == 'a' ? r.selected_atoms : r.selected_bonds;
-            for (size_t i = 2; i < sm2.size(); ++i)
+            std::string a = sm2[2];
+            while (std::regex_search(a, sm3, rx3))
             {
-                vec.push_back(atoi(sm2[i].str().c_str()));
+                vec.push_back(atoi(sm3[1].str().c_str()));
+                a = sm3.suffix();
             }
+            s = sm2.suffix();
         }
     }
     return r;
@@ -215,13 +226,13 @@ static void _toJson(const StructureChecker2::CheckResult& data, Writer<StringBuf
     }
     writer.EndArray();
 }
-const char* StructureChecker2::CheckResult::toJson()
+std::string StructureChecker2::CheckResult::toJson()
 {
     std::stringstream result;
     StringBuffer s;
     Writer<StringBuffer> writer(s);
     _toJson(*this, writer);
-    return s.GetString();
+    return std::string(s.GetString());
 }
 
 /**************************************************/
@@ -390,7 +401,7 @@ static void check_overlap_bond(Molecule& mol, const std::unordered_set<int>& sel
     {
         auto mean_dist = calc_mean_dist(mol);
         std::unordered_set<int> ids;
-        std::for_each(selected_bonds.begin(), selected_atoms.end(), [&mol, &ids, mean_dist](int idx) {
+        std::for_each(selected_bonds.begin(), selected_bonds.end(), [&mol, &ids, mean_dist](int idx) {
             const Edge& e1 = mol.getEdge(idx);
             Vec2f a1, b1, a2, b2;
             Vec2f::projectZ(a1, mol.getAtomXyz(e1.beg));
@@ -538,9 +549,9 @@ static void checkMolecule(BaseMolecule& bmol, int check_types, const std::vector
     std::transform(selected_bonds.begin(), selected_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).end; });
 
     Molecule& mol = ((BaseMolecule&)bmol).isQueryMolecule() ? (Molecule&)((BaseMolecule&)bmol).asQueryMolecule() : ((BaseMolecule&)bmol).asMolecule();
-    for (int t = check_types, i = 0; i < sizeof(check_type_checkers) / sizeof(*check_type_checkers); i++, t >>= 1)
+    for (int i = 0; i < sizeof(check_type_checkers) / sizeof(*check_type_checkers); i++)
     {
-        if (t & 1)
+        if (check_types & (1 << i))
         {
             check_type_checkers[i](mol, sel_atoms, sel_bonds, result);
         }
