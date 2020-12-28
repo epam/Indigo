@@ -1,5 +1,7 @@
 #include "bingo_lock.h"
 
+using namespace bingo;
+
 DatabaseLockData::DatabaseLockData() : writers_count(0), readers_count(0)
 {
     osSemaphoreCreate(&rc_sem, 1, 1);
