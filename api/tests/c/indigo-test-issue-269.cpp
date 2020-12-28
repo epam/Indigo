@@ -117,7 +117,7 @@ int test(int negative)
 int test2(int negative)
 {
     indigo::StructureChecker2 checker;
-    std::string result = checker.check(negative ? FAILED_MOLECULE_STRING : GOOD_MOLECULE_STRING, "query atoms 2,3,4 all").toJson();
+    std::string result = checker.check(negative ? FAILED_MOLECULE_STRING : GOOD_MOLECULE_STRING, "", "query").toJson();
     printf(result.c_str());
     return 0;
 }
