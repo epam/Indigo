@@ -113,18 +113,18 @@ public class IndigoUtils {
     static String getDllPath() {
         String path;
         if (Platform.isWindows()) {
-            path = "Win" + File.separator;
+            path = "Win/";
             if (Platform.is64Bit()) path += "x64";
             else path += "x86";
         } else if (Platform.isMac()) {
-            path = "Mac" + File.separator;
+            path = "Mac/";
             path += "10." + detectMacMinorVersion(path);
         } else if (Platform.isLinux()) {
-            path = "Linux" + File.separator;
+            path = "Linux/";
             if (Platform.is64Bit()) path += "x64";
             else path += "x86";
         } else if (Platform.isSolaris()) {
-            path = "Sun" + File.separator;
+            path = "Sun/";
             if (Platform.is64Bit()) path += "sparc64";
             else path += "sparc32";
         } else throw new Error("Operating system not recognized");
