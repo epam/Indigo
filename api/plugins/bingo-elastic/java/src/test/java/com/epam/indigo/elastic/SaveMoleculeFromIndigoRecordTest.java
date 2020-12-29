@@ -7,6 +7,8 @@ import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.model.IndigoRecord.IndigoRecordBuilder;
+import com.epam.indigo.model.IndigoRecordMolecule;
+import com.epam.indigo.model.IndigoRecordMoleculeTest;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
@@ -109,7 +111,7 @@ public class SaveMoleculeFromIndigoRecordTest {
         Indigo session = new Indigo();
         IndigoObject mol = session.createMolecule();
         Exception exception = assertThrows(BingoElasticException.class, () -> {
-            (new IndigoRecordBuilder()).withIndigoObject(mol).build();
+            (new IndigoRecordMolecule.IndigoRecordBuilder()).withIndigoObject(mol).build();
         });
         String expectedMessage = "Building IndigoRecords from empty IndigoObject is not supported";
         String actualMessage = exception.getMessage();

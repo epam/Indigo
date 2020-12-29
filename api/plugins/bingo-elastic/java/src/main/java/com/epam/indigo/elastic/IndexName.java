@@ -12,7 +12,7 @@ public class IndexName {
         BINGO_REACTION;
     }
 
-    private Index index;
+    public Index index;
 
     public IndexName(Index index) {
         this.index = index;

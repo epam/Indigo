@@ -7,7 +7,7 @@ public class FromIndigoObject {
 
     public static IndigoRecord build(IndigoObject indigoObject) throws BingoElasticException {
         indigoObject.aromatize();
-        IndigoRecord.IndigoRecordBuilder builder = new IndigoRecord.IndigoRecordBuilder().withIndigoObject(
+        IndigoRecord.IndigoRecordBuilder builder = new IndigoRecordMolecule.IndigoRecordBuilder().withIndigoObject(
                 indigoObject
         );
         for (IndigoObject prop : indigoObject.iterateProperties()) {

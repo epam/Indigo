@@ -78,7 +78,8 @@ public class Helpers {
     }
 
     public static IndigoRecord fromElastic(String id, Map<String, Object> source, float score) throws BingoElasticException {
-        IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordBuilder();
+
+        IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordMolecule.IndigoRecordBuilder();
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             if (entry.getKey().equals(NamingConstants.SIM_FINGERPRINT)) {
                 indigoRecordBuilder.withSimFingerprint((List<Integer>) ((List<Object>) entry.getValue()).get(0));

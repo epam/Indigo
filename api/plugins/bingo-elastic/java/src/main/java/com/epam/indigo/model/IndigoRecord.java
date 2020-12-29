@@ -16,16 +16,16 @@ public class IndigoRecord {
 
     //    custom map/dict think about it as JSON
     //    object to be string?
-    private final Map<String, Object> objects = new HashMap<>();
+    protected final Map<String, Object> objects = new HashMap<>();
     // Internal Elastic ID
-    private String internalID = null;
-    private float score;
+    protected String internalID = null;
+    protected float score;
     // todo: rename? and add ability to extend?
-    private List<Integer> simFingerprint;
-    private List<Integer> subFingerprint;
+    protected List<Integer> simFingerprint;
+    protected List<Integer> subFingerprint;
     //    TODO add tau fingerprint, add support for other fingerprints
-    private byte[] cmf;
-    private String name;
+    protected byte[] cmf;
+    protected String name;
 
     public IndigoRecord() {
 
@@ -75,8 +75,8 @@ public class IndigoRecord {
         return new Field(value);
     }
 
-    public static class IndigoRecordBuilder {
-        private final List<Consumer<IndigoRecord>> operations;
+    public abstract static class IndigoRecordBuilder <T extends IndigoRecord> {
+        protected final List<Consumer<T>> operations;
 
         public IndigoRecordBuilder() {
             this.operations = new ArrayList<>();
@@ -147,13 +147,15 @@ public class IndigoRecord {
             return this;
         }
 
+        public abstract T build() throws BingoElasticException;
 
-        public IndigoRecord build() throws BingoElasticException {
-            IndigoRecord record = new IndigoRecord();
-            operations.forEach(operation -> operation.accept(record));
-            validate(record);
-            return record;
-        }
+
+//        public IndigoRecord build() throws BingoElasticException {
+//            IndigoRecord record = new IndigoRecord();
+//            operations.forEach(operation -> operation.accept(record));
+//            validate(record);
+//            return record;
+//        }
 
         public void validate(IndigoRecord record) throws BingoElasticException {
             if (record.internalID == null) {
