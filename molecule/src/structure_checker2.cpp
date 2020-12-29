@@ -96,6 +96,10 @@ StructureChecker2::StructureChecker2()
 StructureChecker2::CheckResult StructureChecker2::check(const char* item, const char* check_flags, const char* load_params)
 {
     int it = indigoLoadStructureFromString(item, load_params);
+    if (it < 0)
+    {
+        it = indigoLoadStructureFromString(item, (std::string(load_params ? load_params : "") + " query").c_str()); //##!!!PATCH
+    }
     auto p = check_params_from_string(check_flags);
     auto r = check(it, p.check_flags, p.selected_atoms, p.selected_bonds);
     indigoFree(it);
@@ -241,7 +245,7 @@ static void filter_atoms(Molecule& mol, const std::unordered_set<int>& selected_
 {
     std::vector<int> ids;
     std::copy_if(selected_atoms.begin(), selected_atoms.end(), std::back_inserter(ids), [&mol, &filter, default_filter](int idx) {
-        return (!default_filter || !mol.isPseudoAtom(idx) && !mol.isRSite(idx) && !mol.isTemplateAtom(idx) && !mol.isQueryMolecule()) && filter(mol, idx);
+        return (!default_filter || !mol.isPseudoAtom(idx) && !mol.isRSite(idx) && !mol.isTemplateAtom(idx)) && filter(mol, idx);
     });
     if (ids.size())
     {
@@ -345,12 +349,16 @@ static void check_stereo(Molecule& mol, const std::unordered_set<int>& selected_
 static void check_query(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                         StructureChecker2::CheckResult& result)
 {
+    if (mol.isQueryMolecule())
+    {
+        result.message(StructureChecker2::CheckMessageCode::CHECK_MSG_QUERY);
+    }
     FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_QUERY_ATOM,
-                         [](Molecule& mol, int idx) { return (mol.reaction_atom_inversion[idx] > 0) || (mol.reaction_atom_exact_change[idx] > 0); });
+                         [](Molecule& mol, int idx) { return mol.reaction_atom_exact_change[idx] || mol.reaction_atom_inversion[idx]; });
 
     std::vector<int> ids;
     std::copy_if(selected_atoms.begin(), selected_atoms.end(), std::back_inserter(ids),
-                 [&mol](int idx) { return !mol.isQueryMolecule() && mol.reaction_bond_reacting_center[idx] != 0; });
+                 [&mol](int idx) { return mol.reaction_bond_reacting_center[idx] != 0; });
     if (ids.size())
     {
         result.message(StructureChecker2::CheckMessageCode::CHECK_MSG_QUERY_BOND, ids);
@@ -569,6 +577,7 @@ static const std::string message_list[] = {"",
                                            "Structure contains stereocenters defined by 3D coordinates",
                                            "Structure contains stereocenters with undefined stereo configuration",
                                            "CHECK_MSG_IGNORE_STEREO_ERROR",
+                                           "Structure contains query features",
                                            "Structure contains query features for atoms",
                                            "Structure contains query features for bonds",
                                            "CHECK_MSG_IGNORE_QUERY_FEATURE",

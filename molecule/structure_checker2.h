@@ -81,6 +81,7 @@ namespace indigo
             CHECK_MSG_3D_STEREO,
             CHECK_MSG_UNDEFINED_STEREO,
             CHECK_MSG_IGNORE_STEREO_ERROR,
+            CHECK_MSG_QUERY,
             CHECK_MSG_QUERY_ATOM,
             CHECK_MSG_QUERY_BOND,
             CHECK_MSG_IGNORE_QUERY_FEATURE,

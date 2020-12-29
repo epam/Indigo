@@ -117,15 +117,15 @@ int test(int negative)
 int test2(int negative)
 {
     indigo::StructureChecker2 checker;
-    std::string result = checker.check(negative ? FAILED_MOLECULE_STRING : GOOD_MOLECULE_STRING, "", "query").toJson();
+    std::string result = checker.check(negative ? FAILED_MOLECULE_STRING : GOOD_MOLECULE_STRING, "query,stereo").toJson();
     printf(result.c_str());
     return 0;
 }
 
 void onError(const char* message, void* context)
 {
-    fprintf(stderr, "Error: %s\n", message);
-    exit(-1);
+//    fprintf(stderr, "Error: %s\n", message);
+//    exit(-1);
 }
 
 int main(void)
