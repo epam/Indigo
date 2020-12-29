@@ -254,7 +254,7 @@ static void filter_atoms(Molecule& mol, const std::unordered_set<int>& selected_
 }
 //
 static void check_load(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
-                      StructureChecker2::CheckResult& result)
+                       StructureChecker2::CheckResult& result)
 {
     if (mol.vertexCount() == 0)
     {
@@ -266,17 +266,36 @@ static void check_load(Molecule& mol, const std::unordered_set<int>& selected_at
 #define FILTER_ATOMS_DEFAULT(MSG, FILTER) filter_atoms(mol, selected_atoms, result, MSG, FILTER);
 
 static void check_valence(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
-                         StructureChecker2::CheckResult& result)
+                          StructureChecker2::CheckResult& result)
 {
-    FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE,
-                         [](Molecule& mol, int idx) { return mol.getAtomValence_NoThrow(idx, -1) == -1; });
+
+    if (mol.isQueryMolecule())
+    {
+        result.message(
+            StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_QUERY); // 'Structure contains query features, so valency could not be checked'
+    }
+    else if (mol.hasRGroups())
+    {
+        result.message(StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_RGROUP); // 'Structure contains RGroup components, so valency could
+    }
+    else
+    {
+        FILTER_ATOMS(StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE, [](Molecule& mol, int idx) { return mol.getAtomValence_NoThrow(idx, -1) == -1; });
+    }
 }
 
 static void check_radical(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                           StructureChecker2::CheckResult& result)
 {
-    FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_RADICAL,
-                         [](Molecule& mol, int idx) { return mol.getAtomRadical_NoThrow(idx, -1) > 0; });
+    if (mol.hasPseudoAtoms())
+    {
+        result.message(StructureChecker2::CheckMessageCode::CHECK_MSG_RADICAL_NOT_CHECKED_PSEUDO);
+    }
+    else
+    {
+        FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_RADICAL,
+                             [](Molecule& mol, int idx) { return mol.getAtomRadical_NoThrow(idx, -1) > 0; });
+    }
 }
 static void check_pseudoatom(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                              StructureChecker2::CheckResult& result)
@@ -440,7 +459,7 @@ static void check_overlap_bond(Molecule& mol, const std::unordered_set<int>& sel
 static void check_rgroup(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                          StructureChecker2::CheckResult& result)
 {
-    if (mol.rgroups.getRGroupCount() > 0)
+    if (mol.hasRGroups())
     {
         result.message(StructureChecker2::CheckMessageCode::CHECK_MSG_RGROUP);
     }
@@ -491,9 +510,16 @@ static void check_salt(Molecule& mol, const std::unordered_set<int>& selected_at
 static void check_ambigous_h(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                              StructureChecker2::CheckResult& result)
 {
-    FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H, [](Molecule& mol, int idx) {
-        return mol.asMolecule().getImplicitH_NoThrow(idx, -1) == -1 && mol.getAtomAromaticity(idx) == ATOM_AROMATIC;
-    });
+    if (mol.isQueryMolecule())
+    {
+        result.message(StructureChecker2::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H_NOT_CHECKED_QUERY);
+    }
+    else
+    {
+        FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H, [](Molecule& mol, int idx) {
+            return mol.asMolecule().getImplicitH_NoThrow(idx, -1) == -1 && mol.getAtomAromaticity(idx) == ATOM_AROMATIC;
+        });
+    }
 }
 static void check_coord(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                         StructureChecker2::CheckResult& result)
@@ -515,8 +541,9 @@ static void check_v3000(int mol, StructureChecker2::CheckResult& result)
 #undef FILTER_ATOMS_DEFAULT
 
 static void (*check_type_checkers[])(Molecule&, const std::unordered_set<int>&, const std::unordered_set<int>&, StructureChecker2::CheckResult&) = {
-    &check_load,    &check_valence, &check_radical,   &check_pseudoatom,  &check_stereo,   &check_query,  &check_overlap_atom, &check_overlap_bond, &check_rgroup,
-    &check_sgroup, &check_tgroup, &check_chirality, &check_chiral_flag, &check_3d_coord, &check_charge, &check_salt,         &check_ambigous_h,   &check_coord};
+    &check_load,         &check_valence,      &check_radical, &check_pseudoatom, &check_stereo,     &check_query,
+    &check_overlap_atom, &check_overlap_bond, &check_rgroup,  &check_sgroup,     &check_tgroup,     &check_chirality,
+    &check_chiral_flag,  &check_3d_coord,     &check_charge,  &check_salt,       &check_ambigous_h, &check_coord};
 
 static void checkMolecule(const IndigoObject& item, int check_types, const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds,
                           StructureChecker2::CheckResult& result)
@@ -569,8 +596,11 @@ static void checkMolecule(BaseMolecule& bmol, int check_types, const std::vector
 static const std::string message_list[] = {"",
                                            "Error at loading structure, wrong format found",
                                            "Structure contains atoms with unusuall valence",
+                                           "Structure contains query features, so valency could not be checked",
+                                           "Structure contains RGroup components, so valency could not be checked",
                                            "IGNORE_BAD_VALENCE flag is active",
                                            "Structure contains radicals",
+                                           "Structure contains pseudoatoms, so radicals could not be checked",
                                            "Structure contains pseudoatoms",
                                            "Structure contains wrong chiral flag",
                                            "Structure contains incorrect stereochemistry",
@@ -590,6 +620,7 @@ static const std::string message_list[] = {"",
                                            "Structure contains charged fragments (possible salt)",
                                            "Input structure is empty",
                                            "Structure contains ambiguous hydrogens",
+                                           "Structure contains query features, so ambiguous H could not be checked",
                                            "Structure contains 3D coordinates",
                                            "Structure has no atoms coordinates"
                                            "Reaction component check result",

@@ -103,6 +103,8 @@ namespace indigo
         virtual Molecule& asMolecule();
         virtual QueryMolecule& asQueryMolecule();
         virtual bool isQueryMolecule();
+        virtual bool hasRGroups();
+        virtual bool hasPseudoAtoms();
 
         virtual void clear();
 
