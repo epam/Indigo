@@ -44,7 +44,7 @@ elseif(UNIX AND NOT APPLE OR MINGW)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
     if (DEFINED ENV{UNIVERSAL} OR UNIVERSAL_BUILD)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++ -static-libgcc")
     endif()
 elseif(APPLE)
     include(MacFrameworks)
@@ -62,7 +62,7 @@ elseif(APPLE)
     else()
         set(CMAKE_OSX_SYSROOT /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SDK_SUBSYSTEM_NAME}.sdk)
     endif()
-    
+
     message(STATUS "SDK: ${CMAKE_OSX_SYSROOT}")
 endif()
 

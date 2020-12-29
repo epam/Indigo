@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "bingo_elastic"
-version = "1.4.1"
+version = "1.4.2"
 description = "Bingo API for using with Elasticsearch"
 authors = ["EPAM Systems Life Science Department"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-"epam.indigo" = "1.4.1"
+"epam.indigo" = "1.4.2"
 elasticsearch = "7.10.1"
 
 [tool.poetry.dev-dependencies]
