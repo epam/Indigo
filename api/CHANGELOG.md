@@ -10,8 +10,8 @@
 
 ## Bugfixes
 * api: build: reduce list of exported symbols for Indigo shared library on Linux to hide libstdc++ symbols (#276)
-* api: java: fix load native libs on Windows (#261) (Thanks to @00Green27)
-
+* api: java: fix load native libs on Windows (#261) (Thanks to @00Green27 for pull request)
+* api: data S-groups strings were not properly terminated (#231)
 
 # Indigo 1.4.1
 *25 Nov 2020*
