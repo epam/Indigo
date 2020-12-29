@@ -37,13 +37,13 @@ namespace indigo
     public:
         DECL_TPL_ERROR(ArrayError);
 
-        Array() : _reserved(0), _length(0), _array(NULL)
+        Array() : _reserved(0), _length(0), _array(nullptr)
         {
         }
 
         ~Array()
         {
-            if (_array != NULL)
+            if (_array != nullptr)
             {
                 free(_array);
             }
@@ -67,17 +67,17 @@ namespace indigo
             {
                 if (_length < 1)
                 {
-                    if (_array != NULL)
+                    if (_array != nullptr)
                     {
                         free(_array);
-                        _array = NULL;
+                        _array = nullptr;
                     }
                 }
 
                 T* oldptr = _array;
 
                 _array = (T*)realloc(_array, sizeof(T) * to_reserve);
-                if (_array == NULL)
+                if (_array == nullptr)
                 {
                     _array = oldptr;
                     throw Error("reserve(): no memory");
