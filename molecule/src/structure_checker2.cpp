@@ -253,7 +253,7 @@ static void filter_atoms(Molecule& mol, const std::unordered_set<int>& selected_
     }
 }
 //
-static void checkLoad(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_load(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                       StructureChecker2::CheckResult& result)
 {
     if (mol.vertexCount() == 0)
@@ -265,7 +265,7 @@ static void checkLoad(Molecule& mol, const std::unordered_set<int>& selected_ato
 #define FILTER_ATOMS(MSG, FILTER) filter_atoms(mol, selected_atoms, result, MSG, FILTER, false);
 #define FILTER_ATOMS_DEFAULT(MSG, FILTER) filter_atoms(mol, selected_atoms, result, MSG, FILTER);
 
-static void checkValence(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_valence(Molecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                          StructureChecker2::CheckResult& result)
 {
     FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE,
@@ -515,7 +515,7 @@ static void check_v3000(int mol, StructureChecker2::CheckResult& result)
 #undef FILTER_ATOMS_DEFAULT
 
 static void (*check_type_checkers[])(Molecule&, const std::unordered_set<int>&, const std::unordered_set<int>&, StructureChecker2::CheckResult&) = {
-    &checkLoad,    &checkValence, &check_radical,   &check_pseudoatom,  &check_stereo,   &check_query,  &check_overlap_atom, &check_overlap_bond, &check_rgroup,
+    &check_load,    &check_valence, &check_radical,   &check_pseudoatom,  &check_stereo,   &check_query,  &check_overlap_atom, &check_overlap_bond, &check_rgroup,
     &check_sgroup, &check_tgroup, &check_chirality, &check_chiral_flag, &check_3d_coord, &check_charge, &check_salt,         &check_ambigous_h,   &check_coord};
 
 static void checkMolecule(const IndigoObject& item, int check_types, const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds,
