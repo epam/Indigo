@@ -1,3 +1,9 @@
+# Indigo 1.4.3
+*29 Dec 2020*
+
+## Bugfixes
+* api: data S-groups strings were not properly terminated (#231)
+
 # Indigo 1.4.2
 *28 Dec 2020*
 
