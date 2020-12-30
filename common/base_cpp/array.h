@@ -183,7 +183,7 @@ namespace indigo
 
         int memcmp(const Array<T>& other) const
         {
-            size_t min_length = std::min(_length, other._length);
+            size_t min_length = __min(_length, other._length);
             int result = ::memcmp(_array, other._array, min_length * sizeof(T));
             if (result != 0)
                 return result;
