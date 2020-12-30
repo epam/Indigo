@@ -212,7 +212,7 @@ CEXPORT const char* indigoCdxml(int object);
 // (because MDLCT data usually contains zeroes)
 CEXPORT int indigoSaveMDLCT(int item, int output);
 
-// CEXPORT const char* indigoJson(int object);
+CEXPORT const char* indigoJson(int object);
 
 /*
 Converts a chemical name into a corresponding structure
