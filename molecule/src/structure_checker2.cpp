@@ -100,10 +100,15 @@ StructureChecker2::CheckResult StructureChecker2::check(const char* item, const 
     {
         it = indigoLoadStructureFromString(item, (std::string(load_params ? load_params : "") + " query").c_str()); //##!!!PATCH
     }
-    auto p = check_params_from_string(check_flags);
-    auto r = check(it, p.check_flags, p.selected_atoms, p.selected_bonds);
+    auto r = check(it, check_flags);
     indigoFree(it);
     return r;
+}
+
+StructureChecker2::CheckResult StructureChecker2::check(int item, const char* check_flags)
+{
+    auto p = check_params_from_string(check_flags);
+    return check(item, p.check_flags, p.selected_atoms, p.selected_bonds);
 }
 
 StructureChecker2::CheckResult StructureChecker2::check(int item, int check_types, const std::vector<int>& selected_atoms,

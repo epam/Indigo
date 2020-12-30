@@ -133,6 +133,7 @@ namespace indigo
         StructureChecker2();
 
         CheckResult check(const char* item, const char* check_flags = 0, const char* load_params = 0);
+        CheckResult check(int item, const char* check_flags);
         CheckResult check(int item, int check_flags = CHECK_ALL, const std::vector<int>& selected_atoms = std::vector<int>(),
                           const std::vector<int>& selected_bonds = std::vector<int>());
         CheckResult check(const IndigoObject& item, int check_flags = CHECK_ALL, const std::vector<int>& selected_atoms = std::vector<int>(),

@@ -38,6 +38,7 @@
 #include "molecule/rdf_loader.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/structure_checker.h"
+#include "molecule/structure_checker2.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
 #include "reaction/reaction_checker.h"
@@ -1221,6 +1222,27 @@ CEXPORT int indigoCheckStereo(int item)
         return 0;
     }
     INDIGO_END(-1);
+}
+
+CEXPORT const char* indigoCheck2(const char* item, const char* check_flags, const char* load_params)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        tmp.string.appendString(StructureChecker2().check(item, check_flags, load_params).toJson().c_str(), true);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
+}
+CEXPORT const char* indigoCheckObj2(int item, const char* check_flags)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        tmp.string.appendString(StructureChecker2().check(item, check_flags).toJson().c_str(), true);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
 }
 
 CEXPORT const char* indigoCheck(int item, const char* props)

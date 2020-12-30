@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "indigo.h"
-#include "molecule/structure_checker2.h"
+//#include "molecule/structure_checker2.h"
 
 const char* FAILED_MOLECULE_STRING = "The molecule\n"
                                      "  Ketcher 12222012222D 1   1.00000     0.00000     0\n"
@@ -116,9 +116,7 @@ int test(int negative)
 
 int test2(int negative)
 {
-    indigo::StructureChecker2 checker;
-    std::string result = checker.check(negative ? FAILED_MOLECULE_STRING : GOOD_MOLECULE_STRING, "query,stereo").toJson();
-    printf(result.c_str());
+    printf(indigoCheck2((negative ? FAILED_MOLECULE_STRING : GOOD_MOLECULE_STRING), "query,stereo", ""));
     return 0;
 }
 

@@ -136,6 +136,15 @@ class IndigoObject(object):
             self.dispatcher._checkResult(Indigo._lib.indigoClone(self.id)),
         )
 
+    def check2(self, moltext, checkflags="", props=""):
+        if props is None:
+            props = ""
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(
+            Indigo._lib.indigoCheck2(moltext.encode(ENCODE_ENCODING), checkflags.encode(ENCODE_ENCODING), props.encode(ENCODE_ENCODING))
+        )
+
+
     def check(self, props=""):
         if props is None:
             props = ""
