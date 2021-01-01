@@ -45,7 +45,7 @@ int MoleculeJsonLoader::addBondToMoleculeQuery( int beg, int end, int order )
         bond.reset(QueryMolecule::Bond::und(bond.release(),
                                             new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY, topology == 1 ? TOPOLOGY_RING : TOPOLOGY_CHAIN)));
     }*/
-    
+
     return _pqmol->addBond(beg, end, bond.release());
 }
 
@@ -132,17 +132,17 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery( const char* label, int element, 
             break;
         }
     }
-    
+
     if( charge != 0 )
         atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_CHARGE, charge)));
-    
+
     if( valence > 0 )
     {
         if (valence == 15)
             valence = 0;
         atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_VALENCE, valence)));
     }
-    
+
     if (isotope != 0)
         atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_ISOTOPE, isotope)));
     if (radical != 0)
@@ -211,7 +211,7 @@ void MoleculeJsonLoader::parseAtoms( const rapidjson::Value& atoms, BaseMolecule
                     }
                 }
         }
-        
+
         if( a.HasMember("charge"))
             charge = a["charge"].GetInt();
         if( a.HasMember("explicitValence"))
@@ -220,7 +220,7 @@ void MoleculeJsonLoader::parseAtoms( const rapidjson::Value& atoms, BaseMolecule
             radical = a["radical"].GetInt();
         if( a.HasMember("isotope") )
             isotope = a["isotope"].GetInt();
-        
+
         if( _pmol )
         {
             atom_idx = _pmol->addAtom( elem );
@@ -234,18 +234,21 @@ void MoleculeJsonLoader::parseAtoms( const rapidjson::Value& atoms, BaseMolecule
                 _pmol->setAtomIsotope( atom_idx, isotope );
         } else
             atom_idx = addAtomToMoleculeQuery( label.c_str(), elem, charge, valence, radical, isotope );
-        
+
         if( rsite_idx )
             mol.allowRGroupOnRSite( atom_idx, rsite_idx );
 
-        const Value& coords = a["location"];
-        if (coords.Size() > 0)
+        if (a.HasMember("location"))
         {
-            Vec3f a_pos;
-            a_pos.x = coords[0].GetDouble();
-            a_pos.y = coords[1].GetDouble();
-            a_pos.z = coords[2].GetDouble();
-            mol.setAtomXyz(atom_idx, a_pos);
+            const Value& coords = a["location"];
+            if (coords.Size() > 0)
+            {
+                Vec3f a_pos;
+                a_pos.x = coords[0].GetDouble();
+                a_pos.y = coords[1].GetDouble();
+                a_pos.z = coords[2].GetDouble();
+                mol.setAtomXyz(atom_idx, a_pos);
+            }
         }
     }
 }
@@ -256,13 +259,13 @@ void MoleculeJsonLoader::parseBonds( const rapidjson::Value& bonds, BaseMolecule
     {
         const Value& b = bonds[i];
         const Value& refs = b["atoms"];
-        
+
         int stereo = 0;
         if( b.HasMember("stereo") )
         {
             stereo = b["stereo"].GetInt();
         }
-        
+
         int order = b["type"].GetInt();
         if( _pmol )
             validateMoleculeBond( order );
@@ -270,7 +273,7 @@ void MoleculeJsonLoader::parseBonds( const rapidjson::Value& bonds, BaseMolecule
         {
             int a1 = refs[0].GetInt() + atom_base_idx;
             int a2 = refs[1].GetInt() + atom_base_idx;
-            
+
             int bond_idx = 0;
             bond_idx = _pmol ? _pmol->addBond_Silent( a1, a2, order ) : addBondToMoleculeQuery( a1, a2, order );
             if( stereo )
@@ -306,13 +309,13 @@ void MoleculeJsonLoader::handleRepetitions( SGroup* sgroup, BaseMolecule& bmol, 
     QS_DEF(Array<int>, mapping);
     AutoPtr<BaseMolecule> rep( bmol.neu() );
     rep->makeSubmolecule( bmol, sgroup->atoms, &mapping, 0 );
-    
+
     rep->sgroups.clear(SGroup::SG_TYPE_SRU);
     rep->sgroups.clear(SGroup::SG_TYPE_MUL);
-    
+
     int rep_start = mapping[start];
     int rep_end = mapping[end];
-        
+
     // already have one instance of the sgroup; add repetitions if they exist
     for (int j = 0; j < rc - 1; j++)
     {
@@ -357,7 +360,7 @@ void MoleculeJsonLoader::parseSGroups( const rapidjson::Value& sgroups, BaseMole
         int grp_idx = mol.sgroups.addSGroup( sg_type );
         SGroup* sgroup = &mol.sgroups.getSGroup(grp_idx);
         const Value& atoms = s["atoms"];
-        
+
         // add brackets
         Vec2f* p = sgroup->brackets.push();
         p[0].set(0, 0);
@@ -389,7 +392,7 @@ void MoleculeJsonLoader::parseSGroups( const rapidjson::Value& sgroups, BaseMole
                 {
                     ru->subscript.readString( s["subscript"].GetString(), true );
                 }
-                
+
                 if( s.HasMember("connectivity"))
                 {
                     std::string conn = s["connectivity"].GetString();
@@ -439,7 +442,7 @@ void MoleculeJsonLoader::parseSGroups( const rapidjson::Value& sgroups, BaseMole
             break;
             default:
                 throw Error("Invalid sgroup type %s", sg_type_str.c_str());
-                
+
         }
         // add atoms
         std::unordered_set<int> sgroup_atoms;
@@ -455,7 +458,7 @@ void MoleculeJsonLoader::parseSGroups( const rapidjson::Value& sgroups, BaseMole
                     mg->parent_atoms.push( atom_idx );
             }
         }
-        
+
         // add bonds
         for ( auto k : mol.edges() )
         {
@@ -507,7 +510,7 @@ void MoleculeJsonLoader::loadMolecule( BaseMolecule& mol )
             throw Error("unknown type: %s", type.c_str());
         }
     }
-    
+
     MoleculeRGroups& rgroups = mol.rgroups;
     if( _rgroups.Size() )
     {

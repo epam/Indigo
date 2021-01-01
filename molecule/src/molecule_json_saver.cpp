@@ -44,7 +44,7 @@ void MoleculeJsonSaver::saveBonds( BaseMolecule* mol_base, rapidjson::Writer<rap
             writer.StartObject();
             writer.Key("type");
             writer.Uint(mol_base->getBondOrder(i));
-            
+
             const Edge& e1 = mol_base->getEdge(i);
             writer.Key("atoms");
             writer.StartArray();
@@ -67,10 +67,10 @@ void MoleculeJsonSaver::saveBonds( BaseMolecule* mol_base, rapidjson::Writer<rap
                 default:
                     break;
             }
-            
+
             if( mol_base->cis_trans.isIgnored(i) )
                 stereo = 3;
-            
+
             if( stereo )
             {
                 writer.Key("stereo");
@@ -109,7 +109,10 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule* mol_base, Writer<StringBuffer>&
                 writer.EndArray();
             } else
             {
-                radical = mol_base->getAtomRadical(i);
+                if (!mol_base->isPseudoAtom(i))
+                {
+                    radical = mol_base->getAtomRadical(i);
+                }
                 mol_base->getAtomSymbol(i, buf);
                 writer.Key("label");
                 writer.String(buf.ptr());
@@ -142,7 +145,7 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule* mol_base, Writer<StringBuffer>&
                 writer.Key("radical");
                 writer.Int( radical );
             }
-            
+
             if( isotope )
             {
                 writer.Key("isotope");
@@ -203,7 +206,7 @@ void MoleculeJsonSaver::saveMolecule( BaseMolecule& mol )
     _pqmol = dynamic_cast<QueryMolecule*>(&mol);
 
     writer.StartObject();
-    
+
     writer.Key("root");
     writer.StartObject();
     writer.Key("nodes");
@@ -225,10 +228,10 @@ void MoleculeJsonSaver::saveMolecule( BaseMolecule& mol )
         writer.String( buf.ptr() );
         writer.EndObject();
     }
-    
+
     writer.EndArray(); // nodes
     writer.EndObject(); // root
-    
+
     writer.Key("mol0");
     writer.StartObject();
     writer.Key("type");
@@ -243,7 +246,7 @@ void MoleculeJsonSaver::saveMolecule( BaseMolecule& mol )
     writer.StartArray();
     saveBonds( &mol, writer );
     writer.EndArray();
-    
+
     writer.EndObject(); // mol0
 
     for ( int i = 1; i <= n_rgroups; i++ )
@@ -252,7 +255,7 @@ void MoleculeJsonSaver::saveMolecule( BaseMolecule& mol )
         if( rgrp.fragments.size() )
             saveRGroup( rgrp.fragments, i, writer );
     }
-   
+
     writer.EndObject();
     result << s.GetString();
     _output.printf("%s", result.str().c_str());
