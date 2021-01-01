@@ -71,6 +71,16 @@ void MoleculeJsonSaver::saveBonds( BaseMolecule* mol_base, rapidjson::Writer<rap
             if( mol_base->cis_trans.isIgnored(i) )
                 stereo = 3;
 
+            const auto parity = mol_base->cis_trans.getParity(i);
+            if (parity == MoleculeCisTrans::CIS)
+            {
+                stereo = 7;
+            }
+            else if (parity == MoleculeCisTrans::TRANS)
+            {
+                stereo = 8;
+            }
+
             if( stereo )
             {
                 writer.Key("stereo");

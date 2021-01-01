@@ -187,7 +187,8 @@ void MoleculeJsonLoader::parseAtoms( const rapidjson::Value& atoms, BaseMolecule
                     label = "R";
                 } else
                     throw Error("invalid refs: %s", ref.c_str() );
-            } else
+            }
+            else
                 throw Error("invalid atom type: %s", atom_type.c_str() );
         } else
         {
@@ -206,8 +207,11 @@ void MoleculeJsonLoader::parseAtoms( const rapidjson::Value& atoms, BaseMolecule
                     elem = Element::fromString2(label.c_str());
                     if( elem == -1 )
                     {
-                        if( _pmol )
-                            throw Error("element %s not supported for molecules", label.c_str() );
+                        elem = ELEM_PSEUDO;
+                        if (isotope != 0)
+                        {
+                            throw Error("isotope number not allowed on pseudo-atoms");
+                        }
                     }
                 }
         }
@@ -232,6 +236,10 @@ void MoleculeJsonLoader::parseAtoms( const rapidjson::Value& atoms, BaseMolecule
                 _pmol->setAtomRadical( atom_idx, radical );
             if( isotope )
                 _pmol->setAtomIsotope( atom_idx, isotope );
+            if (elem == ELEM_PSEUDO)
+            {
+                _pmol->setPseudoAtom(atom_idx, label.c_str());
+            }
         } else
             atom_idx = addAtomToMoleculeQuery( label.c_str(), elem, charge, valence, radical, isotope );
 
@@ -290,6 +298,12 @@ void MoleculeJsonLoader::parseBonds( const rapidjson::Value& bonds, BaseMolecule
                         break;
                     case 6:
                         mol.setBondDirection( bond_idx, BOND_DOWN );
+                        break;
+                    case 7:
+                        mol.cis_trans.setParity( bond_idx, MoleculeCisTrans::CIS );
+                        break;
+                    case 8:
+                        mol.cis_trans.setParity( bond_idx, MoleculeCisTrans::TRANS );
                         break;
                     default:
                         break;

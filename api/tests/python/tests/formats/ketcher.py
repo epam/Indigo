@@ -19,6 +19,15 @@ paths = ("molecules/1.ket", "molecules/sgroups.mol", "molecules/all_features_mol
 for path in paths:
     m1 = indigo.loadMoleculeFromFile(joinPath(path))
     js = m1.json()
-    print(js)
     m2 = indigo.loadMolecule(js)
+    assert m1.countAtoms() == m2.countAtoms()
+    for i in range(m1.countAtoms()):
+        print(i, m1.getAtom(i).symbol(), m2.getAtom(i).symbol())
+        assert m1.getAtom(i).symbol() == m2.getAtom(i).symbol()
+    assert m1.countBonds() == m2.countBonds()
+    for i in range(m2.countBonds()):
+        print(i, m1.getBond(i).bondOrder(), m2.getBond(i).bondOrder())
+        assert m1.getBond(i).bondOrder() == m2.getBond(i).bondOrder()
+        print(i, m1.getBond(i).bondStereo(), m2.getBond(i).bondStereo())
+        assert m1.getBond(i).bondStereo() == m2.getBond(i).bondStereo()
     print(indigo.exactMatch(m1, m2) is not None)
