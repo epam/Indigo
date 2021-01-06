@@ -22,6 +22,8 @@
 #include "base_cpp/exception.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "third_party/rapidjson/document.h"
+#include "molecule/query_molecule.h"
+#include "molecule/molecule.h"
 
 namespace indigo
 {
@@ -30,7 +32,7 @@ namespace indigo
     class BaseReaction;
     class Reaction;
     class QueryReaction;
-    
+	class QueryMolecule;
     class ReactionJsonLoader
     {
     public:
@@ -54,6 +56,10 @@ namespace indigo
         ReactionJsonLoader(const ReactionJsonLoader&); // no implicit copy
         Reaction* _prxn;
         QueryReaction* _pqrxn;
+		Molecule _mol;
+		QueryMolecule _qmol;
+		BaseMolecule* _pmol;
+
     };
     
 }; // namespace indigo

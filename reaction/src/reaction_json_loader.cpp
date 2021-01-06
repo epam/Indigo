@@ -19,6 +19,7 @@
 #include "reaction/reaction_json_loader.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
+#include "molecule/molecule_json_loader.h"
 
 using namespace indigo;
 
@@ -36,9 +37,19 @@ ReactionJsonLoader::~ReactionJsonLoader()
 
 void ReactionJsonLoader::loadReaction( BaseReaction& rxn )
 {
+	MoleculeJsonLoader loader( _molecule, _rgroups );
     _prxn = dynamic_cast<Reaction*>(&rxn);
     _pqrxn = dynamic_cast<QueryReaction*>(&rxn);
-    if( _prxn == NULL && _pqrxn == NULL )
-        throw Error("unknown reaction type: %s", typeid(rxn).name());
-   
+	if (_prxn)
+	{
+		_pmol = &_mol;
+		loader.loadMolecule(_mol);
+	}
+	else if (_pqrxn)
+	{
+		loader.loadMolecule(_qmol);
+		_pmol = &_qmol;
+	} else
+		throw Error("unknown reaction type: %s", typeid(rxn).name());
+       
 }

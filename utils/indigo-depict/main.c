@@ -30,7 +30,7 @@ void usage(void)
     fprintf(stderr,
             "Indigo version: %s\n\n"
             "Usage:\n"
-            "  indigo-depict infile.{mol,rxn,cml,smi} outfile.{png,svg,pdf} [parameters]\n"
+            "  indigo-depict infile.{mol,rxn,cml,ket,smi} outfile.{png,svg,pdf} [parameters]\n"
             "  indigo-depict infile.{sdf,rdf,cml,smi} outfile_%%s.{png,svg,pdf} [parameters]\n"
             "  indigo-depict infile.{sdf,rdf}.gz outfile_%%s.{png,svg,pdf} [parameters]\n"
             "  indigo-depict infile.smi outfile.{mol,rxn,cml} [parameters]\n"

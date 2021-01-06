@@ -209,10 +209,10 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
                                 const char* node_name = rnode["$ref"].GetString();
                                 Value& node = data[ node_name ];
                                 std::string node_type = node["type"].GetString();
-                                if( node_type.compare("molecule") == 0 )
+                                if( node_type == "molecule" )
                                 {
                                     mol_nodes.PushBack( node, data.GetAllocator() );
-                                } else if (node_type.compare("rgroup") == 0 )
+                                } else if ( node_type == "rgroup" )
                                 {
                                     rgroups.PushBack( node, data.GetAllocator() );
                                 } else

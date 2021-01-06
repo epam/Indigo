@@ -41,13 +41,17 @@ namespace indigo
     public:
         explicit MoleculeJsonSaver( Output& output );
         void saveMolecule( BaseMolecule& mol );
-        void saveAtoms( BaseMolecule* mol_base, rapidjson::Writer<rapidjson::StringBuffer>& writer );
-        void saveBonds( BaseMolecule* mol_base, rapidjson::Writer<rapidjson::StringBuffer>& writer );
+        void saveAtoms( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
+        void saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
         void saveRGroup( PtrPool<BaseMolecule>& fragments, int rgnum, rapidjson::Writer<rapidjson::StringBuffer>& writer );
+		void saveSGroups( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
+		void saveSGroup(SGroup& sgroup, rapidjson::Writer<rapidjson::StringBuffer>& writer);
 
         DECL_ERROR;
 
     protected:
+		void _checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list);
+
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         Output& _output;

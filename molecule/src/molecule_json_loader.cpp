@@ -20,7 +20,7 @@ MoleculeJsonLoader::MoleculeJsonLoader( Value& mol_nodes, Value& rgroups) : _mol
 {
 }
 
-int MoleculeJsonLoader::addBondToMoleculeQuery( int beg, int end, int order )
+int MoleculeJsonLoader::addBondToMoleculeQuery( int beg, int end, int order, int topology )
 {
     AutoPtr<QueryMolecule::Bond> bond;
     if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
@@ -39,13 +39,11 @@ int MoleculeJsonLoader::addBondToMoleculeQuery( int beg, int end, int order )
         bond.reset(new QueryMolecule::Bond());
     else
         throw Error("unknown bond type: %d", order);
-    // TODO: check what does it mean
-/*    if (topology != 0)
+    if (topology != 0)
     {
         bond.reset(QueryMolecule::Bond::und(bond.release(),
                                             new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY, topology == 1 ? TOPOLOGY_RING : TOPOLOGY_CHAIN)));
-    }*/
-
+    }
     return _pqmol->addBond(beg, end, bond.release());
 }
 
@@ -274,6 +272,12 @@ void MoleculeJsonLoader::parseBonds( const rapidjson::Value& bonds, BaseMolecule
             stereo = b["stereo"].GetInt();
         }
 
+		int topology = -1;
+		if (b.HasMember("topology"))
+		{
+			topology = b["topology"].GetInt();
+		}
+
         int order = b["type"].GetInt();
         if( _pmol )
             validateMoleculeBond( order );
@@ -283,7 +287,7 @@ void MoleculeJsonLoader::parseBonds( const rapidjson::Value& bonds, BaseMolecule
             int a2 = refs[1].GetInt() + atom_base_idx;
 
             int bond_idx = 0;
-            bond_idx = _pmol ? _pmol->addBond_Silent( a1, a2, order ) : addBondToMoleculeQuery( a1, a2, order );
+            bond_idx = _pmol ? _pmol->addBond_Silent( a1, a2, order ) : addBondToMoleculeQuery( a1, a2, order, topology );
             if( stereo )
             {
                 switch ( stereo ) {
@@ -317,12 +321,12 @@ void MoleculeJsonLoader::parseBonds( const rapidjson::Value& bonds, BaseMolecule
     }
 }
 
-void MoleculeJsonLoader::handleRepetitions( SGroup* sgroup, BaseMolecule& bmol, int rc, int start, int end )
+void MoleculeJsonLoader::handleRepetitions( SGroup& sgroup, BaseMolecule& bmol, int rc, int start, int end )
 {
     int end_bond = -1;
     QS_DEF(Array<int>, mapping);
     AutoPtr<BaseMolecule> rep( bmol.neu() );
-    rep->makeSubmolecule( bmol, sgroup->atoms, &mapping, 0 );
+    rep->makeSubmolecule( bmol, sgroup.atoms, &mapping, 0 );
 
     rep->sgroups.clear(SGroup::SG_TYPE_SRU);
     rep->sgroups.clear(SGroup::SG_TYPE_MUL);
@@ -336,11 +340,11 @@ void MoleculeJsonLoader::handleRepetitions( SGroup* sgroup, BaseMolecule& bmol, 
         bmol.mergeWithMolecule(rep.ref(), &mapping, 0);
         int k;
         for (k = rep->vertexBegin(); k != rep->vertexEnd(); k = rep->vertexNext(k))
-            sgroup->atoms.push(mapping[k]);
+            sgroup.atoms.push(mapping[k]);
         for (k = rep->edgeBegin(); k != rep->edgeEnd(); k = rep->edgeNext(k))
         {
             const Edge& edge = rep->getEdge(k);
-            sgroup->bonds.push(bmol.findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
+            sgroup.bonds.push(bmol.findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
         }
         if (rep_end >= 0 && end_bond >= 0)
         {
@@ -372,14 +376,14 @@ void MoleculeJsonLoader::parseSGroups( const rapidjson::Value& sgroups, BaseMole
         std::string sg_type_str = s["type"].GetString(); //GEN, MUL, SRU, SUP
         int sg_type = SGroup::getType(sg_type_str.c_str());
         int grp_idx = mol.sgroups.addSGroup( sg_type );
-        SGroup* sgroup = &mol.sgroups.getSGroup(grp_idx);
+        SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
         const Value& atoms = s["atoms"];
 
         // add brackets
-        Vec2f* p = sgroup->brackets.push();
+        Vec2f* p = sgroup.brackets.push();
         p[0].set(0, 0);
         p[1].set(0, 0);
-        p = sgroup->brackets.push();
+        p = sgroup.brackets.push();
         p[0].set(0, 0);
         p[1].set(0, 0);
 
@@ -391,85 +395,102 @@ void MoleculeJsonLoader::parseSGroups( const rapidjson::Value& sgroups, BaseMole
             break;
             case SGroup::SG_TYPE_MUL:
             {
-                MultipleGroup* mg = (MultipleGroup*)sgroup;
+                MultipleGroup& mg = (MultipleGroup&)sgroup;
                 if( s.HasMember("mul") )
                 {
                     int mult = s["mul"].GetInt();
-                    mg->multiplier = mult;
+                    mg.multiplier = mult;
                 }
             }
             break;
             case SGroup::SG_TYPE_SRU:
             {
-                RepeatingUnit* ru = (RepeatingUnit*)sgroup;
+                RepeatingUnit& ru = (RepeatingUnit&)sgroup;
                 if( s.HasMember("subscript") )
                 {
-                    ru->subscript.readString( s["subscript"].GetString(), true );
+                    ru.subscript.readString( s["subscript"].GetString(), true );
                 }
 
                 if( s.HasMember("connectivity"))
                 {
                     std::string conn = s["connectivity"].GetString();
                     if(  conn == "HT" )
-                        ru->connectivity = RepeatingUnit::HEAD_TO_TAIL;
+                        ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
                     else if( conn == "HH" )
-                        ru->connectivity = RepeatingUnit::HEAD_TO_HEAD;
+                        ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
                     else if( conn == "EU" )
-                        ru->connectivity = RepeatingUnit::EITHER;
+                        ru.connectivity = RepeatingUnit::EITHER;
                 }
             }
             break;
             case SGroup::SG_TYPE_SUP:
             {
-                Superatom* sg = (Superatom*) sgroup;
+                Superatom& sg = (Superatom&) sgroup;
                 if( s.HasMember("name"))
-                    sg->subscript.readString( s["name"].GetString(), true );
+                    sg.subscript.readString( s["name"].GetString(), true );
             }
             break;
             case SGroup::SG_TYPE_DAT:
             {
-                DataSGroup* dsg = (DataSGroup*) sgroup;
+                DataSGroup& dsg = (DataSGroup&) sgroup;
                 if ( s.HasMember("fieldName") )
-                    dsg->name.readString( s["fieldName"].GetString(), true);
+                    dsg.name.readString( s["fieldName"].GetString(), true);
 
                 if ( s.HasMember("fieldData") )
-                    dsg->data.readString( s["fieldData"].GetString(), true);
+                    dsg.data.readString( s["fieldData"].GetString(), true);
 
                 if ( s.HasMember("fieldType") )
-                    dsg->description.readString( s["fieldType"].GetString(), true);
+                    dsg.description.readString( s["fieldType"].GetString(), true);
+
+				if (s.HasMember("queryType"))
+					dsg.querycode.readString(s["queryType"].GetString(), true);
+
+				if (s.HasMember("queryOp"))
+					dsg.queryoper.readString(s["queryOp"].GetString(), true);
 
                 if ( s.HasMember("x") )
-                    dsg->display_pos.x = s["x"].GetFloat();
+                    dsg.display_pos.x = s["x"].GetFloat();
 
                 if ( s.HasMember("y") )
-                    dsg->display_pos.y = s["y"].GetFloat();
+                    dsg.display_pos.y = s["y"].GetFloat();
 
+				if (s.HasMember("dataDetached"))
+					dsg.detached = s["dataDetached"].GetBool();
+
+	            // TODO: placement = relative, display = display_units
                 if ( s.HasMember("placement") )
-                    dsg->relative = s["placement"].GetBool();
+                    dsg.relative = s["placement"].GetBool();
 
-                if ( s.HasMember("placement") )
-                    dsg->relative = s["placement"].GetBool();
+                if( s.HasMember("display") )
+                    dsg.display_units = s["display"].GetBool();
 
-                if ( s.HasMember("display") )
-                    dsg->display_units = s["display"].GetBool();
+				if (s.HasMember("tag"))
+				{
+					auto tag = s["tag"].GetString();
+					if( strlen(tag) )
+						dsg.tag = *tag;
+				}
+
+				if (s.HasMember("displayedChars"))
+					dsg.num_chars = s["displayedChars"].GetInt();
+
             }
             break;
             default:
                 throw Error("Invalid sgroup type %s", sg_type_str.c_str());
-
         }
         // add atoms
         std::unordered_set<int> sgroup_atoms;
         for( int j = 0; j < atoms.Size(); ++j )
         {
             int atom_idx = atoms[j].GetInt();
-            sgroup->atoms.push( atom_idx );
+            sgroup.atoms.push( atom_idx );
             sgroup_atoms.insert( atom_idx );
             if( sg_type == SGroup::SG_TYPE_MUL )
             {
-                MultipleGroup* mg = (MultipleGroup*)sgroup;
-                if( mg->multiplier )
-                    mg->parent_atoms.push( atom_idx );
+                MultipleGroup& mg = (MultipleGroup&)sgroup;
+                if( mg.multiplier )
+                    mg.parent_atoms.push( atom_idx );
             }
         }
 
@@ -478,15 +499,15 @@ void MoleculeJsonLoader::parseSGroups( const rapidjson::Value& sgroups, BaseMole
         {
             const Edge& edge = mol.getEdge(k);
             if( sgroup_atoms.find( edge.beg ) != sgroup_atoms.end() && sgroup_atoms.find( edge.end ) != sgroup_atoms.end() )
-                sgroup->bonds.push(k);
+                sgroup.bonds.push(k);
         }
 
         // expand multiple s-groups
         if( sg_type == SGroup::SG_TYPE_MUL )
         {
-            MultipleGroup* mg = (MultipleGroup*)sgroup;
-            if( mg->multiplier )
-                handleRepetitions(sgroup, mol, mg->multiplier, sgroup->atoms[0], sgroup->atoms.top());
+            MultipleGroup& mg = (MultipleGroup&)sgroup;
+            if( mg.multiplier )
+                handleRepetitions(sgroup, mol, mg.multiplier, sgroup.atoms[0], sgroup.atoms.top());
         }
     }
 }
