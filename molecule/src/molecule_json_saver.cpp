@@ -151,13 +151,13 @@ void MoleculeJsonSaver::saveSGroups( BaseMolecule& mol, rapidjson::Writer<rapidj
 
 void indigo::MoleculeJsonSaver::saveSGroup(SGroup & sgroup, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
+	writer.StartObject();
 	writer.Key("type");
 	writer.String(SGroup::typeToString(sgroup.sgroup_type));
 	writer.Key("atoms");
 	writer.StartArray();
 	for( int i = 0; i < sgroup.atoms.size(); i++ )
 		writer.Int( sgroup.atoms[i] );
-
 	writer.EndArray();
 
 	switch( sgroup.sgroup_type )
@@ -246,25 +246,25 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup & sgroup, rapidjson::Writer<ra
 		case SGroup::SG_TYPE_SRU:
 		{
 			RepeatingUnit& ru = (RepeatingUnit&)sgroup;
-			writer.Key("subscript");
-			writer.String( ru.subscript.ptr() );
+			if(ru.subscript.size())
+			{
+				writer.Key("subscript");
+				writer.String(ru.subscript.ptr());
+			}
+
 			writer.Key("connectivity");
 			switch (ru.connectivity)
 			{
-			    case SGroup::HEAD_TO_TAIL:
+				case SGroup::HEAD_TO_TAIL:
 					writer.String("HT");
-				break;
+					break;
 				case SGroup::HEAD_TO_HEAD:
 					writer.String("HH");
-				break;
-				case SGroup::EITHER:
-					writer.String("EU");
-				break;
+					break;
 				default:
-					throw Error("Invalid connectivity");
-				break;
+					writer.String("EU");
+					break;
 			}
-
 		}
 		break;
 		case SGroup::SG_TYPE_MUL:
@@ -307,6 +307,7 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup & sgroup, rapidjson::Writer<ra
 		default:
 		break;
 	}
+	writer.EndObject();
 }
 
 void MoleculeJsonSaver::saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer )
@@ -413,6 +414,8 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule& mol, Writer<StringBuffer>& writ
     {
         for (auto i : mol.vertices())
         {
+			int anum = mol.getAtomNumber(i);
+			int isotope = mol.getAtomIsotope(i);
             writer.StartObject();
             QS_DEF(Array<int>, rg_list);
             int radical = 0;
@@ -437,7 +440,18 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule& mol, Writer<StringBuffer>& writ
                 {
                     radical = mol.getAtomRadical(i);
                 }
-                mol.getAtomSymbol(i, buf);
+				mol.getAtomSymbol(i, buf);
+				if( anum == ELEM_H  )
+				{
+					if (isotope == 2)
+					{
+						buf.clear(); buf.appendString("D", true);
+					}
+					if (isotope == 3)
+					{
+						buf.clear(); buf.appendString("T", true);
+					}
+				}
                 writer.Key("label");
                 writer.String(buf.ptr());
             }
@@ -453,7 +467,6 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule& mol, Writer<StringBuffer>& writ
             }
             int charge = mol.getAtomCharge(i);
             int evalence = mol.getExplicitValence(i);
-            int isotope = mol.getAtomIsotope(i);
             if( charge )
             {
                 writer.Key("charge");
@@ -470,7 +483,7 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule& mol, Writer<StringBuffer>& writ
                 writer.Int( radical );
             }
 
-            if( isotope )
+            if( isotope && anum != ELEM_H )
             {
                 writer.Key("isotope");
                 writer.Int( isotope );
