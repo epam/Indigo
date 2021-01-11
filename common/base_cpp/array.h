@@ -37,7 +37,7 @@ namespace indigo
     public:
         DECL_TPL_ERROR(ArrayError);
 
-        Array() : _reserved(0), _length(0), _array(nullptr)
+        explicit Array() : _reserved(0), _length(0), _array(nullptr)
         {
         }
 
