@@ -54,6 +54,10 @@ namespace indigo
         void validateMoleculeBond( int order );
         void parseAtoms( const rapidjson::Value& atoms, BaseMolecule& mol );
         void parseBonds( const rapidjson::Value& bonds, BaseMolecule& mol, int atom_base_idx );
+		void parseHighlightedBonds( const rapidjson::Value& bonds, BaseMolecule& mol );
+		void parseHighlightedAtoms(const rapidjson::Value& atoms, BaseMolecule& mol);
+		void parseSelectedBonds(const rapidjson::Value& bonds, BaseMolecule& mol);
+		void parseSelectedAtoms(const rapidjson::Value& atoms, BaseMolecule& mol);
         void parseSGroups( const rapidjson::Value& sgroups, BaseMolecule& mol );
         void handleRepetitions( SGroup& sgroup, BaseMolecule& bmol, int rc, int start, int end );
 

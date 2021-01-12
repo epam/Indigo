@@ -172,6 +172,35 @@ void MoleculeJsonLoader::parseAtoms( const rapidjson::Value& atoms, BaseMolecule
         std::string label;
         int atom_idx = 0 , charge = 0, valence = 0, radical = 0, isotope = 0, elem = 0, rsite_idx = 0;
         const Value& a = atoms[i];
+		if (a.HasMember("attachmentPoints"))
+		{
+			int val = a["attachmentPoints"].GetInt();
+			for (int att_idx = 0; (1 << att_idx) <= val; att_idx++)
+				if (val & (1 << att_idx))
+					mol.addAttachmentPoint(att_idx + 1, i);
+		}
+
+
+		if (a.HasMember("atomRefs4"))
+		{
+			throw Error("Tetrahedral stereocenters loading not implemented yet");
+			/* BufferScanner strscan(a["atomRefs4"].GetString());
+			QS_DEF(Array<char>, id);
+			int k, pyramid[4];
+			for (k = 0; k < 4; k++)
+			{
+				strscan.skipSpace();
+				strscan.readWord(id, 0);
+				pyramid[k] = getAtomIdx(id.ptr());
+				if (pyramid[k] == i)
+					pyramid[k] = -1;
+			}
+
+			MoleculeStereocenters::moveMinimalToEnd(pyramid);
+			mol.stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, pyramid);*/
+		}
+
+
         if( a.HasMember( "type") )
         {
             std::string atom_type = a["type"].GetString();
@@ -319,6 +348,38 @@ void MoleculeJsonLoader::parseBonds( const rapidjson::Value& bonds, BaseMolecule
             // TODO:
         }
     }
+}
+
+void indigo::MoleculeJsonLoader::parseHighlightedBonds(const rapidjson::Value & bonds, BaseMolecule & mol)
+{
+	for (int i = 0; i < bonds.Size(); ++i)
+	{
+	   mol.highlightBond( bonds[i].GetInt() );
+	}
+}
+
+void indigo::MoleculeJsonLoader::parseHighlightedAtoms(const rapidjson::Value & atoms, BaseMolecule & mol)
+{
+	for (int i = 0; i < atoms.Size(); ++i)
+	{
+		mol.highlightBond( atoms[i].GetInt() );
+	}
+}
+
+void indigo::MoleculeJsonLoader::parseSelectedBonds(const rapidjson::Value & bonds, BaseMolecule & mol)
+{
+	for (int i = 0; i < bonds.Size(); ++i)
+	{
+		mol.selectBond(bonds[i].GetInt());
+	}
+}
+
+void indigo::MoleculeJsonLoader::parseSelectedAtoms(const rapidjson::Value & atoms, BaseMolecule & mol)
+{
+	for (int i = 0; i < atoms.Size(); ++i)
+	{
+		mol.selectBond(atoms[i].GetInt());
+	}
 }
 
 void MoleculeJsonLoader::handleRepetitions( SGroup& sgroup, BaseMolecule& bmol, int rc, int start, int end )
@@ -534,6 +595,24 @@ void MoleculeJsonLoader::loadMolecule( BaseMolecule& mol )
                 parseBonds( mol_node["bonds"], mol, atoms_count );
             }
             atoms_count += atoms.Size();
+			mol.unhighlightAll();
+			if (mol_node.HasMember("hl_bonds"))
+			{
+				parseHighlightedBonds( mol_node["hl_bonds"], mol );
+			}
+			if (mol_node.HasMember("hl_atoms"))
+			{
+				parseHighlightedAtoms(mol_node["hl_atoms"], mol);
+			}
+			if (mol_node.HasMember("sl_bonds"))
+			{
+				parseSelectedBonds(mol_node["sl_bonds"], mol);
+			}
+			if (mol_node.HasMember("sl_atoms"))
+			{
+				parseSelectedAtoms(mol_node["sl_atoms"], mol);
+			}
+
             // parse SGroups
             if( mol_node.HasMember("sgroups") )
             {

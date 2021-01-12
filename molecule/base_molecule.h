@@ -312,6 +312,21 @@ namespace indigo
         bool isBondHighlighted(int idx);
         void highlightSubmolecule(BaseMolecule& sub, const int* mapping, bool entire);
 
+		void unselectAll();
+		void selectAtom(int idx);
+		void selectBond(int idx);
+		void selectAtoms(const Filter& filter);
+		void selectBonds(const Filter& filter);
+		void unselectAtom(int idx);
+		void unselectBond(int idx);
+		int countSelectedAtoms();
+		int countSelectedBonds();
+		bool hasSelection();
+		bool isAtomSelected(int idx);
+		bool isBondSelected(int idx);
+		void selectSubmolecule(BaseMolecule& sub, const int* mapping, bool entire);
+
+
         static int getVacantPiOrbitals(int group, int charge, int radical, int conn, int* lonepairs_out);
 
         // Returns edit revision for this molecule.
@@ -389,6 +404,9 @@ namespace indigo
 
         Array<int> _hl_atoms;
         Array<int> _hl_bonds;
+		Array<int> _sl_atoms;
+		Array<int> _sl_bonds;
+
         Array<int> _bond_directions;
 
         Array<Vec3f> _xyz;
