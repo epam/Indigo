@@ -37,10 +37,19 @@ struct CheckParams
     std::vector<int> selected_bonds;
 };
 
+static constexpr const char* checkTypeName[] = {
+    StructureChecker2::CHECK_NONE_TXT,      StructureChecker2::CHECK_LOAD_TXT,         StructureChecker2::CHECK_VALENCE_TXT,
+    StructureChecker2::CHECK_RADICAL_TXT,   StructureChecker2::CHECK_PSEUDOATOM_TXT,   StructureChecker2::CHECK_STEREO_TXT,
+    StructureChecker2::CHECK_QUERY_TXT,     StructureChecker2::CHECK_OVERLAP_ATOM_TXT, StructureChecker2::CHECK_OVERLAP_BOND_TXT,
+    StructureChecker2::CHECK_RGROUP_TXT,    StructureChecker2::CHECK_SGROUP_TXT,       StructureChecker2::CHECK_TGROUP_TXT,
+    StructureChecker2::CHECK_CHIRALITY_TXT, StructureChecker2::CHECK_CHIRAL_FLAG_TXT,  StructureChecker2::CHECK_3D_COORD_TXT,
+    StructureChecker2::CHECK_CHARGE_TXT,    StructureChecker2::CHECK_SALT_TXT,         StructureChecker2::CHECK_AMBIGUOUS_H_TXT,
+    StructureChecker2::CHECK_COORD_TXT,     StructureChecker2::CHECK_V3000_TXT,        StructureChecker2::CHECK_ALL_TXT};
+
 static CheckParams check_params_from_string(const char* params)
 {
     CheckParams r;
-    size_t len = sizeof(StructureChecker2::checkTypeName) / sizeof(*StructureChecker2::checkTypeName);
+    size_t len = sizeof(checkTypeName) / sizeof(*checkTypeName);
     if (params)
     {
         std::smatch sm1;
@@ -55,7 +64,7 @@ static CheckParams check_params_from_string(const char* params)
         r.check_flags = StructureChecker2::CHECK_NONE;
         for (int i = 0; i < len; i++)
         {
-            if (words.find(std::string(StructureChecker2::checkTypeName[i])) != words.end())
+            if (words.find(std::string(checkTypeName[i])) != words.end())
             {
                 r.check_flags |= 1 << i;
             }

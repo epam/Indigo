@@ -22,8 +22,8 @@
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
 #include <string>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 class IndigoObject;
 
@@ -60,13 +60,35 @@ namespace indigo
             CHECK_ALL = -1                   // Check all features (default)
         };
 
-        static constexpr const char* checkTypeName[] = {"none",         "load",         "valence", "radical",    "pseudoatom", "stereo",    "query",
-                                                        "overlap_atom", "overlap_bond", "rgroup",  "sgroup",     "tgroup",     "chirality", "chiral_flag",
-                                                        "3d_coord",     "charge",       "salt",    "ambigous_h", "coord",      "v3000",     "all"};
-        // See below check(char *, char *):
-        // check("molecule text", "load, valence, radical, atoms 1 2 3, bonds 4 5 6, tgroup"
-        // is equivalent to
-        // check(the_molecule, check_flags = CHECK_LOAD | CHECK_VALECE | CHECK_RADICAL | CHECK_TGROUP, selected_atoms=[1,2,3], selected_bonds=[4,5,6]);
+        /// <summary>
+        /// Textual Check Type values for the corresponding CheckTypeCode
+        /// to be used in host language calls (Java, Python etc.) as a comma-separated list
+        /// See below check(char *, char *):
+        /// check("molecule text", "load, valence, radical, atoms 1 2 3, bonds 4 5 6, tgroup"
+        /// is equivalent to
+        /// check(the_molecule, check_flags = CHECK_LOAD | CHECK_VALECE | CHECK_RADICAL | CHECK_TGROUP, selected_atoms=[1,2,3], selected_bonds=[4,5,6]);
+        /// </summary>
+        static constexpr char* CHECK_NONE_TXT = "none";                 // Check none
+        static constexpr char* CHECK_LOAD_TXT = "load";                 // Check loading (correspondence some known format)
+        static constexpr char* CHECK_VALENCE_TXT = "valence";           // Check valence correctness
+        static constexpr char* CHECK_RADICAL_TXT = "radical";           // Check radicals existance
+        static constexpr char* CHECK_PSEUDOATOM_TXT = "pseudoatom";     // Check pseudoatoms existance
+        static constexpr char* CHECK_STEREO_TXT = "stereo";             // Check strerochemistry description correctness
+        static constexpr char* CHECK_QUERY_TXT = "query";               // Check query fetaures existance
+        static constexpr char* CHECK_OVERLAP_ATOM_TXT = "overlap_atom"; // Check overlapping atoms existance
+        static constexpr char* CHECK_OVERLAP_BOND_TXT = "overlap_bond"; // Check overlapping bonds existance
+        static constexpr char* CHECK_RGROUP_TXT = "rgroup";             // Check R-groups existance
+        static constexpr char* CHECK_SGROUP_TXT = "sgroup";             // Check S-groups existance
+        static constexpr char* CHECK_TGROUP_TXT = "tgroup";             // Check T-groups existance (SCSR features)
+        static constexpr char* CHECK_CHIRALITY_TXT = "chirality";       // Check chirality feature correctness (including 3D source)
+        static constexpr char* CHECK_CHIRAL_FLAG_TXT = "chiral_flag";   // Check chiral flag existance (MOLFILE format)
+        static constexpr char* CHECK_3D_COORD_TXT = "3d_coord";         // Check 3D coordinates existance
+        static constexpr char* CHECK_CHARGE_TXT = "charge";             // Check charged structure
+        static constexpr char* CHECK_SALT_TXT = "salt";                 // Check possible salt structure
+        static constexpr char* CHECK_AMBIGUOUS_H_TXT = "ambigous_h";    // Check ambiguous H existance
+        static constexpr char* CHECK_COORD_TXT = "coord";               // Check coordinates existance
+        static constexpr char* CHECK_V3000_TXT = "v3000";               // Check v3000 format
+        static constexpr char* CHECK_ALL_TXT = "all";                   // Check all features (default)
 
         enum class CheckMessageCode
         {
