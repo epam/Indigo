@@ -48,9 +48,7 @@
 
 
 
-#ifdef DEBUG
 #include <iostream>
-#endif
 
 #include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
@@ -311,9 +309,7 @@ namespace indigo
 
             // Inserts a new node at the end of the list
             void insert(FragmentNode* node);
-#ifdef DEBUG
             virtual void print(std::ostream& out) const;
-#endif
 
             FragmentClassType classType = FragmentClassType::INVALID;
             FragmentNode* parent = nullptr; // A handle to the parent; must not be freed
@@ -329,9 +325,7 @@ namespace indigo
             }
             virtual ~FragmentNodeRoot() = default;
 
-#ifdef DEBUG
             virtual void print(std::ostream& out) const;
-#endif
         }; // class FragmentNodeRoot
 
         typedef std::pair<int, TokenType> Multiplier;
@@ -375,9 +369,7 @@ namespace indigo
             */
             int combineMultipliers();
 
-#ifdef DEBUG
             virtual void print(std::ostream& out) const;
-#endif
 
             Element element;
             Isomerism isomerism = Isomerism::NONE;
@@ -429,9 +421,7 @@ namespace indigo
                 return dynamic_cast<FragmentNodeBase*>(this);
             }
 
-#ifdef DEBUG
             virtual void print(std::ostream& out) const;
-#endif
 
             // Positions of this substituent inside its base
             Positions positions;

@@ -509,7 +509,6 @@ void MoleculeNameParser::FragmentNode::insert(FragmentNode* node)
     nodes.push_back(node);
 }
 
-#ifdef DEBUG
 void MoleculeNameParser::FragmentNode::print(ostream& out) const
 {
     out << "Parent: " << parent << endl;
@@ -579,7 +578,6 @@ ostream& operator<<(ostream& out, const MoleculeNameParser::FragmentNode* node) 
    return out;
 }
 #endif
-#endif // DEBUG
 
 MoleculeNameParser::FragmentNodeBase::FragmentNodeBase()
 {
