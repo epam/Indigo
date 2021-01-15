@@ -1,0 +1,56 @@
+REFACTORING PROPOSAL
+
+
+Indigo library implementation has the following main problems:
+
+1. Unclear mapping of C++ code to host languages (Java, Python etc.)
+C++ classes are enveloped into a flat, not structured C-interface. 
+The C-interface is presented in host languages as classes and interfaces which has no common with source C++ class system and may differ for different host languages.
+As a result, a separate set of API documentation is required for C++ and each host language programmers.
+
+2. Intermediate code between C++ and host languages is written manually.
+The first, the code consistency can't be autoverified and not guarantied. This causes and aggravates the problem #1
+The second, this provocates developers to code features in host language and C-envelope instead of C++ primary code - see the issue #269
+
+The solution:
+
+1. Declaratively describe an object interface.
+
+It can be XML, JSON etc. but the best is Java:
+  - Clear syntax similar to target C++
+  - Editor support: syntax highlight and checking
+  - Metainformation can be provided using annotations
+  - Easily parsed and accessed using Java reflection API.
+ 
+Example: Indigo/indigo2/declarative/com/dc/indigo/molecule/Molecule.java
+
+2. Develop (once) a code generator
+See Indigo/indigo2/codegen/CodeGenerator.java
+The utility should do the following:
+	- Collect all declarations like "interface Molecule" from the specified package
+	- Walk through each Java interface (e.g. Molecule) using reflection and generate the files (see the examples):
+			1. Indigo/indigo2/generated/java/com/dc/indigo/molecule/MoleculeGeneratedImpl.java - Java implementation
+			2. Indigo/indigo2/generated/python/Molecule.py - Python implementation
+			3. Indigo/indigo2/generated/cpp/MoleculeGeneratedAPI.cpp - Java and Python native interface methods
+			4. Indigo/indigo2/generated/cpp/Molecule.h - C++ interface == Java and Python interfaces.
+
+3. Run the code generator
+4. Implement the e.g. Molecule.h in Molecule.cpp.
+These e.g. Molecule.cpp (Molecule::aMethod()) and source declaration Molecule.java (interface Molecule {aMethod() {....}}) 
+are the only manually written code and its interface and functionality are fully equivalent in C++, Java, Python etc.
+Consistency	between the declared Java interface and its C++ implementation is checked by compiler.
+
+As a result:
+	1. The development is performed in C++ only. There is no manually written code outside C++ class implementation except declarative description of its interface.
+	2. All the patterned derived code necessary to reflect the C++ class into host languages' classes is generated automatically in one click.
+	(including REST API and AWS lambdas if you want)
+	3. Class hierarchy and the classes' interfaces in C++, Java, Python etc. are exactly equivalent.
+	API documentation and programming style is practically common for all languages.
+	4. Consistency between a declared interface and its implementations is autochecked by compiler.
+	If the interface is changed, compilation errors will appear in Java implementation.
+	After re-executing of the code generator, compilation errors will appear in C++ implementation until the interface changes are correctly implemented.
+
+
+
+
+	
