@@ -104,10 +104,12 @@ StructureChecker2::StructureChecker2()
 
 StructureChecker2::CheckResult StructureChecker2::check(const char* item, const char* check_flags, const char* load_params)
 {
-    int it = indigoLoadStructureFromString(item, load_params);
+    std::string lp = std::string(load_params ? load_params : "");
+
+    int it = indigoLoadStructureFromString(item, lp.c_str());
     if (it < 0)
     {
-        it = indigoLoadStructureFromString(item, (std::string(load_params ? load_params : "") + " query").c_str()); //##!!!PATCH
+        it = indigoLoadStructureFromString(item, (lp + " query").c_str()); //##!!!PATCH
     }
     auto r = check(it, check_flags);
     indigoFree(it);
@@ -390,8 +392,9 @@ static void check_query(Molecule& mol, const std::unordered_set<int>& selected_a
                          [](Molecule& mol, int idx) { return mol.reaction_atom_exact_change[idx] || mol.reaction_atom_inversion[idx]; });
 
     std::vector<int> ids;
-    std::copy_if(selected_atoms.begin(), selected_atoms.end(), std::back_inserter(ids),
-                 [&mol](int idx) { return mol.reaction_bond_reacting_center[idx] != 0; });
+    std::copy_if(selected_atoms.begin(), selected_atoms.end(), std::back_inserter(ids), [&mol](int idx) {
+        return idx >= 0 && idx < mol.reaction_bond_reacting_center.size() && mol.reaction_bond_reacting_center[idx] != 0;
+    });
     if (ids.size())
     {
         result.message(StructureChecker2::CheckMessageCode::CHECK_MSG_QUERY_BOND, ids);
@@ -577,12 +580,12 @@ static void checkMolecule(BaseMolecule& bmol, int check_types, const std::vector
 
     if (selected_atoms.size() == 0 && selected_bonds.size() == 0)
     {
-        for (auto i : bmol.vertices())
+        for (const auto i : bmol.vertices())
         {
             sel_atoms.insert(i);
         }
 
-        for (auto i : bmol.edges())
+        for (const auto i : bmol.edges())
         {
             sel_bonds.insert(i);
         }
@@ -594,8 +597,8 @@ static void checkMolecule(BaseMolecule& bmol, int check_types, const std::vector
         std::copy_if(selected_bonds.begin(), selected_bonds.end(), std::inserter(sel_bonds, sel_bonds.begin()),
                      [num_bonds](int i) { return i >= 0 && i < num_bonds; });
     }
-    std::transform(selected_bonds.begin(), selected_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).beg; });
-    std::transform(selected_bonds.begin(), selected_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).end; });
+    std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).beg; });
+    std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).end; });
 
     Molecule& mol = ((BaseMolecule&)bmol).isQueryMolecule() ? (Molecule&)((BaseMolecule&)bmol).asQueryMolecule() : ((BaseMolecule&)bmol).asMolecule();
     for (int i = 0; i < sizeof(check_type_checkers) / sizeof(*check_type_checkers); i++)
@@ -636,7 +639,7 @@ static const std::string message_list[] = {"",
                                            "Structure contains ambiguous hydrogens",
                                            "Structure contains query features, so ambiguous H could not be checked",
                                            "Structure contains 3D coordinates",
-                                           "Structure has no atoms coordinates"
+                                           "Structure has no atoms coordinates",
                                            "Reaction component check result",
                                            "Not implemented yet: check chirality",
                                            "Not implemented yet: check charge",

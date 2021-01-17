@@ -1228,8 +1228,10 @@ CEXPORT const char* indigoCheck2(const char* item, const char* check_flags, cons
 {
     INDIGO_BEGIN
     {
+        self.stereochemistry_options.ignore_errors = true;
         auto& tmp = self.getThreadTmpData();
         std::string r = StructureChecker2().check(item, check_flags, load_params).toJson();
+        tmp.string.clear();
         tmp.string.appendString(r.c_str(), true);
         return tmp.string.ptr();
     }
