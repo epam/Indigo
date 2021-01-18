@@ -103,9 +103,9 @@ namespace indigo
             return Vec2f(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
         } // complex multiplication of two complex numbers
 
-        const float APPROX_STEP = 0.01;   // step of derivate approximation
-        const Vec2f ZERO = Vec2f(0., 0.); // complex zero
-        const Vec2f ONE = Vec2f(1., 0.);  // complex one
+        const float APPROX_STEP = 0.01f;   // step of derivate approximation
+        const Vec2f ZERO = Vec2f(0.f, 0.f); // complex zero
+        const Vec2f ONE = Vec2f(1.f, 0.f);  // complex one
     };
 
 } // namespace indigo

@@ -217,7 +217,7 @@ static float _indigoSimilarity2(const byte* arr1, const byte* arr2, int size, co
     if (metrics == 0 || metrics[0] == 0 || strcasecmp(metrics, "tanimoto") == 0)
     {
         if (common_ones == 0)
-            return 0;
+            return 0.f;
 
         return (float)common_ones / (ones1 + ones2 - common_ones);
     }

@@ -150,7 +150,7 @@ void RefinementState::rotateBranch(const Filter& branch, const RefinementState& 
     const Vec2f& v = state.layout[v_idx];
     Vec2f d;
 
-    angle = DEG2RAD(angle);
+    angle = _2FLOAT(DEG2RAD(angle));
 
     co = cos(angle);
     si = sin(angle);
@@ -212,7 +212,7 @@ void RefinementState::rotateLayout(const RefinementState& state, int v_idx, floa
     const Vec2f& v = state.layout[v_idx];
     Vec2f d;
 
-    angle = DEG2RAD(angle);
+    angle = _2FLOAT(DEG2RAD(angle));
 
     co = cos(angle);
     si = sin(angle);
