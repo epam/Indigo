@@ -37,8 +37,8 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutMacrocyclesLattice, "molecule_layout_macrocycles_lattice");
 
-const float MoleculeLayoutMacrocyclesLattice::CHANGE_FACTOR = 1.0;
-const float MoleculeLayoutMacrocyclesLattice::SMOOTHING_MULTIPLIER = 0.2;
+const float MoleculeLayoutMacrocyclesLattice::CHANGE_FACTOR = 1.0f;
+const float MoleculeLayoutMacrocyclesLattice::SMOOTHING_MULTIPLIER = 0.2f;
 
 CP_DEF(MoleculeLayoutMacrocyclesLattice);
 CP_DEF(MoleculeLayoutMacrocyclesLattice::CycleLayout);
@@ -103,7 +103,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout()
                 has_trans = true;
         if (!has_trans)
         {
-            float alpha = 2 * M_PI / length;
+            float alpha = _2FLOAT(2. * M_PI / length);
             float r = 1 / sqrt(2 * (1 - cos(alpha)));
             for (int i = 0; i < length; i++)
             {
@@ -180,7 +180,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout()
 
     for (int i = 0, j = 0; i < cl.vertex_count; i++)
         for (int t = cl.external_vertex_number[i]; t < cl.external_vertex_number[i + 1]; t++, j++)
-            _positions[j] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * (t - cl.external_vertex_number[i]) / cl.edge_length[i];
+            _positions[j] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * _2FLOAT(t - cl.external_vertex_number[i]) / _2FLOAT(cl.edge_length[i]);
 
     rotate_cycle(-rotate_length);
 }
@@ -333,21 +333,21 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish)
                 int add = get_weight(_vertex_weight[len], path[len + 1].p);
 
                 // choosing rotation closer to circle
-                float l = len * (sqrt(3.0) + 1.5) * M_PI / 12;
+                float l = _2FLOAT(len * (sqrt(3.0) + 1.5) * M_PI / 12.);
 
-                Vec2f vec(path[len].y, 0);
-                vec.rotate(M_PI / 3);
-                vec += Vec2f(path[len].x, 0);
+                Vec2f vec(_2FLOAT(path[len].y), 0.f);
+                vec.rotate(_2FLOAT(M_PI / 3.));
+                vec += Vec2f(_2FLOAT(path[len].x), 0.f);
                 float x = vec.length();
 
-                float eps = 1e-3;
+                float eps = 1e-3f;
 
-                float alpha = 2 * M_PI;
+                float alpha = _2FLOAT(2. * M_PI);
                 if (x > eps)
                 {
 
                     float L = eps;
-                    float R = 2 * M_PI - eps;
+                    float R = _2FLOAT(2. * M_PI - eps);
 
                     while (R - L > eps)
                     {
@@ -786,9 +786,9 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(answer_point* ext_point
     point.clear_resize(vertex_count + 1);
     for (int i = 0; i <= vertex_count; i++)
     {
-        point[i] = Vec2f(ext_point[external_vertex_number[i]].y, 0);
-        point[i].rotate(M_PI / 3);
-        point[i] += Vec2f(ext_point[external_vertex_number[i]].x, 0);
+        point[i] = Vec2f(_2FLOAT(ext_point[external_vertex_number[i]].y), 0.f);
+        point[i].rotate(_2FLOAT(M_PI / 3.));
+        point[i] += Vec2f(_2FLOAT(ext_point[external_vertex_number[i]].x), 0.f);
     }
     /*for (int i = 0; i < vertex_count; i++) {
         point[i] = Vec2f(vertex_count / (2 * M_PI), 0);
@@ -814,11 +814,11 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(int* up_point)
 
     point.clear_resize(vertex_count + 1);
     int length = external_vertex_number[vertex_count];
-    float r = length / 2 / M_PI;
+    float r = _2FLOAT(_2DOUBLE(length) / 2. / M_PI);
     for (int i = 0; i <= vertex_count; i++)
     {
-        point[i] = Vec2f(r + up_point[external_vertex_number[i]], 0);
-        point[i].rotate(2 * M_PI * external_vertex_number[i] / length);
+        point[i] = Vec2f(r + _2FLOAT(up_point[external_vertex_number[i]]), 0.f);
+        point[i].rotate(_2FLOAT(2. * M_PI * external_vertex_number[i] / length));
     }
 }
 
@@ -936,7 +936,7 @@ float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
     for (int i = 0, j = 0; i < cl.vertex_count; i++)
         for (int t = cl.external_vertex_number[i]; t < cl.external_vertex_number[i + 1]; t++, j++)
         {
-            _positions[j] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * (t - cl.external_vertex_number[i]) / cl.edge_length[i];
+            _positions[j] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * _2FLOAT(t - cl.external_vertex_number[i]) / _2FLOAT(cl.edge_length[i]);
         }
 
     return rating(cl);
@@ -1000,7 +1000,7 @@ int MoleculeLayoutMacrocyclesLattice::period(CycleLayout& cl)
 
 float MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl)
 {
-    float eps = 1e-9;
+    float eps = 1e-9f;
     float result = 0;
     int add = 0;
     // distances
@@ -1038,7 +1038,7 @@ float MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl)
     for (int i = 0; i < cl.vertex_count; i++)
         for (int a = cl.external_vertex_number[i], t = 0; a != cl.external_vertex_number[(i + 1) % cl.vertex_count]; a = (a + 1) % length, t++)
         {
-            pp.push_back((cl.point[i] * (cl.edge_length[i] - t) + cl.point[(i + 1) % cl.vertex_count] * t) / cl.edge_length[i]);
+            pp.push_back((cl.point[i] * _2FLOAT(cl.edge_length[i] - t) + cl.point[(i + 1) % cl.vertex_count] * _2FLOAT(t)) / _2FLOAT(cl.edge_length[i]));
         }
 
     int size = pp.size();
@@ -1060,16 +1060,16 @@ float MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl)
             }
     // tails
 
-    float diff = internalValue(cl);
+    float diff = _2FLOAT(internalValue(cl));
 
-    result += 1.0 * diff / length;
+    result += _2FLOAT(1.0 * diff / length);
 
     float area = cl.area();
     QS_DEF(Array<Vec2f>, current_point);
     current_point.clear_resize(length);
     for (int i = 0, t = 0; i < cl.vertex_count; i++)
         for (int j = cl.external_vertex_number[i], d = 0; j < cl.external_vertex_number[i + 1]; j++, t++, d++)
-            current_point[t] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * d;
+            current_point[t] = cl.point[i] + (cl.point[i + 1] - cl.point[i]) * _2FLOAT(d);
 
     for (int i = 0; i < cl.vertex_count; i++)
         if ((_component_finish[cl.external_vertex_number[i]] != cl.external_vertex_number[i]) &&
@@ -1080,12 +1080,12 @@ float MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl)
 
     float perimeter = cl.perimeter();
 
-    result += (perimeter * perimeter / 4 / M_PI / area - 1) / 5;
+    result += _2FLOAT((perimeter * perimeter / 4. / M_PI / area - 1.) / 5.);
 
-    result += 1000.0 * add;
+    result += 1000.0f * add;
 
     int p = period(cl);
-    result *= 1.0 / p;
+    result *= 1.0f / p;
 
     return result;
 }
@@ -1093,11 +1093,11 @@ float MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl)
 void MoleculeLayoutMacrocyclesLattice::CycleLayout::soft_move_vertex(int vertex_number, Vec2f move_vector)
 {
     int i = vertex_number;
-    float count = vertex_count;
+    float count = _2FLOAT(vertex_count);
     Vec2f shift_vector = move_vector;
-    Vec2f add_vector = move_vector * (-1.0 / vertex_count);
-    float mult = 1;
-    float add_mult = -1.0 / vertex_count;
+    Vec2f add_vector = move_vector * _2FLOAT(-1.0 / vertex_count);
+    float mult = 1.f;
+    float add_mult = _2FLOAT(-1.0 / vertex_count);
     do
     {
         point[i++] += move_vector * (count / vertex_count);
@@ -1153,28 +1153,28 @@ void MoleculeLayoutMacrocyclesLattice::closingStep(CycleLayout& cl, int index, i
         if ((cl.point[prev_vertex] - cl.point[base_vertex]).length() < 2 * EPSILON || (cl.point[next_vertex] - cl.point[base_vertex]).length() < 2 * EPSILON)
             return;
         float current_angle = cl.point[base_vertex].calc_angle(cl.point[next_vertex], cl.point[prev_vertex]);
-        while (current_angle > 2 * M_PI)
-            current_angle -= 2 * M_PI;
-        while (current_angle < 0)
-            current_angle += 2 * M_PI;
+        while (current_angle > _2FLOAT(2. * M_PI))
+            current_angle -= _2FLOAT(2. * M_PI);
+        while (current_angle < 0.f)
+            current_angle += _2FLOAT(2. * M_PI);
 
         float current_target_angle = _target_angle[cl.external_vertex_number[base_vertex]];
         if (cl.rotate[base_vertex] < 0)
-            current_target_angle = 2 * M_PI - current_target_angle;
+            current_target_angle = _2FLOAT(2. * M_PI - current_target_angle);
         float anti_current_target_angle;
         if (current_target_angle > M_PI)
         {
             if (current_angle > current_target_angle)
-                anti_current_target_angle = 2 * M_PI;
+                anti_current_target_angle = _2FLOAT(2. * M_PI);
             else
-                anti_current_target_angle = M_PI;
+                anti_current_target_angle = _2FLOAT(M_PI);
         }
         else
         {
             if (current_angle < current_target_angle)
-                anti_current_target_angle = 0;
+                anti_current_target_angle = 0.f;
             else
-                anti_current_target_angle = M_PI;
+                anti_current_target_angle = _2FLOAT(M_PI);
         }
 
         float better_change_angle = 0;
@@ -1233,7 +1233,7 @@ void MoleculeLayoutMacrocyclesLattice::closingStep(CycleLayout& cl, int index, i
         int first_vertex = fix_next ? base_vertex : prev_vertex;
         int second_vertex = fix_next ? next_vertex : base_vertex;
         float current_dist = Vec2f::dist(cl.point[first_vertex], cl.point[second_vertex]);
-        float current_target_dist = cl.edge_length[first_vertex];
+        float current_target_dist = _2FLOAT(cl.edge_length[first_vertex]);
         Vec2f better_chenge_vector = cl.point[second_vertex] - cl.point[first_vertex];
         Vec2f worse_chenge_vector = cl.point[second_vertex] - cl.point[first_vertex];
 
@@ -1273,14 +1273,14 @@ void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout& cl)
     Random rand(SOME_MAGIC_INT_FOR_RANDOM_1);
 
     int iter_count = max(200 * cl.vertex_count, 10000);
-    float multiplyer = 0.3;
+    float multiplyer = 0.3f;
 
     for (int i = 0; i < iter_count; i++)
     {
         float lenSqr = (cl.point[0] - cl.point[cl.vertex_count]).lengthSqr();
         if (lenSqr < 0.25)
         {
-            float angle = -M_PI * cl.vertex_count;
+            float angle = _2FLOAT(-M_PI * cl.vertex_count);
             for (int i = 0; i < cl.vertex_count; i++)
                 angle += cl.point[i].calc_angle_pos(cl.point[(i + 1) % cl.vertex_count], cl.point[(i + cl.vertex_count - 1) % cl.vertex_count]);
             if (angle < 0)
@@ -1317,9 +1317,9 @@ void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout& cl)
 void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>& pairs, CycleLayout& cl)
 {
     int len = cl.vertex_count;
-    float eps = 1e-4;
+    float eps = 1e-4f;
     float eps2 = eps * eps;
-    float good_distance = 1;
+    float good_distance = 1.f;
     pairs.clear();
 
     QS_DEF(Array<Vec2f>, all_points);
@@ -1377,13 +1377,13 @@ void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout& cl, int vertex
 {
     Vec2f p1 = cl.point[(vertex_number - 1 + cl.vertex_count) % cl.vertex_count];
     Vec2f p2 = cl.point[(vertex_number + 1 + cl.vertex_count) % cl.vertex_count];
-    float r1 = cl.edge_length[(cl.vertex_count + vertex_number - 1) % cl.vertex_count];
-    float r2 = cl.edge_length[(cl.vertex_count + vertex_number) % cl.vertex_count];
+    float r1 = _2FLOAT(cl.edge_length[(cl.vertex_count + vertex_number - 1) % cl.vertex_count]);
+    float r2 = _2FLOAT(cl.edge_length[(cl.vertex_count + vertex_number) % cl.vertex_count]);
 
     float len1 = Vec2f::dist(p1, cl.point[vertex_number]);
     float len2 = Vec2f::dist(p2, cl.point[vertex_number]);
 
-    float r3 = Vec2f::dist(p1, p2) / sqrt(3.0);
+    float r3 = _2FLOAT(Vec2f::dist(p1, p2) / sqrt(3.0));
 
     Vec2f p3;
 
@@ -1391,7 +1391,7 @@ void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout& cl, int vertex
     {
         p3 = (p1 + p2) / 2;
         Vec2f a = (p2 - p1) / sqrt(12.0f);
-        a.rotate(M_PI / 2 * cl.rotate[vertex_number]);
+        a.rotate(_2FLOAT(M_PI / 2. * cl.rotate[vertex_number]));
         p3 += a;
     }
     else
@@ -1405,7 +1405,7 @@ void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout& cl, int vertex
 
     // printf("%5.5f %5.5f %5.5f %5.5f\n", len1, len2, len3, r3);
     Vec2f newPoint;
-    float eps = 1e-4;
+    float eps = 1e-4f;
     float eps2 = eps * eps;
     if (len1 < eps || len2 < eps || len3 < eps)
     {
@@ -1450,20 +1450,20 @@ Vec2f MoleculeLayoutMacrocyclesLattice::CycleLayout::getWantedVector(int vertex_
 
     Vec2f p1 = point[(vertex_number - 1 + vertex_count) % vertex_count];
     Vec2f p2 = point[(vertex_number + 1 + vertex_count) % vertex_count];
-    float r1 = edge_length[(vertex_count + vertex_number - 1) % vertex_count];
-    float r2 = edge_length[(vertex_count + vertex_number) % vertex_count];
+    float r1 = _2FLOAT(edge_length[(vertex_count + vertex_number - 1) % vertex_count]);
+    float r2 = _2FLOAT(edge_length[(vertex_count + vertex_number) % vertex_count]);
 
     float len1 = Vec2f::dist(p1, point[vertex_number]);
     float len2 = Vec2f::dist(p2, point[vertex_number]);
 
-    float r3 = Vec2f::dist(p1, p2) / sqrt(3.0);
+    float r3 = _2FLOAT(Vec2f::dist(p1, p2) / sqrt(3.0));
 
     Vec2f p3 = (p1 + p2) / 2;
 
     if (rotate[vertex_number] != 0)
     {
         Vec2f a = (p2 - p1) / sqrt(12.0f);
-        a.rotate(M_PI / 2 * rotate[vertex_number]);
+        a.rotate(_2FLOAT(M_PI / 2. * rotate[vertex_number]));
         p3 += a;
     }
     else
@@ -1477,7 +1477,7 @@ Vec2f MoleculeLayoutMacrocyclesLattice::CycleLayout::getWantedVector(int vertex_
 
     // printf("%5.5f %5.5f %5.5f %5.5f\n", len1, len2, len3, r3);
     Vec2f newPoint;
-    float eps = 1e-4;
+    float eps = 1e-4f;
     float eps2 = eps * eps;
     // if (len1 < eps || len2 < eps || len3 < eps) return ;
 

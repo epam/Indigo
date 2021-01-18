@@ -603,8 +603,8 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
             if (prev_layout_component < 0 && next_layout_component < 0)
             {
-                layout.setTargetAngle(i, 2 * M_PI / 3);
-                layout.setAngleImportance(i, 0.2);
+                layout.setTargetAngle(i, _2FLOAT(2. * M_PI / 3.));
+                layout.setAngleImportance(i, 0.2f);
             }
             else if ((prev_layout_component < 0) ^ (next_layout_component < 0))
             {
@@ -651,32 +651,32 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                 angle = (calc_segment.getIntPosition(next_vertex) - calc_segment.getIntPosition(calc_vertex)).tiltAngle2();
                 angle -= (calc_segment.getIntPosition(prev_vertex) - calc_segment.getIntPosition(calc_vertex)).tiltAngle2();
 
-                while (angle < 0)
-                    angle += 2 * M_PI;
-                while (angle >= 2 * M_PI)
-                    angle -= 2 * M_PI;
+                while (angle < 0.f)
+                    angle += _2FLOAT(2. * M_PI);
+                while (angle >= _2FLOAT(2. * M_PI))
+                    angle -= _2FLOAT(2 * M_PI);
 
-                layout.setTargetAngle(i, M_PI - angle / 2);
+                layout.setTargetAngle(i, _2FLOAT(M_PI - angle / 2.));
             }
             else if (prev_layout_component == next_layout_component)
             {
                 float angle = (getPos(cycle.getVertexC(i - 1)) - getPos(cycle.getVertexC(i))).tiltAngle2();
                 angle -= (getPos(cycle.getVertexC(i + 1)) - getPos(cycle.getVertexC(i))).tiltAngle2();
 
-                while (angle < 0)
-                    angle += 2 * M_PI;
-                while (angle >= 2 * M_PI)
-                    angle -= 2 * M_PI;
-                if (angle > M_PI)
-                    angle = 2 * M_PI - angle;
+                while (angle < 0.f)
+                    angle += _2FLOAT(2. * M_PI);
+                while (angle >= _2FLOAT(2. * M_PI))
+                    angle -= _2FLOAT(2. * M_PI);
+                if (angle > _2FLOAT(M_PI))
+                    angle = _2FLOAT(2. * M_PI - angle);
 
                 layout.setTargetAngle(i, angle);
             }
             // temporary value
             else
             {
-                layout.setTargetAngle(i, M_PI);
-                layout.setAngleImportance(i, 0.2);
+                layout.setTargetAngle(i, _2FLOAT(M_PI));
+                layout.setAngleImportance(i, 0.2f);
             }
         }
     }
@@ -1052,8 +1052,8 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                 middle_new += layout.getPos(i);
                 countVertex++;
             }
-            middle_host /= countVertex;
-            middle_new /= countVertex;
+            middle_host /= _2FLOAT(countVertex);
+            middle_new /= _2FLOAT(countVertex);
 
             for (int i = 0; i < insideVertex.size(); i++)
                 _layout_vertices[insideVertex[i]].pos += middle_new - middle_host;
@@ -1150,8 +1150,8 @@ void MoleculeLayoutGraphSmart::_segment_calculate_target_angle(const MoleculeLay
         Vec2f p2 = layout.getPos(rotation_vertex[i]);
         Vec2f p3 = layout.getPos(rotation_vertex[(i + 1) % segments_count]);
         target_angle[i] = p2.calc_angle(p3, p1);
-        while (target_angle[i] < 0)
-            target_angle[i] += 2 * M_PI;
+        while (target_angle[i] < 0.f)
+            target_angle[i] += _2FLOAT(2. * M_PI);
     }
 
     for (int i = 0; i < segments_count; i++)
@@ -1159,10 +1159,10 @@ void MoleculeLayoutGraphSmart::_segment_calculate_target_angle(const MoleculeLay
         {
             if (segment[i].is_start(v))
                 if (segment[i]._graph.getVertex(v).degree() > 2)
-                    target_angle[i] = M_PI;
+                    target_angle[i] = _2FLOAT(M_PI);
             if (segment[i].is_finish(v))
                 if (segment[i]._graph.getVertex(v).degree() > 2)
-                    target_angle[(i + 1) % segments_count] = M_PI;
+                    target_angle[(i + 1) % segments_count] = _2FLOAT(M_PI);
         }
 }
 
@@ -1297,13 +1297,13 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(ObjArray<MoleculeLayou
                     else
                         continue;
 
-                    direction /= 3;
+                    direction /= 3.f;
 
                     bool moved = false;
                     for (int sign = 1; sign >= -1 && !moved; sign -= 2)
                     {
 
-                        Vec2f newpos = segment[i].getPosition(v1) + (direction * sign);
+                        Vec2f newpos = segment[i].getPosition(v1) + (direction * _2FLOAT(sign));
                         bool can_to_move = true;
 
                         for (int u1 = vert1.neiBegin(); u1 != vert1.neiEnd() && can_to_move; u1 = vert1.neiNext(u1))
@@ -1323,11 +1323,11 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(ObjArray<MoleculeLayou
                             something_done = true;
                             moved = true;
 
-                            segment[i].shiftStartBy(direction * sign / 2);
-                            segment[i].shiftFinishBy(direction * sign / 2);
+                            segment[i].shiftStartBy(direction * _2FLOAT(sign) / 2.f);
+                            segment[i].shiftFinishBy(direction * _2FLOAT(sign) / 2.f);
 
-                            segment[j].shiftStartBy(direction * -sign / 2);
-                            segment[j].shiftFinishBy(direction * -sign / 2);
+                            segment[j].shiftStartBy(direction * _2FLOAT(-sign) / 2.f);
+                            segment[j].shiftFinishBy(direction * _2FLOAT(-sign) / 2.f);
                         }
                     }
                 }
@@ -1343,7 +1343,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(ObjArray<MoleculeLayou
 void MoleculeLayoutGraphSmart::_update_touching_segments(Array<local_pair_ii>& pairs, ObjArray<MoleculeLayoutSmoothingSegment>& segment)
 {
     int segments_count = segment.size();
-    float min_dist = 0.7;
+    float min_dist = 0.7f;
     pairs.clear();
 
     for (int i = 0; i < segments_count; i++)
@@ -1394,7 +1394,7 @@ void MoleculeLayoutGraphSmart::_do_segment_smoothing(Array<Vec2f>& rotation_poin
             if (all_right)
                 break;
         }
-        _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1, touching_segments);
+        _segment_improoving(rotation_point, target_angle, segment, rand.next() % segments_count, 0.1f, touching_segments);
     }
 
     for (int i = 0; i < segments_count; i++)
@@ -1561,7 +1561,7 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
         if (touching_segments[i].left == move_vertex || touching_segments[i].left == (move_vertex + 1) % segments_count)
         {
             int another_segment = touching_segments[i].right;
-            float min_dist = 0.7;
+            float min_dist = 0.7f;
             // float dist2 = min_dist;
             bool interseced = false;
             for (int v1 = segment[move_vertex]._graph.vertexBegin(); !interseced && v1 != segment[move_vertex]._graph.vertexEnd();
@@ -1598,7 +1598,7 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
         Vec2f center(prev_point + chord / 2);
         Vec2f rot_chord(chord);
         rot_chord.rotate(1, 0);
-        center += rot_chord / tan(M_PI - target_angle[move_vertex]) / 2;
+        center += rot_chord / _2FLOAT(tan(M_PI - target_angle[move_vertex])) / 2.f;
 
         float radii = (prev_point - center).length();
         float dist = (this_point - center).length();
@@ -1616,7 +1616,7 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
 
         Vec2f chord(next_point - prev_point);
         chord.rotate(1, 0);
-        center += chord * (target_angle[move_vertex] - M_PI) * l1 * l2 / (l1 + l2);
+        center += chord * _2FLOAT(target_angle[move_vertex] - M_PI) * l1 * l2 / (l1 + l2);
 
         move_vector += (center - this_point);
     }
@@ -1653,7 +1653,7 @@ SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, Array<int>& e
     cycle_length = l;
     edge_length.clear_resize(cycle_length);
     for (int i = 0; i < cycle_length; i++)
-        edge_length[i] = e_l[i];
+        edge_length[i] = _2FLOAT(e_l[i]);
 }
 
 SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, ObjArray<MoleculeLayoutSmoothingSegment>& s) : SmoothingCycle(p, t_a)
@@ -1662,7 +1662,7 @@ SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, ObjArray<Mole
     cycle_length = s.size();
     edge_length.clear_resize(cycle_length);
     for (int i = 0; i < cycle_length; i++)
-        edge_length[i] = s[i].getLength();
+        edge_length[i] = _2FLOAT(s[i].getLength());
 }
 
 void SmoothingCycle::_do_smoothing(int iter_count)
@@ -1670,9 +1670,9 @@ void SmoothingCycle::_do_smoothing(int iter_count)
     QS_DEF(Array<local_pair_ii>, touching_segments);
     touching_segments.clear();
 
-    float coef = 1.0;
-    float multiplyer = __max(0.5, __min(0.999f, 1 - 10.0 / iter_count));
-    for (int i = 0; i < 100; i++, coef *= 0.9)
+    float coef = 1.0f;
+    float multiplyer = __max(0.5f, __min(0.999f, _2FLOAT(1. - 10.0 / iter_count)));
+    for (int i = 0; i < 100; i++, coef *= 0.9f)
     {
         _gradient_step(coef, touching_segments, 0);
     }
@@ -1685,17 +1685,17 @@ void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& touching_s
     for (int i = 0; i < cycle_length; i++)
         change[i] = Vec2f(0, 0);
 
-    float eps = 0.01;
+    float eps = 0.01f;
     for (int i = 0; i < cycle_length; i++)
     {
         int i_1 = (i - 1 + cycle_length) % cycle_length; // i - 1
         int i1 = (i + 1) % cycle_length;                 // i + 1
 
-        change[i] += _get_len_derivative(point[i1] - point[i], get_length(i), false) * (is_simple_component(i) ? 1 : 5);
-        change[i] += _get_len_derivative(point[i_1] - point[i], get_length(i_1), false) * (is_simple_component(i_1) ? 1 : 5);
+        change[i] += _get_len_derivative(point[i1] - point[i], get_length(i), false) * (is_simple_component(i) ? 1.f : 5.f);
+        change[i] += _get_len_derivative(point[i_1] - point[i], get_length(i_1), false) * (is_simple_component(i_1) ? 1.f : 5.f);
 
         if (fabs(target_angle[i] - M_PI) > eps)
-            change[i] += _get_angle_derivative(point[i] - point[i_1], point[i1] - point[i], M_PI - target_angle[i], false);
+            change[i] += _get_angle_derivative(point[i] - point[i_1], point[i1] - point[i], _2FLOAT(M_PI - target_angle[i]), false);
     }
 
     for (int i = 0; i < cycle_length; i++)
@@ -1704,7 +1704,7 @@ void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& touching_s
                 if (!is_simple_component(i) && !is_simple_component(j))
                 {
                     float current_dist = (get_center(i) - get_center(j)).length();
-                    float target_dist = get_radius(i) + get_radius(j) + 1.0;
+                    float target_dist = get_radius(i) + get_radius(j) + 1.0f;
                     if (current_dist < target_dist)
                     {
                         float importance = 1;
@@ -1758,9 +1758,9 @@ Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point,
     float len2_sq = right_point.lengthSqr();
     float len12 = sqrt(len1_sq * len2_sq);
     float cross = Vec2f::cross(left_point, right_point);
-    float signcross = cross > 0 ? 1 : cross == 0 ? 0 : -1;
+    float signcross = cross > 0.f ? 1.f : cross == 0.f ? 0.f : -1.f;
     float dot = Vec2f::dot(left_point, right_point);
-    float signdot = dot > 0 ? 1 : dot == 0 ? 0 : -1;
+    float signdot = dot > 0.f ? 1.f : dot == 0.f ? 0.f : -1.f;
     float cos = dot / len12;
     float alpha;
     Vec2f alphadv;
@@ -1768,7 +1768,7 @@ Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point,
     {
         Vec2f cosdv = ((right_point - left_point) * len12 - (left_point * len2_sq - right_point * len1_sq) * dot / len12) / (len1_sq * len2_sq);
         alpha = acos(cos) * signcross;
-        alphadv = cosdv * (-1. / sqrt(1 - cos * cos)) * signcross;
+        alphadv = cosdv * _2FLOAT(-1. / sqrt(1. - cos * cos)) * signcross;
     }
     else
     {
@@ -1776,18 +1776,18 @@ Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point,
         Vec2f vec = left_point + right_point;
         vec.rotate(-1, 0);
         Vec2f sindv = (vec * len12 - (left_point * len2_sq - right_point * len1_sq) * cross / len12) / (len1_sq * len2_sq);
-        alphadv = sindv * (1. / sqrt(1 - sin * sin)) * signdot;
+        alphadv = sindv * _2FLOAT(1. / sqrt(1. - sin * sin)) * signdot;
         alpha = asin(sin);
         if (cos < 0)
         {
             if (alpha > 0)
-                alpha = M_PI - alpha;
+                alpha = _2FLOAT(M_PI - alpha);
             else
-                alpha = -M_PI - alpha;
+                alpha = _2FLOAT(-M_PI - alpha);
         }
     }
     // float diff = fabs(alpha) > fabs(target_angle) ? alpha / target_angle - 1 : target_angle / alpha - 1;
     // Vec2f result = fabs(alpha) > fabs(target_angle) ? alphadv / target_angle : alphadv * (- target_angle) / (alpha * alpha);
     // return result * diff * 2;
-    return alphadv * (alpha - target_angle) * 2;
+    return alphadv * (alpha - target_angle) * 2.f;
 }

@@ -119,7 +119,7 @@ float Vec2f::tiltAngle2()
 
     if (y >= 0)
         return acos(x / l);
-    return 2 * M_PI - acos(x / l);
+    return _2FLOAT(2. * M_PI - acos(x / l));
 }
 
 float Vec2f::calc_angle(Vec2f a, Vec2f b)
@@ -133,8 +133,8 @@ float Vec2f::calc_angle(Vec2f a, Vec2f b)
 
     double cross = Vec2f::cross(a, b);
     double dot = Vec2f::dot(a, b);
-    float cos = dot / sqr;
-    float sin = cross / sqr;
+    float cos = _2FLOAT(dot / sqr);
+    float sin = _2FLOAT(cross / sqr);
 
     float angle;
     if (2 * cos * cos < 1)
@@ -149,9 +149,9 @@ float Vec2f::calc_angle(Vec2f a, Vec2f b)
         if (dot < 0)
         {
             if (cross >= 0)
-                angle = M_PI - angle;
+                angle = _2FLOAT(M_PI - angle);
             else
-                angle = -M_PI - angle;
+                angle = _2FLOAT(-M_PI - angle);
         }
     }
 
@@ -162,7 +162,7 @@ float Vec2f::calc_angle_pos(Vec2f a, Vec2f b)
 {
     float angle = this->calc_angle(a, b);
     if (angle < 0)
-        angle += 2 * M_PI;
+        angle += _2FLOAT(2. * M_PI);
     return angle;
 }
 
@@ -260,7 +260,7 @@ bool Vec2f::segmentsIntersect(const Vec2f& a0, const Vec2f& a1, const Vec2f& b0,
     float minbx = __min(b0.x, b1.x);
     float minby = __min(b0.y, b1.y);
 
-    float big_eps = 0.001;
+    float big_eps = 0.001f;
 
     if (maxax + big_eps < minbx || maxbx + big_eps < minax || maxay + big_eps < minby || maxby + big_eps < minay)
         return false;
@@ -281,7 +281,7 @@ bool Vec2f::segmentsIntersectInternal(const Vec2f& a0, const Vec2f& a1, const Ve
     float minbx = __min(b0.x, b1.x);
     float minby = __min(b0.y, b1.y);
 
-    float big_eps = 0.001;
+    float big_eps = 0.001f;
 
     if (maxax < minbx + big_eps || maxbx < minax + big_eps || maxay < minby + big_eps || maxby < minay + big_eps)
         return false;
@@ -298,7 +298,7 @@ float Vec2f::distPointSegment(Vec2f p, Vec2f q, Vec2f r)
         return dist(p, r);
 
     Vec2f normal = r - q;
-    normal.rotate(M_PI / 2);
+    normal.rotate(_2FLOAT(M_PI / 2.));
     float c = cross(q, r);
     float s = normal.length();
 
@@ -320,7 +320,7 @@ Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, float angle)
 
     Vec2f vec(q - p);
 
-    return (p + q) / 2 + vec / tan((M_PI - angle) / 2);
+    return (p + q) / 2.f + vec / _2FLOAT(tan((M_PI - angle) / 2.));
 }
 
 Vec2f Vec2f::get_circle_center(Vec2f a, Vec2f p, Vec2f q)
