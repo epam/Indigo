@@ -111,7 +111,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: indigo-test-wrappers-python
-          path: dist/indigo-python-*.zip
+          path: |
+            dist/indigo-python-*.zip
+            dist/*.whl
       - name: Upload test wrappers for Java
         uses: actions/upload-artifact@v2
         with:
@@ -279,9 +281,8 @@ jobs:
       - name: Install poetry
         run: pip install poetry
 
-        # Todo: remove relative path
       - name: Install latest indigo version
-        run: poetry run pip install ../../../../dist/epam.indigo-1.4.3-py3-none-manylinux1_x86_64.whl
+        run: poetry run pip install "${GITHUB_WORKSPACE}/dist/epam.indigo-*-py3-none-manylinux1_x86_64.whl"
         working-directory: api/plugins/bingo-elastic/python
 
       - name: Install dependencies
