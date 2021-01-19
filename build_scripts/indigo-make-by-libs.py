@@ -47,13 +47,13 @@ def copytree(src, dst, symlinks=False, ignore=None):
 def join_archives(names, dest_name):
     if os.path.exists(dest_name):
         shutil.rmtree(dest_name)
-    dest_zf_name = '{}.zip'.format(dest_name)
+    dest_zf_name = "{}.zip".format(dest_name)
     if os.path.exists(dest_zf_name):
         os.remove(dest_zf_name)
     for name in names:
-        zf_name = '{}.zip'.format(name)
+        zf_name = "{}.zip".format(name)
         if not os.path.exists(zf_name):
-            raise ValueError('Archive file {} does not exist!'.format(zf_name))
+            raise ValueError("Archive file {} does not exist!".format(zf_name))
         if os.path.exists(name):
             shutil.rmtree(name)
         os.makedirs(name)
@@ -62,7 +62,7 @@ def join_archives(names, dest_name):
         copytree(name, dest_name)
         shutil.rmtree(name)
         # os.remove(zf_name)
-    shutil.make_archive(dest_name, 'zip', os.path.dirname(dest_name), dest_name)
+    shutil.make_archive(dest_name, "zip", os.path.dirname(dest_name), dest_name)
     shutil.rmtree(dest_name)
 
 
@@ -88,11 +88,14 @@ def clear_libs(libs_dir):
 
 
 def unpack_to_libs(name, libs_dir):
-    with zipfile.ZipFile('{}.zip'.format(name)) as zf:
+    with zipfile.ZipFile("{}.zip".format(name)) as zf:
         zf.extractall(libs_dir)
         unzipped_folder = os.path.join(libs_dir, os.path.basename(name))
-        for os_name in os.listdir(os.path.join(unzipped_folder, 'shared')):
-            shutil.copytree(os.path.join(unzipped_folder, 'shared', os_name), os.path.join(libs_dir, 'shared', os_name))
+        for os_name in os.listdir(os.path.join(unzipped_folder, "shared")):
+            shutil.copytree(
+                os.path.join(unzipped_folder, "shared", os_name),
+                os.path.join(libs_dir, "shared", os_name),
+            )
         shutil.rmtree(unzipped_folder, ignore_errors=True)
 
 
@@ -123,21 +126,35 @@ def main():
         ("universal", ["win", "linux", "mac"]),
     ]
 
-    wrappers_gen = ["make-java-wrappers.py", "make-python-wrappers.py", 'make-dotnet-wrappers.py']
+    wrappers_gen = [
+        "make-java-wrappers.py",
+        "make-python-wrappers.py",
+        "make-dotnet-wrappers.py",
+    ]
 
-    parser = OptionParser(description='Indigo libraries repacking')
-    parser.add_option('--libonlyname', help='extract only the library into api/lib')
-    parser.add_option('--config', default="Release", help='project configuration')
-    parser.add_option('--type', default='python,java,dotnet', help='wrapper (dotnet, java, python)')
-    parser.add_option('--wrappers-arch', default='win,linux,mac,universal',
-                      help='wrappers arch (win, linux, mac, universal')
-    parser.add_option('--publish', action='store_true', default=False, help='Required for later publishing Java artifacts to Maven Central')
+    parser = OptionParser(description="Indigo libraries repacking")
+    parser.add_option("--libonlyname", help="extract only the library into api/lib")
+    parser.add_option("--config", default="Release", help="project configuration")
+    parser.add_option(
+        "--type", default="python,java,dotnet", help="wrapper (dotnet, java, python)"
+    )
+    parser.add_option(
+        "--wrappers-arch",
+        default="win,linux,mac,universal",
+        help="wrappers arch (win, linux, mac, universal",
+    )
+    parser.add_option(
+        "--publish",
+        action="store_true",
+        default=False,
+        help="Required for later publishing Java artifacts to Maven Central",
+    )
 
     (args, left_args) = parser.parse_args()
 
-    required_wrappers_arches = args.wrappers_arch.split(',')
+    required_wrappers_arches = args.wrappers_arch.split(",")
     if not args.type:
-        args.type = 'python,java,dotnet'
+        args.type = "python,java,dotnet"
 
     if len(left_args) > 0:
         print("Unexpected arguments: %s" % (str(left_args)))
@@ -150,11 +167,11 @@ def main():
     need_join_archives = args.libonlyname is None
     need_gen_wrappers = args.libonlyname is None
 
-    # Find Indigo version
+    # Find Indigo versionbuild_wrappers
     sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "api"))
-    get_indigo_version = __import__('get_indigo_version').getIndigoVersion
+    get_indigo_version = __import__("get_indigo_version").getIndigoVersion
     version = get_indigo_version()
-    with cwd(os.path.join(os.path.split(__file__)[0], '..', 'dist')):
+    with cwd(os.path.join(os.path.split(__file__)[0], "..", "dist")):
 
         if need_join_archives:
             flatten_directory(".")
@@ -189,13 +206,18 @@ def main():
             if need_gen_wrappers:
                 for gen in wrappers_gen:
                     if args.type is not None:
-                        for g in args.type.split(','):
+                        for g in args.type.split(","):
                             if gen.find(g) != -1:
-                                publish = '--publish' if args.publish else ''
-                                command = '"%s" "%s" -s "%s" %s' % (sys.executable, os.path.join(api_dir, gen), w, publish)
+                                publish = "--publish" if args.publish else ""
+                                command = '"%s" "%s" -s "%s" %s' % (
+                                    sys.executable,
+                                    os.path.join(api_dir, gen),
+                                    w,
+                                    publish,
+                                )
                                 print(command)
                                 subprocess.check_call(command, shell=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -255,6 +255,77 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "macOS Python Test Report"
+  bingo_elastic_tests_python:
+    name: Run tests on bingo-elastic python
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.7, 3.8, 3.9 ]
+    needs: build_wrappers
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Create folder for native libs
+        run: mkdir dist
+      - name: Download wrappers
+        uses: actions/download-artifact@v2
+        with:
+          name: indigo-test-wrappers-python
+          path: dist/
+
+      - name: Install poetry
+        run: pip install poetry
+
+        # Todo: remove relative path
+      - name: Install latest indigo version
+        run: poetry run pip install ../../../../dist/epam.indigo-1.4.3-py3-none-manylinux1_x86_64.whl
+        working-directory: api/plugins/bingo-elastic/python
+
+      - name: Install dependencies
+        run: poetry install
+        working-directory: api/plugins/bingo-elastic/python
+      - name: Run pylint
+        run: poetry run pylint bingo_elastic
+        working-directory: api/plugins/bingo-elastic/python
+      - name: Setup elasticsearch
+        run: docker run -d -p 9200:9200 --env "discovery.type=single-node" --env "opendistro_security.disabled=true" amazon/opendistro-for-elasticsearch:latest
+      - name: Wait elastic is ready
+        run: sleep 30s
+      - name: Run tests
+        run: poetry run pytest tests
+        working-directory: api/plugins/bingo-elastic/python
+
+  bingo_elastic_tests_java:
+    name: Run tests on bingo-elastic java
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build indigo
+        run: python build_scripts/indigo-release-libs.py --preset=linux64
+      - name: Build indigo java api
+        run: mvn clean install
+        working-directory: api/java
+      - name: Build bingo-nosql
+        run: mvn clean install
+        working-directory: api/plugins/bingo/java
+      - name: Build bingo-elastic
+        run: mvn -B test --file pom.xml
+        working-directory: api/plugins/bingo-elastic/java
+
   publish:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest

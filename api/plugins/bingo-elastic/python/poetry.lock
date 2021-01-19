@@ -124,7 +124,7 @@ requests = ["requests (>=2.4.0,<3.0.0)"]
 
 [[package]]
 name = "epam.indigo"
-version = "1.4.1"
+version = "1.4.3"
 description = "Indigo universal cheminformatics toolkit"
 category = "main"
 optional = false
@@ -449,7 +449,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "939902f77280c929aa45b3e2848bb16eaa780eb4901d99197464c934cf30ef4e"
+content-hash = "f70440566562a06dd881362e08b1ffa3db69502809eb3a6299c92237d0f17acb"
 
 [metadata.files]
 appdirs = [
@@ -496,9 +496,9 @@ elasticsearch = [
     {file = "elasticsearch-7.10.1.tar.gz", hash = "sha256:a725dd923d349ca0652cf95d6ce23d952e2153740cf4ab6daf4a2d804feeed48"},
 ]
 "epam.indigo" = [
-    {file = "epam.indigo-1.4.1-py3-none-macosx_10_7_intel.whl", hash = "sha256:9669d7320b549f185aae44343fd298fdd95e2d214b6be39946c4573529592fbd"},
-    {file = "epam.indigo-1.4.1-py3-none-manylinux1_x86_64.whl", hash = "sha256:9740d377c18084d39895186a9b4017be93e907623f348512b40a58db2b7eaef2"},
-    {file = "epam.indigo-1.4.1-py3-none-win_amd64.whl", hash = "sha256:d96ac686d1776a6900953bf6aff4ad1e114ba017aea66999c848f8b5d9c37d65"},
+    {file = "epam.indigo-1.4.3-py3-none-macosx_10_7_intel.whl", hash = "sha256:c11734140c821ca5bbb7280160cc4e4e08d8bd097f3a2373aa216e4bb47b92d0"},
+    {file = "epam.indigo-1.4.3-py3-none-manylinux1_x86_64.whl", hash = "sha256:de7242f71dddcc06c96304da19912bd5467484acde2f9d73485730dbe1a61e04"},
+    {file = "epam.indigo-1.4.3-py3-none-win_amd64.whl", hash = "sha256:00485ae62b8b7aca36bb1c6151f7b1febbf9c1cb28b4d8f2322e3ec3d5efe7ed"},
 ]
 filelock = [
     {file = "filelock-3.0.12-py3-none-any.whl", hash = "sha256:929b7d63ec5b7d6b71b0fa5ac14e030b3f70b75747cef1b10da9b879fef15836"},
