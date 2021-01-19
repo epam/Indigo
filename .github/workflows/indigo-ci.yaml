@@ -114,6 +114,9 @@ jobs:
           path: |
             dist/indigo-python-*.zip
             dist/*.whl
+      - name: Show artifacts
+        run: ls -la dist/
+
       - name: Upload test wrappers for Java
         uses: actions/upload-artifact@v2
         with:
