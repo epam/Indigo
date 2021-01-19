@@ -21,6 +21,7 @@
 #include "molecule/query_molecule.h"
 
 #include <vector>
+#include <memory>
 #include <set>
 
 using namespace indigo;
@@ -643,7 +644,7 @@ void MoleculeJsonSaver::saveRGroup( PtrPool<BaseMolecule>& fragments, int rgnum,
 void MoleculeJsonSaver::saveMolecule( BaseMolecule& bmol )
 {
     // bool have_z = BaseMolecule::hasZCoord(*_mol);
-	std::shared_ptr<BaseMolecule> mol;
+	std::unique_ptr<BaseMolecule> mol;
 	_pmol = nullptr;
 	_pqmol = nullptr;
 	if (bmol.isQueryMolecule())
