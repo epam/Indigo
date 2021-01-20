@@ -206,8 +206,8 @@ int improvement(int ind, int molSize, int* rotateAngle, int* edgeLenght, int* ve
 
     // printf("%5.5f %5.5f %5.5f %5.5f\n", len1, len2, len3, r3);
     Vec2f newPoint;
-    float eps = 1e-4f;
-    float eps2 = eps * eps;
+    const float eps = 1e-4f;
+    const float eps2 = eps * eps;
     if (len1 < eps || len2 < eps || len3 < eps)
     {
         p[worstVertex] = (p1 + p2) / 2.0;
@@ -557,7 +557,7 @@ void MoleculeLayoutMacrocycles::smoothing2(int vertex_count, int cycle_size, int
 
 float MoleculeLayoutMacrocycles::badness(int ind, int molSize, int* rotateAngle, int* edgeLenght, int* vertexNumber, Vec2f* p, int diff)
 {
-    float eps = 1e-9f;
+    const float eps = 1e-9f;
     float result = 0;
     int add = 0;
     // distances
@@ -1056,7 +1056,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                 vec += Vec2f(_2FLOAT(x_result[k] - init_x), 0.f);
                 float x = vec.length();
 
-                float eps = 1e-3f;
+                const float eps = 1e-3f;
 
                 float alpha = 0;
                 if (x > eps)
