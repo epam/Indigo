@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +22,11 @@ public class BatchTest {
 
     @BeforeAll
     public static void setUpDataStore() {
-        elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.2");
+        elasticsearchContainer = new ElasticsearchContainer(
+                DockerImageName
+                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
+                        .withTag(ElasticsearchVersion.VERSION)
+        );
         elasticsearchContainer.start();
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder

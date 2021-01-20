@@ -2,6 +2,7 @@ package com.epam.indigo.model;
 
 import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.Indigo;
+import com.epam.indigo.IndigoException;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.fields.Field;
 import com.epam.indigo.model.fields.FieldNotFoundException;
@@ -11,6 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
+class SkipErrorsHandler implements ErrorHandler {
+    @Override
+    public void handle(IndigoException error) {
+
+    }
+}
 
 public class IndigoRecord {
 
@@ -26,6 +34,11 @@ public class IndigoRecord {
     //    TODO add tau fingerprint, add support for other fingerprints
     protected byte[] cmf;
     protected String name;
+    // Skip errors when IndigoRecord cannot be created
+    protected Boolean skipErrors = false;
+
+    // Error handler called when IndigoRecord cannot be created
+    protected ErrorHandler errorHandler;
 
     public IndigoRecord() {
 
@@ -64,7 +77,7 @@ public class IndigoRecord {
     }
 
     public IndigoObject getIndigoObject(Indigo session) {
-        return session.unserialize(getCmf());
+        return session.deserialize(getCmf());
     }
 
     public Field getField(String field) throws FieldNotFoundException {
@@ -82,90 +95,80 @@ public class IndigoRecord {
             this.operations = new ArrayList<>();
         }
 
-        public IndigoRecordBuilder withIndigoObject(IndigoObject indigoObject) {
+        public IndigoRecordBuilder<T> withIndigoObject(IndigoObject indigoObject) {
             withCmf(indigoObject.serialize());
             withName(indigoObject.name());
             operations.add(record -> {
-                List<Integer> fin = new ArrayList<>();
-                String simBitList = indigoObject.fingerprint("sim").oneBitsList();
-                String subBitList = indigoObject.fingerprint("sub").oneBitsList();
-                String[] oneBits = simBitList.split(" ");
-
-                if (simBitList.length() == 0 || subBitList.length() == 0) {
-                    throw new BingoElasticException("Building IndigoRecords from empty IndigoObject is not supported");
-                }
-
-                for (String oneBit : oneBits) {
-                    fin.add(Integer.parseInt(oneBit));
-                }
-                record.simFingerprint = new ArrayList<>();
-                record.simFingerprint.addAll(fin);
-                fin.clear();
-                oneBits = subBitList.split(" ");
-                for (String oneBit : oneBits) {
-                    fin.add(Integer.parseInt(oneBit));
-                }
-                record.subFingerprint = new ArrayList<>();
-                record.subFingerprint.addAll(fin);
+                record.subFingerprint = addFingerprint(indigoObject, "sub");
+                record.simFingerprint = addFingerprint(indigoObject, "sim");
             });
 
             return this;
         }
 
-        public IndigoRecordBuilder withCustomObject(String key, Object object) {
+        private List<Integer> addFingerprint(IndigoObject indigoObject, String fingerprintType) {
+            List<Integer> result = new ArrayList<>();
+            String bitList = indigoObject.fingerprint(fingerprintType).oneBitsList();
+            if (bitList.isEmpty()) {
+                return result;
+            }
+            String[] oneBits = bitList.split(" ");
+            for (String oneBit : oneBits) {
+                result.add(Integer.parseInt(oneBit));
+            }
+            return result;
+        }
+
+        public IndigoRecordBuilder<T> withCustomObject(String key, Object object) {
             operations.add(record -> record.objects.put(key, object));
             return this;
         }
 
-        public IndigoRecordBuilder withSimFingerprint(List<Integer> simFingerprint) {
+        public IndigoRecordBuilder<T> withSimFingerprint(List<Integer> simFingerprint) {
             operations.add(record -> record.simFingerprint = simFingerprint);
             return this;
         }
 
-        public IndigoRecordBuilder withSubFingerprint(List<Integer> subFingerprint) {
+        public IndigoRecordBuilder<T> withSubFingerprint(List<Integer> subFingerprint) {
             operations.add(record -> record.subFingerprint = subFingerprint);
             return this;
         }
 
-        public IndigoRecordBuilder withCmf(byte[] cmf) {
+        public IndigoRecordBuilder<T> withCmf(byte[] cmf) {
             operations.add(record -> record.cmf = cmf);
             return this;
         }
 
-        public IndigoRecordBuilder withName(String name) {
+        public IndigoRecordBuilder<T> withName(String name) {
             operations.add(record -> record.name = name);
             return this;
         }
 
-        public IndigoRecordBuilder withId(String id) {
+        public IndigoRecordBuilder<T> withId(String id) {
             operations.add(record -> record.internalID = id);
             return this;
         }
 
-        public IndigoRecordBuilder withScore(float score) {
+        public IndigoRecordBuilder<T> withScore(float score) {
             operations.add(record -> record.score = score);
+            return this;
+        }
+
+        public IndigoRecordBuilder<T> withErrorHandler(ErrorHandler errorHandler) {
+            operations.add(record -> record.errorHandler = errorHandler);
+            return this;
+        }
+
+        public IndigoRecordBuilder<T> withSkipErrors(Boolean skipErrors) {
+            operations.add(record -> record.skipErrors = skipErrors);
             return this;
         }
 
         public abstract T build() throws BingoElasticException;
 
-
-//        public IndigoRecord build() throws BingoElasticException {
-//            IndigoRecord record = new IndigoRecord();
-//            operations.forEach(operation -> operation.accept(record));
-//            validate(record);
-//            return record;
-//        }
-
         public void validate(IndigoRecord record) throws BingoElasticException {
-            if (record.internalID == null) {
-                if (null == record.simFingerprint) {
-                    throw new BingoElasticException("Fingerprint is required field");
-                }
-                if (null == record.subFingerprint) {
-                    throw new BingoElasticException("Fingerprint is required field");
-                }
-            }
+            if (record.cmf.length == 0)
+                throw new BingoElasticException("Creation of IndgioRecord from empty IndigoObject isn't supported");
         }
     }
 

@@ -8,9 +8,9 @@ import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.predicate.SimilarityMatch;
-import org.elasticsearch.ElasticsearchStatusException;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,7 +29,11 @@ public class LoadMoleculeFromFileTest {
 
     @BeforeAll
     public static void setUpElastic() {
-        elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.2");
+        elasticsearchContainer = new ElasticsearchContainer(
+                DockerImageName
+                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
+                        .withTag(ElasticsearchVersion.VERSION)
+        );
         elasticsearchContainer.start();
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder
@@ -59,11 +63,7 @@ public class LoadMoleculeFromFileTest {
 
     @AfterEach
     public void deleteIndex() throws IOException {
-        try {
-            repository.deleteAllRecords();
-        } catch (ElasticsearchStatusException ignored) {
-
-        }
+        repository.deleteAllRecords();
     }
 
 
@@ -77,14 +77,14 @@ public class LoadMoleculeFromFileTest {
 
     @Test
     @DisplayName("Testing creation of IndigoRecord from mol file")
-    void testLoadFromMol() throws Exception {
+    void testLoadFromMol() {
         IndigoRecord indigoRecord = Helpers.loadFromFile("src/test/resources/composition1.mol");
         assertNotNull(indigoRecord.getSimFingerprint());
     }
 
     @Test
     @DisplayName("Testing creation of IndigoRecord from cml file")
-    public void testLoadFromCml() throws Exception {
+    public void testLoadFromCml() {
         List<IndigoRecord> indigoRecordList = Helpers.loadFromCmlFile("src/test/resources/tetrahedral-all.cml");
         assertEquals(163, indigoRecordList.size());
     }
@@ -136,7 +136,41 @@ public class LoadMoleculeFromFileTest {
             assertEquals(1, similarRecords.size());
 
         } catch (Exception e) {
-            Assertions.fail();
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    @DisplayName("Testing indexing and retrieving exact match for empty fingerprint molecules")
+    void testExactMatchOnEmptyFingerprint() {
+        try {
+            String smiles1 = "[H][H]";
+            IndigoRecord indigoRecord1 = Helpers.loadFromSmiles(smiles1);
+            String smiles2 = "[H][H][H]";
+            IndigoRecord indigoRecord2 = Helpers.loadFromSmiles(smiles2);
+            repository.indexRecord(indigoRecord1);
+            repository.indexRecord(indigoRecord2);
+            TimeUnit.SECONDS.sleep(5);
+
+        } catch (Exception e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    @DisplayName("Testing indexing and retrieving similar match for empty fingerprint molecules")
+    void testSimMatchOnEmptyFingerprint() {
+        try {
+            String smiles1 = "[H][H]";
+            IndigoRecord indigoRecord1 = Helpers.loadFromSmiles(smiles1);
+            String smiles2 = "[H][H][H]";
+            IndigoRecord indigoRecord2 = Helpers.loadFromSmiles(smiles2);
+            repository.indexRecord(indigoRecord1);
+            repository.indexRecord(indigoRecord2);
+            TimeUnit.SECONDS.sleep(5);
+
+        } catch (Exception e) {
+            Assertions.fail(e);
         }
     }
 

@@ -48,7 +48,7 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     private RestHighLevelClient elasticClient;
     private boolean ignoreSSL;
     private int numShards = 1;
-    private int numReplicas = 1;
+    private int numReplicas = 0;
     private String refreshInterval = "5m";
 
     private ElasticRepository() {

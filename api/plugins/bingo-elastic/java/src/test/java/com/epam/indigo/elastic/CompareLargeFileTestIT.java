@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
+public class CompareLargeFileTestIT extends NoSQLElasticCompareAbstract {
 
     protected static final String test100SmilesFile = "src/test/resources/pubchem_slice_100000.smiles";
 
@@ -67,7 +67,7 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
             String bingoFoundSmiles = indigoObjectResult.canonicalSmiles();
             nosqlListResult.add(new Tuple<>(bingoFoundSmiles, bingoObjectResult.getCurrentSimilarityValue()));
         }
-        Collections.sort(nosqlListResult, (o1, o2) -> -Float.compare(o1.v2(), o2.v2()));
+        nosqlListResult.sort((o1, o2) -> -Float.compare(o1.v2(), o2.v2()));
         return nosqlListResult;
     }
 

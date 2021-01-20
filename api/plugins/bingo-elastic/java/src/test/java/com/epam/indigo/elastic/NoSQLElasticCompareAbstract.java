@@ -5,6 +5,7 @@ import com.epam.indigo.Indigo;
 import com.epam.indigo.elastic.ElasticRepository;
 import com.epam.indigo.model.IndigoRecord;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.utility.DockerImageName;
 
 abstract public class NoSQLElasticCompareAbstract {
 
@@ -14,7 +15,11 @@ abstract public class NoSQLElasticCompareAbstract {
     protected static final Indigo indigo = new Indigo();
 
     public static void setUpDataStore() {
-        elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.2");
+        elasticsearchContainer = new ElasticsearchContainer(
+                DockerImageName
+                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
+                        .withTag(ElasticsearchVersion.VERSION)
+        );
         elasticsearchContainer.start();
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder
