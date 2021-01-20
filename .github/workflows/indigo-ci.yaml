@@ -291,7 +291,7 @@ jobs:
         run: pip install poetry
 
       - name: Install latest indigo version
-        run: poetry run pip install "${GITHUB_WORKSPACE}/dist/epam.indigo-*-py3-none-manylinux1_x86_64.whl"
+        run: poetry run pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*-py3-none-manylinux1_x86_64.whl
         working-directory: api/plugins/bingo-elastic/python
 
       - name: Install dependencies
