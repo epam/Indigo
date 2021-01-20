@@ -281,6 +281,12 @@ jobs:
           name: indigo-test-wrappers-python
           path: dist/
 
+      - name: Show artifacts
+        run: ls -la dist/
+
+      - name: Show cwd
+        run: pwd
+
       - name: Install poetry
         run: pip install poetry
 
