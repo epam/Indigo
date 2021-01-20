@@ -18,8 +18,8 @@ from bingo_elastic.utils import PostprocessType
 
 class IndexName(Enum):
 
-    BINGO_MOLECULE = "bingo-molecule"
-    BINGO_REACTION = "bingo-reaction"
+    BINGO_MOLECULE = "bingo-molecules"
+    BINGO_REACTION = "bingo-reactions"
 
 
 def get_index_name(record: IndigoRecord) -> IndexName:

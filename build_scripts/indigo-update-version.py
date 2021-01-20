@@ -140,13 +140,29 @@ def main():
     sys.path.append(os.path.join(INDIGO_PATH, "api"))
     new_version = __import__("get_indigo_version").get_indigo_version_tuple_from_git()
 
-    # update_pom_version(os.path.join(INDIGO_PATH, 'api', 'java', 'pom.xml'), new_version)
-    # update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'bingo', 'java', 'pom.xml'), new_version)
-    # update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'bingo-elastic', 'java', 'pom.xml'), new_version)
-    # update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'inchi', 'java', 'pom.xml'), new_version)
-    # update_pom_version(os.path.join(INDIGO_PATH, 'api', 'plugins', 'renderer', 'java', 'pom.xml'), new_version)
-    # update_csproj_version(os.path.join(INDIGO_PATH, 'api', 'dotnet', 'Indigo.Net.csproj'), new_version)
-    # update_setup_py_version(os.path.join(INDIGO_PATH, 'api', 'python', 'setup.py'), new_version)
+    update_pom_version(os.path.join(INDIGO_PATH, "api", "java", "pom.xml"), new_version)
+    update_pom_version(
+        os.path.join(INDIGO_PATH, "api", "plugins", "bingo", "java", "pom.xml"),
+        new_version,
+    )
+    update_pom_version(
+        os.path.join(INDIGO_PATH, "api", "plugins", "bingo-elastic", "java", "pom.xml"),
+        new_version,
+    )
+    update_pom_version(
+        os.path.join(INDIGO_PATH, "api", "plugins", "inchi", "java", "pom.xml"),
+        new_version,
+    )
+    update_pom_version(
+        os.path.join(INDIGO_PATH, "api", "plugins", "renderer", "java", "pom.xml"),
+        new_version,
+    )
+    update_csproj_version(
+        os.path.join(INDIGO_PATH, "api", "dotnet", "Indigo.Net.csproj"), new_version
+    )
+    update_setup_py_version(
+        os.path.join(INDIGO_PATH, "api", "python", "setup.py"), new_version
+    )
     update_bingo_elastic_py_version(
         os.path.join(INDIGO_PATH, "api", "plugins", "bingo-elastic", "python"),
         new_version,
