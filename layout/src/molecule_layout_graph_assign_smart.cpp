@@ -1685,7 +1685,7 @@ void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& touching_s
     for (int i = 0; i < cycle_length; i++)
         change[i] = Vec2f(0, 0);
 
-    float eps = 0.01f;
+    const float eps = 0.01f;
     for (int i = 0; i < cycle_length; i++)
     {
         int i_1 = (i - 1 + cycle_length) % cycle_length; // i - 1

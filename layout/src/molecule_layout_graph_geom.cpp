@@ -286,8 +286,8 @@ bool MoleculeLayoutGraph::_drawRegularCurveEx(const Array<int>& chain, int v1, i
 // Check vertex is inside the edge
 bool MoleculeLayoutGraph::_isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const
 {
-    float a1, a0, b1, b0;
-    float t, eps = 0.05f;
+    float a1, a0, b1, b0, t;
+    const float eps = 0.05f;
     const Vec2f& pos = getPos(vert_idx);
     const Vec2f& pos1 = getPos(edge_beg);
     const Vec2f& pos2 = getPos(edge_end);
@@ -539,12 +539,12 @@ int MoleculeLayoutGraph::_calcIntersection(int edge1_idx, int edge2_idx) const
 {
     float a11, a12, a21, a22, b1, b2;
     float delta, delta1, delta2, t, s;
-    float a, b, pr, eps;
+    float a, b, pr;
 
     const Edge& edge1 = getEdge(edge1_idx);
     const Edge& edge2 = getEdge(edge2_idx);
 
-    eps = 0.01f;
+    const float eps = 0.01f;
 
     if (getVertexType(edge1.beg) == ELEMENT_NOT_DRAWN || getVertexType(edge1.end) == ELEMENT_NOT_DRAWN || getVertexType(edge2.beg) == ELEMENT_NOT_DRAWN ||
         getVertexType(edge2.end) == ELEMENT_NOT_DRAWN)
@@ -740,7 +740,7 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
             comp_angle = _2FLOAT(2. * M_PI - (angles[ii] - angles[i]));
             if (ii == 0)
                 comp_angle -= _2FLOAT(2 * M_PI);
-            float eps = 0.1f;
+            const float eps = 0.1f;
             if (i == 0 || comp_angle < best_angle - eps)
             {
                 best_angle = comp_angle;
@@ -806,7 +806,7 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
         comp_angle = _2FLOAT(2. * M_PI - (angles[ii] - angles[i]));
         if (ii == 0)
             comp_angle -= _2FLOAT(2 * M_PI);
-        float eps = 0.1f;
+        const float eps = 0.1f;
         //      printf("%d: %5.5f %5.5f %d\n", i, energy, comp_angle, on_left[i]);
         if (i == 0 || energy + eps < cur_energy || (fabs(energy - cur_energy) < eps && comp_angle < best_angle - eps) ||
             (fabs(energy - cur_energy) < eps && fabs(comp_angle - best_angle) < eps && on_left[i]))

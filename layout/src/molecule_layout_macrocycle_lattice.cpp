@@ -340,7 +340,7 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish)
                 vec += Vec2f(_2FLOAT(path[len].x), 0.f);
                 float x = vec.length();
 
-                float eps = 1e-3f;
+                const float eps = 1e-3f;
 
                 float alpha = _2FLOAT(2. * M_PI);
                 if (x > eps)
@@ -1000,7 +1000,7 @@ int MoleculeLayoutMacrocyclesLattice::period(CycleLayout& cl)
 
 float MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl)
 {
-    float eps = 1e-9f;
+    const float eps = 1e-9f;
     float result = 0;
     int add = 0;
     // distances
@@ -1317,8 +1317,8 @@ void MoleculeLayoutMacrocyclesLattice::closing(CycleLayout& cl)
 void MoleculeLayoutMacrocyclesLattice::updateTouchingPoints(Array<local_pair_id>& pairs, CycleLayout& cl)
 {
     int len = cl.vertex_count;
-    float eps = 1e-4f;
-    float eps2 = eps * eps;
+    const float eps = 1e-4f;
+    const float eps2 = eps * eps;
     float good_distance = 1.f;
     pairs.clear();
 
@@ -1405,8 +1405,8 @@ void MoleculeLayoutMacrocyclesLattice::smoothingStep(CycleLayout& cl, int vertex
 
     // printf("%5.5f %5.5f %5.5f %5.5f\n", len1, len2, len3, r3);
     Vec2f newPoint;
-    float eps = 1e-4f;
-    float eps2 = eps * eps;
+    const float eps = 1e-4f;
+    const float eps2 = eps * eps;
     if (len1 < eps || len2 < eps || len3 < eps)
     {
         cl.point[vertex_number] = (p1 + p2) / 2.0;
@@ -1477,8 +1477,8 @@ Vec2f MoleculeLayoutMacrocyclesLattice::CycleLayout::getWantedVector(int vertex_
 
     // printf("%5.5f %5.5f %5.5f %5.5f\n", len1, len2, len3, r3);
     Vec2f newPoint;
-    float eps = 1e-4f;
-    float eps2 = eps * eps;
+    const float eps = 1e-4f;
+    const float eps2 = eps * eps;
     // if (len1 < eps || len2 < eps || len3 < eps) return ;
 
     float coef1 = (r1 / len1 - 1);

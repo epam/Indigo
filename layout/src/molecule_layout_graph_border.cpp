@@ -538,7 +538,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
     QS_DEF(Array<int>, edges);
     QS_DEF(Array<Vec2f>, pos);
     int i, n = 0;
-    float eps = 1e-5f;
+    const float eps = 1e-5f;
 
     Random rand(SOME_MAGIC_INT_FOR_RANDOM_3);
     /*   for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
