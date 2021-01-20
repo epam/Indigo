@@ -219,13 +219,8 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             this.operations = new ArrayList<>();
         }
 
-        public ElasticRepositoryBuilder<T> withIndexName(IndexName indexName) {
-            operations.add(repo -> repo.indexName = indexName.toString());
-            return this;
-        }
-
-        public ElasticRepositoryBuilder<T> withIndexName(IndexName.Index indexName) {
-            operations.add(repo -> repo.indexName = (new IndexName(indexName)).toString());
+        public ElasticRepositoryBuilder<T> withIndexName(String indexName) {
+            operations.add(repo -> repo.indexName = indexName);
             return this;
         }
 

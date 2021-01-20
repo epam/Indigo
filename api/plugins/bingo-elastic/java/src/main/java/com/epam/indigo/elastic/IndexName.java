@@ -7,30 +7,28 @@ import com.epam.indigo.model.IndigoRecordReaction;
 
 public class IndexName {
 
-    public enum Index {
-        BINGO_MOLECULE,
-        BINGO_REACTION;
-    }
+    public static final String BINGO_MOLECULE = "bingo_molecules";
+    public static final String BINGO_REACTION = "bingo_reactions";
 
-    public Index index;
+    private final String index;
 
-    public IndexName(Index index) {
+    public IndexName(String index) {
         this.index = index;
     }
 
     public static IndexName getIndexName(IndigoRecord indigoRecord) {
         if (indigoRecord instanceof IndigoRecordMolecule) {
-            return new IndexName(Index.BINGO_MOLECULE);
+            return new IndexName(BINGO_MOLECULE);
         }
         if (indigoRecord instanceof IndigoRecordReaction) {
-            return new IndexName(Index.BINGO_REACTION);
+            return new IndexName(BINGO_REACTION);
         }
         throw new BingoElasticException("Unknown IndigoRecord type " + indigoRecord.getClass());
     }
 
     @Override
     public String toString() {
-        return this.index.toString().toLowerCase();
+        return this.index;
     }
 
 }

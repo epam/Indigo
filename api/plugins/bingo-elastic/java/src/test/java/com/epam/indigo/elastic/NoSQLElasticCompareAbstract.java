@@ -18,7 +18,7 @@ abstract public class NoSQLElasticCompareAbstract {
         elasticsearchContainer.start();
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder
-                .withIndexName(IndexName.Index.BINGO_MOLECULE)
+                .withIndexName(IndexName.BINGO_MOLECULE)
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")

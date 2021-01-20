@@ -13,7 +13,7 @@ public class RepositoryValidationTest {
     void testFailedRepo() {
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         builder
-                .withIndexName(IndexName.Index.BINGO_MOLECULE)
+                .withIndexName(IndexName.BINGO_MOLECULE)
                 .withHostName("localost")
                 .withPort(9999)
                 .withScheme("http");

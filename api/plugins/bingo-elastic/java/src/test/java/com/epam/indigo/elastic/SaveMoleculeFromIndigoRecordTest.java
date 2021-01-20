@@ -6,9 +6,7 @@ import com.epam.indigo.IndigoObject;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
-import com.epam.indigo.model.IndigoRecord.IndigoRecordBuilder;
 import com.epam.indigo.model.IndigoRecordMolecule;
-import com.epam.indigo.model.IndigoRecordMoleculeTest;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
@@ -31,7 +29,7 @@ public class SaveMoleculeFromIndigoRecordTest {
         elasticsearchContainer.start();
         ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepositoryBuilder<>();
         repository = builder
-                .withIndexName(IndexName.Index.BINGO_MOLECULE)
+                .withIndexName(IndexName.BINGO_MOLECULE)
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")

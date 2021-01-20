@@ -30,7 +30,7 @@ public class FullUsageTest {
         elasticsearchContainer.start();
         ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepositoryBuilder<>();
         repository = builder
-                .withIndexName(IndexName.Index.BINGO_MOLECULE)
+                .withIndexName(IndexName.BINGO_MOLECULE)
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")

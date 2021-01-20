@@ -15,10 +15,10 @@ public class IndexNameTest {
 
     @Test
     public void indexName() {
-        Map<String, IndexName.Index> testPairs = new HashMap<>();
-        testPairs.put("bingo_molecule", IndexName.Index.BINGO_MOLECULE);
-        testPairs.put("bingo_reaction", IndexName.Index.BINGO_REACTION);
-        for (Map.Entry<String, IndexName.Index> testPair : testPairs.entrySet()) {
+        Map<String, String> testPairs = new HashMap<>();
+        testPairs.put("bingo_molecules", IndexName.BINGO_MOLECULE);
+        testPairs.put("bingo_reactions", IndexName.BINGO_REACTION);
+        for (Map.Entry<String, String> testPair : testPairs.entrySet()) {
             IndexName indexName = new IndexName(
                     testPair.getValue()
             );
@@ -36,7 +36,7 @@ public class IndexNameTest {
         IndigoRecordMolecule recordMolecule = builder.build();
 
         IndexName indexName = IndexName.getIndexName(recordMolecule);
-        assertEquals(indexName.index, IndexName.Index.BINGO_MOLECULE);
+        assertEquals(indexName.toString(), IndexName.BINGO_MOLECULE);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class IndexNameTest {
         IndigoRecordReaction recordReaction = builder.build();
 
         IndexName indexName = IndexName.getIndexName(recordReaction);
-        assertEquals(indexName.index, IndexName.Index.BINGO_REACTION);
+        assertEquals(indexName.toString(), IndexName.BINGO_REACTION);
     }
 
 
