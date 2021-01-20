@@ -7,7 +7,6 @@ import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.model.IndigoRecordMolecule;
-import org.junit.Ignore;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -109,7 +108,7 @@ public class SaveMoleculeFromIndigoRecordTest {
         }
     }
 
-    @Ignore
+    @Disabled
     @Test
     @DisplayName("Test empty molecule save")
     public void saveEmptyMolecule() {
