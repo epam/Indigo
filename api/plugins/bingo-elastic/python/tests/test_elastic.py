@@ -233,10 +233,10 @@ def test_similaririty_matches_reactions(
             == reaction.countReactants()
         )
 
-    # for found_reaction in elastic_repository_reaction.filter(
-    #     exact=reaction_rec
-    # ):
-    #     assert (
-    #         as_iob(found_reaction, indigo_fixture).countReactants()
-    #         == reaction.countReactants()
-    #     )
+    for found_reaction in elastic_repository_reaction.filter(
+        exact=reaction_rec
+    ):
+        assert (
+            as_iob(found_reaction, indigo_fixture).countReactants()
+            == reaction.countReactants()
+        )

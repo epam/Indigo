@@ -30,6 +30,17 @@ def get_index_name(record: IndigoRecord) -> IndexName:
     raise AttributeError(f"Unknown IndigoRecord type {record}")
 
 
+def get_record_by_index(
+    response: Dict, index: str
+) -> Union[IndigoRecordMolecule, IndigoRecordReaction]:
+    if index == IndexName.BINGO_MOLECULE.value:
+        return IndigoRecordMolecule(elastic_response=response)
+    if index == IndexName.BINGO_REACTION.value:
+        return IndigoRecordReaction(elastic_response=response)
+    breakpoint()
+    raise AttributeError("Unknown index %s", index)
+
+
 def elastic_repository_molecule(*args, **kwargs):
     return ElasticRepository(IndexName.BINGO_MOLECULE, *args, **kwargs)
 
@@ -168,7 +179,7 @@ class ElasticRepository:
         res = self.el_client.search(index=self.index_name, body=query)
         indigo_session = Indigo()
         for el_response in res.get("hits", {}).get("hits", []):
-            record = IndigoRecord(elastic_response=el_response)
+            record = get_record_by_index(el_response, self.index_name)
             for action_fn in postprocess_actions:
                 record = action_fn(record, indigo_session)
                 if not record:
