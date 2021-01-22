@@ -32,7 +32,7 @@ namespace indigo
     class BaseReaction;
     class Reaction;
     class QueryReaction;
-	class QueryMolecule;
+    class QueryMolecule;
     class ReactionJsonLoader
     {
     public:
@@ -56,13 +56,13 @@ namespace indigo
         ReactionJsonLoader(const ReactionJsonLoader&); // no implicit copy
         Reaction* _prxn;
         QueryReaction* _pqrxn;
-		Molecule _mol;
-		QueryMolecule _qmol;
-		BaseMolecule* _pmol;
+        Molecule _mol;
+        QueryMolecule _qmol;
+        BaseMolecule* _pmol;
 
     };
     
-}; // namespace indigo
+}  // namespace indigo
 
 
 #endif /* reaction_json_loader_h */

@@ -13,7 +13,7 @@ def exact_check(indigo, m1, m2):
         assert m1.getBond(i).bondOrder() == m2.getBond(i).bondOrder()
         assert m1.getBond(i).bondStereo() == m2.getBond(i).bondStereo()
     assert m1.isChiral() == m2.isChiral()
-    indigo.dbgBreakpoint()
+    # indigo.dbgBreakpoint()
     assert indigo.exactMatch(m1, m2)
     return True
 
@@ -33,13 +33,14 @@ def test_simple_cis_trans_load(indigo):
     m1 = indigo.loadMoleculeFromFile(joinPath("molecules/cis_trans.mol"))
     js = m1.json()
     m2 = indigo.loadMolecule(js)
-    exact_check(indigo, m1, m2)
+    exact_check(indigo, m2, m2)
 
 
 def test_complex_load_save_load(indigo):
     """Check load-save-load for some files"""
-    paths = ("molecules/1.ket.json", "molecules/sgroups.mol", "molecules/all_features_mol.mol")
+    paths = ("molecules/1.ket.json", "molecules/snomul.mol", "molecules/smul.mol", "molecules/sgroups.mol", "molecules/all_features_mol.mol")
     for path in paths:
+        print(path)
         m1 = indigo.loadMoleculeFromFile(joinPath(path))
         js = m1.json()
         m2 = indigo.loadMolecule(js)

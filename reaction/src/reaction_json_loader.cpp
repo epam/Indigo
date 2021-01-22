@@ -37,19 +37,19 @@ ReactionJsonLoader::~ReactionJsonLoader()
 
 void ReactionJsonLoader::loadReaction( BaseReaction& rxn )
 {
-	MoleculeJsonLoader loader( _molecule, _rgroups );
+    MoleculeJsonLoader loader( _molecule, _rgroups );
     _prxn = dynamic_cast<Reaction*>(&rxn);
     _pqrxn = dynamic_cast<QueryReaction*>(&rxn);
-	if (_prxn)
-	{
-		_pmol = &_mol;
-		loader.loadMolecule(_mol);
-	}
-	else if (_pqrxn)
-	{
-		loader.loadMolecule(_qmol);
-		_pmol = &_qmol;
-	} else
-		throw Error("unknown reaction type: %s", typeid(rxn).name());
-       
+    if (_prxn)
+    {
+        _pmol = &_mol;
+        loader.loadMolecule(_mol);
+    }
+    else if (_pqrxn)
+    {
+        loader.loadMolecule(_qmol);
+        _pmol = &_qmol;
+    } else
+        throw Error("unknown reaction type: %s", typeid(rxn).name());
+      
 }

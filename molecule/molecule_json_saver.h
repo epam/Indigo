@@ -44,17 +44,17 @@ namespace indigo
         void saveAtoms( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
         void saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
         void saveRGroup( PtrPool<BaseMolecule>& fragments, int rgnum, rapidjson::Writer<rapidjson::StringBuffer>& writer );
-		void saveSGroups( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
-		void saveSGroup(SGroup& sgroup, rapidjson::Writer<rapidjson::StringBuffer>& writer);
-		void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer);
-		void saveStereoCenter(BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer);
-		void saveHighlights(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
-		void saveSelection(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
+        void saveSGroups( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
+        void saveSGroup(SGroup& sgroup, rapidjson::Writer<rapidjson::StringBuffer>& writer);
+        void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer);
+        void saveStereoCenter(BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer);
+        void saveHighlights(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
+        void saveSelection(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
 
         DECL_ERROR;
 
     protected:
-		void _checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list);
+        void _checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list);
 
         Molecule* _pmol;
         QueryMolecule* _pqmol;
