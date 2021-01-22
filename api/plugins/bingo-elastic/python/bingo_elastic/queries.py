@@ -7,7 +7,6 @@ from indigo import Indigo
 
 from bingo_elastic.model.record import (
     IndigoRecord,
-    IndigoRecordReaction,
     IndigoRecordMolecule,
 )
 from bingo_elastic.utils import PostprocessType, head_by_path
