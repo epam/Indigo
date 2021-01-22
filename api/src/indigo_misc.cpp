@@ -38,7 +38,7 @@
 #include "molecule/rdf_loader.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/structure_checker.h"
-#include "molecule/structure_checker2.h"
+#include "indigo_structure_checker.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
 #include "reaction/reaction_checker.h"
@@ -1230,7 +1230,8 @@ CEXPORT const char* indigoCheck2(const char* item, const char* check_flags, cons
     {
         self.stereochemistry_options.ignore_errors = true;
         auto& tmp = self.getThreadTmpData();
-        std::string r = StructureChecker2().check(item, check_flags, load_params).toJson();
+        IndigoStructureChecker checker;
+        std::string r = checker.toJson(checker.check(item, check_flags, load_params));
         tmp.string.clear();
         tmp.string.appendString(r.c_str(), true);
         return tmp.string.ptr();
@@ -1242,7 +1243,10 @@ CEXPORT const char* indigoCheckObj2(int item, const char* check_flags)
     INDIGO_BEGIN
     {
         auto& tmp = self.getThreadTmpData();
-        tmp.string.appendString(StructureChecker2().check(item, check_flags).toJson().c_str(), true);
+        IndigoStructureChecker checker;
+        std::string r = checker.toJson(checker.check(item, check_flags));
+        tmp.string.clear();
+        tmp.string.appendString(r.c_str(), true);
         return tmp.string.ptr();
     }
     INDIGO_END(0);

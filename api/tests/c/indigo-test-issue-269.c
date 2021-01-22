@@ -12,7 +12,7 @@
         int r = 0;                                                                                                                                             \
         const char* resp = indigoCheck2(issue269test_##NAME, param, "");                                                                                       \
         printf("Test " #NAME "\n\tResponse: %s\n", resp);                                                                                                      \
-/*        if (strcmp(resp, issue269test_##NAME##_response))                                                                                                      \
+        if (strcmp(resp, issue269test_##NAME##_response))                                                                                                      \
         {                                                                                                                                                      \
             printf("\nERROR: \n\tExpected:%s\n\tActual:%s\n\n", issue269test_##NAME##_response, resp);                                                         \
             r = 1;                                                                                                                                             \
@@ -20,7 +20,7 @@
         else                                                                                                                                                   \
         {                                                                                                                                                      \
             printf("OK\n\n");                                                                                                                                  \
-        }     */                                                                                                                                                 \
+        }                                                                                                                                                      \
         return r;                                                                                                                                              \
     }
 
@@ -35,12 +35,14 @@ TEST(All, "all");
 int main(void)
 {
     int r = 0;
-//!    r += test_RGroupsWarning();
+    r += test_RGroupsWarning();
     r += test_ChiralityWarning();
-//!    r += test_StereochemistryWarning();
-//!   r += test_PseudoatomWarning();
-//!    r += test_RadicalWarning();
-//!    r += test_QueryWarning();
-//!    r += test_All();
+    r += test_StereochemistryWarning();
+    r += test_PseudoatomWarning();
+    r += test_RadicalWarning();
+    r += test_QueryWarning();
+    r += test_All();
+    if (r == 0)
+        printf("\n\nAll tests PASSED\n\n");                                                                                                                                  \
     return r;
 }

@@ -48,6 +48,9 @@ extern "C" const char* issue269test_ChiralityWarning = R"(
 M  END
 )";
 
+//extern "C" const char* issue269test_ChiralityWarning_response = R"(TODO -- not impl)";
+extern "C" const char* issue269test_ChiralityWarning_response = R"([{"code":31,"message":"Not implemented yet: check chirality"}])";
+
 extern "C" const char* issue269test_StereochemistryWarning = R"(
   Ketcher  1142115472D 1   1.00000     0.00000     0
 
