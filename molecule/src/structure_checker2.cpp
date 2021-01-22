@@ -112,7 +112,7 @@ static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& sele
     }
     else if (!mol.isQueryMolecule() && mol.asMolecule().getIgnoreBadValenceFlag())
     {
-        message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_IGNORE_VALENCE_ERROR); 
+        message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_IGNORE_VALENCE_ERROR);
     }
     else
     {
@@ -256,7 +256,10 @@ static void check_overlap_atom(BaseMolecule& mol, const std::unordered_set<int>&
             }
         }
     });
-    message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_OVERLAP_ATOM, ids);
+    if (ids.size())
+    {
+        message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_OVERLAP_ATOM, ids);
+    }
 }
 static void check_overlap_bond(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                                StructureChecker2::CheckResult& result)
@@ -290,13 +293,17 @@ static void check_overlap_bond(BaseMolecule& mol, const std::unordered_set<int>&
                 }
             }
         });
+        if (ids.size())
+        {
+            message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_OVERLAP_BOND, ids);
+        }
     }
 }
 
 static void check_rgroup(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                          StructureChecker2::CheckResult& result)
 {
-    if (mol.hasRGroups())
+    if (!mol.isQueryMolecule() && mol.hasRGroups())
     {
         message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_RGROUP);
     }
@@ -305,6 +312,10 @@ static void check_rgroup(BaseMolecule& mol, const std::unordered_set<int>& selec
 static void check_sgroup(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                          StructureChecker2::CheckResult& result)
 {
+    if (mol.sgroups.getSGroupCount() > 0)
+    {
+        message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_SGROUP);
+    }
 }
 
 static void check_tgroup(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
