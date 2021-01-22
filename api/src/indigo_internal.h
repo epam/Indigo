@@ -27,7 +27,7 @@
 #include <memory>
 #include <utility>
 
-#include "api/indigo.h"
+#include "indigo.h"
 
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/exception.h"
@@ -162,7 +162,6 @@ public:
         INDIGO_OBJECT_LAST_TYPE // must be the last element in the enum
     };
 
-    int id;
     int type;
     virtual const char* getTypeName() const;
 
