@@ -35,14 +35,14 @@ TEST(Issue_293_All, "radical;pseudoatom;stereo;query;overlap_atom;overlap_bond;r
 
 int main(void)
 {
-    int r = 0; /*
+    int r = 0; 
     r += test_RGroupsWarning();
     r += test_ChiralityWarning();
     r += test_StereochemistryWarning();
     r += test_PseudoatomWarning();
     r += test_RadicalWarning();
     r += test_QueryWarning();
-    r += test_All();*/
+    r += test_All();
     r += test_Issue_293_All();
     if (r == 0)
         printf("\n\nAll tests PASSED\n\n");                                                                                                                                  \
