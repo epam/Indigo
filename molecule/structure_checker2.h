@@ -93,7 +93,6 @@ namespace indigo
             CHECK_MSG_ZERO_COORD,
             CHECK_MSG_REACTION,
             CHECK_MSG_CHIRALITY,
-            CHECK_MSG_CHARGE_NOT_IMPL,
             CHECK_MSG_SALT_NOT_IMPL,
             CHECK_MSG_V3000
         };

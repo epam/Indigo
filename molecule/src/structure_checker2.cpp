@@ -19,10 +19,13 @@
 #include "molecule/structure_checker2.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_automorphism_search.h"
+#include "molecule/molecule_exact_matcher.h"
 #include "reaction/base_reaction.h"
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <memory>
+#include <numeric>
 #include <string>
 
 using namespace indigo;
@@ -106,6 +109,10 @@ static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& sele
     else if (mol.hasRGroups())
     {
         message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_RGROUP); // 'Structure contains RGroup components, so valency could
+    }
+    else if (!mol.isQueryMolecule() && mol.asMolecule().getIgnoreBadValenceFlag())
+    {
+        message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_IGNORE_VALENCE_ERROR); 
     }
     else
     {
@@ -312,8 +319,10 @@ static void check_tgroup(BaseMolecule& mol, const std::unordered_set<int>& selec
 static void check_chirality(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                             StructureChecker2::CheckResult& result)
 {
-    // not impl
-    message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_CHIRALITY);
+    if (mol.isChiral())
+    {
+        message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_CHIRALITY);
+    }
 }
 
 static void check_chiral_flag(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
@@ -334,8 +343,10 @@ static void check_3d_coord(BaseMolecule& mol, const std::unordered_set<int>& sel
 static void check_charge(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                          StructureChecker2::CheckResult& result)
 {
-    // not impl
-    message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_CHARGE_NOT_IMPL);
+    if (std::accumulate(selected_atoms.begin(), selected_atoms.end(), 0, [&mol](int sum, int idx) { return sum + mol.getAtomCharge(idx); }))
+    {
+        message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_CHARGE);
+    }
 }
 
 static void check_salt(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
@@ -482,8 +493,7 @@ static const std::string message_list[] = {"",
                                            "Structure contains 3D coordinates",
                                            "Structure has no atoms coordinates",
                                            "Reaction component check result",
-                                           "Not implemented yet: check chirality",
-                                           "Not implemented yet: check charge",
+                                           "Structure contains chirality",
                                            "Not implemented yet: check salt",
                                            "Structure supports only Molfile V3000"
 
