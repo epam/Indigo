@@ -144,18 +144,18 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
 {
     if (!mol.isQueryMolecule())
     {
-        Molecule target;
+        std::unique_ptr<Molecule> target(new Molecule);
         auto saved_valence_flag = mol.asMolecule().getIgnoreBadValenceFlag();
         mol.asMolecule().setIgnoreBadValenceFlag(true);
-        target.clone_KeepIndices(mol);
+        target->clone_KeepIndices(mol);
 
-        for (auto i : target.vertices())
+        for (auto i : target->vertices())
         {
-            if (!target.stereocenters.exists(i) && target.stereocenters.isPossibleStereocenter(i))
+            if (!target->stereocenters.exists(i) && target->stereocenters.isPossibleStereocenter(i))
             {
                 try
                 {
-                    target.stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+                    target->stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
                 }
                 catch (Exception& e)
                 {
@@ -170,13 +170,13 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
         as.detect_invalid_cistrans_bonds = true;
         as.detect_invalid_stereocenters = true;
         as.find_canonical_ordering = false;
-        as.process(target);
+        as.process(*target);
 
-        for (auto i : target.vertices())
+        for (auto i : target->vertices())
         {
-            if (target.stereocenters.exists(i) && as.invalidStereocenter(i))
+            if (target->stereocenters.exists(i) && as.invalidStereocenter(i))
             {
-                target.stereocenters.remove(i);
+                target->stereocenters.remove(i);
             }
         }
 
@@ -193,11 +193,11 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
         });
 
         FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_WRONG_STEREO, [&target](BaseMolecule& mol, int idx) {
-            return mol.stereocenters.exists(idx) && target.stereocenters.exists(idx) && mol.stereocenters.getType(idx) != target.stereocenters.getType(idx) ||
-                   mol.stereocenters.exists(idx) && !target.stereocenters.exists(idx);
+            return mol.stereocenters.exists(idx) && target->stereocenters.exists(idx) && mol.stereocenters.getType(idx) != target->stereocenters.getType(idx) ||
+                   mol.stereocenters.exists(idx) && !target->stereocenters.exists(idx);
         });
         FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO,
-                             [&target](BaseMolecule& mol, int idx) { return !mol.stereocenters.exists(idx) && target.stereocenters.exists(idx); });
+                             [&target](BaseMolecule& mol, int idx) { return !mol.stereocenters.exists(idx) && target->stereocenters.exists(idx); });
 
         mol.asMolecule().setIgnoreBadValenceFlag(saved_valence_flag);
     }
