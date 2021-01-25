@@ -149,7 +149,7 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
         mol.asMolecule().setIgnoreBadValenceFlag(true);
         target->clone_KeepIndices(mol);
 
-        for (auto i : target->vertices())
+        for (const auto i : target->vertices())
         {
             if (!target->stereocenters.exists(i) && target->stereocenters.isPossibleStereocenter(i))
             {
@@ -172,7 +172,7 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
         as.find_canonical_ordering = false;
         as.process(*target);
 
-        for (auto i : target->vertices())
+        for (const auto i : target->vertices())
         {
             if (target->stereocenters.exists(i) && as.invalidStereocenter(i))
             {
@@ -224,7 +224,7 @@ static void check_query(BaseMolecule& mol, const std::unordered_set<int>& select
 static float calc_mean_dist(BaseMolecule& mol)
 {
     float mean_dist = 0.0;
-    for (auto i : mol.edges())
+    for (const auto i : mol.edges())
     {
         const Edge& edge = mol.getEdge(i);
         Vec3f& a = mol.getAtomXyz(edge.beg);
@@ -243,7 +243,7 @@ static void check_overlap_atom(BaseMolecule& mol, const std::unordered_set<int>&
     std::unordered_set<int> ids;
     std::for_each(selected_atoms.begin(), selected_atoms.end(), [&mol, &ids, mean_dist](int idx) {
         Vec3f& a = mol.getAtomXyz(idx);
-        for (auto i : mol.vertices())
+        for (const auto i : mol.vertices())
         {
             if (i != idx)
             {
@@ -274,7 +274,7 @@ static void check_overlap_bond(BaseMolecule& mol, const std::unordered_set<int>&
             Vec2f::projectZ(a1, mol.getAtomXyz(e1.beg));
             Vec2f::projectZ(b1, mol.getAtomXyz(e1.end));
 
-            for (auto i : mol.edges())
+            for (const auto i : mol.edges())
             {
                 if ((i != idx))
                 {
