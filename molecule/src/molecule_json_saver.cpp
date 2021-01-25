@@ -19,6 +19,7 @@
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
+#include "layout/molecule_layout.h"
 
 #include <vector>
 #include <memory>
@@ -394,6 +395,22 @@ void MoleculeJsonSaver::saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjso
                     break;
                     default:
                     {
+					/*	int parity = mol.cis_trans.getParity(i);
+						if (parity)
+						{
+                            if (parity == MoleculeCisTrans::CIS)
+                                stereo = 7;
+                            if (parity == MoleculeCisTrans::TRANS)
+                                stereo = 8;
+                            const int* subst = mol.cis_trans.getSubstituents(i);
+                            writer.Key("subs");
+                            writer.StartArray();
+                            writer.Int(subst[0]);
+                            writer.Int(e1.beg);
+                            writer.Int(e1.end);
+                            writer.Int(subst[2]);
+                            writer.EndArray();
+						}*/
                     }
                     break;
                 }
@@ -434,91 +451,113 @@ void MoleculeJsonSaver::saveAttachmentPoint( BaseMolecule& mol, int atom_idx, ra
 
 void MoleculeJsonSaver::saveStereoCenter( BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer )
 {
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+	writer.Key("pyramid");
+	writer.StartArray();
     const int* pyramid = mol.stereocenters.getPyramid(atom_idx);
-    if (pyramid[3] == -1)
-        out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], atom_idx);
-    else
-        out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], pyramid[3]);
-    buf.push(0);
-    writer.Key("atomRefs4");
-    writer.String(buf.ptr());
+	for (int i = 0; i < 4; ++i)
+	{
+		int prm = pyramid[i];
+		if (prm == -1 && i == 3)
+			prm = atom_idx;
+		writer.Int( prm );
+	}
+	writer.EndArray();
 }
 
 void indigo::MoleculeJsonSaver::saveHighlights( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer )
 {
-	writer.Key("highlight");
-	writer.StartArray();
+	int ca = mol.countSelectedAtoms();
+	int cb = mol.countSelectedBonds();
+	if (ca || cb)
+	{
+		writer.Key("highlight");
+		writer.StartArray();
 
-    if (mol.countHighlightedBonds() > 0)
-    {
-		writer.StartObject();
-        writer.Key("bonds");
-        writer.StartArray();
-        for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-        {
-            if (mol.isBondHighlighted(i))
-            {
-                writer.Int(i);
-            }
-        }
-        writer.EndArray();
-    }
+		if ( ca )
+		{
+            writer.Key("entityType");
+            writer.String("atom");
+            writer.StartObject();
+            writer.Key("items");
+            writer.StartArray();
+            for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+			{
+				if (mol.isAtomHighlighted(i))
+				{
+					writer.Int(i);
+				}
+			}
+			writer.EndArray();
+			writer.EndObject();
+		}
 
-    if (mol.countHighlightedAtoms() > 0)
-    {
-        writer.Key("hl_atoms");
-        writer.StartArray();
-        for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-        {
-            if (mol.isAtomHighlighted(i))
-            {
-                writer.Int(i);
-            }
-        }
-        writer.EndArray();
-		writer.EndObject();
-    }
-	writer.EndArray();
+		if ( cb )
+		{
+            writer.Key("entityType");
+            writer.String("bond");
+            writer.StartObject();
+            writer.Key("items");
+            writer.StartArray();
+            for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+			{
+				if (mol.isBondHighlighted(i))
+				{
+					writer.Int(i);
+				}
+			}
+			writer.EndArray();
+			writer.EndObject();
+		}
+
+		writer.EndArray();
+	}
 }
 
 void indigo::MoleculeJsonSaver::saveSelection(BaseMolecule & mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
-	writer.Key("selection");
-	writer.StartArray();
-	if (mol.countSelectedAtoms() > 0)
+	int ca = mol.countSelectedAtoms();
+	int cb = mol.countSelectedBonds();
+	if (ca || cb)
 	{
-		writer.StartObject();
-		writer.Key("atoms");
+		writer.Key("selection");
 		writer.StartArray();
-		for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+		if (ca)
 		{
-			if (mol.isAtomSelected(i))
+            writer.Key("entityType");
+            writer.String("atom");
+			writer.StartObject();
+			writer.Key("items");
+			writer.StartArray();
+			for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
 			{
-				writer.Int(i);
+				if (mol.isAtomSelected(i))
+				{
+					writer.Int(i);
+				}
 			}
+			writer.EndArray();
+			writer.EndObject();
+		}
+
+		if (cb)
+		{
+            writer.Key("entityType");
+            writer.String("bond");
+			writer.StartObject();
+			writer.Key("items");
+			writer.StartArray();
+			for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+			{
+				if (mol.isBondSelected(i))
+				{
+					writer.Int(i);
+				}
+			}
+			writer.EndArray();
+			writer.EndObject();
 		}
 		writer.EndArray();
-		writer.EndObject();
 	}
-
-    if (mol.countSelectedBonds() > 0)
-    {
-		writer.StartObject();
-        writer.Key("bonds");
-        writer.StartArray();
-        for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-        {
-            if (mol.isBondSelected(i))
-            {
-                writer.Int(i);
-            }
-        }
-        writer.EndArray();
-		writer.EndObject();
-    }
-	writer.EndArray();
 }
 
 
@@ -535,8 +574,8 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule& mol, Writer<StringBuffer>& writ
             writer.StartObject();
             if (mol.attachmentPointCount())
                 saveAttachmentPoint(mol, i, writer);
-            if (mol.stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
-                saveStereoCenter( mol, i, writer );
+            //if (mol.stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
+            //    saveStereoCenter( mol, i, writer );
             QS_DEF(Array<int>, rg_list);
             int radical = 0;
             if( mol.isRSite(i) )
@@ -650,6 +689,7 @@ void MoleculeJsonSaver::saveRGroup( PtrPool<BaseMolecule>& fragments, int rgnum,
 void MoleculeJsonSaver::saveMolecule( BaseMolecule& bmol )
 {
     // bool have_z = BaseMolecule::hasZCoord(*_mol);
+    int chiral = bmol.getChiralFlag();
     std::unique_ptr<BaseMolecule> mol;
     _pmol = nullptr;
     _pqmol = nullptr;
@@ -663,10 +703,15 @@ void MoleculeJsonSaver::saveMolecule( BaseMolecule& bmol )
         _pmol = (Molecule*)mol.get();
     }
     mol->clone_KeepIndices( bmol );
+	if (!BaseMolecule::hasCoord(*mol))
+	{
+        MoleculeLayout ml(*mol, false);
+        ml.layout_orientation = UNCPECIFIED;
+        ml.make();
+	}
     BaseMolecule::collapse( *mol );
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
-    LocaleGuard locale_guard;
     //
     StringBuffer s;
     std::set<int> rgrp_full_list;
@@ -704,7 +749,11 @@ void MoleculeJsonSaver::saveMolecule( BaseMolecule& bmol )
     writer.StartObject();
     writer.Key("type");
     writer.String("molecule");
-
+	if(chiral)
+	{
+        writer.Key("chiral");
+        writer.Int(chiral);
+	}
     writer.Key("atoms");
     writer.StartArray();
     saveAtoms( *mol, writer );
