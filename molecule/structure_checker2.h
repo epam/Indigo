@@ -108,13 +108,8 @@ namespace indigo
 
         struct DLLEXPORT CheckMessage
         {
-            CheckMessage()
-            {
-            }
-            CheckMessage(CheckMessageCode _code, int _index, const std::vector<int>& _ids, const CheckResult& _subresult)
-                : code(_code), index(_index), ids(_ids), subresult(_subresult)
-            {
-            }
+            CheckMessage();
+            CheckMessage(CheckMessageCode _code, int _index, const std::vector<int>& _ids, const CheckResult& _subresult);
             CheckMessageCode code = StructureChecker2::CheckMessageCode::CHECK_MSG_NONE;
             std::string message();
             int index = -1;

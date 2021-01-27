@@ -509,6 +509,17 @@ static const std::string message_list[] = {"",
 
 };
 
+StructureChecker2::CheckMessage::CheckMessage()
+{
+}
+
+StructureChecker2::CheckMessage::CheckMessage(StructureChecker2::CheckMessageCode _code, int _index, const std::vector<int>& _ids,
+                                              const StructureChecker2::CheckResult& _subresult)
+    : code(_code), index(_index), ids(_ids), subresult(_subresult)
+{
+    std::sort(ids.begin(), ids.end());
+}
+
 std::string StructureChecker2::CheckMessage::message()
 {
     return message_list[(size_t)code];
