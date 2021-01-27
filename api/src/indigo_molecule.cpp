@@ -2651,7 +2651,7 @@ if (bonds != 0)
     for (i = 0; i < nbonds; i++)
         dsg.bonds.push(bonds[i]);
 if (data != 0)
-    dsg.data.readString(data, false);
+    dsg.data.readString(data, true);
 if (name != 0)
     dsg.name.readString(name, true);
 
@@ -2701,7 +2701,7 @@ INDIGO_END(-1)
 CEXPORT int indigoSetSGroupData(int sgroup, const char* data){INDIGO_BEGIN{DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
 if (data != 0)
-    dsg.data.readString(data, false);
+    dsg.data.readString(data, true);
 
 return 1;
 }

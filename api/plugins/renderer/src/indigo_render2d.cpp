@@ -604,7 +604,7 @@ public:
 
 _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter()
 {
-    OptionManager& mgr = indigoGetOptionManager();
+    IndigoOptionManager& mgr = indigoGetOptionManager();
     OsLocker locker(mgr.lock);
 
 #define rp indigoRendererGetInstance().renderParams
