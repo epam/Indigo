@@ -108,6 +108,13 @@ namespace indigo
 
         struct DLLEXPORT CheckMessage
         {
+            CheckMessage()
+            {
+            }
+            CheckMessage(CheckMessageCode _code, int _index, const std::vector<int>& _ids, const CheckResult& _subresult)
+                : code(_code), index(_index), ids(_ids), subresult(_subresult)
+            {
+            }
             CheckMessageCode code = StructureChecker2::CheckMessageCode::CHECK_MSG_NONE;
             std::string message();
             int index = -1;
@@ -118,13 +125,13 @@ namespace indigo
         StructureChecker2();
 
         CheckResult checkMolecule(const BaseMolecule& item, int check_flags = CHECK_ALL, const std::vector<int>& selected_atoms = std::vector<int>(),
-                          const std::vector<int>& selected_bonds = std::vector<int>());
+                                  const std::vector<int>& selected_bonds = std::vector<int>());
         CheckResult checkReaction(const BaseReaction& reaction, int check_types);
         DECL_ERROR;
 
     private:
         StructureChecker2(const StructureChecker2&); // no implicit copy
-    };                                           // namespace indigo
+    };                                               // namespace indigo
 
 } // namespace indigo
 

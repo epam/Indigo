@@ -42,8 +42,7 @@ bool StructureChecker2::CheckResult::isEmpty() const
 static void message(StructureChecker2::CheckResult& result, StructureChecker2::CheckMessageCode code, int index, std::vector<int> ids,
                     const StructureChecker2::CheckResult& subresult)
 {
-    StructureChecker2::CheckMessage m = {code, index, ids, subresult};
-    result.messages.push_back(m);
+    result.messages.push_back(StructureChecker2::CheckMessage(code, index, ids, subresult));
 }
 
 static void message(StructureChecker2::CheckResult& result, StructureChecker2::CheckMessageCode code, int index,
