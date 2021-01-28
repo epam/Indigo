@@ -2,7 +2,6 @@ package com.epam.indigo.model;
 
 import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.Indigo;
-import com.epam.indigo.IndigoException;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.fields.Field;
 import com.epam.indigo.model.fields.FieldNotFoundException;
@@ -13,13 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-class SkipErrorsHandler implements ErrorHandler {
-    @Override
-    public void handle(IndigoException error) {
-
-    }
-}
-
+/**
+ * Class represents IndigoRecord for storing/retrieving Elasticsearch
+ */
 public class IndigoRecord {
 
     //    custom map/dict think about it as JSON
@@ -40,9 +35,7 @@ public class IndigoRecord {
     // Error handler called when IndigoRecord cannot be created
     protected ErrorHandler errorHandler;
 
-    public IndigoRecord() {
-
-    }
+    public IndigoRecord() {}
 
     public String getInternalID() {
         return internalID;
@@ -164,6 +157,11 @@ public class IndigoRecord {
             return this;
         }
 
+        /**
+         * Build method should be
+         * @return
+         * @throws BingoElasticException
+         */
         public abstract T build() throws BingoElasticException;
 
         public void validate(IndigoRecord record) throws BingoElasticException {

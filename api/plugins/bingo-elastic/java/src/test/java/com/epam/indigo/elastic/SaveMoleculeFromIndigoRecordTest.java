@@ -7,11 +7,13 @@ import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.model.IndigoRecordMolecule;
+import com.epam.indigo.model.NamingConstants;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -20,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SaveMoleculeFromIndigoRecordTest {
 
-    protected static ElasticRepository<IndigoRecord> repository;
+    protected static ElasticRepository<IndigoRecordMolecule> repository;
     private static ElasticsearchContainer elasticsearchContainer;
 
 
@@ -32,9 +34,9 @@ public class SaveMoleculeFromIndigoRecordTest {
                         .withTag(ElasticsearchVersion.VERSION)
         );
         elasticsearchContainer.start();
-        ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepositoryBuilder<>();
+        ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepositoryBuilder<>();
         repository = builder
-                .withIndexName(IndexName.BINGO_MOLECULE)
+                .withIndexName(NamingConstants.BINGO_MOLECULES)
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
@@ -55,11 +57,11 @@ public class SaveMoleculeFromIndigoRecordTest {
     @Test
     @DisplayName("Testing saving IndigoRecord from File")
     public void saveFromFile() {
-        IndigoRecord indigoRecord = Helpers.loadFromFile("src/test/resources/composition1.mol");
+        IndigoRecordMolecule indigoRecord = Helpers.loadMolecule("src/test/resources/composition1.mol");
         try {
             repository.indexRecord(indigoRecord);
             TimeUnit.SECONDS.sleep(5);
-            List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
+            List<IndigoRecordMolecule> collect = repository.stream().collect(Collectors.toList());
             assertEquals(1, collect.size());
         } catch (Exception exception) {
             Assertions.fail(exception);
@@ -70,10 +72,11 @@ public class SaveMoleculeFromIndigoRecordTest {
     @DisplayName("Testing saving from sdf file")
     public void saveFromSdfFile() {
         try {
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
-            List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
+            List<IndigoRecordMolecule> collect = repository.stream().collect(Collectors.toList());
             assertEquals(10, collect.size());
         } catch (Exception exception) {
             Assertions.fail(exception);
@@ -84,7 +87,8 @@ public class SaveMoleculeFromIndigoRecordTest {
     @DisplayName("Testing saving from cml file")
     public void saveFromCmlFile() {
         try {
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromCmlFile("src/test/resources/tetrahedral-all.cml");
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateCml("src/test/resources/tetrahedral-all.cml").forEach(indigoRecordList::add);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
             List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
@@ -98,7 +102,7 @@ public class SaveMoleculeFromIndigoRecordTest {
     @DisplayName("Testing saving from smiles")
     public void saveFromSmiles() {
         try {
-            IndigoRecord indigoRecord = Helpers.loadFromSmiles("O(C(C[N+](C)(C)C)CC([O-])=O)C(=O)C");
+            IndigoRecordMolecule indigoRecord = Helpers.loadFromSmiles("O(C(C[N+](C)(C)C)CC([O-])=O)C(=O)C");
             repository.indexRecord(indigoRecord);
             TimeUnit.SECONDS.sleep(5);
             List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
@@ -118,7 +122,6 @@ public class SaveMoleculeFromIndigoRecordTest {
         String expectedMessage = "Building IndigoRecords from empty IndigoObject is not supported";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
-
     }
 
 }

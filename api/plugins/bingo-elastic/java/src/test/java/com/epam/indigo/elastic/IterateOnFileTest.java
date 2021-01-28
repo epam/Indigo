@@ -5,6 +5,7 @@ import com.epam.indigo.IndigoException;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.IndigoRecordMolecule;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,11 +27,11 @@ public class IterateOnFileTest {
 
         String sdfFile = "src/test/resources/rand_queries_small.sdf";
 
-        Iterable<IndigoRecord> indigoRecords = Helpers.iterateSdf(sdfFile);
+        Iterable<IndigoRecordMolecule> indigoRecords = Helpers.iterateSdf(sdfFile);
         int count = 0;
         int succCount = 0;
         for (IndigoObject indigoObject : indigo.iterateSDFile(sdfFile)) {
-            IndigoRecord currentIndigoRecord = indigoRecords.iterator().next();
+            IndigoRecordMolecule currentIndigoRecord = indigoRecords.iterator().next();
             indigoObject.aromatize();
             try {
                 assertEquals(
@@ -50,10 +51,10 @@ public class IterateOnFileTest {
     void testIterateSmiles() {
         String smilesFile = "src/test/resources/pubchem_slice_50.smi";
 
-        Iterable<IndigoRecord> indigoRecords = Helpers.iterateSmiles(smilesFile);
+        Iterable<IndigoRecordMolecule> indigoRecords = Helpers.iterateSmiles(smilesFile);
         int count = 0;
         for (IndigoObject indigoObject : indigo.iterateSmilesFile(smilesFile)) {
-            IndigoRecord currentIndigoRecord = indigoRecords.iterator().next();
+            IndigoRecordMolecule currentIndigoRecord = indigoRecords.iterator().next();
             indigoObject.aromatize();
             assertEquals(
                     currentIndigoRecord.getIndigoObject(indigo).canonicalSmiles(),
@@ -67,10 +68,10 @@ public class IterateOnFileTest {
     void testIterateCml() {
         String cmlFile = "src/test/resources/tetrahedral-all.cml";
 
-        Iterable<IndigoRecord> indigoRecords = Helpers.iterateCml(cmlFile);
+        Iterable<IndigoRecordMolecule> indigoRecords = Helpers.iterateCml(cmlFile);
         int count = 0;
         for (IndigoObject indigoObject : indigo.iterateCMLFile(cmlFile)) {
-            IndigoRecord currentIndigoRecord = indigoRecords.iterator().next();
+            IndigoRecordMolecule currentIndigoRecord = indigoRecords.iterator().next();
             indigoObject.aromatize();
             assertEquals(
                     currentIndigoRecord.getIndigoObject(indigo).canonicalSmiles(),

@@ -8,6 +8,7 @@ public final class NamingConstants {
     public static final String SUB_FINGERPRINT_LEN = "sub_fingerprint_len";
     public static final String CMF = "cmf";
     public static final String NAME = "name";
-
+    public static final String BINGO_MOLECULES = "bingo_molecules";
+    public static final String BINGO_REACTION = "bingo_reactions";
 
 }

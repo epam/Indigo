@@ -4,12 +4,15 @@ import com.epam.indigo.Indigo;
 import com.epam.indigo.elastic.ElasticRepository.ElasticRepositoryBuilder;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.IndigoRecordMolecule;
+import com.epam.indigo.model.NamingConstants;
 import com.epam.indigo.predicate.*;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -17,10 +20,10 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FullUsageTest {
+public class FullUsageMoleculeTest {
 
     private static final Random random = new Random();
-    protected static ElasticRepository<IndigoRecord> repository;
+    protected static ElasticRepository<IndigoRecordMolecule> repository;
     private static ElasticsearchContainer elasticsearchContainer;
     private static Indigo indigo;
 
@@ -33,9 +36,9 @@ public class FullUsageTest {
                         .withTag(ElasticsearchVersion.VERSION)
         );
         elasticsearchContainer.start();
-        ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepositoryBuilder<>();
+        ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepositoryBuilder<>();
         repository = builder
-                .withIndexName(IndexName.BINGO_MOLECULE)
+                .withIndexName(NamingConstants.BINGO_MOLECULES)
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
@@ -57,7 +60,8 @@ public class FullUsageTest {
     @DisplayName("Testing full usage, indexing, searching")
     public void fullUsage() {
         try {
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(10);
             int requestSize = 20;
@@ -76,11 +80,12 @@ public class FullUsageTest {
     @DisplayName("Testing exact match")
     public void exactMatch() {
         try {
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(10);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
-            List<IndigoRecord> similarRecords = repository.stream()
+            List<IndigoRecordMolecule> similarRecords = repository.stream()
                     .filter(new ExactMatch<>(target))
                     .limit(20)
                     .collect(Collectors.toList())
@@ -99,15 +104,16 @@ public class FullUsageTest {
     @DisplayName("Testing tversky match")
     public void tversky() {
         try {
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(10);
             IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             float threshold = 0.8f;
-            List<IndigoRecord> similarRecords = repository.stream()
+            List<IndigoRecordMolecule> similarRecords = repository.stream()
                     .filter(new TverskySimilarityMatch<>(target, threshold, 0.5f, 0.5f))
                     .collect(Collectors.toList());
-            for (IndigoRecord similarRecord : similarRecords) assertTrue(similarRecord.getScore() >= threshold);
+            for (IndigoRecordMolecule similarRecord : similarRecords) assertTrue(similarRecord.getScore() >= threshold);
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
@@ -117,7 +123,8 @@ public class FullUsageTest {
     @DisplayName("Testing euclid with threshold match")
     public void euclidWithThreshold() {
         try {
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
             float threshold = 0.5f;
@@ -136,15 +143,16 @@ public class FullUsageTest {
     @DisplayName("Testing tanimoto and keyword query")
     public void keywordQueryWithTanimoto() {
         try {
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
-            IndigoRecord indigoRecord = indigoRecordList.get(0);
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
+            IndigoRecordMolecule indigoRecord = indigoRecordList.get(0);
             String test = "Test";
             String fieldName = "tag";
             indigoRecord.addCustomObject(fieldName, test);
             repository.indexRecords(indigoRecordList, 100);
             TimeUnit.SECONDS.sleep(10);
             IndigoRecord target = indigoRecordList.get(0);
-            List<IndigoRecord> similarRecords = repository.stream()
+            List<IndigoRecordMolecule> similarRecords = repository.stream()
                     .filter(new SimilarityMatch<>(target))
                     .filter(new KeywordQuery<>(fieldName, test))
                     .collect(Collectors.toList());
@@ -160,7 +168,8 @@ public class FullUsageTest {
     public void rangeQueryWithTanimoto() {
         try {
             Random r = new Random();
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             String fieldName = "weight";
             int cnt = 0;
             for (IndigoRecord rec: indigoRecordList) {
@@ -171,8 +180,8 @@ public class FullUsageTest {
             }
             repository.indexRecords(indigoRecordList, 100);
             TimeUnit.SECONDS.sleep(10);
-            IndigoRecord target = indigoRecordList.get(0);
-            List<IndigoRecord> similarRecords = repository.stream()
+            IndigoRecordMolecule target = indigoRecordList.get(0);
+            List<IndigoRecordMolecule> similarRecords = repository.stream()
                     .filter(new SimilarityMatch<>(target))
                     .filter(new RangeQuery<>(fieldName, 10, 100))
                     .collect(Collectors.toList());
@@ -187,10 +196,11 @@ public class FullUsageTest {
     @DisplayName("Testing substructure search")
     public void substructureSearch() {
         try {
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(10);
-            IndigoRecord target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
+            IndigoRecordMolecule target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
             List<IndigoRecord> records = repository.stream()
                     .filter(new SubstructureMatch<>(target))
                     .limit(20)
@@ -209,14 +219,15 @@ public class FullUsageTest {
     @DisplayName("Testing RangeQuery search")
     public void rangeSearch() {
         try {
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             int i = 0;
-            for (IndigoRecord record : indigoRecordList) {
+            for (IndigoRecordMolecule record : indigoRecordList) {
                 record.addCustomObject("ind_number", i++);
             }
             repository.indexRecords(indigoRecordList, 1000);
             TimeUnit.SECONDS.sleep(10);
-            List<IndigoRecord> records = repository.stream()
+            List<IndigoRecordMolecule> records = repository.stream()
                                 .filter(new RangeQuery<>("ind_number", 1, 10))
                                 .limit(20)
                                 .collect(Collectors.toList());
@@ -231,7 +242,8 @@ public class FullUsageTest {
     public void wildcardSearch() {
 
         try {
-            List<IndigoRecord> indigoRecordList = Helpers.loadFromSdf("src/test/resources/rand_queries_small.sdf");
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             IndigoRecord indigoRecord = indigoRecordList.get(0);
             String test = "Test";
             String fieldName = "tag";
@@ -246,6 +258,15 @@ public class FullUsageTest {
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
+    }
 
+    @Test
+    @DisplayName("Testing TanimotoSimilarityMatch reaction")
+    public void reactionTanimoto() {
+        try {
+            
+        } catch (Exception exception) {
+            Assertions.fail("Exception happened during test " + exception.getMessage());
+        }
     }
 }

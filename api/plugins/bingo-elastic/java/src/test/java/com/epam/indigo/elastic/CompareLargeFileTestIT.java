@@ -4,6 +4,7 @@ import com.epam.indigo.BingoObject;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.IndigoRecordMolecule;
 import com.epam.indigo.predicate.*;
 import org.elasticsearch.common.collect.Tuple;
 import org.junit.jupiter.api.*;
@@ -32,7 +33,7 @@ public class CompareLargeFileTestIT extends NoSQLElasticCompareAbstract {
         noSQLTotal = System.nanoTime() - noSQLTotal;
         long elasticTotal = System.nanoTime();
         try {
-            Iterable<IndigoRecord> indigoRecordList = Helpers.iterateSmiles(test100SmilesFile);
+            Iterable<IndigoRecordMolecule> indigoRecordList = Helpers.iterateSmiles(test100SmilesFile);
             repository.indexRecords(indigoRecordList, 5000);
         } catch (Exception e) {
             Assertions.fail(e);

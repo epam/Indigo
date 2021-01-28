@@ -12,110 +12,72 @@ import java.util.*;
  */
 public class Helpers {
 
-    protected static IndigoRecord load(IndigoObject comp) {
+    ////////////////////////////////////////////////////////////////
+    //
+    // MOLECULE HELPERS
+    //
+    ////////////////////////////////////////////////////////////////
+
+
+    protected static IndigoRecordMolecule load(IndigoObject comp) {
         return load(comp, error -> {});
     }
 
-    protected static IndigoRecord load(IndigoObject comp, ErrorHandler errorHandler) {
-        return FromIndigoObject.build(comp, errorHandler);
+    protected static IndigoRecordMolecule load(IndigoObject comp, ErrorHandler errorHandler) {
+        return FromIndigoObject.buildMolecule(comp, errorHandler);
     }
 
-    public static IndigoRecord loadFromFile(String molFile) {
+    public static IndigoRecordMolecule loadMolecule(String molFile) {
         Indigo indigo = new Indigo();
-        return FromIndigoObject.build(indigo.loadMoleculeFromFile(molFile));
+        IndigoObject indigoObject = indigo.loadMoleculeFromFile(molFile);
+        return FromIndigoObject.buildMolecule(indigoObject);
     }
 
-    /**
-     * @deprecated
-     * This method will be removed in next releases, use {@link com.epam.indigo.model.Helpers#iterateSdf(String)} iterateSdf} instead
-     * @param sdfFile
-     * @return
-     */
-    @Deprecated
-    public static List<IndigoRecord> loadFromSdf(String sdfFile) {
-        return loadFromSdf(sdfFile, error -> {});
-    }
-
-    /**
-     * @deprecated
-     * This method will be removed in next releases, use {@link com.epam.indigo.model.Helpers#iterateSdf(String, ErrorHandler)} iterateSdf} instead
-     * @param sdfFile
-     * @param errorHandler
-     * @return
-     */
-    @Deprecated
-    public static List<IndigoRecord> loadFromSdf(String sdfFile, ErrorHandler errorHandler) {
-        Indigo indigo = new Indigo();
-        List<IndigoRecord> acc = new ArrayList<>();
-        for (IndigoObject comp : indigo.iterateSDFile(sdfFile)) {
-            acc.add(FromIndigoObject.build(comp, errorHandler));
-        }
-        return acc;
-    }
-
-    /**
-     * @deprecated
-     * This method will be removed in next releases, use {@link com.epam.indigo.model.Helpers#iterateSmiles(String)} iterateSdf} instead
-     * @param smilesFile
-     * @return
-     */
-    @Deprecated
-    public static List<IndigoRecord> loadFromSmilesFile(String smilesFile) {
-        return loadFromSmilesFile(smilesFile, error -> {});
-    }
-
-    /**
-     * @deprecated
-     * This method will be removed in next releases, use {@link com.epam.indigo.model.Helpers#iterateSmiles(String, ErrorHandler)} iterateSdf} instead
-     * @param smilesFile
-     * @param errorHandler
-     * @return
-     */
-    @Deprecated
-    public static List<IndigoRecord> loadFromSmilesFile(String smilesFile, ErrorHandler errorHandler) {
-        Indigo indigo = new Indigo();
-        List<IndigoRecord> acc = new ArrayList<>();
-        for (IndigoObject comp : indigo.iterateSmilesFile(smilesFile)) {
-            acc.add(FromIndigoObject.build(comp, errorHandler));
-        }
-        return acc;
-    }
-
-    /**
-     * @deprecated
-     * This method will be removed in next releases, use {@link com.epam.indigo.model.Helpers#iterateCml(String)} instead
-     * @param cmlFile
-     * @return
-     */
-    @Deprecated
-    public static List<IndigoRecord> loadFromCmlFile(String cmlFile) {
-        return loadFromCmlFile(cmlFile, error -> {});
-    }
-
-    /**
-     * @deprecated
-     * This method will be removed in next releases, use {@link com.epam.indigo.model.Helpers#iterateCml(String, ErrorHandler)} instead
-     * @param cmlFile
-     * @param errorHandler
-     * @return
-     */
-    @Deprecated
-    public static List<IndigoRecord> loadFromCmlFile(String cmlFile, ErrorHandler errorHandler) {
-        Indigo indigo = new Indigo();
-        List<IndigoRecord> acc = new ArrayList<>();
-        for (IndigoObject comp : indigo.iterateCMLFile(cmlFile)) {
-            acc.add(FromIndigoObject.build(comp, errorHandler));
-        }
-        return acc;
-    }
-
-    public static IndigoRecord loadFromSmiles(String smiles) {
+    public static IndigoRecordMolecule loadFromSmiles(String smiles) {
         Indigo indigo = new Indigo();
         IndigoObject indigoObject = indigo.loadMolecule(smiles);
-        return FromIndigoObject.build(indigoObject);
+        return FromIndigoObject.buildMolecule(indigoObject);
     }
 
+    public static Iterable<IndigoRecordMolecule> iterateSdf(String sdfFile) {
+        return iterateSdf(sdfFile, error -> {});
+    }
 
+    public static Iterable<IndigoRecordMolecule> iterateSdf(String sdfFile, ErrorHandler errorHandler) {
+        Indigo indigo = new Indigo();
+        return iterateIndigoObject(indigo.iterateSDFile(sdfFile), errorHandler);
+    }
+
+    public static Iterable<IndigoRecordMolecule> iterateSmiles(String smilesFile) {
+        return iterateSmiles(smilesFile, error -> {});
+    }
+
+    public static Iterable<IndigoRecordMolecule> iterateSmiles(String smilesFile, ErrorHandler errorHandler) {
+        Indigo indigo = new Indigo();
+        return iterateIndigoObject(indigo.iterateSmilesFile(smilesFile), errorHandler);
+    }
+
+    public static Iterable<IndigoRecordMolecule> iterateCml(String cmlFile) {
+        return iterateCml(cmlFile, error -> {});
+    }
+
+    public static Iterable<IndigoRecordMolecule> iterateCml(String cmlFile, ErrorHandler errorHandler) {
+        Indigo indigo = new Indigo();
+        return iterateIndigoObject(indigo.iterateCMLFile(cmlFile), errorHandler);
+    }
+
+    ////////////////////////////////////////////////////////////////
+    //
+    // REACTION HELPERS
+    //
+    ////////////////////////////////////////////////////////////////
+
+    public static IndigoRecordReaction loadReaction(String file) {
+        Indigo indigo = new Indigo();
+        return FromIndigoObject.buildReaction(indigo.loadReactionFromFile(file));
+    }
+
+    // TODO: Move from helpers
     public static IndigoRecord fromElastic(String id, Map<String, Object> source, float score) throws BingoElasticException {
 
         IndigoRecordMolecule.IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordMolecule.IndigoRecordBuilder();
@@ -136,45 +98,18 @@ public class Helpers {
         return indigoRecordBuilder.build();
     }
 
-    protected static Iterable<IndigoRecord> iterateIndigoObject(IndigoObject indigoObject, ErrorHandler errorHandler) {
-        return () -> new Iterator<IndigoRecord>() {
+    protected static Iterable<IndigoRecordMolecule> iterateIndigoObject(IndigoObject indigoObject, ErrorHandler errorHandler) {
+        return () -> new Iterator<IndigoRecordMolecule>() {
             @Override
             public boolean hasNext() {
                 return indigoObject.hasNext();
             }
 
             @Override
-            public IndigoRecord next() {
+            public IndigoRecordMolecule next() {
                 return load(indigoObject.next());
             }
         };
-    }
-
-    public static Iterable<IndigoRecord> iterateSdf(String sdfFile) {
-        return iterateSdf(sdfFile, error -> {});
-    }
-
-    public static Iterable<IndigoRecord> iterateSdf(String sdfFile, ErrorHandler errorHandler) {
-        Indigo indigo = new Indigo();
-        return iterateIndigoObject(indigo.iterateSDFile(sdfFile), errorHandler);
-    }
-
-    public static Iterable<IndigoRecord> iterateSmiles(String smilesFile) {
-        return iterateSmiles(smilesFile, error -> {});
-    }
-
-    public static Iterable<IndigoRecord> iterateSmiles(String smilesFile, ErrorHandler errorHandler) {
-        Indigo indigo = new Indigo();
-        return iterateIndigoObject(indigo.iterateSmilesFile(smilesFile), errorHandler);
-    }
-
-    public static Iterable<IndigoRecord> iterateCml(String cmlFile) {
-        return iterateCml(cmlFile, error -> {});
-    }
-
-    public static Iterable<IndigoRecord> iterateCml(String cmlFile, ErrorHandler errorHandler) {
-        Indigo indigo = new Indigo();
-        return iterateIndigoObject(indigo.iterateCMLFile(cmlFile), errorHandler);
     }
 
 }

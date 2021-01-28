@@ -2,14 +2,14 @@ package com.epam.indigo.elastic;
 
 import com.epam.indigo.Bingo;
 import com.epam.indigo.Indigo;
-import com.epam.indigo.elastic.ElasticRepository;
-import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.IndigoRecordMolecule;
+import com.epam.indigo.model.NamingConstants;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
 abstract public class NoSQLElasticCompareAbstract {
 
-    protected static ElasticRepository<IndigoRecord> repository;
+    protected static ElasticRepository<IndigoRecordMolecule> repository;
     protected static ElasticsearchContainer elasticsearchContainer;
     protected static Bingo bingoDb;
     protected static final Indigo indigo = new Indigo();
@@ -21,9 +21,9 @@ abstract public class NoSQLElasticCompareAbstract {
                         .withTag(ElasticsearchVersion.VERSION)
         );
         elasticsearchContainer.start();
-        ElasticRepository.ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
+        ElasticRepository.ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder
-                .withIndexName(IndexName.BINGO_MOLECULE)
+                .withIndexName(NamingConstants.BINGO_MOLECULES)
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
