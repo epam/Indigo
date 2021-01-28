@@ -37,8 +37,7 @@ def get_record_by_index(
         return IndigoRecordMolecule(elastic_response=response)
     if index == IndexName.BINGO_REACTION.value:
         return IndigoRecordReaction(elastic_response=response)
-    breakpoint()
-    raise AttributeError("Unknown index %s", index)
+    raise AttributeError(f"Unknown index {index}")
 
 
 def elastic_repository_molecule(*args, **kwargs):
