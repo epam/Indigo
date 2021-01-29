@@ -4,7 +4,6 @@ import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoException;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.Helpers;
-import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.model.IndigoRecordMolecule;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
