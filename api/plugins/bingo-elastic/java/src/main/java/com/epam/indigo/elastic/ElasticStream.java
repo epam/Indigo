@@ -3,6 +3,7 @@ package com.epam.indigo.elastic;
 import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.NamingConstants;
 import com.epam.indigo.predicate.*;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -66,8 +67,16 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         try {
             SearchResponse searchResponse = this.elasticClient.search(searchRequest, RequestOptions.DEFAULT);
             hits = searchResponse.getHits().getHits();
-            for (SearchHit hit : hits) {
-                collector.accumulator().accept(container, (T) Helpers.fromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
+            if (NamingConstants.BINGO_REACTIONS.equals(this.indexName)) {
+                for (SearchHit hit : hits) {
+                    collector.accumulator().accept(container, (T) Helpers.reactionFromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
+                }
+            } else if (NamingConstants.BINGO_MOLECULES.equals(this.indexName)) {
+                for (SearchHit hit : hits) {
+                    collector.accumulator().accept(container, (T) Helpers.moleculeFromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
+                }
+            } else {
+                throw new BingoElasticException("Unsupported index " + this.indexName);
             }
         } catch (IOException e) {
             throw new BingoElasticException("Couldn't complete search in Elasticsearch", e.getCause());

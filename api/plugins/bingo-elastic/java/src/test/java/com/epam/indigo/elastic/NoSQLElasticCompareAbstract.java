@@ -7,6 +7,9 @@ import com.epam.indigo.model.NamingConstants;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
+/**
+ * TODO: Add generic support or add IndigoRecordReaction support
+ */
 abstract public class NoSQLElasticCompareAbstract {
 
     protected static ElasticRepository<IndigoRecordMolecule> repository;

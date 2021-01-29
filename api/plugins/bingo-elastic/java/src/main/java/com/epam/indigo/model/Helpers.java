@@ -77,10 +77,31 @@ public class Helpers {
         return FromIndigoObject.buildReaction(indigo.loadReactionFromFile(file));
     }
 
+    // TODO: Generalize next two methods
     // TODO: Move from helpers
-    public static IndigoRecord fromElastic(String id, Map<String, Object> source, float score) throws BingoElasticException {
+    public static IndigoRecordMolecule moleculeFromElastic(String id, Map<String, Object> source, float score) throws BingoElasticException {
 
         IndigoRecordMolecule.IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordMolecule.IndigoRecordBuilder();
+        for (Map.Entry<String, Object> entry : source.entrySet()) {
+            if (entry.getKey().equals(NamingConstants.SIM_FINGERPRINT)) {
+                indigoRecordBuilder.withSimFingerprint((List<Integer>) ((List<Object>) entry.getValue()).get(0));
+            } else if (entry.getKey().equals(NamingConstants.SUB_FINGERPRINT)) {
+                indigoRecordBuilder.withSubFingerprint((List<Integer>) ((List<Object>) entry.getValue()).get(0));
+            } else {
+                indigoRecordBuilder.withCustomObject(entry.getKey(), entry.getValue());
+            }
+        }
+        indigoRecordBuilder.withScore(score);
+        indigoRecordBuilder.withId(id);
+        byte[] cmf = Base64.getDecoder().decode((String) source.get(NamingConstants.CMF));
+        indigoRecordBuilder.withCmf(cmf);
+        indigoRecordBuilder.withName((String) source.get(NamingConstants.NAME));
+        return indigoRecordBuilder.build();
+    }
+
+    public static IndigoRecordReaction reactionFromElastic(String id, Map<String, Object> source, float score) throws BingoElasticException {
+
+        IndigoRecordReaction.IndigoRecordBuilder indigoRecordBuilder = new IndigoRecordReaction.IndigoRecordBuilder();
         for (Map.Entry<String, Object> entry : source.entrySet()) {
             if (entry.getKey().equals(NamingConstants.SIM_FINGERPRINT)) {
                 indigoRecordBuilder.withSimFingerprint((List<Integer>) ((List<Object>) entry.getValue()).get(0));
