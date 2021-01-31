@@ -8,7 +8,8 @@ from optparse import OptionParser
 
 
 check_call = None
-if not hasattr(subprocess, 'check_call'):
+if not hasattr(subprocess, "check_call"):
+
     def check_call_replacement(*popenargs, **kwargs):
         retcode = subprocess.call(*popenargs, **kwargs)
         if retcode:
@@ -17,18 +18,21 @@ if not hasattr(subprocess, 'check_call'):
                 cmd = popenargs[0]
             raise subprocess.CalledProcessError(retcode, cmd)
         return 0
+
     check_call = check_call_replacement
 else:
     check_call = subprocess.check_call
 
 
 def get_cpu_count():
-    if os.name == 'java':
+    if os.name == "java":
         from java.lang import Runtime
+
         runtime = Runtime.getRuntime()
         cpu_count = runtime.availableProcessors()
     else:
         import multiprocessing
+
         cpu_count = multiprocessing.cpu_count()
     return cpu_count
 
@@ -58,27 +62,108 @@ def build_libs(cl_args):
         "mac10.13": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.13"),
         "mac10.14": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.14"),
         "mac10.15": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.15"),
+        "mac10.16": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.16"),
         "mac-universal": ("Unix Makefiles", "-DSUBSYSTEM_NAME=10.7"),
     }
 
-    parser = OptionParser(description='Indigo libraries build script')
-    parser.add_option('--generator', help='this option is passed as -G option for cmake')
-    parser.add_option('--params', default="", help='additional build parameters')
-    parser.add_option('--config', default="Release", help='project configuration')
-    parser.add_option('--nobuild', default=False, action="store_true", help='configure without building', dest="nobuild")
-    parser.add_option('--clean', default=False, action="store_true", help='delete all the build data', dest="clean")
-    parser.add_option('--preset', type="choice", dest="preset", choices=list(presets.keys()), help='build preset %s' % (str(list(presets.keys()))))
-    parser.add_option('--with-static', action='store_true', help='Build Indigo static libraries', default=False, dest='withStatic')
-    parser.add_option('--verbose', action='store_true', help='Show verbose build information', default=False, dest='buildVerbose')
-    parser.add_option('--cairo-gl', dest="cairogl", default=False, action="store_true", help='Build Cairo with OpenGL support')
-    parser.add_option('--cairo-vg', dest="cairovg", default=False, action="store_true", help='Build Cairo with CairoVG support')
-    parser.add_option('--cairo-egl', dest="cairoegl", default=False, action="store_true", help='Build Cairo with EGL support')
-    parser.add_option('--cairo-glesv2', dest="cairoglesv2", default=False, action="store_true", help='Build Cairo with GLESv2 support')
-    parser.add_option('--find-cairo', dest="findcairo", default=False, action="store_true", help='Find and use system Cairo')
-    parser.add_option('--find-pixman', dest="findpixman", default=False, action="store_true", help='Find and use system Pixman')
-    parser.add_option('--no-multithreaded-build', dest='mtbuild', default=True, action='store_false', help='Use only 1 core to build')
-    if os.name == 'posix':
-        parser.add_option('--check-abi', dest='checkabi', default=False, action="store_true", help='Check ABI type of Indigo libraries on Linux')
+    parser = OptionParser(description="Indigo libraries build script")
+    parser.add_option(
+        "--generator", help="this option is passed as -G option for cmake"
+    )
+    parser.add_option("--params", default="", help="additional build parameters")
+    parser.add_option("--config", default="Release", help="project configuration")
+    parser.add_option(
+        "--nobuild",
+        default=False,
+        action="store_true",
+        help="configure without building",
+        dest="nobuild",
+    )
+    parser.add_option(
+        "--clean",
+        default=False,
+        action="store_true",
+        help="delete all the build data",
+        dest="clean",
+    )
+    parser.add_option(
+        "--preset",
+        type="choice",
+        dest="preset",
+        choices=list(presets.keys()),
+        help="build preset %s" % (str(list(presets.keys()))),
+    )
+    parser.add_option(
+        "--with-static",
+        action="store_true",
+        help="Build Indigo static libraries",
+        default=False,
+        dest="withStatic",
+    )
+    parser.add_option(
+        "--verbose",
+        action="store_true",
+        help="Show verbose build information",
+        default=False,
+        dest="buildVerbose",
+    )
+    parser.add_option(
+        "--cairo-gl",
+        dest="cairogl",
+        default=False,
+        action="store_true",
+        help="Build Cairo with OpenGL support",
+    )
+    parser.add_option(
+        "--cairo-vg",
+        dest="cairovg",
+        default=False,
+        action="store_true",
+        help="Build Cairo with CairoVG support",
+    )
+    parser.add_option(
+        "--cairo-egl",
+        dest="cairoegl",
+        default=False,
+        action="store_true",
+        help="Build Cairo with EGL support",
+    )
+    parser.add_option(
+        "--cairo-glesv2",
+        dest="cairoglesv2",
+        default=False,
+        action="store_true",
+        help="Build Cairo with GLESv2 support",
+    )
+    parser.add_option(
+        "--find-cairo",
+        dest="findcairo",
+        default=False,
+        action="store_true",
+        help="Find and use system Cairo",
+    )
+    parser.add_option(
+        "--find-pixman",
+        dest="findpixman",
+        default=False,
+        action="store_true",
+        help="Find and use system Pixman",
+    )
+    parser.add_option(
+        "--no-multithreaded-build",
+        dest="mtbuild",
+        default=True,
+        action="store_false",
+        help="Use only 1 core to build",
+    )
+    if os.name == "posix":
+        parser.add_option(
+            "--check-abi",
+            dest="checkabi",
+            default=False,
+            action="store_true",
+            help="Check ABI type of Indigo libraries on Linux",
+        )
 
     (args, left_args) = parser.parse_args(cl_args)
     if len(left_args) > 0:
@@ -89,62 +174,71 @@ def build_libs(cl_args):
     if args.preset:
         args.generator, args.params = presets[args.preset]
     else:
-        if os.name == 'java':
+        if os.name == "java":
             from java.lang import System
+
             system = System.getProperty("os.name")
         else:
             system = platform.system()
 
-        if system in ('Darwin', 'Mac OS X'):
-            mac_version = platform.mac_ver()[0] if os.name != 'java' else System.getProperty('os.version')
-            preset = 'mac{}'.format('.'.join(mac_version.split('.')[:2]))
-        elif system == 'Linux':
-            preset = 'linux{}'.format(platform.architecture()[0][:2])
-        elif system == 'Windows':
-            preset = ''
+        if system in ("Darwin", "Mac OS X"):
+            mac_version = (
+                platform.mac_ver()[0]
+                if os.name != "java"
+                else System.getProperty("os.version")
+            )
+            preset = "mac{}".format(".".join(mac_version.split(".")[:2]))
+        elif system == "Linux":
+            preset = "linux{}".format(platform.architecture()[0][:2])
+        elif system == "Windows":
+            preset = ""
             auto_vs = True
         else:
-            raise NotImplementedError('Unsupported OS: {}'.format(system))
+            raise NotImplementedError("Unsupported OS: {}".format(system))
         if preset:
             print("Auto-selecting preset: {}".format(preset))
             args.generator, args.params = presets[preset]
         else:
-            print("Preset is no selected, continuing with empty generator and params...")
-            args.generator, args.params = '', ''
+            print(
+                "Preset is no selected, continuing with empty generator and params..."
+            )
+            args.generator, args.params = "", ""
 
     cur_dir = os.path.abspath(os.path.dirname(__file__))
     root = os.path.join(cur_dir, "..")
     project_dir = os.path.join(cur_dir, "indigo-all")
 
     if args.cairogl:
-        args.params += ' -DWITH_CAIRO_GL=TRUE'
+        args.params += " -DWITH_CAIRO_GL=TRUE"
 
     if args.cairovg:
-        args.params += ' -DWITH_CAIRO_VG=TRUE'
+        args.params += " -DWITH_CAIRO_VG=TRUE"
 
     if args.cairoegl:
-        args.params += ' -DWITH_CAIRO_EGL=TRUE'
+        args.params += " -DWITH_CAIRO_EGL=TRUE"
 
     if args.cairoglesv2:
-        args.params += ' -DWITH_CAIRO_GLESV2=TRUE'
+        args.params += " -DWITH_CAIRO_GLESV2=TRUE"
 
     if args.findcairo:
-        args.params += ' -DUSE_SYSTEM_CAIRO=TRUE'
+        args.params += " -DUSE_SYSTEM_CAIRO=TRUE"
 
     if args.findcairo:
-        args.params += ' -DUSE_SYSTEM_PIXMAN=TRUE'
+        args.params += " -DUSE_SYSTEM_PIXMAN=TRUE"
 
     if args.withStatic:
-        args.params += ' -DWITH_STATIC=TRUE'
+        args.params += " -DWITH_STATIC=TRUE"
 
-    if args.preset and args.preset.find('universal') != -1:
-        args.params += ' -DUNIVERSAL_BUILD=TRUE'
+    if args.preset and args.preset.find("universal") != -1:
+        args.params += " -DUNIVERSAL_BUILD=TRUE"
 
-    if os.name == 'posix' and args.checkabi:
-        args.params += ' -DCHECK_ABI=TRUE'
+    if os.name == "posix" and args.checkabi:
+        args.params += " -DCHECK_ABI=TRUE"
 
-    build_dir = (args.generator + " " + args.config + args.params.replace('-D', ''))
-    build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace("-", "_")
+    build_dir = args.generator + " " + args.config + args.params.replace("-D", "")
+    build_dir = "indigo_" + build_dir.replace(" ", "_").replace("=", "_").replace(
+        "-", "_"
+    )
 
     full_build_dir = os.path.join(root, "build", build_dir)
 
@@ -156,12 +250,21 @@ def build_libs(cl_args):
 
     os.chdir(full_build_dir)
 
-    environment_prefix = ''
-    if args.preset and (args.preset.find('linux') != -1 and args.preset.find('universal') != -1):
-        if args.preset.find('32') != -1:
-            os.environ['LD_FLAGS'] = '{} {}'.format(os.environ.get('LD_FLAGS', ''), '-m32')
-        environment_prefix = 'CC=gcc CXX=g++'
-    command = "%s cmake %s %s %s" % (environment_prefix, '-G \"%s\"' % args.generator if args.generator else '', args.params, project_dir)
+    environment_prefix = ""
+    if args.preset and (
+        args.preset.find("linux") != -1 and args.preset.find("universal") != -1
+    ):
+        if args.preset.find("32") != -1:
+            os.environ["LD_FLAGS"] = "{} {}".format(
+                os.environ.get("LD_FLAGS", ""), "-m32"
+            )
+        environment_prefix = "CC=gcc CXX=g++"
+    command = "%s cmake %s %s %s" % (
+        environment_prefix,
+        '-G "%s"' % args.generator if args.generator else "",
+        args.params,
+        project_dir,
+    )
     print(command)
     check_call(command, shell=True)
 
@@ -173,26 +276,36 @@ def build_libs(cl_args):
         if ext == ".zip":
             os.remove(os.path.join(full_build_dir, f))
 
-    if args.generator in {"Unix Makefiles", 'MinGW Makefiles'}:
-        make_args = ''
+    if args.generator in {"Unix Makefiles", "MinGW Makefiles"}:
+        make_args = ""
         if args.buildVerbose:
-            make_args += ' VERBOSE=1'
+            make_args += " VERBOSE=1"
 
         if args.mtbuild:
-            make_args += ' -j{} '.format(get_cpu_count())
+            make_args += " -j{} ".format(get_cpu_count())
 
-        make_command = 'mingw32-make' if args.generator == 'MinGW Makefiles' else 'make'
+        make_command = "mingw32-make" if args.generator == "MinGW Makefiles" else "make"
         check_call("%s package %s" % (make_command, make_args), shell=True)
         check_call("%s install" % make_command, shell=True)
     elif args.generator == "Xcode":
-        check_call("cmake --build . --target package --config %s" % args.config, shell=True)
-        check_call("cmake --build . --target install --config %s" % args.config, shell=True)
+        check_call(
+            "cmake --build . --target package --config %s" % args.config, shell=True
+        )
+        check_call(
+            "cmake --build . --target install --config %s" % args.config, shell=True
+        )
     elif args.generator.startswith("Visual Studio") or auto_vs:
         vsenv = os.environ
         if args.mtbuild:
-            vsenv = dict(os.environ, CL='/MP')
-        check_call("cmake --build . --target PACKAGE --config %s" % args.config, env=vsenv, shell=True)
-        check_call("cmake --build . --target INSTALL --config %s" % args.config, shell=True)
+            vsenv = dict(os.environ, CL="/MP")
+        check_call(
+            "cmake --build . --target PACKAGE --config %s" % args.config,
+            env=vsenv,
+            shell=True,
+        )
+        check_call(
+            "cmake --build . --target INSTALL --config %s" % args.config, shell=True
+        )
     else:
         print("Do not know how to run package and install target")
     check_call("ctest -V --timeout 60 -C %s ." % args.config, shell=True)
@@ -212,5 +325,5 @@ def build_libs(cl_args):
     return zip_path_vec
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     build_libs(sys.argv[1:])
