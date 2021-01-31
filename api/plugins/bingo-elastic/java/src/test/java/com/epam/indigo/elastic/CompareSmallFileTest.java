@@ -6,7 +6,6 @@ import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.model.IndigoRecordMolecule;
 import com.epam.indigo.predicate.*;
-import org.junit.Ignore;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@Ignore
+
 public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
 
     protected static final String testSdfFile = "src/test/resources/zinc-slice.sdf.gz";
