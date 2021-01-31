@@ -441,7 +441,7 @@ MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGra
                 }
         }
         for (int i = 0; i < vert.size(); i++)
-            _pos[vert[i]].set(i * 1. / (vert.size() - 1), 0);
+            _pos[vert[i]].set(i * 1.f / _2FLOAT(vert.size() - 1), 0.f);
     }
 
     // double ternary search of center of component
@@ -667,7 +667,7 @@ void MoleculeLayoutSmoothingSegment::set_start_finish_number(int s, int f)
     }
     for (int v : _graph.vertices())
         _center += _pos[v];
-    _center /= _graph.vertexCount();
+    _center /= _2FLOAT(_graph.vertexCount());
 
     _radius = 0;
     for (int v : _graph.vertices())
