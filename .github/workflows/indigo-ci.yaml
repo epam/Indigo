@@ -333,7 +333,7 @@ jobs:
         run: mvn clean install
         working-directory: api/plugins/bingo/java
       - name: Build bingo-elastic
-        run: mvn -B test --file pom.xml
+        run: mvn clean -B test --file pom.xml
         working-directory: api/plugins/bingo-elastic/java
 
   publish:
