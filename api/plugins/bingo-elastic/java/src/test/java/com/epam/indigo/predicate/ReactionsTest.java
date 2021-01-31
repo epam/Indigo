@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class ReactionsTest extends BaseElasticTest {
 
-    public static List<IndigoRecordReaction> reactions = new ArrayList<>();
+    public static final List<IndigoRecordReaction> reactions = new ArrayList<>();
 
     @BeforeAll
     public static void setUp() throws Exception {
@@ -61,7 +61,7 @@ public class ReactionsTest extends BaseElasticTest {
     public void exactMatchTest() {
         IndigoRecordReaction targetReaction = reactions.get(0);
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
-                .filter(new ExactMatch<IndigoRecordReaction>(targetReaction))
+                .filter(new ExactMatch<>(targetReaction))
                 .collect(Collectors.toList());
         check(targetReaction, reaction);
     }
@@ -70,7 +70,7 @@ public class ReactionsTest extends BaseElasticTest {
     public void similarityMatchTest() {
         IndigoRecordReaction targetReaction = reactions.get(1);
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
-                .filter(new SimilarityMatch<IndigoRecordReaction>(targetReaction, 1))
+                .filter(new SimilarityMatch<>(targetReaction, 1))
                 .collect(Collectors.toList());
         check(targetReaction, reaction);
     }
@@ -79,7 +79,7 @@ public class ReactionsTest extends BaseElasticTest {
     public void euclidMatchTest() {
         IndigoRecordReaction targetReaction = reactions.get(2);
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
-                .filter(new EuclidSimilarityMatch<IndigoRecordReaction>(targetReaction, 1))
+                .filter(new EuclidSimilarityMatch<>(targetReaction, 1))
                 .collect(Collectors.toList());
         check(targetReaction, reaction);
     }
@@ -88,7 +88,7 @@ public class ReactionsTest extends BaseElasticTest {
     public void tverskyMatchTest() {
         IndigoRecordReaction targetReaction = reactions.get(3);
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
-                .filter(new TverskySimilarityMatch<IndigoRecordReaction>(targetReaction, 1, 1))
+                .filter(new TverskySimilarityMatch<>(targetReaction, 1, 1))
                 .collect(Collectors.toList());
         check(targetReaction, reaction);
     }
