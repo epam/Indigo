@@ -9,6 +9,7 @@ import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.model.IndigoRecordMolecule;
 import com.epam.indigo.model.NamingConstants;
 import com.epam.indigo.predicate.SimilarityMatch;
+import org.junit.Ignore;
 import org.junit.jupiter.api.*;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -113,6 +114,7 @@ public class LoadMoleculeFromFileTest {
     }
 
     @Test
+    @Ignore
     @DisplayName("Testing creation of IndigoRecord from sdf file with names")
     void testLoadFromSdfWithName() throws Exception {
         List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
