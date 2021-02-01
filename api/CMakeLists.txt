@@ -22,7 +22,7 @@ set_target_properties(indigoObj PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
 
 #Indigo static
 if (WITH_STATIC)
-    add_library(indigo STATIC $<TARGET_OBJECTS:indigoObj> $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
+    add_library(indigo STATIC $<TARGET_OBJECTS:indigoObj> $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:experimental> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
     SET_TARGET_PROPERTIES(indigo PROPERTIES OUTPUT_NAME "indigo-static")
     target_link_libraries(indigo tinyxml z inchi)
     set_property(TARGET indigo PROPERTY FOLDER "indigo")
@@ -33,7 +33,7 @@ endif()
 
 
 # Indigo shared
-add_library(indigo-shared SHARED $<TARGET_OBJECTS:indigoObj> $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction> ${Common_SOURCE_DIR}/hacks/memcpy.c)
+add_library(indigo-shared SHARED $<TARGET_OBJECTS:indigoObj> $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:experimental> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction> ${Common_SOURCE_DIR}/hacks/memcpy.c)
 
 # Copy shared library to indigo/api/libs/shared/ folder, that is used by python tests and wrappers generation
 add_custom_command(

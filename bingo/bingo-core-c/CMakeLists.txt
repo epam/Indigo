@@ -23,7 +23,7 @@ set_property(TARGET bingo-core-c PROPERTY OUTPUT_NAME "bingo-core-c-static")
 
 
 if(BINGO_SQLSERVER)
-    add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
+    add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:experimental> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
 	target_link_libraries(bingo-core-c-shared bingo-core inchi tinyxml z)
 	if (APPLE)
 		set_target_properties(bingo-core-c-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -lc++")

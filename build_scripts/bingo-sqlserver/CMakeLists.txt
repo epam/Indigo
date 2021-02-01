@@ -32,6 +32,7 @@ add_subdirectory(../../third_party/tinyxml "${CMAKE_CURRENT_BINARY_DIR}/tinyxml"
 get_directory_property(TinyXML_HEADERS_DIR DIRECTORY ../../third_party/tinyxml DEFINITION TinyXML_HEADERS_DIR)
 
 add_subdirectory(../../graph "${CMAKE_CURRENT_BINARY_DIR}/graph")
+add_subdirectory(../../experimental "${CMAKE_CURRENT_BINARY_DIR}/experimental")
 add_subdirectory(../../molecule "${CMAKE_CURRENT_BINARY_DIR}/molecule")
 add_subdirectory(../../reaction "${CMAKE_CURRENT_BINARY_DIR}/reaction")
 
