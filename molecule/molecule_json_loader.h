@@ -24,6 +24,7 @@
 #include "base_cpp/non_copyable.h"
 #include "third_party/rapidjson/document.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include <unordered_set>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -57,7 +58,7 @@ namespace indigo
         void parseHighlight( const rapidjson::Value& highlight, BaseMolecule& mol );
         void parseSelection(const rapidjson::Value& selection, BaseMolecule& mol);
         void parseSGroups( const rapidjson::Value& sgroups, BaseMolecule& mol );
-        void handleRepetitions( SGroup& sgroup, BaseMolecule& bmol, int rc, int start, int end );
+        void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
         StereocentersOptions stereochemistry_options;
 

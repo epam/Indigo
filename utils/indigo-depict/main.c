@@ -814,6 +814,7 @@ void _setComment(int obj, Params* p)
 
 int main(int argc, char* argv[])
 {
+    indigoSetOption("molfile-saving-mode", "2000");
     Params p;
     int obj = -1, reader = -1, writer = -1;
     int i = 0;
@@ -863,9 +864,8 @@ int main(int argc, char* argv[])
 
     // read in the input
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
-    /*
-	{
-        int reader2 = indigoReadFile(p.file_to_load);
+/*	{
+        int reader2 = indigoReadFile(p.outfile);
         auto m1 = indigoLoadMolecule(reader);
         auto m2 = indigoLoadMolecule(reader2);
         int ematch = indigoExactMatch(m1, m2, NULL );

@@ -8,7 +8,6 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 
 using namespace rapidjson;
 using namespace indigo;
@@ -408,8 +407,10 @@ void indigo::MoleculeJsonLoader::parseSelection(const rapidjson::Value& selectio
     }
 }
 
-void MoleculeJsonLoader::handleRepetitions(SGroup& sgroup, BaseMolecule& bmol, int rc, int start, int end)
+void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol)
 {
+    int start = sgroup.atoms[0];
+    int end = sgroup.atoms.top();
     int end_bond = -1, start_bond = -1;
     for (auto j : bmol.edges())
     {
@@ -417,12 +418,21 @@ void MoleculeJsonLoader::handleRepetitions(SGroup& sgroup, BaseMolecule& bmol, i
             continue;
 
         const Edge& edge = bmol.getEdge(j);
+        auto itbeg = atoms.find(edge.beg);
+        auto itend = atoms.find(edge.end);
 
-        // bond going out of the sgroup
-        if (start_bond == -1 && (edge.beg == start || edge.end == start))
-            start_bond = j;
-        else if (end_bond == -1 && (edge.beg == end || edge.end == end))
-            end_bond = j;
+		if( itbeg == atoms.end() && itend == atoms.end() )
+            continue;
+        if (itbeg != atoms.end() && itend != atoms.end() )
+            sgroup.bonds.push(j);
+        else
+        {
+            // bond going out of the sgroup
+            if (start_bond == -1 && (edge.beg == start || edge.end == start))
+                start_bond = j;
+            else if (end_bond == -1 && (edge.beg == end || edge.end == end))
+                end_bond = j;
+		}
     }
 
     QS_DEF(Array<int>, mapping);
@@ -435,38 +445,41 @@ void MoleculeJsonLoader::handleRepetitions(SGroup& sgroup, BaseMolecule& bmol, i
     int rep_start = mapping[start];
     int rep_end = mapping[end];
 
-    // already have one instance of the sgroup; add repetitions if they exist
-    for (int j = 0; j < rc - 1; j++)
-    {
-        bmol.mergeWithMolecule(rep.ref(), &mapping, 0);
-        int k;
-        for (k = rep->vertexBegin(); k != rep->vertexEnd(); k = rep->vertexNext(k))
-            sgroup.atoms.push(mapping[k]);
-        for (k = rep->edgeBegin(); k != rep->edgeEnd(); k = rep->edgeNext(k))
-        {
-            const Edge& edge = rep->getEdge(k);
-            sgroup.bonds.push(bmol.findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
-        }
-        if (rep_end >= 0 && end_bond >= 0)
-        {
-            // make new connections from the end of the old fragment
-            // to the beginning of the new one, and from the end of the
-            // new fragment outwards from the sgroup
-            int external = bmol.getEdge(end_bond).findOtherEnd(end);
-            bmol.removeBond(end_bond);
-            if (_pmol != 0)
+	if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
+	{
+        MultipleGroup& mg = (MultipleGroup&)sgroup;
+		if (mg.multiplier > 1)
+		{
+            for (int j = 0; j < mg.multiplier - 1; j++)
             {
-                _pmol->addBond(end, mapping[rep_start], BOND_SINGLE);
-                end_bond = _pmol->addBond(mapping[rep_end], external, BOND_SINGLE);
+                bmol.mergeWithMolecule(rep.ref(), &mapping, 0);
+                int k;
+                for (k = rep->vertexBegin(); k != rep->vertexEnd(); k = rep->vertexNext(k))
+                    sgroup.atoms.push(mapping[k]);
+                for (k = rep->edgeBegin(); k != rep->edgeEnd(); k = rep->edgeNext(k))
+                {
+                    const Edge& edge = rep->getEdge(k);
+                    sgroup.bonds.push(bmol.findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
+                }
+                if (rep_end >= 0 && end_bond >= 0)
+                {
+                    int external = bmol.getEdge(end_bond).findOtherEnd(end);
+                    bmol.removeBond(end_bond);
+                    if (_pmol != 0)
+                    {
+                        _pmol->addBond(end, mapping[rep_start], BOND_SINGLE);
+                        end_bond = _pmol->addBond(mapping[rep_end], external, BOND_SINGLE);
+                    }
+                    else
+                    {
+                        _pqmol->addBond(end, mapping[rep_start], new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+                        end_bond = _pqmol->addBond(mapping[rep_end], external, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+                    }
+                    end = mapping[rep_end];
+                }
             }
-            else
-            {
-                _pqmol->addBond(end, mapping[rep_start], new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
-                end_bond = _pqmol->addBond(mapping[rep_end], external, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
-            }
-            end = mapping[rep_end];
-        }
-    }
+		}
+	}
 }
 
 void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)
@@ -589,22 +602,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                     mg.parent_atoms.push(atom_idx);
             }
         }
-
-        // add bonds
-        for (auto k : mol.edges())
-        {
-            const Edge& edge = mol.getEdge(k);
-            if (sgroup_atoms.find(edge.beg) != sgroup_atoms.end() && sgroup_atoms.find(edge.end) != sgroup_atoms.end())
-                sgroup.bonds.push(k);
-        }
-
-        // expand multiple s-groups
-        if (sg_type == SGroup::SG_TYPE_MUL)
-        {
-            MultipleGroup& mg = (MultipleGroup&)sgroup;
-            if (mg.multiplier)
-                handleRepetitions(sgroup, mol, mg.multiplier, sgroup.atoms[0], sgroup.atoms.top());
-        }
+		handleSGroup(sgroup, sgroup_atoms, mol);
     }
 }
 
