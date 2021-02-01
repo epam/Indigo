@@ -81,6 +81,41 @@ static void filter_atoms(BaseMolecule& mol, const std::unordered_set<int>& selec
         message(result, msg, ids);
     }
 }
+
+static bool isQueryMolecule(BaseMolecule& mol)
+{
+    bool r = mol.isQueryMolecule();
+    if (!r)
+    {
+        for (auto idx : mol.vertices())
+        {
+            r = r || (mol.reaction_atom_exact_change[idx] || mol.reaction_atom_inversion[idx]);
+        }
+        for (auto idx : mol.edges())
+        {
+            r = r || mol.reaction_bond_reacting_center[idx];
+        }
+    }
+    return r;
+}
+
+static bool hasRGroups(BaseMolecule& mol)
+{
+    return !isQueryMolecule(mol) && (mol.countRSites() || mol.attachmentPointCount() || mol.rgroups.getRGroupCount());
+}
+
+static bool hasPseudoAtoms(BaseMolecule& mol)
+{
+    for (auto i : mol.vertices())
+    {
+        if (mol.isPseudoAtom(i))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 //
 
 static void check_load(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
@@ -99,17 +134,18 @@ static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& sele
                           StructureChecker2::CheckResult& result)
 {
 
-    if (mol.isQueryMolecule())
+    if (isQueryMolecule(mol))
     {
-        message(
-            result,
-            StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_QUERY); // 'Structure contains query features, so valency could not be checked'
+        message(result,
+                StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_QUERY); // 'Structure contains query features, so valency could not be
+                                                                                           // checked'
     }
-    else if (mol.hasRGroups())
+    else if (hasRGroups(mol))
     {
-        message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_RGROUP); // 'Structure contains RGroup components, so valency could
+        message(result,
+                StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_RGROUP); // 'Structure contains RGroup components, so valency could
     }
-    else if (!mol.isQueryMolecule() && mol.asMolecule().getIgnoreBadValenceFlag())
+    else if (!isQueryMolecule(mol) && mol.asMolecule().getIgnoreBadValenceFlag())
     {
         message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_IGNORE_VALENCE_ERROR);
     }
@@ -123,7 +159,7 @@ static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& sele
 static void check_radical(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                           StructureChecker2::CheckResult& result)
 {
-    if (mol.hasPseudoAtoms())
+    if (hasPseudoAtoms(mol))
     {
         message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_RADICAL_NOT_CHECKED_PSEUDO);
     }
@@ -141,7 +177,7 @@ static void check_pseudoatom(BaseMolecule& mol, const std::unordered_set<int>& s
 static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                          StructureChecker2::CheckResult& result)
 {
-    if (!mol.isQueryMolecule())
+    if (!isQueryMolecule(mol))
     {
         std::unique_ptr<Molecule> target(new Molecule);
         auto saved_valence_flag = mol.asMolecule().getIgnoreBadValenceFlag();
@@ -204,7 +240,7 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
 static void check_query(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                         StructureChecker2::CheckResult& result)
 {
-    if (mol.isQueryMolecule())
+    if (isQueryMolecule(mol))
     {
         message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_QUERY);
     }
@@ -302,7 +338,7 @@ static void check_overlap_bond(BaseMolecule& mol, const std::unordered_set<int>&
 static void check_rgroup(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                          StructureChecker2::CheckResult& result)
 {
-    if (!mol.isQueryMolecule() && mol.hasRGroups())
+    if (!isQueryMolecule(mol) && hasRGroups(mol))
     {
         message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_RGROUP);
     }
@@ -369,7 +405,7 @@ static void check_salt(BaseMolecule& mol, const std::unordered_set<int>& selecte
 static void check_ambigous_h(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                              StructureChecker2::CheckResult& result)
 {
-    if (mol.isQueryMolecule())
+    if (isQueryMolecule(mol))
     {
         message(result, StructureChecker2::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H_NOT_CHECKED_QUERY);
     }
@@ -439,12 +475,11 @@ StructureChecker2::CheckResult StructureChecker2::checkMolecule(const BaseMolecu
     std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).beg; });
     std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).end; });
 
-    Molecule& mol = ((BaseMolecule&)bmol).isQueryMolecule() ? (Molecule&)((BaseMolecule&)bmol).asQueryMolecule() : ((BaseMolecule&)bmol).asMolecule();
     for (int i = 0; i < sizeof(check_type_checkers) / sizeof(*check_type_checkers); i++)
     {
         if (check_types & (1 << i))
         {
-            check_type_checkers[i](mol, sel_atoms, sel_bonds, result);
+            check_type_checkers[i]((BaseMolecule&)bmol, sel_atoms, sel_bonds, result);
         }
     }
     return result;

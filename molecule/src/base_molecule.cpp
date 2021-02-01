@@ -21,17 +21,17 @@
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
-#include "graph/dfs_walk.h"
 #include "molecule/elements.h"
-#include "molecule/inchi_wrapper.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
 #include "molecule/molecule_substructure_matcher.h"
-#include "molecule/molecule_tautomer_enumerator.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
+#include "molecule/inchi_wrapper.h"
+#include "molecule/molecule_tautomer_enumerator.h"
 #include "molecule/smiles_saver.h"
+#include "graph/dfs_walk.h"
 
 using namespace indigo;
 
@@ -58,35 +58,6 @@ QueryMolecule& BaseMolecule::asQueryMolecule()
 
 bool BaseMolecule::isQueryMolecule()
 {
-    bool r = false;
-    for (auto idx : vertices())
-    {
-        r = r || (reaction_atom_exact_change[idx] || reaction_atom_inversion[idx]);
-    }
-
-    for (auto idx : edges())
-    {
-        r = r || reaction_bond_reacting_center[idx];
-    }
-    return r;
-}
-
-bool BaseMolecule::hasRGroups()
-{
-    if (isQueryMolecule())
-    {
-        throw Error("Query molecule doesn't support RGroups");
-    }
-    return countRSites() || attachmentPointCount() || rgroups.getRGroupCount();
-}
-
-bool BaseMolecule::hasPseudoAtoms()
-{
-    for (auto i : vertices())
-    {
-        if (isPseudoAtom(i))
-            return true;
-    }
     return false;
 }
 
@@ -2998,8 +2969,8 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
             {
                 if (findEdgeIndex(att_atoms[i], idx) > -1)
                 {
-                    // printf("Flip bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", findEdgeIndex(att_atoms[i], idx),
-                    // att_atoms[i], tg_atoms[i], mapping[tg_atoms[i]]);
+                    // printf("Flip bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", findEdgeIndex(att_atoms[i], idx), att_atoms[i],
+                    // tg_atoms[i], mapping[tg_atoms[i]]);
                     flipBond(att_atoms[i], idx, mapping[tg_atoms[i]]);
                 }
                 else if (isTemplateAtom(att_atoms[i]))
@@ -3012,9 +2983,9 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
                             getTemplateAtomAttachmentPointId(att_atoms[i], m, ap_id);
                             int added_bond = this->asMolecule().addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
                             (void)added_bond;
-                            // printf("Add bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", added_bond, att_atoms[i],
-                            // tg_atoms[i], mapping[tg_atoms[i]]); printf("Flip AP  att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d, ap_id =
-                            // %s\n", att_atoms[i], tg_atoms[i], mapping[tg_atoms[i]], ap_id.ptr());
+                            // printf("Add bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", added_bond, att_atoms[i], tg_atoms[i],
+                            // mapping[tg_atoms[i]]); printf("Flip AP  att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d, ap_id = %s\n",
+                            // att_atoms[i], tg_atoms[i], mapping[tg_atoms[i]], ap_id.ptr());
                             _flipTemplateAtomAttachmentPoint(att_atoms[i], idx, ap_id, mapping[tg_atoms[i]]);
                         }
                     }
