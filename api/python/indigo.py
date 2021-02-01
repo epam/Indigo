@@ -144,6 +144,14 @@ class IndigoObject(object):
             Indigo._lib.indigoCheck(self.id, props.encode(ENCODE_ENCODING))
         )
 
+    def check2(self, checkflags=""):
+        if checkflags is None:
+            checkflags = ""
+        self.dispatcher._setSessionId()
+        return self.dispatcher._checkResultString(
+            Indigo._lib.indigoCheckObj2(self.id, checkflags.encode(ENCODE_ENCODING))
+        )
+
     def close(self):
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResult(Indigo._lib.indigoClose(self.id))
@@ -2615,6 +2623,8 @@ class Indigo(object):
 
         Indigo._lib.indigoCheck2.restype = c_char_p
         Indigo._lib.indigoCheck2.argtypes = [c_char_p, c_char_p, c_char_p]
+        Indigo._lib.indigoCheckObj2.restype = c_char_p
+        Indigo._lib.indigoCheckObj2.argtypes = [c_int, c_char_p]
 
         Indigo._lib.indigoCheckStructure.restype = c_char_p
         Indigo._lib.indigoCheckStructure.argtypes = [c_char_p, c_char_p]
@@ -4159,5 +4169,12 @@ class Indigo(object):
         )
 
     def check2(self, moltext, checkflags="", props=""):
-        return Indigo._lib.indigoCheck2(moltext.encode(ENCODE_ENCODING), checkflags.encode(ENCODE_ENCODING), props.encode(ENCODE_ENCODING))
+        if props is None:
+            props = ""
+        if checkflags is None:
+            checkflags = ""
+        self._setSessionId()
+        return self._checkResultString(
+            Indigo._lib.indigoCheck2(moltext.encode(ENCODE_ENCODING), checkflags.encode(ENCODE_ENCODING), props.encode(ENCODE_ENCODING))
+        )
 

@@ -1310,6 +1310,7 @@ CEXPORT const char* indigoCheck2(const char* item, const char* check_flags, cons
     }
     INDIGO_END(0);
 }
+
 CEXPORT const char* indigoCheckObj2(int item, const char* check_flags)
 {
     INDIGO_BEGIN
