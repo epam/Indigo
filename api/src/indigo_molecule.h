@@ -28,7 +28,7 @@
 #include "graph/cycle_enumerator.h"
 #include "graph/edge_subgraph_enumerator.h"
 #include "graph/graph_subtree_enumerator.h"
-#include "api/src/indigo_internal.h"
+#include "indigo_internal.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_neighbourhood_counters.h"
 #include "molecule/query_molecule.h"
@@ -47,7 +47,7 @@ public:
 
     const char* debugInfo();
 
-    static bool is(const IndigoObject& object);
+    static bool is(IndigoObject& object);
 
     indigo::PropertiesMap _properties;
 };
