@@ -424,10 +424,11 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
 		if( itbeg == atoms.end() && itend == atoms.end() )
             continue;
         if (itbeg != atoms.end() && itend != atoms.end() )
-            sgroup.bonds.push(j);
+            continue;
         else
         {
             // bond going out of the sgroup
+            sgroup.bonds.push(j);
             if (start_bond == -1 && (edge.beg == start || edge.end == start))
                 start_bond = j;
             else if (end_bond == -1 && (edge.beg == end || edge.end == end))
@@ -459,7 +460,7 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
                 for (k = rep->edgeBegin(); k != rep->edgeEnd(); k = rep->edgeNext(k))
                 {
                     const Edge& edge = rep->getEdge(k);
-                    sgroup.bonds.push(bmol.findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
+                    // sgroup.bonds.push(bmol.findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
                 }
                 if (rep_end >= 0 && end_bond >= 0)
                 {
