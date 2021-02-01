@@ -52,3 +52,4 @@ api/tests/dotnet/obj/
 api/tests/python/**/out
 **/.__pycache__
 *.pyo
+.DS_Store

@@ -336,51 +336,63 @@ IndigoObject* IndigoQueryReaction::clone()
     return cloneFrom(*this);
 }
 
-int _indigoIterateReaction(int reaction, int subtype){INDIGO_BEGIN{IndigoObject& obj = self.getObject(reaction);
-BaseReaction& rxn = obj.getBaseReaction();
-
-try
+int _indigoIterateReaction(int reaction, int subtype)
 {
-    MonomersProperties& map = obj.getMonomersProperties();
-    return self.addObject(new IndigoReactionIter(rxn, map, subtype));
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(reaction);
+        BaseReaction& rxn = obj.getBaseReaction();
+
+        try
+        {
+            MonomersProperties& map = obj.getMonomersProperties();
+            return self.addObject(new IndigoReactionIter(rxn, map, subtype));
+        }
+        catch (Exception&)
+        {
+            return self.addObject(new IndigoReactionIter(rxn, subtype));
+        }
+    }
+    INDIGO_END(-1);
 }
-catch (Exception&)
+
+CEXPORT int indigoLoadReaction(int source)
 {
-    return self.addObject(new IndigoReactionIter(rxn, subtype));
-}
-}
-INDIGO_END(-1)
-}
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        Scanner& scanner = IndigoScanner::get(obj);
 
-CEXPORT int indigoLoadReaction(int source){INDIGO_BEGIN{IndigoObject& obj = self.getObject(source);
-Scanner& scanner = IndigoScanner::get(obj);
+        ReactionAutoLoader loader(scanner);
 
-ReactionAutoLoader loader(scanner);
+        loader.stereochemistry_options = self.stereochemistry_options;
+        loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+        loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
 
-loader.stereochemistry_options = self.stereochemistry_options;
-loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
-
-AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
-loader.loadReaction(rxnptr->rxn);
-return self.addObject(rxnptr.release());
-}
-INDIGO_END(-1)
+        AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
+        loader.loadReaction(rxnptr->rxn);
+        return self.addObject(rxnptr.release());
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadQueryReaction(int source){INDIGO_BEGIN{IndigoObject& obj = self.getObject(source);
-Scanner& scanner = IndigoScanner::get(obj);
+CEXPORT int indigoLoadQueryReaction(int source)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        Scanner& scanner = IndigoScanner::get(obj);
 
-ReactionAutoLoader loader(scanner);
+        ReactionAutoLoader loader(scanner);
 
-loader.stereochemistry_options = self.stereochemistry_options;
-loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+        loader.stereochemistry_options = self.stereochemistry_options;
+        loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
 
-AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
-loader.loadQueryReaction(rxnptr->rxn);
-return self.addObject(rxnptr.release());
-}
-INDIGO_END(-1)
+        AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+        loader.loadQueryReaction(rxnptr->rxn);
+        return self.addObject(rxnptr.release());
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateReactants(int reaction)
@@ -498,20 +510,24 @@ CEXPORT int indigoCountMolecules(int handle)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoGetMolecule(int reaction, int index){INDIGO_BEGIN{IndigoObject& obj = self.getObject(reaction);
-BaseReaction& rxn = obj.getBaseReaction();
+CEXPORT int indigoGetMolecule(int reaction, int index)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(reaction);
+        BaseReaction& rxn = obj.getBaseReaction();
 
-try
-{
-    MonomersProperties& map = obj.getMonomersProperties();
-    return self.addObject(new IndigoReactionMolecule(rxn, map, index));
-}
-catch (Exception&)
-{
-    return self.addObject(new IndigoReactionMolecule(rxn, index));
-}
-}
-INDIGO_END(-1)
+        try
+        {
+            MonomersProperties& map = obj.getMonomersProperties();
+            return self.addObject(new IndigoReactionMolecule(rxn, map, index));
+        }
+        catch (Exception&)
+        {
+            return self.addObject(new IndigoReactionMolecule(rxn, index));
+        }
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoMapMolecule(int handle, int molecule)
@@ -535,7 +551,7 @@ CEXPORT int indigoMapMolecule(int handle, int molecule)
 
         return self.addObject(new IndigoReactionMolecule(mapping.to, target_index));
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 static int readAAMOptions(const char* mode, ReactionAutomapper& ram)

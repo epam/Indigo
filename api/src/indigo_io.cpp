@@ -86,9 +86,13 @@ Output& IndigoOutput::get(IndigoObject& obj)
     throw IndigoError("%s is not an output", obj.debugInfo());
 }
 
-CEXPORT int indigoReadFile(const char* filename){INDIGO_BEGIN{return self.addObject(new IndigoScanner(new FileScanner(self.filename_encoding, filename)));
-}
-INDIGO_END(-1)
+CEXPORT int indigoReadFile(const char* filename)
+{
+    INDIGO_BEGIN
+    {
+        return self.addObject(new IndigoScanner(new FileScanner(self.filename_encoding, filename)));
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoReadString(const char* str)
@@ -100,48 +104,72 @@ CEXPORT int indigoReadString(const char* str)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoReadBuffer(const char* buffer, int size){INDIGO_BEGIN{return self.addObject(new IndigoScanner(new BufferScanner(buffer, size)));
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoLoadString(const char* str){INDIGO_BEGIN{return self.addObject(new IndigoScanner(str));
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoLoadBuffer(const char* buffer, int size){INDIGO_BEGIN{return self.addObject(new IndigoScanner(buffer, size));
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoWriteFile(const char* filename){INDIGO_BEGIN{return self.addObject(new IndigoOutput(new FileOutput(filename)));
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoClose(int output){INDIGO_BEGIN{IndigoObject& obj = self.getObject(output);
-if (obj.type == IndigoObject::OUTPUT)
+CEXPORT int indigoReadBuffer(const char* buffer, int size)
 {
-    IndigoOutput& out = ((IndigoOutput&)obj);
-    out.ptr.reset(nullptr);
-    return 1;
-}
-else if (obj.type == IndigoObject::SAVER)
-{
-    IndigoSaver& saver = ((IndigoSaver&)obj);
-    saver.close();
-    return 1;
-}
-else
-    throw IndigoError("indigoClose(): does not accept %s", obj.debugInfo());
-}
-INDIGO_END(-1)
+    INDIGO_BEGIN
+    {
+        return self.addObject(new IndigoScanner(new BufferScanner(buffer, size)));
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoWriteBuffer(void){INDIGO_BEGIN{return self.addObject(new IndigoOutput());
+CEXPORT int indigoLoadString(const char* str)
+{
+    INDIGO_BEGIN
+    {
+        return self.addObject(new IndigoScanner(str));
+    }
+    INDIGO_END(-1);
 }
-INDIGO_END(-1)
+
+CEXPORT int indigoLoadBuffer(const char* buffer, int size)
+{
+    INDIGO_BEGIN
+    {
+        return self.addObject(new IndigoScanner(buffer, size));
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoWriteFile(const char* filename)
+{
+    INDIGO_BEGIN
+    {
+        return self.addObject(new IndigoOutput(new FileOutput(filename)));
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoClose(int output)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(output);
+        if (obj.type == IndigoObject::OUTPUT)
+        {
+            IndigoOutput& out = ((IndigoOutput&)obj);
+            out.ptr.reset(nullptr);
+            return 1;
+        }
+        else if (obj.type == IndigoObject::SAVER)
+        {
+            IndigoSaver& saver = ((IndigoSaver&)obj);
+            saver.close();
+            return 1;
+        }
+        else
+            throw IndigoError("indigoClose(): does not accept %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoWriteBuffer(void)
+{
+    INDIGO_BEGIN
+    {
+        return self.addObject(new IndigoOutput());
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT const char* indigoToString(int handle)

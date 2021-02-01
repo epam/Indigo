@@ -19,18 +19,22 @@
 #include "indigo_tautomer_enumerator.h"
 #include "indigo_molecule.h"
 
-CEXPORT int indigoIterateTautomers(int molecule, const char* options){INDIGO_BEGIN{Molecule& mol = self.getObject(molecule).getMolecule();
+CEXPORT int indigoIterateTautomers(int molecule, const char* options)
+{
+    INDIGO_BEGIN
+    {
+        Molecule& mol = self.getObject(molecule).getMolecule();
 
-TautomerMethod method;
-if (strncasecmp(options, "INCHI", 5) == 0)
-    method = INCHI;
-else if (strncasecmp(options, "RSMARTS", 7) == 0)
-    method = RSMARTS;
-else
-    method = RSMARTS;
-return self.addObject(new IndigoTautomerIter(mol, method));
-}
-INDIGO_END(-1)
+        TautomerMethod method;
+        if (strncasecmp(options, "INCHI", 5) == 0)
+            method = INCHI;
+        else if (strncasecmp(options, "RSMARTS", 7) == 0)
+            method = RSMARTS;
+        else
+            method = RSMARTS;
+        return self.addObject(new IndigoTautomerIter(mol, method));
+    }
+    INDIGO_END(-1);
 }
 
 IndigoTautomerIter::IndigoTautomerIter(Molecule& molecule, TautomerMethod method) : IndigoObject(TAUTOMER_ITER), _enumerator(molecule, method), _complete(false)

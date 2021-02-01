@@ -4,15 +4,18 @@ import com.epam.indigo.BingoObject;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.IndigoRecordMolecule;
 import com.epam.indigo.predicate.*;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+
 
 public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
 
@@ -37,8 +40,8 @@ public class CompareSmallFileTest extends NoSQLElasticCompareAbstract {
             bingoDb.insert(indigoObject);
         }
         try {
-            List<IndigoRecord> indigoRecordList =
-                    Helpers.loadFromSdf(testSdfFile);
+            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+            Helpers.iterateSdf(testSdfFile).forEach(indigoRecordList::add);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(10);
         } catch (Exception e) {
