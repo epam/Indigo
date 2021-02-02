@@ -412,6 +412,7 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
     int start = sgroup.atoms[0];
     int end = sgroup.atoms.top();
     int end_bond = -1, start_bond = -1;
+    Array<int> sgbonds;
     for (auto j : bmol.edges())
     {
         if (!bmol.hasEdge(j))
@@ -428,7 +429,7 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
         else
         {
             // bond going out of the sgroup
-            sgroup.bonds.push(j);
+            sgbonds.push(j);
             if (start_bond == -1 && (edge.beg == start || edge.end == start))
                 start_bond = j;
             else if (end_bond == -1 && (edge.beg == end || edge.end == end))
@@ -436,18 +437,17 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
 		}
     }
 
-    QS_DEF(Array<int>, mapping);
-    AutoPtr<BaseMolecule> rep(bmol.neu());
-    rep->makeSubmolecule(bmol, sgroup.atoms, &mapping, 0);
-
-    rep->sgroups.clear(SGroup::SG_TYPE_SRU);
-    rep->sgroups.clear(SGroup::SG_TYPE_MUL);
-
-    int rep_start = mapping[start];
-    int rep_end = mapping[end];
-
 	if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
 	{
+        QS_DEF(Array<int>, mapping);
+        AutoPtr<BaseMolecule> rep(bmol.neu());
+        rep->makeSubmolecule(bmol, sgroup.atoms, &mapping, 0);
+
+        rep->sgroups.clear(SGroup::SG_TYPE_SRU);
+        rep->sgroups.clear(SGroup::SG_TYPE_MUL);
+
+        int rep_start = mapping[start];
+        int rep_end = mapping[end];
         MultipleGroup& mg = (MultipleGroup&)sgroup;
 		if (mg.multiplier > 1)
 		{
@@ -457,11 +457,6 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
                 int k;
                 for (k = rep->vertexBegin(); k != rep->vertexEnd(); k = rep->vertexNext(k))
                     sgroup.atoms.push(mapping[k]);
-                for (k = rep->edgeBegin(); k != rep->edgeEnd(); k = rep->edgeNext(k))
-                {
-                    const Edge& edge = rep->getEdge(k);
-                    // sgroup.bonds.push(bmol.findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
-                }
                 if (rep_end >= 0 && end_bond >= 0)
                 {
                     int external = bmol.getEdge(end_bond).findOtherEnd(end);
@@ -481,6 +476,7 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
             }
 		}
 	}
+    sgroup.bonds.copy( sgbonds );
 }
 
 void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)
