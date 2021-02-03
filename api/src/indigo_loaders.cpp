@@ -549,21 +549,21 @@ CEXPORT int indigoIterateSDF(int reader)
         IndigoObject& obj = self.getObject(reader);
         return self.addObject(new IndigoSdfLoader(IndigoScanner::get(obj)));
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateRDF(int reader){INDIGO_BEGIN{IndigoObject& obj = self.getObject(reader);
 
 return self.addObject(new IndigoRdfLoader(IndigoScanner::get(obj)));
 }
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateSmiles(int reader){INDIGO_BEGIN{IndigoObject& obj = self.getObject(reader);
 
 return self.addObject(new IndigoMultilineSmilesLoader(IndigoScanner::get(obj)));
 }
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoTell(int handle){INDIGO_BEGIN{IndigoObject& obj = self.getObject(handle);
@@ -600,7 +600,7 @@ if (size > max_int)
 else
     return static_cast<int>(size);
 }
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT long long indigoTell64(int handle){INDIGO_BEGIN{IndigoObject& obj = self.getObject(handle);
@@ -629,22 +629,22 @@ if (obj.type == IndigoObject::CDX_REACTION)
 
 throw IndigoError("indigoTell64(): not applicable to %s", obj.debugInfo());
 }
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateSDFile(const char* filename){INDIGO_BEGIN{return self.addObject(new IndigoSdfLoader(filename));
 }
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateRDFile(const char* filename){INDIGO_BEGIN{return self.addObject(new IndigoRdfLoader(filename));
 }
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateSmilesFile(const char* filename){INDIGO_BEGIN{return self.addObject(new IndigoMultilineSmilesLoader(filename));
 }
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 IndigoCmlMolecule::IndigoCmlMolecule(Array<char>& data, int index, long long offset) : IndigoRdfData(CML_MOLECULE, data, index, offset)
@@ -781,12 +781,12 @@ CEXPORT int indigoIterateCML(int reader){INDIGO_BEGIN{IndigoObject& obj = self.g
 
 return self.addObject(new IndigoMultipleCmlLoader(IndigoScanner::get(obj)));
 }
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateCMLFile(const char* filename){INDIGO_BEGIN{return self.addObject(new IndigoMultipleCmlLoader(filename));
 }
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 IndigoCdxMolecule::IndigoCdxMolecule(Array<char>& data, PropertiesMap& properties, int index, long long offset)
@@ -935,7 +935,7 @@ CEXPORT int indigoIterateCDX(int reader){INDIGO_BEGIN{IndigoObject& obj = self.g
 
 return self.addObject(new IndigoMultipleCdxLoader(IndigoScanner::get(obj)));
 }
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoIterateCDXFile(const char* filename)
@@ -944,5 +944,5 @@ CEXPORT int indigoIterateCDXFile(const char* filename)
     {
         return self.addObject(new IndigoMultipleCdxLoader(filename));
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
