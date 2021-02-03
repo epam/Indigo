@@ -19,7 +19,7 @@ tests = [
 
 errors = ''
 for test in tests:
-    with open(joinPath(f"molecules/{test['name']}.mol"), 'r') as file:
+    with open(joinPath('molecules/' + test['name'] + '.mol'), 'r') as file:
         molfile = file.read()
-    print(f"\nTEST: {test['name']}\nResult: {indigo.check2(molfile, test['test'])}")
+    print("\nTEST: " + test['name'] + "\nResult: " + indigo.check2(molfile, test['test']))
     
