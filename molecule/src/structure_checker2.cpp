@@ -575,15 +575,15 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
 static const struct CheckNamesMap
 {
     std::vector<StructureChecker2::CheckTypeCode> all;
-    std::unordered_map<StructureChecker2::CheckTypeCode, std::string> types;
-    std::unordered_map<StructureChecker2::CheckTypeCode, Checker> checkers;
-    std::unordered_map<StructureChecker2::CheckMessageCode, std::string> messages;
+    std::unordered_map<int, std::string> types;
+    std::unordered_map<int, Checker> checkers;
+    std::unordered_map<int, std::string> messages;
     CheckNamesMap()
     {
         std::for_each(check_type_map.begin(), check_type_map.end(), [this](std::pair<std::string, CheckType> t) {
             this->all.push_back(t.second.code);
-            this->types.insert(std::pair<StructureChecker2::CheckTypeCode, const std::string&>(t.second.code, t.first));
-            this->checkers.insert(std::pair<StructureChecker2::CheckTypeCode, const Checker>(t.second.code, t.second.checker));
+            this->types.insert(std::pair<int, const std::string&>((int)t.second.code, t.first));
+            this->checkers.insert(std::pair<int, const Checker>((int)t.second.code, t.second.checker));
             std::copy(t.second.messages.begin(), t.second.messages.end(), std::inserter(this->messages, this->messages.end()));
         });
     }
@@ -597,12 +597,12 @@ StructureChecker2::CheckTypeCode StructureChecker2::getCheckType(const std::stri
 
 std::string StructureChecker2::getCheckType(StructureChecker2::CheckTypeCode code)
 {
-    return check_names_map.types.at(code);
+    return check_names_map.types.at((int)code);
 }
 
 std::string StructureChecker2::getCheckMessage(StructureChecker2::CheckMessageCode code)
 {
-    return check_names_map.messages.at(code);
+    return check_names_map.messages.at((int)code);
 }
 
 struct CheckParams
@@ -703,7 +703,7 @@ StructureChecker2::CheckResult StructureChecker2::checkMolecule(const BaseMolecu
 
     const auto& checkers = check_names_map.checkers;
     std::for_each(ct_uniq.begin(), ct_uniq.end(), [&checkers, &bmol, &sel_atoms, &sel_bonds, &result](CheckTypeCode code) {
-        checkers.at(code)((BaseMolecule&)bmol, sel_atoms, sel_bonds, result);
+        checkers.at((int)code)((BaseMolecule&)bmol, sel_atoms, sel_bonds, result);
     });
     return result;
 }
