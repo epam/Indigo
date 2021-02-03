@@ -409,6 +409,11 @@ public class Indigo {
         return checkResultString(this, lib.indigoCheckStructure(str, params));
     }
 
+    public String check2(String str, String type, String params) {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoCheck2(str, type, params));
+    }
+
     public IndigoObject loadStructure(String str) {
         return loadStructure(str, "");
     }

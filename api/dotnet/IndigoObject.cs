@@ -1678,6 +1678,22 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoCheck(self, type));
         }
 
+        public string check2()
+        {
+            return check2("");
+        }
+
+        public string check2(string type)
+        {
+            if (type == null)
+            {
+                type = "";
+            }
+
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCheckObj2(self, type));
+        }
+
         public IndigoObject fingerprint(string type)
         {
             if (type == null)
