@@ -582,9 +582,11 @@ static const struct CheckNamesMap
     {
         std::for_each(check_type_map.begin(), check_type_map.end(), [this](std::pair<std::string, CheckType> t) {
             this->all.push_back(t.second.code);
-            this->types.insert(std::pair<int, const std::string&>((int)t.second.code, t.first));
-            this->checkers.insert(std::pair<int, const Checker>((int)t.second.code, t.second.checker));
-            std::copy(t.second.messages.begin(), t.second.messages.end(), std::inserter(this->messages, this->messages.end()));
+            this->types.insert(std::pair<int, std::string>((int)t.second.code, t.first));
+            this->checkers.insert(std::pair<int, Checker>((int)t.second.code, t.second.checker));
+            std::for_each(t.second.messages.begin(), t.second.messages.end(), [this](std::pair<StructureChecker2::CheckMessageCode, std::string> it) {
+                this->messages.insert(std::pair<int, std::string>((int)it.first, it.second));
+            });
         });
     }
 } check_names_map;
