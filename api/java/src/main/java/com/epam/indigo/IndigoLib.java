@@ -294,6 +294,10 @@ public interface IndigoLib extends Library {
 
     int indigoCountImplicitHydrogens(int item);
 
+    Pointer indigoCheck2(String item, String type);
+
+    Pointer indigoCheckObj2(int item, String type);
+
     Pointer indigoCheck(int item, String type);
 
     Pointer indigoCheckStructure(String structure, String type);
