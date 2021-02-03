@@ -19,23 +19,7 @@ tests = [
 
 errors = ''
 for test in tests:
-    print(f"\nTEST: {test['name']}\n")
     with open(joinPath(f"molecules/{test['name']}.mol"), 'r') as file:
         molfile = file.read()
-    res = indigo.check2(molfile, test['test'])
-    if (res == test['expected']):
-        print("OK\n")
-    else:
-        print("FAIL\n")
-        err = f"""
-        {test['name']} FAILED:
-           EXPECTED: {test['expected']}
-           ACTUAL: {res}
-           
-           """
-        print(err)
-        errors += err
-if (errors != ""):
-    raise Exception(errors)
-else:
-    print("\nPASSED\n")
+    print(f"\nTEST: {test['name']}\nResult: {indigo.check2(molfile, test['test'])}")
+    
