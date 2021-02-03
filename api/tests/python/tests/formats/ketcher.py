@@ -39,7 +39,7 @@ def test_simple_cis_trans_load(indigo):
 
 def test_complex_load_save_load(indigo):
     """Check load-save-load for some files"""
-    paths = ("molecules/ketcher.mol","molecules/kconv.mol","molecules/all2000.ket","molecules/all2000.mol")
+    paths = ("molecules/ketcher.mol","molecules/all2000.mol")
     for path in paths:
         print(path)
         m1 = indigo.loadMoleculeFromFile(joinPath(path))

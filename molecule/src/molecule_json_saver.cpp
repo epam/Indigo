@@ -319,6 +319,16 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup & sgroup, rapidjson::Writer<ra
         default:
         break;
     }
+
+    if (sgroup.bonds.size())
+    {
+        writer.Key("bonds");
+        writer.StartArray();
+        for (int i = 0; i < sgroup.bonds.size(); ++i)
+            writer.Int(sgroup.bonds[i]);
+        writer.EndArray();
+    }
+
     writer.EndObject();
 }
 
@@ -574,8 +584,6 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule& mol, Writer<StringBuffer>& writ
             writer.StartObject();
             if (mol.attachmentPointCount())
                 saveAttachmentPoint(mol, i, writer);
-            //if (mol.stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
-            //    saveStereoCenter( mol, i, writer );
             QS_DEF(Array<int>, rg_list);
             int radical = 0;
             if( mol.isRSite(i) )
@@ -760,7 +768,7 @@ void MoleculeJsonSaver::saveMolecule( BaseMolecule& bmol )
     writer.EndArray();
 
     saveBonds( *mol, writer );
-    saveSGroups( *mol, writer );
+    saveSGroups( bmol, writer);
     saveHighlights( *mol, writer );
     saveSelection( *mol, writer );
 

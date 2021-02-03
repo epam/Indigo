@@ -409,10 +409,11 @@ void indigo::MoleculeJsonLoader::parseSelection(const rapidjson::Value& selectio
 
 void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol)
 {
-    int start = sgroup.atoms[0];
-    int end = sgroup.atoms.top();
+    int start = -1;
+    int end = -1;
     int end_bond = -1, start_bond = -1;
-    Array<int> sgbonds;
+    QS_DEF(Array<int>, xbonds);
+
     for (auto j : bmol.edges())
     {
         if (!bmol.hasEdge(j))
@@ -429,11 +430,17 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
         else
         {
             // bond going out of the sgroup
-            sgbonds.push(j);
-            if (start_bond == -1 && (edge.beg == start || edge.end == start))
+            xbonds.push(j);
+            if (start_bond == -1 )
+			{
                 start_bond = j;
-            else if (end_bond == -1 && (edge.beg == end || edge.end == end))
+                start = itbeg != atoms.end() ? *itbeg : *itend;
+			}
+			else if (end_bond == -1)
+			{
                 end_bond = j;
+                end = itbeg != atoms.end() ? *itbeg : *itend;
+			}
 		}
     }
 
@@ -451,6 +458,8 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
         MultipleGroup& mg = (MultipleGroup&)sgroup;
 		if (mg.multiplier > 1)
 		{
+            int start_order = start_bond > 0 ? bmol.getBondOrder(start_bond) : -1;
+            int end_order = end_bond > 0 ? bmol.getBondOrder(end_bond): -1;
             for (int j = 0; j < mg.multiplier - 1; j++)
             {
                 bmol.mergeWithMolecule(rep.ref(), &mapping, 0);
@@ -463,20 +472,20 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
                     bmol.removeBond(end_bond);
                     if (_pmol != 0)
                     {
-                        _pmol->addBond(end, mapping[rep_start], BOND_SINGLE);
-                        end_bond = _pmol->addBond(mapping[rep_end], external, BOND_SINGLE);
+                        _pmol->addBond(end, mapping[rep_start], start_order);
+                        end_bond = _pmol->addBond(mapping[rep_end], external, end_order);
                     }
                     else
                     {
-                        _pqmol->addBond(end, mapping[rep_start], new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
-                        end_bond = _pqmol->addBond(mapping[rep_end], external, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+                        _pqmol->addBond(end, mapping[rep_start], new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, start_order));
+                        end_bond = _pqmol->addBond(mapping[rep_end], external, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, end_order));
                     }
                     end = mapping[rep_end];
                 }
             }
 		}
 	}
-    sgroup.bonds.copy( sgbonds );
+    // sgroup.bonds.copy( xbonds );
 }
 
 void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)
@@ -489,6 +498,20 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         int grp_idx = mol.sgroups.addSGroup(sg_type);
         SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
         const Value& atoms = s["atoms"];
+        // add atoms
+        std::unordered_set<int> sgroup_atoms;
+        for (int j = 0; j < atoms.Size(); ++j)
+        {
+            int atom_idx = atoms[j].GetInt();
+            sgroup.atoms.push(atom_idx);
+            sgroup_atoms.insert(atom_idx);
+            if (sg_type == SGroup::SG_TYPE_MUL)
+            {
+                MultipleGroup& mg = (MultipleGroup&)sgroup;
+                if (mg.multiplier)
+                    mg.parent_atoms.push(atom_idx);
+            }
+        }
 
         // add brackets
         Vec2f* p = sgroup.brackets.push();
@@ -563,7 +586,8 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
 
             if (s.HasMember("dataDetached"))
                 dsg.detached = s["dataDetached"].GetBool();
-
+            else
+                dsg.detached = true;
             // TODO: placement = relative, display = display_units
             if (s.HasMember("placement"))
                 dsg.relative = s["placement"].GetBool();
@@ -585,21 +609,19 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         default:
             throw Error("Invalid sgroup type %s", sg_type_str.c_str());
         }
-        // add atoms
-        std::unordered_set<int> sgroup_atoms;
-        for (int j = 0; j < atoms.Size(); ++j)
+
+        if (sg_type != SGroup::SG_TYPE_DAT )
+		    handleSGroup(sgroup, sgroup_atoms, mol);
+
+		if (s.HasMember("bonds"))
         {
-            int atom_idx = atoms[j].GetInt();
-            sgroup.atoms.push(atom_idx);
-            sgroup_atoms.insert(atom_idx);
-            if (sg_type == SGroup::SG_TYPE_MUL)
+            const Value& bonds = s["bonds"];
+            for (int j = 0; j < bonds.Size(); ++j)
             {
-                MultipleGroup& mg = (MultipleGroup&)sgroup;
-                if (mg.multiplier)
-                    mg.parent_atoms.push(atom_idx);
+                sgroup.bonds.push(bonds[j].GetInt());
             }
         }
-		handleSGroup(sgroup, sgroup_atoms, mol);
+
     }
 }
 
