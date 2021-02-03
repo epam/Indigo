@@ -78,7 +78,7 @@ static void filter_atoms(BaseMolecule& mol, const std::unordered_set<int>& selec
 {
     std::vector<int> ids;
     std::copy_if(selected_atoms.begin(), selected_atoms.end(), std::back_inserter(ids), [&mol, &filter, default_filter](int idx) {
-        return (!default_filter || !mol.isPseudoAtom(idx) && !mol.isRSite(idx) && !mol.isTemplateAtom(idx)) && filter(mol, idx);
+        return (!default_filter || (!mol.isPseudoAtom(idx) && !mol.isRSite(idx) && !mol.isTemplateAtom(idx))) && filter(mol, idx);
     });
     if (ids.size())
     {
@@ -237,8 +237,9 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
         });
 
         FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_WRONG_STEREO, [&target](BaseMolecule& mol, int idx) {
-            return mol.stereocenters.exists(idx) && target->stereocenters.exists(idx) && mol.stereocenters.getType(idx) != target->stereocenters.getType(idx) ||
-                   mol.stereocenters.exists(idx) && !target->stereocenters.exists(idx);
+            return (mol.stereocenters.exists(idx) && target->stereocenters.exists(idx) &&
+                    mol.stereocenters.getType(idx) != target->stereocenters.getType(idx)) ||
+                   (mol.stereocenters.exists(idx) && !target->stereocenters.exists(idx));
         });
         FILTER_ATOMS_DEFAULT(StructureChecker2::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO,
                              [&target](BaseMolecule& mol, int idx) { return !mol.stereocenters.exists(idx) && target->stereocenters.exists(idx); });
@@ -579,7 +580,7 @@ static const struct CheckNamesMap
     std::unordered_map<StructureChecker2::CheckMessageCode, const std::string> messages;
     CheckNamesMap()
     {
-        std::for_each(check_type_map.begin(), check_type_map.end(), [this](auto t) {
+        std::for_each(check_type_map.begin(), check_type_map.end(), [this](std::pair<std::string, CheckType> t) {
             this->all.push_back(t.second.code);
             this->types.insert(std::pair<StructureChecker2::CheckTypeCode, const std::string&>(t.second.code, t.first));
             this->checkers.insert(std::pair<StructureChecker2::CheckTypeCode, const Checker>(t.second.code, t.second.checker));
