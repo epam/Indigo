@@ -620,7 +620,7 @@ static CheckParams check_params_from_string(const std::string& params)
     if (!params.empty())
     {
         std::smatch sm1;
-        std::unordered_set<StructureChecker2::CheckTypeCode> ct;
+        std::unordered_set<int> ct;
         std::string s = params;
         std::regex rx1(R"(\b(\w+)\b)", std::regex_constants::icase);
         while (std::regex_search(s, sm1, rx1))
@@ -628,11 +628,12 @@ static CheckParams check_params_from_string(const std::string& params)
             auto code = StructureChecker2::getCheckType(sm1[1]);
             if (code != StructureChecker2::CheckTypeCode::CHECK_NONE)
             {
-                ct.insert(code);
+                ct.insert((int)code);
             }
             s = sm1.suffix();
         }
-        std::copy(ct.begin(), ct.end(), std::back_inserter(r.check_types));
+        std::vector<StructureChecker2::CheckTypeCode> chk;
+        std::for_each(ct.begin(), ct.end(), [&r](int v) { r.check_types.push_back((StructureChecker2::CheckTypeCode)v); });
 
         std::smatch sm2;
         s = params;
