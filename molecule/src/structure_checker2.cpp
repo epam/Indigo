@@ -575,9 +575,9 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
 static const struct CheckNamesMap
 {
     std::vector<StructureChecker2::CheckTypeCode> all;
-    std::unordered_map<StructureChecker2::CheckTypeCode, const std::string> types;
-    std::unordered_map<StructureChecker2::CheckTypeCode, const Checker> checkers;
-    std::unordered_map<StructureChecker2::CheckMessageCode, const std::string> messages;
+    std::unordered_map<StructureChecker2::CheckTypeCode, std::string> types;
+    std::unordered_map<StructureChecker2::CheckTypeCode, Checker> checkers;
+    std::unordered_map<StructureChecker2::CheckMessageCode, std::string> messages;
     CheckNamesMap()
     {
         std::for_each(check_type_map.begin(), check_type_map.end(), [this](std::pair<std::string, CheckType> t) {
