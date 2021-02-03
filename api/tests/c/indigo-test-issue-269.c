@@ -14,7 +14,7 @@
         printf("Test " #NAME "\n\tResponse: %s\n", resp);                                                                                                      \
         if (strcmp(resp, issue269test_##NAME##_response))                                                                                                      \
         {                                                                                                                                                      \
-            printf("\nERROR: \n\tExpected:%s\n\tActual:%s\n\n", issue269test_##NAME##_response, resp);                                                         \
+            printf("\nERROR: \n\tExpected:%s\n\tActual:  %s\n\n", issue269test_##NAME##_response, resp);                                                         \
             r = 1;                                                                                                                                             \
         }                                                                                                                                                      \
         else                                                                                                                                                   \

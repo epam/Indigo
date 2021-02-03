@@ -26,7 +26,11 @@
 #include <iterator>
 #include <memory>
 #include <numeric>
+#include <regex>
+#include <set>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 using namespace indigo;
 
@@ -117,6 +121,11 @@ static bool hasPseudoAtoms(BaseMolecule& mol)
 }
 
 //
+
+static void check_none(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                       StructureChecker2::CheckResult& result)
+{
+}
 
 static void check_load(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                        StructureChecker2::CheckResult& result)
@@ -437,13 +446,225 @@ static void check_v3000(BaseMolecule& mol, const std::unordered_set<int>& select
 #undef FILTER_ATOMS
 #undef FILTER_ATOMS_DEFAULT
 
-static void (*check_type_checkers[])(BaseMolecule&, const std::unordered_set<int>&, const std::unordered_set<int>&, StructureChecker2::CheckResult&) = {
-    &check_load,         &check_valence, &check_radical,    &check_pseudoatom, &check_stereo,    &check_query,       &check_overlap_atom,
-    &check_overlap_bond, &check_rgroup,  &check_sgroup,     &check_tgroup,     &check_chirality, &check_chiral_flag, &check_3d_coord,
-    &check_charge,       &check_salt,    &check_ambigous_h, &check_coord,      &check_v3000};
+/// <summary>
+/// Textual Check Type values for the corresponding CheckTypeCode
+/// are intended for use mainly in host language calls (Java, Python etc.) as a comma-separated list
+///
+/// The check_type_map maps Textual Check Type values to the corresponding CheckTypeCode codes
+/// and CheckMessageCode codes to the corresponding text messages.
+///
+/// checkMolecule(molecule, "load, valence, radical, atoms 1 2 3, bonds 4 5 6, tgroup"
+/// is equivalent to
+/// checkMolecule(molecule, check_types=[CHECK_LOAD, CHECK_VALECE, CHECK_RADICAL, CHECK_TGROUP], selected_atoms=[1,2,3], selected_bonds=[4,5,6]);
+/// </summary>
+typedef void (*Checker)(BaseMolecule&, const std::unordered_set<int>&, const std::unordered_set<int>&, StructureChecker2::CheckResult&);
+struct CheckType
+{
+    StructureChecker2::CheckTypeCode code;
+    Checker checker;
+    std::vector<std::pair<StructureChecker2::CheckMessageCode, std::string>> messages;
+};
+static const std::unordered_map<std::string, CheckType> check_type_map = {
+    {"",
+     {StructureChecker2::CheckTypeCode::CHECK_NONE,
+      &check_none,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_NONE, ""},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_LOAD, "Error at loading structure, wrong format found"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_REACTION, "Reaction component check result"}}}},
 
-StructureChecker2::CheckResult StructureChecker2::checkMolecule(const BaseMolecule& bmol, int check_types, const std::vector<int>& selected_atoms,
-                                                                const std::vector<int>& selected_bonds)
+    {"load", {StructureChecker2::CheckTypeCode::CHECK_LOAD, &check_load, {{StructureChecker2::CheckMessageCode::CHECK_MSG_EMPTY, "Input structure is empty"}}}},
+
+    {"valence",
+     {StructureChecker2::CheckTypeCode::CHECK_VALENCE,
+      &check_valence,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE, "Structure contains atoms with unusuall valence"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_QUERY, "Structure contains query features, so valency could not be checked"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_RGROUP, "Structure contains RGroup components, so valency could not be checked"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_IGNORE_VALENCE_ERROR, "IGNORE_BAD_VALENCE flag is active, so valency could not be checked"}}}},
+
+    {"radical",
+     {StructureChecker2::CheckTypeCode::CHECK_RADICAL,
+      &check_radical,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_RADICAL, "Structure contains radicals"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_RADICAL_NOT_CHECKED_PSEUDO, "Structure contains pseudoatoms, so radicals could not be checked"}}}},
+
+    {"pseudoatom",
+     {StructureChecker2::CheckTypeCode::CHECK_PSEUDOATOM,
+      &check_pseudoatom,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_PSEUDOATOM, "Structure contains pseudoatoms"}}}},
+
+    {"stereo",
+     {StructureChecker2::CheckTypeCode::CHECK_STEREO,
+      &check_stereo,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_3D_STEREO, "Structure contains stereocenters defined by 3D coordinates"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_WRONG_STEREO, "Structure contains incorrect stereochemistry"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO, "Structure contains stereocenters with undefined stereo configuration"}}}},
+
+    {"query",
+     {StructureChecker2::CheckTypeCode::CHECK_QUERY,
+      &check_query,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_QUERY, "Structure contains query features"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_QUERY_ATOM, "Structure contains query features for atoms"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_QUERY_BOND, "Structure contains query features for bonds"}}}},
+
+    {"overlap_atom",
+     {StructureChecker2::CheckTypeCode::CHECK_OVERLAP_ATOM,
+      &check_overlap_atom,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_OVERLAP_ATOM, "Structure contains overlapping atoms"}}}},
+
+    {"overlap_bond",
+     {StructureChecker2::CheckTypeCode::CHECK_OVERLAP_BOND,
+      &check_overlap_bond,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_OVERLAP_BOND, "Structure contains overlapping bonds."}}}},
+
+    {"rgroup",
+     {StructureChecker2::CheckTypeCode::CHECK_RGROUP, &check_rgroup, {{StructureChecker2::CheckMessageCode::CHECK_MSG_RGROUP, "Structure contains R-groups"}}}},
+
+    {"sgroup",
+     {StructureChecker2::CheckTypeCode::CHECK_SGROUP, &check_sgroup, {{StructureChecker2::CheckMessageCode::CHECK_MSG_SGROUP, "Structure contains S-groups"}}}},
+
+    {"tgroup",
+     {StructureChecker2::CheckTypeCode::CHECK_TGROUP,
+      &check_tgroup,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_TGROUP, "Structure contains SCSR templates"}}}},
+
+    {"chirality",
+     {StructureChecker2::CheckTypeCode::CHECK_CHIRALITY,
+      &check_chirality,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_CHIRALITY, "Structure contains chirality"}}}},
+
+    {"chiral_flag",
+     {StructureChecker2::CheckTypeCode::CHECK_CHIRAL_FLAG,
+      &check_chiral_flag,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_CHIRAL_FLAG, "Structure contains wrong chiral flag"}}}},
+
+    {"3d_coord",
+     {StructureChecker2::CheckTypeCode::CHECK_3D_COORD,
+      &check_3d_coord,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_3D_COORD, "Structure contains 3D coordinates"}}}},
+
+    {"charge",
+     {StructureChecker2::CheckTypeCode::CHECK_CHARGE,
+      &check_charge,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_CHARGE, "Structure has non-zero charge"}}}},
+
+    {"salt",
+     {StructureChecker2::CheckTypeCode::CHECK_SALT,
+      &check_salt,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_SALT, "Structure contains charged fragments (possible salt)"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL, "Not implemented yet: check salt"}}}},
+
+    {"ambigous_h",
+     {StructureChecker2::CheckTypeCode::CHECK_AMBIGUOUS_H,
+      &check_ambigous_h,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H, "Structure contains ambiguous hydrogens"},
+       {StructureChecker2::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H_NOT_CHECKED_QUERY,
+        "Structure contains query features, so ambiguous H could not be checked"}}}},
+
+    {"coord",
+     {StructureChecker2::CheckTypeCode::CHECK_COORD,
+      &check_coord,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_ZERO_COORD, "Structure has no atoms coordinates"}}}},
+
+    {"v3000",
+     {StructureChecker2::CheckTypeCode::CHECK_V3000,
+      &check_v3000,
+      {{StructureChecker2::CheckMessageCode::CHECK_MSG_V3000, "Structure supports only Molfile V3000"}}}}};
+
+static const struct CheckNamesMap
+{
+    std::vector<StructureChecker2::CheckTypeCode> all;
+    std::unordered_map<StructureChecker2::CheckTypeCode, const std::string> types;
+    std::unordered_map<StructureChecker2::CheckTypeCode, const Checker> checkers;
+    std::unordered_map<StructureChecker2::CheckMessageCode, const std::string> messages;
+    CheckNamesMap()
+    {
+        std::for_each(check_type_map.begin(), check_type_map.end(), [this](auto t) {
+            this->all.push_back(t.second.code);
+            this->types.insert(std::pair<StructureChecker2::CheckTypeCode, const std::string&>(t.second.code, t.first));
+            this->checkers.insert(std::pair<StructureChecker2::CheckTypeCode, const Checker>(t.second.code, t.second.checker));
+            std::copy(t.second.messages.begin(), t.second.messages.end(), std::inserter(this->messages, this->messages.end()));
+        });
+    }
+} check_names_map;
+
+StructureChecker2::CheckTypeCode StructureChecker2::getCheckType(const std::string& type)
+{
+    auto code = check_type_map.find(type);
+    return code == check_type_map.end() ? StructureChecker2::CheckTypeCode::CHECK_NONE : code->second.code;
+}
+
+std::string StructureChecker2::getCheckType(StructureChecker2::CheckTypeCode code)
+{
+    return check_names_map.types.at(code);
+}
+
+std::string StructureChecker2::getCheckMessage(StructureChecker2::CheckMessageCode code)
+{
+    return check_names_map.messages.at(code);
+}
+
+struct CheckParams
+{
+    std::vector<StructureChecker2::CheckTypeCode> check_types;
+    std::vector<int> selected_atoms;
+    std::vector<int> selected_bonds;
+};
+
+static CheckParams check_params_from_string(const std::string& params)
+{
+    CheckParams r;
+    if (!params.empty())
+    {
+        std::smatch sm1;
+        std::unordered_set<StructureChecker2::CheckTypeCode> ct;
+        std::string s = params;
+        std::regex rx1(R"(\b(\w+)\b)", std::regex_constants::icase);
+        while (std::regex_search(s, sm1, rx1))
+        {
+            auto code = StructureChecker2::getCheckType(sm1[1]);
+            if (code != StructureChecker2::CheckTypeCode::CHECK_NONE)
+            {
+                ct.insert(code);
+            }
+            s = sm1.suffix();
+        }
+        std::copy(ct.begin(), ct.end(), std::back_inserter(r.check_types));
+
+        std::smatch sm2;
+        s = params;
+        std::regex rx2(R"(\b(atoms|bonds)\b((?:\W+\b\d+\b\W*?)+))", std::regex_constants::icase);
+        std::regex rx3(R"(\b(\d+)\b)");
+        std::smatch sm3;
+        while (std::regex_search(s, sm2, rx2))
+        {
+            std::vector<int>& vec = std::tolower(sm2[1].str()[0]) == 'a' ? r.selected_atoms : r.selected_bonds;
+            std::string a = sm2[2];
+            while (std::regex_search(a, sm3, rx3))
+            {
+                vec.push_back(atoi(sm3[1].str().c_str()));
+                a = sm3.suffix();
+            }
+            s = sm2.suffix();
+        }
+    }
+    return r;
+}
+
+StructureChecker2::CheckResult StructureChecker2::checkMolecule(const BaseMolecule& item, const std::string& check_types_and_selections)
+{
+    auto pars = check_params_from_string(check_types_and_selections);
+    return checkMolecule(item, pars.check_types, pars.selected_atoms, pars.selected_bonds);
+}
+StructureChecker2::CheckResult StructureChecker2::checkMolecule(const BaseMolecule& item, const std::string& check_types,
+                                                                const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
+{
+    auto pars = check_params_from_string(check_types);
+    return checkMolecule(item, pars.check_types, selected_atoms, selected_bonds);
+}
+
+StructureChecker2::CheckResult StructureChecker2::checkMolecule(const BaseMolecule& bmol, const std::vector<CheckTypeCode>& check_types,
+                                                                const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
 {
     StructureChecker2::CheckResult result;
 
@@ -475,17 +696,24 @@ StructureChecker2::CheckResult StructureChecker2::checkMolecule(const BaseMolecu
     std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).beg; });
     std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).end; });
 
-    for (int i = 0; i < sizeof(check_type_checkers) / sizeof(*check_type_checkers); i++)
-    {
-        if (check_types & (1 << i))
-        {
-            check_type_checkers[i]((BaseMolecule&)bmol, sel_atoms, sel_bonds, result);
-        }
-    }
+    const auto& ct = check_types.size() ? check_types : check_names_map.all;
+    std::set<CheckTypeCode> ct_uniq;
+    std::copy(ct.begin(), ct.end(), std::inserter(ct_uniq, ct_uniq.end()));
+
+    const auto& checkers = check_names_map.checkers;
+    std::for_each(ct_uniq.begin(), ct_uniq.end(), [&checkers, &bmol, &sel_atoms, &sel_bonds, &result](CheckTypeCode code) {
+        checkers.at(code)((BaseMolecule&)bmol, sel_atoms, sel_bonds, result);
+    });
     return result;
 }
 
-StructureChecker2::CheckResult StructureChecker2::checkReaction(const BaseReaction& reaction, int check_types)
+StructureChecker2::CheckResult StructureChecker2::checkReaction(const BaseReaction& reaction, const std::string& check_types)
+{
+    auto pars = check_params_from_string(check_types);
+    return checkReaction(reaction, pars.check_types);
+}
+
+StructureChecker2::CheckResult StructureChecker2::checkReaction(const BaseReaction& reaction, const std::vector<CheckTypeCode>& check_types)
 {
     CheckResult r;
     bool query = ((BaseReaction&)reaction).isQueryReaction();
@@ -507,43 +735,6 @@ StructureChecker2::CheckResult StructureChecker2::checkReaction(const BaseReacti
     return r;
 }
 
-static const std::string message_list[] = {"",
-                                           "Error at loading structure, wrong format found",
-                                           "Structure contains atoms with unusuall valence",
-                                           "Structure contains query features, so valency could not be checked",
-                                           "Structure contains RGroup components, so valency could not be checked",
-                                           "IGNORE_BAD_VALENCE flag is active",
-                                           "Structure contains radicals",
-                                           "Structure contains pseudoatoms, so radicals could not be checked",
-                                           "Structure contains pseudoatoms",
-                                           "Structure contains wrong chiral flag",
-                                           "Structure contains incorrect stereochemistry",
-                                           "Structure contains stereocenters defined by 3D coordinates",
-                                           "Structure contains stereocenters with undefined stereo configuration",
-                                           "CHECK_MSG_IGNORE_STEREO_ERROR",
-                                           "Structure contains query features",
-                                           "Structure contains query features for atoms",
-                                           "Structure contains query features for bonds",
-                                           "CHECK_MSG_IGNORE_QUERY_FEATURE",
-                                           "Structure contains overlapping atoms",
-                                           "Structure contains overlapping bonds.",
-                                           "Structure contains R-groups",
-                                           "Structure contains S-groups",
-                                           "Structure contains SCSR templates",
-                                           "Structure has non-zero charge",
-                                           "Structure contains charged fragments (possible salt)",
-                                           "Input structure is empty",
-                                           "Structure contains ambiguous hydrogens",
-                                           "Structure contains query features, so ambiguous H could not be checked",
-                                           "Structure contains 3D coordinates",
-                                           "Structure has no atoms coordinates",
-                                           "Reaction component check result",
-                                           "Structure contains chirality",
-                                           "Not implemented yet: check salt",
-                                           "Structure supports only Molfile V3000"
-
-};
-
 StructureChecker2::CheckMessage::CheckMessage()
 {
 }
@@ -557,5 +748,5 @@ StructureChecker2::CheckMessage::CheckMessage(StructureChecker2::CheckMessageCod
 
 std::string StructureChecker2::CheckMessage::message()
 {
-    return message_list[(size_t)code];
+    return StructureChecker2::getCheckMessage(code);
 }

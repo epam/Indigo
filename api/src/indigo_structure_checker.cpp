@@ -25,78 +25,98 @@
 #include "third_party/rapidjson/stringbuffer.h"
 #include "third_party/rapidjson/writer.h"
 #include <functional>
-#include <regex>
 #include <string>
 
 using namespace indigo;
-
-struct CheckParams
-{
-    int check_flags = StructureChecker2::CHECK_ALL;
-    std::vector<int> selected_atoms;
-    std::vector<int> selected_bonds;
-};
-
-static constexpr const char* checkTypeName[] = {
-    IndigoStructureChecker::CHECK_NONE_TXT,      IndigoStructureChecker::CHECK_LOAD_TXT,         IndigoStructureChecker::CHECK_VALENCE_TXT,
-    IndigoStructureChecker::CHECK_RADICAL_TXT,   IndigoStructureChecker::CHECK_PSEUDOATOM_TXT,   IndigoStructureChecker::CHECK_STEREO_TXT,
-    IndigoStructureChecker::CHECK_QUERY_TXT,     IndigoStructureChecker::CHECK_OVERLAP_ATOM_TXT, IndigoStructureChecker::CHECK_OVERLAP_BOND_TXT,
-    IndigoStructureChecker::CHECK_RGROUP_TXT,    IndigoStructureChecker::CHECK_SGROUP_TXT,       IndigoStructureChecker::CHECK_TGROUP_TXT,
-    IndigoStructureChecker::CHECK_CHIRALITY_TXT, IndigoStructureChecker::CHECK_CHIRAL_FLAG_TXT,  IndigoStructureChecker::CHECK_3D_COORD_TXT,
-    IndigoStructureChecker::CHECK_CHARGE_TXT,    IndigoStructureChecker::CHECK_SALT_TXT,         IndigoStructureChecker::CHECK_AMBIGUOUS_H_TXT,
-    IndigoStructureChecker::CHECK_COORD_TXT,     IndigoStructureChecker::CHECK_V3000_TXT,        IndigoStructureChecker::CHECK_ALL_TXT};
-
-static CheckParams check_params_from_string(const char* params)
-{
-    CheckParams r;
-    size_t len = sizeof(checkTypeName) / sizeof(*checkTypeName);
-    if (params)
-    {
-        std::smatch sm1;
-        std::unordered_set<std::string> words;
-        std::string s(params);
-        std::regex rx1(R"(\b(\w+)\b)", std::regex_constants::icase);
-        while (std::regex_search(s, sm1, rx1))
-        {
-            words.insert(sm1[1]);
-            s = sm1.suffix();
-        }
-        r.check_flags = StructureChecker2::CHECK_NONE;
-        for (int i = 0; i < len; i++)
-        {
-            if (words.find(std::string(checkTypeName[i])) != words.end())
-            {
-                r.check_flags |= 1 << i;
-            }
-        }
-        r.check_flags = !r.check_flags || r.check_flags & 1 << (len - 1) ? StructureChecker2::CHECK_ALL
-                                                                         : (r.check_flags == 1 ? StructureChecker2::CHECK_NONE : r.check_flags >> 1);
-
-        std::smatch sm2;
-        s = params;
-        std::regex rx2(R"(\b(atoms|bonds)\b((?:\W+\b\d+\b\W*?)+))", std::regex_constants::icase);
-        std::regex rx3(R"(\b(\d+)\b)");
-        std::smatch sm3;
-        while (std::regex_search(s, sm2, rx2))
-        {
-            std::vector<int>& vec = std::tolower(sm2[1].str()[0]) == 'a' ? r.selected_atoms : r.selected_bonds;
-            std::string a = sm2[2];
-            while (std::regex_search(a, sm3, rx3))
-            {
-                vec.push_back(atoi(sm3[1].str().c_str()));
-                a = sm3.suffix();
-            }
-            s = sm2.suffix();
-        }
-    }
-    return r;
-}
 
 IndigoStructureChecker::IndigoStructureChecker()
 {
 }
 
-StructureChecker2::CheckResult IndigoStructureChecker::check(const char* item, const char* check_flags, const char* load_params)
+enum class CheckMode
+{
+    STRING_ALL,
+    STRING_TYPES,
+    BIN_ALL
+};
+
+static StructureChecker2::CheckResult _check(CheckMode mode, IndigoStructureChecker& thisPtr, int handleitem, const std::string& check_types_str,
+                                             const IndigoObject* objitem, const std::vector<StructureChecker2::CheckTypeCode>& check_types,
+                                             const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
+{
+    StructureChecker2::CheckResult r;
+    if (handleitem < 0)
+    {
+        StructureChecker2::CheckMessage msg;
+        msg.code = StructureChecker2::CheckMessageCode::CHECK_MSG_LOAD;
+        r.messages.push_back(msg);
+    }
+    else
+    {
+        const IndigoObject& item = objitem ? *objitem : indigoGetInstance().getObject(handleitem);
+        if (IndigoBaseMolecule::is((IndigoObject&)item))
+        {
+            switch (mode)
+            {
+            case CheckMode::STRING_ALL:
+                r = thisPtr.checkMolecule(((IndigoObject&)item).getBaseMolecule(), check_types_str);
+                break;
+            case CheckMode::STRING_TYPES:
+                r = thisPtr.checkMolecule(((IndigoObject&)item).getBaseMolecule(), check_types_str, selected_atoms, selected_bonds);
+                break;
+            case CheckMode::BIN_ALL:
+                r = thisPtr.checkMolecule(((IndigoObject&)item).getBaseMolecule(), check_types, selected_atoms, selected_bonds);
+                break;
+            }
+        }
+        else if (IndigoBaseReaction::is((IndigoObject&)item))
+        {
+            switch (mode)
+            {
+            case CheckMode::STRING_ALL:
+            case CheckMode::STRING_TYPES:
+                r = thisPtr.checkReaction(((IndigoObject&)item).getBaseReaction(), check_types_str);
+                break;
+            case CheckMode::BIN_ALL:
+                r = thisPtr.checkReaction(((IndigoObject&)item).getBaseReaction(), check_types);
+                break;
+            }
+        }
+        else if (IndigoAtom::is((IndigoObject&)item))
+        {
+            IndigoAtom& ia = IndigoAtom::cast((IndigoObject&)item);
+            std::vector<int> atoms = {ia.getIndex() + 1};
+            switch (mode)
+            {
+            case CheckMode::STRING_ALL:
+            case CheckMode::STRING_TYPES:
+                r = thisPtr.checkMolecule(ia.mol, check_types_str, atoms, {});
+                break;
+            case CheckMode::BIN_ALL:
+                r = thisPtr.checkMolecule(ia.mol, check_types, atoms);
+                break;
+            }
+        }
+        else if (IndigoBond::is((IndigoObject&)item))
+        {
+            IndigoBond& ib = IndigoBond::cast((IndigoObject&)item);
+            std::vector<int> bonds = {ib.getIndex() + 1};
+            switch (mode)
+            {
+            case CheckMode::STRING_ALL:
+            case CheckMode::STRING_TYPES:
+                r = thisPtr.checkMolecule(ib.mol, check_types_str, std::vector<int>(), bonds);
+                break;
+            case CheckMode::BIN_ALL:
+                r = thisPtr.checkMolecule(ib.mol, check_types, std::vector<int>(), bonds);
+                break;
+            }
+        }
+    }
+    return r;
+}
+
+StructureChecker2::CheckResult IndigoStructureChecker::check(const char* item, const char* check_types, const char* load_params)
 {
     std::string lp = std::string(load_params ? load_params : "");
 
@@ -105,59 +125,32 @@ StructureChecker2::CheckResult IndigoStructureChecker::check(const char* item, c
     {
         it = indigoLoadStructureFromString(item, (lp + " query").c_str()); //##!!!PATCH
     }
-    auto r = check(it, check_flags);
+    auto r = check(it, check_types);
     indigoFree(it);
     return r;
 }
 
-StructureChecker2::CheckResult IndigoStructureChecker::check(int item, const char* check_flags)
+StructureChecker2::CheckResult IndigoStructureChecker::check(int item, const char* check_types)
 {
-    auto p = check_params_from_string(check_flags);
-    return check(item, p.check_flags, p.selected_atoms, p.selected_bonds);
+    return _check(CheckMode::STRING_ALL, *this, item, check_types, nullptr, {}, {}, {});
 }
 
-StructureChecker2::CheckResult IndigoStructureChecker::check(int item, int check_types, const std::vector<int>& selected_atoms,
+StructureChecker2::CheckResult IndigoStructureChecker::check(int item, const char* check_types, const std::vector<int>& selected_atoms,
                                                              const std::vector<int>& selected_bonds)
 {
-    if (item < 0)
-    {
-        StructureChecker2::CheckMessage msg;
-        msg.code = StructureChecker2::CheckMessageCode::CHECK_MSG_LOAD;
-        StructureChecker2::CheckResult cr;
-        cr.messages.push_back(msg);
-        return cr;
-    }
-    else
-    {
-        return check(indigoGetInstance().getObject(item), check_types, selected_atoms, selected_bonds);
-    }
+    return _check(CheckMode::STRING_TYPES, *this, item, check_types, nullptr, {}, selected_atoms, selected_bonds);
 }
 
-StructureChecker2::CheckResult IndigoStructureChecker::check(const IndigoObject& item, int check_types, const std::vector<int>& selected_atoms,
+StructureChecker2::CheckResult IndigoStructureChecker::check(int item, const std::vector<CheckTypeCode>& check_types, const std::vector<int>& selected_atoms,
                                                              const std::vector<int>& selected_bonds)
 {
-    CheckResult r;
-    if (IndigoBaseMolecule::is((IndigoObject&)item))
-    {
-        r = checkMolecule(((IndigoObject&)item).getBaseMolecule(), check_types, selected_atoms, selected_bonds);
-    }
-    else if (IndigoBaseReaction::is((IndigoObject&)item))
-    {
-        r = checkReaction(((IndigoObject&)item).getBaseReaction(), check_types);
-    }
-    else if (IndigoAtom::is((IndigoObject&)item))
-    {
-        IndigoAtom& ia = IndigoAtom::cast((IndigoObject&)item);
-        std::vector<int> atoms = {ia.getIndex() + 1};
-        r = checkMolecule(ia.mol, check_types, atoms);
-    }
-    else if (IndigoBond::is((IndigoObject&)item))
-    {
-        IndigoBond& ib = IndigoBond::cast((IndigoObject&)item);
-        std::vector<int> bonds = {ib.getIndex() + 1};
-        r = checkMolecule(ib.mol, check_types, std::vector<int>(), bonds);
-    }
-    return r;
+    return _check(CheckMode::BIN_ALL, *this, item, "", nullptr, check_types, selected_atoms, selected_bonds);
+}
+
+StructureChecker2::CheckResult IndigoStructureChecker::check(const IndigoObject& item, const std::vector<CheckTypeCode>& check_types,
+                                                             const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
+{
+    return _check(CheckMode::BIN_ALL, *this, 0, "", &item, check_types, selected_atoms, selected_bonds);
 }
 
 using namespace rapidjson;

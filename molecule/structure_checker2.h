@@ -16,13 +16,11 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __structure_checker3__
-#define __structure_checker3__
+#ifndef __structure_checker2__
+#define __structure_checker2__
 
-#include "base_c/defs.h"
 #include "base_cpp/exception.h"
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 namespace indigo
@@ -34,29 +32,28 @@ namespace indigo
     class DLLEXPORT StructureChecker2
     {
     public:
-        enum CheckTypeCode
+        enum class CheckTypeCode
         {
-            CHECK_NONE = 0x00000000,         // Check none
-            CHECK_LOAD = 0x00000001,         // Check loading (correspondence some known format)
-            CHECK_VALENCE = 0x00000002,      // Check valence correctness
-            CHECK_RADICAL = 0x00000004,      // Check radicals existence
-            CHECK_PSEUDOATOM = 0x00000008,   // Check pseudoatoms existence
-            CHECK_STEREO = 0x00000010,       // Check stereochemistry description correctness
-            CHECK_QUERY = 0x00000020,        // Check query features existence
-            CHECK_OVERLAP_ATOM = 0x00000040, // Check overlapping atoms existence
-            CHECK_OVERLAP_BOND = 0x00000080, // Check overlapping bonds existence
-            CHECK_RGROUP = 0x00000100,       // Check R-groups existence
-            CHECK_SGROUP = 0x00000200,       // Check S-groups existence
-            CHECK_TGROUP = 0x00000400,       // Check T-groups existence (SCSR features)
-            CHECK_CHIRALITY = 0x00000800,    // Check chirality feature correctness (including 3D source)
-            CHECK_CHIRAL_FLAG = 0x00001000,  // Check chiral flag existence (MOLFILE format)
-            CHECK_3D_COORD = 0x00002000,     // Check 3D coordinates existence
-            CHECK_CHARGE = 0x00004000,       // Check charged structure
-            CHECK_SALT = 0x00008000,         // Check possible salt structure
-            CHECK_AMBIGUOUS_H = 0x00010000,  // Check ambiguous H existence
-            CHECK_COORD = 0x00020000,        // Check coordinates existence
-            CHECK_V3000 = 0x00040000,        // Check v3000 format
-            CHECK_ALL = -1                   // Check all features (default)
+            CHECK_NONE,         // Check nothing
+            CHECK_LOAD,         // Check loading (correspondence some known format)
+            CHECK_VALENCE,      // Check valence correctness
+            CHECK_RADICAL,      // Check radicals existence
+            CHECK_PSEUDOATOM,   // Check pseudoatoms existence
+            CHECK_STEREO,       // Check stereochemistry description correctness
+            CHECK_QUERY,        // Check query features existence
+            CHECK_OVERLAP_ATOM, // Check overlapping atoms existence
+            CHECK_OVERLAP_BOND, // Check overlapping bonds existence
+            CHECK_RGROUP,       // Check R-groups existence
+            CHECK_SGROUP,       // Check S-groups existence
+            CHECK_TGROUP,       // Check T-groups existence (SCSR features)
+            CHECK_CHIRALITY,    // Check chirality feature correctness (including 3D source)
+            CHECK_CHIRAL_FLAG,  // Check chiral flag existence (MOLFILE format)
+            CHECK_3D_COORD,     // Check 3D coordinates existence
+            CHECK_CHARGE,       // Check charged structure
+            CHECK_SALT,         // Check possible salt structure
+            CHECK_AMBIGUOUS_H,  // Check ambiguous H existence
+            CHECK_COORD,        // Check coordinates existence
+            CHECK_V3000         // Check v3000 format
         };
 
         enum class CheckMessageCode
@@ -74,11 +71,9 @@ namespace indigo
             CHECK_MSG_WRONG_STEREO,
             CHECK_MSG_3D_STEREO,
             CHECK_MSG_UNDEFINED_STEREO,
-            CHECK_MSG_IGNORE_STEREO_ERROR,
             CHECK_MSG_QUERY,
             CHECK_MSG_QUERY_ATOM,
             CHECK_MSG_QUERY_BOND,
-            CHECK_MSG_IGNORE_QUERY_FEATURE,
             CHECK_MSG_OVERLAP_ATOM,
             CHECK_MSG_OVERLAP_BOND,
             CHECK_MSG_RGROUP,
@@ -119,9 +114,21 @@ namespace indigo
 
         StructureChecker2();
 
-        CheckResult checkMolecule(const BaseMolecule& item, int check_flags = CHECK_ALL, const std::vector<int>& selected_atoms = std::vector<int>(),
-                                  const std::vector<int>& selected_bonds = std::vector<int>());
-        CheckResult checkReaction(const BaseReaction& reaction, int check_types);
+        CheckResult checkMolecule(const BaseMolecule& item, const std::string& check_types_and_selections = "");
+        CheckResult checkMolecule(const BaseMolecule& item, const std::string& check_types, const std::vector<int>& selected_atoms,
+                                  const std::vector<int>& selected_bonds);
+        CheckResult checkMolecule(const BaseMolecule& item, const std::vector<CheckTypeCode>& check_types = std::vector<CheckTypeCode>(),
+                                  const std::vector<int>& selected_atoms = std::vector<int>(), const std::vector<int>& selected_bonds = std::vector<int>());
+
+        CheckResult checkReaction(const BaseReaction& reaction, const std::string& check_types = "");
+        CheckResult checkReaction(const BaseReaction& reaction, const std::vector<CheckTypeCode>& check_types = std::vector<CheckTypeCode>());
+
+
+        static CheckTypeCode getCheckType(const std::string& type);
+        static std::string getCheckType(StructureChecker2::CheckTypeCode code);
+        static std::string getCheckMessage(StructureChecker2::CheckMessageCode code);
+
+
         DECL_ERROR;
 
     private:
