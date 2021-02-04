@@ -3565,7 +3565,7 @@ CEXPORT int indigoCloneComponent(int molecule, int index)
     {
         BaseMolecule& bm = self.getObject(molecule).getBaseMolecule();
         if (index < 0 || index >= bm.countComponents())
-            throw IndigoError("indigoCloneComponent(): bad index %d (0-%d allowed)", bm.countComponents() - 1);
+            throw IndigoError("indigoCloneComponent(): bad index %d (0-%d allowed)", index, bm.countComponents() - 1);
 
         Filter filter(bm.getDecomposition().ptr(), Filter::EQ, index);
         AutoPtr<IndigoMolecule> im(new IndigoMolecule());
@@ -3593,7 +3593,7 @@ CEXPORT int indigoComponent(int molecule, int index)
         BaseMolecule& bm = self.getObject(molecule).getBaseMolecule();
 
         if (index < 0 || index >= bm.countComponents())
-            throw IndigoError("indigoComponent(): bad index %d (0-%d allowed)", bm.countComponents() - 1);
+            throw IndigoError("indigoComponent(): bad index %d (0-%d allowed)", index, bm.countComponents() - 1);
 
         return self.addObject(new IndigoMoleculeComponent(bm, index));
     }
