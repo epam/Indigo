@@ -241,7 +241,7 @@ static MultilineTextLayout _parseTextLayout(const char* text)
     float val;
     if (scanner.tryReadFloat(val))
     {
-        float eps = 1e-6f;
+        const float eps = 1e-6f;
         if (fabs(val) < eps)
             text = "left";
         else if (fabs(val - 0.5f) < eps)
@@ -604,7 +604,7 @@ public:
 
 _IndigoRenderingOptionsHandlersSetter::_IndigoRenderingOptionsHandlersSetter()
 {
-    OptionManager& mgr = indigoGetOptionManager();
+    IndigoOptionManager& mgr = indigoGetOptionManager();
     OsLocker locker(mgr.lock);
 
 #define rp indigoRendererGetInstance().renderParams

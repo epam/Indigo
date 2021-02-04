@@ -20,7 +20,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Upload artifacts
@@ -37,7 +37,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py
       - name: Upload artifacts
@@ -54,7 +54,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Build native libs
         run: python build_scripts/indigo-release-libs.py --preset=mac-universal
       - name: Upload artifacts
@@ -73,7 +73,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download Linux native libs
@@ -133,7 +133,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -160,7 +160,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -187,7 +187,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -213,7 +213,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -239,7 +239,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -267,7 +267,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags
+        run: git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download native shared libraries

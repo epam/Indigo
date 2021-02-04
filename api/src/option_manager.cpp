@@ -20,20 +20,20 @@
 #include "base_cpp/scanner.h"
 #include "option_manager.h"
 
-ThreadSafeStaticObj<OptionManager> indigo_option_manager;
+ThreadSafeStaticObj<IndigoOptionManager> indigo_option_manager;
 
-DLLEXPORT OptionManager& indigoGetOptionManager()
+DLLEXPORT IndigoOptionManager& indigoGetOptionManager()
 {
     return indigo_option_manager.ref();
 }
 
-IMPL_ERROR(OptionManager, "option manager");
+IMPL_ERROR(IndigoOptionManager, "option manager");
 
-OptionManager::OptionManager()
+IndigoOptionManager::IndigoOptionManager()
 {
 }
 
-void OptionManager::callOptionHandlerInt(const char* name, int value)
+void IndigoOptionManager::callOptionHandlerInt(const char* name, int value)
 {
     CHECK_OPT_DEFINED(name);
 
@@ -49,7 +49,7 @@ void OptionManager::callOptionHandlerInt(const char* name, int value)
         callOptionHandlerT(name, value);
 }
 
-void OptionManager::callOptionHandlerBool(const char* name, int value)
+void IndigoOptionManager::callOptionHandlerBool(const char* name, int value)
 {
     CHECK_OPT_DEFINED(name);
     if (typeMap.at(name) == OPTION_BOOL)
@@ -58,7 +58,7 @@ void OptionManager::callOptionHandlerBool(const char* name, int value)
         callOptionHandlerT(name, value);
 }
 
-void OptionManager::callOptionHandlerFloat(const char* name, float value)
+void IndigoOptionManager::callOptionHandlerFloat(const char* name, float value)
 {
     CHECK_OPT_DEFINED(name);
     if (typeMap.at(name) == OPTION_FLOAT)
@@ -67,34 +67,34 @@ void OptionManager::callOptionHandlerFloat(const char* name, float value)
         callOptionHandlerT(name, value);
 }
 
-void OptionManager::callOptionHandlerVoid(const char* name)
+void IndigoOptionManager::callOptionHandlerVoid(const char* name)
 {
     CHECK_OPT_DEFINED(name);
     voidFunctions.at(name)();
 }
 
-void OptionManager::callOptionHandlerColor(const char* name, float r, float g, float b)
+void IndigoOptionManager::callOptionHandlerColor(const char* name, float r, float g, float b)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_COLOR);
     colorSetters.at(name)(r, g, b);
 }
 
-void OptionManager::callOptionHandlerXY(const char* name, int x, int y)
+void IndigoOptionManager::callOptionHandlerXY(const char* name, int x, int y)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_XY);
     xySetters.at(name)(x, y);
 }
 
-void OptionManager::getOptionValueInt(const char* name, int& value)
+void IndigoOptionManager::getOptionValueInt(const char* name, int& value)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_INT);
     intGetters.at(name)(value);
 }
 
-void OptionManager::getOptionValueStr(const char* name, Array<char>& value)
+void IndigoOptionManager::getOptionValueStr(const char* name, Array<char>& value)
 {
     CHECK_OPT_DEFINED(name);
 
@@ -153,45 +153,45 @@ void OptionManager::getOptionValueStr(const char* name, Array<char>& value)
     }
 }
 
-void OptionManager::getOptionValueBool(const char* name, int& value)
+void IndigoOptionManager::getOptionValueBool(const char* name, int& value)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_BOOL);
     boolGetters.at(name)(value);
 }
 
-void OptionManager::getOptionValueFloat(const char* name, float& value)
+void IndigoOptionManager::getOptionValueFloat(const char* name, float& value)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_FLOAT);
     floatGetters.at(name)(value);
 }
 
-void OptionManager::getOptionValueColor(const char* name, float& r, float& g, float& b)
+void IndigoOptionManager::getOptionValueColor(const char* name, float& r, float& g, float& b)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_COLOR);
     colorGetters.at(name)(r, g, b);
 }
 
-void OptionManager::getOptionValueXY(const char* name, int& x, int& y)
+void IndigoOptionManager::getOptionValueXY(const char* name, int& x, int& y)
 {
     CHECK_OPT_DEFINED(name);
     CHECK_OPT_TYPE(name, OPTION_XY);
     xyGetters.at(name)(x, y);
 }
 
-void OptionManager::getOptionType(const char* name, Array<char>& value)
+void IndigoOptionManager::getOptionType(const char* name, Array<char>& value)
 {
     CHECK_OPT_DEFINED(name);
     if (!typeMap.find(name))
         throw Error("Property \"%s\" not defined", name);
 
     auto copyString = [](const char* source, char* dest, int len) {
-        if (strlen(source) > len)
-            throw Error("invalid string value len: expected len: %d, actual len: %d", len, strlen(source));
-        memset(dest, ' ', len);
-        strcpy(dest, source);
+      if (strlen(source) > len)
+          throw Error("invalid string value len: expected len: %d, actual len: %d", len, strlen(source));
+      memset(dest, ' ', len);
+      strcpy(dest, source);
     };
     switch (typeMap.at(name))
     {
@@ -216,12 +216,12 @@ void OptionManager::getOptionType(const char* name, Array<char>& value)
     }
 }
 
-bool OptionManager::hasOptionHandler(const char* name)
+bool IndigoOptionManager::hasOptionHandler(const char* name)
 {
     return typeMap.find(name);
 }
 
-void OptionManager::callOptionHandler(const char* name, const char* value)
+void IndigoOptionManager::callOptionHandler(const char* name, const char* value)
 {
     if (!typeMap.find(name))
         throw Error("Property \"%s\" not defined", name);
@@ -263,19 +263,19 @@ void OptionManager::callOptionHandler(const char* name, const char* value)
     }
 }
 
-int OptionManager::nOptions() const
+int IndigoOptionManager::nOptions() const
 {
     return typeMap.size();
 }
 
-int OptionManager::_parseInt(const char* str, int& val)
+int IndigoOptionManager::_parseInt(const char* str, int& val)
 {
     if (sscanf(str, "%d", &val) != 1)
         return -1;
     return 1;
 }
 
-int OptionManager::_parseBool(const char* str, int& val)
+int IndigoOptionManager::_parseBool(const char* str, int& val)
 {
     if (strcasecmp(str, "true") == 0 || strcasecmp(str, "on") == 0 || strcasecmp(str, "yes") == 0)
     {
@@ -291,7 +291,7 @@ int OptionManager::_parseBool(const char* str, int& val)
         return _parseInt(str, val);
 }
 
-int OptionManager::_parseFloat(const char* str, float& val)
+int IndigoOptionManager::_parseFloat(const char* str, float& val)
 {
     BufferScanner scanner(str);
     if (!scanner.tryReadFloat(val))
@@ -299,7 +299,7 @@ int OptionManager::_parseFloat(const char* str, float& val)
     return 1;
 }
 
-int OptionManager::_parseColor(const char* str, float& r, float& g, float& b)
+int IndigoOptionManager::_parseColor(const char* str, float& r, float& g, float& b)
 {
     BufferScanner scanner(str);
     if (!scanner.tryReadFloat(r))
@@ -323,7 +323,7 @@ int OptionManager::_parseColor(const char* str, float& r, float& g, float& b)
     return 1;
 }
 
-int OptionManager::_parseSize(const char* str, int& w, int& h)
+int IndigoOptionManager::_parseSize(const char* str, int& w, int& h)
 {
     if (sscanf(str, "%d,%d", &w, &h) != 2)
         return -1;

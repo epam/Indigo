@@ -591,7 +591,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
 void MoleculeLayoutGraph::_attachEars(int vert_idx, int drawn_idx, int* ears, const Vec2f& rest_pos)
 {
     Vec2f v1, v2, v3, v4;
-    float phi = 13 * M_PI / 24;
+    float phi = _2FLOAT(13. * M_PI / 24.);
     const Vertex& vert = getVertex(vert_idx);
 
     _layout_vertices[ears[0]].type = ELEMENT_IGNORE;
@@ -602,13 +602,13 @@ void MoleculeLayoutGraph::_attachEars(int vert_idx, int drawn_idx, int* ears, co
     v1 = getPos(vert_idx);
     v2 = getPos(drawn_idx);
     _calculatePos(phi, v1, rest_pos, v3);
-    _calculatePos(phi + 2 * M_PI / 3, v1, rest_pos, v4);
+    _calculatePos(_2FLOAT(phi + 2. * M_PI / 3.), v1, rest_pos, v4);
 
     if (Vec2f::dist(v3, v2) < Vec2f::dist(v4, v2))
         v3 = v4;
 
     _layout_vertices[ears[0]].pos = v3;
-    _calculatePos(M_PI / 4, v1, v3, getPos(ears[1]));
+    _calculatePos(_2FLOAT(M_PI / 4.), v1, v3, getPos(ears[1]));
 }
 
 // Attach set of trivial components
@@ -846,7 +846,7 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions
         if (p0.length() < EPSILON)
         {
             // Perturbate coordinate
-            v1.y += 0.001;
+            v1.y += 0.001f;
             p0.diff(v1, v2);
         }
         angles.push(p0.tiltAngle2());
@@ -872,7 +872,7 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions
     }
 
     v2 = getPos(vert.neiVertex(edges.top()));
-    phi = (2 * M_PI + angles[0] - angles.top()) / 2;
+    phi = _2FLOAT((2. * M_PI + angles[0] - angles.top()) / 2.);
     _calculatePos(phi, v1, v2, positions.top());
 }
 
@@ -957,7 +957,7 @@ void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, Array<int
 
     positions.clear_resize(n_pos);
 
-    phi = 2 * M_PI / (n_pos + 1);
+    phi = _2FLOAT(2. * M_PI / (n_pos + 1));
     v1 = getPos(vert_idx);
     v2 = getPos(vert.neiVertex(drawn_idx));
 
@@ -1045,7 +1045,7 @@ void MoleculeLayoutGraph::_orderByEnergy(Array<Vec2f>& positions)
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
         if (getVertexType(i) != ELEMENT_NOT_DRAWN && getVertexType(i) != ELEMENT_IGNORE)
         {
-            norm_a[i] = _layout_vertices[i].morgan_code;
+            norm_a[i] = _2FLOAT(_layout_vertices[i].morgan_code);
             norm += norm_a[i] * norm_a[i];
         }
 
@@ -1065,7 +1065,7 @@ void MoleculeLayoutGraph::_orderByEnergy(Array<Vec2f>& positions)
                     continue;
                 }
 
-                energies[i] += ((norm_a[j] / norm + 0.5) / r);
+                energies[i] += ((norm_a[j] / norm + 0.5f) / r);
             }
     }
 

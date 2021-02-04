@@ -277,9 +277,9 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             if (coords.Size() > 0)
             {
                 Vec3f a_pos;
-                a_pos.x = coords[0].GetDouble();
-                a_pos.y = coords[1].GetDouble();
-                a_pos.z = coords[2].GetDouble();
+                a_pos.x = _2FLOAT(coords[0].GetDouble());
+                a_pos.y = _2FLOAT(coords[1].GetDouble());
+                a_pos.z = _2FLOAT(coords[2].GetDouble());
                 mol.setAtomXyz(atom_idx, a_pos);
             }
         }
