@@ -3602,7 +3602,7 @@ CEXPORT int indigoComponent(int molecule, int index)
 
 IndigoComponentAtomsIter::IndigoComponentAtomsIter(BaseMolecule& mol, int cidx) : IndigoObject(COMPONENT_ATOMS_ITER), _mol(mol)
 {
-    if (cidx < 0 || cidx > mol.countComponents())
+    if (cidx < 0 || cidx >= mol.countComponents())
         throw IndigoError("%d is not a valid component number (0-%d allowed)", cidx, _mol.countComponents() - 1);
     _idx = -1;
     _cidx = cidx;
@@ -3644,7 +3644,7 @@ int IndigoComponentAtomsIter::_next()
 
 IndigoComponentBondsIter::IndigoComponentBondsIter(BaseMolecule& mol, int cidx) : IndigoObject(COMPONENT_BONDS_ITER), _mol(mol)
 {
-    if (cidx < 0 || cidx > _mol.countComponents())
+    if (cidx < 0 || cidx >= _mol.countComponents())
         throw IndigoError("%d is not a valid component number (0-%d allowed)", cidx, _mol.countComponents() - 1);
     _idx = -1;
     _cidx = cidx;
