@@ -4,6 +4,7 @@ import com.epam.indigo.BingoObject;
 import com.epam.indigo.IndigoObject;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.IndigoRecordMolecule;
 import com.epam.indigo.predicate.*;
 import org.elasticsearch.common.collect.Tuple;
 import org.junit.jupiter.api.*;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
+public class CompareLargeFileTestIT extends NoSQLElasticCompareAbstract {
 
     protected static final String test100SmilesFile = "src/test/resources/pubchem_slice_100000.smiles";
 
@@ -32,7 +33,7 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
         noSQLTotal = System.nanoTime() - noSQLTotal;
         long elasticTotal = System.nanoTime();
         try {
-            Iterable<IndigoRecord> indigoRecordList = Helpers.iterateSmiles(test100SmilesFile);
+            Iterable<IndigoRecordMolecule> indigoRecordList = Helpers.iterateSmiles(test100SmilesFile);
             repository.indexRecords(indigoRecordList, 5000);
         } catch (Exception e) {
             Assertions.fail(e);
@@ -67,7 +68,7 @@ public class CompareLargeFileTest extends NoSQLElasticCompareAbstract {
             String bingoFoundSmiles = indigoObjectResult.canonicalSmiles();
             nosqlListResult.add(new Tuple<>(bingoFoundSmiles, bingoObjectResult.getCurrentSimilarityValue()));
         }
-        Collections.sort(nosqlListResult, (o1, o2) -> -Float.compare(o1.v2(), o2.v2()));
+        nosqlListResult.sort((o1, o2) -> -Float.compare(o1.v2(), o2.v2()));
         return nosqlListResult;
     }
 

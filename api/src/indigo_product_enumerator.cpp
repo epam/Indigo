@@ -66,89 +66,93 @@ static void product_proc(Molecule& product, Array<int>& monomers_indices, Array<
     indices.copy(monomers_indices);
 }
 
-CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers){INDIGO_BEGIN{bool has_coord = false;
-
-QueryReaction& query_rxn = self.getObject(reaction).getQueryReaction();
-IndigoArray& monomers_object = IndigoArray::cast(self.getObject(monomers));
-
-ReactionProductEnumerator rpe(query_rxn);
-rpe.arom_options = self.arom_options;
-
-if (monomers_object.objects.size() < query_rxn.reactantsCount())
-    throw IndigoError("Too small monomers array");
-
-ObjArray<PropertiesMap> monomers_properties;
-for (int i = query_rxn.reactantBegin(); i != query_rxn.reactantEnd(); i = query_rxn.reactantNext(i))
+CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
 {
-    IndigoArray& reactant_monomers_object = IndigoArray::cast(*monomers_object.objects[i]);
-
-    auto size = reactant_monomers_object.objects.size();
-    for (int j = 0; j < size; j++)
+    INDIGO_BEGIN
     {
-        IndigoObject& object = *reactant_monomers_object.objects[j];
-        monomers_properties.push().copy(object.getProperties());
+        bool has_coord = false;
 
-        Molecule& monomer = object.getMolecule();
-        rpe.addMonomer(i, monomer);
-        if (monomer.have_xyz)
-            has_coord = true;
-    }
-}
+        QueryReaction& query_rxn = self.getObject(reaction).getQueryReaction();
+        IndigoArray& monomers_object = IndigoArray::cast(self.getObject(monomers));
 
-rpe.is_multistep_reaction = self.rpe_params.is_multistep_reactions;
-rpe.is_one_tube = self.rpe_params.is_one_tube;
-rpe.is_self_react = self.rpe_params.is_self_react;
-rpe.max_deep_level = self.rpe_params.max_deep_level;
-rpe.max_product_count = self.rpe_params.max_product_count;
+        ReactionProductEnumerator rpe(query_rxn);
+        rpe.arom_options = self.arom_options;
 
-rpe.product_proc = product_proc;
+        if (monomers_object.objects.size() < query_rxn.reactantsCount())
+            throw IndigoError("Too small monomers array");
 
-ObjArray<Reaction> out_reactions;
-ObjArray<Array<int>> out_indices_all;
-
-ProductEnumeratorCallbackData rpe_data;
-rpe_data.out_reactions = &out_reactions;
-rpe_data.out_indices = &out_indices_all;
-rpe_data.rpe = &rpe;
-rpe.userdata = &rpe_data;
-
-rpe.buildProducts();
-
-int out_array = indigoCreateArray();
-
-for (int k = 0; k < out_reactions.size(); k++)
-{
-    Reaction& out_reaction = out_reactions[k];
-    if (has_coord && self.rpe_params.is_layout)
-    {
-        ReactionLayout layout(out_reaction, self.smart_layout);
-        layout.layout_orientation = (layout_orientation_value)self.layout_orientation;
-        layout.make();
-        out_reaction.markStereocenterBonds();
-    }
-
-    QS_DEF(IndigoReaction, indigo_rxn);
-    indigo_rxn._monomersProperties.clear();
-    indigo_rxn.rxn.clone(out_reaction, NULL, NULL, NULL);
-
-    int properties_count = monomers_properties.size();
-    Array<int>& out_indices = out_indices_all[k];
-    for (auto m = 0; m < out_indices.size(); m++)
-    {
-        int index = out_indices[m];
-        if (index < properties_count)
+        ObjArray<PropertiesMap> monomers_properties;
+        for (int i = query_rxn.reactantBegin(); i != query_rxn.reactantEnd(); i = query_rxn.reactantNext(i))
         {
-            PropertiesMap& properties = monomers_properties[index];
-            indigo_rxn._monomersProperties.push().copy(properties);
+            IndigoArray& reactant_monomers_object = IndigoArray::cast(*monomers_object.objects[i]);
+
+            auto size = reactant_monomers_object.objects.size();
+            for (int j = 0; j < size; j++)
+            {
+                IndigoObject& object = *reactant_monomers_object.objects[j];
+                monomers_properties.push().copy(object.getProperties());
+
+                Molecule& monomer = object.getMolecule();
+                rpe.addMonomer(i, monomer);
+                if (monomer.have_xyz)
+                    has_coord = true;
+            }
         }
+
+        rpe.is_multistep_reaction = self.rpe_params.is_multistep_reactions;
+        rpe.is_one_tube = self.rpe_params.is_one_tube;
+        rpe.is_self_react = self.rpe_params.is_self_react;
+        rpe.max_deep_level = self.rpe_params.max_deep_level;
+        rpe.max_product_count = self.rpe_params.max_product_count;
+
+        rpe.product_proc = product_proc;
+
+        ObjArray<Reaction> out_reactions;
+        ObjArray<Array<int>> out_indices_all;
+
+        ProductEnumeratorCallbackData rpe_data;
+        rpe_data.out_reactions = &out_reactions;
+        rpe_data.out_indices = &out_indices_all;
+        rpe_data.rpe = &rpe;
+        rpe.userdata = &rpe_data;
+
+        rpe.buildProducts();
+
+        int out_array = indigoCreateArray();
+
+        for (int k = 0; k < out_reactions.size(); k++)
+        {
+            Reaction& out_reaction = out_reactions[k];
+            if (has_coord && self.rpe_params.is_layout)
+            {
+                ReactionLayout layout(out_reaction, self.smart_layout);
+                layout.layout_orientation = (layout_orientation_value)self.layout_orientation;
+                layout.make();
+                out_reaction.markStereocenterBonds();
+            }
+
+            QS_DEF(IndigoReaction, indigo_rxn);
+            indigo_rxn._monomersProperties.clear();
+            indigo_rxn.rxn.clone(out_reaction, NULL, NULL, NULL);
+
+            int properties_count = monomers_properties.size();
+            Array<int>& out_indices = out_indices_all[k];
+            for (auto m = 0; m < out_indices.size(); m++)
+            {
+                int index = out_indices[m];
+                if (index < properties_count)
+                {
+                    PropertiesMap& properties = monomers_properties[index];
+                    indigo_rxn._monomersProperties.push().copy(properties);
+                }
+            }
+
+            indigoArrayAdd(out_array, self.addObject(indigo_rxn.clone()));
+        }
+
+        return out_array;
     }
-
-    indigoArrayAdd(out_array, self.addObject(indigo_rxn.clone()));
-}
-
-return out_array;
-}
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoTransform(int reaction, int monomers)
@@ -231,7 +235,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
             return 0;
         }
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 void indigoProductEnumeratorSetOneTubeMode(const char* mode_string)

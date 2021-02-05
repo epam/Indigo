@@ -72,31 +72,43 @@ void _indigoParseTauCondition(const char* list_ptr, int& aromaticity, Array<int>
     label_list.push(Element::fromString(buf.ptr()));
 }
 
-CEXPORT int indigoSetTautomerRule(int n, const char* beg,
-                                  const char* end){INDIGO_BEGIN{if (n < 1 || n >= 32) throw IndigoError("tautomer rule index %d is out of range", n);
+CEXPORT int indigoSetTautomerRule(int n, const char* beg, const char* end)
+{
+    INDIGO_BEGIN
+    {
+        if (n < 1 || n >= 32)
+            throw IndigoError("tautomer rule index %d is out of range", n);
 
-AutoPtr<TautomerRule> rule(new TautomerRule());
+        AutoPtr<TautomerRule> rule(new TautomerRule());
 
-_indigoParseTauCondition(beg, rule->aromaticity1, rule->list1);
-_indigoParseTauCondition(end, rule->aromaticity2, rule->list2);
+        _indigoParseTauCondition(beg, rule->aromaticity1, rule->list1);
+        _indigoParseTauCondition(end, rule->aromaticity2, rule->list2);
 
-self.tautomer_rules.expand(n);
-self.tautomer_rules.reset(n - 1, rule.release());
-return 1;
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoClearTautomerRules(){INDIGO_BEGIN{self.tautomer_rules.clear();
-return 1;
-}
-INDIGO_END(-1)
+        self.tautomer_rules.expand(n);
+        self.tautomer_rules.reset(n - 1, rule.release());
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoRemoveTautomerRule(int n){INDIGO_BEGIN{self.tautomer_rules.remove(n - 1);
-return 1;
+CEXPORT int indigoClearTautomerRules()
+{
+    INDIGO_BEGIN
+    {
+        self.tautomer_rules.clear();
+        return 1;
+    }
+    INDIGO_END(-1);
 }
-INDIGO_END(-1)
+
+CEXPORT int indigoRemoveTautomerRule(int n)
+{
+    INDIGO_BEGIN
+    {
+        self.tautomer_rules.remove(n - 1);
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
 DLLEXPORT bool _indigoParseTautomerFlags(const char* flags, IndigoTautomerParams& params)
@@ -719,51 +731,55 @@ bool IndigoMoleculeSubstructureMatcher::findTautomerMatch(QueryMolecule& query, 
     return true;
 }
 
-CEXPORT int indigoSubstructureMatcher(int target, const char* mode_str){INDIGO_BEGIN{IndigoObject& obj = self.getObject(target);
-
-if (IndigoBaseMolecule::is(obj))
+CEXPORT int indigoSubstructureMatcher(int target, const char* mode_str)
 {
-    Molecule& mol = obj.getMolecule();
-    int mode = IndigoMoleculeSubstructureMatcher::NORMAL;
-    IndigoTautomerParams tau_params;
-
-    if (mode_str != 0 && *mode_str != 0)
+    INDIGO_BEGIN
     {
-        if (_indigoParseTautomerFlags(mode_str, tau_params))
-            mode = IndigoMoleculeSubstructureMatcher::TAUTOMER;
-        else if (strcasecmp(mode_str, "RES") == 0)
-            mode = IndigoMoleculeSubstructureMatcher::RESONANCE;
-        else
-            throw IndigoError("indigoSubstructureMatcher(): unsupported mode %s", mode_str);
+        IndigoObject& obj = self.getObject(target);
+
+        if (IndigoBaseMolecule::is(obj))
+        {
+            Molecule& mol = obj.getMolecule();
+            int mode = IndigoMoleculeSubstructureMatcher::NORMAL;
+            IndigoTautomerParams tau_params;
+
+            if (mode_str != 0 && *mode_str != 0)
+            {
+                if (_indigoParseTautomerFlags(mode_str, tau_params))
+                    mode = IndigoMoleculeSubstructureMatcher::TAUTOMER;
+                else if (strcasecmp(mode_str, "RES") == 0)
+                    mode = IndigoMoleculeSubstructureMatcher::RESONANCE;
+                else
+                    throw IndigoError("indigoSubstructureMatcher(): unsupported mode %s", mode_str);
+            }
+
+            AutoPtr<IndigoMoleculeSubstructureMatcher> matcher(new IndigoMoleculeSubstructureMatcher(mol, mode));
+
+            if (mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
+                matcher->tau_params = tau_params;
+
+            return self.addObject(matcher.release());
+        }
+        if (IndigoBaseReaction::is(obj))
+        {
+            Reaction& rxn = obj.getReaction();
+            bool daylight_aam = false;
+
+            if (mode_str != 0 && *mode_str != 0)
+            {
+                if (strcasecmp(mode_str, "DAYLIGHT-AAM") == 0)
+                    daylight_aam = true;
+                else
+                    throw IndigoError("reaction substructure matcher: unknown mode %s", mode_str);
+            }
+
+            AutoPtr<IndigoReactionSubstructureMatcher> matcher(new IndigoReactionSubstructureMatcher(rxn));
+            matcher->daylight_aam = daylight_aam;
+            return self.addObject(matcher.release());
+        }
+        throw IndigoError("indigoSubstructureMatcher(): %s is neither a molecule not a reaction", obj.debugInfo());
     }
-
-    AutoPtr<IndigoMoleculeSubstructureMatcher> matcher(new IndigoMoleculeSubstructureMatcher(mol, mode));
-
-    if (mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
-        matcher->tau_params = tau_params;
-
-    return self.addObject(matcher.release());
-}
-if (IndigoBaseReaction::is(obj))
-{
-    Reaction& rxn = obj.getReaction();
-    bool daylight_aam = false;
-
-    if (mode_str != 0 && *mode_str != 0)
-    {
-        if (strcasecmp(mode_str, "DAYLIGHT-AAM") == 0)
-            daylight_aam = true;
-        else
-            throw IndigoError("reaction substructure matcher: unknown mode %s", mode_str);
-    }
-
-    AutoPtr<IndigoReactionSubstructureMatcher> matcher(new IndigoReactionSubstructureMatcher(rxn));
-    matcher->daylight_aam = daylight_aam;
-    return self.addObject(matcher.release());
-}
-throw IndigoError("indigoSubstructureMatcher(): %s is neither a molecule not a reaction", obj.debugInfo());
-}
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 IndigoMoleculeSubstructureMatcher& IndigoMoleculeSubstructureMatcher::cast(IndigoObject& obj)
@@ -786,33 +802,42 @@ IndigoTautomerSubstructureMatchIter* IndigoMoleculeSubstructureMatcher::getTauto
                                        method);
 }
 
-CEXPORT int indigoIgnoreAtom(int target_matcher, int atom_object){
-    INDIGO_BEGIN{IndigoMoleculeSubstructureMatcher& matcher = IndigoMoleculeSubstructureMatcher::cast(self.getObject(target_matcher));
+CEXPORT int indigoIgnoreAtom(int target_matcher, int atom_object)
+{
+    INDIGO_BEGIN
+    {
+        IndigoMoleculeSubstructureMatcher& matcher = IndigoMoleculeSubstructureMatcher::cast(self.getObject(target_matcher));
 
-IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom_object));
-matcher.ignoreAtom(ia.idx);
-return 0;
-}
-INDIGO_END(-1)
+        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom_object));
+        matcher.ignoreAtom(ia.idx);
+        return 0;
+    }
+    INDIGO_END(-1);
 }
 
 // Ignore target atom in the substructure matcher
-CEXPORT int indigoUnignoreAtom(int target_matcher, int atom_object){
-    INDIGO_BEGIN{IndigoMoleculeSubstructureMatcher& matcher = IndigoMoleculeSubstructureMatcher::cast(self.getObject(target_matcher));
+CEXPORT int indigoUnignoreAtom(int target_matcher, int atom_object)
+{
+    INDIGO_BEGIN
+    {
+        IndigoMoleculeSubstructureMatcher& matcher = IndigoMoleculeSubstructureMatcher::cast(self.getObject(target_matcher));
 
-IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom_object));
-matcher.unignoreAtom(ia.idx);
-return 0;
-}
-INDIGO_END(-1)
+        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom_object));
+        matcher.unignoreAtom(ia.idx);
+        return 0;
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoUnignoreAllAtoms(int target_matcher){
-    INDIGO_BEGIN{IndigoMoleculeSubstructureMatcher& matcher = IndigoMoleculeSubstructureMatcher::cast(self.getObject(target_matcher));
-matcher.unignoreAllAtoms();
-return 0;
-}
-INDIGO_END(-1)
+CEXPORT int indigoUnignoreAllAtoms(int target_matcher)
+{
+    INDIGO_BEGIN
+    {
+        IndigoMoleculeSubstructureMatcher& matcher = IndigoMoleculeSubstructureMatcher::cast(self.getObject(target_matcher));
+        matcher.unignoreAllAtoms();
+        return 0;
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoMatch(int target_matcher, int query)
@@ -919,7 +944,7 @@ CEXPORT int indigoMatch(int target_matcher, int query)
         }
         throw IndigoError("indigoIterateMatches(): expected a matcher, got %s", obj.debugInfo());
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 int indigoCountMatches(int target_matcher, int query)
@@ -952,7 +977,7 @@ CEXPORT int indigoCountMatchesWithLimit(int target_matcher, int query, int embed
             throw IndigoError("count matches: can not work with reactions");
         throw IndigoError("count matches: expected a matcher, got %s", obj.debugInfo());
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 int indigoIterateMatches(int target_matcher, int query)
@@ -982,7 +1007,7 @@ int indigoIterateMatches(int target_matcher, int query)
             throw IndigoError("indigoIterateMatches(): can not work with reactions");
         throw IndigoError("indigoIterateMatches(): expected a matcher, got %s", obj.debugInfo());
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 const char* IndigoReactionSubstructureMatcher::debugInfo()

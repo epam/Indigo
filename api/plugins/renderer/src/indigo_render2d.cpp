@@ -368,167 +368,175 @@ void indigoRenderGetCdxmlPropertiesKeyAlignment(Array<char>& value)
         value.readString("right", true);
 }
 
-CEXPORT int indigoRender(int object, int output){INDIGO_BEGIN{RenderParams& rp = indigoRendererGetInstance().renderParams;
-// If there are molecules/reactions in the arrays then current call will
-// rendere a grid -> needs to clear it
-rp.clearArrays();
-rp.smart_layout = self.smart_layout;
-
-IndigoObject& obj = self.getObject(object);
-
-if (IndigoBaseMolecule::is(obj))
+CEXPORT int indigoRender(int object, int output)
 {
-    if (obj.getBaseMolecule().isQueryMolecule())
-        rp.mol.reset(new QueryMolecule());
-    else
-        rp.mol.reset(new Molecule());
-    rp.mol->clone_KeepIndices(self.getObject(object).getBaseMolecule());
-    rp.rmode = RENDER_MOL;
-}
-else if (IndigoBaseReaction::is(obj))
-{
-    if (obj.getBaseReaction().isQueryReaction())
-        rp.rxn.reset(new QueryReaction());
-    else
-        rp.rxn.reset(new Reaction());
-    rp.rxn->clone(self.getObject(object).getBaseReaction(), 0, 0, 0);
-    rp.rmode = RENDER_RXN;
-}
-else
-{
-    throw IndigoError("The object provided should be a molecule, a reaction or an array of such");
-}
-
-IndigoObject& out = self.getObject(output);
-if (out.type == IndigoHDCOutput::HDC_OUTPUT)
-{
-    IndigoHDCOutput& hdcOut = (IndigoHDCOutput&)self.getObject(output);
-    rp.rOpt.hdc = hdcOut.dc;
-    rp.rOpt.mode = hdcOut.prn ? MODE_PRN : MODE_HDC;
-}
-else if (out.type == IndigoObject::OUTPUT)
-{
-    rp.rOpt.output = &IndigoOutput::get(out);
-}
-else
-{
-    throw IndigoError("Invalid output object type");
-}
-RenderParamInterface::render(rp);
-return 1;
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int output){INDIGO_BEGIN{RenderParams& rp = indigoRendererGetInstance().renderParams;
-rp.clearArrays();
-
-PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
-if (rp.rOpt.cdxml_context.get() != NULL)
-{
-    RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
-    context.property_data.clear();
-}
-if (IndigoBaseMolecule::is(*objs[0]))
-{
-    for (int i = 0; i < objs.size(); ++i)
+    INDIGO_BEGIN
     {
-        if (objs[i]->getBaseMolecule().isQueryMolecule())
-            rp.mols.add(new QueryMolecule());
-        else
-            rp.mols.add(new Molecule());
-        Array<char>& title = rp.titles.push();
-        if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
-            title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
+        RenderParams& rp = indigoRendererGetInstance().renderParams;
+        // If there are molecules/reactions in the arrays then current call will
+        // rendere a grid -> needs to clear it
+        rp.clearArrays();
+        rp.smart_layout = self.smart_layout;
 
-        if (rp.rOpt.mode == DINGO_MODE::MODE_CDXML)
+        IndigoObject& obj = self.getObject(object);
+
+        if (IndigoBaseMolecule::is(obj))
         {
-            if (rp.rOpt.cdxml_context.get() != NULL)
-            {
-
-                RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
-                RenderCdxmlContext::PropertyData& data = context.property_data.push();
-
-                auto& properties = objs[i]->getProperties();
-                if (context.propertyNameCaption.size() > 0 && context.propertyValueCaption.size() > 0)
-                    if (properties.contains(context.propertyNameCaption.ptr()))
-                    {
-                        if (properties.contains(context.propertyValueCaption.ptr()))
-                        {
-                            data.propertyName.readString(properties.at(context.propertyNameCaption.ptr()), true);
-                            data.propertyValue.readString(properties.at(context.propertyValueCaption.ptr()), true);
-                        }
-                    }
-            }
+            if (obj.getBaseMolecule().isQueryMolecule())
+                rp.mol.reset(new QueryMolecule());
+            else
+                rp.mol.reset(new Molecule());
+            rp.mol->clone_KeepIndices(self.getObject(object).getBaseMolecule());
+            rp.rmode = RENDER_MOL;
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            if (obj.getBaseReaction().isQueryReaction())
+                rp.rxn.reset(new QueryReaction());
+            else
+                rp.rxn.reset(new Reaction());
+            rp.rxn->clone(self.getObject(object).getBaseReaction(), 0, 0, 0);
+            rp.rmode = RENDER_RXN;
+        }
+        else
+        {
+            throw IndigoError("The object provided should be a molecule, a reaction or an array of such");
         }
 
-        rp.mols.top()->clone_KeepIndices(objs[i]->getBaseMolecule());
-        rp.rmode = RENDER_MOL;
-    }
-}
-else if (IndigoBaseReaction::is(*objs[0]))
-{
-    for (int i = 0; i < objs.size(); ++i)
-    {
-        if (objs[i]->getBaseReaction().isQueryReaction())
-            rp.rxns.add(new QueryReaction());
+        IndigoObject& out = self.getObject(output);
+        if (out.type == IndigoHDCOutput::HDC_OUTPUT)
+        {
+            IndigoHDCOutput& hdcOut = (IndigoHDCOutput&)self.getObject(output);
+            rp.rOpt.hdc = hdcOut.dc;
+            rp.rOpt.mode = hdcOut.prn ? MODE_PRN : MODE_HDC;
+        }
+        else if (out.type == IndigoObject::OUTPUT)
+        {
+            rp.rOpt.output = &IndigoOutput::get(out);
+        }
         else
-            rp.rxns.add(new Reaction());
-        Array<char>& title = rp.titles.push();
-        if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
-            title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
-
-        rp.rxns.top()->clone(objs[i]->getBaseReaction(), 0, 0, 0);
-        rp.rmode = RENDER_RXN;
+        {
+            throw IndigoError("Invalid output object type");
+        }
+        RenderParamInterface::render(rp);
+        return 1;
     }
-}
-else
-{
-    throw IndigoError("The array elements should be molecules or reactions");
+    INDIGO_END(-1);
 }
 
-if (refAtoms != NULL)
+CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int output)
 {
-    rp.refAtoms.copy(refAtoms, objs.size());
-}
-
-rp.cnvOpt.gridColumnNumber = nColumns;
-
-bool hasNonemptyTitles = false;
-for (int i = 0; i < rp.titles.size(); ++i)
-{
-    if (rp.titles[i].size() > 0)
+    INDIGO_BEGIN
     {
-        hasNonemptyTitles = true;
-        break;
+        RenderParams& rp = indigoRendererGetInstance().renderParams;
+        rp.clearArrays();
+
+        PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
+        if (rp.rOpt.cdxml_context.get() != NULL)
+        {
+            RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
+            context.property_data.clear();
+        }
+        if (IndigoBaseMolecule::is(*objs[0]))
+        {
+            for (int i = 0; i < objs.size(); ++i)
+            {
+                if (objs[i]->getBaseMolecule().isQueryMolecule())
+                    rp.mols.add(new QueryMolecule());
+                else
+                    rp.mols.add(new Molecule());
+                Array<char>& title = rp.titles.push();
+                if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
+                    title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
+
+                if (rp.rOpt.mode == DINGO_MODE::MODE_CDXML)
+                {
+                    if (rp.rOpt.cdxml_context.get() != NULL)
+                    {
+
+                        RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
+                        RenderCdxmlContext::PropertyData& data = context.property_data.push();
+
+                        auto& properties = objs[i]->getProperties();
+                        if (context.propertyNameCaption.size() > 0 && context.propertyValueCaption.size() > 0)
+                            if (properties.contains(context.propertyNameCaption.ptr()))
+                            {
+                                if (properties.contains(context.propertyValueCaption.ptr()))
+                                {
+                                    data.propertyName.readString(properties.at(context.propertyNameCaption.ptr()), true);
+                                    data.propertyValue.readString(properties.at(context.propertyValueCaption.ptr()), true);
+                                }
+                            }
+                    }
+                }
+
+                rp.mols.top()->clone_KeepIndices(objs[i]->getBaseMolecule());
+                rp.rmode = RENDER_MOL;
+            }
+        }
+        else if (IndigoBaseReaction::is(*objs[0]))
+        {
+            for (int i = 0; i < objs.size(); ++i)
+            {
+                if (objs[i]->getBaseReaction().isQueryReaction())
+                    rp.rxns.add(new QueryReaction());
+                else
+                    rp.rxns.add(new Reaction());
+                Array<char>& title = rp.titles.push();
+                if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
+                    title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
+
+                rp.rxns.top()->clone(objs[i]->getBaseReaction(), 0, 0, 0);
+                rp.rmode = RENDER_RXN;
+            }
+        }
+        else
+        {
+            throw IndigoError("The array elements should be molecules or reactions");
+        }
+
+        if (refAtoms != NULL)
+        {
+            rp.refAtoms.copy(refAtoms, objs.size());
+        }
+
+        rp.cnvOpt.gridColumnNumber = nColumns;
+
+        bool hasNonemptyTitles = false;
+        for (int i = 0; i < rp.titles.size(); ++i)
+        {
+            if (rp.titles[i].size() > 0)
+            {
+                hasNonemptyTitles = true;
+                break;
+            }
+        }
+        if (!hasNonemptyTitles)
+            rp.titles.clear();
+
+        IndigoObject& out = self.getObject(output);
+        if (out.type == IndigoHDCOutput::HDC_OUTPUT)
+        {
+            IndigoHDCOutput& hdcOut = (IndigoHDCOutput&)self.getObject(output);
+            rp.rOpt.hdc = hdcOut.dc;
+            rp.rOpt.mode = hdcOut.prn ? MODE_PRN : MODE_HDC;
+        }
+        else if (out.type == IndigoObject::OUTPUT)
+        {
+            rp.rOpt.output = &IndigoOutput::get(out);
+        }
+        else
+        {
+            throw IndigoError("Invalid output object type");
+        }
+        RenderParamInterface::render(rp);
+
+        // Release memory for arrays with molecules/reactions
+        rp.clearArrays();
+
+        return 1;
     }
-}
-if (!hasNonemptyTitles)
-    rp.titles.clear();
-
-IndigoObject& out = self.getObject(output);
-if (out.type == IndigoHDCOutput::HDC_OUTPUT)
-{
-    IndigoHDCOutput& hdcOut = (IndigoHDCOutput&)self.getObject(output);
-    rp.rOpt.hdc = hdcOut.dc;
-    rp.rOpt.mode = hdcOut.prn ? MODE_PRN : MODE_HDC;
-}
-else if (out.type == IndigoObject::OUTPUT)
-{
-    rp.rOpt.output = &IndigoOutput::get(out);
-}
-else
-{
-    throw IndigoError("Invalid output object type");
-}
-RenderParamInterface::render(rp);
-
-// Release memory for arrays with molecules/reactions
-rp.clearArrays();
-
-return 1;
-}
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 DINGO_MODE indigoRenderGuessOutputFormat(const char* filename)
@@ -574,11 +582,15 @@ CEXPORT int indigoRenderGridToFile(int objects, int* refAtoms, int nColumns, con
     return res;
 }
 
-CEXPORT int indigoRenderReset(){INDIGO_BEGIN{IndigoRenderer& rp = indigoRendererGetInstance();
-rp.init();
-return 1;
-}
-INDIGO_END(-1)
+CEXPORT int indigoRenderReset()
+{
+    INDIGO_BEGIN
+    {
+        IndigoRenderer& rp = indigoRendererGetInstance();
+        rp.init();
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT void indigoRenderResetOptions()
@@ -593,7 +605,7 @@ CEXPORT int indigoRenderWriteHDC(void* hdc, int printingHdc)
     {
         return self.addObject(new IndigoHDCOutput(hdc, printingHdc != 0));
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 class _IndigoRenderingOptionsHandlersSetter

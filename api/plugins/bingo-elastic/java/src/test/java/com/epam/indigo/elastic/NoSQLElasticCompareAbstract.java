@@ -2,22 +2,31 @@ package com.epam.indigo.elastic;
 
 import com.epam.indigo.Bingo;
 import com.epam.indigo.Indigo;
-import com.epam.indigo.elastic.ElasticRepository;
-import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.IndigoRecordMolecule;
+import com.epam.indigo.model.NamingConstants;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.utility.DockerImageName;
 
+/**
+ * TODO: Add generic support or add IndigoRecordReaction support
+ */
 abstract public class NoSQLElasticCompareAbstract {
 
-    protected static ElasticRepository<IndigoRecord> repository;
+    protected static ElasticRepository<IndigoRecordMolecule> repository;
     protected static ElasticsearchContainer elasticsearchContainer;
     protected static Bingo bingoDb;
     protected static final Indigo indigo = new Indigo();
 
     public static void setUpDataStore() {
-        elasticsearchContainer = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch-oss:7.9.2");
+        elasticsearchContainer = new ElasticsearchContainer(
+                DockerImageName
+                        .parse("docker.elastic.co/elasticsearch/elasticsearch-oss")
+                        .withTag(ElasticsearchVersion.VERSION)
+        );
         elasticsearchContainer.start();
-        ElasticRepository.ElasticRepositoryBuilder<IndigoRecord> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
+        ElasticRepository.ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder
+                .withIndexName(NamingConstants.BINGO_MOLECULES)
                 .withHostName(elasticsearchContainer.getHost())
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
