@@ -931,6 +931,12 @@ namespace com.epam.indigo
         public static extern int indigoCheckStereo(int handle);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern sbyte* indigoCheck2(string item, string type, string load_params);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern sbyte* indigoCheckObj2(int item, string type);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern sbyte* indigoCheck(int item, string type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]

@@ -470,6 +470,14 @@ namespace com.epam.indigo
             return checkResult(IndigoLib.indigoCheckStructure(str, options));
         }
 
+
+        public string check2(string str, string type, string options)
+        {
+            setSessionID();
+            return checkResult(IndigoLib.indigoCheck2(str, type, options));
+        }
+
+
         public IndigoObject loadStructure(string str)
         {
             return loadStructure(str, "");
