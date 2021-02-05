@@ -27,7 +27,6 @@
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
-#include <set>
 
 namespace indigo
 {

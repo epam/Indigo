@@ -814,7 +814,6 @@ void _setComment(int obj, Params* p)
 
 int main(int argc, char* argv[])
 {
-    indigoSetOption("molfile-saving-mode", "2000");
     Params p;
     int obj = -1, reader = -1, writer = -1;
     int i = 0;

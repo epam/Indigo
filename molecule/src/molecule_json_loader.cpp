@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 using namespace rapidjson;
 using namespace indigo;
@@ -692,7 +693,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         }
     }
 
-	std::vector<int> ignore_cistrans(mol.edgeCount());
+    std::vector<int> ignore_cistrans(mol.edgeCount());
     std::vector<int> sensible_bond_directions(mol.edgeCount());
     for (int i = 0; i < mol.edgeCount(); i++)
         if ( mol.getBondDirection(i) == BOND_EITHER)
