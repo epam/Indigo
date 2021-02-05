@@ -19,54 +19,70 @@
 #include "indigo_properties.h"
 #include "base_cpp/properties_map.h"
 
-CEXPORT int indigoHasProperty(int handle, const char* prop){
-    INDIGO_BEGIN{if (prop == 0 || *prop == 0) throw IndigoError("indigoHasProperty(): null or empty property given");
+CEXPORT int indigoHasProperty(int handle, const char* prop)
+{
+    INDIGO_BEGIN
+    {
+        if (prop == 0 || *prop == 0)
+            throw IndigoError("indigoHasProperty(): null or empty property given");
 
-IndigoObject& obj = self.getObject(handle);
+        IndigoObject& obj = self.getObject(handle);
 
-auto& props = obj.getProperties();
+        auto& props = obj.getProperties();
 
-return props.contains(prop);
-}
-INDIGO_END(-1)
-}
-
-CEXPORT const char* indigoGetProperty(int handle, const char* prop){
-    INDIGO_BEGIN{if (prop == 0 || *prop == 0) throw IndigoError("indigoGetProperty(): null or empty property given");
-
-IndigoObject& obj = self.getObject(handle);
-auto& props = obj.getProperties();
-
-auto& tmp = self.getThreadTmpData();
-tmp.string.readString(props.at(prop), true);
-return tmp.string.ptr();
-}
-INDIGO_END(0)
+        return props.contains(prop);
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoSetProperty(int handle, const char* prop, const char* value){
-    INDIGO_BEGIN{if (prop == 0 || *prop == 0) throw IndigoError("indigoSetProperty(): null or empty property given");
+CEXPORT const char* indigoGetProperty(int handle, const char* prop)
+{
+    INDIGO_BEGIN
+    {
+        if (prop == 0 || *prop == 0)
+            throw IndigoError("indigoGetProperty(): null or empty property given");
 
-if (value == 0)
-    value = "";
+        IndigoObject& obj = self.getObject(handle);
+        auto& props = obj.getProperties();
 
-IndigoObject& obj = self.getObject(handle);
-auto& props = obj.getProperties();
-props.insert(prop, value);
-return 1;
+        auto& tmp = self.getThreadTmpData();
+        tmp.string.readString(props.at(prop), true);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
 }
-INDIGO_END(-1)
+
+CEXPORT int indigoSetProperty(int handle, const char* prop, const char* value)
+{
+    INDIGO_BEGIN
+    {
+        if (prop == 0 || *prop == 0)
+            throw IndigoError("indigoSetProperty(): null or empty property given");
+
+        if (value == 0)
+            value = "";
+
+        IndigoObject& obj = self.getObject(handle);
+        auto& props = obj.getProperties();
+        props.insert(prop, value);
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoRemoveProperty(int handle, const char* prop){
-    INDIGO_BEGIN{if (prop == 0 || *prop == 0) throw IndigoError("indigoRemoveProperty(): null or empty property given");
+CEXPORT int indigoRemoveProperty(int handle, const char* prop)
+{
+    INDIGO_BEGIN
+    {
+        if (prop == 0 || *prop == 0)
+            throw IndigoError("indigoRemoveProperty(): null or empty property given");
 
-IndigoObject& obj = self.getObject(handle);
-auto& props = obj.getProperties();
-props.remove(prop);
-return 1;
-}
-INDIGO_END(-1)
+        IndigoObject& obj = self.getObject(handle);
+        auto& props = obj.getProperties();
+        props.remove(prop);
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
 IndigoPropertiesIter::IndigoPropertiesIter(indigo::PropertiesMap& props) : IndigoObject(PROPERTIES_ITER), _props(props)
@@ -122,12 +138,16 @@ IndigoObject* IndigoPropertiesIter::next()
     return new IndigoProperty(_props, _idx);
 }
 
-CEXPORT int indigoIterateProperties(int handle){INDIGO_BEGIN{IndigoObject& obj = self.getObject(handle);
-auto& props = obj.getProperties();
+CEXPORT int indigoIterateProperties(int handle)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(handle);
+        auto& props = obj.getProperties();
 
-return self.addObject(new IndigoPropertiesIter(props));
-}
-INDIGO_END(-1)
+        return self.addObject(new IndigoPropertiesIter(props));
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoClearProperties(int handle)
@@ -140,5 +160,5 @@ CEXPORT int indigoClearProperties(int handle)
         props.clear();
         return 0;
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }

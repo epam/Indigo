@@ -845,7 +845,7 @@ namespace indigo
 
                 return count;
             }
-            INDIGO_END(-1)
+            INDIGO_END(-1);
         }
 
     } // namespace abbreviations

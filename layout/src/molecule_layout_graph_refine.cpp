@@ -400,7 +400,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             if (layout_orientation != UNCPECIFIED)
             {
-                new_state.rotateLayout(beg_state, center, beg_state.calc_best_angle() / M_PI * 180);
+                new_state.rotateLayout(beg_state, center, _2FLOAT(beg_state.calc_best_angle() / M_PI * 180.));
                 beg_state.copy(new_state);
 
                 if (layout_orientation == VERTICAL)

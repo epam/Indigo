@@ -612,7 +612,7 @@ bool MoleculeStereocenters::_buildOneCenter(int atom_idx, int* sensible_bonds_ou
 // 4 -- in the 'positive' straight angle, 8 -- in the 'negative' straight angle
 int MoleculeStereocenters::_xyzzy(const Vec3f& v1, const Vec3f& v2, const Vec3f& u)
 {
-    float eps = 1e-3f;
+    const float eps = 1e-3f;
 
     Vec3f cross;
 
@@ -653,7 +653,7 @@ int MoleculeStereocenters::_sign(const Vec3f& v1, const Vec3f& v2, const Vec3f& 
         throw Error("angle between bonds is too small");
 
     float res = (v1.x - v3.x) * (v2.y - v3.y) - (v1.y - v3.y) * (v2.x - v3.x);
-    float eps = 1e-3f;
+    const float eps = 1e-3f;
 
     if (res > eps)
         return 1;
@@ -666,7 +666,7 @@ int MoleculeStereocenters::_sign(const Vec3f& v1, const Vec3f& v2, const Vec3f& 
 int MoleculeStereocenters::_onPlane(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3, const Vec3f& u)
 {
     Vec3f v1u, v2u, v3u, p;
-    float eps = 0.1f;
+    const float eps = 0.1f;
 
     v1u.diff(v1, u);
     v1u.normalize();

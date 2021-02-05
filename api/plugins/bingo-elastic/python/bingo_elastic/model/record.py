@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Callable, Dict, List, Optional
 from uuid import uuid4
 
@@ -6,13 +8,13 @@ from indigo import Indigo, IndigoObject
 
 
 # pylint: disable=unused-argument
-def skip_errors(instance: object, err: BaseException) -> None:
+def skip_errors(instance: IndigoRecord, err: BaseException) -> None:
     """
     Empty handler to skip errors
     """
 
 
-def check_error(instance: object, error: BaseException) -> None:
+def check_error(instance: IndigoRecord, error: BaseException) -> None:
     if instance.error_handler:
         instance.error_handler(instance, error)
     else:
@@ -20,14 +22,14 @@ def check_error(instance: object, error: BaseException) -> None:
 
 
 class WithElasticResponse:
-    def __set__(self, instance: object, value: Dict):
+    def __set__(self, instance: IndigoRecord, value: Dict):
         el_src = value["_source"]
         for arg, val in el_src.items():
             setattr(instance, arg, val)
 
 
 class WithIndigoObject:
-    def __set__(self, instance: object, value: IndigoObject) -> None:
+    def __set__(self, instance: IndigoRecord, value: IndigoObject) -> None:
         fingerprints = (
             "sim",
             "sub",
@@ -49,7 +51,11 @@ class WithIndigoObject:
             except indigo.IndigoException as err_:
                 check_error(instance, err_)
 
-        setattr(instance, "name", value.name())
+        try:
+            setattr(instance, "name", value.name())
+        except indigo.IndigoException as err_:
+            pass
+
         try:
             setattr(
                 instance, "cmf", " ".join(map(str, list(value.serialize())))
@@ -59,6 +65,13 @@ class WithIndigoObject:
 
 
 class IndigoRecord:
+    """
+    Base class for IndigoObject representation.
+    This class could not be instantiated directly, use one of the following
+    subclasses:
+        - IndigoRecordMolecule
+        - IndigoRecordReaction
+    """
 
     cmf: bytes = None
     name: str = None
@@ -109,3 +122,21 @@ class IndigoRecord:
 
     def as_indigo_object(self, session: Indigo):
         return session.deserialize(list(map(int, self.cmf.split(" "))))
+
+
+class IndigoRecordMolecule(IndigoRecord):
+    pass
+
+
+class IndigoRecordReaction(IndigoRecord):
+    pass
+
+
+def as_iob(indigo_record: IndigoRecord, session: Indigo) -> IndigoObject:
+    """Function extracts IndigoObject from IndigoRecord
+    Short alias to IndigoRecord.as_indigo_object
+    :param indigo_record:
+    :param session:
+    :return:
+    """
+    return indigo_record.as_indigo_object(session)
