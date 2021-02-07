@@ -37,19 +37,15 @@ namespace indigo
     public:
         DECL_TPL_ERROR(ArrayError);
 
-        explicit Array()
+        explicit Array() : _reserved(0), _length(0), _array(nullptr)
         {
-            _reserved = 0;
-            _length = 0;
-            _array = NULL;
         }
 
         ~Array()
         {
-            if (_array != NULL)
+            if (_array != nullptr)
             {
                 free(_array);
-                _array = NULL;
             }
         }
 
@@ -60,9 +56,9 @@ namespace indigo
 
         void reserve(int to_reserve)
         {
-            // Addtional check for unexpectedly large memory allocations (larger than 512 Mb)
+            // Addtional check for unexpectedly large memory allocations (larger than 1 GB)
             if (to_reserve * sizeof(T) >= 1 << 30)
-                throw Error("memory to reserve (%d x %d) is large than allowed threshold", to_reserve, (int)sizeof(T));
+                throw Error("memory to reserve (%d x %d) is larger than the allowed threshold", to_reserve, (int)sizeof(T));
 
             if (to_reserve <= 0)
                 throw Error("to_reserve = %d", to_reserve);
@@ -71,14 +67,17 @@ namespace indigo
             {
                 if (_length < 1)
                 {
-                    free(_array);
-                    _array = NULL;
+                    if (_array != nullptr)
+                    {
+                        free(_array);
+                        _array = nullptr;
+                    }
                 }
 
                 T* oldptr = _array;
 
                 _array = (T*)realloc(_array, sizeof(T) * to_reserve);
-                if (_array == NULL)
+                if (_array == nullptr)
                 {
                     _array = oldptr;
                     throw Error("reserve(): no memory");
@@ -98,6 +97,7 @@ namespace indigo
             if (_length > 0)
                 memset(_array, 0xFF, _length * sizeof(T));
         }
+
         void fill(const T& value)
         {
             for (int i = 0; i < size(); i++)
@@ -144,6 +144,7 @@ namespace indigo
         {
             return _length;
         }
+
         int sizeInBytes(void) const
         {
             return _length * sizeof(T);

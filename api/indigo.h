@@ -414,6 +414,12 @@ CEXPORT int indigoCheckQuery(int item);
 // Returns one if structure contains RGroup features (RSites, RGroups or attachment points
 CEXPORT int indigoCheckRGroups(int item);
 
+// Returns check result for Indigo object as text file for requested properties as JSON
+CEXPORT const char* indigoCheck2(const char* item, const char* check_flags, const char* load_params);
+
+// Returns check result for Indigo object for requested properties as JSON
+CEXPORT const char* indigoCheckObj2(int item, const char* check_flags);
+
 // Returns check result for Indigo object for requested properties
 CEXPORT const char* indigoCheck(int item, const char* props);
 
