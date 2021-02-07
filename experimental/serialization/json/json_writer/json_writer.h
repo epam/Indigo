@@ -1,61 +1,74 @@
 #ifndef __item__
 #define __item__
 
-#include "../reflection/reflection.h"
+#include "../../../item/item.h"
+#include "../../../reflection/reflection.h"
 
 #include <mutex>
 #include <string>
 #include <vector>
 
-#define GETTER(TYPE, NAME) virtual TYPE NAME() const      // getter
-#define SETTER(TYPE, NAME) virtual void NAME(const TYPE&) // setter
-#define GETSETTER(TYPE, NAME) virtual TYPE NAME() const
-virtual void NAME(const TYPE&)
-
-#define GETTER_MODEL_IMPL(CLASS, TYPE, NAME)                                                                                                                   \
-    TYPE CLASS::NAME()                                                                                                                                         \
-    {                                                                                                                                                          \
-        return NAME;                                                                                                                                     \
-    }
-#define SETTER_MODEL_IMPL(CLASS, TYPE, NAME)                                                                                                                   \
-    void CLASS::NAME(const TYPE& _##NAME)                                                                                                                         \
-    {                                                                                                                                                          \
-        NAME = _##NAME;                                                                                                                                     \
-    }
-
-#define GETSETTER_MODEL_IMPL(CLASS, TYPE, NAME)                                                                                                                \
-    TYPE CLASS::NAME()                                                                                                                                         \
-    {                                                                                                                                                          \
-        return NAME;                                                                                                                                     \
-    }                                                                                                                                                          \
-    void CLASS::NAME(const TYPE& _##NAME)                                                                                                                      \
-    {                                                                                                                                                          \
-        NAME = _##NAME;                                                                                                                                  \
-    }
-
-    namespace indigo2
+class JsonWriter : public virtual FieldsScanner
 {
-    typedef id_t int;
+    thread_local ostream& out;
 
-    class Item // interface
+public:
+    JsonWriter(ostream& _out) : out(_out)
     {
-    public:
-        GETTER(id_t, ID) = 0; // id to use as ref when serialized
+    }
 
-        GETSETTER(std::string, name) = 0; // human-friendly name
-        GETSETTER(std::string, uri) = 0;  // globally unique URI (can be an URL for loading of the item from remote service)
+    to_json(Item& item)
+    {
+        out << "{";
+        item.reflection(*this);
+        out << "}";
+    }
 
-        virtual const std::lock_guard<std::mutex> lock() = 0;
+    template <T> to_json(std::vector<T> item)
+    {
+        out << "[";
+        std::for_each(item.beg(), item.end(), [this](auto e) { to_json(e); out << "," });
+        out << "]";
+    }
 
-    protected:
-        REFLECTION
-        REFLECTION_FIELD(ID)
-        REFLECTION_FIELD(name)
-        REFLECTION_FIELD(uri)
-    private:
-        Item()
-        {
-        }
+    template <T> to_json(std::unordered_map<K,V> item)
+    {
+        out << "{";
+        std::for_each(item.beg(), item.end(), [this](auto e) {
+            out << "\"" << escape(e.first) << "\"=";
+            to_json(e.second);
+            out << ","
+        });
+        out << "}";
+    }
+
+    template <T> to_json(std::map<K, V> item)
+    {
+        out << "{";
+        std::for_each(item.beg(), item.end(), [this](auto e) {
+            out << "\"" << escape(e.first) << "\"=";
+            to_json(e.second);
+            out << ","
+        });
+        out << "}";
+    }
+
+    to_json(std::string value)
+    {
+        out << "\"" << escape(value) << "\"";
+    }
+
+    template <T> to_json(T value)
+    {
+        out << value;
+    }
+
+    template <T> virtual void process(const std::string& field_name, std::function<const T&()>& getter, std::function<void(const T&)>& setter)
+    {
+        out << "\"" << escape(field_name) << "\""
+            << "=";
+        to_json(getter());
+        out << ",";
     }
 };
 } // namespace indigo2

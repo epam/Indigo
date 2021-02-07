@@ -52,6 +52,7 @@ virtual void NAME(const TYPE&)
         REFLECTION_FIELD(ID)
         REFLECTION_FIELD(name)
         REFLECTION_FIELD(uri)
+    }
     private:
         Item()
         {
