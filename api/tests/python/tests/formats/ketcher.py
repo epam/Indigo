@@ -13,7 +13,6 @@ def exact_check(indigo, m1, m2):
         assert m1.getBond(i).bondOrder() == m2.getBond(i).bondOrder()
         assert m1.getBond(i).bondStereo() == m2.getBond(i).bondStereo()
     assert m1.isChiral() == m2.isChiral()
-    print( indigo.exactMatch(m1, m2) )
     assert indigo.exactMatch(m1, m2)
     return True
 
