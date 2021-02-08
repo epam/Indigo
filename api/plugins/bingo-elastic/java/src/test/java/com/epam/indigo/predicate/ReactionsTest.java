@@ -28,14 +28,14 @@ public class ReactionsTest extends BaseElasticTest {
 
     protected void check(IndigoRecordReaction target, Iterable<IndigoRecordReaction> found) {
         found.forEach(currentReaction -> {
-            assertEquals(
-                    currentReaction.getCmf().length,
-                    target.getCmf().length
-            );
             assertTrue(Arrays.equals(
                     currentReaction.getCmf(),
                     target.getCmf()
             ));
+            assertEquals(
+                    currentReaction.getCmf().length,
+                    target.getCmf().length
+            );
         });
     }
 
@@ -77,7 +77,7 @@ public class ReactionsTest extends BaseElasticTest {
 
     @Test
     public void euclidMatchTest() {
-        IndigoRecordReaction targetReaction = reactions.get(2);
+        IndigoRecordReaction targetReaction = reactions.get(3);
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
                 .filter(new EuclidSimilarityMatch<>(targetReaction, 1))
                 .collect(Collectors.toList());
