@@ -9,7 +9,6 @@ import java.io.Writer;
 import java.lang.reflect.GenericSignatureFormatError;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.dc.builder.annotations.Ignore;
 import com.dc.builder.java.JavaBuilder;
 import com.dc.indigo.core.Item;
 
@@ -28,7 +28,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
-public class CodeBuilder {
+public abstract class CodeBuilder {
 
 	public static class ClassItem {
 		private String packageName;
@@ -73,6 +73,11 @@ public class CodeBuilder {
 		private boolean isRetItem;
 		private String name;
 		private List<ParamItem> params;
+		public String simpleTypeName;
+
+		public String getSimpleTypeName() {
+			return simpleTypeName;
+		}
 
 		public String getType() {
 			return type;
@@ -122,10 +127,11 @@ public class CodeBuilder {
 		cfg.setFallbackOnNullLoopVariable(false);
 		cfg.setTemplateLoader(new ClassTemplateLoader(CodeBuilder.class, "templates"));
 
-		JavaBuilder javaBuilder = new JavaBuilder();
+		CodeBuilder[] builders = { new JavaBuilder() };
+
 		try {
-			List<ClassItem> classes = Arrays.asList(getClasses("com.dc.indigo.graph")).stream()
-					.filter(e -> e.isInterface() && Item.class.isAssignableFrom(e)).map(e -> {
+			List<ClassItem> classes = Arrays.asList(getClasses("com.dc.indigo")).stream()
+					.filter(e -> e.isInterface() && Item.class.isAssignableFrom(e) && Item.class != e && e.getAnnotation(Ignore.class) == null).map(e -> {
 						ClassItem classItem = new ClassItem();
 						classItem.theClass = e.getClass();
 						classItem.packageName = e.getPackageName();
@@ -138,16 +144,18 @@ public class CodeBuilder {
 						classItem.allInterfacesNames = Arrays.asList(e.getInterfaces()).stream().map(ee -> ee.getName())
 								.collect(Collectors.toList());
 						classItem.methods = Arrays.asList(e.getDeclaredMethods()).stream()
-								.filter(m -> (m.getModifiers() & Modifier.PUBLIC) != 0).map(m -> {
+								.filter(m -> (m.getModifiers() & Modifier.PUBLIC) != 0 && !m.isDefault()).map(m -> {
 									MethodItem methodItem = new MethodItem();
 
 									methodItem.type = m.getReturnType().getName();
+									methodItem.simpleTypeName = m.getReturnType().getSimpleName();
 
 									try {
-									String params = String.join(", ",
-											Arrays.asList(((ParameterizedType) m.getGenericReturnType()).getActualTypeArguments()).stream().map(ee -> ee.getTypeName()).collect(Collectors.toList())
-										);
-									methodItem.type += "<" + params + ">";
+										String params = String.join(", ",
+												Arrays.asList(((ParameterizedType) m.getGenericReturnType())
+														.getActualTypeArguments()).stream().map(ee -> ee.getTypeName())
+														.collect(Collectors.toList()));
+										methodItem.type += "<" + params + ">";
 									} catch (ClassCastException | GenericSignatureFormatError ex) {
 									}
 
@@ -166,13 +174,8 @@ public class CodeBuilder {
 					}).collect(Collectors.toList());
 
 			classes.forEach(c -> {
-				try {
-					System.out.println(c.getInterfaceName());
-					javaBuilder.buildImpl(c);
-				} catch (IOException | TemplateException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				System.out.println(c.getInterfaceName());
+				Arrays.asList(builders).stream().forEach(e -> e.buildImpl(c));
 			});
 
 		} catch (ClassNotFoundException |
@@ -183,6 +186,8 @@ public class CodeBuilder {
 		}
 
 	}
+
+	abstract public void buildImpl(ClassItem classItem);
 
 	protected void applyTemplate(Object item, String templateName, String outFilePath, boolean overwrite) {
 		try (Writer out = createFile(outFilePath, overwrite)) {

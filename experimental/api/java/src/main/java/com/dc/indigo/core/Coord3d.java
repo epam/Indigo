@@ -1,9 +1,15 @@
 package com.dc.indigo.core;
 
-import com.dc.builder.annotations.NativeClass;
-
-@NativeClass
+/**
+ * 
+ * @author Dmitrii_Chernov
+ * 
+ * 	X, Y, Z  - center (diagonals intersection point) of circumscribed parallepiped
+ *  sizeX, sizeY, sizeZ  - dimensions of circumscribed parallepiped
+ *  rotX, rotY, rotZ  - rotation of circumscribed parallepiped
+ */
 public interface Coord3d extends Item {
+	
 	float getX();
 
 	void setX(float v);

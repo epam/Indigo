@@ -1,9 +1,8 @@
 package com.dc.indigo.graph;
 
-import java.util.Map;
-
 import com.dc.indigo.core.Coord3d;
 import com.dc.indigo.core.Item;
+import com.dc.indigo.core.NativeMap;
 
 public interface GraphItem extends Item {
 
@@ -13,7 +12,7 @@ public interface GraphItem extends Item {
 
 	void setLabel(String v);
 
-	Map<String, String> getStyle();
+	NativeMap<String, String> getStyle();
 
 	boolean getSelected();
 
