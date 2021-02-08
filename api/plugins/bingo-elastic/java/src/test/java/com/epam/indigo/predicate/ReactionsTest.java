@@ -28,14 +28,14 @@ public class ReactionsTest extends BaseElasticTest {
 
     protected void check(IndigoRecordReaction target, Iterable<IndigoRecordReaction> found) {
         found.forEach(currentReaction -> {
-            assertEquals(
-                    currentReaction.getCmf().length,
-                    target.getCmf().length
-            );
             assertTrue(Arrays.equals(
                     currentReaction.getCmf(),
                     target.getCmf()
             ));
+            assertEquals(
+                    currentReaction.getCmf().length,
+                    target.getCmf().length
+            );
         });
     }
 
