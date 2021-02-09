@@ -18,7 +18,7 @@ namespace indigo2
     {
 
     public:
-        GETTER(std::shared_ptr<Graph>, graph) = 0;
+        GETTER(std::weak_ptr<Graph>, graph) = 0;
         GETSETTER(std::string, label) = 0;
         GETSETTER(std::unordered_map<std::string, std::string>, style) = 0;
         GETSETTER(bool, selected) = 0;
