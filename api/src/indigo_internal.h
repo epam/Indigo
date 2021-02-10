@@ -56,7 +56,6 @@ namespace indigo
     class Output;
     class Scanner;
     class SdfLoader;
-    class JSONLoader;
     class RdfLoader;
     class MolfileSaver;
     class RxnfileSaver;

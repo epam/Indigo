@@ -173,6 +173,8 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         std::string label;
         int atom_idx = 0, charge = 0, valence = 0, radical = 0, isotope = 0, elem = 0, rsite_idx = 0;
         const Value& a = atoms[i];
+        if (a.HasMember("isotope"))
+            isotope = a["isotope"].GetInt();
         if (a.HasMember("attachmentPoints"))
         {
             int val = a["attachmentPoints"].GetInt();
@@ -247,8 +249,6 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             valence = a["explicitValence"].GetInt();
         if (a.HasMember("radical"))
             radical = a["radical"].GetInt();
-        if (a.HasMember("isotope"))
-            isotope = a["isotope"].GetInt();
 
         if (_pmol)
         {

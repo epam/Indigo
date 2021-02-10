@@ -570,9 +570,9 @@ CEXPORT int indigoSaveJson( int item, int output )
         if (IndigoBaseReaction::is(obj))
         {
             // reaction not implemented yet
-            return 1;
+            return -1;
         }
-        throw IndigoError("indigoSaveCml(): expected molecule or reaction, got %s", obj.debugInfo());
+        throw IndigoError("indigoSaveJson(): expected molecule or reaction, got %s", obj.debugInfo());
     }
     INDIGO_END(-1);
 }

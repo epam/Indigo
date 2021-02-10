@@ -811,7 +811,6 @@ CEXPORT int indigoIterateRDF(int reader);
 CEXPORT int indigoIterateSmiles(int reader);
 CEXPORT int indigoIterateCML(int reader);
 CEXPORT int indigoIterateCDX(int reader);
-CEXPORT int indigoIterateJSON(int reader);
 
 CEXPORT int indigoIterateSDFile(const char* filename);
 CEXPORT int indigoIterateRDFile(const char* filename);

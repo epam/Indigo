@@ -28,7 +28,6 @@
 #include "molecule/multiple_cml_loader.h"
 #include "molecule/rdf_loader.h"
 #include "molecule/sdf_loader.h"
-#include "molecule/json_loader.h"
 #include "molecule/molecule_json_loader.h"
 
 #include "molecule/smiles_loader.h"

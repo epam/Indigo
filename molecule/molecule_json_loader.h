@@ -50,6 +50,9 @@ namespace indigo
         DECL_ERROR;
         explicit MoleculeJsonLoader( rapidjson::Value& molecule, rapidjson::Value& rgroups );
         void loadMolecule( BaseMolecule& mol );
+        StereocentersOptions stereochemistry_options;
+
+	protected:
         int addAtomToMoleculeQuery( const char* label, int element, int charge, int valence, int radical, int isotope );
         int addBondToMoleculeQuery( int beg, int end, int order, int topology = 0 );
         void validateMoleculeBond( int order );
@@ -59,8 +62,6 @@ namespace indigo
         void parseSelection(const rapidjson::Value& selection, BaseMolecule& mol);
         void parseSGroups( const rapidjson::Value& sgroups, BaseMolecule& mol );
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
-
-        StereocentersOptions stereochemistry_options;
 
     private:
         rapidjson::Value& _mol_nodes;
