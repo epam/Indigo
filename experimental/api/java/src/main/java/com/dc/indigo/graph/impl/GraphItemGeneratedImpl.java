@@ -14,41 +14,11 @@ public class GraphItemGeneratedImpl extends com.dc.indigo.core.impl.ItemImpl imp
     
 	private native java.lang.String _getLabel(int thisID); //
     
-	public com.dc.indigo.graph.Graph getGraph() {
-		return	session.getGraph(_getGraph(thisID));
-	}
-    
-	private native int _getGraph(int thisID); //
-    
 	public void setLabel(java.lang.String v) {
 			_setLabel(thisID, v);
 	}
     
 	private native void _setLabel(int thisID, java.lang.String v); //
-    
-	public com.dc.indigo.core.Coord3d getCoord3d() {
-		return	session.getCoord3d(_getCoord3d(thisID));
-	}
-    
-	private native int _getCoord3d(int thisID); //
-    
-	public boolean getSelected() {
-		return	_getSelected(thisID);
-	}
-    
-	private native boolean _getSelected(int thisID); //
-    
-	public com.dc.indigo.core.NativeMap<java.lang.String, java.lang.String> getStyle() {
-		return	session.getNativeMap(_getStyle(thisID));
-	}
-    
-	private native int _getStyle(int thisID); //
-    
-	public void setSelected(boolean v) {
-			_setSelected(thisID, v);
-	}
-    
-	private native void _setSelected(int thisID, boolean v); //
     
 	public boolean getHighlighted() {
 		return	_getHighlighted(thisID);
@@ -56,11 +26,41 @@ public class GraphItemGeneratedImpl extends com.dc.indigo.core.impl.ItemImpl imp
     
 	private native boolean _getHighlighted(int thisID); //
     
+	public com.dc.indigo.core.Coord3d getCoord3d() {
+		return	session.getCoord3d(_getCoord3d(thisID));
+	}
+    
+	private native int _getCoord3d(int thisID); //
+    
 	public void setHighlighted(boolean v) {
 			_setHighlighted(thisID, v);
 	}
     
 	private native void _setHighlighted(int thisID, boolean v); //
+    
+	public com.dc.indigo.core.NativeMap<java.lang.String, java.lang.String> getStyle() {
+		return	session.getNativeMap(_getStyle(thisID));
+	}
+    
+	private native int _getStyle(int thisID); //
+    
+	public com.dc.indigo.graph.Graph getGraph() {
+		return	session.getGraph(_getGraph(thisID));
+	}
+    
+	private native int _getGraph(int thisID); //
+    
+	public void setSelected(boolean v) {
+			_setSelected(thisID, v);
+	}
+    
+	private native void _setSelected(int thisID, boolean v); //
+    
+	public boolean getSelected() {
+		return	_getSelected(thisID);
+	}
+    
+	private native boolean _getSelected(int thisID); //
     
 }
 

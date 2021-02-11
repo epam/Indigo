@@ -8,23 +8,29 @@ public class Coord3dGeneratedImpl extends com.dc.indigo.core.impl.ItemImpl imple
 		super(thisID);
 	}
  
-	public void setZ(float v) {
-			_setZ(thisID, v);
+	public float getRotZ() {
+		return	_getRotZ(thisID);
 	}
     
-	private native void _setZ(int thisID, float v); //
+	private native float _getRotZ(int thisID); //
     
-	public void setX(float v) {
-			_setX(thisID, v);
+	public float getRotX() {
+		return	_getRotX(thisID);
 	}
     
-	private native void _setX(int thisID, float v); //
+	private native float _getRotX(int thisID); //
     
-	public float getSizeX() {
-		return	_getSizeX(thisID);
+	public void setRotY(float v) {
+			_setRotY(thisID, v);
 	}
     
-	private native float _getSizeX(int thisID); //
+	private native void _setRotY(int thisID, float v); //
+    
+	public void setRotZ(float v) {
+			_setRotZ(thisID, v);
+	}
+    
+	private native void _setRotZ(int thisID, float v); //
     
 	public void setSizeX(float v) {
 			_setSizeX(thisID, v);
@@ -32,29 +38,23 @@ public class Coord3dGeneratedImpl extends com.dc.indigo.core.impl.ItemImpl imple
     
 	private native void _setSizeX(int thisID, float v); //
     
-	public float getX() {
-		return	_getX(thisID);
-	}
-    
-	private native float _getX(int thisID); //
-    
-	public void setSizeY(float v) {
-			_setSizeY(thisID, v);
-	}
-    
-	private native void _setSizeY(int thisID, float v); //
-    
-	public float getSizeZ() {
-		return	_getSizeZ(thisID);
-	}
-    
-	private native float _getSizeZ(int thisID); //
-    
 	public float getSizeY() {
 		return	_getSizeY(thisID);
 	}
     
 	private native float _getSizeY(int thisID); //
+    
+	public void setX(float v) {
+			_setX(thisID, v);
+	}
+    
+	private native void _setX(int thisID, float v); //
+    
+	public void setRotX(float v) {
+			_setRotX(thisID, v);
+	}
+    
+	private native void _setRotX(int thisID, float v); //
     
 	public float getY() {
 		return	_getY(thisID);
@@ -68,23 +68,41 @@ public class Coord3dGeneratedImpl extends com.dc.indigo.core.impl.ItemImpl imple
     
 	private native void _setSizeZ(int thisID, float v); //
     
+	public float getZ() {
+		return	_getZ(thisID);
+	}
+    
+	private native float _getZ(int thisID); //
+    
+	public float getSizeX() {
+		return	_getSizeX(thisID);
+	}
+    
+	private native float _getSizeX(int thisID); //
+    
+	public void setSizeY(float v) {
+			_setSizeY(thisID, v);
+	}
+    
+	private native void _setSizeY(int thisID, float v); //
+    
+	public void setZ(float v) {
+			_setZ(thisID, v);
+	}
+    
+	private native void _setZ(int thisID, float v); //
+    
 	public void setY(float v) {
 			_setY(thisID, v);
 	}
     
 	private native void _setY(int thisID, float v); //
     
-	public float getRotX() {
-		return	_getRotX(thisID);
+	public float getSizeZ() {
+		return	_getSizeZ(thisID);
 	}
     
-	private native float _getRotX(int thisID); //
-    
-	public float getZ() {
-		return	_getZ(thisID);
-	}
-    
-	private native float _getZ(int thisID); //
+	private native float _getSizeZ(int thisID); //
     
 	public float getRotY() {
 		return	_getRotY(thisID);
@@ -92,29 +110,11 @@ public class Coord3dGeneratedImpl extends com.dc.indigo.core.impl.ItemImpl imple
     
 	private native float _getRotY(int thisID); //
     
-	public void setRotX(float v) {
-			_setRotX(thisID, v);
+	public float getX() {
+		return	_getX(thisID);
 	}
     
-	private native void _setRotX(int thisID, float v); //
-    
-	public void setRotY(float v) {
-			_setRotY(thisID, v);
-	}
-    
-	private native void _setRotY(int thisID, float v); //
-    
-	public float getRotZ() {
-		return	_getRotZ(thisID);
-	}
-    
-	private native float _getRotZ(int thisID); //
-    
-	public void setRotZ(float v) {
-			_setRotZ(thisID, v);
-	}
-    
-	private native void _setRotZ(int thisID, float v); //
+	private native float _getX(int thisID); //
     
 }
 
