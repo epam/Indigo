@@ -1887,7 +1887,6 @@ void SmilesLoader::_handlePolymerRepetition(int i)
         if (_atoms[j].ends_polymer)
             end = j;
     }
-    
     if (start == -1)
         throw Error("internal: polymer start not found");
     if (end == -1)

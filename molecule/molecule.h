@@ -214,7 +214,6 @@ namespace indigo
 
             Array<_AttachOrder> order; // attach order info
         };
-        
         ObjPool<_TemplateOccurrence> _template_occurrences;
 
         StringPool _template_classes;
