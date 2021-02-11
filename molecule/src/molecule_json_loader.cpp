@@ -201,7 +201,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         if (a.HasMember("type"))
         {
             std::string atom_type = a["type"].GetString();
-            if (atom_type == "rg-label" && a.HasMember("$refs"))
+            if (atom_type == "rg-label" && a.HasMember("$refs") && a["$refs"].Size() )
             {
                 std::string ref = a["$refs"][0].GetString();
                 if (ref.find("rg-") == 0 && ref.erase(0, 3).size())
