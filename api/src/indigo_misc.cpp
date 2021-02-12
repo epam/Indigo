@@ -1436,6 +1436,7 @@ CEXPORT const char* indigoCheckStructure(const char* structure, const char* prop
     INDIGO_END(0);
 }
 
+
 CEXPORT const char* indigoJson(int item)
 {
     INDIGO_BEGIN
@@ -1448,19 +1449,8 @@ CEXPORT const char* indigoJson(int item)
         if (IndigoBaseMolecule::is(obj))
         {
             MoleculeJsonSaver jn(out);
-
             BaseMolecule& bmol = obj.getBaseMolecule();
-
-            if (bmol.isQueryMolecule())
-            {
-                QueryMolecule& qmol = bmol.asQueryMolecule();
-                jn.saveQueryMolecule(qmol);
-            }
-            else
-            {
-                Molecule& mol = bmol.asMolecule();
-                jn.saveMolecule(mol);
-            }
+            jn.saveMolecule(bmol);
         }
         out.writeChar(0);
         return tmp.string.ptr();

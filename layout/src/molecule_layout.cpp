@@ -412,10 +412,18 @@ BaseMolecule& MoleculeLayout::_getMol(int id)
 {
     return *_map[id];
 }
+
+void MoleculeLayout::updateSGroups()
+{
+    _updateDataSGroups();
+    _updateMultipleGroups();
+    _updateRepeatingUnits();
+}
+
+
 void MoleculeLayout::make()
 {
     _make();
-
     if (_molecule.rgroups.getRGroupCount() > 0)
     {
         MoleculeRGroups& rgs = ((QueryMolecule&)_molecule).rgroups;
@@ -426,9 +434,7 @@ void MoleculeLayout::make()
         {
             RGroup& rg = rgs.getRGroup(i);
             Metalayout::LayoutLine& line = _ml.newLine();
-
             PtrPool<BaseMolecule>& frags = rg.fragments;
-
             for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
             {
                 BaseMolecule& mol = *frags[j];
@@ -443,7 +449,6 @@ void MoleculeLayout::make()
                 _pushMol(line, mol); // add molecule to metalayout AFTER its own layout is determined
             }
         }
-
         _ml.bondLength = bond_length;
         _ml.context = this;
         _ml.cb_getMol = cb_getMol;

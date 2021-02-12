@@ -24,6 +24,8 @@
 #include "base_cpp/properties_map.h"
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
+#include "molecule/query_molecule.h"
+#include "third_party/rapidjson/document.h"
 
 class IndigoRdfData : public IndigoObject
 {
@@ -87,19 +89,32 @@ public:
     IndigoSdfLoader(Scanner& scanner);
     IndigoSdfLoader(const char* filename);
     virtual ~IndigoSdfLoader();
-
     virtual IndigoObject* next();
     virtual bool hasNext();
-
     IndigoObject* at(int index);
-
     long long tell();
-
     AutoPtr<SdfLoader> sdf_loader;
 
 protected:
     AutoPtr<Scanner> _own_scanner;
 };
+
+/*
+class IndigoJSONLoader : public IndigoObject
+{
+public:
+    IndigoJSONLoader(Scanner& scanner);
+    IndigoJSONLoader(const char* filename);
+    virtual ~IndigoJSONLoader();
+    virtual IndigoObject* next();
+    virtual bool hasNext();
+    IndigoObject* at(int index);
+    AutoPtr<JSONLoader> json_loader;
+    
+protected:
+    AutoPtr<Scanner> _own_scanner;
+};*/
+
 
 class IndigoRdfLoader : public IndigoObject
 {
@@ -119,6 +134,24 @@ public:
 
 protected:
     AutoPtr<Scanner> _own_scanner;
+};
+
+
+class IndigoJSONMolecule : public IndigoObject
+{
+public:
+    IndigoJSONMolecule( rapidjson::Value& node, rapidjson::Value& rgroups, int index );
+    virtual ~IndigoJSONMolecule();
+    virtual Molecule& getMolecule();
+    virtual BaseMolecule& getBaseMolecule();
+    virtual const char* getName();
+    virtual IndigoObject* clone();
+    
+protected:
+    Molecule _mol;
+    rapidjson::Value& _node;
+    rapidjson::Value& _rgroups;
+    bool _loaded;
 };
 
 class IndigoSmilesMolecule : public IndigoRdfData

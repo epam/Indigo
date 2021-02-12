@@ -30,7 +30,7 @@ void usage(void)
     fprintf(stderr,
             "Indigo version: %s\n\n"
             "Usage:\n"
-            "  indigo-depict infile.{mol,rxn,cml,smi} outfile.{png,svg,pdf} [parameters]\n"
+            "  indigo-depict infile.{mol,rxn,cml,ket,smi} outfile.{png,svg,pdf} [parameters]\n"
             "  indigo-depict infile.{sdf,rdf,cml,smi} outfile_%%s.{png,svg,pdf} [parameters]\n"
             "  indigo-depict infile.{sdf,rdf}.gz outfile_%%s.{png,svg,pdf} [parameters]\n"
             "  indigo-depict infile.smi outfile.{mol,rxn,cml} [parameters]\n"
@@ -227,7 +227,7 @@ enum
     MODE_MULTILINE_SMILES,
     MODE_SDF,
     MODE_RDF,
-    MODE_MULTIPLE_CML
+    MODE_MULTIPLE_CML,
 };
 
 enum
@@ -243,6 +243,7 @@ enum
     OEXT_SDF,
     OEXT_RDF,
     OEXT_CML,
+    OEXT_KET,
     OEXT_OTHER
 };
 
@@ -329,9 +330,9 @@ int parseParams(Params* p, int argc, char* argv[])
         }
 
         p->file_to_load = argv[1];
-        if (strcasecmp(p->infile_ext, "mol") == 0)
+        if (strcasecmp(p->infile_ext, "mol") == 0 || strcasecmp(p->infile_ext, "ket") == 0)
             p->mode = MODE_SINGLE_MOLECULE;
-        else if (strcasecmp(p->infile_ext, "rxn") == 0)
+        else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0)
             p->mode = MODE_SINGLE_REACTION;
         else if (strcasecmp(p->infile_ext, "smi") == 0)
         {
@@ -365,8 +366,9 @@ int parseParams(Params* p, int argc, char* argv[])
         else if (strcasecmp(p->infile_ext, "rdf") == 0 || strcasecmp(p->infile_ext, "rdf.gz") == 0)
             p->mode = MODE_RDF;
         else
+        {
             USAGE();
-
+        }
         i = 2;
     }
 
@@ -848,6 +850,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_RDF;
     else if (strcmp(p.outfile_ext, "cml") == 0)
         p.out_ext = OEXT_CML;
+    else if (strcmp(p.outfile_ext, "ket") == 0)
+        p.out_ext = OEXT_KET;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
@@ -859,6 +863,14 @@ int main(int argc, char* argv[])
 
     // read in the input
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
+/*	{
+        int reader2 = indigoReadFile(p.outfile);
+        auto m1 = indigoLoadMolecule(reader);
+        auto m2 = indigoLoadMolecule(reader2);
+        int ematch = indigoExactMatch(m1, m2, NULL );
+        if (ematch)
+            printf("ok");
+    }*/
 
     if (p.mode == MODE_SINGLE_MOLECULE)
     {
@@ -879,9 +891,11 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            indigoLayout(obj);
+            // indigoLayout(obj);
             if (p.out_ext == OEXT_MOL)
                 indigoSaveMolfileToFile(obj, p.outfile);
+            else if (p.out_ext == OEXT_KET)
+                indigoSaveJsonToFile(obj, p.outfile);
             else
                 indigoSaveCmlToFile(obj, p.outfile);
         }

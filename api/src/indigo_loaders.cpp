@@ -33,8 +33,48 @@
 #include "reaction/reaction_cml_loader.h"
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
+#include "molecule/molecule_json_loader.h"
 
 #include <limits>
+
+IndigoJSONMolecule::IndigoJSONMolecule( rapidjson::Value& node, rapidjson::Value& rgroups, int index )
+: IndigoObject( JSON_MOLECULE ), _node( node ), _rgroups( rgroups ), _loaded( false )
+{
+    
+}
+
+Molecule& IndigoJSONMolecule::getMolecule()
+{
+    if( !_loaded )
+    {
+        MoleculeJsonLoader loader( _node, _rgroups );
+        loader.loadMolecule( _mol );
+        _loaded = true;
+    }
+    return _mol;
+}
+
+BaseMolecule& IndigoJSONMolecule::getBaseMolecule()
+{
+    return getMolecule();
+}
+
+IndigoObject* IndigoJSONMolecule::clone()
+{
+    return IndigoMolecule::cloneFrom(*this);
+}
+
+
+const char* IndigoJSONMolecule::getName()
+{
+    if (getMolecule().name.ptr() == 0)
+        return "";
+    return getMolecule().name.ptr();
+}
+
+IndigoJSONMolecule::~IndigoJSONMolecule()
+{
+}
 
 IndigoSdfLoader::IndigoSdfLoader(Scanner& scanner) : IndigoObject(SDF_LOADER)
 {
