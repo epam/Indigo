@@ -68,6 +68,7 @@ setup(
     maintainer_email="Mikhail_Kviatkovskii@epam.com",
     packages=[
         "indigo",
+        "indigo_tools",
     ],
     license="Apache-2.0",
     url="https://lifescience.opensource.epam.com/indigo/index.html",

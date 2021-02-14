@@ -17,17 +17,9 @@ def indigo() -> Indigo:
     return __indigo.get()
 
 
-async def a_indigo() -> Indigo:
-    return indigo()
-
-
 @contextmanager
-def indigo_ctx(**kwargs) -> Indigo:
-    # TODO: this implementation doesn't support session copy
-    # TODO: Implement copy/restore functionality
+def indigo_new() -> Indigo:
     indigo_sess = Indigo()
-    for option in kwargs.get("setOption", []):
-        setattr(indigo_sess, "setOption", option)
     token = __indigo.set(indigo_sess)
     try:
         yield
