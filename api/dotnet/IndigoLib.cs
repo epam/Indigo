@@ -946,6 +946,9 @@ namespace com.epam.indigo
         public static extern int indigoFingerprint(int item, string type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern sbyte* indigoOneBitsList(int fingerprint);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadFingerprintFromBuffer(byte[] buffer, int size);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
