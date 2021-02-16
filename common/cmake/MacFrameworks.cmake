@@ -10,7 +10,7 @@ else()
 endif()
 
 set(FRAMEWORK_PATH /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${SSNAME}.sdk/System/Library/Frameworks)
-
+set(FRAMEWORK_PATH /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks)
 macro(ADD_FRAMEWORK fwname appname)
     set(FRAMEWORK_${fwname} ${FRAMEWORK_PATH}/${fwname}.framework)
 

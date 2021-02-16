@@ -194,6 +194,10 @@ CEXPORT int indigoSaveMolfile(int molecule, int output);
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename);
 CEXPORT const char* indigoMolfile(int molecule);
 
+
+CEXPORT int indigoSaveJsonToFile( int item, const char* filename );
+CEXPORT int indigoSaveJson( int item, int output );
+
 // accepts molecules and reactions (but not query ones)
 CEXPORT int indigoSaveCml(int object, int output);
 CEXPORT int indigoSaveCmlToFile(int object, const char* filename);

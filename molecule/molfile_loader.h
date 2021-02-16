@@ -85,34 +85,6 @@ namespace indigo
 
         enum
         {
-            _ATOM_R,
-            _ATOM_A,
-            _ATOM_X,
-            _ATOM_Q,
-            _ATOM_M,
-            _ATOM_AH,
-            _ATOM_XH,
-            _ATOM_QH,
-            _ATOM_MH,
-            _ATOM_LIST,
-            _ATOM_NOTLIST,
-            _ATOM_PSEUDO,
-            _ATOM_TEMPLATE,
-            _ATOM_ELEMENT
-        };
-
-        enum
-        {
-            _BOND_SINGLE_OR_DOUBLE = 5,
-            _BOND_SINGLE_OR_AROMATIC = 6,
-            _BOND_DOUBLE_OR_AROMATIC = 7,
-            _BOND_ANY = 8,
-            _BOND_COORDINATION = 9,
-            _BOND_HYDROGEN = 10
-        };
-
-        enum
-        {
             _SGROUP_TYPE_SUP = 1,
             _SGROUP_TYPE_DAT,
             _SGROUP_TYPE_SRU,

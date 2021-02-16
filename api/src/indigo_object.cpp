@@ -122,6 +122,8 @@ IndigoObjectTypes::IndigoObjectTypes()
     emplace(IndigoObject::TGROUP, "TGroup");
     emplace(IndigoObject::TGROUPS_ITER, "TGroupsIterator");
     emplace(IndigoObject::GROSS_REACTION, "GrossReaction");
+    emplace(IndigoObject::JSON_MOLECULE, "JsonMolecule");
+    emplace(IndigoObject::JSON_REACTION, "JsonReaction");
 
     if (size() != IndigoObject::INDIGO_OBJECT_LAST_TYPE - 1)
     {
