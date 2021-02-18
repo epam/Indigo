@@ -1,4 +1,4 @@
-from contextlib import contextmanager
+import asyncio
 from enum import Enum
 from typing import Dict, List, Optional, Union, Tuple
 
@@ -110,9 +110,22 @@ async def exact_match(indigo_response: IndigoResponse, molecule1: str, molecule2
     return indigo_response
 
 
-@app.post(f"{base_url_indigo_object}/aromatize", response_model=IndigoResponse)
-async def aromatize(indigo_response: IndigoResponse, molecule1: str) -> IndigoResponse:
+@app.get(f"{base_url_indigo}/version")
+async def indigo_version() -> IndigoResponse:
+    indigo_response = IndigoResponse()
+    mol1 = indigo().loadMolecule("CN1C=NC2=C1C(=O)N(C(=O)N2C)C")
+    indigo_response.data = {
+        "type": "version_string",
+        "attributes": {"content": indigo().version()},
+    }
+    return indigo_response
 
+
+@app.post(f"{base_url_indigo_object}/aromatize", response_model=IndigoResponse)
+async def aromatize(indigo_request: IndigoRequest) -> IndigoResponse:
+
+    indigo_response = IndigoResponse()
+    molecule1 = indigo_request.data.attributes[0].content
     try:
         mol1 = indigo().loadMolecule(molecule1)
         mol1.aromatize()
@@ -126,4 +139,38 @@ async def aromatize(indigo_response: IndigoResponse, molecule1: str) -> IndigoRe
             str(err_),
         ]
 
+    return indigo_response
+
+
+@app.post(f"{base_url_indigo_object}/smiles")
+async def smiles(indigo_request: IndigoRequest) -> IndigoResponse:
+    indigo_response = IndigoResponse()
+    molecule1 = indigo_request.data.attributes[0].content
+    try:
+        mol1 = indigo().loadMolecule(molecule1)
+        indigo_response.data = {
+            "type": "smiles",
+            "attributes": {"content": mol1.smiles()},
+        }
+    except IndigoException as err_:
+        indigo_response.errors = [
+            str(err_.__cause__),
+        ]
+    return indigo_response
+
+
+@app.post(f"{base_url_indigo_object}/smarts")
+async def smarts(indigo_request: IndigoRequest) -> IndigoResponse:
+    indigo_response = IndigoResponse()
+    molecule1 = indigo_request.data.attributes[0].content
+    try:
+        mol1 = indigo().loadMolecule(molecule1)
+        indigo_response.data = {
+            "type": "smarts",
+            "attributes": {"content": mol1.smarts()},
+        }
+    except IndigoException as err_:
+        indigo_response.errors = [
+            str(err_.__cause__),
+        ]
     return indigo_response
