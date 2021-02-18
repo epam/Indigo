@@ -989,37 +989,31 @@ void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions
 
 int MoleculePkaModel::_asc_cmp_cb(int& v1, int& v2, void* context)
 {
-    QS_DEF(Array<char>, key1);
-    QS_DEF(Array<char>, key2);
-    int res = 0;
+    Array<char> key1;
+    Array<char> key2;
 
     Molecule& mol = *(Molecule*)context;
-    key1.clear();
-    key2.clear();
     getAtomLocalKey(mol, v1, key1);
     getAtomLocalKey(mol, v2, key2);
 
-    res = strcmp(key1.ptr(), key2.ptr());
-    if (res != 0)
-        return res;
-    else
-    {
-        const Vertex& v3 = mol.getVertex(v1);
-        for (auto i : v3.neighbors())
-        {
-            getAtomLocalKey(mol, v3.neiVertex(i), key1);
-            ;
-        }
+    if (!key1.ptr()) return 1; // we could get nullptr for H; H must be last in sorted atoms; H always bigger
+    if (!key2.ptr()) return -1; // we could get nullptr for H; H must be last in sorted atoms; H always bigger
 
-        const Vertex& v4 = mol.getVertex(v2);
-        for (auto i : v4.neighbors())
-        {
-            getAtomLocalKey(mol, v4.neiVertex(i), key2);
-            ;
-        }
-        res = strcmp(key1.ptr(), key2.ptr());
+    const int res = strcmp(key1.ptr(), key2.ptr());
+    if (res != 0) return res;
+
+    const Vertex& v3 = mol.getVertex(v1);
+    for (auto i : v3.neighbors())
+    {
+        getAtomLocalKey(mol, v3.neiVertex(i), key1);
     }
-    return res;
+
+    const Vertex& v4 = mol.getVertex(v2);
+    for (auto i : v4.neighbors())
+    {
+        getAtomLocalKey(mol, v4.neiVertex(i), key2);
+    }
+    return strcmp(key1.ptr(), key2.ptr());
 }
 
 void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, Array<char>& fp, int level)
