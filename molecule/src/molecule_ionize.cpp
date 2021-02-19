@@ -894,21 +894,18 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
     matcher.fmcache = new MoleculeSubstructureMatcher::FragmentMatchCache;
     matcher.use_aromaticity_matcher = true;
     ignore_atoms.clear();
-    for (auto i = 0; i < _model.acids.size(); i++)
+    for (auto i = 0; i < _model.acids.size(); ++i)
     {
         matcher.setQuery(_model.acids[i]);
 
-        for (int j = 0; j < ignore_atoms.size(); j++)
+        for (int j = 0; j < ignore_atoms.size(); ++j)
             matcher.ignoreTargetAtom(ignore_atoms[j]);
 
-        if (!matcher.find())
-            continue;
-
-        for (;;)
+        for (bool flag = matcher.find(); flag; flag = matcher.findNext())
         {
             mapping.clear();
             mapping.copy(matcher.getQueryMapping(), _model.acids[i].vertexEnd());
-            for (int j = 0; j < mapping.size(); j++)
+            for (int j = 0; j < mapping.size(); ++j)
             {
                 if (mapping[j] > -1)
                 {
@@ -917,27 +914,22 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
                     ignore_atoms.push(mapping[j]);
                 }
             }
-            if (!matcher.findNext())
-                break;
         }
     }
 
     ignore_atoms.clear();
-    for (auto i = 0; i < _model.basics.size(); i++)
+    for (auto i = 0; i < _model.basics.size(); ++i)
     {
         matcher.setQuery(_model.basics[i]);
 
-        for (int j = 0; j < ignore_atoms.size(); j++)
+        for (int j = 0; j < ignore_atoms.size(); ++j)
             matcher.ignoreTargetAtom(ignore_atoms[j]);
 
-        if (!matcher.find())
-            continue;
-
-        for (;;)
+        for (bool flag = matcher.find(); flag; flag = matcher.findNext())
         {
             mapping.clear();
             mapping.copy(matcher.getQueryMapping(), _model.basics[i].vertexEnd());
-            for (int j = 0; j < mapping.size(); j++)
+            for (int j = 0; j < mapping.size(); ++j)
             {
                 if (mapping[j] > -1)
                 {
@@ -946,8 +938,6 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
                     ignore_atoms.push(mapping[j]);
                 }
             }
-            if (!matcher.findNext())
-                break;
         }
     }
 }
@@ -1226,7 +1216,7 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
     {
         mol.getVacantPiOrbitals(group, a_chg, a_rad, a_conn, &a_lone);
     }
-    catch (indigo::Exception& e)
+    catch (indigo::Exception&)
     {
         a_lone = -1; // The atom is aromatic
     }
