@@ -1,6 +1,6 @@
 import asyncio
 from enum import Enum
-from typing import Dict, List, Optional, Union, Tuple
+from typing import Dict, List, Optional, Union, Tuple, Generator
 
 from fastapi import FastAPI, Response, Request
 from indigo import IndigoException, IndigoObject
@@ -25,11 +25,28 @@ class AttributesModel(BaseModel):
 
 class DataModel(BaseModel):
     type: SupportedTypes
-    attributes: List[AttributesModel]
+    attributes: AttributesModel
 
 
 class IndigoRequest(BaseModel):
     data: DataModel
+
+
+class OneCompoundRequest(BaseModel):
+    type: SupportedTypes
+    attributes: List
+
+
+class TwoCompoundsRequest(BaseModel):
+    pass
+
+
+class IndigoOneCompoundRequest(BaseModel):
+    data: OneCompoundRequest
+
+
+class IndigoTwoCompoundsRequest(BaseModel):
+    data: TwoCompoundsRequest
 
 
 class IndigoResponse(BaseModel):
@@ -92,10 +109,10 @@ async def decompose_molecules(scaffold: str, structures: str) -> str:
 
 
 @app.post(f"{base_url_indigo}/exactMatch", response_model=IndigoResponse)
-async def exact_match(indigo_response: IndigoResponse, molecule1: str, molecule2: str):
+async def exact_match(indigo_request: IndigoRequest) -> IndigoResponse:
+    indigo_response = IndigoResponse()
     try:
-        mol1 = indigo().loadMolecule(molecule1)
-        mol2 = indigo().loadMolecule(molecule2)
+        mol1, mol2 = get_molecules(indigo_request)
         match = True if indigo().exactMatch(mol1, mol2) else False
         indigo_response.data = {
             "type": "bool",
@@ -110,7 +127,7 @@ async def exact_match(indigo_response: IndigoResponse, molecule1: str, molecule2
     return indigo_response
 
 
-@app.get(f"{base_url_indigo}/version")
+@app.get(f"{base_url_indigo}/version", response_model=IndigoResponse)
 async def indigo_version() -> IndigoResponse:
     indigo_response = IndigoResponse()
     mol1 = indigo().loadMolecule("CN1C=NC2=C1C(=O)N(C(=O)N2C)C")
@@ -121,25 +138,40 @@ async def indigo_version() -> IndigoResponse:
     return indigo_response
 
 
-@app.post(f"{base_url_indigo_object}/aromatize", response_model=IndigoResponse)
-async def aromatize(indigo_request: IndigoRequest) -> IndigoResponse:
+async def extract_molecules(
+    request: IndigoRequest,
+) -> Generator[IndigoObject, None, None]:
+    type_ = request.data.type
+    for molecule in request.data.attributes:
+        if type_ == "smiles":
+            yield indigo().loadMolecule(molecule)
+        elif type_ == "molfile":
+            yield indigo().loadMoleculeFromBuffer(bytes(molecule.content, "utf-8"))
+        else:
+            raise AttributeError(f"Unsupported type {type_}")
 
+
+async def apply(molecule: IndigoObject, function: str) -> IndigoResponse:
     indigo_response = IndigoResponse()
-    molecule1 = indigo_request.data.attributes[0].content
     try:
-        mol1 = indigo().loadMolecule(molecule1)
-        mol1.aromatize()
+        getattr(molecule, function)
+        molecule.aromatize()
         indigo_response.data = {
             "type": "molfile",
-            "attributes": {"content": mol1.molfile()},
+            "attributes": {"content": molecule.molfile()},
         }
-
     except IndigoException as err_:
         indigo_response.errors = [
             str(err_),
         ]
-
     return indigo_response
+
+
+@app.post(f"{base_url_indigo_object}/aromatize", response_model=IndigoResponse)
+async def aromatize(indigo_request: IndigoRequest) -> IndigoResponse:
+    molecule_string = indigo_request.data.attributes[0].content
+    molecule = indigo().loadMolecule(molecule_string)
+    return await apply(molecule, "aromatize")
 
 
 @app.post(f"{base_url_indigo_object}/smiles")
@@ -161,6 +193,7 @@ async def smiles(indigo_request: IndigoRequest) -> IndigoResponse:
 
 @app.post(f"{base_url_indigo_object}/smarts")
 async def smarts(indigo_request: IndigoRequest) -> IndigoResponse:
+    # TODO: query molecule only
     indigo_response = IndigoResponse()
     molecule1 = indigo_request.data.attributes[0].content
     try:
