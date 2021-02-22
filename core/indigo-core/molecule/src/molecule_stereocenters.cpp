@@ -24,6 +24,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include <algorithm>
 
 using namespace indigo;
 
@@ -1041,7 +1042,7 @@ bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, 
     if (size == 3)
     {
         int order[3] = {mapping[pyramid[0]], mapping[pyramid[1]], mapping[pyramid[2]]};
-        int min = __min3(order[0], order[1], order[2]);
+        int min = *std::min_element(order, order + NELEM(order));
 
         while (order[0] != min)
         {

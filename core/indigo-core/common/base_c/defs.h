@@ -19,12 +19,6 @@
 #ifndef __defs_h__
 #define __defs_h__
 
-#if !defined(__min3)
-#define __min3(a, b, c) (__min(a, __min(b, c)))
-#endif
-#if !defined(__max3)
-#define __max3(a, b, c) (__max(a, __max(b, c)))
-#endif
 #if !defined(__sign)
 #define __sign(a) (a > 0 ? 1 : (a < 0 ? -1 : 0))
 #endif
