@@ -115,7 +115,7 @@ void RenderItemMolecule::estimateSize()
     for (int i = 0; i < items.size(); ++i)
     {
         RenderItemHLine& line = _factory.getItemHLine(items[i]);
-        size.x = __max(size.x, line.size.x);
+        size.x = std::max(size.x, line.size.x);
         if (i > 0)
             size.y += vSpace;
         size.y += line.size.y;

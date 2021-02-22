@@ -20,6 +20,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/cancellation_handler.h"
 #include "time.h"
+#include <algorithm>
 
 using namespace indigo;
 
@@ -174,9 +175,9 @@ void MaxCommonSubgraph::findExactMCS()
 
 void MaxCommonSubgraph::findApproximateMCS()
 {
-    int max_vsize = __max(_subgraph->vertexEnd(), _supergraph->vertexEnd());
-    int max_esize = __max(_subgraph->edgeEnd(), _supergraph->edgeEnd());
-    int max_asize = __max(max_vsize, max_esize);
+    int max_vsize = std::max(_subgraph->vertexEnd(), _supergraph->vertexEnd());
+    int max_esize = std::max(_subgraph->edgeEnd(), _supergraph->edgeEnd());
+    int max_asize = std::max(max_vsize, max_esize);
 
     AdjMatricesStore ams(*this, max_asize);
     ams.create(*_subgraph, *_supergraph);
@@ -703,7 +704,7 @@ void MaxCommonSubgraph::ReGraph::parse(bool findAllStructure)
     allowed_g1.clear();
     allowed_g2.clear();
 
-    int max_size = __min(_firstGraphSize, _secondGraphSize) + 1;
+    int max_size = std::min(_firstGraphSize, _secondGraphSize) + 1;
     xk.clear_resize(max_size);
 
     for (int i = 0; i < max_size; i++)
@@ -906,7 +907,7 @@ void MaxCommonSubgraph::ReGraph::_solution(const Dbitset& traversed, Dbitset& tr
 bool MaxCommonSubgraph::ReGraph::_mustContinue(const Dbitset& pnode_g1, const Dbitset& pnode_g2) const
 {
     bool result = true;
-    int num_bits = __min(pnode_g1.bitsNumber(), pnode_g2.bitsNumber());
+    int num_bits = std::min(pnode_g1.bitsNumber(), pnode_g2.bitsNumber());
 
     for (int i = _solutionObjList.begin(); i != _solutionObjList.end(); i = _solutionObjList.next(i))
     {

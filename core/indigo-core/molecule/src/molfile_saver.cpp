@@ -1140,8 +1140,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         {
             const char* pseudo = mol.getPseudoAtom(i);
 
-            if (strlen(pseudo) <= 3)
-                memcpy(label, pseudo, __min(strlen(pseudo), 3));
+            if (strlen(pseudo) <= (size_t)3)
+                memcpy(label, pseudo, std::min(strlen(pseudo), (size_t)3));
             else
             {
                 label[0] = 'A';
@@ -1403,8 +1403,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         int j = 0;
         while (j < charges.size())
         {
-            output.printf("M  CHG%3d", __min(charges.size(), j + 8) - j);
-            for (i = j; i < __min(charges.size(), j + 8); i++)
+            output.printf("M  CHG%3d", std::min(charges.size(), j + 8) - j);
+            for (i = j; i < std::min(charges.size(), j + 8); i++)
                 output.printf(" %3d %3d", _atom_mapping[charges[i]], mol.getAtomCharge(charges[i]));
             output.writeCR();
             j += 8;
@@ -1416,8 +1416,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         int j = 0;
         while (j < radicals.size())
         {
-            output.printf("M  RAD%3d", __min(radicals.size(), j + 8) - j);
-            for (i = j; i < __min(radicals.size(), j + 8); i++)
+            output.printf("M  RAD%3d", std::min(radicals.size(), j + 8) - j);
+            for (i = j; i < std::min(radicals.size(), j + 8); i++)
                 output.printf(" %3d %3d", _atom_mapping[radicals[i][0]], radicals[i][1]);
             output.writeCR();
             j += 8;
@@ -1429,8 +1429,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         int j = 0;
         while (j < isotopes.size())
         {
-            output.printf("M  ISO%3d", __min(isotopes.size(), j + 8) - j);
-            for (i = j; i < __min(isotopes.size(), j + 8); i++)
+            output.printf("M  ISO%3d", std::min(isotopes.size(), j + 8) - j);
+            for (i = j; i < std::min(isotopes.size(), j + 8); i++)
                 output.printf(" %3d %3d", _atom_mapping[isotopes[i]], mol.getAtomIsotope(isotopes[i]));
             output.writeCR();
             j += 8;
@@ -1442,8 +1442,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         int j = 0;
         while (j < unsaturated.size())
         {
-            output.printf("M  UNS%3d", __min(unsaturated.size(), j + 8) - j);
-            for (i = j; i < __min(unsaturated.size(), j + 8); i++)
+            output.printf("M  UNS%3d", std::min(unsaturated.size(), j + 8) - j);
+            for (i = j; i < std::min(unsaturated.size(), j + 8); i++)
                 output.printf(" %3d %3d", _atom_mapping[unsaturated[i]], 1);
             output.writeCR();
             j += 8;
@@ -1455,8 +1455,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         int j = 0;
         while (j < substitution_count.size())
         {
-            output.printf("M  SUB%3d", __min(substitution_count.size(), j + 8) - j);
-            for (i = j; i < __min(substitution_count.size(), j + 8); i++)
+            output.printf("M  SUB%3d", std::min(substitution_count.size(), j + 8) - j);
+            for (i = j; i < std::min(substitution_count.size(), j + 8); i++)
                 output.printf(" %3d %3d", _atom_mapping[substitution_count[i][0]], substitution_count[i][1]);
             output.writeCR();
             j += 8;
@@ -1468,8 +1468,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         int j = 0;
         while (j < ring_bonds.size())
         {
-            output.printf("M  RBC%3d", __min(ring_bonds.size(), j + 8) - j);
-            for (i = j; i < __min(ring_bonds.size(), j + 8); i++)
+            output.printf("M  RBC%3d", std::min(ring_bonds.size(), j + 8) - j);
+            for (i = j; i < std::min(ring_bonds.size(), j + 8); i++)
                 output.printf(" %3d %3d", _atom_mapping[ring_bonds[i][0]], ring_bonds[i][1]);
             output.writeCR();
             j += 8;
@@ -1557,8 +1557,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         int j;
         for (j = 0; j < sgroup_ids.size(); j += 8)
         {
-            output.printf("M  STY%3d", __min(sgroup_ids.size(), j + 8) - j);
-            for (i = j; i < __min(sgroup_ids.size(), j + 8); i++)
+            output.printf("M  STY%3d", std::min(sgroup_ids.size(), j + 8) - j);
+            for (i = j; i < std::min(sgroup_ids.size(), j + 8); i++)
             {
                 SGroup* sgroup = &mol.sgroups.getSGroup(sgroup_ids[i]);
                 output.printf(" %3d %s", sgroup->original_group, SGroup::typeToString(sgroup->sgroup_type));
@@ -1576,8 +1576,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         }
         for (j = 0; j < child_ids.size(); j += 8)
         {
-            output.printf("M  SPL%3d", __min(child_ids.size(), j + 8) - j);
-            for (i = j; i < __min(child_ids.size(), j + 8); i++)
+            output.printf("M  SPL%3d", std::min(child_ids.size(), j + 8) - j);
+            for (i = j; i < std::min(child_ids.size(), j + 8); i++)
             {
                 output.printf(" %3d %3d", child_ids[i], parent_ids[i]);
             }
@@ -1585,8 +1585,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         }
         for (j = 0; j < sgroup_ids.size(); j += 8)
         {
-            output.printf("M  SLB%3d", __min(sgroup_ids.size(), j + 8) - j);
-            for (i = j; i < __min(sgroup_ids.size(), j + 8); i++)
+            output.printf("M  SLB%3d", std::min(sgroup_ids.size(), j + 8) - j);
+            for (i = j; i < std::min(sgroup_ids.size(), j + 8); i++)
             {
                 SGroup* sgroup = &mol.sgroups.getSGroup(sgroup_ids[i]);
                 output.printf(" %3d %3d", sgroup->original_group, sgroup->original_group);
@@ -1597,8 +1597,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         int sru_count = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU);
         for (j = 0; j < sru_count; j += 8)
         {
-            output.printf("M  SCN%3d", __min(sru_count, j + 8) - j);
-            for (i = j; i < __min(sru_count, j + 8); i++)
+            output.printf("M  SCN%3d", std::min(sru_count, j + 8) - j);
+            for (i = j; i < std::min(sru_count, j + 8); i++)
             {
                 RepeatingUnit* ru = (RepeatingUnit*)&mol.sgroups.getSGroup(i, SGroup::SG_TYPE_SRU);
 
@@ -1628,16 +1628,16 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             for (j = 0; j < sgroup.atoms.size(); j += 8)
             {
                 int k;
-                output.printf("M  SAL %3d%3d", sgroup.original_group, __min(sgroup.atoms.size(), j + 8) - j);
-                for (k = j; k < __min(sgroup.atoms.size(), j + 8); k++)
+                output.printf("M  SAL %3d%3d", sgroup.original_group, std::min(sgroup.atoms.size(), j + 8) - j);
+                for (k = j; k < std::min(sgroup.atoms.size(), j + 8); k++)
                     output.printf(" %3d", _atom_mapping[sgroup.atoms[k]]);
                 output.writeCR();
             }
             for (j = 0; j < sgroup.bonds.size(); j += 8)
             {
                 int k;
-                output.printf("M  SBL %3d%3d", sgroup.original_group, __min(sgroup.bonds.size(), j + 8) - j);
-                for (k = j; k < __min(sgroup.bonds.size(), j + 8); k++)
+                output.printf("M  SBL %3d%3d", sgroup.original_group, std::min(sgroup.bonds.size(), j + 8) - j);
+                for (k = j; k < std::min(sgroup.bonds.size(), j + 8); k++)
                     output.printf(" %3d", _bond_mapping[sgroup.bonds[k]]);
                 output.writeCR();
             }
@@ -1671,7 +1671,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                     {
                         if (next_line)
                         {
-                            output.printf("M  SAP %3d%3d", superatom.original_group, __min(nrem, 6));
+                            output.printf("M  SAP %3d%3d", superatom.original_group, std::min(nrem, 6));
                             next_line = false;
                         }
 
@@ -1759,8 +1759,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 for (j = 0; j < mg.parent_atoms.size(); j += 8)
                 {
                     int k;
-                    output.printf("M  SPA %3d%3d", mg.original_group, __min(mg.parent_atoms.size(), j + 8) - j);
-                    for (k = j; k < __min(mg.parent_atoms.size(), j + 8); k++)
+                    output.printf("M  SPA %3d%3d", mg.original_group, std::min(mg.parent_atoms.size(), j + 8) - j);
+                    for (k = j; k < std::min(mg.parent_atoms.size(), j + 8); k++)
                         output.printf(" %3d", _atom_mapping[mg.parent_atoms[k]]);
                     output.writeCR();
                 }

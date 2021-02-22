@@ -110,7 +110,7 @@ void MoleculeChainFingerprintBuilder::_handleChain(Graph& graph, int size, const
     unsigned seed1 = CRC32::get(str.ptr());
     unsigned seed2 = CRC32::get(rev_str.ptr());
 
-    seed = __min(seed1, seed2);
+    seed = std::min(seed1, seed2);
 
     for (int i = 0; i < self->_parameters.bits_per_chain; i++)
     {

@@ -19,12 +19,6 @@
 #ifndef __defs_h__
 #define __defs_h__
 
-#if !defined(__max)
-#define __max(a, b) (((a) > (b)) ? (a) : (b))
-#endif
-#if !defined(__min)
-#define __min(a, b) (((a) < (b)) ? (a) : (b))
-#endif
 #if !defined(__min3)
 #define __min3(a, b, c) (__min(a, __min(b, c)))
 #endif

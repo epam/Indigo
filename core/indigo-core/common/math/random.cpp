@@ -1,5 +1,6 @@
 #include "math/random.h"
 #include "base_c/defs.h"
+#include <algorithm>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +41,7 @@ unsigned int Random::next(int mod)
 
 unsigned int Random::nextBounded(int l, int r)
 {
-    return __min(l, r) + next(abs(r - l));
+    return std::min(l, r) + next(abs(r - l));
 }
 
 unsigned int Random::nextLarge(int mod)
@@ -72,5 +73,5 @@ double Random::nextDouble()
 
 double Random::nextDoubleBounded(double l, double r)
 {
-    return __min(l, r) + nextDouble() * fabs(r - l);
+    return std::min(l, r) + nextDouble() * fabs(r - l);
 }

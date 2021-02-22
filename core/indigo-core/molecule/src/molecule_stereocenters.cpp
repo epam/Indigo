@@ -1477,7 +1477,7 @@ void MoleculeStereocenters::moveElementToEnd(int pyramid[4], int element)
 
 void MoleculeStereocenters::moveMinimalToEnd(int pyramid[4])
 {
-    int min_element = __min(__min(pyramid[0], pyramid[1]), __min(pyramid[2], pyramid[3]));
+    int min_element = std::min(std::min(pyramid[0], pyramid[1]), std::min(pyramid[2], pyramid[3]));
     moveElementToEnd(pyramid, min_element);
 }
 
