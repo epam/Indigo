@@ -1,40 +1,20 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(BingoCoreC)
+project(bingo-core-c LANGUAGES CXX)
 
-file(GLOB BingoCoreC_src src/*.cpp)
-file(GLOB BingoCoreC_headers src/*.h)
+file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
-set(BingoCoreC_HEADERS_DIR ${BingoCoreC_SOURCE_DIR}/src CACHE INTERNAL "include directories" FORCE)
+add_library(${PROJECT_NAME}-object OBJECT ${${PROJECT_NAME}_SOURCES})
+target_link_libraries(${PROJECT_NAME}-object
+        PUBLIC bingo-core)
 
-include(ConfigureCommon)
+add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
+target_link_libraries(${PROJECT_NAME}-static
+        PUBLIC bingo-core)
+target_include_directories(${PROJECT_NAME}-static
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-include_directories(../src ../src/core ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${ZLib_HEADERS_DIR} ${BingoCore_HEADERS_DIR}
-	${Common_SOURCE_DIR}/../api/plugins/inchi/src ${InChI_SOURCE_DIR}/INCHI_BASE/src)
-
-add_library(bingo-core-c STATIC ${BingoCoreC_src} ${BingoCoreC_headers})
-target_link_libraries(bingo-core-c bingo-core inchi)
-if(APPLE)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lc++")
-endif()
-set_target_properties(bingo-core-c PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-set_property(TARGET bingo-core-c PROPERTY FOLDER "bingo-core-c")
-set_property(TARGET bingo-core-c PROPERTY OUTPUT_NAME "bingo-core-c-static")
-
-
-if(BINGO_SQLSERVER)
-    add_library(bingo-core-c-shared SHARED ${BingoCoreC_src} ${BingoCoreC_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
-	target_link_libraries(bingo-core-c-shared bingo-core inchi tinyxml z)
-	if (APPLE)
-		set_target_properties(bingo-core-c-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -lc++")
-	endif()
-	if (UNIX AND NOT APPLE)
-		if(${SUBSYSTEM_NAME} MATCHES "x64")
-			set_target_properties(bingo-core-c-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
-		endif()
-	endif()
-	set_target_properties(bingo-core-c-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
-	set_property(TARGET bingo-core-c-shared PROPERTY FOLDER "bingo-core-c-shared")
-	set_property(TARGET bingo-core-c-shared PROPERTY OUTPUT_NAME "bingo-core-c")
-endif()
-
+add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
+target_link_libraries(${PROJECT_NAME}
+        PUBLIC bingo-core)

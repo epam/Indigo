@@ -39,9 +39,7 @@ using namespace indigo;
 
 extern "C"
 {
-#ifdef PG_MODULE_MAGIC
-    PG_MODULE_MAGIC;
-#endif
+PG_MODULE_MAGIC;
 
 #if PG_VERSION_NUM / 100 >= 906
     BINGO_FUNCTION_EXPORT(bingo_handler);
@@ -204,7 +202,7 @@ Datum bingo_build(PG_FUNCTION_ARGS)
             #else
                 reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
             #endif
-            
+
         }
         BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", message));
 

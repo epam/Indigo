@@ -1,13 +1,14 @@
-export MAKEFLAGS="-j $(grep -c ^processor /proc/cpuinfo)"
-ifeq ($(shell uname), Linux)
-	INDIGO_LIBRARIES := -lfontconfig -lfreetype
-endif
+repo_root := $(shell pwd)/../../..
+revision = $(shell git rev-parse --short HEAD)
 
-all:indigo
-	PKG_CXXFLAGS="-I/usr/local/Cellar/r/3.1.1/R.framework/Resources/include"  R CMD SHLIB -o rindigo.so rindigo.cpp -L$(PWD)/dist/ -L$(PWD)/dist/static/Linux/x64/ -lindigo-renderer-static -lindigo-static -ltinyxml -lcairo -lpixman -lz -lpng $(INDIGO_LIBRARIES)
-	gcc -Ldist/static/Linux/x64/ rindigo.o -lindigo-renderer-static -lindigo-static -ltinyxml -lcairo -lpixman -lz -lfreetype -lfontconfig -lpng ./rindigo.so
-indigo:clean
-	pwd && ls && cd dist && unzip "indigo-libs-1.2.1-dev5-linux64-static.zip" && cd ..
+all:indigo_build
+	PKG_CXXFLAGS="-I$(repo_root)/api/cpp/indigo -I$(repo_root)/api/cpp/indigo-renderer" R CMD SHLIB -L/tmp/indigo-build-$(revision)/lib -o rindigo.so rindigo.cpp -lindigo-renderer-static -lindigo-static -lindigo-core -lrender2d -linchi
+indigo_build:clean
+	mkdir -p /tmp/indigo-build-$(revision) && \
+	cd /tmp/indigo-build-$(revision) && \
+	cmake $(repo_root) && \
+	make -j indigo-static indigo-renderer-static
 clean:
 	rm -f *.o
 	rm -f *.so
+	rm -f *.dll

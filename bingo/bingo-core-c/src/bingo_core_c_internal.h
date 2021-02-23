@@ -21,12 +21,12 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/auto_ptr.h"
-#include "core/bingo_context.h"
-#include "core/mango_context.h"
-#include "core/ringo_context.h"
+#include "bingo_context.h"
+#include "mango_context.h"
+#include "ringo_context.h"
 
-#include "core/bingo_error.h"
-#include "core/mango_matchers.h"
+#include "bingo_error.h"
+#include "mango_matchers.h"
 
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/scanner.h"
