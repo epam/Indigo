@@ -2777,7 +2777,7 @@ void MolfileSaver::_addNextLevel(Molecule& source, Molecule& target, int s_idx, 
 void MolfileSaver::_calcStereocenters(Molecule& source, Molecule& mol, Array<int>& mapping)
 {
     QS_DEF(Array<int>, chirality);
-    int tmp, type, group;
+    int type, group;
 
     chirality.clear_resize(mol.vertexEnd());
     chirality.zerofill();
@@ -2838,7 +2838,7 @@ void MolfileSaver::_calcStereocenters(Molecule& source, Molecule& mol, Array<int
         source.stereocenters.get(mapping[i], type, group, source_pyramid);
 
         if (source.stereocenters.isPyramidMappingRigid(source_pyramid) != mol.stereocenters.isPyramidMappingRigid(pyramid, size, mapping.ptr()))
-            __swap(pyramid[0], pyramid[1], tmp);
+            std::swap(pyramid[0], pyramid[1]);
 
         mol.stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 1, pyramid);
     }

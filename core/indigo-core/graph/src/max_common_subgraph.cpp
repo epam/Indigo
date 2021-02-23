@@ -1297,8 +1297,8 @@ void MaxCommonSubgraph::AdjMatricesStore::_createCorrespondence()
         {
             if (_x[i] < _x[j])
             {
-                __swap(_cr1[i], _cr1[j], tmp);
-                __swap(_x[i], _x[j], tmp);
+                std::swap(_cr1[i], _cr1[j]);
+                std::swap(_x[i], _x[j]);
             }
         }
     }
@@ -1308,8 +1308,8 @@ void MaxCommonSubgraph::AdjMatricesStore::_createCorrespondence()
         {
             if (_y[i] < _y[j])
             {
-                __swap(_cr2[i], _cr2[j], tmp);
-                __swap(_y[i], _y[j], tmp);
+                std::swap(_cr2[i], _cr2[j]);
+                std::swap(_y[i], _y[j]);
             }
         }
     }
@@ -1349,12 +1349,12 @@ void MaxCommonSubgraph::AdjMatricesStore::_createCorrespondence()
     for (i = 0; i < _size1; i++)
     {
         r = random_handler.next(_size1);
-        __swap(_cr1[i], _cr1[r], tmp);
+        std::swap(_cr1[i], _cr1[r]);
     }
     for (i = 0; i < _size2; i++)
     {
         r = random_handler.next(_size2);
-        __swap(_cr2[i], _cr2[r], tmp);
+        std::swap(_cr2[i], _cr2[r]);
     }
 }
 

@@ -966,7 +966,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
             if (cur_site_vertex.neiVertex(nei_idx1) != nei_atom_idx1)
             {
                 // Swap attachment neighbors according to attachment orders (first and second)
-                __swap(nei_idx1, nei_idx2, i);
+                std::swap(nei_idx1, nei_idx2);
             }
 
             if (cur_site_vertex.neiVertex(nei_idx1) != nei_atom_idx1 || cur_site_vertex.neiVertex(nei_idx2) != nei_atom_idx2)

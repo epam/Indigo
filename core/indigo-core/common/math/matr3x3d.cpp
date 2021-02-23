@@ -149,10 +149,10 @@ void Matr3x3d::matrixVectorMultiply(const Vec3f& a, Vec3f& b) const
 
 void Matr3x3d::transpose()
 {
-    double tmp;
-    __swap(elements[3], elements[1], tmp);
-    __swap(elements[6], elements[2], tmp);
-    __swap(elements[7], elements[5], tmp);
+
+    std::swap(elements[3], elements[1]);
+    std::swap(elements[6], elements[2]);
+    std::swap(elements[7], elements[5]);
 }
 
 void Matr3x3d::matrixMatrixMultiply(const Matr3x3d& m, Matr3x3d& matrix_out) const
@@ -243,10 +243,10 @@ void Matr3x3d::eigenSystem(Matr3x3d& evec_out)
         {
             if (elements[j * 3 + j] < elements[(j + 1) * 3 + (j + 1)])
             {
-                __swap(elements[j * 3 + j], elements[(j + 1) * 3 + (j + 1)], nrm);
-                __swap(evec_out.elements[0 * 3 + j], evec_out.elements[0 * 3 + (j + 1)], nrm);
-                __swap(evec_out.elements[1 * 3 + j], evec_out.elements[1 * 3 + (j + 1)], nrm);
-                __swap(evec_out.elements[2 * 3 + j], evec_out.elements[2 * 3 + (j + 1)], nrm);
+                std::swap(elements[j * 3 + j], elements[(j + 1) * 3 + (j + 1)]);
+                std::swap(evec_out.elements[0 * 3 + j], evec_out.elements[0 * 3 + (j + 1)]);
+                std::swap(evec_out.elements[1 * 3 + j], evec_out.elements[1 * 3 + (j + 1)]);
+                std::swap(evec_out.elements[2 * 3 + j], evec_out.elements[2 * 3 + (j + 1)]);
             }
         }
     }

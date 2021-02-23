@@ -492,7 +492,7 @@ void MoleculeLayoutGraph::_excludeDandlingIntersections()
                 getPos(end2).lineCombin2(a, 0.3f, b, 0.7f);
                 break;
             case 23: // swap v2 and v4, equalize lengths
-                __swap(getPos(end1), getPos(end2), a);
+                std::swap(getPos(end1), getPos(end2));
 
                 norm1 = Vec2f::dist(getPos(beg1), getPos(end1));
                 norm2 = Vec2f::dist(getPos(beg2), getPos(end2));

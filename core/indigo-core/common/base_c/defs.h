@@ -23,8 +23,6 @@
 #define __sign(a) (a > 0 ? 1 : (a < 0 ? -1 : 0))
 #endif
 
-#define __swap(a, b, tmp) ((tmp) = (b), (b) = (a), (a) = (tmp))
-
 #if defined(_WIN32) && !defined(__MINGW32__)
 //#define vsnprintf _vsnprintf
 #if _MSC_VER < 1900
