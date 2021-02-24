@@ -121,7 +121,7 @@ void MangoIndex::prepare(Scanner& molfile, Output& output, OsLock* lock_for_excl
 
     ArrayOutput ce_output(_counted_elems_str);
 
-    for (int i = 0; i < (int)NELEM(counted_elements); i++)
+    for (int i = 0; i < NELEM(counted_elements); i++)
     {
         _counted_elem_counters.push(gross[counted_elements[i]]);
         ce_output.printf(", %d", gross[counted_elements[i]]);

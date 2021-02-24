@@ -24,7 +24,7 @@ bool MoleculeTautomerUtils::_isRepMetal(int elem)
 {
     static const int list[] = {ELEM_Li, ELEM_Na, ELEM_K, ELEM_Rb, ELEM_Cs, ELEM_Be, ELEM_Mg, ELEM_Ca, ELEM_Sr, ELEM_Ba};
 
-    for (int i = 0; i < (int)NELEM(list); i++)
+    for (int i = 0; i < NELEM(list); i++)
         if (elem == list[i])
             return true;
 

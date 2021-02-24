@@ -289,7 +289,7 @@ void MangoShadowTable::create(OracleEnv& env)
               " gross VARCHAR2(500), cmf BLOB, xyz BLOB, MASS number, fragments NUMBER",
               mi);
 
-    for (i = 0; i < (int)NELEM(MangoIndex::counted_elements); i++)
+    for (i = 0; i < NELEM(MangoIndex::counted_elements); i++)
         s1.append(", cnt_%s INTEGER", Element::toString(MangoIndex::counted_elements[i]));
     s1.append(") NOLOGGING");
     s1.append(" LOB(cmf) STORE AS (NOCACHE NOLOGGING PCTVERSION 0)"

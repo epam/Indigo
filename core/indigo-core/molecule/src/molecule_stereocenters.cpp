@@ -232,7 +232,7 @@ bool MoleculeStereocenters::isPossibleStereocenter(int atom_idx, bool* possible_
         *possible_lone_pair = false;
     int i;
 
-    for (i = 0; i < (int)NELEM(allowed_stereocenters); i++)
+    for (i = 0; i < NELEM(allowed_stereocenters); i++)
     {
         const _Configuration& as = allowed_stereocenters[i];
 

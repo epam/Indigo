@@ -37,7 +37,11 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-#define NELEM(arr) ((int)(sizeof(arr) / sizeof(arr[0])))
+#ifdef __cplusplus
+#define NELEM(arr) (std::extent<decltype(arr)>::value)
+#else
+#define NELEM(arr) (sizeof(arr) / sizeof(arr[0]))
+#endif
 
 #ifndef dword
 typedef unsigned int dword;
