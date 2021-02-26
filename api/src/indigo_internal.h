@@ -413,8 +413,6 @@ class DLLEXPORT IndigoError : public Exception
 {
 public:
     explicit IndigoError(const char* format, ...);
-    IndigoError(const IndigoError&);
-
 private:
 };
 

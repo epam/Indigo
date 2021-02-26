@@ -276,18 +276,13 @@ Indigo::TmpData& Indigo::getThreadTmpData()
 // IndigoError
 //
 
-IndigoError::IndigoError(const char* format, ...) : Exception()
+IndigoError::IndigoError(const char* format, ...) : Exception("core")
 {
     va_list args;
 
     va_start(args, format);
-    _init("core", format, args);
+    appendMessage(format, args);
     va_end(args);
-}
-
-IndigoError::IndigoError(const IndigoError& other) : Exception()
-{
-    other._cloneTo(this);
 }
 
 //
