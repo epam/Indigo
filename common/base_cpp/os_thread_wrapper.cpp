@@ -136,7 +136,7 @@ void OsCommandDispatcher::_mainLoop()
     {
         Exception* cur = _exception_to_forward;
         _exception_to_forward = NULL;
-        cur->throwSelf();
+        throw *cur;
     }
 }
 
@@ -218,11 +218,11 @@ void OsCommandDispatcher::_handleResultWithCheck(OsCommandResult* result)
     }
     catch (Exception& e)
     {
-        exception = e.clone();
+        exception = new Exception(e);
     }
     catch (...)
     {
-        exception = Exception("Unknown exception").clone();
+        exception = new Exception("Unknown exception");
     }
     if (exception != NULL)
         _handleException(exception);
@@ -355,7 +355,7 @@ void OsCommandDispatcher::_threadFunc(void)
         OsCommand* command = nullptr;
         _recvCommandAndResult(result, command);
 
-        Exception* exception = NULL;
+        Exception* exception = nullptr;
         try
         {
             result->clear();
@@ -363,14 +363,14 @@ void OsCommandDispatcher::_threadFunc(void)
         }
         catch (Exception& e)
         {
-            exception = e.clone();
+            exception = new Exception(e);
         }
         catch (...)
         {
-            exception = Exception("Unknown exception").clone();
+            exception = new Exception("Unknown exception");
         }
 
-        if (exception != NULL)
+        if (exception)
         {
             // Forward exception into main thread
             _baseMessageSystem.SendMsg(MSG_HANDLE_EXCEPTION, exception);
