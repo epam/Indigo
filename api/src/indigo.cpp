@@ -276,11 +276,7 @@ Indigo::TmpData& Indigo::getThreadTmpData()
 // IndigoError
 //
 
-<<<<<<< HEAD
 IndigoError::IndigoError(const char* format, ...) : Exception("core: ")
-=======
-IndigoError::IndigoError(const char* format, ...) : Exception("core")
->>>>>>> 76ce95726d11729f9e4090eeefba6a644c32ee93
 {
     va_list args;
 

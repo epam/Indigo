@@ -69,10 +69,7 @@ public                                                                          
 #define IMPL_EXCEPTION2(Namespace, ExceptionName, Parent, prefix)                       \
     Namespace::ExceptionName::ExceptionName(const char* format, ...) : Parent(prefix)   \
     {                                                                                   \
-<<<<<<< HEAD
         appendMessage(": ");                                                            \
-=======
->>>>>>> 76ce95726d11729f9e4090eeefba6a644c32ee93
         va_list args;                                                                   \
                                                                                         \
         va_start(args, format);                                                         \
