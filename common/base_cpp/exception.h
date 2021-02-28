@@ -22,6 +22,7 @@
 #include <cstdarg>
 #include <cstring>
 #include <type_traits>
+#include <stdio.h>
 
 #include "base_c/defs.h"
 
@@ -66,16 +67,15 @@ public                                                                          
 
 #define DECL_EXCEPTION_NO_EXP(ExceptionName) DECL_EXCEPTION_NO_EXP2(ExceptionName, indigo::Exception)
 
-#define IMPL_EXCEPTION2(Namespace, ExceptionName, Parent, prefix)                       \
-    Namespace::ExceptionName::ExceptionName(const char* format, ...) : Parent(prefix)   \
-    {                                                                                   \
-        appendMessage(": ");                                                            \
-        va_list args;                                                                   \
-                                                                                        \
-        va_start(args, format);                                                         \
-        appendMessage(format, args);                                                    \
-        va_end(args);                                                                   \
-    }                                                                                   \
+#define IMPL_EXCEPTION2(Namespace, ExceptionName, Parent, prefix)                            \
+    Namespace::ExceptionName::ExceptionName(const char* format, ...) : Parent(prefix ": ")   \
+    {                                                                                        \
+        va_list args;                                                                        \
+        va_start(args, format);                                                              \
+        const int len = strlen(_message);                                                    \
+        vsnprintf(_message + len, sizeof(_message) - len, format, args);                     \
+        va_end(args);                                                                        \
+    }                                                                                        \
 
 
 #define IMPL_EXCEPTION(Namespace, ExceptionName, prefix) IMPL_EXCEPTION2(Namespace, ExceptionName, indigo::Exception, prefix)

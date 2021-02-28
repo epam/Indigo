@@ -16,7 +16,6 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <stdio.h>
 #include <string.h>
 
 #include "base_c/defs.h"
@@ -37,12 +36,10 @@ Exception::Exception(const char* format, ...)
 void Exception::appendMessage(const char* format, ...)
 {
     va_list args;
-
     va_start(args, format);
 
-    char added_message[1024];
-    vsnprintf(added_message, sizeof(added_message), format, args);
-    strncat(_message, added_message, sizeof(_message));
+    const int len = strlen(_message);
+    vsnprintf(_message + len, sizeof(_message) - len, format, args);
 
     va_end(args);
 }

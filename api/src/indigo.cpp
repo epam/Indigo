@@ -279,9 +279,9 @@ Indigo::TmpData& Indigo::getThreadTmpData()
 IndigoError::IndigoError(const char* format, ...) : Exception("core: ")
 {
     va_list args;
-
     va_start(args, format);
-    appendMessage(format, args);
+    const int len = strlen(_message);
+    vsnprintf(_message + len, sizeof(_message) - len, format, args);
     va_end(args);
 }
 
