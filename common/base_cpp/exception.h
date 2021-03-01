@@ -35,7 +35,7 @@ namespace indigo
 
     public:
         Exception(const Exception&) = default;
-        ~Exception() = default;
+        virtual ~Exception() = default;
 
         explicit Exception(const char* format, ...);
 
@@ -46,7 +46,6 @@ namespace indigo
     protected:
         char _message[1024];
     };
-    static_assert(sizeof(Exception) == 1024, "alignment");
 
 #define DECL_EXCEPTION_BODY(ExceptionName, Parent)                                      \
     ExceptionName:                                                                      \
@@ -56,7 +55,6 @@ public                                                                          
         ExceptionName() = delete;                                                       \
     public:                                                                             \
         explicit ExceptionName(const char* format, ...);                                \
-        ExceptionName(const ExceptionName& other) = default;                            \
     }
 
 #define DECL_EXCEPTION2(ExceptionName, Parent) class DLLEXPORT DECL_EXCEPTION_BODY(ExceptionName, Parent)
@@ -72,7 +70,7 @@ public                                                                          
     {                                                                                        \
         va_list args;                                                                        \
         va_start(args, format);                                                              \
-        const int len = strlen(_message);                                                    \
+        const size_t len = static_cast<size_t>(strlen(_message));                            \
         vsnprintf(_message + len, sizeof(_message) - len, format, args);                     \
         va_end(args);                                                                        \
     }                                                                                        \
