@@ -151,7 +151,8 @@ namespace indigo
         void moveTo(const Vec2f& v);
         void moveToRel(float x, float y);
         void moveToRel(const Vec2f& v);
-
+        void arc( cairo_t* cr, double xc, double yc, double radius, double angle1, double angle2 );
+        
         int _width;
         int _height;
         float _defaultScale;
