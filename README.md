@@ -56,8 +56,85 @@ To build the project from the sources, the following tools should be installed:
 * GIT 1.8.2+
 * C/C++ compilers with C++11 support (GCC, Clang and MSVC are officially supported)
 * CMake 3.4+
-* Python 2.7+
+* Python 3.6+
 * JDK 1.8+
 * .NET Standard 2.0+
+* Emscripten SDK
+* Ninja
 
-## Build instructions ##
+## How to build Indigo-WASM ##
+
+### Build tools prerequisites ###
+
+* Git
+
+Make sure git is running from path:
+```
+>git --version
+git version 2.26.2.windows.1
+```
+
+* Python (https://www.python.org/downloads/)
+
+Make sure python is running from path:
+```
+>python --version
+Python 3.9.0
+```
+
+* cmake (https://cmake.org/download/)
+
+Make sure cmake is running from path:
+```
+>cmake --version
+cmake version 3.18.4
+```
+
+* Install ninja (https://github.com/ninja-build/ninja/releases)
+
+Download corresponding ninja-xxx.zip and unpack to folder on path.
+Make sure it's running from path:
+```
+>ninja --version
+1.10.2
+```
+
+* Install emscripten sdk (https://github.com/emscripten-core/emsdk)
+
+```
+>git clone https://github.com/emscripten-core/emsdk.git
+>cd emsdk
+>./emsdk install latest
+>./emsdk activate latest
+>source ./emsdk_env.sh
+```
+
+Note: On Windows, run `emsdk` instead of `./emsdk`, and `emsdk_env.bat` instead of source `./emsdk_env.sh`.
+
+### Get Indigo sources ###
+
+Clone (or checkout) Indigo repository, branch `feature/246-indigo-ketcher`
+
+```
+>git clone https://github.com/epam/Indigo.git --branch feature/246-indigo-ketcher 
+```
+
+### Build Indigo ###
+
+For each new session, set environment anew:
+```
+>cd emsdk
+>./emsdk activate latest
+```
+
+If fresh build:
+```
+>mkdir build
+>cd build
+```
+
+Now build:
+```
+>emcmake cmake .. -DCMAKE_BUILD_TYPE=Debug -G Ninja
+>ninja indigo-ketcher-js-test
+```
