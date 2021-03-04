@@ -309,6 +309,8 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
     case ATOM_SMALLEST_RING_SIZE:
         out.printf("r%d", atom->value_min);
         return;
+    case ATOM_VALENCE:
+        return;
     default:
         throw new Error("Unrecognized constraint type %d", atom->type);
     }

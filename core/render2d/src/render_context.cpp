@@ -630,7 +630,7 @@ void RenderContext::drawTriangleZigzag(const Vec2f& v0, const Vec2f& v1, const V
 void RenderContext::drawCircle(const Vec2f& center, const float r)
 {
     cairo_new_path(_cr);
-    cairo_arc(_cr, center.x, center.y, r, 0, 2 * M_PI);
+    arc(_cr, center.x, center.y, r, 0, 2 * M_PI);
     cairoCheckStatus();
     checkPathNonEmpty();
     bbIncludePath(true);
@@ -641,7 +641,7 @@ void RenderContext::drawCircle(const Vec2f& center, const float r)
 
 void RenderContext::fillCircle(const Vec2f& center, const float r)
 {
-    cairo_arc(_cr, center.x, center.y, r, 0, 2 * M_PI);
+    arc(_cr, center.x, center.y, r, 0, 2 * M_PI);
     cairoCheckStatus();
     checkPathNonEmpty();
     bbIncludePath(false);
@@ -653,12 +653,25 @@ void RenderContext::drawArc(const Vec2f& center, const float r, const float a0, 
 {
     cairo_new_path(_cr);
     cairoCheckStatus();
-    cairo_arc(_cr, center.x, center.y, r, a0, a1);
+    arc(_cr, center.x, center.y, r, a0, a1);
     cairoCheckStatus();
     checkPathNonEmpty();
     bbIncludePath(true);
     cairo_stroke(_cr);
     cairoCheckStatus();
+}
+
+void RenderContext::arc(cairo_t* cr, double xc, double yc, double radius, double angle1, double angle2)
+{
+#ifdef __EMSCRIPTEN__
+    // In the WASM build this workaround fixes function signature issues with cairo_arc. 
+    const double arc_parts = 18;
+    double diff = angle2-angle1;
+    for (double phi = angle1; phi <= angle2; phi += diff / arc_parts ) 
+        lineTo(Vec2f(_settings.graphItemDotRadius * cos(phi) + xc, _settings.graphItemDotRadius * sin(phi) + yc));
+#else
+    cairo_arc(cr, xc, yc, radius, angle1, angle2);
+#endif
 }
 
 void RenderContext::setFontSize(double fontSize)
@@ -798,7 +811,7 @@ void RenderContext::_drawGraphItem(GraphItem& gi)
         break;
     case GraphItem::DOT:
         moveTo(v0);
-        cairo_arc(_cr, v0.x, v0.y, _settings.graphItemDotRadius, 0, 2 * M_PI);
+        arc(_cr, v0.x, v0.y, _settings.graphItemDotRadius, 0, 2 * M_PI);
         cairoCheckStatus();
         break;
     case GraphItem::PLUS:
