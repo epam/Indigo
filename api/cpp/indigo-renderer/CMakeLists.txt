@@ -7,7 +7,7 @@ file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
 
 add_library(${PROJECT_NAME}-object OBJECT ${${PROJECT_NAME}_SOURCES})
 target_link_libraries(${PROJECT_NAME}-object
-        PUBLIC indigo-static
+        PRIVATE indigo-object
         PUBLIC render2d)
 target_include_directories(${PROJECT_NAME}-object
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
