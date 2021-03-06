@@ -13,16 +13,14 @@ target_include_directories(${PROJECT_NAME}-object
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(${PROJECT_NAME}-object
-        PUBLIC indigo-core
-        PUBLIC Threads::Threads)
+        PUBLIC indigo-core)
 
 add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
 target_include_directories(${PROJECT_NAME}-static
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(${PROJECT_NAME}-static
-        PUBLIC indigo-core
-        PUBLIC Threads::Threads)
+        PUBLIC indigo-core)
 
 if (NOT EMSCRIPTEN)
     add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}-object>)

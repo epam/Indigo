@@ -1,3 +1,8 @@
+if(POLICY CMP0068)
+    # https://cmake.org/cmake/help/v3.9/policy/CMP0068.html
+    cmake_policy(SET CMP0068 NEW)
+endif()
+
 if (NOT EMSCRIPTEN AND NOT CMAKE_HOST_WIN32)
     find_program(CCACHE_PROGRAM ccache)
     if (CCACHE_PROGRAM)
@@ -15,10 +20,6 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif ()
 
-#if (CMAKE_BUILD_TYPE STREQUAL Release)
-#    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-#endif()
-
 if (EMSCRIPTEN)
     string(APPEND CMAKE_CXX_FLAGS " -c -fexceptions --bind -s DISABLE_EXCEPTION_CATCHING=0 -s FILESYSTEM=0 -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0 -s")
     string(APPEND CMAKE_C_FLAGS   " -c -fexceptions --bind -s DISABLE_EXCEPTION_CATCHING=0 -s FILESYSTEM=0 -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0 -s")
@@ -32,6 +33,8 @@ if (EMSCRIPTEN)
     set(CMAKE_AR "emar")
     set(CMAKE_C_CREATE_STATIC_LIBRARY   "<CMAKE_AR> qc <TARGET> <LINK_FLAGS> <OBJECTS>")
     set(CMAKE_CXX_CREATE_STATIC_LIBRARY "<CMAKE_AR> qc <TARGET> <LINK_FLAGS> <OBJECTS>")
+else()
+    find_package(Threads REQUIRED)
 endif()
 if (UNIX)
     string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden")
@@ -52,14 +55,13 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if (ENABLE_TESTS)
+    set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
     enable_testing()
 endif ()
 
 if (BUILD_SELF_SUFFICIENT AND NOT EMSCRIPTEN)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/conan.cmake)
 endif ()
-
-find_package(Threads REQUIRED)
 
 set(DIST_DIRECTORY ${CMAKE_SOURCE_DIR}/dist)
 set(INDIGO_NATIVE_LIBS_DIRECTORY ${DIST_DIRECTORY}/lib)
