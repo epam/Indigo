@@ -231,30 +231,30 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int
         _surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, _width, _height);
         cairoCheckSurfaceStatus();
         break;
-    case MODE_HDC:
-#ifdef _WIN32
-        _surface = createWin32Surface();
-#else
-        throw Error("mode \"HDC\" is not supported on this platform");
-#endif
-        break;
-    case MODE_PRN:
-#ifdef _WIN32
-        _surface = createWin32PrintingSurfaceForHDC();
-#else
-        throw Error("mode \"PRN\" is not supported on this platform");
-#endif
-        break;
-    case MODE_EMF:
-#ifdef _WIN32
-        bool isLarge;
-        _surface = createWin32PrintingSurfaceForMetafile(isLarge);
-        if (isLarge)
-            metafileFontsToCurves = true;
-#else
-        throw Error("mode \"EMF\" is not supported on this platform");
-#endif
-        break;
+//    case MODE_HDC:
+//#ifdef _WIN32
+//        _surface = createWin32Surface();
+//#else
+//        throw Error("mode \"HDC\" is not supported on this platform");
+//#endif
+//        break;
+//    case MODE_PRN:
+//#ifdef _WIN32
+//        _surface = createWin32PrintingSurfaceForHDC();
+//#else
+//        throw Error("mode \"PRN\" is not supported on this platform");
+//#endif
+//        break;
+//    case MODE_EMF:
+//#ifdef _WIN32
+//        bool isLarge;
+//        _surface = createWin32PrintingSurfaceForMetafile(isLarge);
+//        if (isLarge)
+//            metafileFontsToCurves = true;
+//#else
+//        throw Error("mode \"EMF\" is not supported on this platform");
+//#endif
+//        break;
     default:
         throw Error("unknown mode: %d", mode);
     }
@@ -343,14 +343,14 @@ void RenderContext::closeContext(bool discard)
         break;
     case MODE_PDF:
     case MODE_SVG:
-    case MODE_HDC:
-    case MODE_PRN:
-        break;
-    case MODE_EMF:
-#ifdef _WIN32
-        storeAndDestroyMetafile(discard);
-#endif
-        break;
+//    case MODE_HDC:
+//    case MODE_PRN:
+//        break;
+//    case MODE_EMF:
+//#ifdef _WIN32
+//        storeAndDestroyMetafile(discard);
+//#endif
+//        break;
     default:
         throw Error("unknown mode: %d", opt.mode);
     }

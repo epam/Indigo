@@ -17,8 +17,14 @@ target_link_libraries(${PROJECT_NAME}
         PUBLIC png)
 target_compile_options(${PROJECT_NAME}
         PRIVATE -DHAVE_STDINT_H
-        PRIVATE -DHAVE_UNISTD_H
         PRIVATE -DHAVE_UINT64_T)
+if (NOT MSVC)
+    target_compile_definitions(${PROJECT_NAME}
+        PRIVATE -DHAVE_UNISTD_H)
+else()
+    target_compile_definitions(${PROJECT_NAME}
+        PUBLIC -DCAIRO_WIN32_STATIC_BUILD)
+endif()
 if (EMSCRIPTEN)
     target_compile_definitions(${PROJECT_NAME}
         PRIVATE -DCAIRO_NO_MUTEX)

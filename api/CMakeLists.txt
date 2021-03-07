@@ -7,7 +7,7 @@ include(indigo-version.cmake)
 if (BUILD_INDIGO)
     if (PREPARE_INDIGO_BINDINGS)
         add_custom_target(before-bindings)
-        set(INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY ${INDIGO_NATIVE_LIBS_DIRECTORY}/${CMAKE_SYSTEM_NAME_LOWER}-${CMAKE_SYSTEM_PROCESSOR})
+        set(INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY ${INDIGO_NATIVE_LIBS_DIRECTORY}/${CMAKE_SYSTEM_NAME_LOWER}-${CMAKE_SYSTEM_PROCESSOR_LOWER})
     endif ()
 
     add_subdirectory(cpp/indigo)
