@@ -5,16 +5,24 @@ project(bingo-nosql LANGUAGES CXX)
 file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 
-add_library(${PROJECT_NAME}-object OBJECT ${${PROJECT_NAME}_SOURCES})
-target_link_libraries(${PROJECT_NAME}-object
-        PRIVATE indigo-object)
-target_include_directories(${PROJECT_NAME}-object
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
-
 if (NOT EMSCRIPTEN)
+    add_library(${PROJECT_NAME}-object OBJECT ${${PROJECT_NAME}_SOURCES})
+    target_link_libraries(${PROJECT_NAME}-object
+            PRIVATE indigo-object)
+    target_include_directories(${PROJECT_NAME}-object
+            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
+
     add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
     target_link_libraries(${PROJECT_NAME}
-            PUBLIC indigo)
+            PUBLIC indigo
+    )
+    if(MSVC)
+        target_link_libraries(${PROJECT_NAME}
+                PRIVATE indigo-core
+        )
+        target_link_options(${PROJECT_NAME}
+                PRIVATE -force:multiple)
+    endif()
 
     if (ENABLE_TESTS)
         add_subdirectory(tests)

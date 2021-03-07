@@ -12,12 +12,12 @@ target_link_libraries(${PROJECT_NAME}-object
 target_include_directories(${PROJECT_NAME}-object
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
-#add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
-#target_link_libraries(${PROJECT_NAME}-static
-#        PUBLIC indigo-static
-#        PUBLIC render2d)
-#target_include_directories(${PROJECT_NAME}-static
-#        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
+add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
+target_link_libraries(${PROJECT_NAME}-static
+        PUBLIC indigo-static
+        PUBLIC render2d)
+target_include_directories(${PROJECT_NAME}-static
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
 if (NOT EMSCRIPTEN)
     add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}-object>)

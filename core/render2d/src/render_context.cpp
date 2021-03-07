@@ -343,14 +343,14 @@ void RenderContext::closeContext(bool discard)
         break;
     case MODE_PDF:
     case MODE_SVG:
-//    case MODE_HDC:
-//    case MODE_PRN:
-//        break;
-//    case MODE_EMF:
+    case MODE_HDC:
+    case MODE_PRN:
+        break;
+    case MODE_EMF:
 //#ifdef _WIN32
 //        storeAndDestroyMetafile(discard);
 //#endif
-//        break;
+        break;
     default:
         throw Error("unknown mode: %d", opt.mode);
     }
