@@ -28,6 +28,15 @@ endif()
 if (EMSCRIPTEN)
     target_compile_definitions(${PROJECT_NAME}
         PRIVATE -DCAIRO_NO_MUTEX)
+else()
+    if (NOT MSVC)
+        target_compile_definitions(${PROJECT_NAME}
+            PRIVATE -DHAVE_UNISTD_H
+            PRIVATE -DCAIRO_HAS_PTHREAD)
+     else()
+        target_compile_definitions(${PROJECT_NAME}
+            PUBLIC -DCAIRO_WIN32_STATIC_BUILD)
+    endif()
 endif()
 
 message(STATUS "Using local version of ${PROJECT_NAME}")

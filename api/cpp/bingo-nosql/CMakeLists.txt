@@ -22,7 +22,7 @@ if (NOT EMSCRIPTEN)
                 )
         target_link_options(${PROJECT_NAME}
                 PRIVATE -force:multiple)
-    elseif(MINGW)
+    elseif(MINGW OR UNIX)
         target_link_libraries(${PROJECT_NAME}
                 PRIVATE indigo-core
                 )
