@@ -1,5 +1,13 @@
 find_package (Python3 COMPONENTS Interpreter REQUIRED)
 
+if (WIN32)
+    set(COPY_COMMAND "cmd /C copy")
+else()
+    set(COPY_COMMAND cp)
+endif()
+
+message(STATUS ${COPY_COMMAND})
+
 add_custom_target(bindings-python
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist ${CMAKE_CURRENT_SOURCE_DIR}/indigo/lib
         COMMAND ${Python3_EXECUTABLE} setup.py test
@@ -8,7 +16,7 @@ add_custom_target(bindings-python
         COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=manylinux1_i686 --python-tag=py2.py3
         COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=win_amd64 --python-tag=py2.py3
         COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=win32 --python-tag=py2.py3
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/dist/*.whl ${DIST_DIRECTORY}/
+        COMMAND ${COPY_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/dist/*.whl ${DIST_DIRECTORY}/
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/)
 add_dependencies(bindings-python before-bindings)
 add_dependencies(bindings bindings-python)

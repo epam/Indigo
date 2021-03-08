@@ -23,7 +23,22 @@ if (NOT EMSCRIPTEN)
     add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC indigo
-            PUBLIC render2d)
+            PUBLIC render2d
+    )
+    if(MSVC)
+        target_link_libraries(${PROJECT_NAME}
+                PRIVATE indigo-core
+                )
+        target_link_options(${PROJECT_NAME}
+                PRIVATE -force:multiple)
+    elseif(MINGW OR UNIX)
+        target_link_libraries(${PROJECT_NAME}
+                PRIVATE indigo-core
+                )
+        target_link_options(${PROJECT_NAME}
+                PRIVATE -Wl,--allow-multiple-definition)
+    endif()
+
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
