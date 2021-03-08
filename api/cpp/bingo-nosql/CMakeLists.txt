@@ -19,9 +19,15 @@ if (NOT EMSCRIPTEN)
     if(MSVC)
         target_link_libraries(${PROJECT_NAME}
                 PRIVATE indigo-core
-        )
+                )
         target_link_options(${PROJECT_NAME}
                 PRIVATE -force:multiple)
+    elseif(MINGW)
+        target_link_libraries(${PROJECT_NAME}
+                PRIVATE indigo-core
+                )
+        target_link_options(${PROJECT_NAME}
+                PRIVATE -Wl,--allow-multiple-definition)
     endif()
 
     if (ENABLE_TESTS)
