@@ -44,8 +44,9 @@ RUN apt update && \
     sed 's|$(dirname $0)|$(dirname $(readlink $0))|g' /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh -i && \
     ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh  /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
-    # Python 3 Pillow
-    python3 -m pip install --upgrade Pillow pip setuptools wheel twine && \
+    # Python 3 packages
+    python3 -m pip install --upgrade pip && \
+    python3 -m pip install --upgrade Pillow setuptools wheel twine && \
     apt autoremove -y
 
 ENV JAVA_HOME=/opt/jdk
