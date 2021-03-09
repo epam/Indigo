@@ -2324,7 +2324,7 @@ class Indigo(object):
 
     # Python embeds path into .pyc code if method is marked with @staticmethod
     # This causes an error when Indigo is loaded from different places by relative path
-    def _initStatic(self, path=None):
+    def _initStatic(self):
         indigo_found = False
         system_name = platform.system().lower()
         machine_name = platform.machine().lower()
