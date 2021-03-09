@@ -63,7 +63,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags
-      - name Build native libs
+      - name: Build native libs
         run: |
           mkdir build
           cd build
