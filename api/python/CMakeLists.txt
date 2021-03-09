@@ -10,5 +10,4 @@ add_custom_target(bindings-python
         COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=win32 --python-tag=py2.py3
         COMMAND cp "${CMAKE_CURRENT_SOURCE_DIR}/dist/*.whl" "${DIST_DIRECTORY}/"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/)
-add_dependencies(bindings-python before-bindings)
 add_dependencies(bindings bindings-python)
