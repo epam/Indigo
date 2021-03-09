@@ -24,17 +24,15 @@ if (NOT EMSCRIPTEN)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC indigo
             PUBLIC render2d
+            PRIVATE indigo-core
     )
     if(MSVC)
-        target_link_libraries(${PROJECT_NAME}
-                PRIVATE indigo-core
-                )
         target_link_options(${PROJECT_NAME}
                 PRIVATE -force:multiple)
+    elseif(APPLE)
+        target_link_options(${PROJECT_NAME}
+                PRIVATE -Wl,-m)
     elseif(MINGW OR UNIX)
-        target_link_libraries(${PROJECT_NAME}
-                PRIVATE indigo-core
-                )
         target_link_options(${PROJECT_NAME}
                 PRIVATE -Wl,--allow-multiple-definition)
     endif()
