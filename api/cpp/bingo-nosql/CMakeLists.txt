@@ -17,6 +17,9 @@ if (NOT EMSCRIPTEN)
             PUBLIC indigo
             PRIVATE indigo-core
     )
+    target_include_directories(${PROJECT_NAME}
+            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
+
     if(MSVC)
         target_link_options(${PROJECT_NAME}
                 PRIVATE -force:multiple)
