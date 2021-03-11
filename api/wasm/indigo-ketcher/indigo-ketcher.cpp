@@ -3,6 +3,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <set>
 #include <iomanip>
 
 #include <emscripten.h>
@@ -26,6 +27,11 @@ namespace indigo
     EM_JS(void, jsThrow, (cstring str), {
         throw UTF8ToString(str);
     });
+
+    EM_JS(void, print_jsn, (cstring str, int n), {
+        console.log( UTF8ToString(str) + n );
+    });
+
 
     int _checkResult(int result)
     {
@@ -276,68 +282,73 @@ namespace indigo
         return iko.toString();
     }
 
-	void calculate_molecule( const IndigoKetcherObject& subiko, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream, std::stringstream& monoisotopicMassStream,  std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream )
+	void calculate_molecule( const IndigoKetcherObject& iko, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream, std::stringstream& monoisotopicMassStream,  std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream, const std::vector<int>& selected_atoms )
 	{
-        if( indigoCountRGroups(subiko.id()) || indigoCountAttachmentPoints( subiko.id() ) )
+        const std::set<int> selected_set( selected_atoms.begin(), selected_atoms.end() );
+        if( indigoCountRGroups(iko.id()) || indigoCountAttachmentPoints( iko.id() ) )
             jsThrow("Cannot calculate properties for RGroups");
 		
-	    const auto componentsCount = _checkResult(indigoCountComponents(subiko.id()));
+	    const auto componentsCount = _checkResult(indigoCountComponents( iko.id()));
+        bool at_least_one = false;
         for (auto i = 0; i < componentsCount; i++)
         {
-            const auto component = IndigoObject(_checkResult(indigoComponent(subiko.id(), i)));
-            std::vector<int> component_atoms;
-            component_atoms.reserve(_checkResult(indigoCountAtoms(component.id)));
+            const auto component = IndigoObject(_checkResult(indigoComponent(iko.id(), i)));
+            std::set<int> component_atoms;
             const auto component_atoms_iterator = IndigoObject(_checkResult(indigoIterateAtoms(component.id)));
             while (const auto atom_id = _checkResult(indigoNext(component_atoms_iterator.id)))
             {
                 const auto atom = IndigoObject(atom_id);
-                component_atoms.emplace_back(_checkResult(indigoIndex(atom.id)));
+                int aix = _checkResult(indigoIndex(atom.id));
+                if( selected_set.size() && selected_set.find(aix) == selected_set.end() )
+                    continue;
+                component_atoms.insert( aix );
             }
 
-            const auto subsubiko = subiko.substructure(component_atoms);
+            print_jsn("collected atoms:", component_atoms.size() );
 
-            const auto molecularWeight = indigoMolecularWeight(subsubiko.id());
-            if (molecularWeight < 0.5)
+            if (component_atoms.size())
             {
-                molecularWeightStream << indigoGetLastError();
-            }
-            else
-            {
-                molecularWeightStream << std::fixed << std::setprecision(7) << molecularWeight;
-            }
+                const auto molecularWeight = indigoMolecularWeight(iko.id());
+                if (molecularWeight < 0.5)
+                {
+                    molecularWeightStream << indigoGetLastError();
+                }
+                else
+                {
+                    molecularWeightStream << std::fixed << std::setprecision(7) << molecularWeight;
+                }
 
-            const auto mostAbundantMass = indigoMostAbundantMass(subsubiko.id());
-            if (mostAbundantMass < 0.5)
-            {
-                mostAbundantMassStream << indigoGetLastError();
-            }
-            else
-            {
-                mostAbundantMassStream << std::fixed << std::setprecision(7) << mostAbundantMass;
-            }
+                const auto mostAbundantMass = indigoMostAbundantMass(iko.id());
+                if (mostAbundantMass < 0.5)
+                {
+                    mostAbundantMassStream << indigoGetLastError();
+                }
+                else
+                {
+                    mostAbundantMassStream << std::fixed << std::setprecision(7) << mostAbundantMass;
+                }
 
-            const auto monoisotopicMass = indigoMonoisotopicMass(subsubiko.id());
-            if (monoisotopicMass < 0.5)
-            {
-                monoisotopicMassStream << indigoGetLastError();
-            }
-            else
-            {
-                monoisotopicMassStream << std::fixed << std::setprecision(7) << monoisotopicMass;
-            }
+                const auto monoisotopicMass = indigoMonoisotopicMass(iko.id());
+                if (monoisotopicMass < 0.5)
+                {
+                    monoisotopicMassStream << indigoGetLastError();
+                }
+                else
+                {
+                    monoisotopicMassStream << std::fixed << std::setprecision(7) << monoisotopicMass;
+                }
 
-            const auto* massComposition = indigoMassComposition(subsubiko.id());
-            if (massComposition == nullptr)
-            {
-                massCompositionStream << indigoGetLastError();
-            }
-            else
-            {
-                massCompositionStream << massComposition;
-            }
+                const auto* massComposition = indigoMassComposition(iko.id());
+                if (massComposition == nullptr)
+                {
+                    massCompositionStream << indigoGetLastError();
+                }
+                else
+                {
+                    massCompositionStream << massComposition;
+                }
 
-            {
-                const auto grossFormulaObject = IndigoObject(_checkResult(indigoGrossFormula(subsubiko.id())));
+                const auto grossFormulaObject = IndigoObject(_checkResult(indigoGrossFormula(iko.id())));
                 const auto* grossFormula = indigoToString(grossFormulaObject.id);
                 if (grossFormula == nullptr)
                 {
@@ -347,20 +358,22 @@ namespace indigo
                 {
                     grossFormulaStream << grossFormula;
                 }
-            }
-
-            if (i < componentsCount - 1)
-            {
-                molecularWeightStream << "; ";
-                mostAbundantMassStream << "; ";
-                monoisotopicMassStream << "; ";
-                massCompositionStream << "; ";
-                grossFormulaStream << "; ";
+                
+                if( i < componentsCount - 1 && at_least_one )
+                {
+                    molecularWeightStream << "; ";
+                    mostAbundantMassStream << "; ";
+                    monoisotopicMassStream << "; ";
+                    massCompositionStream << "; ";
+                    grossFormulaStream << "; ";
+                }
+                
+                at_least_one = true;
             }
         }
 	}
 
-    void calculate_iteration_object( const IndigoObject& iterator, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream, std::stringstream& monoisotopicMassStream,  std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream )
+    void calculate_iteration_object( const IndigoObject& iterator, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream, std::stringstream& monoisotopicMassStream,  std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream, const std::vector<int>& selected_atoms )
 	{
 		bool is_not_first = false;
         while (const auto id = _checkResult(indigoNext(iterator.id)))
@@ -378,7 +391,7 @@ namespace indigo
             monoisotopicMassStream << "[";
             massCompositionStream << "[";
             grossFormulaStream << "[";
-		    calculate_molecule( IndigoKetcherObject(id, IndigoKetcherObject::EKETMolecule), molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream );
+		    calculate_molecule( IndigoKetcherObject(id, IndigoKetcherObject::EKETMolecule), molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms );
             molecularWeightStream << "]";
             mostAbundantMassStream << "]";
             monoisotopicMassStream << "]";
@@ -388,28 +401,27 @@ namespace indigo
 		}
 	}
 	
-	void calculate_reaction( const IndigoKetcherObject& subiko, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream, std::stringstream& monoisotopicMassStream,  std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream )
+	void calculate_reaction( const IndigoKetcherObject& iko, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream, std::stringstream& monoisotopicMassStream,  std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream, const std::vector<int>& selected_atoms )
 	{
-		const auto mol_iterator = IndigoObject(_checkResult(indigoIterateMolecules(subiko.id())));
+		const auto mol_iterator = IndigoObject(_checkResult(indigoIterateMolecules(iko.id())));
         while (const auto mol_id = _checkResult(indigoNext(mol_iterator.id)))
         {
             if( _checkResult(indigoCountRGroups(mol_id)) || _checkResult(indigoCountAttachmentPoints( mol_id )) )
                 jsThrow("Cannot calculate properties for RGroups");
         }
-		calculate_iteration_object( IndigoObject(_checkResult(indigoIterateReactants(subiko.id()))), molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream);
+		calculate_iteration_object( IndigoObject(_checkResult(indigoIterateReactants(iko.id()))), molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms );
         molecularWeightStream << " > ";
         mostAbundantMassStream << " > ";
         monoisotopicMassStream << " > ";
         massCompositionStream << " > ";
         grossFormulaStream << " > ";
-		calculate_iteration_object( IndigoObject(_checkResult(indigoIterateProducts(subiko.id()))), molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream);
+		calculate_iteration_object( IndigoObject(_checkResult(indigoIterateProducts(iko.id()))), molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms );
 	}
 
     std::string calculate(const std::string& data, const std::map<std::string, std::string>& options, const std::vector<int>& selected_atoms)
     {
         indigoSetOptions(options);
         auto iko = loadMoleculeOrReaction(data.c_str());
-        const auto& subiko = (selected_atoms.empty()) ? iko : iko.substructure(selected_atoms);
         rapidjson::Document result;
         auto& allocator = result.GetAllocator();
         result.SetObject();
@@ -422,10 +434,10 @@ namespace indigo
         switch( iko.objtype )
 		{
 			case IndigoKetcherObject::EKETMolecule:
-			    calculate_molecule(subiko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream );
+			    calculate_molecule(iko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms );
 			break;
 			case IndigoKetcherObject::EKETReaction:
-			    calculate_reaction(subiko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream);
+			    calculate_reaction(iko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms );
 			break;
 			case IndigoKetcherObject::EKETReactionQuery:
 			case IndigoKetcherObject::EKETMoleculeQuery:
