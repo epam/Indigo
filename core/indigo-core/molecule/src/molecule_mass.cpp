@@ -32,7 +32,7 @@ MoleculeMass::MoleculeMass()
     relative_atomic_mass_map = NULL;
 }
 
-double MoleculeMass::molecularWeight(Molecule& mol)
+double MoleculeMass::molecularWeight(Molecule& mol, const std::set<int>& selected_atoms )
 {
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
@@ -58,6 +58,9 @@ double MoleculeMass::molecularWeight(Molecule& mol)
                 throw Error("Cannot calculate mass for structure with pseudoatoms, template atoms or RSites");
             }
         }
+        
+        if( selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
+            continue;
 
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
@@ -114,7 +117,7 @@ static int _isotopesCmp(int i1, int i2, void* context)
     return 0;
 }
 
-double MoleculeMass::mostAbundantMass(Molecule& mol)
+double MoleculeMass::mostAbundantMass(Molecule& mol, const std::set<int>& selected_atoms )
 {
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
@@ -141,6 +144,9 @@ double MoleculeMass::mostAbundantMass(Molecule& mol)
                 throw Error("Cannot calculate mass for structure with pseudoatoms, template atoms or RSites");
             }
         }
+        
+        if( selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
+            continue;
 
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
@@ -207,7 +213,7 @@ double MoleculeMass::mostAbundantMass(Molecule& mol)
     return molmass;
 }
 
-double MoleculeMass::monoisotopicMass(Molecule& mol)
+double MoleculeMass::monoisotopicMass(Molecule& mol, const std::set<int>& selected_atoms )
 {
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
@@ -231,6 +237,9 @@ double MoleculeMass::monoisotopicMass(Molecule& mol)
                 throw Error("Cannot calculate mass for structure with pseudoatoms, template atoms or RSites");
             }
         }
+
+        if( selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
+            continue;
 
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
@@ -303,7 +312,7 @@ int MoleculeMass::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context)
     return strncmp(Element::toString(ec1.elem), Element::toString(ec2.elem), 3);
 }
 
-void MoleculeMass::massComposition(Molecule& mol, Array<char>& str)
+void MoleculeMass::massComposition(Molecule& mol, Array<char>& str, const std::set<int>& selected_atoms )
 {
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
@@ -330,6 +339,9 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str)
                 throw Error("Cannot calculate mass for structure with pseudoatoms, template atoms or RSites");
             }
         }
+
+        if( selected_atoms.size() && selected_atoms.find(v) == selected_atoms.end())
+            continue;
 
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);

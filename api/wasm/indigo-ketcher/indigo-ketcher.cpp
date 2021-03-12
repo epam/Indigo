@@ -293,7 +293,7 @@ namespace indigo
         for (auto i = 0; i < componentsCount; i++)
         {
             const auto component = IndigoObject(_checkResult(indigoComponent(iko.id(), i)));
-            std::set<int> component_atoms;
+            std::vector<int> component_atoms;
             const auto component_atoms_iterator = IndigoObject(_checkResult(indigoIterateAtoms(component.id)));
             while (const auto atom_id = _checkResult(indigoNext(component_atoms_iterator.id)))
             {
@@ -301,14 +301,14 @@ namespace indigo
                 int aix = _checkResult(indigoIndex(atom.id));
                 if( selected_set.size() && selected_set.find(aix) == selected_set.end() )
                     continue;
-                component_atoms.insert( aix );
+                component_atoms.push_back( aix );
             }
 
             print_jsn("collected atoms:", component_atoms.size() );
 
-            if (component_atoms.size())
+            if( component_atoms.size() )
             {
-                const auto molecularWeight = indigoMolecularWeight(iko.id());
+                const auto molecularWeight = indigoMolecularWeightWithSelection(iko.id(), component_atoms.size(), component_atoms.data());
                 if (molecularWeight < 0.5)
                 {
                     molecularWeightStream << indigoGetLastError();
@@ -318,7 +318,7 @@ namespace indigo
                     molecularWeightStream << std::fixed << std::setprecision(7) << molecularWeight;
                 }
 
-                const auto mostAbundantMass = indigoMostAbundantMass(iko.id());
+                const auto mostAbundantMass = indigoMostAbundantMassWithSelection(iko.id(), component_atoms.size(), component_atoms.data());
                 if (mostAbundantMass < 0.5)
                 {
                     mostAbundantMassStream << indigoGetLastError();
@@ -328,7 +328,7 @@ namespace indigo
                     mostAbundantMassStream << std::fixed << std::setprecision(7) << mostAbundantMass;
                 }
 
-                const auto monoisotopicMass = indigoMonoisotopicMass(iko.id());
+                const auto monoisotopicMass = indigoMonoisotopicMassWithSelection(iko.id(), component_atoms.size(), component_atoms.data());
                 if (monoisotopicMass < 0.5)
                 {
                     monoisotopicMassStream << indigoGetLastError();
@@ -338,7 +338,7 @@ namespace indigo
                     monoisotopicMassStream << std::fixed << std::setprecision(7) << monoisotopicMass;
                 }
 
-                const auto* massComposition = indigoMassComposition(iko.id());
+                const auto* massComposition = indigoMassCompositionWithSelection(iko.id(), component_atoms.size(), component_atoms.data() );
                 if (massComposition == nullptr)
                 {
                     massCompositionStream << indigoGetLastError();
@@ -348,7 +348,7 @@ namespace indigo
                     massCompositionStream << massComposition;
                 }
 
-                const auto grossFormulaObject = IndigoObject(_checkResult(indigoGrossFormula(iko.id())));
+                const auto grossFormulaObject = IndigoObject(_checkResult(indigoGrossFormulaWithSelection(iko.id(), component_atoms.size(), component_atoms.data() )));
                 const auto* grossFormula = indigoToString(grossFormulaObject.id);
                 if (grossFormula == nullptr)
                 {

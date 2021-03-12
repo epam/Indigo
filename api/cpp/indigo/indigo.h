@@ -651,10 +651,18 @@ CEXPORT int indigoIterateEdgeSubmolecules(int molecule, int min_bonds, int max_b
 
 CEXPORT int indigoCountHeavyAtoms(int molecule);
 CEXPORT int indigoGrossFormula(int molecule);
+CEXPORT int indigoGrossFormulaWithSelection(int molecule, int nvertices, const int* vertices);
 CEXPORT double indigoMolecularWeight(int molecule);
+CEXPORT double indigoMolecularWeightWithSelection(int molecule, int nvertices, const int* vertices);
+
 CEXPORT double indigoMostAbundantMass(int molecule);
+CEXPORT double indigoMostAbundantMassWithSelection(int molecule, int nvertices, const int* vertices);
+
 CEXPORT double indigoMonoisotopicMass(int molecule);
+CEXPORT double indigoMonoisotopicMassWithSelection(int molecule, int nvertices, const int* vertices);
+
 CEXPORT const char* indigoMassComposition(int molecule);
+CEXPORT const char* indigoMassCompositionWithSelection(int molecule, int nvertices, const int* vertices);
 
 CEXPORT const char* indigoCanonicalSmiles(int molecule);
 CEXPORT const char* indigoLayeredCode(int molecule);
