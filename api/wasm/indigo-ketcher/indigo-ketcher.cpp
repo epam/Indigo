@@ -289,7 +289,6 @@ namespace indigo
             jsThrow("Cannot calculate properties for RGroups");
 		
 	    const auto componentsCount = _checkResult(indigoCountComponents( iko.id()));
-        bool at_least_one = false;
         for (auto i = 0; i < componentsCount; i++)
         {
             const auto component = IndigoObject(_checkResult(indigoComponent(iko.id(), i)));
@@ -303,8 +302,6 @@ namespace indigo
                     continue;
                 component_atoms.push_back( aix );
             }
-
-            print_jsn("collected atoms:", component_atoms.size() );
 
             if( component_atoms.size() )
             {
@@ -359,7 +356,7 @@ namespace indigo
                     grossFormulaStream << grossFormula;
                 }
                 
-                if( i < componentsCount - 1 && at_least_one )
+                if( i < componentsCount - 1 )
                 {
                     molecularWeightStream << "; ";
                     mostAbundantMassStream << "; ";
@@ -367,8 +364,6 @@ namespace indigo
                     massCompositionStream << "; ";
                     grossFormulaStream << "; ";
                 }
-                
-                at_least_one = true;
             }
         }
 	}
@@ -434,13 +429,13 @@ namespace indigo
         switch( iko.objtype )
 		{
 			case IndigoKetcherObject::EKETMolecule:
+  			case IndigoKetcherObject::EKETMoleculeQuery:
 			    calculate_molecule(iko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms );
 			break;
 			case IndigoKetcherObject::EKETReaction:
 			    calculate_reaction(iko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms );
 			break;
 			case IndigoKetcherObject::EKETReactionQuery:
-			case IndigoKetcherObject::EKETMoleculeQuery:
 			    jsThrow("Cannot calculate properties for structures with query features");
 			break;
 		}
