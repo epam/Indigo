@@ -135,7 +135,7 @@ class Bingo(object):
         if os.name == 'posix' and not platform.mac_ver()[0] and not platform.system().startswith("CYGWIN"):
             _lib = CDLL(indigo._dll_path + "/libbingo-nosql.so")
         elif os.name == 'nt' or platform.system().startswith("CYGWIN"):
-            _lib = CDLL(indigo._dll_path + "/libbingo-nosql.dll")
+            _lib = CDLL(indigo._dll_path + "/bingo-nosql.dll")
         elif platform.mac_ver()[0]:
             _lib = CDLL(indigo._dll_path + "/libbingo-nosql.dylib")
         else:

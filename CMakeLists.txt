@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.9)
 
 project(indigo-all LANGUAGES C CXX)
 
+message(STATUS ${CMAKE_SYSTEM_PROCESSOR})
+
 # Options
 
 # Common options
@@ -28,7 +30,7 @@ option(BUILD_BINGO_MSSQL "Build Bingo MS SqlServer cartridge [WIP]" OFF)
 option(BUILD_BINGO_ORACLE "Build Bingo Oracle cartridge [WIP]" OFF)
 # Auto-set dependable options
 if (BUILD_UTILS AND NOT BUILD_INDIGO_RENDERER)
-    message(STATUS "Enabling BUILD_INDIGO_RENDERER because it's required for BUILD_UTILS")
+    message(STATUS "Enabling BUILD_INDIGO and BUILD_INDIGO_RENDERER because it's required for BUILD_UTILS")
     set(BUILD_INDIGO_RENDERER ON)
     set(BUILD_INDIGO ON)
 endif()

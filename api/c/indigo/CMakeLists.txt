@@ -13,22 +13,45 @@ target_include_directories(${PROJECT_NAME}-object
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(${PROJECT_NAME}-object
-        PUBLIC indigo-core
-        PUBLIC Threads::Threads)
+        PUBLIC indigo-core)
 
 add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
 target_include_directories(${PROJECT_NAME}-static
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(${PROJECT_NAME}-static
-        PUBLIC indigo-core
-        PUBLIC Threads::Threads)
+        PUBLIC indigo-core)
 
 if (NOT EMSCRIPTEN)
     add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
     target_link_libraries(${PROJECT_NAME}
-            PUBLIC indigo-core
-            PUBLIC Threads::Threads)
+            PRIVATE indigo-core
+    )
+    set(INDIGO_MSVC_SYSTEM_RUNTIME_LIBS "")
+    if (MINGW)
+        # Avoid all MinGW-related runtime-dependencies, including them in DLL
+        target_link_options(${PROJECT_NAME} PRIVATE -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive)
+    else()
+        # On MSVC we cannot statically link C++ runtime, so we need to copy requried files as dependencies
+        list(APPEND INDIGO_MSVC_SYSTEM_RUNTIME_LIBS_SUBSTRINGS
+                vcruntime140_1.dll
+                vcruntime140.dll
+                msvcp140.dll
+        )
+        set(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_SKIP TRUE)
+        include(InstallRequiredSystemLibraries)
+        foreach(lib ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})
+            foreach(indigo_lib_substring ${INDIGO_MSVC_SYSTEM_RUNTIME_LIBS_SUBSTRINGS})
+                string(FIND ${lib} ${indigo_lib_substring} INDIGO_LIB_SUBSTRING_FOUND)
+                if(lib MATCHES "${indigo_lib_substring}")
+                    list(APPEND INDIGO_MSVC_SYSTEM_RUNTIME_LIBS
+                            ${lib})
+                    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+                            COMMAND ${CMAKE_COMMAND} -E copy ${lib} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+                endif()
+            endforeach()
+        endforeach()
+    endif()
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -43,7 +66,7 @@ if (NOT EMSCRIPTEN)
 
     set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
     set(CPACK_PACKAGE_VERSION ${INDIGO_VERSION})
-    set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME_LOWER}-${CMAKE_SYSTEM_PROCESSOR}")
+    set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME_LOWER}-${CMAKE_SYSTEM_PROCESSOR_LOWER}")
     if (UNIX)
         set(CPACK_GENERATOR "TGZ")
     else ()
@@ -62,8 +85,11 @@ if (NOT EMSCRIPTEN)
         add_custom_target(before-bindings-${PROJECT_NAME}
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY}
                 COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
+        foreach(lib ${INDIGO_MSVC_SYSTEM_RUNTIME_LIBS})
+            add_custom_command(TARGET before-bindings-${PROJECT_NAME} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy ${lib} ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
+        endforeach()
         add_dependencies(before-bindings before-bindings-${PROJECT_NAME})
         add_dependencies(before-bindings-${PROJECT_NAME} ${PROJECT_NAME})
     endif ()
-
 endif ()

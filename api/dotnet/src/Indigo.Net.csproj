@@ -37,11 +37,6 @@
 			<PackagePath>runtimes/win-x64/native/indigo.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
-		<Content Include="runtimes/win-x64/native/concrt140.dll">
-			<Pack>true</Pack>
-			<PackagePath>runtimes/win-x64/native/concrt140.dll</PackagePath>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 		<Content Include="runtimes/win-x64/native/msvcp140.dll">
 			<Pack>true</Pack>
 			<PackagePath>runtimes/win-x64/native/msvcp140.dll</PackagePath>

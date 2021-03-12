@@ -1,4 +1,0 @@
-[requires]
-rapidjson/cci.20200410
-tinyxml/2.6.2
-zlib/1.2.11
