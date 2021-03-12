@@ -377,7 +377,7 @@ namespace indigo
 
     void calculate_iteration_object(const IndigoObject& iterator, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream,
                                     std::stringstream& monoisotopicMassStream, std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream,
-                                    const std::vector<int>& selected_atoms)
+                                    const std::vector<int>& selected_atoms, int& base )
     {
         bool is_not_first = false;
         while (const auto id = _checkResult(indigoNext(iterator.id)))
@@ -395,8 +395,22 @@ namespace indigo
             monoisotopicMassStream << "[";
             massCompositionStream << "[";
             grossFormulaStream << "[";
-            calculate_molecule(IndigoKetcherObject(id, IndigoKetcherObject::EKETMolecule), molecularWeightStream, mostAbundantMassStream,
-                               monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms);
+            auto mol = IndigoKetcherObject(id, IndigoKetcherObject::EKETMolecule);
+            std::vector<int> subselect;
+            if( selected_atoms.size() )
+            {
+                for( int i = 0; i < selected_atoms.size(); ++i )
+                {
+                    int atom_id = selected_atoms[i] - base;
+                    if( atom_id >=0 )
+                        subselect.push_back( atom_id );
+                }
+            }
+            
+            if( !selected_atoms.size() || subselect.size() )
+                calculate_molecule(mol, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream, subselect);
+            if( selected_atoms.size() )
+                base += indigoCountAtoms( id );
             molecularWeightStream << "]";
             mostAbundantMassStream << "]";
             monoisotopicMassStream << "]";
@@ -416,15 +430,16 @@ namespace indigo
             if (_checkResult(indigoCountRGroups(mol_id)) || _checkResult(indigoCountAttachmentPoints(mol_id)))
                 jsThrow("Cannot calculate properties for RGroups");
         }
+        int base = 0;
         calculate_iteration_object(IndigoObject(_checkResult(indigoIterateReactants(iko.id()))), molecularWeightStream, mostAbundantMassStream,
-                                   monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms);
+                                   monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms, base );
         molecularWeightStream << " > ";
         mostAbundantMassStream << " > ";
         monoisotopicMassStream << " > ";
         massCompositionStream << " > ";
         grossFormulaStream << " > ";
         calculate_iteration_object(IndigoObject(_checkResult(indigoIterateProducts(iko.id()))), molecularWeightStream, mostAbundantMassStream,
-                                   monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms);
+                                   monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms, base );
     }
 
     std::string calculate(const std::string& data, const std::map<std::string, std::string>& options, const std::vector<int>& selected_atoms)
