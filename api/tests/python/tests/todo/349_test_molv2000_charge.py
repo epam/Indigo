@@ -17,3 +17,4 @@ def testMolv2000Charge(filename):
         print("caught " + getIndigoExceptionText(e))
 
 testMolv2000Charge("molecules/test_molv2000_charge.mol")
+testMolv2000Charge("molecules/public-structures-bingo-parse-errors.sdf")
