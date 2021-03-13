@@ -61,6 +61,7 @@ namespace indigo
         unsigned int readPackedUInt();
 
         void readCharsFix(int n, char* chars_out);
+        int readCharsFlexible(int n, char* chars_out);
         float readFloatFix(int digits);
         int readIntFix(int digits);
         void skipSpace();

@@ -417,6 +417,16 @@ void Scanner::readCharsFix(int n, char* chars_out)
     read(n, chars_out);
 }
 
+int Scanner::readCharsFlexible(int n, char* chars_out)
+{
+    size_t i = 0;
+    while ((i < n) && !isEOF())
+    {
+        chars_out[i++] = readChar();
+    }
+    return (int)i;
+}
+
 word Scanner::readBinaryWord()
 {
     word res;
