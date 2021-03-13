@@ -103,5 +103,5 @@ int main(void)
         }
     }
 
-    return 0; // until fixed
+    return fail_count;
 }
