@@ -40,9 +40,9 @@ RUN apt update && \
     mkdir ironpython && \
     unzip IronPython.${IRONPYTHON_VERSION}.zip -d ./ironpython || true && \
     mv ironpython /opt/ && \
+    printf '#!/bin/sh\nBASEDIR=$(dirname $0)\nABS_PATH=`cd "$BASEDIR"; pwd`\ndotnet $ABS_PATH/ipy.dll\n' > /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh -i && \
     chmod +x /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh && \
-    sed 's|$(dirname $0)|$(dirname $(readlink $0))|g' /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh -i && \
-    ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh  /opt/ironpython/ipy && \
+    ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 packages
     python3 -m pip install --upgrade pip && \
