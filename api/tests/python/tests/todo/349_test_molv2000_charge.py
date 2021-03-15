@@ -6,15 +6,34 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
 
-    
+def printInfo(mol):
+    print("Molecule: %s" % mol.name())
+    print("Atom block:")
+    with mol.iterateAtoms() as iterator:
+        while iterator.hasNext() :
+            atom = iterator.next()
+            print('%s, isotope: %d, charge: %d' % (atom.symbol(), atom.isotope(), atom.charge()))
+    print("Bond block:")
+    with mol.iterateBonds() as iterator:
+        while iterator.hasNext() :
+            bond = iterator.next()
+            print('order: %d, stereo: %d' % (bond.bondOrder(), bond.bondStereo()))
+
 def testMolv2000Charge(filename):
     
-    print(relativePath(filename))
-    try:
-        mol = indigo.loadMoleculeFromFile(joinPath(filename))
-        print("loaded.")
-    except IndigoException as e:
-        print("caught " + getIndigoExceptionText(e))
+    print(filename)
+    mol = indigo.loadMoleculeFromFile(joinPath(filename))
+    printInfo(mol)
 
-testMolv2000Charge("molecules/test_molv2000_charge.mol")
-testMolv2000Charge("molecules/public-structures-bingo-parse-errors.sdf")
+def testSDF2000Charge(filename):
+    
+    print(filename)
+    with indigo.iterateSDFile(joinPath(filename)) as iterator:
+        while iterator.hasNext():
+            printInfo(iterator.next())
+
+try:
+    testMolv2000Charge("molecules/test_molv2000_charge.mol")
+    testSDF2000Charge("molecules/public-structures-bingo-parse-errors.sdf")
+except IndigoException as e:
+    print("caught " + getIndigoExceptionText(e))
