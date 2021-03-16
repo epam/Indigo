@@ -1,11 +1,11 @@
 FROM debian:stable-slim
 
-ARG JDK_VERSION_MAJOR=8u272
-ARG JDK_VERSION_MINOR=b10
+ARG JDK_VERSION_MAJOR=8u282
+ARG JDK_VERSION_MINOR=b08
 ARG MAVEN_VERSION=3.6.3
 ARG JYTHON_VERSION=2.7.2
-ARG DOTNET_VERSION=5.0
-ARG IRONPYTHON_VERSION=2.7.10
+ARG DOTNET_VERSION=3.1
+ARG IRONPYTHON_VERSION=2.7.11
 
 RUN apt update && \
     apt upgrade -y && \
@@ -40,9 +40,9 @@ RUN apt update && \
     mkdir ironpython && \
     unzip IronPython.${IRONPYTHON_VERSION}.zip -d ./ironpython || true && \
     mv ironpython /opt/ && \
+    printf '#!/bin/sh\nBASEDIR=$(dirname $0)\nABS_PATH=`cd "$BASEDIR"; pwd`\ndotnet $ABS_PATH/ipy.dll\n' > /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh -i && \
     chmod +x /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh && \
-    sed 's|$(dirname $0)|$(dirname $(readlink $0))|g' /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh -i && \
-    ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh  /opt/ironpython/ipy && \
+    ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 packages
     python3 -m pip install --upgrade pip && \
