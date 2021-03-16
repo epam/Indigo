@@ -21,11 +21,12 @@
 
 #include "indigo_internal.h"
 
+#include <rapidjson/document.h>
+
 #include "base_cpp/properties_map.h"
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
 #include "molecule/query_molecule.h"
-#include "third_party/rapidjson/document.h"
 
 class IndigoRdfData : public IndigoObject
 {

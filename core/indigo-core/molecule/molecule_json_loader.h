@@ -19,12 +19,14 @@
 #ifndef __molecule_json_loader__
 #define __molecule_json_loader__
 
+#include <unordered_set>
+
+#include <rapidjson/document.h>
+
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/non_copyable.h"
-#include "third_party/rapidjson/document.h"
 #include "molecule/molecule_stereocenter_options.h"
-#include <unordered_set>
 
 #ifdef _WIN32
 #pragma warning(push)

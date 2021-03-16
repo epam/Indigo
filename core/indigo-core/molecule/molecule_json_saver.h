@@ -21,8 +21,9 @@
 
 #include <sstream>
 
-#include "third_party/rapidjson/stringbuffer.h"
-#include "third_party/rapidjson/writer.h"
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+
 #include "molecule/base_molecule.h"
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"

@@ -19,9 +19,10 @@
 #ifndef __reaction_json_saver__
 #define __reaction_json_saver__
 
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+
 #include "base_cpp/exception.h"
-#include "third_party/rapidjson/stringbuffer.h"
-#include "third_party/rapidjson/writer.h"
 
 namespace indigo
 {

@@ -31,7 +31,7 @@
 #include "option_manager.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
-#include "render2d/render_cdxml.h"
+#include "render_cdxml.h"
 
 using namespace indigo;
 

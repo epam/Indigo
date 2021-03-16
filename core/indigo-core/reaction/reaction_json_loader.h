@@ -19,9 +19,10 @@
 #ifndef __reaction_json_loader__
 #define __reaction_json_loader__
 
+#include <rapidjson/document.h>
+
 #include "base_cpp/exception.h"
 #include "molecule/molecule_stereocenter_options.h"
-#include "third_party/rapidjson/document.h"
 #include "molecule/query_molecule.h"
 #include "molecule/molecule.h"
 
