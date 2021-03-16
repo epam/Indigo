@@ -102,7 +102,8 @@ namespace indigo
 
         IndigoKetcherObject substructure(const std::vector<int>& selected_atoms) const
         {
-            const int* selected_atoms_array = &selected_atoms[0];
+            std::vector<int> mutable_selected_atoms(selected_atoms);
+            int* selected_atoms_array = &mutable_selected_atoms[0];
             return IndigoKetcherObject(_checkResult(indigoGetSubmolecule(id(), static_cast<int>(selected_atoms.size()), selected_atoms_array)), objtype, indigo_object);
         }
 		
