@@ -128,8 +128,11 @@ void MoleculeGrossFormula::collect(BaseMolecule& molecule, Array<int>& gross_out
     }
 }
 
-std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bool add_isotopes, const std::set<int>& selected_atoms )
+std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bool add_isotopes )
 {
+    std::set<int> selected_atoms;
+    mol.getAtomSelection( selected_atoms );
+
     if (!mol.isQueryMolecule())
     {
         mol.asMolecule().restoreAromaticHydrogens();

@@ -3698,6 +3698,18 @@ int BaseMolecule::countSelectedAtoms()
 	return res;
 }
 
+void BaseMolecule::getAtomSelection( std::set<int>& selection )
+{
+    selection.clear();
+	for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+	{
+		if (i >= _sl_atoms.size())
+			break;
+        if( _sl_atoms[i] )
+        selection.insert( i );
+	}
+}
+
 int BaseMolecule::countHighlightedBonds()
 {
 	int i, res = 0;

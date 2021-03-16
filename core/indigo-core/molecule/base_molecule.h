@@ -32,6 +32,7 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
+#include <set>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -317,6 +318,7 @@ namespace indigo
         void selectBond(int idx);
         void selectAtoms(const Filter& filter);
         void selectBonds(const Filter& filter);
+        void getAtomSelection( std::set<int>& selection );
         void unselectAtom(int idx);
         void unselectBond(int idx);
         int countSelectedAtoms();

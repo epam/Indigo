@@ -62,36 +62,6 @@ CEXPORT int indigoGrossFormula(int object)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoGrossFormulaWithSelection(int object, int nvertices, const int* vertices)
-{
-    std::set<int> selected_atoms(vertices, vertices + nvertices);
-    INDIGO_BEGIN
-    {
-        IndigoObject& indigoObject = self.getObject(object);
-        if (IndigoBaseMolecule::is(indigoObject))
-        {
-            BaseMolecule& mol = self.getObject(object).getBaseMolecule();
-            AutoPtr<IndigoMoleculeGross> grossptr(new IndigoMoleculeGross());
-
-            grossptr->gross = MoleculeGrossFormula::collect(mol, self.gross_formula_options.add_isotopes, selected_atoms);
-            return self.addObject(grossptr.release());
-        }
-        else if (IndigoBaseReaction::is(indigoObject))
-        {
-            BaseReaction& rxn = self.getObject(object).getBaseReaction();
-            AutoPtr<IndigoReactionGross> grossptr(new IndigoReactionGross());
-
-            grossptr->gross = ReactionGrossFormula::collect(rxn, self.gross_formula_options.add_isotopes);
-            return self.addObject(grossptr.release());
-        }
-        else
-        {
-            throw IndigoError("incorrect object type for gross formula: %s", indigoObject.debugInfo());
-        }
-    }
-    INDIGO_END(-1)
-}
-
 static BaseMolecule& _indigoPrepareMass(IndigoObject& obj, MoleculeMass mass)
 {
     if (IndigoBaseMolecule::is(obj))
@@ -121,19 +91,6 @@ CEXPORT double indigoMolecularWeight(int molecule)
     INDIGO_END(-1);
 }
 
-CEXPORT double indigoMolecularWeightWithSelection(int molecule, int nvertices, const int* vertices)
-{
-    INDIGO_BEGIN
-    {
-        MoleculeMass mass;
-        std::set<int> selected_atoms(vertices, vertices + nvertices);
-        auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
-        mass.mass_options = self.mass_options;
-        return mass.molecularWeight(mol.asMolecule(), selected_atoms);
-    }
-    INDIGO_END(-1)
-}
-
 CEXPORT double indigoMostAbundantMass(int molecule)
 {
     INDIGO_BEGIN
@@ -146,19 +103,6 @@ CEXPORT double indigoMostAbundantMass(int molecule)
     INDIGO_END(-1)
 }
 
-CEXPORT double indigoMostAbundantMassWithSelection(int molecule, int nvertices, const int* vertices)
-{
-    INDIGO_BEGIN
-    {
-        MoleculeMass mass;
-        std::set<int> selected_atoms(vertices, vertices + nvertices);
-        auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
-        mass.mass_options = self.mass_options;
-        return mass.mostAbundantMass(mol.asMolecule(), selected_atoms);
-    }
-    INDIGO_END(-1)
-}
-
 CEXPORT double indigoMonoisotopicMass(int molecule)
 {
     INDIGO_BEGIN
@@ -167,19 +111,6 @@ CEXPORT double indigoMonoisotopicMass(int molecule)
         auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
         mass.mass_options = self.mass_options;
         return mass.monoisotopicMass(mol.asMolecule());
-    }
-    INDIGO_END(-1)
-}
-
-CEXPORT double indigoMonoisotopicMassWithSelection(int molecule, int nvertices, const int* vertices)
-{
-    INDIGO_BEGIN
-    {
-        MoleculeMass mass;
-        std::set<int> selected_atoms(vertices, vertices + nvertices);
-        auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
-        mass.mass_options = self.mass_options;
-        return mass.monoisotopicMass(mol.asMolecule(), selected_atoms);
     }
     INDIGO_END(-1)
 }
@@ -198,22 +129,4 @@ CEXPORT const char* indigoMassComposition(int molecule)
         return tmp.string.ptr();
     }
     INDIGO_END(0);
-}
-
-CEXPORT const char* indigoMassCompositionWithSelection(int molecule, int nvertices, const int* vertices)
-{
-    INDIGO_BEGIN
-    {
-        MoleculeMass mass;
-        std::set<int> selected_atoms(vertices, vertices + nvertices);
-
-        auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
-        mass.mass_options = self.mass_options;
-
-        auto& tmp = self.getThreadTmpData();
-        mass.massComposition(mol.asMolecule(), tmp.string, selected_atoms);
-
-        return tmp.string.ptr();
-    }
-    INDIGO_END(0)
 }

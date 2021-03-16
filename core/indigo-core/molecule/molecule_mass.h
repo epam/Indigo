@@ -49,19 +49,19 @@ namespace indigo
         /* Mass of a molecule calculated using the average mass of each
          * element weighted for its natural isotopic abundance
          */
-        double molecularWeight(Molecule& mol, const std::set<int>& selected_atoms = std::set<int>() );
+        double molecularWeight(Molecule& mol );
 
         /* Mass of a molecule containing most likely
          * isotopic composition for a single random molecule.
          * Notes: in PubChem search engine it is called Exact Mass
          */
-        double mostAbundantMass(Molecule& mol, const std::set<int>& selected_atoms = std::set<int>());
+        double mostAbundantMass(Molecule& mol );
 
         /* Mass of a molecule calculated using the mass of
          * the most abundant isotope of each element.
          * Notes: in Marvin it is called Exact Mass
          */
-        double monoisotopicMass(Molecule& mol, const std::set<int>& selected_atoms = std::set<int>() );
+        double monoisotopicMass( Molecule& mol );
 
         /* Sum of the mass numbers of all constituent atoms.
          */
@@ -69,7 +69,7 @@ namespace indigo
 
         /* Atom weight percentage like "C 77% H 13%"
          */
-        void massComposition(Molecule& molecule, Array<char>& str, const std::set<int>& selected_atoms = std::set<int>() );
+        void massComposition(Molecule& molecule, Array<char>& str );
     };
 
 } // namespace indigo

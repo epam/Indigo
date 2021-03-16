@@ -32,8 +32,11 @@ MoleculeMass::MoleculeMass()
     relative_atomic_mass_map = NULL;
 }
 
-double MoleculeMass::molecularWeight(Molecule& mol, const std::set<int>& selected_atoms )
+double MoleculeMass::molecularWeight( Molecule& mol )
 {
+    std::set<int> selected_atoms;
+    mol.getAtomSelection( selected_atoms );
+
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
         throw Error("Cannot calculate mass for structure with repeating units");
@@ -117,8 +120,11 @@ static int _isotopesCmp(int i1, int i2, void* context)
     return 0;
 }
 
-double MoleculeMass::mostAbundantMass(Molecule& mol, const std::set<int>& selected_atoms )
+double MoleculeMass::mostAbundantMass(Molecule& mol )
 {
+    std::set<int> selected_atoms;
+    mol.getAtomSelection( selected_atoms );
+
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
         throw Error("Cannot calculate mass for structure with repeating units");
@@ -213,8 +219,11 @@ double MoleculeMass::mostAbundantMass(Molecule& mol, const std::set<int>& select
     return molmass;
 }
 
-double MoleculeMass::monoisotopicMass(Molecule& mol, const std::set<int>& selected_atoms )
+double MoleculeMass::monoisotopicMass(Molecule& mol )
 {
+    std::set<int> selected_atoms;
+    mol.getAtomSelection( selected_atoms );
+
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
         throw Error("Cannot calculate mass for structure with repeating units");
@@ -312,8 +321,10 @@ int MoleculeMass::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context)
     return strncmp(Element::toString(ec1.elem), Element::toString(ec2.elem), 3);
 }
 
-void MoleculeMass::massComposition(Molecule& mol, Array<char>& str, const std::set<int>& selected_atoms )
+void MoleculeMass::massComposition(Molecule& mol, Array<char>& str )
 {
+    std::set<int> selected_atoms;
+    mol.getAtomSelection( selected_atoms );
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
         throw Error("Cannot calculate mass for structure with repeating units");
