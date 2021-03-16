@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright (C) from 2009 to Present EPAM Systems.
  *
- *This file is part of Indigo toolkit.
+ * This file is part of Indigo toolkit.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ namespace indigo
                           const std::vector<int>& selected_atoms = std::vector<int>(), const std::vector<int>& selected_bonds = std::vector<int>());
 
         std::string toJson(const StructureChecker2::CheckResult& res);
-        std::string toJson2(const StructureChecker2::CheckResult& res);
 
         DECL_ERROR;
 

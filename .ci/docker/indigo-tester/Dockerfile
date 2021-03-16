@@ -40,7 +40,7 @@ RUN apt update && \
     mkdir ironpython && \
     unzip IronPython.${IRONPYTHON_VERSION}.zip -d ./ironpython || true && \
     mv ironpython /opt/ && \
-    printf '#!/bin/sh\nBASEDIR=$(dirname $0)\nABS_PATH=`cd "$BASEDIR"; pwd`\ndotnet $ABS_PATH/ipy.dll\n' > /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh -i && \
+    printf '#!/bin/sh\nBASEDIR=$(dirname $(readlink $0))\nABS_PATH=$(cd "${BASEDIR}"; pwd)\ndotnet ${ABS_PATH}/ipy.dll $@' > /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh -i && \
     chmod +x /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh && \
     ln -fs /opt/ironpython/netcoreapp${DOTNET_VERSION}/ipy.sh /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
@@ -51,6 +51,7 @@ RUN apt update && \
 
 ENV JAVA_HOME=/opt/jdk
 ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 # Check
 RUN git --version && \

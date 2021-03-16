@@ -538,7 +538,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
     QS_DEF(Array<int>, edges);
     QS_DEF(Array<Vec2f>, pos);
     int i, n = 0;
-    float eps = 1e-5;
+    const float eps = 1e-5f;
 
     Random rand(SOME_MAGIC_INT_FOR_RANDOM_3);
     /*   for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
@@ -555,8 +555,8 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
     float cs = 0;
     while (sn == 0 && cs == 0)
     {
-        sn = 2.0 * rand.nextDouble() - 1;
-        cs = 2.0 * rand.nextDouble() - 1;
+        sn = _2FLOAT(2.0 * rand.nextDouble() - 1.);
+        cs = _2FLOAT(2.0 * rand.nextDouble() - 1.);
     }
     float len = sqrt(sn * sn + cs * cs);
     sn /= len;
@@ -576,7 +576,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
         }
 
     int first_edge = -1;
-    float first_edge_x = 1e20;
+    float first_edge_x = 1e20f;
     for (int i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
         if (_layout_edges[i].type != ELEMENT_NOT_DRAWN)
         {

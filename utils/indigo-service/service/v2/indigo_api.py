@@ -722,6 +722,18 @@ def calculate_cip():
     return get_response(md, data['output_format'], data['json_output'], data['options'])
 
 
+@indigo_api.route('/check2', methods=['POST', ])
+@check_exceptions
+def check2():
+    data = IndigoCheckSchema(strict=True).load(get_request_data(request)).data
+    try:
+        indigo = indigo_init(data['options'])
+    except Exception as e:
+        raise HttpException('Problem with Indigo initialization: {0}'.format(e), 501)
+    LOG_DATA('[REQUEST] /check', data['types'], data['struct'], data['options'])
+    result = indigo.check2(data['struct'], data['types']);
+    return result, 200, {'Content-Type': 'application/json'}
+
 @indigo_api.route('/check', methods=['POST', ])
 @check_exceptions
 def check():

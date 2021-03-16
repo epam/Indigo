@@ -19,9 +19,14 @@
 #ifndef __molecule_json_loader__
 #define __molecule_json_loader__
 
+#include <unordered_set>
+
+#include <rapidjson/document.h>
+
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/non_copyable.h"
+#include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -32,8 +37,10 @@ namespace indigo
 {
 
     class Scanner;
+    class BaseMolecule;
     class Molecule;
     class QueryMolecule;
+    class SGroup;
 
     /*
      * Loader for JSON format
@@ -43,13 +50,27 @@ namespace indigo
     {
     public:
         DECL_ERROR;
+        explicit MoleculeJsonLoader( rapidjson::Value& molecule, rapidjson::Value& rgroups );
+        void loadMolecule( BaseMolecule& mol );
+        StereocentersOptions stereochemistry_options;
 
-        explicit MoleculeJsonLoader(Scanner& scanner);
-        void loadMolecule(Molecule& mol);
-        void loadQueryMolecule(QueryMolecule& qmol);
+	protected:
+        int addAtomToMoleculeQuery( const char* label, int element, int charge, int valence, int radical, int isotope );
+        int addBondToMoleculeQuery( int beg, int end, int order, int topology = 0 );
+        void validateMoleculeBond( int order );
+        void parseAtoms( const rapidjson::Value& atoms, BaseMolecule& mol );
+        void parseBonds( const rapidjson::Value& bonds, BaseMolecule& mol, int atom_base_idx );
+        void parseHighlight( const rapidjson::Value& highlight, BaseMolecule& mol );
+        void parseSelection(const rapidjson::Value& selection, BaseMolecule& mol);
+        void parseSGroups( const rapidjson::Value& sgroups, BaseMolecule& mol );
+        void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
 
     private:
-        Scanner& _scanner;
+        rapidjson::Value& _mol_nodes;
+        rapidjson::Value& _rgroups;
+        Molecule* _pmol;
+        QueryMolecule* _pqmol;
+
     };
 
 } // namespace indigo

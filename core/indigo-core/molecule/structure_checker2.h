@@ -127,7 +127,7 @@ namespace indigo
         static CheckTypeCode getCheckType(const std::string& type);
         static std::string getCheckType(StructureChecker2::CheckTypeCode code);
         static std::string getCheckMessage(StructureChecker2::CheckMessageCode code);
-        static CheckTypeCode getCheckTypeByMsgCode( StructureChecker2::CheckMessageCode code );
+
 
         DECL_ERROR;
 

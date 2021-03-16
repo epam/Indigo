@@ -3557,6 +3557,13 @@ void BaseMolecule::unhighlightAll()
     updateEditRevision();
 }
 
+void BaseMolecule::unselectAll()
+{
+	_sl_atoms.clear();
+	_sl_bonds.clear();
+	updateEditRevision();
+}
+
 void BaseMolecule::highlightAtom(int idx)
 {
     _hl_atoms.expandFill(idx + 1, 0);
@@ -3564,11 +3571,26 @@ void BaseMolecule::highlightAtom(int idx)
     updateEditRevision();
 }
 
+void BaseMolecule::selectAtom(int idx)
+{
+	_sl_atoms.expandFill(idx + 1, 0);
+	_sl_atoms[idx] = 1;
+	updateEditRevision();
+}
+
+
 void BaseMolecule::highlightBond(int idx)
 {
     _hl_bonds.expandFill(idx + 1, 0);
     _hl_bonds[idx] = 1;
     updateEditRevision();
+}
+
+void BaseMolecule::selectBond(int idx)
+{
+	_sl_bonds.expandFill(idx + 1, 0);
+	_sl_bonds[idx] = 1;
+	updateEditRevision();
 }
 
 void BaseMolecule::highlightAtoms(const Filter& filter)
@@ -3581,6 +3603,16 @@ void BaseMolecule::highlightAtoms(const Filter& filter)
     updateEditRevision();
 }
 
+void BaseMolecule::selectAtoms(const Filter& filter)
+{
+	int i;
+
+	for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+		if (filter.valid(i))
+			selectAtom(i);
+	updateEditRevision();
+}
+
 void BaseMolecule::highlightBonds(const Filter& filter)
 {
     int i;
@@ -3589,6 +3621,16 @@ void BaseMolecule::highlightBonds(const Filter& filter)
         if (filter.valid(i))
             highlightBond(i);
     updateEditRevision();
+}
+
+void BaseMolecule::selectBonds(const Filter& filter)
+{
+	int i;
+
+	for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
+		if (filter.valid(i))
+			selectBond(i);
+	updateEditRevision();
 }
 
 void BaseMolecule::unhighlightAtom(int idx)
@@ -3600,6 +3642,16 @@ void BaseMolecule::unhighlightAtom(int idx)
     }
 }
 
+void BaseMolecule::unselectAtom(int idx)
+{
+	if (_sl_atoms.size() > idx)
+	{
+		_sl_atoms[idx] = 0;
+		updateEditRevision();
+	}
+}
+
+
 void BaseMolecule::unhighlightBond(int idx)
 {
     if (_hl_bonds.size() > idx)
@@ -3607,6 +3659,15 @@ void BaseMolecule::unhighlightBond(int idx)
         _hl_bonds[idx] = 0;
         updateEditRevision();
     }
+}
+
+void BaseMolecule::unselectBond(int idx)
+{
+	if (_sl_bonds.size() > idx)
+	{
+		_sl_bonds[idx] = 0;
+		updateEditRevision();
+	}
 }
 
 int BaseMolecule::countHighlightedAtoms()
@@ -3623,15 +3684,43 @@ int BaseMolecule::countHighlightedAtoms()
     return res;
 }
 
+int BaseMolecule::countSelectedAtoms()
+{
+	int i, res = 0;
+
+	for (i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+	{
+		if (i >= _sl_atoms.size())
+			break;
+		res += _sl_atoms[i];
+	}
+
+	return res;
+}
+
 int BaseMolecule::countHighlightedBonds()
+{
+	int i, res = 0;
+
+	for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
+	{
+		if (i >= _hl_bonds.size())
+			break;
+		res += _hl_bonds[i];
+	}
+	return res;
+}
+
+
+int BaseMolecule::countSelectedBonds()
 {
     int i, res = 0;
 
     for (i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
     {
-        if (i >= _hl_bonds.size())
+        if (i >= _sl_bonds.size())
             break;
-        res += _hl_bonds[i];
+        res += _sl_bonds[i];
     }
 
     return res;
@@ -3642,15 +3731,32 @@ bool BaseMolecule::hasHighlighting()
     return countHighlightedAtoms() > 0 || countHighlightedBonds() > 0;
 }
 
+bool BaseMolecule::hasSelection()
+{
+	return countSelectedAtoms() > 0 || countSelectedBonds() > 0;
+}
+
+
 bool BaseMolecule::isAtomHighlighted(int idx)
 {
     return _hl_atoms.size() > idx && _hl_atoms[idx] == 1;
+}
+
+bool BaseMolecule::isAtomSelected(int idx)
+{
+	return _sl_atoms.size() > idx && _sl_atoms[idx] == 1;
 }
 
 bool BaseMolecule::isBondHighlighted(int idx)
 {
     return _hl_bonds.size() > idx && _hl_bonds[idx] == 1;
 }
+
+bool BaseMolecule::isBondSelected(int idx)
+{
+	return _sl_bonds.size() > idx && _sl_bonds[idx] == 1;
+}
+
 
 void BaseMolecule::highlightSubmolecule(BaseMolecule& subgraph, const int* mapping, bool entire)
 {
@@ -3677,6 +3783,33 @@ void BaseMolecule::highlightSubmolecule(BaseMolecule& subgraph, const int* mappi
                 highlightBond(edge_idx);
         }
     }
+}
+
+void BaseMolecule::selectSubmolecule(BaseMolecule& subgraph, const int* mapping, bool entire)
+{
+	int i;
+
+	for (i = subgraph.vertexBegin(); i != subgraph.vertexEnd(); i = subgraph.vertexNext(i))
+		if (mapping[i] >= 0 && (entire || subgraph.isAtomSelected(i)))
+			selectAtom(mapping[i]);
+
+	for (i = subgraph.edgeBegin(); i != subgraph.edgeEnd(); i = subgraph.edgeNext(i))
+	{
+		if (!entire && !subgraph.isBondSelected(i))
+			continue;
+
+		const Edge& edge = subgraph.getEdge(i);
+
+		int beg = mapping[edge.beg];
+		int end = mapping[edge.end];
+
+		if (beg >= 0 && end >= 0)
+		{
+			int edge_idx = findEdgeIndex(beg, end);
+			if (edge_idx >= 0)
+				selectBond(edge_idx);
+		}
+	}
 }
 
 int BaseMolecule::countSGroups()

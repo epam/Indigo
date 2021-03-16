@@ -59,12 +59,12 @@ CEXPORT int indigoGrossFormula(int object)
             throw IndigoError("incorrect object type for gross formula: %s", indigoObject.debugInfo());
         }
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoGrossFormulaWithSelection(int object, int nvertices, const int* vertices )
+CEXPORT int indigoGrossFormulaWithSelection(int object, int nvertices, const int* vertices)
 {
-    std::set<int> selected_atoms( vertices, vertices + nvertices );
+    std::set<int> selected_atoms(vertices, vertices + nvertices);
     INDIGO_BEGIN
     {
         IndigoObject& indigoObject = self.getObject(object);
@@ -73,7 +73,7 @@ CEXPORT int indigoGrossFormulaWithSelection(int object, int nvertices, const int
             BaseMolecule& mol = self.getObject(object).getBaseMolecule();
             AutoPtr<IndigoMoleculeGross> grossptr(new IndigoMoleculeGross());
 
-            grossptr->gross = MoleculeGrossFormula::collect( mol, self.gross_formula_options.add_isotopes, selected_atoms );
+            grossptr->gross = MoleculeGrossFormula::collect(mol, self.gross_formula_options.add_isotopes, selected_atoms);
             return self.addObject(grossptr.release());
         }
         else if (IndigoBaseReaction::is(indigoObject))
@@ -92,7 +92,6 @@ CEXPORT int indigoGrossFormulaWithSelection(int object, int nvertices, const int
     INDIGO_END(-1)
 }
 
-
 static BaseMolecule& _indigoPrepareMass(IndigoObject& obj, MoleculeMass mass)
 {
     if (IndigoBaseMolecule::is(obj))
@@ -110,55 +109,79 @@ static BaseMolecule& _indigoPrepareMass(IndigoObject& obj, MoleculeMass mass)
     }
 }
 
-CEXPORT double indigoMolecularWeight(int molecule){INDIGO_BEGIN{MoleculeMass mass;
-auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
-mass.mass_options = self.mass_options;
-return mass.molecularWeight(mol.asMolecule());
-}
-INDIGO_END(-1)
-}
-
-CEXPORT double indigoMolecularWeightWithSelection(int molecule, int nvertices, const int* vertices ){INDIGO_BEGIN{MoleculeMass mass;
-std::set<int> selected_atoms( vertices, vertices + nvertices );
-auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
-mass.mass_options = self.mass_options;
-return mass.molecularWeight(mol.asMolecule(), selected_atoms );
-}
-INDIGO_END(-1)
+CEXPORT double indigoMolecularWeight(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        MoleculeMass mass;
+        auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
+        mass.mass_options = self.mass_options;
+        return mass.molecularWeight(mol.asMolecule());
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT double indigoMostAbundantMass(int molecule){INDIGO_BEGIN{MoleculeMass mass;
-auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
-mass.mass_options = self.mass_options;
-return mass.mostAbundantMass(mol.asMolecule());
-}
-INDIGO_END(-1)
-}
-
-CEXPORT double indigoMostAbundantMassWithSelection(int molecule, int nvertices, const int* vertices ){INDIGO_BEGIN{MoleculeMass mass;
-std::set<int> selected_atoms( vertices, vertices + nvertices );
-auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
-mass.mass_options = self.mass_options;
-return mass.mostAbundantMass(mol.asMolecule(), selected_atoms);
-}
-INDIGO_END(-1)
+CEXPORT double indigoMolecularWeightWithSelection(int molecule, int nvertices, const int* vertices)
+{
+    INDIGO_BEGIN
+    {
+        MoleculeMass mass;
+        std::set<int> selected_atoms(vertices, vertices + nvertices);
+        auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
+        mass.mass_options = self.mass_options;
+        return mass.molecularWeight(mol.asMolecule(), selected_atoms);
+    }
+    INDIGO_END(-1)
 }
 
-CEXPORT double indigoMonoisotopicMass(int molecule){INDIGO_BEGIN{MoleculeMass mass;
-auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
-mass.mass_options = self.mass_options;
-return mass.monoisotopicMass(mol.asMolecule());
-}
-INDIGO_END(-1)
+CEXPORT double indigoMostAbundantMass(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        MoleculeMass mass;
+        auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
+        mass.mass_options = self.mass_options;
+        return mass.mostAbundantMass(mol.asMolecule());
+    }
+    INDIGO_END(-1)
 }
 
-CEXPORT double indigoMonoisotopicMassWithSelection(int molecule, int nvertices, const int* vertices ){INDIGO_BEGIN{MoleculeMass mass;
-std::set<int> selected_atoms( vertices, vertices + nvertices );
-auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
-mass.mass_options = self.mass_options;
-return mass.monoisotopicMass(mol.asMolecule(), selected_atoms);
+CEXPORT double indigoMostAbundantMassWithSelection(int molecule, int nvertices, const int* vertices)
+{
+    INDIGO_BEGIN
+    {
+        MoleculeMass mass;
+        std::set<int> selected_atoms(vertices, vertices + nvertices);
+        auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
+        mass.mass_options = self.mass_options;
+        return mass.mostAbundantMass(mol.asMolecule(), selected_atoms);
+    }
+    INDIGO_END(-1)
 }
-INDIGO_END(-1)
+
+CEXPORT double indigoMonoisotopicMass(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        MoleculeMass mass;
+        auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
+        mass.mass_options = self.mass_options;
+        return mass.monoisotopicMass(mol.asMolecule());
+    }
+    INDIGO_END(-1)
+}
+
+CEXPORT double indigoMonoisotopicMassWithSelection(int molecule, int nvertices, const int* vertices)
+{
+    INDIGO_BEGIN
+    {
+        MoleculeMass mass;
+        std::set<int> selected_atoms(vertices, vertices + nvertices);
+        auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
+        mass.mass_options = self.mass_options;
+        return mass.monoisotopicMass(mol.asMolecule(), selected_atoms);
+    }
+    INDIGO_END(-1)
 }
 
 CEXPORT const char* indigoMassComposition(int molecule)
@@ -174,21 +197,21 @@ CEXPORT const char* indigoMassComposition(int molecule)
 
         return tmp.string.ptr();
     }
-    INDIGO_END(0)
+    INDIGO_END(0);
 }
 
-CEXPORT const char* indigoMassCompositionWithSelection(int molecule, int nvertices, const int* vertices )
+CEXPORT const char* indigoMassCompositionWithSelection(int molecule, int nvertices, const int* vertices)
 {
     INDIGO_BEGIN
     {
         MoleculeMass mass;
-        std::set<int> selected_atoms( vertices, vertices + nvertices );
+        std::set<int> selected_atoms(vertices, vertices + nvertices);
 
         auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
         mass.mass_options = self.mass_options;
 
         auto& tmp = self.getThreadTmpData();
-        mass.massComposition(mol.asMolecule(), tmp.string, selected_atoms );
+        mass.massComposition(mol.asMolecule(), tmp.string, selected_atoms);
 
         return tmp.string.ptr();
     }

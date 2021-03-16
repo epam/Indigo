@@ -39,7 +39,7 @@ import static com.epam.indigo.model.NamingConstants.*;
  */
 public class ElasticRepository<T extends IndigoRecord> implements GenericRepository<T> {
 
-    private String indexName = "bingo";
+    private String indexName;
     private String hostName;
     private int port;
     private String scheme;
@@ -48,13 +48,13 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     private RestHighLevelClient elasticClient;
     private boolean ignoreSSL;
     private int numShards = 1;
-    private int numReplicas = 1;
+    private int numReplicas = 0;
     private String refreshInterval = "5m";
 
     private ElasticRepository() {
     }
 
-    private boolean checkIfIndexExists() throws IOException {
+    private boolean checkIfIndexExists() throws BingoElasticException {
         try {
             return this.elasticClient.indices().exists(new GetIndexRequest(this.indexName), RequestOptions.DEFAULT);
         } catch (IOException e) {
@@ -297,6 +297,9 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
 
         private void validate(ElasticRepository<T> repository) {
             boolean ping;
+            if (null == repository.indexName || repository.indexName.isEmpty()) {
+                throw new BingoElasticException("Elasticsearch indexName must be initialized. Use withIndexName method");
+            }
             try {
                 ping = repository.elasticClient.ping(RequestOptions.DEFAULT);
                 if (!ping) {

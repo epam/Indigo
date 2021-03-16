@@ -115,13 +115,6 @@ namespace indigo
             return indigo_object->id;
         }
 
-        IndigoKetcherObject substructure(const std::vector<int>& selected_atoms) const
-        {
-            const int* selected_atoms_array = &selected_atoms[0];
-            return IndigoKetcherObject(_checkResult(indigoGetSubmolecule(id(), static_cast<int>(selected_atoms.size()), selected_atoms_array)), objtype,
-                                       indigo_object);
-        }
-
         bool is_reaction() const
         {
             return objtype == EKETReaction || objtype == EKETReactionQuery;

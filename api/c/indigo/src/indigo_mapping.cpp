@@ -62,43 +62,47 @@ IndigoObject* IndigoReactionMapping::clone()
     return res_ptr.release();
 }
 
-CEXPORT int indigoMapAtom(int handle, int atom){INDIGO_BEGIN{IndigoObject& obj = self.getObject(handle);
-IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
-
-if (obj.type == IndigoObject::MAPPING)
+CEXPORT int indigoMapAtom(int handle, int atom)
 {
-    IndigoMapping& mapping = (IndigoMapping&)obj;
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(handle);
+        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
 
-    int mapped = mapping.mapping[ia.idx];
-    if (mapped < 0)
-        return 0;
-    return self.addObject(new IndigoAtom(mapping.to, mapped));
-}
-if (obj.type == IndigoObject::REACTION_MAPPING)
-{
-    IndigoReactionMapping& mapping = (IndigoReactionMapping&)obj;
+        if (obj.type == IndigoObject::MAPPING)
+        {
+            IndigoMapping& mapping = (IndigoMapping&)obj;
 
-    int mol_idx = mapping.from.findMolecule(&ia.mol);
+            int mapped = mapping.mapping[ia.idx];
+            if (mapped < 0)
+                return 0;
+            return self.addObject(new IndigoAtom(mapping.to, mapped));
+        }
+        if (obj.type == IndigoObject::REACTION_MAPPING)
+        {
+            IndigoReactionMapping& mapping = (IndigoReactionMapping&)obj;
 
-    if (mol_idx == -1)
-        throw IndigoError("indigoMapAtom(): input atom not found in the reaction");
+            int mol_idx = mapping.from.findMolecule(&ia.mol);
 
-    if (mapping.mol_mapping[mol_idx] < 0)
-        // can happen for catalysts
-        return 0;
+            if (mol_idx == -1)
+                throw IndigoError("indigoMapAtom(): input atom not found in the reaction");
 
-    BaseMolecule& mol = mapping.to.getBaseMolecule(mapping.mol_mapping[mol_idx]);
-    int idx = mapping.mappings[mol_idx][ia.idx];
+            if (mapping.mol_mapping[mol_idx] < 0)
+                // can happen for catalysts
+                return 0;
 
-    if (idx < 0)
-        return 0;
+            BaseMolecule& mol = mapping.to.getBaseMolecule(mapping.mol_mapping[mol_idx]);
+            int idx = mapping.mappings[mol_idx][ia.idx];
 
-    return self.addObject(new IndigoAtom(mol, idx));
-}
+            if (idx < 0)
+                return 0;
 
-throw IndigoError("indigoMapAtom(): not applicable to %s", obj.debugInfo());
-}
-INDIGO_END(-1)
+            return self.addObject(new IndigoAtom(mol, idx));
+        }
+
+        throw IndigoError("indigoMapAtom(): not applicable to %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoMapBond(int handle, int bond)
@@ -158,7 +162,7 @@ CEXPORT int indigoMapBond(int handle, int bond)
 
         throw IndigoError("indigoMapBond(): not applicable to %s", obj.debugInfo());
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 void _indigoHighlightSubstructure(BaseMolecule& query, BaseMolecule& mol, Array<int>& qmapping, Array<int>& mapping)
@@ -225,5 +229,5 @@ CEXPORT int indigoHighlightedTarget(int item)
 
         throw IndigoError("indigoHighlightedTarget(): no idea what to do with %s", obj.debugInfo());
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }

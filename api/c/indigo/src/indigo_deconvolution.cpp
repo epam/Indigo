@@ -1567,267 +1567,302 @@ bool IndigoDeconvolution::DecompositionEnumerator::_cbAutoCheckAutomorphism(Grap
     return false;
 }
 
-CEXPORT int indigoDecomposeMolecules(int scaffold, int structures){INDIGO_BEGIN{IndigoArray& mol_array = IndigoArray::cast(self.getObject(structures));
-
-AutoPtr<IndigoDeconvolution> deco(new IndigoDeconvolution());
-deco->save_ap_bond_orders = self.deco_save_ap_bond_orders;
-deco->ignore_errors = self.deco_ignore_errors;
-deco->aromatize = self.deconvolution_aromatization;
-int i;
-
-for (i = 0; i < mol_array.objects.size(); i++)
+CEXPORT int indigoDecomposeMolecules(int scaffold, int structures)
 {
-    IndigoObject& obj = *mol_array.objects[i];
-    /*
-     * Add molecule
-     */
-    deco->addMolecule(obj.getMolecule(), obj.getProperties(), i);
-}
-
-QueryMolecule& scaf = self.getObject(scaffold).getQueryMolecule();
-
-deco->makeRGroups(scaf);
-return self.addObject(deco.release());
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoIterateDecomposedMolecules(int decomp){INDIGO_BEGIN{IndigoObject& obj = self.getObject(decomp);
-
-if (obj.type != IndigoObject::DECONVOLUTION)
-    throw IndigoError("indigoIterateDecomposedMolecules(): not applicable to %s", obj.debugInfo());
-
-IndigoDeconvolution& deco = (IndigoDeconvolution&)obj;
-
-return self.addObject(new IndigoDeconvolutionIter(deco.getItems()));
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoDecomposedMoleculeScaffold(int decomp){INDIGO_BEGIN{IndigoObject& obj = self.getObject(decomp);
-AutoPtr<IndigoObject> mol_ptr;
-
-if (obj.type == IndigoObject::DECONVOLUTION)
-{
-    /*
-     * Create query scaffold
-     */
-    IndigoDeconvolution& deco = (IndigoDeconvolution&)obj;
-    mol_ptr.reset(new IndigoQueryMolecule());
-    IndigoQueryMolecule& qmol = (IndigoQueryMolecule&)mol_ptr.ref();
-    qmol.qmol.clone(deco.getDecomposedScaffold(), 0, 0);
-}
-else if (obj.type == IndigoObject::DECONVOLUTION_ELEM)
-{
-    /*
-     * Create simple scaffold with rsites
-     */
-    IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
-    IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
-
-    if (deco_enum.contexts.size() == 0)
+    INDIGO_BEGIN
     {
-        throw IndigoError("indigoDecomposedMoleculeScaffold(): no embeddings were found for the molecule %d", elem.idx);
+        IndigoArray& mol_array = IndigoArray::cast(self.getObject(structures));
+
+        AutoPtr<IndigoDeconvolution> deco(new IndigoDeconvolution());
+        deco->save_ap_bond_orders = self.deco_save_ap_bond_orders;
+        deco->ignore_errors = self.deco_ignore_errors;
+        deco->aromatize = self.deconvolution_aromatization;
+        int i;
+
+        for (i = 0; i < mol_array.objects.size(); i++)
+        {
+            IndigoObject& obj = *mol_array.objects[i];
+            /*
+             * Add molecule
+             */
+            deco->addMolecule(obj.getMolecule(), obj.getProperties(), i);
+        }
+
+        QueryMolecule& scaf = self.getObject(scaffold).getQueryMolecule();
+
+        deco->makeRGroups(scaf);
+        return self.addObject(deco.release());
     }
-    IndigoDecompositionMatch& deco_match = deco_enum.contexts[0];
-
-    mol_ptr.reset(new IndigoMolecule());
-    IndigoMolecule& mol = (IndigoMolecule&)mol_ptr.ref();
-
-    mol.mol.clone(deco_match.mol_scaffold, 0, 0);
-
-    deco_match.completeScaffold();
+    INDIGO_END(-1);
 }
-else if (obj.type == IndigoObject::DECOMPOSITION_MATCH)
+
+CEXPORT int indigoIterateDecomposedMolecules(int decomp)
 {
-    IndigoDecompositionMatch& deco_match = (IndigoDecompositionMatch&)obj;
-
-    mol_ptr.reset(new IndigoMolecule());
-    IndigoMolecule& mol = (IndigoMolecule&)mol_ptr.ref();
-
-    mol.mol.clone(deco_match.mol_scaffold, 0, 0);
-}
-else
-{
-    throw IndigoError("indigoDecomposedMoleculeScaffold(): not applicable to %s", obj.debugInfo());
-}
-int obj_idx = self.addObject(mol_ptr.release());
-/*
- * Call layout
- */
-indigoLayout(obj_idx);
-return obj_idx;
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoDecomposedMoleculeHighlighted(int decomp){INDIGO_BEGIN{IndigoObject& obj = self.getObject(decomp);
-
-AutoPtr<IndigoMolecule> mol;
-
-if (obj.type == IndigoObject::DECONVOLUTION_ELEM)
-{
-    IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
-    IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
-
-    if (deco_enum.contexts.size() == 0)
+    INDIGO_BEGIN
     {
-        throw IndigoError("indigoDecomposedMoleculeHighlighted(): no embeddings were found for the molecule %d", elem.idx);
+        IndigoObject& obj = self.getObject(decomp);
+
+        if (obj.type != IndigoObject::DECONVOLUTION)
+            throw IndigoError("indigoIterateDecomposedMolecules(): not applicable to %s", obj.debugInfo());
+
+        IndigoDeconvolution& deco = (IndigoDeconvolution&)obj;
+
+        return self.addObject(new IndigoDeconvolutionIter(deco.getItems()));
     }
-    IndigoDecompositionMatch& deco_match = deco_enum.contexts[0];
-
-    mol.create();
-    mol->mol.clone_KeepIndices(deco_match.mol_out, 0);
-    mol->copyProperties(elem.getProperties());
-
-    deco_match.completeScaffold();
+    INDIGO_END(-1);
 }
-else if (obj.type == IndigoObject::DECOMPOSITION_MATCH)
+
+CEXPORT int indigoDecomposedMoleculeScaffold(int decomp)
 {
-    IndigoDecompositionMatch& deco_match = (IndigoDecompositionMatch&)obj;
-
-    mol.create();
-    mol->mol.clone_KeepIndices(deco_match.mol_out, 0);
-}
-else
-{
-    throw IndigoError("indigoDecomposedMoleculeHighlighted(): not applicable to %s", obj.debugInfo());
-}
-
-return self.addObject(mol.release());
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoDecomposedMoleculeSubstituents(int decomp){INDIGO_BEGIN{IndigoObject& obj = self.getObject(decomp);
-
-if (obj.type == IndigoObject::DECONVOLUTION_ELEM)
-{
-    IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
-    IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
-
-    if (deco_enum.contexts.size() == 0)
+    INDIGO_BEGIN
     {
-        throw IndigoError("indigoDecomposedMoleculeSubstituents(): no embeddings were found for the molecule %d", elem.idx);
+        IndigoObject& obj = self.getObject(decomp);
+        AutoPtr<IndigoObject> mol_ptr;
+
+        if (obj.type == IndigoObject::DECONVOLUTION)
+        {
+            /*
+             * Create query scaffold
+             */
+            IndigoDeconvolution& deco = (IndigoDeconvolution&)obj;
+            mol_ptr.reset(new IndigoQueryMolecule());
+            IndigoQueryMolecule& qmol = (IndigoQueryMolecule&)mol_ptr.ref();
+            qmol.qmol.clone(deco.getDecomposedScaffold(), 0, 0);
+        }
+        else if (obj.type == IndigoObject::DECONVOLUTION_ELEM)
+        {
+            /*
+             * Create simple scaffold with rsites
+             */
+            IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
+            IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
+
+            if (deco_enum.contexts.size() == 0)
+            {
+                throw IndigoError("indigoDecomposedMoleculeScaffold(): no embeddings were found for the molecule %d", elem.idx);
+            }
+            IndigoDecompositionMatch& deco_match = deco_enum.contexts[0];
+
+            mol_ptr.reset(new IndigoMolecule());
+            IndigoMolecule& mol = (IndigoMolecule&)mol_ptr.ref();
+
+            mol.mol.clone(deco_match.mol_scaffold, 0, 0);
+
+            deco_match.completeScaffold();
+        }
+        else if (obj.type == IndigoObject::DECOMPOSITION_MATCH)
+        {
+            IndigoDecompositionMatch& deco_match = (IndigoDecompositionMatch&)obj;
+
+            mol_ptr.reset(new IndigoMolecule());
+            IndigoMolecule& mol = (IndigoMolecule&)mol_ptr.ref();
+
+            mol.mol.clone(deco_match.mol_scaffold, 0, 0);
+        }
+        else
+        {
+            throw IndigoError("indigoDecomposedMoleculeScaffold(): not applicable to %s", obj.debugInfo());
+        }
+        int obj_idx = self.addObject(mol_ptr.release());
+        /*
+         * Call layout
+         */
+        indigoLayout(obj_idx);
+        return obj_idx;
     }
-    IndigoDecompositionMatch& deco_match = deco_enum.contexts[0];
-
-    Molecule* qmol = &deco_match.rgroup_mol;
-
-    deco_match.completeScaffold();
-
-    return self.addObject(new IndigoRGroupsIter(qmol));
+    INDIGO_END(-1);
 }
-else if (obj.type == IndigoObject::DECOMPOSITION_MATCH)
+
+CEXPORT int indigoDecomposedMoleculeHighlighted(int decomp)
 {
-    IndigoDecompositionMatch& deco_match = (IndigoDecompositionMatch&)obj;
-
-    Molecule* qmol = &deco_match.rgroup_mol;
-    return self.addObject(new IndigoRGroupsIter(qmol));
-}
-else
-{
-    throw IndigoError("indigoDecomposedMoleculeSubstituents(): not applicable to %s", obj.debugInfo());
-}
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoDecomposedMoleculeWithRGroups(int decomp){INDIGO_BEGIN{IndigoObject& obj = self.getObject(decomp);
-AutoPtr<IndigoMolecule> mol_ptr;
-
-if (obj.type == IndigoObject::DECONVOLUTION_ELEM)
-{
-    IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
-    IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
-
-    if (deco_enum.contexts.size() == 0)
+    INDIGO_BEGIN
     {
-        throw IndigoError("indigoDecomposedMoleculeWithRGroups(): no embeddings were found for the molecule %d", elem.idx);
+        IndigoObject& obj = self.getObject(decomp);
+
+        AutoPtr<IndigoMolecule> mol;
+
+        if (obj.type == IndigoObject::DECONVOLUTION_ELEM)
+        {
+            IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
+            IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
+
+            if (deco_enum.contexts.size() == 0)
+            {
+                throw IndigoError("indigoDecomposedMoleculeHighlighted(): no embeddings were found for the molecule %d", elem.idx);
+            }
+            IndigoDecompositionMatch& deco_match = deco_enum.contexts[0];
+
+            mol.create();
+            mol->mol.clone_KeepIndices(deco_match.mol_out, 0);
+            mol->copyProperties(elem.getProperties());
+
+            deco_match.completeScaffold();
+        }
+        else if (obj.type == IndigoObject::DECOMPOSITION_MATCH)
+        {
+            IndigoDecompositionMatch& deco_match = (IndigoDecompositionMatch&)obj;
+
+            mol.create();
+            mol->mol.clone_KeepIndices(deco_match.mol_out, 0);
+        }
+        else
+        {
+            throw IndigoError("indigoDecomposedMoleculeHighlighted(): not applicable to %s", obj.debugInfo());
+        }
+
+        return self.addObject(mol.release());
     }
-    IndigoDecompositionMatch& deco_match = deco_enum.contexts[0];
-
-    mol_ptr.reset(new IndigoMolecule());
-    mol_ptr->mol.clone(deco_match.rgroup_mol, 0, 0);
-    mol_ptr->copyProperties(elem.getProperties());
-
-    deco_match.completeScaffold();
+    INDIGO_END(-1);
 }
-else if (obj.type == IndigoObject::DECOMPOSITION_MATCH)
+
+CEXPORT int indigoDecomposedMoleculeSubstituents(int decomp)
 {
-    IndigoDecompositionMatch& deco_match = (IndigoDecompositionMatch&)obj;
-    if (deco_match.deco)
-        deco_match.deco->createRgroups(deco_match, false);
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(decomp);
 
-    mol_ptr.reset(new IndigoMolecule());
-    mol_ptr->mol.clone(deco_match.rgroup_mol, 0, 0);
+        if (obj.type == IndigoObject::DECONVOLUTION_ELEM)
+        {
+            IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
+            IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
+
+            if (deco_enum.contexts.size() == 0)
+            {
+                throw IndigoError("indigoDecomposedMoleculeSubstituents(): no embeddings were found for the molecule %d", elem.idx);
+            }
+            IndigoDecompositionMatch& deco_match = deco_enum.contexts[0];
+
+            Molecule* qmol = &deco_match.rgroup_mol;
+
+            deco_match.completeScaffold();
+
+            return self.addObject(new IndigoRGroupsIter(qmol));
+        }
+        else if (obj.type == IndigoObject::DECOMPOSITION_MATCH)
+        {
+            IndigoDecompositionMatch& deco_match = (IndigoDecompositionMatch&)obj;
+
+            Molecule* qmol = &deco_match.rgroup_mol;
+            return self.addObject(new IndigoRGroupsIter(qmol));
+        }
+        else
+        {
+            throw IndigoError("indigoDecomposedMoleculeSubstituents(): not applicable to %s", obj.debugInfo());
+        }
+    }
+    INDIGO_END(-1);
 }
-else
+
+CEXPORT int indigoDecomposedMoleculeWithRGroups(int decomp)
 {
-    throw IndigoError("indigoDecomposedMoleculeWithRGroups(): not applicable to %s", obj.debugInfo());
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(decomp);
+        AutoPtr<IndigoMolecule> mol_ptr;
+
+        if (obj.type == IndigoObject::DECONVOLUTION_ELEM)
+        {
+            IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)obj;
+            IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
+
+            if (deco_enum.contexts.size() == 0)
+            {
+                throw IndigoError("indigoDecomposedMoleculeWithRGroups(): no embeddings were found for the molecule %d", elem.idx);
+            }
+            IndigoDecompositionMatch& deco_match = deco_enum.contexts[0];
+
+            mol_ptr.reset(new IndigoMolecule());
+            mol_ptr->mol.clone(deco_match.rgroup_mol, 0, 0);
+            mol_ptr->copyProperties(elem.getProperties());
+
+            deco_match.completeScaffold();
+        }
+        else if (obj.type == IndigoObject::DECOMPOSITION_MATCH)
+        {
+            IndigoDecompositionMatch& deco_match = (IndigoDecompositionMatch&)obj;
+            if (deco_match.deco)
+                deco_match.deco->createRgroups(deco_match, false);
+
+            mol_ptr.reset(new IndigoMolecule());
+            mol_ptr->mol.clone(deco_match.rgroup_mol, 0, 0);
+        }
+        else
+        {
+            throw IndigoError("indigoDecomposedMoleculeWithRGroups(): not applicable to %s", obj.debugInfo());
+        }
+
+        return self.addObject(mol_ptr.release());
+    }
+    INDIGO_END(-1);
 }
 
-return self.addObject(mol_ptr.release());
-}
-INDIGO_END(-1)
-}
+CEXPORT int indigoCreateDecomposer(int scaffold)
+{
+    INDIGO_BEGIN
+    {
+        AutoPtr<IndigoDeconvolution> deco(new IndigoDeconvolution());
+        deco->save_ap_bond_orders = self.deco_save_ap_bond_orders;
+        deco->ignore_errors = self.deco_ignore_errors;
+        deco->aromatize = self.deconvolution_aromatization;
 
-CEXPORT int indigoCreateDecomposer(int scaffold){INDIGO_BEGIN{AutoPtr<IndigoDeconvolution> deco(new IndigoDeconvolution());
-deco->save_ap_bond_orders = self.deco_save_ap_bond_orders;
-deco->ignore_errors = self.deco_ignore_errors;
-deco->aromatize = self.deconvolution_aromatization;
+        QueryMolecule& scaf = self.getObject(scaffold).getQueryMolecule();
 
-QueryMolecule& scaf = self.getObject(scaffold).getQueryMolecule();
-
-deco->setScaffold(scaf);
-return self.addObject(deco.release());
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoDecomposeMolecule(int decomp, int mol){INDIGO_BEGIN{IndigoObject& obj = self.getObject(decomp);
-
-if (obj.type != IndigoObject::DECONVOLUTION)
-    throw IndigoError("indigoDecomposeMolecule(): not applicable to %s", obj.debugInfo());
-
-IndigoDeconvolution& deco = (IndigoDeconvolution&)obj;
-
-AutoPtr<IndigoDeconvolutionElem> deco_elem;
-//      deco_elem.reset(new IndigoDeconvolutionElem(self.getObject(mol).getMolecule(), self.getObject(mol).getProperties()));
-deco_elem.reset(new IndigoDeconvolutionElem(self.getObject(mol).getMolecule()));
-/*
- * Calculate only first match
- */
-deco.makeRGroup(deco_elem.ref(), false, false);
-
-return self.addObject(deco_elem.release());
-}
-INDIGO_END(-1)
+        deco->setScaffold(scaf);
+        return self.addObject(deco.release());
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoIterateDecompositions(int deco_item){INDIGO_BEGIN{
+CEXPORT int indigoDecomposeMolecule(int decomp, int mol)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(decomp);
 
-    IndigoObject& in_elem = self.getObject(deco_item);
+        if (obj.type != IndigoObject::DECONVOLUTION)
+            throw IndigoError("indigoDecomposeMolecule(): not applicable to %s", obj.debugInfo());
 
-if (in_elem.type != IndigoObject::DECONVOLUTION_ELEM)
-    throw IndigoError("indigoIterateDecompositions(): not applicable to %s", in_elem.debugInfo());
+        IndigoDeconvolution& deco = (IndigoDeconvolution&)obj;
 
-IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)in_elem;
-IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
-IndigoDeconvolution* deco = deco_enum.deco;
-/*
- * Calculate all matches
- */
-if (deco)
-    deco->makeRGroup(elem, true, false);
+        AutoPtr<IndigoDeconvolutionElem> deco_elem;
+        //      deco_elem.reset(new IndigoDeconvolutionElem(self.getObject(mol).getMolecule(), self.getObject(mol).getProperties()));
+        deco_elem.reset(new IndigoDeconvolutionElem(self.getObject(mol).getMolecule()));
+        /*
+         * Calculate only first match
+         */
+        deco.makeRGroup(deco_elem.ref(), false, false);
 
-AutoPtr<IndigoDecompositionMatchIter> match_iter;
-match_iter.reset(new IndigoDecompositionMatchIter(deco_enum.contexts));
-
-int obj_idx = self.addObject(match_iter.release());
-return obj_idx;
+        return self.addObject(deco_elem.release());
+    }
+    INDIGO_END(-1);
 }
-INDIGO_END(-1)
+
+CEXPORT int indigoIterateDecompositions(int deco_item)
+{
+    INDIGO_BEGIN
+    {
+
+        IndigoObject& in_elem = self.getObject(deco_item);
+
+        if (in_elem.type != IndigoObject::DECONVOLUTION_ELEM)
+            throw IndigoError("indigoIterateDecompositions(): not applicable to %s", in_elem.debugInfo());
+
+        IndigoDeconvolutionElem& elem = (IndigoDeconvolutionElem&)in_elem;
+        IndigoDeconvolution::DecompositionEnumerator& deco_enum = elem.deco_enum;
+        IndigoDeconvolution* deco = deco_enum.deco;
+        /*
+         * Calculate all matches
+         */
+        if (deco)
+            deco->makeRGroup(elem, true, false);
+
+        AutoPtr<IndigoDecompositionMatchIter> match_iter;
+        match_iter.reset(new IndigoDecompositionMatchIter(deco_enum.contexts));
+
+        int obj_idx = self.addObject(match_iter.release());
+        return obj_idx;
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoAddDecomposition(int decomp, int q_match)
@@ -1849,5 +1884,5 @@ CEXPORT int indigoAddDecomposition(int decomp, int q_match)
         deco.addCompleteRGroup(match, true, 0);
         return 0;
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }

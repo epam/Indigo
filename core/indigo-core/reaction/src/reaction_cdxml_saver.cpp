@@ -235,16 +235,16 @@ void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
         return;
     else if (rxn.productsCount() == 0)
     {
-        p2.x = rmax.x + 1.0;
+        p2.x = rmax.x + 1.0f;
         p2.y = (rmin.y + rmax.y) / 2;
-        p1.x = p2.x + 1.0;
+        p1.x = p2.x + 1.0f;
         p1.y = p2.y;
     }
     else if (rxn.reactantsCount() == 0)
     {
-        p1.x = pmin.x - 1.0;
+        p1.x = pmin.x - 1.0f;
         p1.y = (pmin.y + pmax.y) / 2;
-        p2.x = p1.x - 1.0;
+        p2.x = p1.x - 1.0f;
         p2.y = p1.y;
     }
     else
@@ -256,18 +256,18 @@ void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
         }
         else
         {
-            p2.x = (rmax.x + pmin.x) / 2 - 1.0;
+            p2.x = (rmax.x + pmin.x) / 2 - 1.0f;
             p2.y = (rmin.y + rmax.y) / 2;
         }
 
         if ((pmin.x - rmax.x) > 0)
         {
-            p1.x = (rmax.x + pmin.x) / 2 + (pmin.x - rmax.x) / 4;
-            p1.y = (pmin.y + pmax.y) / 2;
+            p1.x = (rmax.x + pmin.x) / 2.f + (pmin.x - rmax.x) / 4.f;
+            p1.y = (pmin.y + pmax.y) / 2.f;
         }
         else
         {
-            p1.x = (rmax.x + pmin.x) / 2 + 1.0;
+            p1.x = (rmax.x + pmin.x) / 2 + 1.0f;
             p1.y = (pmin.y + pmax.y) / 2;
         }
     }
@@ -480,8 +480,8 @@ void ReactionCdxmlSaver::_addTitle(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
         }
     }
 
-    p.x = (rmin.x + pmax.x) / 2 - rxn.name.size() * 0.1;
-    p.y = (rmax.y > pmax.y ? rmax.y : pmax.y) + 1.0;
+    p.x = (rmin.x + pmax.x) / 2 - rxn.name.size() * 0.1f;
+    p.y = (rmax.y > pmax.y ? rmax.y : pmax.y) + 1.0f;
 
     molsaver.addTitle(p, rxn.name.ptr());
 }

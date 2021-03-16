@@ -63,7 +63,7 @@ namespace indigo
 
     typedef ObjArray<PropertiesMap> MonomersProperties;
 } // namespace indigo
-extern DLLEXPORT OptionManager& indigoGetOptionManager();
+extern DLLEXPORT IndigoOptionManager& indigoGetOptionManager();
 
 class DLLEXPORT IndigoObject
 {
@@ -159,6 +159,8 @@ public:
         TGROUP,
         TGROUPS_ITER,
         GROSS_REACTION,
+        JSON_MOLECULE,
+        JSON_REACTION,
         INDIGO_OBJECT_LAST_TYPE // must be the last element in the enum
     };
 
