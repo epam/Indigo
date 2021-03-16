@@ -316,8 +316,10 @@ namespace indigo
         }
         
         auto mid = indigoLoadMoleculeFromString( indigoMolfile( qc.id ) );
+        
+        print_jsn("loaded:", mid);
         if( mid < 0 )
-            jsThrow("Cannot calculate properties for structures with query features");
+            jsThrow("Cannot calculate properties for structures with query features!");
         iko.set( mid, IndigoKetcherObject::EKETMolecule );
     }
 
@@ -325,6 +327,8 @@ namespace indigo
                             std::stringstream& monoisotopicMassStream, std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream,
                             const std::vector<int>& selected_atoms)
     {
+        print_jsn("calculate_molecule:", selected_atoms.size());
+        
         const std::set<int> selected_set(selected_atoms.begin(), selected_atoms.end());
 
         if( iko.objtype == IndigoKetcherObject::EKETMoleculeQuery )
@@ -436,7 +440,7 @@ namespace indigo
             monoisotopicMassStream << "[";
             massCompositionStream << "[";
             grossFormulaStream << "[";
-            auto mol = IndigoKetcherObject(id, _checkResult( indigoCheckQuery(id) ) ? IndigoKetcherObject::EKETMolecule : IndigoKetcherObject::EKETMoleculeQuery );
+            auto mol = IndigoKetcherObject(id, _checkResult( indigoCheckQuery(id) ) ? IndigoKetcherObject::EKETMoleculeQuery : IndigoKetcherObject::EKETMolecule );
             std::vector<int> subselect;
             if( selected_atoms.size() )
             {
@@ -503,12 +507,10 @@ namespace indigo
             calculate_molecule(iko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream,
                                selected_atoms);
             break;
+        case IndigoKetcherObject::EKETReactionQuery:
         case IndigoKetcherObject::EKETReaction:
             calculate_reaction(iko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream,
                                selected_atoms);
-            break;
-        case IndigoKetcherObject::EKETReactionQuery:
-            jsThrow("Cannot calculate properties for structures with query features");
             break;
         }
         result.AddMember("molecular-weight", molecularWeightStream.str(), allocator);
