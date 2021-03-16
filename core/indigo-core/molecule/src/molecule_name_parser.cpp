@@ -530,9 +530,19 @@ void MoleculeNameParser::FragmentNodeBase::print(ostream& out) const
 {
     out << "Type: FragmentNodeBase" << endl;
 
-//    out << "Multipliers:" << endl;
-//    const auto& mul_container = multipliers._Get_container();
-//    std::for_each(mul_container.begin(), mul_container.end(), [&out](const Multiplier& multiplier) { out << "\tvalue: " << multiplier.first << endl; });
+    out << "Multipliers:" << endl;
+    auto muls = multipliers;
+    Multipliers muls_rev;
+    while (!muls.empty())
+    {
+        muls_rev.push(muls.top());
+        muls.pop();
+    }
+    while (!muls_rev.empty())
+    {
+        out << "\tvalue: " << muls_rev.top().first << endl;
+        muls_rev.pop();
+    }
 
     out << "Locants:" << endl;
     for (int locant : locants)

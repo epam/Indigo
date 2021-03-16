@@ -317,3 +317,18 @@ class BingoObject(object):
     def maxCell(self):
         self._indigo._setSessionId()
         return Bingo._checkResult(self._indigo, self._bingo._lib.bingoMaxCell(self._id))
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        next_item = self.next()
+        if next_item:
+            return self
+        raise StopIteration

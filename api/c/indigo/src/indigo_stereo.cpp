@@ -159,26 +159,38 @@ CEXPORT const int* indigoStereocenterPyramid(int atom)
     INDIGO_END(NULL);
 }
 
-CEXPORT int indigoCountStereocenters(int molecule){INDIGO_BEGIN{BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
+CEXPORT int indigoCountStereocenters(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
 
-return mol.stereocenters.size();
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoClearAlleneCenters(int molecule){INDIGO_BEGIN{BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
-
-mol.allene_stereo.clear();
-return 1;
-}
-INDIGO_END(-1)
+        return mol.stereocenters.size();
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoCountAlleneCenters(int molecule){INDIGO_BEGIN{BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
+CEXPORT int indigoClearAlleneCenters(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
 
-return mol.allene_stereo.size();
+        mol.allene_stereo.clear();
+        return 1;
+    }
+    INDIGO_END(-1);
 }
-INDIGO_END(-1)
+
+CEXPORT int indigoCountAlleneCenters(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
+
+        return mol.allene_stereo.size();
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoBondStereo(int bond)
@@ -208,91 +220,103 @@ CEXPORT int indigoBondStereo(int bond)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoInvertStereo(int item){INDIGO_BEGIN{IndigoObject& obj = self.getObject(item);
-if (IndigoAtom::is(obj))
+CEXPORT int indigoInvertStereo(int item)
 {
-    IndigoAtom& ia = IndigoAtom::cast(self.getObject(item));
-
-    if (ia.mol.stereocenters.getType(ia.idx) > 0)
+    INDIGO_BEGIN
     {
-        int k, *pyramid = ia.mol.stereocenters.getPyramid(ia.idx);
-        if (pyramid == 0)
-            throw IndigoError("indigoInvertStereo: internal");
-        __swap(pyramid[0], pyramid[1], k);
+        IndigoObject& obj = self.getObject(item);
+        if (IndigoAtom::is(obj))
+        {
+            IndigoAtom& ia = IndigoAtom::cast(self.getObject(item));
+
+            if (ia.mol.stereocenters.getType(ia.idx) > 0)
+            {
+                int k, *pyramid = ia.mol.stereocenters.getPyramid(ia.idx);
+                if (pyramid == 0)
+                    throw IndigoError("indigoInvertStereo: internal");
+                __swap(pyramid[0], pyramid[1], k);
+            }
+            else if (ia.mol.allene_stereo.isCenter(ia.idx))
+                ia.mol.allene_stereo.invert(ia.idx);
+            else
+                throw IndigoError("indigoInvertStereo: not a stereo atom");
+        }
+        else if (IndigoBond::is(obj))
+        {
+            IndigoBond& ib = IndigoBond::cast(self.getObject(item));
+
+            int parity = ib.mol.cis_trans.getParity(ib.idx);
+            if (parity == 0)
+                throw IndigoError("indigoInvertStereo: not a stereobond");
+
+            if (parity == MoleculeCisTrans::CIS)
+                ib.mol.cis_trans.setParity(ib.idx, MoleculeCisTrans::TRANS);
+            else
+                ib.mol.cis_trans.setParity(ib.idx, MoleculeCisTrans::CIS);
+        }
+        else
+            throw IndigoError("indigoInvertStereo(): %s given", obj.debugInfo());
+        return 1;
     }
-    else if (ia.mol.allene_stereo.isCenter(ia.idx))
-        ia.mol.allene_stereo.invert(ia.idx);
-    else
-        throw IndigoError("indigoInvertStereo: not a stereo atom");
+    INDIGO_END(-1);
 }
-else if (IndigoBond::is(obj))
+
+CEXPORT int indigoResetStereo(int item)
 {
-    IndigoBond& ib = IndigoBond::cast(self.getObject(item));
-
-    int parity = ib.mol.cis_trans.getParity(ib.idx);
-    if (parity == 0)
-        throw IndigoError("indigoInvertStereo: not a stereobond");
-
-    if (parity == MoleculeCisTrans::CIS)
-        ib.mol.cis_trans.setParity(ib.idx, MoleculeCisTrans::TRANS);
-    else
-        ib.mol.cis_trans.setParity(ib.idx, MoleculeCisTrans::CIS);
-}
-else
-    throw IndigoError("indigoInvertStereo(): %s given", obj.debugInfo());
-return 1;
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoResetStereo(int item){INDIGO_BEGIN{IndigoObject& obj = self.getObject(item);
-
-if (IndigoAtom::is(obj))
-{
-    IndigoAtom& ia = IndigoAtom::cast(self.getObject(item));
-
-    if (ia.mol.stereocenters.getType(ia.idx) != 0)
-        ia.mol.stereocenters.remove(ia.idx);
-    if (ia.mol.allene_stereo.isCenter(ia.idx))
-        ia.mol.allene_stereo.reset(ia.idx);
-}
-else if (IndigoBond::is(obj))
-{
-    IndigoBond& ib = IndigoBond::cast(self.getObject(item));
-
-    ib.mol.setBondDirection(ib.idx, 0);
-    ib.mol.cis_trans.setParity(ib.idx, 0);
-}
-else
-    throw IndigoError("indigoResetStereo(): %s given", obj.debugInfo());
-return 1;
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoClearStereocenters(int object){INDIGO_BEGIN{IndigoObject& obj = self.getObject(object);
-
-if (IndigoBaseMolecule::is(obj))
-{
-    obj.getBaseMolecule().stereocenters.clear();
-    obj.getBaseMolecule().clearBondDirections();
-}
-else if (IndigoBaseReaction::is(obj))
-{
-    BaseReaction& rxn = obj.getBaseReaction();
-    int i;
-
-    for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+    INDIGO_BEGIN
     {
-        rxn.getBaseMolecule(i).stereocenters.clear();
-        rxn.getBaseMolecule(i).clearBondDirections();
+        IndigoObject& obj = self.getObject(item);
+
+        if (IndigoAtom::is(obj))
+        {
+            IndigoAtom& ia = IndigoAtom::cast(self.getObject(item));
+
+            if (ia.mol.stereocenters.getType(ia.idx) != 0)
+                ia.mol.stereocenters.remove(ia.idx);
+            if (ia.mol.allene_stereo.isCenter(ia.idx))
+                ia.mol.allene_stereo.reset(ia.idx);
+        }
+        else if (IndigoBond::is(obj))
+        {
+            IndigoBond& ib = IndigoBond::cast(self.getObject(item));
+
+            ib.mol.setBondDirection(ib.idx, 0);
+            ib.mol.cis_trans.setParity(ib.idx, 0);
+        }
+        else
+            throw IndigoError("indigoResetStereo(): %s given", obj.debugInfo());
+        return 1;
     }
+    INDIGO_END(-1);
 }
-else
-    throw IndigoError("only molecules and reactions have stereocenters");
-return 1;
-}
-INDIGO_END(-1)
+
+CEXPORT int indigoClearStereocenters(int object)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(object);
+
+        if (IndigoBaseMolecule::is(obj))
+        {
+            obj.getBaseMolecule().stereocenters.clear();
+            obj.getBaseMolecule().clearBondDirections();
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            BaseReaction& rxn = obj.getBaseReaction();
+            int i;
+
+            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            {
+                rxn.getBaseMolecule(i).stereocenters.clear();
+                rxn.getBaseMolecule(i).clearBondDirections();
+            }
+        }
+        else
+            throw IndigoError("only molecules and reactions have stereocenters");
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoClearCisTrans(int object)
@@ -315,7 +339,7 @@ CEXPORT int indigoClearCisTrans(int object)
             throw IndigoError("only molecules and reactions have cis-trans");
         return 1;
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 static int _resetSymmetric(Molecule& mol, bool cistrans, bool stereo)
@@ -409,58 +433,70 @@ static int _markEitherCisTrans(Molecule& mol)
     return sum;
 }
 
-CEXPORT int indigoResetSymmetricCisTrans(int handle){INDIGO_BEGIN{IndigoObject& obj = self.getObject(handle);
-
-if (IndigoBaseMolecule::is(obj))
-    return _resetSymmetric(obj.getMolecule(), true, false);
-else if (IndigoBaseReaction::is(obj))
+CEXPORT int indigoResetSymmetricCisTrans(int handle)
 {
-    Reaction& rxn = obj.getReaction();
-    int i, sum = 0;
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(handle);
 
-    for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-        sum += _resetSymmetric(rxn.getMolecule(i), true, false);
-    return sum;
-}
-throw IndigoError("only molecules and reactions have cis-trans");
-}
-INDIGO_END(-1)
+        if (IndigoBaseMolecule::is(obj))
+            return _resetSymmetric(obj.getMolecule(), true, false);
+        else if (IndigoBaseReaction::is(obj))
+        {
+            Reaction& rxn = obj.getReaction();
+            int i, sum = 0;
+
+            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                sum += _resetSymmetric(rxn.getMolecule(i), true, false);
+            return sum;
+        }
+        throw IndigoError("only molecules and reactions have cis-trans");
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoResetSymmetricStereocenters(int handle){INDIGO_BEGIN{IndigoObject& obj = self.getObject(handle);
-
-if (IndigoBaseMolecule::is(obj))
-    return _resetSymmetric(obj.getMolecule(), false, true);
-else if (IndigoBaseReaction::is(obj))
+CEXPORT int indigoResetSymmetricStereocenters(int handle)
 {
-    Reaction& rxn = obj.getReaction();
-    int i, sum = 0;
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(handle);
 
-    for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-        sum += _resetSymmetric(rxn.getMolecule(i), false, true);
-    return sum;
-}
-throw IndigoError("only molecules and reactions have cis-trans");
-}
-INDIGO_END(-1)
+        if (IndigoBaseMolecule::is(obj))
+            return _resetSymmetric(obj.getMolecule(), false, true);
+        else if (IndigoBaseReaction::is(obj))
+        {
+            Reaction& rxn = obj.getReaction();
+            int i, sum = 0;
+
+            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                sum += _resetSymmetric(rxn.getMolecule(i), false, true);
+            return sum;
+        }
+        throw IndigoError("only molecules and reactions have cis-trans");
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoMarkEitherCisTrans(int handle){INDIGO_BEGIN{IndigoObject& obj = self.getObject(handle);
-
-if (IndigoBaseMolecule::is(obj))
-    return _markEitherCisTrans(obj.getMolecule());
-else if (IndigoBaseReaction::is(obj))
+CEXPORT int indigoMarkEitherCisTrans(int handle)
 {
-    Reaction& rxn = obj.getReaction();
-    int i, sum = 0;
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(handle);
 
-    for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-        sum += _markEitherCisTrans(rxn.getMolecule(i));
-    return sum;
-}
-throw IndigoError("only molecules and reactions have cis-trans");
-}
-INDIGO_END(-1)
+        if (IndigoBaseMolecule::is(obj))
+            return _markEitherCisTrans(obj.getMolecule());
+        else if (IndigoBaseReaction::is(obj))
+        {
+            Reaction& rxn = obj.getReaction();
+            int i, sum = 0;
+
+            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                sum += _markEitherCisTrans(rxn.getMolecule(i));
+            return sum;
+        }
+        throw IndigoError("only molecules and reactions have cis-trans");
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoMarkStereobonds(int handle)
@@ -481,7 +517,7 @@ CEXPORT int indigoMarkStereobonds(int handle)
             throw IndigoError("only molecules and reactions have stereocenters");
         return 0;
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 static void _indigoValidateMoleculeChirality(Molecule& mol)
@@ -537,5 +573,5 @@ CEXPORT int indigoValidateChirality(int handle)
             throw IndigoError("only molecules and reactions have stereocenters");
         return 0;
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }

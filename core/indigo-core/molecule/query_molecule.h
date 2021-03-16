@@ -42,6 +42,24 @@ namespace indigo
         SKIP_COMPONENTS = 0x1000
     };
 
+    enum
+    {
+        _ATOM_R,
+        _ATOM_A,
+        _ATOM_X,
+        _ATOM_Q,
+        _ATOM_M,
+        _ATOM_AH,
+        _ATOM_XH,
+        _ATOM_QH,
+        _ATOM_MH,
+        _ATOM_LIST,
+        _ATOM_NOTLIST,
+        _ATOM_PSEUDO,
+        _ATOM_TEMPLATE,
+        _ATOM_ELEMENT
+    };
+    
     class Output;
 
     class DLLEXPORT QueryMolecule : public BaseMolecule
@@ -305,6 +323,7 @@ namespace indigo
             QUERY_BOND_SINGLE_OR_DOUBLE,
             QUERY_BOND_ANY
         };
+        
         static bool isKnownAttr(QueryMolecule::Atom& qa);
         static bool isNotAtom(QueryMolecule::Atom& qa, int elem);
         static QueryMolecule::Atom* stripKnownAttrs(QueryMolecule::Atom& qa);
@@ -316,6 +335,7 @@ namespace indigo
         static bool isOrBond(Bond& qb, int type1, int type2);
         static bool isSingleOrDouble(Bond& qb);
         static int getQueryBondType(Bond& qb);
+        static int getAtomType( const char* label );
 
         virtual bool bondStereoCare(int idx);
         void setBondStereoCare(int idx, bool stereo_care);

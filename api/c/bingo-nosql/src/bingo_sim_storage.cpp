@@ -120,7 +120,7 @@ int SimStorage::getIncSimilar(const byte* query, SimCoef& sim_coef, double min_c
             continue;
         size_t id = _inc_id_buffer[i];
 
-        sim_fp_indices.push(SimResult(id, coef));
+        sim_fp_indices.push(SimResult(id, _2FLOAT(coef)));
     }
 
     return sim_fp_indices.size();

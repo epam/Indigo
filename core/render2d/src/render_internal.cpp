@@ -3818,15 +3818,15 @@ void MoleculeRenderInternal::_adjustAngle(Vec2f& l, const BondEnd& be1, const Bo
         return;
     l.diff(p2, p1);
     l.normalize();
-    l.scale(ttr);
-    l.rotateL(left ? sng : -sng, csg);
+    l.scale(_2FLOAT(ttr));
+    l.rotateL(_2FLOAT(left ? sng : -sng), _2FLOAT(csg));
     l.add(p1);
 }
 
 void MoleculeRenderInternal::_bondBoldStereo(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
 {
     Vec2f r0(be1.p), l0(be1.p), r1(be2.p), l1(be2.p);
-    double w = _settings.bondSpace;
+    float w = _settings.bondSpace;
     l0.addScaled(bd.norm, -w);
     r0.addScaled(bd.norm, w);
     l1.addScaled(bd.norm, -w);
@@ -3849,12 +3849,12 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
         return;
     }
     Vec2f l(be2.p), r(be2.p);
-    double w = _settings.bondSpace;
+    float w = _settings.bondSpace;
     l.addScaled(bd.norm, -w);
     r.addScaled(bd.norm, w);
     bd.extP = bd.extN = w;
 
-    double lw = _cw.currentLineWidth();
+    float lw = _cw.currentLineWidth();
     Vec2f r0(be1.p), l0(be1.p);
     l0.addScaled(bd.norm, -lw / 2);
     r0.addScaled(bd.norm, lw / 2);

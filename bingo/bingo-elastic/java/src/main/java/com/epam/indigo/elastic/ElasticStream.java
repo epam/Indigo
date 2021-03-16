@@ -3,6 +3,7 @@ package com.epam.indigo.elastic;
 import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
+import com.epam.indigo.model.NamingConstants;
 import com.epam.indigo.predicate.*;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -66,8 +67,16 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         try {
             SearchResponse searchResponse = this.elasticClient.search(searchRequest, RequestOptions.DEFAULT);
             hits = searchResponse.getHits().getHits();
-            for (SearchHit hit : hits) {
-                collector.accumulator().accept(container, (T) Helpers.fromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
+            if (NamingConstants.BINGO_REACTIONS.equals(this.indexName)) {
+                for (SearchHit hit : hits) {
+                    collector.accumulator().accept(container, (T) Helpers.reactionFromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
+                }
+            } else if (NamingConstants.BINGO_MOLECULES.equals(this.indexName)) {
+                for (SearchHit hit : hits) {
+                    collector.accumulator().accept(container, (T) Helpers.moleculeFromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
+                }
+            } else {
+                throw new BingoElasticException("Unsupported index " + this.indexName);
             }
         } catch (IOException e) {
             throw new BingoElasticException("Couldn't complete search in Elasticsearch", e.getCause());
@@ -87,6 +96,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         SearchRequest searchRequest = new SearchRequest(this.indexName);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         boolean similarityRequested = false;
+        boolean isEmptyFingerprint = false;
         if (this.predicates.isEmpty()) {
             searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         } else {
@@ -100,12 +110,16 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
                     similarityRequested = true;
                     if (predicate instanceof ExactMatch || predicate instanceof SubstructureMatch) {
                         QueryBuilder[] clauses = generateClauses(((BaseMatch<? super T>) predicate).getTarget().getSubFingerprint(), ((BaseMatch<? super T>) predicate).getFingerprintName());
+                        if (clauses.length == 0)
+                            isEmptyFingerprint = true;
                         for (QueryBuilder clause : clauses) {
                             boolQueryBuilder.must(clause);
                         }
                         boolQueryBuilder.must(QueryBuilders.termQuery(SUB_FINGERPRINT_LEN, clauses.length).boost(0.0f));
                     } else {
                         QueryBuilder[] clauses = generateClauses(((BaseMatch<? super T>) predicate).getTarget().getSimFingerprint(), ((BaseMatch<? super T>) predicate).getFingerprintName());
+                        if (clauses.length == 0)
+                            isEmptyFingerprint = true;
                         for (QueryBuilder clause : clauses) {
                             boolQueryBuilder.should(clause);
                         }
@@ -119,7 +133,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
                     boolQueryBuilder.must(((FilterPredicate<?>) predicate).generateQuery());
                 }
             }
-            if (script == null) {
+            if (script == null || isEmptyFingerprint) {
                 script = generateIdentityScore();
             }
             searchSourceBuilder.fetchSource(new String[]{"*"}, new String[]{SIM_FINGERPRINT, SIM_FINGERPRINT_LEN, SUB_FINGERPRINT_LEN, SUB_FINGERPRINT});

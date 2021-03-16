@@ -27,95 +27,99 @@
 #include <algorithm>
 #include <vector>
 
-CEXPORT int indigoLayout(int object){INDIGO_BEGIN{IndigoObject& obj = self.getObject(object);
-int i;
-
-if (IndigoBaseMolecule::is(obj))
+CEXPORT int indigoLayout(int object)
 {
-    BaseMolecule* mol = &obj.getBaseMolecule();
-    Filter f;
-    if (obj.type == IndigoObject::SUBMOLECULE)
+    INDIGO_BEGIN
     {
-        IndigoSubmolecule& submol = (IndigoSubmolecule&)obj;
-        mol = &submol.getOriginalMolecule();
-        f.initNone(mol->vertexEnd());
-        for (int i = 0; i < submol.vertices.size(); i++)
+        IndigoObject& obj = self.getObject(object);
+        int i;
+
+        if (IndigoBaseMolecule::is(obj))
         {
-            f.unhide(submol.vertices[i]);
-        }
-    }
-    MoleculeLayout ml(*mol, self.smart_layout);
-
-    if (obj.type == IndigoObject::SUBMOLECULE)
-    {
-        ml.filter = &f;
-    }
-
-    ml.max_iterations = self.layout_max_iterations;
-    ml.bond_length = 1.6f;
-    ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
-
-    TimeoutCancellationHandler cancellation(self.cancellation_timeout);
-    ml.setCancellationHandler(&cancellation);
-
-    ml.make();
-
-    if (obj.type != IndigoObject::SUBMOLECULE)
-    {
-        // Not for submolecule yet
-        mol->clearBondDirections();
-        try
-        {
-            mol->stereocenters.markBonds();
-            mol->allene_stereo.markBonds();
-        }
-        catch (Exception e)
-        {
-        }
-        for (i = 1; i <= mol->rgroups.getRGroupCount(); i++)
-        {
-            RGroup& rgp = mol->rgroups.getRGroup(i);
-
-            for (int j = rgp.fragments.begin(); j != rgp.fragments.end(); j = rgp.fragments.next(j))
+            BaseMolecule* mol = &obj.getBaseMolecule();
+            Filter f;
+            if (obj.type == IndigoObject::SUBMOLECULE)
             {
-                rgp.fragments[j]->clearBondDirections();
+                IndigoSubmolecule& submol = (IndigoSubmolecule&)obj;
+                mol = &submol.getOriginalMolecule();
+                f.initNone(mol->vertexEnd());
+                for (int i = 0; i < submol.vertices.size(); i++)
+                {
+                    f.unhide(submol.vertices[i]);
+                }
+            }
+            MoleculeLayout ml(*mol, self.smart_layout);
+
+            if (obj.type == IndigoObject::SUBMOLECULE)
+            {
+                ml.filter = &f;
+            }
+
+            ml.max_iterations = self.layout_max_iterations;
+            ml.bond_length = 1.6f;
+            ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
+
+            TimeoutCancellationHandler cancellation(self.cancellation_timeout);
+            ml.setCancellationHandler(&cancellation);
+
+            ml.make();
+
+            if (obj.type != IndigoObject::SUBMOLECULE)
+            {
+                // Not for submolecule yet
+                mol->clearBondDirections();
                 try
                 {
-                    rgp.fragments[j]->stereocenters.markBonds();
-                    rgp.fragments[j]->allene_stereo.markBonds();
+                    mol->stereocenters.markBonds();
+                    mol->allene_stereo.markBonds();
                 }
                 catch (Exception e)
                 {
                 }
+                for (i = 1; i <= mol->rgroups.getRGroupCount(); i++)
+                {
+                    RGroup& rgp = mol->rgroups.getRGroup(i);
+
+                    for (int j = rgp.fragments.begin(); j != rgp.fragments.end(); j = rgp.fragments.next(j))
+                    {
+                        rgp.fragments[j]->clearBondDirections();
+                        try
+                        {
+                            rgp.fragments[j]->stereocenters.markBonds();
+                            rgp.fragments[j]->allene_stereo.markBonds();
+                        }
+                        catch (Exception e)
+                        {
+                        }
+                    }
+                }
             }
         }
-    }
-}
-else if (IndigoBaseReaction::is(obj))
-{
-    BaseReaction& rxn = obj.getBaseReaction();
-    ReactionLayout rl(rxn, self.smart_layout);
-    rl.max_iterations = self.layout_max_iterations;
-    rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
-    rl.bond_length = 1.6f;
-    rl.horizontal_interval_factor = self.layout_horintervalfactor;
+        else if (IndigoBaseReaction::is(obj))
+        {
+            BaseReaction& rxn = obj.getBaseReaction();
+            ReactionLayout rl(rxn, self.smart_layout);
+            rl.max_iterations = self.layout_max_iterations;
+            rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
+            rl.bond_length = 1.6f;
+            rl.horizontal_interval_factor = self.layout_horintervalfactor;
 
-    rl.make();
-    try
-    {
-        rxn.markStereocenterBonds();
+            rl.make();
+            try
+            {
+                rxn.markStereocenterBonds();
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        else
+        {
+            throw IndigoError("The object provided is neither a molecule, nor a reaction");
+        }
+        return 0;
     }
-    catch (Exception e)
-    {
-    }
-}
-else
-{
-    throw IndigoError("The object provided is neither a molecule, nor a reaction");
-}
-return 0;
-}
-INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoClean2d(int object)
@@ -177,5 +181,5 @@ CEXPORT int indigoClean2d(int object)
 
         return 0;
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }

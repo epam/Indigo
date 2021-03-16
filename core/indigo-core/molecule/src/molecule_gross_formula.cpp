@@ -240,10 +240,11 @@ void MoleculeGrossFormula::toString(GROSS_UNITS& gross, Array<char>& str, bool a
 
 void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, bool add_rsites)
 {
+    ArrayOutput output(str); // clear!
+
     if (gross.size() == 0)
         return;
 
-    ArrayOutput output(str);
     int* val;
 
     // First base molecule

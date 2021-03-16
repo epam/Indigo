@@ -194,6 +194,10 @@ CEXPORT int indigoSaveMolfile(int molecule, int output);
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename);
 CEXPORT const char* indigoMolfile(int molecule);
 
+
+CEXPORT int indigoSaveJsonToFile( int item, const char* filename );
+CEXPORT int indigoSaveJson( int item, int output );
+
 // accepts molecules and reactions (but not query ones)
 CEXPORT int indigoSaveCml(int object, int output);
 CEXPORT int indigoSaveCmlToFile(int object, const char* filename);
@@ -412,6 +416,7 @@ CEXPORT int indigoCheckRGroups(int item);
 
 // Returns check result for Indigo object as text file for requested properties as JSON
 CEXPORT const char* indigoCheck2(const char* item, const char* check_flags, const char* load_params);
+
 // Returns check result for Indigo object for requested properties as JSON
 CEXPORT const char* indigoCheckObj2(int item, const char* check_flags);
 
@@ -673,7 +678,7 @@ CEXPORT int indigoIsPossibleFischerProjection(int molecule, const char* options)
 CEXPORT int indigoCreateSubmolecule(int molecule, int nvertices, int* vertices);
 CEXPORT int indigoCreateEdgeSubmolecule(int molecule, int nvertices, int* vertices, int nedges, int* edges);
 
-CEXPORT int indigoGetSubmolecule(int molecule, int nvertices, const int* vertices);
+CEXPORT int indigoGetSubmolecule(int molecule, int nvertices, int* vertices);
 
 CEXPORT int indigoRemoveAtoms(int molecule, int nvertices, int* vertices);
 CEXPORT int indigoRemoveBonds(int molecule, int nbonds, int* bonds);

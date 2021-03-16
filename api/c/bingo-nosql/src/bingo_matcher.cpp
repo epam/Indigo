@@ -1269,7 +1269,7 @@ void TopNSimMatcher::_initModelDistribution(Array<float>& model_thrs, Array<int>
 {
     for (int i = 0; i < 9; i++)
     {
-        model_thrs.push(1.0 - 0.1 * (i + 1));
+        model_thrs.push(_2FLOAT(1.0 - 0.1 * (i + 1)));
         model_nhits_per_block.push(5 * 2 ^ (i));
     }
 }

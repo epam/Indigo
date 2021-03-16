@@ -1678,6 +1678,27 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoCheck(self, type));
         }
 
+        public string check2()
+        {
+            return check2("");
+        }
+
+        public string check2(string type)
+        {
+            if (type == null)
+            {
+                type = "";
+            }
+
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCheckObj2(self, type));
+        }
+
+        public IndigoObject fingerprint()
+        {
+            return fingerprint("");
+        }
+
         public IndigoObject fingerprint(string type)
         {
             if (type == null)
@@ -1687,6 +1708,12 @@ namespace com.epam.indigo
 
             dispatcher.setSessionID();
             return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoFingerprint(self, type)));
+        }
+
+        public string oneBitsList()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoOneBitsList(self));
         }
 
         public int countBits()

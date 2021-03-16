@@ -55,13 +55,14 @@ CEXPORT int indigoAromatize(int object)
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(object);
+
         if (IndigoBaseMolecule::is(obj))
             return obj.getBaseMolecule().aromatize(self.arom_options) ? 1 : 0;
         if (IndigoBaseReaction::is(obj))
             return obj.getBaseReaction().aromatize(self.arom_options) ? 1 : 0;
         throw IndigoError("Only molecules and reactions can be aromatized");
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoDearomatize(int object)
@@ -79,7 +80,7 @@ CEXPORT int indigoDearomatize(int object)
             return obj.getBaseReaction().dearomatize(arom_options) ? 1 : 0;
         throw IndigoError("Only molecules and reactions can be dearomatized");
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 #define INDIGO_SET_OPTION(SUFFIX, TYPE)                                                                                                                        \
@@ -90,7 +91,7 @@ CEXPORT int indigoDearomatize(int object)
             indigoGetOptionManager().callOptionHandler##SUFFIX(name, value);                                                                                   \
             return 1;                                                                                                                                          \
         }                                                                                                                                                      \
-        INDIGO_END(-1)                                                                                                                                         \
+        INDIGO_END(-1);                                                                                                                                        \
     }
 
 INDIGO_SET_OPTION(, const char*)
@@ -98,65 +99,110 @@ INDIGO_SET_OPTION(Int, int)
 INDIGO_SET_OPTION(Bool, int)
 INDIGO_SET_OPTION(Float, float)
 
-CEXPORT int indigoSetOptionColor(const char* name, float r, float g, float b){INDIGO_BEGIN{indigoGetOptionManager().callOptionHandlerColor(name, r, g, b);
-return 1;
+CEXPORT int indigoSetOptionColor(const char* name, float r, float g, float b)
+{
+    INDIGO_BEGIN
+    {
+        indigoGetOptionManager().callOptionHandlerColor(name, r, g, b);
+        return 1;
+    }
+    INDIGO_END(-1);
 }
-INDIGO_END(-1)
-}
-CEXPORT int indigoSetOptionXY(const char* name, int x, int y){INDIGO_BEGIN{indigoGetOptionManager().callOptionHandlerXY(name, x, y);
-return 1;
-}
-INDIGO_END(-1)
-}
-
-CEXPORT const char* indigoGetOption(const char* name){INDIGO_BEGIN{auto& tmp = self.getThreadTmpData();
-indigoGetOptionManager().getOptionValueStr(name, tmp.string);
-return tmp.string.ptr();
-}
-INDIGO_END(0)
-}
-
-CEXPORT int indigoGetOptionInt(const char* name, int* value){INDIGO_BEGIN{if (value){indigoGetOptionManager().getOptionValueInt(name, *value);
-return 1;
-}
-}
-INDIGO_END(-1)
+CEXPORT int indigoSetOptionXY(const char* name, int x, int y)
+{
+    INDIGO_BEGIN
+    {
+        indigoGetOptionManager().callOptionHandlerXY(name, x, y);
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT int indigoGetOptionBool(const char* name, int* value){INDIGO_BEGIN{if (value){indigoGetOptionManager().getOptionValueBool(name, *value);
-return 1;
-}
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoGetOptionFloat(const char* name, float* value){INDIGO_BEGIN{if (value){indigoGetOptionManager().getOptionValueFloat(name, *value);
-return 1;
-}
-}
-INDIGO_END(-1)
+CEXPORT const char* indigoGetOption(const char* name)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        indigoGetOptionManager().getOptionValueStr(name, tmp.string);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
 }
 
-CEXPORT int indigoGetOptionColor(const char* name, float* r, float* g,
-                                 float* b){INDIGO_BEGIN{if (r && g && b){indigoGetOptionManager().getOptionValueColor(name, *r, *g, *b);
-return 1;
-}
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoGetOptionXY(const char* name, int* x, int* y){INDIGO_BEGIN{if (x && y){indigoGetOptionManager().getOptionValueXY(name, *x, *y);
-return 1;
-}
-}
-INDIGO_END(-1)
+CEXPORT int indigoGetOptionInt(const char* name, int* value)
+{
+    INDIGO_BEGIN
+    {
+        if (value)
+        {
+            indigoGetOptionManager().getOptionValueInt(name, *value);
+            return 1;
+        }
+    }
+    INDIGO_END(-1);
 }
 
-CEXPORT const char* indigoGetOptionType(const char* name){INDIGO_BEGIN{auto& tmp = self.getThreadTmpData();
-indigoGetOptionManager().getOptionType(name, tmp.string);
-return tmp.string.ptr();
+CEXPORT int indigoGetOptionBool(const char* name, int* value)
+{
+    INDIGO_BEGIN
+    {
+        if (value)
+        {
+            indigoGetOptionManager().getOptionValueBool(name, *value);
+            return 1;
+        }
+    }
+    INDIGO_END(-1);
 }
-INDIGO_END(0)
+
+CEXPORT int indigoGetOptionFloat(const char* name, float* value)
+{
+    INDIGO_BEGIN
+    {
+        if (value)
+        {
+            indigoGetOptionManager().getOptionValueFloat(name, *value);
+            return 1;
+        }
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetOptionColor(const char* name, float* r, float* g, float* b)
+{
+    INDIGO_BEGIN
+    {
+        if (r && g && b)
+        {
+            indigoGetOptionManager().getOptionValueColor(name, *r, *g, *b);
+            return 1;
+        }
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetOptionXY(const char* name, int* x, int* y)
+{
+    INDIGO_BEGIN
+    {
+        if (x && y)
+        {
+            indigoGetOptionManager().getOptionValueXY(name, *x, *y);
+            return 1;
+        }
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT const char* indigoGetOptionType(const char* name)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        indigoGetOptionManager().getOptionType(name, tmp.string);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
 }
 
 CEXPORT int indigoResetOptions()
@@ -173,7 +219,7 @@ CEXPORT int indigoResetOptions()
         }
         return 1;
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 void _indigoCheckBadValence(Molecule& mol)
@@ -407,7 +453,7 @@ CEXPORT int indigoUnfoldHydrogens(int item)
 
         return 1;
     }
-    INDIGO_END(-1)
+    INDIGO_END(-1);
 }
 
 static bool _removeHydrogens(Molecule& mol)
@@ -438,24 +484,28 @@ static bool _removeHydrogens(Molecule& mol)
     return to_remove.size() > 0;
 }
 
-CEXPORT int indigoFoldHydrogens(int item){INDIGO_BEGIN{IndigoObject& obj = self.getObject(item);
-
-if (IndigoBaseMolecule::is(obj))
-    _removeHydrogens(obj.getMolecule());
-else if (IndigoBaseReaction::is(obj))
+CEXPORT int indigoFoldHydrogens(int item)
 {
-    int i;
-    Reaction& rxn = obj.getReaction();
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
 
-    for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-        _removeHydrogens(rxn.getMolecule(i));
-}
-else
-    throw IndigoError("indigoFoldHydrogens(): %s given", obj.debugInfo());
+        if (IndigoBaseMolecule::is(obj))
+            _removeHydrogens(obj.getMolecule());
+        else if (IndigoBaseReaction::is(obj))
+        {
+            int i;
+            Reaction& rxn = obj.getReaction();
 
-return 1;
-}
-INDIGO_END(-1)
+            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                _removeHydrogens(rxn.getMolecule(i));
+        }
+        else
+            throw IndigoError("indigoFoldHydrogens(): %s given", obj.debugInfo());
+
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoSetName(int handle, const char* name)
@@ -484,38 +534,46 @@ CEXPORT const char* indigoName(int handle)
     INDIGO_END(0);
 }
 
-CEXPORT const char* indigoRawData(int handler){INDIGO_BEGIN{IndigoObject& obj = self.getObject(handler);
-
-auto& tmp = self.getThreadTmpData();
-
-if (obj.type == IndigoObject::RDF_MOLECULE || obj.type == IndigoObject::RDF_REACTION || obj.type == IndigoObject::SMILES_MOLECULE ||
-    obj.type == IndigoObject::SMILES_REACTION || obj.type == IndigoObject::CML_MOLECULE || obj.type == IndigoObject::CML_REACTION ||
-    obj.type == IndigoObject::CDX_MOLECULE || obj.type == IndigoObject::CDX_REACTION)
+CEXPORT const char* indigoRawData(int handler)
 {
-    IndigoRdfData& data = (IndigoRdfData&)obj;
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(handler);
 
-    tmp.string.copy(data.getRawData());
+        auto& tmp = self.getThreadTmpData();
+
+        if (obj.type == IndigoObject::RDF_MOLECULE || obj.type == IndigoObject::RDF_REACTION || obj.type == IndigoObject::SMILES_MOLECULE ||
+            obj.type == IndigoObject::SMILES_REACTION || obj.type == IndigoObject::CML_MOLECULE || obj.type == IndigoObject::CML_REACTION ||
+            obj.type == IndigoObject::CDX_MOLECULE || obj.type == IndigoObject::CDX_REACTION)
+        {
+            IndigoRdfData& data = (IndigoRdfData&)obj;
+
+            tmp.string.copy(data.getRawData());
+        }
+        else if (obj.type == IndigoObject::PROPERTY)
+            tmp.string.readString(((IndigoProperty&)obj).getValue(), false);
+        else if (obj.type == IndigoObject::DATA_SGROUP)
+        {
+            tmp.string.copy(((IndigoDataSGroup&)obj).get().data);
+        }
+        else
+            throw IndigoError("%s does not have raw data", obj.debugInfo());
+        tmp.string.push(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
 }
-else if (obj.type == IndigoObject::PROPERTY)
-    tmp.string.readString(((IndigoProperty&)obj).getValue(), false);
-else if (obj.type == IndigoObject::DATA_SGROUP)
+
+CEXPORT int indigoRemove(int item)
 {
-    tmp.string.copy(((IndigoDataSGroup&)obj).get().data);
-}
-else
-    throw IndigoError("%s does not have raw data", obj.debugInfo());
-tmp.string.push(0);
-return tmp.string.ptr();
-}
-INDIGO_END(0)
-}
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
 
-CEXPORT int indigoRemove(int item){INDIGO_BEGIN{IndigoObject& obj = self.getObject(item);
-
-obj.remove();
-return 1;
-}
-INDIGO_END(-1)
+        obj.remove();
+        return 1;
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoAt(int item, int index)
@@ -586,56 +644,67 @@ CEXPORT int indigoCount(int item)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoSerialize(int item, byte** buf, int* size){INDIGO_BEGIN{IndigoObject& obj = self.getObject(item);
-auto& tmp = self.getThreadTmpData();
-ArrayOutput out(tmp.string);
-
-if (IndigoBaseMolecule::is(obj))
+CEXPORT int indigoSerialize(int item, byte** buf, int* size)
 {
-    Molecule& mol = obj.getMolecule();
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput out(tmp.string);
 
-    IcmSaver saver(out);
-    saver.save_xyz = mol.have_xyz;
-    saver.save_bond_dirs = true;
-    saver.save_highlighting = true;
-    saver.save_ordering = self.preserve_ordering_in_serialize;
-    saver.saveMolecule(mol);
+        if (IndigoBaseMolecule::is(obj))
+        {
+            Molecule& mol = obj.getMolecule();
+
+            IcmSaver saver(out);
+            saver.save_xyz = mol.have_xyz;
+            saver.save_bond_dirs = true;
+            saver.save_highlighting = true;
+            saver.save_ordering = self.preserve_ordering_in_serialize;
+            saver.saveMolecule(mol);
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            Reaction& rxn = obj.getReaction();
+            IcrSaver saver(out);
+            saver.save_xyz = BaseReaction::haveCoord(rxn);
+            saver.save_bond_dirs = true;
+            saver.save_highlighting = true;
+            saver.save_ordering = self.preserve_ordering_in_serialize;
+            saver.saveReaction(rxn);
+        }
+
+        *buf = (byte*)tmp.string.ptr();
+        *size = tmp.string.size();
+        return 1;
+    }
+    INDIGO_END(-1);
 }
-else if (IndigoBaseReaction::is(obj))
+
+CEXPORT int indigoUnserialize(const byte* buf, int size)
 {
-    Reaction& rxn = obj.getReaction();
-    IcrSaver saver(out);
-    saver.save_xyz = BaseReaction::haveCoord(rxn);
-    saver.save_bond_dirs = true;
-    saver.save_highlighting = true;
-    saver.save_ordering = self.preserve_ordering_in_serialize;
-    saver.saveReaction(rxn);
-}
-
-*buf = (byte*)tmp.string.ptr();
-*size = tmp.string.size();
-return 1;
-}
-INDIGO_END(-1)
-}
-
-CEXPORT int indigoUnserialize(const byte* buf, int size){INDIGO_BEGIN{if (IcmSaver::checkVersion((const char*)buf)){BufferScanner scanner(buf, size);
-IcmLoader loader(scanner);
-AutoPtr<IndigoMolecule> im(new IndigoMolecule());
-loader.loadMolecule(im->mol);
-return self.addObject(im.release());
-}
-else if (IcrSaver::checkVersion((const char*)buf))
-{
-    BufferScanner scanner(buf, size);
-    IcrLoader loader(scanner);
-    AutoPtr<IndigoReaction> ir(new IndigoReaction());
-    loader.loadReaction(ir->rxn);
-    return self.addObject(ir.release());
-}
-else throw IndigoError("indigoUnserialize(): format not recognized");
-}
-INDIGO_END(-1)
+    INDIGO_BEGIN
+    {
+        if (IcmSaver::checkVersion((const char*)buf))
+        {
+            BufferScanner scanner(buf, size);
+            IcmLoader loader(scanner);
+            AutoPtr<IndigoMolecule> im(new IndigoMolecule());
+            loader.loadMolecule(im->mol);
+            return self.addObject(im.release());
+        }
+        else if (IcrSaver::checkVersion((const char*)buf))
+        {
+            BufferScanner scanner(buf, size);
+            IcrLoader loader(scanner);
+            AutoPtr<IndigoReaction> ir(new IndigoReaction());
+            loader.loadReaction(ir->rxn);
+            return self.addObject(ir.release());
+        }
+        else
+            throw IndigoError("indigoUnserialize(): format not recognized");
+    }
+    INDIGO_END(-1);
 }
 
 CEXPORT int indigoClear(int item)
@@ -1239,7 +1308,7 @@ CEXPORT const char* indigoCheck2(const char* item, const char* check_flags, cons
         tmp.string.appendString(r.c_str(), true);
         return tmp.string.ptr();
     }
-    INDIGO_END(nullptr);
+    INDIGO_END(0);
 }
 
 CEXPORT const char* indigoCheckObj2(int item, const char* check_flags)
@@ -1248,12 +1317,12 @@ CEXPORT const char* indigoCheckObj2(int item, const char* check_flags)
     {
         auto& tmp = self.getThreadTmpData();
         IndigoStructureChecker checker;
-        std::string r = checker.toJson2(checker.check(item, check_flags));
+        std::string r = checker.toJson(checker.check(item, check_flags));
         tmp.string.clear();
         tmp.string.appendString(r.c_str(), true);
         return tmp.string.ptr();
     }
-    INDIGO_END(nullptr);
+    INDIGO_END(0);
 }
 
 CEXPORT const char* indigoCheck(int item, const char* props)
@@ -1367,6 +1436,7 @@ CEXPORT const char* indigoCheckStructure(const char* structure, const char* prop
     INDIGO_END(0);
 }
 
+
 CEXPORT const char* indigoJson(int item)
 {
     INDIGO_BEGIN
@@ -1379,19 +1449,8 @@ CEXPORT const char* indigoJson(int item)
         if (IndigoBaseMolecule::is(obj))
         {
             MoleculeJsonSaver jn(out);
-
             BaseMolecule& bmol = obj.getBaseMolecule();
-
-            if (bmol.isQueryMolecule())
-            {
-                QueryMolecule& qmol = bmol.asQueryMolecule();
-                jn.saveQueryMolecule(qmol);
-            }
-            else
-            {
-                Molecule& mol = bmol.asMolecule();
-                jn.saveMolecule(mol);
-            }
+            jn.saveMolecule(bmol);
         }
         out.writeChar(0);
         return tmp.string.ptr();

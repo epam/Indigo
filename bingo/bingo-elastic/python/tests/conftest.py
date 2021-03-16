@@ -5,9 +5,11 @@ from typing import Callable
 import pytest
 from indigo import Indigo
 
-from bingo_elastic.elastic import ElasticRepository
-from bingo_elastic.model.helpers import iterate_file
-from bingo_elastic.model.record import IndigoRecord
+from bingo_elastic.elastic import ElasticRepository, IndexName
+from bingo_elastic.model.helpers import iterate_file, load_reaction
+from bingo_elastic.model.record import (
+    IndigoRecordMolecule,
+)
 
 
 @pytest.fixture()
@@ -16,10 +18,10 @@ def resource_loader() -> Callable[[str], str]:
 
     def wrapper(resource: str):
         if cwd.name == "tests":
-            return resource
+            return str(Path("resources") / resource)
         if cwd.name == "model":
-            return str(cwd.parent / resource)
-        return str(cwd / "tests" / resource)
+            return str(cwd.parent / "resources" / resource)
+        return str(cwd / "tests" / "resources" / resource)
 
     return wrapper
 
@@ -30,24 +32,51 @@ def indigo_fixture() -> Indigo:
 
 
 @pytest.fixture
-def elastic_repository() -> ElasticRepository:
-    return ElasticRepository(host="127.0.0.1", port=9200)
+def elastic_repository_molecule() -> ElasticRepository:
+    return ElasticRepository(
+        IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200
+    )
+
+
+@pytest.fixture
+def elastic_repository_reaction() -> ElasticRepository:
+    return ElasticRepository(
+        IndexName.BINGO_REACTION, host="127.0.0.1", port=9200
+    )
 
 
 @pytest.fixture(autouse=True)
-def clear_index(elastic_repository: ElasticRepository):
-    elastic_repository.delete_all_records()
+def clear_index(
+    elastic_repository_molecule: ElasticRepository,
+    elastic_repository_reaction: ElasticRepository,
+):
+    elastic_repository_molecule.delete_all_records()
+    elastic_repository_reaction.delete_all_records()
 
 
 @pytest.fixture
 def loaded_sdf(
-    elastic_repository: ElasticRepository,
-    resource_loader: Callable[[str], str],
-) -> IndigoRecord:
-    resource = resource_loader("resources/rand_queries_small.sdf")
+    elastic_repository_molecule: ElasticRepository,
+    resource_loader,
+) -> IndigoRecordMolecule:
+    resource = resource_loader("molecules/rand_queries_small.sdf")
     sdf = iterate_file(Path(resource))
-    elastic_repository.index_records(sdf, chunk_size=10)
+    elastic_repository_molecule.index_records(sdf, chunk_size=10)
     time.sleep(5)
     return next(
-        iterate_file(Path(resource_loader("resources/rand_queries_small.sdf")))
+        iterate_file(Path(resource_loader("molecules/rand_queries_small.sdf")))
     )
+
+
+@pytest.fixture
+def loaded_rxns(
+    elastic_repository_reaction: ElasticRepository,
+    resource_loader: Callable[[str], str],
+    indigo_fixture,
+):
+    for file_ in Path(resource_loader("reactions/rheadb")).iterdir():
+        if file_.suffix == ".rxn":
+            reaction_file = load_reaction(file_, indigo_fixture)
+            elastic_repository_reaction.index_record(reaction_file)
+
+    time.sleep(5)

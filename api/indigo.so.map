@@ -1,0 +1,19 @@
+{
+    global:
+        *indigo*;
+        *Indigo*;
+        bitAnd;
+        bitCommonOnes;
+        bitDifferentOnes;
+        bitGetBit;
+        bitGetOnesCount;
+        bitSetBit;
+        bitTestOnes;
+        osDirCreate;
+        osDirExists;
+        osSemaphoreCreate;
+        osSemaphorePost;
+        osSemaphoreWait;
+    local:
+        *;
+};
