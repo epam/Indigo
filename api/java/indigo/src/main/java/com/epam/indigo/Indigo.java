@@ -71,7 +71,7 @@ public class Indigo {
     public static final String INDIGO_DLL = "indigo.dll";
     public static final String LIBINDIGO_SO = "libindigo.so";
     public static final String LIBINDIGO_DYLIB = "libindigo.dylib";
-    public static final String[] WIN_DLLS = {"vcruntime140.dll", "vcruntime140_1.dll", "msvcp140.dll", "concrt140.dll"};
+    public static final String[] WIN_DLLS = {"vcruntime140.dll", "vcruntime140_1.dll", "msvcp140.dll"};
     private static final String dllpath;
     private static IndigoLib lib = null;
 

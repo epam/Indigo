@@ -346,6 +346,7 @@ jobs:
   bingo_elastic_tests_java:
     name: Run tests on bingo-elastic java
     runs-on: ubuntu-latest
+    needs: build_wrappers
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -362,61 +363,60 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build indigo
-        run: python build_scripts/indigo-release-libs.py --preset=linux64
-      - name: Build indigo java api
-        run: mvn clean install
-        working-directory: api/java
-      - name: Build bingo-nosql
-        run: mvn clean install
-        working-directory: api/plugins/bingo/java
-      - name: Build bingo-elastic
-        run: mvn clean -B test --file pom.xml
-        working-directory: api/plugins/bingo-elastic/java
-
-  publish:
-    if: startsWith(github.ref, 'refs/tags/indigo-')
-    runs-on: ubuntu-latest
-    needs: [test_linux_python, test_linux_java, test_linux_dotnet, test_windows_python, test_macos_python]
-    container: epmlsop/indigo-tester:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Create folder for native libs
-        run: mkdir dist
-      - name: Download native shared libraries
+      - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
-          name: indigo-native-shared-libs
+          name: indigo-test-wrappers-python
           path: dist/
-      - name: Update Wrappers version
-        run: python3 build_scripts/indigo-update-version.py
-      - name: Publish Python wheels to PyPI
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal --publish
-      - name: Publish Java jars to Maven Central
-        env:
-          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
-          MAVEN_USER: ${{ secrets.MAVEN_USER }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-          GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
-        run: |
-          set -eux
-          apt install -y gnupg
-          mkdir /root/.m2
-          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
-          echo ${GPG_PRIVATE_KEY} > gpg.key
-          gpg --batch --import gpg.key
-          rm gpg.key
-          python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal --publish
-      - name: Publish .NET nupkg to Nuget
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: python3 build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal --publish
+      - name: Install Indigo jars
+        run: find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
+      - name: Build bingo-elastic
+        run: mvn -B --file pom.xml -Dmaven.repo.local=~/.m2/repository clean test
+        working-directory: bingo/bingo-elastic/java
+
+#  publish:
+#    if: startsWith(github.ref, 'refs/tags/indigo-')
+#    runs-on: ubuntu-latest
+#    needs: [test_linux_python, test_linux_java, test_linux_dotnet, test_windows_python, test_macos_python]
+#    container: epmlsop/indigo-tester:latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          lfs: true
+#          fetch-depth: 500
+#      - name: Git fetch tags
+#        run: git fetch --tags -f
+#      - name: Create folder for native libs
+#        run: mkdir dist
+#      - name: Download native shared libraries
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: indigo-native-shared-libs
+#          path: dist/
+#      - name: Update Wrappers version
+#        run: python3 build_scripts/indigo-update-version.py
+#      - name: Publish Python wheels to PyPI
+#        env:
+#          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+#        run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal --publish
+#      - name: Publish Java jars to Maven Central
+#        env:
+#          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
+#          MAVEN_USER: ${{ secrets.MAVEN_USER }}
+#          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+#          GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
+#          GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
+#        run: |
+#          set -eux
+#          apt install -y gnupg
+#          mkdir /root/.m2
+#          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
+#          echo ${GPG_PRIVATE_KEY} > gpg.key
+#          gpg --batch --import gpg.key
+#          rm gpg.key
+#          python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal --publish
+#      - name: Publish .NET nupkg to Nuget
+#        env:
+#          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+#        run: python3 build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal --publish
