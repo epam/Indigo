@@ -78,7 +78,7 @@
             <Pack>false</Pack>
             <Link>bingo-nosql.dll</Link>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>ß
+        </Content>
         <Content Include="$(ProjectDir)/../src/runtimes/win-x64/native/msvcp140.dll">
             <Pack>true</Pack>
             <Link>msvcp140.dll</Link>
