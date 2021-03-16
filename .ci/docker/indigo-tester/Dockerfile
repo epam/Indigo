@@ -51,6 +51,7 @@ RUN apt update && \
 
 ENV JAVA_HOME=/opt/jdk
 ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 # Check
 RUN git --version && \
