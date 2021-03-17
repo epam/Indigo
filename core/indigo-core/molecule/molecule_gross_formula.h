@@ -20,6 +20,7 @@
 #define __molecule_gross_formula__
 
 #include <memory>
+#include <set>
 
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
@@ -52,7 +53,7 @@ namespace indigo
     {
     public:
         static void collect(BaseMolecule& molecule, Array<int>& gross);
-        static std::unique_ptr<GROSS_UNITS> collect(BaseMolecule& molecule, bool add_isotopes = false);
+        static std::unique_ptr<GROSS_UNITS> collect(BaseMolecule& molecule, bool add_isotopes = false );
 
         static void toString(const Array<int>& gross, Array<char>& str, bool add_rsites = false);
         static void toString(GROSS_UNITS& gross, Array<char>& str, bool add_rsites = false);

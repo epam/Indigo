@@ -632,6 +632,17 @@ CEXPORT int indigoUnhighlight(int item);
 // Access atoms and bonds
 CEXPORT int indigoIsHighlighted(int item);
 
+/* Selection */
+
+// Access atoms and bonds
+CEXPORT int indigoSelect(int item);
+
+// Access atoms, bonds, molecules, and reactions
+CEXPORT int indigoUnselect(int item);
+
+// Access atoms and bonds
+CEXPORT int indigoIsSelected(int item);
+
 /* Connected components of molecules */
 
 CEXPORT int indigoCountComponents(int molecule);
@@ -657,8 +668,11 @@ CEXPORT int indigoIterateEdgeSubmolecules(int molecule, int min_bonds, int max_b
 CEXPORT int indigoCountHeavyAtoms(int molecule);
 CEXPORT int indigoGrossFormula(int molecule);
 CEXPORT double indigoMolecularWeight(int molecule);
+
 CEXPORT double indigoMostAbundantMass(int molecule);
+
 CEXPORT double indigoMonoisotopicMass(int molecule);
+
 CEXPORT const char* indigoMassComposition(int molecule);
 
 CEXPORT const char* indigoCanonicalSmiles(int molecule);

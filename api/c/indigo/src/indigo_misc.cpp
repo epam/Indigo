@@ -813,12 +813,104 @@ CEXPORT int indigoIsHighlighted(int item)
             return ib.mol.isBondHighlighted(ib.idx) ? 1 : 0;
         }
         else
-            throw IndigoError("indigoHighlight(): expected atom or bond, got %s", obj.debugInfo());
+            throw IndigoError("indigoIsHighlighted(): expected atom or bond, got %s", obj.debugInfo());
 
         return 1;
     }
     INDIGO_END(-1);
 }
+
+
+CEXPORT int indigoSelect(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+
+        if (IndigoAtom::is(obj))
+        {
+            IndigoAtom& ia = IndigoAtom::cast(obj);
+
+            ia.mol.selectAtom(ia.idx);
+        }
+        else if (IndigoBond::is(obj))
+        {
+            IndigoBond& ib = IndigoBond::cast(obj);
+
+            ib.mol.selectBond(ib.idx);
+        }
+        else
+            throw IndigoError("indigoSelect(): expected atom or bond, got %s", obj.debugInfo());
+
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoUnselect(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+
+        if (IndigoAtom::is(obj))
+        {
+            IndigoAtom& ia = IndigoAtom::cast(obj);
+
+            ia.mol.unselectAtom(ia.idx);
+        }
+        else if (IndigoBond::is(obj))
+        {
+            IndigoBond& ib = IndigoBond::cast(obj);
+
+            ib.mol.unselectBond(ib.idx);
+        }
+        else if (IndigoBaseMolecule::is(obj))
+        {
+            obj.getBaseMolecule().unhighlightAll();
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            BaseReaction& reaction = obj.getBaseReaction();
+            int i;
+
+            for (i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
+                reaction.getBaseMolecule(i).unselectAll();
+        }
+        else
+            throw IndigoError("indigoUnselect(): expected atom/bond/molecule/reaction, got %s", obj.debugInfo());
+
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoIsSelected(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+
+        if (IndigoAtom::is(obj))
+        {
+            IndigoAtom& ia = IndigoAtom::cast(obj);
+
+            return ia.mol.isAtomSelected(ia.idx) ? 1 : 0;
+        }
+        else if (IndigoBond::is(obj))
+        {
+            IndigoBond& ib = IndigoBond::cast(obj);
+
+            return ib.mol.isBondSelected(ib.idx) ? 1 : 0;
+        }
+        else
+            throw IndigoError("indigoIsSelected(): expected atom or bond, got %s", obj.debugInfo());
+
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
 
 CEXPORT int indigoOptimize(int query, const char* options)
 {
