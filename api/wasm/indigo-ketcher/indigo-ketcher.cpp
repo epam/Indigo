@@ -95,7 +95,7 @@ namespace indigo
         {
         }
 
-        void set( const int id, const KOType type, std::shared_ptr<const IndigoObject> parent = nullptr )
+        void set(const int id, const KOType type, std::shared_ptr<const IndigoObject> parent = nullptr)
         {
             indigo_object = std::make_shared<IndigoObject>(id);
             objtype = type;
@@ -109,14 +109,15 @@ namespace indigo
             }
             return _checkResultString(indigoMolfile(id()));
         }
-        
+
         IndigoKetcherObject substructure(const std::vector<int>& selected_atoms) const
         {
             std::vector<int> mutable_selected_atoms(selected_atoms);
             int* selected_atoms_array = &mutable_selected_atoms[0];
-            return IndigoKetcherObject(_checkResult(indigoGetSubmolecule(id(), static_cast<int>(selected_atoms.size()), selected_atoms_array)), objtype, indigo_object);
+            return IndigoKetcherObject(_checkResult(indigoGetSubmolecule(id(), static_cast<int>(selected_atoms.size()), selected_atoms_array)), objtype,
+                                       indigo_object);
         }
-        
+
         int id() const
         {
             return indigo_object->id;
@@ -126,7 +127,6 @@ namespace indigo
         {
             return objtype == EKETReaction || objtype == EKETReactionQuery;
         }
-        
     };
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
@@ -293,49 +293,48 @@ namespace indigo
         return iko.toString();
     }
 
-
-    void qmol2mol( IndigoKetcherObject& iko, const std::set<int>& selected_set )
+    void qmol2mol(IndigoKetcherObject& iko, const std::set<int>& selected_set)
     {
-        IndigoObject qc(_checkResult(indigoClone(iko.id())));  // create query copy
-        const auto atoms_iterator = IndigoObject( _checkResult( indigoIterateAtoms(qc.id) ) );
-        while( const auto atom_id = _checkResult(indigoNext(atoms_iterator.id)) )
+        IndigoObject qc(_checkResult(indigoClone(iko.id()))); // create query copy
+        const auto atoms_iterator = IndigoObject(_checkResult(indigoIterateAtoms(qc.id)));
+        while (const auto atom_id = _checkResult(indigoNext(atoms_iterator.id)))
         {
-            int aix = _checkResult( indigoIndex(atom_id) );
-            if( selected_set.size() && selected_set.find(aix) == selected_set.end() )
-                _checkResult(indigoResetAtom( atom_id, "C" ));            // replace not selected atoms with C
+            int aix = _checkResult(indigoIndex(atom_id));
+            if (selected_set.size() && selected_set.find(aix) == selected_set.end())
+                _checkResult(indigoResetAtom(atom_id, "C")); // replace not selected atoms with C
         }
-            
-        const auto bonds_iterator = IndigoObject( _checkResult( indigoIterateBonds(qc.id) ) );
-        while( const auto bond_id = _checkResult(indigoNext(bonds_iterator.id)) )
+
+        const auto bonds_iterator = IndigoObject(_checkResult(indigoIterateBonds(qc.id)));
+        while (const auto bond_id = _checkResult(indigoNext(bonds_iterator.id)))
         {
-            int bix = _checkResult( indigoIndex( bond_id ) );
-            const auto beg = _checkResult( indigoIndex(_checkResult( indigoSource( bond_id ) )));
-            const auto end = _checkResult( indigoIndex(_checkResult( indigoDestination( bond_id ) )));
-            if( selected_set.size() && selected_set.find(beg) == selected_set.end() && selected_set.find(end) == selected_set.end() )
-                _checkResult(indigoRemoveBonds( qc.id, 1, &bix ));
+            int bix = _checkResult(indigoIndex(bond_id));
+            const auto beg = _checkResult(indigoIndex(_checkResult(indigoSource(bond_id))));
+            const auto end = _checkResult(indigoIndex(_checkResult(indigoDestination(bond_id))));
+            if (selected_set.size() && selected_set.find(beg) == selected_set.end() && selected_set.find(end) == selected_set.end())
+                _checkResult(indigoRemoveBonds(qc.id, 1, &bix));
         }
-        
-        auto mid = indigoLoadMoleculeFromString( indigoMolfile( qc.id ) );
-        if( mid < 0 )
+
+        auto mid = indigoLoadMoleculeFromString(indigoMolfile(qc.id));
+        if (mid < 0)
             jsThrow("Cannot calculate properties for structures with query features!");
-        iko.set( mid, IndigoKetcherObject::EKETMolecule );
+        iko.set(mid, IndigoKetcherObject::EKETMolecule);
     }
 
-    void calculate_molecule( IndigoKetcherObject iko, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream,
+    void calculate_molecule(IndigoKetcherObject iko, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream,
                             std::stringstream& monoisotopicMassStream, std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream,
                             const std::vector<int>& selected_atoms)
     {
-        
+
         const std::set<int> selected_set(selected_atoms.begin(), selected_atoms.end());
 
-        if( iko.objtype == IndigoKetcherObject::EKETMoleculeQuery )
-            qmol2mol( iko, selected_set );
+        if (iko.objtype == IndigoKetcherObject::EKETMoleculeQuery)
+            qmol2mol(iko, selected_set);
 
         const auto componentsCount = _checkResult(indigoCountComponents(iko.id()));
-        
-        if( indigoCountRGroups(iko.id()) || indigoCountAttachmentPoints(iko.id()) )
+
+        if (indigoCountRGroups(iko.id()) || indigoCountAttachmentPoints(iko.id()))
             jsThrow("Cannot calculate properties for RGroups");
-        
+
         for (auto i = 0; i < componentsCount; i++)
         {
             const auto component = IndigoObject(_checkResult(indigoComponent(iko.id(), i)));
@@ -348,14 +347,14 @@ namespace indigo
                 int aix = _checkResult(indigoIndex(atom.id));
                 if (selected_set.size() && selected_set.find(aix) == selected_set.end())
                     continue;
-                component_atoms.push_back(aix);
-                indigoSelect( atom_id );
+                component_atoms.push_back(atom_id);
+                indigoSelect(atom_id);
             }
 
             if (component_atoms.size())
             {
                 const auto molecularWeight = indigoMolecularWeight(iko.id());
-                
+
                 if (molecularWeight < 0.5)
                 {
                     molecularWeightStream << indigoGetLastError();
@@ -376,7 +375,7 @@ namespace indigo
                 }
 
                 const auto monoisotopicMass = indigoMonoisotopicMass(iko.id());
-                
+
                 if (monoisotopicMass < 0.5)
                 {
                     monoisotopicMassStream << indigoGetLastError();
@@ -396,8 +395,7 @@ namespace indigo
                     massCompositionStream << massComposition;
                 }
 
-                const auto grossFormulaObject =
-                    IndigoObject(_checkResult(indigoGrossFormula(iko.id())));
+                const auto grossFormulaObject = IndigoObject(_checkResult(indigoGrossFormula(iko.id())));
                 const auto* grossFormula = indigoToString(grossFormulaObject.id);
                 if (grossFormula == nullptr)
                 {
@@ -422,7 +420,7 @@ namespace indigo
 
     void calculate_iteration_object(const IndigoObject& iterator, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream,
                                     std::stringstream& monoisotopicMassStream, std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream,
-                                    const std::vector<int>& selected_atoms, int& base )
+                                    const std::vector<int>& selected_atoms, int& base)
     {
         bool is_not_first = false;
         while (const auto id = _checkResult(indigoNext(iterator.id)))
@@ -440,22 +438,23 @@ namespace indigo
             monoisotopicMassStream << "[";
             massCompositionStream << "[";
             grossFormulaStream << "[";
-            auto mol = IndigoKetcherObject(id, _checkResult( indigoCheckQuery(id) ) ? IndigoKetcherObject::EKETMoleculeQuery : IndigoKetcherObject::EKETMolecule );
+            auto mol = IndigoKetcherObject(id, _checkResult(indigoCheckQuery(id)) ? IndigoKetcherObject::EKETMoleculeQuery : IndigoKetcherObject::EKETMolecule);
             std::vector<int> subselect;
-            if( selected_atoms.size() )
+            if (selected_atoms.size())
             {
-                for( int i = 0; i < selected_atoms.size(); ++i )
+                for (int i = 0; i < selected_atoms.size(); ++i)
                 {
                     int atom_id = selected_atoms[i] - base;
-                    if( atom_id >=0 )
-                        subselect.push_back( atom_id );
+                    if (atom_id >= 0)
+                        subselect.push_back(atom_id);
                 }
             }
-            
-            if( !selected_atoms.size() || subselect.size() )
-                calculate_molecule(mol, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream, subselect);
-            if( selected_atoms.size() )
-                base += indigoCountAtoms( id );
+
+            if (!selected_atoms.size() || subselect.size())
+                calculate_molecule(mol, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream,
+                                   subselect);
+            if (selected_atoms.size())
+                base += indigoCountAtoms(id);
             molecularWeightStream << "]";
             mostAbundantMassStream << "]";
             monoisotopicMassStream << "]";
@@ -477,14 +476,14 @@ namespace indigo
         }
         int base = 0;
         calculate_iteration_object(IndigoObject(_checkResult(indigoIterateReactants(iko.id()))), molecularWeightStream, mostAbundantMassStream,
-                                   monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms, base );
+                                   monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms, base);
         molecularWeightStream << " > ";
         mostAbundantMassStream << " > ";
         monoisotopicMassStream << " > ";
         massCompositionStream << " > ";
         grossFormulaStream << " > ";
         calculate_iteration_object(IndigoObject(_checkResult(indigoIterateProducts(iko.id()))), molecularWeightStream, mostAbundantMassStream,
-                                   monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms, base );
+                                   monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms, base);
     }
 
     std::string calculate(const std::string& data, const std::map<std::string, std::string>& options, const std::vector<int>& selected_atoms)
