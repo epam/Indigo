@@ -867,7 +867,7 @@ CEXPORT int indigoUnselect(int item)
         }
         else if (IndigoBaseMolecule::is(obj))
         {
-            obj.getBaseMolecule().unhighlightAll();
+            obj.getBaseMolecule().unselectAll();
         }
         else if (IndigoBaseReaction::is(obj))
         {
