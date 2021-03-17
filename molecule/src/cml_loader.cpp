@@ -399,7 +399,8 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
             {
                 idx = _mol->addAtom(label);
 
-                if (label == ELEM_PSEUDO)
+                // #338: see above: label was kept Carbon for pseudo atoms AH, QH, XH, MH, X, M
+                if (label == ELEM_PSEUDO || (label == ELEM_C && !a.label.empty()))
                 {
                     if (!a.label.empty())
                         _mol->setPseudoAtom(idx, a.label.c_str());
