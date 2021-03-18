@@ -8,7 +8,8 @@ target_link_libraries(${PROJECT_NAME}-object indigo-static indigo-inchi-static i
 set(EMCC_FLAGS
         -Oz -flto --closure 1
         --bind
-        -s INITIAL_MEMORY=16777216
+        -s INITIAL_MEMORY=32mb
+        -s ALLOW_MEMORY_GROWTH=1
         -s DISABLE_EXCEPTION_CATCHING=0
         -s SINGLE_FILE=1
         -s MODULARIZE=1
