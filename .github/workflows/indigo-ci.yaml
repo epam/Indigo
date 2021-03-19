@@ -66,11 +66,11 @@ jobs:
         with:
           lfs: true
           fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
       - uses: msys2/setup-msys2@v2
         with:
           install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
+      - name: Git fetch tags
+        run: git fetch --tags -f
       - name: Build native libs
         run: |
           mkdir build
@@ -356,7 +356,7 @@ jobs:
       - name: Install poetry
         run: pip install poetry
       - name: Install latest indigo version
-        run: poetry run pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*-py3-none-manylinux1_x86_64.whl
+        run: poetry run pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*manylinux1_x86_64.whl
         working-directory: bingo/bingo-elastic/python
       - name: Install dependencies
         run: poetry install
