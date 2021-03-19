@@ -53,6 +53,33 @@ jobs:
         with:
           name: indigo-libs-windows
           path: dist
+  build_windows_mingw:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - uses: msys2/setup-msys2@v2
+        with:
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
+      - name: Build native libs
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "MinGW Makefiles"
+          cmake --build . --config Release --target before-bindings -- -j $(nproc) --output-sync
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-windows-mingw
+          path: dist
   build_macos:
     runs-on: macos-latest
     steps:
@@ -298,7 +325,6 @@ jobs:
   #         check_name: "Linux .NET Test Report"
 
   test_bingo_elastic_python_linux:
-    name: Run tests on bingo-elastic python
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -339,7 +365,6 @@ jobs:
         working-directory: bingo/bingo-elastic/python
 
   test_bingo_elastic_java_linux:
-    name: Run tests on bingo-elastic java
     runs-on: ubuntu-latest
     needs: build_wrappers
     steps:
