@@ -90,6 +90,9 @@ if isIronPython():
 elif isJython():
     from com.epam.indigo import Indigo, IndigoOject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
 else:
+    indigo_python_source_folder = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', '..', 'python'))
+    print(indigo_python_source_folder)
+    sys.path.append(indigo_python_source_folder)
     from indigo import Indigo, IndigoObject, IndigoException
     from indigo.renderer import IndigoRenderer
     from indigo.inchi import IndigoInchi
