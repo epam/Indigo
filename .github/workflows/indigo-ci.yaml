@@ -27,6 +27,7 @@ jobs:
           cd build
           cmake ..
           cmake --build . --config Release --target before-bindings -- -j $(nproc)
+          ctest .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -48,6 +49,7 @@ jobs:
           cd build
           cmake ..
           cmake --build . --config Release --target before-bindings
+          ctest .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -75,6 +77,7 @@ jobs:
           cd build
           cmake .. -G "MinGW Makefiles"
           cmake --build . --config Release --target before-bindings -- -j $(nproc) --output-sync
+          ctest .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -96,6 +99,7 @@ jobs:
           cd build
           cmake ..
           cmake --build . --config Release --target before-bindings -- -j $(nproc)
+          ctest .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
