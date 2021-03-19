@@ -250,7 +250,7 @@ jobs:
           python-version: '3.9'
           architecture: 'x64'
       - name: Install wrapers
-        run: python3 -m pip install dist/*win*.whl
+        run: Get-ChildItem dist -Filter *win*.whl -Recurse | % { python3 -m pip install $_.FullName }
       - name: Test
         run: python3 api/tests/integration/test.py -j junit_report.xml -e todo || true
       - name: Publish Test Report
