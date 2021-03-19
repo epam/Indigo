@@ -26,8 +26,11 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          cmake --build . --config Release --target before-bindings -- -j $(nproc)
-          ctest .
+          cmake --build . --config Release --target all before-bindings -- -j $(nproc)
+      - name: Test native libs
+        run: |
+          cd build
+          ctest --verbose
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -48,8 +51,11 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          cmake --build . --config Release --target before-bindings
-          ctest .
+          cmake --build . --config Release --target all before-bindings
+      - name: Test native libs
+        run: |
+          cd build
+          ctest --verbose
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -76,8 +82,11 @@ jobs:
           mkdir build
           cd build
           cmake .. -G "MinGW Makefiles"
-          cmake --build . --config Release --target before-bindings -- -j $(nproc) --output-sync
-          ctest .
+          cmake --build . --config Release --target all before-bindings -- -j $(nproc) --output-sync
+      - name: Test native libs
+        run: |
+          cd build
+          ctest --verbose
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -98,8 +107,11 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          cmake --build . --config Release --target before-bindings -- -j $(nproc)
-          ctest .
+          cmake --build . --config Release --target all before-bindings -- -j $(nproc)
+      - name: Test native libs
+        run: |
+          cd build
+          ctest --verbose
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
