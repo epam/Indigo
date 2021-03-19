@@ -126,6 +126,11 @@ jobs:
         with:
           name: indigo-libs-macos
           path: dist/
+      - name: Diagnostics
+        run: |
+          du -ah dist | sort -h
+          cd api/dotnet/src
+          powershell prebuild.ps1
       - name: Build wrappers
         run: |
           mkdir build
