@@ -31,8 +31,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: indigo-libs-linux
-          path: dist/lib
-  build_windows:
+          path: dist
+  build_windows_msvc:
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -52,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: indigo-libs-windows
-          path: dist/lib
+          path: dist
   build_macos:
     runs-on: macos-latest
     steps:
@@ -73,8 +73,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: indigo-libs-macos
-          path: dist/lib
-  build_indigo_ketcher_wasm:
+          path: dist
+  build_indigo_wasm_ketcher:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -99,7 +99,7 @@ jobs:
           path: build/lib/libindigo-ketcher.js
   build_wrappers:
     runs-on: ubuntu-latest
-    needs: [build_linux, build_windows, build_macos]
+    needs: [build_linux, build_windows_msvc, build_macos]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
