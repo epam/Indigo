@@ -51,7 +51,7 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          cmake --build . --config Release --target all before-bindings
+          cmake --build . --config Release --target ALL_BUILD before-bindings
       - name: Test native libs
         run: |
           cd build

@@ -23,6 +23,7 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
 endif ()
 
 add_custom_target(${PROJECT_NAME}-js
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         COMMAND emcc
         -o ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libindigo-ketcher.js
         ${EMCC_FLAGS}
