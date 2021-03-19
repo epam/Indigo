@@ -57,7 +57,9 @@ if sys.argv[1] == "bdist_wheel":
             elif PLATFORM_NAME == "manylinux1_i686":
                 INDIGO_LIBS = "lib/linux-i386/*.so"
             elif PLATFORM_NAME == "win_amd64":
-                INDIGO_LIBS = "lib/windows-amd64/*.dll"
+                INDIGO_LIBS = "lib/windows-x86_64/*.dll"
+            elif PLATFORM_NAME == "mingw":
+                INDIGO_LIBS = "lib/windows-x86_64/*.dll"
             elif PLATFORM_NAME == "win32":
                 INDIGO_LIBS = "lib/windows-i386/*.dll"
             break

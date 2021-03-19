@@ -26,7 +26,7 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          cmake --build . --config Release --target before-bindings -- -j
+          cmake --build . --config Release --target before-bindings -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -68,7 +68,7 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          cmake --build . --config Release --target before-bindings -- -j
+          cmake --build . --config Release --target before-bindings -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -91,7 +91,7 @@ jobs:
           mkdir build
           cd build
           emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release --target indigo-ketcher-js-test -- -j
+          cmake --build . --config Release --target indigo-ketcher-js-test -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -126,46 +126,36 @@ jobs:
         with:
           name: indigo-libs-macos
           path: dist/
-      - name: Diagnostics
-        run: |
-          du -ah dist | sort -h
-          cd api/dotnet/src
-          powershell prebuild.ps1
       - name: Build wrappers
         run: |
           mkdir build
           cd build
           cmake ..
           cmake --build . --config Release --target bindings
+          ls -alh ../dist
       - name: Upload native shared libs
         uses: actions/upload-artifact@v2
         with:
           name: indigo-native-shared-libs
           path: |
-            dist/indigo-libs-*-win-shared.zip
-            dist/indigo-libs-*-linux-shared.zip
-            dist/indigo-libs-*-mac-shared.zip
+            dist/lib
       - name: Upload test wrappers for Python
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-test-wrappers-python
+          name: indigo-python
           path: |
-            dist/indigo-python-*.zip
-            dist/*.whl
-      - name: Show artifacts
-        run: ls -la dist/
-
+            dist/*.whl   
       - name: Upload test wrappers for Java
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-test-wrappers-java
-          path: dist/indigo-java-*.zip
+          name: indigo-java
+          path: dist/*.jar
       - name: Upload test wrappers for .NET
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-test-wrappers-dotnet
-          path: dist/indigo-dotnet-*.zip
-  test_linux_python:
+          name: indigo-dotnet
+          path: dist/*.nupkg
+  test_indigo_python_linux:
     runs-on: ubuntu-latest
     needs: build_wrappers
     container: epmlsop/indigo-tester:latest
@@ -182,123 +172,125 @@ jobs:
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
-          name: indigo-test-wrappers-python
+          name: indigo-python
           path: dist/
+      - name: Install wrapers
+        run: pip install dist/*linux*.whl
       - name: Test
-        run: python3 api/tests/python/test.py -j junit_report.xml -e todo || true
+        run: python3 api/tests/integration/test.py -j junit_report.xml -e todo || true
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "Linux Python Test Report"
-  test_linux_java:
-    runs-on: ubuntu-latest
-    needs: build_wrappers
-    container: epmlsop/indigo-tester:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Create folder for native libs
-        run: mkdir dist
-      - name: Download wrappers
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-test-wrappers-java
-          path: dist/
-      - name: Test
-        run: jython api/tests/python/test.py -j junit_report.xml -e todo || true
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v1
-        with:
-          report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "Linux Java Test Report"
-  test_linux_dotnet:
-    runs-on: ubuntu-latest
-    needs: build_wrappers
-    container: epmlsop/indigo-tester:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Create folder for native libs
-        run: mkdir dist
-      - name: Download wrappers
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-test-wrappers-dotnet
-          path: dist/
-      - name: Test
-        run: ipy -X:ExceptionDetail api/tests/python/test.py -j junit_report.xml -e todo || true
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v1
-        with:
-          report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "Linux .NET Test Report"
-  test_windows_python:
-    runs-on: windows-latest
-    needs: build_wrappers
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Create folder for native libs
-        run: mkdir dist
-      - name: Download wrappers
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-test-wrappers-python
-          path: dist/
-      - name: Test
-        run: python api/tests/python/test.py -j junit_report.xml -e todo || true
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v1
-        with:
-          report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "Windows Python Test Report"
-  test_macos_python:
-    runs-on: macos-latest
-    needs: build_wrappers
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Create folder for native libs
-        run: mkdir dist
-      - name: Download wrappers
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-test-wrappers-python
-          path: dist/
-      - name: Test
-        run: python api/tests/python/test.py -j junit_report.xml -e todo || true
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v1
-        with:
-          report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "macOS Python Test Report"
-  bingo_elastic_tests_python:
+  # test_indigo_python_windows:
+  #   runs-on: windows-latest
+  #   needs: build_wrappers
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
+  #         fetch-depth: 500
+  #     - name: Git fetch tags
+  #       run: git fetch --tags -f
+  #     - name: Create folder for native libs
+  #       run: mkdir dist
+  #     - name: Download wrappers
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: indigo-test-wrappers-python
+  #         path: dist/
+  #     - name: Test
+  #       run: python api/tests/python/test.py -j junit_report.xml -e todo || true
+  #     - name: Publish Test Report
+  #       uses: mikepenz/action-junit-report@v1
+  #       with:
+  #         report_paths: 'junit_report.xml'
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         check_name: "Windows Python Test Report"
+  # test_indigo_python_macos:
+  #   runs-on: macos-latest
+  #   needs: build_wrappers
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
+  #         fetch-depth: 500
+  #     - name: Git fetch tags
+  #       run: git fetch --tags -f
+  #     - name: Create folder for native libs
+  #       run: mkdir dist
+  #     - name: Download wrappers
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: indigo-test-wrappers-python
+  #         path: dist/
+  #     - name: Test
+  #       run: python api/tests/python/test.py -j junit_report.xml -e todo || true
+  #     - name: Publish Test Report
+  #       uses: mikepenz/action-junit-report@v1
+  #       with:
+  #         report_paths: 'junit_report.xml'
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         check_name: "macOS Python Test Report"
+  #  test_linux_java:
+  #   runs-on: ubuntu-latest
+  #   needs: build_wrappers
+  #   container: epmlsop/indigo-tester:latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
+  #         fetch-depth: 500
+  #     - name: Git fetch tags
+  #       run: git fetch --tags -f
+  #     - name: Create folder for native libs
+  #       run: mkdir dist
+  #     - name: Download wrappers
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: indigo-test-wrappers-java
+  #         path: dist/
+  #     - name: Test
+  #       run: jython api/tests/python/test.py -j junit_report.xml -e todo || true
+  #     - name: Publish Test Report
+  #       uses: mikepenz/action-junit-report@v1
+  #       with:
+  #         report_paths: 'junit_report.xml'
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         check_name: "Linux Java Test Report"
+  # test_linux_dotnet:
+  #   runs-on: ubuntu-latest
+  #   needs: build_wrappers
+  #   container: epmlsop/indigo-tester:latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
+  #         fetch-depth: 500
+  #     - name: Git fetch tags
+  #       run: git fetch --tags -f
+  #     - name: Create folder for native libs
+  #       run: mkdir dist
+  #     - name: Download wrappers
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: indigo-test-wrappers-dotnet
+  #         path: dist/
+  #     - name: Test
+  #       run: ipy -X:ExceptionDetail api/tests/python/test.py -j junit_report.xml -e todo || true
+  #     - name: Publish Test Report
+  #       uses: mikepenz/action-junit-report@v1
+  #       with:
+  #         report_paths: 'junit_report.xml'
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         check_name: "Linux .NET Test Report"
+  test_bingo_elastic_python:
     name: Run tests on bingo-elastic python
     runs-on: ubuntu-latest
     strategy:
