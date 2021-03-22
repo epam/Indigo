@@ -416,22 +416,9 @@ namespace indigo
                                     std::stringstream& monoisotopicMassStream, std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream,
                                     const std::vector<int>& selected_atoms, int& base )
     {
-        bool is_not_first = false;
+        bool is_first = true;
         while (const auto id = _checkResult(indigoNext(iterator.id)))
         {
-            if (is_not_first)
-            {
-                molecularWeightStream << "+";
-                mostAbundantMassStream << "+";
-                monoisotopicMassStream << "+";
-                massCompositionStream << "+";
-                grossFormulaStream << "+";
-            }
-            molecularWeightStream << "[";
-            mostAbundantMassStream << "[";
-            monoisotopicMassStream << "[";
-            massCompositionStream << "[";
-            grossFormulaStream << "[";
             auto mol = IndigoKetcherObject(id, _checkResult( indigoCheckQuery(id) ) ? IndigoKetcherObject::EKETMoleculeQuery : IndigoKetcherObject::EKETMolecule );
             std::vector<int> subselect;
             if( selected_atoms.size() )
@@ -443,17 +430,33 @@ namespace indigo
                         subselect.push_back( atom_id );
                 }
             }
-            
+
             if( !selected_atoms.size() || subselect.size() )
-                calculate_molecule(mol, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream, subselect);
+            {
+                std::stringstream mws, mams, misos, mcs, gfs;
+                calculate_molecule( mol, mws, mams, misos, mcs, gfs, subselect );
+                if(gfs.str().size() )
+                {
+                    if( is_first)
+                        is_first = false;
+                    else
+                    {
+                        molecularWeightStream << "+";
+                        mostAbundantMassStream << "+";
+                        monoisotopicMassStream << "+";
+                        massCompositionStream << "+";
+                        grossFormulaStream << "+";
+                    }
+
+                    molecularWeightStream << "[" << mws.str() << "]";
+                    mostAbundantMassStream << "[" << mams.str() << "]";
+                    monoisotopicMassStream << "[" << misos.str() << "]";
+                    massCompositionStream << "[" << mcs.str() << "]";
+                    grossFormulaStream << "[" << gfs.str() << "]";
+                }
+            }
             if( selected_atoms.size() )
                 base += indigoCountAtoms( id );
-            molecularWeightStream << "]";
-            mostAbundantMassStream << "]";
-            monoisotopicMassStream << "]";
-            massCompositionStream << "]";
-            grossFormulaStream << "]";
-            is_not_first = true;
         }
     }
 
