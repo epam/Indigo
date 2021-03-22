@@ -44,7 +44,8 @@ namespace indigo
                           const std::vector<int>& selected_atoms = std::vector<int>(), const std::vector<int>& selected_bonds = std::vector<int>());
 
         std::string toJson(const StructureChecker2::CheckResult& res);
-
+        std::string toJson2(const StructureChecker2::CheckResult& res);
+        
         DECL_ERROR;
 
     private:
