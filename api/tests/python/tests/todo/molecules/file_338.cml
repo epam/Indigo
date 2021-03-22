@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<cml>
+    <molecule title="">
+        <atomArray>
+            <atom id="a0" elementType="C" x2="8.95" y2="-8.525" />
+            <atom id="a1" elementType="C" mrvPseudo="AH" x2="9.816" y2="-9.025" />
+            <atom id="a2" elementType="C" x2="10.6821" y2="-8.525" />
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a0 a1" order="1" />
+            <bond atomRefs2="a1 a2" order="1" />
+        </bondArray>
+    </molecule>
+</cml>
