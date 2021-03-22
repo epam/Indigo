@@ -196,3 +196,43 @@ std::string IndigoStructureChecker::toJson(const StructureChecker2::CheckResult&
     _toJson(res, writer);
     return std::string(s.GetString());
 }
+
+void dumpMessage( StructureChecker2::CheckMessage& msg, std::string& out_str )
+{
+    if( !out_str.empty() )
+        out_str += ",";
+    out_str += msg.message();
+    if (!msg.ids.empty())
+    {
+        out_str += ",(";    
+        for (int i = 0; i< msg.ids.size(); ++i )
+        {
+            out_str += std::to_string( msg.ids[i] );
+            if( i < msg.ids.size()-1 )
+                out_str += ",";
+        }
+        out_str += ")";    
+    }
+
+    if (!msg.subresult.isEmpty())
+    {
+        for( auto sub_msg : msg.subresult.messages )
+            dumpMessage( sub_msg, out_str );
+    }
+}
+
+std::string IndigoStructureChecker::toJson2(const StructureChecker2::CheckResult& res)
+{
+    StringBuffer s;
+    Writer<StringBuffer> writer(s);
+    writer.StartObject();
+    for (auto msg : res.messages)
+    {
+        writer.Key( getCheckType( StructureChecker2::getCheckTypeByMsgCode( msg.code)).c_str() );
+        std::string message;
+        dumpMessage( msg, message );
+        writer.String(message.c_str());
+    }
+    writer.EndObject();
+    return std::string(s.GetString());
+}

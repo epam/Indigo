@@ -578,14 +578,16 @@ static const struct CheckNamesMap
     std::unordered_map<int, std::string> types;
     std::unordered_map<int, Checker> checkers;
     std::unordered_map<int, std::string> messages;
+    std::unordered_map<int, StructureChecker2::CheckTypeCode> code2type;
     CheckNamesMap()
     {
         std::for_each(check_type_map.begin(), check_type_map.end(), [this](std::pair<std::string, CheckType> t) {
             this->all.push_back(t.second.code);
             this->types.insert(std::pair<int, std::string>((int)t.second.code, t.first));
             this->checkers.insert(std::pair<int, Checker>((int)t.second.code, t.second.checker));
-            std::for_each(t.second.messages.begin(), t.second.messages.end(), [this](std::pair<StructureChecker2::CheckMessageCode, std::string> it) {
-                this->messages.insert(std::pair<int, std::string>((int)it.first, it.second));
+            std::for_each(t.second.messages.begin(), t.second.messages.end(), [this, t](std::pair<StructureChecker2::CheckMessageCode, std::string> it ) {
+             this->messages.insert(std::pair<int, std::string>((int)it.first, it.second));
+             this->code2type.insert(std::pair<int, StructureChecker2::CheckTypeCode>( (int)it.first,  t.second.code ) );
             });
         });
     }
@@ -605,6 +607,11 @@ std::string StructureChecker2::getCheckType(StructureChecker2::CheckTypeCode cod
 std::string StructureChecker2::getCheckMessage(StructureChecker2::CheckMessageCode code)
 {
     return check_names_map.messages.at((int)code);
+}
+
+StructureChecker2::CheckTypeCode StructureChecker2::getCheckTypeByMsgCode( StructureChecker2::CheckMessageCode code )
+{
+    return check_names_map.code2type.at((int)code);
 }
 
 struct CheckParams
