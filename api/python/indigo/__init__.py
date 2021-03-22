@@ -2332,10 +2332,10 @@ class Indigo(object):
 
     # Python embeds path into .pyc code if method is marked with @staticmethod
     # This causes an error when Indigo is loaded from different places by relative path
-    def _initStatic(self):
+    def _initStatic(self, _=None):
         indigo_found = False
         system_name = platform.system().lower()
-        machine_name = platform.machine().lower()
+        machine_name = platform.machine().lower().replace('amd64', 'x86_64')
         if system_name == 'linux':
             library_prefix = 'lib'
             library_suffix = '.so'
@@ -2360,7 +2360,7 @@ class Indigo(object):
         if not indigo_found:
             raise IndigoException(
                 "Could not find native libraries for target OS in search directories: {}".format(
-                    library_base_path
+                    library_path
                 )
             )
 

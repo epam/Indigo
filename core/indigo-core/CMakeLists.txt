@@ -19,6 +19,11 @@ else()
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
+
+if (NOT EMSCRIPTEN)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Threads::Threads)
+endif()
+
 if (BUILD_SELF_SUFFICIENT)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC zlib

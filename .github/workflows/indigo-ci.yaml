@@ -26,13 +26,17 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          cmake --build . --config Release --target before-bindings -- -j
+          cmake --build . --config Release --target all before-bindings -- -j $(nproc)
+      - name: Test native libs
+        run: |
+          cd build
+          ctest --verbose
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: indigo-libs-linux
-          path: dist/lib
-  build_windows:
+          path: dist
+  build_windows_msvc:
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -47,12 +51,47 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          cmake --build . --config Release --target before-bindings
+          cmake --build . --config Release --target ALL_BUILD before-bindings
+      - name: Test native libs
+        run: |
+          cd build
+          ctest -C Release --verbose
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: indigo-libs-windows
-          path: dist/lib
+          path: dist
+  build_windows_mingw:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - uses: msys2/setup-msys2@v2
+        with:
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Build native libs
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "MinGW Makefiles"
+          cmake --build . --config Release --target all before-bindings -- -j $(nproc) --output-sync
+      - name: Test native libs
+        run: |
+          cd build
+          ctest --verbose
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-windows-mingw
+          path: dist
   build_macos:
     runs-on: macos-latest
     steps:
@@ -68,13 +107,17 @@ jobs:
           mkdir build
           cd build
           cmake ..
-          cmake --build . --config Release --target before-bindings -- -j
+          cmake --build . --config Release --target all before-bindings -- -j $(nproc)
+      - name: Test native libs
+        run: |
+          cd build
+          ctest --verbose
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: indigo-libs-macos
-          path: dist/lib
-  build_indigo_ketcher_wasm:
+          path: dist
+  build_indigo_wasm_ketcher:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -91,7 +134,7 @@ jobs:
           mkdir build
           cd build
           emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release --target indigo-ketcher-js-test -- -j
+          cmake --build . --config Release --target indigo-ketcher-js-test -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -99,7 +142,7 @@ jobs:
           path: build/lib/libindigo-ketcher.js
   build_wrappers:
     runs-on: ubuntu-latest
-    needs: [build_linux, build_windows, build_macos]
+    needs: [build_linux, build_windows_msvc, build_macos]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -132,35 +175,30 @@ jobs:
           cd build
           cmake ..
           cmake --build . --config Release --target bindings
+          ls -alh ../dist
       - name: Upload native shared libs
         uses: actions/upload-artifact@v2
         with:
           name: indigo-native-shared-libs
           path: |
-            dist/indigo-libs-*-win-shared.zip
-            dist/indigo-libs-*-linux-shared.zip
-            dist/indigo-libs-*-mac-shared.zip
+            dist/lib
       - name: Upload test wrappers for Python
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-test-wrappers-python
+          name: indigo-python
           path: |
-            dist/indigo-python-*.zip
-            dist/*.whl
-      - name: Show artifacts
-        run: ls -la dist/
-
+            dist/*.whl   
       - name: Upload test wrappers for Java
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-test-wrappers-java
-          path: dist/indigo-java-*.zip
+          name: indigo-java
+          path: dist/*.jar
       - name: Upload test wrappers for .NET
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-test-wrappers-dotnet
-          path: dist/indigo-dotnet-*.zip
-  test_linux_python:
+          name: indigo-dotnet
+          path: dist/*.nupkg
+  test_indigo_python_linux:
     runs-on: ubuntu-latest
     needs: build_wrappers
     container: epmlsop/indigo-tester:latest
@@ -177,71 +215,19 @@ jobs:
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
-          name: indigo-test-wrappers-python
+          name: indigo-python
           path: dist/
+      - name: Install wrapers
+        run: python3 -m pip install dist/*linux*.whl
       - name: Test
-        run: python3 api/tests/python/test.py -j junit_report.xml -e todo || true
+        run: python3 api/tests/integration/test.py -j junit_report.xml -e todo || true
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "Linux Python Test Report"
-  test_linux_java:
-    runs-on: ubuntu-latest
-    needs: build_wrappers
-    container: epmlsop/indigo-tester:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Create folder for native libs
-        run: mkdir dist
-      - name: Download wrappers
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-test-wrappers-java
-          path: dist/
-      - name: Test
-        run: jython api/tests/python/test.py -j junit_report.xml -e todo || true
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v1
-        with:
-          report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "Linux Java Test Report"
-  test_linux_dotnet:
-    runs-on: ubuntu-latest
-    needs: build_wrappers
-    container: epmlsop/indigo-tester:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Create folder for native libs
-        run: mkdir dist
-      - name: Download wrappers
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-test-wrappers-dotnet
-          path: dist/
-      - name: Test
-        run: ipy -X:ExceptionDetail api/tests/python/test.py -j junit_report.xml -e todo || true
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v1
-        with:
-          report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "Linux .NET Test Report"
-  test_windows_python:
+  test_indigo_python_windows:
     runs-on: windows-latest
     needs: build_wrappers
     steps:
@@ -257,17 +243,23 @@ jobs:
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
-          name: indigo-test-wrappers-python
+          name: indigo-python
           path: dist/
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
+      - name: Install wrapers
+        run: Get-ChildItem dist -Filter *win*.whl -Recurse | % { python3 -m pip install $_.FullName }
       - name: Test
-        run: python api/tests/python/test.py -j junit_report.xml -e todo || true
+        run: python3 api/tests/integration/test.py -j junit_report.xml -e todo || true
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "Windows Python Test Report"
-  test_macos_python:
+  test_indigo_python_macos:
     runs-on: macos-latest
     needs: build_wrappers
     steps:
@@ -283,18 +275,76 @@ jobs:
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
-          name: indigo-test-wrappers-python
+          name: indigo-python
           path: dist/
+      - name: Install wrapers
+        run: python3 -m pip install dist/*macos*.whl
       - name: Test
-        run: python api/tests/python/test.py -j junit_report.xml -e todo || true
+        run: python3 api/tests/integration/test.py -j junit_report.xml -e todo || true
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "macOS Python Test Report"
-  bingo_elastic_tests_python:
-    name: Run tests on bingo-elastic python
+  #  test_linux_java:
+  #   runs-on: ubuntu-latest
+  #   needs: build_wrappers
+  #   container: epmlsop/indigo-tester:latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
+  #         fetch-depth: 500
+  #     - name: Git fetch tags
+  #       run: git fetch --tags -f
+  #     - name: Create folder for native libs
+  #       run: mkdir dist
+  #     - name: Download wrappers
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: indigo-java
+  #         path: dist/
+  #     - name: Install Indigo jars
+  #       run: find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
+  #     - name: Test
+  #       run: jython api/tests/integration/test.py -j junit_report.xml -e todo || true
+  #     - name: Publish Test Report
+  #       uses: mikepenz/action-junit-report@v1
+  #       with:
+  #         report_paths: 'junit_report.xml'
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         check_name: "Linux Java Test Report"
+  # test_linux_dotnet:
+  #   runs-on: ubuntu-latest
+  #   needs: build_wrappers
+  #   container: epmlsop/indigo-tester:latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
+  #         fetch-depth: 500
+  #     - name: Git fetch tags
+  #       run: git fetch --tags -f
+  #     - name: Create folder for native libs
+  #       run: mkdir dist
+  #     - name: Download wrappers
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: indigo-test-wrappers-dotnet
+  #         path: dist/
+  #     - name: Test
+  #       run: ipy -X:ExceptionDetail api/tests/python/test.py -j junit_report.xml -e todo || true
+  #     - name: Publish Test Report
+  #       uses: mikepenz/action-junit-report@v1
+  #       with:
+  #         report_paths: 'junit_report.xml'
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         check_name: "Linux .NET Test Report"
+
+  test_bingo_elastic_python_linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -313,38 +363,28 @@ jobs:
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
-          name: indigo-test-wrappers-python
+          name: indigo-python
           path: dist/
-
-      - name: Show artifacts
-        run: ls -la dist/
-
-      - name: Show cwd
-        run: pwd
-
       - name: Install poetry
         run: pip install poetry
-
       - name: Install latest indigo version
-        run: poetry run pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*-py3-none-manylinux1_x86_64.whl
-        working-directory: api/plugins/bingo-elastic/python
-
+        run: poetry run pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*manylinux1_x86_64.whl
+        working-directory: bingo/bingo-elastic/python
       - name: Install dependencies
         run: poetry install
-        working-directory: api/plugins/bingo-elastic/python
+        working-directory: bingo/bingo-elastic/python
       - name: Run pylint
         run: poetry run pylint bingo_elastic
-        working-directory: api/plugins/bingo-elastic/python
+        working-directory: bingo/bingo-elastic/python
       - name: Setup elasticsearch
         run: docker run -d -p 9200:9200 --env "discovery.type=single-node" --env "opendistro_security.disabled=true" --env "indices.query.bool.max_clause_count=4096" amazon/opendistro-for-elasticsearch:latest
       - name: Wait elastic is ready
         run: sleep 30s
       - name: Run tests
         run: poetry run pytest tests
-        working-directory: api/plugins/bingo-elastic/python
+        working-directory: bingo/bingo-elastic/python
 
-  bingo_elastic_tests_java:
-    name: Run tests on bingo-elastic java
+  test_bingo_elastic_java_linux:
     runs-on: ubuntu-latest
     needs: build_wrappers
     steps:
@@ -366,7 +406,7 @@ jobs:
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
-          name: indigo-test-wrappers-python
+          name: indigo-java
           path: dist/
       - name: Install Indigo jars
         run: find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;

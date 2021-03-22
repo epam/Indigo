@@ -77,3 +77,4 @@ obj
 TestResults
 cmake-build-debug
 cmake-build-release
+api/c/indigo/src/indigo_version.h
