@@ -573,13 +573,9 @@ def convert():
                 - chemical/x-inchi-aux'
     responses:
       200:
-        description: Aromatized molecule
-        schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_IndigoResponse"
+        description: Convert format of molecule file
       400:
         description: 'A problem with supplied client data'
-        schema:
-          $ref: "#/definitions/indigo_api_aromatize_post_Error"
     """
     if request.method == 'POST':
         data = IndigoRequestSchema(strict=True).load(get_request_data(request)).data
