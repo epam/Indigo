@@ -70,6 +70,7 @@ if (NOT DEFINED ENV{DISABLE_INDIGO_TESTS})
     DEFINE_TEST(indigo-c-test-shared "tests/c/indigo-test.c" indigo-shared)
     DEFINE_TEST(indigo-c-test-shared-issue-269 "tests/c/indigo-test-issue-269.c;tests/c/indigo-test-data-issue-269.cpp" indigo-shared)
     DEFINE_TEST(indigo-c-test-shared-issue-153 "tests/c/indigo-test-issue-153.c" indigo-shared)
+    DEFINE_TEST(indigo-c-test-shared-issue-338 "tests/c/indigo-test-issue-338.cpp" indigo-shared)
 endif()
 
 add_executable(dlopen-test ${Indigo_SOURCE_DIR}/tests/c/dlopen-test.c)
