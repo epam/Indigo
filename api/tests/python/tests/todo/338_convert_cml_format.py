@@ -10,7 +10,7 @@ tls = local()
 ##indigo = Indigo()
 
 def printInfo(mol):
-    print("Internal molecule: %s" % mol.name())
+    print("Internal molecule:")
     print("Atoms:")
     with mol.iterateAtoms() as iterator:
         while iterator.hasNext() :
@@ -200,10 +200,10 @@ try:
         'output_format': 'chemical/x-mdl-molfile',
         'input_format' : 'chemical/x-cml',
         'json_output' : False,
-        'options' : { 'ignore-stereochemistry-errors':True, }
+        'options' : { }
     }
     response = convert(data)
     
-    print("Output molecule:\n", response)
+    print("\nOutput molecule:\n", response)
 except IndigoException as e:
     print("caught " + getIndigoExceptionText(e))
