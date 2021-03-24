@@ -256,7 +256,11 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         const char* pseudo = elem->Attribute("mrvPseudo");
 
         if (pseudo != 0)
+        {
+            if (_qmol == 0)
+                throw Error("Pseudo atom is allowed only for queries");
             a.label = pseudo;
+        }
 
         const char* alias = elem->Attribute("mrvAlias");
 
@@ -477,7 +481,8 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                 AutoPtr<QueryMolecule::Atom> atom;
                 int qhcount = -1;
 
-                if (label == ELEM_PSEUDO)
+                // #338: see above: label was kept Carbon for pseudo atoms AH, QH, XH, MH, X, M
+                if (label == ELEM_PSEUDO || (label == ELEM_C && !a.label.empty()))
                 {
                     if (!a.label.empty())
                         atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, a.label.c_str()));
