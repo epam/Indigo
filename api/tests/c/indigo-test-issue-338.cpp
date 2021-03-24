@@ -36,34 +36,38 @@ size_t mismatch(const char* s1, const char* s2)
 int main(void)
 {
     int mol = indigoLoadMoleculeFromString(issue338TestData);
-    if (mol != -1)
+    if (mol == -1)
     {
-        int iter = indigoIterateAtoms(mol);
-        while(indigoHasNext(iter))
-        { 
-            int atom = indigoNext(iter);
-            const char* label = indigoSymbol(atom);
-            bool is_pseudo = indigoIsPseudoatom(atom);
-            int number = is_pseudo ? 0 : indigoAtomicNumber(atom);
-            printf("atom: %s, number: %d, pseudo: %d\n", label, number, is_pseudo);
-        }
-        const char* str_save = indigoCml(mol);
-        const size_t str_save_len = strlen(str_save);
-        size_t pos = mismatch(issue338TestData, str_save);
-        if (str_save_len == issue338TestLength && pos == issue338TestLength)
-        {
-            printf("OK\n");
-        }
-        else
-        {
-            printf("Error: output and input differ at position %zd.\n", pos);
-        }
-        indigoFree(mol);
+        printf("indigoLoadMoleculeFromString failed: %s\n", indigoGetLastError());
+        mol = indigoLoadQueryMoleculeFromString(issue338TestData);
+    }
+    if (mol == -1)
+    {
+        printf("indigoLoadQueryMoleculeFromString() failed: %s\n", indigoGetLastError());
         return 0;
+    }
+
+    int iter = indigoIterateAtoms(mol);
+    while(indigoHasNext(iter))
+    { 
+        int atom = indigoNext(iter);
+        const char* label = indigoSymbol(atom);
+        bool is_pseudo = indigoIsPseudoatom(atom);
+        int number = is_pseudo ? 0 : indigoAtomicNumber(atom);
+        printf("atom: %s, number: %d, pseudo: %d\n", label, number, is_pseudo);
+    }
+    const char* str_save = indigoCml(mol);
+    const size_t str_save_len = strlen(str_save);
+    printf("%s\n", str_save);
+    size_t pos = mismatch(issue338TestData, str_save);
+    if (str_save_len == issue338TestLength && pos == issue338TestLength)
+    {
+        printf("OK\n");
     }
     else
     {
-        printf("Failed: %s\n", indigoGetLastError());
-        return 0;
+        printf("Error: output and input differ at position %zd.\n", pos);
     }
+    indigoFree(mol);
+    return 0;
 }
