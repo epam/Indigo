@@ -402,6 +402,8 @@ namespace indigo
 
         if (str.size())
             vec.push_back(str);
+        else
+            vec.push_back("Unknown error");
     }
 
     void calculate_molecule(IndigoKetcherObject iko, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream,
