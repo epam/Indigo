@@ -223,7 +223,7 @@ char* MolfileLoader::_strtrim(char* buf)
     {
         size_t len = strlen(buf);
         char* end = buf + len - 1;
-        while (*end == ' ')
+        while (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r')
         {
             *end = 0;
             end--;
@@ -236,22 +236,23 @@ void MolfileLoader::_readCtab2000()
 {
     _init();
 
-    int k;
-
     QS_DEF(Array<char>, str);
 
     // read atoms
-    for (k = 0; k < _atoms_num; k++)
+    for (int k = 0; k < _atoms_num; k++)
     {
-        // read coordinates
-        float x = _scanner.readFloatFix(10);
-        float y = _scanner.readFloatFix(10);
-        float z = _scanner.readFloatFix(10);
+        // read each atom line to buffer
+        _scanner.readLine(str, false);
+        BufferScanner atom_line(str);
 
-        _scanner.skip(1);
+        // read coordinates
+        float x = atom_line.readFloatFix(10);
+        float y = atom_line.readFloatFix(10);
+        float z = atom_line.readFloatFix(10);
+
+        atom_line.skip(1);
 
         char atom_label_array[4] = {0};
-        char* buf = atom_label_array;
         int label = 0;
         int isotope = 0;
 
@@ -262,12 +263,20 @@ void MolfileLoader::_readCtab2000()
         atom_type = _ATOM_ELEMENT;
 
         // read atom label and mass difference
-        _scanner.readCharsFix(3, atom_label_array);
+        int read_chars_atom_label = atom_line.readCharsFlexible(3, atom_label_array);
 
         // Atom label can be both left-bound or right-bound: "  N", "N  " or even " N ".
-        buf = _strtrim(atom_label_array);
+        char* buf = _strtrim(atom_label_array);
 
-        isotope = _scanner.readIntFix(2);
+        //#349: make 'isotope' field optional
+        try
+        {
+            atom_line.skip(3 - read_chars_atom_label);
+            isotope = atom_line.readIntFix(2);
+        }
+        catch (Scanner::Error&)
+        {
+        }
 
         if (buf[0] == 0)
             throw Error("Empty atom label");
@@ -277,7 +286,9 @@ void MolfileLoader::_readCtab2000()
             label = ELEM_RSITE;
         }
         else if (buf[0] == 'A' && buf[1] == 0)
+        {
             atom_type = _ATOM_A; // will later become 'any atom' or pseudo atom
+        }
         else if (buf[0] == 'A' && buf[1] == 'H' && buf[2] == 0)
         {
             if (_qmol == 0)
@@ -355,32 +366,37 @@ void MolfileLoader::_readCtab2000()
         int aam = 0, irflag = 0, ecflag = 0;
         int charge = 0, radical = 0;
 
-        _convertCharge(_scanner.readIntFix(3), charge, radical);
+        // #349: make 'charge' field optional
+        try
+        {
+            _convertCharge(atom_line.readIntFix(3), charge, radical);
+        }
+        catch (Scanner::Error&)
+        {
+        }
 
         try
         {
-            _scanner.readLine(str, false);
 
-            BufferScanner rest(str);
 
-            rest.skip(3); // skip atom stereo parity
-            _hcount[k] = rest.readIntFix(3);
+            atom_line.skip(3); // skip atom stereo parity
+            _hcount[k] = atom_line.readIntFix(3);
 
             if (_hcount[k] > 0 && _qmol == 0)
                 if (!ignore_noncritical_query_features)
                     throw Error("only a query can have H count value");
 
-            stereo_care = rest.readIntFix(3);
+            stereo_care = atom_line.readIntFix(3);
 
             if (stereo_care > 0 && _qmol == 0)
                 if (!ignore_noncritical_query_features)
                     throw Error("only a query can have stereo care box");
 
-            valence = rest.readIntFix(3);
-            rest.skip(9);                // skip "HO designator" and 2 unused fields
-            aam = rest.readIntFix(3);    // atom-to-atom mapping number
-            irflag = rest.readIntFix(3); // inversion/retension flag,
-            ecflag = rest.readIntFix(3); // exact change flag
+            valence = atom_line.readIntFix(3);
+            atom_line.skip(9);                // skip "HO designator" and 2 unused fields
+            aam = atom_line.readIntFix(3);    // atom-to-atom mapping number
+            irflag = atom_line.readIntFix(3); // inversion/retension flag,
+            ecflag = atom_line.readIntFix(3); // exact change flag
         }
         catch (Scanner::Error&)
         {
@@ -526,32 +542,36 @@ void MolfileLoader::_readCtab2000()
         _bmol->reaction_atom_exact_change[idx] = ecflag;
     }
 
-    int bond_idx;
+    // read bonds
 
-    for (bond_idx = 0; bond_idx < _bonds_num; bond_idx++)
+    for (int bond_idx = 0; bond_idx < _bonds_num; bond_idx++)
     {
-        int beg = _scanner.readIntFix(3);
-        int end = _scanner.readIntFix(3);
-        int order = _scanner.readIntFix(3);
-        int stereo = _scanner.readIntFix(3);
+        // read each bond line to buffer
+        _scanner.readLine(str, false);
+        BufferScanner bond_line(str);
+
+        int beg = bond_line.readIntFix(3);
+        int end = bond_line.readIntFix(3);
+        int order = bond_line.readIntFix(3);
+        int stereo = 0;
         int topology = 0;
         int rcenter = 0;
 
+        // #349: rest fields are optional
         try
         {
-            _scanner.readLine(str, false);
 
-            BufferScanner rest(str);
+            stereo = bond_line.readIntFix(3);
 
-            rest.skip(3); // not used
+            bond_line.skip(3); // not used
 
-            topology = rest.readIntFix(3);
+            topology = bond_line.readIntFix(3);
 
             if (topology != 0 && _qmol == 0)
                 if (!ignore_noncritical_query_features)
                     throw Error("bond topology is allowed only for queries");
 
-            rcenter = rest.readIntFix(3);
+            rcenter = bond_line.readIntFix(3);
         }
         catch (Scanner::Error&)
         {
