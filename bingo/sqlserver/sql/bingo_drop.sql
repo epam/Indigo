@@ -11,6 +11,10 @@ go
 drop event notification $(bingo)_$(database)_logout_notify on server;
 go
 
+if (select count(*) from sys.server_triggers where name = '$(bingo)_$(database)_prevent_db_drop') = 1
+	DROP TRIGGER $(bingo)_$(database)_prevent_db_drop ON ALL SERVER;
+go
+
 drop route $(bingo)_notify_route;
 go
 
