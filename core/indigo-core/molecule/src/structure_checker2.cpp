@@ -245,6 +245,9 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
                              [&target](BaseMolecule& mol, int idx) { return !mol.stereocenters.exists(idx) && target->stereocenters.exists(idx); });
 
         mol.asMolecule().setIgnoreBadValenceFlag(saved_valence_flag);
+    } else
+    {
+        message( result, StructureChecker2::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO );
     }
 }
 static void check_query(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
@@ -483,13 +486,13 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
        {StructureChecker2::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_RGROUP, "Structure contains RGroup components, so valency could not be checked"},
        {StructureChecker2::CheckMessageCode::CHECK_MSG_IGNORE_VALENCE_ERROR, "IGNORE_BAD_VALENCE flag is active, so valency could not be checked"}}}},
 
-    {"radical",
+    {"radicals",
      {StructureChecker2::CheckTypeCode::CHECK_RADICAL,
       &check_radical,
       {{StructureChecker2::CheckMessageCode::CHECK_MSG_RADICAL, "Structure contains radicals"},
        {StructureChecker2::CheckMessageCode::CHECK_MSG_RADICAL_NOT_CHECKED_PSEUDO, "Structure contains pseudoatoms, so radicals could not be checked"}}}},
 
-    {"pseudoatom",
+    {"pseudoatoms",
      {StructureChecker2::CheckTypeCode::CHECK_PSEUDOATOM,
       &check_pseudoatom,
       {{StructureChecker2::CheckMessageCode::CHECK_MSG_PSEUDOATOM, "Structure contains pseudoatoms"}}}},
@@ -508,28 +511,28 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
        {StructureChecker2::CheckMessageCode::CHECK_MSG_QUERY_ATOM, "Structure contains query features for atoms"},
        {StructureChecker2::CheckMessageCode::CHECK_MSG_QUERY_BOND, "Structure contains query features for bonds"}}}},
 
-    {"overlap_atom",
+    {"overlapping_atoms",
      {StructureChecker2::CheckTypeCode::CHECK_OVERLAP_ATOM,
       &check_overlap_atom,
       {{StructureChecker2::CheckMessageCode::CHECK_MSG_OVERLAP_ATOM, "Structure contains overlapping atoms"}}}},
 
-    {"overlap_bond",
+    {"overlapping_bonds",
      {StructureChecker2::CheckTypeCode::CHECK_OVERLAP_BOND,
       &check_overlap_bond,
       {{StructureChecker2::CheckMessageCode::CHECK_MSG_OVERLAP_BOND, "Structure contains overlapping bonds."}}}},
 
-    {"rgroup",
+    {"rgroups",
      {StructureChecker2::CheckTypeCode::CHECK_RGROUP, &check_rgroup, {{StructureChecker2::CheckMessageCode::CHECK_MSG_RGROUP, "Structure contains R-groups"}}}},
 
-    {"sgroup",
+    {"sgroups",
      {StructureChecker2::CheckTypeCode::CHECK_SGROUP, &check_sgroup, {{StructureChecker2::CheckMessageCode::CHECK_MSG_SGROUP, "Structure contains S-groups"}}}},
 
-    {"tgroup",
+    {"tgroups",
      {StructureChecker2::CheckTypeCode::CHECK_TGROUP,
       &check_tgroup,
       {{StructureChecker2::CheckMessageCode::CHECK_MSG_TGROUP, "Structure contains SCSR templates"}}}},
 
-    {"chirality",
+    {"chiral",
      {StructureChecker2::CheckTypeCode::CHECK_CHIRALITY,
       &check_chirality,
       {{StructureChecker2::CheckMessageCode::CHECK_MSG_CHIRALITY, "Structure contains chirality"}}}},
@@ -539,7 +542,7 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
       &check_chiral_flag,
       {{StructureChecker2::CheckMessageCode::CHECK_MSG_CHIRAL_FLAG, "Structure contains wrong chiral flag"}}}},
 
-    {"3d_coord",
+    {"3d",
      {StructureChecker2::CheckTypeCode::CHECK_3D_COORD,
       &check_3d_coord,
       {{StructureChecker2::CheckMessageCode::CHECK_MSG_3D_COORD, "Structure contains 3D coordinates"}}}},

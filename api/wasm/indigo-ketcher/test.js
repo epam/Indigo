@@ -76,7 +76,8 @@ M  END
         JSON.parse(indigo.check(molfile, "", options)),
         {
             "valence": "Structure contains query features, so valency could not be checked",
-            "radical": "Structure contains radicals,(13,15,17)",
+            "radicals": "Structure contains radicals,(13,15,17)",
+            "stereo":"Structure contains stereocenters with undefined stereo configuration",
             "query": "Structure contains query features",
             "charge": "Structure has non-zero charge",
             "salt": "Not implemented yet: check salt",
