@@ -245,6 +245,9 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
                              [&target](BaseMolecule& mol, int idx) { return !mol.stereocenters.exists(idx) && target->stereocenters.exists(idx); });
 
         mol.asMolecule().setIgnoreBadValenceFlag(saved_valence_flag);
+    } else
+    {
+        message( result, StructureChecker2::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO );
     }
 }
 static void check_query(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
