@@ -27,6 +27,7 @@ namespace indigo
     EM_JS(void, jsThrow, (cstring str), { throw UTF8ToString(str); });
 
     EM_JS(void, print_jsn, (cstring str, int n), { console.log(UTF8ToString(str) + n); });
+    EM_JS(void, print_js, (cstring str), { console.log(UTF8ToString(str)); });
 
     int _checkResult(int result)
     {
