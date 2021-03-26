@@ -1,6 +1,81 @@
 const moduleFn = require('./libindigo-ketcher.js')
 const assert = require('assert').strict;
 
+function testCalculate(indigo) {
+    let options = new indigo.MapStringString();
+    selected = new indigo.VectorInt();
+    let molfile = `$RXN
+
+
+
+  1  1  0
+$MOL
+
+  Ketcher  3262115472D 1   1.00000     0.00000     0
+
+  5  4  0     0  0            999 V2000
+    2.3000   -4.4330    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.3000   -4.4330    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.8000   -3.5670    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.9000   -6.9001    0.0000 S   0  0  0  0  0  0  0  0  0  0  0  0
+    2.9000   -5.9001    0.0000 S   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0     0  0
+  2  3  1  0     0  0
+  1  3  1  0     0  0
+  4  5  1  0     0  0
+M  END
+$MOL
+
+  Ketcher  3262115472D 1   1.00000     0.00000     0
+
+  1  0  0     0  0            999 V2000
+    6.3501   -4.1500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+M  END
+`
+    console.log(indigo.calculate(molfile, options, selected));
+    assert.deepStrictEqual(
+        JSON.parse(indigo.calculate(molfile, options, selected)),
+        {
+            "molecular-weight":"[42.0797410; 66.1458774] > [16.0424604]",
+            "most-abundant-mass":"[42.0469501; 65.9597914] > [16.0313001]",
+            "monoisotopic-mass":"[42.0469501; 65.9597914] > [16.0313001]",
+            "mass-composition":"[C 85.63 H 14.37; H 3.05 S 96.95] > [C 74.87 H 25.13]",
+            "gross-formula":"[C3 H6; H2 S2] > [C H4]"
+        }
+    );
+    
+    selected.push_back(5); // select CH4
+    console.log(indigo.calculate(molfile, options, selected));
+    assert.deepStrictEqual(
+        JSON.parse(indigo.calculate(molfile, options, selected)),
+        {"molecular-weight":"16.0424604","most-abundant-mass":"16.0313001","monoisotopic-mass":"16.0313001","mass-composition":"C 74.87 H 25.13","gross-formula":"C H4"}
+    );
+
+    selected.delete();
+    selected = new indigo.VectorInt();
+
+    selected.push_back(0); selected.push_back(1); selected.push_back(2); selected.push_back(3); selected.push_back(4); // select two-components reagent
+    console.log(indigo.calculate(molfile, options, selected));
+    assert.deepStrictEqual(
+        JSON.parse(indigo.calculate(molfile, options, selected)),
+        {"molecular-weight":"42.0797410; 66.1458774","most-abundant-mass":"42.0469501; 65.9597914","monoisotopic-mass":"42.0469501; 65.9597914","mass-composition":"C 85.63 H 14.37; H 3.05 S 96.95","gross-formula":"C3 H6; H2 S2"}
+    );
+
+
+    selected.delete();
+    selected = new indigo.VectorInt();
+
+    selected.push_back(0); selected.push_back(1); selected.push_back(2); selected.push_back(5); // select product and partial reagent
+    console.log(indigo.calculate(molfile, options, selected));
+    assert.deepStrictEqual(
+        JSON.parse(indigo.calculate(molfile, options, selected)),
+        {"molecular-weight":"[42.0797410] > [16.0424604]","most-abundant-mass":"[42.0469501] > [16.0313001]","monoisotopic-mass":"[42.0469501] > [16.0313001]","mass-composition":"[C 85.63 H 14.37] > [C 74.87 H 25.13]","gross-formula":"[C3 H6] > [C H4]"}
+    );
+    options.delete();
+    selected.delete();
+}
+
+
 function testCheck(indigo) {
     let options = new indigo.MapStringString();
     let molfile = `
@@ -206,6 +281,8 @@ M  END`, options, selected));
     console.log(Buffer.from(base64, 'base64'));
 
     testCheck(indigo);
-
+    
+    testCalculate( indigo )
+    
     options.delete();
 })

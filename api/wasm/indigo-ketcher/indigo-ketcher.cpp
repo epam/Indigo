@@ -348,45 +348,44 @@ namespace indigo
 
     class VectorStringBracketed
     {
-        const std::vector<std::string>& vec;
+        const std::vector<std::string>& vec1;
+        const std::vector<std::string>& vec2;
 
     public:
-        explicit VectorStringBracketed(const std::vector<std::string>& v) : vec(v)
+        explicit VectorStringBracketed(const std::vector<std::string>& v1, const std::vector<std::string>& v2) : vec1(v1), vec2(v2)
         {
         }
-        friend std::stringstream& operator<<(std::stringstream& ss, const VectorStringBracketed& vs);
-    };
 
-    std::stringstream& operator<<(std::stringstream& ss, const VectorStringBracketed& vs)
-    {
-        bool isFirst = true;
-        for (const auto& str : vs.vec)
+        static void dumpVector(const std::vector<std::string>& v, std::stringstream& ss, bool both)
         {
-            if (vs.vec.size() > 1)
+            bool isFirst = true;
+            for (const auto& str : v)
             {
+                if (v.size() == 1 && !both)
+                {
+                    ss << str;
+                    break;
+                }
+
                 if (isFirst)
                     isFirst = false;
                 else
                     ss << "+";
                 ss << "[" << str << "]";
             }
-            else
-                ss << str;
         }
-        return ss;
-    }
 
-    void dumpStrVector2Stream(std::vector<std::string>& vec, std::stringstream& ss)
+        friend std::stringstream& operator<<(std::stringstream& ss, const VectorStringBracketed& vs);
+    };
+
+    std::stringstream& operator<<(std::stringstream& ss, const VectorStringBracketed& vs)
     {
-        bool isFirst = true;
-        for (const auto& str : vec)
-        {
-            if (isFirst)
-                isFirst = false;
-            else
-                ss << "; ";
-            ss << str;
-        }
+        bool both = vs.vec1.size() && vs.vec2.size();
+        VectorStringBracketed::dumpVector(vs.vec1, ss, both);
+        if (both)
+            ss << " > ";
+        VectorStringBracketed::dumpVector(vs.vec2, ss, both);
+        return ss;
     }
 
     void pushDoubleAsStr(double arg, std::vector<std::string>& vec)
@@ -468,11 +467,10 @@ namespace indigo
         grossFormulaStream << VectorStringSemicoloned(grossFormulas);
     }
 
-    void calculate_iteration_object(const IndigoObject& iterator, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream,
-                                    std::stringstream& monoisotopicMassStream, std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream,
+    void calculate_iteration_object(const IndigoObject& iterator, std::vector<std::string>& molWeights, std::vector<std::string>& mamMasses,
+                                    std::vector<std::string>& misoMasses, std::vector<std::string>& massCompositions, std::vector<std::string>& grossFormulas,
                                     const std::vector<int>& selected_atoms, int& base)
     {
-        std::vector<std::string> molWeights, mamMasses, misoMasses, massCompositions, grossFormulas;
         while (const auto id = _checkResult(indigoNext(iterator.id)))
         {
             auto mol = IndigoKetcherObject(id, _checkResult(indigoCheckQuery(id)) ? IndigoKetcherObject::EKETMoleculeQuery : IndigoKetcherObject::EKETMolecule);
@@ -503,18 +501,19 @@ namespace indigo
             if (selected_atoms.size())
                 base += indigoCountAtoms(id);
         }
-
-        molecularWeightStream << VectorStringBracketed(molWeights);
-        mostAbundantMassStream << VectorStringBracketed(mamMasses);
-        monoisotopicMassStream << VectorStringBracketed(misoMasses);
-        massCompositionStream << VectorStringBracketed(massCompositions);
-        grossFormulaStream << VectorStringBracketed(grossFormulas);
     }
 
     void calculate_reaction(const IndigoKetcherObject& iko, std::stringstream& molecularWeightStream, std::stringstream& mostAbundantMassStream,
                             std::stringstream& monoisotopicMassStream, std::stringstream& massCompositionStream, std::stringstream& grossFormulaStream,
                             const std::vector<int>& selected_atoms)
     {
+        enum
+        {
+            IDX_REACTANTS = 0,
+            IDX_PRODUCTS = 1
+        };
+        std::vector<std::string> molWeights[2], mamMasses[2], misoMasses[2], massCompositions[2], grossFormulas[2];
+
         const auto mol_iterator = IndigoObject(_checkResult(indigoIterateMolecules(iko.id())));
         while (const auto mol_id = _checkResult(indigoNext(mol_iterator.id)))
         {
@@ -522,25 +521,17 @@ namespace indigo
                 jsThrow("Cannot calculate properties for RGroups");
         }
         int base = 0;
-        calculate_iteration_object(IndigoObject(_checkResult(indigoIterateReactants(iko.id()))), molecularWeightStream, mostAbundantMassStream,
-                                   monoisotopicMassStream, massCompositionStream, grossFormulaStream, selected_atoms, base);
+        calculate_iteration_object(IndigoObject(_checkResult(indigoIterateReactants(iko.id()))), molWeights[IDX_REACTANTS], mamMasses[IDX_REACTANTS],
+                                   misoMasses[IDX_REACTANTS], massCompositions[IDX_REACTANTS], grossFormulas[IDX_REACTANTS], selected_atoms, base);
+                                   
+        calculate_iteration_object(IndigoObject(_checkResult(indigoIterateProducts(iko.id()))), molWeights[IDX_PRODUCTS], mamMasses[IDX_PRODUCTS],
+                                   misoMasses[IDX_PRODUCTS], massCompositions[IDX_PRODUCTS], grossFormulas[IDX_PRODUCTS], selected_atoms, base);
 
-        std::stringstream mws, mams, misos, mcs, gfs;
-        calculate_iteration_object(IndigoObject(_checkResult(indigoIterateProducts(iko.id()))), mws, mams, misos, mcs, gfs, selected_atoms, base);
-        if (grossFormulaStream.str().size() && gfs.str().size()) // check if we have gross formula for both reagents and products
-        {
-            molecularWeightStream << " > ";
-            mostAbundantMassStream << " > ";
-            monoisotopicMassStream << " > ";
-            massCompositionStream << " > ";
-            grossFormulaStream << " > ";
-        }
-
-        molecularWeightStream << mws.str();
-        mostAbundantMassStream << mams.str();
-        monoisotopicMassStream << misos.str();
-        massCompositionStream << mcs.str();
-        grossFormulaStream << gfs.str();
+        molecularWeightStream << VectorStringBracketed(molWeights[IDX_REACTANTS], molWeights[IDX_PRODUCTS]);
+        mostAbundantMassStream << VectorStringBracketed(mamMasses[IDX_REACTANTS], mamMasses[IDX_PRODUCTS]);
+        monoisotopicMassStream << VectorStringBracketed(misoMasses[IDX_REACTANTS], misoMasses[IDX_PRODUCTS]);
+        massCompositionStream << VectorStringBracketed(massCompositions[IDX_REACTANTS], massCompositions[IDX_PRODUCTS]);
+        grossFormulaStream << VectorStringBracketed(grossFormulas[IDX_REACTANTS], grossFormulas[IDX_PRODUCTS]);
     }
 
     std::string calculate(const std::string& data, const std::map<std::string, std::string>& options, const std::vector<int>& selected_atoms)
