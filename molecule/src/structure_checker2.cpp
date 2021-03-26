@@ -201,9 +201,8 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
                 {
                     target->stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
                 }
-                catch (Exception& e)
+                catch (Exception&)
                 {
-                    e.code();
                     // Just ignore this stereo center
                 }
             }

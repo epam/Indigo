@@ -306,10 +306,9 @@ bool BaseMatcher::_loadCurrentObject()
     }
     catch (Exception& ex)
     {
-        int db_id = _index.getIdMapping()[_current_id];
+        const int db_id = _index.getIdMapping()[_current_id];
         ex.appendMessage(" on id=%d", db_id);
-        ex.throwSelf();
-        return false; // This statement is dummy because throwSelf always throws an exception
+        throw;
     }
 }
 
