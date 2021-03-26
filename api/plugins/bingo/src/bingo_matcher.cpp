@@ -309,7 +309,6 @@ bool BaseMatcher::_loadCurrentObject()
         const int db_id = _index.getIdMapping()[_current_id];
         ex.appendMessage(" on id=%d", db_id);
         throw;
-        return false; // This statement is dummy because throwSelf always throws an exception
     }
 }
 

@@ -379,14 +379,14 @@ private:
             self.updateCancellationHandler();
 
 #define INDIGO_END(fail)                                                                                                                                       \
-    }                                                                                                                                                          \
-    catch (Exception & ex)                                                                                                                                     \
-    {                                                                                                                                                          \
-        self.error_message.readString(ex.message(), true);                                                                                                     \
-        if (self.error_handler != 0)                                                                                                                           \
-            self.error_handler(ex.message(), self.error_handler_context);                                                                                      \
-        return fail;                                                                                                                                           \
-    }                                                                                                                                                          \
+        }                                                                                                                                                      \
+        catch (Exception & ex)                                                                                                                                 \
+        {                                                                                                                                                      \
+            self.error_message.readString(ex.message(), true);                                                                                                 \
+            if (self.error_handler != 0)                                                                                                                       \
+                self.error_handler(ex.message(), self.error_handler_context);                                                                                  \
+            return fail;                                                                                                                                       \
+        }                                                                                                                                                      \
     }
 
 #define INDIGO_END_CHECKMSG(success, fail)                                                                                                                     \
@@ -413,7 +413,6 @@ class DLLEXPORT IndigoError : public Exception
 {
 public:
     explicit IndigoError(const char* format, ...);
-private:
 };
 
 class _IndigoBasicOptionsHandlersSetter

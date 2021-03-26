@@ -280,7 +280,7 @@ IndigoError::IndigoError(const char* format, ...) : Exception("core: ")
 {
     va_list args;
     va_start(args, format);
-    const int len = strlen(_message);
+    const size_t len = strlen(_message);
     vsnprintf(_message + len, sizeof(_message) - len, format, args);
     va_end(args);
 }
