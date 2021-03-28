@@ -2345,6 +2345,10 @@ class Indigo(object):
         elif system_name == 'windows':
             library_prefix = ''
             library_suffix = '.dll'
+        elif system_name.startswith('msys_nt'):
+            library_prefix = ''
+            library_suffix = '.dll'
+            system_name = 'windows'
         else:
             raise ValueError('Unsupported OS: {}'.format(system_name))
 

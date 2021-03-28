@@ -23,7 +23,7 @@ if (BUILD_INDIGO)
     if (ENABLE_TESTS)
         add_subdirectory(c/tests)
         # TODO
-        # add_subdirectory(tests/integration)
+        add_subdirectory(tests/integration)
     endif ()
 
     if (BUILD_INDIGO_BINDINGS)

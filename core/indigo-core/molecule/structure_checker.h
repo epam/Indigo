@@ -50,26 +50,26 @@ namespace indigo
         enum
         {
             // Check types
-            CHECK_NONE = 0x00000000,         // Check none
-            CHECK_LOAD = 0x00000001,         // Check loading (correspondence some known format)
-            CHECK_VALENCE = 0x00000002,      // Check valence correctness
-            CHECK_RADICAL = 0x00000004,      // Check radicals existance
-            CHECK_PSEUDOATOM = 0x00000008,   // Check pseudoatoms existance
-            CHECK_STEREO = 0x00000010,       // Check strerochemistry description correctness
-            CHECK_QUERY = 0x00000020,        // Check query fetaures existance
-            CHECK_OVERLAP_ATOM = 0x00000040, // Check overlapping atoms existance
-            CHECK_OVERLAP_BOND = 0x00000080, // Check overlapping bonds existance
-            CHECK_RGROUP = 0x00000100,       // Check R-groups existance
-            CHECK_SGROUP = 0x00000200,       // Check S-groups existance
-            CHECK_TGROUP = 0x00000400,       // Check T-groups existance (SCSR features)
-            CHECK_CHIRALITY = 0x00000800,    // Check chirality feature correctness (including 3D source)
-            CHECK_CHIRAL_FLAG = 0x00001000,  // Check chiral flag existance (MOLFILE format)
-            CHECK_3D_COORD = 0x00002000,     // Check 3D coordinates existance
-            CHECK_CHARGE = 0x00004000,       // Check charged structure
-            CHECK_SALT = 0x00008000,         // Check possible salt structure
-            CHECK_AMBIGUOUS_H = 0x00010000,  // Check ambiguous H existance
-            CHECK_COORD = 0x00020000,        // Check coordinates existance
-            CHECK_ALL = 0xFFFFFFFF           // Check all features
+            CHECK_NONE = 0x00000,         // Check none
+            CHECK_LOAD = 0x00001,         // Check loading (correspondence some known format)
+            CHECK_VALENCE = 0x00002,      // Check valence correctness
+            CHECK_RADICAL = 0x00004,      // Check radicals existance
+            CHECK_PSEUDOATOM = 0x00008,   // Check pseudoatoms existance
+            CHECK_STEREO = 0x00010,       // Check strerochemistry description correctness
+            CHECK_QUERY = 0x00020,        // Check query fetaures existance
+            CHECK_OVERLAP_ATOM = 0x00040, // Check overlapping atoms existance
+            CHECK_OVERLAP_BOND = 0x00080, // Check overlapping bonds existance
+            CHECK_RGROUP = 0x00100,       // Check R-groups existance
+            CHECK_SGROUP = 0x00200,       // Check S-groups existance
+            CHECK_TGROUP = 0x00400,       // Check T-groups existance (SCSR features)
+            CHECK_CHIRALITY = 0x00800,    // Check chirality feature correctness (including 3D source)
+            CHECK_CHIRAL_FLAG = 0x01000,  // Check chiral flag existance (MOLFILE format)
+            CHECK_3D_COORD = 0x02000,     // Check 3D coordinates existance
+            CHECK_CHARGE = 0x04000,       // Check charged structure
+            CHECK_SALT = 0x08000,         // Check possible salt structure
+            CHECK_AMBIGUOUS_H = 0x10000,  // Check ambiguous H existance
+            CHECK_COORD = 0x20000,        // Check coordinates existance
+            CHECK_ALL = 0xFFFF           // Check all features
         };
 
         enum

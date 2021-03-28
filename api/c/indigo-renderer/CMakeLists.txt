@@ -32,7 +32,7 @@ if (NOT EMSCRIPTEN)
     elseif(APPLE)
         target_link_options(${PROJECT_NAME}
                 PRIVATE -Wl,-m)
-    elseif(MINGW OR UNIX)
+    elseif(MINGW OR UNIX OR MSYS OR CYGWIN)
         target_link_options(${PROJECT_NAME}
                 PRIVATE -Wl,--allow-multiple-definition)
     endif()

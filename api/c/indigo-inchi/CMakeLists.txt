@@ -17,9 +17,13 @@ target_include_directories(${PROJECT_NAME}-static
 
 if (NOT EMSCRIPTEN)
     add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
-    target_link_libraries(${PROJECT_NAME} PUBLIC indigo)
+    target_link_libraries(${PROJECT_NAME} PRIVATE indigo indigo-core)
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
+    if(MINGW)
+        target_link_options(${PROJECT_NAME}
+                PRIVATE -Wl,--allow-multiple-definition)
+    endif()
 
     if (ENABLE_TESTS)
         add_subdirectory(tests)

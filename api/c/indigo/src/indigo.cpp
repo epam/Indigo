@@ -37,7 +37,7 @@ DLLEXPORT Indigo& indigoGetInstance()
 
 CEXPORT const char* indigoVersion()
 {
-    return INDIGO_VERSION;
+    return INDIGO_VERSION "-" INDIGO_PLATFORM;
 }
 
 void Indigo::init()
