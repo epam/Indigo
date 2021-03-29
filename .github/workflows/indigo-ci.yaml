@@ -508,5 +508,26 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: bingo-oracle-windows
+          name: bingo-oracle-windows-mingw
+          path: dist/bingo-oracle*.zip
+  build_bingo_oracle_windows_msvc:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Build bingo-oracle
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF
+          cmake --build . --config Release --target bingo-oracle package-bingo-oracle -- -j $(nproc)
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bingo-oracle-windows-msvc
           path: dist/bingo-oracle*.zip
