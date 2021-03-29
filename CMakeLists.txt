@@ -25,7 +25,7 @@ option(BUILD_UTILS "Build indigo-cano, indigo-deco and indigo-depict utilities" 
 # Bingo-SQL options
 option(BUILD_BINGO_POSTGRES "Build Bingo Postgres cartridge" OFF)
 option(BUILD_BINGO_MSSQL "Build Bingo MS SqlServer cartridge [WIP]" OFF)
-option(BUILD_BINGO_ORACLE "Build Bingo Oracle cartridge [WIP]" ON)
+option(BUILD_BINGO_ORACLE "Build Bingo Oracle cartridge [WIP]" OFF)
 # Auto-set dependable options
 if (BUILD_UTILS AND NOT BUILD_INDIGO_RENDERER)
     message(STATUS "Enabling BUILD_INDIGO and BUILD_INDIGO_RENDERER because it's required for BUILD_UTILS")
