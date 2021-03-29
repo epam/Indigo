@@ -9,23 +9,23 @@ option(ENABLE_TESTS "Enable CTest tests" ON)
 option(BUILD_SELF_SUFFICIENT "Build without any system dependencies except for libc, otherwise require tinyxml, zlib, rapidjson, and cairo for renderer" ON)
 
 # Indigo API options
-option(BUILD_INDIGO "Build indigo shared library" ON)
+option(BUILD_INDIGO "Build indigo shared library" OFF)
 option(BUILD_INDIGO_INCHI "Build Indigo InChI plugin shared library" ON)
 option(BUILD_INDIGO_RENDERER "Build Indigo renderer plugin shared library" ON)
 option(BUILD_BINGO_NOSQL "Build Indigo bingo-nosql plugin shared library" ON)
 # Indigo API Bindings options
-option(PREPARE_INDIGO_BINDINGS "Prepare native libraries folder for later building bindings. It could be prepared manually" ON)
+option(PREPARE_INDIGO_BINDINGS "Prepare native libraries folder for later building bindings. It could be prepared manually" OFF)
 option(BUILD_INDIGO_BINDINGS "Build all existing Indigo API bindings" ON)
 option(BUILD_INDIGO_BINDINGS_PYTHON "Build Indigo API bindings to Python" ON)
 option(BUILD_INDIGO_BINDINGS_JAVA "Build Indigo API bindings to Java" ON)
 option(BUILD_INDIGO_BINDINGS_DOTNET "Build Indigo API bindings to .NET" ON)
 # option(BUILD_INDIGO_BINDINGS_R "Build Indigo API bindings to R [WIP]" OFF)
 # CLI utils options
-option(BUILD_UTILS "Build indigo-cano, indigo-deco and indigo-depict utilities" ON)
+option(BUILD_UTILS "Build indigo-cano, indigo-deco and indigo-depict utilities" OFF)
 # Bingo-SQL options
 option(BUILD_BINGO_POSTGRES "Build Bingo Postgres cartridge" OFF)
 option(BUILD_BINGO_MSSQL "Build Bingo MS SqlServer cartridge [WIP]" OFF)
-option(BUILD_BINGO_ORACLE "Build Bingo Oracle cartridge [WIP]" OFF)
+option(BUILD_BINGO_ORACLE "Build Bingo Oracle cartridge [WIP]" ON)
 # Auto-set dependable options
 if (BUILD_UTILS AND NOT BUILD_INDIGO_RENDERER)
     message(STATUS "Enabling BUILD_INDIGO and BUILD_INDIGO_RENDERER because it's required for BUILD_UTILS")
