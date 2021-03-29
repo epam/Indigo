@@ -36,6 +36,9 @@ if (EMSCRIPTEN)
 else()
     find_package(Threads REQUIRED)
 endif()
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 if (UNIX OR MINGW)
     string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden")
     string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden")
@@ -45,8 +48,6 @@ if (UNIX OR MINGW)
         elseif  (CMAKE_CXX_COMPILER_ID STREQUAL Clang)
             string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra -stdlib=libc++")
         endif()
-    else ()
-        list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
     endif ()
 
     if(MSYS OR CYGWIN)
