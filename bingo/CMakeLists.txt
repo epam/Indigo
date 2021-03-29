@@ -1,6 +1,5 @@
 if (BUILD_BINGO_POSTGRES OR BUILD_BINGO_ORACLE OR BUILD_BINGO_MSSQL)
     include(${CMAKE_CURRENT_SOURCE_DIR}/bingo-version.cmake)
-    message(STATUS "Bingo version is ${BINGO_VERSION}")
 
     add_subdirectory(bingo-core)
     if (BUILD_BINGO_POSTGRES OR BUILD_BINGO_MSSQL)
