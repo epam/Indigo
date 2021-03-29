@@ -503,8 +503,8 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
-          cmake --build . --config Release --target package-bingo-oracle
+          cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
