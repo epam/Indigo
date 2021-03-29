@@ -25,8 +25,8 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake ..
-          cmake --build . --config Release --target all before-wrappers -- -j $(nproc)
+          cmake .. -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target all-- -j $(nproc)
       - name: Test native libs
         run: |
           cd build
@@ -50,8 +50,8 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake ..
-          cmake --build . --config Release --target ALL_BUILD before-wrappers
+          cmake .. -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target ALL_BUILD
       - name: Test native libs
         run: |
           cd build
@@ -81,8 +81,8 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "MinGW Makefiles"
-          cmake --build . --config Release --target all before-wrappers -- -j $(nproc) --output-sync
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target all -- -j $(nproc) --output-sync
       - name: Test native libs
         run: |
           cd build
@@ -106,8 +106,8 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake ..
-          cmake --build . --config Release --target all before-wrappers -- -j $(nproc)
+          cmake .. -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target all -- -j $(nproc)
       - name: Test native libs
         run: |
           cd build
@@ -173,8 +173,8 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake ..
-          cmake --build . --config Release --target wrappers
+          cmake .. -DBUILD_INDIGO=OFF
+          cmake --build . --config Release --target indigo-wrappers
           ls -alh ../dist
       - name: Upload native shared libs
         uses: actions/upload-artifact@v2
@@ -476,8 +476,8 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF
-          cmake --build . --config Release --target bingo-oracle package-bingo-oracle -- -j $(nproc)
+          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -503,8 +503,8 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF
-          cmake --build . --config Release --target bingo-oracle package-bingo-oracle -- -j $(nproc)
+          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -524,10 +524,32 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF
-          cmake --build . --config Release --target bingo-oracle package-bingo-oracle -- -j $(nproc)
+          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: bingo-oracle-windows-msvc
           path: dist/bingo-oracle*.zip
+  build_bingo_postgres_linux:
+    runs-on: ubuntu-latest
+    container: epmlsop/buildpack-centos7:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Build bingo-oracle
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bingo-oracle-linux
+          path: dist/bingo-oracle*.tgz

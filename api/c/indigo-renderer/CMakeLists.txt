@@ -37,13 +37,11 @@ if (NOT EMSCRIPTEN)
         add_subdirectory(tests)
     endif()
 
-    if (PREPARE_INDIGO_WRAPPERS)
-        add_custom_target(before-wrappers-${PROJECT_NAME}
-                COMMAND ${CMAKE_COMMAND} -E make_directory ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY}
-                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
-        add_dependencies(before-wrappers before-wrappers-${PROJECT_NAME})
-        add_dependencies(before-wrappers-${PROJECT_NAME} ${PROJECT_NAME})
-    endif()
+    add_custom_target(before-indigo-wrappers-${PROJECT_NAME}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY}
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
+    add_dependencies(before-indigo-wrappers before-indigo-wrappers-${PROJECT_NAME})
+    add_dependencies(before-indigo-wrappers-${PROJECT_NAME} ${PROJECT_NAME})
 else()
     add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
     target_link_libraries(${PROJECT_NAME}-static

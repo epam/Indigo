@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
 
-project(indigo-all)
-
-set(GRAPHVIZ_CUSTOM_TARGETS TRUE)
+project(indigo-all LANGUAGES NONE)
 
 # Options
 
@@ -11,13 +9,12 @@ option(ENABLE_TESTS "Enable CTest tests" ON)
 option(BUILD_STANDALONE "Build without any system dependencies except for libc, otherwise require tinyxml, zlib, rapidjson, and cairo for renderer" ON)
 
 # Indigo API options
-option(BUILD_INDIGO "Build indigo shared library" OFF)
+option(BUILD_INDIGO "Build indigo shared library" ON)
 option(BUILD_INDIGO_INCHI "Build Indigo InChI plugin shared library" ON)
-option(BUILD_INDIGO_RENDERER "Build Indigo renderer plugin shared library" ON)
-option(BUILD_BINGO_NOSQL "Build Indigo bingo-nosql plugin shared library" ON)
+option(BUILD_INDIGO_RENDERER "Build Indigo Renderer plugin shared library" ON)
+option(BUILD_BINGO_NOSQL "Build Indigo Bingo NoSQL plugin shared library" ON)
 
 # Indigo API Wrappers options
-option(PREPARE_INDIGO_WRAPPERS "Prepare native libraries folder for later building wrappers. It could be prepared manually" OFF)
 option(BUILD_INDIGO_WRAPPERS "Build all existing Indigo API wrappers" ON)
 option(BUILD_INDIGO_WRAPPERS_PYTHON "Build Indigo API wrappers to Python" ON)
 option(BUILD_INDIGO_WRAPPERS_JAVA "Build Indigo API wrappers to Java" ON)
@@ -34,13 +31,11 @@ option(BUILD_BINGO_ORACLE "Build Bingo Oracle cartridge" OFF)
 
 # Auto-set dependent options
 if (NOT BUILD_INDIGO)
-    message(STATUS "Disabling BUILD_INDIGO_INCHI, BUILD_INDIGO_RENDERER, BUILD_BINGO_NOSQL, PREPARE_INDIGO_WRAPPERS, BUILD_INDIGO_WRAPPERS and BUILD_UTILS because BUILD_INDIGO=OFF")
+    message(STATUS "Disabling BUILD_INDIGO_INCHI, BUILD_INDIGO_RENDERER, BUILD_BINGO_NOSQL and BUILD_UTILS because BUILD_INDIGO=OFF")
     set(BUILD_INDIGO_INCHI OFF)
     set(BUILD_INDIGO_RENDERER OFF)
     set(BUILD_BINGO_NOSQL OFF)
-    set(PREPARE_INDIGO_WRAPPERS OFF)
     set(BUILD_UTILS OFF)
-    set(BUILD_INDIGO_WRAPPERS OFF)
 endif()
 
 if (BUILD_UTILS AND NOT BUILD_INDIGO_RENDERER)
@@ -70,7 +65,6 @@ if (EMSCRIPTEN)
     set(BUILD_INDIGO_INCHI ON)
     set(BUILD_INDIGO_RENDERER ON)
     set(BUILD_BINGO_NOSQL OFF)
-    set(PREPARE_INDIGO_WRAPPERS OFF)
     set(BUILD_INDIGO_WRAPPERS OFF)
     set(BUILD_INDIGO_WRAPPERS_PYTHON OFF)
     set(BUILD_INDIGO_WRAPPERS_JAVA OFF)
@@ -82,15 +76,22 @@ if (EMSCRIPTEN)
     set(BUILD_BINGO_ORACLE OFF)
 endif()
 
+if (BUILD_INDIGO OR BUILD_UTILS OR BUILD_BINGO_MSSQL OR BUILD_BINGO_ORACLE OR BUILD_BINGO_POSTGRES OR EMSCRIPTEN)
+    set(BUILD_NATIVE ON)
+endif()
+
 # Set up compiler flags and other preparatory steps
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(setup)
 
 # In subprojects we'll add dependencies for this pseudo-target to build all packages at once
-add_custom_target(package)
-add_subdirectory(third_party)
-add_subdirectory(core)
-add_subdirectory(api)
+if (BUILD_INDIGO OR BUILD_UTILS OR BUILD_BINGO_POSTGRES OR BUILD_BINGO_ORACLE OR BUILD_BINGO_MSSQL)
+    add_subdirectory(third_party)
+    add_subdirectory(core)
+endif()
+if (BUILD_INDIGO OR BUILD_INDIGO_WRAPPERS)
+    add_subdirectory(api)
+endif()
 if (BUILD_BINGO_POSTGRES OR BUILD_BINGO_ORACLE OR BUILD_BINGO_MSSQL)
     add_subdirectory(bingo)
 endif()
@@ -105,7 +106,6 @@ message(STATUS "BUILD_INDIGO=${BUILD_INDIGO}")
 message(STATUS "BUILD_INDIGO_INCHI=${BUILD_INDIGO_INCHI}")
 message(STATUS "BUILD_INDIGO_RENDERER=${BUILD_INDIGO_RENDERER}")
 message(STATUS "BUILD_BINGO_NOSQL=${BUILD_BINGO_NOSQL}")
-message(STATUS "PREPARE_INDIGO_WRAPPERS=${PREPARE_INDIGO_WRAPPERS}")
 message(STATUS "BUILD_INDIGO_WRAPPERS=${BUILD_INDIGO_WRAPPERS}")
 message(STATUS "BUILD_INDIGO_WRAPPERS_PYTHON=${BUILD_INDIGO_WRAPPERS_PYTHON}")
 message(STATUS "BUILD_INDIGO_WRAPPERS_JAVA=${BUILD_INDIGO_WRAPPERS_JAVA}")

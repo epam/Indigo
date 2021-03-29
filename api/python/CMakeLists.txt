@@ -1,6 +1,6 @@
-find_package (Python3 COMPONENTS Interpreter REQUIRED)
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
-add_custom_target(wrappers-python
+add_custom_target(indigo-python
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/indigo/lib
         COMMAND ${Python3_EXECUTABLE} setup.py test
@@ -12,4 +12,7 @@ add_custom_target(wrappers-python
         COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=mingw --python-tag=py2.py3
         COMMAND cp "${CMAKE_CURRENT_SOURCE_DIR}/dist/*.whl" "${DIST_DIRECTORY}/"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/)
-add_dependencies(wrappers wrappers-python)
+add_dependencies(indigo-wrappers indigo-python)
+if (BUILD_INDIGO)
+    add_dependencies(indigo-python before-indigo-wrappers)
+endif ()

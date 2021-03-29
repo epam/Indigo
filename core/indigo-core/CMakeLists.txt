@@ -21,6 +21,7 @@ endif()
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
 
 if (NOT EMSCRIPTEN)
+    find_package(Threads REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC Threads::Threads)
 endif()
 

@@ -40,14 +40,11 @@ echo '    Target directory with the installed bingo_postgres'$libext' (defaut {C
 echo '  -schema name'
 echo '    Postgres schema name (default "bingo").'
 echo '  -pglibdir'
-echo '    Use postgreSQL $libdir option (default "false")'
+echo '    Use PostgreSQL $libdir option (default "false")'
 echo '    Notice: bingo_postgres'$libext' must be placed in the package library directory'
 echo '  -y'
 echo '    Process default options (default "false")'
 }
-
-
-
 
 while [ "$#" != 0 ]; do
   case "$1" in
@@ -72,7 +69,7 @@ while [ "$#" != 0 ]; do
      *)
         echo "Unknown parameter: $1";
         usage;
-        exit -1
+        exit 255
   esac
   shift
 done
@@ -111,5 +108,3 @@ sed 's,BINGO_PATHNAME,'$libdir'/'$bingo_pg_name',g' <sql/bingo_config.sql.in >>b
 
 #Generate uninstall script
 sed 's,BINGO_SCHEMANAME,'$schema_name',g'         <sql/bingo_uninstall.quick.sql.in >bingo_uninstall.sql
-
-

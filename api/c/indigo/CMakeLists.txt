@@ -55,38 +55,16 @@ if (NOT EMSCRIPTEN)
         add_subdirectory(tests)
     endif ()
 
-    install(TARGETS ${PROJECT_NAME}
-            LIBRARY DESTINATION lib)
-    install(FILES indigo.h DESTINATION .)
-
-    set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
-    set(CPACK_PACKAGE_VERSION ${INDIGO_VERSION})
-    set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME_LOWER}-${CMAKE_SYSTEM_PROCESSOR_LOWER}")
-    if (UNIX)
-        set(CPACK_GENERATOR "TGZ")
-    else ()
-        set(CPACK_GENERATOR "ZIP")
-    endif ()
-    set(CPACK_VERBATIM_VARIABLES YES)
-    set(CPACK_OUTPUT_CONFIG_FILE ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.CPackConfig.cmake)
-    include(CPack)
-
-    add_custom_target(package-${PROJECT_NAME}
-            COMMAND "${CMAKE_CPACK_COMMAND}"
-            "-C" "$<CONFIGURATION>" "--config" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.CPackConfig.cmake")
-    add_dependencies(package package-${PROJECT_NAME})
-
-    if (PREPARE_INDIGO_WRAPPERS)
-        add_custom_target(before-wrappers-${PROJECT_NAME}
-                COMMAND ${CMAKE_COMMAND} -E make_directory ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY}
-                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
-        foreach(lib ${INDIGO_MSVC_SYSTEM_RUNTIME_LIBS})
-            add_custom_command(TARGET before-wrappers-${PROJECT_NAME} POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy ${lib} ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
-        endforeach()
-        add_dependencies(before-wrappers before-wrappers-${PROJECT_NAME})
-        add_dependencies(before-wrappers-${PROJECT_NAME} ${PROJECT_NAME})
-    endif ()
+    # Prepare libraries to build wrappers
+    add_custom_target(before-indigo-wrappers-${PROJECT_NAME}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY}
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
+    foreach(lib ${INDIGO_MSVC_SYSTEM_RUNTIME_LIBS})
+        add_custom_command(TARGET before-indigo-wrappers-${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy ${lib} ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
+    endforeach()
+    add_dependencies(before-indigo-wrappers before-indigo-wrappers-${PROJECT_NAME})
+    add_dependencies(before-indigo-wrappers-${PROJECT_NAME} ${PROJECT_NAME})
 else()
     add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
     target_include_directories(${PROJECT_NAME}-static
