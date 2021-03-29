@@ -9,7 +9,7 @@ add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
 get_target_property(IndigoCore_INCLUDE_DIRECTORIES indigo-core INCLUDE_DIRECTORIES)
 target_include_directories(${PROJECT_NAME} PUBLIC ${IndigoCore_INCLUDE_DIRECTORIES})
 
-if (BUILD_SELF_SUFFICIENT)
+if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC cairo)
 else ()

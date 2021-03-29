@@ -8,7 +8,7 @@ add_custom_target(indigo-integration-tests-prepare
 #        COMMAND pyinstaller -F test.py -n indigo-integration-tests
 #        COMMAND ${CMAKE_COMMAND} -E copy dist/indigo-integration-tests${CMAKE_EXECUTABLE_SUFFIX} .
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DEPENDS before-bindings
+        DEPENDS before-wrappers
 )
 
 #add_executable(indigo-integration-tests IMPORTED)

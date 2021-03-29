@@ -12,13 +12,6 @@ target_link_libraries(${PROJECT_NAME}-object
 target_include_directories(${PROJECT_NAME}-object
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
-add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
-target_link_libraries(${PROJECT_NAME}-static
-        PUBLIC indigo-static
-        PUBLIC render2d)
-target_include_directories(${PROJECT_NAME}-static
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
-
 if (NOT EMSCRIPTEN)
     add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
     target_link_libraries(${PROJECT_NAME}
@@ -44,11 +37,18 @@ if (NOT EMSCRIPTEN)
         add_subdirectory(tests)
     endif()
 
-    if (PREPARE_INDIGO_BINDINGS)
-        add_custom_target(before-bindings-${PROJECT_NAME}
+    if (PREPARE_INDIGO_WRAPPERS)
+        add_custom_target(before-wrappers-${PROJECT_NAME}
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY}
                 COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
-        add_dependencies(before-bindings before-bindings-${PROJECT_NAME})
-        add_dependencies(before-bindings-${PROJECT_NAME} ${PROJECT_NAME})
+        add_dependencies(before-wrappers before-wrappers-${PROJECT_NAME})
+        add_dependencies(before-wrappers-${PROJECT_NAME} ${PROJECT_NAME})
     endif()
+else()
+    add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
+    target_link_libraries(${PROJECT_NAME}-static
+            PUBLIC indigo-static
+            PUBLIC render2d)
+    target_include_directories(${PROJECT_NAME}-static
+            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 endif()

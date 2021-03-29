@@ -14,7 +14,7 @@ add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES})
 target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
         PUBLIC ${OCI_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} bingo-core inchi tinyxml zlib)
+target_link_libraries(${PROJECT_NAME} bingo-core)
 
 if (WIN32)
 	target_link_libraries(${PROJECT_NAME} ${OCI_LIBRARIES})

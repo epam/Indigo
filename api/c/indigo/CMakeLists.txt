@@ -15,13 +15,6 @@ target_include_directories(${PROJECT_NAME}-object
 target_link_libraries(${PROJECT_NAME}-object
         PUBLIC indigo-core)
 
-add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
-target_include_directories(${PROJECT_NAME}-static
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(${PROJECT_NAME}-static
-        PUBLIC indigo-core)
-
 if (NOT EMSCRIPTEN)
     add_library(${PROJECT_NAME} SHARED $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
     target_link_libraries(${PROJECT_NAME}
@@ -83,15 +76,22 @@ if (NOT EMSCRIPTEN)
             "-C" "$<CONFIGURATION>" "--config" "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.CPackConfig.cmake")
     add_dependencies(package package-${PROJECT_NAME})
 
-    if (PREPARE_INDIGO_BINDINGS)
-        add_custom_target(before-bindings-${PROJECT_NAME}
+    if (PREPARE_INDIGO_WRAPPERS)
+        add_custom_target(before-wrappers-${PROJECT_NAME}
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY}
                 COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
         foreach(lib ${INDIGO_MSVC_SYSTEM_RUNTIME_LIBS})
-            add_custom_command(TARGET before-bindings-${PROJECT_NAME} POST_BUILD
+            add_custom_command(TARGET before-wrappers-${PROJECT_NAME} POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy ${lib} ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
         endforeach()
-        add_dependencies(before-bindings before-bindings-${PROJECT_NAME})
-        add_dependencies(before-bindings-${PROJECT_NAME} ${PROJECT_NAME})
+        add_dependencies(before-wrappers before-wrappers-${PROJECT_NAME})
+        add_dependencies(before-wrappers-${PROJECT_NAME} ${PROJECT_NAME})
     endif ()
+else()
+    add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
+    target_include_directories(${PROJECT_NAME}-static
+            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
+            PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+    target_link_libraries(${PROJECT_NAME}-static
+            PUBLIC indigo-core)
 endif ()
