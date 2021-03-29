@@ -27,14 +27,14 @@ if (NOT EMSCRIPTEN)
     target_link_libraries(${PROJECT_NAME}
             PRIVATE indigo-core
     )
-    set(INDIGO_MSVC_SYSTEM_RUNTIME_LIBS "")
     if (MINGW)
         # Avoid all MinGW-related runtime-dependencies, including them in DLL
         target_link_options(${PROJECT_NAME} PRIVATE -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive)
     elseif(MSYS OR CYGWIN)
         target_link_options(${PROJECT_NAME} PRIVATE -Wl,--exclude-libs,ALL)
     else()
-        # On MSVC we cannot statically link C++ runtime, so we need to copy requried files as dependencies
+        # On MSVC we cannot statically link C++ runtime, so we need to copy required files as dependencies
+        set(INDIGO_MSVC_SYSTEM_RUNTIME_LIBS "")
         list(APPEND INDIGO_MSVC_SYSTEM_RUNTIME_LIBS_SUBSTRINGS
                 vcruntime140_1.dll
                 vcruntime140.dll

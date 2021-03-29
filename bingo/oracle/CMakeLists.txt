@@ -17,5 +17,9 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} bingo-core inchi tinyxml zlib)
 
 if (WIN32)
-	target_link_libraries(${PROJECT_NAME} odbc32 odbccp32 ${OCI_LIBRARIES})
+	target_link_libraries(${PROJECT_NAME} ${OCI_LIBRARIES})
+endif()
+if (MINGW)
+	# Avoid all MinGW-related runtime-dependencies, including them in DLL
+	target_link_options(${PROJECT_NAME} PRIVATE -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive)
 endif()
