@@ -27,7 +27,7 @@ endif()
 
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}
-            PUBLIC zlib
+            PUBLIC z
             PUBLIC tinyxml
             PUBLIC rapidjson
             PUBLIC inchi)

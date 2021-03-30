@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(zlib C)
+project(z C)
 
 file (GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS "src/*.c")
 
