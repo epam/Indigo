@@ -531,26 +531,61 @@ jobs:
         with:
           name: bingo-oracle-windows-msvc
           path: dist/bingo-oracle*.zip
-  # TODO: use correct Docker image and install required build tools
-  # build_bingo_postgres_linux:
-  #   runs-on: ubuntu-latest
-  #   container: epmlsop/buildpack-centos7:latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #       with:
-  #         lfs: true
-  #         fetch-depth: 500
-  #     - name: Git fetch tags
-  #       run: git fetch --tags -f
-  #     - name: Build bingo-oracle
-  #       run: |
-  #         mkdir build
-  #         cd build
-  #         cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
-  #         cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
-  #     - name: Upload artifacts
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: bingo-oracle-linux
-  #         path: dist/bingo-oracle*.tgz
+  build_bingo_postgres_linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres_version: [ 12, 11, 10 ]
+    runs-on: ubuntu-latest
+    container: epmlsop/buildpack-centos7:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Install postgres server headers
+        run: |
+          yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils
+          yumdownloader postgresql${{ matrix.postgres_version }}-devel
+          rpm -i --nodeps postgresql${{ matrix.postgres_version }}*.rpm
+      - name: Build bingo-postgres
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bingo-postgres-linux
+          path: dist/bingo-postgres*.tgz
+  build_bingo_postgres_windows_msvc:
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres_version: [ 12, 11, 10 ]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Install Postgres
+        run: choco install -y postgresql${{ matrix.postgres_version }}
+      - name: Build bingo-postgres
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target package-bingo-postgres
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bingo-postgres-linux
+          path: dist/bingo-postgres*.zip

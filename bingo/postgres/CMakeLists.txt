@@ -8,38 +8,48 @@ file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
         src/pg_core/*.cpp src/pg_core/*.c)
 find_package(PostgreSQL REQUIRED)
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES})
-find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME}
-        PUBLIC bingo-core-c-static
-        PUBLIC PostgreSQL::PostgreSQL
-        PUBLIC Threads::Threads)
+        PUBLIC bingo-core-c-static)
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME}
+            PUBLIC PostgreSQL::PostgreSQL)
+endif ()
+
+# C:\Program Files\PostgreSQL\9.6\include\server\port\win32
+message(STATUS ${PostgreSQL_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME}
+        PUBLIC ${PostgreSQL_INCLUDE_DIRS}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core)
+if (WIN32)
+    target_include_directories(${PROJECT_NAME}
+            PUBLIC ${PostgreSQL_INCLUDE_DIRS}/port/win32)
+endif ()
+
 if (UNIX)
     # We need to explicitly export "Pg_magic_func", we need to remove visibility=hidden for this library
     string(REPLACE "-fvisibility=hidden" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-endif()
+endif ()
 
 string(REPLACE "." ";" PostgreSQL_VERSION_LIST ${PostgreSQL_VERSION_STRING})
 list(GET PostgreSQL_VERSION_LIST 0 PostgreSQL_VERSION_MAJOR)
 list(GET PostgreSQL_VERSION_LIST 1 PostgreSQL_VERSION_MINOR)
-if(PostgreSQL_VERSION_MAJOR GREATER 9)
+if (PostgreSQL_VERSION_MAJOR GREATER 9)
     set(PostgreSQL_VERSION ${PostgreSQL_VERSION_MAJOR})
-else()
+else ()
     set(PostgreSQL_VERSION "${PostgreSQL_VERSION_MAJOR}.${PostgreSQL_VERSION_MINOR}")
-endif()
+endif ()
 
 set(BINGO_POSTGRES_PACKAGE_DIR ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${BINGO_VERSION}-${CMAKE_SYSTEM_NAME_LOWER}-${CMAKE_SYSTEM_PROCESSOR_LOWER})
 if (WIN32)
     set(BINGO_POSTGRES_SETUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/setup/bingo-pg-install.bat)
     set(ARCHIVE_FORMAT zip)
     set(ARCHIVE_FLAGS cvf --format=zip)
-else()
+else ()
     set(BINGO_POSTGRES_SETUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/setup/bingo-pg-install.sh)
     set(ARCHIVE_FLAGS cfvz)
     set(ARCHIVE_FORMAT tgz)
-endif()
+endif ()
 add_custom_target(package-bingo-postgres
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${BINGO_POSTGRES_PACKAGE_DIR}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${BINGO_POSTGRES_PACKAGE_DIR}/lib
