@@ -22,6 +22,7 @@ target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core)
 
 if (WIN32)
+    string(REPLACE "libpq.lib" "postgres.lib" PostgreSQL_LIBRARIES ${PostgreSQL_LIBRARIES})
     if (MSVC)
         target_include_directories(${PROJECT_NAME}
                 PUBLIC ${PostgreSQL_TYPE_INCLUDE_DIR}/port/win32_msvc)
@@ -29,7 +30,6 @@ if (WIN32)
         target_link_options(${PROJECT_NAME} PRIVATE -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive)
         target_compile_definitions(${PROJECT_NAME}
                 PRIVATE -DHAVE_LONG_INT_64 -D_TIMEZONE_DEFINED -DHAVE_GETTIMEOFDAY)
-        string(REPLACE "libpq.lib" "postgres.lib" PostgreSQL_LIBRARIES ${PostgreSQL_LIBRARIES})
     endif()
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${PostgreSQL_TYPE_INCLUDE_DIR}/port/win32)
