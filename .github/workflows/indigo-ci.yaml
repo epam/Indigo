@@ -535,7 +535,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_version: [ 12, 11, 10 ]
+        postgres_major_version: [ 12, 11, 10 ]
     runs-on: ubuntu-latest
     container: epmlsop/buildpack-centos7:latest
     steps:
@@ -549,8 +549,8 @@ jobs:
       - name: Install postgres server headers
         run: |
           yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils
-          yumdownloader postgresql${{ matrix.postgres_version }}-devel
-          rpm -i --nodeps postgresql${{ matrix.postgres_version }}*.rpm
+          yumdownloader postgresql${{ matrix.postgres_major_version }}-devel
+          rpm -i --nodeps postgresql${{ matrix.postgres_major_version }}*.rpm
       - name: Build bingo-postgres
         run: |
           mkdir build
@@ -560,13 +560,13 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: bingo-postgres-linux
+          name: bingo-postgres-${{ matrix.postgres_major_version }}-linux
           path: dist/bingo-postgres*.tgz
   build_bingo_postgres_windows_msvc:
     strategy:
       fail-fast: false
       matrix:
-        postgres_version: [ "12.6-1", "11.11-1", "10.16-1" ]
+        postgres_major_version: [ 12, 11, 10 ]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -578,9 +578,11 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          curl -O https://get.enterprisedb.com/postgresql/postgresql-${{ matrix.postgres_version }}-windows-x64-binaries.zip
-          Expand-Archive postgresql-${{ matrix.postgres_version }}-windows-x64-binaries.zip
-          cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { 12 { 12.6 } 11 { 11.11 } 10 { 10.16 }};
+          curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip;
+          Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip;
+          ls;
+          cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h;
       - name: Build bingo-postgres
         run: |
           mkdir build
@@ -590,5 +592,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: bingo-postgres-windows
+          name: bingo-postgres-${{ matrix.postgres_major_version }}-windows
           path: dist/bingo-postgres*.zip
