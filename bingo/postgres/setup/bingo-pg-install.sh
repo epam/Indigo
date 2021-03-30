@@ -36,12 +36,12 @@ echo 'Parameters:'
 echo '  -?, -help'
 echo '    Print this help message'
 echo '  -libdir path'
-echo '    Target directory with the installed bingo_postgres'$libext' (defaut {CURRENT_DIR}/bin/).'
+echo "    Target directory with the installed bingo-postgres$libext (default {PWD}/lib)."
 echo '  -schema name'
 echo '    Postgres schema name (default "bingo").'
 echo '  -pglibdir'
 echo '    Use PostgreSQL $libdir option (default "false")'
-echo '    Notice: bingo_postgres'$libext' must be placed in the package library directory'
+echo "    Notice: bingo-postgres$libext must be placed in the package library directory"
 echo '  -y'
 echo '    Process default options (default "false")'
 }

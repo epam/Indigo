@@ -1,4 +1,9 @@
-cmake_minimum_required(VERSION 3.4)
+if (WIN32)
+    # We need PostgreSQL_TYPE_INCLUDE_DIR definition
+    cmake_minimum_required(VERSION 3.17)
+else()
+    cmake_minimum_required(VERSION 3.4)
+endif()
 
 project(bingo-postgres C CXX)
 
@@ -10,20 +15,26 @@ find_package(PostgreSQL REQUIRED)
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES})
 target_link_libraries(${PROJECT_NAME}
         PUBLIC bingo-core-c-static)
-if (WIN32)
-    target_link_libraries(${PROJECT_NAME}
-            PUBLIC PostgreSQL::PostgreSQL)
-endif ()
 
-# C:\Program Files\PostgreSQL\9.6\include\server\port\win32
-message(STATUS ${PostgreSQL_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME}
         PUBLIC ${PostgreSQL_INCLUDE_DIRS}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core)
+
 if (WIN32)
+    if (MSVC)
+        target_include_directories(${PROJECT_NAME}
+                PUBLIC ${PostgreSQL_TYPE_INCLUDE_DIR}/port/win32_msvc)
+    elseif(MINGW)
+        target_link_options(${PROJECT_NAME} PRIVATE -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive)
+        target_compile_definitions(${PROJECT_NAME}
+                PRIVATE -DHAVE_LONG_INT_64 -D_TIMEZONE_DEFINED -DHAVE_GETTIMEOFDAY)
+        string(REPLACE "libpq.lib" "postgres.lib" PostgreSQL_LIBRARIES ${PostgreSQL_LIBRARIES})
+    endif()
     target_include_directories(${PROJECT_NAME}
-            PUBLIC ${PostgreSQL_INCLUDE_DIRS}/port/win32)
+            PUBLIC ${PostgreSQL_TYPE_INCLUDE_DIR}/port/win32)
+    target_link_libraries(${PROJECT_NAME}
+            PUBLIC ${PostgreSQL_LIBRARIES})
 endif ()
 
 if (UNIX)
@@ -44,12 +55,13 @@ set(BINGO_POSTGRES_PACKAGE_DIR ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${BINGO_VERSI
 if (WIN32)
     set(BINGO_POSTGRES_SETUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/setup/bingo-pg-install.bat)
     set(ARCHIVE_FORMAT zip)
-    set(ARCHIVE_FLAGS cvf --format=zip)
-else ()
+    set(ARCHIVE_FLAGS cvf)
+    set(ARCHIVE_FLAGS_2 --format=zip)
+else()
     set(BINGO_POSTGRES_SETUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/setup/bingo-pg-install.sh)
     set(ARCHIVE_FLAGS cfvz)
     set(ARCHIVE_FORMAT tgz)
-endif ()
+endif()
 add_custom_target(package-bingo-postgres
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${BINGO_POSTGRES_PACKAGE_DIR}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${BINGO_POSTGRES_PACKAGE_DIR}/lib
@@ -57,7 +69,7 @@ add_custom_target(package-bingo-postgres
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/sql/common ${BINGO_POSTGRES_PACKAGE_DIR}/sql
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/sql/${PostgreSQL_VERSION}/bingo_am.sql.in ${BINGO_POSTGRES_PACKAGE_DIR}/sql/
         COMMAND ${CMAKE_COMMAND} -E copy ${BINGO_POSTGRES_SETUP_SCRIPT} ${BINGO_POSTGRES_PACKAGE_DIR}/
-        COMMAND ${CMAKE_COMMAND} -E tar ${ARCHIVE_FLAGS} ${BINGO_POSTGRES_PACKAGE_DIR}.${ARCHIVE_FORMAT} ${BINGO_POSTGRES_PACKAGE_DIR}
+        COMMAND ${CMAKE_COMMAND} -E tar ${ARCHIVE_FLAGS} ${BINGO_POSTGRES_PACKAGE_DIR}.${ARCHIVE_FORMAT} ${ARCHIVE_FLAGS_2} ${BINGO_POSTGRES_PACKAGE_DIR}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
         COMMAND ${CMAKE_COMMAND} -E copy ${BINGO_POSTGRES_PACKAGE_DIR}.${ARCHIVE_FORMAT} ${DIST_DIRECTORY}/
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}

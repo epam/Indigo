@@ -39,7 +39,11 @@ using namespace indigo;
 
 extern "C"
 {
+#ifdef __MINGW32__
+EXPORT_SYMBOL PG_MODULE_MAGIC;
+#else
 PG_MODULE_MAGIC;
+#endif
 
 #if PG_VERSION_NUM / 100 >= 906
     BINGO_FUNCTION_EXPORT(bingo_handler);

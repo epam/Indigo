@@ -18,7 +18,6 @@
 set libdir=%CD%/lib
 
 set schemaname=bingo
-set libext=".dll"
 set y=
 set pglibdir=
 
@@ -111,13 +110,13 @@ echo End Function >> replace.vbs
 @rem Generate install script
 cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo_schema.sql.in bingo_install.sql
 cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo_pg.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo_internal.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\mango_internal.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo-postgres sql\bingo_internal.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo-postgres sql\mango_internal.sql.in bingo_install.sql
 cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\mango_pg.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\ringo_internal.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo-postgres sql\ringo_internal.sql.in bingo_install.sql
 cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\ringo_pg.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo_am.sql.in bingo_install.sql
-cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo_postgres sql\bingo_config.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo-postgres sql\bingo_am.sql.in bingo_install.sql
+cscript //b replace.vbs BINGO_PATHNAME %libdir%/bingo-postgres sql\bingo_config.sql.in bingo_install.sql
 @rem Generate uninstall script
 if exist bingo_uninstall.sql del bingo_uninstall.sql
 cscript //b replace.vbs BINGO_SCHEMANAME %schemaname% sql\bingo_uninstall.quick.sql.in bingo_uninstall.sql 
@@ -136,12 +135,12 @@ echo Parameters:
 echo   -?, -help
 echo     Print this help message
 echo   -libdir path
-echo     Target directory with the installed bingo_postgres%libext% (defaut %CD%\bin).
+echo     Target directory with the installed bingo-postgres.dll (defaut %CD%\bin).
 echo   -schema name
 echo     Postgres schema name (default "bingo").
 echo   -pglibdir
 echo     Use postgreSQL $libdir option (default "false")
-echo     Notice: bingo_postgres%libext% must be placed in the package library directory
+echo     Notice: bingo-postgres.dll must be placed in the package library directory
 echo   -y
 echo     Process default options (default "false")
 goto end
@@ -149,4 +148,3 @@ goto end
 :end
 set libdir=
 set schemaname=
-set libext=
