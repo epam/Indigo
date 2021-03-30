@@ -9,7 +9,7 @@ extern "C"
 #include "fmgr.h"
 #include "storage/bufmgr.h"
 #include "utils/rel.h"
-#include "utils/relcache.h"
+
 
 #if PG_VERSION_NUM / 100 >= 906
 #include "access/amapi.h"
@@ -25,7 +25,6 @@ extern "C"
 #include "base_cpp/tlscont.h"
 #include "bingo_pg_build.h"
 #include "bingo_pg_common.h"
-#include "bingo_pg_text.h"
 #include "bingo_postgres.h"
 #include "pg_bingo_context.h"
 

@@ -566,7 +566,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_version: [ 12, 11, 10 ]
+        postgres_version: [ 12.6-1, 11.11-1, 10.16-1 ]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -576,13 +576,16 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
-      - name: Install Postgres
-        run: choco install -y postgresql${{ matrix.postgres_version }}
+      - name: Set up Postgres
+        run: |
+          curl -O https://get.enterprisedb.com/postgresql/postgresql-${{ postgres_version }}-windows-x64-binaries.zip
+          Expand-Archive postgresql-${{ postgres_version }}-windows-x64-binaries.zip
+          cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h
       - name: Build bingo-postgres
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DPostgreSQL_ROOT="$(resolve-path $pwd/../pgsql)"
           cmake --build . --config Release --target package-bingo-postgres
       - name: Upload artifacts
         uses: actions/upload-artifact@v2

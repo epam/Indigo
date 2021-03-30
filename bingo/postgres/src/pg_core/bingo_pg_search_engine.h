@@ -5,15 +5,7 @@
  * Interface class for procession fingerprint data
  */
 
-#ifdef qsort
-#pragma push_macro("qsort")
-#undef qsort
-#define POP_QSORT
-#endif
 #include "base_cpp/array.h"
-#ifdef POP_QSORT
-#pragma pop_macro("qsort")
-#endif
 #include "base_cpp/auto_ptr.h"
 
 #include "bingo_pg_buffer_cache.h"
