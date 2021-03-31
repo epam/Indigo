@@ -5,11 +5,19 @@ import sys
 
 
 def isIronPython():
-    return sys.platform == 'cli'
+    try:
+        import clr
+        return True
+    except:
+        return False
 
 
 def isJython():
-    return os.name == 'java'
+    try:
+        import java
+        return True
+    except:
+        return False
 
 
 def getIndigoVersion():
@@ -59,3 +67,16 @@ def getPlatform():
         else:
             raise EnvironmentError('Unsupported operating system %s' % os.name)
     return system_name
+
+
+def get_indigo_java_version():
+    pom_path = os.path.join(REPO_ROOT, 'api', 'java', 'pom.xml')
+    ElementTree.register_namespace("", "http://maven.apache.org/POM/4.0.0")
+    tree = ElementTree.parse(pom_path)
+    namespace = r'{http://maven.apache.org/POM/4.0.0}'
+    for l1_child in tree.getroot():
+        if l1_child.tag == "{}properties".format(namespace):
+            for l2_child in l1_child:
+                if l2_child.tag == "{}revision".format(namespace):
+                    return l2_child.text
+    raise ValueError('Could not find version in {}'.format(pom_path))

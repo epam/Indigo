@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.epam.indigo</groupId>
     <artifactId>bingo-nosql</artifactId>
-    <version>${indigoVersion}</version>
+    <version>${revision}</version>
     <packaging>jar</packaging>
 
     <name>Indigo Bingo NoSQL</name>
@@ -13,14 +13,14 @@
     <parent>
         <groupId>com.epam.indigo</groupId>
         <artifactId>parent</artifactId>
-        <version>${indigoVersion}</version>
+        <version>${revision}</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>com.epam.indigo</groupId>
             <artifactId>indigo</artifactId>
-            <version>${indigoVersion}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

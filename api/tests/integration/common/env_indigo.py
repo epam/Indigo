@@ -5,8 +5,13 @@ import shutil
 import inspect
 import threading
 from math import sqrt
+import xml.etree.cElementTree as ElementTree
 
-from util import isIronPython, isJython, getPlatform, getIndigoVersion, getCpuCount
+from util import isIronPython, isJython, getPlatform, getIndigoVersion, getCpuCount, get_indigo_java_version
+
+
+REPO_ROOT = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', '..', '..'))
+
 
 if sys.platform == 'cli':
     import clr
@@ -86,19 +91,25 @@ if isIronPython():
     for item in os.environ['INDIGO_PATH'].split(os.pathsep):
         cdll_indigo(item)
         clr.AddReferenceToFileAndPath(item)
-    from com.epam.indigo import Indigo, IndigoOject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
+    from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
 elif isJython():
-    from com.epam.indigo import Indigo, IndigoOject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
+    from jip.embed import require
+    indigo_java_version = get_indigo_java_version()
+    require('net.java.dev.jna:jna:5.8.0')
+    require('com.epam.indigo:indigo:{}'.format(indigo_java_version))
+    require('com.epam.indigo:indigo-inchi:{}'.format(indigo_java_version))
+    require('com.epam.indigo:indigo-renderer:{}'.format(indigo_java_version))
+    require('com.epam.indigo:bingo-nosql:{}'.format(indigo_java_version))
+    from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
+    dll_full_path = lambda: sys.path[-5]
 else:
-    indigo_python_source_folder = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', '..', 'python'))
-    print(indigo_python_source_folder)
+    indigo_python_source_folder = os.path.join(REPO_ROOT, 'api', 'python')
     sys.path.append(indigo_python_source_folder)
     from indigo import Indigo, IndigoObject, IndigoException
     from indigo.renderer import IndigoRenderer
     from indigo.inchi import IndigoInchi
     from indigo.bingo import Bingo, BingoException, BingoObject
-    import indigo
-    dll_full_path = indigo.__file__
+    dll_full_path = lambda: Indigo._dll_path
 
 
 def getIndigoExceptionText(e):

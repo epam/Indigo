@@ -31,11 +31,11 @@ class IndigoRenderer(object):
             and not platform.mac_ver()[0]
             and not platform.system().startswith("CYGWIN")
         ):
-            self._lib = CDLL(indigo._dll_path + "/libindigo-renderer.so")
+            self._lib = CDLL(indigo._dll_dir + "/libindigo-renderer.so")
         elif os.name == "nt" or platform.system().startswith("CYGWIN"):
-            self._lib = CDLL(indigo._dll_path + "\indigo-renderer.dll")
+            self._lib = CDLL(indigo._dll_dir + "/indigo-renderer.dll")
         elif platform.mac_ver()[0]:
-            self._lib = CDLL(indigo._dll_path + "/libindigo-renderer.dylib")
+            self._lib = CDLL(indigo._dll_dir + "/libindigo-renderer.dylib")
         else:
             raise IndigoException("unsupported OS: " + os.name)
 

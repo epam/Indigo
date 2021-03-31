@@ -133,11 +133,11 @@ class Bingo(object):
     @staticmethod
     def _getLib(indigo):
         if os.name == 'posix' and not platform.mac_ver()[0] and not platform.system().startswith("CYGWIN"):
-            _lib = CDLL(indigo._dll_path + "/libbingo-nosql.so")
+            _lib = CDLL(indigo._dll_dir + "/libbingo-nosql.so")
         elif os.name == 'nt' or platform.system().startswith("CYGWIN"):
-            _lib = CDLL(indigo._dll_path + "/bingo-nosql.dll")
+            _lib = CDLL(indigo._dll_dir + "/bingo-nosql.dll")
         elif platform.mac_ver()[0]:
-            _lib = CDLL(indigo._dll_path + "/libbingo-nosql.dylib")
+            _lib = CDLL(indigo._dll_dir + "/libbingo-nosql.dylib")
         else:
             raise BingoException("unsupported OS: " + os.name)
         return _lib

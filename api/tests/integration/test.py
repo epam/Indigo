@@ -128,7 +128,7 @@ def main():
         python_exec = python_exec[1:-1]
 
     print("Indigo version: " + indigo.version())
-    print("Indigo library path: " + dll_full_path)
+    print("Indigo library path: " + dll_full_path())
     print("Date & time: " + datetime.datetime.now().strftime("%d.%m.%Y %H:%M"))
     if sys.platform == 'cli':
         import System.Environment

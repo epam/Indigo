@@ -23,11 +23,11 @@ class IndigoInchi(object):
         self.indigo = indigo
 
         if os.name == 'posix' and not platform.mac_ver()[0] and not platform.system().startswith("CYGWIN"):
-            self._lib = CDLL(indigo._dll_path + "/libindigo-inchi.so")
+            self._lib = CDLL(indigo._dll_dir + "/libindigo-inchi.so")
         elif os.name == 'nt' or platform.system().startswith("CYGWIN"):
-            self._lib = CDLL(indigo._dll_path + "\indigo-inchi.dll")
+            self._lib = CDLL(indigo._dll_dir + "/indigo-inchi.dll")
         elif platform.mac_ver()[0]:
-            self._lib = CDLL(indigo._dll_path + "/libindigo-inchi.dylib")
+            self._lib = CDLL(indigo._dll_dir + "/libindigo-inchi.dylib")
         else:
             raise IndigoException("unsupported OS: " + os.name)
 
