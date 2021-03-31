@@ -2,6 +2,10 @@ if(POLICY CMP0068)
     # https://cmake.org/cmake/help/v3.9/policy/CMP0068.html
     cmake_policy(SET CMP0068 NEW)
 endif()
+if (BUILD_BINGO_POSTGRES AND (WIN32 OR APPLE))
+    # https://cmake.org/cmake/help/v3.12/policy/CMP0074.html
+    cmake_policy(SET CMP0074 NEW)
+endif()
 
 if (BUILD_NATIVE)
     enable_language(C CXX)

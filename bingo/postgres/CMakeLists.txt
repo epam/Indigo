@@ -1,4 +1,4 @@
-if (WIN32)
+if (WIN32 OR APPLE)
     # We need PostgreSQL_TYPE_INCLUDE_DIR definition
     cmake_minimum_required(VERSION 3.17)
 else()
@@ -37,6 +37,10 @@ if (WIN32)
             PUBLIC ${PostgreSQL_LIBRARIES})
 endif ()
 
+if (APPLE)
+    target_link_options(${PROJECT_NAME} PRIVATE -undefined suppress -flat_namespace)
+endif()
+
 if (UNIX)
     # We need to explicitly export "Pg_magic_func", we need to remove visibility=hidden for this library
     string(REPLACE "-fvisibility=hidden" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
@@ -51,7 +55,7 @@ else ()
     set(PostgreSQL_VERSION "${PostgreSQL_VERSION_MAJOR}.${PostgreSQL_VERSION_MINOR}")
 endif ()
 
-set(BINGO_POSTGRES_PACKAGE_DIR ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${BINGO_VERSION}-${CMAKE_SYSTEM_NAME_LOWER}-${CMAKE_SYSTEM_PROCESSOR_LOWER})
+set(BINGO_POSTGRES_PACKAGE_DIR ${CMAKE_BINARY_DIR}/${PROJECT_NAME}${PostgreSQL_VERSION_MAJOR}-${CMAKE_SYSTEM_NAME_LOWER}-${CMAKE_SYSTEM_PROCESSOR_LOWER}-${BINGO_VERSION})
 if (WIN32)
     set(BINGO_POSTGRES_SETUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/setup/bingo-pg-install.bat)
     set(ARCHIVE_FORMAT zip)

@@ -538,7 +538,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 12, 11, 10 ]
+        postgres_major_version: [ 10, 11, 12 ]
     runs-on: ubuntu-latest
     container: epmlsop/buildpack-centos7:latest
     steps:
@@ -569,7 +569,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 12, 11, 10 ]
+        postgres_major_version: [ 10, 11, 12 ]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -597,3 +597,35 @@ jobs:
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-windows
           path: dist/bingo-postgres*.zip
+  build_bingo_postgres_macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres_major_version: [ 10, 11, 12 ]
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Setup Postgres
+        run: |
+          case ${{ matrix.postgres_major_version }} in 12) pg_version=12.6;; "11") pg_version=11.11;; 10) pg_version=10.16;; esac;
+          curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
+          unzip postgresql-${pg_version}-1-osx-binaries.zip
+          mv postgresql-${pg_version}-1-osx-binaries/pgsql pgsql
+          cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h
+      - name: Build bingo-postgres
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DPostgreSQL_ROOT="$(realpath $PWD/../pgsql)"
+          cmake --build . --config Release --target package-bingo-postgres
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bingo-postgres-${{ matrix.postgres_major_version }}-macos
+          path: dist/bingo-postgres*.tgz
