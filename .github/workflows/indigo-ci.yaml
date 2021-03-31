@@ -581,8 +581,7 @@ jobs:
           $pg_version = switch(${{ matrix.postgres_major_version }}) { 12 { 12.6 } 11 { 11.11 } 10 { 10.16 }};
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip;
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip;
-          ls;
-          ls postgresql-${pg_version}-1-windows-x64-binaries;
+          mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
           cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h;
       - name: Build bingo-postgres
         run: |
