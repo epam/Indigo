@@ -8,6 +8,7 @@ on:
       - 'indigo-*'
   workflow_dispatch:
   pull_request:
+  repository_dispatch:
 
 jobs:
   build_indigo_linux:
@@ -620,7 +621,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DPostgreSQL_ROOT="$(realpath $PWD/../pgsql)"
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DPostgreSQL_ROOT="$(realpath $PWD/../pgsql)" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
           cmake --build . --config Release --target package-bingo-postgres
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
