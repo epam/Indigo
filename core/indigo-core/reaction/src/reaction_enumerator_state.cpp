@@ -50,7 +50,6 @@ ReactionEnumeratorState::ReactionMonomers::ReactionMonomers()
     _reactant_indexes.clear();
     _deep_levels.clear();
     _tube_indexes.clear();
-    _monomers.reserve(200);
 }
 
 int ReactionEnumeratorState::ReactionMonomers::size()
@@ -73,7 +72,7 @@ Molecule& ReactionEnumeratorState::ReactionMonomers::getMonomer(int reactant_idx
     for (int i = 0; i < _reactant_indexes.size(); i++)
         if (_reactant_indexes[i] == reactant_idx)
             if (cur_idx++ == index)
-                return _monomers[i];
+                return *_monomers[i];
 
     throw Error("can't find reactant's #%d monomer #%d", reactant_idx, index);
 }
@@ -83,13 +82,15 @@ Molecule& ReactionEnumeratorState::ReactionMonomers::getMonomer(int mon_index)
     if (mon_index >= _monomers.size() || mon_index < 0)
         throw Error("can't find monomer #%d", mon_index);
     else
-        return _monomers[mon_index];
+        return *_monomers[mon_index];
 }
 
 void ReactionEnumeratorState::ReactionMonomers::addMonomer(int reactant_idx, Molecule& monomer, int deep_level, int tube_idx)
 {
-    Molecule& new_monomer = _monomers.push();
+    Molecule* mol_ptr = new Molecule();
+    _monomers.add( mol_ptr );
 
+    Molecule& new_monomer = *mol_ptr;
     new_monomer.clone(monomer, NULL, NULL);
 
     _reactant_indexes.push(reactant_idx);
@@ -102,13 +103,13 @@ void ReactionEnumeratorState::ReactionMonomers::removeMonomer(int idx)
     for (int j = idx + 1; j < _monomers.size(); j++)
     {
         _reactant_indexes[j - 1] = _reactant_indexes[j];
-        _monomers[j - 1].clone(_monomers[j], NULL, NULL);
+        _monomers[j - 1]->clone(*_monomers[j], NULL, NULL);
         _deep_levels[j - 1] = _deep_levels[j];
         _tube_indexes[j - 1] = _tube_indexes[j];
     }
 
     _reactant_indexes.pop();
-    _monomers.pop();
+    delete(_monomers.pop());
     _deep_levels.pop();
     _tube_indexes.pop();
 }
@@ -260,7 +261,7 @@ int ReactionEnumeratorState::buildProduct(void)
     {
         QS_DEF(Molecule, ee_monomer);
         ee_monomer.clear();
-        ee_monomer.clone(_reaction_monomers._monomers[i], NULL, NULL);
+        ee_monomer.clone(*_reaction_monomers._monomers[i], NULL, NULL);
         ee_monomer.cis_trans.build(NULL);
 
         if (!is_one_tube)
@@ -411,17 +412,17 @@ void ReactionEnumeratorState::_productProcess(void)
 
     for (int i = 0; i < _product_monomers.size(); i++)
     {
-        if (_reaction_monomers._monomers[_product_monomers[i]].name.size() == 0)
+        if (_reaction_monomers._monomers[_product_monomers[i]]->name.size() == 0)
             continue;
 
         bool is_deep = false;
-        if (_reaction_monomers._monomers[_product_monomers[i]].name.find('+') != -1)
+        if (_reaction_monomers._monomers[_product_monomers[i]]->name.find('+') != -1)
         {
             is_deep = true;
             ready_product.name.push('(');
         }
 
-        ready_product.name.concat(_reaction_monomers._monomers[_product_monomers[i]].name);
+        ready_product.name.concat(_reaction_monomers._monomers[_product_monomers[i]]->name);
         ready_product.name.pop();
 
         if (is_deep)

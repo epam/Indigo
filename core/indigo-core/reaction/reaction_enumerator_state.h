@@ -50,7 +50,7 @@ namespace indigo
             DECL_ERROR;
 
             CP_DECL;
-            TL_CP_DECL(ReusableObjArray<Molecule>, _monomers);
+            TL_CP_DECL(PtrArray<Molecule>, _monomers);
             TL_CP_DECL(Array<int>, _reactant_indexes);
             TL_CP_DECL(Array<int>, _deep_levels);
             TL_CP_DECL(Array<int>, _tube_indexes);
