@@ -616,8 +616,6 @@ jobs:
           case ${{ matrix.postgres_major_version }} in 12) pg_version=12.6;; "11") pg_version=11.11;; 10) pg_version=10.16;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
-          mv postgresql-${pg_version}-1-osx-binaries/pgsql pgsql
-          cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h
       - name: Build bingo-postgres
         run: |
           mkdir build
