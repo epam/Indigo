@@ -50,6 +50,7 @@ ReactionEnumeratorState::ReactionMonomers::ReactionMonomers()
     _reactant_indexes.clear();
     _deep_levels.clear();
     _tube_indexes.clear();
+    _monomers.reserve(200);
 }
 
 int ReactionEnumeratorState::ReactionMonomers::size()
