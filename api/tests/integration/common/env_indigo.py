@@ -5,12 +5,8 @@ import shutil
 import inspect
 import threading
 from math import sqrt
-import xml.etree.cElementTree as ElementTree
 
-from util import isIronPython, isJython, getPlatform, getIndigoVersion, getCpuCount, get_indigo_java_version
-
-
-REPO_ROOT = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', '..', '..'))
+from util import isIronPython, isJython, getPlatform, getIndigoVersion, getCpuCount, get_indigo_java_version, REPO_ROOT
 
 
 if sys.platform == 'cli':

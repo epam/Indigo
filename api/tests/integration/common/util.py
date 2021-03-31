@@ -2,6 +2,10 @@ import os
 import platform
 import re
 import sys
+import xml.etree.cElementTree as ElementTree
+
+
+REPO_ROOT = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', '..', '..'))
 
 
 def isIronPython():
