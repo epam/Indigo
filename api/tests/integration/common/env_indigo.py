@@ -6,7 +6,7 @@ import inspect
 import threading
 from math import sqrt
 
-from util import isIronPython, isJython, getPlatform, getIndigoVersion, getCpuCount, get_indigo_java_version, REPO_ROOT
+from util import isIronPython, isJython, getPlatform, get_indigo_java_version, REPO_ROOT
 
 
 if sys.platform == 'cli':
