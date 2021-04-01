@@ -288,7 +288,7 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "macOS Python Test Report"
-  test_linux_java:
+  test_indigo_linux_java:
     runs-on: ubuntu-latest
     needs: build_indigo_wrappers
     container: epmlsop/indigo-tester:latest
@@ -309,10 +309,6 @@ jobs:
           path: dist/
       - name: Install Indigo jars
         run: find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
-      - name: Install Jython Jip
-        run: | 
-          jython -m pip install jip
-          printf '[repos:local]\nuri=~/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config
       - name: Test
         run: jython api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
@@ -321,7 +317,7 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "Linux Java Test Report"
-  # test_linux_dotnet:
+  # test_indigo_linux_dotnet:
   #   runs-on: ubuntu-latest
   #   needs: build_indigo_wrappers
   #   container: epmlsop/indigo-tester:latest
