@@ -25,8 +25,10 @@ RUN apt update && \
     curl -OL https://repo1.maven.org/maven2/org/python/jython-installer/${JYTHON_VERSION}/jython-installer-${JYTHON_VERSION}.jar && \
     /opt/jdk/bin/java -jar jython-installer-${JYTHON_VERSION}.jar -s -d /opt/jython && \
     rm jython-installer-${JYTHON_VERSION}.jar && \
+    export JAVA_HOME=/opt/jdk && \
+    export PATH=$PATH:$JAVA_HOME/bin && \
     /opt/jython/bin/jython -m ensurepip && \
-    /opt/jython/bin/jython -m pip install jip && \
+    /opt/jython/bin/jython -m pip --no-cache-dir install jip && \
     printf '[repos:local]\nuri=~/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config && \
     # .NET Core
     curl -L https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg && \
