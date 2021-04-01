@@ -314,6 +314,13 @@ jobs:
           mvn install:install-file -Dfile=jna-5.8.0.jar -DpomFile=jna-5.8.0.pom
           rm jna-5.8.0.jar jna-5.8.0.pom
           find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
+      - name: Check
+        run: |
+          cat ~/.jip_config
+          printf '[repos:local]\nuri=~/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config
+          cat ~/.jip_config
+          jip install net.java.dev.jna:jna:5.8.0
+          jip list
       - name: Test
         run: jython api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
