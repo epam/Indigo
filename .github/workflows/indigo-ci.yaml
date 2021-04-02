@@ -267,16 +267,21 @@ jobs:
           curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
           java -jar jython.jar -m ensurepip
           java -jar jython.jar -m pip install jip
-      - name: Additional Jip setup Unix
-        if: ${{ matrix.os != 'windows-latest' }}
+      - name: Additional Jip setup Linux
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           printf 'import sys\nfrom jip.main import main\nsys.exit(main())\n' > Lib/site-packages/jip/__main__.py
-          printf '[repos:local]\nuri=/root/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config
+          printf '[repos:local]\nuri=/home/runner/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config
+      - name: Additional Jip setup macOS
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          printf 'import sys\nfrom jip.main import main\nsys.exit(main())\n' > Lib/site-packages/jip/__main__.py
+          printf '[repos:local]\nuri=/Users/runner/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config
       - name: Additional Jip setup Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           "import sys{0}from jip.main import main{0}sys.exit(main())" -f [environment]::NewLine | echo > Lib/site-packages/jip/__main__.py
-          "[repos:local]{0}uri=/root/.m2/repository/{0}type=local{0}{0}[repos:central]{0}uri=https://repo1.maven.org/maven2/{0}type=remote" -f [environment]::NewLine | echo > ~/.jip_config
+          "[repos:local]{0}uri=/Users/runner/.m2/repository/{0}type=local{0}{0}[repos:central]{0}uri=https://repo1.maven.org/maven2/{0}type=remote" -f [environment]::NewLine | echo > ~/.jip_config
       - name: Install Indigo jars and JNA
         run: |
           find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
