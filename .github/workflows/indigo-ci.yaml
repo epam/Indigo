@@ -280,7 +280,7 @@ jobs:
           find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
           java -jar jython.jar -m jip install net.java.dev.jna:jna:5.8.0
       - name: Test
-        run: jython api/tests/integration/test.py -j junit_report.xml -e todo
+        run: java -jar jython api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
