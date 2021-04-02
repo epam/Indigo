@@ -201,6 +201,7 @@ jobs:
           path: dist/*.nupkg
   test_indigo_python:
     strategy:
+      fail-fast: false
       matrix:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
@@ -241,6 +242,7 @@ jobs:
           check_name: "${{ matrix.os }}_python_test_report"
   test_indigo_java:
     strategy:
+      fail-fast: false
       matrix:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
@@ -265,18 +267,26 @@ jobs:
           curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
           java -jar jython.jar -m ensurepip
           java -jar jython.jar -m pip install jip
+          pwd
+          ls
       - name: Additional Jip setup Unix
         if: ${{ matrix.os != 'windows-latest' }}
         run: |
           printf 'import sys\nfrom jip.main import main\nsys.exit(main())\n' > Lib/site-packages/jip/__main__.py
           printf '[repos:local]\nuri=/root/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config
+          pwd
+          ls
       - name: Additional Jip setup Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           echo 'import sys`nfrom jip.main import main`nsys.exit(main())`n' > Lib/site-packages/jip/__main__.py
           echo '[repos:local]`nuri=/root/.m2/repository/`ntype=local`n`n[repos:central]`nuri=https://repo1.maven.org/maven2/`ntype=remote`n' > ~/.jip_config
+          pwd
+          ls
       - name: Install Indigo jars and JNS
         run: |
+          pwd
+          ls
           find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
           java -jar jython.jar -m jip install net.java.dev.jna:jna:5.8.0
       - name: Test
@@ -318,6 +328,7 @@ jobs:
   test_bingo_elastic_python_linux:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: [ 3.7, 3.8, 3.9 ]
     needs: build_indigo_wrappers
@@ -357,6 +368,7 @@ jobs:
 
   test_bingo_elastic_java_linux:
     strategy:
+      fail-fast: false
       matrix:
         java-version: [ 1.8, 1.11 ]
     runs-on: ubuntu-latest
