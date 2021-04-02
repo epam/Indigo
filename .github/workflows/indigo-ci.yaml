@@ -62,37 +62,37 @@ jobs:
         with:
           name: indigo-libs-windows
           path: dist
-  build_indigo_windows_mingw:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - uses: msys2/setup-msys2@v2
-        with:
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build native libs
-        run: |
-          mkdir build
-          cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF
-          cmake --build . --config Release --target all -- -j $(nproc) --output-sync
-      - name: Test native libs
-        run: |
-          cd build
-          ctest --verbose
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: indigo-libs-windows-mingw
-          path: dist
+  # build_indigo_windows_mingw:
+  #   runs-on: windows-latest
+  #   defaults:
+  #     run:
+  #       shell: msys2 {0}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
+  #         fetch-depth: 500
+  #     - uses: msys2/setup-msys2@v2
+  #       with:
+  #         install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
+  #     - name: Git fetch tags
+  #       run: git fetch --tags -f
+  #     - name: Build native libs
+  #       run: |
+  #         mkdir build
+  #         cd build
+  #         cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF
+  #         cmake --build . --config Release --target all -- -j $(nproc) --output-sync
+  #     - name: Test native libs
+  #       run: |
+  #         cd build
+  #         ctest --verbose
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: indigo-libs-windows-mingw
+  #         path: dist
   build_indigo_macos:
     runs-on: macos-latest
     steps:
@@ -118,29 +118,29 @@ jobs:
         with:
           name: indigo-libs-macos
           path: dist
-  build_indigo_wasm_ketcher:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags
-      - name: Install Emcripten SDK
-        uses: mymindstorm/setup-emsdk@v7
-      - name: Build Indigo Ketcher WASM
-        run: |
-          mkdir build
-          cd build
-          emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release --target indigo-ketcher-js-test -- -j $(nproc)
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: indigo-ketcher-js
-          path: build/bin/libindigo-ketcher.js
+  # build_indigo_wasm_ketcher:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
+  #         fetch-depth: 500
+  #     - name: Git fetch tags
+  #       run: git fetch --tags
+  #     - name: Install Emcripten SDK
+  #       uses: mymindstorm/setup-emsdk@v7
+  #     - name: Build Indigo Ketcher WASM
+  #       run: |
+  #         mkdir build
+  #         cd build
+  #         emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
+  #         cmake --build . --config Release --target indigo-ketcher-js-test -- -j $(nproc)
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: indigo-ketcher-js
+  #         path: build/bin/libindigo-ketcher.js
   build_indigo_wrappers:
     runs-on: ubuntu-latest
     needs: [build_indigo_linux, build_indigo_windows_msvc, build_indigo_macos]
@@ -199,47 +199,47 @@ jobs:
         with:
           name: indigo-dotnet
           path: dist/*.nupkg
-  test_indigo_python:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
-    runs-on: ${{ matrix.os }}
-    needs: build_indigo_wrappers
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Create folder for native libs
-        run: mkdir dist
-      - name: Download wrappers
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-python
-          path: dist/
-      - name: Install Pillow
-        run: python3 -m pip install Pillow
-      - name: Install wrappers Linux
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: python3 -m pip install dist/*linux*.whl
-      - name: Install wrappers Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: Get-ChildItem dist -Filter *win*.whl -Recurse | % { python3 -m pip install $_.FullName }
-      - name: Install wrappers macOS
-        if: ${{ matrix.os == 'macos-latest' }}
-        run: python3 -m pip install dist/*macos*.whl
-      - name: Test
-        run: python3 api/tests/integration/test.py -j junit_report.xml -e todo
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v1
-        with:
-          report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "${{ matrix.os }}_python_test_report"
+  # test_indigo_python:
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [ macos-latest, ubuntu-latest, windows-latest ]
+  #   runs-on: ${{ matrix.os }}
+  #   needs: build_indigo_wrappers
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         lfs: true
+  #         fetch-depth: 500
+  #     - name: Git fetch tags
+  #       run: git fetch --tags -f
+  #     - name: Create folder for native libs
+  #       run: mkdir dist
+  #     - name: Download wrappers
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: indigo-python
+  #         path: dist/
+  #     - name: Install Pillow
+  #       run: python3 -m pip install Pillow
+  #     - name: Install wrappers Linux
+  #       if: ${{ matrix.os == 'ubuntu-latest' }}
+  #       run: python3 -m pip install dist/*linux*.whl
+  #     - name: Install wrappers Windows
+  #       if: ${{ matrix.os == 'windows-latest' }}
+  #       run: Get-ChildItem dist -Filter *win*.whl -Recurse | % { python3 -m pip install $_.FullName }
+  #     - name: Install wrappers macOS
+  #       if: ${{ matrix.os == 'macos-latest' }}
+  #       run: python3 -m pip install dist/*macos*.whl
+  #     - name: Test
+  #       run: python3 api/tests/integration/test.py -j junit_report.xml -e todo
+  #     - name: Publish Test Report
+  #       uses: mikepenz/action-junit-report@v1
+  #       with:
+  #         report_paths: 'junit_report.xml'
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         check_name: "${{ matrix.os }}_python_test_report"
   test_indigo_java:
     strategy:
       fail-fast: false
@@ -291,316 +291,316 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}_java_test_report"
-  # test_indigo_linux_dotnet:
-  #   runs-on: ubuntu-latest
-  #   needs: build_indigo_wrappers
-  #   container: epmlsop/indigo-tester:latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #       with:
-  #         lfs: true
-  #         fetch-depth: 500
-  #     - name: Git fetch tags
-  #       run: git fetch --tags -f
-  #     - name: Create folder for native libs
-  #       run: mkdir dist
-  #     - name: Download wrappers
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: indigo-test-wrappers-dotnet
-  #         path: dist/
-  #     - name: Test
-  #       run: ipy -X:ExceptionDetail api/tests/python/test.py -j junit_report.xml -e todo
-  #     - name: Publish Test Report
-  #       uses: mikepenz/action-junit-report@v1
-  #       with:
-  #         report_paths: 'junit_report.xml'
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         check_name: "Linux .NET Test Report"
+#   # test_indigo_linux_dotnet:
+#   #   runs-on: ubuntu-latest
+#   #   needs: build_indigo_wrappers
+#   #   container: epmlsop/indigo-tester:latest
+#   #   steps:
+#   #     - name: Checkout
+#   #       uses: actions/checkout@v2
+#   #       with:
+#   #         lfs: true
+#   #         fetch-depth: 500
+#   #     - name: Git fetch tags
+#   #       run: git fetch --tags -f
+#   #     - name: Create folder for native libs
+#   #       run: mkdir dist
+#   #     - name: Download wrappers
+#   #       uses: actions/download-artifact@v2
+#   #       with:
+#   #         name: indigo-test-wrappers-dotnet
+#   #         path: dist/
+#   #     - name: Test
+#   #       run: ipy -X:ExceptionDetail api/tests/python/test.py -j junit_report.xml -e todo
+#   #     - name: Publish Test Report
+#   #       uses: mikepenz/action-junit-report@v1
+#   #       with:
+#   #         report_paths: 'junit_report.xml'
+#   #         github_token: ${{ secrets.GITHUB_TOKEN }}
+#   #         check_name: "Linux .NET Test Report"
 
-  test_bingo_elastic_python_linux:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [ 3.7, 3.8, 3.9 ]
-    needs: build_indigo_wrappers
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          lfs: true
-          fetch-depth: 500
-      - name: Create folder for native libs
-        run: mkdir dist
-      - name: Download wrappers
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-python
-          path: dist/
-      - name: Install poetry
-        run: pip install poetry
-      - name: Install latest indigo version
-        run: poetry run pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*manylinux1_x86_64.whl
-        working-directory: bingo/bingo-elastic/python
-      - name: Install dependencies
-        run: poetry install
-        working-directory: bingo/bingo-elastic/python
-      - name: Run pylint
-        run: poetry run pylint bingo_elastic
-        working-directory: bingo/bingo-elastic/python
-      - name: Setup elasticsearch
-        run: docker run -d -p 9200:9200 --env "discovery.type=single-node" --env "opendistro_security.disabled=true" --env "indices.query.bool.max_clause_count=4096" amazon/opendistro-for-elasticsearch:latest
-      - name: Wait elastic is ready
-        run: sleep 30s
-      - name: Run tests
-        run: poetry run pytest tests
-        working-directory: bingo/bingo-elastic/python
+#   test_bingo_elastic_python_linux:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         python-version: [ 3.7, 3.8, 3.9 ]
+#     needs: build_indigo_wrappers
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: Set up Python ${{ matrix.python-version }}
+#         uses: actions/setup-python@v2
+#         with:
+#           python-version: ${{ matrix.python-version }}
+#           lfs: true
+#           fetch-depth: 500
+#       - name: Create folder for native libs
+#         run: mkdir dist
+#       - name: Download wrappers
+#         uses: actions/download-artifact@v2
+#         with:
+#           name: indigo-python
+#           path: dist/
+#       - name: Install poetry
+#         run: pip install poetry
+#       - name: Install latest indigo version
+#         run: poetry run pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*manylinux1_x86_64.whl
+#         working-directory: bingo/bingo-elastic/python
+#       - name: Install dependencies
+#         run: poetry install
+#         working-directory: bingo/bingo-elastic/python
+#       - name: Run pylint
+#         run: poetry run pylint bingo_elastic
+#         working-directory: bingo/bingo-elastic/python
+#       - name: Setup elasticsearch
+#         run: docker run -d -p 9200:9200 --env "discovery.type=single-node" --env "opendistro_security.disabled=true" --env "indices.query.bool.max_clause_count=4096" amazon/opendistro-for-elasticsearch:latest
+#       - name: Wait elastic is ready
+#         run: sleep 30s
+#       - name: Run tests
+#         run: poetry run pytest tests
+#         working-directory: bingo/bingo-elastic/python
 
-  test_bingo_elastic_java_linux:
-    strategy:
-      fail-fast: false
-      matrix:
-        java-version: [ 1.8, 1.11 ]
-    runs-on: ubuntu-latest
-    needs: build_indigo_wrappers
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ matrix.java-version }}
-      - name: Cache Maven packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Download wrappers
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-java
-          path: dist/
-      - name: Install Indigo jars
-        run: find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
-      - name: Build bingo-elastic
-        run: mvn -B --file pom.xml -Dmaven.repo.local=~/.m2/repository clean test
-        working-directory: bingo/bingo-elastic/java
+#   test_bingo_elastic_java_linux:
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         java-version: [ 1.8, 1.11 ]
+#     runs-on: ubuntu-latest
+#     needs: build_indigo_wrappers
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#         with:
+#           lfs: true
+#           fetch-depth: 500
+#       - name: Set up JDK 1.8
+#         uses: actions/setup-java@v1
+#         with:
+#           java-version: ${{ matrix.java-version }}
+#       - name: Cache Maven packages
+#         uses: actions/cache@v2
+#         with:
+#           path: ~/.m2
+#           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+#           restore-keys: ${{ runner.os }}-m2
+#       - name: Download wrappers
+#         uses: actions/download-artifact@v2
+#         with:
+#           name: indigo-java
+#           path: dist/
+#       - name: Install Indigo jars
+#         run: find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
+#       - name: Build bingo-elastic
+#         run: mvn -B --file pom.xml -Dmaven.repo.local=~/.m2/repository clean test
+#         working-directory: bingo/bingo-elastic/java
 
-#  publish:
-#    if: startsWith(github.ref, 'refs/tags/indigo-')
-#    runs-on: ubuntu-latest
-#    needs: [test_linux_python, test_linux_java, test_linux_dotnet, test_windows_python, test_macos_python]
-#    container: epmlsop/indigo-tester:latest
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#        with:
-#          lfs: true
-#          fetch-depth: 500
-#      - name: Git fetch tags
-#        run: git fetch --tags -f
-#      - name: Create folder for native libs
-#        run: mkdir dist
-#      - name: Download native shared libraries
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: indigo-native-shared-libs
-#          path: dist/
-#      - name: Update Wrappers version
-#        run: python3 build_scripts/indigo-update-version.py
-#      - name: Publish Python wheels to PyPI
-#        env:
-#          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-#        run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal --publish
-#      - name: Publish Java jars to Maven Central
-#        env:
-#          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
-#          MAVEN_USER: ${{ secrets.MAVEN_USER }}
-#          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-#          GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
-#          GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
-#        run: |
-#          set -eux
-#          apt install -y gnupg
-#          mkdir /root/.m2
-#          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
-#          echo ${GPG_PRIVATE_KEY} > gpg.key
-#          gpg --batch --import gpg.key
-#          rm gpg.key
-#          python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal --publish
-#      - name: Publish .NET nupkg to Nuget
-#        env:
-#          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-#        run: python3 build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal --publish
+# #  publish:
+# #    if: startsWith(github.ref, 'refs/tags/indigo-')
+# #    runs-on: ubuntu-latest
+# #    needs: [test_linux_python, test_linux_java, test_linux_dotnet, test_windows_python, test_macos_python]
+# #    container: epmlsop/indigo-tester:latest
+# #    steps:
+# #      - name: Checkout
+# #        uses: actions/checkout@v2
+# #        with:
+# #          lfs: true
+# #          fetch-depth: 500
+# #      - name: Git fetch tags
+# #        run: git fetch --tags -f
+# #      - name: Create folder for native libs
+# #        run: mkdir dist
+# #      - name: Download native shared libraries
+# #        uses: actions/download-artifact@v2
+# #        with:
+# #          name: indigo-native-shared-libs
+# #          path: dist/
+# #      - name: Update Wrappers version
+# #        run: python3 build_scripts/indigo-update-version.py
+# #      - name: Publish Python wheels to PyPI
+# #        env:
+# #          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+# #        run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal --publish
+# #      - name: Publish Java jars to Maven Central
+# #        env:
+# #          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
+# #          MAVEN_USER: ${{ secrets.MAVEN_USER }}
+# #          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+# #          GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
+# #          GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
+# #        run: |
+# #          set -eux
+# #          apt install -y gnupg
+# #          mkdir /root/.m2
+# #          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
+# #          echo ${GPG_PRIVATE_KEY} > gpg.key
+# #          gpg --batch --import gpg.key
+# #          rm gpg.key
+# #          python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal --publish
+# #      - name: Publish .NET nupkg to Nuget
+# #        env:
+# #          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+# #        run: python3 build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal --publish
 
-  build_bingo_oracle_linux:
-    runs-on: ubuntu-latest
-    container: epmlsop/buildpack-centos7:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build bingo-oracle
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
-          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-oracle-linux
-          path: dist/bingo-oracle*.tgz
-  build_bingo_oracle_windows_mingw:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - uses: msys2/setup-msys2@v2
-        with:
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build bingo-oracle
-        run: |
-          mkdir build
-          cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
-          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-oracle-windows-mingw
-          path: dist/bingo-oracle*.zip
-  build_bingo_oracle_windows_msvc:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build bingo-oracle
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
-          cmake --build . --config Release --target package-bingo-oracle
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-oracle-windows-msvc
-          path: dist/bingo-oracle*.zip
-  build_bingo_postgres_linux:
-    strategy:
-      fail-fast: false
-      matrix:
-        postgres_major_version: [ 10, 11, 12 ]
-    runs-on: ubuntu-latest
-    container: epmlsop/buildpack-centos7:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Install postgres server headers
-        run: |
-          yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils
-          yumdownloader postgresql${{ matrix.postgres_major_version }}-devel
-          rpm -i --nodeps postgresql${{ matrix.postgres_major_version }}*.rpm
-      - name: Build bingo-postgres
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
-          cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-postgres-${{ matrix.postgres_major_version }}-linux
-          path: dist/bingo-postgres*.tgz
-  build_bingo_postgres_windows_msvc:
-    strategy:
-      fail-fast: false
-      matrix:
-        postgres_major_version: [ 10, 11, 12 ]
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Setup Postgres
-        run: |
-          $pg_version = switch(${{ matrix.postgres_major_version }}) { 12 { 12.6 } 11 { 11.11 } 10 { 10.16 }};
-          curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip;
-          Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip;
-          mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
-          cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h;
-      - name: Build bingo-postgres
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DPostgreSQL_ROOT="$(resolve-path $pwd/../pgsql)"
-          cmake --build . --config Release --target package-bingo-postgres
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-postgres-${{ matrix.postgres_major_version }}-windows
-          path: dist/bingo-postgres*.zip
-  build_bingo_postgres_macos:
-    strategy:
-      fail-fast: false
-      matrix:
-        postgres_major_version: [ 10, 11, 12 ]
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Setup Postgres
-        run: |
-          case ${{ matrix.postgres_major_version }} in 12) pg_version=12.6;; "11") pg_version=11.11;; 10) pg_version=10.16;; esac;
-          curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
-          unzip postgresql-${pg_version}-1-osx-binaries.zip
-      - name: Build bingo-postgres
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DPostgreSQL_ROOT="$(dirname $PWD)/pgsql" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
-          cmake --build . --config Release --target package-bingo-postgres
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: bingo-postgres-${{ matrix.postgres_major_version }}-macos
-          path: dist/bingo-postgres*.tgz
+#   build_bingo_oracle_linux:
+#     runs-on: ubuntu-latest
+#     container: epmlsop/buildpack-centos7:latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#         with:
+#           lfs: true
+#           fetch-depth: 500
+#       - name: Git fetch tags
+#         run: git fetch --tags -f
+#       - name: Build bingo-oracle
+#         run: |
+#           mkdir build
+#           cd build
+#           cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+#           cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: bingo-oracle-linux
+#           path: dist/bingo-oracle*.tgz
+#   build_bingo_oracle_windows_mingw:
+#     runs-on: windows-latest
+#     defaults:
+#       run:
+#         shell: msys2 {0}
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#         with:
+#           lfs: true
+#           fetch-depth: 500
+#       - uses: msys2/setup-msys2@v2
+#         with:
+#           install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
+#       - name: Git fetch tags
+#         run: git fetch --tags -f
+#       - name: Build bingo-oracle
+#         run: |
+#           mkdir build
+#           cd build
+#           cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+#           cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: bingo-oracle-windows-mingw
+#           path: dist/bingo-oracle*.zip
+#   build_bingo_oracle_windows_msvc:
+#     runs-on: windows-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#         with:
+#           lfs: true
+#           fetch-depth: 500
+#       - name: Git fetch tags
+#         run: git fetch --tags -f
+#       - name: Build bingo-oracle
+#         run: |
+#           mkdir build
+#           cd build
+#           cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+#           cmake --build . --config Release --target package-bingo-oracle
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: bingo-oracle-windows-msvc
+#           path: dist/bingo-oracle*.zip
+#   build_bingo_postgres_linux:
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         postgres_major_version: [ 10, 11, 12 ]
+#     runs-on: ubuntu-latest
+#     container: epmlsop/buildpack-centos7:latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#         with:
+#           lfs: true
+#           fetch-depth: 500
+#       - name: Git fetch tags
+#         run: git fetch --tags -f
+#       - name: Install postgres server headers
+#         run: |
+#           yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils
+#           yumdownloader postgresql${{ matrix.postgres_major_version }}-devel
+#           rpm -i --nodeps postgresql${{ matrix.postgres_major_version }}*.rpm
+#       - name: Build bingo-postgres
+#         run: |
+#           mkdir build
+#           cd build
+#           cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF
+#           cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: bingo-postgres-${{ matrix.postgres_major_version }}-linux
+#           path: dist/bingo-postgres*.tgz
+#   build_bingo_postgres_windows_msvc:
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         postgres_major_version: [ 10, 11, 12 ]
+#     runs-on: windows-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#         with:
+#           lfs: true
+#           fetch-depth: 500
+#       - name: Git fetch tags
+#         run: git fetch --tags -f
+#       - name: Setup Postgres
+#         run: |
+#           $pg_version = switch(${{ matrix.postgres_major_version }}) { 12 { 12.6 } 11 { 11.11 } 10 { 10.16 }};
+#           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip;
+#           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip;
+#           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
+#           cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h;
+#       - name: Build bingo-postgres
+#         run: |
+#           mkdir build
+#           cd build
+#           cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DPostgreSQL_ROOT="$(resolve-path $pwd/../pgsql)"
+#           cmake --build . --config Release --target package-bingo-postgres
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: bingo-postgres-${{ matrix.postgres_major_version }}-windows
+#           path: dist/bingo-postgres*.zip
+#   build_bingo_postgres_macos:
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         postgres_major_version: [ 10, 11, 12 ]
+#     runs-on: macos-latest
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#         with:
+#           lfs: true
+#           fetch-depth: 500
+#       - name: Git fetch tags
+#         run: git fetch --tags -f
+#       - name: Setup Postgres
+#         run: |
+#           case ${{ matrix.postgres_major_version }} in 12) pg_version=12.6;; "11") pg_version=11.11;; 10) pg_version=10.16;; esac;
+#           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
+#           unzip postgresql-${pg_version}-1-osx-binaries.zip
+#       - name: Build bingo-postgres
+#         run: |
+#           mkdir build
+#           cd build
+#           cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DPostgreSQL_ROOT="$(dirname $PWD)/pgsql" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
+#           cmake --build . --config Release --target package-bingo-postgres
+#       - name: Upload artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: bingo-postgres-${{ matrix.postgres_major_version }}-macos
+#           path: dist/bingo-postgres*.tgz
