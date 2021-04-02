@@ -275,14 +275,16 @@ jobs:
       - name: Additional Jip setup Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
-          echo 'import sys`nfrom jip.main import main`nsys.exit(main())`n' > Lib/site-packages/jip/__main__.py
-          echo '[repos:local]`nuri=/root/.m2/repository/`ntype=local`n`n[repos:central]`nuri=https://repo1.maven.org/maven2/`ntype=remote`n' > ~/.jip_config
-      - name: Install Indigo jars and JNS
+          "import sys{0}from jip.main import main{0}sys.exit(main())" -f [environment]::NewLine | echo > Lib/site-packages/jip/__main__.py
+          "[repos:local]{0}uri=/root/.m2/repository/{0}type=local{0}{0}[repos:central]{0}uri=https://repo1.maven.org/maven2/{0}type=remote" -f [environment]::NewLine | echo > ~/.jip_config
+      - name: Install Indigo jars and JNA
         run: |
           find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
           java -jar jython.jar -m jip install net.java.dev.jna:jna:5.8.0
       - name: Test
-        run: java -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
+        run: |
+          java -jar jython.jar -m jip list
+          java -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v1
         with:
