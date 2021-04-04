@@ -301,9 +301,9 @@ jobs:
           check_name: "${{ matrix.os }}_java_test_report"
   test_indigo_dotnet:
     strategy:
-    fail-fast: false
-    matrix:
-      os: [ macos-latest, ubuntu-latest, windows-latest ]
+      fail-fast: false
+      matrix:
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
