@@ -6,10 +6,10 @@ import inspect
 import threading
 from math import sqrt
 
-from util import isIronPython, isJython, getPlatform, get_indigo_java_version, REPO_ROOT
+from util import isIronPython, isJython, getPlatform, REPO_ROOT
 
 
-if sys.platform == 'cli':
+if isIronPython():
     import clr
     import System
     clr.AddReference("System.IO.FileSystem")
@@ -21,6 +21,8 @@ if sys.platform == 'cli':
 else:
     import subprocess
     import zipfile
+    if isJython():
+        from util import get_indigo_java_version
 
 
 frame = inspect.stack()[1]
@@ -84,9 +86,9 @@ def rmdir(path):
 
 if isIronPython():
     import clr
-    for item in os.environ['INDIGO_PATH'].split(os.pathsep):
-        cdll_indigo(item)
-        clr.AddReferenceToFileAndPath(item)
+    dll_full_path = lambda: os.environ['INDIGO_PATH']
+    # cdll_indigo(dll_full_path)
+    clr.AddReferenceToFileAndPath(dll_full_path())
     from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
 elif isJython():
     from jip.embed import require

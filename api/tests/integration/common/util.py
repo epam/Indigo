@@ -2,7 +2,6 @@ import os
 import platform
 import re
 import sys
-import xml.etree.cElementTree as ElementTree
 
 
 REPO_ROOT = os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', '..', '..'))
@@ -74,6 +73,7 @@ def getPlatform():
 
 
 def get_indigo_java_version():
+    import xml.etree.cElementTree as ElementTree
     pom_path = os.path.join(REPO_ROOT, 'api', 'java', 'pom.xml')
     ElementTree.register_namespace("", "http://maven.apache.org/POM/4.0.0")
     tree = ElementTree.parse(pom_path)
