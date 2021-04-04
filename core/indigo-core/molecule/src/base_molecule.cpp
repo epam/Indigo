@@ -926,7 +926,7 @@ int BaseMolecule::getAtomRadical_NoThrow(int idx, int fallback)
     {
         return getAtomRadical(idx);
     }
-    catch (Element::Error&)
+    catch (...)
     {
         return fallback;
     }
@@ -938,7 +938,7 @@ int BaseMolecule::getAtomValence_NoThrow(int idx, int fallback)
     {
         return getAtomValence(idx);
     }
-    catch (Element::Error&)
+    catch (...)
     {
         return fallback;
     }
