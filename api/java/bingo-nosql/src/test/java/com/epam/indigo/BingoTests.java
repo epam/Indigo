@@ -21,5 +21,6 @@ public class BingoTests {
                 bingo.version(),
                 "Checking version of the Bingo"
         );
+        bingo.close();
     }
 }

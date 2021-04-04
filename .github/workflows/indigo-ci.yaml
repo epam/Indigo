@@ -283,8 +283,8 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           "import sys{0}from jip.main import main{0}sys.exit(main())" -f [environment]::NewLine | echo > Lib/site-packages/jip/__main__.py
-          "[repos:local]{0}uri=/Users/runner/.m2/repository/{0}type=local{0}{0}[repos:central]{0}uri=https://repo1.maven.org/maven2/{0}type=remote" -f [environment]::NewLine | echo > ~/.jip_config
-          Get-ChildItem dist -Filter *.jar -exclude *javadoc*,*sources* | % { mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=$_.FullName }
+          "[repos:local]{0}uri=~/.m2/repository/{0}type=local{0}{0}[repos:central]{0}uri=https://repo1.maven.org/maven2/{0}type=remote" -f [environment]::NewLine | echo > ~/.jip_config
+          Get-ChildItem dist -Filter *.jar -exclude *javadoc*,*sources* -recurse | % { mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile="$_" }
       - name: Install JNA
         run: java -jar jython.jar -m jip install net.java.dev.jna:jna:5.8.0
       - name: Test

@@ -97,7 +97,7 @@ elif isJython():
     require('com.epam.indigo:indigo-renderer:{}'.format(indigo_java_version))
     require('com.epam.indigo:bingo-nosql:{}'.format(indigo_java_version))
     from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
-    dll_full_path = lambda: sys.path[-5]
+    dll_full_path = lambda: sys.path[-4]
 else:
     indigo_python_source_folder = os.path.join(REPO_ROOT, 'api', 'python')
     sys.path.append(indigo_python_source_folder)

@@ -19,7 +19,7 @@ public class IndigoUtils {
             String res = extractFromJar(cls, "/" + dllpath, filename);
             if (res != null) return res;
             throw new FileNotFoundException(
-                    "Couldn't extract native lib " + filename + " from jar");
+                    "Couldn't extract native lib " + filename + " (" + dllpath + ", " + path + ") from jar");
         }
         path = path + File.separator + dllpath + File.separator + filename;
         try {
@@ -113,7 +113,7 @@ public class IndigoUtils {
     static String getDllPath() {
         String path;
         if (Platform.isWindows()) {
-            path = "win-";
+            path = "windows-";
         } else if (Platform.isMac()) {
             path = "darwin-";
         } else if (Platform.isLinux()) {
