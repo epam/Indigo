@@ -319,7 +319,7 @@ jobs:
       - name: Download wrappers
         uses: actions/download-artifact@v2
         with:
-          name: indigo-test-wrappers-dotnet
+          name: indigo-dotnet
           path: dist/
       - name: Prepare Common
         run: |

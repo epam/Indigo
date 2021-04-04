@@ -55,14 +55,7 @@
 #undef linux
 #define OS linux
 #elif __APPLE__
-#include <TargetConditionals.h>
-#if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
-#define OS ios
-#elif TARGET_OS_MAC
-#define OS macos
-#else
-#error "Unknown Apple platform"
-#endif
+#define OS darwin
 #elif __EMSCRIPTEN__
 #define OS wasm
 #else
@@ -75,7 +68,7 @@
 #elif __i386__ || _M_IX86
 #define ARCH x86
 #elif __aarch64__
-#define ARCH arm64
+#define ARCH aarch64
 #elif __arm__ || _M_ARM
 #define ARCH arm
 #elif __EMSCRIPTEN__
