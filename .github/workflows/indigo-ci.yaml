@@ -292,6 +292,7 @@ jobs:
           java -jar jython.jar -m jip list
           java -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
+        if: always()
         uses: mikepenz/action-junit-report@v1
         with:
           report_paths: 'junit_report.xml'
