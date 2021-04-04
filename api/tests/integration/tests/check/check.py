@@ -7,15 +7,15 @@ indigo = Indigo()
 indigo.setOption("ignore-noncritical-query-features", "true")
 
 tests = [
-    { "name" : "issue269test_RGroupsWarning",  "test": "rgroup"}, 
-    { "name" : "issue269test_ChiralityWarning",  "test": "chirality"},
+    { "name" : "issue269test_RGroupsWarning",  "test": "rgroups"}, 
+    { "name" : "issue269test_ChiralityWarning",  "test": "chiral"},
     { "name" : "issue269test_StereochemistryWarning",  "test": "stereo"},
-    { "name" : "issue269test_PseudoatomWarning",  "test": "pseudoatom"},
-    { "name" : "issue269test_RadicalWarning",  "test": "radical"},
+    { "name" : "issue269test_PseudoatomWarning",  "test": "pseudoatoms"},
+    { "name" : "issue269test_RadicalWarning",  "test": "radicals"},
     { "name" : "issue269test_QueryWarning",  "test": "query"},
     { "name" : "issue269test_All",  "test": "all"},
-    { "name" : "issue269test_Issue_293_All",  "test": "radical;pseudoatom;stereo;query;overlap_atom;overlap_bond;rgroup;chirality;3d_coord"},
-    ] 
+    { "name" : "issue269test_Issue_293_All",  "test": "radicals;pseudoatoms;stereo;query;overlap_atoms;overlap_bonds;rgroups;chiral;3d"},
+    ]
 
 errors = ''
 for test in tests:
