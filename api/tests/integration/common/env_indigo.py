@@ -87,7 +87,6 @@ def rmdir(path):
 if isIronPython():
     import clr
     dll_full_path = lambda: os.environ['INDIGO_PATH']
-    # cdll_indigo(dll_full_path)
     clr.AddReferenceToFileAndPath(dll_full_path())
     from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
 elif isJython():

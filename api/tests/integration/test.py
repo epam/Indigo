@@ -152,6 +152,7 @@ def main():
 
     tests_status = 0
 
+    total_time = time.time()
     # Execute tests in sorted order
     for root, filename in tests:
         test_dir = os.path.join(output_dir, root)
@@ -250,7 +251,7 @@ def main():
             if root != 'todo':
                 tests_status |= 1
 
-        print("%s%s\t%.2f sec" % (spacer * spacer_len, test_status, tspent))
+        print("{}{}    {:.2f} sec".format(spacer * spacer_len, test_status, tspent))
         if diff_file and file_exists(diff_file):
             f = open(diff_file, 'rt')
             msg = 'Diff:\n' + f.read()
@@ -261,6 +262,9 @@ def main():
             f.close()
 
         test_results.append((root, filename, test_status, msg, tspent))
+
+    total_time = time.time() - total_time
+    print("\nTotal time: {:.2f} sec".format(total_time))
 
     if nunit_report_name != "":
         from generate_nunit_report import generateNUnitReport
