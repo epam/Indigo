@@ -324,6 +324,7 @@ jobs:
       - name: Prepare Common
         run: |
           mkdir IronPython
+          mkdir tmp
           cd IronPython
           curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.11/IronPython.2.7.11.zip
       - name: Prepare UNIX
@@ -331,20 +332,15 @@ jobs:
         run: |
           cd IronPython
           unzip IronPython.2.7.11.zip
-          cd ..
-          mkdir tmp
-          cd tmp
+          cd ../tmp
           unzip ../dist/Indigo.Net.*.nupkg
-          cd ..
-          chmod a+rw -R tmp
+          chmod -R a+rw .
       - name: Prepare Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           cd IronPython
           Expand-Archive IronPython.2.7.11.zip
-          cd ..
-          mkdir tmp
-          cd tmp
+          cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg
       - name: Test UNIX
         if: ${{ matrix.os != 'windows-latest' }}
@@ -358,7 +354,12 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+        run: |
+          echo ${env.PATH}
+          ls
+          ls IronPython
+          ls IronPython\net45
+          .\IronPython\net45\ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
