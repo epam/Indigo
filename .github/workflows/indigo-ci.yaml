@@ -437,12 +437,24 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
-      - name: Linux Docker setup
+      - name: Build utils Linux
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: docker://epmlsop/buildpack-centos7:latest
-      - name: Build utils UNIX
-        if: ${{ matrix.os != 'windows-latest' }}
+        args: >
+          -v ${PWD}:/indigo /bin/sh -c "cd indigo &&
+          uname -a &&
+          cat /proc/cpuinfo &&
+          mkdir build &&
+          cd build &&
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON &&
+          cmake --build . --config Release --target all -- -j $(nproc) && 
+          ctest --verbose
+          "
+      - name: Build utils macOS
+        if: ${{ matrix.os == 'macos-latest' }}
         run: |
+          uname -a
+          cat /proc/cpuinfo
           mkdir build
           cd build
           cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
