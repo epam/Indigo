@@ -425,9 +425,9 @@ jobs:
 
   build_indigo_utils:
     strategy:
-    fail-fast: false
-    matrix:
-      os: [ macos-latest, ubuntu-latest, windows-latest ]
+      fail-fast: false
+      matrix:
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
