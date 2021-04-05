@@ -265,9 +265,9 @@ jobs:
           path: dist/
       - name: Install Jython and Jip
         run: |
-          curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
-          java -jar jython.jar -m ensurepip
-          java -jar jython.jar -m pip install jip
+          curl -L https://repo1.maven.org/maven2/org/python/jython-installer/2.7.2/jython-installer-2.7.2.jar -o jython-installer.jar
+          java -jar jython-installer.jar -s -d ./jython
+          ./jython/bin/pip install jip
       - name: Additional Jip setup Linux
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
@@ -287,11 +287,9 @@ jobs:
           "[repos:local]{0}uri=~/.m2/repository/{0}type=local{0}{0}[repos:central]{0}uri=https://repo1.maven.org/maven2/{0}type=remote" -f [environment]::NewLine | echo > ~/.jip_config
           Get-ChildItem dist -Filter *.jar -exclude *javadoc*,*sources* -recurse | % { mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile="$_" }
       - name: Install JNA
-        run: java -jar jython.jar -m jip install net.java.dev.jna:jna:5.8.0
+        run: ./jython/bin/jip install net.java.dev.jna:jna:5.8.0
       - name: Test
-        run: |
-          java -jar jython.jar -m jip list
-          java -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
+        run: ./jython/bin/jython api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -349,7 +347,6 @@ jobs:
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: | 
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          env
           dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Test Windows
         if: ${{ matrix.os == 'windows-latest' }}
