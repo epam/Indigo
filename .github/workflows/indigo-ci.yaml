@@ -438,22 +438,18 @@ jobs:
       - name: Git fetch tags
         run: git fetch --tags -f
       - name: Build utils macOS
-        if: ${{ matrix.os == 'macos-latest' }}
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
-          cmake --build . --config Release --target all -- -j $(nproc)
-          ctest --verbose -C Release
-      - name: Build utils Linux
+        
+      - name: Linux setup
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: docker://epmlsop/buildpack-centos7:latest
+      name: Build utils UNIX
+        if: ${{ matrix.os != 'windows-latest' }}
         run: |
           mkdir build
           cd build
           cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
           cmake --build . --config Release --target all -- -j $(nproc)
-          ctest --verbose -C Release
+          ctest --verbose
       - name: Build utils Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
