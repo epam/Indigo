@@ -78,9 +78,58 @@ def get_indigo_java_version():
     ElementTree.register_namespace("", "http://maven.apache.org/POM/4.0.0")
     tree = ElementTree.parse(pom_path)
     namespace = r'{http://maven.apache.org/POM/4.0.0}'
+    indigo_version = None
+    jna_version = None
     for l1_child in tree.getroot():
         if l1_child.tag == "{}properties".format(namespace):
             for l2_child in l1_child:
                 if l2_child.tag == "{}revision".format(namespace):
-                    return l2_child.text
-    raise ValueError('Could not find version in {}'.format(pom_path))
+                    indigo_version = l2_child.text
+        if l1_child.tag == "{}dependencies".format(namespace):
+            for l2_child in l1_child:
+                if l2_child.tag == "{}dependency".format(namespace):
+                    jna_found = False
+                    for l3_child in l2_child:
+                        if l3_child.tag == "{}artifactId".format(namespace) and l3_child.text == 'jna':
+                            jna_found = True
+                            break
+                    if jna_found:
+                        for l3_child in l2_child:
+                            if l3_child.tag == "{}version".format(namespace):
+                                jna_version = l3_child.text
+    if not indigo_version:
+        raise ValueError('Could not find Indigo version in {}'.format(pom_path))
+    if not jna_version:
+        raise ValueError('Could not find JNA version in {}'.format(pom_path))
+    return indigo_version, jna_version
+
+
+def file_sha1(path):
+    import hashlib
+    with open(path, 'rb') as f:
+        return hashlib.sha1(f.read()).hexdigest()
+
+
+def download_jna(jna_version, path):
+    import urllib
+
+    output_path = os.path.join(path, 'jna-{}.jar'.format(jna_version))
+    jna_url = "https://search.maven.org/remotecontent?filepath=net/java/dev/jna/jna/{0}/jna-{0}.jar".format(jna_version)
+    need_to_download = False
+
+    if os.path.exists(output_path):
+        jna_sha1_url = "{}.sha1".format(jna_url)
+        jna_sha1 = urllib.urlopen(jna_sha1_url).read()
+        if jna_sha1_url != file_sha1(output_path):
+            need_to_download = True
+
+    if not need_to_download:
+        return
+    try:
+        with open(output_path, 'wb') as of:
+            f = urllib.urlopen(jna_url)
+            of.write(f.read())
+            f.close()
+    except Exception as e:
+        os.remove(output_path)
+        raise e

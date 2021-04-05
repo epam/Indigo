@@ -188,7 +188,7 @@ jobs:
         with:
           name: indigo-python
           path: |
-            dist/*.whl   
+            dist/*.whl
       - name: Upload test wrappers for Java
         uses: actions/upload-artifact@v2
         with:
@@ -263,33 +263,19 @@ jobs:
         with:
           name: indigo-java
           path: dist/
-      - name: Install Jython and Jip
+      - name: Install Jython
         run: |
-          curl -L https://repo1.maven.org/maven2/org/python/jython-installer/2.7.2/jython-installer-2.7.2.jar -o jython-installer.jar
-          java -jar jython-installer.jar -s -d ./jython
-          ./jython/bin/pip install jip
-      - name: Additional Jip setup Linux
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: |
-          printf 'import sys\nfrom jip.main import main\nsys.exit(main())\n' > Lib/site-packages/jip/__main__.py
-          printf '[repos:local]\nuri=/home/runner/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config
-          find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
-      - name: Additional Jip setup macOS
-        if: ${{ matrix.os == 'macos-latest' }}
-        run: |
-          printf 'import sys\nfrom jip.main import main\nsys.exit(main())\n' > Lib/site-packages/jip/__main__.py
-          printf '[repos:local]\nuri=/Users/runner/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config
-          find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
-      - name: Indigo and JNA jars installation Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          "import sys{0}from jip.main import main{0}sys.exit(main())" -f [environment]::NewLine | echo > Lib/site-packages/jip/__main__.py
-          "[repos:local]{0}uri=~/.m2/repository/{0}type=local{0}{0}[repos:central]{0}uri=https://repo1.maven.org/maven2/{0}type=remote" -f [environment]::NewLine | echo > ~/.jip_config
-          Get-ChildItem dist -Filter *.jar -exclude *javadoc*,*sources* -recurse | % { mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile="$_" }
-      - name: Install JNA
-        run: ./jython/bin/jip install net.java.dev.jna:jna:5.8.0
+          curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
       - name: Test
-        run: ./jython/bin/jython api/tests/integration/test.py -j junit_report.xml -e todo
+        env:
+          INDIGO_PATH: ${{ github.workspace }}/dist
+        run: |
+          env || echo failed
+          echo ${env:INDIGO_PATH} || echo failed
+          ls ${env:INDIGO_PATH} || echo failed
+          echo ${INDIGO_PATH} || echo failed
+          ls ${INDIGO_PATH} || echo failed
+          java -jar jython.jar api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v1
@@ -345,7 +331,7 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
-        run: | 
+        run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
           dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Test Windows
@@ -437,52 +423,50 @@ jobs:
         run: mvn -B --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
         working-directory: bingo/bingo-elastic/java
 
-#  publish:
-#    if: startsWith(github.ref, 'refs/tags/indigo-')
-#    runs-on: ubuntu-latest
-#    needs: [test_linux_python, test_linux_java, test_linux_dotnet, test_windows_python, test_macos_python]
-#    container: epmlsop/indigo-tester:latest
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#        with:
-#          lfs: true
-#          fetch-depth: 500
-#      - name: Git fetch tags
-#        run: git fetch --tags -f
-#      - name: Create folder for native libs
-#        run: mkdir dist
-#      - name: Download native shared libraries
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: indigo-native-shared-libs
-#          path: dist/
-#      - name: Update Wrappers version
-#        run: python3 build_scripts/indigo-update-version.py
-#      - name: Publish Python wheels to PyPI
-#        env:
-#          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-#        run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal --publish
-#      - name: Publish Java jars to Maven Central
-#        env:
-#          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
-#          MAVEN_USER: ${{ secrets.MAVEN_USER }}
-#          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-#          GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
-#          GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
-#        run: |
-#          set -eux
-#          apt install -y gnupg
-#          mkdir /root/.m2
-#          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
-#          echo ${GPG_PRIVATE_KEY} > gpg.key
-#          gpg --batch --import gpg.key
-#          rm gpg.key
-#          python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal --publish
-#      - name: Publish .NET nupkg to Nuget
-#        env:
-#          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-#        run: python3 build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal --publish
+  build_indigo_utils:
+    strategy:
+    fail-fast: false
+    matrix:
+      os: [ macos-latest, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Build utils macOS
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
+          cmake --build . --config Release --target all -- -j $(nproc)
+          ctest --verbose -C Release
+      - name: Build utils Linux
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: docker://epmlsop/buildpack-centos7:latest
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
+          cmake --build . --config Release --target all -- -j $(nproc)
+          ctest --verbose -C Release
+      - name: Build utils Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
+          cmake --build . --config Release --target ALL_BUILD
+          ctest --verbose -C Release
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-utils-${{ matrix.os }}
+          path: dist/utils
 
   build_bingo_oracle_linux:
     runs-on: ubuntu-latest
@@ -647,3 +631,51 @@ jobs:
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-macos
           path: dist/bingo-postgres*.tgz
+
+
+#  publish:
+#    if: startsWith(github.ref, 'refs/tags/indigo-')
+#    runs-on: ubuntu-latest
+#    needs: [test_linux_python, test_linux_java, test_linux_dotnet, test_windows_python, test_macos_python]
+#    container: epmlsop/indigo-tester:latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          lfs: true
+#          fetch-depth: 500
+#      - name: Git fetch tags
+#        run: git fetch --tags -f
+#      - name: Create folder for native libs
+#        run: mkdir dist
+#      - name: Download native shared libraries
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: indigo-native-shared-libs
+#          path: dist/
+#      - name: Update Wrappers version
+#        run: python3 build_scripts/indigo-update-version.py
+#      - name: Publish Python wheels to PyPI
+#        env:
+#          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+#        run: python3 build_scripts/indigo-make-by-libs.py --type=python --wrappers-arch=universal --publish
+#      - name: Publish Java jars to Maven Central
+#        env:
+#          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
+#          MAVEN_USER: ${{ secrets.MAVEN_USER }}
+#          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+#          GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
+#          GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
+#        run: |
+#          set -eux
+#          apt install -y gnupg
+#          mkdir /root/.m2
+#          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
+#          echo ${GPG_PRIVATE_KEY} > gpg.key
+#          gpg --batch --import gpg.key
+#          rm gpg.key
+#          python3 build_scripts/indigo-make-by-libs.py --type=java --wrappers-arch=universal --publish
+#      - name: Publish .NET nupkg to Nuget
+#        env:
+#          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+#        run: python3 build_scripts/indigo-make-by-libs.py --type=dotnet --wrappers-arch=universal --publish

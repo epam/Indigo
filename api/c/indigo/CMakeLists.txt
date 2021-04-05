@@ -65,7 +65,10 @@ if (NOT EMSCRIPTEN)
     endforeach()
     add_dependencies(before-indigo-wrappers before-indigo-wrappers-${PROJECT_NAME})
     add_dependencies(before-indigo-wrappers-${PROJECT_NAME} ${PROJECT_NAME})
-else()
+endif()
+
+
+if (BUILD_UTILS OR EMSCRIPTEN)
     add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
     target_include_directories(${PROJECT_NAME}-static
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
