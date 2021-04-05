@@ -88,7 +88,7 @@ if isIronPython():
     import clr
     dll_full_path = lambda: os.environ['INDIGO_PATH']
     clr.AddReferenceToFileAndPath(dll_full_path())
-    from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
+    from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject, ReactingCenter
 elif isJython():
     from jip.embed import require
     indigo_java_version = get_indigo_java_version()
