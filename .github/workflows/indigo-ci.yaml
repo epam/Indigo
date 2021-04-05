@@ -442,7 +442,7 @@ jobs:
       - name: Linux setup
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: docker://epmlsop/buildpack-centos7:latest
-      name: Build utils UNIX
+      - name: Build utils UNIX
         if: ${{ matrix.os != 'windows-latest' }}
         run: |
           mkdir build
