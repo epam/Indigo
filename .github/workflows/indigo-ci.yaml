@@ -348,7 +348,10 @@ jobs:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
           DYLD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/osx-x64/native
-        run: dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+          DYLD_PRINT_LIBRARIES: 1
+        run: | 
+          env
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Test Windows
         if: ${{ matrix.os == 'windows-latest' }}
         env:
