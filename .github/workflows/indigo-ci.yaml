@@ -349,15 +349,15 @@ jobs:
       - name: Test UNIX
         if: ${{ matrix.os != 'windows-latest' }}
         env:
-          INDIGO_PATH: ${{ env.GITHUB_WORKSPACE }}/tmp/lib/netstandard2.0/Indigo.Net.dll
-          LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}:${{ env.GITHUB_WORKSPACE }}/tmp/runtimes/linux-x64/native
-          DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH }}:${{ env.GITHUB_WORKSPACE }}/tmp/runtimes/osx-x64/native
+          INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
+          LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}:${{ github.workspace }}/tmp/runtimes/linux-x64/native
+          DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH }}:${{ github.workspace }}/tmp/runtimes/osx-x64/native
         run: dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Test Windows
+        if: ${{ matrix.os == 'windows-latest' }}
         env:
-          INDIGO_PATH: ${{ env.GITHUB_WORKSPACE }}/tmp/lib/netstandard2.0/Indigo.Net.dll
-          PATH: ${{ env.PATH }};${{ env.GITHUB_WORKSPACE }}/tmp/runtimes/win-x64/native
-        if: ${{ matrix.os != 'windows-latest' }}
+          INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
+          PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
         run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Publish Test Report
         if: always()
