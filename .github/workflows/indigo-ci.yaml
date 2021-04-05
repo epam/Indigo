@@ -437,9 +437,7 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
-      - name: Build utils macOS
-        
-      - name: Linux setup
+      - name: Linux Docker setup
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: docker://epmlsop/buildpack-centos7:latest
       - name: Build utils UNIX
