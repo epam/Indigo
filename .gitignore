@@ -80,3 +80,4 @@ cmake-build-release
 api/c/indigo/src/indigo_version.h
 .jython_cache/
 *$py.class
+.vscode/

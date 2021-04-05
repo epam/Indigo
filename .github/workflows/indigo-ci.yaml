@@ -339,16 +339,19 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
           cd IronPython
-          Expand-Archive IronPython.2.7.11.zip
+          Expand-Archive IronPython.2.7.11.zip .
           cd ../tmp
-          Expand-Archive ../dist/Indigo.Net.*.nupkg
+          Expand-Archive ../dist/Indigo.Net.*.nupkg .
       - name: Test UNIX
         if: ${{ matrix.os != 'windows-latest' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}:${{ github.workspace }}/tmp/runtimes/linux-x64/native
           DYLD_LIBRARY_PATH: ${{ env.DYLD_LIBRARY_PATH }}:${{ github.workspace }}/tmp/runtimes/osx-x64/native
-        run: dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
+        run: |
+          env
+          find .
+          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Test Windows
         if: ${{ matrix.os == 'windows-latest' }}
         env:
@@ -607,11 +610,11 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          $pg_version = switch(${{ matrix.postgres_major_version }}) { 12 { 12.6 } 11 { 11.11 } 10 { 10.16 }};
-          curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip;
-          Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip;
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { 12 { 12.6 } 11 { 11.11 } 10 { 10.16 }}
+          curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip
+          Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
-          cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h;
+          cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h
       - name: Build bingo-postgres
         run: |
           mkdir build
