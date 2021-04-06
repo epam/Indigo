@@ -112,7 +112,12 @@ message(STATUS "CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}")
 # Fix problem with CMake not supporting copy with wildcards on windows
 # Use like ${COPY_COMMAND} ${SEP}some${SEP}path${sep}file.txt ${NATIVE_DIST_DIRECTORY}${SEP}
 if (WIN32)
-    set(COPY_COMMAND copy)
+    find_program(CP cp PATHS ENV{PATH})
+    if (CP)
+        set(COPY_COMMAND cp)
+    else()
+        set(COPY_COMMAND copy)
+    endif()
 else()
     set(COPY_COMMAND cp)
 endif()

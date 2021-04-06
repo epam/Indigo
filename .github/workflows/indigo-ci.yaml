@@ -88,11 +88,27 @@ jobs:
         run: |
           cd build
           ctest --verbose
+      - name: Prepare integration tests
+        run: |
+          cd build
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON
+          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
+      - name: Run integration tests
+        run: |
+          python api/tests/integration/test.py -j junit_report.xml -e todo
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "windows-latest-mingw_python_test_report"
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: indigo-libs-windows-mingw
           path: dist
+            - name: Publish Test Report
   build_indigo_macos:
     runs-on: macos-latest
     steps:
@@ -454,16 +470,18 @@ jobs:
       - name: Build utils macOS
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          uname -a
-          echo $(nproc)
+          uname -a || echo failed
+          echo $(sysctl -n hw.logicalcpu) || echo failed
           mkdir build
           cd build
           cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
-          cmake --build . --config Release --target all -- -j $(nproc)
+          cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           ctest --verbose
       - name: Build utils Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
+          systeminfo || echo failed
+          echo ${env:NUMBER_OF_PROCESSORS} || echo failed
           mkdir build
           cd build
           cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
