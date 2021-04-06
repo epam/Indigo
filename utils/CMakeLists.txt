@@ -1,4 +1,4 @@
-if (BUILD_UTILS)
+if (BUILD_INDIGO_UTILS)
     add_subdirectory(indigo-cano)
     add_subdirectory(indigo-deco)
     add_subdirectory(indigo-depict)

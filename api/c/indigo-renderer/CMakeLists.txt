@@ -49,7 +49,7 @@ if (NOT EMSCRIPTEN)
 endif()
 
 
-if (BUILD_UTILS OR EMSCRIPTEN)
+if (BUILD_INDIGO_UTILS OR EMSCRIPTEN)
     add_library(${PROJECT_NAME}-static STATIC $<TARGET_OBJECTS:${PROJECT_NAME}-object>)
     target_link_libraries(${PROJECT_NAME}-static
             PUBLIC indigo-static

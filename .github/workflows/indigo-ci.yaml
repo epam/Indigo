@@ -439,7 +439,7 @@ jobs:
         run: mvn -B --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
         working-directory: bingo/bingo-elastic/java
 
-  build_indigo_utils:
+  build_indigo_utils_x86_64:
     strategy:
       fail-fast: false
       matrix:
@@ -459,29 +459,23 @@ jobs:
         with:
           args: >
             /bin/sh -c "
-            uname -a &&
-            echo $(nproc) &&
             mkdir build &&
             cd build &&
-            cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON &&
+            cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=ON &&
             cmake --build . --config Release --target all -- -j $(nproc) && 
             ctest --verbose
             "
       - name: Build utils macOS
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
-          uname -a || echo failed
-          echo $(sysctl -n hw.logicalcpu) || echo failed
           mkdir build
           cd build
-          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=ON
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           ctest --verbose
       - name: Build utils Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
-          systeminfo || echo failed
-          echo ${env:NUMBER_OF_PROCESSORS} || echo failed
           mkdir build
           cd build
           cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
@@ -490,10 +484,10 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-utils-${{ matrix.os }}
+          name: indigo-utils-${{ fromJSON('{"ubuntu": "linux", "windows": "windows", "macos": "macos"}')[matrix.os] }}-x86_64
           path: dist/utils
 
-  build_bingo_oracle_linux:
+  build_bingo_oracle_linux_x86_64:
     runs-on: ubuntu-latest
     container: epmlsop/buildpack-centos7:latest
     steps:
@@ -513,9 +507,9 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: bingo-oracle-linux
+          name: bingo-oracle-linux-x86_64
           path: dist/bingo-oracle*.tgz
-  build_bingo_oracle_windows_mingw:
+  build_bingo_oracle_windows_mingw_x86_64:
     runs-on: windows-latest
     defaults:
       run:
@@ -540,9 +534,9 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: bingo-oracle-windows-mingw
+          name: bingo-oracle-windows-mingw-x86_64
           path: dist/bingo-oracle*.zip
-  build_bingo_oracle_windows_msvc:
+  build_bingo_oracle_windows_msvc_x86_64:
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -561,9 +555,9 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: bingo-oracle-windows-msvc
+          name: bingo-oracle-windows-msvc-x86_64
           path: dist/bingo-oracle*.zip
-  build_bingo_postgres_linux:
+  build_bingo_postgres_linux_x86_64:
     strategy:
       fail-fast: false
       matrix:
@@ -592,9 +586,9 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: bingo-postgres-${{ matrix.postgres_major_version }}-linux
+          name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
           path: dist/bingo-postgres*.tgz
-  build_bingo_postgres_windows_msvc:
+  build_bingo_postgres_windows_msvc_x86_64:
     strategy:
       fail-fast: false
       matrix:
@@ -624,9 +618,9 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: bingo-postgres-${{ matrix.postgres_major_version }}-windows
+          name: bingo-postgres-${{ matrix.postgres_major_version }}-windows-x86_64
           path: dist/bingo-postgres*.zip
-  build_bingo_postgres_macos:
+  build_bingo_postgres_macos_x86_64:
     strategy:
       fail-fast: false
       matrix:
@@ -654,9 +648,34 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: bingo-postgres-${{ matrix.postgres_major_version }}-macos
+          name: bingo-postgres-${{ matrix.postgres_major_version }}-macos-x86_64
           path: dist/bingo-postgres*.tgz
 
+  build_bingo_sqlserver_windows_msvc_x86_64:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows ]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f      
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_BINGO_SQLSERVER=ON -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
+          cmake --build . --config Release --target package-bingo-sqlserver
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: bingo-sqlserver-${{ matrix.os }}-x86_64
+          path: dist/bingo-sqlserver*.zip
 
 #  publish:
 #    if: startsWith(github.ref, 'refs/tags/indigo-')
