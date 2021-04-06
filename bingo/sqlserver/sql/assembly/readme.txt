@@ -1,1 +1,0 @@
-Bingo assembly for MS SQL Server is placed here automatically after build

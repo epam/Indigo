@@ -130,7 +130,7 @@ namespace indigo {
         
         internal static byte[] Win_x64_bingo_core_c_dll {
             get {
-                object obj = ResourceManager.GetObject("windows-x86_64/bingo-core-c.dll", resourceCulture);
+                object obj = ResourceManager.GetObject("bingo-core-c.dll", resourceCulture);
                 return ((byte[])(obj));
             }
         }

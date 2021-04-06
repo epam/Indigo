@@ -30,7 +30,7 @@ option(BUILD_UTILS "Build indigo-cano, indigo-deco and indigo-depict utilities" 
 
 # Bingo options
 option(BUILD_BINGO_POSTGRES "Build Bingo Postgres cartridge" OFF)
-option(BUILD_BINGO_MSSQL "Build Bingo MS SqlServer cartridge [WIP]" OFF)
+option(BUILD_BINGO_SQLSERVER "Build Bingo MS SqlServer cartridge [WIP]" OFF)
 option(BUILD_BINGO_ORACLE "Build Bingo Oracle cartridge" OFF)
 
 # Auto-set dependent options
@@ -75,11 +75,11 @@ if (EMSCRIPTEN)
     # set(BUILD_INDIGO_WRAPPERS_R OFF)
     set(BUILD_UTILS OFF)
     set(BUILD_BINGO_POSTGRES OFF)
-    set(BUILD_BINGO_MSSQL OFF)
+    set(BUILD_BINGO_SQLSERVER OFF)
     set(BUILD_BINGO_ORACLE OFF)
 endif()
 
-if (BUILD_INDIGO OR BUILD_UTILS OR BUILD_BINGO_MSSQL OR BUILD_BINGO_ORACLE OR BUILD_BINGO_POSTGRES OR EMSCRIPTEN)
+if (BUILD_INDIGO OR BUILD_UTILS OR BUILD_BINGO_SQLSERVER OR BUILD_BINGO_ORACLE OR BUILD_BINGO_POSTGRES OR EMSCRIPTEN)
     set(BUILD_NATIVE ON)
 endif()
 
@@ -98,7 +98,7 @@ message(STATUS "BUILD_INDIGO_WRAPPERS_DOTNET=${BUILD_INDIGO_WRAPPERS_DOTNET}")
 # message(STATUS "BUILD_INDIGO_WRAPPERS_R=${BUILD_INDIGO_WRAPPERS_R}")
 message(STATUS "BUILD_UTILS=${BUILD_UTILS}")
 message(STATUS "BUILD_BINGO_POSTGRES=${BUILD_BINGO_POSTGRES}")
-message(STATUS "BUILD_BINGO_MSSQL=${BUILD_BINGO_MSSQL}")
+message(STATUS "BUILD_BINGO_SQLSERVER=${BUILD_BINGO_SQLSERVER}")
 message(STATUS "BUILD_BINGO_ORACLE=${BUILD_BINGO_ORACLE}")
 
 # Set up compiler flags and other preparatory steps
@@ -106,14 +106,14 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(setup)
 
 # In subprojects we'll add dependencies for this pseudo-target to build all packages at once
-if (BUILD_INDIGO OR BUILD_UTILS OR BUILD_BINGO_POSTGRES OR BUILD_BINGO_ORACLE OR BUILD_BINGO_MSSQL)
+if (BUILD_INDIGO OR BUILD_UTILS OR BUILD_BINGO_POSTGRES OR BUILD_BINGO_ORACLE OR BUILD_BINGO_SQLSERVER)
     add_subdirectory(third_party)
     add_subdirectory(core)
 endif()
 if (BUILD_INDIGO OR BUILD_INDIGO_WRAPPERS)
     add_subdirectory(api)
 endif()
-if (BUILD_BINGO_POSTGRES OR BUILD_BINGO_ORACLE OR BUILD_BINGO_MSSQL)
+if (BUILD_BINGO_POSTGRES OR BUILD_BINGO_ORACLE OR BUILD_BINGO_SQLSERVER)
     add_subdirectory(bingo)
 endif()
 if (BUILD_UTILS)

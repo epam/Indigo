@@ -85,3 +85,5 @@ api/c/indigo/src/indigo_version.h
 api/java/**/target/
 
 
+bingo/bingo-core/src/core/bingo_version.h
+bingo/sqlserver/Resources/bingo-core-c.dll
