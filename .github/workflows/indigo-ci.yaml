@@ -100,7 +100,7 @@ jobs:
           fetch-depth: 500
       - uses: msys2/setup-msys2@v2
         with:
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-wheel
       - name: Git fetch tags
         run: git fetch --tags -f
       - name: Build native libs
@@ -116,7 +116,7 @@ jobs:
       - name: Prepare integration tests
         run: |
           cd build
-          python3 -m pip install wheel
+          python -m pip install wheel
           cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON
           cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
       - name: Run integration tests
