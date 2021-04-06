@@ -1,5 +1,8 @@
 name: Indigo CI
 
+env:
+  OS_NAME_MAPPING_JSON: {"ubuntu": "linux", "windows": "windows", "macos": "macos"}
+
 on:
   push:
     branches:
@@ -443,8 +446,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
-    runs-on: ${{ matrix.os }}
+        os: [ macos, ubuntu, windows ]
+    runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -454,7 +457,7 @@ jobs:
       - name: Git fetch tags
         run: git fetch --tags -f
       - name: Build utils Linux
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu' }}
         uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: >
@@ -466,7 +469,7 @@ jobs:
             ctest --verbose
             "
       - name: Build utils macOS
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos' }}
         run: |
           mkdir build
           cd build
@@ -474,7 +477,7 @@ jobs:
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           ctest --verbose
       - name: Build utils Windows
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'windows' }}
         run: |
           mkdir build
           cd build
@@ -484,7 +487,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-utils-${{ fromJSON('{"ubuntu": "linux", "windows": "windows", "macos": "macos"}')[matrix.os] }}-x86_64
+          name: indigo-utils-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
           path: dist/utils
 
   build_bingo_oracle_linux_x86_64:
