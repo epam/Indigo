@@ -440,16 +440,17 @@ jobs:
       - name: Build utils Linux
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: docker://epmlsop/buildpack-centos7:latest
-        args: >
-          -v ${PWD}:/indigo /bin/sh -c "cd indigo &&
-          uname -a &&
-          cat /proc/cpuinfo &&
-          mkdir build &&
-          cd build &&
-          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON &&
-          cmake --build . --config Release --target all -- -j $(nproc) && 
-          ctest --verbose
-          "
+        with:
+          args: >
+            -v ${PWD}:/indigo /bin/sh -c "cd indigo &&
+            uname -a &&
+            cat /proc/cpuinfo &&
+            mkdir build &&
+            cd build &&
+            cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON &&
+            cmake --build . --config Release --target all -- -j $(nproc) && 
+            ctest --verbose
+            "
       - name: Build utils macOS
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
