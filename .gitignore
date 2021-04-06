@@ -62,7 +62,7 @@ api/plugins/renderer/java/target/
 api/tests/dotnet/bin/
 api/tests/dotnet/obj/
 **/venv/
-api/tests/python/**/out
+api/tests/integrations/**/out
 **/.__pycache__
 *.pyo
 .DS_Store
