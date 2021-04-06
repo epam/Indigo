@@ -107,7 +107,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DPython3_ROOT_DIR=/mingw64
           cmake --build . --config Release --target all -- -j $(nproc) --output-sync
       - name: Test native libs
         run: |
@@ -117,7 +117,7 @@ jobs:
         run: |
           cd build
           python -m pip install wheel
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DPython3_ROOT_DIR=/mingw64
           cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
       - name: Run integration tests
         run: |

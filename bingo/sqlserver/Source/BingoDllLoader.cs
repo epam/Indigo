@@ -242,16 +242,16 @@ namespace indigo
                 switch (Environment.OSVersion.Platform)
                 {
                     case PlatformID.Win32NT:
-                        subprefix = (IntPtr.Size == 8) ? "Win/x64/" : "Win/x86/";
+                        subprefix = (IntPtr.Size == 8) ? "windows-x86_x64/" : "windows-x86/";
                         break;
                     case PlatformID.Unix:
                         if (isMac())
                         {
-                            subprefix = "Mac/10.7/";
+                            subprefix = "darwin-x86_64";
                         }
                         else
                         {
-                            subprefix = (IntPtr.Size == 8) ? "Linux/x64/" : "Linux/x86/";
+                            subprefix = (IntPtr.Size == 8) ? "linux-x86_64" : "linux-x86";
                         }
                         break;
                     default:

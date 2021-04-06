@@ -76,9 +76,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>resource.resx</DependentUpon>
     </Compile>
-    <Compile Include="Source\Bingo.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Source\Bingo.cs" />
     <Compile Include="Source\BingoCommon.cs" />
     <Compile Include="Source\BingoConfig.cs" />
     <Compile Include="Source\BingoCoreLib.cs" />
@@ -90,7 +88,6 @@
     <Compile Include="Source\BingoStorage.cs" />
     <Compile Include="Source\BingoUtils.cs" />
     <Compile Include="Source\BingoDllLoader.cs" />
-    <Compile Include="..\..\api\dotnet\IndigoException.cs" />
     <Compile Include="Source\MangoCommon.cs" />
     <Compile Include="Source\MangoFastIndexFetch.cs" />
     <Compile Include="Source\MangoIndex.cs" />
@@ -113,8 +110,7 @@
     <PostBuildEvent>del $(ProjectDir)sql\assembly\$(TargetName).*
 copy $(TargetDir)$(TargetName).* $(ProjectDir)sql\assembly\
 </PostBuildEvent>
-    <PreBuildEvent>IF EXIST $(DllPath32)\bingo-core-c.dll (copy /Y $(DllPath32)\bingo-core-c.dll $(ProjectDir)Resources\Win\x86)
-IF EXIST $(DllPath64)\bingo-core-c.dll (copy /Y $(DllPath64)\bingo-core-c.dll $(ProjectDir)Resources\Win\x64)
+    <PreBuildEvent>IF EXIST $(DllPath64)\bingo-core-c.dll (copy /Y $(DllPath64)\bingo-core-c.dll $(ProjectDir)Resources\windows-x86_64)
 </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>
