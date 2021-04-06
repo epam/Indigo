@@ -108,7 +108,6 @@ jobs:
         with:
           name: indigo-libs-windows-mingw
           path: dist
-            - name: Publish Test Report
   build_indigo_macos:
     runs-on: macos-latest
     steps:
