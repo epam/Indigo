@@ -442,7 +442,7 @@ jobs:
         uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: >
-            /bin/sh -c "cd indigo &&
+            /bin/sh -c "
             uname -a &&
             echo $(nproc) &&
             mkdir build &&
