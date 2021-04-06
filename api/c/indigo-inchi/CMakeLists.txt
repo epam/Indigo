@@ -17,7 +17,8 @@ if (NOT EMSCRIPTEN)
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
     if(MINGW)
         target_link_options(${PROJECT_NAME}
-                PRIVATE -Wl,--allow-multiple-definition)
+                PRIVATE -Wl,--allow-multiple-definition
+                PRIVATE -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive)
     endif()
 
     if (ENABLE_TESTS)

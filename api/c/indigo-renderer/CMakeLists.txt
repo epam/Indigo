@@ -28,6 +28,10 @@ if (NOT EMSCRIPTEN)
     elseif(MINGW OR UNIX OR MSYS OR CYGWIN)
         target_link_options(${PROJECT_NAME}
                 PRIVATE -Wl,--allow-multiple-definition)
+        if(MINGW)
+                target_link_options(${PROJECT_NAME}
+                        PRIVATE -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive)
+        endif()
     endif()
 
     target_include_directories(${PROJECT_NAME}

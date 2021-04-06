@@ -74,7 +74,6 @@ public class IndigoInchi {
     private synchronized static void loadLibrary(String path) {
         if (lib != null)
             return;
-
         try {
             if (Platform.isLinux() || Platform.isSolaris())
                 lib = Native.load(IndigoUtils.getPathToBinary(IndigoInchi.class, Indigo.getPlatformDependentPath(), path, "libindigo-inchi.so"), IndigoInchiLib.class);

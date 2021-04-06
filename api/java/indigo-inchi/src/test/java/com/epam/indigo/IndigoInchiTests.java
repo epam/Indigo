@@ -18,7 +18,6 @@ public class IndigoInchiTests {
         IndigoObject indigoObject = indigo.loadMolecule("C1=CC=CC=C1");
         String inchi = indigoInchi.getInchi(indigoObject);
 
-
         assertEquals(
                 "InChI=1S/C6H6/c1-2-4-6-5-3-1/h1-6H",
                 inchi,

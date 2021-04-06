@@ -62,7 +62,7 @@ api/plugins/renderer/java/target/
 api/tests/dotnet/bin/
 api/tests/dotnet/obj/
 **/venv/
-api/tests/integrations/**/out
+api/tests/integrations/**/out/
 **/.__pycache__
 *.pyo
 .DS_Store
@@ -81,3 +81,7 @@ api/c/indigo/src/indigo_version.h
 .jython_cache/
 *$py.class
 .vscode/
+.flattened-pom.xml
+api/java/**/target/
+
+
