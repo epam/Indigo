@@ -99,7 +99,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_INDIGO=OFF
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_UTILS=OFF
           cmake --build . --config Release --target indigo-${{ matrix.wrapper }}
           ls -alh ../dist
       - name: Upload native shared libs
@@ -108,20 +108,20 @@ jobs:
           name: indigo-native-shared-libs
           path: |
             dist/lib
-      - name: Upload test wrappers for Python
+      - name: Upload Python wrappers
         if: ${{ matrix.wrapper == 'python' }}
         uses: actions/upload-artifact@v2
         with:
           name: indigo-python
           path: |
             dist/*.whl
-      - name: Upload test wrappers for Java
+      - name: Upload Java wrappers
         if: ${{ matrix.wrapper == 'java' }}
         uses: actions/upload-artifact@v2
         with:
           name: indigo-java
           path: dist/*.jar
-      - name: Upload test wrappers for .NET
+      - name: Upload .NET wrappers
         if: ${{ matrix.wrapper == 'dotnet' }}
         uses: actions/upload-artifact@v2
         with:
