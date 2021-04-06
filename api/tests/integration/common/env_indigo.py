@@ -91,26 +91,18 @@ if isIronPython():
     from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject, ReactingCenter
 elif isJython():
     indigo_java_version, jna_version = get_indigo_java_version()
-    if 'INDIGO_PATH' not in os.environ:
-        require('net.java.dev.jna:jna:{}'.format(jna_version))
-        require('com.epam.indigo:indigo:{}'.format(indigo_java_version))
-        require('com.epam.indigo:indigo-inchi:{}'.format(indigo_java_version))
-        require('com.epam.indigo:indigo-renderer:{}'.format(indigo_java_version))
-        require('com.epam.indigo:bingo-nosql:{}'.format(indigo_java_version))
-    else:
-        indigo_path = os.path.normpath(os.path.abspath(os.getenv('INDIGO_PATH', os.path.join(REPO_ROOT, 'dist'))))
-        download_jna(jna_version, indigo_path)
-        jars = []
-        for filename in os.listdir(indigo_path):
-            if filename.endswith('.jar') and not 'javadoc' in filename and not 'sources' in filename:
-                jar_path = os.path.join(indigo_path, filename)
-                if 'jna' in filename:
-                    jars.insert(0, jar_path)
-                else:
-                    jars.append(jar_path)
-        for jar in jars:
-            sys.path.append(jar)
-    print(sys.path)
+    indigo_path = os.path.normpath(os.path.abspath(os.getenv('INDIGO_PATH', os.path.join(REPO_ROOT, 'dist'))))
+    download_jna(jna_version, indigo_path)
+    jars = []
+    for filename in os.listdir(indigo_path):
+        if filename.endswith('.jar') and not 'javadoc' in filename and not 'sources' in filename:
+            jar_path = os.path.join(indigo_path, filename)
+            if 'jna' in filename:
+                jars.insert(0, jar_path)
+            else:
+                jars.append(jar_path)
+    for jar in jars:
+        sys.path.append(jar)
     from com.epam.indigo import Indigo, IndigoObject, IndigoException, IndigoRenderer, IndigoInchi, Bingo, BingoException, BingoObject
     dll_full_path = lambda: sys.path[-4]
 else:
