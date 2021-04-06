@@ -14,9 +14,12 @@ on:
   repository_dispatch:
 
 jobs:
-  build_indigo_linux:
-    runs-on: ubuntu-latest
-    container: epmlsop/buildpack-centos7:latest
+  build_indigo_libs_x86_64:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos, ubuntu, windows ]
+    runs-on: ${{ matrix.os }}-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -25,144 +28,47 @@ jobs:
           fetch-depth: 500
       - name: Git fetch tags
         run: git fetch --tags -f
-      - name: Build native libs
+      - name: Build Linux
+        if: ${{ matrix.os == 'ubuntu' }}
+        uses: docker://epmlsop/buildpack-centos7:latest
+        with:
+          args: >
+            /bin/sh -c "
+            mkdir build &&
+            cd build &&
+            cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF &&
+            cmake --build . --config Release --target all -- -j $(nproc) && 
+            ctest --verbose
+            "
+      - name: Build macOS
+        if: ${{ matrix.os == 'macos' }}
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_INDIGO_WRAPPERS=OFF
-          cmake --build . --config Release --target all -- -j $(nproc)
-      - name: Test native libs
-        run: |
-          cd build
+          cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
+          cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           ctest --verbose
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: indigo-libs-linux
-          path: dist
-  build_indigo_windows_msvc:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build native libs
+      - name: Build Windows
+        if: ${{ matrix.os == 'windows' }}
         run: |
           mkdir build
           cd build
-          cmake .. -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
           cmake --build . --config Release --target ALL_BUILD
-      - name: Test native libs
-        run: |
-          cd build
-          ctest -C Release --verbose
+          ctest --verbose -C Release
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: indigo-libs-windows
+          name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
           path: dist
-  build_indigo_macos:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build native libs
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_INDIGO_WRAPPERS=OFF
-          cmake --build . --config Release --target all -- -j $(nproc)
-      - name: Test native libs
-        run: |
-          cd build
-          ctest --verbose
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: indigo-libs-macos
-          path: dist
-  build_indigo_windows_mingw:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - uses: msys2/setup-msys2@v2
-        with:
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build native libs
-        run: |
-          mkdir build
-          cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DPython3_ROOT_DIR=/mingw64
-          cmake --build . --config Release --target all -- -j $(nproc) --output-sync
-      - name: Test native libs
-        run: |
-          cd build
-          ctest --verbose
-      - name: Prepare integration tests
-        run: |
-          cd build
-          python -m pip install wheel
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DPython3_ROOT_DIR=/mingw64
-          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
-      - name: Run integration tests
-        run: |
-          python api/tests/integration/test.py -j junit_report.xml -e todo
-      - name: Publish Test Report
-        if: always()
-        uses: mikepenz/action-junit-report@v1
-        with:
-          report_paths: 'junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "windows-latest-mingw_python_test_report"
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: indigo-libs-windows-mingw
-          path: dist
-  build_indigo_wasm_ketcher:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags
-      - name: Install Emcripten SDK
-        uses: mymindstorm/setup-emsdk@v7
-      - name: Build Indigo Ketcher WASM
-        run: |
-          mkdir build
-          cd build
-          emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release --target indigo-ketcher-js-test -- -j $(nproc)
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: indigo-ketcher-js
-          path: build/bin/libindigo-ketcher.js
+
   build_indigo_wrappers:
+    strategy:
+      fail-fast: false
+      matrix:
+        wrapper: [ python, java, dotnet ]
     runs-on: ubuntu-latest
-    needs: [build_indigo_linux, build_indigo_windows_msvc, build_indigo_macos]
+    needs: [ build_indigo_libs_x86_64 ]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -177,24 +83,24 @@ jobs:
       - name: Download Linux native libs
         uses: actions/download-artifact@v2
         with:
-          name: indigo-libs-linux
+          name: indigo-libs-linux-x86_64
           path: dist/
       - name: Download Windows native libs
         uses: actions/download-artifact@v2
         with:
-          name: indigo-libs-windows
+          name: indigo-libs-windows-x86_64
           path: dist/
       - name: Download macOS native libs
         uses: actions/download-artifact@v2
         with:
-          name: indigo-libs-macos
+          name: indigo-libs-macos-x86_64
           path: dist/
       - name: Build wrappers
         run: |
           mkdir build
           cd build
           cmake .. -DBUILD_INDIGO=OFF
-          cmake --build . --config Release --target indigo-wrappers
+          cmake --build . --config Release --target indigo-${{ matrix.wrapper }}
           ls -alh ../dist
       - name: Upload native shared libs
         uses: actions/upload-artifact@v2
@@ -203,22 +109,26 @@ jobs:
           path: |
             dist/lib
       - name: Upload test wrappers for Python
+        if: ${{ matrix.wrapper == 'python' }}
         uses: actions/upload-artifact@v2
         with:
           name: indigo-python
           path: |
             dist/*.whl
       - name: Upload test wrappers for Java
+        if: ${{ matrix.wrapper == 'java' }}
         uses: actions/upload-artifact@v2
         with:
           name: indigo-java
           path: dist/*.jar
       - name: Upload test wrappers for .NET
+        if: ${{ matrix.wrapper == 'dotnet' }}
         uses: actions/upload-artifact@v2
         with:
           name: indigo-dotnet
           path: dist/*.nupkg
-  test_indigo_python:
+
+  test_indigo_python_x86_64:
     strategy:
       fail-fast: false
       matrix:
@@ -260,7 +170,8 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}_python_test_report"
-  test_indigo_java:
+
+  test_indigo_java_x86_64:
     strategy:
       fail-fast: false
       matrix:
@@ -302,7 +213,8 @@ jobs:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}_java_test_report"
-  test_indigo_dotnet:
+
+  test_indigo_dotnet_x86_64:
     strategy:
       fail-fast: false
       matrix:
@@ -367,7 +279,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}_dotnet_test_report"
 
-  test_bingo_elastic_python_linux:
+  test_bingo_elastic_python_linux_x86_64:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -408,7 +320,7 @@ jobs:
         run: poetry run pytest tests
         working-directory: bingo/bingo-elastic/python
 
-  test_bingo_elastic_java_linux:
+  test_bingo_elastic_java_linux_x86_64:
     strategy:
       fail-fast: false
       matrix:
@@ -441,6 +353,82 @@ jobs:
       - name: Build bingo-elastic
         run: mvn -B --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
         working-directory: bingo/bingo-elastic/java
+
+  build_indigo_windows_mingw_x86_64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - uses: msys2/setup-msys2@v2
+        with:
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Build native libs
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DPython3_ROOT_DIR=/mingw64
+          cmake --build . --config Release --target all -- -j $(nproc) --output-sync
+      - name: Test native libs
+        run: |
+          cd build
+          ctest --verbose
+      - name: Prepare integration tests
+        run: |
+          cd build
+          python -m pip install wheel
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DPython3_ROOT_DIR=/mingw64
+          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
+      - name: Run integration tests
+        run: |
+          python api/tests/integration/test.py -j junit_report.xml -e todo
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v1
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "windows-latest-mingw_python_test_report"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-windows-mingw-x86_64
+          path: dist
+
+  build_indigo_wasm_ketcher:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags
+      - name: Install Emcripten SDK
+        uses: mymindstorm/setup-emsdk@v7
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release --target indigo-ketcher-js -- -j $(nproc)
+      - name : Test
+        run: |
+          cd build
+          cmake --build . --config Release --target indigo-ketcher-js-test
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-wasm-ketcher
+          path: build/bin/libindigo-ketcher.js
 
   build_indigo_utils_x86_64:
     strategy:
@@ -512,6 +500,7 @@ jobs:
         with:
           name: bingo-oracle-linux-x86_64
           path: dist/bingo-oracle*.tgz
+
   build_bingo_oracle_windows_mingw_x86_64:
     runs-on: windows-latest
     defaults:
@@ -539,6 +528,7 @@ jobs:
         with:
           name: bingo-oracle-windows-mingw-x86_64
           path: dist/bingo-oracle*.zip
+
   build_bingo_oracle_windows_msvc_x86_64:
     runs-on: windows-latest
     steps:
@@ -560,6 +550,7 @@ jobs:
         with:
           name: bingo-oracle-windows-msvc-x86_64
           path: dist/bingo-oracle*.zip
+
   build_bingo_postgres_linux_x86_64:
     strategy:
       fail-fast: false
@@ -591,6 +582,7 @@ jobs:
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
           path: dist/bingo-postgres*.tgz
+
   build_bingo_postgres_windows_msvc_x86_64:
     strategy:
       fail-fast: false
@@ -623,6 +615,7 @@ jobs:
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-windows-x86_64
           path: dist/bingo-postgres*.zip
+
   build_bingo_postgres_macos_x86_64:
     strategy:
       fail-fast: false

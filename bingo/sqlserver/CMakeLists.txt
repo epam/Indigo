@@ -6,7 +6,13 @@ include(CSharpUtilities)
 
 file (GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS Source/*.cs)
 
+add_custom_target(before-${PROJECT_NAME}
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:bingo-core-c> ${CMAKE_CURRENT_SOURCE_DIR}/Resources/
+    DEPENDS bingo-core-c
+)
+
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES} Properties/AssemblyInfo.cs resource.Designer.cs resource.resx)
+add_dependencies(${PROJECT_NAME} bingo-core-c before-${PROJECT_NAME})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES 
     VS_GLOBAL_AllowUnsafeBlocks true
@@ -16,10 +22,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     DOTNET_TARGET_FRAMEWORK_VERSION v3.5
 )
 
-add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:bingo-core-c> ${CMAKE_CURRENT_SOURCE_DIR}/Resources/
-    DEPENDS bingo-core-c
-)
 
 set(BINGO_SQLSERVER_PACKAGE_DIR ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${CMAKE_SYSTEM_NAME_LOWER}-${CMAKE_SYSTEM_PROCESSOR_LOWER}-${BINGO_VERSION})
 add_custom_target(package-bingo-sqlserver
