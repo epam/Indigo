@@ -62,6 +62,31 @@ jobs:
         with:
           name: indigo-libs-windows
           path: dist
+  build_indigo_macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: git fetch --tags -f
+      - name: Build native libs
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_INDIGO_WRAPPERS=OFF
+          cmake --build . --config Release --target all -- -j $(nproc)
+      - name: Test native libs
+        run: |
+          cd build
+          ctest --verbose
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: indigo-libs-macos
+          path: dist
   build_indigo_windows_mingw:
     runs-on: windows-latest
     defaults:
@@ -91,6 +116,7 @@ jobs:
       - name: Prepare integration tests
         run: |
           cd build
+          python3 -m pip install wheel
           cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON
           cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
       - name: Run integration tests
@@ -107,31 +133,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: indigo-libs-windows-mingw
-          path: dist
-  build_indigo_macos:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: git fetch --tags -f
-      - name: Build native libs
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_INDIGO_WRAPPERS=OFF
-          cmake --build . --config Release --target all -- -j $(nproc)
-      - name: Test native libs
-        run: |
-          cd build
-          ctest --verbose
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: indigo-libs-macos
           path: dist
   build_indigo_wasm_ketcher:
     runs-on: ubuntu-latest
