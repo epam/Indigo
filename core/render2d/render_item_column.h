@@ -28,17 +28,17 @@ namespace indigo
     {
     public:
         RenderItemColumn(RenderItemFactory& factory);
-        virtual ~RenderItemColumn()
+        ~RenderItemColumn() override
         {
         }
 
         DECL_ERROR;
 
-        virtual void init();
+        void init() override;
         void setVerticalSpacing(float spacing);
         void setAlignment(MultilineTextLayout::Alignment alignment);
-        virtual void estimateSize();
-        virtual void render(bool idle);
+        void estimateSize() override;
+        void render(bool idle) override;
 
     private:
         float vSpace;

@@ -81,7 +81,7 @@ namespace indigo
             explicit AngleBase(int type) : Base(type)
             {
             }
-            virtual ~AngleBase()
+            ~AngleBase() override
             {
             }
 
@@ -94,7 +94,7 @@ namespace indigo
             explicit DistanceBase(int type) : Base(type)
             {
             }
-            virtual ~DistanceBase()
+            ~DistanceBase() override
             {
             }
 
@@ -107,7 +107,7 @@ namespace indigo
             explicit Normale() : Base(LINE_NORMALE)
             {
             }
-            virtual ~Normale()
+            ~Normale() override
             {
             }
 
@@ -120,7 +120,7 @@ namespace indigo
             explicit BestFitLine() : Base(LINE_BEST_FIT)
             {
             }
-            virtual ~BestFitLine()
+            ~BestFitLine() override
             {
             }
 
@@ -133,7 +133,7 @@ namespace indigo
             explicit PointByAtom() : Base(POINT_ATOM)
             {
             }
-            virtual ~PointByAtom()
+            ~PointByAtom() override
             {
             }
 
@@ -145,7 +145,7 @@ namespace indigo
             explicit PointByDistance() : Base(POINT_DISTANCE)
             {
             }
-            virtual ~PointByDistance()
+            ~PointByDistance() override
             {
             }
 
@@ -159,7 +159,7 @@ namespace indigo
             explicit PointByPercentage() : Base(POINT_PERCENTAGE)
             {
             }
-            virtual ~PointByPercentage()
+            ~PointByPercentage() override
             {
             }
 
@@ -173,7 +173,7 @@ namespace indigo
             explicit PointByNormale() : Base(POINT_NORMALE)
             {
             }
-            virtual ~PointByNormale()
+            ~PointByNormale() override
             {
             }
 
@@ -187,7 +187,7 @@ namespace indigo
             explicit Centroid() : Base(POINT_CENTROID)
             {
             }
-            virtual ~Centroid()
+            ~Centroid() override
             {
             }
 
@@ -199,7 +199,7 @@ namespace indigo
             explicit BestFitPlane() : Base(PLANE_BEST_FIT)
             {
             }
-            virtual ~BestFitPlane()
+            ~BestFitPlane() override
             {
             }
 
@@ -212,7 +212,7 @@ namespace indigo
             explicit PlaneByPoint() : Base(PLANE_POINT_LINE)
             {
             }
-            virtual ~PlaneByPoint()
+            ~PlaneByPoint() override
             {
             }
 
@@ -225,7 +225,7 @@ namespace indigo
             explicit DistanceByPoints() : DistanceBase(DISTANCE_2POINTS)
             {
             }
-            virtual ~DistanceByPoints()
+            ~DistanceByPoints() override
             {
             }
 
@@ -238,7 +238,7 @@ namespace indigo
             explicit DistanceByLine() : DistanceBase(DISTANCE_POINT_LINE)
             {
             }
-            virtual ~DistanceByLine()
+            ~DistanceByLine() override
             {
             }
 
@@ -251,7 +251,7 @@ namespace indigo
             explicit DistanceByPlane() : DistanceBase(DISTANCE_POINT_PLANE)
             {
             }
-            virtual ~DistanceByPlane()
+            ~DistanceByPlane() override
             {
             }
 
@@ -264,7 +264,7 @@ namespace indigo
             explicit AngleByPoints() : AngleBase(ANGLE_3POINTS)
             {
             }
-            virtual ~AngleByPoints()
+            ~AngleByPoints() override
             {
             }
 
@@ -278,7 +278,7 @@ namespace indigo
             explicit AngleByLines() : AngleBase(ANGLE_2LINES)
             {
             }
-            virtual ~AngleByLines()
+            ~AngleByLines() override
             {
             }
 
@@ -291,7 +291,7 @@ namespace indigo
             explicit AngleByPlanes() : AngleBase(ANGLE_2PLANES)
             {
             }
-            virtual ~AngleByPlanes()
+            ~AngleByPlanes() override
             {
             }
 
@@ -304,7 +304,7 @@ namespace indigo
             explicit AngleDihedral() : AngleBase(ANGLE_DIHEDRAL)
             {
             }
-            virtual ~AngleDihedral()
+            ~AngleDihedral() override
             {
             }
 
@@ -319,7 +319,7 @@ namespace indigo
             explicit ExclusionSphere() : Base(EXCLUSION_SPHERE)
             {
             }
-            virtual ~ExclusionSphere()
+            ~ExclusionSphere() override
             {
             }
 

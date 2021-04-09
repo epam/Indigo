@@ -219,7 +219,7 @@ namespace indigo
     template <typename T> class DestructorT : public Destructor
     {
     public:
-        virtual void callDestructor(void* data)
+        void callDestructor(void* data) override
         {
             ((T*)data)->~T();
         }

@@ -30,21 +30,21 @@ namespace indigo
     {
     public:
         RenderItemFragment(RenderItemFactory& factory);
-        virtual ~RenderItemFragment();
+        ~RenderItemFragment() override;
 
         DECL_ERROR;
 
-        virtual void estimateSize();
-        virtual void setObjScale(float scale)
+        void estimateSize() override;
+        void setObjScale(float scale) override
         {
             _scaleFactor = scale;
         }
-        virtual void init();
-        virtual void render(bool idle);
-        virtual float getTotalBondLength();
-        virtual float getTotalClosestAtomDistance();
-        virtual int getBondCount();
-        virtual int getAtomCount();
+        void init() override;
+        void render(bool idle) override;
+        float getTotalBondLength() override;
+        float getTotalClosestAtomDistance() override;
+        int getBondCount() override;
+        int getAtomCount() override;
 
         BaseMolecule* mol;
         bool isRFragment;

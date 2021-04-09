@@ -28,18 +28,18 @@ namespace indigo
     {
     public:
         RenderItemContainer(RenderItemFactory& factory);
-        virtual ~RenderItemContainer()
+        ~RenderItemContainer() override
         {
         }
 
         DECL_ERROR;
 
-        virtual void estimateSize();
-        virtual void setObjScale(float scale);
-        virtual float getTotalBondLength();
-        virtual float getTotalClosestAtomDistance();
-        virtual int getBondCount();
-        virtual int getAtomCount();
+        void estimateSize() override;
+        void setObjScale(float scale) override;
+        float getTotalBondLength() override;
+        float getTotalClosestAtomDistance() override;
+        int getBondCount() override;
+        int getAtomCount() override;
 
         Array<int> items;
     };

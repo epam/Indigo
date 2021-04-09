@@ -1075,7 +1075,7 @@ public:
     double xPos;
 
 protected:
-    virtual int _compare(int key, const Node& node) const
+    int _compare(int key, const Node& node) const override
     {
         const Segment& a = segments[key];
         const Segment& b = segments[node.key];

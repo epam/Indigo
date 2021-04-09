@@ -29,10 +29,10 @@ class DLLEXPORT IndigoProperty : public IndigoObject
 {
 public:
     IndigoProperty(indigo::PropertiesMap& props, int idx);
-    virtual ~IndigoProperty();
+    ~IndigoProperty() override;
 
-    virtual const char* getName();
-    virtual int getIndex();
+    const char* getName() override;
+    int getIndex() override;
 
     const char* getValue();
 
@@ -45,10 +45,10 @@ class IndigoPropertiesIter : public IndigoObject
 {
 public:
     IndigoPropertiesIter(indigo::PropertiesMap& props);
-    virtual ~IndigoPropertiesIter();
+    ~IndigoPropertiesIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     indigo::PropertiesMap& _props;

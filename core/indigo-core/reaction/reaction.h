@@ -51,18 +51,18 @@ namespace indigo
     {
     public:
         Reaction();
-        virtual ~Reaction();
+        ~Reaction() override;
 
-        virtual void clear();
+        void clear() override;
 
-        virtual BaseReaction* neu();
+        BaseReaction* neu() override;
 
         Molecule& getMolecule(int index);
 
-        virtual bool aromatize(const AromaticityOptions& options);
-        virtual bool dearomatize(const AromaticityOptions& options);
+        bool aromatize(const AromaticityOptions& options) override;
+        bool dearomatize(const AromaticityOptions& options) override;
 
-        virtual Reaction& asReaction();
+        Reaction& asReaction() override;
 
         /*
         void dearomatizeBonds();
@@ -79,7 +79,7 @@ namespace indigo
         DECL_ERROR;
 
     protected:
-        virtual int _addBaseMolecule(int side);
+        int _addBaseMolecule(int side) override;
     };
 
 } // namespace indigo

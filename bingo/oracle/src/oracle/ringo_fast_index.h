@@ -30,16 +30,16 @@ class RingoFastIndex : public BingoFetchEngine
 {
 public:
     explicit RingoFastIndex(RingoFetchContext& context);
-    virtual ~RingoFastIndex();
+    ~RingoFastIndex() override;
 
     void prepareSubstructure(OracleEnv& env);
 
-    virtual void fetch(OracleEnv& env, int maxrows);
-    virtual bool end();
-    virtual float calcSelectivity(OracleEnv& env, int total_count);
-    virtual int getIOCost(OracleEnv& env, float selectivity);
+    void fetch(OracleEnv& env, int maxrows) override;
+    bool end() override;
+    float calcSelectivity(OracleEnv& env, int total_count) override;
+    int getIOCost(OracleEnv& env, float selectivity) override;
 
-    virtual bool getLastRowid(OraRowidText& id);
+    bool getLastRowid(OraRowidText& id) override;
 
     int getTotalCount(OracleEnv& env);
 

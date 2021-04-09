@@ -41,7 +41,7 @@ namespace indigo
         };
 
         LayeredMolecules(BaseMolecule& molecule);
-        virtual ~LayeredMolecules();
+        ~LayeredMolecules() override;
 
         // This method returns a bitmask of all layers that contain a bond idx of a specific order:
         const Dbitset& getBondMask(int idx, int order) const;
@@ -75,57 +75,57 @@ namespace indigo
             return _hashs[layer];
         }
 
-        virtual void clear();
+        void clear() override;
 
-        virtual BaseMolecule* neu();
+        BaseMolecule* neu() override;
 
-        virtual int getAtomNumber(int idx);
-        virtual int getAtomCharge(int idx);
-        virtual int getAtomIsotope(int idx);
-        virtual int getAtomRadical(int idx);
-        virtual int getAtomAromaticity(int idx);
-        virtual int getExplicitValence(int idx);
-        virtual int getAtomValence(int idx);
-        virtual int getAtomSubstCount(int idx);
-        virtual int getAtomRingBondsCount(int idx);
-        virtual int getAtomConnectivity(int idx);
+        int getAtomNumber(int idx) override;
+        int getAtomCharge(int idx) override;
+        int getAtomIsotope(int idx) override;
+        int getAtomRadical(int idx) override;
+        int getAtomAromaticity(int idx) override;
+        int getExplicitValence(int idx) override;
+        int getAtomValence(int idx) override;
+        int getAtomSubstCount(int idx) override;
+        int getAtomRingBondsCount(int idx) override;
+        int getAtomConnectivity(int idx) override;
 
-        virtual int getAtomMaxH(int idx);
-        virtual int getAtomMinH(int idx);
-        virtual int getAtomTotalH(int idx);
+        int getAtomMaxH(int idx) override;
+        int getAtomMinH(int idx) override;
+        int getAtomTotalH(int idx) override;
 
-        virtual bool isPseudoAtom(int idx);
-        virtual const char* getPseudoAtom(int idx);
+        bool isPseudoAtom(int idx) override;
+        const char* getPseudoAtom(int idx) override;
 
-        virtual bool isTemplateAtom(int idx);
-        virtual const char* getTemplateAtom(int idx);
-        virtual const int getTemplateAtomSeqid(int idx);
-        virtual const char* getTemplateAtomClass(int idx);
-        virtual const int getTemplateAtomDisplayOption(int idx);
+        bool isTemplateAtom(int idx) override;
+        const char* getTemplateAtom(int idx) override;
+        const int getTemplateAtomSeqid(int idx) override;
+        const char* getTemplateAtomClass(int idx) override;
+        const int getTemplateAtomDisplayOption(int idx) override;
 
-        virtual bool isRSite(int atom_idx);
-        virtual dword getRSiteBits(int atom_idx);
-        virtual void allowRGroupOnRSite(int atom_idx, int rg_idx);
+        bool isRSite(int atom_idx) override;
+        dword getRSiteBits(int atom_idx) override;
+        void allowRGroupOnRSite(int atom_idx, int rg_idx) override;
 
-        virtual int getBondOrder(int idx);
-        virtual int getBondTopology(int idx);
+        int getBondOrder(int idx) override;
+        int getBondTopology(int idx) override;
 
-        virtual bool atomNumberBelongs(int idx, const int* numbers, int count);
-        virtual bool possibleAtomNumber(int idx, int number);
-        virtual bool possibleAtomNumberAndCharge(int idx, int number, int charge);
-        virtual bool possibleAtomNumberAndIsotope(int idx, int number, int isotope);
-        virtual bool possibleAtomIsotope(int idx, int isotope);
-        virtual bool possibleAtomCharge(int idx, int charge);
-        virtual void getAtomDescription(int idx, Array<char>& description);
-        virtual void getBondDescription(int idx, Array<char>& description);
-        virtual bool possibleBondOrder(int idx, int order);
+        bool atomNumberBelongs(int idx, const int* numbers, int count) override;
+        bool possibleAtomNumber(int idx, int number) override;
+        bool possibleAtomNumberAndCharge(int idx, int number, int charge) override;
+        bool possibleAtomNumberAndIsotope(int idx, int number, int isotope) override;
+        bool possibleAtomIsotope(int idx, int isotope) override;
+        bool possibleAtomCharge(int idx, int charge) override;
+        void getAtomDescription(int idx, Array<char>& description) override;
+        void getBondDescription(int idx, Array<char>& description) override;
+        bool possibleBondOrder(int idx, int order) override;
 
-        virtual bool isSaturatedAtom(int idx);
+        bool isSaturatedAtom(int idx) override;
 
-        virtual bool bondStereoCare(int idx);
+        bool bondStereoCare(int idx) override;
 
-        virtual bool aromatize(const AromaticityOptions& options);
-        virtual bool dearomatize(const AromaticityOptions& options);
+        bool aromatize(const AromaticityOptions& options) override;
+        bool dearomatize(const AromaticityOptions& options) override;
 
         int layers;
 
@@ -143,7 +143,7 @@ namespace indigo
         Array<bool> _mobilePositions;
         ObjArray<Dbitset> _mobilePositionsOccupied;
 
-        virtual void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags);
+        void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags) override;
 
         static bool _cb_handle_cycle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
 

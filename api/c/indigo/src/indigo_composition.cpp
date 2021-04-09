@@ -29,7 +29,7 @@ public:
     IndigoCompositionElem() : IndigoObject(COMPOSITION_ELEM)
     {
     }
-    virtual ~IndigoCompositionElem()
+    ~IndigoCompositionElem() override
     {
     }
 
@@ -78,11 +78,11 @@ public:
     IndigoCompositionIter(BaseMolecule& mol) : IndigoObject(COMPOSITION_ITER), _composition(mol), _it(_composition.begin()), _end(_composition.end())
     {
     }
-    virtual ~IndigoCompositionIter()
+    ~IndigoCompositionIter() override
     {
     }
 
-    virtual IndigoObject* next()
+    IndigoObject* next() override
     {
         if (!_hasNext)
         {
@@ -101,7 +101,7 @@ public:
         _hasNext = _it.next();
         return result.release();
     }
-    virtual bool hasNext()
+    bool hasNext() override
     {
         return _hasNext;
     }
