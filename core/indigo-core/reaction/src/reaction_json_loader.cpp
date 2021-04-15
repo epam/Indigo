@@ -22,6 +22,8 @@
 #include "reaction/reaction.h"
 #include <algorithm>
 #include <tuple>
+#include <vector>
+#include <memory>
 
 using namespace indigo;
 
