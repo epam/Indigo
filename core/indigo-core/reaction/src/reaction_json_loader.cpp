@@ -53,7 +53,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
         ARROW
     };
 
-    using ReactionComponent = std::tuple<float, ReactionFramentType, std::unique_ptr<BaseMolecule>>;
+    typedef std::tuple<float, ReactionFramentType, std::unique_ptr<BaseMolecule>> ReactionComponent;
 
     MoleculeJsonLoader loader(_molecule, _rgroups);
     _prxn = dynamic_cast<Reaction*>(&rxn);
