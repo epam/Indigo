@@ -26,18 +26,16 @@ using namespace indigo;
 class BingoError : public Exception
 {
 public:
-    explicit BingoError(const char* format, ...)
+    explicit BingoError(const char* format, ...) : Exception("core: ")
     {
         va_list args;
 
         va_start(args, format);
-        _init("core", format, args);
+        const size_t len = strlen(_message);
+        vsnprintf(_message + len, sizeof(_message) - len, format, args);
         va_end(args);
     }
-    BingoError(const BingoError& other) : Exception()
-    {
-        other._cloneTo(this);
-    }
+    BingoError(const BingoError& other) = default;
 };
 
 #endif
