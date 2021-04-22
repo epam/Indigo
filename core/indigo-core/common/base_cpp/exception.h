@@ -21,7 +21,8 @@
 
 #include <cstdarg>
 #include <cstring>
-#include <stdexcept>
+#include <type_traits>
+#include <stdio.h>
 
 #include "base_c/defs.h"
 
@@ -30,46 +31,30 @@ namespace indigo
 
     class DLLEXPORT Exception : public std::exception
     {
+        Exception() = delete;
+
     public:
+        Exception(const Exception&) = default;
+        virtual ~Exception() = default;
+
         explicit Exception(const char* format, ...);
 
-        int code() const noexcept;
-        const char* message() const noexcept;
-        const char* what() const noexcept override;
+        const char* message() const noexcept { return _message; };
 
         void appendMessage(const char* format, ...);
 
-        virtual Exception* clone();
-        virtual void throwSelf();
-
-        Exception(const Exception&);
-
     protected:
-        explicit Exception();
-
-        void _init(const char* format, va_list args);
-        void _init(const char* prefix, const char* format, va_list args);
-
-        void _cloneTo(Exception* dest) const;
-
-        int _code;
         char _message[1024];
     };
 
-#define DECL_EXCEPTION_BODY(ExceptionName, Parent)                                                                                                             \
-    ExceptionName:                                                                                                                                             \
-public                                                                                                                                                         \
-    Parent                                                                                                                                                     \
-    {                                                                                                                                                          \
-    public:                                                                                                                                                    \
-        explicit ExceptionName(const char* format, ...);                                                                                                       \
-        virtual ~ExceptionName();                                                                                                                              \
-        virtual Exception* clone();                                                                                                                            \
-        virtual void throwSelf();                                                                                                                              \
-        ExceptionName(const ExceptionName& other);                                                                                                             \
-                                                                                                                                                               \
-    protected:                                                                                                                                                 \
-        explicit ExceptionName();                                                                                                                              \
+#define DECL_EXCEPTION_BODY(ExceptionName, Parent)                                      \
+    ExceptionName:                                                                      \
+public                                                                                  \
+    Parent                                                                              \
+    {                                                                                   \
+        ExceptionName() = delete;                                                       \
+    public:                                                                             \
+        explicit ExceptionName(const char* format, ...);                                \
     }
 
 #define DECL_EXCEPTION2(ExceptionName, Parent) class DLLEXPORT DECL_EXCEPTION_BODY(ExceptionName, Parent)
@@ -80,38 +65,16 @@ public                                                                          
 
 #define DECL_EXCEPTION_NO_EXP(ExceptionName) DECL_EXCEPTION_NO_EXP2(ExceptionName, indigo::Exception)
 
-#define IMPL_EXCEPTION2(Namespace, ExceptionName, Parent, prefix)                                                                                              \
-    Namespace::ExceptionName::ExceptionName()                                                                                                                  \
-    {                                                                                                                                                          \
-    }                                                                                                                                                          \
-                                                                                                                                                               \
-    Namespace::ExceptionName::ExceptionName(const char* format, ...) : Parent()                                                                                \
-    {                                                                                                                                                          \
-        va_list args;                                                                                                                                          \
-                                                                                                                                                               \
-        va_start(args, format);                                                                                                                                \
-        _init(prefix, format, args);                                                                                                                           \
-        va_end(args);                                                                                                                                          \
-    }                                                                                                                                                          \
-                                                                                                                                                               \
-    Namespace::ExceptionName::~ExceptionName()                                                                                                                 \
-    {                                                                                                                                                          \
-    }                                                                                                                                                          \
-                                                                                                                                                               \
-    indigo::Exception* Namespace::ExceptionName::clone()                                                                                                       \
-    {                                                                                                                                                          \
-        ExceptionName* error = new ExceptionName("");                                                                                                          \
-        _cloneTo(error);                                                                                                                                       \
-        return error;                                                                                                                                          \
-    }                                                                                                                                                          \
-    void Namespace::ExceptionName::throwSelf()                                                                                                                 \
-    {                                                                                                                                                          \
-        throw *this;                                                                                                                                           \
-    }                                                                                                                                                          \
-    Namespace::ExceptionName::ExceptionName(const ExceptionName& other) : Parent()                                                                             \
-    {                                                                                                                                                          \
-        other._cloneTo(this);                                                                                                                                  \
-    }
+#define IMPL_EXCEPTION2(Namespace, ExceptionName, Parent, prefix)                            \
+    Namespace::ExceptionName::ExceptionName(const char* format, ...) : Parent(prefix ": ")   \
+    {                                                                                        \
+        va_list args;                                                                        \
+        va_start(args, format);                                                              \
+        const size_t len = strlen(_message);                                                 \
+        vsnprintf(_message + len, sizeof(_message) - len, format, args);                     \
+        va_end(args);                                                                        \
+    }                                                                                        \
+
 
 #define IMPL_EXCEPTION(Namespace, ExceptionName, prefix) IMPL_EXCEPTION2(Namespace, ExceptionName, indigo::Exception, prefix)
 

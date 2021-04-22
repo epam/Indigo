@@ -617,7 +617,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
         catch (NonUniqueDearomatizationException& ex)
         {
             // Do not allow non-unique dearomatizations
-            ex.throwSelf();
+            throw;
         }
         catch (DearomatizationException&)
         {
