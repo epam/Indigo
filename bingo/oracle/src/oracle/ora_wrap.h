@@ -48,6 +48,8 @@ namespace indigo
         explicit OracleError(int my_rc, const char* format, ...);
 
         void raise(OracleLogger& logger, OCIExtProcContext* ctx);
+    private:
+        int _code;
     };
 
     class OracleLogger;
