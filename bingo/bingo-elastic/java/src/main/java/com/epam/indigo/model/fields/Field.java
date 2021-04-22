@@ -8,4 +8,8 @@ final public class Field {
         field = object;
     }
 
+    @Override
+    public String toString() {
+        return field.toString();
+    }
 }
