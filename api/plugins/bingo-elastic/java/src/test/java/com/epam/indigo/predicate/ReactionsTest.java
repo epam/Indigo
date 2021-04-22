@@ -3,16 +3,19 @@ package com.epam.indigo.predicate;
 import com.epam.indigo.BaseElasticTest;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecordReaction;
+import com.epam.indigo.model.fields.FieldNotFoundException;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 
 public class ReactionsTest extends BaseElasticTest {
@@ -41,15 +44,20 @@ public class ReactionsTest extends BaseElasticTest {
 
 
     protected static void loadReactions() throws Exception {
+        System.out.println("Loading reactions");
         Files.list(new File("src/test/resources/reactions/rheadb").toPath()).forEach(
                 path -> {
+                    System.out.println(path.toString());
                     IndigoRecordReaction reaction = Helpers.loadReaction(path.toString());
+                    reaction.addCustomObject("File", path.toString());
                     reactions.add(reaction);
                 }
         );
+        System.out.println("Loaded reactions count:");
+        System.out.println(reactions.size());
         Iterable<IndigoRecordReaction> reactionIterable = reactions;
         repositoryReaction.indexRecords(reactionIterable, reactions.size());
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(15);
     }
 
     @AfterAll
@@ -75,18 +83,53 @@ public class ReactionsTest extends BaseElasticTest {
         check(targetReaction, reaction);
     }
 
+
+    protected IndigoRecordReaction getTargetReaction(String fileName) {
+        IndigoRecordReaction targetReaction = null;
+        for (IndigoRecordReaction reaction : reactions) {
+            try {
+                if (reaction.getField("File").toString().endsWith(fileName)) {
+                    targetReaction = reaction;
+                    break;
+                }
+            } catch (FieldNotFoundException e) {
+                Assertions.fail(e);
+            }
+        }
+        if (targetReaction == null) {
+            Assertions.fail(new Exception("Target reaction not found"));
+        }
+        return targetReaction;
+    }
+
     @Test
     public void euclidMatchTest() {
-        IndigoRecordReaction targetReaction = reactions.get(3);
+        IndigoRecordReaction targetReaction = getTargetReaction("42837.rxn");
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
                 .filter(new EuclidSimilarityMatch<>(targetReaction, 1))
                 .collect(Collectors.toList());
+        System.out.println("Target reaction file:");
+        try {
+            System.out.println(targetReaction.getField("File").toString());
+        } catch (FieldNotFoundException e) {
+            System.out.println("- File is not set");
+        }
+        System.out.println("Result");
+        reaction.forEach(r -> {
+            try {
+                System.out.println(r.getField("File").toString());
+            } catch (FieldNotFoundException e) {
+                System.out.println("- File is not set");
+            }
+        });
+        System.out.println("Result size:");
+        System.out.println(StreamSupport.stream(reaction.spliterator(), false).count());
         check(targetReaction, reaction);
     }
 
     @Test
     public void tverskyMatchTest() {
-        IndigoRecordReaction targetReaction = reactions.get(3);
+        IndigoRecordReaction targetReaction = getTargetReaction("42837.rxn");
         Iterable<IndigoRecordReaction> reaction = repositoryReaction.stream()
                 .filter(new TverskySimilarityMatch<>(targetReaction, 1, 1))
                 .collect(Collectors.toList());
