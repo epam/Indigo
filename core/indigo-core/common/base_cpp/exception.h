@@ -22,14 +22,14 @@
 #include <cstdarg>
 #include <cstring>
 #include <type_traits>
-#include <stdio.h>
+#include <cstdio>
 
 #include "base_c/defs.h"
 
 namespace indigo
 {
 
-    class DLLEXPORT Exception : public std::exception
+    class DLLEXPORT Exception
     {
         Exception() = delete;
 
