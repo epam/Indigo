@@ -1,15 +1,10 @@
-#include <fstream>
-#include <iostream>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string>
 
-#include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-#include "indigo-renderer.h"
 #include "indigo.h"
+#include "indigo-renderer.h"
 
 #ifndef REXPORT_SYMBOL
 #ifdef _WIN32

@@ -1,8 +1,8 @@
 Package: rindigo
-Version: 0.2
-Date: 2014-11-10
+Version: 1.5.0
+Date: 2020-12-10
 Title: R Package for Indigo Toolkit
-Authors@R: c(person(given = "Mikhail", family = "Kviatkovskii", role = c("cre"), 
+Authors@R: c(person(given = "Mikhail", family = "Kviatkovskii", role = c("cre"),
         email = "Mikhail_Kviatkovskii@epam.com"))
 Description: R Package for Indigo Toolkit
 NeedsCompile: Yes
@@ -10,4 +10,4 @@ License: Apache License 2.0
 URL: http://lifescience.opensource.epam.com/indigo/api
 Author: Mikhail Kviatkovskii [cre]
 Maintainer: Mikhail Kviatkovskii <Mikhail_Kviatkovskii@epam.com>
-Packaged: 2014-12-18 15:26:37 UTC; mk
+Packaged: 2020-12-18 15:26:37 UTC; mk

@@ -20,8 +20,8 @@
 #define __mango_context__
 
 #include "base_cpp/tlscont.h"
-#include "core/mango_index.h"
-#include "core/mango_matchers.h"
+#include "mango_index.h"
+#include "mango_matchers.h"
 
 using namespace indigo;
 

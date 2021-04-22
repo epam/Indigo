@@ -15,7 +15,7 @@ namespace indigo
 
         class WindowsLoader
         {
-            [DllImport("kernel32")]
+            [DllImport("kernel32.dll")]
             public static extern IntPtr LoadLibrary(string lpFileName);
             [DllImport("kernel32.dll")]
             public static extern int FreeLibrary(IntPtr module);
@@ -25,106 +25,24 @@ namespace indigo
             public static extern int GetLastError();
         }
 
-        class LinuxLoader
-        {
-            [DllImport("libdl.so.2")]
-            public static extern IntPtr dlopen([MarshalAs(UnmanagedType.LPTStr)] string filename, int flags);
-            [DllImport("libdl.so.2")]
-            public static extern int dlclose(IntPtr handle);
-            [DllImport("libdl.so.2")]
-            public static extern IntPtr dlsym(IntPtr libraryPointer, string procedureName);
-            [DllImport("libdl.so.2")]
-            public static extern string dlerror();
-        }
-
-
-        class MacLoader
-        {
-            [DllImport("libdl.dylib")]
-            public static extern IntPtr dlopen(string filename, int flags);
-            [DllImport("libdl.dylib")]
-            public static extern int dlclose(IntPtr handle);
-            [DllImport("libdl.dylib")]
-            public static extern IntPtr dlsym(IntPtr libraryPointer, string procedureName);
-            [DllImport("libdl.dylib")]
-            public static extern string dlerror();
-        }
-
-
         public static IntPtr LoadLibrary(string filename)
         {
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.Win32NT:
-                    return WindowsLoader.LoadLibrary(filename);
-                case PlatformID.Unix:
-                    if (BingoDllLoader.isMac())
-                    {
-                        return MacLoader.dlopen(filename.Replace("\\", "/"), 0x8 | 0x1); // RTLD_GLOBAL | RTLD_NOW
-                    }
-                    else
-                    {
-                        return LinuxLoader.dlopen(filename.Replace("\\", "/"), 0x00100 | 0x00002); // RTLD_GLOBAL | RTLD_NOW
-                    }
-            }
-            return IntPtr.Zero;
+            return WindowsLoader.LoadLibrary(filename);
         }
 
         public static int FreeLibrary(IntPtr handle)
         {
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.Win32NT:
-                    return WindowsLoader.FreeLibrary(handle);
-                case PlatformID.Unix:
-                    if (BingoDllLoader.isMac())
-                    {
-                        return MacLoader.dlclose(handle);
-                    }
-                    else
-                    {
-                        return LinuxLoader.dlclose(handle);
-                    }
-            }
-            return 0;
+            return WindowsLoader.FreeLibrary(handle);
         }
 
         public static IntPtr GetProcAddress(IntPtr library, string procedureName)
         {
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.Win32NT:
-                    return WindowsLoader.GetProcAddress(library, procedureName);
-                case PlatformID.Unix:
-                    if (BingoDllLoader.isMac())
-                    {
-                        return MacLoader.dlsym(library, procedureName);
-                    }
-                    else
-                    {
-                        return LinuxLoader.dlsym(library, procedureName);
-                    }
-            }
-            return IntPtr.Zero;
+            return WindowsLoader.GetProcAddress(library, procedureName);
         }
 
         public static string GetLastError()
         {
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.Win32NT:
-                    return WindowsLoader.GetLastError().ToString();
-                case PlatformID.Unix:
-                    if (BingoDllLoader.isMac())
-                    {
-                        return MacLoader.dlerror();
-                    }
-                    else
-                    {
-                        return LinuxLoader.dlerror();
-                    }
-            }
-            return null;
+            return WindowsLoader.GetLastError().ToString();
         }
     }
 
@@ -186,44 +104,6 @@ namespace indigo
         // Local synchronization object
         Object _sync_object = new Object();
 
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        struct utsname
-        {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-            public string sysname;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-            public string nodename;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-            public string release;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-            public string version;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-            public string machine;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 1024)]
-            public string extraJustInCase;
-
-        }
-
-        [DllImport("libc")]
-        private static extern void uname(out utsname uname_struct);
-
-        private static string detectUnixKernel()
-        {
-            utsname uts = new utsname();
-            uname(out uts);
-            return uts.sysname.ToString();
-        }
-
-        static public bool isMac()
-        {
-            return (detectUnixKernel() == "Darwin");
-        }
-
         public void loadLibrary(String path, String dll_name, string resource_name, bool make_unique_dll_name)
         {
             lock (_sync_object)
@@ -237,35 +117,9 @@ namespace indigo
                     return;
                 }
 
-                String subprefix = null;
-
-                switch (Environment.OSVersion.Platform)
-                {
-                    case PlatformID.Win32NT:
-                        subprefix = (IntPtr.Size == 8) ? "Win/x64/" : "Win/x86/";
-                        break;
-                    case PlatformID.Unix:
-                        if (isMac())
-                        {
-                            subprefix = "Mac/10.7/";
-                        }
-                        else
-                        {
-                            subprefix = (IntPtr.Size == 8) ? "Linux/x64/" : "Linux/x86/";
-                        }
-                        break;
-                    default:
-                        throw new PlatformNotSupportedException(String.Format(
-                            "Unsupported platform: {0}",
-                            Environment.OSVersion.Platform
-                        )
-                        );
-                }
-
                 data = new DllData();
                 data.lib_path = path;
-                data.file_name = _getPathToBinary(path, subprefix + dll_name,
-                resource_name, Assembly.GetCallingAssembly(), make_unique_dll_name);
+                data.file_name = _getPathToBinary(path, dll_name, resource_name, Assembly.GetCallingAssembly(), make_unique_dll_name);
 
                 data.file_name = data.file_name.Replace('/', '\\');
 
@@ -323,9 +177,11 @@ namespace indigo
         {
             ResourceManager manager = new ResourceManager(resource_name, resource_assembly);
 
+            String output = String.Join(" ", resource_assembly.GetManifestResourceNames());
+
             Object file_data = manager.GetObject(filename);
             if (file_data == null)
-                throw new Exception("Internal error: there is no resource " + filename);
+                throw new Exception("Internal error: there is no resource " + filename + " in resource " + resource_name + ". All resources: " + output);
 
             String tmpdir_path = _getTemporaryDirectory(resource_assembly);
             String version = resource_assembly.GetName().Version.ToString();

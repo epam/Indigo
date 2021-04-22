@@ -20,8 +20,8 @@
 #define __ringo_context__
 
 #include "base_cpp/tlscont.h"
-#include "core/ringo_index.h"
-#include "core/ringo_matchers.h"
+#include "ringo_index.h"
+#include "ringo_matchers.h"
 
 using namespace indigo;
 

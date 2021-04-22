@@ -23,7 +23,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 
-#include "core/bingo_index.h"
+#include "bingo_index.h"
 
 using namespace indigo;
 

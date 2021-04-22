@@ -183,7 +183,7 @@ void IndexingCommand::execute(OsCommandResult& result_)
         {
             // Check unhandled exceptions
             e.appendMessage(" ERROR ON id=%d", ids[i]);
-            e.throwSelf();
+            throw;
         }
     }
 }

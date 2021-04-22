@@ -16,8 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "core/bingo_context.h"
-#include "core/ringo_matchers.h"
+#include "bingo_context.h"
+#include "ringo_matchers.h"
 #include "layout/reaction_layout.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_automapper.h"

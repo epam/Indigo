@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.epam.indigo</groupId>
+    <artifactId>indigo</artifactId>
+    <version>${revision}</version>
+    <packaging>jar</packaging>
+
+    <name>Indigo</name>
+    <description>Universal organic chemistry toolkit</description>
+    <url>http://lifescience.opensource.epam.com/indigo/api</url>
+
+    <parent>
+        <groupId>com.epam.indigo</groupId>
+        <artifactId>parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>../../../dist/lib</directory>
+                <excludes>
+                    <exclude>**/*.lib</exclude>
+                </excludes>
+                <includes>
+                    <include>**/*indigo.*</include>
+                    <include>**/msvc*.*</include>
+                    <include>**/vcruntime*.*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+</project>

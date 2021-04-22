@@ -9,11 +9,12 @@ extern "C"
 #include "utils/typcache.h"
 }
 
-#include "bingo_pg_fix_post.h"
+#ifdef qsort
+#undef qsort
+#endif
 
 #include "mango_pg_search_engine.h"
 
-#include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
 #include "base_cpp/scanner.h"

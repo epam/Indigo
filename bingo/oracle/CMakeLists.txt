@@ -1,38 +1,50 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(BingoOracle)
+project(bingo-oracle LANGUAGES CXX)
 
-include(../bingo-version.cmake)
-include(ConfigureCommon)
-
-message(STATUS "BingoOracle version is ${BINGO_VERSION_EXT}")
-
-file(GLOB Bingo_src src/oracle/*.cpp)
-file(GLOB Bingo_headers src/oracle/*.h)
-
-include_directories(src ${Common_SOURCE_DIR} ${Common_SOURCE_DIR}/.. ${OCI_INCLUDE_DIRS} ${ZLib_HEADERS_DIR} ${BingoCore_HEADERS_DIR}
-	${InChI_SOURCE_DIR}/INCHI_BASE/src  ${InChI_SOURCE_DIR}/INCHI_BASE/src)
-
-add_library(bingo-oracle-shared SHARED ${Bingo_src} ${Bingo_headers} ${Common_SOURCE_DIR}/hacks/memcpy.c $<TARGET_OBJECTS:graph> $<TARGET_OBJECTS:layout> $<TARGET_OBJECTS:molecule> $<TARGET_OBJECTS:common> $<TARGET_OBJECTS:reaction>)
-
-if (UNIX AND NOT APPLE)
-	if(${SUBSYSTEM_NAME} MATCHES "x64")
-		set_target_properties(bingo-oracle-shared PROPERTIES LINK_FLAGS "${LINK_FLAGS} -Wl,--wrap=memcpy")
-	endif()
+if (APPLE)
+	message(SEND_ERROR "bingo-oracle is not supported on macOS")
 endif()
 
-set_target_properties(bingo-oracle-shared PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS}")
+file (GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS "src/oracle/*.cpp")
 
-target_link_libraries(bingo-oracle-shared bingo-core common-oracle inchi tinyxml z)
-if (MSVC)
-	target_link_libraries(bingo-oracle-shared odbc32 odbccp32 ${OCI_LIBRARY})
-elseif(APPLE)
-	target_link_libraries(bingo-oracle-shared ${OCI_LIBRARY})
+find_package(OCI REQUIRED)
+
+add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES})
+target_include_directories(${PROJECT_NAME}
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
+        PUBLIC ${OCI_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} bingo-core)
+
+if (WIN32)
+	target_link_libraries(${PROJECT_NAME} ${OCI_LIBRARIES})
 endif()
-set_property(TARGET bingo-oracle-shared PROPERTY LINK_INTERFACE_LIBRARIES "")
+if (MINGW)
+	# Avoid all MinGW-related runtime-dependencies, including them in DLL
+	target_link_options(${PROJECT_NAME} PRIVATE -Wl,-Bstatic,--whole-archive -lpthread -Wl,--no-whole-archive)
+endif()
 
-SET_TARGET_PROPERTIES(bingo-oracle-shared PROPERTIES OUTPUT_NAME "bingo-oracle")
 
-set_property(TARGET bingo-oracle-shared PROPERTY FOLDER "bingo-oracle")
-
-pack_bingo(bingo-oracle-shared)
+set(BINGO_ORACLE_PACKAGE_DIR ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-${CMAKE_SYSTEM_NAME_LOWER}-${CMAKE_SYSTEM_PROCESSOR_LOWER}-${BINGO_VERSION})
+if (WIN32)
+	set(BINGO_ORACLE_SETUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/setup/bingo-oracle-install.bat)
+	set(ARCHIVE_FORMAT zip)
+	set(ARCHIVE_FLAGS cvf)	
+	set(ARCHIVE_FLAGS_2 --format=zip)
+else()
+	set(BINGO_ORACLE_SETUP_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/setup/bingo-oracle-install.sh)
+	set(ARCHIVE_FLAGS cfvz)
+	set(ARCHIVE_FORMAT tgz)
+endif()
+add_custom_target(package-bingo-oracle
+		COMMAND ${CMAKE_COMMAND} -E remove_directory ${BINGO_ORACLE_PACKAGE_DIR}
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${BINGO_ORACLE_PACKAGE_DIR}/lib
+		COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${BINGO_ORACLE_PACKAGE_DIR}/lib
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/sql ${BINGO_ORACLE_PACKAGE_DIR}/sql
+		COMMAND ${CMAKE_COMMAND} -E copy ${BINGO_ORACLE_SETUP_SCRIPT} ${BINGO_ORACLE_PACKAGE_DIR}/
+		COMMAND ${CMAKE_COMMAND} -E tar ${ARCHIVE_FLAGS} ${BINGO_ORACLE_PACKAGE_DIR}.${ARCHIVE_FORMAT} ${ARCHIVE_FLAGS_2} ${BINGO_ORACLE_PACKAGE_DIR}
+		COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
+		COMMAND ${CMAKE_COMMAND} -E copy ${BINGO_ORACLE_PACKAGE_DIR}.${ARCHIVE_FORMAT} ${DIST_DIRECTORY}/
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+		DEPENDS ${PROJECT_NAME}
+)

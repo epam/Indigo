@@ -39,7 +39,7 @@ namespace indigo {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("indigo.resource", typeof(resource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("  ", typeof(resource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -130,14 +130,7 @@ namespace indigo {
         
         internal static byte[] Win_x64_bingo_core_c_dll {
             get {
-                object obj = ResourceManager.GetObject("Win/x64/bingo-core-c.dll", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        internal static byte[] Win_x86_bingo_core_c_dll {
-            get {
-                object obj = ResourceManager.GetObject("Win/x86/bingo-core-c.dll", resourceCulture);
+                object obj = ResourceManager.GetObject("bingo-core-c.dll", resourceCulture);
                 return ((byte[])(obj));
             }
         }

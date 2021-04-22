@@ -1,15 +1,12 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(IndigoDeco)
+project(indigo-deco LANGUAGES C)
 
-include(DefineTest)
-include_directories(../../api ../../common)
+add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.c)
+target_link_libraries(${PROJECT_NAME} indigo-static)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}/utils
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${DIST_DIRECTORY}/utils/
+)
 
-add_executable(indigo-deco main.c)
-target_link_libraries(indigo-deco indigo)
-if (UNIX)
-    set_target_properties(indigo-deco PROPERTIES LINK_FLAGS "-pthread")
-endif()
-pack_executable(indigo-deco)
-
-add_test(NAME deco-simple-test COMMAND indigo-deco -h)
+add_test(NAME deco-simple-test COMMAND ${PROJECT_NAME} -h)

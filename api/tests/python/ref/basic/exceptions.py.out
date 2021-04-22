@@ -1,2 +1,0 @@
-molecule auto loader: SMILES loader: 'X' specifier is allowed only for query molecules
-core: <reaction> is not a base molecule

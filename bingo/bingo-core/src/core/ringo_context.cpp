@@ -16,8 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "core/ringo_context.h"
-#include "core/bingo_context.h"
+#include "ringo_context.h"
+#include "bingo_context.h"
 
 TL_DEF(RingoContext, PtrArray<RingoContext>, _instances);
 

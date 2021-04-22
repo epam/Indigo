@@ -16,13 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "core/mango_matchers.h"
+#include "mango_matchers.h"
 
 #include "base_cpp/crc32.h"
 #include "base_cpp/scanner.h"
-#include "core/bingo_context.h"
-#include "core/bingo_error.h"
-#include "core/mango_index.h"
+#include "bingo_context.h"
+#include "bingo_error.h"
+#include "mango_index.h"
 #include "graph/filter.h"
 #include "graph/subgraph_hash.h"
 #include "molecule/cmf_loader.h"

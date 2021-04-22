@@ -16,13 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "core/mango_index.h"
+#include "mango_index.h"
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/profiling.h"
 #include "base_cpp/scanner.h"
-#include "core/bingo_context.h"
-#include "core/bingo_error.h"
-#include "core/mango_matchers.h"
+#include "bingo_context.h"
+#include "bingo_error.h"
+#include "mango_matchers.h"
 #include "molecule/cmf_saver.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"

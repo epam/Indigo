@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.epam.indigo</groupId>
+    <artifactId>bingo-nosql</artifactId>
+    <version>${revision}</version>
+    <packaging>jar</packaging>
+
+    <name>Indigo Bingo NoSQL</name>
+    <description>Chemical structures NoSQL database and search plugin for Indigo universal organic chemistry toolkit</description>
+    <url>http://lifescience.opensource.epam.com/indigo/api</url>
+
+    <parent>
+        <groupId>com.epam.indigo</groupId>
+        <artifactId>parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.epam.indigo</groupId>
+            <artifactId>indigo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>../../../dist/lib</directory>
+                <excludes>
+                    <exclude>**/*.lib</exclude>
+                </excludes>
+                <includes>
+                    <include>**/*bingo-nosql.*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+</project>
