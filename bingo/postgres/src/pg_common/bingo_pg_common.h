@@ -397,12 +397,12 @@ private:
 
 class DLLEXPORT BingoPgError : public indigo::Exception {
 public:
-    explicit BingoPgError (const char *format, ...) {
+    explicit BingoPgError (const char *format, ...) : indigo::Exception("bingo-postgres: ") {
         va_list args;
-
-            va_start(args, format);
-        _init("bingo", format, args);
-            va_end(args);
+        va_start(args, format);
+        const size_t len = strlen(_message);
+        vsnprintf(_message + len, sizeof(_message) - len, format, args);
+        va_end(args);
     }
 };
 
