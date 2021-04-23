@@ -10,6 +10,7 @@
 #include "base_c/bitarray.h"
 #include "base_cpp/array.h"
 #include "base_cpp/auto_ptr.h"
+#include "base_cpp/exception.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
@@ -459,14 +460,16 @@ private:
 class DLLEXPORT BingoPgError : public indigo::Exception
 {
 public:
-    explicit BingoPgError(const char* format, ...)
+    explicit BingoPgError(const char* format, ...) : indigo::Exception("bingo :")
     {
         va_list args;
-
         va_start(args, format);
-        _init("bingo", format, args);
+        const size_t len = strlen(_message);
+        vsnprintf(_message + len, sizeof(_message) - len, format, args);
         va_end(args);
     }
+    BingoPgError(const BingoPgError& other) = default;
+    BingoPgError() = delete;
 };
 
 #define CORE_HANDLE_ERROR(res, success_res, suffix, message)                                                                                                   \
