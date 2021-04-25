@@ -3,6 +3,21 @@ cmake_minimum_required(VERSION 3.6)
 project(indigo-tests LANGUAGES C CXX)
 
 if (ENABLE_TESTS)
+    file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp)
+    add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES} main.cpp)
+    target_link_libraries(${PROJECT_NAME} indigo bingo-nosql indigo-renderer indigo-inchi indigo-core gtest)
+    if(MSVC)
+        target_link_options(${PROJECT_NAME}
+                PRIVATE -force:multiple)
+    elseif(APPLE)
+        target_link_options(${PROJECT_NAME}
+                PRIVATE -Wl,-m)
+    elseif(MINGW OR UNIX OR MSYS OR CYGWIN)
+        target_link_options(${PROJECT_NAME}
+                PRIVATE -Wl,--allow-multiple-definition)
+    endif()
+    add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+
     add_executable(${PROJECT_NAME}-dlopen ${CMAKE_CURRENT_SOURCE_DIR}/indigo-test-dlopen.c)
     target_link_libraries(${PROJECT_NAME}-dlopen ${CMAKE_DL_LIBS})
     add_test(NAME ${PROJECT_NAME}-dlopen-indigo
