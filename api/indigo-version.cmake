@@ -24,8 +24,6 @@ endif()
 
 message(STATUS "Indigo full version: " ${INDIGO_FULL_VERSION})
 
-# Do not forget to launch build_scripts/indigo-update-version.py after changing the version because it should be ${RV} changed in the Java and .NET files as well
-
 if($ENV{BUILD_NUMBER})
    set(INDIGO_BUILD_VERSION $ENV{BUILD_NUMBER})
 else()

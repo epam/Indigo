@@ -1,0 +1,1 @@
+#cmakedefine PYTHON_SYS_PATH "@PYTHON_SYS_PATH@"

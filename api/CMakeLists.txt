@@ -18,7 +18,6 @@ if (BUILD_INDIGO)
     endif ()
     if (ENABLE_TESTS)
         add_subdirectory(c/tests)
-        # TODO
         add_subdirectory(tests/integration)
     endif ()
 
