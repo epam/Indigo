@@ -46,7 +46,7 @@ endif()
 
 # Project version:
 cmake_policy(SET CMP0048 NEW)
-project(gtest VERSION ${GOOGLETEST_VERSION} LANGUAGES CXX C)
+project(gtest LANGUAGES CXX C)
 cmake_minimum_required(VERSION 3.4)
 
 if (POLICY CMP0063) # Visibility
