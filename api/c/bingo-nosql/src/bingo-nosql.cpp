@@ -20,23 +20,14 @@
 #include "bingo_object.h"
 
 #include "bingo_internal.h"
-#include "indigo_cpp.h"
-#include "indigo_fingerprints.h"
 #include "indigo_internal.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 
 #include "bingo_index.h"
-#include "bingo_lock.h"
 
 #include <stdio.h>
 #include <string>
-
-#include "base_cpp/auto_ptr.h"
-#include "base_cpp/exception.h"
-#include "base_cpp/os_sync_wrapper.h"
-#include "base_cpp/profiling.h"
-#include "base_cpp/ptr_array.h"
 
 using namespace indigo;
 using namespace bingo;

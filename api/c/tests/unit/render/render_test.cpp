@@ -24,7 +24,7 @@ TEST(IndigoRenderTest, render_superatoms)
 
     try
     {
-        int m = indigoLoadMoleculeFromFile("../../data/molecules/sgroups/abbr.mol");
+        int m = indigoLoadMoleculeFromFile(dataPath("molecules/sgroups/abbr.mol").c_str());
         ASSERT_STREQ("CC1C=CC=CC=1", indigoCanonicalSmiles(m));
         int buf = indigoWriteBuffer();
         indigoRender(m, buf);

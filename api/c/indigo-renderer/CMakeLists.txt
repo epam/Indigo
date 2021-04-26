@@ -37,10 +37,6 @@ if (NOT EMSCRIPTEN)
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
-    if (ENABLE_TESTS)
-        add_subdirectory(tests)
-    endif()
-
     add_custom_target(before-indigo-wrappers-${PROJECT_NAME}
             COMMAND ${CMAKE_COMMAND} -E make_directory ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY}
             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${INDIGO_CURRENT_NATIVE_LIBS_DIRECTORY})
