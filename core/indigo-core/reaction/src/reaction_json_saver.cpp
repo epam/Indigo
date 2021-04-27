@@ -22,6 +22,8 @@
 #include "reaction/reaction.h"
 #include "molecule/query_molecule.h"
 #include <vector>
+#include <memory>
+
 #include <rapidjson/document.h>
 
 using namespace indigo;
