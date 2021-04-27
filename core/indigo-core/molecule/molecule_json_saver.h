@@ -41,6 +41,7 @@ namespace indigo
     public:
         explicit MoleculeJsonSaver( Output& output );
         void saveMolecule( BaseMolecule& bmol );
+        void saveMolecule( BaseMolecule& bmol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
 
     protected:
         void saveAtoms( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );

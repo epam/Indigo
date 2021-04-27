@@ -26,13 +26,49 @@
 #include <memory>
 
 using namespace indigo;
+using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
-ReactionJsonLoader::ReactionJsonLoader(rapidjson::Value& molecule, rapidjson::Value& rgroups, rapidjson::Value& pluses, rapidjson::Value& arrows)
-    : _molecule(molecule), _rgroups(rgroups), _pluses(pluses), _arrows(arrows)
+ReactionJsonLoader::ReactionJsonLoader( Document& ket ) : 
+    _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType)
 {
     ignore_bad_valence = false;
+    Value& root = ket["root"];
+    Value& nodes = root["nodes"];
+    // rewind to first molecule node
+    for (int i = 0; i < nodes.Size(); ++i)
+    {
+        Value& rnode = nodes[i];
+        if (rnode.HasMember("$ref"))
+        {
+            const char* node_name = rnode["$ref"].GetString();
+            Value& node = ket[node_name];
+            std::string node_type = node["type"].GetString();
+            if (node_type == "molecule")
+            {
+                _molecule.PushBack(node, ket.GetAllocator());
+            }
+            else if (node_type == "rgroup")
+            {
+                _rgroups.PushBack(node, ket.GetAllocator());
+            }
+            else
+                throw Error("Unknows JSON node: %s", node_type.c_str());
+        }
+        else if (rnode.HasMember("type"))
+        {
+            std::string node_type = rnode["type"].GetString();
+            if (node_type == "arrow")
+                _arrows.PushBack(rnode, ket.GetAllocator());
+            else if (node_type == "plus")
+                _pluses.PushBack(rnode, ket.GetAllocator());
+            else
+                throw Error("Unknown reaction node: %s", node_type.c_str());
+        }
+        else
+            throw Error("Unknows JSON node");
+    }
 }
 
 ReactionJsonLoader::~ReactionJsonLoader()

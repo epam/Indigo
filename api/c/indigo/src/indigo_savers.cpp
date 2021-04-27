@@ -36,6 +36,7 @@
 #include "reaction/reaction_cml_saver.h"
 #include "reaction/rsmiles_saver.h"
 #include "reaction/rxnfile_saver.h"
+#include "reaction/reaction_json_saver.h"
 
 #include <time.h>
 
@@ -566,11 +567,14 @@ CEXPORT int indigoSaveJson( int item, int output )
             saver.saveMolecule( mol );
             out.flush();
             return 1;
-        }
+        } else
         if (IndigoBaseReaction::is(obj))
         {
-            // reaction not implemented yet
-            return -1;
+            ReactionJsonSaver saver(out);
+            BaseReaction& rxn = obj.getBaseReaction();
+            saver.saveReaction(rxn);
+            out.flush();
+            return 1;
         }
         throw IndigoError("indigoSaveJson(): expected molecule or reaction, got %s", obj.debugInfo());
     }

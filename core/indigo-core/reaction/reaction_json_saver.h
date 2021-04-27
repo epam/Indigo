@@ -28,24 +28,25 @@ namespace indigo
 {
     
     class Output;
-    class Reaction;
-    
+    class BaseReaction;
+    class BaseMolecule;
+    class Vec2f;
     class ReactionJsonSaver
     {
     public:
         explicit ReactionJsonSaver(Output& output);
         ~ReactionJsonSaver();
         
-        void saveReaction(Reaction& rxn);
+        void saveReaction(BaseReaction& rxn);
         
         DECL_ERROR;
         
     protected:
-        Reaction* _rxn;
         Output& _output;
         
     private:
         ReactionJsonSaver(const ReactionJsonSaver&); // no implicit copy
+        static void _getBounds(BaseMolecule& mol, Vec2f& min, Vec2f& max, float scale);
     };
     
 } // namespace indigo

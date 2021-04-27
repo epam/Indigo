@@ -39,7 +39,7 @@ namespace indigo
     public:
         DECL_ERROR;
         
-        ReactionJsonLoader( rapidjson::Value& molecule, rapidjson::Value& rgroups, rapidjson::Value& pluses, rapidjson::Value& arrows );
+        ReactionJsonLoader( rapidjson::Document& ket );
         ~ReactionJsonLoader();
         
         void loadReaction( BaseReaction& rxn );
@@ -48,10 +48,10 @@ namespace indigo
         bool ignore_bad_valence;
         
     protected:
-        rapidjson::Value& _molecule;
-        rapidjson::Value& _rgroups;
-        rapidjson::Value& _pluses;
-        rapidjson::Value& _arrows;
+        rapidjson::Value _molecule;
+        rapidjson::Value _rgroups;
+        rapidjson::Value _pluses;
+        rapidjson::Value _arrows;
         
     private:
         ReactionJsonLoader(const ReactionJsonLoader&); // no implicit copy

@@ -20,7 +20,6 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "layout/molecule_layout.h"
-
 #include <vector>
 #include <memory>
 #include <set>
@@ -634,6 +633,12 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule& mol, Writer<StringBuffer>& writ
             }
             int charge = mol.getAtomCharge(i);
             int evalence = mol.getExplicitValence(i);
+            int mapping = mol.reaction_atom_mapping[i];
+            if (mapping)
+            {
+                writer.Key("mapping");
+                writer.Int(mapping);
+            }
             if( charge )
             {
                 writer.Key("charge");
@@ -693,8 +698,7 @@ void MoleculeJsonSaver::saveRGroup( PtrPool<BaseMolecule>& fragments, int rgnum,
     writer.EndObject();
 }
 
-
-void MoleculeJsonSaver::saveMolecule( BaseMolecule& bmol )
+void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& writer)
 {
     // bool have_z = BaseMolecule::hasZCoord(*_mol);
     int chiral = bmol.getChiralFlag();
@@ -704,28 +708,24 @@ void MoleculeJsonSaver::saveMolecule( BaseMolecule& bmol )
     if (bmol.isQueryMolecule())
     {
         mol.reset(new QueryMolecule());
-        _pqmol = (QueryMolecule*) mol.get();
-    } else
+        _pqmol = (QueryMolecule*)mol.get();
+    }
+    else
     {
-        mol.reset( new Molecule());
+        mol.reset(new Molecule());
         _pmol = (Molecule*)mol.get();
     }
-    mol->clone_KeepIndices( bmol );
-	if (!BaseMolecule::hasCoord(*mol))
-	{
+    mol->clone_KeepIndices(bmol);
+    if (!BaseMolecule::hasCoord(*mol))
+    {
         MoleculeLayout ml(*mol, false);
         ml.layout_orientation = UNCPECIFIED;
         ml.make();
-	}
-    BaseMolecule::collapse( *mol );
+    }
+    BaseMolecule::collapse(*mol);
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
-    //
-    StringBuffer s;
     std::set<int> rgrp_full_list;
-    Writer<StringBuffer> writer(s);
-    std::stringstream result;
-
     writer.StartObject();
 
     writer.Key("root");
@@ -735,53 +735,61 @@ void MoleculeJsonSaver::saveMolecule( BaseMolecule& bmol )
 
     writer.StartObject();
     writer.Key("$ref");
-    writer.String( "mol0" );
+    writer.String("mol0");
     writer.EndObject();
 
     int n_rgroups = mol->rgroups.getRGroupCount();
-    for ( int i = 1; i <= n_rgroups; ++i )
+    for (int i = 1; i <= n_rgroups; ++i)
     {
         buf.clear();
-        out.printf( "rg%d", i );
+        out.printf("rg%d", i);
         buf.push(0);
         writer.StartObject();
         writer.Key("$ref");
-        writer.String( buf.ptr() );
+        writer.String(buf.ptr());
         writer.EndObject();
     }
 
-    writer.EndArray(); // nodes
+    writer.EndArray();  // nodes
     writer.EndObject(); // root
 
     writer.Key("mol0");
     writer.StartObject();
     writer.Key("type");
     writer.String("molecule");
-	if(chiral)
-	{
+    if (chiral)
+    {
         writer.Key("chiral");
         writer.Int(chiral);
-	}
+    }
     writer.Key("atoms");
     writer.StartArray();
-    saveAtoms( *mol, writer );
+    saveAtoms(*mol, writer);
     writer.EndArray();
 
-    saveBonds( *mol, writer );
-    saveSGroups( bmol, writer);
-    saveHighlights( *mol, writer );
-    saveSelection( *mol, writer );
+    saveBonds(*mol, writer);
+    saveSGroups(bmol, writer);
+    saveHighlights(*mol, writer);
+    saveSelection(*mol, writer);
 
     writer.EndObject(); // mol0
 
-    for ( int i = 1; i <= n_rgroups; i++ )
+    for (int i = 1; i <= n_rgroups; i++)
     {
         auto& rgrp = mol->rgroups.getRGroup(i);
-        if( rgrp.fragments.size() )
-            saveRGroup( rgrp.fragments, i, writer );
+        if (rgrp.fragments.size())
+            saveRGroup(rgrp.fragments, i, writer);
     }
 
     writer.EndObject();
+}
+
+void MoleculeJsonSaver::saveMolecule( BaseMolecule& bmol )
+{
+    StringBuffer s;
+    Writer<StringBuffer> writer(s);
+    saveMolecule( bmol, writer );
+    std::stringstream result;
     result << s.GetString();
     _output.printf("%s", result.str().c_str());
 }
