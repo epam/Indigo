@@ -24,6 +24,7 @@
 #include <tuple>
 #include <vector>
 #include <memory>
+#include <string>
 
 using namespace indigo;
 using namespace rapidjson;
