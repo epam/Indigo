@@ -34,7 +34,7 @@
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
 #include "molecule/molecule_json_loader.h"
-#include "reaction/reaction_json_loader.h
+#include "reaction/reaction_json_loader.h"
 
 #include <limits>
 
