@@ -46,6 +46,7 @@ namespace indigo
             if (_array != nullptr)
             {
                 free(_array);
+                _array = nullptr;
             }
         }
 
@@ -140,12 +141,12 @@ namespace indigo
             return (*this)[index];
         }
 
-        int size(void) const
+        int size() const
         {
             return _length;
         }
 
-        int sizeInBytes(void) const
+        int sizeInBytes() const
         {
             return _length * sizeof(T);
         }
@@ -163,7 +164,9 @@ namespace indigo
                 memcpy(_array, other, count * sizeof(T));
             }
             else
+            {
                 _length = 0;
+            }
         }
 
         void concat(const Array<T>& other)

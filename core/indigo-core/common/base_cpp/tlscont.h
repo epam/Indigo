@@ -44,6 +44,8 @@ namespace indigo
     {
     public:
         static _SIDManager& getInst(void);
+        static OsLock& getLock();
+
         _SIDManager(void);
         ~_SIDManager(void);
 
@@ -67,8 +69,6 @@ namespace indigo
         // Array with vacant SIDs
         Array<qword> _vacantSIDs;
 
-        static _SIDManager _instance;
-        static OsLock _lock;
     };
 
 // Macros for managing session IDs for current thread

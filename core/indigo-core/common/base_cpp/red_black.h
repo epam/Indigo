@@ -69,7 +69,10 @@ namespace indigo
             clear();
 
             if (_own_nodes)
+            {
                 delete _nodes;
+                _nodes = nullptr;
+            }
         }
 
         virtual void clear()

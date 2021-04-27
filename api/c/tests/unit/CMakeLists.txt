@@ -20,5 +20,5 @@ if (ENABLE_TESTS)
         target_link_options(${PROJECT_NAME}
                 PRIVATE -Wl,--allow-multiple-definition)
     endif()
-    add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
+    add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} --gtest_output=xml:indigo_unit_tests.xml)
 endif()

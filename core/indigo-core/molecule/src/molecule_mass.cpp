@@ -219,7 +219,7 @@ double MoleculeMass::mostAbundantMass(Molecule& mol )
     return molmass;
 }
 
-double MoleculeMass::monoisotopicMass(Molecule& mol )
+double MoleculeMass::monoisotopicMass(Molecule& mol)
 {
     std::set<int> selected_atoms;
     mol.getAtomSelection( selected_atoms );

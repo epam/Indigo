@@ -19,10 +19,13 @@
 #ifndef __elements_h__
 #define __elements_h__
 
-#include "base_cpp/red_black.h"
-#include "base_cpp/tlscont.h"
+#include <map>
+#include <vector>
 
-#ifdef _WIN32
+#include "base_c/defs.h"
+#include "base_cpp/exception.h"
+
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4251)
 #endif
@@ -209,29 +212,30 @@ namespace indigo
 
         static bool canBeAromatic(int element);
 
-        static Array<int>& tautomerHeteroatoms();
+        Element(const Element&) = delete;
+        Element(Element&&) = delete;
+        Element& operator= (const Element&) = delete;
+        Element& operator= (Element&&) = delete;
+        static const Element& _instance();
 
     private:
-        Element();
+        Element() noexcept;
+        ~Element() = default;
 
-        static Element _instance;
+        void _initAllPeriodic() noexcept;
+        void _initPeriodic(int element, const char* name, int period, int group) noexcept;
 
-        void _initAllPeriodic();
-        void _initPeriodic(int element, const char* name, int period, int group);
+        void _setStandardAtomicWeightIndex(int element, int index) noexcept;
+        void _addElementIsotope(int element, int isotope, double mass, double isotopic_composition) noexcept;
+        void _initAllIsotopes() noexcept;
+        void _initDefaultIsotopes() noexcept;
+        void _initAromatic() noexcept;
 
-        void _setStandardAtomicWeightIndex(int element, int index);
-        void _addElementIsotope(int element, int isotope, double mass, double isotopic_composition);
-        void _initAllIsotopes();
-        void _initDefaultIsotopes();
-
-        void _initAromatic();
-
-        RedBlackStringMap<int> _map;
-        Array<int> _halogens;
-        Array<int> _tau_heteroatoms; // Appear in tautomer chains
+        double _getStandardAtomicWeight(int element) const noexcept;
+        double _getRelativeIsotopicMass(int element, int isotope) const noexcept;
 
         // Per-element physical parameters
-        struct _Parameters
+        struct ElementParameters
         {
             char name[3];
 
@@ -249,10 +253,8 @@ namespace indigo
             bool can_be_aromatic;
         };
 
-        Array<_Parameters> _element_parameters;
-
         // Isotopes mass key
-        struct DLLEXPORT _IsotopeKey
+        struct DLLEXPORT IsotopeKey
         {
             int element;
             int isotope; // Can be equal to NATURAL
@@ -265,26 +267,32 @@ namespace indigo
                 UNINITIALIZED = -2
             };
 
-            _IsotopeKey(int element, int isotope);
-
-            bool operator<(const _IsotopeKey& right) const;
+            bool operator<(const IsotopeKey& right) const;
         };
 
-        struct _IsotopeValue
+        struct IsotopeValue
         {
-            _IsotopeValue(double mass, double isotopic_composition);
-
             // Isotope mass
             double mass;
             // Mole fraction of the various isotopes
             double isotopic_composition;
         };
-        RedBlackMap<_IsotopeKey, _IsotopeValue> _isotope_parameters_map;
-    };
 
+        struct cmp_str
+        {
+            bool operator()(char const *a, char const *b) const
+            {
+                return std::strcmp(a, b) < 0;
+            }
+        };
+
+        std::map<const char*, int, cmp_str> _map;
+        std::vector<ElementParameters> _element_parameters;
+        std::map<IsotopeKey, IsotopeValue> _isotope_parameters_map;
+    };
 } // namespace indigo
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
