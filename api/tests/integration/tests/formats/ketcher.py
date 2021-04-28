@@ -50,7 +50,8 @@ def test_complex_load_save_load(indigo):
 
 
 def test_reactions_load_save_load(indigo):
-    paths = ("reactions/cdxml/AmideFormation.rxn", "reactions/cdxml/Claisen.rxn",
+    paths = ("reactions/cdxml/AmideFormation.ket", "reactions/cdxml/Claisen.ket",
+             "reactions/cdxml/AmideFormation.rxn", "reactions/cdxml/Claisen.rxn",
              "reactions/cdxml/CN_Bond-S-GRP.rxn", "reactions/cdxml/CN_Bond.rxn",
              "reactions/cdxml/CN_Bond_map.rxn")
     for path in paths:
