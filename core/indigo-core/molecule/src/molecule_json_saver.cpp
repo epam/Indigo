@@ -16,13 +16,14 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "molecule/molecule_json_saver.h"
-#include "molecule/molecule.h"
-#include "molecule/query_molecule.h"
-#include "layout/molecule_layout.h"
-#include <vector>
 #include <memory>
 #include <set>
+#include <vector>
+
+#include "layout/molecule_layout.h"
+#include "molecule/molecule.h"
+#include "molecule/molecule_json_saver.h"
+#include "molecule/query_molecule.h"
 
 using namespace indigo;
 using namespace rapidjson;
@@ -131,7 +132,7 @@ void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_l
     }
 }
 
-void MoleculeJsonSaver::saveSGroups( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer )
+void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
     QS_DEF(Array<int>, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
@@ -144,13 +145,13 @@ void MoleculeJsonSaver::saveSGroups( BaseMolecule& mol, rapidjson::Writer<rapidj
         for (int i = 0; i < sgs_sorted.size(); i++)
         {
             int sg_idx = sgs_sorted[i];
-            saveSGroup( mol.sgroups.getSGroup(sg_idx), writer );
+            saveSGroup(mol.sgroups.getSGroup(sg_idx), writer);
         }
         writer.EndArray();
     }
 }
 
-void indigo::MoleculeJsonSaver::saveSGroup(SGroup & sgroup, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
     writer.StartObject();
     writer.Key("type");
@@ -164,158 +165,154 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup & sgroup, rapidjson::Writer<ra
         writer.EndArray();
     }
 
-    switch( sgroup.sgroup_type )
+    switch (sgroup.sgroup_type)
     {
-        case SGroup::SG_TYPE_GEN:
+    case SGroup::SG_TYPE_GEN:
         break;
-        case SGroup::SG_TYPE_DAT:
+    case SGroup::SG_TYPE_DAT: {
+        DataSGroup& dsg = (DataSGroup&)sgroup;
+        auto name = dsg.name.ptr();
+        if (name && strlen(name))
         {
-            DataSGroup& dsg = (DataSGroup&)sgroup;
-            auto name = dsg.name.ptr();
-            if (name && strlen(name) )
-            {
-                writer.Key("fieldName");
-                writer.String( name );
-            }
-            auto data = dsg.data.ptr();
-            if (data && strlen(data))
-            {
-                writer.Key("fieldData");
-                writer.String(data);
-            }
-            auto field_type = dsg.description.ptr();
-            if (field_type && strlen(field_type))
-            {
-                writer.Key("fieldType");
-                writer.String( field_type );
-            }
-            auto query_code = dsg.querycode.ptr();
-            if (query_code && strlen(query_code))
-            {
-                writer.Key("queryType");
-                writer.String(query_code);
-            }
-            auto query_oper = dsg.queryoper.ptr();
-            if (query_oper && strlen(query_oper) )
-            {
-                writer.Key("queryOp");
-                writer.String(query_oper);
-            }
-
-            writer.Key("x");
-            writer.Double(dsg.display_pos.x );
-            writer.Key("y");
-            writer.Double(dsg.display_pos.y );
-
-            if( !dsg.detached )
-            {
-                writer.Key("dataDetached");
-                writer.Bool( false );
-            }
-
-            if( dsg.relative )
-            {
-                writer.Key("placement");
-                writer.Bool( true );
-            }
-
-            if( dsg.display_units )
-            {
-                writer.Key("display");
-                writer.Bool(true);
-            }
-
-            char tag = dsg.tag;
-            if( tag != 0 && tag != ' ' )
-            {
-                writer.Key( "tag" );
-                std::string tag_s{ tag };
-                writer.String( tag_s.c_str() );
-            }
-
-            if( dsg.num_chars > 0)
-            {
-                writer.Key( "displayedChars" );
-                writer.Int( dsg.num_chars );
-            }
+            writer.Key("fieldName");
+            writer.String(name);
         }
-        break;
-        case SGroup::SG_TYPE_SUP:
+        auto data = dsg.data.ptr();
+        if (data && strlen(data))
         {
-            Superatom& sa = (Superatom&)sgroup;
-            writer.Key("name");
-            writer.String( sa.subscript.ptr() );
+            writer.Key("fieldData");
+            writer.String(data);
         }
-        break;
-        case SGroup::SG_TYPE_SRU:
+        auto field_type = dsg.description.ptr();
+        if (field_type && strlen(field_type))
         {
-            RepeatingUnit& ru = (RepeatingUnit&)sgroup;
-            if(ru.subscript.size())
-            {
-                writer.Key("subscript");
-                writer.String(ru.subscript.ptr());
-            }
+            writer.Key("fieldType");
+            writer.String(field_type);
+        }
+        auto query_code = dsg.querycode.ptr();
+        if (query_code && strlen(query_code))
+        {
+            writer.Key("queryType");
+            writer.String(query_code);
+        }
+        auto query_oper = dsg.queryoper.ptr();
+        if (query_oper && strlen(query_oper))
+        {
+            writer.Key("queryOp");
+            writer.String(query_oper);
+        }
 
-            writer.Key("connectivity");
-            switch (ru.connectivity)
-            {
-                case SGroup::HEAD_TO_TAIL:
-                    writer.String("HT");
-                    break;
-                case SGroup::HEAD_TO_HEAD:
-                    writer.String("HH");
-                    break;
-                default:
-                    writer.String("EU");
-                    break;
-            }
-        }
-        break;
-        case SGroup::SG_TYPE_MUL:
+        writer.Key("x");
+        writer.Double(dsg.display_pos.x);
+        writer.Key("y");
+        writer.Double(dsg.display_pos.y);
+
+        if (!dsg.detached)
         {
-            MultipleGroup& mg = (MultipleGroup&)sgroup;
-            if (mg.parent_atoms.size())
-            {
-                writer.StartArray();
-                for (int i = 0; i < mg.parent_atoms.size(); i++)
-                    writer.Int(mg.parent_atoms[i]);
-                writer.EndArray();
-            }
-            writer.Key("mul");
-            writer.Int( mg.multiplier );
+            writer.Key("dataDetached");
+            writer.Bool(false);
         }
-        break;
-        case SGroup::SG_TYPE_MON:
-            throw Error("SG_TYPE_MON not implemented in indigo yet");
-        break;
-        case SGroup::SG_TYPE_MER:
-            throw Error("SG_TYPE_MER not implemented in indigo yet");
-        break;
-        case SGroup::SG_TYPE_COP:
-            throw Error("SG_TYPE_COP not implemented in indigo yet");
-        break;
-        case SGroup::SG_TYPE_CRO:
-            throw Error("SG_TYPE_CRO not implemented in indigo yet");
-        break;
-        case SGroup::SG_TYPE_MOD:
-            throw Error("SG_TYPE_MOD not implemented in indigo yet");
-        break;
-        case SGroup::SG_TYPE_GRA:
-            throw Error("SG_TYPE_GRA not implemented in indigo yet");
-        break;
-        case SGroup::SG_TYPE_COM:
-            throw Error("SG_TYPE_COM not implemented in indigo yet");
-        break;
-        case SGroup::SG_TYPE_MIX:
-            throw Error("SG_TYPE_MIX not implemented in indigo yet");
-        break;
-        case SGroup::SG_TYPE_FOR:
-            throw Error("SG_TYPE_FOR not implemented in indigo yet");
-        break;
-        case SGroup::SG_TYPE_ANY:
-            throw Error("SG_TYPE_ANY not implemented in indigo yet");
-        break;
+
+        if (dsg.relative)
+        {
+            writer.Key("placement");
+            writer.Bool(true);
+        }
+
+        if (dsg.display_units)
+        {
+            writer.Key("display");
+            writer.Bool(true);
+        }
+
+        char tag = dsg.tag;
+        if (tag != 0 && tag != ' ')
+        {
+            writer.Key("tag");
+            std::string tag_s{tag};
+            writer.String(tag_s.c_str());
+        }
+
+        if (dsg.num_chars > 0)
+        {
+            writer.Key("displayedChars");
+            writer.Int(dsg.num_chars);
+        }
+    }
+    break;
+    case SGroup::SG_TYPE_SUP: {
+        Superatom& sa = (Superatom&)sgroup;
+        writer.Key("name");
+        writer.String(sa.subscript.ptr());
+    }
+    break;
+    case SGroup::SG_TYPE_SRU: {
+        RepeatingUnit& ru = (RepeatingUnit&)sgroup;
+        if (ru.subscript.size())
+        {
+            writer.Key("subscript");
+            writer.String(ru.subscript.ptr());
+        }
+
+        writer.Key("connectivity");
+        switch (ru.connectivity)
+        {
+        case SGroup::HEAD_TO_TAIL:
+            writer.String("HT");
+            break;
+        case SGroup::HEAD_TO_HEAD:
+            writer.String("HH");
+            break;
         default:
+            writer.String("EU");
+            break;
+        }
+    }
+    break;
+    case SGroup::SG_TYPE_MUL: {
+        MultipleGroup& mg = (MultipleGroup&)sgroup;
+        if (mg.parent_atoms.size())
+        {
+            writer.StartArray();
+            for (int i = 0; i < mg.parent_atoms.size(); i++)
+                writer.Int(mg.parent_atoms[i]);
+            writer.EndArray();
+        }
+        writer.Key("mul");
+        writer.Int(mg.multiplier);
+    }
+    break;
+    case SGroup::SG_TYPE_MON:
+        throw Error("SG_TYPE_MON not implemented in indigo yet");
+        break;
+    case SGroup::SG_TYPE_MER:
+        throw Error("SG_TYPE_MER not implemented in indigo yet");
+        break;
+    case SGroup::SG_TYPE_COP:
+        throw Error("SG_TYPE_COP not implemented in indigo yet");
+        break;
+    case SGroup::SG_TYPE_CRO:
+        throw Error("SG_TYPE_CRO not implemented in indigo yet");
+        break;
+    case SGroup::SG_TYPE_MOD:
+        throw Error("SG_TYPE_MOD not implemented in indigo yet");
+        break;
+    case SGroup::SG_TYPE_GRA:
+        throw Error("SG_TYPE_GRA not implemented in indigo yet");
+        break;
+    case SGroup::SG_TYPE_COM:
+        throw Error("SG_TYPE_COM not implemented in indigo yet");
+        break;
+    case SGroup::SG_TYPE_MIX:
+        throw Error("SG_TYPE_MIX not implemented in indigo yet");
+        break;
+    case SGroup::SG_TYPE_FOR:
+        throw Error("SG_TYPE_FOR not implemented in indigo yet");
+        break;
+    case SGroup::SG_TYPE_ANY:
+        throw Error("SG_TYPE_ANY not implemented in indigo yet");
+        break;
+    default:
         break;
     }
 
@@ -331,7 +328,7 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup & sgroup, rapidjson::Writer<ra
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer )
+void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
@@ -344,7 +341,7 @@ void MoleculeJsonSaver::saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjso
             writer.StartObject();
             writer.Key("type");
             int bond_order = mol.getBondOrder(i);
-            if (bond_order < 0 && _pqmol )
+            if (bond_order < 0 && _pqmol)
             {
                 int qb = QueryMolecule::getQueryBondType(_pqmol->getBond(i));
                 if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
@@ -355,11 +352,11 @@ void MoleculeJsonSaver::saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjso
                     bond_order = 7;
                 else if (qb == QueryMolecule::QUERY_BOND_ANY)
                     bond_order = 8;
-               if( bond_order < 0 )
-                 throw Error("Invalid query bond");
+                if (bond_order < 0)
+                    throw Error("Invalid query bond");
             }
 
-            if (bond_order == BOND_ZERO && _pmol )
+            if (bond_order == BOND_ZERO && _pmol)
             {
                 bond_order = 9;
                 const Edge& edge = mol.getEdge(i);
@@ -373,7 +370,7 @@ void MoleculeJsonSaver::saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjso
             if (_pqmol)
             {
                 _pqmol->getBond(i).sureValue(QueryMolecule::BOND_TOPOLOGY, topology);
-                if ( topology > 0)
+                if (topology > 0)
                 {
                     writer.Key("topology");
                     writer.Uint(topology);
@@ -391,22 +388,21 @@ void MoleculeJsonSaver::saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjso
             if (mol.cis_trans.isIgnored(i))
                 stereo = 3;
             else
-                switch( stereo )
+                switch (stereo)
                 {
-                    case BOND_UP:
-                        stereo = 1;
+                case BOND_UP:
+                    stereo = 1;
                     break;
-                    case BOND_EITHER:
-                        stereo = 4;
+                case BOND_EITHER:
+                    stereo = 4;
                     break;
-                    case BOND_DOWN:
-                        stereo = 6;
+                case BOND_DOWN:
+                    stereo = 6;
                     break;
-                    default:
-                    {
-					/*	int parity = mol.cis_trans.getParity(i);
-						if (parity)
-						{
+                default: {
+                    /*	int parity = mol.cis_trans.getParity(i);
+                        if (parity)
+                        {
                             if (parity == MoleculeCisTrans::CIS)
                                 stereo = 7;
                             if (parity == MoleculeCisTrans::TRANS)
@@ -419,15 +415,15 @@ void MoleculeJsonSaver::saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjso
                             writer.Int(e1.end);
                             writer.Int(subst[2]);
                             writer.EndArray();
-						}*/
-                    }
-                    break;
+                        }*/
+                }
+                break;
                 }
 
-            if( stereo )
+            if (stereo)
             {
                 writer.Key("stereo");
-                writer.Uint( stereo );
+                writer.Uint(stereo);
             }
             writer.EndObject();
         }
@@ -435,15 +431,14 @@ void MoleculeJsonSaver::saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjso
     }
 }
 
-
-void MoleculeJsonSaver::saveAttachmentPoint( BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void MoleculeJsonSaver::saveAttachmentPoint(BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
     int val = 0;
     for (int idx = 1; idx <= mol.attachmentPointCount(); idx++)
     {
         for (int j = 0; mol.getAttachmentPoint(idx, j) != -1; j++)
         {
-            if (mol.getAttachmentPoint(idx, j) == atom_idx )
+            if (mol.getAttachmentPoint(idx, j) == atom_idx)
             {
                 val |= 1 << (idx - 1);
                 break;
@@ -458,119 +453,118 @@ void MoleculeJsonSaver::saveAttachmentPoint( BaseMolecule& mol, int atom_idx, ra
     }
 }
 
-void MoleculeJsonSaver::saveStereoCenter( BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer )
+void MoleculeJsonSaver::saveStereoCenter(BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
-	writer.Key("pyramid");
-	writer.StartArray();
+    writer.Key("pyramid");
+    writer.StartArray();
     const int* pyramid = mol.stereocenters.getPyramid(atom_idx);
-	for (int i = 0; i < 4; ++i)
-	{
-		int prm = pyramid[i];
-		if (prm == -1 && i == 3)
-			prm = atom_idx;
-		writer.Int( prm );
-	}
-	writer.EndArray();
+    for (int i = 0; i < 4; ++i)
+    {
+        int prm = pyramid[i];
+        if (prm == -1 && i == 3)
+            prm = atom_idx;
+        writer.Int(prm);
+    }
+    writer.EndArray();
 }
 
-void indigo::MoleculeJsonSaver::saveHighlights( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer )
+void indigo::MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
-	int ca = mol.countSelectedAtoms();
-	int cb = mol.countSelectedBonds();
-	if (ca || cb)
-	{
-		writer.Key("highlight");
-		writer.StartArray();
+    int ca = mol.countSelectedAtoms();
+    int cb = mol.countSelectedBonds();
+    if (ca || cb)
+    {
+        writer.Key("highlight");
+        writer.StartArray();
 
-		if ( ca )
-		{
+        if (ca)
+        {
             writer.Key("entityType");
             writer.String("atom");
             writer.StartObject();
             writer.Key("items");
             writer.StartArray();
             for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-			{
-				if (mol.isAtomHighlighted(i))
-				{
-					writer.Int(i);
-				}
-			}
-			writer.EndArray();
-			writer.EndObject();
-		}
+            {
+                if (mol.isAtomHighlighted(i))
+                {
+                    writer.Int(i);
+                }
+            }
+            writer.EndArray();
+            writer.EndObject();
+        }
 
-		if ( cb )
-		{
+        if (cb)
+        {
             writer.Key("entityType");
             writer.String("bond");
             writer.StartObject();
             writer.Key("items");
             writer.StartArray();
             for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-			{
-				if (mol.isBondHighlighted(i))
-				{
-					writer.Int(i);
-				}
-			}
-			writer.EndArray();
-			writer.EndObject();
-		}
+            {
+                if (mol.isBondHighlighted(i))
+                {
+                    writer.Int(i);
+                }
+            }
+            writer.EndArray();
+            writer.EndObject();
+        }
 
-		writer.EndArray();
-	}
+        writer.EndArray();
+    }
 }
 
-void indigo::MoleculeJsonSaver::saveSelection(BaseMolecule & mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
+void indigo::MoleculeJsonSaver::saveSelection(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
-	int ca = mol.countSelectedAtoms();
-	int cb = mol.countSelectedBonds();
-	if (ca || cb)
-	{
-		writer.Key("selection");
-		writer.StartArray();
-		if (ca)
-		{
+    int ca = mol.countSelectedAtoms();
+    int cb = mol.countSelectedBonds();
+    if (ca || cb)
+    {
+        writer.Key("selection");
+        writer.StartArray();
+        if (ca)
+        {
             writer.Key("entityType");
             writer.String("atom");
-			writer.StartObject();
-			writer.Key("items");
-			writer.StartArray();
-			for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-			{
-				if (mol.isAtomSelected(i))
-				{
-					writer.Int(i);
-				}
-			}
-			writer.EndArray();
-			writer.EndObject();
-		}
+            writer.StartObject();
+            writer.Key("items");
+            writer.StartArray();
+            for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+            {
+                if (mol.isAtomSelected(i))
+                {
+                    writer.Int(i);
+                }
+            }
+            writer.EndArray();
+            writer.EndObject();
+        }
 
-		if (cb)
-		{
+        if (cb)
+        {
             writer.Key("entityType");
             writer.String("bond");
-			writer.StartObject();
-			writer.Key("items");
-			writer.StartArray();
-			for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-			{
-				if (mol.isBondSelected(i))
-				{
-					writer.Int(i);
-				}
-			}
-			writer.EndArray();
-			writer.EndObject();
-		}
-		writer.EndArray();
-	}
+            writer.StartObject();
+            writer.Key("items");
+            writer.StartArray();
+            for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+            {
+                if (mol.isBondSelected(i))
+                {
+                    writer.Int(i);
+                }
+            }
+            writer.EndArray();
+            writer.EndObject();
+        }
+        writer.EndArray();
+    }
 }
 
-
-void MoleculeJsonSaver::saveAtoms( BaseMolecule& mol, Writer<StringBuffer>& writer )
+void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& writer)
 {
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
@@ -585,43 +579,46 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule& mol, Writer<StringBuffer>& writ
                 saveAttachmentPoint(mol, i, writer);
             QS_DEF(Array<int>, rg_list);
             int radical = 0;
-            if( mol.isRSite(i) )
+            if (mol.isRSite(i))
             {
-                mol.getAllowedRGroups( i, rg_list );
+                mol.getAllowedRGroups(i, rg_list);
                 writer.Key("type");
                 writer.String("rg-label");
                 writer.Key("$refs");
                 writer.StartArray();
-                for( int j = 0; j < rg_list.size(); ++j )
+                for (int j = 0; j < rg_list.size(); ++j)
                 {
                     buf.clear();
-                    out.printf("rg-%d", rg_list[j] );
+                    out.printf("rg-%d", rg_list[j]);
                     buf.push(0);
                     writer.String(buf.ptr());
                 }
                 writer.EndArray();
-            } else
+            }
+            else
             {
                 if (!mol.isPseudoAtom(i))
                 {
                     radical = mol.getAtomRadical(i);
                 }
                 mol.getAtomSymbol(i, buf);
-                if( anum == ELEM_H  )
+                if (anum == ELEM_H)
                 {
                     if (isotope == 2)
                     {
-                        buf.clear(); buf.appendString("D", true);
+                        buf.clear();
+                        buf.appendString("D", true);
                     }
                     if (isotope == 3)
                     {
-                        buf.clear(); buf.appendString("T", true);
+                        buf.clear();
+                        buf.appendString("T", true);
                     }
                 }
                 writer.Key("label");
                 writer.String(buf.ptr());
             }
-            if (BaseMolecule::hasCoord(mol) )
+            if (BaseMolecule::hasCoord(mol))
             {
                 const Vec3f& coord = mol.getAtomXyz(i);
                 writer.Key("location");
@@ -639,39 +636,39 @@ void MoleculeJsonSaver::saveAtoms( BaseMolecule& mol, Writer<StringBuffer>& writ
                 writer.Key("mapping");
                 writer.Int(mapping);
             }
-            if( charge )
+            if (charge)
             {
                 writer.Key("charge");
-                writer.Int( charge );
+                writer.Int(charge);
             }
-            if( evalence > 0 )
+            if (evalence > 0)
             {
                 writer.Key("explicitValence");
-                writer.Int( evalence );
+                writer.Int(evalence);
             }
-            if( radical )
+            if (radical)
             {
                 writer.Key("radical");
-                writer.Int( radical );
+                writer.Int(radical);
             }
 
-            if( isotope && anum != ELEM_H )
+            if (isotope && anum != ELEM_H)
             {
                 writer.Key("isotope");
-                writer.Int( isotope );
+                writer.Int(isotope);
             }
             writer.EndObject();
         }
     }
 }
 
-void MoleculeJsonSaver::saveRGroup( PtrPool<BaseMolecule>& fragments, int rgnum, rapidjson::Writer<rapidjson::StringBuffer>& writer )
+void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
 
     buf.clear();
-    out.printf( "rg%d", rgnum );
+    out.printf("rg%d", rgnum);
     buf.push(0);
 
     writer.Key(buf.ptr());
@@ -679,21 +676,21 @@ void MoleculeJsonSaver::saveRGroup( PtrPool<BaseMolecule>& fragments, int rgnum,
     writer.Key("rlogic");
     writer.StartObject();
     writer.Key("number");
-    writer.Int( rgnum );
-    writer.EndObject(); //rlogic
+    writer.Int(rgnum);
+    writer.EndObject(); // rlogic
     writer.Key("type");
     writer.String("rgroup");
 
     writer.Key("atoms");
     writer.StartArray();
     for (int j = fragments.begin(); j != fragments.end(); j = fragments.next(j))
-        saveAtoms( *fragments[j], writer );
+        saveAtoms(*fragments[j], writer);
     writer.EndArray();
 
     writer.Key("bonds");
     writer.StartArray();
     for (int j = fragments.begin(); j != fragments.end(); j = fragments.next(j))
-        saveBonds( *fragments[j], writer );
+        saveBonds(*fragments[j], writer);
     writer.EndArray();
     writer.EndObject();
 }
@@ -784,11 +781,11 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveMolecule( BaseMolecule& bmol )
+void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
 {
     StringBuffer s;
     Writer<StringBuffer> writer(s);
-    saveMolecule( bmol, writer );
+    saveMolecule(bmol, writer);
     std::stringstream result;
     result << s.GetString();
     _output.printf("%s", result.str().c_str());

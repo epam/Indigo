@@ -863,14 +863,6 @@ int main(int argc, char* argv[])
 
     // read in the input
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
-/*	{
-        int reader2 = indigoReadFile(p.outfile);
-        auto m1 = indigoLoadMolecule(reader);
-        auto m2 = indigoLoadMolecule(reader2);
-        int ematch = indigoExactMatch(m1, m2, NULL );
-        if (ematch)
-            printf("ok");
-    }*/
 
     if (p.mode == MODE_SINGLE_MOLECULE)
     {
