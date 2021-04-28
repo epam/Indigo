@@ -1,0 +1,69 @@
+molecules/test_molv2000_charge.mol
+Molecule: -
+Atom block:
+C, isotope: 0, charge: 0
+Br, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+O, isotope: 0, charge: 0
+Bond block:
+order: 1, stereo: 0
+order: 1, stereo: 0
+order: 1, stereo: 0
+molecules/public-structures-bingo-parse-errors.sdf
+Molecule: -
+Atom block:
+C, isotope: 0, charge: 0
+Br, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+O, isotope: 0, charge: 0
+Bond block:
+order: 1, stereo: 0
+order: 1, stereo: 0
+order: 1, stereo: 0
+Molecule: -
+Atom block:
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+O, isotope: 0, charge: 0
+N, isotope: 0, charge: 0
+Bond block:
+order: 1, stereo: 4
+order: 1, stereo: 0
+order: 1, stereo: 0
+Molecule: -
+Atom block:
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+Bond block:
+order: 1, stereo: 0
+order: 1, stereo: 0
+order: 1, stereo: 0
+order: 1, stereo: 0
+Molecule: -
+Atom block:
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+Bond block:
+order: 1, stereo: 0
+order: 1, stereo: 0
+order: 1, stereo: 0
+order: 1, stereo: 0
+order: 1, stereo: 0
+Molecule: -
+Atom block:
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+O, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+C, isotope: 0, charge: 0
+Bond block:
+order: 1, stereo: 0
+order: 1, stereo: 5
+order: 1, stereo: 0
+order: 1, stereo: 0

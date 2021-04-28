@@ -34,7 +34,7 @@
 
 using namespace indigo;
 
-OracleError::OracleError(OCIError* errhp, int oracle_rc, const char* message, int my_rc)
+OracleError::OracleError(OCIError* errhp, int oracle_rc, const char* message, int my_rc) : Exception("bingo-oracle: ")
 {
     if (oracle_rc == OCI_NO_DATA)
         snprintf(_message, sizeof(_message), "%s: no data", message);
@@ -57,7 +57,7 @@ OracleError::OracleError(OCIError* errhp, int oracle_rc, const char* message, in
     _code = my_rc;
 }
 
-OracleError::OracleError(int my_rc, const char* format, ...)
+OracleError::OracleError(int my_rc, const char* format, ...) : Exception("bingo-oracle: ")
 {
     va_list args;
     int n;
