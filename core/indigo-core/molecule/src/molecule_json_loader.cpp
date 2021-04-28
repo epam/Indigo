@@ -326,29 +326,12 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                 case 6:
                     mol.setBondDirection(bond_idx, BOND_DOWN);
                     break;
-                case 7:
-                case 8: {
-                    /*                    int substituents[4];
-                                        if (b.HasMember("subs"))
-                                        {
-                                            const Value& subs = b["subs"];
-                                            if (subs.Size() == 4)
-                                            {
-                                                for (int k = 0; k < 4; ++k)
-                                                {
-                                                    substituents[k] = subs[k].GetInt();
-                                                }
-                                            }
-                                            mol.cis_trans.add(bond_idx, substituents, stereo == 7 ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
-                                        }*/
-                }
                 break;
 
                 default:
                     break;
                 }
             }
-            // mol.reaction_bond_reacting_center[bond_idx] = rcenter;
         }
         else
         {
