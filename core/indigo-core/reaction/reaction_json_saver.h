@@ -46,7 +46,7 @@ namespace indigo
 
     private:
         ReactionJsonSaver(const ReactionJsonSaver&); // no implicit copy
-        static void _getBounds(BaseMolecule& mol, Vec2f& min, Vec2f& max, float scale);
+        static void _getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale);
     };
 
 } // namespace indigo
