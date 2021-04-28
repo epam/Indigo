@@ -173,9 +173,9 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
 
         _scanner->seek(pos, SEEK_SET);
     }
-    
+
     // check for JSON-KET format
-    
+
     {
         long long pos = _scanner->tell();
         _scanner->skipSpace();
@@ -190,14 +190,15 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
                     _scanner->readAll(buf);
                     buf.push(0);
                     Document data;
-                    if ( data.Parse(buf.ptr()).HasParseError())
+                    if (data.Parse(buf.ptr()).HasParseError())
                         throw Error("Error at parsing JSON: %s", buf.ptr());
-                    if( data.HasMember( "root" ) && data["root"].HasMember("nodes") )
+                    if (data.HasMember("root") && data["root"].HasMember("nodes"))
                     {
-                        ReactionJsonLoader loader( data );
+                        ReactionJsonLoader loader(data);
                         loader.stereochemistry_options = stereochemistry_options;
                         loader.loadReaction(reaction);
-                    } else
+                    }
+                    else
                         throw Error("Ketcher's JSON has no root node");
                     return;
                 }
@@ -205,7 +206,6 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
         }
         _scanner->seek(pos, SEEK_SET);
     }
-
 
     // check for SMILES format
     if (Scanner::isSingleLine(*_scanner))

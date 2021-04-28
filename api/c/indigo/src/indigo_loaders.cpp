@@ -23,6 +23,7 @@
 #include "indigo_reaction.h"
 #include "molecule/cml_loader.h"
 #include "molecule/molecule_cdx_loader.h"
+#include "molecule/molecule_json_loader.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/multiple_cdx_loader.h"
 #include "molecule/multiple_cml_loader.h"
@@ -31,25 +32,23 @@
 #include "molecule/smiles_loader.h"
 #include "reaction/reaction_cdx_loader.h"
 #include "reaction/reaction_cml_loader.h"
+#include "reaction/reaction_json_loader.h"
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
-#include "molecule/molecule_json_loader.h"
-#include "reaction/reaction_json_loader.h"
 
 #include <limits>
 
-IndigoJSONMolecule::IndigoJSONMolecule( rapidjson::Value& node, rapidjson::Value& rgroups, int index )
-: IndigoObject( JSON_MOLECULE ), _node( node ), _rgroups( rgroups ), _loaded( false )
+IndigoJSONMolecule::IndigoJSONMolecule(rapidjson::Value& node, rapidjson::Value& rgroups, int index)
+    : IndigoObject(JSON_MOLECULE), _node(node), _rgroups(rgroups), _loaded(false)
 {
-    
 }
 
 Molecule& IndigoJSONMolecule::getMolecule()
 {
-    if( !_loaded )
+    if (!_loaded)
     {
-        MoleculeJsonLoader loader( _node, _rgroups );
-        loader.loadMolecule( _mol );
+        MoleculeJsonLoader loader(_node, _rgroups);
+        loader.loadMolecule(_mol);
         _loaded = true;
     }
     return _mol;
@@ -64,7 +63,6 @@ IndigoObject* IndigoJSONMolecule::clone()
 {
     return IndigoMolecule::cloneFrom(*this);
 }
-
 
 const char* IndigoJSONMolecule::getName()
 {

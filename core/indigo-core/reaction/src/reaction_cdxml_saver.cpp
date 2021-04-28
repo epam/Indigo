@@ -138,7 +138,7 @@ void ReactionCdxmlSaver::_addPlusses(BaseReaction& rxn, MoleculeCdxmlSaver& mols
 {
     Vec2f offset(0, 0);
 
-    if( rxn.reactantsCount() > 1 )
+    if (rxn.reactantsCount() > 1)
     {
         int rcount = 1;
         for (auto i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))

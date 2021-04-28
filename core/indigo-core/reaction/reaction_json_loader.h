@@ -22,13 +22,13 @@
 #include <rapidjson/document.h>
 
 #include "base_cpp/exception.h"
+#include "molecule/molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
-#include "molecule/molecule.h"
 
 namespace indigo
 {
-    
+
     class Scanner;
     class BaseReaction;
     class Reaction;
@@ -38,21 +38,21 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        
-        ReactionJsonLoader( rapidjson::Document& ket );
+
+        ReactionJsonLoader(rapidjson::Document& ket);
         ~ReactionJsonLoader();
-        
-        void loadReaction( BaseReaction& rxn );
-        
+
+        void loadReaction(BaseReaction& rxn);
+
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
-        
+
     protected:
         rapidjson::Value _molecule;
         rapidjson::Value _rgroups;
         rapidjson::Value _pluses;
         rapidjson::Value _arrows;
-        
+
     private:
         ReactionJsonLoader(const ReactionJsonLoader&); // no implicit copy
         Reaction* _prxn;
@@ -60,10 +60,8 @@ namespace indigo
         Molecule _mol;
         QueryMolecule _qmol;
         BaseMolecule* _pmol;
-
     };
-    
-}  // namespace indigo
 
+} // namespace indigo
 
 #endif /* reaction_json_loader_h */

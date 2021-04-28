@@ -26,7 +26,7 @@
 
 namespace indigo
 {
-    
+
     class Output;
     class BaseReaction;
     class BaseMolecule;
@@ -36,19 +36,19 @@ namespace indigo
     public:
         explicit ReactionJsonSaver(Output& output);
         ~ReactionJsonSaver();
-        
+
         void saveReaction(BaseReaction& rxn);
-        
+
         DECL_ERROR;
-        
+
     protected:
         Output& _output;
-        
+
     private:
         ReactionJsonSaver(const ReactionJsonSaver&); // no implicit copy
         static void _getBounds(BaseMolecule& mol, Vec2f& min, Vec2f& max, float scale);
     };
-    
+
 } // namespace indigo
 
 #endif
