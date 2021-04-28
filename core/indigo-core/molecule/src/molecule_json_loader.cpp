@@ -326,7 +326,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                 case 6:
                     mol.setBondDirection(bond_idx, BOND_DOWN);
                     break;
-                break;
+                    break;
 
                 default:
                     break;

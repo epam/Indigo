@@ -16,23 +16,23 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "reaction/reaction_json_loader.h"
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <tuple>
+#include <vector>
+
 #include "molecule/molecule_json_loader.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
-#include <algorithm>
-#include <tuple>
-#include <vector>
-#include <memory>
-#include <string>
+#include "reaction/reaction_json_loader.h"
 
 using namespace indigo;
 using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
-ReactionJsonLoader::ReactionJsonLoader( Document& ket ) : 
-    _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType)
+ReactionJsonLoader::ReactionJsonLoader(Document& ket) : _rgroups(kArrayType), _molecule(kArrayType), _pluses(kArrayType), _arrows(kArrayType)
 {
     ignore_bad_valence = false;
     Value& root = ket["root"];
@@ -176,7 +176,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
         switch (std::get<FRAGMENT_TYPE_IDX>(comp))
         {
         case ReactionFramentType::MOLECULE:
-            merged_molecule->mergeWithMolecule( *std::get<MOLECULE_IDX>(comp), 0, 0 );
+            merged_molecule->mergeWithMolecule(*std::get<MOLECULE_IDX>(comp), 0, 0);
             break;
         case ReactionFramentType::ARROW:
             rxn.addReactantCopy(*merged_molecule, 0, 0);

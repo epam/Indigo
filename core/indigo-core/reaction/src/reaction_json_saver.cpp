@@ -16,15 +16,16 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "reaction/reaction_json_saver.h"
-#include "base_cpp/output.h"
-#include "molecule/molecule_json_saver.h"
-#include "reaction/reaction.h"
-#include "molecule/query_molecule.h"
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include <rapidjson/document.h>
+
+#include "base_cpp/output.h"
+#include "molecule/molecule_json_saver.h"
+#include "molecule/query_molecule.h"
+#include "reaction/reaction.h"
+#include "reaction/reaction_json_saver.h"
 
 using namespace indigo;
 using namespace indigo;
@@ -32,7 +33,7 @@ using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonSaver, "reaction KET saver");
 
-void ReactionJsonSaver::_getBounds( BaseMolecule& mol, Vec2f& min, Vec2f& max, float scale )
+void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min, Vec2f& max, float scale)
 {
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
     {
@@ -60,20 +61,20 @@ ReactionJsonSaver::~ReactionJsonSaver()
 {
 }
 
-void ReactionJsonSaver::saveReaction( BaseReaction& rxn )
+void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 {
     std::vector<Vec2f> pluses;
     Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0);
 
-    MoleculeJsonSaver json_saver( _output );
+    MoleculeJsonSaver json_saver(_output);
     std::unique_ptr<BaseMolecule> merged;
-    if( rxn.isQueryReaction() )
+    if (rxn.isQueryReaction())
     {
         merged.reset(new QueryMolecule());
     }
     else
     {
-        merged.reset( new Molecule() );
+        merged.reset(new Molecule());
     }
 
     if (rxn.reactantsCount() > 0)
@@ -96,11 +97,11 @@ void ReactionJsonSaver::saveReaction( BaseReaction& rxn )
                 rmax.max(max1);
             }
 
-            if( rcount < rxn.reactantsCount() )
+            if (rcount < rxn.reactantsCount())
             {
                 Vec2f min2, max2;
                 _getBounds(rxn.getBaseMolecule(rxn.reactantNext(i)), min2, max2, 1.0);
-                pluses.emplace_back( (max1.x + min2.x) / 2, (min1.y + max1.y) / 2 );
+                pluses.emplace_back((max1.x + min2.x) / 2, (min1.y + max1.y) / 2);
                 rcount++;
             }
         }
@@ -128,7 +129,7 @@ void ReactionJsonSaver::saveReaction( BaseReaction& rxn )
                 pmax.max(max1);
             }
 
-            if( rcount < rxn.productsCount() )
+            if (rcount < rxn.productsCount())
             {
                 Vec2f min2, max2;
                 _getBounds(rxn.getBaseMolecule(rxn.productNext(i)), min2, max2, 1.0);
@@ -140,7 +141,7 @@ void ReactionJsonSaver::saveReaction( BaseReaction& rxn )
 
     StringBuffer s;
     Writer<StringBuffer> writer(s);
-    json_saver.saveMolecule( *merged, writer);
+    json_saver.saveMolecule(*merged, writer);
     Document ket;
     ket.Parse(s.GetString());
     if (!(ket.HasMember("root") && ket["root"].HasMember("nodes")))
@@ -159,7 +160,7 @@ void ReactionJsonSaver::saveReaction( BaseReaction& rxn )
         nodes.PushBack(plus, ket.GetAllocator());
     }
 
-    //add arrow
+    // add arrow
     Vec2f p1(0, 0);
     Vec2f p2(0, 0);
     if (rxn.reactantsCount() || rxn.productsCount())
