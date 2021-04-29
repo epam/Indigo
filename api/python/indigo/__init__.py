@@ -2558,13 +2558,11 @@ class Indigo(object):
         Indigo._lib.indigoDbgBreakpoint.argtypes = None
         Indigo._lib.indigoClone.restype = c_int
         Indigo._lib.indigoClone.argtypes = [c_int]
-        Indigo._lib.indigoCheck.restype = c_char_p
-        Indigo._lib.indigoCheck.argtypes = [c_int, c_char_p]
 
-        Indigo._lib.indigoCheck2.restype = c_char_p
-        Indigo._lib.indigoCheck2.argtypes = [c_char_p, c_char_p, c_char_p]
-        Indigo._lib.indigoCheckObj2.restype = c_char_p
-        Indigo._lib.indigoCheckObj2.argtypes = [c_int, c_char_p]
+        Indigo._lib.indigoCheck.restype = c_char_p
+        Indigo._lib.indigoCheck.argtypes = [c_char_p, c_char_p, c_char_p]
+        Indigo._lib.indigoCheckObj.restype = c_char_p
+        Indigo._lib.indigoCheckObj.argtypes = [c_int, c_char_p]
 
         Indigo._lib.indigoCheckStructure.restype = c_char_p
         Indigo._lib.indigoCheckStructure.argtypes = [c_char_p, c_char_p]

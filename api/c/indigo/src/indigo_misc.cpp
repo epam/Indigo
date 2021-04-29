@@ -1417,6 +1417,32 @@ CEXPORT const char* indigoCheckObj(int item, const char* check_flags)
     INDIGO_END(0);
 }
 
+CEXPORT const char* indigoCheckStructure(const char* structure, const char* props)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput out(tmp.string);
+
+        try
+        {
+            int item = indigoLoadStructureFromString(structure, "");
+            if (item > 0)
+                out.writeString(indigoCheckObj(item, props));
+            else
+                out.writeString("{\"LOAD\":{\"message\":\"Error at loading structure\"}}");
+        }
+        catch (Exception& e)
+        {
+            out.printf("{\"LOAD\":{\"message\":\"Error at loading structure. %s\"}}", e.message());
+        }
+
+        out.writeChar(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
+}
+
 CEXPORT const char* indigoJson(int item)
 {
     INDIGO_BEGIN
