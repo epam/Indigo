@@ -137,20 +137,12 @@ class IndigoObject(object):
             self.dispatcher._checkResult(Indigo._lib.indigoClone(self.id)),
         )
 
-    def check(self, props=""):
-        if props is None:
-            props = ""
-        self.dispatcher._setSessionId()
-        return self.dispatcher._checkResultString(
-            Indigo._lib.indigoCheck(self.id, props.encode(ENCODE_ENCODING))
-        )
-
-    def check2(self, checkflags=""):
+    def check(self, checkflags=""):
         if checkflags is None:
             checkflags = ""
         self.dispatcher._setSessionId()
         return self.dispatcher._checkResultString(
-            Indigo._lib.indigoCheckObj2(self.id, checkflags.encode(ENCODE_ENCODING))
+            Indigo._lib.indigoCheckObj(self.id, checkflags.encode(ENCODE_ENCODING))
         )
 
     def close(self):

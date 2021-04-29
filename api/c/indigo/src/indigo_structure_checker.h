@@ -21,14 +21,14 @@
 
 #include "base_cpp/exception.h"
 #include "indigo_internal.h"
-#include "molecule/structure_checker2.h"
+#include "molecule/structure_checker.h"
 #include <string>
 #include <vector>
 
 namespace indigo
 {
 
-    class DLLEXPORT IndigoStructureChecker : public StructureChecker2
+    class DLLEXPORT IndigoStructureChecker : public StructureChecker
     {
     public:
         IndigoStructureChecker();
@@ -43,8 +43,8 @@ namespace indigo
         CheckResult check(const IndigoObject& item, const std::vector<CheckTypeCode>& check_types = std::vector<CheckTypeCode>(),
                           const std::vector<int>& selected_atoms = std::vector<int>(), const std::vector<int>& selected_bonds = std::vector<int>());
 
-        std::string toJson(const StructureChecker2::CheckResult& res);
-        std::string toJson2(const StructureChecker2::CheckResult& res);
+        std::string toJson(const StructureChecker::CheckResult& res);
+        std::string toJson2(const StructureChecker::CheckResult& res);
         
         DECL_ERROR;
 

@@ -37,11 +37,9 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/rdf_loader.h"
 #include "molecule/sdf_loader.h"
-#include "molecule/structure_checker.h"
 #include "indigo_structure_checker.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
-#include "reaction/reaction_checker.h"
 
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_json_saver.h"
@@ -1390,7 +1388,7 @@ CEXPORT int indigoCheckStereo(int item)
     INDIGO_END(-1);
 }
 
-CEXPORT const char* indigoCheck2(const char* item, const char* check_flags, const char* load_params)
+CEXPORT const char* indigoCheck(const char* item, const char* check_flags, const char* load_params)
 {
     INDIGO_BEGIN
     {
@@ -1405,7 +1403,7 @@ CEXPORT const char* indigoCheck2(const char* item, const char* check_flags, cons
     INDIGO_END(0);
 }
 
-CEXPORT const char* indigoCheckObj2(int item, const char* check_flags)
+CEXPORT const char* indigoCheckObj(int item, const char* check_flags)
 {
     INDIGO_BEGIN
     {
@@ -1418,118 +1416,6 @@ CEXPORT const char* indigoCheckObj2(int item, const char* check_flags)
     }
     INDIGO_END(0);
 }
-
-CEXPORT const char* indigoCheck(int item, const char* props)
-{
-    INDIGO_BEGIN
-    {
-        auto& tmp = self.getThreadTmpData();
-        ArrayOutput out(tmp.string);
-
-        IndigoObject& obj = self.getObject(item);
-
-        if (IndigoBaseMolecule::is(obj))
-        {
-            StructureChecker ch(out);
-            ch.parseCheckTypes(props);
-
-            BaseMolecule& bmol = obj.getBaseMolecule();
-
-            if (bmol.isQueryMolecule())
-            {
-                QueryMolecule& qmol = bmol.asQueryMolecule();
-                ch.checkQueryMolecule(qmol);
-            }
-            else
-            {
-                Molecule& mol = bmol.asMolecule();
-                ch.checkMolecule(mol);
-            }
-        }
-        else if (IndigoBaseReaction::is(obj))
-        {
-            ReactionChecker ch(out);
-            ch.setCheckTypes(props);
-
-            BaseReaction& brxn = obj.getBaseReaction();
-            ch.checkBaseReaction(brxn);
-        }
-        else if (IndigoAtom::is(obj))
-        {
-            StructureChecker ch(out);
-            ch.parseCheckTypes(props);
-
-            IndigoAtom& ia = IndigoAtom::cast(obj);
-            QS_DEF(Array<int>, atoms);
-            atoms.clear();
-            atoms.push(ia.getIndex() + 1);
-            ch.addAtomSelection(atoms);
-
-            if (ia.mol.isQueryMolecule())
-            {
-                QueryMolecule& qmol = ia.mol.asQueryMolecule();
-                ch.checkQueryMolecule(qmol);
-            }
-            else
-            {
-                Molecule& mol = ia.mol.asMolecule();
-                ch.checkMolecule(mol);
-            }
-        }
-        else if (IndigoBond::is(obj))
-        {
-            StructureChecker ch(out);
-            ch.parseCheckTypes(props);
-
-            IndigoBond& ib = IndigoBond::cast(obj);
-            QS_DEF(Array<int>, bonds);
-            bonds.clear();
-            bonds.push(ib.getIndex() + 1);
-            ch.addBondSelection(bonds);
-
-            if (ib.mol.isQueryMolecule())
-            {
-                QueryMolecule& qmol = ib.mol.asQueryMolecule();
-                ch.checkQueryMolecule(qmol);
-            }
-            else
-            {
-                Molecule& mol = ib.mol.asMolecule();
-                ch.checkMolecule(mol);
-            }
-        }
-        out.writeChar(0);
-        return tmp.string.ptr();
-    }
-    INDIGO_END(0);
-}
-
-CEXPORT const char* indigoCheckStructure(const char* structure, const char* props)
-{
-    INDIGO_BEGIN
-    {
-        auto& tmp = self.getThreadTmpData();
-        ArrayOutput out(tmp.string);
-
-        try
-        {
-            int item = indigoLoadStructureFromString(structure, "");
-            if (item > 0)
-                out.writeString(indigoCheck(item, props));
-            else
-                out.writeString("{\"LOAD\":{\"message\":\"Error at loading structure\"}}");
-        }
-        catch (Exception& e)
-        {
-            out.printf("{\"LOAD\":{\"message\":\"Error at loading structure. %s\"}}", e.message());
-        }
-
-        out.writeChar(0);
-        return tmp.string.ptr();
-    }
-    INDIGO_END(0);
-}
-
 
 CEXPORT const char* indigoJson(int item)
 {
