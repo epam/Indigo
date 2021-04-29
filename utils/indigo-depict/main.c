@@ -863,14 +863,6 @@ int main(int argc, char* argv[])
 
     // read in the input
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
-/*	{
-        int reader2 = indigoReadFile(p.outfile);
-        auto m1 = indigoLoadMolecule(reader);
-        auto m2 = indigoLoadMolecule(reader2);
-        int ematch = indigoExactMatch(m1, m2, NULL );
-        if (ematch)
-            printf("ok");
-    }*/
 
     if (p.mode == MODE_SINGLE_MOLECULE)
     {
@@ -891,7 +883,7 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            // indigoLayout(obj);
+            indigoLayout(obj);
             if (p.out_ext == OEXT_MOL)
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)
@@ -925,8 +917,10 @@ int main(int argc, char* argv[])
             indigoLayout(obj);
             if (p.out_ext == OEXT_CML)
                 indigoSaveCmlToFile(obj, p.outfile);
-            else
+            else if (p.outfile_ext == OEXT_RXN)
                 indigoSaveRxnfileToFile(obj, p.outfile);
+            else
+                indigoSaveJsonToFile(obj, p.outfile);
         }
         else
         {
