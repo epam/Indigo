@@ -4106,13 +4106,13 @@ class Indigo(object):
             self._checkResult(Indigo._lib.indigoTransformHELMtoSCSR(item.id)),
         )
 
-    def check2(self, moltext, checkflags="", props=""):
+    def check(self, moltext, checkflags="", props=""):
         if props is None:
             props = ""
         if checkflags is None:
             checkflags = ""
         self._setSessionId()
         return self._checkResultString(
-            Indigo._lib.indigoCheck2(moltext.encode(ENCODE_ENCODING), checkflags.encode(ENCODE_ENCODING), props.encode(ENCODE_ENCODING))
+            Indigo._lib.indigoCheck(moltext.encode(ENCODE_ENCODING), checkflags.encode(ENCODE_ENCODING), props.encode(ENCODE_ENCODING))
         )
 
