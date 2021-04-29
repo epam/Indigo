@@ -731,7 +731,7 @@ def check2():
     except Exception as e:
         raise HttpException('Problem with Indigo initialization: {0}'.format(e), 501)
     LOG_DATA('[REQUEST] /check', data['types'], data['struct'], data['options'])
-    result = indigo.check2(data['struct'], data['types']);
+    result = indigo.check(data['struct'], data['types']);
     return result, 200, {'Content-Type': 'application/json'}
 
 @indigo_api.route('/check', methods=['POST', ])
