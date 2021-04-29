@@ -1691,7 +1691,7 @@ namespace com.epam.indigo
             }
 
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoCheckObj2(self, type));
+            return dispatcher.checkResult(IndigoLib.indigoCheckObj(self, type));
         }
 
         public IndigoObject fingerprint()

@@ -296,7 +296,7 @@ public interface IndigoLib extends Library {
 
     Pointer indigoCheck2(String item, String type, String options);
 
-    Pointer indigoCheckObj2(int item, String type);
+    Pointer indigoCheckObj(int item, String type);
 
     Pointer indigoCheck(int item, String type);
 
