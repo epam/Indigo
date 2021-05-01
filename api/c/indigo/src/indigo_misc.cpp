@@ -1409,7 +1409,7 @@ CEXPORT const char* indigoCheckObj(int item, const char* check_flags)
     {
         auto& tmp = self.getThreadTmpData();
         IndigoStructureChecker checker;
-        std::string r = checker.toJson2(checker.check(item, check_flags));
+        std::string r = checker.toJson(checker.check(item, check_flags));
         tmp.string.clear();
         tmp.string.appendString(r.c_str(), true);
         return tmp.string.ptr();

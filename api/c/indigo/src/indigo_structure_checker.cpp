@@ -154,48 +154,6 @@ StructureChecker::CheckResult IndigoStructureChecker::check(const IndigoObject& 
 }
 
 using namespace rapidjson;
-static void _toJson(const StructureChecker::CheckResult& data, Writer<StringBuffer>& writer)
-{
-    writer.StartArray();
-    for (auto msg : data.messages)
-    {
-        writer.StartObject();
-        writer.Key("code");
-        writer.Uint(static_cast<unsigned int>(msg.code));
-        writer.Key("message");
-        writer.String(msg.message().c_str());
-        if (msg.index >= 0)
-        {
-            writer.Key("index");
-            writer.Uint(msg.index);
-        }
-        if (!msg.ids.empty())
-        {
-            writer.Key("ids");
-            writer.StartArray();
-            for (auto i : msg.ids)
-            {
-                writer.Uint(i);
-            }
-            writer.EndArray();
-        }
-        if (!msg.subresult.isEmpty())
-        {
-            writer.Key("subresult");
-            _toJson(msg.subresult, writer);
-        }
-        writer.EndObject();
-    }
-    writer.EndArray();
-}
-std::string IndigoStructureChecker::toJson(const StructureChecker::CheckResult& res)
-{
-    std::stringstream result;
-    StringBuffer s;
-    Writer<StringBuffer> writer(s);
-    _toJson(res, writer);
-    return std::string(s.GetString());
-}
 
 void dumpMessage( StructureChecker::CheckMessage& msg, std::string& out_str )
 {
@@ -221,7 +179,7 @@ void dumpMessage( StructureChecker::CheckMessage& msg, std::string& out_str )
     }
 }
 
-std::string IndigoStructureChecker::toJson2(const StructureChecker::CheckResult& res)
+std::string IndigoStructureChecker::toJson(const StructureChecker::CheckResult& res)
 {
     StringBuffer s;
     Writer<StringBuffer> writer(s);
