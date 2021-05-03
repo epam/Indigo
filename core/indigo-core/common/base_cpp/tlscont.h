@@ -328,8 +328,9 @@ namespace indigo
     _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release;                                                                                \
     _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());                                                                                  \
     name.clear_resize(len);
+// Use this for debug purposes if you suspect QS_DEF in something bad
+// #define QS_DEF_RES(TYPE, name, len) TYPE name; name.clear_resize(len);
 
-//
 // Reusable class members definition
 // By tradition this macros start with TL_, but should start with SL_
 // To work with them you should first define commom pool with CP_DECL,
