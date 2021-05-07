@@ -17,373 +17,191 @@
  ***************************************************************************/
 
 #include "molecule/structure_checker.h"
+#include "molecule/molecule.h"
+#include "molecule/molecule_automorphism_search.h"
+#include "molecule/molecule_exact_matcher.h"
+#include "reaction/base_reaction.h"
+#include <algorithm>
+#include <functional>
+#include <iterator>
+#include <memory>
+#include <numeric>
+#include <regex>
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 using namespace indigo;
 
-IMPL_ERROR(StructureChecker, "Structure checker");
-
-static StructureChecker::CheckType check_list[] = {{"NONE", StructureChecker::CHECK_NONE},
-                                                   {"LOAD", StructureChecker::CHECK_LOAD},
-                                                   {"VALENCE", StructureChecker::CHECK_VALENCE},
-                                                   {"RADICAL", StructureChecker::CHECK_RADICAL},
-                                                   {"PSEUDOATOM", StructureChecker::CHECK_PSEUDOATOM},
-                                                   {"STEREO", StructureChecker::CHECK_STEREO},
-                                                   {"QUERY", StructureChecker::CHECK_QUERY},
-                                                   {"OVERLAP_ATOM", StructureChecker::CHECK_OVERLAP_ATOM},
-                                                   {"OVERLAP_BOND", StructureChecker::CHECK_OVERLAP_BOND},
-                                                   {"RGROUP", StructureChecker::CHECK_RGROUP},
-                                                   {"SGROUP", StructureChecker::CHECK_SGROUP},
-                                                   {"TGROUP", StructureChecker::CHECK_TGROUP},
-                                                   {"CHIRALITY", StructureChecker::CHECK_CHIRALITY},
-                                                   {"CHIRAL_FLAG", StructureChecker::CHECK_CHIRAL_FLAG},
-                                                   {"3D_COORD", StructureChecker::CHECK_3D_COORD},
-                                                   {"CHARGE", StructureChecker::CHECK_CHARGE},
-                                                   {"SALT", StructureChecker::CHECK_SALT},
-                                                   {"AMBIGUOUS_H", StructureChecker::CHECK_AMBIGUOUS_H},
-                                                   {"COORD", StructureChecker::CHECK_COORD},
-                                                   {"ALL", StructureChecker::CHECK_ALL}};
-
-static StructureChecker::CheckMessage message_list[] = {
-    {StructureChecker::CHECK_MSG_LOAD, StructureChecker::CHECK_LOAD, "Error at loading structure, wrong format found"},
-    {StructureChecker::CHECK_MSG_EMPTY, StructureChecker::CHECK_LOAD, "Input structure is empty"},
-    {StructureChecker::CHECK_MSG_VALENCE, StructureChecker::CHECK_VALENCE, "Structure contains atoms with unusuall valence"},
-    {StructureChecker::CHECK_MSG_IGNORE_VALENCE_ERROR, StructureChecker::CHECK_VALENCE, "IGNORE_BAD_VALENCE flag is active"},
-    {StructureChecker::CHECK_MSG_RADICAL, StructureChecker::CHECK_RADICAL, "Structure contains radicals"},
-    {StructureChecker::CHECK_MSG_PSEUDOATOM, StructureChecker::CHECK_PSEUDOATOM, "Structure contains pseudoatoms"},
-    {StructureChecker::CHECK_MSG_WRONG_STEREO, StructureChecker::CHECK_STEREO, "Structure contains incorrect stereochemistry"},
-    {StructureChecker::CHECK_MSG_QUERY, StructureChecker::CHECK_QUERY, "Structure contains query features"},
-    {StructureChecker::CHECK_MSG_OVERLAP_ATOM, StructureChecker::CHECK_OVERLAP_ATOM, "Structure contains overlapping atoms"},
-    {StructureChecker::CHECK_MSG_OVERLAP_BOND, StructureChecker::CHECK_OVERLAP_BOND, "Structure contains overlapping bonds."},
-    {StructureChecker::CHECK_MSG_RGROUP, StructureChecker::CHECK_RGROUP, "Structure contains R-groups"},
-    {StructureChecker::CHECK_MSG_SGROUP, StructureChecker::CHECK_SGROUP, "Structure contains S-groups"},
-    {StructureChecker::CHECK_MSG_TGROUP, StructureChecker::CHECK_TGROUP, "Structure contains SCSR templates"},
-    {StructureChecker::CHECK_MSG_3D_STEREO, StructureChecker::CHECK_STEREO, "Structure contains stereocenters defined by 3D coordinates"},
-    {StructureChecker::CHECK_MSG_UNDEFINED_STEREO, StructureChecker::CHECK_STEREO, "Structure contains stereocenters with undefined stereo configuration"},
-    {StructureChecker::CHECK_MSG_CHIRAL_FLAG, StructureChecker::CHECK_CHIRAL_FLAG, "Structure contains wrong chiral flag"},
-    {StructureChecker::CHECK_MSG_3D_COORD, StructureChecker::CHECK_3D_COORD, "Structure contains 3D coordinates"},
-    {StructureChecker::CHECK_MSG_CHARGE, StructureChecker::CHECK_CHARGE, "Structure has non-zero charge"},
-    {StructureChecker::CHECK_MSG_SALT, StructureChecker::CHECK_SALT, "Structure contains charged fragments (possible salt)"},
-    {StructureChecker::CHECK_MSG_AMBIGUOUS_H, StructureChecker::CHECK_AMBIGUOUS_H, "Structure contains ambiguous hydrogens"},
-    {StructureChecker::CHECK_MSG_ZERO_COORD, StructureChecker::CHECK_COORD, "Structure has no atoms coordinates"}};
-
-const char* StructureChecker::typeToString(dword check_type)
+StructureChecker::StructureChecker()
 {
-    for (int i = 0; i < NELEM(check_list); i++)
-    {
-        if (check_type == check_list[i].t_flag)
-            return check_list[i].t_text;
-    }
-    return NULL;
 }
 
-dword StructureChecker::getType(const char* check_type)
+bool StructureChecker::CheckResult::isEmpty() const
 {
-    for (int i = 0; i < NELEM(check_list); i++)
+    return messages.size() == 0;
+}
+
+static void message(StructureChecker::CheckResult& result, StructureChecker::CheckMessageCode code, int index, std::vector<int> ids,
+                    const StructureChecker::CheckResult& subresult)
+{
+    result.messages.push_back(StructureChecker::CheckMessage(code, index, ids, subresult));
+}
+
+static void message(StructureChecker::CheckResult& result, StructureChecker::CheckMessageCode code, int index,
+                    const StructureChecker::CheckResult& subresult)
+{
+    message(result, code, index, std::vector<int>(), subresult);
+}
+
+static void message(StructureChecker::CheckResult& result, StructureChecker::CheckMessageCode code, const std::vector<int>& ids)
+{
+    message(result, code, -1, ids, StructureChecker::CheckResult());
+}
+
+static void message(StructureChecker::CheckResult& result, StructureChecker::CheckMessageCode code, const std::unordered_set<int>& ids)
+{
+    std::vector<int> v;
+    std::copy(ids.begin(), ids.end(), std::back_inserter(v));
+    message(result, code, v);
+}
+
+static void message(StructureChecker::CheckResult& result, StructureChecker::CheckMessageCode code)
+{
+    message(result, code, -1, std::vector<int>(), StructureChecker::CheckResult());
+}
+
+/**************************************************/
+static void filter_atoms(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, StructureChecker::CheckResult& result,
+                         StructureChecker::CheckMessageCode msg, const std::function<bool(BaseMolecule&, int)>& filter, bool default_filter = true)
+{
+    std::vector<int> ids;
+    std::copy_if(selected_atoms.begin(), selected_atoms.end(), std::back_inserter(ids), [&mol, &filter, default_filter](int idx) {
+        return (!default_filter || (!mol.isPseudoAtom(idx) && !mol.isRSite(idx) && !mol.isTemplateAtom(idx))) && filter(mol, idx);
+    });
+    if (ids.size())
     {
-        if (strcasecmp(check_type, check_list[i].t_text) == 0)
+        message(result, msg, ids);
+    }
+}
+
+static bool isQueryMolecule(BaseMolecule& mol)
+{
+    bool r = mol.isQueryMolecule();
+    if (!r)
+    {
+        for (auto idx : mol.vertices())
         {
-            return check_list[i].t_flag;
+            r = r || (mol.reaction_atom_exact_change[idx] || mol.reaction_atom_inversion[idx]);
+        }
+        for (auto idx : mol.edges())
+        {
+            r = r || mol.reaction_bond_reacting_center[idx];
         }
     }
-    return -1;
+    return r;
 }
 
-StructureChecker::StructureChecker(Output& output) : _output(output)
+static bool hasRGroups(BaseMolecule& mol)
 {
-    check_flags = CHECK_ALL;
-    check_result = 0;
-    _results.clear();
+    return !isQueryMolecule(mol) && (mol.countRSites() || mol.attachmentPointCount() || mol.rgroups.getRGroupCount());
 }
 
-void StructureChecker::checkStructure(Scanner& scanner, const char* params)
+static bool hasPseudoAtoms(BaseMolecule& mol)
 {
-}
-
-void StructureChecker::checkBaseMolecule(BaseMolecule& mol)
-{
-    _results.clear();
-    checkMolecule(mol, mol.isQueryMolecule());
-    buildCheckResult();
-}
-
-void StructureChecker::checkMolecule(Molecule& mol)
-{
-    _results.clear();
-    checkMolecule(mol, false);
-    buildCheckResult();
-}
-
-void StructureChecker::checkQueryMolecule(QueryMolecule& mol)
-{
-    _results.clear();
-    checkMolecule(mol, true);
-    buildCheckResult();
-}
-
-void StructureChecker::clearCheckResult()
-{
-    _results.clear();
-    _bad_val_ids.clear();
-    _rad_ids.clear();
-    _atom_qf_ids.clear();
-    _bond_qf_ids.clear();
-    _pseudo_ids.clear();
-    _sg_atom_ids.clear();
-    _sg_bond_ids.clear();
-    _atom_3d_ids.clear();
-    _overlapped_atom_ids.clear();
-    _overlapped_bond_ids.clear();
-    _atom_amb_h_ids.clear();
-    _atom_3d_stereo_ids.clear();
-    _atom_wrong_stereo_ids.clear();
-    _atom_undefined_stereo_ids.clear();
-}
-
-bool StructureChecker::CheckType::compare(const char* text) const
-{
-    return strcasecmp(t_text, text) == 0 ? true : false;
-}
-
-void StructureChecker::parseCheckTypes(const char* params)
-{
-    int i;
-
-    if (params == 0)
+    for (auto i : mol.vertices())
     {
-        check_flags = CHECK_ALL;
-        return;
-    }
-
-    dword inp_flags = CHECK_NONE;
-
-    BufferScanner scanner(params);
-    QS_DEF(Array<char>, word);
-    QS_DEF(Array<int>, atoms);
-    QS_DEF(Array<int>, bonds);
-
-    scanner.skipSpace();
-    if (scanner.isEOF())
-        return;
-
-    while (!scanner.isEOF())
-    {
-        scanner.readWord(word, " ,:");
-        if (!scanner.isEOF())
-            scanner.skip(1);
-
-        for (i = 0; i < NELEM(check_list); i++)
+        if (mol.isPseudoAtom(i))
         {
-            if (check_list[i].compare(word.ptr()))
-            {
-                inp_flags |= check_list[i].t_flag;
-                break;
-            }
-            else if (word[0] == '-' && check_list[i].compare(word.ptr() + 1))
-            {
-                inp_flags &= ~check_list[i].t_flag;
-                break;
-            }
-            else if (strcasecmp(word.ptr(), "ATOMS") == 0)
-            {
-                scanner.skip(1);
-                _parseSelection(scanner, atoms);
-                break;
-            }
-            else if (strcasecmp(word.ptr(), "BONDS") == 0)
-            {
-                scanner.skip(1);
-                _parseSelection(scanner, bonds);
-                break;
-            }
+            return true;
         }
     }
-    if (inp_flags == CHECK_NONE)
-        check_flags = CHECK_ALL;
-
-    addAtomSelection(atoms);
-    addBondSelection(bonds);
+    return false;
 }
 
-void StructureChecker::addAtomSelection(Array<int>& atoms)
+//
+
+static void check_none(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                       StructureChecker::CheckResult& result)
 {
-    if (atoms.size() > 0)
-    {
-        _selected_atoms.clear();
-        for (int i = 0; i < atoms.size(); i++)
-        {
-            _selected_atoms.push(atoms[i] - 1);
-        }
-    }
 }
 
-void StructureChecker::addBondSelection(Array<int>& bonds)
+static void check_load(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                       StructureChecker::CheckResult& result)
 {
-    if (bonds.size() > 0)
+    if (mol.vertexCount() == 0)
     {
-        _selected_bonds.clear();
-        for (int i = 0; i < bonds.size(); i++)
-        {
-            _selected_bonds.push(bonds[i] - 1);
-        }
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_EMPTY);
     }
 }
 
-void StructureChecker::buildCheckResult()
+#define FILTER_ATOMS(MSG, FILTER) filter_atoms(mol, selected_atoms, result, MSG, FILTER, false);
+#define FILTER_ATOMS_DEFAULT(MSG, FILTER) filter_atoms(mol, selected_atoms, result, MSG, FILTER);
+
+static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                          StructureChecker::CheckResult& result)
 {
-    using namespace rapidjson;
-    std::stringstream result;
-    //   json j;
-    StringBuffer s;
-    Writer<StringBuffer> writer(s);
 
-    if (check_result == 0)
+    if (isQueryMolecule(mol))
     {
-        _output.writeString("{}");
-        return;
+        message(result,
+                StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_QUERY); // 'Structure contains query features, so valency could not be
+                                                                                           // checked'
     }
-
-    writer.StartObject();
-
-    for (int i = 0; i < _results.size(); i++)
+    else if (hasRGroups(mol))
     {
-        CheckResult& res = _results[i];
-
-        for (int m = 0; m < NELEM(message_list); m++)
-        {
-            if (res.m_id == message_list[m].m_id)
-            {
-                writer.Key(StructureChecker::typeToString(message_list[m].m_flag));
-                writer.StartObject();
-                writer.Key("message");
-                writer.String(message_list[m].m_text);
-                if (res.atom_ids.size() > 0)
-                {
-                    writer.Key("atoms");
-                    writer.StartArray();
-
-                    for (int k = 0; k < res.atom_ids.size(); k++)
-                        writer.Uint(res.atom_ids[k] + 1);
-                    writer.EndArray();
-                }
-
-                if (res.bond_ids.size() > 0)
-                {
-                    writer.Key("bonds");
-                    writer.StartArray();
-
-                    for (int k = 0; k < res.bond_ids.size(); k++)
-                        writer.Uint(res.bond_ids[k] + 1);
-                    writer.EndArray();
-                }
-                writer.EndObject();
-            }
-        }
+        message(result,
+                StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_RGROUP); // 'Structure contains RGroup components, so valency could
     }
-
-    writer.EndObject();
-
-    if (s.GetSize() > 0)
+    else if (!isQueryMolecule(mol) && mol.asMolecule().getIgnoreBadValenceFlag())
     {
-        result << s.GetString();
-        _output.printf("%s", result.str().c_str());
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_IGNORE_VALENCE_ERROR);
     }
     else
     {
-        _output.writeString("{}");
+        FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE,
+                     [](BaseMolecule& mol, int idx) { return mol.getAtomValence_NoThrow(idx, -1) == -1; });
     }
 }
 
-void StructureChecker::_parseSelection(Scanner& sc, Array<int>& ids)
+static void check_radical(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                          StructureChecker::CheckResult& result)
 {
-    int id;
-    ids.clear();
-
-    while (!sc.isEOF())
+    if (hasPseudoAtoms(mol))
     {
-        if ((sc.lookNext() == -1) || (sc.lookNext() == ','))
-            return;
-
-        id = sc.readInt1();
-        if (id > 0)
-            ids.push(id);
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_RADICAL_NOT_CHECKED_PSEUDO);
+    }
+    else
+    {
+        FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_RADICAL,
+                             [](BaseMolecule& mol, int idx) { return mol.getAtomRadical_NoThrow(idx, -1) > 0; });
     }
 }
-
-void StructureChecker::checkMolecule(BaseMolecule& mol, bool query)
+static void check_pseudoatom(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                             StructureChecker::CheckResult& result)
 {
-    QS_DEF(Molecule, target);
-    bool _saved_valence_flag = false;
-    check_result = 0;
-
-    if ((check_flags & CHECK_LOAD) && (mol.vertexCount() == 0))
+    FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_PSEUDOATOM, [](BaseMolecule& mol, int idx) { return mol.isPseudoAtom(idx); });
+}
+static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                         StructureChecker::CheckResult& result)
+{
+    if (!isQueryMolecule(mol))
     {
-        check_result |= CHECK_LOAD;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_EMPTY;
-        return;
-    }
-
-    else if (!BaseMolecule::hasCoord(mol) && mol.vertexCount() > 1)
-    {
-        check_result |= CHECK_COORD;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_ZERO_COORD;
-    }
-
-    if ((check_flags & CHECK_CHIRAL_FLAG) && (mol.getChiralFlag() > 0) && (mol.stereocenters.size() == 0))
-    {
-        check_result |= CHECK_CHIRAL_FLAG;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_CHIRAL_FLAG;
-    }
-
-    if ((check_flags & CHECK_RGROUP) && (mol.rgroups.getRGroupCount() > 0))
-    {
-        check_result |= CHECK_RGROUP;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_RGROUP;
-    }
-
-    if ((check_flags & CHECK_TGROUP) && (mol.tgroups.getTGroupCount() > 0))
-    {
-        check_result |= CHECK_TGROUP;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_TGROUP;
-    }
-
-    if (BaseMolecule::hasCoord(mol) && ((check_flags & CHECK_OVERLAP_ATOM) || (check_flags & CHECK_OVERLAP_BOND)))
-    {
-        mean_dist = 0.0;
-        for (auto i : mol.edges())
-        {
-            const Edge& edge = mol.getEdge(i);
-            Vec3f& a = mol.getAtomXyz(edge.beg);
-            Vec3f& b = mol.getAtomXyz(edge.end);
-            mean_dist += Vec3f::dist(a, b);
-        }
-        if (mol.edgeCount() > 0)
-            mean_dist = mean_dist / mol.edgeCount();
-    }
-
-    if (!query)
-    {
-        _saved_valence_flag = mol.asMolecule().getIgnoreBadValenceFlag();
-    }
-
-    if ((check_flags & CHECK_STEREO) && !query)
-    {
+        std::unique_ptr<Molecule> target(new Molecule);
+        auto saved_valence_flag = mol.asMolecule().getIgnoreBadValenceFlag();
         mol.asMolecule().setIgnoreBadValenceFlag(true);
-        target.clone_KeepIndices(mol);
+        target->clone_KeepIndices(mol);
 
-        for (auto i : target.vertices())
+        for (const auto i : target->vertices())
         {
-            if (!target.stereocenters.exists(i) && target.stereocenters.isPossibleStereocenter(i))
+            if (!target->stereocenters.exists(i) && target->stereocenters.isPossibleStereocenter(i))
             {
                 try
                 {
-                    target.stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+                    target->stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, false);
                 }
-                catch (Exception& e)
+                catch (Exception&)
                 {
                     // Just ignore this stereo center
                 }
@@ -395,331 +213,553 @@ void StructureChecker::checkMolecule(BaseMolecule& mol, bool query)
         as.detect_invalid_cistrans_bonds = true;
         as.detect_invalid_stereocenters = true;
         as.find_canonical_ordering = false;
-        as.process(target);
+        as.process(*target);
 
-        for (auto i : target.vertices())
+        for (const auto i : target->vertices())
         {
-            if (target.stereocenters.exists(i) && as.invalidStereocenter(i))
+            if (target->stereocenters.exists(i) && as.invalidStereocenter(i))
             {
-                target.stereocenters.remove(i);
+                target->stereocenters.remove(i);
             }
         }
-        mol.asMolecule().setIgnoreBadValenceFlag(false);
-    }
 
-    if ((_selected_atoms.size() == 0) && (_selected_bonds.size() == 0))
-    {
-        for (auto i : mol.vertices())
-        {
-            _checkAtom(mol, target, i, query);
-        }
-
-        for (auto i : mol.edges())
-        {
-            _checkBond(mol, target, i, query);
-        }
-    }
-    else if ((_selected_atoms.size() > 0) && (_selected_bonds.size() == 0))
-    {
-        for (auto i = 0; i < _selected_atoms.size(); i++)
-        {
-            int idx = _selected_atoms[i];
-            if ((idx < 0) || (idx >= mol.vertexEnd()))
-                continue;
-
-            _checkAtom(mol, target, idx, query);
-        }
-    }
-    else if ((_selected_atoms.size() == 0) && (_selected_bonds.size() > 0))
-    {
-        for (auto i = 0; i < _selected_bonds.size(); i++)
-        {
-            int idx = _selected_bonds[i];
-            if ((idx < 0) || (idx >= mol.edgeEnd()))
-                continue;
-
-            _checkBond(mol, target, idx, query);
-
-            const Edge& edge = mol.getEdge(idx);
-            _checkAtom(mol, target, edge.beg, query);
-            _checkAtom(mol, target, edge.end, query);
-        }
-    }
-    else
-    {
-        for (auto i = 0; i < _selected_atoms.size(); i++)
-        {
-            int idx = _selected_atoms[i];
-            if ((idx < 0) || (idx >= mol.vertexEnd()))
-                continue;
-
-            _checkAtom(mol, target, idx, query);
-        }
-
-        for (auto i = 0; i < _selected_bonds.size(); i++)
-        {
-            int idx = _selected_bonds[i];
-            if ((idx < 0) || (idx >= mol.edgeEnd()))
-                continue;
-
-            _checkBond(mol, target, idx, query);
-
-            const Edge& edge = mol.getEdge(idx);
-            if (_selected_atoms.find(edge.beg) == -1)
+        FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_3D_STEREO, [](BaseMolecule& mol, int idx) {
+            bool stereo_3d = true;
+            if (BaseMolecule::hasZCoord(mol) && mol.stereocenters.exists(idx))
             {
-                _checkAtom(mol, target, edge.beg, query);
-                _selected_atoms.push(edge.beg);
-            }
-            if (_selected_atoms.find(edge.end) == -1)
-            {
-                _checkAtom(mol, target, edge.end, query);
-                _selected_atoms.push(edge.end);
-            }
-        }
-    }
-
-    if (_saved_valence_flag)
-        mol.asMolecule().setIgnoreBadValenceFlag(true);
-
-    if (_bad_val_ids.size() > 0)
-    {
-        check_result |= CHECK_VALENCE;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_VALENCE;
-        res->atom_ids.copy(_bad_val_ids);
-    }
-
-    if (_rad_ids.size() > 0)
-    {
-        check_result |= CHECK_RADICAL;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_RADICAL;
-        res->atom_ids.copy(_rad_ids);
-    }
-
-    if ((_atom_qf_ids.size() > 0) || (_bond_qf_ids.size() > 0))
-    {
-        check_result |= CHECK_QUERY;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_QUERY;
-        res->atom_ids.copy(_atom_qf_ids);
-        res->bond_ids.copy(_bond_qf_ids);
-    }
-
-    if ((_sg_atom_ids.size() > 0) || (_sg_bond_ids.size() > 0))
-    {
-        check_result |= CHECK_SGROUP;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_SGROUP;
-        res->atom_ids.copy(_sg_atom_ids);
-        res->bond_ids.copy(_sg_bond_ids);
-    }
-
-    if (_atom_3d_ids.size() > 0)
-    {
-        check_result |= CHECK_3D_COORD;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_3D_COORD;
-        res->atom_ids.copy(_atom_3d_ids);
-    }
-
-    if (_atom_amb_h_ids.size() > 0)
-    {
-        check_result |= CHECK_AMBIGUOUS_H;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_AMBIGUOUS_H;
-        res->atom_ids.copy(_atom_amb_h_ids);
-    }
-
-    if (_atom_3d_stereo_ids.size() > 0)
-    {
-        check_result |= CHECK_STEREO;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_3D_STEREO;
-        res->atom_ids.copy(_atom_3d_stereo_ids);
-    }
-
-    if (_atom_wrong_stereo_ids.size() > 0)
-    {
-        check_result |= CHECK_STEREO;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_WRONG_STEREO;
-        res->atom_ids.copy(_atom_wrong_stereo_ids);
-    }
-
-    if (_atom_undefined_stereo_ids.size() > 0)
-    {
-        check_result |= CHECK_STEREO;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_UNDEFINED_STEREO;
-        res->atom_ids.copy(_atom_undefined_stereo_ids);
-    }
-
-    if (_overlapped_atom_ids.size() > 0)
-    {
-        check_result |= CHECK_OVERLAP_ATOM;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_OVERLAP_ATOM;
-        res->atom_ids.copy(_overlapped_atom_ids);
-    }
-
-    if (_overlapped_bond_ids.size() > 0)
-    {
-        check_result |= CHECK_OVERLAP_BOND;
-        CheckResult* res = &_results.push();
-        res->m_id = CHECK_MSG_OVERLAP_BOND;
-        res->bond_ids.copy(_overlapped_bond_ids);
-    }
-}
-
-void StructureChecker::_checkAtom(BaseMolecule& mol, Molecule& target, int idx, bool query)
-{
-    if (!mol.isPseudoAtom(idx) && !mol.isRSite(idx) && !mol.isTemplateAtom(idx))
-    {
-        if ((check_flags & CHECK_VALENCE) && !query)
-        {
-            if (mol.getAtomValence_NoThrow(idx, BAD_VALENCE) == BAD_VALENCE)
-                _bad_val_ids.push(idx);
-        }
-
-        if ((check_flags & CHECK_RADICAL))
-        {
-            int rad = mol.getAtomRadical_NoThrow(idx, BAD_RADICAL);
-            if ((rad > 0) && (rad != BAD_RADICAL))
-                _rad_ids.push(idx);
-        }
-
-        if ((check_flags & CHECK_QUERY) && !query)
-        {
-            if ((mol.reaction_atom_inversion[idx] > 0) || (mol.reaction_atom_exact_change[idx] > 0))
-                _atom_qf_ids.push(idx);
-        }
-
-        if ((check_flags & CHECK_AMBIGUOUS_H) && !query)
-        {
-            if (mol.asMolecule().getImplicitH_NoThrow(idx, -1) == -1 && mol.getAtomAromaticity(idx) == ATOM_AROMATIC)
-                _atom_amb_h_ids.push(idx);
-        }
-
-        if ((check_flags & CHECK_STEREO) && BaseMolecule::hasZCoord(mol))
-        {
-            if (mol.stereocenters.exists(idx))
-            {
-                bool stereo_3d = true;
                 const Vertex& vertex = mol.getVertex(idx);
                 for (auto j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
                     if (mol.getBondDirection2(idx, vertex.neiVertex(j)) > 0)
                         stereo_3d = false;
-                if (stereo_3d)
-                    _atom_3d_stereo_ids.push(idx);
             }
-        }
+            return stereo_3d;
+        });
 
-        if ((check_flags & CHECK_STEREO) && !query)
-        {
-            if ((mol.stereocenters.exists(idx) && target.stereocenters.exists(idx)) && (mol.stereocenters.getType(idx) != target.stereocenters.getType(idx)))
-            {
-                _atom_wrong_stereo_ids.push(idx);
-            }
-            else if (mol.stereocenters.exists(idx) && !target.stereocenters.exists(idx))
-            {
-                _atom_wrong_stereo_ids.push(idx);
-            }
-            else if (!mol.stereocenters.exists(idx) && target.stereocenters.exists(idx))
-            {
-                _atom_undefined_stereo_ids.push(idx);
-            }
-        }
-    }
-    else if (mol.isPseudoAtom(idx) && (check_flags & CHECK_PSEUDOATOM))
+        FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_WRONG_STEREO, [&target](BaseMolecule& mol, int idx) {
+            return (mol.stereocenters.exists(idx) && target->stereocenters.exists(idx) &&
+                    mol.stereocenters.getType(idx) != target->stereocenters.getType(idx)) ||
+                   (mol.stereocenters.exists(idx) && !target->stereocenters.exists(idx));
+        });
+        FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO,
+                             [&target](BaseMolecule& mol, int idx) { return !mol.stereocenters.exists(idx) && target->stereocenters.exists(idx); });
+
+        mol.asMolecule().setIgnoreBadValenceFlag(saved_valence_flag);
+    } else
     {
-        _pseudo_ids.push(idx);
+        message( result, StructureChecker::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO );
     }
-
-    if ((check_flags & CHECK_SGROUP) && (mol.sgroups.getSGroupCount() > 0))
+}
+static void check_query(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                        StructureChecker::CheckResult& result)
+{
+    if (isQueryMolecule(mol))
     {
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-        {
-            SGroup& sg = mol.sgroups.getSGroup(i);
-            if ((sg.atoms.find(idx) != -1) && (_sg_atom_ids.find(idx) == -1))
-                _sg_atom_ids.push(idx);
-        }
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_QUERY);
     }
+    FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_QUERY_ATOM,
+                         [](BaseMolecule& mol, int idx) { return mol.reaction_atom_exact_change[idx] || mol.reaction_atom_inversion[idx]; });
 
-    if (check_flags & CHECK_3D_COORD)
+    std::vector<int> ids;
+    std::copy_if(selected_atoms.begin(), selected_atoms.end(), std::back_inserter(ids),
+                 [&mol](int idx) { return idx >= 0 && idx < mol.reaction_bond_reacting_center.size() && mol.reaction_bond_reacting_center[idx] != 0; });
+    if (ids.size())
     {
-        if (fabs(mol.getAtomXyz(idx).z) > 0.001)
-            _atom_3d_ids.push(idx);
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_QUERY_BOND, ids);
     }
+}
 
-    if (BaseMolecule::hasCoord(mol) && (check_flags & CHECK_OVERLAP_ATOM))
+static float calc_mean_dist(BaseMolecule& mol)
+{
+    float mean_dist = 0.0;
+    for (const auto i : mol.edges())
     {
-        if (_overlapped_atom_ids.find(idx) != -1)
-            return;
+        const Edge& edge = mol.getEdge(i);
+        Vec3f& a = mol.getAtomXyz(edge.beg);
+        Vec3f& b = mol.getAtomXyz(edge.end);
+        mean_dist += Vec3f::dist(a, b);
+    }
+    if (mol.edgeCount() > 0)
+        mean_dist = mean_dist / mol.edgeCount();
+    return mean_dist;
+}
 
+static void check_overlap_atom(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                               StructureChecker::CheckResult& result)
+{
+    auto mean_dist = calc_mean_dist(mol);
+    std::unordered_set<int> ids;
+    std::for_each(selected_atoms.begin(), selected_atoms.end(), [&mol, &ids, mean_dist](int idx) {
         Vec3f& a = mol.getAtomXyz(idx);
-        bool added = false;
-        for (auto i : mol.vertices())
+        for (const auto i : mol.vertices())
         {
-            if ((i != idx) && (_overlapped_atom_ids.find(i) == -1))
+            if (i != idx)
             {
                 Vec3f& b = mol.getAtomXyz(i);
                 if ((mean_dist > 0.0) && (Vec3f::dist(a, b) < 0.25 * mean_dist))
                 {
-                    if (!added)
-                    {
-                        _overlapped_atom_ids.push(idx);
-                        added = true;
-                    }
-                    _overlapped_atom_ids.push(i);
+                    ids.insert(idx);
+                    ids.insert(i);
                 }
             }
+        }
+    });
+    if (ids.size())
+    {
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_OVERLAP_ATOM, ids);
+    }
+}
+static void check_overlap_bond(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                               StructureChecker::CheckResult& result)
+{
+    if (BaseMolecule::hasCoord(mol))
+    {
+        auto mean_dist = calc_mean_dist(mol);
+        std::unordered_set<int> ids;
+        std::for_each(selected_bonds.begin(), selected_bonds.end(), [&mol, &ids, mean_dist](int idx) {
+            const Edge& e1 = mol.getEdge(idx);
+            Vec2f a1, b1, a2, b2;
+            Vec2f::projectZ(a1, mol.getAtomXyz(e1.beg));
+            Vec2f::projectZ(b1, mol.getAtomXyz(e1.end));
+
+            for (const auto i : mol.edges())
+            {
+                if ((i != idx))
+                {
+                    const Edge& e2 = mol.getEdge(i);
+                    Vec2f::projectZ(a2, mol.getAtomXyz(e2.beg));
+                    Vec2f::projectZ(b2, mol.getAtomXyz(e2.end));
+                    if ((Vec2f::dist(a1, a2) < 0.01 * mean_dist) || (Vec2f::dist(b1, b2) < 0.01 * mean_dist) || (Vec2f::dist(a1, b2) < 0.01 * mean_dist) ||
+                        (Vec2f::dist(b1, a2) < 0.01 * mean_dist))
+                        continue;
+
+                    if (Vec2f::segmentsIntersect(a1, b1, a2, b2))
+                    {
+                        ids.insert(idx);
+                        ids.insert(i);
+                    }
+                }
+            }
+        });
+        if (ids.size())
+        {
+            message(result, StructureChecker::CheckMessageCode::CHECK_MSG_OVERLAP_BOND, ids);
         }
     }
 }
 
-void StructureChecker::_checkBond(BaseMolecule& mol, Molecule& target, int idx, bool query)
+static void check_rgroup(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                         StructureChecker::CheckResult& result)
 {
-    if ((check_flags & CHECK_QUERY) && !query)
+    if (!isQueryMolecule(mol) && hasRGroups(mol))
     {
-        if (mol.reaction_bond_reacting_center[idx] != 0)
-        {
-            _bond_qf_ids.push(idx);
-        }
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_RGROUP);
     }
+}
 
-    if (BaseMolecule::hasCoord(mol) && (check_flags & CHECK_OVERLAP_BOND))
+static void check_sgroup(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                         StructureChecker::CheckResult& result)
+{
+    if (mol.sgroups.getSGroupCount() > 0)
     {
-        if (_overlapped_bond_ids.find(idx) != -1)
-            return;
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_SGROUP);
+    }
+}
 
-        bool added = false;
-        const Edge& e1 = mol.getEdge(idx);
-        Vec2f a1, b1, a2, b2;
-        Vec2f::projectZ(a1, mol.getAtomXyz(e1.beg));
-        Vec2f::projectZ(b1, mol.getAtomXyz(e1.end));
+static void check_tgroup(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                         StructureChecker::CheckResult& result)
+{
+    if (mol.tgroups.getTGroupCount() > 0)
+    {
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_TGROUP);
+    }
+}
 
-        for (auto i : mol.edges())
+static void check_chirality(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                            StructureChecker::CheckResult& result)
+{
+    if (mol.isChiral())
+    {
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_CHIRALITY);
+    }
+}
+
+static void check_chiral_flag(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                              StructureChecker::CheckResult& result)
+{
+    if (mol.getChiralFlag() > 0 && mol.stereocenters.size() == 0)
+    {
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_CHIRAL_FLAG);
+    }
+}
+
+static void check_3d_coord(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                           StructureChecker::CheckResult& result)
+{
+    FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_3D_COORD, [](BaseMolecule& mol, int idx) { return fabs(mol.getAtomXyz(idx).z) > 0.001; });
+}
+
+static void check_charge(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                         StructureChecker::CheckResult& result)
+{
+    if (std::accumulate(selected_atoms.begin(), selected_atoms.end(), 0, [&mol](int sum, int idx) { return sum + mol.getAtomCharge(idx); }))
+    {
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_CHARGE);
+    }
+}
+
+static void check_salt(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                       StructureChecker::CheckResult& result)
+{
+    // not impl
+    message(result, StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL);
+}
+
+static void check_ambigous_h(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                             StructureChecker::CheckResult& result)
+{
+    if (isQueryMolecule(mol))
+    {
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H_NOT_CHECKED_QUERY);
+    }
+    else
+    {
+        FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H, [](BaseMolecule& mol, int idx) {
+            return mol.asMolecule().getImplicitH_NoThrow(idx, -1) == -1 && mol.getAtomAromaticity(idx) == ATOM_AROMATIC;
+        });
+    }
+}
+
+static void check_coord(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                        StructureChecker::CheckResult& result)
+{
+    if (mol.vertexCount() > 1 && !BaseMolecule::hasCoord(mol))
+    {
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_ZERO_COORD);
+    }
+}
+
+static void check_v3000(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+                        StructureChecker::CheckResult& result)
+{
+    if (mol.hasHighlighting() || (!mol.stereocenters.haveAllAbsAny() && !mol.stereocenters.haveAllAndAny()) || mol.vertexCount() > 999 || mol.edgeCount() > 999)
+    {
+        message(result, StructureChecker::CheckMessageCode::CHECK_MSG_V3000);
+    }
+}
+#undef FILTER_ATOMS
+#undef FILTER_ATOMS_DEFAULT
+
+/// <summary>
+/// Textual Check Type values for the corresponding CheckTypeCode
+/// are intended for use mainly in host language calls (Java, Python etc.) as a comma-separated list
+///
+/// The check_type_map maps Textual Check Type values to the corresponding CheckTypeCode codes
+/// and CheckMessageCode codes to the corresponding text messages.
+///
+/// checkMolecule(molecule, "load, valence, radical, atoms 1 2 3, bonds 4 5 6, tgroup"
+/// is equivalent to
+/// checkMolecule(molecule, check_types=[CHECK_LOAD, CHECK_VALECE, CHECK_RADICAL, CHECK_TGROUP], selected_atoms=[1,2,3], selected_bonds=[4,5,6]);
+/// </summary>
+typedef void (*Checker)(BaseMolecule&, const std::unordered_set<int>&, const std::unordered_set<int>&, StructureChecker::CheckResult&);
+struct CheckType
+{
+    StructureChecker::CheckTypeCode code;
+    Checker checker;
+    std::vector<std::pair<StructureChecker::CheckMessageCode, std::string>> messages;
+};
+static const std::unordered_map<std::string, CheckType> check_type_map = {
+    {"",
+     {StructureChecker::CheckTypeCode::CHECK_NONE,
+      &check_none,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_NONE, ""},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_LOAD, "Error at loading structure, wrong format found"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_REACTION, "Reaction component check result"}}}},
+
+    {"load", {StructureChecker::CheckTypeCode::CHECK_LOAD, &check_load, {{StructureChecker::CheckMessageCode::CHECK_MSG_EMPTY, "Input structure is empty"}}}},
+
+    {"valence",
+     {StructureChecker::CheckTypeCode::CHECK_VALENCE,
+      &check_valence,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE, "Structure contains atoms with unusuall valence"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_QUERY, "Structure contains query features, so valency could not be checked"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE_NOT_CHECKED_RGROUP, "Structure contains RGroup components, so valency could not be checked"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_IGNORE_VALENCE_ERROR, "IGNORE_BAD_VALENCE flag is active, so valency could not be checked"}}}},
+
+    {"radicals",
+     {StructureChecker::CheckTypeCode::CHECK_RADICAL,
+      &check_radical,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_RADICAL, "Structure contains radicals"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_RADICAL_NOT_CHECKED_PSEUDO, "Structure contains pseudoatoms, so radicals could not be checked"}}}},
+
+    {"pseudoatoms",
+     {StructureChecker::CheckTypeCode::CHECK_PSEUDOATOM,
+      &check_pseudoatom,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_PSEUDOATOM, "Structure contains pseudoatoms"}}}},
+
+    {"stereo",
+     {StructureChecker::CheckTypeCode::CHECK_STEREO,
+      &check_stereo,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_3D_STEREO, "Structure contains stereocenters defined by 3D coordinates"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_WRONG_STEREO, "Structure contains incorrect stereochemistry"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO, "Structure contains stereocenters with undefined stereo configuration"}}}},
+
+    {"query",
+     {StructureChecker::CheckTypeCode::CHECK_QUERY,
+      &check_query,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_QUERY, "Structure contains query features"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_QUERY_ATOM, "Structure contains query features for atoms"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_QUERY_BOND, "Structure contains query features for bonds"}}}},
+
+    {"overlapping_atoms",
+     {StructureChecker::CheckTypeCode::CHECK_OVERLAP_ATOM,
+      &check_overlap_atom,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_OVERLAP_ATOM, "Structure contains overlapping atoms"}}}},
+
+    {"overlapping_bonds",
+     {StructureChecker::CheckTypeCode::CHECK_OVERLAP_BOND,
+      &check_overlap_bond,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_OVERLAP_BOND, "Structure contains overlapping bonds."}}}},
+
+    {"rgroups",
+     {StructureChecker::CheckTypeCode::CHECK_RGROUP, &check_rgroup, {{StructureChecker::CheckMessageCode::CHECK_MSG_RGROUP, "Structure contains R-groups"}}}},
+
+    {"sgroups",
+     {StructureChecker::CheckTypeCode::CHECK_SGROUP, &check_sgroup, {{StructureChecker::CheckMessageCode::CHECK_MSG_SGROUP, "Structure contains S-groups"}}}},
+
+    {"tgroups",
+     {StructureChecker::CheckTypeCode::CHECK_TGROUP,
+      &check_tgroup,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_TGROUP, "Structure contains SCSR templates"}}}},
+
+    {"chiral",
+     {StructureChecker::CheckTypeCode::CHECK_CHIRALITY,
+      &check_chirality,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_CHIRALITY, "Structure contains chirality"}}}},
+
+    {"chiral_flag",
+     {StructureChecker::CheckTypeCode::CHECK_CHIRAL_FLAG,
+      &check_chiral_flag,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_CHIRAL_FLAG, "Structure contains wrong chiral flag"}}}},
+
+    {"3d",
+     {StructureChecker::CheckTypeCode::CHECK_3D_COORD,
+      &check_3d_coord,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_3D_COORD, "Structure contains 3D coordinates"}}}},
+
+    {"charge",
+     {StructureChecker::CheckTypeCode::CHECK_CHARGE,
+      &check_charge,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_CHARGE, "Structure has non-zero charge"}}}},
+
+    {"salt",
+     {StructureChecker::CheckTypeCode::CHECK_SALT,
+      &check_salt,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_SALT, "Structure contains charged fragments (possible salt)"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL, "Not implemented yet: check salt"}}}},
+
+    {"ambigous_h",
+     {StructureChecker::CheckTypeCode::CHECK_AMBIGUOUS_H,
+      &check_ambigous_h,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H, "Structure contains ambiguous hydrogens"},
+       {StructureChecker::CheckMessageCode::CHECK_MSG_AMBIGUOUS_H_NOT_CHECKED_QUERY,
+        "Structure contains query features, so ambiguous H could not be checked"}}}},
+
+    {"coord",
+     {StructureChecker::CheckTypeCode::CHECK_COORD,
+      &check_coord,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_ZERO_COORD, "Structure has no atoms coordinates"}}}},
+
+    {"v3000",
+     {StructureChecker::CheckTypeCode::CHECK_V3000,
+      &check_v3000,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_V3000, "Structure supports only Molfile V3000"}}}}};
+
+static const struct CheckNamesMap
+{
+    std::vector<StructureChecker::CheckTypeCode> all;
+    std::unordered_map<int, std::string> types;
+    std::unordered_map<int, Checker> checkers;
+    std::unordered_map<int, std::string> messages;
+    std::unordered_map<int, StructureChecker::CheckTypeCode> code2type;
+    CheckNamesMap()
+    {
+        std::for_each(check_type_map.begin(), check_type_map.end(), [this](std::pair<std::string, CheckType> t) {
+            this->all.push_back(t.second.code);
+            this->types.insert(std::pair<int, std::string>((int)t.second.code, t.first));
+            this->checkers.insert(std::pair<int, Checker>((int)t.second.code, t.second.checker));
+            std::for_each(t.second.messages.begin(), t.second.messages.end(), [this, t](std::pair<StructureChecker::CheckMessageCode, std::string> it) {
+                this->messages.insert(std::pair<int, std::string>((int)it.first, it.second));
+                this->code2type.insert(std::pair<int, StructureChecker::CheckTypeCode>((int)it.first, t.second.code));
+            });
+        });
+    }
+} check_names_map;
+
+StructureChecker::CheckTypeCode StructureChecker::getCheckType(const std::string& type)
+{
+    auto code = check_type_map.find(type);
+    return code == check_type_map.end() ? StructureChecker::CheckTypeCode::CHECK_NONE : code->second.code;
+}
+
+std::string StructureChecker::getCheckType(StructureChecker::CheckTypeCode code)
+{
+    return check_names_map.types.at((int)code);
+}
+
+std::string StructureChecker::getCheckMessage(StructureChecker::CheckMessageCode code)
+{
+    return check_names_map.messages.at((int)code);
+}
+
+StructureChecker::CheckTypeCode StructureChecker::getCheckTypeByMsgCode( StructureChecker::CheckMessageCode code )
+{
+    return check_names_map.code2type.at((int)code);
+}
+
+struct CheckParams
+{
+    std::vector<StructureChecker::CheckTypeCode> check_types;
+    std::vector<int> selected_atoms;
+    std::vector<int> selected_bonds;
+};
+
+static CheckParams check_params_from_string(const std::string& params)
+{
+    CheckParams r;
+    if (!params.empty())
+    {
+        std::smatch sm1;
+        std::unordered_set<int> ct;
+        std::string s = params;
+        std::regex rx1(R"(\b(\w+)\b)", std::regex_constants::icase);
+        while (std::regex_search(s, sm1, rx1))
         {
-            if ((i != idx) && (_overlapped_bond_ids.find(i) == -1))
+            auto code = StructureChecker::getCheckType(sm1[1]);
+            if (code != StructureChecker::CheckTypeCode::CHECK_NONE)
             {
-                const Edge& e2 = mol.getEdge(i);
-                Vec2f::projectZ(a2, mol.getAtomXyz(e2.beg));
-                Vec2f::projectZ(b2, mol.getAtomXyz(e2.end));
-                if ((Vec2f::dist(a1, a2) < 0.01 * mean_dist) || (Vec2f::dist(b1, b2) < 0.01 * mean_dist) || (Vec2f::dist(a1, b2) < 0.01 * mean_dist) ||
-                    (Vec2f::dist(b1, a2) < 0.01 * mean_dist))
-                    continue;
-
-                if (Vec2f::segmentsIntersect(a1, b1, a2, b2))
-                {
-                    if (!added)
-                    {
-                        _overlapped_bond_ids.push(idx);
-                        added = true;
-                    }
-                    _overlapped_bond_ids.push(i);
-                }
+                ct.insert((int)code);
             }
+            s = sm1.suffix();
+        }
+        std::vector<StructureChecker::CheckTypeCode> chk;
+        std::for_each(ct.begin(), ct.end(), [&r](int v) { r.check_types.push_back((StructureChecker::CheckTypeCode)v); });
+
+        std::smatch sm2;
+        s = params;
+        std::regex rx2(R"(\b(atoms|bonds)\b((?:\W+\b\d+\b\W*?)+))", std::regex_constants::icase);
+        std::regex rx3(R"(\b(\d+)\b)");
+        std::smatch sm3;
+        while (std::regex_search(s, sm2, rx2))
+        {
+            std::vector<int>& vec = std::tolower(sm2[1].str()[0]) == 'a' ? r.selected_atoms : r.selected_bonds;
+            std::string a = sm2[2];
+            while (std::regex_search(a, sm3, rx3))
+            {
+                vec.push_back(atoi(sm3[1].str().c_str()));
+                a = sm3.suffix();
+            }
+            s = sm2.suffix();
         }
     }
+    return r;
+}
+
+StructureChecker::CheckResult StructureChecker::checkMolecule(const BaseMolecule& item, const std::string& check_types_and_selections)
+{
+    auto pars = check_params_from_string(check_types_and_selections);
+    return checkMolecule(item, pars.check_types, pars.selected_atoms, pars.selected_bonds);
+}
+StructureChecker::CheckResult StructureChecker::checkMolecule(const BaseMolecule& item, const std::string& check_types,
+                                                                const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
+{
+    auto pars = check_params_from_string(check_types);
+    return checkMolecule(item, pars.check_types, selected_atoms, selected_bonds);
+}
+
+StructureChecker::CheckResult StructureChecker::checkMolecule(const BaseMolecule& bmol, const std::vector<CheckTypeCode>& check_types,
+                                                                const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
+{
+    StructureChecker::CheckResult result;
+
+    auto num_atoms = bmol.vertexEnd();
+    auto num_bonds = bmol.edgeEnd();
+
+    std::unordered_set<int> sel_atoms(num_atoms);
+    std::unordered_set<int> sel_bonds(num_bonds);
+
+    if (selected_atoms.size() == 0 && selected_bonds.size() == 0)
+    {
+        for (const auto i : ((BaseMolecule&)bmol).vertices())
+        {
+            sel_atoms.insert(i);
+        }
+
+        for (const auto i : ((BaseMolecule&)bmol).edges())
+        {
+            sel_bonds.insert(i);
+        }
+    }
+    else
+    {
+        std::copy_if(selected_atoms.begin(), selected_atoms.end(), std::inserter(sel_atoms, sel_atoms.begin()),
+                     [num_atoms](int i) { return i >= 0 && i < num_atoms; });
+        std::copy_if(selected_bonds.begin(), selected_bonds.end(), std::inserter(sel_bonds, sel_bonds.begin()),
+                     [num_bonds](int i) { return i >= 0 && i < num_bonds; });
+    }
+    std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).beg; });
+    std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).end; });
+
+    const auto& ct = check_types.size() ? check_types : check_names_map.all;
+    std::set<CheckTypeCode> ct_uniq;
+    std::copy(ct.begin(), ct.end(), std::inserter(ct_uniq, ct_uniq.end()));
+
+    const auto& checkers = check_names_map.checkers;
+    std::for_each(ct_uniq.begin(), ct_uniq.end(), [&checkers, &bmol, &sel_atoms, &sel_bonds, &result](CheckTypeCode code) {
+        checkers.at((int)code)((BaseMolecule&)bmol, sel_atoms, sel_bonds, result);
+    });
+    return result;
+}
+
+StructureChecker::CheckResult StructureChecker::checkReaction(const BaseReaction& reaction, const std::string& check_types)
+{
+    auto pars = check_params_from_string(check_types);
+    return checkReaction(reaction, pars.check_types);
+}
+
+StructureChecker::CheckResult StructureChecker::checkReaction(const BaseReaction& reaction, const std::vector<CheckTypeCode>& check_types)
+{
+    CheckResult r;
+    bool query = ((BaseReaction&)reaction).isQueryReaction();
+    BaseReaction* brxn = query ? (BaseReaction*)&((BaseReaction&)reaction).asQueryReaction() : (BaseReaction*)&((BaseReaction&)reaction).asReaction();
+
+#define CHECK_REACTION_COMPONENT(KIND)                                                                                                                         \
+    for (auto i = brxn->KIND##Begin(); i < brxn->KIND##End(); i = brxn->KIND##Next(i))                                                                         \
+    {                                                                                                                                                          \
+        CheckResult res = checkMolecule(brxn->getBaseMolecule(i), check_types);                                                                                \
+        if (!res.isEmpty())                                                                                                                                    \
+        {                                                                                                                                                      \
+            message(r, StructureChecker::CheckMessageCode::CHECK_MSG_REACTION, i, res);                                                                       \
+        }                                                                                                                                                      \
+    }
+    CHECK_REACTION_COMPONENT(reactant)
+    CHECK_REACTION_COMPONENT(product)
+    CHECK_REACTION_COMPONENT(catalyst)
+#undef CHECK_REACTION_COMPONENT
+    return r;
+}
+
+StructureChecker::CheckMessage::CheckMessage()
+{
+}
+
+StructureChecker::CheckMessage::CheckMessage(StructureChecker::CheckMessageCode _code, int _index, const std::vector<int>& _ids,
+                                              const StructureChecker::CheckResult& _subresult)
+    : code(_code), index(_index), ids(_ids), subresult(_subresult)
+{
+    std::sort(ids.begin(), ids.end());
+}
+
+std::string StructureChecker::CheckMessage::message()
+{
+    return StructureChecker::getCheckMessage(code);
 }

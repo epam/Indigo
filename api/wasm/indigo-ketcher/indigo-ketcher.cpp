@@ -283,7 +283,7 @@ namespace indigo
     {
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str());
-        return _checkResultString(indigoCheckObj2(iko.id(), properties.c_str()));
+        return _checkResultString(indigoCheckObj(iko.id(), properties.c_str()));
     }
 
     std::string calculateCip(const std::string& data, const std::map<std::string, std::string>& options)

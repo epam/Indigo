@@ -415,13 +415,10 @@ CEXPORT int indigoCheckQuery(int item);
 CEXPORT int indigoCheckRGroups(int item);
 
 // Returns check result for Indigo object as text file for requested properties as JSON
-CEXPORT const char* indigoCheck2(const char* item, const char* check_flags, const char* load_params);
+CEXPORT const char* indigoCheck(const char* item, const char* check_flags, const char* load_params);
 
 // Returns check result for Indigo object for requested properties as JSON
-CEXPORT const char* indigoCheckObj2(int item, const char* check_flags);
-
-// Returns check result for Indigo object for requested properties
-CEXPORT const char* indigoCheck(int item, const char* props);
+CEXPORT const char* indigoCheckObj(int item, const char* check_flags);
 
 // Returns check result for structure against requested properties
 CEXPORT const char* indigoCheckStructure(const char* structure, const char* props);

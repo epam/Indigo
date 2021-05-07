@@ -19,82 +19,61 @@
 #ifndef __structure_checker__
 #define __structure_checker__
 
-#include <sstream>
-
 #include "base_cpp/exception.h"
-#include "base_cpp/red_black.h"
-#include "base_cpp/obj_array.h"
-#include "base_cpp/output.h"
-#include "base_cpp/scanner.h"
-#include "molecule/elements.h"
-#include "molecule/molecule.h"
-#include "molecule/molecule_automorphism_search.h"
-#include "molecule/query_molecule.h"
-
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/writer.h>
-
+#include <string>
+#include <vector>
 
 namespace indigo
 {
 
-    class Molecule;
-    class QueryMolecule;
     class BaseMolecule;
-    class Scanner;
-    class Output;
+    class BaseReaction;
 
     class DLLEXPORT StructureChecker
     {
     public:
-        enum
+        enum class CheckTypeCode
         {
-            // Check types
-            CHECK_NONE = 0x00000,         // Check none
-            CHECK_LOAD = 0x00001,         // Check loading (correspondence some known format)
-            CHECK_VALENCE = 0x00002,      // Check valence correctness
-            CHECK_RADICAL = 0x00004,      // Check radicals existance
-            CHECK_PSEUDOATOM = 0x00008,   // Check pseudoatoms existance
-            CHECK_STEREO = 0x00010,       // Check strerochemistry description correctness
-            CHECK_QUERY = 0x00020,        // Check query fetaures existance
-            CHECK_OVERLAP_ATOM = 0x00040, // Check overlapping atoms existance
-            CHECK_OVERLAP_BOND = 0x00080, // Check overlapping bonds existance
-            CHECK_RGROUP = 0x00100,       // Check R-groups existance
-            CHECK_SGROUP = 0x00200,       // Check S-groups existance
-            CHECK_TGROUP = 0x00400,       // Check T-groups existance (SCSR features)
-            CHECK_CHIRALITY = 0x00800,    // Check chirality feature correctness (including 3D source)
-            CHECK_CHIRAL_FLAG = 0x01000,  // Check chiral flag existance (MOLFILE format)
-            CHECK_3D_COORD = 0x02000,     // Check 3D coordinates existance
-            CHECK_CHARGE = 0x04000,       // Check charged structure
-            CHECK_SALT = 0x08000,         // Check possible salt structure
-            CHECK_AMBIGUOUS_H = 0x10000,  // Check ambiguous H existance
-            CHECK_COORD = 0x20000,        // Check coordinates existance
-            CHECK_ALL = 0xFFFF           // Check all features
+            CHECK_NONE,         // Check nothing
+            CHECK_LOAD,         // Check loading (correspondence some known format)
+            CHECK_VALENCE,      // Check valence correctness
+            CHECK_RADICAL,      // Check radicals existence
+            CHECK_PSEUDOATOM,   // Check pseudoatoms existence
+            CHECK_STEREO,       // Check stereochemistry description correctness
+            CHECK_QUERY,        // Check query features existence
+            CHECK_OVERLAP_ATOM, // Check overlapping atoms existence
+            CHECK_OVERLAP_BOND, // Check overlapping bonds existence
+            CHECK_RGROUP,       // Check R-groups existence
+            CHECK_SGROUP,       // Check S-groups existence
+            CHECK_TGROUP,       // Check T-groups existence (SCSR features)
+            CHECK_CHIRALITY,    // Check chirality feature correctness (including 3D source)
+            CHECK_CHIRAL_FLAG,  // Check chiral flag existence (MOLFILE format)
+            CHECK_3D_COORD,     // Check 3D coordinates existence
+            CHECK_CHARGE,       // Check charged structure
+            CHECK_SALT,         // Check possible salt structure
+            CHECK_AMBIGUOUS_H,  // Check ambiguous H existence
+            CHECK_COORD,        // Check coordinates existence
+            CHECK_V3000         // Check v3000 format
         };
 
-        enum
+        enum class CheckMessageCode
         {
-            // Check severity level
-            CHECK_INFO = 1, // Information message
-            CHECK_WARINING, // Warning message
-            CHECK_ERROR     // Error message
-        };
-
-        enum
-        {
-            // Check messages
-            CHECK_MSG_LOAD = 1,
+            CHECK_MSG_NONE,
+            CHECK_MSG_LOAD,
             CHECK_MSG_VALENCE,
+            CHECK_MSG_VALENCE_NOT_CHECKED_QUERY,
+            CHECK_MSG_VALENCE_NOT_CHECKED_RGROUP,
             CHECK_MSG_IGNORE_VALENCE_ERROR,
             CHECK_MSG_RADICAL,
+            CHECK_MSG_RADICAL_NOT_CHECKED_PSEUDO,
             CHECK_MSG_PSEUDOATOM,
             CHECK_MSG_CHIRAL_FLAG,
             CHECK_MSG_WRONG_STEREO,
             CHECK_MSG_3D_STEREO,
             CHECK_MSG_UNDEFINED_STEREO,
-            CHECK_MSG_IGNORE_STEREO_ERROR,
             CHECK_MSG_QUERY,
-            CHECK_MSG_IGNORE_QUERY_FEATURE,
+            CHECK_MSG_QUERY_ATOM,
+            CHECK_MSG_QUERY_BOND,
             CHECK_MSG_OVERLAP_ATOM,
             CHECK_MSG_OVERLAP_BOND,
             CHECK_MSG_RGROUP,
@@ -104,96 +83,57 @@ namespace indigo
             CHECK_MSG_SALT,
             CHECK_MSG_EMPTY,
             CHECK_MSG_AMBIGUOUS_H,
+            CHECK_MSG_AMBIGUOUS_H_NOT_CHECKED_QUERY,
             CHECK_MSG_3D_COORD,
-            CHECK_MSG_ZERO_COORD
+            CHECK_MSG_ZERO_COORD,
+            CHECK_MSG_REACTION,
+            CHECK_MSG_CHIRALITY,
+            CHECK_MSG_SALT_NOT_IMPL,
+            CHECK_MSG_V3000
         };
 
-        enum
+        struct DLLEXPORT CheckMessage;
+
+        class DLLEXPORT CheckResult
         {
-            BAD_VALENCE = 100,
-            BAD_RADICAL
+        public:
+            bool isEmpty() const;
+            std::vector<CheckMessage> messages;
         };
 
-        struct CheckType
+        struct DLLEXPORT CheckMessage
         {
-            bool compare(const char* text) const;
-
-            const char* t_text;
-            dword t_flag;
+            CheckMessage();
+            CheckMessage(CheckMessageCode _code, int _index, const std::vector<int>& _ids, const CheckResult& _subresult);
+            CheckMessageCode code = StructureChecker::CheckMessageCode::CHECK_MSG_NONE;
+            std::string message();
+            int index = -1;
+            std::vector<int> ids;
+            CheckResult subresult;
         };
 
-        struct CheckMessage
-        {
-            int m_id;
-            dword m_flag;
-            const char* m_text;
-        };
+        StructureChecker();
 
-        struct CheckResult
-        {
-            int m_id;
-            Array<int> atom_ids;
-            Array<int> bond_ids;
-        };
+        CheckResult checkMolecule(const BaseMolecule& item, const std::string& check_types_and_selections = "");
+        CheckResult checkMolecule(const BaseMolecule& item, const std::string& check_types, const std::vector<int>& selected_atoms,
+                                  const std::vector<int>& selected_bonds);
+        CheckResult checkMolecule(const BaseMolecule& item, const std::vector<CheckTypeCode>& check_types = std::vector<CheckTypeCode>(),
+                                  const std::vector<int>& selected_atoms = std::vector<int>(), const std::vector<int>& selected_bonds = std::vector<int>());
 
-        StructureChecker(Output& output);
+        CheckResult checkReaction(const BaseReaction& reaction, const std::string& check_types = "");
+        CheckResult checkReaction(const BaseReaction& reaction, const std::vector<CheckTypeCode>& check_types = std::vector<CheckTypeCode>());
 
-        void checkStructure(Scanner& scanner, const char* params);
 
-        void checkBaseMolecule(BaseMolecule& mol);
-        void checkMolecule(Molecule& mol);
-        void checkQueryMolecule(QueryMolecule& mol);
-
-        void checkMolecule(BaseMolecule& mol, bool query);
-
-        void parseCheckTypes(const char* params);
-        void addAtomSelection(Array<int>& atoms);
-        void addBondSelection(Array<int>& bonds);
-
-        void buildCheckResult();
-
-        void clearCheckResult();
-
-        static const char* typeToString(dword check_type);
-        static dword getType(const char* check_type);
-
-        dword check_flags;
-        dword check_result;
-
-        float mean_dist;
+        static CheckTypeCode getCheckType(const std::string& type);
+        static std::string getCheckType(StructureChecker::CheckTypeCode code);
+        static std::string getCheckMessage(StructureChecker::CheckMessageCode code);
+        static CheckTypeCode getCheckTypeByMsgCode( StructureChecker::CheckMessageCode code );
 
         DECL_ERROR;
 
-    protected:
-        void _parseSelection(Scanner& sc, Array<int>& ids);
-        void _checkAtom(BaseMolecule& mol, Molecule& target, int idx, bool query);
-        void _checkBond(BaseMolecule& mol, Molecule& target, int idx, bool query);
-
-        Array<int> _selected_atoms;
-        Array<int> _selected_bonds;
-
-        ObjArray<CheckResult> _results;
-
-        Array<int> _bad_val_ids;
-        Array<int> _rad_ids;
-        Array<int> _atom_qf_ids;
-        Array<int> _bond_qf_ids;
-        Array<int> _pseudo_ids;
-        Array<int> _sg_atom_ids;
-        Array<int> _sg_bond_ids;
-        Array<int> _atom_3d_ids;
-        Array<int> _overlapped_atom_ids;
-        Array<int> _overlapped_bond_ids;
-        Array<int> _atom_amb_h_ids;
-        Array<int> _atom_3d_stereo_ids;
-        Array<int> _atom_wrong_stereo_ids;
-        Array<int> _atom_undefined_stereo_ids;
-
-        Output& _output;
-
     private:
         StructureChecker(const StructureChecker&); // no implicit copy
-    };
+    };                                               // namespace indigo
 
 } // namespace indigo
 

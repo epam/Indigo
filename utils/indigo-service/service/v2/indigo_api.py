@@ -722,7 +722,7 @@ def calculate_cip():
     return get_response(md, data['output_format'], data['json_output'], data['options'])
 
 
-@indigo_api.route('/check2', methods=['POST', ])
+@indigo_api.route('/check', methods=['POST', ])
 @check_exceptions
 def check2():
     data = IndigoCheckSchema(strict=True).load(get_request_data(request)).data
@@ -731,12 +731,12 @@ def check2():
     except Exception as e:
         raise HttpException('Problem with Indigo initialization: {0}'.format(e), 501)
     LOG_DATA('[REQUEST] /check', data['types'], data['struct'], data['options'])
-    result = indigo.check2(data['struct'], data['types']);
+    result = indigo.check(data['struct'], data['types']);
     return result, 200, {'Content-Type': 'application/json'}
 
-@indigo_api.route('/check', methods=['POST', ])
+@indigo_api.route('/check_v1', methods=['POST', ])
 @check_exceptions
-def check():
+def check_v1():
     """
     Verifies input structure according to given types to Molfile/Rxnfile, SMILES, CML or InChI
     ---
