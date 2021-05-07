@@ -602,19 +602,6 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                     radical = mol.getAtomRadical(i);
                 }
                 mol.getAtomSymbol(i, buf);
-                if (anum == ELEM_H)
-                {
-                    if (isotope == 2)
-                    {
-                        buf.clear();
-                        buf.appendString("D", true);
-                    }
-                    if (isotope == 3)
-                    {
-                        buf.clear();
-                        buf.appendString("T", true);
-                    }
-                }
                 writer.Key("label");
                 writer.String(buf.ptr());
             }

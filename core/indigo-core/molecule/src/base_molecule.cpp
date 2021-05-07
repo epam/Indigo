@@ -3979,7 +3979,20 @@ void BaseMolecule::getAtomSymbol(int v, Array<char>& result)
 
         if (number != -1)
         {
-            result.readString(Element::toString(number), true);
+            int isotope = getAtomIsotope(v);
+            if( number == ELEM_H && isotope > 1 )
+            {
+                if (isotope == 2)
+                {
+                    result.readString("D", true);
+                }
+                if (isotope == 3)
+                {
+                    result.readString("T", true);
+                }
+            } else
+                  result.readString(Element::toString(number), true);
+
             return;
         }
 
