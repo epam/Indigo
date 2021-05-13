@@ -555,7 +555,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 10, 11, 12 ]
+        postgres_major_version: [ 9.6, 10, 11, 12 ]
     runs-on: ubuntu-latest
     container: epmlsop/buildpack-centos7:latest
     steps:
@@ -587,7 +587,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 10, 11, 12 ]
+        postgres_major_version: [ 9.6, 10, 11, 12 ]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -599,7 +599,7 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          $pg_version = switch(${{ matrix.postgres_major_version }}) { 12 { 12.6 } 11 { 11.11 } 10 { 10.16 }}
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { 12 { 12.6 } 11 { 11.11 } 10 { 10.16 } 9.6 { 9.6.21 } }
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
@@ -620,7 +620,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 10, 11, 12 ]
+        postgres_major_version: [ 9.6, 10, 11, 12 ]
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -632,7 +632,7 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          case ${{ matrix.postgres_major_version }} in 12) pg_version=12.6;; "11") pg_version=11.11;; 10) pg_version=10.16;; esac;
+          case ${{ matrix.postgres_major_version }} in 12) pg_version=12.6;; "11") pg_version=11.11;; 10) pg_version=10.16;; 9) pg_version=9.6.21;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
       - name: Build bingo-postgres
