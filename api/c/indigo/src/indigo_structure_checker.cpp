@@ -40,15 +40,15 @@ enum class CheckMode
     BIN_ALL
 };
 
-static StructureChecker2::CheckResult _check(CheckMode mode, IndigoStructureChecker& thisPtr, int handleitem, const std::string& check_types_str,
-                                             const IndigoObject* objitem, const std::vector<StructureChecker2::CheckTypeCode>& check_types,
+static StructureChecker::CheckResult _check(CheckMode mode, IndigoStructureChecker& thisPtr, int handleitem, const std::string& check_types_str,
+                                             const IndigoObject* objitem, const std::vector<StructureChecker::CheckTypeCode>& check_types,
                                              const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
 {
-    StructureChecker2::CheckResult r;
+    StructureChecker::CheckResult r;
     if (handleitem < 0)
     {
-        StructureChecker2::CheckMessage msg;
-        msg.code = StructureChecker2::CheckMessageCode::CHECK_MSG_LOAD;
+        StructureChecker::CheckMessage msg;
+        msg.code = StructureChecker::CheckMessageCode::CHECK_MSG_LOAD;
         r.messages.push_back(msg);
     }
     else
@@ -116,7 +116,7 @@ static StructureChecker2::CheckResult _check(CheckMode mode, IndigoStructureChec
     return r;
 }
 
-StructureChecker2::CheckResult IndigoStructureChecker::check(const char* item, const char* check_types, const char* load_params)
+StructureChecker::CheckResult IndigoStructureChecker::check(const char* item, const char* check_types, const char* load_params)
 {
     std::string lp = std::string(load_params ? load_params : "");
 
@@ -130,74 +130,32 @@ StructureChecker2::CheckResult IndigoStructureChecker::check(const char* item, c
     return r;
 }
 
-StructureChecker2::CheckResult IndigoStructureChecker::check(int item, const char* check_types)
+StructureChecker::CheckResult IndigoStructureChecker::check(int item, const char* check_types)
 {
     return _check(CheckMode::STRING_ALL, *this, item, check_types, nullptr, {}, {}, {});
 }
 
-StructureChecker2::CheckResult IndigoStructureChecker::check(int item, const char* check_types, const std::vector<int>& selected_atoms,
+StructureChecker::CheckResult IndigoStructureChecker::check(int item, const char* check_types, const std::vector<int>& selected_atoms,
                                                              const std::vector<int>& selected_bonds)
 {
     return _check(CheckMode::STRING_TYPES, *this, item, check_types, nullptr, {}, selected_atoms, selected_bonds);
 }
 
-StructureChecker2::CheckResult IndigoStructureChecker::check(int item, const std::vector<CheckTypeCode>& check_types, const std::vector<int>& selected_atoms,
+StructureChecker::CheckResult IndigoStructureChecker::check(int item, const std::vector<CheckTypeCode>& check_types, const std::vector<int>& selected_atoms,
                                                              const std::vector<int>& selected_bonds)
 {
     return _check(CheckMode::BIN_ALL, *this, item, "", nullptr, check_types, selected_atoms, selected_bonds);
 }
 
-StructureChecker2::CheckResult IndigoStructureChecker::check(const IndigoObject& item, const std::vector<CheckTypeCode>& check_types,
+StructureChecker::CheckResult IndigoStructureChecker::check(const IndigoObject& item, const std::vector<CheckTypeCode>& check_types,
                                                              const std::vector<int>& selected_atoms, const std::vector<int>& selected_bonds)
 {
     return _check(CheckMode::BIN_ALL, *this, 0, "", &item, check_types, selected_atoms, selected_bonds);
 }
 
 using namespace rapidjson;
-static void _toJson(const StructureChecker2::CheckResult& data, Writer<StringBuffer>& writer)
-{
-    writer.StartArray();
-    for (auto msg : data.messages)
-    {
-        writer.StartObject();
-        writer.Key("code");
-        writer.Uint(static_cast<unsigned int>(msg.code));
-        writer.Key("message");
-        writer.String(msg.message().c_str());
-        if (msg.index >= 0)
-        {
-            writer.Key("index");
-            writer.Uint(msg.index);
-        }
-        if (!msg.ids.empty())
-        {
-            writer.Key("ids");
-            writer.StartArray();
-            for (auto i : msg.ids)
-            {
-                writer.Uint(i);
-            }
-            writer.EndArray();
-        }
-        if (!msg.subresult.isEmpty())
-        {
-            writer.Key("subresult");
-            _toJson(msg.subresult, writer);
-        }
-        writer.EndObject();
-    }
-    writer.EndArray();
-}
-std::string IndigoStructureChecker::toJson(const StructureChecker2::CheckResult& res)
-{
-    std::stringstream result;
-    StringBuffer s;
-    Writer<StringBuffer> writer(s);
-    _toJson(res, writer);
-    return std::string(s.GetString());
-}
 
-void dumpMessage( StructureChecker2::CheckMessage& msg, std::string& out_str )
+void dumpMessage( StructureChecker::CheckMessage& msg, std::string& out_str )
 {
     if( !out_str.empty() )
         out_str += ",";
@@ -221,14 +179,14 @@ void dumpMessage( StructureChecker2::CheckMessage& msg, std::string& out_str )
     }
 }
 
-std::string IndigoStructureChecker::toJson2(const StructureChecker2::CheckResult& res)
+std::string IndigoStructureChecker::toJson(const StructureChecker::CheckResult& res)
 {
     StringBuffer s;
     Writer<StringBuffer> writer(s);
     writer.StartObject();
     for (auto msg : res.messages)
     {
-        writer.Key( getCheckType( StructureChecker2::getCheckTypeByMsgCode( msg.code)).c_str() );
+        writer.Key( getCheckType( StructureChecker::getCheckTypeByMsgCode( msg.code)).c_str() );
         std::string message;
         dumpMessage( msg, message );
         writer.String(message.c_str());

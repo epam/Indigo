@@ -471,10 +471,10 @@ namespace com.epam.indigo
         }
 
 
-        public string check2(string str, string type, string options)
+        public string check(string str, string type, string options)
         {
             setSessionID();
-            return checkResult(IndigoLib.indigoCheck2(str, type, options));
+            return checkResult(IndigoLib.indigoCheck(str, type, options));
         }
 
 

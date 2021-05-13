@@ -427,28 +427,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoCheckStereo(self));
     }
 
-    public String check2() {
-        String type = "";
-        dispatcher.setSessionID();
-        return Indigo.checkResultString(this, lib.indigoCheckObj2(self, type));
-    }
-
     public String check() {
         String type = "";
         dispatcher.setSessionID();
-        return Indigo.checkResultString(this, lib.indigoCheck(self, type));
-    }
-
-    public String check2(String type) {
-        if (type == null) type = "";
-        dispatcher.setSessionID();
-        return Indigo.checkResultString(this, lib.indigoCheckObj2(self, type));
+        return Indigo.checkResultString(this, lib.indigoCheckObj(self, type));
     }
 
     public String check(String type) {
         if (type == null) type = "";
         dispatcher.setSessionID();
-        return Indigo.checkResultString(this, lib.indigoCheck(self, type));
+        return Indigo.checkResultString(this, lib.indigoCheckObj(self, type));
     }
 
     public Integer countHydrogens() {

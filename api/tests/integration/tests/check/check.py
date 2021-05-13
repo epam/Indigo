@@ -21,5 +21,5 @@ errors = ''
 for test in tests:
     with open(joinPath('molecules/' + test['name'] + '.mol'), 'r') as file:
         molfile = file.read()
-    print("\nTEST: " + test['name'] + "\nResult: " + indigo.check2(molfile, test['test'], ""))
+    print("\nTEST: " + test['name'] + "\nResult: " + indigo.check(molfile, test['test'], ""))
     
