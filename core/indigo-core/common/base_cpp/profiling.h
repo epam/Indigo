@@ -142,8 +142,7 @@ namespace indigo
     class DLLEXPORT _ProfilingTimer
     {
     public:
-        _ProfilingTimer(int name_index);
-        ~_ProfilingTimer();
+        explicit _ProfilingTimer(int name_index);
 
         qword stop();
         qword getTime() const;

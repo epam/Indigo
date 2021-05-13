@@ -34,10 +34,6 @@ _ProfilingTimer::_ProfilingTimer(int name_index) : _name_index(name_index), _sta
 {
 }
 
-_ProfilingTimer::~_ProfilingTimer()
-{
-}
-
 qword _ProfilingTimer::stop()
 {
     if (_name_index == -1)
