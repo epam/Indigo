@@ -37,7 +37,8 @@ jobs:
             mkdir build &&
             cd build &&
             cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF &&
-            cmake --build . --config Release --target all -- -j $(nproc)
+            cmake --build . --config Release --target all -- -j $(nproc) &&
+            ctest --verbose
             "
       - name: Build macOS
         if: ${{ matrix.os == 'macos' }}
@@ -46,6 +47,7 @@ jobs:
           cd build
           cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
+          ctest --verbose
       - name: Build Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
@@ -53,15 +55,6 @@ jobs:
           cd build
           cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF
           cmake --build . --config Release --target ALL_BUILD
-      - name: Test
-        if: ${{ matrix.os != 'windows' }}
-        run: |
-          cd build
-          ctest --verbose
-      - name: Test
-        if: ${{ matrix.os == 'windows' }}
-        run: |
-          cd build
           ctest --verbose -C Release
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -460,7 +453,8 @@ jobs:
             mkdir build &&
             cd build &&
             cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=ON &&
-            cmake --build . --config Release --target all -- -j $(nproc)
+            cmake --build . --config Release --target all -- -j $(nproc) &&
+            ctest --verbose
             "
       - name: Build utils macOS
         if: ${{ matrix.os == 'macos' }}
@@ -469,6 +463,7 @@ jobs:
           cd build
           cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=ON
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
+          ctest --verbose
       - name: Build utils Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
@@ -476,15 +471,6 @@ jobs:
           cd build
           cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_UTILS=ON
           cmake --build . --config Release --target ALL_BUILD
-      - name: Test
-        if: ${{ matrix.os != 'windows' }}
-        run: |
-          cd build
-          ctest --verbose
-      - name: Test
-        if: ${{ matrix.os == 'windows' }}
-        run: |
-          cd build
           ctest --verbose -C Release
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
