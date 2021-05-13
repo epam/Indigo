@@ -135,7 +135,7 @@ namespace indigo
         Array<int> _sorted_records;
         OsLock _lock;
 
-        static ObjArray<Array<char>> _names;
+        static ObjArray<Array<char>>& getNames();
     };
 
     // This class shouldn't be used explicitly

@@ -36,6 +36,7 @@ TEST(BingoNosqlTest, test_enumerate_id)
     }
 
     bingoEndSearch(e);
+    bingoCloseDatabase(db);
 
     ASSERT_EQ(count, 3);
 }
