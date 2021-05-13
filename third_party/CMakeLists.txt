@@ -16,3 +16,6 @@ if (EMSCRIPTEN)
     # Required for base64 encoding
     add_subdirectory(cppcodec)
 endif()
+if (ENABLE_TESTS)
+    add_subdirectory(googletest)
+endif()

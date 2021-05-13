@@ -16,10 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <ctype.h>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
+#include <cctype>
 
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
@@ -28,35 +28,32 @@
 
 using namespace indigo;
 
-Element Element::_instance;
-
 IMPL_ERROR(Element, "element");
 
-Element::Element()
+const Element& Element::_instance()
+{
+    static Element instance;
+    return instance;
+}
+
+Element::Element() noexcept
 {
     _element_parameters.resize(ELEM_MAX);
-    _element_parameters.zerofill();
 
     _initAllPeriodic();
     _initAllIsotopes();
     _initAromatic();
-
-    _halogens.push(ELEM_F);
-    _halogens.push(ELEM_Cl);
-    _halogens.push(ELEM_Br);
-    _halogens.push(ELEM_I);
-    _halogens.push(ELEM_At);
 }
 
-void Element::_initPeriodic(int element, const char* name, int period, int group)
+void Element::_initPeriodic(int element, const char* name, int period, int group) noexcept
 {
-    _Parameters& parameters = _element_parameters[element];
+    ElementParameters& parameters = _element_parameters[element];
 
     strncpy(parameters.name, name, 3);
     parameters.group = group;
     parameters.period = period;
 
-    _map.insert(name, element);
+    _map[name] = element;
 }
 
 int Element::radicalElectrons(int radical)
@@ -75,7 +72,7 @@ int Element::radicalOrbitals(int radical)
     return 0;
 }
 
-void Element::_initAllPeriodic()
+void Element::_initAllPeriodic() noexcept
 {
 #define INIT(elem, period, group) _initPeriodic(ELEM_##elem, #elem, period, group)
 
@@ -202,22 +199,22 @@ void Element::_initAllPeriodic()
 
 int Element::fromString(const char* name)
 {
-    int* value = _instance._map.at2(name);
-
-    if (value == 0)
-        throw Error("fromString(): element %s not supported", name);
-
-    return *value;
+    const auto& map = _instance()._map;
+    if (map.count(name) > 0)
+    {
+        return map.at(name);
+    }
+    throw Error("fromString(): element %s not supported", name);
 }
 
 int Element::fromString2(const char* name)
 {
-    int* value = _instance._map.at2(name);
-
-    if (value == 0)
-        return -1;
-
-    return *value;
+    const auto& map = _instance()._map;
+    if (map.count(name) > 0)
+    {
+        return map.at(name);
+    }
+    return -1;
 }
 
 int Element::fromChar(char c)
@@ -243,7 +240,7 @@ int Element::fromTwoChars2(char c1, char c2)
 
 bool Element::isHalogen(int element)
 {
-    return _instance._halogens.find(element) >= 0;
+    return element == ELEM_F || element == ELEM_Cl || element == ELEM_Br || element == ELEM_I || element == ELEM_At;
 }
 
 const char* Element::toString(int element)
@@ -251,7 +248,7 @@ const char* Element::toString(int element)
     if (element < 0 || element > ELEM_MAX)
         throw Error("bad element number: %d", element);
 
-    return _instance._element_parameters[element].name;
+    return _instance()._element_parameters.at(element).name;
 }
 
 int Element::calcValenceOfAromaticAtom(int elem, int charge, int n_arom, int min_conn)
@@ -980,12 +977,12 @@ int Element::calcValenceMinusHyd(int elem, int charge, int radical, int conn)
 
 int Element::group(int elem)
 {
-    return _instance._element_parameters[elem].group;
+    return _instance()._element_parameters.at(elem).group;
 }
 
 int Element::period(int elem)
 {
-    return _instance._element_parameters[elem].period;
+    return _instance()._element_parameters.at(elem).period;
 }
 
 int Element::read(Scanner& scanner)
@@ -1000,22 +997,24 @@ int Element::read(Scanner& scanner)
     return fromString(str);
 }
 
-void Element::_setStandardAtomicWeightIndex(int element, int index)
+void Element::_setStandardAtomicWeightIndex(int element, int index) noexcept
 {
-    _Parameters& p = _instance._element_parameters[element];
+    ElementParameters& p = _element_parameters.at(element);
     p.natural_isotope_index = index;
 }
 
-void Element::_addElementIsotope(int element, int isotope, double mass, double isotopic_composition)
+void Element::_addElementIsotope(int element, int isotope, double mass, double isotopic_composition) noexcept
 {
-    _instance._isotope_parameters_map.insert(_IsotopeKey(element, isotope), _IsotopeValue(mass, isotopic_composition));
+    auto key = IsotopeKey{element, isotope};
+    auto value = IsotopeValue{mass, isotopic_composition};
+    _isotope_parameters_map[key] = value;
 }
 
-void Element::_initAllIsotopes()
+void Element::_initAllIsotopes() noexcept
 {
 #define ADD _addElementIsotope
 #define SET _setStandardAtomicWeightIndex
-#define NATURAL _IsotopeKey::NATURAL
+#define NATURAL IsotopeKey::NATURAL
 
 #include "elements_isotopes.inc"
 
@@ -1028,51 +1027,45 @@ void Element::_initAllIsotopes()
 
 double Element::getStandardAtomicWeight(int element)
 {
-    _Parameters& p = _instance._element_parameters[element];
-    return getRelativeIsotopicMass(element, p.natural_isotope_index);
+    return _instance()._getStandardAtomicWeight(element);
 }
 
 int Element::getDefaultIsotope(int element)
 {
-    _Parameters& p = _instance._element_parameters[element];
+    const ElementParameters& p = _instance()._element_parameters.at(element);
     return p.default_isotope;
 }
 
 int Element::getMostAbundantIsotope(int element)
 {
-    _Parameters& p = _instance._element_parameters[element];
+    const ElementParameters& p = _instance()._element_parameters.at(element);
     return p.most_abundant_isotope;
 }
 
 bool Element::getIsotopicComposition(int element, int isotope, double& res)
 {
-    _IsotopeValue* value = _instance._isotope_parameters_map.at2(_IsotopeKey(element, isotope));
-
-    if (value == 0)
-        return false;
-
-    res = value->isotopic_composition;
-    return true;
+    const auto key = IsotopeKey{element, isotope};
+    if (_instance()._isotope_parameters_map.count(key))
+    {
+        res = _instance()._isotope_parameters_map.at(key).isotopic_composition;
+        return true;
+    }
+    return false;
 }
 
 void Element::getMinMaxIsotopeIndex(int element, int& min, int& max)
 {
-    _Parameters& p = _instance._element_parameters[element];
+    const ElementParameters& p = _instance()._element_parameters.at(element);
     min = p.min_isotope_index;
     max = p.max_isotope_index;
 }
 
 double Element::getRelativeIsotopicMass(int element, int isotope)
 {
-    _IsotopeValue* value = _instance._isotope_parameters_map.at2(_IsotopeKey(element, isotope));
-
-    if (value == 0)
-        throw Error("getRelativeIsotopicMass: isotope (%s, %d) not found", toString(element), isotope);
-
-    return value->mass;
+    return _instance()._getRelativeIsotopicMass(element, isotope);
 }
 
-void Element::_initDefaultIsotopes()
+void Element::_initDefaultIsotopes() noexcept
 {
     Array<int> def_isotope_index;
     def_isotope_index.resize(_element_parameters.size());
@@ -1084,47 +1077,54 @@ void Element::_initDefaultIsotopes()
 
     for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
     {
-        _element_parameters[i].default_isotope = -1;
-        _element_parameters[i].most_abundant_isotope = -1;
-        _element_parameters[i].min_isotope_index = 10000;
-        _element_parameters[i].max_isotope_index = 0;
+        _element_parameters.at(i).default_isotope = IsotopeKey::NATURAL;
+        _element_parameters.at(i).most_abundant_isotope = IsotopeKey::NATURAL;
+        _element_parameters.at(i).min_isotope_index = 10000;
+        _element_parameters.at(i).max_isotope_index = 0;
     }
 
-    for (int i = _isotope_parameters_map.begin(); i != _isotope_parameters_map.end(); i = _isotope_parameters_map.next(i))
+    for (auto& item : _isotope_parameters_map)
     {
-        _IsotopeKey& key = _isotope_parameters_map.key(i);
-        _IsotopeValue& value = _isotope_parameters_map.value(i);
+        const auto& key = item.first;
+        auto& value = item.second;
 
-        if (key.isotope == _IsotopeKey::NATURAL)
+        if (key.isotope == IsotopeKey::NATURAL)
+        {
             continue;
-
-        double atomic_weight = getStandardAtomicWeight(key.element);
+        }
+        double atomic_weight = _getStandardAtomicWeight(key.element);
 
         double diff_best = 1e6;
-        if (def_isotope_index[key.element] != -1)
+        if (def_isotope_index[key.element] != IsotopeKey::NATURAL)
         {
             int best_iso = def_isotope_index[key.element];
-            _IsotopeValue& best = _isotope_parameters_map.value(best_iso);
-
-            diff_best = fabs(best.mass - atomic_weight);
+            const auto isotope_key = IsotopeKey{key.element, best_iso};
+            if (_isotope_parameters_map.count(isotope_key) > 0)
+            {
+                const auto& best = _isotope_parameters_map.at(isotope_key);
+                diff_best = fabs(best.mass - atomic_weight);
+            }
         }
         double diff_cur = fabs(value.mass - atomic_weight);
 
         if (diff_best > diff_cur)
         {
-            def_isotope_index[key.element] = i;
-            _element_parameters[key.element].default_isotope = key.isotope;
+            def_isotope_index[key.element] = key.element;
+            _element_parameters.at(key.element).default_isotope = key.isotope;
         }
 
-        int& min_iso = _element_parameters[key.element].min_isotope_index;
-        int& max_iso = _element_parameters[key.element].max_isotope_index;
+        int& min_iso = _element_parameters.at(key.element).min_isotope_index;
+        int& max_iso = _element_parameters.at(key.element).max_isotope_index;
         if (min_iso > key.isotope)
+        {
             min_iso = key.isotope;
+        }
         if (max_iso < key.isotope)
+        {
             max_iso = key.isotope;
-
+        }
         double most_abundance = 1e6;
-        if (_element_parameters[key.element].default_isotope != -1)
+        if (_element_parameters.at(key.element).default_isotope != IsotopeKey::NATURAL)
         {
             most_abundance = value.isotopic_composition;
         }
@@ -1132,23 +1132,27 @@ void Element::_initDefaultIsotopes()
         if (value.isotopic_composition > most_abundant_isotope_fraction[key.element])
         {
             most_abundant_isotope_fraction[key.element] = value.isotopic_composition;
-            _element_parameters[key.element].most_abundant_isotope = key.isotope;
+            _element_parameters.at(key.element).most_abundant_isotope = key.isotope;
         }
     }
 
     for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
     {
-        _Parameters& element = _element_parameters[i];
+        ElementParameters& element = _element_parameters.at(i);
 
-        if (element.natural_isotope_index != _IsotopeKey::NATURAL)
+        if (element.natural_isotope_index != IsotopeKey::NATURAL)
+        {
             element.default_isotope = element.natural_isotope_index;
-        if (element.most_abundant_isotope == -1)
+        }
+        if (element.most_abundant_isotope == IsotopeKey::NATURAL)
+        {
             element.most_abundant_isotope = element.default_isotope;
+        }
     }
 
     // Post-condition
     for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
-        if (_element_parameters[i].default_isotope == -1)
+        if (_element_parameters.at(i).default_isotope == IsotopeKey::NATURAL)
             // usually you can't catch this as it's being thrown before main()
             throw Error("default isotope is not set on element #%d", i);
 }
@@ -1188,11 +1192,7 @@ int Element::getMaximumConnectivity(int elem, int charge, int radical, bool use_
         return 2 * vacant_orbitals - electrons;
 }
 
-Element::_IsotopeKey::_IsotopeKey(int element, int isotope) : element(element), isotope(isotope)
-{
-}
-
-bool Element::_IsotopeKey::operator<(const _IsotopeKey& right) const
+bool Element::IsotopeKey::operator<(const IsotopeKey& right) const
 {
     if (element < right.element)
         return true;
@@ -1205,32 +1205,39 @@ bool Element::_IsotopeKey::operator<(const _IsotopeKey& right) const
     return false;
 }
 
-Element::_IsotopeValue::_IsotopeValue(double mass, double isotopic_composition) : mass(mass), isotopic_composition(isotopic_composition)
-{
-}
-
 bool Element::canBeAromatic(int element)
 {
-    return _instance._element_parameters[element].can_be_aromatic;
+    return _instance()._element_parameters.at(element).can_be_aromatic;
 }
 
-void Element::_initAromatic()
+void Element::_initAromatic() noexcept
 {
     int i;
 
     for (i = ELEM_B; i <= ELEM_F; i++)
-        _element_parameters[i].can_be_aromatic = true;
+        _element_parameters.at(i).can_be_aromatic = true;
     for (i = ELEM_Al; i <= ELEM_Cl; i++)
-        _element_parameters[i].can_be_aromatic = true;
+        _element_parameters.at(i).can_be_aromatic = true;
     for (i = ELEM_Ga; i <= ELEM_Br; i++)
-        _element_parameters[i].can_be_aromatic = true;
+        _element_parameters.at(i).can_be_aromatic = true;
     for (i = ELEM_In; i <= ELEM_I; i++)
-        _element_parameters[i].can_be_aromatic = true;
+        _element_parameters.at(i).can_be_aromatic = true;
     for (i = ELEM_Tl; i <= ELEM_Bi; i++)
-        _element_parameters[i].can_be_aromatic = true;
+        _element_parameters.at(i).can_be_aromatic = true;
 }
 
-Array<int>& Element::tautomerHeteroatoms()
+double Element::_getStandardAtomicWeight(int element) const noexcept
 {
-    return _instance._tau_heteroatoms;
+    const ElementParameters& p = _element_parameters.at(element);
+    return _getRelativeIsotopicMass(element, p.natural_isotope_index);
+}
+
+double Element::_getRelativeIsotopicMass(int element, int isotope) const noexcept
+{
+    const auto key = IsotopeKey{element, isotope};
+    if (_isotope_parameters_map.count(key))
+    {
+        return _isotope_parameters_map.at(key).mass;
+    }
+    throw Error("getRelativeIsotopicMass: isotope (%s, %d) not found", toString(element), isotope);
 }

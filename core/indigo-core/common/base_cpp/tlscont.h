@@ -44,6 +44,8 @@ namespace indigo
     {
     public:
         static _SIDManager& getInst(void);
+        static OsLock& getLock();
+
         _SIDManager(void);
         ~_SIDManager(void);
 
@@ -67,8 +69,6 @@ namespace indigo
         // Array with vacant SIDs
         Array<qword> _vacantSIDs;
 
-        static _SIDManager _instance;
-        static OsLock _lock;
     };
 
 // Macros for managing session IDs for current thread
@@ -317,6 +317,8 @@ namespace indigo
     _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release;                                                                                \
     _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());                                                                                  \
     name.clear();
+// Use this for debug purposes if you suspect QS_DEF in something bad
+// #define QS_DEF(TYPE, name) TYPE name;
 
 // "Quasi-static" variable definition. Calls clear_resize() at the end
 #define QS_DEF_RES(TYPE, name, len)                                                                                                                            \
@@ -326,8 +328,9 @@ namespace indigo
     _ReusableVariablesAutoRelease<_GET_TYPE(TYPE)> _POOL_##name##_auto_release;                                                                                \
     _POOL_##name##_auto_release.init(_POOL_##name##_idx, _POOL_##name.ptr());                                                                                  \
     name.clear_resize(len);
+// Use this for debug purposes if you suspect QS_DEF in something bad
+// #define QS_DEF_RES(TYPE, name, len) TYPE name; name.clear_resize(len);
 
-//
 // Reusable class members definition
 // By tradition this macros start with TL_, but should start with SL_
 // To work with them you should first define commom pool with CP_DECL,

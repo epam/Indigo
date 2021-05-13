@@ -202,6 +202,14 @@ MoleculeRenderInternal::MoleculeRenderInternal(const RenderOptions& opt, const R
     _bondMappingInv.clear();
 }
 
+MoleculeRenderInternal::~MoleculeRenderInternal()
+{
+    if (_own_mol)
+    {
+        delete _mol;
+    }
+}
+
 void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
 {
     _mol = mol;
@@ -835,6 +843,7 @@ void MoleculeRenderInternal::_cloneAndFillMappings()
         _bondMappingInv.insert(i, BaseMolecule::findMappedEdge(*clone, *_mol, i, _atomMappingInv.ptr()));
     }
     _mol = clone;
+    _own_mol = true;
 }
 
 void MoleculeRenderInternal::_prepareSGroups()
@@ -879,7 +888,7 @@ void MoleculeRenderInternal::_prepareSGroups()
                 }
                 Vec3f pos;
                 int posCnt = 0;
-                while (group.atoms.size() > 0)
+                while (mol.sgroups.hasSGroup(i) && group.atoms.size() > 0)
                 {
                     int aid = group.atoms[0];
                     const Vertex& v = mol.getVertex(aid);

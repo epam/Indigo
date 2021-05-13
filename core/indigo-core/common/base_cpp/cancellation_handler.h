@@ -36,16 +36,17 @@ namespace indigo
     public:
         virtual bool isCancelled() = 0;
         virtual const char* cancelledRequestMessage() = 0;
+        virtual ~CancellationHandler() = default;
     };
 
     class DLLEXPORT TimeoutCancellationHandler : public CancellationHandler
     {
     public:
-        TimeoutCancellationHandler(int mseconds = 0);
-        virtual ~TimeoutCancellationHandler();
+        explicit TimeoutCancellationHandler(int mseconds = 0);
+        ~TimeoutCancellationHandler() override;
 
-        virtual bool isCancelled();
-        virtual const char* cancelledRequestMessage();
+        bool isCancelled() override;
+        const char* cancelledRequestMessage() override;
 
         void reset(int mseconds);
 

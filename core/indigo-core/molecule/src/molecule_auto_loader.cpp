@@ -351,7 +351,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
     {
         // check for InChI format
         {
-            char prefix[6];
+            char prefix[6] = { '\0' };
             long long start = _scanner->tell();
 
             bool inchi = false;
@@ -362,7 +362,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     *ptr = _scanner->readChar();
                     ptr++;
                 }
-                inchi = !strncmp(prefix, "InChI=", 6);
+                inchi = (strncmp(prefix, "InChI=", 6) == 0);
                 _scanner->seek(start, SEEK_SET);
             }
 

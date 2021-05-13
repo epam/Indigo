@@ -236,7 +236,7 @@ namespace indigo
         MoleculeCisTrans cis_trans;
         MoleculeAlleneStereo allene_stereo;
 
-        bool have_xyz;
+        bool have_xyz = false;
 
         bool isChiral();
 

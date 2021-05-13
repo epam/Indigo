@@ -20,14 +20,18 @@
 
 using namespace indigo;
 
-_SIDManager _SIDManager::_instance;
-OsLock _SIDManager::_lock;
-
 IMPL_ERROR(_SIDManager, "TLS");
 
-_SIDManager& _SIDManager::getInst(void)
+_SIDManager& _SIDManager::getInst()
 {
+    static _SIDManager _instance;
     return _instance;
+}
+
+OsLock& _SIDManager::getLock()
+{
+    static OsLock _lock;
+    return _lock;
 }
 
 _SIDManager::~_SIDManager(void)
@@ -40,7 +44,7 @@ _SIDManager::~_SIDManager(void)
 
 void _SIDManager::setSessionId(qword id)
 {
-    OsLocker locker(_lock);
+    OsLocker locker(_SIDManager::getLock());
 
     if (!_allSIDs.find(id))
         _allSIDs.insert(id);
@@ -57,7 +61,7 @@ void _SIDManager::setSessionId(qword id)
 
 qword _SIDManager::allocSessionId(void)
 {
-    OsLocker locker(_lock);
+    OsLocker locker(_SIDManager::getLock());
 
     qword id;
     if (_vacantSIDs.size() > 0)
@@ -92,7 +96,7 @@ qword _SIDManager::getSessionId(void)
 
 void _SIDManager::releaseSessionId(qword id)
 {
-    OsLocker locker(_lock);
+    OsLocker locker(_SIDManager::getLock());
 
     _vacantSIDs.push(id);
 }
