@@ -24,9 +24,9 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
-#include "molecule/base_molecule.h"
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
+#include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 
 namespace indigo
@@ -39,14 +39,15 @@ namespace indigo
     class DLLEXPORT MoleculeJsonSaver
     {
     public:
-        explicit MoleculeJsonSaver( Output& output );
-        void saveMolecule( BaseMolecule& bmol );
+        explicit MoleculeJsonSaver(Output& output);
+        void saveMolecule(BaseMolecule& bmol);
+        void saveMolecule(BaseMolecule& bmol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
 
     protected:
-        void saveAtoms( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
-        void saveBonds( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
-        void saveRGroup( PtrPool<BaseMolecule>& fragments, int rgnum, rapidjson::Writer<rapidjson::StringBuffer>& writer );
-        void saveSGroups( BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer );
+        void saveAtoms(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
+        void saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
+        void saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, rapidjson::Writer<rapidjson::StringBuffer>& writer);
+        void saveSGroups(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer);
         void saveSGroup(SGroup& sgroup, rapidjson::Writer<rapidjson::StringBuffer>& writer);
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer);
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, rapidjson::Writer<rapidjson::StringBuffer>& writer);

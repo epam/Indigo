@@ -18,26 +18,27 @@
 
 #include "indigo_savers.h"
 
-#include "indigo_io.h"
-#include "indigo_molecule.h"
-#include "indigo_reaction.h"
+#include <ctime>
 
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/cml_saver.h"
-#include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_cdxml_saver.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_saver.h"
 #include "molecule/smiles_saver.h"
 #include "reaction/canonical_rsmiles_saver.h"
 #include "reaction/reaction_cdxml_saver.h"
 #include "reaction/reaction_cml_saver.h"
+#include "reaction/reaction_json_saver.h"
 #include "reaction/rsmiles_saver.h"
 #include "reaction/rxnfile_saver.h"
 
-#include <time.h>
+#include "indigo_io.h"
+#include "indigo_molecule.h"
+#include "indigo_reaction.h"
 
 //
 // IndigoSaver
@@ -553,7 +554,7 @@ CEXPORT int indigoSaveMolfile(int molecule, int output)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoSaveJson( int item, int output )
+CEXPORT int indigoSaveJson(int item, int output)
 {
     INDIGO_BEGIN
     {
@@ -563,14 +564,17 @@ CEXPORT int indigoSaveJson( int item, int output )
         {
             MoleculeJsonSaver saver(out);
             BaseMolecule& mol = obj.getBaseMolecule();
-            saver.saveMolecule( mol );
+            saver.saveMolecule(mol);
             out.flush();
             return 1;
         }
-        if (IndigoBaseReaction::is(obj))
+        else if (IndigoBaseReaction::is(obj))
         {
-            // reaction not implemented yet
-            return -1;
+            ReactionJsonSaver saver(out);
+            BaseReaction& rxn = obj.getBaseReaction();
+            saver.saveReaction(rxn);
+            out.flush();
+            return 1;
         }
         throw IndigoError("indigoSaveJson(): expected molecule or reaction, got %s", obj.debugInfo());
     }

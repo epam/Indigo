@@ -171,7 +171,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
     for (SizeType i = 0; i < atoms.Size(); i++)
     {
         std::string label;
-        int atom_idx = 0, charge = 0, valence = 0, radical = 0, isotope = 0, elem = 0, rsite_idx = 0;
+        int atom_idx = 0, charge = 0, valence = 0, radical = 0, isotope = 0, elem = 0, rsite_idx = 0, mapping = 0;
         const Value& a = atoms[i];
         if (a.HasMember("isotope"))
             isotope = a["isotope"].GetInt();
@@ -183,25 +183,15 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                     mol.addAttachmentPoint(att_idx + 1, i);
         }
 
-		/*
-        if (a.HasMember("pyramid"))
+        if (a.HasMember("mapping"))
         {
-            const Value& pyr_arr = a["pyramid"];
-            int pyramid[4];
-            for (int k = 0; k < 4; k++)
-            {
-                pyramid[k] = pyr_arr[k].GetInt();
-                if (pyramid[k] == i)
-                    pyramid[k] = -1;
-            }
-            MoleculeStereocenters::moveMinimalToEnd(pyramid);
-            mol.stereocenters.add(i, MoleculeStereocenters::ATOM_ABS, 0, pyramid);
-        }*/
+            mapping = a["mapping"].GetInt();
+        }
 
         if (a.HasMember("type"))
         {
             std::string atom_type = a["type"].GetString();
-            if (atom_type == "rg-label" && a.HasMember("$refs") && a["$refs"].Size() )
+            if (atom_type == "rg-label" && a.HasMember("$refs") && a["$refs"].Size())
             {
                 std::string ref = a["$refs"][0].GetString();
                 if (ref.find("rg-") == 0 && ref.erase(0, 3).size())
@@ -269,6 +259,11 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         else
             atom_idx = addAtomToMoleculeQuery(label.c_str(), elem, charge, valence, radical, isotope);
 
+        if (mapping)
+        {
+            mol.reaction_atom_mapping[atom_idx] = mapping;
+        }
+
         if (rsite_idx)
             mol.allowRGroupOnRSite(atom_idx, rsite_idx);
 
@@ -331,29 +326,12 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                 case 6:
                     mol.setBondDirection(bond_idx, BOND_DOWN);
                     break;
-                case 7:
-                case 8: {
-/*                    int substituents[4];
-                    if (b.HasMember("subs"))
-                    {
-                        const Value& subs = b["subs"];
-                        if (subs.Size() == 4)
-                        {
-                            for (int k = 0; k < 4; ++k)
-                            {
-                                substituents[k] = subs[k].GetInt();
-                            }
-                        }
-                        mol.cis_trans.add(bond_idx, substituents, stereo == 7 ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
-                    }*/
-                }
-                break;
+                    break;
 
                 default:
                     break;
                 }
             }
-            // mol.reaction_bond_reacting_center[bond_idx] = rcenter;
         }
         else
         {
@@ -362,26 +340,26 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
     }
 }
 
-void indigo::MoleculeJsonLoader::parseHighlight( const rapidjson::Value& highlight, BaseMolecule& mol )
+void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol)
 {
     for (int i = 0; i < highlight.Size(); ++i)
     {
         const rapidjson::Value& val = highlight[i];
-        if( val.HasMember("entityType") && val.HasMember("items") )
-		{
+        if (val.HasMember("entityType") && val.HasMember("items"))
+        {
             const rapidjson::Value& items = val["items"];
             std::string et = val["entityType"].GetString();
             if (et == "atoms")
-			{
+            {
                 for (int j = 0; i < items.Size(); ++i)
                     mol.highlightAtom(items[i].GetInt());
             }
-			else if (et == "bonds")
-			{
+            else if (et == "bonds")
+            {
                 for (int j = 0; i < items.Size(); ++i)
                     mol.highlightBond(items[i].GetInt());
-			}
-		}
+            }
+        }
     }
 }
 
@@ -424,29 +402,29 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
         auto itbeg = atoms.find(edge.beg);
         auto itend = atoms.find(edge.end);
 
-		if( itbeg == atoms.end() && itend == atoms.end() )
+        if (itbeg == atoms.end() && itend == atoms.end())
             continue;
-        if (itbeg != atoms.end() && itend != atoms.end() )
+        if (itbeg != atoms.end() && itend != atoms.end())
             continue;
         else
         {
             // bond going out of the sgroup
             xbonds.push(j);
-            if (start_bond == -1 )
-			{
+            if (start_bond == -1)
+            {
                 start_bond = j;
                 start = itbeg != atoms.end() ? *itbeg : *itend;
-			}
-			else if (end_bond == -1)
-			{
+            }
+            else if (end_bond == -1)
+            {
                 end_bond = j;
                 end = itbeg != atoms.end() ? *itbeg : *itend;
-			}
-		}
+            }
+        }
     }
 
-	if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
-	{
+    if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
+    {
         QS_DEF(Array<int>, mapping);
         AutoPtr<BaseMolecule> rep(bmol.neu());
         rep->makeSubmolecule(bmol, sgroup.atoms, &mapping, 0);
@@ -457,10 +435,10 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
         int rep_start = mapping[start];
         int rep_end = mapping[end];
         MultipleGroup& mg = (MultipleGroup&)sgroup;
-		if (mg.multiplier > 1)
-		{
+        if (mg.multiplier > 1)
+        {
             int start_order = start_bond > 0 ? bmol.getBondOrder(start_bond) : -1;
-            int end_order = end_bond > 0 ? bmol.getBondOrder(end_bond): -1;
+            int end_order = end_bond > 0 ? bmol.getBondOrder(end_bond) : -1;
             for (int j = 0; j < mg.multiplier - 1; j++)
             {
                 bmol.mergeWithMolecule(rep.ref(), &mapping, 0);
@@ -484,8 +462,8 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
                     end = mapping[rep_end];
                 }
             }
-		}
-	}
+        }
+    }
     // sgroup.bonds.copy( xbonds );
 }
 
@@ -611,10 +589,10 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             throw Error("Invalid sgroup type %s", sg_type_str.c_str());
         }
 
-        if (sg_type != SGroup::SG_TYPE_DAT )
-		    handleSGroup(sgroup, sgroup_atoms, mol);
+        if (sg_type != SGroup::SG_TYPE_DAT)
+            handleSGroup(sgroup, sgroup_atoms, mol);
 
-		if (s.HasMember("bonds"))
+        if (s.HasMember("bonds"))
         {
             const Value& bonds = s["bonds"];
             for (int j = 0; j < bonds.Size(); ++j)
@@ -622,7 +600,6 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 sgroup.bonds.push(bonds[j].GetInt());
             }
         }
-
     }
 }
 
@@ -640,9 +617,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         if (type.compare("molecule") == 0 || type.compare("rgroup") == 0)
         {
             int chiral = 0;
-			if (mol_node.HasMember("chiral"))
+            if (mol_node.HasMember("chiral"))
                 chiral = mol_node["chiral"].GetInt();
-            mol.setChiralFlag( chiral );
+            mol.setChiralFlag(chiral);
             // parse atoms
             auto& atoms = mol_node["atoms"];
             parseAtoms(atoms, mol);
@@ -696,7 +673,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
     std::vector<int> ignore_cistrans(mol.edgeCount());
     std::vector<int> sensible_bond_directions(mol.edgeCount());
     for (int i = 0; i < mol.edgeCount(); i++)
-        if ( mol.getBondDirection(i) == BOND_EITHER)
+        if (mol.getBondDirection(i) == BOND_EITHER)
         {
             if (MoleculeCisTrans::isGeomStereoBond(mol, i, 0, true))
             {
@@ -723,9 +700,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
     mol.stereocenters.buildFromBonds(stereochemistry_options, sensible_bond_directions.data());
     mol.allene_stereo.buildFromBonds(stereochemistry_options.ignore_errors, sensible_bond_directions.data());
 
-	// int num_atoms = mol.vertices();
+    // int num_atoms = mol.vertices();
     // printf("%d", num_atoms);
-	if ( !mol.getChiralFlag() )
+    if (!mol.getChiralFlag())
         for (int i : mol.vertices())
         {
             int type = mol.stereocenters.getType(i);

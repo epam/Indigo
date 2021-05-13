@@ -16,14 +16,42 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "reaction/reaction_json_saver.h"
+#include <memory>
+#include <vector>
+
+#include <rapidjson/document.h>
+
 #include "base_cpp/output.h"
 #include "molecule/molecule_json_saver.h"
+#include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
+#include "reaction/reaction_json_saver.h"
 
 using namespace indigo;
+using namespace indigo;
+using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonSaver, "reaction KET saver");
+
+void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale)
+{
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+    {
+        Vec3f& p = mol.getAtomXyz(i);
+        Vec2f p2(p.x, p.y);
+
+        if (i == mol.vertexBegin())
+            min_vec = max_vec = p2;
+        else
+        {
+            min_vec.min(p2);
+            max_vec.max(p2);
+        }
+    }
+
+    min_vec.scale(scale);
+    max_vec.scale(scale);
+}
 
 ReactionJsonSaver::ReactionJsonSaver(Output& output) : _output(output)
 {
@@ -33,7 +61,162 @@ ReactionJsonSaver::~ReactionJsonSaver()
 {
 }
 
-void ReactionJsonSaver::saveReaction(Reaction& rxn)
+void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 {
+    std::vector<Vec2f> pluses;
+    Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0);
 
+    MoleculeJsonSaver json_saver(_output);
+    std::unique_ptr<BaseMolecule> merged;
+    if (rxn.isQueryReaction())
+    {
+        merged.reset(new QueryMolecule());
+    }
+    else
+    {
+        merged.reset(new Molecule());
+    }
+
+    if (rxn.reactantsCount() > 0)
+    {
+        int rcount = 1;
+        for (int i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
+        {
+            Vec2f min1, max1;
+            _getBounds(rxn.getBaseMolecule(i), min1, max1, 1.0);
+            merged->mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
+
+            if (i == rxn.reactantBegin())
+            {
+                rmin = min1;
+                rmax = max1;
+            }
+            else
+            {
+                rmin.min(min1);
+                rmax.max(max1);
+            }
+
+            if (rcount < rxn.reactantsCount())
+            {
+                Vec2f min2, max2;
+                _getBounds(rxn.getBaseMolecule(rxn.reactantNext(i)), min2, max2, 1.0);
+                pluses.emplace_back((max1.x + min2.x) / 2, (min1.y + max1.y) / 2);
+                rcount++;
+            }
+        }
+    }
+
+    if (rxn.productsCount() > 0)
+    {
+        int rcount = 1;
+        Vec2f min1, max1;
+
+        for (int i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
+        {
+            Vec2f min1, max1;
+            _getBounds(rxn.getBaseMolecule(i), min1, max1, 1.0);
+            merged->mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
+
+            if (i == rxn.productBegin())
+            {
+                pmin = min1;
+                pmax = max1;
+            }
+            else
+            {
+                pmin.min(min1);
+                pmax.max(max1);
+            }
+
+            if (rcount < rxn.productsCount())
+            {
+                Vec2f min2, max2;
+                _getBounds(rxn.getBaseMolecule(rxn.productNext(i)), min2, max2, 1.0);
+                pluses.emplace_back((max1.x + min2.x) / 2, (min1.y + max1.y) / 2);
+                rcount++;
+            }
+        }
+    }
+
+    StringBuffer s;
+    Writer<StringBuffer> writer(s);
+    json_saver.saveMolecule(*merged, writer);
+    Document ket;
+    ket.Parse(s.GetString());
+    if (!(ket.HasMember("root") && ket["root"].HasMember("nodes")))
+        throw Error("reaction_json_saver: MoleculeJsonSaver::saveMolecule failed");
+
+    auto& nodes = ket["root"]["nodes"];
+    for (const auto& plus_offset : pluses)
+    {
+        Value plus(kObjectType);
+        plus.AddMember("type", "plus", ket.GetAllocator());
+        Value location(kArrayType);
+        location.PushBack(Value().SetDouble(plus_offset.x), ket.GetAllocator());
+        location.PushBack(Value().SetDouble(plus_offset.y), ket.GetAllocator());
+        location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());
+        plus.AddMember("location", location, ket.GetAllocator());
+        nodes.PushBack(plus, ket.GetAllocator());
+    }
+
+    // add arrow
+    Vec2f p1(0, 0);
+    Vec2f p2(0, 0);
+    if (rxn.reactantsCount() || rxn.productsCount())
+    {
+        if (rxn.productsCount() == 0)
+        {
+            p2.x = rmax.x + 1.0f;
+            p2.y = (rmin.y + rmax.y) / 2;
+            p1.x = p2.x + 1.0f;
+            p1.y = p2.y;
+        }
+        else if (rxn.reactantsCount() == 0)
+        {
+            p1.x = pmin.x - 1.0f;
+            p1.y = (pmin.y + pmax.y) / 2;
+            p2.x = p1.x - 1.0f;
+            p2.y = p1.y;
+        }
+        else
+        {
+            if ((pmin.x - rmax.x) > 0)
+            {
+                p2.x = (rmax.x + pmin.x) / 2 - (pmin.x - rmax.x) / 8;
+                p2.y = (rmin.y + rmax.y) / 2;
+            }
+            else
+            {
+                p2.x = (rmax.x + pmin.x) / 2 - 1.0f;
+                p2.y = (rmin.y + rmax.y) / 2;
+            }
+
+            if ((pmin.x - rmax.x) > 0)
+            {
+                p1.x = (rmax.x + pmin.x) / 2.f + (pmin.x - rmax.x) / 8.f;
+                p1.y = (pmin.y + pmax.y) / 2.f;
+            }
+            else
+            {
+                p1.x = (rmax.x + pmin.x) / 2 + 1.0f;
+                p1.y = (pmin.y + pmax.y) / 2;
+            }
+        }
+    }
+    else
+        throw Error("Empty reaction");
+
+    Value arrow(kObjectType);
+    arrow.AddMember("type", "arrow", ket.GetAllocator());
+    Value location(kArrayType);
+    location.PushBack(Value().SetDouble(p2.x), ket.GetAllocator());
+    location.PushBack(Value().SetDouble(p2.y), ket.GetAllocator());
+    location.PushBack(Value().SetDouble(0.0), ket.GetAllocator());
+    arrow.AddMember("location", location, ket.GetAllocator());
+    nodes.PushBack(arrow, ket.GetAllocator());
+    s.Clear();
+    writer.Reset(s);
+    ket.Accept(writer);
+    _output.printf("%s", s.GetString());
 }

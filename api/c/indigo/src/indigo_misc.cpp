@@ -45,6 +45,8 @@
 
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_json_saver.h"
+#include "reaction/reaction_json_loader.h"
+#include "reaction/reaction_json_saver.h"
 
 #define CHECKRGB(r, g, b)                                                                                                                                      \
     if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6)                                                                                                   \
@@ -1543,6 +1545,12 @@ CEXPORT const char* indigoJson(int item)
             MoleculeJsonSaver jn(out);
             BaseMolecule& bmol = obj.getBaseMolecule();
             jn.saveMolecule(bmol);
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            ReactionJsonSaver jn(out);
+            BaseReaction& br = obj.getBaseReaction();
+            jn.saveReaction(br);
         }
         out.writeChar(0);
         return tmp.string.ptr();
