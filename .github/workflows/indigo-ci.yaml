@@ -37,7 +37,7 @@ jobs:
             mkdir build &&
             cd build &&
             cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF &&
-            cmake --build . --config Release --target all -- -j $(nproc) &&
+            cmake --build . --config Release --target all -- -j $(nproc)
             "
       - name: Build macOS
         if: ${{ matrix.os == 'macos' }}
@@ -460,7 +460,7 @@ jobs:
             mkdir build &&
             cd build &&
             cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=ON &&
-            cmake --build . --config Release --target all -- -j $(nproc) &&
+            cmake --build . --config Release --target all -- -j $(nproc)
             "
       - name: Build utils macOS
         if: ${{ matrix.os == 'macos' }}
