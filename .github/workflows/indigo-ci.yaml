@@ -602,7 +602,7 @@ jobs:
         run: git fetch --tags -f
       - name: Setup Postgres
         run: |
-          $pg_version = switch(${postgres_major_version}) { "12" { "12.6" } "11" { "11.11" } "10" { "10.16" } "9.6" { "9.6.21" } }
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { "12" { "12.6" } "11" { "11.11" } "10" { "10.16" } "9.6" { "9.6.21" } }
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
