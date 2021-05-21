@@ -27,10 +27,12 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
+#include <iostream>
 
 namespace indigo
 {
     DECL_EXCEPTION(ArrayError);
+
 
     template <typename T> class Array
     {
@@ -76,6 +78,18 @@ namespace indigo
                 }
 
                 T* oldptr = _array;
+
+                /*
+                std::string tp_name = typeid(T).name();
+                if (tp_name.find("class") != std::string::npos || tp_name.find("struct") != std::string::npos)
+                {
+                    if (tp_name.find("*") == std::string::npos)
+                        std::cout << tp_name.c_str() << std::endl;
+                    if (tp_name.find("QueryMolecule") != std::string::npos)
+                    {
+                        std::cout << "stop!!!" << std::endl;
+                    }
+                }*/
 
                 _array = (T*)realloc(_array, sizeof(T) * to_reserve);
                 if (_array == nullptr)

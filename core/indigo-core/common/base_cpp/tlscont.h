@@ -20,6 +20,9 @@
 #define __tlscont_h__
 
 #include <typeinfo>
+#include <map>
+#include <set>
+#include <memory>
 
 #include "base_c/defs.h"
 #include "base_c/os_tls.h"
@@ -64,11 +67,10 @@ namespace indigo
 
         // Thread local key for storing current session ID
         TLS_IDX_TYPE _tlsIdx;
-        RedBlackSet<qword> _allSIDs;
+        std::set<qword> _allSIDs;
         qword _lastNewSID;
         // Array with vacant SIDs
         Array<qword> _vacantSIDs;
-
     };
 
 // Macros for managing session IDs for current thread
@@ -89,15 +91,20 @@ namespace indigo
         T& getLocalCopy(const qword id)
         {
             OsLocker locker(_lock.ref());
-            AutoPtr<T>& ptr = _map.findOrInsert(id);
-            if (ptr.get() == NULL)
-                ptr.reset(new T());
-            return ptr.ref();
+            auto it = _map.find(id);
+            if (it == _map.end())
+            {
+                std::shared_ptr<T> ptr(new T());
+                _map.emplace(id, ptr);
+                return *ptr;
+            }
+            else
+                return *it->second;
         }
 
     private:
-        typedef RedBlackObjMap<qword, AutoPtr<T>> _Map;
-
+        // typedef RedBlackObjMap<qword, AutoPtr<T>> _Map;
+        typedef std::map<qword, std::shared_ptr<T>> _Map;
         _Map _map;
         ThreadSafeStaticObj<OsLock> _lock;
     };

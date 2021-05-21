@@ -46,7 +46,7 @@ void _SIDManager::setSessionId(qword id)
 {
     OsLocker locker(_SIDManager::getLock());
 
-    if (!_allSIDs.find(id))
+    if (_allSIDs.find(id) == _allSIDs.end() )
         _allSIDs.insert(id);
 
     qword* pId = _getID();
@@ -68,7 +68,7 @@ qword _SIDManager::allocSessionId(void)
         id = _vacantSIDs.pop();
     else
     {
-        while (_allSIDs.find(_lastNewSID))
+        while (_allSIDs.find(_lastNewSID) != _allSIDs.end())
             ++_lastNewSID;
 
         id = _lastNewSID;
