@@ -89,12 +89,12 @@ bool GraphEmbeddingsStorage::addEmbedding(const Graph& super, const Graph& sub, 
     data.sorted = false;
 
     // Try to find element with the same hash
-    int* id = _map_hash_to_id.at2(hash);
+    auto it = _map_hash_to_id.find(hash);
     int append_to = -1;
-    if (id != 0)
+    if (it != _map_hash_to_id.end())
     {
         // Compare elements in the list
-        int cur = *id;
+        int cur = it->first;
         while (true)
         {
             if (check_uniquencess && _compareEmbedding(cur, added_index))
@@ -120,7 +120,7 @@ bool GraphEmbeddingsStorage::addEmbedding(const Graph& super, const Graph& sub, 
         _embedding_data[append_to].next = added_index;
     else
         // Insert embedding into map
-        _map_hash_to_id.insert(hash, added_index);
+        _map_hash_to_id.emplace(hash, added_index);
 
     return true;
 }

@@ -60,7 +60,7 @@ void SimpleCycleBasis::create()
 
     Graph spanning_tree;
 
-    QS_DEF(RedBlackSet<int>, visited_edges);
+    QS_DEF(std::set<int>, visited_edges);
     visited_edges.clear();
 
     // FIFO for the BFS
@@ -93,7 +93,7 @@ void SimpleCycleBasis::create()
             // find a neighbour vertex of the current vertex
             int edge = c_vertex.neiEdge(i);
 
-            if (!visited_edges.find(edge))
+            if (visited_edges.find(edge) == visited_edges.end())
             {
 
                 // mark edge as visited

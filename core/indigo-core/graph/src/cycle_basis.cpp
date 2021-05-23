@@ -63,8 +63,8 @@ void CycleBasis::create(const Graph& graph)
                     int source = subgraph.getEdge(cycle[j]).beg;
                     int target = subgraph.getEdge(cycle[j]).end;
                     int edge_idx = graph.findEdgeIndex(mapping_out[source], mapping_out[target]);
-                    _cycleVertices.find_or_insert(mapping_out[source]);
-                    _cycleVertices.find_or_insert(mapping_out[target]);
+                    _cycleVertices.insert(mapping_out[source]);
+                    _cycleVertices.insert(mapping_out[target]);
                     new_cycle.push(edge_idx);
                 }
             }
@@ -74,5 +74,5 @@ void CycleBasis::create(const Graph& graph)
 
 bool CycleBasis::containsVertex(int vertex) const
 {
-    return _cycleVertices.find(vertex);
+    return _cycleVertices.find(vertex) != _cycleVertices.end();
 }

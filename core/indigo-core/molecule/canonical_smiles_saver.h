@@ -19,6 +19,7 @@
 #ifndef __canonical_smiles_saver__
 #define __canonical_smiles_saver__
 
+#include <unordered_map>
 #include "base_cpp/exception.h"
 #include "molecule/smiles_saver.h"
 
@@ -38,10 +39,10 @@ namespace indigo
         DECL_ERROR;
 
     protected:
-        typedef RedBlackMap<int, int> MapIntInt;
+        typedef std::unordered_map<int,int> HashMapIntInt;
 
         TL_CP_DECL(Array<int>, _actual_atom_atom_mapping);
-        TL_CP_DECL(MapIntInt, _initial_to_actual);
+        TL_CP_DECL(HashMapIntInt, _initial_to_actual);
         int _aam_counter;
     };
 
