@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <map>
 #include "base_cpp/auto_ptr.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
@@ -27,8 +28,6 @@
 #include "molecule/molfile_loader.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
-
-#include "base_cpp/multimap.h"
 
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
@@ -3048,23 +3047,23 @@ void MolfileLoader::_fillSGroupsParentIndices()
 {
     MoleculeSGroups& sgroups = _bmol->sgroups;
 
-    MultiMap<int, int> indices;
+    std::multimap<int, int> indices;
     // original index can be arbitrary, sometimes key is used multiple times
 
     for (auto i = sgroups.begin(); i != sgroups.end(); i++)
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        indices.insert(sgroup.original_group, i);
+        indices.emplace(sgroup.original_group, i);
     }
 
     // TODO: replace parent_group with parent_idx
     for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        auto& set = indices.get(sgroup.parent_group);
-        if (set.size() == 1)
+        auto range = indices.equal_range(sgroup.parent_group);
+        if ( std::distance( range.first, range.second ) == 1)
         {
-            sgroup.parent_idx = set.key(set.begin());
+            sgroup.parent_idx = range.first->first;
         }
         else
         {

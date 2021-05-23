@@ -30,7 +30,7 @@ namespace indigo
     {
         bool operator()(const std::string& str1, const std::string& str2) const
         {
-            return stricmp(str1.c_str(), str2.c_str()) < 0;
+            return strcasecmp(str1.c_str(), str2.c_str()) < 0;
         }
     };
 
