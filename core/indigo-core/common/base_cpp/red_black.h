@@ -20,12 +20,21 @@
 #define __red_black_h__
 
 #include <string.h>
-
+#include <map>
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/string_pool.h"
 
 namespace indigo
 {
+    struct StringIgnoreCaseLess
+    {
+        bool operator()(const std::string& str1, const std::string& str2) const
+        {
+            return stricmp(str1.c_str(), str2.c_str()) < 0;
+        }
+    };
+
+    template <typename T> using StringMapNC = std::map<std::string, T, StringIgnoreCaseLess>;
 
     struct RedBlackNodeBase
     {

@@ -382,9 +382,9 @@ void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
 {
     QS_DEF(Array<int>, path_vertices);
     path_vertices.clear();
-    QS_DEF(RedBlackSet<int>, selected_edges);
+    QS_DEF(std::set<int>, selected_edges);
     selected_edges.clear();
-    QS_DEF(RedBlackSet<int>, remaining_edges);
+    QS_DEF(std::set<int>, remaining_edges);
     remaining_edges.clear();
     for (int i = subgraph.edgeBegin(); i < subgraph.edgeEnd(); i = subgraph.edgeNext(i))
     {
@@ -396,7 +396,7 @@ void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
     while (remaining_edges.size() > 0)
     {
 
-        int edge = remaining_edges.begin();
+        int edge = *remaining_edges.begin();
 
         int source = subgraph.getEdge(edge).beg;
         int target = subgraph.getEdge(edge).end;
@@ -417,14 +417,12 @@ void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
 
         for (int i = 0; i < path_edges.size(); ++i)
         {
-            remaining_edges.remove_if_exists(path_edges[i]);
+            remaining_edges.erase(path_edges[i]);
         }
     }
 
-    for (int i = selected_edges.begin(); i < selected_edges.end(); i = selected_edges.next(i))
-    {
-        subgraph.removeEdge(selected_edges.key(i));
-    }
+    for ( const auto& val : selected_edges )
+        subgraph.removeEdge(val);
 }
 
 int AuxiliaryGraph::auxVertex0(int vertex)

@@ -1464,7 +1464,7 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base,
             organicElement = false;
         }
 
-        const string& symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
+        const string symbol = organicElement ? _organicElements[number] : "[" + element.second + "]";
         SmilesNode node(symbol, BOND_SINGLE, &root);
         root.nodes.push_back(std::move(node));
 

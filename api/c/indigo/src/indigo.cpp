@@ -250,9 +250,9 @@ IndigoObject& Indigo::getObject(int handle)
     {
         return *_objects.at(handle);
     }
-    catch (RedBlackMap<int, IndigoObject*>::Error& e)
+    catch ( std::out_of_range& )
     {
-        throw IndigoError("can not access object #%d: %s", handle, e.message());
+        throw IndigoError("can not access object #%d: %s", handle );
     }
 }
 

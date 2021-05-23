@@ -345,12 +345,21 @@ typedef struct tagCANON_GLOBALS
     int m_num_bit;
 } CANON_GLOBALS;
 
-int  SetBitCreate( struct tagCANON_GLOBALS *pCG);
+#ifndef COMPILE_ALL_CPP
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+#endif
 
+int  SetBitCreate( struct tagCANON_GLOBALS *pCG);
 void inchi_qsort(void *pParam, void *base, size_t num, size_t width, int (*comp)(const void *, const void *, void *));
 
-
-
+#ifndef COMPILE_ALL_CPP
+#ifdef __cplusplus
+}
+#endif
+#endif
 
 
 /**************************************************/

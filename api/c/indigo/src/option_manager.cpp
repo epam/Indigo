@@ -184,7 +184,7 @@ void IndigoOptionManager::getOptionValueXY(const char* name, int& x, int& y)
 void IndigoOptionManager::getOptionType(const char* name, Array<char>& value)
 {
     CHECK_OPT_DEFINED(name);
-    if (!typeMap.find(name))
+    if ( typeMap.find(name) == typeMap.end())
         throw Error("Property \"%s\" not defined", name);
 
     auto copyString = [](const char* source, char* dest, int len) {
@@ -218,12 +218,12 @@ void IndigoOptionManager::getOptionType(const char* name, Array<char>& value)
 
 bool IndigoOptionManager::hasOptionHandler(const char* name)
 {
-    return typeMap.find(name);
+    return typeMap.find(name) != typeMap.end();
 }
 
 void IndigoOptionManager::callOptionHandler(const char* name, const char* value)
 {
-    if (!typeMap.find(name))
+    if (typeMap.find(name)==typeMap.end())
         throw Error("Property \"%s\" not defined", name);
     OPTION_TYPE type = typeMap.at(name);
     int x = 0, y = 0;
