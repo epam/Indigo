@@ -41,7 +41,7 @@ using namespace indigo;
 
 IMPL_ERROR(BingoPgCommon, "bingo postgres");
 
-void BingoPgCommon::getSearchTypeString(int type, indigo::Array<char>& result, bool molecule)
+void BingoPgCommon::getSearchTypeString(int type, indigo::std::string& result, bool molecule)
 {
     result.clear();
     if (molecule)
@@ -89,8 +89,8 @@ void BingoPgCommon::getSearchTypeString(int type, indigo::Array<char>& result, b
 void BingoPgCommon::printBitset(const char* name, BingoPgExternalBitset& bitset)
 {
     elog(NOTICE, "bitset = %s", name);
-    indigo::Array<char> bits;
-    indigo::ArrayOutput ao(bits);
+    indigo::std::string bits;
+    indigo::StringOutput ao(bits);
     for (int x = bitset.begin(); x != bitset.end(); x = bitset.next(x))
     {
         ao.printf("%d ", x);
@@ -102,8 +102,8 @@ void BingoPgCommon::printBitset(const char* name, BingoPgExternalBitset& bitset)
 void BingoPgCommon::printFPBitset(const char* name, unsigned char* bitset, int size)
 {
     elog(NOTICE, "bitset = %s", name);
-    indigo::Array<char> bits;
-    indigo::ArrayOutput ao(bits);
+    indigo::std::string bits;
+    indigo::StringOutput ao(bits);
     for (int fp_idx = 0; fp_idx < size; fp_idx++)
     {
         if (bitGetBit(bitset, fp_idx))
@@ -134,7 +134,7 @@ void BingoPgCommon::setDefaultOptions()
 
 static int rnd_check = rand();
 
-int BingoPgCommon::executeQuery(indigo::Array<char>& query_str)
+int BingoPgCommon::executeQuery(indigo::std::string& query_str)
 {
     int result = 0;
     BINGO_PG_TRY
@@ -155,8 +155,8 @@ int BingoPgCommon::executeQuery(indigo::Array<char>& query_str)
 
 int BingoPgCommon::executeQuery(const char* format, ...)
 {
-    QS_DEF(Array<char>, buf);
-    ArrayOutput output(buf);
+    QS_DEF(std::string, buf);
+    StringOutput output(buf);
     va_list args;
     va_start(args, format);
     output.vprintf(format, args);
@@ -263,7 +263,7 @@ void BingoPgCommon::BingoSessionHandler::refresh()
 //
 //}
 // dword BingoPgCommon::getFunctionOid(const char* name, indigo::Array<dword>& types) {
-//   indigo::Array<char> fname;
+//   indigo::std::string fname;
 //   fname.readString(name, true);
 //   Value* func_name = makeString(fname.ptr());
 //

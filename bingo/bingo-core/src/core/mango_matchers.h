@@ -38,28 +38,28 @@ class MangoSubstructure
 public:
     MangoSubstructure(BingoContext& context);
 
-    void loadQuery(const Array<char>& buf);
+    void loadQuery(const std::string& buf);
     void loadQuery(const char* str);
     void loadQuery(Scanner& scanner);
 
-    void loadSMARTS(const Array<char>& buf);
+    void loadSMARTS(const std::string& buf);
     void loadSMARTS(const char* str);
     void loadSMARTS(Scanner& scanner);
 
-    void loadTarget(const Array<char>& molfile_buf);
+    void loadTarget(const std::string& molfile_buf);
     void loadTarget(const char* target);
     void loadTarget(Scanner& scanner);
     bool matchLoadedTarget();
 
-    bool matchBinary(const Array<char>& target_buf, const Array<char>* xyz_buf);
+    bool matchBinary(const std::string& target_buf, const std::string* xyz_buf);
     bool matchBinary(Scanner& scanner, Scanner* xyz_scanner);
 
     void loadBinaryTargetXyz(Scanner& xyz_scanner);
 
     const byte* getQueryFingerprint();
 
-    void getHighlightedTarget(Array<char>& molfile_buf);
-    void getHighlightedTarget_Smiles(Array<char>& smiles_buf);
+    void getHighlightedTarget(std::string& molfile_buf);
+    void getHighlightedTarget_Smiles(std::string& smiles_buf);
 
     bool needCoords();
 
@@ -109,7 +109,7 @@ class MangoExact
 public:
     MangoExact(BingoContext& context);
 
-    void loadQuery(const Array<char>& buf);
+    void loadQuery(const std::string& buf);
     void loadQuery(Scanner& scanner);
     void loadQuery(const char* buf);
 
@@ -132,14 +132,14 @@ public:
 
     const Hash& getQueryHash() const;
 
-    void loadTarget(const Array<char>& molfile_buf);
+    void loadTarget(const std::string& molfile_buf);
     void loadTarget(Scanner& scanner);
     void loadTarget(const char* target);
 
     bool matchLoadedTarget();
 
     bool matchBinary(Scanner& scanner, Scanner* xyz_scanner);
-    bool matchBinary(const Array<char>& target_buf, const Array<char>* xyz_buf);
+    bool matchBinary(const std::string& target_buf, const std::string* xyz_buf);
 
     void setParameters(const char* conditions);
     bool parse(const char* params);
@@ -194,11 +194,11 @@ public:
     static Metrics whichMetrics(const char* metrics_str);
     void setMetrics(const char* metrics_str);
 
-    void loadQuery(const Array<char>& buf);
+    void loadQuery(const std::string& buf);
     void loadQuery(Scanner& scanner);
     void loadQuery(const char* str);
 
-    float calc(const Array<char>& target_buf);
+    float calc(const std::string& target_buf);
     float calc(Scanner& scanner);
 
     // upper and lower bounds for common ones
@@ -241,7 +241,7 @@ public:
 
     MangoTautomer(BingoContext& context);
 
-    void loadQuery(const Array<char>& buf);
+    void loadQuery(const std::string& buf);
     void loadQuery(Scanner& scanner);
     void loadQuery(const char* str);
 
@@ -252,15 +252,15 @@ public:
     const byte* getQueryFingerprint();
 
     void loadTarget(Scanner& scanner);
-    void loadTarget(const Array<char>& molfile_buf);
+    void loadTarget(const std::string& molfile_buf);
     void loadTarget(const char* target);
 
     bool matchLoadedTarget();
 
-    bool matchBinary(const Array<char>& target_buf);
+    bool matchBinary(const std::string& target_buf);
     bool matchBinary(Scanner& scanner);
 
-    void getHighlightedTarget(Array<char>& molfile_buf);
+    void getHighlightedTarget(std::string& molfile_buf);
 
     bool preserve_bonds_on_highlighting;
 
@@ -276,7 +276,7 @@ protected:
 
     AutoPtr<BaseMolecule> _query;
     Molecule _target;
-    Array<char> _query_gross_str;
+    std::string _query_gross_str;
     Array<byte> _query_fp;
     bool _query_data_valid;
     Array<int> _target_bond_types;
@@ -293,7 +293,7 @@ public:
 
     // query like '> C6 H6'
     void parseQuery(const char* query);
-    void parseQuery(const Array<char>& query);
+    void parseQuery(const std::string& query);
     void parseQuery(Scanner& scanner);
 
     // SLQ conditions like 'CNT_C > 6 AND CNT_H > 6'
@@ -302,7 +302,7 @@ public:
     bool checkGross(const Array<int>& target_gross);
     bool checkGross(const char* target_gross_str);
 
-    bool checkMolecule(const Array<char>& target_buf);
+    bool checkMolecule(const std::string& target_buf);
     bool checkMolecule(Scanner& scanner);
 
     DECL_ERROR;
@@ -312,7 +312,7 @@ protected:
 
     Array<int> _query_gross;
     int _sign;
-    Array<char> _conditions;
+    std::string _conditions;
 };
 
 class MangoMass

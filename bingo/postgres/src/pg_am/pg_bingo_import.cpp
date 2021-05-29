@@ -66,7 +66,7 @@ public:
         {
         }
 
-        Array<char> columnName;
+        std::string columnName;
         Oid type;
 
     private:
@@ -174,7 +174,7 @@ public:
                 /*
                  * Pg atoi workaround
                  */
-                QS_DEF(Array<char>, str2);
+                QS_DEF(std::string, str2);
                 str2.readString(str, true);
                 BINGO_PG_TRY
                 {
@@ -229,7 +229,7 @@ public:
         /*
          * Prepare query table with column name
          */
-        ArrayOutput column_names(_columnNames);
+        StringOutput column_names(_columnNames);
         column_names.printf("%s(%s", tablename_text.getString(), column_text.getString());
         /*
          * Add additional columns
@@ -267,7 +267,7 @@ public:
         /*
          * Read column names for query
          */
-        Array<char> column_names;
+        std::string column_names;
         for (int i = 0; i < _importColumns.size(); ++i)
         {
             if (i != 0)
@@ -331,16 +331,16 @@ public:
 
     void import()
     {
-        QS_DEF(Array<char>, query_str);
+        QS_DEF(std::string, query_str);
         QS_DEF(Array<Datum>, q_values);
         QS_DEF(Array<Oid>, q_oids);
-        QS_DEF(Array<char>, q_nulls);
+        QS_DEF(std::string, q_nulls);
         int spi_success = 0;
 
         /*
          * Prepare query string
          */
-        ArrayOutput query_string(query_str);
+        StringOutput query_string(query_str);
         query_string.printf("INSERT INTO ");
         query_string.printf("%s", _columnNames.ptr());
         query_string.printf(" VALUES (");
@@ -427,7 +427,7 @@ public:
 protected:
     int bingo_res;
     bool _parseColumns;
-    Array<char> _columnNames;
+    std::string _columnNames;
 
     ObjArray<ImportColumn> _importColumns;
     PtrArray<ImportData> _importData;

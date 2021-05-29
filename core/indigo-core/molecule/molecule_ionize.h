@@ -58,8 +58,8 @@ namespace indigo
         DECL_ERROR;
         static void estimate_pKa(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites, Array<float>& acid_pkas,
                                  Array<float>& basic_pkas);
-        static void getAtomLocalFingerprint(Molecule& mol, int idx, Array<char>& fp, int level);
-        static void getAtomLocalKey(Molecule& mol, int idx, Array<char>& fp);
+        static void getAtomLocalFingerprint(Molecule& mol, int idx, std::string& fp, int level);
+        static void getAtomLocalKey(Molecule& mol, int idx, std::string& fp);
         static bool getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<int>& fp);
         static int buildPkaModel(int level, float threshold, const char* filename);
 

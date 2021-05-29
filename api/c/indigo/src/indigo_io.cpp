@@ -57,11 +57,11 @@ IndigoOutput::IndigoOutput(Output* output) : IndigoObject(OUTPUT), ptr(output)
 
 IndigoOutput::IndigoOutput() : IndigoObject(OUTPUT)
 {
-    ptr.reset(new ArrayOutput(_buf));
+    ptr.reset(new StringOutput(_buf));
     _own_buf = true;
 }
 
-void IndigoOutput::toString(Array<char>& str)
+void IndigoOutput::toString(std::string& str)
 {
     if (_own_buf)
         str.copy(_buf);

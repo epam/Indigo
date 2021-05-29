@@ -92,7 +92,7 @@ void RSmilesLoader::_loadReaction()
     QS_DEF(Array<int>, prod_aam);
     QS_DEF(Array<int>, rcnt_aam_ignorable);
     QS_DEF(Array<int>, prod_aam_ignorable);
-    QS_DEF(Array<char>, buf);
+    QS_DEF(std::string, buf);
     Array<int>* aams[] = {&rcnt_aam, &ctlt_aam, &prod_aam};
     Array<int>* ignorable_aams[] = {&rcnt_aam_ignorable, 0, &prod_aam_ignorable};
 
@@ -380,7 +380,7 @@ void RSmilesLoader::_loadReaction()
             else if (c == '$')
             {
                 int k = rcnt->vertexCount() + ctlt->vertexCount() + prod->vertexCount();
-                QS_DEF(Array<char>, label);
+                QS_DEF(std::string, label);
 
                 for (i = 0; i < k; i++)
                 {

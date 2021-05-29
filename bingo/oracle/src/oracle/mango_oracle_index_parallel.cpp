@@ -53,7 +53,7 @@ void MangoRegisterDispatcher::_handleResult(OsCommandResult& result)
     for (auto& warning : res.warnings)
         _context.context().warnings.add(_env, warning.rowid.c_str(), warning.message.c_str());
 
-    QS_DEF(Array<char>, prepared_data);
+    QS_DEF(std::string, prepared_data);
     for (int i = 0; i < res.valid_molecules; i++)
     {
         const char* rowid = (const char*)res.rowids.get(i);
@@ -101,8 +101,8 @@ void MangoRegisterCommand::execute(OsCommandResult& result)
     MangoRegisterResult& res = (MangoRegisterResult&)result;
     res.valid_molecules = 0;
 
-    QS_DEF(Array<char>, molfile_buf);
-    QS_DEF(Array<char>, prepared_data);
+    QS_DEF(std::string, molfile_buf);
+    QS_DEF(std::string, prepared_data);
 
     std::string failure_message;
 

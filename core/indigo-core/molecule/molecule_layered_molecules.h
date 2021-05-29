@@ -116,8 +116,8 @@ namespace indigo
         virtual bool possibleAtomNumberAndIsotope(int idx, int number, int isotope);
         virtual bool possibleAtomIsotope(int idx, int isotope);
         virtual bool possibleAtomCharge(int idx, int charge);
-        virtual void getAtomDescription(int idx, Array<char>& description);
-        virtual void getBondDescription(int idx, Array<char>& description);
+        virtual void getAtomDescription(int idx, std::string& description);
+        virtual void getBondDescription(int idx, std::string& description);
         virtual bool possibleBondOrder(int idx, int order);
 
         virtual bool isSaturatedAtom(int idx);

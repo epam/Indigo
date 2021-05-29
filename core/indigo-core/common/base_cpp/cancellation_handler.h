@@ -51,7 +51,7 @@ namespace indigo
         void reset(int mseconds);
 
     private:
-        Array<char> _message;
+        std::string _message;
         int _mseconds;
         qword _currentTime;
     };

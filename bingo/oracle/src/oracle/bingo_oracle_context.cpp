@@ -32,7 +32,7 @@
 
 BingoOracleContext::BingoOracleContext(OracleEnv& env, int id_) : BingoContext(id_), storage(env, id_), _config_changed(false)
 {
-    ArrayOutput output(_id);
+    StringOutput output(_id);
 
     output.printf("BINGO_%d", id_);
     output.writeChar(0);
@@ -120,7 +120,7 @@ void BingoOracleContext::_loadConfigParameters(OracleEnv& env)
     configGetIntDef(env, "IGNORE_BAD_VALENCE", val, 0);
     ignore_bad_valence = (val != 0);
 
-    QS_DEF(Array<char>, cmfdict);
+    QS_DEF(std::string, cmfdict);
 
     if (configGetBlob(env, "CMFDICT", cmfdict))
     {
@@ -129,7 +129,7 @@ void BingoOracleContext::_loadConfigParameters(OracleEnv& env)
         cmf_dict.load(scanner);
     }
 
-    QS_DEF(Array<char>, riddict);
+    QS_DEF(std::string, riddict);
 
     if (configGetBlob(env, "RIDDICT", riddict))
     {
@@ -142,7 +142,7 @@ void BingoOracleContext::_loadConfigParameters(OracleEnv& env)
     configGetInt(env, "SIM_SCREENING_PASS_MARK", sim_screening_pass_mark);
     configGetInt(env, "SUB_SCREENING_MAX_BITS", sub_screening_max_bits);
 
-    QS_DEF(Array<char>, log_table);
+    QS_DEF(std::string, log_table);
     if (configGetString(env, "LOG_TABLE", log_table))
         warnings.setTableNameAndColumns(env, log_table.ptr());
     else
@@ -155,9 +155,9 @@ void BingoOracleContext::saveCmfDict(OracleEnv& env)
 {
     env.dbgPrintfTS("saving cmf dictionary\n");
 
-    QS_DEF(Array<char>, cmfdict);
+    QS_DEF(std::string, cmfdict);
 
-    ArrayOutput output(cmfdict);
+    StringOutput output(cmfdict);
     cmf_dict.saveFull(output);
     cmf_dict.resetModified();
 
@@ -168,9 +168,9 @@ void BingoOracleContext::saveRidDict(OracleEnv& env)
 {
     env.dbgPrintfTS("saving rowid dictionary\n");
 
-    QS_DEF(Array<char>, riddict);
+    QS_DEF(std::string, riddict);
 
-    ArrayOutput output(riddict);
+    StringOutput output(riddict);
     rid_dict.saveFull(output);
     rid_dict.resetModified();
 
@@ -249,7 +249,7 @@ void BingoOracleContext::configSetFloat(OracleEnv& env, const char* name, float 
     _config_changed = true;
 }
 
-bool BingoOracleContext::configGetString(OracleEnv& env, const char* name, Array<char>& value)
+bool BingoOracleContext::configGetString(OracleEnv& env, const char* name, std::string& value)
 {
     if (!OracleStatement::executeSingleString(value, env,
                                               "SELECT value FROM "
@@ -268,7 +268,7 @@ void BingoOracleContext::configSetString(OracleEnv& env, const char* name, const
     _config_changed = true;
 }
 
-bool BingoOracleContext::configGetBlob(OracleEnv& env, const char* name, Array<char>& value)
+bool BingoOracleContext::configGetBlob(OracleEnv& env, const char* name, std::string& value)
 {
     if (!OracleStatement::executeSingleBlob(value, env,
                                             "SELECT value FROM "
@@ -280,7 +280,7 @@ bool BingoOracleContext::configGetBlob(OracleEnv& env, const char* name, Array<c
     return true;
 }
 
-void BingoOracleContext::configSetBlob(OracleEnv& env, const char* name, const Array<char>& value)
+void BingoOracleContext::configSetBlob(OracleEnv& env, const char* name, const std::string& value)
 {
     configReset(env, name);
 
@@ -298,7 +298,7 @@ void BingoOracleContext::configSetBlob(OracleEnv& env, const char* name, const A
     _config_changed = true;
 }
 
-bool BingoOracleContext::configGetClob(OracleEnv& env, const char* name, Array<char>& value)
+bool BingoOracleContext::configGetClob(OracleEnv& env, const char* name, std::string& value)
 {
     if (!OracleStatement::executeSingleClob(value, env,
                                             "SELECT value FROM "
@@ -310,7 +310,7 @@ bool BingoOracleContext::configGetClob(OracleEnv& env, const char* name, Array<c
     return true;
 }
 
-void BingoOracleContext::configSetClob(OracleEnv& env, const char* name, const Array<char>& value)
+void BingoOracleContext::configSetClob(OracleEnv& env, const char* name, const std::string& value)
 {
     configReset(env, name);
 
@@ -407,8 +407,8 @@ void BingoOracleContext::parseParameters(OracleEnv& env, const char* str)
 {
     BufferScanner scanner(str);
 
-    QS_DEF(Array<char>, param_name);
-    QS_DEF(Array<char>, param_value);
+    QS_DEF(std::string, param_name);
+    QS_DEF(std::string, param_value);
 
     static const char* PARAMETERS_INT[] = {
         "FP_ORD_SIZE",
@@ -483,7 +483,7 @@ void BingoOracleContext::atomicMassLoad(OracleEnv& env)
         return;
 
     const char* buffer = _relative_atomic_mass.ptr();
-    QS_DEF(Array<char>, element_str);
+    QS_DEF(std::string, element_str);
     element_str.resize(_relative_atomic_mass.size());
 
     float mass;

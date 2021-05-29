@@ -148,7 +148,7 @@ public:
     {
         size_in = SIZE_IN_MB;
     }
-    void getSizeIn(Array<char>& out)
+    void getSizeIn(std::string& out)
     {
         switch (size_in)
         {
@@ -196,7 +196,7 @@ public:
     {
         BufferScanner scanner(params_str);
 
-        QS_DEF(Array<char>, buf_word);
+        QS_DEF(std::string, buf_word);
 
         scanner.skipSpace();
 
@@ -260,10 +260,10 @@ Datum _precache_database(PG_FUNCTION_ARGS)
         CacheParams params;
         params.parseParameters(parameters_text.getString());
 
-        Array<char> tmp_buffer;
+        std::string tmp_buffer;
         Array<int> tmp_buffer2;
-        Array<char> result_buf;
-        ArrayOutput result(result_buf);
+        std::string result_buf;
+        StringOutput result(result_buf);
         ItemPointerData item_buf;
 
         int buf_size = 0;
@@ -433,7 +433,7 @@ Datum _precache_database(PG_FUNCTION_ARGS)
 //}
 //
 // static Oid getFunc(const char* name, Array<Oid>& types) {
-//   Array<char> fname;
+//   std::string fname;
 //   fname.readString(name, true);
 //   Value* func_name = makeString(fname.ptr());
 //
@@ -537,7 +537,7 @@ Datum filetotext(PG_FUNCTION_ARGS)
         BingoPgText fname_text(file_name_datum);
         BingoPgText result_text;
 
-        QS_DEF(Array<char>, buffer);
+        QS_DEF(std::string, buffer);
         buffer.clear();
         /*
          * Read file
@@ -565,7 +565,7 @@ Datum filetoblob(PG_FUNCTION_ARGS)
     {
         BingoPgText fname_text(file_name_datum);
         BingoPgText result_text;
-        QS_DEF(Array<char>, buffer);
+        QS_DEF(std::string, buffer);
         buffer.clear();
         /*
          * Read file
@@ -621,7 +621,7 @@ static void _parseQueryFieldList(const char* fields_str, RedBlackStringMap<int, 
 {
     BufferScanner scanner(fields_str);
 
-    QS_DEF(Array<char>, buf_word);
+    QS_DEF(std::string, buf_word);
 
     scanner.skipSpace();
     int column_idx = field_list.size();
@@ -665,7 +665,7 @@ static void checkExportEmpty(Datum text_datum, BingoPgText& text)
         text.init(text_datum);
 }
 
-static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum other_column_datum, Array<char>& query_str,
+static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum other_column_datum, std::string& query_str,
                                   RedBlackStringMap<int, false>& field_list)
 {
     BingoPgText tablename_text;
@@ -681,7 +681,7 @@ static int _initializeColumnQuery(Datum table_datum, Datum column_datum, Datum o
     field_list.insert(column_text.getString(), 0);
     int data_key = field_list.begin();
 
-    ArrayOutput query_out(query_str);
+    StringOutput query_out(query_str);
     query_out.printf("SELECT %s", column_text.getString());
 
     if (other_column_datum != 0)
@@ -725,7 +725,7 @@ Datum exportsdf(PG_FUNCTION_ARGS)
 
     PG_BINGO_BEGIN
     {
-        QS_DEF(Array<char>, query_str);
+        QS_DEF(std::string, query_str);
         RedBlackStringMap<int, false> field_list;
 
         BingoPgText fname_text;
@@ -770,7 +770,7 @@ Datum exportrdf(PG_FUNCTION_ARGS)
 
     PG_BINGO_BEGIN
     {
-        QS_DEF(Array<char>, query_str);
+        QS_DEF(std::string, query_str);
         RedBlackStringMap<int, false> field_list;
 
         BingoPgText fname_text;

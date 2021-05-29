@@ -106,7 +106,7 @@ void MangoExact::calculateHash(Molecule& mol, Hash& hash)
     }
 }
 
-void MangoExact::loadQuery(const Array<char>& buf)
+void MangoExact::loadQuery(const std::string& buf)
 {
     BufferScanner scanner(buf);
 
@@ -139,7 +139,7 @@ void MangoExact::loadTarget(Scanner& scanner)
     _initTarget(_target, false);
 }
 
-void MangoExact::loadTarget(const Array<char>& target_buf)
+void MangoExact::loadTarget(const std::string& target_buf)
 {
     BufferScanner scanner(target_buf);
 
@@ -203,7 +203,7 @@ bool MangoExact::matchBinary(Scanner& scanner, Scanner* xyz_scanner)
     return matcher.find();
 }
 
-bool MangoExact::matchBinary(const Array<char>& target_buf, const Array<char>* xyz_buf)
+bool MangoExact::matchBinary(const std::string& target_buf, const std::string* xyz_buf)
 {
     BufferScanner scanner(target_buf);
 
@@ -232,7 +232,7 @@ bool MangoExact::parse(const char* params)
         return true;
     }
 
-    QS_DEF(Array<char>, params_upper);
+    QS_DEF(std::string, params_upper);
 
     params_upper.upper(params);
 

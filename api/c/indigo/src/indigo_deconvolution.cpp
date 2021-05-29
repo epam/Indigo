@@ -489,8 +489,8 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
                 /*
                  * Write AP pseudo
                  */
-                QS_DEF(Array<char>, buf);
-                ArrayOutput ap_out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput ap_out(buf);
                 ap_out.printf("AP%d", att_order_m);
                 ap_out.writeChar(0);
                 fragment.setPseudoAtom(ap_atom_idx, buf.ptr());
@@ -740,8 +740,8 @@ void IndigoDecompositionMatch::completeScaffold()
 //   /*
 //    * A string to keep attachemnt orders strings
 //    */
-//   QS_DEF(Array<char>, str_key);
-//   ArrayOutput str_out(str_key);
+//   QS_DEF(std::string, str_key);
+//   StringOutput str_out(str_key);
 //
 //
 //   int new_rg_idx = 0;
@@ -883,8 +883,8 @@ void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& deco_match
     /*
      * A string to keep attachemnt orders strings
      */
-    QS_DEF(Array<char>, str_key);
-    ArrayOutput str_out(str_key);
+    QS_DEF(std::string, str_key);
+    StringOutput str_out(str_key);
 
     int max_rg_idx = 0;
     /*
@@ -1120,8 +1120,8 @@ int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int 
     /*
      * A string to keep attachemnt orders strings
      */
-    QS_DEF(Array<char>, str_key);
-    ArrayOutput str_out(str_key);
+    QS_DEF(std::string, str_key);
+    StringOutput str_out(str_key);
     int max_rg_idx = match_rgroups.at("max_rg_idx").at(0);
 
     int n_rgroups = deco_match.getRgroupNumber();

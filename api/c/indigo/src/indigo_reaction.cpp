@@ -561,7 +561,7 @@ static int readAAMOptions(const char* mode, ReactionAutomapper& ram)
     if (mode == 0 || mode[0] == 0)
         return nmode;
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
     BufferScanner scanner(mode);
 
     while (1)
@@ -763,7 +763,7 @@ CEXPORT const char* indigoCanonicalRSmiles(int reaction)
         Reaction& react = self.getObject(reaction).getReaction();
 
         auto& tmp = self.getThreadTmpData();
-        ArrayOutput output(tmp.string);
+        StringOutput output(tmp.string);
         CanonicalRSmilesSaver saver(output);
 
         saver.saveReaction(react);

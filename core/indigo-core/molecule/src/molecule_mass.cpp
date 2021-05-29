@@ -321,7 +321,7 @@ int MoleculeMass::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context)
     return strncmp(Element::toString(ec1.elem), Element::toString(ec2.elem), 3);
 }
 
-void MoleculeMass::massComposition(Molecule& mol, Array<char>& str )
+void MoleculeMass::massComposition(Molecule& mol, std::string& str )
 {
     std::set<int> selected_atoms;
     mol.getAtomSelection( selected_atoms );
@@ -385,7 +385,7 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str )
 
     double totalWeight = molecularWeight(mol);
 
-    ArrayOutput output(str);
+    StringOutput output(str);
     if (totalWeight)
     {
         QS_DEF(Array<_ElemCounter>, counters);

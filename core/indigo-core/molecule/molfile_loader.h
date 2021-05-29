@@ -123,9 +123,9 @@ namespace indigo
         void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg);
         void _readCollectionBlock3000();
         void _readSGroupsBlock3000();
-        void _preparePseudoAtomLabel(Array<char>& pseudo);
-        void _readMultiString(Array<char>& str);
-        void _readStringInQuotes(Scanner& scanner, Array<char>* str);
+        void _preparePseudoAtomLabel(std::string& pseudo);
+        void _readMultiString(std::string& str);
+        void _readStringInQuotes(Scanner& scanner, std::string* str);
         void _init();
         void _appendQueryAtom(const char* atom_label, AutoPtr<QueryMolecule::Atom>& atom);
 

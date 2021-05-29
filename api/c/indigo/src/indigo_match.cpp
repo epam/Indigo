@@ -50,7 +50,7 @@ void _indigoParseTauCondition(const char* list_ptr, int& aromaticity, Array<int>
 
     label_list.clear();
 
-    QS_DEF(Array<char>, buf);
+    QS_DEF(std::string, buf);
     buf.clear();
 
     while (*list_ptr != 0)
@@ -120,7 +120,7 @@ DLLEXPORT bool _indigoParseTautomerFlags(const char* flags, IndigoTautomerParams
 
     scanner.skipSpace();
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
 
     if (scanner.isEOF())
         return false;
@@ -162,7 +162,7 @@ DLLEXPORT int _indigoParseExactFlags(const char* flags, bool reaction, float* rm
 
     BufferScanner scanner(flags);
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
     while (1)
     {
         scanner.skipSpace();

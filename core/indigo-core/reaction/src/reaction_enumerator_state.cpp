@@ -385,12 +385,12 @@ void ReactionEnumeratorState::_productProcess(void)
 
     if (!is_same_keeping)
     {
-        QS_DEF(Array<char>, cur_smiles);
+        QS_DEF(std::string, cur_smiles);
         cur_smiles.clear();
 
         try
         {
-            ArrayOutput arr_out(cur_smiles);
+            StringOutput arr_out(cur_smiles);
             CanonicalSmilesSaver product_cs_saver(arr_out);
             product_cs_saver.saveMolecule(ready_product);
         }

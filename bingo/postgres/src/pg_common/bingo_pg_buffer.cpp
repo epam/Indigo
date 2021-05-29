@@ -325,7 +325,7 @@ using namespace indigo;
 
 void BingoPgBuffer::formEmptyIndexTuple(int size)
 {
-    QS_DEF(Array<char>, buf);
+    QS_DEF(std::string, buf);
     buf.resize(size);
     buf.zerofill();
     formIndexTuple(buf.ptr(), buf.sizeInBytes());

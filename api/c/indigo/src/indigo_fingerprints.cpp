@@ -194,16 +194,16 @@ CEXPORT int indigoLoadFingerprintFromDescriptors(const double* arr, int arr_len,
     INDIGO_END(-1);
 }
 
-void IndigoFingerprint::toString(Array<char>& str)
+void IndigoFingerprint::toString(std::string& str)
 {
-    ArrayOutput output(str);
+    StringOutput output(str);
     int i;
 
     for (i = 0; i < bytes.size(); i++)
         output.printf("%02x", bytes[i]);
 }
 
-void IndigoFingerprint::toBuffer(Array<char>& buf)
+void IndigoFingerprint::toBuffer(std::string& buf)
 {
     buf.copy((char*)bytes.ptr(), bytes.size());
 }
@@ -269,7 +269,7 @@ static float _indigoSimilarity(Array<byte>& arr1, Array<byte>& arr2, const char*
 
 static void _collectAtomFeatures(BaseMolecule& m, RedBlackStringMap<int>& counters, bool with_degrees)
 {
-    QS_DEF(Array<char>, symbol);
+    QS_DEF(std::string, symbol);
     for (int i = m.vertexBegin(); i != m.vertexEnd(); i = m.vertexNext(i))
     {
         int iso = 0, charge = 0, radical = 0;
@@ -298,7 +298,7 @@ static void _collectAtomFeatures(BaseMolecule& m, RedBlackStringMap<int>& counte
 
 static void _collectBondFeatures(BaseMolecule& m, RedBlackStringMap<int>& counters, bool with_degrees)
 {
-    QS_DEF(Array<char>, symbol);
+    QS_DEF(std::string, symbol);
     for (int i = m.edgeBegin(); i != m.edgeEnd(); i = m.edgeNext(i))
     {
         const Edge& e = m.getEdge(i);
@@ -490,7 +490,7 @@ CEXPORT const char* indigoOneBitsList(int fingerprint)
     {
         Array<byte>& fp = IndigoFingerprint::cast(self.getObject(fingerprint)).bytes;
         auto& tmp = self.getThreadTmpData();
-        ArrayOutput out(tmp.string);
+        StringOutput out(tmp.string);
         tmp.string.clear();
         for (int i = 0; i < fp.sizeInBytes() * 8; ++i)
         {

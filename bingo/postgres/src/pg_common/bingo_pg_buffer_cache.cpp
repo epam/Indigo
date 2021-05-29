@@ -338,7 +338,7 @@ bool BingoPgBufferCacheBin::isEnoughSpace(int size)
     return result;
 }
 
-unsigned short BingoPgBufferCacheBin::addBin(indigo::Array<char>& bin_buf)
+unsigned short BingoPgBufferCacheBin::addBin(indigo::std::string& bin_buf)
 {
 
     /*
@@ -355,8 +355,8 @@ unsigned short BingoPgBufferCacheBin::addBin(indigo::Array<char>& bin_buf)
     /*
      * Prepare new array = size + buf
      */
-    indigo::Array<char> out_arr;
-    indigo::ArrayOutput ao(out_arr);
+    indigo::std::string out_arr;
+    indigo::StringOutput ao(out_arr);
     BingoPgCommon::DataProcessing::handleArray(bin_buf, 0, &ao);
     /*
      * Store data with it size
@@ -372,7 +372,7 @@ unsigned short BingoPgBufferCacheBin::addBin(indigo::Array<char>& bin_buf)
     return result;
 }
 
-unsigned short BingoPgBufferCacheBin::writeBin(indigo::Array<char>& bin_buf)
+unsigned short BingoPgBufferCacheBin::writeBin(indigo::std::string& bin_buf)
 {
     /*
      * If read strategy then it is an update so read the buffer in this function also
@@ -388,8 +388,8 @@ unsigned short BingoPgBufferCacheBin::writeBin(indigo::Array<char>& bin_buf)
     /*
      * Prepare new array = size + buf
      */
-    indigo::Array<char> out_arr;
-    indigo::ArrayOutput ao(out_arr);
+    indigo::std::string out_arr;
+    indigo::StringOutput ao(out_arr);
     BingoPgCommon::DataProcessing::handleArray(bin_buf, 0, &ao);
     /*
      * Store data with it size
@@ -405,7 +405,7 @@ unsigned short BingoPgBufferCacheBin::writeBin(indigo::Array<char>& bin_buf)
     return result;
 }
 
-void BingoPgBufferCacheBin::readBin(unsigned short offset, indigo::Array<char>& result)
+void BingoPgBufferCacheBin::readBin(unsigned short offset, indigo::std::string& result)
 {
     if (!_write)
     {

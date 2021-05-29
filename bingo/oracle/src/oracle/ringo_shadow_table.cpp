@@ -27,7 +27,7 @@ RingoShadowTable::RingoShadowTable(int context_id)
 {
     _table_name.push(0);
 
-    ArrayOutput output(_table_name);
+    StringOutput output(_table_name);
 
     output.printf("SHADOW_%d", context_id);
     output.writeChar(0);

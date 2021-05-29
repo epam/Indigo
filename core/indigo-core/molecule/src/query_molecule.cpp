@@ -202,9 +202,9 @@ bool QueryMolecule::possibleAtomRadical(int idx, int radical)
     return _atoms[idx]->possibleValue(ATOM_RADICAL, radical);
 }
 
-void QueryMolecule::getAtomDescription(int idx, Array<char>& description)
+void QueryMolecule::getAtomDescription(int idx, std::string& description)
 {
-    ArrayOutput out(description);
+    StringOutput out(description);
 
     out.writeChar('[');
     _getAtomDescription(_atoms[idx], out, 0);
@@ -318,9 +318,9 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
     }
 }
 
-void QueryMolecule::getBondDescription(int idx, Array<char>& description)
+void QueryMolecule::getBondDescription(int idx, std::string& description)
 {
-    ArrayOutput out(description);
+    StringOutput out(description);
 
     _getBondDescription(_bonds[idx], out);
     out.writeChar(0);

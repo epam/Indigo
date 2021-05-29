@@ -56,9 +56,9 @@ protected:
 
     RingoFetchContext& _context;
 
-    Array<char> _table_name;
+    std::string _table_name;
     int _total_count;
-    Array<char> _counting_select;
+    std::string _counting_select;
     int _processed_rows;
     bool _end;
     AutoPtr<OracleEnv> _env;

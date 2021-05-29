@@ -43,12 +43,12 @@ RingoFastIndex::~RingoFastIndex()
 {
 }
 
-void RingoFastIndex::_decompressRowid(const Array<char>& stored, OraRowidText& rid)
+void RingoFastIndex::_decompressRowid(const std::string& stored, OraRowidText& rid)
 {
     BufferScanner scanner(stored.ptr() + 2, stored[1]);
 
     RowIDLoader loader(_context.context().context().rid_dict, scanner);
-    QS_DEF(Array<char>, rowid);
+    QS_DEF(std::string, rowid);
 
     loader.loadRowID(rowid);
 
@@ -64,7 +64,7 @@ void RingoFastIndex::_match(OracleEnv& env, int idx)
     _last_id = idx;
 
     BingoStorage& storage = this->_context.context().context().storage;
-    QS_DEF(Array<char>, stored);
+    QS_DEF(std::string, stored);
 
     storage.get(idx, stored);
 
@@ -201,7 +201,7 @@ bool RingoFastIndex::getLastRowid(OraRowidText& id)
         return false;
 
     BingoStorage& storage = this->_context.context().context().storage;
-    QS_DEF(Array<char>, stored);
+    QS_DEF(std::string, stored);
 
     storage.get(_last_id, stored);
     _decompressRowid(stored, id);

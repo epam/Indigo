@@ -436,12 +436,12 @@ bool LayeredMolecules::possibleAtomCharge(int idx, int charge)
     return _proto.possibleAtomCharge(idx, charge);
 }
 
-void LayeredMolecules::getAtomDescription(int idx, Array<char>& description)
+void LayeredMolecules::getAtomDescription(int idx, std::string& description)
 {
     return _proto.getAtomDescription(idx, description);
 }
 
-void LayeredMolecules::getBondDescription(int idx, Array<char>& description)
+void LayeredMolecules::getBondDescription(int idx, std::string& description)
 {
     throw Error("getBondDescription method is not implemented in LayeredMolecules class");
 }

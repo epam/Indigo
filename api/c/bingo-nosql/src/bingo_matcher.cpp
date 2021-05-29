@@ -19,7 +19,7 @@ using namespace bingo;
 static const char* _matcher_params_prop = "";
 static const char* _matcher_part_prop = "part";
 
-GrossQueryData::GrossQueryData(Array<char>& gross_str) : _obj(gross_str)
+GrossQueryData::GrossQueryData(std::string& gross_str) : _obj(gross_str)
 {
 }
 
@@ -1432,7 +1432,7 @@ void RxnExactMatcher::_setParameters(const char* flags)
 
     BufferScanner scanner(flags);
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
     while (1)
     {
         scanner.skipSpace();

@@ -330,8 +330,8 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, rapidjson::Writer<rap
 
 void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+    QS_DEF(std::string, buf);
+    StringOutput out(buf);
     if (mol.edgeCount() > 0)
     {
         writer.Key("bonds");
@@ -566,8 +566,8 @@ void indigo::MoleculeJsonSaver::saveSelection(BaseMolecule& mol, rapidjson::Writ
 
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& writer)
 {
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+    QS_DEF(std::string, buf);
+    StringOutput out(buf);
     if (mol.vertexCount() > 0)
     {
         for (auto i : mol.vertices())
@@ -664,8 +664,8 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
 
 void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, rapidjson::Writer<rapidjson::StringBuffer>& writer)
 {
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+    QS_DEF(std::string, buf);
+    StringOutput out(buf);
 
     buf.clear();
     out.printf("rg%d", rgnum);
@@ -720,8 +720,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
         ml.make();
     }
     BaseMolecule::collapse(*mol);
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+    QS_DEF(std::string, buf);
+    StringOutput out(buf);
     std::set<int> rgrp_full_list;
     writer.StartObject();
 

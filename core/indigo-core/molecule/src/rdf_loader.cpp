@@ -98,7 +98,7 @@ int RdfLoader::count()
 void RdfLoader::readNext()
 {
 
-    ArrayOutput output(data);
+    StringOutput output(data);
     data.clear();
     properties.clear();
 
@@ -164,7 +164,7 @@ void RdfLoader::readNext()
     /*
      * Current value for property reading
      */
-    Array<char>* current_datum = 0;
+    std::string* current_datum = 0;
     /*
      * Read properties
      */
@@ -176,7 +176,7 @@ void RdfLoader::readNext()
 
         if (_startsWith("$DTYPE"))
         {
-            QS_DEF(Array<char>, property_name);
+            QS_DEF(std::string, property_name);
             BufferScanner scanner(_innerBuffer.ptr());
 
             /*
@@ -243,7 +243,7 @@ bool RdfLoader::_readIdentifiers(bool from_begin)
 {
     bool result = false;
     BufferScanner scanner(_innerBuffer.ptr());
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
 
     scanner.skipSpace();
     while (!scanner.isEOF())
@@ -256,7 +256,7 @@ bool RdfLoader::_readIdentifiers(bool from_begin)
             /*
              * Insert new property key
              */
-            Array<char>& val = properties.insert("internal-regno");
+            std::string& val = properties.insert("internal-regno");
             scanner.skipSpace();
             /*
              * Insert new property value
@@ -270,7 +270,7 @@ bool RdfLoader::_readIdentifiers(bool from_begin)
             /*
              * Insert new property key
              */
-            Array<char>& val = properties.insert("external-regno");
+            std::string& val = properties.insert("external-regno");
             scanner.skipSpace();
             /*
              * Insert new property value
@@ -290,7 +290,7 @@ bool RdfLoader::_readIdentifiers(bool from_begin)
     return result;
 }
 
-bool RdfLoader::_readLine(Scanner& scanner, Array<char>& buffer)
+bool RdfLoader::_readLine(Scanner& scanner, std::string& buffer)
 {
     buffer.clear();
     if (scanner.isEOF())

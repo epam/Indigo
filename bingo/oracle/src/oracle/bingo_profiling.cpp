@@ -27,8 +27,8 @@
 void bingoProfilingPrintStatistics(bool print_all)
 {
     // Print profiling statistics
-    QS_DEF(Array<char>, buffer);
-    ArrayOutput output(buffer);
+    QS_DEF(std::string, buffer);
+    StringOutput output(buffer);
     profGetStatistics(output, print_all);
     buffer.push(0);
     logger.dbgPrintf("Profiling statistics:\n");

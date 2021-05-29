@@ -166,7 +166,7 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config)
     /*
      * Initialize config buffer
      */
-    indigo::Array<char> config_data;
+    indigo::std::string config_data;
     bingo_config.serialize(config_data);
     BingoPgBuffer config_buffer;
     config_buffer.writeNewBuffer(_index, BINGO_CONFIG_PAGE);
@@ -223,7 +223,7 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine)
     /*
      * Fulfil dictionary buffers
      */
-    indigo::Array<char> buffer_dict;
+    indigo::std::string buffer_dict;
     int dict_offset = 0;
     int dict_buf_size;
 
@@ -374,13 +374,13 @@ int BingoPgIndex::_getSectionOffset(int section_idx)
     return result;
 }
 
-void BingoPgIndex::readDictionary(indigo::Array<char>& dictionary)
+void BingoPgIndex::readDictionary(indigo::std::string& dictionary)
 {
     dictionary.clear();
     if (_metaInfo.n_blocks_for_dictionary == 0)
         return;
 
-    indigo::Array<char> buffer_dict;
+    indigo::std::string buffer_dict;
     int block_size = _metaInfo.n_blocks_for_dictionary + _metaInfo.offset_dictionary;
     /*
      * Read all buffers for dictionary
@@ -528,7 +528,7 @@ bool BingoPgIndex::isStructureRemoved(ItemPointerData& cmf_item)
     return isStructureRemoved(ItemPointerGetBlockNumber(&cmf_item), ItemPointerGetOffsetNumber(&cmf_item));
 }
 
-void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>& cmf_buf)
+void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::std::string& cmf_buf)
 {
     profTimerStart(t0, "bingo_pg.read_cmf");
     /*
@@ -565,7 +565,7 @@ void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>
     elog(DEBUG1, "bingo: index: read cmf: successfully read cmf of size %d for block %d offset %d", cmf_buf.size(), block_num, block_offset);
 }
 
-void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>& xyz_buf)
+void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::std::string& xyz_buf)
 {
     /*
      * Prepare info for reading

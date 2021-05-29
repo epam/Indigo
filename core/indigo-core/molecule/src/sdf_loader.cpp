@@ -115,11 +115,11 @@ bool SdfLoader::isEOF()
 
 void SdfLoader::readNext()
 {
-    ArrayOutput output(data);
+    StringOutput output(data);
     output.writeArray(_preread);
     int n_preread = _preread.size();
     _preread.clear();
-    QS_DEF(Array<char>, str);
+    QS_DEF(std::string, str);
 
     if (_scanner->isEOF())
         throw Error("end of stream");
@@ -167,7 +167,7 @@ void SdfLoader::readNext()
             if (ws.readChar() == '<')
                 break;
 
-        QS_DEF(Array<char>, word);
+        QS_DEF(std::string, word);
         bool have_word = false;
 
         word.clear();

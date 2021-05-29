@@ -158,7 +158,7 @@ namespace indigo
             clear();
         }
         void clear();
-        Array<char> text;
+        std::string text;
         FONT_SIZE fontsize;
     };
 
@@ -249,7 +249,7 @@ namespace indigo
         int stereoGroupNumber;
         int implicit_h;
         Array<int> list;
-        Array<char> pseudo;
+        std::string pseudo;
         Array<int> nearbyAtoms;
         int aam;
         int inversion;
@@ -506,8 +506,8 @@ namespace indigo
         int marginY;
         int commentOffset;
         int titleOffset;
-        Array<char> comment;
-        Array<char> titleProp;
+        std::string comment;
+        std::string titleProp;
         COMMENT_POS commentPos;
         MultilineTextLayout commentAlign;
         MultilineTextLayout titleAlign;
@@ -558,7 +558,7 @@ namespace indigo
         bool showCycles; // for diagnostic purposes
         bool agentsBelowArrow;
         bool collapseSuperatoms;
-        Array<char> atomColorProp;
+        std::string atomColorProp;
         AutoPtr<RenderCdxmlContext> cdxml_context;
 
     private:

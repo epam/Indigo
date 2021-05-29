@@ -50,7 +50,7 @@ bool RingoSubstructure::parse(const char* params)
     return true;
 }
 
-void RingoSubstructure::loadQuery(const Array<char>& buf)
+void RingoSubstructure::loadQuery(const std::string& buf)
 {
     BufferScanner scanner(buf);
 
@@ -90,7 +90,7 @@ void RingoSubstructure::loadSMARTS(Scanner& scanner)
     _smarts = true;
 }
 
-void RingoSubstructure::loadSMARTS(const Array<char>& buf)
+void RingoSubstructure::loadSMARTS(const std::string& buf)
 {
     BufferScanner scanner(buf);
 
@@ -156,7 +156,7 @@ void RingoSubstructure::_initTarget(bool from_database)
     _nei_target_counters.calculate(_target_reaction);
 }
 
-bool RingoSubstructure::matchBinary(const Array<char>& buf)
+bool RingoSubstructure::matchBinary(const std::string& buf)
 {
     BufferScanner scanner(buf);
 
@@ -180,7 +180,7 @@ bool RingoSubstructure::matchBinary(Scanner& scanner)
     return rsm.find();
 }
 
-void RingoSubstructure::loadTarget(const Array<char>& buf)
+void RingoSubstructure::loadTarget(const std::string& buf)
 {
     BufferScanner scanner(buf);
 
@@ -217,9 +217,9 @@ bool RingoSubstructure::matchLoadedTarget()
     return rsm.find();
 }
 
-void RingoSubstructure::getHighlightedTarget(Array<char>& buf)
+void RingoSubstructure::getHighlightedTarget(std::string& buf)
 {
-    ArrayOutput output(buf);
+    StringOutput output(buf);
     RxnfileSaver saver(output);
 
     if (!Reaction::haveCoord(_target_reaction))

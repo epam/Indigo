@@ -69,9 +69,9 @@ namespace indigo
     DLLEXPORT OsLock _profiling_global_lock, _profiling_global_names_lock;
 }
 
-ObjArray<Array<char>>& ProfilingSystem::getNames()
+ObjArray<std::string>& ProfilingSystem::getNames()
 {
-    static ObjArray<Array<char>> _names;
+    static ObjArray<std::string> _names;
     return _names;
 }
 
@@ -92,7 +92,7 @@ int ProfilingSystem::getNameIndex(const char* name, bool add_if_not_exists)
     if (!add_if_not_exists)
         return -1;
     // Add new label
-    Array<char>& name_record = _names.push();
+    std::string& name_record = _names.push();
     name_record.copy(name, strlen(name) + 1);
     return _names.size() - 1;
 }

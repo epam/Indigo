@@ -162,7 +162,7 @@ void RenderParamInterface::_prepareReaction(RenderParams& params, BaseReaction& 
     }
 }
 
-int RenderParamInterface::multilineTextUnit(RenderItemFactory& factory, int type, const Array<char>& titleStr, const float spacing,
+int RenderParamInterface::multilineTextUnit(RenderItemFactory& factory, int type, const std::string& titleStr, const float spacing,
                                             const MultilineTextLayout::Alignment alignment)
 {
     int title = factory.addItemColumn();

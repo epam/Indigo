@@ -49,10 +49,10 @@ std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> Reactio
     return result;
 }
 
-void ReactionGrossFormula::toString_Hill(std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>& gross, Array<char>& str, bool add_rsites)
+void ReactionGrossFormula::toString_Hill(std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>& gross, std::string& str, bool add_rsites)
 {
-    ArrayOutput output(str);
-    Array<char> temp_str;
+    StringOutput output(str);
+    std::string temp_str;
 
     bool first_written = false;
     for (int i = 0; i < gross.first.size(); i++)

@@ -76,7 +76,7 @@ void MangoSubstructure::loadSMARTS(Scanner& scanner)
     _use_pi_systems_matcher = false;
 }
 
-void MangoSubstructure::loadQuery(const Array<char>& buf)
+void MangoSubstructure::loadQuery(const std::string& buf)
 {
     BufferScanner scanner(buf);
 
@@ -90,7 +90,7 @@ void MangoSubstructure::loadQuery(const char* str)
     loadQuery(scanner);
 }
 
-void MangoSubstructure::loadSMARTS(const Array<char>& buf)
+void MangoSubstructure::loadSMARTS(const std::string& buf)
 {
     BufferScanner scanner(buf);
 
@@ -139,7 +139,7 @@ void MangoSubstructure::_validateQueryExtraData()
     _query_extra_valid = true;
 }
 
-void MangoSubstructure::loadTarget(const Array<char>& molfile_buf)
+void MangoSubstructure::loadTarget(const std::string& molfile_buf)
 {
     BufferScanner scanner(molfile_buf);
 
@@ -197,9 +197,9 @@ void MangoSubstructure::loadBinaryTargetXyz(Scanner& xyz_scanner)
     cmf_loader->loadXyz(xyz_scanner);
 }
 
-void MangoSubstructure::getHighlightedTarget(Array<char>& molfile_buf)
+void MangoSubstructure::getHighlightedTarget(std::string& molfile_buf)
 {
-    ArrayOutput output(molfile_buf);
+    StringOutput output(molfile_buf);
     MolfileSaver saver(output);
 
     if (!_target.have_xyz)
@@ -217,9 +217,9 @@ void MangoSubstructure::getHighlightedTarget(Array<char>& molfile_buf)
     saver.saveMolecule(_target);
 }
 
-void MangoSubstructure::getHighlightedTarget_Smiles(Array<char>& smiles_buf)
+void MangoSubstructure::getHighlightedTarget_Smiles(std::string& smiles_buf)
 {
-    ArrayOutput output(smiles_buf);
+    StringOutput output(smiles_buf);
     SmilesSaver saver(output);
 
     if (preserve_bonds_on_highlighting)
@@ -298,7 +298,7 @@ bool MangoSubstructure::needCoords()
     return MoleculeSubstructureMatcher::needCoords(match_3d, _query);
 }
 
-bool MangoSubstructure::matchBinary(const Array<char>& target_buf, const Array<char>* xyz_buf)
+bool MangoSubstructure::matchBinary(const std::string& target_buf, const std::string* xyz_buf)
 {
     BufferScanner scanner(target_buf);
 
@@ -349,7 +349,7 @@ bool MangoSubstructure::parse(const char* params)
 
     BufferScanner scanner(params);
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
 
     scanner.skipSpace();
     while (!scanner.isEOF())

@@ -58,7 +58,7 @@ SimilarityMoleculeQuery::SimilarityMoleculeQuery(/* const */ Molecule& mol) : Ba
     _mol.clone(mol, 0, 0);
 }
 
-GrossQuery::GrossQuery(/* const */ Array<char>& str)
+GrossQuery::GrossQuery(/* const */ std::string& str)
 {
     _gross_str.copy(str);
 }
@@ -68,7 +68,7 @@ bool GrossQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params
     throw Exception("GrossQuery::buildFingerprint can\t be called");
 }
 
-Array<char>& GrossQuery::getGrossString()
+std::string& GrossQuery::getGrossString()
 {
     return _gross_str;
 }
@@ -131,16 +131,16 @@ bool IndexMolecule::buildFingerprint(const MoleculeFingerprintParameters& fp_par
     return true;
 }
 
-bool IndexMolecule::buildGrossString(Array<char>& gross) /* const */
+bool IndexMolecule::buildGrossString(std::string& gross) /* const */
 {
     GrossStorage::calculateMolFormula(_mol, gross);
 
     return true;
 }
 
-bool IndexMolecule::buildCfString(Array<char>& cf) // const
+bool IndexMolecule::buildCfString(std::string& cf) // const
 {
-    ArrayOutput arr_out(cf);
+    StringOutput arr_out(cf);
     CmfSaver cmf_saver(arr_out);
 
     cmf_saver.saveMolecule(_mol);
@@ -177,16 +177,16 @@ bool IndexReaction::buildFingerprint(const MoleculeFingerprintParameters& fp_par
     return true;
 }
 
-bool IndexReaction::buildGrossString(Array<char>& gross) /* const */
+bool IndexReaction::buildGrossString(std::string& gross) /* const */
 {
     GrossStorage::calculateRxnFormula(_rxn, gross);
 
     return true;
 }
 
-bool IndexReaction::buildCfString(Array<char>& cf) // const
+bool IndexReaction::buildCfString(std::string& cf) // const
 {
-    ArrayOutput arr_out(cf);
+    StringOutput arr_out(cf);
     CrfSaver crf_saver(arr_out);
 
     crf_saver.saveReaction(_rxn);

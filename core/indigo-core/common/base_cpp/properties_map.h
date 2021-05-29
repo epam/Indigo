@@ -39,17 +39,17 @@ namespace indigo
         ~PropertiesMap()
         {
         }
-        //   inline RedBlackStringObjMap< Array<char> >& getProperties() {
+        //   inline RedBlackStringObjMap< std::string >& getProperties() {
         //      return _properties;
         //   }
-        void copy(RedBlackStringObjMap<Array<char>>& properties);
+        void copy(RedBlackStringObjMap<std::string>& properties);
         void copy(PropertiesMap&);
         void insert(const char* key, const char* value);
-        Array<char>& insert(const char* key);
+        std::string& insert(const char* key);
 
         const char* key(int);
         const char* value(int);
-        Array<char>& valueBuf(const char* key);
+        std::string& valueBuf(const char* key);
 
         bool contains(const char* key);
         const char* at(const char* key);
@@ -84,8 +84,8 @@ namespace indigo
 
     private:
         PropertiesMap(const PropertiesMap&);
-        RedBlackStringObjMap<Array<char>> _properties;
-        ObjArray<Array<char>> _propertyNames;
+        RedBlackStringObjMap<std::string> _properties;
+        ObjArray<std::string> _propertyNames;
     };
 
 } // namespace indigo

@@ -60,7 +60,7 @@ CEXPORT int indigoExtractCommonScaffold(int structures, const char* options)
         if (options != 0)
         {
             BufferScanner scanner(options);
-            QS_DEF(Array<char>, word);
+            QS_DEF(std::string, word);
 
             scanner.skipSpace();
             if (!scanner.isEOF())

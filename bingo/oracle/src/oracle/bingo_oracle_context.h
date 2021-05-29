@@ -53,12 +53,12 @@ public:
     bool configGetIntDef(OracleEnv& env, const char* name, int& value, int default_value);
     bool configGetFloat(OracleEnv& env, const char* name, float& value);
     void configSetFloat(OracleEnv& env, const char* name, float value);
-    bool configGetString(OracleEnv& env, const char* name, Array<char>& value);
+    bool configGetString(OracleEnv& env, const char* name, std::string& value);
     void configSetString(OracleEnv& env, const char* name, const char* value);
-    bool configGetBlob(OracleEnv& env, const char* name, Array<char>& value);
-    void configSetBlob(OracleEnv& env, const char* name, const Array<char>& value);
-    bool configGetClob(OracleEnv& env, const char* name, Array<char>& value);
-    void configSetClob(OracleEnv& env, const char* name, const Array<char>& value);
+    bool configGetBlob(OracleEnv& env, const char* name, std::string& value);
+    void configSetBlob(OracleEnv& env, const char* name, const std::string& value);
+    bool configGetClob(OracleEnv& env, const char* name, std::string& value);
+    void configSetClob(OracleEnv& env, const char* name, const std::string& value);
 
     void configResetAll(OracleEnv& env);
     void configReset(OracleEnv& env, const char* name);
@@ -87,12 +87,12 @@ protected:
 
     int _longop_slno;
     int _longop_rindex;
-    Array<char> _longop_operation;
-    Array<char> _longop_units;
-    Array<char> _longop_target; // actually, it is the source table
+    std::string _longop_operation;
+    std::string _longop_units;
+    std::string _longop_target; // actually, it is the source table
     int _longop_total;
 
-    Array<char> _id;
+    std::string _id;
     SharedMemory* _shmem;
 
     void _loadConfigParameters(OracleEnv& env);

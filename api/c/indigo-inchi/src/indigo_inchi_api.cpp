@@ -162,7 +162,7 @@ void indigoInchiSetInchiOptions(const char* options)
     inchi_wrapper.setOptions(options);
 }
 
-void indigoInchiGetInchiOptions(Array<char>& value)
+void indigoInchiGetInchiOptions(std::string& value)
 {
     InchiWrapper& inchi_wrapper = indigoInchiGetInstance().inchi;
     inchi_wrapper.getOptions(value);

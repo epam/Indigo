@@ -78,9 +78,9 @@ void MainLayerFormula::_collectAtomsCount()
     _atoms_count[ELEM_H] += implicit_hydrogens_count;
 }
 
-void MainLayerFormula::printFormula(Array<char>& result)
+void MainLayerFormula::printFormula(std::string& result)
 {
-    ArrayOutput output(result);
+    StringOutput output(result);
 
     bool carbon_present = (_atoms_count[ELEM_C] != 0);
     if (carbon_present)
@@ -245,7 +245,7 @@ int MainLayerConnections::compareComponentsConnectionTables(MainLayerConnections
     return 0;
 }
 
-void MainLayerConnections::printConnectionTable(Array<char>& result)
+void MainLayerConnections::printConnectionTable(std::string& result)
 {
     Molecule& cano_mol = _getMolecule();
 
@@ -255,7 +255,7 @@ void MainLayerConnections::printConnectionTable(Array<char>& result)
         result.push(0);
         return;
     }
-    ArrayOutput output(result);
+    StringOutput output(result);
 
     QS_DEF(Array<int>, vertex_ranks);
     vertex_ranks.clear_resize(cano_mol.vertexEnd());
@@ -465,10 +465,10 @@ int HydrogensLayer::compareComponentsHydrogens(HydrogensLayer& comp1, HydrogensL
     return 0;
 }
 
-void HydrogensLayer::print(Array<char>& result)
+void HydrogensLayer::print(std::string& result)
 {
     // Print hydrogens sublayer for the main layer
-    ArrayOutput output(result);
+    StringOutput output(result);
 
     // Find maximum number of hydrogens
     const Array<int>& hydrogens = _per_atom_immobile;
@@ -564,10 +564,10 @@ int HydrogensLayer::compareMappings(MoleculeInChIUtils::Mapping& m1, MoleculeInC
 // CisTransStereochemistryLayer
 //
 
-void CisTransStereochemistryLayer::print(Array<char>& result)
+void CisTransStereochemistryLayer::print(std::string& result)
 {
     // Print hydrogens sublayer for the main layer
-    ArrayOutput output(result);
+    StringOutput output(result);
 
     Molecule& mol = _getMolecule();
     QS_DEF(Array<int[2]>, dbl);
@@ -708,9 +708,9 @@ int CisTransStereochemistryLayer::compareComponents(CisTransStereochemistryLayer
 // TetrahedralStereochemistryLayer
 //
 
-void TetrahedralStereochemistryLayer::print(Array<char>& result)
+void TetrahedralStereochemistryLayer::print(std::string& result)
 {
-    ArrayOutput output(result);
+    StringOutput output(result);
 
     Molecule& mol = _getMolecule();
     int first_sign = 0;
@@ -742,9 +742,9 @@ int TetrahedralStereochemistryLayer::_getFirstSign()
     return 0;
 }
 
-void TetrahedralStereochemistryLayer::printEnantiomers(Array<char>& result)
+void TetrahedralStereochemistryLayer::printEnantiomers(std::string& result)
 {
-    ArrayOutput output(result);
+    StringOutput output(result);
 
     int sign = _getFirstSign();
     if (sign != 0)

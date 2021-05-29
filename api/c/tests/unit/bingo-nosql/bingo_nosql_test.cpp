@@ -48,7 +48,7 @@ TEST(BingoNosqlTest, test_loadtargetscmf)
     SdfLoader sdf(sc);
     QueryMolecule qmol;
 
-    Array<char> qbuf;
+    std::string qbuf;
     qbuf.readString("N(#C)=C(C)C", false);
     BufferScanner sm_scanner(qbuf);
     SmilesLoader smiles_loader(sm_scanner);
@@ -61,8 +61,8 @@ TEST(BingoNosqlTest, test_loadtargetscmf)
         MolfileLoader loader(bsc);
         Molecule mol;
         loader.loadMolecule(mol);
-        Array<char> buf;
-        ArrayOutput buf_out(buf);
+        std::string buf;
+        StringOutput buf_out(buf);
         CmfSaver cmf_saver(buf_out);
 
         cmf_saver.saveMolecule(mol);

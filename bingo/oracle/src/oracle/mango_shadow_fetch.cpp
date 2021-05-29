@@ -38,11 +38,11 @@ MangoShadowFetch::MangoShadowFetch(MangoFetchContext& context) : _context(contex
     _total_count = -1;
     _table_name.push(0);
 
-    ArrayOutput output(_table_name);
+    StringOutput output(_table_name);
     output.printf(context.context().shadow_table.getName());
     output.writeChar(0);
 
-    ArrayOutput output2(_components_table_name);
+    StringOutput output2(_components_table_name);
     output2.printf(context.context().shadow_table.getComponentsName());
     output2.writeChar(0);
 
@@ -214,7 +214,7 @@ void MangoShadowFetch::prepareTautomer(OracleEnv& env, int right_part)
 
     if (right_part == 1)
     {
-        ArrayOutput output(_counting_select);
+        StringOutput output(_counting_select);
 
         output.printf("SELECT COUNT(*) FROM %s WHERE gross = :gross", _table_name.ptr());
     }
@@ -244,8 +244,8 @@ void MangoShadowFetch::prepareExact(OracleEnv& env, int right_part)
         _statement->append(", sh.xyz", _table_name.ptr());
     _statement->append(" FROM %s sh", _table_name.ptr());
 
-    QS_DEF(Array<char>, table_copies);
-    QS_DEF(Array<char>, where_clause);
+    QS_DEF(std::string, table_copies);
+    QS_DEF(std::string, where_clause);
     _prepareExactQueryStrings(table_copies, where_clause);
 
     _statement->append(table_copies.ptr());
@@ -261,18 +261,18 @@ void MangoShadowFetch::prepareExact(OracleEnv& env, int right_part)
         _statement->defineBlobByPos(3, _lob_xyz.ref());
     }
 
-    ArrayOutput output_cnt(_counting_select);
+    StringOutput output_cnt(_counting_select);
     output_cnt.printf("SELECT COUNT(*) FROM %s sh", _table_name.ptr());
     output_cnt.printf("%s", table_copies.ptr());
     output_cnt.printf("%s", where_clause.ptr());
 }
 
-void MangoShadowFetch::_prepareExactQueryStrings(Array<char>& table_copies, Array<char>& where_clause)
+void MangoShadowFetch::_prepareExactQueryStrings(std::string& table_copies, std::string& where_clause)
 {
     const MangoExact& instance = _context.exact;
     const MangoExact::Hash& hash = instance.getQueryHash();
 
-    ArrayOutput output_tables(table_copies);
+    StringOutput output_tables(table_copies);
     if (_right_part == 1)
     {
         for (int i = 0; i < hash.size(); i++)
@@ -281,7 +281,7 @@ void MangoShadowFetch::_prepareExactQueryStrings(Array<char>& table_copies, Arra
     output_tables.writeChar(0);
 
     // Create complex WHERE clause
-    ArrayOutput output(where_clause);
+    StringOutput output(where_clause);
     if (_right_part == 1)
     {
         bool where_was_added = false;
@@ -346,7 +346,7 @@ void MangoShadowFetch::prepareGross(OracleEnv& env, int right_part)
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
     _statement->defineStringByPos(2, _gross, sizeof(_gross));
 
-    ArrayOutput output(_counting_select);
+    StringOutput output(_counting_select);
     output.printf("SELECT COUNT(*) FROM %s WHERE %s", _table_name.ptr(), instance.getConditions());
 }
 
@@ -354,10 +354,10 @@ void MangoShadowFetch::prepareMass(OracleEnv& env)
 {
     env.dbgPrintf("preparing shadow table for molecular mass match\n");
 
-    QS_DEF(Array<char>, where);
+    QS_DEF(std::string, where);
 
     {
-        ArrayOutput where_out(where);
+        StringOutput where_out(where);
         where_out.printf("");
         where_out.writeChar(0);
     }
@@ -371,7 +371,7 @@ void MangoShadowFetch::prepareMass(OracleEnv& env)
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
 
-    ArrayOutput output(_counting_select);
+    StringOutput output(_counting_select);
     output.printf("SELECT COUNT(*) FROM %s WHERE WHERE mass >= :mass_min AND mass <= :mass_max", _table_name.ptr());
 }
 
@@ -400,7 +400,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
         {
             const char* gross = _context.tautomer.getQueryGross();
             _statement->bindStringByName(":gross", gross, strlen(gross) + 1);
-            QS_DEF(Array<char>, grossh);
+            QS_DEF(std::string, grossh);
             grossh.readString(gross, false);
             grossh.appendString(" H%", true);
             _statement->bindStringByName(":grossh", grossh.ptr(), grossh.size());
@@ -428,7 +428,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
             if (_fetch_type == _NON_SUBSTRUCTURE)
             {
                 MangoSubstructure& instance = _context.substructure;
-                QS_DEF(Array<char>, cmf);
+                QS_DEF(std::string, cmf);
 
                 _lob_cmf->readAll(cmf, false);
 
@@ -438,7 +438,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
                         have_match = true;
                     else
                     {
-                        QS_DEF(Array<char>, xyz);
+                        QS_DEF(std::string, xyz);
 
                         _lob_xyz->readAll(xyz, false);
                         if (!instance.matchBinary(cmf, &xyz))
@@ -451,7 +451,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
             else if (_fetch_type == _NON_TAUTOMER_SUBSTRUCTURE)
             {
                 MangoTautomer& instance = _context.tautomer;
-                QS_DEF(Array<char>, cmf);
+                QS_DEF(std::string, cmf);
 
                 _lob_cmf->readAll(cmf, false);
 
@@ -461,7 +461,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
             else if (_fetch_type == _TAUTOMER)
             {
                 MangoTautomer& instance = _context.tautomer;
-                QS_DEF(Array<char>, cmf);
+                QS_DEF(std::string, cmf);
 
                 _lob_cmf->readAll(cmf, false);
 
@@ -471,7 +471,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
             else if (_fetch_type == _EXACT)
             {
                 MangoExact& instance = _context.exact;
-                QS_DEF(Array<char>, cmf);
+                QS_DEF(std::string, cmf);
 
                 profTimerStart(tlobread, "exact.lobread");
                 _lob_cmf->readAll(cmf, false);
@@ -483,7 +483,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
                         have_match = (_right_part == 0);
                     else
                     {
-                        QS_DEF(Array<char>, xyz);
+                        QS_DEF(std::string, xyz);
 
                         profTimerStart(txyzlobread, "exact.xyzlobread");
                         _lob_xyz->readAll(xyz, false);

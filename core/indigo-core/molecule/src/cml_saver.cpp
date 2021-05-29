@@ -141,8 +141,8 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
             TiXmlElement* atom = new TiXmlElement("atom");
             atomarray->LinkEndChild(atom);
 
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
+            QS_DEF(std::string, buf);
+            StringOutput out(buf);
             out.printf("a%d", i);
             buf.push(0);
             atom->SetAttribute("id", buf.ptr());
@@ -238,8 +238,8 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
 
                 _mol->getAllowedRGroups(i, rg_refs);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
 
                 if (rg_refs.size() == 1)
                 {
@@ -251,8 +251,8 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
 
             if (qmol != 0)
             {
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
 
                 QS_DEF(Array<int>, list);
 
@@ -369,8 +369,8 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                 TiXmlElement* atomparity = new TiXmlElement("atomParity");
                 atom->LinkEndChild(atomparity);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
                 const int* pyramid = _mol->stereocenters.getPyramid(i);
                 if (pyramid[3] == -1)
                     out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], i);
@@ -426,8 +426,8 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                     TiXmlElement* atom = new TiXmlElement("atom");
                     atomarray->LinkEndChild(atom);
 
-                    QS_DEF(Array<char>, buf);
-                    ArrayOutput out(buf);
+                    QS_DEF(std::string, buf);
+                    StringOutput out(buf);
                     out.printf("a%d", latest_ind++);
                     buf.push(0);
                     atom->SetAttribute("id", buf.ptr());
@@ -449,8 +449,8 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
             TiXmlElement* bond = new TiXmlElement("bond");
             bondarray->LinkEndChild(bond);
 
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
+            QS_DEF(std::string, buf);
+            StringOutput out(buf);
             out.printf("a%d a%d", edge.beg, edge.end);
             buf.push(0);
             bond->SetAttribute("atomRefs2", buf.ptr());
@@ -502,8 +502,8 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                 TiXmlElement* bondstereo = new TiXmlElement("bondStereo");
                 bond->LinkEndChild(bondstereo);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
 
                 const int* subst = _mol->cis_trans.getSubstituents(i);
                 out.printf("a%d a%d a%d a%d", subst[0], edge.beg, edge.end, subst[2]);
@@ -550,16 +550,16 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
     TiXmlElement* sg = new TiXmlElement("molecule");
     molecule->LinkEndChild(sg);
 
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+    QS_DEF(std::string, buf);
+    StringOutput out(buf);
     out.printf("sg%d", sgroup.original_group);
     buf.push(0);
     sg->SetAttribute("id", buf.ptr());
 
     if (sgroup.atoms.size() > 0)
     {
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
+        QS_DEF(std::string, buf);
+        StringOutput out(buf);
 
         for (int j = 0; j < sgroup.atoms.size(); j++)
             out.printf("a%d ", sgroup.atoms[j]);
@@ -745,8 +745,8 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
 
         if (mul.parent_atoms.size() > 0)
         {
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
+            QS_DEF(std::string, buf);
+            StringOutput out(buf);
 
             for (int j = 0; j < mul.parent_atoms.size(); j++)
                 out.printf("a%d ", mul.parent_atoms[j]);
@@ -797,8 +797,8 @@ void CmlSaver::_addRgroups(TiXmlElement* elem, BaseMolecule& mol, bool query)
             if (rgroup.rest_h > 0)
                 rg->SetAttribute("restH", rgroup.rest_h);
 
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
+            QS_DEF(std::string, buf);
+            StringOutput out(buf);
 
             _writeOccurrenceRanges(out, rgroup.occurrence);
 

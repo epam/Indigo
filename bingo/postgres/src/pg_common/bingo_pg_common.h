@@ -40,7 +40,7 @@ public:
         MOL_MASS = 100/*pseudo types*/
     };
 
-    static void getSearchTypeString(int, indigo::Array<char>& result, bool molecule);
+    static void getSearchTypeString(int, indigo::std::string& result, bool molecule);
 
 //   static float getBingoSim(char*, int, char*, int);
 
@@ -63,7 +63,7 @@ public:
 
 
 //   static void executeQuery(const char* query_str);
-    static int executeQuery(indigo::Array<char>& query_str);
+    static int executeQuery(indigo::std::string& query_str);
     static int executeQuery(const char *format, ...);
     static bool tableExists(const char* schema_name,const char* table_name);
 
@@ -112,7 +112,7 @@ public:
 
         template <typename T>
         static void handleRedBlackString(indigo::RedBlackStringMap<T>& data, indigo::Scanner* scanner, indigo::Output* output) {
-            indigo::Array<char> key_tmp;
+            indigo::std::string key_tmp;
             int size = data.size();
             handleNumber(size, scanner, output);
             if (scanner) {
@@ -153,7 +153,7 @@ public:
         }
         template <typename T>
         static void handleRedBlackStringArr(indigo::RedBlackStringObjMap< indigo::Array<T> >& data, indigo::Scanner* scanner, indigo::Output* output) {
-            indigo::Array<char> key_tmp;
+            indigo::std::string key_tmp;
             int size = data.size();
             handleNumber(size, scanner, output);
             if (scanner) {
@@ -246,7 +246,7 @@ public:
             /*
              * Double workaround with string saving
              */
-            indigo::Array<char> d_string;
+            indigo::std::string d_string;
             d_string.clear();
             if (scanner) {
                 handleArray(d_string, scanner, output);
@@ -259,13 +259,13 @@ public:
         }
     };
 
-    static void convertTo(const indigo::Array<char>& value_str, float& val) {
+    static void convertTo(const indigo::std::string& value_str, float& val) {
         indigo::BufferScanner scanner(value_str);
         if (!scanner.tryReadFloat(val))
             throw Error("can not read float value in string %s\n", value_str.ptr());
     }
 
-    static void convertTo(const indigo::Array<char>& value_str, bool& val) {
+    static void convertTo(const indigo::std::string& value_str, bool& val) {
         if (strcasecmp("true", value_str.ptr()) == 0) {
             val = true;
         } else if (strcasecmp("false", value_str.ptr()) == 0) {
@@ -275,12 +275,12 @@ public:
         }
     }
 
-    static void convertTo(const indigo::Array<char>& value_str, int& val) {
+    static void convertTo(const indigo::std::string& value_str, int& val) {
         indigo::BufferScanner scanner(value_str);
         val = scanner.readInt();
     }
 
-    static void convertTo(const indigo::Array<char>& value_str, indigo::Array<char>& val) {
+    static void convertTo(const indigo::std::string& value_str, indigo::std::string& val) {
         val.copy(value_str);
     }
     class BingoSessionHandler {
@@ -302,7 +302,7 @@ public:
     private:
         BingoSessionHandler(const BingoSessionHandler&); //no implicit copy
         qword _sessionId;
-        indigo::Array<char> _functionName;
+        indigo::std::string _functionName;
     };
 
     DECL_ERROR;
@@ -344,7 +344,7 @@ private:
 
 #define BINGO_PG_TRY {\
    bool pg_error_raised = false; \
-   QS_DEF(Array<char>, pg_message); \
+   QS_DEF(std::string, pg_message); \
    PG_TRY();
 
 #define BINGO_PG_HANDLE(handle_statement) \

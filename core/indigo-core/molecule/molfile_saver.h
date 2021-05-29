@@ -122,7 +122,7 @@ namespace indigo
         void _writeAttachmentValues2000(Output& output, BaseMolecule& fragment);
         void _writeGenericSGroup3000(SGroup& sgroup, int idx, Output& output);
         void _writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out);
-        void _writeFormattedString(Output& output, Array<char>& str, int length);
+        void _writeFormattedString(Output& output, std::string& str, int length);
         static bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
         static bool _hasNeighborEitherBond(BaseMolecule& mol, int edge_idx);
 

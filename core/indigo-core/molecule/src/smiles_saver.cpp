@@ -1741,8 +1741,8 @@ void SmilesSaver::_writeRGroups()
                     first_fr = false;
 
                 BaseMolecule* fragment = frags[j];
-                Array<char> out_buffer;
-                ArrayOutput fr_out(out_buffer);
+                std::string out_buffer;
+                StringOutput fr_out(out_buffer);
 
                 if (ignore_hydrogens)
                 {

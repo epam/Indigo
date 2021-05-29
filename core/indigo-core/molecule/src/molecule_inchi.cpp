@@ -75,18 +75,18 @@ void MoleculeInChI::outputInChI(Molecule& mol)
 template <typename Layer> class MoleculeInChI::_ComponentLayerPrintFunction : public _PrintLayerFuncBase
 {
 public:
-    _ComponentLayerPrintFunction(Layer MoleculeInChICompoment::*layer, void (Layer::*print)(Array<char>&)) : _layer(layer), _print(print)
+    _ComponentLayerPrintFunction(Layer MoleculeInChICompoment::*layer, void (Layer::*print)(std::string&)) : _layer(layer), _print(print)
     {
     }
 
-    void operator()(MoleculeInChICompoment& component, Array<char>& output)
+    void operator()(MoleculeInChICompoment& component, std::string& output)
     {
         ((component.*_layer).*_print)(output);
     }
 
 private:
     Layer MoleculeInChICompoment::*_layer;
-    void (Layer::*_print)(Array<char>&);
+    void (Layer::*_print)(std::string&);
 };
 
 void MoleculeInChI::_printInChI()
@@ -132,13 +132,13 @@ void MoleculeInChI::_printInChI()
 
 bool MoleculeInChI::_printInChILayer(_PrintLayerFuncBase& print_func, const char* delim, const char* multiplier, const char* layer_prefix)
 {
-    QS_DEF(Array<char>, layer_string);
+    QS_DEF(std::string, layer_string);
 
-    ArrayOutput output(layer_string);
+    StringOutput output(layer_string);
 
-    QS_DEF(Array<char>, previous_component);
+    QS_DEF(std::string, previous_component);
     previous_component.clear();
-    QS_DEF(Array<char>, current_component);
+    QS_DEF(std::string, current_component);
 
     int index = -1;
     int same_components_count = 1;

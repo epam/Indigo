@@ -233,8 +233,8 @@ void MultipleCdxLoader::_getObject()
     UINT16 size;
     UINT32 id;
 
-    QS_DEF(Array<char>, name);
-    QS_DEF(Array<char>, value);
+    QS_DEF(std::string, name);
+    QS_DEF(std::string, value);
     name.clear();
     value.clear();
     int type = 0;
@@ -364,7 +364,7 @@ void MultipleCdxLoader::_checkHeader()
     }
 }
 
-void MultipleCdxLoader::_getString(int size, Array<char>& buf)
+void MultipleCdxLoader::_getString(int size, std::string& buf)
 {
     UINT16 flag = 0;
 
@@ -389,11 +389,11 @@ void MultipleCdxLoader::_getString(int size, Array<char>& buf)
     return;
 }
 
-void MultipleCdxLoader::_getValue(int type, int size, Array<char>& buf)
+void MultipleCdxLoader::_getValue(int type, int size, std::string& buf)
 {
     double dval;
     int ival;
-    ArrayOutput output(buf);
+    StringOutput output(buf);
 
     switch (type)
     {

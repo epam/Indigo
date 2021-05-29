@@ -42,7 +42,7 @@ namespace indigo
     {
     public:
         MoleculeAutoLoader(Scanner& scanner);
-        MoleculeAutoLoader(const Array<char>& arr);
+        MoleculeAutoLoader(const std::string& arr);
         MoleculeAutoLoader(const char* str);
 
         ~MoleculeAutoLoader();
@@ -66,8 +66,8 @@ namespace indigo
 
         DECL_ERROR;
 
-        static bool tryMDLCT(Scanner& scanner, Array<char>& outbuf);
-        static void readAllDataToString(Scanner& scanner, Array<char>& dataBuf);
+        static bool tryMDLCT(Scanner& scanner, std::string& outbuf);
+        static void readAllDataToString(Scanner& scanner, std::string& dataBuf);
 
     protected:
         Scanner* _scanner;

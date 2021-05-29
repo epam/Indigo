@@ -33,18 +33,18 @@ BingoStorage::BingoStorage(OracleEnv& env, int context_id)
     _top_lob_pending_mark = 0;
     _index_lob_pending_mark = 0;
 
-    QS_DEF(Array<char>, instance);
-    QS_DEF(Array<char>, schema);
+    QS_DEF(std::string, instance);
+    QS_DEF(std::string, schema);
 
     OracleStatement::executeSingleString(instance, env, "SELECT PROPERTY_VALUE from database_properties where property_name = 'GLOBAL_DB_NAME'");
     OracleStatement::executeSingleString(schema, env, "SELECT SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') from dual");
 
-    ArrayOutput output1(_shmem_id);
+    StringOutput output1(_shmem_id);
 
     output1.printf("%s#%s#%d#bs2", instance.ptr(), schema.ptr(), context_id);
     output1.writeChar(0);
 
-    ArrayOutput output2(_table_name);
+    StringOutput output2(_table_name);
 
     output2.printf("STORAGE_%d", context_id);
     output2.writeChar(0);
@@ -186,7 +186,7 @@ void BingoStorage::validate(OracleEnv& env)
 
     int id, length;
     OracleLOB lob(env);
-    QS_DEF(Array<char>, block_name);
+    QS_DEF(std::string, block_name);
 
     statement.append("SELECT id, length(bindata), bindata FROM %s ORDER BY id", _table_name.ptr());
 
@@ -198,7 +198,7 @@ void BingoStorage::validate(OracleEnv& env)
 
     do
     {
-        ArrayOutput output(block_name);
+        StringOutput output(block_name);
         output.printf("%s_%d_%d", _shmem_id.ptr(), id, state->age);
         output.writeByte(0);
 
@@ -311,7 +311,7 @@ void BingoStorage::_insertLOB(OracleEnv& env, int no)
     _top_lob_pending_mark = 0;
 }
 
-void BingoStorage::add(OracleEnv& env, const Array<char>& data, int& blockno, int& offset)
+void BingoStorage::add(OracleEnv& env, const std::string& data, int& blockno, int& offset)
 {
     if (_blocks.size() < 1 || _blocks.top().size + data.size() > _MAX_BLOCK_SIZE)
         _insertLOB(env, _blocks.size() + 1);
@@ -345,7 +345,7 @@ int BingoStorage::count()
     return _index.size();
 }
 
-void BingoStorage::get(int n, Array<char>& out)
+void BingoStorage::get(int n, std::string& out)
 {
     const _Addr& addr = _index[n];
 

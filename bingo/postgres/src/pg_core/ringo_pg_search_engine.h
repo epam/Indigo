@@ -69,17 +69,17 @@ public:
 private:
     RingoPgSearchEngine(const RingoPgSearchEngine&); // no implicit copy
 
-    void _prepareExactQueryStrings(indigo::Array<char>& what_clause, indigo::Array<char>& from_clause, indigo::Array<char>& where_clause);
+    void _prepareExactQueryStrings(indigo::std::string& what_clause, indigo::std::string& from_clause, indigo::std::string& where_clause);
 
     void _prepareSubSearch(PG_OBJECT scan_desc);
     void _prepareExactSearch(PG_OBJECT scan_desc);
     void _prepareSmartsSearch(PG_OBJECT scan_desc);
-    void _getScanQueries(uintptr_t arg_datum, indigo::Array<char>& str1, indigo::Array<char>& str2);
+    void _getScanQueries(uintptr_t arg_datum, indigo::std::string& str1, indigo::std::string& str2);
 
     static void _errorHandler(const char* message, void* context);
 
-    indigo::Array<char> _relName;
-    indigo::Array<char> _shadowRelName;
+    indigo::std::string _relName;
+    indigo::std::string _shadowRelName;
 
     int _searchType;
 };

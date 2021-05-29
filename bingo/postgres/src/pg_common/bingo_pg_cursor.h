@@ -12,7 +12,7 @@ class BingoPgCursor
 {
 public:
     BingoPgCursor(const char* format, ...);
-    BingoPgCursor(indigo::Array<char>& query_str);
+    BingoPgCursor(indigo::std::string& query_str);
     virtual ~BingoPgCursor();
 
     bool next();
@@ -27,9 +27,9 @@ public:
 private:
     BingoPgCursor(const BingoPgCursor&); // no implicit copy
 
-    void _init(indigo::Array<char>& query_str);
+    void _init(indigo::std::string& query_str);
 
-    indigo::Array<char> _cursorName;
+    indigo::std::string _cursorName;
     PG_OBJECT _cursorPtr;
     bool _pushed;
 };

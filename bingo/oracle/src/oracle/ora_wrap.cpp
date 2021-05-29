@@ -145,7 +145,7 @@ void OracleLOB::disableBuffering()
     }
 }
 
-void OracleLOB::readAll(Array<char>& arr, bool add_zero)
+void OracleLOB::readAll(std::string& arr, bool add_zero)
 {
     int len = getLength();
 
@@ -197,7 +197,7 @@ void OracleLOB::flush()
     }
 }
 
-void OracleLOB::write(int start, const Array<char>& data)
+void OracleLOB::write(int start, const std::string& data)
 {
     write(start, data.ptr(), data.size());
 }
@@ -621,7 +621,7 @@ bool OracleStatement::executeSingleFloat(float& result, OracleEnv& env, const ch
     return true;
 }
 
-bool OracleStatement::executeSingleString(Array<char>& result, OracleEnv& env, const char* format, ...)
+bool OracleStatement::executeSingleString(std::string& result, OracleEnv& env, const char* format, ...)
 {
     OracleStatement statement(env);
     va_list args;
@@ -644,7 +644,7 @@ bool OracleStatement::executeSingleString(Array<char>& result, OracleEnv& env, c
     return true;
 }
 
-bool OracleStatement::executeSingleBlob(Array<char>& result, OracleEnv& env, const char* format, ...)
+bool OracleStatement::executeSingleBlob(std::string& result, OracleEnv& env, const char* format, ...)
 {
     OracleStatement statement(env);
     va_list args;
@@ -670,7 +670,7 @@ bool OracleStatement::executeSingleBlob(Array<char>& result, OracleEnv& env, con
     return true;
 }
 
-bool OracleStatement::executeSingleClob(Array<char>& result, OracleEnv& env, const char* format, ...)
+bool OracleStatement::executeSingleClob(std::string& result, OracleEnv& env, const char* format, ...)
 {
     OracleStatement statement(env);
     va_list args;

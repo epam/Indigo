@@ -49,7 +49,7 @@ namespace bingo
     class GrossQueryData : public MatcherQueryData
     {
     public:
-        GrossQueryData(Array<char>& gross_str);
+        GrossQueryData(std::string& gross_str);
 
         virtual /*const*/ QueryObject& getQueryObject() /*const*/;
 

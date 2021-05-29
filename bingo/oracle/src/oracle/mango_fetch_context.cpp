@@ -27,7 +27,7 @@ OsLock MangoFetchContext::_instances_lock;
 
 IMPL_ERROR(MangoFetchContext, "mango fetch context");
 
-MangoFetchContext::MangoFetchContext(int id_, MangoOracleContext& context, const Array<char>& query_id)
+MangoFetchContext::MangoFetchContext(int id_, MangoOracleContext& context, const std::string& query_id)
     : substructure(context.context()), similarity(context.context()), exact(context.context()), tautomer(context.context()), gross(context.context()),
       _context(context)
 {
@@ -53,7 +53,7 @@ MangoFetchContext& MangoFetchContext::get(int id)
     throw Error("context #%d not found", id);
 }
 
-MangoFetchContext& MangoFetchContext::create(MangoOracleContext& context, const Array<char>& query_id)
+MangoFetchContext& MangoFetchContext::create(MangoOracleContext& context, const std::string& query_id)
 {
     OsLocker locker(_instances_lock);
     TL_GET(PtrArray<MangoFetchContext>, _instances);
@@ -74,7 +74,7 @@ MangoFetchContext& MangoFetchContext::create(MangoOracleContext& context, const 
     return *_instances.top();
 }
 
-MangoFetchContext* MangoFetchContext::findFresh(int context_id, const Array<char>& query_id)
+MangoFetchContext* MangoFetchContext::findFresh(int context_id, const std::string& query_id)
 {
     OsLocker locker(_instances_lock);
     TL_GET(PtrArray<MangoFetchContext>, _instances);

@@ -63,8 +63,8 @@ namespace indigo
         void addCustomText(const Vec2f& pos, const char* alignment, float line_height, const char* text);
         void addTitle(const Vec2f& pos, const char* text);
         void addGraphic(int id, const Vec2f& p1, const Vec2f& p2, PropertiesMap& attrs);
-        void addCustomElement(int id, Array<char>& name, PropertiesMap& attrs);
-        void startCurrentElement(int id, Array<char>& name, PropertiesMap& attrs);
+        void addCustomElement(int id, std::string& name, PropertiesMap& attrs);
+        void startCurrentElement(int id, std::string& name, PropertiesMap& attrs);
         void endCurrentElement();
         void endPage();
         void endDocument();

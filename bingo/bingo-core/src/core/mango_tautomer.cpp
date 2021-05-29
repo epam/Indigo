@@ -57,7 +57,7 @@ void MangoTautomer::loadQuery(Scanner& scanner)
     _query_data_valid = false;
 }
 
-void MangoTautomer::loadQuery(const Array<char>& buf)
+void MangoTautomer::loadQuery(const std::string& buf)
 {
     BufferScanner scanner(buf);
 
@@ -144,7 +144,7 @@ void MangoTautomer::loadTarget(Scanner& scanner)
     _initTarget(false);
 }
 
-void MangoTautomer::loadTarget(const Array<char>& molfile_buf)
+void MangoTautomer::loadTarget(const std::string& molfile_buf)
 {
     BufferScanner scanner(molfile_buf);
 
@@ -164,9 +164,9 @@ bool MangoTautomer::matchLoadedTarget()
     return matcher.find();
 }
 
-void MangoTautomer::getHighlightedTarget(Array<char>& molfile_buf)
+void MangoTautomer::getHighlightedTarget(std::string& molfile_buf)
 {
-    ArrayOutput output(molfile_buf);
+    StringOutput output(molfile_buf);
     MolfileSaver saver(output);
 
     if (!_target.have_xyz)
@@ -193,7 +193,7 @@ void MangoTautomer::_initTarget(bool from_database)
         MoleculeAromatizer::aromatizeBonds(_target, AromaticityOptions::BASIC);
 }
 
-bool MangoTautomer::matchBinary(const Array<char>& target_buf)
+bool MangoTautomer::matchBinary(const std::string& target_buf)
 {
     BufferScanner scanner(target_buf);
 
@@ -243,7 +243,7 @@ bool MangoTautomer::parseSub(const char* params)
     if (scanner.isEOF())
         return false;
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
     scanner.readWord(word, 0);
 
     if (strcasecmp(word.ptr(), "TAU") != 0)
@@ -266,7 +266,7 @@ bool MangoTautomer::parseExact(const char* params)
 
     scanner.skipSpace();
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
 
     scanner.readWord(word, 0);
 

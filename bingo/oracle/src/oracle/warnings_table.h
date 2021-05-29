@@ -33,7 +33,7 @@ public:
     void add(OracleEnv& env, const char* rowid, const char* message);
 
 private:
-    Array<char> _table_name, _rowid_column, _message_column;
+    std::string _table_name, _rowid_column, _message_column;
 };
 
 #endif

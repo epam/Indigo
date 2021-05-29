@@ -42,7 +42,7 @@ namespace indigo
         qword dif_time = nanoClock() - _currentTime;
         if (_mseconds > 0 && nanoHowManySeconds(dif_time) * 1000 > _mseconds)
         {
-            ArrayOutput mes_out(_message);
+            StringOutput mes_out(_message);
             mes_out.printf("The operation timed out: %d ms", _mseconds);
             mes_out.writeChar(0);
             return true;

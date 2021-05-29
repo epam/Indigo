@@ -650,7 +650,7 @@ CEXPORT int indigoSerialize(int item, byte** buf, int* size)
     {
         IndigoObject& obj = self.getObject(item);
         auto& tmp = self.getThreadTmpData();
-        ArrayOutput out(tmp.string);
+        StringOutput out(tmp.string);
 
         if (IndigoBaseMolecule::is(obj))
         {
@@ -1160,12 +1160,12 @@ CEXPORT int indigoIsPossibleFischerProjection(int object, const char* options)
     INDIGO_END(-1);
 }
 
-void _parseHelmRgroupsNames(Array<char>& helm_caps, StringPool& r_names)
+void _parseHelmRgroupsNames(std::string& helm_caps, StringPool& r_names)
 {
     BufferScanner strscan(helm_caps);
-    QS_DEF(Array<char>, r_desc);
-    QS_DEF(Array<char>, r_name);
-    QS_DEF(Array<char>, delim);
+    QS_DEF(std::string, r_desc);
+    QS_DEF(std::string, r_name);
+    QS_DEF(std::string, delim);
     r_desc.clear();
     r_name.clear();
     delim.clear();
@@ -1196,12 +1196,12 @@ CEXPORT int indigoTransformHELMtoSCSR(int object)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(Array<char>, helm_class);
-        QS_DEF(Array<char>, helm_name);
-        QS_DEF(Array<char>, helm_code);
-        QS_DEF(Array<char>, helm_natreplace);
-        QS_DEF(Array<char>, helm_caps);
-        QS_DEF(Array<char>, helm_type);
+        QS_DEF(std::string, helm_class);
+        QS_DEF(std::string, helm_name);
+        QS_DEF(std::string, helm_code);
+        QS_DEF(std::string, helm_natreplace);
+        QS_DEF(std::string, helm_caps);
+        QS_DEF(std::string, helm_type);
         QS_DEF(StringPool, r_names);
 
         IndigoObject& obj = self.getObject(object);
@@ -1422,7 +1422,7 @@ CEXPORT const char* indigoCheckStructure(const char* structure, const char* prop
     INDIGO_BEGIN
     {
         auto& tmp = self.getThreadTmpData();
-        ArrayOutput out(tmp.string);
+        StringOutput out(tmp.string);
 
         try
         {
@@ -1448,7 +1448,7 @@ CEXPORT const char* indigoJson(int item)
     INDIGO_BEGIN
     {
         auto& tmp = self.getThreadTmpData();
-        ArrayOutput out(tmp.string);
+        StringOutput out(tmp.string);
 
         IndigoObject& obj = self.getObject(item);
 

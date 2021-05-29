@@ -32,8 +32,8 @@ public:
     IndigoFingerprint();
     virtual ~IndigoFingerprint();
 
-    virtual void toString(Array<char>& str);
-    virtual void toBuffer(Array<char>& buf);
+    virtual void toString(std::string& str);
+    virtual void toBuffer(std::string& buf);
 
     static IndigoFingerprint& cast(IndigoObject& obj);
 

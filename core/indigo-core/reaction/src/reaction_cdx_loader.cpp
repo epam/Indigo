@@ -39,7 +39,7 @@ void ReactionCdxLoader::loadReaction(Reaction& rxn)
 {
     rxn.clear();
 
-    QS_DEF(Array<char>, buf);
+    QS_DEF(std::string, buf);
     _scanner.readAll(buf);
     buf.push(0);
 }

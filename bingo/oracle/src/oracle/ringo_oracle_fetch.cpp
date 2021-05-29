@@ -26,7 +26,7 @@
 #include "oracle/ringo_fetch_context.h"
 #include "oracle/ringo_oracle.h"
 
-static void _ringoIndexStart(OracleEnv& env, RingoFetchContext& context, const char* oper, const Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop,
+static void _ringoIndexStart(OracleEnv& env, RingoFetchContext& context, const char* oper, const std::string& query_buf, OCINumber* p_strt, OCINumber* p_stop,
                              const char* params)
 {
     RingoShadowFetch& shadow_fetch = context.shadow_fetch.ref();
@@ -103,12 +103,12 @@ ORAEXT int oraRingoIndexStart(OCIExtProcContext* ctx, int context_id, const char
         if (stop_ind != OCI_IND_NOTNULL)
             p_stop = 0;
 
-        QS_DEF(Array<char>, query_buf);
+        QS_DEF(std::string, query_buf);
         OracleLOB query_lob(env, query_loc);
 
         query_lob.readAll(query_buf, false);
 
-        QS_DEF(Array<char>, query_id);
+        QS_DEF(std::string, query_id);
 
         bingoBuildQueryID(env, oper, query_buf, p_strt, p_stop, 0, params, query_id);
 
@@ -205,8 +205,8 @@ ORAEXT OCINumber* oraRingoIndexSelectivity(OCIExtProcContext* ctx, int context_i
 
         RingoOracleContext& context = RingoOracleContext::get(env, context_id, false);
 
-        QS_DEF(Array<char>, query_id);
-        QS_DEF(Array<char>, query_buf);
+        QS_DEF(std::string, query_id);
+        QS_DEF(std::string, query_buf);
         OracleLOB query_lob(env, query_loc);
 
         query_lob.readAll(query_buf, false);
@@ -265,12 +265,12 @@ if (stop_ind != OCI_IND_NOTNULL)
 
 float sel = OracleUtil::numberToFloat(env, p_sel);
 
-QS_DEF(Array<char>, query_buf);
+QS_DEF(std::string, query_buf);
 OracleLOB query_lob(env, query_loc);
 
 query_lob.readAll(query_buf, false);
 
-QS_DEF(Array<char>, query_id);
+QS_DEF(std::string, query_id);
 
 bingoBuildQueryID(env, oper, query_buf, p_strt, p_stop, 0, params, query_id);
 

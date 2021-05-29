@@ -147,7 +147,7 @@ void MolfileLoader::_readHeader()
 
 void MolfileLoader::_readCtabHeader()
 {
-    QS_DEF(Array<char>, str);
+    QS_DEF(std::string, str);
 
     _scanner.readLine(str, false);
 
@@ -236,7 +236,7 @@ void MolfileLoader::_readCtab2000()
 {
     _init();
 
-    QS_DEF(Array<char>, str);
+    QS_DEF(std::string, str);
 
     // read atoms
     for (int k = 0; k < _atoms_num; k++)
@@ -971,7 +971,7 @@ void MolfileLoader::_readCtab2000()
                 int rest_h = _scanner.readIntFix(3);
                 _scanner.skip(1);
 
-                QS_DEF(Array<char>, occurrence_str);
+                QS_DEF(std::string, occurrence_str);
 
                 RGroup& rgroup = _bmol->rgroups.getRGroup(rgroup_idx);
                 rgroup.clear();
@@ -1117,7 +1117,7 @@ void MolfileLoader::_readCtab2000()
 
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_DAT)
                 {
-                    QS_DEF(Array<char>, rest);
+                    QS_DEF(std::string, rest);
 
                     _scanner.readLine(rest, false);
                     BufferScanner strscan(rest);
@@ -1468,7 +1468,7 @@ void MolfileLoader::_readCtab2000()
         }
         else if (c == 'A')
         {
-            QS_DEF(Array<char>, alias);
+            QS_DEF(std::string, alias);
 
             // There should be 3 characters to the atom index, but some molfiles
             // has only 2 digits
@@ -2228,7 +2228,7 @@ void MolfileLoader::_readRGroups2000()
 
 void MolfileLoader::_readCtab3000()
 {
-    QS_DEF(Array<char>, str);
+    QS_DEF(std::string, str);
 
     _scanner.readLine(str, true);
     if (strncmp(str.ptr(), "M  V30 BEGIN CTAB", 17) != 0)
@@ -2281,7 +2281,7 @@ void MolfileLoader::_readCtab3000()
 
             strscan.readInt1(); // atom index -- ignored
 
-            QS_DEF(Array<char>, buf);
+            QS_DEF(std::string, buf);
 
             strscan.readWord(buf, " [");
 
@@ -2442,7 +2442,7 @@ void MolfileLoader::_readCtab3000()
                 if (label == -1)
                 {
                     long long cur_pos = strscan.tell();
-                    QS_DEF(ReusableObjArray<Array<char>>, strs);
+                    QS_DEF(ReusableObjArray<std::string>, strs);
                     strs.clear();
                     strs.push().readString("CLASS", false);
                     strs.push().readString("SEQID", false);
@@ -2593,7 +2593,7 @@ void MolfileLoader::_readCtab3000()
                 if (strscan.isEOF())
                     break;
 
-                QS_DEF(Array<char>, prop_arr);
+                QS_DEF(std::string, prop_arr);
                 strscan.readWord(prop_arr, "=");
 
                 strscan.skip(1);
@@ -2752,7 +2752,7 @@ void MolfileLoader::_readCtab3000()
                 else if (strcmp(prop, "ATTCHORD") == 0)
                 {
                     int n_items, nei_idx, att_type;
-                    QS_DEF(Array<char>, att_id);
+                    QS_DEF(std::string, att_id);
 
                     strscan.skip(1); // skip '('
                     n_items = strscan.readInt1() / 2;
@@ -2775,7 +2775,7 @@ void MolfileLoader::_readCtab3000()
                 }
                 else if (strcmp(prop, "CLASS") == 0)
                 {
-                    QS_DEF(Array<char>, temp_class);
+                    QS_DEF(std::string, temp_class);
                     strscan.readWord(temp_class, 0);
                     temp_class.push(0);
                     if (_mol != 0)
@@ -2899,7 +2899,7 @@ void MolfileLoader::_readCtab3000()
                 if (strscan.isEOF())
                     break;
 
-                QS_DEF(Array<char>, prop);
+                QS_DEF(std::string, prop);
 
                 strscan.readWord(prop, "=");
                 strscan.skip(1);
@@ -3028,7 +3028,7 @@ void MolfileLoader::_readCtab3000()
 
 void MolfileLoader::_readSGroupsBlock3000()
 {
-    QS_DEF(Array<char>, str);
+    QS_DEF(std::string, str);
 
     while (1)
     {
@@ -3075,7 +3075,7 @@ void MolfileLoader::_fillSGroupsParentIndices()
 
 void MolfileLoader::_readCollectionBlock3000()
 {
-    QS_DEF(Array<char>, str);
+    QS_DEF(std::string, str);
 
     while (1)
     {
@@ -3102,7 +3102,7 @@ void MolfileLoader::_readCollectionBlock3000()
             stereo_type = MoleculeStereocenters::ATOM_ABS;
         else if (strcmp(coll, "MDLV30/HILITE") == 0)
         {
-            QS_DEF(Array<char>, what);
+            QS_DEF(std::string, what);
 
             strscan.skipSpace();
             strscan.readWord(what, " =");
@@ -3149,7 +3149,7 @@ void MolfileLoader::_readCollectionBlock3000()
     }
 }
 
-void MolfileLoader::_preparePseudoAtomLabel(Array<char>& pseudo)
+void MolfileLoader::_preparePseudoAtomLabel(std::string& pseudo)
 {
     // if the string is quoted, unquote it
     if (pseudo.size() > 2 && pseudo[0] == '\'' && pseudo[pseudo.size() - 2] == '\'')
@@ -3162,9 +3162,9 @@ void MolfileLoader::_preparePseudoAtomLabel(Array<char>& pseudo)
         throw Error("empty pseudo-atom");
 }
 
-void MolfileLoader::_readMultiString(Array<char>& str)
+void MolfileLoader::_readMultiString(std::string& str)
 {
-    QS_DEF(Array<char>, tmp);
+    QS_DEF(std::string, tmp);
 
     str.clear();
     tmp.clear_resize(7);
@@ -3191,7 +3191,7 @@ void MolfileLoader::_readMultiString(Array<char>& str)
     }
 }
 
-void MolfileLoader::_readStringInQuotes(Scanner& scanner, Array<char>* str)
+void MolfileLoader::_readStringInQuotes(Scanner& scanner, std::string* str)
 {
     char first = scanner.readChar();
     if (first == ' ')
@@ -3234,7 +3234,7 @@ void MolfileLoader::_readStringInQuotes(Scanner& scanner, Array<char>* str)
 
 void MolfileLoader::_readRGroups3000()
 {
-    QS_DEF(Array<char>, str);
+    QS_DEF(std::string, str);
 
     MoleculeRGroups* rgroups = &_bmol->rgroups;
 
@@ -3268,7 +3268,7 @@ void MolfileLoader::_readRGroups3000()
 
             if (!strscan.isEOF())
             {
-                QS_DEF(Array<char>, occ);
+                QS_DEF(std::string, occ);
 
                 strscan.readLine(occ, true);
                 _readRGroupOccurrenceRanges(occ.ptr(), rgroup.occurrence);
@@ -3319,8 +3319,8 @@ void MolfileLoader::_readRGroups3000()
 void MolfileLoader::_readSGroup3000(const char* str)
 {
     BufferScanner scanner(str);
-    QS_DEF(Array<char>, type);
-    QS_DEF(Array<char>, entity);
+    QS_DEF(std::string, type);
+    QS_DEF(std::string, entity);
     entity.clear();
     type.clear();
 
@@ -3397,7 +3397,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
         }
         else if (strcmp(entity.ptr(), "SUBTYPE") == 0)
         {
-            QS_DEF(Array<char>, subtype);
+            QS_DEF(std::string, subtype);
             subtype.clear();
             scanner.readWord(subtype, 0);
             if (strcmp(subtype.ptr(), "ALT") == 0)
@@ -3420,7 +3420,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
         }
         else if (strcmp(entity.ptr(), "BRKTYP") == 0)
         {
-            QS_DEF(Array<char>, style);
+            QS_DEF(std::string, style);
             style.clear();
             scanner.readWord(style, 0);
             if (strcmp(style.ptr(), "BRACKET") == 0)
@@ -3483,7 +3483,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
         }
         else if (strcmp(entity.ptr(), "FIELDDISP") == 0)
         {
-            QS_DEF(Array<char>, substr);
+            QS_DEF(std::string, substr);
             substr.clear();
             _readStringInQuotes(scanner, &substr);
             if (dsg != 0)
@@ -3658,7 +3658,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
 
 void MolfileLoader::_readTGroups3000()
 {
-    QS_DEF(Array<char>, str);
+    QS_DEF(std::string, str);
 
     MoleculeTGroups* tgroups = &_bmol->tgroups;
 
@@ -3691,7 +3691,7 @@ void MolfileLoader::_readTGroups3000()
                 TGroup& tgroup = tgroups->getTGroup(idx);
                 tgroup.tgroup_id = tg_idx;
 
-                QS_DEF(Array<char>, word);
+                QS_DEF(std::string, word);
                 strscan.skipSpace();
                 strscan.readWord(word, " /");
                 char stop_char = strscan.readChar();

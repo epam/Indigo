@@ -47,9 +47,9 @@ private:
 
     //   void _handleError(int res, int success_res, const char* message, bool only_warn);
 
-    indigo::Array<char> _relName;
-    indigo::Array<char> _shadowRelName;
-    indigo::Array<char> _shadowHashRelName;
+    indigo::std::string _relName;
+    indigo::std::string _shadowRelName;
+    indigo::std::string _shadowHashRelName;
 
     int _searchType;
 };

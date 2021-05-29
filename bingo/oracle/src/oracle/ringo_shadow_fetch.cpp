@@ -35,7 +35,7 @@ RingoShadowFetch::RingoShadowFetch(RingoFetchContext& context) : _context(contex
     _total_count = -1;
     _table_name.push(0);
 
-    ArrayOutput output(_table_name);
+    StringOutput output(_table_name);
 
     output.printf("SHADOW_%d", context.context_id);
     output.writeChar(0);
@@ -178,7 +178,7 @@ void RingoShadowFetch::prepareExact(OracleEnv& env, int right_part)
         _statement->bindStringByName(":hash", hash_str, strlen(hash_str) + 1);
     }
 
-    ArrayOutput output_cnt(_counting_select);
+    StringOutput output_cnt(_counting_select);
     output_cnt.printf("SELECT COUNT(*) FROM %s sh", _table_name.ptr());
     if (right_part == 1)
         output_cnt.printf(" WHERE hash = :hash");
@@ -222,7 +222,7 @@ void RingoShadowFetch::fetch(OracleEnv& env, int maxrows)
             if (_fetch_type == _NON_SUBSTRUCTURE)
             {
                 RingoSubstructure& instance = _context.substructure;
-                QS_DEF(Array<char>, crf);
+                QS_DEF(std::string, crf);
 
                 _lob_crf->readAll(crf, false);
 
@@ -232,7 +232,7 @@ void RingoShadowFetch::fetch(OracleEnv& env, int maxrows)
             else if (_fetch_type == _EXACT)
             {
                 RingoExact& instance = _context.exact;
-                QS_DEF(Array<char>, crf);
+                QS_DEF(std::string, crf);
 
                 _lob_crf->readAll(crf, false);
 

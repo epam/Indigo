@@ -83,7 +83,7 @@ void MangoIndex::prepare(Scanner& molfile, Output& output, OsLock* lock_for_excl
         const byte* fp_sim_ptr = builder.getSim();
         int fp_sim_size = _context->fp_parameters.fingerprintSizeSim();
 
-        ArrayOutput fp_sim_output(_fp_sim_str);
+        StringOutput fp_sim_output(_fp_sim_str);
 
         for (int i = 0; i < fp_sim_size; i++)
             fp_sim_output.printf("%02X", fp_sim_ptr[i]);
@@ -91,7 +91,7 @@ void MangoIndex::prepare(Scanner& molfile, Output& output, OsLock* lock_for_excl
         fp_sim_output.writeChar(0);
     }
 
-    ArrayOutput output_cmf(_cmf);
+    StringOutput output_cmf(_cmf);
     {
         // CmfSaver modifies _context->cmf_dict and
         // requires exclusive access for this
@@ -103,7 +103,7 @@ void MangoIndex::prepare(Scanner& molfile, Output& output, OsLock* lock_for_excl
 
         if (mol.have_xyz)
         {
-            ArrayOutput output_xyz(_xyz);
+            StringOutput output_xyz(_xyz);
             saver.saveXyz(output_xyz);
         }
         else
@@ -119,7 +119,7 @@ void MangoIndex::prepare(Scanner& molfile, Output& output, OsLock* lock_for_excl
     _counted_elems_str.clear();
     _counted_elem_counters.clear();
 
-    ArrayOutput ce_output(_counted_elems_str);
+    StringOutput ce_output(_counted_elems_str);
 
     for (int i = 0; i < (int)NELEM(counted_elements); i++)
     {
@@ -155,12 +155,12 @@ const Array<int>& MangoIndex::getCountedElements() const
     return _counted_elem_counters;
 }
 
-const Array<char>& MangoIndex::getCmf() const
+const std::string& MangoIndex::getCmf() const
 {
     return _cmf;
 }
 
-const Array<char>& MangoIndex::getXyz() const
+const std::string& MangoIndex::getXyz() const
 {
     return _xyz;
 }

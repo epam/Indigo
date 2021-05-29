@@ -78,8 +78,8 @@ CEXPORT int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* c
                                            const char** fingerprint_sim_str, float* mass,
                                            int* sim_fp_bits_count){BINGO_BEGIN{if (id) * id = self.index_record_data_id;
 
-const Array<char>& cmf = self.mango_index->getCmf();
-const Array<char>& xyz = self.mango_index->getXyz();
+const std::string& cmf = self.mango_index->getCmf();
+const std::string& xyz = self.mango_index->getXyz();
 
 *cmf_buf = cmf.ptr();
 *cmf_buf_len = cmf.size();
@@ -493,7 +493,7 @@ CEXPORT const char* mangoSMILES(const char* target_buf, int target_buf_len, int 
         if (canonical)
             MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
 
-        ArrayOutput out(self.buffer);
+        StringOutput out(self.buffer);
 
         if (canonical)
         {
@@ -522,7 +522,7 @@ MoleculeAutoLoader loader(scanner);
 self.bingo_context->setLoaderSettings(loader);
 loader.loadMolecule(target);
 
-ArrayOutput out(self.buffer);
+StringOutput out(self.buffer);
 
 MolfileSaver saver(out);
 
@@ -544,7 +544,7 @@ MoleculeAutoLoader loader(scanner);
 self.bingo_context->setLoaderSettings(loader);
 loader.loadMolecule(target);
 
-ArrayOutput out(self.buffer);
+StringOutput out(self.buffer);
 
 CmlSaver saver(out);
 saver.saveMolecule(target);
@@ -588,7 +588,7 @@ CEXPORT int mangoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
     BINGO_END(1, -2)
 }
 
-CEXPORT const char* mangoGetCountedElementName(int index){BINGO_BEGIN{ArrayOutput output(self.buffer);
+CEXPORT const char* mangoGetCountedElementName(int index){BINGO_BEGIN{StringOutput output(self.buffer);
 output.printf("cnt_%s", Element::toString(MangoIndex::counted_elements[index]));
 self.buffer.push(0);
 
@@ -756,7 +756,7 @@ MoleculeAutoLoader loader(scanner);
 self.bingo_context->setLoaderSettings(loader);
 loader.loadMolecule(target);
 
-ArrayOutput out(self.buffer);
+StringOutput out(self.buffer);
 
 if ((save_xyz != 0) && !target.have_xyz)
     throw BingoError("molecule has no XYZ");
@@ -844,7 +844,7 @@ CEXPORT const char* mangoStandardize(const char* molecule, int molecule_len, con
 
         MoleculeStandardizer::standardize(target, st_options);
 
-        ArrayOutput out(self.buffer);
+        StringOutput out(self.buffer);
 
         MolfileSaver saver(out);
 

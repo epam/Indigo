@@ -308,7 +308,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
                 _addCoef(v, base_point.size() - 1, ONE);
             }
         QS_DEF(Array<int>, vertex_list);
-        QS_DEF(Array<char>, debug_atoms);
+        QS_DEF(std::string, debug_atoms);
         vertex_list.clear();
         for (int c = 0; c < component_count; c++)
         {

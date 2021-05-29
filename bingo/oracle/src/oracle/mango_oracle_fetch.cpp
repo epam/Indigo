@@ -29,7 +29,7 @@
 #include "oracle/ora_logger.h"
 #include "oracle/ora_wrap.h"
 
-static void _mangoIndexStart(OracleEnv& env, MangoFetchContext& context, const char* oper, const Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop,
+static void _mangoIndexStart(OracleEnv& env, MangoFetchContext& context, const char* oper, const std::string& query_buf, OCINumber* p_strt, OCINumber* p_stop,
                              int flags, const char* params)
 {
     MangoShadowFetch& shadow_fetch = context.shadow_fetch.ref();
@@ -197,12 +197,12 @@ ORAEXT int oraMangoIndexStart(OCIExtProcContext* ctx, int context_id, const char
         if (stop_ind != OCI_IND_NOTNULL)
             p_stop = 0;
 
-        QS_DEF(Array<char>, query_buf);
+        QS_DEF(std::string, query_buf);
         OracleLOB query_lob(env, query_loc);
 
         query_lob.readAll(query_buf, false);
 
-        QS_DEF(Array<char>, query_id);
+        QS_DEF(std::string, query_id);
 
         bingoBuildQueryID(env, oper, query_buf, p_strt, p_stop, flags, params, query_id);
 
@@ -312,8 +312,8 @@ ORAEXT OCINumber* oraMangoIndexSelectivity(OCIExtProcContext* ctx, int context_i
 
         MangoOracleContext& context = MangoOracleContext::get(env, context_id, false);
 
-        QS_DEF(Array<char>, query_id);
-        QS_DEF(Array<char>, query_buf);
+        QS_DEF(std::string, query_id);
+        QS_DEF(std::string, query_buf);
         OracleLOB query_lob(env, query_loc);
 
         query_lob.readAll(query_buf, false);
@@ -372,12 +372,12 @@ if (stop_ind != OCI_IND_NOTNULL)
 
 float sel = OracleUtil::numberToFloat(env, p_sel);
 
-QS_DEF(Array<char>, query_buf);
+QS_DEF(std::string, query_buf);
 OracleLOB query_lob(env, query_loc);
 
 query_lob.readAll(query_buf, false);
 
-QS_DEF(Array<char>, query_id);
+QS_DEF(std::string, query_id);
 
 bingoBuildQueryID(env, oper, query_buf, p_strt, p_stop, flags, params, query_id);
 

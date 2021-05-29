@@ -45,12 +45,12 @@ namespace indigo
         bool isReaction();
 
         CP_DECL;
-        TL_CP_DECL(Array<char>, data);
+        TL_CP_DECL(std::string, data);
         TL_CP_DECL(PropertiesMap, properties);
 
     protected:
         TL_CP_DECL(Array<long long>, _offsets);
-        TL_CP_DECL(Array<char>, _latest_text);
+        TL_CP_DECL(std::string, _latest_text);
         Scanner& _scanner;
         int _current_number;
         long long _max_offset;
@@ -61,8 +61,8 @@ namespace indigo
         bool _hasNextObject();
         void _skipObject();
         void _getObject();
-        void _getString(int size, Array<char>& str);
-        void _getValue(int type, int size, Array<char>& str);
+        void _getString(int size, std::string& str);
+        void _getValue(int type, int size, std::string& str);
     };
 
 } // namespace indigo

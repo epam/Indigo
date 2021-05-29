@@ -256,7 +256,7 @@ static void copyString(const char* source, char* dest, int len)
     strcpy(dest, source);
 }
 
-void indigoProductEnumeratorGetOneTubeMode(Array<char>& value)
+void indigoProductEnumeratorGetOneTubeMode(std::string& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.rpe_params.is_one_tube)

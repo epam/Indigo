@@ -53,7 +53,7 @@ void BingoPgText::initFromString(const char* str)
     BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a string: %s", message));
 }
 
-void BingoPgText::initFromArray(indigo::Array<char>& str)
+void BingoPgText::initFromArray(indigo::std::string& str)
 {
     clear();
     BINGO_PG_TRY

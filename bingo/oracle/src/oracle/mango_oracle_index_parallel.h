@@ -70,10 +70,10 @@ public:
     ChunkStorage rowids;
 };
 
-bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& molfile_buf, MangoOracleContext& context, MangoIndex& index, Array<char>& data,
+bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const std::string& molfile_buf, MangoOracleContext& context, MangoIndex& index, std::string& data,
                           OsLock* lock_for_exclusive_access, std::string& failure_message);
 
 void mangoRegisterMolecule(OracleEnv& env, const char* rowid, MangoOracleContext& context, const MangoIndex& index, BingoFingerprints& fingerprints,
-                           const Array<char>& prepared_data, bool append);
+                           const std::string& prepared_data, bool append);
 
 #endif // __mango_oracle_index_parallel_h__

@@ -56,7 +56,7 @@ ORAEXT OCILobLocator* oraLoadFileToCLOB(OCIExtProcContext* ctx, char* filename, 
 
         FileScanner scanner(filename);
 
-        QS_DEF(Array<char>, buf);
+        QS_DEF(std::string, buf);
 
         scanner.readAll(buf);
 
@@ -88,7 +88,7 @@ ORAEXT OCILobLocator* oraLoadFileToBLOB(OCIExtProcContext* ctx, char* filename, 
 
         FileScanner scanner(filename);
 
-        QS_DEF(Array<char>, buf);
+        QS_DEF(std::string, buf);
 
         scanner.readAll(buf);
 
@@ -119,7 +119,7 @@ ORAEXT OCIString* oraLoadFileToString(OCIExtProcContext* ctx, char* filename, sh
             throw BingoError("Null filename given");
 
         FileScanner scanner(filename);
-        QS_DEF(Array<char>, buf);
+        QS_DEF(std::string, buf);
 
         scanner.readAll(buf);
 
@@ -145,7 +145,7 @@ ORAEXT void oraSaveLOBToFile(OCIExtProcContext* ctx, OCILobLocator* lob_locator,
 
         OracleLOB lob(env, lob_locator);
 
-        QS_DEF(Array<char>, buf);
+        QS_DEF(std::string, buf);
 
         lob.readAll(buf, false);
 
@@ -159,9 +159,9 @@ ORAEXT void oraSaveLOBToFile(OCIExtProcContext* ctx, OCILobLocator* lob_locator,
 void _exportSDF(OracleEnv& env, const char* table, const char* clob_col, const char* other_cols, Output& output)
 {
     QS_DEF(StringPool, col_names);
-    QS_DEF(Array<char>, col_values);
-    QS_DEF(Array<char>, word);
-    QS_DEF(Array<char>, lob_value);
+    QS_DEF(std::string, col_values);
+    QS_DEF(std::string, word);
+    QS_DEF(std::string, lob_value);
 
     BufferScanner scanner(other_cols);
     int i;
@@ -226,8 +226,8 @@ void _exportSDF(OracleEnv& env, const char* table, const char* clob_col, const c
 
 void _parseFieldList(const char* str, StringPool& props, StringPool& columns)
 {
-    QS_DEF(Array<char>, prop);
-    QS_DEF(Array<char>, column);
+    QS_DEF(std::string, prop);
+    QS_DEF(std::string, column);
     BufferScanner scanner(str);
 
     props.clear();
@@ -257,7 +257,7 @@ void _importSDF(OracleEnv& env, const char* table, const char* clob_col, const c
 {
     FileScanner scanner(file_name);
     int i, nwritten = 0;
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
     QS_DEF(StringPool, props);
     QS_DEF(StringPool, columns);
 
@@ -304,7 +304,7 @@ void _importSDF(OracleEnv& env, const char* table, const char* clob_col, const c
             if (loader.properties.contains(props.at(i)))
                 continue;
 
-            ArrayOutput out(word);
+            StringOutput out(word);
 
             out.printf(":%s", columns.at(i));
             out.writeChar(0);
@@ -339,8 +339,8 @@ void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, co
     Scanner* scanner;
 
     int nwritten = 0;
-    QS_DEF(Array<char>, id);
-    QS_DEF(Array<char>, str);
+    QS_DEF(std::string, id);
+    QS_DEF(std::string, str);
 
     env.dbgPrintfTS("importing into table %s\n", table);
 
@@ -423,7 +423,7 @@ void _importRDF(OracleEnv& env, const char* table, const char* clob_col, const c
 {
     FileScanner scanner(file_name);
     int i, nwritten = 0;
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
     QS_DEF(StringPool, props);
     QS_DEF(StringPool, columns);
 
@@ -468,7 +468,7 @@ void _importRDF(OracleEnv& env, const char* table, const char* clob_col, const c
             if (loader.properties.contains(props.at(i)))
                 continue;
 
-            ArrayOutput out(word);
+            StringOutput out(word);
 
             out.printf(":%s", columns.at(i));
             out.writeChar(0);
@@ -663,13 +663,13 @@ if (dest_indicator == OCI_IND_NULL)
 
 OracleLOB source_lob(env, source_locator);
 
-QS_DEF(Array<char>, source);
-QS_DEF(Array<char>, dest);
+QS_DEF(std::string, source);
+QS_DEF(std::string, dest);
 
 source_lob.readAll(source, false);
 
 {
-    ArrayOutput output(dest);
+    StringOutput output(dest);
     GZipOutput gzoutput(output, 9);
 
     gzoutput.write(source.ptr(), source.size());
@@ -694,8 +694,8 @@ if (dest_indicator == OCI_IND_NULL)
 
 OracleLOB source_lob(env, source_locator);
 
-QS_DEF(Array<char>, source);
-QS_DEF(Array<char>, dest);
+QS_DEF(std::string, source);
+QS_DEF(std::string, dest);
 
 source_lob.readAll(source, false);
 
@@ -725,8 +725,8 @@ ORAEXT OCIString* oraBingoGetName(OCIExtProcContext* ctx, OCILobLocator* source_
         if (source_indicator == OCI_IND_NULL)
             throw BingoError("null source given");
 
-        QS_DEF(Array<char>, source);
-        QS_DEF(Array<char>, name);
+        QS_DEF(std::string, source);
+        QS_DEF(std::string, name);
         OracleLOB source_lob(env, source_locator);
 
         source_lob.readAll(source, false);

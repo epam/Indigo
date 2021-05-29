@@ -104,7 +104,7 @@ void RxnfileLoader::_loadReaction()
 void RxnfileLoader::_readRxnHeader()
 {
 
-    QS_DEF(Array<char>, header);
+    QS_DEF(std::string, header);
 
     _scanner.readLine(header, true);
 
@@ -154,7 +154,7 @@ void RxnfileLoader::_readProductsHeader()
         return;
     }
 
-    QS_DEF(Array<char>, header);
+    QS_DEF(std::string, header);
 
     _scanner.readLine(header, true);
     if (strcmp(header.ptr(), "M  V30 BEGIN PRODUCT") != 0)
@@ -170,7 +170,7 @@ void RxnfileLoader::_readReactantsHeader()
         return;
     }
 
-    QS_DEF(Array<char>, header);
+    QS_DEF(std::string, header);
 
     _scanner.readLine(header, true);
     if (strcmp(header.ptr(), "M  V30 BEGIN REACTANT") != 0)
@@ -186,7 +186,7 @@ void RxnfileLoader::_readCatalystsHeader()
         return;
     }
 
-    QS_DEF(Array<char>, header);
+    QS_DEF(std::string, header);
 
     _scanner.readLine(header, true);
     if (strcmp(header.ptr(), "M  V30 BEGIN AGENT") != 0)
@@ -202,7 +202,7 @@ void RxnfileLoader::_readMolHeader()
     {
         return;
     }
-    QS_DEF(Array<char>, header);
+    QS_DEF(std::string, header);
 
     _scanner.readLine(header, true);
     if (strcmp(header.ptr(), "$MOL") != 0)
@@ -215,7 +215,7 @@ void RxnfileLoader::_readReactantsFooter()
     {
         return;
     }
-    QS_DEF(Array<char>, footer);
+    QS_DEF(std::string, footer);
 
     _scanner.readLine(footer, true);
 
@@ -229,7 +229,7 @@ void RxnfileLoader::_readProductsFooter()
     {
         return;
     }
-    QS_DEF(Array<char>, footer);
+    QS_DEF(std::string, footer);
 
     _scanner.readLine(footer, true);
 
@@ -243,7 +243,7 @@ void RxnfileLoader::_readCatalystsFooter()
     {
         return;
     }
-    QS_DEF(Array<char>, footer);
+    QS_DEF(std::string, footer);
 
     _scanner.readLine(footer, true);
 

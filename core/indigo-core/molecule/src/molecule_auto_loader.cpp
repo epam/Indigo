@@ -59,7 +59,7 @@ MoleculeAutoLoader::MoleculeAutoLoader(Scanner& scanner) : CP_INIT, TL_CP_GET(pr
     _init();
 }
 
-MoleculeAutoLoader::MoleculeAutoLoader(const Array<char>& arr) : CP_INIT, TL_CP_GET(properties)
+MoleculeAutoLoader::MoleculeAutoLoader(const std::string& arr) : CP_INIT, TL_CP_GET(properties)
 {
     _scanner = new BufferScanner(arr);
     _own_scanner = true;
@@ -90,11 +90,11 @@ void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol)
     _loadMolecule(qmol, true);
 }
 
-bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, Array<char>& outbuf)
+bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, std::string& outbuf)
 {
     long long pos = scanner.tell();
     bool endmark = false;
-    QS_DEF(Array<char>, curline);
+    QS_DEF(std::string, curline);
 
     outbuf.clear();
     while (!scanner.isEOF())
@@ -160,7 +160,7 @@ bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, Array<char>& outbuf)
     return endmark;
 }
 
-void MoleculeAutoLoader::readAllDataToString(Scanner& scanner, Array<char>& dataBuf)
+void MoleculeAutoLoader::readAllDataToString(Scanner& scanner, std::string& dataBuf)
 {
     // check GZip format
     if (scanner.length() >= 2)
@@ -201,7 +201,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         if (id[0] == 0x1f && id[1] == 0x8b)
         {
             GZipScanner gzscanner(*_scanner);
-            QS_DEF(Array<char>, buf);
+            QS_DEF(std::string, buf);
 
             gzscanner.readAll(buf);
             MoleculeAutoLoader loader2(buf);
@@ -224,7 +224,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
 
     // check for MDLCT format
     {
-        QS_DEF(Array<char>, buf);
+        QS_DEF(std::string, buf);
         if (tryMDLCT(*_scanner, buf))
         {
             BufferScanner scanner2(buf);
@@ -297,7 +297,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                 _scanner->seek(pos, SEEK_SET);
 //                try
                 {
-                    Array<char> buf;
+                    std::string buf;
                     _scanner->readAll(buf);
                     buf.push(0);
                     Document data;
@@ -373,7 +373,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     throw Error("InChI input doesn't support query molecules");
                 }
 
-                Array<char> inchi;
+                std::string inchi;
                 _scanner->readWord(inchi, " ");
 
                 InchiWrapper loader;
@@ -383,7 +383,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         }
 
         // If not InChI then SMILES or IUPAC name
-        Array<char> err_buf;
+        std::string err_buf;
 
         try
         {
@@ -411,7 +411,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         // We fall down to IUPAC name conversion if SMILES loading threw an exception
         try
         {
-            Array<char> name;
+            std::string name;
             _scanner->seek(SEEK_SET, SEEK_SET);
             _scanner->readLine(name, true);
             MoleculeNameParser parser;

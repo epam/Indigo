@@ -37,11 +37,11 @@ namespace indigo
     class TGroup
     {
     public:
-        Array<char> tgroup_class;
-        Array<char> tgroup_name;
-        Array<char> tgroup_alias;
-        Array<char> tgroup_comment;
-        Array<char> tgroup_natreplace;
+        std::string tgroup_class;
+        std::string tgroup_name;
+        std::string tgroup_alias;
+        std::string tgroup_comment;
+        std::string tgroup_natreplace;
         int tgroup_id;
 
         TGroup();

@@ -72,7 +72,7 @@ int Scanner::readIntFix(int digits)
 
 int Scanner::readInt1(void)
 {
-    QS_DEF(Array<char>, buf);
+    QS_DEF(std::string, buf);
     char c;
     int result;
 
@@ -100,7 +100,7 @@ int Scanner::readInt1(void)
 
 int Scanner::readInt(void)
 {
-    QS_DEF(Array<char>, buf);
+    QS_DEF(std::string, buf);
     char c;
     int result;
 
@@ -264,7 +264,7 @@ bool Scanner::tryReadFloat(float& value)
     return true;
 }
 
-void Scanner::readWord(Array<char>& word, const char* delimiters)
+void Scanner::readWord(std::string& word, const char* delimiters)
 {
     word.clear();
 
@@ -356,7 +356,7 @@ bool Scanner::skipLine()
     return false;
 }
 
-void Scanner::read(int length, Array<char>& buf)
+void Scanner::read(int length, std::string& buf)
 {
     buf.resize(length);
     read(length, buf.ptr());
@@ -374,7 +374,7 @@ void Scanner::skipUntil(const char* delimiters)
         skip(1);
 }
 
-void Scanner::appendLine(Array<char>& out, bool append_zero)
+void Scanner::appendLine(std::string& out, bool append_zero)
 {
     if (isEOF())
         throw Error("appendLine(): end of stream");
@@ -406,7 +406,7 @@ void Scanner::appendLine(Array<char>& out, bool append_zero)
         out.push(0);
 }
 
-void Scanner::readLine(Array<char>& out, bool append_zero)
+void Scanner::readLine(std::string& out, bool append_zero)
 {
     out.clear();
     appendLine(out, append_zero);
@@ -494,7 +494,7 @@ unsigned int Scanner::readPackedUInt()
     }
 }
 
-void Scanner::readAll(Array<char>& arr)
+void Scanner::readAll(std::string& arr)
 {
     const long long size = length() - tell();
     const int max_int = std::numeric_limits<int>::max();
@@ -714,7 +714,7 @@ BufferScanner::BufferScanner(const char* str)
     _init(str, (int)strlen(str));
 }
 
-BufferScanner::BufferScanner(const Array<char>& arr)
+BufferScanner::BufferScanner(const std::string& arr)
 {
     _init(arr.ptr(), arr.size());
 }
@@ -795,7 +795,7 @@ byte BufferScanner::readByte()
     return _buffer[_offset++];
 }
 
-void Scanner::_prefixFunction(Array<char>& str, Array<int>& prefix)
+void Scanner::_prefixFunction(std::string& str, Array<int>& prefix)
 {
     prefix.clear();
     prefix.push(0);
@@ -814,16 +814,16 @@ void Scanner::_prefixFunction(Array<char>& str, Array<int>& prefix)
 
 bool Scanner::findWord(const char* word)
 {
-    QS_DEF(ReusableObjArray<Array<char>>, strs);
+    QS_DEF(ReusableObjArray<std::string>, strs);
 
     strs.clear();
-    Array<char>& str = strs.push();
+    std::string& str = strs.push();
 
     str.readString(word, false);
     return findWord(strs) == 0;
 }
 
-int Scanner::findWord(ReusableObjArray<Array<char>>& words)
+int Scanner::findWord(ReusableObjArray<std::string>& words)
 {
     if (isEOF())
         return -1;
@@ -867,16 +867,16 @@ int Scanner::findWord(ReusableObjArray<Array<char>>& words)
 
 bool Scanner::findWordIgnoreCase(const char* word)
 {
-    QS_DEF(ReusableObjArray<Array<char>>, strs);
+    QS_DEF(ReusableObjArray<std::string>, strs);
 
     strs.clear();
-    Array<char>& str = strs.push();
+    std::string& str = strs.push();
 
     str.readString(word, false);
     return findWordIgnoreCase(strs) == 0;
 }
 
-int Scanner::findWordIgnoreCase(ReusableObjArray<Array<char>>& words)
+int Scanner::findWordIgnoreCase(ReusableObjArray<std::string>& words)
 {
     if (isEOF())
         return -1;

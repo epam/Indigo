@@ -58,7 +58,7 @@ namespace indigo
         /*
          * Data buffer with reaction or molecule for current record
          */
-        TL_CP_DECL(Array<char>, data);
+        TL_CP_DECL(std::string, data);
         /*
          * Properties map for current record
          */
@@ -77,14 +77,14 @@ namespace indigo
     protected:
         bool _readIdentifiers(bool);
         inline Scanner& _getScanner() const;
-        static bool _readLine(Scanner&, Array<char>&);
+        static bool _readLine(Scanner&, std::string&);
 
         inline bool _startsWith(const char* str) const
         {
             return ((size_t)_innerBuffer.size() >= strlen(str) && strncmp(_innerBuffer.ptr(), str, strlen(str)) == 0);
         }
 
-        TL_CP_DECL(Array<char>, _innerBuffer);
+        TL_CP_DECL(std::string, _innerBuffer);
         bool _ownScanner;
         Scanner* _scanner;
         bool _isMolecule;

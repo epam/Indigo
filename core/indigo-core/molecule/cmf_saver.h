@@ -81,7 +81,7 @@ namespace indigo
             Array<int>*atom_mapping, *bond_mapping;
         };
 
-        void _encodeString(const Array<char>& str);
+        void _encodeString(const std::string& str);
         void _encodeUIntArray(const Array<int>& data, const Array<int>& mapping);
         void _encodeUIntArray(const Array<int>& data);
         void _encodeUIntArraySkipNegative(const Array<int>& data);

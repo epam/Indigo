@@ -47,15 +47,15 @@ namespace indigo
 
         // Input parameters
         void setOptions(const char* opt);
-        void getOptions(Array<char>& value);
+        void getOptions(std::string& value);
 
         // Output additional results
-        Array<char> warning, log, auxInfo;
+        std::string warning, log, auxInfo;
 
         void loadMoleculeFromInchi(const char* inchi, Molecule& mol);
         void loadMoleculeFromAux(const char* aux, Molecule& mol);
 
-        void saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi);
+        void saveMoleculeIntoInchi(Molecule& mol, std::string& inchi);
 
         void parseInchiOutput(const InchiOutput& inchi_output, Molecule& mol);
 
@@ -65,7 +65,7 @@ namespace indigo
 
         static const char* version();
 
-        static void InChIKey(const char* inchi, Array<char>& output);
+        static void InChIKey(const char* inchi, std::string& output);
 
         DECL_EXCEPTION_NO_EXP(Error);
 
@@ -78,7 +78,7 @@ namespace indigo
         };
 
     private:
-        Array<char> options;
+        std::string options;
         int _stereo_opt;
     };
 

@@ -50,7 +50,7 @@ void RingoIndex::prepare(Scanner& rxnfile, Output& output, OsLock* lock_for_excl
 
     _hash = RingoExact::calculateHash(reaction);
     {
-        ArrayOutput out(_hash_str);
+        StringOutput out(_hash_str);
         out.printf("%02X", _hash);
         _hash_str.push(0);
     }
@@ -63,7 +63,7 @@ void RingoIndex::prepare(Scanner& rxnfile, Output& output, OsLock* lock_for_excl
         _fp.copy(builder.get(), _context->fp_parameters.fingerprintSizeExtOrdSim() * 2);
     }
 
-    ArrayOutput output_crf(_crf);
+    StringOutput output_crf(_crf);
     {
         // CrfSaver modifies _context->cmf_dict and
         // requires exclusive access for this
@@ -80,7 +80,7 @@ const byte* RingoIndex::getFingerprint()
     return _fp.ptr();
 }
 
-const Array<char>& RingoIndex::getCrf()
+const std::string& RingoIndex::getCrf()
 {
     return _crf;
 }

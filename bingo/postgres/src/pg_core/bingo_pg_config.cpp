@@ -197,9 +197,9 @@ void BingoPgConfig::setUpBingoConfiguration()
     }
 }
 
-void BingoPgConfig::serialize(indigo::Array<char>& config_data)
+void BingoPgConfig::serialize(indigo::std::string& config_data)
 {
-    ArrayOutput data_out(config_data);
+    StringOutput data_out(config_data);
     BingoPgCommon::DataProcessing::handleRedBlackStringArr(_rawConfig, 0, &data_out);
     BingoPgCommon::DataProcessing::handleRedBlackObject(_tauParameters, 0, &data_out);
 }
@@ -232,9 +232,9 @@ void BingoPgConfig::_replaceInsertTauParameter(uintptr_t rule_datum, uintptr_t b
     param.end.readString(end_text.getString(), true);
 }
 
-void BingoPgConfig::_toString(int value, Array<char>& a)
+void BingoPgConfig::_toString(int value, std::string& a)
 {
-    ArrayOutput ao(a);
+    StringOutput ao(a);
     ao.printf("%d", value);
 }
 

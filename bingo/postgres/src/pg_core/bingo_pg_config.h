@@ -24,7 +24,7 @@ public:
     void replaceInsertParameter(uintptr_t name_datum, uintptr_t value_datum);
     void setUpBingoConfiguration();
 
-    void serialize(indigo::Array<char>& config_data);
+    void serialize(indigo::std::string& config_data);
     void deserialize(void* data, int data_len);
 
     DECL_ERROR;
@@ -36,18 +36,18 @@ private:
     int _getNumericValue(int c_idx);
 
     void _replaceInsertTauParameter(uintptr_t rule_datum, uintptr_t beg_datum, uintptr_t end_datum);
-    void _toString(int value, indigo::Array<char>&);
+    void _toString(int value, indigo::std::string&);
 
-    indigo::RedBlackStringObjMap<indigo::Array<char>> _rawConfig;
-    indigo::RedBlackStringObjMap<indigo::Array<char>> _stringParams;
+    indigo::RedBlackStringObjMap<indigo::std::string> _rawConfig;
+    indigo::RedBlackStringObjMap<indigo::std::string> _stringParams;
 
     class TauParameter
     {
     public:
         TauParameter(){};
         ~TauParameter(){};
-        indigo::Array<char> beg;
-        indigo::Array<char> end;
+        indigo::std::string beg;
+        indigo::std::string end;
         void serialize(indigo::Scanner*, indigo::Output*);
     };
 

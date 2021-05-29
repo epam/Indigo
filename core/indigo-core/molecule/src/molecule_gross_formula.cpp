@@ -144,7 +144,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     // basic structure and all polymers
     int grossFormulaSize = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) + 1;
     QS_DEF_RES(ObjArray<Array<int>>, filters, grossFormulaSize);
-    QS_DEF_RES(ObjArray<Array<char>>, indices, grossFormulaSize);
+    QS_DEF_RES(ObjArray<std::string>, indices, grossFormulaSize);
 
     // first element is for old-style gross formula
     indices[0].appendString(" ", true);
@@ -227,16 +227,16 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     return result;
 }
 
-void MoleculeGrossFormula::toString(const Array<int>& gross, Array<char>& str, bool add_rsites)
+void MoleculeGrossFormula::toString(const Array<int>& gross, std::string& str, bool add_rsites)
 {
-    ArrayOutput output(str);
+    StringOutput output(str);
     _toString(gross, output, _cmp, add_rsites);
     output.writeChar(0);
 }
 
-void MoleculeGrossFormula::toString(GROSS_UNITS& gross, Array<char>& str, bool add_rsites)
+void MoleculeGrossFormula::toString(GROSS_UNITS& gross, std::string& str, bool add_rsites)
 {
-    ArrayOutput output(str);
+    StringOutput output(str);
 
     for (int i = 0; i < gross.size(); i++)
     {
@@ -245,9 +245,9 @@ void MoleculeGrossFormula::toString(GROSS_UNITS& gross, Array<char>& str, bool a
     output.writeChar(0);
 }
 
-void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, bool add_rsites)
+void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, std::string& str, bool add_rsites)
 {
-    ArrayOutput output(str); // clear!
+    StringOutput output(str); // clear!
 
     if (gross.size() == 0)
         return;
@@ -274,7 +274,7 @@ void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, b
     output.writeChar(0);
 }
 
-void MoleculeGrossFormula::_toString(const Array<int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites)
+void MoleculeGrossFormula::_toString(const Array<int>& gross, StringOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites)
 {
     QS_DEF(Array<_ElemCounter>, counters);
     int i;
@@ -314,7 +314,7 @@ void MoleculeGrossFormula::_toString(const Array<int>& gross, ArrayOutput& outpu
     }
 }
 
-void MoleculeGrossFormula::_toString(const RedBlackMap<int, int>& isotopes, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*),
+void MoleculeGrossFormula::_toString(const RedBlackMap<int, int>& isotopes, StringOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*),
                                      bool add_rsites)
 {
     QS_DEF(Array<_ElemCounter>, counters);

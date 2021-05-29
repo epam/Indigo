@@ -59,7 +59,7 @@ static void _mangoUpdateMolecule(Molecule& target, const char* options, BingoOra
     }
 }
 
-static OCIString* _mangoSMILES(OracleEnv& env, const Array<char>& target_buf, const char* options, BingoOracleContext& context, bool canonical)
+static OCIString* _mangoSMILES(OracleEnv& env, const std::string& target_buf, const char* options, BingoOracleContext& context, bool canonical)
 {
     QS_DEF(Molecule, target);
 
@@ -80,9 +80,9 @@ static OCIString* _mangoSMILES(OracleEnv& env, const Array<char>& target_buf, co
     if (canonical)
         MoleculeAromatizer::aromatizeBonds(target, AromaticityOptions::BASIC);
 
-    QS_DEF(Array<char>, smiles);
+    QS_DEF(std::string, smiles);
 
-    ArrayOutput out(smiles);
+    StringOutput out(smiles);
 
     if (canonical)
     {
@@ -133,7 +133,7 @@ ORAEXT OCIString* oraMangoSMILES(OCIExtProcContext* ctx, OCILobLocator* target_l
 
             OracleLOB target_lob(env, target_locator);
 
-            QS_DEF(Array<char>, buf);
+            QS_DEF(std::string, buf);
 
             target_lob.readAll(buf, false);
 
@@ -173,7 +173,7 @@ ORAEXT OCIString* oraMangoCanonicalSMILES(OCIExtProcContext* ctx, OCILobLocator*
 
             OracleLOB target_lob(env, target_locator);
 
-            QS_DEF(Array<char>, buf);
+            QS_DEF(std::string, buf);
 
             profTimerStart(treadlob, "smiles.read_lob");
             target_lob.readAll(buf, false);
@@ -218,7 +218,7 @@ ORAEXT OCIString* oraMangoCheckMolecule(OCIExtProcContext* ctx, OCILobLocator* t
         {
             OracleLOB target_lob(env, target_locator);
 
-            QS_DEF(Array<char>, buf);
+            QS_DEF(std::string, buf);
             QS_DEF(Molecule, mol);
 
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
@@ -253,9 +253,9 @@ ORAEXT OCIString* oraMangoCheckMolecule(OCIExtProcContext* ctx, OCILobLocator* t
     return result;
 }
 
-void _ICM(BingoOracleContext& context, OracleLOB& target_lob, int save_xyz, Array<char>& icm)
+void _ICM(BingoOracleContext& context, OracleLOB& target_lob, int save_xyz, std::string& icm)
 {
-    QS_DEF(Array<char>, target);
+    QS_DEF(std::string, target);
     QS_DEF(Molecule, mol);
 
     target_lob.readAll(target, false);
@@ -267,7 +267,7 @@ void _ICM(BingoOracleContext& context, OracleLOB& target_lob, int save_xyz, Arra
     if ((save_xyz != 0) && !mol.have_xyz)
         throw BingoError("molecule has no XYZ");
 
-    ArrayOutput output(icm);
+    StringOutput output(icm);
     IcmSaver saver(output);
 
     saver.save_xyz = (save_xyz != 0);
@@ -290,7 +290,7 @@ ORAEXT OCILobLocator* oraMangoICM(OCIExtProcContext* ctx, OCILobLocator* target_
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
             block_throw_error = context.reject_invalid_structures.get();
 
-            QS_DEF(Array<char>, icm);
+            QS_DEF(std::string, icm);
 
             _ICM(context, target_lob, save_xyz, icm);
 
@@ -320,7 +320,7 @@ OracleLOB target_lob(env, target_locator);
 BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
 block_throw_error = context.reject_invalid_structures.get();
 
-QS_DEF(Array<char>, icm);
+QS_DEF(std::string, icm);
 
 _ICM(context, target_lob, save_xyz, icm);
 
@@ -352,8 +352,8 @@ ORAEXT OCILobLocator* oraMangoMolfile(OCIExtProcContext* ctx, OCILobLocator* tar
             block_throw_error = context.reject_invalid_structures.get();
             OracleLOB target_lob(env, target_locator);
 
-            QS_DEF(Array<char>, target);
-            QS_DEF(Array<char>, icm);
+            QS_DEF(std::string, target);
+            QS_DEF(std::string, icm);
             QS_DEF(Molecule, mol);
 
             target_lob.readAll(target, false);
@@ -374,7 +374,7 @@ ORAEXT OCILobLocator* oraMangoMolfile(OCIExtProcContext* ctx, OCILobLocator* tar
                 mol.allene_stereo.markBonds();
             }
 
-            ArrayOutput output(icm);
+            StringOutput output(icm);
             MolfileSaver saver(output);
 
             saver.saveMolecule(mol);
@@ -409,8 +409,8 @@ ORAEXT OCILobLocator* oraMangoCML(OCIExtProcContext* ctx, OCILobLocator* target_
             block_throw_error = context.reject_invalid_structures.get();
             OracleLOB target_lob(env, target_locator);
 
-            QS_DEF(Array<char>, target);
-            QS_DEF(Array<char>, icm);
+            QS_DEF(std::string, target);
+            QS_DEF(std::string, icm);
             QS_DEF(Molecule, mol);
 
             target_lob.readAll(target, false);
@@ -429,7 +429,7 @@ ORAEXT OCILobLocator* oraMangoCML(OCIExtProcContext* ctx, OCILobLocator* target_
                 mol.allene_stereo.markBonds();
             }
 
-            ArrayOutput output(icm);
+            StringOutput output(icm);
             CmlSaver saver(output);
 
             saver.saveMolecule(mol);
@@ -467,7 +467,7 @@ ORAEXT OCILobLocator* oraMangoInchi(OCIExtProcContext* ctx, OCILobLocator* targe
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
             block_throw_error = context.reject_invalid_structures.get();
 
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(std::string, target_buf);
 
             OracleLOB target_lob(env, target_loc);
 
@@ -479,7 +479,7 @@ ORAEXT OCILobLocator* oraMangoInchi(OCIExtProcContext* ctx, OCILobLocator* targe
             context.setLoaderSettings(loader);
             loader.loadMolecule(target);
 
-            QS_DEF(Array<char>, inchi);
+            QS_DEF(std::string, inchi);
 
             InchiWrapper inchi_calc;
             inchi_calc.setOptions(options);
@@ -516,11 +516,11 @@ ORAEXT OCIString* oraMangoInchiKey(OCIExtProcContext* ctx, OCILobLocator* inchi_
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
             block_throw_error = context.reject_invalid_structures.get();
 
-            QS_DEF(Array<char>, inchi);
+            QS_DEF(std::string, inchi);
             OracleLOB inchi_lob(env, inchi_loc);
             inchi_lob.readAll(inchi, true);
 
-            QS_DEF(Array<char>, inchikey_buf);
+            QS_DEF(std::string, inchikey_buf);
 
             InchiWrapper::InChIKey(inchi.ptr(), inchikey_buf);
 
@@ -554,7 +554,7 @@ ORAEXT OCILobLocator* oraMangoFingerprint(OCIExtProcContext* ctx, OCILobLocator*
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
             block_throw_error = context.reject_invalid_structures.get();
 
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(std::string, target_buf);
 
             OracleLOB target_lob(env, target_loc);
 

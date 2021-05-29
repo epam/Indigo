@@ -151,7 +151,7 @@ bool GZipScanner::_read(int length, void* res)
     return true;
 }
 
-void GZipScanner::readAll(Array<char>& arr)
+void GZipScanner::readAll(std::string& arr)
 {
     arr.clear();
 
@@ -161,7 +161,7 @@ void GZipScanner::readAll(Array<char>& arr)
 
 void GZipScanner::skip(int length)
 {
-    QS_DEF(Array<char>, dummy);
+    QS_DEF(std::string, dummy);
 
     dummy.clear_resize(length);
     read(length, dummy.ptr());

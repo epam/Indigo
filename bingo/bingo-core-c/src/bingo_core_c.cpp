@@ -247,7 +247,7 @@ CEXPORT int bingoGetConfigBin(const char* name, const char** value, int* len)
 
         if (strcasecmp(name, "cmf-dict") == 0 || strcasecmp(name, "cmf_dict") == 0)
         {
-            ArrayOutput output(self.buffer);
+            StringOutput output(self.buffer);
             self.bingo_context->cmf_dict.save(output);
             *value = self.buffer.ptr();
             *len = self.buffer.size();
@@ -331,8 +331,8 @@ CEXPORT int bingoImportParseFieldList(const char* fields_str)
 {
     BINGO_BEGIN
     {
-        QS_DEF(Array<char>, prop);
-        QS_DEF(Array<char>, column);
+        QS_DEF(std::string, prop);
+        QS_DEF(std::string, column);
         BufferScanner scanner(fields_str);
 
         self.import_properties.free();
@@ -471,7 +471,7 @@ CEXPORT void bingoProfilingReset(byte reset_whole_session)
     ProfilingSystem::getInstance().reset(reset_whole_session != 0);
 }
 
-CEXPORT const char* bingoProfilingGetStatistics(bool for_session){BINGO_BEGIN{ArrayOutput output(self.buffer);
+CEXPORT const char* bingoProfilingGetStatistics(bool for_session){BINGO_BEGIN{StringOutput output(self.buffer);
 profGetStatistics(output, for_session);
 output.writeByte(0);
 return self.buffer.ptr();
@@ -552,8 +552,8 @@ CEXPORT void bingoProfIncCounter(const char* name, int dv)
     inst.addCounter(name_index, dv);
 }
 
-CEXPORT const char* bingoGetNameCore(const char* target_buf, int target_buf_len){BINGO_BEGIN{QS_DEF(Array<char>, source);
-QS_DEF(Array<char>, name);
+CEXPORT const char* bingoGetNameCore(const char* target_buf, int target_buf_len){BINGO_BEGIN{QS_DEF(std::string, source);
+QS_DEF(std::string, name);
 
 BufferScanner scanner(target_buf, target_buf_len);
 bingoGetName(scanner, self.buffer);

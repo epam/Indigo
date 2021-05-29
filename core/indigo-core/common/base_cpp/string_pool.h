@@ -39,7 +39,7 @@ namespace indigo
         ~StringPool();
 
         int add(const char* str);
-        int add(Array<char>& str);
+        int add(std::string& str);
         int add(int size);
         void remove(int idx);
         int size() const;
@@ -96,7 +96,7 @@ namespace indigo
         int _add(const char* str, int size);
 
         Pool<int> _pool;
-        PtrArray<Array<char>> _storage;
+        PtrArray<std::string> _storage;
 
     private:
         StringPool(const StringPool&); // no implicit copy

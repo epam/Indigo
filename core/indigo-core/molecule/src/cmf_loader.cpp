@@ -863,7 +863,7 @@ void CmfLoader::_readSGroupXYZ(Scanner& scanner, int idx, Molecule& mol, const C
         throw Error("_readExtSection: unexpected SGroup type: %d", sg_type);
 }
 
-void CmfLoader::_readString(Array<char>& dest)
+void CmfLoader::_readString(std::string& dest)
 {
     unsigned int len = _scanner->readPackedUInt();
     dest.resize(len + 1);

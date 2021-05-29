@@ -169,8 +169,8 @@ public:
 
     virtual const char* debugInfo();
 
-    virtual void toString(Array<char>& str);
-    virtual void toBuffer(Array<char>& buf);
+    virtual void toString(std::string& str);
+    virtual void toBuffer(std::string& buf);
     virtual BaseMolecule& getBaseMolecule();
     virtual QueryMolecule& getQueryMolecule();
     virtual Molecule& getMolecule();
@@ -191,15 +191,15 @@ public:
 
     virtual void remove();
 
-    //   virtual RedBlackStringObjMap< Array<char> > * getProperties();
-    //   void copyProperties (RedBlackStringObjMap< Array<char> > &other);
+    //   virtual RedBlackStringObjMap< std::string > * getProperties();
+    //   void copyProperties (RedBlackStringObjMap< std::string > &other);
     virtual PropertiesMap& getProperties();
     virtual MonomersProperties& getMonomersProperties();
     virtual void copyProperties(PropertiesMap&);
-    virtual void copyProperties(RedBlackStringObjMap<Array<char>>& other);
+    virtual void copyProperties(RedBlackStringObjMap<std::string>& other);
 
 protected:
-    AutoPtr<Array<char>> _dbg_info; // allocated by debugInfo() on demand
+    AutoPtr<std::string> _dbg_info; // allocated by debugInfo() on demand
 private:
     IndigoObject(const IndigoObject&);
 };
@@ -210,7 +210,7 @@ public:
     IndigoMoleculeGross();
     virtual ~IndigoMoleculeGross();
 
-    virtual void toString(Array<char>& str);
+    virtual void toString(std::string& str);
 
     std::unique_ptr<GROSS_UNITS> gross;
 };
@@ -221,7 +221,7 @@ public:
     IndigoReactionGross();
     virtual ~IndigoReactionGross();
 
-    virtual void toString(Array<char>& str);
+    virtual void toString(std::string& str);
 
     std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> gross;
 };
@@ -259,7 +259,7 @@ public:
     Indigo();
     ~Indigo();
 
-    Array<char> error_message;
+    std::string error_message;
     INDIGO_ERROR_HANDLER error_handler;
     void* error_handler_context;
 
@@ -278,7 +278,7 @@ public:
 
     struct TmpData
     {
-        Array<char> string;
+        std::string string;
         float xyz[3];
     };
     // Method that returns temporary buffer that can be returned from Indigo C API methods

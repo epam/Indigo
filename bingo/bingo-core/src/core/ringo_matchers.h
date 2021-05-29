@@ -42,26 +42,26 @@ public:
 
     bool parse(const char* params);
 
-    bool matchBinary(const Array<char>& buf);
+    bool matchBinary(const std::string& buf);
     bool matchBinary(Scanner& scanner);
 
-    void loadTarget(const Array<char>& buf);
+    void loadTarget(const std::string& buf);
     void loadTarget(Scanner& scanner);
     void loadTarget(const char* str);
 
     bool matchLoadedTarget();
 
-    void loadQuery(const Array<char>& buf);
+    void loadQuery(const std::string& buf);
     void loadQuery(const char* str);
     void loadQuery(Scanner& scanner);
 
-    void loadSMARTS(const Array<char>& buf);
+    void loadSMARTS(const std::string& buf);
     void loadSMARTS(const char* str);
     void loadSMARTS(Scanner& scanner);
 
     bool preserve_bonds_on_highlighting;
 
-    void getHighlightedTarget(Array<char>& buf);
+    void getHighlightedTarget(std::string& buf);
 
     const byte* getQueryFingerprint();
 
@@ -97,11 +97,11 @@ public:
 
     void parse(const char* mode);
 
-    void loadReaction(const Array<char>& buf);
+    void loadReaction(const std::string& buf);
     void loadReaction(const char* str);
     void loadReaction(Scanner& scanner);
 
-    void getResult(Array<char>& buf);
+    void getResult(std::string& buf);
 
     DECL_ERROR;
 
@@ -115,21 +115,21 @@ class RingoExact
 public:
     RingoExact(BingoContext& context);
 
-    void loadQuery(const Array<char>& buf);
+    void loadQuery(const std::string& buf);
     void loadQuery(Scanner& scanner);
     void loadQuery(const char* buf);
 
     dword getQueryHash();
     const char* getQueryHashStr();
 
-    void loadTarget(const Array<char>& molfile_buf);
+    void loadTarget(const std::string& molfile_buf);
     void loadTarget(Scanner& scanner);
     void loadTarget(const char* target);
 
     bool matchLoadedTarget();
 
     bool matchBinary(Scanner& scanner);
-    bool matchBinary(const Array<char>& target_buf);
+    bool matchBinary(const std::string& target_buf);
 
     void setParameters(const char* conditions);
 
@@ -144,7 +144,7 @@ protected:
     Reaction _target;
     dword _query_hash;
     int _flags;
-    Array<char> _query_hash_str;
+    std::string _query_hash_str;
 
     void _initQuery(Reaction& query);
     static void _initTarget(Reaction& target, bool from_database);

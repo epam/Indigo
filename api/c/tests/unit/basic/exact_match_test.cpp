@@ -20,7 +20,7 @@ TEST(IndigoBasicApiTest, test_exact_match)
     byte* buf;
     int size;
     indigoSerialize(mol, &buf, &size);
-    Array<char> buffer;
+    std::string buffer;
     buffer.copy((const char*)buf, size);
     int mol2 = indigoUnserialize((const byte*)buffer.ptr(), buffer.size());
 

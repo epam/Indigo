@@ -60,8 +60,8 @@ void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
     doctype->SetValue("!DOCTYPE CDXML SYSTEM \"http://www.cambridgesoft.com/xml/cdxml.dtd\" ");
     _doc->LinkEndChild(doctype);
 
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+    QS_DEF(std::string, buf);
+    StringOutput out(buf);
     out.printf("%f", _bond_length);
     buf.push(0);
 
@@ -144,8 +144,8 @@ void MoleculeCdxmlSaver::addFontTable(const char* font)
         TiXmlUnknown* f = new TiXmlUnknown();
         _fonttable->LinkEndChild(f);
 
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
+        QS_DEF(std::string, buf);
+        StringOutput out(buf);
         buf.readString(&font[1], false);
         buf.remove(buf.size() - 1);
         buf.push(0);
@@ -182,8 +182,8 @@ void MoleculeCdxmlSaver::addColorTable(const char* color)
         TiXmlUnknown* c = new TiXmlUnknown();
         _colortable->LinkEndChild(c);
 
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
+        QS_DEF(std::string, buf);
+        StringOutput out(buf);
         buf.readString(&color[1], false);
         buf.remove(buf.size() - 1);
         buf.push(0);
@@ -204,7 +204,7 @@ void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
 void MoleculeCdxmlSaver::addDefaultFontTable()
 {
     int id = -1;
-    Array<char> name;
+    std::string name;
     PropertiesMap attrs;
 
     name.clear();
@@ -230,8 +230,8 @@ void MoleculeCdxmlSaver::addDefaultFontTable()
 
 void MoleculeCdxmlSaver::addDefaultColorTable()
 {
-    Array<char> color;
-    ArrayOutput color_out(color);
+    std::string color;
+    StringOutput color_out(color);
 
     color_out.printf("<color r=\"0.5\" g=\"0.5\" b=\"0.5\"/>");
     color.push(0);
@@ -360,8 +360,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                     {
                         int k;
 
-                        QS_DEF(Array<char>, buf);
-                        ArrayOutput out(buf);
+                        QS_DEF(std::string, buf);
+                        StringOutput out(buf);
 
                         if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
                             out.writeString("NOT ");
@@ -394,8 +394,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
             pos.scale(scale);
             if (have_hyz)
             {
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
                 out.printf("%f %f", pos.x, -pos.y);
                 buf.push(0);
                 node->SetAttribute("p", buf.ptr());
@@ -408,8 +408,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
 
                     const int* pyramid = mol.stereocenters.getPyramid(i);
                     // 0 means atom absence
-                    QS_DEF(Array<char>, buf);
-                    ArrayOutput out(buf);
+                    QS_DEF(std::string, buf);
+                    StringOutput out(buf);
                     if (ids.size() > 0)
                     {
                         out.printf("%d %d %d %d", ids[pyramid[0]], ids[pyramid[1]], ids[pyramid[2]], ids[pyramid[3]]);
@@ -429,8 +429,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 TiXmlElement* t = new TiXmlElement("t");
                 node->LinkEndChild(t);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
                 out.printf("%f %f", pos.x, -pos.y);
                 buf.push(0);
                 t->SetAttribute("p", buf.ptr());
@@ -450,8 +450,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 TiXmlElement* t = new TiXmlElement("t");
                 node->LinkEndChild(t);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
                 out.printf("%f %f", pos.x, -pos.y);
                 buf.push(0);
                 t->SetAttribute("p", buf.ptr());
@@ -487,8 +487,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 TiXmlElement* t = new TiXmlElement("t");
                 node->LinkEndChild(t);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
                 out.printf("%f %f", pos.x, -pos.y);
                 buf.push(0);
                 t->SetAttribute("p", buf.ptr());
@@ -523,8 +523,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 TiXmlElement* t = new TiXmlElement("t");
                 node->LinkEndChild(t);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
                 out.printf("%f %f", pos.x, -pos.y);
                 buf.push(0);
                 t->SetAttribute("p", buf.ptr());
@@ -567,8 +567,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 TiXmlElement* t = new TiXmlElement("t");
                 node->LinkEndChild(t);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
                 out.printf("%f %f", pos.x, -pos.y);
                 buf.push(0);
                 t->SetAttribute("p", buf.ptr());
@@ -672,8 +672,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                     int tmp;
                     __swap(s3, s4, tmp);
                 }
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(std::string, buf);
+                StringOutput out(buf);
                 out.printf("%d %d %d %d", s1, s2, s3, s4);
                 buf.push(0);
                 bond->SetAttribute("BondCircularOrdering", buf.ptr());
@@ -689,8 +689,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
         TiXmlElement* graphic = new TiXmlElement("graphic");
         fragment->LinkEndChild(graphic);
 
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
+        QS_DEF(std::string, buf);
+        StringOutput out(buf);
         out.printf("%f %f %f %f", bbox.x, bbox.y, bbox.x, bbox.y);
         buf.push(0);
         graphic->SetAttribute("BoundingBox", buf.ptr());
@@ -712,7 +712,7 @@ void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text)
 
 void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text, const char* alignment)
 {
-    QS_DEF(Array<char>, buf);
+    QS_DEF(std::string, buf);
     buf.readString(text, false);
     if (buf.size() < 1)
         return;
@@ -721,7 +721,7 @@ void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text, const char*
     TiXmlElement* t = new TiXmlElement("t");
     _current->LinkEndChild(t);
 
-    ArrayOutput out(buf);
+    StringOutput out(buf);
     out.printf("%f %f", _bond_length * pos.x, -_bond_length * pos.y);
     buf.push(0);
     t->SetAttribute("p", buf.ptr());
@@ -739,7 +739,7 @@ void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text, const char*
 
 void MoleculeCdxmlSaver::addTitle(const Vec2f& pos, const char* text)
 {
-    QS_DEF(Array<char>, buf);
+    QS_DEF(std::string, buf);
     buf.readString(text, false);
     if (buf.size() < 1)
         return;
@@ -748,7 +748,7 @@ void MoleculeCdxmlSaver::addTitle(const Vec2f& pos, const char* text)
     TiXmlElement* t = new TiXmlElement("t");
     _current->LinkEndChild(t);
 
-    ArrayOutput out(buf);
+    StringOutput out(buf);
     out.printf("%f %f", _bond_length * pos.x, -_bond_length * pos.y);
     buf.push(0);
     t->SetAttribute("p", buf.ptr());
@@ -772,8 +772,8 @@ void MoleculeCdxmlSaver::addGraphic(int id, const Vec2f& p1, const Vec2f& p2, Pr
     if (id > 0)
         g->SetAttribute("id", id);
 
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+    QS_DEF(std::string, buf);
+    StringOutput out(buf);
     out.printf("%f %f %f %f", _bond_length * p1.x, -_bond_length * p1.y, _bond_length * p2.x, -_bond_length * p2.y);
     buf.push(0);
 
@@ -785,7 +785,7 @@ void MoleculeCdxmlSaver::addGraphic(int id, const Vec2f& p1, const Vec2f& p2, Pr
     }
 }
 
-void MoleculeCdxmlSaver::addCustomElement(int id, Array<char>& name, PropertiesMap& attrs)
+void MoleculeCdxmlSaver::addCustomElement(int id, std::string& name, PropertiesMap& attrs)
 {
     TiXmlElement* e = new TiXmlElement(name.ptr());
     _current->LinkEndChild(e);
@@ -799,7 +799,7 @@ void MoleculeCdxmlSaver::addCustomElement(int id, Array<char>& name, PropertiesM
     }
 }
 
-void MoleculeCdxmlSaver::startCurrentElement(int id, Array<char>& name, PropertiesMap& attrs)
+void MoleculeCdxmlSaver::startCurrentElement(int id, std::string& name, PropertiesMap& attrs)
 {
     TiXmlElement* e = new TiXmlElement(name.ptr());
     _current->LinkEndChild(e);
@@ -825,8 +825,8 @@ void MoleculeCdxmlSaver::addCustomText(const Vec2f& pos, const char* alignment, 
     TiXmlElement* t = new TiXmlElement("t");
     _current->LinkEndChild(t);
 
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+    QS_DEF(std::string, buf);
+    StringOutput out(buf);
     out.printf("%f %f", _bond_length * pos.x, -_bond_length * pos.y);
     buf.push(0);
     t->SetAttribute("p", buf.ptr());

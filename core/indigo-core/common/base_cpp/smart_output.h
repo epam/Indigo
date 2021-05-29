@@ -54,11 +54,11 @@ namespace indigo
         void _printLineSmart(int index, const Array<int>& widths);
 
         CP_DECL;
-        TL_CP_DECL(ReusableObjArray<Array<char>>, _lines);
-        TL_CP_DECL(ReusableObjArray<Array<char>>, _line_formats);
+        TL_CP_DECL(ReusableObjArray<std::string>, _lines);
+        TL_CP_DECL(ReusableObjArray<std::string>, _line_formats);
         TL_CP_DECL(Array<int>, _line_format_index);
 
-        Array<char>* _active_line;
+        std::string* _active_line;
         bool _use_smart_printing;
         Output& _output;
     };

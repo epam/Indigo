@@ -52,7 +52,7 @@ bool RingoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
 {
     bool result = false;
     int bingo_res;
-    QS_DEF(Array<char>, react_buf);
+    QS_DEF(std::string, react_buf);
     react_buf.clear();
 
     _bufferIndexPtr->readCmfItem(section_idx, structure_idx, react_buf);
@@ -122,12 +122,12 @@ void RingoPgSearchEngine::_errorHandler(const char* message, void*)
     throw Error("Error while searching a reaction: %s", message);
 }
 
-void RingoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_clause_str, indigo::Array<char>& from_clause_str,
-                                                    indigo::Array<char>& where_clause_str)
+void RingoPgSearchEngine::_prepareExactQueryStrings(indigo::std::string& what_clause_str, indigo::std::string& from_clause_str,
+                                                    indigo::std::string& where_clause_str)
 {
-    ArrayOutput what_clause(what_clause_str);
-    ArrayOutput from_clause(from_clause_str);
-    ArrayOutput where_clause(where_clause_str);
+    StringOutput what_clause(what_clause_str);
+    StringOutput from_clause(from_clause_str);
+    StringOutput where_clause(where_clause_str);
 
     what_clause.printf("b_id");
     from_clause.printf("%s", _shadowRelName.ptr());
@@ -146,10 +146,10 @@ void RingoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
 void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
 {
     IndexScanDesc scan_desc = (IndexScanDesc)scan_desc_ptr;
-    QS_DEF(Array<char>, search_type);
+    QS_DEF(std::string, search_type);
     int bingo_res;
-    Array<char> search_query;
-    Array<char> search_options;
+    std::string search_query;
+    std::string search_options;
     BingoPgFpData& data = _queryFpData.ref();
 
     if (scan_desc->numberOfKeys != 1)
@@ -187,12 +187,12 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
 void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
 {
     IndexScanDesc scan_desc = (IndexScanDesc)scan_desc_ptr;
-    QS_DEF(Array<char>, what_clause);
-    QS_DEF(Array<char>, from_clause);
-    QS_DEF(Array<char>, where_clause);
-    QS_DEF(Array<char>, search_type);
-    Array<char> search_query;
-    Array<char> search_options;
+    QS_DEF(std::string, what_clause);
+    QS_DEF(std::string, from_clause);
+    QS_DEF(std::string, where_clause);
+    QS_DEF(std::string, search_type);
+    std::string search_query;
+    std::string search_options;
     int bingo_res;
 
     if (scan_desc->numberOfKeys != 1)
@@ -222,7 +222,7 @@ void RingoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr)
     _prepareSubSearch(scan_desc_ptr);
 }
 
-void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, indigo::Array<char>& str1_out, indigo::Array<char>& str2_out)
+void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, indigo::std::string& str1_out, indigo::std::string& str2_out)
 {
     /*
      * Get query info

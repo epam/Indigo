@@ -590,7 +590,7 @@ CEXPORT int indigoLoadStructureFromString(const char* string, const char* params
 CEXPORT int indigoLoadStructureFromBuffer(const byte* buff, int bufferSize, const char* params)
 {
     BufferScanner scanner(buff, bufferSize);
-    Array<char> arr;
+    std::string arr;
     MoleculeAutoLoader::readAllDataToString(scanner, arr);
 
     return indigoLoadStructureFromString(arr.ptr(), params);
@@ -601,7 +601,7 @@ CEXPORT int indigoLoadStructureFromFile(const char* filename, const char* params
     INDIGO_BEGIN
     {
         FileScanner scanner(self.filename_encoding, filename);
-        Array<char> arr;
+        std::string arr;
         MoleculeAutoLoader::readAllDataToString(scanner, arr);
 
         return indigoLoadStructureFromString(arr.ptr(), params);
@@ -1702,7 +1702,7 @@ CEXPORT const char* indigoLayeredCode(int molecule)
         Molecule& mol = self.getObject(molecule).getMolecule();
 
         auto& tmp = self.getThreadTmpData();
-        ArrayOutput output(tmp.string);
+        StringOutput output(tmp.string);
 
         MoleculeInChI inchi_saver(output);
         inchi_saver.outputInChI(mol);

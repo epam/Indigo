@@ -87,7 +87,7 @@ CEXPORT int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* c
         if (id)
             *id = self.index_record_data_id;
 
-        const Array<char>& crf = self.ringo_index->getCrf();
+        const std::string& crf = self.ringo_index->getCrf();
 
         *crf_buf = crf.ptr();
         *crf_buf_len = crf.size();
@@ -244,7 +244,7 @@ CEXPORT const char* ringoRSMILES(const char* target_buf, int target_buf_len)
         self.bingo_context->setLoaderSettings(loader);
         loader.loadReaction(target);
 
-        ArrayOutput out(self.buffer);
+        StringOutput out(self.buffer);
 
         RSmilesSaver saver(out);
 
@@ -265,7 +265,7 @@ ReactionAutoLoader loader(scanner);
 self.bingo_context->setLoaderSettings(loader);
 loader.loadReaction(target);
 
-ArrayOutput out(self.buffer);
+StringOutput out(self.buffer);
 
 RxnfileSaver saver(out);
 
@@ -287,7 +287,7 @@ ReactionAutoLoader loader(scanner);
 self.bingo_context->setLoaderSettings(loader);
 loader.loadReaction(target);
 
-ArrayOutput out(self.buffer);
+StringOutput out(self.buffer);
 
 ReactionCmlSaver saver(out);
 
@@ -404,7 +404,7 @@ ReactionAutoLoader loader(scanner);
 self.bingo_context->setLoaderSettings(loader);
 loader.loadReaction(target);
 
-ArrayOutput out(self.buffer);
+StringOutput out(self.buffer);
 
 if ((save_xyz != 0) && !Reaction::haveCoord(target))
     throw BingoError("reaction has no XYZ");

@@ -475,7 +475,7 @@ namespace indigo
             this->qsort(0, _length - 1, cmp, context);
         }
 
-        // Array<char>-specific
+        // std::string-specific
         void appendString(const char* str, bool keep_zero)
         {
             int len = (int)strlen(str);

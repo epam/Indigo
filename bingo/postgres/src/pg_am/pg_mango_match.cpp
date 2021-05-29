@@ -79,7 +79,7 @@ public:
         int target_size;
         const char* target_data = target_text.getText(target_size);
 
-        QS_DEF(Array<char>, buffer_warn);
+        QS_DEF(std::string, buffer_warn);
         if (_type == BingoPgCommon::MOL_GROSS)
         {
             buffer_warn.readString(_typeStr.ptr(), true);
@@ -118,7 +118,7 @@ public:
 private:
     _MangoContextHandler(const _MangoContextHandler&); // no implicit copy
     int _type;
-    indigo::Array<char> _typeStr;
+    indigo::std::string _typeStr;
 };
 
 Datum _sub_internal(PG_FUNCTION_ARGS)
@@ -206,7 +206,7 @@ Datum _gross_internal(PG_FUNCTION_ARGS)
     {
         BingoPgText query_text(query_datum);
         BingoPgText sign_text(query_sign);
-        QS_DEF(indigo::Array<char>, bingo_query);
+        QS_DEF(indigo::std::string, bingo_query);
         bingo_query.readString(sign_text.getString(), false);
         bingo_query.appendString(" ", false);
         bingo_query.appendString(query_text.getString(), false);

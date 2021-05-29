@@ -26,7 +26,7 @@ OsLock RingoFetchContext::_instances_lock;
 
 IMPL_ERROR(RingoFetchContext, "ringo fetch context");
 
-RingoFetchContext::RingoFetchContext(int id_, RingoOracleContext& context, const Array<char>& query_id)
+RingoFetchContext::RingoFetchContext(int id_, RingoOracleContext& context, const std::string& query_id)
     : substructure(context.context()), exact(context.context()), _context(context)
 {
     id = id_;
@@ -51,7 +51,7 @@ RingoFetchContext& RingoFetchContext::get(int id)
     throw Error("context #%d not found", id);
 }
 
-RingoFetchContext& RingoFetchContext::create(RingoOracleContext& context, const Array<char>& query_id)
+RingoFetchContext& RingoFetchContext::create(RingoOracleContext& context, const std::string& query_id)
 {
     OsLocker locker(_instances_lock);
     TL_GET(PtrArray<RingoFetchContext>, _instances);
@@ -71,7 +71,7 @@ RingoFetchContext& RingoFetchContext::create(RingoOracleContext& context, const 
     return *_instances.top();
 }
 
-RingoFetchContext* RingoFetchContext::findFresh(int context_id, const Array<char>& query_id)
+RingoFetchContext* RingoFetchContext::findFresh(int context_id, const std::string& query_id)
 {
     OsLocker locker(_instances_lock);
     TL_GET(PtrArray<RingoFetchContext>, _instances);

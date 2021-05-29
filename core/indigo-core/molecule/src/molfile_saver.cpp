@@ -181,8 +181,8 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
 
             _output.printf("M  LOG  1 %3d %3d %3d  ", i, rgroup.if_then, rgroup.rest_h);
 
-            QS_DEF(Array<char>, occ);
-            ArrayOutput occ_out(occ);
+            QS_DEF(std::string, occ);
+            StringOutput occ_out(occ);
 
             _writeOccurrenceRanges(occ_out, rgroup.occurrence);
 
@@ -373,7 +373,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
     int i;
     int iw = 1;
-    QS_DEF(Array<char>, buf);
+    QS_DEF(std::string, buf);
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
@@ -386,7 +386,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     {
         int atom_number = mol.getAtomNumber(i);
         int isotope = mol.getAtomIsotope(i);
-        ArrayOutput out(buf);
+        StringOutput out(buf);
 
         out.printf("%d ", _atom_mapping[i]);
         QS_DEF(Array<int>, list);
@@ -497,8 +497,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
             sgroup.atoms.push(i);
 
-            QS_DEF(Array<char>, tmp_buf);
-            ArrayOutput tmp_out(tmp_buf);
+            QS_DEF(std::string, tmp_buf);
+            StringOutput tmp_out(tmp_buf);
             tmp_out.printf("IMPL_H%d", hcount);
             tmp_buf.push(0);
             sgroup.data.readString(tmp_buf.ptr(), true);
@@ -625,7 +625,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     {
         const Edge& edge = mol.getEdge(i);
         int bond_order = mol.getBondOrder(i);
-        ArrayOutput out(buf);
+        StringOutput out(buf);
 
         _bond_mapping[i] = iw;
 
@@ -715,7 +715,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             if (processed[i])
                 continue;
 
-            ArrayOutput out(buf);
+            StringOutput out(buf);
             int j, type = stereocenters.getType(i);
 
             if (type == MoleculeStereocenters::ATOM_ABS)
@@ -751,7 +751,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         {
             if (mol.countHighlightedBonds() > 0)
             {
-                ArrayOutput out(buf);
+                StringOutput out(buf);
 
                 out.printf("MDLV30/HILITE BONDS=(%d", mol.countHighlightedBonds());
 
@@ -764,7 +764,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
             if (mol.countHighlightedAtoms() > 0)
             {
-                ArrayOutput out(buf);
+                StringOutput out(buf);
                 out.printf("MDLV30/HILITE ATOMS=(%d", mol.countHighlightedAtoms());
                 for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
                     if (mol.isAtomHighlighted(i))
@@ -778,7 +778,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         {
             for (i = mol.custom_collections.begin(); i != mol.custom_collections.end(); i = mol.custom_collections.next(i))
             {
-                ArrayOutput out(buf);
+                StringOutput out(buf);
                 out.printf("%s", mol.custom_collections.at(i));
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
@@ -798,7 +798,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         output.writeStringCR("M  V30 BEGIN SGROUP");
         for (i = 0; i < sgs_sorted.size(); i++)
         {
-            ArrayOutput out(buf);
+            StringOutput out(buf);
             int sg_idx = sgs_sorted[i];
             SGroup& sgroup = sgroups->getSGroup(sg_idx);
             _writeGenericSGroup3000(sgroup, idx++, out);
@@ -1043,8 +1043,8 @@ void MolfileSaver::_writeOccurrenceRanges(Output& out, const Array<int>& occurre
 
 void MolfileSaver::_writeRGroup(Output& output, BaseMolecule& mol, int rg_idx)
 {
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+    QS_DEF(std::string, buf);
+    StringOutput out(buf);
     RGroup& rgroup = mol.rgroups.getRGroup(rg_idx);
 
     output.printfCR("M  V30 BEGIN RGROUP %d", rg_idx);
@@ -1064,8 +1064,8 @@ void MolfileSaver::_writeRGroup(Output& output, BaseMolecule& mol, int rg_idx)
 
 void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
 {
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
+    QS_DEF(std::string, buf);
+    StringOutput out(buf);
     TGroup& tgroup = mol.tgroups.getTGroup(tg_idx);
 
     out.printf("TEMPLATE %d ", tgroup.tgroup_id);
@@ -1290,8 +1290,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
             sgroup.atoms.push(i);
 
-            QS_DEF(Array<char>, tmp_buf);
-            ArrayOutput tmp_out(tmp_buf);
+            QS_DEF(std::string, tmp_buf);
+            StringOutput tmp_out(tmp_buf);
             tmp_buf.clear();
             tmp_out.printf("IMPL_H%d", hydrogens_count);
             tmp_buf.push(0);
@@ -1349,7 +1349,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
         if (bond_order < 0)
         {
-            Array<char> buf;
+            std::string buf;
             qmol->getBondDescription(i, buf);
             throw Error("unrepresentable query bond: %s", buf.ptr());
         }
@@ -1789,7 +1789,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     }
 }
 
-void MolfileSaver::_writeFormattedString(Output& output, Array<char>& str, int length)
+void MolfileSaver::_writeFormattedString(Output& output, std::string& str, int length)
 {
     int k = length;
     if ((str.size() > 1) && (str.size() <= length))
@@ -2312,7 +2312,7 @@ void MolfileSaver::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfo
     Array<int> used1;
     Array<int> used2;
 
-    QS_DEF(Array<char>, st_desc);
+    QS_DEF(std::string, st_desc);
     CIPContext context;
 
     int atom_idx, type, group, pyramid[4];
@@ -2910,7 +2910,7 @@ void MolfileSaver::_calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfo
     QS_DEF(Array<int>, used1);
     QS_DEF(Array<int>, used2);
 
-    QS_DEF(Array<char>, st_desc);
+    QS_DEF(std::string, st_desc);
     CIPContext context;
 
     int pyramid[4];

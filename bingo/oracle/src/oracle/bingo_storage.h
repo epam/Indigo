@@ -39,7 +39,7 @@ public:
     virtual ~BingoStorage();
 
     void validateForInsert(OracleEnv& env);
-    void add(OracleEnv& env, const Array<char>& data, int& blockno, int& offset);
+    void add(OracleEnv& env, const std::string& data, int& blockno, int& offset);
 
     void create(OracleEnv& env);
     void drop(OracleEnv& env);
@@ -53,7 +53,7 @@ public:
     void markRemoved(OracleEnv& env, int blockno, int offset);
 
     int count();
-    void get(int n, Array<char>& out);
+    void get(int n, std::string& out);
 
     DECL_ERROR;
 
@@ -105,12 +105,12 @@ protected:
     void _finishTopLob(OracleEnv& env);
     void _finishIndexLob(OracleEnv& env);
 
-    Array<char> _shmem_id;
-    Array<char> _table_name;
+    std::string _shmem_id;
+    std::string _table_name;
 
     Array<_Addr> _index;
-    Array<char> _top_lob_pending_data;
-    Array<char> _index_lob_pending_data;
+    std::string _top_lob_pending_data;
+    std::string _index_lob_pending_data;
     int _top_lob_pending_mark;
     int _index_lob_pending_mark;
 };

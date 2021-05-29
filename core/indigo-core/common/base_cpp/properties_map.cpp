@@ -22,7 +22,7 @@ using namespace indigo;
 
 IMPL_ERROR(PropertiesMap, "properties map");
 
-void PropertiesMap::copy(RedBlackStringObjMap<Array<char>>& other)
+void PropertiesMap::copy(RedBlackStringObjMap<std::string>& other)
 {
     clear();
     for (int i = other.begin(); i != other.end(); i = other.next(i))
@@ -55,7 +55,7 @@ void PropertiesMap::insert(const char* key, const char* value)
             _properties.value(k).readString(value, true);
     }
 }
-Array<char>& PropertiesMap::insert(const char* key)
+std::string& PropertiesMap::insert(const char* key)
 {
     insert(key, 0);
     return valueBuf(key);
@@ -78,7 +78,7 @@ const char* PropertiesMap::value(int i)
     }
 }
 
-Array<char>& PropertiesMap::valueBuf(const char* key)
+std::string& PropertiesMap::valueBuf(const char* key)
 {
     return _properties.at(key);
 }

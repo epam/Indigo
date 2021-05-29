@@ -47,7 +47,7 @@ public:
     DECL_ERROR;
 
 protected:
-    Array<char> _table_name;
+    std::string _table_name;
 
 private:
     RingoShadowTable(RingoShadowTable&); // no implicit copy

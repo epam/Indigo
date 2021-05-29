@@ -40,8 +40,8 @@ namespace indigo
         class PropertyData
         {
         public:
-            Array<char> propertyName;
-            Array<char> propertyValue;
+            std::string propertyName;
+            std::string propertyValue;
             PropertyData(){};
 
         private:
@@ -51,12 +51,12 @@ namespace indigo
         bool enabled;
         int keyAlignment;
         float propertyFontSize;
-        Array<char> titleFont;
-        Array<char> titleFace;
-        Array<char> fonttable;
-        Array<char> colortable;
-        Array<char> propertyNameCaption;
-        Array<char> propertyValueCaption;
+        std::string titleFont;
+        std::string titleFace;
+        std::string fonttable;
+        std::string colortable;
+        std::string propertyNameCaption;
+        std::string propertyValueCaption;
         ObjArray<PropertyData> property_data;
 
         void clear()

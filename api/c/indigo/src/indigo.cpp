@@ -343,7 +343,7 @@ CEXPORT const char* indigoDbgProfiling(int whole_session)
     INDIGO_BEGIN
     {
         auto& tmp = self.getThreadTmpData();
-        ArrayOutput out(tmp.string);
+        StringOutput out(tmp.string);
         profGetStatistics(out, whole_session != 0);
 
         tmp.string.push(0);

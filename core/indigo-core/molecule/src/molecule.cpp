@@ -1290,10 +1290,10 @@ bool Molecule::possibleAtomCharge(int idx, int charge)
     return _atoms[idx].charge == charge;
 }
 
-void Molecule::getAtomDescription(int idx, Array<char>& description)
+void Molecule::getAtomDescription(int idx, std::string& description)
 {
     _Atom& atom = _atoms[idx];
-    ArrayOutput output(description);
+    StringOutput output(description);
 
     if (atom.isotope != 0)
         output.printf("%d", atom.isotope);
@@ -1317,9 +1317,9 @@ void Molecule::getAtomDescription(int idx, Array<char>& description)
     output.writeChar(0);
 }
 
-void Molecule::getBondDescription(int idx, Array<char>& description)
+void Molecule::getBondDescription(int idx, std::string& description)
 {
-    ArrayOutput output(description);
+    StringOutput output(description);
 
     switch (_bond_orders[idx])
     {

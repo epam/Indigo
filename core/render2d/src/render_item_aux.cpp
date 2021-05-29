@@ -81,7 +81,7 @@ void RenderItemAuxiliary::_drawRGroupLabel(bool idle)
         TextItem tiOccurrence;
         tiOccurrence.fontsize = FONT_SIZE_RGROUP_LOGIC_INDEX;
         tiOccurrence.color = CWC_BASE;
-        ArrayOutput output(tiOccurrence.text);
+        StringOutput output(tiOccurrence.text);
         for (int i = 0; i < rg.occurrence.size(); ++i)
         {
             int v = rg.occurrence[i];

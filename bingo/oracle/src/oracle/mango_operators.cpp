@@ -39,7 +39,7 @@
 
 using namespace indigo;
 
-static OCINumber* _mangoSub(OracleEnv& env, MangoOracleContext& context, const Array<char>& query_buf, const Array<char>& target_buf, const char* params)
+static OCINumber* _mangoSub(OracleEnv& env, MangoOracleContext& context, const std::string& query_buf, const std::string& target_buf, const char* params)
 {
     if (context.substructure.parse(params))
     {
@@ -74,7 +74,7 @@ static OCINumber* _mangoSub(OracleEnv& env, MangoOracleContext& context, const A
     throw BingoError("cannot parse parameters");
 }
 
-static OCINumber* _mangoExact(OracleEnv& env, MangoOracleContext& context, const Array<char>& query_buf, const Array<char>& target_buf, const char* params)
+static OCINumber* _mangoExact(OracleEnv& env, MangoOracleContext& context, const std::string& query_buf, const std::string& target_buf, const char* params)
 {
     if (context.exact.parse(params))
     {
@@ -109,7 +109,7 @@ static OCINumber* _mangoExact(OracleEnv& env, MangoOracleContext& context, const
     throw BingoError("cannot parse parameters");
 }
 
-static OCINumber* _mangoSim(OracleEnv& env, MangoOracleContext& context, const Array<char>& query_buf, const Array<char>& target_buf, const char* params)
+static OCINumber* _mangoSim(OracleEnv& env, MangoOracleContext& context, const std::string& query_buf, const std::string& target_buf, const char* params)
 {
     MangoSimilarity& instance = context.similarity;
 
@@ -128,7 +128,7 @@ static OCINumber* _mangoSim(OracleEnv& env, MangoOracleContext& context, const A
 // used for SUB(), EXACT() and SIM() but not for GROSS()
 static OCINumber* _mangoCommon(OCIExtProcContext* ctx, int context_id, OCILobLocator* target_loc, short target_ind, OCILobLocator* query_loc, short query_ind,
                                const char* params, short params_ind, short* return_ind,
-                               OCINumber* (*callback)(OracleEnv& env, MangoOracleContext& context, const Array<char>& query_buf, const Array<char>& target_buf,
+                               OCINumber* (*callback)(OracleEnv& env, MangoOracleContext& context, const std::string& query_buf, const std::string& target_buf,
                                                       const char* params))
 {
     OCINumber* result = NULL;
@@ -148,8 +148,8 @@ static OCINumber* _mangoCommon(OCIExtProcContext* ctx, int context_id, OCILobLoc
         {
             MangoOracleContext& context = MangoOracleContext::get(env, context_id, false);
 
-            QS_DEF(Array<char>, query_buf);
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(std::string, query_buf);
+            QS_DEF(std::string, target_buf);
 
             OracleLOB target_lob(env, target_loc);
             OracleLOB query_lob(env, query_loc);
@@ -195,8 +195,8 @@ ORAEXT OCINumber* oraMangoSmarts(OCIExtProcContext* ctx, int context_id, OCILobL
         {
             MangoOracleContext& context = MangoOracleContext::get(env, context_id, false);
 
-            QS_DEF(Array<char>, query_buf);
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(std::string, query_buf);
+            QS_DEF(std::string, target_buf);
 
             OracleLOB target_lob(env, target_loc);
 
@@ -255,8 +255,8 @@ ORAEXT OCILobLocator* oraMangoSubHi(OCIExtProcContext* ctx, int context_id, OCIL
         {
             MangoOracleContext& context = MangoOracleContext::get(env, context_id, false);
 
-            QS_DEF(Array<char>, query_buf);
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(std::string, query_buf);
+            QS_DEF(std::string, target_buf);
 
             OracleLOB target_lob(env, target_loc);
             OracleLOB query_lob(env, query_loc);
@@ -316,8 +316,8 @@ ORAEXT OCILobLocator* oraMangoSmartsHi(OCIExtProcContext* ctx, int context_id, O
         {
             MangoOracleContext& context = MangoOracleContext::get(env, context_id, false);
 
-            QS_DEF(Array<char>, query_buf);
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(std::string, query_buf);
+            QS_DEF(std::string, target_buf);
 
             OracleLOB target_lob(env, target_loc);
 
@@ -363,8 +363,8 @@ ORAEXT OCILobLocator* oraMangoExactHi(OCIExtProcContext* ctx, int context_id, OC
         {
             MangoOracleContext& context = MangoOracleContext::get(env, context_id, false);
 
-            QS_DEF(Array<char>, query_buf);
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(std::string, query_buf);
+            QS_DEF(std::string, target_buf);
 
             OracleLOB target_lob(env, target_loc);
             OracleLOB query_lob(env, query_loc);
@@ -399,7 +399,7 @@ ORAEXT OCILobLocator* oraMangoExactHi(OCIExtProcContext* ctx, int context_id, OC
     return 0;
 }
 
-static OCIString* _mangoGrossCalc(OracleEnv& env, MangoOracleContext& context, const Array<char>& target_buf)
+static OCIString* _mangoGrossCalc(OracleEnv& env, MangoOracleContext& context, const std::string& target_buf)
 {
     QS_DEF(Molecule, target);
 
@@ -410,7 +410,7 @@ static OCIString* _mangoGrossCalc(OracleEnv& env, MangoOracleContext& context, c
     OCIString* result = 0;
 
     QS_DEF(Array<int>, gross);
-    QS_DEF(Array<char>, gross_str);
+    QS_DEF(std::string, gross_str);
 
     MoleculeGrossFormula::collect(target, gross);
     MoleculeGrossFormula::toString(gross, gross_str);
@@ -425,7 +425,7 @@ static OCIString* _mangoGrossCalc(OracleEnv& env, MangoOracleContext& context, c
     return result;
 }
 
-static OCINumber* _mangoGross(OracleEnv& env, MangoOracleContext& context, const Array<char>& target_buf, const char* query)
+static OCINumber* _mangoGross(OracleEnv& env, MangoOracleContext& context, const std::string& target_buf, const char* query)
 {
     MangoGross& instance = context.gross;
 
@@ -457,7 +457,7 @@ ORAEXT OCIString* oraMangoGrossCalc(OCIExtProcContext* ctx, OCILobLocator* targe
             MangoOracleContext& context = MangoOracleContext::get(env, 0, false);
             block_throw_error = context.context().reject_invalid_structures.get();
 
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(std::string, target_buf);
             OracleLOB target_lob(env, target_loc);
 
             target_lob.readAll(target_buf, false);
@@ -493,7 +493,7 @@ ORAEXT OCINumber* oraMangoGross(OCIExtProcContext* ctx, int context_id, OCILobLo
             MangoOracleContext& context = MangoOracleContext::get(env, context_id, false);
             block_throw_error = context.context().reject_invalid_structures.get();
 
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(std::string, target_buf);
 
             OracleLOB target_lob(env, target_loc);
 
@@ -513,7 +513,7 @@ ORAEXT OCINumber* oraMangoGross(OCIExtProcContext* ctx, int context_id, OCILobLo
     return result;
 }
 
-static OCINumber* _mangoMass(OracleEnv& env, MangoOracleContext& context, const Array<char>& target_buf, const char* type)
+static OCINumber* _mangoMass(OracleEnv& env, MangoOracleContext& context, const std::string& target_buf, const char* type)
 {
     double molmass = 0;
     TRY_READ_TARGET_MOL
@@ -563,7 +563,7 @@ ORAEXT OCINumber* oraMangoMolecularMass(OCIExtProcContext* ctx, int context_id, 
         {
             MangoOracleContext& context = MangoOracleContext::get(env, context_id, false);
 
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(std::string, target_buf);
 
             OracleLOB target_lob(env, target_loc);
 

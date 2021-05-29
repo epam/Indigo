@@ -34,7 +34,7 @@ CP_DEF(BingoFingerprints);
 
 BingoFingerprints::BingoFingerprints(int context_id) : CP_INIT, TL_CP_GET(_table_name)
 {
-    ArrayOutput output(_table_name);
+    StringOutput output(_table_name);
 
     output.printf("FINGERPRINTS_%d", context_id);
     output.writeChar(0);

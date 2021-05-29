@@ -224,7 +224,7 @@ void MoleculeExactMatcher::parseConditions(const char* params, int& flags, float
 
     BufferScanner scanner(params);
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(std::string, word);
 
     scanner.skipSpace();
     if (scanner.isEOF())

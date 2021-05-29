@@ -1648,7 +1648,7 @@ void MoleculeRenderInternal::_initAtomData()
         BaseMolecule& bm = *_mol;
         const Vertex& vertex = bm.getVertex(i);
 
-        // QS_DEF(Array<char>, buf);
+        // QS_DEF(std::string, buf);
         // buf.clear();
         // bm.getAtomDescription(i, buf);
         // printf("%s\n", buf.ptr());
@@ -2337,7 +2337,7 @@ void MoleculeRenderInternal::_initBondEndData()
             be.width = 4 * _settings.bondSpace + _settings.bondLineWidth;
         else
         {
-            Array<char> buf;
+            std::string buf;
             _mol->getBondDescription(be.bid, buf);
             throw Error("Unknown bond type %s. Can not determine bond width.", buf.ptr());
         }
@@ -3055,7 +3055,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         {
             TextItem& label = _data.textitems[tilabel];
             label.fontsize = FONT_SIZE_LABEL;
-            ArrayOutput output(label.text);
+            StringOutput output(label.text);
             if (ad.type == AtomDesc::TYPE_REGULAR)
                 if (ad.label == ELEM_H && isotope == 2)
                     output.printf("D");
@@ -3317,7 +3317,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
 
         TextItem& itemStereoGroup = _data.textitems[tiStereoGroup];
         itemStereoGroup.fontsize = FONT_SIZE_ATTR;
-        ArrayOutput itemOutput(itemStereoGroup.text);
+        StringOutput itemOutput(itemStereoGroup.text);
         if (ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY)
         {
             const char* stereoGroupText = _getStereoGroupText(ad.stereoGroupType);
@@ -4162,7 +4162,7 @@ void MoleculeRenderInternal::_precalcScale()
     {
         long long int output_length = 0;
         Array<int> iarr;
-        Array<char> carr;
+        std::string carr;
         if (bm.isPseudoAtom(i))
         {
             carr.readString(bm.getPseudoAtom(i), true);

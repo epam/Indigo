@@ -61,7 +61,7 @@ namespace indigo
         class MainLayerFormula : public AbstractLayer
         {
         public:
-            void printFormula(Array<char>& result);
+            void printFormula(std::string& result);
 
             static int compareComponentsAtomsCountNoH(MainLayerFormula& comp1, MainLayerFormula& comp2);
             static int compareComponentsTotalHydrogensCount(MainLayerFormula& comp1, MainLayerFormula& comp2);
@@ -80,7 +80,7 @@ namespace indigo
         class MainLayerConnections : public AbstractLayer
         {
         public:
-            void printConnectionTable(Array<char>& result);
+            void printConnectionTable(std::string& result);
 
             int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);
 
@@ -104,7 +104,7 @@ namespace indigo
             bool checkAutomorphism(const Array<int>& mapping);
             int compareMappings(MoleculeInChIUtils::Mapping& m1, MoleculeInChIUtils::Mapping& m2);
 
-            void print(Array<char>& result);
+            void print(std::string& result);
 
         protected:
             virtual void _construct();
@@ -123,7 +123,7 @@ namespace indigo
         class CisTransStereochemistryLayer : public AbstractLayer
         {
         public:
-            void print(Array<char>& result);
+            void print(std::string& result);
 
             bool checkAutomorphism(const Array<int>& mapping);
             int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);
@@ -141,9 +141,9 @@ namespace indigo
         class TetrahedralStereochemistryLayer : public AbstractLayer
         {
         public:
-            void print(Array<char>& result);
+            void print(std::string& result);
 
-            void printEnantiomers(Array<char>& result);
+            void printEnantiomers(std::string& result);
 
             bool checkAutomorphism(const Array<int>& mapping);
             int compareMappings(const MoleculeInChIUtils::Mapping& m1, const MoleculeInChIUtils::Mapping& m2);

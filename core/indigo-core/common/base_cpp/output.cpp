@@ -86,7 +86,7 @@ void Output::printf(const char* format, ...)
 
 void Output::vprintf(const char* format, va_list args_orig)
 {
-    QS_DEF(Array<char>, str);
+    QS_DEF(std::string, str);
     if (str.size() < 2048)
         str.resize(2048);
 
@@ -119,7 +119,7 @@ void Output::vprintf(const char* format, va_list args_orig)
     write(str.ptr(), n);
 }
 
-void Output::writeArray(const Array<char>& data)
+void Output::writeArray(const std::string& data)
 {
     write(data.ptr(), data.size());
 }
@@ -263,16 +263,16 @@ long long FileOutput::tell()
 #endif
 }
 
-ArrayOutput::ArrayOutput(Array<char>& arr) : _arr(arr)
+StringOutput::StringOutput(std::string& arr) : _arr(arr)
 {
     _arr.clear();
 }
 
-ArrayOutput::~ArrayOutput()
+StringOutput::~StringOutput()
 {
 }
 
-void ArrayOutput::write(const void* data, int size)
+void StringOutput::write(const void* data, int size)
 {
     int old_size = _arr.size();
 
@@ -280,21 +280,21 @@ void ArrayOutput::write(const void* data, int size)
     memcpy(_arr.ptr() + old_size, data, size);
 }
 
-long long ArrayOutput::tell()
+long long StringOutput::tell()
 {
     return _arr.size();
 }
 
-void ArrayOutput::flush()
+void StringOutput::flush()
 {
 }
 
-void ArrayOutput::seek(long long offset, int from)
+void StringOutput::seek(long long offset, int from)
 {
     throw Error("not implemented");
 }
 
-void ArrayOutput::clear()
+void StringOutput::clear()
 {
     _arr.clear();
 }
@@ -364,11 +364,11 @@ void NullOutput::flush()
 
 namespace indigo
 {
-    void bprintf(Array<char>& buf, const char* format, ...)
+    void bprintf(std::string& buf, const char* format, ...)
     {
         va_list args;
         va_start(args, format);
-        ArrayOutput output(buf);
+        StringOutput output(buf);
         output.vprintf(format, args);
         output.writeChar(0);
         va_end(args);

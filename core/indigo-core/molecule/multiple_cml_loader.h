@@ -44,10 +44,10 @@ namespace indigo
         bool isReaction();
 
         CP_DECL;
-        TL_CP_DECL(Array<char>, data);
+        TL_CP_DECL(std::string, data);
 
     protected:
-        TL_CP_DECL(ReusableObjArray<Array<char>>, _tags);
+        TL_CP_DECL(ReusableObjArray<std::string>, _tags);
         TL_CP_DECL(Array<long long>, _offsets);
         Scanner& _scanner;
         int _current_number;

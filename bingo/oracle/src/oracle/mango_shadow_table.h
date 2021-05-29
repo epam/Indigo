@@ -35,7 +35,7 @@ public:
     MangoShadowTable(int context_id);
     virtual ~MangoShadowTable();
 
-    bool getXyz(OracleEnv& env, const char* rowid, Array<char>& xyz);
+    bool getXyz(OracleEnv& env, const char* rowid, std::string& xyz);
 
     void drop(OracleEnv& env);
     void truncate(OracleEnv& env);
@@ -56,7 +56,7 @@ public:
     DECL_ERROR;
 
 protected:
-    Array<char> _table_name, _components_table_name;
+    std::string _table_name, _components_table_name;
 
     void _flushMain(OracleEnv& env);
     void _flushComponents(OracleEnv& env);

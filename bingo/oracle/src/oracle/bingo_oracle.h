@@ -108,7 +108,7 @@ extern const char* log_filename;
 
 int bingoPopRowidsToArray(OracleEnv& env, List<OraRowidText>& matched, int maxrows, OCIArray* array);
 int bingoGetExactRightPart(OracleEnv& env, OCINumber* p_strt, OCINumber* p_stop, int flags);
-void bingoBuildQueryID(OracleEnv& env, const char* oper, const Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop, int flags, const char* params,
-                       Array<char>& id);
+void bingoBuildQueryID(OracleEnv& env, const char* oper, const std::string& query_buf, OCINumber* p_strt, OCINumber* p_stop, int flags, const char* params,
+                       std::string& id);
 
 #endif

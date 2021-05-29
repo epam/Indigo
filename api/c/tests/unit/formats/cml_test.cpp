@@ -20,8 +20,8 @@ TEST(IndigoCmlTest, cml_test1)
 
     loadMolecule("c1ccccc1N", t_mol);
 
-    Array<char> out;
-    ArrayOutput std_out(out);
+    std::string out;
+    StringOutput std_out(out);
     CmlSaver saver(std_out);
     saver.saveMolecule(t_mol);
     loadMolecule("c1ccccc1", t_mol);
