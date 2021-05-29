@@ -21,6 +21,7 @@
 using namespace indigo;
 
 IMPL_ERROR(AutomorphismSearch, "automorphism search");
+IMPL_TIMEOUT_EXCEPTION(AutomorphismSearch, "automorphism search");
 
 CP_DEF(AutomorphismSearch);
 
@@ -28,7 +29,7 @@ AutomorphismSearch::AutomorphismSearch()
     : CP_INIT, TL_CP_GET(_call_stack), TL_CP_GET(_lab), TL_CP_GET(_ptn), TL_CP_GET(_graph), TL_CP_GET(_mapping), TL_CP_GET(_inv_mapping), TL_CP_GET(_degree),
       TL_CP_GET(_tcells), TL_CP_GET(_fix), TL_CP_GET(_mcr), TL_CP_GET(_active), TL_CP_GET(_workperm), TL_CP_GET(_workperm2), TL_CP_GET(_bucket),
       TL_CP_GET(_count), TL_CP_GET(_firstlab), TL_CP_GET(_canonlab), TL_CP_GET(_orbits), TL_CP_GET(_fixedpts), TL_CP_GET(_work_active_cells),
-      TL_CP_GET(_edge_ranks_in_refine)
+      TL_CP_GET(_edge_ranks_in_refine), _cancellation_handler(getCancellationHandler())
 {
     getcanon = true;
     compare_vertex_degree_first = true;
@@ -604,6 +605,10 @@ int AutomorphismSearch::_processNode(int level, int numcells)
 
     if (numcells != _n) // discrete partition?
         return level;
+
+    if (_cancellation_handler != nullptr && _cancellation_handler->isCancelled()) {
+        throw TimeoutException("%s", _cancellation_handler->cancelledRequestMessage());
+    }
 
     for (i = 0; i < _n; i++)
         _workperm[_firstlab[i]] = _lab[i];

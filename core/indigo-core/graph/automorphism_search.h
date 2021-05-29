@@ -19,6 +19,7 @@
 #ifndef __automorphism_search__
 #define __automorphism_search__
 
+#include "base_cpp/cancellation_handler.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph.h"
@@ -81,6 +82,7 @@ namespace indigo
 
         DECL_ERROR;
 
+        DECL_TIMEOUT_EXCEPTION;
     protected:
         enum
         {
@@ -162,6 +164,7 @@ namespace indigo
         bool _hasEdgeWithRank(int from, int to, int target_edge_rank);
 
         static int _cmp_vertices(int idx1, int idx2, void* context);
+        class CancellationHandler* _cancellation_handler;
     };
 
 } // namespace indigo
