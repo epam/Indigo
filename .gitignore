@@ -87,3 +87,4 @@ api/java/**/target/
 
 bingo/bingo-core/src/core/bingo_version.h
 bingo/sqlserver/Resources/bingo-core-c.dll
+api/tests/integration/**/out
