@@ -29,7 +29,7 @@ AutomorphismSearch::AutomorphismSearch()
     : CP_INIT, TL_CP_GET(_call_stack), TL_CP_GET(_lab), TL_CP_GET(_ptn), TL_CP_GET(_graph), TL_CP_GET(_mapping), TL_CP_GET(_inv_mapping), TL_CP_GET(_degree),
       TL_CP_GET(_tcells), TL_CP_GET(_fix), TL_CP_GET(_mcr), TL_CP_GET(_active), TL_CP_GET(_workperm), TL_CP_GET(_workperm2), TL_CP_GET(_bucket),
       TL_CP_GET(_count), TL_CP_GET(_firstlab), TL_CP_GET(_canonlab), TL_CP_GET(_orbits), TL_CP_GET(_fixedpts), TL_CP_GET(_work_active_cells),
-      TL_CP_GET(_edge_ranks_in_refine), _cancellation_handler(getCancellationHandler())
+      TL_CP_GET(_edge_ranks_in_refine)
 {
     getcanon = true;
     compare_vertex_degree_first = true;
@@ -47,6 +47,8 @@ AutomorphismSearch::AutomorphismSearch()
     context_automorphism = 0;
     _given_graph = 0;
     ignored_vertices = 0;
+
+    _cancellation_handler = getCancellationHandler();
 
     _call_stack.clear();
 }
