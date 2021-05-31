@@ -95,8 +95,7 @@ const char* RingoExact::getQueryHashStr()
 {
     StringOutput out(_query_hash_str);
     out.printf("%02X", getQueryHash());
-    _query_hash_str.push(0);
-    return _query_hash_str.ptr();
+    return _query_hash_str.c_str();
 }
 
 void RingoExact::setParameters(const char* flags)
@@ -130,7 +129,7 @@ void RingoExact::setParameters(const char* flags)
             break;
         scanner.readWord(word, 0);
 
-        if (strcasecmp(word.ptr(), "NONE") == 0)
+        if (strcasecmp(word.c_str(), "NONE") == 0)
         {
             if (had_all)
                 throw Error("NONE conflicts with ALL");
@@ -138,7 +137,7 @@ void RingoExact::setParameters(const char* flags)
             count++;
             continue;
         }
-        if (strcasecmp(word.ptr(), "ALL") == 0)
+        if (strcasecmp(word.c_str(), "ALL") == 0)
         {
             if (had_none)
                 throw Error("ALL conflicts with NONE");
@@ -150,21 +149,21 @@ void RingoExact::setParameters(const char* flags)
 
         for (i = 0; i < NELEM(token_list); i++)
         {
-            if (strcasecmp(token_list[i].token, word.ptr()) == 0)
+            if (strcasecmp(token_list[i].token, word.c_str()) == 0)
             {
                 if (had_all)
                     throw Error("only negative flags are allowed together with ALL");
                 res |= token_list[i].value;
                 break;
             }
-            if (word[0] == '-' && strcasecmp(token_list[i].token, word.ptr() + 1) == 0)
+            if (word[0] == '-' && strcasecmp(token_list[i].token, word.c_str() + 1) == 0)
             {
                 res &= ~token_list[i].value;
                 break;
             }
         }
         if (i == NELEM(token_list))
-            throw Error("unknown token %s", word.ptr());
+            throw Error("unknown token %s", word.c_str());
         count++;
     }
 

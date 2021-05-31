@@ -42,34 +42,34 @@ void RowIDLoader::loadRowID(std::string& RowId)
 
         if (CurCode == ROW_ID_SLASH)
         {
-            RowId.push('/');
+            RowId +='/';
             continue;
         }
 
         if (CurCode == ROW_ID_PLUS)
         {
-            RowId.push('+');
+            RowId += '+';
             continue;
         }
 
         if (CurCode >= ROW_ID_DIGITS && CurCode < ROW_ID_DIGITS + ROW_ID_NUM_OF_DIGITS)
         {
             CurCode = CurCode + 48 - ROW_ID_DIGITS;
-            RowId.push((char)CurCode);
+            RowId += ((char)CurCode);
             continue;
         }
 
         if (CurCode >= ROW_ID_LOWER_CASE && CurCode < ROW_ID_LOWER_CASE + ROW_ID_NUM_OF_SMALL_LETTERS)
         {
             CurCode = CurCode + 97 - ROW_ID_LOWER_CASE;
-            RowId.push((char)CurCode);
+            RowId += ((char)CurCode);
             continue;
         }
 
         if (CurCode >= ROW_ID_UPPER_CASE && CurCode < ROW_ID_UPPER_CASE + ROW_ID_NUM_OF_BIG_LETTERS)
         {
             CurCode = CurCode + 65 - ROW_ID_UPPER_CASE;
-            RowId.push((char)CurCode);
+            RowId += ((char)CurCode);
             continue;
         }
 

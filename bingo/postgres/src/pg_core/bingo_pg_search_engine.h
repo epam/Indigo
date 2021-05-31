@@ -82,11 +82,11 @@ public:
         return _structureIdx;
     }
 
-    indigo::std::string& getCmfBuf()
+    std::string& getCmfBuf()
     {
         return _cmfBuf;
     }
-    indigo::std::string& getXyzBuf()
+    std::string& getXyzBuf()
     {
         return _xyzBuf;
     }
@@ -110,8 +110,8 @@ protected:
     int _structureIdx;
     unsigned short _bitsCount;
 
-    indigo::std::string _cmfBuf;
-    indigo::std::string _xyzBuf;
+    std::string _cmfBuf;
+    std::string _xyzBuf;
 
     indigo::Array<int> _fingerprintBits;
 };
@@ -153,7 +153,7 @@ protected:
     void _setBingoContext();
     bool _fetchForNext();
 
-    void _getBlockParameters(indigo::std::string& params);
+    void _getBlockParameters(std::string& params);
 
     qword _bingoSession;
 

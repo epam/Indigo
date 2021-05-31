@@ -52,7 +52,7 @@ void WarningsTable::add(OracleEnv& env, const char* rowid, const char* message)
     {
         OracleStatement statement(env);
 
-        statement.append("insert into %s (%s, %s) values (:id, :msg)", _table_name.ptr(), _rowid_column.ptr(), _message_column.ptr());
+        statement.append("insert into %s (%s, %s) values (:id, :msg)", _table_name.c_str(), _rowid_column.c_str(), _message_column.c_str());
         statement.prepare();
         statement.bindStringByName(":id", rowid, strlen(rowid) + 1);
         statement.bindStringByName(":msg", message, strlen(message) + 1);

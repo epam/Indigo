@@ -201,7 +201,7 @@ ORAEXT OCINumber* oraMangoSmarts(OCIExtProcContext* ctx, int context_id, OCILobL
             OracleLOB target_lob(env, target_loc);
 
             target_lob.readAll(target_buf, false);
-            query_buf.readString(query, false);
+            query_buf = query;
 
             context.substructure.loadSMARTS(query_buf);
 
@@ -322,7 +322,7 @@ ORAEXT OCILobLocator* oraMangoSmartsHi(OCIExtProcContext* ctx, int context_id, O
             OracleLOB target_lob(env, target_loc);
 
             target_lob.readAll(target_buf, false);
-            query_buf.readString(query, false);
+            query_buf = query;
 
             context.substructure.preserve_bonds_on_highlighting = true;
             context.substructure.loadSMARTS(query_buf);
@@ -420,7 +420,7 @@ static OCIString* _mangoGrossCalc(OracleEnv& env, MangoOracleContext& context, c
         // So we return a string containing one space
         env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)" ", 1, &result));
     else
-        env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)gross_str.ptr(), gross_str.size() - 1, &result));
+        env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)gross_str.c_str(), gross_str.size() - 1, &result));
 
     return result;
 }

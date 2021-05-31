@@ -25,12 +25,8 @@ IMPL_ERROR(RingoShadowTable, "ringo shadow table");
 
 RingoShadowTable::RingoShadowTable(int context_id)
 {
-    _table_name.push(0);
-
     StringOutput output(_table_name);
-
     output.printf("SHADOW_%d", context_id);
-    output.writeChar(0);
 }
 
 void RingoShadowTable::addReaction(OracleEnv& env, RingoIndex& index, const char* rowid, int blockno, int offset)
@@ -43,7 +39,7 @@ void RingoShadowTable::addReaction(OracleEnv& env, RingoIndex& index, const char
 
     OracleStatement statement(env);
 
-    statement.append("INSERT INTO %s VALUES(:rxnrowid, :blockno, :offset, :crf, :rxnhash)", _table_name.ptr());
+    statement.append("INSERT INTO %s VALUES(:rxnrowid, :blockno, :offset, :crf, :rxnhash)", _table_name.c_str());
 
     statement.prepare();
     statement.bindStringByName(":rxnrowid", rowid, strlen(rowid) + 1);
@@ -58,7 +54,7 @@ void RingoShadowTable::addReaction(OracleEnv& env, RingoIndex& index, const char
 void RingoShadowTable::create(OracleEnv& env)
 {
     OracleStatement statement(env);
-    const char* tn = _table_name.ptr();
+    const char* tn = _table_name.c_str();
 
     statement.append("CREATE TABLE %s "
                      "(rid VARCHAR2(18), blockno NUMBER, offset NUMBER, crf BLOB, hash VARCHAR2(8)) NOLOGGING",
@@ -72,18 +68,18 @@ void RingoShadowTable::create(OracleEnv& env)
 
 void RingoShadowTable::drop(OracleEnv& env)
 {
-    OracleStatement::executeSingle(env, "BEGIN DropTable('%s'); END;", _table_name.ptr());
+    OracleStatement::executeSingle(env, "BEGIN DropTable('%s'); END;", _table_name.c_str());
 }
 
 void RingoShadowTable::truncate(OracleEnv& env)
 {
-    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _table_name.ptr());
+    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _table_name.c_str());
 }
 
 void RingoShadowTable::analyze(OracleEnv& env)
 {
     env.dbgPrintf("analyzing shadow table\n");
-    OracleStatement::executeSingle(env, "ANALYZE TABLE %s ESTIMATE STATISTICS", _table_name.ptr());
+    OracleStatement::executeSingle(env, "ANALYZE TABLE %s ESTIMATE STATISTICS", _table_name.c_str());
 }
 
 int RingoShadowTable::countOracleBlocks(OracleEnv& env)
@@ -93,7 +89,7 @@ int RingoShadowTable::countOracleBlocks(OracleEnv& env)
     if (!OracleStatement::executeSingleInt(res, env,
                                            "select blocks from user_tables where "
                                            "table_name = upper('%s')",
-                                           _table_name.ptr()))
+                                           _table_name.c_str()))
         return 0;
 
     return res;
@@ -101,16 +97,16 @@ int RingoShadowTable::countOracleBlocks(OracleEnv& env)
 
 const char* RingoShadowTable::getName()
 {
-    return _table_name.ptr();
+    return _table_name.c_str();
 }
 
 bool RingoShadowTable::getReactionLocation(OracleEnv& env, const char* rowid, int& blockno, int& offset)
 {
     OracleStatement statement(env);
 
-    statement.append("SELECT blockno, offset FROM %s WHERE rid = :rid", _table_name.ptr());
+    statement.append("SELECT blockno, offset FROM %s WHERE rid = :rid", _table_name.c_str());
     statement.prepare();
-    statement.bindStringByName(":rid", rowid, strlen(rowid) + 1);
+    statement.bindStringByName(":rid", rowid, strlen(rowid));
     statement.defineIntByPos(1, &blockno);
     statement.defineIntByPos(2, &offset);
 
@@ -119,5 +115,5 @@ bool RingoShadowTable::getReactionLocation(OracleEnv& env, const char* rowid, in
 
 void RingoShadowTable::deleteReaction(OracleEnv& env, const char* rowid)
 {
-    OracleStatement::executeSingle_BindString(env, ":rid", rowid, "DELETE FROM %s WHERE rid = :rid", _table_name.ptr());
+    OracleStatement::executeSingle_BindString(env, ":rid", rowid, "DELETE FROM %s WHERE rid = :rid", _table_name.c_str());
 }

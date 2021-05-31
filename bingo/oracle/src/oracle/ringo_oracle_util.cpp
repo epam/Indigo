@@ -53,7 +53,7 @@ static OCIString* _ringoRSMILES(OracleEnv& env, const std::string& target_buf, B
     saver.saveReaction(target);
 
     OCIString* result = 0;
-    env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)rsmiles.ptr(), rsmiles.size(), &result));
+    env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)rsmiles.data(), rsmiles.size(), &result));
 
     return result;
 }

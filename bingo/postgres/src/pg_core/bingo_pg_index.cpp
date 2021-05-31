@@ -166,11 +166,11 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config)
     /*
      * Initialize config buffer
      */
-    indigo::std::string config_data;
+    std::string config_data;
     bingo_config.serialize(config_data);
     BingoPgBuffer config_buffer;
     config_buffer.writeNewBuffer(_index, BINGO_CONFIG_PAGE);
-    config_buffer.formIndexTuple(config_data.ptr(), config_data.sizeInBytes());
+    config_buffer.formIndexTuple(&config_data[0], config_data.size());
     config_buffer.clear();
     ++_metaInfo.n_pages;
     /*
@@ -223,7 +223,7 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine)
     /*
      * Fulfil dictionary buffers
      */
-    indigo::std::string buffer_dict;
+    std::string buffer_dict;
     int dict_offset = 0;
     int dict_buf_size;
 
@@ -239,7 +239,7 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine)
          */
         int blck_off = _metaInfo.offset_dictionary + _metaInfo.n_blocks_for_dictionary;
         BingoPgBufferCacheBin buffer_cache(blck_off, _index, false);
-        buffer_dict.copy(dict_buf + dict_offset, dict_buf_size);
+        buffer_dict.assign(dict_buf + dict_offset, dict_buf_size);
         buffer_cache.writeBin(buffer_dict);
 
         dict_offset += dict_buf_size;
@@ -374,13 +374,13 @@ int BingoPgIndex::_getSectionOffset(int section_idx)
     return result;
 }
 
-void BingoPgIndex::readDictionary(indigo::std::string& dictionary)
+void BingoPgIndex::readDictionary(std::string& dictionary)
 {
     dictionary.clear();
     if (_metaInfo.n_blocks_for_dictionary == 0)
         return;
 
-    indigo::std::string buffer_dict;
+    std::string buffer_dict;
     int block_size = _metaInfo.n_blocks_for_dictionary + _metaInfo.offset_dictionary;
     /*
      * Read all buffers for dictionary
@@ -392,7 +392,7 @@ void BingoPgIndex::readDictionary(indigo::std::string& dictionary)
          * Read and concat buffers
          */
         buffer_cache.readBin(0, buffer_dict);
-        dictionary.concat(buffer_dict);
+        dictionary += buffer_dict;
     }
 }
 
@@ -528,7 +528,7 @@ bool BingoPgIndex::isStructureRemoved(ItemPointerData& cmf_item)
     return isStructureRemoved(ItemPointerGetBlockNumber(&cmf_item), ItemPointerGetOffsetNumber(&cmf_item));
 }
 
-void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::std::string& cmf_buf)
+void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, std::string& cmf_buf)
 {
     profTimerStart(t0, "bingo_pg.read_cmf");
     /*
@@ -565,7 +565,7 @@ void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::std::string
     elog(DEBUG1, "bingo: index: read cmf: successfully read cmf of size %d for block %d offset %d", cmf_buf.size(), block_num, block_offset);
 }
 
-void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::std::string& xyz_buf)
+void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, std::string& xyz_buf)
 {
     /*
      * Prepare info for reading

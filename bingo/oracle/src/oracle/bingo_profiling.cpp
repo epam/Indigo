@@ -30,9 +30,8 @@ void bingoProfilingPrintStatistics(bool print_all)
     QS_DEF(std::string, buffer);
     StringOutput output(buffer);
     profGetStatistics(output, print_all);
-    buffer.push(0);
     logger.dbgPrintf("Profiling statistics:\n");
-    logger.dbgPrintf(buffer.ptr());
+    logger.dbgPrintf(buffer.c_str());
     logger.dbgPrintf("\n");
 }
 

@@ -80,7 +80,7 @@ void MangoGross::parseQuery(Scanner& scanner)
 
         MoleculeGrossFormula::toString(_query_gross, query_gross_str);
 
-        out.printf("gross = '%s'", query_gross_str.ptr());
+        out.printf("gross = '%s'", query_gross_str.c_str());
     }
     else
         for (int i = 0; i < NELEM(MangoIndex::counted_elements); i++)
@@ -105,7 +105,7 @@ void MangoGross::parseQuery(Scanner& scanner)
 
 const char* MangoGross::getConditions()
 {
-    return _conditions.ptr();
+    return _conditions.c_str();
 }
 
 bool MangoGross::checkGross(const Array<int>& target_gross)

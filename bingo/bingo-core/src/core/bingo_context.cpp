@@ -154,11 +154,10 @@ void bingoGetTauCondition(const char* list_ptr, int& aromaticity, Array<int>& la
     while (*list_ptr != 0)
     {
         if (isalpha((unsigned)*list_ptr))
-            buf.push(*list_ptr);
+            buf += *list_ptr;
         else if (*list_ptr == ',')
         {
-            buf.push(0);
-            label_list.push(Element::fromString(buf.ptr()));
+            label_list.push(Element::fromString(buf.c_str()));
             buf.clear();
         }
         else
@@ -166,8 +165,7 @@ void bingoGetTauCondition(const char* list_ptr, int& aromaticity, Array<int>& la
         list_ptr++;
     }
 
-    buf.push(0);
-    label_list.push(Element::fromString(buf.ptr()));
+    label_list.push(Element::fromString(buf.c_str()));
 }
 
 void bingoGetName(Scanner& scanner, std::string& result)
@@ -179,19 +177,19 @@ void bingoGetName(Scanner& scanner, std::string& result)
 
     if (single_line)
     {
-        scanner.readLine(str, true);
+        scanner.readLine(str);
         int idx = str.find('|');
         int idx2 = 0;
 
         if (idx >= 0)
         {
-            int tmp = str.find(idx + 1, str.size(), '|');
+            int tmp = str.find(idx + 1, '|');
 
             if (tmp > 0)
                 idx2 = tmp + 1;
         }
 
-        BufferScanner scan2(str.ptr() + idx2);
+        BufferScanner scan2(str.c_str() + idx2);
 
         while (!scan2.isEOF())
         {
@@ -200,13 +198,13 @@ void bingoGetName(Scanner& scanner, std::string& result)
         }
         scan2.skipSpace();
         if (!scan2.isEOF())
-            scan2.readLine(result, false);
+            scan2.readLine(result);
     }
     else
     {
-        scanner.readLine(result, false);
-        if (result.size() >= 4 && strncmp(result.ptr(), "$RXN", 4) == 0)
-            scanner.readLine(result, false);
+        scanner.readLine(result);
+        if (result.size() >= 4 && strncmp(result.c_str(), "$RXN", 4) == 0)
+            scanner.readLine(result);
     }
 }
 

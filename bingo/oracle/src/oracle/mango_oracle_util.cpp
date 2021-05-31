@@ -104,10 +104,10 @@ static OCIString* _mangoSMILES(OracleEnv& env, const std::string& target_buf, co
     if (smiles.size() == 0)
         // Oracle would treat empty string as NULL value.
         // To give it non-NULL, we give it a space (which is correct SMILES)
-        smiles.push(' ');
+        smiles += ' ';
 
     OCIString* result = 0;
-    env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)smiles.ptr(), smiles.size(), &result));
+    env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)smiles.c_str(), smiles.size(), &result));
 
     return result;
 }
@@ -487,9 +487,6 @@ ORAEXT OCILobLocator* oraMangoInchi(OCIExtProcContext* ctx, OCILobLocator* targe
 
             OracleLOB lob(env);
             lob.createTemporaryCLOB();
-            // Exclude terminating zero
-            if (inchi.top() == 0)
-                inchi.pop();
             lob.write(0, inchi);
             lob.doNotDelete();
             result = lob.get();
@@ -522,9 +519,9 @@ ORAEXT OCIString* oraMangoInchiKey(OCIExtProcContext* ctx, OCILobLocator* inchi_
 
             QS_DEF(std::string, inchikey_buf);
 
-            InchiWrapper::InChIKey(inchi.ptr(), inchikey_buf);
+            InchiWrapper::InChIKey(inchi.c_str(), inchikey_buf);
 
-            env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)inchikey_buf.ptr(), inchikey_buf.size() - 1, &result));
+            env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)inchikey_buf.c_str(), inchikey_buf.size() - 1, &result));
         }
 
         if (result != 0)

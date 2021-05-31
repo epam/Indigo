@@ -357,8 +357,8 @@ bool MangoSubstructure::parse(const char* params)
         scanner.skipSpace();
         scanner.readWord(word, 0);
 
-        bool is_aff = strcasecmp(word.ptr(), "AFF") == 0;
-        bool is_conf = strcasecmp(word.ptr(), "CONF") == 0;
+        bool is_aff = strcasecmp(word.c_str(), "AFF") == 0;
+        bool is_conf = strcasecmp(word.c_str(), "CONF") == 0;
         if (is_aff || is_conf)
         {
             if (match_3d != 0)
@@ -371,7 +371,7 @@ bool MangoSubstructure::parse(const char* params)
             scanner.skipSpace();
             rms_threshold = scanner.readFloat();
         }
-        else if (strcasecmp(word.ptr(), "RES") == 0)
+        else if (strcasecmp(word.c_str(), "RES") == 0)
             _use_pi_systems_matcher = true;
         else
             return false;

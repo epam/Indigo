@@ -36,15 +36,12 @@ IMPL_ERROR(MangoShadowFetch, "mango shadow fetch");
 MangoShadowFetch::MangoShadowFetch(MangoFetchContext& context) : _context(context)
 {
     _total_count = -1;
-    _table_name.push(0);
 
     StringOutput output(_table_name);
     output.printf(context.context().shadow_table.getName());
-    output.writeChar(0);
 
     StringOutput output2(_components_table_name);
     output2.printf(context.context().shadow_table.getComponentsName());
-    output2.writeChar(0);
 
     _executed = false;
     _fetch_type = 0;
@@ -62,7 +59,7 @@ int MangoShadowFetch::getTotalCount(OracleEnv& env)
 {
     if (_total_count < 0)
     {
-        if (!OracleStatement::executeSingleInt(_total_count, env, "SELECT COUNT(*) FROM %s", _table_name.ptr()))
+        if (!OracleStatement::executeSingleInt(_total_count, env, "SELECT COUNT(*) FROM %s", _table_name.c_str()))
             throw Error("getTotalCount() failed");
     }
 
@@ -86,7 +83,7 @@ int MangoShadowFetch::countOracleBlocks(OracleEnv& env)
     if (!OracleStatement::executeSingleInt(res, env,
                                            "select blocks from user_tables where "
                                            "table_name = upper('%s')",
-                                           _table_name.ptr()))
+                                           _table_name.c_str()))
         return 0;
 
     return res;
@@ -108,10 +105,9 @@ float MangoShadowFetch::calcSelectivity(OracleEnv& env, int total_count)
 
     if (_counting_select.size() > 1)
     {
-        _counting_select.push(0);
         OracleStatement statement(env);
 
-        statement.append("%s", _counting_select.ptr());
+        statement.append("%s", _counting_select.c_str());
         statement.prepare();
         statement.defineIntByPos(1, &nrows_select_total);
         if (_fetch_type == _MASS)
@@ -154,7 +150,7 @@ void MangoShadowFetch::prepareNonSubstructure(OracleEnv& env)
     {
         _lob_cmf.reset(new OracleLOB(_env.ref()));
         _lob_xyz.reset(new OracleLOB(_env.ref()));
-        _statement->append("SELECT mol_rowid, cmf, xyz FROM %s", _table_name.ptr());
+        _statement->append("SELECT mol_rowid, cmf, xyz FROM %s", _table_name.c_str());
         _statement->prepare();
         _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
         _statement->defineBlobByPos(2, _lob_cmf.ref());
@@ -163,7 +159,7 @@ void MangoShadowFetch::prepareNonSubstructure(OracleEnv& env)
     else
     {
         _lob_cmf.reset(new OracleLOB(_env.ref()));
-        _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.ptr());
+        _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.c_str());
         _statement->prepare();
         _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
         _statement->defineBlobByPos(2, _lob_cmf.ref());
@@ -181,7 +177,7 @@ void MangoShadowFetch::prepareNonTautomerSubstructure(OracleEnv& env)
     _statement.reset(new OracleStatement(_env.ref()));
     _lob_cmf.reset(new OracleLOB(_env.ref()));
 
-    _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.ptr());
+    _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.c_str());
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
     _statement->defineBlobByPos(2, _lob_cmf.ref());
@@ -203,7 +199,7 @@ void MangoShadowFetch::prepareTautomer(OracleEnv& env, int right_part)
     _statement.reset(new OracleStatement(_env.ref()));
     _lob_cmf.reset(new OracleLOB(_env.ref()));
 
-    _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.ptr());
+    _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.c_str());
 
     if (right_part == 1)
         _statement->append(" WHERE gross = :gross OR gross LIKE :grossh");
@@ -216,7 +212,7 @@ void MangoShadowFetch::prepareTautomer(OracleEnv& env, int right_part)
     {
         StringOutput output(_counting_select);
 
-        output.printf("SELECT COUNT(*) FROM %s WHERE gross = :gross", _table_name.ptr());
+        output.printf("SELECT COUNT(*) FROM %s WHERE gross = :gross", _table_name.c_str());
     }
     else
         _counting_select.clear();
@@ -241,15 +237,15 @@ void MangoShadowFetch::prepareExact(OracleEnv& env, int right_part)
 
     _statement->append("SELECT sh.mol_rowid, sh.cmf");
     if (_need_xyz)
-        _statement->append(", sh.xyz", _table_name.ptr());
-    _statement->append(" FROM %s sh", _table_name.ptr());
+        _statement->append(", sh.xyz", _table_name.c_str());
+    _statement->append(" FROM %s sh", _table_name.c_str());
 
     QS_DEF(std::string, table_copies);
     QS_DEF(std::string, where_clause);
     _prepareExactQueryStrings(table_copies, where_clause);
 
-    _statement->append(table_copies.ptr());
-    _statement->append(where_clause.ptr());
+    _statement->append(table_copies.c_str());
+    _statement->append(where_clause.c_str());
 
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
@@ -262,9 +258,9 @@ void MangoShadowFetch::prepareExact(OracleEnv& env, int right_part)
     }
 
     StringOutput output_cnt(_counting_select);
-    output_cnt.printf("SELECT COUNT(*) FROM %s sh", _table_name.ptr());
-    output_cnt.printf("%s", table_copies.ptr());
-    output_cnt.printf("%s", where_clause.ptr());
+    output_cnt.printf("SELECT COUNT(*) FROM %s sh", _table_name.c_str());
+    output_cnt.printf("%s", table_copies.c_str());
+    output_cnt.printf("%s", where_clause.c_str());
 }
 
 void MangoShadowFetch::_prepareExactQueryStrings(std::string& table_copies, std::string& where_clause)
@@ -276,7 +272,7 @@ void MangoShadowFetch::_prepareExactQueryStrings(std::string& table_copies, std:
     if (_right_part == 1)
     {
         for (int i = 0; i < hash.size(); i++)
-            output_tables.printf(", %s t%d", _components_table_name.ptr(), i);
+            output_tables.printf(", %s t%d", _components_table_name.c_str(), i);
     }
     output_tables.writeChar(0);
 
@@ -339,7 +335,7 @@ void MangoShadowFetch::prepareGross(OracleEnv& env, int right_part)
     _right_part = right_part;
     _env.reset(new OracleEnv(env.ctx(), env.logger()));
     _statement.reset(new OracleStatement(_env.ref()));
-    _statement->append("SELECT mol_rowid, gross FROM %s ", _table_name.ptr());
+    _statement->append("SELECT mol_rowid, gross FROM %s ", _table_name.c_str());
     if (*instance.getConditions() != 0 && right_part == 1)
         _statement->append("WHERE %s", instance.getConditions());
     _statement->prepare();
@@ -347,7 +343,7 @@ void MangoShadowFetch::prepareGross(OracleEnv& env, int right_part)
     _statement->defineStringByPos(2, _gross, sizeof(_gross));
 
     StringOutput output(_counting_select);
-    output.printf("SELECT COUNT(*) FROM %s WHERE %s", _table_name.ptr(), instance.getConditions());
+    output.printf("SELECT COUNT(*) FROM %s WHERE %s", _table_name.c_str(), instance.getConditions());
 }
 
 void MangoShadowFetch::prepareMass(OracleEnv& env)
@@ -366,13 +362,13 @@ void MangoShadowFetch::prepareMass(OracleEnv& env)
     _env.reset(new OracleEnv(env.ctx(), env.logger()));
     _statement.reset(new OracleStatement(_env.ref()));
 
-    _statement->append("SELECT mol_rowid FROM %s WHERE mass >= :mass_min AND mass <= :mass_max", _table_name.ptr());
+    _statement->append("SELECT mol_rowid FROM %s WHERE mass >= :mass_min AND mass <= :mass_max", _table_name.c_str());
 
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
 
     StringOutput output(_counting_select);
-    output.printf("SELECT COUNT(*) FROM %s WHERE WHERE mass >= :mass_min AND mass <= :mass_max", _table_name.ptr());
+    output.printf("SELECT COUNT(*) FROM %s WHERE WHERE mass >= :mass_min AND mass <= :mass_max", _table_name.c_str());
 }
 
 void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
@@ -401,9 +397,9 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
             const char* gross = _context.tautomer.getQueryGross();
             _statement->bindStringByName(":gross", gross, strlen(gross) + 1);
             QS_DEF(std::string, grossh);
-            grossh.readString(gross, false);
-            grossh.appendString(" H%", true);
-            _statement->bindStringByName(":grossh", grossh.ptr(), grossh.size());
+            grossh = gross;
+            grossh += " H%";
+            _statement->bindStringByName(":grossh", grossh.c_str(), grossh.size());
         }
 
         if (!_executed)

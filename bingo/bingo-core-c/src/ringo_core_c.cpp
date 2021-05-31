@@ -56,14 +56,14 @@ TRY_READ_TARGET_RXN
     {
         if (self.bingo_context->reject_invalid_structures)
             throw;
-        self.warning.readString(e.message(), true);
+        self.warning = e.message();
         return 0;
     }
     catch (CrfSaver::Error& e)
     {
         if (self.bingo_context->reject_invalid_structures)
             throw;
-        self.warning.readString(e.message(), true);
+        self.warning = e.message();
         return 0;
     }
 }
@@ -71,7 +71,7 @@ CATCH_READ_TARGET_RXN({
     if (self.bingo_context->reject_invalid_structures)
         throw;
 
-    self.warning.readString(e.message(), true);
+    self.warning = e.message();
     return 0;
 });
 }
@@ -89,7 +89,7 @@ CEXPORT int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* c
 
         const std::string& crf = self.ringo_index->getCrf();
 
-        *crf_buf = crf.ptr();
+        *crf_buf = crf.c_str();
         *crf_buf_len = crf.size();
 
         *fingerprint_buf = (const char*)self.ringo_index->getFingerprint();
@@ -150,7 +150,7 @@ CEXPORT int ringoSetupMatch(const char* search_type, const char* query, const ch
             self.ringo_search_type = BingoCore::_UNDEF;
             throw BingoError("Unknown search type '%s' or options string '%s'", search_type, options);
         }
-        CATCH_READ_TARGET_RXN(self.error.readString(e.message(), 1); return -1;);
+        CATCH_READ_TARGET_RXN(self.error = e.message(); return -1;);
     }
     BINGO_END(-2, -2)
 }
@@ -187,7 +187,7 @@ CEXPORT int ringoMatchTarget(const char* target, int target_buf_len)
             else
                 throw BingoError("Invalid search type");
         }
-        CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), 1); return -1;);
+        CATCH_READ_TARGET_RXN(self.warning = e.message(); return -1;);
     }
     BINGO_END(-2, -2)
 }
@@ -223,7 +223,7 @@ CEXPORT int ringoMatchTargetBinary(const char* target_bin, int target_bin_len)
             else
                 throw BingoError("Invalid search type");
         }
-        CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), 1); return -1;);
+        CATCH_READ_TARGET_RXN(self.warning = e.message(); return -1;);
     }
     BINGO_END(-2, -2)
 }
@@ -250,7 +250,7 @@ CEXPORT const char* ringoRSMILES(const char* target_buf, int target_buf_len)
 
         saver.saveReaction(target);
         out.writeByte(0);
-        return self.buffer.ptr();
+        return self.buffer.c_str();
     }
     BINGO_END(0, 0)
 }
@@ -271,7 +271,7 @@ RxnfileSaver saver(out);
 
 saver.saveReaction(target);
 out.writeByte(0);
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -293,7 +293,7 @@ ReactionCmlSaver saver(out);
 
 saver.saveReaction(target);
 out.writeByte(0);
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -306,8 +306,7 @@ BufferScanner reaction_scanner(reaction, reaction_len);
 self.ringo_context->ringoAAM.loadReaction(reaction_scanner);
 
 self.ringo_context->ringoAAM.getResult(self.buffer);
-self.buffer.push(0);
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -322,12 +321,12 @@ self.bingo_context->setLoaderSettings(loader);
 loader.loadReaction(rxn);
 Reaction::checkForConsistency(rxn);
 }
-CATCH_READ_TARGET_RXN(self.buffer.readString(e.message(), true); return self.buffer.ptr())
+CATCH_READ_TARGET_RXN(self.buffer = e.message(); return self.buffer.c_str())
 catch (Exception& e)
 {
     e.appendMessage(" INTERNAL ERROR");
-    self.buffer.readString(e.message(), true);
-    return self.buffer.ptr();
+    self.buffer = e.message();
+    return self.buffer.c_str();
 }
 catch (...)
 {
@@ -350,12 +349,12 @@ CEXPORT int ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
         {
             RingoSubstructure& substructure = self.ringo_context->substructure;
 
-            self.buffer.copy((const char*)substructure.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2);
+            self.buffer.assign((const char*)substructure.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSizeExtOrd() * 2);
         }
         else
             throw BingoError("Invalid search type");
 
-        *query_fp = self.buffer.ptr();
+        *query_fp = self.buffer.c_str();
         *query_fp_len = self.buffer.size();
     }
     BINGO_END(1, -2)
@@ -388,8 +387,7 @@ CEXPORT const char* ringoGetHightlightedReaction()
         else
             throw BingoError("Invalid search type");
 
-        self.buffer.push(0);
-        return self.buffer.ptr();
+        return self.buffer.c_str();
     }
     BINGO_END(0, 0);
 }
@@ -414,7 +412,7 @@ saver.save_xyz = (save_xyz != 0);
 saver.saveReaction(target);
 
 *out_len = self.buffer.size();
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -460,10 +458,10 @@ CEXPORT const char* ringoFingerprint(const char* reaction, int reaction_len, con
         const char* buf = (const char*)builder.get();
         int buf_len = self.bingo_context->fp_parameters.fingerprintSizeExtOrdSim() * 2;
 
-        self.buffer.copy(buf, buf_len);
+        self.buffer.assign(buf, buf_len);
 
         *out_len = self.buffer.size();
-        return self.buffer.ptr();
+        return self.buffer.c_str();
     }
     BINGO_END(0, 0)
 }

@@ -50,7 +50,7 @@ public:
     _MangoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid), _type(type)
     {
         BingoPgCommon::getSearchTypeString(_type, _typeStr, true);
-        setFunctionName(_typeStr.ptr());
+        setFunctionName(_typeStr.c_str());
     }
 
     virtual ~_MangoContextHandler()
@@ -71,10 +71,10 @@ public:
         /*
          * Set up match parameters
          */
-        int res = mangoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
+        int res = mangoSetupMatch(_typeStr.c_str(), query_text.getString(), options_text.getString());
 
         if (res < 0)
-            throw BingoPgError("Error while bingo%s loading molecule: %s", _typeStr.ptr(), bingoGetError());
+            throw BingoPgError("Error while bingo%s loading molecule: %s", _typeStr.c_str(), bingoGetError());
 
         int target_size;
         const char* target_data = target_text.getText(target_size);
@@ -82,16 +82,16 @@ public:
         QS_DEF(std::string, buffer_warn);
         if (_type == BingoPgCommon::MOL_GROSS)
         {
-            buffer_warn.readString(_typeStr.ptr(), true);
+            buffer_warn = _typeStr;
             const char* mol_name = bingoGetNameCore(target_data, target_size);
             if (mol_name != 0 && strlen(mol_name) > 0)
             {
-                buffer_warn.appendString(" molecule with name='", true);
-                buffer_warn.appendString(mol_name, true);
-                buffer_warn.appendString("'", true);
+                buffer_warn += " molecule with name='";
+                buffer_warn += mol_name;
+                buffer_warn += "'";
             }
 
-            setFunctionName(buffer_warn.ptr());
+            setFunctionName(buffer_warn.c_str());
             target_data = mangoGross(target_data, target_size);
             if (target_data == 0)
             {
@@ -104,12 +104,12 @@ public:
 
         if (res < 0)
         {
-            buffer_warn.readString(bingoGetWarning(), true);
+            buffer_warn = bingoGetWarning();
             const char* mol_name = bingoGetNameCore(target_data, target_size);
             if (mol_name != 0 && strlen(mol_name) > 0)
-                elog(WARNING, "warning while bingo%s loading molecule with name ='%s': %s", _typeStr.ptr(), mol_name, buffer_warn.ptr());
+                elog(WARNING, "warning while bingo%s loading molecule with name ='%s': %s", _typeStr.c_str(), mol_name, buffer_warn.c_str());
             else
-                elog(WARNING, "warning while bingo%s loading molecule: %s", _typeStr.ptr(), buffer_warn.ptr());
+                elog(WARNING, "warning while bingo%s loading molecule: %s", _typeStr.c_str(), buffer_warn.c_str());
         }
 
         return res;
@@ -118,7 +118,7 @@ public:
 private:
     _MangoContextHandler(const _MangoContextHandler&); // no implicit copy
     int _type;
-    indigo::std::string _typeStr;
+    std::string _typeStr;
 };
 
 Datum _sub_internal(PG_FUNCTION_ARGS)
@@ -206,10 +206,9 @@ Datum _gross_internal(PG_FUNCTION_ARGS)
     {
         BingoPgText query_text(query_datum);
         BingoPgText sign_text(query_sign);
-        QS_DEF(indigo::std::string, bingo_query);
-        bingo_query.readString(sign_text.getString(), false);
-        bingo_query.appendString(" ", false);
-        bingo_query.appendString(query_text.getString(), false);
+        QS_DEF(std::string, bingo_query);
+        bingo_query = sign_text.getString() + ' ';
+        bingo_query += query_text.getString();
 
         query_text.initFromArray(bingo_query);
 

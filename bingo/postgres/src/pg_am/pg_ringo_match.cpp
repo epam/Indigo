@@ -36,7 +36,7 @@ public:
     _RingoContextHandler(int type, unsigned int func_oid) : BingoSessionHandler(func_oid), _type(type)
     {
         BingoPgCommon::getSearchTypeString(_type, _typeStr, false);
-        setFunctionName(_typeStr.ptr());
+        setFunctionName(_typeStr.c_str());
     }
 
     virtual ~_RingoContextHandler()
@@ -57,9 +57,9 @@ public:
         /*
          * Set up match parameters
          */
-        int res = ringoSetupMatch(_typeStr.ptr(), query_text.getString(), options_text.getString());
+        int res = ringoSetupMatch(_typeStr.c_str(), query_text.getString(), options_text.getString());
         if (res < 0)
-            throw BingoPgError("Error while bingo%s loading a reaction: %s", _typeStr.ptr(), bingoGetError());
+            throw BingoPgError("Error while bingo%s loading a reaction: %s", _typeStr.c_str(), bingoGetError());
 
         int target_size;
         const char* target_data = target_text.getText(target_size);
@@ -69,12 +69,12 @@ public:
         if (res < 0)
         {
             QS_DEF(std::string, buffer_warn);
-            buffer_warn.readString(bingoGetWarning(), true);
+            buffer_warn = bingoGetWarning();
             const char* react_name = bingoGetNameCore(target_data, target_size);
             if (react_name != 0 && strlen(react_name) > 0)
-                elog(WARNING, "warning while bingo%s loading a reaction with name='%s': %s", _typeStr.ptr(), react_name, buffer_warn.ptr());
+                elog(WARNING, "warning while bingo%s loading a reaction with name='%s': %s", _typeStr.c_str(), react_name, buffer_warn.c_str());
             else
-                elog(WARNING, "warning while bingo%s loading a reaction: %s", _typeStr.ptr(), buffer_warn.ptr());
+                elog(WARNING, "warning while bingo%s loading a reaction: %s", _typeStr.c_str(), buffer_warn.c_str());
         }
 
         return res;
@@ -83,7 +83,7 @@ public:
 private:
     _RingoContextHandler(const _RingoContextHandler&); // no implicit copy
     int _type;
-    indigo::std::string _typeStr;
+    std::string _typeStr;
 };
 
 Datum _rsub_internal(PG_FUNCTION_ARGS)

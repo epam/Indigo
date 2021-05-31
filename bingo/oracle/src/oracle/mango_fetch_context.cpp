@@ -33,7 +33,7 @@ MangoFetchContext::MangoFetchContext(int id_, MangoOracleContext& context, const
 {
     id = id_;
     context_id = context.context().id;
-    _query_id.copy(query_id);
+    _query_id = query_id;
     fresh = false;
     fetch_engine = 0;
 
@@ -91,7 +91,7 @@ MangoFetchContext* MangoFetchContext::findFresh(int context_id, const std::strin
         if (instance->context_id != context_id)
             continue;
 
-        if (instance->_query_id.memcmp(query_id) != 0)
+        if (instance->_query_id.compare(query_id) != 0)
             continue;
 
         return instance;

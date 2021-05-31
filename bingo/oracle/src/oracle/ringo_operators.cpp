@@ -171,7 +171,7 @@ ORAEXT OCINumber* oraRingoRSmarts(OCIExtProcContext* ctx, int context_id, OCILob
         OracleLOB target_lob(env, target_loc);
 
         target_lob.readAll(target_buf, false);
-        query_buf.readString(query, false);
+        query_buf = query;
 
         context.substructure.loadSMARTS(query_buf);
 
@@ -213,7 +213,7 @@ ORAEXT OCILobLocator* oraRingoRSmartsHi(OCIExtProcContext* ctx, int context_id, 
         OracleLOB target_lob(env, target_loc);
 
         target_lob.readAll(target_buf, false);
-        query_buf.readString(query, false);
+        query_buf = query;
 
         context.substructure.preserve_bonds_on_highlighting = true;
         context.substructure.loadSMARTS(query_buf);

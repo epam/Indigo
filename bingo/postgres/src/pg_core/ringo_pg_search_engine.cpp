@@ -38,9 +38,9 @@ RingoPgSearchEngine::RingoPgSearchEngine(BingoPgConfig& bingo_config, const char
     bingoTautomerRulesReady(0, 0, 0);
     bingoIndexBegin();
 
-    _relName.readString(rel_name, true);
-    _shadowRelName.readString(rel_name, true);
-    _shadowRelName.appendString("_shadow", true);
+    _relName = rel_name;
+    _shadowRelName = rel_name;
+    _shadowRelName += "_shadow";
 }
 
 RingoPgSearchEngine::~RingoPgSearchEngine()
@@ -56,7 +56,7 @@ bool RingoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
     react_buf.clear();
 
     _bufferIndexPtr->readCmfItem(section_idx, structure_idx, react_buf);
-    bingo_res = ringoMatchTargetBinary(react_buf.ptr(), react_buf.sizeInBytes());
+    bingo_res = ringoMatchTargetBinary(react_buf.c_str(), react_buf.size());
     CORE_HANDLE_ERROR_TID(bingo_res, -1, "reaction search engine: error while matching target", section_idx, structure_idx, bingoGetError());
     CORE_RETURN_WARNING_TID(bingo_res, 0, "reaction search engine: error while matching target", section_idx, structure_idx, bingoGetWarning());
 
@@ -122,25 +122,21 @@ void RingoPgSearchEngine::_errorHandler(const char* message, void*)
     throw Error("Error while searching a reaction: %s", message);
 }
 
-void RingoPgSearchEngine::_prepareExactQueryStrings(indigo::std::string& what_clause_str, indigo::std::string& from_clause_str,
-                                                    indigo::std::string& where_clause_str)
+void RingoPgSearchEngine::_prepareExactQueryStrings(std::string& what_clause_str, std::string& from_clause_str,
+                                                    std::string& where_clause_str)
 {
     StringOutput what_clause(what_clause_str);
     StringOutput from_clause(from_clause_str);
     StringOutput where_clause(where_clause_str);
 
     what_clause.printf("b_id");
-    from_clause.printf("%s", _shadowRelName.ptr());
+    from_clause.printf("%s", _shadowRelName.c_str());
 
     dword ex_hash;
     int bingo_res = ringoGetHash(0, &ex_hash);
     CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: error while getting hash", bingoGetError());
 
     where_clause.printf("ex_hash=%d", ex_hash);
-
-    what_clause_str.push(0);
-    from_clause_str.push(0);
-    where_clause_str.push(0);
 }
 
 void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
@@ -171,7 +167,7 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    bingo_res = ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+    bingo_res = ringoSetupMatch(search_type.c_str(), search_query.c_str(), search_options.c_str());
     CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not set rsub search context", bingoGetError());
 
     const char* fingerprint_buf;
@@ -209,12 +205,12 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
     /*
      * Set up matching parameters
      */
-    bingo_res = ringoSetupMatch(search_type.ptr(), search_query.ptr(), search_options.ptr());
+    bingo_res = ringoSetupMatch(search_type.c_str(), search_query.c_str(), search_options.c_str());
     CORE_HANDLE_ERROR(bingo_res, 1, "reaction search engine: can not set rexact search context", bingoGetError());
 
     _prepareExactQueryStrings(what_clause, from_clause, where_clause);
 
-    _searchCursor.reset(new BingoPgCursor("SELECT %s FROM %s WHERE %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr()));
+    _searchCursor.reset(new BingoPgCursor("SELECT %s FROM %s WHERE %s", what_clause.c_str(), from_clause.c_str(), where_clause.c_str()));
 }
 
 void RingoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr)
@@ -222,7 +218,7 @@ void RingoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr)
     _prepareSubSearch(scan_desc_ptr);
 }
 
-void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, indigo::std::string& str1_out, indigo::std::string& str2_out)
+void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, std::string& str1_out, std::string& str2_out)
 {
     /*
      * Get query info
@@ -262,8 +258,8 @@ void RingoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, indigo::std::stri
         str1.init(values[0]);
         str2.init(values[1]);
 
-        str1_out.readString(str1.getString(), true);
-        str2_out.readString(str2.getString(), true);
+        str1_out = str1.getString();
+        str2_out = str2.getString();
 
         pfree(values);
         pfree(nulls);

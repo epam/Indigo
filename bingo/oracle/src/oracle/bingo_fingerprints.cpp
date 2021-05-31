@@ -62,7 +62,7 @@ void BingoFingerprints::init(BingoContext& context, int fp_bytes, int fp_priorit
 
 void BingoFingerprints::create(OracleEnv& env)
 {
-    const char* tn = _table_name.ptr();
+    const char* tn = _table_name.c_str();
     const char* securefile = "";
 
     if (env.serverMajorVersion() >= 11)
@@ -82,12 +82,12 @@ void BingoFingerprints::create(OracleEnv& env)
 
 void BingoFingerprints::drop(OracleEnv& env)
 {
-    OracleStatement::executeSingle(env, "BEGIN DropTable('%s'); END;", _table_name.ptr());
+    OracleStatement::executeSingle(env, "BEGIN DropTable('%s'); END;", _table_name.c_str());
 }
 
 void BingoFingerprints::truncate(OracleEnv& env)
 {
-    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _table_name.ptr());
+    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _table_name.c_str());
 }
 
 void BingoFingerprints::addFingerprint(OracleEnv& env, const byte* fp)
@@ -157,7 +157,7 @@ bool BingoFingerprints::_flush_Update(OracleEnv& env, bool update_counter)
     OracleStatement statement(env);
     OracleLOB lob_counters(env), lob_bits(env), lob_mapping(env), lob_bit_starts(env), lob_bit_ends(env);
 
-    statement.append("SELECT counters, mapping, bit_starts, bit_ends, bits from %s WHERE part = :part FOR UPDATE", _table_name.ptr());
+    statement.append("SELECT counters, mapping, bit_starts, bit_ends, bits from %s WHERE part = :part FOR UPDATE", _table_name.c_str());
     statement.prepare();
     statement.bindIntByName(":part", &_part_adding);
     statement.defineBlobByPos(1, lob_counters);
@@ -180,7 +180,7 @@ bool BingoFingerprints::_flush_Update(OracleEnv& env, bool update_counter)
     if (update_counter)
     {
         OracleStatement statement1(env);
-        statement1.append("UPDATE %s SET used = :used WHERE part = :part", _table_name.ptr());
+        statement1.append("UPDATE %s SET used = :used WHERE part = :part", _table_name.c_str());
         statement1.prepare();
         statement1.bindIntByName(":used", &_pending_block.used);
         statement1.bindIntByName(":part", &_part_adding);
@@ -194,7 +194,7 @@ void BingoFingerprints::_flush_Insert(OracleEnv& env)
     OracleStatement statement(env);
     statement.append("INSERT INTO %s VALUES(:part, :used, "
                      "empty_blob(), empty_blob(), empty_blob(), empty_blob(), empty_blob())",
-                     _table_name.ptr());
+                     _table_name.c_str());
 
     statement.prepare();
     statement.bindIntByName(":part", &_part_adding);
@@ -224,7 +224,7 @@ void BingoFingerprints::_flush_Insert_OLD(OracleEnv& env)
 
     statement.append("INSERT INTO %s VALUES(:part, :used, :counters, "
                      ":mapping, :bit_starts, :bit_ends, :bits)",
-                     _table_name.ptr());
+                     _table_name.c_str());
 
     statement.prepare();
     statement.bindIntByName(":used", &_pending_block.used);
@@ -275,7 +275,7 @@ bool BingoFingerprints::screenPart_Init(OracleEnv& env, Screening& screening)
 
         screening.statement.create(env);
         screening.bits_lob.create(env);
-        screening.statement->append("SELECT bits FROM %s WHERE part = :part", _table_name.ptr());
+        screening.statement->append("SELECT bits FROM %s WHERE part = :part", _table_name.c_str());
         screening.statement->prepare();
         screening.statement->bindIntByName(":part", &screening.part);
         screening.statement->defineBlobByPos(1, screening.bits_lob.ref());
@@ -462,7 +462,7 @@ bool BingoFingerprints::countOnes_Init(OracleEnv& env, Screening& screening)
 
         screening.statement.create(env);
         screening.bits_lob.create(env);
-        screening.statement->append("SELECT bits FROM %s WHERE part = :part", _table_name.ptr());
+        screening.statement->append("SELECT bits FROM %s WHERE part = :part", _table_name.c_str());
         screening.statement->prepare();
         screening.statement->bindIntByName(":part", &screening.part);
         screening.statement->defineBlobByPos(1, screening.bits_lob.ref());
@@ -523,7 +523,7 @@ void BingoFingerprints::validateForUpdate(OracleEnv& env)
     OracleLOB counters_lob(env), mapping_lob(env), bit_starts_lob(env), bit_ends_lob(env), bits_lob(env);
     int used, part = -1;
 
-    statement.append("SELECT used, counters, mapping, bit_starts, bit_ends, part, bits FROM %s ORDER BY part DESC", _table_name.ptr());
+    statement.append("SELECT used, counters, mapping, bit_starts, bit_ends, part, bits FROM %s ORDER BY part DESC", _table_name.c_str());
 
     statement.prepare();
     statement.defineIntByPos(1, &used);
@@ -613,7 +613,7 @@ void BingoFingerprints::validate(OracleEnv& env)
     OracleLOB counters_lob(env), mapping_lob(env), bit_starts_lob(env), bit_ends_lob(env);
     int used;
 
-    statement.append("SELECT used, counters, mapping, bit_starts, bit_ends FROM %s ORDER BY part", _table_name.ptr());
+    statement.append("SELECT used, counters, mapping, bit_starts, bit_ends FROM %s ORDER BY part", _table_name.c_str());
     statement.prepare();
     statement.defineIntByPos(1, &used);
     statement.defineBlobByPos(2, counters_lob);
@@ -648,7 +648,7 @@ void BingoFingerprints::validate(OracleEnv& env)
 void BingoFingerprints::analyze(OracleEnv& env)
 {
     env.dbgPrintf("analyzing fingerprints table\n");
-    OracleStatement::executeSingle(env, "ANALYZE TABLE %s ESTIMATE STATISTICS", _table_name.ptr());
+    OracleStatement::executeSingle(env, "ANALYZE TABLE %s ESTIMATE STATISTICS", _table_name.c_str());
 }
 
 int BingoFingerprints::countOracleBlocks(OracleEnv& env)
@@ -658,7 +658,7 @@ int BingoFingerprints::countOracleBlocks(OracleEnv& env)
     if (_chunk_qwords < 1)
         return 0;
 
-    if (!OracleStatement::executeSingleInt(res, env, "select sum(length(bits)) / %d from %s", _chunk_qwords * 8, _table_name.ptr()))
+    if (!OracleStatement::executeSingleInt(res, env, "select sum(length(bits)) / %d from %s", _chunk_qwords * 8, _table_name.c_str()))
         return 0;
 
     return res;
@@ -686,7 +686,7 @@ int BingoFingerprints::getTotalCount(OracleEnv& env)
     }
     else
     {
-        OracleStatement::executeSingleInt(_total_count_cached, env, "SELECT sum(used) FROM %s", _table_name.ptr());
+        OracleStatement::executeSingleInt(_total_count_cached, env, "SELECT sum(used) FROM %s", _table_name.c_str());
     }
 
     return _total_count_cached;

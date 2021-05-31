@@ -31,7 +31,7 @@ public:
     bool next(PG_OBJECT scan_desc_ptr, PG_OBJECT result_item);
 
     void setItemPointer(PG_OBJECT result_ptr);
-    void readCmfItem(indigo::std::string& cmf_buf);
+    void readCmfItem(std::string& cmf_buf);
 
     BingoPgIndex& getIndex()
     {
@@ -40,7 +40,7 @@ public:
 
     const char* getFuncName() const
     {
-        return _funcName.ptr();
+        return _funcName.c_str();
     }
 
     void prepareRescan(PG_OBJECT scan_desc_ptr);
@@ -60,7 +60,7 @@ private:
     BingoPgIndex _bufferIndex;
     indigo::AutoPtr<BingoPgSearchEngine> _fpEngine;
 
-    indigo::std::string _funcName;
+    std::string _funcName;
 };
 
 #endif /* BINGO_PG_SEARCH_H */

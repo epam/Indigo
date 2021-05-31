@@ -36,18 +36,18 @@ MangoPgBuildEngine::MangoPgBuildEngine(BingoPgConfig& bingo_config, const char* 
     bingoTautomerRulesReady(0, 0, 0);
     bingoIndexBegin();
 
-    _relName.readString(rel_name, true);
-    _shadowRelName.readString(rel_name, true);
-    _shadowRelName.appendString("_shadow", true);
-    _shadowHashRelName.readString(rel_name, true);
-    _shadowHashRelName.appendString("_shadow_hash", true);
+    _relName = rel_name;
+    _shadowRelName = rel_name;
+    _shadowRelName += "_shadow";
+    _shadowHashRelName = rel_name;
+    _shadowHashRelName = "_shadow_hash";
 
-    elog(DEBUG1, "bingo: mango build: start building '%s'", _relName.ptr());
+    elog(DEBUG1, "bingo: mango build: start building '%s'", _relName.c_str());
 }
 
 MangoPgBuildEngine::~MangoPgBuildEngine()
 {
-    elog(DEBUG1, "bingo: mango build: finish building '%s'", _relName.ptr());
+    elog(DEBUG1, "bingo: mango build: finish building '%s'", _relName.c_str());
     _setBingoContext();
     bingoIndexEnd();
 }
@@ -144,8 +144,8 @@ void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)
 {
     MangoPgFpData& data = (MangoPgFpData&)item_data;
 
-    const char* shadow_rel_name = _shadowRelName.ptr();
-    const char* shadow_hash_name = _shadowHashRelName.ptr();
+    const char* shadow_rel_name = _shadowRelName.c_str();
+    const char* shadow_hash_name = _shadowHashRelName.c_str();
     ItemPointerData* tid_ptr = &data.getTidItem();
 
     BingoPgCommon::executeQuery("INSERT INTO %s(b_id,tid_map,mass,fragments,gross,cnt_C,cnt_N,cnt_O,cnt_P,cnt_S,cnt_H) VALUES ("
@@ -176,9 +176,9 @@ void MangoPgBuildEngine::prepareShadowInfo(const char* schema_name, const char* 
     /*
      * Create auxialiry tables
      */
-    const char* rel_name = _relName.ptr();
-    const char* shadow_rel_name = _shadowRelName.ptr();
-    const char* shadow_hash_name = _shadowHashRelName.ptr();
+    const char* rel_name = _relName.c_str();
+    const char* shadow_rel_name = _shadowRelName.c_str();
+    const char* shadow_hash_name = _shadowHashRelName.c_str();
 
     /*
      * Drop table if exists (in case of truncate index)
@@ -222,8 +222,8 @@ void MangoPgBuildEngine::finishShadowProcessing()
     /*
      * Create shadow indexes
      */
-    const char* shadow_rel_name = _shadowRelName.ptr();
-    const char* shadow_hash_rel_name = _shadowHashRelName.ptr();
+    const char* shadow_rel_name = _shadowRelName.c_str();
+    const char* shadow_hash_rel_name = _shadowHashRelName.c_str();
 
     BingoPgCommon::executeQuery("CREATE INDEX %s_mass_idx ON %s using hash(mass)", shadow_rel_name, shadow_rel_name);
     BingoPgCommon::executeQuery("CREATE INDEX %s_cmf_idx ON %s(b_id)", shadow_rel_name, shadow_rel_name);

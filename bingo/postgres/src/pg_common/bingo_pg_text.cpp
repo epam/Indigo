@@ -53,12 +53,12 @@ void BingoPgText::initFromString(const char* str)
     BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a string: %s", message));
 }
 
-void BingoPgText::initFromArray(indigo::std::string& str)
+void BingoPgText::initFromArray(std::string& str)
 {
     clear();
     BINGO_PG_TRY
     {
-        _text = cstring_to_text_with_len(str.ptr(), str.sizeInBytes());
+        _text = cstring_to_text_with_len(str.c_str(), str.size());
     }
     BINGO_PG_HANDLE(throw Error("internal error: can not initialize text from a buffer: %s", message));
 }
@@ -108,10 +108,9 @@ const char* BingoPgText::getString()
         const char* text_data = getText(text_size);
         if (text_data == 0)
             return 0;
-        _cstr.copy(text_data, text_size);
-        _cstr.push(0);
+        _cstr.assign(text_data, text_size);
     }
-    return _cstr.ptr();
+    return _cstr.c_str();
 }
 
 uintptr_t BingoPgText::getDatum()

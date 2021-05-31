@@ -33,12 +33,10 @@ IMPL_ERROR(RingoShadowFetch, "ringo shadow fetch");
 RingoShadowFetch::RingoShadowFetch(RingoFetchContext& context) : _context(context)
 {
     _total_count = -1;
-    _table_name.push(0);
 
     StringOutput output(_table_name);
 
     output.printf("SHADOW_%d", context.context_id);
-    output.writeChar(0);
 
     _executed = false;
     _fetch_type = 0;
@@ -64,7 +62,7 @@ int RingoShadowFetch::getTotalCount(OracleEnv& env)
 {
     if (_total_count < 0)
     {
-        if (!OracleStatement::executeSingleInt(_total_count, env, "SELECT COUNT(*) FROM %s", _table_name.ptr()))
+        if (!OracleStatement::executeSingleInt(_total_count, env, "SELECT COUNT(*) FROM %s", _table_name.c_str()))
             throw Error("getTotalCount() error");
     }
 
@@ -80,7 +78,7 @@ int RingoShadowFetch::countOracleBlocks(OracleEnv& env)
     if (!OracleStatement::executeSingleInt(res, env,
                                            "select blocks from user_tables where "
                                            "table_name = upper('%s')",
-                                           _table_name.ptr()))
+                                           _table_name.c_str()))
         return 0;
 
     return res;
@@ -102,10 +100,9 @@ float RingoShadowFetch::calcSelectivity(OracleEnv& env, int total_count)
 
     if (_counting_select.size() > 0)
     {
-        _counting_select.push(0);
         OracleStatement statement(env);
 
-        statement.append("%s", _counting_select.ptr());
+        statement.append("%s", _counting_select.c_str());
         statement.prepare();
         statement.defineIntByPos(1, &nrows_select_total);
         if (_fetch_type == _EXACT && _right_part == 1)
@@ -140,7 +137,7 @@ void RingoShadowFetch::prepareNonSubstructure(OracleEnv& env)
     _statement.reset(new OracleStatement(_env.ref()));
 
     _lob_crf.reset(new OracleLOB(_env.ref()));
-    _statement->append("SELECT rid, crf FROM %s", _table_name.ptr());
+    _statement->append("SELECT rid, crf FROM %s", _table_name.c_str());
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
     _statement->defineBlobByPos(2, _lob_crf.ref());
@@ -164,7 +161,7 @@ void RingoShadowFetch::prepareExact(OracleEnv& env, int right_part)
     _statement.reset(new OracleStatement(_env.ref()));
     _lob_crf.reset(new OracleLOB(_env.ref()));
 
-    _statement->append("SELECT sh.rid, sh.crf FROM %s sh", _table_name.ptr());
+    _statement->append("SELECT sh.rid, sh.crf FROM %s sh", _table_name.c_str());
 
     if (right_part == 1)
         _statement->append(" WHERE hash = :hash");
@@ -179,7 +176,7 @@ void RingoShadowFetch::prepareExact(OracleEnv& env, int right_part)
     }
 
     StringOutput output_cnt(_counting_select);
-    output_cnt.printf("SELECT COUNT(*) FROM %s sh", _table_name.ptr());
+    output_cnt.printf("SELECT COUNT(*) FROM %s sh", _table_name.c_str());
     if (right_part == 1)
         output_cnt.printf(" WHERE hash = :hash");
 }

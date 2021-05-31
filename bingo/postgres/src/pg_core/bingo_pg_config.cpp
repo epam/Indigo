@@ -166,7 +166,7 @@ void BingoPgConfig::replaceInsertParameter(uintptr_t name_datum, uintptr_t value
 
     int name_key = _rawConfig.findOrInsert(pname_text.getString());
 
-    _rawConfig.value(name_key).readString(value_text.getString(), true);
+    _rawConfig.value(name_key) = value_text.getString();
 }
 
 void BingoPgConfig::setUpBingoConfiguration()
@@ -182,7 +182,7 @@ void BingoPgConfig::setUpBingoConfiguration()
         const char* key = _rawConfig.key(c_idx);
         if (_stringParams.find(_rawConfig.key(c_idx)))
         {
-            bingoSetConfigBin(_rawConfig.key(c_idx), _rawConfig.value(c_idx).ptr(), 0);
+            bingoSetConfigBin(_rawConfig.key(c_idx), _rawConfig.value(c_idx).c_str(), 0);
         }
         else
         {
@@ -193,11 +193,11 @@ void BingoPgConfig::setUpBingoConfiguration()
     for (int c_idx = _tauParameters.begin(); c_idx != _tauParameters.end(); c_idx = _tauParameters.next(c_idx))
     {
         TauParameter& param = _tauParameters.value(c_idx);
-        bingoAddTautomerRule(_tauParameters.key(c_idx), param.beg.ptr(), param.end.ptr());
+        bingoAddTautomerRule(_tauParameters.key(c_idx), param.beg.c_str(), param.end.c_str());
     }
 }
 
-void BingoPgConfig::serialize(indigo::std::string& config_data)
+void BingoPgConfig::serialize(std::string& config_data)
 {
     StringOutput data_out(config_data);
     BingoPgCommon::DataProcessing::handleRedBlackStringArr(_rawConfig, 0, &data_out);
@@ -228,8 +228,8 @@ void BingoPgConfig::_replaceInsertTauParameter(uintptr_t rule_datum, uintptr_t b
 
     TauParameter& param = _tauParameters.findOrInsert(rule_idx);
 
-    param.beg.readString(beg_text.getString(), true);
-    param.end.readString(end_text.getString(), true);
+    param.beg = beg_text.getString();
+    param.end = end_text.getString();
 }
 
 void BingoPgConfig::_toString(int value, std::string& a)

@@ -36,15 +36,15 @@ RingoPgBuildEngine::RingoPgBuildEngine(BingoPgConfig& bingo_config, const char* 
     bingoTautomerRulesReady(0, 0, 0);
     bingoIndexBegin();
 
-    _relName.readString(rel_name, true);
-    _shadowRelName.readString(rel_name, true);
-    _shadowRelName.appendString("_shadow", true);
-    elog(DEBUG1, "bingo: ringo build: start building '%s'", _relName.ptr());
+    _relName = rel_name;
+    _shadowRelName = rel_name; 
+    _shadowRelName += "_shadow";
+    elog(DEBUG1, "bingo: ringo build: start building '%s'", _relName.c_str());
 }
 
 RingoPgBuildEngine::~RingoPgBuildEngine()
 {
-    elog(DEBUG1, "bingo: ringo build: finish building '%s'", _relName.ptr());
+    elog(DEBUG1, "bingo: ringo build: finish building '%s'", _relName.c_str());
     bingoIndexEnd();
 }
 
@@ -107,7 +107,7 @@ void RingoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)
 {
     RingoPgFpData& data = (RingoPgFpData&)item_data;
 
-    const char* shadow_rel_name = _shadowRelName.ptr();
+    const char* shadow_rel_name = _shadowRelName.c_str();
     ItemPointerData* tid_ptr = &data.getTidItem();
 
     BingoPgCommon::executeQuery("INSERT INTO %s(b_id,tid_map,ex_hash) VALUES ("
@@ -131,8 +131,8 @@ void RingoPgBuildEngine::prepareShadowInfo(const char* schema_name, const char* 
     /*
      * Create auxialiry tables
      */
-    const char* rel_name = _relName.ptr();
-    const char* shadow_rel_name = _shadowRelName.ptr();
+    const char* rel_name = _relName.c_str();
+    const char* shadow_rel_name = _shadowRelName.c_str();
 
     /*
      * Drop table if exists (in case of truncate index)
@@ -160,7 +160,7 @@ void RingoPgBuildEngine::finishShadowProcessing()
     /*
      * Create shadow indexes
      */
-    const char* shadow_rel_name = _shadowRelName.ptr();
+    const char* shadow_rel_name = _shadowRelName.c_str();
 
     BingoPgCommon::executeQuery("CREATE INDEX %s_hash_idx ON %s using hash(ex_hash)", shadow_rel_name, shadow_rel_name);
 }

@@ -76,9 +76,9 @@ public:
 private:
     BingoPgSection(const BingoPgSection&); // no implicit copy
 
-    void _setCmfData(indigo::std::string& cmf_buf, int map_buf_idx, int map_idx);
-    void _setXyzData(indigo::std::string& xyz_buf, int map_buf_idx, int map_idx);
-    void _setBinData(indigo::std::string& buf, int& last_buf, ItemPointerData& item_data);
+    void _setCmfData(std::string& cmf_buf, int map_buf_idx, int map_idx);
+    void _setXyzData(std::string& xyz_buf, int map_buf_idx, int map_idx);
+    void _setBinData(std::string& buf, int& last_buf, ItemPointerData& item_data);
     void _setBitsCountData(unsigned short bits_count);
 
     BingoPgBufferCacheBin* _getBufferBin(int idx);

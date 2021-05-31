@@ -41,7 +41,7 @@ BingoStorage::BingoStorage(OracleEnv& env, int context_id)
 
     StringOutput output1(_shmem_id);
 
-    output1.printf("%s#%s#%d#bs2", instance.ptr(), schema.ptr(), context_id);
+    output1.printf("%s#%s#%d#bs2", instance.c_str(), schema.c_str(), context_id);
     output1.writeChar(0);
 
     StringOutput output2(_table_name);
@@ -57,7 +57,7 @@ BingoStorage::~BingoStorage()
 
 void BingoStorage::create(OracleEnv& env)
 {
-    const char* tn = _table_name.ptr();
+    const char* tn = _table_name.c_str();
     OracleStatement::executeSingle(env,
                                    "CREATE TABLE %s(id number, bindata BLOB) "
                                    "NOLOGGING lob(bindata) store as (CACHE READS NOLOGGING PCTVERSION 0)",
@@ -68,7 +68,7 @@ void BingoStorage::create(OracleEnv& env)
 
 void BingoStorage::drop(OracleEnv& env)
 {
-    OracleStatement::executeSingle(env, "BEGIN DropTable('%s'); END;", _table_name.ptr());
+    OracleStatement::executeSingle(env, "BEGIN DropTable('%s'); END;", _table_name.c_str());
     delete _shmem_state;
     _shmem_state = 0;
     _age_loaded = -1;
@@ -76,7 +76,7 @@ void BingoStorage::drop(OracleEnv& env)
 
 void BingoStorage::truncate(OracleEnv& env)
 {
-    const char* tn = _table_name.ptr();
+    const char* tn = _table_name.c_str();
 
     OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", tn);
     OracleStatement::executeSingle(env, "INSERT INTO %s VALUES(0, EMPTY_BLOB())", tn);
@@ -94,7 +94,7 @@ void BingoStorage::validateForInsert(OracleEnv& env)
     int id, length;
     OracleLOB lob(env);
 
-    statement.append("SELECT id, length(bindata), bindata FROM %s ORDER BY id", _table_name.ptr());
+    statement.append("SELECT id, length(bindata), bindata FROM %s ORDER BY id", _table_name.c_str());
 
     statement.prepare();
     statement.defineIntByPos(1, &id);
@@ -131,7 +131,7 @@ void BingoStorage::validate(OracleEnv& env)
 {
     env.dbgPrintfTS("validating storage... ");
 
-    if (_shmem_state != 0 && strcmp(_shmem_state->getID(), _shmem_id.ptr()) != 0)
+    if (_shmem_state != 0 && strcmp(_shmem_state->getID(), _shmem_id.c_str()) != 0)
     {
         delete _shmem_state;
         _shmem_state = 0;
@@ -188,7 +188,7 @@ void BingoStorage::validate(OracleEnv& env)
     OracleLOB lob(env);
     QS_DEF(std::string, block_name);
 
-    statement.append("SELECT id, length(bindata), bindata FROM %s ORDER BY id", _table_name.ptr());
+    statement.append("SELECT id, length(bindata), bindata FROM %s ORDER BY id", _table_name.c_str());
 
     statement.prepare();
     statement.defineIntByPos(1, &id);
@@ -199,8 +199,7 @@ void BingoStorage::validate(OracleEnv& env)
     do
     {
         StringOutput output(block_name);
-        output.printf("%s_%d_%d", _shmem_id.ptr(), id, state->age);
-        output.writeByte(0);
+        output.printf("%s_%d_%d", _shmem_id.c_str(), id, state->age);
 
         if (length < 1)
         {
@@ -212,7 +211,7 @@ void BingoStorage::validate(OracleEnv& env)
             throw Error("cannot validate block #%d: length=%d", id, length);
         }
 
-        _shmem_array.add(new SharedMemory(block_name.ptr(), length, state->state == _STATE_READY));
+        _shmem_array.add(new SharedMemory(block_name.c_str(), length, state->state == _STATE_READY));
 
         void* ptr = _shmem_array.top()->ptr();
 
@@ -257,14 +256,14 @@ OracleLOB* BingoStorage::_getLob(OracleEnv& env, int no)
     OracleStatement statement(env);
     AutoPtr<OracleLOB> lob(new OracleLOB(env));
 
-    statement.append("SELECT bindata FROM %s where ID = :id FOR UPDATE", _table_name.ptr());
+    statement.append("SELECT bindata FROM %s where ID = :id FOR UPDATE", _table_name.c_str());
     statement.prepare();
     statement.bindIntByName(":id", &no);
     statement.defineBlobByPos(1, lob.ref());
     statement.execute();
 
     if (statement.fetch())
-        env.dbgPrintf("WARNING: more than 1 row have id = %d in table %s\n", no, _table_name.ptr());
+        env.dbgPrintf("WARNING: more than 1 row have id = %d in table %s\n", no, _table_name.c_str());
 
     lob->enableBuffering();
     return lob.release();
@@ -297,7 +296,7 @@ void BingoStorage::_insertLOB(OracleEnv& env, int no)
 
     OracleStatement statement(env);
 
-    statement.append("INSERT INTO %s VALUES(%d, EMPTY_BLOB())", _table_name.ptr(), no);
+    statement.append("INSERT INTO %s VALUES(%d, EMPTY_BLOB())", _table_name.c_str(), no);
     statement.prepare();
     statement.execute();
 
@@ -321,7 +320,7 @@ void BingoStorage::add(OracleEnv& env, const std::string& data, int& blockno, in
     blockno = _blocks.size() - 1;
     offset = top.size;
 
-    _top_lob_pending_data.concat(data);
+    _top_lob_pending_data += data;
 
     _Addr addr;
 
@@ -330,7 +329,7 @@ void BingoStorage::add(OracleEnv& env, const std::string& data, int& blockno, in
     addr.offset = top.size;
     top.size += data.size();
 
-    _index_lob_pending_data.concat((char*)&addr, sizeof(_Addr));
+    _index_lob_pending_data += std::string((char*)&addr, sizeof(_Addr));
 
     _n_added++;
 
@@ -351,12 +350,12 @@ void BingoStorage::get(int n, std::string& out)
 
     const char* ptr = (const char*)_shmem_array[addr.blockno + 1]->ptr();
 
-    out.copy(ptr + addr.offset, addr.length);
+    out = std::string(ptr + addr.offset, addr.length);
 }
 
 BingoStorage::_State* BingoStorage::_getState(bool allow_first)
 {
-    return (_State*)_getShared(_shmem_state, _shmem_id.ptr(), sizeof(_State), allow_first);
+    return (_State*)_getShared(_shmem_state, &_shmem_id[0], sizeof(_State), allow_first);
 }
 
 void* BingoStorage::_getShared(SharedMemory*& sh_mem, char* name, int shared_size, bool allow_first)
@@ -394,7 +393,7 @@ void BingoStorage::finish(OracleEnv& env)
 
 void BingoStorage::lock(OracleEnv& env)
 {
-    OracleStatement::executeSingle(env, "LOCK TABLE %s IN EXCLUSIVE MODE", _table_name.ptr());
+    OracleStatement::executeSingle(env, "LOCK TABLE %s IN EXCLUSIVE MODE", _table_name.c_str());
 }
 
 void BingoStorage::markRemoved(OracleEnv& env, int blockno, int offset)
@@ -402,7 +401,7 @@ void BingoStorage::markRemoved(OracleEnv& env, int blockno, int offset)
     OracleStatement statement(env);
     OracleLOB lob(env);
 
-    statement.append("SELECT bindata FROM %s WHERE id = :id FOR UPDATE", _table_name.ptr());
+    statement.append("SELECT bindata FROM %s WHERE id = :id FOR UPDATE", _table_name.c_str());
     statement.prepare();
     statement.bindIntByName(":id", &blockno);
     statement.defineBlobByPos(1, lob);

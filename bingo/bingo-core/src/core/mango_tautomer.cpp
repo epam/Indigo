@@ -75,7 +75,7 @@ const char* MangoTautomer::getQueryGross()
 {
     _validateQueryData();
 
-    return _query_gross_str.ptr();
+    return _query_gross_str.c_str();
 }
 
 void MangoTautomer::setParams(int conditions, bool force_hydrogens, bool ring_chain, bool substructure)
@@ -246,7 +246,7 @@ bool MangoTautomer::parseSub(const char* params)
     QS_DEF(std::string, word);
     scanner.readWord(word, 0);
 
-    if (strcasecmp(word.ptr(), "TAU") != 0)
+    if (strcasecmp(word.c_str(), "TAU") != 0)
         return false;
 
     setParameters(params);
@@ -270,7 +270,7 @@ bool MangoTautomer::parseExact(const char* params)
 
     scanner.readWord(word, 0);
 
-    if (strcasecmp(word.ptr(), "TAU") != 0)
+    if (strcasecmp(word.c_str(), "TAU") != 0)
         return false;
 
     setParameters(params);

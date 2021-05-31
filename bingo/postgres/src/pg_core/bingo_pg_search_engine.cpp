@@ -48,12 +48,12 @@ void BingoPgFpData::setFingerPrints(const char* fp_buf, int size_bits)
 
 void BingoPgFpData::setCmf(const char* cmf_buf, int cmf_len)
 {
-    _cmfBuf.copy(cmf_buf, cmf_len);
+    _cmfBuf.assign(cmf_buf, cmf_len);
 }
 
 void BingoPgFpData::setXyz(const char* xyz_buf, int xyz_len)
 {
-    _xyzBuf.copy(xyz_buf, xyz_len);
+    _xyzBuf.assign(xyz_buf, xyz_len);
 }
 
 BingoPgSearchEngine::BingoPgSearchEngine()
@@ -76,7 +76,7 @@ void BingoPgSearchEngine::loadDictionary(BingoPgIndex& bingo_index)
 {
     QS_DEF(std::string, dict);
     bingo_index.readDictionary(dict);
-    bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
+    bingoSetConfigBin("cmf_dict", dict.c_str(), dict.size());
 }
 
 // const char* BingoPgSearchEngine::getDictionary(int& size) {
@@ -256,22 +256,20 @@ void BingoPgSearchEngine::_getBlockParameters(std::string& params)
     {
         if (params[i] == ';')
         {
-            block_params.copy(params.ptr(), i);
-            block_params.push(0);
-            tmp.copy(params);
+            block_params.assign(params.data(), i);
+            tmp = params;
             params.clear();
             for (int j = i + 1; j < params.size(); ++j)
             {
-                params.push(tmp[j]);
+                params += tmp[j];
             }
-            params.push(0);
         }
     }
     bool verify_split = false;
 
     if (block_params.size() == 0)
     {
-        block_params.copy(params);
+        block_params = params;
         verify_split = true;
     }
 
@@ -285,21 +283,21 @@ void BingoPgSearchEngine::_getBlockParameters(std::string& params)
         scanner.skipSpace();
         scanner.readWord(word, 0);
 
-        if (strcasecmp(word.ptr(), "B_ID") == 0)
+        if (strcasecmp(word.c_str(), "B_ID") == 0)
         {
             scanner.skipSpace();
             block_id = scanner.readInt();
             if (block_id < 1)
                 throw BingoPgError("B_ID should be a positive value: %d", block_id);
         }
-        else if (strcasecmp(word.ptr(), "B_COUNT") == 0)
+        else if (strcasecmp(word.c_str(), "B_COUNT") == 0)
         {
             scanner.skipSpace();
             block_count = scanner.readInt();
             if (block_count < 1)
                 throw BingoPgError("B_COUNT should be a positive value: %d", block_count);
         }
-        else if (strcasecmp(word.ptr(), "") == 0)
+        else if (strcasecmp(word.c_str(), "") == 0)
         {
             break;
         }
@@ -308,14 +306,13 @@ void BingoPgSearchEngine::_getBlockParameters(std::string& params)
             if (verify_split)
                 return;
             else
-                throw BingoPgError("unknown block type: %s", word.ptr());
+                throw BingoPgError("unknown block type: %s", word.c_str());
         }
     }
 
     if (verify_split)
     {
         params.clear();
-        params.push(0);
     }
     /*
      * Return if block id was not specified

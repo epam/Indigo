@@ -52,7 +52,6 @@ void RingoIndex::prepare(Scanner& rxnfile, Output& output, OsLock* lock_for_excl
     {
         StringOutput out(_hash_str);
         out.printf("%02X", _hash);
-        _hash_str.push(0);
     }
 
     if (!skip_calculate_fp)
@@ -92,7 +91,7 @@ dword RingoIndex::getHash()
 
 const char* RingoIndex::getHashStr()
 {
-    return _hash_str.ptr();
+    return _hash_str.c_str();
 }
 
 void RingoIndex::clear()

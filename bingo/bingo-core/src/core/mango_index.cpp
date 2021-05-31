@@ -142,12 +142,12 @@ const MangoExact::Hash& MangoIndex::getHash() const
 
 const char* MangoIndex::getGrossString() const
 {
-    return _gross_str.ptr();
+    return _gross_str.c_str();
 }
 
 const char* MangoIndex::getCountedElementsString() const
 {
-    return (const char*)_counted_elems_str.ptr();
+    return (const char*)_counted_elems_str.c_str();
 }
 
 const Array<int>& MangoIndex::getCountedElements() const
@@ -172,7 +172,7 @@ const byte* MangoIndex::getFingerprint() const
 
 const char* MangoIndex::getFingerprint_Sim_Str() const
 {
-    return _fp_sim_str.ptr();
+    return _fp_sim_str.c_str();
 }
 
 float MangoIndex::getMolecularMass() const

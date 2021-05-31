@@ -95,7 +95,7 @@ ORAEXT OCILobLocator* oraLoadFileToBLOB(OCIExtProcContext* ctx, char* filename, 
         OracleLOB lob(env);
 
         lob.createTemporaryBLOB();
-        lob.write(0, buf.ptr(), buf.size());
+        lob.write(0, buf.c_str(), buf.size());
         *return_indicator = OCI_IND_NOTNULL;
         lob.doNotDelete();
         result = lob.get();
@@ -123,7 +123,7 @@ ORAEXT OCIString* oraLoadFileToString(OCIExtProcContext* ctx, char* filename, sh
 
         scanner.readAll(buf);
 
-        env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)buf.ptr(), buf.size(), &result));
+        env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)buf.c_str(), buf.size(), &result));
 
         *return_indicator = OCI_IND_NOTNULL;
     }
@@ -179,7 +179,7 @@ void _exportSDF(OracleEnv& env, const char* table, const char* clob_col, const c
         scanner.readWord(word, 0);
         if (word.size() < 2)
             break;
-        col_names.add(word.ptr());
+        col_names.add(word.c_str());
     }
 
     col_values.resize(col_names.end() * max_size);
@@ -198,7 +198,7 @@ void _exportSDF(OracleEnv& env, const char* table, const char* clob_col, const c
 
     statement.defineClobByPos(1, lob);
     for (i = col_names.begin(); i != col_names.end(); i = col_names.next(i))
-        statement.defineStringByPos(i + 2, col_values.ptr() + i * max_size, max_size);
+        statement.defineStringByPos(i + 2, &col_values[0] + i * max_size, max_size);
 
     if (statement.executeAllowNoData())
         do
@@ -209,17 +209,17 @@ void _exportSDF(OracleEnv& env, const char* table, const char* clob_col, const c
                 continue;
 
             // hack to handle molfiles which have newline (and those which have not)
-            if (lob_value[lob_value.size() - 1] == '\n')
-                lob_value.pop();
+            if (lob_value.back() == '\n')
+                lob_value.pop_back();
 
             // hack to handle molfiles which have $$$$
-            if (strncmp(lob_value.ptr() + lob_value.size() - 4, "$$$$", 4) == 0)
+            if (strncmp(lob_value.c_str() + lob_value.size() - 4, "$$$$", 4) == 0)
                 lob_value.resize(lob_value.size() - 4);
 
             output.writeArray(lob_value);
 
             for (i = col_names.begin(); i != col_names.end(); i = col_names.next(i))
-                output.printf("\n> <%s>\n%s\n", col_names.at(i), col_values.ptr() + i * max_size);
+                output.printf("\n> <%s>\n%s\n", col_names.at(i), col_values.c_str() + i * max_size);
             output.printf("\n$$$$\n");
         } while (statement.fetch());
 }
@@ -241,8 +241,8 @@ void _parseFieldList(const char* str, StringPool& props, StringPool& columns)
         scanner.readWord(column, " ,");
         scanner.skipSpace();
 
-        props.add(prop.ptr());
-        columns.add(column.ptr());
+        props.add(prop.c_str());
+        columns.add(column.c_str());
 
         if (scanner.isEOF())
             break;
@@ -311,7 +311,7 @@ void _importSDF(OracleEnv& env, const char* table, const char* clob_col, const c
 
             const char* val = loader.properties.at(props.at(i));
 
-            statement.bindStringByName(word.ptr(), val, strlen(val) + 1);
+            statement.bindStringByName(word.c_str(), val, strlen(val));
         }
 
         profTimerStart(tinsert, "import.sql_insert");
@@ -362,7 +362,7 @@ void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, co
     while (!scanner->isEOF())
     {
         id.clear();
-        scanner->readLine(str, false);
+        scanner->readLine(str);
         BufferScanner strscan(str);
 
         strscan.skipSpace();
@@ -378,7 +378,7 @@ void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, co
         }
 
         if (!strscan.isEOF() && id_col != 0)
-            strscan.readLine(id, true);
+            strscan.readLine(id);
 
         OracleStatement statement(env);
 
@@ -399,10 +399,9 @@ void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, co
         statement.append(")");
         statement.prepare();
 
-        str.push(0);
-        statement.bindStringByName(":smiles", str.ptr(), str.size());
+        statement.bindStringByName(":smiles", str.c_str(), str.size());
         if (id.size() > 1)
-            statement.bindStringByName(":id", id.ptr(), id.size());
+            statement.bindStringByName(":id", id.c_str(), id.size());
 
         statement.execute();
         nwritten++;
@@ -475,7 +474,7 @@ void _importRDF(OracleEnv& env, const char* table, const char* clob_col, const c
 
             const char* val = loader.properties.at(props.at(i));
 
-            statement.bindStringByName(word.ptr(), val, strlen(val) + 1);
+            statement.bindStringByName(word.c_str(), val, strlen(val));
         }
 
         statement.execute();
@@ -672,7 +671,7 @@ source_lob.readAll(source, false);
     StringOutput output(dest);
     GZipOutput gzoutput(output, 9);
 
-    gzoutput.write(source.ptr(), source.size());
+    gzoutput.write(source.c_str(), source.size());
     gzoutput.flush();
 }
 
@@ -742,8 +741,7 @@ ORAEXT OCIString* oraBingoGetName(OCIExtProcContext* ctx, OCILobLocator* source_
         }
         else
         {
-            name.push(0);
-            OCIStringAssignText(env.envhp(), env.errhp(), (text*)name.ptr(), strlen(name.ptr()), &result);
+            OCIStringAssignText(env.envhp(), env.errhp(), (text*)name.c_str(), strlen(name.c_str()), &result);
             *return_indicator = OCI_IND_NOTNULL;
         }
     }

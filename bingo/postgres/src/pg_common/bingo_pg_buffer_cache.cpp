@@ -338,13 +338,13 @@ bool BingoPgBufferCacheBin::isEnoughSpace(int size)
     return result;
 }
 
-unsigned short BingoPgBufferCacheBin::addBin(indigo::std::string& bin_buf)
+unsigned short BingoPgBufferCacheBin::addBin(std::string& bin_buf)
 {
 
     /*
      * If read strategy then it is an update so read the buffer in this function also
      */
-    if (!isEnoughSpace(bin_buf.sizeInBytes()))
+    if (!isEnoughSpace(bin_buf.size()))
         throw Error("internal error: can not add cmf to the cache because is not enough space");
 
     /*
@@ -355,13 +355,13 @@ unsigned short BingoPgBufferCacheBin::addBin(indigo::std::string& bin_buf)
     /*
      * Prepare new array = size + buf
      */
-    indigo::std::string out_arr;
+    std::string out_arr;
     indigo::StringOutput ao(out_arr);
     BingoPgCommon::DataProcessing::handleArray(bin_buf, 0, &ao);
     /*
      * Store data with it size
      */
-    _cache.concat(out_arr);
+    _cache += out_arr;
     /*
      * If read strategy then it is an update so write the buffer
      */
@@ -372,12 +372,12 @@ unsigned short BingoPgBufferCacheBin::addBin(indigo::std::string& bin_buf)
     return result;
 }
 
-unsigned short BingoPgBufferCacheBin::writeBin(indigo::std::string& bin_buf)
+unsigned short BingoPgBufferCacheBin::writeBin(std::string& bin_buf)
 {
     /*
      * If read strategy then it is an update so read the buffer in this function also
      */
-    if (bin_buf.sizeInBytes() > MAX_SIZE)
+    if (bin_buf.size() > MAX_SIZE)
         throw Error("internal error: can not add bin to the cache because is not enough space");
 
     /*
@@ -388,13 +388,13 @@ unsigned short BingoPgBufferCacheBin::writeBin(indigo::std::string& bin_buf)
     /*
      * Prepare new array = size + buf
      */
-    indigo::std::string out_arr;
+    std::string out_arr;
     indigo::StringOutput ao(out_arr);
     BingoPgCommon::DataProcessing::handleArray(bin_buf, 0, &ao);
     /*
      * Store data with it size
      */
-    _cache.copy(out_arr);
+    _cache = out_arr;
     /*
      * If read strategy then it is an update so write the buffer
      */
@@ -405,7 +405,7 @@ unsigned short BingoPgBufferCacheBin::writeBin(indigo::std::string& bin_buf)
     return result;
 }
 
-void BingoPgBufferCacheBin::readBin(unsigned short offset, indigo::std::string& result)
+void BingoPgBufferCacheBin::readBin(unsigned short offset, std::string& result)
 {
     if (!_write)
     {
@@ -414,8 +414,8 @@ void BingoPgBufferCacheBin::readBin(unsigned short offset, indigo::std::string& 
     /*
      * Read buffer from the given offset
      */
-    const char* data = _cache.ptr();
-    int data_len = _cache.sizeInBytes();
+    const char* data = _cache.c_str();
+    int data_len = _cache.size();
     BufferScanner sc(data + offset, data_len - offset);
     BingoPgCommon::DataProcessing::handleArray(result, &sc, 0);
 }
@@ -431,7 +431,7 @@ void BingoPgBufferCacheBin::_writeCache()
     _buffer.changeAccess(BINGO_PG_WRITE);
     int data_len;
     char* buf_data = (char*)_buffer.getIndexData(data_len);
-    int cache_size = _cache.sizeInBytes();
+    int cache_size = _cache.size();
     /*
      * Store size
      */
@@ -439,7 +439,7 @@ void BingoPgBufferCacheBin::_writeCache()
     /*
      * Store cache data
      */
-    memcpy(buf_data + sizeof(int), _cache.ptr(), cache_size);
+    memcpy(buf_data + sizeof(int), _cache.c_str(), cache_size);
     _buffer.changeAccess(BINGO_PG_NOLOCK);
 }
 
@@ -466,6 +466,6 @@ void BingoPgBufferCacheBin::_readCache()
     /*
      * Read cache data
      */
-    memcpy(_cache.ptr(), data + sizeof(int), cache_size);
+    memcpy(&_cache[0], data + sizeof(int), cache_size);
     _buffer.changeAccess(BINGO_PG_NOLOCK);
 }

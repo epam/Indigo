@@ -52,9 +52,7 @@ void BingoCore::reset()
 
     // Clear warning and error message
     warning.clear();
-    warning.push(0);
     error.clear();
-    error.push(0);
 }
 
 TL_DECL(BingoCore, self);
@@ -79,12 +77,12 @@ CEXPORT const char* bingoGetVersion()
     return BINGO_VERSION;
 }
 
-CEXPORT const char* bingoGetError(){BINGO_BEGIN{return self.error.ptr();
+CEXPORT const char* bingoGetError(){BINGO_BEGIN{return self.error.c_str();
 }
 BINGO_END("", "")
 }
 
-CEXPORT const char* bingoGetWarning(){BINGO_BEGIN{return self.warning.ptr();
+CEXPORT const char* bingoGetWarning(){BINGO_BEGIN{return self.warning.c_str();
 }
 BINGO_END("", "")
 }
@@ -249,7 +247,7 @@ CEXPORT int bingoGetConfigBin(const char* name, const char** value, int* len)
         {
             StringOutput output(self.buffer);
             self.bingo_context->cmf_dict.save(output);
-            *value = self.buffer.ptr();
+            *value = self.buffer.c_str();
             *len = self.buffer.size();
         }
         else
@@ -349,8 +347,8 @@ CEXPORT int bingoImportParseFieldList(const char* fields_str)
             scanner.readWord(column, " ,");
             scanner.skipSpace();
 
-            self.import_properties.ref().add(prop.ptr());
-            self.import_columns.ref().add(column.ptr());
+            self.import_properties.ref().add(prop.c_str());
+            self.import_columns.ref().add(column.c_str());
 
             if (scanner.isEOF())
                 break;
@@ -421,8 +419,7 @@ BINGO_END(0, -1)
 }
 CEXPORT const char* bingoSDFImportGetNext(){BINGO_BEGIN{profTimerStart(t, "sdf_loader.readNext");
 self.sdf_loader->readNext();
-self.sdf_loader->data.push(0);
-return self.sdf_loader->data.ptr();
+return self.sdf_loader->data.c_str();
 }
 BINGO_END("", 0)
 }
@@ -455,8 +452,7 @@ CEXPORT int bingoRDFImportEOF(){BINGO_BEGIN{return self.rdf_loader->isEOF() ? 1 
 BINGO_END(0, -1)
 }
 CEXPORT const char* bingoRDFImportGetNext(){BINGO_BEGIN{self.rdf_loader->readNext();
-self.rdf_loader->data.push(0);
-return self.rdf_loader->data.ptr();
+return self.rdf_loader->data.c_str();
 }
 BINGO_END("", 0)
 }
@@ -474,7 +470,7 @@ CEXPORT void bingoProfilingReset(byte reset_whole_session)
 CEXPORT const char* bingoProfilingGetStatistics(bool for_session){BINGO_BEGIN{StringOutput output(self.buffer);
 profGetStatistics(output, for_session);
 output.writeByte(0);
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END("<unknown>", "<unknown>")
 }
@@ -507,7 +503,7 @@ self.test_ptr = (byte*)malloc(size);
 
 if (self.test_ptr == 0)
 {
-    self.error.readString("self.test_ptr == 0", true);
+    self.error = "self.test_ptr == 0";
     return -1;
 }
 for (int i = 0; i < size; i++)
@@ -517,7 +513,7 @@ return 1;
 }
 catch (std::exception& ex)
 {
-    self.error.readString(ex.what(), true);
+    self.error = ex.what();
     return -1;
 }
 }
@@ -557,8 +553,7 @@ QS_DEF(std::string, name);
 
 BufferScanner scanner(target_buf, target_buf_len);
 bingoGetName(scanner, self.buffer);
-self.buffer.push(0);
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -650,8 +645,8 @@ BINGO_END(-2, -2)
 
 CEXPORT const char* bingoSMILESImportGetNext(){BINGO_BEGIN{if (self.smiles_scanner == 0) throw BingoError("SMILES import wasn't initialized");
 // TODO: Name should be also extracted here...
-self.smiles_scanner->readLine(self.buffer, true);
-return self.buffer.ptr();
+self.smiles_scanner->readLine(self.buffer);
+return self.buffer.c_str();
 }
 BINGO_END("", 0)
 }
@@ -665,7 +660,7 @@ CEXPORT const char* bingoSMILESImportGetId()
         /*
          * Extract id name by skipping | symbols
          */
-        BufferScanner strscan(self.buffer.ptr());
+        BufferScanner strscan(self.buffer.c_str());
 
         strscan.skipSpace();
         while (!strscan.isEOF() && !isspace(strscan.readChar()))

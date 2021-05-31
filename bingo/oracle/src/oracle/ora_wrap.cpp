@@ -148,13 +148,10 @@ void OracleLOB::disableBuffering()
 void OracleLOB::readAll(std::string& arr, bool add_zero)
 {
     int len = getLength();
+    arr.resize(len);
 
-    arr.clear_resize(len);
+    read(0, &arr[0], len);
 
-    read(0, arr.ptr(), len);
-
-    if (add_zero)
-        arr.push(0);
 }
 
 void OracleLOB::read(int start, char* buffer, int buffer_size)
@@ -199,7 +196,7 @@ void OracleLOB::flush()
 
 void OracleLOB::write(int start, const std::string& data)
 {
-    write(start, data.ptr(), data.size());
+    write(start, data.c_str(), data.size());
 }
 
 void OracleLOB::write(int start, const char* buffer, int bytes)
@@ -627,20 +624,19 @@ bool OracleStatement::executeSingleString(std::string& result, OracleEnv& env, c
     va_list args;
 
     // clear to emphasize that the result can change even if we return 'false'
-    result.clear_resize(4001); // maximum size of Oracle's VARCHAR2
+    result.clear();
+    result.resize(4001); // maximum size of Oracle's VARCHAR2
 
     va_start(args, format);
     statement.append_v(format, args);
     statement.prepare();
-    statement.defineStringByPos(1, result.ptr(), result.size());
+    statement.defineStringByPos(1, &result[0], result.size());
     if (!statement.executeAllowNoData())
     {
         result.clear();
         return false;
     }
     va_end(args);
-
-    result.resize(strlen(result.ptr()) + 1);
     return true;
 }
 

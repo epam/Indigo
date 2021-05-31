@@ -41,7 +41,7 @@ using namespace indigo;
 
 IMPL_ERROR(BingoPgCommon, "bingo postgres");
 
-void BingoPgCommon::getSearchTypeString(int type, indigo::std::string& result, bool molecule)
+void BingoPgCommon::getSearchTypeString(int type, std::string& result, bool molecule)
 {
     result.clear();
     if (molecule)
@@ -49,19 +49,19 @@ void BingoPgCommon::getSearchTypeString(int type, indigo::std::string& result, b
         switch (type)
         {
         case (MOL_SUB):
-            result.readString("SUB", true);
+            result = "SUB";
             break;
         case (MOL_SIM):
-            result.readString("SIM", true);
+            result  = "SIM";
             break;
         case (MOL_SMARTS):
-            result.readString("SMARTS", true);
+            result = "SMARTS";
             break;
         case (MOL_EXACT):
-            result.readString("EXACT", true);
+            result = "EXACT";
             break;
         case (MOL_GROSS):
-            result.readString("GROSS", true);
+            result = "GROSS";
             break;
         default:
             break;
@@ -72,13 +72,13 @@ void BingoPgCommon::getSearchTypeString(int type, indigo::std::string& result, b
         switch (type)
         {
         case (REACT_SUB):
-            result.readString("RSUB", true);
+            result = "RSUB";
             break;
         case (REACT_EXACT):
-            result.readString("REXACT", true);
+            result = "REXACT";
             break;
         case (REACT_SMARTS):
-            result.readString("RSMARTS", true);
+            result = "RSMARTS";
             break;
         default:
             break;
@@ -89,20 +89,19 @@ void BingoPgCommon::getSearchTypeString(int type, indigo::std::string& result, b
 void BingoPgCommon::printBitset(const char* name, BingoPgExternalBitset& bitset)
 {
     elog(NOTICE, "bitset = %s", name);
-    indigo::std::string bits;
+    std::string bits;
     indigo::StringOutput ao(bits);
     for (int x = bitset.begin(); x != bitset.end(); x = bitset.next(x))
     {
         ao.printf("%d ", x);
     }
-    bits.push(0);
-    elog(NOTICE, "%s", bits.ptr());
+    elog(NOTICE, "%s", bits.c_str());
 }
 
 void BingoPgCommon::printFPBitset(const char* name, unsigned char* bitset, int size)
 {
     elog(NOTICE, "bitset = %s", name);
-    indigo::std::string bits;
+    std::string bits;
     indigo::StringOutput ao(bits);
     for (int fp_idx = 0; fp_idx < size; fp_idx++)
     {
@@ -111,8 +110,7 @@ void BingoPgCommon::printFPBitset(const char* name, unsigned char* bitset, int s
             ao.printf("%d ", fp_idx);
         }
     }
-    bits.push(0);
-    elog(NOTICE, "%s", bits.ptr());
+    elog(NOTICE, "%s", bits.c_str());
 }
 
 void BingoPgCommon::setDefaultOptions()
@@ -134,19 +132,19 @@ void BingoPgCommon::setDefaultOptions()
 
 static int rnd_check = rand();
 
-int BingoPgCommon::executeQuery(indigo::std::string& query_str)
+int BingoPgCommon::executeQuery(std::string& query_str)
 {
     int result = 0;
     BINGO_PG_TRY
     {
         SPI_connect();
-        int success = SPI_exec(query_str.ptr(), 1);
+        int success = SPI_exec(query_str.c_str(), 1);
         result = SPI_processed;
 
         SPI_finish();
         if (success < 0)
         {
-            elog(ERROR, "error (%d) while executing query: %s res", success, query_str.ptr());
+            elog(ERROR, "error (%d) while executing query: %s res", success, query_str.c_str());
         }
     }
     BINGO_PG_HANDLE(throw BingoPgError("internal error: can not execute query: %s", message));

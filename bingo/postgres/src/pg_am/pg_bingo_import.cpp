@@ -175,11 +175,11 @@ public:
                  * Pg atoi workaround
                  */
                 QS_DEF(std::string, str2);
-                str2.readString(str, true);
+                str2 = str;
                 BINGO_PG_TRY
                 {
                     data.reset(new int32);
-                    data.ref() = pg_atoi(str2.ptr(), sizeof(int32), 0);
+                    data.ref() = pg_atoi(str2.data(), sizeof(int32), 0);
                 }
                 BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int32: %s", message));
             }
@@ -224,7 +224,7 @@ public:
          * Add the data column
          */
         _importColumns.clear();
-        _importColumns.push().columnName.readString(column_text.getString(), true);
+        _importColumns.push().columnName = column_text.getString();
 
         /*
          * Prepare query table with column name
@@ -240,8 +240,8 @@ public:
             for (int col_idx = 0; col_idx < column_count; ++col_idx)
             {
                 ImportColumn& idCol = _importColumns.push();
-                idCol.columnName.readString(bingoImportGetColumnName(col_idx), true);
-                column_names.printf(", %s", idCol.columnName.ptr());
+                idCol.columnName = bingoImportGetColumnName(col_idx);
+                column_names.printf(", %s", idCol.columnName.c_str());
             }
         }
         else
@@ -251,7 +251,7 @@ public:
                 if (strcmp(other_columns_text.getString(), "") != 0)
                 {
                     ImportColumn& idCol = _importColumns.push();
-                    idCol.columnName.readString(other_columns_text.getString(), true);
+                    idCol.columnName = other_columns_text.getString();
                     column_names.printf(", %s", other_columns_text.getString());
                 }
             }
@@ -271,13 +271,13 @@ public:
         for (int i = 0; i < _importColumns.size(); ++i)
         {
             if (i != 0)
-                column_names.appendString(", ", true);
-            column_names.appendString(_importColumns[i].columnName.ptr(), true);
+                column_names += ", ";
+            column_names += _importColumns[i].columnName.c_str();
         }
         /*
          * Make a query for types definition
          */
-        BingoPgCursor table_first("select %s from %s", column_names.ptr(), table_name);
+        BingoPgCursor table_first("select %s from %s", column_names.c_str(), table_name);
         table_first.next();
         /*
          * Set up all types
@@ -289,7 +289,7 @@ public:
 
             if ((arg_type != INT4OID) && (arg_type != INT8OID) && (arg_type != TEXTOID) && (arg_type != BYTEAOID))
                 throw BingoPgError("can not import a structure: unsupported column '%s' type; supported values: 'text', 'bytea', 'integer'",
-                                   dataCol.columnName.ptr());
+                                   dataCol.columnName.c_str());
 
             dataCol.type = arg_type;
         }
@@ -342,14 +342,13 @@ public:
          */
         StringOutput query_string(query_str);
         query_string.printf("INSERT INTO ");
-        query_string.printf("%s", _columnNames.ptr());
+        query_string.printf("%s", _columnNames.c_str());
         query_string.printf(" VALUES (");
 
         q_nulls.clear();
         q_oids.clear();
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
-            q_nulls.push(0);
             q_oids.push(_importColumns[col_idx].type);
 
             if (col_idx != 0)
@@ -409,7 +408,7 @@ public:
                 /*
                  * Execute query
                  */
-                spi_success = SPI_execute_with_args(query_str.ptr(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.ptr(), false, 1);
+                spi_success = SPI_execute_with_args(query_str.c_str(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.c_str(), false, 1);
                 if (spi_success < 0)
                     elog(WARNING, "can not insert a structure into a table: %s", SPI_result_code_string(spi_success));
             }

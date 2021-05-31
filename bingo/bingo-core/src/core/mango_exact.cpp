@@ -234,9 +234,9 @@ bool MangoExact::parse(const char* params)
 
     QS_DEF(std::string, params_upper);
 
-    params_upper.upper(params);
+    std::transform(params_upper.begin(), params_upper.end(), params_upper.begin(), ::toupper);
 
-    if (strstr(params_upper.ptr(), "TAU") != NULL)
+    if (strstr(params_upper.c_str(), "TAU") != NULL)
         return false;
 
     setParameters(params);

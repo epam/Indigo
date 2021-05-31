@@ -144,7 +144,7 @@ void BingoOracleContext::_loadConfigParameters(OracleEnv& env)
 
     QS_DEF(std::string, log_table);
     if (configGetString(env, "LOG_TABLE", log_table))
-        warnings.setTableNameAndColumns(env, log_table.ptr());
+        warnings.setTableNameAndColumns(env, log_table.c_str());
     else
         warnings.reset();
 
@@ -288,7 +288,7 @@ void BingoOracleContext::configSetBlob(OracleEnv& env, const char* name, const s
     OracleStatement statement(env);
 
     lob.createTemporaryBLOB();
-    lob.write(0, value.ptr(), value.size());
+    lob.write(0, value.c_str(), value.size());
     statement.append("INSERT INTO config_blob VALUES (%d, upper('%s'), :value)", id, name);
 
     statement.prepare();
@@ -318,7 +318,7 @@ void BingoOracleContext::configSetClob(OracleEnv& env, const char* name, const s
     OracleStatement statement(env);
 
     lob.createTemporaryCLOB();
-    lob.write(0, value.ptr(), value.size());
+    lob.write(0, value.c_str(), value.size());
     statement.append("INSERT INTO config_clob VALUES (%d, upper('%s'), :value)", id, name);
 
     statement.prepare();
@@ -374,9 +374,9 @@ void BingoOracleContext::longOpInit(OracleEnv& env, int total, const char* opera
 {
     _longop_slno = 0;
     _longop_total = total;
-    _longop_operation.readString(operation, true);
-    _longop_target.readString(target, true);
-    _longop_units.readString(units, true);
+    _longop_operation = operation;
+    _longop_target = target;
+    _longop_units = units;
 
     OracleStatement statement(env);
 
@@ -395,7 +395,7 @@ void BingoOracleContext::longOpUpdate(OracleEnv& env, int sofar)
                      "slno      => :longop_slno, "
                      "op_name   => '%s', sofar => %d, totalwork => %d, target_desc => '%s', "
                      "units => '%s'); END;",
-                     _longop_operation.ptr(), sofar, _longop_total, _longop_target.ptr(), _longop_units.ptr());
+                     _longop_operation.c_str(), sofar, _longop_total, _longop_target.c_str(), _longop_units.c_str());
 
     statement.prepare();
     statement.bindIntByName(":longop_rindex", &_longop_rindex);
@@ -442,7 +442,7 @@ void BingoOracleContext::parseParameters(OracleEnv& env, const char* str)
 
         bool parameter_found = false;
         for (int i = 0; i < NELEM(PARAMETERS_INT); i++)
-            if (strcasecmp(param_name.ptr(), PARAMETERS_INT[i]) == 0)
+            if (strcasecmp(param_name.c_str(), PARAMETERS_INT[i]) == 0)
             {
                 int value = scanner.readInt();
                 configSetInt(env, PARAMETERS_INT[i], value);
@@ -452,21 +452,21 @@ void BingoOracleContext::parseParameters(OracleEnv& env, const char* str)
                 break;
             }
 
-        if (strcasecmp(param_name.ptr(), "NTHREADS") == 0)
+        if (strcasecmp(param_name.c_str(), "NTHREADS") == 0)
         {
             nthreads = scanner.readInt();
             parameter_found = true;
         }
 
-        if (strcasecmp(param_name.ptr(), "LOG_TABLE") == 0)
+        if (strcasecmp(param_name.c_str(), "LOG_TABLE") == 0)
         {
             scanner.readWord(param_value, " ");
-            setLogTableWithColumns(env, param_value.ptr());
+            setLogTableWithColumns(env, param_value.c_str());
             parameter_found = true;
         }
 
         if (!parameter_found)
-            throw Error("unknown parameter %s", param_name.ptr());
+            throw Error("unknown parameter %s", param_name.c_str());
 
         scanner.skipSpace();
     }
@@ -482,18 +482,18 @@ void BingoOracleContext::atomicMassLoad(OracleEnv& env)
     if (!configGetString(env, "RELATIVE_ATOMIC_MASS", _relative_atomic_mass))
         return;
 
-    const char* buffer = _relative_atomic_mass.ptr();
+    const char* buffer = _relative_atomic_mass.c_str();
     QS_DEF(std::string, element_str);
     element_str.resize(_relative_atomic_mass.size());
 
     float mass;
     int pos;
 
-    while (sscanf(buffer, "%s%f%n", element_str.ptr(), &mass, &pos) > 1)
+    while (sscanf(buffer, "%s%f%n", element_str.c_str(), &mass, &pos) > 1)
     {
-        int elem = Element::fromString(element_str.ptr());
+        int elem = Element::fromString(element_str.c_str());
         if (relative_atomic_mass_map.find(elem))
-            throw Error("element '%s' duplication in atomic mass list", element_str.ptr());
+            throw Error("element '%s' duplication in atomic mass list", element_str.c_str());
 
         relative_atomic_mass_map.insert(elem, mass);
         buffer += pos;
@@ -521,7 +521,7 @@ void BingoOracleContext::atomicMassLoad(OracleEnv& env)
 void BingoOracleContext::atomicMassSave(OracleEnv& env)
 {
     if (_relative_atomic_mass.size() > 1)
-        configSetString(env, "RELATIVE_ATOMIC_MASS", _relative_atomic_mass.ptr());
+        configSetString(env, "RELATIVE_ATOMIC_MASS", _relative_atomic_mass.c_str());
     else
         configSetString(env, "RELATIVE_ATOMIC_MASS", "");
 }
@@ -534,7 +534,7 @@ void BingoOracleContext::setLogTableWithColumns(OracleEnv& env, const char* tabl
 void BingoOracleContext::lock(OracleEnv& env)
 {
     // TODO: implement a semaphore?
-    env.dbgPrintf("    locking %s... ", _id.ptr());
+    env.dbgPrintf("    locking %s... ", _id.c_str());
 
     if (_shmem != 0)
     {
@@ -544,7 +544,7 @@ void BingoOracleContext::lock(OracleEnv& env)
 
     while (1)
     {
-        _shmem = new SharedMemory(_id.ptr(), 1, false);
+        _shmem = new SharedMemory(_id.c_str(), 1, false);
 
         if (_shmem->wasFirst())
             break;
@@ -558,10 +558,10 @@ void BingoOracleContext::unlock(OracleEnv& env)
 {
     if (_shmem == 0)
     {
-        env.dbgPrintf("%s is not locked by this process\n", _id.ptr());
+        env.dbgPrintf("%s is not locked by this process\n", _id.c_str());
         return;
     }
-    env.dbgPrintf("unlocking %s\n", _id.ptr());
+    env.dbgPrintf("unlocking %s\n", _id.c_str());
     delete _shmem;
     _shmem = 0;
 }

@@ -37,7 +37,7 @@ BingoPgCursor::BingoPgCursor(const char* format, ...)
     _init(buf);
 }
 
-BingoPgCursor::BingoPgCursor(indigo::std::string& query_str)
+BingoPgCursor::BingoPgCursor(std::string& query_str)
 {
     _init(query_str);
 }
@@ -49,7 +49,7 @@ BingoPgCursor::~BingoPgCursor()
      */
     BINGO_PG_TRY
     {
-        Portal cur_ptr = SPI_cursor_find(_cursorName.ptr());
+        Portal cur_ptr = SPI_cursor_find(_cursorName.c_str());
         if (cur_ptr != NULL)
             SPI_cursor_close((Portal)_cursorPtr);
         SPI_finish();
@@ -194,7 +194,7 @@ unsigned int BingoPgCursor::getArgOid(int arg_idx)
     return result;
 }
 
-void BingoPgCursor::_init(indigo::std::string& query_str)
+void BingoPgCursor::_init(std::string& query_str)
 {
     Array<dword> arg_types;
 
@@ -202,14 +202,14 @@ void BingoPgCursor::_init(indigo::std::string& query_str)
     {
         _pushed = SPI_push_conditional();
         SPI_connect();
-        SPIPlanPtr plan_ptr = SPI_prepare_cursor(query_str.ptr(), arg_types.size(), arg_types.ptr(), 0);
+        SPIPlanPtr plan_ptr = SPI_prepare_cursor(query_str.c_str(), arg_types.size(), arg_types.ptr(), 0);
 
         ++cursor_idx;
         StringOutput cursor_name_out(_cursorName);
         cursor_name_out.printf("bingo_cursor_%d", cursor_idx);
         cursor_name_out.writeChar(0);
 
-        _cursorPtr = SPI_cursor_open(_cursorName.ptr(), plan_ptr, 0, 0, true);
+        _cursorPtr = SPI_cursor_open(_cursorName.c_str(), plan_ptr, 0, 0, true);
     }
     BINGO_PG_HANDLE(throw Error("internal error: can not prepare or open a cursor: %s", message));
 }

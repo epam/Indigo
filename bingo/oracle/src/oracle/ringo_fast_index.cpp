@@ -45,7 +45,7 @@ RingoFastIndex::~RingoFastIndex()
 
 void RingoFastIndex::_decompressRowid(const std::string& stored, OraRowidText& rid)
 {
-    BufferScanner scanner(stored.ptr() + 2, stored[1]);
+    BufferScanner scanner(stored.c_str() + 2, stored[1]);
 
     RowIDLoader loader(_context.context().context().rid_dict, scanner);
     QS_DEF(std::string, rowid);
@@ -55,7 +55,7 @@ void RingoFastIndex::_decompressRowid(const std::string& stored, OraRowidText& r
     if (rowid.size() != 18)
         throw Error("rowid size=%d?", rowid.size());
 
-    memcpy(rid.ptr(), rowid.ptr(), 18);
+    memcpy(rid.ptr(), rowid.data(), 18);
     rid.ptr()[18] = 0;
 }
 

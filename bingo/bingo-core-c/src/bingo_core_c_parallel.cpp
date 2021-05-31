@@ -28,7 +28,7 @@
 
 using namespace indigo::bingo_core;
 
-CEXPORT int bingoSetIndexRecordData(int id, const char* data, int data_size){BINGO_BEGIN{self.index_record_data->copy(data, data_size);
+CEXPORT int bingoSetIndexRecordData(int id, const char* data, int data_size){BINGO_BEGIN{self.index_record_data->assign(data, data_size);
 self.index_record_data_id = id;
 }
 BINGO_END(0, -1)
@@ -108,7 +108,7 @@ void IndexingDispatcher::_handleResult(OsCommandResult& res)
         // Process results with errors
         for (int i = 0; i < result.error_ids.size(); i++)
         {
-            _core.warning.copy((const char*)result.error_messages.get(i), result.error_messages.getSize(i));
+            _core.warning.assign((const char*)result.error_messages.get(i), result.error_messages.getSize(i));
             process_error_cb(result.error_ids[i], context);
         }
     }

@@ -26,8 +26,6 @@ IMPL_ERROR(MangoShadowTable, "shadow table");
 
 MangoShadowTable::MangoShadowTable(int context_id)
 {
-    _table_name.push(0);
-
     StringOutput output(_table_name);
 
     output.printf("SHADOW_%d", context_id);
@@ -70,7 +68,7 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
         */
         _main_table_statement->append("INSERT %s INTO %s VALUES ("
                                       ":rid, :blockno, :offset, :gross, :cmf, :xyz, :mass, :fragcount",
-                                      false ? "/*+ APPEND_VALUES */" : "", _table_name.ptr());
+                                      false ? "/*+ APPEND_VALUES */" : "", _table_name.c_str());
 
         if (append)
             _commit_main = true;
@@ -120,7 +118,7 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
     {
         _components_table_statement.create(env);
         _components_table_statement->append("INSERT %s INTO %s VALUES (:rid, :hash, :count)", append ? "/*+ APPEND_VALUES */" : "",
-                                            _components_table_name.ptr());
+                                            _components_table_name.c_str());
         _components_table_statement_count = 0;
         if (append)
             _commit_comp = true;
@@ -175,10 +173,10 @@ void MangoShadowTable::_flushMain(OracleEnv& env)
                     maxallocsize_cmf = allocsize;
             }
 
-            cmf.clear_resize((maxallocsize_cmf + 4) * _pending_cmf.size());
-            cmf.zerofill();
+            cmf.clear();
+            cmf.resize((maxallocsize_cmf + 4) * _pending_cmf.size(),0);
             for (i = 0; i < _pending_cmf.size(); i++)
-                memcpy(cmf.ptr() + i * (maxallocsize_cmf + 4), _pending_cmf[i].get(), _pending_cmf[i].getAllocSize() + 4);
+                memcpy(&cmf[0] + i * (maxallocsize_cmf + 4), _pending_cmf[i].get(), _pending_cmf[i].getAllocSize() + 4);
 
             xyz.clear();
             xyz_ind.clear();
@@ -196,21 +194,21 @@ void MangoShadowTable::_flushMain(OracleEnv& env)
             if (maxallocsize_xyz == 0)
                 maxallocsize_xyz = 8; // or we get ORA-01459
 
-            xyz.clear_resize((maxallocsize_xyz + 4) * _pending_xyz.size());
-            xyz.zerofill();
+            xyz.clear();
+            xyz.resize((maxallocsize_xyz + 4) * _pending_xyz.size(),0);
             for (i = 0; i < _pending_xyz.size(); i++)
             {
                 if (_pending_xyz[i].get() != 0)
                 {
-                    memcpy(xyz.ptr() + i * (maxallocsize_xyz + 4), _pending_xyz[i].get(), _pending_xyz[i].getAllocSize() + 4);
+                    memcpy(&xyz[0] + i * (maxallocsize_xyz + 4), _pending_xyz[i].get(), _pending_xyz[i].getAllocSize() + 4);
                     xyz_ind.push(0); // OCI_IND_NOTNULL
                 }
                 else
                     xyz_ind.push(-1); // OCI_IND_NULL
             }
 
-            _main_table_statement->bindRawPtrByName(":cmf", (OCIRaw*)cmf.ptr(), maxallocsize_cmf, 0);
-            _main_table_statement->bindRawPtrByName(":xyz", (OCIRaw*)xyz.ptr(), maxallocsize_xyz, xyz_ind.ptr());
+            _main_table_statement->bindRawPtrByName(":cmf", (OCIRaw*)cmf.c_str(), maxallocsize_cmf, 0);
+            _main_table_statement->bindRawPtrByName(":xyz", (OCIRaw*)xyz.c_str(), maxallocsize_xyz, xyz_ind.ptr());
             _main_table_statement->bindFloatByName(":mass", _pending_mass.ptr());
             _main_table_statement->bindIntByName(":fragcount", _pending_fragcount.ptr());
             for (i = 0; i < _pending_counters.size(); i++)
@@ -274,14 +272,14 @@ void MangoShadowTable::_flushComponents(OracleEnv& env)
 
 void MangoShadowTable::addMolecule(OracleEnv& env, const MangoIndex& index, const char* rowid, int blockno, int offset, bool append)
 {
-    addMolecule(env, rowid, blockno, offset, index.getCmf().ptr(), index.getCmf().size(), index.getXyz().ptr(), index.getXyz().size(), index.getHash(),
+    addMolecule(env, rowid, blockno, offset, index.getCmf().c_str(), index.getCmf().size(), index.getXyz().c_str(), index.getXyz().size(), index.getHash(),
                 index.getGrossString(), index.getCountedElements(), index.getMolecularMass(), index.getFingerprint_Sim_Str(), append);
 }
 
 void MangoShadowTable::create(OracleEnv& env)
 {
     OracleStatement s1(env);
-    const char* mi = _table_name.ptr();
+    const char* mi = _table_name.c_str();
     int i;
 
     s1.append("CREATE TABLE %s "
@@ -299,7 +297,7 @@ void MangoShadowTable::create(OracleEnv& env)
     s1.execute();
 
     // Create shadow table for molecule components
-    const char* cmi = _components_table_name.ptr();
+    const char* cmi = _components_table_name.c_str();
     OracleStatement::executeSingle(env,
                                    "CREATE TABLE %s "
                                    " (mol_rowid VARCHAR2(18), hash VARCHAR2(8), count INT) NOLOGGING",
@@ -308,7 +306,7 @@ void MangoShadowTable::create(OracleEnv& env)
 
 void MangoShadowTable::createIndices(OracleEnv& env)
 {
-    const char* mi = _table_name.ptr();
+    const char* mi = _table_name.c_str();
 
     OracleStatement::executeSingle(env, "CREATE UNIQUE INDEX %s_rid ON %s(mol_rowid) NOLOGGING", mi, mi);
     OracleStatement::executeSingle(env, "CREATE INDEX %s_gross ON %s(gross) NOLOGGING", mi, mi);
@@ -327,7 +325,7 @@ void MangoShadowTable::createIndices(OracleEnv& env)
         s2.execute();
     }
 
-    const char* cmi = _components_table_name.ptr();
+    const char* cmi = _components_table_name.c_str();
 
     OracleStatement::executeSingle(env, "CREATE INDEX %s_rid ON %s(mol_rowid) NOLOGGING", cmi, cmi);
     OracleStatement::executeSingle(env, "CREATE INDEX %s_hash ON %s(hash) NOLOGGING", cmi, cmi);
@@ -336,44 +334,44 @@ void MangoShadowTable::createIndices(OracleEnv& env)
 
 void MangoShadowTable::drop(OracleEnv& env)
 {
-    OracleStatement::executeSingle(env, "BEGIN DropTable('%s'); DropTable('%s'); END;", _table_name.ptr(), _components_table_name.ptr());
+    OracleStatement::executeSingle(env, "BEGIN DropTable('%s'); DropTable('%s'); END;", _table_name.c_str(), _components_table_name.c_str());
 }
 
 void MangoShadowTable::truncate(OracleEnv& env)
 {
-    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _table_name.ptr());
-    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _components_table_name.ptr());
+    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _table_name.c_str());
+    OracleStatement::executeSingle(env, "TRUNCATE TABLE %s", _components_table_name.c_str());
 }
 
 void MangoShadowTable::analyze(OracleEnv& env)
 {
     env.dbgPrintf("analyzing shadow table\n");
-    OracleStatement::executeSingle(env, "ANALYZE TABLE %s ESTIMATE STATISTICS", _table_name.ptr());
-    OracleStatement::executeSingle(env, "ANALYZE TABLE %s ESTIMATE STATISTICS", _components_table_name.ptr());
+    OracleStatement::executeSingle(env, "ANALYZE TABLE %s ESTIMATE STATISTICS", _table_name.c_str());
+    OracleStatement::executeSingle(env, "ANALYZE TABLE %s ESTIMATE STATISTICS", _components_table_name.c_str());
 }
 
 bool MangoShadowTable::getXyz(OracleEnv& env, const char* rowid, std::string& xyz)
 {
-    if (!OracleStatement::executeSingleBlob(xyz, env, "SELECT xyz FROM %s where mol_rowid='%s'", _table_name.ptr(), rowid))
+    if (!OracleStatement::executeSingleBlob(xyz, env, "SELECT xyz FROM %s where mol_rowid='%s'", _table_name.c_str(), rowid))
         return false;
     return true;
 }
 
 const char* MangoShadowTable::getName()
 {
-    return _table_name.ptr();
+    return _table_name.c_str();
 }
 
 const char* MangoShadowTable::getComponentsName()
 {
-    return _components_table_name.ptr();
+    return _components_table_name.c_str();
 }
 
 bool MangoShadowTable::getMoleculeLocation(OracleEnv& env, const char* rowid, int& blockno, int& offset)
 {
     OracleStatement statement(env);
 
-    statement.append("SELECT blockno, offset FROM %s WHERE mol_rowid = :rid", _table_name.ptr());
+    statement.append("SELECT blockno, offset FROM %s WHERE mol_rowid = :rid", _table_name.c_str());
     statement.prepare();
     statement.bindStringByName(":rid", rowid, strlen(rowid) + 1);
     statement.defineIntByPos(1, &blockno);
@@ -384,6 +382,6 @@ bool MangoShadowTable::getMoleculeLocation(OracleEnv& env, const char* rowid, in
 
 void MangoShadowTable::deleteMolecule(OracleEnv& env, const char* rowid)
 {
-    OracleStatement::executeSingle_BindString(env, ":rid", rowid, "DELETE FROM %s WHERE mol_rowid = :rid", _table_name.ptr());
-    OracleStatement::executeSingle_BindString(env, ":rid", rowid, "DELETE FROM %s WHERE mol_rowid = :rid", _components_table_name.ptr());
+    OracleStatement::executeSingle_BindString(env, ":rid", rowid, "DELETE FROM %s WHERE mol_rowid = :rid", _table_name.c_str());
+    OracleStatement::executeSingle_BindString(env, ":rid", rowid, "DELETE FROM %s WHERE mol_rowid = :rid", _components_table_name.c_str());
 }

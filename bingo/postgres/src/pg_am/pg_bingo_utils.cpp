@@ -153,16 +153,16 @@ public:
         switch (size_in)
         {
         case SIZE_IN_BYTES:
-            out.readString("B", true);
+            out = "B";
             break;
         case SIZE_IN_KB:
-            out.readString("KB", true);
+            out = "KB";
             break;
         case SIZE_IN_MB:
-            out.readString("MB", true);
+            out = "MB";
             break;
         case SIZE_IN_GB:
-            out.readString("GB", true);
+            out = "GB";
             break;
         default:
             break;
@@ -205,25 +205,25 @@ public:
             scanner.readWord(buf_word, 0);
             scanner.skipSpace();
 
-            if (strcasecmp(buf_word.ptr(), "B") == 0)
+            if (strcasecmp(buf_word.c_str(), "B") == 0)
             {
                 size_in = CacheParams::SIZE_IN_BYTES;
             }
-            else if (strcasecmp(buf_word.ptr(), "KB") == 0)
+            else if (strcasecmp(buf_word.c_str(), "KB") == 0)
             {
                 size_in = CacheParams::SIZE_IN_KB;
             }
-            else if (strcasecmp(buf_word.ptr(), "MB") == 0)
+            else if (strcasecmp(buf_word.c_str(), "MB") == 0)
             {
                 size_in = CacheParams::SIZE_IN_MB;
             }
-            else if (strcasecmp(buf_word.ptr(), "GB") == 0)
+            else if (strcasecmp(buf_word.c_str(), "GB") == 0)
             {
                 size_in = CacheParams::SIZE_IN_GB;
             }
             else
             {
-                throw BingoPgError("unknown parameter: %s", buf_word.ptr());
+                throw BingoPgError("unknown parameter: %s", buf_word.c_str());
             }
 
             if (scanner.isEOF())
@@ -293,7 +293,7 @@ Datum _precache_database(PG_FUNCTION_ARGS)
         result.printfCR("blocks_number : %d,", bingo_index.getSectionNumber());
 
         params.getSizeIn(tmp_buffer);
-        result.printfCR("size_in : '%s',", tmp_buffer.ptr());
+        result.printfCR("size_in : '%s',", tmp_buffer.c_str());
 
         /*
          * Calc dictionary buf size
@@ -340,7 +340,7 @@ Datum _precache_database(PG_FUNCTION_ARGS)
                  * Cmf real size
                  */
                 bingo_index.readCmfItem(section_idx, str_idx, tmp_buffer);
-                cmf_real_size += tmp_buffer.sizeInBytes();
+                cmf_real_size += tmp_buffer.size();
 
                 /*
                  * Mapping buffers
@@ -401,10 +401,9 @@ Datum _precache_database(PG_FUNCTION_ARGS)
         result.printfCR("total_cache_size : %d", params.getSize(total_cache_size));
         result.printfCR("total_index_size : %d", params.getSize(total_index_size));
         result.printf("}");
-        result_buf.push(0);
-        elog(NOTICE, "%s", result_buf.ptr());
+        elog(NOTICE, "%s", result_buf.c_str());
         BingoPgText res_text;
-        res_text.initFromString(result_buf.ptr());
+        res_text.initFromString(result_buf.c_str());
         res = res_text.release();
     }
     PG_BINGO_END
@@ -631,11 +630,11 @@ static void _parseQueryFieldList(const char* fields_str, RedBlackStringMap<int, 
         scanner.readWord(buf_word, " ,");
         scanner.skipSpace();
 
-        if (field_list.find(buf_word.ptr()))
-            throw BingoPgError("parseQueryFieldList(): key %s is already presented in the query list", buf_word.ptr());
+        if (field_list.find(buf_word.c_str()))
+            throw BingoPgError("parseQueryFieldList(): key %s is already presented in the query list", buf_word.c_str());
 
         ++column_idx;
-        field_list.insert(buf_word.ptr(), column_idx);
+        field_list.insert(buf_word.c_str(), column_idx);
 
         if (scanner.isEOF())
             break;
@@ -734,7 +733,7 @@ Datum exportsdf(PG_FUNCTION_ARGS)
 
         int data_key = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str, field_list);
 
-        BingoPgCursor table_cursor(query_str.ptr());
+        BingoPgCursor table_cursor(query_str.c_str());
         BingoPgText buf_text;
 
         while (table_cursor.next())
@@ -779,7 +778,7 @@ Datum exportrdf(PG_FUNCTION_ARGS)
 
         int data_key = _initializeColumnQuery(table_datum, column_datum, other_columns_datum, query_str, field_list);
 
-        BingoPgCursor table_cursor(query_str.ptr());
+        BingoPgCursor table_cursor(query_str.c_str());
         BingoPgText buf_text;
 
         file_output.printf("$RDFILE 1\n");

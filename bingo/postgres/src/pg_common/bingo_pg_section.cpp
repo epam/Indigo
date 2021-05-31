@@ -305,7 +305,7 @@ void BingoPgSection::readSectionBitsCount(indigo::Array<int>& bits_number)
     }
 }
 
-void BingoPgSection::_setCmfData(indigo::std::string& cmf_buf, int map_buf_idx, int map_idx)
+void BingoPgSection::_setCmfData(std::string& cmf_buf, int map_buf_idx, int map_idx)
 {
     /*
      * Set binary info
@@ -321,7 +321,7 @@ void BingoPgSection::_setCmfData(indigo::std::string& cmf_buf, int map_buf_idx, 
     elog(DEBUG1, "bingo: section: set cmf map: buffer = %d, offset = %d", ItemPointerGetBlockNumber(&cmf_item), ItemPointerGetOffsetNumber(&cmf_item));
 }
 
-void BingoPgSection::_setXyzData(indigo::std::string& xyz_buf, int map_buf_idx, int map_idx)
+void BingoPgSection::_setXyzData(std::string& xyz_buf, int map_buf_idx, int map_idx)
 {
     /*
      * Set binary info
@@ -337,7 +337,7 @@ void BingoPgSection::_setXyzData(indigo::std::string& xyz_buf, int map_buf_idx, 
     elog(DEBUG1, "bingo: section: set xyz map: buffer = %d, offset = %d", ItemPointerGetBlockNumber(&xyz_item), ItemPointerGetOffsetNumber(&xyz_item));
 }
 
-void BingoPgSection::_setBinData(indigo::std::string& buf, int& last_buf, ItemPointerData& item_data)
+void BingoPgSection::_setBinData(std::string& buf, int& last_buf, ItemPointerData& item_data)
 {
     if (buf.size() == 0)
     {
@@ -364,7 +364,7 @@ void BingoPgSection::_setBinData(indigo::std::string& buf, int& last_buf, ItemPo
     /*
      * If not enough space for inserting a new structure - then create and new buffer
      */
-    if (!cache_bin->isEnoughSpace(buf.sizeInBytes()))
+    if (!cache_bin->isEnoughSpace(buf.size()))
     {
         int block_off = _offset + getPagesCount();
         _buffersBin.add(new BingoPgBufferCacheBin(block_off, _index, true));

@@ -198,7 +198,7 @@ void mangoRegisterTable(OracleEnv& env, MangoOracleContext& context, const char*
                 if (blob || clob)
                     molfile_lob->readAll(molfile_buf, false);
                 else
-                    molfile_buf.readString(varchar2_text, false);
+                    molfile_buf = varchar2_text;
 
                 try
                 {

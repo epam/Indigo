@@ -159,7 +159,7 @@ void ringoRegisterTable(OracleEnv& env, RingoOracleContext& context, const char*
                 if (blob || clob)
                     reaction_lob->readAll(reaction_buf, false);
                 else
-                    reaction_buf.readString(varchar2_text, false);
+                    reaction_buf = varchar2_text;
 
                 try
                 {

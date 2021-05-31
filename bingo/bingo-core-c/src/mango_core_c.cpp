@@ -58,7 +58,7 @@ TRY_READ_TARGET_MOL
     {
         if (self.bingo_context->reject_invalid_structures)
             throw;
-        self.warning.readString(e.message(), true);
+        self.warning = e.message();
         return 0;
     }
 }
@@ -66,7 +66,7 @@ CATCH_READ_TARGET_MOL({
     if (self.bingo_context->reject_invalid_structures)
         throw;
 
-    self.warning.readString(e.message(), true);
+    self.warning = e.message();
     return 0;
 });
 }
@@ -81,10 +81,10 @@ CEXPORT int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* c
 const std::string& cmf = self.mango_index->getCmf();
 const std::string& xyz = self.mango_index->getXyz();
 
-*cmf_buf = cmf.ptr();
+*cmf_buf = cmf.c_str();
 *cmf_buf_len = cmf.size();
 
-*xyz_buf = xyz.ptr();
+*xyz_buf = xyz.c_str();
 *xyz_buf_len = xyz.size();
 
 *fingerprint_buf = (const char*)self.mango_index->getFingerprint();
@@ -262,7 +262,7 @@ CEXPORT int mangoSetupMatch(const char* search_type, const char* query, const ch
             self.mango_search_type = BingoCore::_UNDEF;
             throw BingoError("Unknown search type '%s' or options string '%s'", search_type, options);
         }
-        CATCH_READ_TARGET_MOL(self.error.readString(e.message(), 1); return -1;);
+        CATCH_READ_TARGET_MOL(self.error = e.message(); return -1;);
     }
     BINGO_END(-2, -2)
 }
@@ -273,7 +273,7 @@ MangoSimilarity& similarity = self.mango_context->similarity;
 
 self.buffer.resize(sizeof(int) * 2 * count);
 
-int* min_bounds = (int*)self.buffer.ptr();
+int* min_bounds = (int*)self.buffer.c_str();
 int* max_bounds = min_bounds + count;
 for (int i = 0; i < count; i++)
 {
@@ -355,7 +355,7 @@ CEXPORT int mangoMatchTarget(const char* target, int target_buf_len)
             else
                 throw BingoError("Invalid search type");
         }
-        CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), 1); return -1;);
+        CATCH_READ_TARGET_MOL(self.warning = e.message(); return -1;);
     }
     BINGO_END(-2, -2)
 }
@@ -408,7 +408,7 @@ CEXPORT int mangoMatchTargetBinary(const char* target_bin, int target_bin_len, c
             else
                 throw BingoError("Invalid search type");
         }
-        CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), 1); return -1;);
+        CATCH_READ_TARGET_MOL(self.warning = e.message(); return -1;);
     }
     BINGO_END(-2, -2)
 }
@@ -468,8 +468,7 @@ else if (self.mango_search_type == BingoCore::_TAUTOMER)
 else
     throw BingoError("Unsupported search type in mangoGetHightlightedMolecule");
 
-self.buffer.push(0);
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -507,7 +506,7 @@ CEXPORT const char* mangoSMILES(const char* target_buf, int target_buf_len, int 
             saver.saveMolecule(target);
         }
         out.writeByte(0);
-        return self.buffer.ptr();
+        return self.buffer.c_str();
     }
     BINGO_END(0, 0)
 }
@@ -528,7 +527,7 @@ MolfileSaver saver(out);
 
 saver.saveMolecule(target);
 out.writeByte(0);
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -549,7 +548,7 @@ StringOutput out(self.buffer);
 CmlSaver saver(out);
 saver.saveMolecule(target);
 out.writeByte(0);
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -567,22 +566,22 @@ CEXPORT int mangoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
         {
             MangoSubstructure& substructure = self.mango_context->substructure;
 
-            self.buffer.copy((const char*)substructure.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
+            self.buffer.assign((const char*)substructure.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
         }
         else if (self.mango_search_type == BingoCore::_TAUTOMER)
         {
             MangoTautomer& tautomer = self.mango_context->tautomer;
-            self.buffer.copy((const char*)tautomer.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
+            self.buffer.assign((const char*)tautomer.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
         }
         else if (self.mango_search_type == BingoCore::_SIMILARITY)
         {
             MangoSimilarity& similarity = self.mango_context->similarity;
-            self.buffer.copy((const char*)similarity.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
+            self.buffer.assign((const char*)similarity.getQueryFingerprint(), self.bingo_context->fp_parameters.fingerprintSize());
         }
         else
             throw BingoError("Invalid search type");
 
-        *query_fp = self.buffer.ptr();
+        *query_fp = self.buffer.c_str();
         *query_fp_len = self.buffer.size();
     }
     BINGO_END(1, -2)
@@ -590,9 +589,7 @@ CEXPORT int mangoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
 
 CEXPORT const char* mangoGetCountedElementName(int index){BINGO_BEGIN{StringOutput output(self.buffer);
 output.printf("cnt_%s", Element::toString(MangoIndex::counted_elements[index]));
-self.buffer.push(0);
-
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -702,9 +699,7 @@ loader.loadMolecule(target);
 QS_DEF(Array<int>, gross);
 MoleculeGrossFormula::collect(target, gross);
 MoleculeGrossFormula::toString(gross, self.buffer);
-self.buffer.push(0);
-
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -731,12 +726,12 @@ TRY_READ_TARGET_MOL
     loader.loadMolecule(mol);
     Molecule::checkForConsistency(mol);
 }
-CATCH_READ_TARGET_MOL(self.buffer.readString(e.message(), true); return self.buffer.ptr())
+CATCH_READ_TARGET_MOL(self.buffer = e.message(); return self.buffer.c_str())
 catch (Exception& e)
 {
     e.appendMessage(" INTERNAL ERROR");
-    self.buffer.readString(e.message(), true);
-    return self.buffer.ptr();
+    self.buffer = e.message();
+    return self.buffer.c_str();
 }
 catch (...)
 {
@@ -766,7 +761,7 @@ saver.save_xyz = (save_xyz != 0);
 saver.saveMolecule(target);
 
 *out_len = self.buffer.size();
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -792,10 +787,10 @@ builder.process();
 const char* buf = (const char*)builder.get();
 int buf_len = self.bingo_context->fp_parameters.fingerprintSize();
 
-self.buffer.copy(buf, buf_len);
+self.buffer.assign(buf, buf_len);
 
 *out_len = self.buffer.size();
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -816,13 +811,13 @@ inchi.saveMoleculeIntoInchi(target, self.buffer);
 
 *out_len = self.buffer.size();
 
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
 
 CEXPORT const char* mangoInChIKey(const char* inchi){BINGO_BEGIN{InchiWrapper::InChIKey(inchi, self.buffer);
-return self.buffer.ptr();
+return self.buffer.c_str();
 }
 BINGO_END(0, 0)
 }
@@ -850,7 +845,7 @@ CEXPORT const char* mangoStandardize(const char* molecule, int molecule_len, con
 
         saver.saveMolecule(target);
         out.writeByte(0);
-        return self.buffer.ptr();
+        return self.buffer.c_str();
     }
     BINGO_END(0, 0)
 }
