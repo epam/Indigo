@@ -59,7 +59,7 @@ void SmartTableOutput::write(const void* data, int size)
         if (end == size || data_char[end] == '\n')
         {
             for (int i = start; i < end; i++)
-                _active_line->push(data_char[i]);
+                *_active_line += data_char[i];
 
             if (end < size)
             {
@@ -103,7 +103,7 @@ void SmartTableOutput::flush()
 void SmartTableOutput::setLineFormat(const char* line_format)
 {
     std::string& format = _line_formats.push();
-    format.copy(line_format, strlen(line_format));
+    format = line_format;
     _line_format_index.top() = _line_formats.size() - 1;
 }
 
@@ -218,7 +218,7 @@ void SmartTableOutput::_printLineSmart(int index, const Array<int>& widths)
             while (space_begin-- > 0)
                 _output.writeChar(' ');
             if (field_width != 0)
-                _output.write(line.ptr() + field_begin, field_width);
+                _output.write(line.c_str() + field_begin, field_width);
             while (space_end-- > 0)
                 _output.writeChar(' ');
 
@@ -246,7 +246,7 @@ void SmartTableOutput::printHLine()
     if (_active_line->size() != 0)
         _active_line = &_lines.push();
 
-    _active_line->push((char)HLINE_CHAR);
+    *_active_line += (char)HLINE_CHAR;
     _active_line = &_lines.push();
     _line_format_index.push(_line_formats.size() - 1);
 }

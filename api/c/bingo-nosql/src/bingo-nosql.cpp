@@ -458,8 +458,7 @@ CEXPORT int bingoSearchMolFormula(int db, const char* query, const char* options
 {
     BINGO_BEGIN_DB(db)
     {
-        std::string gross_str;
-        gross_str.copy(query, (int)(strlen(query) + 1));
+        std::string gross_str(query);
 
         AutoPtr<GrossQueryData> query_data(new GrossQueryData(gross_str));
 

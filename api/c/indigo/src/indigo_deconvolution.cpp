@@ -493,7 +493,7 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
                 StringOutput ap_out(buf);
                 ap_out.printf("AP%d", att_order_m);
                 ap_out.writeChar(0);
-                fragment.setPseudoAtom(ap_atom_idx, buf.ptr());
+                fragment.setPseudoAtom(ap_atom_idx, buf.c_str());
                 /*
                  * Add AP bond
                  * Check for empty RGroup first
@@ -922,11 +922,11 @@ void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& deco_match
         /*
          * Insert match string
          */
-        if (!match_rgroups.find(str_key.ptr()))
+        if (!match_rgroups.find(str_key.c_str()))
         {
-            match_rgroups.insert(str_key.ptr());
+            match_rgroups.insert(str_key.c_str());
         }
-        match_rgroups.at(str_key.ptr()).push(cur_rg_idx);
+        match_rgroups.at(str_key.c_str()).push(cur_rg_idx);
     }
     match_rgroups.insert("max_rg_idx");
     match_rgroups.at("max_rg_idx").push(max_rg_idx);
@@ -1162,9 +1162,9 @@ int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int 
          * Search for matches
          */
         match_not_found = false;
-        if (match_rgroups.find(str_key.ptr()))
+        if (match_rgroups.find(str_key.c_str()))
         {
-            Array<int>& match_r = match_rgroups.at(str_key.ptr());
+            Array<int>& match_r = match_rgroups.at(str_key.c_str());
             /*
              * Remove matches
              */

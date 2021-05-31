@@ -311,7 +311,7 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
         _clone(other, index, i, mappings);
     }
 
-    name.copy(other.name);
+    name = other.name;
 }
 
 void BaseReaction::_clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings)

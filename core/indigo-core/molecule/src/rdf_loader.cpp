@@ -153,7 +153,7 @@ void RdfLoader::readNext()
         {
             if (_readIdentifiers(true))
                 continue;
-            output.printf("%s\n", _innerBuffer.ptr());
+            output.printf("%s\n", _innerBuffer.c_str());
         }
 
         if (data.size() > MAX_DATA_SIZE)
@@ -177,7 +177,7 @@ void RdfLoader::readNext()
         if (_startsWith("$DTYPE"))
         {
             QS_DEF(std::string, property_name);
-            BufferScanner scanner(_innerBuffer.ptr());
+            BufferScanner scanner(_innerBuffer.c_str());
 
             /*
              * Skip "$DTYPE" string and all spaces
@@ -194,11 +194,11 @@ void RdfLoader::readNext()
             }
             else
             {
-                properties.insert(property_name.ptr());
+                properties.insert(property_name.c_str());
                 /*
                  * Define current value buffer
                  */
-                current_datum = &properties.valueBuf(property_name.ptr());
+                current_datum = &properties.valueBuf(property_name.c_str());
             }
             continue;
         }
@@ -206,7 +206,7 @@ void RdfLoader::readNext()
         {
             if (!current_datum)
                 continue;
-            BufferScanner scanner(_innerBuffer.ptr());
+            BufferScanner scanner(_innerBuffer.c_str());
 
             /*
              * Skip "$DATUM" string and all spaces
@@ -224,8 +224,8 @@ void RdfLoader::readNext()
          */
         if (_innerBuffer.size() && current_datum && current_datum->size())
         {
-            current_datum->appendString("\n", true);
-            current_datum->appendString(_innerBuffer.ptr(), true);
+            *current_datum += "\n";
+            *current_datum += _innerBuffer;
         }
 
     } while (_readLine(_getScanner(), _innerBuffer));
@@ -242,7 +242,7 @@ Scanner& RdfLoader::_getScanner() const
 bool RdfLoader::_readIdentifiers(bool from_begin)
 {
     bool result = false;
-    BufferScanner scanner(_innerBuffer.ptr());
+    BufferScanner scanner(_innerBuffer.c_str());
     QS_DEF(std::string, word);
 
     scanner.skipSpace();
@@ -250,8 +250,7 @@ bool RdfLoader::_readIdentifiers(bool from_begin)
     {
         word.clear();
         scanner.readWord(word, 0);
-        word.push(0);
-        if (strcmp(word.ptr(), "$MIREG") == 0 || strcmp(word.ptr(), "$RIREG") == 0)
+        if (strcmp(word.c_str(), "$MIREG") == 0 || strcmp(word.c_str(), "$RIREG") == 0)
         {
             /*
              * Insert new property key
@@ -262,10 +261,9 @@ bool RdfLoader::_readIdentifiers(bool from_begin)
              * Insert new property value
              */
             scanner.readWord(val, 0);
-            val.push(0);
             result = true;
         }
-        else if (strcmp(word.ptr(), "$MEREG") == 0 || strcmp(word.ptr(), "$REREG") == 0)
+        else if (strcmp(word.c_str(), "$MEREG") == 0 || strcmp(word.c_str(), "$REREG") == 0)
         {
             /*
              * Insert new property key
@@ -276,7 +274,6 @@ bool RdfLoader::_readIdentifiers(bool from_begin)
              * Insert new property value
              */
             scanner.readWord(val, 0);
-            val.push(0);
             result = true;
         }
         else if (from_begin)
@@ -295,7 +292,7 @@ bool RdfLoader::_readLine(Scanner& scanner, std::string& buffer)
     buffer.clear();
     if (scanner.isEOF())
         return false;
-    scanner.readLine(buffer, true);
+    scanner.readLine(buffer);
     return true;
 }
 

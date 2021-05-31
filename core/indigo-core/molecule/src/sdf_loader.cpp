@@ -104,7 +104,7 @@ bool SdfLoader::isEOF()
     while (!_scanner->isEOF())
     {
         if (isspace(_scanner->lookNext()))
-            _preread.push(_scanner->readChar());
+            _preread += _scanner->readChar();
         else
             return false;
     }
@@ -135,10 +135,10 @@ void SdfLoader::readNext()
     while (!_scanner->isEOF())
     {
         last_offset = _scanner->tell();
-        _scanner->readLine(str, true);
+        _scanner->readLine(str);
         if (str.size() > 0 && str[0] == '>')
             break;
-        if (str.size() > 3 && strncmp(str.ptr(), "$$$$", 4) == 0)
+        if (str.size() > 3 && strncmp(str.c_str(), "$$$$", 4) == 0)
             break;
         if (pending_emptyline)
             output.printf("\n");
@@ -148,7 +148,7 @@ void SdfLoader::readNext()
             pending_emptyline = false;
 
         if (!pending_emptyline)
-            output.writeStringCR(str.ptr());
+            output.writeStringCR(str.c_str());
 
         if (data.size() > MAX_DATA_SIZE)
             throw Error("data size exceeded the acceptable size %d bytes, Please check for correct file format", MAX_DATA_SIZE);
@@ -156,12 +156,12 @@ void SdfLoader::readNext()
 
     while (1)
     {
-        if (strncmp(str.ptr(), "$$$$", 4) == 0)
+        if (strncmp(str.c_str(), "$$$$", 4) == 0)
             break;
 
-        output.writeStringCR(str.ptr());
+        output.writeStringCR(str.c_str());
 
-        BufferScanner ws(str.ptr());
+        BufferScanner ws(str.c_str());
 
         while (!ws.isEOF())
             if (ws.readChar() == '<')
@@ -181,19 +181,17 @@ void SdfLoader::readNext()
                 have_word = true;
                 break;
             }
-            word.push(c);
+            word += c;
         }
 
         if (have_word && word.size() > 0)
         {
-            word.push(0);
-
-            _scanner->readLine(str, true);
-            auto& propBuf = properties.insert(word.ptr());
+            _scanner->readLine(str);
+            auto& propBuf = properties.insert(word.c_str());
             //         auto& propBuf = properties.valueBuf(word.ptr());
             //         int idx = properties.findOrInsert(word.ptr());
-            propBuf.copy(str);
-            output.writeStringCR(str.ptr());
+            propBuf = str;
+            output.writeStringCR(str.c_str());
             if (str.size() > 1)
             {
                 do
@@ -201,13 +199,12 @@ void SdfLoader::readNext()
                     if (_scanner->isEOF())
                         break;
 
-                    _scanner->readLine(str, true);
-                    output.writeStringCR(str.ptr());
+                    _scanner->readLine(str);
+                    output.writeStringCR(str.c_str());
                     if (str.size() > 1)
                     {
-                        propBuf.pop(); // Remove string end marker (0)
-                        propBuf.push('\n');
-                        propBuf.appendString(str.ptr(), true);
+                        propBuf += '\n';
+                        propBuf += str;
                     }
                 } while (str.size() > 1);
             }
@@ -216,7 +213,7 @@ void SdfLoader::readNext()
         if (_scanner->isEOF())
             break;
 
-        _scanner->readLine(str, true);
+        _scanner->readLine(str);
     }
 
     if (_scanner->tell() > _max_offset)

@@ -245,9 +245,9 @@ void MoleculeExactMatcher::parseConditions(const char* params, int& flags, float
 
         for (i = 0; i < NELEM(token_list); i++)
         {
-            if (token_list[i].compare(word.ptr()))
+            if (token_list[i].compare(word.c_str()))
                 flags |= token_list[i].t_flag;
-            else if (word[0] == '-' && token_list[i].compare(word.ptr() + 1))
+            else if (word[0] == '-' && token_list[i].compare(word.c_str() + 1))
                 flags &= ~token_list[i].t_flag;
             else
                 continue;
@@ -255,7 +255,7 @@ void MoleculeExactMatcher::parseConditions(const char* params, int& flags, float
         }
         if (i == NELEM(token_list))
         {
-            BufferScanner scanner2(word.ptr());
+            BufferScanner scanner2(word.c_str());
 
             if (scanner2.tryReadFloat(rms_threshold))
             {
@@ -263,7 +263,7 @@ void MoleculeExactMatcher::parseConditions(const char* params, int& flags, float
                 return;
             }
 
-            throw Error("parseConditions(): unknown token %s", word.ptr());
+            throw Error("parseConditions(): unknown token %s", word.c_str());
         }
     }
 }

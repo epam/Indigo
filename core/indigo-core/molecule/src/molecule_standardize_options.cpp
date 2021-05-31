@@ -87,89 +87,89 @@ void StandardizeOptions::parseFromString(const char* options)
         scanner.skipSpace();
         scanner.readWord(word, 0);
 
-        if (strcasecmp(word.ptr(), "standardize-stereo") == 0)
+        if (strcasecmp(word.c_str(), "standardize-stereo") == 0)
             standardize_stereo = true;
-        else if (strcasecmp(word.ptr(), "standardize-charges") == 0)
+        else if (strcasecmp(word.c_str(), "standardize-charges") == 0)
             standardize_charges = true;
-        else if (strcasecmp(word.ptr(), "center-molecule") == 0)
+        else if (strcasecmp(word.c_str(), "center-molecule") == 0)
             center_molecule = true;
-        else if (strcasecmp(word.ptr(), "remove-single-atom-fragments") == 0)
+        else if (strcasecmp(word.c_str(), "remove-single-atom-fragments") == 0)
             remove_single_atom_fragments = true;
-        else if (strcasecmp(word.ptr(), "keep-smallest-fragment") == 0)
+        else if (strcasecmp(word.c_str(), "keep-smallest-fragment") == 0)
             keep_smallest_fragment = true;
-        else if (strcasecmp(word.ptr(), "keep-largest-fragment") == 0)
+        else if (strcasecmp(word.c_str(), "keep-largest-fragment") == 0)
             keep_largest_fragment = true;
-        else if (strcasecmp(word.ptr(), "remove-largest-fragment") == 0)
+        else if (strcasecmp(word.c_str(), "remove-largest-fragment") == 0)
             remove_largest_fragment = true;
-        else if (strcasecmp(word.ptr(), "make-non-h-atoms-c-atoms") == 0)
+        else if (strcasecmp(word.c_str(), "make-non-h-atoms-c-atoms") == 0)
             make_non_h_atoms_c_atoms = true;
-        else if (strcasecmp(word.ptr(), "make-non-h-atoms-a-atoms") == 0)
+        else if (strcasecmp(word.c_str(), "make-non-h-atoms-a-atoms") == 0)
             make_non_h_atoms_a_atoms = true;
-        else if (strcasecmp(word.ptr(), "make-non-c-h-atoms-q-atoms") == 0)
+        else if (strcasecmp(word.c_str(), "make-non-c-h-atoms-q-atoms") == 0)
             make_non_c_h_atoms_q_atoms = true;
-        else if (strcasecmp(word.ptr(), "make-all-bonds-single") == 0)
+        else if (strcasecmp(word.c_str(), "make-all-bonds-single") == 0)
             make_all_bonds_single = true;
-        else if (strcasecmp(word.ptr(), "clear-coordinates") == 0)
+        else if (strcasecmp(word.c_str(), "clear-coordinates") == 0)
             clear_coordinates = true;
-        else if (strcasecmp(word.ptr(), "fix-coordinate-dimension") == 0)
+        else if (strcasecmp(word.c_str(), "fix-coordinate-dimension") == 0)
             fix_coordinate_dimension = true;
-        else if (strcasecmp(word.ptr(), "straighten-triple-bonds") == 0)
+        else if (strcasecmp(word.c_str(), "straighten-triple-bonds") == 0)
             straighten_triple_bonds = true;
-        else if (strcasecmp(word.ptr(), "straighten-allenes") == 0)
+        else if (strcasecmp(word.c_str(), "straighten-allenes") == 0)
             straighten_allenes = true;
-        else if (strcasecmp(word.ptr(), "clear-molecule") == 0)
+        else if (strcasecmp(word.c_str(), "clear-molecule") == 0)
             clear_molecule = true;
-        else if (strcasecmp(word.ptr(), "remove-molecule") == 0)
+        else if (strcasecmp(word.c_str(), "remove-molecule") == 0)
             remove_molecule = true;
-        else if (strcasecmp(word.ptr(), "clear-stereo") == 0)
+        else if (strcasecmp(word.c_str(), "clear-stereo") == 0)
             clear_stereo = true;
-        else if (strcasecmp(word.ptr(), "clear-enhanced-stereo") == 0)
+        else if (strcasecmp(word.c_str(), "clear-enhanced-stereo") == 0)
             clear_enhanced_stereo = true;
-        else if (strcasecmp(word.ptr(), "clear-unknown-stereo") == 0)
+        else if (strcasecmp(word.c_str(), "clear-unknown-stereo") == 0)
             clear_unknown_stereo = true;
-        else if (strcasecmp(word.ptr(), "clear-unknown-atom-stereo") == 0)
+        else if (strcasecmp(word.c_str(), "clear-unknown-atom-stereo") == 0)
             clear_unknown_atom_stereo = true;
-        else if (strcasecmp(word.ptr(), "clear-unknown-cis-trans-bond-stereo") == 0)
+        else if (strcasecmp(word.c_str(), "clear-unknown-cis-trans-bond-stereo") == 0)
             clear_unknown_cis_trans_bond_stereo = true;
-        else if (strcasecmp(word.ptr(), "clear-cis-trans-bond-stereo") == 0)
+        else if (strcasecmp(word.c_str(), "clear-cis-trans-bond-stereo") == 0)
             clear_cis_trans_bond_stereo = true;
-        else if (strcasecmp(word.ptr(), "set-stereo-from-coordinates") == 0)
+        else if (strcasecmp(word.c_str(), "set-stereo-from-coordinates") == 0)
             set_stereo_from_coordinates = true;
-        else if (strcasecmp(word.ptr(), "reposition-stereo-bonds") == 0)
+        else if (strcasecmp(word.c_str(), "reposition-stereo-bonds") == 0)
             reposition_stereo_bonds = true;
-        else if (strcasecmp(word.ptr(), "reposition-axial-stereo-bonds") == 0)
+        else if (strcasecmp(word.c_str(), "reposition-axial-stereo-bonds") == 0)
             reposition_axial_stereo_bonds = true;
-        else if (strcasecmp(word.ptr(), "fix-direction-of-wedge-bonds") == 0)
+        else if (strcasecmp(word.c_str(), "fix-direction-of-wedge-bonds") == 0)
             fix_direction_of_wedge_bonds = true;
-        else if (strcasecmp(word.ptr(), "clear-charges") == 0)
+        else if (strcasecmp(word.c_str(), "clear-charges") == 0)
             clear_charges = true;
-        else if (strcasecmp(word.ptr(), "clear-pi-bonds") == 0)
+        else if (strcasecmp(word.c_str(), "clear-pi-bonds") == 0)
             clear_pi_bonds = true;
-        else if (strcasecmp(word.ptr(), "clear-highlight-colors") == 0)
+        else if (strcasecmp(word.c_str(), "clear-highlight-colors") == 0)
             clear_highlight_colors = true;
-        else if (strcasecmp(word.ptr(), "clear-query-info") == 0)
+        else if (strcasecmp(word.c_str(), "clear-query-info") == 0)
             clear_query_info = true;
-        else if (strcasecmp(word.ptr(), "clear-atom-labels") == 0)
+        else if (strcasecmp(word.c_str(), "clear-atom-labels") == 0)
             clear_atom_labels = true;
-        else if (strcasecmp(word.ptr(), "clear-bond-labels") == 0)
+        else if (strcasecmp(word.c_str(), "clear-bond-labels") == 0)
             clear_bond_labels = true;
-        else if (strcasecmp(word.ptr(), "neutralize-bonded-zwitterions") == 0)
+        else if (strcasecmp(word.c_str(), "neutralize-bonded-zwitterions") == 0)
             neutralize_bonded_zwitterions = true;
-        else if (strcasecmp(word.ptr(), "clear-unusual_valence") == 0)
+        else if (strcasecmp(word.c_str(), "clear-unusual_valence") == 0)
             clear_unusual_valence = true;
-        else if (strcasecmp(word.ptr(), "clear-isotopes") == 0)
+        else if (strcasecmp(word.c_str(), "clear-isotopes") == 0)
             clear_isotopes = true;
-        else if (strcasecmp(word.ptr(), "clear-dative-bonds") == 0)
+        else if (strcasecmp(word.c_str(), "clear-dative-bonds") == 0)
             clear_dative_bonds = true;
-        else if (strcasecmp(word.ptr(), "clear-hydrogen-bonds") == 0)
+        else if (strcasecmp(word.c_str(), "clear-hydrogen-bonds") == 0)
             clear_hydrogen_bonds = true;
-        else if (strcasecmp(word.ptr(), "localize-markush-r-atoms-on-rings") == 0)
+        else if (strcasecmp(word.c_str(), "localize-markush-r-atoms-on-rings") == 0)
             localize_markush_r_atoms_on_rings = true;
-        else if (strcasecmp(word.ptr(), "create-coordination-bonds") == 0)
+        else if (strcasecmp(word.c_str(), "create-coordination-bonds") == 0)
             create_coordination_bonds = true;
-        else if (strcasecmp(word.ptr(), "create-hydrogen-bonds") == 0)
+        else if (strcasecmp(word.c_str(), "create-hydrogen-bonds") == 0)
             create_hydrogen_bonds = true;
-        else if (strcasecmp(word.ptr(), "remove-extra-stereo-bonds") == 0)
+        else if (strcasecmp(word.c_str(), "remove-extra-stereo-bonds") == 0)
             remove_extra_stereo_bonds = true;
 
         scanner.skipSpace();

@@ -88,11 +88,11 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
     else
         elem->LinkEndChild(molecule);
 
-    if (_mol->name.ptr() != 0)
+    if (_mol->name.c_str() != 0)
     {
-        if (strchr(_mol->name.ptr(), '\"') != NULL)
+        if (strchr(_mol->name.c_str(), '\"') != NULL)
             throw Error("can not save molecule with '\"' in title");
-        molecule->SetAttribute("title", _mol->name.ptr());
+        molecule->SetAttribute("title", _mol->name.c_str());
     }
 
     bool have_xyz = BaseMolecule::hasCoord(*_mol);
@@ -144,8 +144,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
             QS_DEF(std::string, buf);
             StringOutput out(buf);
             out.printf("a%d", i);
-            buf.push(0);
-            atom->SetAttribute("id", buf.ptr());
+            atom->SetAttribute("id", buf.c_str());
             atom->SetAttribute("elementType", atom_str);
 
             if (qmol != 0)
@@ -223,10 +222,10 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                     if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
                     {
                         DataSGroup& dsg = (DataSGroup&)sgroup;
-                        if ((dsg.name.size() >= 12) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) && (dsg.atoms.size() > 0) && (dsg.atoms[0] == i) &&
+                        if ((dsg.name.size() >= 12) && (strncmp(dsg.name.c_str(), "INDIGO_ALIAS", 12) == 0) && (dsg.atoms.size() > 0) && (dsg.atoms[0] == i) &&
                             dsg.data.size() > 0)
                         {
-                            atom->SetAttribute("mrvAlias", dsg.data.ptr());
+                            atom->SetAttribute("mrvAlias", dsg.data.c_str());
                         }
                     }
                 }
@@ -244,8 +243,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                 if (rg_refs.size() == 1)
                 {
                     out.printf("%d", rg_refs[0]);
-                    buf.push(0);
-                    atom->SetAttribute("rgroupRef", buf.ptr());
+                    atom->SetAttribute("rgroupRef", buf.c_str());
                 }
             }
 
@@ -315,10 +313,9 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                 else if (hcount == 0)
                     out.printf("H0");
 
-                if (buf.size() > 0)
+                if (buf.size())
                 {
-                    buf.push(0);
-                    atom->SetAttribute("mrvQueryProps", buf.ptr());
+                    atom->SetAttribute("mrvQueryProps", buf.c_str());
                 }
             }
 
@@ -376,8 +373,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                     out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], i);
                 else
                     out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], pyramid[3]);
-                buf.push(0);
-                atomparity->SetAttribute("atomRefs4", buf.ptr());
+                atomparity->SetAttribute("atomRefs4", buf.c_str());
 
                 atomparity->LinkEndChild(new TiXmlText("1"));
             }
@@ -429,8 +425,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
                     QS_DEF(std::string, buf);
                     StringOutput out(buf);
                     out.printf("a%d", latest_ind++);
-                    buf.push(0);
-                    atom->SetAttribute("id", buf.ptr());
+                    atom->SetAttribute("id", buf.c_str());
                     atom->SetAttribute("elementType", "*");
                 }
             }
@@ -452,8 +447,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
             QS_DEF(std::string, buf);
             StringOutput out(buf);
             out.printf("a%d a%d", edge.beg, edge.end);
-            buf.push(0);
-            bond->SetAttribute("atomRefs2", buf.ptr());
+            bond->SetAttribute("atomRefs2", buf.c_str());
 
             int order = _mol->getBondOrder(i);
 
@@ -507,8 +501,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
 
                 const int* subst = _mol->cis_trans.getSubstituents(i);
                 out.printf("a%d a%d a%d a%d", subst[0], edge.beg, edge.end, subst[2]);
-                buf.push(0);
-                bondstereo->SetAttribute("atomRefs4", buf.ptr());
+                bondstereo->SetAttribute("atomRefs4", buf.c_str());
                 bondstereo->LinkEndChild(new TiXmlText((parity == MoleculeCisTrans::CIS) ? "C" : "T"));
             }
             else if (_mol->cis_trans.isIgnored(i))
@@ -535,7 +528,7 @@ void CmlSaver::_addMoleculeElement(TiXmlElement* elem, BaseMolecule& mol, bool q
             if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dsg = (DataSGroup&)sgroup;
-                if ((dsg.name.size() >= 12) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0))
+                if ((dsg.name.size() >= 12) && (strncmp(dsg.name.c_str(), "INDIGO_ALIAS", 12) == 0))
                     continue;
             }
 
@@ -553,8 +546,7 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
     QS_DEF(std::string, buf);
     StringOutput out(buf);
     out.printf("sg%d", sgroup.original_group);
-    buf.push(0);
-    sg->SetAttribute("id", buf.ptr());
+    sg->SetAttribute("id", buf.c_str());
 
     if (sgroup.atoms.size() > 0)
     {
@@ -564,10 +556,9 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
         for (int j = 0; j < sgroup.atoms.size(); j++)
             out.printf("a%d ", sgroup.atoms[j]);
 
-        buf.pop();
-        buf.push(0);
+        buf.pop_back();
 
-        sg->SetAttribute("atomRefs", buf.ptr());
+        sg->SetAttribute("atomRefs", buf.c_str());
     }
 
     if (sgroup.brackets.size() > 0)
@@ -600,22 +591,22 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
 
         DataSGroup& dsg = (DataSGroup&)sgroup;
 
-        const char* name = dsg.name.ptr();
+        const char* name = dsg.name.c_str();
         if (name != 0 && strlen(name) > 0)
         {
             sg->SetAttribute("fieldName", name);
         }
-        const char* desc = dsg.description.ptr();
+        const char* desc = dsg.description.c_str();
         if (desc != 0 && strlen(desc) > 0)
         {
             sg->SetAttribute("fieldType", desc);
         }
-        const char* querycode = dsg.querycode.ptr();
+        const char* querycode = dsg.querycode.c_str();
         if (querycode != 0 && strlen(querycode) > 0)
         {
             sg->SetAttribute("queryType", querycode);
         }
-        const char* queryoper = dsg.queryoper.ptr();
+        const char* queryoper = dsg.queryoper.c_str();
         if (queryoper != 0 && strlen(queryoper) > 0)
         {
             sg->SetAttribute("queryOp", queryoper);
@@ -652,7 +643,7 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
 
         if (dsg.data.size() > 0 && dsg.data[0] != 0)
         {
-            sg->SetAttribute("fieldData", dsg.data.ptr());
+            sg->SetAttribute("fieldData", dsg.data.c_str());
         }
 
         MoleculeSGroups* sgroups = &mol.sgroups;
@@ -685,7 +676,7 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
 
         Superatom& sup = (Superatom&)sgroup;
 
-        const char* name = sup.subscript.ptr();
+        const char* name = sup.subscript.c_str();
         if (name != 0 && strlen(name) > 0)
         {
             sg->SetAttribute("title", name);
@@ -707,7 +698,7 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
 
         RepeatingUnit& sru = (RepeatingUnit&)sgroup;
 
-        const char* name = sru.subscript.ptr();
+        const char* name = sru.subscript.c_str();
         if (name != 0 && strlen(name) > 0)
         {
             sg->SetAttribute("title", name);
@@ -751,10 +742,9 @@ void CmlSaver::_addSgroupElement(TiXmlElement* molecule, BaseMolecule& mol, SGro
             for (int j = 0; j < mul.parent_atoms.size(); j++)
                 out.printf("a%d ", mul.parent_atoms[j]);
 
-            buf.pop();
-            buf.push(0);
+            buf.pop_back();
 
-            sg->SetAttribute("patoms", buf.ptr());
+            sg->SetAttribute("patoms", buf.c_str());
         }
 
         MoleculeSGroups* sgroups = &mol.sgroups;
@@ -803,7 +793,7 @@ void CmlSaver::_addRgroups(TiXmlElement* elem, BaseMolecule& mol, bool query)
             _writeOccurrenceRanges(out, rgroup.occurrence);
 
             if (buf.size() > 1)
-                rg->SetAttribute("rlogicRange", buf.ptr());
+                rg->SetAttribute("rlogicRange", buf.c_str());
 
             _addRgroupElement(rg, rgroup, query);
         }

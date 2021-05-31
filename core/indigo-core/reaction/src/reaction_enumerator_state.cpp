@@ -399,15 +399,14 @@ void ReactionEnumeratorState::_productProcess(void)
             return;
         }
 
-        cur_smiles.push(0);
-        if (_smiles_array.find(cur_smiles.ptr()))
+        if (_smiles_array.find(cur_smiles.c_str()))
         {
-            int* found_count = _smiles_array.at2(cur_smiles.ptr());
+            int* found_count = _smiles_array.at2(cur_smiles.c_str());
             (*found_count)++;
             return;
         }
         _product_count++;
-        _smiles_array.insert(cur_smiles.ptr(), 1);
+        _smiles_array.insert(cur_smiles.c_str(), 1);
     }
 
     for (int i = 0; i < _product_monomers.size(); i++)
@@ -419,20 +418,19 @@ void ReactionEnumeratorState::_productProcess(void)
         if (_reaction_monomers._monomers[_product_monomers[i]]->name.find('+') != -1)
         {
             is_deep = true;
-            ready_product.name.push('(');
+            ready_product.name += '(';
         }
 
-        ready_product.name.concat(_reaction_monomers._monomers[_product_monomers[i]]->name);
-        ready_product.name.pop();
+        ready_product.name += _reaction_monomers._monomers[_product_monomers[i]]->name;
 
         if (is_deep)
-            ready_product.name.push(')');
+            ready_product.name += ')';
 
-        ready_product.name.push('+');
+        ready_product.name += '+';
     }
 
     if (ready_product.name.size() != 0)
-        ready_product.name.top() = 0;
+        ready_product.name.pop_back();
 
     /* Adding a product to monomers lists */
     if (is_multistep_reaction && !is_transform)

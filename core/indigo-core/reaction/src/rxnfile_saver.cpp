@@ -149,8 +149,8 @@ void RxnfileSaver::_writeRxnHeader(BaseReaction& reaction)
         lt = *localtime(&tm);
     }
 
-    if (reaction.name.ptr() != 0)
-        _output.printfCR("%s", reaction.name.ptr());
+    if (reaction.name.c_str() != 0)
+        _output.printfCR("%s", reaction.name.c_str());
     else
         _output.writeCR();
     _output.printfCR(" -INDIGO- %02d%02d%02d%02d%02d", lt.tm_mon + 1, lt.tm_mday, lt.tm_year % 100, lt.tm_hour, lt.tm_min);

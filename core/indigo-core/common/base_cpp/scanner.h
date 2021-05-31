@@ -48,8 +48,8 @@ namespace indigo
 
         void read(int length, std::string& buf);
 
-        void readLine(std::string& out, bool append_zero);
-        void appendLine(std::string& out, bool append_zero);
+        void readLine(std::string& out );
+        void appendLine(std::string& out );
         bool skipLine();
 
         virtual char readChar();

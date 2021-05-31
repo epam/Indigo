@@ -42,11 +42,11 @@ void ReactionCmlSaver::saveReaction(Reaction& rxn)
         _output.printf("<cml>\n");
     }
 
-    if (rxn.name.ptr() != 0)
+    if (rxn.name.size())
     {
-        if (strchr(rxn.name.ptr(), '\"') != NULL)
+        if (strchr(rxn.name.c_str(), '\"') != NULL)
             throw Error("can not save reaction with '\"' in title");
-        _output.printf("<reaction title=\"%s\">\n", rxn.name.ptr());
+        _output.printf("<reaction title=\"%s\">\n", rxn.name.c_str());
     }
     else
         _output.printf("<reaction>\n");

@@ -124,7 +124,7 @@ CEXPORT const char* indigoGetOption(const char* name)
     {
         auto& tmp = self.getThreadTmpData();
         indigoGetOptionManager().getOptionValueStr(name, tmp.string);
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -200,7 +200,7 @@ CEXPORT const char* indigoGetOptionType(const char* name)
     {
         auto& tmp = self.getThreadTmpData();
         indigoGetOptionManager().getOptionType(name, tmp.string);
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -256,8 +256,8 @@ CEXPORT const char* indigoCheckBadValence(int handle)
             catch (Exception& e)
             {
                 auto& tmp = self.getThreadTmpData();
-                tmp.string.readString(e.message(), true);
-                return tmp.string.ptr();
+                tmp.string = e.message();
+                return tmp.string.c_str();
             }
         }
         else if (IndigoBaseReaction::is(obj))
@@ -280,8 +280,8 @@ CEXPORT const char* indigoCheckBadValence(int handle)
             catch (Exception& e)
             {
                 auto& tmp = self.getThreadTmpData();
-                tmp.string.readString(e.message(), true);
-                return tmp.string.ptr();
+                tmp.string = e.message();
+                return tmp.string.c_str();
             }
         }
         else if (IndigoAtom::is(obj))
@@ -298,8 +298,8 @@ CEXPORT const char* indigoCheckBadValence(int handle)
             catch (Exception& e)
             {
                 auto& tmp = self.getThreadTmpData();
-                tmp.string.readString(e.message(), true);
-                return tmp.string.ptr();
+                tmp.string = e.message();
+                return tmp.string.c_str();
             }
         }
         else
@@ -345,8 +345,8 @@ CEXPORT const char* indigoCheckAmbiguousH(int handle)
             catch (Exception& e)
             {
                 auto& tmp = self.getThreadTmpData();
-                tmp.string.readString(e.message(), true);
-                return tmp.string.ptr();
+                tmp.string = e.message();
+                return tmp.string.c_str();
             }
         }
         else if (IndigoBaseReaction::is(obj))
@@ -368,8 +368,8 @@ CEXPORT const char* indigoCheckAmbiguousH(int handle)
             catch (Exception& e)
             {
                 auto& tmp = self.getThreadTmpData();
-                tmp.string.readString(e.message(), true);
-                return tmp.string.ptr();
+                tmp.string = e.message();
+                return tmp.string.c_str();
             }
         }
         else
@@ -388,7 +388,7 @@ CEXPORT const char* indigoSmiles(int item)
         auto& tmp = self.getThreadTmpData();
         IndigoSmilesSaver::generateSmiles(obj, tmp.string);
 
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -401,7 +401,7 @@ CEXPORT const char* indigoCanonicalSmiles(int item)
         auto& tmp = self.getThreadTmpData();
         IndigoCanonicalSmilesSaver::generateSmiles(obj, tmp.string);
 
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -414,7 +414,7 @@ CEXPORT const char* indigoSmarts(int item)
         auto& tmp = self.getThreadTmpData();
         IndigoSmilesSaver::generateSmarts(obj, tmp.string);
 
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -427,7 +427,7 @@ CEXPORT const char* indigoCanonicalSmarts(int item)
         auto& tmp = self.getThreadTmpData();
         IndigoCanonicalSmilesSaver::generateSmarts(obj, tmp.string);
 
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -515,9 +515,9 @@ CEXPORT int indigoSetName(int handle, const char* name)
         IndigoObject& obj = self.getObject(handle);
 
         if (IndigoBaseMolecule::is(obj))
-            obj.getBaseMolecule().name.readString(name, true);
+            obj.getBaseMolecule().name = name;
         else if (IndigoBaseReaction::is(obj))
-            obj.getBaseReaction().name.readString(name, true);
+            obj.getBaseReaction().name = name;
         else
             throw IndigoError("The object provided is neither a molecule, nor a reaction");
         return 1;
@@ -548,18 +548,17 @@ CEXPORT const char* indigoRawData(int handler)
         {
             IndigoRdfData& data = (IndigoRdfData&)obj;
 
-            tmp.string.copy(data.getRawData());
+            tmp.string = data.getRawData();
         }
         else if (obj.type == IndigoObject::PROPERTY)
-            tmp.string.readString(((IndigoProperty&)obj).getValue(), false);
+            tmp.string = ((IndigoProperty&)obj).getValue();
         else if (obj.type == IndigoObject::DATA_SGROUP)
         {
-            tmp.string.copy(((IndigoDataSGroup&)obj).get().data);
+            tmp.string = ((IndigoDataSGroup&)obj).get().data;
         }
         else
             throw IndigoError("%s does not have raw data", obj.debugInfo());
-        tmp.string.push(0);
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -674,7 +673,7 @@ CEXPORT int indigoSerialize(int item, byte** buf, int* size)
             saver.saveReaction(rxn);
         }
 
-        *buf = (byte*)tmp.string.ptr();
+        *buf = (byte*)&tmp.string[0];
         *size = tmp.string.size();
         return 1;
     }
@@ -987,8 +986,8 @@ CEXPORT const char* indigoDbgInternalType(int object)
         char tmp_str[1024];
         snprintf(tmp_str, 1023, "#%02d: %s", obj.type, obj.debugInfo());
         auto& tmp = self.getThreadTmpData();
-        tmp.string.readString(tmp_str, true);
-        return tmp.string.ptr();
+        tmp.string = tmp_str;
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -1168,18 +1167,15 @@ void _parseHelmRgroupsNames(std::string& helm_caps, StringPool& r_names)
     QS_DEF(std::string, delim);
     r_desc.clear();
     r_name.clear();
-    delim.clear();
+    delim = ',';
     r_names.clear();
-
-    delim.push(',');
-    delim.push(0);
 
     while (!strscan.isEOF())
     {
-        strscan.readWord(r_desc, delim.ptr());
-        if (strncmp(r_desc.ptr(), "[R", 2) == 0)
+        strscan.readWord(r_desc, delim.c_str());
+        if (strncmp(r_desc.c_str(), "[R", 2) == 0)
         {
-            BufferScanner r_scan(r_desc.ptr());
+            BufferScanner r_scan(r_desc.c_str());
             r_scan.skip(2);
             int rg_id = r_scan.readInt1();
             r_scan.readAll(r_name);
@@ -1215,19 +1211,19 @@ CEXPORT int indigoTransformHELMtoSCSR(int object)
 
             if (props.contains("HELM_CLASS") && props.contains("HELM_NAME") && props.contains("HELM_CAPS"))
             {
-                helm_class.readString(props.at("HELM_CLASS"), true);
-                helm_name.readString(props.at("HELM_NAME"), true);
-                helm_caps.readString(props.at("HELM_CAPS"), true);
+                helm_class = props.at("HELM_CLASS");
+                helm_name = props.at("HELM_NAME");
+                helm_caps = props.at("HELM_CAPS");
             }
             else
                 throw IndigoError("indigoTransformHELMtoSCSR: required properties not found.");
 
             if (props.contains("HELM_CODE"))
-                helm_code.readString(props.at("HELM_CODE"), true);
+                helm_code = props.at("HELM_CODE");
             if (props.contains("HELM_NATREPLACE"))
-                helm_natreplace.readString(props.at("HELM_NATREPLACE"), true);
+                helm_natreplace = props.at("HELM_NATREPLACE");
             if (props.contains("HELM_TYPE"))
-                helm_type.readString(props.at("HELM_TYPE"), true);
+                helm_type = props.at("HELM_TYPE");
 
             _parseHelmRgroupsNames(helm_caps, r_names);
 
@@ -1396,9 +1392,8 @@ CEXPORT const char* indigoCheck(const char* item, const char* check_flags, const
         auto& tmp = self.getThreadTmpData();
         IndigoStructureChecker checker;
         std::string r = checker.toJson(checker.check(item, check_flags, load_params));
-        tmp.string.clear();
-        tmp.string.appendString(r.c_str(), true);
-        return tmp.string.ptr();
+        tmp.string = r;
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -1410,9 +1405,8 @@ CEXPORT const char* indigoCheckObj(int item, const char* check_flags)
         auto& tmp = self.getThreadTmpData();
         IndigoStructureChecker checker;
         std::string r = checker.toJson(checker.check(item, check_flags));
-        tmp.string.clear();
-        tmp.string.appendString(r.c_str(), true);
-        return tmp.string.ptr();
+        tmp.string = r;
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -1437,8 +1431,7 @@ CEXPORT const char* indigoCheckStructure(const char* structure, const char* prop
             out.printf("{\"LOAD\":{\"message\":\"Error at loading structure. %s\"}}", e.message());
         }
 
-        out.writeChar(0);
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -1464,8 +1457,7 @@ CEXPORT const char* indigoJson(int item)
             BaseReaction& br = obj.getBaseReaction();
             jn.saveReaction(br);
         }
-        out.writeChar(0);
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }

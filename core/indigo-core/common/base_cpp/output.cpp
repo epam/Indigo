@@ -99,7 +99,7 @@ void Output::vprintf(const char* format, va_list args_orig)
         va_copy(args, args_orig);
 
 #if defined(_WIN32) && !defined(__MINGW32__)
-        n = _vsnprintf_l(str.ptr(), str.size(), format, getCLocale(), args);
+        n = _vsnprintf_l(&str[0], str.size(), format, getCLocale(), args);
 #else
         n = vsnprintf(str.ptr(), str.size(), format, args);
 #endif
@@ -116,12 +116,12 @@ void Output::vprintf(const char* format, va_list args_orig)
         str.resize(new_size);
     }
 
-    write(str.ptr(), n);
+    write(str.c_str(), n);
 }
 
 void Output::writeArray(const std::string& data)
 {
-    write(data.ptr(), data.size());
+    write(data.c_str(), data.size());
 }
 
 void Output::writeCR()
@@ -263,9 +263,9 @@ long long FileOutput::tell()
 #endif
 }
 
-StringOutput::StringOutput(std::string& arr) : _arr(arr)
+StringOutput::StringOutput(std::string& str) : _str(str)
 {
-    _arr.clear();
+    _str.clear();
 }
 
 StringOutput::~StringOutput()
@@ -274,15 +274,12 @@ StringOutput::~StringOutput()
 
 void StringOutput::write(const void* data, int size)
 {
-    int old_size = _arr.size();
-
-    _arr.resize(old_size + size);
-    memcpy(_arr.ptr() + old_size, data, size);
+    _str += std::string((const char*)data, size);
 }
 
 long long StringOutput::tell()
 {
-    return _arr.size();
+    return _str.size();
 }
 
 void StringOutput::flush()
@@ -296,7 +293,7 @@ void StringOutput::seek(long long offset, int from)
 
 void StringOutput::clear()
 {
-    _arr.clear();
+    _str.clear();
 }
 
 StandardOutput::StandardOutput()

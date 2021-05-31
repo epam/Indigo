@@ -109,7 +109,7 @@ void IndigoOptionManager::getOptionValueStr(const char* name, std::string& value
         int tmp;
         getOptionValueInt(name, tmp);
         auto strValue = std::to_string(tmp);
-        value.readString(strValue.c_str(), true);
+        value = strValue.c_str();
         break;
     }
     case OPTION_BOOL: {
@@ -118,7 +118,7 @@ void IndigoOptionManager::getOptionValueStr(const char* name, std::string& value
         std::string strValue = "false";
         if (tmp == 1)
             strValue = "true";
-        value.readString(strValue.c_str(), true);
+        value = strValue.c_str();
         break;
     }
     case OPTION_FLOAT: {
@@ -126,7 +126,7 @@ void IndigoOptionManager::getOptionValueStr(const char* name, std::string& value
         getOptionValueFloat(name, tmp);
         std::stringstream strValue;
         strValue << tmp;
-        value.readString(strValue.str().c_str(), true);
+        value = strValue.str();
         break;
     }
     case OPTION_COLOR: {
@@ -135,7 +135,7 @@ void IndigoOptionManager::getOptionValueStr(const char* name, std::string& value
         std::stringstream coords;
 
         coords << "[" << r << ", " << g << ", " << b << "]";
-        value.readString(coords.str().c_str(), true);
+        value = coords.str();
         break;
     }
     case OPTION_XY: {
@@ -144,7 +144,7 @@ void IndigoOptionManager::getOptionValueStr(const char* name, std::string& value
         std::stringstream coords;
 
         coords << "[" << x << ", " << y << "]";
-        value.readString(coords.str().c_str(), true);
+        value = coords.str();
         break;
     }
     default:
@@ -196,22 +196,22 @@ void IndigoOptionManager::getOptionType(const char* name, std::string& value)
     switch (typeMap.at(name))
     {
     case OPTION_STRING:
-        value.readString("str", true);
+        value = "str";
         break;
     case OPTION_INT:
-        value.readString("int", true);
+        value = "int";
         break;
     case OPTION_BOOL:
-        value.readString("bool", true);
+        value = "bool";
         break;
     case OPTION_FLOAT:
-        value.readString("float", true);
+        value = "float";
         break;
     case OPTION_COLOR:
-        value.readString("color", true);
+        value = "color";
         break;
     case OPTION_XY:
-        value.readString("xy", true);
+        value = "xy";
         break;
     }
 }

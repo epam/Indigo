@@ -43,7 +43,7 @@ void CanonicalRSmilesSaver::saveReaction(Reaction& reaction_)
     QS_DEF(Reaction, reaction);
     reaction.clear();
 
-    reaction.name.copy(reaction_.name);
+    reaction.name = reaction_.name;
 
     if (reaction_.reactantsCount())
     {

@@ -56,11 +56,10 @@ void _indigoParseTauCondition(const char* list_ptr, int& aromaticity, Array<int>
     while (*list_ptr != 0)
     {
         if (isalpha((unsigned)*list_ptr))
-            buf.push(*list_ptr);
+            buf += *list_ptr;
         else if (*list_ptr == ',')
         {
-            buf.push(0);
-            label_list.push(Element::fromString(buf.ptr()));
+            label_list.push(Element::fromString(buf.c_str()));
             buf.clear();
         }
         else
@@ -68,8 +67,7 @@ void _indigoParseTauCondition(const char* list_ptr, int& aromaticity, Array<int>
         list_ptr++;
     }
 
-    buf.push(0);
-    label_list.push(Element::fromString(buf.ptr()));
+    label_list.push(Element::fromString(buf.c_str()));
 }
 
 CEXPORT int indigoSetTautomerRule(int n, const char* beg, const char* end)
@@ -127,7 +125,7 @@ DLLEXPORT bool _indigoParseTautomerFlags(const char* flags, IndigoTautomerParams
 
     scanner.readWord(word, 0);
 
-    if (strcasecmp(word.ptr(), "TAU") != 0)
+    if (strcasecmp(word.c_str(), "TAU") != 0)
         return false;
 
     MoleculeTautomerMatcher::parseConditions(flags, params.conditions, params.force_hydrogens, params.ring_chain, params.method);
@@ -172,7 +170,7 @@ DLLEXPORT int _indigoParseExactFlags(const char* flags, bool reaction, float* rm
             throw IndigoError("_indigoParseExactFlags(): no value is allowed after the number");
         scanner.readWord(word, 0);
 
-        if (strcasecmp(word.ptr(), "NONE") == 0)
+        if (strcasecmp(word.c_str(), "NONE") == 0)
         {
             if (had_all)
                 throw IndigoError("_indigoParseExactFlags(): NONE conflicts with ALL");
@@ -180,7 +178,7 @@ DLLEXPORT int _indigoParseExactFlags(const char* flags, bool reaction, float* rm
             count++;
             continue;
         }
-        if (strcasecmp(word.ptr(), "ALL") == 0)
+        if (strcasecmp(word.c_str(), "ALL") == 0)
         {
             if (had_none)
                 throw IndigoError("_indigoParseExactFlags(): ALL conflicts with NONE");
@@ -191,36 +189,36 @@ DLLEXPORT int _indigoParseExactFlags(const char* flags, bool reaction, float* rm
             count++;
             continue;
         }
-        if (strcasecmp(word.ptr(), "TAU") == 0)
+        if (strcasecmp(word.c_str(), "TAU") == 0)
             // should have been handled before
             throw IndigoError("_indigoParseExactFlags(): no flags are allowed together with TAU");
 
         for (i = 0; i < NELEM(token_list); i++)
         {
-            if (strcasecmp(token_list[i].token, word.ptr()) == 0)
+            if (strcasecmp(token_list[i].token, word.c_str()) == 0)
             {
                 if (!reaction && !(token_list[i].type & 1))
-                    throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for reaction matching", word.ptr());
+                    throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for reaction matching", word.c_str());
                 if (reaction && !(token_list[i].type & 2))
-                    throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for molecule matching", word.ptr());
+                    throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for molecule matching", word.c_str());
                 if (had_all)
                     throw IndigoError("_indigoParseExactFlags(): only negative flags are allowed together with ALL");
                 res |= token_list[i].value;
                 break;
             }
-            if (word[0] == '-' && strcasecmp(token_list[i].token, word.ptr() + 1) == 0)
+            if (word[0] == '-' && strcasecmp(token_list[i].token, word.c_str() + 1) == 0)
             {
                 if (!reaction && !(token_list[i].type & 1))
-                    throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for reaction matching", word.ptr());
+                    throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for reaction matching", word.c_str());
                 if (reaction && !(token_list[i].type & 2))
-                    throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for molecule matching", word.ptr());
+                    throw IndigoError("_indigoParseExactFlags(): %s flag is allowed only for molecule matching", word.c_str());
                 res &= ~token_list[i].value;
                 break;
             }
         }
         if (i == NELEM(token_list))
         {
-            BufferScanner scanner2(word.ptr());
+            BufferScanner scanner2(word.c_str());
 
             if (!reaction && scanner2.tryReadFloat(*rms_threshold))
             {
@@ -228,7 +226,7 @@ DLLEXPORT int _indigoParseExactFlags(const char* flags, bool reaction, float* rm
                 had_float = true;
             }
             else
-                throw IndigoError("_indigoParseExactFlags(): unknown token %s", word.ptr());
+                throw IndigoError("_indigoParseExactFlags(): unknown token %s", word.c_str());
         }
         else
             count++;

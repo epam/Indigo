@@ -255,10 +255,10 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         out.writeString(Element::toString(atom->value_min));
         return;
     case ATOM_PSEUDO:
-        out.writeString(atom->alias.ptr());
+        out.writeString(atom->alias.c_str());
         return;
     case ATOM_TEMPLATE:
-        out.writeString(atom->alias.ptr());
+        out.writeString(atom->alias.c_str());
         return;
     case ATOM_CHARGE:
         out.printf("%+d", atom->value_min);
@@ -277,8 +277,8 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         return;
     case ATOM_FRAGMENT:
         out.printf("$(");
-        if (atom->fragment->fragment_smarts.ptr() != 0 && atom->fragment->fragment_smarts.size() > 0)
-            out.printf("%s", atom->fragment->fragment_smarts.ptr());
+        if (atom->fragment->fragment_smarts.c_str() != 0 && atom->fragment->fragment_smarts.size() > 0)
+            out.printf("%s", atom->fragment->fragment_smarts.c_str());
         out.printf(")");
         return;
     case ATOM_TOTAL_H:
@@ -421,7 +421,7 @@ const char* QueryMolecule::getPseudoAtom(int idx)
     // see the comment above in isPseudoAtom()
 
     if (_atoms[idx]->type == ATOM_PSEUDO)
-        return _atoms[idx]->alias.ptr();
+        return _atoms[idx]->alias.c_str();
 
     if (_atoms[idx]->type == OP_AND)
     {
@@ -429,7 +429,7 @@ const char* QueryMolecule::getPseudoAtom(int idx)
 
         for (i = 0; i < _atoms[idx]->children.size(); i++)
             if (_atoms[idx]->children[i]->type == ATOM_PSEUDO)
-                return ((Atom*)_atoms[idx]->children[i])->alias.ptr();
+                return ((Atom*)_atoms[idx]->children[i])->alias.c_str();
     }
 
     throw Error("getPseudoAtom() applied to something that is not a pseudo-atom");
@@ -462,7 +462,7 @@ const char* QueryMolecule::getTemplateAtom(int idx)
     // see the comment above in isTemplateAtom()
 
     if (_atoms[idx]->type == ATOM_TEMPLATE)
-        return _atoms[idx]->alias.ptr();
+        return _atoms[idx]->alias.c_str();
 
     if (_atoms[idx]->type == OP_AND)
     {
@@ -470,7 +470,7 @@ const char* QueryMolecule::getTemplateAtom(int idx)
 
         for (i = 0; i < _atoms[idx]->children.size(); i++)
             if (_atoms[idx]->children[i]->type == ATOM_TEMPLATE)
-                return ((Atom*)_atoms[idx]->children[i])->alias.ptr();
+                return ((Atom*)_atoms[idx]->children[i])->alias.c_str();
     }
 
     throw Error("getTemplateAtom() applied to something that is not a template atom");
@@ -534,7 +534,7 @@ QueryMolecule::Atom::Atom(int type_, int val_min, int val_max) : Node(type_)
 QueryMolecule::Atom::Atom(int type_, const char* value) : Node(type_)
 {
     if (type_ == ATOM_PSEUDO || type_ == ATOM_TEMPLATE || type_ == ATOM_TEMPLATE_CLASS)
-        alias.readString(value, true);
+        alias = value;
     else
         throw Error("bad type: %d", type_);
 }
@@ -1471,9 +1471,9 @@ void QueryMolecule::Atom::copy(Atom& other)
     {
         fragment.reset(new QueryMolecule());
         fragment->clone(other.fragment.ref(), 0, 0);
-        fragment->fragment_smarts.copy(other.fragment->fragment_smarts);
+        fragment->fragment_smarts = other.fragment->fragment_smarts;
     }
-    alias.copy(other.alias);
+    alias = other.alias;
 
     children.clear();
     for (int i = 0; i < other.children.size(); i++)

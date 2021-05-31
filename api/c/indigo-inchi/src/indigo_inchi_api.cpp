@@ -76,25 +76,25 @@ CEXPORT int indigoInchiLoadMolecule(const char* inchi_string)
         BufferScanner scanner(inchi_string);
         if (Scanner::isSingleLine(scanner))
         {
-            scanner.readLine(tmp.string, true);
+            scanner.readLine(tmp.string);
 
-            if (strncmp(tmp.string.ptr(), aux_prefix, strlen(aux_prefix)) == 0)
-                inchi_wrapper.loadMoleculeFromAux(tmp.string.ptr(), mol_obj->mol);
+            if (strncmp(tmp.string.c_str(), aux_prefix, strlen(aux_prefix)) == 0)
+                inchi_wrapper.loadMoleculeFromAux(tmp.string.c_str(), mol_obj->mol);
             else
-                inchi_wrapper.loadMoleculeFromInchi(tmp.string.ptr(), mol_obj->mol);
+                inchi_wrapper.loadMoleculeFromInchi(tmp.string.c_str(), mol_obj->mol);
         }
         else
         {
             while (!scanner.isEOF())
             {
-                scanner.readLine(tmp.string, true);
-                if (strncmp(tmp.string.ptr(), aux_prefix, strlen(aux_prefix)) == 0)
+                scanner.readLine(tmp.string);
+                if (strncmp(tmp.string.c_str(), aux_prefix, strlen(aux_prefix)) == 0)
                 {
-                    inchi_wrapper.loadMoleculeFromAux(tmp.string.ptr(), mol_obj->mol);
+                    inchi_wrapper.loadMoleculeFromAux(tmp.string.c_str(), mol_obj->mol);
                     break;
                 }
                 else
-                    inchi_wrapper.loadMoleculeFromInchi(tmp.string.ptr(), mol_obj->mol);
+                    inchi_wrapper.loadMoleculeFromInchi(tmp.string.c_str(), mol_obj->mol);
             }
         }
 
@@ -112,7 +112,7 @@ CEXPORT const char* indigoInchiGetInchi(int molecule)
 
         auto& tmp = self.getThreadTmpData();
         inchi_wrapper.saveMoleculeIntoInchi(obj.getMolecule(), tmp.string);
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -123,7 +123,7 @@ CEXPORT const char* indigoInchiGetInchiKey(const char* inchi_string)
     {
         auto& tmp = self.getThreadTmpData();
         InchiWrapper::InChIKey(inchi_string, tmp.string);
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -132,7 +132,7 @@ CEXPORT const char* indigoInchiGetWarning()
 {
     InchiWrapper& inchi_wrapper = indigoInchiGetInstance().inchi;
     if (inchi_wrapper.warning.size() != 0)
-        return inchi_wrapper.warning.ptr();
+        return inchi_wrapper.warning.c_str();
     return "";
 }
 
@@ -140,7 +140,7 @@ CEXPORT const char* indigoInchiGetLog()
 {
     InchiWrapper& inchi_wrapper = indigoInchiGetInstance().inchi;
     if (inchi_wrapper.log.size() != 0)
-        return inchi_wrapper.log.ptr();
+        return inchi_wrapper.log.c_str();
     return "";
 }
 
@@ -148,7 +148,7 @@ CEXPORT const char* indigoInchiGetAuxInfo()
 {
     InchiWrapper& inchi_wrapper = indigoInchiGetInstance().inchi;
     if (inchi_wrapper.auxInfo.size() != 0)
-        return inchi_wrapper.auxInfo.ptr();
+        return inchi_wrapper.auxInfo.c_str();
     return "";
 }
 

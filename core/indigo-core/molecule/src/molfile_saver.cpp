@@ -189,7 +189,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
             for (j = 0; j < 3 - occ.size(); j++)
                 _output.writeChar(' ');
 
-            _output.write(occ.ptr(), occ.size());
+            _output.write(occ.c_str(), occ.size());
             _output.writeCR();
         }
 
@@ -255,8 +255,8 @@ void MolfileSaver::_writeHeader(BaseMolecule& mol, Output& output, bool zcoord)
     else
         dim = "2D";
 
-    if (mol.name.ptr() != 0)
-        output.printfCR("%s", mol.name.ptr());
+    if (mol.name.size())
+        output.printfCR("%s", mol.name.c_str());
     else
         output.writeCR();
     output.printfCR("  -INDIGO-%02d%02d%02d%02d%02d%s", lt.tm_mon + 1, lt.tm_mday, lt.tm_year % 100, lt.tm_hour, lt.tm_min, dim);
@@ -500,10 +500,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             QS_DEF(std::string, tmp_buf);
             StringOutput tmp_out(tmp_buf);
             tmp_out.printf("IMPL_H%d", hcount);
-            tmp_buf.push(0);
-            sgroup.data.readString(tmp_buf.ptr(), true);
+            sgroup.data = tmp_buf;
 
-            sgroup.name.readString("MRV_IMPLICIT_H", true);
+            sgroup.name = "MRV_IMPLICIT_H";
             sgroup.detached = true;
         }
 
@@ -574,7 +573,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         BaseMolecule::TemplateAttPoint& ap = mol.template_attachment_points.at(j);
                         if (ap.ap_occur_idx == i)
                         {
-                            out.printf(" %d %s", _atom_mapping[ap.ap_aidx], ap.ap_id.ptr());
+                            out.printf(" %d %s", _atom_mapping[ap.ap_aidx], ap.ap_id.c_str());
                         }
                     }
                     out.printf(")");
@@ -613,7 +612,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 out.printf(" RBCNT=%d", rbc);
         }
 
-        _writeMultiString(output, buf.ptr(), buf.size());
+        _writeMultiString(output, buf.c_str(), buf.size());
     }
 
     output.writeStringCR("M  V30 END ATOM");
@@ -694,7 +693,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         if (topology != 0)
             out.printf(" TOPO=%d", topology);
 
-        _writeMultiString(output, buf.ptr(), buf.size());
+        _writeMultiString(output, buf.c_str(), buf.size());
     }
 
     output.writeStringCR("M  V30 END BOND");
@@ -744,7 +743,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 out.printf(" %d", _atom_mapping[list[j]]);
             out.writeChar(')');
 
-            _writeMultiString(output, buf.ptr(), buf.size());
+            _writeMultiString(output, buf.c_str(), buf.size());
         }
 
         if (mol.hasHighlighting())
@@ -760,7 +759,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" %d", _bond_mapping[i]);
                 out.writeChar(')');
 
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(output, buf.c_str(), buf.size());
             }
             if (mol.countHighlightedAtoms() > 0)
             {
@@ -771,7 +770,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" %d", _atom_mapping[i]);
                 out.writeChar(')');
 
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(output, buf.c_str(), buf.size());
             }
         }
         if (mol.custom_collections.size() > 0)
@@ -780,7 +779,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             {
                 StringOutput out(buf);
                 out.printf("%s", mol.custom_collections.at(i));
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(output, buf.c_str(), buf.size());
             }
         }
 
@@ -804,7 +803,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             _writeGenericSGroup3000(sgroup, idx++, out);
             if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
             {
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(output, buf.c_str(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
             {
@@ -818,9 +817,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     }
                 }
                 if (sup.subscript.size() > 1)
-                    out.printf(" LABEL=%s", sup.subscript.ptr());
+                    out.printf(" LABEL=%s", sup.subscript.c_str());
                 if (sup.sa_class.size() > 1)
-                    out.printf(" CLASS=%s", sup.sa_class.ptr());
+                    out.printf(" CLASS=%s", sup.sa_class.c_str());
                 if (sup.contracted == 0)
                     out.printf(" ESTATE=E");
                 if (sup.attachment_points.size() > 0)
@@ -831,22 +830,22 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         if (sup.attachment_points[j].lvidx > -1)
                             leave_idx = _atom_mapping[sup.attachment_points[j].lvidx];
 
-                        out.printf(" SAP=(3 %d %d %s)", _atom_mapping[sup.attachment_points[j].aidx], leave_idx, sup.attachment_points[j].apid.ptr());
+                        out.printf(" SAP=(3 %d %d %s)", _atom_mapping[sup.attachment_points[j].aidx], leave_idx, sup.attachment_points[j].apid.c_str());
                     }
                 }
                 if (sup.seqid > 0)
                     out.printf(" SEQID=%d", sup.seqid);
 
                 if (sup.sa_natreplace.size() > 1)
-                    out.printf(" NATREPLACE=%s", sup.sa_natreplace.ptr());
+                    out.printf(" NATREPLACE=%s", sup.sa_natreplace.c_str());
 
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(output, buf.c_str(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dsg = (DataSGroup&)sgroup;
 
-                const char* name = dsg.name.ptr();
+                const char* name = dsg.name.c_str();
                 if (name != 0 && strlen(name) > 0)
                 {
                     out.writeString(" FIELDNAME=");
@@ -857,7 +856,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     if (space_found)
                         out.writeString("\"");
                 }
-                const char* desc = dsg.description.ptr();
+                const char* desc = dsg.description.c_str();
                 if (desc != 0 && strlen(desc) > 0)
                 {
                     out.writeString(" FIELDINFO=");
@@ -868,7 +867,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     if (space_found)
                         out.writeString("\"");
                 }
-                const char* querycode = dsg.querycode.ptr();
+                const char* querycode = dsg.querycode.c_str();
                 if (querycode != 0 && strlen(querycode) > 0)
                 {
                     out.writeString(" QUERYTYPE=");
@@ -879,7 +878,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     if (space_found)
                         out.writeString("\"");
                 }
-                const char* queryoper = dsg.queryoper.ptr();
+                const char* queryoper = dsg.queryoper.c_str();
                 if (queryoper != 0 && strlen(queryoper) > 0)
                 {
                     out.writeString(" QUERYOP=");
@@ -898,7 +897,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 {
                     // Split field data by new lines
                     int len = dsg.data.size();
-                    char* data = dsg.data.ptr();
+                    const char* data = &dsg.data[0];
                     while (len > 0)
                     {
                         int j;
@@ -917,7 +916,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                             break;
                     }
                 }
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(output, buf.c_str(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
             {
@@ -929,8 +928,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 else
                     out.printf(" CONNECT=EU");
                 if (ru.subscript.size() > 1)
-                    out.printf(" LABEL=%s", ru.subscript.ptr());
-                _writeMultiString(output, buf.ptr(), buf.size());
+                    out.printf(" LABEL=%s", ru.subscript.c_str());
+                _writeMultiString(output, buf.c_str(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
             {
@@ -944,11 +943,11 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     out.printf(")");
                 }
                 out.printf(" MULT=%d", mg.multiplier);
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(output, buf.c_str(), buf.size());
             }
             else
             {
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(output, buf.c_str(), buf.size());
             }
         }
         output.writeStringCR("M  V30 END SGROUP");
@@ -1053,7 +1052,7 @@ void MolfileSaver::_writeRGroup(Output& output, BaseMolecule& mol, int rg_idx)
 
     _writeOccurrenceRanges(out, rgroup.occurrence);
 
-    _writeMultiString(output, buf.ptr(), buf.size());
+    _writeMultiString(output, buf.c_str(), buf.size());
 
     PtrPool<BaseMolecule>& frags = rgroup.fragments;
     for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
@@ -1070,17 +1069,17 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
 
     out.printf("TEMPLATE %d ", tgroup.tgroup_id);
     if (tgroup.tgroup_class.size() > 0)
-        out.printf("%s/", tgroup.tgroup_class.ptr());
+        out.printf("%s/", tgroup.tgroup_class.c_str());
     if (tgroup.tgroup_name.size() > 0)
-        out.printf("%s", tgroup.tgroup_name.ptr());
+        out.printf("%s", tgroup.tgroup_name.c_str());
     if (tgroup.tgroup_alias.size() > 0)
-        out.printf("/%s", tgroup.tgroup_alias.ptr());
+        out.printf("/%s", tgroup.tgroup_alias.c_str());
     if (tgroup.tgroup_natreplace.size() > 0)
-        out.printf(" NATREPLACE=%s", tgroup.tgroup_natreplace.ptr());
+        out.printf(" NATREPLACE=%s", tgroup.tgroup_natreplace.c_str());
     if (tgroup.tgroup_comment.size() > 0)
-        out.printf(" COMMENT=%s", tgroup.tgroup_comment.ptr());
+        out.printf(" COMMENT=%s", tgroup.tgroup_comment.c_str());
 
-    _writeMultiString(output, buf.ptr(), buf.size());
+    _writeMultiString(output, buf.c_str(), buf.size());
 
     _writeCtab(output, *tgroup.fragment.get(), mol.isQueryMolecule());
 }
@@ -1294,10 +1293,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             StringOutput tmp_out(tmp_buf);
             tmp_buf.clear();
             tmp_out.printf("IMPL_H%d", hydrogens_count);
-            tmp_buf.push(0);
-            sgroup.data.readString(tmp_buf.ptr(), true);
+            sgroup.data = tmp_buf;
 
-            sgroup.name.readString("MRV_IMPLICIT_H", true);
+            sgroup.name = "MRV_IMPLICIT_H";
             sgroup.detached = true;
 
             hydrogens_count = 0;
@@ -1351,7 +1349,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         {
             std::string buf;
             qmol->getBondDescription(i, buf);
-            throw Error("unrepresentable query bond: %s", buf.ptr());
+            throw Error("unrepresentable query bond: %s", buf.c_str());
         }
 
         int stereo = 0;
@@ -1520,10 +1518,10 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if ((dsg.name.size() > 11) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) && (dsg.atoms.size() > 0) && dsg.data.size() > 0)
+            if ((dsg.name.size() > 11) && (strncmp(dsg.name.c_str(), "INDIGO_ALIAS", 12) == 0) && (dsg.atoms.size() > 0) && dsg.data.size() > 0)
             {
                 output.printfCR("A  %3d", _atom_mapping[dsg.atoms[0]]);
-                output.writeString(dsg.data.ptr());
+                output.writeString(dsg.data.c_str());
                 output.writeCR();
             }
         }
@@ -1543,7 +1541,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if ((dsg.name.size() > 11) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0))
+            if ((dsg.name.size() > 11) && (strncmp(dsg.name.c_str(), "INDIGO_ALIAS", 12) == 0))
                 continue;
         }
         sgroup_ids.push(i);
@@ -1621,7 +1619,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& datasgroup = (DataSGroup&)sgroup;
-                if ((datasgroup.name.size() > 11) && (strncmp(datasgroup.name.ptr(), "INDIGO_ALIAS", 12) == 0))
+                if ((datasgroup.name.size() > 11) && (strncmp(datasgroup.name.c_str(), "INDIGO_ALIAS", 12) == 0))
                     continue;
             }
 
@@ -1647,9 +1645,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 Superatom& superatom = (Superatom&)sgroup;
 
                 if (superatom.subscript.size() > 1)
-                    output.printfCR("M  SMT %3d %s", superatom.original_group, superatom.subscript.ptr());
+                    output.printfCR("M  SMT %3d %s", superatom.original_group, superatom.subscript.c_str());
                 if (superatom.sa_class.size() > 1)
-                    output.printfCR("M  SCL %3d %s", superatom.original_group, superatom.sa_class.ptr());
+                    output.printfCR("M  SCL %3d %s", superatom.original_group, superatom.sa_class.c_str());
                 if (superatom.bond_connections.size() > 0)
                 {
                     for (j = 0; j < superatom.bond_connections.size(); j++)
@@ -1696,13 +1694,13 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 RepeatingUnit& sru = (RepeatingUnit&)sgroup;
 
                 if (sru.subscript.size() > 1)
-                    output.printfCR("M  SMT %3d %s", sru.original_group, sru.subscript.ptr());
+                    output.printfCR("M  SMT %3d %s", sru.original_group, sru.subscript.c_str());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& datasgroup = (DataSGroup&)sgroup;
 
-                if ((datasgroup.name.size() > 11) && (strncmp(datasgroup.name.ptr(), "INDIGO_ALIAS", 12) == 0))
+                if ((datasgroup.name.size() > 11) && (strncmp(datasgroup.name.c_str(), "INDIGO_ALIAS", 12) == 0))
                     continue;
 
                 output.printf("M  SDT %3d ", datasgroup.original_group);
@@ -1724,10 +1722,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 output.writeCR();
 
                 int k = datasgroup.data.size();
-                if (k > 0 && datasgroup.data.top() == 0)
-                    k--; // Exclude terminating zero
-
-                char* ptr = datasgroup.data.ptr();
+                const char* ptr = datasgroup.data.c_str();
                 while (k > 0)
                 {
                     int j;
@@ -1794,7 +1789,7 @@ void MolfileSaver::_writeFormattedString(Output& output, std::string& str, int l
     int k = length;
     if ((str.size() > 1) && (str.size() <= length))
     {
-        output.printf("%s", str.ptr());
+        output.printf("%s", str.c_str());
         k -= str.size() - 1;
         while (k-- > 0)
             output.writeChar(' ');
@@ -2108,7 +2103,7 @@ void MolfileSaver::_updateCIPStereoDescriptors(BaseMolecule& mol)
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& datasgroup = (DataSGroup&)sgroup;
-            if (datasgroup.name.size() > 0 && strcmp(datasgroup.name.ptr(), "INDIGO_CIP_DESC") == 0)
+            if (datasgroup.name.size() > 0 && strcmp(datasgroup.name.c_str(), "INDIGO_CIP_DESC") == 0)
             {
                 mol.sgroups.remove(i);
             }
@@ -2263,15 +2258,15 @@ void MolfileSaver::_addCIPSgroups(BaseMolecule& mol, Array<int>& atom_cip_desc, 
             sgroup.atoms.push(i);
 
             if (atom_cip_desc[i] == CIP_DESC_R)
-                sgroup.data.readString("(R)", true);
+                sgroup.data = "(R)";
             else if (atom_cip_desc[i] == CIP_DESC_S)
-                sgroup.data.readString("(S)", true);
+                sgroup.data = "(S)";
             else if (atom_cip_desc[i] == CIP_DESC_r)
-                sgroup.data.readString("(r)", true);
+                sgroup.data = "(r)";
             else if (atom_cip_desc[i] == CIP_DESC_s)
-                sgroup.data.readString("(s)", true);
+                sgroup.data = "(s)";
 
-            sgroup.name.readString("INDIGO_CIP_DESC", true);
+            sgroup.name = "INDIGO_CIP_DESC";
             sgroup.display_pos.x = 0.0;
             sgroup.display_pos.y = 0.0;
             sgroup.detached = true;
@@ -2292,11 +2287,11 @@ void MolfileSaver::_addCIPSgroups(BaseMolecule& mol, Array<int>& atom_cip_desc, 
             sgroup.atoms.push(beg);
             sgroup.atoms.push(end);
             if (bond_cip_desc[i] == CIP_DESC_E)
-                sgroup.data.readString("(E)", true);
+                sgroup.data = "(E)";
             else if (bond_cip_desc[i] == CIP_DESC_Z)
-                sgroup.data.readString("(Z)", true);
+                sgroup.data = "(Z)";
 
-            sgroup.name.readString("INDIGO_CIP_DESC", true);
+            sgroup.name = "INDIGO_CIP_DESC";
             sgroup.display_pos.x = 0.0;
             sgroup.display_pos.y = 0.0;
             sgroup.detached = true;

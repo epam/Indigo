@@ -66,9 +66,7 @@ IndigoObject* IndigoJSONMolecule::clone()
 
 const char* IndigoJSONMolecule::getName()
 {
-    if (getMolecule().name.ptr() == 0)
-        return "";
-    return getMolecule().name.ptr();
+    return getMolecule().name.c_str();
 }
 
 IndigoJSONMolecule::~IndigoJSONMolecule()
@@ -94,7 +92,7 @@ IndigoSdfLoader::~IndigoSdfLoader()
 IndigoRdfData::IndigoRdfData(int type, std::string& data, int index, long long offset) : IndigoObject(type)
 {
     _loaded = false;
-    _data.copy(data);
+    _data = data;
 
     _index = index;
     _offset = offset;
@@ -103,7 +101,7 @@ IndigoRdfData::IndigoRdfData(int type, std::string& data, int index, long long o
 IndigoRdfData::IndigoRdfData(int type, std::string& data, PropertiesMap& properties, int index, long long offset) : IndigoObject(type)
 {
     _loaded = false;
-    _data.copy(data);
+    _data = data;
 
     _properties.copy(properties);
 
@@ -165,14 +163,14 @@ BaseMolecule& IndigoRdfMolecule::getBaseMolecule()
 const char* IndigoRdfMolecule::getName()
 {
     if (_loaded)
-        return _mol.name.ptr();
+        return _mol.name.c_str();
 
     Indigo& self = indigoGetInstance();
 
     BufferScanner scanner(_data);
     auto& tmp = self.getThreadTmpData();
-    scanner.readLine(tmp.string, true);
-    return tmp.string.ptr();
+    scanner.readLine(tmp.string);
+    return tmp.string.c_str();
 }
 
 IndigoObject* IndigoRdfMolecule::clone()
@@ -218,19 +216,19 @@ BaseReaction& IndigoRdfReaction::getBaseReaction()
 const char* IndigoRdfReaction::getName()
 {
     if (_loaded)
-        return _rxn.name.ptr();
+        return _rxn.name.c_str();
 
     Indigo& self = indigoGetInstance();
 
     BufferScanner scanner(_data);
     auto& tmp = self.getThreadTmpData();
-    scanner.readLine(tmp.string, true);
-    if (strcmp(tmp.string.ptr(), "$RXN") != 0)
+    scanner.readLine(tmp.string);
+    if (strcmp(tmp.string.c_str(), "$RXN") != 0)
         throw IndigoError("IndigoRdfReaction::getName(): unexpected first line in the files with reactions."
                           "'%s' has been found but '$RXN' has been expected.");
     // Read next line with the name
-    scanner.readLine(tmp.string, true);
-    return tmp.string.ptr();
+    scanner.readLine(tmp.string);
+    return tmp.string.c_str();
 }
 
 IndigoObject* IndigoRdfReaction::clone()
@@ -355,9 +353,9 @@ BaseMolecule& IndigoSmilesMolecule::getBaseMolecule()
 
 const char* IndigoSmilesMolecule::getName()
 {
-    if (getMolecule().name.ptr() == 0)
+    if (getMolecule().name.c_str() == 0)
         return "";
-    return getMolecule().name.ptr();
+    return getMolecule().name.c_str();
 }
 
 IndigoObject* IndigoSmilesMolecule::clone()
@@ -397,9 +395,9 @@ BaseReaction& IndigoSmilesReaction::getBaseReaction()
 
 const char* IndigoSmilesReaction::getName()
 {
-    if (getReaction().name.ptr() == 0)
+    if (getReaction().name.c_str() == 0)
         return "";
-    return getReaction().name.ptr();
+    return getReaction().name.c_str();
 }
 
 IndigoObject* IndigoSmilesReaction::clone()
@@ -436,7 +434,7 @@ void IndigoMultilineSmilesLoader::_advance()
 {
     _offsets.expand(_current_number + 1);
     _offsets[_current_number++] = _scanner->tell();
-    _scanner->readLine(_str, false);
+    _scanner->readLine(_str);
 
     if (_scanner->tell() > _max_offset)
         _max_offset = _scanner->tell();
@@ -673,7 +671,7 @@ BaseMolecule& IndigoCmlMolecule::getBaseMolecule()
 
 const char* IndigoCmlMolecule::getName()
 {
-    return getMolecule().name.ptr();
+    return getMolecule().name.c_str();
 }
 
 IndigoObject* IndigoCmlMolecule::clone()
@@ -717,7 +715,7 @@ BaseReaction& IndigoCmlReaction::getBaseReaction()
 
 const char* IndigoCmlReaction::getName()
 {
-    return getReaction().name.ptr();
+    return getReaction().name.c_str();
 }
 
 IndigoObject* IndigoCmlReaction::clone()
@@ -824,7 +822,7 @@ BaseMolecule& IndigoCdxMolecule::getBaseMolecule()
 
 const char* IndigoCdxMolecule::getName()
 {
-    return getMolecule().name.ptr();
+    return getMolecule().name.c_str();
 }
 
 IndigoObject* IndigoCdxMolecule::clone()
@@ -869,7 +867,7 @@ BaseReaction& IndigoCdxReaction::getBaseReaction()
 
 const char* IndigoCdxReaction::getName()
 {
-    return getReaction().name.ptr();
+    return getReaction().name.c_str();
 }
 
 IndigoObject* IndigoCdxReaction::clone()

@@ -81,7 +81,7 @@ namespace indigo
 
         inline bool _startsWith(const char* str) const
         {
-            return ((size_t)_innerBuffer.size() >= strlen(str) && strncmp(_innerBuffer.ptr(), str, strlen(str)) == 0);
+            return ((size_t)_innerBuffer.size() >= strlen(str) && strncmp(_innerBuffer.c_str(), str, strlen(str)) == 0);
         }
 
         TL_CP_DECL(std::string, _innerBuffer);

@@ -60,7 +60,7 @@ static void product_proc(Molecule& product, Array<int>& monomers_indices, Array<
         reaction.addReactantCopy(rpe_data->rpe->getMonomer(monomers_indices[i]), NULL, NULL);
 
     reaction.addProductCopy(new_product, NULL, NULL);
-    reaction.name.copy(product.name);
+    reaction.name = product.name;
 
     Array<int>& indices = rpe_data->out_indices->push();
     indices.copy(monomers_indices);
@@ -260,9 +260,9 @@ void indigoProductEnumeratorGetOneTubeMode(std::string& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.rpe_params.is_one_tube)
-        value.readString("one-tube", true);
+        value = "one-tube";
     else
-        value.readString("grid", true);
+        value = "grid";
 }
 
 class _IndigoRPEOptionsHandlersSetter

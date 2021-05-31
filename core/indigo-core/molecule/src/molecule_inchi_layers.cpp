@@ -97,7 +97,6 @@ void MainLayerFormula::printFormula(std::string& result)
             continue;
         _printAtom(output, label);
     }
-    result.push(0);
 }
 
 void MainLayerFormula::_printAtom(Output& output, int label) const
@@ -252,7 +251,6 @@ void MainLayerConnections::printConnectionTable(std::string& result)
     result.clear();
     if (cano_mol.edgeCount() == 0)
     {
-        result.push(0);
         return;
     }
     StringOutput output(result);
@@ -417,8 +415,6 @@ void MainLayerConnections::printConnectionTable(std::string& result)
                 vertex_stack.push(PRINT_COMMA);
         }
     }
-
-    result.push(0);
 }
 
 //
@@ -522,9 +518,7 @@ void HydrogensLayer::print(std::string& result)
 
     // Remove last comma
     if (result.size() != 0)
-        result.pop();
-
-    result.push(0);
+        result.pop_back();
 }
 
 bool HydrogensLayer::checkAutomorphism(const Array<int>& mapping)
@@ -605,8 +599,6 @@ void CisTransStereochemistryLayer::print(std::string& result)
         else
             output.printf("+");
     }
-
-    result.push(0);
 }
 
 bool CisTransStereochemistryLayer::checkAutomorphism(const Array<int>& mapping)
@@ -726,7 +718,6 @@ void TetrahedralStereochemistryLayer::print(std::string& result)
             output.printf("%d%c", v + 1, sign * first_sign == 1 ? '+' : '-');
         }
     }
-    result.push(0);
 }
 
 int TetrahedralStereochemistryLayer::_getFirstSign()
@@ -751,7 +742,6 @@ void TetrahedralStereochemistryLayer::printEnantiomers(std::string& result)
         output.printf("%d", sign == 1 ? 1 : 0);
     else
         output.printf(".");
-    result.push(0);
 }
 
 bool TetrahedralStereochemistryLayer::checkAutomorphism(const Array<int>& mapping)

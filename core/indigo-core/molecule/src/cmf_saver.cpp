@@ -445,7 +445,7 @@ void CmfSaver::_encodeString(const std::string& str)
     if (len > 0 && str[len - 1] == 0)
         len--;
     _output->writePackedUInt(len);
-    _output->write(str.ptr(), len);
+    _output->write(str.data(), len);
 }
 
 void CmfSaver::_encodeAtom(Molecule& mol, int idx, const int* mapping)

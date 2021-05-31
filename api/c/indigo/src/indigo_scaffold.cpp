@@ -67,12 +67,12 @@ CEXPORT int indigoExtractCommonScaffold(int structures, const char* options)
             {
                 scanner.readWord(word, 0);
 
-                if (strcasecmp(word.ptr(), "APPROX") == 0)
+                if (strcasecmp(word.c_str(), "APPROX") == 0)
                     approximate = true;
-                else if (strcasecmp(word.ptr(), "EXACT") == 0)
+                else if (strcasecmp(word.c_str(), "EXACT") == 0)
                     approximate = false;
                 else
-                    throw IndigoError("indigoExtractCommonScaffold: unknown option %s\n", word.ptr());
+                    throw IndigoError("indigoExtractCommonScaffold: unknown option %s\n", word.c_str());
 
                 scanner.skipSpace();
                 if (!scanner.isEOF())

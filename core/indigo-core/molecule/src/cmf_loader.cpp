@@ -768,7 +768,7 @@ void CmfLoader::_readSGroup(int code, Molecule& mol)
         if (version >= 2)
             _readString(s.subscript);
         else
-            s.subscript.readString("n", true);
+            s.subscript = "n";
 
         s.connectivity = _scanner->readPackedUInt();
     }
@@ -866,9 +866,7 @@ void CmfLoader::_readSGroupXYZ(Scanner& scanner, int idx, Molecule& mol, const C
 void CmfLoader::_readString(std::string& dest)
 {
     unsigned int len = _scanner->readPackedUInt();
-    dest.resize(len + 1);
-    _scanner->read(len, dest.ptr());
-    dest[len] = 0;
+    _scanner->read(len, &dest[0]);
 }
 
 void CmfLoader::_readUIntArray(Array<int>& dest)

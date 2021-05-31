@@ -757,7 +757,7 @@ namespace indigo
 
             int sid = mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
             Superatom& super = (Superatom&)mol.sgroups.getSGroup(sid);
-            super.subscript.readString(mol.getPseudoAtom(v), true);
+            super.subscript = mol.getPseudoAtom(v);
             for (int ve = expanded.vertexBegin(); ve != expanded.vertexEnd(); ve = expanded.vertexNext(ve))
                 super.atoms.push(mapping[ve]);
 

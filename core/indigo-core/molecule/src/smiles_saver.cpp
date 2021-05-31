@@ -931,9 +931,9 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
     case QueryMolecule::ATOM_FRAGMENT: {
-        if (atom->fragment->fragment_smarts.ptr() == 0)
+        if (atom->fragment->fragment_smarts.c_str() == 0)
             throw Error("fragment_smarts has unexpectedly gone");
-        _output.printf("$(%s)", atom->fragment->fragment_smarts.ptr());
+        _output.printf("$(%s)", atom->fragment->fragment_smarts.c_str());
         break;
     }
     case QueryMolecule::ATOM_AROMATICITY: {

@@ -166,29 +166,29 @@ void MoleculeTautomerMatcher::parseConditions(const char* tautomer_text, int& ru
         if (word.size() < 2)
             throw Error("internal error on token reading");
 
-        if (strcasecmp(word.ptr(), "TAU") == 0)
+        if (strcasecmp(word.c_str(), "TAU") == 0)
             continue;
-        if (strncasecmp(word.ptr(), "INCHI", 5) == 0)
+        if (strncasecmp(word.c_str(), "INCHI", 5) == 0)
         {
             method = INCHI;
             continue;
         }
-        if (strncasecmp(word.ptr(), "RSMARTS", 7) == 0)
+        if (strncasecmp(word.c_str(), "RSMARTS", 7) == 0)
         {
             method = RSMARTS;
             continue;
         }
-        if (strcasecmp(word.ptr(), "HYD") == 0)
+        if (strcasecmp(word.c_str(), "HYD") == 0)
         {
             force_hydrogens = true;
             continue;
         }
-        if (strcasecmp(word.ptr(), "R-C") == 0)
+        if (strcasecmp(word.c_str(), "R-C") == 0)
         {
             ring_chain = true;
             continue;
         }
-        if (strcasecmp(word.ptr(), "R*") == 0)
+        if (strcasecmp(word.c_str(), "R*") == 0)
         {
             rules = 0xFFFFFF;
             continue;
@@ -197,7 +197,7 @@ void MoleculeTautomerMatcher::parseConditions(const char* tautomer_text, int& ru
         {
             if (isdigit(word[1]))
             {
-                i = atoi(word.ptr() + 1);
+                i = atoi(word.c_str() + 1);
 
                 if (i > 0 && i <= 32)
                 {
@@ -206,7 +206,7 @@ void MoleculeTautomerMatcher::parseConditions(const char* tautomer_text, int& ru
                 }
             }
         }
-        throw Error("parseConditions(): unknown token %s", word.ptr());
+        throw Error("parseConditions(): unknown token %s", word.c_str());
     }
 }
 

@@ -49,7 +49,7 @@ TEST(BingoNosqlTest, test_loadtargetscmf)
     QueryMolecule qmol;
 
     std::string qbuf;
-    qbuf.readString("N(#C)=C(C)C", false);
+    qbuf= "N(#C)=C(C)C";
     BufferScanner sm_scanner(qbuf);
     SmilesLoader smiles_loader(sm_scanner);
     smiles_loader.loadQueryMolecule(qmol);

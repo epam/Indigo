@@ -343,7 +343,7 @@ void CanvasOptions::clear()
     gridColumnNumber = 1;
     comment.clear();
     titleProp.clear();
-    titleProp.appendString("^NAME", true);
+    titleProp += "^NAME";
 }
 
 //

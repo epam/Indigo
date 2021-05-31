@@ -104,7 +104,7 @@ void RSmilesLoader::_loadReaction()
 
         if (c == '>')
             break;
-        buf.push(c);
+        buf += c;
     }
 
     BufferScanner r_scanner(buf);
@@ -138,7 +138,7 @@ void RSmilesLoader::_loadReaction()
 
         if (c == '>')
             break;
-        buf.push(c);
+        buf += c;
     }
 
     if (_rxn != 0)
@@ -181,7 +181,7 @@ void RSmilesLoader::_loadReaction()
             vbar = true;
             break;
         }
-        buf.push(c);
+        buf += c;
     }
 
     BufferScanner p_scanner(buf);
@@ -393,19 +393,17 @@ void RSmilesLoader::_loadReaction()
                         c = _scanner.readChar();
                         if (c == ';' || c == '$')
                             break;
-                        label.push(c);
+                        label += c;
                     }
                     if (c == '$' && i != k - 1)
                         throw Error("only %d atoms found in pseudo-atoms $...$ block", i + 1);
                     if (label.size() > 0)
                     {
-                        label.push(0);
-
                         int idx = i;
                         int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
                         int rnum;
 
-                        if (label.size() > 3 && label[0] == '_' && label[1] == 'R' && sscanf(label.ptr() + 2, "%d", &rnum) == 1)
+                        if (label.size() > 3 && label[0] == '_' && label[1] == 'R' && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
                         {
                             // ChemAxon's Extended SMILES notation for R-sites
                             if (_qrxn != 0)
@@ -419,13 +417,13 @@ void RSmilesLoader::_loadReaction()
                         else
                         {
                             if (_rxn != 0)
-                                ((Molecule&)mols[group]->ref()).setPseudoAtom(idx, label.ptr());
+                                ((Molecule&)mols[group]->ref()).setPseudoAtom(idx, label.c_str());
                             else
                             {
                                 QueryMolecule& qmol = (QueryMolecule&)mols[group]->ref();
 
                                 qmol.resetAtom(idx, (QueryMolecule::Atom*)QueryMolecule::Atom::und(
-                                                        qmol.releaseAtom(idx), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                                                        qmol.releaseAtom(idx), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.c_str())));
                             }
                         }
                     }
@@ -472,7 +470,7 @@ void RSmilesLoader::_loadReaction()
 
     scanner_for_name->skipSpace();
     if (!scanner_for_name->isEOF())
-        scanner_for_name->readLine(_brxn->name, true);
+        scanner_for_name->readLine(_brxn->name);
 
     AutoPtr<BaseMolecule> mol;
     QS_DEF(Array<int>, aam);

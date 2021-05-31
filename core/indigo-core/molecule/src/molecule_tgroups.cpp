@@ -95,7 +95,7 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* context)
     if ((tg1.tgroup_alias.size() - tg2.tgroup_alias.size()) != 0)
         return tg1.tgroup_alias.size() - tg2.tgroup_alias.size();
 
-    if ((tg2.tgroup_class.size() > 1) && strncmp(tg2.tgroup_class.ptr(), "AA", 2) == 0)
+    if ((tg2.tgroup_class.size() > 1) && strncmp(tg2.tgroup_class.c_str(), "AA", 2) == 0)
         return 1;
     else
         return -1;
@@ -103,11 +103,11 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* context)
 
 void TGroup::copy(TGroup& other)
 {
-    tgroup_class.copy(other.tgroup_class);
-    tgroup_name.copy(other.tgroup_name);
-    tgroup_alias.copy(other.tgroup_alias);
-    tgroup_comment.copy(other.tgroup_comment);
-    tgroup_natreplace.copy(other.tgroup_natreplace);
+    tgroup_class = other.tgroup_class;
+    tgroup_name = other.tgroup_name;
+    tgroup_alias = other.tgroup_alias;
+    tgroup_comment = other.tgroup_comment;
+    tgroup_natreplace = other.tgroup_natreplace;
     tgroup_id = other.tgroup_id;
 
     AutoPtr<BaseMolecule> new_fragment(other.fragment->neu());
@@ -184,7 +184,7 @@ int MoleculeTGroups::findTGroup(const char* name)
         TGroup& tgroup = *_tgroups.at(i);
         if (tgroup.tgroup_name.size() > 0 && name != 0)
         {
-            if (strncmp(tgroup.tgroup_name.ptr(), name, tgroup.tgroup_name.size()) == 0)
+            if (strncmp(tgroup.tgroup_name.c_str(), name, tgroup.tgroup_name.size()) == 0)
                 return i;
         }
     }

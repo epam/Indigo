@@ -74,7 +74,7 @@ void MoleculeChainFingerprintBuilder::_handleChain(Graph& graph, int size, const
     {
         int number = self->_mol.getAtomNumber(vertices[i]);
 
-        str.push(number & 0xFF);
+        str.push_back(number & 0xFF);
 
         if (i == size)
             break;
@@ -84,31 +84,28 @@ void MoleculeChainFingerprintBuilder::_handleChain(Graph& graph, int size, const
         switch (order)
         {
         case BOND_SINGLE:
-            str.push('-');
+            str.push_back('-');
             break;
         case BOND_DOUBLE:
-            str.push('=');
+            str.push_back('=');
             break;
         case BOND_TRIPLE:
-            str.push('#');
+            str.push_back('#');
             break;
         default:
-            str.push(':');
+            str.push_back(':');
         }
     }
 
     int len = str.size();
 
     for (i = 0; i < len; i++)
-        rev_str.push(str[len - i - 1]);
-
-    str.push(0);
-    rev_str.push(0);
+        rev_str.push_back(str[len - i - 1]);
 
     unsigned seed;
 
-    unsigned seed1 = CRC32::get(str.ptr());
-    unsigned seed2 = CRC32::get(rev_str.ptr());
+    unsigned seed1 = CRC32::get(str.c_str());
+    unsigned seed2 = CRC32::get(rev_str.c_str());
 
     seed = __min(seed1, seed2);
 

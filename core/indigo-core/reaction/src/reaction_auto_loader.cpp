@@ -188,10 +188,9 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
                 {
                     std::string buf;
                     _scanner->readAll(buf);
-                    buf.push(0);
                     Document data;
-                    if (data.Parse(buf.ptr()).HasParseError())
-                        throw Error("Error at parsing JSON: %s", buf.ptr());
+                    if (data.Parse(buf.c_str()).HasParseError())
+                        throw Error("Error at parsing JSON: %s", buf.c_str());
                     if (data.HasMember("root") && data["root"].HasMember("nodes"))
                     {
                         ReactionJsonLoader loader(data);

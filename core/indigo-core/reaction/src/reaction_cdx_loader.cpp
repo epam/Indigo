@@ -41,5 +41,4 @@ void ReactionCdxLoader::loadReaction(Reaction& rxn)
 
     QS_DEF(std::string, buf);
     _scanner.readAll(buf);
-    buf.push(0);
 }

@@ -126,7 +126,7 @@ CEXPORT const char* indigoMassComposition(int molecule)
         auto& tmp = self.getThreadTmpData();
         mass.massComposition(mol.asMolecule(), tmp.string);
 
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }

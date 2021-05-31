@@ -77,10 +77,9 @@ void CmlLoader::_loadMolecule()
     {
         QS_DEF(std::string, buf);
         _scanner->readAll(buf);
-        buf.push(0);
         TiXmlDocument xml;
 
-        xml.Parse(buf.ptr());
+        xml.Parse(buf.c_str());
 
         if (xml.Error())
             throw Error("XML parsing error: %s", xml.ErrorDesc());
@@ -174,7 +173,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
     const char* title = handle.Element()->Attribute("title");
 
     if (title != 0)
-        _bmol->name.readString(title, true);
+        _bmol->name = title;
 
     QS_DEF(std::vector<Atom>, atoms);
     atoms.clear();
@@ -499,14 +498,13 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     delim.clear();
 
                     strscan.skip(1);
-                    delim.push(strscan.readChar());
-                    delim.push(':');
-                    delim.push(0);
+                    delim = strscan.readChar();
+                    delim += ':';
 
                     while (!strscan.isEOF())
                     {
-                        strscan.readWord(el, delim.ptr());
-                        _appendQueryAtom(el.ptr(), atomlist);
+                        strscan.readWord(el, delim.c_str());
+                        _appendQueryAtom(el.c_str(), atomlist);
                         if (strscan.readChar() == ':')
                             break;
                     }
@@ -631,17 +629,14 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     QS_DEF(std::string, qf);
                     QS_DEF(std::string, delim);
                     qf.clear();
-                    delim.clear();
-
-                    delim.push(';');
-                    delim.push(0);
+                    delim = ';';
 
                     while (!strscan.isEOF())
                     {
-                        strscan.readWord(qf, delim.ptr());
-                        if (strncmp(qf.ptr(), "rb", 2) == 0)
+                        strscan.readWord(qf, delim.c_str());
+                        if (strncmp(qf.c_str(), "rb", 2) == 0)
                         {
-                            BufferScanner qfscan(qf.ptr());
+                            BufferScanner qfscan(qf.c_str());
                             qfscan.skip(2);
                             int rbcount;
                             if (qfscan.lookNext() == '*')
@@ -657,9 +652,9 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                             else if (rbcount == -2)
                                 atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, 0)));
                         }
-                        else if (strncmp(qf.ptr(), "s", 1) == 0)
+                        else if (strncmp(qf.c_str(), "s", 1) == 0)
                         {
-                            BufferScanner qfscan(qf.ptr());
+                            BufferScanner qfscan(qf.c_str());
                             qfscan.skip(1);
                             int subst;
                             if (qfscan.lookNext() == '*')
@@ -685,17 +680,17 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                                     atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst, (subst < 6 ? subst : 100))));
                             }
                         }
-                        else if (strncmp(qf.ptr(), "u", 1) == 0)
+                        else if (strncmp(qf.c_str(), "u", 1) == 0)
                         {
-                            BufferScanner qfscan(qf.ptr());
+                            BufferScanner qfscan(qf.c_str());
                             qfscan.skip(1);
                             bool unsat = (qfscan.readInt1() > 0);
                             if (unsat)
                                 atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_UNSATURATION, 0)));
                         }
-                        else if (strncmp(qf.ptr(), "H", 1) == 0)
+                        else if (strncmp(qf.c_str(), "H", 1) == 0)
                         {
-                            BufferScanner qfscan(qf.ptr());
+                            BufferScanner qfscan(qf.c_str());
                             qfscan.skip(1);
                             qhcount = qfscan.readInt1();
                             /*
@@ -805,8 +800,8 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(sg_idx);
 
                     sgroup.atoms.push(idx);
-                    sgroup.name.readString("INDIGO_ALIAS", true);
-                    sgroup.data.readString(a.alias.c_str(), true);
+                    sgroup.name = "INDIGO_ALIAS";
+                    sgroup.data = a.alias.c_str();
                     sgroup.display_pos.x = _bmol->getAtomXyz(idx).x;
                     sgroup.display_pos.y = _bmol->getAtomXyz(idx).y;
                 }
@@ -864,10 +859,10 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         QS_DEF(std::string, id);
 
         strscan.readWord(id, 0);
-        int beg = getAtomIdx(id.ptr());
+        int beg = getAtomIdx(id.c_str());
         strscan.skipSpace();
         strscan.readWord(id, 0);
-        int end = getAtomIdx(id.ptr());
+        int end = getAtomIdx(id.c_str());
 
         if ((beg < 0) || (end < 0))
             continue;
@@ -1071,7 +1066,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
             {
                 strscan.skipSpace();
                 strscan.readWord(id, 0);
-                pyramid[k] = getAtomIdx(id.ptr());
+                pyramid[k] = getAtomIdx(id.c_str());
                 if (pyramid[k] == idx)
                     pyramid[k] = -1;
             }
@@ -1169,7 +1164,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     strscan.skipSpace();
                     strscan.readWord(id, 0);
 
-                    refs[k] = getAtomIdx(id.ptr());
+                    refs[k] = getAtomIdx(id.c_str());
                 }
 
                 const Edge& edge = _bmol->getEdge(bond_idx);
@@ -1287,7 +1282,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 while (!strscan.isEOF())
                 {
                     strscan.readWord(id, 0);
-                    dsg->atoms.push(getAtomIdx(id.ptr()));
+                    dsg->atoms.push(getAtomIdx(id.c_str()));
                     strscan.skipSpace();
                 }
             }
@@ -1336,15 +1331,15 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
 
             const char* fieldname = elem->Attribute("fieldName");
             if (fieldname != 0)
-                dsg->name.readString(fieldname, true);
+                dsg->name = fieldname;
 
             const char* fielddata = elem->Attribute("fieldData");
             if (fieldname != 0)
-                dsg->data.readString(fielddata, true);
+                dsg->data = fielddata;
 
             const char* fieldtype = elem->Attribute("fieldType");
             if (fieldtype != 0)
-                dsg->description.readString(fieldtype, true);
+                dsg->description = fieldtype;
 
             const char* disp_x = elem->Attribute("x");
             if (disp_x != 0)
@@ -1413,11 +1408,11 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
 
             const char* query_op = elem->Attribute("queryOp");
             if (query_op != 0)
-                dsg->queryoper.readString(query_op, true);
+                dsg->queryoper = query_op;
 
             const char* query_type = elem->Attribute("queryType");
             if (query_type != 0)
-                dsg->querycode.readString(query_type, true);
+                dsg->querycode = query_type;
 
             TiXmlNode* pChild;
             for (pChild = elem->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
@@ -1443,7 +1438,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 while (!strscan.isEOF())
                 {
                     strscan.readWord(id, 0);
-                    gen->atoms.push(getAtomIdx(id.ptr()));
+                    gen->atoms.push(getAtomIdx(id.c_str()));
                     strscan.skipSpace();
                 }
             }
@@ -1521,7 +1516,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 while (!strscan.isEOF())
                 {
                     strscan.readWord(id, 0);
-                    sru->atoms.push(getAtomIdx(id.ptr()));
+                    sru->atoms.push(getAtomIdx(id.c_str()));
                     strscan.skipSpace();
                 }
             }
@@ -1577,7 +1572,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
 
             const char* title = elem->Attribute("title");
             if (title != 0)
-                sru->subscript.readString(title, true);
+                sru->subscript = title;
 
             const char* connect = elem->Attribute("connect");
             if (connect != 0)
@@ -1616,7 +1611,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 while (!strscan.isEOF())
                 {
                     strscan.readWord(id, 0);
-                    mul->atoms.push(getAtomIdx(id.ptr()));
+                    mul->atoms.push(getAtomIdx(id.c_str()));
                     strscan.skipSpace();
                 }
             }
@@ -1630,7 +1625,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 while (!strscan.isEOF())
                 {
                     strscan.readWord(id, 0);
-                    mul->parent_atoms.push(getAtomIdx(id.ptr()));
+                    mul->parent_atoms.push(getAtomIdx(id.c_str()));
                     strscan.skipSpace();
                 }
             }
@@ -1715,7 +1710,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                 while (!strscan.isEOF())
                 {
                     strscan.readWord(id, 0);
-                    sup->atoms.push(getAtomIdx(id.ptr()));
+                    sup->atoms.push(getAtomIdx(id.c_str()));
                     strscan.skipSpace();
                 }
             }
@@ -1801,7 +1796,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
 
             const char* title = elem->Attribute("title");
             if (title != 0)
-                sup->subscript.readString(title, true);
+                sup->subscript = title;
 
             TiXmlNode* pChild;
             for (pChild = elem->FirstChild(); pChild != 0; pChild = pChild->NextSibling())

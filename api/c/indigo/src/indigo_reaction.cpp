@@ -87,9 +87,7 @@ BaseReaction& IndigoReaction::getBaseReaction()
 
 const char* IndigoReaction::getName()
 {
-    if (rxn.name.ptr() == 0)
-        return "";
-    return rxn.name.ptr();
+    return rxn.name.c_str();
 }
 
 //
@@ -121,9 +119,7 @@ QueryReaction& IndigoQueryReaction::getQueryReaction()
 
 const char* IndigoQueryReaction::getName()
 {
-    if (rxn.name.ptr() == 0)
-        return "";
-    return rxn.name.ptr();
+    return rxn.name.c_str();
 }
 
 //
@@ -573,24 +569,24 @@ static int readAAMOptions(const char* mode, ReactionAutomapper& ram)
 
         scanner.readWord(word, 0);
 
-        if (strcasecmp(word.ptr(), "discard") == 0)
+        if (strcasecmp(word.c_str(), "discard") == 0)
             nmode = ReactionAutomapper::AAM_REGEN_DISCARD;
-        else if (strcasecmp(word.ptr(), "alter") == 0)
+        else if (strcasecmp(word.c_str(), "alter") == 0)
             nmode = ReactionAutomapper::AAM_REGEN_ALTER;
-        else if (strcasecmp(word.ptr(), "keep") == 0)
+        else if (strcasecmp(word.c_str(), "keep") == 0)
             nmode = ReactionAutomapper::AAM_REGEN_KEEP;
-        else if (strcasecmp(word.ptr(), "clear") == 0)
+        else if (strcasecmp(word.c_str(), "clear") == 0)
             nmode = ReactionAutomapper::AAM_REGEN_CLEAR;
-        else if (strcasecmp(word.ptr(), "ignore_charges") == 0)
+        else if (strcasecmp(word.c_str(), "ignore_charges") == 0)
             ram.ignore_atom_charges = true;
-        else if (strcasecmp(word.ptr(), "ignore_isotopes") == 0)
+        else if (strcasecmp(word.c_str(), "ignore_isotopes") == 0)
             ram.ignore_atom_isotopes = true;
-        else if (strcasecmp(word.ptr(), "ignore_radicals") == 0)
+        else if (strcasecmp(word.c_str(), "ignore_radicals") == 0)
             ram.ignore_atom_radicals = true;
-        else if (strcasecmp(word.ptr(), "ignore_valence") == 0)
+        else if (strcasecmp(word.c_str(), "ignore_valence") == 0)
             ram.ignore_atom_valence = true;
         else
-            throw IndigoError("indigoAutomap(): unknown mode: %s", word.ptr());
+            throw IndigoError("indigoAutomap(): unknown mode: %s", word.c_str());
     }
 
     return nmode;
@@ -767,8 +763,7 @@ CEXPORT const char* indigoCanonicalRSmiles(int reaction)
         CanonicalRSmilesSaver saver(output);
 
         saver.saveReaction(react);
-        tmp.string.push(0);
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }

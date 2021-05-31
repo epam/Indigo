@@ -61,7 +61,7 @@ TautomerEnumerator::TautomerEnumerator(Molecule& molecule, TautomerMethod method
 
         QS_DEF(std::string, tmp);
         indigo_inchi.saveMoleculeIntoInchi(molecule, tmp);
-        const char* params = tmp.ptr();
+        const char* params = tmp.c_str();
 
         // We need a canonical mapping. This is something that MoleculeInChI does.
         // This is the only reason I use it. Maybe it's better to implement this procedure outside of MoleculeInChI.

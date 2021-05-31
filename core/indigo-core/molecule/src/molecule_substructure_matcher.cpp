@@ -399,9 +399,9 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
     case QueryMolecule::ATOM_NUMBER:
         return query->valueWithinRange(target.getAtomNumber(super_idx));
     case QueryMolecule::ATOM_PSEUDO:
-        return target.isPseudoAtom(super_idx) && strcmp(query->alias.ptr(), target.getPseudoAtom(super_idx)) == 0;
+        return target.isPseudoAtom(super_idx) && strcmp(query->alias.c_str(), target.getPseudoAtom(super_idx)) == 0;
     case QueryMolecule::ATOM_TEMPLATE:
-        return target.isTemplateAtom(super_idx) && strcmp(query->alias.ptr(), target.getTemplateAtom(super_idx)) == 0;
+        return target.isTemplateAtom(super_idx) && strcmp(query->alias.c_str(), target.getTemplateAtom(super_idx)) == 0;
     case QueryMolecule::ATOM_RSITE:
         return true;
     case QueryMolecule::ATOM_ISOTOPE:
@@ -466,7 +466,7 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
             throw Error("unexpected 'fragment' constraint");
 
         QueryMolecule* fragment = query->fragment.get();
-        const char* smarts = fragment->fragment_smarts.ptr();
+        const char* smarts = fragment->fragment_smarts.c_str();
 
         if (fragment->vertexCount() == 0)
             throw Error("empty fragment");

@@ -52,7 +52,7 @@ namespace indigo
 
     const char* TimeoutCancellationHandler::cancelledRequestMessage()
     {
-        return _message.ptr();
+        return _message.c_str();
     }
 
     void TimeoutCancellationHandler::reset(int mseconds)

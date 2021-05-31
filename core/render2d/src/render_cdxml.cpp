@@ -102,7 +102,7 @@ int _getLongestLineXml(const std::string& line)
         int start = 0;
         while (start < line.size() - 1)
         {
-            int next = line.find(start + 1, line.size(), '\n');
+            int next = line.find(start + 1, '\n');
             if (next == -1)
                 next = line.size() - 1;
             int st = _findReverse(start + 1, next - 1, line, '>');
@@ -126,7 +126,7 @@ int _getLongestLine(const std::string& line)
         int start = 0;
         while (start < line.size())
         {
-            int next = line.find(start + 1, line.size(), '\n');
+            int next = line.find(start + 1, '\n');
             if (next == -1)
                 next = line.size();
 
@@ -286,7 +286,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
             const std::string& title = params.titles[mol_idx];
             if (title.size() > 0)
             {
-                int lines = title.count('\n') + 1;
+                int lines = std::count(  title.begin(), title.end(), '\n' ) + 1;
                 float letter_height = params.rOpt.titleFontFactor / MoleculeCdxmlSaver::BOND_LENGTH;
                 // float title_height = lines * saver.textLineHeight();
                 // p.all_size.y += title_height + saver.textLineHeight(); // Add blank line
@@ -301,8 +301,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
             if (context.enabled)
             {
                 RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
-                int lines = data.propertyName.count('\n') + 1;
-
+                int lines = std::count( data.propertyName.begin(), data.propertyName.end(), '\n') + 1;
                 float letter_height = params.rOpt.titleFontFactor / MoleculeCdxmlSaver::BOND_LENGTH;
                 float prop_height = lines * letter_height;
                 p.all_size.y += prop_height + letter_height; // Add blank line
@@ -339,7 +338,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
     if (params.cnvOpt.comment.size() > 0)
     {
-        int lines = params.cnvOpt.comment.count('\n') + 1;
+        int lines = std::count(  params.cnvOpt.comment.begin(), params.cnvOpt.comment.begin(), '\n') + 1;
         float comment_height = lines * 0.3f;
         max_y += 0.3f;
         title_y = max_y;
@@ -365,23 +364,22 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         RenderCdxmlContext& context = params.rOpt.cdxml_context.ref();
         if (context.fonttable.size() > 0)
         {
-            saver.addFontTable(context.fonttable.ptr());
+            saver.addFontTable(context.fonttable.c_str());
         }
         if (context.colortable.size() > 0)
         {
-            saver.addColorTable(context.colortable.ptr());
+            saver.addColorTable(context.colortable.c_str());
         }
         if (context.titleFont.size() > 0)
         {
-            font_out.printf(" font=\"%s\"", context.titleFont.ptr());
+            font_out.printf(" font=\"%s\"", context.titleFont.c_str());
         }
         if (context.titleFace.size() > 0)
         {
-            font_out.printf(" face=\"%s\"", context.titleFace.ptr());
+            font_out.printf(" face=\"%s\"", context.titleFace.c_str());
         }
     }
     font_out.printf(">");
-    font_attr.push(0);
 
     // if (params.rOtitleFont.size() > 0) {
     //   font_out.printf("id=\"5\" charset=\"iso-8859-1\" name=\"%s\"", params.cnvOpt.titleFont.ptr());
@@ -420,7 +418,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
             if (title.size() > 0)
             {
                 title_font.clear();
-                title_font.readString(font_attr.ptr(), false);
+                title_font = font_attr.c_str();
                 // Get title bounding box
                 float x = params.cnvOpt.titleAlign.getAnchorPoint(p.page_offset.x, column_widths[column], title_widths[mol_idx]);
 
@@ -434,10 +432,10 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
                     alignment_str = "Right";
 
                 Vec2f title_offset(x, p.title_offset_y);
-                title_font.appendString(title.ptr(), true);
-                title_font.appendString("</s>", true);
+                title_font += title;
+                title_font += "</s>";
 
-                saver.addCustomText(title_offset, alignment_str, params.rOpt.titleFontFactor, title_font.ptr());
+                saver.addCustomText(title_offset, alignment_str, params.rOpt.titleFontFactor, title_font.c_str());
             }
         }
         if (params.rOpt.cdxml_context.get() != NULL)
@@ -457,15 +455,15 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
                 {
                     Vec2f title_offset_key(x - prop_offset_key, prop_offset_y);
                     Vec2f title_offset_val(x + prop_offset_val, prop_offset_y);
-                    saver.addCustomText(title_offset_key, "Left", context.propertyFontSize, data.propertyName.ptr());
-                    saver.addCustomText(title_offset_val, "Left", context.propertyFontSize, data.propertyValue.ptr());
+                    saver.addCustomText(title_offset_key, "Left", context.propertyFontSize, data.propertyName.c_str());
+                    saver.addCustomText(title_offset_val, "Left", context.propertyFontSize, data.propertyValue.c_str());
                 }
                 else
                 {
                     Vec2f title_offset_key(x + prop_offset_val, prop_offset_y);
                     Vec2f title_offset_val(x + prop_offset_val, prop_offset_y);
-                    saver.addCustomText(title_offset_key, "Right", context.propertyFontSize, data.propertyName.ptr());
-                    saver.addCustomText(title_offset_val, "Left", context.propertyFontSize, data.propertyValue.ptr());
+                    saver.addCustomText(title_offset_key, "Right", context.propertyFontSize, data.propertyName.c_str());
+                    saver.addCustomText(title_offset_val, "Left", context.propertyFontSize, data.propertyValue.c_str());
                 }
             }
         }
@@ -474,7 +472,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     if (params.cnvOpt.comment.size() > 0)
     {
         Vec2f pos(b.max.x / 2, -title_y);
-        saver.addText(pos, params.cnvOpt.comment.ptr());
+        saver.addText(pos, params.cnvOpt.comment.c_str());
     }
 
     saver.endPage();

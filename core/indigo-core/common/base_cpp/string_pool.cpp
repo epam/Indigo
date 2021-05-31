@@ -67,7 +67,7 @@ int StringPool::add(int size)
 
 int StringPool::add(std::string& str)
 {
-    return _add(str.ptr(), str.size());
+    return _add(str.c_str(), str.size());
 }
 
 void StringPool::remove(int idx)
@@ -77,12 +77,12 @@ void StringPool::remove(int idx)
 
 char* StringPool::at(int idx)
 {
-    return _storage[_pool[idx]]->ptr();
+    return &_storage[_pool[idx]]->front();
 }
 
 const char* StringPool::at(int idx) const
 {
-    return _storage[_pool[idx]]->ptr();
+    return _storage[_pool[idx]]->c_str();
 }
 
 int StringPool::size() const

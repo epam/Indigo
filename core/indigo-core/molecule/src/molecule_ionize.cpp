@@ -156,14 +156,14 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                         if (fp.size() == 0)
                             continue;
 
-                        if (!acid_pkas.find(fp.ptr()))
+                        if (!acid_pkas.find(fp.c_str()))
                         {
-                            acid_pkas.insert(fp.ptr());
-                            acid_pka_cids.insert(fp.ptr());
+                            acid_pkas.insert(fp.c_str());
+                            acid_pka_cids.insert(fp.c_str());
                             a_count++;
                         }
-                        acid_pkas.at(fp.ptr()).push(val);
-                        acid_pka_cids.at(fp.ptr()).push(cid);
+                        acid_pkas.at(fp.c_str()).push(val);
+                        acid_pka_cids.at(fp.c_str()).push(cid);
                     }
                 }
             }
@@ -207,14 +207,14 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
                         if (fp.size() == 0)
                             continue;
 
-                        if (!basic_pkas.find(fp.ptr()))
+                        if (!basic_pkas.find(fp.c_str()))
                         {
-                            basic_pkas.insert(fp.ptr());
-                            basic_pka_cids.insert(fp.ptr());
+                            basic_pkas.insert(fp.c_str());
+                            basic_pka_cids.insert(fp.c_str());
                             b_count++;
                         }
-                        basic_pkas.at(fp.ptr()).push(val);
-                        basic_pka_cids.at(fp.ptr()).push(cid);
+                        basic_pkas.at(fp.c_str()).push(val);
+                        basic_pka_cids.at(fp.c_str()).push(cid);
                     }
                 }
             }
@@ -947,10 +947,10 @@ int MoleculePkaModel::_asc_cmp_cb(int& v1, int& v2, void* context)
     getAtomLocalKey(mol, v1, key1);
     getAtomLocalKey(mol, v2, key2);
 
-    if (!key1.ptr()) return 1; // we could get nullptr for H; H must be last in sorted atoms; H always bigger
-    if (!key2.ptr()) return -1; // we could get nullptr for H; H must be last in sorted atoms; H always bigger
+    if (key1.empty()) return 1; // we could get nullptr for H; H must be last in sorted atoms; H always bigger
+    if (key2.empty()) return -1; // we could get nullptr for H; H must be last in sorted atoms; H always bigger
 
-    const int res = strcmp(key1.ptr(), key2.ptr());
+    const int res = strcmp(key1.c_str(), key2.c_str());
     if (res != 0) return res;
 
     const Vertex& v3 = mol.getVertex(v1);
@@ -964,7 +964,7 @@ int MoleculePkaModel::_asc_cmp_cb(int& v1, int& v2, void* context)
     {
         getAtomLocalKey(mol, v4.neiVertex(i), key2);
     }
-    return strcmp(key1.ptr(), key2.ptr());
+    return strcmp(key1.c_str(), key2.c_str());
 }
 
 void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, std::string& fp, int level)
@@ -989,7 +989,7 @@ void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, std::stri
     n_key.clear();
     getAtomLocalKey(mol, idx, n_key);
     if (n_key.size() != 0)
-        fp.appendString(n_key.ptr(), true);
+        fp += n_key;
 
     if (level == 0)
     {
@@ -999,7 +999,7 @@ void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, std::stri
     {
         int cur_level = 0;
         // Mark new layer after root atom
-        fp.appendString("|", true);
+        fp += "|";
         bfs_queue.push(idx);
 
         while (!bfs_queue.isEmpty())
@@ -1012,7 +1012,7 @@ void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, std::stri
             {
                 cur_level = dist;
                 // Mark next new layer
-                fp.appendString("|", true);
+                fp += "|";
             }
 
             const Vertex& v = mol.getVertex(next);
@@ -1055,13 +1055,13 @@ void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, std::stri
                     //               tmp.writeChar(0);
 
                     //               fp.appendString(bond.ptr(), true);
-                    fp.appendString(n_key.ptr(), true);
+                    fp += n_key;
                 }
             }
         }
         // Remove empty layer, if it was created
         if (fp[fp.size() - 2] == '|')
-            fp.remove(fp.size() - 2);
+            fp.erase(fp.size() - 2);
     }
     return;
 }
@@ -1124,7 +1124,7 @@ void MoleculePkaModel::getAtomLocalKey(Molecule& mol, int idx, std::string& fp)
 
     output.writeChar(0);
 
-    fp.appendString(key.ptr(), true);
+    fp += key;
 }
 
 /**
@@ -1149,7 +1149,7 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
     {
         QS_DEF(std::string, a_desc);
         mol.getAtomDescription(idx, a_desc);
-        throw Error("pKa model can't used with atom : %s", a_desc.ptr());
+        throw Error("pKa model can't used with atom : %s", a_desc.c_str());
     }
 
     int a_num = mol.getAtomNumber(idx);
@@ -1223,20 +1223,19 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
     getAtomLocalFingerprint(mol, idx, fp, level);
     //   printf("Acid site: atom index = %d, fp = %s\n",  idx, fp.ptr());
 
-    if (_model.adv_a_pkas.find(fp.ptr()))
+    if (_model.adv_a_pkas.find(fp.c_str()))
     {
-        pka = _model.adv_a_pkas.at(fp.ptr())[0];
+        pka = _model.adv_a_pkas.at(fp.c_str())[0];
         //      printf("Acid site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level, pka,
         //             _model.adv_a_pkas.at(fp.ptr())[1]);
     }
     else
     {
-        int levels = fp.count('|');
+        int levels = std::count(fp.begin(), fp.end(), '|');
         int beg = 0;
-        int end = fp.size();
         for (int i = 0; i < levels; i++)
         {
-            beg = fp.find(beg + 1, end, '|');
+            beg = fp.find(beg + 1, '|');
             level_pos.push(beg);
         }
 
@@ -1245,13 +1244,13 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
             if ((level_pos.size() - i - 1) < min_level)
                 break;
             int next_layer = level_pos[level_pos.size() - i - 1];
-            fp.remove(next_layer, fp.size() - next_layer - 1);
+            fp.erase(next_layer, fp.size() - next_layer - 1);
 
             //         printf("Try FP = %s level = %d\n", fp.ptr(), level_pos.size() - i);
 
-            if (_model.adv_a_pkas.find(fp.ptr()))
+            if (_model.adv_a_pkas.find(fp.c_str()))
             {
-                pka = _model.adv_a_pkas.at(fp.ptr())[0];
+                pka = _model.adv_a_pkas.at(fp.c_str())[0];
                 //            printf("Acid site found: fp = %s level = %d pka = %4.2f, dev = %4.2f\n", fp.ptr(), level_pos.size() - i, pka,
                 //                   _model.adv_a_pkas.at(fp.ptr())[1]);
                 break;
@@ -1277,20 +1276,19 @@ float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int 
     getAtomLocalFingerprint(mol, idx, fp, level);
     //   printf("Basic site: atom index = %d, fp = %s\n",  idx, fp.ptr());
 
-    if (_model.adv_b_pkas.find(fp.ptr()))
+    if (_model.adv_b_pkas.find(fp.c_str()))
     {
-        pka = (_model.adv_b_pkas.at(fp.ptr())[0]);
+        pka = (_model.adv_b_pkas.at(fp.c_str())[0]);
         //      printf("Basic site found: fp = %s  pka = %4.2f, dev = %4.2f\n",  fp.ptr(), pka,
         //              _model.adv_b_pkas.at(fp.ptr())[1]);
     }
     else
     {
-        int levels = fp.count('|');
+        int levels = std::count(fp.begin(), fp.end(), '|');
         int beg = 0;
-        int end = fp.size();
         for (int i = 0; i < levels; i++)
         {
-            beg = fp.find(beg + 1, end, '|');
+            beg = fp.find(beg + 1, '|');
             level_pos.push(beg);
         }
 
@@ -1299,10 +1297,10 @@ float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int 
             if ((level_pos.size() - i - 1) < min_level)
                 break;
             int next_layer = level_pos[level_pos.size() - i - 1];
-            fp.remove(next_layer, fp.size() - next_layer - 1);
-            if (_model.adv_b_pkas.find(fp.ptr()))
+            fp.erase(next_layer, fp.size() - next_layer - 1);
+            if (_model.adv_b_pkas.find(fp.c_str()))
             {
-                pka = _model.adv_b_pkas.at(fp.ptr())[0];
+                pka = _model.adv_b_pkas.at(fp.c_str())[0];
                 //            printf("Basic site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level_pos.size() - i, pka,
                 //                   _model.adv_b_pkas.at(fp.ptr())[1]);
                 break;

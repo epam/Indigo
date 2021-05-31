@@ -124,8 +124,7 @@ void indigoRenderSetOutputFormat(const char* format)
 void indigoRenderGetOutputFormat(std::string& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
-    const char* mode = indigoRenderOutputFormatToString(rp.rOpt.mode);
-    value.readString(mode, true);
+    value = indigoRenderOutputFormatToString(rp.rOpt.mode);
 }
 
 void indigoRenderSetStereoStyle(const char* mode)
@@ -147,13 +146,13 @@ void indigoRenderGetStereoStyle(std::string& value)
     switch (rp.rOpt.stereoMode)
     {
     case STEREO_STYLE_EXT:
-        value.readString("ext", true);
+        value  = "ext";
         break;
     case STEREO_STYLE_OLD:
-        value.readString("old", true);
+        value = "old";
         break;
     case STEREO_STYLE_NONE:
-        value.readString("none", true);
+        value = "none";
         break;
     }
 }
@@ -178,16 +177,16 @@ void indigoRenderGetLabelMode(std::string& value)
     switch (rp.rOpt.labelMode)
     {
     case LABEL_MODE_NONE:
-        value.readString("none", true);
+        value = "none";
         break;
     case LABEL_MODE_HETERO:
-        value.readString("hetero", true);
+        value = "hetero";
         break;
     case LABEL_MODE_TERMINAL_HETERO:
-        value.readString("terminal-hetero", true);
+        value = "terminal-hetero";
         break;
     case LABEL_MODE_ALL:
-        value.readString("all", true);
+        value = "all";
         break;
     }
 }
@@ -208,9 +207,9 @@ void indigoRenderGetCatalystsPlacement(std::string& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     if (rp.rOpt.agentsBelowArrow)
-        value.readString("above-and-below", true);
+        value = "above-and-below";
     else
-        value.readString("above", true);
+        value = "above";
 }
 
 void indigoRenderSetSuperatomMode(const char* mode)
@@ -229,9 +228,9 @@ void indigoRenderGetSuperatomMode(std::string& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     if (rp.rOpt.collapseSuperatoms)
-        value.readString("collapse", true);
+        value = "collapse";
     else
-        value.readString("expand", true);
+        value = "expand";
 }
 
 static MultilineTextLayout _parseTextLayout(const char* text)
@@ -271,22 +270,22 @@ static void layoutToText(const MultilineTextLayout& layout, std::string& value)
     switch (layout.bbox_alignment)
     {
     case MultilineTextLayout::Left:
-        value.readString("left", true);
+        value = "left";
         break;
     case MultilineTextLayout::Right:
-        value.readString("right", true);
+        value = "right";
         break;
     case MultilineTextLayout::Center:
         switch (layout.inbox_alignment)
         {
         case MultilineTextLayout::Left:
-            value.readString("center-left", true);
+            value = "center-left";
             break;
         case MultilineTextLayout::Right:
-            value.readString("center-right", true);
+            value = "center-right";
             break;
         case MultilineTextLayout::Center:
-            value.readString("center", true);
+            value = "center";
             break;
         }
         break;
@@ -333,9 +332,9 @@ void indigoRenderGetCommentPosition(std::string& value)
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     if (rp.cnvOpt.commentPos == COMMENT_POS_TOP)
-        value.readString("top", true);
+        value = "top";
     else
-        value.readString("bottom", true);
+        value = "bottom";
 }
 
 RenderCdxmlContext& getCdxmlContext()
@@ -363,9 +362,9 @@ void indigoRenderGetCdxmlPropertiesKeyAlignment(std::string& value)
 {
     RenderCdxmlContext& context = getCdxmlContext();
     if (context.keyAlignment == RenderCdxmlContext::ALIGNMENT_LEFT)
-        value.readString("left", true);
+        value = "left";
     else
-        value.readString("right", true);
+        value = "right";
 }
 
 CEXPORT int indigoRender(int object, int output)
@@ -446,8 +445,8 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
                 else
                     rp.mols.add(new Molecule());
                 std::string& title = rp.titles.push();
-                if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
-                    title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
+                if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.c_str()))
+                    title = objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.c_str());
 
                 if (rp.rOpt.mode == DINGO_MODE::MODE_CDXML)
                 {
@@ -459,12 +458,12 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
 
                         auto& properties = objs[i]->getProperties();
                         if (context.propertyNameCaption.size() > 0 && context.propertyValueCaption.size() > 0)
-                            if (properties.contains(context.propertyNameCaption.ptr()))
+                            if (properties.contains(context.propertyNameCaption.c_str()))
                             {
-                                if (properties.contains(context.propertyValueCaption.ptr()))
+                                if (properties.contains(context.propertyValueCaption.c_str()))
                                 {
-                                    data.propertyName.readString(properties.at(context.propertyNameCaption.ptr()), true);
-                                    data.propertyValue.readString(properties.at(context.propertyValueCaption.ptr()), true);
+                                    data.propertyName = properties.at(context.propertyNameCaption.c_str());
+                                    data.propertyValue = properties.at(context.propertyValueCaption.c_str()), true;
                                 }
                             }
                     }
@@ -483,8 +482,8 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
                 else
                     rp.rxns.add(new Reaction());
                 std::string& title = rp.titles.push();
-                if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.ptr()))
-                    title.copy(objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.ptr()));
+                if (objs[i]->getProperties().contains(rp.cnvOpt.titleProp.c_str()))
+                    title = objs[i]->getProperties().valueBuf(rp.cnvOpt.titleProp.c_str());
 
                 rp.rxns.top()->clone(objs[i]->getBaseReaction(), 0, 0, 0);
                 rp.rmode = RENDER_RXN;

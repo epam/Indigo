@@ -92,7 +92,7 @@ void InchiWrapper::clear()
 
 void InchiWrapper::setOptions(const char* opt)
 {
-    options.readString(opt, true);
+    options = opt;
     // Replace '/' and '-' according to InChI manual:
     //   "(use - instead of / for O.S. other than MS Windows)"
 #ifdef _WIN32
@@ -108,7 +108,7 @@ void InchiWrapper::setOptions(const char* opt)
 
 void InchiWrapper::getOptions(std::string& value)
 {
-    options.copy(value);
+    options = value;
 }
 
 static inchi_BondType getInchiBondType(int bond_order)
@@ -159,7 +159,7 @@ void InchiWrapper::loadMoleculeFromInchi(const char* inchi_string, Molecule& mol
 
     inchi_InputINCHI inchi_input;
     inchi_input.szInChI = (char*)inchi_string;
-    inchi_input.szOptions = (char*)options.ptr();
+    inchi_input.szOptions = &options[0];
 
     InchiMemObject<inchi_OutputStruct> inchi_output_obj(FreeStructFromINCHI);
     inchi_OutputStruct& inchi_output = inchi_output_obj.ref();
@@ -167,9 +167,9 @@ void InchiWrapper::loadMoleculeFromInchi(const char* inchi_string, Molecule& mol
     int retcode = GetStructFromINCHI(&inchi_input, &inchi_output);
 
     if (inchi_output.szMessage)
-        warning.readString(inchi_output.szMessage, true);
+        warning = inchi_output.szMessage;
     if (inchi_output.szLog)
-        log.readString(inchi_output.szLog, true);
+        log = inchi_output.szLog;
 
     if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING)
         throw Error("Indigo-InChI: InChI loading failed: %s. Code: %d.", inchi_output.szMessage, retcode);
@@ -583,7 +583,7 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
     input.num_atoms = atoms.size();
     input.stereo0D = stereo.ptr();
     input.num_stereo0D = stereo.size();
-    input.szOptions = options.ptr();
+    input.szOptions = &options[0];
 }
 
 void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, std::string& inchi)
@@ -635,7 +635,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, std::string& inchi)
     int ret = GetINCHI(&input, &output);
 
     if (output.szMessage)
-        warning.readString(output.szMessage, true);
+        warning = output.szMessage;
     if (output.szLog)
     {
         const char* unrec_opt_prefix = "Unrecognized option:";
@@ -646,18 +646,17 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, std::string& inchi)
                 if (output.szLog[i] == '\n')
                     break;
             std::string unrec_opt;
-            if (i > 0)
+            if( i )
                 unrec_opt.copy(output.szLog, i - 1);
-            unrec_opt.push(0);
 
-            throw Error("Indigo-InChI: %s.", unrec_opt.ptr());
+            throw Error("Indigo-InChI: %s.", unrec_opt.c_str());
             ;
         }
 
-        log.readString(output.szLog, true);
+        log = output.szLog;
     }
     if (output.szAuxInfo)
-        auxInfo.readString(output.szAuxInfo, true);
+        auxInfo = output.szAuxInfo;
 
     if (ret != inchi_Ret_OKAY && ret != inchi_Ret_WARNING)
     {
@@ -666,17 +665,16 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, std::string& inchi)
         throw error;
     }
 
-    inchi.readString(output.szInChI, true);
+    inchi = output.szInChI;
 }
 
 void InchiWrapper::InChIKey(const char* inchi, std::string& output)
 {
     // lock
     OsLocker locker(inchi_lock);
-
-    output.resize(28);
-    output.zerofill();
-    int ret = GetINCHIKeyFromINCHI(inchi, 0, 0, output.ptr(), 0, 0);
+    output.clear();
+    output.resize(28, 0 );
+    int ret = GetINCHIKeyFromINCHI(inchi, 0, 0, &output[0], 0, 0);
     if (ret != INCHIKEY_OK)
     {
         if (ret == INCHIKEY_UNKNOWN_ERROR)

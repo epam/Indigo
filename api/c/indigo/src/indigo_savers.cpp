@@ -185,7 +185,6 @@ void IndigoSmilesSaver::generateSmiles(IndigoObject& obj, std::string& out_buffe
     }
     else
         throw IndigoError("%s can not be converted to SMILES", obj.debugInfo());
-    out_buffer.push(0);
 }
 
 void IndigoSmilesSaver::generateSmarts(IndigoObject& obj, std::string& out_buffer)
@@ -218,14 +217,13 @@ void IndigoSmilesSaver::generateSmarts(IndigoObject& obj, std::string& out_buffe
     }
     else
         throw IndigoError("%s can not be converted to SMARTS", obj.debugInfo());
-    out_buffer.push(0);
 }
 
 void IndigoSmilesSaver::append(Output& output, IndigoObject& object)
 {
     QS_DEF(std::string, tmp_buffer);
     IndigoSmilesSaver::generateSmiles(object, tmp_buffer);
-    output.writeString(tmp_buffer.ptr());
+    output.writeString(tmp_buffer.c_str());
 
     Indigo& indigo = indigoGetInstance();
     if (indigo.smiles_saving_write_name)
@@ -292,7 +290,6 @@ void IndigoCanonicalSmilesSaver::generateSmiles(IndigoObject& obj, std::string& 
     }
     else
         throw IndigoError("%s can not be converted to SMILES", obj.debugInfo());
-    out_buffer.push(0);
 }
 
 void IndigoCanonicalSmilesSaver::generateSmarts(IndigoObject& obj, std::string& out_buffer)
@@ -325,7 +322,6 @@ void IndigoCanonicalSmilesSaver::generateSmarts(IndigoObject& obj, std::string& 
     }
     else
         throw IndigoError("%s can not be converted to SMARTS", obj.debugInfo());
-    out_buffer.push(0);
 }
 
 const char* IndigoCanonicalSmilesSaver::debugInfo()
@@ -631,7 +627,7 @@ CEXPORT int indigoSaveMDLCT(int item, int output)
         QS_DEF(std::string, line);
         while (!scanner.isEOF())
         {
-            scanner.readLine(line, false);
+            scanner.readLine(line);
             if (line.size() > 255)
                 throw IndigoError("indigoSaveMDLCT: line too big (%d)", line.size());
             out2.writeChar(line.size());

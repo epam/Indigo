@@ -184,7 +184,7 @@ CEXPORT void indigoReleaseSessionId(qword id)
 CEXPORT const char* indigoGetLastError(void)
 {
     Indigo& self = indigoGetInstance();
-    return self.error_message.ptr();
+    return self.error_message.c_str();
 }
 
 CEXPORT void indigoSetErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
@@ -225,7 +225,7 @@ CEXPORT int indigoCountReferences(void)
 CEXPORT void indigoSetErrorMessage(const char* message)
 {
     Indigo& self = indigoGetInstance();
-    self.error_message.readString(message, true);
+    self.error_message = message;
 }
 
 int Indigo::addObject(IndigoObject* obj)
@@ -345,9 +345,7 @@ CEXPORT const char* indigoDbgProfiling(int whole_session)
         auto& tmp = self.getThreadTmpData();
         StringOutput out(tmp.string);
         profGetStatistics(out, whole_session != 0);
-
-        tmp.string.push(0);
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }

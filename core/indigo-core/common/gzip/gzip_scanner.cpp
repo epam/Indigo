@@ -156,15 +156,14 @@ void GZipScanner::readAll(std::string& arr)
     arr.clear();
 
     while (!isEOF())
-        arr.push(readByte());
+        arr.push_back(readByte());
 }
 
 void GZipScanner::skip(int length)
 {
     QS_DEF(std::string, dummy);
-
-    dummy.clear_resize(length);
-    read(length, dummy.ptr());
+    dummy.resize(length);
+    read(length, &dummy[0]);
 }
 
 long long GZipScanner::tell()

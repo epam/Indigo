@@ -46,8 +46,8 @@ CEXPORT const char* indigoGetProperty(int handle, const char* prop)
         auto& props = obj.getProperties();
 
         auto& tmp = self.getThreadTmpData();
-        tmp.string.readString(props.at(prop), true);
-        return tmp.string.ptr();
+        tmp.string = props.at(prop);
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }

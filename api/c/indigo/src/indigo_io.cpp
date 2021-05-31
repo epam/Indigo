@@ -29,13 +29,12 @@ IndigoScanner::IndigoScanner(Scanner* scanner) : IndigoObject(SCANNER), ptr(scan
 
 IndigoScanner::IndigoScanner(const char* str) : IndigoObject(SCANNER)
 {
-    _buf.readString(str, false);
+    _buf = str;
     ptr.reset(new BufferScanner(_buf));
 }
 
-IndigoScanner::IndigoScanner(const char* buf, int size) : IndigoObject(SCANNER)
+IndigoScanner::IndigoScanner(const char* buf, int size) : IndigoObject(SCANNER), _buf( buf, size )
 {
-    _buf.copy(buf, size);
     ptr.reset(new BufferScanner(_buf));
 }
 
@@ -64,7 +63,7 @@ IndigoOutput::IndigoOutput() : IndigoObject(OUTPUT)
 void IndigoOutput::toString(std::string& str)
 {
     if (_own_buf)
-        str.copy(_buf);
+        str = _buf;
     else
         throw IndigoError("can not convert %s to string", debugInfo());
 }
@@ -180,9 +179,7 @@ CEXPORT const char* indigoToString(int handle)
 
         auto& tmp = self.getThreadTmpData();
         obj.toString(tmp.string);
-        tmp.string.push(0);
-
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }
@@ -196,7 +193,7 @@ CEXPORT int indigoToBuffer(int handle, char** buf, int* size)
         auto& tmp = self.getThreadTmpData();
         obj.toBuffer(tmp.string);
 
-        *buf = tmp.string.ptr();
+        *buf = &tmp.string[0];
         *size = tmp.string.size();
         return 1;
     }

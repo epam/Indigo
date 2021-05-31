@@ -120,11 +120,8 @@ bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, std::string& outbuf)
                 scanner.seek(pos, SEEK_SET);
                 return false;
             }
-            int c = scanner.readChar();
-            curline.push(c);
+            curline += scanner.readChar();
         }
-
-        curline.push(0);
 
         if (endmark)
         {
@@ -135,22 +132,21 @@ bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, std::string& outbuf)
             // by "$END CTAB" (in Markush queries), or
             // by "$MOL" (in Rxnfiles). Otherwise, this
             // is actually the end of data.
-            if (strcmp(curline.ptr(), "$END CTAB") != 0 && strcmp(curline.ptr(), "$MOL") != 0)
+            if (strcmp(curline.c_str(), "$END CTAB") != 0 && strcmp(curline.c_str(), "$MOL") != 0)
             {
                 scanner.seek(pos, SEEK_SET);
                 return true;
             }
         }
 
-        if (strcmp(curline.ptr(), "M  END") == 0)
+        if (strcmp(curline.c_str(), "M  END") == 0)
             endmark = true;
-        else if (strcmp(curline.ptr(), "$END MOL") == 0)
+        else if (strcmp(curline.c_str(), "$END MOL") == 0)
             endmark = true;
         else
             endmark = false;
 
-        outbuf.appendString(curline.ptr(), false);
-        outbuf.push('\n');
+        outbuf += curline + '\n';
     }
     scanner.seek(pos, SEEK_SET);
     // It happened once that a valid Molfile had successfully
@@ -175,14 +171,11 @@ void MoleculeAutoLoader::readAllDataToString(Scanner& scanner, std::string& data
         {
             GZipScanner gzscanner(scanner);
             gzscanner.readAll(dataBuf);
-            dataBuf.push('\0');
-
             return;
         }
     }
 
     scanner.readAll(dataBuf);
-    dataBuf.push('\0');
 }
 
 void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
@@ -299,12 +292,11 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                 {
                     std::string buf;
                     _scanner->readAll(buf);
-                    buf.push(0);
                     Document data;
                     Value rgroups(kArrayType);
                     Value mol_nodes(kArrayType);
-                    if ( data.Parse(buf.ptr()).HasParseError())
-                      throw Error("Error at parsing JSON: %s", buf.ptr());
+                    if ( data.Parse(buf.c_str()).HasParseError())
+                      throw Error("Error at parsing JSON: %s", buf.c_str());
                     if( data.HasMember( "root" ) )
                     {
                         const Value& root = data["root"];
@@ -377,7 +369,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                 _scanner->readWord(inchi, " ");
 
                 InchiWrapper loader;
-                loader.loadMoleculeFromInchi(inchi.ptr(), (Molecule&)mol);
+                loader.loadMoleculeFromInchi(inchi.c_str(), (Molecule&)mol);
                 return;
             }
         }
@@ -405,7 +397,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         }
         catch (Exception& e)
         {
-            err_buf.appendString(e.message(), true);
+            err_buf += e.message();
         }
 
         // We fall down to IUPAC name conversion if SMILES loading threw an exception
@@ -413,9 +405,9 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         {
             std::string name;
             _scanner->seek(SEEK_SET, SEEK_SET);
-            _scanner->readLine(name, true);
+            _scanner->readLine(name);
             MoleculeNameParser parser;
-            parser.parseMolecule(name.ptr(), static_cast<Molecule&>(mol));
+            parser.parseMolecule(name.c_str(), static_cast<Molecule&>(mol));
             return;
         }
         catch (...)
@@ -424,7 +416,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
 
         if (err_buf.size() > 0)
         {
-            throw Error(err_buf.ptr());
+            throw Error(err_buf.c_str());
         }
     }
 

@@ -137,17 +137,11 @@ bool MoleculeInChI::_printInChILayer(_PrintLayerFuncBase& print_func, const char
     StringOutput output(layer_string);
 
     QS_DEF(std::string, previous_component);
-    previous_component.clear();
     QS_DEF(std::string, current_component);
 
     int index = -1;
     int same_components_count = 1;
     bool layer_contain_data = false;
-
-    previous_component.clear();
-    previous_component.push(0);
-    current_component.clear();
-    current_component.push(0);
 
     do
     {
@@ -160,7 +154,6 @@ bool MoleculeInChI::_printInChILayer(_PrintLayerFuncBase& print_func, const char
 
             // Call corresponding printing method
             print_func(_components[comp_index], current_component);
-            current_component.push(0);
 
             if (index == 0)
             {
@@ -170,8 +163,8 @@ bool MoleculeInChI::_printInChILayer(_PrintLayerFuncBase& print_func, const char
         }
 
         // Compare current string and previous
-        bool equal = (strcmp(current_component.ptr(), previous_component.ptr()) == 0);
-        bool has_value = (strlen(current_component.ptr()) != 0);
+        bool equal = (strcmp(current_component.c_str(), previous_component.c_str()) == 0);
+        bool has_value = current_component.size();
         if (!is_last && equal && has_value)
             same_components_count++;
         else
@@ -183,11 +176,11 @@ bool MoleculeInChI::_printInChILayer(_PrintLayerFuncBase& print_func, const char
             if (same_components_count > 1 && multiplier != 0)
                 output.printf("%d%s", same_components_count, multiplier);
 
-            output.printf("%s", previous_component.ptr());
+            output.printf("%s", previous_component.c_str());
             if (same_components_count > 1 && multiplier == 0)
             {
                 for (int i = 1; i < same_components_count; i++)
-                    output.printf("%s", previous_component.ptr());
+                    output.printf("%s", previous_component.c_str());
             }
 
             if (previous_component.size() != 0)
@@ -203,12 +196,11 @@ bool MoleculeInChI::_printInChILayer(_PrintLayerFuncBase& print_func, const char
 
     if (!layer_contain_data)
         layer_string.clear();
-    layer_string.push(0);
 
     if (layer_string.size() != 0 && layer_string[0] != 0)
     {
         _output.printf(layer_prefix);
-        _output.writeString(layer_string.ptr());
+        _output.writeString(layer_string.c_str());
         return true;
     }
 

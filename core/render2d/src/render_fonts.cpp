@@ -104,7 +104,7 @@ double RenderContext::fontGetSize(FONT_SIZE size)
 
 void RenderContext::fontsSetFont(cairo_t* cr, FONT_SIZE size, bool bold)
 {
-    cairo_select_font_face(cr, _fontfamily.ptr(), CAIRO_FONT_SLANT_NORMAL, bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_select_font_face(cr, _fontfamily.c_str(), CAIRO_FONT_SLANT_NORMAL, bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
     cairoCheckStatus();
     cairo_set_font_size(cr, fontGetSize(size));
     cairoCheckStatus();
@@ -165,7 +165,7 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool b
     }
     moveToRel(ti.relpos);
     _tlock.lock();
-    cairo_text_path(_cr, ti.text.ptr());
+    cairo_text_path(_cr, ti.text.c_str());
     bbIncludePath(false);
     _tlock.unlock();
     cairo_new_path(_cr);
@@ -175,7 +175,7 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool b
     if (metafileFontsToCurves)
     { // TODO: remove
         _tlock.lock();
-        cairo_text_path(_cr, ti.text.ptr());
+        cairo_text_path(_cr, ti.text.c_str());
         _tlock.unlock();
         cairoCheckStatus();
         cairo_fill(_cr);
@@ -184,7 +184,7 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool b
     else
     {
         _tlock.lock();
-        cairo_show_text(_cr, ti.text.ptr());
+        cairo_show_text(_cr, ti.text.c_str());
         _tlock.unlock();
         cairoCheckStatus();
     }

@@ -598,8 +598,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             const DataSGroup& group = (DataSGroup&)sgroup;
-            const char* atomColorProp = _opt.atomColorProp.size() > 0 ? _opt.atomColorProp.ptr() : NULL;
-            if (atomColorProp != NULL && strcmp(atomColorProp, group.name.ptr()) == 0)
+            const char* atomColorProp = _opt.atomColorProp.size() > 0 ? _opt.atomColorProp.c_str() : NULL;
+            if (atomColorProp != NULL && strcmp(atomColorProp, group.name.c_str()) == 0)
             {
                 Vec3f color;
                 BufferScanner scanner(group.data);
@@ -618,8 +618,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             Sgroup& sg = _data.sgroups.push();
             int tii = _pushTextItem(sg, RenderItem::RIT_DATASGROUP);
             TextItem& ti = _data.textitems[tii];
-            ti.text.copy(group.data);
-            ti.text.push(0);
+            ti.text = group.data;
             ti.fontsize = FONT_SIZE_DATA_SGROUP;
             _cw.setTextItemSize(ti);
 
@@ -661,7 +660,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, group.subscript.size() > 0 ? group.subscript.ptr() : "n");
+            bprintf(index.text, group.subscript.size() > 0 ? group.subscript.c_str() : "n");
             _positionIndex(sg, tiIndex, true);
             if (group.connectivity != RepeatingUnit::HEAD_TO_TAIL)
             {
@@ -705,7 +704,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, "%s", group.subscript.ptr());
+            bprintf(index.text, "%s", group.subscript.c_str());
             _positionIndex(sg, tiIndex, true);
 
             parent = ILLEGAL_RECT();
@@ -871,14 +870,14 @@ void MoleculeRenderInternal::_prepareSGroups()
                 if (mol.isQueryMolecule())
                 {
                     AutoPtr<QueryMolecule::Atom> atom;
-                    atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
+                    atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.c_str()));
                     said = mol.asQueryMolecule().addAtom(atom.release());
                 }
                 else
                 {
                     Molecule& amol = mol.asMolecule();
                     said = amol.addAtom(ELEM_PSEUDO);
-                    amol.setPseudoAtom(said, group.subscript.ptr());
+                    amol.setPseudoAtom(said, group.subscript.c_str());
                 }
                 QS_DEF(RedBlackSet<int>, groupAtoms);
                 groupAtoms.clear();
@@ -1661,12 +1660,12 @@ void MoleculeRenderInternal::_initAtomData()
         if (bm.isPseudoAtom(i))
         {
             ad.type = AtomDesc::TYPE_PSEUDO;
-            ad.pseudo.readString(bm.getPseudoAtom(i), true);
+            ad.pseudo = bm.getPseudoAtom(i);
         }
         else if (bm.isTemplateAtom(i))
         {
             ad.type = AtomDesc::TYPE_PSEUDO;
-            ad.pseudo.readString(bm.getTemplateAtom(i), true);
+            ad.pseudo = bm.getTemplateAtom(i);
         }
         else if (atomNumber < 0 || atomNumber == ELEM_RSITE)
         {
@@ -2339,7 +2338,7 @@ void MoleculeRenderInternal::_initBondEndData()
         {
             std::string buf;
             _mol->getBondDescription(be.bid, buf);
-            throw Error("Unknown bond type %s. Can not determine bond width.", buf.ptr());
+            throw Error("Unknown bond type %s. Can not determine bond width.", buf.c_str());
         }
     }
 }
@@ -2809,7 +2808,7 @@ enum SCRIPT
 void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlighted)
 {
     AtomDesc& ad = _ad(aid);
-    const char* str = ad.pseudo.ptr();
+    const char* str = ad.pseudo.c_str();
 
     int cnt = 0;
     CHARCAT a = WHITESPACE, b = WHITESPACE;
@@ -2822,8 +2821,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
 
     TextItem fake;
     fake.fontsize = FONT_SIZE_LABEL;
-    fake.text.push('C');
-    fake.text.push((char)0);
+    fake.text += 'C';
     _cw.setTextItemSize(fake, ad.pos);
     float xpos = fake.bbp.x, width = fake.bbsz.x, offset = _settings.unit / 2, totalwdt = 0, upshift = -0.6f, downshift = 0.2f, space = width / 2;
     ad.ypos = fake.bbp.y;
@@ -2836,8 +2834,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
         tis.push(id);
         TextItem& item = _data.textitems[id];
         item.fontsize = FONT_SIZE_ATTR;
-        item.text.copy(str, len);
-        item.text.push((char)0);
+        item.text = str;
         _cw.setTextItemSize(item);
         item.bbp.set(xpos, ad.ypos);
         _expandBoundRect(ad, item);
@@ -2951,8 +2948,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
                     tis.push(id);
                     TextItem& item = _data.textitems[id];
                     item.fontsize = (script == MAIN) ? FONT_SIZE_LABEL : FONT_SIZE_ATTR;
-                    item.text.copy(str + i0, i1 - i0);
-                    item.text.push((char)0);
+                    item.text = std::string(str + i0, i1 - i0);
                     _cw.setTextItemSize(item);
 
                     if (cnt > 0)
@@ -4165,12 +4161,12 @@ void MoleculeRenderInternal::_precalcScale()
         std::string carr;
         if (bm.isPseudoAtom(i))
         {
-            carr.readString(bm.getPseudoAtom(i), true);
+            carr = bm.getPseudoAtom(i);
             output_length = carr.size();
         }
         else if (bm.isTemplateAtom(i))
         {
-            carr.readString(bm.getTemplateAtom(i), true);
+            carr = bm.getTemplateAtom(i);
             output_length = carr.size();
         }
         else if (bm.isRSite(i))

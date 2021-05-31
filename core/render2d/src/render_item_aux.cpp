@@ -39,7 +39,7 @@ RenderItemAuxiliary::~RenderItemAuxiliary()
 void RenderItemAuxiliary::_drawText(bool idle)
 {
     TextItem ti;
-    ti.text.copy(text);
+    ti.text = text;
     if (type == AUX_COMMENT)
     {
         ti.fontsize = FONT_SIZE_COMMENT;

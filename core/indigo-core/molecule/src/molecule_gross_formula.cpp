@@ -147,7 +147,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     QS_DEF_RES(ObjArray<std::string>, indices, grossFormulaSize);
 
     // first element is for old-style gross formula
-    indices[0].appendString(" ", true);
+    indices[0] += " ";
     for (int i : mol.vertices())
     {
         filters[0].push(i);
@@ -158,7 +158,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     {
         RepeatingUnit* ru = (RepeatingUnit*)&mol.sgroups.getSGroup(i - 1, SGroup::SG_TYPE_SRU);
         filters[i].copy(ru->atoms);
-        indices[i].copy(ru->subscript.ptr(), ru->subscript.size() - 1); // Remove '0' symbol at the end
+        indices[i]= ru->subscript;
         // Filter polymer atoms
         for (int j = 0; j < filters[i].size(); j++)
         {
@@ -176,7 +176,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     {
         auto& unit = gross[i];
 
-        unit.multiplier.copy(indices[i]);
+        unit.multiplier = indices[i];
 
         for (int j = 0; j < filters[i].size(); j++)
         {

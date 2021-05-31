@@ -50,7 +50,7 @@ void ChunkStorage::add(const byte* data, int n_bytes)
 
 void ChunkStorage::add(const std::string& data)
 {
-    add((const byte*)data.ptr(), data.size());
+    add((const byte*)data.data(), data.size());
 }
 
 void ChunkStorage::add(const char* str)

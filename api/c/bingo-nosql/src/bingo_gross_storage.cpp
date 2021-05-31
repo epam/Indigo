@@ -23,8 +23,8 @@ void GrossStorage::load(BingoPtr<GrossStorage>& gross_ptr, BingoAddr offset)
 
 void GrossStorage::add(std::string& gross_formula, int id)
 {
-    _gross_formulas.add((byte*)gross_formula.ptr(), gross_formula.size(), id);
-    dword hash = _calculateGrossHash(gross_formula.ptr(), gross_formula.size());
+    _gross_formulas.add((byte*)gross_formula.data(), gross_formula.size(), id);
+    dword hash = _calculateGrossHash(gross_formula.c_str(), gross_formula.size());
     _hashes.add(hash, id);
 }
 
@@ -44,7 +44,7 @@ void GrossStorage::find(std::string& query_formula, Array<int>& indices, int par
 
 void GrossStorage::findCandidates(std::string& query_formula, Array<int>& candidates, int part_id, int part_count)
 {
-    dword query_hash = _calculateGrossHash(query_formula.ptr(), query_formula.size());
+    dword query_hash = _calculateGrossHash(query_formula.c_str(), query_formula.size());
 
     dword first_hash = 0;
     dword last_hash = (dword)(-1);
@@ -68,7 +68,7 @@ void GrossStorage::findCandidates(std::string& query_formula, Array<int>& candid
 int GrossStorage::findNext(std::string& query_formula, Array<int>& candidates, int& cur_candidate)
 {
     Array<int> query_array;
-    MoleculeGrossFormula::fromString(query_formula.ptr(), query_array);
+    MoleculeGrossFormula::fromString(query_formula.c_str(), query_array);
 
     while (++cur_candidate)
     {
@@ -89,10 +89,9 @@ bool GrossStorage::tryCandidate(Array<int>& query_array, int id)
     int len;
 
     cand_formula = (const char*)_gross_formulas.get(id, len);
-    std::string cand_fstr;
-    cand_fstr.copy(cand_formula, len);
+    std::string cand_fstr(cand_formula);
 
-    MoleculeGrossFormula::fromString(cand_fstr.ptr(), cand_array);
+    MoleculeGrossFormula::fromString(cand_fstr.c_str(), cand_array);
 
     if (MoleculeGrossFormula::equal(query_array, cand_array))
         return true;
@@ -118,13 +117,13 @@ void GrossStorage::calculateRxnFormula(Reaction& rxn, std::string& gross_formula
         auto gross_array = MoleculeGrossFormula::collect(rxn.getBaseMolecule(i));
         MoleculeGrossFormula::toString(*gross_array, mol_formula, false);
 
-        gross_formula.concat(mol_formula);
+        gross_formula += mol_formula;
         if (rxn.next(i) != rxn.end())
         {
             if (rxn.getSideType(i) != rxn.getSideType(rxn.next(i)))
-                gross_formula.concat(">>", 2);
+                gross_formula += ">>";
             else
-                gross_formula.concat("+", 1);
+                gross_formula += "+";
         }
     }
 }

@@ -27,7 +27,7 @@ void PropertiesMap::copy(RedBlackStringObjMap<std::string>& other)
     clear();
     for (int i = other.begin(); i != other.end(); i = other.next(i))
     {
-        insert(other.key(i), other.value(i).ptr());
+        insert(other.key(i), other.value(i).c_str());
     }
 }
 void PropertiesMap::copy(PropertiesMap& other)
@@ -44,15 +44,15 @@ void PropertiesMap::insert(const char* key, const char* value)
     {
         auto& val = _properties.at(key);
         if (value != 0)
-            val.readString(value, true);
+            val = value;
     }
     else
     {
         auto& name = _propertyNames.push();
-        name.readString(key, true);
+        name = key;
         int k = _properties.insert(key);
         if (value != 0)
-            _properties.value(k).readString(value, true);
+            _properties.value(k) = value;
     }
 }
 std::string& PropertiesMap::insert(const char* key)
@@ -62,15 +62,15 @@ std::string& PropertiesMap::insert(const char* key)
 }
 const char* PropertiesMap::key(int i)
 {
-    return _propertyNames.at(i).ptr();
+    return _propertyNames.at(i).c_str();
 }
 
 const char* PropertiesMap::value(int i)
 {
-    auto& buf = valueBuf(_propertyNames.at(i).ptr());
+    auto& buf = valueBuf(_propertyNames.at(i).c_str());
     if (buf.size() > 0)
     {
-        return buf.ptr();
+        return buf.c_str();
     }
     else
     {
@@ -96,7 +96,7 @@ bool PropertiesMap::contains(const char* key)
 
 const char* PropertiesMap::at(const char* key)
 {
-    return _properties.at(key).ptr();
+    return _properties.at(key).c_str();
 }
 
 void PropertiesMap::remove(const char* key)
@@ -107,7 +107,7 @@ void PropertiesMap::remove(const char* key)
         int to_remove = -1;
         for (auto i = 0; i < _propertyNames.size(); i++)
         {
-            if (strcmp(_propertyNames.at(i).ptr(), key) == 0)
+            if (strcmp(_propertyNames.at(i).c_str(), key) == 0)
             {
                 to_remove = i;
                 break;

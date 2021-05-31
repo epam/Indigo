@@ -382,7 +382,7 @@ private:
         }                                                                                                                                                      \
         catch (Exception & ex)                                                                                                                                 \
         {                                                                                                                                                      \
-            self.error_message.readString(ex.message(), true);                                                                                                 \
+            self.error_message = ex.message();                                                                                                 \
             if (self.error_handler != 0)                                                                                                                       \
                 self.error_handler(ex.message(), self.error_handler_context);                                                                                  \
             return fail;                                                                                                                                       \

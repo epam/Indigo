@@ -286,7 +286,7 @@ static void _collectAtomFeatures(BaseMolecule& m, RedBlackStringMap<int>& counte
         m.getAtomSymbol(i, symbol);
 
         char key[100];
-        snprintf(key, NELEM(key), "e:%s i:%d c:%d r:%d d:%d", symbol.ptr(), iso, charge, radical, degree);
+        snprintf(key, NELEM(key), "e:%s i:%d c:%d r:%d d:%d", symbol.c_str(), iso, charge, radical, degree);
 
         int* ptr = counters.at2(key);
         if (ptr)
@@ -504,9 +504,7 @@ CEXPORT const char* indigoOneBitsList(int fingerprint)
             }
         }
 
-        tmp.string.push(0);
-
-        return tmp.string.ptr();
+        return tmp.string.c_str();
     }
     INDIGO_END(0);
 }

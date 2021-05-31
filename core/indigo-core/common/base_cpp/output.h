@@ -93,7 +93,7 @@ namespace indigo
         void clear();
 
     protected:
-        std::string& _arr;
+        std::string& _str;
     };
 
     class DLLEXPORT StandardOutput : public Output

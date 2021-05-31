@@ -130,10 +130,10 @@ void MolfileLoader::_readHeader()
     }
 
     // Skip header
-    _scanner.readLine(_bmol->name, true);
+    _scanner.readLine(_bmol->name);
     // Check UTF-8 BOM mark in the name
     if (_bmol->name.size() >= 3 && (unsigned char)_bmol->name[0] == 0xEF && (unsigned char)_bmol->name[1] == 0xBB && (unsigned char)_bmol->name[2] == 0xBF)
-        _bmol->name.remove(0, 3);
+        _bmol->name.erase(0, 3);
 
     _scanner.skipLine();
     _scanner.skipLine();
@@ -149,7 +149,7 @@ void MolfileLoader::_readCtabHeader()
 {
     QS_DEF(std::string, str);
 
-    _scanner.readLine(str, false);
+    _scanner.readLine(str);
 
     BufferScanner strscan(str);
 
@@ -242,7 +242,7 @@ void MolfileLoader::_readCtab2000()
     for (int k = 0; k < _atoms_num; k++)
     {
         // read each atom line to buffer
-        _scanner.readLine(str, false);
+        _scanner.readLine(str);
         BufferScanner atom_line(str);
 
         // read coordinates
@@ -547,7 +547,7 @@ void MolfileLoader::_readCtab2000()
     for (int bond_idx = 0; bond_idx < _bonds_num; bond_idx++)
     {
         // read each bond line to buffer
-        _scanner.readLine(str, false);
+        _scanner.readLine(str);
         BufferScanner bond_line(str);
 
         int beg = bond_line.readIntFix(3);
@@ -680,7 +680,7 @@ void MolfileLoader::_readCtab2000()
 
                 AutoPtr<QueryMolecule::Atom> atomlist;
 
-                _scanner.readLine(str, false);
+                _scanner.readLine(str);
                 BufferScanner rest(str);
 
                 for (i = 0; i < list_size; i++)
@@ -979,9 +979,9 @@ void MolfileLoader::_readCtab2000()
                 rgroup.if_then = if_then;
                 rgroup.rest_h = rest_h;
 
-                _scanner.readLine(occurrence_str, true);
+                _scanner.readLine(occurrence_str);
 
-                _readRGroupOccurrenceRanges(occurrence_str.ptr(), rgroup.occurrence);
+                _readRGroupOccurrenceRanges(occurrence_str.c_str(), rgroup.occurrence);
             }
             else if (strncmp(chars, "APO", 3) == 0)
             {
@@ -1119,7 +1119,7 @@ void MolfileLoader::_readCtab2000()
                 {
                     QS_DEF(std::string, rest);
 
-                    _scanner.readLine(rest, false);
+                    _scanner.readLine(rest);
                     BufferScanner strscan(rest);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
@@ -1129,19 +1129,16 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (strscan.isEOF())
                             break;
-                        int c = strscan.readChar();
-                        sgroup.name.push(c);
+                        sgroup.name += strscan.readChar();
                     }
                     // Remove last spaces because name can have multiple words
                     while (sgroup.name.size() > 0)
                     {
-                        if (isspace(sgroup.name.top()))
-                            sgroup.name.pop();
+                        if (isspace(sgroup.name.back()))
+                            sgroup.name.pop_back();
                         else
                             break;
                     }
-
-                    sgroup.name.push(0);
 
                     // Read field type
                     k = 2;
@@ -1149,10 +1146,8 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (strscan.isEOF())
                             break;
-                        int c = strscan.readChar();
-                        sgroup.type.push(c);
+                        sgroup.type += strscan.readChar();
                     }
-                    sgroup.type.push(0);
 
                     // Read field description
                     k = 20;
@@ -1160,18 +1155,16 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (strscan.isEOF())
                             break;
-                        int c = strscan.readChar();
-                        sgroup.description.push(c);
+                        sgroup.description += strscan.readChar();
                     }
                     // Remove last spaces because dscription can have multiple words?
                     while (sgroup.description.size() > 0)
                     {
-                        if (isspace(sgroup.description.top()))
-                            sgroup.description.pop();
+                        if (isspace(sgroup.description.back()))
+                            sgroup.description.pop_back();
                         else
                             break;
                     }
-                    sgroup.description.push(0);
 
                     // Read query code
                     k = 2;
@@ -1179,17 +1172,15 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (strscan.isEOF())
                             break;
-                        int c = strscan.readChar();
-                        sgroup.querycode.push(c);
+                        sgroup.querycode += strscan.readChar();
                     }
                     while (sgroup.querycode.size() > 0)
                     {
-                        if (isspace(sgroup.querycode.top()))
-                            sgroup.querycode.pop();
+                        if (isspace(sgroup.querycode.back()))
+                            sgroup.querycode.pop_back();
                         else
                             break;
                     }
-                    sgroup.querycode.push(0);
 
                     // Read query operator
                     k = 20;
@@ -1197,17 +1188,15 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (strscan.isEOF())
                             break;
-                        int c = strscan.readChar();
-                        sgroup.queryoper.push(c);
+                        sgroup.queryoper += strscan.readChar();
                     }
                     while (sgroup.queryoper.size() > 0)
                     {
-                        if (isspace(sgroup.queryoper.top()))
-                            sgroup.queryoper.pop();
+                        if (isspace(sgroup.queryoper.back()))
+                            sgroup.queryoper.pop_back();
                         else
                             break;
                     }
-                    sgroup.queryoper.push(0);
                 }
             }
             else if (strncmp(chars, "SDD", 3) == 0)
@@ -1232,24 +1221,20 @@ void MolfileLoader::_readCtab2000()
                     _scanner.skip(1);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
                     int len = sgroup.data.size();
-                    _scanner.appendLine(sgroup.data, true);
+                    _scanner.appendLine(sgroup.data);
 
                     // Remove last spaces because "SED" means end of a paragraph
                     if (strncmp(chars, "SED", 3) == 0)
                     {
-                        if (sgroup.data.top() == 0)
-                            sgroup.data.pop();
                         while (sgroup.data.size() > len)
                         {
-                            if (isspace((unsigned char)sgroup.data.top()))
-                                sgroup.data.pop();
+                            if (isspace((unsigned char)sgroup.data.back()))
+                                sgroup.data.pop_back();
                             else
                                 break;
                         }
                         // Add new paragraph. Last '\n' will be cleaned at the end
-                        sgroup.data.push('\n');
-                        if (sgroup.data.top() != 0)
-                            sgroup.data.push(0);
+                        sgroup.data += '\n';
                     }
                 }
                 else
@@ -1263,7 +1248,7 @@ void MolfileLoader::_readCtab2000()
                 {
                     _scanner.skip(1);
                     Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readLine(sup.subscript, true);
+                    _scanner.readLine(sup.subscript);
                 }
                 else if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_MUL)
                 {
@@ -1276,7 +1261,7 @@ void MolfileLoader::_readCtab2000()
                 {
                     _scanner.skip(1);
                     RepeatingUnit& sru = (RepeatingUnit&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readLine(sru.subscript, true);
+                    _scanner.readLine(sru.subscript);
                 }
                 else
                     _scanner.skipLine();
@@ -1289,7 +1274,7 @@ void MolfileLoader::_readCtab2000()
                 {
                     _scanner.skip(1);
                     Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readLine(sup.sa_class, true);
+                    _scanner.readLine(sup.sa_class);
                 }
                 else
                     _scanner.skipLine();
@@ -1370,11 +1355,8 @@ void MolfileLoader::_readCtab2000()
                         _scanner.skip(1);
                         ap.lvidx = _scanner.readIntFix(3) - 1;
                         _scanner.skip(1);
-                        char c = _scanner.readChar();
-                        ap.apid.push(c);
-                        c = _scanner.readChar();
-                        ap.apid.push(c);
-                        ap.apid.push(0);
+                        ap.apid += _scanner.readChar();
+                        ap.apid += _scanner.readChar();
                     }
                 }
                 _scanner.skipLine();
@@ -1424,7 +1406,7 @@ void MolfileLoader::_readCtab2000()
             }
             else if (strncmp(chars, "MRV", 3) == 0)
             {
-                _scanner.readLine(str, false);
+                _scanner.readLine(str);
                 BufferScanner rest(str);
 
                 try
@@ -1477,7 +1459,7 @@ void MolfileLoader::_readCtab2000()
 
             atom_idx--;
             _scanner.skipLine();
-            _scanner.readLine(alias, true);
+            _scanner.readLine(alias);
             _preparePseudoAtomLabel(alias);
 
             if (_atom_types[atom_idx] == _ATOM_ELEMENT)
@@ -1486,18 +1468,18 @@ void MolfileLoader::_readCtab2000()
                 DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(idx);
 
                 sgroup.atoms.push(atom_idx);
-                sgroup.name.readString("INDIGO_ALIAS", true);
-                sgroup.data.copy(alias);
+                sgroup.name = "INDIGO_ALIAS";
+                sgroup.data = alias;
                 sgroup.display_pos.x = _bmol->getAtomXyz(atom_idx).x;
                 sgroup.display_pos.y = _bmol->getAtomXyz(atom_idx).y;
             }
             else
             {
                 if (_mol != 0)
-                    _mol->setPseudoAtom(atom_idx, alias.ptr());
+                    _mol->setPseudoAtom(atom_idx, alias.c_str());
                 else
                     _qmol->resetAtom(atom_idx,
-                                     QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, alias.ptr())));
+                                     QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, alias.c_str())));
 
                 _atom_types[atom_idx] = _ATOM_PSEUDO;
             }
@@ -1516,10 +1498,9 @@ void MolfileLoader::_readCtab2000()
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if (dsg.data.size() > 2 && dsg.data.top(1) == '\n')
+            if (dsg.data.size() > 2 && dsg.data.back() == '\n')
             {
-                dsg.data.pop();
-                dsg.data.top() = 0;
+                dsg.data.pop_back();
             }
         }
     }
@@ -1996,7 +1977,7 @@ void MolfileLoader::_postLoad()
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if (dsg.name.size() > 0 && strncmp(dsg.name.ptr(), "MRV_IMPLICIT_H", 14) == 0)
+            if (dsg.name.size() > 0 && strncmp(dsg.name.c_str(), "MRV_IMPLICIT_H", 14) == 0)
             {
                 BufferScanner scanner(dsg.data);
                 scanner.skip(6); // IMPL_H
@@ -2230,19 +2211,19 @@ void MolfileLoader::_readCtab3000()
 {
     QS_DEF(std::string, str);
 
-    _scanner.readLine(str, true);
-    if (strncmp(str.ptr(), "M  V30 BEGIN CTAB", 17) != 0)
+    _scanner.readLine(str);
+    if (strncmp(str.c_str(), "M  V30 BEGIN CTAB", 17) != 0)
         throw Error("error reading CTAB block header");
 
-    str.clear_resize(14);
-    _scanner.read(14, str.ptr());
-    if (strncmp(str.ptr(), "M  V30 COUNTS ", 14) != 0)
+    str.resize(14);
+    _scanner.read(14, &str[0]);
+    if (strncmp(str.c_str(), "M  V30 COUNTS ", 14) != 0)
         throw Error("error reading COUNTS line");
 
     int i, nsgroups, n3d, chiral_int;
 
-    _scanner.readLine(str, true);
-    if (sscanf(str.ptr(), "%d %d %d %d %d", &_atoms_num, &_bonds_num, &nsgroups, &n3d, &chiral_int) < 5)
+    _scanner.readLine(str);
+    if (sscanf(str.c_str(), "%d %d %d %d %d", &_atoms_num, &_bonds_num, &nsgroups, &n3d, &chiral_int) < 5)
         throw Error("error parsing COUNTS line");
 
     _chiral = (chiral_int != 0);
@@ -2255,8 +2236,8 @@ void MolfileLoader::_readCtab3000()
     bool atom_block_exists = true;
     bool bond_block_exists = true;
 
-    _scanner.readLine(str, true);
-    if (strncmp(str.ptr(), "M  V30 BEGIN ATOM", 14) != 0)
+    _scanner.readLine(str);
+    if (strncmp(str.c_str(), "M  V30 BEGIN ATOM", 14) != 0)
     {
         if (_atoms_num > 0)
             throw Error("Error reading ATOM block header");
@@ -2267,7 +2248,7 @@ void MolfileLoader::_readCtab3000()
         for (i = 0; i < _atoms_num; i++)
         {
             _readMultiString(str);
-            BufferScanner strscan(str.ptr());
+            BufferScanner strscan(str.c_str());
 
             int& atom_type = _atom_types.push();
 
@@ -2294,10 +2275,10 @@ void MolfileLoader::_readCtab3000()
 
                 if (buf[0] == 0)
                     atom_type = _ATOM_LIST;
-                else if (strcmp(buf.ptr(), "NOT") == 0)
+                else if (strcmp(buf.c_str(), "NOT") == 0)
                     atom_type = _ATOM_NOTLIST;
                 else
-                    throw Error("bad word: %s", buf.ptr());
+                    throw Error("bad word: %s", buf.c_str());
 
                 bool was_a = false, was_q = false, was_x = false, was_m = false;
 
@@ -2357,7 +2338,7 @@ void MolfileLoader::_readCtab3000()
                     }
                     else
                     {
-                        _appendQueryAtom(buf.ptr(), query_atom);
+                        _appendQueryAtom(buf.c_str(), query_atom);
                     }
 
                     if (stopchar == ']')
@@ -2437,15 +2418,15 @@ void MolfileLoader::_readCtab3000()
             }
             else
             {
-                label = Element::fromString2(buf.ptr());
+                label = Element::fromString2(buf.c_str());
 
                 if (label == -1)
                 {
                     long long cur_pos = strscan.tell();
                     QS_DEF(ReusableObjArray<std::string>, strs);
                     strs.clear();
-                    strs.push().readString("CLASS", false);
-                    strs.push().readString("SEQID", false);
+                    strs.push() = "CLASS";
+                    strs.push() = "SEQID";
                     if (strscan.findWord(strs) != -1)
                         _atom_types[i] = _ATOM_TEMPLATE;
                     else
@@ -2469,12 +2450,12 @@ void MolfileLoader::_readCtab3000()
                 if (atom_type == _ATOM_PSEUDO)
                 {
                     _preparePseudoAtomLabel(buf);
-                    _mol->setPseudoAtom(i, buf.ptr());
+                    _mol->setPseudoAtom(i, buf.c_str());
                 }
                 else if (atom_type == _ATOM_TEMPLATE)
                 {
                     _preparePseudoAtomLabel(buf);
-                    _mol->setTemplateAtom(i, buf.ptr());
+                    _mol->setTemplateAtom(i, buf.c_str());
                 }
             }
             else
@@ -2486,9 +2467,9 @@ void MolfileLoader::_readCtab3000()
                 else if (atom_type == _ATOM_ELEMENT)
                     _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, label));
                 else if (atom_type == _ATOM_PSEUDO)
-                    _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, buf.ptr()));
+                    _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, buf.c_str()));
                 else if (atom_type == _ATOM_TEMPLATE)
-                    _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE, buf.ptr()));
+                    _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE, buf.c_str()));
                 else if (atom_type == _ATOM_A)
                     _qmol->addAtom(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
                 else if (atom_type == _ATOM_AH)
@@ -2597,7 +2578,7 @@ void MolfileLoader::_readCtab3000()
                 strscan.readWord(prop_arr, "=");
 
                 strscan.skip(1);
-                const char* prop = prop_arr.ptr();
+                const char* prop = prop_arr.c_str();
 
                 if (strcmp(prop, "CHG") == 0)
                 {
@@ -2767,8 +2748,7 @@ void MolfileLoader::_readCtab3000()
                         else
                         {
                             strscan.readWord(att_id, " )");
-                            att_id.push(0);
-                            _bmol->setTemplateAtomAttachmentOrder(i, nei_idx - 1, att_id.ptr());
+                            _bmol->setTemplateAtomAttachmentOrder(i, nei_idx - 1, att_id.c_str());
                             strscan.skip(1); // skip stop character
                         }
                     }
@@ -2777,13 +2757,12 @@ void MolfileLoader::_readCtab3000()
                 {
                     QS_DEF(std::string, temp_class);
                     strscan.readWord(temp_class, 0);
-                    temp_class.push(0);
                     if (_mol != 0)
-                        _mol->setTemplateAtomClass(i, temp_class.ptr());
+                        _mol->setTemplateAtomClass(i, temp_class.c_str());
                     else
                     {
                         _qmol->resetAtom(
-                            i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE_CLASS, temp_class.ptr())));
+                            i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE_CLASS, temp_class.c_str())));
                     }
                 }
                 else if (strcmp(prop, "SEQID") == 0)
@@ -2820,14 +2799,14 @@ void MolfileLoader::_readCtab3000()
 
             _bmol->setAtomXyz(i, x, y, z);
         }
-        _scanner.readLine(str, true);
-        if (strncmp(str.ptr(), "M  V30 END ATOM", 15) != 0)
+        _scanner.readLine(str);
+        if (strncmp(str.c_str(), "M  V30 END ATOM", 15) != 0)
             throw Error("Error reading ATOM block footer");
     }
 
     if (atom_block_exists)
-        _scanner.readLine(str, true);
-    if (strncmp(str.ptr(), "M  V30 BEGIN BOND", 17) != 0)
+        _scanner.readLine(str);
+    if (strncmp(str.c_str(), "M  V30 BEGIN BOND", 17) != 0)
     {
         if (_bonds_num > 0)
             throw Error("Error reading BOND block header");
@@ -2840,7 +2819,7 @@ void MolfileLoader::_readCtab3000()
             int reacting_center = 0;
 
             _readMultiString(str);
-            BufferScanner strscan(str.ptr());
+            BufferScanner strscan(str.c_str());
 
             strscan.readInt1(); // bond index -- ignored
 
@@ -2906,7 +2885,7 @@ void MolfileLoader::_readCtab3000()
 
                 int n;
 
-                if (strcmp(prop.ptr(), "CFG") == 0)
+                if (strcmp(prop.c_str(), "CFG") == 0)
                 {
                     n = strscan.readInt1();
 
@@ -2927,7 +2906,7 @@ void MolfileLoader::_readCtab3000()
                     else
                         throw Error("unknown bond CFG=%d", n);
                 }
-                else if (strcmp(prop.ptr(), "STBOX") == 0)
+                else if (strcmp(prop.c_str(), "STBOX") == 0)
                 {
                     if (_qmol == 0)
                         if (!ignore_noncritical_query_features)
@@ -2936,7 +2915,7 @@ void MolfileLoader::_readCtab3000()
                     if ((strscan.readInt1() != 0))
                         _stereo_care_bonds[i] = 1;
                 }
-                else if (strcmp(prop.ptr(), "TOPO") == 0)
+                else if (strcmp(prop.c_str(), "TOPO") == 0)
                 {
                     if (_qmol == 0)
                     {
@@ -2952,9 +2931,9 @@ void MolfileLoader::_readCtab3000()
                                                         new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY, topo == 1 ? TOPOLOGY_RING : TOPOLOGY_CHAIN)));
                     }
                 }
-                else if (strcmp(prop.ptr(), "RXCTR") == 0)
+                else if (strcmp(prop.c_str(), "RXCTR") == 0)
                     reacting_center = strscan.readInt1();
-                else if (strcmp(prop.ptr(), "ENDPTS") == 0)
+                else if (strcmp(prop.c_str(), "ENDPTS") == 0)
                 {
                     strscan.skip(1); // (
                     n = strscan.readInt1();
@@ -2965,7 +2944,7 @@ void MolfileLoader::_readCtab3000()
                     }
                     strscan.skip(1); // )
                 }
-                else if (strcmp(prop.ptr(), "ATTACH") == 0)
+                else if (strcmp(prop.c_str(), "ATTACH") == 0)
                 {
                     while (!strscan.isEOF())
                     {
@@ -2974,7 +2953,7 @@ void MolfileLoader::_readCtab3000()
                             break;
                     }
                 }
-                else if (strcmp(prop.ptr(), "DISP") == 0)
+                else if (strcmp(prop.c_str(), "DISP") == 0)
                 {
                     while (!strscan.isEOF())
                     {
@@ -2985,44 +2964,44 @@ void MolfileLoader::_readCtab3000()
                 }
                 else
                 {
-                    throw Error("unsupported property of CTAB3000 (in BOND block): %s", prop.ptr());
+                    throw Error("unsupported property of CTAB3000 (in BOND block): %s", prop.c_str());
                 }
             }
             _bmol->reaction_bond_reacting_center[i] = reacting_center;
         }
 
-        _scanner.readLine(str, true);
-        if (strncmp(str.ptr(), "M  V30 END BOND", 15) != 0)
+        _scanner.readLine(str);
+        if (strncmp(str.c_str(), "M  V30 END BOND", 15) != 0)
             throw Error("Error reading BOND block footer");
 
-        _scanner.readLine(str, true);
+        _scanner.readLine(str);
     }
 
     // Read collections and sgroups
     // There is no predefined order: sgroups may appear before collection
     bool collection_parsed = false, sgroups_parsed = false;
-    while (strncmp(str.ptr(), "M  V30 END CTAB", 15) != 0)
+    while (strncmp(str.c_str(), "M  V30 END CTAB", 15) != 0)
     {
-        if (strncmp(str.ptr(), "M  V30 BEGIN COLLECTION", 23) == 0)
+        if (strncmp(str.c_str(), "M  V30 BEGIN COLLECTION", 23) == 0)
         {
             if (collection_parsed)
                 throw Error("COLLECTION block has already been parsed");
             _readCollectionBlock3000();
             collection_parsed = true;
         }
-        else if (strncmp(str.ptr(), "M  V30 BEGIN SGROUP", 19) == 0)
+        else if (strncmp(str.c_str(), "M  V30 BEGIN SGROUP", 19) == 0)
         {
             if (sgroups_parsed)
                 throw Error("SGROUP block has already been parsed");
             _readSGroupsBlock3000();
             sgroups_parsed = true;
         }
-        else if (strncmp(str.ptr(), "M  V30 LINKNODE", 15) == 0)
-            throw Error("link nodes are not supported yet (%s)", str.ptr());
+        else if (strncmp(str.c_str(), "M  V30 LINKNODE", 15) == 0)
+            throw Error("link nodes are not supported yet (%s)", str.c_str());
         else
-            throw Error("error reading CTAB block footer: %s", str.ptr());
+            throw Error("error reading CTAB block footer: %s", str.c_str());
 
-        _scanner.readLine(str, true);
+        _scanner.readLine(str);
     }
 }
 
@@ -3034,11 +3013,11 @@ void MolfileLoader::_readSGroupsBlock3000()
     {
         _readMultiString(str);
 
-        if (strncmp(str.ptr(), "END SGROUP", 10) == 0)
+        if (strncmp(str.c_str(), "END SGROUP", 10) == 0)
             break;
-        if (STRCMP(str.ptr(), "M  V30 DEFAULT") == 0)
+        if (STRCMP(str.c_str(), "M  V30 DEFAULT") == 0)
             continue;
-        _readSGroup3000(str.ptr());
+        _readSGroup3000(str.c_str());
     }
 
     _fillSGroupsParentIndices();
@@ -3081,10 +3060,10 @@ void MolfileLoader::_readCollectionBlock3000()
     {
         _readMultiString(str);
 
-        if (strncmp(str.ptr(), "END COLLECTION", 14) == 0)
+        if (strncmp(str.c_str(), "END COLLECTION", 14) == 0)
             break;
 
-        BufferScanner strscan(str.ptr());
+        BufferScanner strscan(str.c_str());
         char coll[14];
 
         strscan.readCharsFix(13, coll);
@@ -3107,14 +3086,14 @@ void MolfileLoader::_readCollectionBlock3000()
             strscan.skipSpace();
             strscan.readWord(what, " =");
 
-            if (strcmp(what.ptr(), "ATOMS") == 0)
+            if (strcmp(what.c_str(), "ATOMS") == 0)
             {
                 strscan.skip(2); // =(
                 n = strscan.readInt1();
                 while (n-- > 0)
                     _bmol->highlightAtom(strscan.readInt1() - 1);
             }
-            else if (strcmp(what.ptr(), "BONDS") == 0)
+            else if (strcmp(what.c_str(), "BONDS") == 0)
             {
                 strscan.skip(2); // =(
                 n = strscan.readInt1();
@@ -3122,7 +3101,7 @@ void MolfileLoader::_readCollectionBlock3000()
                     _bmol->highlightBond(strscan.readInt1() - 1);
             }
             else
-                throw Error("unknown highlighted object: %s", what.ptr());
+                throw Error("unknown highlighted object: %s", what.c_str());
 
             continue;
         }
@@ -3154,8 +3133,8 @@ void MolfileLoader::_preparePseudoAtomLabel(std::string& pseudo)
     // if the string is quoted, unquote it
     if (pseudo.size() > 2 && pseudo[0] == '\'' && pseudo[pseudo.size() - 2] == '\'')
     {
-        pseudo.remove(pseudo.size() - 2);
-        pseudo.remove(0);
+        pseudo.erase(pseudo.size() - 2);
+        pseudo.erase(0);
     }
 
     if (pseudo.size() <= 1)
@@ -3167,25 +3146,25 @@ void MolfileLoader::_readMultiString(std::string& str)
     QS_DEF(std::string, tmp);
 
     str.clear();
-    tmp.clear_resize(7);
+    tmp.resize(7);
 
     while (1)
     {
         bool to_next = false;
 
-        _scanner.read(7, tmp.ptr());
-        if (strncmp(tmp.ptr(), "M  V30 ", 7) != 0)
+        _scanner.read(7, &tmp[0]);
+        if (strncmp(tmp.c_str(), "M  V30 ", 7) != 0)
             throw Error("error reading multi-string in CTAB v3000");
 
-        _scanner.readLine(tmp, true);
+        _scanner.readLine(tmp);
 
         if (tmp[tmp.size() - 2] == '-')
         {
             tmp[tmp.size() - 2] = 0;
-            tmp.pop();
+            tmp.pop_back();
             to_next = true;
         }
-        str.appendString(tmp.ptr(), true);
+        str += tmp;
         if (!to_next)
             break;
     }
@@ -3198,17 +3177,15 @@ void MolfileLoader::_readStringInQuotes(Scanner& scanner, std::string* str)
         return;
 
     // Check if data is already present, then append to it using new line
-    if (str && str->size() > 0)
+    if (str && str->size())
     {
-        if (str->top() == 0)
-            str->pop();
-        str->push('\n');
+        str += '\n';
     }
 
     // If label is in quotes then read till the end quote
     bool in_quotes = (first == '"');
     if (!in_quotes && str)
-        str->push(first);
+        str->push_back(first);
 
     while (!scanner.isEOF())
     {
@@ -3226,10 +3203,8 @@ void MolfileLoader::_readStringInQuotes(Scanner& scanner, std::string* str)
                 break;
         }
         if (str)
-            str->push(c);
+            str->push_back(c);
     }
-    if (str)
-        str->push(0);
 }
 
 void MolfileLoader::_readRGroups3000()
@@ -3242,24 +3217,24 @@ void MolfileLoader::_readRGroups3000()
     {
         long long next_block_pos = _scanner.tell();
 
-        _scanner.readLine(str, true);
+        _scanner.readLine(str);
 
-        if (strncmp(str.ptr(), "M  V30 BEGIN RGROUP", 19) == 0)
+        if (strncmp(str.c_str(), "M  V30 BEGIN RGROUP", 19) == 0)
         {
             _rgfile = true;
 
             int rg_idx;
 
-            if (sscanf(str.ptr(), "M  V30 BEGIN RGROUP %d", &rg_idx) != 1)
+            if (sscanf(str.c_str(), "M  V30 BEGIN RGROUP %d", &rg_idx) != 1)
                 throw Error("can not read rgroup index");
 
             RGroup& rgroup = rgroups->getRGroup(rg_idx);
 
             _readMultiString(str);
 
-            BufferScanner strscan(str.ptr());
+            BufferScanner strscan(str.c_str());
 
-            if (strncmp(str.ptr(), "RLOGIC", 6) != 0)
+            if (strncmp(str.c_str(), "RLOGIC", 6) != 0)
                 throw Error("Error reading RGROUP block");
 
             strscan.skip(7);
@@ -3270,16 +3245,16 @@ void MolfileLoader::_readRGroups3000()
             {
                 QS_DEF(std::string, occ);
 
-                strscan.readLine(occ, true);
-                _readRGroupOccurrenceRanges(occ.ptr(), rgroup.occurrence);
+                strscan.readLine(occ);
+                _readRGroupOccurrenceRanges(occ.c_str(), rgroup.occurrence);
             }
 
             while (!_scanner.isEOF())
             {
                 long long pos = _scanner.tell();
 
-                _scanner.readLine(str, true);
-                if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
+                _scanner.readLine(str);
+                if (strcmp(str.c_str(), "M  V30 BEGIN CTAB") == 0)
                 {
                     _scanner.seek(pos, SEEK_SET);
                     AutoPtr<BaseMolecule> fragment(_bmol->neu());
@@ -3300,19 +3275,19 @@ void MolfileLoader::_readRGroups3000()
                     loader._postLoad();
                     rgroup.fragments.add(fragment.release());
                 }
-                else if (strcmp(str.ptr(), "M  V30 END RGROUP") == 0)
+                else if (strcmp(str.c_str(), "M  V30 END RGROUP") == 0)
                     break;
                 else
-                    throw Error("unexpected string in rgroup: %s", str.ptr());
+                    throw Error("unexpected string in rgroup: %s", str.c_str());
             }
         }
-        else if ((strncmp(str.ptr(), "M  END", 6) == 0) || (strncmp(str.ptr(), "M  V30 BEGIN TEMPLATE", 21) == 0))
+        else if ((strncmp(str.c_str(), "M  END", 6) == 0) || (strncmp(str.c_str(), "M  V30 BEGIN TEMPLATE", 21) == 0))
         {
             _scanner.seek(next_block_pos, SEEK_SET);
             break;
         }
         else
-            throw Error("unexpected string in rgroup: %s", str.ptr());
+            throw Error("unexpected string in rgroup: %s", str.c_str());
     }
 }
 
@@ -3330,12 +3305,11 @@ void MolfileLoader::_readSGroup3000(const char* str)
     int sgroup_idx = scanner.readInt();
     scanner.skipSpace();
     scanner.readWord(type, 0);
-    type.push(0);
     scanner.skipSpace();
     scanner.readInt();
     scanner.skipSpace();
 
-    int idx = sgroups->addSGroup(type.ptr());
+    int idx = sgroups->addSGroup(type.c_str());
     SGroup* sgroup = &sgroups->getSGroup(idx);
     sgroup->original_group = sgroup_idx;
 
@@ -3357,8 +3331,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
         if (scanner.isEOF())
             return;      // should not actually happen
         scanner.skip(1); // =
-        entity.push(0);
-        if (strcmp(entity.ptr(), "ATOMS") == 0)
+        if (strcmp(entity.c_str(), "ATOMS") == 0)
         {
             scanner.skip(1); // (
             n = scanner.readInt1();
@@ -3369,7 +3342,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
             }
             scanner.skip(1); // )
         }
-        else if ((strcmp(entity.ptr(), "XBONDS") == 0) || (strcmp(entity.ptr(), "CBONDS") == 0))
+        else if ((strcmp(entity.c_str(), "XBONDS") == 0) || (strcmp(entity.c_str(), "CBONDS") == 0))
         {
             scanner.skip(1); // (
             n = scanner.readInt1();
@@ -3380,7 +3353,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
             }
             scanner.skip(1); // )
         }
-        else if (strcmp(entity.ptr(), "PATOMS") == 0)
+        else if (strcmp(entity.c_str(), "PATOMS") == 0)
         {
             scanner.skip(1); // (
             n = scanner.readInt1();
@@ -3395,40 +3368,40 @@ void MolfileLoader::_readSGroup3000(const char* str)
             }
             scanner.skip(1); // )
         }
-        else if (strcmp(entity.ptr(), "SUBTYPE") == 0)
+        else if (strcmp(entity.c_str(), "SUBTYPE") == 0)
         {
             QS_DEF(std::string, subtype);
             subtype.clear();
             scanner.readWord(subtype, 0);
-            if (strcmp(subtype.ptr(), "ALT") == 0)
+            if (strcmp(subtype.c_str(), "ALT") == 0)
                 sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_ALT;
-            else if (strcmp(subtype.ptr(), "RAN") == 0)
+            else if (strcmp(subtype.c_str(), "RAN") == 0)
                 sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_RAN;
-            else if (strcmp(subtype.ptr(), "BLO") == 0)
+            else if (strcmp(subtype.c_str(), "BLO") == 0)
                 sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
         }
-        else if (strcmp(entity.ptr(), "MULT") == 0)
+        else if (strcmp(entity.c_str(), "MULT") == 0)
         {
             int mult = scanner.readInt();
             if (sgroup->sgroup_type == SGroup::SG_TYPE_MUL)
                 ((MultipleGroup*)sgroup)->multiplier = mult;
         }
-        else if (strcmp(entity.ptr(), "PARENT") == 0)
+        else if (strcmp(entity.c_str(), "PARENT") == 0)
         {
             int parent = scanner.readInt();
             sgroup->parent_group = parent;
         }
-        else if (strcmp(entity.ptr(), "BRKTYP") == 0)
+        else if (strcmp(entity.c_str(), "BRKTYP") == 0)
         {
             QS_DEF(std::string, style);
             style.clear();
             scanner.readWord(style, 0);
-            if (strcmp(style.ptr(), "BRACKET") == 0)
+            if (strcmp(style.c_str(), "BRACKET") == 0)
                 sgroup->brk_style = _BRKTYP_SQUARE;
-            if (strcmp(style.ptr(), "PAREN") == 0)
+            if (strcmp(style.c_str(), "PAREN") == 0)
                 sgroup->brk_style = _BRKTYP_ROUND;
         }
-        else if (strcmp(entity.ptr(), "BRKXYZ") == 0)
+        else if (strcmp(entity.c_str(), "BRKXYZ") == 0)
         {
             scanner.skip(1); // (
             n = scanner.readInt1();
@@ -3460,7 +3433,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
             brackets[1].set(x2, y2);
             scanner.skip(1); // )
         }
-        else if (strcmp(entity.ptr(), "CONNECT") == 0)
+        else if (strcmp(entity.c_str(), "CONNECT") == 0)
         {
             char c1 = scanner.readChar();
             char c2 = scanner.readChar();
@@ -3473,15 +3446,15 @@ void MolfileLoader::_readSGroup3000(const char* str)
                     ((RepeatingUnit*)sgroup)->connectivity = SGroup::HEAD_TO_HEAD;
             }
         }
-        else if (strcmp(entity.ptr(), "FIELDNAME") == 0)
+        else if (strcmp(entity.c_str(), "FIELDNAME") == 0)
         {
             _readStringInQuotes(scanner, dsg ? &dsg->name : NULL);
         }
-        else if (strcmp(entity.ptr(), "FIELDINFO") == 0)
+        else if (strcmp(entity.c_str(), "FIELDINFO") == 0)
         {
             _readStringInQuotes(scanner, dsg ? &dsg->description : NULL);
         }
-        else if (strcmp(entity.ptr(), "FIELDDISP") == 0)
+        else if (strcmp(entity.c_str(), "FIELDDISP") == 0)
         {
             QS_DEF(std::string, substr);
             substr.clear();
@@ -3492,19 +3465,19 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 _readSGroupDisplay(subscan, *dsg);
             }
         }
-        else if (strcmp(entity.ptr(), "FIELDDATA") == 0)
+        else if (strcmp(entity.c_str(), "FIELDDATA") == 0)
         {
             _readStringInQuotes(scanner, &dsg->data);
         }
-        else if (strcmp(entity.ptr(), "QUERYTYPE") == 0)
+        else if (strcmp(entity.c_str(), "QUERYTYPE") == 0)
         {
             _readStringInQuotes(scanner, dsg ? &dsg->querycode : NULL);
         }
-        else if (strcmp(entity.ptr(), "QUERYOP") == 0)
+        else if (strcmp(entity.c_str(), "QUERYOP") == 0)
         {
             _readStringInQuotes(scanner, dsg ? &dsg->queryoper : NULL);
         }
-        else if (strcmp(entity.ptr(), "LABEL") == 0)
+        else if (strcmp(entity.c_str(), "LABEL") == 0)
         {
             while (!scanner.isEOF())
             {
@@ -3512,16 +3485,12 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 if (c == ' ')
                     break;
                 if (sup != 0)
-                    sup->subscript.push(c);
+                    sup->subscript += c;
                 if (sru != 0)
-                    sru->subscript.push(c);
+                    sru->subscript += c;
             }
-            if (sup != 0)
-                sup->subscript.push(0);
-            if (sru != 0)
-                sru->subscript.push(0);
         }
-        else if (strcmp(entity.ptr(), "CLASS") == 0)
+        else if (strcmp(entity.c_str(), "CLASS") == 0)
         {
             while (!scanner.isEOF())
             {
@@ -3529,18 +3498,16 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 if (c == ' ')
                     break;
                 if (sup != 0)
-                    sup->sa_class.push(c);
+                    sup->sa_class += c;
             }
-            if (sup != 0)
-                sup->sa_class.push(0);
         }
-        else if (strcmp(entity.ptr(), "SEQID") == 0)
+        else if (strcmp(entity.c_str(), "SEQID") == 0)
         {
             int seqid = scanner.readInt();
             if ((sup != 0) && seqid > 0)
                 sup->seqid = seqid;
         }
-        else if (strcmp(entity.ptr(), "NATREPLACE") == 0)
+        else if (strcmp(entity.c_str(), "NATREPLACE") == 0)
         {
             while (!scanner.isEOF())
             {
@@ -3548,12 +3515,10 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 if (c == ' ')
                     break;
                 if (sup != 0)
-                    sup->sa_natreplace.push(c);
+                    sup->sa_natreplace += c;
             }
-            if (sup != 0)
-                sup->sa_natreplace.push(0);
         }
-        else if (strcmp(entity.ptr(), "ESTATE") == 0)
+        else if (strcmp(entity.c_str(), "ESTATE") == 0)
         {
             while (!scanner.isEOF())
             {
@@ -3572,7 +3537,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 }
             }
         }
-        else if (strcmp(entity.ptr(), "CSTATE") == 0)
+        else if (strcmp(entity.c_str(), "CSTATE") == 0)
         {
             if (sup != 0)
             {
@@ -3599,7 +3564,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 scanner.skip(1);
             }
         }
-        else if (strcmp(entity.ptr(), "SAP") == 0)
+        else if (strcmp(entity.c_str(), "SAP") == 0)
         {
             if (sup != 0)
             {
@@ -3623,9 +3588,8 @@ void MolfileLoader::_readSGroup3000(const char* str)
                     char c = scanner.readChar();
                     if (c == ')')
                         break;
-                    ap.apid.push(c);
+                    ap.apid += c;
                 }
-                ap.apid.push(0);
             }
             else // skip for all other sgroups
             {
@@ -3664,9 +3628,9 @@ void MolfileLoader::_readTGroups3000()
 
     while (!_scanner.isEOF())
     {
-        _scanner.readLine(str, true);
+        _scanner.readLine(str);
 
-        if (strncmp(str.ptr(), "M  V30 BEGIN TEMPLATE", 21) == 0)
+        if (strncmp(str.c_str(), "M  V30 BEGIN TEMPLATE", 21) == 0)
         {
             while (!_scanner.isEOF())
             {
@@ -3674,12 +3638,12 @@ void MolfileLoader::_readTGroups3000()
 
                 _readMultiString(str);
 
-                if (strcmp(str.ptr(), "END TEMPLATE") == 0)
+                if (strcmp(str.c_str(), "END TEMPLATE") == 0)
                     break;
 
-                BufferScanner strscan(str.ptr());
+                BufferScanner strscan(str.c_str());
 
-                if (strncmp(str.ptr(), "TEMPLATE", 8) == 0)
+                if (strncmp(str.c_str(), "TEMPLATE", 8) == 0)
                 {
                     strscan.skip(8);
                     tg_idx = strscan.readInt1();
@@ -3697,9 +3661,9 @@ void MolfileLoader::_readTGroups3000()
                 char stop_char = strscan.readChar();
                 if (stop_char == '/')
                 {
-                    tgroup.tgroup_class.copy(word);
+                    tgroup.tgroup_class = word;
                     strscan.readWord(word, " /");
-                    tgroup.tgroup_name.copy(word);
+                    tgroup.tgroup_name = word;
 
                     if (!strscan.isEOF())
                     {
@@ -3707,7 +3671,7 @@ void MolfileLoader::_readTGroups3000()
                         if (stop_char == '/' && !strscan.isEOF())
                         {
                             strscan.readWord(word, " /");
-                            tgroup.tgroup_alias.copy(word);
+                            tgroup.tgroup_alias = word;
                             if (!strscan.isEOF()) // Skip stop char
                                 strscan.skip(1);
                         }
@@ -3715,7 +3679,7 @@ void MolfileLoader::_readTGroups3000()
                 }
                 else
                 {
-                    tgroup.tgroup_name.copy(word);
+                    tgroup.tgroup_name = word;
                 }
 
                 while (!strscan.isEOF())
@@ -3723,13 +3687,12 @@ void MolfileLoader::_readTGroups3000()
                     strscan.skipSpace();
                     strscan.readWord(word, "=");
                     strscan.skip(1); // =
-                    word.push(0);
-                    if (strcmp(word.ptr(), "COMMENT") == 0)
+                    if (strcmp(word.c_str(), "COMMENT") == 0)
                     {
                         _readStringInQuotes(strscan, &tgroup.tgroup_comment);
                     }
 
-                    if (strcmp(word.ptr(), "NATREPLACE") == 0)
+                    if (strcmp(word.c_str(), "NATREPLACE") == 0)
                     {
                         _readStringInQuotes(strscan, &tgroup.tgroup_natreplace);
                     }
@@ -3739,8 +3702,8 @@ void MolfileLoader::_readTGroups3000()
                 }
 
                 long long pos = _scanner.tell();
-                _scanner.readLine(str, true);
-                if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
+                _scanner.readLine(str);
+                if (strcmp(str.c_str(), "M  V30 BEGIN CTAB") == 0)
                 {
                     _scanner.seek(pos, SEEK_SET);
                     AutoPtr<BaseMolecule> fragment(_bmol->neu());
@@ -3764,13 +3727,13 @@ void MolfileLoader::_readTGroups3000()
                     loader._postLoad();
                 }
                 else
-                    throw Error("unexpected string in template: %s", str.ptr());
+                    throw Error("unexpected string in template: %s", str.c_str());
             }
         }
-        else if (strncmp(str.ptr(), "M  END", 6) == 0)
+        else if (strncmp(str.c_str(), "M  END", 6) == 0)
             break;
         else
-            throw Error("unexpected string in template: %s", str.ptr());
+            throw Error("unexpected string in template: %s", str.c_str());
     }
 }
 

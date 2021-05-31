@@ -519,7 +519,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             RepeatingUnit& ru = (RepeatingUnit&)sgroup;
             if (s.HasMember("subscript"))
             {
-                ru.subscript.readString(s["subscript"].GetString(), true);
+                ru.subscript = s["subscript"].GetString();
             }
 
             if (s.HasMember("connectivity"))
@@ -537,25 +537,25 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         case SGroup::SG_TYPE_SUP: {
             Superatom& sg = (Superatom&)sgroup;
             if (s.HasMember("name"))
-                sg.subscript.readString(s["name"].GetString(), true);
+                sg.subscript = s["name"].GetString();
         }
         break;
         case SGroup::SG_TYPE_DAT: {
             DataSGroup& dsg = (DataSGroup&)sgroup;
             if (s.HasMember("fieldName"))
-                dsg.name.readString(s["fieldName"].GetString(), true);
+                dsg.name = s["fieldName"].GetString();
 
             if (s.HasMember("fieldData"))
-                dsg.data.readString(s["fieldData"].GetString(), true);
+                dsg.data = s["fieldData"].GetString();
 
             if (s.HasMember("fieldType"))
-                dsg.description.readString(s["fieldType"].GetString(), true);
+                dsg.description = s["fieldType"].GetString();
 
             if (s.HasMember("queryType"))
-                dsg.querycode.readString(s["queryType"].GetString(), true);
+                dsg.querycode = s["queryType"].GetString();
 
             if (s.HasMember("queryOp"))
-                dsg.queryoper.readString(s["queryOp"].GetString(), true);
+                dsg.queryoper = s["queryOp"].GetString();
 
             if (s.HasMember("x"))
                 dsg.display_pos.x = s["x"].GetFloat();

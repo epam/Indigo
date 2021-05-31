@@ -275,9 +275,8 @@ void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
     std::string buf;
     StringOutput buf_out(buf);
     buf_out.printf("%d", arrow_id);
-    buf.push(0);
 
-    attrs.insert("id", buf.ptr());
+    attrs.insert("id", buf.c_str());
     attrs.insert("GraphicType", "Line");
     attrs.insert("ArrowType", "FullHead");
     attrs.insert("HeadSize", "1000");
@@ -294,7 +293,7 @@ void ReactionCdxmlSaver::_addScheme(MoleculeCdxmlSaver& molsaver)
     name.clear();
     attrs.clear();
 
-    name.readString("scheme", true);
+    name = "scheme";
     molsaver.startCurrentElement(id, name, attrs);
 }
 
@@ -313,7 +312,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     name.clear();
     attrs.clear();
 
-    name.readString("step", true);
+    name = "step";
 
     std::string buf;
     StringOutput buf_out(buf);
@@ -324,9 +323,8 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     }
     if (buf.size() > 1)
     {
-        buf.pop();
-        buf.push(0);
-        attrs.insert("ReactionStepReactants", buf.ptr());
+        buf.pop_back();
+        attrs.insert("ReactionStepReactants", buf.c_str());
     }
 
     buf.clear();
@@ -337,15 +335,13 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     }
     if (buf.size() > 1)
     {
-        buf.pop();
-        buf.push(0);
-        attrs.insert("ReactionStepProducts", buf.ptr());
+        buf.pop_back();
+        attrs.insert("ReactionStepProducts", buf.c_str());
     }
 
     buf.clear();
     buf_out.printf("%d", arrow_id);
-    buf.push(0);
-    attrs.insert("ReactionStepArrows", buf.ptr());
+    attrs.insert("ReactionStepArrows", buf.c_str());
 
     buf.clear();
     for (auto i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
@@ -371,10 +367,9 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
 
     if (buf.size() > 1)
     {
-        buf.pop();
-        buf.push(0);
-        attrs.insert("ReactionStepAtomMap", buf.ptr());
-        attrs.insert("ReactionStepAtomMapManual", buf.ptr());
+        buf.pop_back();
+        attrs.insert("ReactionStepAtomMap", buf.c_str());
+        attrs.insert("ReactionStepAtomMapManual", buf.c_str());
     }
 
     molsaver.addCustomElement(id, name, attrs);
@@ -483,5 +478,5 @@ void ReactionCdxmlSaver::_addTitle(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
     p.x = (rmin.x + pmax.x) / 2 - rxn.name.size() * 0.1f;
     p.y = (rmax.y > pmax.y ? rmax.y : pmax.y) + 1.0f;
 
-    molsaver.addTitle(p, rxn.name.ptr());
+    molsaver.addTitle(p, rxn.name.c_str());
 }

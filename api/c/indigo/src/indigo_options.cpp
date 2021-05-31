@@ -45,13 +45,13 @@ static void indigoGetMolfileSavingMode(std::string& value)
     switch (self.molfile_saving_mode)
     {
     case MolfileSaver::MODE_2000:
-        value.readString("2000", true);
+        value = "2000";
         break;
     case MolfileSaver::MODE_3000:
-        value.readString("3000", true);
+        value = "3000";
         break;
     case MolfileSaver::MODE_AUTO:
-        value.readString("auto", true);
+        value = "auto";
         break;
     }
 }
@@ -71,9 +71,9 @@ static void indigoGetFilenameEncoding(std::string& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.filename_encoding == ENCODING_ASCII)
-        value.readString("ASCII", true);
+        value = "ASCII";
     else
-        value.readString("UTF-8", true);
+        value = "UTF-8";
 }
 
 static void indigoSetLayoutOrientation(const char* orientation)
@@ -95,13 +95,13 @@ static void indigoGetLayoutOrientation(std::string& value)
     switch (self.layout_orientation)
     {
     case 0:
-        value.readString("unspecified", true);
+        value = "unspecified";
         break;
     case 1:
-        value.readString("horizontal", true);
+        value = "horizontal";
         break;
     case 2:
-        value.readString("vertical", true);
+        value = "vertical";
         break;
     }
 }
@@ -131,11 +131,11 @@ static void indigoGetEmbeddingUniqueness(std::string& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.find_unique_embeddings == false)
-        value.readString("none", true);
+        value = "none";
     else if (self.embedding_edges_uniqueness == false)
-        value.readString("atoms", true);
+        value = "atoms";
     else
-        value.readString("bonds", true);
+        value = "bonds";
 }
 
 static void indigoSetLayoutHorIntervalFactor(float value)
@@ -165,9 +165,9 @@ static void indigoGetAromaticityModel(std::string& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.arom_options.method == AromaticityOptions::BASIC)
-        value.readString("basic", true);
+        value = "basic";
     else
-        value.readString("generic", true);
+        value = "generic";
 }
 
 static void indigoSetPkaModel(const char* model)
@@ -185,9 +185,9 @@ static void indigoGetPkaModel(std::string& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.ionize_options.model == IonizeOptions::PKA_MODEL_SIMPLE)
-        value.readString("simple", true);
+        value = "simple";
     else
-        value.readString("advanced", true);
+        value = "advanced";
 }
 
 static void indigoSetMaxEmbeddings(int value)
@@ -225,15 +225,15 @@ static void indigoGetStereoOption(std::string& option)
 {
     Indigo& self = indigoGetInstance();
     if (self.treat_stereo_as == 0)
-        option.readString("ucf", true);
+        option = "ucf";
     else if (self.treat_stereo_as == MoleculeStereocenters::ATOM_ABS)
-        option.readString("abs", true);
+        option = "abs";
     else if (self.treat_stereo_as == MoleculeStereocenters::ATOM_OR)
-        option.readString("rel", true);
+        option = "rel";
     else if (self.treat_stereo_as == MoleculeStereocenters::ATOM_AND)
-        option.readString("rac", true);
+        option = "rac";
     else if (self.treat_stereo_as == MoleculeStereocenters::ATOM_ANY)
-        option.readString("any", true);
+        option = "any";
 }
 
 static void indigoResetBasicOptions()
@@ -280,8 +280,7 @@ _IndigoBasicOptionsHandlersSetter::_IndigoBasicOptionsHandlersSetter()
     mgr.setOptionHandlerString(
         "similarity-type", [](const char* value) { indigo.fp_params.similarity_type = MoleculeFingerprintBuilder::parseSimilarityType(value); },
         [](std::string& value) {
-            const char* str = MoleculeFingerprintBuilder::printSimilarityType(indigo.fp_params.similarity_type);
-            value.copy(str, strlen(str));
+            value = MoleculeFingerprintBuilder::printSimilarityType(indigo.fp_params.similarity_type);
         });
 
     mgr.setOptionHandlerString("embedding-uniqueness", indigoSetEmbeddingUniqueness, indigoGetEmbeddingUniqueness);

@@ -60,7 +60,7 @@ SimilarityMoleculeQuery::SimilarityMoleculeQuery(/* const */ Molecule& mol) : Ba
 
 GrossQuery::GrossQuery(/* const */ std::string& str)
 {
-    _gross_str.copy(str);
+    _gross_str = str;
 }
 
 bool GrossQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/

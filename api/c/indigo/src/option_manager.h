@@ -79,9 +79,8 @@ using namespace indigo;
         }
 
 #define SETTER_GETTER_STR_OPTION(option)                                                                                                                       \
-    [](const char* value) { option.readString(value, true); }, [](std::string& value) {                                                                        \
-        value.copy(option);                                                                                                                                    \
-        value.push(0);                                                                                                                                         \
+    [](const char* value) { option = value; }, [](std::string& value) {                                                                        \
+        value = option;                                                                                                                                    \
     }
 
 class DLLEXPORT IndigoOptionManager

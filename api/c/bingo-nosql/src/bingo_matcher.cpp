@@ -1440,7 +1440,7 @@ void RxnExactMatcher::_setParameters(const char* flags)
             break;
         scanner.readWord(word, 0);
 
-        if (strcasecmp(word.ptr(), "NONE") == 0)
+        if (strcasecmp(word.c_str(), "NONE") == 0)
         {
             if (had_all)
                 throw Exception("RxnExactMatcher: setParameters: NONE conflicts with ALL");
@@ -1448,7 +1448,7 @@ void RxnExactMatcher::_setParameters(const char* flags)
             count++;
             continue;
         }
-        if (strcasecmp(word.ptr(), "ALL") == 0)
+        if (strcasecmp(word.c_str(), "ALL") == 0)
         {
             if (had_none)
                 throw Exception("RxnExactMatcher: setParameters: ALL conflicts with NONE");
@@ -1460,21 +1460,21 @@ void RxnExactMatcher::_setParameters(const char* flags)
 
         for (i = 0; i < NELEM(token_list); i++)
         {
-            if (strcasecmp(token_list[i].token, word.ptr()) == 0)
+            if (strcasecmp(token_list[i].token, word.c_str()) == 0)
             {
                 if (had_all)
                     throw Exception("RxnExactMatcher: setParameters: only negative flags are allowed together with ALL");
                 res |= token_list[i].value;
                 break;
             }
-            if (word[0] == '-' && strcasecmp(token_list[i].token, word.ptr() + 1) == 0)
+            if (word[0] == '-' && strcasecmp(token_list[i].token, word.c_str() + 1) == 0)
             {
                 res &= ~token_list[i].value;
                 break;
             }
         }
         if (i == NELEM(token_list))
-            throw Exception("RxnExactMatcher: setParameters: unknown token %s", word.ptr());
+            throw Exception("RxnExactMatcher: setParameters: unknown token %s", word.c_str());
         count++;
     }
 
@@ -1556,7 +1556,7 @@ void BaseGrossMatcher::setQueryData(GrossQueryData* query_data)
 {
     _query_data.reset(query_data);
     GrossQuery& gross_qobj = (GrossQuery&)_query_data->getQueryObject();
-    MoleculeGrossFormula::fromString(gross_qobj.getGrossString().ptr(), _query_array);
+    MoleculeGrossFormula::fromString(gross_qobj.getGrossString().c_str(), _query_array);
 
     _calcFormula();
 }
@@ -1582,7 +1582,7 @@ void MolGrossMatcher::_calcFormula()
 {
     GrossQuery& query = (GrossQuery&)(_query_data->getQueryObject());
 
-    MoleculeGrossFormula::fromString(query.getGrossString().ptr(), _query_array);
+    MoleculeGrossFormula::fromString(query.getGrossString().c_str(), _query_array);
 }
 
 bool MolGrossMatcher::_tryCurrent() /* const */

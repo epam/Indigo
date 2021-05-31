@@ -169,13 +169,12 @@ int RenderParamInterface::multilineTextUnit(RenderItemFactory& factory, int type
     int start = 0;
     while (start < titleStr.size())
     {
-        int next = titleStr.find(start + 1, titleStr.size(), '\n');
+        int next = titleStr.find(start + 1, '\n');
         if (next == -1)
             next = titleStr.size();
         int title_line = factory.addItemAuxiliary();
         factory.getItemAuxiliary(title_line).type = (RenderItemAuxiliary::AUX_TYPE)type;
-        factory.getItemAuxiliary(title_line).text.copy(titleStr.ptr() + start, next - start);
-        factory.getItemAuxiliary(title_line).text.push('\0');
+        factory.getItemAuxiliary(title_line).text = std::string(titleStr.c_str() + start, next - start);
         factory.getItemColumn(title).items.push(title_line);
         start = next + 1;
     }

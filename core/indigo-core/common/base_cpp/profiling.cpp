@@ -87,13 +87,13 @@ int ProfilingSystem::getNameIndex(const char* name, bool add_if_not_exists)
     auto& _names = getNames();
 
     for (int i = 0; i < _names.size(); i++)
-        if (strcmp(_names[i].ptr(), name) == 0)
+        if (strcmp(_names[i].c_str(), name) == 0)
             return i;
     if (!add_if_not_exists)
         return -1;
     // Add new label
     std::string& name_record = _names.push();
-    name_record.copy(name, strlen(name) + 1);
+    name_record = name;
     return _names.size() - 1;
 }
 
@@ -129,7 +129,7 @@ void ProfilingSystem::reset(bool all)
 int ProfilingSystem::_recordsCmp(int idx1, int idx2, void* context)
 {
     auto& _names = getNames();
-    return strcmp(_names[idx1].ptr(), _names[idx2].ptr());
+    return strcmp(_names[idx1].c_str(), _names[idx2].c_str());
 }
 
 void ProfilingSystem::getStatistics(Output& output, bool get_all)
@@ -174,7 +174,7 @@ void ProfilingSystem::getStatistics(Output& output, bool get_all)
         if (!get_all && rec.current.count == 0)
             continue;
 
-        table_output.printf("%s\t", _names[idx].ptr());
+        table_output.printf("%s\t", _names[idx].c_str());
 
         if (rec.type == Record::TYPE_TIMER)
         {

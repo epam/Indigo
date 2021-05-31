@@ -299,12 +299,12 @@ void MultipleCdxLoader::_getObject()
         {
             if (name.size() > 0)
             {
-                auto& propVal = properties.insert(name.ptr());
-                if (value.size() > 0)
-                    propVal.readString(value.ptr(), true);
+                auto& propVal = properties.insert(name.c_str());
+                if (value.size())
+                    propVal = value.c_str();
                 else if (_latest_text.size() > 0)
                 {
-                    propVal.readString(_latest_text.ptr(), true);
+                    propVal = _latest_text.c_str();
                     _latest_text.clear();
                 }
             }
@@ -368,8 +368,8 @@ void MultipleCdxLoader::_getString(int size, std::string& buf)
 {
     UINT16 flag = 0;
 
-    buf.clear_resize(size);
-    buf.zerofill();
+    buf.clear();
+    buf.resize(size, 0);
 
     if (size < 3)
     {

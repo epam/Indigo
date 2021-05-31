@@ -85,15 +85,13 @@ int Scanner::readInt1(void)
         c = readChar();
         if (!isdigit(c) && c != '-' && c != '+')
             break;
-        buf.push(c);
+        buf += c;
         if (buf.size() > MAX_LINE_LENGTH)
             throw Error("Line length is too long. Probably the file format is not correct.");
     }
 
-    buf.push(0);
-
-    if (sscanf(buf.ptr(), "%d", &result) < 1)
-        throw Error("readInt(): error parsing %s", buf.ptr());
+    if (sscanf(buf.c_str(), "%d", &result) < 1)
+        throw Error("readInt(): error parsing %s", buf.c_str());
 
     return result;
 }
@@ -109,19 +107,17 @@ int Scanner::readInt(void)
     c = readChar();
 
     if (c == '+' || c == '-' || isdigit(c))
-        buf.push(c);
+        buf += c;
 
     while (isdigit(lookNext()))
     {
-        buf.push(readChar());
+        buf += readChar();
         if (buf.size() > MAX_LINE_LENGTH)
             throw Error("Line length is too long. Probably the file format is not correct.");
     }
 
-    buf.push(0);
-
-    if (sscanf(buf.ptr(), "%d", &result) < 1)
-        throw Error("readInt(): error parsing %s", buf.ptr());
+    if (sscanf(buf.c_str(), "%d", &result) < 1)
+        throw Error("readInt(): error parsing %s", buf.c_str());
 
     return result;
 }
@@ -284,13 +280,11 @@ void Scanner::readWord(std::string& word, const char* delimiters)
         if (delimiters != 0 && strchr(delimiters, (char)next) != NULL)
             break;
 
-        word.push(readChar());
+        word += readChar();
 
         if (word.size() > MAX_LINE_LENGTH)
             throw Error("Line length is too long. Probably the file format is not correct.");
     } while (!isEOF());
-
-    word.push(0);
 }
 
 float Scanner::readFloatFix(int digits)
@@ -359,7 +353,7 @@ bool Scanner::skipLine()
 void Scanner::read(int length, std::string& buf)
 {
     buf.resize(length);
-    read(length, buf.ptr());
+    read(length, &buf[0]);
 }
 
 void Scanner::skipSpace()
@@ -374,14 +368,10 @@ void Scanner::skipUntil(const char* delimiters)
         skip(1);
 }
 
-void Scanner::appendLine(std::string& out, bool append_zero)
+void Scanner::appendLine(std::string& out )
 {
     if (isEOF())
         throw Error("appendLine(): end of stream");
-
-    if (out.size() > 0)
-        while (out.top() == 0)
-            out.pop();
 
     do
     {
@@ -396,20 +386,17 @@ void Scanner::appendLine(std::string& out, bool append_zero)
         if (c == '\n')
             break;
 
-        out.push(c);
+        out += c;
 
         if (out.size() > MAX_LINE_LENGTH)
             throw Error("Line length is too long. Probably the file format is not correct.");
     } while (!isEOF());
-
-    if (append_zero)
-        out.push(0);
 }
 
-void Scanner::readLine(std::string& out, bool append_zero)
+void Scanner::readLine(std::string& out )
 {
     out.clear();
-    appendLine(out, append_zero);
+    appendLine(out);
 }
 
 void Scanner::readCharsFix(int n, char* chars_out)
@@ -503,9 +490,8 @@ void Scanner::readAll(std::string& arr)
         throw Error("Cannot read more than %d into memory", max_int);
     }
 
-    arr.clear_resize(static_cast<int>(size));
-
-    read(arr.size(), arr.ptr());
+    arr.resize( size );
+    read(arr.size(), &arr[0]);
 }
 
 bool Scanner::isSingleLine(Scanner& scanner)
@@ -716,7 +702,7 @@ BufferScanner::BufferScanner(const char* str)
 
 BufferScanner::BufferScanner(const std::string& arr)
 {
-    _init(arr.ptr(), arr.size());
+    _init(arr.c_str(), arr.size());
 }
 
 BufferScanner::~BufferScanner()
@@ -819,7 +805,7 @@ bool Scanner::findWord(const char* word)
     strs.clear();
     std::string& str = strs.push();
 
-    str.readString(word, false);
+    str = word;
     return findWord(strs) == 0;
 }
 
@@ -872,7 +858,7 @@ bool Scanner::findWordIgnoreCase(const char* word)
     strs.clear();
     std::string& str = strs.push();
 
-    str.readString(word, false);
+    str = word;
     return findWordIgnoreCase(strs) == 0;
 }
 

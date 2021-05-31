@@ -525,7 +525,7 @@ void BaseIndex::_insertIndexData(_ObjectIndexData& obj_data)
 {
     _sub_fp_storage.ptr()->add(obj_data.sub_fp.ptr());
     _sim_fp_storage.ptr()->add(obj_data.sim_fp.ptr(), _header->object_count);
-    _cf_storage.ptr()->add((byte*)obj_data.cf_str.ptr(), obj_data.cf_str.size(), _header->object_count);
+    _cf_storage.ptr()->add((byte*)obj_data.cf_str.data(), obj_data.cf_str.size(), _header->object_count);
     _exact_storage.ptr()->add(obj_data.hash, _header->object_count);
     _gross_storage.ptr()->add(obj_data.gross_str, _header->object_count);
 }

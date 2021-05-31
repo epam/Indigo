@@ -69,11 +69,11 @@ namespace indigo
         }
         void setName(const char* name)
         {
-            _name.readString(name, true);
+            _name = name;
         }
         const char* getName() const
         {
-            return _name.ptr();
+            return _name.c_str();
         }
 
         void calcMorganCode();

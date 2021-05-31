@@ -171,31 +171,31 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, rapidjson::Writer<rap
         break;
     case SGroup::SG_TYPE_DAT: {
         DataSGroup& dsg = (DataSGroup&)sgroup;
-        auto name = dsg.name.ptr();
+        auto name = dsg.name.c_str();
         if (name && strlen(name))
         {
             writer.Key("fieldName");
             writer.String(name);
         }
-        auto data = dsg.data.ptr();
+        auto data = dsg.data.c_str();
         if (data && strlen(data))
         {
             writer.Key("fieldData");
             writer.String(data);
         }
-        auto field_type = dsg.description.ptr();
+        auto field_type = dsg.description.c_str();
         if (field_type && strlen(field_type))
         {
             writer.Key("fieldType");
             writer.String(field_type);
         }
-        auto query_code = dsg.querycode.ptr();
+        auto query_code = dsg.querycode.c_str();
         if (query_code && strlen(query_code))
         {
             writer.Key("queryType");
             writer.String(query_code);
         }
-        auto query_oper = dsg.queryoper.ptr();
+        auto query_oper = dsg.queryoper.c_str();
         if (query_oper && strlen(query_oper))
         {
             writer.Key("queryOp");
@@ -243,7 +243,7 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, rapidjson::Writer<rap
     case SGroup::SG_TYPE_SUP: {
         Superatom& sa = (Superatom&)sgroup;
         writer.Key("name");
-        writer.String(sa.subscript.ptr());
+        writer.String(sa.subscript.c_str());
     }
     break;
     case SGroup::SG_TYPE_SRU: {
@@ -251,7 +251,7 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, rapidjson::Writer<rap
         if (ru.subscript.size())
         {
             writer.Key("subscript");
-            writer.String(ru.subscript.ptr());
+            writer.String(ru.subscript.c_str());
         }
 
         writer.Key("connectivity");
@@ -590,8 +590,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                 {
                     buf.clear();
                     out.printf("rg-%d", rg_list[j]);
-                    buf.push(0);
-                    writer.String(buf.ptr());
+                    writer.String(buf.c_str());
                 }
                 writer.EndArray();
             }
@@ -606,17 +605,15 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, Writer<StringBuffer>& write
                 {
                     if (isotope == 2)
                     {
-                        buf.clear();
-                        buf.appendString("D", true);
+                        buf = "D";
                     }
                     if (isotope == 3)
                     {
-                        buf.clear();
-                        buf.appendString("T", true);
+                        buf = "T";
                     }
                 }
                 writer.Key("label");
-                writer.String(buf.ptr());
+                writer.String(buf.c_str());
             }
             if (BaseMolecule::hasCoord(mol))
             {
@@ -669,9 +666,8 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
 
     buf.clear();
     out.printf("rg%d", rgnum);
-    buf.push(0);
 
-    writer.Key(buf.ptr());
+    writer.Key(buf.c_str());
     writer.StartObject();
     writer.Key("rlogic");
     writer.StartObject();
@@ -740,10 +736,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, Writer<StringBuffer>& w
     {
         buf.clear();
         out.printf("rg%d", i);
-        buf.push(0);
         writer.StartObject();
         writer.Key("$ref");
-        writer.String(buf.ptr());
+        writer.String(buf.c_str());
         writer.EndObject();
     }
 

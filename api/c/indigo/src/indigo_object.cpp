@@ -163,13 +163,13 @@ const char* IndigoObject::getTypeName() const
 const char* IndigoObject::debugInfo()
 {
     if (_dbg_info.get() != 0)
-        return _dbg_info->ptr();
+        return _dbg_info->c_str();
 
     _dbg_info.create();
     StringOutput out(_dbg_info.ref());
     out.printf("<%s>", getTypeName());
     out.writeChar(0);
-    return _dbg_info->ptr();
+    return _dbg_info->c_str();
 }
 
 void IndigoObject::toString(std::string& str)

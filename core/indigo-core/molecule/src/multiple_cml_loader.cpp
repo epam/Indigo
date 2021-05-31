@@ -28,8 +28,8 @@ CP_DEF(MultipleCmlLoader);
 MultipleCmlLoader::MultipleCmlLoader(Scanner& scanner) : CP_INIT, TL_CP_GET(data), TL_CP_GET(_tags), TL_CP_GET(_offsets), _scanner(scanner)
 {
     _tags.clear();
-    _tags.push().readString("<reaction", false);
-    _tags.push().readString("<molecule", false);
+    _tags.push()= "<reaction";
+    _tags.push() = "<molecule";
     _current_number = 0;
     _max_offset = 0LL;
     _offsets.clear();

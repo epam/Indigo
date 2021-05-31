@@ -42,11 +42,10 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
 
     QS_DEF(std::string, buf);
     _scanner.readAll(buf);
-    buf.push(0);
 
     TiXmlDocument xml;
 
-    xml.Parse(buf.ptr());
+    xml.Parse(buf.c_str());
 
     if (xml.Error())
         throw Error("XML parsing error: %s", xml.ErrorDesc());
@@ -65,7 +64,7 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
     const char* title = elem->Attribute("title");
 
     if (title != 0)
-        rxn.name.readString(title, true);
+        rxn.name = title;
 
     QS_DEF(Molecule, mol);
 
