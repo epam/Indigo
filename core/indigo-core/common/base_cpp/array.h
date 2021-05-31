@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <algorithm>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
