@@ -101,7 +101,7 @@ void Output::vprintf(const char* format, va_list args_orig)
 #if defined(_WIN32) && !defined(__MINGW32__)
         n = _vsnprintf_l(&str[0], str.size(), format, getCLocale(), args);
 #else
-        n = vsnprintf(str.ptr(), str.size(), format, args);
+        n = vsnprintf(&str[0], str.size(), format, args);
 #endif
         /* If that worked, return the string. */
         if (n > -1 && n < str.size())
