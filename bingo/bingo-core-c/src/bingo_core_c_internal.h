@@ -124,7 +124,7 @@ namespace indigo
     }                                                                                                                                                          \
     catch (Exception & ex)                                                                                                                                     \
     {                                                                                                                                                          \
-        self.error.readString(ex.message(), true);                                                                                                             \
+        self.error = ex.message();                                                                                                             \
         if (self.error_handler != 0)                                                                                                                           \
             self.error_handler(ex.message(), self.error_handler_context);                                                                                      \
         return fail;                                                                                                                                           \

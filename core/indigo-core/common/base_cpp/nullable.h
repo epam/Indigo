@@ -32,13 +32,13 @@ namespace indigo
     public:
         Nullable() : _has_value(false)
         {
-            variable_name.readString("<Undefined>", true);
+            variable_name ="<Undefined>";
         }
 
         const T& get() const
         {
             if (!_has_value)
-                throw Error("\"%s\" variable was not set", variable_name.ptr());
+                throw Error("\"%s\" variable was not set", variable_name.c_str());
             return _value;
         }
 
@@ -71,7 +71,7 @@ namespace indigo
 
         void setName(const char* name)
         {
-            variable_name.readString(name, true);
+            variable_name = name;
         }
 
         DECL_TPL_ERROR(NullableError);

@@ -126,7 +126,7 @@ public:
             }
             if (output) {
                 for (int i = data.begin(); i != data.end(); i = data.next(i)) {
-                    key_tmp.readString(data.key(i), true);
+                    key_tmp = data.key(i);
                     handleArray(key_tmp, scanner, output);
                     handleNumber(data.value(i), scanner, output);
                 }
@@ -160,13 +160,13 @@ public:
                 data.clear();
                 for (int i = 0; i < size; ++i) {
                     handleArray(key_tmp, scanner, output);
-                    int key_idx = data.insert(key_tmp.ptr());
+                    int key_idx = data.insert(key_tmp.c_str());
                     handleArray(data.value(key_idx), scanner, output);
                 }
             }
             if (output) {
                 for (int i = data.begin(); i != data.end(); i = data.next(i)) {
-                    key_tmp.readString(data.key(i), true);
+                    key_tmp = data.key(i);
                     handleArray(key_tmp, scanner, output);
                     handleArray(data.value(i), scanner, output);
                 }
@@ -291,11 +291,11 @@ public:
 //      static void bingoErrorHandler(const char *message, void *context);
 
         const char* getFunctionName() const {
-            return _functionName.size() ? _functionName.ptr() : 0;
+            return _functionName.size() ? _functionName.c_str() : 0;
         }
 
         void setFunctionName(const char* name) {
-            _functionName.readString(name, true);
+            _functionName = name;
         }
 
         void refresh();
