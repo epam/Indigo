@@ -307,7 +307,6 @@ void _importSDF(OracleEnv& env, const char* table, const char* clob_col, const c
             StringOutput out(word);
 
             out.printf(":%s", columns.at(i));
-            out.writeChar(0);
 
             const char* val = loader.properties.at(props.at(i));
 
@@ -470,7 +469,6 @@ void _importRDF(OracleEnv& env, const char* table, const char* clob_col, const c
             StringOutput out(word);
 
             out.printf(":%s", columns.at(i));
-            out.writeChar(0);
 
             const char* val = loader.properties.at(props.at(i));
 
@@ -671,7 +669,7 @@ source_lob.readAll(source, false);
     StringOutput output(dest);
     GZipOutput gzoutput(output, 9);
 
-    gzoutput.write(source.c_str(), source.size());
+    gzoutput.write(source.data(), source.size());
     gzoutput.flush();
 }
 

@@ -247,7 +247,7 @@ CEXPORT int bingoGetConfigBin(const char* name, const char** value, int* len)
         {
             StringOutput output(self.buffer);
             self.bingo_context->cmf_dict.save(output);
-            *value = self.buffer.c_str();
+            *value = self.buffer.data();
             *len = self.buffer.size();
         }
         else
@@ -469,7 +469,6 @@ CEXPORT void bingoProfilingReset(byte reset_whole_session)
 
 CEXPORT const char* bingoProfilingGetStatistics(bool for_session){BINGO_BEGIN{StringOutput output(self.buffer);
 profGetStatistics(output, for_session);
-output.writeByte(0);
 return self.buffer.c_str();
 }
 BINGO_END("<unknown>", "<unknown>")

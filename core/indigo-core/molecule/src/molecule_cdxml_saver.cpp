@@ -525,7 +525,6 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 mol.getAtomSymbol(i, buf);
                 if (hcount > 0)
                 {
-                    // TODO: bug?
                     buf.pop_back();
                     buf.push_back('H');
                 }
@@ -816,8 +815,8 @@ void MoleculeCdxmlSaver::addCustomText(const Vec2f& pos, const char* alignment, 
     buf = text;
     if (buf.size() > 1)
     {
-        buf.erase( buf.begin());
         buf.pop_back();
+        buf.erase( buf.begin());
         s->SetValue(buf.c_str());
         t->LinkEndChild(s);
     }

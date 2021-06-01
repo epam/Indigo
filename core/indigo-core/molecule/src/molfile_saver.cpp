@@ -189,7 +189,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
             for (j = 0; j < 3 - occ.size(); j++)
                 _output.writeChar(' ');
 
-            _output.write(occ.c_str(), occ.size());
+            _output.write(occ.data(), occ.size());
             _output.writeCR();
         }
 
@@ -612,7 +612,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 out.printf(" RBCNT=%d", rbc);
         }
 
-        _writeMultiString(output, buf.c_str(), buf.size());
+        _writeMultiString(output, buf.data(), buf.size());
     }
 
     output.writeStringCR("M  V30 END ATOM");
@@ -693,7 +693,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         if (topology != 0)
             out.printf(" TOPO=%d", topology);
 
-        _writeMultiString(output, buf.c_str(), buf.size());
+        _writeMultiString(output, buf.data(), buf.size());
     }
 
     output.writeStringCR("M  V30 END BOND");
@@ -743,7 +743,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 out.printf(" %d", _atom_mapping[list[j]]);
             out.writeChar(')');
 
-            _writeMultiString(output, buf.c_str(), buf.size());
+            _writeMultiString(output, buf.data(), buf.size());
         }
 
         if (mol.hasHighlighting())
@@ -770,7 +770,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" %d", _atom_mapping[i]);
                 out.writeChar(')');
 
-                _writeMultiString(output, buf.c_str(), buf.size());
+                _writeMultiString(output, buf.data(), buf.size());
             }
         }
         if (mol.custom_collections.size() > 0)
@@ -779,7 +779,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             {
                 StringOutput out(buf);
                 out.printf("%s", mol.custom_collections.at(i));
-                _writeMultiString(output, buf.c_str(), buf.size());
+                _writeMultiString(output, buf.data(), buf.size());
             }
         }
 
@@ -803,7 +803,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             _writeGenericSGroup3000(sgroup, idx++, out);
             if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
             {
-                _writeMultiString(output, buf.c_str(), buf.size());
+                _writeMultiString(output, buf.data(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
             {
@@ -839,7 +839,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 if (sup.sa_natreplace.size() > 1)
                     out.printf(" NATREPLACE=%s", sup.sa_natreplace.c_str());
 
-                _writeMultiString(output, buf.c_str(), buf.size());
+                _writeMultiString(output, buf.data(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
@@ -916,7 +916,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                             break;
                     }
                 }
-                _writeMultiString(output, buf.c_str(), buf.size());
+                _writeMultiString(output, buf.data(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
             {
@@ -929,7 +929,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     out.printf(" CONNECT=EU");
                 if (ru.subscript.size() > 1)
                     out.printf(" LABEL=%s", ru.subscript.c_str());
-                _writeMultiString(output, buf.c_str(), buf.size());
+                _writeMultiString(output, buf.data(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
             {
@@ -943,11 +943,11 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     out.printf(")");
                 }
                 out.printf(" MULT=%d", mg.multiplier);
-                _writeMultiString(output, buf.c_str(), buf.size());
+                _writeMultiString(output, buf.data(), buf.size());
             }
             else
             {
-                _writeMultiString(output, buf.c_str(), buf.size());
+                _writeMultiString(output, buf.data(), buf.size());
             }
         }
         output.writeStringCR("M  V30 END SGROUP");
@@ -1052,7 +1052,7 @@ void MolfileSaver::_writeRGroup(Output& output, BaseMolecule& mol, int rg_idx)
 
     _writeOccurrenceRanges(out, rgroup.occurrence);
 
-    _writeMultiString(output, buf.c_str(), buf.size());
+    _writeMultiString(output, buf.data(), buf.size());
 
     PtrPool<BaseMolecule>& frags = rgroup.fragments;
     for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
@@ -1079,7 +1079,7 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
     if (tgroup.tgroup_comment.size() > 0)
         out.printf(" COMMENT=%s", tgroup.tgroup_comment.c_str());
 
-    _writeMultiString(output, buf.c_str(), buf.size());
+    _writeMultiString(output, buf.data(), buf.size());
 
     _writeCtab(output, *tgroup.fragment.get(), mol.isQueryMolecule());
 }
@@ -2103,7 +2103,7 @@ void MolfileSaver::_updateCIPStereoDescriptors(BaseMolecule& mol)
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& datasgroup = (DataSGroup&)sgroup;
-            if (datasgroup.name.size() > 0 && strcmp(datasgroup.name.c_str(), "INDIGO_CIP_DESC") == 0)
+            if (datasgroup.name.size() && strcmp(datasgroup.name.c_str(), "INDIGO_CIP_DESC") == 0)
             {
                 mol.sgroups.remove(i);
             }

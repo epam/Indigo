@@ -373,6 +373,11 @@ void Scanner::appendLine(std::string& out )
     if (isEOF())
         throw Error("appendLine(): end of stream");
 
+    if (out.size() > 0)
+        while (out.back() == 0)
+            out.pop_back();
+
+
     do
     {
         char c = readChar();
@@ -490,6 +495,7 @@ void Scanner::readAll(std::string& arr)
         throw Error("Cannot read more than %d into memory", max_int);
     }
 
+    arr.clear();
     arr.resize( size );
     read(arr.size(), &arr[0]);
 }
@@ -702,7 +708,7 @@ BufferScanner::BufferScanner(const char* str)
 
 BufferScanner::BufferScanner(const std::string& arr)
 {
-    _init(arr.c_str(), arr.size());
+    _init(arr.data(), arr.size());
 }
 
 BufferScanner::~BufferScanner()

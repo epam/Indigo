@@ -60,7 +60,7 @@ void MangoFastIndex::_decompressRowid(const std::string& stored, OraRowidText& r
     if (rowid.size() != 18)
         throw Error("rowid size=%d?", rowid.size());
 
-    memcpy(rid.ptr(), rowid.c_str(), 18);
+    memcpy(rid.ptr(), rowid.data(), 18);
     rid.ptr()[18] = 0;
 }
 

@@ -76,7 +76,7 @@ void BingoPgSearchEngine::loadDictionary(BingoPgIndex& bingo_index)
 {
     QS_DEF(std::string, dict);
     bingo_index.readDictionary(dict);
-    bingoSetConfigBin("cmf_dict", dict.c_str(), dict.size());
+    bingoSetConfigBin("cmf_dict", dict.data(), dict.size());
 }
 
 // const char* BingoPgSearchEngine::getDictionary(int& size) {

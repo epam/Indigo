@@ -98,7 +98,7 @@ protected:
 
     PtrArray<SharedMemory> _shmem_array;
 
-    void* _getShared(SharedMemory*& sh_mem, char* name, int shared_size, bool allow_first);
+    void* _getShared(SharedMemory*& sh_mem, const char* name, int shared_size, bool allow_first);
     _State* _getState(bool allow_first);
     void _insertLOB(OracleEnv& env, int no);
     OracleLOB* _getLob(OracleEnv& env, int no);

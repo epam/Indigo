@@ -149,7 +149,7 @@ void RxnfileSaver::_writeRxnHeader(BaseReaction& reaction)
         lt = *localtime(&tm);
     }
 
-    if (reaction.name.c_str() != 0)
+    if (reaction.name.size())
         _output.printfCR("%s", reaction.name.c_str());
     else
         _output.writeCR();

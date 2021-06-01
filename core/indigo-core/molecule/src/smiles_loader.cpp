@@ -453,7 +453,7 @@ void SmilesLoader::_readOtherStuff()
                 {
                     int rnum;
 
-                    if (label.size() > 3 && strncmp(label.c_str(), "_R", 2) == 0 && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
+                    if (label.size() > 2 && strncmp(label.c_str(), "_R", 2) == 0 && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
                     {
                         // ChemAxon's Extended SMILES notation for R-sites
                         if (_qmol != 0)
@@ -471,7 +471,7 @@ void SmilesLoader::_readOtherStuff()
                                 _bmol->allowRGroupOnRSite(i, rnum);
                         }
                     }
-                    else if (label.size() > 4 && strncmp(label.c_str(), "_AP", 3) == 0 && sscanf(label.c_str() + 3, "%d", &rnum) == 1)
+                    else if (label.size() > 3 && strncmp(label.c_str(), "_AP", 3) == 0 && sscanf(label.c_str() + 3, "%d", &rnum) == 1)
                     {
                         // That is ChemAxon's Extended SMILES notation for attachment
                         // points. We mark the atom for removal and place attachment point
@@ -487,8 +487,8 @@ void SmilesLoader::_readOtherStuff()
                     {
                         // That is ChemAxon's Extended SMILES notation for pseudoatoms and
                         // special atoms A,Q,X,M and AH,QH,XH,MH
-                        if (label.size() > 3 &&
-                            (strncmp(label.c_str() + label.size() - 3, "_p", 2) == 0 || strncmp(label.c_str() + label.size() - 3, "_e", 2) == 0))
+                        if (label.size() > 2 &&
+                            (strncmp(label.c_str() + label.size() - 2, "_p", 2) == 0 || strncmp(label.c_str() + label.size() - 2, "_e", 2) == 0))
                         {
                             label.pop_back();
                             label.pop_back();
@@ -499,7 +499,7 @@ void SmilesLoader::_readOtherStuff()
                             _mol->setPseudoAtom(i, label.c_str());
                         else
                         {
-                            if (label.size() == 2 && label[0] == 'Q')
+                            if (label.size() == 1 && label[0] == 'Q')
                             {
                                 QueryMolecule::Atom* atom = _qmol->releaseAtom(i);
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
@@ -507,20 +507,20 @@ void SmilesLoader::_readOtherStuff()
                                     i, QueryMolecule::Atom::und(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
                                                                 QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C))));
                             }
-                            else if (label.size() == 3 && label[0] == 'Q' && label[1] == 'H')
+                            else if (label.size() == 2 && label[0] == 'Q' && label[1] == 'H')
                             {
                                 QueryMolecule::Atom* atom = _qmol->releaseAtom(i);
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                                 _qmol->resetAtom(i, QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
                             }
-                            else if (label.size() == 3 && label[0] == 'A' && label[1] == 'H')
+                            else if (label.size() == 2 && label[0] == 'A' && label[1] == 'H')
                             {
                                 AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
 
                                 x_atom->type = QueryMolecule::OP_NONE;
                                 _qmol->resetAtom(i, x_atom.release());
                             }
-                            else if (label.size() == 2 && label[0] == 'X')
+                            else if (label.size() == 1 && label[0] == 'X')
                             {
                                 AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
 
@@ -535,7 +535,7 @@ void SmilesLoader::_readOtherStuff()
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                                 _qmol->resetAtom(i, x_atom.release());
                             }
-                            else if (label.size() == 3 && label[0] == 'X' && label[1] == 'H')
+                            else if (label.size() == 2 && label[0] == 'X' && label[1] == 'H')
                             {
                                 AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
 
@@ -551,7 +551,7 @@ void SmilesLoader::_readOtherStuff()
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                                 _qmol->resetAtom(i, x_atom.release());
                             }
-                            else if (label.size() == 2 && label[0] == 'M')
+                            else if (label.size() == 1 && label[0] == 'M')
                             {
                                 AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
 
@@ -579,7 +579,7 @@ void SmilesLoader::_readOtherStuff()
                                 atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
                                 _qmol->resetAtom(i, x_atom.release());
                             }
-                            else if (label.size() == 3 && label[0] == 'M' && label[1] == 'H')
+                            else if (label.size() == 2 && label[0] == 'M' && label[1] == 'H')
                             {
                                 AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
 
@@ -765,7 +765,7 @@ void SmilesLoader::_readOtherStuff()
                 {
                     int rnum;
 
-                    if (label.size() > 3 && strncmp(label.c_str(), "_R", 2) == 0 && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
+                    if (label.size() > 2 && strncmp(label.c_str(), "_R", 2) == 0 && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
                     {
                         // RGroup description found
                         QS_DEF(std::string, rgdesc);
@@ -816,7 +816,7 @@ void SmilesLoader::_readOtherStuff()
                             }
                         }
                     }
-                    else if (label.size() > 3 && strncmp(label.c_str(), "LOG", 3) == 0)
+                    else if (label.size() > 2 && strncmp(label.c_str(), "LOG", 3) == 0)
                     {
                         // RGroup logic block found
                         while (1)
@@ -849,7 +849,7 @@ void SmilesLoader::_readOtherStuff()
                             {
                                 int rnum;
 
-                                if (label.size() > 3 && strncmp(label.c_str(), "_R", 2) == 0 && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
+                                if (label.size() > 2 && strncmp(label.c_str(), "_R", 2) == 0 && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
                                 {
                                     RGroup& rgroup = rgroups->getRGroup(rnum);
 
@@ -871,7 +871,7 @@ void SmilesLoader::_readOtherStuff()
                                             _scanner.skip(1);
                                         }
  
-                                        if (label.size() > 3 && strncmp(label.c_str(), "_R", 2) == 0 && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
+                                        if (label.size() > 2 && strncmp(label.c_str(), "_R", 2) == 0 && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
                                         {
                                             if_then = rnum;
                                         }
@@ -1031,9 +1031,7 @@ void SmilesLoader::_parseMolecule()
             }
             else
             {
-                if (_atom_stack.size() < 1)
-                    ; // we allow misplaced dots because we are so kind
-                else
+                if (_atom_stack.size() )
                     _atom_stack.pop();
             }
             first_atom = true;
@@ -1104,7 +1102,7 @@ void SmilesLoader::_parseMolecule()
                 qbond.reset(new QueryMolecule::Bond());
 
             // empty bond designator?
-            if (bond_str.size() < 1)
+            if (bond_str.empty())
             {
                 // In SMARTS mode a missing bond symbol is interpreted as "single or aromatic".
                 // (http://www.daylight.com/dayhtml/doc/theory/theory.smarts.html)
@@ -1137,7 +1135,7 @@ void SmilesLoader::_parseMolecule()
                     }
             }
 
-            if (bond_str.size() > 0)
+            if (bond_str.size())
             {
                 if (isdigit(next) || next == '%')
                 {
@@ -1184,7 +1182,7 @@ void SmilesLoader::_parseMolecule()
                         // apart from the direction, check that the closing bond matches the pending bond
                         const char* str = _pending_bonds_pool.at(_cycles[number].pending_bond_str);
 
-                        if (bond_str.size() > 0)
+                        if (bond_str.size() )
                         {
                             if (!ignore_closing_bond_direction_mismatch)
                             {
@@ -2209,7 +2207,7 @@ void SmilesLoader::_readBondSub(std::string& bond_str, _BondDesc& bond, AutoPtr<
 bool SmilesLoader::_readAtomLogic(std::string& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom)
 {
     QS_DEF(std::string, atom_str_copy);
-    if (atom_str.size() < 1)
+    if (atom_str.empty())
         throw Error("empty atom?");
 
     atom_str_copy = atom_str;

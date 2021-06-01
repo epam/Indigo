@@ -397,7 +397,7 @@ void RSmilesLoader::_loadReaction()
                     }
                     if (c == '$' && i != k - 1)
                         throw Error("only %d atoms found in pseudo-atoms $...$ block", i + 1);
-                    if (label.size() > 0)
+                    if (label.size())
                     {
                         int idx = i;
                         int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());

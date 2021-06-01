@@ -231,7 +231,6 @@ void MoleculeGrossFormula::toString(const Array<int>& gross, std::string& str, b
 {
     StringOutput output(str);
     _toString(gross, output, _cmp, add_rsites);
-    output.writeChar(0);
 }
 
 void MoleculeGrossFormula::toString(GROSS_UNITS& gross, std::string& str, bool add_rsites)
@@ -242,7 +241,6 @@ void MoleculeGrossFormula::toString(GROSS_UNITS& gross, std::string& str, bool a
     {
         _toString(gross[i].isotopes, output, _cmp, add_rsites);
     }
-    output.writeChar(0);
 }
 
 void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, std::string& str, bool add_rsites)
@@ -271,7 +269,6 @@ void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, std::string& str, b
         output.writeChar(')');
         output.writeArray(gross[i].multiplier);
     }
-    output.writeChar(0);
 }
 
 void MoleculeGrossFormula::_toString(const Array<int>& gross, StringOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites)

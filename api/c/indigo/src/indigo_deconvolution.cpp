@@ -492,7 +492,6 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
                 QS_DEF(std::string, buf);
                 StringOutput ap_out(buf);
                 ap_out.printf("AP%d", att_order_m);
-                ap_out.writeChar(0);
                 fragment.setPseudoAtom(ap_atom_idx, buf.c_str());
                 /*
                  * Add AP bond
@@ -1157,7 +1156,6 @@ int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int 
         {
             str_out.printf("%d;", str_keys.key(key_idx));
         }
-        str_out.writeChar(0);
         /*
          * Search for matches
          */

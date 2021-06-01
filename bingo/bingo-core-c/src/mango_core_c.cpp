@@ -81,10 +81,10 @@ CEXPORT int mangoIndexReadPreparedMolecule(int* id, const char** cmf_buf, int* c
 const std::string& cmf = self.mango_index->getCmf();
 const std::string& xyz = self.mango_index->getXyz();
 
-*cmf_buf = cmf.c_str();
+*cmf_buf = cmf.data();
 *cmf_buf_len = cmf.size();
 
-*xyz_buf = xyz.c_str();
+*xyz_buf = xyz.data();
 *xyz_buf_len = xyz.size();
 
 *fingerprint_buf = (const char*)self.mango_index->getFingerprint();
@@ -273,7 +273,7 @@ MangoSimilarity& similarity = self.mango_context->similarity;
 
 self.buffer.resize(sizeof(int) * 2 * count);
 
-int* min_bounds = (int*)self.buffer.c_str();
+int* min_bounds = (int*)&self.buffer[0];
 int* max_bounds = min_bounds + count;
 for (int i = 0; i < count; i++)
 {
@@ -505,7 +505,6 @@ CEXPORT const char* mangoSMILES(const char* target_buf, int target_buf_len, int 
 
             saver.saveMolecule(target);
         }
-        out.writeByte(0);
         return self.buffer.c_str();
     }
     BINGO_END(0, 0)
@@ -526,7 +525,6 @@ StringOutput out(self.buffer);
 MolfileSaver saver(out);
 
 saver.saveMolecule(target);
-out.writeByte(0);
 return self.buffer.c_str();
 }
 BINGO_END(0, 0)
@@ -547,7 +545,6 @@ StringOutput out(self.buffer);
 
 CmlSaver saver(out);
 saver.saveMolecule(target);
-out.writeByte(0);
 return self.buffer.c_str();
 }
 BINGO_END(0, 0)
@@ -844,7 +841,6 @@ CEXPORT const char* mangoStandardize(const char* molecule, int molecule_len, con
         MolfileSaver saver(out);
 
         saver.saveMolecule(target);
-        out.writeByte(0);
         return self.buffer.c_str();
     }
     BINGO_END(0, 0)

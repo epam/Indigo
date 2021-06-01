@@ -274,7 +274,6 @@ void MangoShadowFetch::_prepareExactQueryStrings(std::string& table_copies, std:
         for (int i = 0; i < hash.size(); i++)
             output_tables.printf(", %s t%d", _components_table_name.c_str(), i);
     }
-    output_tables.writeChar(0);
 
     // Create complex WHERE clause
     StringOutput output(where_clause);
@@ -399,7 +398,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
             QS_DEF(std::string, grossh);
             grossh = gross;
             grossh += " H%";
-            _statement->bindStringByName(":grossh", grossh.c_str(), grossh.size());
+            _statement->bindStringByName(":grossh", grossh.data(), grossh.size());
         }
 
         if (!_executed)

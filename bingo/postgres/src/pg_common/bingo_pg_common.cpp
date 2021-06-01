@@ -159,7 +159,6 @@ int BingoPgCommon::executeQuery(const char* format, ...)
     va_start(args, format);
     output.vprintf(format, args);
     va_end(args);
-    output.writeChar(0);
 
     return executeQuery(buf);
 }

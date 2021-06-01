@@ -598,7 +598,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             const DataSGroup& group = (DataSGroup&)sgroup;
-            const char* atomColorProp = _opt.atomColorProp.size() > 0 ? _opt.atomColorProp.c_str() : NULL;
+            const char* atomColorProp = _opt.atomColorProp.size() ? _opt.atomColorProp.c_str() : NULL;
             if (atomColorProp != NULL && strcmp(atomColorProp, group.name.c_str()) == 0)
             {
                 Vec3f color;
@@ -660,7 +660,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, group.subscript.size() > 0 ? group.subscript.c_str() : "n");
+            bprintf(index.text, group.subscript.size() ? group.subscript.c_str() : "n");
             _positionIndex(sg, tiIndex, true);
             if (group.connectivity != RepeatingUnit::HEAD_TO_TAIL)
             {
@@ -2948,7 +2948,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
                     tis.push(id);
                     TextItem& item = _data.textitems[id];
                     item.fontsize = (script == MAIN) ? FONT_SIZE_LABEL : FONT_SIZE_ATTR;
-                    item.text = std::string(str + i0, i1 - i0);
+                    item.text.assign(str + i0, i1 - i0);
                     _cw.setTextItemSize(item);
 
                     if (cnt > 0)

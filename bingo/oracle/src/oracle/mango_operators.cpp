@@ -420,7 +420,7 @@ static OCIString* _mangoGrossCalc(OracleEnv& env, MangoOracleContext& context, c
         // So we return a string containing one space
         env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)" ", 1, &result));
     else
-        env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)gross_str.c_str(), gross_str.size() - 1, &result));
+        env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)gross_str.data(), gross_str.size(), &result));
 
     return result;
 }

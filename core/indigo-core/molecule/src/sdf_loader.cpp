@@ -184,7 +184,7 @@ void SdfLoader::readNext()
             word += c;
         }
 
-        if (have_word && word.size() > 0)
+        if (have_word && word.size() )
         {
             _scanner->readLine(str);
             auto& propBuf = properties.insert(word.c_str());
@@ -192,7 +192,7 @@ void SdfLoader::readNext()
             //         int idx = properties.findOrInsert(word.ptr());
             propBuf = str;
             output.writeStringCR(str.c_str());
-            if (str.size() > 1)
+            if (str.size() )
             {
                 do
                 {
@@ -201,7 +201,7 @@ void SdfLoader::readNext()
 
                     _scanner->readLine(str);
                     output.writeStringCR(str.c_str());
-                    if (str.size() > 1)
+                    if (str.size() )
                     {
                         propBuf += '\n';
                         propBuf += str;

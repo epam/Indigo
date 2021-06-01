@@ -350,15 +350,15 @@ void BingoStorage::get(int n, std::string& out)
 
     const char* ptr = (const char*)_shmem_array[addr.blockno + 1]->ptr();
 
-    out = std::string(ptr + addr.offset, addr.length);
+    out.assign(ptr + addr.offset, addr.length);
 }
 
 BingoStorage::_State* BingoStorage::_getState(bool allow_first)
 {
-    return (_State*)_getShared(_shmem_state, &_shmem_id[0], sizeof(_State), allow_first);
+    return (_State*)_getShared(_shmem_state, _shmem_id.c_str(), sizeof(_State), allow_first);
 }
 
-void* BingoStorage::_getShared(SharedMemory*& sh_mem, char* name, int shared_size, bool allow_first)
+void* BingoStorage::_getShared(SharedMemory*& sh_mem, const char* name, int shared_size, bool allow_first)
 {
     if (sh_mem != 0 && strcmp(sh_mem->getID(), name) != 0)
     {

@@ -97,7 +97,7 @@ int _findReverse(int from, int to, const std::string& _array, char value)
 int _getLongestLineXml(const std::string& line)
 {
     int longest_line = 0;
-    if (line.size() > 0)
+    if (line.size())
     {
         int start = 0;
         while (start < line.size() - 1)
@@ -216,7 +216,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         {
             const std::string& title = params.titles[mol_idx];
 
-            if (title.size() > 0)
+            if (title.size())
             {
                 int longest_line = _getLongestLine(title);
 
@@ -415,7 +415,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         {
             const std::string& title = params.titles[mol_idx];
 
-            if (title.size() > 0)
+            if (title.size())
             {
                 title_font.clear();
                 title_font = font_attr.c_str();
@@ -469,7 +469,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         }
     }
 
-    if (params.cnvOpt.comment.size() > 0)
+    if (params.cnvOpt.comment.size())
     {
         Vec2f pos(b.max.x / 2, -title_y);
         saver.addText(pos, params.cnvOpt.comment.c_str());

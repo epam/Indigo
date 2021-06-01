@@ -257,7 +257,6 @@ public:
             }
         }
         column_names.printf(")");
-        column_names.writeChar(0);
 
         _defineColumnTypes(tablename_text.getString());
     }
@@ -349,6 +348,7 @@ public:
         q_oids.clear();
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
+            q_nulls.push_back(0);
             q_oids.push(_importColumns[col_idx].type);
 
             if (col_idx != 0)
@@ -408,7 +408,7 @@ public:
                 /*
                  * Execute query
                  */
-                spi_success = SPI_execute_with_args(query_str.c_str(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.c_str(), false, 1);
+                spi_success = SPI_execute_with_args(query_str.c_str(), q_values.size(), q_oids.ptr(), q_values.ptr(), q_nulls.data(), false, 1);
                 if (spi_success < 0)
                     elog(WARNING, "can not insert a structure into a table: %s", SPI_result_code_string(spi_success));
             }

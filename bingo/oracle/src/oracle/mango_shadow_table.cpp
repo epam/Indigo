@@ -29,11 +29,9 @@ MangoShadowTable::MangoShadowTable(int context_id)
     StringOutput output(_table_name);
 
     output.printf("SHADOW_%d", context_id);
-    output.writeChar(0);
 
     StringOutput output2(_components_table_name);
     output2.printf("HASHES_%d", context_id);
-    output2.writeChar(0);
 
     _main_table_statement_count = 0;
     _components_table_statement_count = 0;
@@ -207,8 +205,8 @@ void MangoShadowTable::_flushMain(OracleEnv& env)
                     xyz_ind.push(-1); // OCI_IND_NULL
             }
 
-            _main_table_statement->bindRawPtrByName(":cmf", (OCIRaw*)cmf.c_str(), maxallocsize_cmf, 0);
-            _main_table_statement->bindRawPtrByName(":xyz", (OCIRaw*)xyz.c_str(), maxallocsize_xyz, xyz_ind.ptr());
+            _main_table_statement->bindRawPtrByName(":cmf", (OCIRaw*)cmf.data(), maxallocsize_cmf, 0);
+            _main_table_statement->bindRawPtrByName(":xyz", (OCIRaw*)xyz.data(), maxallocsize_xyz, xyz_ind.ptr());
             _main_table_statement->bindFloatByName(":mass", _pending_mass.ptr());
             _main_table_statement->bindIntByName(":fragcount", _pending_fragcount.ptr());
             for (i = 0; i < _pending_counters.size(); i++)
@@ -272,7 +270,7 @@ void MangoShadowTable::_flushComponents(OracleEnv& env)
 
 void MangoShadowTable::addMolecule(OracleEnv& env, const MangoIndex& index, const char* rowid, int blockno, int offset, bool append)
 {
-    addMolecule(env, rowid, blockno, offset, index.getCmf().c_str(), index.getCmf().size(), index.getXyz().c_str(), index.getXyz().size(), index.getHash(),
+    addMolecule(env, rowid, blockno, offset, index.getCmf().data(), index.getCmf().size(), index.getXyz().data(), index.getXyz().size(), index.getHash(),
                 index.getGrossString(), index.getCountedElements(), index.getMolecularMass(), index.getFingerprint_Sim_Str(), append);
 }
 

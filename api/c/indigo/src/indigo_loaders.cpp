@@ -395,8 +395,6 @@ BaseReaction& IndigoSmilesReaction::getBaseReaction()
 
 const char* IndigoSmilesReaction::getName()
 {
-    if (getReaction().name.c_str() == 0)
-        return "";
     return getReaction().name.c_str();
 }
 

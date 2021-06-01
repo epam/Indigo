@@ -866,6 +866,7 @@ void CmfLoader::_readSGroupXYZ(Scanner& scanner, int idx, Molecule& mol, const C
 void CmfLoader::_readString(std::string& dest)
 {
     unsigned int len = _scanner->readPackedUInt();
+    dest.resize(len);
     _scanner->read(len, &dest[0]);
 }
 

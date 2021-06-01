@@ -130,7 +130,7 @@ void MangoRegisterCommand::execute(OsCommandResult& result)
 
             if (mangoPrepareMolecule(_env, rowid, molfile_buf, _context, index, prepared_data, &_lock_for_exclusive_access, failure_message))
             {
-                res.per_molecule_data.add((byte*)prepared_data.c_str(), prepared_data.size());
+                res.per_molecule_data.add((byte*)prepared_data.data(), prepared_data.size());
                 res.valid_molecules++;
                 res.rowids.add((byte*)rowid, rowids.getSize(i));
             }

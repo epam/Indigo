@@ -106,7 +106,7 @@ public:
         {
             buffer_warn = bingoGetWarning();
             const char* mol_name = bingoGetNameCore(target_data, target_size);
-            if (mol_name != 0 && strlen(mol_name) > 0)
+            if (mol_name != 0 && strlen(mol_name) )
                 elog(WARNING, "warning while bingo%s loading molecule with name ='%s': %s", _typeStr.c_str(), mol_name, buffer_warn.c_str());
             else
                 elog(WARNING, "warning while bingo%s loading molecule: %s", _typeStr.c_str(), buffer_warn.c_str());

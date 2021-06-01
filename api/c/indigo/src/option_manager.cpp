@@ -108,17 +108,13 @@ void IndigoOptionManager::getOptionValueStr(const char* name, std::string& value
     case OPTION_INT: {
         int tmp;
         getOptionValueInt(name, tmp);
-        auto strValue = std::to_string(tmp);
-        value = strValue.c_str();
+        value = std::to_string(tmp);
         break;
     }
     case OPTION_BOOL: {
         int tmp;
         getOptionValueBool(name, tmp);
-        std::string strValue = "false";
-        if (tmp == 1)
-            strValue = "true";
-        value = strValue.c_str();
+        value = tmp ? "true" : "false";
         break;
     }
     case OPTION_FLOAT: {

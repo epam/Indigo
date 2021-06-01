@@ -521,7 +521,7 @@ ORAEXT OCIString* oraMangoInchiKey(OCIExtProcContext* ctx, OCILobLocator* inchi_
 
             InchiWrapper::InChIKey(inchi.c_str(), inchikey_buf);
 
-            env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)inchikey_buf.c_str(), inchikey_buf.size() - 1, &result));
+            env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)inchikey_buf.data(), inchikey_buf.size(), &result));
         }
 
         if (result != 0)

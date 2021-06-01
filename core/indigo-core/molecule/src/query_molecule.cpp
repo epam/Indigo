@@ -277,7 +277,7 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         return;
     case ATOM_FRAGMENT:
         out.printf("$(");
-        if (atom->fragment->fragment_smarts.c_str() != 0 && atom->fragment->fragment_smarts.size() > 0)
+        if (atom->fragment->fragment_smarts.c_str() != 0 && atom->fragment->fragment_smarts.size() )
             out.printf("%s", atom->fragment->fragment_smarts.c_str());
         out.printf(")");
         return;

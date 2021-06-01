@@ -463,7 +463,7 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
                                 if (properties.contains(context.propertyValueCaption.c_str()))
                                 {
                                     data.propertyName = properties.at(context.propertyNameCaption.c_str());
-                                    data.propertyValue = properties.at(context.propertyValueCaption.c_str()), true;
+                                    data.propertyValue = properties.at(context.propertyValueCaption.c_str());
                                 }
                             }
                     }

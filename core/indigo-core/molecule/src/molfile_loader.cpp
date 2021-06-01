@@ -1158,7 +1158,7 @@ void MolfileLoader::_readCtab2000()
                         sgroup.description += strscan.readChar();
                     }
                     // Remove last spaces because dscription can have multiple words?
-                    while (sgroup.description.size() > 0)
+                    while (sgroup.description.size() )
                     {
                         if (isspace(sgroup.description.back()))
                             sgroup.description.pop_back();
@@ -1174,7 +1174,7 @@ void MolfileLoader::_readCtab2000()
                             break;
                         sgroup.querycode += strscan.readChar();
                     }
-                    while (sgroup.querycode.size() > 0)
+                    while (sgroup.querycode.size() )
                     {
                         if (isspace(sgroup.querycode.back()))
                             sgroup.querycode.pop_back();
@@ -1190,7 +1190,7 @@ void MolfileLoader::_readCtab2000()
                             break;
                         sgroup.queryoper += strscan.readChar();
                     }
-                    while (sgroup.queryoper.size() > 0)
+                    while (sgroup.queryoper.size())
                     {
                         if (isspace(sgroup.queryoper.back()))
                             sgroup.queryoper.pop_back();
@@ -1977,7 +1977,7 @@ void MolfileLoader::_postLoad()
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if (dsg.name.size() > 0 && strncmp(dsg.name.c_str(), "MRV_IMPLICIT_H", 14) == 0)
+            if (dsg.name.size() && strncmp(dsg.name.c_str(), "MRV_IMPLICIT_H", 14) == 0)
             {
                 BufferScanner scanner(dsg.data);
                 scanner.skip(6); // IMPL_H
@@ -2215,6 +2215,7 @@ void MolfileLoader::_readCtab3000()
     if (strncmp(str.c_str(), "M  V30 BEGIN CTAB", 17) != 0)
         throw Error("error reading CTAB block header");
 
+    str.clear();
     str.resize(14);
     _scanner.read(14, &str[0]);
     if (strncmp(str.c_str(), "M  V30 COUNTS ", 14) != 0)
@@ -3131,10 +3132,10 @@ void MolfileLoader::_readCollectionBlock3000()
 void MolfileLoader::_preparePseudoAtomLabel(std::string& pseudo)
 {
     // if the string is quoted, unquote it
-    if (pseudo.size() > 2 && pseudo[0] == '\'' && pseudo[pseudo.size() - 2] == '\'')
+    if (pseudo.size() > 2 && pseudo.front() == '\'' && pseudo.back() == '\'')
     {
-        pseudo.erase(pseudo.size() - 2);
-        pseudo.erase(0);
+        pseudo.erase(0,1);
+        pseudo.pop_back();
     }
 
     if (pseudo.size() <= 1)

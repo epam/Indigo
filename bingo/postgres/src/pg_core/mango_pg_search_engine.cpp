@@ -44,9 +44,8 @@ void MangoPgFpData::insertHash(dword hash, int c_cnt)
 void MangoPgFpData::setGrossStr(const char* gross_str, const char* counter_str)
 {
     _gross = "'";
-    _gross += gross_str + 0x0;
-    _gross += "'\0";
-    _gross += counter_str + 0x0;
+    _gross += gross_str +"'";
+    _gross += counter_str;
 }
 
 IMPL_ERROR(MangoPgSearchEngine, "molecule search engine");
@@ -62,10 +61,10 @@ MangoPgSearchEngine::MangoPgSearchEngine(BingoPgConfig& bingo_config, const char
     bingoIndexBegin();
 
     _relName = rel_name;
-    _shadowRelName = rel_name + 0x0;
-    _shadowRelName += "_shadow\0";
+    _shadowRelName = rel_name;
+    _shadowRelName += "_shadow";
     _shadowHashRelName = rel_name;
-    _shadowHashRelName += "_shadow_hash\0";
+    _shadowHashRelName += "_shadow_hash";
 }
 
 MangoPgSearchEngine::~MangoPgSearchEngine()
@@ -103,7 +102,7 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
         }
 
         //      CORE_HANDLE_WARNING_TID(0, 1, "matching binary target", section_idx, structure_idx, " ");
-        bingo_res = mangoMatchTargetBinary(mol_buf.c_str(), mol_buf.size(), xyz_buf.c_str(), xyz_buf.size());
+        bingo_res = mangoMatchTargetBinary(mol_buf.data(), mol_buf.size(), xyz_buf.data(), xyz_buf.size());
         CORE_HANDLE_ERROR_TID(bingo_res, -1, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetError());
         CORE_RETURN_WARNING_TID(bingo_res, 0, "molecule search engine: error while matching binary target", section_idx, structure_idx, bingoGetWarning());
 
@@ -426,8 +425,7 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
 
     _getScanQueries(scan_desc->keyData[0].sk_argument, search_sigh, search_mol);
 
-    gross_query = search_sigh + char(0x0);
-    gross_query += " \0";
+    gross_query = search_sigh + ' ';
     gross_query += search_mol;
 
     /*

@@ -24,7 +24,7 @@ void GrossStorage::load(BingoPtr<GrossStorage>& gross_ptr, BingoAddr offset)
 void GrossStorage::add(std::string& gross_formula, int id)
 {
     _gross_formulas.add((byte*)gross_formula.data(), gross_formula.size(), id);
-    dword hash = _calculateGrossHash(gross_formula.c_str(), gross_formula.size());
+    dword hash = _calculateGrossHash(gross_formula.data(), gross_formula.size());
     _hashes.add(hash, id);
 }
 
@@ -44,7 +44,7 @@ void GrossStorage::find(std::string& query_formula, Array<int>& indices, int par
 
 void GrossStorage::findCandidates(std::string& query_formula, Array<int>& candidates, int part_id, int part_count)
 {
-    dword query_hash = _calculateGrossHash(query_formula.c_str(), query_formula.size());
+    dword query_hash = _calculateGrossHash(query_formula.data(), query_formula.size());
 
     dword first_hash = 0;
     dword last_hash = (dword)(-1);

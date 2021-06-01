@@ -89,7 +89,7 @@ CEXPORT int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* c
 
         const std::string& crf = self.ringo_index->getCrf();
 
-        *crf_buf = crf.c_str();
+        *crf_buf = crf.data();
         *crf_buf_len = crf.size();
 
         *fingerprint_buf = (const char*)self.ringo_index->getFingerprint();
@@ -249,7 +249,6 @@ CEXPORT const char* ringoRSMILES(const char* target_buf, int target_buf_len)
         RSmilesSaver saver(out);
 
         saver.saveReaction(target);
-        out.writeByte(0);
         return self.buffer.c_str();
     }
     BINGO_END(0, 0)
@@ -292,7 +291,6 @@ StringOutput out(self.buffer);
 ReactionCmlSaver saver(out);
 
 saver.saveReaction(target);
-out.writeByte(0);
 return self.buffer.c_str();
 }
 BINGO_END(0, 0)
@@ -354,7 +352,7 @@ CEXPORT int ringoGetQueryFingerprint(const char** query_fp, int* query_fp_len)
         else
             throw BingoError("Invalid search type");
 
-        *query_fp = self.buffer.c_str();
+        *query_fp = self.buffer.data();
         *query_fp_len = self.buffer.size();
     }
     BINGO_END(1, -2)
@@ -412,7 +410,7 @@ saver.save_xyz = (save_xyz != 0);
 saver.saveReaction(target);
 
 *out_len = self.buffer.size();
-return self.buffer.c_str();
+return self.buffer.data();
 }
 BINGO_END(0, 0)
 }

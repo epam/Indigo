@@ -3125,11 +3125,11 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
 
     tg.tgroup_class = su.sa_class;
 
-    if (su.subscript.size() > 0)
+    if (su.subscript.size() )
         tg.tgroup_name = su.subscript;
     tg.tgroup_alias.clear();
     tg.tgroup_comment.clear();
-    if (su.sa_natreplace.size() > 0)
+    if (su.sa_natreplace.size() )
         tg.tgroup_natreplace = su.sa_natreplace;
 
     AutoPtr<BaseMolecule> new_fragment(this->neu());

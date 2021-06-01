@@ -88,7 +88,6 @@ void MangoIndex::prepare(Scanner& molfile, Output& output, OsLock* lock_for_excl
         for (int i = 0; i < fp_sim_size; i++)
             fp_sim_output.printf("%02X", fp_sim_ptr[i]);
 
-        fp_sim_output.writeChar(0);
     }
 
     StringOutput output_cmf(_cmf);
@@ -126,8 +125,6 @@ void MangoIndex::prepare(Scanner& molfile, Output& output, OsLock* lock_for_excl
         _counted_elem_counters.push(gross[counted_elements[i]]);
         ce_output.printf(", %d", gross[counted_elements[i]]);
     }
-
-    ce_output.writeByte(0);
 
     // Calculate molecular mass
     MoleculeMass mass_calulator;

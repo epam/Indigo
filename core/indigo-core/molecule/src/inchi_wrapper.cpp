@@ -647,7 +647,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, std::string& inchi)
                     break;
             std::string unrec_opt;
             if( i )
-                unrec_opt.copy(output.szLog, i - 1);
+                unrec_opt.assign(output.szLog, i - 1);
 
             throw Error("Indigo-InChI: %s.", unrec_opt.c_str());
             ;

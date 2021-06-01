@@ -302,7 +302,7 @@ void MultipleCdxLoader::_getObject()
                 auto& propVal = properties.insert(name.c_str());
                 if (value.size())
                     propVal = value.c_str();
-                else if (_latest_text.size() > 0)
+                else if (_latest_text.size())
                 {
                     propVal = _latest_text.c_str();
                     _latest_text.clear();

@@ -167,7 +167,7 @@ ORAEXT OCIString* oraConfigGetString(OCIExtProcContext* ctx, int context_id, cha
         if (!context.configGetString(env, key_name, value))
             throw BingoError("Key wasn't found");
 
-        env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)value.c_str(), value.size() - 1, &result));
+        env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)value.c_str(), value.size(), &result));
 
         *return_indicator = OCI_IND_NOTNULL;
     }

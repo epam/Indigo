@@ -1391,8 +1391,7 @@ CEXPORT const char* indigoCheck(const char* item, const char* check_flags, const
         self.stereochemistry_options.ignore_errors = true;
         auto& tmp = self.getThreadTmpData();
         IndigoStructureChecker checker;
-        std::string r = checker.toJson(checker.check(item, check_flags, load_params));
-        tmp.string = r;
+        tmp.string = checker.toJson(checker.check(item, check_flags, load_params));
         return tmp.string.c_str();
     }
     INDIGO_END(0);
@@ -1404,8 +1403,7 @@ CEXPORT const char* indigoCheckObj(int item, const char* check_flags)
     {
         auto& tmp = self.getThreadTmpData();
         IndigoStructureChecker checker;
-        std::string r = checker.toJson(checker.check(item, check_flags));
-        tmp.string = r;
+        tmp.string = checker.toJson(checker.check(item, check_flags));
         return tmp.string.c_str();
     }
     INDIGO_END(0);
