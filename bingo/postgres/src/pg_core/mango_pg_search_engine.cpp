@@ -44,7 +44,8 @@ void MangoPgFpData::insertHash(dword hash, int c_cnt)
 void MangoPgFpData::setGrossStr(const char* gross_str, const char* counter_str)
 {
     _gross = "'";
-    _gross += gross_str +"'";
+    _gross += gross_str;
+    _gross += "'";
     _gross += counter_str;
 }
 

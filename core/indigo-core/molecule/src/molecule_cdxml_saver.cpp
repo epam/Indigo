@@ -816,7 +816,7 @@ void MoleculeCdxmlSaver::addCustomText(const Vec2f& pos, const char* alignment, 
     if (buf.size() > 1)
     {
         buf.pop_back();
-        buf.erase( buf.begin());
+        buf.erase( 0, 1);
         s->SetValue(buf.c_str());
         t->LinkEndChild(s);
     }
