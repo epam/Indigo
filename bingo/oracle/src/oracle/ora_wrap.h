@@ -189,7 +189,7 @@ namespace indigo
         void openReadWrite();
 
         int getLength();
-        void readAll(std::string& arr, bool add_zero);
+        void readAll(std::string& arr);
 
         void read(int start, char* buffer, int buffer_size);
         void write(int start, const char* buffer, int bytes);

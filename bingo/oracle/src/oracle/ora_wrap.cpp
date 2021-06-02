@@ -145,7 +145,7 @@ void OracleLOB::disableBuffering()
     }
 }
 
-void OracleLOB::readAll(std::string& arr, bool add_zero)
+void OracleLOB::readAll(std::string& arr)
 {
     int len = getLength();
     arr.clear();

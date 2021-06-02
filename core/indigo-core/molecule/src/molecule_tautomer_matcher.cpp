@@ -163,7 +163,7 @@ void MoleculeTautomerMatcher::parseConditions(const char* tautomer_text, int& ru
 
         scanner.readWord(word, 0);
 
-        if (word.size() < 2)
+        if (word.empty())
             throw Error("internal error on token reading");
 
         if (strcasecmp(word.c_str(), "TAU") == 0)

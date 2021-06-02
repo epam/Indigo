@@ -403,7 +403,7 @@ void RSmilesLoader::_loadReaction()
                         int group = _selectGroup(idx, rcnt->vertexCount(), ctlt->vertexCount(), prod->vertexCount());
                         int rnum;
 
-                        if (label.size() > 3 && label[0] == '_' && label[1] == 'R' && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
+                        if (label.size() > 2 && label[0] == '_' && label[1] == 'R' && sscanf(label.c_str() + 2, "%d", &rnum) == 1)
                         {
                             // ChemAxon's Extended SMILES notation for R-sites
                             if (_qrxn != 0)

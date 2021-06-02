@@ -147,7 +147,7 @@ ORAEXT void oraSaveLOBToFile(OCIExtProcContext* ctx, OCILobLocator* lob_locator,
 
         QS_DEF(std::string, buf);
 
-        lob.readAll(buf, false);
+        lob.readAll(buf);
 
         FileOutput output(file_name);
 
@@ -177,7 +177,7 @@ void _exportSDF(OracleEnv& env, const char* table, const char* clob_col, const c
             break;
         word.clear();
         scanner.readWord(word, 0);
-        if (word.size() < 2)
+        if (word.empty())
             break;
         col_names.add(word.c_str());
     }
@@ -203,7 +203,7 @@ void _exportSDF(OracleEnv& env, const char* table, const char* clob_col, const c
     if (statement.executeAllowNoData())
         do
         {
-            lob.readAll(lob_value, false);
+            lob.readAll(lob_value);
 
             if (lob_value.size() < 4)
                 continue;
@@ -390,7 +390,7 @@ void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, co
 
         if (id_col != 0)
         {
-            if (id.size() > 1)
+            if (id.size())
                 statement.append(", :id");
             else
                 statement.append(", NULL");
@@ -399,7 +399,7 @@ void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, co
         statement.prepare();
 
         statement.bindStringByName(":smiles", str.c_str(), str.size());
-        if (id.size() > 1)
+        if (id.size())
             statement.bindStringByName(":id", id.c_str(), id.size());
 
         statement.execute();
@@ -663,7 +663,7 @@ OracleLOB source_lob(env, source_locator);
 QS_DEF(std::string, source);
 QS_DEF(std::string, dest);
 
-source_lob.readAll(source, false);
+source_lob.readAll(source);
 
 {
     StringOutput output(dest);
@@ -694,7 +694,7 @@ OracleLOB source_lob(env, source_locator);
 QS_DEF(std::string, source);
 QS_DEF(std::string, dest);
 
-source_lob.readAll(source, false);
+source_lob.readAll(source);
 
 {
     BufferScanner scanner(source);
@@ -726,12 +726,12 @@ ORAEXT OCIString* oraBingoGetName(OCIExtProcContext* ctx, OCILobLocator* source_
         QS_DEF(std::string, name);
         OracleLOB source_lob(env, source_locator);
 
-        source_lob.readAll(source, false);
+        source_lob.readAll(source);
 
         BufferScanner scanner(source);
         bingoGetName(scanner, name);
 
-        if (name.size() < 1)
+        if (name.empty())
         {
             // This is needed for Oracle 9. Returning NULL drops the extproc.
             OCIStringAssignText(env.envhp(), env.errhp(), (text*)"nil", 3, &result);

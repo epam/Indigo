@@ -142,10 +142,7 @@ void SdfLoader::readNext()
             break;
         if (pending_emptyline)
             output.printf("\n");
-        if (str.size() <= 1)
-            pending_emptyline = true;
-        else
-            pending_emptyline = false;
+        pending_emptyline = str.empty();
 
         if (!pending_emptyline)
             output.writeStringCR(str.c_str());
@@ -206,7 +203,7 @@ void SdfLoader::readNext()
                         propBuf += '\n';
                         propBuf += str;
                     }
-                } while (str.size() > 1);
+                } while (str.size());
             }
         }
 

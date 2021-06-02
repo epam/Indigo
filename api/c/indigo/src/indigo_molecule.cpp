@@ -2748,8 +2748,6 @@ CEXPORT const char* indigoDescription(int data_sgroup)
     INDIGO_BEGIN
     {
         IndigoDataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(data_sgroup));
-        if (dsg.get().name.size() < 1)
-            return "";
         return dsg.get().name.c_str();
     }
     INDIGO_END(0);
@@ -2760,8 +2758,6 @@ CEXPORT const char* indigoData(int data_sgroup)
     INDIGO_BEGIN
     {
         IndigoDataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(data_sgroup));
-        if (dsg.get().data.size() < 1)
-            return "";
         return dsg.get().data.c_str();
     }
     INDIGO_END(0);

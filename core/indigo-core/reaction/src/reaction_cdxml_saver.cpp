@@ -125,7 +125,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     _addStep(rxn, molsaver, reactants_ids, products_ids, nodes_ids, arrow_id);
     _closeScheme(molsaver);
 
-    if (rxn.name.size() > 0)
+    if (rxn.name.size() )
     {
         _addTitle(rxn, molsaver);
     }
@@ -321,7 +321,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
         if (reactants_ids[i] > 0)
             buf_out.printf("%d ", reactants_ids[i]);
     }
-    if (buf.size() > 1)
+    if (buf.size())
     {
         buf.pop_back();
         attrs.insert("ReactionStepReactants", buf.c_str());
@@ -333,7 +333,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
         if (products_ids[i] > 0)
             buf_out.printf("%d ", products_ids[i]);
     }
-    if (buf.size() > 1)
+    if (buf.size() )
     {
         buf.pop_back();
         attrs.insert("ReactionStepProducts", buf.c_str());
@@ -365,7 +365,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
         }
     }
 
-    if (buf.size() > 1)
+    if (buf.size() )
     {
         buf.pop_back();
         attrs.insert("ReactionStepAtomMap", buf.c_str());

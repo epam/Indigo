@@ -415,7 +415,7 @@ static OCIString* _mangoGrossCalc(OracleEnv& env, MangoOracleContext& context, c
     MoleculeGrossFormula::collect(target, gross);
     MoleculeGrossFormula::toString(gross, gross_str);
 
-    if (gross_str.size() == 1)
+    if (gross_str.empty())
         // We can not return empty string to Oracle, as empty string is NULL to Oracle.
         // So we return a string containing one space
         env.callOCI(OCIStringAssignText(env.envhp(), env.errhp(), (text*)" ", 1, &result));

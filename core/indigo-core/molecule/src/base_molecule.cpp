@@ -1345,8 +1345,8 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
 
         if (ignore_chem_templates)
         {
-            if (((tg.tgroup_class.size() > 3) && strncmp(tg.tgroup_class.c_str(), "CHEM", 4) == 0) ||
-                ((tg.tgroup_class.size() > 5) && strncmp(tg.tgroup_class.c_str(), "LINKER", 6) == 0) || fragment.vertexCount() < 6)
+            if (((tg.tgroup_class.size() > 2) && strncmp(tg.tgroup_class.c_str(), "CHEM", 4) == 0) ||
+                ((tg.tgroup_class.size() > 4) && strncmp(tg.tgroup_class.c_str(), "LINKER", 6) == 0) || fragment.vertexCount() < 6)
                 continue;
         }
 
@@ -2109,8 +2109,8 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
 
         if (ignore_chem_templates)
         {
-            if (((tg.tgroup_class.size() > 3) && strncmp(tg.tgroup_class.c_str(), "CHEM", 4) == 0) ||
-                ((tg.tgroup_class.size() > 5) && strncmp(tg.tgroup_class.c_str(), "LINKER", 6) == 0) || fragment.vertexCount() < 6)
+            if (((tg.tgroup_class.size() > 2) && strncmp(tg.tgroup_class.c_str(), "CHEM", 4) == 0) ||
+                ((tg.tgroup_class.size() > 4) && strncmp(tg.tgroup_class.c_str(), "LINKER", 6) == 0) || fragment.vertexCount() < 6)
                 continue;
         }
 
@@ -3114,7 +3114,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
         }
     }
 
-    if (su.sa_class.size() == 0)
+    if (su.sa_class.empty())
         return -1;
     else if (strncmp(su.sa_class.c_str(), "AA", 2) != 0)
         return -1;
@@ -4020,7 +4020,7 @@ void BaseMolecule::getAtomSymbol(int v, std::string& result)
             }
         }
     }
-    if (result.size() == 0)
+    if (result.empty())
         result = "*";
 }
 

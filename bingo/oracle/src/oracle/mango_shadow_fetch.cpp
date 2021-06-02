@@ -103,7 +103,7 @@ float MangoShadowFetch::calcSelectivity(OracleEnv& env, int total_count)
 {
     int nrows_select_total;
 
-    if (_counting_select.size() > 1)
+    if (_counting_select.size())
     {
         OracleStatement statement(env);
 

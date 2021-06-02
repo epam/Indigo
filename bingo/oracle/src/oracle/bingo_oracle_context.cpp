@@ -520,7 +520,7 @@ void BingoOracleContext::atomicMassLoad(OracleEnv& env)
 
 void BingoOracleContext::atomicMassSave(OracleEnv& env)
 {
-    if (_relative_atomic_mass.size() > 1)
+    if ( _relative_atomic_mass.size() )
         configSetString(env, "RELATIVE_ATOMIC_MASS", _relative_atomic_mass.c_str());
     else
         configSetString(env, "RELATIVE_ATOMIC_MASS", "");

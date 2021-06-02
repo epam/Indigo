@@ -240,7 +240,7 @@ void MoleculeExactMatcher::parseConditions(const char* params, int& flags, float
         scanner.readWord(word, 0);
         scanner.skipSpace();
 
-        if (word.size() < 2)
+        if (word.empty())
             throw Error("internal error on token reading");
 
         for (i = 0; i < NELEM(token_list); i++)

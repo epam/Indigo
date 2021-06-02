@@ -1060,8 +1060,8 @@ void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, std::stri
             }
         }
         // Remove empty layer, if it was created
-        if (fp[fp.size() - 2] == '|')
-            fp.erase(fp.size() - 2);
+        if (fp.back() == '|')
+            fp.pop_back();
     }
     return;
 }
@@ -1244,7 +1244,7 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
             if ((level_pos.size() - i - 1) < min_level)
                 break;
             int next_layer = level_pos[level_pos.size() - i - 1];
-            fp.erase(next_layer, fp.size() - next_layer - 1);
+            fp.erase(next_layer, fp.size() - next_layer );
 
             //         printf("Try FP = %s level = %d\n", fp.ptr(), level_pos.size() - i);
 
@@ -1297,7 +1297,7 @@ float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int 
             if ((level_pos.size() - i - 1) < min_level)
                 break;
             int next_layer = level_pos[level_pos.size() - i - 1];
-            fp.erase(next_layer, fp.size() - next_layer - 1);
+            fp.erase(next_layer, fp.size() - next_layer );
             if (_model.adv_b_pkas.find(fp.c_str()))
             {
                 pka = _model.adv_b_pkas.at(fp.c_str())[0];

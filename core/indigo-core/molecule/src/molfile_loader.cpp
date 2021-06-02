@@ -1498,7 +1498,7 @@ void MolfileLoader::_readCtab2000()
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if (dsg.data.size() > 2 && dsg.data.back() == '\n')
+            if (dsg.data.size() && dsg.data.back() == '\n')
             {
                 dsg.data.pop_back();
             }
@@ -2297,42 +2297,42 @@ void MolfileLoader::_readCtab3000()
                     if (was_m)
                         throw Error("'M' inside atom list, if present, must be single");
 
-                    if (buf.size() == 2 && buf[0] == 'A')
+                    if (buf.size() == 1 && buf[0] == 'A')
                     {
                         was_a = true;
                         atom_type = _ATOM_A;
                     }
-                    else if (buf.size() == 3 && buf[0] == 'A' && buf[1] == 'H')
+                    else if (buf.size() == 2 && buf[0] == 'A' && buf[1] == 'H')
                     {
                         was_a = true;
                         atom_type = _ATOM_AH;
                     }
-                    else if (buf.size() == 2 && buf[0] == 'Q')
+                    else if (buf.size() == 1 && buf[0] == 'Q')
                     {
                         was_q = true;
                         atom_type = _ATOM_Q;
                     }
-                    else if (buf.size() == 3 && buf[0] == 'Q' && buf[1] == 'H')
+                    else if (buf.size() == 2 && buf[0] == 'Q' && buf[1] == 'H')
                     {
                         was_a = true;
                         atom_type = _ATOM_QH;
                     }
-                    else if (buf.size() == 2 && buf[0] == 'X')
+                    else if (buf.size() == 1 && buf[0] == 'X')
                     {
                         was_q = true;
                         atom_type = _ATOM_X;
                     }
-                    else if (buf.size() == 3 && buf[0] == 'X' && buf[1] == 'H')
+                    else if (buf.size() == 2 && buf[0] == 'X' && buf[1] == 'H')
                     {
                         was_a = true;
                         atom_type = _ATOM_XH;
                     }
-                    else if (buf.size() == 2 && buf[0] == 'M')
+                    else if (buf.size() == 1 && buf[0] == 'M')
                     {
                         was_q = true;
                         atom_type = _ATOM_M;
                     }
-                    else if (buf.size() == 3 && buf[0] == 'M' && buf[1] == 'H')
+                    else if (buf.size() == 2 && buf[0] == 'M' && buf[1] == 'H')
                     {
                         was_a = true;
                         atom_type = _ATOM_MH;
@@ -2346,73 +2346,73 @@ void MolfileLoader::_readCtab3000()
                         break;
                 }
             }
-            else if (buf.size() == 2 && buf[0] == 'D')
+            else if (buf.size() == 1 && buf[0] == 'D')
             {
                 label = ELEM_H;
                 isotope = 2;
             }
-            else if (buf.size() == 2 && buf[0] == 'T')
+            else if (buf.size() == 1 && buf[0] == 'T')
             {
                 label = ELEM_H;
                 isotope = 3;
             }
-            else if (buf.size() == 2 && buf[0] == 'Q')
+            else if (buf.size() == 1 && buf[0] == 'Q')
             {
                 if (_qmol == 0)
                     throw Error("'Q' atom is allowed only for queries");
 
                 atom_type = _ATOM_Q;
             }
-            else if (buf.size() == 3 && buf[0] == 'Q' && buf[1] == 'H')
+            else if (buf.size() == 2 && buf[0] == 'Q' && buf[1] == 'H')
             {
                 if (_qmol == 0)
                     throw Error("'QH' atom is allowed only for queries");
 
                 atom_type = _ATOM_QH;
             }
-            else if (buf.size() == 2 && buf[0] == 'A')
+            else if (buf.size() == 1 && buf[0] == 'A')
             {
                 if (_qmol == 0)
                     throw Error("'A' atom is allowed only for queries");
 
                 atom_type = _ATOM_A;
             }
-            else if (buf.size() == 3 && buf[0] == 'A' && buf[1] == 'H')
+            else if (buf.size() == 2 && buf[0] == 'A' && buf[1] == 'H')
             {
                 if (_qmol == 0)
                     throw Error("'AH' atom is allowed only for queries");
 
                 atom_type = _ATOM_AH;
             }
-            else if (buf.size() == 2 && buf[0] == 'X' && !treat_x_as_pseudoatom)
+            else if (buf.size() == 1 && buf[0] == 'X' && !treat_x_as_pseudoatom)
             {
                 if (_qmol == 0)
                     throw Error("'X' atom is allowed only for queries");
 
                 atom_type = _ATOM_X;
             }
-            else if (buf.size() == 3 && buf[0] == 'X' && buf[1] == 'H' && !treat_x_as_pseudoatom)
+            else if (buf.size() == 2 && buf[0] == 'X' && buf[1] == 'H' && !treat_x_as_pseudoatom)
             {
                 if (_qmol == 0)
                     throw Error("'XH' atom is allowed only for queries");
 
                 atom_type = _ATOM_XH;
             }
-            else if (buf.size() == 2 && buf[0] == 'M')
+            else if (buf.size() == 1 && buf[0] == 'M')
             {
                 if (_qmol == 0)
                     throw Error("'M' atom is allowed only for queries");
 
                 atom_type = _ATOM_M;
             }
-            else if (buf.size() == 3 && buf[0] == 'M' && buf[1] == 'H')
+            else if (buf.size() == 2 && buf[0] == 'M' && buf[1] == 'H')
             {
                 if (_qmol == 0)
                     throw Error("'MH' atom is allowed only for queries");
 
                 atom_type = _ATOM_MH;
             }
-            else if (buf.size() == 3 && buf[0] == 'R' && buf[1] == '#')
+            else if (buf.size() == 2 && buf[0] == 'R' && buf[1] == '#')
             {
                 atom_type = _ATOM_R;
                 label = ELEM_RSITE;
@@ -3132,13 +3132,13 @@ void MolfileLoader::_readCollectionBlock3000()
 void MolfileLoader::_preparePseudoAtomLabel(std::string& pseudo)
 {
     // if the string is quoted, unquote it
-    if (pseudo.size() > 2 && pseudo.front() == '\'' && pseudo.back() == '\'')
+    if (pseudo.size() >= 2 && pseudo.front() == '\'' && pseudo.back() == '\'')
     {
         pseudo.erase(0,1);
         pseudo.pop_back();
     }
 
-    if (pseudo.size() <= 1)
+    if (pseudo.empty())
         throw Error("empty pseudo-atom");
 }
 
@@ -3159,9 +3159,8 @@ void MolfileLoader::_readMultiString(std::string& str)
 
         _scanner.readLine(tmp);
 
-        if (tmp[tmp.size() - 2] == '-')
+        if (tmp.back() == '-')
         {
-            tmp[tmp.size() - 2] = 0;
             tmp.pop_back();
             to_next = true;
         }

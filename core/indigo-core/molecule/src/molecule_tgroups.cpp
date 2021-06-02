@@ -95,7 +95,7 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* context)
     if ((tg1.tgroup_alias.size() - tg2.tgroup_alias.size()) != 0)
         return tg1.tgroup_alias.size() - tg2.tgroup_alias.size();
 
-    if ((tg2.tgroup_class.size() > 1) && strncmp(tg2.tgroup_class.c_str(), "AA", 2) == 0)
+    if ( tg2.tgroup_class.size() && strncmp(tg2.tgroup_class.c_str(), "AA", 2) == 0)
         return 1;
     else
         return -1;

@@ -816,9 +816,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                                    sup.bond_connections[j].bond_dir.y, 0.f);
                     }
                 }
-                if (sup.subscript.size() > 1)
+                if (sup.subscript.size())
                     out.printf(" LABEL=%s", sup.subscript.c_str());
-                if (sup.sa_class.size() > 1)
+                if (sup.sa_class.size())
                     out.printf(" CLASS=%s", sup.sa_class.c_str());
                 if (sup.contracted == 0)
                     out.printf(" ESTATE=E");
@@ -836,7 +836,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 if (sup.seqid > 0)
                     out.printf(" SEQID=%d", sup.seqid);
 
-                if (sup.sa_natreplace.size() > 1)
+                if (sup.sa_natreplace.size() )
                     out.printf(" NATREPLACE=%s", sup.sa_natreplace.c_str());
 
                 _writeMultiString(output, buf.data(), buf.size());
@@ -927,7 +927,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     out.printf(" CONNECT=HT");
                 else
                     out.printf(" CONNECT=EU");
-                if (ru.subscript.size() > 1)
+                if (ru.subscript.size() )
                     out.printf(" LABEL=%s", ru.subscript.c_str());
                 _writeMultiString(output, buf.data(), buf.size());
             }
@@ -1644,9 +1644,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             {
                 Superatom& superatom = (Superatom&)sgroup;
 
-                if (superatom.subscript.size() > 1)
+                if (superatom.subscript.size())
                     output.printfCR("M  SMT %3d %s", superatom.original_group, superatom.subscript.c_str());
-                if (superatom.sa_class.size() > 1)
+                if (superatom.sa_class.size() )
                     output.printfCR("M  SCL %3d %s", superatom.original_group, superatom.sa_class.c_str());
                 if (superatom.bond_connections.size() > 0)
                 {
@@ -1693,7 +1693,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             {
                 RepeatingUnit& sru = (RepeatingUnit&)sgroup;
 
-                if (sru.subscript.size() > 1)
+                if (sru.subscript.size())
                     output.printfCR("M  SMT %3d %s", sru.original_group, sru.subscript.c_str());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
@@ -1787,14 +1787,14 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 void MolfileSaver::_writeFormattedString(Output& output, std::string& str, int length)
 {
     int k = length;
-    if ((str.size() > 1) && (str.size() <= length))
+    if (str.size() && (str.size() <= length))
     {
         output.printf("%s", str.c_str());
-        k -= str.size() - 1;
+        k -= str.size();
         while (k-- > 0)
             output.writeChar(' ');
     }
-    else if (str.size() > 1)
+    else if (str.size())
     {
         for (k = 0; k < length; k++)
         {
