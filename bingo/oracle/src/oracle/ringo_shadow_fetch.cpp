@@ -221,7 +221,7 @@ void RingoShadowFetch::fetch(OracleEnv& env, int maxrows)
                 RingoSubstructure& instance = _context.substructure;
                 QS_DEF(std::string, crf);
 
-                _lob_crf->readAll(crf, false);
+                _lob_crf->readAll(crf);
 
                 if (!instance.matchBinary(crf))
                     have_match = true;
@@ -231,7 +231,7 @@ void RingoShadowFetch::fetch(OracleEnv& env, int maxrows)
                 RingoExact& instance = _context.exact;
                 QS_DEF(std::string, crf);
 
-                _lob_crf->readAll(crf, false);
+                _lob_crf->readAll(crf);
 
                 have_match = (instance.matchBinary(crf) == (_right_part == 1));
             }

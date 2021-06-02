@@ -425,7 +425,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
                 MangoSubstructure& instance = _context.substructure;
                 QS_DEF(std::string, cmf);
 
-                _lob_cmf->readAll(cmf, false);
+                _lob_cmf->readAll(cmf);
 
                 if (_need_xyz)
                 {
@@ -435,7 +435,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
                     {
                         QS_DEF(std::string, xyz);
 
-                        _lob_xyz->readAll(xyz, false);
+                        _lob_xyz->readAll(xyz);
                         if (!instance.matchBinary(cmf, &xyz))
                             have_match = true;
                     }
@@ -448,7 +448,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
                 MangoTautomer& instance = _context.tautomer;
                 QS_DEF(std::string, cmf);
 
-                _lob_cmf->readAll(cmf, false);
+                _lob_cmf->readAll(cmf);
 
                 if (!instance.matchBinary(cmf))
                     have_match = true;
@@ -458,7 +458,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
                 MangoTautomer& instance = _context.tautomer;
                 QS_DEF(std::string, cmf);
 
-                _lob_cmf->readAll(cmf, false);
+                _lob_cmf->readAll(cmf);
 
                 if (instance.matchBinary(cmf) == (_right_part == 1))
                     have_match = true;
@@ -469,7 +469,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
                 QS_DEF(std::string, cmf);
 
                 profTimerStart(tlobread, "exact.lobread");
-                _lob_cmf->readAll(cmf, false);
+                _lob_cmf->readAll(cmf);
                 profTimerStop(tlobread);
 
                 if (_need_xyz)
@@ -481,7 +481,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
                         QS_DEF(std::string, xyz);
 
                         profTimerStart(txyzlobread, "exact.xyzlobread");
-                        _lob_xyz->readAll(xyz, false);
+                        _lob_xyz->readAll(xyz);
                         profTimerStop(txyzlobread);
 
                         profTimerStart(tmatch, "exact.match");

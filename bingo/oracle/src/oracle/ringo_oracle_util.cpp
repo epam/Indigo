@@ -77,7 +77,7 @@ ORAEXT OCIString* oraRingoRSMILES(OCIExtProcContext* ctx, OCILobLocator* target_
 
             QS_DEF(std::string, buf);
 
-            target_lob.readAll(buf, false);
+            target_lob.readAll(buf);
 
             result = _ringoRSMILES(env, buf, context);
         }
@@ -120,7 +120,7 @@ ORAEXT OCIString* oraRingoCheckReaction(OCIExtProcContext* ctx, OCILobLocator* t
             QS_DEF(std::string, buf);
             QS_DEF(Reaction, reaction);
 
-            target_lob.readAll(buf, false);
+            target_lob.readAll(buf);
 
             TRY_READ_TARGET_RXN
             {
@@ -147,7 +147,7 @@ void _ICR(OracleLOB& target_lob, int save_xyz, std::string& icr, BingoOracleCont
     QS_DEF(std::string, target);
     QS_DEF(Reaction, reaction);
 
-    target_lob.readAll(target, false);
+    target_lob.readAll(target);
 
     ReactionAutoLoader loader(target);
     context.setLoaderSettings(loader);
@@ -236,7 +236,7 @@ ORAEXT OCILobLocator* oraRingoRxnfile(OCIExtProcContext* ctx, OCILobLocator* tar
             QS_DEF(std::string, icm);
             QS_DEF(Reaction, reaction);
 
-            target_lob.readAll(target, false);
+            target_lob.readAll(target);
 
             ReactionAutoLoader loader(target);
             context.setLoaderSettings(loader);
@@ -288,7 +288,7 @@ ORAEXT OCILobLocator* oraRingoCML(OCIExtProcContext* ctx, OCILobLocator* target_
             QS_DEF(std::string, icm);
             QS_DEF(Reaction, reaction);
 
-            target_lob.readAll(target, false);
+            target_lob.readAll(target);
 
             ReactionAutoLoader loader(target);
             context.setLoaderSettings(loader);
@@ -343,7 +343,7 @@ ORAEXT OCILobLocator* oraRingoFingerprint(OCIExtProcContext* ctx, OCILobLocator*
 
             OracleLOB target_lob(env, target_loc);
 
-            target_lob.readAll(target_buf, false);
+            target_lob.readAll(target_buf);
 
             QS_DEF(Reaction, target);
 

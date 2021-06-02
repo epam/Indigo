@@ -663,7 +663,7 @@ bool OracleStatement::executeSingleBlob(std::string& result, OracleEnv& env, con
     if (statement.gotNull(1)) // null LOB?
         return false;
 
-    lob.readAll(result, false);
+    lob.readAll(result);
     return true;
 }
 
@@ -688,7 +688,7 @@ bool OracleStatement::executeSingleClob(std::string& result, OracleEnv& env, con
         return false;
 
     va_end(args);
-    lob.readAll(result, false);
+    lob.readAll(result);
     return true;
 }
 

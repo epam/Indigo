@@ -157,7 +157,7 @@ void ringoRegisterTable(OracleEnv& env, RingoOracleContext& context, const char*
                 env.dbgPrintf("inserting reaction #%d with rowid %s\n", n, rowid.ptr());
 
                 if (blob || clob)
-                    reaction_lob->readAll(reaction_buf, false);
+                    reaction_lob->readAll(reaction_buf);
                 else
                     reaction_buf = varchar2_text;
 
@@ -291,7 +291,7 @@ QS_DEF(std::string, target_buf);
 
 OracleLOB target_lob(env, target_loc);
 
-target_lob.readAll(target_buf, false);
+target_lob.readAll(target_buf);
 
 _ringoRegisterReaction(env, rowid, target_buf, context, index, fingerprints);
 

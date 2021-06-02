@@ -154,8 +154,8 @@ static OCINumber* _mangoCommon(OCIExtProcContext* ctx, int context_id, OCILobLoc
             OracleLOB target_lob(env, target_loc);
             OracleLOB query_lob(env, query_loc);
 
-            target_lob.readAll(target_buf, false);
-            query_lob.readAll(query_buf, false);
+            target_lob.readAll(target_buf);
+            query_lob.readAll(query_buf);
 
             result = callback(env, context, query_buf, target_buf, params);
         }
@@ -200,7 +200,7 @@ ORAEXT OCINumber* oraMangoSmarts(OCIExtProcContext* ctx, int context_id, OCILobL
 
             OracleLOB target_lob(env, target_loc);
 
-            target_lob.readAll(target_buf, false);
+            target_lob.readAll(target_buf);
             query_buf = query;
 
             context.substructure.loadSMARTS(query_buf);
@@ -261,8 +261,8 @@ ORAEXT OCILobLocator* oraMangoSubHi(OCIExtProcContext* ctx, int context_id, OCIL
             OracleLOB target_lob(env, target_loc);
             OracleLOB query_lob(env, query_loc);
 
-            target_lob.readAll(target_buf, false);
-            query_lob.readAll(query_buf, false);
+            target_lob.readAll(target_buf);
+            query_lob.readAll(query_buf);
 
             if (context.substructure.parse(params))
             {
@@ -321,7 +321,7 @@ ORAEXT OCILobLocator* oraMangoSmartsHi(OCIExtProcContext* ctx, int context_id, O
 
             OracleLOB target_lob(env, target_loc);
 
-            target_lob.readAll(target_buf, false);
+            target_lob.readAll(target_buf);
             query_buf = query;
 
             context.substructure.preserve_bonds_on_highlighting = true;
@@ -369,8 +369,8 @@ ORAEXT OCILobLocator* oraMangoExactHi(OCIExtProcContext* ctx, int context_id, OC
             OracleLOB target_lob(env, target_loc);
             OracleLOB query_lob(env, query_loc);
 
-            target_lob.readAll(target_buf, false);
-            query_lob.readAll(query_buf, false);
+            target_lob.readAll(target_buf);
+            query_lob.readAll(query_buf);
 
             if (context.tautomer.parseExact(params))
             {
@@ -460,7 +460,7 @@ ORAEXT OCIString* oraMangoGrossCalc(OCIExtProcContext* ctx, OCILobLocator* targe
             QS_DEF(std::string, target_buf);
             OracleLOB target_lob(env, target_loc);
 
-            target_lob.readAll(target_buf, false);
+            target_lob.readAll(target_buf);
 
             result = _mangoGrossCalc(env, context, target_buf);
             *return_ind = OCI_IND_NOTNULL;
@@ -497,7 +497,7 @@ ORAEXT OCINumber* oraMangoGross(OCIExtProcContext* ctx, int context_id, OCILobLo
 
             OracleLOB target_lob(env, target_loc);
 
-            target_lob.readAll(target_buf, false);
+            target_lob.readAll(target_buf);
 
             result = _mangoGross(env, context, target_buf, query);
         }
@@ -567,7 +567,7 @@ ORAEXT OCINumber* oraMangoMolecularMass(OCIExtProcContext* ctx, int context_id, 
 
             OracleLOB target_lob(env, target_loc);
 
-            target_lob.readAll(target_buf, false);
+            target_lob.readAll(target_buf);
 
             result = _mangoMass(env, context, target_buf, type);
         }

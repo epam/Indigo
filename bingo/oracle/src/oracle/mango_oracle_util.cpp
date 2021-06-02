@@ -135,7 +135,7 @@ ORAEXT OCIString* oraMangoSMILES(OCIExtProcContext* ctx, OCILobLocator* target_l
 
             QS_DEF(std::string, buf);
 
-            target_lob.readAll(buf, false);
+            target_lob.readAll(buf);
 
             result = _mangoSMILES(env, buf, options, context, false);
         }
@@ -176,7 +176,7 @@ ORAEXT OCIString* oraMangoCanonicalSMILES(OCIExtProcContext* ctx, OCILobLocator*
             QS_DEF(std::string, buf);
 
             profTimerStart(treadlob, "smiles.read_lob");
-            target_lob.readAll(buf, false);
+            target_lob.readAll(buf);
             profTimerStop(treadlob);
 
             result = _mangoSMILES(env, buf, "", context, true);
@@ -223,7 +223,7 @@ ORAEXT OCIString* oraMangoCheckMolecule(OCIExtProcContext* ctx, OCILobLocator* t
 
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
 
-            target_lob.readAll(buf, false);
+            target_lob.readAll(buf);
 
             TRY_READ_TARGET_MOL
             {
@@ -258,7 +258,7 @@ void _ICM(BingoOracleContext& context, OracleLOB& target_lob, int save_xyz, std:
     QS_DEF(std::string, target);
     QS_DEF(Molecule, mol);
 
-    target_lob.readAll(target, false);
+    target_lob.readAll(target);
 
     MoleculeAutoLoader loader(target);
     context.setLoaderSettings(loader);
@@ -356,7 +356,7 @@ ORAEXT OCILobLocator* oraMangoMolfile(OCIExtProcContext* ctx, OCILobLocator* tar
             QS_DEF(std::string, icm);
             QS_DEF(Molecule, mol);
 
-            target_lob.readAll(target, false);
+            target_lob.readAll(target);
 
             MoleculeAutoLoader loader(target);
             context.setLoaderSettings(loader);
@@ -413,7 +413,7 @@ ORAEXT OCILobLocator* oraMangoCML(OCIExtProcContext* ctx, OCILobLocator* target_
             QS_DEF(std::string, icm);
             QS_DEF(Molecule, mol);
 
-            target_lob.readAll(target, false);
+            target_lob.readAll(target);
 
             MoleculeAutoLoader loader(target);
             context.setLoaderSettings(loader);
@@ -471,7 +471,7 @@ ORAEXT OCILobLocator* oraMangoInchi(OCIExtProcContext* ctx, OCILobLocator* targe
 
             OracleLOB target_lob(env, target_loc);
 
-            target_lob.readAll(target_buf, false);
+            target_lob.readAll(target_buf);
 
             QS_DEF(Molecule, target);
 
@@ -515,7 +515,7 @@ ORAEXT OCIString* oraMangoInchiKey(OCIExtProcContext* ctx, OCILobLocator* inchi_
 
             QS_DEF(std::string, inchi);
             OracleLOB inchi_lob(env, inchi_loc);
-            inchi_lob.readAll(inchi, true);
+            inchi_lob.readAll(inchi);
 
             QS_DEF(std::string, inchikey_buf);
 
@@ -555,7 +555,7 @@ ORAEXT OCILobLocator* oraMangoFingerprint(OCIExtProcContext* ctx, OCILobLocator*
 
             OracleLOB target_lob(env, target_loc);
 
-            target_lob.readAll(target_buf, false);
+            target_lob.readAll(target_buf);
 
             QS_DEF(Molecule, target);
 

@@ -200,7 +200,7 @@ ORAEXT int oraMangoIndexStart(OCIExtProcContext* ctx, int context_id, const char
         QS_DEF(std::string, query_buf);
         OracleLOB query_lob(env, query_loc);
 
-        query_lob.readAll(query_buf, false);
+        query_lob.readAll(query_buf);
 
         QS_DEF(std::string, query_id);
 

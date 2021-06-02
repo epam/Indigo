@@ -196,7 +196,7 @@ void mangoRegisterTable(OracleEnv& env, MangoOracleContext& context, const char*
                 env.dbgPrintf("inserting molecule #%d with rowid %s\n", n, rowid.ptr());
 
                 if (blob || clob)
-                    molfile_lob->readAll(molfile_buf, false);
+                    molfile_lob->readAll(molfile_buf);
                 else
                     molfile_buf = varchar2_text;
 
@@ -367,7 +367,7 @@ QS_DEF(std::string, target_buf);
 
 OracleLOB target_lob(env, target_loc);
 
-target_lob.readAll(target_buf, false);
+target_lob.readAll(target_buf);
 
 mangoPrepareAndRegisterMolecule(env, rowid, target_buf, context, index, fingerprints, false);
 

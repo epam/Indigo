@@ -76,8 +76,8 @@ ORAEXT OCINumber* oraRingoSub(OCIExtProcContext* ctx, int context_id, OCILobLoca
         OracleLOB target_lob(env, target_loc);
         OracleLOB query_lob(env, query_loc);
 
-        target_lob.readAll(target_buf, false);
-        query_lob.readAll(query_buf, false);
+        target_lob.readAll(target_buf);
+        query_lob.readAll(query_buf);
 
         if (!context.substructure.parse(params))
             throw BingoError("can not parse parameters: %s", params);
@@ -119,8 +119,8 @@ ORAEXT OCILobLocator* oraRingoSubHi(OCIExtProcContext* ctx, int context_id, OCIL
         OracleLOB target_lob(env, target_loc);
         OracleLOB query_lob(env, query_loc);
 
-        target_lob.readAll(target_buf, false);
-        query_lob.readAll(query_buf, false);
+        target_lob.readAll(target_buf);
+        query_lob.readAll(query_buf);
 
         if (!context.substructure.parse(params))
             throw BingoError("can not parse parameters: %s", params);
@@ -170,7 +170,7 @@ ORAEXT OCINumber* oraRingoRSmarts(OCIExtProcContext* ctx, int context_id, OCILob
 
         OracleLOB target_lob(env, target_loc);
 
-        target_lob.readAll(target_buf, false);
+        target_lob.readAll(target_buf);
         query_buf = query;
 
         context.substructure.loadSMARTS(query_buf);
@@ -212,7 +212,7 @@ ORAEXT OCILobLocator* oraRingoRSmartsHi(OCIExtProcContext* ctx, int context_id, 
 
         OracleLOB target_lob(env, target_loc);
 
-        target_lob.readAll(target_buf, false);
+        target_lob.readAll(target_buf);
         query_buf = query;
 
         context.substructure.preserve_bonds_on_highlighting = true;
@@ -256,7 +256,7 @@ ORAEXT OCILobLocator* oraRingoAAM(OCIExtProcContext* ctx, OCILobLocator* target_
 
         OracleLOB target_lob(env, target_loc);
 
-        target_lob.readAll(target_buf, false);
+        target_lob.readAll(target_buf);
 
         context.ringoAAM.loadReaction(target_buf);
         context.ringoAAM.parse(params);
@@ -317,8 +317,8 @@ ORAEXT OCINumber* oraRingoExact(OCIExtProcContext* ctx, int context_id, OCILobLo
         OracleLOB target_lob(env, target_loc);
         OracleLOB query_lob(env, query_loc);
 
-        target_lob.readAll(target_buf, false);
-        query_lob.readAll(query_buf, false);
+        target_lob.readAll(target_buf);
+        query_lob.readAll(query_buf);
 
         result = _ringoExact(env, context, query_buf, target_buf, params);
 
