@@ -42,7 +42,7 @@ int StringPool::_add(const char* str, int size)
     if (idx >= _storage.size())
         _storage.resize(idx + 1);
     if (_storage.at(idx) == 0)
-        _storage.set(idx, new Array<char>());
+        _storage.set(idx, new ArrayChar());
     if (size == -1 && str == 0)
         throw Error("Internal error: size == -1 && str == 0");
 
@@ -65,7 +65,7 @@ int StringPool::add(int size)
     return _add(0, size);
 }
 
-int StringPool::add(Array<char>& str)
+int StringPool::add(ArrayChar& str)
 {
     return _add(str.ptr(), str.size());
 }

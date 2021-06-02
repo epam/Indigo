@@ -181,7 +181,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
 
             _output.printf("M  LOG  1 %3d %3d %3d  ", i, rgroup.if_then, rgroup.rest_h);
 
-            QS_DEF(Array<char>, occ);
+            QS_DEF(ArrayChar, occ);
             ArrayOutput occ_out(occ);
 
             _writeOccurrenceRanges(occ_out, rgroup.occurrence);
@@ -373,7 +373,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
     int i;
     int iw = 1;
-    QS_DEF(Array<char>, buf);
+    QS_DEF(ArrayChar, buf);
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
@@ -497,7 +497,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
             sgroup.atoms.push(i);
 
-            QS_DEF(Array<char>, tmp_buf);
+            QS_DEF(ArrayChar, tmp_buf);
             ArrayOutput tmp_out(tmp_buf);
             tmp_out.printf("IMPL_H%d", hcount);
             tmp_buf.push(0);
@@ -1043,7 +1043,7 @@ void MolfileSaver::_writeOccurrenceRanges(Output& out, const Array<int>& occurre
 
 void MolfileSaver::_writeRGroup(Output& output, BaseMolecule& mol, int rg_idx)
 {
-    QS_DEF(Array<char>, buf);
+    QS_DEF(ArrayChar, buf);
     ArrayOutput out(buf);
     RGroup& rgroup = mol.rgroups.getRGroup(rg_idx);
 
@@ -1064,7 +1064,7 @@ void MolfileSaver::_writeRGroup(Output& output, BaseMolecule& mol, int rg_idx)
 
 void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
 {
-    QS_DEF(Array<char>, buf);
+    QS_DEF(ArrayChar, buf);
     ArrayOutput out(buf);
     TGroup& tgroup = mol.tgroups.getTGroup(tg_idx);
 
@@ -1290,7 +1290,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
             sgroup.atoms.push(i);
 
-            QS_DEF(Array<char>, tmp_buf);
+            QS_DEF(ArrayChar, tmp_buf);
             ArrayOutput tmp_out(tmp_buf);
             tmp_buf.clear();
             tmp_out.printf("IMPL_H%d", hydrogens_count);
@@ -1349,7 +1349,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
         if (bond_order < 0)
         {
-            Array<char> buf;
+            ArrayChar buf;
             qmol->getBondDescription(i, buf);
             throw Error("unrepresentable query bond: %s", buf.ptr());
         }
@@ -1789,7 +1789,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     }
 }
 
-void MolfileSaver::_writeFormattedString(Output& output, Array<char>& str, int length)
+void MolfileSaver::_writeFormattedString(Output& output, ArrayChar& str, int length)
 {
     int k = length;
     if ((str.size() > 1) && (str.size() <= length))
@@ -2312,7 +2312,7 @@ void MolfileSaver::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfo
     Array<int> used1;
     Array<int> used2;
 
-    QS_DEF(Array<char>, st_desc);
+    QS_DEF(ArrayChar, st_desc);
     CIPContext context;
 
     int atom_idx, type, group, pyramid[4];
@@ -2910,7 +2910,7 @@ void MolfileSaver::_calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfo
     QS_DEF(Array<int>, used1);
     QS_DEF(Array<int>, used2);
 
-    QS_DEF(Array<char>, st_desc);
+    QS_DEF(ArrayChar, st_desc);
     CIPContext context;
 
     int pyramid[4];

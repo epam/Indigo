@@ -67,13 +67,13 @@ namespace indigo
             {
             }
 
-            virtual void operator()(MoleculeInChICompoment& comp, Array<char>& result) = 0;
+            virtual void operator()(MoleculeInChICompoment& comp, ArrayChar& result) = 0;
         };
         template <typename Layer> class _ComponentLayerPrintFunction;
 
         bool _printInChILayer(_PrintLayerFuncBase& func, const char* delim, const char* multiplier, const char* layer_prefix);
 
-        void _printInChIComponentCisTrans(MoleculeInChICompoment& comp, Array<char>& result);
+        void _printInChIComponentCisTrans(MoleculeInChICompoment& comp, ArrayChar& result);
 
         static void _normalizeMolecule(Molecule& mol);
 

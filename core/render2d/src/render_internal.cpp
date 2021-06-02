@@ -1648,7 +1648,7 @@ void MoleculeRenderInternal::_initAtomData()
         BaseMolecule& bm = *_mol;
         const Vertex& vertex = bm.getVertex(i);
 
-        // QS_DEF(Array<char>, buf);
+        // QS_DEF(ArrayChar, buf);
         // buf.clear();
         // bm.getAtomDescription(i, buf);
         // printf("%s\n", buf.ptr());
@@ -2337,7 +2337,7 @@ void MoleculeRenderInternal::_initBondEndData()
             be.width = 4 * _settings.bondSpace + _settings.bondLineWidth;
         else
         {
-            Array<char> buf;
+            ArrayChar buf;
             _mol->getBondDescription(be.bid, buf);
             throw Error("Unknown bond type %s. Can not determine bond width.", buf.ptr());
         }
@@ -4162,7 +4162,7 @@ void MoleculeRenderInternal::_precalcScale()
     {
         long long int output_length = 0;
         Array<int> iarr;
-        Array<char> carr;
+        ArrayChar carr;
         if (bm.isPseudoAtom(i))
         {
             carr.readString(bm.getPseudoAtom(i), true);

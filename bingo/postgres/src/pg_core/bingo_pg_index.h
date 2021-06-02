@@ -118,8 +118,8 @@ public:
     void readTidItem(ItemPointerData&, PG_OBJECT result_ptr);
     void readTidItem(int section_idx, int mol_idx, PG_OBJECT result_ptr);
 
-    void readCmfItem(int section_idx, int mol_idx, indigo::Array<char>& cmf_buf);
-    void readXyzItem(int section_idx, int mol_idx, indigo::Array<char>& xyz_buf);
+    void readCmfItem(int section_idx, int mol_idx, indigo::ArrayChar& cmf_buf);
+    void readXyzItem(int section_idx, int mol_idx, indigo::ArrayChar& xyz_buf);
 
     void andWithBitset(int section_idx, int fp_idx, BingoPgExternalBitset& ext_bitset);
 
@@ -133,7 +133,7 @@ public:
     bool isStructureRemoved(int section_idx, int mol_idx);
     bool isStructureRemoved(ItemPointerData&);
 
-    void readDictionary(indigo::Array<char>& _dictionary);
+    void readDictionary(indigo::ArrayChar& _dictionary);
     void writeDictionary(BingoPgBuildEngine&);
     /*
      * Clear all buffers

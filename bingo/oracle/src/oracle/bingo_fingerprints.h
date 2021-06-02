@@ -125,7 +125,7 @@ protected:
     int _fp_bytes, _fp_priority_bytes_min, _fp_priority_bytes_max;
     int _chunk_qwords;
     CP_DECL;
-    TL_CP_DECL(Array<char>, _table_name);
+    TL_CP_DECL(ArrayChar, _table_name);
 
     // when adding fingerprints
 

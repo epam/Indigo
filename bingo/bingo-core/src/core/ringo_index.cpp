@@ -80,7 +80,7 @@ const byte* RingoIndex::getFingerprint()
     return _fp.ptr();
 }
 
-const Array<char>& RingoIndex::getCrf()
+const ArrayChar& RingoIndex::getCrf()
 {
     return _crf;
 }

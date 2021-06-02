@@ -210,7 +210,7 @@ namespace indigo
 
         void clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<Array<int>>* mappings, ObjArray<Array<int>>* inv_mappings);
 
-        Array<char> name;
+        ArrayChar name;
 
         DECL_ERROR;
 

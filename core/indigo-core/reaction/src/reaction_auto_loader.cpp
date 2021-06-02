@@ -51,7 +51,7 @@ ReactionAutoLoader::ReactionAutoLoader(Scanner& scanner)
     _init();
 }
 
-ReactionAutoLoader::ReactionAutoLoader(const Array<char>& arr)
+ReactionAutoLoader::ReactionAutoLoader(const ArrayChar& arr)
 {
     _scanner = new BufferScanner(arr);
     _own_scanner = true;
@@ -95,7 +95,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
         if (id[0] == 0x1f && id[1] == 0x8b)
         {
             GZipScanner gzscanner(*_scanner);
-            QS_DEF(Array<char>, buf);
+            QS_DEF(ArrayChar, buf);
 
             gzscanner.readAll(buf);
             ReactionAutoLoader loader2(buf);
@@ -115,7 +115,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
 
     // check for MDLCT format
     {
-        QS_DEF(Array<char>, buf);
+        QS_DEF(ArrayChar, buf);
         if (MoleculeAutoLoader::tryMDLCT(*_scanner, buf))
         {
             BufferScanner scanner2(buf);
@@ -186,7 +186,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
                 using namespace rapidjson;
                 _scanner->seek(pos, SEEK_SET);
                 {
-                    Array<char> buf;
+                    ArrayChar buf;
                     _scanner->readAll(buf);
                     buf.push(0);
                     Document data;

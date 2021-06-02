@@ -119,7 +119,7 @@ void SdfLoader::readNext()
     output.writeArray(_preread);
     int n_preread = _preread.size();
     _preread.clear();
-    QS_DEF(Array<char>, str);
+    QS_DEF(ArrayChar, str);
 
     if (_scanner->isEOF())
         throw Error("end of stream");
@@ -167,7 +167,7 @@ void SdfLoader::readNext()
             if (ws.readChar() == '<')
                 break;
 
-        QS_DEF(Array<char>, word);
+        QS_DEF(ArrayChar, word);
         bool have_word = false;
 
         word.clear();

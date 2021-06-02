@@ -38,7 +38,7 @@ void BingoPgBuildEngine::loadDictionary(BingoPgIndex& bingo_index)
 {
     _setBingoContext();
 
-    QS_DEF(Array<char>, dict);
+    QS_DEF(ArrayChar, dict);
     bingo_index.readDictionary(dict);
     bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
 }

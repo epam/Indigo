@@ -27,10 +27,203 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
+#include <vector>
 
 namespace indigo
 {
     DECL_EXCEPTION(ArrayError);
+
+    class ArrayChar
+    {
+    public:
+        DECL_TPL_ERROR(ArrayError);
+
+        void clear()
+        {
+            _arr.clear();
+        }
+
+        void reserve(int to_reserve)
+        {
+            _arr.reserve(to_reserve);
+        }
+
+        const char* ptr() const
+        {
+            return _arr.data();
+        }
+
+        char* ptr()
+        {
+            return &_arr[0];
+        }
+
+        void copy(const ArrayChar& other)
+        {
+            copy(other._arr.data(), other.size());
+        }
+
+        void copy(const char* other, int count)
+        {
+            _arr.assign(other, count);
+        }
+
+        int size() const
+        {
+            return _arr.size();
+        }
+
+        int sizeInBytes() const
+        {
+            return _arr.size();
+        }
+
+        void push(char ch)
+        {
+            _arr.push_back(ch);
+        }
+
+        int memcmp(const ArrayChar& other) const
+        {
+            if (_arr.size() < other.size())
+                return -1;
+            if (_arr.size() > other.size())
+                return -1;
+
+            if (_arr.size() == 0)
+                return 0;
+
+            return ::memcmp(_arr.data(), other._arr.data(), _arr.size());
+        }
+
+        const char& operator[](int index) const
+        {
+            if (index < 0 || _arr.size() - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _arr.size());
+            return _arr[index];
+        }
+
+        char& operator[](int index)
+        {
+            if (index < 0 || _arr.size() - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _arr.size());
+            return _arr[index];
+        }
+
+        void clear_resize(int newsize)
+        {
+            _arr.clear();
+            _arr.resize(newsize, 0);
+        }
+
+        char pop()
+        {
+            char ch = _arr.back();
+            _arr.pop_back();
+            return ch;
+        }
+
+        void resize(int newsize)
+        {
+            _arr.resize(newsize);
+        }
+
+        void appendString(const char* str, bool keep_zero)
+        {
+            _arr.append(str);
+            if (keep_zero)
+                push(0);
+        }
+
+        void readString(const char* str, bool keep_zero)
+        {
+            clear();
+            appendString(str, keep_zero);
+        }
+
+        void concat(const ArrayChar& other)
+        {
+            concat(other._arr.data(), other.size());
+        }
+
+        void concat(const char* other, int count)
+        {
+            _arr += std::string(other, count);
+        }
+
+        void zerofill()
+        {
+            if (_arr.size() > 0)
+                memset(&_arr[0], 0, _arr.size());
+        }
+
+        int find(char value) const
+        {
+            return find(0, _arr.size(), value);
+        }
+
+        int find(int from, int to, char value) const
+        {
+            for (int i = from; i < to; i++)
+                if (_arr[i] == value)
+                    return i;
+            return -1;
+        }
+
+        int count(int from, int to, char value) const
+        {
+            int cnt = 0;
+            for (int i = from; i < to; i++)
+                if (_arr[i] == value)
+                    cnt++;
+            return cnt;
+        }
+
+        int count(char value) const
+        {
+            return count(0, _arr.size(), value);
+        }
+
+        char& top()
+        {
+            return _arr.back();
+        }
+
+        const char& top() const
+        {
+            return _arr.back();
+        }
+
+        char& top(int offset)
+        {
+            if (_arr.size() - offset <= 0)
+                throw Error("stack underflow");
+            return _arr[_arr.size() - 1 - offset];
+        }
+
+        void remove(int idx, int span = 1)
+        {
+            if (idx < 0 || idx - _arr.size() - span + 1 >= 0)
+                throw Error("remove(): invalid index %d with span %d (size=%d)", idx, span, _arr.size());
+            _arr.erase(idx, span);
+        }
+
+        void swap( ArrayChar& other)
+        {
+            _arr.swap(other._arr);
+        }
+
+        void upper(const char* source)
+        {
+            clear();
+            while (*source != 0)
+                push(::toupper(*source++));
+            push(0);
+        }
+
+    private:
+        std::string _arr;
+    };
 
     template <typename T> class Array
     {
@@ -475,7 +668,7 @@ namespace indigo
             this->qsort(0, _length - 1, cmp, context);
         }
 
-        // Array<char>-specific
+        // ArrayChar-specific
         void appendString(const char* str, bool keep_zero)
         {
             int len = (int)strlen(str);

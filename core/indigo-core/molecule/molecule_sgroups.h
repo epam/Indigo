@@ -127,12 +127,12 @@ namespace indigo
         DataSGroup();
         virtual ~DataSGroup();
 
-        Array<char> description; // SDT in Molfile format (filed units or format)
-        Array<char> name;        // SDT in Molfile format (field name)
-        Array<char> type;        // SDT in Molfile format (field type)
-        Array<char> querycode;   // SDT in Molfile format (query code)
-        Array<char> queryoper;   // SDT in Molfile format (query operator)
-        Array<char> data;        // SCD/SED in Molfile format (field data)
+        ArrayChar description; // SDT in Molfile format (filed units or format)
+        ArrayChar name;        // SDT in Molfile format (field name)
+        ArrayChar type;        // SDT in Molfile format (field type)
+        ArrayChar querycode;   // SDT in Molfile format (query code)
+        ArrayChar queryoper;   // SDT in Molfile format (query operator)
+        ArrayChar data;        // SCD/SED in Molfile format (field data)
         Vec2f display_pos;       // SDD in Molfile format
         bool detached;           // or attached
         bool relative;           // or absolute
@@ -150,18 +150,18 @@ namespace indigo
         Superatom();
         virtual ~Superatom();
 
-        Array<char> subscript;     // SMT in Molfile format
-        Array<char> sa_class;      // SCL in Molfile format
+        ArrayChar subscript;     // SMT in Molfile format
+        ArrayChar sa_class;      // SCL in Molfile format
         int contracted;            // display option (-1 if undefined, 0 - expanded, 1 - contracted)
                                    // SDS in Molfile format
         int seqid;                 // SEQID (V3000 - 2017)
-        Array<char> sa_natreplace; // NATREPLACE (V3000 - 2017)
+        ArrayChar sa_natreplace; // NATREPLACE (V3000 - 2017)
 
         struct _AttachmentPoint
         {
             int aidx;
             int lvidx;
-            Array<char> apid;
+            ArrayChar apid;
         };
         ObjPool<_AttachmentPoint> attachment_points; // SAP in Molfile format
 
@@ -183,7 +183,7 @@ namespace indigo
         virtual ~RepeatingUnit();
 
         int connectivity;
-        Array<char> subscript; // SMT in Molfile format
+        ArrayChar subscript; // SMT in Molfile format
     private:
         RepeatingUnit(const RepeatingUnit&);
     };

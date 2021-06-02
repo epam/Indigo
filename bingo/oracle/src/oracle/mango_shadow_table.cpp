@@ -160,8 +160,8 @@ void MangoShadowTable::_flushMain(OracleEnv& env)
             _main_table_statement->bindIntByName(":offset", _pending_offset.ptr());
             _main_table_statement->bindStringByName(":gross", _pending_gross[0], 512);
 
-            QS_DEF(Array<char>, cmf);
-            QS_DEF(Array<char>, xyz);
+            QS_DEF(ArrayChar, cmf);
+            QS_DEF(ArrayChar, xyz);
             QS_DEF(Array<short>, xyz_ind);
             int maxallocsize_cmf = 0;
             int maxallocsize_xyz = 0;
@@ -352,7 +352,7 @@ void MangoShadowTable::analyze(OracleEnv& env)
     OracleStatement::executeSingle(env, "ANALYZE TABLE %s ESTIMATE STATISTICS", _components_table_name.ptr());
 }
 
-bool MangoShadowTable::getXyz(OracleEnv& env, const char* rowid, Array<char>& xyz)
+bool MangoShadowTable::getXyz(OracleEnv& env, const char* rowid, ArrayChar& xyz)
 {
     if (!OracleStatement::executeSingleBlob(xyz, env, "SELECT xyz FROM %s where mol_rowid='%s'", _table_name.ptr(), rowid))
         return false;

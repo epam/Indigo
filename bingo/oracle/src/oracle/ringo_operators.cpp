@@ -35,7 +35,7 @@
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/rxnfile_loader.h"
 
-static OCINumber* _ringoSub(OracleEnv& env, RingoOracleContext& context, const Array<char>& query_buf, const Array<char>& target_buf, const char* params)
+static OCINumber* _ringoSub(OracleEnv& env, RingoOracleContext& context, const ArrayChar& query_buf, const ArrayChar& target_buf, const char* params)
 {
     context.substructure.loadQuery(query_buf);
 
@@ -70,8 +70,8 @@ ORAEXT OCINumber* oraRingoSub(OCIExtProcContext* ctx, int context_id, OCILobLoca
 
         RingoOracleContext& context = RingoOracleContext::get(env, context_id, false);
 
-        QS_DEF(Array<char>, query_buf);
-        QS_DEF(Array<char>, target_buf);
+        QS_DEF(ArrayChar, query_buf);
+        QS_DEF(ArrayChar, target_buf);
 
         OracleLOB target_lob(env, target_loc);
         OracleLOB query_lob(env, query_loc);
@@ -113,8 +113,8 @@ ORAEXT OCILobLocator* oraRingoSubHi(OCIExtProcContext* ctx, int context_id, OCIL
 
         RingoOracleContext& context = RingoOracleContext::get(env, context_id, false);
 
-        QS_DEF(Array<char>, query_buf);
-        QS_DEF(Array<char>, target_buf);
+        QS_DEF(ArrayChar, query_buf);
+        QS_DEF(ArrayChar, target_buf);
 
         OracleLOB target_lob(env, target_loc);
         OracleLOB query_lob(env, query_loc);
@@ -165,8 +165,8 @@ ORAEXT OCINumber* oraRingoRSmarts(OCIExtProcContext* ctx, int context_id, OCILob
 
         RingoOracleContext& context = RingoOracleContext::get(env, context_id, false);
 
-        QS_DEF(Array<char>, query_buf);
-        QS_DEF(Array<char>, target_buf);
+        QS_DEF(ArrayChar, query_buf);
+        QS_DEF(ArrayChar, target_buf);
 
         OracleLOB target_lob(env, target_loc);
 
@@ -207,8 +207,8 @@ ORAEXT OCILobLocator* oraRingoRSmartsHi(OCIExtProcContext* ctx, int context_id, 
 
         RingoOracleContext& context = RingoOracleContext::get(env, context_id, false);
 
-        QS_DEF(Array<char>, query_buf);
-        QS_DEF(Array<char>, target_buf);
+        QS_DEF(ArrayChar, query_buf);
+        QS_DEF(ArrayChar, target_buf);
 
         OracleLOB target_lob(env, target_loc);
 
@@ -252,7 +252,7 @@ ORAEXT OCILobLocator* oraRingoAAM(OCIExtProcContext* ctx, OCILobLocator* target_
 
         RingoOracleContext& context = RingoOracleContext::get(env, 0, false);
 
-        QS_DEF(Array<char>, target_buf);
+        QS_DEF(ArrayChar, target_buf);
 
         OracleLOB target_lob(env, target_loc);
 
@@ -275,7 +275,7 @@ ORAEXT OCILobLocator* oraRingoAAM(OCIExtProcContext* ctx, OCILobLocator* target_
     return 0;
 }
 
-static OCINumber* _ringoExact(OracleEnv& env, RingoOracleContext& context, const Array<char>& query_buf, const Array<char>& target_buf, const char* params)
+static OCINumber* _ringoExact(OracleEnv& env, RingoOracleContext& context, const ArrayChar& query_buf, const ArrayChar& target_buf, const char* params)
 {
     context.exact.setParameters(params);
     context.exact.loadQuery(query_buf);
@@ -311,8 +311,8 @@ ORAEXT OCINumber* oraRingoExact(OCIExtProcContext* ctx, int context_id, OCILobLo
 
         RingoOracleContext& context = RingoOracleContext::get(env, context_id, false);
 
-        QS_DEF(Array<char>, query_buf);
-        QS_DEF(Array<char>, target_buf);
+        QS_DEF(ArrayChar, query_buf);
+        QS_DEF(ArrayChar, target_buf);
 
         OracleLOB target_lob(env, target_loc);
         OracleLOB query_lob(env, query_loc);

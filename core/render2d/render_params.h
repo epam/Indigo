@@ -58,7 +58,7 @@ namespace indigo
         PtrArray<BaseMolecule> mols;
         PtrArray<BaseReaction> rxns;
 
-        ObjArray<Array<char>> titles;
+        ObjArray<ArrayChar> titles;
         Array<int> refAtoms;
 
         RenderOptions rOpt;
@@ -70,7 +70,7 @@ namespace indigo
     public:
         DECL_ERROR;
         static void render(RenderParams& params);
-        static int multilineTextUnit(RenderItemFactory& factory, int type, const Array<char>& titleStr, const float spacing,
+        static int multilineTextUnit(RenderItemFactory& factory, int type, const ArrayChar& titleStr, const float spacing,
                                      const MultilineTextLayout::Alignment alignment);
 
     private:

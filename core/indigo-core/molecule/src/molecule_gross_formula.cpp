@@ -144,7 +144,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     // basic structure and all polymers
     int grossFormulaSize = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) + 1;
     QS_DEF_RES(ObjArray<Array<int>>, filters, grossFormulaSize);
-    QS_DEF_RES(ObjArray<Array<char>>, indices, grossFormulaSize);
+    QS_DEF_RES(ObjArray<ArrayChar>, indices, grossFormulaSize);
 
     // first element is for old-style gross formula
     indices[0].appendString(" ", true);
@@ -227,14 +227,14 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     return result;
 }
 
-void MoleculeGrossFormula::toString(const Array<int>& gross, Array<char>& str, bool add_rsites)
+void MoleculeGrossFormula::toString(const Array<int>& gross, ArrayChar& str, bool add_rsites)
 {
     ArrayOutput output(str);
     _toString(gross, output, _cmp, add_rsites);
     output.writeChar(0);
 }
 
-void MoleculeGrossFormula::toString(GROSS_UNITS& gross, Array<char>& str, bool add_rsites)
+void MoleculeGrossFormula::toString(GROSS_UNITS& gross, ArrayChar& str, bool add_rsites)
 {
     ArrayOutput output(str);
 
@@ -245,7 +245,7 @@ void MoleculeGrossFormula::toString(GROSS_UNITS& gross, Array<char>& str, bool a
     output.writeChar(0);
 }
 
-void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, bool add_rsites)
+void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, ArrayChar& str, bool add_rsites)
 {
     ArrayOutput output(str); // clear!
 

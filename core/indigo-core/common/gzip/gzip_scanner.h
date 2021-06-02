@@ -45,7 +45,7 @@ namespace indigo
         virtual int lookNext();
         virtual void skip(int length);
         virtual long long length();
-        virtual void readAll(Array<char>& arr);
+        virtual void readAll(ArrayChar& arr);
 
         DECL_ERROR;
 

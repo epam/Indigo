@@ -305,7 +305,7 @@ void BingoPgSection::readSectionBitsCount(indigo::Array<int>& bits_number)
     }
 }
 
-void BingoPgSection::_setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, int map_idx)
+void BingoPgSection::_setCmfData(indigo::ArrayChar& cmf_buf, int map_buf_idx, int map_idx)
 {
     /*
      * Set binary info
@@ -321,7 +321,7 @@ void BingoPgSection::_setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, 
     elog(DEBUG1, "bingo: section: set cmf map: buffer = %d, offset = %d", ItemPointerGetBlockNumber(&cmf_item), ItemPointerGetOffsetNumber(&cmf_item));
 }
 
-void BingoPgSection::_setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx)
+void BingoPgSection::_setXyzData(indigo::ArrayChar& xyz_buf, int map_buf_idx, int map_idx)
 {
     /*
      * Set binary info
@@ -337,7 +337,7 @@ void BingoPgSection::_setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, 
     elog(DEBUG1, "bingo: section: set xyz map: buffer = %d, offset = %d", ItemPointerGetBlockNumber(&xyz_item), ItemPointerGetOffsetNumber(&xyz_item));
 }
 
-void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data)
+void BingoPgSection::_setBinData(indigo::ArrayChar& buf, int& last_buf, ItemPointerData& item_data)
 {
     if (buf.size() == 0)
     {

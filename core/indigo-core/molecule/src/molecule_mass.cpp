@@ -321,7 +321,7 @@ int MoleculeMass::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context)
     return strncmp(Element::toString(ec1.elem), Element::toString(ec2.elem), 3);
 }
 
-void MoleculeMass::massComposition(Molecule& mol, Array<char>& str )
+void MoleculeMass::massComposition(Molecule& mol, ArrayChar& str )
 {
     std::set<int> selected_atoms;
     mol.getAtomSelection( selected_atoms );

@@ -72,7 +72,7 @@ dword RingoExact::calculateHash(Reaction& rxn)
     return hash;
 }
 
-void RingoExact::loadQuery(const Array<char>& buf)
+void RingoExact::loadQuery(const ArrayChar& buf)
 {
     BufferScanner scanner(buf);
 
@@ -122,7 +122,7 @@ void RingoExact::setParameters(const char* flags)
 
     BufferScanner scanner(flags);
 
-    QS_DEF(Array<char>, word);
+    QS_DEF(ArrayChar, word);
     while (1)
     {
         scanner.skipSpace();
@@ -187,7 +187,7 @@ void RingoExact::loadTarget(Scanner& scanner)
     _initTarget(_target, false);
 }
 
-void RingoExact::loadTarget(const Array<char>& target_buf)
+void RingoExact::loadTarget(const ArrayChar& target_buf)
 {
     BufferScanner scanner(target_buf);
 
@@ -248,7 +248,7 @@ bool RingoExact::matchBinary(Scanner& scanner)
     return matcher.find();
 }
 
-bool RingoExact::matchBinary(const Array<char>& target_buf)
+bool RingoExact::matchBinary(const ArrayChar& target_buf)
 {
     BufferScanner scanner(target_buf);
 

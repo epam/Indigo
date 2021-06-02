@@ -151,9 +151,9 @@ namespace indigo
         static void executeSingle_BindString(OracleEnv& env, const char* bind, const char* value, const char* format, ...);
         static bool executeSingleInt(int& result, OracleEnv& env, const char* format, ...);
         static bool executeSingleFloat(float& result, OracleEnv& env, const char* format, ...);
-        static bool executeSingleString(Array<char>& result, OracleEnv& env, const char* format, ...);
-        static bool executeSingleBlob(Array<char>& result, OracleEnv& env, const char* format, ...);
-        static bool executeSingleClob(Array<char>& result, OracleEnv& env, const char* format, ...);
+        static bool executeSingleString(ArrayChar& result, OracleEnv& env, const char* format, ...);
+        static bool executeSingleBlob(ArrayChar& result, OracleEnv& env, const char* format, ...);
+        static bool executeSingleClob(ArrayChar& result, OracleEnv& env, const char* format, ...);
 
     private:
         OracleEnv& _env;
@@ -189,11 +189,11 @@ namespace indigo
         void openReadWrite();
 
         int getLength();
-        void readAll(Array<char>& arr, bool add_zero);
+        void readAll(ArrayChar& arr, bool add_zero);
 
         void read(int start, char* buffer, int buffer_size);
         void write(int start, const char* buffer, int bytes);
-        void write(int start, const Array<char>& data);
+        void write(int start, const ArrayChar& data);
 
         void trim(int length);
         inline void doNotDelete()

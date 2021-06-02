@@ -35,7 +35,7 @@ public:
     virtual void prepare(Scanner& rxnfile, Output& fi_output, OsLock* lock_for_exclusive_access);
 
     const byte* getFingerprint();
-    const Array<char>& getCrf();
+    const ArrayChar& getCrf();
     dword getHash();
     const char* getHashStr();
 
@@ -43,8 +43,8 @@ public:
 
 private:
     Array<byte> _fp;
-    Array<char> _crf;
+    ArrayChar _crf;
     dword _hash;
-    Array<char> _hash_str;
+    ArrayChar _hash_str;
 };
 #endif

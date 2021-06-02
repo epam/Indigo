@@ -64,8 +64,8 @@ int bingoGetExactRightPart(OracleEnv& env, OCINumber* p_strt, OCINumber* p_stop,
     return strt;
 }
 
-void bingoBuildQueryID(OracleEnv& env, const char* oper, const Array<char>& query_buf, OCINumber* p_strt, OCINumber* p_stop, int flags, const char* params,
-                       Array<char>& id)
+void bingoBuildQueryID(OracleEnv& env, const char* oper, const ArrayChar& query_buf, OCINumber* p_strt, OCINumber* p_stop, int flags, const char* params,
+                       ArrayChar& id)
 {
     ArrayOutput output(id);
 

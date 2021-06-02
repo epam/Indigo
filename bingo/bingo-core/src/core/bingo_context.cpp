@@ -148,7 +148,7 @@ void bingoGetTauCondition(const char* list_ptr, int& aromaticity, Array<int>& la
 
     label_list.clear();
 
-    QS_DEF(Array<char>, buf);
+    QS_DEF(ArrayChar, buf);
     buf.clear();
 
     while (*list_ptr != 0)
@@ -170,9 +170,9 @@ void bingoGetTauCondition(const char* list_ptr, int& aromaticity, Array<int>& la
     label_list.push(Element::fromString(buf.ptr()));
 }
 
-void bingoGetName(Scanner& scanner, Array<char>& result)
+void bingoGetName(Scanner& scanner, ArrayChar& result)
 {
-    QS_DEF(Array<char>, str);
+    QS_DEF(ArrayChar, str);
     bool single_line = Scanner::isSingleLine(scanner);
 
     result.clear();

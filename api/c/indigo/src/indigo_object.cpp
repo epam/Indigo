@@ -172,12 +172,12 @@ const char* IndigoObject::debugInfo()
     return _dbg_info->ptr();
 }
 
-void IndigoObject::toString(Array<char>& str)
+void IndigoObject::toString(ArrayChar& str)
 {
     throw IndigoError("can not convert %s to string", debugInfo());
 }
 
-void IndigoObject::toBuffer(Array<char>& buf)
+void IndigoObject::toBuffer(ArrayChar& buf)
 {
     return toString(buf);
 }
@@ -197,14 +197,14 @@ QueryMolecule& IndigoObject::getQueryMolecule()
     throw IndigoError("%s is not a query molecule", debugInfo());
 }
 
-// RedBlackStringObjMap< Array<char> > * IndigoObject::getProperties ()
+// RedBlackStringObjMap< ArrayChar > * IndigoObject::getProperties ()
 //{
 //   throw IndigoError("%s can not have properties", debugInfo());
 //}
 
-// void IndigoObject::copyProperties (RedBlackStringObjMap< Array<char> > &other)
+// void IndigoObject::copyProperties (RedBlackStringObjMap< ArrayChar > &other)
 //{
-//   RedBlackStringObjMap< Array<char> > *props = getProperties();
+//   RedBlackStringObjMap< ArrayChar > *props = getProperties();
 //
 //   if (props == 0)
 //      throw IndigoError("copyProperties(): zero destination");
@@ -216,7 +216,7 @@ QueryMolecule& IndigoObject::getQueryMolecule()
 //   for (i = other.begin(); i != other.end(); i = other.next(i))
 //      props->value(props->insert(other.key(i))).copy(other.value(i));
 //}
-void IndigoObject::copyProperties(RedBlackStringObjMap<Array<char>>& other)
+void IndigoObject::copyProperties(RedBlackStringObjMap<ArrayChar>& other)
 {
     auto& props = getProperties();
     props.copy(other);

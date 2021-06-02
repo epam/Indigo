@@ -439,7 +439,7 @@ void CmfSaver::_writeSGroupsXyz(Molecule& mol, Output& output, const VecRange& r
     }
 }
 
-void CmfSaver::_encodeString(const Array<char>& str)
+void CmfSaver::_encodeString(const ArrayChar& str)
 {
     unsigned int len = str.size();
     if (len > 0 && str[len - 1] == 0)

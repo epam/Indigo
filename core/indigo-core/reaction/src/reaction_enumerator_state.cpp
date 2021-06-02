@@ -385,7 +385,7 @@ void ReactionEnumeratorState::_productProcess(void)
 
     if (!is_same_keeping)
     {
-        QS_DEF(Array<char>, cur_smiles);
+        QS_DEF(ArrayChar, cur_smiles);
         cur_smiles.clear();
 
         try

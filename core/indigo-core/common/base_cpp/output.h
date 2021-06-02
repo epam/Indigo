@@ -52,7 +52,7 @@ namespace indigo
         void writeString(const char* string);
         void writeStringCR(const char* string);
         void writeCR();
-        void writeArray(const Array<char>& data);
+        void writeArray(const ArrayChar& data);
 
         void skip(int count);
 
@@ -82,7 +82,7 @@ namespace indigo
     class DLLEXPORT ArrayOutput : public Output
     {
     public:
-        explicit ArrayOutput(Array<char>& arr);
+        explicit ArrayOutput(ArrayChar& arr);
         virtual ~ArrayOutput();
 
         virtual void write(const void* data, int size);
@@ -93,7 +93,7 @@ namespace indigo
         void clear();
 
     protected:
-        Array<char>& _arr;
+        ArrayChar& _arr;
     };
 
     class DLLEXPORT StandardOutput : public Output
@@ -123,7 +123,7 @@ namespace indigo
         virtual void flush();
     };
 
-    DLLEXPORT void bprintf(Array<char>& buf, const char* format, ...);
+    DLLEXPORT void bprintf(ArrayChar& buf, const char* format, ...);
 
 } // namespace indigo
 

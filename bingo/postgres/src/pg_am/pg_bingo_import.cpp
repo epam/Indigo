@@ -66,7 +66,7 @@ public:
         {
         }
 
-        Array<char> columnName;
+        ArrayChar columnName;
         Oid type;
 
     private:
@@ -174,7 +174,7 @@ public:
                 /*
                  * Pg atoi workaround
                  */
-                QS_DEF(Array<char>, str2);
+                QS_DEF(ArrayChar, str2);
                 str2.readString(str, true);
                 BINGO_PG_TRY
                 {
@@ -267,7 +267,7 @@ public:
         /*
          * Read column names for query
          */
-        Array<char> column_names;
+        ArrayChar column_names;
         for (int i = 0; i < _importColumns.size(); ++i)
         {
             if (i != 0)
@@ -331,10 +331,10 @@ public:
 
     void import()
     {
-        QS_DEF(Array<char>, query_str);
+        QS_DEF(ArrayChar, query_str);
         QS_DEF(Array<Datum>, q_values);
         QS_DEF(Array<Oid>, q_oids);
-        QS_DEF(Array<char>, q_nulls);
+        QS_DEF(ArrayChar, q_nulls);
         int spi_success = 0;
 
         /*
@@ -427,7 +427,7 @@ public:
 protected:
     int bingo_res;
     bool _parseColumns;
-    Array<char> _columnNames;
+    ArrayChar _columnNames;
 
     ObjArray<ImportColumn> _importColumns;
     PtrArray<ImportData> _importData;

@@ -69,7 +69,7 @@ namespace indigo
 
         /* Atom weight percentage like "C 77% H 13%"
          */
-        void massComposition(Molecule& molecule, Array<char>& str );
+        void massComposition(Molecule& molecule, ArrayChar& str );
     };
 
 } // namespace indigo

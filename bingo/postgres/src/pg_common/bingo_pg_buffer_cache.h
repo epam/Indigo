@@ -135,13 +135,13 @@ public:
     /*
      * Add cmf to the buffer. Returns offset for a added cmf
      */
-    unsigned short addBin(indigo::Array<char>& bin_buf);
-    unsigned short writeBin(indigo::Array<char>& bin_buf);
+    unsigned short addBin(indigo::ArrayChar& bin_buf);
+    unsigned short writeBin(indigo::ArrayChar& bin_buf);
 
     /*
      * Get cmf from a buffer
      */
-    void readBin(unsigned short offset, indigo::Array<char>& result);
+    void readBin(unsigned short offset, indigo::ArrayChar& result);
 
     DECL_ERROR;
 
@@ -151,7 +151,7 @@ private:
     void _writeCache();
     void _readCache();
 
-    indigo::Array<char> _cache;
+    indigo::ArrayChar _cache;
 };
 
 #endif /* BUFFER_CASHE_H */

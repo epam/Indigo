@@ -74,7 +74,7 @@ void BingoPgSearchEngine::setItemPointer(PG_OBJECT result_ptr)
 
 void BingoPgSearchEngine::loadDictionary(BingoPgIndex& bingo_index)
 {
-    QS_DEF(Array<char>, dict);
+    QS_DEF(ArrayChar, dict);
     bingo_index.readDictionary(dict);
     bingoSetConfigBin("cmf_dict", dict.ptr(), dict.sizeInBytes());
 }
@@ -246,10 +246,10 @@ bool BingoPgSearchEngine::_fetchForNext()
     return false;
 }
 
-void BingoPgSearchEngine::_getBlockParameters(Array<char>& params)
+void BingoPgSearchEngine::_getBlockParameters(ArrayChar& params)
 {
-    QS_DEF(Array<char>, block_params);
-    QS_DEF(Array<char>, tmp);
+    QS_DEF(ArrayChar, block_params);
+    QS_DEF(ArrayChar, tmp);
     block_params.clear();
 
     for (int i = 0; i < params.size(); ++i)
@@ -276,7 +276,7 @@ void BingoPgSearchEngine::_getBlockParameters(Array<char>& params)
     }
 
     BufferScanner scanner(block_params);
-    QS_DEF(Array<char>, word);
+    QS_DEF(ArrayChar, word);
 
     int block_id = 0, block_count = 0;
 

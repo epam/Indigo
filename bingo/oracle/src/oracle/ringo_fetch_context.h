@@ -35,7 +35,7 @@ namespace ingido
 class RingoFetchContext
 {
 public:
-    RingoFetchContext(int id, RingoOracleContext& context, const Array<char>& query_id);
+    RingoFetchContext(int id, RingoOracleContext& context, const ArrayChar& query_id);
 
     AutoPtr<RingoFastIndex> fast_index;
     AutoPtr<RingoShadowFetch> shadow_fetch;
@@ -49,9 +49,9 @@ public:
     int context_id;
     bool fresh; // 'true' after selectivity calculation and before index start
 
-    static RingoFetchContext& create(RingoOracleContext& context, const Array<char>& query_id);
+    static RingoFetchContext& create(RingoOracleContext& context, const ArrayChar& query_id);
     static RingoFetchContext& get(int id);
-    static RingoFetchContext* findFresh(int context_id, const Array<char>& query_id);
+    static RingoFetchContext* findFresh(int context_id, const ArrayChar& query_id);
 
     static void remove(int id);
     static void removeByContextID(int id);
@@ -64,7 +64,7 @@ public:
     DECL_ERROR;
 
 protected:
-    Array<char> _query_id;
+    ArrayChar _query_id;
     RingoOracleContext& _context;
 
     TL_DECL(PtrArray<RingoFetchContext>, _instances);

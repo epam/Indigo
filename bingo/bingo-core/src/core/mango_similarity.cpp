@@ -101,7 +101,7 @@ void MangoSimilarity::loadQuery(Scanner& scanner)
     _query_ones = builder.countBits_Sim();
 }
 
-void MangoSimilarity::loadQuery(const Array<char>& buf)
+void MangoSimilarity::loadQuery(const ArrayChar& buf)
 {
     BufferScanner scanner(buf);
 
@@ -269,7 +269,7 @@ float MangoSimilarity::calc(Scanner& scanner)
     return _similarity(_query_ones, target_ones, common, metrics, _numerator_value, _denominator_value);
 }
 
-float MangoSimilarity::calc(const Array<char>& target_buf)
+float MangoSimilarity::calc(const ArrayChar& target_buf)
 {
     BufferScanner scanner(target_buf);
 

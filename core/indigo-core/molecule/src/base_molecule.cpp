@@ -240,7 +240,7 @@ void BaseMolecule::clearSGroups()
 void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>& vertices, const Array<int>* edges, Array<int>& mapping,
                                              Array<int>& edge_mapping, int skip_flags)
 {
-    QS_DEF(Array<char>, apid);
+    QS_DEF(ArrayChar, apid);
     int i;
 
     // XYZ
@@ -442,7 +442,7 @@ void BaseMolecule::_flipSuperatomBond(Superatom& sa, int src_bond_idx, int new_b
     }
 }
 
-void BaseMolecule::_flipTemplateAtomAttachmentPoint(int idx, int atom_from, Array<char>& ap_id, int atom_to)
+void BaseMolecule::_flipTemplateAtomAttachmentPoint(int idx, int atom_from, ArrayChar& ap_id, int atom_to)
 {
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
@@ -1059,7 +1059,7 @@ int BaseMolecule::getTemplateAtomAttachmentPoint(int atom_idx, int order)
     return -1;
 }
 
-void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid)
+void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, ArrayChar& apid)
 {
     int ap_count = 0;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
@@ -1078,9 +1078,9 @@ void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, Arr
     throw Error("attachment point order %d is out of range (%d)", order, ap_count);
 }
 
-int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id)
+int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, ArrayChar& att_id)
 {
-    QS_DEF(Array<char>, tmp);
+    QS_DEF(ArrayChar, tmp);
     int aidx = -1;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
@@ -1310,8 +1310,8 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
     QS_DEF(Array<int>, ignore_atoms);
     QS_DEF(Array<int>, query_atoms);
     QS_DEF(Array<int>, ignore_query_atoms);
-    QS_DEF(Array<char>, tg_alias);
-    QS_DEF(Array<char>, tg_name);
+    QS_DEF(ArrayChar, tg_alias);
+    QS_DEF(ArrayChar, tg_name);
 
     QS_DEF(Array<int>, att_atoms);
     QS_DEF(Array<int>, ap_neibs);
@@ -1327,8 +1327,8 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
     QS_DEF(Molecule, query);
 
     InchiWrapper indigo_inchi;
-    QS_DEF(Array<char>, inchi_target);
-    QS_DEF(Array<char>, inchi_query);
+    QS_DEF(ArrayChar, inchi_target);
+    QS_DEF(ArrayChar, inchi_query);
     QS_DEF(Array<int>, mapping_out);
 
     indigo_inchi.setOptions("/SNon");
@@ -1750,7 +1750,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
                                 {
                                     if (getTemplateAtomAttachmentPoint(v_k, m) == att_point_idx)
                                     {
-                                        QS_DEF(Array<char>, ap_id);
+                                        QS_DEF(ArrayChar, ap_id);
                                         getTemplateAtomAttachmentPointId(v_k, m, ap_id);
                                         _flipTemplateAtomAttachmentPoint(v_k, att_point_idx, ap_id, idx);
                                     }
@@ -2024,7 +2024,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
                             {
                                if (getTemplateAtomAttachmentPoint(v_k, m) == att_point_idx)
                                {
-                                  QS_DEF(Array<char>, ap_id);
+                                  QS_DEF(ArrayChar, ap_id);
                                   getTemplateAtomAttachmentPointId(v_k, m, ap_id);
                                   _flipTemplateAtomAttachmentPoint(v_k, att_point_idx, ap_id, idx);
                                }
@@ -2505,7 +2505,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
                                 {
                                     if (getTemplateAtomAttachmentPoint(v_k, m) == att_point_idx)
                                     {
-                                        QS_DEF(Array<char>, ap_id);
+                                        QS_DEF(ArrayChar, ap_id);
                                         getTemplateAtomAttachmentPointId(v_k, m, ap_id);
                                         _flipTemplateAtomAttachmentPoint(v_k, att_point_idx, ap_id, idx);
                                     }
@@ -2645,7 +2645,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
         }
 
         QS_DEF(Array<int>, rem_templ);
-        QS_DEF(Array<char>, ta_desc);
+        QS_DEF(ArrayChar, ta_desc);
         rem_templ.clear();
         ta_desc.clear();
         bool templ_used;
@@ -2697,9 +2697,9 @@ void BaseMolecule::_fillTemplateSeqIds()
     ignored_vertices.clear_resize(tmp.vertexEnd());
     ignored_vertices.zerofill();
 
-    QS_DEF(Array<char>, left_apid);
-    QS_DEF(Array<char>, right_apid);
-    QS_DEF(Array<char>, xlink_apid);
+    QS_DEF(ArrayChar, left_apid);
+    QS_DEF(ArrayChar, right_apid);
+    QS_DEF(ArrayChar, xlink_apid);
     left_apid.readString("Al", true);
     right_apid.readString("Br", true);
     xlink_apid.readString("Cx", true);
@@ -2862,7 +2862,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     QS_DEF(Array<int>, lvgroups);
     QS_DEF(StringPool, ap_points_ids);
     QS_DEF(Array<int>, ap_ids);
-    QS_DEF(Array<char>, ap_id);
+    QS_DEF(ArrayChar, ap_id);
 
     int tg_idx = t_idx;
     if (t_idx == -1)
@@ -3218,7 +3218,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
                         {
                             if (getTemplateAtomAttachmentPoint(v_k, m) == att_point_idx)
                             {
-                                QS_DEF(Array<char>, ap_id);
+                                QS_DEF(ArrayChar, ap_id);
                                 getTemplateAtomAttachmentPointId(v_k, m, ap_id);
                                 _flipTemplateAtomAttachmentPoint(v_k, att_point_idx, ap_id, idx);
                             }
@@ -3334,7 +3334,7 @@ int BaseMolecule::_createSGroupFromFragment(Array<int>& sg_atoms, const TGroup& 
     QS_DEF(Array<int>, lvgroups);
     QS_DEF(StringPool, ap_points_ids);
     QS_DEF(Array<int>, ap_ids);
-    QS_DEF(Array<char>, ap_id);
+    QS_DEF(ArrayChar, ap_id);
 
     fragment.clear();
     fragment.clone_KeepIndices(*tg.fragment.get());
@@ -3946,7 +3946,7 @@ void BaseMolecule::getAtomsCenterPoint(Array<int>& atoms, Vec2f& res)
         res.scale(1.0f / atoms.size());
 }
 
-void BaseMolecule::getAtomSymbol(int v, Array<char>& result)
+void BaseMolecule::getAtomSymbol(int v, ArrayChar& result)
 {
     if (isPseudoAtom(v))
     {
@@ -4050,7 +4050,7 @@ int BaseMolecule::bondCode(int edge_idx)
     return getBondOrder(edge_idx);
 }
 
-int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names)
+int BaseMolecule::transformHELMtoSGroups(ArrayChar& helm_class, ArrayChar& name, ArrayChar& code, ArrayChar& natreplace, StringPool& r_names)
 {
     QS_DEF(Array<int>, sg_atoms);
     sg_atoms.clear();

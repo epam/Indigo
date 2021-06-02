@@ -458,7 +458,7 @@ CEXPORT int bingoSearchMolFormula(int db, const char* query, const char* options
 {
     BINGO_BEGIN_DB(db)
     {
-        Array<char> gross_str;
+        ArrayChar gross_str;
         gross_str.copy(query, (int)(strlen(query) + 1));
 
         AutoPtr<GrossQueryData> query_data(new GrossQueryData(gross_str));

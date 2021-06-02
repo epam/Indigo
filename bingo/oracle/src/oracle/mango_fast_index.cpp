@@ -48,12 +48,12 @@ MangoFastIndex::~MangoFastIndex()
 {
 }
 
-void MangoFastIndex::_decompressRowid(const Array<char>& stored, OraRowidText& rid)
+void MangoFastIndex::_decompressRowid(const ArrayChar& stored, OraRowidText& rid)
 {
     BufferScanner scanner(stored.ptr() + 2, stored[1]);
 
     RowIDLoader loader(_context.context().context().rid_dict, scanner);
-    QS_DEF(Array<char>, rowid);
+    QS_DEF(ArrayChar, rowid);
 
     loader.loadRowID(rowid);
 
@@ -70,7 +70,7 @@ bool MangoFastIndex::getLastRowid(OraRowidText& id)
         return false;
 
     BingoStorage& storage = this->_context.context().context().storage;
-    QS_DEF(Array<char>, stored);
+    QS_DEF(ArrayChar, stored);
 
     storage.get(_last_id, stored);
     _decompressRowid(stored, id);
@@ -82,7 +82,7 @@ void MangoFastIndex::_match(OracleEnv& env, int idx)
     _last_id = idx;
 
     BingoStorage& storage = this->_context.context().context().storage;
-    QS_DEF(Array<char>, stored);
+    QS_DEF(ArrayChar, stored);
 
     storage.get(idx, stored);
 
@@ -104,7 +104,7 @@ void MangoFastIndex::_match(OracleEnv& env, int idx)
 
         if (_fetch_type == _SUBSTRUCTURE)
         {
-            QS_DEF(Array<char>, xyz_buf);
+            QS_DEF(ArrayChar, xyz_buf);
 
             if (_context.substructure.needCoords())
             {
@@ -236,7 +236,7 @@ void MangoFastIndex::_fetchSimilarity(OracleEnv& env, int max_matches)
         QS_DEF(Array<int>, max_common_ones);
         QS_DEF(Array<int>, min_common_ones);
         QS_DEF(Array<int>, target_ones);
-        QS_DEF(Array<char>, stored);
+        QS_DEF(ArrayChar, stored);
 
         max_common_ones.clear_resize(_screening.block->used);
         min_common_ones.clear_resize(_screening.block->used);
@@ -341,7 +341,7 @@ void MangoFastIndex::_fetchSimilarity(OracleEnv& env, int max_matches)
     profTimerStop(tsimfetch);
 }
 
-bool MangoFastIndex::_loadCoords(OracleEnv& env, const char* rowid, Array<char>& coords)
+bool MangoFastIndex::_loadCoords(OracleEnv& env, const char* rowid, ArrayChar& coords)
 {
     MangoOracleContext& moc = MangoOracleContext::get(env, _context.context_id, false);
 

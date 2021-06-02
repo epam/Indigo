@@ -36,7 +36,7 @@
 #include "reaction/rxnfile_saver.h"
 #include "ringo_oracle.h"
 
-static OCIString* _ringoRSMILES(OracleEnv& env, const Array<char>& target_buf, BingoOracleContext& context)
+static OCIString* _ringoRSMILES(OracleEnv& env, const ArrayChar& target_buf, BingoOracleContext& context)
 {
     QS_DEF(Reaction, target);
 
@@ -44,7 +44,7 @@ static OCIString* _ringoRSMILES(OracleEnv& env, const Array<char>& target_buf, B
     context.setLoaderSettings(loader);
     loader.loadReaction(target);
 
-    QS_DEF(Array<char>, rsmiles);
+    QS_DEF(ArrayChar, rsmiles);
 
     ArrayOutput out(rsmiles);
 
@@ -75,7 +75,7 @@ ORAEXT OCIString* oraRingoRSMILES(OCIExtProcContext* ctx, OCILobLocator* target_
         {
             OracleLOB target_lob(env, target_locator);
 
-            QS_DEF(Array<char>, buf);
+            QS_DEF(ArrayChar, buf);
 
             target_lob.readAll(buf, false);
 
@@ -117,7 +117,7 @@ ORAEXT OCIString* oraRingoCheckReaction(OCIExtProcContext* ctx, OCILobLocator* t
         {
             OracleLOB target_lob(env, target_locator);
 
-            QS_DEF(Array<char>, buf);
+            QS_DEF(ArrayChar, buf);
             QS_DEF(Reaction, reaction);
 
             target_lob.readAll(buf, false);
@@ -142,9 +142,9 @@ ORAEXT OCIString* oraRingoCheckReaction(OCIExtProcContext* ctx, OCILobLocator* t
     return result;
 }
 
-void _ICR(OracleLOB& target_lob, int save_xyz, Array<char>& icr, BingoOracleContext& context)
+void _ICR(OracleLOB& target_lob, int save_xyz, ArrayChar& icr, BingoOracleContext& context)
 {
-    QS_DEF(Array<char>, target);
+    QS_DEF(ArrayChar, target);
     QS_DEF(Reaction, reaction);
 
     target_lob.readAll(target, false);
@@ -177,7 +177,7 @@ ORAEXT OCILobLocator* oraRingoICR(OCIExtProcContext* ctx, OCILobLocator* target_
         if (target_indicator == OCI_IND_NOTNULL)
         {
             OracleLOB target_lob(env, target_locator);
-            QS_DEF(Array<char>, icr);
+            QS_DEF(ArrayChar, icr);
 
             _ICR(target_lob, save_xyz, icr, context);
 
@@ -205,7 +205,7 @@ if (result_indicator == OCI_IND_NULL)
     throw BingoError("null LOB given");
 
 OracleLOB target_lob(env, target_locator);
-QS_DEF(Array<char>, icr);
+QS_DEF(ArrayChar, icr);
 
 _ICR(target_lob, save_xyz, icr, context);
 
@@ -232,8 +232,8 @@ ORAEXT OCILobLocator* oraRingoRxnfile(OCIExtProcContext* ctx, OCILobLocator* tar
         {
             OracleLOB target_lob(env, target_locator);
 
-            QS_DEF(Array<char>, target);
-            QS_DEF(Array<char>, icm);
+            QS_DEF(ArrayChar, target);
+            QS_DEF(ArrayChar, icm);
             QS_DEF(Reaction, reaction);
 
             target_lob.readAll(target, false);
@@ -284,8 +284,8 @@ ORAEXT OCILobLocator* oraRingoCML(OCIExtProcContext* ctx, OCILobLocator* target_
         {
             OracleLOB target_lob(env, target_locator);
 
-            QS_DEF(Array<char>, target);
-            QS_DEF(Array<char>, icm);
+            QS_DEF(ArrayChar, target);
+            QS_DEF(ArrayChar, icm);
             QS_DEF(Reaction, reaction);
 
             target_lob.readAll(target, false);
@@ -339,7 +339,7 @@ ORAEXT OCILobLocator* oraRingoFingerprint(OCIExtProcContext* ctx, OCILobLocator*
         {
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
 
-            QS_DEF(Array<char>, target_buf);
+            QS_DEF(ArrayChar, target_buf);
 
             OracleLOB target_lob(env, target_loc);
 

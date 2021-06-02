@@ -244,8 +244,8 @@ void MangoShadowFetch::prepareExact(OracleEnv& env, int right_part)
         _statement->append(", sh.xyz", _table_name.ptr());
     _statement->append(" FROM %s sh", _table_name.ptr());
 
-    QS_DEF(Array<char>, table_copies);
-    QS_DEF(Array<char>, where_clause);
+    QS_DEF(ArrayChar, table_copies);
+    QS_DEF(ArrayChar, where_clause);
     _prepareExactQueryStrings(table_copies, where_clause);
 
     _statement->append(table_copies.ptr());
@@ -267,7 +267,7 @@ void MangoShadowFetch::prepareExact(OracleEnv& env, int right_part)
     output_cnt.printf("%s", where_clause.ptr());
 }
 
-void MangoShadowFetch::_prepareExactQueryStrings(Array<char>& table_copies, Array<char>& where_clause)
+void MangoShadowFetch::_prepareExactQueryStrings(ArrayChar& table_copies, ArrayChar& where_clause)
 {
     const MangoExact& instance = _context.exact;
     const MangoExact::Hash& hash = instance.getQueryHash();
@@ -354,7 +354,7 @@ void MangoShadowFetch::prepareMass(OracleEnv& env)
 {
     env.dbgPrintf("preparing shadow table for molecular mass match\n");
 
-    QS_DEF(Array<char>, where);
+    QS_DEF(ArrayChar, where);
 
     {
         ArrayOutput where_out(where);
@@ -400,7 +400,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
         {
             const char* gross = _context.tautomer.getQueryGross();
             _statement->bindStringByName(":gross", gross, strlen(gross) + 1);
-            QS_DEF(Array<char>, grossh);
+            QS_DEF(ArrayChar, grossh);
             grossh.readString(gross, false);
             grossh.appendString(" H%", true);
             _statement->bindStringByName(":grossh", grossh.ptr(), grossh.size());
@@ -428,7 +428,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
             if (_fetch_type == _NON_SUBSTRUCTURE)
             {
                 MangoSubstructure& instance = _context.substructure;
-                QS_DEF(Array<char>, cmf);
+                QS_DEF(ArrayChar, cmf);
 
                 _lob_cmf->readAll(cmf, false);
 
@@ -438,7 +438,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
                         have_match = true;
                     else
                     {
-                        QS_DEF(Array<char>, xyz);
+                        QS_DEF(ArrayChar, xyz);
 
                         _lob_xyz->readAll(xyz, false);
                         if (!instance.matchBinary(cmf, &xyz))
@@ -451,7 +451,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
             else if (_fetch_type == _NON_TAUTOMER_SUBSTRUCTURE)
             {
                 MangoTautomer& instance = _context.tautomer;
-                QS_DEF(Array<char>, cmf);
+                QS_DEF(ArrayChar, cmf);
 
                 _lob_cmf->readAll(cmf, false);
 
@@ -461,7 +461,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
             else if (_fetch_type == _TAUTOMER)
             {
                 MangoTautomer& instance = _context.tautomer;
-                QS_DEF(Array<char>, cmf);
+                QS_DEF(ArrayChar, cmf);
 
                 _lob_cmf->readAll(cmf, false);
 
@@ -471,7 +471,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
             else if (_fetch_type == _EXACT)
             {
                 MangoExact& instance = _context.exact;
-                QS_DEF(Array<char>, cmf);
+                QS_DEF(ArrayChar, cmf);
 
                 profTimerStart(tlobread, "exact.lobread");
                 _lob_cmf->readAll(cmf, false);
@@ -483,7 +483,7 @@ void MangoShadowFetch::fetch(OracleEnv& env, int maxrows)
                         have_match = (_right_part == 0);
                     else
                     {
-                        QS_DEF(Array<char>, xyz);
+                        QS_DEF(ArrayChar, xyz);
 
                         profTimerStart(txyzlobread, "exact.xyzlobread");
                         _lob_xyz->readAll(xyz, false);

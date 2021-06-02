@@ -60,8 +60,8 @@ namespace indigo
             static BingoCore& getInstance();
             int getTimeout();
 
-            Array<char> error;
-            Array<char> warning;
+            ArrayChar error;
+            ArrayChar warning;
 
             BINGO_ERROR_HANDLER error_handler;
             void* error_handler_context;
@@ -80,12 +80,12 @@ namespace indigo
             AutoPtr<GZipScanner> gz_scanner;
             Scanner* smiles_scanner;
 
-            Array<char> buffer;
+            ArrayChar buffer;
 
             MangoIndex* mango_index;
             RingoIndex* ringo_index;
 
-            Obj<Array<char>> index_record_data;
+            Obj<ArrayChar> index_record_data;
             int index_record_data_id;
 
             Obj<MangoIndex> single_mango_index;

@@ -75,7 +75,7 @@ void CmlLoader::_loadMolecule()
 {
     if (_scanner != 0)
     {
-        QS_DEF(Array<char>, buf);
+        QS_DEF(ArrayChar, buf);
         _scanner->readAll(buf);
         buf.push(0);
         TiXmlDocument xml;
@@ -493,8 +493,8 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     AutoPtr<QueryMolecule::Atom> atomlist;
 
                     BufferScanner strscan(a.query_props.c_str());
-                    QS_DEF(Array<char>, el);
-                    QS_DEF(Array<char>, delim);
+                    QS_DEF(ArrayChar, el);
+                    QS_DEF(ArrayChar, delim);
                     el.clear();
                     delim.clear();
 
@@ -628,8 +628,8 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                 else if (!a.query_props.empty()) // Query features
                 {
                     BufferScanner strscan(a.query_props.c_str());
-                    QS_DEF(Array<char>, qf);
-                    QS_DEF(Array<char>, delim);
+                    QS_DEF(ArrayChar, qf);
+                    QS_DEF(ArrayChar, delim);
                     qf.clear();
                     delim.clear();
 
@@ -861,7 +861,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         int idx;
 
         BufferScanner strscan(atom_refs);
-        QS_DEF(Array<char>, id);
+        QS_DEF(ArrayChar, id);
 
         strscan.readWord(id, 0);
         int beg = getAtomIdx(id.ptr());
@@ -1064,7 +1064,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         if (refs4 != 0)
         {
             BufferScanner strscan(refs4);
-            QS_DEF(Array<char>, id);
+            QS_DEF(ArrayChar, id);
             int k, pyramid[4];
 
             for (k = 0; k < 4; k++)
@@ -1161,7 +1161,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
             if (has_subst)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
                 int refs[4] = {-1, -1, -1, -1};
 
                 for (int k = 0; k < 4; k++)
@@ -1282,7 +1282,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (atom_refs != 0)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1438,7 +1438,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (atom_refs != 0)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1516,7 +1516,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (atom_refs != 0)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1611,7 +1611,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (atom_refs != 0)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1625,7 +1625,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (patoms != 0)
             {
                 BufferScanner strscan(patoms);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {
@@ -1710,7 +1710,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
             if (atom_refs != 0)
             {
                 BufferScanner strscan(atom_refs);
-                QS_DEF(Array<char>, id);
+                QS_DEF(ArrayChar, id);
 
                 while (!strscan.isEOF())
                 {

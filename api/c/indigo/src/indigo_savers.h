@@ -73,9 +73,9 @@ public:
     }
     virtual const char* debugInfo();
 
-    static void generateSmiles(IndigoObject& obj, Array<char>& out_buffer);
+    static void generateSmiles(IndigoObject& obj, ArrayChar& out_buffer);
 
-    static void generateSmarts(IndigoObject& obj, Array<char>& out_buffer);
+    static void generateSmarts(IndigoObject& obj, ArrayChar& out_buffer);
 
     static void append(Output& output, IndigoObject& object);
 
@@ -91,9 +91,9 @@ public:
     }
     virtual const char* debugInfo();
 
-    static void generateSmiles(IndigoObject& obj, Array<char>& out_buffer);
+    static void generateSmiles(IndigoObject& obj, ArrayChar& out_buffer);
 
-    static void generateSmarts(IndigoObject& obj, Array<char>& out_buffer);
+    static void generateSmarts(IndigoObject& obj, ArrayChar& out_buffer);
 
 protected:
 };

@@ -97,7 +97,7 @@ namespace indigo
 
         Array<Vec2f> _outline;
 
-        Array<char> _name;
+        ArrayChar _name;
 
         long _morgan_code;
         bool _fixed;

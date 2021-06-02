@@ -106,7 +106,7 @@ void InchiWrapper::setOptions(const char* opt)
 #endif
 }
 
-void InchiWrapper::getOptions(Array<char>& value)
+void InchiWrapper::getOptions(ArrayChar& value)
 {
     options.copy(value);
 }
@@ -586,7 +586,7 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
     input.szOptions = options.ptr();
 }
 
-void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
+void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, ArrayChar& inchi)
 {
     inchi_Input input;
     QS_DEF(Array<inchi_Atom>, atoms);
@@ -645,7 +645,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
             for (i = 0; i < strlen(output.szLog); i++)
                 if (output.szLog[i] == '\n')
                     break;
-            Array<char> unrec_opt;
+            ArrayChar unrec_opt;
             if (i > 0)
                 unrec_opt.copy(output.szLog, i - 1);
             unrec_opt.push(0);
@@ -669,7 +669,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
     inchi.readString(output.szInChI, true);
 }
 
-void InchiWrapper::InChIKey(const char* inchi, Array<char>& output)
+void InchiWrapper::InChIKey(const char* inchi, ArrayChar& output)
 {
     // lock
     OsLocker locker(inchi_lock);

@@ -86,8 +86,8 @@ bool MangoPgSearchEngine::matchTarget(int section_idx, int structure_idx)
 
     bool result = false;
     int bingo_res;
-    QS_DEF(Array<char>, mol_buf);
-    QS_DEF(Array<char>, xyz_buf);
+    QS_DEF(ArrayChar, mol_buf);
+    QS_DEF(ArrayChar, xyz_buf);
     mol_buf.clear();
     xyz_buf.clear();
 
@@ -209,8 +209,8 @@ void MangoPgSearchEngine::_errorHandler(const char* message, void*)
     throw Error("Error while searching a molecule: %s", message);
 }
 
-void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_clause_str, indigo::Array<char>& from_clause_str,
-                                                    indigo::Array<char>& where_clause_str)
+void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::ArrayChar& what_clause_str, indigo::ArrayChar& from_clause_str,
+                                                    indigo::ArrayChar& where_clause_str)
 {
     int hash_elements_count, count, bingo_res;
     dword hash;
@@ -260,7 +260,7 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
         /*
          * components count mast must target components count
          */
-        Array<char> rel;
+        ArrayChar rel;
         bingo_res = mangoExactNeedComponentMatching();
         CORE_HANDLE_ERROR(bingo_res, 0, "molecule search engine: error while getting need matching", bingoGetError());
 
@@ -303,8 +303,8 @@ void MangoPgSearchEngine::_prepareExactQueryStrings(indigo::Array<char>& what_cl
     where_clause_str.push(0);
 }
 
-void MangoPgSearchEngine::_prepareExactTauStrings(indigo::Array<char>& what_clause_str, indigo::Array<char>& from_clause_str,
-                                                  indigo::Array<char>& where_clause_str)
+void MangoPgSearchEngine::_prepareExactTauStrings(indigo::ArrayChar& what_clause_str, indigo::ArrayChar& from_clause_str,
+                                                  indigo::ArrayChar& where_clause_str)
 {
     ArrayOutput what_clause(what_clause_str);
     ArrayOutput from_clause(from_clause_str);
@@ -327,9 +327,9 @@ void MangoPgSearchEngine::_prepareExactTauStrings(indigo::Array<char>& what_clau
 void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
 {
     IndexScanDesc scan_desc = (IndexScanDesc)scan_desc_ptr;
-    Array<char> search_type;
-    Array<char> search_query;
-    Array<char> search_options;
+    ArrayChar search_type;
+    ArrayChar search_query;
+    ArrayChar search_options;
 
     if (scan_desc->numberOfKeys != 1)
     {
@@ -368,12 +368,12 @@ void MangoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
 void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
 {
     IndexScanDesc scan_desc = (IndexScanDesc)scan_desc_ptr;
-    QS_DEF(Array<char>, what_clause);
-    QS_DEF(Array<char>, from_clause);
-    QS_DEF(Array<char>, where_clause);
-    QS_DEF(Array<char>, search_type);
-    Array<char> search_query;
-    Array<char> search_options;
+    QS_DEF(ArrayChar, what_clause);
+    QS_DEF(ArrayChar, from_clause);
+    QS_DEF(ArrayChar, where_clause);
+    QS_DEF(ArrayChar, search_type);
+    ArrayChar search_query;
+    ArrayChar search_options;
     int bingo_res;
 
     if (scan_desc->numberOfKeys != 1)
@@ -415,10 +415,10 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
 {
     IndexScanDesc scan_desc = (IndexScanDesc)scan_desc_ptr;
 
-    QS_DEF(Array<char>, gross_query);
-    QS_DEF(Array<char>, search_type);
-    Array<char> search_sigh;
-    Array<char> search_mol;
+    QS_DEF(ArrayChar, gross_query);
+    QS_DEF(ArrayChar, search_type);
+    ArrayChar search_sigh;
+    ArrayChar search_mol;
     int bingo_res;
 
     if (scan_desc->numberOfKeys != 1)
@@ -462,7 +462,7 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr)
     bool max_mass_flag = false;
     float min_mass = 0;
     float max_mass = FLT_MAX;
-    QS_DEF(Array<char>, where_clause_str);
+    QS_DEF(ArrayChar, where_clause_str);
     ArrayOutput where_clause(where_clause_str);
 
     for (int arg_idx = 0; arg_idx < scan_desc->numberOfKeys; ++arg_idx)
@@ -501,9 +501,9 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr)
 void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr)
 {
     IndexScanDesc scan_desc = (IndexScanDesc)scan_desc_ptr;
-    QS_DEF(Array<char>, search_type);
-    Array<char> search_query;
-    Array<char> search_options;
+    QS_DEF(ArrayChar, search_type);
+    ArrayChar search_query;
+    ArrayChar search_options;
     int bingo_res;
     float min_bound = 0, max_bound = 1;
     BingoPgFpData& data = _queryFpData.ref();
@@ -544,7 +544,7 @@ void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr)
     data.setFingerPrints(fingerprint_buf, size_bits);
 }
 
-void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, Array<char>& str1_out, Array<char>& str2_out)
+void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, ArrayChar& str1_out, ArrayChar& str2_out)
 {
     /*
      * Get query info
@@ -595,7 +595,7 @@ void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, Array<char>& str1
     BINGO_PG_HANDLE(throw Error("internal error: can not get scan query: %s", message));
 }
 
-void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, float& min_bound, float& max_bound, indigo::Array<char>& str1_out, indigo::Array<char>& str2_out)
+void MangoPgSearchEngine::_getScanQueries(uintptr_t arg_datum, float& min_bound, float& max_bound, indigo::ArrayChar& str1_out, indigo::ArrayChar& str2_out)
 {
     /*
      * Get query info

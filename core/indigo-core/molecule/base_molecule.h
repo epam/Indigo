@@ -154,7 +154,7 @@ namespace indigo
 
         int transformSCSRtoFullCTAB();
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
-        int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
+        int transformHELMtoSGroups(ArrayChar& helm_class, ArrayChar& name, ArrayChar& code, ArrayChar& natreplace, StringPool& r_names);
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;
@@ -168,9 +168,9 @@ namespace indigo
         void setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx, const char* att_id);
 
         int getTemplateAtomAttachmentPoint(int atom_idx, int order);
-        void getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid);
+        void getTemplateAtomAttachmentPointId(int atom_idx, int order, ArrayChar& apid);
         int getTemplateAtomAttachmentPointsCount(int atom_idx);
-        int getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id);
+        int getTemplateAtomAttachmentPointById(int atom_idx, ArrayChar& att_id);
 
         void addAttachmentPoint(int order, int atom_index);
         int getAttachmentPoint(int order, int index) const;
@@ -204,8 +204,8 @@ namespace indigo
         virtual bool possibleAtomCharge(int idx, int charge) = 0;
 
         // human-readable atom and bond desciptions for diagnostic purposes
-        virtual void getAtomDescription(int idx, Array<char>& description) = 0;
-        virtual void getBondDescription(int idx, Array<char>& description) = 0;
+        virtual void getAtomDescription(int idx, ArrayChar& description) = 0;
+        virtual void getBondDescription(int idx, ArrayChar& description) = 0;
 
         // true if the bond can be that order, false otherwise
         virtual bool possibleBondOrder(int idx, int order) = 0;
@@ -244,7 +244,7 @@ namespace indigo
         {
             int ap_occur_idx;
             int ap_aidx;
-            Array<char> ap_id;
+            ArrayChar ap_id;
         };
         ObjPool<TemplateAttPoint> template_attachment_points;
 
@@ -262,7 +262,7 @@ namespace indigo
 
         StringPool custom_collections;
 
-        Array<char> name;
+        ArrayChar name;
 
         Array<int> reaction_atom_mapping;
         Array<int> reaction_atom_inversion;
@@ -353,7 +353,7 @@ namespace indigo
         void getSGroupAtomsCenterPoint(SGroup& sgroup, Vec2f& res);
         void getAtomsCenterPoint(Array<int>& atoms, Vec2f& res);
 
-        void getAtomSymbol(int v, Array<char>& output);
+        void getAtomSymbol(int v, ArrayChar& output);
 
         int atomCode(int idx);
         int bondCode(int idx);
@@ -371,7 +371,7 @@ namespace indigo
 
         void _flipSGroupBond(SGroup& sgroup, int src_bond_idx, int new_bond_idx);
         void _flipSuperatomBond(Superatom& sa, int src_bond_idx, int new_bond_idx);
-        void _flipTemplateAtomAttachmentPoint(int idx, int atom_from, Array<char>& ap_id, int atom_to);
+        void _flipTemplateAtomAttachmentPoint(int idx, int atom_from, ArrayChar& ap_id, int atom_to);
 
         virtual void _mergeWithSubmolecule(BaseMolecule& mol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping,
                                            int skip_flags) = 0;

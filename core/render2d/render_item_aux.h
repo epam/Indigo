@@ -70,7 +70,7 @@ namespace indigo
         }
 
         AUX_TYPE type;
-        Array<char> text;
+        ArrayChar text;
         BaseMolecule* mol;
         int rLabelIdx;
         float arrowLength;

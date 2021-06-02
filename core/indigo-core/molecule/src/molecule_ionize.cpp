@@ -66,7 +66,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
 {
     //   QS_DEF(Array<int>, order);
     //   QS_DEF(Molecule, can_mol);
-    QS_DEF(Array<char>, fp);
+    QS_DEF(ArrayChar, fp);
     RedBlackStringObjMap<Array<float>> acid_pkas;
     RedBlackStringObjMap<Array<float>> basic_pkas;
     RedBlackStringObjMap<Array<int>> acid_pka_cids;
@@ -940,8 +940,8 @@ void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions
 
 int MoleculePkaModel::_asc_cmp_cb(int& v1, int& v2, void* context)
 {
-    Array<char> key1;
-    Array<char> key2;
+    ArrayChar key1;
+    ArrayChar key2;
 
     Molecule& mol = *(Molecule*)context;
     getAtomLocalKey(mol, v1, key1);
@@ -967,14 +967,14 @@ int MoleculePkaModel::_asc_cmp_cb(int& v1, int& v2, void* context)
     return strcmp(key1.ptr(), key2.ptr());
 }
 
-void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, Array<char>& fp, int level)
+void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, ArrayChar& fp, int level)
 {
     QS_DEF(Array<int>, included_atoms);
     QS_DEF(Array<int>, dist_atoms);
     QS_DEF(Queue<int>, bfs_queue);
 
-    QS_DEF(Array<char>, n_key);
-    QS_DEF(Array<char>, bond);
+    QS_DEF(ArrayChar, n_key);
+    QS_DEF(ArrayChar, bond);
 
     QS_DEF(Array<int>, neibs_atoms);
     QS_DEF(Array<int>, neibs_bonds);
@@ -1109,13 +1109,13 @@ void MoleculePkaModel::_checkCanonicalOrder(Molecule& mol, Molecule& can_mol, Ar
     //   printMolfile(can_mol);
 }
 
-void MoleculePkaModel::getAtomLocalKey(Molecule& mol, int idx, Array<char>& fp)
+void MoleculePkaModel::getAtomLocalKey(Molecule& mol, int idx, ArrayChar& fp)
 {
     QS_DEF(Array<int>, feature_set);
     if (!getAtomLocalFeatureSet(mol, idx, feature_set))
         return;
 
-    QS_DEF(Array<char>, key);
+    QS_DEF(ArrayChar, key);
     key.clear();
     ArrayOutput output(key);
 
@@ -1147,7 +1147,7 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
 {
     if (mol.isPseudoAtom(idx) || mol.isRSite(idx) || mol.isTemplateAtom(idx))
     {
-        QS_DEF(Array<char>, a_desc);
+        QS_DEF(ArrayChar, a_desc);
         mol.getAtomDescription(idx, a_desc);
         throw Error("pKa model can't used with atom : %s", a_desc.ptr());
     }
@@ -1210,7 +1210,7 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
 
 float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int min_level)
 {
-    QS_DEF(Array<char>, fp);
+    QS_DEF(ArrayChar, fp);
     QS_DEF(Array<int>, level_pos);
     fp.clear();
     level_pos.clear();
@@ -1264,7 +1264,7 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
 
 float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int min_level)
 {
-    QS_DEF(Array<char>, fp);
+    QS_DEF(ArrayChar, fp);
     QS_DEF(Array<int>, level_pos);
     fp.clear();
     level_pos.clear();

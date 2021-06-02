@@ -38,7 +38,7 @@ public:
 
     RowIDLoader(LzwDict& NewDict, Scanner& NewIn);
 
-    void loadRowID(Array<char>& RowId);
+    void loadRowID(ArrayChar& RowId);
 
 private:
     int _getNextCode(void);

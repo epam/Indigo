@@ -85,7 +85,7 @@ void _getBounds(RenderParams& params, BaseMolecule& mol, Vec2f& min, Vec2f& max,
     min.scale(scale);
     max.scale(scale);
 }
-int _findReverse(int from, int to, const Array<char>& _array, char value)
+int _findReverse(int from, int to, const ArrayChar& _array, char value)
 {
     for (int i = to - 1; i >= from; i--)
     {
@@ -94,7 +94,7 @@ int _findReverse(int from, int to, const Array<char>& _array, char value)
     }
     return -1;
 }
-int _getLongestLineXml(const Array<char>& line)
+int _getLongestLineXml(const ArrayChar& line)
 {
     int longest_line = 0;
     if (line.size() > 0)
@@ -118,7 +118,7 @@ int _getLongestLineXml(const Array<char>& line)
     }
     return longest_line;
 }
-int _getLongestLine(const Array<char>& line)
+int _getLongestLine(const ArrayChar& line)
 {
     int longest_line = 0;
     if (line.size() > 0)
@@ -214,7 +214,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         // Check titles width
         if (mol_idx < params.titles.size())
         {
-            const Array<char>& title = params.titles[mol_idx];
+            const ArrayChar& title = params.titles[mol_idx];
 
             if (title.size() > 0)
             {
@@ -283,7 +283,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
         if (mol_idx < params.titles.size())
         {
-            const Array<char>& title = params.titles[mol_idx];
+            const ArrayChar& title = params.titles[mol_idx];
             if (title.size() > 0)
             {
                 int lines = title.count('\n') + 1;
@@ -355,7 +355,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     b.max.set(w, max_y + y_margins_base);
     saver.beginDocument(&b);
 
-    Array<char> font_attr;
+    ArrayChar font_attr;
     ArrayOutput font_out(font_attr);
 
     font_out.printf("<s size=\"%f\"", params.rOpt.titleFontFactor);
@@ -402,7 +402,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     //}
     // font_attr.push(0);
     saver.beginPage(&b);
-    Array<char> title_font;
+    ArrayChar title_font;
 
     for (int mol_idx = 0; mol_idx < mols.size(); ++mol_idx)
     {
@@ -415,7 +415,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
         if (mol_idx < params.titles.size())
         {
-            const Array<char>& title = params.titles[mol_idx];
+            const ArrayChar& title = params.titles[mol_idx];
 
             if (title.size() > 0)
             {

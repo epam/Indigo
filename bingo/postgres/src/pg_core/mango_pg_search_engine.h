@@ -70,7 +70,7 @@ private:
      * Map: hash - components count
      */
     indigo::RedBlackMap<dword, int> _hashes;
-    indigo::Array<char> _gross;
+    indigo::ArrayChar _gross;
 };
 
 /*
@@ -107,8 +107,8 @@ private:
 
     bool _searchNextSim(PG_OBJECT result_ptr);
 
-    void _prepareExactQueryStrings(indigo::Array<char>& what_clause, indigo::Array<char>& from_clause, indigo::Array<char>& where_clause);
-    void _prepareExactTauStrings(indigo::Array<char>& what_clause, indigo::Array<char>& from_clause, indigo::Array<char>& where_clause);
+    void _prepareExactQueryStrings(indigo::ArrayChar& what_clause, indigo::ArrayChar& from_clause, indigo::ArrayChar& where_clause);
+    void _prepareExactTauStrings(indigo::ArrayChar& what_clause, indigo::ArrayChar& from_clause, indigo::ArrayChar& where_clause);
 
     void _prepareSubSearch(PG_OBJECT scan_desc);
     void _prepareExactSearch(PG_OBJECT scan_desc);
@@ -116,14 +116,14 @@ private:
     void _prepareSmartsSearch(PG_OBJECT scan_desc);
     void _prepareMassSearch(PG_OBJECT scan_desc);
     void _prepareSimSearch(PG_OBJECT scan_desc);
-    void _getScanQueries(uintptr_t arg_datum, indigo::Array<char>& str1, indigo::Array<char>& str2);
-    void _getScanQueries(uintptr_t arg_datum, float& min_bound, float& max_bound, indigo::Array<char>& str1, indigo::Array<char>& str2);
+    void _getScanQueries(uintptr_t arg_datum, indigo::ArrayChar& str1, indigo::ArrayChar& str2);
+    void _getScanQueries(uintptr_t arg_datum, float& min_bound, float& max_bound, indigo::ArrayChar& str1, indigo::ArrayChar& str2);
 
     static void _errorHandler(const char* message, void* context);
 
-    indigo::Array<char> _relName;
-    indigo::Array<char> _shadowRelName;
-    indigo::Array<char> _shadowHashRelName;
+    indigo::ArrayChar _relName;
+    indigo::ArrayChar _shadowRelName;
+    indigo::ArrayChar _shadowHashRelName;
 
     int _searchType;
 };

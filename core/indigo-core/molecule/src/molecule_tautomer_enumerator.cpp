@@ -59,7 +59,7 @@ TautomerEnumerator::TautomerEnumerator(Molecule& molecule, TautomerMethod method
         // Obsolete code for tautomer enumeration using InChI code
         InchiWrapper indigo_inchi;
 
-        QS_DEF(Array<char>, tmp);
+        QS_DEF(ArrayChar, tmp);
         indigo_inchi.saveMoleculeIntoInchi(molecule, tmp);
         const char* params = tmp.ptr();
 

@@ -129,8 +129,8 @@ namespace indigo
         virtual bool possibleAtomNumberAndIsotope(int idx, int number, int isotope);
         virtual bool possibleAtomIsotope(int idx, int isotope);
         virtual bool possibleAtomCharge(int idx, int charge);
-        virtual void getAtomDescription(int idx, Array<char>& description);
-        virtual void getBondDescription(int idx, Array<char>& description);
+        virtual void getAtomDescription(int idx, ArrayChar& description);
+        virtual void getBondDescription(int idx, ArrayChar& description);
         virtual bool possibleBondOrder(int idx, int order);
 
         int getVacantPiOrbitals(int atom_idx, int* lonepairs_out);
@@ -202,7 +202,7 @@ namespace indigo
         struct _AttachOrder
         {
             int ap_idx;
-            Array<char> ap_id;
+            ArrayChar ap_id;
         };
 
         struct _TemplateOccurrence

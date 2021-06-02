@@ -44,12 +44,12 @@ namespace indigo
         virtual long long tell() = 0;
 
         virtual byte readByte();
-        virtual void readAll(Array<char>& arr);
+        virtual void readAll(ArrayChar& arr);
 
-        void read(int length, Array<char>& buf);
+        void read(int length, ArrayChar& buf);
 
-        void readLine(Array<char>& out, bool append_zero);
-        void appendLine(Array<char>& out, bool append_zero);
+        void readLine(ArrayChar& out, bool append_zero);
+        void appendLine(ArrayChar& out, bool append_zero);
         bool skipLine();
 
         virtual char readChar();
@@ -75,18 +75,18 @@ namespace indigo
         int readUnsigned();
 
         // when delimiters = 0, any isspace() character is considered delimiter
-        void readWord(Array<char>& word, const char* delimiters);
+        void readWord(ArrayChar& word, const char* delimiters);
 
         bool findWord(const char* word);
-        int findWord(ReusableObjArray<Array<char>>& words);
+        int findWord(ReusableObjArray<ArrayChar>& words);
         bool findWordIgnoreCase(const char* word);
-        int findWordIgnoreCase(ReusableObjArray<Array<char>>& words);
+        int findWordIgnoreCase(ReusableObjArray<ArrayChar>& words);
 
         static bool isSingleLine(Scanner& scanner);
 
     protected:
         bool _readDouble(double& res, int max);
-        void _prefixFunction(Array<char>& str, Array<int>& prefix);
+        void _prefixFunction(ArrayChar& str, Array<int>& prefix);
     };
 
     class DLLEXPORT FileScanner : public Scanner
@@ -127,7 +127,7 @@ namespace indigo
         explicit BufferScanner(const char* buffer, int buffer_size);
         explicit BufferScanner(const byte* buffer, int buffer_size);
         explicit BufferScanner(const char* str);
-        explicit BufferScanner(const Array<char>& arr);
+        explicit BufferScanner(const ArrayChar& arr);
         virtual ~BufferScanner();
 
         virtual bool isEOF();

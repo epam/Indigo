@@ -78,7 +78,7 @@ void MainLayerFormula::_collectAtomsCount()
     _atoms_count[ELEM_H] += implicit_hydrogens_count;
 }
 
-void MainLayerFormula::printFormula(Array<char>& result)
+void MainLayerFormula::printFormula(ArrayChar& result)
 {
     ArrayOutput output(result);
 
@@ -245,7 +245,7 @@ int MainLayerConnections::compareComponentsConnectionTables(MainLayerConnections
     return 0;
 }
 
-void MainLayerConnections::printConnectionTable(Array<char>& result)
+void MainLayerConnections::printConnectionTable(ArrayChar& result)
 {
     Molecule& cano_mol = _getMolecule();
 
@@ -465,7 +465,7 @@ int HydrogensLayer::compareComponentsHydrogens(HydrogensLayer& comp1, HydrogensL
     return 0;
 }
 
-void HydrogensLayer::print(Array<char>& result)
+void HydrogensLayer::print(ArrayChar& result)
 {
     // Print hydrogens sublayer for the main layer
     ArrayOutput output(result);
@@ -564,7 +564,7 @@ int HydrogensLayer::compareMappings(MoleculeInChIUtils::Mapping& m1, MoleculeInC
 // CisTransStereochemistryLayer
 //
 
-void CisTransStereochemistryLayer::print(Array<char>& result)
+void CisTransStereochemistryLayer::print(ArrayChar& result)
 {
     // Print hydrogens sublayer for the main layer
     ArrayOutput output(result);
@@ -708,7 +708,7 @@ int CisTransStereochemistryLayer::compareComponents(CisTransStereochemistryLayer
 // TetrahedralStereochemistryLayer
 //
 
-void TetrahedralStereochemistryLayer::print(Array<char>& result)
+void TetrahedralStereochemistryLayer::print(ArrayChar& result)
 {
     ArrayOutput output(result);
 
@@ -742,7 +742,7 @@ int TetrahedralStereochemistryLayer::_getFirstSign()
     return 0;
 }
 
-void TetrahedralStereochemistryLayer::printEnantiomers(Array<char>& result)
+void TetrahedralStereochemistryLayer::printEnantiomers(ArrayChar& result)
 {
     ArrayOutput output(result);
 

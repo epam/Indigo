@@ -87,7 +87,7 @@ CEXPORT int ringoIndexReadPreparedReaction(int* id, const char** crf_buf, int* c
         if (id)
             *id = self.index_record_data_id;
 
-        const Array<char>& crf = self.ringo_index->getCrf();
+        const ArrayChar& crf = self.ringo_index->getCrf();
 
         *crf_buf = crf.ptr();
         *crf_buf_len = crf.size();

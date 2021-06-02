@@ -48,8 +48,8 @@ private:
     static void _processResultCb(void* context);
     static bool _readPreparedInfo(int* id, RingoPgFpData& data, int fp_size);
 
-    indigo::Array<char> _relName;
-    indigo::Array<char> _shadowRelName;
+    indigo::ArrayChar _relName;
+    indigo::ArrayChar _shadowRelName;
 
     int _searchType;
 };

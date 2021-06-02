@@ -63,7 +63,7 @@ protected:
     BingoFingerprints::Screening _screening;
 
     void _match(OracleEnv& env, int idx);
-    void _decompressRowid(const Array<char>& stored, OraRowidText& rid);
+    void _decompressRowid(const ArrayChar& stored, OraRowidText& rid);
 
 private:
     RingoFastIndex(const RingoFastIndex&); // noimplicitcopy

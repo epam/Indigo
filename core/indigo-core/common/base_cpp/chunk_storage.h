@@ -35,7 +35,7 @@ namespace indigo
         void clear();
         byte* add(int n_bytes);
         void add(const byte* data, int n_bytes);
-        void add(const Array<char>& data);
+        void add(const ArrayChar& data);
         void add(const char* str);
 
         int count(void);

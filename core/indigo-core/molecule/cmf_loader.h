@@ -133,7 +133,7 @@ namespace indigo
         void _readSGroupXYZ(Scanner& scanner, int code, Molecule& mol, const CmfSaver::VecRange& range);
         void _readBaseSGroupXyz(Scanner& scanner, SGroup& sgroup, const CmfSaver::VecRange& range);
 
-        void _readString(Array<char>& dest);
+        void _readString(ArrayChar& dest);
         void _readUIntArray(Array<int>& dest);
 
         void _readVec3f(Scanner& scanner, Vec3f& pos, const CmfSaver::VecRange& range);

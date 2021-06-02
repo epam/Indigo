@@ -15,7 +15,7 @@ public:
     void clear();
     void init(uintptr_t text_datum);
     void initFromString(const char* str);
-    void initFromArray(indigo::Array<char>& str);
+    void initFromArray(indigo::ArrayChar& str);
     void initFromBuffer(const char* buf, int buf_len);
 
     const char* getText(int& size);
@@ -30,7 +30,7 @@ private:
     BingoPgText(const BingoPgText&); // no implicit copy
 
     PG_OBJECT _text;
-    indigo::Array<char> _cstr;
+    indigo::ArrayChar _cstr;
 };
 
 #endif /* BINGO_PG_TEXT_H */

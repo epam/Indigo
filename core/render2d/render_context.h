@@ -201,7 +201,7 @@ namespace indigo
         static TextLock _tlock;
 
         CP_DECL;
-        TL_CP_DECL(Array<char>, _fontfamily);
+        TL_CP_DECL(ArrayChar, _fontfamily);
         TL_CP_DECL(Array<cairo_matrix_t>, transforms);
 #ifdef _WIN32
         void* _h_fonts[FONT_SIZE_COUNT * 2];

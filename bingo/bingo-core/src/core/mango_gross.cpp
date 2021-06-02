@@ -31,7 +31,7 @@ MangoGross::MangoGross(BingoContext& context) : _context(context)
 {
 }
 
-void MangoGross::parseQuery(const Array<char>& query)
+void MangoGross::parseQuery(const ArrayChar& query)
 {
     BufferScanner scanner(query);
 
@@ -76,7 +76,7 @@ void MangoGross::parseQuery(Scanner& scanner)
 
     if (_sign == 0)
     {
-        QS_DEF(Array<char>, query_gross_str);
+        QS_DEF(ArrayChar, query_gross_str);
 
         MoleculeGrossFormula::toString(_query_gross, query_gross_str);
 
@@ -127,7 +127,7 @@ bool MangoGross::checkGross(const char* target_gross_str)
     return checkGross(target_gross);
 }
 
-bool MangoGross::checkMolecule(const Array<char>& target_buf)
+bool MangoGross::checkMolecule(const ArrayChar& target_buf)
 {
     BufferScanner scanner(target_buf);
 

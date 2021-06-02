@@ -21,14 +21,14 @@ void GrossStorage::load(BingoPtr<GrossStorage>& gross_ptr, BingoAddr offset)
     gross_ptr = BingoPtr<GrossStorage>(offset);
 }
 
-void GrossStorage::add(Array<char>& gross_formula, int id)
+void GrossStorage::add(ArrayChar& gross_formula, int id)
 {
     _gross_formulas.add((byte*)gross_formula.ptr(), gross_formula.size(), id);
     dword hash = _calculateGrossHash(gross_formula.ptr(), gross_formula.size());
     _hashes.add(hash, id);
 }
 
-void GrossStorage::find(Array<char>& query_formula, Array<int>& indices, int part_id, int part_count)
+void GrossStorage::find(ArrayChar& query_formula, Array<int>& indices, int part_id, int part_count)
 {
     Array<int> candidates;
 
@@ -42,7 +42,7 @@ void GrossStorage::find(Array<char>& query_formula, Array<int>& indices, int par
     }
 }
 
-void GrossStorage::findCandidates(Array<char>& query_formula, Array<int>& candidates, int part_id, int part_count)
+void GrossStorage::findCandidates(ArrayChar& query_formula, Array<int>& candidates, int part_id, int part_count)
 {
     dword query_hash = _calculateGrossHash(query_formula.ptr(), query_formula.size());
 
@@ -65,7 +65,7 @@ void GrossStorage::findCandidates(Array<char>& query_formula, Array<int>& candid
         candidates.push(indices[i]);
 }
 
-int GrossStorage::findNext(Array<char>& query_formula, Array<int>& candidates, int& cur_candidate)
+int GrossStorage::findNext(ArrayChar& query_formula, Array<int>& candidates, int& cur_candidate)
 {
     Array<int> query_array;
     MoleculeGrossFormula::fromString(query_formula.ptr(), query_array);
@@ -89,7 +89,7 @@ bool GrossStorage::tryCandidate(Array<int>& query_array, int id)
     int len;
 
     cand_formula = (const char*)_gross_formulas.get(id, len);
-    Array<char> cand_fstr;
+    ArrayChar cand_fstr;
     cand_fstr.copy(cand_formula, len);
 
     MoleculeGrossFormula::fromString(cand_fstr.ptr(), cand_array);
@@ -100,20 +100,20 @@ bool GrossStorage::tryCandidate(Array<int>& query_array, int id)
     return false;
 }
 
-void GrossStorage::calculateMolFormula(Molecule& mol, Array<char>& gross_formula)
+void GrossStorage::calculateMolFormula(Molecule& mol, ArrayChar& gross_formula)
 {
     auto gross_array = MoleculeGrossFormula::collect(mol);
 
     MoleculeGrossFormula::toString(*gross_array, gross_formula, false);
 }
 
-void GrossStorage::calculateRxnFormula(Reaction& rxn, Array<char>& gross_formula)
+void GrossStorage::calculateRxnFormula(Reaction& rxn, ArrayChar& gross_formula)
 {
     gross_formula.clear();
 
     for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
     {
-        Array<char> mol_formula;
+        ArrayChar mol_formula;
 
         auto gross_array = MoleculeGrossFormula::collect(rxn.getBaseMolecule(i));
         MoleculeGrossFormula::toString(*gross_array, mol_formula, false);

@@ -41,7 +41,7 @@ public:
     std::unique_ptr<Scanner> ptr;
 
 protected:
-    Array<char> _buf;
+    ArrayChar _buf;
 };
 
 class DLLEXPORT IndigoOutput : public IndigoObject
@@ -51,7 +51,7 @@ public:
     IndigoOutput(Output* output);
     virtual ~IndigoOutput();
 
-    virtual void toString(Array<char>& str);
+    virtual void toString(ArrayChar& str);
 
     static Output& get(IndigoObject& obj);
 
@@ -59,7 +59,7 @@ public:
 
 protected:
     bool _own_buf;
-    Array<char> _buf;
+    ArrayChar _buf;
 };
 
 #ifdef _WIN32

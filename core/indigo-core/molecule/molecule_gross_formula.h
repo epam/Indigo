@@ -42,7 +42,7 @@ namespace indigo
     class DLLEXPORT GrossFormulaUnit
     {
     public:
-        Array<char> multiplier;
+        ArrayChar multiplier;
         RedBlackMap<int, int> isotopes;
     };
 
@@ -55,9 +55,9 @@ namespace indigo
         static void collect(BaseMolecule& molecule, Array<int>& gross);
         static std::unique_ptr<GROSS_UNITS> collect(BaseMolecule& molecule, bool add_isotopes = false );
 
-        static void toString(const Array<int>& gross, Array<char>& str, bool add_rsites = false);
-        static void toString(GROSS_UNITS& gross, Array<char>& str, bool add_rsites = false);
-        static void toString_Hill(GROSS_UNITS& gross, Array<char>& str, bool add_rsites = false);
+        static void toString(const Array<int>& gross, ArrayChar& str, bool add_rsites = false);
+        static void toString(GROSS_UNITS& gross, ArrayChar& str, bool add_rsites = false);
+        static void toString_Hill(GROSS_UNITS& gross, ArrayChar& str, bool add_rsites = false);
         static void fromString(const char* str, Array<int>& gross);
         static void fromString(Scanner& scanner, Array<int>& gross);
 

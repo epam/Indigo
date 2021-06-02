@@ -186,7 +186,7 @@ namespace indigo
             int value_max;
 
             // available only when type is ATOM_PSEUDO or ATOM_TEMPLATE or ATOM_TEMPLATE_CLASS
-            Array<char> alias;
+            ArrayChar alias;
 
             // available only when type is ATOM_FRAGMENT
             AutoPtr<QueryMolecule> fragment;
@@ -297,8 +297,8 @@ namespace indigo
         virtual bool possibleAtomIsotope(int idx, int number);
         virtual bool possibleAtomCharge(int idx, int charge);
         virtual bool possibleAtomRadical(int idx, int radical);
-        virtual void getAtomDescription(int idx, Array<char>& description);
-        virtual void getBondDescription(int idx, Array<char>& description);
+        virtual void getAtomDescription(int idx, ArrayChar& description);
+        virtual void getBondDescription(int idx, ArrayChar& description);
         virtual bool possibleBondOrder(int idx, int order);
 
         bool possibleNitrogenV5(int idx);
@@ -360,7 +360,7 @@ namespace indigo
 
         QueryMoleculeAromaticity aromaticity;
 
-        Array<char> fragment_smarts;
+        ArrayChar fragment_smarts;
 
         // for component-level grouping of SMARTS
         // components[i] = 0 means nothing;

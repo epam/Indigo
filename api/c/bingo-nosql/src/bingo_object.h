@@ -68,14 +68,14 @@ namespace bingo
     class GrossQuery : public QueryObject
     {
     private:
-        Array<char> _gross_str;
+        ArrayChar _gross_str;
 
         virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/;
 
     public:
-        GrossQuery(/* const */ Array<char>& str);
+        GrossQuery(/* const */ ArrayChar& str);
 
-        Array<char>& getGrossString();
+        ArrayChar& getGrossString();
     };
 
     //////////////////////////
@@ -118,9 +118,9 @@ namespace bingo
     public:
         virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /* const */ = 0;
 
-        virtual bool buildGrossString(Array<char>& cf) /* const */ = 0;
+        virtual bool buildGrossString(ArrayChar& cf) /* const */ = 0;
 
-        virtual bool buildCfString(Array<char>& cf) /* const */ = 0;
+        virtual bool buildCfString(ArrayChar& cf) /* const */ = 0;
 
         virtual bool buildHash(dword& hash) /* const */ = 0;
 
@@ -137,9 +137,9 @@ namespace bingo
 
         virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/;
 
-        virtual bool buildGrossString(Array<char>& gross_string) /* const */;
+        virtual bool buildGrossString(ArrayChar& gross_string) /* const */;
 
-        virtual bool buildCfString(Array<char>& cf) /*const*/;
+        virtual bool buildCfString(ArrayChar& cf) /*const*/;
 
         virtual bool buildHash(dword& hash) /* const */;
     };
@@ -154,9 +154,9 @@ namespace bingo
 
         virtual bool buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* sim_fp) /*const*/;
 
-        virtual bool buildGrossString(Array<char>& gross_string) /* const */;
+        virtual bool buildGrossString(ArrayChar& gross_string) /* const */;
 
-        virtual bool buildCfString(Array<char>& cf) /*const*/;
+        virtual bool buildCfString(ArrayChar& cf) /*const*/;
 
         virtual bool buildHash(dword& hash) /* const */;
     };

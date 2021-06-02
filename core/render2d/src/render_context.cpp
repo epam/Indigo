@@ -106,7 +106,7 @@ IMPL_ERROR(RenderContext, "render context");
 //    if (!discard)
 //    {
 //        int size = GetEnhMetaFileBits(hemf, 0, NULL);
-//        Array<char> buf;
+//        ArrayChar buf;
 //        buf.resize(size);
 //        GetEnhMetaFileBits(hemf, size, (BYTE*)(buf.ptr()));
 //        opt.output->writeArray(buf);

@@ -155,12 +155,12 @@ const Array<int>& MangoIndex::getCountedElements() const
     return _counted_elem_counters;
 }
 
-const Array<char>& MangoIndex::getCmf() const
+const ArrayChar& MangoIndex::getCmf() const
 {
     return _cmf;
 }
 
-const Array<char>& MangoIndex::getXyz() const
+const ArrayChar& MangoIndex::getXyz() const
 {
     return _xyz;
 }

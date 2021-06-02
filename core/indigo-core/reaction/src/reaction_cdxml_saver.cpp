@@ -272,7 +272,7 @@ void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
         }
     }
 
-    Array<char> buf;
+    ArrayChar buf;
     ArrayOutput buf_out(buf);
     buf_out.printf("%d", arrow_id);
     buf.push(0);
@@ -288,7 +288,7 @@ void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
 void ReactionCdxmlSaver::_addScheme(MoleculeCdxmlSaver& molsaver)
 {
     int id = -1;
-    Array<char> name;
+    ArrayChar name;
     PropertiesMap attrs;
 
     name.clear();
@@ -307,7 +307,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
                                   ObjArray<Array<int>>& nodes_ids, int arrow_id)
 {
     int id = -1;
-    Array<char> name;
+    ArrayChar name;
     PropertiesMap attrs;
 
     name.clear();
@@ -315,7 +315,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
 
     name.readString("step", true);
 
-    Array<char> buf;
+    ArrayChar buf;
     ArrayOutput buf_out(buf);
     for (auto i = 0; i < reactants_ids.size(); i++)
     {

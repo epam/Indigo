@@ -34,7 +34,7 @@ namespace indigo
     {
     public:
         ReactionAutoLoader(Scanner& scanner);
-        ReactionAutoLoader(const Array<char>& arr);
+        ReactionAutoLoader(const ArrayChar& arr);
         ReactionAutoLoader(const char*);
 
         ~ReactionAutoLoader();

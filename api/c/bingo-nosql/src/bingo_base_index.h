@@ -134,8 +134,8 @@ namespace bingo
         {
             Array<byte> sub_fp;
             Array<byte> sim_fp;
-            Array<char> cf_str;
-            Array<char> gross_str;
+            ArrayChar cf_str;
+            ArrayChar gross_str;
             dword hash;
         };
 

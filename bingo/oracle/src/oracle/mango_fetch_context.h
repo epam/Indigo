@@ -32,7 +32,7 @@ class MangoShadowFetch;
 class MangoFetchContext
 {
 public:
-    MangoFetchContext(int id, MangoOracleContext& context, const Array<char>& query_id);
+    MangoFetchContext(int id, MangoOracleContext& context, const ArrayChar& query_id);
 
     AutoPtr<MangoFastIndex> fast_index;
     AutoPtr<MangoShadowFetch> shadow_fetch;
@@ -50,9 +50,9 @@ public:
     int context_id;
     bool fresh; // 'true' after selectivity calculation and before index start
 
-    static MangoFetchContext& create(MangoOracleContext& context, const Array<char>& query_id);
+    static MangoFetchContext& create(MangoOracleContext& context, const ArrayChar& query_id);
     static MangoFetchContext& get(int id);
-    static MangoFetchContext* findFresh(int context_id, const Array<char>& query_id);
+    static MangoFetchContext* findFresh(int context_id, const ArrayChar& query_id);
     static void remove(int id);
     static void removeByContextID(int id);
 
@@ -64,7 +64,7 @@ public:
     DECL_ERROR;
 
 protected:
-    Array<char> _query_id;
+    ArrayChar _query_id;
     MangoOracleContext& _context;
 
     TL_DECL(PtrArray<MangoFetchContext>, _instances);

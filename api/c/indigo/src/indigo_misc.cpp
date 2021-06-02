@@ -1160,12 +1160,12 @@ CEXPORT int indigoIsPossibleFischerProjection(int object, const char* options)
     INDIGO_END(-1);
 }
 
-void _parseHelmRgroupsNames(Array<char>& helm_caps, StringPool& r_names)
+void _parseHelmRgroupsNames(ArrayChar& helm_caps, StringPool& r_names)
 {
     BufferScanner strscan(helm_caps);
-    QS_DEF(Array<char>, r_desc);
-    QS_DEF(Array<char>, r_name);
-    QS_DEF(Array<char>, delim);
+    QS_DEF(ArrayChar, r_desc);
+    QS_DEF(ArrayChar, r_name);
+    QS_DEF(ArrayChar, delim);
     r_desc.clear();
     r_name.clear();
     delim.clear();
@@ -1196,12 +1196,12 @@ CEXPORT int indigoTransformHELMtoSCSR(int object)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(Array<char>, helm_class);
-        QS_DEF(Array<char>, helm_name);
-        QS_DEF(Array<char>, helm_code);
-        QS_DEF(Array<char>, helm_natreplace);
-        QS_DEF(Array<char>, helm_caps);
-        QS_DEF(Array<char>, helm_type);
+        QS_DEF(ArrayChar, helm_class);
+        QS_DEF(ArrayChar, helm_name);
+        QS_DEF(ArrayChar, helm_code);
+        QS_DEF(ArrayChar, helm_natreplace);
+        QS_DEF(ArrayChar, helm_caps);
+        QS_DEF(ArrayChar, helm_type);
         QS_DEF(StringPool, r_names);
 
         IndigoObject& obj = self.getObject(object);

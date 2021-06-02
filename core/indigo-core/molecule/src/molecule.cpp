@@ -1290,7 +1290,7 @@ bool Molecule::possibleAtomCharge(int idx, int charge)
     return _atoms[idx].charge == charge;
 }
 
-void Molecule::getAtomDescription(int idx, Array<char>& description)
+void Molecule::getAtomDescription(int idx, ArrayChar& description)
 {
     _Atom& atom = _atoms[idx];
     ArrayOutput output(description);
@@ -1317,7 +1317,7 @@ void Molecule::getAtomDescription(int idx, Array<char>& description)
     output.writeChar(0);
 }
 
-void Molecule::getBondDescription(int idx, Array<char>& description)
+void Molecule::getBondDescription(int idx, ArrayChar& description)
 {
     ArrayOutput output(description);
 
