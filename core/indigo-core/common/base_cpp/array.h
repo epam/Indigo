@@ -27,7 +27,7 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
-#include <vector>
+#include <string>
 
 namespace indigo
 {
