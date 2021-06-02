@@ -124,7 +124,7 @@ public:
 
         template <typename T>
         static void handleRedBlackString(indigo::RedBlackStringMap<T>& data, indigo::Scanner* scanner, indigo::Output* output) {
-            indigo::std::string key_tmp;
+            std::string key_tmp;
             int size = data.size();
             handleNumber(size, scanner, output);
             if (scanner) {
@@ -133,7 +133,7 @@ public:
                     handleArray(key_tmp, scanner, output);
                     T data_value;
                     handleNumber(data_value, scanner, output);
-                    data.insert(key_tmp.ptr(), data_value);
+                    data.insert(key_tmp.c_str(), data_value);
                 }
             }
             if (output) {
