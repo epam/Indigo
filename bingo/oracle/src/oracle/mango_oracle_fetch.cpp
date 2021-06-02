@@ -316,7 +316,7 @@ ORAEXT OCINumber* oraMangoIndexSelectivity(OCIExtProcContext* ctx, int context_i
         QS_DEF(std::string, query_buf);
         OracleLOB query_lob(env, query_loc);
 
-        query_lob.readAll(query_buf, false);
+        query_lob.readAll(query_buf);
 
         bingoBuildQueryID(env, oper, query_buf, p_strt, p_stop, flags, params, query_id);
 
@@ -375,7 +375,7 @@ float sel = OracleUtil::numberToFloat(env, p_sel);
 QS_DEF(std::string, query_buf);
 OracleLOB query_lob(env, query_loc);
 
-query_lob.readAll(query_buf, false);
+query_lob.readAll(query_buf);
 
 QS_DEF(std::string, query_id);
 
