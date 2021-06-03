@@ -185,6 +185,28 @@ public:
                 }
             }
         }
+
+        static void handleRedBlackStringArr(indigo::RedBlackStringObjMap< indigo::ArrayChar >& data, indigo::Scanner* scanner, indigo::Output* output) {
+            indigo::ArrayChar key_tmp;
+            int size = data.size();
+            handleNumber(size, scanner, output);
+            if (scanner) {
+                data.clear();
+                for (int i = 0; i < size; ++i) {
+                    handleArray(key_tmp, scanner, output);
+                    int key_idx = data.insert(key_tmp.ptr());
+                    handleArray(data.value(key_idx), scanner, output);
+                }
+            }
+            if (output) {
+                for (int i = data.begin(); i != data.end(); i = data.next(i)) {
+                    key_tmp.readString(data.key(i), true);
+                    handleArray(key_tmp, scanner, output);
+                    handleArray(data.value(i), scanner, output);
+                }
+            }
+        }
+
         template <typename T, typename R>
         static void handleRedBlackObject(indigo::RedBlackObjMap<T, R>& data, indigo::Scanner* scanner, indigo::Output* output) {
             int size = data.size();
