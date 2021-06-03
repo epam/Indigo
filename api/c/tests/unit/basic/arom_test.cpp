@@ -26,7 +26,6 @@ TEST(IndigoAromTest, arom_test_merge)
             vertices.push(i);
 
         indigoRemoveAtoms(m, vertices.size(), vertices.ptr());
-        //      printf("%s\n", indigoSmiles(cc));
 
         indigoMerge(m, cc);
         ASSERT_STREQ("C1C=CC=CC=1.c1ccccc1", indigoSmiles(m));

@@ -183,6 +183,7 @@ TEST(IndigoLoadTest, loadAssert)
     {
         int obj = -1;
         obj = indigoLoadStructureFromString(mStr.c_str(), "");
+        EXPECT_EQ(false, true);
     }
     catch (Exception& e)
     {
