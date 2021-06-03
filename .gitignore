@@ -87,5 +87,6 @@ api/java/**/target/
 cmake-build-*/
 bingo/bingo-core/src/core/bingo_version.h
 bingo/sqlserver/Resources/bingo-core-c.dll
+api/tests/integration/**/out
 api/tests/integration/_c/test.h
 api/c/tests/unit/common.h

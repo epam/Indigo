@@ -21,6 +21,7 @@
 using namespace indigo;
 
 IMPL_ERROR(AutomorphismSearch, "automorphism search");
+IMPL_TIMEOUT_EXCEPTION(AutomorphismSearch, "automorphism search");
 
 CP_DEF(AutomorphismSearch);
 
@@ -46,6 +47,8 @@ AutomorphismSearch::AutomorphismSearch()
     context_automorphism = 0;
     _given_graph = 0;
     ignored_vertices = 0;
+
+    _cancellation_handler = getCancellationHandler();
 
     _call_stack.clear();
 }
@@ -604,6 +607,10 @@ int AutomorphismSearch::_processNode(int level, int numcells)
 
     if (numcells != _n) // discrete partition?
         return level;
+
+    if (_cancellation_handler != nullptr && _cancellation_handler->isCancelled()) {
+        throw TimeoutException("%s", _cancellation_handler->cancelledRequestMessage());
+    }
 
     for (i = 0; i < _n; i++)
         _workperm[_firstlab[i]] = _lab[i];
