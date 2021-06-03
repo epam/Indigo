@@ -83,7 +83,7 @@ namespace indigo
             _arr.push_back(ch);
         }
 
-        int memcmp(const ArrayChar& other) const
+        int memcmp(const ArrayChar other) const
         {
             if (_arr.size() < other.size())
                 return -1;
@@ -203,12 +203,14 @@ namespace indigo
 
         void remove(int idx, int span = 1)
         {
-            if (idx < 0 || idx - _arr.size() - span + 1 >= 0)
+            if ( idx < 0 || idx + span > _arr.size() )
+            {
                 throw Error("remove(): invalid index %d with span %d (size=%d)", idx, span, _arr.size());
+            }
             _arr.erase(idx, span);
         }
 
-        void swap( ArrayChar& other)
+        void swap(ArrayChar& other)
         {
             _arr.swap(other._arr);
         }
@@ -745,6 +747,8 @@ namespace indigo
             int (*_cmp)(T1, T2, void*);
         };
     };
+
+    //using ArrayChar = Array<char>;
 
 } // namespace indigo
 
