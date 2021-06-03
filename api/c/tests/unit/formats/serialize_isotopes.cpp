@@ -12,20 +12,28 @@ using namespace indigo;
 
 TEST(IndigoSerializeIsotopesTest, basic)
 {
+    qword session = indigoAllocSessionId();
+    indigoSetSessionId(session);
+    indigoSetErrorHandler(errorHandling, nullptr);
+
     const auto m = indigoLoadMoleculeFromString("C");
     const auto atom = indigoGetAtom(m, 0);
     byte* buffer = nullptr;
     int size = 0;
-    const auto& element = Element::_instance();
-    int result;
     for (auto isotope = 0; isotope < 300; isotope++)
     {
-        indigoSetIsotope(atom, isotope);
-        result = indigoSerialize(m, &buffer, &size);
-        if (result == -1)
+        try
+        {
+            indigoSetIsotope(atom, isotope);
+            indigoSerialize(m, &buffer, &size);
+        }
+        catch (Exception& e)
         {
             ASSERT_EQ(isotope, 168);
+            ASSERT_STREQ("CMF saver: unexpected C isotope: 168", e.message());
             break;
         }
     }
+
+    indigoReleaseSessionId(session);
 }
