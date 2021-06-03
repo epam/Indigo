@@ -90,7 +90,8 @@ MoleculeLayoutMacrocyclesLattice::MoleculeLayoutMacrocyclesLattice(int size)
     _vertex_added_square.clear_resize(size);
     _vertex_added_square.zerofill();
 
-    _vertex_drawn.clear_resize(size);
+    _vertex_drawn.clear();
+    _vertex_drawn.resize(size, false);
 }
 
 void MoleculeLayoutMacrocyclesLattice::doLayout()
@@ -824,7 +825,7 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(int* up_point)
 
 float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
 {
-    QS_DEF(ObjArray<ObjArray<Array<bool>>>, can);
+    QS_DEF(ObjArray<ObjArray<std::vector<bool>>>, can);
 
     can.clear();
     int maxrot = 19;    // |[0, 18]|
@@ -836,7 +837,8 @@ float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
         for (int j = 0; j < maxrot; j++)
         {
             can.top().push();
-            can.top().top().clear_resize(mask_count);
+            can.top().top().clear();
+            can.top().top().resize(mask_count, false);
         }
     }
 

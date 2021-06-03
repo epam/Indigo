@@ -1603,7 +1603,7 @@ void QueryMolecule::setBondStereoCare(int idx, bool stereo_care)
     if (stereo_care == false && idx >= _bond_stereo_care.size())
         return;
 
-    _bond_stereo_care.expandFill(idx + 1, false);
+    _bond_stereo_care.resize(idx + 1, false);
     _bond_stereo_care[idx] = stereo_care;
     updateEditRevision();
 }

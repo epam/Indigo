@@ -298,7 +298,7 @@ namespace indigo
         CP_DECL;
         TL_CP_DECL(Array<int>, _atomsEmitBond);
         TL_CP_DECL(Array<int>, _atomsAcceptBond);
-        TL_CP_DECL(Array<bool>, _isBondAttachedArray);
+        TL_CP_DECL(std::vector<bool>, _isBondAttachedArray);
         TL_CP_DECL(Array<int>, _mapping);
         TL_CP_DECL(Array<int>, _inv_mapping);
         TL_CP_DECL(Array<int>, _edge_mapping);

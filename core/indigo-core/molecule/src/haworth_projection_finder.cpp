@@ -17,12 +17,12 @@ const float COS10_THRESHOLD = 0.015f;
 HaworthProjectionFinder::HaworthProjectionFinder(BaseMolecule& mol)
     : _mol(mol), CP_INIT, TL_CP_GET(_atoms_mask), TL_CP_GET(_bonds_mask), TL_CP_GET(_bold_bonds_mask)
 {
-    _atoms_mask.clear_resize(_mol.vertexEnd());
-    _atoms_mask.fill(false);
-    _bonds_mask.clear_resize(_mol.edgeEnd());
-    _bonds_mask.fill(false);
-    _bold_bonds_mask.clear_resize(_mol.edgeEnd());
-    _bold_bonds_mask.fill(false);
+    _atoms_mask.clear();
+    _atoms_mask.resize(_mol.vertexEnd(), false);
+    _bonds_mask.clear();
+    _bonds_mask.resize(_mol.edgeEnd(), false);
+    _bold_bonds_mask.clear();
+    _bold_bonds_mask.resize(_mol.edgeEnd(), false);
 }
 
 void HaworthProjectionFinder::findAndAddStereocenters()
@@ -35,12 +35,12 @@ void HaworthProjectionFinder::find()
     _find(false);
 }
 
-const Array<bool>& HaworthProjectionFinder::getAtomsMask()
+const std::vector<bool>& HaworthProjectionFinder::getAtomsMask()
 {
     return _atoms_mask;
 }
 
-const Array<bool>& HaworthProjectionFinder::getBondsMask()
+const std::vector<bool>& HaworthProjectionFinder::getBondsMask()
 {
     return _bonds_mask;
 }

@@ -174,9 +174,9 @@ void MoleculeLayoutGraphSmart::_get_toches_to_component(Cycle& cycle, int compon
 {
     if (component_number < 0 || component_number >= _layout_component_count)
         return;
-    QS_DEF(Array<bool>, touch_to_current_component);
-    touch_to_current_component.clear_resize(cycle.vertexCount());
-    touch_to_current_component.zerofill();
+    QS_DEF(std::vector<bool>, touch_to_current_component);
+    touch_to_current_component.clear();
+    touch_to_current_component.resize(cycle.vertexCount());
     for (int i = 0; i < cycle.vertexCount(); i++)
     {
         const Vertex& vert = getVertex(cycle.getVertex(i));
@@ -233,9 +233,9 @@ int MoleculeLayoutGraphSmart::_search_separated_component(Cycle& cycle, Array<in
 
 void MoleculeLayoutGraphSmart::_search_path(int start, int finish, Array<int>& path, int component_number)
 {
-    QS_DEF(Array<bool>, visited);
-    visited.clear_resize(vertexEnd());
-    visited.zerofill();
+    QS_DEF(std::vector<bool>, visited);
+    visited.clear();
+    visited.resize(vertexEnd(), false);
     visited[start] = true;
 
     QS_DEF(Array<int>, vertices_list);
@@ -700,9 +700,9 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
     _layout_component_count++;
 
-    QS_DEF(Array<bool>, _is_layout_component_incoming);
-    _is_layout_component_incoming.clear_resize(_layout_component_count);
-    _is_layout_component_incoming.zerofill();
+    QS_DEF(std::vector<bool>, _is_layout_component_incoming);
+    _is_layout_component_incoming.clear();
+    _is_layout_component_incoming.resize(_layout_component_count);
     for (int i = 0; i < size; i++)
         _is_layout_component_incoming[_layout_component_number[cycle.getEdge(i)]] = true;
 
@@ -902,9 +902,9 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
     }
     }*/
 
-    QS_DEF(Array<bool>, need_to_insert);
-    need_to_insert.clear_resize(size);
-    need_to_insert.zerofill();
+    QS_DEF(std::vector<bool>, need_to_insert);
+    need_to_insert.clear();
+    need_to_insert.resize(size, false);
 
     for (int i = 0; i < size; i++)
         need_to_insert[i] = _layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN;
@@ -913,8 +913,9 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
     bool componentIsWholeCycle = false;
 
-    QS_DEF(Array<bool>, _is_component_touch);
-    _is_component_touch.clear_resize(_layout_component_count);
+    QS_DEF(std::vector<bool>, _is_component_touch);
+    _is_component_touch.clear();
+    _is_component_touch.resize(_layout_component_count, false);
 
     for (int index = 0; index < size; index++)
         if (need_to_insert[index])
@@ -924,12 +925,10 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
             insideVertex.clear_resize(0);
             insideVertex.push(cycle.getVertex(index));
 
-            QS_DEF(Array<bool>, takenVertex);
-            takenVertex.clear_resize(vertexCount());
-            takenVertex.zerofill();
+            QS_DEF(std::vector<bool>, takenVertex);
+            takenVertex.clear();
+            takenVertex.resize(vertexCount(), false);
             takenVertex[cycle.getVertex(index)] = true;
-
-            _is_component_touch.zerofill();
 
             for (int i = 0; i < insideVertex.size(); i++)
                 for (int j = getVertex(insideVertex[i]).neiBegin(); j != getVertex(insideVertex[i]).neiEnd(); j = getVertex(insideVertex[i]).neiNext(j))
@@ -1407,9 +1406,9 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
 {
     int cycle_size = cycle.vertexCount();
 
-    QS_DEF(Array<bool>, layout_comp_touch);
-    layout_comp_touch.clear_resize(_layout_component_count);
-    layout_comp_touch.zerofill();
+    QS_DEF(std::vector<bool>, layout_comp_touch);
+    layout_comp_touch.clear();
+    layout_comp_touch.resize(_layout_component_count, false);
 
     for (int i = 0; i < cycle_size; i++)
     {
@@ -1424,8 +1423,9 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
     segment_start.clear_resize(0);
     segment_start.fffill();
 
-    QS_DEF(Array<bool>, touch_to_current_component);
-    touch_to_current_component.clear_resize(cycle_size);
+    QS_DEF(std::vector<bool>, touch_to_current_component);
+    touch_to_current_component.clear();
+    touch_to_current_component.resize(cycle_size, false);
 
     QS_DEF(Array<int>, segment_component_number);
     segment_component_number.clear();
@@ -1437,7 +1437,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
         {
 
             // search of vertices touch to i-th layout component
-            touch_to_current_component.zerofill();
+            std::fill(touch_to_current_component.begin(), touch_to_current_component.end(), false);
             for (int j = 0; j < cycle_size; j++)
             {
                 const Vertex& vert = getVertex(cycle.getVertex(j));

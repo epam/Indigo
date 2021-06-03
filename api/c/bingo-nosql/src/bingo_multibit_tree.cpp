@@ -12,7 +12,7 @@ int MultibitTree::_compareBitWeights(_DistrWeight& bw1, _DistrWeight& bw2, void*
         return 0;
 }
 
-BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_fp_indices, const Array<bool>& is_parrent_mb, int level)
+BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_fp_indices, const std::vector<bool>& is_parrent_mb, int level)
 {
     BingoPtr<_MultibitNode> node_ptr;
     node_ptr.allocate();
@@ -70,8 +70,8 @@ BingoPtr<MultibitTree::_MultibitNode> MultibitTree::_buildNode(Array<int>& fit_f
     QS_DEF(Array<int>, right_fit);
     right_fit.clear();
 
-    QS_DEF(Array<bool>, is_mb);
-    is_mb.copy(is_parrent_mb);
+    QS_DEF(std::vector<bool>, is_mb);
+    is_mb = is_parrent_mb;
 
     for (int i = 0; i < mb_indices.size(); i++)
     {
@@ -134,9 +134,8 @@ void MultibitTree::_build()
     for (int i = 0; i < indices.size(); i++)
         indices[i] = i;
 
-    QS_DEF(Array<bool>, is_mb);
-    is_mb.clear_resize(_fp_size * 8);
-    is_mb.zerofill();
+    QS_DEF(std::vector<bool>, is_mb);
+    is_mb.resize(_fp_size * 8, false);
 
     _tree_ptr = _buildNode(indices, is_mb, 0);
 }

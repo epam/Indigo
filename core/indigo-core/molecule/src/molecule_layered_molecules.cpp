@@ -51,7 +51,7 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule) : _layersAromatized(0
         _bond_masks[_proto.getBondOrder(e_idx)].top().set(0);
     }
 
-    _mobilePositions.expandFill(_proto.vertexCount(), false);
+    _mobilePositions.resize(_proto.vertexCount(), false);
     _mobilePositionsOccupied.expand(_proto.vertexCount());
 
     layers = 1;
@@ -131,9 +131,9 @@ bool LayeredMolecules::addLayersWithInvertedPath(const Dbitset& mask, const Arra
 // beg, end: the mobile positions of hydrogen to swap
 // forward: the direction to move the hydrogen
 {
-    QS_DEF(Array<bool>, edgeIsOnPath); // indicates if an edge is on path that needs to be inverted
+    QS_DEF(std::vector<bool>, edgeIsOnPath); // indicates if an edge is on path that needs to be inverted
     edgeIsOnPath.clear();
-    edgeIsOnPath.expandFill(edgeCount(), false);
+    edgeIsOnPath.resize(edgeCount(), false);
     for (auto i = 0; i < edgesPath.size(); ++i)
     {
         edgeIsOnPath[edgesPath[i]] = true;

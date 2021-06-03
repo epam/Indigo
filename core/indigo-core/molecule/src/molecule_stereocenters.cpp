@@ -44,8 +44,8 @@ void MoleculeStereocenters::buildFromBonds(const StereocentersOptions& options, 
     if (options.detect_haworth_projection)
         haworth_finder.findAndAddStereocenters();
 
-    const Array<bool>& bonds_ignore = haworth_finder.getBondsMask();
-    const Array<bool>& atoms_ignore = haworth_finder.getAtomsMask();
+    const std::vector<bool>& bonds_ignore = haworth_finder.getBondsMask();
+    const std::vector<bool>& atoms_ignore = haworth_finder.getAtomsMask();
     for (int i = _baseMolecule.edgeBegin(); i != _baseMolecule.edgeEnd(); i = _baseMolecule.edgeNext(i))
     {
         if (bonds_ignore[i] && _baseMolecule.getBondDirection(i))
@@ -262,7 +262,7 @@ bool MoleculeStereocenters::isPossibleStereocenter(int atom_idx, bool* possible_
 // can be determined by normal direction then do not check if opposite directions
 // contradicts original ones.
 bool MoleculeStereocenters::_buildOneCenter(int atom_idx, int* sensible_bonds_out, bool bidirectional_mode, bool bidirectional_either_mode,
-                                            const Array<bool>& bond_ignore)
+                                            const std::vector<bool>& bond_ignore)
 {
     const Vertex& vertex = _baseMolecule.getVertex(atom_idx);
 

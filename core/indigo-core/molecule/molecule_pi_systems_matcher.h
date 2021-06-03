@@ -51,10 +51,10 @@ namespace indigo
         int _initMarks(void);
 
         void _markAtomsFirst();
-        void _markUnstablePiSystems(Array<bool>& pi_system_used);
+        void _markUnstablePiSystems(std::vector<bool>& pi_system_used);
 
         void _markVerticesInPiSystemsWithCycles();
-        void _markVerticesInUnusedPiSystems(Array<bool>& pi_system_used);
+        void _markVerticesInUnusedPiSystems(std::vector<bool>& pi_system_used);
         void _markVerticesInSingleAtomPiSystem(int n_pi_systems);
 
         void _calculatePiSystemsSizes(int n_pi_systems, Array<int>& sizes);

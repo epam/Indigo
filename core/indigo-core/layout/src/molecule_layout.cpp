@@ -88,11 +88,11 @@ void MoleculeLayout::_init(bool smart_layout)
     }
 }
 
-void _collectCrossBonds(Array<int>& crossBonds, Array<bool>& crossBondOut, BaseMolecule& mol, const Array<int>& atoms)
+void _collectCrossBonds(Array<int>& crossBonds, std::vector<bool>& crossBondOut, BaseMolecule& mol, const Array<int>& atoms)
 {
-    QS_DEF(Array<bool>, atomMask);
-    atomMask.clear_resize(mol.vertexEnd());
-    atomMask.fill(false);
+    QS_DEF(std::vector<bool>, atomMask);
+    atomMask.clear();
+    atomMask.resize(mol.vertexEnd(), false);
     for (int i = 0; i < atoms.size(); ++i)
     {
         int aid = atoms[i];
@@ -111,14 +111,14 @@ void _collectCrossBonds(Array<int>& crossBonds, Array<bool>& crossBondOut, BaseM
             {
                 int bid = v.neiEdge(j);
                 crossBonds.push(bid);
-                crossBondOut.push(mol.getEdge(bid).beg == aid);
+                crossBondOut.push_back(mol.getEdge(bid).beg == aid);
             }
         }
     }
 }
 
 void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, const Array<int>& crossBonds,
-                                    const Array<bool>& crossBondOut, float bondLength)
+                                    const std::vector<bool>& crossBondOut, float bondLength)
 {
     brackets.clear();
     if (crossBonds.size() == 2)
@@ -500,7 +500,7 @@ void MoleculeLayout::_makeLayout()
 void MoleculeLayout::_updateRepeatingUnits()
 {
     QS_DEF(Array<int>, crossBonds);
-    QS_DEF(Array<bool>, crossBondOut);
+    QS_DEF(std::vector<bool>, crossBondOut);
     for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
     {
         SGroup& sg = _molecule.sgroups.getSGroup(i);

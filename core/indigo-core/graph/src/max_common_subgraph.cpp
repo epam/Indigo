@@ -964,7 +964,7 @@ MaxCommonSubgraph::AdjMatricesStore::AdjMatricesStore(MaxCommonSubgraph& context
         _ajEdge1[i]->resize(maxsize);
         _ajEdge2.add(new Array<int>());
         _ajEdge2[i]->resize(maxsize);
-        _aj2.add(new Array<bool>());
+        _aj2.add(new std::vector<bool>());
         _aj2[i]->resize(maxsize);
         _errorEdgesMatrix.add(new Array<int>());
         _errorEdgesMatrix[i]->resize(maxsize);

@@ -391,7 +391,7 @@ namespace indigo
 
         Array<int> _min_h;
 
-        Array<bool> _bond_stereo_care;
+        std::vector<bool> _bond_stereo_care;
 
         PtrArray<Atom> _atoms;
         PtrArray<Bond> _bonds;

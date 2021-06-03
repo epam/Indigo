@@ -42,21 +42,21 @@ void PathEnumerator::process()
 {
     QS_DEF(Array<int>, vertices);
     QS_DEF(Array<int>, edges);
-    QS_DEF(Array<bool>, flags);
+    QS_DEF(std::vector<bool>, flags);
     QS_DEF(Array<int>, index);
-    QS_DEF(Array<bool>, can_achieve_to_end);
+    QS_DEF(std::vector<bool>, can_achieve_to_end);
 
     vertices.clear();
     edges.clear();
-    flags.clear_resize(_graph.vertexEnd());
-    flags.zerofill();
+    flags.clear();
+    flags.resize(_graph.vertexEnd(), false);
     vertices.push(_begin);
     edges.push(-1); // fictitious edge
     flags[_begin] = true;
     index.clear_resize(_graph.vertexEnd());
     index.zerofill();
-    can_achieve_to_end.clear_resize(_graph.vertexEnd());
-    can_achieve_to_end.zerofill();
+    can_achieve_to_end.clear();
+    can_achieve_to_end.resize(_graph.vertexEnd(), false);
     can_achieve_to_end[_end] = true;
     index[_begin] = _graph.getVertex(_begin).neiBegin();
 

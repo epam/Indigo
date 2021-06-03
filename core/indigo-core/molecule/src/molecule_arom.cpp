@@ -838,7 +838,7 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
     int n_rgroups = rgroups.getRGroupCount();
 
     // Check if r-groups are attached with single bonds
-    QS_DEF(Array<bool>, rgroups_attached_single);
+    QS_DEF(std::vector<bool>, rgroups_attached_single);
     rgroups_attached_single.clear();
     for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
     {
@@ -865,7 +865,7 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
                     mol.getAllowedRGroups(v, sites);
                     for (int j = 0; j < sites.size(); j++)
                     {
-                        rgroups_attached_single.expandFill(sites[j] + 1, true);
+                        rgroups_attached_single.resize(sites[j] + 1, true);
                         rgroups_attached_single[sites[j]] = false;
                     }
                 }
@@ -873,7 +873,7 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
         }
     }
 
-    rgroups_attached_single.expandFill(n_rgroups + 1, true);
+    rgroups_attached_single.resize(n_rgroups + 1, true);
     for (int i = 1; i <= n_rgroups; i++)
     {
         PtrPool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
@@ -1035,7 +1035,7 @@ void QueryMoleculeAromaticity::setCanBeAromatic(int edge_index, bool state)
     if (state == false && edge_index >= can_bond_be_aromatic.size())
         return;
 
-    can_bond_be_aromatic.expandFill(edge_index + 1, false);
+    can_bond_be_aromatic.resize(edge_index + 1, false);
     can_bond_be_aromatic[edge_index] = state;
 }
 

@@ -909,9 +909,9 @@ void DearomatizationsGroups::_detectAromaticGroups(int v_idx, const int* atom_ex
         _vertexIsAcceptDoubleEdge[v_idx] = false;
 }
 
-bool* DearomatizationsGroups::getAcceptDoubleBonds(void)
+std::vector<bool>* DearomatizationsGroups::getAcceptDoubleBonds(void)
 {
-    return _vertexIsAcceptDoubleEdge.ptr();
+    return &_vertexIsAcceptDoubleEdge;
 }
 
 bool DearomatizationsGroups::isAcceptDoubleBond(int atom)
@@ -1322,7 +1322,7 @@ bool DearomatizationMatcher::GraphMatchingVerticesFixed::checkVertex(int v_idx)
 {
     if (_verticesMapping[v_idx] != -1)
         return bitGetBit(_verticesState, _verticesMapping[v_idx]) == 1;
-    return _verticesAcceptDoubleBond[v_idx];
+    return (*_verticesAcceptDoubleBond)[v_idx];
 }
 
 void DearomatizationMatcher::GraphMatchingVerticesFixed::setVerticesState(const byte* verticesState)
@@ -1335,7 +1335,7 @@ void DearomatizationMatcher::GraphMatchingVerticesFixed::setVerticesMapping(int*
     _verticesMapping = verticesMapping;
 }
 
-void DearomatizationMatcher::GraphMatchingVerticesFixed::setVerticesAccept(bool* verticesAcceptDoubleBond)
+void DearomatizationMatcher::GraphMatchingVerticesFixed::setVerticesAccept(std::vector<bool>* verticesAcceptDoubleBond)
 {
     _verticesAcceptDoubleBond = verticesAcceptDoubleBond;
 }

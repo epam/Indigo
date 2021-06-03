@@ -221,7 +221,7 @@ void SimpleCycleBasis::_minimize(int startIndex)
 
     // Implementation of "Algorithm 1" from [BGdV04]
 
-    QS_DEF(ObjArray<Array<bool>>, a);
+    QS_DEF(ObjArray<std::vector<bool>>, a);
     a.clear();
 
     _getCycleEdgeIncidenceMatrix(a);
@@ -231,7 +231,7 @@ void SimpleCycleBasis::_minimize(int startIndex)
         // "Subroutine 2"
 
         // Construct kernel vector u
-        Array<bool> u;
+        std::vector<bool> u;
         u.resize(_edgeList.size());
 
         constructKernelVector(u, a, cur_cycle);
@@ -326,11 +326,11 @@ void SimpleCycleBasis::_minimize(int startIndex)
     _isMinimized = true;
 }
 
-void SimpleCycleBasis::_getCycleEdgeIncidenceMatrix(ObjArray<Array<bool>>& result)
+void SimpleCycleBasis::_getCycleEdgeIncidenceMatrix(ObjArray<std::vector<bool>>& result)
 {
     for (int i = 0; i < _cycles.size(); ++i)
     {
-        Array<bool>& new_array = result.push();
+        std::vector<bool>& new_array = result.push();
         new_array.resize(_edgeList.size());
         Array<int>& cycle = _cycles[i];
         for (int j = 0; j < _edgeList.size(); ++j)
@@ -340,7 +340,7 @@ void SimpleCycleBasis::_getCycleEdgeIncidenceMatrix(ObjArray<Array<bool>>& resul
     }
 }
 
-void SimpleCycleBasis::constructKernelVector(Array<bool>& u, ObjArray<Array<bool>>& a, int i)
+void SimpleCycleBasis::constructKernelVector(std::vector<bool>& u, ObjArray<std::vector<bool>>& a, int i)
 {
     for (int j = 0; j < u.size(); ++j)
     {

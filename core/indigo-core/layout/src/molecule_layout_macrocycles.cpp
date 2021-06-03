@@ -68,8 +68,8 @@ MoleculeLayoutMacrocycles::MoleculeLayoutMacrocycles(int size)
     _edge_stereo.clear_resize(size);
     _edge_stereo.zerofill();
 
-    _vertex_drawn.clear_resize(size);
-    _vertex_drawn.zerofill();
+    _vertex_drawn.clear();
+    _vertex_drawn.resize(size, false);
 
     _positions.clear_resize(size);
 
@@ -1264,12 +1264,12 @@ float MoleculeLayoutMacrocycles::depictionCircle()
     if (zero_edge_stereo_count == 0)
         return 1000000;
 
-    QS_DEF(Array<bool>, up);
-    QS_DEF(Array<bool>, only_up);
-    up.clear_resize(length + 1);
-    only_up.clear_resize(length + 1);
-    up.zerofill();
-    only_up.zerofill();
+    QS_DEF(std::vector<bool>, up);
+    QS_DEF(std::vector<bool>, only_up);
+    up.clear();
+    up.resize(length + 1, false);
+    only_up.clear();
+    only_up.resize(length + 1, false);
 
     for (int i = 0; i < length; i++)
         if (_edge_stereo[i] == MoleculeCisTrans::CIS && _edge_stereo[(i + length - 1) % length] == MoleculeCisTrans::CIS)

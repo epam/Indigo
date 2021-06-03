@@ -28,6 +28,8 @@
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
 #include <string>
+#include <vector>
+#include <algorithm>
 
 namespace indigo
 {
@@ -203,7 +205,7 @@ namespace indigo
 
         void remove(int idx, int span = 1)
         {
-            if ( idx < 0 || idx + span > _arr.size() )
+            if (idx < 0 || idx + span > _arr.size())
             {
                 throw Error("remove(): invalid index %d with span %d (size=%d)", idx, span, _arr.size());
             }
@@ -748,7 +750,7 @@ namespace indigo
         };
     };
 
-    //using ArrayChar = Array<char>;
+    // using ArrayChar = Array<char>;
 
 } // namespace indigo
 

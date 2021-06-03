@@ -82,8 +82,8 @@ MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_dec
 
 void MoleculeCleaner2d::_initBasePointValid()
 {
-    is_valid_base.clear_resize(vertex_size);
-    is_valid_base.zerofill();
+    is_valid_base.clear();
+    is_valid_base.resize(vertex_size, false);
     for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
         is_valid_base[v] = is_art_point[v] || _mol.getVertex(v).degree() == 1;
 }
@@ -108,13 +108,13 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
         for (int i = 0; i < component_count; i++)
         {
             in.push();
-            in.top().clear_resize(vertex_size);
-            in.top().zerofill();
+            in.top().clear();
+            in.top().resize(vertex_size, false);
         }
 
         Filter filter;
-        _is_trivial.clear_resize(component_count);
-        _is_trivial.zerofill();
+        _is_trivial.clear();
+        _is_trivial.resize(component_count, false);
 
         for (int i = 0; i < component_count; i++)
         {
@@ -136,11 +136,12 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
         for (int i = 0; i < component_count; i++)
         {
             in.push();
-            in.top().clear_resize(vertex_size);
-            in.top().zerofill();
+            in.top().clear();
+            in.top().resize(vertex_size, false);
         }
 
-        _is_trivial.clear_resize(component_count);
+        _is_trivial.clear();
+        _is_trivial.resize(component_count);
 
         for (int i = 0, e = _mol.edgeBegin(); e != _mol.edgeEnd(); i++, e = _mol.edgeNext(e))
         {
@@ -170,17 +171,17 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
 
     if (use_beconnected_decomposition)
     {
-        QS_DEF(Array<bool>, has_component);
+        QS_DEF(std::vector<bool>, has_component);
         QS_DEF(Array<int>, component_list);
-        QS_DEF(Array<bool>, has_vertex);
-        QS_DEF(Array<bool>, block_vertex);
-        has_component.clear_resize(component_count);
-        has_component.zerofill();
+        QS_DEF(std::vector<bool>, has_vertex);
+        QS_DEF(std::vector<bool>, block_vertex);
+        has_component.clear();
+        has_component.resize(component_count, false);
         component_list.clear();
-        has_vertex.clear_resize(vertex_size);
-        has_vertex.zerofill();
-        block_vertex.clear_resize(vertex_size);
-        block_vertex.zerofill();
+        has_vertex.clear();
+        has_vertex.resize(vertex_size, false);
+        block_vertex.clear();
+        block_vertex.resize(vertex_size, false);
 
         QS_DEF(Array<int>, local_component_list);
 
@@ -360,8 +361,8 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
     for (int i = 0; i < component_count; i++)
         unite_with[i] = i;
 
-    _is_straightline_vertex.clear_resize(vertex_size);
-    _is_straightline_vertex.zerofill();
+    _is_straightline_vertex.clear();
+    _is_straightline_vertex.resize(vertex_size);
 
     QS_DEF(ObjArray<Array<int>>, unite_to);
     unite_to.clear();
@@ -448,9 +449,9 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
             }
         }
 
-    QS_DEF(Array<bool>, valid);
-    valid.clear_resize(component_count);
-    valid.zerofill();
+    QS_DEF(std::vector<bool>, valid);
+    valid.clear();
+    valid.resize(component_count, false);
 
     for (int i = 0; i < component_count; i++)
         valid[unite_with[i]] = true;
@@ -519,8 +520,8 @@ void MoleculeCleaner2d::_initGeometry()
 
 void MoleculeCleaner2d::_initArtPoints()
 {
-    is_art_point.clear_resize(vertex_size);
-    is_art_point.zerofill();
+    is_art_point.clear();
+    is_art_point.resize(vertex_size, false);
     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
     {
         int cnt = 0;
@@ -539,8 +540,8 @@ void MoleculeCleaner2d::_initAdjMatrix()
     for (int i = 0; i < vertex_size; i++)
     {
         adj_matrix.push();
-        adj_matrix.top().clear_resize(vertex_size);
-        adj_matrix.top().zerofill();
+        adj_matrix.top().clear();
+        adj_matrix.top().resize(vertex_size);
     }
     for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e))
     {
@@ -590,7 +591,7 @@ void MoleculeCleaner2d::_initCommonBiconnectedComp()
 
     common_bicon_comp.clear();
 
-    QS_DEF(ObjArray<Array<bool>>, b_in);
+    QS_DEF(ObjArray<std::vector<bool>>, b_in);
     Filter filter;
     int b_component_count = decomposer.componentsCount();
 
@@ -598,8 +599,8 @@ void MoleculeCleaner2d::_initCommonBiconnectedComp()
     {
         decomposer.getComponent(i, filter);
         b_in.push();
-        b_in[i].clear_resize(vertex_size);
-        b_in[i].zerofill();
+        b_in[i].clear();
+        b_in[i].resize(vertex_size);
         for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
         {
             b_in[i][j] = filter.valid(j);

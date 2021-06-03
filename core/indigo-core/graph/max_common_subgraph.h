@@ -441,8 +441,8 @@ namespace indigo
             int _size2;
 
             // adjacency matrix
-            // PtrArray< Array<bool> > _aj1;
-            PtrArray<Array<bool>> _aj2;
+            // PtrArray< std::vector<bool> > _aj1;
+            PtrArray<std::vector<bool>> _aj2;
             // indexes of edges
             PtrArray<Array<int>> _ajEdge1;
             PtrArray<Array<int>> _ajEdge2;
