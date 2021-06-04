@@ -1,8 +1,8 @@
 FROM debian:stable-slim
 
-ARG JDK_VERSION_MAJOR=8u282
-ARG JDK_VERSION_MINOR=b08
-ARG MAVEN_VERSION=3.6.3
+ARG JDK_VERSION_MAJOR=8u292
+ARG JDK_VERSION_MINOR=b10
+ARG MAVEN_VERSION=3.8.1
 ARG JYTHON_VERSION=2.7.2
 ARG DOTNET_VERSION=3.1
 ARG IRONPYTHON_VERSION=2.7.11
@@ -21,15 +21,12 @@ RUN apt update && \
     tar -xzf apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     mv apache-maven-${MAVEN_VERSION} /opt/maven && \
     rm apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
-    # Jython with Jip
+    # Jython
     curl -OL https://repo1.maven.org/maven2/org/python/jython-installer/${JYTHON_VERSION}/jython-installer-${JYTHON_VERSION}.jar && \
     /opt/jdk/bin/java -jar jython-installer-${JYTHON_VERSION}.jar -s -d /opt/jython && \
     rm jython-installer-${JYTHON_VERSION}.jar && \
     export JAVA_HOME=/opt/jdk && \
     export PATH=$PATH:$JAVA_HOME/bin && \
-    /opt/jython/bin/jython -m ensurepip && \
-    /opt/jython/bin/jython -m pip --no-cache-dir install jip && \
-    printf '[repos:local]\nuri=~/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config && \
     # .NET Core
     curl -L https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg && \
     mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/ && \
@@ -67,7 +64,6 @@ RUN git --version && \
     mvn --version && \
     gpg --version && \
     jython --version && \
-    jip version && \
     dotnet --version && \
     dotnet nuget --version && \
     ipy -V && \
