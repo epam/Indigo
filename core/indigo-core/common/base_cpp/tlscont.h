@@ -89,14 +89,20 @@ namespace indigo
         T& getLocalCopy(const qword id)
         {
             OsLocker locker(_lock.ref());
-            AutoPtr<T>& ptr = _map.findOrInsert(id);
+            auto it = _map.find(id);
+            if (it == _map.end())
+            {
+                it = _map.emplace( id, new T ).first;
+            }
+
+            std::unique_ptr<T>& ptr = it->second;
             if (ptr.get() == NULL)
                 ptr.reset(new T());
-            return ptr.ref();
+            return *ptr;
         }
 
     private:
-        typedef RedBlackObjMap<qword, AutoPtr<T>> _Map;
+        typedef std::unordered_map<qword, std::unique_ptr<T>> _Map;
 
         _Map _map;
         ThreadSafeStaticObj<OsLock> _lock;
