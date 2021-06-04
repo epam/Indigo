@@ -170,7 +170,7 @@ TEST(IndigoLoadTest, query)
 }
 
 // TODO: #417
-TEST(IndigoLoadTest, DISABLED_loadAssert)
+TEST(IndigoLoadTest, loadAssert)
 {
     const string mStr = "C1=C(*)C=?C=C1";
     const string expectedError = "molecule auto loader: SMILES loader: Character #63 is unexpected during bond parsing";
