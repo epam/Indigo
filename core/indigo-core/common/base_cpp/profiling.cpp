@@ -16,28 +16,22 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "base_cpp/profiling.h"
+#include "profiling.h"
+
+#include <cmath>
 
 #include "base_cpp/output.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/smart_output.h"
-#include "base_cpp/tlscont.h"
-#include <math.h>
 
 using namespace indigo;
 
 //
 // _ProfilingTimer
 //
-_ProfilingTimer::_ProfilingTimer(int name_index)
-{
-    _name_index = name_index;
-    _start_time = nanoClock();
-}
 
-_ProfilingTimer::~_ProfilingTimer()
+_ProfilingTimer::_ProfilingTimer(int name_index) : _name_index(name_index), _start_time(nanoClock()), _dt(0)
 {
-    stop();
 }
 
 qword _ProfilingTimer::stop()
@@ -74,19 +68,23 @@ namespace indigo
 {
     DLLEXPORT OsLock _profiling_global_lock, _profiling_global_names_lock;
 }
-ObjArray<Array<char>> ProfilingSystem::_names;
 
-TL_DECL(ProfilingSystem, _profiling_system);
+ObjArray<Array<char>>& ProfilingSystem::getNames()
+{
+    static ObjArray<Array<char>> _names;
+    return _names;
+}
 
 ProfilingSystem& ProfilingSystem::getInstance()
 {
-    TL_GET(ProfilingSystem, _profiling_system);
+    thread_local ProfilingSystem _profiling_system;
     return _profiling_system;
 }
 
 int ProfilingSystem::getNameIndex(const char* name, bool add_if_not_exists)
 {
     OsLocker locker(_profiling_global_names_lock);
+    auto& _names = getNames();
 
     for (int i = 0; i < _names.size(); i++)
         if (strcmp(_names[i].ptr(), name) == 0)
@@ -130,6 +128,7 @@ void ProfilingSystem::reset(bool all)
 
 int ProfilingSystem::_recordsCmp(int idx1, int idx2, void* context)
 {
+    auto& _names = getNames();
     return strcmp(_names[idx1].ptr(), _names[idx2].ptr());
 }
 
@@ -137,6 +136,7 @@ void ProfilingSystem::getStatistics(Output& output, bool get_all)
 {
     OsLocker locker(_lock);
     OsLocker names_locker(_profiling_global_names_lock);
+    auto& _names = getNames();
 
     // Print formatted statistics
     while (_sorted_records.size() < _records.size())

@@ -7,7 +7,9 @@ file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
 get_target_property(IndigoCore_INCLUDE_DIRECTORIES indigo-core INCLUDE_DIRECTORIES)
-target_include_directories(${PROJECT_NAME} PUBLIC ${IndigoCore_INCLUDE_DIRECTORIES})
+target_include_directories(${PROJECT_NAME}
+        PRIVATE ${IndigoCore_INCLUDE_DIRECTORIES}
+        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}
@@ -17,6 +19,3 @@ else ()
     target_link_libraries(${PROJECT_NAME}
             PUBLIC Cairo::Cairo)
 endif ()
-
-target_include_directories(${PROJECT_NAME}
-        PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)

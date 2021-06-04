@@ -31,6 +31,7 @@ namespace indigo
     {
     public:
         MoleculeRenderInternal(const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw, bool idle);
+        ~MoleculeRenderInternal();
         void setMolecule(BaseMolecule* mol);
         void setIsRFragment(bool isRFragment);
         void setScaleFactor(const float scaleFactor, const Vec2f& min, const Vec2f& max);
@@ -221,6 +222,7 @@ namespace indigo
         // local
         void* _hdc;
         BaseMolecule* _mol;
+        bool _own_mol = false;
         RenderContext& _cw;
         float _scale;
         Vec2f _min, _max;

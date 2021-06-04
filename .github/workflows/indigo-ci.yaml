@@ -37,7 +37,7 @@ jobs:
             mkdir build &&
             cd build &&
             cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF &&
-            cmake --build . --config Release --target all -- -j $(nproc) && 
+            cmake --build . --config Release --target all -- -j $(nproc) &&
             ctest --verbose
             "
       - name: Build macOS
@@ -132,8 +132,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
-    runs-on: ${{ matrix.os }}
+        os: [ macos, ubuntu, windows ]
+    runs-on: ${{ matrix.os }}-latest
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -153,13 +153,13 @@ jobs:
       - name: Install Pillow
         run: python3 -m pip install Pillow
       - name: Install wrappers Linux
-        if: ${{ matrix.os == 'ubuntu-latest' }}
+        if: ${{ matrix.os == 'ubuntu' }}
         run: python3 -m pip install dist/*linux*.whl
       - name: Install wrappers Windows
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'windows' }}
         run: Get-ChildItem dist -Filter *win*.whl -Recurse | % { python3 -m pip install $_.FullName }
       - name: Install wrappers macOS
-        if: ${{ matrix.os == 'macos-latest' }}
+        if: ${{ matrix.os == 'macos' }}
         run: python3 -m pip install dist/*macos*.whl
       - name: Test
         run: python3 api/tests/integration/test.py -j junit_report.xml -e todo
@@ -175,8 +175,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
-    runs-on: ${{ matrix.os }}
+        os: [ macos, ubuntu, windows ]
+    runs-on: ${{ matrix.os }}-latest
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -218,8 +218,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
-    runs-on: ${{ matrix.os }}
+        os: [ macos, ubuntu, windows ]
+    runs-on: ${{ matrix.os }}-latest
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -243,7 +243,7 @@ jobs:
           cd IronPython
           curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.11/IronPython.2.7.11.zip
       - name: Prepare UNIX
-        if: ${{ matrix.os != 'windows-latest' }}
+        if: ${{ matrix.os != 'windows' }}
         run: |
           cd IronPython
           unzip IronPython.2.7.11.zip
@@ -251,14 +251,14 @@ jobs:
           unzip ../dist/Indigo.Net.*.nupkg
           chmod -R a+rw .
       - name: Prepare Windows
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'windows' }}
         run: |
           cd IronPython
           Expand-Archive IronPython.2.7.11.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
       - name: Test UNIX
-        if: ${{ matrix.os != 'windows-latest' }}
+        if: ${{ matrix.os != 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
@@ -266,7 +266,7 @@ jobs:
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
           dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -j junit_report.xml -e todo
       - name: Test Windows
-        if: ${{ matrix.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
@@ -395,7 +395,7 @@ jobs:
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "windows-latest-mingw_python_test_report"
+          check_name: "windows-mingw_python_test_report"
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -453,7 +453,7 @@ jobs:
             mkdir build &&
             cd build &&
             cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=ON &&
-            cmake --build . --config Release --target all -- -j $(nproc) && 
+            cmake --build . --config Release --target all -- -j $(nproc) &&
             ctest --verbose
             "
       - name: Build utils macOS
@@ -663,7 +663,7 @@ jobs:
           lfs: true
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f      
+        run: git fetch --tags -f
       - name: Build
         run: |
           mkdir build
