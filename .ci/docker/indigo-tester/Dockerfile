@@ -27,7 +27,6 @@ RUN apt update && \
     rm jython-installer-${JYTHON_VERSION}.jar && \
     export JAVA_HOME=/opt/jdk && \
     export PATH=$PATH:$JAVA_HOME/bin && \
-    printf '[repos:local]\nuri=~/.m2/repository/\ntype=local\n\n[repos:central]\nuri=https://repo1.maven.org/maven2/\ntype=remote\n' > ~/.jip_config && \
     # .NET Core
     curl -L https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg && \
     mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/ && \
