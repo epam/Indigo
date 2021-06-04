@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 import logging
-import re
-from v2.db.database import db_session
+# import re
+# from v2.db.database import db_session
 from v2.indigo_api import indigo_init
 
 
@@ -22,27 +22,27 @@ def version():
     """
     versions = {}
 
-    if is_indigo_db():
-        versions['bingo_version'] = db_session.execute("SELECT Bingo.GetVersion();").fetchone()[0]
+    # if is_indigo_db():
+    #     versions['bingo_version'] = db_session.execute("SELECT Bingo.GetVersion();").fetchone()[0]
     indigo = indigo_init()
     versions['indigo_version'] = indigo.version()
 
-    with open('/srv/service_version', 'r') as ver:
-        imago_versions = []
-        for line in ver.readlines():
-            if line.startswith("imago-console-"):
-                imago_versions.append(re.search('imago-console-(.*)\..*', line).group(1))
-            else:
-                versions['service_version'] = line.rstrip()
-    versions['imago_versions'] = imago_versions
+    # with open('/srv/service_version', 'r') as ver:
+    #     imago_versions = []
+    #     for line in ver.readlines():
+    #         if line.startswith("imago-console-"):
+    #             imago_versions.append(re.search('imago-console-(.*)\..*', line).group(1))
+    #         else:
+    #             versions['service_version'] = line.rstrip()
+    # versions['imago_versions'] = imago_versions
 
     return jsonify(versions),  200, {'Content-Type': 'application/json'}
-
-
-def is_indigo_db():
-    try:
-        import socket
-        socket.gethostbyname('indigo_db')
-        return True
-    except:
-        return False
+#
+#
+# def is_indigo_db():
+#     try:
+#         import socket
+#         socket.gethostbyname('indigo_db')
+#         return True
+#     except:
+#         return False

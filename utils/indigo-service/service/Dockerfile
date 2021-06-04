@@ -1,70 +1,72 @@
-FROM debian:stretch
+FROM debian:stable-slim
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update -qq && apt-get upgrade -y -qq
+RUN apt-get update && apt-get upgrade -y
 
 RUN apt-get install -y --no-install-recommends \
-    unzip libcairo2 uwsgi redis-server supervisor python3 python3-pip \
-    uwsgi-plugin-python3 python3-psycopg2 python3-redis \
+    unzip libcairo2 uwsgi python3 python3-pip \
+    uwsgi-plugin-python3 \
     p7zip-full git python3-setuptools python3-wheel
 
 # Write service version into file
-COPY ./ /opt/git/
-RUN cd /opt/git && \
-    git describe --tags >> /srv/service_version && \
-    find ./lib -name "imago-console-*" -exec basename -a {} + >> /srv/service_version
+# COPY ./ /opt/git/
+# RUN cd /opt/git && \
+#    git describe --tags >> /srv/service_version && \
+#    find ./lib -name "imago-console-*" -exec basename -a {} + >> /srv/service_version
 
 # Install python dependencies using pip
 COPY ./service/requirements.txt /opt/
 RUN pip3 install -r /opt/requirements.txt
 
 # Install Celery
-COPY ./celery/celeryd.conf /etc/default/celeryd
-RUN useradd -ms /bin/bash celery || echo "User already exists."
-RUN chmod 640 /etc/default/celeryd
-COPY ./celery/celery.auto.conf /etc/supervisor/conf.d/
+# COPY ./celery/celeryd.conf /etc/default/celeryd
+# RUN useradd -ms /bin/bash celery || echo "User already exists."
+# RUN chmod 640 /etc/default/celeryd
+# COPY ./celery/celery.auto.conf /etc/supervisor/conf.d/
 
 # Install redis runner
-COPY ./celery/redis.auto.conf /etc/supervisor/conf.d/
+# COPY ./celery/redis.auto.conf /etc/supervisor/conf.d/
 
 # Install uwsgi runner
 COPY ./uwsgi/uwsgi.ini /etc/uwsgi.ini
-COPY ./uwsgi/uwsgi.auto.conf /etc/supervisor/conf.d/
+# COPY ./uwsgi/uwsgi.auto.conf /etc/supervisor/conf.d/
 EXPOSE 8002
 ENV INDIGO_UWSGI_RUN_PARAMETERS --plugin python3
 
-# Install Indigo
-COPY ./lib/indigo-python-* /opt/
-RUN cd /opt && unzip indigo-python-* -d dist && mv dist/indigo-python-* /srv/indigo-python
+# Install Indigodf
+COPY ./lib/*indigo*linux*.whl /opt/
+RUN ls /opt
+RUN python3 -m pip install /opt/*linux*.whl
 
-# Install Indigo Uploader
-COPY ./lib/indigo-uploader-*.zip /opt/
-RUN cd /opt && \
-     unzip indigo-uploader-* && \
-     mv indigo-uploader*/ /srv/uploader/
-
-COPY ./db/uploader_config.yml /srv/uploader/
-RUN mkdir -p /tmp/indigo-service/upload
-RUN chmod -R a+rw /tmp/indigo-service/
-
-# Install Imago
-COPY ./lib/imago-console-*.7z /opt/
-RUN cd /opt && \
-     mkdir /srv/imago && \
-     for imago_zip in $(cat /srv/service_version); do case "$imago_zip" in *imago*) 7z x $imago_zip; mv imago-console*/ /srv/imago/$(basename $imago_zip .7z)/ ;; esac; done
-RUN chmod -R a+rx /srv/imago
+# # Install Indigo Uploader
+# COPY ./lib/indigo-uploader-*.zip /opt/
+# RUN cd /opt && \
+#      unzip indigo-uploader-* && \
+#      mv indigo-uploader*/ /srv/uploader/
+#
+# COPY ./db/uploader_config.yml /srv/uploader/
+# RUN mkdir -p /tmp/indigo-service/upload
+# RUN chmod -R a+rw /tmp/indigo-service/
+#
+# # Install Imago
+# COPY ./lib/imago-console-*.7z /opt/
+# RUN cd /opt && \
+#      mkdir /srv/imago && \
+#      for imago_zip in $(cat /srv/service_version); do case "$imago_zip" in *imago*) 7z x $imago_zip; mv imago-console*/ /srv/imago/$(basename $imago_zip .7z)/ ;; esac; done
+# RUN chmod -R a+rx /srv/imago
 
 COPY ./lib/favicon.ico /srv/api/client/
 COPY ./service/v2/ /srv/api/v2/
 COPY ./service/*.py /srv/api/
 
 # Clean
-RUN apt-get purge -y p7zip-full unzip git python3-pip python3-setuptools python3-wheel
+RUN apt-get purge -y p7zip-full unzip git python3-pip python3-wheel
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get autoremove -y && \
     rm -rf /opt/* /var/lib/apt/lists/*
 
 WORKDIR /srv/api
 
-CMD supervisord -n
+# CMD supervisord -n
+CMD python3 app.py -s 0.0.0.0 -p 8002

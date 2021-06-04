@@ -15,8 +15,8 @@ import types
 import zlib
 
 from indigo import Indigo, IndigoException
-from indigo_renderer import IndigoRenderer
-from indigo_inchi import IndigoInchi
+from indigo.renderer import IndigoRenderer
+from indigo.inchi import IndigoInchi
 
 from pyparsing import ParseException
 from marshmallow.exceptions import ValidationError

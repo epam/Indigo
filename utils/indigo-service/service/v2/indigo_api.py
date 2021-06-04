@@ -13,8 +13,8 @@ import sys
 import traceback
 
 from indigo import Indigo, IndigoException
-from indigo_inchi import IndigoInchi
-from indigo_renderer import IndigoRenderer
+from indigo.inchi import IndigoInchi
+from indigo.renderer import IndigoRenderer
 
 from .common.util import highlight
 from .validation import IndigoRendererSchema, IndigoRequestSchema, IndigoAutomapSchema, IndigoCheckSchema, IndigoCalculateSchema
