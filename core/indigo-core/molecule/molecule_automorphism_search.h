@@ -32,7 +32,7 @@ namespace indigo
     {
     public:
         MoleculeAutomorphismSearch();
-        virtual ~MoleculeAutomorphismSearch()
+        ~MoleculeAutomorphismSearch() override
         {
         }
 

@@ -167,8 +167,6 @@ bool MoleculeCisTrans::sortSubstituents(BaseMolecule& mol, int* substituents, bo
     if (h2 && h3)
         return false;
 
-    int tmp;
-
     // If hydrogens are explicit then keep them
     // And do not place explicit hydrogens to the end, because all static methods
     // should be converted into non-static with checking whether atom is hydrogen
@@ -179,14 +177,14 @@ bool MoleculeCisTrans::sortSubstituents(BaseMolecule& mol, int* substituents, bo
     if (!e1)
         if (e0 || substituents[0] > substituents[1])
         {
-            __swap(substituents[0], substituents[1], tmp);
+            std::swap(substituents[0], substituents[1]);
             swapped = !swapped;
         }
 
     if (!e3)
         if (e2 || substituents[2] > substituents[3])
         {
-            __swap(substituents[2], substituents[3], tmp);
+            std::swap(substituents[2], substituents[3]);
             swapped = !swapped;
         }
 

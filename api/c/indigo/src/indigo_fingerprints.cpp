@@ -328,7 +328,7 @@ static void _collectBondFeatures(BaseMolecule& m, RedBlackStringMap<int>& counte
             d1 = d2 = 0;
 
         char key[100];
-        snprintf(key, NELEM(key), "o:%d s:%s d:%d %d", m.getBondOrder(i), stereo, __min(d1, d2), __max(d1, d2));
+        snprintf(key, NELEM(key), "o:%d s:%s d:%d %d", m.getBondOrder(i), stereo, std::min(d1, d2), std::max(d1, d2));
 
         int* ptr = counters.at2(key);
         if (ptr)
@@ -357,7 +357,7 @@ static void _getCountersDifference(RedBlackStringMap<int>& c1, RedBlackStringMap
             int* val2_ptr = b.at2(key);
             int val2 = val2_ptr ? *val2_ptr : 0;
 
-            int c = __min(val1, val2);
+            int c = std::min(val1, val2);
             common += c;
             *diff[i] += val1 - c;
         }

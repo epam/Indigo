@@ -157,10 +157,10 @@ int QueryReaction::_compare(int& i1, int& i2, void* c)
     int label2 = context.m.getAtomNumber(i2);
     int idx1, idx2;
 
-    for (idx1 = 0; idx1 < (int)NELEM(labels_by_freq); idx1++)
+    for (idx1 = 0; idx1 < NELEM(labels_by_freq); idx1++)
         if (label1 == labels_by_freq[idx1])
             break;
-    for (idx2 = 0; idx2 < (int)NELEM(labels_by_freq); idx2++)
+    for (idx2 = 0; idx2 < NELEM(labels_by_freq); idx2++)
         if (label2 == labels_by_freq[idx2])
             break;
 

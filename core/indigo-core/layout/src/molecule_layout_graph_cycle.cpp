@@ -121,8 +121,8 @@ void MoleculeLayoutGraph::Cycle::canonize()
         if (_vertices[i] < _vertices[min_idx])
             min_idx = i;
 
-    int prev_idx = __max(0, min_idx - 1);
-    int next_idx = __min(vertexCount() - 1, min_idx + 1);
+    int prev_idx = std::max(0, min_idx - 1);
+    int next_idx = std::min(vertexCount() - 1, min_idx + 1);
 
     // rotate direction
     if (_vertices[prev_idx] < _vertices[next_idx])

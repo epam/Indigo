@@ -51,7 +51,7 @@ namespace bingo
     public:
         GrossQueryData(Array<char>& gross_str);
 
-        virtual /*const*/ QueryObject& getQueryObject() /*const*/;
+        /*const*/ QueryObject& getQueryObject() /*const*/ override;
 
     private:
         GrossQuery _obj;
@@ -62,11 +62,11 @@ namespace bingo
     public:
         MoleculeSimilarityQueryData(/* const */ Molecule& mol, float min_coef, float max_coef);
 
-        virtual /*const*/ QueryObject& getQueryObject() /*const*/;
+        /*const*/ QueryObject& getQueryObject() /*const*/ override;
 
-        virtual float getMin() const;
-        virtual float getMax() const;
-        virtual void setMin(float min);
+        float getMin() const override;
+        float getMax() const override;
+        void setMin(float min) override;
 
     private:
         SimilarityMoleculeQuery _obj;
@@ -79,11 +79,11 @@ namespace bingo
     public:
         ReactionSimilarityQueryData(/* const */ Reaction& rxn, float min_coef, float max_coef);
 
-        virtual /*const*/ QueryObject& getQueryObject() /*const*/;
+        /*const*/ QueryObject& getQueryObject() /*const*/ override;
 
-        virtual float getMin() const;
-        virtual float getMax() const;
-        virtual void setMin(float min);
+        float getMin() const override;
+        float getMax() const override;
+        void setMin(float min) override;
 
     protected:
         SimilarityReactionQuery _obj;
@@ -96,7 +96,7 @@ namespace bingo
     public:
         MoleculeExactQueryData(/* const */ Molecule& mol);
 
-        virtual /*const*/ QueryObject& getQueryObject();
+        /*const*/ QueryObject& getQueryObject() override;
 
     private:
         SimilarityMoleculeQuery _obj;
@@ -107,7 +107,7 @@ namespace bingo
     public:
         ReactionExactQueryData(/* const */ Reaction& rxn);
 
-        virtual /*const*/ QueryObject& getQueryObject() /*const*/;
+        /*const*/ QueryObject& getQueryObject() /*const*/ override;
 
     private:
         SimilarityReactionQuery _obj;
@@ -118,7 +118,7 @@ namespace bingo
     public:
         MoleculeSubstructureQueryData(/* const */ QueryMolecule& qmol);
 
-        virtual /*const*/ QueryObject& getQueryObject() /*const*/;
+        /*const*/ QueryObject& getQueryObject() /*const*/ override;
 
     private:
         SubstructureMoleculeQuery _obj;
@@ -129,7 +129,7 @@ namespace bingo
     public:
         ReactionSubstructureQueryData(/* const */ QueryReaction& qrxn);
 
-        virtual /*const*/ QueryObject& getQueryObject() /*const*/;
+        /*const*/ QueryObject& getQueryObject() /*const*/ override;
 
     private:
         SubstructureReactionQuery _obj;
@@ -190,24 +190,24 @@ namespace bingo
     public:
         BaseMatcher(BaseIndex& index, IndigoObject*& current_obj);
 
-        virtual int currentId();
+        int currentId() override;
 
-        virtual IndigoObject* currentObject();
+        IndigoObject* currentObject() override;
 
-        virtual const Index& getIndex();
+        const Index& getIndex() override;
 
-        virtual float currentSimValue();
+        float currentSimValue() override;
 
-        virtual void setOptions(const char* options);
-        virtual void resetThresholdLimit(float min);
+        void setOptions(const char* options) override;
+        void resetThresholdLimit(float min) override;
 
-        virtual int esimateRemainingResultsCount(int& delta);
-        virtual float esimateRemainingTime(float& delta);
-        virtual int containersCount();
-        virtual int cellsCount();
-        virtual int currentCell();
-        virtual int minCell();
-        virtual int maxCell();
+        int esimateRemainingResultsCount(int& delta) override;
+        float esimateRemainingTime(float& delta) override;
+        int containersCount() override;
+        int cellsCount() override;
+        int currentCell() override;
+        int minCell() override;
+        int maxCell() override;
 
     protected:
         BaseIndex& _index;
@@ -227,7 +227,7 @@ namespace bingo
         virtual void _setParameters(const char* params) = 0;
         virtual void _initPartition() = 0;
 
-        ~BaseMatcher();
+        ~BaseMatcher() override;
     };
 
     class BaseSubstructureMatcher : public BaseMatcher
@@ -235,7 +235,7 @@ namespace bingo
     public:
         BaseSubstructureMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj);
 
-        virtual bool next();
+        bool next() override;
 
         void setQueryData(SubstructureQueryData* query_data);
 
@@ -274,7 +274,7 @@ namespace bingo
     private:
         Array<int> _mapping;
 
-        virtual bool _tryCurrent() /*const*/;
+        bool _tryCurrent() /*const*/ override;
 
         IndexCurrentMolecule* _current_mol;
     };
@@ -289,7 +289,7 @@ namespace bingo
     private:
         ObjArray<Array<int>> _mapping;
 
-        virtual bool _tryCurrent() /*const*/;
+        bool _tryCurrent() /*const*/ override;
 
         IndexCurrentReaction* _current_rxn;
     };
@@ -299,25 +299,25 @@ namespace bingo
     public:
         BaseSimilarityMatcher(BaseIndex& index, IndigoObject*& current_obj);
 
-        virtual bool next();
+        bool next() override;
 
         void setQueryData(SimilarityQueryData* query_data);
 
         void setQueryDataWithExtFP(SimilarityQueryData* query_data, IndigoObject& fp);
 
-        ~BaseSimilarityMatcher();
+        ~BaseSimilarityMatcher() override;
 
-        virtual int esimateRemainingResultsCount(int& delta);
-        virtual float esimateRemainingTime(float& delta);
-        virtual void resetThresholdLimit(float min);
+        int esimateRemainingResultsCount(int& delta) override;
+        float esimateRemainingTime(float& delta) override;
+        void resetThresholdLimit(float min) override;
 
-        virtual int containersCount();
-        virtual int cellsCount();
-        virtual int currentCell();
-        virtual int minCell();
-        virtual int maxCell();
+        int containersCount() override;
+        int cellsCount() override;
+        int currentCell() override;
+        int minCell() override;
+        int maxCell() override;
 
-        virtual float currentSimValue();
+        float currentSimValue() override;
 
     protected:
         float _current_sim_value;
@@ -344,9 +344,9 @@ namespace bingo
         const byte* _cur_loc;
         Array<byte> _query_fp;
 
-        virtual void _setParameters(const char* params);
+        void _setParameters(const char* params) override;
 
-        virtual void _initPartition();
+        void _initPartition() override;
     };
 
     class MoleculeSimMatcher : public BaseSimilarityMatcher
@@ -372,10 +372,10 @@ namespace bingo
     public:
         TopNSimMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj);
 
-        virtual bool next();
+        bool next() override;
         void setLimit(int limit);
 
-        ~TopNSimMatcher();
+        ~TopNSimMatcher() override;
 
     protected:
         void _findTopN();
@@ -413,11 +413,11 @@ namespace bingo
     public:
         BaseExactMatcher(BaseIndex& index, IndigoObject*& current_obj);
 
-        virtual bool next();
+        bool next() override;
 
         void setQueryData(ExactQueryData* query_data);
 
-        ~BaseExactMatcher();
+        ~BaseExactMatcher() override;
 
     protected:
         int _current_cand_id;
@@ -442,11 +442,11 @@ namespace bingo
         IndexCurrentMolecule* _current_mol;
         float _rms_threshold;
 
-        virtual dword _calcHash();
+        dword _calcHash() override;
 
-        virtual bool _tryCurrent() /* const */;
+        bool _tryCurrent() /* const */ override;
 
-        virtual void _setParameters(const char* params);
+        void _setParameters(const char* params) override;
 
         bool _tautomer;
         IndigoTautomerParams _tautomer_params;
@@ -460,11 +460,11 @@ namespace bingo
     private:
         IndexCurrentReaction* _current_rxn;
 
-        virtual dword _calcHash();
+        dword _calcHash() override;
 
-        virtual bool _tryCurrent() /* const */;
+        bool _tryCurrent() /* const */ override;
 
-        virtual void _setParameters(const char* params);
+        void _setParameters(const char* params) override;
     };
 
     class BaseGrossMatcher : public BaseMatcher
@@ -472,11 +472,11 @@ namespace bingo
     public:
         BaseGrossMatcher(BaseIndex& index, IndigoObject*& current_obj);
 
-        virtual bool next();
+        bool next() override;
 
         void setQueryData(GrossQueryData* query_data);
 
-        ~BaseGrossMatcher();
+        ~BaseGrossMatcher() override;
 
     protected:
         int _current_cand_id;
@@ -499,11 +499,11 @@ namespace bingo
     private:
         IndexCurrentMolecule* _current_mol;
 
-        virtual void _calcFormula();
+        void _calcFormula() override;
 
-        virtual bool _tryCurrent() /* const */;
+        bool _tryCurrent() /* const */ override;
 
-        virtual void _setParameters(const char* params);
+        void _setParameters(const char* params) override;
     };
 
     class EnumeratorMatcher : public BaseMatcher
@@ -511,15 +511,15 @@ namespace bingo
     public:
         EnumeratorMatcher(BaseIndex& index);
 
-        virtual bool next();
+        bool next() override;
 
-        ~EnumeratorMatcher()
+        ~EnumeratorMatcher() override
         {
         }
 
     protected:
-        virtual void _setParameters(const char* params){};
-        virtual void _initPartition(){};
+        void _setParameters(const char* params) override {};
+        void _initPartition() override {};
 
     private:
         IndigoObject* _indigoObject;

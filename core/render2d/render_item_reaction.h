@@ -30,15 +30,15 @@ namespace indigo
     {
     public:
         RenderItemReaction(RenderItemFactory& factory);
-        virtual ~RenderItemReaction()
+        ~RenderItemReaction() override
         {
         }
 
         DECL_ERROR;
 
-        virtual void init();
-        virtual void estimateSize();
-        virtual void render(bool idle);
+        void init() override;
+        void estimateSize() override;
+        void render(bool idle) override;
 
         BaseReaction* rxn;
         float hSpace, catalystOffset;

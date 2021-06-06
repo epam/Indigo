@@ -47,7 +47,7 @@ namespace indigo
     protected:
         TL_CP_DECL(ObjArray<MoleculeSubstructureMatcher::FragmentMatchCache>, _fmcaches);
 
-        virtual bool _checkAAM();
+        bool _checkAAM() override;
 
         static bool _match_atoms(BaseReaction& query_, Reaction& target, int sub_mol_idx, int sub_atom_idx, int super_mol_idx, int super_atom_idx,
                                  void* context);

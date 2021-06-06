@@ -19,6 +19,7 @@
 #ifndef _ALGEBRA_H_
 #define _ALGEBRA_H_
 
+#include <algorithm>
 #include <cmath>
 
 #include "base_c/defs.h"
@@ -118,14 +119,14 @@ namespace indigo
 
         inline void min(const Vec2f& a)
         {
-            x = __min(x, a.x);
-            y = __min(y, a.y);
+            x = std::min(x, a.x);
+            y = std::min(y, a.y);
         }
 
         inline void max(const Vec2f& a)
         {
-            x = __max(x, a.x);
-            y = __max(y, a.y);
+            x = std::max(x, a.x);
+            y = std::max(y, a.y);
         }
 
         inline float lengthSqr() const
@@ -458,16 +459,16 @@ namespace indigo
 
         inline void min(const Vec3f& a)
         {
-            x = __min(x, a.x);
-            y = __min(y, a.y);
-            z = __min(z, a.z);
+            x = std::min(x, a.x);
+            y = std::min(y, a.y);
+            z = std::min(z, a.z);
         }
 
         inline void max(const Vec3f& a)
         {
-            x = __max(x, a.x);
-            y = __max(y, a.y);
-            z = __max(z, a.z);
+            x = std::max(x, a.x);
+            y = std::max(y, a.y);
+            z = std::max(z, a.z);
         }
 
         inline void cross(const Vec3f& a, const Vec3f& b)

@@ -1957,8 +1957,8 @@ void MolfileLoader::_postLoad()
             int nei_idx_1 = vertex.neiVertex(vertex.neiBegin());
             int nei_idx_2 = vertex.neiVertex(vertex.neiNext(vertex.neiBegin()));
 
-            _bmol->setRSiteAttachmentOrder(i, __min(nei_idx_1, nei_idx_2), 0);
-            _bmol->setRSiteAttachmentOrder(i, __max(nei_idx_1, nei_idx_2), 1);
+            _bmol->setRSiteAttachmentOrder(i, std::min(nei_idx_1, nei_idx_2), 0);
+            _bmol->setRSiteAttachmentOrder(i, std::max(nei_idx_1, nei_idx_2), 1);
         }
         else if (vertex.degree() > 2)
         {

@@ -45,7 +45,7 @@ void RenderItemHLine::estimateSize()
     for (int i = 0; i < items.size(); ++i)
     {
         RenderItemBase& item = _factory.getItem(items[i]);
-        size.y = __max(size.y, 2 * (fabs(item.referenceY) + item.size.y / 2));
+        size.y = std::max(size.y, 2.f * (fabsf(item.referenceY) + item.size.y / 2.f));
         size.x += (i > 0 ? hSpace : 0) + item.size.x;
     }
 }

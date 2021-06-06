@@ -36,22 +36,22 @@ namespace indigo
         {
         public:
             MoleculeBasket();
-            virtual ~MoleculeBasket();
+            ~MoleculeBasket() override;
 
             // initializes molecules basket
             void initBasket(ObjArray<Molecule>* mol_set, ObjArray<QueryMolecule>* basket_set, int max_number);
             // this method adds molecules from set (defines with edges and vertices lists) to basket queue
-            virtual void addToNextEmptySpot(Graph& graph, Array<int>& v_list, Array<int>& e_list);
+            void addToNextEmptySpot(Graph& graph, Array<int>& v_list, Array<int>& e_list) override;
 
-            virtual Graph& getGraphFromSet(int idx)
+            Graph& getGraphFromSet(int idx) override
             {
                 return (Graph&)_searchStructures->at(_orderArray[idx]);
             }
 
-            virtual int getMaxGraphIndex();
+            int getMaxGraphIndex() override;
 
             // returns ptr of molecule in basket with index
-            virtual Graph& getGraph(int index) const;
+            Graph& getGraph(int index) const override;
             // adds new molecule to queue and returns ptr of that
             QueryMolecule& pickOutNextMolecule();
 
@@ -60,7 +60,7 @@ namespace indigo
             DECL_ERROR;
 
         private:
-            virtual void _sortGraphsInSet();
+            void _sortGraphsInSet() override;
 
             static int _compareEdgeCount(int& i1, int& i2, void* context);
             static int _compareRingsCount(BaseMolecule& m1, BaseMolecule& m2, void* context);

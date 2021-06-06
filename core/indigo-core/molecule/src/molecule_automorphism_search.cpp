@@ -555,7 +555,7 @@ int MoleculeAutomorphismSearch::_compareMappedStereocenters(Molecule& mol, const
     for (int s = stereocenters.begin(); s != stereocenters.end(); s = stereocenters.next(s))
     {
         int atom_idx = stereocenters.getAtomIndex(s);
-        max_stereogroup = __max(stereocenters.getGroup(atom_idx), max_stereogroup);
+        max_stereogroup = std::max(stereocenters.getGroup(atom_idx), max_stereogroup);
     }
 
     int groups_count = 2 * (max_stereogroup + 1);

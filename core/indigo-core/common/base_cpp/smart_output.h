@@ -32,12 +32,12 @@ namespace indigo
     {
     public:
         SmartTableOutput(Output& output, bool use_smart_printing);
-        virtual ~SmartTableOutput();
+        ~SmartTableOutput() override;
 
-        virtual void write(const void* data, int size);
-        virtual void seek(long long offset, int from);
-        virtual long long tell();
-        virtual void flush();
+        void write(const void* data, int size) override;
+        void seek(long long offset, int from) override;
+        long long tell() override;
+        void flush() override;
 
         void setLineFormat(const char* line_format);
         void printHLine();

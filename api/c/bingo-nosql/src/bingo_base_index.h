@@ -82,17 +82,17 @@ namespace bingo
         };
 
     public:
-        virtual void create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id);
+        void create(const char* location, const MoleculeFingerprintParameters& fp_params, const char* options, int index_id) override;
 
-        virtual void load(const char* location, const char* options, int index_id);
+        void load(const char* location, const char* options, int index_id) override;
 
-        virtual int add(IndexObject& obj, int obj_id, DatabaseLockData& lock_data);
+        int add(IndexObject& obj, int obj_id, DatabaseLockData& lock_data) override;
 
-        virtual int addWithExtFP(IndexObject& obj, int obj_id, DatabaseLockData& lock_data, IndigoObject& fp);
+        int addWithExtFP(IndexObject& obj, int obj_id, DatabaseLockData& lock_data, IndigoObject& fp) override;
 
-        virtual void optimize();
+        void optimize() override;
 
-        virtual void remove(int id);
+        void remove(int id) override;
 
         const MoleculeFingerprintParameters& getFingerprintParams() const;
 
@@ -112,17 +112,17 @@ namespace bingo
 
         int getObjectsCount() const;
 
-        virtual const byte* getObjectCf(int id, int& len);
+        const byte* getObjectCf(int id, int& len) override;
 
-        virtual const char* getIdPropertyName();
+        const char* getIdPropertyName() override;
 
-        virtual const char* getVersion();
+        const char* getVersion() override;
 
-        virtual IndexType getType() const;
+        IndexType getType() const override;
 
         static IndexType determineType(const char* location);
 
-        virtual ~BaseIndex();
+        ~BaseIndex() override;
 
     protected:
         BaseIndex(IndexType type);

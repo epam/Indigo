@@ -966,7 +966,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
             if (cur_site_vertex.neiVertex(nei_idx1) != nei_atom_idx1)
             {
                 // Swap attachment neighbors according to attachment orders (first and second)
-                __swap(nei_idx1, nei_idx2, i);
+                std::swap(nei_idx1, nei_idx2);
             }
 
             if (cur_site_vertex.neiVertex(nei_idx1) != nei_atom_idx1 || cur_site_vertex.neiVertex(nei_idx2) != nei_atom_idx2)
@@ -1438,10 +1438,10 @@ int MoleculeSubstructureMatcher::_compare_frequency_asc(BaseMolecule& mol, int i
     int label2 = mol.getAtomNumber(i2);
     int idx1, idx2;
 
-    for (idx1 = 0; idx1 < (int)NELEM(labels_by_freq); idx1++)
+    for (idx1 = 0; idx1 < NELEM(labels_by_freq); idx1++)
         if (label1 == labels_by_freq[idx1])
             break;
-    for (idx2 = 0; idx2 < (int)NELEM(labels_by_freq); idx2++)
+    for (idx2 = 0; idx2 < NELEM(labels_by_freq); idx2++)
         if (label2 == labels_by_freq[idx2])
             break;
 

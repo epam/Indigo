@@ -94,17 +94,17 @@ namespace indigo
     public:
         FileScanner(Encoding filename_encoding, const char* filename);
         explicit FileScanner(const char* format, ...);
-        virtual ~FileScanner();
+        ~FileScanner() override;
 
-        virtual void read(int length, void* res);
-        virtual bool isEOF();
-        virtual void skip(int n);
-        virtual int lookNext();
-        virtual void seek(long long pos, int from);
-        virtual long long length();
-        virtual long long tell();
+        void read(int length, void* res) override;
+        bool isEOF() override;
+        void skip(int n) override;
+        int lookNext() override;
+        void seek(long long pos, int from) override;
+        long long length() override;
+        long long tell() override;
 
-        virtual char readChar();
+        char readChar() override;
 
     private:
         FILE* _file;
@@ -128,16 +128,16 @@ namespace indigo
         explicit BufferScanner(const byte* buffer, int buffer_size);
         explicit BufferScanner(const char* str);
         explicit BufferScanner(const Array<char>& arr);
-        virtual ~BufferScanner();
+        ~BufferScanner() override;
 
-        virtual bool isEOF();
-        virtual void read(int length, void* res);
-        virtual void skip(int n);
-        virtual int lookNext();
-        virtual void seek(long long pos, int from);
-        virtual long long length();
-        virtual long long tell();
-        virtual byte readByte();
+        bool isEOF() override;
+        void read(int length, void* res) override;
+        void skip(int n) override;
+        int lookNext() override;
+        void seek(long long pos, int from) override;
+        long long length() override;
+        long long tell() override;
+        byte readByte() override;
 
         const void* curptr();
 

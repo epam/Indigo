@@ -24,6 +24,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include <algorithm>
 
 using namespace indigo;
 
@@ -231,7 +232,7 @@ bool MoleculeStereocenters::isPossibleStereocenter(int atom_idx, bool* possible_
         *possible_lone_pair = false;
     int i;
 
-    for (i = 0; i < (int)NELEM(allowed_stereocenters); i++)
+    for (i = 0; i < NELEM(allowed_stereocenters); i++)
     {
         const _Configuration& as = allowed_stereocenters[i];
 
@@ -332,8 +333,6 @@ bool MoleculeStereocenters::_buildOneCenter(int atom_idx, int* sensible_bonds_ou
         nei_idx++;
     }
 
-    _EdgeIndVec tmp;
-
     bool possible_implicit_h = false;
     bool possible_lone_pair = false;
     int i;
@@ -366,17 +365,17 @@ bool MoleculeStereocenters::_buildOneCenter(int atom_idx, int* sensible_bonds_ou
     {
         // sort by neighbor atom index (ascending)
         if (edge_ids[0].rank > edge_ids[1].rank)
-            __swap(edge_ids[0], edge_ids[1], tmp);
+            std::swap(edge_ids[0], edge_ids[1]);
         if (edge_ids[1].rank > edge_ids[2].rank)
-            __swap(edge_ids[1], edge_ids[2], tmp);
+            std::swap(edge_ids[1], edge_ids[2]);
         if (edge_ids[2].rank > edge_ids[3].rank)
-            __swap(edge_ids[2], edge_ids[3], tmp);
+            std::swap(edge_ids[2], edge_ids[3]);
         if (edge_ids[1].rank > edge_ids[2].rank)
-            __swap(edge_ids[1], edge_ids[2], tmp);
+            std::swap(edge_ids[1], edge_ids[2]);
         if (edge_ids[0].rank > edge_ids[1].rank)
-            __swap(edge_ids[0], edge_ids[1], tmp);
+            std::swap(edge_ids[0], edge_ids[1]);
         if (edge_ids[1].rank > edge_ids[2].rank)
-            __swap(edge_ids[1], edge_ids[2], tmp);
+            std::swap(edge_ids[1], edge_ids[2]);
 
         int main1 = -1, main2 = -1, side1 = -1, side2 = -1;
         int main_dir = 0;
@@ -481,11 +480,11 @@ bool MoleculeStereocenters::_buildOneCenter(int atom_idx, int* sensible_bonds_ou
     {
         // sort by neighbor atom index (ascending)
         if (edge_ids[0].rank > edge_ids[1].rank)
-            __swap(edge_ids[0], edge_ids[1], tmp);
+            std::swap(edge_ids[0], edge_ids[1]);
         if (edge_ids[1].rank > edge_ids[2].rank)
-            __swap(edge_ids[1], edge_ids[2], tmp);
+            std::swap(edge_ids[1], edge_ids[2]);
         if (edge_ids[0].rank > edge_ids[1].rank)
-            __swap(edge_ids[0], edge_ids[1], tmp);
+            std::swap(edge_ids[0], edge_ids[1]);
 
         bool degenerate = true;
         int dirs[3] = {0, 0, 0};
@@ -725,9 +724,8 @@ int* MoleculeStereocenters::getPyramid(int idx)
 
 void MoleculeStereocenters::invertPyramid(int idx)
 {
-    int tmp;
     int* pyramid = getPyramid(idx);
-    __swap(pyramid[0], pyramid[1], tmp);
+    std::swap(pyramid[0], pyramid[1]);
 }
 
 void MoleculeStereocenters::getAbsAtoms(Array<int>& indices)
@@ -990,23 +988,23 @@ bool MoleculeStereocenters::checkSub(const MoleculeStereocenters& query, const M
 
 bool MoleculeStereocenters::isPyramidMappingRigid(const int mapping[4])
 {
-    int arr[4], tmp;
+    int arr[4];
     bool rigid = true;
 
     memcpy(arr, mapping, 4 * sizeof(int));
 
     if (arr[0] > arr[1])
-        __swap(arr[0], arr[1], tmp), rigid = !rigid;
+        std::swap(arr[0], arr[1]), rigid = !rigid;
     if (arr[1] > arr[2])
-        __swap(arr[1], arr[2], tmp), rigid = !rigid;
+        std::swap(arr[1], arr[2]), rigid = !rigid;
     if (arr[2] > arr[3])
-        __swap(arr[2], arr[3], tmp), rigid = !rigid;
+        std::swap(arr[2], arr[3]), rigid = !rigid;
     if (arr[1] > arr[2])
-        __swap(arr[1], arr[2], tmp), rigid = !rigid;
+        std::swap(arr[1], arr[2]), rigid = !rigid;
     if (arr[0] > arr[1])
-        __swap(arr[0], arr[1], tmp), rigid = !rigid;
+        std::swap(arr[0], arr[1]), rigid = !rigid;
     if (arr[1] > arr[2])
-        __swap(arr[1], arr[2], tmp), rigid = !rigid;
+        std::swap(arr[1], arr[2]), rigid = !rigid;
 
     return rigid;
 }
@@ -1014,24 +1012,24 @@ bool MoleculeStereocenters::isPyramidMappingRigid(const int mapping[4])
 bool MoleculeStereocenters::isPyramidMappingRigid_Sort(int* pyramid, const int* mapping)
 {
     bool rigid = true;
-    int i, tmp;
+    int i;
 
     for (i = 0; i < 4; i++)
         if (pyramid[i] != -1 && mapping[pyramid[i]] < 0)
             pyramid[i] = -1;
 
     if (pyramid[0] == -1 || (pyramid[1] >= 0 && mapping[pyramid[0]] > mapping[pyramid[1]]))
-        __swap(pyramid[0], pyramid[1], tmp), rigid = !rigid;
+        std::swap(pyramid[0], pyramid[1]), rigid = !rigid;
     if (pyramid[1] == -1 || (pyramid[2] >= 0 && mapping[pyramid[1]] > mapping[pyramid[2]]))
-        __swap(pyramid[1], pyramid[2], tmp), rigid = !rigid;
+        std::swap(pyramid[1], pyramid[2]), rigid = !rigid;
     if (pyramid[2] == -1 || (pyramid[3] >= 0 && mapping[pyramid[2]] > mapping[pyramid[3]]))
-        __swap(pyramid[2], pyramid[3], tmp), rigid = !rigid;
+        std::swap(pyramid[2], pyramid[3]), rigid = !rigid;
     if (pyramid[1] == -1 || (pyramid[2] >= 0 && mapping[pyramid[1]] > mapping[pyramid[2]]))
-        __swap(pyramid[1], pyramid[2], tmp), rigid = !rigid;
+        std::swap(pyramid[1], pyramid[2]), rigid = !rigid;
     if (pyramid[0] == -1 || (pyramid[1] >= 0 && mapping[pyramid[0]] > mapping[pyramid[1]]))
-        __swap(pyramid[0], pyramid[1], tmp), rigid = !rigid;
+        std::swap(pyramid[0], pyramid[1]), rigid = !rigid;
     if (pyramid[1] == -1 || (pyramid[2] >= 0 && mapping[pyramid[1]] > mapping[pyramid[2]]))
-        __swap(pyramid[1], pyramid[2], tmp), rigid = !rigid;
+        std::swap(pyramid[1], pyramid[2]), rigid = !rigid;
 
     return rigid;
 }
@@ -1041,7 +1039,7 @@ bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, 
     if (size == 3)
     {
         int order[3] = {mapping[pyramid[0]], mapping[pyramid[1]], mapping[pyramid[2]]};
-        int min = __min3(order[0], order[1], order[2]);
+        int min = *std::min_element(order, order + NELEM(order));
 
         while (order[0] != min)
         {
@@ -1401,35 +1399,33 @@ void MoleculeStereocenters::_restorePyramid(int idx, int pyramid[4], int invert_
             throw Error("restorePyramid(): extra hydrogen");
     }
 
-    int tmp;
-
     // sort pyramid indices
     if (pyramid[3] == -1)
     {
         if (pyramid[0] > pyramid[1])
-            __swap(pyramid[0], pyramid[1], tmp);
+            std::swap(pyramid[0], pyramid[1]);
         if (pyramid[1] > pyramid[2])
-            __swap(pyramid[1], pyramid[2], tmp);
+            std::swap(pyramid[1], pyramid[2]);
         if (pyramid[0] > pyramid[1])
-            __swap(pyramid[0], pyramid[1], tmp);
+            std::swap(pyramid[0], pyramid[1]);
     }
     else
     {
         if (pyramid[0] > pyramid[1])
-            __swap(pyramid[0], pyramid[1], tmp);
+            std::swap(pyramid[0], pyramid[1]);
         if (pyramid[1] > pyramid[2])
-            __swap(pyramid[1], pyramid[2], tmp);
+            std::swap(pyramid[1], pyramid[2]);
         if (pyramid[2] > pyramid[3])
-            __swap(pyramid[2], pyramid[3], tmp);
+            std::swap(pyramid[2], pyramid[3]);
         if (pyramid[1] > pyramid[2])
-            __swap(pyramid[1], pyramid[2], tmp);
+            std::swap(pyramid[1], pyramid[2]);
         if (pyramid[0] > pyramid[1])
-            __swap(pyramid[0], pyramid[1], tmp);
+            std::swap(pyramid[0], pyramid[1]);
         if (pyramid[1] > pyramid[2])
-            __swap(pyramid[1], pyramid[2], tmp);
+            std::swap(pyramid[1], pyramid[2]);
     }
     if (invert_pyramid)
-        __swap(pyramid[1], pyramid[2], j);
+        std::swap(pyramid[1], pyramid[2]);
 }
 
 void MoleculeStereocenters::rotatePyramid(int* pyramid)
@@ -1472,12 +1468,12 @@ void MoleculeStereocenters::moveElementToEnd(int pyramid[4], int element)
     }
 
     if (cnt & 1)
-        __swap(pyramid[0], pyramid[1], cnt);
+        std::swap(pyramid[0], pyramid[1]);
 }
 
 void MoleculeStereocenters::moveMinimalToEnd(int pyramid[4])
 {
-    int min_element = __min(__min(pyramid[0], pyramid[1]), __min(pyramid[2], pyramid[3]));
+    int min_element = std::min(std::min(pyramid[0], pyramid[1]), std::min(pyramid[2], pyramid[3]));
     moveElementToEnd(pyramid, min_element);
 }
 

@@ -977,7 +977,7 @@ bool AutomorphismSearch::_hasEdgeWithRank(int from, int to, int target_edge_rank
 
 void AutomorphismSearch::_refineByCell(int split1, int split2, int level, int& numcells, int& hint, int target_edge_rank)
 {
-    int i, j, tmp;
+    int i, j;
 
     if (split1 == split2) // trivial splitting cell
     {
@@ -998,7 +998,7 @@ void AutomorphismSearch::_refineByCell(int split1, int split2, int level, int& n
                     c1++;
                 else
                 {
-                    __swap(_lab[c1], _lab[c2], tmp);
+                    std::swap(_lab[c1], _lab[c2]);
                     c2--;
                 }
             }
@@ -1071,7 +1071,7 @@ void AutomorphismSearch::_refineByCell(int split1, int split2, int level, int& n
                 {
                     int dest = _bucket.size() - i - 1;
                     if (dest < i)
-                        __swap(_bucket[i], _bucket[dest], tmp);
+                        std::swap(_bucket[i], _bucket[dest]);
                 }
                 _bucket.resize(_bucket.size() - bmin);
                 bmin = 0;

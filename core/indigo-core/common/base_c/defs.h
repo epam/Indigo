@@ -19,23 +19,9 @@
 #ifndef __defs_h__
 #define __defs_h__
 
-#if !defined(__max)
-#define __max(a, b) (((a) > (b)) ? (a) : (b))
-#endif
-#if !defined(__min)
-#define __min(a, b) (((a) < (b)) ? (a) : (b))
-#endif
-#if !defined(__min3)
-#define __min3(a, b, c) (__min(a, __min(b, c)))
-#endif
-#if !defined(__max3)
-#define __max3(a, b, c) (__max(a, __max(b, c)))
-#endif
 #if !defined(__sign)
 #define __sign(a) (a > 0 ? 1 : (a < 0 ? -1 : 0))
 #endif
-
-#define __swap(a, b, tmp) ((tmp) = (b), (b) = (a), (a) = (tmp))
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 //#define vsnprintf _vsnprintf
@@ -51,7 +37,11 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-#define NELEM(arr) ((int)(sizeof(arr) / sizeof(arr[0])))
+#ifdef __cplusplus
+#define NELEM(arr) (std::extent<decltype(arr)>::value)
+#else
+#define NELEM(arr) (sizeof(arr) / sizeof(arr[0]))
+#endif
 
 #ifndef dword
 typedef unsigned int dword;

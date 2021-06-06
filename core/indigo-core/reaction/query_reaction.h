@@ -35,9 +35,9 @@ namespace indigo
     {
     public:
         QueryReaction();
-        virtual ~QueryReaction();
+        ~QueryReaction() override;
 
-        virtual void clear();
+        void clear() override;
 
         QueryMolecule& getQueryMolecule(int index);
 
@@ -49,13 +49,13 @@ namespace indigo
 
         int _addedQueryMolecule(int side, QueryMolecule& mol);
 
-        virtual bool aromatize(const AromaticityOptions& options);
-        virtual bool dearomatize(const AromaticityOptions& options);
+        bool aromatize(const AromaticityOptions& options) override;
+        bool dearomatize(const AromaticityOptions& options) override;
 
-        virtual BaseReaction* neu();
+        BaseReaction* neu() override;
 
-        virtual QueryReaction& asQueryReaction();
-        virtual bool isQueryReaction();
+        QueryReaction& asQueryReaction() override;
+        bool isQueryReaction() override;
         Array<int>& getIgnorableAAMArray(int index);
         int getIgnorableAAM(int index, int atom);
 
@@ -64,9 +64,9 @@ namespace indigo
     protected:
         void _transposeMoleculeForSubstructure(int index, Array<int>& transposition);
 
-        virtual int _addBaseMolecule(int side);
+        int _addBaseMolecule(int side) override;
 
-        virtual void _addedBaseMolecule(int idx, int side, BaseMolecule& mol);
+        void _addedBaseMolecule(int idx, int side, BaseMolecule& mol) override;
 
         struct _SortingContext
         {
@@ -82,7 +82,7 @@ namespace indigo
 
         ObjArray<Array<int>> _ignorableAAM;
 
-        virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
+        void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings) override;
 
     private:
         QueryReaction(const QueryReaction&); // no implicit copy

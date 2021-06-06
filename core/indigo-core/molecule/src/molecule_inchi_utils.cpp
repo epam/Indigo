@@ -140,8 +140,8 @@ int MoleculeInChIUtils::getParityInChI(Molecule& mol, int bond)
 
     const int* subst = mol.cis_trans.getSubstituents(bond);
     // Find substituents with maximal indices
-    int max_first = __max(subst[0], subst[1]);
-    int max_second = __max(subst[2], subst[3]);
+    int max_first = std::max(subst[0], subst[1]);
+    int max_second = std::max(subst[2], subst[3]);
 
     int value = MoleculeCisTrans::sameside(mol.getAtomXyz(edge.beg), mol.getAtomXyz(edge.end), mol.getAtomXyz(max_first), mol.getAtomXyz(max_second));
     if (value > 0)

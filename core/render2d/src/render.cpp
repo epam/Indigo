@@ -69,13 +69,13 @@ float Render::_getObjScale(int item)
 int Render::_getMaxWidth()
 {
     int maxPageSize = _rc.getMaxPageSize();
-    return _cnvOpt.maxWidth > 0 ? __min(_cnvOpt.maxWidth, maxPageSize) : maxPageSize;
+    return _cnvOpt.maxWidth > 0 ? std::min(_cnvOpt.maxWidth, maxPageSize) : maxPageSize;
 }
 
 int Render::_getMaxHeight()
 {
     int maxPageSize = _rc.getMaxPageSize();
-    return _cnvOpt.maxHeight > 0 ? __min(_cnvOpt.maxHeight, maxPageSize) : maxPageSize;
+    return _cnvOpt.maxHeight > 0 ? std::min(_cnvOpt.maxHeight, maxPageSize) : maxPageSize;
 }
 
 float Render::_getScale(int w, int h)
@@ -101,5 +101,5 @@ float Render::_getMaxScale(int w, int h)
         return _getScaleGivenSize(w, maxHeight);
     if (defaultWidth <= maxWidth && defaultHeight <= maxHeight)
         return s;
-    return _getScaleGivenSize(__min(defaultWidth, maxWidth), __min(defaultHeight, maxHeight));
+    return _getScaleGivenSize(std::min(defaultWidth, maxWidth), std::min(defaultHeight, maxHeight));
 }

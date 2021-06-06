@@ -521,7 +521,7 @@ int IndigoMoleculeSubstructureMatchIter::countMatches(int embeddings_limit)
     MatchCountContext context;
     context.embeddings_count = 0;
     if (embeddings_limit != 0)
-        context.max_count = __min(max_embeddings, embeddings_limit);
+        context.max_count = std::min(max_embeddings, embeddings_limit);
     else
         context.max_count = max_embeddings;
 

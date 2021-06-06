@@ -28,15 +28,15 @@ namespace indigo
     {
     public:
         RenderItemHLine(RenderItemFactory& factory);
-        virtual ~RenderItemHLine()
+        ~RenderItemHLine() override
         {
         }
 
         DECL_ERROR;
 
-        virtual void init();
-        virtual void estimateSize();
-        virtual void render(bool idle);
+        void init() override;
+        void estimateSize() override;
+        void render(bool idle) override;
 
         float hSpace;
     };

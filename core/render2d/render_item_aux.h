@@ -38,33 +38,33 @@ namespace indigo
         };
 
         RenderItemAuxiliary(RenderItemFactory& factory);
-        virtual ~RenderItemAuxiliary();
+        ~RenderItemAuxiliary() override;
         DECL_ERROR;
 
-        virtual void estimateSize()
+        void estimateSize() override
         {
             _renderIdle();
         }
-        virtual void setObjScale(float scale)
+        void setObjScale(float scale) override
         {
         }
-        virtual void init()
+        void init() override
         {
         }
-        virtual void render(bool idle);
-        virtual float getTotalBondLength()
-        {
-            return 0.0f;
-        }
-        virtual float getTotalClosestAtomDistance()
+        void render(bool idle) override;
+        float getTotalBondLength() override
         {
             return 0.0f;
         }
-        virtual int getBondCount()
+        float getTotalClosestAtomDistance() override
+        {
+            return 0.0f;
+        }
+        int getBondCount() override
         {
             return 0;
         }
-        virtual int getAtomCount()
+        int getAtomCount() override
         {
             return 0;
         }

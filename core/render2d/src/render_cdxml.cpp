@@ -111,7 +111,7 @@ int _getLongestLineXml(const Array<char>& line)
                 st = start;
             }
 
-            longest_line = __max(next - st, longest_line);
+            longest_line = std::max(next - st, longest_line);
 
             start = next;
         }
@@ -130,7 +130,7 @@ int _getLongestLine(const Array<char>& line)
             if (next == -1)
                 next = line.size();
 
-            longest_line = __max(next - start, longest_line);
+            longest_line = std::max(next - start, longest_line);
 
             start = next;
         }
@@ -225,7 +225,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
                 float title_width = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
                 title_widths[mol_idx] = title_width;
-                width = __max(width, title_width);
+                width = std::max(width, title_width);
             }
         }
         if (params.rOpt.cdxml_context.get() != NULL)
@@ -243,11 +243,11 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
                 float prop_width = longest_line * letter_width / MoleculeCdxmlSaver::BOND_LENGTH;
                 prop_widths[mol_idx] = prop_width;
 
-                width = __max(width, prop_width);
+                width = std::max(width, prop_width);
             }
         }
 
-        column_widths[column] = __max(width, column_widths[column]);
+        column_widths[column] = std::max(width, column_widths[column]);
     }
 
     float x_margins_base = 1.1f, y_margins_base = 1.1f;
@@ -327,7 +327,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
         p.title_offset_y = -p.page_offset.y - p.size.y - 1.0f;
 
-        max_y = __max(max_y, p.page_offset.y + p.all_size.y);
+        max_y = std::max(max_y, p.page_offset.y + p.all_size.y);
 
         int next_row = (mol_idx + 1) / params.cnvOpt.gridColumnNumber;
         if (last_row != next_row)

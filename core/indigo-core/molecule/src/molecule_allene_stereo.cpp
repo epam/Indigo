@@ -249,17 +249,15 @@ bool MoleculeAlleneStereo::_isAlleneCenter(BaseMolecule& mol, int idx, _Atom& at
     if (prod.z > 0)
         atom.parity = 3 - atom.parity;
 
-    int tmp;
-
     // move hydrogens from [0] and [2] to [1] and [3] respectively
     if (pure_h[0])
     {
-        __swap(atom.subst[0], atom.subst[1], tmp);
+        std::swap(atom.subst[0], atom.subst[1]);
         atom.parity = 3 - atom.parity;
     }
     if (pure_h[2])
     {
-        __swap(atom.subst[2], atom.subst[3], tmp);
+        std::swap(atom.subst[2], atom.subst[3]);
         atom.parity = 3 - atom.parity;
     }
 
@@ -332,15 +330,14 @@ bool MoleculeAlleneStereo::checkSub(BaseMolecule& query, BaseMolecule& target, c
 
         int parity = qa->parity;
         int qs[4], ts[4];
-        int tmp;
 
         memcpy(qs, qa->subst, 4 * sizeof(int));
         memcpy(ts, ta->subst, 4 * sizeof(int));
 
         if (mapping[qs[0]] == ts[2] || mapping[qs[0]] == ts[3])
         {
-            __swap(qs[0], qs[2], tmp);
-            __swap(qs[1], qs[3], tmp);
+            std::swap(qs[0], qs[2]);
+            std::swap(qs[1], qs[3]);
         }
 
         if (mapping[qs[0]] == ts[0])
@@ -399,17 +396,15 @@ void MoleculeAlleneStereo::buildOnSubmolecule(MoleculeAlleneStereo& super, int* 
         if (new_center.subst[2] == -1 && new_center.subst[3] == -1)
             continue;
 
-        int tmp;
-
         if (_baseMolecule.getAtomNumber(new_center.subst[0]) == ELEM_H && _baseMolecule.possibleAtomIsotope(new_center.subst[0], 0))
         {
-            __swap(new_center.subst[0], new_center.subst[1], tmp);
+            std::swap(new_center.subst[0], new_center.subst[1]);
             new_center.parity = 3 - new_center.parity;
         }
 
         if (_baseMolecule.getAtomNumber(new_center.subst[2]) == ELEM_H && _baseMolecule.possibleAtomIsotope(new_center.subst[2], 0))
         {
-            __swap(new_center.subst[2], new_center.subst[3], tmp);
+            std::swap(new_center.subst[2], new_center.subst[3]);
             new_center.parity = 3 - new_center.parity;
         }
 

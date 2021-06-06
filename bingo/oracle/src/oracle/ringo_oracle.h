@@ -37,7 +37,7 @@ class RingoOracleContext : public RingoContext
 {
 public:
     explicit RingoOracleContext(BingoContext& context);
-    virtual ~RingoOracleContext();
+    ~RingoOracleContext() override;
 
     BingoOracleContext& context();
 

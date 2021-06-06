@@ -36,7 +36,7 @@ public:
 
     static Scanner& get(IndigoObject& obj);
 
-    virtual ~IndigoScanner();
+    ~IndigoScanner() override;
 
     std::unique_ptr<Scanner> ptr;
 
@@ -49,9 +49,9 @@ class DLLEXPORT IndigoOutput : public IndigoObject
 public:
     IndigoOutput();
     IndigoOutput(Output* output);
-    virtual ~IndigoOutput();
+    ~IndigoOutput() override;
 
-    virtual void toString(Array<char>& str);
+    void toString(Array<char>& str) override;
 
     static Output& get(IndigoObject& obj);
 

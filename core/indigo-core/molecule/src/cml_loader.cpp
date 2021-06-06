@@ -1065,9 +1065,9 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
         {
             BufferScanner strscan(refs4);
             QS_DEF(Array<char>, id);
-            int k, pyramid[4];
+            int pyramid[4];
 
-            for (k = 0; k < 4; k++)
+            for (int k = 0; k < 4; k++)
             {
                 strscan.skipSpace();
                 strscan.readWord(id, 0);
@@ -1077,7 +1077,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
             }
 
             if (val < 0)
-                __swap(pyramid[0], pyramid[1], k);
+                std::swap(pyramid[0], pyramid[1]);
 
             MoleculeStereocenters::moveMinimalToEnd(pyramid);
 

@@ -999,7 +999,7 @@ int ReactionAutomapper::_validMapFound(BaseReaction& reaction, int react, int pr
     rsub_mcs.userdata = &rsub_mcs;
 
     if (rsub_mcs.searchSubstructure(&sub_map))
-        result = __min(react_copy.vertexCount(), reaction.getBaseMolecule(prod).vertexCount());
+        result = std::min(react_copy.vertexCount(), reaction.getBaseMolecule(prod).vertexCount());
 
     return result;
 }
