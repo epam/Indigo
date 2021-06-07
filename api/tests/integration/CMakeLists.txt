@@ -15,7 +15,7 @@ else()
     execute_process(
             COMMAND ${Python3_EXECUTABLE} -c "import os; import sys; print(os.pathsep.join(sys.path).replace(os.sep,'/') + os.pathsep, end='')"
             OUTPUT_VARIABLE PYTHON_SYS_PATH)
-    set(PYTHON_SYS_PATH "${PYTHON_SYS_PATH}${CMAKE_CURRENT_SOURCE_DIR}")
+    set(PYTHON_SYS_PATH "${CMAKE_CURRENT_SOURCE_DIR}${PYTHON_SYS_PATH}")
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/_c/test.h.in ${CMAKE_CURRENT_SOURCE_DIR}/_c/test.h)
 
     add_custom_target(${PROJECT_NAME}-prepare

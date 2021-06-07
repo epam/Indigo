@@ -132,8 +132,8 @@ def main():
     print("Date & time: " + datetime.datetime.now().strftime("%d.%m.%Y %H:%M"))
     if sys.platform == 'cli':
         import System.Environment
-    print("Platform: {}".format(platform.platform() if sys.platform != 'cli' else System.Environment.OSVersion.ToString()))
-    print("Processor: {}".format(platform.processor() if sys.platform != 'cli' else 'x86_64' if System.Environment.Is64BitProcess else 'x86'))
+    #print("Platform: {}".format(platform.platform() if sys.platform != 'cli' else System.Environment.OSVersion.ToString()))
+    #print("Processor: {}".format(platform.processor() if sys.platform != 'cli' else 'x86_64' if System.Environment.Is64BitProcess else 'x86'))
     print("Python: " + sys.version.replace('\n', '\t'))
     print("Executable: " + python_exec)
     import socket
