@@ -27,9 +27,12 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
-#include <string>
-#include <vector>
 #include <algorithm>
+#include <stack>
+#include <string>
+#include <unordered_set>
+#include <vector>
+#include <array>
 
 namespace indigo
 {
@@ -229,6 +232,186 @@ namespace indigo
         std::string _arr;
     };
 
+    template <typename T> class Array
+    {
+    public:
+        DECL_TPL_ERROR(ArrayError);
+        void clear()
+        {
+            _arr.clear();
+        }
+
+        void clear_resize(int newsize)
+        {
+            _arr.clear();
+            _arr.resize(newsize);
+        }
+
+        void reserve(int to_reserve)
+        {
+            _arr.reserve(to_reserve);
+        }
+
+        const T* ptr() const
+        {
+            return _arr.data();
+        }
+
+        T* ptr()
+        {
+            return &_arr[0];
+        }
+
+        const T& operator[](int index) const
+        {
+            if (index < 0 || _arr.size() - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _arr.size());
+
+            return _arr[index];
+        }
+
+        T& operator[](int index)
+        {
+            if (index < 0 || _arr.size() - index <= 0)
+                throw Error("invalid index %d (size=%d)", index, _arr.size());
+
+            return _arr[index];
+        }
+
+        const T& at(int index) const
+        {
+            return _arr[index];
+        }
+
+        T& at(int index)
+        {
+            return _arr[index];
+        }
+
+        int size() const
+        {
+            return _arr.size();
+        }
+
+        int sizeInBytes() const
+        {
+            return _arr.size() * sizeof(T);
+        }
+
+        const T& top() const
+        {
+            return _arr.back();
+        }
+
+        T& top()
+        {
+            return _arr.back();
+        }
+
+        void swap(Array<T>& other)
+        {
+            _arr.swap(other._arr);
+        }
+
+        void swap(int idx1, int idx2)
+        {
+            std::swap(_arr[idx1], _arr[idx2]);
+        }
+
+        void zerofill()
+        {
+            if (_arr.size())
+                memset(&_arr[0], 0, _arr.size() * sizeof(T));
+        }
+
+        void fffill()
+        {
+            if (_arr.size())
+                memset(&_arr[0], 0xFF, _arr.size() * sizeof(T));
+        }
+
+        void fill(const T& value)
+        {
+            std::fill(_arr.begin(), _arr.end(), value);
+        }
+
+        void resize(int newsize)
+        {
+            _arr.resize(newsize);
+        }
+
+        int find(const T& value) const // TODO:: remove it!!!
+        {
+            for (int i = 0; i < _arr.size(); i++)
+                if (_arr[i] == value)
+                    return i;
+            return -1;
+        }
+
+        void push(T elem)
+        {
+            _arr.push_back(elem);
+        }
+
+        T& push()
+        {
+            _arr.emplace_back();
+            return _arr.back();
+        }
+
+        T& pop()
+        {
+            T& res = _arr.back();
+            _arr.pop_back();
+            return res;
+        }
+
+        void copy(const Array<T>& other)
+        {
+            _arr = other._arr;
+        }
+
+        void copy(const T* other, int count)
+        {
+            _arr.assign(other, count);
+        }
+
+        void concat(const Array<T>& other)
+        {
+            _arr.insert(_arr.end(), other._arr.begin(), other._arr.end());
+        }
+
+        void concat(const T* other, int count)
+        {
+            std::vector<T> tmp(other, count);
+            concat(tmp);
+        }
+
+        void expand(int newsize)
+        {
+            resize(newsize);
+        }
+
+        void expandFill(int newsize, const T& value)
+        {
+            while (_arr.size() < newsize)
+                push(value);
+        }
+
+        void remove(int idx, int span = 1)
+        {
+            auto beg = _arr.begin();
+            std::advance(beg, idx);
+            auto end = beg;
+            std::advance(end, span);
+            _arr.erase(beg, end);
+        }
+
+    private:
+        std::vector<T> _arr;
+    };
+
+    /*
     template <typename T> class Array
     {
     public:
@@ -672,56 +855,6 @@ namespace indigo
             this->qsort(0, _length - 1, cmp, context);
         }
 
-        // ArrayChar-specific
-        void appendString(const char* str, bool keep_zero)
-        {
-            int len = (int)strlen(str);
-            int initial_size = _length;
-
-            if (initial_size > 0 && _array[initial_size - 1] == 0)
-                initial_size--;
-
-            resize(initial_size + len);
-            memcpy(_array + initial_size, str, len);
-
-            if (keep_zero)
-                push(0);
-        }
-
-        void readString(const char* str, bool keep_zero)
-        {
-            clear();
-            appendString(str, keep_zero);
-        }
-
-        void upper(const char* source)
-        {
-            clear();
-            while (*source != 0)
-                push(::toupper(*source++));
-            push(0);
-        }
-
-        void lower(const char* source)
-        {
-            clear();
-            while (*source != 0)
-                push(::tolower(*source++));
-            push(0);
-        }
-
-        void toupper()
-        {
-            for (int i = 0; i < _length; i++)
-                _array[i] = ::toupper(_array[i]);
-        }
-
-        void tolower()
-        {
-            for (int i = 0; i < _length; i++)
-                _array[i] = ::tolower(_array[i]);
-        }
-
     protected:
         T* _array;
 
@@ -748,9 +881,7 @@ namespace indigo
             void* _context;
             int (*_cmp)(T1, T2, void*);
         };
-    };
-
-    // using ArrayChar = Array<char>;
+    };*/
 
 } // namespace indigo
 

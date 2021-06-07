@@ -938,37 +938,39 @@ void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions
     }
 }
 
-int MoleculePkaModel::_asc_cmp_cb(int& v1, int& v2, void* context)
-{
-    ArrayChar key1;
-    ArrayChar key2;
-
-    Molecule& mol = *(Molecule*)context;
-    getAtomLocalKey(mol, v1, key1);
-    getAtomLocalKey(mol, v2, key2);
-
-    if (!key1.ptr()) return 1; // we could get nullptr for H; H must be last in sorted atoms; H always bigger
-    if (!key2.ptr()) return -1; // we could get nullptr for H; H must be last in sorted atoms; H always bigger
-
-    const int res = strcmp(key1.ptr(), key2.ptr());
-    if (res != 0) return res;
-
-    const Vertex& v3 = mol.getVertex(v1);
-    for (auto i : v3.neighbors())
-    {
-        getAtomLocalKey(mol, v3.neiVertex(i), key1);
-    }
-
-    const Vertex& v4 = mol.getVertex(v2);
-    for (auto i : v4.neighbors())
-    {
-        getAtomLocalKey(mol, v4.neiVertex(i), key2);
-    }
-    return strcmp(key1.ptr(), key2.ptr());
-}
-
 void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, ArrayChar& fp, int level)
 {
+    auto _asc_cmp_cb = [&mol](int v1, int v2) -> int
+    {
+        ArrayChar key1;
+        ArrayChar key2;
+
+        getAtomLocalKey(mol, v1, key1);
+        getAtomLocalKey(mol, v2, key2);
+
+        if (!key1.ptr())
+            return 1; // we could get nullptr for H; H must be last in sorted atoms; H always bigger
+        if (!key2.ptr())
+            return -1; // we could get nullptr for H; H must be last in sorted atoms; H always bigger
+
+        const int res = strcmp(key1.ptr(), key2.ptr());
+        if (res != 0)
+            return res;
+
+        const Vertex& v3 = mol.getVertex(v1);
+        for (auto i : v3.neighbors())
+        {
+            getAtomLocalKey(mol, v3.neiVertex(i), key1);
+        }
+
+        const Vertex& v4 = mol.getVertex(v2);
+        for (auto i : v4.neighbors())
+        {
+            getAtomLocalKey(mol, v4.neiVertex(i), key2);
+        }
+        return strcmp(key1.ptr(), key2.ptr());
+    };
+
     QS_DEF(Array<int>, included_atoms);
     QS_DEF(Array<int>, dist_atoms);
     QS_DEF(Queue<int>, bfs_queue);
@@ -976,7 +978,7 @@ void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, ArrayChar
     QS_DEF(ArrayChar, n_key);
     QS_DEF(ArrayChar, bond);
 
-    QS_DEF(Array<int>, neibs_atoms);
+    QS_DEF(std::vector<int>, neibs_atoms);
     QS_DEF(Array<int>, neibs_bonds);
 
     fp.clear();
@@ -1022,9 +1024,10 @@ void MoleculePkaModel::getAtomLocalFingerprint(Molecule& mol, int idx, ArrayChar
 
             for (auto i : v.neighbors())
             {
-                neibs_atoms.push(v.neiVertex(i));
+                neibs_atoms.push_back(v.neiVertex(i));
             }
-            neibs_atoms.qsort(_asc_cmp_cb, &mol);
+
+            std::sort( neibs_atoms.begin(), neibs_atoms.end(), _asc_cmp_cb);
 
             for (auto i = 0; i < neibs_atoms.size(); i++)
             {
@@ -1111,7 +1114,7 @@ void MoleculePkaModel::_checkCanonicalOrder(Molecule& mol, Molecule& can_mol, Ar
 
 void MoleculePkaModel::getAtomLocalKey(Molecule& mol, int idx, ArrayChar& fp)
 {
-    QS_DEF(Array<int>, feature_set);
+    QS_DEF(std::vector<int>, feature_set);
     if (!getAtomLocalFeatureSet(mol, idx, feature_set))
         return;
 
@@ -1143,7 +1146,7 @@ void MoleculePkaModel::getAtomLocalKey(Molecule& mol, int idx, ArrayChar& fp)
  *  11. triple bond count
  *  12. zero bond count
  * */
-bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<int>& fp)
+bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, std::vector<int>& fp)
 {
     if (mol.isPseudoAtom(idx) || mol.isRSite(idx) || mol.isTemplateAtom(idx))
     {
@@ -1201,9 +1204,7 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
             a_coord_cnt++;
     }
 
-    int feature_set[] = {a_num, a_val, a_chg, a_rad, a_iso, a_arom, a_lone, a_conn, a_single_cnt, a_double_cnt, a_aromatic_cnt, a_triple_cnt, a_coord_cnt};
-
-    fp.copy(feature_set, sizeof(feature_set) / sizeof(*feature_set));
+    fp = {a_num, a_val, a_chg, a_rad, a_iso, a_arom, a_lone, a_conn, a_single_cnt, a_double_cnt, a_aromatic_cnt, a_triple_cnt, a_coord_cnt};
 
     return true;
 }

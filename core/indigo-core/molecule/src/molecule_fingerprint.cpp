@@ -731,7 +731,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
 
     std::map<dword, int> counters;
 
-    QS_DEF(Array<int>, feature_set);
+    QS_DEF(std::vector<int>, feature_set);
     for (auto vi : mol.vertices())
     {
         // No exception should ever be thrown, added the try-catch just to be sure
@@ -758,8 +758,8 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
         counters[key] = value + 1; // increment the counter for the key
     }
 
-    QS_DEF(Array<int>, feature_set1);
-    QS_DEF(Array<int>, feature_set2);
+    QS_DEF(std::vector<int>, feature_set1);
+    QS_DEF(std::vector<int>, feature_set2);
     for (auto ei : mol.edges())
     {
         // No exception should ever be thrown, added the try-catch just to be sure
@@ -775,8 +775,8 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
             continue;
         }
 
-        Array<int>*fs1, *fs2; // ordered `feature_set1` and `feature_set2`
-        if (feature_set1.memcmp(feature_set2) < 0)
+        std::vector<int>*fs1, *fs2; // ordered `feature_set1` and `feature_set2`
+        if ( feature_set1 < feature_set2 )
         {
             fs1 = &feature_set1;
             fs2 = &feature_set2;

@@ -64,10 +64,10 @@ namespace indigo
 
         // Thread local key for storing current session ID
         TLS_IDX_TYPE _tlsIdx;
-        RedBlackSet<qword> _allSIDs;
+        std::unordered_set<qword> _allSIDs;
         qword _lastNewSID;
         // Array with vacant SIDs
-        Array<qword> _vacantSIDs;
+        std::stack<qword> _vacantSIDs;
 
     };
 
