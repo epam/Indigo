@@ -22,7 +22,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes, Value& rgroups) : _mol_
 
 int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology)
 {
-    AutoPtr<QueryMolecule::Bond> bond;
+    std::unique_ptr<QueryMolecule::Bond> bond;
     if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
         bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
     else if (order == _BOND_SINGLE_OR_DOUBLE)
@@ -49,7 +49,7 @@ int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int 
 
 int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope)
 {
-    AutoPtr<QueryMolecule::Atom> atom;
+    std::unique_ptr<QueryMolecule::Atom> atom;
     atom.reset(new QueryMolecule::Atom());
     if (element != -1 && element != ELEM_RSITE)
         atom.reset(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, element));
@@ -426,7 +426,7 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
     if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
     {
         QS_DEF(Array<int>, mapping);
-        AutoPtr<BaseMolecule> rep(bmol.neu());
+        std::unique_ptr<BaseMolecule> rep(bmol.neu());
         rep->makeSubmolecule(bmol, sgroup.atoms, &mapping, 0);
 
         rep->sgroups.clear(SGroup::SG_TYPE_SRU);
@@ -441,7 +441,7 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
             int end_order = end_bond > 0 ? bmol.getBondOrder(end_bond) : -1;
             for (int j = 0; j < mg.multiplier - 1; j++)
             {
-                bmol.mergeWithMolecule(rep.ref(), &mapping, 0);
+                bmol.mergeWithMolecule(*rep, &mapping, 0);
                 int k;
                 for (k = rep->vertexBegin(); k != rep->vertexEnd(); k = rep->vertexNext(k))
                     sgroup.atoms.push(mapping[k]);
@@ -659,7 +659,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol)
         for (int rsite_idx = 0; rsite_idx < _rgroups.Size(); ++rsite_idx)
         {
             RGroup& rgroup = rgroups.getRGroup(rsite_idx + 1);
-            AutoPtr<BaseMolecule> fragment(mol.neu());
+            std::unique_ptr<BaseMolecule> fragment(mol.neu());
             Value one_rnode(kArrayType);
             Value& rnode = _rgroups[rsite_idx];
             one_rnode.PushBack(rnode, data.GetAllocator());

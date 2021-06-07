@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "reaction/reaction_automapper.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/red_black.h"
 #include "graph/automorphism_search.h"
 #include "molecule/elements.h"
@@ -97,7 +97,7 @@ void ReactionAutomapper::_createMoleculeCopy(int mol_idx, bool reactant, Array<i
     QS_DEF(Array<int>, vertices_map);
     QS_DEF(Array<int>, vertices_to_clone);
     int cmol_idx, ncomp, edge_beg, edge_end, edge_idx;
-    BaseReaction& reaction = _reactionCopy.ref();
+    BaseReaction& reaction = *_reactionCopy;
     BaseMolecule& mol = _initReaction.getBaseMolecule(mol_idx);
     /*
      * Calculate components
@@ -195,7 +195,7 @@ void ReactionAutomapper::_initMappings(BaseReaction& reaction)
 
     int i, j;
 
-    BaseReaction& copy_reaction = _reactionCopy.ref();
+    BaseReaction& copy_reaction = *_reactionCopy;
 
     if (_mode == AAM_REGEN_ALTER || _mode == AAM_REGEN_DISCARD)
     {
@@ -260,14 +260,14 @@ void ReactionAutomapper::_createReactionMap()
     QS_DEF(ObjArray<Array<int>>, reactant_permutations);
     QS_DEF(Array<int>, product_mapping_tmp);
 
-    BaseReaction& reaction = _reactionCopy.ref();
+    BaseReaction& reaction = *_reactionCopy;
 
     ReactionMapMatchingData react_map_match(reaction);
     react_map_match.createAtomMatchingData();
 
     _initMappings(reaction);
 
-    AutoPtr<BaseReaction> reaction_clone;
+    std::unique_ptr<BaseReaction> reaction_clone;
     reaction_clone.reset(reaction.neu());
     /*
      * Create all possible permutations for reactants
@@ -288,7 +288,7 @@ void ReactionAutomapper::_createReactionMap()
             /*
              * Apply new permutation
              */
-            int map_complete = _handleWithProduct(reactant_permutations[pmt], product_mapping_tmp, reaction_clone.ref(), product, react_map_match);
+            int map_complete = _handleWithProduct(reactant_permutations[pmt], product_mapping_tmp, *reaction_clone, product, react_map_match);
             /*
              * Collect statistic and choose the best mapping
              */
@@ -343,7 +343,7 @@ int ReactionAutomapper::_handleWithProduct(const Array<int>& reactant_cons, Arra
     QS_DEF(Array<int>, vertices_to_remove);
     int map_complete = 0;
 
-    BaseReaction& _reaction = _reactionCopy.ref();
+    BaseReaction& _reaction = *_reactionCopy;
 
     BaseMolecule& product_cut = reaction.getBaseMolecule(product);
     /*
@@ -494,7 +494,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
     QS_DEF(Array<int>, v_mapping);
     QS_DEF(Array<int>, null_map);
     QS_DEF(Array<int>, rmol_map);
-    AutoPtr<BaseReaction> reaction_copy_ptr;
+    std::unique_ptr<BaseReaction> reaction_copy_ptr;
     QS_DEF(ObjArray<Array<int>>, react_invmap);
 
     null_map.clear();
@@ -511,7 +511,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
 
     reaction_copy_ptr.reset(_initReaction.neu());
 
-    BaseReaction& reaction_copy = reaction_copy_ptr.ref();
+    BaseReaction& reaction_copy = *reaction_copy_ptr;
 
     reaction_copy.clone(_initReaction, &rmol_map, 0, &react_invmap);
     reaction_copy.aromatize(arom_options);
@@ -727,7 +727,7 @@ void ReactionAutomapper::_setupReactionMap(Array<int>& react_mapping, ObjArray<A
     if (_mode == AAM_REGEN_KEEP)
         _usedVertices.zerofill();
 
-    BaseReaction& reaction_copy = _reactionCopy.ref();
+    BaseReaction& reaction_copy = *_reactionCopy;
 
     for (mol_idx = _initReaction.productBegin(); mol_idx < _initReaction.productEnd(); mol_idx = _initReaction.productNext(mol_idx))
     {
@@ -775,7 +775,7 @@ void ReactionAutomapper::_setupReactionInvMap(Array<int>& react_mapping, ObjArra
     if (_mode == AAM_REGEN_KEEP)
         _usedVertices.zerofill();
 
-    BaseReaction& reaction_copy = _reactionCopy.ref();
+    BaseReaction& reaction_copy = *_reactionCopy;
 
     mol_idx = reaction_copy.productBegin();
     for (; mol_idx < reaction_copy.productEnd(); mol_idx = reaction_copy.productNext(mol_idx))
@@ -829,8 +829,8 @@ void ReactionAutomapper::_setupReactionInvMap(Array<int>& react_mapping, ObjArra
 
 void ReactionAutomapper::_considerDissociation()
 {
-    AutoPtr<BaseMolecule> null_map_cut;
-    AutoPtr<BaseMolecule> full_map_cut;
+    std::unique_ptr<BaseMolecule> null_map_cut;
+    std::unique_ptr<BaseMolecule> full_map_cut;
     QS_DEF(Array<int>, map);
     int i, j, mcv, mcvsum;
 
@@ -872,7 +872,7 @@ void ReactionAutomapper::_considerDissociation()
             if (null_map_cut->vertexCount() == 0)
                 break;
 
-            RSubstructureMcs rsm(_initReaction, full_map_cut.ref(), null_map_cut.ref(), *this);
+            RSubstructureMcs rsm(_initReaction, *full_map_cut, *null_map_cut, *this);
             rsm.userdata = &rsm;
 
             map.clear();
@@ -902,13 +902,13 @@ void ReactionAutomapper::_considerDimerization()
     QS_DEF(Array<int>, sub_map);
     QS_DEF(Array<int>, max_sub_map);
 
-    AutoPtr<BaseReaction> reaction_copy_ptr;
+    std::unique_ptr<BaseReaction> reaction_copy_ptr;
 
     bool way_exit = true, map_changed = false;
     int map_found, max_found, max_react_index = -1;
     reaction_copy_ptr.reset(_initReaction.neu());
 
-    BaseReaction& reaction_copy = reaction_copy_ptr.ref();
+    BaseReaction& reaction_copy = *reaction_copy_ptr;
 
     reaction_copy.clone(_initReaction, &mol_mapping, 0, &inv_mappings);
     /*

@@ -30,7 +30,7 @@ IndigoMapping::~IndigoMapping()
 
 IndigoObject* IndigoMapping::clone()
 {
-    AutoPtr<IndigoMapping> res_ptr(new IndigoMapping(from, to));
+    std::unique_ptr<IndigoMapping> res_ptr(new IndigoMapping(from, to));
     res_ptr->mapping.copy(mapping);
     return res_ptr.release();
 }
@@ -53,7 +53,7 @@ IndigoReactionMapping::~IndigoReactionMapping()
 
 IndigoObject* IndigoReactionMapping::clone()
 {
-    AutoPtr<IndigoReactionMapping> res_ptr(new IndigoReactionMapping(from, to));
+    std::unique_ptr<IndigoReactionMapping> res_ptr(new IndigoReactionMapping(from, to));
     res_ptr->mol_mapping.copy(mol_mapping);
     for (int i = 0; i < mappings.size(); ++i)
     {
@@ -199,7 +199,7 @@ CEXPORT int indigoHighlightedTarget(int item)
         if (obj.type == IndigoObject::MAPPING)
         {
             IndigoMapping& im = (IndigoMapping&)obj;
-            AutoPtr<IndigoMolecule> mol(new IndigoMolecule());
+            std::unique_ptr<IndigoMolecule> mol(new IndigoMolecule());
 
             QS_DEF(Array<int>, mapping);
             mol->mol.clone(im.to, 0, &mapping);
@@ -209,7 +209,7 @@ CEXPORT int indigoHighlightedTarget(int item)
         if (obj.type == IndigoObject::REACTION_MAPPING)
         {
             IndigoReactionMapping& im = (IndigoReactionMapping&)obj;
-            AutoPtr<IndigoReaction> rxn(new IndigoReaction());
+            std::unique_ptr<IndigoReaction> rxn(new IndigoReaction());
             QS_DEF(ObjArray<Array<int>>, mappings);
             QS_DEF(Array<int>, mol_mapping);
             int i;

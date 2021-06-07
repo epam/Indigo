@@ -41,7 +41,7 @@ CEXPORT int indigoGrossFormula(int object)
         if (IndigoBaseMolecule::is(indigoObject))
         {
             BaseMolecule& mol = self.getObject(object).getBaseMolecule();
-            AutoPtr<IndigoMoleculeGross> grossptr(new IndigoMoleculeGross());
+            std::unique_ptr<IndigoMoleculeGross> grossptr(new IndigoMoleculeGross());
 
             grossptr->gross = MoleculeGrossFormula::collect(mol, self.gross_formula_options.add_isotopes);
             return self.addObject(grossptr.release());
@@ -49,7 +49,7 @@ CEXPORT int indigoGrossFormula(int object)
         else if (IndigoBaseReaction::is(indigoObject))
         {
             BaseReaction& rxn = self.getObject(object).getBaseReaction();
-            AutoPtr<IndigoReactionGross> grossptr(new IndigoReactionGross());
+            std::unique_ptr<IndigoReactionGross> grossptr(new IndigoReactionGross());
 
             grossptr->gross = ReactionGrossFormula::collect(rxn, self.gross_formula_options.add_isotopes);
             return self.addObject(grossptr.release());

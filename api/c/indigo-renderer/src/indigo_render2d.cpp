@@ -349,9 +349,9 @@ RenderCdxmlContext& getCdxmlContext()
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     if (rp.rOpt.cdxml_context.get() == NULL)
     {
-        rp.rOpt.cdxml_context.create();
+        rp.rOpt.cdxml_context = std::make_unique<RenderCdxmlContext>();
     }
-    return rp.rOpt.cdxml_context.ref();
+    return *rp.rOpt.cdxml_context;
 }
 
 void indigoRenderSetCdxmlPropertiesKeyAlignment(const char* value)
@@ -462,7 +462,7 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
         PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
         if (rp.rOpt.cdxml_context.get() != NULL)
         {
-            RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
+            RenderCdxmlContext& context = *rp.rOpt.cdxml_context;
             context.property_data.clear();
         }
         if (IndigoBaseMolecule::is(*objs[0]))
@@ -482,7 +482,7 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
                     if (rp.rOpt.cdxml_context.get() != NULL)
                     {
 
-                        RenderCdxmlContext& context = rp.rOpt.cdxml_context.ref();
+                        RenderCdxmlContext& context = *rp.rOpt.cdxml_context;
                         RenderCdxmlContext::PropertyData& data = context.property_data.push();
 
                         auto& properties = objs[i]->getProperties();

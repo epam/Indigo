@@ -64,7 +64,7 @@ IndigoObject* IndigoTautomerIter::next()
 {
     if (hasNext())
     {
-        AutoPtr<IndigoMoleculeTautomer> result(new IndigoMoleculeTautomer(_enumerator, _currentPosition));
+        std::unique_ptr<IndigoMoleculeTautomer> result(new IndigoMoleculeTautomer(_enumerator, _currentPosition));
         _currentPosition = _enumerator.next(_currentPosition);
         return result.release();
     }

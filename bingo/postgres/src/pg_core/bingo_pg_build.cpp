@@ -13,7 +13,7 @@ extern "C"
 
 #include "bingo_pg_build.h"
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/profiling.h"
 #include "bingo_core_c.h"
 

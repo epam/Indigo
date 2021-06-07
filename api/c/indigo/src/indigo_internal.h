@@ -199,7 +199,7 @@ public:
     virtual void copyProperties(RedBlackStringObjMap<Array<char>>& other);
 
 protected:
-    AutoPtr<Array<char>> _dbg_info; // allocated by debugInfo() on demand
+    std::unique_ptr<Array<char>> _dbg_info; // allocated by debugInfo() on demand
 private:
     IndigoObject(const IndigoObject&);
 };

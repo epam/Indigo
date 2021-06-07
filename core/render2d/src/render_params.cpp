@@ -213,7 +213,7 @@ void RenderParamInterface::render(RenderParams& params)
         if (params.mols.size() == 0)
         {
             obj = factory.addItemMolecule();
-            BaseMolecule& bm = params.mol.ref();
+            BaseMolecule& bm = *params.mol;
             _prepareMolecule(params, bm);
             factory.getItemMolecule(obj).mol = &bm;
         }
@@ -241,7 +241,7 @@ void RenderParamInterface::render(RenderParams& params)
         {
             obj = factory.addItemReaction();
             factory.getItemReaction(obj);
-            BaseReaction& rxn = params.rxn.ref();
+            BaseReaction& rxn = *params.rxn;
             _prepareReaction(params, rxn);
             factory.getItemReaction(obj).rxn = &rxn;
         }

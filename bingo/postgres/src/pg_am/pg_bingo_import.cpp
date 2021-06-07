@@ -126,7 +126,7 @@ public:
         ~ImportInt8Data() override
         {
         }
-        AutoPtr<int64> data;
+        std::unique_ptr<int64> data;
 
         void convert(const char* str) override
         {
@@ -163,7 +163,7 @@ public:
         ~ImportInt4Data() override
         {
         }
-        AutoPtr<int32> data;
+        std::unique_ptr<int32> data;
 
         void convert(const char* str) override
         {
@@ -297,7 +297,7 @@ public:
 
     void _addData(const char* data, int col_idx)
     {
-        AutoPtr<ImportData> import_data;
+        std::unique_ptr<ImportData> import_data;
         ImportColumn& import_column = _importColumns[col_idx];
         /*
          * Detect the types and correspond class

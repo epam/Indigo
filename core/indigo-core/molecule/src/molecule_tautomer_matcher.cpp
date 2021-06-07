@@ -29,7 +29,7 @@ using namespace indigo;
 IMPL_ERROR(MoleculeTautomerMatcher, "molecule tautomer matcher");
 
 MoleculeTautomerMatcher::MoleculeTautomerMatcher(Molecule& target, bool substructure)
-    : _substructure(substructure), _force_hydrogens(false), _ring_chain(false), _rules(0), _rules_list(0), _context(0), _target_src(target), _query(0)
+    : _substructure(substructure), _force_hydrogens(false), _ring_chain(false), _rules(0), _rules_list(0), _target_src(target)
 {
     if (substructure)
     {

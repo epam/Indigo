@@ -53,7 +53,7 @@ float MoleculeCdxmlSaver::textLineHeight() const
 void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
 {
     _doc.reset(new TiXmlDocument());
-    AutoPtr<TiXmlElement> root(new TiXmlElement("CDXML"));
+    std::unique_ptr<TiXmlElement> root(new TiXmlElement("CDXML"));
 
     _doc->LinkEndChild(new TiXmlDeclaration("1.0", "UTF-8", ""));
     TiXmlUnknown* doctype = new TiXmlUnknown();

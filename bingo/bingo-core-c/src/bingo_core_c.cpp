@@ -303,7 +303,7 @@ CEXPORT int bingoAddTautomerRule(int n, const char* beg, const char* end)
         if (n < 1 || n >= 32)
             throw BingoError("tautomer rule index %d is out of range", n);
 
-        AutoPtr<TautomerRule> rule(new TautomerRule());
+        std::unique_ptr<TautomerRule> rule(new TautomerRule());
 
         bingoGetTauCondition(beg, rule->aromaticity1, rule->list1);
         bingoGetTauCondition(end, rule->aromaticity2, rule->list2);

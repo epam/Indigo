@@ -685,7 +685,7 @@ CEXPORT int indigoUnserialize(const byte* buf, int size)
         {
             BufferScanner scanner(buf, size);
             IcmLoader loader(scanner);
-            AutoPtr<IndigoMolecule> im(new IndigoMolecule());
+            std::unique_ptr<IndigoMolecule> im(new IndigoMolecule());
             loader.loadMolecule(im->mol);
             return self.addObject(im.release());
         }
@@ -693,7 +693,7 @@ CEXPORT int indigoUnserialize(const byte* buf, int size)
         {
             BufferScanner scanner(buf, size);
             IcrLoader loader(scanner);
-            AutoPtr<IndigoReaction> ir(new IndigoReaction());
+            std::unique_ptr<IndigoReaction> ir(new IndigoReaction());
             loader.loadReaction(ir->rxn);
             return self.addObject(ir.release());
         }
@@ -1204,7 +1204,7 @@ CEXPORT int indigoTransformHELMtoSCSR(int object)
 
         if (obj.type == IndigoObject::RDF_MOLECULE)
         {
-            AutoPtr<IndigoMolecule> im(new IndigoMolecule());
+            std::unique_ptr<IndigoMolecule> im(new IndigoMolecule());
             im->mol.clone(obj.getMolecule(), 0, 0);
 
             auto& props = obj.getProperties();

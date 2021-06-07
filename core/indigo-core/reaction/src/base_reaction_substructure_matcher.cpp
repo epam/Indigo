@@ -120,7 +120,7 @@ bool BaseReactionSubstructureMatcher::find()
             int mode = _matchers.top()->getMode();
 
             //_matchers.reserve(_matchers.size() + 1);
-            AutoPtr<_Matcher> top_matcher(new _Matcher(*_matchers.top()));
+            std::unique_ptr<_Matcher> top_matcher(new _Matcher(*_matchers.top()));
             _matchers.add(top_matcher.release());
             _matchers.top()->setMode(command);
             if (!_matchers.top()->addPair(mol1, mol2, core1, core2, mode == _FIRST_SIDE))

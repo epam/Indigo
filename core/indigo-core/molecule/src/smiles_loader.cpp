@@ -20,7 +20,7 @@
 
 #include "molecule/smiles_loader.h"
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/scanner.h"
 #include "graph/cycle_basis.h"
 #include "molecule/elements.h"
@@ -514,14 +514,14 @@ void SmilesLoader::_readOtherStuff()
                             }
                             else if (label.size() == 3 && label[0] == 'A' && label[1] == 'H')
                             {
-                                AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                                std::unique_ptr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
 
                                 x_atom->type = QueryMolecule::OP_NONE;
                                 _qmol->resetAtom(i, x_atom.release());
                             }
                             else if (label.size() == 2 && label[0] == 'X')
                             {
-                                AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                                std::unique_ptr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
 
                                 x_atom->type = QueryMolecule::OP_OR;
                                 x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
@@ -536,7 +536,7 @@ void SmilesLoader::_readOtherStuff()
                             }
                             else if (label.size() == 3 && label[0] == 'X' && label[1] == 'H')
                             {
-                                AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                                std::unique_ptr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
 
                                 x_atom->type = QueryMolecule::OP_OR;
                                 x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
@@ -552,7 +552,7 @@ void SmilesLoader::_readOtherStuff()
                             }
                             else if (label.size() == 2 && label[0] == 'M')
                             {
-                                AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                                std::unique_ptr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
 
                                 x_atom->type = QueryMolecule::OP_AND;
                                 x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -580,7 +580,7 @@ void SmilesLoader::_readOtherStuff()
                             }
                             else if (label.size() == 3 && label[0] == 'M' && label[1] == 'H')
                             {
-                                AutoPtr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                                std::unique_ptr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
 
                                 x_atom->type = QueryMolecule::OP_AND;
                                 x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -801,7 +801,7 @@ void SmilesLoader::_readOtherStuff()
                             {
                                 rgdesc.pop();
 
-                                AutoPtr<BaseMolecule> fragment(_bmol->neu());
+                                std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
                                 BufferScanner rg_scanner(rgdesc);
                                 SmilesLoader rg_loader(rg_scanner);
 
@@ -1000,7 +1000,7 @@ void SmilesLoader::_parseMolecule()
                     if (_qmol != 0)
                     {
                         QS_DEF(Array<char>, bond_str);
-                        AutoPtr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond());
+                        std::unique_ptr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond());
 
                         bond_str.readString(_pending_bonds_pool.at(_cycles[number].pending_bond_str), false);
                         _readBond(bond_str, *bond, qbond);
@@ -1091,7 +1091,7 @@ void SmilesLoader::_parseMolecule()
             bond->index = -1;
         }
 
-        AutoPtr<QueryMolecule::Bond> qbond;
+        std::unique_ptr<QueryMolecule::Bond> qbond;
 
         if (bond != 0)
         {
@@ -1241,7 +1241,7 @@ void SmilesLoader::_parseMolecule()
 
         _AtomDesc& atom = _atoms.push(_neipool);
 
-        AutoPtr<QueryMolecule::Atom> qatom;
+        std::unique_ptr<QueryMolecule::Atom> qatom;
 
         if (_qmol != 0)
             qatom.reset(new QueryMolecule::Atom());
@@ -1352,7 +1352,7 @@ void SmilesLoader::_parseMolecule()
             QueryMolecule::Atom& q_beg = _qmol->getAtom(edge.beg);
             QueryMolecule::Atom& q_end = _qmol->getAtom(edge.end);
 
-            AutoPtr<QueryMolecule::Bond> new_qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+            std::unique_ptr<QueryMolecule::Bond> new_qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
 
             bool beg_can_be_aromatic = q_beg.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC);
             bool end_can_be_aromatic = q_end.possibleValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC);
@@ -1723,8 +1723,8 @@ void SmilesLoader::_forbidHydrogens()
             // not desired if it is a list with hydrogen
             if (!_qmol->getAtom(i).hasConstraintWithValue(QueryMolecule::ATOM_NUMBER, ELEM_H))
             {
-                AutoPtr<QueryMolecule::Atom> newatom;
-                AutoPtr<QueryMolecule::Atom> oldatom(_qmol->releaseAtom(i));
+                std::unique_ptr<QueryMolecule::Atom> newatom;
+                std::unique_ptr<QueryMolecule::Atom> oldatom(_qmol->releaseAtom(i));
 
                 newatom.reset(
                     QueryMolecule::Atom::und(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)), oldatom.release()));
@@ -1782,15 +1782,15 @@ void SmilesLoader::_addLigandsForStereo()
             {
                 _AtomDesc& atom = _atoms.push(_neipool);
                 _BondDesc* bond = &_bonds.push();
-                AutoPtr<QueryMolecule::Atom> qatom;
+                std::unique_ptr<QueryMolecule::Atom> qatom;
 
                 if (add_explicit_h)
-                    qatom = QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+                    qatom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
                 else
-                    qatom = QueryMolecule::Atom::oder(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
-                                                      new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+                    qatom.reset(QueryMolecule::Atom::oder(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)),
+                                                      new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
 
-                AutoPtr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+                std::unique_ptr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
 
                 atom.star_atom = true;
                 int any_atom_idx = _qmol->addAtom(qatom.release());
@@ -1812,8 +1812,8 @@ void SmilesLoader::_addLigandsForStereo()
                 _AtomDesc& atom = _atoms.push(_neipool);
                 _BondDesc* bond = &_bonds.push();
 
-                AutoPtr<QueryMolecule::Atom> qatom(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
-                AutoPtr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
+                std::unique_ptr<QueryMolecule::Atom> qatom(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H));
+                std::unique_ptr<QueryMolecule::Bond> qbond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
 
                 atom.label = ELEM_H;
                 int exp_h_idx = _qmol->addAtom(qatom.release());
@@ -1930,7 +1930,7 @@ void SmilesLoader::_handlePolymerRepetition(int i)
     if (_polymer_repetitions[i] > 1)
     {
         QS_DEF(Array<int>, mapping);
-        AutoPtr<BaseMolecule> rep(_bmol->neu());
+        std::unique_ptr<BaseMolecule> rep(_bmol->neu());
 
         rep->makeSubmolecule(*_bmol, sgroup->atoms, &mapping, 0);
         rep->sgroups.clear(SGroup::SG_TYPE_SRU);
@@ -1941,7 +1941,7 @@ void SmilesLoader::_handlePolymerRepetition(int i)
         // already have one instance of the sgroup; add repetitions if they exist
         for (j = 0; j < _polymer_repetitions[i] - 1; j++)
         {
-            _bmol->mergeWithMolecule(rep.ref(), &mapping, 0);
+            _bmol->mergeWithMolecule(*rep, &mapping, 0);
 
             int k;
 
@@ -2019,12 +2019,12 @@ void SmilesLoader::_loadMolecule()
     _loadParsedMolecule();
 }
 
-void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond)
+void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond)
 {
     if (bond_str.find(';') != -1)
     {
         QS_DEF(Array<char>, substring);
-        AutoPtr<QueryMolecule::Bond> subqbond;
+        std::unique_ptr<QueryMolecule::Bond> subqbond;
         int i;
 
         if (_qmol == 0)
@@ -2048,7 +2048,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, AutoPtr<Que
     if (bond_str.find(',') != -1)
     {
         QS_DEF(Array<char>, substring);
-        AutoPtr<QueryMolecule::Bond> subqbond;
+        std::unique_ptr<QueryMolecule::Bond> subqbond;
         int i;
 
         if (_qmol == 0)
@@ -2075,7 +2075,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, AutoPtr<Que
     if (bond_str.find('&') != -1)
     {
         QS_DEF(Array<char>, substring);
-        AutoPtr<QueryMolecule::Bond> subqbond;
+        std::unique_ptr<QueryMolecule::Bond> subqbond;
         int i;
 
         if (_qmol == 0)
@@ -2099,7 +2099,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, AutoPtr<Que
     _readBondSub(bond_str, bond, qbond);
 }
 
-void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, AutoPtr<QueryMolecule::Bond>& qbond)
+void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond)
 {
     BufferScanner scanner(bond_str);
 
@@ -2172,7 +2172,7 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, AutoPtr<
         else
             throw Error("Character #%d is unexpected during bond parsing", next);
 
-        AutoPtr<QueryMolecule::Bond> subqbond;
+        std::unique_ptr<QueryMolecule::Bond> subqbond;
 
         if (order > 0)
         {
@@ -2210,7 +2210,7 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, AutoPtr<
     }
 }
 
-bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom)
+bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom)
 {
     QS_DEF(Array<char>, atom_str_copy);
     if (atom_str.size() < 1)
@@ -2241,7 +2241,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
     if (atom_str_copy.find(';') != -1)
     {
         QS_DEF(Array<char>, substring);
-        AutoPtr<QueryMolecule::Atom> subqatom;
+        std::unique_ptr<QueryMolecule::Atom> subqatom;
         int i, k = 0;
 
         if (qatom.get() == 0)
@@ -2267,7 +2267,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
     if (atom_str_copy.find(',') != -1)
     {
         QS_DEF(Array<char>, substring);
-        AutoPtr<QueryMolecule::Atom> subqatom;
+        std::unique_ptr<QueryMolecule::Atom> subqatom;
         int i, k = 0;
 
         if (qatom.get() == 0)
@@ -2296,7 +2296,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
     if (atom_str_copy.find('&') != -1)
     {
         QS_DEF(Array<char>, substring);
-        AutoPtr<QueryMolecule::Atom> subqatom;
+        std::unique_ptr<QueryMolecule::Atom> subqatom;
         int i, k = 0;
 
         if (qatom.get() == 0)
@@ -2321,7 +2321,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
     return true;
 }
 
-void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, AutoPtr<QueryMolecule::Atom>& qatom)
+void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom)
 {
     if (!_readAtomLogic(atom_str, first_in_brackets, atom, qatom))
         return;
@@ -2336,7 +2336,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
         int element = -1;
         int aromatic = 0;
         int next = scanner.lookNext();
-        AutoPtr<QueryMolecule::Atom> subatom;
+        std::unique_ptr<QueryMolecule::Atom> subatom;
 
         if (next == '!')
         {
@@ -2374,10 +2374,10 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             }
 
             BufferScanner subscanner(subexp);
-            AutoPtr<SmilesLoader> subloader(new SmilesLoader(subscanner));
-            AutoPtr<QueryMolecule> fragment(new QueryMolecule());
+            std::unique_ptr<SmilesLoader> subloader(new SmilesLoader(subscanner));
+            std::unique_ptr<QueryMolecule> fragment(new QueryMolecule());
 
-            subloader->loadSMARTS(fragment.ref());
+            subloader->loadSMARTS(*fragment);
             fragment->fragment_smarts.copy(subexp);
             fragment->fragment_smarts.push(0);
 

@@ -67,7 +67,7 @@ void MoleculeLayout::_init(bool smart_layout)
                 // collapse multiple group
                 atomMapCollapse.clear();
                 bondMapInv.clear();
-                BaseMolecule::collapse(_molCollapsed.ref(), i, atomMapCollapse, bondMapInv);
+                BaseMolecule::collapse(*_molCollapsed, i, atomMapCollapse, bondMapInv);
 
                 // modify the atom mapping
                 for (int j = 0; j < _atomMapping.size(); ++j)
@@ -384,7 +384,7 @@ void MoleculeLayout::_make()
         for (int j = 0; j < _atomMapping.size(); ++j)
         {
             int i = _atomMapping[j];
-            _molecule.setAtomXyz(j, _molCollapsed.ref().getAtomXyz(i));
+            _molecule.setAtomXyz(j, _molCollapsed->getAtomXyz(i));
         }
         _molCollapsed.reset(NULL);
     }

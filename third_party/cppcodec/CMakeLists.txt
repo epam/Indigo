@@ -8,9 +8,9 @@ include(CTest)
 # These flags are for binaries built by this particular CMake project (test_cppcodec, base64enc, etc.).
 # In your own project that uses cppcodec, you might want to specify a different standard or error level.
 
-# Request C++11, or let the user specify the standard on via -D command line option.
+# Request C++14, or let the user specify the standard on via -D command line option.
 if (NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD 14)
 endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

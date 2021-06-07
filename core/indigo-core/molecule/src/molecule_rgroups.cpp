@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "molecule/molecule_rgroups.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "molecule/query_molecule.h"
 
 using namespace indigo;
@@ -48,7 +48,7 @@ void RGroup::copy(RGroup& other)
     PtrPool<BaseMolecule>& frags = other.fragments;
     for (int i = frags.begin(); i != frags.end(); i = frags.next(i))
     {
-        AutoPtr<BaseMolecule> new_fragment(frags[i]->neu());
+        std::unique_ptr<BaseMolecule> new_fragment(frags[i]->neu());
 
         new_fragment->clone(*frags[i], 0, 0);
         fragments.add(new_fragment.release());

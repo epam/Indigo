@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "molecule/molecule_tgroups.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/scanner.h"
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
@@ -110,7 +110,7 @@ void TGroup::copy(TGroup& other)
     tgroup_natreplace.copy(other.tgroup_natreplace);
     tgroup_id = other.tgroup_id;
 
-    AutoPtr<BaseMolecule> new_fragment(other.fragment->neu());
+    std::unique_ptr<BaseMolecule> new_fragment(other.fragment->neu());
     fragment.reset(new_fragment.release());
     fragment->clone(*other.fragment.get(), 0, 0);
 }

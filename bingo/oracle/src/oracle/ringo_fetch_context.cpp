@@ -62,7 +62,7 @@ RingoFetchContext& RingoFetchContext::create(RingoOracleContext& context, const 
         if (_instances[i]->id >= id)
             id = _instances[i]->id + 1;
 
-    AutoPtr<RingoFetchContext> new_context(new RingoFetchContext(id, context, query_id));
+    std::unique_ptr<RingoFetchContext> new_context(new RingoFetchContext(id, context, query_id));
     const BingoOracleContext& boc = context.context();
 
     new_context->id = id;

@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "indigo_reaction.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "indigo_array.h"
 #include "indigo_io.h"
@@ -280,7 +280,7 @@ IndigoReaction* IndigoReaction::cloneFrom(IndigoObject& obj)
 {
     Reaction& rxn = obj.getReaction();
 
-    AutoPtr<IndigoReaction> rxnptr;
+    std::unique_ptr<IndigoReaction> rxnptr;
     rxnptr.reset(new IndigoReaction());
     rxnptr->rxn.clone(rxn, 0, 0, 0);
 
@@ -305,7 +305,7 @@ IndigoQueryReaction* IndigoQueryReaction::cloneFrom(IndigoObject& obj)
 {
     QueryReaction& rxn = obj.getQueryReaction();
 
-    AutoPtr<IndigoQueryReaction> rxnptr;
+    std::unique_ptr<IndigoQueryReaction> rxnptr;
     rxnptr.reset(new IndigoQueryReaction());
     rxnptr->rxn.clone(rxn, 0, 0, 0);
 
@@ -369,7 +369,7 @@ CEXPORT int indigoLoadReaction(int source)
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
         loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
 
-        AutoPtr<IndigoReaction> rxnptr(new IndigoReaction());
+        std::unique_ptr<IndigoReaction> rxnptr(new IndigoReaction());
         loader.loadReaction(rxnptr->rxn);
         return self.addObject(rxnptr.release());
     }
@@ -388,7 +388,7 @@ CEXPORT int indigoLoadQueryReaction(int source)
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
 
-        AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+        std::unique_ptr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
         loader.loadQueryReaction(rxnptr->rxn);
         return self.addObject(rxnptr.release());
     }
@@ -745,7 +745,7 @@ CEXPORT int indigoLoadReactionSmarts(int source)
         IndigoObject& obj = self.getObject(source);
         RSmilesLoader loader(IndigoScanner::get(obj));
 
-        AutoPtr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+        std::unique_ptr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
 
         QueryReaction& qrxn = rxnptr->rxn;
 

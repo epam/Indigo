@@ -1,7 +1,7 @@
 #ifndef _BINGO_PG_INDEX_H__
 #define _BINGO_PG_INDEX_H__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/obj_array.h"
 
@@ -159,7 +159,7 @@ private:
     BingoMetaPageData _metaInfo;
     BingoPgBuffer _metaBuffer;
     indigo::PtrArray<BingoPgBuffer> _sectionOffsetBuffers;
-    indigo::AutoPtr<BingoPgSection> _currentSection;
+    indigo::std::unique_ptr<BingoPgSection> _currentSection;
     int _currentSectionIdx;
 };
 

@@ -4,7 +4,7 @@
 #ifndef _BINGO_PG_BUILD_H__
 #define _BINGO_PG_BUILD_H__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/exception.h"
 #include "base_cpp/obj_array.h"
 
@@ -57,7 +57,7 @@ private:
      */
     BingoPgIndex _bufferIndex;
 
-    indigo::AutoPtr<BingoPgBuildEngine> fp_engine;
+    indigo::std::unique_ptr<BingoPgBuildEngine> fp_engine;
 
     /*
      * There are two possible uses - build(true) and update(false)
@@ -67,7 +67,7 @@ private:
     indigo::ObjArray<BingoPgBuildEngine::StructCache> _parrallelCache;
 
     //#ifdef BINGO_PG_INTEGRITY_DEBUG
-    //   indigo::AutoPtr<FileOutput> debug_fileoutput;
+    //   indigo::std::unique_ptr<FileOutput> debug_fileoutput;
     //#endif
 };
 

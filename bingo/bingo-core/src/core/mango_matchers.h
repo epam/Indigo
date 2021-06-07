@@ -19,7 +19,7 @@
 #ifndef __mango_matchers__
 #define __mango_matchers__
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/cmf_loader.h"
@@ -274,7 +274,7 @@ public:
 protected:
     BingoContext& _context;
 
-    AutoPtr<BaseMolecule> _query;
+    std::unique_ptr<BaseMolecule> _query;
     Molecule _target;
     Array<char> _query_gross_str;
     Array<byte> _query_fp;

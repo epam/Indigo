@@ -70,7 +70,7 @@ static OCIString* _mangoSMILES(OracleEnv& env, const Array<char>& target_buf, co
     profTimerStop(tload);
 
     _mangoUpdateMolecule(target, options, context);
-    AutoPtr<CancellationHandler> handler(nullptr);
+    std::unique_ptr<CancellationHandler> handler(nullptr);
     if (context.timeout > 0)
     {
         handler.reset(new TimeoutCancellationHandler(context.timeout));

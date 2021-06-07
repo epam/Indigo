@@ -18,7 +18,7 @@
 
 #include "oracle/bingo_oracle.h"
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/profiling.h"
 #include "base_cpp/scanner.h"
@@ -143,7 +143,7 @@ void mangoRegisterTable(OracleEnv& env, MangoOracleContext& context, const char*
 
     QS_DEF(Array<char>, molfile_buf);
     OracleStatement statement(env);
-    AutoPtr<OracleLOB> molfile_lob;
+    std::unique_ptr<OracleLOB> molfile_lob;
     OraRowidText rowid;
     char varchar2_text[4001];
 

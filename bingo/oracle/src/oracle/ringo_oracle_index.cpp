@@ -18,7 +18,7 @@
 
 #include "oracle/bingo_oracle.h"
 
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "base_cpp/output.h"
 #include "graph/embedding_enumerator.h"
 #include "molecule/cmf_saver.h"
@@ -101,7 +101,7 @@ void ringoRegisterTable(OracleEnv& env, RingoOracleContext& context, const char*
 {
     QS_DEF(Array<char>, reaction_buf);
     OracleStatement statement(env);
-    AutoPtr<OracleLOB> reaction_lob;
+    std::unique_ptr<OracleLOB> reaction_lob;
     OraRowidText rowid;
     char varchar2_text[4001];
 

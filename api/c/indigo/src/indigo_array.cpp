@@ -18,7 +18,7 @@
 
 #include "indigo_array.h"
 // #include "api/indigo.h"
-#include "base_cpp/auto_ptr.h"
+#include <memory>
 #include "indigo_loaders.h"
 
 IndigoArray::IndigoArray() : IndigoObject(ARRAY)
@@ -49,7 +49,7 @@ IndigoArray& IndigoArray::cast(IndigoObject& obj)
 
 IndigoObject* IndigoArray::clone()
 {
-    AutoPtr<IndigoArray> res(new IndigoArray());
+    std::unique_ptr<IndigoArray> res(new IndigoArray());
 
     int i;
 
@@ -136,7 +136,7 @@ IndigoObject* IndigoArrayIter::next()
 
     _idx++;
 
-    AutoPtr<IndigoArrayElement> elem(new IndigoArrayElement(*_arr, _idx));
+    std::unique_ptr<IndigoArrayElement> elem(new IndigoArrayElement(*_arr, _idx));
 
     return elem.release();
 }

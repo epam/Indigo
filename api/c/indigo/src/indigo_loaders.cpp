@@ -84,7 +84,7 @@ IndigoSdfLoader::IndigoSdfLoader(const char* filename) : IndigoObject(SDF_LOADER
 {
     // AutoPtr guard in case of exception in SdfLoader (happens in case of empty file)
     _own_scanner.reset(new FileScanner(indigoGetInstance().filename_encoding, filename));
-    sdf_loader.reset(new SdfLoader(_own_scanner.ref()));
+    sdf_loader.reset(new SdfLoader(*_own_scanner));
 }
 
 IndigoSdfLoader::~IndigoSdfLoader()
@@ -274,13 +274,13 @@ long long IndigoSdfLoader::tell()
 
 IndigoRdfLoader::IndigoRdfLoader(Scanner& scanner) : IndigoObject(RDF_LOADER)
 {
-    rdf_loader = new RdfLoader(scanner);
+    rdf_loader.reset(new RdfLoader(scanner));
 }
 
 IndigoRdfLoader::IndigoRdfLoader(const char* filename) : IndigoObject(RDF_LOADER)
 {
     _own_scanner.reset(new FileScanner(indigoGetInstance().filename_encoding, filename));
-    rdf_loader.reset(new RdfLoader(_own_scanner.ref()));
+    rdf_loader.reset(new RdfLoader(*_own_scanner));
 }
 
 IndigoRdfLoader::~IndigoRdfLoader()
@@ -733,13 +733,13 @@ const char* IndigoCmlReaction::debugInfo()
 IndigoMultipleCmlLoader::IndigoMultipleCmlLoader(Scanner& scanner) : IndigoObject(MULTIPLE_CML_LOADER)
 {
     _own_scanner = 0;
-    loader = new MultipleCmlLoader(scanner);
+    loader.reset(new MultipleCmlLoader(scanner));
 }
 
 IndigoMultipleCmlLoader::IndigoMultipleCmlLoader(const char* filename) : IndigoObject(MULTIPLE_CML_LOADER)
 {
     _own_scanner.reset(new FileScanner(filename));
-    loader.reset(new MultipleCmlLoader(_own_scanner.ref()));
+    loader.reset(new MultipleCmlLoader(*_own_scanner));
 }
 
 IndigoMultipleCmlLoader::~IndigoMultipleCmlLoader()
@@ -885,13 +885,13 @@ const char* IndigoCdxReaction::debugInfo()
 IndigoMultipleCdxLoader::IndigoMultipleCdxLoader(Scanner& scanner) : IndigoObject(MULTIPLE_CDX_LOADER)
 {
     _own_scanner = 0;
-    loader = new MultipleCdxLoader(scanner);
+    loader.reset(new MultipleCdxLoader(scanner));
 }
 
 IndigoMultipleCdxLoader::IndigoMultipleCdxLoader(const char* filename) : IndigoObject(MULTIPLE_CDX_LOADER)
 {
     _own_scanner.reset(new FileScanner(filename));
-    loader.reset(new MultipleCdxLoader(_own_scanner.ref()));
+    loader.reset(new MultipleCdxLoader(*_own_scanner));
 }
 
 IndigoMultipleCdxLoader::~IndigoMultipleCdxLoader()

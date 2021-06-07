@@ -224,7 +224,7 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
             is_edge_in_aromatic_cycle[e_idx] = 1;
     }
     Filter aromatic_edge_filter(is_edge_in_aromatic_cycle.ptr(), Filter::EQ, 1);
-    SpanningTree arom_edges_st(_submolecule.ref(), 0, &aromatic_edge_filter);
+    SpanningTree arom_edges_st(*_submolecule, 0, &aromatic_edge_filter);
     // Store in is_edge_in_aromatic_cycle marks about such bonds
     is_edge_in_aromatic_cycle.zerofill();
     arom_edges_st.markAllEdgesInCycles(is_edge_in_aromatic_cycle.ptr(), 1);
@@ -246,10 +246,10 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
             {
                 QueryMolecule& qmol = _submolecule->asQueryMolecule();
 
-                AutoPtr<QueryMolecule::Bond> bond(qmol.releaseBond(e_idx));
+                std::unique_ptr<QueryMolecule::Bond> bond(qmol.releaseBond(e_idx));
                 bond->removeConstraints(QueryMolecule::BOND_ORDER);
 
-                AutoPtr<QueryMolecule::Bond> arom_bond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC));
+                std::unique_ptr<QueryMolecule::Bond> arom_bond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC));
 
                 qmol.resetBond(e_idx, QueryMolecule::Bond::und(bond.release(), arom_bond.release()));
             }
@@ -314,9 +314,9 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
         // Find dearomatization
         if (dearomatizer.get() == NULL)
         {
-            dearomatizer.create(_submolecule.ref(), external_conn.ptr(), _arom_options);
+            dearomatizer.create(*_submolecule, external_conn.ptr(), _arom_options);
             dearomatizer->enumerateDearomatizations(dearomatizations);
-            dearomatizationMatcher.create(dearomatizations, _submolecule.ref(), external_conn.ptr());
+            dearomatizationMatcher.create(dearomatizations, *_submolecule, external_conn.ptr());
         }
 
         // Fix bond

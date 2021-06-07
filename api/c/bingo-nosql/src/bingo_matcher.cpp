@@ -677,7 +677,7 @@ bool BaseSimilarityMatcher::next()
                 }
 
                 _current_portion.clear();
-                sim_storage.getSimilar(_query_fp.ptr(), _sim_coef.ref(), _query_data->getMin(), _current_portion, _current_cell, _current_container);
+                sim_storage.getSimilar(_query_fp.ptr(), *_sim_coef, _query_data->getMin(), _current_portion, _current_cell, _current_container);
             }
             else
             {
@@ -685,7 +685,7 @@ bool BaseSimilarityMatcher::next()
                     return false;
 
                 _current_portion.clear();
-                sim_storage.getIncSimilar(_query_fp.ptr(), _sim_coef.ref(), _query_data->getMin(), _current_portion);
+                sim_storage.getIncSimilar(_query_fp.ptr(), *_sim_coef, _query_data->getMin(), _current_portion);
             }
 
             _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));

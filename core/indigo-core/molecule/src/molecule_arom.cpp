@@ -907,7 +907,7 @@ bool QueryMoleculeAromatizer::_aromatizeRGroupFragment(QueryMolecule& fragment, 
 
             if (fragment.findEdgeIndex(point, additional_atom) == -1)
             {
-                AutoPtr<QueryMolecule::Bond> bond;
+                std::unique_ptr<QueryMolecule::Bond> bond;
                 if (add_single_bonds)
                     bond.reset(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE));
                 else
@@ -943,10 +943,10 @@ bool QueryMoleculeAromatizer::_aromatizeBondsExact(QueryMolecule& qmol, const Ar
     for (int e_idx = qmol.edgeBegin(); e_idx < qmol.edgeEnd(); e_idx = qmol.edgeNext(e_idx))
         if (aromatizer.isBondAromatic(e_idx))
         {
-            AutoPtr<QueryMolecule::Bond> bond(qmol.releaseBond(e_idx));
+            std::unique_ptr<QueryMolecule::Bond> bond(qmol.releaseBond(e_idx));
             bond->removeConstraints(QueryMolecule::BOND_ORDER);
 
-            AutoPtr<QueryMolecule::Bond> arom_bond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC));
+            std::unique_ptr<QueryMolecule::Bond> arom_bond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC));
 
             qmol.resetBond(e_idx, QueryMolecule::Bond::und(bond.release(), arom_bond.release()));
 
@@ -979,7 +979,7 @@ bool QueryMoleculeAromatizer::_aromatizeBondsFuzzy(QueryMolecule& mol, const Aro
 
 void MoleculeAromatizer::findAromaticAtoms(BaseMolecule& mol, Array<int>* atoms, Array<int>* bonds, const AromaticityOptions& options)
 {
-    AutoPtr<BaseMolecule> clone;
+    std::unique_ptr<BaseMolecule> clone;
     QS_DEF(Array<int>, mapping);
 
     clone.reset(mol.neu());
