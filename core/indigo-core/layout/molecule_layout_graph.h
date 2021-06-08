@@ -193,6 +193,7 @@ namespace indigo
             explicit Cycle();
             explicit Cycle(const List<int>& edges, const MoleculeLayoutGraph& graph);
             explicit Cycle(const Array<int>& vertices, const Array<int>& edges);
+            Cycle(const Cycle& other); 
 
             void copy(const List<int>& edges, const MoleculeLayoutGraph& graph);
             void copy(const Array<int>& vertices, const Array<int>& edges);
@@ -262,9 +263,6 @@ namespace indigo
             int _max_idx;
             long _morgan_code;
             bool _morgan_code_calculated;
-
-        private:
-            Cycle(const Cycle& other); // No copy constructor
         };
         struct EnumContext
         {
@@ -547,7 +545,7 @@ namespace indigo
     public:
         explicit MoleculeLayoutGraphSmart();
         virtual ~MoleculeLayoutGraphSmart();
-
+        MoleculeLayoutGraphSmart(const MoleculeLayoutGraphSmart&);
         MoleculeLayoutGraph* getInstance();
 
         virtual void clear();
@@ -634,8 +632,8 @@ namespace indigo
         };
 
         void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph);
-        void _get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list);
-        int _search_separated_component(Cycle& cycle, Array<interval>& interval_list);
+        void _get_toches_to_component(Cycle& cycle, int component_number, std::vector<interval>& interval_list);
+        int _search_separated_component(Cycle& cycle, std::vector<interval>& interval_list);
         void _search_path(int start, int finish, Array<int>& path, int component_number);
         void _assignEveryCycle(const Cycle& cycle);
 
@@ -691,9 +689,6 @@ namespace indigo
         int _layout_component_count;
 
         MoleculeLayoutGraph* _graph;
-
-    private:
-        MoleculeLayoutGraphSmart(const MoleculeLayoutGraphSmart&);
     };
 
 } // namespace indigo

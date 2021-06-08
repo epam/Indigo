@@ -51,7 +51,7 @@ void MoleculeInChI::outputInChI(Molecule& mol)
     QS_DEF(Molecule, component);
     for (int i = 0; i < mol.countComponents(); i++)
     {
-        MoleculeInChICompoment& comp = _components.push();
+        MoleculeInChIComponent& comp = _components.push();
         Filter filt(mol.getDecomposition().ptr(), Filter::EQ, i);
 
         component.makeSubmolecule(mol, filt, 0, 0);
@@ -75,53 +75,53 @@ void MoleculeInChI::outputInChI(Molecule& mol)
 template <typename Layer> class MoleculeInChI::_ComponentLayerPrintFunction : public _PrintLayerFuncBase
 {
 public:
-    _ComponentLayerPrintFunction(Layer MoleculeInChICompoment::*layer, void (Layer::*print)(ArrayChar&)) : _layer(layer), _print(print)
+    _ComponentLayerPrintFunction(Layer MoleculeInChIComponent::*layer, void (Layer::*print)(ArrayChar&)) : _layer(layer), _print(print)
     {
     }
 
-    void operator()(MoleculeInChICompoment& component, ArrayChar& output)
+    void operator()(MoleculeInChIComponent& component, ArrayChar& output)
     {
         ((component.*_layer).*_print)(output);
     }
 
 private:
-    Layer MoleculeInChICompoment::*_layer;
+    Layer MoleculeInChIComponent::*_layer;
     void (Layer::*_print)(ArrayChar&);
 };
 
 void MoleculeInChI::_printInChI()
 {
     // Print formula
-    _ComponentLayerPrintFunction<MainLayerFormula> print_formula(&MoleculeInChICompoment::main_layer_formula, &MainLayerFormula::printFormula);
+    _ComponentLayerPrintFunction<MainLayerFormula> print_formula(&MoleculeInChIComponent::main_layer_formula, &MainLayerFormula::printFormula);
 
     _printInChILayer(print_formula, ".", "", "/");
 
     // Print connections table
-    _ComponentLayerPrintFunction<MainLayerConnections> print_connections(&MoleculeInChICompoment::main_layer_connections,
+    _ComponentLayerPrintFunction<MainLayerConnections> print_connections(&MoleculeInChIComponent::main_layer_connections,
                                                                          &MainLayerConnections::printConnectionTable);
 
     _printInChILayer(print_connections, ";", "*", "/c");
 
     // Print hydrogens
-    _ComponentLayerPrintFunction<HydrogensLayer> print_hydrogens(&MoleculeInChICompoment::hydrogens_layer, &HydrogensLayer::print);
+    _ComponentLayerPrintFunction<HydrogensLayer> print_hydrogens(&MoleculeInChIComponent::hydrogens_layer, &HydrogensLayer::print);
 
     _printInChILayer(print_hydrogens, ";", "*", "/h");
 
     // Print cis-trans bonds
-    _ComponentLayerPrintFunction<CisTransStereochemistryLayer> print_cis_trans(&MoleculeInChICompoment::cistrans_stereochemistry_layer,
+    _ComponentLayerPrintFunction<CisTransStereochemistryLayer> print_cis_trans(&MoleculeInChIComponent::cistrans_stereochemistry_layer,
                                                                                &CisTransStereochemistryLayer::print);
 
     _printInChILayer(print_cis_trans, ";", "*", "/b");
 
     // Print stereocenters
-    _ComponentLayerPrintFunction<TetrahedralStereochemistryLayer> print_stereocenters(&MoleculeInChICompoment::tetra_stereochemistry_layer,
+    _ComponentLayerPrintFunction<TetrahedralStereochemistryLayer> print_stereocenters(&MoleculeInChIComponent::tetra_stereochemistry_layer,
                                                                                       &TetrahedralStereochemistryLayer::print);
 
     bool has_stereo = _printInChILayer(print_stereocenters, ";", "*", "/t");
 
     if (has_stereo)
     {
-        _ComponentLayerPrintFunction<TetrahedralStereochemistryLayer> print_stereocenters_enan(&MoleculeInChICompoment::tetra_stereochemistry_layer,
+        _ComponentLayerPrintFunction<TetrahedralStereochemistryLayer> print_stereocenters_enan(&MoleculeInChIComponent::tetra_stereochemistry_layer,
                                                                                                &TetrahedralStereochemistryLayer::printEnantiomers);
 
         _printInChILayer(print_stereocenters_enan, "", 0, "/m");
@@ -218,8 +218,8 @@ bool MoleculeInChI::_printInChILayer(_PrintLayerFuncBase& print_func, const char
 int MoleculeInChI::_cmpComponents(int& index1, int& index2, void* context)
 {
     MoleculeInChI* self = (MoleculeInChI*)context;
-    MoleculeInChICompoment& comp1 = self->_components[index1];
-    MoleculeInChICompoment& comp2 = self->_components[index2];
+    MoleculeInChIComponent& comp1 = self->_components[index1];
+    MoleculeInChIComponent& comp2 = self->_components[index2];
 
     int ret = 0;
     ret = MainLayerFormula::compareComponentsAtomsCountNoH(comp1.main_layer_formula, comp2.main_layer_formula);

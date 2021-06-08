@@ -128,7 +128,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _canonlab);
         TL_CP_DECL(Array<int>, _orbits);
         TL_CP_DECL(Array<int>, _fixedpts);
-        TL_CP_DECL(Array<int[2]>, _work_active_cells);
+        TL_CP_DECL(Array< IntPair >, _work_active_cells);
         TL_CP_DECL(Array<int>, _edge_ranks_in_refine);
 
         int _n;

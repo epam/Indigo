@@ -27,7 +27,7 @@ using namespace indigo::MoleculeInChILayers;
 // Code for debug
 void (*dbg_handle_canonical_component_cb)(const Molecule& cano_component);
 
-void MoleculeInChICompoment::construct(Molecule& original_component)
+void MoleculeInChIComponent::construct(Molecule& original_component)
 {
     // Array with all layers
     AbstractLayer* layers[] = {&main_layer_formula, &main_layer_connections, &hydrogens_layer, &cistrans_stereochemistry_layer, &tetra_stereochemistry_layer};
@@ -46,7 +46,7 @@ void MoleculeInChICompoment::construct(Molecule& original_component)
         layers[i]->construct(mol);
 }
 
-void MoleculeInChICompoment::getCanonicalOrdering(Molecule& source_mol, Array<int>& mapping)
+void MoleculeInChIComponent::getCanonicalOrdering(Molecule& source_mol, Array<int>& mapping)
 {
     QS_DEF(Array<int>, ignored);
     ignored.clear_resize(source_mol.vertexEnd());
@@ -71,12 +71,12 @@ void MoleculeInChICompoment::getCanonicalOrdering(Molecule& source_mol, Array<in
     as.getCanonicalNumbering(mapping);
 }
 
-int MoleculeInChICompoment::cmpVertex(Graph& graph, int v1, int v2, const void* context)
+int MoleculeInChIComponent::cmpVertex(Graph& graph, int v1, int v2, const void* context)
 {
     return _cmpVertex(graph, v1, v2, context);
 }
 
-void MoleculeInChICompoment::_getCanonicalMolecule(Molecule& source_mol, Molecule& cano_mol)
+void MoleculeInChIComponent::_getCanonicalMolecule(Molecule& source_mol, Molecule& cano_mol)
 {
     QS_DEF(Array<int>, ignored);
     ignored.clear_resize(source_mol.vertexEnd());
@@ -112,7 +112,7 @@ void MoleculeInChICompoment::_getCanonicalMolecule(Molecule& source_mol, Molecul
         dbg_handle_canonical_component_cb(cano_mol);
 }
 
-int MoleculeInChICompoment::_cmpVertex(Graph& graph, int v1, int v2, const void* context)
+int MoleculeInChIComponent::_cmpVertex(Graph& graph, int v1, int v2, const void* context)
 {
     Molecule& mol = (Molecule&)graph;
 
@@ -133,7 +133,7 @@ int MoleculeInChICompoment::_cmpVertex(Graph& graph, int v1, int v2, const void*
     return 0;
 }
 
-int MoleculeInChICompoment::_cmpVertexStereo(Molecule& mol, int v1, int v2, const void* context)
+int MoleculeInChIComponent::_cmpVertexStereo(Molecule& mol, int v1, int v2, const void* context)
 {
     // TODO: Implement as in InChI
     int diff = mol.stereocenters.getType(v1) - mol.stereocenters.getType(v2);
@@ -143,7 +143,7 @@ int MoleculeInChICompoment::_cmpVertexStereo(Molecule& mol, int v1, int v2, cons
     return 0;
 }
 
-bool MoleculeInChICompoment::_checkAutomorphism(Graph& graph, const Array<int>& mapping, const void* context)
+bool MoleculeInChIComponent::_checkAutomorphism(Graph& graph, const Array<int>& mapping, const void* context)
 {
     Molecule& mol = (Molecule&)graph;
 
@@ -164,7 +164,7 @@ bool MoleculeInChICompoment::_checkAutomorphism(Graph& graph, const Array<int>& 
             return false;
     }
 
-    MoleculeInChICompoment& self = *(MoleculeInChICompoment*)context;
+    MoleculeInChIComponent& self = *(MoleculeInChIComponent*)context;
 
     if (!self.hydrogens_layer.checkAutomorphism(mapping))
         return false;
@@ -176,7 +176,7 @@ bool MoleculeInChICompoment::_checkAutomorphism(Graph& graph, const Array<int>& 
     return true;
 }
 
-int MoleculeInChICompoment::_cmpMappings(Graph& graph, const Array<int>& mapping1, const Array<int>& mapping2, const void* context)
+int MoleculeInChIComponent::_cmpMappings(Graph& graph, const Array<int>& mapping1, const Array<int>& mapping2, const void* context)
 {
     QS_DEF(Array<int>, inv_mapping1);
     QS_DEF(Array<int>, inv_mapping2);
@@ -196,7 +196,7 @@ int MoleculeInChICompoment::_cmpMappings(Graph& graph, const Array<int>& mapping
     MoleculeInChIUtils::Mapping m1(mapping1, inv_mapping1);
     MoleculeInChIUtils::Mapping m2(mapping2, inv_mapping2);
 
-    MoleculeInChICompoment& self = *(MoleculeInChICompoment*)context;
+    MoleculeInChIComponent& self = *(MoleculeInChIComponent*)context;
 
     int diff = self.main_layer_connections.compareMappings(m1, m2);
     if (diff != 0)

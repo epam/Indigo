@@ -37,7 +37,8 @@
 namespace indigo
 {
     DECL_EXCEPTION(ArrayError);
-
+    using IntPair =  std::array<int, 2>;
+    using ArrayBool = std::vector<unsigned char>;
     class ArrayChar
     {
     public:
@@ -373,7 +374,7 @@ namespace indigo
 
         void copy(const T* other, int count)
         {
-            _arr.assign(other, count);
+            _arr = std::vector<T>(other, other + count);
         }
 
         void concat(const Array<T>& other)
@@ -383,8 +384,8 @@ namespace indigo
 
         void concat(const T* other, int count)
         {
-            std::vector<T> tmp(other, count);
-            concat(tmp);
+            std::vector<T> tmp(other, other + count);
+            _arr.insert(_arr.end(), tmp.begin(), tmp.end());
         }
 
         void expand(int newsize)
@@ -407,21 +408,35 @@ namespace indigo
             _arr.erase(beg, end);
         }
 
+        // TODO: implement qsort
+
+        template <typename CmpFunctor> void qsort(int start, int end, CmpFunctor cmp)
+        {
+        }
+
+        template <typename T1, typename T2> void qsort(int start, int end, int (*cmp)(T1, T2, void*), void* context)
+        {
+        }
+
+        template <typename T1, typename T2> void qsort(int (*cmp)(T1, T2, void*), void* context)
+        {
+        }
+
+
     private:
         std::vector<T> _arr;
     };
 
-    /*
-    template <typename T> class Array
+    template <typename T> class ArrayDeprecated
     {
     public:
         DECL_TPL_ERROR(ArrayError);
 
-        explicit Array() : _reserved(0), _length(0), _array(nullptr)
+        explicit ArrayDeprecated() : _reserved(0), _length(0), _array(nullptr)
         {
         }
 
-        ~Array()
+        ~ArrayDeprecated()
         {
             if (_array != nullptr)
             {
@@ -862,8 +877,8 @@ namespace indigo
         int _length;
 
     private:
-        Array(const Array&);                            // no implicit copy
-        Array<int>& operator=(const Array<int>& right); // no copy constructor
+        ArrayDeprecated(const ArrayDeprecated&);                  // no implicit copy
+        ArrayDeprecated<int>& operator=(const ArrayDeprecated<int>& right); // no copy constructor
 
         template <typename T1, typename T2> class _CmpFunctorCaller
         {
@@ -881,7 +896,7 @@ namespace indigo
             void* _context;
             int (*_cmp)(T1, T2, void*);
         };
-    };*/
+    };
 
 } // namespace indigo
 

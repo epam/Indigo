@@ -1318,7 +1318,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = dsg->brackets.push();
+                        pbrackets = &dsg->brackets.push().front();
 
                     const char* point_x = pPoint->Attribute("x");
                     const char* point_y = pPoint->Attribute("y");
@@ -1474,7 +1474,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = gen->brackets.push();
+                        pbrackets = &gen->brackets.push().front();
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1552,7 +1552,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = sru->brackets.push();
+                        pbrackets = &sru->brackets.push().front();
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1661,7 +1661,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = mul->brackets.push();
+                        pbrackets = &mul->brackets.push().front();
 
                     float x = 0, y = 0;
                     const char* point_x = pPoint->Attribute("x");
@@ -1746,7 +1746,7 @@ void CmlLoader::_loadSGroupElement(TiXmlElement* elem, std::unordered_map<std::s
                         continue;
 
                     if (point_idx == 0)
-                        pbrackets = sup->brackets.push();
+                        pbrackets = &sup->brackets.push().front();
 
                     const char* point_x = pPoint->Attribute("x");
                     const char* point_y = pPoint->Attribute("y");

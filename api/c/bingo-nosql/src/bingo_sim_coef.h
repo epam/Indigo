@@ -13,6 +13,7 @@ namespace bingo
         SimResult(int new_id, float new_sim_value) : id(new_id), sim_value(new_sim_value)
         {
         }
+
     };
 
     class SimCoef

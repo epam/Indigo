@@ -67,13 +67,13 @@ namespace indigo
             {
             }
 
-            virtual void operator()(MoleculeInChICompoment& comp, ArrayChar& result) = 0;
+            virtual void operator()(MoleculeInChIComponent& comp, ArrayChar& result) = 0;
         };
         template <typename Layer> class _ComponentLayerPrintFunction;
 
         bool _printInChILayer(_PrintLayerFuncBase& func, const char* delim, const char* multiplier, const char* layer_prefix);
 
-        void _printInChIComponentCisTrans(MoleculeInChICompoment& comp, ArrayChar& result);
+        void _printInChIComponentCisTrans(MoleculeInChIComponent& comp, ArrayChar& result);
 
         static void _normalizeMolecule(Molecule& mol);
 
@@ -81,7 +81,7 @@ namespace indigo
 
         // Array with molecule components and InChI information and sorted indices
         CP_DECL;
-        TL_CP_DECL(ReusableObjArray<MoleculeInChICompoment>, _components);
+        TL_CP_DECL(ReusableObjArray<MoleculeInChIComponent>, _components);
         TL_CP_DECL(Array<int>, _component_indices);
     };
 

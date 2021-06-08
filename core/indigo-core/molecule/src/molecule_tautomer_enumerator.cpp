@@ -82,7 +82,7 @@ TautomerEnumerator::TautomerEnumerator(Molecule& molecule, TautomerMethod method
         of.compare_vertex_degree_first = false;
         of.refine_reverse_degree = true;
         of.refine_by_sorted_neighbourhood = true;
-        of.cb_vertex_cmp = MoleculeInChICompoment::cmpVertex;
+        of.cb_vertex_cmp = MoleculeInChIComponent::cmpVertex;
         of.process(molecule);
         of.getCanonicalNumbering(canonical_mapping);
 

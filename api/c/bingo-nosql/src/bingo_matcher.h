@@ -380,12 +380,12 @@ namespace bingo
     protected:
         void _findTopN();
         void _initModelDistribution(Array<float>& thrs, Array<int>& nhits_per_block);
-        static int _cmp_sim_res(SimResult& res1, SimResult& res2, void* context);
+        static bool _cmp_sim_res(const SimResult& res1, const SimResult& res2);
 
     private:
         int _idx;
         int _limit;
-        Array<SimResult> _current_results;
+        std::vector<SimResult> _current_results;
         Array<int> _result_ids;
         Array<float> _result_sims;
     };

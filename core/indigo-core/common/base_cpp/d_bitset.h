@@ -72,9 +72,10 @@ namespace indigo
 
         Array<qword> _words;
 
+    public:
+
         Dbitset(const Dbitset&);            // no implicit copy
         Dbitset& operator=(const Dbitset&); // no implicit assign
-    public:
         Dbitset();
         // creates a bit set whose initial size
         explicit Dbitset(int nbits);

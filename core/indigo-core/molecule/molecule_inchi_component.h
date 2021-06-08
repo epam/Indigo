@@ -29,7 +29,7 @@ namespace indigo
 {
 
     // Whole InChI component with component molecule and InChI layers
-    struct MoleculeInChICompoment
+    struct MoleculeInChIComponent
     {
         // Canonicaly-ordered molecule
         Molecule mol;

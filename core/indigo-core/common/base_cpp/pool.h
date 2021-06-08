@@ -147,7 +147,7 @@ namespace indigo
         }
 
     protected:
-        Array<T> _array; // pool elements
+        ArrayDeprecated<T> _array; // pool elements
 
         // _next[i] >= 0  => _array[i] is not used,
         //                    _next[i] contains the index of the next unused element

@@ -258,7 +258,6 @@ namespace indigo
 
         float leftMargin, rightMargin, ypos, height;
 
-    private:
         AtomDesc(const AtomDesc& ad);
     };
 
@@ -302,8 +301,6 @@ namespace indigo
         bool prolong;
         int lRing;
         float width;
-
-    private:
         BondEnd(const BondEnd& be);
     };
 
@@ -337,8 +334,6 @@ namespace indigo
         int tiTopology;
         int topology;
         int reactingCenter;
-
-    private:
         BondDescr(const BondDescr& bd);
     };
 

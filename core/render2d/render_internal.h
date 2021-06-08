@@ -88,12 +88,12 @@ namespace indigo
         void _hydroPosCorrectRepulse();
         void _initAtomData();
         void _initRGroups();
-        void _loadBrackets(Sgroup& sg, const Array<Vec2f[2]>& coord);
-        void _placeBrackets(Sgroup& sg, const Array<int>& atoms, Array<Vec2f[2]>& brackets);
+        void _loadBrackets(Sgroup& sg, const Array<std::array<Vec2f,2>>& coord);
+        void _placeBrackets(Sgroup& sg, const Array<int>& atoms, Array<std::array<Vec2f,2>>& brackets);
         void _positionIndex(Sgroup& sg, int ti, bool lower);
         void _loadBracketsAuto(const SGroup& group, Sgroup& sg);
-        void _convertCoordinate(const Array<Vec2f[2]>& original, Array<Vec2f[2]>& converted);
-        void _adjustBrackets(const Array<Vec2f[2]>& converted, Array<Vec2f[2]>& placed);
+        void _convertCoordinate(const Array<std::array<Vec2f,2>>& original, Array<std::array<Vec2f,2>>& converted);
+        void _adjustBrackets(const Array<std::array<Vec2f,2>>& converted, Array<std::array<Vec2f,2>>& placed);
 
         void _prepareSGroups();
         void _initSGroups(Tree& sgroups, Rect2f parent);

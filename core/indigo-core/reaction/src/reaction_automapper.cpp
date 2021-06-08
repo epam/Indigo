@@ -1492,7 +1492,7 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
         throw ReactionAutomapper::Error("internal AAM error: not initialized sub-mcs molecules");
 
     QS_DEF(ObjArray<Array<int>>, tmp_maps);
-    QS_DEF(ObjArray<EmbeddingEnumerator>, emb_enums);
+    QS_DEF(std::vector<EmbeddingEnumerator>, emb_enums);
     QS_DEF(Array<int>, in_map_cut);
     QS_DEF(Array<int>, results);
 
@@ -1517,7 +1517,8 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
 
     for (int i = 0; i < 4; ++i)
     {
-        EmbeddingEnumerator& emb_enum = emb_enums.push(*_super);
+        emb_enums.push_back(*_super);
+        EmbeddingEnumerator& emb_enum = emb_enums.back();
         emb_enum.setSubgraph(*_sub);
         emb_enum.cb_match_vertex = atomConditionReact;
         emb_enum.cb_embedding = _embedding;

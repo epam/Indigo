@@ -135,13 +135,13 @@ namespace indigo
         void _addCIPStereoDescriptors(BaseMolecule& mol);
         void _addCIPSgroups(BaseMolecule& mol, Array<int>& attom_cip_desc, Array<int>& bond_cip_desc);
         void _calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<int>& atom_cip_desc, Array<int>& stereo_passed,
-                                     bool use_stereo, Array<int[2]>& equiv_ligands, bool& digrap_cip_used);
+                                     bool use_stereo, Array<IntPair>& equiv_ligands, bool& digrap_cip_used);
         void _calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<int>& bond_cip_desc);
-        bool _checkLigandsEquivalence(Array<int>& ligands, Array<int[2]>& equiv_ligands, CIPContext& context);
+        bool _checkLigandsEquivalence(Array<int>& ligands, Array<IntPair>& equiv_ligands, CIPContext& context);
         static int _getNumberOfStereoDescritors(Array<int>& atom_cip_desc);
-        bool _isPseudoAssymCenter(BaseMolecule& mol, int idx, Array<int>& atom_cip_desc, Array<int>& ligands, Array<int[2]>& equiv_ligands);
+        bool _isPseudoAssymCenter(BaseMolecule& mol, int idx, Array<int>& atom_cip_desc, Array<int>& ligands, Array<IntPair>& equiv_ligands);
 
-        int _calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, Array<int>& ligands, Array<int[2]>& equiv_ligands);
+        int _calcCIPDigraphDescriptor(BaseMolecule& mol, int atom_idx, Array<int>& ligands, Array<IntPair>& equiv_ligands);
         void _addNextLevel(Molecule& source, Molecule& target, int s_idx, int t_idx, Array<int>& used, Array<int>& mapping);
         void _calcStereocenters(Molecule& source, Molecule& mol, Array<int>& mapping);
 

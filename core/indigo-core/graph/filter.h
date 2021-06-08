@@ -68,6 +68,7 @@ namespace indigo
 
         DECL_ERROR;
 
+        Filter(const Filter&);
     protected:
         const int* _filter;
 
@@ -76,8 +77,6 @@ namespace indigo
         int _value;
         int _type;
 
-    private:
-        Filter(const Filter&); // no implicit copy
     };
 
 } // namespace indigo

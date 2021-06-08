@@ -71,7 +71,6 @@ namespace indigo
             float height;
             float width;
 
-        private:
             LayoutLine(const LayoutLine&);
         };
 

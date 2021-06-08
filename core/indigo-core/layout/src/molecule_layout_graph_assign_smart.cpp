@@ -170,7 +170,7 @@ void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates(float bond_length)
     }
 }
 
-void MoleculeLayoutGraphSmart::_get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list)
+void MoleculeLayoutGraphSmart::_get_toches_to_component(Cycle& cycle, int component_number, std::vector<interval>& interval_list)
 {
     if (component_number < 0 || component_number >= _layout_component_count)
         return;
@@ -208,8 +208,7 @@ void MoleculeLayoutGraphSmart::_get_toches_to_component(Cycle& cycle, int compon
         while (!touch_to_current_component[finish])
             finish = (finish + 1) % cycle.vertexCount();
 
-        interval_list.push();
-        interval_list.top().init(start, finish);
+        interval_list.emplace_back(start, finish);
 
         start = finish;
         while (_layout_component_number[cycle.getEdge(start)] == component_number)
@@ -220,7 +219,7 @@ void MoleculeLayoutGraphSmart::_get_toches_to_component(Cycle& cycle, int compon
     }
 }
 
-int MoleculeLayoutGraphSmart::_search_separated_component(Cycle& cycle, Array<interval>& interval_list)
+int MoleculeLayoutGraphSmart::_search_separated_component(Cycle& cycle, std::vector<interval>& interval_list)
 {
     for (int i = 0; i < _layout_component_count; i++)
     {
@@ -349,7 +348,7 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates(int& fixed_component, 
         if (unused_count[min_i] > 0)
         {
 
-            QS_DEF(Array<interval>, interval_list);
+            QS_DEF(std::vector<interval>, interval_list);
             int separating_component = _search_separated_component(cycles[min_i], interval_list);
             if (separating_component >= 0)
             {

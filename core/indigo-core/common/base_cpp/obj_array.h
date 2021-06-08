@@ -177,7 +177,7 @@ namespace indigo
         }
 
     protected:
-        Array<T> _array;
+        ArrayDeprecated<T> _array;
 
     private:
         ObjArray(const ObjArray&); // no implicit copy

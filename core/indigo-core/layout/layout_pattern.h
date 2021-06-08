@@ -38,6 +38,8 @@ namespace indigo
         {
         }
         Vec2f pos;
+
+        PatternAtom() = default;
     };
 
     struct PatternBond
@@ -45,6 +47,8 @@ namespace indigo
         explicit PatternBond(int type_) : type(type_), parity(0)
         {
         }
+
+        PatternBond() = default;
 
         int type; // see BOND_***
         int parity;
@@ -55,6 +59,8 @@ namespace indigo
     public:
         explicit PatternLayout();
         virtual ~PatternLayout();
+        // no implicit copy
+        PatternLayout(const PatternLayout&);
 
         int addBond(int atom_beg, int atom_end, int type);
         int addAtom(float x, float y);
@@ -101,9 +107,6 @@ namespace indigo
 
         long _morgan_code;
         bool _fixed;
-
-        // no implicit copy
-        PatternLayout(const PatternLayout&);
     };
 
 } // namespace indigo

@@ -35,7 +35,7 @@ namespace indigo
 
     struct RGroup
     {
-        explicit RGroup();
+        RGroup();
         ~RGroup();
         void clear();
 
@@ -47,9 +47,7 @@ namespace indigo
         int if_then;
         int rest_h;
         Array<int> occurrence;
-
-    protected:
-        explicit RGroup(RGroup& other);
+        RGroup(RGroup& other);
     };
 
     class DLLEXPORT MoleculeRGroups

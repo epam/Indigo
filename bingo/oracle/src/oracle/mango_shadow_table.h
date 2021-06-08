@@ -67,18 +67,18 @@ protected:
     int _main_table_statement_count;
     int _components_table_statement_count;
 
-    Array<char[19]> _pending_rid;
+    std::vector< std::array<char,19> > _pending_rid;
     Array<int> _pending_blockno;
     Array<int> _pending_offset;
-    Array<char[512]> _pending_gross;
+    std::vector<std::array<char, 512> > _pending_gross;
     ObjArray<OracleRaw> _pending_cmf;
     ObjArray<OracleRaw> _pending_xyz;
     Array<float> _pending_mass;
     Array<int> _pending_fragcount;
     ObjArray<Array<int>> _pending_counters;
 
-    Array<char[19]> _pending_comp_rid;
-    Array<char[9]> _pending_comp_hash;
+    std::vector< std::array<char, 19 >> _pending_comp_rid;
+    std::vector< std::array<char, 9 >> _pending_comp_hash;
     Array<int> _pending_comp_count;
 
     bool _commit_main;

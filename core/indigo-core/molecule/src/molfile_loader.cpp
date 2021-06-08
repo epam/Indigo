@@ -1085,7 +1085,7 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (n == 4) // should always be 4
                         {
-                            Vec2f* brackets = sgroup->brackets.push();
+                            Vec2f* brackets = &sgroup->brackets.push().front();
 
                             _scanner.skipSpace();
                             brackets[0].x = _scanner.readFloat();
@@ -3455,7 +3455,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
             scanner.skipSpace();
             scanner.readFloat();
             scanner.skipSpace();
-            Vec2f* brackets = sgroup->brackets.push();
+            Vec2f* brackets = &sgroup->brackets.push().front();
             brackets[0].set(x1, y1);
             brackets[1].set(x2, y2);
             scanner.skip(1); // )

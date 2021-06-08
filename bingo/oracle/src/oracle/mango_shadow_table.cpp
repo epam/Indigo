@@ -84,12 +84,12 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
         _main_table_statement->append(")");
     }
 
-    _pending_rid.push();
-    strncpy(_pending_rid.top(), rowid, 19);
+    _pending_rid.emplace_back();
+    strncpy(_pending_rid.back().data(), rowid, 19);
     _pending_blockno.push(blockno);
     _pending_offset.push(offset);
-    _pending_gross.push();
-    strncpy(_pending_gross.top(), gross, 512);
+    _pending_gross.emplace_back();
+    strncpy(_pending_gross.back().data(), gross, 512);
     _pending_mass.push(molecular_mass);
 
     _pending_cmf.push(env);
@@ -128,10 +128,10 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
 
     for (int i = 0; i < hash.size(); i++)
     {
-        _pending_comp_hash.push();
-        snprintf(_pending_comp_hash.top(), 9, "%08X", hash[i].hash);
-        _pending_comp_rid.push();
-        strncpy(_pending_comp_rid.top(), rowid, 19);
+        _pending_comp_hash.emplace_back();
+        snprintf(_pending_comp_hash.back().data(), 9, "%08X", hash[i].hash);
+        _pending_comp_rid.emplace_back();
+        strncpy(_pending_comp_rid.back().data(), rowid, 19);
         _pending_comp_count.push(hash[i].count);
         _components_table_statement_count++;
     }
@@ -155,10 +155,10 @@ void MangoShadowTable::_flushMain(OracleEnv& env)
             profTimerStart(tmain, "moleculeIndex.register_shadow_main");
             _main_table_statement->prepare();
 
-            _main_table_statement->bindStringByName(":rid", _pending_rid[0], 19);
+            _main_table_statement->bindStringByName(":rid", _pending_rid[0].data(), 19);
             _main_table_statement->bindIntByName(":blockno", _pending_blockno.ptr());
             _main_table_statement->bindIntByName(":offset", _pending_offset.ptr());
-            _main_table_statement->bindStringByName(":gross", _pending_gross[0], 512);
+            _main_table_statement->bindStringByName(":gross", _pending_gross[0].data(), 512);
 
             QS_DEF(ArrayChar, cmf);
             QS_DEF(ArrayChar, xyz);
@@ -254,8 +254,8 @@ void MangoShadowTable::_flushComponents(OracleEnv& env)
             profTimerStart(tcomp, "moleculeIndex.register_shadow_comp");
             _components_table_statement->prepare();
             _components_table_statement->bindIntByName(":count", _pending_comp_count.ptr());
-            _components_table_statement->bindStringByName(":rid", _pending_comp_rid[0], 19);
-            _components_table_statement->bindStringByName(":hash", _pending_comp_hash[0], 9);
+            _components_table_statement->bindStringByName(":rid", _pending_comp_rid[0].data(), 19);
+            _components_table_statement->bindStringByName(":hash", _pending_comp_hash[0].data(), 9);
             _components_table_statement->executeMultiple(_components_table_statement_count);
             if (_commit_comp)
             {

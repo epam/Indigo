@@ -118,7 +118,7 @@ bool LzwDict::addElem(const int NewPrefix, const byte NewChar, int HashIndex)
             }
         }
 
-        _storage.push(D);
+        _storage.push_back(D);
 
         _freePtr++;
 
@@ -141,7 +141,7 @@ int LzwDict::dictSearch(const int SearchPrefix, const byte SearchChar, int HashI
 
     j = _hashKeys[HashIndex];
 
-    _DictElement D = _storage[j];
+    _DictElement& D = _storage[j];
 
     while (true)
     {
