@@ -120,7 +120,7 @@ namespace indigo
         }
 
     protected:
-        ArrayDeprecated<T> _array;
+        Array<T> _array;
         int _count;
 
     private:

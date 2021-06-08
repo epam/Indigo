@@ -1388,6 +1388,11 @@ int Molecule::addBond_Silent(int beg, int end, int order)
     _aromaticity.clear();
     _aromatized = false;
 
+    if (_bond_orders.size() == 12)
+    {
+        printf("bond orders size: %d\n", _bond_orders.size());
+    }
+
     return idx;
 }
 
