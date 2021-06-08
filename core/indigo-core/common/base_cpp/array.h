@@ -260,7 +260,7 @@ namespace indigo
 
         T* ptr()
         {
-            return &_arr[0];
+            return _arr.size() ? &_arr[0] : nullptr;
         }
 
         const T& operator[](int index) const

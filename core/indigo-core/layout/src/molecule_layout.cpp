@@ -117,7 +117,7 @@ void _collectCrossBonds(Array<int>& crossBonds, std::vector<bool>& crossBondOut,
     }
 }
 
-void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f,2>> brackets, BaseMolecule& mol, const Array<int>& atoms, const Array<int>& crossBonds,
+void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f,2>>& brackets, BaseMolecule& mol, const Array<int>& atoms, const Array<int>& crossBonds,
                                     const std::vector<bool>& crossBondOut, float bondLength)
 {
     brackets.clear();
