@@ -48,7 +48,7 @@ CEXPORT int indigoExtractCommonScaffold(int structures, const char* options)
             for (int i = 0; i < mol_set.size(); ++i)
                 MoleculeAromatizer::aromatizeBonds(mol_set[i], self.arom_options);
 
-        std::unique_ptr<IndigoScaffold> scaf(new IndigoScaffold());
+        std::unique_ptr<IndigoScaffold> scaf = std::make_unique<IndigoScaffold>();
 
         MoleculeScaffoldDetection msd(&mol_set);
 
@@ -115,12 +115,12 @@ CEXPORT int indigoAllScaffolds(int extracted)
 
         IndigoScaffold& scaf = (IndigoScaffold&)obj;
 
-        std::unique_ptr<IndigoArray> arr(new IndigoArray());
+        std::unique_ptr<IndigoArray> arr = std::make_unique<IndigoArray>();
         int i;
 
         for (i = 0; i < scaf.all_scaffolds.size(); i++)
         {
-            std::unique_ptr<IndigoQueryMolecule> mol(new IndigoQueryMolecule);
+            std::unique_ptr<IndigoQueryMolecule> mol = std::make_unique<IndigoQueryMolecule>();
             mol->qmol.clone(scaf.all_scaffolds[i], 0, 0);
             arr->objects.add(mol.release());
         }

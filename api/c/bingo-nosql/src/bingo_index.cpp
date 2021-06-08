@@ -13,36 +13,35 @@ Matcher* MoleculeIndex::createMatcher(const char* type, MatcherQueryData* query_
 {
     if (strcmp(type, "sub") == 0)
     {
-        MoleculeSubMatcher* matcher = new MoleculeSubMatcher(*this);
+        std::unique_ptr<MoleculeSubMatcher> matcher = std::make_unique<MoleculeSubMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryData(dynamic_cast<SubstructureQueryData*>(query_data));
-        return matcher;
+        return matcher.release();
     }
     else if (strcmp(type, "sim") == 0)
     {
-        MoleculeSimMatcher* matcher = new MoleculeSimMatcher(*this);
+        std::unique_ptr<MoleculeSimMatcher> matcher = std::make_unique<MoleculeSimMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryData(dynamic_cast<SimilarityQueryData*>(query_data));
-        return matcher;
+        return matcher.release();
     }
     else if (strcmp(type, "exact") == 0)
     {
-        MolExactMatcher* matcher = new MolExactMatcher(*this);
+        std::unique_ptr<MolExactMatcher> matcher = std::make_unique<MolExactMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryData(dynamic_cast<ExactQueryData*>(query_data));
-        return matcher;
+        return matcher.release();
     }
     else if (strcmp(type, "formula") == 0)
     {
-        MolGrossMatcher* matcher = new MolGrossMatcher(*this);
+        std::unique_ptr<MolGrossMatcher> matcher = std::make_unique<MolGrossMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryData(dynamic_cast<GrossQueryData*>(query_data));
-        return matcher;
+        return matcher.release();
     }
     else if (strcmp(type, "enum") == 0)
     {
-        EnumeratorMatcher* matcher = new EnumeratorMatcher(*this);
-        return matcher;
+        return new EnumeratorMatcher(*this);
     }
     else
         throw Exception("createMatcher: undefined type");
@@ -54,10 +53,10 @@ Matcher* MoleculeIndex::createMatcherWithExtFP(const char* type, MatcherQueryDat
 {
     if (strcmp(type, "sim") == 0)
     {
-        MoleculeSimMatcher* matcher = new MoleculeSimMatcher(*this);
+        std::unique_ptr<MoleculeSimMatcher> matcher = std::make_unique<MoleculeSimMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryDataWithExtFP(dynamic_cast<SimilarityQueryData*>(query_data), fp);
-        return matcher;
+        return matcher.release();
     }
     else
         throw Exception("createMatcher: undefined type");
@@ -69,11 +68,11 @@ Matcher* MoleculeIndex::createMatcherTopN(const char* type, MatcherQueryData* qu
 {
     if (strcmp(type, "sim") == 0)
     {
-        MoleculeTopNSimMatcher* matcher = new MoleculeTopNSimMatcher(*this);
+        std::unique_ptr<MoleculeTopNSimMatcher> matcher = std::make_unique<MoleculeTopNSimMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryData(dynamic_cast<SimilarityQueryData*>(query_data));
         matcher->setLimit(limit);
-        return matcher;
+        return matcher.release();
     }
     else
         throw Exception("createMatcher: undefined type");
@@ -85,11 +84,11 @@ Matcher* MoleculeIndex::createMatcherTopNWithExtFP(const char* type, MatcherQuer
 {
     if (strcmp(type, "sim") == 0)
     {
-        MoleculeTopNSimMatcher* matcher = new MoleculeTopNSimMatcher(*this);
+        std::unique_ptr<MoleculeTopNSimMatcher> matcher = std::make_unique<MoleculeTopNSimMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryDataWithExtFP(dynamic_cast<SimilarityQueryData*>(query_data), fp);
         matcher->setLimit(limit);
-        return matcher;
+        return matcher.release();
     }
     else
         throw Exception("createMatcher: undefined type");
@@ -105,24 +104,24 @@ Matcher* ReactionIndex::createMatcher(const char* type, MatcherQueryData* query_
 {
     if (strcmp(type, "sub") == 0)
     {
-        ReactionSubMatcher* matcher = new ReactionSubMatcher(*this);
+        std::unique_ptr<ReactionSubMatcher> matcher = std::make_unique<ReactionSubMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryData(dynamic_cast<SubstructureQueryData*>(query_data));
-        return matcher;
+        return matcher.release();
     }
     else if (strcmp(type, "sim") == 0)
     {
-        ReactionSimMatcher* matcher = new ReactionSimMatcher(*this);
+        std::unique_ptr<ReactionSimMatcher> matcher = std::make_unique<ReactionSimMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryData(dynamic_cast<SimilarityQueryData*>(query_data));
-        return matcher;
+        return matcher.release();
     }
     else if (strcmp(type, "exact") == 0)
     {
-        RxnExactMatcher* matcher = new RxnExactMatcher(*this);
+        std::unique_ptr<RxnExactMatcher> matcher = std::make_unique<RxnExactMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryData(dynamic_cast<ExactQueryData*>(query_data));
-        return matcher;
+        return matcher.release();
     }
     else if (strcmp(type, "enum") == 0)
     {
@@ -138,10 +137,10 @@ Matcher* ReactionIndex::createMatcherWithExtFP(const char* type, MatcherQueryDat
 {
     if (strcmp(type, "sim") == 0)
     {
-        ReactionSimMatcher* matcher = new ReactionSimMatcher(*this);
+        std::unique_ptr<ReactionSimMatcher> matcher = std::make_unique<ReactionSimMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryDataWithExtFP(dynamic_cast<SimilarityQueryData*>(query_data), fp);
-        return matcher;
+        return matcher.release();
     }
     else
         throw Exception("createMatcher: undefined type");
@@ -153,11 +152,11 @@ Matcher* ReactionIndex::createMatcherTopN(const char* type, MatcherQueryData* qu
 {
     if (strcmp(type, "sim") == 0)
     {
-        ReactionTopNSimMatcher* matcher = new ReactionTopNSimMatcher(*this);
+        std::unique_ptr<ReactionTopNSimMatcher> matcher = std::make_unique<ReactionTopNSimMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryData(dynamic_cast<SimilarityQueryData*>(query_data));
         matcher->setLimit(limit);
-        return matcher;
+        return matcher.release();
     }
     else
         throw Exception("createMatcher: undefined type");
@@ -169,11 +168,11 @@ Matcher* ReactionIndex::createMatcherTopNWithExtFP(const char* type, MatcherQuer
 {
     if (strcmp(type, "sim") == 0)
     {
-        ReactionTopNSimMatcher* matcher = new ReactionTopNSimMatcher(*this);
+        std::unique_ptr<ReactionTopNSimMatcher> matcher = std::make_unique<ReactionTopNSimMatcher>(*this);
         matcher->setOptions(options);
         matcher->setQueryDataWithExtFP(dynamic_cast<SimilarityQueryData*>(query_data), fp);
         matcher->setLimit(limit);
-        return matcher;
+        return matcher.release();
     }
     else
         throw Exception("createMatcher: undefined type");

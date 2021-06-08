@@ -460,7 +460,7 @@ bool TautomerEnumerator::_performProcedure()
             }
             const char* rule = reactionSmarts[_currentRule++];
             QueryReaction reaction;
-            std::unique_ptr<Scanner> _scanner(new BufferScanner(rule));
+            std::unique_ptr<Scanner> _scanner = std::make_unique<BufferScanner>(rule);
             RSmilesLoader loader(*_scanner.get());
             loader.smarts_mode = true;
             loader.loadQueryReaction(reaction);

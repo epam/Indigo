@@ -2374,8 +2374,8 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             }
 
             BufferScanner subscanner(subexp);
-            std::unique_ptr<SmilesLoader> subloader(new SmilesLoader(subscanner));
-            std::unique_ptr<QueryMolecule> fragment(new QueryMolecule());
+            std::unique_ptr<SmilesLoader> subloader = std::make_unique<SmilesLoader>(subscanner);
+            std::unique_ptr<QueryMolecule> fragment = std::make_unique<QueryMolecule>();
 
             subloader->loadSMARTS(*fragment);
             fragment->fragment_smarts.copy(subexp);

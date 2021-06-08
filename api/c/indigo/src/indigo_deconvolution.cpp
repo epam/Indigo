@@ -90,10 +90,7 @@ void IndigoDeconvolution::setScaffold(QueryMolecule& scaffold)
                 if (_scaffold.getAtomNumber(vertex.neiVertex(j)) != ELEM_H)
                     ++subst_count;
             }
-
-            std::unique_ptr<QueryMolecule::Atom> qatom;
-            qatom.reset(QueryMolecule::Atom::und(_scaffold.releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst_count)));
-            _scaffold.resetAtom(i, qatom.release());
+            _scaffold.resetAtom(i, QueryMolecule::Atom::und(_scaffold.releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst_count)));
         }
     }
 }
@@ -596,8 +593,7 @@ IndigoObject* IndigoDecompositionMatchIter::next()
         return 0;
 
     ++_index;
-    std::unique_ptr<IndigoDecompositionMatch> result;
-    result.reset(new IndigoDecompositionMatch());
+    std::unique_ptr<IndigoDecompositionMatch> result = std::make_unique<IndigoDecompositionMatch>();
     result->copy(_matches[_index]);
     return result.release();
 }
@@ -1572,24 +1568,16 @@ CEXPORT int indigoDecomposeMolecules(int scaffold, int structures)
     INDIGO_BEGIN
     {
         IndigoArray& mol_array = IndigoArray::cast(self.getObject(structures));
-
-        std::unique_ptr<IndigoDeconvolution> deco(new IndigoDeconvolution());
+        std::unique_ptr<IndigoDeconvolution> deco = std::make_unique<IndigoDeconvolution>();
         deco->save_ap_bond_orders = self.deco_save_ap_bond_orders;
         deco->ignore_errors = self.deco_ignore_errors;
         deco->aromatize = self.deconvolution_aromatization;
-        int i;
-
-        for (i = 0; i < mol_array.objects.size(); i++)
+        for (int i = 0; i < mol_array.objects.size(); i++)
         {
             IndigoObject& obj = *mol_array.objects[i];
-            /*
-             * Add molecule
-             */
             deco->addMolecule(obj.getMolecule(), obj.getProperties(), i);
         }
-
         QueryMolecule& scaf = self.getObject(scaffold).getQueryMolecule();
-
         deco->makeRGroups(scaf);
         return self.addObject(deco.release());
     }
@@ -1790,7 +1778,7 @@ CEXPORT int indigoCreateDecomposer(int scaffold)
 {
     INDIGO_BEGIN
     {
-        std::unique_ptr<IndigoDeconvolution> deco(new IndigoDeconvolution());
+        std::unique_ptr<IndigoDeconvolution> deco = std::make_unique<IndigoDeconvolution>();
         deco->save_ap_bond_orders = self.deco_save_ap_bond_orders;
         deco->ignore_errors = self.deco_ignore_errors;
         deco->aromatize = self.deconvolution_aromatization;
@@ -1842,11 +1830,7 @@ CEXPORT int indigoIterateDecompositions(int deco_item)
          */
         if (deco)
             deco->makeRGroup(elem, true, false);
-
-        std::unique_ptr<IndigoDecompositionMatchIter> match_iter;
-        match_iter.reset(new IndigoDecompositionMatchIter(deco_enum.contexts));
-
-        int obj_idx = self.addObject(match_iter.release());
+        int obj_idx = self.addObject(new IndigoDecompositionMatchIter(deco_enum.contexts));
         return obj_idx;
     }
     INDIGO_END(-1);

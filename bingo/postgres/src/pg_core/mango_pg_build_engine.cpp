@@ -78,7 +78,7 @@ bool MangoPgBuildEngine::processStructure(StructCache& struct_cache)
     if (bingo_res < 1)
         return false;
 
-    std::unique_ptr<MangoPgFpData> fp_data(new MangoPgFpData());
+    std::unique_ptr<MangoPgFpData> fp_data = std::make_unique<MangoPgFpData>();
     if (_readPreparedInfo(0, fp_data.ref(), getFpSize()))
     {
         struct_cache.data.reset(fp_data.release());
@@ -235,7 +235,7 @@ void MangoPgBuildEngine::_processResultCb(void* context)
     MangoPgBuildEngine* engine = (MangoPgBuildEngine*)context;
     ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
     int cache_idx = -1;
-    std::unique_ptr<MangoPgFpData> fp_data(new MangoPgFpData());
+    std::unique_ptr<MangoPgFpData> fp_data = std::make_unique<MangoPgFpData>();
     /*
      * Prepare info
      */

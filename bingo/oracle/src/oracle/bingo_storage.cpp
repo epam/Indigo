@@ -255,7 +255,7 @@ void BingoStorage::validate(OracleEnv& env)
 OracleLOB* BingoStorage::_getLob(OracleEnv& env, int no)
 {
     OracleStatement statement(env);
-    std::unique_ptr<OracleLOB> lob(new OracleLOB(env));
+    std::unique_ptr<OracleLOB> lob = std::make_unique<OracleLOB>(env);
 
     statement.append("SELECT bindata FROM %s where ID = :id FOR UPDATE", _table_name.ptr());
     statement.prepare();

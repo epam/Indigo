@@ -369,7 +369,7 @@ CEXPORT int indigoLoadReaction(int source)
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
         loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
 
-        std::unique_ptr<IndigoReaction> rxnptr(new IndigoReaction());
+        std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
         loader.loadReaction(rxnptr->rxn);
         return self.addObject(rxnptr.release());
     }
@@ -388,7 +388,7 @@ CEXPORT int indigoLoadQueryReaction(int source)
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
 
-        std::unique_ptr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+        std::unique_ptr<IndigoQueryReaction> rxnptr = std::make_unique<IndigoQueryReaction>();
         loader.loadQueryReaction(rxnptr->rxn);
         return self.addObject(rxnptr.release());
     }
@@ -745,7 +745,7 @@ CEXPORT int indigoLoadReactionSmarts(int source)
         IndigoObject& obj = self.getObject(source);
         RSmilesLoader loader(IndigoScanner::get(obj));
 
-        std::unique_ptr<IndigoQueryReaction> rxnptr(new IndigoQueryReaction());
+        std::unique_ptr<IndigoQueryReaction> rxnptr = std::make_unique<IndigoQueryReaction>();
 
         QueryReaction& qrxn = rxnptr->rxn;
 

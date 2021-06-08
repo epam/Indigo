@@ -48,7 +48,7 @@ void CmlSaver::saveQueryMolecule(QueryMolecule& mol)
 void CmlSaver::_saveMolecule(BaseMolecule& mol, bool query)
 {
     LocaleGuard locale_guard;
-    std::unique_ptr<TiXmlDocument> doc(new TiXmlDocument());
+    std::unique_ptr<TiXmlDocument> doc = std::make_unique<TiXmlDocument>();
     _doc = doc->GetDocument();
     _root = 0;
     TiXmlElement* elem = 0;

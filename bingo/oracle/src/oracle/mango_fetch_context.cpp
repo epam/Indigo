@@ -64,7 +64,7 @@ MangoFetchContext& MangoFetchContext::create(MangoOracleContext& context, const 
         if (_instances[i]->id >= id)
             id = _instances[i]->id + 1;
 
-    std::unique_ptr<MangoFetchContext> new_context(new MangoFetchContext(id, context, query_id));
+    std::unique_ptr<MangoFetchContext> new_context = std::make_unique<MangoFetchContext>(id, context, query_id);
 
     const BingoOracleContext& boc = context.context();
 

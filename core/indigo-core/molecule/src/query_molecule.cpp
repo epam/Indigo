@@ -1482,14 +1482,14 @@ void QueryMolecule::Atom::copy(Atom& other)
 
 QueryMolecule::Atom* QueryMolecule::Atom::clone()
 {
-    std::unique_ptr<Atom> res(new Atom());
+    std::unique_ptr<Atom> res = std::make_unique<Atom>();
     res->copy(*this);
     return res.release();
 }
 
 QueryMolecule::Bond* QueryMolecule::Bond::clone()
 {
-    std::unique_ptr<Bond> res(new Bond());
+    std::unique_ptr<Bond> res = std::make_unique<Bond>();
     int i;
 
     res->type = type;

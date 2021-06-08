@@ -267,8 +267,7 @@ void ReactionAutomapper::_createReactionMap()
 
     _initMappings(reaction);
 
-    std::unique_ptr<BaseReaction> reaction_clone;
-    reaction_clone.reset(reaction.neu());
+    std::unique_ptr<BaseReaction> reaction_clone(reaction.neu());
     /*
      * Create all possible permutations for reactants
      */
@@ -901,15 +900,10 @@ void ReactionAutomapper::_considerDimerization()
     QS_DEF(ObjArray<Array<int>>, inv_mappings);
     QS_DEF(Array<int>, sub_map);
     QS_DEF(Array<int>, max_sub_map);
-
-    std::unique_ptr<BaseReaction> reaction_copy_ptr;
-
     bool way_exit = true, map_changed = false;
     int map_found, max_found, max_react_index = -1;
-    reaction_copy_ptr.reset(_initReaction.neu());
-
+    std::unique_ptr<BaseReaction> reaction_copy_ptr(_initReaction.neu());
     BaseReaction& reaction_copy = *reaction_copy_ptr;
-
     reaction_copy.clone(_initReaction, &mol_mapping, 0, &inv_mappings);
     /*
      * Clear reactants

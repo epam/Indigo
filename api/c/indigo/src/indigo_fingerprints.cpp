@@ -131,7 +131,7 @@ CEXPORT int indigoFingerprint(int item, const char* type)
 
             _indigoParseMoleculeFingerprintType(builder, type, mol.isQueryMolecule());
             builder.process();
-            std::unique_ptr<IndigoFingerprint> fp(new IndigoFingerprint());
+            std::unique_ptr<IndigoFingerprint> fp = std::make_unique<IndigoFingerprint>();
             fp->bytes.copy(builder.get(), self.fp_params.fingerprintSize());
             return self.addObject(fp.release());
         }
@@ -142,7 +142,7 @@ CEXPORT int indigoFingerprint(int item, const char* type)
 
             _indigoParseReactionFingerprintType(builder, type, rxn.isQueryReaction());
             builder.process();
-            std::unique_ptr<IndigoFingerprint> fp(new IndigoFingerprint());
+            std::unique_ptr<IndigoFingerprint> fp = std::make_unique<IndigoFingerprint>();
             fp->bytes.copy(builder.get(), self.fp_params.fingerprintSizeExtOrdSim() * 2);
             return self.addObject(fp.release());
         }
@@ -157,7 +157,7 @@ CEXPORT int indigoLoadFingerprintFromBuffer(const byte* buffer, int size)
 {
     INDIGO_BEGIN
     {
-        std::unique_ptr<IndigoFingerprint> fp(new IndigoFingerprint());
+        std::unique_ptr<IndigoFingerprint> fp = std::make_unique<IndigoFingerprint>();
         fp->bytes.copy(buffer, size);
         return self.addObject(fp.release());
     }
@@ -187,9 +187,8 @@ CEXPORT int indigoLoadFingerprintFromDescriptors(const double* arr, int arr_len,
             }
         }
 
-        std::unique_ptr<IndigoFingerprint> fp(new IndigoFingerprint());
+        std::unique_ptr<IndigoFingerprint> fp = std::make_unique<IndigoFingerprint>();
         fp->bytes.copy(data.ptr(), size);
-
         return self.addObject(fp.release());
     }
     INDIGO_END(-1);

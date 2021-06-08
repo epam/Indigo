@@ -66,7 +66,7 @@ std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const AttachmentI
 
 std::unique_ptr<Molecule> MoleculeRGroupsComposition::decorate(const Array<int>& at) const
 {
-    std::unique_ptr<Molecule> result(new Molecule());
+    std::unique_ptr<Molecule> result = std::make_unique<Molecule>();
     decorate(at, *result.get());
     return result;
 }

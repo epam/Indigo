@@ -533,7 +533,7 @@ CEXPORT int indigoCreateFileSaver(const char* filename, const char* format)
 {
     INDIGO_BEGIN
     {
-        std::unique_ptr<FileOutput> output(new FileOutput(self.filename_encoding, filename));
+        std::unique_ptr<FileOutput> output = std::make_unique<FileOutput>(self.filename_encoding, filename);
         std::unique_ptr<IndigoSaver> saver(IndigoSaver::create(*output, format));
         saver->acquireOutput(output.release());
         return self.addObject(saver.release());

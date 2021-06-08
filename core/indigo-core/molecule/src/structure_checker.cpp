@@ -188,7 +188,7 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
 {
     if (!isQueryMolecule(mol))
     {
-        std::unique_ptr<Molecule> target(new Molecule);
+        std::unique_ptr<Molecule> target = std::make_unique<Molecule>();
         auto saved_valence_flag = mol.asMolecule().getIgnoreBadValenceFlag();
         mol.asMolecule().setIgnoreBadValenceFlag(true);
         target->clone_KeepIndices(mol);

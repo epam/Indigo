@@ -335,8 +335,6 @@ void _importSDF(OracleEnv& env, const char* table, const char* clob_col, const c
 void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, const char* id_col, const char* file_name)
 {
     FileScanner fscanner(file_name);
-    std::unique_ptr<GZipScanner> gzscanner;
-    Scanner* scanner;
 
     int nwritten = 0;
     QS_DEF(Array<char>, id);
@@ -350,7 +348,8 @@ void _importSMILES(OracleEnv& env, const char* table, const char* smiles_col, co
 
     fscanner.readCharsFix(2, (char*)magic);
     fscanner.seek(pos, SEEK_SET);
-
+    std::unique_ptr<GZipScanner> gzscanner;
+    Scanner* scanner = nullptr;
     if (magic[0] == 0x1f && magic[1] == 0x8b)
     {
         gzscanner.reset(new GZipScanner(fscanner));
