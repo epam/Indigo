@@ -532,7 +532,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                 {
                     if (strncmp(a.label.c_str(), "AH", 2) == 0)
                     {
-                        std::unique_ptr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
                         x_atom->type = QueryMolecule::OP_NONE;
                         atom.get()->removeConstraints(QueryMolecule::ATOM_NUMBER);
                         atom.reset(x_atom.release());
@@ -544,7 +544,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     }
                     else if (strncmp(a.label.c_str(), "XH", 2) == 0)
                     {
-                        std::unique_ptr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
 
                         x_atom->type = QueryMolecule::OP_OR;
                         x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
@@ -559,7 +559,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     }
                     else if (strncmp(a.label.c_str(), "X", 1) == 0)
                     {
-                        std::unique_ptr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
 
                         x_atom->type = QueryMolecule::OP_OR;
                         x_atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
@@ -573,7 +573,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     }
                     else if (strncmp(a.label.c_str(), "MH", 2) == 0)
                     {
-                        std::unique_ptr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
 
                         x_atom->type = QueryMolecule::OP_AND;
                         x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -599,7 +599,7 @@ void CmlLoader::_loadMoleculeElement(TiXmlHandle& handle)
                     }
                     else if (strncmp(a.label.c_str(), "M", 1) == 0)
                     {
-                        std::unique_ptr<QueryMolecule::Atom> x_atom(new QueryMolecule::Atom());
+                        std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
 
                         x_atom->type = QueryMolecule::OP_AND;
                         x_atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));

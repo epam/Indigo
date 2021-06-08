@@ -249,7 +249,7 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
                 std::unique_ptr<QueryMolecule::Bond> bond(qmol.releaseBond(e_idx));
                 bond->removeConstraints(QueryMolecule::BOND_ORDER);
 
-                std::unique_ptr<QueryMolecule::Bond> arom_bond(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC));
+                std::unique_ptr<QueryMolecule::Bond> arom_bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, BOND_AROMATIC);
 
                 qmol.resetBond(e_idx, QueryMolecule::Bond::und(bond.release(), arom_bond.release()));
             }

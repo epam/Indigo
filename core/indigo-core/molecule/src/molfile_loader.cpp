@@ -2450,13 +2450,13 @@ void MolfileLoader::_readCtab3000()
                     _qmol->addAtom(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
                 else if (atom_type == _ATOM_AH)
                 {
-                    std::unique_ptr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
                     atom->type = QueryMolecule::OP_NONE;
                     _qmol->addAtom(atom.release());
                 }
                 else if (atom_type == _ATOM_X)
                 {
-                    std::unique_ptr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
 
                     atom->type = QueryMolecule::OP_OR;
                     atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
@@ -2468,7 +2468,7 @@ void MolfileLoader::_readCtab3000()
                 }
                 else if (atom_type == _ATOM_XH)
                 {
-                    std::unique_ptr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
 
                     atom->type = QueryMolecule::OP_OR;
                     atom->children.add(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_F));
@@ -2486,7 +2486,7 @@ void MolfileLoader::_readCtab3000()
                                                             QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C))));
                 else if (atom_type == _ATOM_MH)
                 {
-                    std::unique_ptr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
 
                     atom->type = QueryMolecule::OP_AND;
                     atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -2511,7 +2511,7 @@ void MolfileLoader::_readCtab3000()
                 }
                 else if (atom_type == _ATOM_M)
                 {
-                    std::unique_ptr<QueryMolecule::Atom> atom(new QueryMolecule::Atom());
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
 
                     atom->type = QueryMolecule::OP_AND;
                     atom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
