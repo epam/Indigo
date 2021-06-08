@@ -340,10 +340,6 @@ namespace indigo
 
         void resize(int newsize)
         {
-            if (_arr.capacity() == 13)
-            {
-                printf("pup");
-            }
             _arr.resize(newsize);
         }
 
@@ -397,7 +393,8 @@ namespace indigo
 
         void expand(int newsize)
         {
-            resize(newsize);
+            if (newsize > _arr.size())
+                resize(newsize);
         }
 
         void expandFill(int newsize, const T& value)
@@ -663,10 +660,6 @@ namespace indigo
 
         void resize(int newsize)
         {
-            if (_arr.capacity() == 13)
-            {
-                printf("pup");
-            }
             _arr.resize(newsize);
         }
 
@@ -719,7 +712,8 @@ namespace indigo
 
         void expand(int newsize)
         {
-            resize(newsize);
+            if (newsize > _arr.size())
+                resize(newsize);
         }
 
         void expandFill(int newsize, const int& value)
