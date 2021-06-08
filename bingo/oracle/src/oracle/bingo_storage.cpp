@@ -260,7 +260,7 @@ OracleLOB* BingoStorage::_getLob(OracleEnv& env, int no)
     statement.append("SELECT bindata FROM %s where ID = :id FOR UPDATE", _table_name.ptr());
     statement.prepare();
     statement.bindIntByName(":id", &no);
-    statement.defineBlobByPos(1, lob.ref());
+    statement.defineBlobByPos(1, *lob);
     statement.execute();
 
     if (statement.fetch())

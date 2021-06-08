@@ -58,7 +58,7 @@ private:
     PG_OBJECT _indexScanDesc;
 
     BingoPgIndex _bufferIndex;
-    indigo::std::unique_ptr<BingoPgSearchEngine> _fpEngine;
+    std::unique_ptr<BingoPgSearchEngine> _fpEngine;
 
     indigo::Array<char> _funcName;
 };

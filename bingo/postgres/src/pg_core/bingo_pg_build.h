@@ -57,7 +57,7 @@ private:
      */
     BingoPgIndex _bufferIndex;
 
-    indigo::std::unique_ptr<BingoPgBuildEngine> fp_engine;
+    std::unique_ptr<BingoPgBuildEngine> fp_engine;
 
     /*
      * There are two possible uses - build(true) and update(false)

@@ -137,13 +137,13 @@ void RingoShadowFetch::prepareNonSubstructure(OracleEnv& env)
     _fetch_type = _NON_SUBSTRUCTURE;
 
     _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(_env.ref()));
+    _statement.reset(new OracleStatement(*_env));
 
-    _lob_crf.reset(new OracleLOB(_env.ref()));
+    _lob_crf.reset(new OracleLOB(*_env));
     _statement->append("SELECT rid, crf FROM %s", _table_name.ptr());
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
-    _statement->defineBlobByPos(2, _lob_crf.ref());
+    _statement->defineBlobByPos(2, *_lob_crf);
 
     _counting_select.clear();
 }
@@ -161,8 +161,8 @@ void RingoShadowFetch::prepareExact(OracleEnv& env, int right_part)
     _right_part = right_part;
 
     _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(_env.ref()));
-    _lob_crf.reset(new OracleLOB(_env.ref()));
+    _statement.reset(new OracleStatement(*_env));
+    _lob_crf.reset(new OracleLOB(*_env));
 
     _statement->append("SELECT sh.rid, sh.crf FROM %s sh", _table_name.ptr());
 
@@ -171,7 +171,7 @@ void RingoShadowFetch::prepareExact(OracleEnv& env, int right_part)
 
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
-    _statement->defineBlobByPos(2, _lob_crf.ref());
+    _statement->defineBlobByPos(2, *_lob_crf);
     if (_right_part == 1)
     {
         const char* hash_str = instance.getQueryHashStr();

@@ -150,7 +150,7 @@ void RingoPgSearchEngine::_prepareSubSearch(PG_OBJECT scan_desc_ptr)
     int bingo_res;
     Array<char> search_query;
     Array<char> search_options;
-    BingoPgFpData& data = _queryFpData.ref();
+    BingoPgFpData& data = *_queryFpData;
 
     if (scan_desc->numberOfKeys != 1)
     {

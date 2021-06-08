@@ -56,12 +56,12 @@ BingoPgBuild::~BingoPgBuild()
      */
     if (_buildingState)
     {
-        fp_engine.ref().finishShadowProcessing();
+        fp_engine->finishShadowProcessing();
     }
     /*
      * Write meta info in desctructor
      */
-    _bufferIndex.writeDictionary(fp_engine.ref());
+    _bufferIndex.writeDictionary(*fp_engine);
     _bufferIndex.writeMetaInfo();
 }
 /*
@@ -114,9 +114,9 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
     /*
      * If new build then create a metapage and initial section
      */
-    _bufferIndex.writeBegin(fp_engine.ref(), bingo_config);
+    _bufferIndex.writeBegin(*fp_engine, bingo_config);
 
-    fp_engine.ref().prepareShadowInfo(schema_name, index_schema);
+    fp_engine->prepareShadowInfo(schema_name, index_schema);
 }
 
 void BingoPgBuild::_prepareUpdating()
@@ -187,7 +187,7 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
     if (struct_cache.data.get() == 0)
         return false;
 
-    BingoPgFpData& data_ref = struct_cache.data.ref();
+    BingoPgFpData& data_ref = *struct_cache.data;
 
     _bufferIndex.insertStructure(data_ref);
     fp_engine->insertShadowInfo(data_ref);
@@ -232,7 +232,7 @@ void BingoPgBuild::flush()
             continue;
         }
 
-        BingoPgFpData& data_ref = struct_cache.data.ref();
+        BingoPgFpData& data_ref = *struct_cache.data;
         _bufferIndex.insertStructure(data_ref);
         fp_engine->insertShadowInfo(data_ref);
     }

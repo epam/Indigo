@@ -148,25 +148,25 @@ void MangoShadowFetch::prepareNonSubstructure(OracleEnv& env)
     _need_xyz = _context.substructure.needCoords();
 
     _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(_env.ref()));
+    _statement.reset(new OracleStatement(*_env));
 
     if (_need_xyz)
     {
-        _lob_cmf.reset(new OracleLOB(_env.ref()));
-        _lob_xyz.reset(new OracleLOB(_env.ref()));
+        _lob_cmf.reset(new OracleLOB(*_env));
+        _lob_xyz.reset(new OracleLOB(*_env));
         _statement->append("SELECT mol_rowid, cmf, xyz FROM %s", _table_name.ptr());
         _statement->prepare();
         _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
-        _statement->defineBlobByPos(2, _lob_cmf.ref());
-        _statement->defineBlobByPos(3, _lob_xyz.ref());
+        _statement->defineBlobByPos(2, *_lob_cmf);
+        _statement->defineBlobByPos(3, *_lob_xyz);
     }
     else
     {
-        _lob_cmf.reset(new OracleLOB(_env.ref()));
+        _lob_cmf.reset(new OracleLOB(*_env));
         _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.ptr());
         _statement->prepare();
         _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
-        _statement->defineBlobByPos(2, _lob_cmf.ref());
+        _statement->defineBlobByPos(2, *_lob_cmf);
     }
 
     _counting_select.clear();
@@ -178,13 +178,13 @@ void MangoShadowFetch::prepareNonTautomerSubstructure(OracleEnv& env)
     _fetch_type = _NON_TAUTOMER_SUBSTRUCTURE;
 
     _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(_env.ref()));
-    _lob_cmf.reset(new OracleLOB(_env.ref()));
+    _statement.reset(new OracleStatement(*_env));
+    _lob_cmf.reset(new OracleLOB(*_env));
 
     _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.ptr());
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
-    _statement->defineBlobByPos(2, _lob_cmf.ref());
+    _statement->defineBlobByPos(2, *_lob_cmf);
 
     _counting_select.clear();
 }
@@ -200,8 +200,8 @@ void MangoShadowFetch::prepareTautomer(OracleEnv& env, int right_part)
     _right_part = right_part;
 
     _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(_env.ref()));
-    _lob_cmf.reset(new OracleLOB(_env.ref()));
+    _statement.reset(new OracleStatement(*_env));
+    _lob_cmf.reset(new OracleLOB(*_env));
 
     _statement->append("SELECT mol_rowid, cmf FROM %s", _table_name.ptr());
 
@@ -210,7 +210,7 @@ void MangoShadowFetch::prepareTautomer(OracleEnv& env, int right_part)
 
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
-    _statement->defineBlobByPos(2, _lob_cmf.ref());
+    _statement->defineBlobByPos(2, *_lob_cmf);
 
     if (right_part == 1)
     {
@@ -236,8 +236,8 @@ void MangoShadowFetch::prepareExact(OracleEnv& env, int right_part)
     _need_xyz = instance.needCoords();
 
     _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(_env.ref()));
-    _lob_cmf.reset(new OracleLOB(_env.ref()));
+    _statement.reset(new OracleStatement(*_env));
+    _lob_cmf.reset(new OracleLOB(*_env));
 
     _statement->append("SELECT sh.mol_rowid, sh.cmf");
     if (_need_xyz)
@@ -253,12 +253,12 @@ void MangoShadowFetch::prepareExact(OracleEnv& env, int right_part)
 
     _statement->prepare();
     _statement->defineStringByPos(1, _rowid.ptr(), sizeof(_rowid));
-    _statement->defineBlobByPos(2, _lob_cmf.ref());
+    _statement->defineBlobByPos(2, *_lob_cmf);
 
     if (_need_xyz)
     {
-        _lob_xyz.reset(new OracleLOB(_env.ref()));
-        _statement->defineBlobByPos(3, _lob_xyz.ref());
+        _lob_xyz.reset(new OracleLOB(*_env));
+        _statement->defineBlobByPos(3, *_lob_xyz);
     }
 
     ArrayOutput output_cnt(_counting_select);
@@ -338,7 +338,7 @@ void MangoShadowFetch::prepareGross(OracleEnv& env, int right_part)
     _fetch_type = _GROSS;
     _right_part = right_part;
     _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(_env.ref()));
+    _statement.reset(new OracleStatement(*_env));
     _statement->append("SELECT mol_rowid, gross FROM %s ", _table_name.ptr());
     if (*instance.getConditions() != 0 && right_part == 1)
         _statement->append("WHERE %s", instance.getConditions());
@@ -364,7 +364,7 @@ void MangoShadowFetch::prepareMass(OracleEnv& env)
 
     _fetch_type = _MASS;
     _env.reset(new OracleEnv(env.ctx(), env.logger()));
-    _statement.reset(new OracleStatement(_env.ref()));
+    _statement.reset(new OracleStatement(*_env));
 
     _statement->append("SELECT mol_rowid FROM %s WHERE mass >= :mass_min AND mass <= :mass_max", _table_name.ptr());
 

@@ -89,7 +89,7 @@ private:
 
     BingoSectionInfoData _sectionInfo;
     BingoPgBuffer _sectionInfoBuffer;
-    indigo::std::unique_ptr<BingoPgBufferCacheFp> _existStructures;
+    std::unique_ptr<BingoPgBufferCacheFp> _existStructures;
 
     indigo::PtrArray<BingoPgBufferCacheFp> _buffersFp;
     indigo::PtrArray<BingoPgBufferCacheMap> _buffersMap;

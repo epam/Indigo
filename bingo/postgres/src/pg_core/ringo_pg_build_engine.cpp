@@ -73,7 +73,7 @@ bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
         return false;
 
     std::unique_ptr<RingoPgFpData> fp_data = std::make_unique<RingoPgFpData>();
-    if (_readPreparedInfo(0, fp_data.ref(), getFpSize()))
+    if (_readPreparedInfo(0, *fp_data, getFpSize()))
     {
         struct_cache.data.reset(fp_data.release());
         struct_cache.data->setTidItem(item_ptr);
@@ -174,7 +174,7 @@ void RingoPgBuildEngine::_processResultCb(void* context)
     /*
      * Prepare info
      */
-    if (_readPreparedInfo(&cache_idx, fp_data.ref(), engine->_fpSize))
+    if (_readPreparedInfo(&cache_idx, *fp_data, engine->_fpSize))
     {
         StructCache& struct_cache = struct_caches[cache_idx];
         struct_cache.data.reset(fp_data.release());

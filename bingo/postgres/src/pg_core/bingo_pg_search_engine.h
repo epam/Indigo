@@ -167,8 +167,8 @@ protected:
     BingoPgIndex* _bufferIndexPtr;
 
     BingoPgExternalBitset _sectionBitset;
-    indigo::std::unique_ptr<BingoPgFpData> _queryFpData;
-    indigo::std::unique_ptr<BingoPgCursor> _searchCursor;
+    std::unique_ptr<BingoPgFpData> _queryFpData;
+    std::unique_ptr<BingoPgCursor> _searchCursor;
 };
 
 #endif /* BINGO_PG_SEARCH_ENGINE_H */

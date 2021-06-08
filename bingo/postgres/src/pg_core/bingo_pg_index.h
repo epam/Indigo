@@ -159,7 +159,7 @@ private:
     BingoMetaPageData _metaInfo;
     BingoPgBuffer _metaBuffer;
     indigo::PtrArray<BingoPgBuffer> _sectionOffsetBuffers;
-    indigo::std::unique_ptr<BingoPgSection> _currentSection;
+    std::unique_ptr<BingoPgSection> _currentSection;
     int _currentSectionIdx;
 };
 

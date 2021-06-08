@@ -124,12 +124,12 @@ void ringoRegisterTable(OracleEnv& env, RingoOracleContext& context, const char*
     if (blob)
     {
         reaction_lob.reset(new OracleLOB(env));
-        statement.defineBlobByPos(1, reaction_lob.ref());
+        statement.defineBlobByPos(1, *reaction_lob);
     }
     else if (clob)
     {
         reaction_lob.reset(new OracleLOB(env));
-        statement.defineClobByPos(1, reaction_lob.ref());
+        statement.defineClobByPos(1, *reaction_lob);
     }
     else
         statement.defineStringByPos(1, varchar2_text, sizeof(varchar2_text));

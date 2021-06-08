@@ -167,12 +167,12 @@ void mangoRegisterTable(OracleEnv& env, MangoOracleContext& context, const char*
     if (blob)
     {
         molfile_lob.reset(new OracleLOB(env));
-        statement.defineBlobByPos(1, molfile_lob.ref());
+        statement.defineBlobByPos(1, *molfile_lob);
     }
     else if (clob)
     {
         molfile_lob.reset(new OracleLOB(env));
-        statement.defineClobByPos(1, molfile_lob.ref());
+        statement.defineClobByPos(1, *molfile_lob);
     }
     else
         statement.defineStringByPos(1, varchar2_text, sizeof(varchar2_text));

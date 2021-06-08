@@ -40,8 +40,8 @@ public:
         {
         }
         ItemPointerData ptr;
-        indigo::std::unique_ptr<BingoPgText> text;
-        indigo::std::unique_ptr<BingoPgFpData> data;
+        std::unique_ptr<BingoPgText> text;
+        std::unique_ptr<BingoPgFpData> data;
 
     private:
         StructCache(const StructCache&); // no implicit copy
