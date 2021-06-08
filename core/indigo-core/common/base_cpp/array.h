@@ -56,12 +56,12 @@ namespace indigo
 
         const char* ptr() const
         {
-            return _arr.data();
+            return _arr.size() ? _arr.data() : nullptr;
         }
 
         char* ptr()
         {
-            return &_arr[0];
+            return _arr.size() ? &_arr[0] : nullptr;
         }
 
         void copy(const ArrayChar& other)
@@ -255,7 +255,7 @@ namespace indigo
 
         const T* ptr() const
         {
-            return _arr.data();
+            return _arr.size() ? _arr.data() : nullptr;
         }
 
         T* ptr()
@@ -360,9 +360,9 @@ namespace indigo
             return _arr.back();
         }
 
-        T& pop()
+        T pop()
         {
-            T& res = _arr.back();
+            T res = _arr.back();
             _arr.pop_back();
             return res;
         }
