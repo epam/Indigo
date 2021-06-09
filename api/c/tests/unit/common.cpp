@@ -18,7 +18,7 @@ void indigo::errorHandling(const char* message, void* context)
     throw indigo::Exception(message);
 }
 
-void indigo::printMap(ArrayInt& map)
+void indigo::printMap(Array<int>& map)
 {
     for (int i = 0; i < map.size(); ++i)
     {
