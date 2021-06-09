@@ -21,6 +21,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <algorithm>
 
 #include "base_c/defs.h"
 #include "base_cpp/scanner.h"
@@ -604,7 +605,7 @@ long long FileScanner::tell()
 
 void FileScanner::read(int length, void* res)
 {
-    int to_read_from_cache = __min(length, _max_cache - _cache_pos);
+    int to_read_from_cache = std::min(length, _max_cache - _cache_pos);
     memcpy(res, _cache + _cache_pos, to_read_from_cache);
     _cache_pos += to_read_from_cache;
 

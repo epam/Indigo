@@ -669,8 +669,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
                 }
                 if (parity == MoleculeCisTrans::TRANS)
                 {
-                    int tmp;
-                    __swap(s3, s4, tmp);
+
+                    std::swap(s3, s4);
                 }
                 QS_DEF(ArrayChar, buf);
                 ArrayOutput out(buf);

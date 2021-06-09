@@ -219,7 +219,7 @@ namespace indigo
                         len++;
                     }
                     char symb[4] = {0};
-                    strncpy(symb, label, __min(NELEM(symb) - 1, len));
+                    strncpy(symb, label, std::min(NELEM(symb) - 1, len));
                     int id = Element::fromString2(symb);
                     if (id < 0)
                         return -1;

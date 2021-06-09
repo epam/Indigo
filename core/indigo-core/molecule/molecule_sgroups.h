@@ -125,7 +125,7 @@ namespace indigo
     {
     public:
         DataSGroup();
-        virtual ~DataSGroup();
+        ~DataSGroup() override;
 
         ArrayChar description; // SDT in Molfile format (filed units or format)
         ArrayChar name;        // SDT in Molfile format (field name)
@@ -148,7 +148,7 @@ namespace indigo
     {
     public:
         Superatom();
-        virtual ~Superatom();
+        ~Superatom() override;
 
         ArrayChar subscript;     // SMT in Molfile format
         ArrayChar sa_class;      // SCL in Molfile format
@@ -180,7 +180,7 @@ namespace indigo
     {
     public:
         RepeatingUnit();
-        virtual ~RepeatingUnit();
+        ~RepeatingUnit() override;
 
         int connectivity;
         ArrayChar subscript; // SMT in Molfile format
@@ -192,7 +192,7 @@ namespace indigo
     {
     public:
         MultipleGroup();
-        virtual ~MultipleGroup();
+        ~MultipleGroup() override;
 
         Array<int> parent_atoms;
         int multiplier;

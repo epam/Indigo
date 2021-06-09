@@ -94,7 +94,7 @@ void MoleculeElectronsLocalizer::_construct()
     for (int v = _skeleton.vertexBegin(); v != _skeleton.vertexEnd(); v = _skeleton.vertexNext(v))
     {
         _AtomInfo& info = _atom_info[v];
-        _zc_atoms_connectivity += __max(info.zc_connectivity, 0);
+        _zc_atoms_connectivity += std::max(info.zc_connectivity, 0);
         _zc_lonepairs += info.zc_lonepairs;
 
         // Store initial maximum add connectivity
@@ -189,7 +189,7 @@ void MoleculeElectronsLocalizer::_setupBMatchingNodeAtom(int atom)
 {
     _AtomInfo& info = _atom_info[atom];
 
-    int zero_sum_conn = __max(info.zc_connectivity, 0) + info.zc_lonepairs;
+    int zero_sum_conn = std::max(info.zc_connectivity, 0) + info.zc_lonepairs;
     _finder->setNodeCapacity(info.atom_node, zero_sum_conn, _PRIMARY_ATOMS_SET);
 
     int left_conn = info.max_add_connectivity - zero_sum_conn;
@@ -237,7 +237,7 @@ void MoleculeElectronsLocalizer::_setupBMatchingEdges()
         int beg_cap = _atom_info[edge.beg].max_add_connectivity;
         int end_cap = _atom_info[edge.end].max_add_connectivity;
 
-        _finder->setMaxEdgeMultiplicity(e, __min(beg_cap, end_cap));
+        _finder->setMaxEdgeMultiplicity(e, std::min(beg_cap, end_cap));
     }
 }
 
@@ -613,7 +613,7 @@ void MoleculeElectronsLocalizer::unfixBond(int bond)
     int beg_cap = _atom_info[edge.beg].max_add_connectivity0;
     int end_cap = _atom_info[edge.end].max_add_connectivity0;
 
-    _finder->setMaxEdgeMultiplicity(_edge_mapping[bond], __min(beg_cap, end_cap));
+    _finder->setMaxEdgeMultiplicity(_edge_mapping[bond], std::min(beg_cap, end_cap));
 
     _edges_fixed_type[bond] = -1;
 }
@@ -733,7 +733,7 @@ void MoleculeElectronsLocalizer::_splitConnectivity(int atom, int conn, int* pri
 {
     const _AtomInfo& info = _atom_info[atom];
 
-    int zc_sum_conn = __max(info.zc_connectivity, 0) + info.zc_lonepairs;
+    int zc_sum_conn = std::max(info.zc_connectivity, 0) + info.zc_lonepairs;
     if (conn < zc_sum_conn)
     {
         *prim = conn;

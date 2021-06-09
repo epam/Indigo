@@ -66,11 +66,11 @@ namespace indigo
     public:
         LzwOutput(LzwEncoder& encoder);
 
-        virtual void write(const void* data, int size);
-        virtual void writeByte(byte value);
-        virtual void seek(long long offset, int from);
-        virtual long long tell();
-        virtual void flush();
+        void write(const void* data, int size) override;
+        void writeByte(byte value) override;
+        void seek(long long offset, int from) override;
+        long long tell() override;
+        void flush() override;
 
     private:
         LzwEncoder& _encoder;

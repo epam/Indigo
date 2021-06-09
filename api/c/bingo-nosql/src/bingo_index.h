@@ -11,10 +11,10 @@ namespace bingo
     public:
         MoleculeIndex();
 
-        virtual Matcher* createMatcher(const char* type, MatcherQueryData* query_data, const char* options);
-        virtual Matcher* createMatcherWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, IndigoObject& fp);
-        virtual Matcher* createMatcherTopN(const char* type, MatcherQueryData* query_data, const char* options, int limit);
-        virtual Matcher* createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp);
+        Matcher* createMatcher(const char* type, MatcherQueryData* query_data, const char* options) override;
+        Matcher* createMatcherWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, IndigoObject& fp) override;
+        Matcher* createMatcherTopN(const char* type, MatcherQueryData* query_data, const char* options, int limit) override;
+        Matcher* createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp) override;
     };
 
     class ReactionIndex : public BaseIndex
@@ -22,10 +22,10 @@ namespace bingo
     public:
         ReactionIndex();
 
-        virtual Matcher* createMatcher(const char* type, MatcherQueryData* query_data, const char* options);
-        virtual Matcher* createMatcherWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, IndigoObject& fp);
-        virtual Matcher* createMatcherTopN(const char* type, MatcherQueryData* query_data, const char* options, int limit);
-        virtual Matcher* createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp);
+        Matcher* createMatcher(const char* type, MatcherQueryData* query_data, const char* options) override;
+        Matcher* createMatcherWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, IndigoObject& fp) override;
+        Matcher* createMatcherTopN(const char* type, MatcherQueryData* query_data, const char* options, int limit) override;
+        Matcher* createMatcherTopNWithExtFP(const char* type, MatcherQueryData* query_data, const char* options, int limit, IndigoObject& fp) override;
     };
 }; // namespace bingo
 

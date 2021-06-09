@@ -34,20 +34,20 @@ class DLLEXPORT IndigoBaseReaction : public IndigoObject
 public:
     explicit IndigoBaseReaction(int type_);
 
-    virtual ~IndigoBaseReaction();
+    ~IndigoBaseReaction() override;
 
-    virtual indigo::PropertiesMap& getProperties()
+    indigo::PropertiesMap& getProperties() override
     {
         return _properties;
     }
-    virtual MonomersProperties& getMonomersProperties()
+    MonomersProperties& getMonomersProperties() override
     {
         return _monomersProperties;
     };
 
     static bool is(IndigoObject& obj);
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
     inline void clear()
     {
@@ -63,17 +63,17 @@ class DLLEXPORT IndigoReaction : public IndigoBaseReaction
 {
 public:
     IndigoReaction();
-    virtual ~IndigoReaction();
+    ~IndigoReaction() override;
 
-    virtual BaseReaction& getBaseReaction();
-    virtual Reaction& getReaction();
-    virtual const char* getName();
+    BaseReaction& getBaseReaction() override;
+    Reaction& getReaction() override;
+    const char* getName() override;
 
-    virtual IndigoObject* clone();
+    IndigoObject* clone() override;
 
     static IndigoReaction* cloneFrom(IndigoObject& obj);
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
     Reaction rxn;
 };
@@ -82,17 +82,17 @@ class DLLEXPORT IndigoQueryReaction : public IndigoBaseReaction
 {
 public:
     IndigoQueryReaction();
-    virtual ~IndigoQueryReaction();
+    ~IndigoQueryReaction() override;
 
-    virtual BaseReaction& getBaseReaction();
-    virtual QueryReaction& getQueryReaction();
-    virtual const char* getName();
+    BaseReaction& getBaseReaction() override;
+    QueryReaction& getQueryReaction() override;
+    const char* getName() override;
 
-    virtual IndigoObject* clone();
+    IndigoObject* clone() override;
 
     static IndigoQueryReaction* cloneFrom(IndigoObject& obj);
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
     QueryReaction rxn;
 };
@@ -102,20 +102,20 @@ class IndigoReactionMolecule : public IndigoObject
 public:
     IndigoReactionMolecule(BaseReaction& reaction, int index);
     IndigoReactionMolecule(BaseReaction& reaction, MonomersProperties& map, int index);
-    virtual ~IndigoReactionMolecule();
+    ~IndigoReactionMolecule() override;
 
-    virtual BaseMolecule& getBaseMolecule();
-    virtual QueryMolecule& getQueryMolecule();
-    virtual Molecule& getMolecule();
-    virtual int getIndex();
-    virtual IndigoObject* clone();
-    virtual void remove();
-    virtual indigo::PropertiesMap& getProperties()
+    BaseMolecule& getBaseMolecule() override;
+    QueryMolecule& getQueryMolecule() override;
+    Molecule& getMolecule() override;
+    int getIndex() override;
+    IndigoObject* clone() override;
+    void remove() override;
+    indigo::PropertiesMap& getProperties() override
     {
         return _properties;
     }
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
     BaseReaction& rxn;
     int idx;
@@ -135,12 +135,12 @@ public:
 
     IndigoReactionIter(BaseReaction& rxn, MonomersProperties& map, int subtype);
     IndigoReactionIter(BaseReaction& rxn, int subtype);
-    virtual ~IndigoReactionIter();
+    ~IndigoReactionIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
 protected:
     int _begin();

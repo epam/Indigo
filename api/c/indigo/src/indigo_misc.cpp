@@ -46,10 +46,6 @@
 #include "reaction/reaction_json_loader.h"
 #include "reaction/reaction_json_saver.h"
 
-#define CHECKRGB(r, g, b)                                                                                                                                      \
-    if (__min3(r, g, b) < 0 || __max3(r, g, b) > 1.0 + 1e-6)                                                                                                   \
-    throw IndigoError("Some of the color components are out of range [0..1]")
-
 CEXPORT int indigoAromatize(int object)
 {
     INDIGO_BEGIN

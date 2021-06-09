@@ -54,7 +54,7 @@ namespace indigo
     {
     public:
         explicit PatternLayout();
-        virtual ~PatternLayout();
+        ~PatternLayout() override;
 
         int addBond(int atom_beg, int atom_end, int type);
         int addAtom(float x, float y);

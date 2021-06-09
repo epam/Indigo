@@ -442,7 +442,7 @@ void MoleculeRenderInternal::_extendRenderItem(RenderItem& item, const float ext
     item.relpos.add(exv);
 }
 
-#define __minmax(inv, t1, t2) (inv ? __min(t1, t2) : __max(t1, t2))
+#define __minmax(inv, t1, t2) (inv ? std::min(t1, t2) : std::max(t1, t2))
 bool MoleculeRenderInternal::_clipRaySegment(float& offset, const Vec2f& p, const Vec2f& d, const Vec2f& n0, const Vec2f& a, const Vec2f& b, const float w)
 {
     Vec2f ab, pa, pb;
@@ -503,7 +503,7 @@ bool MoleculeRenderInternal::_clipRayBox(float& offset, const Vec2f& p, const Ve
     if (_clipRaySegment(tt, p, d, n, a, b, w))
     {
         f = true;
-        t = __max(t, tt);
+        t = std::max(t, tt);
     }
 
     a.set(rp.x, rp.y);
@@ -511,7 +511,7 @@ bool MoleculeRenderInternal::_clipRayBox(float& offset, const Vec2f& p, const Ve
     if (_clipRaySegment(tt, p, d, n, a, b, w))
     {
         f = true;
-        t = __max(t, tt);
+        t = std::max(t, tt);
     }
 
     a.set(rp.x + sz.x, rp.y);
@@ -519,7 +519,7 @@ bool MoleculeRenderInternal::_clipRayBox(float& offset, const Vec2f& p, const Ve
     if (_clipRaySegment(tt, p, d, n, a, b, w))
     {
         f = true;
-        t = __max(t, tt);
+        t = std::max(t, tt);
     }
 
     a.set(rp.x, rp.y + sz.y);
@@ -527,7 +527,7 @@ bool MoleculeRenderInternal::_clipRayBox(float& offset, const Vec2f& p, const Ve
     if (_clipRaySegment(tt, p, d, n, a, b, w))
     {
         f = true;
-        t = __max(t, tt);
+        t = std::max(t, tt);
     }
 
     if (f)
@@ -1016,12 +1016,12 @@ int loopDist(int i, int j, int len)
 {
     if (i > j)
     {
-        int t;
-        __swap(i, j, t);
+
+        std::swap(i, j);
     }
     int d1 = j - i;
     int d2 = i + len - j;
-    return __min(d1, d2);
+    return std::min(d1, d2);
 }
 
 class SegmentList : protected RedBlackSet<int>
@@ -1076,7 +1076,7 @@ public:
     double xPos;
 
 protected:
-    virtual int _compare(int key, const Node& node) const
+    int _compare(int key, const Node& node) const override
     {
         const Segment& a = segments[key];
         const Segment& b = segments[node.key];
@@ -1113,7 +1113,7 @@ bool MoleculeRenderInternal::_ringHasSelfIntersectionsSimple(const Ring& ring)
 {
     for (int j = 0; j < ring.bondEnds.size(); ++j)
     {
-        for (int k = j + 2; k < __min(ring.bondEnds.size(), ring.bondEnds.size() + j - 1); ++k)
+        for (int k = j + 2; k < std::min(ring.bondEnds.size(), ring.bondEnds.size() + j - 1); ++k)
         {
             const BondEnd& be1 = _be(ring.bondEnds[j]);
             const BondEnd& be2 = _be(ring.bondEnds[k]);
@@ -1571,8 +1571,8 @@ int MoleculeRenderInternal::_hydroPosFindConflict(int i)
         Vec2f d;
         d.diff(_ad(aid).pos, ad.pos);
         HYDRO_POS orientation = d.x < d.y ? (d.x > -d.y ? HYDRO_POS_DOWN : HYDRO_POS_LEFT) : (d.x > -d.y ? HYDRO_POS_RIGHT : HYDRO_POS_UP);
-        float aDist = __max(fabs(d.x), fabs(d.y));
-        float bDist = __min(fabs(d.x), fabs(d.y));
+        float aDist = std::max(fabs(d.x), fabs(d.y));
+        float bDist = std::min(fabs(d.x), fabs(d.y));
         if (orientation == ad.hydroPos && bDist < _settings.neighboringAtomDistanceTresholdB &&
             (aDist < _settings.neighboringAtomDistanceTresholdA ||
              (aDist < _settings.neighboringAtomDistanceTresholdA * 2 && _ad(aid).hydroPos == 3 - ad.hydroPos)))
@@ -1710,13 +1710,13 @@ void MoleculeRenderInternal::_initAtomData()
             d.sub(ad.pos);
             d.normalize();
             if (d.x > 0)
-                ad.rightSin = __max(ad.rightSin, d.x);
+                ad.rightSin = std::max(ad.rightSin, d.x);
             else
-                ad.leftSin = __max(ad.leftSin, -d.x);
+                ad.leftSin = std::max(ad.leftSin, -d.x);
             if (d.y > 0)
-                ad.lowerSin = __max(ad.lowerSin, d.y);
+                ad.lowerSin = std::max(ad.lowerSin, d.y);
             else
-                ad.upperSin = __max(ad.upperSin, -d.y);
+                ad.upperSin = std::max(ad.upperSin, -d.y);
         }
         if (ad.rightSin > 0.7)
             hasBondOnRight = true;
@@ -1839,7 +1839,7 @@ void MoleculeRenderInternal::_findAnglesOverPi()
             if (dot > 0 || 1 + dot < 1e-4)
                 continue;
             float ahs = sqrt((1 + dot) / (1 - dot));
-            lmbe.offset = rmbe.offset = -ahs * __min(_bd(lmbe.bid).thickness, _bd(rmbe.bid).thickness) / 2;
+            lmbe.offset = rmbe.offset = -ahs * std::min(_bd(lmbe.bid).thickness, _bd(rmbe.bid).thickness) / 2;
         }
     }
 }
@@ -1978,9 +1978,9 @@ void MoleculeRenderInternal::_renderRings()
                     _cw.setHighlight();
                 float a0 = ring.angles[k], a1 = ring.angles[(k + 1) % ring.bondEnds.size()];
                 if (fabs(a1 - a0) > M_PI)
-                    _cw.drawArc(ring.center, r, __max(a0, a1), __min(a0, a1));
+                    _cw.drawArc(ring.center, r, std::max(a0, a1), std::min(a0, a1));
                 else
-                    _cw.drawArc(ring.center, r, __min(a0, a1), __max(a0, a1));
+                    _cw.drawArc(ring.center, r, std::min(a0, a1), std::max(a0, a1));
                 if (_edgeIsHighlighted(be.bid))
                     _cw.resetHighlight();
             }
@@ -2165,7 +2165,7 @@ float MoleculeRenderInternal::_getBondOffset(int aid, const Vec2f& pos, const Ve
         if (item.noBondOffset)
             continue;
         if (_clipRayBox(offset, pos, dir, item.bbp, item.bbsz, bondWidth))
-            maxOffset = __max(maxOffset, offset);
+            maxOffset = std::max(maxOffset, offset);
     }
     for (int k = 0; k < _ad(aid).gicount; ++k)
     {
@@ -2173,7 +2173,7 @@ float MoleculeRenderInternal::_getBondOffset(int aid, const Vec2f& pos, const Ve
         if (item.noBondOffset)
             continue;
         if (_clipRayBox(offset, pos, dir, item.bbp, item.bbsz, bondWidth))
-            maxOffset = __max(maxOffset, offset);
+            maxOffset = std::max(maxOffset, offset);
     }
     return maxOffset + _settings.unit * 2;
 }
@@ -2187,7 +2187,7 @@ void MoleculeRenderInternal::_calculateBondOffset()
         for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
         {
             BondEnd& be1 = _getBondEnd(i, j);
-            be1.offset = __max(be1.offset, _getBondOffset(i, be1.p, be1.dir, be1.width));
+            be1.offset = std::max(be1.offset, _getBondOffset(i, be1.p, be1.dir, be1.width));
         }
     }
 
@@ -2659,7 +2659,7 @@ int MoleculeRenderInternal::_findClosestBox(Vec2f& p, int aid, const Vec2f& sz, 
         rightOffset = w2 * fabs(leftNorm.x) + h2 * fabs(leftNorm.y);
         leftOffset = w2 * fabs(rightNorm.x) + h2 * fabs(rightNorm.y);
 
-        float t = __max(leftShift + rightOffset, leftOffset + rightShift) / factor;
+        float t = std::max(leftShift + rightOffset, leftOffset + rightShift) / factor;
         Vec2f median(rightDir);
         median.rotateL(ang / 2);
         q.addScaled(median, t);
@@ -2763,7 +2763,7 @@ int MoleculeRenderInternal::_findClosestCircle(Vec2f& p, int aid, float radius, 
         if (ang < 0)
             ang += (float)(2 * M_PI);
 
-        float factor = __max(fabs(si), 0.01f);
+        float factor = std::max(fabsf(si), 0.01f);
         if (rightShift > 0)
             origin.addScaled(leftDir, rightShift / factor);
         if (leftShift > 0)
@@ -3126,9 +3126,9 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                     float shift = item.bbsz.length() + label.bbsz.length();
                     // one of the next conditions should be satisfied
                     if (fabs(be.dir.x) > 1e-3)
-                        shift = __min(shift, (item.bbsz.x + label.bbsz.x) / 2 / fabs(be.dir.x));
+                        shift = std::min(shift, (item.bbsz.x + label.bbsz.x) / 2.f / fabsf(be.dir.x));
                     if (fabs(be.dir.y) > 1e-3)
-                        shift = __min(shift, (item.bbsz.y + label.bbsz.y) / 2 / fabs(be.dir.y));
+                        shift = std::min(shift, (item.bbsz.y + label.bbsz.y) / 2.f / fabsf(be.dir.y));
                     shift += _settings.unit;
                     item.bbp.addScaled(be.dir, shift);
                     ti.bbp.addScaled(be.dir, shift);
@@ -3187,7 +3187,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                     bprintf(itemHydroIndex.text, "%i", implicit_h);
                     _cw.setTextItemSize(itemHydroIndex, ad.pos);
                     hydrogenGroupSz.x += itemHydroIndex.bbsz.x + _settings.labelInternalOffset;
-                    hydrogenGroupSz.y = __max(hydrogenGroupSz.y, _settings.lowerIndexShift * itemHydrogen.bbsz.y + itemHydroIndex.bbsz.y);
+                    hydrogenGroupSz.y = std::max(hydrogenGroupSz.y, _settings.lowerIndexShift * itemHydrogen.bbsz.y + itemHydroIndex.bbsz.y);
                 }
 
                 // take new reference, old one may be corrupted after adding 'tiHydroIndex'
@@ -3485,7 +3485,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         for (int j = 0; j < rGroupAttachmentIndices.size(); ++j)
         {
             RenderItemAttachmentPoint& attachmentPoint = _data.attachmentPoints.push();
-            float offset = __min(__max(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.unit), 0), 0.4f);
+            float offset = std::min(std::max(_getBondOffset(aid, ad.pos, attachmentDirection[j], _settings.unit), 0.f), 0.4f);
             attachmentPoint.dir.copy(attachmentDirection[j]);
             attachmentPoint.p0.lineCombin(ad.pos, attachmentDirection[j], offset);
             attachmentPoint.p1.lineCombin(ad.pos, attachmentDirection[j], 0.8f);
@@ -3770,13 +3770,13 @@ void MoleculeRenderInternal::_drawReactingCenter(BondDescr& bd, int rc)
         _cw.drawLine(p[2 * i], p[2 * i + 1]);
     if (rc == RC_UNCHANGED)
     {
-        bd.extN = __max(bd.extN, radius);
-        bd.extP = __max(bd.extP, radius);
+        bd.extN = std::max(bd.extN, radius);
+        bd.extP = std::max(bd.extP, radius);
     }
     else
     {
-        bd.extN = __max(bd.extN, acrossSz);
-        bd.extP = __max(bd.extP, acrossSz);
+        bd.extN = std::max(bd.extN, acrossSz);
+        bd.extP = std::max(bd.extP, acrossSz);
     }
 }
 
@@ -3889,12 +3889,12 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
     }
     else if (bd.stereodir == BOND_DOWN)
     {
-        int stripeCnt = __max((int)((len) / lw / 2), 4);
+        int stripeCnt = std::max((int)((len) / lw / 2), 4);
         _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
     }
     else if (bd.stereodir == BOND_EITHER)
     {
-        int stripeCnt = __max((int)((len) / lw / 1.5), 5);
+        int stripeCnt = std::max((int)((len) / lw / 1.5), 5);
         _cw.drawTriangleZigzag(be1.p, r, l, stripeCnt);
     }
     else
@@ -3970,8 +3970,8 @@ void MoleculeRenderInternal::_prepareDoubleBondCoords(Vec2f* coord, BondDescr& b
 
         if (!bd.lineOnTheRight)
         {
-            float t;
-            __swap(bd.extP, bd.extN, t);
+
+            std::swap(bd.extP, bd.extN);
             ns.negate();
         }
 
@@ -4088,7 +4088,7 @@ void MoleculeRenderInternal::_bondSingleOrDouble(BondDescr& bd, const BondEnd& b
     // Get number of segments of single-or-double bond
     // An average bond in our coordinates has length 1. We want an average bond to have 5 segments, like -=-=-
     // For longer bond more segments may be necessary, for shorter one - less, but not less then 3 segments, like -=-
-    int numSegments = __max((int)(len / 0.4f), 1) * 2 + 1;
+    int numSegments = std::max((int)(len / 0.4f), 1) * 2 + 1;
 
     Vec2f r0, r1, p0, p1, q0, q1;
     float step = len / numSegments;
@@ -4246,5 +4246,5 @@ void MoleculeRenderInternal::_precalcScale()
             }
         }
     }
-    _scale = __max(_scale, float(max_output_length) / ((float)10.0 * scale_modificator));
+    _scale = std::max(_scale, float(max_output_length) / ((float)10.0 * scale_modificator));
 }

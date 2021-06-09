@@ -129,9 +129,9 @@ namespace indigo
         static void findAromaticAtoms(BaseMolecule& mol, Array<int>* atoms, Array<int>* bonds, const AromaticityOptions& options);
 
     protected:
-        virtual bool _checkVertex(int v_idx);
-        virtual bool _isCycleAromatic(const int* cycle, int cycle_len);
-        virtual bool _acceptOutgoingDoubleBond(int atom, int bond);
+        bool _checkVertex(int v_idx) override;
+        bool _isCycleAromatic(const int* cycle, int cycle_len) override;
+        bool _acceptOutgoingDoubleBond(int atom, int bond) override;
 
         int _getPiLabel(int v_idx);
         int _getPiLabelByConn(int v_idx, int conn);
@@ -177,10 +177,10 @@ namespace indigo
             int min, max;
         };
 
-        virtual bool _checkVertex(int v_idx);
-        virtual bool _isCycleAromatic(const int* cycle, int cycle_len);
-        virtual void _handleAromaticCycle(const int* cycle, int cycle_len);
-        virtual bool _acceptOutgoingDoubleBond(int atom, int bond);
+        bool _checkVertex(int v_idx) override;
+        bool _isCycleAromatic(const int* cycle, int cycle_len) override;
+        void _handleAromaticCycle(const int* cycle, int cycle_len) override;
+        bool _acceptOutgoingDoubleBond(int atom, int bond) override;
 
         static bool _aromatizeBondsExact(QueryMolecule& mol, const AromaticityOptions& options);
         static bool _aromatizeBondsFuzzy(QueryMolecule& mol, const AromaticityOptions& options);

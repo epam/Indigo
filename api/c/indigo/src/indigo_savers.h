@@ -57,7 +57,7 @@ public:
     IndigoSdfSaver(Output& output) : IndigoSaver(output)
     {
     }
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
     static void append(Output& output, IndigoObject& object);
     static void appendMolfile(Output& output, IndigoObject& object);
 
@@ -71,7 +71,7 @@ public:
     IndigoSmilesSaver(Output& output) : IndigoSaver(output)
     {
     }
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
     static void generateSmiles(IndigoObject& obj, ArrayChar& out_buffer);
 
@@ -80,7 +80,7 @@ public:
     static void append(Output& output, IndigoObject& object);
 
 protected:
-    virtual void _append(IndigoObject& object);
+    void _append(IndigoObject& object) override;
 };
 
 class IndigoCanonicalSmilesSaver : public IndigoSaver
@@ -89,7 +89,7 @@ public:
     IndigoCanonicalSmilesSaver(Output& output) : IndigoSaver(output)
     {
     }
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
     static void generateSmiles(IndigoObject& obj, ArrayChar& out_buffer);
 
@@ -104,15 +104,15 @@ public:
     IndigoCmlSaver(Output& output) : IndigoSaver(output)
     {
     }
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
     static void append(Output& output, IndigoObject& object);
     static void appendHeader(Output& output);
     static void appendFooter(Output& output);
 
 protected:
-    virtual void _append(IndigoObject& object);
-    virtual void _appendHeader();
-    virtual void _appendFooter();
+    void _append(IndigoObject& object) override;
+    void _appendHeader() override;
+    void _appendFooter() override;
 };
 
 class IndigoRdfSaver : public IndigoSaver
@@ -121,14 +121,14 @@ public:
     IndigoRdfSaver(Output& output) : IndigoSaver(output)
     {
     }
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
     static void append(Output& output, IndigoObject& object);
     static void appendRXN(Output& output, IndigoObject& object);
     static void appendHeader(Output& output);
 
 protected:
-    virtual void _append(IndigoObject& object);
-    virtual void _appendHeader();
+    void _append(IndigoObject& object) override;
+    void _appendHeader() override;
 };
 
 #ifdef _WIN32

@@ -1141,8 +1141,8 @@ void DearomatizationMatcher::_prepare(void)
         else
             _groupExInfo[group].needPrepare = false;
 
-        maxGroupDearomatizations = __max(maxGroupDearomatizations, _dearomatizations.getGroupDearomatizationsCount(group));
-        maxGroupDearomatizations = __max(maxGroupDearomatizations, _dearomatizations.getGroupHeterAtomsStateCount(group));
+        maxGroupDearomatizations = std::max(maxGroupDearomatizations, _dearomatizations.getGroupDearomatizationsCount(group));
+        maxGroupDearomatizations = std::max(maxGroupDearomatizations, _dearomatizations.getGroupHeterAtomsStateCount(group));
 
         int edgesInGroup = _dearomatizations.getGroupBondsCount(group);
         const int* edges = _dearomatizations.getGroupBonds(group);

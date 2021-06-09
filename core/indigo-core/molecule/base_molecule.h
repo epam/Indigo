@@ -104,14 +104,14 @@ namespace indigo
         typedef RedBlackMap<int, int> Mapping;
 
         BaseMolecule();
-        virtual ~BaseMolecule();
+        ~BaseMolecule() override;
 
         // Casting methods. Invalid casting throws exceptions.
         virtual Molecule& asMolecule();
         virtual QueryMolecule& asQueryMolecule();
         virtual bool isQueryMolecule();
 
-        virtual void clear();
+        void clear() override;
 
         // 'neu' means 'new' in German
         virtual BaseMolecule* neu() = 0;

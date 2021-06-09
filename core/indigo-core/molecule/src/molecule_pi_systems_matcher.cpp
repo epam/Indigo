@@ -324,7 +324,7 @@ void MoleculePiSystemsMatcher::_findPiSystemLocalization(int pi_system_index)
 
         int label = mol.getAtomNumber(v);
         electrons += Element::electrons(label, mol.getAtomCharge(v)) - min_connectivity;
-        zc_electrons += __max(Element::electrons(label, 0) - min_connectivity, 0);
+        zc_electrons += std::max(Element::electrons(label, 0) - min_connectivity, 0);
 
         octet_electron_pairs += 4 - min_connectivity - Element::radicalOrbitals(mol.getAtomRadical(v));
     }

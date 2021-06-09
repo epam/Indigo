@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <string.h>
+#include <algorithm>
 
 #include "base_cpp/smart_output.h"
 
@@ -151,7 +152,7 @@ void SmartTableOutput::_updateColumnWidths(int index, Array<int>& widths)
         widths.push(0);
 
     for (int i = 0; i < cur_widths.size(); i++)
-        widths[i] = __max(widths[i], cur_widths[i] + 2);
+        widths[i] = std::max(widths[i], cur_widths[i] + 2);
 }
 
 void SmartTableOutput::_printLineSmart(int index, const Array<int>& widths)

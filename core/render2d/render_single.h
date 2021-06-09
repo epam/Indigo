@@ -28,7 +28,7 @@ namespace indigo
     {
     public:
         RenderSingle(RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet);
-        virtual ~RenderSingle();
+        ~RenderSingle() override;
         void draw();
 
         DECL_ERROR;

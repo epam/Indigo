@@ -1671,7 +1671,7 @@ void SmoothingCycle::_do_smoothing(int iter_count)
     touching_segments.clear();
 
     float coef = 1.0f;
-    float multiplyer = __max(0.5f, __min(0.999f, _2FLOAT(1. - 10.0 / iter_count)));
+    float multiplyer = std::max(0.5f, std::min(0.999f, _2FLOAT(1. - 10.0 / iter_count)));
     for (int i = 0; i < 100; i++, coef *= 0.9f)
     {
         _gradient_step(coef, touching_segments, 0);
@@ -1731,7 +1731,7 @@ void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& touching_s
 Vec2f SmoothingCycle::_get_len_derivative(Vec2f current_vector, float target_dist, bool flag)
 {
     float dist = current_vector.length();
-    // dist = __max(dist, 0.01);
+    // dist = std::max(dist, 0.01f);
     float coef = 1;
     if (dist >= target_dist)
     {
@@ -1747,7 +1747,7 @@ Vec2f SmoothingCycle::_get_len_derivative(Vec2f current_vector, float target_dis
 Vec2f SmoothingCycle::_get_len_derivative_simple(Vec2f current_vector, float target_dist)
 {
     float dist = current_vector.length();
-    // dist = __max(dist, 0.01);
+    // dist = std::max(dist, 0.01f);
     float coef = -1; // dist - target_dist;
     return current_vector * -coef;
 }

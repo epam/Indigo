@@ -36,12 +36,12 @@ namespace indigo
         };
 
         explicit GZipOutput(Output& dest, int level);
-        virtual ~GZipOutput();
+        ~GZipOutput() override;
 
-        virtual void write(const void* data, int size);
-        virtual void seek(long long offset, int from);
-        virtual long long tell();
-        virtual void flush();
+        void write(const void* data, int size) override;
+        void seek(long long offset, int from) override;
+        long long tell() override;
+        void flush() override;
 
         DECL_ERROR;
 

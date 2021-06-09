@@ -18,6 +18,7 @@
 
 #include "base_cpp/d_bitset.h"
 #include "base_cpp/obj_array.h"
+#include <algorithm>
 
 using namespace indigo;
 
@@ -149,7 +150,7 @@ void Dbitset::copySubset(const Dbitset& set)
         copy(set);
     if (_bitsNumber < set._bitsNumber)
         return;
-    _wordsInUse = __max(_wordsInUse, set._wordsInUse);
+    _wordsInUse = std::max(_wordsInUse, set._wordsInUse);
     for (int i = 0; i < set._length; ++i)
     {
         _words[i] = set._words[i];
@@ -297,7 +298,7 @@ int Dbitset::nextSetBit(int fromIndex) const
 
 bool Dbitset::intersects(const Dbitset& set) const
 {
-    for (int i = __min(_wordsInUse, set._wordsInUse) - 1; i >= 0; --i)
+    for (int i = std::min(_wordsInUse, set._wordsInUse) - 1; i >= 0; --i)
         if ((_words[i] & set._words[i]) != 0)
             return true;
     return false;
@@ -355,7 +356,7 @@ void Dbitset::xorWith(const Dbitset& set)
 
 void Dbitset::andNotWith(const Dbitset& set)
 {
-    for (int i = __min(_wordsInUse, set._wordsInUse) - 1; i >= 0; --i)
+    for (int i = std::min(_wordsInUse, set._wordsInUse) - 1; i >= 0; --i)
         _words[i] &= ~set._words[i];
 
     _recalculateWordsInUse();
@@ -414,7 +415,7 @@ void Dbitset::zeroFill()
 
 void Dbitset::bsOrBs(const Dbitset& set1, const Dbitset& set2)
 {
-    int max_words = __max(set1._wordsInUse, set2._wordsInUse);
+    int max_words = std::max(set1._wordsInUse, set2._wordsInUse);
     for (int i = 0; i < max_words; ++i)
     {
         _words[i] = set1._words[i] | set2._words[i];

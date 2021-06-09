@@ -26,12 +26,12 @@ class IndigoScaffold : public IndigoObject
 {
 public:
     IndigoScaffold();
-    virtual ~IndigoScaffold();
+    ~IndigoScaffold() override;
 
     void extractScaffold();
 
-    virtual QueryMolecule& getQueryMolecule();
-    virtual BaseMolecule& getBaseMolecule();
+    QueryMolecule& getQueryMolecule() override;
+    BaseMolecule& getBaseMolecule() override;
 
     QueryMolecule max_scaffold;
     ObjArray<QueryMolecule> all_scaffolds;

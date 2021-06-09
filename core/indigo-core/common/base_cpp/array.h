@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
@@ -461,11 +462,7 @@ namespace indigo
             if (idx1 == idx2)
                 return;
 
-            T tmp;
-
-            memcpy(&tmp, _array + idx1, sizeof(T));
-            memcpy(_array + idx1, _array + idx2, sizeof(T));
-            memcpy(_array + idx2, &tmp, sizeof(T));
+            std::swap(_array[idx1], _array[idx2]);
         }
 
         void push(T elem)
@@ -551,11 +548,11 @@ namespace indigo
 
         void swap(Array<T>& other)
         {
-            T* tmp_t;
-            __swap(_array, other._array, tmp_t);
-            int tmp_int;
-            __swap(_reserved, other._reserved, tmp_int);
-            __swap(_length, other._length, tmp_int);
+
+            std::swap(_array, other._array);
+
+            std::swap(_reserved, other._reserved);
+            std::swap(_length, other._length);
         }
 
         // CMP_FUNCTOR has two arguments and returns sign of comparation

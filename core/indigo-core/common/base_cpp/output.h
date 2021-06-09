@@ -68,12 +68,12 @@ namespace indigo
         explicit FileOutput(const char* name);
         // explicit FileOutput (const char *format, ...);
         explicit FileOutput(bool append, const char* format, ...);
-        virtual ~FileOutput();
+        ~FileOutput() override;
 
-        virtual void write(const void* data, int size);
-        virtual void seek(long long offset, int from);
-        virtual long long tell();
-        virtual void flush();
+        void write(const void* data, int size) override;
+        void seek(long long offset, int from) override;
+        long long tell() override;
+        void flush() override;
 
     protected:
         FILE* _file;
@@ -83,12 +83,12 @@ namespace indigo
     {
     public:
         explicit ArrayOutput(ArrayChar& arr);
-        virtual ~ArrayOutput();
+        ~ArrayOutput() override;
 
-        virtual void write(const void* data, int size);
-        virtual void seek(long long offset, int from);
-        virtual long long tell();
-        virtual void flush();
+        void write(const void* data, int size) override;
+        void seek(long long offset, int from) override;
+        long long tell() override;
+        void flush() override;
 
         void clear();
 
@@ -100,12 +100,12 @@ namespace indigo
     {
     public:
         explicit StandardOutput();
-        virtual ~StandardOutput();
+        ~StandardOutput() override;
 
-        virtual void write(const void* data, int size);
-        virtual void seek(long long offset, int from);
-        virtual long long tell();
-        virtual void flush();
+        void write(const void* data, int size) override;
+        void seek(long long offset, int from) override;
+        long long tell() override;
+        void flush() override;
 
     protected:
         int _count;
@@ -115,12 +115,12 @@ namespace indigo
     {
     public:
         explicit NullOutput();
-        virtual ~NullOutput();
+        ~NullOutput() override;
 
-        virtual void write(const void* data, int size);
-        virtual void seek(long long offset, int from);
-        virtual long long tell();
-        virtual void flush();
+        void write(const void* data, int size) override;
+        void seek(long long offset, int from) override;
+        long long tell() override;
+        void flush() override;
     };
 
     DLLEXPORT void bprintf(ArrayChar& buf, const char* format, ...);

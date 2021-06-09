@@ -150,9 +150,8 @@ int Graph::addEdge(int beg, int end)
 
 void Graph::swapEdgeEnds(int edge_idx)
 {
-    int tmp;
 
-    __swap(_edges[edge_idx].beg, _edges[edge_idx].end, tmp);
+    std::swap(_edges[edge_idx].beg, _edges[edge_idx].end);
 }
 
 void Graph::removeEdge(int idx)

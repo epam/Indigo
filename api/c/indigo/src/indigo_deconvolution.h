@@ -45,7 +45,7 @@ private:
 
 public:
     IndigoDeconvolution();
-    virtual ~IndigoDeconvolution()
+    ~IndigoDeconvolution() override
     {
     }
 
@@ -149,13 +149,13 @@ public:
     IndigoDeconvolutionElem(Molecule& mol, int* index);
     IndigoDeconvolutionElem(IndigoDeconvolutionElem& elem);
 
-    virtual ~IndigoDeconvolutionElem();
+    ~IndigoDeconvolutionElem() override;
 
-    virtual int getIndex()
+    int getIndex() override
     {
         return idx;
     }
-    virtual indigo::PropertiesMap& getProperties()
+    indigo::PropertiesMap& getProperties() override
     {
         return _properties;
     }
@@ -207,10 +207,10 @@ class DLLEXPORT IndigoDeconvolutionIter : public IndigoObject
 {
 public:
     IndigoDeconvolutionIter(ObjArray<IndigoDeconvolutionElem>& items);
-    virtual ~IndigoDeconvolutionIter();
+    ~IndigoDeconvolutionIter() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
 protected:
     int _index;
@@ -220,13 +220,13 @@ class DLLEXPORT IndigoDecompositionMatchIter : public IndigoObject
 {
 public:
     IndigoDecompositionMatchIter(ObjArray<IndigoDecompositionMatch>& matches);
-    virtual ~IndigoDecompositionMatchIter()
+    ~IndigoDecompositionMatchIter() override
     {
     }
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
-    virtual int getIndex()
+    IndigoObject* next() override;
+    bool hasNext() override;
+    int getIndex() override
     {
         return _index;
     }

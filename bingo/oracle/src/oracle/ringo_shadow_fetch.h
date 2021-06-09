@@ -30,15 +30,15 @@ class RingoShadowFetch : public BingoFetchEngine
 {
 public:
     RingoShadowFetch(RingoFetchContext& context);
-    virtual ~RingoShadowFetch();
+    ~RingoShadowFetch() override;
 
-    virtual float calcSelectivity(OracleEnv& env, int total_count);
-    virtual void fetch(OracleEnv& env, int maxrows);
-    virtual bool end();
-    virtual int getIOCost(OracleEnv& env, float selectivity);
+    float calcSelectivity(OracleEnv& env, int total_count) override;
+    void fetch(OracleEnv& env, int maxrows) override;
+    bool end() override;
+    int getIOCost(OracleEnv& env, float selectivity) override;
     virtual int getTotalCount(OracleEnv& env);
 
-    virtual bool getLastRowid(OraRowidText& id);
+    bool getLastRowid(OraRowidText& id) override;
 
     int countOracleBlocks(OracleEnv& env);
 

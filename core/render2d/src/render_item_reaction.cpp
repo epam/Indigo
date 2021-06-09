@@ -126,30 +126,30 @@ void RenderItemReaction::estimateSize()
     {
         RenderItemBase& reactants = _factory.getItem(_reactantLine);
         size.x += reactants.size.x;
-        size.y = __max(size.y, reactants.size.y);
+        size.y = std::max(size.y, reactants.size.y);
     }
     if (_productLine >= 0)
     {
         RenderItemBase& products = _factory.getItem(_productLine);
         size.x += products.size.x;
-        size.y = __max(size.y, products.size.y);
+        size.y = std::max(size.y, products.size.y);
     }
     if (_arrow >= 0)
     {
         RenderItemAuxiliary& arrow = _factory.getItemAuxiliary(_arrow);
         _arrowWidth = arrow.size.x;
-        size.y = __max(size.y, arrow.size.y);
+        size.y = std::max(size.y, arrow.size.y);
         if (_catalystLineUpper >= 0)
         {
             RenderItemBase& catalysts = _factory.getItem(_catalystLineUpper);
-            _arrowWidth = __max(_arrowWidth, catalysts.size.x);
-            size.y = __max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
+            _arrowWidth = std::max(_arrowWidth, catalysts.size.x);
+            size.y = std::max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
         }
         if (_catalystLineLower >= 0)
         {
             RenderItemBase& catalysts = _factory.getItem(_catalystLineLower);
-            _arrowWidth = __max(_arrowWidth, catalysts.size.x);
-            size.y = __max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
+            _arrowWidth = std::max(_arrowWidth, catalysts.size.x);
+            size.y = std::max(size.y, 2 * catalysts.size.y + 2 * catalystOffset + arrow.size.y);
         }
         size.x += _arrowWidth + 2 * hSpace;
     }

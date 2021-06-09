@@ -91,7 +91,7 @@ namespace indigo
     {
     public:
         explicit MoleculeLayoutGraph();
-        virtual ~MoleculeLayoutGraph();
+        ~MoleculeLayoutGraph() override;
 
         virtual MoleculeLayoutGraph* getInstance() = 0;
 
@@ -129,7 +129,7 @@ namespace indigo
             _layout_edges[idx].type = type;
         }
 
-        virtual void clear();
+        void clear() override;
 
         bool isSingleEdge() const;
 
@@ -340,11 +340,11 @@ namespace indigo
     {
     public:
         explicit MoleculeLayoutGraphSimple();
-        virtual ~MoleculeLayoutGraphSimple();
+        ~MoleculeLayoutGraphSimple() override;
 
         MoleculeLayoutGraph* getInstance();
 
-        virtual void clear();
+        void clear() override;
 
         float calculateAngle(int v, int& v1, int& v2) const;
 
@@ -546,11 +546,11 @@ namespace indigo
     {
     public:
         explicit MoleculeLayoutGraphSmart();
-        virtual ~MoleculeLayoutGraphSmart();
+        ~MoleculeLayoutGraphSmart() override;
 
         MoleculeLayoutGraph* getInstance();
 
-        virtual void clear();
+        void clear() override;
 
         inline int getVertexOrigIdx(int idx) const
         {

@@ -365,7 +365,7 @@ void MoleculeLayoutGraphSimple::_splitBorder(int v1, int v2, Array<int>& part1v,
         throw Error("border division by non-boundary vertex");
 
     if (idx1 > idx2)
-        __swap(idx1, idx2, i);
+        std::swap(idx1, idx2);
 
     part1v.clear();
     part1e.clear();

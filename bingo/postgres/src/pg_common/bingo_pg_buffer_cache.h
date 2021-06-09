@@ -61,7 +61,7 @@ public:
     } BingoMapData;
 
     BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write);
-    virtual ~BingoPgBufferCacheMap();
+    ~BingoPgBufferCacheMap() override;
 
     /*
      * Setters
@@ -92,7 +92,7 @@ class BingoPgBufferCacheFp : public BingoPgBufferCache
 {
 public:
     BingoPgBufferCacheFp(int block_id, PG_OBJECT index_ptr, bool write);
-    virtual ~BingoPgBufferCacheFp();
+    ~BingoPgBufferCacheFp() override;
 
     void setBit(int str_idx, bool value);
     bool getBit(int str_idx);
@@ -126,7 +126,7 @@ public:
     };
 
     BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write);
-    virtual ~BingoPgBufferCacheBin();
+    ~BingoPgBufferCacheBin() override;
 
     /*
      * Returns true if enough space for adding a new structure with given size

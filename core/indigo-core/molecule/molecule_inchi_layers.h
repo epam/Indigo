@@ -67,7 +67,7 @@ namespace indigo
             static int compareComponentsTotalHydrogensCount(MainLayerFormula& comp1, MainLayerFormula& comp2);
 
         protected:
-            virtual void _construct();
+            void _construct() override;
 
         private:
             Array<int> _atoms_count;
@@ -87,7 +87,7 @@ namespace indigo
             static int compareComponentsConnectionTables(MainLayerConnections& comp1, MainLayerConnections& comp2);
 
         protected:
-            virtual void _construct();
+            void _construct() override;
 
         private:
             Array<int> _connection_table;
@@ -107,7 +107,7 @@ namespace indigo
             void print(ArrayChar& result);
 
         protected:
-            virtual void _construct();
+            void _construct() override;
 
         private:
             // Number of immobile hydrogens for each atom
@@ -131,7 +131,7 @@ namespace indigo
             static int compareComponents(CisTransStereochemistryLayer& comp1, CisTransStereochemistryLayer& comp2);
 
         protected:
-            virtual void _construct();
+            void _construct() override;
 
         private:
             Array<int> bond_is_cis_trans;

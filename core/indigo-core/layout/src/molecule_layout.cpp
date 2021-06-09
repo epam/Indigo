@@ -203,8 +203,8 @@ void _placeSGroupBracketsCrossBonds(Array<std::array<Vec2f, 2>>& brackets, BaseM
         int aidIn = edge.beg, aidOut = edge.end;
         if (!crossBondOut[i])
         {
-            int t;
-            __swap(aidIn, aidOut, t);
+
+            std::swap(aidIn, aidOut);
         }
         Vec2f p2dIn, p2dOut, d, n, b1, b2;
         Vec2f::projectZ(p2dIn, mol.getAtomXyz(aidIn));
@@ -232,8 +232,8 @@ void _placeSGroupBracketsCrossBondSingle(Array<std::array<Vec2f, 2>>& brackets, 
     int aidIn = edge.beg, aidOut = edge.end;
     if (!out)
     {
-        int t;
-        __swap(aidIn, aidOut, t);
+
+        std::swap(aidIn, aidOut);
     }
 
     Vec2f p2dIn, p2dOut, d, n, b1, b2;

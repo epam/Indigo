@@ -31,7 +31,7 @@ public:
 
     RenderParams renderParams;
 
-    virtual void init();
+    void init() override;
 };
 
 class IndigoHDCOutput : public IndigoObject
@@ -48,7 +48,7 @@ public:
     void* dc;
     bool prn;
 
-    virtual ~IndigoHDCOutput()
+    ~IndigoHDCOutput() override
     {
     }
 

@@ -23,6 +23,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/smart_output.h"
+#include <algorithm>
 
 using namespace indigo;
 
@@ -71,7 +72,7 @@ namespace indigo
 
 ObjArray<ArrayChar>& ProfilingSystem::getNames()
 {
-    static ObjArray<ArrayChar> _names;
+    static ObjArray<Array<char>> _names;
     return _names;
 }
 
@@ -312,7 +313,7 @@ void ProfilingSystem::Record::Data::add(qword adding_value)
 {
     count++;
     value += adding_value;
-    max_value = __max(max_value, adding_value);
+    max_value = std::max(max_value, adding_value);
 
     double adding_value_dbl = (double)adding_value;
     square_sum += adding_value_dbl * adding_value_dbl;

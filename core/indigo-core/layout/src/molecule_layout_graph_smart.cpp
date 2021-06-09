@@ -448,10 +448,10 @@ MoleculeLayoutSmoothingSegment::MoleculeLayoutSmoothingSegment(MoleculeLayoutGra
     float MLx = 0, Ly = 0, MRx = 0, Ry = 0, Lx, Rx;
     for (int v : _graph.vertices())
     {
-        MLx = __min(MLx, _pos[v].x);
-        MRx = __max(MRx, _pos[v].x);
-        Ly = __min(Ly, _pos[v].y);
-        Ry = __max(Ry, _pos[v].y);
+        MLx = std::min(MLx, _pos[v].x);
+        MRx = std::max(MRx, _pos[v].x);
+        Ly = std::min(Ly, _pos[v].y);
+        Ry = std::max(Ry, _pos[v].y);
     }
     while (Ry - Ly > EPSILON)
     {
@@ -501,7 +501,7 @@ float MoleculeLayoutSmoothingSegment::calc_radius(Vec2f c)
 {
     float answer = 0;
     for (int v : _graph.vertices())
-        answer = __max(answer, (c - _pos[v]).lengthSqr());
+        answer = std::max(answer, (c - _pos[v]).lengthSqr());
     return sqrt(answer);
 }
 
@@ -571,7 +571,7 @@ float MoleculeLayoutSmoothingSegment::get_min_x()
     for (int v : _graph.vertices())
     {
         float xx = getPosition(v).x;
-        answer = __min(answer, xx);
+        answer = std::min(answer, xx);
     }
 
     return answer;
@@ -584,7 +584,7 @@ float MoleculeLayoutSmoothingSegment::get_min_y()
     for (int v : _graph.vertices())
     {
         float yy = getPosition(v).y;
-        answer = __min(answer, yy);
+        answer = std::min(answer, yy);
     }
 
     return answer;
@@ -597,7 +597,7 @@ float MoleculeLayoutSmoothingSegment::get_max_x()
     for (int v : _graph.vertices())
     {
         float xx = getPosition(v).x;
-        answer = __max(answer, getPosition(v).x);
+        answer = std::max(answer, getPosition(v).x);
     }
 
     return answer;
@@ -610,7 +610,7 @@ float MoleculeLayoutSmoothingSegment::get_max_y()
     for (int v : _graph.vertices())
     {
         float yy = getPosition(v).y;
-        answer = __max(answer, yy);
+        answer = std::max(answer, yy);
     }
 
     return answer;

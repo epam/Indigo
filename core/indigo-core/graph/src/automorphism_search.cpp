@@ -21,6 +21,7 @@
 using namespace indigo;
 
 IMPL_ERROR(AutomorphismSearch, "automorphism search");
+IMPL_TIMEOUT_EXCEPTION(AutomorphismSearch, "automorphism search");
 
 CP_DEF(AutomorphismSearch);
 
@@ -46,6 +47,8 @@ AutomorphismSearch::AutomorphismSearch()
     context_automorphism = 0;
     _given_graph = 0;
     ignored_vertices = 0;
+
+    _cancellation_handler = getCancellationHandler();
 
     _call_stack.clear();
 }
@@ -605,6 +608,10 @@ int AutomorphismSearch::_processNode(int level, int numcells)
     if (numcells != _n) // discrete partition?
         return level;
 
+    if (_cancellation_handler != nullptr && _cancellation_handler->isCancelled()) {
+        throw TimeoutException("%s", _cancellation_handler->cancelledRequestMessage());
+    }
+
     for (i = 0; i < _n; i++)
         _workperm[_firstlab[i]] = _lab[i];
 
@@ -970,7 +977,7 @@ bool AutomorphismSearch::_hasEdgeWithRank(int from, int to, int target_edge_rank
 
 void AutomorphismSearch::_refineByCell(int split1, int split2, int level, int& numcells, int& hint, int target_edge_rank)
 {
-    int i, j, tmp;
+    int i, j;
 
     if (split1 == split2) // trivial splitting cell
     {
@@ -991,7 +998,7 @@ void AutomorphismSearch::_refineByCell(int split1, int split2, int level, int& n
                     c1++;
                 else
                 {
-                    __swap(_lab[c1], _lab[c2], tmp);
+                    std::swap(_lab[c1], _lab[c2]);
                     c2--;
                 }
             }
@@ -1064,7 +1071,7 @@ void AutomorphismSearch::_refineByCell(int split1, int split2, int level, int& n
                 {
                     int dest = _bucket.size() - i - 1;
                     if (dest < i)
-                        __swap(_bucket[i], _bucket[dest], tmp);
+                        std::swap(_bucket[i], _bucket[dest]);
                 }
                 _bucket.resize(_bucket.size() - bmin);
                 bmin = 0;

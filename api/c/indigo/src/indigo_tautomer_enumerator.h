@@ -27,16 +27,16 @@ class IndigoMoleculeTautomer : public IndigoObject
 {
 public:
     IndigoMoleculeTautomer(TautomerEnumerator& enumerator, int index);
-    virtual ~IndigoMoleculeTautomer();
+    ~IndigoMoleculeTautomer() override;
 
-    virtual int getIndex();
+    int getIndex() override;
 
-    virtual Molecule& getMolecule();
-    virtual IndigoObject* clone();
+    Molecule& getMolecule() override;
+    IndigoObject* clone() override;
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
-    virtual PropertiesMap& getProperties()
+    PropertiesMap& getProperties() override
     {
         return _properties;
     }
@@ -51,14 +51,14 @@ class IndigoTautomerIter : public IndigoObject
 {
 public:
     IndigoTautomerIter(Molecule& molecule, TautomerMethod method);
-    virtual ~IndigoTautomerIter();
+    ~IndigoTautomerIter() override;
 
-    virtual int getIndex();
+    int getIndex() override;
 
-    virtual IndigoObject* next();
-    virtual bool hasNext();
+    IndigoObject* next() override;
+    bool hasNext() override;
 
-    virtual const char* debugInfo();
+    const char* debugInfo() override;
 
 protected:
     TautomerEnumerator _enumerator;

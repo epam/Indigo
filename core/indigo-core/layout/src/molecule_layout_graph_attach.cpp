@@ -509,7 +509,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
         if (dist > (k + 1) * length)
         {
             length = 0.2f + dist / (k + 1);
-            max_length = __max(max_length, length * 1.5f); // update max length if needed
+            max_length = std::max(max_length, length * 1.5f); // update max length if needed
         }
 
         bool attached = false;

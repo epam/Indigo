@@ -208,9 +208,9 @@ class IndigoMoleculeGross : public IndigoObject
 {
 public:
     IndigoMoleculeGross();
-    virtual ~IndigoMoleculeGross();
+    ~IndigoMoleculeGross() override;
 
-    virtual void toString(ArrayChar& str);
+    void toString(ArrayChar& str) override;
 
     std::unique_ptr<GROSS_UNITS> gross;
 };
@@ -219,9 +219,9 @@ class IndigoReactionGross : public IndigoObject
 {
 public:
     IndigoReactionGross();
-    virtual ~IndigoReactionGross();
+    ~IndigoReactionGross() override;
 
-    virtual void toString(ArrayChar& str);
+    void toString(ArrayChar& str) override;
 
     std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> gross;
 };

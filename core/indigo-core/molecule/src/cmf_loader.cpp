@@ -584,10 +584,9 @@ void CmfLoader::loadMolecule(Molecule& mol)
         int type = _bonds[i].type;
         int beg = _bonds[i].beg;
         int end = _bonds[i].end;
-        int tmp;
 
         if (_bonds[i].swap)
-            __swap(beg, end, tmp);
+            std::swap(beg, end);
 
         int idx = mol.addBond_Silent(beg, end, type);
 
@@ -668,25 +667,24 @@ void CmfLoader::loadMolecule(Molecule& mol)
             int left, right, subst[4];
             bool pure_h[4];
             int parity = _atoms[i].allene_stereo_parity;
-            int tmp;
 
             if (!MoleculeAlleneStereo::possibleCenter(mol, i, left, right, subst, pure_h))
                 throw Error("invalid molecule allene stereo marker");
 
             if (subst[1] != -1 && subst[1] < subst[0])
-                __swap(subst[1], subst[0], tmp);
+                std::swap(subst[1], subst[0]);
 
             if (subst[3] != -1 && subst[3] < subst[2])
-                __swap(subst[3], subst[2], tmp);
+                std::swap(subst[3], subst[2]);
 
             if (pure_h[0])
             {
-                __swap(subst[1], subst[0], tmp);
+                std::swap(subst[1], subst[0]);
                 parity = 3 - parity;
             }
             if (pure_h[2])
             {
-                __swap(subst[2], subst[3], tmp);
+                std::swap(subst[2], subst[3]);
                 parity = 3 - parity;
             }
 

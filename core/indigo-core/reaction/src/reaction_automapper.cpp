@@ -64,7 +64,6 @@ void ReactionAutomapper::automap(int mode)
      */
     _createReactionMap();
     _setupReactionInvMap(react_mapping, mol_mappings);
-
     _considerDissociation();
     _considerDimerization();
 
@@ -1000,7 +999,7 @@ int ReactionAutomapper::_validMapFound(BaseReaction& reaction, int react, int pr
     rsub_mcs.userdata = &rsub_mcs;
 
     if (rsub_mcs.searchSubstructure(&sub_map))
-        result = __min(react_copy.vertexCount(), reaction.getBaseMolecule(prod).vertexCount());
+        result = std::min(react_copy.vertexCount(), reaction.getBaseMolecule(prod).vertexCount());
 
     return result;
 }
@@ -1462,22 +1461,26 @@ void RSubstructureMcs::setUpFlags(const ReactionAutomapper& context)
 bool RSubstructureMcs::searchSubstructure(Array<int>* map)
 {
     bool result = false;
-
-    if (_context.cancellation != nullptr)
-    {
-        try
-        {
-            result = SubstructureMcs::searchSubstructure(map);
-        }
-        catch (Exception&)
-        {
-            result = false;
-        }
-    }
-    else
-    {
-        result = SubstructureMcs::searchSubstructure(map);
-    }
+    /*
+     * Disable old logic with timeout waiting for mcs. Can be a different result for some reaction though
+    */
+    // if (_context.cancellation != nullptr)
+    // {
+    //     try
+    //     {
+    //         result = SubstructureMcs::searchSubstructure(map);
+    //     }
+    //     catch (Exception&)
+    //     {
+    //         result = false;
+    //     }
+    // }
+    // else
+    // {
+    // result = SubstructureMcs::searchSubstructure(map);
+    // }
+    // Will throw error on timeout
+    result = SubstructureMcs::searchSubstructure(map);
     /*
      * Transpose map back
      */
@@ -1908,22 +1911,27 @@ int RSubstructureMcs::_searchSubstructure(EmbeddingEnumerator& emb_enum, const A
         return result;
 
     int proc = 1;
-    if (_context.cancellation != nullptr)
-    {
-        try
-        {
-            proc = emb_enum.process();
-        }
-        catch (Exception&)
-        {
-            proc = 1;
-        }
-    }
-    else
-    {
-        proc = emb_enum.process();
-    }
+    /*
+     * Disable old logic with timeout waiting for mcs. Can be a different result for some reaction though
+    */
+    // if (_context.cancellation != nullptr)
+    // {
+    //     try
+    //     {
+    //         proc = emb_enum.process();
+    //     }
+    //     catch (Exception&)
+    //     {
+    //         proc = 1;
+    //     }
+    // }
+    // else
+    // {
+    // proc = emb_enum.process();
+    // }
 
+    // Will throw error on timeout
+    proc = emb_enum.process();
     if (proc == 1)
         return -1;
 

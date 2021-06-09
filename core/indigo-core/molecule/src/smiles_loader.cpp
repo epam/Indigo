@@ -80,7 +80,7 @@ void SmilesLoader::loadQueryMolecule(QueryMolecule& mol)
 
 void SmilesLoader::_calcStereocenters()
 {
-    int i, j, tmp;
+    int i, j;
 
     for (i = 0; i < _atoms.size(); i++)
     {
@@ -101,7 +101,7 @@ void SmilesLoader::_calcStereocenters()
                 continue;
             }
 
-            int tmp, parity = 3 - _atoms[i].chirality;
+            int parity = 3 - _atoms[i].chirality;
 
             for (j = 0; j < 4; j++)
                 if (subst[j] == -1)
@@ -118,13 +118,13 @@ void SmilesLoader::_calcStereocenters()
 
             if (subst2[1] < subst2[0])
             {
-                __swap(subst2[1], subst2[0], tmp);
+                std::swap(subst2[1], subst2[0]);
                 parity = 3 - parity;
             }
 
             if (subst2[3] < subst2[2])
             {
-                __swap(subst2[3], subst2[2], tmp);
+                std::swap(subst2[3], subst2[2]);
                 parity = 3 - parity;
             }
 
@@ -133,14 +133,14 @@ void SmilesLoader::_calcStereocenters()
             {
                 if (subst[1] == -1)
                     throw Error("unexpected: subst[1] = -1");
-                __swap(subst[0], subst[1], tmp);
+                std::swap(subst[0], subst[1]);
                 parity = 3 - parity;
             }
             if (pure_h[2])
             {
                 if (subst[3] == -1)
                     throw Error("unexpected: subst[3] = -1");
-                __swap(subst[2], subst[3], tmp);
+                std::swap(subst[2], subst[3]);
                 parity = 3 - parity;
             }
 
@@ -215,16 +215,16 @@ void SmilesLoader::_calcStereocenters()
 
                 for (j = h_index; j < 3; j++)
                 {
-                    __swap(pyramid[j], pyramid[j + 1], tmp);
+                    std::swap(pyramid[j], pyramid[j + 1]);
                     parity = !parity;
                 }
 
                 if (!parity)
-                    __swap(pyramid[0], pyramid[1], tmp);
+                    std::swap(pyramid[0], pyramid[1]);
             }
 
             if (_atoms[i].chirality == 2)
-                __swap(pyramid[0], pyramid[1], j);
+                std::swap(pyramid[0], pyramid[1]);
 
             if (!stereocenters.isPossibleStereocenter(i))
             {
@@ -1919,8 +1919,8 @@ void SmilesLoader::_handlePolymerRepetition(int i)
     if (end_bond == -1 && start_bond != -1)
     {
         // swap them to make things below easier
-        __swap(start, end, j);
-        __swap(start_bond, end_bond, j);
+        std::swap(start, end);
+        std::swap(start_bond, end_bond);
     }
 
     auto& p = sgroup->brackets.push();

@@ -18,6 +18,7 @@ extern "C"
 #include "bingo_pg_index.h"
 #include "bingo_pg_search_engine.h"
 #include "pg_bingo_context.h"
+#include <algorithm>
 
 IMPL_ERROR(BingoPgIndex, "bingo index");
 
@@ -230,7 +231,7 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine)
     /*
      * Set offset
      */
-    dict_buf_size = __min(BingoPgBufferCacheBin::MAX_SIZE, dict_size - dict_offset);
+    dict_buf_size = std::min(static_cast<int>(BingoPgBufferCacheBin::MAX_SIZE), dict_size - dict_offset);
 
     while (dict_buf_size > 0)
     {
@@ -243,7 +244,7 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine)
         buffer_cache.writeBin(buffer_dict);
 
         dict_offset += dict_buf_size;
-        dict_buf_size = __min(BingoPgBufferCacheBin::MAX_SIZE, dict_size - dict_offset);
+        dict_buf_size = std::min(static_cast<int>(BingoPgBufferCacheBin::MAX_SIZE), dict_size - dict_offset);
         ++_metaInfo.n_blocks_for_dictionary;
     }
 }

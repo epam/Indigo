@@ -574,7 +574,7 @@ namespace indigo
         {
         }
 
-        virtual ~RedBlackSet()
+        ~RedBlackSet() override
         {
         }
 
@@ -631,7 +631,7 @@ namespace indigo
         }
 
     protected:
-        virtual int _compare(Key key, const Node& node) const
+        int _compare(Key key, const Node& node) const override
         {
             return key > node.key ? 1 : (key < node.key ? -1 : 0);
         }
@@ -667,7 +667,7 @@ namespace indigo
         {
         }
 
-        virtual ~RedBlackMap()
+        ~RedBlackMap() override
         {
         }
 
@@ -737,7 +737,7 @@ namespace indigo
         }
 
     protected:
-        virtual int _compare(Key key, const Node& node) const
+        int _compare(Key key, const Node& node) const override
         {
             if (key < node.key)
                 return -1;
@@ -774,7 +774,7 @@ namespace indigo
     public:
         typedef RedBlackStringMapNode<Value> Node;
 
-        virtual void clear()
+        void clear() override
         {
             RedBlackTree<const char*, Node>::clear();
             _pool.clear();
@@ -835,7 +835,7 @@ namespace indigo
         }
 
     protected:
-        virtual int _compare(const char* key, const RedBlackStringMapNode<Value>& node) const
+        int _compare(const char* key, const RedBlackStringMapNode<Value>& node) const override
         {
             return case_sensitive ? strcmp(key, _pool.at(node.key_idx)) : strcasecmp(key, _pool.at(node.key_idx));
         }
@@ -867,7 +867,7 @@ namespace indigo
             dummy = 123;
         }
 
-        virtual ~RedBlackObjMap()
+        ~RedBlackObjMap() override
         {
             this->clear();
         }
@@ -967,7 +967,7 @@ namespace indigo
             return this->_nodes->at(node).value;
         }
 
-        virtual void clear()
+        void clear() override
         {
             int i;
 
@@ -978,7 +978,7 @@ namespace indigo
         }
 
     protected:
-        virtual int _compare(Key key, const Node& node) const
+        int _compare(Key key, const Node& node) const override
         {
             if (key < node.key)
                 return -1;
@@ -1034,12 +1034,12 @@ namespace indigo
         {
         }
 
-        virtual ~RedBlackStringObjMap()
+        ~RedBlackStringObjMap() override
         {
             this->clear();
         }
 
-        virtual void clear()
+        void clear() override
         {
             for (int i = this->begin(); i != this->end(); i = this->next(i))
                 this->value(i).~Value();
@@ -1160,7 +1160,7 @@ namespace indigo
         }
 
     protected:
-        virtual int _compare(const char* key, const Node& node) const
+        int _compare(const char* key, const Node& node) const override
         {
             return strcmp(key, _pool.at(node.key_idx));
         }

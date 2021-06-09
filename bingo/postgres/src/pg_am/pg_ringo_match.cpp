@@ -39,7 +39,7 @@ public:
         setFunctionName(_typeStr.ptr());
     }
 
-    virtual ~_RingoContextHandler()
+    ~_RingoContextHandler() override
     {
     }
 

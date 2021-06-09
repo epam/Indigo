@@ -36,7 +36,7 @@ class IndigoInchiContext : public IndigoPluginContext
 public:
     InchiWrapper inchi;
 
-    virtual void init()
+    void init() override
     {
         inchi.clear();
     }

@@ -1067,13 +1067,11 @@ double Element::getRelativeIsotopicMass(int element, int isotope)
 
 void Element::_initDefaultIsotopes() noexcept
 {
-    Array<int> def_isotope_index;
+    std::vector<IsotopeKey> def_isotope_index;
     def_isotope_index.resize(_element_parameters.size());
-    def_isotope_index.fffill();
 
-    Array<double> most_abundant_isotope_fraction;
+    std::vector<double> most_abundant_isotope_fraction;
     most_abundant_isotope_fraction.resize(_element_parameters.size());
-    most_abundant_isotope_fraction.fill(0);
 
     for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
     {
@@ -1095,13 +1093,12 @@ void Element::_initDefaultIsotopes() noexcept
         double atomic_weight = _getStandardAtomicWeight(key.element);
 
         double diff_best = 1e6;
-        if (def_isotope_index[key.element] != IsotopeKey::NATURAL)
+        if (def_isotope_index[key.element].isotope != IsotopeKey::NATURAL)
         {
-            int best_iso = def_isotope_index[key.element];
-            const auto isotope_key = IsotopeKey{key.element, best_iso};
-            if (_isotope_parameters_map.count(isotope_key) > 0)
+            auto best_iso = def_isotope_index[key.element];
+            if (_isotope_parameters_map.count(best_iso) > 0)
             {
-                const auto& best = _isotope_parameters_map.at(isotope_key);
+                const auto& best = _isotope_parameters_map.at(best_iso);
                 diff_best = fabs(best.mass - atomic_weight);
             }
         }
@@ -1109,8 +1106,9 @@ void Element::_initDefaultIsotopes() noexcept
 
         if (diff_best > diff_cur)
         {
-            def_isotope_index[key.element] = key.element;
+            def_isotope_index[key.element] = key;
             _element_parameters.at(key.element).default_isotope = key.isotope;
+            diff_best = diff_cur;
         }
 
         int& min_iso = _element_parameters.at(key.element).min_isotope_index;
