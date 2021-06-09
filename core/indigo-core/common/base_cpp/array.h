@@ -27,16 +27,17 @@
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
+#include <array>
 
 namespace indigo
 {
     DECL_EXCEPTION(ArrayError);
 
     using ArrayBool = std::vector<unsigned char>;
-    using Vec2fPair = std::array<Vec2f, 2>;
+    // typedef std::array<Vec2f, 2> Vec2fPair;
 
     class ArrayChar
     {

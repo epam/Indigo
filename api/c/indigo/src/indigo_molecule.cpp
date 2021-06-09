@@ -3293,7 +3293,7 @@ CEXPORT int indigoSetSGroupBrackets(int sgroup, int brk_style, float x1, float y
 
         psg->brk_style = brk_style;
         psg->brackets.clear();
-        Vec2f* brackets = psg->brackets.push();
+        auto& brackets = psg->brackets.push();
         brackets[0].set(x1, y1);
         brackets[1].set(x2, y2);
         brackets = psg->brackets.push();

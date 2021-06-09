@@ -493,7 +493,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         }
 
         // add brackets
-        Vec2f* p = sgroup.brackets.push();
+        auto& p = sgroup.brackets.push();
         p[0].set(0, 0);
         p[1].set(0, 0);
         p = sgroup.brackets.push();

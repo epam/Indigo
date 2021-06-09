@@ -1923,7 +1923,7 @@ void SmilesLoader::_handlePolymerRepetition(int i)
         __swap(start_bond, end_bond, j);
     }
 
-    Vec2f* p = sgroup->brackets.push();
+    auto& p = sgroup->brackets.push();
     p[0].set(0, 0);
     p[1].set(0, 0);
     p = sgroup->brackets.push();

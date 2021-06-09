@@ -112,7 +112,7 @@ namespace indigo
         Array<int> bonds; // represented with SBL in Molfile format
 
         int brk_style;            // represented with SBT in Molfile format
-        Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
+        Array<std::array<Vec2f, 2>> brackets; // represented with SDI in Molfile format
 
         static const char* typeToString(int sg_type);
         static int getType(const char* sg_type);
