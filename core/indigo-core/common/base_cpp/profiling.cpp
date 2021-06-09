@@ -72,7 +72,7 @@ namespace indigo
 
 ObjArray<ArrayChar>& ProfilingSystem::getNames()
 {
-    static ObjArray<Array<char>> _names;
+    static ObjArray<ArrayChar> _names;
     return _names;
 }
 
